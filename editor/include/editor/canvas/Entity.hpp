@@ -4,13 +4,13 @@
 #include <imgui.h>
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
+#include "fornani/utils/Polymorphic.hpp"
 
 namespace pi {
 
-class Entity {
+class Entity : public fornani::Polymorphic {
   public:
-	explicit Entity(std::string const& label, int const id = 0, sf::Vector2<std::uint32_t> dimensions = {}) : id(id), label(label), dimensions(dimensions) {};
-	virtual ~Entity() = default;
+	explicit Entity(std::string const& label, int const id = 0, sf::Vector2<std::uint32_t> dimensions = {}) : id(id), label(label), dimensions(dimensions){};
 	virtual std::unique_ptr<Entity> clone() const;
 	virtual void serialize(dj::Json& out);
 	virtual void unserialize(dj::Json& in);

@@ -5,6 +5,7 @@
 #include "fornani/utils/Math.hpp"
 #include "fornani/utils/Random.hpp"
 #include "fornani/weapon/Weapon.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::arms {
 

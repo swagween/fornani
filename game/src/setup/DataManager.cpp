@@ -36,16 +36,18 @@ void DataManager::load_data(std::string in_room) {
 			sf::Vector2<std::uint32_t> dimensions{};
 			dimensions.x = map_jsons.back().metadata["meta"]["dimensions"][0].as<int>();
 			dimensions.y = map_jsons.back().metadata["meta"]["dimensions"][1].as<int>();
-			std::vector<world::Layer> next{};
+			map_layers.push_back(std::vector<std::unique_ptr<world::Layer>>{});
 			auto& in_tile = map_jsons.back().metadata["tile"];
-			auto ho{static_cast<bool>(in_tile["flags"]["obscuring"].as_bool())};
-			auto hro{static_cast<bool>(in_tile["flags"]["reverse_obscuring"].as_bool())};
+			auto ho = static_cast<bool>(in_tile["flags"]["obscuring"].as_bool());
+			auto hro = static_cast<bool>(in_tile["flags"]["reverse_obscuring"].as_bool());
 			std::uint8_t ctr{0u};
 			for (auto& layer : in_tile["layers"].array_view()) {
-				next.push_back(world::Layer(ctr, {in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].array_view().size())}, dimensions, in_tile["layers"][ctr], util::constants::f_cell_size, ho, hro));
+				auto parallax = in_tile["parallax"][ctr].as<float>();
+				if (parallax == 0.f) { parallax = 1.f; }
+				auto partition = sf::Vector2i{in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].array_view().size())};
+				map_layers.back().push_back(std::make_unique<world::Layer>(ctr, partition, dimensions, in_tile["layers"][ctr], util::constants::f_cell_size, ho, hro, parallax));
 				++ctr;
 			}
-			map_layers.push_back(next);
 
 			// write to map table
 			auto entry = dj::Json{};
@@ -652,6 +654,6 @@ int DataManager::get_npc_location(int npc_id) {
 	return npc_locations.at(npc_id);
 }
 
-std::vector<world::Layer>& DataManager::get_layers(int id) { return map_layers.at(get_room_index(id)); }
+std::vector<std::unique_ptr<world::Layer>>& DataManager::get_layers(int id) { return map_layers.at(get_room_index(id)); }
 
 } // namespace fornani::data

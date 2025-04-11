@@ -6,9 +6,10 @@
 #include <djson/json.hpp>
 #include <array>
 #include <string>
+#include "fornani/entities/npc/Vendor.hpp"
 #include "fornani/io/File.hpp"
 #include "fornani/utils/QuestCode.hpp"
-#include "fornani/world/Map.hpp"
+#include "fornani/world/Layer.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -94,7 +95,7 @@ class DataManager {
 
 	int get_room_index(int id);
 	int get_npc_location(int npc_id);
-	std::vector<world::Layer>& get_layers(int id);
+	std::vector<std::unique_ptr<world::Layer>>& get_layers(int id);
 
 	// gui
 	dj::Json m_console_paths{};
@@ -128,7 +129,7 @@ class DataManager {
 	dj::Json background{};
 
 	std::vector<MapData> map_jsons{};
-	std::vector<std::vector<world::Layer>> map_layers{};
+	std::vector<std::vector<std::unique_ptr<world::Layer>>> map_layers{};
 	int num_layers{8};
 	std::vector<int> rooms{};
 	std::vector<int> discovered_rooms{};

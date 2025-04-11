@@ -4,6 +4,7 @@ nani_add_sources(
         Checkpoint.cpp
         Destroyable.cpp
         Grid.cpp
+        Layer.cpp
         Map.cpp
         Platform.cpp
         Pushable.cpp

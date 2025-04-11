@@ -151,7 +151,9 @@ bool Canvas::load(fornani::data::ResourceFinder& finder, std::string const& regi
 	// tiles
 	auto counter{0};
 	for (auto& layer : metadata["tile"]["layers"].array_view()) {
-		map_states.back().layers.push_back(Layer(counter, counter == map_states.back().get_middleground(), dimensions));
+		auto parallax = metadata["tile"]["parallax"][counter].as<float>();
+		if (parallax == 0) { parallax = 1.f; }
+		map_states.back().layers.push_back(Layer(counter, counter == map_states.back().get_middleground(), dimensions, parallax));
 		int cell_counter{};
 		for (auto& cell : layer.array_view()) {
 			map_states.back().layers.back().grid.cells.at(cell_counter).value = cell.as<int>();
@@ -215,6 +217,7 @@ bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& regi
 			metadata["tile"]["layers"][current_layer].push_back(layer.grid.cells.at(current_cell).value);
 			++current_cell;
 		}
+		metadata["tile"]["parallax"].push_back(layer.parallax);
 		++current_layer;
 	}
 

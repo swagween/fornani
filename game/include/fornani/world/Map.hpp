@@ -1,15 +1,6 @@
 
 #pragma once
 
-#include "Breakable.hpp"
-#include "Checkpoint.hpp"
-#include "Destroyable.hpp"
-#include "Grid.hpp"
-#include "Platform.hpp"
-#include "Pushable.hpp"
-#include "Spawner.hpp"
-#include "Spike.hpp"
-#include "SwitchBlock.hpp"
 #include "fornani/audio/Ambience.hpp"
 #include "fornani/entities/atmosphere/Atmosphere.hpp"
 #include "fornani/entities/enemy/EnemyCatalog.hpp"
@@ -31,17 +22,25 @@
 #include "fornani/graphics/Transition.hpp"
 #include "fornani/io/Logger.hpp"
 #include "fornani/particle/Effect.hpp"
+#include "fornani/particle/Emitter.hpp"
 #include "fornani/story/CutsceneCatalog.hpp"
 #include "fornani/utils/CircleCollider.hpp"
 #include "fornani/utils/Shape.hpp"
 #include "fornani/utils/Stopwatch.hpp"
 #include "fornani/weapon/Grenade.hpp"
 #include "fornani/weapon/Projectile.hpp"
+#include "fornani/world/Breakable.hpp"
+#include "fornani/world/Checkpoint.hpp"
+#include "fornani/world/Destroyable.hpp"
+#include "fornani/world/Layer.hpp"
+#include "fornani/world/Platform.hpp"
+#include "fornani/world/Pushable.hpp"
+#include "fornani/world/Spawner.hpp"
+#include "fornani/world/Spike.hpp"
+#include "fornani/world/SwitchBlock.hpp"
 
 #include <optional>
 #include <vector>
-
-#include "fornani/particle/Emitter.hpp"
 
 constexpr unsigned int u_chunk_size_v{16u};
 
@@ -64,42 +63,6 @@ namespace fornani::world {
 enum class LevelState : std::uint8_t { game_over, camera_shake, spawn_enemy };
 enum class MapState : std::uint8_t { unobscure };
 enum class MapProperties : std::uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer };
-enum class LayerType : std::uint8_t { background, middleground, foreground, reverse_obscuring, obscuring };
-
-struct LayerTexture {
-	sf::RenderTexture day{};
-	sf::RenderTexture twilight{};
-	sf::RenderTexture night{};
-};
-
-class Layer {
-  public:
-	Layer() = default;
-	Layer(std::uint8_t o, sf::Vector2i partition, sf::Vector2<std::uint32_t> dim, dj::Json& source, float spacing, bool has_obscuring, bool has_reverse_obscuring)
-		: render_order(o), collidable(o == partition.x), dimensions(dim), grid(dim, source, spacing) {
-		auto order = static_cast<int>(o);
-		if (order < partition.x) { type = LayerType::background; }
-		if (order == partition.x) { type = LayerType::middleground; }
-		if (order > partition.x) { type = LayerType::foreground; }
-		if (order == partition.y - 2 && has_reverse_obscuring) { type = LayerType::reverse_obscuring; }
-		if (order == partition.y - 1 && has_obscuring) { type = LayerType::obscuring; }
-	}
-	[[nodiscard]] auto background() const -> bool { return type == LayerType::background; }
-	[[nodiscard]] auto foreground() const -> bool { return type == LayerType::foreground; }
-	[[nodiscard]] auto middleground() const -> bool { return type == LayerType::middleground; }
-	[[nodiscard]] auto obscuring() const -> bool { return type == LayerType::obscuring; }
-	[[nodiscard]] auto reverse_obscuring() const -> bool { return type == LayerType::reverse_obscuring; }
-	[[nodiscard]] auto get_render_order() const -> std::uint8_t { return render_order; }
-	[[nodiscard]] auto get_i_render_order() const -> int { return static_cast<int>(render_order); }
-	[[nodiscard]] auto get_layer_type() const -> LayerType { return type; }
-	Grid grid;
-	bool collidable{};
-	sf::Vector2<std::uint32_t> dimensions{};
-
-  private:
-	std::uint8_t render_order{};
-	LayerType type{};
-};
 
 struct EnemySpawn {
 	sf::Vector2<float> pos{};
@@ -109,10 +72,7 @@ struct EnemySpawn {
 class Map {
 
   public:
-	using Vec = sf::Vector2<float>;
-
 	Map(automa::ServiceProvider& svc, player::Player& player);
-	~Map() {}
 
 	// methods
 	void load(automa::ServiceProvider& svc, int room_number, bool soft = false);
@@ -123,18 +83,18 @@ class Map {
 	void spawn_enemy(int id, sf::Vector2<float> pos);
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
-	void generate_layer_textures(automa::ServiceProvider& svc);
+	void generate_layer_textures(automa::ServiceProvider& svc) const;
 	bool check_cell_collision(shape::Collider& collider, bool foreground = false);
 	bool check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	void handle_cell_collision(shape::CircleCollider& collider);
 	void shake_camera();
 	void clear();
 	void wrap(sf::Vector2<float>& position) const;
-	std::vector<Layer>& get_layers();
-	Layer& get_middleground();
-	Layer& get_obscuring_layer();
+	std::vector<std::unique_ptr<world::Layer>>& get_layers();
+	std::unique_ptr<world::Layer>& get_middleground();
+	std::unique_ptr<world::Layer>& get_obscuring_layer();
 	npc::NPC& get_npc(int id);
-	Vec get_spawn_position(int portal_source_map_id);
+	sf::Vector2f get_spawn_position(int portal_source_map_id);
 	sf::Vector2<float> get_nearest_target_point(sf::Vector2<float> from);
 	sf::Vector2<float> last_checkpoint();
 
@@ -159,8 +119,8 @@ class Map {
 
 	// layers
 	sf::Vector2<int> metagrid_coordinates{};
-	Vec real_dimensions{};	   // pixel dimensions (maybe useless)
-	sf::Vector2u dimensions{}; // points on the 32x32-unit grid
+	sf::Vector2f real_dimensions{}; // pixel dimensions (maybe useless)
+	sf::Vector2u dimensions{};		// points on the 32x32-unit grid
 
 	dj::Json inspectable_data{};
 
@@ -205,18 +165,7 @@ class Map {
 	enemy::EnemyCatalog enemy_catalog;
 	CutsceneCatalog cutscene_catalog;
 
-	sf::RectangleShape borderbox{};
 	sf::RectangleShape center_box{};
-
-	// layers
-	struct {
-		sf::RenderTexture greyblock{};
-		sf::RenderTexture barrier{};
-		LayerTexture foreground{};
-		LayerTexture background{};
-		std::optional<LayerTexture> obscuring{};
-		std::optional<LayerTexture> reverse_obscuring{};
-	} textures{};
 
 	std::string_view style_label{};
 
@@ -250,7 +199,7 @@ class Map {
 	util::Cooldown end_demo{500};
 
   private:
-	int abyss_distance{400};
+	int abyss_distance{512};
 	struct {
 		std::string biome{};
 		std::string room{};
@@ -270,6 +219,7 @@ class Map {
 		int echo_count{};
 	} sound{};
 	int m_middleground{};
+	sf::Color m_letterbox_color{};
 
 	io::Logger m_logger{"Map"};
 };

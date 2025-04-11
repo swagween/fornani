@@ -197,7 +197,7 @@ void Collider::detect_map_collision(world::Map& map) {
 	flags.perma_state = {};
 	flags.state.reset(State::tickwise_ramp_collision);
 
-	auto& grid = map.get_middleground().grid;
+	auto& grid = map.get_middleground()->grid;
 	auto top = map.get_index_at_position(vicinity.vertices.at(0));
 	auto bottom = map.get_index_at_position(vicinity.vertices.at(3));
 	auto right = map.get_index_at_position(vicinity.vertices.at(1)) - top;

@@ -1,8 +1,9 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/Direction.hpp"
 #include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Direction.hpp"
+#include "fornani/utils/Polymorphic.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -16,10 +17,9 @@ namespace fornani::entity {
 
 enum class State { flip };
 
-class Entity {
+class Entity : public Polymorphic {
   public:
 	Entity() = default;
-	virtual ~Entity() = default;
 	explicit Entity(automa::ServiceProvider& svc);
 	virtual void update(automa::ServiceProvider& svc, world::Map& map);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) = 0;
@@ -37,4 +37,4 @@ class Entity {
 	util::BitFlags<State> ent_state{};
 };
 
-} // namespace entity
+} // namespace fornani::entity

@@ -1,6 +1,7 @@
 #include "fornani/graphics/Rain.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::vfx {
 

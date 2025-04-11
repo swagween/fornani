@@ -6,6 +6,7 @@
 #include "editor/canvas/Canvas.hpp"
 #include "editor/canvas/Clipboard.hpp"
 #include "editor/util/SelectBox.hpp"
+#include "fornani/utils/Polymorphic.hpp"
 
 #include <optional>
 #include <string_view>
@@ -17,11 +18,9 @@ enum class EntityType : std::uint8_t { none, portal, inspectable, critter, chest
 enum class EntityMode : std::uint8_t { selector, placer, eraser, mover, editor };
 enum class ToolStatus : std::uint8_t { usable, unusable, loaded };
 
-class Tool {
+class Tool : public fornani::UniquePolymorphic {
   public:
 	Tool(std::string_view label, ToolType type) : label(label), type(type) {}
-	Tool& operator=(Tool const&) = delete;
-	virtual ~Tool() = default;
 	virtual void update(Canvas& canvas);
 	virtual void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) = 0;
 	virtual void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) = 0;

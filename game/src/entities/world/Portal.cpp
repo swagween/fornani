@@ -1,6 +1,7 @@
 
 #include "fornani/entities/world/Portal.hpp"
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/graphics/Transition.hpp"
 #include "fornani/gui/Console.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 

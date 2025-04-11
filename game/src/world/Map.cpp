@@ -1,6 +1,7 @@
 #include "fornani/world/Map.hpp"
 #include <imgui.h>
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/graphics/Colors.hpp"
 #include "fornani/gui/Console.hpp"
 #include "fornani/gui/Portrait.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -54,6 +55,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	m_middleground = svc.data.map_jsons.at(room_lookup).metadata["tile"]["middleground"].as<int>();
 	svc.data.map_jsons.at(room_lookup).metadata["tile"]["flags"]["obscuring"].as_bool() ? flags.properties.set(MapProperties::has_obscuring_layer) : flags.properties.reset(MapProperties::has_obscuring_layer);
 	svc.data.map_jsons.at(room_lookup).metadata["tile"]["flags"]["reverse_obscuring"].as_bool() ? flags.properties.set(MapProperties::has_reverse_obscuring_layer) : flags.properties.reset(MapProperties::has_reverse_obscuring_layer);
+
+	m_letterbox_color = style_id == 2 ? colors::pioneer_black : colors::ui_black;
 
 	auto const& entities = metadata["entities"];
 
@@ -538,16 +541,8 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		save_point.render(svc, win, cam);
 	}
 
-	// map foreground tiles
 	if (!svc.greyblock_mode()) {
-		std::vector<sf::Sprite> sprites{sf::Sprite{textures.foreground.day.getTexture()}, sf::Sprite{textures.foreground.twilight.getTexture()}, sf::Sprite{textures.foreground.night.getTexture()}};
-		auto ctr{0};
-		for (auto& sprite : sprites) {
-			sprite.setScale(util::constants::f_scale_vec);
-			sprite.setPosition(-cam);
-			m_camera_effects.shifter.render(svc, win, sprite, ctr);
-			++ctr;
-		}
+		for (auto& layer : get_layers()) { layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam); }
 	}
 
 	{
@@ -563,62 +558,12 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		}
 	}
 
-	if (!svc.greyblock_mode()) {
-		// draw obscuring layer
-		if (textures.obscuring) {
-			std::vector<sf::Sprite> obs_sprites{sf::Sprite{textures.obscuring.value().day.getTexture()}, sf::Sprite{textures.obscuring.value().twilight.getTexture()}, sf::Sprite{textures.obscuring.value().night.getTexture()}};
-
-			auto ctr{0};
-			for (auto& sprite : obs_sprites) {
-				sprite.setScale(util::constants::f_scale_vec);
-				sprite.setPosition(-cam);
-				std::uint8_t alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
-				if (alpha != 0) { m_camera_effects.shifter.render(svc, win, sprite, ctr, alpha); }
-				++ctr;
-			}
-		}
-		if (textures.reverse_obscuring) {
-			std::vector<sf::Sprite> rev_sprites{sf::Sprite{textures.reverse_obscuring.value().day.getTexture()}, sf::Sprite{textures.reverse_obscuring.value().twilight.getTexture()},
-												sf::Sprite{textures.reverse_obscuring.value().night.getTexture()}};
-			auto ctr{0};
-			for (auto& sprite : rev_sprites) {
-				sprite.setScale(util::constants::f_scale_vec);
-				sprite.setPosition(-cam);
-				std::uint8_t revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
-				if (revalpha != 0) { m_camera_effects.shifter.render(svc, win, sprite, ctr, revalpha); }
-				++ctr;
-			}
-		}
-	}
-
 	{
 		ZoneScopedN("Map::render - effects");
 		for (auto& effect : effects) { effect.render(svc, win, cam); }
 	}
 
 	player->render_indicators(svc, win, cam);
-
-	if (real_dimensions.y < svc.window->f_screen_dimensions().y) {
-		auto ydiff = (svc.window->f_screen_dimensions().y - real_dimensions.y) * 0.5f;
-		borderbox.setFillColor(svc.styles.colors.ui_black);
-		borderbox.setSize({svc.window->f_screen_dimensions().x, ydiff});
-		borderbox.setPosition({});
-		win.draw(borderbox);
-
-		borderbox.setPosition({0.0f, real_dimensions.y + ydiff});
-		win.draw(borderbox);
-	}
-
-	if (real_dimensions.x < svc.window->f_screen_dimensions().x) {
-		auto xdiff = (svc.window->f_screen_dimensions().x - real_dimensions.x) * 0.5f;
-		borderbox.setFillColor(svc.styles.colors.ui_black);
-		borderbox.setSize({xdiff, svc.window->f_screen_dimensions().y});
-		borderbox.setPosition({});
-		win.draw(borderbox);
-
-		borderbox.setPosition({real_dimensions.x + xdiff, 0.0f});
-		win.draw(borderbox);
-	}
 
 	{
 		ZoneScopedN("Map::render - animator");
@@ -646,10 +591,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		win.draw(center_box);
 		center_box.setPosition({0.f, svc.window->f_screen_dimensions().y * 0.5f});
 		win.draw(center_box);
-		sf::Sprite greyblock{textures.greyblock.getTexture()};
-		greyblock.setPosition(-cam);
-		win.draw(greyblock);
-		get_middleground().grid.render(win, cam);
+		get_middleground()->grid.render(win, cam);
 	}
 }
 
@@ -660,21 +602,8 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		for (auto& layer : scenery_layers) {
 			for (auto& piece : layer) { piece->render(svc, win, cam); }
 		}
-		// draw barrier
-		auto spr = sf::Sprite{textures.barrier.getTexture()};
-		auto border = sf::Vector2i{512, 512};
-		spr.setTextureRect(sf::IntRect{-border, {sf::Vector2i{textures.barrier.getSize()} + 2 * border}});
-		spr.setScale(util::constants::f_scale_vec);
-		spr.setPosition(-cam - sf::Vector2f{2 * border});
-		win.draw(spr);
-
-		std::vector<sf::Sprite> sprites{sf::Sprite{textures.background.day.getTexture()}, sf::Sprite{textures.background.twilight.getTexture()}, sf::Sprite{textures.background.night.getTexture()}};
-		auto ctr{0};
-		for (auto& sprite : sprites) {
-			sprite.setScale(util::constants::f_scale_vec);
-			sprite.setPosition(-cam);
-			m_camera_effects.shifter.render(svc, win, sprite, ctr);
-			++ctr;
+		if (!svc.greyblock_mode()) {
+			for (auto& layer : get_layers()) { layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true); }
 		}
 		for (auto& npc : npcs) {
 			if (npc.background()) { npc.render(svc, win, cam); }
@@ -744,13 +673,13 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 
 void Map::generate_collidable_layer(bool live) {
 	auto pushable_offset = sf::Vector2<float>{1.f, 0.f};
-	for (auto& cell : get_middleground().grid.cells) {
-		get_middleground().grid.check_neighbors(cell.one_d_index);
+	for (auto& cell : get_middleground()->grid.cells) {
+		get_middleground()->grid.check_neighbors(cell.one_d_index);
 		if (live) { continue; }
 		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position(), styles.breakables)); }
 		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position() + pushable_offset, styles.pushables, cell.value - 483)); }
-		if (cell.is_big_spike()) { spikes.push_back(Spike(*m_services, m_services->assets.get_texture("big_spike"), cell.position(), get_middleground().grid.get_solid_neighbors(cell.one_d_index), {6.f, 4.f})); }
-		if (cell.is_spike()) { spikes.push_back(Spike(*m_services, m_services->assets.get_tileset(m_metadata.biome), cell.position(), get_middleground().grid.get_solid_neighbors(cell.one_d_index), {1.f, 1.f})); }
+		if (cell.is_big_spike()) { spikes.push_back(Spike(*m_services, m_services->assets.get_texture("big_spike"), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {6.f, 4.f})); }
+		if (cell.is_spike()) { spikes.push_back(Spike(*m_services, m_services->assets.get_tileset(m_metadata.biome), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {1.f, 1.f})); }
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position(), 5)); }
 		if (cell.is_target()) { target_points.push_back(cell.get_center()); }
 		if (cell.is_checkpoint()) { checkpoints.push_back(Checkpoint(*m_services, cell.position())); }
@@ -761,83 +690,12 @@ void Map::generate_collidable_layer(bool live) {
 	}
 }
 
-void Map::generate_layer_textures(automa::ServiceProvider& svc) {
-	auto& layers = svc.data.get_layers(room_id);
-	if (has_obscuring_layer()) { textures.obscuring = LayerTexture(); }
-	if (has_reverse_obscuring_layer()) { textures.reverse_obscuring = LayerTexture(); }
-	if (!textures.barrier.resize(sf::Vector2u{get_middleground().dimensions * static_cast<unsigned int>(util::constants::u_cell_resolution)})) { NANI_LOG_ERROR(m_logger, "Barrier texture not created."); }
-	for (auto cycle{0}; cycle < static_cast<int>(fornani::TimeOfDay::END); ++cycle) {
-		for (auto& layer : layers) {
-			auto changed{layer.get_i_render_order() == 0 || layer.middleground()};
-			auto finished{layer.get_i_render_order() == m_middleground - 1 || layer.get_i_render_order() == layers.size() - 1};
-			auto time = static_cast<fornani::TimeOfDay>(cycle);
-			auto& tex{time == fornani::TimeOfDay::day ? (!layer.background() ? textures.foreground.day : textures.background.day)
-													  : (time == fornani::TimeOfDay::twilight ? (!layer.background() ? textures.foreground.twilight : textures.background.twilight)
-														 : !layer.background()				  ? textures.foreground.night
-																							  : textures.background.night)};
-
-			sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x) * static_cast<unsigned int>(util::constants::i_cell_resolution),
-							  static_cast<unsigned int>(layer.grid.dimensions.y) * static_cast<unsigned int>(util::constants::i_cell_resolution)};
-			if (changed) {
-				if (!tex.resize(size)) { NANI_LOG_ERROR(m_logger, "Layer texture not created."); }
-				tex.clear(sf::Color::Transparent);
-			}
-			if (layer.obscuring()) {
-				auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
-				if (!obs_tex.resize(size)) { NANI_LOG_ERROR(m_logger, "Obscuring layer texture not created."); }
-				obs_tex.clear(sf::Color::Transparent);
-			}
-			if (layer.reverse_obscuring()) {
-				auto& rev_obs_tex{time == fornani::TimeOfDay::day ? textures.reverse_obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.reverse_obscuring.value().twilight : textures.reverse_obscuring.value().night)};
-				if (!rev_obs_tex.resize(size)) { NANI_LOG_ERROR(m_logger, "Reverse layer texture not created."); }
-				rev_obs_tex.clear(sf::Color::Transparent);
-			}
-			sf::Sprite tile{svc.assets.get_tileset(m_metadata.biome)};
-			for (auto& cell : layer.grid.cells) {
-				auto x_coord = static_cast<int>((cell.value % util::constants::tileset_dimensions.x + cycle * util::constants::tileset_dimensions.x) * util::constants::i_cell_resolution);
-				auto y_coord = static_cast<int>(std::floor(cell.value / util::constants::tileset_dimensions.x) * util::constants::i_cell_resolution);
-				tile.setTextureRect(sf::IntRect({x_coord, y_coord}, util::constants::i_resolution_vec));
-				tile.setPosition(cell.position() / util::constants::f_scale_factor);
-				if (cell.is_occupied() && !cell.is_special()) {
-					auto normal{true};
-					if (layer.obscuring()) {
-						auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
-						obs_tex.draw(tile);
-						normal = false;
-					}
-					if (layer.reverse_obscuring()) {
-						auto& rev_obs_tex{time == fornani::TimeOfDay::day ? textures.reverse_obscuring.value().day
-																		  : (time == fornani::TimeOfDay::twilight ? textures.reverse_obscuring.value().twilight : textures.reverse_obscuring.value().night)};
-						rev_obs_tex.draw(tile);
-						normal = false;
-					}
-					if (normal) { tex.draw(tile); }
-				}
-				if (layer.middleground() && cycle == 0) {
-					textures.barrier.draw(tile);
-					// draw_barrier(tex, tile, cell, util::constants::f_scale_factor);
-				}
-			}
-			if (finished) { tex.display(); }
-			if (layer.obscuring()) {
-				auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
-				obs_tex.display();
-			}
-			if (layer.reverse_obscuring()) {
-				auto& rev_obs_tex{time == fornani::TimeOfDay::day ? textures.reverse_obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.reverse_obscuring.value().twilight : textures.reverse_obscuring.value().night)};
-				rev_obs_tex.display();
-			}
-			if (layer.middleground()) {
-				if (!textures.greyblock.resize(size)) { NANI_LOG_ERROR(m_logger, "Layer texture not created."); }
-				get_middleground().grid.draw(textures.greyblock);
-			}
-			if (layer.middleground() && cycle == 0) { textures.barrier.display(); }
-		}
-	}
+void Map::generate_layer_textures(automa::ServiceProvider& svc) const {
+	for (auto& layer : svc.data.get_layers(room_id)) { layer->generate_textures(svc.assets.get_tileset(m_metadata.biome)); }
 }
 
 bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
-	auto& grid = foreground ? get_obscuring_layer().grid : get_middleground().grid;
+	auto& grid = foreground ? get_obscuring_layer()->grid : get_middleground()->grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.vicinity.vertices.at(0));
 	auto bottom = get_index_at_position(collider.vicinity.vertices.at(3));
@@ -857,7 +715,7 @@ bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
 }
 
 bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms) {
-	auto& grid = get_middleground().grid;
+	auto& grid = get_middleground()->grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.boundary.first);
 	auto bottom = get_index_at_position(collider.boundary.second);
@@ -878,7 +736,7 @@ bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool coll
 }
 
 void Map::handle_cell_collision(shape::CircleCollider& collider) {
-	auto& grid = get_middleground().grid;
+	auto& grid = get_middleground()->grid;
 	auto top = get_index_at_position(collider.boundary.first);
 	auto bottom = get_index_at_position(collider.boundary.second);
 	auto right = static_cast<std::size_t>(collider.boundary_width() / util::constants::f_cell_size);
@@ -919,11 +777,11 @@ void Map::wrap(sf::Vector2<float>& position) const {
 	if (position.y > real_dimensions.y) { position.y = 0.f; }
 }
 
-std::vector<Layer>& Map::get_layers() { return m_services->data.get_layers(room_id); }
+std::vector<std::unique_ptr<world::Layer>>& Map::get_layers() { return m_services->data.get_layers(room_id); }
 
-Layer& Map::get_middleground() { return m_services->data.get_layers(room_id).at(m_middleground); }
+std::unique_ptr<world::Layer>& Map::get_middleground() { return m_services->data.get_layers(room_id).at(m_middleground); }
 
-Layer& Map::get_obscuring_layer() { return m_services->data.get_layers(room_id).at(static_cast<std::size_t>(m_services->data.get_layers(room_id).size() - 1)); }
+std::unique_ptr<world::Layer>& Map::get_obscuring_layer() { return m_services->data.get_layers(room_id).at(static_cast<std::size_t>(m_services->data.get_layers(room_id).size() - 1)); }
 
 npc::NPC& Map::get_npc(int id) {
 	for (auto& npc : npcs) {
@@ -933,11 +791,11 @@ npc::NPC& Map::get_npc(int id) {
 	std::exit(1);
 }
 
-sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
+sf::Vector2f Map::get_spawn_position(int portal_source_map_id) {
 	for (auto& portal : portals) {
 		if (portal.get_source() == portal_source_map_id) { return (portal.position); }
 	}
-	return Vec(300.f, 390.f);
+	return real_dimensions * 0.5f;
 }
 
 sf::Vector2<float> Map::get_nearest_target_point(sf::Vector2<float> from) {
@@ -974,16 +832,16 @@ bool Map::nearby(shape::Shape& first, shape::Shape& second) const {
 bool Map::within_bounds(sf::Vector2<float> test) const { return test.x > 0.f && test.x < real_dimensions.x && test.y > 0.f && test.y < real_dimensions.y; }
 
 bool Map::overlaps_middleground(shape::Shape& test) {
-	for (auto& cell : get_middleground().grid.cells) {
+	for (auto& cell : get_middleground()->grid.cells) {
 		if (test.overlaps(cell.bounding_box) && cell.is_solid()) { return true; }
 	}
 	return false;
 }
 
-std::size_t Map::get_index_at_position(sf::Vector2<float> position) { return get_middleground().grid.get_index_at_position(position); }
+std::size_t Map::get_index_at_position(sf::Vector2<float> position) { return get_middleground()->grid.get_index_at_position(position); }
 
-int Map::get_tile_value_at_position(sf::Vector2<float> position) { return get_middleground().grid.get_cell(get_index_at_position(position)).value; }
+int Map::get_tile_value_at_position(sf::Vector2<float> position) { return get_middleground()->grid.get_cell(get_index_at_position(position)).value; }
 
-Tile& Map::get_cell_at_position(sf::Vector2<float> position) { return get_middleground().grid.cells.at(get_index_at_position(position)); }
+Tile& Map::get_cell_at_position(sf::Vector2<float> position) { return get_middleground()->grid.cells.at(get_index_at_position(position)); }
 
 } // namespace fornani::world

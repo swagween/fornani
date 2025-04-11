@@ -9,6 +9,7 @@
 #include "fornani/gui/HUD.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/gui/PauseWindow.hpp"
+#include "fornani/utils/Polymorphic.hpp"
 #include "fornani/world/Map.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -43,15 +44,13 @@ struct Scene {
 	std::string_view label{};
 };
 
-class GameState {
+class GameState : public UniquePolymorphic {
 
   public:
 	std::unordered_map<MenuSelection, int> menu_selection_id{{MenuSelection::play, 0},	   {MenuSelection::options, 1}, {MenuSelection::quit, 2},	 {MenuSelection::controls, 0},
 															 {MenuSelection::tutorial, 2}, {MenuSelection::credits, 3}, {MenuSelection::settings, 1}};
 
 	GameState(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
-	GameState& operator=(GameState&&) = delete;
-	virtual ~GameState() {}
 
 	virtual void tick_update([[maybe_unused]] ServiceProvider& svc);
 	virtual void frame_update([[maybe_unused]] ServiceProvider& svc){};

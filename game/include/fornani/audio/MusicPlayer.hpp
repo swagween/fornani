@@ -3,9 +3,10 @@
 
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/setup/ResourceFinder.hpp"
+#include <optional>
 #include "fornani/io/Logger.hpp"
+#include "fornani/setup/ResourceFinder.hpp"
+#include "fornani/utils/BitFlags.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -18,7 +19,7 @@ enum class MusicPlayerState : std::uint8_t { on };
 
 class MusicPlayer {
   public:
-	void load(const data::ResourceFinder& finder, std::string_view song_name);
+	void load(data::ResourceFinder const& finder, std::string_view song_name);
 	void simple_load(std::string_view source);
 	void play_once(float vol = 100.f);
 	void play_looped(float vol = 100.f);
@@ -32,11 +33,17 @@ class MusicPlayer {
 	void turn_off();
 	void turn_on();
 	void set_volume(float vol);
-	[[nodiscard]] auto get_volume() const -> float { return song_first.getStatus() == sf::SoundSource::Status::Playing ? song_first.getVolume() : song_loop.getStatus() == sf::SoundSource::Status::Playing ? song_loop.getVolume() : 0.f; }
+	[[nodiscard]] auto get_volume() const -> float {
+		if (!song_first || !song_loop) { return 0.f; }
+		return song_first->getStatus() == sf::SoundSource::Status::Playing ? song_first->getVolume() : song_loop->getStatus() == sf::SoundSource::Status::Playing ? song_loop->getVolume() : 0.f;
+	}
 	[[nodiscard]] auto global_off() const -> bool { return !flags.player.test(MusicPlayerState::on); }
 	[[nodiscard]] auto switched_off() const -> bool { return !flags.state.test(SongState::on); }
 
-	[[nodiscard]] auto playing() const -> bool { return song_first.getStatus() == sf::SoundSource::Status::Playing || song_loop.getStatus() == sf::SoundSource::Status::Playing; }
+	[[nodiscard]] auto playing() const -> bool {
+		if (!song_first || !song_loop) { return false; }
+		return song_first->getStatus() == sf::SoundSource::Status::Playing || song_loop->getStatus() == sf::SoundSource::Status::Playing;
+	}
 
 	struct {
 		float native{};
@@ -52,8 +59,8 @@ class MusicPlayer {
 
 	int current_loop{};
 
-	sf::Music song_first{};
-	sf::Music song_loop{};
+	std::optional<sf::Music> song_first{};
+	std::optional<sf::Music> song_loop{};
 	sf::SoundSource::Status status{};
 	std::int64_t last_dt{};
 
@@ -68,4 +75,4 @@ class MusicPlayer {
 	io::Logger m_logger{"Audio"};
 };
 
-} // namespace audio
+} // namespace fornani::audio

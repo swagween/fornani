@@ -4,6 +4,7 @@
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/io/Logger.hpp"
+#include "fornani/utils/Polymorphic.hpp"
 #include "fornani/utils/RectPath.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -49,10 +50,9 @@ struct FreeConstituent {
 	void update();
 };
 
-class Gizmo {
+class Gizmo : public UniquePolymorphic {
   public:
 	explicit Gizmo(std::string const& label, bool foreground) : m_label(label), m_foreground(foreground) {}
-	virtual ~Gizmo() = default;
 	virtual void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground = false);
 	virtual bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard);

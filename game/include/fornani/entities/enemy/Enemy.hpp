@@ -1,17 +1,18 @@
 #pragma once
 
+#include <string_view>
+#include "fornani/audio/Soundboard.hpp"
 #include "fornani/entities/Entity.hpp"
-#include "fornani/utils/Collider.hpp"
-#include "fornani/utils/BitFlags.hpp"
 #include "fornani/entities/animation/Animation.hpp"
-#include "fornani/utils/StateFunction.hpp"
-#include "fornani/utils/Math.hpp"
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/entities/packages/WeaponPackage.hpp"
 #include "fornani/entities/player/Indicator.hpp"
-#include "fornani/audio/Soundboard.hpp"
 #include "fornani/io/Logger.hpp"
-#include <string_view>
+#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Collider.hpp"
+#include "fornani/utils/Math.hpp"
+#include "fornani/utils/Polymorphic.hpp"
+#include "fornani/utils/StateFunction.hpp"
 
 namespace fornani::player {
 class Player;

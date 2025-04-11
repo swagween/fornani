@@ -3,6 +3,7 @@
 
 #include "fornani/io/Logger.hpp"
 #include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Polymorphic.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
@@ -22,10 +23,9 @@ enum class ItemType : std::uint8_t { key, apparel, collectible };
 enum class ItemFlags : std::uint8_t { sellable, vendor_spawnable, gizmo, ability };
 enum class ItemState : std::uint8_t { revealed };
 
-class Item {
+class Item : public Polymorphic {
   public:
 	Item(dj::Json& source, std::string_view label, ItemType type);
-	~Item() = default;
 
 	virtual void render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f position);
 

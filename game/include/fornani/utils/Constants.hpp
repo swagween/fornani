@@ -9,6 +9,7 @@ constexpr int i_scale_factor{static_cast<int>(u_scale_factor)};
 constexpr float f_scale_factor{static_cast<float>(u_scale_factor)};
 
 constexpr std::uint8_t u_cell_resolution{16};
+constexpr unsigned int ui_cell_resolution{static_cast<unsigned int>(u_cell_resolution)};
 constexpr int i_cell_resolution{static_cast<int>(u_cell_resolution)};
 constexpr float f_cell_resolution{static_cast<float>(i_cell_resolution)};
 

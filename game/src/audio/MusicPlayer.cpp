@@ -1,10 +1,10 @@
 #include "fornani/audio/MusicPlayer.hpp"
-#include "fornani/utils/Tracy.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Tracy.hpp"
 
 namespace fornani::audio {
 
-void MusicPlayer::load(const data::ResourceFinder& finder, const std::string_view song_name) {
+void MusicPlayer::load(data::ResourceFinder const& finder, std::string_view const song_name) {
 	if (global_off()) { return; }
 	if (label == song_name && playing()) { return; }
 	if (song_name.empty()) { return; }
@@ -13,8 +13,8 @@ void MusicPlayer::load(const data::ResourceFinder& finder, const std::string_vie
 		return;
 	}
 	label = song_name;
-	if (!song_first.openFromFile(finder.resource_path() + "/audio/songs/" + song_name.data() + "_first.ogg")) { NANI_LOG_WARN(m_logger, "Failed to load song: [{}/audio/songs/{}_first.ogg]", finder.resource_path(), song_name.data()); }
-	if (!song_loop.openFromFile(finder.resource_path() + "/audio/songs/" + song_name.data() + "_loop.ogg")) { NANI_LOG_WARN(m_logger, "Failed to load song: [{}/audio/songs/{}_loop.ogg] ", finder.resource_path(), song_name.data()); }
+	song_first = sf::Music(finder.resource_path() + "/audio/songs/" + song_name.data() + "_first.ogg");
+	song_loop = sf::Music(finder.resource_path() + "/audio/songs/" + song_name.data() + "_loop.ogg");
 	switch_on();
 	flags.state.reset(SongState::looping);
 }
@@ -29,8 +29,8 @@ void MusicPlayer::simple_load(std::string_view source) {
 	}
 	label = source;
 	std::string const path = source.data();
-	if (!song_first.openFromFile(path + ".ogg")) { NANI_LOG_WARN(m_logger, "Failed to load song [{}.ogg]", path); }
-	if (!song_loop.openFromFile(path + ".ogg")) { NANI_LOG_WARN(m_logger, "Failed to load song: [{}.ogg]", path); }
+	song_first = sf::Music(path + ".ogg");
+	song_loop = sf::Music(path + ".ogg");
 	switch_on();
 	flags.state.reset(SongState::looping);
 }
@@ -39,28 +39,31 @@ void MusicPlayer::play_once(float vol) {
 	if (global_off()) { return; }
 	if (switched_off()) { return; }
 	if (playing()) { return; }
+	if (!song_first) { return; }
 	volume.native = vol;
-	song_first.setLooping(false);
-	song_first.setVolume(volume.actual);
-	song_first.play();
+	song_first->setLooping(false);
+	song_first->setVolume(volume.actual);
+	song_first->play();
 	status = sf::SoundSource::Status::Playing;
 }
 void MusicPlayer::play_looped(float vol) {
 	if (global_off()) { return; }
 	if (switched_off()) { return; }
 	if (playing()) { return; }
+	if (!song_first || !song_loop) { return; }
 	volume.native = vol;
-	song_first.setLooping(false);
-	song_loop.setLooping(true);
-	song_first.setVolume(volume.actual);
-	song_loop.setVolume(volume.actual);
-	song_first.play();
+	song_first->setLooping(false);
+	song_loop->setLooping(true);
+	song_first->setVolume(volume.actual);
+	song_loop->setVolume(volume.actual);
+	song_first->play();
 	music_clock.restart();
 	status = sf::SoundSource::Status::Playing;
 }
 void MusicPlayer::update() {
 	NANI_ZoneScopedN("MusicPlayer::update");
 	if (global_off()) { return; }
+	if (!song_first || !song_loop) { return; }
 	volume.actual = volume.native * volume.multiplier;
 	set_volume(volume.actual);
 	if (!flags.state.test(SongState::on)) {
@@ -69,16 +72,16 @@ void MusicPlayer::update() {
 	}
 	last_dt = music_tick.getElapsedTime().asMicroseconds();
 	music_tick.restart();
-	auto song_dt = (song_first.getDuration() - music_clock.getElapsedTime()).asMicroseconds();
-	if (song_dt < (last_dt * 2) && !flags.state.test(SongState::looping) && song_first.getStatus() != sf::Sound::Status::Playing) {
-		song_loop.play();
+	auto song_dt = (song_first->getDuration() - music_clock.getElapsedTime()).asMicroseconds();
+	if (song_dt < (last_dt * 2) && !flags.state.test(SongState::looping) && song_first->getStatus() != sf::Sound::Status::Playing) {
+		song_loop->play();
 		flags.state.set(SongState::looping);
 		music_clock.restart();
 	}
 	if (flags.state.test(SongState::looping)) {
-		song_dt = (song_loop.getDuration() - music_clock.getElapsedTime()).asMicroseconds();
+		song_dt = (song_loop->getDuration() - music_clock.getElapsedTime()).asMicroseconds();
 		if (song_dt < (last_dt * 2)) {
-			song_loop.play();
+			song_loop->play();
 			flags.state.set(SongState::looping);
 			music_clock.restart();
 		}
@@ -86,14 +89,16 @@ void MusicPlayer::update() {
 }
 
 void MusicPlayer::pause() {
-	song_first.pause();
-	song_loop.pause();
+	if (!song_first || !song_loop) { return; }
+	song_first->pause();
+	song_loop->pause();
 	switch_off();
 }
 
 void MusicPlayer::stop() {
-	song_first.stop();
-	song_loop.stop();
+	if (!song_first || !song_loop) { return; }
+	song_first->stop();
+	song_loop->stop();
 	switch_off();
 }
 
@@ -113,8 +118,9 @@ void MusicPlayer::turn_on() {
 }
 
 void MusicPlayer::set_volume(float vol) {
-	song_first.setVolume(vol);
-	song_loop.setVolume(vol);
+	if (!song_first || !song_loop) { return; }
+	song_first->setVolume(vol);
+	song_loop->setVolume(vol);
 }
 
-} // namespace audio
+} // namespace fornani::audio

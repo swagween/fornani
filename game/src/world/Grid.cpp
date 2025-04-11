@@ -6,7 +6,7 @@
 
 namespace fornani::world {
 
-Grid::Grid(sf::Vector2<std::uint32_t> d, dj::Json& source, float s) : dimensions(d), m_spacing(s) {
+Grid::Grid(sf::Vector2u d, dj::Json& source, float s) : dimensions(d), m_spacing(s) {
 	auto size = static_cast<std::size_t>(dimensions.x * dimensions.y);
 	cells.reserve(size);
 	auto i{0};

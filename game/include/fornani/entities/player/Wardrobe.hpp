@@ -6,6 +6,7 @@
 #include "fornani/utils/BitFlags.hpp"
 
 #include "fornani/io/Logger.hpp"
+#include "fornani/utils/Polymorphic.hpp"
 
 namespace fornani::flfx {
 class TextureUpdater;
@@ -19,7 +20,7 @@ enum class ApparelShirt : std::uint8_t { standard, skycorps_tee, chalcedony_shir
 enum class ApparelHeadgear : std::uint8_t { standard, head_lamp, gas_mask, sporty_cap };
 enum class ApparelHairstyle : std::uint8_t { standard, bob_cut, ponytail, punk_hair };
 
-class Apparel {
+class Apparel : public Polymorphic {
   public:
 	virtual int get_variant() const { return 0; };
 	virtual void set(int to) {}

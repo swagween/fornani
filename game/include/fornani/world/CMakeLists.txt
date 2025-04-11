@@ -3,6 +3,7 @@ nani_add_headers(
         Camera.hpp
         Destroyable.hpp
         Grid.hpp
+        Layer.hpp
         Map.hpp
         Platform.hpp
         Pushable.hpp

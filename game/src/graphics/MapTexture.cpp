@@ -28,8 +28,8 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 	if (!m_border_texture.resize(map.dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
 	m_border_texture.clear(sf::Color::Transparent);
 
-	for (auto& cell : middleground.grid.cells) {
-		auto obscured{obscuring.grid.cells.at(cell.one_d_index).is_occupied() && map.has_obscuring_layer()};
+	for (auto& cell : middleground->grid.cells) {
+		auto obscured{obscuring->grid.cells.at(cell.one_d_index).is_occupied() && map.has_obscuring_layer()};
 		if (!cell.is_breakable()) {
 			if (!cell.is_occupied() || cell.is_platform()) {
 				m_tile_box.setFillColor(m_tile_color);
