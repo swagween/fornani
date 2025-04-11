@@ -4,6 +4,9 @@
 #include "fornani/utils/Constants.hpp"
 #include "fornani/utils/WorldClock.hpp"
 
+#include <ccmath/ccmath.hpp>
+#include <ccmath/math/misc/lerp.hpp>
+
 namespace fornani::world {
 
 void Layer::generate_textures(sf::Texture const& tex) {
@@ -27,7 +30,7 @@ void Layer::generate_textures(sf::Texture const& tex) {
 		sf::Sprite tile{tex};
 		for (auto& cell : grid.cells) {
 			auto x_coord = static_cast<int>((cell.value % util::constants::tileset_dimensions.x + cycle * util::constants::tileset_dimensions.x) * util::constants::i_cell_resolution);
-			auto y_coord = static_cast<int>(std::floor(cell.value / util::constants::tileset_dimensions.x) * util::constants::i_cell_resolution);
+			auto y_coord = static_cast<int>(ccm::floor(cell.value / util::constants::tileset_dimensions.x) * util::constants::i_cell_resolution);
 			tile.setTextureRect(sf::IntRect({x_coord, y_coord}, util::constants::i_resolution_vec));
 			tile.setPosition(cell.position() / util::constants::f_scale_factor);
 			if (cell.is_occupied() && !cell.is_special()) {
@@ -53,8 +56,8 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics
 	std::vector<sf::Sprite> sprites{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.twilight.getTexture()}, sf::Sprite{m_texture.night.getTexture()}};
 	auto ctr{0};
 	for (auto& sprite : sprites) {
-		std::uint8_t alpha = std::lerp(0, 255, fade);
-		std::uint8_t revalpha = std::lerp(0, 255, 1.f - fade);
+		std::uint8_t alpha = ccm::lerp(0, 255, fade);
+		std::uint8_t revalpha = ccm::lerp(0, 255, 1.f - fade);
 		sprite.setScale(util::constants::f_scale_vec);
 		sprite.setPosition(-cam * m_parallax);
 		if (obscuring()) { shifter.render(svc, win, sprite, ctr, alpha); }
