@@ -1,7 +1,6 @@
 #include "fornani/utils/CollisionDepth.hpp"
-#include "fornani/utils/Shape.hpp"
 #include "fornani/utils/Collider.hpp"
-#include <iostream>
+#include "fornani/utils/Shape.hpp"
 
 namespace fornani::util {
 
@@ -37,26 +36,13 @@ void CollisionDepth::maximize(CollisionDepth& other) {
 }
 
 void CollisionDepth::print() {
-	std::cout << "Stream size: " << stream.size() << "\n";
-	std::cout << ">>>\n";
-	std::cout << "-Out Depth-\n";
-	std::cout << "Left..: " << out_depth.left << "\n";
-	std::cout << "Right.: " << out_depth.right << "\n";
-	std::cout << "Top...: " << out_depth.top << "\n";
-	std::cout << "Bottom: " << out_depth.bottom << "\n";
-	std::cout << ">>>\n\n\n";
+	NANI_LOG_INFO(m_logger, "Stream size: {}", stream.size());
+	NANI_LOG_INFO(m_logger, "-Out Depth-");
+	NANI_LOG_INFO(m_logger, "Left..: {}", out_depth.left);
+	NANI_LOG_INFO(m_logger, "Right.: {}", out_depth.right);
+	NANI_LOG_INFO(m_logger, "Top...: {}", out_depth.top);
+	NANI_LOG_INFO(m_logger, "Bottom: {}", out_depth.bottom);
 	return;
-	std::cout << ">>>\n";
-	std::cout << "-Stream-\n";
-	auto ctr{0};
-	for (auto& depth : stream) {
-		std::cout << "Slot " << ctr << ":\n";
-		std::cout << "Left..: " << depth.left << "\n";
-		std::cout << "Right.: " << depth.right << "\n";
-		std::cout << "Top...: " << depth.top << "\n";
-		std::cout << "Bottom: " << depth.bottom << "\n";
-		++ctr;
-	}
 }
 
 void CollisionDepth::render(shape::Shape const& bounding_box, sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -86,4 +72,4 @@ bool CollisionDepth::vertical_squish() const { return collision_direction == Col
 
 void CollisionDepth::try_push() { stream.push_back(candidate); }
 
-} // namespace util
+} // namespace fornani::util

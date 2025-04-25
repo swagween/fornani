@@ -71,6 +71,8 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		NANI_ZoneScopedN("Game Loop");
 
+		static bool zooming{};
+
 		auto smp = util::random::percent_chance(10) ? 1 : 0;
 		rng_test.sample += smp;
 		++rng_test.total;
@@ -112,6 +114,12 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 						}
 					}
 					if (key_pressed->scancode == sf::Keyboard::Scancode::Equal) { take_screenshot(services.window->screencap); }
+					if (key_pressed->scancode == sf::Keyboard::Scancode::Y) {
+						auto view = services.window->get_view();
+						view.zoom(0.5f);
+						services.window->get().setView(view);
+						zooming = !zooming;
+					}
 					if (key_pressed->scancode == sf::Keyboard::Scancode::Escape) { m_game_menu = {}; }
 				}
 
@@ -194,7 +202,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 			services.window->get().clear();
 			if (services.window->fullscreen()) { services.window->get().setView(entire_window); }
 			services.window->get().draw(background);
-			services.window->restore_view();
+			if (!zooming) { services.window->restore_view(); }
 
 			if (m_game_menu) {
 				m_game_menu.value()->get_current_state().render(services, services.window->get());

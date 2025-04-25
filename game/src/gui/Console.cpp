@@ -13,7 +13,6 @@ Console::Console(automa::ServiceProvider& svc)
 	text_suite = svc.text.console;
 	m_path.set_section("open");
 	m_began = true;
-	NANI_LOG_INFO(m_logger, "/// Console began ///.");
 }
 
 Console::Console(automa::ServiceProvider& svc, std::string_view message) : Console(svc) { load_single_message(message); }
@@ -56,7 +55,6 @@ void Console::update(automa::ServiceProvider& svc) {
 			if (code.is_response() && !m_writer->is_writing()) { m_writer->respond(); }
 		}
 	}
-	// help_marker = graphics::HelpText(*m_services, "Press [", config::DigitalAction::menu_select, "] to continue.");
 }
 
 void Console::render(sf::RenderWindow& win) {
@@ -140,7 +138,6 @@ void Console::append(std::string_view key) { m_writer->append(key); }
 void Console::end() {
 	m_services->soundboard.flags.console.set(audio::Console::done);
 	m_mode = ConsoleMode::off;
-	NANI_LOG_INFO(m_logger, "/// Console ended ///\n.");
 }
 
 void Console::include_portrait(int id) {
@@ -182,7 +179,6 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 			}
 			m_response = {};
 			responded = true;
-			NANI_LOG_DEBUG(m_logger, "ResponseDialog destroyed.");
 		}
 	}
 
@@ -193,7 +189,6 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 		m_mode = ConsoleMode::responding;
 		m_writer->wait();
 		m_services->soundboard.flags.console.set(audio::Console::next);
-		NANI_LOG_DEBUG(m_logger, "ResponseDialog created.");
 		return;
 	}
 

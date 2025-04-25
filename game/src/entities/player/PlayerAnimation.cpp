@@ -1,7 +1,5 @@
 #include "fornani/entities/player/PlayerAnimation.hpp"
 
-#include <iostream>
-
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
@@ -269,7 +267,7 @@ fsm::StateFunction PlayerAnimation::update_fall() {
 	if (change_state(AnimState::wallslide, wallslide)) { return PA_BIND(update_wallslide); }
 	if (change_state(AnimState::push, between_push)) { return PA_BIND(update_between_push); }
 	if (change_state(AnimState::dash, dash)) { return PA_BIND(update_dash); }
-	if(m_player->grounded()) {
+	if (m_player->grounded()) {
 		state = AnimState::land;
 		animation.set_params(land);
 		return PA_BIND(update_land);
@@ -484,8 +482,8 @@ fsm::StateFunction PlayerAnimation::update_die() {
 		m_player->m_services->music.stop();
 		post_death.start();
 		triggers.reset(AnimTriggers::end_death);
-		m_player->m_services->state_controller.actions.set(automa::Actions::death_mode); //set here, reset on map load
-		//std::cout << "Death animation started.\n";
+		m_player->m_services->state_controller.actions.set(automa::Actions::death_mode); // set here, reset on map load
+		// std::cout << "Death animation started.\n";
 	}
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();
@@ -567,7 +565,6 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 	m_player->collider.physics.acceleration.x = slider.get_speed() * m_player->controller.sliding_movement() * slider.get_dampen();
 
 	if (slider.direction.lr != m_player->controller.direction.lr) {
-		std::cout << "slider dir\n";
 		m_player->controller.get_slide().end();
 		state = AnimState::sharp_turn;
 		animation.set_params(sharp_turn);
@@ -593,7 +590,6 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 			m_player->controller.get_slide().end();
 			state = AnimState::get_up;
 			animation.set_params(get_up);
-			std::cout << "exited\n";
 			return PA_BIND(update_get_up);
 		}
 	}
@@ -631,7 +627,7 @@ fsm::StateFunction PlayerAnimation::update_roll() {
 	animation.label = "roll";
 	auto& controller = m_player->controller;
 	controller.reset_vertical_movement();
-	auto sign = m_player->controller.moving_left() ? -1.f: 1.f;
+	auto sign = m_player->controller.moving_left() ? -1.f : 1.f;
 	if (!m_player->controller.moving()) { sign = m_player->controller.facing_left() ? -1.f : 1.f; }
 	m_player->collider.physics.velocity.x = 60.f * sign;
 	if (!controller.roll.rolling()) {
@@ -709,7 +705,7 @@ fsm::StateFunction PlayerAnimation::update_shoot() {
 	if (change_state(AnimState::hurt, hurt)) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::sharp_turn, sharp_turn)) { return PA_BIND(update_sharp_turn); }
 	if (change_state(AnimState::turn, turn)) { return PA_BIND(update_turn); }
-	if(animation.complete()) {
+	if (animation.complete()) {
 		state = AnimState::idle;
 		animation.set_params(idle);
 		return PA_BIND(update_idle);
@@ -725,4 +721,4 @@ bool PlayerAnimation::change_state(AnimState next, anim::Parameters params, bool
 	return false;
 }
 
-} // namespace player
+} // namespace fornani::player

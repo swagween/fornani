@@ -2,14 +2,17 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <djson/json.hpp>
-#include <array>
-#include <string>
 #include "fornani/entities/npc/Vendor.hpp"
 #include "fornani/io/File.hpp"
+#include "fornani/io/Logger.hpp"
 #include "fornani/utils/QuestCode.hpp"
 #include "fornani/world/Layer.hpp"
+
+#include <SFML/Graphics.hpp>
+#include <djson/json.hpp>
+
+#include <array>
+#include <string>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -146,6 +149,8 @@ class DataManager {
 	std::vector<int> destroyed_blocks{};
 	std::vector<std::string> destroyed_inspectables{};
 	std::vector<util::QuestKey> quest_progressions{};
+
+	io::Logger m_logger{"data"};
 };
 
 } // namespace fornani::data

@@ -73,8 +73,8 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	if (horizontal_inputs.size() > quick_turn_sample_size) { horizontal_inputs.pop_front(); }
 
 	key_map[ControllerInput::move_x] = 0.f;
-	if (left) { key_map[ControllerInput::move_x] -= 1.f; }
-	if (right) { key_map[ControllerInput::move_x] += 1.f; }
+	if (left) { key_map[ControllerInput::move_x] -= walk_speed_v; }
+	if (right) { key_map[ControllerInput::move_x] += walk_speed_v; }
 
 	key_map[ControllerInput::move_y] = 0.f;
 	if (up) { key_map[ControllerInput::move_y] -= 1.f; }
@@ -100,7 +100,11 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	if ((down_released || (left_released || right_released)) && !roll.rolling()) { slide.break_out(); }
 
 	key_map[ControllerInput::sprint] = 0.f;
-	if (moving() && sprint && !sprint_released()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }
+	if (moving() && sprint && !sprint_released()) {
+		if (left) { key_map[ControllerInput::move_x] = -sprint_speed_v; }
+		if (right) { key_map[ControllerInput::move_x] = sprint_speed_v; }
+		key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x];
+	}
 
 	direction.set_intermediate(left, right, up, down);
 

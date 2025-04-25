@@ -44,6 +44,7 @@ void Layer::generate_textures(sf::Texture const& tex) {
 }
 
 void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics::DayNightShifter& shifter, float fade, sf::Vector2<float> cam, bool is_bg) const {
+	if (background() != is_bg) { return; }
 	if (m_barrier) {
 		auto spr = sf::Sprite{m_barrier->getTexture()};
 		auto border = sf::Vector2i{512, 512};
@@ -52,7 +53,6 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics
 		spr.setPosition(-cam - sf::Vector2f{2 * border});
 		win.draw(spr);
 	}
-	if (background() != is_bg) { return; }
 	std::vector<sf::Sprite> sprites{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.twilight.getTexture()}, sf::Sprite{m_texture.night.getTexture()}};
 	auto ctr{0};
 	for (auto& sprite : sprites) {

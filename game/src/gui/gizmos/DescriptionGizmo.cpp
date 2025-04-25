@@ -38,10 +38,7 @@ void DescriptionGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& wi
 bool DescriptionGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) { return Gizmo::handle_inputs(controller, soundboard); }
 
 void DescriptionGizmo::write(automa::ServiceProvider& svc, std::string_view message) {
-	if (!m_text) {
-		m_text = TextWriter(svc, message, m_bounds);
-		NANI_LOG_DEBUG(m_logger, "Text Writer Created");
-	}
+	if (!m_text) { m_text = TextWriter(svc, message, m_bounds); }
 	m_text->load_single_message(message);
 	m_text->set_bounds(m_bounds, true);
 	m_text->set_font_color(svc.styles.colors.pioneer_red);

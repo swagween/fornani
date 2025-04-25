@@ -458,8 +458,6 @@ void Player::update_direction() {
 	} else {
 		anchor_point = {collider.physics.position.x + collider.bounding_box.get_dimensions().x / 2, collider.physics.position.y + collider.bounding_box.get_dimensions().y / 2};
 	}
-	// set directions for grappling hook
-	// if (arsenal) { equipped_weapon().projectile.hook.probe_direction = controller.direction; }
 }
 
 void Player::update_weapon() {
@@ -484,16 +482,6 @@ void Player::walk() {
 	}
 	if (controller.moving_left() && !collider.has_left_collision()) {
 		collider.physics.acceleration.x = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
-	}
-	if (controller.sprinting()) {
-		collider.physics.acceleration.x *= physics_stats.sprint_multiplier;
-		if (!tutorial.flags.test(text::TutorialFlags::sprint) && tutorial.current_state == text::TutorialFlags::sprint) {
-			cooldowns.sprint_tutorial.update();
-			if (cooldowns.sprint_tutorial.is_complete()) {
-				tutorial.turn_off();
-				tutorial.flags.set(text::TutorialFlags::sprint);
-			}
-		}
 	}
 }
 

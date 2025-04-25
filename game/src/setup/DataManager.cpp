@@ -1,8 +1,6 @@
 
 #include "fornani/setup/DataManager.hpp"
 
-#include <iostream>
-
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/ControllerMap.hpp"
@@ -13,7 +11,7 @@ DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services
 
 void DataManager::load_data(std::string in_room) {
 	m_services->stopwatch.start();
-	std::cout << "> Start Timer...\n";
+	NANI_LOG_INFO(m_logger, "Data loading started.");
 	auto const& finder = m_services->finder;
 	// populate map table
 	auto room_path = std::filesystem::path{finder.resource_path()};
@@ -401,7 +399,7 @@ void DataManager::load_settings() {
 	m_services->controller_map.enable_gamepad_input(settings["gamepad"].as_bool().value);
 	m_services->music.volume.multiplier = settings["music_volume"].as<float>();
 	m_services->set_fullscreen(settings["fullscreen"].as_bool().value);
-	std::cout << "Settings set.\n";
+	NANI_LOG_INFO(m_logger, "Enabled user settings.");
 }
 
 void DataManager::delete_file(int index) {

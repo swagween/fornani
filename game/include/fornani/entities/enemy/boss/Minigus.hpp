@@ -7,6 +7,7 @@
 #include "fornani/entities/packages/Shockwave.hpp"
 #include "fornani/graphics/SpriteHistory.hpp"
 #include "fornani/gui/StatusBar.hpp"
+#include "fornani/io/Logger.hpp"
 #include "fornani/particle/Sparkler.hpp"
 #define MINIGUS_BIND(f) std::bind(&Minigus::f, this)
 
@@ -188,6 +189,8 @@ class Minigus : public Enemy, public npc::NPC {
 	world::Map* m_map;
 
 	bool change_state(MinigusState next, anim::Parameters params);
+
+	io::Logger m_logger{"boss"};
 };
 
 } // namespace fornani::enemy

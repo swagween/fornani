@@ -2,8 +2,6 @@
 #include "fornani/core/Application.hpp"
 #include "fornani/graphics/Colors.hpp"
 
-#include <iostream>
-
 #include "fornani/utils/Tracy.hpp"
 
 namespace fornani {
