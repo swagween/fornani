@@ -20,7 +20,7 @@ namespace fornani::player {
 constexpr static int dash_time{32};
 constexpr static int quick_turn_sample_size{24};
 constexpr static float backwards_dampen{0.5f};
-constexpr static float walk_speed_v{0.6f};
+constexpr static float walk_speed_v{0.62f};
 constexpr static float sprint_speed_v{1.0f};
 
 enum class ControllerInput : std::uint8_t { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y, slide };

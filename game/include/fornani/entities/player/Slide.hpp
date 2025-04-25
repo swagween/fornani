@@ -2,8 +2,8 @@
 #pragma once
 
 #include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Direction.hpp"
 #include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/Direction.hpp"
 
 namespace fornani::player {
 
@@ -38,11 +38,11 @@ class Slide {
 	util::Cooldown begin_slide{128};
 	util::Cooldown friction{256};
 	util::Cooldown post_slide{48};
-	float speed{4.5f};
+	float speed{8.5f};
 	float multiplier{1.5f};
 	float slowness_limit{0.2f};
 	float begin_normal{};
 	util::BitFlags<SlideFlags> flags{};
 };
 
-} // namespace player
+} // namespace fornani::player

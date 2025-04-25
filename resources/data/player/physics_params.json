@@ -3,7 +3,7 @@
 		"grav": 1.053610,
 		"ground_fric": 0.938000,
 		"air_fric": 0.929000,
-		"x_acc": 3.675000,
+		"x_acc": 4.2000,
 		"air_multiplier": 0.851000,
 		"sprint_multiplier": 1.557000,
 		"jump_velocity": 13.760310,
