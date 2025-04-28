@@ -20,12 +20,14 @@ PlayerController::PlayerController(automa::ServiceProvider& svc) : shield(svc), 
 void PlayerController::update(automa::ServiceProvider& svc) {
 	if (walking_autonomously()) {
 		prevent_movement();
-		key_map[ControllerInput::move_x] = direction.lr == dir::LR::left ? -1.f : 1.f;
+		key_map[ControllerInput::move_x] = direction.lr == dir::LR::left ? -walk_speed_v : walk_speed_v;
 	}
 	if (hard_state.test(HardState::no_move) || walking_autonomously()) { return; }
 
 	auto const& left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_left).held;
 	auto const& right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_right).held;
+	// TODO: get this to work
+	// auto const& throttle = svc.controller_map.analog_action_status(config::AnalogAction::platformer_movement).x;
 	auto const& up = svc.controller_map.digital_action_status(config::DigitalAction::platformer_up).held;
 	auto const& down = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).held;
 
@@ -73,8 +75,13 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	if (horizontal_inputs.size() > quick_turn_sample_size) { horizontal_inputs.pop_front(); }
 
 	key_map[ControllerInput::move_x] = 0.f;
-	if (left) { key_map[ControllerInput::move_x] -= walk_speed_v; }
-	if (right) { key_map[ControllerInput::move_x] += walk_speed_v; }
+	// keyboard
+	if (svc.controller_map.gamepad_connected()) {
+		key_map[ControllerInput::move_x] = svc.controller_map.get_joystick_throttle().x;
+	} else {
+		if (left) { key_map[ControllerInput::move_x] -= walk_speed_v; }
+		if (right) { key_map[ControllerInput::move_x] += walk_speed_v; }
+	}
 
 	key_map[ControllerInput::move_y] = 0.f;
 	if (up) { key_map[ControllerInput::move_y] -= 1.f; }
@@ -213,7 +220,7 @@ void PlayerController::dash() { dash_count = 1; }
 void PlayerController::walljump() { flags.set(MovementState::walljumping); }
 
 void PlayerController::autonomous_walk() {
-	direction.lr == dir::LR::right ? key_map[ControllerInput::move_x] = 1.f : key_map[ControllerInput::move_x] = -1.f;
+	direction.lr == dir::LR::right ? key_map[ControllerInput::move_x] = walk_speed_v : key_map[ControllerInput::move_x] = -walk_speed_v;
 	if (sprinting()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }
 	flags.set(MovementState::walking_autonomously);
 }

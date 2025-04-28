@@ -11,6 +11,8 @@
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Direction.hpp"
 
+#include <ccmath/ccmath.hpp>
+
 namespace fornani::automa {
 struct ServiceProvider;
 }
@@ -22,6 +24,7 @@ constexpr static int quick_turn_sample_size{24};
 constexpr static float backwards_dampen{0.5f};
 constexpr static float walk_speed_v{0.62f};
 constexpr static float sprint_speed_v{1.0f};
+constexpr static float sprint_threshold_v{0.01f};
 
 enum class ControllerInput : std::uint8_t { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y, slide };
 enum class MovementState : std::uint8_t { restricted, grounded, walking_autonomously, walljumping };
@@ -63,7 +66,7 @@ class PlayerController {
 
 	[[nodiscard]] auto nothing_pressed() -> bool { return key_map[ControllerInput::move_x] == 0.f && key_map[ControllerInput::jump] == 0.f && key_map[ControllerInput::inspect] == 0.f; }
 	[[nodiscard]] auto moving() -> bool { return key_map[ControllerInput::move_x] != 0.f; }
-	[[nodiscard]] auto sprinting() -> bool { return key_map[ControllerInput::sprint] != 0.f; }
+	[[nodiscard]] auto sprinting() -> bool { return ccm::abs(key_map[ControllerInput::move_x]) > walk_speed_v + sprint_threshold_v; }
 	[[nodiscard]] auto moving_left() -> bool { return key_map[ControllerInput::move_x] < 0.f; }
 	[[nodiscard]] auto moving_right() -> bool { return key_map[ControllerInput::move_x] > 0.f; }
 	[[nodiscard]] auto facing_left() const -> bool { return direction.lr == dir::LR::left; }

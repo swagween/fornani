@@ -48,6 +48,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 		if (down) { m_dashboard->set_selection({0, 1}); }
 		if (left) { m_dashboard->set_selection({-1, 0}); }
 		if (right) { m_dashboard->set_selection({1, 0}); }
+		if (controller.gamepad_connected()) { m_dashboard->set_selection(controller.get_i_joystick_throttle(true)); }
 		if (selected && m_dashboard->is_hovering()) {
 			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = ccm::ext::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
 			if (m_dashboard->get_selected_position().y == 0) { m_grid_position.x = ccm::ext::clamp(m_grid_position.x + m_dashboard->get_selected_position().x, -1.f, 1.f); }

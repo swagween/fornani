@@ -109,6 +109,7 @@
 			"action_platformer_open_inventory"		"Open Inventory"
 			"action_platformer_toggle_pause"		"Pause"
 			"action_platformer_open_map"		"Open Map"
+			"action_platformer_movement"		"Horizontal Movement"
 			"platformer_open_map"		"Open Map"
 			"platformer_toggle_pause"		"Pause/Unpause"
 			"set_menu"		"Menu Controls"
@@ -656,6 +657,26 @@
 		"gameactions"
 		{
 			"Menu"		"Menu_Map map_movement"
+			"Platformer"		"platformer_movement"
+		}
+	}
+	"group"
+	{
+		"id"		"20"
+		"mode"		"joystick_mouse"
+		"name"		""
+		"description"		""
+		"inputs"
+		{
+		}
+		"settings"
+		{
+			"layer"		"1"
+			"output_joystick"		"2"
+		}
+		"gameactions"
+		{
+			"Platformer"		"platformer_movement"
 		}
 	}
 	"group"

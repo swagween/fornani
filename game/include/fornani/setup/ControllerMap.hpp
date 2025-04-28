@@ -7,6 +7,7 @@
 #include <steam/isteaminput.h>
 #include <SFML/Graphics.hpp>
 
+#include <cmath>
 #include <string_view>
 #include <unordered_map>
 #include <unordered_set>
@@ -57,10 +58,7 @@ enum class DigitalAction : int {
 	COUNT
 };
 
-enum class AnalogAction : std::uint8_t {
-	// Map controls
-	map_movement,
-};
+enum class AnalogAction : std::uint8_t { platformer_movement, map_movement };
 
 enum class ActionSet : std::uint8_t {
 	Platformer,
@@ -95,6 +93,7 @@ struct AnalogActionStatus {
 
 class ControllerMap {
   public:
+	friend class Game;
 	explicit ControllerMap(automa::ServiceProvider& svc);
 
 	ControllerMap(ControllerMap const&) = delete;
@@ -151,8 +150,11 @@ class ControllerMap {
 
 	/// @brief Obtains a `DigitalAction` variant by its name in the enum.
 	auto get_action_by_identifier(std::string_view id) -> config::DigitalAction;
+	[[nodiscard]] auto get_joystick_throttle() const -> sf::Vector2f { return m_joystick_throttle; }
+	[[nodiscard]] auto get_i_joystick_throttle(bool exclusive) const -> sf::Vector2i;
 
   private:
+	void set_joystick_throttle(sf::Vector2f throttle);
 	struct DigitalActionData {
 		InputDigitalActionHandle_t steam_handle;
 		DigitalActionStatus status;
@@ -183,6 +185,10 @@ class ControllerMap {
 
 	bool gamepad_input_enabled{true};
 	bool autosprint_enabled{true};
+
+	// joystick members
+	sf::Vector2f m_joystick_throttle{};
+	float m_stick_sensitivity;
 
 	void reset_digital_action_states();
 

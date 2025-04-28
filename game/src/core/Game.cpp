@@ -128,6 +128,12 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 					if (key_released->scancode == sf::Keyboard::Scancode::LControl) { key_flags.reset(KeyboardFlags::control); }
 				}
 
+				if (auto const* joystick_moved = event->getIf<sf::Event::JoystickMoved>()) {
+					auto jx = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::X);
+					auto jy = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::Y);
+					services.controller_map.set_joystick_throttle(sf::Vector2f{jx, jy});
+				}
+
 				services.controller_map.handle_event(*event);
 				if (valid_event) { ImGui::SFML::ProcessEvent(services.window->get(), *event); }
 				valid_event = true;

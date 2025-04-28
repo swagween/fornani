@@ -1,6 +1,8 @@
+
 #include "fornani/setup/ControllerMap.hpp"
 #include <steam/isteaminput.h>
 
+#include <ccmath/ext/clamp.hpp>
 #include <tracy/Tracy.hpp>
 
 #include "fornani/service/ServiceProvider.hpp"
@@ -65,7 +67,7 @@ bool parent_action_set(ActionSet set, ActionSet* parent) {
 	return false;
 }
 
-ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
+ControllerMap::ControllerMap(automa::ServiceProvider& svc) : m_stick_sensitivity{0.2f} {
 	NANI_LOG_INFO(m_logger, "Initializing Steam Input");
 	if (!SteamInput()->Init(true)) {
 		NANI_LOG_WARN(m_logger, "Could not initialize Steam Input!");
@@ -136,6 +138,7 @@ void ControllerMap::setup_action_handles() {
 
 	// Analog actions
 	analog_actions.insert({AnalogAction::map_movement, {SteamInput()->GetAnalogActionHandle("map_movement"), AnalogActionStatus(AnalogAction::map_movement)}});
+	analog_actions.insert({AnalogAction::platformer_movement, {SteamInput()->GetAnalogActionHandle("platformer_movement"), AnalogActionStatus(AnalogAction::platformer_movement)}});
 
 #undef DEFINE_ACTION
 #undef STR
@@ -224,6 +227,8 @@ void ControllerMap::update() {
 		auto& [steam_handle, action_status] = pair;
 
 		auto const data = SteamInput()->GetAnalogActionData(controller_handle, steam_handle);
+
+		if (data.bActive) { NANI_LOG_DEBUG(m_logger, "Analog action data: [ {}, {} ]", data.x, data.y); }
 
 		if (data.bActive) {
 			action_status.x = data.x;
@@ -428,6 +433,23 @@ auto ControllerMap::get_action_by_identifier(std::string_view id) -> config::Dig
 	};
 
 	return map.at(id);
+}
+
+auto ControllerMap::get_i_joystick_throttle(bool exclusive) const -> sf::Vector2i {
+	auto ret = sf::Vector2i{static_cast<int>(std::ceil(m_joystick_throttle.x)), static_cast<int>(std::ceil(m_joystick_throttle.y))};
+	if (exclusive) {
+		if (abs(m_joystick_throttle.x) > abs(m_joystick_throttle.y)) { ret.y = 0.f; }
+		if (abs(m_joystick_throttle.x) <= abs(m_joystick_throttle.y)) { ret.x = 0.f; }
+	}
+	return ret;
+}
+
+void ControllerMap::set_joystick_throttle(sf::Vector2f throttle) {
+	// constrict throttle based on stick sensitivity
+	m_joystick_throttle.x = ccm::ext::clamp(throttle.x / 100.f, -1.f, 1.f);
+	m_joystick_throttle.y = ccm::ext::clamp(throttle.y / 100.f, -1.f, 1.f);
+	if (ccm::abs(m_joystick_throttle.x) < m_stick_sensitivity) { m_joystick_throttle.x = 0.f; }
+	if (ccm::abs(m_joystick_throttle.y) < m_stick_sensitivity) { m_joystick_throttle.y = 0.f; }
 }
 
 } // namespace fornani::config

@@ -144,6 +144,7 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 
 bool MapGizmo::handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard) {
 	auto zoom_factor{0.1f};
+	if (controller.gamepad_connected()) { m_minimap->move(controller.get_joystick_throttle()); }
 	if (controller.digital_action_status(config::DigitalAction::menu_up).held) {
 		m_minimap->move({0.f, -1.f});
 		if (!m_minimap->hit_vert_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }

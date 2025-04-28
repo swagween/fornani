@@ -35,6 +35,7 @@
 				"platformer_open_inventory"		"#action_platformer_open_inventory"
 				"platformer_open_map"		"#action_platformer_open_map"
 				"platformer_toggle_pause"		"#action_platformer_toggle_pause"
+				"platformer_movement"		"#action_platformer_movement"
 			}
 		}
 		"Menu"
@@ -109,6 +110,7 @@
 			"action_platformer_open_inventory"		"Open Inventory"
 			"action_platformer_toggle_pause"		"Pause"
 			"action_platformer_open_map"		"Open Map"
+			"action_platformer_movement"		"Horizontal Movement"
 			"platformer_open_map"		"Open Map"
 			"platformer_toggle_pause"		"Pause/Unpause"
 			"set_menu"		"Menu Controls"
@@ -739,6 +741,7 @@
 		"gameactions"
 		{
 			"Menu"		"Menu_Map map_movement"
+			"Platformer"		"platformer_movement"
 		}
 	}
 	"group"
