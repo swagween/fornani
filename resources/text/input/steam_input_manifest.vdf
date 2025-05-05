@@ -2,20 +2,6 @@
 {
 	"configurations"
 	{
-		"controller_xboxone"
-		{
-			"0"
-			{
-				"path"		"config_480_controller_xboxone.vdf"
-			}
-		}
-		"controller_ps5"
-		{
-			"0"
-			{
-				"path"		"config_3218760_controller_ps5.vdf"
-			}
-		}
 	}
 	"actions"
 	{
@@ -32,14 +18,13 @@
 				"platformer_jump"		"#action_platformer_jump"
 				"platformer_shoot"		"#action_platformer_shoot"
 				"platformer_sprint"		"#action_platformer_sprint"
-				"platformer_shield"		"#action_platformer_shield"
+				"platformer_slide"		"#action_platformer_slide"
+				"platformer_dash"		"#action_platformer_dash"
 				"platformer_inspect"		"#action_platformer_inspect"
 				"platformer_arms_switch_left"		"#action_platformer_arms_switch_left"
 				"platformer_arms_switch_right"		"#action_platformer_arms_switch_right"
 				"platformer_open_inventory"		"#action_platformer_open_inventory"
-				"platformer_open_map"		"#action_platformer_open_map"
 				"platformer_toggle_pause"		"#action_platformer_toggle_pause"
-				"platformer_movement"		"#action_platformer_movement"
 			}
 		}
 		"Menu"
@@ -54,11 +39,38 @@
 				"menu_down"		"#action_menu_down"
 				"menu_select"		"#action_menu_select"
 				"menu_cancel"		"#action_menu_cancel"
+				"menu_tab_left"		"#action_menu_tab_left"
+				"menu_tab_right"		"#action_menu_tab_right"
 			}
 			"Layers"
 			{
 				"Menu_Inventory"		"#layer_inventory"
 				"Menu_Map"		"#layer_map"
+			}
+		}
+	}
+	"action_layers"
+	{
+		"Menu_Inventory"
+		{
+			"title"		"#layer_inventory"
+			"legacy_set"		"0"
+			"set_layer"		"1"
+			"parent_set_name"		"Menu"
+			"Button"
+			{
+				"inventory_close"		"#action_inventory_close"
+			}
+		}
+		"Menu_Map"
+		{
+			"title"		"#layer_map"
+			"legacy_set"		"0"
+			"set_layer"		"1"
+			"parent_set_name"		"Menu"
+			"Button"
+			{
+				"map_movement"		"#action_map_movement"
 			}
 		}
 	}
@@ -74,16 +86,14 @@
 			"action_platformer_jump"		"Jump"
 			"action_platformer_shoot"		"Use Weapon"
 			"action_platformer_sprint"		"Sprint"
-			"action_platformer_shield"		"Shield"
+			"action_platformer_slide"		"Slide"
+			"action_platformer_dash"		"Dash"
 			"action_platformer_inspect"		"Inspect"
 			"action_platformer_arms_switch_left"		"Switch to Previous Weapon"
 			"action_platformer_arms_switch_right"		"Switch to Next Weapon"
 			"action_platformer_open_inventory"		"Open Inventory"
 			"action_platformer_toggle_pause"		"Pause"
-			"action_platformer_open_map"		"Open Map"
 			"action_platformer_movement"		"Horizontal Movement"
-			"platformer_open_map"		"Open Map"
-			"platformer_toggle_pause"		"Pause/Unpause"
 			"set_menu"		"Menu Controls"
 			"action_menu_left"		"Left"
 			"action_menu_right"		"Right"
@@ -91,11 +101,12 @@
 			"action_menu_down"		"Down"
 			"action_menu_select"		"Select"
 			"action_menu_cancel"		"Cancel"
+			"action_menu_tab_left"		"Tab Left"
+			"action_menu_tab_right"		"Tab Right"
 			"layer_inventory"		"Inventory"
 			"action_inventory_close"		"Close Inventory"
 			"layer_map"		"Map"
 			"action_map_movement"		"Pan Map"
-			"action_map_close"		"Close Map"
 		}
 	}
 }

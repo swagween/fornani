@@ -27,33 +27,26 @@ enum class DigitalAction : int {
 	platformer_jump,
 	platformer_shoot,
 	platformer_sprint,
-	// XXX platformer_dash
-	platformer_shield,
+	platformer_slide,
+	platformer_dash,
 	platformer_inspect,
 	platformer_arms_switch_left,
 	platformer_arms_switch_right,
 	platformer_open_inventory,
-	platformer_open_map,
 	platformer_toggle_pause,
 
 	// Inventory controls
-	inventory_open_map,
 	inventory_close,
 
-	// Map controls
-	map_open_inventory,
-	map_close,
-
 	// Menu controls
-	// XXX rename to UI
 	menu_left,
 	menu_right,
 	menu_up,
 	menu_down,
 	menu_select,
 	menu_cancel,
-	menu_switch_left,
-	menu_switch_right,
+	menu_tab_left,
+	menu_tab_right,
 
 	COUNT
 };
@@ -137,6 +130,8 @@ class ControllerMap {
 	[[nodiscard]] auto string_to_key(std::string_view) const -> sf::Keyboard::Scancode;
 
 	[[nodiscard]] auto last_controller_type_used() const -> ControllerType { return last_controller_ty_used; }
+	[[nodiscard]] auto is_gamepad() const -> bool { return last_controller_ty_used == ControllerType::gamepad; }
+	[[nodiscard]] auto is_keyboard() const -> bool { return last_controller_ty_used == ControllerType::keyboard; }
 
 	/// @brief Processes gamepad disconnection to pause the game.
 	/// @return Returns true if gamepad was just disconnected, otherwise returns false.
@@ -150,11 +145,12 @@ class ControllerMap {
 
 	/// @brief Obtains a `DigitalAction` variant by its name in the enum.
 	auto get_action_by_identifier(std::string_view id) -> config::DigitalAction;
-	[[nodiscard]] auto get_joystick_throttle() const -> sf::Vector2f { return m_joystick_throttle; }
+	[[nodiscard]] auto get_joystick_throttle() const -> sf::Vector2f;
 	[[nodiscard]] auto get_i_joystick_throttle(bool exclusive) const -> sf::Vector2i;
 
-  private:
 	void set_joystick_throttle(sf::Vector2f throttle);
+
+  private:
 	struct DigitalActionData {
 		InputDigitalActionHandle_t steam_handle;
 		DigitalActionStatus status;

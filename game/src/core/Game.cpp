@@ -177,7 +177,6 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 				NANI_ZoneScopedN("Update->State");
 				if (m_game_menu) {
 					m_game_menu.value()->get_current_state().frame_update(services);
-					// m_game_menu.value()->process_state(services, player, *this);
 				} else {
 					game_state.get_current_state().frame_update(services);
 					game_state.process_state(services, player, *this);

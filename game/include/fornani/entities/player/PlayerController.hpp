@@ -78,6 +78,7 @@ class PlayerController {
 	[[nodiscard]] auto dash_requested() const -> bool { return dash_request > -1; }
 	[[nodiscard]] auto shot() -> bool { return key_map[ControllerInput::shoot] == 1.f; }
 	[[nodiscard]] auto sliding() -> bool { return key_map[ControllerInput::slide] != 0.f; }
+	[[nodiscard]] auto is_sprinting() -> bool { return key_map[ControllerInput::move_x] > walk_speed_v; }
 	[[nodiscard]] auto released_hook() -> bool {
 		auto const ret = hook_flags.test(Hook::hook_released);
 		hook_flags.reset(Hook::hook_released);

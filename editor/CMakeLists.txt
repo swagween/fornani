@@ -1,7 +1,7 @@
 project(pioneer)
 
 if (NOT DEFINED FORNANI_ROOT_DIR)
-    message(FATAL_ERROR "FORNANI_ROOT_DIR has not been specified! Did you some how call the editor cmake only?")
+    message(FATAL_ERROR "FORNANI_ROOT_DIR has not been specified! Did you somehow only call the editor CMake?")
 endif ()
 
 add_executable(pioneer)
@@ -24,9 +24,9 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(pioneer INTERFACE -Wno-sign-conversion)
 endif ()
 
-if (FORNANI_STEAM_APP_ID OR FORNANI_ENABLE_DEV_ID)
+if (FORNANI_ENABLE_DEV_ID)
     if (NOT DEFINED FORNANI_STEAM_APP_ID)
-        set(FORNANI_STEAM_APP_ID 480 CACHE STRING "Developer Steam App ID: 480")
+        set(FORNANI_STEAM_APP_ID ${FORNANI_STEAM_APP_ID_DEV} CACHE STRING "Developer Steam App ID: 480")
     endif ()
     target_compile_definitions(${PROJECT_NAME} PUBLIC FORNANI_STEAM_APP_ID=${FORNANI_STEAM_APP_ID})
 else ()

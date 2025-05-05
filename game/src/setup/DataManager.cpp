@@ -589,39 +589,6 @@ bool DataManager::enemy_is_fallen(int room_id, int id) const {
 	return false;
 }
 
-auto get_action_by_string(std::string_view id) -> config::DigitalAction {
-	static std::unordered_map<std::string_view, config::DigitalAction> const map = {
-		{"platformer_left", config::DigitalAction::platformer_left},
-		{"platformer_right", config::DigitalAction::platformer_right},
-		{"platformer_up", config::DigitalAction::platformer_up},
-		{"platformer_down", config::DigitalAction::platformer_down},
-		{"platformer_jump", config::DigitalAction::platformer_jump},
-		{"platformer_shoot", config::DigitalAction::platformer_shoot},
-		{"platformer_sprint", config::DigitalAction::platformer_sprint},
-		{"platformer_shield", config::DigitalAction::platformer_shield},
-		{"platformer_inspect", config::DigitalAction::platformer_inspect},
-		{"platformer_arms_switch_left", config::DigitalAction::platformer_arms_switch_left},
-		{"platformer_arms_switch_right", config::DigitalAction::platformer_arms_switch_right},
-		{"platformer_open_inventory", config::DigitalAction::platformer_open_inventory},
-		{"platformer_open_map", config::DigitalAction::platformer_open_map},
-		{"platformer_toggle_pause", config::DigitalAction::platformer_toggle_pause},
-		{"inventory_open_map", config::DigitalAction::inventory_open_map},
-		{"inventory_close", config::DigitalAction::inventory_close},
-		{"map_open_inventory", config::DigitalAction::map_open_inventory},
-		{"map_close", config::DigitalAction::map_close},
-		{"menu_left", config::DigitalAction::menu_left},
-		{"menu_right", config::DigitalAction::menu_right},
-		{"menu_up", config::DigitalAction::menu_up},
-		{"menu_down", config::DigitalAction::menu_down},
-		{"menu_select", config::DigitalAction::menu_select},
-		{"menu_switch_left", config::DigitalAction::menu_switch_left},
-		{"menu_switch_right", config::DigitalAction::menu_switch_right},
-		{"menu_cancel", config::DigitalAction::menu_cancel},
-	};
-
-	return map.at(id);
-}
-
 void DataManager::load_controls(config::ControllerMap& controller) {
 	// XXX change controls json when keybinds get modified
 	controls = dj::Json::from_file((m_services->finder.resource_path() + "/data/config/control_map.json").c_str());
@@ -630,7 +597,7 @@ void DataManager::load_controls(config::ControllerMap& controller) {
 
 	for (auto const& [key, item] : controls["controls"].object_view()) {
 		assert(item.is_object());
-		if (item.contains("primary_key")) { controller.set_primary_keyboard_binding(get_action_by_string(key), controller.string_to_key(item["primary_key"].as_string())); }
+		if (item.contains("primary_key")) { controller.set_primary_keyboard_binding(controller.get_action_by_identifier(key), controller.string_to_key(item["primary_key"].as_string())); }
 	}
 }
 

@@ -78,6 +78,10 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 
 void Dojo::tick_update(ServiceProvider& svc) {
 	GameState::tick_update(svc);
+
+	// gamepad disconnected
+	if (svc.controller_map.process_gamepad_disconnection()) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
+
 	svc.a11y.set_action_ctx_bar_enabled(false);
 
 	loading.is_complete() && !vendor_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
@@ -88,6 +92,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	// set action set
 	if (pause_window || m_console) {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
+		svc.controller_map.set_joystick_throttle({});
 	} else if (inventory_window) {
 		svc.controller_map.set_action_set(config::ActionSet::Inventory);
 	} else {
@@ -163,7 +168,6 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	// in-game menus
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc, gui_map, *player); }
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
-	if (svc.controller_map.process_gamepad_disconnection()) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
 
 	enter_room.update();
 	if (!m_console && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }

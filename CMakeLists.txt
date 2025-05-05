@@ -18,12 +18,12 @@ set(FORNANI_STEAM_APP_ID_DEV 480 CACHE STRING "The developer Steam app ID (Space
 option(FORNANI_PRODUCTION_BUILD "If enabled, will build the game in production mode" OFF)
 option(
         FORNANI_DEV_BUILD
-        "If enabled, writes a steam_appid.txt file next to the executable,
-        that will avoid the game from relaunching itself from Steam. DISABLE IN PRODUCTION"
+        "If enabled, writes a steam_appid.txt file next to the executable
+        that will stop the game from relaunching itself through Steam. DISABLE IN PRODUCTION"
         ON
 )
 option(FORNANI_BUILD_EDITOR "Build the editor. This should never be enabled in production!" ON)
-option(FORNANI_ENABLE_DEV_ID "Enables dev ID for steam. This should never be enabled in production!" ON)
+option(FORNANI_ENABLE_DEV_ID "Enables dev ID for steam. This should never be enabled in production!" OFF)
 option(FORNANI_ENABLE_PROFILER "Enables tracy profiling. This should never be enabled in production!" OFF)
 option(
         FORNANI_ENABLE_VERBOSE_LOGGING

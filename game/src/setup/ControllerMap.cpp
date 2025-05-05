@@ -23,27 +23,23 @@ auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 	case DigitalAction::platformer_jump:
 	case DigitalAction::platformer_shoot:
 	case DigitalAction::platformer_sprint:
-	case DigitalAction::platformer_shield:
+	case DigitalAction::platformer_slide:
+	case DigitalAction::platformer_dash:
 	case DigitalAction::platformer_inspect:
 	case DigitalAction::platformer_arms_switch_left:
 	case DigitalAction::platformer_arms_switch_right:
 	case DigitalAction::platformer_open_inventory:
-	case DigitalAction::platformer_open_map:
 	case DigitalAction::platformer_toggle_pause: return ActionSet::Platformer;
 
-	case DigitalAction::inventory_open_map:
 	case DigitalAction::inventory_close: return ActionSet::Inventory;
-
-	case DigitalAction::map_open_inventory:
-	case DigitalAction::map_close: return ActionSet::Map;
 
 	case DigitalAction::menu_left:
 	case DigitalAction::menu_right:
 	case DigitalAction::menu_up:
 	case DigitalAction::menu_down:
 	case DigitalAction::menu_select:
-	case DigitalAction::menu_switch_right:
-	case DigitalAction::menu_switch_left:
+	case DigitalAction::menu_tab_right:
+	case DigitalAction::menu_tab_left:
 	case DigitalAction::menu_cancel: return ActionSet::Menu;
 
 	case DigitalAction::COUNT:
@@ -110,21 +106,16 @@ void ControllerMap::setup_action_handles() {
 	DEFINE_ACTION(platformer_jump);
 	DEFINE_ACTION(platformer_shoot);
 	DEFINE_ACTION(platformer_sprint);
-	DEFINE_ACTION(platformer_shield);
+	DEFINE_ACTION(platformer_slide);
+	DEFINE_ACTION(platformer_dash);
 	DEFINE_ACTION(platformer_inspect);
 	DEFINE_ACTION(platformer_arms_switch_left);
 	DEFINE_ACTION(platformer_arms_switch_right);
 	DEFINE_ACTION(platformer_open_inventory);
-	DEFINE_ACTION(platformer_open_map);
 	DEFINE_ACTION(platformer_toggle_pause);
 
 	// Inventory controls
-	DEFINE_ACTION(inventory_open_map);
 	DEFINE_ACTION(inventory_close);
-
-	// Map controls
-	DEFINE_ACTION(map_open_inventory);
-	DEFINE_ACTION(map_close);
 
 	// Menu controls
 	DEFINE_ACTION(menu_left);
@@ -132,8 +123,8 @@ void ControllerMap::setup_action_handles() {
 	DEFINE_ACTION(menu_up);
 	DEFINE_ACTION(menu_down);
 	DEFINE_ACTION(menu_select);
-	DEFINE_ACTION(menu_switch_left);
-	DEFINE_ACTION(menu_switch_right);
+	DEFINE_ACTION(menu_tab_left);
+	DEFINE_ACTION(menu_tab_right);
 	DEFINE_ACTION(menu_cancel);
 
 	// Analog actions
@@ -160,7 +151,7 @@ void ControllerMap::update() {
 	SteamInput()->RunFrame();
 	m_actions_queried_this_update.clear();
 
-	// SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, SteamInput()->GetActionSetHandle("MenuControls"));
+	SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, SteamInput()->GetActionSetHandle("MenuControls"));
 	std::unordered_set<EInputActionOrigin> buttons_pressed_this_tick{};
 	for (auto& [action, data] : digital_actions) {
 		auto& [steam_handle, action_status, primary_key, secondary_key, was_active_last_tick] = data;
@@ -238,6 +229,8 @@ void ControllerMap::update() {
 			action_status.y = 0.f;
 		}
 	}
+
+	if (last_controller_type_used() != ControllerType::gamepad) { m_joystick_throttle = {}; }
 }
 
 void ControllerMap::set_action_set(ActionSet set) {
@@ -272,7 +265,7 @@ void ControllerMap::set_action_set(ActionSet set) {
 	auto controller_origin = k_EInputActionOrigin_None;
 	if (controller_handle) {
 		auto action_set = get_action_set_from_action(action);
-		InputActionSetHandle_t handle;
+		InputActionSetHandle_t handle{};
 		switch (action_set) {
 		case ActionSet::Inventory: handle = inventory_action_layer; break;
 		case ActionSet::Map: handle = map_action_layer; break;
@@ -291,7 +284,7 @@ void ControllerMap::set_action_set(ActionSet set) {
 [[nodiscard]] auto ControllerMap::digital_action_source_name(DigitalAction action) const -> std::string_view {
 	if (controller_handle) {
 		auto action_set = get_action_set_from_action(action);
-		InputActionSetHandle_t handle;
+		InputActionSetHandle_t handle{};
 		switch (action_set) {
 		case ActionSet::Inventory: handle = inventory_action_layer; break;
 		case ActionSet::Map: handle = map_action_layer; break;
@@ -411,31 +404,34 @@ auto ControllerMap::get_action_by_identifier(std::string_view id) -> config::Dig
 		{"platformer_jump", config::DigitalAction::platformer_jump},
 		{"platformer_shoot", config::DigitalAction::platformer_shoot},
 		{"platformer_sprint", config::DigitalAction::platformer_sprint},
-		{"platformer_shield", config::DigitalAction::platformer_shield},
+		{"platformer_slide", config::DigitalAction::platformer_slide},
+		{"platformer_dash", config::DigitalAction::platformer_dash},
 		{"platformer_inspect", config::DigitalAction::platformer_inspect},
 		{"platformer_arms_switch_left", config::DigitalAction::platformer_arms_switch_left},
 		{"platformer_arms_switch_right", config::DigitalAction::platformer_arms_switch_right},
 		{"platformer_open_inventory", config::DigitalAction::platformer_open_inventory},
-		{"platformer_open_map", config::DigitalAction::platformer_open_map},
 		{"platformer_toggle_pause", config::DigitalAction::platformer_toggle_pause},
-		{"inventory_open_map", config::DigitalAction::inventory_open_map},
 		{"inventory_close", config::DigitalAction::inventory_close},
-		{"map_open_inventory", config::DigitalAction::map_open_inventory},
-		{"map_close", config::DigitalAction::map_close},
 		{"menu_left", config::DigitalAction::menu_left},
 		{"menu_right", config::DigitalAction::menu_right},
 		{"menu_up", config::DigitalAction::menu_up},
 		{"menu_down", config::DigitalAction::menu_down},
 		{"menu_select", config::DigitalAction::menu_select},
 		{"menu_cancel", config::DigitalAction::menu_cancel},
-		{"menu_switch_left", config::DigitalAction::menu_switch_left},
-		{"menu_switch_right", config::DigitalAction::menu_switch_right},
+		{"menu_tab_left", config::DigitalAction::menu_tab_left},
+		{"menu_tab_right", config::DigitalAction::menu_tab_right},
 	};
 
 	return map.at(id);
 }
 
+auto config::ControllerMap::get_joystick_throttle() const -> sf::Vector2f {
+	if (!gamepad_connected()) { return {}; }
+	return m_joystick_throttle;
+}
+
 auto ControllerMap::get_i_joystick_throttle(bool exclusive) const -> sf::Vector2i {
+	if (!gamepad_connected()) { return {}; }
 	auto ret = sf::Vector2i{static_cast<int>(std::ceil(m_joystick_throttle.x)), static_cast<int>(std::ceil(m_joystick_throttle.y))};
 	if (exclusive) {
 		if (abs(m_joystick_throttle.x) > abs(m_joystick_throttle.y)) { ret.y = 0.f; }

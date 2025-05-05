@@ -161,10 +161,10 @@ bool MapGizmo::handle_inputs(config::ControllerMap& controller, audio::Soundboar
 		m_minimap->move({1.f, 0.f});
 		if (!m_minimap->hit_horiz_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_switch_left).held) {
+	if (controller.digital_action_status(config::DigitalAction::menu_tab_left).held) {
 		m_minimap->zoom(zoom_factor);
 		if (!m_minimap->hit_zoom_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::buzz); }
-	} else if (controller.digital_action_status(config::DigitalAction::menu_switch_right).held) {
+	} else if (controller.digital_action_status(config::DigitalAction::menu_tab_right).held) {
 		m_minimap->zoom(-zoom_factor);
 		if (!m_minimap->hit_zoom_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::buzz); }
 	}

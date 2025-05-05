@@ -39,9 +39,6 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		sprint_release = sprint_pressed;
 	}
 
-	auto const& shielding = svc.controller_map.digital_action_status(config::DigitalAction::platformer_shield).held;
-	auto const& shield_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_shield).released;
-
 	auto const& jump_started = svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).triggered;
 	auto const& jump_held = svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).held;
 	auto const& jump_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).released;
@@ -57,26 +54,28 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& down_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).released;
 	auto const& down_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).triggered;
 
+	auto const& slide_held = svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).held;
+	auto const& slide_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).released;
+	auto const& slide_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).triggered;
+
 	auto it{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).triggered};
 	auto ir{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).released};
 	auto ih{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).held && cooldowns.inspect.is_almost_complete()};
-	auto const& inspected = (ir) && grounded() && !left && !right;
+
+	// inspect
+	auto const& inspected = (it) && grounded() && !left && !right;
 	cooldowns.inspect.update();
 	if (it) { cooldowns.inspect.start(); }
 
-	/* Dash ability and grappling hook will remain out of scope for the demo. */
-
-	auto const& dash_left = false;	// XXX svc.controller_map.label_to_control.at("tertiary_action").triggered() && !grounded() && left;
-	auto const& dash_right = false; // XXX svc.controller_map.label_to_control.at("tertiary_action").triggered() && !grounded() && right;
-
-	auto const& hook_held = false; // XXX svc.controller_map.label_to_control.at("secondary_action").held();
+	auto const& dash_left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered && !grounded() && left;
+	auto const& dash_right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered && !grounded() && right;
 
 	horizontal_inputs.push_back(key_map[ControllerInput::move_x]);
 	if (horizontal_inputs.size() > quick_turn_sample_size) { horizontal_inputs.pop_front(); }
 
 	key_map[ControllerInput::move_x] = 0.f;
 	// keyboard
-	if (svc.controller_map.gamepad_connected()) {
+	if (svc.controller_map.is_gamepad()) {
 		key_map[ControllerInput::move_x] = svc.controller_map.get_joystick_throttle().x;
 	} else {
 		if (left) { key_map[ControllerInput::move_x] -= walk_speed_v; }
@@ -89,23 +88,19 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 
 	// shield
 	key_map[ControllerInput::shield] = 0.f;
-	if (!shield.recovering() && grounded()) {
-		if (shielding) { key_map[ControllerInput::shield] = 1.0f; }
-		if (shielding) { shield.flags.triggers.set(ShieldTrigger::shield_up); }
-		if (shield_released && shield.is_shielding()) { shield.pop(); }
-	}
 
 	// roll
 	roll.update();
-	if (down_pressed && moving() && sprint) { roll.request(); }
+	if (slide_pressed && moving() && is_sprinting()) { roll.request(); }
 	if (grounded()) { roll.reset(); }
 
 	// slide
 	slide.update();
 	key_map[ControllerInput::slide] = 0.f;
-	if (moving() && down && grounded()) { key_map[ControllerInput::slide] = key_map[ControllerInput::move_x]; }
-	if ((down_released || (left_released || right_released)) && !roll.rolling()) { slide.break_out(); }
+	if (moving() && slide_held && grounded()) { key_map[ControllerInput::slide] = key_map[ControllerInput::move_x]; }
+	if ((slide_released || (left_released || right_released)) && !roll.rolling()) { slide.break_out(); }
 
+	// sprint
 	key_map[ControllerInput::sprint] = 0.f;
 	if (moving() && sprint && !sprint_released()) {
 		if (left) { key_map[ControllerInput::move_x] = -sprint_speed_v; }
@@ -115,12 +110,10 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 
 	direction.set_intermediate(left, right, up, down);
 
+	// dash
 	key_map[ControllerInput::dash] = dash_left && !dash_right ? -1.f : key_map[ControllerInput::dash];
 	key_map[ControllerInput::dash] = dash_right && !dash_left ? 1.f : key_map[ControllerInput::dash];
 	if (key_map[ControllerInput::dash] != 0.f && dash_count == 0) { dash_request = dash_time; }
-
-	// hook
-	hook_held ? hook_flags.set(Hook::hook_held) : hook_flags.reset(Hook::hook_held);
 
 	// sprint
 	if (sprint_release) { sprint_flags.set(Sprint::released); }

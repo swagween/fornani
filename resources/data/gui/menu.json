@@ -27,12 +27,11 @@
 			"jump",
 			"shoot",
 			"sprint",
-			"shield",
+			"slide",
 			"inspect",
 			"arms_switch_left",
 			"arms_switch_right",
 			"open_inventory",
-			"open_map",
 			"gamepad settings",
 			"reset to default"
 		],

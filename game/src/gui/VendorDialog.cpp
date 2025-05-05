@@ -132,7 +132,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	//	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) { m_item_menu->up(svc); }
 	//	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) { m_item_menu = {}; }
 	// }
-	// if (!m_item_menu && (svc.controller_map.digital_action_status(config::DigitalAction::menu_switch_left).triggered || svc.controller_map.digital_action_status(config::DigitalAction::menu_switch_right).triggered)) {
+	// if (!m_item_menu && (svc.controller_map.digital_action_status(config::DigitalAction::menu_tab_left).triggered || svc.controller_map.digital_action_status(config::DigitalAction::menu_tab_right).triggered)) {
 	//	state = state == VendorState::buy ? VendorState::sell : VendorState::buy;
 	//	/*selector.switch_sections({1, 0});*/
 	//	update_table(player, map, true);
