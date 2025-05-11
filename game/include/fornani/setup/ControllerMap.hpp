@@ -16,6 +16,10 @@ namespace fornani::automa {
 struct ServiceProvider;
 }
 
+namespace fornani {
+class Game;
+}
+
 namespace fornani::config {
 
 enum class DigitalAction : int {
@@ -87,7 +91,7 @@ struct AnalogActionStatus {
 
 class ControllerMap {
   public:
-	friend class Game;
+	friend class fornani::Game;
 	explicit ControllerMap(automa::ServiceProvider& svc);
 
 	ControllerMap(ControllerMap const&) = delete;
