@@ -1,22 +1,22 @@
 
 #include "fornani/automa/states/ControlsMenu.hpp"
 
+#include "fornani/graphics/Colors.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Constants.hpp"
 
 namespace fornani::automa {
 
-constexpr std::array<std::string_view, 4> tabs = {"controls_platformer", "controls_inventory", "controls_map", "controls_menu"};
-constexpr std::array<std::string_view, 4> tab_id_prefixes = {"platformer_", "inventory_", "map_", "menu_"};
+constexpr std::array<std::string_view, 2> tabs = {"controls_platformer", "controls_menu"};
+constexpr std::array<std::string_view, 2> tab_id_prefixes = {"platformer_", "menu_"};
 
-ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, "controls_platformer", room_number), instruction(svc.text.fonts.title) {
+ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, "controls_platformer", room_number), instruction(svc.text.fonts.title), m_current_tab{tabs.size()} {
 	change_scene(svc, "controls_platformer");
-	refresh_controls(svc);
 	instruction.setLineSpacing(1.5f);
 	instruction.setLetterSpacing(title_letter_spacing);
 	instruction.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
 	instruction.setPosition({svc.window->i_screen_dimensions().x * 0.5f - instruction.getLocalBounds().getCenter().x, svc.window->i_screen_dimensions().y - 120.f});
-	instruction.setFillColor(svc.styles.colors.dark_grey);
+	instruction.setFillColor(colors::dark_grey);
 
 	left_dot.set_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_position(options.at(current_selection.get()).right_offset);
@@ -24,7 +24,7 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 
 	debug.setFillColor(sf::Color::Transparent);
 	debug.setSize({2.f, svc.window->f_screen_dimensions().y});
-	debug.setOutlineColor(svc.styles.colors.blue);
+	debug.setOutlineColor(colors::blue);
 	debug.setOutlineThickness(-1);
 }
 
@@ -33,40 +33,54 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 	binding_mode ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 
+	// reset gamepad settings color
+	options.at(options.size() - 2).selectable = svc.controller_map.gamepad_connected();
+
+	static bool entered{};
+	if (binding_mode) {
+		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_confirm).triggered) {
+			if (svc.controller_map.has_forbidden_duplicate_binding()) {
+				svc.soundboard.flags.menu.set(audio::Menu::error);
+			} else {
+				binding_mode = false;
+				option_is_selected = false;
+				svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
+			}
+		}
+		auto id = std::string(tab_id_prefixes.at(m_current_tab.get())) + std::string(options.at(current_selection.get()).label.getString());
+		auto action = svc.controller_map.get_action_by_identifier(id.data());
+		if (binding_mode && svc.controller_map.was_keyboard_input_detected() && entered) { svc.controller_map.set_primary_keyboard_binding(action, svc.controller_map.get_last_key_pressed()); }
+		entered = true;
+	}
+
+	auto this_selection = current_selection.get();
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered && !binding_mode) {
 		current_selection.modulate(-1);
+		while (!options.at(current_selection.get()).selectable && current_selection.get() != this_selection) { current_selection.modulate(-1); }
+		option_is_selected = false;
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered && !binding_mode) {
 		current_selection.modulate(1);
+		while (!options.at(current_selection.get()).selectable && current_selection.get() != this_selection) { current_selection.modulate(1); }
+		option_is_selected = false;
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_left).triggered && option_is_selected && current_selection.get() == 0) {
-		auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
-		if (current_tab == 0) { current_tab = 4; }
-		auto tab_to_switch_to = current_tab - 1;
-		change_scene(svc, tabs[tab_to_switch_to]);
+		m_current_tab.modulate(-1);
+		change_scene(svc, tabs[m_current_tab.get()]);
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).triggered && option_is_selected && current_selection.get() == 0) {
-		auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
-		auto tab_to_switch_to = (current_tab + 1) % 4;
-		change_scene(svc, tabs[tab_to_switch_to]);
+		m_current_tab.modulate(1);
+		change_scene(svc, tabs[m_current_tab.get()]);
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
-		if (binding_mode) {
-			binding_mode = false;
-			option_is_selected = false;
-			auto& control = control_list.at(current_selection.get());
-			restore_defaults(svc);
-			// TODO: set new control here. this is a temporary fix for the hard lock
-		} else {
-			svc.state_controller.submenu = MenuType::options;
-			svc.state_controller.actions.set(Actions::exit_submenu);
-		}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && !binding_mode) {
+		svc.state_controller.submenu = MenuType::options;
+		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
-	auto pressed_select = svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered;
-	if (pressed_select) {
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
+		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		// Gamepad settings should be second to last option
 		if (current_selection.get() == 0) {
 			option_is_selected = !option_is_selected;
@@ -79,8 +93,9 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 		} else if (!binding_mode) {
 			option_is_selected = !option_is_selected;
 			binding_mode = true;
+			entered = false;
 			auto& control = control_list.at(current_selection.get());
-			control.setString("Press a key");
+			control.setString("Press a key (Enter to confirm)");
 			control.setOrigin({control.getLocalBounds().size.x, control.getLocalBounds().getCenter().y});
 		}
 	}
@@ -89,6 +104,8 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 		option.flagged = current_selection.get() == option.index && option_is_selected;
 		option.update(svc, current_selection.get());
 	}
+
+	refresh_controls(svc);
 
 	loading.update();
 	left_dot.update(svc);
@@ -114,6 +131,7 @@ void ControlsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 	std::size_t ctr{0};
 	for (auto& option : options) {
+		option.update(svc, current_selection.get());
 		if (ctr > 0 && ctr < options.size() - 2) {
 			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
 			auto id = std::string(tab_id_prefixes.at(current_tab)) + static_cast<std::string>(option.label.getString());
@@ -125,19 +143,18 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 			control.setPosition({svc.window->i_screen_dimensions().x * 0.5f + center_offset, option.position.y});
 			control.setCharacterSize(16);
 			control.setLetterSpacing(title_letter_spacing);
-			control.setFillColor(svc.styles.colors.dark_grey);
+			control.setFillColor(option.label.getFillColor());
 			control.setOrigin(control.getLocalBounds().getCenter());
+			option.selectable = !svc.controller_map.gamepad_connected() && svc.controller_map.is_gamepad_input_enabled();
 		}
 		++ctr;
 	}
-	// FIXME User may get stuck if their menu bindings are wrong, because they won't be able to reset them
 }
 
 void ControlsMenu::restore_defaults(ServiceProvider& svc) {
 	svc.data.reset_controls();
 	svc.data.save_controls(svc.controller_map);
 	svc.data.load_controls(svc.controller_map);
-	refresh_controls(svc);
 }
 
 void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change_to) {
@@ -166,7 +183,6 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 		control_list.push_back(sf::Text(svc.text.fonts.title));
 		++ctr;
 	}
-	refresh_controls(svc);
 }
 
 } // namespace fornani::automa

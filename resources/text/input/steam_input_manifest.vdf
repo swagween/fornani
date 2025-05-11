@@ -41,6 +41,7 @@
 				"menu_cancel"		"#action_menu_cancel"
 				"menu_tab_left"		"#action_menu_tab_left"
 				"menu_tab_right"		"#action_menu_tab_right"
+				"menu_confirm"			"#action_menu_confirm"
 			}
 			"Layers"
 			{
@@ -103,6 +104,7 @@
 			"action_menu_cancel"		"Cancel"
 			"action_menu_tab_left"		"Tab Left"
 			"action_menu_tab_right"		"Tab Right"
+			"action_menu_confirm"		"Confirm"
 			"layer_inventory"		"Inventory"
 			"action_inventory_close"		"Close Inventory"
 			"layer_map"		"Map"

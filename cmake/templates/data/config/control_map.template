@@ -68,6 +68,9 @@
 		},
 		"menu_tab_right": {
 			"primary_key": "S"
+		},
+		"menu_confirm": {
+			"primary_key": "Enter"
 		}
 	}
 }

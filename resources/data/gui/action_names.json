@@ -21,5 +21,6 @@
 	"menu_select": "select",
 	"menu_cancel": "cancel",
 	"menu_tab_left": "previous tab",
-	"menu_tab_right": "next tab"
+	"menu_tab_right": "next tab",
+	"menu_confirm": "menu_confirm"
 }

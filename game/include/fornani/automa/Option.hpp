@@ -9,6 +9,7 @@ struct Option {
 	Option(ServiceProvider& svc, std::string_view lbl, bool red = false);
 	void set_string(std::string_view str);
 	sf::Text label;
+	sf::Color native_color{};
 	sf::Vector2<float> position{};
 	sf::Vector2<float> left_offset{};
 	sf::Vector2<float> right_offset{};
@@ -18,6 +19,7 @@ struct Option {
 	bool selected{};
 	bool flagged{};
 	bool red{};
+	bool selectable;
 	void update(ServiceProvider& svc, int selection);
 };
 } // namespace fornani::automa

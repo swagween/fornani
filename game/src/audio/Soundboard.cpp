@@ -17,6 +17,7 @@ void Soundboard::play_sounds(automa::ServiceProvider& svc, int echo_count, int e
 	if (flags.menu.test(Menu::backward_switch)) { play(svc, svc.sounds.get_buffer("menu_back")); }
 	if (flags.menu.test(Menu::select)) { play(svc, svc.sounds.get_buffer("menu_click")); }
 	if (flags.menu.test(Menu::shift)) { play(svc, svc.sounds.get_buffer("menu_shift")); }
+	if (flags.menu.test(Menu::error)) { play(svc, svc.sounds.get_buffer("error")); }
 
 	// console
 	if (flags.console.test(Console::select)) { play(svc, svc.sounds.get_buffer("menu_click")); }

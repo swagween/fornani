@@ -40,7 +40,8 @@ auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 	case DigitalAction::menu_select:
 	case DigitalAction::menu_tab_right:
 	case DigitalAction::menu_tab_left:
-	case DigitalAction::menu_cancel: return ActionSet::Menu;
+	case DigitalAction::menu_cancel:
+	case DigitalAction::menu_confirm: return ActionSet::Menu;
 
 	case DigitalAction::COUNT:
 	default: assert(false && "Invalid action set in get_action_set_from_action");
@@ -126,6 +127,7 @@ void ControllerMap::setup_action_handles() {
 	DEFINE_ACTION(menu_tab_left);
 	DEFINE_ACTION(menu_tab_right);
 	DEFINE_ACTION(menu_cancel);
+	DEFINE_ACTION(menu_confirm);
 
 	// Analog actions
 	analog_actions.insert({AnalogAction::map_movement, {SteamInput()->GetAnalogActionHandle("map_movement"), AnalogActionStatus(AnalogAction::map_movement)}});
@@ -259,7 +261,13 @@ void ControllerMap::set_action_set(ActionSet set) {
 	return digital_actions.at(action).status;
 }
 
-[[nodiscard]] auto ControllerMap::digital_action_name(DigitalAction action) const -> std::string_view { return digital_action_names.at(action); }
+[[nodiscard]] auto ControllerMap::digital_action_name(DigitalAction action) const -> std::string_view {
+	if (digital_action_names.contains(action)) {
+		return digital_action_names.at(action);
+	} else {
+		NANI_LOG_ERROR(m_logger, "Action missing from action_names.json");
+	}
+}
 
 [[nodiscard]] auto ControllerMap::digital_action_source(DigitalAction action) const -> DigitalActionSource {
 	auto controller_origin = k_EInputActionOrigin_None;
@@ -342,9 +350,10 @@ auto ControllerMap::key_to_string(sf::Keyboard::Scancode key) const -> std::stri
 																			{sf::Keyboard::Scancode::Period, "Period"}, {sf::Keyboard::Scancode::Num1, "1"},
 																			{sf::Keyboard::Scancode::Num2, "2"},		{sf::Keyboard::Scancode::Num3, "3"},
 																			{sf::Keyboard::Scancode::Space, "Space"},	{sf::Keyboard::Scancode::LControl, "LControl"},
-																			{sf::Keyboard::Scancode::Escape, "Esc"},	{sf::Keyboard::Scancode::Unknown, "None"}};
+																			{sf::Keyboard::Scancode::Enter, "Enter"},	{sf::Keyboard::Scancode::Escape, "Esc"},
+																			{sf::Keyboard::Scancode::Unknown, "None"}};
 
-	return map.at(key);
+	return map.contains(key) ? map.at(key) : "<Unknown>";
 }
 
 auto ControllerMap::string_to_key(std::string_view string) const -> sf::Keyboard::Scancode {
@@ -369,11 +378,24 @@ auto ControllerMap::string_to_key(std::string_view string) const -> sf::Keyboard
 																			{"Space", sf::Keyboard::Scancode::Space},	{"LControl", sf::Keyboard::Scancode::LControl},
 																			{"Esc", sf::Keyboard::Scancode::Escape},	{"Enter", sf::Keyboard::Scancode::Enter}};
 
-	if (map.contains(string)) {
-		return map.at(string);
-	} else {
-		return sf::Keyboard::Scancode::Unknown;
+	return map.contains(string) ? map.at(string) : sf::Keyboard::Scancode::Unknown;
+}
+
+auto config::ControllerMap::has_forbidden_duplicate_binding() const -> bool {
+	for (auto& binding : digital_actions) {
+		for (auto& other : digital_actions) {
+			if (get_action_set_from_action(binding.first) != get_action_set_from_action(other.first)) { continue; }
+			if (other.first != binding.first && binding.second.primary_binding == other.second.primary_binding) {
+				if (binding.first == DigitalAction::menu_select) { return true; }
+				if (binding.first == DigitalAction::menu_confirm) { return true; }
+				if (binding.first == DigitalAction::menu_up) { return true; }
+				if (binding.first == DigitalAction::menu_down) { return true; }
+				if (binding.first == DigitalAction::menu_left) { return true; }
+				if (binding.first == DigitalAction::menu_right) { return true; }
+			}
+		}
 	}
+	return false;
 }
 
 bool ControllerMap::process_gamepad_disconnection() {
@@ -382,8 +404,12 @@ bool ControllerMap::process_gamepad_disconnection() {
 	return ret;
 }
 
-void ControllerMap::set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Scancode key) { digital_actions.at(action).primary_binding = key; }
-void ControllerMap::set_secondary_keyboard_binding(DigitalAction action, sf::Keyboard::Scancode key) { digital_actions.at(action).secondary_binding = key; }
+void ControllerMap::set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Scancode key) {
+	if (digital_actions.contains(action)) { digital_actions.at(action).primary_binding = key; }
+}
+void ControllerMap::set_secondary_keyboard_binding(DigitalAction action, sf::Keyboard::Scancode key) {
+	if (digital_actions.contains(action)) { digital_actions.at(action).secondary_binding = key; }
+}
 
 auto ControllerMap::get_primary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Scancode { return digital_actions.at(action).primary_binding; }
 auto ControllerMap::get_secondary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Scancode { return digital_actions.at(action).secondary_binding; }
@@ -396,33 +422,32 @@ void ControllerMap::reset_digital_action_states() {
 }
 
 auto ControllerMap::get_action_by_identifier(std::string_view id) -> config::DigitalAction {
-	static std::unordered_map<std::string_view, config::DigitalAction> const map = {
-		{"platformer_left", config::DigitalAction::platformer_left},
-		{"platformer_right", config::DigitalAction::platformer_right},
-		{"platformer_up", config::DigitalAction::platformer_up},
-		{"platformer_down", config::DigitalAction::platformer_down},
-		{"platformer_jump", config::DigitalAction::platformer_jump},
-		{"platformer_shoot", config::DigitalAction::platformer_shoot},
-		{"platformer_sprint", config::DigitalAction::platformer_sprint},
-		{"platformer_slide", config::DigitalAction::platformer_slide},
-		{"platformer_dash", config::DigitalAction::platformer_dash},
-		{"platformer_inspect", config::DigitalAction::platformer_inspect},
-		{"platformer_arms_switch_left", config::DigitalAction::platformer_arms_switch_left},
-		{"platformer_arms_switch_right", config::DigitalAction::platformer_arms_switch_right},
-		{"platformer_open_inventory", config::DigitalAction::platformer_open_inventory},
-		{"platformer_toggle_pause", config::DigitalAction::platformer_toggle_pause},
-		{"inventory_close", config::DigitalAction::inventory_close},
-		{"menu_left", config::DigitalAction::menu_left},
-		{"menu_right", config::DigitalAction::menu_right},
-		{"menu_up", config::DigitalAction::menu_up},
-		{"menu_down", config::DigitalAction::menu_down},
-		{"menu_select", config::DigitalAction::menu_select},
-		{"menu_cancel", config::DigitalAction::menu_cancel},
-		{"menu_tab_left", config::DigitalAction::menu_tab_left},
-		{"menu_tab_right", config::DigitalAction::menu_tab_right},
-	};
+	static std::unordered_map<std::string_view, config::DigitalAction> const map = {{"platformer_left", config::DigitalAction::platformer_left},
+																					{"platformer_right", config::DigitalAction::platformer_right},
+																					{"platformer_up", config::DigitalAction::platformer_up},
+																					{"platformer_down", config::DigitalAction::platformer_down},
+																					{"platformer_jump", config::DigitalAction::platformer_jump},
+																					{"platformer_shoot", config::DigitalAction::platformer_shoot},
+																					{"platformer_sprint", config::DigitalAction::platformer_sprint},
+																					{"platformer_slide", config::DigitalAction::platformer_slide},
+																					{"platformer_dash", config::DigitalAction::platformer_dash},
+																					{"platformer_inspect", config::DigitalAction::platformer_inspect},
+																					{"platformer_arms_switch_left", config::DigitalAction::platformer_arms_switch_left},
+																					{"platformer_arms_switch_right", config::DigitalAction::platformer_arms_switch_right},
+																					{"platformer_open_inventory", config::DigitalAction::platformer_open_inventory},
+																					{"platformer_toggle_pause", config::DigitalAction::platformer_toggle_pause},
+																					{"inventory_close", config::DigitalAction::inventory_close},
+																					{"menu_left", config::DigitalAction::menu_left},
+																					{"menu_right", config::DigitalAction::menu_right},
+																					{"menu_up", config::DigitalAction::menu_up},
+																					{"menu_down", config::DigitalAction::menu_down},
+																					{"menu_select", config::DigitalAction::menu_select},
+																					{"menu_cancel", config::DigitalAction::menu_cancel},
+																					{"menu_tab_left", config::DigitalAction::menu_tab_left},
+																					{"menu_tab_right", config::DigitalAction::menu_tab_right},
+																					{"menu_confirm", config::DigitalAction::menu_confirm}};
 
-	return map.at(id);
+	return map.contains(id) ? map.at(id) : config::DigitalAction::COUNT;
 }
 
 auto config::ControllerMap::get_joystick_throttle() const -> sf::Vector2f {
@@ -447,6 +472,10 @@ void ControllerMap::set_joystick_throttle(sf::Vector2f throttle) {
 	if (ccm::abs(m_joystick_throttle.x) < m_stick_sensitivity) { m_joystick_throttle.x = 0.f; }
 	if (ccm::abs(m_joystick_throttle.y) < m_stick_sensitivity) { m_joystick_throttle.y = 0.f; }
 }
+
+void ControllerMap::set_last_key_pressed(sf::Keyboard::Scancode to_key) { m_last_key_pressed = to_key; }
+
+void config::ControllerMap::set_keyboard_input_detected(bool flag) { m_keyboard_input_detected = flag; }
 
 } // namespace fornani::config
 

@@ -90,8 +90,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		{
 			NANI_ZoneScopedN("Handle Window Events");
-			bool valid_event{true};
-
+			services.controller_map.set_keyboard_input_detected(false);
 			while (std::optional const event = services.window->get().pollEvent()) {
 				NANI_ZoneScopedN("Event Polling");
 				player.animation.state = {};
@@ -102,6 +101,8 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 				if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
 					NANI_ZoneScopedN("Key Press Handling");
+					services.controller_map.set_keyboard_input_detected(true);
+					services.controller_map.set_last_key_pressed(key_pressed->scancode);
 					if (key_pressed->scancode == sf::Keyboard::Scancode::LControl) { key_flags.set(KeyboardFlags::control); }
 					if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_flags.test(KeyboardFlags::control)) {
 						services.toggle_debug();
@@ -135,8 +136,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 				}
 
 				services.controller_map.handle_event(*event);
-				if (valid_event) { ImGui::SFML::ProcessEvent(services.window->get(), *event); }
-				valid_event = true;
+				ImGui::SFML::ProcessEvent(services.window->get(), *event);
 			}
 		}
 

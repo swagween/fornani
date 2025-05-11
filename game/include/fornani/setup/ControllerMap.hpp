@@ -47,6 +47,7 @@ enum class DigitalAction : int {
 	menu_cancel,
 	menu_tab_left,
 	menu_tab_right,
+	menu_confirm,
 
 	COUNT
 };
@@ -133,6 +134,10 @@ class ControllerMap {
 	[[nodiscard]] auto is_gamepad() const -> bool { return last_controller_ty_used == ControllerType::gamepad; }
 	[[nodiscard]] auto is_keyboard() const -> bool { return last_controller_ty_used == ControllerType::keyboard; }
 
+	/// @return Returns true if keyboard control bindings have a duplicate.
+	[[nodiscard]] auto has_forbidden_duplicate_binding() const -> bool;
+	[[nodiscard]] auto was_keyboard_input_detected() const -> bool { return m_keyboard_input_detected; }
+
 	/// @brief Processes gamepad disconnection to pause the game.
 	/// @return Returns true if gamepad was just disconnected, otherwise returns false.
 	bool process_gamepad_disconnection();
@@ -148,9 +153,13 @@ class ControllerMap {
 	[[nodiscard]] auto get_joystick_throttle() const -> sf::Vector2f;
 	[[nodiscard]] auto get_i_joystick_throttle(bool exclusive) const -> sf::Vector2i;
 
+	[[nodiscard]] auto get_last_key_pressed() const -> sf::Keyboard::Scancode { return m_last_key_pressed; };
+
 	void set_joystick_throttle(sf::Vector2f throttle);
 
   private:
+	void set_last_key_pressed(sf::Keyboard::Scancode to_key);
+	void set_keyboard_input_detected(bool flag);
 	struct DigitalActionData {
 		InputDigitalActionHandle_t steam_handle;
 		DigitalActionStatus status;
@@ -179,8 +188,11 @@ class ControllerMap {
 
 	InputHandle_t controller_handle{};
 
+	sf::Keyboard::Scancode m_last_key_pressed{};
+
 	bool gamepad_input_enabled{true};
 	bool autosprint_enabled{true};
+	bool m_keyboard_input_detected{};
 
 	// joystick members
 	sf::Vector2f m_joystick_throttle{};

@@ -2,6 +2,7 @@
 #pragma once
 
 #include "fornani/automa/GameState.hpp"
+#include "fornani/utils/Circuit.hpp"
 
 namespace fornani::automa {
 
@@ -24,6 +25,7 @@ class ControlsMenu final : public GameState {
 	bool option_is_selected{};
 	bool binding_mode{};
 	sf::RectangleShape debug{};
+	util::Circuit m_current_tab;
 };
 
 } // namespace fornani::automa
