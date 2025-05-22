@@ -6,10 +6,9 @@
 	},
 	"bed": {
 		"suite": [
-			[ "Would you like to sleep?%0" ],
-			[ "Getting cozy...$88#1#1#", "...", "You awaken feeling well-rested." ]
+			[ "You awaken feeling well-rested." ]
 		],
-		"responses": [ [ "Yes%0", "No%1" ] ]
+		"responses": [ [] ]
 	},
 	"chest": {
 		"suite": [

@@ -14,7 +14,7 @@ DescriptionGizmo::DescriptionGizmo(automa::ServiceProvider& svc, world::Map& map
 	: Gizmo("Map Info", false), m_sprite{svc.assets.get_texture("description_gizmo")}, m_bounds{text_bounds}, m_text_offset{text_bounds.position} {
 	m_physics.position = sf::Vector2f{374.f, 1600.f};
 	m_placement = placement;
-	m_sprite.setScale(util::constants::f_scale_vec);
+	m_sprite.setScale(constants::f_scale_vec);
 	m_sprite.setTextureRect(lookup);
 }
 

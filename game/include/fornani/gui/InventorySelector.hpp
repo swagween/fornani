@@ -13,7 +13,7 @@ class InventorySelector {
 	friend class OutfitterGizmo;
 
   public:
-	InventorySelector(sf::Vector2i range, sf::Vector2f spacing = util::constants::f_cell_vec);
+	InventorySelector(sf::Vector2i range, sf::Vector2f spacing = constants::f_cell_vec);
 	void update();
 	void render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin);
 

@@ -2,7 +2,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-namespace fornani::util::constants {
+namespace fornani::constants {
 
 constexpr std::uint8_t u_scale_factor{2u};
 constexpr int i_scale_factor{static_cast<int>(u_scale_factor)};
@@ -25,10 +25,11 @@ constexpr sf::Vector2i i_resolution_vec{i_cell_resolution, i_cell_resolution};
 constexpr sf::Vector2f f_resolution_vec{f_cell_resolution, f_cell_resolution};
 constexpr sf::Vector2i i_scale_vec{i_scale_factor, i_scale_factor};
 constexpr sf::Vector2f f_scale_vec{f_scale_factor, f_scale_factor};
+constexpr sf::Vector2f f_inverse_scale_vec{-f_scale_factor, f_scale_factor};
 
 constexpr sf::Vector2i tileset_dimensions{16, 32};
 
 constexpr int i_chunk_size{16};
 constexpr float f_chunk_size{static_cast<float>(i_chunk_size)};
 
-} // namespace fornani::util::constants
+} // namespace fornani::constants

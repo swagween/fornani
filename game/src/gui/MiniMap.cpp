@@ -13,7 +13,7 @@ MiniMap::MiniMap(automa::ServiceProvider& svc) : m_texture(svc), m_map_sprite{sv
 	m_border.setOutlineThickness(-4.f);
 	m_border.setFillColor(sf::Color::Transparent);
 	m_border.setSize(svc.window->f_screen_dimensions());
-	m_cursor.setScale(util::constants::f_scale_vec);
+	m_cursor.setScale(constants::f_scale_vec);
 	m_cursor.setOrigin({7.f, 7.f});
 }
 
@@ -32,12 +32,12 @@ void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (!map.is_minimap()) { return; } // don't care about test maps
 	auto room_pos{current_map->get_position()};
 	if (map.save_point.id > 0) { m_markers.push_back({MapIconFlags::save, map.save_point.position * m_texture_scale + room_pos, room}); }
-	for (auto& bed : map.beds) { m_markers.push_back({MapIconFlags::bed, bed.bounding_box.get_position() * m_texture_scale / util::constants::f_cell_size + room_pos, room}); }
+	for (auto& bed : map.beds) { m_markers.push_back({MapIconFlags::bed, bed.bounding_box.get_position() * m_texture_scale / constants::f_cell_size + room_pos, room}); }
 	for (auto& door : map.portals) {
-		if (!door.activate_on_contact()) { m_markers.push_back({MapIconFlags::door, door.position * m_texture_scale / util::constants::f_cell_size + room_pos, room}); }
+		if (!door.activate_on_contact()) { m_markers.push_back({MapIconFlags::door, door.position * m_texture_scale / constants::f_cell_size + room_pos, room}); }
 	}
 	if (current) {
-		m_player_position = player.collider.get_center() * m_texture_scale / util::constants::f_cell_size + room_pos;
+		m_player_position = player.collider.get_center() * m_texture_scale / constants::f_cell_size + room_pos;
 		m_markers.push_back({MapIconFlags::nani, m_player_position, room});
 	}
 	map.clear();
@@ -79,7 +79,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 		}
 		win.draw(m_map_sprite);
 	}
-	icon_sprite.setScale(util::constants::f_scale_vec.componentWiseDiv(port.size));
+	icon_sprite.setScale(constants::f_scale_vec.componentWiseDiv(port.size));
 	auto icon_lookup{136};
 	auto icon_dim{6};
 	for (auto& element : m_markers) {
@@ -88,7 +88,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 		if (element.type == MapIconFlags::nani) { icon_sprite.setScale(icon_sprite.getScale().componentWiseMul(player.get_facing_scale())); }
 		win.draw(icon_sprite);
 	}
-	m_cursor.setScale(util::constants::f_scale_vec.componentWiseDiv(port.size));
+	m_cursor.setScale(constants::f_scale_vec.componentWiseDiv(port.size));
 	m_cursor.setPosition(svc.window->f_center_screen());
 	win.draw(m_cursor);
 	svc.window->restore_view();

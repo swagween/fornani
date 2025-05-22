@@ -24,7 +24,7 @@ vfx::Chain::Chain(automa::ServiceProvider& svc, sf::Texture const& tex, SpringPa
 		link.set_bob(link.get_anchor() + sf::Vector2<float>{spacing, sign * spacing});
 		++ctr;
 	}
-	m_sprite.setScale(util::constants::f_scale_vec);
+	m_sprite.setScale(constants::f_scale_vec);
 }
 
 void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, float dampen) {

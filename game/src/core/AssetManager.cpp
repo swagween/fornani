@@ -8,7 +8,6 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 
 	namespace fs = std::filesystem;
 	auto p_folder{fs::path{"image"}};
-	auto p_gui{p_folder / fs::path{"gui"}};
 	auto p_app{p_folder / fs::path{"app"}};
 	auto image_dir = fs::path{finder.resource_path()} / "image";
 

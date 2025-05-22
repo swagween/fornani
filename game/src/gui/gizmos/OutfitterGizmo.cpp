@@ -15,9 +15,9 @@ OutfitterGizmo::OutfitterGizmo(automa::ServiceProvider& svc, world::Map& map, sf
 	  m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "wardrobe_outfitter", 108, util::InterpolationType::quadratic}, m_wires(svc.assets.get_texture("wardrobe_wires"), {88, 118}), m_max_slots{10},
 	  m_selector({m_max_slots, 4}, {38.f, 50.f}), m_init{true}, m_grid_offset{144.f, 10.f}, m_row{{{76, 0}, {170, 18}}, {}}, wardrobe_index{160} {
 	m_placement = placement;
-	m_sprite.setScale(util::constants::f_scale_vec);
-	m_wires.set_scale(util::constants::f_scale_vec);
-	m_apparel_sprite.setScale(util::constants::f_scale_vec);
+	m_sprite.setScale(constants::f_scale_vec);
+	m_wires.set_scale(constants::f_scale_vec);
+	m_apparel_sprite.setScale(constants::f_scale_vec);
 	m_path.set_section("start");
 	m_wires.push_params("idle", {0, 1, 128, -1});
 	m_wires.push_params("plug", {1, 6, 20, 0}, "set");

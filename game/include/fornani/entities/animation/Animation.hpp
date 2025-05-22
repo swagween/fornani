@@ -55,6 +55,7 @@ struct Animation {
 	[[nodiscard]] auto keyframe_started() const -> bool { return frame_timer.get_cooldown() == params.framerate; }
 	[[nodiscard]] auto just_started() const -> bool { return global_counter.get_count() == 1; }
 	[[nodiscard]] auto get_frame_count() const -> int { return frame.get_count(); }
+	[[nodiscard]] auto get_elapsed_ticks() const -> int { return global_counter.get_count(); }
 
 	util::Cooldown frame_timer{};
 	util::Counter global_counter{};

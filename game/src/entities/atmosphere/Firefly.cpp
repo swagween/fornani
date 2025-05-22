@@ -21,7 +21,7 @@ Firefly::Firefly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprit
 	sprite.set_origin({4.5f, 4.5f});
 	variant = util::random::percent_chance(60) ? 0 : util::random::percent_chance(50) ? 1 : util::random::percent_chance(50) ? 2 : 3;
 	if (variant == 0 && util::random::percent_chance(30)) {
-		trail = std::make_unique<flfx::SpriteHistory>();
+		trail = std::make_unique<graphics::SpriteHistory>();
 		trail.value()->set_sample_size(12);
 	}
 }

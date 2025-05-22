@@ -9,8 +9,8 @@ namespace fornani::entity {
 
 Portal::Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked, bool already_open, int key_id, int style, sf::Vector2<int> map_dim)
 	: scaled_dimensions(dim), scaled_position(pos), meta({src, dest, key_id}), sprite{svc.assets.get_texture("portals")} {
-	dimensions = static_cast<Vec>(dim * util::constants::u32_cell_size);
-	position = static_cast<Vec>(pos * util::constants::u32_cell_size);
+	dimensions = static_cast<Vec>(dim * constants::u32_cell_size);
+	position = static_cast<Vec>(pos * constants::u32_cell_size);
 	bounding_box = shape::Shape(dimensions);
 	bounding_box.set_position(position);
 	meta.orientation = PortalOrientation::central;
@@ -22,7 +22,7 @@ Portal::Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, in
 		state = PortalRenderState::open;
 		flags.attributes.set(PortalAttributes::already_open);
 	}
-	lookup = sf::IntRect({static_cast<int>(state) * util::constants::i_cell_size, style * util::constants::i_cell_size * 2}, {util::constants::i_cell_size, util::constants::i_cell_size * 2});
+	lookup = sf::IntRect({static_cast<int>(state) * constants::i_cell_size, style * constants::i_cell_size * 2}, {constants::i_cell_size, constants::i_cell_size * 2});
 	sprite.setTextureRect(lookup);
 	if (activate_on_contact) { flags.attributes.set(PortalAttributes::activate_on_contact); }
 	if (locked) { flags.state.set(PortalState::locked); }
@@ -30,11 +30,11 @@ Portal::Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, in
 }
 
 void Portal::update(automa::ServiceProvider& svc) {
-	position = static_cast<Vec>(scaled_position * util::constants::u32_cell_size);
-	dimensions = static_cast<Vec>(scaled_dimensions * util::constants::u32_cell_size);
+	position = static_cast<Vec>(scaled_position * constants::u32_cell_size);
+	dimensions = static_cast<Vec>(scaled_dimensions * constants::u32_cell_size);
 	bounding_box.set_position(position);
 	bounding_box.set_dimensions(dimensions);
-	lookup.position.x = static_cast<int>(state) * util::constants::i_cell_size;
+	lookup.position.x = static_cast<int>(state) * constants::i_cell_size;
 }
 
 void Portal::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos) {
@@ -57,7 +57,7 @@ void Portal::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec cam
 	}
 }
 
-void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, int room_id, flfx::Transition& transition) {
+void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, int room_id, graphics::Transition& transition) {
 	update(svc);
 	if (bounding_box.overlaps(player.collider.bounding_box)) {
 		if (flags.attributes.test(PortalAttributes::activate_on_contact) && flags.state.test(PortalState::ready)) {
@@ -111,7 +111,7 @@ void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& pla
 	}
 }
 
-void Portal::change_states(automa::ServiceProvider& svc, int room_id, flfx::Transition& transition) {
+void Portal::change_states(automa::ServiceProvider& svc, int room_id, graphics::Transition& transition) {
 	if (!flags.attributes.test(PortalAttributes::activate_on_contact) && transition.not_started()) {
 		state = PortalRenderState::open;
 		if (!flags.attributes.test(PortalAttributes::already_open)) { svc.soundboard.flags.world.set(audio::World::door_open); }

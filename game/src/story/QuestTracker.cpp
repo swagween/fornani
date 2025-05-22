@@ -27,7 +27,7 @@ QuestTracker::QuestTracker() {
 	suites.cutscene.quests.insert({6001, Quest{6001, "lady_numbus_1"}});
 }
 
-int QuestTracker::get_progression(QuestType type, int id) { 
+int QuestTracker::get_progression(QuestType type, int id) {
 	auto ret{0};
 	if (type == QuestType::npc) { ret = suites.npc.get_progression(id); }
 	if (type == QuestType::item) { ret = suites.item.get_progression(id); }
@@ -38,7 +38,7 @@ int QuestTracker::get_progression(QuestType type, int id) {
 	if (type == QuestType::fetch_text) { ret = suites.fetch_text.get_progression(id); }
 	if (type == QuestType::cutscene) { ret = suites.cutscene.get_progression(id); }
 	if (type == QuestType::hidden_npcs) { ret = suites.hidden_npcs.get_progression(id); }
-	return ret; 
+	return ret;
 }
 void QuestTracker::progress(QuestType type, int id, int source, int amount, bool hard_set) {
 	if (type == QuestType::npc && suites.npc.quests.contains(id)) { suites.npc.quests.at(id).progress(source, amount, hard_set); }
@@ -66,7 +66,6 @@ void QuestTracker::reset(QuestType type, int id) {
 
 void QuestTracker::process(automa::ServiceProvider& svc, util::QuestKey key) {
 	if (key.type == 27) { svc.state_controller.actions.set(automa::Actions::retry); }
-	if (key.type == 88) { svc.state_controller.actions.set(automa::Actions::sleep); }
 	if (key.type == 89) { svc.state_controller.actions.set(automa::Actions::main_menu); }
 	if (key.type == 69) { svc.state_controller.actions.set(automa::Actions::print_stats); }
 	if (key.type == 70) { svc.menu_controller.open_vendor_dialog(key.id); }
@@ -87,6 +86,5 @@ void QuestTracker::process(automa::ServiceProvider& svc, util::QuestKey key) {
 	}
 	svc.data.push_quest(key);
 }
-
 
 } // namespace fornani

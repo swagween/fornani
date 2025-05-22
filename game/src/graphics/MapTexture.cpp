@@ -17,7 +17,7 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 		m_ignore = true;
 		return;
 	}
-	m_global_offset = map.metagrid_coordinates * util::constants::i_chunk_size * static_cast<int>(m_scale);
+	m_global_offset = map.metagrid_coordinates * constants::i_chunk_size * static_cast<int>(m_scale);
 	m_map_dimensions = static_cast<sf::Vector2<float>>(map.dimensions) * m_scale;
 
 	auto u_scale = static_cast<unsigned int>(m_scale);

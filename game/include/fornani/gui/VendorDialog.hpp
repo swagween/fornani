@@ -21,7 +21,7 @@ class Player;
 namespace fornani::npc {
 class Vendor;
 }
-namespace fornani::flfx {
+namespace fornani::graphics {
 class Transition;
 }
 

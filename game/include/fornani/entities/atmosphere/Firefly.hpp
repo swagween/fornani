@@ -33,7 +33,7 @@ class Firefly {
 	util::Cooldown light{};
 	int variant{};
 	bool glowing{};
-	std::optional<std::unique_ptr<flfx::SpriteHistory>> trail{};
+	std::optional<std::unique_ptr<graphics::SpriteHistory>> trail{};
 };
 
 } // namespace fornani::vfx

@@ -203,6 +203,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	}
 	map.soft_reset.render(win);
 	map.transition.render(win);
+	map.bed_transition.render(win);
 	if (pause_window) { pause_window.value()->render(svc, win); }
 	if (m_console) {
 		m_console.value()->render(win);

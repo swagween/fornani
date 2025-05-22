@@ -159,8 +159,9 @@ class Map {
 	audio::Ambience ambience{};
 
 	std::unique_ptr<bg::Background> background{};
-	flfx::Transition transition;
-	flfx::Transition soft_reset;
+	graphics::Transition transition;
+	graphics::Transition bed_transition;
+	graphics::Transition soft_reset;
 
 	enemy::EnemyCatalog enemy_catalog;
 	CutsceneCatalog cutscene_catalog;

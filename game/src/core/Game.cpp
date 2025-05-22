@@ -436,8 +436,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Wallsliding? %s", player.controller.get_wallslide().is_wallsliding() ? "Yes" : "No");
 								ImGui::Text("On Ramp? %s", player.collider.on_ramp() ? "Yes" : "No");
 								ImGui::Separator();
-								ImGui::Text("X Position: %.2f", player.collider.physics.position.x / util::constants::f_cell_size);
-								ImGui::Text("Y Position: %.2f", player.collider.physics.position.y / util::constants::f_cell_size);
+								ImGui::Text("X Position: %.2f", player.collider.physics.position.x / constants::f_cell_size);
+								ImGui::Text("Y Position: %.2f", player.collider.physics.position.y / constants::f_cell_size);
 								ImGui::Text("X Velocity: %.2f", player.collider.physics.velocity.x);
 								ImGui::Text("Y Velocity: %.2f", player.collider.physics.velocity.y);
 								ImGui::Text("Apparent X Velocity: %.2f", player.collider.physics.apparent_velocity().x);
@@ -457,6 +457,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							if (ImGui::BeginTabItem("Animation")) {
 								ImGui::Text("Animation: %s", player.animation.animation.label.data());
 								ImGui::Separator();
+								ImGui::Text("Elapsed Ticks: %i", player.animation.animation.get_elapsed_ticks());
 								ImGui::Text("Current Frame: %i", player.animation.animation.frame.get_count());
 								ImGui::Text("Loop: %i", player.animation.animation.loop.get_count());
 								ImGui::Text("Frame Timer: %i", player.animation.animation.frame_timer.get_cooldown());

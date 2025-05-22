@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <deque>
 
-namespace fornani::flfx {
+namespace fornani::graphics {
 
 class SpriteHistory {
   public:
@@ -20,4 +20,4 @@ class SpriteHistory {
 
 };
 
-} // namespace flfx
+} // namespace graphics

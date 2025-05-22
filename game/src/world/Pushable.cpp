@@ -14,7 +14,7 @@
 namespace fornani::world {
 
 Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int size) : style(style), size(size), sprite{svc.assets.get_texture("pushables")} {
-	collider = shape::Collider({util::constants::f_cell_size * static_cast<float>(size) - 4.f, util::constants::f_cell_size * static_cast<float>(size) - 1.f});
+	collider = shape::Collider({constants::f_cell_size * static_cast<float>(size) - 4.f, constants::f_cell_size * static_cast<float>(size) - 1.f});
 	collider.physics.position = position;
 	start_position = position;
 	collider.physics.set_constant_friction({0.95f, 0.98f});
@@ -25,8 +25,8 @@ Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, in
 	auto lock = collider.snap_to_grid(static_cast<float>(size));
 	collider.physics.position = lock;
 	start_box = collider.bounding_box;
-	sprite.setTextureRect(sf::IntRect{{style * 2 * util::constants::i_cell_resolution, (size - 1) * util::constants::i_cell_resolution}, util::constants::i_resolution_vec * size});
-	sprite.setScale(util::constants::f_scale_vec);
+	sprite.setTextureRect(sf::IntRect{{style * 2 * constants::i_cell_resolution, (size - 1) * constants::i_cell_resolution}, constants::i_resolution_vec * size});
+	sprite.setScale(constants::f_scale_vec);
 }
 
 void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
@@ -95,7 +95,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		if (platform.bounding_box.overlaps(collider.jumpbox)) { collider.handle_collider_collision(platform.bounding_box); }
 	}
 	if (collider.flags.state.test(shape::State::just_landed)) {
-		map.effects.push_back(entity::Effect(svc, "dust", {collider.physics.position.x + util::constants::f_cell_size * (size / 2.f), collider.physics.position.y + (size - 1) * util::constants::f_cell_size}, {}, 0, 10));
+		map.effects.push_back(entity::Effect(svc, "dust", {collider.physics.position.x + constants::f_cell_size * (size / 2.f), collider.physics.position.y + (size - 1) * constants::f_cell_size}, {}, 0, 10));
 		svc.soundboard.flags.world.set(audio::World::thud);
 	}
 	collider.reset();

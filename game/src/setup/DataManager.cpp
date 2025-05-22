@@ -43,7 +43,7 @@ void DataManager::load_data(std::string in_room) {
 				auto parallax = in_tile["parallax"][ctr].as<float>();
 				if (parallax == 0.f) { parallax = 1.f; }
 				auto partition = sf::Vector2i{in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].array_view().size())};
-				map_layers.back().push_back(std::make_unique<world::Layer>(ctr, partition, dimensions, in_tile["layers"][ctr], util::constants::f_cell_size, ho, hro, parallax));
+				map_layers.back().push_back(std::make_unique<world::Layer>(ctr, partition, dimensions, in_tile["layers"][ctr], constants::f_cell_size, ho, hro, parallax));
 				++ctr;
 			}
 

@@ -1,16 +1,45 @@
 
 #pragma once
 
-#include "fornani/utils/StateFunction.hpp"
-#include "fornani/utils/Counter.hpp"
 #include "fornani/entities/animation/Animation.hpp"
+#include "fornani/io/Logger.hpp"
+#include "fornani/utils/Counter.hpp"
+#include "fornani/utils/StateFunction.hpp"
 #define PA_BIND(f) std::bind(&PlayerAnimation::f, this)
 
 namespace fornani::player {
 
 class Player;
 
-enum class AnimState : std::uint8_t { idle, turn, sharp_turn, run, sprint, shield, between_push, push, rise, suspend, fall, stop, inspect, sit, land, hurt, dash, wallslide, walljump, die, backflip, slide, get_up, roll, shoot };
+enum class AnimState : std::uint8_t {
+	idle,
+	turn,
+	sharp_turn,
+	run,
+	sprint,
+	shield,
+	between_push,
+	push,
+	rise,
+	suspend,
+	fall,
+	stop,
+	inspect,
+	sit,
+	land,
+	hurt,
+	dash,
+	wallslide,
+	walljump,
+	die,
+	backflip,
+	slide,
+	get_up,
+	roll,
+	shoot,
+	sleep,
+	wake_up
+};
 enum class AnimTriggers : std::uint8_t { flip, end_death };
 int const rate{4};
 // { lookup, duration, framerate, num_loops (-1 for infinite), repeat_last_frame, interruptible }
@@ -39,6 +68,8 @@ inline anim::Parameters slide{96, 4, 4 * rate, -1};
 inline anim::Parameters get_up{57, 1, 5 * rate, 0};
 inline anim::Parameters roll{100, 4, 5 * rate, 0};
 inline anim::Parameters shoot{104, 3, 8 * rate, 0};
+inline anim::Parameters sleep{3, 4, 8 * rate, -1, true};
+inline anim::Parameters wake_up{7, 2, 8 * rate, 0};
 
 class PlayerAnimation {
 
@@ -59,6 +90,8 @@ class PlayerAnimation {
 	[[nodiscard]] auto death_over() -> bool { return triggers.consume(AnimTriggers::end_death); }
 	[[nodiscard]] auto not_jumping() const -> bool { return state != AnimState::rise; }
 	[[nodiscard]] auto get_frame() const -> int { return animation.get_frame(); }
+	[[nodiscard]] auto was_requested(AnimState check) const -> bool { return m_requested.test(check); }
+	[[nodiscard]] auto get_state() const -> AnimState { return m_actual; }
 	bool stepped() const;
 
 	fsm::StateFunction state_function = std::bind(&PlayerAnimation::update_idle, this);
@@ -88,14 +121,23 @@ class PlayerAnimation {
 	fsm::StateFunction update_get_up();
 	fsm::StateFunction update_roll();
 	fsm::StateFunction update_shoot();
+	fsm::StateFunction update_sleep();
+	fsm::StateFunction update_wake_up();
 
 	bool change_state(AnimState next, anim::Parameters params, bool hard = false);
+	void request_animation(AnimState to_state) { m_requested.set(to_state); };
 
 	Player* m_player;
 
 	struct {
 		int sit{2400};
 	} timers{};
+
+  private:
+	util::BitFlags<AnimState> m_requested{};
+	AnimState m_actual{};
+
+	io::Logger m_logger{"animation"};
 };
 
-} // namespace player
+} // namespace fornani::player

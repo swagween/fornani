@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-namespace fornani::flfx {
+namespace fornani::graphics {
 
 class TextureUpdater {
 
@@ -32,4 +32,4 @@ class TextureUpdater {
 	sf::Texture base_texture{};
 	sf::Texture dynamic_texture{};
 };
-} // namespace flfx
+} // namespace graphics

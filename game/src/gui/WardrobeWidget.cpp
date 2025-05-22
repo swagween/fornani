@@ -10,8 +10,8 @@ gui::WardrobeWidget::WardrobeWidget(automa::ServiceProvider& svc)
 	background.setFillColor(svc.styles.colors.pioneer_black);
 	background.setSize(f_dimensions());
 	if (!nani.resize({128, 256})) { NANI_LOG_WARN(m_logger, "nani.resize() failed!"); }
-	m_base.setScale(util::constants::f_scale_vec);
-	m_outfit.setScale(util::constants::f_scale_vec);
+	m_base.setScale(constants::f_scale_vec);
+	m_outfit.setScale(constants::f_scale_vec);
 }
 
 void WardrobeWidget::update(player::Player& player) {

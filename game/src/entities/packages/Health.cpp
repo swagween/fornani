@@ -36,7 +36,7 @@ void Health::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 };
 
 void Health::heal(float amount) {
-	hp += amount;
+	hp = ccm::ext::clamp(hp + amount, 0.f, max_hp);
 	restored.start();
 }
 

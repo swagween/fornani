@@ -316,7 +316,7 @@ void Editor::render(sf::RenderWindow& win) {
 	auto soft_palette_mode = m_options.palette && available() && palette.hovered();
 	if (current_tool->in_bounds(map.dimensions) && !menu_hovered && !palette_mode() && current_tool->highlight_canvas() && !soft_palette_mode) {
 		auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
-		tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), fornani::util::constants::i_resolution_vec}));
+		tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), fornani::constants::i_resolution_vec}));
 		for (int i = 0; i < current_tool->size; i++) {
 			for (int j = 0; j < current_tool->size; j++) {
 				target_shape.setPosition({(current_tool->f_scaled_position().x - i) * map.f_cell_size() + map.get_position().x, (current_tool->f_scaled_position().y - j) * map.f_cell_size() + map.get_position().y});
@@ -882,8 +882,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::Separator();
 			ImGui::Text("Current Tile:");
 			auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
-			tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), fornani::util::constants::i_resolution_vec}));
-			tileset.setScale(fornani::util::constants::f_scale_vec);
+			tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), fornani::constants::i_resolution_vec}));
+			tileset.setScale(fornani::constants::f_scale_vec);
 			ImGui::Image(tileset);
 			if (current_tool->type == ToolType::entity_editor) {
 				if (current_tool->current_entity) {

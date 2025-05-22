@@ -46,7 +46,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 	m_gizmos.push_back(std::make_unique<WardrobeGizmo>(svc, map, wardrobe_placement)); // have to stick this in the for loop once we have a clock item
 	m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map, clock_placement));	   // have to stick this in the for loop once we have a clock item
 
-	m_sprite.setScale(util::constants::f_scale_vec);
+	m_sprite.setScale(constants::f_scale_vec);
 }
 
 void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {

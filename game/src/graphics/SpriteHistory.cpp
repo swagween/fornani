@@ -3,7 +3,7 @@
 #include <ccmath/ext/clamp.hpp>
 #include <ccmath/math/misc/lerp.hpp>
 
-namespace fornani::flfx {
+namespace fornani::graphics {
 
 void SpriteHistory::update(sf::Sprite next, sf::Vector2<float> position) {
 	pairs.push_back({next, position});
@@ -27,4 +27,4 @@ void SpriteHistory::drag(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	}
 }
 
-} // namespace fornani::flfx
+} // namespace fornani::graphics

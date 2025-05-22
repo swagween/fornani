@@ -12,8 +12,8 @@ Item::Item(dj::Json& source, std::string_view label, ItemType type) : m_label{la
 	m_table_origin.x = in_data["origin"][0].as<int>();
 	m_table_origin.y = in_data["origin"][1].as<int>();
 	m_table_position = {in_data["lookup"][0].as<float>() - in_data["origin"][0].as<float>(), in_data["lookup"][1].as<float>() - in_data["origin"][1].as<float>()};
-	m_lookup.position = m_lookup.position.componentWiseMul(util::constants::i_resolution_vec);
-	m_lookup.size = util::constants::i_resolution_vec;
+	m_lookup.position = m_lookup.position.componentWiseMul(constants::i_resolution_vec);
+	m_lookup.size = constants::i_resolution_vec;
 
 	m_info.actual_title = in_data["actual_title"].as_string();
 	m_info.actual_description = in_data["actual_description"].as_string();

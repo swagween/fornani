@@ -16,7 +16,7 @@ class Player;
 namespace fornani::gui {
 class Console;
 }
-namespace fornani::flfx {
+namespace fornani::graphics {
 class Transition;
 }
 
@@ -36,8 +36,8 @@ class Portal {
 	Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked = false, bool already_open = false, int key_id = 0, int style = 0, sf::Vector2<int> map_dim = {});
 	void update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
-	void handle_activation(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, int room_id, flfx::Transition& transition);
-	void change_states(automa::ServiceProvider& svc, int room_id, flfx::Transition& transition);
+	void handle_activation(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, int room_id, graphics::Transition& transition);
+	void change_states(automa::ServiceProvider& svc, int room_id, graphics::Transition& transition);
 	void close() { state = PortalRenderState::closed; }
 	[[nodiscard]] auto get_source() const -> int { return meta.source_map_id; }
 	[[nodiscard]] auto get_destination() const -> int { return meta.destination_map_id; }

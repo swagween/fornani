@@ -15,7 +15,8 @@
 namespace fornani::world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player)
-	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(2)}} {}
+	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc.window->f_screen_dimensions(), 96), bed_transition(svc.window->f_screen_dimensions(), 192), soft_reset(svc.window->f_screen_dimensions(), 64), m_services(&svc),
+	  cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(2)}} {}
 
 void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	// for debugging
@@ -46,7 +47,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
 	dimensions.y = meta["dimensions"][1].as<int>();
-	real_dimensions = {static_cast<float>(dimensions.x) * util::constants::f_cell_size, static_cast<float>(dimensions.y) * util::constants::f_cell_size};
+	real_dimensions = {static_cast<float>(dimensions.x) * constants::f_cell_size, static_cast<float>(dimensions.y) * constants::f_cell_size};
 	auto style_value = meta["style"].as<int>();
 	style_label = svc.data.map_styles["styles"][style_value]["label"].as_string();
 	style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
@@ -149,14 +150,15 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		}
 		for (auto& entry : entities["beds"].array_view()) {
 			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<float>() * util::constants::f_cell_size;
-			pos.y = entry["position"][1].as<float>() * util::constants::f_cell_size;
-			beds.push_back(entity::Bed(svc, pos, room_lookup));
+			pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
+			pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
+			auto flipped = static_cast<bool>(entry["flipped"].as_bool());
+			beds.push_back(entity::Bed(svc, pos, native_style_id, flipped));
 		}
 		for (auto& entry : entities["scenery"]["basic"].array_view()) {
 			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<float>() * util::constants::f_cell_size;
-			pos.y = entry["position"][1].as<float>() * util::constants::f_cell_size;
+			pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
+			pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
 			auto var = entry["variant"].as<int>();
 			auto lyr = entry["layer"].as<int>();
 			auto parallax = entry["parallax"].as<float>();
@@ -164,8 +166,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		}
 		for (auto& entry : entities["scenery"]["vines"].array_view()) {
 			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<float>() * util::constants::f_cell_size;
-			pos.y = entry["position"][1].as<float>() * util::constants::f_cell_size;
+			pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
+			pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
 			auto fg = static_cast<bool>(entry["foreground"].as_bool());
 			auto rev = static_cast<bool>(entry["reversed"].as_bool());
 			vines.push_back(std::make_unique<entity::Vine>(svc, pos, entry["length"].as<int>(), entry["size"].as<int>(), fg, rev));
@@ -198,7 +200,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			start.y = entry["start_direction"][1].as<int>();
 			auto variant = entry["variant"].as<int>();
 			enemy_catalog.push_enemy(svc, *this, entry["id"].as<int>(), false, variant, start);
-			enemy_catalog.enemies.back()->set_position_from_scaled({pos * util::constants::f_cell_size});
+			enemy_catalog.enemies.back()->set_position_from_scaled({pos * constants::f_cell_size});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 			enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
 			if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
@@ -245,8 +247,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		pos.y = entry["position"][1].as<float>();
 		dim.x = entry["dimensions"][0].as<float>();
 		dim.y = entry["dimensions"][1].as<float>();
-		pos *= util::constants::f_cell_size;
-		dim *= util::constants::f_cell_size;
+		pos *= constants::f_cell_size;
+		dim *= constants::f_cell_size;
 		auto start = entry["start"].as<float>();
 		start = ccm::ext::clamp(start, 0.f, 1.f);
 		auto type = entry["type"].as_string();
@@ -256,7 +258,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		sf::Vector2<float> pos{};
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();
-		pos *= util::constants::f_cell_size;
+		pos *= constants::f_cell_size;
 		auto type = entry["type"].as<int>();
 		auto button_id = entry["button_id"].as<int>();
 		switch_blocks.push_back(SwitchBlock(svc, pos, button_id, type));
@@ -265,7 +267,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		sf::Vector2<float> pos{};
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();
-		pos *= util::constants::f_cell_size;
+		pos *= constants::f_cell_size;
 		auto type = entry["type"].as<int>();
 		auto button_id = entry["button_id"].as<int>();
 		switch_buttons.push_back(std::make_unique<SwitchButton>(svc, pos, button_id, type, *this));
@@ -391,13 +393,14 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
 	for (auto& destroyer : destroyers) { destroyer.update(svc, *this, *player); }
 	for (auto& checkpoint : checkpoints) { checkpoint.update(svc, *this, *player); }
-	for (auto& bed : beds) { bed.update(svc, *this, console, *player, transition); }
+	for (auto& bed : beds) { bed.update(svc, *this, console, *player, bed_transition); }
 	for (auto& breakable : breakables) { breakable.update(svc, *player); }
 	for (auto& pushable : pushables) { pushable.update(svc, *this, *player); }
 	for (auto& spike : spikes) { spike.update(svc, *player, *this); }
 	for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	player->handle_map_collision(*this);
 	if (cooldowns.loading.is_complete()) { transition.update(*player); }
+	if (cooldowns.loading.is_complete()) { bed_transition.update(*player); }
 	soft_reset.update(*player);
 	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
 	if (save_point.id != -1) { save_point.update(svc, *player, console); }
@@ -453,6 +456,10 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	if (fire) {
 		ZoneScopedN("Map::render - fires");
 		for (auto& f : fire.value()) { f.render(svc, win, cam); }
+	}
+	{
+		ZoneScopedN("Map::render - beds");
+		for (auto& bed : beds) { bed.render(svc, win, cam); }
 	}
 	{
 		ZoneScopedN("Map::render - chests");
@@ -520,10 +527,6 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	{
 		ZoneScopedN("Map::render - switch buttons");
 		for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - beds");
-		for (auto& bed : beds) { bed.render(svc, win, cam); }
 	}
 	{
 		ZoneScopedN("Map::render - atmosphere");
@@ -719,7 +722,7 @@ bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool coll
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.boundary.first);
 	auto bottom = get_index_at_position(collider.boundary.second);
-	auto right = static_cast<std::size_t>(collider.boundary_width() / util::constants::f_cell_size);
+	auto right = static_cast<std::size_t>(collider.boundary_width() / constants::f_cell_size);
 	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
@@ -739,7 +742,7 @@ void Map::handle_cell_collision(shape::CircleCollider& collider) {
 	auto& grid = get_middleground()->grid;
 	auto top = get_index_at_position(collider.boundary.first);
 	auto bottom = get_index_at_position(collider.boundary.second);
-	auto right = static_cast<std::size_t>(collider.boundary_width() / util::constants::f_cell_size);
+	auto right = static_cast<std::size_t>(collider.boundary_width() / constants::f_cell_size);
 	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {

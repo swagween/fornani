@@ -13,6 +13,8 @@ Console::Console(automa::ServiceProvider& svc)
 	text_suite = svc.text.console;
 	m_path.set_section("open");
 	m_began = true;
+	m_path.update();
+	m_position = m_path.get_position();
 }
 
 Console::Console(automa::ServiceProvider& svc, std::string_view message) : Console(svc) { load_single_message(message); }

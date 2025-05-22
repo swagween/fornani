@@ -161,6 +161,8 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 		suite.push_back(this_set);
 	}
 	working_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
+	working_message.setString("");
+	working_str = {};
 }
 
 void TextWriter::append(std::string_view content) {
@@ -209,7 +211,7 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
 	auto& current_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
 	current_message.setPosition(m_bounds.position);
-	if (!is_writing()) {
+	if (!is_writing() && m_mode != WriterMode::stall) {
 		win.draw(current_message);
 		if (m_services->ticker.every_x_frames(24)) { show_cursor = !show_cursor; }
 		auto last_glyph_position = current_message.findCharacterPos(working_message.getString().getSize() - 1);

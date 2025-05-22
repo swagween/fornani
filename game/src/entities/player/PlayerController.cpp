@@ -13,6 +13,7 @@ PlayerController::PlayerController(automa::ServiceProvider& svc) : shield(svc), 
 	key_map.insert(std::make_pair(ControllerInput::arms_switch, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::inspect, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::dash, 0.f));
+	key_map.insert(std::make_pair(ControllerInput::slide, 0.f));
 	direction.und = dir::UND::neutral;
 	direction.lr = dir::LR::right;
 }
@@ -22,7 +23,12 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		prevent_movement();
 		key_map[ControllerInput::move_x] = direction.lr == dir::LR::left ? -walk_speed_v : walk_speed_v;
 	}
-	if (hard_state.test(HardState::no_move) || walking_autonomously()) { return; }
+	if (hard_state.test(HardState::no_move)) {
+		key_map = {};
+		jump = {};
+		return;
+	}
+	if (walking_autonomously()) { return; }
 
 	auto const& left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_left).held;
 	auto const& right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_right).held;
@@ -91,7 +97,7 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 
 	// roll
 	roll.update();
-	if (slide_pressed && moving() && is_sprinting()) { roll.request(); }
+	if (slide_pressed && moving() && sprint) { roll.request(); }
 	if (grounded()) { roll.reset(); }
 
 	// slide

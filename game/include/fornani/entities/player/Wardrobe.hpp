@@ -8,7 +8,7 @@
 #include "fornani/io/Logger.hpp"
 #include "fornani/utils/Polymorphic.hpp"
 
-namespace fornani::flfx {
+namespace fornani::graphics {
 class TextureUpdater;
 }
 
@@ -67,7 +67,7 @@ class Wardrobe {
 	Wardrobe();
 	void set_palette(sf::Texture& tex);
 	void change_outfit(std::vector<std::pair<sf::Vector2<unsigned int>, sf::Color>> replacement);
-	void update(flfx::TextureUpdater& updater);
+	void update(graphics::TextureUpdater& updater);
 	void equip(ApparelType type, int variant);
 	void unequip(ApparelType type);
 	int get_variant(ApparelType type);

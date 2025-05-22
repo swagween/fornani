@@ -7,12 +7,16 @@
 #include "fornani/gui/Console.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Constants.hpp"
 #include "fornani/world/Map.hpp"
 
 namespace fornani::player {
 
 Player::Player(automa::ServiceProvider& svc)
-	: arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this), tutorial(svc), sprite{svc.assets.get_texture("nani")}, camera_offset{32.f, -64.f}, wardrobe_widget(svc) {}
+	: arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this), tutorial(svc), sprite{svc.assets.get_texture("nani")}, camera_offset{32.f, -64.f}, wardrobe_widget(svc),
+	  m_sprite_dimensions{24, 24} {
+	sprite.setScale(constants::f_scale_vec);
+}
 
 void Player::init(automa::ServiceProvider& svc) {
 
@@ -42,7 +46,7 @@ void Player::init(automa::ServiceProvider& svc) {
 	antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{physics_stats.antenna_friction, physics_stats.antenna_friction}, 1.0f);
 	antennae[1].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
 
-	sprite_dimensions = {48.f, 48.f};
+	;
 
 	texture_updater.load_base_texture(svc.assets.get_texture_modifiable("nani"));
 	texture_updater.load_pixel_map(svc.assets.get_texture_modifiable("nani_palette_default"));
@@ -183,9 +187,10 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	sprite_history.drag(win, cam);
 
 	// get UV coords
-	auto u = (animation.get_frame() / 10) * 48;
-	auto v = (animation.get_frame() % 10) * 48;
-	sprite.setTextureRect(sf::IntRect({u, v}, {48, 48}));
+	auto frames_per_col = 10;
+	auto u = (animation.get_frame() / frames_per_col) * m_sprite_dimensions.x;
+	auto v = (animation.get_frame() % frames_per_col) * m_sprite_dimensions.y;
+	sprite.setTextureRect(sf::IntRect({u, v}, m_sprite_dimensions));
 	sprite.setOrigin(sprite.getLocalBounds().getCenter());
 	sprite.setPosition(sprite_position - cam);
 
@@ -216,9 +221,10 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f forced_position) {
 	ZoneScopedN("Player::render");
-	auto u = (animation.get_frame() / 10) * 48;
-	auto v = (animation.get_frame() % 10) * 48;
-	sprite.setTextureRect(sf::IntRect({u, v}, {48, 48}));
+	auto frames_per_col = 10;
+	auto u = (animation.get_frame() / frames_per_col) * m_sprite_dimensions.x;
+	auto v = (animation.get_frame() % frames_per_col) * m_sprite_dimensions.y;
+	sprite.setTextureRect(sf::IntRect({u, v}, m_sprite_dimensions));
 	sprite.setOrigin(sprite.getLocalBounds().getCenter());
 	sprite.setPosition(forced_position - cam);
 	win.draw(sprite);
@@ -291,23 +297,24 @@ void Player::update_animation() {
 	animation.state == AnimState::slide ? collider.flags.animation.set(shape::Animation::sliding) : collider.flags.animation.reset(shape::Animation::sliding);
 	if (animation.state == AnimState::roll) { collider.flags.animation.set(shape::Animation::sliding); }
 
+	if (animation.was_requested(AnimState::sleep)) { animation.state = player::AnimState::sleep; }
+	if (animation.was_requested(AnimState::wake_up)) { animation.state = player::AnimState::wake_up; }
+
 	animation.update();
 }
 
 void Player::update_sprite() {
 
 	if (animation.triggers.consume(AnimTriggers::flip)) {
-		sprite.scale({-1.0f, 1.0f});
+		sprite.scale({-1.f, 1.f});
 		if (animation.animation.label == "turn" || animation.animation.label == "sharp_turn") { animation.animation.set_params(idle); }
 	}
 
 	flags.state.reset(State::dir_switch);
 	// flip the sprite based on the player's direction
-	sf::Vector2<float> right_scale = {1.0f, 1.0f};
-	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
 	if (!grounded()) {
-		if (controller.facing_left() && sprite.getScale() == right_scale) { sprite.scale({-1.0f, 1.0f}); }
-		if (controller.facing_right() && sprite.getScale() == left_scale) { sprite.scale({-1.0f, 1.0f}); }
+		if (controller.facing_left() && sprite.getScale() == constants::f_scale_vec) { sprite.scale({-1.f, 1.f}); }
+		if (controller.facing_right() && sprite.getScale() == constants::f_inverse_scale_vec) { sprite.scale({-1.f, 1.f}); }
 	}
 
 	// check for quick turn
@@ -317,10 +324,8 @@ void Player::update_sprite() {
 }
 
 void Player::handle_turning() {
-	sf::Vector2<float> right_scale = {1.0f, 1.0f};
-	sf::Vector2<float> left_scale = {-1.0f, 1.0f};
-	if (controller.facing_left() && sprite.getScale() == right_scale) { animation.state = collider.physics.velocity.x > thresholds.quick_turn ? AnimState::sharp_turn : AnimState::turn; }
-	if (controller.facing_right() && sprite.getScale() == left_scale) { animation.state = collider.physics.velocity.x < -thresholds.quick_turn ? AnimState::sharp_turn : AnimState::turn; }
+	if (controller.facing_left() && sprite.getScale() == constants::f_scale_vec) { animation.state = collider.physics.velocity.x > thresholds.quick_turn ? AnimState::sharp_turn : AnimState::turn; }
+	if (controller.facing_right() && sprite.getScale() == constants::f_inverse_scale_vec) { animation.state = collider.physics.velocity.x < -thresholds.quick_turn ? AnimState::sharp_turn : AnimState::turn; }
 }
 
 void Player::flash_sprite() {
@@ -346,6 +351,7 @@ void Player::piggyback(int id) { piggybacker = Piggybacker(*m_services, m_servic
 
 void Player::jump(world::Map& map) {
 	if (is_dead() || animation.state == AnimState::die) { return; }
+	if (is_in_animation(AnimState::sleep) || is_in_animation(AnimState::wake_up)) { return; }
 	if (controller.get_jump().began()) {
 		collider.flags.movement.set(shape::Movement::jumping);
 		animation.state = AnimState::rise;

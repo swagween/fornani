@@ -20,13 +20,13 @@ WardrobeGizmo::WardrobeGizmo(automa::ServiceProvider& svc, world::Map& map, sf::
 	m_placement = placement;
 	m_wardrobe_update = true;
 	m_path.set_section("start");
-	m_core.set_scale(util::constants::f_scale_vec);
-	m_light.set_scale(util::constants::f_scale_vec);
-	m_sprite.setScale(util::constants::f_scale_vec);
-	m_scanline.setScale(util::constants::f_scale_vec);
-	m_apparel_sprite.setScale(util::constants::f_scale_vec);
-	m_health_display.hearts.setScale(util::constants::f_scale_vec);
-	m_health_display.sockets.setScale(util::constants::f_scale_vec);
+	m_core.set_scale(constants::f_scale_vec);
+	m_light.set_scale(constants::f_scale_vec);
+	m_sprite.setScale(constants::f_scale_vec);
+	m_scanline.setScale(constants::f_scale_vec);
+	m_apparel_sprite.setScale(constants::f_scale_vec);
+	m_health_display.hearts.setScale(constants::f_scale_vec);
+	m_health_display.sockets.setScale(constants::f_scale_vec);
 	m_core.push_params("idle", {0, 1, 128, 0});
 	m_core.push_params("beat", {1, 9, 32, 0}, "idle");
 	m_light.push_params("blink", {0, 8, 32, -1});
@@ -110,10 +110,10 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	for (auto& piece : player.get_outfit()) {
 		auto irow{static_cast<int>(row)};
 		auto icol = piece > 0 ? static_cast<int>(piece - 1) : 9; // 9 is where the default outfit is located on the atlas
-		auto lookup = sf::Vector2i{icol, irow} * util::constants::i_cell_resolution;
-		m_apparel_sprite.setTextureRect(sf::IntRect{lookup + wardrobe_origin, util::constants::i_resolution_vec});
+		auto lookup = sf::Vector2i{icol, irow} * constants::i_cell_resolution;
+		m_apparel_sprite.setTextureRect(sf::IntRect{lookup + wardrobe_origin, constants::i_resolution_vec});
 		m_apparel_sprite.setPosition(m_placement + m_path.get_position() + outfit_offset + row * spacing - cam);
-		m_apparel_sprite.setOrigin(util::constants::f_resolution_vec * 0.5f);
+		m_apparel_sprite.setOrigin(constants::f_resolution_vec * 0.5f);
 		win.draw(m_apparel_sprite);
 		++row;
 	}

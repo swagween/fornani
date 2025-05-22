@@ -28,11 +28,11 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player
 	m_dashboard_port = DashboardPort::minimap;
 	m_physics.position = sf::Vector2f{0.f, svc.window->f_screen_dimensions().y};
 	m_icon_sprite.setOrigin({3.f, 3.f});
-	m_icon_sprite.setScale(util::constants::f_scale_vec);
+	m_icon_sprite.setScale(constants::f_scale_vec);
 	for (auto& id : svc.data.discovered_rooms) { m_minimap->bake(svc, map, player, id, id == svc.current_room); }
 	m_minimap->center();
-	m_sprite.setScale(util::constants::f_scale_vec);
-	m_plugin_sprite.setScale(util::constants::f_scale_vec);
+	m_sprite.setScale(constants::f_scale_vec);
+	m_plugin_sprite.setScale(constants::f_scale_vec);
 	m_path.set_section("close");
 	m_motherboard_path.set_section("start");
 	m_placement = {380.f, -22.f};
@@ -126,7 +126,7 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 	m_constituents.gizmo.motherboard.position = m_path.get_position() + m_motherboard_path.get_position() - m_map_screen.get_f_corner_dimensions();
 	m_constituents.gizmo.motherboard.render(win, m_sprite, render_position, sf::Vector2f{100.f, -6.f});
 	m_minimap->render(svc, win, player, cam, m_icon_sprite);
-	m_icon_sprite.setScale(util::constants::f_scale_vec);
+	m_icon_sprite.setScale(constants::f_scale_vec);
 	m_map_screen.render(win, cam);
 	m_map_shadow.render(win, cam);
 	for (auto& chain : m_chains) { chain->render(svc, win, cam); }

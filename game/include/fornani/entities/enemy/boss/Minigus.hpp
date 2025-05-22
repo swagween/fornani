@@ -55,7 +55,7 @@ class Minigus : public Enemy, public npc::NPC {
 	MinigusState state{};
 	util::BitFlags<MinigusFlags> status{};
 	gui::StatusBar health_bar;
-	flfx::SpriteHistory sprite_history{};
+	graphics::SpriteHistory sprite_history{};
 
 	dir::Direction sprite_direction{};
 	dir::Direction pre_direction{};

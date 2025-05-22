@@ -21,7 +21,7 @@ void Wardrobe::change_outfit(std::vector<std::pair<sf::Vector2<unsigned int>, sf
 	if (!m_palette.loadFromImage(image)) { NANI_LOG_WARN(m_logger, "Outfit palette could not be loaded."); }
 }
 
-void Wardrobe::update(flfx::TextureUpdater& updater) {
+void Wardrobe::update(graphics::TextureUpdater& updater) {
 	switch (get_variant(ApparelType::pants)) {
 	case 0: change_outfit({{{2, 0}, sf::Color{76, 176, 199}}, {{3, 0}, sf::Color{55, 151, 174}}}); break;
 	case 1: change_outfit({{{2, 0}, sf::Color{215, 0, 75}}, {{3, 0}, sf::Color{160, 18, 63}}}); break;

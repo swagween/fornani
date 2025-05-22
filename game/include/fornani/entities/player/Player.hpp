@@ -1,22 +1,23 @@
 
 #pragma once
 
-#include "Catalog.hpp"
-#include "Indicator.hpp"
-#include "Piggybacker.hpp"
-#include "PlayerAnimation.hpp"
-#include "PlayerController.hpp"
-#include "VisitHistory.hpp"
-#include "Wallet.hpp"
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/entities/item/Drop.hpp"
 #include "fornani/entities/packages/Caution.hpp"
 #include "fornani/entities/packages/Health.hpp"
+#include "fornani/entities/player/Catalog.hpp"
+#include "fornani/entities/player/Indicator.hpp"
+#include "fornani/entities/player/Piggybacker.hpp"
+#include "fornani/entities/player/PlayerAnimation.hpp"
+#include "fornani/entities/player/PlayerController.hpp"
+#include "fornani/entities/player/VisitHistory.hpp"
+#include "fornani/entities/player/Wallet.hpp"
 #include "fornani/graphics/SpriteHistory.hpp"
 #include "fornani/graphics/TextureUpdater.hpp"
 #include "fornani/graphics/Tutorial.hpp"
 #include "fornani/gui/WardrobeWidget.hpp"
+#include "fornani/io/Logger.hpp"
 #include "fornani/particle/Gravitator.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Collider.hpp"
@@ -132,6 +133,7 @@ class Player {
 	[[nodiscard]] auto firing_weapon() -> bool { return controller.shot(); }
 	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2<float> { return collider.get_center() + camera_offset; }
 	[[nodiscard]] auto get_facing_scale() const -> sf::Vector2f { return controller.facing_left() ? sf::Vector2f{-1.f, 1.f} : sf::Vector2f{1.f, 1.f}; }
+	[[nodiscard]] auto is_in_animation(AnimState check) const -> bool { return animation.get_state() == check; }
 
 	// moves
 	void jump(world::Map& map);
@@ -198,7 +200,7 @@ class Player {
 	sf::Vector2<float> camera_offset{};
 	sf::Vector2<float> anchor_point{};
 	sf::Vector2<float> sprite_offset{10.f, -3.f};
-	sf::Vector2<float> sprite_dimensions{};
+	sf::Vector2i m_sprite_dimensions;
 	sf::Vector2<float> sprite_position{};
 
 	std::vector<vfx::Gravitator> antennae{};
@@ -223,10 +225,10 @@ class Player {
 
 	// sprites
 	sf::Sprite sprite;
-	flfx::SpriteHistory sprite_history{};
+	graphics::SpriteHistory sprite_history{};
 
 	// texture updater
-	flfx::TextureUpdater texture_updater{};
+	graphics::TextureUpdater texture_updater{};
 
 	bool grav = true;
 
@@ -257,6 +259,8 @@ class Player {
 		components::SteeringBehavior target{};
 		components::PhysicsComponent physics{};
 	} m_camera{};
+
+	io::Logger m_logger{"player"};
 };
 
 } // namespace fornani::player

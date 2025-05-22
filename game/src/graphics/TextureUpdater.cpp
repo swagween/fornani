@@ -1,7 +1,7 @@
 #include "fornani/graphics/TextureUpdater.hpp"
 #include <SFML/Graphics.hpp>
 
-namespace fornani::flfx {
+namespace fornani::graphics {
 
 void TextureUpdater::load_pixel_map(sf::Texture& map_texture) {
 	map.clear();
@@ -99,7 +99,7 @@ void TextureUpdater::update_texture(sf::Texture& texture) {
 	image.clear();
 }
 
-void flfx::TextureUpdater::debug_render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+void graphics::TextureUpdater::debug_render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
 	debug.setSize({8.f, 8.f});
 	int i{};
 	for (auto& color : map_colors) {
@@ -119,4 +119,4 @@ void flfx::TextureUpdater::debug_render(sf::RenderWindow& win, sf::Vector2<float
 
 sf::Texture& TextureUpdater::get_dynamic_texture() { return dynamic_texture; }
 
-} // namespace flfx
+} // namespace graphics
