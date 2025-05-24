@@ -56,6 +56,7 @@ class TextWriter {
 	[[nodiscard]] auto is_stalling() const -> bool { return m_mode == WriterMode::stall; }
 	[[nodiscard]] auto exit_requested() const -> bool { return m_mode == WriterMode::close; }
 	[[nodiscard]] auto is_ready() const -> bool { return is_waiting() && m_delay.is_complete(); }
+	[[nodiscard]] auto is_available() const -> bool { return !is_writing() && !is_stalling(); }
 
 	Message& current_message(); // for debug
 

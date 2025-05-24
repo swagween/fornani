@@ -30,7 +30,6 @@ class Slide {
 	[[nodiscard]] auto exhausted() const -> bool { return get_dampen() < slowness_limit; }
 	[[nodiscard]] auto broke_out() -> bool { return flags.consume(SlideFlags::break_out); }
 	[[nodiscard]] auto started() const -> bool { return flags.test(SlideFlags::started); }
-	[[nodiscard]] auto get_speed() const -> float { return speed; }
 	[[nodiscard]] auto get_dampen() const -> float { return begin_normal * multiplier; }
 	dir::Direction direction{};
 
@@ -38,7 +37,6 @@ class Slide {
 	util::Cooldown begin_slide{128};
 	util::Cooldown friction{256};
 	util::Cooldown post_slide{48};
-	float speed{8.5f};
 	float multiplier{1.5f};
 	float slowness_limit{0.2f};
 	float begin_normal{};

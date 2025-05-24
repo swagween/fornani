@@ -205,15 +205,17 @@ void TextWriter::write_instant_message(sf::RenderWindow& win) {
 
 void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	// win.draw(bounds_box);
+	if (m_mode == WriterMode::stall) { return; }
 	static bool show_cursor;
+	static auto blink_rate{24};
 	auto cursor_offset{sf::Vector2f{8.f, 0.f}};
 	if (m_iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
 	auto& current_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
 	current_message.setPosition(m_bounds.position);
-	if (!is_writing() && m_mode != WriterMode::stall) {
+	if (!is_writing()) {
 		win.draw(current_message);
-		if (m_services->ticker.every_x_frames(24)) { show_cursor = !show_cursor; }
+		if (m_services->ticker.every_x_frames(blink_rate)) { show_cursor = !show_cursor; }
 		auto last_glyph_position = current_message.findCharacterPos(working_message.getString().getSize() - 1);
 		cursor.setPosition(last_glyph_position + cursor_offset);
 		if (show_cursor && !m_hide_cursor) { win.draw(cursor); }

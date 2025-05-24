@@ -41,39 +41,13 @@ enum class AnimState : std::uint8_t {
 	wake_up
 };
 enum class AnimTriggers : std::uint8_t { flip, end_death };
-int const rate{4};
-// { lookup, duration, framerate, num_loops (-1 for infinite), repeat_last_frame, interruptible }
-inline anim::Parameters idle{20, 8, 7 * rate, -1, false, true};
-inline anim::Parameters turn{33, 3, 4 * rate, 0};
-inline anim::Parameters sharp_turn{16, 2, 5 * rate, 0};
-inline anim::Parameters run{44, 4, 6 * rate, -1};
-inline anim::Parameters sprint{10, 6, 4 * rate, -1};
-inline anim::Parameters shield{80, 3, 4 * rate, -1, true};
-inline anim::Parameters between_push{85, 1, 4 * rate, 0};
-inline anim::Parameters push{86, 4, 7 * rate, -1};
-inline anim::Parameters rise{40, 4, 6 * rate, 0};
-inline anim::Parameters walljump{40, 4, 6 * rate, 0};
-inline anim::Parameters suspend{30, 3, 7 * rate, -1};
-inline anim::Parameters fall{62, 4, 5 * rate, -1};
-inline anim::Parameters stop{74, 2, 4 * rate, 0};
-inline anim::Parameters land{56, 2, 4 * rate, 0};
-inline anim::Parameters inspect{37, 2, 7 * rate, -1, true};
-inline anim::Parameters sit{50, 4, 6 * rate, -1, true};
-inline anim::Parameters hurt{76, 2, 7 * rate, 0};
-inline anim::Parameters dash{40, 4, 5 * rate, 0};
-inline anim::Parameters wallslide{66, 4, 7 * rate, -1};
-inline anim::Parameters die{76, 4, 8 * rate, -1, true};
-inline anim::Parameters backflip{90, 6, 5 * rate, 0};
-inline anim::Parameters slide{96, 4, 4 * rate, -1};
-inline anim::Parameters get_up{57, 1, 5 * rate, 0};
-inline anim::Parameters roll{100, 4, 5 * rate, 0};
-inline anim::Parameters shoot{104, 3, 8 * rate, 0};
-inline anim::Parameters sleep{3, 4, 8 * rate, -1, true};
-inline anim::Parameters wake_up{7, 2, 8 * rate, 0};
 
 class PlayerAnimation {
+  private:
+	std::unordered_map<std::string, anim::Parameters> m_params;
 
   public:
+	friend class Player;
 	PlayerAnimation(player::Player& plr);
 
 	anim::Animation animation{};
@@ -94,7 +68,7 @@ class PlayerAnimation {
 	[[nodiscard]] auto get_state() const -> AnimState { return m_actual; }
 	bool stepped() const;
 
-	fsm::StateFunction state_function = std::bind(&PlayerAnimation::update_idle, this);
+	fsm::StateFunction state_function;
 
 	fsm::StateFunction update_idle();
 	fsm::StateFunction update_turn();
@@ -134,6 +108,7 @@ class PlayerAnimation {
 	} timers{};
 
   private:
+	anim::Parameters const& get_params(std::string const& key);
 	util::BitFlags<AnimState> m_requested{};
 	AnimState m_actual{};
 

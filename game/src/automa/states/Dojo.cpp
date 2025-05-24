@@ -100,6 +100,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	}
 
 	if (pause_window) {
+		if (m_console) { m_console.value()->update(svc); }
 		pause_window.value()->update(svc, m_console);
 		if (pause_window.value()->settings_requested()) {
 			flags.set(GameStateFlags::settings_request);
@@ -110,7 +111,6 @@ void Dojo::tick_update(ServiceProvider& svc) {
 			pause_window.value()->reset();
 		}
 		if (pause_window.value()->exit_requested()) { pause_window = {}; }
-		if (m_console) { m_console.value()->update(svc); }
 		return;
 	}
 

@@ -78,6 +78,8 @@ struct PhysicsStats {
 	float dash_dampen{};
 	float wallslide_speed{};
 	float antenna_friction{0.93f};
+	float roll_speed{};
+	float slide_speed{};
 };
 
 struct Counters {
@@ -225,7 +227,7 @@ class Player {
 
 	// sprites
 	sf::Sprite sprite;
-	graphics::SpriteHistory sprite_history{};
+	graphics::SpriteHistory dash_effect;
 
 	// texture updater
 	graphics::TextureUpdater texture_updater{};

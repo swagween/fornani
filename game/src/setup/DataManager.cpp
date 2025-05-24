@@ -457,6 +457,8 @@ void DataManager::load_player_params(player::Player& player) {
 	player.physics_stats.dash_speed = player_params["physics"]["dash_speed"].as<float>();
 	player.physics_stats.dash_dampen = player_params["physics"]["dash_dampen"].as<float>();
 	player.physics_stats.wallslide_speed = player_params["physics"]["wallslide_speed"].as<float>();
+	player.physics_stats.roll_speed = player_params["physics"]["roll_speed"].as<float>();
+	player.physics_stats.slide_speed = player_params["physics"]["slide_speed"].as<float>();
 	// std::cout << " success!\n";
 }
 
@@ -481,6 +483,8 @@ void DataManager::save_player_params(player::Player& player) {
 	player_params["physics"]["dash_speed"] = player.physics_stats.dash_speed;
 	player_params["physics"]["dash_dampen"] = player.physics_stats.dash_dampen;
 	player_params["physics"]["wallslide_speed"] = player.physics_stats.wallslide_speed;
+	player_params["physics"]["roll_speed"] = player.physics_stats.roll_speed;
+	player_params["physics"]["slide_speed"] = player.physics_stats.slide_speed;
 
 	player_params.dj::Json::to_file((finder.resource_path() + "/data/player/physics_params.json").c_str());
 	// std::cout << " success!\n";

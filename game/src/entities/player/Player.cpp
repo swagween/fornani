@@ -14,7 +14,7 @@ namespace fornani::player {
 
 Player::Player(automa::ServiceProvider& svc)
 	: arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this), tutorial(svc), sprite{svc.assets.get_texture("nani")}, camera_offset{32.f, -64.f}, wardrobe_widget(svc),
-	  m_sprite_dimensions{24, 24} {
+	  m_sprite_dimensions{24, 24}, dash_effect{8} {
 	sprite.setScale(constants::f_scale_vec);
 }
 
@@ -182,9 +182,9 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 	// dashing effect
 	sprite.setPosition(sprite_position);
-	if (svc.ticker.every_x_frames(8) && animation.state == AnimState::dash) { sprite_history.update(sprite, collider.physics.position); }
-	if (svc.ticker.every_x_frames(8) && !(animation.state == AnimState::dash)) { sprite_history.flush(); }
-	sprite_history.drag(win, cam);
+	if (svc.ticker.every_x_frames(4) && animation.state == AnimState::dash) { dash_effect.update(sprite, collider.physics.position); }
+	if (svc.ticker.every_x_frames(12)) { dash_effect.flush(); }
+	dash_effect.drag(win, cam);
 
 	// get UV coords
 	auto frames_per_col = 10;
@@ -307,7 +307,7 @@ void Player::update_sprite() {
 
 	if (animation.triggers.consume(AnimTriggers::flip)) {
 		sprite.scale({-1.f, 1.f});
-		if (animation.animation.label == "turn" || animation.animation.label == "sharp_turn") { animation.animation.set_params(idle); }
+		if (animation.animation.label == "turn" || animation.animation.label == "sharp_turn") { animation.animation.set_params(animation.get_params("idle")); }
 	}
 
 	flags.state.reset(State::dir_switch);
@@ -343,7 +343,7 @@ void Player::calculate_sprite_offset() {
 
 void Player::set_idle() {
 	animation.state = AnimState::idle;
-	animation.animation.set_params(idle);
+	animation.animation.set_params(animation.get_params("idle"));
 	animation.state_function = std::bind(&PlayerAnimation::update_idle, &animation);
 }
 

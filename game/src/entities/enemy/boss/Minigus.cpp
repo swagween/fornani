@@ -344,7 +344,6 @@ void Minigus::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 
 	visual.sprite.setPosition(visual.sprite.getPosition() + cam); // reset sprite for history
 	if (svc.ticker.every_x_frames(8) && state == MinigusState::rush) { sprite_history.update(visual.sprite, visual.sprite.getPosition()); }
-	if (svc.ticker.every_x_frames(8) && state != MinigusState::rush) { sprite_history.flush(); }
 	visual.sprite.setPosition(visual.sprite.getPosition() - cam);
 	win.draw(visual.sprite);
 

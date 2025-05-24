@@ -54,7 +54,7 @@ void Console::update(automa::ServiceProvider& svc) {
 	// check for response
 	for (auto& code : m_codes) {
 		if (code.set == m_writer->get_current_suite_set() && code.index == m_writer->get_index()) {
-			if (code.is_response() && !m_writer->is_writing()) { m_writer->respond(); }
+			if (code.is_response() && m_writer->is_available()) { m_writer->respond(); }
 		}
 	}
 }
