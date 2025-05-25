@@ -40,6 +40,7 @@ enum class AnimState : std::uint8_t {
 	sleep,
 	wake_up
 };
+
 enum class AnimTriggers : std::uint8_t { flip, end_death };
 
 class PlayerAnimation {
@@ -51,7 +52,6 @@ class PlayerAnimation {
 	PlayerAnimation(player::Player& plr);
 
 	anim::Animation animation{};
-	AnimState state{};
 	util::BitFlags<AnimTriggers> triggers{};
 	util::Counter idle_timer{};
 	util::Cooldown post_death{400};
@@ -62,10 +62,12 @@ class PlayerAnimation {
 	void update();
 	void start();
 	[[nodiscard]] auto death_over() -> bool { return triggers.consume(AnimTriggers::end_death); }
-	[[nodiscard]] auto not_jumping() const -> bool { return state != AnimState::rise; }
+	[[nodiscard]] auto not_jumping() const -> bool { return m_actual != AnimState::rise; }
 	[[nodiscard]] auto get_frame() const -> int { return animation.get_frame(); }
 	[[nodiscard]] auto was_requested(AnimState check) const -> bool { return m_requested.test(check); }
+	[[nodiscard]] auto was_requested_externally(AnimState check) const -> bool { return m_requested_external.test(check); }
 	[[nodiscard]] auto get_state() const -> AnimState { return m_actual; }
+	[[nodiscard]] auto is_state(AnimState check) const -> bool { return m_actual == check; }
 	bool stepped() const;
 
 	fsm::StateFunction state_function;
@@ -99,7 +101,7 @@ class PlayerAnimation {
 	fsm::StateFunction update_wake_up();
 
 	bool change_state(AnimState next, anim::Parameters params, bool hard = false);
-	void request_animation(AnimState to_state) { m_requested.set(to_state); };
+	void request(AnimState to_state);
 
 	Player* m_player;
 
@@ -110,6 +112,8 @@ class PlayerAnimation {
   private:
 	anim::Parameters const& get_params(std::string const& key);
 	util::BitFlags<AnimState> m_requested{};
+	util::BitFlags<AnimState> m_requested_external{};
+	util::Cooldown m_buffer;
 	AnimState m_actual{};
 
 	io::Logger m_logger{"animation"};

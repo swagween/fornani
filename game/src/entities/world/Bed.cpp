@@ -29,7 +29,7 @@ void Bed::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 		flags.set(BedFlags::active);
 		sparkler.activate();
 		fadeout.start();
-		if (player.controller.inspecting()) { player.animation.request_animation(player::AnimState::sleep); }
+		if (!flags.test(BedFlags::engaged) && !flags.test(BedFlags::slept_in) && player.controller.inspecting()) { player.flags.state.set(player::State::sleep); }
 		if (player.is_in_animation(player::AnimState::sleep) && !console && player.animation.animation.get_elapsed_ticks() >= sleep_timer_v && !flags.test(BedFlags::slept_in)) { flags.set(BedFlags::engaged); }
 	} else {
 		flags.reset(BedFlags::active);
@@ -50,7 +50,7 @@ void Bed::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 		}
 	}
 	if (!console && flags.test(BedFlags::slept_in)) {
-		player.animation.request_animation(player::AnimState::wake_up);
+		player.flags.state.set(player::State::wake_up);
 		flags.reset(BedFlags::slept_in);
 	}
 }

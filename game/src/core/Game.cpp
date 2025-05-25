@@ -93,7 +93,6 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 			services.controller_map.set_keyboard_input_detected(false);
 			while (std::optional const event = services.window->get().pollEvent()) {
 				NANI_ZoneScopedN("Event Polling");
-				player.animation.state = {};
 				if (event->is<sf::Event::Closed>()) {
 					shutdown();
 					return;
@@ -466,27 +465,29 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Repeat Last Frame? %s", player.animation.animation.params.repeat_last_frame ? "Yes" : "No");
 								ImGui::Text("Idle Timer: %i", player.animation.idle_timer.get_count());
 								ImGui::Separator();
-								ImGui::Text("idle...: %s", player.animation.state == player::AnimState::idle ? "flag set" : "");
-								ImGui::Text("run....: %s", player.animation.state == player::AnimState::run ? "flag set" : "");
-								ImGui::Text("stop...: %s", player.animation.state == player::AnimState::stop ? "flag set" : "");
-								ImGui::Text("turn...: %s", player.animation.state == player::AnimState::turn ? "flag set" : "");
-								ImGui::Text("hurt...: %s", player.animation.state == player::AnimState::hurt ? "flag set" : "");
-								ImGui::Text("shpturn: %s", player.animation.state == player::AnimState::sharp_turn ? "flag set" : "");
-								ImGui::Text("rise...: %s", player.animation.state == player::AnimState::rise ? "flag set" : "");
-								ImGui::Text("suspend: %s", player.animation.state == player::AnimState::suspend ? "flag set" : "");
-								ImGui::Text("fall...: %s", player.animation.state == player::AnimState::fall ? "flag set" : "");
+								ImGui::Text("idle...: %s", player.animation.was_requested(player::AnimState::idle) ? "flag set" : "");
+								ImGui::Text("run....: %s", player.animation.was_requested(player::AnimState::run) ? "flag set" : "");
+								ImGui::Text("stop...: %s", player.animation.was_requested(player::AnimState::stop) ? "flag set" : "");
+								ImGui::Text("turn...: %s", player.animation.was_requested(player::AnimState::turn) ? "flag set" : "");
+								ImGui::Text("hurt...: %s", player.animation.was_requested(player::AnimState::hurt) ? "flag set" : "");
+								ImGui::Text("shpturn: %s", player.animation.was_requested(player::AnimState::sharp_turn) ? "flag set" : "");
+								ImGui::Text("rise...: %s", player.animation.was_requested(player::AnimState::rise) ? "flag set" : "");
+								ImGui::Text("suspend: %s", player.animation.was_requested(player::AnimState::suspend) ? "flag set" : "");
+								ImGui::Text("fall...: %s", player.animation.was_requested(player::AnimState::fall) ? "flag set" : "");
 								ImGui::Separator();
-								ImGui::Text("land...: %s", player.animation.state == player::AnimState::land ? "flag set" : "");
-								ImGui::Text("roll...: %s", player.animation.state == player::AnimState::roll ? "flag set" : "");
-								ImGui::Text("slide..: %s", player.animation.state == player::AnimState::slide ? "flag set" : "");
-								ImGui::Text("getup..: %s", player.animation.state == player::AnimState::get_up ? "flag set" : "");
+								ImGui::Text("land...: %s", player.animation.was_requested(player::AnimState::land) ? "flag set" : "");
+								ImGui::Text("roll...: %s", player.animation.was_requested(player::AnimState::roll) ? "flag set" : "");
+								ImGui::Text("slide..: %s", player.animation.was_requested(player::AnimState::slide) ? "flag set" : "");
+								ImGui::Text("getup..: %s", player.animation.was_requested(player::AnimState::get_up) ? "flag set" : "");
 								ImGui::Separator();
-								ImGui::Text("dash...: %s", player.animation.state == player::AnimState::dash ? "flag set" : "");
-								ImGui::Text("sprint.: %s", player.animation.state == player::AnimState::sprint ? "flag set" : "");
-								ImGui::Text("wlslide: %s", player.animation.state == player::AnimState::wallslide ? "flag set" : "");
-								ImGui::Text("wljump.: %s", player.animation.state == player::AnimState::walljump ? "flag set" : "");
-								ImGui::Text("inspect: %s", player.animation.state == player::AnimState::inspect ? "flag set" : "");
-								ImGui::Text("die....: %s", player.animation.state == player::AnimState::die ? "flag set" : "");
+								ImGui::Text("dash...: %s", player.animation.was_requested(player::AnimState::dash) ? "flag set" : "");
+								ImGui::Text("sprint.: %s", player.animation.was_requested(player::AnimState::sprint) ? "flag set" : "");
+								ImGui::Text("wlslide: %s", player.animation.was_requested(player::AnimState::wallslide) ? "flag set" : "");
+								ImGui::Text("wljump.: %s", player.animation.was_requested(player::AnimState::walljump) ? "flag set" : "");
+								ImGui::Text("inspect: %s", player.animation.was_requested(player::AnimState::inspect) ? "flag set" : "");
+								ImGui::Text("die....: %s", player.animation.was_requested(player::AnimState::die) ? "flag set" : "");
+								ImGui::Text("sleep..: %s", player.animation.was_requested(player::AnimState::sleep) ? "flag set" : "");
+								ImGui::Text("wakeup.: %s", player.animation.was_requested(player::AnimState::wake_up) ? "flag set" : "");
 								ImGui::EndTabItem();
 							}
 							if (ImGui::BeginTabItem("Weapon")) {

@@ -77,7 +77,7 @@ void MainMenu::tick_update(ServiceProvider& svc) {
 	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
 	svc.soundboard.play_sounds(svc);
-	player->animation.state = player::AnimState::run;
+	player->animation.request(player::AnimState::run);
 }
 
 void MainMenu::frame_update(ServiceProvider& svc) {}

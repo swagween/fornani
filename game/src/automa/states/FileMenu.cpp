@@ -107,7 +107,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
 
-	player->animation.state = player::AnimState::run;
+	player->animation.request(player::AnimState::run);
 	player->collider.physics.acceleration = {};
 	player->collider.physics.velocity = {};
 	player->collider.physics.zero();
