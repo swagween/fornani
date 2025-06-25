@@ -81,6 +81,7 @@ fsm::StateFunction PlayerAnimation::update_sprint() {
 		if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
 		if (change_state(AnimState::push, get_params("between_push"))) { return PA_BIND(update_between_push); }
 	}
+	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 	if (change_state(AnimState::stop, get_params("stop"))) { return PA_BIND(update_stop); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"))) { return PA_BIND(update_wallslide); }
 	if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }
@@ -89,8 +90,6 @@ fsm::StateFunction PlayerAnimation::update_sprint() {
 	if (change_state(AnimState::idle, get_params("idle"))) { return PA_BIND(update_idle); }
 	if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
-	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
-	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 
 	return std::move(state_function);
 }
@@ -117,6 +116,8 @@ fsm::StateFunction PlayerAnimation::update_between_push() {
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
+	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
+	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 	if (animation.complete()) {
 		if (change_state(AnimState::push, get_params("push"))) { return PA_BIND(update_push); }
 		if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
@@ -177,8 +178,14 @@ fsm::StateFunction PlayerAnimation::update_run() {
 fsm::StateFunction PlayerAnimation::update_turn() {
 	animation.label = "turn";
 	m_actual = AnimState::turn;
-	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
-	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
+	if (change_state(AnimState::die, get_params("die"), true)) {
+		triggers.set(AnimTriggers::flip);
+		return PA_BIND(update_die);
+	}
+	if (change_state(AnimState::rise, get_params("rise"))) {
+		triggers.set(AnimTriggers::flip);
+		return PA_BIND(update_rise);
+	}
 	if (animation.complete()) {
 		triggers.set(AnimTriggers::flip);
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
@@ -200,8 +207,14 @@ fsm::StateFunction PlayerAnimation::update_turn() {
 fsm::StateFunction PlayerAnimation::update_sharp_turn() {
 	animation.label = "sharp_turn";
 	m_actual = AnimState::sharp_turn;
-	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
-	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
+	if (change_state(AnimState::die, get_params("die"), true)) {
+		triggers.set(AnimTriggers::flip);
+		return PA_BIND(update_die);
+	}
+	if (change_state(AnimState::rise, get_params("rise"))) {
+		triggers.set(AnimTriggers::flip);
+		return PA_BIND(update_rise);
+	}
 	if (animation.complete()) {
 		triggers.set(AnimTriggers::flip);
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
@@ -564,7 +577,7 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 	if (m_player->collider.downhill()) { slider.start(); }
 	m_player->collider.physics.acceleration.x = m_player->physics_stats.slide_speed * m_player->controller.sliding_movement() * slider.get_dampen();
 
-	if (slider.direction.lr != m_player->controller.direction.lr) {
+	if (slider.direction.lnr != m_player->controller.direction.lnr) {
 		m_player->controller.get_slide().end();
 		request(AnimState::sharp_turn);
 		animation.set_params(get_params("sharp_turn"));
@@ -609,13 +622,13 @@ fsm::StateFunction PlayerAnimation::update_get_up() {
 		return PA_BIND(update_idle);
 	}
 	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
+	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 	if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 	if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }
 	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
 	if (change_state(AnimState::suspend, get_params("suspend"))) { return PA_BIND(update_suspend); }
 	if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
-	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 	if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 
 	return PA_BIND(update_get_up);
@@ -630,7 +643,7 @@ fsm::StateFunction PlayerAnimation::update_roll() {
 	if (!m_player->controller.moving()) { sign = m_player->controller.facing_left() ? -1.f : 1.f; }
 	m_player->collider.physics.velocity.x = m_player->physics_stats.roll_speed * sign;
 	if (!controller.roll.rolling()) {
-		controller.roll.direction.lr = controller.direction.lr;
+		controller.roll.direction.lnr = controller.direction.lnr;
 		m_player->m_services->soundboard.flags.player.set(audio::Player::roll);
 	}
 	controller.roll.roll();
@@ -671,7 +684,7 @@ fsm::StateFunction PlayerAnimation::update_roll() {
 		}
 	}
 
-	if (controller.roll.direction.lr != controller.direction.lr) {
+	if (controller.roll.direction.lnr != controller.direction.lnr) {
 		m_player->collider.physics.hard_stop_x();
 		animation.set_params(get_params("sharp_turn"));
 		return PA_BIND(update_sharp_turn);

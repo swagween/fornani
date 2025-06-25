@@ -52,11 +52,11 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	text.item_label.setCharacterSize(16);
 	text.price_number.setCharacterSize(16);
 	// colors
-	text.vendor_name.setFillColor(svc.styles.colors.ui_white);
-	text.orb_count.setFillColor(svc.styles.colors.ui_white);
-	text.price.setFillColor(svc.styles.colors.red);
-	text.item_label.setFillColor(svc.styles.colors.red);
-	text.price_number.setFillColor(svc.styles.colors.periwinkle);
+	text.vendor_name.setFillColor(colors::ui_white);
+	text.orb_count.setFillColor(colors::ui_white);
+	text.price.setFillColor(colors::red);
+	text.item_label.setFillColor(colors::red);
+	text.price_number.setFillColor(colors::periwinkle);
 	// origins
 	text.vendor_name.setOrigin(text.vendor_name.getLocalBounds().getCenter());
 	text.buy_tab.setOrigin({text.buy_tab.getLocalBounds().getCenter().x, 0.f});
@@ -104,8 +104,8 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	// portrait.set_position(portrait_position + bring_in);
 	// text.orb_count.setPosition(sf::Vector2<float>{svc.window->f_screen_dimensions().x - 72.f, 36.f} + bring_in);
 
-	// state == VendorState::buy ? text.buy_tab.setFillColor(svc.styles.colors.red) : text.buy_tab.setFillColor(svc.styles.colors.blue);
-	// state == VendorState::sell ? text.sell_tab.setFillColor(svc.styles.colors.red) : text.sell_tab.setFillColor(svc.styles.colors.blue);
+	// state == VendorState::buy ? text.buy_tab.setFillColor(colors::red) : text.buy_tab.setFillColor(colors::blue);
+	// state == VendorState::sell ? text.sell_tab.setFillColor(colors::red) : text.sell_tab.setFillColor(colors::blue);
 	// bool exchanged{};
 	// orb.sprite.update(sf::Vector2<float>{svc.window->f_screen_dimensions().x - 60.f, 32.f} + bring_in, 0, 0, true);
 	// text.orb_count.setString(player.wallet.get_balance_string());

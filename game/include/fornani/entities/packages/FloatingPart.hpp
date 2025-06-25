@@ -20,7 +20,7 @@ class FloatingPart {
 	FloatingPart(sf::Texture const& tex, float force, float friction, sf::Vector2<float> offset = {}, int id = 0);
 	FloatingPart(sf::Texture const& tex, sf::Vector2i dimensions, std::vector<anim::Parameters> params, std::vector<std::string_view> labels, float force, float friction, sf::Vector2<float> offset = {}, int id = 0);
 	FloatingPart(sf::Color color, sf::Vector2f dimensions, float force, float friction, sf::Vector2<float> offset = {}, int id = 0);
-	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, dir::Direction direction, sf::Vector2<float> scale, sf::Vector2<float> position);
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, Direction direction, sf::Vector2<float> scale, sf::Vector2<float> position);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void set_position(sf::Vector2<float> pos) const { gravitator->set_position(pos); }
 	void set_force(float force) const { gravitator->attraction_force = force; }

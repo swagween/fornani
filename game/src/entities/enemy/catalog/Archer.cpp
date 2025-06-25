@@ -11,9 +11,9 @@ Archer::Archer(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "arch
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};
 	collider.flags.general.set(shape::General::complex);
-	directions.desired.lr = dir::LR::left;
-	directions.actual.lr = dir::LR::left;
-	directions.movement.lr = dir::LR::neutral;
+	directions.desired.lnr = LNR::left;
+	directions.actual.lnr = LNR::left;
+	directions.movement.lnr = LNR::neutral;
 
 	variant = util::random::percent_chance(70) ? ArcherVariant::huntress : ArcherVariant::defender;
 	parts.bow.sprite->setTextureRect(sf::IntRect{{0, 0}, bow_dimensions});
@@ -32,10 +32,10 @@ void Archer::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	caution.avoid_ledges(map, collider, directions.actual, 3);
 
 	// reset animation states to determine next animation state
-	directions.desired.lr = (player.collider.get_center().x < collider.get_center().x) ? dir::LR::left : dir::LR::right;
-	directions.movement.lr = collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
-	if (directions.actual.lr == dir::LR::right && visual.sprite.getScale() == sf::Vector2{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lr == dir::LR::left && visual.sprite.getScale() == sf::Vector2{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
+	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
+	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
+	if (directions.actual.lnr == LNR::right && visual.sprite.getScale() == sf::Vector2{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
+	if (directions.actual.lnr == LNR::left && visual.sprite.getScale() == sf::Vector2{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
 	auto shooting_offset = state == ArcherState::shoot ? sf::Vector2{0.f, -6.f} : sf::Vector2{0.f, 0.f};
 	parts.bow.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center() + shooting_offset);
@@ -59,7 +59,7 @@ void Archer::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 
 	if (just_died()) { m_services->soundboard.flags.archer.set(audio::Archer::death); }
 
-	if (directions.actual.lr != directions.desired.lr) { state = ArcherState::turn; }
+	if (directions.actual.lnr != directions.desired.lnr) { state = ArcherState::turn; }
 
 	state_function = state_function();
 }
@@ -95,7 +95,7 @@ fsm::StateFunction Archer::update_turn() {
 
 fsm::StateFunction Archer::update_run() {
 	animation.label = "run";
-	auto const facing = directions.actual.lr == dir::LR::left ? -1.f : 1.f;
+	auto const facing = directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	collider.physics.apply_force({attributes.speed * facing, 0.f});
 	if (caution.danger() || animation.complete()) {
 		state = ArcherState::idle;

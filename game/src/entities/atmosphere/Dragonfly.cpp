@@ -38,7 +38,7 @@ void Dragonfly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 	if (svc.greyblock_mode()) {
 		sf::RectangleShape drawbox{};
 		drawbox.setSize({2.f, 2.f});
-		drawbox.setFillColor(svc.styles.colors.ui_white);
+		drawbox.setFillColor(colors::ui_white);
 		drawbox.setPosition(physics.position - cam);
 		win.draw(drawbox);
 		steering.render(svc, win, cam);

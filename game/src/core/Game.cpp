@@ -2,6 +2,7 @@
 #include "fornani/automa/states/Dojo.hpp"
 #include "fornani/automa/states/MainMenu.hpp"
 #include "fornani/automa/states/SettingsMenu.hpp"
+#include "fornani/graphics/Colors.hpp"
 #include "fornani/gui/ActionContextBar.hpp"
 #include "fornani/setup/WindowManager.hpp"
 #include "fornani/utils/Math.hpp"
@@ -31,7 +32,7 @@ Game::Game(char** argv, WindowManager& window, Version& version) : services(argv
 	player.init(services);
 
 	background.setSize(sf::Vector2f{services.window->get().getSize()});
-	background.setFillColor(services.styles.colors.ui_black);
+	background.setFillColor(colors::ui_black);
 }
 
 void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
@@ -419,6 +420,10 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						if (ImGui::BeginTabBar("PlayerTabBar", tab_bar_flags)) {
 							if (ImGui::BeginTabItem("General")) {
 								ImGui::Text("Player");
+								ImGui::Separator();
+								ImGui::Text("Last Requested Direction: %s", player.controller.last_requested_direction().print().c_str());
+								ImGui::Text("Desired Direction: %s", player.get_desired_direction().print().c_str());
+								ImGui::Text("Actual Direction: %s", player.get_actual_direction().print().c_str());
 								ImGui::Separator();
 								ImGui::Text("World Grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");
 								ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());

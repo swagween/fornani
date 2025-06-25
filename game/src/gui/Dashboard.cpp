@@ -74,7 +74,7 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 		button.state = button.position == m_selected_position ? GizmoButtonState::hovered : GizmoButtonState::off;
 		if (button.state == GizmoButtonState::hovered && m_gizmos.size() > 0) { m_current_port = static_cast<DashboardPort>(ccm::ext::clamp(ctr, 0, static_cast<int>(m_gizmos.size() - 1))); }
 		button.box.setPosition(svc.window->f_center_screen() + pos);
-		button.state == GizmoButtonState::hovered ? button.box.setOutlineColor(svc.styles.colors.bright_orange) : button.box.setOutlineColor(svc.styles.colors.dark_fucshia);
+		button.state == GizmoButtonState::hovered ? button.box.setOutlineColor(colors::bright_orange) : button.box.setOutlineColor(colors::dark_fucshia);
 		// win.draw(button.box);
 		++ctr;
 	}

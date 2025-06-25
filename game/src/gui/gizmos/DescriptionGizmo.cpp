@@ -41,7 +41,7 @@ void DescriptionGizmo::write(automa::ServiceProvider& svc, std::string_view mess
 	if (!m_text) { m_text = TextWriter(svc, message, m_bounds); }
 	m_text->load_single_message(message);
 	m_text->set_bounds(m_bounds, true);
-	m_text->set_font_color(svc.styles.colors.pioneer_red);
+	m_text->set_font_color(colors::pioneer_red);
 }
 
 } // namespace fornani::gui

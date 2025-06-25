@@ -14,7 +14,7 @@ namespace fornani::player {
 
 Player::Player(automa::ServiceProvider& svc)
 	: arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this), tutorial(svc), sprite{svc.assets.get_texture("nani")}, camera_offset{32.f, -64.f}, wardrobe_widget(svc),
-	  m_sprite_dimensions{24, 24}, dash_effect{8} {
+	  m_sprite_dimensions{24, 24}, dash_effect{8}, m_directions{.desired{LR::left}, .actual{LR::right}} {
 	sprite.setScale(constants::f_scale_vec);
 }
 
@@ -38,15 +38,13 @@ void Player::init(automa::ServiceProvider& svc) {
 
 	anchor_point = {collider.physics.position.x + PLAYER_WIDTH / 2, collider.physics.position.y + PLAYER_HEIGHT / 2};
 
-	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.bright_orange, antenna_force));
-	antennae.push_back(vfx::Gravitator(collider.physics.position, svc.styles.colors.bright_orange, antenna_force, {2.f, 4.f}));
+	antennae.push_back(vfx::Gravitator(collider.physics.position, colors::bright_orange, antenna_force));
+	antennae.push_back(vfx::Gravitator(collider.physics.position, colors::bright_orange, antenna_force, {2.f, 4.f}));
 
 	antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{physics_stats.antenna_friction, physics_stats.antenna_friction}, 1.0f);
 	antennae[0].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
 	antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{physics_stats.antenna_friction, physics_stats.antenna_friction}, 1.0f);
 	antennae[1].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
-
-	;
 
 	texture_updater.load_base_texture(svc.assets.get_texture_modifiable("nani"));
 	texture_updater.load_pixel_map(svc.assets.get_texture_modifiable("nani_palette_default"));
@@ -68,7 +66,7 @@ void Player::update(world::Map& map) {
 	m_camera.physics.simple_update();
 	camera_offset.y = -64.f + m_camera.physics.position.y;
 
-	invincible() ? collider.draw_hurtbox.setFillColor(m_services->styles.colors.red) : collider.draw_hurtbox.setFillColor(m_services->styles.colors.blue);
+	invincible() ? collider.draw_hurtbox.setFillColor(colors::red) : collider.draw_hurtbox.setFillColor(colors::blue);
 
 	collider.flags.general.set(shape::General::complex);
 	if (!catalog.abilities.has_ability(Abilities::dash)) { controller.nullify_dash(); }
@@ -104,6 +102,10 @@ void Player::update(world::Map& map) {
 	}
 	collider.flags.state.reset(shape::State::just_landed);
 
+	// check direction switch
+	m_directions.desired = controller.last_requested_direction();
+	controller.direction.lnr = m_directions.desired.as<LNR>();
+
 	// player-controlled actions
 	if (hotbar) { hotbar.value().switch_weapon(*m_services, static_cast<int>(controller.arms_switch())); }
 	dash();
@@ -120,8 +122,8 @@ void Player::update(world::Map& map) {
 	// weapon
 	if (controller.shot() || controller.arms_switch()) { animation.idle_timer.start(); }
 	if (flags.state.test(State::impart_recoil) && arsenal) {
-		if (controller.direction.und == dir::UND::down) { accumulated_forces.push_back({0.f, -equipped_weapon().get_recoil()}); }
-		if (controller.direction.und == dir::UND::up) { accumulated_forces.push_back({0.f, equipped_weapon().get_recoil()}); }
+		if (controller.direction.und == UND::down) { accumulated_forces.push_back({0.f, -equipped_weapon().get_recoil()}); }
+		if (controller.direction.und == UND::up) { accumulated_forces.push_back({0.f, equipped_weapon().get_recoil()}); }
 		flags.state.reset(State::impart_recoil);
 	}
 
@@ -130,7 +132,7 @@ void Player::update(world::Map& map) {
 	accumulated_forces.clear();
 	collider.physics.impart_momentum();
 	if (controller.moving() || collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded()) { collider.physics.forced_momentum = {}; }
-	auto switched = directions.movement.lr != controller.direction.lr || !controller.moving();
+	auto switched = directions.movement.lnr != controller.direction.lnr || !controller.moving();
 	if (collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded() || switched || grounded()) { collider.physics.forced_acceleration = {}; }
 
 	collider.update(*m_services);
@@ -151,7 +153,7 @@ void Player::update(world::Map& map) {
 	}
 
 	if (animation.is_state(AnimState::slide) && m_services->ticker.every_x_ticks(12)) {
-		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "slide", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
+		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "slide", colors::ui_white, Direction(UND::up)));
 	}
 
 	update_antennae();
@@ -175,7 +177,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	calculate_sprite_offset();
 	if (flags.state.test(State::crushed)) { return; }
 	// debug
-	collider.colors.local = controller.can_jump() ? svc.styles.colors.green : svc.styles.colors.green;
+	collider.colors.local = controller.can_jump() ? colors::green : colors::green;
 
 	// piggybacker
 	if (piggybacker) { piggybacker.value().render(svc, win, cam); }
@@ -201,7 +203,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		collider.render(win, cam);
 		sf::RectangleShape box{};
 		box.setFillColor(sf::Color::Transparent);
-		box.setOutlineColor(svc.styles.colors.green);
+		box.setOutlineColor(colors::green);
 		box.setOutlineThickness(-1);
 		box.setPosition(hurtbox.get_position() - cam);
 		box.setSize(hurtbox.get_dimensions());
@@ -246,7 +248,7 @@ void Player::update_animation() {
 		if (!(animation.is_state(AnimState::land) || animation.is_state(AnimState::rise))) {
 			if (controller.nothing_pressed() && !controller.dashing() && !(animation.is_state(AnimState::inspect)) && !(animation.is_state(AnimState::sit))) { animation.request(AnimState::idle); }
 			if (controller.moving() && !controller.dashing() && !controller.sprinting()) { animation.request(AnimState::run); }
-			if (controller.moving() && controller.sprinting() && !controller.dashing() && !(animation.is_state(AnimState::sharp_turn))) { animation.request(AnimState::sprint); }
+			if (controller.moving() && controller.sprinting() && !controller.dashing()) { animation.request(AnimState::sprint); }
 			if ((animation.is_state(AnimState::sprint) || animation.is_state(AnimState::roll)) && controller.sliding() && controller.get_slide().can_begin()) { animation.request(AnimState::slide); }
 			if (abs(collider.physics.velocity.x) > thresholds.stop && !controller.moving()) { animation.request(AnimState::stop); }
 			if (hotbar && arsenal) {
@@ -305,35 +307,26 @@ void Player::update_animation() {
 
 void Player::update_sprite() {
 
+	if (!grounded()) {
+		if (m_directions.desired != m_directions.actual) { animation.triggers.set(AnimTriggers::flip); }
+	}
 	if (animation.triggers.consume(AnimTriggers::flip)) {
 		sprite.scale({-1.f, 1.f});
-		if (animation.is_state(AnimState::turn) || animation.is_state(AnimState::sharp_turn)) { animation.animation.set_params(animation.get_params("idle")); }
+		m_directions.actual.flip();
 	}
 
 	flags.state.reset(State::dir_switch);
-	// flip the sprite based on the player's direction
-	if (!grounded()) {
-		if (controller.facing_left() && sprite.getScale() == constants::f_scale_vec) { sprite.scale({-1.f, 1.f}); }
-		if (controller.facing_right() && sprite.getScale() == constants::f_inverse_scale_vec) { sprite.scale({-1.f, 1.f}); }
-	}
-
-	// check for quick turn
-	if (controller.quick_turn()) { flags.state.set(State::dir_switch); }
 
 	sprite.setTexture(texture_updater.get_dynamic_texture());
 }
 
 void Player::handle_turning() {
-	if (controller.facing_left() && sprite.getScale() == constants::f_scale_vec) { collider.physics.velocity.x > thresholds.quick_turn ? animation.request(AnimState::sharp_turn) : animation.request(AnimState::turn); }
-	if (controller.facing_right() && sprite.getScale() == constants::f_inverse_scale_vec) { collider.physics.velocity.x < -thresholds.quick_turn ? animation.request(AnimState::sharp_turn) : animation.request(AnimState::turn); }
+	if (m_directions.desired != m_directions.actual) { ccm::abs(collider.physics.velocity.x) > thresholds.quick_turn ? animation.request(AnimState::sharp_turn) : animation.request(AnimState::turn); }
 }
 
 void Player::flash_sprite() {
-	if ((health.invincibility.get_cooldown() / 30) % 2 == 0) {
-		sprite.setColor(m_services->styles.colors.red);
-	} else {
-		sprite.setColor(m_services->styles.colors.blue);
-	}
+	auto flash_rate = 30;
+	(health.invincibility.get_cooldown() / flash_rate) % 2 == 0 ? sprite.setColor(colors::red) : sprite.setColor(colors::blue);
 }
 
 void Player::calculate_sprite_offset() {
@@ -356,9 +349,7 @@ void Player::jump(world::Map& map) {
 		collider.flags.movement.set(shape::Movement::jumping);
 		animation.request(AnimState::rise);
 		if (controller.get_wallslide().is_wallsliding()) { controller.walljump(); }
-		if (m_services->ticker.every_x_ticks(20)) {
-			map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "jump", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
-		}
+		if (m_services->ticker.every_x_ticks(20)) { map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "jump", colors::ui_white, Direction(UND::up))); }
 		if (tutorial.current_state == text::TutorialFlags::jump) {
 			tutorial.flags.set(text::TutorialFlags::jump);
 			tutorial.current_state = text::TutorialFlags::sprint;
@@ -369,13 +360,13 @@ void Player::jump(world::Map& map) {
 		collider.flags.movement.reset(shape::Movement::jumping);
 	}
 	if (controller.get_jump().jumpsquat_trigger()) {
-		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "jump", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
+		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "jump", colors::ui_white, Direction(UND::up)));
 		controller.get_jump().start_jumpsquat();
 		controller.get_jump().reset_jumpsquat_trigger();
 		collider.flags.movement.set(shape::Movement::jumping);
 	}
 	if (controller.get_jump().jumpsquatting()) {
-		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "jump", m_services->styles.colors.ui_white, dir::Direction(dir::UND::up)));
+		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "jump", colors::ui_white, Direction(UND::up)));
 		controller.get_jump().stop_jumpsquatting();
 		controller.get_jump().start();
 		collider.physics.acceleration.y = -physics_stats.jump_velocity;
@@ -456,7 +447,7 @@ void Player::freeze_position() {
 }
 
 void Player::update_direction() {
-	directions.movement.lr = collider.physics.apparent_velocity().x > 0.f ? dir::LR::right : dir::LR::left;
+	directions.movement.lnr = collider.physics.apparent_velocity().x > 0.f ? LNR::right : LNR::left;
 	if (controller.facing_left()) {
 		anchor_point = {collider.physics.position.x + collider.bounding_box.get_dimensions().x / 2 - ANCHOR_BUFFER, collider.physics.position.y + collider.bounding_box.get_dimensions().y / 2};
 	} else if (controller.facing_right()) {
@@ -510,12 +501,12 @@ void Player::on_crush(world::Map& map) {
 	if (!collider.collision_depths) { return; }
 	if (collider.crushed() && alive()) {
 		hurt(1024.f, true);
-		directions.left_squish.und = collider.horizontal_squish() ? dir::UND::up : dir::UND::neutral;
-		directions.left_squish.lr = collider.vertical_squish() ? dir::LR::left : dir::LR::neutral;
-		directions.right_squish.und = collider.horizontal_squish() ? dir::UND::down : dir::UND::neutral;
-		directions.right_squish.lr = collider.vertical_squish() ? dir::LR::right : dir::LR::neutral;
-		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.physics.position, collider.dimensions, "player_crush", m_services->styles.colors.nani_white, directions.left_squish));
-		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.physics.position, collider.dimensions, "player_crush", m_services->styles.colors.nani_white, directions.right_squish));
+		directions.left_squish.und = collider.horizontal_squish() ? UND::up : UND::neutral;
+		directions.left_squish.lnr = collider.vertical_squish() ? LNR::left : LNR::neutral;
+		directions.right_squish.und = collider.horizontal_squish() ? UND::down : UND::neutral;
+		directions.right_squish.lnr = collider.vertical_squish() ? LNR::right : LNR::neutral;
+		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.physics.position, collider.dimensions, "player_crush", colors::nani_white, directions.left_squish));
+		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.physics.position, collider.dimensions, "player_crush", colors::nani_white, directions.right_squish));
 		collider.collision_depths = {};
 		flags.state.set(State::crushed);
 	}
@@ -715,7 +706,7 @@ void Player::pop_from_loadout(int id) {
 	}
 }
 
-dir::LR Player::entered_from() const { return (collider.physics.position.x < lookup::SPACING * 8) ? dir::LR::right : dir::LR::left; }
+SimpleDirection Player::entered_from() const { return (collider.physics.position.x < constants::f_cell_size * 8.f) ? SimpleDirection(LR::right) : SimpleDirection(LR::left); }
 
 std::string Player::print_direction(bool lr) {
 	if (lr) {

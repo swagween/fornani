@@ -34,7 +34,7 @@ NPC::NPC(automa::ServiceProvider& svc, std::string_view label, int id)
 	drawbox.setOutlineThickness(-1);
 	drawbox.setSize(dimensions);
 
-	direction.lr = dir::LR::left;
+	direction.lnr = LNR::left;
 }
 
 void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player) {
@@ -42,7 +42,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	svc.data.set_npc_location(id, current_location);
 	if (state_flags.test(NPCState::hidden)) { return; }
 	svc.player_dat.piggy_id == id ? state_flags.set(NPCState::piggybacking) : state_flags.reset(NPCState::piggybacking);
-	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::left : dir::LR::right;
+	direction.lnr = (player.collider.physics.position.x < collider.physics.position.x) ? LNR::left : LNR::right;
 	Entity::update(svc, map);
 	if (abs(collider.physics.velocity.x) > physical.walk_threshold) { animation_machine->animation_flags.set(NPCAnimState::walk); }
 	if (ent_state.test(entity::State::flip)) { animation_machine->animation_flags.set(NPCAnimState::turn); }
@@ -101,7 +101,7 @@ void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	if (svc.greyblock_mode()) {
 		collider.render(win, campos);
 		drawbox.setPosition(collider.physics.position - campos);
-		state_flags.test(NPCState::engaged) ? drawbox.setFillColor(svc.styles.colors.green) : drawbox.setFillColor(svc.styles.colors.dark_orange);
+		state_flags.test(NPCState::engaged) ? drawbox.setFillColor(colors::green) : drawbox.setFillColor(colors::dark_orange);
 		win.draw(drawbox);
 	} else {
 		win.draw(m_sprite);

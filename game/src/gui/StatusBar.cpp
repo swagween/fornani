@@ -5,11 +5,11 @@
 namespace fornani::gui {
 
 StatusBar::StatusBar(automa::ServiceProvider& svc, sf::Vector2<int> dim, float size) : dimensions(dim), size(size) {
-	gravitator = vfx::Gravitator({0, 0}, svc.styles.colors.bright_orange, 0.9f);
+	gravitator = vfx::Gravitator({0, 0}, colors::bright_orange, 0.9f);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.9f, 0.9f}, 1.0f);
-	debug_rects.filled.setFillColor(svc.styles.colors.red);
-	debug_rects.taken.setFillColor(svc.styles.colors.goldenrod);
-	debug_rects.gone.setFillColor(svc.styles.colors.navy_blue);
+	debug_rects.filled.setFillColor(colors::red);
+	debug_rects.taken.setFillColor(colors::goldenrod);
+	debug_rects.gone.setFillColor(colors::navy_blue);
 	debug_rects.filled.setPosition({svc.window->i_screen_dimensions().x * 0.5f, 60.f});
 	debug_rects.filled.setSize({200.f, 20.f});
 	debug_rects.filled.setOrigin(debug_rects.filled.getSize() * 0.5f);

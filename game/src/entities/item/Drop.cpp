@@ -6,7 +6,7 @@
 namespace fornani::item {
 
 Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time, int special_id)
-	: sparkler(svc, drop_dimensions, svc.styles.colors.ui_white, "drop"), special_id(special_id), sprite{svc.assets.get_texture("hearts")} {
+	: sparkler(svc, drop_dimensions, colors::ui_white, "drop"), special_id(special_id), sprite{svc.assets.get_texture("hearts")} {
 
 	collider.physics.elasticity = 0.5f;
 

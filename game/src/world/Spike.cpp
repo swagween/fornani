@@ -15,15 +15,15 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vecto
 	direction.x = direction.y != 0 ? 0 : direction.x;
 	i_size().x == 1 ? sprite.setTextureRect(sf::IntRect{{480, 480}, {32, 32}}) : sprite.setTextureRect(sf::IntRect{{0, 0}, {192, 128}});
 	collider = shape::Collider(size * 32.f);
-	facing.und = (direction.y == 1) ? dir::UND::up : facing.und;
-	facing.und = (direction.y == -1) ? dir::UND::down : facing.und;
-	facing.lr = (direction.x == 1) ? dir::LR::left : facing.lr;
-	facing.lr = (direction.x == -1) ? dir::LR::right : facing.lr;
+	facing.und = (direction.y == 1) ? UND::up : facing.und;
+	facing.und = (direction.y == -1) ? UND::down : facing.und;
+	facing.lnr = (direction.x == 1) ? LNR::left : facing.lnr;
+	facing.lnr = (direction.x == -1) ? LNR::right : facing.lnr;
 	sprite.setOrigin(size * 16.f);
 	if (util::random::percent_chance(50)) { sprite.setScale({-1.f, 1.f}); }
-	if (facing.lr == dir::LR::left) { sprite.setRotation(sf::degrees(-90)); }
-	if (facing.lr == dir::LR::right) { sprite.setRotation(sf::degrees(90)); }
-	if (facing.und == dir::UND::down) { sprite.setRotation(sf::degrees(180)); }
+	if (facing.lnr == LNR::left) { sprite.setRotation(sf::degrees(-90)); }
+	if (facing.lnr == LNR::right) { sprite.setRotation(sf::degrees(90)); }
+	if (facing.und == UND::down) { sprite.setRotation(sf::degrees(180)); }
 	collider.physics.position = position + offset;
 	collider.sync_components();
 	auto x_off = 56.f;

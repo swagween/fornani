@@ -63,14 +63,15 @@ class PlayerController {
 	void set_arsenal(bool const has);
 
 	std::optional<float> get_controller_state(ControllerInput key) const;
+	[[nodiscard]] auto last_requested_direction() -> SimpleDirection const& { return m_last_requested_direction; }
 
 	[[nodiscard]] auto nothing_pressed() -> bool { return key_map[ControllerInput::move_x] == 0.f && key_map[ControllerInput::jump] == 0.f && key_map[ControllerInput::inspect] == 0.f; }
 	[[nodiscard]] auto moving() -> bool { return key_map[ControllerInput::move_x] != 0.f; }
 	[[nodiscard]] auto sprinting() -> bool { return ccm::abs(key_map[ControllerInput::move_x]) > walk_speed_v + sprint_threshold_v; }
 	[[nodiscard]] auto moving_left() -> bool { return key_map[ControllerInput::move_x] < 0.f; }
 	[[nodiscard]] auto moving_right() -> bool { return key_map[ControllerInput::move_x] > 0.f; }
-	[[nodiscard]] auto facing_left() const -> bool { return direction.lr == dir::LR::left; }
-	[[nodiscard]] auto facing_right() const -> bool { return direction.lr == dir::LR::right; }
+	[[nodiscard]] auto facing_left() const -> bool { return direction.lnr == LNR::left; }
+	[[nodiscard]] auto facing_right() const -> bool { return direction.lnr == LNR::right; }
 	[[nodiscard]] auto restricted() const -> bool { return flags.test(MovementState::restricted); }
 	[[nodiscard]] auto grounded() const -> bool { return flags.test(MovementState::grounded); }
 	[[nodiscard]] auto is_walljumping() const -> bool { return flags.test(MovementState::walljumping); }
@@ -100,17 +101,6 @@ class PlayerController {
 	[[nodiscard]] auto sliding_movement() -> float { return key_map[ControllerInput::slide]; }
 	[[nodiscard]] auto arms_switch() -> float { return key_map[ControllerInput::arms_switch]; }
 	[[nodiscard]] auto dash_value() -> float { return key_map[ControllerInput::dash]; }
-	[[nodiscard]] auto quick_turn() const -> bool {
-		bool ret{};
-		bool left{};
-		bool right{};
-		for (auto& state : horizontal_inputs) {
-			if (state == -1.f) { left = true; }
-			if (state == 1.f) { right = true; }
-		}
-		if (left && right) { ret = true; }
-		return ret;
-	}
 
 	[[nodiscard]] auto get_jump() -> Jump& { return jump; }
 	[[nodiscard]] auto get_wallslide() -> Wallslide& { return wallslide; }
@@ -118,7 +108,7 @@ class PlayerController {
 	[[nodiscard]] auto get_slide() -> Slide& { return slide; }
 	Roll roll{};
 
-	dir::Direction direction{};
+	Direction direction{};
 
   private:
 	std::unordered_map<ControllerInput, float> key_map{};
@@ -126,6 +116,8 @@ class PlayerController {
 	util::BitFlags<HardState> hard_state{}; // unused
 	util::BitFlags<Sprint> sprint_flags{};
 	util::BitFlags<Hook> hook_flags{};
+
+	SimpleDirection m_last_requested_direction{};
 
 	Jump jump{};
 	Wallslide wallslide{};
@@ -138,7 +130,5 @@ class PlayerController {
 	struct {
 		util::Cooldown inspect{};
 	} cooldowns{};
-
-	std::deque<float> horizontal_inputs{};
 };
 } // namespace fornani::player

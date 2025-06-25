@@ -17,7 +17,7 @@ void Frdog::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 	// reset animation states to determine next animation state
 	state = {};
 	if (ent_state.test(entity::State::flip)) { state.set(AnimState::turn); }
-	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::right : dir::LR::left;
+	direction.lnr = (player.collider.physics.position.x < collider.physics.position.x) ? LNR::right : LNR::left;
 	if (flags.state.test(StateFlags::hurt)) {
 		state.set(AnimState::hurt);
 		flags.state.reset(StateFlags::hurt);

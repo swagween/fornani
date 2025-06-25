@@ -7,7 +7,7 @@ namespace fornani::gui {
 
 gui::WardrobeWidget::WardrobeWidget(automa::ServiceProvider& svc)
 	: m_base{sf::Sprite{svc.assets.get_texture("wardrobe_base")}}, m_outfit{sf::Sprite{svc.assets.get_texture("wardrobe_outfits")}}, out_nani{sf::Sprite{svc.assets.get_texture("null")}} {
-	background.setFillColor(svc.styles.colors.pioneer_black);
+	background.setFillColor(colors::pioneer_black);
 	background.setSize(f_dimensions());
 	if (!nani.resize({128, 256})) { NANI_LOG_WARN(m_logger, "nani.resize() failed!"); }
 	m_base.setScale(constants::f_scale_vec);

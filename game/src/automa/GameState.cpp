@@ -18,8 +18,8 @@ GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_v
 		++ctr;
 	}
 	if (options.empty()) { return; }
-	left_dot = vfx::Gravitator({options.at(0).position.x - dot_pad.x, options.at(0).position.y + dot_pad.y}, svc.styles.colors.bright_orange, dot_force);
-	right_dot = vfx::Gravitator({options.at(0).position.x + options.at(0).label.getLocalBounds().size.x + dot_pad.x, options.at(0).position.y + dot_pad.y}, svc.styles.colors.bright_orange, dot_force);
+	left_dot = vfx::Gravitator({options.at(0).position.x - dot_pad.x, options.at(0).position.y + dot_pad.y}, colors::bright_orange, dot_force);
+	right_dot = vfx::Gravitator({options.at(0).position.x + options.at(0).label.getLocalBounds().size.x + dot_pad.x, options.at(0).position.y + dot_pad.y}, colors::bright_orange, dot_force);
 
 	left_dot.collider.physics = components::PhysicsComponent(sf::Vector2<float>{dot_fric, dot_fric}, 1.0f);
 	left_dot.collider.physics.maximum_velocity = sf::Vector2<float>(dot_speed, dot_speed);

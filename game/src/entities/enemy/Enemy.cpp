@@ -11,7 +11,7 @@ namespace fornani::enemy {
 Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
 	: entity::Entity(svc), label(label), health_indicator(svc), directions{.actual{start_direction}, .desired{start_direction}}, visual{.sprite = sf::Sprite(svc.assets.get_texture("enemy_" + std::string{label}))} {
 
-	direction = dir::Direction{start_direction};
+	direction = Direction{start_direction};
 
 	if (spawned) { flags.general.set(GeneralFlags::spawned); }
 
@@ -96,7 +96,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 
 	drawbox.setSize({static_cast<float>(sprite_dimensions.x), static_cast<float>(sprite_dimensions.y)});
 	drawbox.setFillColor(sf::Color::Transparent);
-	drawbox.setOutlineColor(svc.styles.colors.ui_white);
+	drawbox.setOutlineColor(colors::ui_white);
 	drawbox.setOutlineThickness(-1);
 }
 
@@ -106,8 +106,8 @@ void Enemy::set_external_id(std::pair<int, sf::Vector2<int>> code) {
 }
 
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	directions.desired.lr = (player.collider.get_center().x < collider.get_center().x) ? dir::LR::left : dir::LR::right;
-	directions.movement.lr = collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
+	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
+	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
 
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 	sound.hurt_sound_cooldown.update();
@@ -195,8 +195,8 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) { handle_player_collision(player); }
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (directions.actual.lr == dir::LR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lr == dir::LR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
+	if (directions.actual.lnr == LNR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
+	if (directions.actual.lnr == LNR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 	auto sprite_position = collider.physics.position + sprite_offset - cam + random_offset;
 
 	// exit conditions
@@ -212,7 +212,7 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 		win.draw(visual.sprite);
 		drawbox.setOrigin({});
 		drawbox.setSize(collider.hurtbox.get_dimensions());
-		drawbox.setOutlineColor(svc.styles.colors.ui_white);
+		drawbox.setOutlineColor(colors::ui_white);
 		drawbox.setPosition(collider.hurtbox.get_position() - cam);
 		win.draw(drawbox);
 		drawbox.setPosition(physical.alert_range.get_position() - cam);

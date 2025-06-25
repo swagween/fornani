@@ -36,13 +36,13 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 	track_shape.setOutlineColor(sf::Color(135, 132, 149, 140));
 	track_shape.setOutlineThickness(2);
 
-	direction.lr = dir::LR::neutral;
-	direction.und = dir::UND::neutral;
+	direction.lnr = LNR::neutral;
+	direction.und = UND::neutral;
 
 	// for collision handling
 	if (track.size() > 1) {
-		native_direction.lr = flags.attributes.test(PlatformAttributes::side_to_side) ? dir::LR::left : dir::LR::neutral;
-		native_direction.und = flags.attributes.test(PlatformAttributes::up_down) ? dir::UND::down : dir::UND::neutral;
+		native_direction.lnr = flags.attributes.test(PlatformAttributes::side_to_side) ? LNR::left : LNR::neutral;
+		native_direction.und = flags.attributes.test(PlatformAttributes::up_down) ? UND::down : UND::neutral;
 	}
 
 	counter.start();
@@ -82,10 +82,10 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		if (block.on()) { handle_collider_collision(block.get_hurtbox()); }
 	}
 	for (auto& platform : map.platforms) {
-		if (&platform != this && native_direction.lr != platform.native_direction.lr) { handle_collider_collision(platform.hurtbox); }
+		if (&platform != this && native_direction.lnr != platform.native_direction.lnr) { handle_collider_collision(platform.hurtbox); }
 	}
 	if (flags.state.test(PlatformState::moving)) {
-		if (native_direction.lr == dir::LR::left) {
+		if (native_direction.lnr == LNR::left) {
 			if (Collider::flags.external_state.consume(shape::ExternalState::horiz_collider_collision) && !switch_up.running()) {
 				switch_directions();
 				switch_up.start();
@@ -98,7 +98,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		}
 	}
 	// init direction to oppose player
-	direction.lr = player.controller.direction.lr == dir::LR::left ? dir::LR::right : dir::LR::left;
+	direction.lnr = player.controller.direction.lnr == LNR::left ? LNR::right : LNR::left;
 
 	for (std::size_t x = 0; x < track.size() - 1; ++x) {
 		auto const start = track[x];
@@ -111,8 +111,8 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			physics.velocity = physics.position - old_position;
 			physics.real_velocity = physics.velocity;
 			// set direction
-			direction.lr = physics.velocity.x > 0.0f ? dir::LR::right : dir::LR::left;
-			direction.und = physics.velocity.y > 0.0f ? dir::UND::down : dir::UND::up;
+			direction.lnr = physics.velocity.x > 0.0f ? LNR::right : LNR::left;
+			direction.und = physics.velocity.y > 0.0f ? UND::down : UND::up;
 
 			if (player.collider.jumpbox.overlaps(bounding_box) && !player.collider.perma_grounded() && flags.attributes.test(PlatformAttributes::sticky)) {
 				if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) { player.collider.physics.forced_momentum = physics.position - old_position; }
@@ -128,13 +128,13 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		}
 	}
 
-	if (player.controller.direction.lr != direction.lr && flags.attributes.test(PlatformAttributes::player_controlled) && player.collider.jumpbox.overlaps(bounding_box)) { switch_directions(); }
+	if (player.controller.direction.lnr != direction.lnr && flags.attributes.test(PlatformAttributes::player_controlled) && player.collider.jumpbox.overlaps(bounding_box)) { switch_directions(); }
 	if (flags.attributes.test(PlatformAttributes::player_controlled)) {
 		state = 2;
 		if (player.collider.jumpbox.overlaps(bounding_box)) {
-			switch (direction.lr) {
-			case dir::LR::left: state = 3; break;
-			case dir::LR::right: state = 4; break;
+			switch (direction.lnr) {
+			case LNR::left: state = 3; break;
+			case LNR::right: state = 4; break;
 			default: NANI_LOG_WARN(m_logger, "Unknown direction was passed. Did you forget to add a case to the switch?"); break;
 			}
 		}
@@ -185,7 +185,7 @@ void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proje
 	if (proj.get_bounding_box().overlaps(bounding_box)) {
 		if (!proj.destruction_initiated()) {
 			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position(), physics.velocity * 10.f, proj.effect_type(), 2));
-			if (proj.get_direction().lr == dir::LR::neutral) { map.effects.back().rotate(); }
+			if (proj.get_direction().lnr == LNR::neutral) { map.effects.back().rotate(); }
 			svc.soundboard.flags.world.set(audio::World::wall_hit);
 		}
 		proj.destroy(false);

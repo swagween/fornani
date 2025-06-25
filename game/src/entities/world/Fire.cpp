@@ -22,8 +22,8 @@ void Fire::update(automa::ServiceProvider& svc, player::Player& player, Map& map
 	sparkler.update(svc);
 	sprite.update(bounding_box.get_position() + sprite_offset);
 	if (svc.ticker.every_x_ticks(64)) {
-		auto direction = dir::Direction{};
-		direction.und = dir::UND::up;
+		auto direction = Direction{};
+		direction.und = UND::up;
 		auto offset = sf::Vector2<float>{0.f, 48.f};
 		map.active_emitters.push_back(vfx::Emitter(svc, bounding_box.get_position() - offset, bounding_box.get_dimensions(), "smoke", sf::Color::Transparent, direction));
 	}

@@ -96,9 +96,9 @@ class Enemy : public entity::Entity {
 	player::Indicator health_indicator;
 	anim::Animation animation{};
 	struct {
-		dir::Direction actual{};
-		dir::Direction desired{};
-		dir::Direction movement{};
+		Direction actual{};
+		Direction desired{};
+		Direction movement{};
 	} directions{};
 
   protected:

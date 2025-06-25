@@ -73,7 +73,7 @@ void Portal::handle_activation(automa::ServiceProvider& svc, player::Player& pla
 		}
 		// player just entered room via border portal
 		if (!flags.state.test(PortalState::ready) && flags.attributes.test(PortalAttributes::activate_on_contact) && is_left_or_right()) {
-			player.controller.direction.lr = player.entered_from();
+			player.controller.direction.set_from_simple(player.entered_from());
 			player.controller.prevent_movement();
 			player.controller.autonomous_walk();
 			player.walk();

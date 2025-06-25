@@ -11,8 +11,8 @@ void Indicator::init(automa::ServiceProvider& svc, int id) {
 	type = static_cast<IndicatorType>(id);
 	label.setCharacterSize(16);
 	label.setLetterSpacing(0.6f);
-	if (type == IndicatorType::health) { color_fade = vfx::ColorFade({svc.styles.colors.ui_white, svc.styles.colors.red, svc.styles.colors.dark_fucshia}, 16, addition_time); }
-	if (type == IndicatorType::orb) { color_fade = vfx::ColorFade({svc.styles.colors.ui_white, svc.styles.colors.goldenrod, svc.styles.colors.dark_orange}, 16, addition_time); }
+	if (type == IndicatorType::health) { color_fade = vfx::ColorFade({colors::ui_white, colors::red, colors::dark_fucshia}, 16, addition_time); }
+	if (type == IndicatorType::orb) { color_fade = vfx::ColorFade({colors::ui_white, colors::goldenrod, colors::dark_orange}, 16, addition_time); }
 	float fric{0.85f};
 	gravitator = vfx::Gravitator(position, sf::Color::Transparent, 1.f);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{fric, fric}, 2.0f);
@@ -32,9 +32,9 @@ void Indicator::update(automa::ServiceProvider& svc, sf::Vector2<float> pos) {
 	position = gravitator.collider.physics.position + offset;
 	if (type == IndicatorType::orb) {
 		if (variables.amount < 0.f) {
-			color_fade.change_colors({svc.styles.colors.ui_white, svc.styles.colors.periwinkle, svc.styles.colors.navy_blue});
+			color_fade.change_colors({colors::ui_white, colors::periwinkle, colors::navy_blue});
 		} else {
-			color_fade.change_colors({svc.styles.colors.ui_white, svc.styles.colors.goldenrod, svc.styles.colors.dark_orange});
+			color_fade.change_colors({colors::ui_white, colors::goldenrod, colors::dark_orange});
 		}
 	}
 }
@@ -44,7 +44,7 @@ void Indicator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 		return;
 	} else if (!addition_limit.is_complete()) {
 		label.setPosition(position + shadow - cam);
-		type == IndicatorType::health || variables.amount < 0.f ? label.setFillColor(svc.styles.colors.ui_black) : label.setFillColor(svc.styles.colors.dark_fucshia);
+		type == IndicatorType::health || variables.amount < 0.f ? label.setFillColor(colors::ui_black) : label.setFillColor(colors::dark_fucshia);
 		win.draw(label);
 		label.setFillColor(color_fade.color());
 		label.setPosition(position - cam);

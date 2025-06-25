@@ -57,10 +57,10 @@ class Minigus : public Enemy, public npc::NPC {
 	gui::StatusBar health_bar;
 	graphics::SpriteHistory sprite_history{8};
 
-	dir::Direction sprite_direction{};
-	dir::Direction pre_direction{};
-	dir::Direction post_direction{};
-	dir::Direction movement_direction{};
+	Direction sprite_direction{};
+	Direction pre_direction{};
+	Direction post_direction{};
+	Direction movement_direction{};
 
 	shape::Shape distant_range{};
 
@@ -74,7 +74,7 @@ class Minigus : public Enemy, public npc::NPC {
 		anim::Parameters firing{13, 8, 10, 1};
 		sf::Vector2<float> offset{0, 64};
 		sf::Vector2<int> dimensions{78, 30};
-		dir::Direction direction;
+		Direction direction;
 		util::BitFlags<MinigunFlags> flags{};
 	} minigun;
 

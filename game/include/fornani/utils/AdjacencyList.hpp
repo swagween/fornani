@@ -5,8 +5,7 @@
 
 namespace fornani::util {
 
-template <typename T>
-class AdjacencyList {
+<typename T> class AdjacencyList {
 
   public:
 	AdjacencyList() = default;

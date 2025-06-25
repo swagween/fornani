@@ -6,11 +6,6 @@
 
 namespace fornani::lookup {
 
-inline constexpr float SPACING{32.0f};
-
-inline constexpr float unit_size_f{32.0f};
-inline constexpr int unit_size_i{32};
-
 inline constexpr float min_hook_length{32.f};
 inline constexpr float max_hook_length{256.f};
 

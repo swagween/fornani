@@ -27,10 +27,10 @@ void Health::update() {
 }
 
 void Health::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	drawbox.setFillColor(svc.styles.colors.dark_orange);
+	drawbox.setFillColor(colors::dark_orange);
 	drawbox.setSize({max_hp, 4});
 	win.draw(drawbox);
-	drawbox.setFillColor(svc.styles.colors.green);
+	drawbox.setFillColor(colors::green);
 	drawbox.setSize({hp, 4});
 	win.draw(drawbox);
 };

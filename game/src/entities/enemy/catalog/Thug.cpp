@@ -11,11 +11,11 @@ Thug::Thug(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "thug"), 
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};
 	secondary_collider = shape::Collider({28.f, 28.f});
-	directions.desired.lr = dir::LR::left;
-	directions.actual.lr = dir::LR::left;
-	directions.movement.lr = dir::LR::neutral;
+	directions.desired.lnr = LNR::left;
+	directions.actual.lnr = LNR::left;
+	directions.movement.lnr = LNR::neutral;
 	attacks.punch.sensor.bounds.setRadius(10);
-	attacks.punch.sensor.drawable.setFillColor(svc.styles.colors.blue);
+	attacks.punch.sensor.drawable.setFillColor(colors::blue);
 	attacks.punch.hit.bounds.setRadius(28);
 	attacks.punch.origin = {-10.f, -26.f};
 
@@ -30,7 +30,7 @@ void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 		Enemy::update(svc, map, player);
 		return;
 	}
-	if (directions.actual.lr == dir::LR::left) {
+	if (directions.actual.lnr == LNR::left) {
 		attacks.punch.set_position(Enemy::collider.physics.position);
 		attacks.rush.set_position(Enemy::collider.physics.position);
 		attacks.punch.origin.x = -10.f;
@@ -52,7 +52,7 @@ void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	attacks.punch.handle_player(player);
 	attacks.rush.handle_player(player);
 	if (state == ThugState::rush && attacks.rush.sensor.active() && !cooldowns.rush_hit.running()) {
-		auto sign = directions.actual.lr == dir::LR::left ? -1.f : 1.f;
+		auto sign = directions.actual.lnr == LNR::left ? -1.f : 1.f;
 		if ((sign == -1.f && player_behind(player)) || (sign == 1.f && !player_behind(player))) {
 			player.hurt(1);
 			player.accumulated_forces.push_back({sign * 2.f, -2.f});
@@ -66,13 +66,13 @@ void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 
 	// reset animation states to determine next animation state
 	state = {};
-	directions.desired.lr = (player.collider.get_center().x < collider.get_center().x) ? dir::LR::left : dir::LR::right;
-	directions.movement.lr = collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
-	if (directions.actual.lr == dir::LR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lr == dir::LR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
+	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
+	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
+	if (directions.actual.lnr == LNR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
+	if (directions.actual.lnr == LNR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
 	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 14.f};
-	secondary_collider.physics.position.x += directions.actual.lr == dir::LR::left ? 10.f : collider.dimensions.x - secondary_collider.dimensions.x - 10.f;
+	secondary_collider.physics.position.x += directions.actual.lnr == LNR::left ? 10.f : collider.dimensions.x - secondary_collider.dimensions.x - 10.f;
 	secondary_collider.sync_components();
 	player.collider.handle_collider_collision(secondary_collider);
 
@@ -98,7 +98,7 @@ void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 
 	if (just_died()) { m_services->soundboard.flags.thug.set(audio::Thug::death); }
 
-	if (directions.actual.lr != directions.desired.lr) { state = ThugState::turn; }
+	if (directions.actual.lnr != directions.desired.lnr) { state = ThugState::turn; }
 
 	state_function = state_function();
 }
@@ -134,7 +134,7 @@ fsm::StateFunction Thug::update_turn() {
 };
 fsm::StateFunction Thug::update_run() {
 	animation.label = "run";
-	auto facing = directions.actual.lr == dir::LR::left ? -1.f : 1.f;
+	auto facing = directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	collider.physics.apply_force({attributes.speed * facing, 0.f});
 	if (caution.danger() || animation.complete()) {
 		state = ThugState::idle;
@@ -171,7 +171,7 @@ fsm::StateFunction Thug::update_alert() {
 		}
 	}
 	if (animation.complete()) {
-		if (directions.actual.lr != directions.desired.lr) {
+		if (directions.actual.lnr != directions.desired.lnr) {
 			state = ThugState::turn;
 			animation.set_params(turn);
 			return THUG_BIND(update_turn);
@@ -192,7 +192,7 @@ fsm::StateFunction Thug::update_rush() {
 		return THUG_BIND(update_idle);
 	}
 	auto force{16.f};
-	force *= directions.actual.lr == dir::LR::left ? -1.f : 1.f;
+	force *= directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	collider.physics.apply_force({force, 0.f});
 	if (animation.complete()) {
 		state = ThugState::idle;

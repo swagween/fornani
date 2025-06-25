@@ -59,7 +59,7 @@ class Projectile {
 	void seed(automa::ServiceProvider& svc, sf::Vector2<float> target = {});
 	void set_position(sf::Vector2<float> pos);
 	void set_team(Team to_team);
-	void set_firing_direction(dir::Direction to_direction);
+	void set_firing_direction(Direction to_direction);
 	void multiply(float factor) { variables.damage_multiplier = std::min(variables.damage_multiplier * factor, variables.damage_multiplier * 5.f); }
 	void poof();
 	void damage_over_time();
@@ -77,7 +77,7 @@ class Projectile {
 	[[nodiscard]] auto get_velocity() const -> sf::Vector2<float> { return physical.physics.apparent_velocity(); }
 	[[nodiscard]] auto get_destruction_point() const -> sf::Vector2<float> { return variables.destruction_point; }
 	[[nodiscard]] auto get_team() const -> Team { return metadata.team; }
-	[[nodiscard]] auto get_direction() const -> dir::Direction { return physical.direction; }
+	[[nodiscard]] auto get_direction() const -> Direction { return physical.direction; }
 	[[nodiscard]] auto get_bounding_box() -> shape::Shape& { return physical.bounding_box; }
 	[[nodiscard]] auto can_damage() const -> bool { return damage_timer.is_almost_complete() || !persistent(); }
 
@@ -107,12 +107,12 @@ class Projectile {
 		anim::AnimatedSprite sprite;
 		sf::Vector2<int> dimensions{};
 		graphics::SpriteHistory sprite_history{};
-		dir::Direction direction{};
+		Direction direction{};
 	} visual;
 
 	struct {
 		shape::Shape bounding_box{};
-		dir::Direction direction{};
+		Direction direction{};
 		sf::Vector2<float> max_dimensions{};
 		shape::CircleCollider collider{4.f};
 		components::PhysicsComponent physics{};

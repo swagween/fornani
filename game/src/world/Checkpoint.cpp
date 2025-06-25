@@ -22,7 +22,7 @@ void Checkpoint::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 			sf::RectangleShape tag{};
 			tag.setSize({32.f, 32.f});
 			tag.setPosition(bounds.get_position() - cam);
-			tag.setOutlineColor(svc.styles.colors.mythic_green);
+			tag.setOutlineColor(colors::mythic_green);
 			tag.setFillColor(sf::Color::Transparent);
 			tag.setOutlineThickness(-2);
 			win.draw(tag);

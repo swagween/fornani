@@ -97,7 +97,9 @@ struct PlayerFlags {
 class Player {
   public:
 	Player(automa::ServiceProvider& svc);
-	~Player() {}
+
+	friend class PlayerController;
+	friend class PlayerAnimation;
 
 	// init (violates RAII but must happen after resource path is set)
 	void init(automa::ServiceProvider& svc);
@@ -130,12 +132,14 @@ class Player {
 	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.inventory.has_item(id); }
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
 	[[nodiscard]] auto has_map() const -> bool { return catalog.inventory.has_item(16); }
-	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lr == dir::LR::left; }
+	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lnr == LNR::left; }
 	[[nodiscard]] auto switched_weapon() const -> bool { return hotbar->switched(); }
 	[[nodiscard]] auto firing_weapon() -> bool { return controller.shot(); }
 	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2<float> { return collider.get_center() + camera_offset; }
 	[[nodiscard]] auto get_facing_scale() const -> sf::Vector2f { return controller.facing_left() ? sf::Vector2f{-1.f, 1.f} : sf::Vector2f{1.f, 1.f}; }
 	[[nodiscard]] auto is_in_animation(AnimState check) const -> bool { return animation.get_state() == check; }
+	[[nodiscard]] auto get_desired_direction() const -> SimpleDirection { return m_directions.desired; }
+	[[nodiscard]] auto get_actual_direction() const -> SimpleDirection { return m_directions.actual; }
 
 	// moves
 	void jump(world::Map& map);
@@ -175,7 +179,7 @@ class Player {
 	void pop_from_loadout(int id);
 
 	// map helpers
-	dir::LR entered_from() const;
+	SimpleDirection entered_from() const;
 
 	// for debug mode
 	std::string print_direction(bool lr);
@@ -244,6 +248,8 @@ class Player {
 	VisitHistory visit_history{};
 
   private:
+	void set_facing_direction(SimpleDirection to_direction) { m_directions.desired = to_direction; }
+
 	struct {
 		float stop{5.8f};
 		float wallslide{-1.5f};
@@ -252,11 +258,18 @@ class Player {
 		float run{0.02f};
 		float quick_turn{0.9f};
 	} thresholds{};
+
 	struct {
-		dir::Direction left_squish{};
-		dir::Direction right_squish{};
-		dir::Direction movement{};
+		Direction left_squish{};
+		Direction right_squish{};
+		Direction movement{};
 	} directions{};
+
+	struct {
+		SimpleDirection desired{};
+		SimpleDirection actual{};
+	} m_directions{};
+
 	struct {
 		components::SteeringBehavior target{};
 		components::PhysicsComponent physics{};

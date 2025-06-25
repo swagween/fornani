@@ -48,14 +48,14 @@ void SteeringBehavior::render(automa::ServiceProvider& svc, sf::RenderWindow& wi
 	sf::CircleShape wander_circle{};
 	wander_circle.setRadius(2.f);
 	wander_circle.setOrigin({2.f, 2.f});
-	wander_circle.setOutlineColor(svc.styles.colors.goldenrod);
+	wander_circle.setOutlineColor(colors::goldenrod);
 	wander_circle.setFillColor(sf::Color::Transparent);
 	wander_circle.setOutlineThickness(-2);
 	wander_circle.setPosition(wander - cam);
 	win.draw(wander_circle);
 	wander_circle.setRadius(wander_radius);
 	wander_circle.setOrigin({wander_radius, wander_radius});
-	wander_circle.setOutlineColor(svc.styles.colors.green);
+	wander_circle.setOutlineColor(colors::green);
 	wander_circle.setOutlineThickness(-1);
 	wander_circle.setPointCount(32);
 	win.draw(wander_circle);

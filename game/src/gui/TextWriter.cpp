@@ -15,7 +15,7 @@ TextWriter::TextWriter(automa::ServiceProvider& svc)
 	bounds_box.setFillColor(sf::Color(200, 200, 10, 10));
 	bounds_box.setOutlineColor(sf::Color(255, 80, 80, 180));
 	bounds_box.setOutlineThickness(-1);
-	cursor.setFillColor(svc.styles.colors.ui_white);
+	cursor.setFillColor(colors::ui_white);
 	cursor.setSize({10.f, 16.f});
 }
 
@@ -174,7 +174,7 @@ void TextWriter::append(std::string_view content) {
 
 void TextWriter::stylize(sf::Text& msg) const {
 	msg.setCharacterSize(m_text_size);
-	msg.setFillColor(m_services->styles.colors.ui_white);
+	msg.setFillColor(colors::ui_white);
 	msg.setFont(*m_font);
 	msg.setLineSpacing(1.5f);
 	msg.setPosition(m_bounds.position);
@@ -222,7 +222,7 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 		return;
 	}
 	show_cursor = true;
-	working_message.setFillColor(m_services->styles.colors.ui_white);
+	working_message.setFillColor(colors::ui_white);
 	working_message.setPosition(m_bounds.position);
 	auto last_glyph_position = working_message.findCharacterPos(working_message.getString().getSize() - 1);
 	cursor.setPosition(last_glyph_position + cursor_offset);

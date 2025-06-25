@@ -20,12 +20,12 @@ void ActionContextBar::update(automa::ServiceProvider& svc) {
 		// If an action has been queried this tick, it most likely does something when activated, so it is shown in the context bar
 		auto sprite = get_action_control_icon(svc, action);
 
-		sprite.setColor(svc.styles.colors.dark_grey);
+		sprite.setColor(colors::dark_grey);
 
 		text.add_sprite(sprite);
 
 		auto str = svc.controller_map.digital_action_name(action);
-		text.add_text(str, svc.text.fonts.basic, 16, svc.styles.colors.dark_grey);
+		text.add_text(str, svc.text.fonts.basic, 16, colors::dark_grey);
 		text.add_spacing(15.f);
 	}
 }

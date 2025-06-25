@@ -20,7 +20,7 @@ class Roll {
 	[[nodiscard]] auto is_valid() const -> bool { return roll_window.running(); }
 	[[nodiscard]] auto rolling() const -> bool { return flags.test(RollFlags::rolling); }
 
-	dir::Direction direction{};
+	Direction direction{};
 
   private:
 	util::Cooldown roll_window{38};

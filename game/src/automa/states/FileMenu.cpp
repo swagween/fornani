@@ -18,7 +18,7 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	loading.start(4);
 
 	title.setSize(svc.window->f_screen_dimensions());
-	title.setFillColor(svc.styles.colors.ui_black);
+	title.setFillColor(colors::ui_black);
 
 	refresh(svc);
 
@@ -117,7 +117,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 
 	player->set_position({svc.window->i_screen_dimensions().x * 0.5f + 80, 360});
 	player->update(map);
-	player->controller.direction.lr = dir::LR::left;
+	player->controller.direction.lnr = LNR::left;
 
 	if (m_console) { m_console.value()->update(svc); }
 	hud.update(svc, *player);

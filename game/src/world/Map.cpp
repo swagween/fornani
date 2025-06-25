@@ -614,7 +614,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam, true); }
 	} else {
 		sf::RectangleShape box{};
-		box.setFillColor(svc.styles.colors.black);
+		box.setFillColor(colors::black);
 		box.setSize(svc.window->f_screen_dimensions());
 		win.draw(box);
 	}
@@ -829,7 +829,8 @@ void Map::debug() {
 }
 
 bool Map::nearby(shape::Shape& first, shape::Shape& second) const {
-	return abs(first.get_position().x + first.get_dimensions().x * 0.5f - second.get_position().x) < lookup::unit_size_f * collision_barrier && abs(first.get_position().y - second.get_position().y) < lookup::unit_size_f * collision_barrier;
+	return abs(first.get_position().x + first.get_dimensions().x * 0.5f - second.get_position().x) < constants::f_cell_size * collision_barrier &&
+		   abs(first.get_position().y - second.get_position().y) < constants::f_cell_size * collision_barrier;
 }
 
 bool Map::within_bounds(sf::Vector2<float> test) const { return test.x > 0.f && test.x < real_dimensions.x && test.y > 0.f && test.y < real_dimensions.y; }

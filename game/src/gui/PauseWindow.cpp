@@ -6,7 +6,7 @@ namespace fornani::gui {
 
 PauseWindow::PauseWindow(automa::ServiceProvider& svc) : m_menu(svc, {"resume", "settings", "controls", "quit"}, svc.window->f_center_screen() + sf::Vector2f{0.f, 32.f}), m_dimensions{0.f, 0.f} {
 	m_background.setSize(svc.window->f_screen_dimensions());
-	auto color = svc.styles.colors.ui_black;
+	auto color = colors::ui_black;
 	color.a = 220;
 	m_background.setFillColor(color);
 	svc.soundboard.flags.console.set(audio::Console::menu_open);

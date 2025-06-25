@@ -6,7 +6,7 @@ namespace fornani::automa {
 
 Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number) {
 	title.setSize(static_cast<sf::Vector2f>(svc.window->i_screen_dimensions()));
-	title.setFillColor(svc.styles.colors.ui_black);
+	title.setFillColor(colors::ui_black);
 	svc.music.load(svc.finder, "respite");
 	svc.music.play_looped(20);
 	float ppx = svc.data.get_save()["player_data"]["position"]["x"].as<float>();

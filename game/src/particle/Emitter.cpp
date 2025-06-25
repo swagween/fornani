@@ -4,7 +4,7 @@
 
 namespace fornani::vfx {
 
-Emitter::Emitter(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, std::string_view type, sf::Color color, dir::Direction direction)
+Emitter::Emitter(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, std::string_view type, sf::Color color, Direction direction)
 	: position(position), dimensions(dimensions), type(type), color(color), direction(direction) {
 	auto const& in_data = svc.data.particle[type];
 	variables.load = in_data["load"].as<int>();

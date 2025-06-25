@@ -95,7 +95,7 @@ void SwitchButton::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 		sensorbox.setSize(sensor.get_dimensions());
 		sensorbox.setFillColor(sf::Color::Transparent);
 		sensorbox.setOutlineThickness(-4);
-		pressed() ? sensorbox.setOutlineColor(svc.styles.colors.dark_fucshia) : sensorbox.setOutlineColor(svc.styles.colors.mythic_green);
+		pressed() ? sensorbox.setOutlineColor(colors::dark_fucshia) : sensorbox.setOutlineColor(colors::mythic_green);
 		win.draw(sensorbox);
 		return;
 	}

@@ -34,7 +34,7 @@ void Eyebot::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	// reset animation states to determine next animation state
 	state = {};
 	if (ent_state.test(entity::State::flip)) { state.set(EyebotState::turn); }
-	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::left : dir::LR::right;
+	direction.lnr = (player.collider.physics.position.x < collider.physics.position.x) ? LNR::left : LNR::right;
 
 	state_function = state_function();
 

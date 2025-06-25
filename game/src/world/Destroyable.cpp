@@ -44,7 +44,7 @@ void Destroyable::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Pr
 	if (proj.get_bounding_box().overlaps(collider.bounding_box)) {
 		if (!proj.destruction_initiated()) {
 			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position(), {}, proj.effect_type(), 2));
-			if (proj.get_direction().lr == dir::LR::neutral) { map.effects.back().rotate(); }
+			if (proj.get_direction().lnr == LNR::neutral) { map.effects.back().rotate(); }
 			svc.soundboard.flags.world.set(audio::World::wall_hit);
 		}
 		proj.destroy(false);

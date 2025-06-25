@@ -1,13 +1,15 @@
+
 #include "fornani/entities/packages/Caution.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/world/Map.hpp"
 
 namespace fornani::entity {
+
 void Caution::update() {}
 
 void Caution::avoid_player(player::Player& player) {}
 
-void Caution::avoid_ledges(world::Map& map, shape::Collider& collider, dir::Direction& direction, int height) {
+void Caution::avoid_ledges(world::Map& map, shape::Collider& collider, Direction& direction, int height) {
 	heights.danger = height;
 	heights.perceived = {};
 	retreat = {};
@@ -19,7 +21,7 @@ void Caution::avoid_ledges(world::Map& map, shape::Collider& collider, dir::Dire
 	testers.right = collider.vicinity.vertices.at(2) - buffer;
 
 	// only test cells later in the grid to save time
-	auto& probe = direction.lr == dir::LR::left ? testers.left : testers.right;
+	auto& probe = direction.lnr == LNR::left ? testers.left : testers.right;
 	auto start_index = map.get_index_at_position(probe);
 	for (auto i{start_index}; i < map.get_middleground()->grid.cells.size(); i += map.dimensions.x) {
 		auto& cell = map.get_middleground()->grid.cells.at(static_cast<int>(i));
@@ -30,7 +32,7 @@ void Caution::avoid_ledges(world::Map& map, shape::Collider& collider, dir::Dire
 		}
 	}
 	if (heights.perceived >= height) { retreat = {10.f, 0.f}; }
-	if (direction.lr == dir::LR::right) { retreat.x *= -1.f; }
+	if (direction.lnr == LNR::right) { retreat.x *= -1.f; }
 }
 
 bool entity::Caution::danger() const { return heights.perceived >= heights.danger; }

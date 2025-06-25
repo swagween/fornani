@@ -13,9 +13,9 @@ Tank::Tank(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "tank"), 
 	collider.physics.maximum_velocity = {3.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};
 	secondary_collider = shape::Collider({28.f, 28.f});
-	directions.desired.lr = dir::LR::left;
-	directions.actual.lr = dir::LR::left;
-	directions.movement.lr = dir::LR::neutral;
+	directions.desired.lnr = LNR::left;
+	directions.actual.lnr = LNR::left;
+	directions.movement.lnr = LNR::neutral;
 }
 
 void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -30,13 +30,13 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 
 	// reset animation states to determine next animation state
 	state = {};
-	directions.desired.lr = (player.collider.get_center().x < collider.get_center().x) ? dir::LR::left : dir::LR::right;
-	directions.movement.lr = collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
-	if (directions.actual.lr == dir::LR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lr == dir::LR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
+	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
+	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
+	if (directions.actual.lnr == LNR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
+	if (directions.actual.lnr == LNR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
 	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 14.f};
-	secondary_collider.physics.position.x += directions.actual.lr == dir::LR::left ? 10.f : collider.dimensions.x - secondary_collider.dimensions.x - 10.f;
+	secondary_collider.physics.position.x += directions.actual.lnr == LNR::left ? 10.f : collider.dimensions.x - secondary_collider.dimensions.x - 10.f;
 	secondary_collider.sync_components();
 
 	player.collider.handle_collider_collision(secondary_collider);
@@ -68,7 +68,7 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 
 	if (just_died()) { m_services->soundboard.flags.tank.set(audio::Tank::death); }
 
-	if (directions.actual.lr != directions.desired.lr) { state = TankState::turn; }
+	if (directions.actual.lnr != directions.desired.lnr) { state = TankState::turn; }
 
 	state_function = state_function();
 }
@@ -96,7 +96,7 @@ fsm::StateFunction Tank::update_turn() {
 };
 fsm::StateFunction Tank::update_run() {
 	animation.label = "run";
-	auto facing = directions.actual.lr == dir::LR::left ? -1.f : 1.f;
+	auto facing = directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	collider.physics.apply_force({attributes.speed * facing, 0.f});
 	if (caution.danger() || animation.complete()) {
 		state = TankState::idle;
@@ -113,8 +113,8 @@ fsm::StateFunction Tank::update_shoot() {
 	if (change_state(TankState::turn, turn)) { return TANK_BIND(update_turn); }
 	if (!gun.get().cooling_down()) {
 		gun.cycle.update();
-		if (directions.actual.lr == dir::LR::left) { gun.barrel_offset = gun.cycle.get_alternator() % 2 == 0 ? sf::Vector2<float>{-14.f, 10.f} : sf::Vector2<float>{26.f, 20.f}; }
-		if (directions.actual.lr == dir::LR::right) { gun.barrel_offset = gun.cycle.get_alternator() % 2 == 1 ? sf::Vector2<float>{52.f, 10.f} : sf::Vector2<float>{14.f, 20.f}; }
+		if (directions.actual.lnr == LNR::left) { gun.barrel_offset = gun.cycle.get_alternator() % 2 == 0 ? sf::Vector2<float>{-14.f, 10.f} : sf::Vector2<float>{26.f, 20.f}; }
+		if (directions.actual.lnr == LNR::right) { gun.barrel_offset = gun.cycle.get_alternator() % 2 == 1 ? sf::Vector2<float>{52.f, 10.f} : sf::Vector2<float>{14.f, 20.f}; }
 		gun.shoot();
 		m_map->spawn_projectile_at(*m_services, gun.get(), gun.barrel_point());
 		m_services->soundboard.flags.weapon.set(audio::Weapon::skycorps_ar);
@@ -139,7 +139,7 @@ fsm::StateFunction Tank::update_alert() {
 		}
 	}
 	if (animation.complete()) {
-		if (directions.actual.lr != directions.desired.lr) {
+		if (directions.actual.lnr != directions.desired.lnr) {
 			state = TankState::turn;
 			animation.set_params(turn);
 			return TANK_BIND(update_turn);

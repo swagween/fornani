@@ -95,7 +95,7 @@ void SettingsMenu::frame_update(ServiceProvider& svc) {}
 void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	auto index = static_cast<int>(Toggles::music);
 
-	adjust_mode() ? options.at(index).label.setFillColor(svc.styles.colors.red) : options.at(index).label.setFillColor(options.at(index).label.getFillColor());
+	adjust_mode() ? options.at(index).label.setFillColor(colors::red) : options.at(index).label.setFillColor(options.at(index).label.getFillColor());
 	options.at(index).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music.volume.multiplier * 100.f)) + "%");
 
 	for (auto& option : options) { win.draw(option.label); }

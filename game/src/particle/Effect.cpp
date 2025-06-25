@@ -82,7 +82,7 @@ Effect::Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vecto
 	}
 	animation.set_params({0, spritesheet_dimensions.y, framerate, 0});
 	drawbox.setFillColor(sf::Color::Transparent);
-	drawbox.setOutlineColor(svc.styles.colors.fucshia);
+	drawbox.setOutlineColor(colors::fucshia);
 	drawbox.setOutlineThickness(-1);
 	drawbox.setSize(static_cast<sf::Vector2<float>>(sprite_dimensions));
 	physics = components::PhysicsComponent({0.99f, 0.99f}, 1.f);

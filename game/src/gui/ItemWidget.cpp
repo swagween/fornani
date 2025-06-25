@@ -17,8 +17,8 @@ ItemWidget::ItemWidget(automa::ServiceProvider& svc) : sprites{.item = sf::Sprit
 	sprites.gun.setOrigin(gun_dimensions * 0.5f);
 	sprites.item.setTextureRect(sf::IntRect({(id - 1) * static_cast<int>(dimensions.x), 0}, {static_cast<int>(dimensions.x), static_cast<int>(dimensions.y)}));
 	gravitator.set_target_position(position);
-	sparkler = vfx::Sparkler(svc, dimensions, svc.styles.colors.ui_white, "item");
-	sticker.setFillColor(svc.styles.colors.console_blue);
+	sparkler = vfx::Sparkler(svc, dimensions, colors::ui_white, "item");
+	sticker.setFillColor(colors::console_blue);
 	sticker.setRadius(32.f);
 	sticker.setOrigin({sticker.getRadius(), sticker.getRadius()});
 	sticker.setPointCount(32);

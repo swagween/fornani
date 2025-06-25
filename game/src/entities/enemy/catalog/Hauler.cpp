@@ -28,7 +28,7 @@ void Hauler::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 
 	// reset animation states to determine next animation state
 	state = {};
-	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::left : dir::LR::right;
+	direction.lnr = (player.collider.physics.position.x < collider.physics.position.x) ? LNR::left : LNR::right;
 	Enemy::update(svc, map, player);
 
 	if (hostility_triggered() && running_time.is_complete()) {
@@ -71,12 +71,12 @@ void Hauler::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	hurt_effect.update();
 	if (hurt_effect.running()) {
 		if ((hurt_effect.get_cooldown() / 32) % 2 == 0) {
-			visual.sprite.setColor(svc.styles.colors.red);
+			visual.sprite.setColor(colors::red);
 		} else {
-			visual.sprite.setColor(svc.styles.colors.periwinkle);
+			visual.sprite.setColor(colors::periwinkle);
 		}
 	} else {
-		visual.sprite.setColor(svc.styles.colors.white);
+		visual.sprite.setColor(colors::white);
 	}
 
 	if (just_died()) { m_services->soundboard.flags.tank.set(audio::Tank::death); }
@@ -127,7 +127,7 @@ fsm::StateFunction Hauler::update_turn() {
 };
 fsm::StateFunction Hauler::update_run() {
 	animation.label = "run";
-	auto facing = direction.lr == dir::LR::left ? -1.f : 1.f;
+	auto facing = direction.lnr == LNR::left ? -1.f : 1.f;
 	collider.physics.apply_force({attributes.speed * facing, 0.f});
 	if (caution.danger()) { running_time.cancel(); }
 	if (running_time.is_complete()) { state.set(HaulerState::idle); }

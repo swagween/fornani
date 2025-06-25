@@ -5,7 +5,7 @@
 
 namespace fornani::gui {
 
-MapTexture::MapTexture(automa::ServiceProvider& svc) : m_border_color{svc.styles.colors.pioneer_red}, m_tile_color{svc.styles.colors.pioneer_dark_red}, m_scale{4.f} {
+MapTexture::MapTexture(automa::ServiceProvider& svc) : m_border_color{colors::pioneer_red}, m_tile_color{colors::pioneer_dark_red}, m_scale{4.f} {
 	m_tile_box.setFillColor(m_tile_color);
 	m_tile_box.setSize({m_scale, m_scale});
 }
@@ -34,7 +34,7 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 			if (!cell.is_occupied() || cell.is_platform()) {
 				m_tile_box.setFillColor(m_tile_color);
 				m_tile_box.setPosition(cell.f_scaled_position() * m_scale);
-				cell.is_platform() ? m_tile_box.setFillColor(svc.styles.colors.pioneer_dark_red) : m_tile_box.setFillColor(svc.styles.colors.pioneer_dark_red);
+				cell.is_platform() ? m_tile_box.setFillColor(colors::pioneer_dark_red) : m_tile_box.setFillColor(colors::pioneer_dark_red);
 				cell.is_platform() ? m_tile_box.setScale({1.f, 0.75f}) : m_tile_box.setScale({1.f, 1.f});
 				cell.is_platform() ? m_tile_box.setOrigin({0.0f, -0.25f * m_scale}) : m_tile_box.setOrigin({});
 				if (!obscured) { m_center_texture.draw(m_tile_box); }

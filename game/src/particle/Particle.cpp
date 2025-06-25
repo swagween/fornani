@@ -10,7 +10,7 @@
 
 namespace fornani::vfx {
 
-Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> dim, std::string_view type, sf::Color color, dir::Direction direction)
+Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> dim, std::string_view type, sf::Color color, Direction direction)
 	: position(pos), dimensions(dim), sprite_dimensions(dim), collider(dim.x), sprite{svc.assets.get_texture("particle_" + std::string{type})} {
 	box.setFillColor(color);
 	box.setSize(dimensions);
@@ -28,9 +28,9 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 
 	auto angle = util::random::random_range_float(-angle_range, angle_range);
 	auto f_pi = static_cast<float>(std::numbers::pi);
-	if (direction.lr == dir::LR::left) { angle += f_pi; }
-	if (direction.und == dir::UND::up) { angle += f_pi * 1.5f; }
-	if (direction.und == dir::UND::down) { angle += f_pi * 0.5f; }
+	if (direction.lnr == LNR::left) { angle += f_pi; }
+	if (direction.und == UND::up) { angle += f_pi * 1.5f; }
+	if (direction.und == UND::down) { angle += f_pi * 0.5f; }
 
 	expulsion += util::random::random_range_float(-expulsion_variance, expulsion_variance);
 

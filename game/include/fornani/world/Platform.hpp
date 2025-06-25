@@ -30,7 +30,7 @@ class Platform : public shape::Collider {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	void switch_directions();
-	dir::Direction direction{};
+	Direction direction{};
 	util::Counter counter{};
 
   private:
@@ -48,7 +48,7 @@ class Platform : public shape::Collider {
 		util::BitFlags<PlatformState> state{};
 	} flags{};
 
-	dir::Direction native_direction{};
+	Direction native_direction{};
 
 	sf::ConvexShape track_shape{};
 	std::vector<sf::Vector2<float>> track{};

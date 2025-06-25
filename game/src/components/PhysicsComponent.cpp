@@ -28,8 +28,8 @@ void PhysicsComponent::multiply_acceleration(float multiplier, sf::Vector2<float
 
 void PhysicsComponent::update_euler(automa::ServiceProvider& svc) {
 	integrate(svc);
-	direction.und = velocity.y > 0.f ? dir::UND::down : (velocity.y < 0.f ? dir::UND::up : dir::UND::neutral);
-	direction.lr = velocity.x > 0.f ? dir::LR::right : (velocity.x < 0.f ? dir::LR::left : dir::LR::neutral);
+	direction.und = velocity.y > 0.f ? UND::down : (velocity.y < 0.f ? UND::up : UND::neutral);
+	direction.lnr = velocity.x > 0.f ? LNR::right : (velocity.x < 0.f ? LNR::left : LNR::neutral);
 }
 
 void PhysicsComponent::integrate(automa::ServiceProvider& svc) {

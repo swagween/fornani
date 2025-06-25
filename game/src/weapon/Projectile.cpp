@@ -97,13 +97,13 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	visual.sprite.update(physical.bounding_box.get_position() + physical.bounding_box.get_dimensions() * 0.5f, 0, visual.sprite.get_sprite_angle_index(), true);
 	if (physical.sensor) { visual.sprite.update(physical.bounding_box.get_position() + physical.bounding_box.get_dimensions() * 0.5f, 0, visual.sprite.get_sprite_angle_index(), true); }
 
-	if (physical.direction.lr == dir::LR::left) {
+	if (physical.direction.lnr == LNR::left) {
 		physical.bounding_box.set_position(shape::Shape::Vec{physical.physics.position.x, physical.physics.position.y - physical.bounding_box.get_dimensions().y / 2});
-	} else if (physical.direction.lr == dir::LR::right) {
+	} else if (physical.direction.lnr == LNR::right) {
 		physical.bounding_box.set_position(shape::Shape::Vec{physical.physics.position.x - physical.bounding_box.get_dimensions().x, physical.physics.position.y - physical.bounding_box.get_dimensions().y / 2});
-	} else if (physical.direction.und == dir::UND::up) {
+	} else if (physical.direction.und == UND::up) {
 		physical.bounding_box.set_position(shape::Shape::Vec{physical.physics.position.x - physical.bounding_box.get_dimensions().x / 2, physical.physics.position.y});
-	} else if (physical.direction.und == dir::UND::down) {
+	} else if (physical.direction.und == UND::down) {
 		physical.bounding_box.set_position(shape::Shape::Vec{physical.physics.position.x - physical.bounding_box.get_dimensions().x / 2, physical.physics.position.y - physical.bounding_box.get_dimensions().y});
 	}
 
@@ -124,7 +124,7 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 	if (map.check_cell_collision_circle(physical.collider, false)) {
 		if (!destruction_initiated()) {
 			map.effects.push_back(entity::Effect(svc, "bullet_hit", variables.destruction_point + physical.physics.position, {}, effect_type(), 2));
-			if (physical.direction.lr == dir::LR::neutral) { map.effects.back().rotate(); }
+			if (physical.direction.lnr == LNR::neutral) { map.effects.back().rotate(); }
 			auto listener_position = sf::Vector2<float>{sf::Listener::getPosition().x, sf::Listener::getPosition().z};
 			svc.soundboard.play(svc, svc.sounds.get_buffer("wall_hit"), 0.1f, 100.f, 0, 10.f, listener_position - physical.bounding_box.get_center());
 		}
@@ -174,7 +174,7 @@ void Projectile::destroy(bool completely, bool whiffed) {
 	}
 
 	if (!variables.state.test(ProjectileState::destruction_initiated)) {
-		if (physical.direction.lr == dir::LR::left || physical.direction.und == dir::UND::up) {
+		if (physical.direction.lnr == LNR::left || physical.direction.und == UND::up) {
 			variables.destruction_point = physical.bounding_box.get_position();
 		} else {
 			variables.destruction_point = physical.bounding_box.get_position() + physical.bounding_box.get_dimensions();
@@ -191,16 +191,16 @@ void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2<float> target) {
 		physical.physics.velocity = util::unit(target) * metadata.specifications.speed;
 		return;
 	}
-	switch (physical.direction.lr) {
-	case dir::LR::left: physical.physics.velocity = {-metadata.specifications.speed, var}; break;
-	case dir::LR::right: physical.physics.velocity = {metadata.specifications.speed, var}; break;
-	case dir::LR::neutral: break;
+	switch (physical.direction.lnr) {
+	case LNR::left: physical.physics.velocity = {-metadata.specifications.speed, var}; break;
+	case LNR::right: physical.physics.velocity = {metadata.specifications.speed, var}; break;
+	case LNR::neutral: break;
 	default: NANI_LOG_WARN(m_logger, "Unknown direction was passed. Did you forget to add a case to the switch?"); break;
 	}
 	switch (physical.direction.und) {
-	case dir::UND::up: physical.physics.velocity = {var, -metadata.specifications.speed}; break;
-	case dir::UND::down: physical.physics.velocity = {var, metadata.specifications.speed}; break;
-	case dir::UND::neutral: break;
+	case UND::up: physical.physics.velocity = {var, -metadata.specifications.speed}; break;
+	case UND::down: physical.physics.velocity = {var, metadata.specifications.speed}; break;
+	case UND::neutral: break;
 	default: NANI_LOG_WARN(m_logger, "Unknown direction was passed. Did you forget to add a case to the switch?"); break;
 	}
 	if (sprite_flip()) {
@@ -218,7 +218,7 @@ void Projectile::set_position(sf::Vector2<float> pos) {
 
 void Projectile::set_team(Team to_team) { metadata.team = to_team; }
 
-void Projectile::set_firing_direction(dir::Direction to_direction) { physical.direction = to_direction; }
+void Projectile::set_firing_direction(Direction to_direction) { physical.direction = to_direction; }
 
 void Projectile::poof() { variables.state.set(arms::ProjectileState::poof); }
 

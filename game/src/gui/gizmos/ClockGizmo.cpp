@@ -17,7 +17,7 @@ ClockGizmo::ClockGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector
 	m_sprites.clock.setScale(constants::f_scale_vec);
 	m_sprites.hand.setOrigin({4.f, 4.f});
 	m_sprites.clock.setOrigin(m_sprites.clock.getLocalBounds().getCenter());
-	m_text.readout.setFillColor(svc.styles.colors.pioneer_red);
+	m_text.readout.setFillColor(colors::pioneer_red);
 	m_text.readout.setCharacterSize(16);
 }
 

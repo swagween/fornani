@@ -14,14 +14,14 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map, 
 	: m_cell_dimensions{svc.window->f_screen_dimensions()}, m_dashboard{std::make_unique<Dashboard>(svc, map, player, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}} {
 	m_debug.border.setFillColor(sf::Color{12, 12, 20});
 	m_debug.border.setSize(svc.window->f_screen_dimensions());
-	m_debug.border.setOutlineColor(svc.styles.colors.green);
+	m_debug.border.setOutlineColor(colors::green);
 	m_debug.border.setOutlineThickness(-2.f);
-	m_debug.center.setFillColor(svc.styles.colors.red);
+	m_debug.center.setFillColor(colors::red);
 	m_debug.center.setRadius(32.f);
 	m_debug.center.setOrigin({32.f, 32.f});
 	boundary.size = svc.window->f_screen_dimensions() * 3.f;
 	boundary.position = -1.f * svc.window->f_screen_dimensions();
-	m_background.setFillColor(svc.styles.colors.pioneer_black);
+	m_background.setFillColor(colors::pioneer_black);
 	m_background.setSize(svc.window->f_screen_dimensions());
 	m_dashboard->set_position(sf::Vector2f{250.f, 32.f}, true);
 	svc.soundboard.flags.console.set(audio::Console::menu_open);
@@ -35,7 +35,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 		if (!m_dashboard->handle_inputs(controller, svc.soundboard)) { m_grid_position = {}; }
 	}
 
-	m_background.setFillColor(util::ColorUtils::fade_in(svc.styles.colors.pioneer_black));
+	m_background.setFillColor(util::ColorUtils::fade_in(colors::pioneer_black));
 
 	if (m_view == InventoryView::dashboard) {
 		auto const& up = controller.digital_action_status(config::DigitalAction::menu_up).held;

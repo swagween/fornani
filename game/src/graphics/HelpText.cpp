@@ -8,9 +8,9 @@ namespace fornani::graphics {
 HelpText::HelpText(automa::ServiceProvider& svc) : data(svc.text.fonts.title) {}
 
 HelpText::HelpText(automa::ServiceProvider& svc, std::string start, config::DigitalAction const& code, std::string end, int delay_time, bool include_background, bool no_blink) : HelpText(svc) {
-	text_color = svc.styles.colors.ui_white;
+	text_color = colors::ui_white;
 	text_color.a = 0;
-	bg_color = svc.styles.colors.ui_black;
+	bg_color = colors::ui_black;
 	bg_color.a = 0;
 	data.setCharacterSize(text_size);
 	data.setLineSpacing(1.5f);

@@ -32,7 +32,7 @@ class Spike {
 	sf::Vector2<float> size{};
 	shape::Shape hitbox{};
 	shape::Collider collider{};
-	dir::Direction facing{};
+	Direction facing{};
 	util::BitFlags<SpikeAttributes> attributes{};
 	sf::Vector2<float> grid_position{};
 	sf::Vector2<float> offset{};

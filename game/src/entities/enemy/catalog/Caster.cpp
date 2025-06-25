@@ -14,9 +14,9 @@ Caster::Caster(automa::ServiceProvider& svc, world::Map& map)
 	collider.physics.air_friction = {0.9f, 0.9f};
 	collider.flags.general.set(shape::General::complex);
 	secondary_collider = shape::Collider({22.f, 22.f});
-	directions.desired.lr = dir::LR::left;
-	directions.actual.lr = dir::LR::left;
-	directions.movement.lr = dir::LR::neutral;
+	directions.desired.lnr = LNR::left;
+	directions.actual.lnr = LNR::left;
+	directions.movement.lnr = LNR::neutral;
 	energy_ball.get().set_team(arms::Team::guardian);
 
 	target = vfx::Gravitator(sf::Vector2<float>{}, sf::Color::Transparent, 0.013f);
@@ -47,7 +47,7 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 			} else {
 				idle_distance.y = -120.f;
 			}
-			if (directions.actual.lr == dir::LR::right) { idle_distance.x *= -1; }
+			if (directions.actual.lnr == LNR::right) { idle_distance.x *= -1; }
 			if (util::random::percent_chance(12) && svc.ticker.every_x_ticks(10)) { idle_distance.x *= -1; }
 			target.set_target_position(player.collider.get_center() + idle_distance);
 		}
@@ -57,10 +57,10 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 			} else {
 				signal_distance.y = -80.f;
 			}
-			if (directions.actual.lr == dir::LR::right) { signal_distance.x *= -1; }
+			if (directions.actual.lnr == LNR::right) { signal_distance.x *= -1; }
 			target.set_target_position(player.collider.get_center() + signal_distance);
 		} else if (!is_dormant()) {
-			if (directions.actual.lr == dir::LR::right) { standard_distance.x *= -1; }
+			if (directions.actual.lnr == LNR::right) { standard_distance.x *= -1; }
 			target.set_target_position(player.collider.get_center() + standard_distance);
 		} else {
 			target.set_position(collider.physics.position);
@@ -91,8 +91,8 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 
 	// reset animation states to determine next animation state
 	state = {};
-	directions.desired.lr = (player.collider.get_center().x < collider.get_center().x) ? dir::LR::left : dir::LR::right;
-	directions.movement.lr = target.collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
+	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
+	directions.movement.lnr = target.collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
 	Enemy::update(svc, map, player);
 	if (!is_dormant()) {
 		parts.scepter.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center());
@@ -100,7 +100,7 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	}
 
 	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 10.f};
-	secondary_collider.physics.position.x += directions.actual.lr == dir::LR::left ? 2.f : collider.dimensions.x - secondary_collider.dimensions.x - 2.f;
+	secondary_collider.physics.position.x += directions.actual.lnr == LNR::left ? 2.f : collider.dimensions.x - secondary_collider.dimensions.x - 2.f;
 	secondary_collider.sync_components();
 
 	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
@@ -120,12 +120,12 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 
 	if (just_died()) { m_services->soundboard.flags.demon.set(audio::Demon::death); }
 
-	if (directions.actual.lr != directions.desired.lr) { state = CasterState::turn; }
+	if (directions.actual.lnr != directions.desired.lnr) { state = CasterState::turn; }
 
 	state_function = state_function();
 
-	if (directions.actual.lr == dir::LR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lr == dir::LR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
+	if (directions.actual.lnr == LNR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
+	if (directions.actual.lnr == LNR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 }
 
 void Caster::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -196,7 +196,7 @@ fsm::StateFunction Caster::update_prepare() {
 fsm::StateFunction Caster::update_signal() {
 	animation.label = "signal";
 	if (animation.just_started()) {
-		auto sign = directions.actual.lr == dir::LR::left ? 1.f : -1.f;
+		auto sign = directions.actual.lnr == LNR::left ? 1.f : -1.f;
 		parts.scepter.sprite->rotate(sf::degrees(90.f) * sign);
 		cooldowns.rapid_fire.start(208);
 	}
@@ -212,14 +212,14 @@ fsm::StateFunction Caster::update_signal() {
 	if (animation.complete()) {
 		parts.scepter.sprite->setTextureRect(sf::IntRect{{0, 0}, scepter_dimensions});
 		parts.wand.sprite->setTextureRect(sf::IntRect{{0, 0}, wand_dimensions});
-		auto sign = directions.actual.lr == dir::LR::left ? 1.f : -1.f;
+		auto sign = directions.actual.lnr == LNR::left ? 1.f : -1.f;
 		parts.scepter.sprite->rotate(sf::degrees(-90.f) * sign);
 		cooldowns.post_cast.start();
 		if (variant == CasterVariant::apprentice) {
 			m_map->spawn_projectile_at(*m_services, energy_ball.get(), energy_ball.get().get_barrel_point(), attack_target);
 			m_services->soundboard.flags.weapon.set(audio::Weapon::energy_ball);
 		} // only shoot at end for apprentice
-		if (directions.actual.lr != directions.desired.lr) {
+		if (directions.actual.lnr != directions.desired.lnr) {
 			state = CasterState::turn;
 			animation.set_params(turn);
 			return CASTER_BIND(update_turn);

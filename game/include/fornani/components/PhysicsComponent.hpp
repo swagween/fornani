@@ -75,7 +75,7 @@ class PhysicsComponent {
 	[[nodiscard]] auto stationary() const -> bool { return std::abs(velocity.x) < epsilon && std::abs(velocity.y) < epsilon; }
 
 	util::BitFlags<State> flags{};
-	dir::Direction direction{};
+	Direction direction{};
 	
 	float epsilon{0.0001f};
 };

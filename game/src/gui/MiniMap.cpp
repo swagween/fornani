@@ -9,7 +9,7 @@
 namespace fornani::gui {
 
 MiniMap::MiniMap(automa::ServiceProvider& svc) : m_texture(svc), m_map_sprite{svc.assets.get_texture("null")}, m_cursor{svc.assets.get_texture("map_cursor")}, m_speed{64.f} {
-	m_border.setOutlineColor(svc.styles.colors.pioneer_dark_red);
+	m_border.setOutlineColor(colors::pioneer_dark_red);
 	m_border.setOutlineThickness(-4.f);
 	m_border.setFillColor(sf::Color::Transparent);
 	m_border.setSize(svc.window->f_screen_dimensions());

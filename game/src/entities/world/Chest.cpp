@@ -24,7 +24,7 @@ Chest::Chest(automa::ServiceProvider& svc, int id) : id(id), sprite{svc.assets.g
 
 	animation.set_params(unopened);
 
-	sparkler = vfx::Sparkler(svc, dimensions, svc.styles.colors.ui_white, "chest");
+	sparkler = vfx::Sparkler(svc, dimensions, colors::ui_white, "chest");
 	sparkler.set_position(collider.physics.position);
 	if (svc.data.chest_is_open(id)) { state.set(ChestState::open); }
 }
@@ -92,7 +92,7 @@ void Chest::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		drawbox.setPosition(collider.physics.position - campos);
-		state.test(ChestState::activated) ? drawbox.setOutlineColor(svc.styles.colors.green) : drawbox.setOutlineColor(svc.styles.colors.dark_orange);
+		state.test(ChestState::activated) ? drawbox.setOutlineColor(colors::green) : drawbox.setOutlineColor(colors::dark_orange);
 		win.draw(drawbox);
 		collider.render(win, campos);
 	} else {

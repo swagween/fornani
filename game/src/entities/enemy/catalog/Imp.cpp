@@ -26,18 +26,18 @@ Imp::Imp(automa::ServiceProvider& svc, world::Map& map)
 																			  0.85f,
 																			  {0.f, -30.f},
 																			  2},
-			.hand{svc.styles.colors.ui_black, {4.f, 4.f}, 2.0f, 0.85f, {-32.f, 8.f}}},
+			.hand{colors::ui_black, {4.f, 4.f}, 2.0f, 0.85f, {-32.f, 8.f}}},
 	  dormant{0, 1, imp_framerate, -1}, idle{1, 6, imp_framerate, -1}, turn{7, 3, imp_framerate, 0}, run{10, 8, imp_framerate, -1}, jump{18, 5, imp_framerate, 0}, fall{24, 3, imp_framerate, -1}, attack{27, 7, imp_framerate, 0} {
 
 	animation.set_params(dormant);
 	collider.physics.maximum_velocity = {40.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};
 	collider.flags.general.set(shape::General::complex);
-	directions.desired.lr = dir::LR::left;
-	directions.actual.lr = dir::LR::left;
-	directions.movement.lr = dir::LR::neutral;
+	directions.desired.lnr = LNR::left;
+	directions.actual.lnr = LNR::left;
+	directions.movement.lnr = LNR::neutral;
 	attacks.stab.sensor.bounds.setRadius(10);
-	attacks.stab.sensor.drawable.setFillColor(svc.styles.colors.blue);
+	attacks.stab.sensor.drawable.setFillColor(colors::blue);
 	attacks.stab.hit.bounds.setRadius(28);
 	attacks.stab.origin = {-10.f, -26.f};
 
@@ -54,7 +54,7 @@ void Imp::unique_update(automa::ServiceProvider& svc, world::Map& map, player::P
 		return;
 	}
 
-	if (directions.actual.lr == dir::LR::left) {
+	if (directions.actual.lnr == LNR::left) {
 		attacks.stab.set_position(Enemy::collider.physics.position);
 		attacks.stab.origin.x = -10.f;
 	} else {
@@ -104,7 +104,7 @@ void Imp::unique_update(automa::ServiceProvider& svc, world::Map& map, player::P
 
 	if (just_died()) { m_services->soundboard.flags.demon.set(audio::Demon::death); }
 
-	if (directions.actual.lr != directions.desired.lr) { state = ImpState::turn; }
+	if (directions.actual.lnr != directions.desired.lnr) { state = ImpState::turn; }
 
 	state_function = state_function();
 }
@@ -153,7 +153,7 @@ fsm::StateFunction Imp::update_run() {
 	if (animation.just_started()) { parts.weapon.animated_sprite->set_params("lift"); }
 	if (parts.weapon.animated_sprite->complete()) { parts.weapon.animated_sprite->set_params("run"); }
 	attacks.stab.disable();
-	auto facing = directions.actual.lr == dir::LR::left ? -1.f : 1.f;
+	auto facing = directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	collider.physics.apply_force({attributes.speed * facing, 0.f});
 	if (caution.danger() || animation.complete()) {
 		state = ImpState::idle;
@@ -173,7 +173,7 @@ fsm::StateFunction Imp::update_jump() {
 	if (animation.just_started()) {
 		cooldowns.jump.start();
 		rand_jump = util::random::percent_chance(50) ? -1.f : 1.f;
-		if (cooldowns.post_attack.running()) { rand_jump = directions.actual.lr == dir::LR::left ? 1.f : -1.f; } // always jump backwards after a attack otherwise it feels unfair
+		if (cooldowns.post_attack.running()) { rand_jump = directions.actual.lnr == LNR::left ? 1.f : -1.f; } // always jump backwards after a attack otherwise it feels unfair
 	}
 	if (cooldowns.jump.running() && animation.get_frame_count() > jumpsquat_frame) { collider.physics.apply_force({0, -3.5f}); }
 	if (!collider.grounded() && animation.get_frame_count() > jumpsquat_frame) { collider.physics.apply_force({rand_jump * 2.f, 0.f}); }
@@ -209,7 +209,7 @@ fsm::StateFunction Imp::update_attack() {
 	if (animation.just_started()) { parts.weapon.animated_sprite->set_params("attack"); }
 	if (parts.weapon.animated_sprite->complete()) { parts.weapon.animated_sprite->set_params("swoosh"); }
 	auto force{16.f};
-	force *= directions.actual.lr == dir::LR::left ? -1.f : 1.f;
+	force *= directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	collider.physics.apply_force({force, 0.f});
 	if (animation.complete()) {
 		cooldowns.post_attack.start();

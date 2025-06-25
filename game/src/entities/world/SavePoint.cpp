@@ -17,7 +17,7 @@ SavePoint::SavePoint(automa::ServiceProvider& svc) : sprite{svc.assets.get_textu
 
 	animation.set_params(anim_params);
 
-	sparkler = vfx::Sparkler(svc, dimensions, svc.styles.colors.green, "save_point");
+	sparkler = vfx::Sparkler(svc, dimensions, colors::green, "save_point");
 	sparkler.set_position(position);
 }
 
@@ -25,7 +25,7 @@ void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, std
 
 	animation.update();
 	sparkler.update(svc);
-	intensity < 2 ? sparkler.set_color(svc.styles.colors.periwinkle) : sparkler.set_color(svc.styles.colors.ui_white);
+	intensity < 2 ? sparkler.set_color(colors::periwinkle) : sparkler.set_color(colors::ui_white);
 
 	sf::Vector2<float> proximity_offset = proximity_box.get_dimensions() * 0.5f + dimensions * 0.5f;
 	position = static_cast<Vec>(scaled_position) * 32.f;
@@ -71,7 +71,7 @@ void SavePoint::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec 
 
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		drawbox.setPosition(position - campos);
-		activated ? drawbox.setOutlineColor(svc.styles.colors.green) : drawbox.setOutlineColor(svc.styles.colors.dark_orange);
+		activated ? drawbox.setOutlineColor(colors::green) : drawbox.setOutlineColor(colors::dark_orange);
 		win.draw(drawbox);
 	} else {
 		win.draw(sprite);

@@ -14,14 +14,14 @@ PlayerController::PlayerController(automa::ServiceProvider& svc) : shield(svc), 
 	key_map.insert(std::make_pair(ControllerInput::inspect, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::dash, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::slide, 0.f));
-	direction.und = dir::UND::neutral;
-	direction.lr = dir::LR::right;
+	direction.und = UND::neutral;
+	direction.lnr = LNR::right;
 }
 
 void PlayerController::update(automa::ServiceProvider& svc) {
 	if (walking_autonomously()) {
 		prevent_movement();
-		key_map[ControllerInput::move_x] = direction.lr == dir::LR::left ? -walk_speed_v : walk_speed_v;
+		key_map[ControllerInput::move_x] = direction.lnr == LNR::left ? -walk_speed_v : walk_speed_v;
 	}
 	if (hard_state.test(HardState::no_move)) {
 		key_map = {};
@@ -68,6 +68,9 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto ir{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).released};
 	auto ih{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).held && cooldowns.inspect.is_almost_complete()};
 
+	auto const& left_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_left).triggered;
+	auto const& right_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_right).triggered;
+
 	// inspect
 	auto const& inspected = (it) && grounded() && !left && !right;
 	cooldowns.inspect.update();
@@ -75,9 +78,6 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 
 	auto const& dash_left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered && !grounded() && left;
 	auto const& dash_right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered && !grounded() && right;
-
-	horizontal_inputs.push_back(key_map[ControllerInput::move_x]);
-	if (horizontal_inputs.size() > quick_turn_sample_size) { horizontal_inputs.pop_front(); }
 
 	key_map[ControllerInput::move_x] = 0.f;
 	// keyboard
@@ -133,17 +133,22 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		hook_flags.set(Hook::hook_released);
 	}
 
+	bool firing_automatic = false;
 	if (!restricted() && (!shot() || !has_arsenal())) {
-		direction.lr = moving_left() ? dir::LR::left : direction.lr;
-		direction.lr = moving_right() ? dir::LR::right : direction.lr;
-		direction.und = dir::UND::neutral;
-		direction.und = up ? dir::UND::up : direction.und;
-		direction.und = down && !grounded() ? dir::UND::down : direction.und;
-	} else if (((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left)) && has_arsenal()) {
+		direction.lnr = moving_left() ? LNR::left : direction.lnr;
+		direction.lnr = moving_right() ? LNR::right : direction.lnr;
+		direction.und = UND::neutral;
+		direction.und = up ? UND::up : direction.und;
+		direction.und = down && !grounded() ? UND::down : direction.und;
+	} else if (((moving_left() && direction.lnr == LNR::right) || (moving_right() && direction.lnr == LNR::left)) && has_arsenal()) {
 		key_map[ControllerInput::move_x] *= backwards_dampen;
-	} else if (((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left))) {
+		firing_automatic = true;
+	} else if (((moving_left() && direction.lnr == LNR::right) || (moving_right() && direction.lnr == LNR::left))) {
 		key_map[ControllerInput::slide] = 0.f;
 	}
+
+	if ((left_pressed || left) && !firing_automatic) { m_last_requested_direction.set(LR::left); }
+	if ((right_pressed || right) && !firing_automatic) { m_last_requested_direction.set(LR::right); }
 
 	key_map[ControllerInput::arms_switch] = 0.f;
 	key_map[ControllerInput::arms_switch] = arms_switch_left ? -1.f : key_map[ControllerInput::arms_switch];
@@ -219,7 +224,7 @@ void PlayerController::dash() { dash_count = 1; }
 void PlayerController::walljump() { flags.set(MovementState::walljumping); }
 
 void PlayerController::autonomous_walk() {
-	direction.lr == dir::LR::right ? key_map[ControllerInput::move_x] = walk_speed_v : key_map[ControllerInput::move_x] = -walk_speed_v;
+	direction.lnr == LNR::right ? key_map[ControllerInput::move_x] = walk_speed_v : key_map[ControllerInput::move_x] = -walk_speed_v;
 	if (sprinting()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }
 	flags.set(MovementState::walking_autonomously);
 }

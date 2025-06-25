@@ -21,7 +21,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 	emitter.dimensions = {in_data["visual"]["spray"]["dimensions"][0].as<float>(), in_data["visual"]["spray"]["dimensions"][1].as<float>()};
 	try {
 		emitter.color = svc.styles.spray_colors.at(metadata.label);
-	} catch (std::out_of_range) { emitter.color = svc.styles.colors.white; }
+	} catch (std::out_of_range) { emitter.color = colors::white; }
 	emitter.type = in_data["visual"]["spray"]["type"].as_string(); // secondary emitter
 	if (in_data["visual"]["secondary_spray"]) {
 		secondary_emitter = EmitterAttributes();
@@ -29,7 +29,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 		secondary_emitter.value().dimensions.y = in_data["visual"]["secondary_spray"]["dimensions"][1].as<float>();
 		try {
 			secondary_emitter.value().color = svc.styles.spray_colors.at(metadata.label);
-		} catch (std::out_of_range) { secondary_emitter.value().color = svc.styles.colors.white; }
+		} catch (std::out_of_range) { secondary_emitter.value().color = colors::white; }
 		secondary_emitter.value().type = in_data["visual"]["secondary_spray"]["type"].as_string();
 	}
 	visual.texture_lookup = in_data["visual"]["texture_lookup"].as<int>() * 16;
@@ -49,7 +49,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 	audio.shoot = in_data["audio"]["shoot"].as<int>();
 }
 
-void Weapon::update(automa::ServiceProvider& svc, dir::Direction to_direction) {
+void Weapon::update(automa::ServiceProvider& svc, Direction to_direction) {
 	ammo.update();
 	if ((ammo.empty() || !cooldowns.down_time.running()) && !cooldowns.reload.running() && !ammo.full()) { cooldowns.reload.start(); }
 	if (cooldowns.reload.is_almost_complete() && projectile.get_team() == Team::nani) { svc.soundboard.flags.arms.set(audio::Arms::reload); }
@@ -72,10 +72,10 @@ void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		box.setSize({2.f, 2.f});
 		box.setOrigin({1.f, 1.f});
 		box.setPosition(offsets.gameplay.barrel - cam);
-		box.setFillColor(svc.styles.colors.fucshia);
+		box.setFillColor(colors::fucshia);
 		win.draw(box);
 		box.setPosition(visual.position - cam);
-		box.setFillColor(svc.styles.colors.goldenrod);
+		box.setFillColor(colors::goldenrod);
 		win.draw(box);
 	} else {
 		// visual.sprite.render(svc, win, cam);
@@ -124,7 +124,7 @@ void Weapon::force_position(sf::Vector2<float> pos) {
 
 void Weapon::set_barrel_point(sf::Vector2<float> point) { offsets.gameplay.barrel = point; }
 
-void Weapon::set_orientation(dir::Direction to_direction) {
+void Weapon::set_orientation(Direction to_direction) {
 	auto right_scale = sf::Vector2<float>{1.f, 1.f};
 	auto left_scale = sf::Vector2<float>{-1.f, 1.f};
 	auto neutral_rotation{0.0f};
@@ -136,26 +136,26 @@ void Weapon::set_orientation(dir::Direction to_direction) {
 	auto left_barrel_offset = sf::Vector2<float>{-offsets.render.barrel.x, offsets.render.barrel.y};
 	auto const& position = physical.final_position;
 	visual.sprite.setRotation(sf::degrees(neutral_rotation));
-	switch (firing_direction.lr) {
-	case dir::LR::right:
+	switch (firing_direction.lnr) {
+	case LNR::right:
 		visual.sprite.setScale(right_scale);
 		offsets.gameplay.barrel = position + right_offset + right_barrel_offset;
 		break;
-	case dir::LR::left:
+	case LNR::left:
 		visual.sprite.setScale(left_scale);
 		offsets.gameplay.barrel = position + left_offset + left_barrel_offset;
 		break;
 	default: break;
 	}
 	switch (firing_direction.und) {
-	case dir::UND::up:
+	case UND::up:
 		to_direction.right() ? visual.sprite.rotate(sf::degrees(-90)) : visual.sprite.rotate(sf::degrees(90));
 		if (to_direction.left()) { offsets.gameplay.barrel = {position.x - left_offset.y - left_barrel_offset.y, position.y + left_offset.x + left_barrel_offset.x}; }
 		if (to_direction.right()) { offsets.gameplay.barrel = {position.x + right_offset.y + right_barrel_offset.y, position.y - right_offset.x - right_barrel_offset.x}; }
 		firing_direction.neutralize_lr();
 		break;
-	case dir::UND::down:
-		to_direction.lr == dir::LR::right ? visual.sprite.rotate(sf::degrees(90)) : visual.sprite.rotate(sf::degrees(-90));
+	case UND::down:
+		to_direction.lnr == LNR::right ? visual.sprite.rotate(sf::degrees(90)) : visual.sprite.rotate(sf::degrees(-90));
 		if (to_direction.left()) { offsets.gameplay.barrel = {position.x + left_offset.y + left_barrel_offset.y, position.y - left_offset.x - left_barrel_offset.x}; }
 		if (to_direction.right()) { offsets.gameplay.barrel = {position.x - right_offset.y - right_barrel_offset.y, position.y + right_offset.x + right_barrel_offset.x}; }
 		firing_direction.neutralize_lr();
@@ -167,7 +167,7 @@ void Weapon::set_orientation(dir::Direction to_direction) {
 
 void Weapon::set_team(Team team) { projectile.set_team(team); }
 
-void Weapon::set_firing_direction(dir::Direction to_direction) { firing_direction = to_direction; }
+void Weapon::set_firing_direction(Direction to_direction) { firing_direction = to_direction; }
 
 void Weapon::reset() { active_projectiles.start(); }
 

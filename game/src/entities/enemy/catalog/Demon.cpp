@@ -14,11 +14,11 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map)
 	collider.physics.air_friction = {0.95f, 0.999f};
 	collider.flags.general.set(shape::General::complex);
 	secondary_collider = shape::Collider({22.f, 22.f});
-	directions.desired.lr = dir::LR::left;
-	directions.actual.lr = dir::LR::left;
-	directions.movement.lr = dir::LR::neutral;
+	directions.desired.lnr = LNR::left;
+	directions.actual.lnr = LNR::left;
+	directions.movement.lnr = LNR::neutral;
 	attacks.stab.sensor.bounds.setRadius(10);
-	attacks.stab.sensor.drawable.setFillColor(svc.styles.colors.blue);
+	attacks.stab.sensor.drawable.setFillColor(colors::blue);
 	attacks.stab.hit.bounds.setRadius(28);
 	attacks.stab.origin = {-10.f, -26.f};
 
@@ -39,7 +39,7 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 		return;
 	}
 
-	if (directions.actual.lr == dir::LR::left) {
+	if (directions.actual.lnr == LNR::left) {
 		attacks.stab.set_position(Enemy::collider.physics.position);
 		attacks.rush.set_position(Enemy::collider.physics.position);
 		attacks.stab.origin.x = -10.f;
@@ -63,7 +63,7 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 	attacks.stab.handle_player(player);
 	attacks.rush.handle_player(player);
 	if (state == DemonState::rush && attacks.rush.sensor.active() && !cooldowns.rush_hit.running()) {
-		auto sign = directions.actual.lr == dir::LR::left ? -1.f : 1.f;
+		auto sign = directions.actual.lnr == LNR::left ? -1.f : 1.f;
 		if ((sign == -1.f && player_behind(player)) || (sign == 1.f && !player_behind(player))) {
 			// player.hurt(1);
 			player.accumulated_forces.push_back({sign * 2.f, -2.f});
@@ -77,10 +77,10 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 
 	// reset animation states to determine next animation state
 	state = {};
-	directions.desired.lr = (player.collider.get_center().x < collider.get_center().x) ? dir::LR::left : dir::LR::right;
-	directions.movement.lr = collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
-	if (directions.actual.lr == dir::LR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lr == dir::LR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
+	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
+	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
+	if (directions.actual.lnr == LNR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
+	if (directions.actual.lnr == LNR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
 	if (!is_dormant()) {
 		parts.spear.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center());
@@ -94,7 +94,7 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 
 	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 10.f};
-	secondary_collider.physics.position.x += directions.actual.lr == dir::LR::left ? 2.f : collider.dimensions.x - secondary_collider.dimensions.x - 2.f;
+	secondary_collider.physics.position.x += directions.actual.lnr == LNR::left ? 2.f : collider.dimensions.x - secondary_collider.dimensions.x - 2.f;
 	secondary_collider.sync_components();
 	if (player.collider.hurtbox.overlaps(secondary_collider.bounding_box) && !is_dormant()) { player.hurt(); }
 
@@ -123,7 +123,7 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 
 	if (just_died()) { m_services->soundboard.flags.demon.set(audio::Demon::death); }
 
-	if (directions.actual.lr != directions.desired.lr) { state = DemonState::turn; }
+	if (directions.actual.lnr != directions.desired.lnr) { state = DemonState::turn; }
 
 	state_function = state_function();
 }
@@ -168,7 +168,7 @@ fsm::StateFunction Demon::update_turn() {
 
 fsm::StateFunction Demon::update_run() {
 	animation.label = "run";
-	auto facing = directions.actual.lr == dir::LR::left ? -1.f : 1.f;
+	auto facing = directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	collider.physics.apply_force({attributes.speed * facing, 0.f});
 	if (caution.danger() || animation.complete()) {
 		state = DemonState::idle;
@@ -186,7 +186,7 @@ fsm::StateFunction Demon::update_jump() {
 	if (animation.just_started()) {
 		cooldowns.jump.start();
 		rand_jump = util::random::percent_chance(50) ? -1.f : 1.f;
-		if (cooldowns.post_rush.running()) { rand_jump = directions.actual.lr == dir::LR::left ? 1.f : -1.f; } // always jump backwards after a rush otherwise it feels unfair
+		if (cooldowns.post_rush.running()) { rand_jump = directions.actual.lnr == LNR::left ? 1.f : -1.f; } // always jump backwards after a rush otherwise it feels unfair
 	}
 	if (cooldowns.jump.running()) { collider.physics.apply_force({0, -2.5f}); }
 	if (!collider.grounded()) { collider.physics.apply_force({rand_jump * 2.f, 0.f}); }
@@ -206,7 +206,7 @@ fsm::StateFunction Demon::update_signal() {
 	if (animation.just_started()) { m_services->soundboard.flags.demon.set(audio::Demon::up_snort); }
 	shake();
 	if (animation.complete()) {
-		if (directions.actual.lr != directions.desired.lr) {
+		if (directions.actual.lnr != directions.desired.lnr) {
 			state = DemonState::turn;
 			animation.set_params(turn);
 			return DEMON_BIND(update_turn);
@@ -226,10 +226,10 @@ fsm::StateFunction Demon::update_rush() {
 		return DEMON_BIND(update_idle);
 	}
 	auto force{16.f};
-	force *= directions.actual.lr == dir::LR::left ? -1.f : 1.f;
+	force *= directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	collider.physics.apply_force({force, 0.f});
-	directions.actual.lr == dir::LR::left ? parts.sword.move({-70.f, 0.f}) : parts.sword.move({70.f, 0.f});
-	directions.actual.lr == dir::LR::left ? parts.spear.move({-70.f, 0.f}) : parts.spear.move({70.f, 0.f});
+	directions.actual.lnr == LNR::left ? parts.sword.move({-70.f, 0.f}) : parts.sword.move({70.f, 0.f});
+	directions.actual.lnr == LNR::left ? parts.spear.move({-70.f, 0.f}) : parts.spear.move({70.f, 0.f});
 	if (animation.complete()) {
 		cooldowns.post_rush.start();
 		state = DemonState::idle;

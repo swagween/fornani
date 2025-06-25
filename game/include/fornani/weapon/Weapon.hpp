@@ -42,7 +42,7 @@ class Weapon {
   public:
 	Weapon(automa::ServiceProvider& svc, int id, bool enemy = false);
 
-	void update(automa::ServiceProvider& svc, dir::Direction to_direction);
+	void update(automa::ServiceProvider& svc, Direction to_direction);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void render_ui(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> position);
 
@@ -61,9 +61,9 @@ class Weapon {
 	void set_position(sf::Vector2<float> pos);
 	void force_position(sf::Vector2<float> pos);
 	void set_barrel_point(sf::Vector2<float> point);
-	void set_orientation(dir::Direction to_direction);
+	void set_orientation(Direction to_direction);
 	void set_team(Team team);
-	void set_firing_direction(dir::Direction to_direction);
+	void set_firing_direction(Direction to_direction);
 	void reset();
 
 	void set_hotbar() { inventory_state = InventoryState::hotbar; }
@@ -83,7 +83,7 @@ class Weapon {
 	[[nodiscard]] auto multishot() const -> bool { return specifications.multishot != 0; }
 	[[nodiscard]] auto get_barrel_point() const -> sf::Vector2<float> { return offsets.gameplay.barrel; }
 	[[nodiscard]] auto get_cooldown() const -> int { return cooldowns.cooldown.get_cooldown(); }
-	[[nodiscard]] auto get_firing_direction() & -> dir::Direction& { return firing_direction; }
+	[[nodiscard]] auto get_firing_direction() & -> Direction& { return firing_direction; }
 	[[nodiscard]] auto get_global_offset() const -> sf::Vector2<float> { return offsets.render.global; };
 	[[nodiscard]] auto get_recoil() const -> float { return specifications.recoil; }
 	[[nodiscard]] auto get_multishot() const -> int { return specifications.multishot; }
@@ -105,7 +105,7 @@ class Weapon {
 	} metadata{};
 
 	Offsets offsets{};
-	dir::Direction firing_direction{};
+	Direction firing_direction{};
 	WeaponSpecifications specifications{};
 	util::BitFlags<WeaponAttributes> attributes{};
 
