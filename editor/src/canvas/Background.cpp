@@ -10,7 +10,7 @@ namespace pi {
 Background::Background(fornani::data::ResourceFinder& finder, Backdrop backdrop) : type{backdrop} {
 	std::string bg_type = type.get_label();
 	std::string doc = "background_" + bg_type + ".png";
-	auto bg = dj::Json::from_file((finder.paths.resources / "data/level/background_behaviors.json").string().c_str());
+	auto bg = *dj::Json::from_file((finder.paths.resources / "data/level/background_behaviors.json").string().c_str());
 	assert(!bg.is_null());
 	if (!texture.loadFromFile((finder.paths.resources / "image/background" / doc).string())) { NANI_LOG_WARN(m_logger, "Failed to load background {} ", type.get_label()); }
 

@@ -37,7 +37,7 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, s
 		flags.reset(InspectableFlags::hovered);
 	}
 	if (flags.test(InspectableFlags::activated)) {
-		for (auto& choice : set.as_array()) {
+		for (auto choice : set.as_array()) {
 			if (choice["key"].as_string() == std::string{key}) { console = std::make_unique<gui::Console>(svc, choice, std::string{key + std::to_string(current_alt)}, gui::OutputType::instant); }
 		}
 	}

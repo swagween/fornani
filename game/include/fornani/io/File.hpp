@@ -12,8 +12,7 @@ class File {
   public:
 	[[nodiscard]] auto is_new() const -> bool { return flags.test(FileFlags::new_file); }
 	void write() {
-		dj::Boolean flag{};
-		save_data["status"]["new"] = flag;
+		save_data["status"]["new"] = false;
 		flags.reset(FileFlags::new_file);
 	}
 	int id{};

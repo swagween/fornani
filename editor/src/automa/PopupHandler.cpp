@@ -42,7 +42,7 @@ void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& consol
 	if (ImGui::BeginPopupModal("Platform Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 
 		static dj::Json in_specs{};
-		in_specs = dj::Json::from_file(std::string{finder.paths.resources.string() + "/data/level/platform.json"}.c_str());
+		in_specs = *dj::Json::from_file(std::string{finder.paths.resources.string() + "/data/level/platform.json"}.c_str());
 		assert(!in_specs.is_null());
 
 		static int x{1};

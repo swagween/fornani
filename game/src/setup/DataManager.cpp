@@ -20,7 +20,7 @@ void DataManager::load_data(std::string in_room) {
 		if (!this_region.is_directory()) { continue; }
 		for (auto const& this_room : std::filesystem::recursive_directory_iterator(this_region)) {
 			if (this_room.path().extension() != ".json") { continue; }
-			auto room_data = dj::Json::from_file((this_room.path()).string().c_str());
+			auto room_data = *dj::Json::from_file((this_room.path()).string().c_str());
 			if (room_data.is_null()) { continue; }
 			auto this_id = room_data["meta"]["room_id"].as<int>();
 			auto this_name = this_room.path().filename().string();
@@ -55,7 +55,7 @@ void DataManager::load_data(std::string in_room) {
 		}
 	}
 	map_table.dj::Json::to_file((finder.resource_path() + "/data/level/map_table.json").c_str());
-	map_table = dj::Json::from_file((finder.resource_path() + "/data/level/map_table.json").c_str());
+	map_table = *dj::Json::from_file((finder.resource_path() + "/data/level/map_table.json").c_str());
 	assert(!map_table.is_null());
 	for (auto const& room : map_table["rooms"].as_array()) {
 		auto id = room["room_id"].as<int>();
@@ -68,52 +68,52 @@ void DataManager::load_data(std::string in_room) {
 	for (auto& file : files) {
 		file.id = ctr;
 		file.label = "file_" + std::to_string(ctr);
-		file.save_data = dj::Json::from_file((finder.resource_path() + "/data/save/file_" + std::to_string(ctr) + ".json").c_str());
+		file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/file_" + std::to_string(ctr) + ".json").c_str());
 		if (file.save_data["status"]["new"].as_bool()) { file.flags.set(fornani::io::FileFlags::new_file); }
 		++ctr;
 	}
-	blank_file.save_data = dj::Json::from_file((finder.resource_path() + "/data/save/new_game.json").c_str());
+	blank_file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/new_game.json").c_str());
 
-	weapon = dj::Json::from_file((finder.resource_path() + "/data/weapon/weapon_data.json").c_str());
+	weapon = *dj::Json::from_file((finder.resource_path() + "/data/weapon/weapon_data.json").c_str());
 	assert(!weapon.is_null());
-	enemy_weapon = dj::Json::from_file((finder.resource_path() + "/data/weapon/enemy_weapons.json").c_str());
+	enemy_weapon = *dj::Json::from_file((finder.resource_path() + "/data/weapon/enemy_weapons.json").c_str());
 	assert(!enemy_weapon.is_null());
-	drop = dj::Json::from_file((finder.resource_path() + "/data/item/drop.json").c_str());
+	drop = *dj::Json::from_file((finder.resource_path() + "/data/item/drop.json").c_str());
 	assert(!drop.is_null());
-	particle = dj::Json::from_file((finder.resource_path() + "/data/vfx/particle.json").c_str());
+	particle = *dj::Json::from_file((finder.resource_path() + "/data/vfx/particle.json").c_str());
 	assert(!particle.is_null());
-	sparkler = dj::Json::from_file((finder.resource_path() + "/data/vfx/sparkler.json").c_str());
+	sparkler = *dj::Json::from_file((finder.resource_path() + "/data/vfx/sparkler.json").c_str());
 	assert(!sparkler.is_null());
-	npc = dj::Json::from_file((finder.resource_path() + "/data/npc/npc_data.json").c_str());
+	npc = *dj::Json::from_file((finder.resource_path() + "/data/npc/npc_data.json").c_str());
 	assert(!npc.is_null());
-	item = dj::Json::from_file((finder.resource_path() + "/data/item/item.json").c_str());
+	item = *dj::Json::from_file((finder.resource_path() + "/data/item/item.json").c_str());
 	assert(!item.is_null());
-	platform = dj::Json::from_file((finder.resource_path() + "/data/level/platform.json").c_str());
+	platform = *dj::Json::from_file((finder.resource_path() + "/data/level/platform.json").c_str());
 	assert(!platform.is_null());
-	cutscene = dj::Json::from_file((finder.resource_path() + "/data/story/cutscenes.json").c_str());
+	cutscene = *dj::Json::from_file((finder.resource_path() + "/data/story/cutscenes.json").c_str());
 	assert(!cutscene.is_null());
-	map_styles = dj::Json::from_file((finder.resource_path() + "/data/level/map_styles.json").c_str());
+	map_styles = *dj::Json::from_file((finder.resource_path() + "/data/level/map_styles.json").c_str());
 	assert(!map_styles.is_null());
-	action_names = dj::Json::from_file((finder.resource_path() + "/data/gui/action_names.json").c_str());
+	action_names = *dj::Json::from_file((finder.resource_path() + "/data/gui/action_names.json").c_str());
 	assert(!action_names.is_null());
 
-	enemy = dj::Json::from_file((finder.resource_path() + "/data/enemy/enemy_params.json").c_str());
+	enemy = *dj::Json::from_file((finder.resource_path() + "/data/enemy/enemy_params.json").c_str());
 	assert(!enemy.is_null());
-	frdog = dj::Json::from_file((finder.resource_path() + "/data/enemy/frdog.json").c_str());
+	frdog = *dj::Json::from_file((finder.resource_path() + "/data/enemy/frdog.json").c_str());
 	assert(!frdog.is_null());
-	hulmet = dj::Json::from_file((finder.resource_path() + "/data/enemy/hulmet.json").c_str());
+	hulmet = *dj::Json::from_file((finder.resource_path() + "/data/enemy/hulmet.json").c_str());
 	assert(!hulmet.is_null());
 
-	menu = dj::Json::from_file((finder.resource_path() + "/data/gui/menu.json").c_str());
+	menu = *dj::Json::from_file((finder.resource_path() + "/data/gui/menu.json").c_str());
 	assert(!menu.is_null());
-	background = dj::Json::from_file((finder.resource_path() + "/data/level/background_behaviors.json").c_str());
+	background = *dj::Json::from_file((finder.resource_path() + "/data/level/background_behaviors.json").c_str());
 	assert(!background.is_null());
 
 	// load item labels
 	// for (auto const& entry : item.object_view()) { m_services->tables.item_labels.insert({entry.second["index"].as<int>(), entry.first.data()}); }
 
 	// load marketplace
-	for (auto const& entry : npc.object_view()) {
+	for (auto const& entry : npc.as_object()) {
 		if (!entry.second["vendor"]) { continue; }
 		marketplace.insert({entry.second["vendor"]["id"].as<int>(), npc::Vendor()});
 		auto& vendor = marketplace.at(entry.second["vendor"]["id"].as<int>());
@@ -137,14 +137,10 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["player_data"]["position"]["x"] = player.collider.physics.position.x;
 	save["player_data"]["position"]["y"] = player.collider.physics.position.y;
 
-	// create empty json array
-	constexpr auto empty_array = R"([])";
-	auto const wipe = dj::Json::parse(empty_array);
-
 	// write marketplace status
-	save["marketplace"] = wipe;
+	save["marketplace"] = dj::Json::empty_array();
 	for (auto& vendor : marketplace) {
-		auto out_vendor = wipe;
+		auto out_vendor = dj::Json::empty_array();
 		// TODO: redo this once I add collectible items
 		// for (auto& item : vendor.second.inventory.key_items_view()) { out_vendor.push_back(item.get_id()); }
 		save["marketplace"].push_back(out_vendor);
@@ -154,24 +150,24 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["map_data"]["world_time"]["hours"] = m_services->world_clock.get_hours();
 	save["map_data"]["world_time"]["minutes"] = m_services->world_clock.get_minutes();
 	save["piggybacker"] = m_services->player_dat.piggy_id;
-	save["npc_locations"] = wipe;
-	save["map_data"]["fallen_enemies"] = wipe;
-	save["discovered_rooms"] = wipe;
-	save["unlocked_doors"] = wipe;
-	save["opened_chests"] = wipe;
-	save["activated_switches"] = wipe;
-	save["destroyed_blocks"] = wipe;
-	save["destroyed_inspectables"] = wipe;
-	for (auto& entry : save["quest_progressions"].as_array()) { entry = wipe; }
-	save["quest_progressions"] = wipe;
+	save["npc_locations"] = dj::Json::empty_array();
+	save["map_data"]["fallen_enemies"] = dj::Json::empty_array();
+	save["discovered_rooms"] = dj::Json::empty_array();
+	save["unlocked_doors"] = dj::Json::empty_array();
+	save["opened_chests"] = dj::Json::empty_array();
+	save["activated_switches"] = dj::Json::empty_array();
+	save["destroyed_blocks"] = dj::Json::empty_array();
+	save["destroyed_inspectables"] = dj::Json::empty_array();
+	for (auto& entry : save["quest_progressions"].as_array()) { entry = dj::Json::empty_array(); }
+	save["quest_progressions"] = dj::Json::empty_array();
 	for (auto& location : npc_locations) {
-		auto entry = wipe;
+		auto entry = dj::Json::empty_array();
 		entry.push_back(location.first);
 		entry.push_back(location.second);
 		save["npc_locations"].push_back(entry);
 	}
 	for (auto& enemy : fallen_enemies) {
-		auto entry = wipe;
+		auto entry = dj::Json::empty_array();
 		entry.push_back(enemy.code.first);
 		entry.push_back(enemy.code.second);
 		entry.push_back(enemy.respawn_distance);
@@ -185,7 +181,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	for (auto& block : destroyed_blocks) { save["destroyed_blocks"].push_back(block); }
 	for (auto& i : destroyed_inspectables) { save["destroyed_inspectables"].push_back(i); }
 	for (auto& q : quest_progressions) {
-		auto out_quest = wipe;
+		auto out_quest = dj::Json::empty_array();
 		out_quest.push_back(q.type);
 		out_quest.push_back(q.id);
 		out_quest.push_back(q.source_id);
@@ -194,18 +190,18 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 		save["quest_progressions"].push_back(out_quest);
 	}
 
-	save["tutorial"]["jump"] = dj::Boolean{player.tutorial.flags.test(text::TutorialFlags::jump)};
-	save["tutorial"]["shoot"] = dj::Boolean{player.tutorial.flags.test(text::TutorialFlags::shoot)};
-	save["tutorial"]["sprint"] = dj::Boolean{player.tutorial.flags.test(text::TutorialFlags::sprint)};
-	save["tutorial"]["map"] = dj::Boolean{player.tutorial.flags.test(text::TutorialFlags::map)};
-	save["tutorial"]["inventory"] = dj::Boolean{player.tutorial.flags.test(text::TutorialFlags::inventory)};
+	save["tutorial"]["jump"] = player.tutorial.flags.test(text::TutorialFlags::jump);
+	save["tutorial"]["shoot"] = player.tutorial.flags.test(text::TutorialFlags::shoot);
+	save["tutorial"]["sprint"] = player.tutorial.flags.test(text::TutorialFlags::sprint);
+	save["tutorial"]["map"] = player.tutorial.flags.test(text::TutorialFlags::map);
+	save["tutorial"]["inventory"] = player.tutorial.flags.test(text::TutorialFlags::inventory);
 	save["tutorial"]["state"] = static_cast<int>(player.tutorial.current_state);
-	save["tutorial"]["closed"] = dj::Boolean{player.tutorial.closed()};
-	save["tutorial"]["on"] = dj::Boolean{player.tutorial.on()};
+	save["tutorial"]["closed"] = player.tutorial.closed();
+	save["tutorial"]["on"] = player.tutorial.on();
 
 	// save arsenal
-	save["player_data"]["arsenal"] = wipe;
-	save["player_data"]["hotbar"] = wipe;
+	save["player_data"]["arsenal"] = dj::Json::empty_array();
+	save["player_data"]["hotbar"] = dj::Json::empty_array();
 	// push player arsenal
 	if (player.arsenal) {
 		for (auto& gun : player.arsenal.value().get_loadout()) {
@@ -224,8 +220,8 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["player_data"]["wardrobe"]["pants"] = static_cast<int>(player.catalog.wardrobe.get_variant(player::ApparelType::pants));
 
 	// items and abilities
-	save["player_data"]["abilities"] = wipe;
-	save["player_data"]["items"] = wipe;
+	save["player_data"]["abilities"] = dj::Json::empty_array();
+	save["player_data"]["items"] = dj::Json::empty_array();
 	if (player.catalog.abilities.has_ability(player::Abilities::dash)) { save["player_data"]["abilities"].push_back("dash"); }
 	if (player.catalog.abilities.has_ability(player::Abilities::wall_slide)) { save["player_data"]["abilities"].push_back("wallslide"); }
 	if (player.catalog.abilities.has_ability(player::Abilities::double_jump)) { save["player_data"]["abilities"].push_back("doublejump"); }
@@ -265,11 +261,11 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 }
 
 void DataManager::save_settings() {
-	settings["auto_sprint"] = dj::Boolean{m_services->controller_map.is_autosprint_enabled()};
-	settings["tutorial"] = dj::Boolean{m_services->tutorial()};
-	settings["gamepad"] = dj::Boolean{m_services->controller_map.is_gamepad_input_enabled()};
+	settings["auto_sprint"] = m_services->controller_map.is_autosprint_enabled();
+	settings["tutorial"] = m_services->tutorial();
+	settings["gamepad"] = m_services->controller_map.is_gamepad_input_enabled();
 	settings["music_volume"] = m_services->music_player.get_volume_multiplier();
-	settings["fullscreen"] = dj::Boolean{m_services->fullscreen()};
+	settings["fullscreen"] = m_services->fullscreen();
 	settings.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str());
 }
 
@@ -392,7 +388,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 }
 
 void DataManager::load_settings() {
-	settings = dj::Json::from_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str());
+	settings = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str());
 	assert(!settings.is_null());
 	m_services->controller_map.enable_autosprint(settings["auto_sprint"].as_bool().value);
 	m_services->set_tutorial(settings["tutorial"].as_bool().value);
@@ -436,7 +432,7 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 void DataManager::load_player_params(player::Player& player) {
 
 	// std::cout << "loading player params ...";
-	player_params = dj::Json::from_file((m_services->finder.resource_path() + "/data/player/physics_params.json").c_str());
+	player_params = *dj::Json::from_file((m_services->finder.resource_path() + "/data/player/physics_params.json").c_str());
 	assert(!player_params.is_null());
 
 	player.physics_stats.grav = player_params["physics"]["grav"].as<float>();
@@ -595,7 +591,7 @@ bool DataManager::enemy_is_fallen(int room_id, int id) const {
 
 void DataManager::load_controls(config::ControllerMap& controller) {
 	// XXX change controls json when keybinds get modified
-	controls = dj::Json::from_file((m_services->finder.resource_path() + "/data/config/control_map.json").c_str());
+	controls = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/control_map.json").c_str());
 	assert(!controls.is_null());
 	assert(controls.contains("controls") && controls["controls"].is_object());
 
@@ -607,7 +603,7 @@ void DataManager::load_controls(config::ControllerMap& controller) {
 
 void DataManager::save_controls(config::ControllerMap& controller) { controls.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/control_map.json").c_str()); }
 
-void DataManager::reset_controls() { controls = dj::Json::from_file((m_services->finder.resource_path() + "/data/config/defaults.json").c_str()); }
+void DataManager::reset_controls() { controls = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/defaults.json").c_str()); }
 
 int DataManager::get_room_index(int id) {
 	auto ctr{0};

@@ -34,7 +34,7 @@ Editor::Editor(char** argv, WindowManager& window, fornani::data::ResourceFinder
 		m_labels.backdrops[i] = m_labels.bg_str[i].c_str();
 	}
 
-	user_data = dj::Json::from_file((finder.paths.editor / "data" / "config" / "user.json").string().c_str());
+	user_data = *dj::Json::from_file((finder.paths.editor / "data" / "config" / "user.json").string().c_str());
 	assert(!user_data.is_null());
 	console.add_log("Welcome to Pioneer!");
 	finder.paths.region = user_data["region"] ? user_data["region"].as_string() : "config";

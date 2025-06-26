@@ -235,7 +235,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
 	auto const& savept = entities["save_point"];
 	auto save_id = svc.state_controller.save_point_id;
-	save_point.id = savept.contains("position") ? room_id : -1;
+	save_point.id = savept.as_object().contains("position") ? room_id : -1;
 	save_point.scaled_position.x = savept["position"][0].as<int>();
 	save_point.scaled_position.y = savept["position"][1].as<int>();
 	save_point.position = {static_cast<float>(save_point.scaled_position.x), static_cast<float>(save_point.scaled_position.y)};

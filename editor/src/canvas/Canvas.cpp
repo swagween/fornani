@@ -108,12 +108,12 @@ bool Canvas::load(fornani::data::ResourceFinder& finder, std::string const& regi
 
 	std::string metapath = (source / std::filesystem::path{region} / std::filesystem::path{room_name}).string();
 
-	metadata = dj::Json::from_file((metapath).c_str());
+	metadata = *dj::Json::from_file((metapath).c_str());
 	if (metadata.is_null()) {
 		finder.paths.region = "config";
 		finder.paths.room_name = "new_file.json";
 		metapath = (source / finder.paths.region / finder.paths.room_name).string();
-		metadata = dj::Json::from_file((metapath).c_str());
+		metadata = *dj::Json::from_file((metapath).c_str());
 		success = false;
 	}
 	assert(!metadata.is_null());
@@ -177,13 +177,9 @@ bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& regi
 	// clean jsons
 	metadata = {};
 
-	// empty json array
-	constexpr auto empty_array = R"([])";
-	auto const wipe = dj::Json::parse(empty_array);
-
 	// metadata
 	metadata["meta"]["room_id"] = room_id;
-	metadata["meta"]["minimap"] = dj::Boolean{minimap};
+	metadata["meta"]["minimap"] = minimap;
 	metadata["meta"]["metagrid"][0] = metagrid_coordinates.x;
 	metadata["meta"]["metagrid"][1] = metagrid_coordinates.y;
 	metadata["meta"]["dimensions"][0] = dimensions.x;
@@ -199,17 +195,17 @@ bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& regi
 	metadata["meta"]["camera_effects"]["shake"]["start_time"] = m_camera_effects.shake_properties.start_time;
 	metadata["meta"]["camera_effects"]["shake"]["dampen_factor"] = m_camera_effects.shake_properties.dampen_factor;
 	metadata["meta"]["camera_effects"]["shake"]["frequency_in_seconds"] = m_camera_effects.frequency_in_seconds;
-	metadata["meta"]["cutscene_on_entry"]["flag"] = dj::Boolean{cutscene.flag};
+	metadata["meta"]["cutscene_on_entry"]["flag"] = cutscene.flag;
 	metadata["meta"]["cutscene_on_entry"]["type"] = cutscene.type;
 	metadata["meta"]["cutscene_on_entry"]["id"] = cutscene.id;
 	metadata["meta"]["cutscene_on_entry"]["source"] = cutscene.source;
 
-	metadata["tile"]["layers"] = wipe;
-	for (auto i{0}; i < last_layer(); ++i) { metadata["tile"]["layers"].push_back(wipe); }
+	metadata["tile"]["layers"] = dj::Json::empty_array();
+	for (auto i{0}; i < last_layer(); ++i) { metadata["tile"]["layers"].push_back(dj::Json::empty_array()); }
 	// push layer data
 	int current_layer{};
-	metadata["tile"]["flags"]["obscuring"] = dj::Boolean{map_states.back().m_flags.has_obscuring_layer};
-	metadata["tile"]["flags"]["reverse_obscuring"] = dj::Boolean{map_states.back().m_flags.has_reverse_obscuring_layer};
+	metadata["tile"]["flags"]["obscuring"] = map_states.back().m_flags.has_obscuring_layer;
+	metadata["tile"]["flags"]["reverse_obscuring"] = map_states.back().m_flags.has_reverse_obscuring_layer;
 	for (auto& layer : map_states.back().layers) {
 		if (map_states.back().get_middleground() == current_layer) { metadata["tile"]["middleground"] = current_layer; }
 		int current_cell{};

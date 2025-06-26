@@ -23,8 +23,8 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 	collider.physics.elasticity = in_data["elasticity"].as<float>();
 	collider.physics.set_global_friction(in_data["friction"].as<float>());
 	collider.physics.gravity = in_data["gravity"].as<float>();
-	if ((dj::Boolean)in_data["animated"].as_bool()) { flags.set(ParticleType::animated); }
-	if ((dj::Boolean)in_data["colliding"].as_bool()) { flags.set(ParticleType::colliding); }
+	if (in_data["animated"].as_bool()) { flags.set(ParticleType::animated); }
+	if (in_data["colliding"].as_bool()) { flags.set(ParticleType::colliding); }
 
 	auto angle = util::random::random_range_float(-angle_range, angle_range);
 	auto f_pi = static_cast<float>(std::numbers::pi);

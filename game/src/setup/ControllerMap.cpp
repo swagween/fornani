@@ -83,7 +83,7 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) : m_stick_sensitivity
 	SteamInput()->RunFrame();
 	setup_action_handles();
 
-	for (auto const& [action_id, action_name] : svc.data.action_names.object_view()) {
+	for (auto const& [action_id, action_name] : svc.data.action_names.as_object()) {
 		auto action = get_action_by_identifier(action_id);
 		digital_action_names[action] = action_name.as_string();
 	}

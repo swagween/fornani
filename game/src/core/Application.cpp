@@ -11,7 +11,7 @@ void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
 	NANI_LOG_INFO(m_logger, "> Launching");
 	NANI_LOG_INFO(m_logger, "Resource path: {}", m_finder.resource_path());
 
-	m_app_settings = dj::Json::from_file((m_finder.resource_path() + "/data/config/settings.json").c_str());
+	m_app_settings = *dj::Json::from_file((m_finder.resource_path() + "/data/config/settings.json").c_str());
 	assert(!m_app_settings.is_null());
 
 	// create window

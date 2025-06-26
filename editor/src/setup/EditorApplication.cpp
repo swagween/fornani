@@ -10,12 +10,12 @@ namespace pi {
 EditorApplication::EditorApplication(char** argv) : finder(argv), metadata(game_info, finder) {
 
 	// load app resources
-	game_info = dj::Json::from_file((finder.paths.editor / "data/config/version.json").string().c_str());
+	game_info = *dj::Json::from_file((finder.paths.editor / "data/config/version.json").string().c_str());
 	assert(!game_info.is_null());
 
 	NANI_LOG_INFO(m_logger, "> Launching {}", metadata.long_title());
 
-	app_settings = dj::Json::from_file((finder.paths.editor / "data/config/settings.json").string().c_str());
+	app_settings = *dj::Json::from_file((finder.paths.editor / "data/config/settings.json").string().c_str());
 	assert(!app_settings.is_null());
 
 	// create window
