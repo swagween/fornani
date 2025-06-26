@@ -10,7 +10,7 @@ Grid::Grid(sf::Vector2u d, dj::Json& source, float s) : dimensions(d), m_spacing
 	auto size = static_cast<std::size_t>(dimensions.x * dimensions.y);
 	cells.reserve(size);
 	auto i{0};
-	for (auto& cell : source.array_view()) {
+	for (auto& cell : source.as_array()) {
 		auto value = cell.as<int>();
 		auto xidx = static_cast<std::uint32_t>(std::floor(i % dimensions.x));
 		auto yidx = static_cast<std::uint32_t>(std::floor(i / dimensions.x));

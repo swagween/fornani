@@ -9,8 +9,8 @@ CreditsMenu::CreditsMenu(ServiceProvider& svc, player::Player& player, std::stri
 	right_dot.set_position(options.at(current_selection.get()).right_offset);
 }
 
-void CreditsMenu::tick_update(ServiceProvider& svc) {
-	GameState::tick_update(svc);
+void CreditsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
+	GameState::tick_update(svc, engine);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
@@ -31,7 +31,7 @@ void CreditsMenu::tick_update(ServiceProvider& svc) {
 	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
 
-	svc.soundboard.play_sounds(svc);
+	svc.soundboard.play_sounds(engine, svc);
 }
 
 void CreditsMenu::frame_update(ServiceProvider& svc) {}

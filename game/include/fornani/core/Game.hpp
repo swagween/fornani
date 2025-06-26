@@ -1,4 +1,5 @@
 #pragma once
+#include <capo/engine.hpp>
 #include <filesystem>
 #include "fornani/automa/StateManager.hpp"
 #include "fornani/entities/player/Player.hpp"
@@ -14,9 +15,9 @@ enum class KeyboardFlags { control };
 
 class Game {
   public:
-	Game(char** argv, WindowManager& window, Version& version);
+	Game(char** argv, WindowManager& window, Version& version, capo::IEngine& audio_engine);
 	~Game() = default;
-	void run(bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
+	void run(capo::IEngine& audio_engine, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
 	void shutdown();
 
 	void playtest_sync();
@@ -37,7 +38,7 @@ class Game {
 	} measurements{};
 
 	struct {
-		bool m_musicplayer{};
+		bool musicplayer{};
 		bool b_dash{};
 		bool b_shield{};
 		bool b_wallslide{};

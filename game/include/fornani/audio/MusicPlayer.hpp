@@ -1,76 +1,46 @@
 
 #pragma once
 
-#include <SFML/Audio.hpp>
-#include <SFML/Graphics.hpp>
+#include <juke/juke.hpp>
 #include <optional>
 #include "fornani/io/Logger.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
-#include "fornani/utils/BitFlags.hpp"
-
-namespace fornani::automa {
-struct ServiceProvider;
-}
 
 namespace fornani::audio {
 
-enum class SongState : std::uint8_t { playing, paused, on, looping };
-enum class MusicPlayerState : std::uint8_t { on };
+enum class MusicPlayerState : std::uint8_t { on, off };
 
 class MusicPlayer {
   public:
+	explicit MusicPlayer(capo::IEngine& audio_engine);
 	void load(data::ResourceFinder const& finder, std::string_view song_name);
-	void simple_load(std::string_view source);
-	void play_once(float vol = 100.f);
-	void play_looped(float vol = 100.f);
+	void load(std::string_view path);
+	void play_once();
+	void play_looped();
 	void update();
 	void pause();
 	void stop();
 	void fade_out();
 	void fade_in();
-	void switch_on();
-	void switch_off();
-	void turn_off();
 	void turn_on();
+	void turn_off();
 	void set_volume(float vol);
-	[[nodiscard]] auto get_volume() const -> float {
-		if (!song_first || !song_loop) { return 0.f; }
-		return song_first->getStatus() == sf::SoundSource::Status::Playing ? song_first->getVolume() : song_loop->getStatus() == sf::SoundSource::Status::Playing ? song_loop->getVolume() : 0.f;
-	}
-	[[nodiscard]] auto global_off() const -> bool { return !flags.player.test(MusicPlayerState::on); }
-	[[nodiscard]] auto switched_off() const -> bool { return !flags.state.test(SongState::on); }
+	void set_volume_multiplier(float to);
 
-	[[nodiscard]] auto playing() const -> bool {
-		if (!song_first || !song_loop) { return false; }
-		return song_first->getStatus() == sf::SoundSource::Status::Playing || song_loop->getStatus() == sf::SoundSource::Status::Playing;
-	}
+	[[nodiscard]] auto get_volume() const -> float { return 0.f; }
+	[[nodiscard]] auto is_on() const -> bool { return m_state == MusicPlayerState::on; }
+	[[nodiscard]] auto is_off() const -> bool { return m_state == MusicPlayerState::off; }
 
-	struct {
-		float native{};
-		float actual{};
-		float multiplier{1.0f};
-	} volume{};
+	[[nodiscard]] auto is_playing() const -> bool { return m_jukebox.is_playing(); }
+	[[nodiscard]] auto is_stopped() const -> bool { return m_jukebox.is_stopped(); }
+
+	[[nodiscard]] auto get_volume_multiplier() const -> float { return m_volume_multiplier; }
 
   private:
-	struct {
-		util::BitFlags<SongState> state{};
-		util::BitFlags<MusicPlayerState> player{};
-	} flags{};
+	MusicPlayerState m_state{};
+	juke::Jukebox m_jukebox;
 
-	int current_loop{};
-
-	std::optional<sf::Music> song_first{};
-	std::optional<sf::Music> song_loop{};
-	sf::SoundSource::Status status{};
-	std::int64_t last_dt{};
-
-	sf::Time start_time{};
-	sf::Time end_time{};
-	sf::Time current_time{};
-	sf::Clock music_clock{};
-	sf::Clock music_tick{};
-
-	std::string label{};
+	float m_volume_multiplier{0.5f};
 
 	io::Logger m_logger{"Audio"};
 };

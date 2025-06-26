@@ -1,7 +1,8 @@
 
 #pragma once
 
-#include <SFML/Audio.hpp>
+#include <SFML/Graphics.hpp>
+#include <capo/engine.hpp>
 #include <unordered_map>
 #include "Sound.hpp"
 #include "fornani/utils/BitFlags.hpp"
@@ -43,7 +44,7 @@ enum class Meatsquash : std::uint8_t { hurt, death, chomp, whip, swallow };
 class Soundboard {
   public:
 	Soundboard(automa::ServiceProvider& svc);
-	void play_sounds(automa::ServiceProvider& svc, int echo_count = 0, int echo_rate = 1);
+	void play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc, int echo_count = 0, int echo_rate = 1);
 	void turn_on() { status = SoundboardState::on; }
 	void turn_off() { status = SoundboardState::off; }
 	void play_step(int tile_value, int style_id, bool land = false);
@@ -75,13 +76,13 @@ class Soundboard {
 		util::BitFlags<Meatsquash> meatsquash{};
 	} flags{};
 
-	void play(automa::ServiceProvider& svc, sf::SoundBuffer const& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2<float> distance = {}, int echo_count = 0,
-			  int echo_rate = 64);
+	void play(capo::IEngine& engine, automa::ServiceProvider& svc, capo::Buffer const& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2<float> distance = {},
+			  int echo_count = 0, int echo_rate = 64);
 
   private:
 	void repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset = 0.f, float attenuation = 1.f, sf::Vector2<float> distance = {});
 	void randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol = 100.f, float attenuation = 1.f, sf::Vector2<float> distance = {}, bool wait_until_over = false);
-	void simple_repeat(sf::SoundBuffer const& buffer, std::string const& label);
+	void simple_repeat(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label);
 	void stop(std::string const& label);
 
 	std::vector<Sound> sound_pool{};

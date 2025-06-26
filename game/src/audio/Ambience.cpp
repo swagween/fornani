@@ -1,22 +1,23 @@
+
 #include "fornani/audio/Ambience.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::audio {
+
+Ambience::Ambience(capo::IEngine& audio_engine) : tracks{.open{audio_engine}, .closed{audio_engine}} {}
 
 void Ambience::load(data::ResourceFinder& finder, std::string_view source) {
 	if (source.empty()) { return; }
 	tracks.open.turn_on();
 	tracks.closed.turn_on();
 	std::string source_str = source.data();
-	tracks.open.simple_load(finder.resource_path() + "/audio/ambience/" + source_str + "/open");
-	tracks.closed.simple_load(finder.resource_path() + "/audio/ambience/" + source_str + "/closed");
+	tracks.open.load(finder.resource_path() + "/audio/ambience/" + source_str + "/open.xm");
+	tracks.closed.load(finder.resource_path() + "/audio/ambience/" + source_str + "/closed.xm");
 }
 
 void Ambience::play() {
-	tracks.open.switch_on();
-	tracks.closed.switch_on();
-	tracks.open.play_looped(5);
-	tracks.closed.play_looped(5);
+	tracks.open.play_looped();
+	tracks.closed.play_looped();
 }
 
 void Ambience::set_balance(float balance) {

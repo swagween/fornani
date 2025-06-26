@@ -95,15 +95,15 @@ void Console::load_and_launch(std::string_view key, OutputType type) {
 	// load message codes
 	auto& in_data = text_suite[key]["codes"];
 	if (in_data) {
-		for (auto& code : in_data.array_view()) {
-			if (code.array_view().size() < 5) { NANI_LOG_ERROR(m_logger, "Invalid Text Json data, too few codes were read!"); }
+		for (auto& code : in_data.as_array()) {
+			if (code.as_array().size() < 5) { NANI_LOG_ERROR(m_logger, "Invalid Text Json data, too few codes were read!"); }
 			auto in_ints = std::vector<int>{};
-			for (auto& input : code.array_view()) { in_ints.push_back(input.as<int>()); }
+			for (auto& input : code.as_array()) { in_ints.push_back(input.as<int>()); }
 			auto in_code = MessageCode{static_cast<CodeSource>(in_ints[0]), in_ints[1], in_ints[2], static_cast<MessageCodeType>(in_ints[3]), in_ints[4]};
 			// read extra values, if they exist
-			if (code.array_view().size() > 5) {
+			if (code.as_array().size() > 5) {
 				in_code.extras = std::vector<int>{};
-				for (auto i{5}; i < code.array_view().size(); ++i) { in_code.extras->push_back(in_ints[i]); }
+				for (auto i{5}; i < code.as_array().size(); ++i) { in_code.extras->push_back(in_ints[i]); }
 			}
 			m_codes.push_back(in_code);
 		}

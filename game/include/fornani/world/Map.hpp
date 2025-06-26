@@ -155,9 +155,6 @@ class Map {
 	std::optional<vfx::Rain> rain{};
 	std::optional<std::vector<Fire>> fire{};
 
-	// sfx
-	audio::Ambience ambience{};
-
 	std::unique_ptr<bg::Background> background{};
 	graphics::Transition transition;
 	graphics::Transition bed_transition;

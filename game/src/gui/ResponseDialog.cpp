@@ -9,7 +9,7 @@ namespace fornani::gui {
 
 ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, std::string_view key, int index, sf::Vector2f start_position) : m_text_size{16}, m_selection{1}, m_index{index} {
 	auto& set = source[key]["responses"][index];
-	for (auto& msg : set.array_view()) {
+	for (auto& msg : set.as_array()) {
 		m_responses.push_back(sf::Text(text.fonts.basic));
 		m_responses.back().setString(msg.as_string().data());
 		stylize(m_responses.back());

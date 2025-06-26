@@ -28,8 +28,8 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 	debug.setOutlineThickness(-1);
 }
 
-void ControlsMenu::tick_update(ServiceProvider& svc) {
-	GameState::tick_update(svc);
+void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
+	GameState::tick_update(svc, engine);
 	binding_mode ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 
@@ -113,7 +113,7 @@ void ControlsMenu::tick_update(ServiceProvider& svc) {
 	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
 
-	svc.soundboard.play_sounds(svc);
+	svc.soundboard.play_sounds(engine, svc);
 }
 
 void ControlsMenu::frame_update(ServiceProvider& svc) {}
@@ -163,7 +163,7 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 	options.clear();
 	control_list.clear();
 	auto const& in_data = svc.data.menu["options"];
-	for (auto& entry : in_data[scene].array_view()) { options.push_back(Option(svc, entry.as_string())); }
+	for (auto& entry : in_data[scene].as_array()) { options.push_back(Option(svc, entry.as_string())); }
 	if (!options.empty()) { current_selection = util::Circuit(static_cast<int>(options.size())); }
 	top_buffer = svc.data.menu["config"][scene]["top_buffer"].as<float>();
 	int ctr{};

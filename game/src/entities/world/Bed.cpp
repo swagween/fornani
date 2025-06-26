@@ -36,7 +36,7 @@ void Bed::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 		sparkler.deactivate();
 	}
 	if (flags.test(BedFlags::engaged)) {
-		svc.music.pause();
+		svc.music_player.pause();
 		transition.start();
 		svc.data.respawn_all(); // respawn enemies
 		if (transition.has_waited(rest_time_v) && !console) {
@@ -44,7 +44,7 @@ void Bed::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 			console = std::make_unique<gui::Console>(svc, svc.text.basic, "bed", gui::OutputType::gradual);
 			player.health.refill();
 			svc.soundboard.flags.item.set(audio::Item::heal);
-			svc.music.play_looped(10);
+			svc.music_player.play_looped();
 			transition.end();
 			flags.reset(BedFlags::engaged);
 		}

@@ -19,7 +19,7 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 
 	metrics.speed = in_data["speed"].as<float>();
 
-	for (auto& point : in_data["track"].array_view()) {
+	for (auto& point : in_data["track"].as_array()) {
 		track.push_back({position.x + (point[0].as<float>() * extent), position.y + (point[1].as<float>() * extent)});
 		if (point[0].as<float>() > 0.f) { flags.attributes.set(PlatformAttributes::side_to_side); }
 		if (point[1].as<float>() > 0.f) { flags.attributes.set(PlatformAttributes::up_down); }

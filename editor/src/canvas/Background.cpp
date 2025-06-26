@@ -19,7 +19,7 @@ Background::Background(fornani::data::ResourceFinder& finder, Backdrop backdrop)
 	dimensions.y = in_data["dimensions"][1].as<int>();
 	scroll_pane = dimensions;
 	auto index{0};
-	for (auto& layer : in_data["layers"].array_view()) {
+	for (auto& layer : in_data["layers"].as_array()) {
 		layers.push_back(BackgroundLayer(texture, index, layer["scroll_speed"].as<float>(), layer["parallax"].as<float>()));
 		layers.back().sprite.setTextureRect(sf::IntRect{{0, dimensions.y * index}, dimensions});
 		++index;

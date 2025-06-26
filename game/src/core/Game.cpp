@@ -15,19 +15,26 @@
 
 namespace fornani {
 
-Game::Game(char** argv, WindowManager& window, Version& version) : services(argv, version, window), player(services), game_state(services, player, automa::MenuType::main) {
+Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& audio_engine) : services(argv, version, window, audio_engine), player(services), game_state(services, player, automa::MenuType::main) {
 	NANI_ZoneScopedN("Game::Game");
+
+	/* Set up ImGui Context */
+	auto wContext = ImGui::CreateContext();
+	ImGui::SetCurrentContext(wContext);
+	ImGuiIO& io = ImGui::GetIO();
+	io.Fonts->AddFontDefault();
+	// NANI_LOG_INFO(m_logger, "ImGui IO.Fonts size: {}", io.Fonts->Fonts.size);
 	if (!ImGui::SFML::Init(services.window->get())) {
 		NANI_LOG_ERROR(m_logger, "ImGui-SFML failed to initialize the window.");
 		shutdown();
 		return;
 	}
+
 	// controls
 	services.data.load_controls(services.controller_map);
 	services.data.load_settings();
 	// sounds
-	playtest.m_musicplayer = true;
-	services.music.turn_on();
+	playtest.musicplayer = true;
 	// player
 	player.init(services);
 
@@ -35,7 +42,7 @@ Game::Game(char** argv, WindowManager& window, Version& version) : services(argv
 	background.setFillColor(colors::ui_black);
 }
 
-void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
+void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
 	NANI_ZoneScopedN("Game::run");
 
 	if (services.window->fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
@@ -50,7 +57,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 			services.debug_flags.set(automa::DebugFlags::demo_mode);
 			flags.set(GameFlags::in_game);
 			game_state.get_current_state().target_folder.paths.scene = levelpath;
-			services.music.turn_off();
+			services.music_player.turn_off();
 			services.data.load_progress(player, 0);
 			game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", room_id, levelpath.filename().string()));
 			services.state_controller.demo_level = room_id;
@@ -147,9 +154,8 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 
 		{
 			NANI_ZoneScopedN("Update");
-			services.music.update();
 			bool has_focus = services.window->get().hasFocus();
-			services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services] {
+			services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services, &audio_engine = audio_engine] {
 				NANI_ZoneScopedN("Update->Tick");
 				services.controller_map.update();
 				if (services.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && m_game_menu) {
@@ -159,9 +165,9 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 					}
 				}
 				if (m_game_menu) {
-					m_game_menu.value()->get_current_state().tick_update(services);
+					m_game_menu.value()->get_current_state().tick_update(services, audio_engine);
 				} else {
-					game_state.get_current_state().tick_update(services);
+					game_state.get_current_state().tick_update(services, audio_engine);
 				}
 				if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.update(services); }
 				if (game_state.get_current_state().flags.test(automa::GameStateFlags::settings_request)) {
@@ -225,10 +231,7 @@ void Game::run(bool demo, int room_id, std::filesystem::path levelpath, sf::Vect
 	shutdown();
 }
 
-void Game::shutdown() {
-	services.music.stop();
-	ImGui::SFML::Shutdown();
-}
+void Game::shutdown() { ImGui::SFML::Shutdown(); }
 
 void Game::playtester_portal(sf::RenderWindow& window) {
 	if (!flags.test(GameFlags::playtest)) { return; }
@@ -376,19 +379,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Separator();
 					ImGui::EndTabItem();
 				}
-				if (ImGui::BeginTabItem("Music")) {
-					ImGui::Separator();
-					ImGui::Checkbox("Music Player", &playtest.m_musicplayer);
-					ImGui::Text("Volume: ");
-					ImGui::SameLine();
-					ImGui::SliderFloat("##vol", &services.music.volume.multiplier, 0.f, 1.f, "%.3f");
-					if (playtest.m_musicplayer && services.music.global_off()) {
-						services.music.turn_on();
-					} else if (!playtest.m_musicplayer && !services.music.global_off()) {
-						services.music.turn_off();
-					}
-					ImGui::EndTabItem();
-				}
+				if (ImGui::BeginTabItem("Music")) { ImGui::EndTabItem(); }
 				if (ImGui::BeginTabItem("Story")) {
 					ImGui::Separator();
 					ImGui::Text("Piggybacking? %s", static_cast<bool>(player.piggybacker) ? "Yes" : "No");
@@ -500,21 +491,21 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Separator();
 								if (player.hotbar) {
 									auto& gun = player.equipped_weapon();
-									ImGui::Text(gun.get_label().data());
+									ImGui::Text("%s", gun.get_label().data());
 									ImGui::Text("Ammo Capacity: %i", gun.ammo.get_capacity());
 									ImGui::Text("Ammo Count: %i", gun.ammo.get_count());
 								}
 								ImGui::Separator();
 								ImGui::Text("Loadout:");
 								if (player.arsenal) {
-									for (auto& gun : player.arsenal.value().get_loadout()) { ImGui::Text(gun.get()->get_label().data()); }
+									for (auto& gun : player.arsenal.value().get_loadout()) { ImGui::Text("%s", gun.get()->get_label().data()); }
 								}
 								ImGui::Text("Hotbar:");
 								if (player.hotbar) {
 									for (auto& gun : player.hotbar.value().get_ids()) { ImGui::Text("%i", gun); }
 								}
 								ImGui::Text("Player has arsenal? %s", player.arsenal ? "Yes" : "No");
-								ImGui::Text("Loadout Size: %i", player.arsenal ? player.arsenal.value().size() : 0);
+								ImGui::Text("Loadout Size: %zu", player.arsenal ? player.arsenal.value().size() : 0);
 								playtest_sync();
 								ImGui::Checkbox("Bryn's Gun", &playtest.weapons.bryn);
 								toggle_weapon(playtest.weapons.bryn, 0);
@@ -544,7 +535,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Separator();
 								ImGui::Text("Inventory");
 								for (auto& item : player.catalog.inventory.key_items_view()) {
-									ImGui::Text(item->get_label().data());
+									ImGui::Text("%s", item->get_label().data());
 									ImGui::SameLine();
 								}
 								ImGui::Separator();

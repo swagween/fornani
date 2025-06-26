@@ -17,11 +17,19 @@ add_subdirectory(imgui)
 set(IMGUI_SFML_FIND_SFML OFF)
 add_subdirectory(imgui-sfml)
 
+# juke
+FetchContent_Declare(
+        juke
+        GIT_REPOSITORY https://github.com/swagween/jukebox
+        GIT_TAG d492bd906cf4184daf3659860622a5638fa6644b
+)
+FetchContent_MakeAvailable(juke)
+
 # djson
 FetchContent_Declare(
         djson
         GIT_REPOSITORY https://github.com/karnkaul/djson
-        GIT_TAG v2.1.1
+        GIT_TAG v3.1.1
 )
 FetchContent_MakeAvailable(djson)
 
@@ -141,6 +149,7 @@ target_link_libraries(fornani-dependencies INTERFACE
         SFML::Graphics
         SFML::Window
         SFML::Audio
+        juke::juke
         steamworks
         Tracy::TracyClient
 

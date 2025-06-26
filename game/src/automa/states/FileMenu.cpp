@@ -26,8 +26,8 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	right_dot.set_position(options.at(current_selection.get()).right_offset);
 }
 
-void FileMenu::tick_update(ServiceProvider& svc) {
-	GameState::tick_update(svc);
+void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
+	GameState::tick_update(svc, engine);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 	if (!m_console) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
@@ -125,7 +125,7 @@ void FileMenu::tick_update(ServiceProvider& svc) {
 	loading.update();
 
 	player->controller.clean();
-	svc.soundboard.play_sounds(svc);
+	svc.soundboard.play_sounds(engine, svc);
 	player->flags.triggers = {};
 }
 

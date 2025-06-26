@@ -151,9 +151,9 @@ void TextWriter::load_single_message(std::string_view message) {
 void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	flush();
 	// suite
-	for (auto& set : source[key]["suite"].array_view()) {
+	for (auto& set : source[key]["suite"].as_array()) {
 		auto this_set = std::deque<Message>{};
-		for (auto& msg : set.array_view()) {
+		for (auto& msg : set.as_array()) {
 			this_set.push_back({sf::Text(*m_font), false});
 			this_set.back().data.setString(msg.as_string().data());
 			stylize(this_set.back().data);

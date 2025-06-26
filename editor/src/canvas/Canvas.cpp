@@ -132,7 +132,7 @@ bool Canvas::load(fornani::data::ResourceFinder& finder, std::string const& regi
 	tile_style = Style(static_cast<StyleType>(style_value));
 	m_theme.music = meta["music"].as_string();
 	m_theme.ambience = meta["ambience"].as_string();
-	for (auto& in : meta["atmosphere"].array_view()) { m_theme.atmosphere.push_back(in.as<int>()); };
+	for (auto& in : meta["atmosphere"].as_array()) { m_theme.atmosphere.push_back(in.as<int>()); };
 	if (meta["camera_effects"]) {
 		m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
 		m_camera_effects.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
@@ -150,12 +150,12 @@ bool Canvas::load(fornani::data::ResourceFinder& finder, std::string const& regi
 
 	// tiles
 	auto counter{0};
-	for (auto& layer : metadata["tile"]["layers"].array_view()) {
+	for (auto& layer : metadata["tile"]["layers"].as_array()) {
 		auto parallax = metadata["tile"]["parallax"][counter].as<float>();
 		if (parallax == 0) { parallax = 1.f; }
 		map_states.back().layers.push_back(Layer(counter, counter == map_states.back().get_middleground(), dimensions, parallax));
 		int cell_counter{};
-		for (auto& cell : layer.array_view()) {
+		for (auto& cell : layer.as_array()) {
 			map_states.back().layers.back().grid.cells.at(cell_counter).value = cell.as<int>();
 			++cell_counter;
 		}

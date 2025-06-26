@@ -495,7 +495,7 @@ fsm::StateFunction PlayerAnimation::update_die() {
 	animation.label = "die";
 	m_actual = AnimState::die;
 	if (animation.just_started()) {
-		m_player->m_services->music.stop();
+		m_player->m_services->music_player.stop();
 		post_death.start();
 		triggers.reset(AnimTriggers::end_death);
 		m_player->m_services->state_controller.actions.set(automa::Actions::death_mode); // set here, reset on map load
@@ -546,9 +546,6 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 	slider.calculate();
 	if (!slider.started()) {
 		slider.start();
-		slider.direction = m_player->controller.direction;
-	}
-	if (animation.just_started()) {
 		m_player->m_services->soundboard.flags.player.set(audio::Player::slide);
 		slider.slide();
 	}
@@ -564,6 +561,7 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 		animation.set_params(get_params("get_up"));
 		return PA_BIND(update_get_up);
 	}
+
 	m_player->controller.roll.break_out();
 
 	if (!m_player->grounded()) {
@@ -577,12 +575,15 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 	if (m_player->collider.downhill()) { slider.start(); }
 	m_player->collider.physics.acceleration.x = m_player->physics_stats.slide_speed * m_player->controller.sliding_movement() * slider.get_dampen();
 
-	if (slider.direction.lnr != m_player->controller.direction.lnr) {
+	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) {
 		m_player->controller.get_slide().end();
-		request(AnimState::sharp_turn);
-		animation.set_params(get_params("sharp_turn"));
 		return PA_BIND(update_sharp_turn);
 	}
+	if (change_state(AnimState::turn, get_params("turn"))) {
+		m_player->controller.get_slide().end();
+		return PA_BIND(update_turn);
+	}
+
 	if (m_player->controller.get_slide().can_exit()) {
 		if (was_requested(AnimState::sharp_turn)) { m_player->controller.get_slide().end(); }
 		if (was_requested(AnimState::get_up)) { m_player->controller.get_slide().end(); }
@@ -607,7 +608,7 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 			return PA_BIND(update_get_up);
 		}
 	}
-	return std::move(state_function);
+	return PA_BIND(update_slide);
 }
 
 fsm::StateFunction PlayerAnimation::update_get_up() {

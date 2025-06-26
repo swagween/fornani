@@ -266,6 +266,7 @@ void ControllerMap::set_action_set(ActionSet set) {
 		return digital_action_names.at(action);
 	} else {
 		NANI_LOG_ERROR(m_logger, "Action missing from action_names.json");
+		return std::string_view{};
 	}
 }
 

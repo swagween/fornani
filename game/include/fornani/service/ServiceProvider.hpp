@@ -1,4 +1,5 @@
 #pragma once
+#include "fornani/audio/Ambience.hpp"
 #include "fornani/audio/MusicPlayer.hpp"
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/automa/MenuController.hpp"
@@ -38,13 +39,10 @@ struct PlayerDat {
 struct MapDebug {
 	int active_projectiles{};
 };
-// TODO: Honestly the entire ServiceProvider needs to go but it's gonna be a slow process of eliminating it.
-// TODO: Convert ServiceProvider to a MonoInstance
-/*
- * Here
- */
+
 struct ServiceProvider {
-	ServiceProvider(char** argv, Version& version, WindowManager& window) : finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder}, sounds{finder} {};
+	ServiceProvider(char** argv, Version& version, WindowManager& window, capo::IEngine& audio_engine)
+		: finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder}, sounds{finder}, music_player{audio_engine}, ambience_player{audio_engine} {};
 
 	util::Stopwatch stopwatch{}; // TODO: Remove. Make Free-Standing.
 	data::ResourceFinder finder;
@@ -65,7 +63,8 @@ struct ServiceProvider {
 	StateController state_controller{};
 	MenuController menu_controller{};
 	audio::Soundboard soundboard{*this}; // TODO: Remove. Make Free-Standing. Maybe?
-	audio::MusicPlayer music{};			 // TODO: Remove. Make Free-Standing. Maybe?
+	audio::MusicPlayer music_player;
+	audio::Ambience ambience_player;
 	QuestTracker quest{};
 	StatTracker stats{};
 	PlayerDat player_dat{};

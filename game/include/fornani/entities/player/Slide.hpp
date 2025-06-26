@@ -31,7 +31,6 @@ class Slide {
 	[[nodiscard]] auto broke_out() -> bool { return flags.consume(SlideFlags::break_out); }
 	[[nodiscard]] auto started() const -> bool { return flags.test(SlideFlags::started); }
 	[[nodiscard]] auto get_dampen() const -> float { return begin_normal * multiplier; }
-	Direction direction{};
 
   private:
 	util::Cooldown begin_slide{128};

@@ -36,7 +36,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 
 	// populate dashboard depending on the player's inventory
 	auto const& items = svc.data.get_player_items();
-	for (auto& i : items.array_view()) {
+	for (auto& i : items.as_array()) {
 		// if (i["label"].as_string() == "radar_device") { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player)); }
 	}
 	auto clock_placement{sf::Vector2f{84.f, 142.f}};

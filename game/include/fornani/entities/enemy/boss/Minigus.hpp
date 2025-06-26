@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/Audio.hpp>
 #include "fornani/entities/enemy/Enemy.hpp"
 #include "fornani/entities/npc/NPC.hpp"
 #include "fornani/entities/packages/Attack.hpp"
@@ -9,6 +10,7 @@
 #include "fornani/gui/StatusBar.hpp"
 #include "fornani/io/Logger.hpp"
 #include "fornani/particle/Sparkler.hpp"
+
 #define MINIGUS_BIND(f) std::bind(&Minigus::f, this)
 
 namespace fornani::enemy {

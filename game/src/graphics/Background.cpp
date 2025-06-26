@@ -22,7 +22,7 @@ Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "du
 	if (in_data["lock"]["horizontal"].as_bool()) { lock_horizontally(); }
 	if (in_data["lock"]["vertical"].as_bool()) { lock_vertically(); }
 	auto index{0};
-	for (auto& layer : in_data["layers"].array_view()) {
+	for (auto& layer : in_data["layers"].as_array()) {
 		layers.push_back({index, layer["scroll_speed"].as<float>(), layer["parallax"].as<float>()});
 		layers.back().physics.set_global_friction(1.f);
 		for (auto i{0}; i < svc.world_clock.num_cycles(); ++i) {

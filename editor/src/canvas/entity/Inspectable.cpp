@@ -42,11 +42,11 @@ void Inspectable::unserialize(dj::Json& in) {
 	alternates = in["alternates"].as<int>();
 	for (auto i{0}; i <= alternates; ++i) {
 		auto next = std::string{key + std::to_string(i)};
-		for (auto& in_suite : in[next]["suite"].array_view()) {
-			for (auto& message : in_suite.array_view()) { suites.push_back(std::vector<std::string>{message.as_string().data()}); }
+		for (auto& in_suite : in[next]["suite"].as_array()) {
+			for (auto& message : in_suite.as_array()) { suites.push_back(std::vector<std::string>{message.as_string().data()}); }
 		}
-		for (auto& in_response : in[next]["responses"].array_view()) {
-			for (auto& message : in_response.array_view()) { responses.push_back(std::vector<std::string>{message.as_string().data()}); }
+		for (auto& in_response : in[next]["responses"].as_array()) {
+			for (auto& message : in_response.as_array()) { responses.push_back(std::vector<std::string>{message.as_string().data()}); }
 		}
 	}
 }

@@ -6,7 +6,7 @@ namespace fornani::automa {
 
 GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : player(&player), hud(svc, player), scene(scene) {
 	auto const& in_data = svc.data.menu["options"];
-	for (auto& entry : in_data[scene].array_view()) { options.push_back(Option(svc, entry.as_string())); }
+	for (auto& entry : in_data[scene].as_array()) { options.push_back(Option(svc, entry.as_string())); }
 	if (!options.empty()) { current_selection = util::Circuit(static_cast<int>(options.size())); }
 
 	top_buffer = svc.data.menu["config"][scene]["top_buffer"].as<float>();
@@ -27,7 +27,7 @@ GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_v
 	right_dot.collider.physics.maximum_velocity = sf::Vector2<float>(dot_speed, dot_speed);
 }
 
-void GameState::tick_update(ServiceProvider& svc) {
+void GameState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (m_console) {
 		if (m_console.value()->exit_requested()) { m_console = {}; }
 	}

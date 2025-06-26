@@ -71,7 +71,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 				svc.data.write_death_count(player);
 				return;
 			}
-			svc.music.stop();
+			svc.music_player.stop();
 		}
 	}
 	if (svc.state_controller.actions.consume(Actions::trigger)) {

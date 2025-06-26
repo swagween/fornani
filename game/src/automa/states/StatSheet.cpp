@@ -24,13 +24,13 @@ StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, std::string_v
 							 " / 2\n items found: " + std::to_string(player.catalog.inventory.key_items_view().size()) + " / 9\n'get bryn's gun' speedrun time: " + svc.stats.tt_formatted() + " seconds";
 	stats.setString(statistics);
 	stats.setLineSpacing(2.0f);
-	svc.music.load(svc.finder, "firstwind");
-	svc.music.play_looped(10);
+	svc.music_player.load(svc.finder, "firstwind");
+	svc.music_player.play_looped();
 	loading.start();
 }
 
-void StatSheet::tick_update(ServiceProvider& svc) {
-	GameState::tick_update(svc);
+void StatSheet::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
+	GameState::tick_update(svc, engine);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
@@ -65,7 +65,7 @@ void StatSheet::tick_update(ServiceProvider& svc) {
 	right_dot.update(svc);
 	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
-	svc.soundboard.play_sounds(svc);
+	svc.soundboard.play_sounds(engine, svc);
 }
 
 void StatSheet::frame_update(ServiceProvider& svc) {}

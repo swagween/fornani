@@ -9,7 +9,7 @@ namespace fornani::automa {
 class ControlsMenu final : public GameState {
   public:
 	ControlsMenu(ServiceProvider& svc, player::Player& player, std::string_view room_name = "", int room_number = 0);
-	void tick_update(ServiceProvider& svc) override;
+	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
 	void refresh_controls(ServiceProvider& svc);

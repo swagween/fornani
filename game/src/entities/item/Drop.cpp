@@ -28,7 +28,7 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 
 	auto& in_anim = svc.data.drop[key]["animation"];
 	num_sprites = in_anim["num_sprites"].as<int>();
-	for (auto& param : in_anim["params"].array_view()) {
+	for (auto& param : in_anim["params"].as_array()) {
 		anim::Parameters a{};
 		a.duration = param["duration"].as<int>();
 		a.framerate = param["framerate"].as<int>();

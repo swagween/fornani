@@ -76,8 +76,8 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	loading.start();
 }
 
-void Dojo::tick_update(ServiceProvider& svc) {
-	GameState::tick_update(svc);
+void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
+	GameState::tick_update(svc, engine);
 
 	// gamepad disconnected
 	if (svc.controller_map.process_gamepad_disconnection()) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
@@ -87,7 +87,7 @@ void Dojo::tick_update(ServiceProvider& svc) {
 	loading.is_complete() && !vendor_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
 	loading.update();
 
-	svc.soundboard.play_sounds(svc, map.get_echo_count(), map.get_echo_rate());
+	svc.soundboard.play_sounds(engine, svc, map.get_echo_count(), map.get_echo_rate());
 
 	// set action set
 	if (pause_window || m_console) {

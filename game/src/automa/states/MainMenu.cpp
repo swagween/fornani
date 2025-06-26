@@ -37,13 +37,13 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	loading.start();
 }
 
-void MainMenu::tick_update(ServiceProvider& svc) {
-	GameState::tick_update(svc);
+void MainMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
+	GameState::tick_update(svc, engine);
 	svc.a11y.set_action_ctx_bar_enabled(true);
 
 	if (loading.is_almost_complete()) {
-		svc.music.load(svc.finder, "clay");
-		svc.music.play_looped(20);
+		svc.music_player.load(svc.finder, "clay");
+		svc.music_player.play_looped();
 	}
 	loading.update();
 
@@ -77,7 +77,7 @@ void MainMenu::tick_update(ServiceProvider& svc) {
 	right_dot.update(svc);
 	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
 	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
-	svc.soundboard.play_sounds(svc);
+	svc.soundboard.play_sounds(engine, svc);
 	player->animation.request(player::AnimState::run);
 }
 

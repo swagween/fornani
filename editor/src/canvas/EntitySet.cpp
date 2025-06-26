@@ -38,25 +38,25 @@ void EntitySet::load(fornani::data::ResourceFinder& finder, dj::Json& metadata, 
 	// general entities
 	for (auto const& [key, entry] : metadata.object_view()) {
 		if (std::string{key} == "inspectables") {
-			for (auto& element : entry.array_view()) {
+			for (auto& element : entry.as_array()) {
 				variables.entities.push_back(std::make_unique<Inspectable>());
 				variables.entities.back()->unserialize(element);
 			}
 		}
 		if (std::string{key} == "platforms") {
-			for (auto& element : entry.array_view()) {
+			for (auto& element : entry.as_array()) {
 				variables.entities.push_back(std::make_unique<Platform>());
 				variables.entities.back()->unserialize(element);
 			}
 		}
 		if (std::string{key} == "portals") {
-			for (auto& element : entry.array_view()) {
+			for (auto& element : entry.as_array()) {
 				variables.entities.push_back(std::make_unique<Portal>());
 				variables.entities.back()->unserialize(element);
 			}
 		}
 		if (std::string{key} == "enemies") {
-			for (auto& element : entry.array_view()) {
+			for (auto& element : entry.as_array()) {
 				variables.entities.push_back(std::make_unique<Enemy>());
 				variables.entities.back()->unserialize(element);
 			}

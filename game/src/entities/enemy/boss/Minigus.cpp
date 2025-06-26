@@ -10,44 +10,44 @@ namespace fornani::enemy {
 
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map)
 	: Enemy(svc, "minigus"), gun(svc, 1), soda(svc, 2), m_services(&svc), npc::NPC(svc, "minigus", 7), m_map(&map), health_bar(svc), sparkler(svc, Enemy::collider.vicinity.get_dimensions(), colors::ui_white, "minigus"),
-	  voice{.hurt_1 = sf::Sound(svc.sounds.get_buffer("minigus_hurt_1")),
-			.hurt_2 = sf::Sound(svc.sounds.get_buffer("minigus_hurt_2")),
-			.hurt_3 = sf::Sound(svc.sounds.get_buffer("minigus_hurt_3")),
-			.laugh_1 = sf::Sound(svc.sounds.get_buffer("minigus_laugh_1")),
-			.laugh_2 = sf::Sound(svc.sounds.get_buffer("minigus_laugh_2")),
-			.grunt = sf::Sound(svc.sounds.get_buffer("minigus_grunt")),
-			.aww = sf::Sound(svc.sounds.get_buffer("minigus_aww")),
-			.babyimhome = sf::Sound(svc.sounds.get_buffer("minigus_babyimhome")),
-			.deepspeak = sf::Sound(svc.sounds.get_buffer("minigus_deepspeak")),
-			.doge = sf::Sound(svc.sounds.get_buffer("minigus_doge")),
-			.dontlookatme = sf::Sound(svc.sounds.get_buffer("minigus_dontlookatme")),
-			.exhale = sf::Sound(svc.sounds.get_buffer("minigus_exhale")),
-			.getit = sf::Sound(svc.sounds.get_buffer("minigus_getit")),
-			.greatidea = sf::Sound(svc.sounds.get_buffer("minigus_greatidea")),
-			.itsagreatday = sf::Sound(svc.sounds.get_buffer("minigus_itsagreatday")),
-			.long_death = sf::Sound(svc.sounds.get_buffer("minigus_long_death")),
-			.long_moan = sf::Sound(svc.sounds.get_buffer("minigus_long_moan")),
-			.momma = sf::Sound(svc.sounds.get_buffer("minigus_momma")),
-			.mother = sf::Sound(svc.sounds.get_buffer("minigus_mother")),
-			.ok_1 = sf::Sound(svc.sounds.get_buffer("minigus_ok_1")),
-			.ok_2 = sf::Sound(svc.sounds.get_buffer("minigus_ok_2")),
-			.pizza = sf::Sound(svc.sounds.get_buffer("minigus_pizza")),
-			.poh = sf::Sound(svc.sounds.get_buffer("minigus_poh")),
-			.quick_breath = sf::Sound(svc.sounds.get_buffer("minigus_quick_breath")),
-			.thatisverysneeze = sf::Sound(svc.sounds.get_buffer("minigus_thatisverysneeze")),
-			.whatisit = sf::Sound(svc.sounds.get_buffer("minigus_whatisit")),
-			.woob = sf::Sound(svc.sounds.get_buffer("minigus_woob"))},
-	  sounds{.jump = sf::Sound(svc.sounds.get_buffer("minigus_jump")),
-			 .land = sf::Sound(svc.sounds.get_buffer("minigus_land")),
-			 .crash = sf::Sound(svc.sounds.get_buffer("minigus_crash")),
-			 .step = sf::Sound(svc.sounds.get_buffer("minigus_step")),
-			 .punch = sf::Sound(svc.sounds.get_buffer("minigus_punch")),
-			 .snap = sf::Sound(svc.sounds.get_buffer("minigus_snap")),
-			 .lose_inv = sf::Sound(svc.sounds.get_buffer("minigus_lose_inv")),
-			 .charge = sf::Sound(svc.sounds.get_buffer("minigus_charge")),
-			 .build = sf::Sound(svc.sounds.get_buffer("minigus_build")),
-			 .inv = sf::Sound(svc.sounds.get_buffer("minigus_inv")),
-			 .soda = sf::Sound(svc.sounds.get_buffer("minigus_soda"))},
+	  voice{.hurt_1 = sf::Sound(svc.sounds.get_sf_buffer("minigus_hurt_1")),
+			.hurt_2 = sf::Sound(svc.sounds.get_sf_buffer("minigus_hurt_2")),
+			.hurt_3 = sf::Sound(svc.sounds.get_sf_buffer("minigus_hurt_3")),
+			.laugh_1 = sf::Sound(svc.sounds.get_sf_buffer("minigus_laugh_1")),
+			.laugh_2 = sf::Sound(svc.sounds.get_sf_buffer("minigus_laugh_2")),
+			.grunt = sf::Sound(svc.sounds.get_sf_buffer("minigus_grunt")),
+			.aww = sf::Sound(svc.sounds.get_sf_buffer("minigus_aww")),
+			.babyimhome = sf::Sound(svc.sounds.get_sf_buffer("minigus_babyimhome")),
+			.deepspeak = sf::Sound(svc.sounds.get_sf_buffer("minigus_deepspeak")),
+			.doge = sf::Sound(svc.sounds.get_sf_buffer("minigus_doge")),
+			.dontlookatme = sf::Sound(svc.sounds.get_sf_buffer("minigus_dontlookatme")),
+			.exhale = sf::Sound(svc.sounds.get_sf_buffer("minigus_exhale")),
+			.getit = sf::Sound(svc.sounds.get_sf_buffer("minigus_getit")),
+			.greatidea = sf::Sound(svc.sounds.get_sf_buffer("minigus_greatidea")),
+			.itsagreatday = sf::Sound(svc.sounds.get_sf_buffer("minigus_itsagreatday")),
+			.long_death = sf::Sound(svc.sounds.get_sf_buffer("minigus_long_death")),
+			.long_moan = sf::Sound(svc.sounds.get_sf_buffer("minigus_long_moan")),
+			.momma = sf::Sound(svc.sounds.get_sf_buffer("minigus_momma")),
+			.mother = sf::Sound(svc.sounds.get_sf_buffer("minigus_mother")),
+			.ok_1 = sf::Sound(svc.sounds.get_sf_buffer("minigus_ok_1")),
+			.ok_2 = sf::Sound(svc.sounds.get_sf_buffer("minigus_ok_2")),
+			.pizza = sf::Sound(svc.sounds.get_sf_buffer("minigus_pizza")),
+			.poh = sf::Sound(svc.sounds.get_sf_buffer("minigus_poh")),
+			.quick_breath = sf::Sound(svc.sounds.get_sf_buffer("minigus_quick_breath")),
+			.thatisverysneeze = sf::Sound(svc.sounds.get_sf_buffer("minigus_thatisverysneeze")),
+			.whatisit = sf::Sound(svc.sounds.get_sf_buffer("minigus_whatisit")),
+			.woob = sf::Sound(svc.sounds.get_sf_buffer("minigus_woob"))},
+	  sounds{.jump = sf::Sound(svc.sounds.get_sf_buffer("minigus_jump")),
+			 .land = sf::Sound(svc.sounds.get_sf_buffer("minigus_land")),
+			 .crash = sf::Sound(svc.sounds.get_sf_buffer("minigus_crash")),
+			 .step = sf::Sound(svc.sounds.get_sf_buffer("minigus_step")),
+			 .punch = sf::Sound(svc.sounds.get_sf_buffer("minigus_punch")),
+			 .snap = sf::Sound(svc.sounds.get_sf_buffer("minigus_snap")),
+			 .lose_inv = sf::Sound(svc.sounds.get_sf_buffer("minigus_lose_inv")),
+			 .charge = sf::Sound(svc.sounds.get_sf_buffer("minigus_charge")),
+			 .build = sf::Sound(svc.sounds.get_sf_buffer("minigus_build")),
+			 .inv = sf::Sound(svc.sounds.get_sf_buffer("minigus_inv")),
+			 .soda = sf::Sound(svc.sounds.get_sf_buffer("minigus_soda"))},
 	  minigun{.sprite = sf::Sprite(svc.assets.get_texture("minigus_minigun"))} {
 	animation.set_params(idle);
 	gun.clip_cooldown_time = 360;
@@ -316,15 +316,15 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (voice_cue == 6) { voice.getit.play(); }
 
 	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::theme_song)) {
-		svc.music.load(svc.finder, "minigus");
-		svc.music.play_looped(25);
+		svc.music_player.load(svc.finder, "minigus");
+		svc.music_player.play_looped();
 		status.set(MinigusFlags::theme_song);
 	}
 	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::battle_mode) && console_complete && !health_bar.empty() && !status.test(MinigusFlags::exit_scene)) {
 		status.set(MinigusFlags::battle_mode);
 		triggers.reset(npc::NPCTrigger::distant_interact);
-		svc.music.load(svc.finder, "scuffle");
-		svc.music.play_looped(25);
+		svc.music_player.load(svc.finder, "scuffle");
+		svc.music_player.play_looped();
 		cooldowns.vulnerability.start();
 	}
 
@@ -850,7 +850,7 @@ fsm::StateFunction Minigus::update_struggle() {
 			triggers.set(npc::NPCTrigger::distant_interact);
 			flush_conversations();
 			push_conversation("2");
-			m_services->music.stop();
+			m_services->music_player.stop();
 			sounds.crash.play();
 			voice.quick_breath.play();
 			voice.long_moan.play();
@@ -864,7 +864,7 @@ fsm::StateFunction Minigus::update_struggle() {
 
 		if (cooldowns.exit.is_complete() && status.test(MinigusFlags::exit_scene)) {
 			triggers.set(npc::NPCTrigger::distant_interact);
-			m_services->music.stop();
+			m_services->music_player.stop();
 			flush_conversations();
 			push_conversation("3");
 			status.reset(MinigusFlags::exit_scene);
@@ -886,8 +886,8 @@ fsm::StateFunction Minigus::update_exit() {
 		m_map->active_loot.push_back(item::Loot(*m_services, get_attributes().drop_range, get_attributes().loot_multiplier, get_collider().bounding_box.get_position()));
 		state = MinigusState::jumpsquat;
 		animation.set_params(jumpsquat);
-		m_services->music.load(m_services->finder, "dusken_cove");
-		m_services->music.play_looped(30);
+		m_services->music_player.load(m_services->finder, "dusken_cove");
+		m_services->music_player.play_looped();
 		return MINIGUS_BIND(update_jumpsquat);
 	}
 	state = MinigusState::exit;

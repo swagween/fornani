@@ -31,8 +31,8 @@ void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
 }
 
 void Application::launch(char** argv, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
-	std::unique_ptr game = std::make_unique<Game>(argv, m_window, m_metadata);
-	game->run(demo, room_id, levelpath, player_position);
+	std::unique_ptr game = std::make_unique<Game>(argv, m_window, m_metadata, *m_engine);
+	game->run(*m_engine, demo, room_id, levelpath, player_position);
 }
 
 } // namespace fornani
