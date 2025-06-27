@@ -10,44 +10,6 @@ namespace fornani::enemy {
 
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map)
 	: Enemy(svc, "minigus"), gun(svc, 1), soda(svc, 2), m_services(&svc), npc::NPC(svc, "minigus", 7), m_map(&map), health_bar(svc), sparkler(svc, Enemy::collider.vicinity.get_dimensions(), colors::ui_white, "minigus"),
-	  voice{.hurt_1 = sf::Sound(svc.sounds.get_sf_buffer("minigus_hurt_1")),
-			.hurt_2 = sf::Sound(svc.sounds.get_sf_buffer("minigus_hurt_2")),
-			.hurt_3 = sf::Sound(svc.sounds.get_sf_buffer("minigus_hurt_3")),
-			.laugh_1 = sf::Sound(svc.sounds.get_sf_buffer("minigus_laugh_1")),
-			.laugh_2 = sf::Sound(svc.sounds.get_sf_buffer("minigus_laugh_2")),
-			.grunt = sf::Sound(svc.sounds.get_sf_buffer("minigus_grunt")),
-			.aww = sf::Sound(svc.sounds.get_sf_buffer("minigus_aww")),
-			.babyimhome = sf::Sound(svc.sounds.get_sf_buffer("minigus_babyimhome")),
-			.deepspeak = sf::Sound(svc.sounds.get_sf_buffer("minigus_deepspeak")),
-			.doge = sf::Sound(svc.sounds.get_sf_buffer("minigus_doge")),
-			.dontlookatme = sf::Sound(svc.sounds.get_sf_buffer("minigus_dontlookatme")),
-			.exhale = sf::Sound(svc.sounds.get_sf_buffer("minigus_exhale")),
-			.getit = sf::Sound(svc.sounds.get_sf_buffer("minigus_getit")),
-			.greatidea = sf::Sound(svc.sounds.get_sf_buffer("minigus_greatidea")),
-			.itsagreatday = sf::Sound(svc.sounds.get_sf_buffer("minigus_itsagreatday")),
-			.long_death = sf::Sound(svc.sounds.get_sf_buffer("minigus_long_death")),
-			.long_moan = sf::Sound(svc.sounds.get_sf_buffer("minigus_long_moan")),
-			.momma = sf::Sound(svc.sounds.get_sf_buffer("minigus_momma")),
-			.mother = sf::Sound(svc.sounds.get_sf_buffer("minigus_mother")),
-			.ok_1 = sf::Sound(svc.sounds.get_sf_buffer("minigus_ok_1")),
-			.ok_2 = sf::Sound(svc.sounds.get_sf_buffer("minigus_ok_2")),
-			.pizza = sf::Sound(svc.sounds.get_sf_buffer("minigus_pizza")),
-			.poh = sf::Sound(svc.sounds.get_sf_buffer("minigus_poh")),
-			.quick_breath = sf::Sound(svc.sounds.get_sf_buffer("minigus_quick_breath")),
-			.thatisverysneeze = sf::Sound(svc.sounds.get_sf_buffer("minigus_thatisverysneeze")),
-			.whatisit = sf::Sound(svc.sounds.get_sf_buffer("minigus_whatisit")),
-			.woob = sf::Sound(svc.sounds.get_sf_buffer("minigus_woob"))},
-	  sounds{.jump = sf::Sound(svc.sounds.get_sf_buffer("minigus_jump")),
-			 .land = sf::Sound(svc.sounds.get_sf_buffer("minigus_land")),
-			 .crash = sf::Sound(svc.sounds.get_sf_buffer("minigus_crash")),
-			 .step = sf::Sound(svc.sounds.get_sf_buffer("minigus_step")),
-			 .punch = sf::Sound(svc.sounds.get_sf_buffer("minigus_punch")),
-			 .snap = sf::Sound(svc.sounds.get_sf_buffer("minigus_snap")),
-			 .lose_inv = sf::Sound(svc.sounds.get_sf_buffer("minigus_lose_inv")),
-			 .charge = sf::Sound(svc.sounds.get_sf_buffer("minigus_charge")),
-			 .build = sf::Sound(svc.sounds.get_sf_buffer("minigus_build")),
-			 .inv = sf::Sound(svc.sounds.get_sf_buffer("minigus_inv")),
-			 .soda = sf::Sound(svc.sounds.get_sf_buffer("minigus_soda"))},
 	  minigun{.sprite = sf::Sprite(svc.assets.get_texture("minigus_minigun"))} {
 	animation.set_params(idle);
 	gun.clip_cooldown_time = 360;
@@ -93,7 +55,7 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map)
 
 	push_conversation("1");
 
-	voice.greatidea.setVolume(30),
+	// voice.greatidea.setVolume(30),
 
 		sparkler.set_dimensions(Enemy::collider.vicinity.get_dimensions());
 }
@@ -238,11 +200,11 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 	if (flags.state.test(StateFlags::hurt)) {
 		cooldowns.hurt.start();
 		if (util::random::percent_chance(40)) {
-			voice.hurt_1.play();
+			//voice.hurt_1.play();
 		} else if (util::random::percent_chance(40)) {
-			voice.hurt_2.play();
+			//voice.hurt_2.play();
 		} else {
-			voice.hurt_3.play();
+			//voice.hurt_3.play();
 		}
 		flags.state.reset(StateFlags::hurt);
 	}
@@ -308,12 +270,12 @@ void Minigus::unique_update(automa::ServiceProvider& svc, world::Map& map, playe
 
 	// auto voice_cue = player.transponder.shipments.voice.consume_pulse();
 	auto voice_cue{1};
-	if (voice_cue == 1) { voice.greatidea.play(); }
+	/*if (voice_cue == 1) { voice.greatidea.play(); }
 	if (voice_cue == 2) { voice.dontlookatme.play(); }
 	if (voice_cue == 3) { voice.laugh_1.play(); }
 	if (voice_cue == 4) { voice.pizza.play(); }
 	if (voice_cue == 5) { voice.grunt.play(); }
-	if (voice_cue == 6) { voice.getit.play(); }
+	if (voice_cue == 6) { voice.getit.play(); }*/
 
 	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::theme_song)) {
 		svc.music_player.load(svc.finder, "minigus");
@@ -388,10 +350,10 @@ fsm::StateFunction Minigus::update_shoot() {
 	if (animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "shoot"); }
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
 	if (animation.just_started()) {
-		voice.doge.play();
+		//voice.doge.play();
 		minigun.animation.set_params(minigun.charging);
 		minigun.flags.set(MinigunFlags::charging);
-		sounds.charge.play();
+		//sounds.charge.play();
 	}
 	if (!gun.get().cooling_down() && !minigun.flags.test(MinigunFlags::charging)) {
 		gun.cycle.update();
@@ -468,7 +430,7 @@ fsm::StateFunction Minigus::update_hurt() {
 
 fsm::StateFunction Minigus::update_jump() {
 	if (animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "jump"); }
-	if (animation.just_started()) { voice.woob.play(); }
+	if (animation.just_started()) { /*voice.woob.play();*/ }
 	// NANI_LOG_DEBUG(m_logger, animation.global_counter.get_count() << "");
 	cooldowns.jump.update();
 	if (animation.just_started()) { cooldowns.jump.start(); }
@@ -479,8 +441,8 @@ fsm::StateFunction Minigus::update_jump() {
 	if (cooldowns.jump.is_complete() && status.test(MinigusFlags::over_and_out)) { flags.general.reset(GeneralFlags::map_collision); }
 	if (Enemy::collider.grounded() && cooldowns.jump.is_complete()) {
 		m_map->shake_camera();
-		sounds.land.play();
-		sounds.crash.play();
+		//sounds.land.play();
+		//sounds.crash.play();
 		attacks.left_shockwave.start();
 		attacks.right_shockwave.start();
 		if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
@@ -494,7 +456,7 @@ fsm::StateFunction Minigus::update_jump() {
 
 fsm::StateFunction Minigus::update_jump_shoot() {
 	if (animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "jump_shoot"); }
-	if (animation.just_started()) { voice.getit.play(); }
+	if (animation.just_started()) { /*voice.getit.play();*/ }
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
 	if (cooldowns.pre_jump.get_cooldown() != -1) { cooldowns.pre_jump.update(); }
 	cooldowns.jump.update();
@@ -504,7 +466,7 @@ fsm::StateFunction Minigus::update_jump_shoot() {
 		cooldowns.pre_jump.start();
 		minigun.animation.set_params(minigun.charging);
 		minigun.flags.set(MinigunFlags::charging);
-		sounds.charge.play();
+		//sounds.charge.play();
 	}
 	if (cooldowns.pre_jump.is_complete() && !cooldowns.jump.running()) {
 		cooldowns.pre_jump.nullify();
@@ -558,7 +520,7 @@ fsm::StateFunction Minigus::update_reload() {
 	if (animation.complete()) {
 		minigun.flags.reset(MinigunFlags::exhausted);
 		minigun.animation.set_params(minigun.neutral);
-		voice.deepspeak.play();
+		//voice.deepspeak.play();
 		if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
 
 		if (invincible()) {
@@ -658,7 +620,7 @@ fsm::StateFunction Minigus::update_run() {
 
 fsm::StateFunction Minigus::update_punch() {
 	if (animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "punch"); }
-	if (animation.just_started()) { voice.mother.play(); }
+	if (animation.just_started()) { /*voice.mother.play();*/ }
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
 	if (animation.get_frame() == 30 && !status.test(MinigusFlags::punched)) {
 		m_map->effects.push_back(entity::Effect(*m_services, "small_flash", attacks.punch.hit.bounds.getPosition(), {}, 0, 5));
@@ -684,7 +646,7 @@ fsm::StateFunction Minigus::update_punch() {
 
 fsm::StateFunction Minigus::update_uppercut() {
 	if (animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "uppercut"); }
-	if (animation.just_started()) { voice.momma.play(); }
+	if (animation.just_started()) { /*voice.momma.play();*/ }
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
 	if (animation.get_frame() == 37 && !status.test(MinigusFlags::punched)) {
 		m_map->effects.push_back(entity::Effect(*m_services, "small_flash", attacks.uppercut.hit.bounds.getPosition(), {}, 0, 5));
@@ -711,8 +673,8 @@ fsm::StateFunction Minigus::update_uppercut() {
 fsm::StateFunction Minigus::update_build_invincibility() {
 	if (animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "build_invincibility"); }
 	if (animation.just_started()) {
-		voice.grunt.play();
-		sounds.build.play();
+		//voice.grunt.play();
+		//sounds.build.play();
 		sparkler.set_rate(6.f);
 	}
 	if (change_state(MinigusState::struggle, struggle)) {
@@ -723,7 +685,7 @@ fsm::StateFunction Minigus::update_build_invincibility() {
 	if (animation.complete()) {
 		flags.state.reset(StateFlags::vulnerable);
 		counters.snap.start();
-		sounds.inv.play();
+		//sounds.inv.play();
 		visual.sprite.setTexture(m_services->assets.get_texture("enemy_minigus_inv"));
 		sparkler.set_rate(0.f);
 		state = MinigusState::laugh;
@@ -738,9 +700,9 @@ fsm::StateFunction Minigus::update_laugh() {
 	if (animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "laugh"); }
 	if (animation.just_started()) {
 		if (util::random::percent_chance(50)) {
-			voice.laugh_1.play();
+			//voice.laugh_1.play();
 		} else {
-			voice.laugh_2.play();
+			//voice.laugh_2.play();
 		}
 	}
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
@@ -774,7 +736,7 @@ fsm::StateFunction Minigus::update_laugh() {
 
 fsm::StateFunction Minigus::update_snap() {
 	if (animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "snap"); }
-	if (animation.just_started()) { sounds.snap.play(); }
+	if (animation.just_started()) { /*sounds.snap.play();*/ }
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
 	if (animation.complete()) {
 		for (int i{0}; i < 2; ++i) {
@@ -831,7 +793,7 @@ fsm::StateFunction Minigus::update_struggle() {
 	if (half_health() && !status.test(MinigusFlags::second_phase)) {
 		if (animation.just_started()) {
 			cooldowns.struggle.start();
-			voice.quick_breath.play();
+			//voice.quick_breath.play();
 		}
 		cooldowns.struggle.update();
 		if (cooldowns.struggle.is_complete()) {
@@ -851,9 +813,9 @@ fsm::StateFunction Minigus::update_struggle() {
 			flush_conversations();
 			push_conversation("2");
 			m_services->music_player.stop();
-			sounds.crash.play();
-			voice.quick_breath.play();
-			voice.long_moan.play();
+			//sounds.crash.play();
+			//voice.quick_breath.play();
+			//voice.long_moan.play();
 		}
 		if (!animation.just_started() && console_complete && !status.test(MinigusFlags::exit_scene)) {
 			status.set(MinigusFlags::exit_scene);
@@ -896,14 +858,14 @@ fsm::StateFunction Minigus::update_exit() {
 
 fsm::StateFunction Minigus::update_drink() {
 	if (animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "drink"); }
-	if (animation.just_started()) { voice.mother.play(); }
+	if (animation.just_started()) { /*voice.mother.play();*/ }
 	if (animation.get_frame() == 48 && !status.test(MinigusFlags::soda_pop)) {
-		sounds.soda.play();
+		//sounds.soda.play();
 		status.set(MinigusFlags::soda_pop);
 	}
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
 	if (animation.complete()) {
-		voice.poh.play();
+		//voice.poh.play();
 		status.reset(MinigusFlags::soda_pop);
 		state = MinigusState::throw_can;
 		animation.set_params(throw_can);
@@ -915,7 +877,7 @@ fsm::StateFunction Minigus::update_drink() {
 
 fsm::StateFunction Minigus::update_throw_can() {
 	if (animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "throw can"); }
-	if (animation.just_started()) { voice.pizza.play(); }
+	if (animation.just_started()) { /*voice.pizza.play();*/ }
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
 	if (animation.get_frame() == 62 && !status.test(MinigusFlags::threw_can)) {
 		m_map->spawn_projectile_at(*m_services, soda.get(), soda.get().get_barrel_point());

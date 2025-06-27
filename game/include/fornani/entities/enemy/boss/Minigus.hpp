@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SFML/Audio.hpp>
+#include <capo/engine.hpp>
 #include "fornani/entities/enemy/Enemy.hpp"
 #include "fornani/entities/npc/NPC.hpp"
 #include "fornani/entities/packages/Attack.hpp"
@@ -119,50 +119,6 @@ class Minigus : public Enemy, public npc::NPC {
 		util::Counter snap{};
 		util::Counter invincible_turn{};
 	} counters{};
-
-	struct {
-		sf::Sound jump;
-		sf::Sound land;
-		sf::Sound crash;
-		sf::Sound step;
-		sf::Sound punch;
-		sf::Sound snap;
-		sf::Sound lose_inv;
-		sf::Sound charge;
-		sf::Sound build;
-		sf::Sound inv;
-		sf::Sound soda;
-	} sounds;
-
-	struct {
-		sf::Sound hurt_1;
-		sf::Sound hurt_2;
-		sf::Sound hurt_3;
-		sf::Sound laugh_1;
-		sf::Sound laugh_2;
-		sf::Sound grunt;
-		sf::Sound aww;
-		sf::Sound babyimhome;
-		sf::Sound deepspeak;
-		sf::Sound doge;
-		sf::Sound dontlookatme;
-		sf::Sound exhale;
-		sf::Sound getit;
-		sf::Sound greatidea;
-		sf::Sound itsagreatday;
-		sf::Sound long_death;
-		sf::Sound long_moan;
-		sf::Sound momma;
-		sf::Sound mother;
-		sf::Sound ok_1;
-		sf::Sound ok_2;
-		sf::Sound pizza;
-		sf::Sound poh;
-		sf::Sound quick_breath;
-		sf::Sound thatisverysneeze; // dash cue
-		sf::Sound whatisit;
-		sf::Sound woob; // jumping
-	} voice;
 
 	util::Cycle hurt_color{2};
 

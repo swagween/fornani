@@ -158,7 +158,6 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["activated_switches"] = dj::Json::empty_array();
 	save["destroyed_blocks"] = dj::Json::empty_array();
 	save["destroyed_inspectables"] = dj::Json::empty_array();
-	for (auto& entry : save["quest_progressions"].as_array()) { entry = dj::Json::empty_array(); }
 	save["quest_progressions"] = dj::Json::empty_array();
 	for (auto& location : npc_locations) {
 		auto entry = dj::Json::empty_array();
@@ -390,11 +389,11 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 void DataManager::load_settings() {
 	settings = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str());
 	assert(!settings.is_null());
-	m_services->controller_map.enable_autosprint(settings["auto_sprint"].as_bool().value);
-	m_services->set_tutorial(settings["tutorial"].as_bool().value);
-	m_services->controller_map.enable_gamepad_input(settings["gamepad"].as_bool().value);
+	m_services->controller_map.enable_autosprint(settings["auto_sprint"].as_bool());
+	m_services->set_tutorial(settings["tutorial"].as_bool());
+	m_services->controller_map.enable_gamepad_input(settings["gamepad"].as_bool());
 	m_services->music_player.set_volume_multiplier(settings["music_volume"].as<float>());
-	m_services->set_fullscreen(settings["fullscreen"].as_bool().value);
+	m_services->set_fullscreen(settings["fullscreen"].as_bool());
 	NANI_LOG_INFO(m_logger, "Enabled user settings.");
 }
 
@@ -593,11 +592,11 @@ void DataManager::load_controls(config::ControllerMap& controller) {
 	// XXX change controls json when keybinds get modified
 	controls = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/control_map.json").c_str());
 	assert(!controls.is_null());
-	assert(controls.contains("controls") && controls["controls"].is_object());
+	assert(controls["controls"] && controls["controls"].is_object());
 
-	for (auto const& [key, item] : controls["controls"].object_view()) {
+	for (auto const& [key, item] : controls["controls"].as_object()) {
 		assert(item.is_object());
-		if (item.contains("primary_key")) { controller.set_primary_keyboard_binding(controller.get_action_by_identifier(key), controller.string_to_key(item["primary_key"].as_string())); }
+		if (item.as_object().contains("primary_key")) { controller.set_primary_keyboard_binding(controller.get_action_by_identifier(key), controller.string_to_key(item["primary_key"].as_string())); }
 	}
 }
 

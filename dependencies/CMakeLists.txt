@@ -148,7 +148,6 @@ target_link_libraries(fornani-dependencies INTERFACE
         SFML::System
         SFML::Graphics
         SFML::Window
-        SFML::Audio
         juke::juke
         steamworks
         Tracy::TracyClient

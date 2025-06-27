@@ -1,56 +1,56 @@
 {
   "rooms": [
     {
-      "room_id": 1,
-      "label": "new_file.json"
+      "label": "new_file.json",
+      "room_id": 1
     },
     {
-      "room_id": 99,
-      "label": "placeholder.json"
+      "label": "placeholder.json",
+      "room_id": 99
     },
     {
-      "room_id": 98,
-      "label": "placeholder_2.json"
+      "label": "placeholder_2.json",
+      "room_id": 98
     },
     {
-      "room_id": 90,
-      "label": "test_chamber.json"
+      "label": "test_chamber.json",
+      "room_id": 90
     },
     {
-      "room_id": 103,
-      "label": "atrium.json"
+      "label": "atrium.json",
+      "room_id": 103
     },
     {
-      "room_id": 100,
-      "label": "prison.json"
+      "label": "prison.json",
+      "room_id": 100
     },
     {
-      "room_id": 102,
-      "label": "vent.json"
+      "label": "vent.json",
+      "room_id": 102
     },
     {
-      "room_id": 4204,
-      "label": "border_test.json"
+      "label": "border_test.json",
+      "room_id": 4204
     },
     {
-      "room_id": 42009,
-      "label": "challenge.json"
+      "label": "challenge.json",
+      "room_id": 42009
     },
     {
-      "room_id": 4203,
-      "label": "dojo.json"
+      "label": "dojo.json",
+      "room_id": 4203
     },
     {
-      "room_id": 4205,
-      "label": "farm.json"
+      "label": "farm.json",
+      "room_id": 4205
     },
     {
-      "room_id": 4200,
-      "label": "hub.json"
+      "label": "hub.json",
+      "room_id": 4200
     },
     {
-      "room_id": 4201,
-      "label": "shop.json"
+      "label": "shop.json",
+      "room_id": 4201
     }
   ]
 }

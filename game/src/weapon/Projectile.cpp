@@ -125,7 +125,7 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 		if (!destruction_initiated()) {
 			map.effects.push_back(entity::Effect(svc, "bullet_hit", variables.destruction_point + physical.physics.position, {}, effect_type(), 2));
 			if (physical.direction.lnr == LNR::neutral) { map.effects.back().rotate(); }
-			auto listener_position = sf::Vector2<float>{sf::Listener::getPosition().x, sf::Listener::getPosition().z};
+			// auto listener_position = sf::Vector2<float>{sf::Listener::getPosition().x, sf::Listener::getPosition().z};
 			// TODO: use capo engine here
 			// svc.soundboard.play(svc, svc.sounds.get_buffer("wall_hit"), 0.1f, 100.f, 0, 10.f, listener_position - physical.bounding_box.get_center());
 		}

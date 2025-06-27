@@ -9,7 +9,7 @@ SoundManager::SoundManager(data::ResourceFinder const& finder) {
 	auto file = sfx_dir / fs::path{"error_sound.wav"};
 	auto file_str = file.string();
 
-	if (!m_deleteme.loadFromFile(file)) { NANI_LOG_WARN(m_logger, "Failed to load sf buffer."); }
+	// if (!m_deleteme.loadFromFile(file)) { NANI_LOG_WARN(m_logger, "Failed to load sf buffer."); }
 
 	// null buffer for lookup failures
 	if (!m_null_buffer.decode_file(file_str.c_str(), capo::Encoding::Wav)) { NANI_LOG_WARN(m_logger, "Failed to load null buffer."); };
@@ -31,6 +31,6 @@ SoundManager::SoundManager(data::ResourceFinder const& finder) {
 
 capo::Buffer const& SoundManager::get_buffer(std::string const& label) { return m_buffers.contains(label) ? m_buffers.at(label) : m_null_buffer; }
 
-sf::SoundBuffer const& SoundManager::get_sf_buffer(std::string const& label) { return m_deleteme; }
+// sf::SoundBuffer const& SoundManager::get_sf_buffer(std::string const& label) { return m_deleteme; }
 
 } // namespace fornani::core

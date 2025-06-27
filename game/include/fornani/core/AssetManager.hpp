@@ -5,7 +5,6 @@
 #include "fornani/setup/EnumLookups.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
 
-#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
 namespace fornani::core {
