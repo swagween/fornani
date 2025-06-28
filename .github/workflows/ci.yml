@@ -1,0 +1,95 @@
+name: ci-pr
+on: [pull_request, workflow_dispatch]
+jobs:
+  x64-linux-gcc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: init
+        run: uname -m; sudo apt update -yqq && sudo apt install -yqq ninja-build mesa-common-dev libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules
+      - name: configure
+        run: cmake -S . --preset=ninja-gcc -B build -DGLFW_BUILD_X11=OFF -DJUKE_USE_LIBXMP=OFF -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14
+      - name: build debug
+        run: cmake --build build --config=Debug -- -v
+      - name: build release
+        run: cmake --build build --config=Release -- -v
+      - name: test debug
+        run: cd build && ctest -V -C Debug
+      - name: test release
+        run: cd build && ctest -V -C Release
+  x64-linux-clang:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: init
+        run: uname -m; sudo apt update -yqq && sudo apt install -yqq ninja-build clang-19 mesa-common-dev libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules
+      - name: configure
+        run: cmake -S . --preset=ninja-clang -B build -DGLFW_BUILD_X11=OFF -DJUKE_USE_LIBXMP=OFF -DCMAKE_C_COMPILER=clang-19 -DCMAKE_CXX_COMPILER=clang++-19
+      - name: build debug
+        run: cmake --build build --config=Debug -- -v
+      - name: build release
+        run: cmake --build build --config=Release -- -v
+      - name: test debug
+        run: cd build && ctest -V -C Debug
+      - name: test release
+        run: cd build && ctest -V -C Release
+  arm64-linux-gcc:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - name: init
+        run: uname -m; sudo apt update -yqq && sudo apt install -yqq ninja-build mesa-common-dev libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules
+      - name: configure
+        run: cmake -S . --preset=ninja-gcc -B build -DGLFW_BUILD_X11=OFF -DJUKE_USE_LIBXMP=OFF -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14
+      - name: build debug
+        run: cmake --build build --config=Debug -- -v
+      - name: build release
+        run: cmake --build build --config=Release -- -v
+      - name: test debug
+        run: cd build && ctest -V -C Debug
+      - name: test release
+        run: cd build && ctest -V -C Release
+  arm64-linux-clang:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - name: init
+        run: uname -m; sudo apt update -yqq && sudo apt install -yqq ninja-build clang-19 mesa-common-dev libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules
+      - name: configure
+        run: cmake -S . --preset=ninja-clang -B build -DGLFW_BUILD_X11=OFF -DJUKE_USE_LIBXMP=OFF -DCMAKE_C_COMPILER=clang-19 -DCMAKE_CXX_COMPILER=clang++-19
+      - name: build debug
+        run: cmake --build build --config=Debug -- -v
+      - name: build release
+        run: cmake --build build --config=Release -- -v
+      - name: test debug
+        run: cd build && ctest -V -C Debug
+      - name: test release
+        run: cd build && ctest -V -C Release
+  x64-windows-vs22:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: configure
+        run: cmake -S . --preset=vs22 -B build -DJUKE_USE_LIBXMP=OFF
+      - name: build debug
+        run: cmake --build build --config=Debug --parallel
+      - name: build release
+        run: cmake --build build --config=Release --parallel
+      - name: test debug
+        run: cd build && ctest -V -C Debug
+      - name: test release
+        run: cd build && ctest -V -C Release
+  x64-windows-clang:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: configure
+        run: cmake -S . --preset=ninja-clang -B build -DJUKE_USE_LIBXMP=OFF
+      - name: build debug
+        run: cmake --build build --config=Debug -- -v
+      - name: build release
+        run: cmake --build build --config=Release -- -v
+      - name: test debug
+        run: cd build && ctest -V -C Debug
+      - name: test release
+        run: cd build && ctest -V -C Release
