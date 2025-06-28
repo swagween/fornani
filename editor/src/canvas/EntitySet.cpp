@@ -36,27 +36,27 @@ void EntitySet::render(Canvas& map, sf::RenderWindow& win, sf::Vector2<float> ca
 void EntitySet::load(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 
 	// general entities
-	for (auto const& [key, entry] : metadata.object_view()) {
+	for (auto const& [key, entry] : metadata.as_object()) {
 		if (std::string{key} == "inspectables") {
-			for (auto& element : entry.as_array()) {
+			for (auto element : entry.as_array()) {
 				variables.entities.push_back(std::make_unique<Inspectable>());
 				variables.entities.back()->unserialize(element);
 			}
 		}
 		if (std::string{key} == "platforms") {
-			for (auto& element : entry.as_array()) {
+			for (auto element : entry.as_array()) {
 				variables.entities.push_back(std::make_unique<Platform>());
 				variables.entities.back()->unserialize(element);
 			}
 		}
 		if (std::string{key} == "portals") {
-			for (auto& element : entry.as_array()) {
+			for (auto element : entry.as_array()) {
 				variables.entities.push_back(std::make_unique<Portal>());
 				variables.entities.back()->unserialize(element);
 			}
 		}
 		if (std::string{key} == "enemies") {
-			for (auto& element : entry.as_array()) {
+			for (auto element : entry.as_array()) {
 				variables.entities.push_back(std::make_unique<Enemy>());
 				variables.entities.back()->unserialize(element);
 			}

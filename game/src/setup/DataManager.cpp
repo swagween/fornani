@@ -263,7 +263,7 @@ void DataManager::save_settings() {
 	settings["auto_sprint"] = m_services->controller_map.is_autosprint_enabled();
 	settings["tutorial"] = m_services->tutorial();
 	settings["gamepad"] = m_services->controller_map.is_gamepad_input_enabled();
-	settings["music_volume"] = m_services->music_player.get_volume_multiplier();
+	settings["music_volume"] = m_services->music_player.get_volume();
 	settings["fullscreen"] = m_services->fullscreen();
 	settings.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str());
 }
@@ -392,7 +392,7 @@ void DataManager::load_settings() {
 	m_services->controller_map.enable_autosprint(settings["auto_sprint"].as_bool());
 	m_services->set_tutorial(settings["tutorial"].as_bool());
 	m_services->controller_map.enable_gamepad_input(settings["gamepad"].as_bool());
-	m_services->music_player.set_volume_multiplier(settings["music_volume"].as<float>());
+	m_services->music_player.set_volume(settings["music_volume"].as<float>());
 	m_services->set_fullscreen(settings["fullscreen"].as_bool());
 	NANI_LOG_INFO(m_logger, "Enabled user settings.");
 }

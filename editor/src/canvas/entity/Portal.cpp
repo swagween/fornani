@@ -12,11 +12,11 @@ std::unique_ptr<Entity> Portal::clone() const { return std::make_unique<Portal>(
 
 void Portal::serialize(dj::Json& out) {
 	Entity::serialize(out);
-	out["activate_on_contact"] = dj::Boolean{activate_on_contact};
-	out["already_open"] = dj::Boolean{already_open};
+	out["activate_on_contact"] = activate_on_contact;
+	out["already_open"] = already_open;
 	out["source_id"] = source_id;
 	out["destination_id"] = destination_id;
-	out["locked"] = dj::Boolean{locked};
+	out["locked"] = locked;
 	out["key_id"] = key_id;
 }
 

@@ -21,7 +21,7 @@ add_subdirectory(imgui-sfml)
 FetchContent_Declare(
         juke
         GIT_REPOSITORY https://github.com/swagween/jukebox
-        GIT_TAG v0.0.1
+        GIT_TAG v1.0.0
 )
 FetchContent_MakeAvailable(juke)
 

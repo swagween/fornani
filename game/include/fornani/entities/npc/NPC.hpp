@@ -44,7 +44,7 @@ class NPC : public entity::Entity {
 	void set_position_from_scaled(sf::Vector2<float> scaled_pos);
 	void set_id(int new_id);
 	void start_conversation(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console);
-	void push_conversation(std::string_view convo);
+	void push_conversation(int convo);
 	void pop_conversation();
 	void flush_conversations();
 	void push_to_background() { state_flags.set(NPCState::background); }
@@ -63,7 +63,7 @@ class NPC : public entity::Entity {
   protected:
 	util::BitFlags<NPCState> state_flags{};
 	util::BitFlags<NPCTrigger> triggers{};
-	std::deque<std::string_view> conversations{};
+	std::deque<int> conversations{};
 	shape::Collider collider{};
 	std::optional<Vendor*> vendor;
 	sf::Sprite m_sprite;

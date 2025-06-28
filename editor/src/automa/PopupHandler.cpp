@@ -66,7 +66,7 @@ void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& consol
 		ImGui::Separator();
 		ImGui::Text("Type:");
 		auto ctr{0};
-		for (auto const [key, count] : in_specs.object_view()) {
+		for (auto const& [key, count] : in_specs.as_object()) {
 			if (ImGui::Selectable(std::string{key}.c_str(), selected == ctr, ImGuiSelectableFlags_DontClosePopups)) {
 				type = std::string{key};
 				selected = ctr;

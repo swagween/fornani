@@ -23,14 +23,14 @@ SoundManager::SoundManager(data::ResourceFinder const& finder) {
 			auto sfx_str = sfx.path().filename().string();
 			auto in_buffer = capo::Buffer{};
 			auto pathstr = sfx.path().string();
-			in_buffer.decode_file(pathstr.c_str(), capo::Encoding::Wav);
-			m_buffers.insert({sfx_str.substr(0, sfx_str.find('.')), in_buffer});
+			if (!in_buffer.decode_file(pathstr.c_str(), capo::Encoding::Wav)) { NANI_LOG_ERROR(m_logger, "Failed to decode file [{}]", pathstr); }
+			auto filename = sfx_str.substr(0, sfx_str.find('.'));
+			m_buffers.insert({filename, in_buffer});
+			NANI_LOG_INFO(m_logger, "Loaded sound effect [{}]", filename);
 		}
 	}
 }
 
 capo::Buffer const& SoundManager::get_buffer(std::string const& label) { return m_buffers.contains(label) ? m_buffers.at(label) : m_null_buffer; }
-
-// sf::SoundBuffer const& SoundManager::get_sf_buffer(std::string const& label) { return m_deleteme; }
 
 } // namespace fornani::core

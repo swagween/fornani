@@ -78,7 +78,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 			// do something clever in Soundboard
 		}
 	}
-	if (!console && state_flags.test(NPCState::engaged)) { pop_conversation(); }
+	// if (!console && state_flags.test(NPCState::engaged)) { pop_conversation(); }
 	if (state_flags.test(NPCState::talking)) {
 		player.camera_offset.y = 32.f;
 		svc.camera_controller.free();
@@ -128,21 +128,29 @@ void NPC::set_position_from_scaled(sf::Vector2<float> scaled_pos) {
 void NPC::set_id(int new_id) { id = new_id; }
 
 void NPC::start_conversation(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console) {
+	for (auto& conv : conversations) { NANI_LOG_DEBUG(m_logger, "Convos: {}", conv); }
 	state_flags.set(NPCState::introduced);
 	std::string name = std::string(m_label);
-	std::string convo = std::string(conversations.front());
-	std::string target = name + convo;
-	console = std::make_unique<gui::Console>(svc, svc.text.npc, target, gui::OutputType::gradual);
+	std::string target = std::to_string(conversations.front());
+	NANI_LOG_DEBUG(m_logger, "Starting convo: {}", target);
+	console = std::make_unique<gui::Console>(svc, svc.text.npc[name], target, gui::OutputType::gradual);
 	console.value()->include_portrait(id);
 }
 
-void NPC::push_conversation(std::string_view convo) { conversations.push_back(convo); }
+void NPC::push_conversation(int convo) {
+	conversations.push_back(convo);
+	NANI_LOG_DEBUG(m_logger, "Pushed convo: {}", convo);
+}
 
 void NPC::pop_conversation() {
 	if (conversations.size() > 1) { conversations.pop_front(); }
+	NANI_LOG_DEBUG(m_logger, "popped");
 	state_flags.reset(NPCState::cutscene); // this function should only be called for cutscenes
 }
 
-void NPC::flush_conversations() { conversations.clear(); }
+void NPC::flush_conversations() {
+	NANI_LOG_DEBUG(m_logger, "flushed");
+	conversations.clear();
+}
 
 } // namespace fornani::npc

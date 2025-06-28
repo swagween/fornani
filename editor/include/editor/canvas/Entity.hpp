@@ -13,7 +13,7 @@ class Entity : public fornani::Polymorphic {
 	explicit Entity(std::string const& label, int const id = 0, sf::Vector2<std::uint32_t> dimensions = {}) : id(id), label(label), dimensions(dimensions){};
 	virtual std::unique_ptr<Entity> clone() const;
 	virtual void serialize(dj::Json& out);
-	virtual void unserialize(dj::Json& in);
+	virtual void unserialize(dj::Json const& in);
 	virtual void expose();
 	virtual void render(sf::RenderWindow& win, sf::Vector2<float> cam, float size);
 	void set_position(sf::Vector2u to_position);

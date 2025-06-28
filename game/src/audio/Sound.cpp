@@ -13,7 +13,7 @@ Sound::Sound(capo::IEngine& engine, capo::Buffer const& buffer, std::string cons
 	for (auto i{0}; i <= echo_count; ++i) {
 		auto source = engine.create_source();
 		if (!source) { NANI_LOG_ERROR(m_logger, "Failed to create sound source"); }
-		source->bind_to(&buffer);
+		if (!source->bind_to(&buffer)) { NANI_LOG_ERROR(m_logger, "Failed to bind source"); };
 		m_sounds.emplace_back(std::move(source));
 	}
 }

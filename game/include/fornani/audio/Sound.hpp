@@ -23,7 +23,7 @@ class Sound {
 	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
 	[[nodiscard]] auto is_echoing() const -> bool { return echo.count.running(); }
 	[[nodiscard]] auto is_playing() const -> bool {
-		return std::ranges::find_if(m_sounds, [](auto& s) { return s->is_playing(); }) == std::ranges::end(m_sounds);
+		return std::ranges::find_if(m_sounds, [](auto& s) { return s->is_playing(); }) != std::ranges::end(m_sounds);
 	}
 	[[nodiscard]] auto is_running() const -> bool { return is_playing() || is_echoing(); }
 

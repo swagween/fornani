@@ -20,27 +20,24 @@ class MusicPlayer {
 	void update();
 	void pause();
 	void stop();
-	void fade_out();
-	void fade_in();
+	void fade_out(std::chrono::duration<float> duration);
+	void fade_in(std::chrono::duration<float> duration);
 	void turn_on();
 	void turn_off();
 	void set_volume(float vol);
-	void set_volume_multiplier(float to);
+	void adjust_volume(float delta);
 
-	[[nodiscard]] auto get_volume() const -> float { return 0.f; }
+	[[nodiscard]] auto get_volume() const -> float { return m_jukebox.get_gain(); }
 	[[nodiscard]] auto is_on() const -> bool { return m_state == MusicPlayerState::on; }
 	[[nodiscard]] auto is_off() const -> bool { return m_state == MusicPlayerState::off; }
 
 	[[nodiscard]] auto is_playing() const -> bool { return m_jukebox.is_playing(); }
 	[[nodiscard]] auto is_stopped() const -> bool { return m_jukebox.is_stopped(); }
 
-	[[nodiscard]] auto get_volume_multiplier() const -> float { return m_volume_multiplier; }
-
   private:
 	MusicPlayerState m_state{};
 	juke::Jukebox m_jukebox;
-
-	float m_volume_multiplier{0.5f};
+	std::string m_current_song{};
 
 	io::Logger m_logger{"Audio"};
 };

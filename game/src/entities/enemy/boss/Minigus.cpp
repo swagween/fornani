@@ -53,7 +53,7 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map)
 	sprite_direction.lnr = LNR::left;
 	Enemy::direction.lnr = LNR::left;
 
-	push_conversation("1");
+	push_conversation(1);
 
 	// voice.greatidea.setVolume(30),
 
@@ -811,7 +811,7 @@ fsm::StateFunction Minigus::update_struggle() {
 			status.reset(MinigusFlags::battle_mode);
 			triggers.set(npc::NPCTrigger::distant_interact);
 			flush_conversations();
-			push_conversation("2");
+			push_conversation(2);
 			m_services->music_player.stop();
 			//sounds.crash.play();
 			//voice.quick_breath.play();
@@ -828,7 +828,7 @@ fsm::StateFunction Minigus::update_struggle() {
 			triggers.set(npc::NPCTrigger::distant_interact);
 			m_services->music_player.stop();
 			flush_conversations();
-			push_conversation("3");
+			push_conversation(3);
 			status.reset(MinigusFlags::exit_scene);
 			status.set(MinigusFlags::goodbye);
 			stop_shaking();

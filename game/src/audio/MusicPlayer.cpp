@@ -4,12 +4,16 @@
 #include <filesystem>
 
 namespace fornani::audio {
+	
+	using namespace std::chrono_literals;
 
 MusicPlayer::MusicPlayer(capo::IEngine& audio_engine) : m_jukebox{audio_engine} {}
 
 void MusicPlayer::load(data::ResourceFinder const& finder, std::string_view song_name) {
 	if (is_off()) { return; }
-	// if (song_name.empty()) { return; }
+	if (song_name.empty()) { return; }
+	if (song_name == m_current_song) { return; }
+	m_current_song = song_name;
 	auto path = std::filesystem::path{finder.resource_path() + "/audio/songs/" + song_name.data() + ".xm"};
 	m_jukebox.load_media(path);
 }
@@ -33,11 +37,13 @@ void MusicPlayer::update() {}
 
 void MusicPlayer::pause() { m_jukebox.pause(); }
 
-void MusicPlayer::stop() { m_jukebox.stop(); }
+void MusicPlayer::stop() {
+	m_jukebox.stop();
+}
 
-void MusicPlayer::fade_out() {}
+void MusicPlayer::fade_out(std::chrono::duration<float> duration) { m_jukebox.set_fade_in(duration, get_volume()); }
 
-void MusicPlayer::fade_in() {}
+void MusicPlayer::fade_in(std::chrono::duration<float> duration) { m_jukebox.set_fade_out(duration); }
 
 void MusicPlayer::turn_off() {
 	stop();
@@ -46,8 +52,8 @@ void MusicPlayer::turn_off() {
 
 void MusicPlayer::turn_on() { m_state = MusicPlayerState::on; }
 
-void MusicPlayer::set_volume(float vol) {}
+void MusicPlayer::set_volume(float vol) { m_jukebox.set_gain(ccm::ext::clamp(vol, 0.f, 1.f)); }
 
-void MusicPlayer::set_volume_multiplier(float to) { m_volume_multiplier = ccm::ext::clamp(to, 0.f, 1.f); }
+void MusicPlayer::adjust_volume(float delta) { set_volume(get_volume() + delta); }
 
 } // namespace fornani::audio
