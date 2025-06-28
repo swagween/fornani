@@ -11,7 +11,7 @@ std::unique_ptr<Entity> SavePoint::clone() const { return std::make_unique<SaveP
 
 void SavePoint::serialize(dj::Json& out) { Entity::serialize(out); }
 
-void SavePoint::unserialize(dj::Json& in) { Entity::unserialize(in); }
+void SavePoint::unserialize(dj::Json const& in) { Entity::unserialize(in); }
 
 void SavePoint::expose() { Entity::expose(); }
 

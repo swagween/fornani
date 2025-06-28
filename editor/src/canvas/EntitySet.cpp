@@ -75,9 +75,7 @@ bool EntitySet::save(fornani::data::ResourceFinder& finder, dj::Json& metadata, 
 	// clean jsons
 	data = {};
 
-	// empty json array
-	constexpr auto empty_array = R"([])";
-	auto const wipe = dj::Json::parse(empty_array);
+	auto const& wipe = dj::Json::empty_array();
 
 	// general entities
 	for (auto& ent : variables.entities) {
@@ -87,7 +85,7 @@ bool EntitySet::save(fornani::data::ResourceFinder& finder, dj::Json& metadata, 
 		} else {
 			auto entry = wipe;
 			ent->serialize(entry);
-			metadata[label].push_back(entry);
+			metadata[label].push_back(wipe);
 		}
 	}
 

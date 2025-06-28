@@ -14,7 +14,7 @@ void Entity::serialize(dj::Json& out) {
 	out["dimensions"][1] = dimensions.y;
 }
 
-void Entity::unserialize(dj::Json& in) {
+void Entity::unserialize(dj::Json const& in) {
 	id = in["id"].as<int>();
 	position.x = in["position"][0].as<std::uint32_t>();
 	position.y = in["position"][1].as<std::uint32_t>();

@@ -12,9 +12,8 @@ std::unique_ptr<Entity> Inspectable::clone() const { return std::make_unique<Ins
 
 void Inspectable::serialize(dj::Json& out) {
 	Entity::serialize(out);
-	constexpr auto empty_array = R"([])";
-	auto const wipe = dj::Json::parse(empty_array);
-	out["activate_on_contact"] = dj::Boolean{activate_on_contact};
+	auto const& wipe = dj::Json::empty_array();
+	out["activate_on_contact"] = activate_on_contact;
 	out["key"] = key;
 	out["alternates"] = alternates;
 	for (auto i{0}; i <= alternates; ++i) {
@@ -33,10 +32,9 @@ void Inspectable::serialize(dj::Json& out) {
 	}
 }
 
-void Inspectable::unserialize(dj::Json& in) {
+void Inspectable::unserialize(dj::Json const& in) {
 	Entity::unserialize(in);
-	constexpr auto empty_array = R"([])";
-	auto const wipe = dj::Json::parse(empty_array);
+	auto const& wipe = dj::Json::empty_array();
 	activate_on_contact = static_cast<bool>(in["activate_on_contact"].as_bool());
 	key = in["key"].as_string();
 	alternates = in["alternates"].as<int>();

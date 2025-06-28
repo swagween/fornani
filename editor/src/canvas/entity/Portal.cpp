@@ -20,7 +20,7 @@ void Portal::serialize(dj::Json& out) {
 	out["key_id"] = key_id;
 }
 
-void Portal::unserialize(dj::Json& in) {
+void Portal::unserialize(dj::Json const& in) {
 	Entity::unserialize(in);
 	activate_on_contact = static_cast<bool>(in["activate_on_contact"].as_bool());
 	already_open = static_cast<bool>(in["already_open"].as_bool());

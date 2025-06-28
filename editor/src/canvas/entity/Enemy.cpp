@@ -11,7 +11,7 @@ std::unique_ptr<Entity> Enemy::clone() const { return std::make_unique<Enemy>(*t
 
 void Enemy::serialize(dj::Json& out) { Entity::serialize(out); }
 
-void Enemy::unserialize(dj::Json& in) { Entity::unserialize(in); }
+void Enemy::unserialize(dj::Json const& in) { Entity::unserialize(in); }
 
 void Enemy::expose() { Entity::expose(); }
 

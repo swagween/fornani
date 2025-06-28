@@ -16,7 +16,7 @@ void Platform::serialize(dj::Json& out) {
 	out["start"] = start;
 }
 
-void Platform::unserialize(dj::Json& in) { Entity::unserialize(in); }
+void Platform::unserialize(dj::Json const& in) { Entity::unserialize(in); }
 
 void Platform::expose() {
 	Entity::expose();
