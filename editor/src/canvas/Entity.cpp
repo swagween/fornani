@@ -16,6 +16,7 @@ void Entity::serialize(dj::Json& out) {
 
 void Entity::unserialize(dj::Json const& in) {
 	id = in["id"].as<int>();
+	NANI_LOG_INFO(m_logger, "Unserializing entity with id {}", id);
 	position.x = in["position"][0].as<std::uint32_t>();
 	position.y = in["position"][1].as<std::uint32_t>();
 	dimensions.x = in["dimensions"][0].as<std::uint32_t>();

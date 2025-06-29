@@ -11,4 +11,5 @@ nani_add_headers(
         Meatsquash.hpp
         Tank.hpp
         Thug.hpp
+        Hulmet.hpp
 )

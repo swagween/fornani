@@ -81,6 +81,7 @@ class Enemy : public entity::Entity {
 	[[nodiscard]] auto is_foreground() const -> bool { return flags.general.test(GeneralFlags::foreground); }
 	[[nodiscard]] auto is_transcendent() const -> bool { return flags.general.test(GeneralFlags::transcendent); }
 	[[nodiscard]] auto permadeath() const -> bool { return flags.general.test(GeneralFlags::permadeath); }
+	[[nodiscard]] auto get_actual_direction() const -> Direction { return directions.actual; }
 	[[nodiscard]] bool player_behind(player::Player& player) const;
 	void set_position(sf::Vector2<float> pos) {
 		collider.physics.position = pos;
@@ -95,11 +96,6 @@ class Enemy : public entity::Entity {
 	entity::Health health{};
 	player::Indicator health_indicator;
 	anim::Animation animation{};
-	struct {
-		Direction actual{};
-		Direction desired{};
-		Direction movement{};
-	} directions{};
 
   protected:
 	std::string_view label{};
@@ -111,6 +107,11 @@ class Enemy : public entity::Entity {
 	util::Cooldown post_death{};
 	util::Cooldown hitstun{};
 	int afterlife{200};
+	struct {
+		Direction actual{};
+		Direction desired{};
+		Direction movement{};
+	} directions{};
 
 	util::Cooldown hurt_effect{};
 

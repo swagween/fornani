@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 #include "fornani/utils/Polymorphic.hpp"
+#include "fornani/io/Logger.hpp"
 
 namespace pi {
 
@@ -44,6 +45,8 @@ class Entity : public fornani::Polymorphic {
 	std::string label{};
 	sf::Vector2<std::uint32_t> position{};
 	sf::Vector2<std::uint32_t> dimensions{};
+
+	fornani::io::Logger m_logger{"Pioneer"};
 };
 
 } // namespace pi

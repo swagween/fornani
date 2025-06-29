@@ -2,6 +2,7 @@
 #pragma once
 
 #include "editor/canvas/Entity.hpp"
+#include "fornani/io/Logger.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
@@ -138,6 +139,8 @@ class EntitySet {
 	struct {
 		dj::Json inspectables{};
 	} data{};
+
+	fornani::io::Logger m_logger{"Pioneer"};
 };
 
 } // namespace pi

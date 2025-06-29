@@ -174,6 +174,8 @@ bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& regi
 
 	std::filesystem::create_directory(finder.paths.levels / std::filesystem::path{region});
 
+	NANI_LOG_INFO(m_logger, "Saved canvas to {} in folder {}", finder.paths.levels.string(), region);
+
 	// clean jsons
 	metadata = {};
 
@@ -218,8 +220,15 @@ bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& regi
 	}
 
 	auto success{true};
-	if (!entities.save(finder, metadata["entities"], room_name)) { success = false; }
-	if (!metadata.to_file((finder.paths.levels / region / room_name).string().c_str())) { success = false; }
+	auto to_file = std::filesystem::path{region} / std::filesystem::path{room_name};
+	if (!entities.save(finder, metadata["entities"], to_file.string())) {
+		success = false;
+		NANI_LOG_INFO(m_logger, "Failed to save entities to file {}", to_file.string());
+	}
+	if (!metadata.to_file((finder.paths.levels / region / room_name).string().c_str())) {
+		success = false;
+		NANI_LOG_INFO(m_logger, "Failed to save metadata to file {}", to_file.string());
+	}
 	return success;
 }
 

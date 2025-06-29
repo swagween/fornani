@@ -11,4 +11,5 @@ nani_add_sources(
         Meatsquash.cpp
         Tank.cpp
         Thug.cpp
+        Hulmet.cpp
 )

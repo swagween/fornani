@@ -50,6 +50,7 @@ class Demon final : public Enemy {
 	} attacks{};
 	entity::Caution caution{};
 
+
 	struct {
 		util::Cooldown jump{40};
 		util::Cooldown post_jump{400};
