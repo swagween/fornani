@@ -1,8 +1,8 @@
 #include "fornani/entities/enemy/catalog/Tank.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::enemy {
 
@@ -18,7 +18,7 @@ Tank::Tank(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "tank"), 
 	directions.movement.lnr = LNR::neutral;
 }
 
-void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (died()) {
 		Enemy::update(svc, map, player);
 		return;
@@ -30,10 +30,8 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 
 	// reset animation states to determine next animation state
 	state = {};
-	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
+	face_player(player);
 	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
-	if (directions.actual.lnr == LNR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lnr == LNR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
 	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 14.f};
 	secondary_collider.physics.position.x += directions.actual.lnr == LNR::left ? 10.f : collider.dimensions.x - secondary_collider.dimensions.x - 10.f;
@@ -50,9 +48,7 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 		} else {
 			m_services->soundboard.flags.tank.set(audio::Tank::hurt_2);
 		}
-		hurt_effect.start(128);
 		sound.hurt_sound_cooldown.start();
-		flags.state.reset(StateFlags::hurt);
 	}
 
 	hurt_effect.update();
@@ -73,6 +69,8 @@ void Tank::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	state_function = state_function();
 }
 
+void Tank::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) { Enemy::render(svc, win, cam); }
+
 fsm::StateFunction Tank::update_idle() {
 	animation.label = "idle";
 	if (change_state(TankState::turn, turn)) { return TANK_BIND(update_turn); }
@@ -85,7 +83,7 @@ fsm::StateFunction Tank::update_idle() {
 fsm::StateFunction Tank::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
-		visual.sprite.scale({-1.f, 1.f});
+		flip();
 		directions.actual = directions.desired;
 		state = TankState::idle;
 		animation.set_params(idle, false);

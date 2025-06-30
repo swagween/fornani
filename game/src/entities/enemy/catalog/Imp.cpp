@@ -42,13 +42,13 @@ Imp::Imp(automa::ServiceProvider& svc, world::Map& map)
 	attacks.stab.origin = {-10.f, -26.f};
 
 	variant = parts.weapon.get_id() == 1 ? ImpVariant::knife : ImpVariant::fork;
-	if (variant == ImpVariant::knife) { visual.sprite.setTexture(svc.assets.get_texture("enemy_knife_imp")); }
+	// if (variant == ImpVariant::knife) { visual.sprite.setTexture(svc.assets.get_texture("enemy_knife_imp")); }
 	parts.weapon.animated_sprite->set_params("idle");
 
 	cooldowns.awaken.start();
 }
 
-void Imp::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void Imp::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (died()) {
 		Enemy::update(svc, map, player);
 		return;
@@ -73,8 +73,8 @@ void Imp::unique_update(automa::ServiceProvider& svc, world::Map& map, player::P
 
 	Enemy::update(svc, map, player);
 	if (!is_dormant()) {
-		parts.weapon.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center());
-		parts.hand.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center());
+		parts.weapon.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
+		parts.hand.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
 	}
 	parts.weapon.set_hitbox();
 
@@ -109,7 +109,7 @@ void Imp::unique_update(automa::ServiceProvider& svc, world::Map& map, player::P
 	state_function = state_function();
 }
 
-void Imp::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Imp::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (died() || state == ImpState::dormant) { return; }
 	parts.weapon.render(svc, win, cam);
 	parts.hand.render(svc, win, cam);
@@ -138,7 +138,7 @@ fsm::StateFunction Imp::update_turn() {
 	attacks.stab.disable();
 	if (animation.totally_complete()) {
 		NANI_LOG_INFO(m_logger, "finished!");
-		visual.sprite.scale({-1.f, 1.f});
+		flip();
 		directions.actual = directions.desired;
 		state = ImpState::idle;
 		animation.set_params(idle, false);

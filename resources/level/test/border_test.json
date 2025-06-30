@@ -22,6 +22,28 @@
           19,
           11
         ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 13,
+        "position": [
+          16,
+          8
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 13,
+        "position": [
+          9,
+          8
+        ]
       }
     ],
     "portals": [

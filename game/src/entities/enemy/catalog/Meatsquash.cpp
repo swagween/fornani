@@ -1,7 +1,7 @@
 #include "fornani/entities/enemy/catalog/Meatsquash.hpp"
-#include "fornani/world/Map.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::enemy {
 
@@ -20,7 +20,7 @@ Meatsquash::Meatsquash(automa::ServiceProvider& svc, world::Map& map) : Enemy(sv
 	attacks.bite.origin = {0.f, 0.f};
 }
 
-void Meatsquash::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void Meatsquash::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (died()) {
 		Enemy::update(svc, map, player);
 		return;
@@ -31,10 +31,8 @@ void Meatsquash::unique_update(automa::ServiceProvider& svc, world::Map& map, pl
 	// reset animation states to determine next animation state
 	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
 	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
-	if (directions.actual.lnr == LNR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lnr == LNR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
-	
+
 	auto bite_offset = sf::Vector2<float>{0.f, -88.f};
 	attacks.bite.set_position(collider.get_center() + bite_offset);
 	attacks.bite.update();
@@ -43,7 +41,7 @@ void Meatsquash::unique_update(automa::ServiceProvider& svc, world::Map& map, pl
 	animation.get_frame() == 12 ? attacks.bite.hit.activate() : attacks.bite.hit.deactivate();
 	if (attacks.bite.sensor.active() && attacks.bite.hit.active() && !(player.collider.get_center().y > collider.physics.position.y)) { player.hurt(24.f); }
 
-	if(flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
+	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
 		m_services->soundboard.flags.meatsquash.set(audio::Meatsquash::hurt);
 		hurt_effect.start(128);
 		flags.state.reset(StateFlags::hurt);
@@ -57,9 +55,9 @@ void Meatsquash::unique_update(automa::ServiceProvider& svc, world::Map& map, pl
 	state_function = state_function();
 }
 
-void Meatsquash::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Meatsquash::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (died()) { return; }
-	//attacks.bite.render(win, cam);
+	// attacks.bite.render(win, cam);
 }
 
 fsm::StateFunction Meatsquash::update_idle() {
@@ -108,4 +106,4 @@ bool Meatsquash::change_state(MeatsquashState next, anim::Parameters params) {
 	return false;
 }
 
-} // namespace enemy
+} // namespace fornani::enemy

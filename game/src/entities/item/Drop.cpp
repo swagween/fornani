@@ -5,8 +5,7 @@
 
 namespace fornani::item {
 
-Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time, int special_id)
-	: sparkler(svc, drop_dimensions, colors::ui_white, "drop"), special_id(special_id), sprite{svc.assets.get_texture("hearts")} {
+Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time, int special_id) : sparkler(svc, drop_dimensions, colors::ui_white, "drop"), special_id(special_id), sprite{svc.assets.get_texture("hearts")} {
 
 	collider.physics.elasticity = 0.5f;
 
@@ -28,12 +27,13 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 
 	auto& in_anim = svc.data.drop[key]["animation"];
 	num_sprites = in_anim["num_sprites"].as<int>();
-	for (auto& param : in_anim["params"].as_array()) {
+	for (auto param : in_anim["params"].as_array()) {
 		anim::Parameters a{};
 		a.duration = param["duration"].as<int>();
 		a.framerate = param["framerate"].as<int>();
 		a.num_loops = param["num_loops"].as<int>();
 		sprite.push_params(param["label"].as_string(), a);
+		NANI_LOG_DEBUG(m_logger, "label: {}", param["label"].as_string());
 	}
 	sprite.set_params("neutral", true);
 	sf::Vector2 const dim{static_cast<int>(sprite_dimensions.x), static_cast<int>(sprite_dimensions.y)};

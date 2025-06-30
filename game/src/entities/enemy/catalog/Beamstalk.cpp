@@ -13,7 +13,7 @@ Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<
 	beam.get().set_team(arms::Team::beast);
 }
 
-void Beamstalk::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void Beamstalk::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (died()) {
 		Enemy::update(svc, map, player);
 		return;
@@ -25,8 +25,6 @@ void Beamstalk::unique_update(automa::ServiceProvider& svc, world::Map& map, pla
 	// reset animation states to determine next animation state
 	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
 	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
-	if (directions.actual.lnr == LNR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lnr == LNR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
 	beam.update(svc, map, *this);
 	auto bp = collider.get_center();
@@ -48,7 +46,7 @@ void Beamstalk::unique_update(automa::ServiceProvider& svc, world::Map& map, pla
 	state_function = state_function();
 }
 
-void Beamstalk::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Beamstalk::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (died()) { return; }
 }
 

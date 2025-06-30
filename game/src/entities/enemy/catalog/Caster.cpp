@@ -31,7 +31,7 @@ Caster::Caster(automa::ServiceProvider& svc, world::Map& map)
 	parts.wand.sprite->setTextureRect(sf::IntRect{{0, 0}, wand_dimensions});
 }
 
-void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (died()) {
 		Enemy::update(svc, map, player);
 		return;
@@ -95,8 +95,8 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	directions.movement.lnr = target.collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
 	Enemy::update(svc, map, player);
 	if (!is_dormant()) {
-		parts.scepter.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center());
-		parts.wand.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center());
+		parts.scepter.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
+		parts.wand.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
 	}
 
 	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 10.f};
@@ -123,12 +123,9 @@ void Caster::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	if (directions.actual.lnr != directions.desired.lnr) { state = CasterState::turn; }
 
 	state_function = state_function();
-
-	if (directions.actual.lnr == LNR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lnr == LNR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 }
 
-void Caster::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Caster::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (died() || state == CasterState::dormant || flags.state.test(StateFlags::invisible)) { return; }
 	variant == CasterVariant::apprentice ? parts.scepter.render(svc, win, cam) : parts.wand.render(svc, win, cam);
 	if (svc.greyblock_mode()) {}
@@ -173,7 +170,7 @@ fsm::StateFunction Caster::update_turn() {
 	animation.label = "turn";
 	cooldowns.pre_invisibility.update();
 	if (animation.complete()) {
-		Enemy::visual.sprite.scale({-1.f, 1.f});
+		flip();
 		directions.actual = directions.desired;
 		state = CasterState::idle;
 		animation.set_params(idle);

@@ -10,26 +10,27 @@ enum class TankState : std::uint8_t { idle, turn, run, shoot, alert };
 
 class Tank final : public Enemy {
 
-	  public:
-		Tank() = delete;
-		~Tank() override {}
-		Tank& operator = (Tank&&) = delete;
-		Tank(automa::ServiceProvider& svc, world::Map& map);
-		void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+  public:
+	Tank() = delete;
+	~Tank() override {}
+	Tank& operator=(Tank&&) = delete;
+	Tank(automa::ServiceProvider& svc, world::Map& map);
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 
-		fsm::StateFunction state_function = std::bind(&Tank::update_idle, this);
-		fsm::StateFunction update_idle();
-		fsm::StateFunction update_turn();
-		fsm::StateFunction update_run();
-		fsm::StateFunction update_shoot();
-		fsm::StateFunction update_alert();
+	fsm::StateFunction state_function = std::bind(&Tank::update_idle, this);
+	fsm::StateFunction update_idle();
+	fsm::StateFunction update_turn();
+	fsm::StateFunction update_run();
+	fsm::StateFunction update_shoot();
+	fsm::StateFunction update_alert();
 
-	  private:
-		TankState state{};
+  private:
+	TankState state{};
 
 	float fire_chance{50.f};
 
-	//packages
+	// packages
 	entity::WeaponPackage gun;
 	entity::Caution caution{};
 
@@ -44,7 +45,6 @@ class Tank final : public Enemy {
 	world::Map* m_map;
 
 	bool change_state(TankState next, anim::Parameters params);
-
 };
 
-} // namespace enemy
+} // namespace fornani::enemy

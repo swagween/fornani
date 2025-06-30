@@ -16,8 +16,8 @@ class Caster final : public Enemy {
 	~Caster() override {}
 	Caster& operator=(Caster&&) = delete;
 	Caster(automa::ServiceProvider& svc, world::Map& map);
-	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
-	void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 	void teleport();
 	[[nodiscard]] auto is_dormant() const -> bool { return state == CasterState::dormant || cooldowns.awaken.running(); }
 

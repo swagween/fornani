@@ -1,3 +1,4 @@
+
 #include "fornani/entities/enemy/Enemy.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -9,9 +10,8 @@
 namespace fornani::enemy {
 
 Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
-	: entity::Entity(svc), label(label), health_indicator(svc), directions{.actual{start_direction}, .desired{start_direction}}, visual{.sprite = sf::Sprite(svc.assets.get_texture("enemy_" + std::string{label}))} {
-
-	direction = Direction{start_direction};
+	: Animatable(svc, "enemy_" + std::string{label}, {svc.data.enemy[label]["physical"]["sprite_dimensions"][0].as<int>(), svc.data.enemy[label]["physical"]["sprite_dimensions"][1].as<int>()}), label(label), health_indicator(svc),
+	  directions{.actual{start_direction}, .desired{start_direction}}, hurt_effect{128} {
 
 	if (spawned) { flags.general.set(GeneralFlags::spawned); }
 
@@ -24,8 +24,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 	auto const& in_animation = in_data["animation"];
 	auto const& in_general = in_data["general"];
 
-	dimensions.x = in_physical["dimensions"][0].as<float>();
-	dimensions.y = in_physical["dimensions"][1].as<float>();
+	auto dimensions = sf::Vector2f{in_physical["dimensions"][0].as<float>(), in_physical["dimensions"][1].as<float>()};
 
 	collider = shape::Collider(dimensions);
 	collider.sync_components();
@@ -37,17 +36,10 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 	secondary_collider.physics.set_global_friction(in_physical["friction"].as<float>());
 	secondary_collider.stats.GRAV = in_physical["gravity"].as<float>();
 
+	m_native_offset = sf::Vector2f{in_physical["offset"][0].as<float>(), in_physical["offset"][1].as<float>()};
+
 	metadata.id = in_metadata["id"].as<int>();
 	metadata.variant = in_metadata["variant"].as_string();
-
-	sprite_dimensions.x = in_physical["sprite_dimensions"][0].as<int>();
-	sprite_dimensions.y = in_physical["sprite_dimensions"][1].as<int>();
-	spritesheet_dimensions.x = in_physical["spritesheet_dimensions"][0].as<int>();
-	spritesheet_dimensions.y = in_physical["spritesheet_dimensions"][1].as<int>();
-	sprite_offset.x = in_physical["offset"][0].as<float>();
-	sprite_offset.y = in_physical["offset"][1].as<float>();
-
-	// TODO: load hurtboxes and colliders
 
 	physical.alert_range.set_dimensions({in_physical["alert_range"][0].as<float>(), in_physical["alert_range"][1].as<float>()});
 	physical.hostile_range.set_dimensions({in_physical["hostile_range"][0].as<float>(), in_physical["hostile_range"][1].as<float>()});
@@ -64,8 +56,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 
 	visual.effect_size = in_visual["effect_size"].as<int>();
 	visual.effect_type = in_visual["effect_type"].as<int>();
-	// TODO: load in all the animation data and map them to a set of parameters
-	// let's add this function to services
+
 	anim::Parameters params{};
 	params.duration = in_animation["duration"].as<int>();
 	params.framerate = in_animation["framerate"].as<int>();
@@ -94,10 +85,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 	if (!flags.general.test(GeneralFlags::gravity)) { collider.stats.GRAV = 0.f; }
 	if (!flags.general.test(GeneralFlags::uncrushable)) { collider.collision_depths = util::CollisionDepth(); }
 
-	drawbox.setSize({static_cast<float>(sprite_dimensions.x), static_cast<float>(sprite_dimensions.y)});
-	drawbox.setFillColor(sf::Color::Transparent);
-	drawbox.setOutlineColor(colors::ui_white);
-	drawbox.setOutlineThickness(-1);
+	center();
 }
 
 void Enemy::set_external_id(std::pair<int, sf::Vector2<int>> code) {
@@ -128,10 +116,11 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		post_death.update();
 		return;
 	}
+
 	// shake
 	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
-	if (svc.ticker.every_x_ticks(20)) { random_offset = util::random::random_vector_float(-energy, energy); }
+	if (svc.ticker.every_x_ticks(20)) { m_random_offset = util::random::random_vector_float(-energy, energy); }
 	if (hitstun.running()) {
 		hitstun.update();
 		if (svc.ticker.every_x_ticks(4)) {
@@ -141,7 +130,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 
 	// stuff that slows down from hitstun
-	Entity::update(svc, map);
+	Animatable::tick();
 	collider.update(svc);
 	secondary_collider.update(svc);
 	health_indicator.update(svc, collider.physics.position);
@@ -163,7 +152,6 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	collider.physics.acceleration = {};
 	secondary_collider.physics.acceleration = {};
 
-	animation.update();
 	health.update();
 
 	// update ranges
@@ -182,51 +170,40 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		flags.state.reset(StateFlags::hostile);
 	}
 
-	// animate
-	auto column{0};
-	if (hurt_effect.running()) { column = (hurt_effect.get_cooldown() / 32) % 2 == 0 ? 1 : 2; }
+	// on hit
+	auto flash_rate = 32;
+	set_channel(EnemyChannel::standard);
+	flags.state.test(StateFlags::vulnerable) ? set_channel(EnemyChannel::standard) : set_channel(EnemyChannel::invincible);
+	if (hurt_effect.running()) { set_channel((hurt_effect.get_cooldown() / flash_rate) % 2 == 0 ? EnemyChannel::hurt_1 : EnemyChannel::hurt_2); }
 	if (hurt_effect.running()) { shake(); }
-	auto u = column * sprite_dimensions.x;
-	auto v = static_cast<int>(animation.get_frame()) * sprite_dimensions.y;
-	visual.sprite.setTextureRect(sf::IntRect({u, v}, {sprite_dimensions.x, sprite_dimensions.y}));
-	visual.sprite.setOrigin({static_cast<float>(sprite_dimensions.x) * 0.5f, static_cast<float>(dimensions.y) * 0.5f});
+	hurt_effect.update();
+	if (flags.state.test(StateFlags::hurt)) {
+		hurt_effect.start();
+		// TODO: play sound here
+		flags.state.reset(StateFlags::hurt);
+	}
 }
 
 void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) { handle_player_collision(player); }
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (directions.actual.lnr == LNR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lnr == LNR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	auto sprite_position = collider.physics.position + sprite_offset - cam + random_offset;
 
-	// exit conditions
-	if (!svc.in_window(sprite_position, visual.sprite.getGlobalBounds().size)) { return; }
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
-	if (flags.state.test(StateFlags::invisible)) { return; }
 
-	drawbox.setOrigin(visual.sprite.getOrigin());
-	drawbox.setPosition(collider.physics.position + sprite_offset - cam);
-	visual.sprite.setPosition(sprite_position);
-	win.draw(visual.sprite);
-	if (svc.greyblock_mode()) {
-		win.draw(visual.sprite);
-		drawbox.setOrigin({});
-		drawbox.setSize(collider.hurtbox.get_dimensions());
-		drawbox.setOutlineColor(colors::ui_white);
-		drawbox.setPosition(collider.hurtbox.get_position() - cam);
-		win.draw(drawbox);
-		drawbox.setPosition(physical.alert_range.get_position() - cam);
-		drawbox.setSize(physical.alert_range.get_dimensions());
-		drawbox.setOutlineColor(sf::Color{80, 20, 60, 80});
-		win.draw(drawbox);
-		drawbox.setPosition(physical.hostile_range.get_position() - cam);
-		drawbox.setSize(physical.hostile_range.get_dimensions());
-		drawbox.setOutlineColor(sf::Color{140, 30, 60, 110});
-		win.draw(drawbox);
-		collider.render(win, cam);
-		secondary_collider.render(win, cam);
-		health.render(svc, win, cam);
-	}
+	auto sprite_position = collider.get_center() - cam + m_random_offset + m_native_offset;
+
+	// debug
+	sf::RectangleShape box{};
+	box.setPosition(sprite_position);
+	box.setFillColor(colors::transparent);
+	box.setOutlineThickness(-1.f);
+	box.setOutlineColor(colors::treasure_blue);
+	box.setSize(Animatable::get_f_dimensions());
+	box.setOrigin(box.getLocalBounds().getCenter());
+	win.draw(box);
+
+	Drawable::set_position(sprite_position);
+	Drawable::draw(win);
 }
 
 void Enemy::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -280,6 +257,8 @@ void Enemy::on_crush(world::Map& map) {
 }
 
 bool Enemy::player_behind(player::Player& player) const { return player.collider.physics.position.x + player.collider.bounding_box.get_dimensions().x * 0.5f < collider.physics.position.x + collider.dimensions.x * 0.5f; }
+
+void Enemy::face_player(player::Player& player) { directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right; }
 
 void Enemy::set_position_from_scaled(sf::Vector2<float> pos) {
 	auto new_pos = pos;

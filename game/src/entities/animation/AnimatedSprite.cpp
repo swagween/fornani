@@ -22,16 +22,16 @@ void AnimatedSprite::update(sf::Vector2<float> pos, int u, int v, bool horiz) {
 	}
 };
 
-void AnimatedSprite::push_params(std::string_view label, Parameters in_params) { params.insert({label, in_params}); }
+void AnimatedSprite::push_params(std::string_view label, Parameters in_params) { params.insert({label.data(), in_params}); }
 
 void AnimatedSprite::push_params(std::string_view label, Parameters in_params, std::string_view target_animation) {
 	in_params.target = target_animation;
-	params.insert({label, in_params});
+	params.insert({label.data(), in_params});
 }
 
 void AnimatedSprite::set_params(std::string_view label, bool force) {
-	if (params.contains(label)) {
-		animation.set_params(params.at(label), force);
+	if (params.contains(label.data())) {
+		animation.set_params(params.at(label.data()), force);
 	} else {
 		NANI_LOG_WARN(m_logger, "Undefined parameters set for animation {}", label.data());
 	}

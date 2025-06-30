@@ -1,23 +1,20 @@
 #include "fornani/entities/enemy/catalog/Frdog.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::enemy {
 
 Frdog::Frdog(automa::ServiceProvider& svc) : Enemy(svc, "frdog") { animation.set_params(idle); }
 
-void Frdog::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void Frdog::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (died()) {
 		Enemy::update(svc, map, player);
 		return;
 	}
-	
+
 	flags.state.set(StateFlags::vulnerable); // frdog is always vulnerable
 
 	// reset animation states to determine next animation state
-	state = {};
-	if (ent_state.test(entity::State::flip)) { state.set(AnimState::turn); }
-	direction.lnr = (player.collider.physics.position.x < collider.physics.position.x) ? LNR::right : LNR::left;
 	if (flags.state.test(StateFlags::hurt)) {
 		state.set(AnimState::hurt);
 		flags.state.reset(StateFlags::hurt);
@@ -48,7 +45,6 @@ fsm::StateFunction Frdog::update_sit() { return FRDOG_BIND(update_idle); };
 fsm::StateFunction Frdog::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
-		visual.sprite.scale({-1.f, 1.f});
 		if (state.test(AnimState::hurt)) {
 			state.reset(AnimState::turn);
 			animation.set_params(hurt);
@@ -90,4 +86,4 @@ fsm::StateFunction Frdog::update_hurt() {
 fsm::StateFunction Frdog::update_bark() { return FRDOG_BIND(update_idle); };
 fsm::StateFunction Frdog::update_spew() { return FRDOG_BIND(update_idle); };
 
-} // namespace enemy
+} // namespace fornani::enemy

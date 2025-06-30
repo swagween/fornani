@@ -20,7 +20,7 @@ Archer::Archer(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "arch
 	parts.bow.sprite->setOrigin({32.f, 32.f});
 }
 
-void Archer::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void Archer::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (died()) {
 		Enemy::update(svc, map, player);
 		return;
@@ -34,11 +34,9 @@ void Archer::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	// reset animation states to determine next animation state
 	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
 	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
-	if (directions.actual.lnr == LNR::right && visual.sprite.getScale() == sf::Vector2{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lnr == LNR::left && visual.sprite.getScale() == sf::Vector2{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
 	auto shooting_offset = state == ArcherState::shoot ? sf::Vector2{0.f, -6.f} : sf::Vector2{0.f, 0.f};
-	parts.bow.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center() + shooting_offset);
+	parts.bow.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center() + shooting_offset);
 
 	if (svc.ticker.every_x_ticks(200)) {
 		if (util::random::percent_chance(4) && !caution.danger()) { state = ArcherState::run; }
@@ -64,7 +62,7 @@ void Archer::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	state_function = state_function();
 }
 
-void Archer::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Archer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (died()) { return; }
 	parts.bow.render(svc, win, cam);
 	if (svc.greyblock_mode()) {}
@@ -83,7 +81,7 @@ fsm::StateFunction Archer::update_idle() {
 fsm::StateFunction Archer::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
-		visual.sprite.scale({-1.f, 1.f});
+		flip();
 		directions.actual = directions.desired;
 		state = ArcherState::idle;
 		animation.set_params(idle, false);

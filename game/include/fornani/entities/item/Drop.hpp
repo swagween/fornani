@@ -2,6 +2,7 @@
 #pragma once
 
 #include "fornani/entities/animation/AnimatedSprite.hpp"
+#include "fornani/io/Logger.hpp"
 #include "fornani/particle/Sparkler.hpp"
 #include "fornani/utils/CircleCollider.hpp"
 #include "fornani/utils/Cooldown.hpp"
@@ -86,6 +87,8 @@ class Drop {
 	} constants{};
 
 	bool dead{};
+
+	io::Logger m_logger{"drop"};
 };
 
 } // namespace fornani::item

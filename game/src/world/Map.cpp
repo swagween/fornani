@@ -374,7 +374,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		proj.on_player_hit(*player);
 	}
 	for (auto& enemy : enemy_catalog.enemies) {
-		enemy->unique_update(svc, *this, *player);
+		enemy->update(svc, *this, *player);
 		enemy->post_update(svc, *this, *player);
 	}
 
@@ -481,10 +481,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	{
 		ZoneScopedN("Map::render - enemies");
 		for (auto& enemy : enemy_catalog.enemies) {
-			if (!enemy->is_foreground()) {
-				enemy->render(svc, win, cam);
-				enemy->unique_render(svc, win, cam);
-			}
+			if (!enemy->is_foreground()) { enemy->render(svc, win, cam); }
 		}
 	}
 	{
@@ -555,10 +552,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		ZoneScopedN("Map::render - forground enemies");
 		// foreground enemies
 		for (auto& enemy : enemy_catalog.enemies) {
-			if (enemy->is_foreground()) {
-				enemy->render(svc, win, cam);
-				enemy->unique_render(svc, win, cam);
-			}
+			if (enemy->is_foreground()) { enemy->render(svc, win, cam); }
 			enemy->render_indicators(svc, win, cam);
 			enemy->gui_render(svc, win, cam);
 		}

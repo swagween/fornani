@@ -1,6 +1,6 @@
 #include "fornani/entities/enemy/catalog/Eyebit.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::enemy {
 
@@ -11,7 +11,7 @@ Eyebit::Eyebit(automa::ServiceProvider& svc, bool spawned) : Enemy(svc, "eyebit"
 	flags.general.set(GeneralFlags::transcendent);
 }
 
-void Eyebit::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void Eyebit::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (died()) {
 		Enemy::update(svc, map, player);
 		return;
@@ -21,9 +21,7 @@ void Eyebit::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	flags.state.set(StateFlags::vulnerable); // eyebit is always vulnerable
 
 	// reset animation states to determine next animation state
-	state = {};
-	if (ent_state.test(entity::State::flip)) { state.set(EyebitState::turn); }
-	direction.lnr = (player.collider.physics.position.x < collider.physics.position.x) ? LNR::left : LNR::right;
+	directions.desired.lnr = (player.collider.physics.position.x < collider.physics.position.x) ? LNR::left : LNR::right;
 
 	state_function = state_function();
 
@@ -54,14 +52,12 @@ fsm::StateFunction Eyebit::update_idle() {
 fsm::StateFunction Eyebit::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
-		visual.sprite.setScale({-1.f, 1.f});
-		state = {};
+		flip();
 		state.set(EyebitState::idle);
 		animation.set_params(idle);
 		return EYEBIT_BIND(update_idle);
 	}
-	state = {};
 	state.set(EyebitState::turn);
 	return EYEBIT_BIND(update_turn);
 };
-} // namespace enemy
+} // namespace fornani::enemy

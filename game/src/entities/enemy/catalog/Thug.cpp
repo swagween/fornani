@@ -1,8 +1,8 @@
 #include "fornani/entities/enemy/catalog/Thug.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::enemy {
 
@@ -25,7 +25,7 @@ Thug::Thug(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "thug"), 
 	attacks.rush.hit_offset = {0.f, 0.f};
 }
 
-void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void Thug::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (died()) {
 		Enemy::update(svc, map, player);
 		return;
@@ -68,8 +68,6 @@ void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	state = {};
 	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
 	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
-	if (directions.actual.lnr == LNR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lnr == LNR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
 	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 14.f};
 	secondary_collider.physics.position.x += directions.actual.lnr == LNR::left ? 10.f : collider.dimensions.x - secondary_collider.dimensions.x - 10.f;
@@ -103,7 +101,7 @@ void Thug::unique_update(automa::ServiceProvider& svc, world::Map& map, player::
 	state_function = state_function();
 }
 
-void Thug::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Thug::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (!svc.greyblock_mode()) {
 	} else {
 		if (state == ThugState::punch) { attacks.punch.render(win, cam); }
@@ -123,7 +121,7 @@ fsm::StateFunction Thug::update_idle() {
 fsm::StateFunction Thug::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
-		Enemy::visual.sprite.scale({-1.f, 1.f});
+		flip();
 		directions.actual = directions.desired;
 		state = ThugState::idle;
 		animation.set_params(idle, false);

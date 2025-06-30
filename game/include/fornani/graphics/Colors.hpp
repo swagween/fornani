@@ -5,6 +5,7 @@
 
 namespace fornani::colors {
 
+constexpr sf::Color transparent{0, 0, 0, 0};
 constexpr sf::Color ui_white{254, 252, 216};
 constexpr sf::Color nani_white{234, 227, 255};
 constexpr sf::Color white{235, 232, 249};

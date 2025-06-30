@@ -50,7 +50,7 @@ class AnimatedSprite {
 	sf::Vector2<int> dimensions{};
 	sf::Vector2<float> position{};
 	Animation animation{};
-	std::unordered_map<std::string_view, Parameters> params{};
+	std::unordered_map<std::string, Parameters> params{};
 	vfx::SpriteRotator rotator{};
 
 	io::Logger m_logger{"anim"};

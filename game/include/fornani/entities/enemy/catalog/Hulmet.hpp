@@ -18,10 +18,10 @@ class Hulmet final : public Enemy {
 	~Hulmet() override {}
 	Hulmet& operator=(Hulmet&&) = delete;
 	Hulmet(automa::ServiceProvider& svc, world::Map& map);
-	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
-	void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 
-	fsm::StateFunction state_function = std::bind(&Hulmet::update_sleep, this);
+	fsm::StateFunction state_function = std::bind(&Hulmet::update_idle, this);
 	fsm::StateFunction update_idle();
 	fsm::StateFunction update_turn();
 	fsm::StateFunction update_run();
@@ -53,8 +53,8 @@ class Hulmet final : public Enemy {
 
 	// lookup, duration, framerate, num_loops
 	struct {
-		anim::Parameters idle{0, 6, 28, -1};
-		anim::Parameters turn{26, 2, 48, 1};
+		anim::Parameters idle{0, 6, 48, -1};
+		anim::Parameters turn{26, 2, 48, 0};
 		anim::Parameters run{5, 4, 28, 4};
 		anim::Parameters jump{9, 1, 48, 0};
 		anim::Parameters roll{10, 4, 58, 2};

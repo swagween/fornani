@@ -14,8 +14,8 @@ class Beamstalk final : public Enemy {
 	~Beamstalk() override = default;
 	Beamstalk& operator=(Beamstalk&&) = delete;
 	Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction);
-	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
-	void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 
 	fsm::StateFunction state_function = std::bind(&Beamstalk::update_idle, this);
 	fsm::StateFunction update_idle();

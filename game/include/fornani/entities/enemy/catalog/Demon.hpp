@@ -18,8 +18,8 @@ class Demon final : public Enemy {
 	~Demon() override {}
 	Demon& operator=(Demon&&) = delete;
 	Demon(automa::ServiceProvider& svc, world::Map& map);
-	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
-	void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
 	[[nodiscard]] auto is_dormant() const -> bool { return state == DemonState::dormant || cooldowns.awaken.running(); }
 
 	fsm::StateFunction state_function = std::bind(&Demon::update_dormant, this);

@@ -46,8 +46,7 @@
 		},
 		"physical": {
 			"dimensions": [ 40, 40 ],
-			"sprite_dimensions": [ 80, 80 ],
-			"spritesheet_dimensions": [ 5, 4 ],
+			"sprite_dimensions": [ 40, 40 ],
 			"offset": [ 22, -19 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
@@ -591,15 +590,15 @@
 			"variant": "skycorps"
 		},
 		"physical": {
-			"dimensions": [ 24, 24 ],
-			"sprite_dimensions": [ 64, 64 ],
-			"offset": [ 0, 0 ],
+			"dimensions": [ 32, 32 ],
+			"sprite_dimensions": [ 32, 32 ],
+			"offset": [ 0, -16 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 180.0, 180.0 ],
 			"hostile_range": [ 180.0, 180.0 ],
-			"friction": 0.98,
-			"gravity": 0.0
+			"friction": 0.999,
+			"gravity": 12.0
 		},
 		"visual": {
 			"effect_type": 0,
@@ -612,16 +611,16 @@
 			"base_hp": 80,
 			"base_damage": 4.0,
 			"speed": 0.9,
-			"loot_multiplier": 18.0,
+			"loot_multiplier": 4.0,
 			"drop_range": [ 8, 12 ],
 			"rare_drop_id": 0,
 			"respawn_distance": 4,
 			"permadeath": false
 		},
 		"general": {
-			"mobile": false,
-			"gravity": false,  
-			"map_collision": false,
+			"mobile": true,
+			"gravity": true,
+			"map_collision": true,
 			"player_collision": true,
 			"foreground": true,
 			"rare_drops": true

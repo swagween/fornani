@@ -33,7 +33,7 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map)
 	cooldowns.awaken.start();
 }
 
-void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (died()) {
 		Enemy::update(svc, map, player);
 		return;
@@ -79,13 +79,11 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 	state = {};
 	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
 	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
-	if (directions.actual.lnr == LNR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lnr == LNR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
 	if (!is_dormant()) {
-		parts.spear.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center());
-		parts.sword.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center());
-		parts.shield.update(svc, map, player, directions.actual, visual.sprite.getScale(), collider.get_center());
+		parts.spear.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
+		parts.sword.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
+		parts.shield.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
 	}
 	if (variant == DemonVariant::spearman) { parts.spear.set_hitbox(); }
 	if (variant == DemonVariant::warrior) {
@@ -128,7 +126,7 @@ void Demon::unique_update(automa::ServiceProvider& svc, world::Map& map, player:
 	state_function = state_function();
 }
 
-void Demon::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Demon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 	if (died() || state == DemonState::dormant) { return; }
 	if (variant == DemonVariant::spearman) {
 		parts.spear.render(svc, win, cam);
@@ -156,7 +154,7 @@ fsm::StateFunction Demon::update_idle() {
 fsm::StateFunction Demon::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
-		visual.sprite.scale({-1.f, 1.f});
+		flip();
 		directions.actual = directions.desired;
 		state = DemonState::idle;
 		animation.set_params(idle, false);
