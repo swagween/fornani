@@ -97,6 +97,8 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
 	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
 
+	impulse.update();
+
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 	sound.hurt_sound_cooldown.update();
 	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.external_id, attributes.respawn_distance, permadeath()); }
@@ -115,6 +117,19 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		health_indicator.update(svc, collider.physics.position);
 		post_death.update();
 		return;
+	}
+
+	health.update(); // on hit
+	auto flash_rate = 64;
+	set_channel(EnemyChannel::standard);
+	if (flags.general.test(GeneralFlags::has_invincible_channel)) { flags.state.test(StateFlags::vulnerable) ? set_channel(EnemyChannel::standard) : set_channel(EnemyChannel::invincible); }
+	if (hurt_effect.running()) { set_channel((hurt_effect.get_cooldown() / flash_rate) % 2 == 0 ? EnemyChannel::hurt_1 : EnemyChannel::hurt_2); }
+	if (hurt_effect.running()) { shake(); }
+	hurt_effect.update();
+	if (flags.state.test(StateFlags::hurt)) {
+		hurt_effect.start();
+		// TODO: play sound here
+		flags.state.reset(StateFlags::hurt);
 	}
 
 	// shake
@@ -152,8 +167,6 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	collider.physics.acceleration = {};
 	secondary_collider.physics.acceleration = {};
 
-	health.update();
-
 	// update ranges
 	physical.alert_range.set_position(collider.bounding_box.get_position() - (physical.alert_range.get_dimensions() * 0.5f) + (collider.dimensions * 0.5f));
 	physical.hostile_range.set_position(collider.bounding_box.get_position() - (physical.hostile_range.get_dimensions() * 0.5f) + (collider.dimensions * 0.5f));
@@ -169,19 +182,6 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	} else {
 		flags.state.reset(StateFlags::hostile);
 	}
-
-	// on hit
-	auto flash_rate = 32;
-	set_channel(EnemyChannel::standard);
-	flags.state.test(StateFlags::vulnerable) ? set_channel(EnemyChannel::standard) : set_channel(EnemyChannel::invincible);
-	if (hurt_effect.running()) { set_channel((hurt_effect.get_cooldown() / flash_rate) % 2 == 0 ? EnemyChannel::hurt_1 : EnemyChannel::hurt_2); }
-	if (hurt_effect.running()) { shake(); }
-	hurt_effect.update();
-	if (flags.state.test(StateFlags::hurt)) {
-		hurt_effect.start();
-		// TODO: play sound here
-		flags.state.reset(StateFlags::hurt);
-	}
 }
 
 void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) { handle_player_collision(player); }
@@ -192,15 +192,12 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 
 	auto sprite_position = collider.get_center() - cam + m_random_offset + m_native_offset;
 
-	// debug
-	sf::RectangleShape box{};
-	box.setPosition(sprite_position);
-	box.setFillColor(colors::transparent);
-	box.setOutlineThickness(-1.f);
-	box.setOutlineColor(colors::treasure_blue);
-	box.setSize(Animatable::get_f_dimensions());
-	box.setOrigin(box.getLocalBounds().getCenter());
-	win.draw(box);
+	if (svc.greyblock_mode()) {
+		physical.alert_range.render(win, cam);
+		physical.hostile_range.render(win, cam);
+		collider.render(win, cam);
+		secondary_collider.render(win, cam);
+	}
 
 	Drawable::set_position(sprite_position);
 	Drawable::draw(win);
@@ -228,7 +225,10 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 	if (flags.state.test(StateFlags::invisible)) { return; }
 	if (!(proj.get_bounding_box().overlaps(collider.bounding_box) || proj.get_bounding_box().overlaps(secondary_collider.bounding_box))) { return; }
 	flags.state.set(enemy::StateFlags::shot);
-	if (flags.state.test(enemy::StateFlags::vulnerable) && !died()) {
+	if (((proj.get_bounding_box().overlaps(secondary_collider.bounding_box) && flags.general.test(GeneralFlags::invincible_secondary)) || !flags.state.test(enemy::StateFlags::vulnerable)) && !died()) {
+		map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position(), {}, 0, 6));
+		svc.soundboard.flags.world.set(audio::World::hard_hit);
+	} else if (flags.state.test(enemy::StateFlags::vulnerable) && !died()) {
 		if (proj.persistent()) { proj.damage_over_time(); }
 		if (proj.can_damage()) {
 			hurt();
@@ -236,11 +236,8 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 			health_indicator.add(-proj.get_damage());
 			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
 			map.effects.push_back(entity::Effect(svc, "hit_flash", proj.get_position(), {}, 0, 11, {1, 1}));
-			hitstun.start(64);
+			hitstun.start(32);
 		}
-	} else if (!flags.state.test(enemy::StateFlags::vulnerable)) {
-		map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position(), {}, 0, 6));
-		svc.soundboard.flags.world.set(audio::World::hard_hit);
 	}
 	if (!proj.persistent() && (!died() || just_died())) { proj.destroy(false); }
 }

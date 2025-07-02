@@ -26,10 +26,14 @@ class FloatingPart {
 	void set_force(float force) const { gravitator->attraction_force = force; }
 	void set_shield(sf::Vector2<float> dim = {}, sf::Vector2<float> pos = {});
 	void set_hitbox(sf::Vector2<float> dim = {}, sf::Vector2<float> pos = {});
+	void set_magnitude(float magnitude);
 	void move(sf::Vector2<float> distance) const;
+
 	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return gravitator->collider.bounding_box.get_position(); }
+	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return gravitator->collider.get_center(); }
 	[[nodiscard]] auto get_velocity() const -> sf::Vector2<float> { return gravitator->collider.physics.velocity; }
 	[[nodiscard]] auto get_id() const -> int { return m_id; }
+
 	std::optional<sf::Sprite> sprite{};
 	std::optional<anim::AnimatedSprite> animated_sprite{};
 
@@ -43,13 +47,14 @@ class FloatingPart {
 		float time{};
 		float rate{0.03f};
 		float magnitude{4.f};
-	} movement{};
+	} m_movement{};
 	bool init{};
 	bool textured{};
 	std::optional<sf::RectangleShape> drawbox{};
 	std::optional<shape::Shape> hitbox{};
 	std::optional<shape::Shape> shieldbox{};
 	sf::RectangleShape debugbox{};
+
 };
 
 } // namespace fornani::entity

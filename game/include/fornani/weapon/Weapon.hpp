@@ -34,7 +34,7 @@ struct Offsets {
 
 struct EmitterAttributes {
 	sf::Vector2<float> dimensions{};
-	std::string_view type{};
+	std::string type{};
 	sf::Color color{};
 };
 

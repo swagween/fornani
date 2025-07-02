@@ -63,7 +63,7 @@
 			"hit": -1
 		},
 		"attributes": {
-			"base_hp": 40,
+			"base_hp": 120,
 			"base_damage": 2.0,
 			"speed": 1.0,
 			"loot_multiplier": 4.0,
@@ -595,10 +595,10 @@
 			"offset": [ 0, -16 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
-			"alert_range": [ 180.0, 180.0 ],
-			"hostile_range": [ 180.0, 180.0 ],
-			"friction": 0.999,
-			"gravity": 12.0
+			"alert_range": [ 380.0, 64.0 ],
+			"hostile_range": [ 90.0, 32.0 ],
+			"friction": 0.99,
+			"gravity": 14.0
 		},
 		"visual": {
 			"effect_type": 0,
@@ -608,10 +608,10 @@
 			"hit": -1
 		},
 		"attributes": {
-			"base_hp": 80,
+			"base_hp": 40,
 			"base_damage": 4.0,
 			"speed": 0.9,
-			"loot_multiplier": 4.0,
+			"loot_multiplier": 2.0,
 			"drop_range": [ 8, 12 ],
 			"rare_drop_id": 0,
 			"respawn_distance": 4,
@@ -621,9 +621,9 @@
 			"mobile": true,
 			"gravity": true,
 			"map_collision": true,
-			"player_collision": true,
+			"player_collision": false,
 			"foreground": true,
-			"rare_drops": true
+			"rare_drops": false
 		}
 	}
 }

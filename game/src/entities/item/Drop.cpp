@@ -33,7 +33,6 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 		a.framerate = param["framerate"].as<int>();
 		a.num_loops = param["num_loops"].as<int>();
 		sprite.push_params(param["label"].as_string(), a);
-		NANI_LOG_DEBUG(m_logger, "label: {}", param["label"].as_string());
 	}
 	sprite.set_params("neutral", true);
 	sf::Vector2 const dim{static_cast<int>(sprite_dimensions.x), static_cast<int>(sprite_dimensions.y)};

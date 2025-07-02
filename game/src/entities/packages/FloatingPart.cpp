@@ -57,13 +57,13 @@ FloatingPart::FloatingPart(sf::Color color, sf::Vector2f dimensions, float force
 void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, Direction direction, sf::Vector2<float> scale, sf::Vector2<float> position) {
 	if (init) {
 		gravitator->set_position(position + actual);
-		movement.time = util::random::random_range_float(0.f, 2.f * static_cast<float>(std::numbers::pi));
+		m_movement.time = util::random::random_range_float(0.f, 2.f * static_cast<float>(std::numbers::pi));
 		init = false;
 	}
 	actual = direction.lnr == LNR::left ? position + left : position + right;
-	movement.time += movement.rate;
-	auto const tweak = movement.magnitude * std::sin(movement.time);
-	if (tweak == 0.f) { movement.time = 0.f; }
+	m_movement.time += m_movement.rate;
+	auto const tweak = m_movement.magnitude * std::sin(m_movement.time);
+	if (tweak == 0.f) { m_movement.time = 0.f; }
 	actual.y += tweak;
 	gravitator->set_target_position(actual);
 	gravitator->update(svc);
@@ -123,6 +123,8 @@ void FloatingPart::set_hitbox(sf::Vector2<float> dim, sf::Vector2<float> pos) {
 	if (pos.x == 0.f && pos.y == 0.f && sprite) { pos = gravitator->position() - sprite->getLocalBounds().getCenter(); }
 	hitbox.value().set_position(pos);
 }
+
+void FloatingPart::set_magnitude(float magnitude) { m_movement.magnitude = magnitude; }
 
 void FloatingPart::move(sf::Vector2<float> distance) const { gravitator->set_target_position(gravitator->position() + distance); }
 

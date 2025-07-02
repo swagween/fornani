@@ -79,7 +79,8 @@ fsm::StateFunction Tank::update_idle() {
 	if (change_state(TankState::shoot, shoot)) { return TANK_BIND(update_shoot); }
 	state = TankState::idle;
 	return TANK_BIND(update_idle);
-};
+}
+
 fsm::StateFunction Tank::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
@@ -91,7 +92,8 @@ fsm::StateFunction Tank::update_turn() {
 	}
 	state = TankState::turn;
 	return TANK_BIND(update_turn);
-};
+}
+
 fsm::StateFunction Tank::update_run() {
 	animation.label = "run";
 	auto facing = directions.actual.lnr == LNR::left ? -1.f : 1.f;
@@ -106,6 +108,7 @@ fsm::StateFunction Tank::update_run() {
 	state = TankState::run;
 	return TANK_BIND(update_run);
 }
+
 fsm::StateFunction Tank::update_shoot() {
 	animation.label = "shoot";
 	if (change_state(TankState::turn, turn)) { return TANK_BIND(update_turn); }

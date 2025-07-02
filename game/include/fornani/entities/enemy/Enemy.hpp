@@ -29,7 +29,24 @@ class Projectile;
 namespace fornani::enemy {
 
 enum class EnemyChannel : std::uint8_t { standard, hurt_1, hurt_2, invincible };
-enum class GeneralFlags : std::uint8_t { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable, foreground, spawned, transcendent, rare_drops, permadeath };
+enum class GeneralFlags : std::uint8_t {
+	mobile,
+	gravity,
+	player_collision,
+	hurt_on_contact,
+	map_collision,
+	post_death_render,
+	no_loot,
+	custom_sounds,
+	uncrushable,
+	foreground,
+	spawned,
+	transcendent,
+	rare_drops,
+	permadeath,
+	has_invincible_channel,
+	invincible_secondary
+};
 enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible };
 enum class Triggers : std::uint8_t { hostile, alert };
 enum class Variant : std::uint8_t { beast, soldier, elemental, worker, guardian };
@@ -70,7 +87,7 @@ class Enemy : public Animatable {
 
 	[[nodiscard]] auto hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto alert() const -> bool { return flags.state.test(StateFlags::alert); }
-	[[nodiscard]] auto is_hurt() const -> bool { return flags.state.test(StateFlags::hurt); }
+	[[nodiscard]] auto is_hurt() const -> bool { return hurt_effect.running(); }
 	[[nodiscard]] auto hostility_triggered() const -> bool { return flags.triggers.test(Triggers::hostile); }
 	[[nodiscard]] auto alertness_triggered() const -> bool { return flags.triggers.test(Triggers::alert); }
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
@@ -112,6 +129,7 @@ class Enemy : public Animatable {
 	Attributes attributes{};
 	util::Cooldown post_death{};
 	util::Cooldown hitstun{};
+	util::Cooldown impulse{};
 	int afterlife{200};
 	struct {
 		Direction actual{};

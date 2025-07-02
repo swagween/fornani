@@ -358,6 +358,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
 	std::erase_if(destroyers, [](auto const& d) { return d.detonated(); });
 	std::erase_if(npcs, [](auto const& n) { return n.piggybacking(); });
+	enemy_catalog.update();
 
 	manage_projectiles(svc);
 	svc.map_debug.active_projectiles = active_projectiles.size();

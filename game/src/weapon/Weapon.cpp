@@ -11,7 +11,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 	auto const& in_data = enemy ? svc.data.enemy_weapon["weapons"][id] : svc.data.weapon["weapons"][id];
 
 	// metadata
-	metadata.description = in_data["metadata"]["description"].as_string();
+	metadata.description = in_data["metadata"]["description"].as_string().data();
 
 	// visual
 	visual.dimensions = {in_data["visual"]["dimensions"][0].as<int>(), in_data["visual"]["dimensions"][1].as<int>()};
@@ -22,7 +22,9 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 	try {
 		emitter.color = svc.styles.spray_colors.at(metadata.label);
 	} catch (std::out_of_range) { emitter.color = colors::white; }
-	emitter.type = in_data["visual"]["spray"]["type"].as_string(); // secondary emitter
+
+	emitter.type = in_data["visual"]["spray"]["type"].as_string().data(); // secondary emitter
+
 	if (in_data["visual"]["secondary_spray"]) {
 		secondary_emitter = EmitterAttributes();
 		secondary_emitter.value().dimensions.x = in_data["visual"]["secondary_spray"]["dimensions"][0].as<float>();
