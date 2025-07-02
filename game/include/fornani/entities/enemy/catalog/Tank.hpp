@@ -6,7 +6,7 @@
 
 namespace fornani::enemy {
 
-enum class TankState : std::uint8_t { idle, turn, run, shoot, alert };
+enum class TankState : std::uint8_t { idle, run, shoot_horizontal, shoot_vertical, jumpsquat, jump, land, turn, type, alert };
 
 class Tank final : public Enemy {
 
@@ -20,26 +20,42 @@ class Tank final : public Enemy {
 
 	fsm::StateFunction state_function = std::bind(&Tank::update_idle, this);
 	fsm::StateFunction update_idle();
-	fsm::StateFunction update_turn();
 	fsm::StateFunction update_run();
-	fsm::StateFunction update_shoot();
+	fsm::StateFunction update_shoot_horizontal();
+	fsm::StateFunction update_shoot_vertical();
+	fsm::StateFunction update_jumpsquat();
+	fsm::StateFunction update_jump();
+	fsm::StateFunction update_land();
+	fsm::StateFunction update_turn();
+	fsm::StateFunction update_type();
 	fsm::StateFunction update_alert();
 
   private:
-	TankState state{};
+	void request(TankState to) { m_state.desired = to; }
+
+	struct {
+		TankState actual{};
+		TankState desired{};
+	} m_state{};
 
 	float fire_chance{50.f};
 
 	// packages
-	entity::WeaponPackage gun;
+	entity::FloatingPart m_gun;
+	entity::WeaponPackage m_weapon;
 	entity::Caution caution{};
 
 	// lookup, duration, framerate, num_loops
 	anim::Parameters idle{0, 6, 28, -1};
-	anim::Parameters turn{6, 2, 38, 0};
-	anim::Parameters run{9, 4, 38, 2};
-	anim::Parameters shoot{13, 3, 22, 3};
-	anim::Parameters alert{17, 3, 42, 0};
+	anim::Parameters run{6, 4, 38, 2};
+	anim::Parameters shoot_horizontal{10, 4, 22, 0};
+	anim::Parameters shoot_vertical{14, 4, 22, 0};
+	anim::Parameters jumpsquat{18, 5, 22, 0, true};
+	anim::Parameters jump{23, 4, 22, 0, true};
+	anim::Parameters land{27, 3, 22, 0};
+	anim::Parameters turn{30, 2, 32, 0};
+	anim::Parameters type{32, 2, 256, -1};
+	anim::Parameters alert{34, 7, 32, 0};
 
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;

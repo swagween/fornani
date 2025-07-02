@@ -45,9 +45,9 @@
 			"variant": "skycorps"
 		},
 		"physical": {
-			"dimensions": [ 40, 40 ],
-			"sprite_dimensions": [ 40, 40 ],
-			"offset": [ 22, -19 ],
+			"dimensions": [ 80, 80 ],
+			"sprite_dimensions": [ 64, 64 ],
+			"offset": [ 0, -23 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 200.0, 300.0 ],
@@ -592,13 +592,13 @@
 		"physical": {
 			"dimensions": [ 32, 32 ],
 			"sprite_dimensions": [ 32, 32 ],
-			"offset": [ 0, -16 ],
+			"offset": [ 0, -15 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 380.0, 64.0 ],
 			"hostile_range": [ 90.0, 32.0 ],
 			"friction": 0.99,
-			"gravity": 14.0
+			"gravity": 10.0
 		},
 		"visual": {
 			"effect_type": 0,

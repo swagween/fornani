@@ -104,6 +104,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.enemy.test(Enemy::hit_high)) { play(engine, svc, svc.sounds.get_buffer("hit_high")); }
 	if (flags.enemy.test(Enemy::hit_squeak)) { play(engine, svc, svc.sounds.get_buffer("hit_squeak")); }
 	if (flags.enemy.test(Enemy::standard_death)) { play(engine, svc, svc.sounds.get_buffer("standard_death")); }
+	if (flags.enemy.test(Enemy::jump_low)) { play(engine, svc, svc.sounds.get_buffer("jump_low")); }
 
 	// item
 	if (flags.item.test(Item::heal)) { play(engine, svc, svc.sounds.get_buffer("heal"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }

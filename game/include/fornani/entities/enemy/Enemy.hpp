@@ -3,6 +3,7 @@
 #include <string_view>
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/entities/Entity.hpp"
+#include "fornani/entities/packages/FloatingPart.hpp"
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/entities/packages/WeaponPackage.hpp"
 #include "fornani/entities/player/Indicator.hpp"
@@ -47,9 +48,10 @@ enum class GeneralFlags : std::uint8_t {
 	has_invincible_channel,
 	invincible_secondary
 };
-enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible };
+enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, flip };
 enum class Triggers : std::uint8_t { hostile, alert };
 enum class Variant : std::uint8_t { beast, soldier, elemental, worker, guardian };
+
 struct Attributes {
 	float base_hp{};
 	float base_damage{};
@@ -84,6 +86,7 @@ class Enemy : public Animatable {
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	void on_crush(world::Map& map);
 	void set_channel(EnemyChannel to) { Animatable::set_channel(static_cast<int>(to)); }
+	void request_flip() { flags.state.set(StateFlags::flip); }
 
 	[[nodiscard]] auto hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto alert() const -> bool { return flags.state.test(StateFlags::alert); }

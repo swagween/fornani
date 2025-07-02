@@ -145,7 +145,6 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 
 	// stuff that slows down from hitstun
-	Animatable::tick();
 	collider.update(svc);
 	secondary_collider.update(svc);
 	health_indicator.update(svc, collider.physics.position);
@@ -184,13 +183,21 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 }
 
-void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) { handle_player_collision(player); }
+void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	handle_player_collision(player);
+	if (flags.state.consume(StateFlags::flip)) {
+		directions.actual = directions.desired;
+		flip();
+	}
+	Animatable::tick();
+}
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
 
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
-
 	auto sprite_position = collider.get_center() - cam + m_random_offset + m_native_offset;
+	Drawable::set_position(sprite_position);
+	Drawable::draw(win);
 
 	if (svc.greyblock_mode()) {
 		physical.alert_range.render(win, cam);
@@ -198,9 +205,6 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 		collider.render(win, cam);
 		secondary_collider.render(win, cam);
 	}
-
-	Drawable::set_position(sprite_position);
-	Drawable::draw(win);
 }
 
 void Enemy::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {

@@ -12,8 +12,7 @@ void CollisionDepth::calculate(shape::Collider const& native, shape::Shape const
 	if (other.left() < native.hurtbox.right() && other.right() > native.hurtbox.left() && other.get_center().y > native.get_center().y) { candidate.bottom = other.top() - native.bottom(); }
 	try_push();
 	iterations.update();
-	collision_direction = other.overlaps(native.horizontal) ? CollisionDirection::horizontal : collision_direction;
-	collision_direction = other.overlaps(native.vertical) && !horizontal_squish() ? CollisionDirection::vertical : collision_direction;
+	collision_direction = std::abs(out_depth.left) + std::abs(out_depth.right) > std::abs(out_depth.top) + std::abs(out_depth.bottom) ? CollisionDirection::vertical : CollisionDirection::horizontal;
 }
 
 void CollisionDepth::update() {
