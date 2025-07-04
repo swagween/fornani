@@ -41,6 +41,7 @@ class Tank final : public Enemy {
 	} m_state{};
 
 	struct {
+		util::Cooldown alerted{1200};
 		util::Cooldown post_jump{200};
 		util::Cooldown run{80};
 	} m_cooldowns{};
@@ -51,6 +52,9 @@ class Tank final : public Enemy {
 	entity::FloatingPart m_gun;
 	entity::WeaponPackage m_weapon;
 	entity::Caution m_caution{};
+
+	// extra detectors
+	shape::Shape m_vertical_range{};
 
 	// lookup, duration, framerate, num_loops
 	anim::Parameters idle{0, 6, 28, -1};

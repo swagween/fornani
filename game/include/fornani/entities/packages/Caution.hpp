@@ -25,19 +25,22 @@ class Caution {
 	Caution() = default;
 	void update();
 	void avoid_player(player::Player& player);
-	void avoid_ledges(world::Map& map, shape::Collider& collider, Direction& direction, int height);
+	void avoid_ledges(world::Map& map, shape::Collider& collider, Direction const& direction, int height);
 	Direction projectile_detected(world::Map& map, shape::Shape& zone, arms::Team friendly_fire);
-	bool detected_step(world::Map& map, shape::Collider& collider, Direction& direction, sf::Vector2f offset = {}, int vision = 1);
+	bool detected_step(world::Map& map, shape::Collider& collider, Direction const& direction, sf::Vector2f offset = {}, int vision = 1);
+	bool detected_ceiling(world::Map& map, shape::Collider& collider, sf::Vector2f offset = {}, int vision = 1);
 
-	void debug_render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	void debug_render(sf::RenderWindow& win, sf::Vector2f cam);
 
 	[[nodiscard]] bool danger() const;
 
-	sf::Vector2<float> retreat{};
+	sf::Vector2f retreat{};
 	struct {
-		sf::Vector2<float> left{};
-		sf::Vector2<float> right{};
+		sf::Vector2f left{};
+		sf::Vector2f right{};
+		sf::Vector2f top{};
 	} testers{};
+
 	struct {
 		int perceived{};
 		int danger{};

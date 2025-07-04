@@ -48,10 +48,7 @@ void MusicPlayer::pause() { m_jukebox.pause(); }
 
 void MusicPlayer::stop() { m_jukebox.stop(); }
 
-void MusicPlayer::resume() {
-	m_ringtone.stop();
-	m_jukebox.play();
-}
+void MusicPlayer::resume() { m_jukebox.play(); }
 
 void MusicPlayer::fade_out(std::chrono::duration<float> duration) { m_jukebox.set_fade_in(duration, get_volume()); }
 

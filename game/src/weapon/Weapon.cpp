@@ -1,5 +1,7 @@
+
 #include "fornani/weapon/Weapon.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::arms {
 
@@ -48,7 +50,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 	if (static_cast<bool>(in_data["gameplay"]["attributes"]["automatic"].as_bool())) { attributes.set(WeaponAttributes::automatic); }
 
 	// audio
-	audio.shoot = in_data["audio"]["shoot"].as<int>();
+	m_audio.shoot = static_cast<audio::Weapon>(in_data["audio"]["shoot"].as<int>());
 }
 
 void Weapon::update(automa::ServiceProvider& svc, Direction to_direction) {
@@ -105,6 +107,12 @@ void Weapon::shoot() {
 	active_projectiles.update();
 	ammo.use();
 	physical.physics.apply_force(firing_direction.get_vector() * -1.f);
+}
+
+void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map) {
+	shoot();
+	map.spawn_projectile_at(svc, *this, get_barrel_point());
+	svc.soundboard.flags.weapon.set(m_audio.shoot);
 }
 
 void Weapon::decrement_projectiles() { active_projectiles.update(-1); }

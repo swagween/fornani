@@ -9,7 +9,7 @@ void Caution::update() {}
 
 void Caution::avoid_player(player::Player& player) {}
 
-void Caution::avoid_ledges(world::Map& map, shape::Collider& collider, Direction& direction, int height) {
+void Caution::avoid_ledges(world::Map& map, shape::Collider& collider, Direction const& direction, int height) {
 	heights.danger = height;
 	heights.perceived = {};
 	retreat = {};
@@ -41,7 +41,7 @@ Direction Caution::projectile_detected(world::Map& map, shape::Shape& zone, arms
 	return ret;
 }
 
-bool Caution::detected_step(world::Map& map, shape::Collider& collider, Direction& direction, sf::Vector2f offset, int vision) {
+bool Caution::detected_step(world::Map& map, shape::Collider& collider, Direction const& direction, sf::Vector2f offset, int vision) {
 	auto buffer = sf::Vector2<float>{collider.dimensions.x, 0.f};
 	testers.left = collider.get_center() - (buffer + sf::Vector2f{offset.x, -offset.y});
 	testers.right = collider.get_center() + buffer + offset;
@@ -57,6 +57,16 @@ bool Caution::detected_step(world::Map& map, shape::Collider& collider, Directio
 	return false;
 }
 
+bool Caution::detected_ceiling(world::Map& map, shape::Collider& collider, sf::Vector2f offset, int vision) {
+	testers.top = collider.get_center() - offset;
+	auto start_index = map.get_index_at_position(testers.top);
+	for (auto i{start_index}; i >= start_index - (map.dimensions.x * vision); i -= map.dimensions.x) {
+		auto& cell = map.get_middleground()->grid.cells.at(static_cast<int>(i));
+		if (cell.is_solid() || cell.is_platform()) { return true; }
+	}
+	return false;
+}
+
 void Caution::debug_render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	sf::CircleShape probe{};
 	probe.setFillColor(colors::mythic_green);
@@ -65,6 +75,8 @@ void Caution::debug_render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	probe.setPosition(testers.left - cam);
 	win.draw(probe);
 	probe.setPosition(testers.right - cam);
+	win.draw(probe);
+	probe.setPosition(testers.top - cam);
 	win.draw(probe);
 }
 

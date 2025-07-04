@@ -51,6 +51,7 @@ class Hulmet final : public Enemy {
 		util::Cooldown post_fire{400};
 		util::Cooldown alerted{1600};
 		util::Cooldown post_jump{200};
+		util::Cooldown post_roll{60};
 		util::Cooldown run{80};
 	} m_cooldowns{};
 

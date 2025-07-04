@@ -151,6 +151,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	if (flags.general.test(GeneralFlags::map_collision)) {
 		for (auto& breakable : map.breakables) { breakable.handle_collision(collider); }
+		for (auto& spike : map.spikes) { spike.handle_collision(collider); }
 		collider.detect_map_collision(map);
 		secondary_collider.detect_map_collision(map);
 	}
@@ -244,6 +245,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 			map.effects.push_back(entity::Effect(svc, "hit_flash", proj.get_position(), {}, 0, 11, {1, 1}));
 			hitstun.start(32);
 		}
+		svc.soundboard.flags.world.set(audio::World::projectile_hit);
 	}
 	if (!proj.persistent() && (!died() || just_died())) { proj.destroy(false); }
 }
@@ -279,10 +281,10 @@ void Enemy::debug() {
 	if (ImGui::Begin("Enemy Info", b_debug, window_flags)) {
 		ImGui::Separator();
 		ImGui::Text("Label: %s", label.c_str());
-		ImGui::Text("Desired Direction: %s", directions.desired.print_lr().c_str());
+		ImGui::Text("Desired Direction: %s", directions.desired.print_lnr().c_str());
 		ImGui::SameLine();
 		ImGui::Text("%s", directions.desired.is_locked() ? "(locked)" : "");
-		ImGui::Text("Actual Direction: %s", directions.actual.print_lr().c_str());
+		ImGui::Text("Actual Direction: %s", directions.actual.print_lnr().c_str());
 	}
 	ImGui::End();
 }

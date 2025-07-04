@@ -22,7 +22,7 @@ constexpr float default_jumpbox_height = 4.0f;
 constexpr float default_detector_width = 4.f;
 constexpr float default_detector_height = 18.f;
 
-enum class General : std::uint8_t { ignore_resolution, complex, pushable, soft, top_only_collision };
+enum class General : std::uint8_t { ignore_resolution, complex, pushable, soft, top_only_collision, no_move };
 enum class Animation : std::uint8_t { just_landed, sliding };
 enum class State : std::uint8_t {
 	just_collided,
@@ -87,6 +87,7 @@ class Collider {
 	void reset_ground_flags();
 	void set_top_only();
 	void adjust_acceleration();
+	void fix();
 
 	bool on_ramp() const;
 	bool has_horizontal_collision() const;
@@ -120,8 +121,6 @@ class Collider {
 	[[nodiscard]] auto bottom() const -> float { return bounding_box.bottom(); }
 	[[nodiscard]] auto downhill() const -> bool { return flags.perma_state.test(PermaFlags::downhill); }
 	[[nodiscard]] auto hit_ceiling_ramp() const -> bool { return flags.external_state.test(ExternalState::ceiling_ramp_hit); }
-
-	float compute_length(sf::Vector2<float> const v);
 
 	Shape bounding_box{};
 	Shape predictive_vertical{};

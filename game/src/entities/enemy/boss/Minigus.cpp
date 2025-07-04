@@ -344,7 +344,7 @@ fsm::StateFunction Minigus::update_shoot() {
 	if (!gun.get().cooling_down() && !minigun.flags.test(MinigunFlags::charging)) {
 		gun.cycle.update();
 		gun.barrel_offset = gun.cycle.get_alternator() % 2 == 0 ? sf::Vector2<float>{0.f, 10.f} : (gun.cycle.get_alternator() % 2 == 1 ? sf::Vector2<float>{0.f, 20.f} : sf::Vector2<float>{0.f, 15.f});
-		gun.shoot();
+		gun.shoot(*m_services, *m_map);
 		m_map->spawn_projectile_at(*m_services, gun.get(), gun.get().get_barrel_point());
 		m_map->shake_camera();
 		m_services->soundboard.flags.weapon.set(audio::Weapon::skycorps_ar);
@@ -462,8 +462,7 @@ fsm::StateFunction Minigus::update_jump_shoot() {
 	if (!gun.get().cooling_down() && !minigun.flags.test(MinigunFlags::charging)) {
 		gun.cycle.update();
 		gun.barrel_offset = gun.cycle.get_alternator() % 2 == 0 ? sf::Vector2<float>{0.f, 10.f} : (gun.cycle.get_alternator() % 2 == 1 ? sf::Vector2<float>{0.f, 20.f} : sf::Vector2<float>{0.f, 15.f});
-		gun.shoot();
-		m_map->spawn_projectile_at(*m_services, gun.get(), gun.get().get_barrel_point());
+		gun.shoot(*m_services, *m_map);
 		m_map->shake_camera();
 		m_services->soundboard.flags.weapon.set(audio::Weapon::skycorps_ar);
 	}

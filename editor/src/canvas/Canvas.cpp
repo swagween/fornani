@@ -146,6 +146,7 @@ bool Canvas::load(fornani::data::ResourceFinder& finder, std::string const& regi
 		cutscene.source = meta["cutscene_on_entry"]["source"].as<int>();
 	}
 	if (meta["background"]) { background = std::make_unique<Background>(finder, static_cast<Backdrop>(meta["background"].as<int>())); }
+	if (meta["properties"]["environmental_randomness"].as_bool()) { m_map_properties.set(fornani::world::MapProperties::environmental_randomness); }
 
 	// tiles
 	auto counter{0};
@@ -200,6 +201,7 @@ bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& regi
 	metadata["meta"]["cutscene_on_entry"]["type"] = cutscene.type;
 	metadata["meta"]["cutscene_on_entry"]["id"] = cutscene.id;
 	metadata["meta"]["cutscene_on_entry"]["source"] = cutscene.source;
+	metadata["meta"]["properties"]["environmental_randomness"] = m_map_properties.test(fornani::world::MapProperties::environmental_randomness);
 
 	metadata["tile"]["layers"] = dj::Json::empty_array();
 	for (auto i{0}; i < last_layer(); ++i) { metadata["tile"]["layers"].push_back(dj::Json::empty_array()); }

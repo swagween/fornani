@@ -1,8 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "fornani/entities/Entity.hpp"
-#include "fornani/weapon/Weapon.hpp"
 #include "fornani/utils/Cycle.hpp"
+#include "fornani/weapon/Weapon.hpp"
 
 namespace fornani::enemy {
 class Enemy;
@@ -15,7 +15,7 @@ class WeaponPackage : public Entity {
 	WeaponPackage(automa::ServiceProvider& svc, int id);
 	void update(automa::ServiceProvider& svc, world::Map& map, enemy::Enemy& enemy);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
-	void shoot();
+	void shoot(automa::ServiceProvider& svc, world::Map& map);
 	void set_team(arms::Team team);
 	[[nodiscard]] auto get() const -> arms::Weapon& { return *weapon; }
 	[[nodiscard]] auto barrel_point() const -> sf::Vector2<float> { return weapon->get_barrel_point(); }

@@ -8,6 +8,7 @@
 #include "editor/util/SelectBox.hpp"
 #include "fornani/graphics/CameraController.hpp"
 #include "fornani/utils/Constants.hpp"
+#include "fornani/world/Map.hpp"
 
 #include <deque>
 #include <filesystem>
@@ -186,6 +187,7 @@ class Canvas {
 	std::deque<Map> redo_states{};
 	util::BitFlags<CanvasState> state{};
 	util::BitFlags<CanvasProperties> properties{};
+	util::BitFlags<fornani::world::MapProperties> m_map_properties{};
 	sf::RectangleShape box{};
 	sf::RectangleShape gridbox{};
 	sf::RectangleShape chunkbox{};

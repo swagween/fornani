@@ -1,3 +1,4 @@
+
 #include "fornani/utils/Collider.hpp"
 #include <ccmath/math/power/sqrt.hpp>
 #include "fornani/service/ServiceProvider.hpp"
@@ -369,7 +370,7 @@ void Collider::update(automa::ServiceProvider& svc) {
 	if (!on_ramp()) { acceleration_multiplier = 1.f; }
 	flags.external_state = {};
 	adjust_acceleration();
-	physics.update(svc);
+	if (!flags.general.test(General::no_move)) { physics.update(svc); }
 	sync_components();
 	flags.state.reset(State::just_collided);
 	physics.gravity = flags.state.test(State::grounded) ? 0.0f : stats.GRAV;
@@ -476,6 +477,8 @@ void Collider::adjust_acceleration() {
 	acceleration_multiplier = 1.f;
 }
 
+void Collider::fix() { flags.general.set(General::no_move); }
+
 bool Collider::on_ramp() const { return flags.external_state.test(ExternalState::on_ramp); }
 
 bool Collider::has_horizontal_collision() const { return flags.collision.test(Collision::has_left_collision) || flags.collision.test(Collision::has_right_collision); }
@@ -501,7 +504,5 @@ bool Collider::pushes(Collider& other) const { return (physics.position.x < othe
 sf::Vector2<float> Collider::snap_to_grid(float size, float scale, float factor) {
 	return sf::Vector2<float>{std::round((physics.position.x * size / factor) / (size * (scale / factor))), std::round((physics.position.y * size / factor) / (size * (scale / factor)))} * scale;
 }
-
-float Collider::compute_length(sf::Vector2<float> const v) { return ccm::sqrt(v.x * v.x + v.y * v.y); }
 
 } // namespace fornani::shape

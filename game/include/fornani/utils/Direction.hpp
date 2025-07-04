@@ -40,7 +40,7 @@ class SimpleDirection {
 
 struct Direction {
 	Direction(UND und_preset = UND::neutral, LNR lnr_preset = LNR::neutral) : und(und_preset), lnr(lnr_preset) {}
-	Direction(sf::Vector2<int> preset) : lnr{preset.x == 0 ? LNR::neutral : preset.x == 1 ? LNR::right : LNR::left}, und{preset.y == 0 ? UND::neutral : preset.y == 1 ? UND::down : UND::up} {}
+	Direction(sf::Vector2i preset) : lnr{preset.x == 0 ? LNR::neutral : preset.x == 1 ? LNR::right : LNR::left}, und{preset.y == 0 ? UND::neutral : preset.y == 1 ? UND::up : UND::down} {}
 
 	LNR lnr{LNR::neutral};
 	UND und{UND::neutral};
@@ -89,8 +89,9 @@ struct Direction {
 	constexpr float as_float_und() const { return und == UND::up ? -1.f : (und == UND::down ? 1.f : 0.f); }
 	sf::Vector2<float> get_vector() const { return sf::Vector2<float>{as_float(), as_float_und()}; }
 
-	std::string print_und() const { return "UND: " + static_cast<std::string>(und == UND::up ? "UP " : (und == UND::neutral ? "NEUTRAL " : "DOWN ")); }
-	std::string print_lr() const { return "LR: " + static_cast<std::string>(lnr == LNR::left ? "LEFT " : (lnr == LNR::neutral ? "NEUTRAL " : "RIGHT ")); }
+	std::string print() const { return print_und() + ", " + print_lnr(); }
+	std::string print_und() const { return und == UND::up ? "up" : (und == UND::neutral ? "neutral" : "down"); }
+	std::string print_lnr() const { return lnr == LNR::left ? "left" : (lnr == LNR::neutral ? "neutral" : "right"); }
 	std::string print_intermediate() const {
 		switch (inter) {
 		default:

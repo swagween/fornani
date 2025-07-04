@@ -16,11 +16,11 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class SpikeAttributes : std::uint8_t { no_collision };
+enum class SpikeAttributes : std::uint8_t { no_collision, soft_reset, random };
 
 class Spike {
   public:
-	Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vector2<float> position, sf::Vector2<int> direction, sf::Vector2<float> size);
+	Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vector2<float> position, sf::Vector2<int> direction, sf::Vector2<float> size, bool random = false);
 	void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 	void handle_collision(shape::Collider& other) const;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
@@ -28,14 +28,15 @@ class Spike {
 	shape::Shape& get_hurtbox() { return collider.hurtbox; }
 
   private:
-	[[nodiscard]] auto i_size() const -> sf::Vector2<int> { return sf::Vector2<int>(static_cast<int>(size.x), static_cast<int>(size.y)); }
-	sf::Vector2<float> size{};
+	[[nodiscard]] auto i_size() const -> sf::Vector2i { return sf::Vector2i{size}; }
+	[[nodiscard]] auto is_small() const -> bool { return i_size().x == 1; }
+	sf::Vector2f size{};
 	shape::Shape hitbox{};
 	shape::Collider collider{};
 	Direction facing{};
 	util::BitFlags<SpikeAttributes> attributes{};
-	sf::Vector2<float> grid_position{};
-	sf::Vector2<float> offset{};
+	sf::Vector2f grid_position{};
+	sf::Vector2f offset{};
 	sf::RectangleShape drawbox{};
 	sf::Sprite sprite;
 	bool soft_reset{};

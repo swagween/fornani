@@ -23,7 +23,7 @@ namespace fornani::world {
 class Map;
 }
 
-namespace fornani::arns {
+namespace fornani::arms {
 class Projectile;
 }
 

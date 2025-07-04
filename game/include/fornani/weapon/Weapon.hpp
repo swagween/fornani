@@ -2,11 +2,12 @@
 #pragma once
 
 #include <optional>
-#include "Ammo.hpp"
-#include "Projectile.hpp"
+#include "fornani/audio/Soundboard.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/utils/BitFlags.hpp"
+#include "fornani/weapon/Ammo.hpp"
+#include "fornani/weapon/Projectile.hpp"
 
 namespace fornani::arms {
 
@@ -51,6 +52,7 @@ class Weapon {
 	void unlock();
 	void lock();
 	void shoot();
+	void shoot(automa::ServiceProvider& svc, world::Map& map);
 	void decrement_projectiles();
 
 	bool is_equipped() const;
@@ -75,7 +77,7 @@ class Weapon {
 	[[nodiscard]] auto shot() const -> bool { return cooldowns.cooldown.just_started(); }
 	[[nodiscard]] auto automatic() const -> bool { return attributes.test(WeaponAttributes::automatic); }
 	[[nodiscard]] auto get_id() const -> int { return metadata.id; }
-	[[nodiscard]] auto get_sound_id() const -> int { return audio.shoot; }
+	[[nodiscard]] auto get_sound_id() const -> int { return static_cast<int>(m_audio.shoot); }
 	[[nodiscard]] auto get_active_projectiles() const -> int { return active_projectiles.get_count(); }
 	[[nodiscard]] auto get_inventory_state() const -> int { return static_cast<int>(inventory_state); }
 	[[nodiscard]] auto get_ui_position() const -> sf::Vector2<float> { return visual.ui.getPosition(); }
@@ -131,8 +133,8 @@ class Weapon {
 	} flags{};
 
 	struct {
-		int shoot{};
-	} audio{};
+		audio::Weapon shoot{};
+	} m_audio{};
 
 	util::Counter active_projectiles{};
 	InventoryState inventory_state{};

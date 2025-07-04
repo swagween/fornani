@@ -62,6 +62,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.world.test(World::breakable_shatter)) { play(engine, svc, svc.sounds.get_buffer("breakable_shatter"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.world.test(World::breakable_hit)) { play(engine, svc, svc.sounds.get_buffer("breakable_hit"), 0.1f); }
 	if (flags.world.test(World::hard_hit)) { play(engine, svc, svc.sounds.get_buffer("hard_hit"), 0.1f, 60.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.world.test(World::projectile_hit)) { play(engine, svc, svc.sounds.get_buffer("projectile_hit"), 0.2f); }
 
 	if (!svc.in_game()) {
 		flags = {};

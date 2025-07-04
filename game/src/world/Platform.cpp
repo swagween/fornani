@@ -28,7 +28,7 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 	if (flags.attributes.test(PlatformAttributes::loop)) { track.push_back(track.at(0)); }
 
 	for (std::size_t x = 0; x < track.size() - 1; ++x) {
-		path_length += compute_length(track[x + 1] - track[x]);
+		path_length += (track[x + 1] - track[x]).length();
 		track_shape.setPoint(x, track[x] + dimensions * 0.5f);
 	}
 
@@ -103,7 +103,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	for (std::size_t x = 0; x < track.size() - 1; ++x) {
 		auto const start = track[x];
 		auto const end = track[x + 1];
-		auto const len = compute_length(end - start);
+		auto const len = (end - start).length();
 		if (auto const edge_end = edge_start + (len / path_length); edge_end >= path_position) {
 			constexpr auto skip_value{16.f};
 			physics.position.x = std::lerp(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));

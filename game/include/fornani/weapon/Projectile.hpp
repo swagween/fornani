@@ -17,6 +17,10 @@ namespace fornani::automa {
 struct ServiceProvider;
 }
 
+namespace fornani::world {
+class Map;
+}
+
 namespace fornani::player {
 class Player;
 }

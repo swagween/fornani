@@ -15,7 +15,7 @@ void WeaponPackage::update(automa::ServiceProvider& svc, world::Map& map, enemy:
 
 void WeaponPackage::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) { weapon->render(svc, win, cam); }
 
-void WeaponPackage::shoot() { weapon->shoot(); }
+void WeaponPackage::shoot(automa::ServiceProvider& svc, world::Map& map) { weapon->shoot(svc, map); }
 
 void WeaponPackage::set_team(arms::Team team) { weapon->set_team(team); }
 
