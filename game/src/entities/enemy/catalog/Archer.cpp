@@ -51,9 +51,9 @@ void Archer::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 
 	hurt_effect.update();
 
-	if (hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { state = ArcherState::run; }
+	if (is_hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { state = ArcherState::run; }
 
-	if (alert() && !hostile() && svc.ticker.every_x_ticks(900)) { state = ArcherState::shoot; }
+	if (is_alert() && !is_hostile() && svc.ticker.every_x_ticks(900)) { state = ArcherState::shoot; }
 
 	if (just_died()) { m_services->soundboard.flags.archer.set(audio::Archer::death); }
 

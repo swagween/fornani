@@ -27,9 +27,6 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		svc.state_controller.actions.set(automa::Actions::intro_done);
 		svc.state_controller.actions.set(automa::Actions::trigger);
 		player->cooldowns.tutorial.start();
-		player->tutorial.current_state = text::TutorialFlags::jump;
-		player->tutorial.turn_on();
-		player->tutorial.trigger();
 		svc.ticker.in_game_seconds_passed = {};
 	}
 

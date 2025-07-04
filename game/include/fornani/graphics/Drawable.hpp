@@ -28,6 +28,7 @@ class Drawable : public sf::Drawable, Polymorphic {
 	void flip(std::pair<bool, bool> orientation = {true, false});
 
 	[[nodiscard]] auto get_scale() const -> sf::Vector2f { return m_sprite.getScale(); }
+	[[nodiscard]] auto get_window_position() const -> sf::Vector2f { return m_sprite.getPosition(); }
 
   protected:
 	io::Logger m_logger{"Rendering"};

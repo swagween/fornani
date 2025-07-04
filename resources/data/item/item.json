@@ -1,120 +1,120 @@
 {
 	"bryns_notebook": {
-		"index": 1,
-		"title": "Bryn's Notebook",
+		"id": 1,
+		"actual_title": "Bryn's Notebook",
 		"naive_description": "Bryn's personal notebook. It's sealed shut with a tiny padlock... Not that you were going to read it anyway.",
 		"hidden_description": "Bryn's personal notebook. It's sealed shut with a tiny padlock... Not that you were going to read it anyway.",
 		"unique": true
 	},
 	"factory_access_permit": {
-		"index": 2,
-		"title": "Factory Access Permit",
+		"id": 2,
+		"actual_title": "Factory Access Permit",
 		"naive_description": "A permit that grants you access to the Nimbus III Maintenance Facility.",
 		"unique": true
 	},
 	"bipolar_junction_transistor": {
-		"index": 3,
-		"title": "Bipolar Junction Transistor",
+		"id": 3,
+		"actual_title": "Bipolar Junction Transistor",
 		"naive_description": "It looks like a mechanical part of sorts.",
 		"hidden_description": "Beeker says this is required to build a special kind of gun. You should hold on to it.",
 		"unique": true
 	},
 	"willets_floppy_disc": {
-		"index": 4,
-		"title": "Willet's Floppy Disc",
+		"id": 4,
+		"actual_title": "Willet's Floppy Disc",
 		"naive_description": "Contains schematics for the Greatwing, which we will need in order to stop Skycorps from taking over the island. Dr. Willet told me to bring it to someone named Spencer in Ashtown.",
 		"hidden_description": "Contains schematics for the Greatwing. Spencer needs a track zero sensor and a fresh head motor to access its contents.",
 		"unique": true
 	},
 	"track_zero_sensor": {
-		"index": 5,
-		"title": "Track Zero Sensor",
+		"id": 5,
+		"actual_title": "Track Zero Sensor",
 		"naive_description": "A small sensor that Spencer needs to repair his floppy disc drive. Without it, he can't access the Greatwing schematics.",
 		"unique": true
 	},
 	"head_motor": {
-		"index": 6,
-		"title": "Head Motor",
+		"id": 6,
+		"actual_title": "Head Motor",
 		"naive_description": "A tiny motor that Spencer needs to access Doc Willet's floppy disc.",
 		"unique": true
 	},
 	"gas_mask": {
-		"index": 7,
-		"title": "Gas Mask",
+		"id": 7,
+		"actual_title": "Gas Mask",
 		"naive_description": "You need this to navigate the Toxic Cavern without dying.",
 		"unique": true
 	},
 	"firstwind_hangar_key": {
-		"index": 8,
-		"title": "Firstwind Hangar Key",
+		"id": 8,
+		"actual_title": "Firstwind Hangar Key",
 		"naive_description": "A small iron key that grants you access to the Firstwind's hangar shafts.",
 		"unique": true
 	},
 	"woodshine_warehouse_key": {
-		"index": 9,
-		"title": "Woodshine Warehouse Key",
+		"id": 9,
+		"actual_title": "Woodshine Warehouse Key",
 		"naive_description": "Allows you to enter Woodshine's warehouse.",
 		"unique": true
 	},
 	"nimbus_iii_boiler_room_key": {
-		"index": 10,
-		"title": "Nimbus III Boiler Room Key",
+		"id": 10,
+		"actual_title": "Nimbus III Boiler Room Key",
 		"naive_description": "Allows you to enter Nimbus III's boiler room.",
 		"unique": true
 	},
 	"laboratory_key": {
-		"index": 11,
-		"title": "Laboratory Key",
+		"id": 11,
+		"actual_title": "Laboratory Key",
 		"naive_description": "Grants access to Firstwind's research lab.",
 		"unique": true
 	},
 	"bit_cell_key": {
-		"index": 12,
+		"id": 12,
 		"naive_title": "Mysterious Key",
-		"title": "Bit's Cell Key",
+		"actual_title": "Bit's Cell Key",
 		"naive_description": "Looks like just an ordinary key. There's no reason not to hold on to it.",
 		"hidden_description": "The key to Bit's prison cell. He said he owes you big time for freeing him...",
 		"unique": true
 	},
 	"four_of_diamonds": {
-		"index": 13,
-		"title": "Four of Diamonds",
+		"id": 13,
+		"actual_title": "Four of Diamonds",
 		"naive_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
 		"hidden_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
 		"unique": true
 	},
 	"staple_box": {
-		"index": 14,
-		"title": "Staple Box",
+		"id": 14,
+		"actual_title": "Staple Box",
 		"naive_description": "A box of staples.",
 		"hidden_description": "A box of staples.",
 		"unique": true
 	},
 	"boiler_key": {
-		"index": 15,
+		"id": 15,
 		"naive_title": "Mysterious Key",
-		"title": "Boiler Key",
+		"actual_title": "Boiler Key",
 		"naive_description": "A key of unknown use. Might as well keep it.",
 		"hidden_description": "The key to Firstwind's boiler room.",
 		"unique": true
 	},
 	"radar_device": {
-		"index": 16,
-		"title": "Radar Device",
+		"id": 16,
+		"actual_title": "Radar Device",
 		"naive_description": "A map system. You can view the map by selecting this item, or pressing the designated key ([W] by default).",
 		"unique": true,
 		"usable": true
 	},
 	"dog_leash": {
-		"index": 20,
-		"title": "Dog Leash",
+		"id": 20,
+		"actual_title": "Dog Leash",
 		"naive_description": "You can use this to transport dogs.",
 		"unique": true,
 		"usable": false
 	},
 	"ashtown_raspberry_preserves": {
-		"index": 22,
-		"title": "Ashtown Raspberry Reserves",
+		"id": 22,
+		"actual_title": "Ashtown Raspberry Preserves",
 		"naive_description": "A delicious raspberry treat. It would taste better on some toast, but it will still restore your health if you eat it.",
 		"unique": false,
 		"usable": true,
@@ -122,62 +122,62 @@
 		"value": 660
 	},
 	"bronze_bracelet": {
-		"index": 23,
-		"title": "Bronze Bracelet",
+		"id": 23,
+		"actual_title": "Bronze Bracelet",
 		"naive_description": "A common treasure item.",
 		"unique": false,
 		"equippable": false,
 		"value": 200
 	},
 	"silver_bracelet": {
-		"index": 24,
-		"title": "Silver Bracelet",
+		"id": 24,
+		"actual_title": "Silver Bracelet",
 		"naive_description": "A common treasure item.",
 		"unique": false,
 		"equippable": false,
 		"value": 300
 	},
 	"boxing_glove": {
-		"index": 25,
-		"title": "Boxing Glove",
+		"id": 25,
+		"actual_title": "Boxing Glove",
 		"naive_description": "Seems like it could be useful to someone who is not you.",
 		"unique": false,
 		"equippable": false,
 		"value": 80
 	},
 	"walkie_talkie": {
-		"index": 26,
-		"title": "Walkie-Talkie",
+		"id": 26,
+		"actual_title": "Walkie-Talkie",
 		"naive_description": "The batteries are dead.",
 		"unique": false,
 		"equippable": false,
 		"value": 60
 	},
 	"clamp": {
-		"index": 27,
-		"title": "Clamp",
+		"id": 27,
+		"actual_title": "Clamp",
 		"naive_description": "A painted metal clamp. It could be useful for home improvements.",
 		"unique": false,
 		"equippable": false,
 		"value": 90
 	},
 	"heart_keychain": {
-		"index": 29,
-		"title": "Heart Keychain",
+		"id": 29,
+		"actual_title": "Heart Keychain",
 		"naive_description": "A heart keychain. You attach it to your belt and it gives you extra life.",
 		"unique": false,
 		"rarity": 1
 	},
 	"stationary_rat": {
-		"index": 30,
-		"title": "Stationary Rat",
+		"id": 30,
+		"actual_title": "Stationary Rat",
 		"naive_description": "You discovered this rat inside a chest. It obviously didn't want to be found.",
 		"hidden_description": "A very good boy who cannot spin.",
 		"unique": true
 	},
 	"loops_mixtape": {
-		"index": 31,
-		"title": "Loop's Mixtape",
+		"id": 31,
+		"actual_title": "Loop's Mixtape",
 		"naive_description": "A mixtape with your brother's handwriting on the label. Your heart fills with sadness and rage when you look at it.",
 		"hidden_description": "A mixtape that Loop hid in the woods when you were younger. You can play it on a jukebox.",
 		"unique": true
@@ -194,8 +194,8 @@
 		"value": 1220
 	},
 	"clay_statue": {
-		"index": 65,
-		"title": "Clay Statue",
+		"id": 65,
+		"actual_title": "Clay Statue",
 		"naive_description": "A common artifact of the ancient peoples.",
 		"rarity": 0,
 		"unique": false,
@@ -203,8 +203,8 @@
 		"value": 400
 	},
 	"glass_statue": {
-		"index": 66,
-		"title": "Glass Statue",
+		"id": 66,
+		"actual_title": "Glass Statue",
 		"naive_description": "An uncommon artifact of the ancient peoples.",
 		"rarity": 1,
 		"unique": false,
@@ -212,8 +212,8 @@
 		"value": 800
 	},
 	"bronze_statue": {
-		"index": 67,
-		"title": "Bronze Statue",
+		"id": 67,
+		"actual_title": "Bronze Statue",
 		"naive_description": "A rare artifact of the ancient peoples.",
 		"rarity": 2,
 		"unique": false,
@@ -221,8 +221,8 @@
 		"value": 1000
 	},
 	"cinnabar_statue": {
-		"index": 68,
-		"title": "Cinnabar Statue",
+		"id": 68,
+		"actual_title": "Cinnabar Statue",
 		"naive_description": "A very rare artifact of the ancient peoples.",
 		"rarity": 2,
 		"unique": false,
@@ -230,8 +230,8 @@
 		"value": 4000
 	},
 	"jade_statue": {
-		"index": 69,
-		"title": "Jade Statue",
+		"id": 69,
+		"actual_title": "Jade Statue",
 		"naive_description": "An incredibly rare artifact of the ancient peoples.",
 		"rarity": 2,
 		"unique": false,
@@ -239,8 +239,8 @@
 		"value": 8000
 	},
 	"alabaster_statue": {
-		"index": 70,
-		"title": "Alabaster Statue",
+		"id": 70,
+		"actual_title": "Alabaster Statue",
 		"naive_description": "A legendary artifact of the ancient peoples.",
 		"rarity": 3,
 		"unique": false,
@@ -292,9 +292,9 @@
 		"value": 2000
 	},
 	"punk_hair_dye": {
-		"index": 84,
+		"id": 84,
 		"start_index": 160,
-		"title": "Punk Hair Dye",
+		"actual_title": "Punk Hair Dye",
 		"naive_description": "A whacky and rebellious hair color.",
 		"unique": true,
 		"equippable": true,
@@ -302,9 +302,9 @@
 		"value": 460
 	},
 	"punk_shirt": {
-		"index": 85,
+		"id": 85,
 		"start_index": 160,
-		"title": "Punk Shirt",
+		"actual_title": "Punk Shirt",
 		"naive_description": "A shirt that awakens your rebellious spirit.",
 		"unique": true,
 		"equippable": true,
@@ -312,9 +312,9 @@
 		"value": 190
 	},
 	"punk_pants": {
-		"index": 86,
+		"id": 86,
 		"start_index": 160,
-		"title": "Punk Pants",
+		"actual_title": "Punk Pants",
 		"naive_description": "Black pants with a rebellious chain accessory.",
 		"unique": true,
 		"equippable": true,
@@ -322,9 +322,9 @@
 		"value": 100
 	},
 	"hairtie": {
-		"index": 87,
+		"id": 87,
 		"start_index": 160,
-		"title": "Hairtie",
+		"actual_title": "Hairtie",
 		"naive_description": "Wear this to keep your hair from going all over the place all the time.",
 		"unique": true,
 		"equippable": true,
@@ -332,16 +332,16 @@
 		"value": 80
 	},
 	"rhenite": {
-		"index": 97,
-		"title": "Rhenite",
+		"id": 97,
+		"actual_title": "Rhenite",
 		"naive_description": "A rare red gem.",
 		"unique": false,
 		"rarity": 2,
 		"value": 8100
 	},
 	"sapphire": {
-		"index": 98,
-		"title": "Sapphire",
+		"id": 98,
+		"actual_title": "Sapphire",
 		"naive_description": "A rare blue gem.",
 		"unique": false,
 		"rarity": 2,

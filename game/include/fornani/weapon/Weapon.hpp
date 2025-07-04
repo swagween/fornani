@@ -100,8 +100,8 @@ class Weapon {
   private:
 	struct {
 		int id{};
-		std::string_view label{};
-		std::string_view description{};
+		std::string label{};
+		std::string description{};
 	} metadata{};
 
 	Offsets offsets{};

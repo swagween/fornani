@@ -54,7 +54,7 @@ void DataManager::load_data(std::string in_room) {
 			map_table["rooms"].push_back(entry);
 		}
 	}
-	map_table.dj::Json::to_file((finder.resource_path() + "/data/level/map_table.json").c_str());
+	if (!map_table.to_file((finder.resource_path() + "/data/level/map_table.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save map table!"); }
 	map_table = *dj::Json::from_file((finder.resource_path() + "/data/level/map_table.json").c_str());
 	assert(!map_table.is_null());
 	for (auto const& room : map_table["rooms"].as_array()) {
@@ -122,6 +122,13 @@ void DataManager::load_data(std::string in_room) {
 		for (auto& item : entry.second["vendor"]["uncommon_items"].as_array()) { vendor.uncommon_items.push_back(item.as_string().data()); }
 		for (auto& item : entry.second["vendor"]["rare_items"].as_array()) { vendor.rare_items.push_back(item.as_string().data()); }
 	}
+
+	// load item labels
+	for (auto const& [key, entry] : item.as_object()) {
+		m_item_labels.insert({entry["id"].as<int>(), key});
+		NANI_LOG_INFO(m_logger, "Loaded data for item {}", key);
+	}
+
 	m_services->stopwatch.stop();
 	m_services->stopwatch.print_time();
 	m_services->stopwatch.start();
@@ -189,15 +196,6 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 		save["quest_progressions"].push_back(out_quest);
 	}
 
-	save["tutorial"]["jump"] = player.tutorial.flags.test(text::TutorialFlags::jump);
-	save["tutorial"]["shoot"] = player.tutorial.flags.test(text::TutorialFlags::shoot);
-	save["tutorial"]["sprint"] = player.tutorial.flags.test(text::TutorialFlags::sprint);
-	save["tutorial"]["map"] = player.tutorial.flags.test(text::TutorialFlags::map);
-	save["tutorial"]["inventory"] = player.tutorial.flags.test(text::TutorialFlags::inventory);
-	save["tutorial"]["state"] = static_cast<int>(player.tutorial.current_state);
-	save["tutorial"]["closed"] = player.tutorial.closed();
-	save["tutorial"]["on"] = player.tutorial.on();
-
 	// save arsenal
 	save["player_data"]["arsenal"] = dj::Json::empty_array();
 	save["player_data"]["hotbar"] = dj::Json::empty_array();
@@ -256,7 +254,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	out_stat["seconds_played"] = m_services->ticker.in_game_seconds_passed.count();
 	out_stat["time_trials"]["bryns_gun"] = s.time_trials.bryns_gun;
 
-	save.dj::Json::to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
+	if (!save.dj::Json::to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save file!"); }
 }
 
 void DataManager::save_settings() {
@@ -265,7 +263,7 @@ void DataManager::save_settings() {
 	settings["gamepad"] = m_services->controller_map.is_gamepad_input_enabled();
 	settings["music_volume"] = m_services->music_player.get_volume();
 	settings["fullscreen"] = m_services->fullscreen();
-	settings.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str());
+	if (!settings.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save user settings!"); }
 }
 
 int DataManager::load_progress(player::Player& player, int const file, bool state_switch, bool from_menu) {
@@ -314,18 +312,6 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	player.piggybacker = {};
 	m_services->player_dat.set_piggy_id(save["piggybacker"].as<int>());
 	m_services->player_dat.drop_piggy = false;
-
-	player.tutorial.flags = {};
-	if (save["tutorial"]["jump"].as_bool()) { player.tutorial.flags.set(text::TutorialFlags::jump); }
-	if (save["tutorial"]["shoot"].as_bool()) { player.tutorial.flags.set(text::TutorialFlags::shoot); }
-	if (save["tutorial"]["sprint"].as_bool()) { player.tutorial.flags.set(text::TutorialFlags::sprint); }
-	if (save["tutorial"]["map"].as_bool()) { player.tutorial.flags.set(text::TutorialFlags::map); }
-	if (save["tutorial"]["inventory"].as_bool()) { player.tutorial.flags.set(text::TutorialFlags::inventory); }
-	player.tutorial.current_state = static_cast<text::TutorialFlags>(save["tutorial"]["state"].as<int>());
-	if (save["tutorial"]["closed"].as_bool()) { player.tutorial.close_for_good(); }
-	player.cooldowns.tutorial.start();
-	player.tutorial.turn_off();
-	if (!m_services->tutorial()) { player.tutorial.close_for_good(); }
 
 	int save_pt_id = save["save_point_id"].as<int>();
 	int room_id = save_pt_id;
@@ -401,7 +387,7 @@ void DataManager::delete_file(int index) {
 	if (index >= files.size()) { return; }
 	files.at(index).save_data = blank_file.save_data;
 	files.at(index).flags.set(fornani::io::FileFlags::new_file);
-	files.at(index).save_data.dj::Json::to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
+	if (!files.at(index).save_data.to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to clear save data!"); }
 }
 
 void DataManager::write_death_count(player::Player& player) {
@@ -409,7 +395,7 @@ void DataManager::write_death_count(player::Player& player) {
 	auto& out_stat = save["player_data"]["stats"];
 	auto const& s = m_services->stats;
 	out_stat["death_count"] = s.player.death_count.get_count();
-	save.dj::Json::to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str());
+	if (!save.to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to write death count to save!"); }
 }
 
 std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) const {
@@ -481,7 +467,7 @@ void DataManager::save_player_params(player::Player& player) {
 	player_params["physics"]["roll_speed"] = player.physics_stats.roll_speed;
 	player_params["physics"]["slide_speed"] = player.physics_stats.slide_speed;
 
-	player_params.dj::Json::to_file((finder.resource_path() + "/data/player/physics_params.json").c_str());
+	if (!player_params.dj::Json::to_file((finder.resource_path() + "/data/player/physics_params.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save physics params!"); }
 	// std::cout << " success!\n";
 }
 
@@ -600,7 +586,9 @@ void DataManager::load_controls(config::ControllerMap& controller) {
 	}
 }
 
-void DataManager::save_controls(config::ControllerMap& controller) { controls.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/control_map.json").c_str()); }
+void DataManager::save_controls(config::ControllerMap& controller) {
+	if (!controls.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/control_map.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save controls layout!"); }
+}
 
 void DataManager::reset_controls() { controls = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/defaults.json").c_str()); }
 

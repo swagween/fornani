@@ -2,7 +2,6 @@
 #include "editor/canvas/Canvas.hpp"
 #include <cassert>
 #include "editor/tool/Tool.hpp"
-#include "editor/util/Lookup.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
 
 #include <ccmath/ext/clamp.hpp>

@@ -95,6 +95,7 @@ class DataManager {
 		}
 		return false;
 	}
+	[[nodiscard]] auto item_label_from_id(int key) const& -> std::string { return m_item_labels.contains(key) ? m_item_labels.at(key) : "<invalid>"; }
 
 	int get_room_index(int id);
 	int get_npc_location(int npc_id);
@@ -149,6 +150,8 @@ class DataManager {
 	std::vector<int> destroyed_blocks{};
 	std::vector<std::string> destroyed_inspectables{};
 	std::vector<util::QuestKey> quest_progressions{};
+
+	std::unordered_map<int, std::string> m_item_labels{};
 
 	io::Logger m_logger{"data"};
 };

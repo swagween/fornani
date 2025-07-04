@@ -1,9 +1,9 @@
 
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/Cooldown.hpp"
 #include "fornani/graphics/ColorFade.hpp"
 #include "fornani/particle/Gravitator.hpp"
+#include "fornani/utils/Cooldown.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -13,12 +13,13 @@ namespace fornani::player {
 class Player;
 }
 
-namespace fornani::player {
+namespace fornani::graphics {
+
 enum class IndicatorType : std::uint8_t { health, orb };
+
 class Indicator {
   public:
-	explicit Indicator(automa::ServiceProvider& svc);
-	void init(automa::ServiceProvider& svc, int id);
+	explicit Indicator(automa::ServiceProvider& svc, IndicatorType type = IndicatorType::health);
 	void update(automa::ServiceProvider& svc, sf::Vector2<float> pos = {0.f, 0.f});
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 	void add(float amount);
@@ -32,8 +33,8 @@ class Indicator {
 		float amount{};
 	} variables{};
 
-	IndicatorType type{};
-	sf::Text label;
+	IndicatorType m_type{};
+	sf::Text m_label;
 	util::Cooldown addition_limit{};
 	util::Cooldown fadeout{};
 	int fadeout_time{32};
@@ -44,4 +45,4 @@ class Indicator {
 	vfx::ColorFade color_fade{};
 	vfx::Gravitator gravitator{};
 };
-} // namespace fornani::player
+} // namespace fornani::graphics

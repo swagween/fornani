@@ -2,7 +2,6 @@
 #include "editor/automa/Editor.hpp"
 #include "editor/canvas/entity/SavePoint.hpp"
 #include "editor/gui/Console.hpp"
-#include "editor/util/Lookup.hpp"
 #include "fornani/core/Application.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
 
@@ -411,6 +410,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	bool plat{};
 	bool port{};
 	bool enem{};
+	bool chest{};
 	bool open_themes{};
 
 	// Main Menu
@@ -628,6 +628,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Inspectable", NULL, &insp)) {}
 			if (ImGui::MenuItem("Platform", NULL, &plat)) {}
 			if (ImGui::MenuItem("Enemy", NULL, &enem)) {}
+			if (ImGui::MenuItem("Chest", NULL, &chest)) {}
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 				current_tool->current_entity = std::make_unique<SavePoint>(map.room_id);
@@ -719,6 +720,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	if (enem) {
 		ImGui::OpenPopup("Enemy Specifications");
 		label = "Enemy Specifications";
+		popup_open = true;
+	}
+	if (chest) {
+		ImGui::OpenPopup("Chest Specifications");
+		label = "Chest Specifications";
 		popup_open = true;
 	}
 

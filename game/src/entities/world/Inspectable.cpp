@@ -24,6 +24,8 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, s
 	bounding_box.set_position(position);
 	flags.reset(InspectableFlags::activated);
 	animation.update();
+	m_indicator_cooldown.update();
+	if (m_indicator_cooldown.is_almost_complete()) { flags.reset(InspectableFlags::hovered); }
 
 	// check for quest-based alternates
 	auto quest_status = svc.quest.get_progression(fornani::QuestType::inspectable, native_id);
@@ -34,7 +36,7 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, s
 		flags.set(InspectableFlags::hovered);
 		if (player.controller.inspecting() || attributes.test(InspectableAttributes::activate_on_contact)) { flags.set(InspectableFlags::activated); }
 	} else {
-		flags.reset(InspectableFlags::hovered);
+		if (!m_indicator_cooldown.running()) { m_indicator_cooldown.start(); }
 	}
 	if (flags.test(InspectableFlags::activated)) {
 		for (auto choice : set.as_array()) {

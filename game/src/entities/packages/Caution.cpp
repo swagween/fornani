@@ -41,10 +41,10 @@ Direction Caution::projectile_detected(world::Map& map, shape::Shape& zone, arms
 	return ret;
 }
 
-bool Caution::detected_step(world::Map& map, shape::Collider& collider, Direction& direction, int vision) {
+bool Caution::detected_step(world::Map& map, shape::Collider& collider, Direction& direction, sf::Vector2f offset, int vision) {
 	auto buffer = sf::Vector2<float>{collider.dimensions.x, 0.f};
-	testers.left = collider.get_center() - buffer;
-	testers.right = collider.get_center() + buffer;
+	testers.left = collider.get_center() - (buffer + sf::Vector2f{offset.x, -offset.y});
+	testers.right = collider.get_center() + buffer + offset;
 
 	// only test cells later in the grid to save time
 	auto& probe = direction.left() ? testers.left : testers.right;
@@ -55,6 +55,17 @@ bool Caution::detected_step(world::Map& map, shape::Collider& collider, Directio
 		if (cell.is_solid() || cell.is_platform()) { return true; }
 	}
 	return false;
+}
+
+void Caution::debug_render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+	sf::CircleShape probe{};
+	probe.setFillColor(colors::mythic_green);
+	probe.setRadius(4.f);
+	probe.setOrigin({2.f, 2.f});
+	probe.setPosition(testers.left - cam);
+	win.draw(probe);
+	probe.setPosition(testers.right - cam);
+	win.draw(probe);
 }
 
 bool entity::Caution::danger() const { return heights.perceived >= heights.danger; }

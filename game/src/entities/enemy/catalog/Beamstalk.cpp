@@ -40,7 +40,7 @@ void Beamstalk::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 
 	hurt_effect.update();
 
-	if (hostile() && !hostility_triggered() && !post_beam.running()) { state = BeamstalkState::charge; }
+	if (is_hostile() && !hostility_triggered() && !post_beam.running()) { state = BeamstalkState::charge; }
 	if (just_died()) { m_services->soundboard.flags.beamstalk.set(audio::Beamstalk::death); }
 
 	state_function = state_function();

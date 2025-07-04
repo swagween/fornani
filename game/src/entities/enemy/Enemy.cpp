@@ -5,12 +5,13 @@
 #include "fornani/utils/Random.hpp"
 #include "fornani/world/Map.hpp"
 
+#include <imgui.h>
 #include <ccmath/ext/clamp.hpp>
 
 namespace fornani::enemy {
 
 Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
-	: Animatable(svc, "enemy_" + std::string{label}, {svc.data.enemy[label]["physical"]["sprite_dimensions"][0].as<int>(), svc.data.enemy[label]["physical"]["sprite_dimensions"][1].as<int>()}), label(label), health_indicator(svc),
+	: Animatable(svc, "enemy_" + std::string{label}, {svc.data.enemy[label]["physical"]["sprite_dimensions"][0].as<int>(), svc.data.enemy[label]["physical"]["sprite_dimensions"][1].as<int>()}), label(label), health_indicator{svc},
 	  directions{.actual{start_direction}, .desired{start_direction}}, hurt_effect{128} {
 
 	if (spawned) { flags.general.set(GeneralFlags::spawned); }
@@ -71,7 +72,6 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 	}
 
 	health.set_max(attributes.base_hp);
-	health_indicator.init(svc, 0);
 	post_death.start(afterlife);
 
 	if (in_general["mobile"].as_bool()) { flags.general.set(GeneralFlags::mobile); }
@@ -170,13 +170,13 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	physical.alert_range.set_position(collider.bounding_box.get_position() - (physical.alert_range.get_dimensions() * 0.5f) + (collider.dimensions * 0.5f));
 	physical.hostile_range.set_position(collider.bounding_box.get_position() - (physical.hostile_range.get_dimensions() * 0.5f) + (collider.dimensions * 0.5f));
 	if (player.collider.bounding_box.overlaps(physical.alert_range)) {
-		if (!alert()) { flags.triggers.set(Triggers::alert); }
+		if (!is_alert()) { flags.triggers.set(Triggers::alert); }
 		flags.state.set(StateFlags::alert);
 	} else {
 		flags.state.reset(StateFlags::alert);
 	}
 	if (player.collider.bounding_box.overlaps(physical.hostile_range)) {
-		if (!hostile()) { flags.triggers.set(Triggers::hostile); }
+		if (!is_hostile()) { flags.triggers.set(Triggers::hostile); }
 		flags.state.set(StateFlags::hostile);
 	} else {
 		flags.state.reset(StateFlags::hostile);
@@ -186,8 +186,9 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	handle_player_collision(player);
 	if (flags.state.consume(StateFlags::flip)) {
+		if (directions.desired.lnr != directions.actual.lnr) { flip(); }
+		directions.desired.unlock();
 		directions.actual = directions.desired;
-		flip();
 	}
 	Animatable::tick();
 }
@@ -205,6 +206,7 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 		collider.render(win, cam);
 		secondary_collider.render(win, cam);
 	}
+	// debug();
 }
 
 void Enemy::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
@@ -259,13 +261,30 @@ void Enemy::on_crush(world::Map& map) {
 
 bool Enemy::player_behind(player::Player& player) const { return player.collider.physics.position.x + player.collider.bounding_box.get_dimensions().x * 0.5f < collider.physics.position.x + collider.dimensions.x * 0.5f; }
 
-void Enemy::face_player(player::Player& player) { directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right; }
+void Enemy::face_player(player::Player& player) { directions.desired.set((player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right); }
 
 void Enemy::set_position_from_scaled(sf::Vector2<float> pos) {
 	auto new_pos = pos;
 	auto round = static_cast<int>(collider.dimensions.y) % 32;
 	new_pos.y += static_cast<float>(32.f - round);
 	set_position(new_pos);
+}
+
+void Enemy::debug() {
+	static bool* b_debug{};
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	static ImVec2 pos = ImVec2{Drawable::get_window_position()};
+	ImGui::SetNextWindowPos(ImVec2{0, 0}, ImGuiCond_Always);
+	ImGui::SetNextWindowBgAlpha(0.65f);
+	if (ImGui::Begin("Enemy Info", b_debug, window_flags)) {
+		ImGui::Separator();
+		ImGui::Text("Label: %s", label.c_str());
+		ImGui::Text("Desired Direction: %s", directions.desired.print_lr().c_str());
+		ImGui::SameLine();
+		ImGui::Text("%s", directions.desired.is_locked() ? "(locked)" : "");
+		ImGui::Text("Actual Direction: %s", directions.actual.print_lr().c_str());
+	}
+	ImGui::End();
 }
 
 } // namespace fornani::enemy

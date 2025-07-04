@@ -1,7 +1,6 @@
 nani_add_sources(
         AbilityManager.cpp
         Catalog.cpp
-        Indicator.cpp
         Inventory.cpp
         Jump.cpp
         Piggybacker.cpp

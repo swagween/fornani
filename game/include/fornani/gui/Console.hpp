@@ -22,8 +22,8 @@ class ControllerMap;
 namespace fornani::gui {
 
 enum class ConsoleMode : std::uint8_t { writing, responding, off };
-enum class ConsoleFlags : std::uint8_t { portrait_included, display_item };
-enum class OutputType : std::uint8_t { instant, gradual };
+enum class ConsoleFlags : std::uint8_t { portrait_included };
+enum class OutputType : std::uint8_t { instant, gradual, no_skip };
 
 enum class MessageCodeType : std::uint8_t { none, response, item, quest, voice, emotion, redirect, action, exit };
 enum class CodeSource : std::uint8_t { suite, response };
@@ -84,11 +84,7 @@ class Console {
 	[[nodiscard]] auto get_response_code(int which) const -> MessageCode;
 
 	util::RectPath m_path;
-
 	dj::Json text_suite{};
-
-	ItemWidget item_widget;
-
 	automa::ServiceProvider* m_services;
 
 	std::string native_key{};
@@ -102,6 +98,7 @@ class Console {
 	std::unique_ptr<TextWriter> m_writer;
 	std::optional<ResponseDialog> m_response{};
 	std::vector<MessageCode> m_codes{};
+	std::optional<ItemWidget> m_item_widget{};
 
 	util::BitFlags<ConsoleFlags> m_flags{};
 

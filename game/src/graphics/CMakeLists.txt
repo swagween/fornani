@@ -7,6 +7,7 @@ nani_add_sources(
         Droplet.cpp
         Drawable.cpp
         HelpText.cpp
+        Indicator.cpp
         MapTexture.cpp
         Rain.cpp
         Scenery.cpp

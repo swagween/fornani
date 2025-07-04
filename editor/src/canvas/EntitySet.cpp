@@ -1,12 +1,13 @@
 
 #include "editor/canvas/EntitySet.hpp"
 #include "editor/canvas/Canvas.hpp"
-#include "fornani/setup/ResourceFinder.hpp"
+#include "editor/canvas/entity/Chest.hpp"
+#include "editor/canvas/entity/Enemy.hpp"
 #include "editor/canvas/entity/Inspectable.hpp"
 #include "editor/canvas/entity/Platform.hpp"
 #include "editor/canvas/entity/Portal.hpp"
-#include "editor/canvas/entity/Enemy.hpp"
 #include "editor/canvas/entity/SavePoint.hpp"
+#include "fornani/setup/ResourceFinder.hpp"
 
 #include <cassert>
 
@@ -58,6 +59,12 @@ void EntitySet::load(fornani::data::ResourceFinder& finder, dj::Json& metadata, 
 		if (std::string{key} == "enemies") {
 			for (auto element : entry.as_array()) {
 				variables.entities.push_back(std::make_unique<Enemy>());
+				variables.entities.back()->unserialize(element);
+			}
+		}
+		if (std::string{key} == "chests") {
+			for (auto element : entry.as_array()) {
+				variables.entities.push_back(std::make_unique<Chest>());
 				variables.entities.back()->unserialize(element);
 			}
 		}
@@ -114,4 +121,3 @@ bool EntitySet::overlaps(Entity& other) const {
 }
 
 } // namespace pi
-

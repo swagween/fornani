@@ -1,14 +1,15 @@
 
 #include "editor/automa/PopupHandler.hpp"
-#include "editor/tool/Tool.hpp"
-#include "editor/gui/Console.hpp"
+#include <imgui.h>
+#include <string>
+#include "editor/canvas/entity/Chest.hpp"
+#include "editor/canvas/entity/Enemy.hpp"
 #include "editor/canvas/entity/Inspectable.hpp"
 #include "editor/canvas/entity/Platform.hpp"
 #include "editor/canvas/entity/Portal.hpp"
-#include "editor/canvas/entity/Enemy.hpp"
+#include "editor/gui/Console.hpp"
+#include "editor/tool/Tool.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
-#include <imgui.h>
-#include <string>
 
 namespace pi {
 
@@ -158,7 +159,27 @@ void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& consol
 		ImGui::SameLine();
 		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
 		ImGui::EndPopup();
-	
+	}
+	if (ImGui::BeginPopupModal("Chest Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		static int id{};
+		static int modifier{};
+		static int type{};
+		ImGui::InputInt("ID", &id);
+		ImGui::InputInt("Type", &type);
+		ImGui::SameLine();
+		help_marker("0 for gun, 1 for orbs, 2 for item");
+		ImGui::InputInt("Content Modifier", &modifier);
+		ImGui::SameLine();
+		help_marker("Defines the contents of the chest. For guns and items, it is the Item ID. For orbs, it defines the rarity (1 - 100).");
+
+		if (ImGui::Button("Create")) {
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<Chest>(type, modifier, id);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		ImGui::EndPopup();
 	}
 }
 

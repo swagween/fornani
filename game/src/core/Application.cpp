@@ -2,12 +2,9 @@
 #include "fornani/core/Application.hpp"
 #include "fornani/graphics/Colors.hpp"
 
-#include "fornani/utils/Tracy.hpp"
-
 namespace fornani {
 
 void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
-	NANI_ZoneScopedN("Application::Application");
 	NANI_LOG_INFO(m_logger, "> Launching");
 	NANI_LOG_INFO(m_logger, "Resource path: {}", m_finder.resource_path());
 

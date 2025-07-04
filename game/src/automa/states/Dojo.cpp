@@ -1,10 +1,6 @@
 
 #include "fornani/automa/states/Dojo.hpp"
-
 #include "fornani/service/ServiceProvider.hpp"
-
-#include <tracy/Tracy.hpp>
-
 #include "fornani/utils/Random.hpp"
 
 namespace fornani::automa {
@@ -188,10 +184,9 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	hud.update(svc, *player);
 }
 
-void Dojo::frame_update(ServiceProvider& svc) { ZoneScopedN("Dojo::frame_update"); }
+void Dojo::frame_update(ServiceProvider& svc) {}
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
-	ZoneScopedN("Dojo::render");
 	map.render_background(svc, win, camera.get_position());
 	map.render(svc, win, camera.get_position());
 
@@ -209,7 +204,6 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		m_console.value()->render(win);
 		m_console.value()->write(win);
 	}
-	player->tutorial.render(win);
 	if (svc.debug_mode()) { map.debug(); }
 }
 

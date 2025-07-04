@@ -30,6 +30,8 @@ class Tank final : public Enemy {
 	fsm::StateFunction update_type();
 	fsm::StateFunction update_alert();
 
+	[[nodiscard]] auto is_mid_run() { return m_cooldowns.run.is_almost_complete(); }
+
   private:
 	void request(TankState to) { m_state.desired = to; }
 
@@ -38,12 +40,17 @@ class Tank final : public Enemy {
 		TankState desired{};
 	} m_state{};
 
+	struct {
+		util::Cooldown post_jump{200};
+		util::Cooldown run{80};
+	} m_cooldowns{};
+
 	float fire_chance{50.f};
 
 	// packages
 	entity::FloatingPart m_gun;
 	entity::WeaponPackage m_weapon;
-	entity::Caution caution{};
+	entity::Caution m_caution{};
 
 	// lookup, duration, framerate, num_loops
 	anim::Parameters idle{0, 6, 28, -1};

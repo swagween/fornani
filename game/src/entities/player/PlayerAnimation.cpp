@@ -760,6 +760,6 @@ void player::PlayerAnimation::request(AnimState to_state) {
 	m_buffer.start();
 }
 
-anim::Parameters const& player::PlayerAnimation::get_params(std::string const& key) { return m_params.contains(key) ? m_params.at(key) : anim::Parameters{20, 8, 7 * rate, -1, false, true}; }
+anim::Parameters const& player::PlayerAnimation::get_params(std::string const& key) { return m_params.contains(key) ? m_params.at(key) : m_params.at("idle"); }
 
 } // namespace fornani::player

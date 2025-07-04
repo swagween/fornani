@@ -90,11 +90,11 @@ void Imp::update(automa::ServiceProvider& svc, world::Map& map, player::Player& 
 	}
 
 	hurt_effect.update();
-	if (hostile() && !cooldowns.post_attack.running()) { state = ImpState::attack; }
-	// if (hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { state = ImpState::jump; } // player is already in hostile range
+	if (is_hostile() && !cooldowns.post_attack.running()) { state = ImpState::attack; }
+	// if (is_hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { state = ImpState::jump; } // player is already in hostile range
 	if (!collider.grounded()) { state = ImpState::fall; }
 
-	if (alert() && !hostile() && svc.ticker.every_x_ticks(32)) {
+	if (is_alert() && !is_hostile() && svc.ticker.every_x_ticks(32)) {
 		if (util::random::percent_chance(50)) {
 			state = ImpState::run;
 		} else {
@@ -225,7 +225,7 @@ fsm::StateFunction Imp::update_attack() {
 fsm::StateFunction Imp::update_dormant() {
 	animation.label = "dormant";
 	parts.weapon.animated_sprite->set_params("dormant");
-	hostile() ? cooldowns.awaken.update() : cooldowns.awaken.reverse();
+	is_hostile() ? cooldowns.awaken.update() : cooldowns.awaken.reverse();
 	if (cooldowns.awaken.halfway()) {
 		shake();
 		m_services->soundboard.flags.world.set(audio::World::pushable_move);

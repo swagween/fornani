@@ -1,14 +1,10 @@
 
-
 #include "fornani/entities/atmosphere/Atmosphere.hpp"
 #include <imgui.h>
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-
-#include <tracy/Tracy.hpp>
-
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::vfx {
 
@@ -36,7 +32,6 @@ void Atmosphere::update(automa::ServiceProvider& svc, world::Map& map, player::P
 }
 
 void Atmosphere::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	ZoneScopedN("Atmospher::render");
 	svc.out_value = 0;
 	for (auto const& fly : fireflies) { fly->render(svc, win, cam); }
 	for (auto& fly : dragonflies) { fly.render(svc, win, cam); }

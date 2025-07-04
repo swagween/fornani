@@ -26,7 +26,6 @@ SoundManager::SoundManager(data::ResourceFinder const& finder) {
 			if (!in_buffer.decode_file(pathstr.c_str(), capo::Encoding::Wav)) { NANI_LOG_ERROR(m_logger, "Failed to decode file [{}]", pathstr); }
 			auto filename = sfx_str.substr(0, sfx_str.find('.'));
 			m_buffers.insert({filename, in_buffer});
-			NANI_LOG_INFO(m_logger, "Loaded sound effect [{}]", filename);
 		}
 	}
 }

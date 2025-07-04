@@ -49,7 +49,7 @@ void Meatsquash::update(automa::ServiceProvider& svc, world::Map& map, player::P
 
 	hurt_effect.update();
 
-	if (hostile() && !hostility_triggered()) { state = MeatsquashState::chomp; }
+	if (is_hostile() && !hostility_triggered()) { state = MeatsquashState::chomp; }
 	if (just_died()) { m_services->soundboard.flags.meatsquash.set(audio::Meatsquash::death); }
 
 	state_function = state_function();

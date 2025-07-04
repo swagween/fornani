@@ -8,6 +8,7 @@ nani_add_headers(
         Droplet.hpp
         Drawable.hpp
         HelpText.hpp
+        Indicator.hpp
         MapTexture.hpp
         Rain.hpp
         Scenery.hpp

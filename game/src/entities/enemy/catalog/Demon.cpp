@@ -108,10 +108,10 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 
 	hurt_effect.update();
-	if (hostile() && !cooldowns.post_rush.running()) { state = DemonState::signal; }
-	if (hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { state = DemonState::jumpsquat; } // player is already in hostile range
+	if (is_hostile() && !cooldowns.post_rush.running()) { state = DemonState::signal; }
+	if (is_hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { state = DemonState::jumpsquat; } // player is already in hostile range
 
-	if (alert() && !hostile() && svc.ticker.every_x_ticks(32)) {
+	if (is_alert() && !is_hostile() && svc.ticker.every_x_ticks(32)) {
 		if (util::random::percent_chance(50)) {
 			state = DemonState::run;
 		} else {
@@ -242,7 +242,7 @@ fsm::StateFunction Demon::update_stab() { return DEMON_BIND(update_idle); }
 
 fsm::StateFunction Demon::update_dormant() {
 	flags.state.reset(StateFlags::vulnerable);
-	hostile() ? cooldowns.awaken.update() : cooldowns.awaken.reverse();
+	is_hostile() ? cooldowns.awaken.update() : cooldowns.awaken.reverse();
 	if (cooldowns.awaken.halfway()) {
 		shake();
 		m_services->soundboard.flags.world.set(audio::World::pushable_move);

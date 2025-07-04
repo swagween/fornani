@@ -57,6 +57,7 @@ class Inspectable {
 	sf::Sprite sprite;
 	anim::Animation animation{};
 	anim::Parameters params{0, 14, 18, 0};
+	util::Cooldown m_indicator_cooldown{4000};
 };
 
 } // namespace fornani::entity

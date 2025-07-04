@@ -116,7 +116,7 @@ void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		cooldowns.pre_invisibility.cancel();
 	}
 
-	if (alert() && !hostile() && !cooldowns.post_cast.running()) { state = CasterState::prepare; }
+	if (is_alert() && !is_hostile() && !cooldowns.post_cast.running()) { state = CasterState::prepare; }
 
 	if (just_died()) { m_services->soundboard.flags.demon.set(audio::Demon::death); }
 
@@ -232,7 +232,7 @@ fsm::StateFunction Caster::update_signal() {
 fsm::StateFunction Caster::update_dormant() {
 	flags.state.reset(StateFlags::vulnerable);
 	flags.general.reset(GeneralFlags::foreground);
-	hostile() ? cooldowns.awaken.update() : cooldowns.awaken.reverse();
+	is_hostile() ? cooldowns.awaken.update() : cooldowns.awaken.reverse();
 	if (cooldowns.awaken.halfway()) {
 		shake();
 		m_services->soundboard.flags.world.set(audio::World::pushable_move);

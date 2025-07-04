@@ -4,10 +4,19 @@
 #include <filesystem>
 
 namespace fornani::audio {
-	
-	using namespace std::chrono_literals;
 
-MusicPlayer::MusicPlayer(capo::IEngine& audio_engine) : m_jukebox{audio_engine} {}
+using namespace std::chrono_literals;
+
+MusicPlayer::MusicPlayer(capo::IEngine& audio_engine) : m_jukebox{audio_engine}, m_ringtone{audio_engine} {}
+
+void MusicPlayer::quick_play(data::ResourceFinder const& finder, std::string_view song_name) {
+	m_jukebox.stop();
+	if (is_off()) { return; }
+	auto path = std::filesystem::path{finder.resource_path() + "/audio/songs/" + song_name.data() + ".xm"};
+	m_ringtone.load_media(path);
+	m_ringtone.play(false);
+	m_ringtone.set_gain(m_jukebox.get_gain());
+}
 
 void MusicPlayer::load(data::ResourceFinder const& finder, std::string_view song_name) {
 	if (is_off()) { return; }
@@ -37,8 +46,11 @@ void MusicPlayer::update() {}
 
 void MusicPlayer::pause() { m_jukebox.pause(); }
 
-void MusicPlayer::stop() {
-	m_jukebox.stop();
+void MusicPlayer::stop() { m_jukebox.stop(); }
+
+void MusicPlayer::resume() {
+	m_ringtone.stop();
+	m_jukebox.play();
 }
 
 void MusicPlayer::fade_out(std::chrono::duration<float> duration) { m_jukebox.set_fade_in(duration, get_volume()); }

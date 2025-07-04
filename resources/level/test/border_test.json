@@ -1,5 +1,46 @@
 {
   "entities": {
+    "chests": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 4,
+        "modifier": 0,
+        "position": [
+          33,
+          5
+        ],
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 2,
+        "modifier": 22,
+        "position": [
+          36,
+          5
+        ],
+        "type": 2
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 876,
+        "modifier": 16,
+        "position": [
+          39,
+          5
+        ],
+        "type": 1
+      }
+    ],
     "enemies": [
       {
         "dimensions": [
@@ -19,18 +60,7 @@
         ],
         "id": 13,
         "position": [
-          13,
-          11
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 13,
-        "position": [
-          23,
+          12,
           11
         ]
       }
@@ -57,7 +87,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 1,
+    "background": 5,
     "biome": "firstwind",
     "camera_effects": {
       "shake": {
@@ -3489,20 +3519,20 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
         0,
         0,
         0,
@@ -3627,9 +3657,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        1,
+        1,
+        1,
         0,
         0,
         0,

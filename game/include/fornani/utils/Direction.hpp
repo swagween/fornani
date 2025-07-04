@@ -1,16 +1,18 @@
 
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <fornani/utils/BitFlags.hpp>
 #include <string>
 
 namespace fornani {
 
 enum class LR : std::uint8_t { left, right };
-
 enum class LNR : std::uint8_t { left, right, neutral };
 enum class UND : std::uint8_t { up, down, neutral };
 // intermediate direction, used for special cases like grappling hook
 enum class Inter : std::uint8_t { north, south, east, west, northeast, northwest, southeast, southwest };
+
+enum class DirectionFlags : std::uint8_t { locked };
 
 class SimpleDirection {
   public:
@@ -50,8 +52,13 @@ struct Direction {
 	[[nodiscard]] auto right() const -> bool { return lnr == LNR::right; }
 	[[nodiscard]] auto up_or_down() const -> bool { return up() || down(); }
 	[[nodiscard]] auto left_or_right() const -> bool { return left() || right(); }
+	[[nodiscard]] auto is_locked() const -> bool { return m_flags.test(DirectionFlags::locked); }
 
+	void set(LNR to) { lnr = is_locked() ? lnr : to; }
+	void set(UND to) { und = is_locked() ? und : to; }
 	constexpr void set_from_simple(SimpleDirection from) { lnr = from.left() ? LNR::left : LNR::right; }
+	void lock() { m_flags.set(DirectionFlags::locked); }
+	void unlock() { m_flags.reset(DirectionFlags::locked); }
 
 	constexpr void set_intermediate(bool const left, bool const right, bool const up, bool const down) {
 
@@ -98,6 +105,9 @@ struct Direction {
 		}
 		return "null";
 	}
+
+  private:
+	util::BitFlags<DirectionFlags> m_flags{};
 };
 
 } // namespace fornani

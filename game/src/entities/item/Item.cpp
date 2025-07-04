@@ -5,7 +5,7 @@
 namespace fornani::item {
 
 Item::Item(dj::Json& source, std::string_view label, ItemType type) : m_label{label}, m_type{type} {
-	auto& in_data{source[label]};
+	auto const& in_data = source[label];
 	m_id = in_data["id"].as<int>();
 	m_lookup.position.x = in_data["lookup"][0].as<int>();
 	m_lookup.position.y = in_data["lookup"][1].as<int>();
@@ -15,10 +15,12 @@ Item::Item(dj::Json& source, std::string_view label, ItemType type) : m_label{la
 	m_lookup.position = m_lookup.position.componentWiseMul(constants::i_resolution_vec);
 	m_lookup.size = constants::i_resolution_vec;
 
-	m_info.actual_title = in_data["actual_title"].as_string();
-	m_info.actual_description = in_data["actual_description"].as_string();
-	m_info.naive_title = in_data["naive_title"] ? in_data["naive_title"].as_string() : m_info.actual_title;
-	m_info.naive_description = in_data["naive_description"] ? in_data["naive_description"].as_string() : m_info.actual_description;
+	m_info.actual_title = in_data["actual_title"].as_string().data();
+	m_info.actual_description = in_data["actual_description"].as_string().data();
+	m_info.naive_title = in_data["naive_title"] ? in_data["naive_title"].as_string().data() : m_info.actual_title;
+	m_info.naive_description = in_data["naive_description"] ? in_data["naive_description"].as_string().data() : m_info.actual_description;
+
+	NANI_LOG_INFO(m_logger, "Loaded item {}", m_info.actual_title);
 }
 
 void Item::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f position) {

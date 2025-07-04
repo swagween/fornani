@@ -186,7 +186,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 
 	state = MinigusState::idle;
 
-	if (status.test(MinigusFlags::distant_range_activated) && !alert() && !hostile()) { state = MinigusState::run; }
+	if (status.test(MinigusFlags::distant_range_activated) && !is_alert() && !is_hostile()) { state = MinigusState::run; }
 	if (attacks.uppercut.sensor.active() && cooldowns.post_punch.is_complete()) { state = MinigusState::uppercut; }
 	if (attacks.punch.sensor.active() && cooldowns.post_punch.is_complete()) { state = MinigusState::punch; }
 
@@ -208,7 +208,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		if (util::random::percent_chance(12)) { state = MinigusState::reload; }
 	}
 
-	if (gun.clip_cooldown.is_complete() && !minigun.flags.test(MinigunFlags::exhausted) && !cooldowns.post_charge.running() && hostile()) {
+	if (gun.clip_cooldown.is_complete() && !minigun.flags.test(MinigunFlags::exhausted) && !cooldowns.post_charge.running() && is_hostile()) {
 		// if (util::random::percent_chance(snap_chance) && !flags.state.test(StateFlags::vulnerable) && Enemy::collider.grounded() && !(counters.snap.get_count() > 1) && half_health()) { state = MinigusState::snap; }
 		if (util::random::percent_chance(fire_chance)) {
 			if (util::random::percent_chance(50)) {
@@ -227,7 +227,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		}
 	}
 
-	if (alert() && Enemy::collider.grounded()) {
+	if (is_alert() && Enemy::collider.grounded()) {
 		if (cooldowns.post_punch.is_complete()) {
 			state = MinigusState::run;
 			if (attacks.uppercut.sensor.active()) { state = MinigusState::uppercut; }

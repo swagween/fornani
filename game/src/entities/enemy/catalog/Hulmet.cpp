@@ -12,7 +12,7 @@ Hulmet::Hulmet(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "hulm
 	m_parts.gun.set_magnitude(2.f);
 	m_weapon.clip_cooldown_time = 360;
 	m_weapon.get().set_team(arms::Team::skycorps);
-	secondary_collider = shape::Collider({32.f, 16.f});
+	secondary_collider = shape::Collider({28.f, 8.f});
 	flags.general.set(GeneralFlags::invincible_secondary);
 	m_cooldowns.run.start();
 }
@@ -24,14 +24,15 @@ void Hulmet::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		if (util::random::percent_chance(20)) { request(HulmetState::run); }
 	}
 	face_player(player);
-	if (alert() && !m_cooldowns.post_fire.running()) { request(HulmetState::shoot); }
-	if (hostile()) { request(HulmetState::roll); }
+	if (is_alert() && !m_cooldowns.post_fire.running()) { request(HulmetState::shoot); }
+	if (is_hostile()) { request(HulmetState::roll); }
 	if (alertness_triggered() && !m_cooldowns.alerted.running()) { request(HulmetState::alert); }
 	if (directions.actual.lnr != directions.desired.lnr) { request(HulmetState::turn); }
 	auto detected_projectile = m_caution.projectile_detected(map, physical.hostile_range, arms::Team::skycorps);
 	auto towards_me = (detected_projectile.left() && directions.actual.right()) || (detected_projectile.right() && directions.actual.left());
 	if (towards_me && collider.grounded()) { request(HulmetState::roll); }
 	if (detected_projectile.up_or_down()) { request(HulmetState::roll); }
+	if (is_hurt()) { request(HulmetState::roll); }
 	if (m_caution.detected_step(map, collider, directions.actual) && (collider.physics.is_moving_horizontally(0.5f) || is_mid_run()) && !m_cooldowns.post_jump.running()) { request(HulmetState::jump); }
 
 	m_cooldowns.post_fire.update();
@@ -40,10 +41,10 @@ void Hulmet::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 
 	m_parts.gun.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
 	m_weapon.update(svc, map, *this);
-	auto sign = directions.actual.left() ? -1.f : 1.f;
-	m_weapon.barrel_offset = sf::Vector2f{12.f * sign, 6.f};
+	m_weapon.barrel_offset = sf::Vector2f{directions.actual.as_float() * 40.f, 0.f};
+	if (m_state.actual == HulmetState::roll) { cancel_shake(); }
 
-	secondary_collider.set_position(collider.bounding_box.get_position() + sf::Vector2f{0.f, -16.f});
+	secondary_collider.set_position(collider.bounding_box.get_position() + sf::Vector2f{2.f, -8.f});
 
 	state_function = state_function();
 }
@@ -77,6 +78,7 @@ fsm::StateFunction Hulmet::update_turn() {
 	animation.label = "turn";
 	m_state.actual = HulmetState::turn;
 	flags.state.set(StateFlags::vulnerable);
+	directions.desired.lock();
 	if (animation.complete()) {
 		request_flip();
 		if (change_state(HulmetState::alert, m_animations.alert)) { return HULMET_BIND(update_alert); }
@@ -197,9 +199,7 @@ fsm::StateFunction Hulmet::update_shoot() {
 	}
 	if (animation.complete()) {
 		m_cooldowns.post_fire.start();
-		if (is_hurt()) { request(HulmetState::roll); }
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
-		if (change_state(HulmetState::roll, m_animations.roll)) { return HULMET_BIND(update_roll); }
 		if (change_state(HulmetState::run, m_animations.run)) { return HULMET_BIND(update_run); }
 		if (change_state(HulmetState::jump, m_animations.jump)) {
 			impulse.start(m_jump_time);

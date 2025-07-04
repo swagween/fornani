@@ -1,8 +1,6 @@
 
 #include "fornani/entities/player/Player.hpp"
 
-#include <tracy/Tracy.hpp>
-
 #include "fornani/entities/item/Drop.hpp"
 #include "fornani/gui/Console.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
@@ -13,30 +11,19 @@
 namespace fornani::player {
 
 Player::Player(automa::ServiceProvider& svc)
-	: arsenal(svc), m_services(&svc), health_indicator(svc), orb_indicator(svc), controller(svc), animation(*this), tutorial(svc), sprite{svc.assets.get_texture("nani")}, camera_offset{32.f, -64.f}, wardrobe_widget(svc),
-	  m_sprite_dimensions{24, 24}, dash_effect{8}, m_directions{.desired{LR::left}, .actual{LR::right}} {
+	: arsenal(svc), m_services(&svc), controller(svc), animation(*this), sprite{svc.assets.get_texture("nani")}, camera_offset{32.f, -64.f}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{8},
+	  m_directions{.desired{LR::left}, .actual{LR::right}}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, collider{player_dimensions_v} {
 	sprite.setScale(constants::f_scale_vec);
-}
-
-void Player::init(automa::ServiceProvider& svc) {
-
-	m_services = &svc;
-
 	svc.data.load_player_params(*this);
-	health_indicator.init(svc, 0);
-	orb_indicator.init(svc, 1);
-	tutorial.update(svc);
 
+	anchor_point = collider.physics.position + player_dimensions_v * 0.5f;
+	collider.collision_depths = util::CollisionDepth();
 	health.set_invincibility(400);
-
-	collider = shape::Collider(sf::Vector2<float>{PLAYER_WIDTH, PLAYER_HEIGHT});
 	hurtbox.set_dimensions(sf::Vector2<float>{12.f, 26.f});
+
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
 
 	collider.physics.set_constant_friction({physics_stats.ground_fric, physics_stats.air_fric});
-	collider.collision_depths = util::CollisionDepth();
-
-	anchor_point = {collider.physics.position.x + PLAYER_WIDTH / 2, collider.physics.position.y + PLAYER_HEIGHT / 2};
 
 	antennae.push_back(vfx::Gravitator(collider.physics.position, colors::bright_orange, antenna_force));
 	antennae.push_back(vfx::Gravitator(collider.physics.position, colors::bright_orange, antenna_force, {2.f, 4.f}));
@@ -54,7 +41,6 @@ void Player::init(automa::ServiceProvider& svc) {
 void Player::update(world::Map& map) {
 	caution.avoid_ledges(map, collider, controller.direction, 8);
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
-	tutorial.update(*m_services);
 	cooldowns.tutorial.update();
 
 	// camera stuff
@@ -173,7 +159,6 @@ void Player::update(world::Map& map) {
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	ZoneScopedN("Player::render");
 	calculate_sprite_offset();
 	if (flags.state.test(State::crushed)) { return; }
 	// debug
@@ -222,7 +207,6 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f forced_position) {
-	ZoneScopedN("Player::render");
 	auto frames_per_col = 10;
 	auto u = (animation.get_frame() / frames_per_col) * m_sprite_dimensions.x;
 	auto v = (animation.get_frame() % frames_per_col) * m_sprite_dimensions.y;
@@ -350,12 +334,6 @@ void Player::jump(world::Map& map) {
 		animation.request(AnimState::rise);
 		if (controller.get_wallslide().is_wallsliding()) { controller.walljump(); }
 		if (m_services->ticker.every_x_ticks(20)) { map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "jump", colors::ui_white, Direction(UND::up))); }
-		if (tutorial.current_state == text::TutorialFlags::jump) {
-			tutorial.flags.set(text::TutorialFlags::jump);
-			tutorial.current_state = text::TutorialFlags::sprint;
-			tutorial.trigger();
-			tutorial.turn_on();
-		}
 	} else {
 		collider.flags.movement.reset(shape::Movement::jumping);
 	}
@@ -570,11 +548,6 @@ bool Player::fire_weapon() {
 	if (controller.shot() && equipped_weapon().can_shoot()) {
 		m_services->soundboard.flags.weapon.set(static_cast<audio::Weapon>(equipped_weapon().get_sound_id()));
 		flags.state.set(State::impart_recoil);
-		if (tutorial.current_state == text::TutorialFlags::shoot) {
-			tutorial.flags.set(text::TutorialFlags::shoot);
-			tutorial.current_state = text::TutorialFlags::map;
-			tutorial.turn_off();
-		}
 		return true;
 	}
 	return false;
@@ -684,10 +657,6 @@ void Player::push_to_loadout(int id, bool from_save) {
 		m_services->stats.time_trials.bryns_gun = m_services->ticker.in_game_seconds_passed.count();
 		auto bg = util::QuestKey{1, 111, 1};
 		m_services->quest.process(*m_services, bg);
-		tutorial.flags.set(text::TutorialFlags::inventory); // set this in case the player never opened inventory
-		tutorial.current_state = text::TutorialFlags::shoot;
-		tutorial.trigger();
-		tutorial.turn_on();
 	}
 	if (id == 10 && !from_save) { m_services->quest.progress(fornani::QuestType::destroyers, 122, 1); }
 	arsenal.value().push_to_loadout(id);

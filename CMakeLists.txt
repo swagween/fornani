@@ -26,7 +26,6 @@ option(
 )
 option(FORNANI_BUILD_EDITOR "Build the editor. This should never be enabled in production!" ON)
 option(FORNANI_ENABLE_DEV_ID "Enables dev ID for steam. This should never be enabled in production!" OFF)
-option(FORNANI_ENABLE_PROFILER "Enables tracy profiling. This should never be enabled in production!" OFF)
 option(
         FORNANI_ENABLE_VERBOSE_LOGGING
         "Enable verbose logging that will output source location information.
@@ -49,7 +48,6 @@ add_subdirectory(launcher)
 
 
 if (FORNANI_ENABLE_PROFILER AND NOT FORNANI_PRODUCTION_BUILD)
-    target_compile_definitions(fornani PRIVATE TRACY_ENABLE)
     target_compile_definitions(fornani PRIVATE FORNANI_PROFILE)
 endif ()
 

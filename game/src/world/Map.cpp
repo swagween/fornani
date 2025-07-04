@@ -10,7 +10,6 @@
 #include "fornani/utils/Random.hpp"
 
 #include <ccmath/ext/clamp.hpp>
-#include <tracy/Tracy.hpp>
 
 namespace fornani::world {
 
@@ -49,7 +48,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	dimensions.y = meta["dimensions"][1].as<int>();
 	real_dimensions = {static_cast<float>(dimensions.x) * constants::f_cell_size, static_cast<float>(dimensions.y) * constants::f_cell_size};
 	auto style_value = meta["style"].as<int>();
-	style_label = svc.data.map_styles["styles"][style_value]["label"].as_string();
+	style_label = svc.data.map_styles["styles"][style_value]["label"].as_string().data();
 	style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
 	if (svc.greyblock_mode()) { style_id = static_cast<int>(lookup::Style::provisional); }
 	native_style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
@@ -126,13 +125,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			sf::Vector2<float> pos{};
 			pos.x = entry["position"][0].as<float>();
 			pos.y = entry["position"][1].as<float>();
-			chests.push_back(entity::Chest(svc, entry["id"].as<int>()));
-			chests.back().set_item(entry["item_id"].as<int>());
-			chests.back().set_amount(entry["amount"].as<int>());
-			chests.back().set_rarity(entry["rarity"].as<float>());
-			if (entry["type"].as<int>() == 1) { chests.back().set_type(entity::ChestType::gun); }
-			if (entry["type"].as<int>() == 2) { chests.back().set_type(entity::ChestType::orbs); }
-			if (entry["type"].as<int>() == 3) { chests.back().set_type(entity::ChestType::item); }
+			chests.push_back(entity::Chest(svc, entry["id"].as<int>(), static_cast<entity::ChestType>(entry["type"].as<int>()), entry["modifier"].as<int>()));
 			chests.back().set_position_from_scaled(pos);
 		}
 
@@ -445,7 +438,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 }
 
 void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	ZoneScopedN("Map::render");
 	// check for a switch to greyblock mode
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
 		style_id = style_id == static_cast<int>(lookup::Style::provisional) ? native_style_id : static_cast<int>(lookup::Style::provisional);
@@ -453,133 +445,59 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		svc.debug_flags.reset(automa::DebugFlags::greyblock_trigger);
 	}
 
-	{
-		ZoneScopedN("Map::render - portals");
-		for (auto& portal : portals) { portal.render(svc, win, cam); }
-	}
+	for (auto& portal : portals) { portal.render(svc, win, cam); }
 	if (fire) {
-		ZoneScopedN("Map::render - fires");
 		for (auto& f : fire.value()) { f.render(svc, win, cam); }
 	}
-	{
-		ZoneScopedN("Map::render - beds");
-		for (auto& bed : beds) { bed.render(svc, win, cam); }
+	for (auto& bed : beds) { bed.render(svc, win, cam); }
+	for (auto& chest : chests) { chest.render(win, cam); }
+	for (auto& npc : npcs) {
+		if (!npc.background()) { npc.render(svc, win, cam); }
 	}
-	{
-		ZoneScopedN("Map::render - chests");
-		for (auto& chest : chests) { chest.render(svc, win, cam); }
+	player->render(svc, win, cam);
+	for (auto& enemy : enemy_catalog.enemies) {
+		if (!enemy->is_foreground()) { enemy->render(svc, win, cam); }
 	}
-	{
-		ZoneScopedN("Map::render - npcs");
-		for (auto& npc : npcs) {
-			if (!npc.background()) { npc.render(svc, win, cam); }
-		}
-	}
-	{
-		ZoneScopedN("Map::render - player");
-		player->render(svc, win, cam);
-	}
-	{
-		ZoneScopedN("Map::render - enemies");
-		for (auto& enemy : enemy_catalog.enemies) {
-			if (!enemy->is_foreground()) { enemy->render(svc, win, cam); }
-		}
-	}
-	{
-		ZoneScopedN("Map::render - active projectiles");
-		for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - active loot");
-		for (auto& loot : active_loot) { loot.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - active emmitters");
-		for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - platforms");
-		for (auto& platform : platforms) { platform.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - breakables");
-		for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - pushables");
-		for (auto& pushable : pushables) { pushable.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - destroyers");
-		for (auto& destroyer : destroyers) { destroyer.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - checkpoints");
-		for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - spikes");
-		for (auto& spike : spikes) { spike.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - switch blocks");
-		for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - switch buttons");
-		for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - atmosphere");
-		for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - vines");
-		for (auto& vine : vines) {
-			if (vine->foreground()) { vine->render(svc, win, cam); }
-		}
+	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
+	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
+	for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
+	for (auto& platform : platforms) { platform.render(svc, win, cam); }
+	for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
+	for (auto& pushable : pushables) { pushable.render(svc, win, cam); }
+	for (auto& destroyer : destroyers) { destroyer.render(svc, win, cam); }
+	for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
+	for (auto& spike : spikes) { spike.render(svc, win, cam); }
+	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
+	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
+	for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
+	for (auto& vine : vines) {
+		if (vine->foreground()) { vine->render(svc, win, cam); }
 	}
 
-	if (save_point.id != -1) {
-		ZoneScopedN("Map::render - save point");
-		save_point.render(svc, win, cam);
-	}
+	if (save_point.id != -1) { save_point.render(svc, win, cam); }
 
 	if (!svc.greyblock_mode()) {
 		for (auto& layer : get_layers()) { layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam); }
 	}
 
-	{
-		ZoneScopedN("Map::render - forground enemies");
-		// foreground enemies
-		for (auto& enemy : enemy_catalog.enemies) {
-			if (enemy->is_foreground()) { enemy->render(svc, win, cam); }
-			enemy->render_indicators(svc, win, cam);
-			enemy->gui_render(svc, win, cam);
-		}
+	// foreground enemies
+	for (auto& enemy : enemy_catalog.enemies) {
+		if (enemy->is_foreground()) { enemy->render(svc, win, cam); }
+		enemy->render_indicators(svc, win, cam);
+		enemy->gui_render(svc, win, cam);
 	}
 
-	{
-		ZoneScopedN("Map::render - effects");
-		for (auto& effect : effects) { effect.render(svc, win, cam); }
-	}
+	for (auto& effect : effects) { effect.render(svc, win, cam); }
 
 	player->render_indicators(svc, win, cam);
 
-	{
-		ZoneScopedN("Map::render - animator");
-		for (auto& animator : animators) {
-			if (animator.is_foreground()) { animator.render(svc, win, cam); }
-		}
+	for (auto& animator : animators) {
+		if (animator.is_foreground()) { animator.render(svc, win, cam); }
 	}
-	{
-		ZoneScopedN("Map::render - inspectables");
-		for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
-	}
-	if (rain) {
-		ZoneScopedN("Map::render - rain");
-		rain.value().render(svc, win, cam);
-	}
+
+	for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
+
+	if (rain) { rain.value().render(svc, win, cam); }
 
 	if (svc.greyblock_mode()) {
 		center_box.setPosition({});
@@ -597,7 +515,6 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 }
 
 void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	ZoneScopedN("Map::render_background");
 	if (!svc.greyblock_mode()) {
 		background->render(svc, win, cam);
 		for (auto& layer : scenery_layers) {
@@ -820,6 +737,7 @@ sf::Vector2<float> Map::last_checkpoint() {
 }
 
 void Map::debug() {
+	for (auto& enemy : enemy_catalog.enemies) { enemy->debug(); }
 #if defined(FORNANI_PRODUCTION)
 	background->debug();
 	// for (auto& atm : atmosphere) { atm.debug(); }

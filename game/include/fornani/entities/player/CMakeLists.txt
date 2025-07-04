@@ -1,7 +1,6 @@
 nani_add_headers(
         AbilityManager.hpp
         Catalog.hpp
-        Indicator.hpp
         Inventory.hpp
         Jump.hpp
         Piggybacker.hpp

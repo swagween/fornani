@@ -13,6 +13,7 @@ enum class MusicPlayerState : std::uint8_t { on, off };
 class MusicPlayer {
   public:
 	explicit MusicPlayer(capo::IEngine& audio_engine);
+	void quick_play(data::ResourceFinder const& finder, std::string_view song_name);
 	void load(data::ResourceFinder const& finder, std::string_view song_name);
 	void load(std::string_view path);
 	void play_once();
@@ -20,6 +21,7 @@ class MusicPlayer {
 	void update();
 	void pause();
 	void stop();
+	void resume();
 	void fade_out(std::chrono::duration<float> duration);
 	void fade_in(std::chrono::duration<float> duration);
 	void turn_on();
@@ -37,6 +39,7 @@ class MusicPlayer {
   private:
 	MusicPlayerState m_state{};
 	juke::Jukebox m_jukebox;
+	juke::Jukebox m_ringtone;
 	std::string m_current_song{};
 
 	io::Logger m_logger{"Audio"};

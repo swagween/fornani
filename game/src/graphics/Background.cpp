@@ -7,7 +7,6 @@
 #include "fornani/utils/Math.hpp"
 
 #include <ccmath/ext/clamp.hpp>
-#include <tracy/Tracy.hpp>
 
 namespace fornani::bg {
 
@@ -41,7 +40,6 @@ void Background::update(automa::ServiceProvider& svc) {
 }
 
 void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	ZoneScopedN("Background::render");
 	auto epsilon = 0.99999f;
 
 	for (auto& layer : layers) {

@@ -92,7 +92,7 @@ void Thug::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	hurt_effect.update();
 
 	if (hostility_triggered()) { state = ThugState::alert; }
-	if (hostile() && !hostility_triggered()) { state = ThugState::run; } // player is already in hostile range
+	if (is_hostile() && !hostility_triggered()) { state = ThugState::run; } // player is already in hostile range
 
 	if (just_died()) { m_services->soundboard.flags.thug.set(audio::Thug::death); }
 

@@ -1,8 +1,6 @@
 
 #include "fornani/automa/StateManager.hpp"
 
-#include <fornani/utils/Tracy.hpp>
-
 #include "fornani/automa/states/ControlsMenu.hpp"
 #include "fornani/automa/states/CreditsMenu.hpp"
 #include "fornani/automa/states/Dojo.hpp"
@@ -25,7 +23,6 @@ StateManager::StateManager(ServiceProvider& svc, player::Player& player, MenuTyp
 }
 
 void StateManager::process_state(ServiceProvider& svc, player::Player& player, fornani::Game& game) {
-	NANI_ZoneScopedN("StateManager::process_state");
 	if (svc.state_controller.actions.test(Actions::trigger_submenu)) {
 		switch (svc.state_controller.submenu) {
 		case MenuType::file_select:

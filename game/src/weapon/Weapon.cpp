@@ -11,7 +11,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 	auto const& in_data = enemy ? svc.data.enemy_weapon["weapons"][id] : svc.data.weapon["weapons"][id];
 
 	// metadata
-	metadata.description = in_data["metadata"]["description"].as_string().data();
+	metadata.description = in_data["metadata"]["description"].as_string();
 
 	// visual
 	visual.dimensions = {in_data["visual"]["dimensions"][0].as<int>(), in_data["visual"]["dimensions"][1].as<int>()};

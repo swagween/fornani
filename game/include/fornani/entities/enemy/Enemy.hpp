@@ -6,8 +6,8 @@
 #include "fornani/entities/packages/FloatingPart.hpp"
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/entities/packages/WeaponPackage.hpp"
-#include "fornani/entities/player/Indicator.hpp"
 #include "fornani/graphics/Animatable.hpp"
+#include "fornani/graphics/Indicator.hpp"
 #include "fornani/io/Logger.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Collider.hpp"
@@ -76,11 +76,11 @@ class Enemy : public Animatable {
 
 	virtual void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	virtual void gui_render([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win, [[maybe_unused]] sf::Vector2<float> cam) {};
 
 	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
 
-	virtual void gui_render([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win, [[maybe_unused]] sf::Vector2<float> cam) {};
 	void handle_player_collision(player::Player& player) const;
 	void handle_collision(shape::Collider& other);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
@@ -88,8 +88,8 @@ class Enemy : public Animatable {
 	void set_channel(EnemyChannel to) { Animatable::set_channel(static_cast<int>(to)); }
 	void request_flip() { flags.state.set(StateFlags::flip); }
 
-	[[nodiscard]] auto hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
-	[[nodiscard]] auto alert() const -> bool { return flags.state.test(StateFlags::alert); }
+	[[nodiscard]] auto is_hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
+	[[nodiscard]] auto is_alert() const -> bool { return flags.state.test(StateFlags::alert); }
 	[[nodiscard]] auto is_hurt() const -> bool { return hurt_effect.running(); }
 	[[nodiscard]] auto hostility_triggered() const -> bool { return flags.triggers.test(Triggers::hostile); }
 	[[nodiscard]] auto alertness_triggered() const -> bool { return flags.triggers.test(Triggers::alert); }
@@ -114,6 +114,10 @@ class Enemy : public Animatable {
 		collider.sync_components();
 		health_indicator.set_position(pos);
 	}
+	void cancel_shake() {
+		energy = {};
+		m_random_offset = {};
+	}
 
 	void face_player(player::Player& player);
 	void set_position_from_scaled(sf::Vector2<float> pos);
@@ -122,10 +126,12 @@ class Enemy : public Animatable {
 	void stop_shaking() { flags.state.reset(StateFlags::shaking); }
 
 	entity::Health health{};
-	player::Indicator health_indicator;
+	graphics::Indicator health_indicator;
+
+	void debug();
 
   protected:
-	std::string_view label{};
+	std::string label{};
 	shape::Collider collider{};
 	shape::Collider secondary_collider{};
 	Flags flags{};

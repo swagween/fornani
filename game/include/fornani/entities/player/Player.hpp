@@ -7,15 +7,14 @@
 #include "fornani/entities/packages/Caution.hpp"
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/entities/player/Catalog.hpp"
-#include "fornani/entities/player/Indicator.hpp"
 #include "fornani/entities/player/Piggybacker.hpp"
 #include "fornani/entities/player/PlayerAnimation.hpp"
 #include "fornani/entities/player/PlayerController.hpp"
 #include "fornani/entities/player/VisitHistory.hpp"
 #include "fornani/entities/player/Wallet.hpp"
+#include "fornani/graphics/Indicator.hpp"
 #include "fornani/graphics/SpriteHistory.hpp"
 #include "fornani/graphics/TextureUpdater.hpp"
-#include "fornani/graphics/Tutorial.hpp"
 #include "fornani/gui/WardrobeWidget.hpp"
 #include "fornani/io/Logger.hpp"
 #include "fornani/particle/Gravitator.hpp"
@@ -39,16 +38,16 @@ struct ServiceProvider;
 
 namespace fornani::player {
 
-constexpr float PLAYER_WIDTH = 20.0f;
-constexpr float PLAYER_HEIGHT = 20.0f;
-constexpr float head_height{8.f};
+constexpr sf::Vector2f player_dimensions_v = {20.0f, 20.f};
+constexpr float head_height_v{8.f};
+
 constexpr float PLAYER_START_X = 100.0f;
 constexpr float PLAYER_START_Y = 100.0f;
 constexpr float JUMPBOX_HEIGHT = 8.0f;
 constexpr float DETECTOR_WIDTH = 8.0f;
 constexpr float DETECTOR_HEIGHT = 22.0f;
 constexpr float WALL_SLIDE_DETECTOR_OFFSET = 20.0f;
-constexpr float DETECTOR_BUFFER = (PLAYER_HEIGHT - DETECTOR_HEIGHT) / 2;
+constexpr float DETECTOR_BUFFER = (player_dimensions_v.x - DETECTOR_HEIGHT) / 2;
 constexpr int JUMP_BUFFER_TIME = 12;
 constexpr int INVINCIBILITY_TIME = 200;
 constexpr int ANCHOR_BUFFER = 50;
@@ -101,8 +100,6 @@ class Player {
 	friend class PlayerController;
 	friend class PlayerAnimation;
 
-	// init (violates RAII but must happen after resource path is set)
-	void init(automa::ServiceProvider& svc);
 	// member functions
 	void update(world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
@@ -194,10 +191,8 @@ class Player {
 	PlayerAnimation animation;
 	entity::Health health{};
 	Wallet wallet{};
-	Indicator health_indicator;
-	Indicator orb_indicator;
-
-	text::Tutorial tutorial;
+	graphics::Indicator health_indicator;
+	graphics::Indicator orb_indicator;
 
 	// weapons
 	std::optional<arms::Arsenal> arsenal{};

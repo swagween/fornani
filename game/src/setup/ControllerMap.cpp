@@ -1,10 +1,7 @@
 
 #include "fornani/setup/ControllerMap.hpp"
 #include <steam/isteaminput.h>
-
 #include <ccmath/ext/clamp.hpp>
-#include <tracy/Tracy.hpp>
-
 #include "fornani/service/ServiceProvider.hpp"
 
 #ifdef _MSC_VER
@@ -149,7 +146,6 @@ void ControllerMap::handle_event(std::optional<sf::Event> const event) {
 }
 
 void ControllerMap::update() {
-	ZoneScopedN("ControllerMap::update");
 	SteamInput()->RunFrame();
 	m_actions_queried_this_update.clear();
 

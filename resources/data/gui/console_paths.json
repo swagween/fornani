@@ -22,5 +22,35 @@
 				}
 			]
 		}
+	],
+	"sticker": [
+		{
+			"label": "in",
+			"path": [
+				{
+					"position": [ 240, -128 ]
+				},
+				{
+					"position": [ 240, 110 ]
+				},
+				{
+					"position": [ 240, 100 ]
+				}
+			]
+		},
+		{
+			"label": "out",
+			"path": [
+				{
+					"position": [ 240, 100 ]
+				},
+				{
+					"position": [ 240, 110 ]
+				},
+				{
+					"position": [ 240, -128 ]
+				}
+			]
+		}
 	]
 }

@@ -165,7 +165,7 @@ class Map {
 
 	sf::RectangleShape center_box{};
 
-	std::string_view style_label{};
+	std::string style_label{};
 
 	int room_lookup{};
 	int style_id{};

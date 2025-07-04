@@ -6,7 +6,6 @@
 #include "fornani/gui/ActionContextBar.hpp"
 #include "fornani/setup/WindowManager.hpp"
 #include "fornani/utils/Math.hpp"
-#include "fornani/utils/Tracy.hpp"
 
 #include <steam/steam_api.h>
 #include <ctime>
@@ -16,7 +15,6 @@
 namespace fornani {
 
 Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& audio_engine) : services(argv, version, window, audio_engine), player(services), game_state(services, player, automa::MenuType::main) {
-	NANI_ZoneScopedN("Game::Game");
 
 	/* Set up ImGui Context */
 	auto wContext = ImGui::CreateContext();
@@ -35,15 +33,12 @@ Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& 
 	services.data.load_settings();
 	// sounds
 	playtest.musicplayer = true;
-	// player
-	player.init(services);
 
 	background.setSize(sf::Vector2f{services.window->get().getSize()});
 	background.setFillColor(colors::ui_black);
 }
 
 void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
-	NANI_ZoneScopedN("Game::run");
 
 	if (services.window->fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
 
@@ -51,20 +46,17 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 	measurements.win_size.y = services.window->get().getSize().y;
 	auto entire_window = sf::View(sf::FloatRect{{}, sf::Vector2f{sf::VideoMode::getDesktopMode().size}});
 
-	{
-		NANI_ZoneScopedN("Demo Mode Setup");
-		if (demo) {
-			services.debug_flags.set(automa::DebugFlags::demo_mode);
-			flags.set(GameFlags::in_game);
-			game_state.get_current_state().target_folder.paths.scene = levelpath;
-			services.music_player.turn_off();
-			services.data.load_progress(player, 0);
-			game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", room_id, levelpath.filename().string()));
-			services.state_controller.demo_level = room_id;
-			NANI_LOG_INFO(m_logger, "Launching demo in room {} from folder {} ", room_id, levelpath.filename().string());
-			services.state_controller.player_position = player_position;
-			player.set_position(player_position);
-		}
+	if (demo) {
+		services.debug_flags.set(automa::DebugFlags::demo_mode);
+		flags.set(GameFlags::in_game);
+		game_state.get_current_state().target_folder.paths.scene = levelpath;
+		services.music_player.turn_off();
+		services.data.load_progress(player, 0);
+		game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", room_id, levelpath.filename().string()));
+		services.state_controller.demo_level = room_id;
+		NANI_LOG_INFO(m_logger, "Launching demo in room {} from folder {} ", room_id, levelpath.filename().string());
+		services.state_controller.player_position = player_position;
+		player.set_position(player_position);
 	}
 
 	gui::ActionContextBar ctx_bar(services);
@@ -77,155 +69,130 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 
 	while (services.window->get().isOpen()) {
 
-		NANI_ZoneScopedN("Game Loop");
-
 		static bool zooming{};
 
 		auto smp = util::random::percent_chance(10) ? 1 : 0;
 		rng_test.sample += smp;
 		++rng_test.total;
 
-		{
-			NANI_ZoneScopedN("Check Shutdown Condition");
-			if (services.state_controller.actions.test(automa::Actions::shutdown)) {
-				NANI_LOG_INFO(m_logger, "Shutdown");
-				break;
-			}
-			if (services.death_mode()) { flags.reset(GameFlags::in_game); }
+		if (services.state_controller.actions.test(automa::Actions::shutdown)) {
+			NANI_LOG_INFO(m_logger, "Shutdown");
+			break;
 		}
+		if (services.death_mode()) { flags.reset(GameFlags::in_game); }
 
 		services.ticker.start_frame();
 
-		{
-			NANI_ZoneScopedN("Handle Window Events");
-			services.controller_map.set_keyboard_input_detected(false);
-			while (std::optional const event = services.window->get().pollEvent()) {
-				NANI_ZoneScopedN("Event Polling");
-				if (event->is<sf::Event::Closed>()) {
-					shutdown();
-					return;
-				}
-
-				if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
-					NANI_ZoneScopedN("Key Press Handling");
-					services.controller_map.set_keyboard_input_detected(true);
-					services.controller_map.set_last_key_pressed(key_pressed->scancode);
-					if (key_pressed->scancode == sf::Keyboard::Scancode::LControl) { key_flags.set(KeyboardFlags::control); }
-					if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_flags.test(KeyboardFlags::control)) {
-						services.toggle_debug();
-						if (flags.test(GameFlags::playtest)) {
-							flags.reset(GameFlags::playtest);
-							services.soundboard.flags.menu.set(audio::Menu::forward_switch);
-						} else {
-							flags.set(GameFlags::playtest);
-							services.soundboard.flags.menu.set(audio::Menu::backward_switch);
-						}
-					}
-					if (key_pressed->scancode == sf::Keyboard::Scancode::Equal) { take_screenshot(services.window->screencap); }
-					if (key_pressed->scancode == sf::Keyboard::Scancode::Y) {
-						auto view = services.window->get_view();
-						view.zoom(0.5f);
-						services.window->get().setView(view);
-						zooming = !zooming;
-					}
-					if (key_pressed->scancode == sf::Keyboard::Scancode::Escape) { m_game_menu = {}; }
-				}
-
-				if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
-					NANI_ZoneScopedN("Key Release Handling");
-					if (key_released->scancode == sf::Keyboard::Scancode::LControl) { key_flags.reset(KeyboardFlags::control); }
-				}
-
-				if (auto const* joystick_moved = event->getIf<sf::Event::JoystickMoved>()) {
-					auto jx = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::X);
-					auto jy = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::Y);
-					services.controller_map.set_joystick_throttle(sf::Vector2f{jx, jy});
-				}
-
-				services.controller_map.handle_event(*event);
-				ImGui::SFML::ProcessEvent(services.window->get(), *event);
+		services.controller_map.set_keyboard_input_detected(false);
+		while (std::optional const event = services.window->get().pollEvent()) {
+			if (event->is<sf::Event::Closed>()) {
+				shutdown();
+				return;
 			}
-		}
 
-		{
-			NANI_ZoneScopedN("Steam API Callbacks");
-			SteamAPI_RunCallbacks();
-		}
-
-		{
-			NANI_ZoneScopedN("Update");
-			bool has_focus = services.window->get().hasFocus();
-			services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services, &audio_engine = audio_engine] {
-				NANI_ZoneScopedN("Update->Tick");
-				services.controller_map.update();
-				if (services.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && m_game_menu) {
-					if (m_game_menu.value()->get_current_state().is_ready()) {
-						m_game_menu = {};
+			if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
+				services.controller_map.set_keyboard_input_detected(true);
+				services.controller_map.set_last_key_pressed(key_pressed->scancode);
+				if (key_pressed->scancode == sf::Keyboard::Scancode::LControl) { key_flags.set(KeyboardFlags::control); }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_flags.test(KeyboardFlags::control)) {
+					services.toggle_debug();
+					if (flags.test(GameFlags::playtest)) {
+						flags.reset(GameFlags::playtest);
+						services.soundboard.flags.menu.set(audio::Menu::forward_switch);
+					} else {
+						flags.set(GameFlags::playtest);
 						services.soundboard.flags.menu.set(audio::Menu::backward_switch);
 					}
 				}
-				if (m_game_menu) {
-					m_game_menu.value()->get_current_state().tick_update(services, audio_engine);
-				} else {
-					game_state.get_current_state().tick_update(services, audio_engine);
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Equal) { take_screenshot(services.window->screencap); }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Y) {
+					auto view = services.window->get_view();
+					view.zoom(0.5f);
+					services.window->get().setView(view);
+					zooming = !zooming;
 				}
-				if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.update(services); }
-				if (game_state.get_current_state().flags.test(automa::GameStateFlags::settings_request)) {
-					m_game_menu = std::make_unique<automa::StateManager>(services, player, automa::MenuType::settings);
-					game_state.get_current_state().flags.reset(automa::GameStateFlags::settings_request);
-				}
-				if (game_state.get_current_state().flags.test(automa::GameStateFlags::controls_request)) {
-					m_game_menu = std::make_unique<automa::StateManager>(services, player, automa::MenuType::controls);
-					game_state.get_current_state().flags.reset(automa::GameStateFlags::controls_request);
-				}
-			});
-			{
-				NANI_ZoneScopedN("Update->State");
-				if (m_game_menu) {
-					m_game_menu.value()->get_current_state().frame_update(services);
-				} else {
-					game_state.get_current_state().frame_update(services);
-					game_state.process_state(services, player, *this);
-				}
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Escape) { m_game_menu = {}; }
 			}
-			if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(services.window->screencap); }
 
-			{
-				NANI_ZoneScopedN("Update->ImGUI");
-				ImGui::SetMouseCursor(ImGuiMouseCursor_None);
-				ImGuiIO& io = ImGui::GetIO();
-				io.IniFilename = NULL;
-				io.LogFilename = NULL;
-				io.MouseDrawCursor = flags.test(GameFlags::draw_cursor);
-				services.window->get().setMouseCursorVisible(io.MouseDrawCursor);
-				ImGui::SFML::Update(services.window->get(), delta_clock.getElapsedTime());
-				delta_clock.restart();
+			if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
+				if (key_released->scancode == sf::Keyboard::Scancode::LControl) { key_flags.reset(KeyboardFlags::control); }
 			}
+
+			if (auto const* joystick_moved = event->getIf<sf::Event::JoystickMoved>()) {
+				auto jx = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::X);
+				auto jy = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::Y);
+				services.controller_map.set_joystick_throttle(sf::Vector2f{jx, jy});
+			}
+
+			services.controller_map.handle_event(*event);
+			ImGui::SFML::ProcessEvent(services.window->get(), *event);
 		}
 
-		{
-			NANI_ZoneScopedN("Rendering");
+		SteamAPI_RunCallbacks();
+
+		bool has_focus = services.window->get().hasFocus();
+		services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services, &audio_engine = audio_engine] {
+			services.controller_map.update();
+			if (services.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && m_game_menu) {
+				if (m_game_menu.value()->get_current_state().is_ready()) {
+					m_game_menu = {};
+					services.soundboard.flags.menu.set(audio::Menu::backward_switch);
+				}
+			}
+			if (m_game_menu) {
+				m_game_menu.value()->get_current_state().tick_update(services, audio_engine);
+			} else {
+				game_state.get_current_state().tick_update(services, audio_engine);
+			}
+			if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.update(services); }
+			if (game_state.get_current_state().flags.test(automa::GameStateFlags::settings_request)) {
+				m_game_menu = std::make_unique<automa::StateManager>(services, player, automa::MenuType::settings);
+				game_state.get_current_state().flags.reset(automa::GameStateFlags::settings_request);
+			}
+			if (game_state.get_current_state().flags.test(automa::GameStateFlags::controls_request)) {
+				m_game_menu = std::make_unique<automa::StateManager>(services, player, automa::MenuType::controls);
+				game_state.get_current_state().flags.reset(automa::GameStateFlags::controls_request);
+			}
+		});
+		if (m_game_menu) {
+			m_game_menu.value()->get_current_state().frame_update(services);
+		} else {
+			game_state.get_current_state().frame_update(services);
+			game_state.process_state(services, player, *this);
+		}
+
+		if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(services.window->screencap); }
+
+		ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+		ImGuiIO& io = ImGui::GetIO();
+		io.IniFilename = NULL;
+		io.LogFilename = NULL;
+		io.MouseDrawCursor = flags.test(GameFlags::draw_cursor);
+		services.window->get().setMouseCursorVisible(io.MouseDrawCursor);
+		ImGui::SFML::Update(services.window->get(), delta_clock.getElapsedTime());
+		delta_clock.restart();
+
 #if not defined(FORNANI_PRODUCTION)
-			if (flags.test(GameFlags::playtest)) { playtester_portal(services.window->get()); }
-			flags.test(GameFlags::playtest) || demo ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
+		if (flags.test(GameFlags::playtest)) { playtester_portal(services.window->get()); }
+		flags.test(GameFlags::playtest) || demo ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
 #endif
 
-			services.window->get().clear();
-			if (services.window->fullscreen()) { services.window->get().setView(entire_window); }
-			services.window->get().draw(background);
-			if (!zooming) { services.window->restore_view(); }
+		services.window->get().clear();
+		if (services.window->fullscreen()) { services.window->get().setView(entire_window); }
+		services.window->get().draw(background);
+		if (!zooming) { services.window->restore_view(); }
 
-			if (m_game_menu) {
-				m_game_menu.value()->get_current_state().render(services, services.window->get());
-			} else {
-				game_state.get_current_state().render(services, services.window->get());
-			}
-
-			if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.render(services.window->get()); }
-
-			ImGui::SFML::Render(services.window->get());
-			services.window->get().display();
+		if (m_game_menu) {
+			m_game_menu.value()->get_current_state().render(services, services.window->get());
+		} else {
+			game_state.get_current_state().render(services, services.window->get());
 		}
+
+		if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.render(services.window->get()); }
+
+		ImGui::SFML::Render(services.window->get());
+		services.window->get().display();
+
 		services.ticker.end_frame();
 	}
 	shutdown();
@@ -263,7 +230,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("In Game? %s", services.in_game() ? "Yes" : "No");
 					ImGui::Text("Region: %s", game_state.get_current_state().target_folder.paths.region.string().c_str());
 					ImGui::Text("Room: %s", game_state.get_current_state().target_folder.paths.room.string().c_str());
+					ImGui::Text("debug mode: %s", services.debug_mode() ? "Enabled" : "Disabled");
 					ImGui::Text("demo mode: %s", services.demo_mode() ? "Enabled" : "Disabled");
+					if (ImGui::Button("Toggle Debug Mode")) { services.toggle_debug(); }
 					if (ImGui::Button("Toggle Demo Mode")) { services.debug_flags.test(automa::DebugFlags::demo_mode) ? services.debug_flags.reset(automa::DebugFlags::demo_mode) : services.debug_flags.set(automa::DebugFlags::demo_mode); }
 					if (ImGui::Button("Toggle Greyblock Mode")) {
 						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
@@ -324,14 +293,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Current Input Device: %s", "TODO"); // XXX services.controller_map.is_gamepad() ? "Gamepad" : "Keyboard
 					ImGui::Text("Gamepad Status: %s", services.controller_map.gamepad_connected() ? "Connected" : "Disconnected");
 					ImGui::Text("Gamepad Enabled? %s", services.controller_map.is_gamepad_input_enabled() ? "Yes" : "No");
-					ImGui::EndTabItem();
-				}
-				if (ImGui::BeginTabItem("Tutorial")) {
-					ImGui::Text("Jump..: %s", player.tutorial.flags.test(text::TutorialFlags::jump) ? "Yes" : "No");
-					ImGui::Text("Shoot.: %s", player.tutorial.flags.test(text::TutorialFlags::shoot) ? "Yes" : "No");
-					ImGui::Text("Sprint: %s", player.tutorial.flags.test(text::TutorialFlags::sprint) ? "Yes" : "No");
-					ImGui::Text("Inv...: %s", player.tutorial.flags.test(text::TutorialFlags::inventory) ? "Yes" : "No");
-					ImGui::Text("Map...: %s", player.tutorial.flags.test(text::TutorialFlags::map) ? "Yes" : "No");
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Inventory")) { ImGui::EndTabItem(); }
