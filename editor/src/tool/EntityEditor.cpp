@@ -115,7 +115,7 @@ void EntityEditor::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode
 	}
 }
 
-void EntityEditor::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) {
+void EntityEditor::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) {
 	if (!canvas.editable()) { return; }
 	if (!current_entity) { return; }
 

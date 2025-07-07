@@ -19,8 +19,8 @@ void Option::set_string(std::string_view str) { label.setString(str.data()); }
 
 void Option::update(ServiceProvider& svc, int selection) {
 	label.setPosition(position);
-	left_offset = position - sf::Vector2<float>{label.getLocalBounds().getCenter().x + dot_offset.x - 2, -dot_offset.y};
-	right_offset = position + sf::Vector2<float>{label.getLocalBounds().getCenter().x + dot_offset.x, dot_offset.y};
+	left_offset = position - sf::Vector2f{label.getLocalBounds().getCenter().x + dot_offset.x - 2, -dot_offset.y};
+	right_offset = position + sf::Vector2f{label.getLocalBounds().getCenter().x + dot_offset.x, dot_offset.y};
 	if (red) {
 		selection == index ? label.setFillColor(colors::red) : label.setFillColor(colors::beige);
 	} else {

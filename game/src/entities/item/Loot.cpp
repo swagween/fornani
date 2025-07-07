@@ -5,7 +5,7 @@
 #include "fornani/utils/Random.hpp"
 
 namespace fornani::item {
-Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float probability, sf::Vector2<float> pos, int delay_time, bool special, int special_id) {
+Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float probability, sf::Vector2f pos, int delay_time, bool special, int special_id) {
 
 	auto const drop_rate = util::random::random_range(drop_range.x, drop_range.y);
 	position = pos;
@@ -52,10 +52,10 @@ void Loot::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	}
 }
 
-void Loot::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
+void Loot::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos) {
 	for (auto& drop : drops) { drop->render(svc, win, campos); }
 }
 
-void Loot::set_position(sf::Vector2<float> pos) { position = pos; }
+void Loot::set_position(sf::Vector2f pos) { position = pos; }
 
 } // namespace fornani::item

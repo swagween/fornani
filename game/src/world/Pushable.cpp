@@ -13,7 +13,7 @@
 
 namespace fornani::world {
 
-Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int size) : style(style), size(size), sprite{svc.assets.get_texture("pushables")} {
+Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2f position, int style, int size) : style(style), size(size), sprite{svc.assets.get_texture("pushables")} {
 	collider = shape::Collider({constants::f_cell_size * static_cast<float>(size) - 4.f, constants::f_cell_size * static_cast<float>(size) - 1.f});
 	collider.physics.position = position;
 	start_position = position;
@@ -105,7 +105,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 
 void Pushable::handle_collision(shape::Collider& other) const { other.handle_collider_collision(collider); }
 
-void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	snap = collider.snap_to_grid(1, 4.f, 2.f);
 	if (ccm::abs(random_offset.x) > 0.f || ccm::abs(random_offset.y) > 0.f) { snap = collider.physics.position; } // don't snap if shaking
 	if (ccm::abs(collider.physics.velocity.x) > 0.1f || ccm::abs(collider.physics.velocity.y) > 0.1f) { set_moving(); }
@@ -141,7 +141,7 @@ void Pushable::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proje
 
 void Pushable::reset(automa::ServiceProvider& svc, world::Map& map) {
 	auto index = size == 1 ? 0 : 1;
-	auto offset = size == 1 ? sf::Vector2<float>{} : sf::Vector2<float>{5.f, 5.f};
+	auto offset = size == 1 ? sf::Vector2f{} : sf::Vector2f{5.f, 5.f};
 	auto label = size == 1 ? "small_explosion" : "large_explosion";
 	map.effects.push_back(entity::Effect(svc, label, collider.physics.position + offset, {}, 0, index));
 	collider.physics.position = start_position;

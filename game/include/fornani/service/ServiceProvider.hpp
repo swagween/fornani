@@ -93,6 +93,6 @@ struct ServiceProvider {
 	[[nodiscard]] auto greyblock_mode() const -> bool { return debug_flags.test(DebugFlags::greyblock_mode); }
 	[[nodiscard]] auto debug_mode() const -> bool { return debug_flags.test(DebugFlags::debug_mode); }
 	[[nodiscard]] auto death_mode() const -> bool { return state_controller.actions.test(Actions::death_mode); }
-	[[nodiscard]] auto in_window(sf::Vector2<float> point, sf::Vector2<float> dimensions) const -> bool { return window->in_window(point, dimensions); }
+	[[nodiscard]] auto in_window(sf::Vector2f point, sf::Vector2f dimensions) const -> bool { return window->in_window(point, dimensions); }
 };
 } // namespace fornani::automa

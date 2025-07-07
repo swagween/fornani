@@ -13,8 +13,8 @@ void WindowManager::set() {
 	auto const display_ratio = static_cast<float>(display_dimensions.x) / static_cast<float>(display_dimensions.y);
 	auto const letterbox = std::min(display_ratio, aspect_ratio) / std::max(display_ratio, aspect_ratio);
 	auto const vertical = display_ratio < aspect_ratio;
-	auto resize_ratio = vertical ? sf::Vector2<float>(1.f, letterbox) : sf::Vector2<float>(letterbox, 1.f);
-	auto offset = vertical ? sf::Vector2<float>(0.f, (1.f - letterbox) * 0.5f) : sf::Vector2<float>((1.f - letterbox) * 0.5f, 0.f);
+	auto resize_ratio = vertical ? sf::Vector2f(1.f, letterbox) : sf::Vector2f(letterbox, 1.f);
+	auto offset = vertical ? sf::Vector2f(0.f, (1.f - letterbox) * 0.5f) : sf::Vector2f((1.f - letterbox) * 0.5f, 0.f);
 	game_port = is_fullscreen ? sf::FloatRect{{offset.x, offset.y}, {resize_ratio.x, resize_ratio.y}} : sf::FloatRect({}, {1.f, 1.f});
 	game_view.setViewport(game_port);
 	m_window->setView(game_view);

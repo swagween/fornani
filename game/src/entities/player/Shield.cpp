@@ -78,8 +78,8 @@ void Shield::reset_all() {
 	flags.state = {};
 }
 
-void Shield::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	sf::Vector2<float> offset{32.f, 36.f};
+void Shield::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	sf::Vector2f offset{32.f, 36.f};
 	int u = animation.params.lookup * dimensions.x;
 	int v = animation.get_frame() * dimensions.y;
 	sprite.setTextureRect(sf::IntRect{{u, v}, dimensions});

@@ -38,7 +38,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 		for (auto& portal : map.portals) {
 			if (portal.get_destination() == svc.state_controller.source_id) {
 				found_one = true;
-				sf::Vector2<float> spawn_position{portal.position.x + (portal.dimensions.x * 0.5f), portal.position.y + portal.dimensions.y - player.height()};
+				sf::Vector2f spawn_position{portal.position.x + (portal.dimensions.x * 0.5f), portal.position.y + portal.dimensions.y - player.height()};
 				player.set_position(spawn_position, true);
 				camera.force_center(player.get_camera_focus_point());
 				if (portal.activate_on_contact() && portal.is_left_or_right()) {

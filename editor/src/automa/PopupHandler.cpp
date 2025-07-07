@@ -150,10 +150,12 @@ void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& consol
 	}
 	if (ImGui::BeginPopupModal("Enemy Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		static int id{};
+		static int variant{};
 		ImGui::InputInt("ID", &id);
+		ImGui::InputInt("Variant", &variant);
 		if (ImGui::Button("Create")) {
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<Enemy>(id);
+			tool->current_entity = std::make_unique<Enemy>(id, variant);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();

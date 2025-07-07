@@ -104,7 +104,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		styles.pushables = meta["styles"]["pushables"].as<int>();
 
 		for (auto entry : entities["npcs"].as_array()) {
-			sf::Vector2<float> pos{};
+			sf::Vector2f pos{};
 			pos.x = entry["position"][0].as<float>();
 			pos.y = entry["position"][1].as<float>();
 			auto id = entry["id"].as<int>();
@@ -123,7 +123,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		}
 
 		for (auto& entry : entities["chests"].as_array()) {
-			sf::Vector2<float> pos{};
+			sf::Vector2f pos{};
 			pos.x = entry["position"][0].as<float>();
 			pos.y = entry["position"][1].as<float>();
 			chests.push_back(entity::Chest(svc, entry["id"].as<int>(), static_cast<entity::ChestType>(entry["type"].as<int>()), entry["modifier"].as<int>()));
@@ -146,14 +146,14 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			animators.push_back(a);
 		}
 		for (auto& entry : entities["beds"].as_array()) {
-			sf::Vector2<float> pos{};
+			sf::Vector2f pos{};
 			pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
 			pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
 			auto flipped = static_cast<bool>(entry["flipped"].as_bool());
 			beds.push_back(entity::Bed(svc, pos, native_style_id, flipped));
 		}
 		for (auto& entry : entities["scenery"]["basic"].as_array()) {
-			sf::Vector2<float> pos{};
+			sf::Vector2f pos{};
 			pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
 			pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
 			auto var = entry["variant"].as<int>();
@@ -162,7 +162,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, style_id, lyr, var, parallax));
 		}
 		for (auto& entry : entities["scenery"]["vines"].as_array()) {
-			sf::Vector2<float> pos{};
+			sf::Vector2f pos{};
 			pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
 			pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
 			auto fg = static_cast<bool>(entry["foreground"].as_bool());
@@ -189,7 +189,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
 		for (auto& entry : entities["enemies"].as_array()) {
 			int id{};
-			sf::Vector2<float> pos{};
+			sf::Vector2f pos{};
 			sf::Vector2<int> start{};
 			pos.x = entry["position"][0].as<float>();
 			pos.y = entry["position"][1].as<float>();
@@ -238,8 +238,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	save_point.position = {static_cast<float>(save_point.scaled_position.x), static_cast<float>(save_point.scaled_position.y)};
 
 	for (auto& entry : entities["platforms"].as_array()) {
-		sf::Vector2<float> dim{};
-		sf::Vector2<float> pos{};
+		sf::Vector2f dim{};
+		sf::Vector2f pos{};
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();
 		dim.x = entry["dimensions"][0].as<float>();
@@ -252,7 +252,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		platforms.push_back(Platform(svc, pos, dim, entry["extent"].as<float>(), type, start, entry["style"].as<int>()));
 	}
 	for (auto& entry : entities["switch_blocks"].as_array()) {
-		sf::Vector2<float> pos{};
+		sf::Vector2f pos{};
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();
 		pos *= constants::f_cell_size;
@@ -261,7 +261,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		switch_blocks.push_back(SwitchBlock(svc, pos, button_id, type));
 	}
 	for (auto& entry : entities["switches"].as_array()) {
-		sf::Vector2<float> pos{};
+		sf::Vector2f pos{};
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();
 		pos *= constants::f_cell_size;
@@ -423,7 +423,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	// demo only
 	if (svc.state_controller.actions.consume(automa::Actions::end_demo)) { end_demo.start(); }
 	end_demo.update();
-	if (end_demo.get_cooldown() == 1) { console = std::make_unique<gui::Console>(svc, svc.text.basic, "end_demo", gui::OutputType::gradual); }
+	if (end_demo.get() == 1) { console = std::make_unique<gui::Console>(svc, svc.text.basic, "end_demo", gui::OutputType::gradual); }
 	if (svc.state_controller.actions.test(automa::Actions::print_stats) && !console) { svc.state_controller.actions.set(automa::Actions::trigger); }
 	// demo only
 
@@ -438,7 +438,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	}
 }
 
-void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	// check for a switch to greyblock mode
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
 		style_id = style_id == static_cast<int>(lookup::Style::provisional) ? native_style_id : static_cast<int>(lookup::Style::provisional);
@@ -515,7 +515,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	}
 }
 
-void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (!svc.greyblock_mode()) {
 		background->render(svc, win, cam);
 		for (auto& layer : scenery_layers) {
@@ -543,7 +543,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	}
 }
 
-void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos, sf::Vector2<float> target) {
+void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target) {
 	active_projectiles.push_back(weapon.projectile);
 	active_projectiles.back().set_position(pos);
 	active_projectiles.back().seed(svc, target);
@@ -558,7 +558,7 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon
 	}
 }
 
-void Map::spawn_enemy(int id, sf::Vector2<float> pos) {
+void Map::spawn_enemy(int id, sf::Vector2f pos) {
 	enemy_spawns.push_back({pos, id});
 	spawn_counter.update();
 	flags.state.set(LevelState::spawn_enemy);
@@ -579,7 +579,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	// TODO: refactor this and move it into appropriate classes
 	if (player->fire_weapon()) {
 		svc.stats.player.bullets_fired.update();
-		sf::Vector2<float> tweak = player->controller.facing_left() ? sf::Vector2<float>{0.f, 0.f} : sf::Vector2<float>{-3.f, 0.f};
+		sf::Vector2f tweak = player->controller.facing_left() ? sf::Vector2f{0.f, 0.f} : sf::Vector2f{-3.f, 0.f};
 		if (player->equipped_weapon().multishot()) {
 			for (int i = 0; i < player->equipped_weapon().get_multishot(); ++i) { spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point()); }
 		} else {
@@ -591,7 +591,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 }
 
 void Map::generate_collidable_layer(bool live) {
-	auto pushable_offset = sf::Vector2<float>{1.f, 0.f};
+	auto pushable_offset = sf::Vector2f{1.f, 0.f};
 	for (auto& cell : get_middleground()->grid.cells) {
 		get_middleground()->grid.check_neighbors(cell.one_d_index);
 		if (live) { continue; }
@@ -606,7 +606,8 @@ void Map::generate_collidable_layer(bool live) {
 								   flags.properties.test(MapProperties::environmental_randomness)));
 		}
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position(), 5)); }
-		if (cell.is_target()) { target_points.push_back(cell.get_center()); }
+		if (cell.is_target()) { target_points.push_back(cell.get_global_center()); }
+		if (cell.is_home()) { home_points.push_back(cell.get_global_center()); }
 		if (cell.is_checkpoint()) { checkpoints.push_back(Checkpoint(*m_services, cell.position())); }
 		if (cell.is_fire()) {
 			if (!fire) { fire = std::vector<Fire>{}; }
@@ -695,7 +696,7 @@ void Map::clear() {
 	checkpoints.clear();
 }
 
-void Map::wrap(sf::Vector2<float>& position) const {
+void Map::wrap(sf::Vector2f& position) const {
 	if (position.x < 0.f) { position.x = real_dimensions.x; }
 	if (position.y < 0.f) { position.y = real_dimensions.y; }
 	if (position.x > real_dimensions.x) { position.x = 0.f; }
@@ -723,8 +724,8 @@ sf::Vector2f Map::get_spawn_position(int portal_source_map_id) {
 	return real_dimensions * 0.5f;
 }
 
-sf::Vector2<float> Map::get_nearest_target_point(sf::Vector2<float> from) {
-	auto ret = sf::Vector2<float>{};
+sf::Vector2f Map::get_nearest_target_point(sf::Vector2f from) {
+	auto ret = sf::Vector2f{};
 	auto dist = std::numeric_limits<float>::max();
 	for (auto& target : target_points) {
 		auto test = util::magnitude(from - target);
@@ -736,7 +737,7 @@ sf::Vector2<float> Map::get_nearest_target_point(sf::Vector2<float> from) {
 	return ret;
 }
 
-sf::Vector2<float> Map::last_checkpoint() {
+sf::Vector2f Map::last_checkpoint() {
 	for (auto& checkpoint : checkpoints) {
 		if (checkpoint.reached()) { return checkpoint.position(); }
 	}
@@ -756,7 +757,7 @@ bool Map::nearby(shape::Shape& first, shape::Shape& second) const {
 		   abs(first.get_position().y - second.get_position().y) < constants::f_cell_size * collision_barrier;
 }
 
-bool Map::within_bounds(sf::Vector2<float> test) const { return test.x > 0.f && test.x < real_dimensions.x && test.y > 0.f && test.y < real_dimensions.y; }
+bool Map::within_bounds(sf::Vector2f test) const { return test.x > 0.f && test.x < real_dimensions.x && test.y > 0.f && test.y < real_dimensions.y; }
 
 bool Map::overlaps_middleground(shape::Shape& test) {
 	for (auto& cell : get_middleground()->grid.cells) {
@@ -765,10 +766,10 @@ bool Map::overlaps_middleground(shape::Shape& test) {
 	return false;
 }
 
-std::size_t Map::get_index_at_position(sf::Vector2<float> position) { return get_middleground()->grid.get_index_at_position(position); }
+std::size_t Map::get_index_at_position(sf::Vector2f position) { return get_middleground()->grid.get_index_at_position(position); }
 
-int Map::get_tile_value_at_position(sf::Vector2<float> position) { return get_middleground()->grid.get_cell(get_index_at_position(position)).value; }
+int Map::get_tile_value_at_position(sf::Vector2f position) { return get_middleground()->grid.get_cell(get_index_at_position(position)).value; }
 
-Tile& Map::get_cell_at_position(sf::Vector2<float> position) { return get_middleground()->grid.cells.at(get_index_at_position(position)); }
+Tile& Map::get_cell_at_position(sf::Vector2f position) { return get_middleground()->grid.cells.at(get_index_at_position(position)); }
 
 } // namespace fornani::world

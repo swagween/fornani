@@ -39,7 +39,7 @@ void Background::update(automa::ServiceProvider& svc) {
 	}
 }
 
-void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	auto epsilon = 0.99999f;
 
 	for (auto& layer : layers) {
@@ -57,7 +57,7 @@ void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 		for (auto& sprite : layer.sprites) {
 			for (auto i{0}; i < 2; ++i) {
 				for (auto j{0}; j < 2; ++j) {
-					sprite.setPosition(layer.final_position + sf::Vector2<float>{static_cast<float>(dimensions.x * epsilon) * static_cast<float>(i), static_cast<float>(dimensions.y * epsilon) * static_cast<float>(j)});
+					sprite.setPosition(layer.final_position + sf::Vector2f{static_cast<float>(dimensions.x * epsilon) * static_cast<float>(i), static_cast<float>(dimensions.y * epsilon) * static_cast<float>(j)});
 					shifter.render(svc, win, sprite, ctr);
 				}
 			}

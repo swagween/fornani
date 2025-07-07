@@ -34,7 +34,7 @@ class Jump {
 	[[nodiscard]] auto can_doublejump() const -> bool { return jump_counter.get_count() == 0; }
 	[[nodiscard]] auto is_doublejump() const -> bool { return jump_counter.get_count() >= 1; }
 	[[nodiscard]] auto just_doublejumped() const -> bool { return jump_counter.get_count() == 1; }
-	[[nodiscard]] auto get_coyote() const -> int { return coyote_time.get_cooldown(); }
+	[[nodiscard]] auto get_coyote() const -> int { return coyote_time.get(); }
 	[[nodiscard]] auto get_count() const -> int { return jump_counter.get_count(); }
 
 	void request_jump();
@@ -59,7 +59,7 @@ class Jump {
 	void prevent();
 	void doublejump();
 	int get_request() const;
-	int get_cooldown() const;
+	int get() const;
 
 	util::BitFlags<JumpTrigger> triggers{};
 	util::BitFlags<JumpState> states{};

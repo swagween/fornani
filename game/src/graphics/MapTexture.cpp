@@ -18,7 +18,7 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 		return;
 	}
 	m_global_offset = map.metagrid_coordinates * constants::i_chunk_size * static_cast<int>(m_scale);
-	m_map_dimensions = static_cast<sf::Vector2<float>>(map.dimensions) * m_scale;
+	m_map_dimensions = static_cast<sf::Vector2f>(map.dimensions) * m_scale;
 
 	auto u_scale = static_cast<unsigned int>(m_scale);
 	auto const& middleground = map.get_middleground();
@@ -50,8 +50,8 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 
 sf::RenderTexture& MapTexture::get(bool border) { return border ? m_border_texture : m_center_texture; }
 
-sf::Vector2<float> MapTexture::get_position() { return sf::Vector2<float>(static_cast<float>(m_global_offset.x), static_cast<float>(m_global_offset.y)); }
+sf::Vector2f MapTexture::get_position() { return sf::Vector2f(static_cast<float>(m_global_offset.x), static_cast<float>(m_global_offset.y)); }
 
-sf::Vector2<float> MapTexture::get_dimensions() const { return m_map_dimensions; }
+sf::Vector2f MapTexture::get_dimensions() const { return m_map_dimensions; }
 
 } // namespace fornani::gui

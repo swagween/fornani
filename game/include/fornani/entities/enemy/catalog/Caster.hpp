@@ -17,7 +17,7 @@ class Caster final : public Enemy {
 	Caster& operator=(Caster&&) = delete;
 	Caster(automa::ServiceProvider& svc, world::Map& map);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	void teleport();
 	[[nodiscard]] auto is_dormant() const -> bool { return state == CasterState::dormant || cooldowns.awaken.running(); }
 
@@ -34,7 +34,7 @@ class Caster final : public Enemy {
 
 	vfx::Gravitator target{};
 	entity::WeaponPackage energy_ball;
-	sf::Vector2<float> attack_target{};
+	sf::Vector2f attack_target{};
 
 	// packages
 	struct {

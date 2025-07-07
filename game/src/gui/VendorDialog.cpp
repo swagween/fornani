@@ -94,20 +94,20 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	// artwork.setScale({1.f, 1.f});
 
 	//// asset positions
-	// text.vendor_name.setPosition(sf::Vector2<float>{108, 290} + bring_in);
-	// text.buy_tab.setPosition(sf::Vector2<float>{276, 28} + bring_in);
-	// text.sell_tab.setPosition(sf::Vector2<float>{404, 28} + bring_in);
+	// text.vendor_name.setPosition(sf::Vector2f{108, 290} + bring_in);
+	// text.buy_tab.setPosition(sf::Vector2f{276, 28} + bring_in);
+	// text.sell_tab.setPosition(sf::Vector2f{404, 28} + bring_in);
 	// text.price.setPosition(ui_constants.price_position + bring_in);
 	// text.item_label.setPosition(ui_constants.item_label_position + bring_in);
-	// text.price_number.setPosition(sf::Vector2<float>{text.price.getPosition().x + text.price.getLocalBounds().size.x, text.price.getPosition().y} + bring_in);
+	// text.price_number.setPosition(sf::Vector2f{text.price.getPosition().x + text.price.getLocalBounds().size.x, text.price.getPosition().y} + bring_in);
 	// ui.setPosition(bring_in);
 	// portrait.set_position(portrait_position + bring_in);
-	// text.orb_count.setPosition(sf::Vector2<float>{svc.window->f_screen_dimensions().x - 72.f, 36.f} + bring_in);
+	// text.orb_count.setPosition(sf::Vector2f{svc.window->f_screen_dimensions().x - 72.f, 36.f} + bring_in);
 
 	// state == VendorState::buy ? text.buy_tab.setFillColor(colors::red) : text.buy_tab.setFillColor(colors::blue);
 	// state == VendorState::sell ? text.sell_tab.setFillColor(colors::red) : text.sell_tab.setFillColor(colors::blue);
 	// bool exchanged{};
-	// orb.sprite.update(sf::Vector2<float>{svc.window->f_screen_dimensions().x - 60.f, 32.f} + bring_in, 0, 0, true);
+	// orb.sprite.update(sf::Vector2f{svc.window->f_screen_dimensions().x - 60.f, 32.f} + bring_in, 0, 0, true);
 	// text.orb_count.setString(player.wallet.get_balance_string());
 	// if (opening()) { return; }
 

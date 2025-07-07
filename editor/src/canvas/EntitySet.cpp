@@ -22,12 +22,12 @@ EntitySet::EntitySet(fornani::data::ResourceFinder& finder, dj::Json& metadata, 
 	player_box.setOutlineThickness(-2);
 }
 
-void EntitySet::render(Canvas& map, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void EntitySet::render(Canvas& map, sf::RenderWindow& win, sf::Vector2f cam) {
 
 	// draw player start position
 	player_box.setOrigin(map.get_origin());
 	player_box.setSize({map.f_cell_size(), map.f_cell_size()});
-	player_box.setPosition(sf::Vector2<float>{variables.player_start} * map.f_cell_size() + cam);
+	player_box.setPosition(sf::Vector2f{variables.player_start} * map.f_cell_size() + cam);
 	win.draw(player_box);
 
 	// draw general entities

@@ -8,7 +8,7 @@
 
 namespace fornani::vfx {
 
-Atmosphere::Atmosphere(automa::ServiceProvider& svc, sf::Vector2<float> span, int type) {
+Atmosphere::Atmosphere(automa::ServiceProvider& svc, sf::Vector2f span, int type) {
 	auto density{32};
 	auto const chunks = (span.x / (constants::f_cell_size * 16.f)) * (span.y / (constants::f_cell_size * 16.f));
 	for (auto i{0}; i < density * chunks; ++i) {
@@ -31,7 +31,7 @@ void Atmosphere::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	for (auto& fly : dragonflies) { fly.update(svc, map, player); }
 }
 
-void Atmosphere::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Atmosphere::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	svc.out_value = 0;
 	for (auto const& fly : fireflies) { fly->render(svc, win, cam); }
 	for (auto& fly : dragonflies) { fly.render(svc, win, cam); }

@@ -7,7 +7,7 @@
 
 namespace fornani::vfx {
 
-Spark::Spark(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Color color, std::string_view type) : type(type) {
+Spark::Spark(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Color color, std::string_view type) : type(type) {
 	auto const& in_data = svc.data.sparkler[type];
 	parameters.wobble = in_data["wobble"].as<float>();
 	parameters.frequency = in_data["frequency"].as<float>();
@@ -24,7 +24,7 @@ Spark::Spark(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Color col
 	variables.energy = util::random::random_range_float(1.0f - parameters.volatility, 1.0f + parameters.volatility);
 	variables.offset = util::random::random_range_float(0.f, static_cast<float>(std::numbers::pi) * 2.f);
 
-	if (in_data["fader"].as_bool()) { fader = util::Fader(svc, lifespan.get_cooldown(), in_data["color"].as_string()); }
+	if (in_data["fader"].as_bool()) { fader = util::Fader(svc, lifespan.get(), in_data["color"].as_string()); }
 	if (fader) { fader.value().get_sprite().setScale({3.f, 3.f}); }
 }
 
@@ -36,7 +36,7 @@ void Spark::update(automa::ServiceProvider& svc) {
 	if (fader) { fader.value().update(); }
 }
 
-void Spark::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Spark::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setPosition(position - cam);
 	if (fader) {
 		fader.value().get_sprite().setPosition(position - cam);

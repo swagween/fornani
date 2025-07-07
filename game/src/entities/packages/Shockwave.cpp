@@ -5,7 +5,7 @@
 
 namespace fornani::entity {
 
-Shockwave::Shockwave(sf::Vector2<float> speed) : speed(speed) {
+Shockwave::Shockwave(sf::Vector2f speed) : speed(speed) {
 	hit.bounds.setRadius(16.f);
 	hit.bounds.setOrigin({8.f, 8.f});
 }
@@ -26,10 +26,10 @@ void Shockwave::update(automa::ServiceProvider& svc, world::Map& map) {
 	}
 }
 
-void Shockwave::set_position(sf::Vector2<float> to_position) { hit.bounds.setPosition(to_position); }
+void Shockwave::set_position(sf::Vector2f to_position) { hit.bounds.setPosition(to_position); }
 
 void Shockwave::handle_player(player::Player& player) { hit.within_bounds(player.collider.bounding_box) && lifetime.running() ? hit.activate() : hit.deactivate(); }
 
-void Shockwave::render(sf::RenderWindow& win, sf::Vector2<float> cam) { hit.render(win, cam); }
+void Shockwave::render(sf::RenderWindow& win, sf::Vector2f cam) { hit.render(win, cam); }
 
 } // namespace fornani::entity

@@ -11,7 +11,7 @@ void ColorFade::start() { cooldown.start(duration); }
 
 void ColorFade::update() {
 	cooldown.update();
-	auto diff = duration - cooldown.get_cooldown();
+	auto diff = duration - cooldown.get();
 	if (colors.size() < 3) { return; }
 	current_color = colors.at(1);
 	if (diff < threshold) { current_color = colors.at(0); }

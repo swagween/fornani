@@ -7,12 +7,13 @@
 
 #include <imgui.h>
 #include <ccmath/ext/clamp.hpp>
+#include <numbers>
 
 namespace fornani::enemy {
 
 Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
-	: Animatable(svc, "enemy_" + std::string{label}, {svc.data.enemy[label]["physical"]["sprite_dimensions"][0].as<int>(), svc.data.enemy[label]["physical"]["sprite_dimensions"][1].as<int>()}), label(label), health_indicator{svc},
-	  directions{.actual{start_direction}, .desired{start_direction}}, hurt_effect{128} {
+	: Animatable(svc, "enemy_" + std::string{label}, {svc.data.enemy[label]["physical"]["sprite_dimensions"][0].as<int>(), svc.data.enemy[label]["physical"]["sprite_dimensions"][1].as<int>()}), metadata{.variant{variant}}, label(label),
+	  health_indicator{svc}, directions{.actual{start_direction}, .desired{start_direction}}, hurt_effect{128} {
 
 	if (spawned) { flags.general.set(GeneralFlags::spawned); }
 
@@ -40,10 +41,10 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 	m_native_offset = sf::Vector2f{in_physical["offset"][0].as<float>(), in_physical["offset"][1].as<float>()};
 
 	metadata.id = in_metadata["id"].as<int>();
-	metadata.variant = in_metadata["variant"].as_string();
 
 	physical.alert_range.set_dimensions({in_physical["alert_range"][0].as<float>(), in_physical["alert_range"][1].as<float>()});
 	physical.hostile_range.set_dimensions({in_physical["hostile_range"][0].as<float>(), in_physical["hostile_range"][1].as<float>()});
+	physical.home_detector.set_dimensions({in_physical["home_detector"][0].as<float>(), in_physical["home_detector"][1].as<float>()});
 
 	attributes.base_damage = in_attributes["base_damage"].as<float>();
 	attributes.base_hp = in_attributes["base_hp"].as<float>();
@@ -98,9 +99,10 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
 
 	impulse.update();
+	sound.hurt_sound_cooldown.update();
 
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
-	sound.hurt_sound_cooldown.update();
+
 	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.external_id, attributes.respawn_distance, permadeath()); }
 	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
@@ -123,14 +125,9 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	auto flash_rate = 64;
 	set_channel(EnemyChannel::standard);
 	if (flags.general.test(GeneralFlags::has_invincible_channel)) { flags.state.test(StateFlags::vulnerable) ? set_channel(EnemyChannel::standard) : set_channel(EnemyChannel::invincible); }
-	if (hurt_effect.running()) { set_channel((hurt_effect.get_cooldown() / flash_rate) % 2 == 0 ? EnemyChannel::hurt_1 : EnemyChannel::hurt_2); }
+	if (hurt_effect.running()) { set_channel((hurt_effect.get() / flash_rate) % 2 == 0 ? EnemyChannel::hurt_1 : EnemyChannel::hurt_2); }
 	if (hurt_effect.running()) { shake(); }
 	hurt_effect.update();
-	if (flags.state.test(StateFlags::hurt)) {
-		hurt_effect.start();
-		// TODO: play sound here
-		flags.state.reset(StateFlags::hurt);
-	}
 
 	// shake
 	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
@@ -170,6 +167,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	// update ranges
 	physical.alert_range.set_position(collider.bounding_box.get_position() - (physical.alert_range.get_dimensions() * 0.5f) + (collider.dimensions * 0.5f));
 	physical.hostile_range.set_position(collider.bounding_box.get_position() - (physical.hostile_range.get_dimensions() * 0.5f) + (collider.dimensions * 0.5f));
+	physical.home_detector.set_position(collider.bounding_box.get_position() - (physical.home_detector.get_dimensions() * 0.5f) + (collider.dimensions * 0.5f));
 	if (player.collider.bounding_box.overlaps(physical.alert_range)) {
 		if (!is_alert()) { flags.triggers.set(Triggers::alert); }
 		flags.state.set(StateFlags::alert);
@@ -194,7 +192,7 @@ void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::P
 	Animatable::tick();
 }
 
-void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
 	auto sprite_position = collider.get_center() - cam + m_random_offset + m_native_offset;
@@ -202,15 +200,16 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	Drawable::draw(win);
 
 	if (svc.greyblock_mode()) {
-		physical.alert_range.render(win, cam);
-		physical.hostile_range.render(win, cam);
 		collider.render(win, cam);
 		secondary_collider.render(win, cam);
+		physical.alert_range.render(win, cam);
+		physical.hostile_range.render(win, cam);
+		physical.home_detector.render(win, cam, colors::blue);
 	}
 	// debug();
 }
 
-void Enemy::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Enemy::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (flags.state.test(StateFlags::invisible)) { return; }
 	health_indicator.render(svc, win, cam);
 }
@@ -261,11 +260,35 @@ void Enemy::on_crush(world::Map& map) {
 	}
 }
 
+bool Enemy::seek_home(world::Map& map) {
+	auto distance = std::numeric_limits<float>::max();
+	auto my_point = sf::Vector2f{};
+	for (auto& home : map.home_points) {
+		distance = std::min(distance, (home - physical.home_detector.get_center()).length());
+		if (distance < std::numeric_limits<float>::max()) { my_point = home; }
+	}
+
+	// my_point is our target
+	flags.state.reset(StateFlags::advance);
+	if (physical.home_detector.overlaps(my_point)) {
+		flags.state.reset(StateFlags::advance);
+		return true;
+	} else {
+		return false;
+	}
+	if (my_point.length() > 0.f) {
+		flags.state.set(StateFlags::advance);
+		directions.desired.set((my_point.x < collider.get_center().x) ? LNR::left : LNR::right);
+	} else {
+		return false;
+	}
+}
+
 bool Enemy::player_behind(player::Player& player) const { return player.collider.physics.position.x + player.collider.bounding_box.get_dimensions().x * 0.5f < collider.physics.position.x + collider.dimensions.x * 0.5f; }
 
 void Enemy::face_player(player::Player& player) { directions.desired.set((player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right); }
 
-void Enemy::set_position_from_scaled(sf::Vector2<float> pos) {
+void Enemy::set_position_from_scaled(sf::Vector2f pos) {
 	auto new_pos = pos;
 	auto round = static_cast<int>(collider.dimensions.y) % 32;
 	new_pos.y += static_cast<float>(32.f - round);

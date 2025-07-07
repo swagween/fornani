@@ -15,7 +15,7 @@ void Erase::update(Canvas& canvas) {
 
 void Erase::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {}
 
-void Erase::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) {}
+void Erase::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) {}
 
 void Erase::store_tile(int index) { tile = index; }
 

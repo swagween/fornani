@@ -50,7 +50,7 @@ void Hulmet::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	state_function = state_function();
 }
 
-void Hulmet::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Hulmet::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Enemy::render(svc, win, cam);
 	if (died()) { return; }
 	if (m_state.actual != HulmetState::roll && m_state.actual != HulmetState::sleep) { m_parts.gun.render(svc, win, cam); }

@@ -7,7 +7,7 @@
 
 namespace fornani::entity {
 
-Vine::Vine(automa::ServiceProvider& svc, sf::Vector2<float> position, int length, int size, bool foreground, bool reversed)
+Vine::Vine(automa::ServiceProvider& svc, sf::Vector2f position, int length, int size, bool foreground, bool reversed)
 	: position(position), length(length), size(size), chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, position, length, reversed),
 	  sprite{size == 1 ? svc.assets.get_texture("vine_small") : svc.assets.get_texture("vine_large")} {
 	drawbox.setOutlineColor(colors::blue);
@@ -65,7 +65,7 @@ void Vine::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectil
 	}
 }
 
-void Vine::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Vine::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (svc.greyblock_mode()) { chain.render(svc, win, cam); }
 	if (treasure_balls) {
 		for (auto const& ball : treasure_balls.value()) { ball->render(svc, win, cam); }

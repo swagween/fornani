@@ -35,7 +35,7 @@ void Rain::update(automa::ServiceProvider& svc, world::Map& map) {
 	std::erase_if(drops, [](auto const& d) { return d.decayed(); });
 }
 
-void Rain::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Rain::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	for (auto& drop : drops) {
 		drop.collided() ? raindrop.setSize({dimensions.x, dimensions.x}) : raindrop.setSize(dimensions);
 		drop.collided() ? raindrop.setOrigin({dimensions.x * 0.5f, dimensions.x}) : raindrop.setOrigin({dimensions.x * 0.5f, dimensions.y});

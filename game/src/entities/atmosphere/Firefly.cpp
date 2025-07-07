@@ -7,7 +7,7 @@
 
 namespace fornani::vfx {
 
-Firefly::Firefly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprite(svc.assets.get_texture("firefly"), {9, 9}) {
+Firefly::Firefly(automa::ServiceProvider& svc, sf::Vector2f start) : sprite(svc.assets.get_texture("firefly"), {9, 9}) {
 	physics.set_global_friction(0.99f);
 	physics.position = start;
 	physics.velocity = util::random::random_vector_float(-1.f, 1.f);
@@ -46,7 +46,7 @@ void Firefly::update(automa::ServiceProvider& svc, world::Map& map) {
 	if (trail && (svc.ticker.every_x_ticks(20) || light.is_almost_complete())) { trail.value()->update(sprite.get_sprite(), physics.position); }
 }
 
-void Firefly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Firefly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (svc.greyblock_mode()) { return; }
 	++svc.out_value;
 	if (trail) { trail.value()->drag(win, cam); }

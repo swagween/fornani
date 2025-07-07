@@ -38,7 +38,7 @@ Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& 
 	background.setFillColor(colors::ui_black);
 }
 
-void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
+void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2f player_position) {
 
 	if (services.window->fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
 
@@ -380,7 +380,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("World Grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");
 								ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
 								ImGui::Text("Coyote Time: %i", player.controller.get_jump().get_coyote());
-								ImGui::Text("Push Time: %i", player.cooldowns.push.get_cooldown());
+								ImGui::Text("Push Time: %i", player.cooldowns.push.get());
 								ImGui::Separator();
 								ImGui::Text("Jump");
 								ImGui::Separator();
@@ -416,7 +416,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Elapsed Ticks: %i", player.animation.animation.get_elapsed_ticks());
 								ImGui::Text("Current Frame: %i", player.animation.animation.frame.get_count());
 								ImGui::Text("Loop: %i", player.animation.animation.loop.get_count());
-								ImGui::Text("Frame Timer: %i", player.animation.animation.frame_timer.get_cooldown());
+								ImGui::Text("Frame Timer: %i", player.animation.animation.frame_timer.get());
 								ImGui::Text("Complete? %s", player.animation.animation.complete() ? "Yes" : "No");
 								ImGui::Text("One Off? %s", player.animation.animation.params.num_loops > -1 ? "Yes" : "No");
 								ImGui::Text("Repeat Last Frame? %s", player.animation.animation.params.repeat_last_frame ? "Yes" : "No");

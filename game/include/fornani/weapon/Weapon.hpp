@@ -25,16 +25,16 @@ struct WeaponSpecifications {
 
 struct Offsets {
 	struct {
-		sf::Vector2<float> global{};
-		sf::Vector2<float> barrel{};
+		sf::Vector2f global{};
+		sf::Vector2f barrel{};
 	} render{};
 	struct {
-		sf::Vector2<float> barrel{};
+		sf::Vector2f barrel{};
 	} gameplay{};
 };
 
 struct EmitterAttributes {
-	sf::Vector2<float> dimensions{};
+	sf::Vector2f dimensions{};
 	std::string type{};
 	sf::Color color{};
 };
@@ -44,8 +44,8 @@ class Weapon {
 	Weapon(automa::ServiceProvider& svc, int id, bool enemy = false);
 
 	void update(automa::ServiceProvider& svc, Direction to_direction);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	void render_ui(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> position);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void render_ui(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f position);
 
 	void equip();
 	void unequip();
@@ -60,9 +60,9 @@ class Weapon {
 	bool cooling_down() const;
 	bool can_shoot() const;
 
-	void set_position(sf::Vector2<float> pos);
-	void force_position(sf::Vector2<float> pos);
-	void set_barrel_point(sf::Vector2<float> point);
+	void set_position(sf::Vector2f pos);
+	void force_position(sf::Vector2f pos);
+	void set_barrel_point(sf::Vector2f point);
 	void set_orientation(Direction to_direction);
 	void set_team(Team team);
 	void set_firing_direction(Direction to_direction);
@@ -80,19 +80,20 @@ class Weapon {
 	[[nodiscard]] auto get_sound_id() const -> int { return static_cast<int>(m_audio.shoot); }
 	[[nodiscard]] auto get_active_projectiles() const -> int { return active_projectiles.get_count(); }
 	[[nodiscard]] auto get_inventory_state() const -> int { return static_cast<int>(inventory_state); }
-	[[nodiscard]] auto get_ui_position() const -> sf::Vector2<float> { return visual.ui.getPosition(); }
+	[[nodiscard]] auto get_ui_position() const -> sf::Vector2f { return visual.ui.getPosition(); }
 	[[nodiscard]] auto get_description() const -> std::string_view { return metadata.description; }
 	[[nodiscard]] auto multishot() const -> bool { return specifications.multishot != 0; }
-	[[nodiscard]] auto get_barrel_point() const -> sf::Vector2<float> { return offsets.gameplay.barrel; }
-	[[nodiscard]] auto get_cooldown() const -> int { return cooldowns.cooldown.get_cooldown(); }
+	[[nodiscard]] auto get_barrel_point() const -> sf::Vector2f { return offsets.gameplay.barrel; }
+	[[nodiscard]] auto get_cooldown() const -> int { return cooldowns.cooldown.get(); }
 	[[nodiscard]] auto get_firing_direction() & -> Direction& { return firing_direction; }
-	[[nodiscard]] auto get_global_offset() const -> sf::Vector2<float> { return offsets.render.global; };
+	[[nodiscard]] auto get_global_offset() const -> sf::Vector2f { return offsets.render.global; };
 	[[nodiscard]] auto get_recoil() const -> float { return specifications.recoil; }
 	[[nodiscard]] auto get_multishot() const -> int { return specifications.multishot; }
 	[[nodiscard]] auto get_label() const -> std::string_view { return metadata.label; }
 	[[nodiscard]] auto get_type() const -> ProjectileType { return projectile.get_type(); }
 	[[nodiscard]] auto get_ui_color() const -> int { return static_cast<int>(visual.color); }
-	[[nodiscard]] auto get_recoil_force() const -> sf::Vector2<float> { return sf::Vector2<float>{-specifications.recoil, 0.f}; }
+	[[nodiscard]] auto get_recoil_force() const -> sf::Vector2f { return sf::Vector2f{-specifications.recoil, 0.f}; }
+	[[nodiscard]] auto get_reload() const -> util::Cooldown { return cooldowns.reload; }
 
 	Projectile projectile;
 	Ammo ammo{};
@@ -114,15 +115,15 @@ class Weapon {
 	struct {
 		components::PhysicsComponent physics{};
 		components::SteeringBehavior steering{};
-		sf::Vector2<float> final_position{};
+		sf::Vector2f final_position{};
 	} physical{};
 
 	struct {
 		sf::Sprite sprite;
 		sf::Sprite ui;
-		sf::Vector2<float> position{};
+		sf::Vector2f position{};
 		sf::Vector2<int> dimensions{};
-		std::vector<sf::Vector2<float>> anchor_points{};
+		std::vector<sf::Vector2f> anchor_points{};
 		UIColor color{};
 		int texture_lookup{};
 	} visual;
@@ -142,7 +143,6 @@ class Weapon {
 	struct {
 		util::Cooldown cooldown{};
 		util::Cooldown reload{};
-		util::Cooldown down_time{};
 	} cooldowns{};
 };
 

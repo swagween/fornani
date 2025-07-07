@@ -76,12 +76,12 @@ class Soundboard {
 		util::BitFlags<Meatsquash> meatsquash{};
 	} flags{};
 
-	void play(capo::IEngine& engine, automa::ServiceProvider& svc, capo::Buffer const& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2<float> distance = {},
+	void play(capo::IEngine& engine, automa::ServiceProvider& svc, capo::Buffer const& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2f distance = {},
 			  int echo_count = 0, int echo_rate = 64);
 
   private:
-	void repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset = 0.f, float attenuation = 1.f, sf::Vector2<float> distance = {});
-	void randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol = 100.f, float attenuation = 1.f, sf::Vector2<float> distance = {}, bool wait_until_over = false);
+	void repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset = 0.f, float attenuation = 1.f, sf::Vector2f distance = {});
+	void randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol = 100.f, float attenuation = 1.f, sf::Vector2f distance = {}, bool wait_until_over = false);
 	void simple_repeat(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label);
 	void stop(std::string const& label);
 

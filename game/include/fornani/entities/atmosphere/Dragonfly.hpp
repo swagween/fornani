@@ -23,9 +23,9 @@ namespace fornani::vfx {
 
 class Dragonfly {
   public:
-	Dragonfly(automa::ServiceProvider& svc, sf::Vector2<float> start);
+	Dragonfly(automa::ServiceProvider& svc, sf::Vector2f start);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void set_forces(float seek, float walk, float evade);
 	void debug();
   private:

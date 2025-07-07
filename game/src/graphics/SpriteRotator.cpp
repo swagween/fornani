@@ -4,7 +4,7 @@
 
 namespace fornani::vfx {
 
-void SpriteRotator::handle_rotation(sf::Sprite& sprite, sf::Vector2<float> direction, int num_angles, bool radial) {
+void SpriteRotator::handle_rotation(sf::Sprite& sprite, sf::Vector2f direction, int num_angles, bool radial) {
 
 	sprite.setScale({1.f, 1.f});
 	sprite.setRotation(sf::degrees(0.f));

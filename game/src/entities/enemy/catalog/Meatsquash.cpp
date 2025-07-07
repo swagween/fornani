@@ -33,7 +33,7 @@ void Meatsquash::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
 	Enemy::update(svc, map, player);
 
-	auto bite_offset = sf::Vector2<float>{0.f, -88.f};
+	auto bite_offset = sf::Vector2f{0.f, -88.f};
 	attacks.bite.set_position(collider.get_center() + bite_offset);
 	attacks.bite.update();
 	attacks.bite.handle_player(player);
@@ -55,7 +55,7 @@ void Meatsquash::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	state_function = state_function();
 }
 
-void Meatsquash::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Meatsquash::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (died()) { return; }
 	// attacks.bite.render(win, cam);
 }

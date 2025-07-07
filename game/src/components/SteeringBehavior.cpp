@@ -15,12 +15,12 @@ void SteeringBehavior::smooth_random_walk(PhysicsComponent& physics, float dampe
 	float const theta = wander_displacement + ::std::atan2(physics.velocity.y, physics.velocity.x);
 	float const x = radius * ::std::cos(theta);
 	float const y = radius * ::std::sin(theta);
-	auto const target = wander + sf::Vector2<float>{x, y};
+	auto const target = wander + sf::Vector2f{x, y};
 	auto const steering = util::unit(target - physics.position) * dampen;
 	physics.apply_force(steering);
 }
 
-void SteeringBehavior::target(components::PhysicsComponent& physics, sf::Vector2<float> point, float strength) {
+void SteeringBehavior::target(components::PhysicsComponent& physics, sf::Vector2f point, float strength) {
 	auto distance = point - physics.position;
 	auto mag = util::magnitude(distance);
 	auto epsilon{0.1f};
@@ -28,14 +28,14 @@ void SteeringBehavior::target(components::PhysicsComponent& physics, sf::Vector2
 	physics.apply_force(distance * strength);
 }
 
-void SteeringBehavior::seek(components::PhysicsComponent& physics, sf::Vector2<float> point, float strength) {
+void SteeringBehavior::seek(components::PhysicsComponent& physics, sf::Vector2f point, float strength) {
 	auto force = point - physics.position;
 	force -= physics.velocity;
 	force *= strength;
 	physics.apply_force(force);
 }
 
-void SteeringBehavior::evade(components::PhysicsComponent& physics, sf::Vector2<float> point, float strength, float max_force) {
+void SteeringBehavior::evade(components::PhysicsComponent& physics, sf::Vector2f point, float strength, float max_force) {
 	auto distance = point - physics.position;
 	auto mag = util::magnitude(distance);
 	mag = std::max(0.0001f, mag);
@@ -44,7 +44,7 @@ void SteeringBehavior::evade(components::PhysicsComponent& physics, sf::Vector2<
 	physics.apply_force(distance * str * -1.f);
 }
 
-void SteeringBehavior::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void SteeringBehavior::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	sf::CircleShape wander_circle{};
 	wander_circle.setRadius(2.f);
 	wander_circle.setOrigin({2.f, 2.f});

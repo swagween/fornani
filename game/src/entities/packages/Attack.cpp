@@ -12,7 +12,7 @@ void Attack::update() {
 	sensor.bounds.setOrigin({sensor.bounds.getRadius(), sensor.bounds.getRadius()});
 }
 
-void Attack::set_position(sf::Vector2<float> position) {
+void Attack::set_position(sf::Vector2f position) {
 	sensor.bounds.setPosition(position + origin);
 	hit.bounds.setPosition(position + hit_offset + origin);
 }
@@ -22,7 +22,7 @@ void Attack::handle_player(player::Player& player) {
 	hit.within_bounds(player.collider.bounding_box) ? hit.activate() : hit.deactivate();
 }
 
-void Attack::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Attack::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	sensor.render(win, cam);
 	hit.render(win, cam);
 }

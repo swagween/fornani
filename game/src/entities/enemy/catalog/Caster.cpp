@@ -19,9 +19,9 @@ Caster::Caster(automa::ServiceProvider& svc, world::Map& map)
 	directions.movement.lnr = LNR::neutral;
 	energy_ball.get().set_team(arms::Team::guardian);
 
-	target = vfx::Gravitator(sf::Vector2<float>{}, sf::Color::Transparent, 0.013f);
-	target.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.96f, 0.98f}, 1.0f);
-	target.collider.physics.maximum_velocity = sf::Vector2<float>(20.f, 20.f);
+	target = vfx::Gravitator(sf::Vector2f{}, sf::Color::Transparent, 0.013f);
+	target.collider.physics = components::PhysicsComponent(sf::Vector2f{0.96f, 0.98f}, 1.0f);
+	target.collider.physics.maximum_velocity = sf::Vector2f(20.f, 20.f);
 
 	variant = util::random::percent_chance(15) ? CasterVariant::tyrant : CasterVariant::apprentice;
 	if (variant == CasterVariant::apprentice) { flags.general.reset(GeneralFlags::rare_drops); }
@@ -39,9 +39,9 @@ void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	if (!flags.state.test(StateFlags::invisible)) {
 		target.update(svc);
 		// set target based on player position
-		auto idle_distance = sf::Vector2<float>{100.f, -160.f};
-		auto signal_distance = sf::Vector2<float>{-300.f, 0.f};
-		auto standard_distance = sf::Vector2<float>{-60.f, -140.f};
+		auto idle_distance = sf::Vector2f{100.f, -160.f};
+		auto signal_distance = sf::Vector2f{-300.f, 0.f};
+		auto standard_distance = sf::Vector2f{-60.f, -140.f};
 		if (state == CasterState::idle) {
 			if (player.collider.grounded()) {
 			} else {
@@ -99,7 +99,7 @@ void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		parts.wand.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
 	}
 
-	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 10.f};
+	secondary_collider.physics.position = collider.physics.position - sf::Vector2f{0.f, 10.f};
 	secondary_collider.physics.position.x += directions.actual.lnr == LNR::left ? 2.f : collider.dimensions.x - secondary_collider.dimensions.x - 2.f;
 	secondary_collider.sync_components();
 
@@ -125,7 +125,7 @@ void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	state_function = state_function();
 }
 
-void Caster::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Caster::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (died() || state == CasterState::dormant || flags.state.test(StateFlags::invisible)) { return; }
 	variant == CasterVariant::apprentice ? parts.scepter.render(svc, win, cam) : parts.wand.render(svc, win, cam);
 	if (svc.greyblock_mode()) {}

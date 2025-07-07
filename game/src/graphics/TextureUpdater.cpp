@@ -99,7 +99,7 @@ void TextureUpdater::update_texture(sf::Texture& texture) {
 	image.clear();
 }
 
-void graphics::TextureUpdater::debug_render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+void graphics::TextureUpdater::debug_render(sf::RenderWindow& win, sf::Vector2f& campos) {
 	debug.setSize({8.f, 8.f});
 	int i{};
 	for (auto& color : map_colors) {

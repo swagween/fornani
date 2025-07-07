@@ -18,10 +18,10 @@ class WindowManager {
 	void restore_view();
 	void set_screencap();
 	[[nodiscard]] auto i_screen_dimensions() const -> sf::Vector2<int> { return m_screen_dimensions; }
-	[[nodiscard]] auto f_screen_dimensions() const -> sf::Vector2<float> { return sf::Vector2<float>{static_cast<float>(m_screen_dimensions.x), static_cast<float>(m_screen_dimensions.y)}; }
-	[[nodiscard]] auto f_center_screen() const -> sf::Vector2<float> { return f_screen_dimensions() * 0.5f; }
+	[[nodiscard]] auto f_screen_dimensions() const -> sf::Vector2f { return sf::Vector2f{static_cast<float>(m_screen_dimensions.x), static_cast<float>(m_screen_dimensions.y)}; }
+	[[nodiscard]] auto f_center_screen() const -> sf::Vector2f { return f_screen_dimensions() * 0.5f; }
 	[[nodiscard]] auto fullscreen() const -> bool { return is_fullscreen; }
-	[[nodiscard]] auto in_window(sf::Vector2<float> point, sf::Vector2<float> dimensions) const -> bool {
+	[[nodiscard]] auto in_window(sf::Vector2f point, sf::Vector2f dimensions) const -> bool {
 		if (point.x + dimensions.x < 0.f || point.x - dimensions.x > f_screen_dimensions().x) { return false; }
 		if (point.y + dimensions.y < 0.f || point.y - dimensions.y > f_screen_dimensions().y) { return false; }
 		return true;

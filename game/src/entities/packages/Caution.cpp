@@ -14,7 +14,7 @@ void Caution::avoid_ledges(world::Map& map, shape::Collider& collider, Direction
 	heights.perceived = {};
 	retreat = {};
 	if (height < 1 || map.dimensions.x < 1 || map.dimensions.y < 1) { return; }
-	auto buffer = sf::Vector2<float>{0.f, 8.f};
+	auto buffer = sf::Vector2f{0.f, 8.f};
 	testers.left = collider.vicinity.vertices.at(3) - buffer;
 	testers.right = collider.vicinity.vertices.at(2) - buffer;
 
@@ -42,7 +42,7 @@ Direction Caution::projectile_detected(world::Map& map, shape::Shape& zone, arms
 }
 
 bool Caution::detected_step(world::Map& map, shape::Collider& collider, Direction const& direction, sf::Vector2f offset, int vision) {
-	auto buffer = sf::Vector2<float>{collider.dimensions.x, 0.f};
+	auto buffer = sf::Vector2f{collider.dimensions.x, 0.f};
 	testers.left = collider.get_center() - (buffer + sf::Vector2f{offset.x, -offset.y});
 	testers.right = collider.get_center() + buffer + offset;
 
@@ -67,7 +67,7 @@ bool Caution::detected_ceiling(world::Map& map, shape::Collider& collider, sf::V
 	return false;
 }
 
-void Caution::debug_render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Caution::debug_render(sf::RenderWindow& win, sf::Vector2f cam) {
 	sf::CircleShape probe{};
 	probe.setFillColor(colors::mythic_green);
 	probe.setRadius(4.f);

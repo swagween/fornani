@@ -9,7 +9,7 @@
 
 namespace fornani::components {
 
-void PhysicsComponent::apply_force(sf::Vector2<float> force) { sf::operator+=(acceleration, force); }
+void PhysicsComponent::apply_force(sf::Vector2f force) { sf::operator+=(acceleration, force); }
 
 void PhysicsComponent::apply_force_at_angle(float magnitude, float angle) {
 	acceleration.x += (magnitude * std::cos(angle)) / mass;
@@ -21,7 +21,7 @@ void PhysicsComponent::multiply_velocity(float multiplier) {
 	real_velocity *= multiplier;
 }
 
-void PhysicsComponent::multiply_acceleration(float multiplier, sf::Vector2<float> weight) {
+void PhysicsComponent::multiply_acceleration(float multiplier, sf::Vector2f weight) {
 	acceleration.x *= weight.x > 0.f ? multiplier * weight.x : 1.f;
 	acceleration.y *= weight.y > 0.f ? multiplier * weight.y : 1.f;
 }
@@ -40,7 +40,7 @@ void PhysicsComponent::integrate(automa::ServiceProvider& svc) {
 	previous_position = position;
 
 	acceleration.y += gravity * dt;
-	sf::Vector2<float> friction = flags.test(State::grounded) ? ground_friction : air_friction;
+	sf::Vector2f friction = flags.test(State::grounded) ? ground_friction : air_friction;
 	velocity.x = (velocity.x + (acceleration.x / mass) * dt) * friction.x;
 	velocity.y = (velocity.y + (acceleration.y / mass) * dt) * friction.y;
 	velocity.x = ccm::ext::clamp(velocity.x, -maximum_velocity.x, maximum_velocity.x);
@@ -95,7 +95,7 @@ void PhysicsComponent::zero_y() {
 
 void PhysicsComponent::hitstun() {}
 
-void PhysicsComponent::set_constant_friction(sf::Vector2<float> fric) {
+void PhysicsComponent::set_constant_friction(sf::Vector2f fric) {
 	ground_friction = {fric.x, fric.x};
 	air_friction = {fric.y, fric.y};
 }

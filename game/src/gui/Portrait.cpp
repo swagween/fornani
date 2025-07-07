@@ -4,7 +4,7 @@
 namespace fornani::gui {
 
 Portrait::Portrait(automa::ServiceProvider& svc, bool left) : is_nani(!left), sprite{svc.assets.get_texture("character_portraits")}, window{svc.assets.get_texture("portrait_window")} {
-	dimensions = sf::Vector2<float>{128, 256};
+	dimensions = sf::Vector2f{128, 256};
 	end_position = sf::Vector2{pad_x, svc.window->i_screen_dimensions().y - pad_y - dimensions.y};
 	bring_in();
 	if (is_nani) {
@@ -40,7 +40,7 @@ void Portrait::reset(automa::ServiceProvider& svc) {
 	emotion = 1;
 }
 
-void Portrait::set_position(sf::Vector2<float> pos) {
+void Portrait::set_position(sf::Vector2f pos) {
 	window.setPosition(pos);
 	sprite.setPosition(pos);
 	m_physics.position = pos;

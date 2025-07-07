@@ -19,10 +19,10 @@ namespace fornani::entity {
 enum class SpawnablePlatformState : std::uint8_t { open, opening, fading, closing, dormant };
 class SpawnablePlatform {
   public:
-	SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2<float> position, int index = 0);
-	void update(automa::ServiceProvider& svc, player::Player& player, sf::Vector2<float> target);
+	SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2f position, int index = 0);
+	void update(automa::ServiceProvider& svc, player::Player& player, sf::Vector2f target);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	[[nodiscard]] auto get_index() const -> int { return index; }
 	[[nodiscard]] auto collidable() const -> bool { return state == SpawnablePlatformState::open || state == SpawnablePlatformState::opening || state == SpawnablePlatformState::fading; }
 

@@ -37,7 +37,7 @@ void Thug::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		attacks.rush.origin.x = 20.f;
 		attacks.rush.hit_offset.x = 0.f;
 	} else {
-		sf::Vector2<float> dir_offset{Enemy::collider.bounding_box.get_dimensions().x, 0.f};
+		sf::Vector2f dir_offset{Enemy::collider.bounding_box.get_dimensions().x, 0.f};
 		attacks.punch.set_position(Enemy::collider.physics.position + dir_offset);
 		attacks.rush.set_position(Enemy::collider.physics.position + dir_offset);
 		attacks.punch.origin.x = 10.f;
@@ -69,7 +69,7 @@ void Thug::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
 	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
 	Enemy::update(svc, map, player);
-	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 14.f};
+	secondary_collider.physics.position = collider.physics.position - sf::Vector2f{0.f, 14.f};
 	secondary_collider.physics.position.x += directions.actual.lnr == LNR::left ? 10.f : collider.dimensions.x - secondary_collider.dimensions.x - 10.f;
 	secondary_collider.sync_components();
 	player.collider.handle_collider_collision(secondary_collider);
@@ -101,7 +101,7 @@ void Thug::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	state_function = state_function();
 }
 
-void Thug::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Thug::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (!svc.greyblock_mode()) {
 	} else {
 		if (state == ThugState::punch) { attacks.punch.render(win, cam); }

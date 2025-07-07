@@ -52,7 +52,7 @@ void HelpText::set_string(std::string string) { data.setString(string); }
 
 void HelpText::set_alpha(std::uint8_t a) { text_color.a = a; }
 
-void HelpText::set_position(sf::Vector2<float> pos) { position = pos; }
+void HelpText::set_position(sf::Vector2f pos) { position = pos; }
 
 void HelpText::reset() {
 	text_color.a = 0;

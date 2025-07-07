@@ -14,11 +14,11 @@ Spring::Spring(SpringParameters params) : params(params) {
 	sensor.bounds.setOrigin({sensor.bounds.getRadius(), sensor.bounds.getRadius()});
 }
 
-Spring::Spring(SpringParameters params, sf::Vector2<float> anchor, sf::Vector2<float> bob) : anchor(anchor), bob(bob) {}
+Spring::Spring(SpringParameters params, sf::Vector2f anchor, sf::Vector2f bob) : anchor(anchor), bob(bob) {}
 
 void Spring::calculate() { calculate_force(); }
 
-void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2<float> external_force, bool loose, bool sag) {
+void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2f external_force, bool loose, bool sag) {
 	variables.bob_physics.gravity = sag ? custom_grav : 0.f;
 	variables.anchor_physics.gravity = sag ? custom_grav : 0.f;
 	calculate();
@@ -33,7 +33,7 @@ void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2
 	sensor.bounds.setPosition(bob);
 }
 
-void Spring::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Spring::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	bob_shape.setRadius(8.f);
 	anchor_shape.setRadius(6.f);
 	bob_shape.setOrigin({bob_shape.getRadius(), bob_shape.getRadius()});
@@ -74,12 +74,12 @@ void Spring::reverse_anchor_and_bob() {
 	variables.bob_physics.position = bob;
 }
 
-void Spring::set_anchor(sf::Vector2<float> point) {
+void Spring::set_anchor(sf::Vector2f point) {
 	anchor = point;
 	variables.anchor_physics.position = point;
 }
 
-void Spring::set_bob(sf::Vector2<float> point) {
+void Spring::set_bob(sf::Vector2f point) {
 	bob = point;
 	variables.bob_physics.position = point;
 }
@@ -88,12 +88,12 @@ void Spring::set_rest_length(float point) { params.rest_length = point; }
 
 void Spring::set_force(float force) { params.spring_constant = force; }
 
-sf::Vector2<float>& Spring::get_bob() { return bob; }
+sf::Vector2f& Spring::get_bob() { return bob; }
 
-sf::Vector2<float>& Spring::get_anchor() { return anchor; }
+sf::Vector2f& Spring::get_anchor() { return anchor; }
 
-sf::Vector2<float> Spring::get_rope(int index) {
-	auto ret = sf::Vector2<float>{};
+sf::Vector2f Spring::get_rope(int index) {
+	auto ret = sf::Vector2f{};
 	ret = (bob - anchor) / (float)num_links;
 	ret = bob - ret * (float)index;
 	return ret;

@@ -65,7 +65,7 @@ class GameState : public UniquePolymorphic {
 
 	vfx::Gravitator left_dot{};
 	vfx::Gravitator right_dot{};
-	sf::Vector2<float> dot_pad{24.f, 8.f};
+	sf::Vector2f dot_pad{24.f, 8.f};
 
 	player::Player* player;
 	gui::HUD hud;

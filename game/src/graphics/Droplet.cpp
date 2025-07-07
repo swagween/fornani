@@ -8,7 +8,7 @@
 
 namespace fornani::vfx {
 
-Droplet::Droplet(sf::Vector2<float> start, DropParams params, float tweak) : collider(shape::CircleCollider(3.f)), params(params) {
+Droplet::Droplet(sf::Vector2f start, DropParams params, float tweak) : collider(shape::CircleCollider(3.f)), params(params) {
 	collider.physics.position = start;
 	collider.physics.velocity.x = params.slant + tweak;
 	collider.physics.gravity = 8.f;

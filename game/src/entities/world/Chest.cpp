@@ -87,8 +87,8 @@ void Chest::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	win.draw(*this);
 }
 
-void Chest::set_position(sf::Vector2<float> pos) { collider.physics.position = pos; }
+void Chest::set_position(sf::Vector2f pos) { collider.physics.position = pos; }
 
-void Chest::set_position_from_scaled(sf::Vector2<float> scaled_pos) { collider.physics.position = scaled_pos * 32.f; }
+void Chest::set_position_from_scaled(sf::Vector2f scaled_pos) { collider.physics.position = scaled_pos * 32.f; }
 
 } // namespace fornani::entity

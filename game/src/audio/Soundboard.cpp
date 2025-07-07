@@ -152,7 +152,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	proximities = {};
 }
 
-void Soundboard::play(capo::IEngine& engine, automa::ServiceProvider& svc, capo::Buffer const& buffer, float random_pitch_offset, float vol, int frequency, float attenuation, sf::Vector2<float> distance, int echo_count, int echo_rate) {
+void Soundboard::play(capo::IEngine& engine, automa::ServiceProvider& svc, capo::Buffer const& buffer, float random_pitch_offset, float vol, int frequency, float attenuation, sf::Vector2f distance, int echo_count, int echo_rate) {
 	sound_pool.push_back(Sound(engine, buffer, "standard", echo_count, echo_rate));
 	frequency != 0 ? repeat(svc, sound_pool.back(), frequency, random_pitch_offset, attenuation, distance) : randomize(svc, sound_pool.back(), random_pitch_offset, vol, attenuation, distance);
 }
@@ -172,7 +172,7 @@ void audio::Soundboard::stop(std::string const& label) {
 	std::erase_if(sound_pool, [label](auto const& s) { return s.get_label() == label; });
 }
 
-void Soundboard::repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset, float attenuation, sf::Vector2<float> distance) {
+void Soundboard::repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset, float attenuation, sf::Vector2f distance) {
 	if (frequency == -1) {
 		randomize(svc, sound, random_pitch_offset, 100.f, attenuation, distance, true);
 	} else if (svc.ticker.every_x_ticks(frequency)) {
@@ -180,7 +180,7 @@ void Soundboard::repeat(automa::ServiceProvider& svc, Sound& sound, int frequenc
 	}
 }
 
-void Soundboard::randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol, float attenuation, sf::Vector2<float> distance, bool wait_until_over) {
+void Soundboard::randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol, float attenuation, sf::Vector2f distance, bool wait_until_over) {
 	auto random_pitch = random_pitch_offset == 0.f ? 0.f : util::random::random_range_float(-random_pitch_offset, random_pitch_offset);
 	sound.set_pitch(1.f + random_pitch);
 	sound.set_volume(vol);

@@ -15,7 +15,7 @@ void Brush::update(Canvas& canvas) {
 
 void Brush::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {}
 
-void Brush::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) {}
+void Brush::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) {}
 
 void Brush::store_tile(int index) { tile = index; }
 

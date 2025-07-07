@@ -125,7 +125,7 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 		if (!destruction_initiated()) {
 			map.effects.push_back(entity::Effect(svc, "bullet_hit", variables.destruction_point + physical.physics.position, {}, effect_type(), 2));
 			if (physical.direction.lnr == LNR::neutral) { map.effects.back().rotate(); }
-			// auto listener_position = sf::Vector2<float>{sf::Listener::getPosition().x, sf::Listener::getPosition().z};
+			// auto listener_position = sf::Vector2f{sf::Listener::getPosition().x, sf::Listener::getPosition().z};
 			// TODO: use capo engine here
 			// svc.soundboard.play(svc, svc.sounds.get_buffer("wall_hit"), 0.1f, 100.f, 0, 10.f, listener_position - physical.bounding_box.get_center());
 		}
@@ -135,6 +135,7 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 
 void Projectile::on_player_hit(player::Player& player) {
 	if (metadata.team == arms::Team::nani) { return; }
+	if (player.is_dead()) { return; }
 	if (physical.sensor) {
 		if (physical.sensor.value().within_bounds(player.hurtbox)) { player.hurt(metadata.specifications.base_damage); }
 		return;
@@ -145,7 +146,7 @@ void Projectile::on_player_hit(player::Player& player) {
 	}
 }
 
-void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f cam) {
 
 	if (!lifetime.just_started()) { visual.sprite.render(svc, win, cam); }
 
@@ -186,7 +187,7 @@ void Projectile::destroy(bool completely, bool whiffed) {
 	metadata.specifications.base_damage = 0;
 }
 
-void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2<float> target) {
+void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2f target) {
 	float var = util::random::random_range_float(-metadata.specifications.variance, metadata.specifications.variance);
 	if (omnidirectional()) {
 		physical.physics.velocity = util::unit(target) * metadata.specifications.speed;
@@ -205,12 +206,12 @@ void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2<float> target) {
 	default: NANI_LOG_WARN(m_logger, "Unknown direction was passed. Did you forget to add a case to the switch?"); break;
 	}
 	if (sprite_flip()) {
-		auto scale = physical.direction.left_or_right() ? sf::Vector2<float>{1.f, -1.f} : sf::Vector2<float>{-1.f, 1.f};
+		auto scale = physical.direction.left_or_right() ? sf::Vector2f{1.f, -1.f} : sf::Vector2f{-1.f, 1.f};
 		if (util::random::percent_chance(50)) { visual.sprite.set_scale(scale); }
 	}
 }
 
-void Projectile::set_position(sf::Vector2<float> pos) {
+void Projectile::set_position(sf::Vector2f pos) {
 	physical.physics.position = pos;
 	physical.bounding_box.set_position(pos);
 	variables.fired_point = pos;

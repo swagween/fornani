@@ -22,12 +22,12 @@ enum class CheckpointState : std::uint8_t { reached };
 
 class Checkpoint {
   public:
-	Checkpoint(automa::ServiceProvider& svc, sf::Vector2<float> pos);
+	Checkpoint(automa::ServiceProvider& svc, sf::Vector2f pos);
 	void update(automa::ServiceProvider& svc, Map& map, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void unflag() { flags.reset(CheckpointState::reached); }
 	[[nodiscard]] auto reached() const -> bool { return flags.test(CheckpointState::reached); }
-	[[nodiscard]] auto position() const -> sf::Vector2<float> { return bounds.get_position(); }
+	[[nodiscard]] auto position() const -> sf::Vector2f { return bounds.get_position(); }
 
   private:
 	shape::Shape bounds{};

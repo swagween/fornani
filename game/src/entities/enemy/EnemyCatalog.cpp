@@ -1,6 +1,5 @@
 #include "fornani/entities/enemy/EnemyCatalog.hpp"
 #include "fornani/entities/enemy/boss/Minigus.hpp"
-#include "fornani/entities/enemy/catalog/Hulmet.hpp"
 #include "fornani/entities/enemy/catalog/Archer.hpp"
 #include "fornani/entities/enemy/catalog/Beamstalk.hpp"
 #include "fornani/entities/enemy/catalog/Caster.hpp"
@@ -8,6 +7,7 @@
 #include "fornani/entities/enemy/catalog/Eyebit.hpp"
 #include "fornani/entities/enemy/catalog/Eyebot.hpp"
 #include "fornani/entities/enemy/catalog/Frdog.hpp"
+#include "fornani/entities/enemy/catalog/Hulmet.hpp"
 #include "fornani/entities/enemy/catalog/Imp.hpp"
 #include "fornani/entities/enemy/catalog/Meatsquash.hpp"
 #include "fornani/entities/enemy/catalog/Tank.hpp"
@@ -24,7 +24,7 @@ void EnemyCatalog::update() {
 void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, int id, bool spawned, int variant, sf::Vector2<int> start_direction) {
 	switch (id) {
 	case 0: enemies.push_back(std::make_unique<Hulmet>(svc, map)); break;
-	case 1: enemies.push_back(std::make_unique<Tank>(svc, map)); break;
+	case 1: enemies.push_back(std::make_unique<Tank>(svc, map, variant)); break;
 	case 3: enemies.push_back(std::make_unique<Thug>(svc, map)); break;
 	case 4: enemies.push_back(std::make_unique<Eyebot>(svc)); break;
 	case 5: enemies.push_back(std::make_unique<Eyebit>(svc, spawned)); break;

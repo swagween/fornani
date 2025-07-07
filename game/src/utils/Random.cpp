@@ -24,14 +24,14 @@ namespace {
 	float random_range_float(float lo, float hi) { return std::uniform_real_distribution<float>{lo, hi}(engine); }
 
 	// Generates a random 2D vector of floats with both components in the range [lo, hi]
-	sf::Vector2<float> random_vector_float(float lo, float hi) {
+	sf::Vector2f random_vector_float(float lo, float hi) {
 		auto randx = random_range_float(lo, hi);
 		auto randy = random_range_float(lo, hi);
 		return {randx, randy};
 	}
 
 	// Generates a random 2D vector of floats with x in [lo.x, hi.x] and y in [lo.y, hi.y]
-	sf::Vector2<float> random_vector_float(sf::Vector2<float> lo, sf::Vector2<float> hi) {
+	sf::Vector2f random_vector_float(sf::Vector2f lo, sf::Vector2f hi) {
 		auto randx = random_range_float(lo.x, hi.x);
 		auto randy = random_range_float(lo.y, hi.y);
 		return {randx, randy};

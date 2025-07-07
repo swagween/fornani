@@ -57,7 +57,7 @@ void Marquee::update(Canvas& canvas) {
 
 void Marquee::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {}
 
-void Marquee::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) {
+void Marquee::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) {
 	sf::RectangleShape box{};
 	switch (mode) {
 	case SelectMode::none: break;

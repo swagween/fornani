@@ -25,8 +25,8 @@ class Minigus : public Enemy, public npc::NPC {
   public:
 	Minigus(automa::ServiceProvider& svc, world::Map& map);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
-	void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
+	void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	[[nodiscard]] auto invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable); }
 	[[nodiscard]] auto half_health() const -> bool { return health.get_hp() < health.get_max() * 0.5f; }
 
@@ -74,7 +74,7 @@ class Minigus : public Enemy, public npc::NPC {
 		anim::Parameters deactivated{11, 2, 48, -1};
 		anim::Parameters charging{0, 11, 38, 0};
 		anim::Parameters firing{13, 8, 10, 1};
-		sf::Vector2<float> offset{0, 64};
+		sf::Vector2f offset{0, 64};
 		sf::Vector2<int> dimensions{78, 30};
 		Direction direction;
 		util::BitFlags<MinigunFlags> flags{};

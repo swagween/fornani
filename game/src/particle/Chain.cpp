@@ -6,9 +6,9 @@
 
 namespace fornani::vfx {
 
-Chain::Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2<float> position, int num_links, bool reversed, float spacing) : Chain(svc, svc.assets.get_texture("null"), params, position, num_links, reversed, spacing) {}
+Chain::Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2f position, int num_links, bool reversed, float spacing) : Chain(svc, svc.assets.get_texture("null"), params, position, num_links, reversed, spacing) {}
 
-vfx::Chain::Chain(automa::ServiceProvider& svc, sf::Texture const& tex, SpringParameters params, sf::Vector2<float> position, int num_links, bool reversed, float spacing) : root(position), m_sprite{tex} {
+vfx::Chain::Chain(automa::ServiceProvider& svc, sf::Texture const& tex, SpringParameters params, sf::Vector2f position, int num_links, bool reversed, float spacing) : root(position), m_sprite{tex} {
 	for (int i{0}; i < num_links; ++i) { links.push_back(Spring({params})); }
 	grav = params.grav;
 	int ctr{};
@@ -21,14 +21,14 @@ vfx::Chain::Chain(automa::ServiceProvider& svc, sf::Texture const& tex, SpringPa
 			link.cousin = &links.at(ctr - 1);
 			if (link.cousin) { link.set_anchor(link.cousin.value()->get_bob()); }
 		}
-		link.set_bob(link.get_anchor() + sf::Vector2<float>{spacing, sign * spacing});
+		link.set_bob(link.get_anchor() + sf::Vector2f{spacing, sign * spacing});
 		++ctr;
 	}
 	m_sprite.setScale(constants::f_scale_vec);
 }
 
 void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, float dampen) {
-	auto external_force = sf::Vector2<float>{};
+	auto external_force = sf::Vector2f{};
 	auto ctr{0};
 	for (auto& link : links) {
 		if (ctr < links.size() - 1) {
@@ -49,7 +49,7 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 }
 
-void Chain::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Chain::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	for (auto& link : links) {
 		if (svc.greyblock_mode()) { link.render(win, cam); }
 		m_sprite.setPosition(link.get_bob() - cam);

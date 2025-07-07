@@ -9,7 +9,7 @@ namespace pi {
 class Grid {
   public:
 	Grid(sf::Vector2<std::uint32_t> d);
-	void set_position(sf::Vector2<float> to_position, float scale);
+	void set_position(sf::Vector2f to_position, float scale);
 	void match(Grid& other);
 	sf::Vector2<std::uint32_t> first_available_ground() const;
 	sf::Vector2<std::uint32_t> dimensions{};

@@ -26,7 +26,7 @@ void WardrobeWidget::update(player::Player& player) {
 	out_nani = sf::Sprite(nani.getTexture());
 }
 
-void WardrobeWidget::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+void WardrobeWidget::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	background.setPosition(position - cam);
 	win.draw(background);
 	out_nani.setPosition(position - cam);

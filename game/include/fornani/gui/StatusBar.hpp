@@ -1,35 +1,34 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "fornani/particle/Gravitator.hpp"
+#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/components/SteeringBehavior.hpp>
+#include <fornani/entities/packages/Health.hpp>
+#include <fornani/graphics/Colors.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
 }
 
 namespace fornani::gui {
-enum class BarState : std::uint8_t { full, empty };
+
 class StatusBar {
   public:
-	StatusBar() = default;
-	explicit StatusBar(automa::ServiceProvider& svc, sf::Vector2<int> dim = {8, 2}, float size = 600.f);
-	void update(automa::ServiceProvider& svc, float current);
+	explicit StatusBar(automa::ServiceProvider& svc, sf::Vector2f dim = {8.f, 2.f}, std::vector<sf::Color> colors = {colors::red, colors::goldenrod, colors::navy_blue}, bool centered = true);
+	void update(automa::ServiceProvider& svc, sf::Vector2f position, entity::Health& status, bool ease = false);
+	void update(automa::ServiceProvider& svc, sf::Vector2f position, float fraction, float taken = 0.f, bool ease = false);
 	void render(sf::RenderWindow& win);
-	BarState current_state{};
-	vfx::Gravitator gravitator{};
-	sf::Vector2<float> position{};
-	sf::Vector2<float> draw_position{};
-	sf::Vector2<float> origin{};
-	[[nodiscard]] auto empty() const -> bool { return current_state == BarState::empty; }
+	void set_dimensions(sf::Vector2f dim) { m_dimensions = dim; }
 
   private:
-	sf::Vector2<int> dimensions{};
-	float maximum{};
-	float size{};
+	components::PhysicsComponent m_physics{};
+	components::SteeringBehavior m_steering{};
+	sf::Vector2f m_dimensions{};
+	float m_unit_size{};
 	struct {
 		sf::RectangleShape gone{};
 		sf::RectangleShape taken{};
 		sf::RectangleShape filled{};
-	} debug_rects{};
+	} m_rects{};
 };
 
 } // namespace fornani::gui

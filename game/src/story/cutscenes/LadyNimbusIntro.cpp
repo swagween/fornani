@@ -33,7 +33,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 	auto total_suites{0};
 	for (auto& npc : map.npcs) { total_suites += npc.num_suites(); }
 	total_conversations = std::max(total_conversations, total_suites);
-	if (cooldowns.end.get_cooldown() == 1) {
+	if (cooldowns.end.get() == 1) {
 		flags.set(CutsceneFlags::complete);
 		return;
 	}
@@ -54,13 +54,13 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 		}
 		break;
 	case 1:
-		if (cooldowns.long_pause.get_cooldown() == 256) { svc.soundboard.flags.transmission.set(audio::Transmission::statics); }
+		if (cooldowns.long_pause.get() == 256) { svc.soundboard.flags.transmission.set(audio::Transmission::statics); }
 		if (!console && !cooldowns.long_pause.running()) {
 			cooldowns.long_pause.start();
 			nimbus.pop_conversation();
 			return;
 		}
-		if (!console && cooldowns.long_pause.get_cooldown() == 1) {
+		if (!console && cooldowns.long_pause.get() == 1) {
 			hologus.force_engage();
 			++progress;
 			return;
@@ -72,7 +72,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 			hologus.pop_conversation();
 			return;
 		}
-		if (!console && cooldowns.pause.get_cooldown() == 1) {
+		if (!console && cooldowns.pause.get() == 1) {
 			nimbus.force_engage();
 			++progress;
 			return;
@@ -84,7 +84,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 			nimbus.pop_conversation();
 			return;
 		}
-		if (!console && cooldowns.pause.get_cooldown() == 1) {
+		if (!console && cooldowns.pause.get() == 1) {
 			hologus.force_engage();
 			++progress;
 			return;
@@ -96,7 +96,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 			hologus.pop_conversation();
 			return;
 		}
-		if (!console && cooldowns.pause.get_cooldown() == 1) {
+		if (!console && cooldowns.pause.get() == 1) {
 			nimbus.force_engage();
 			++progress;
 			return;
@@ -108,7 +108,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 			nimbus.pop_conversation();
 			return;
 		}
-		if (!console && cooldowns.pause.get_cooldown() == 1) {
+		if (!console && cooldowns.pause.get() == 1) {
 			hologus.force_engage();
 			++progress;
 			return;
@@ -120,7 +120,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 			hologus.pop_conversation();
 			return;
 		}
-		if (!console && cooldowns.pause.get_cooldown() == 1) {
+		if (!console && cooldowns.pause.get() == 1) {
 			nimbus.force_engage();
 			++progress;
 			return;
@@ -132,7 +132,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 			nimbus.pop_conversation();
 			return;
 		}
-		if (!console && cooldowns.pause.get_cooldown() == 1) {
+		if (!console && cooldowns.pause.get() == 1) {
 			hologus.force_engage();
 			++progress;
 			return;
@@ -144,7 +144,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 			hologus.pop_conversation();
 			return;
 		}
-		if (!console && cooldowns.pause.get_cooldown() == 1) {
+		if (!console && cooldowns.pause.get() == 1) {
 			nimbus.force_engage();
 			++progress;
 			return;
@@ -156,7 +156,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 			nimbus.pop_conversation();
 			return;
 		}
-		if (!console && cooldowns.end.get_cooldown() == 1) { return; }
+		if (!console && cooldowns.end.get() == 1) { return; }
 		break;
 	default: break;
 	}

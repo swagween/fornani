@@ -14,15 +14,15 @@ namespace fornani::vfx {
 
 class Spark {
   public:
-	Spark(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Color color, std::string_view type);
+	Spark(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Color color, std::string_view type);
 	void update(automa::ServiceProvider& svc);
-	void render(sf::RenderWindow& win,sf::Vector2<float> cam);
+	void render(sf::RenderWindow& win,sf::Vector2f cam);
 	[[nodiscard]] auto done() const -> bool { return lifespan.is_complete(); }
 
   private:
 	sf::RectangleShape box{};
 	std::optional<util::Fader> fader{};
-	sf::Vector2<float> position{};
+	sf::Vector2f position{};
 	util::Cooldown lifespan{};
 	int frame{};
 	std::string_view type{};

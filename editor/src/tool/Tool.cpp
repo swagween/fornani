@@ -7,9 +7,9 @@ namespace pi {
 
 bool Tool::in_bounds(sf::Vector2<std::uint32_t>& bounds) const { return scaled_position().x >= 0 && scaled_position().x < bounds.x && scaled_position().y >= 0 && scaled_position().y < bounds.y; }
 
-void Tool::set_position(sf::Vector2<float> to_position) { position = to_position; }
+void Tool::set_position(sf::Vector2f to_position) { position = to_position; }
 
-void Tool::set_window_position(sf::Vector2<float> to_position) { window_position = to_position; }
+void Tool::set_window_position(sf::Vector2f to_position) { window_position = to_position; }
 
 void Tool::activate() { active = true; }
 

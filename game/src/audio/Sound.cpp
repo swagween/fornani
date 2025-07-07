@@ -22,11 +22,11 @@ void Sound::update(automa::ServiceProvider& /*svc*/) {
 	echo.repeater.update();
 	if (!is_echoing()) { return; }
 	if (echo.rate < 1) { return; }
-	if (echo.repeater.get_cooldown() % echo.rate == 0) {
+	if (echo.repeater.get() % echo.rate == 0) {
 		echo.repeater.start(echo.rate);
 		echo.count.update();
-		m_sounds.at(echo.count.get_cooldown())->set_gain(native_volume * echo.count.get_cubic_normalized() * 0.2f);
-		m_sounds.at(echo.count.get_cooldown())->play();
+		m_sounds.at(echo.count.get())->set_gain(native_volume * echo.count.get_cubic_normalized() * 0.2f);
+		m_sounds.at(echo.count.get())->play();
 	}
 }
 

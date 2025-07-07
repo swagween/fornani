@@ -58,10 +58,10 @@ class Projectile {
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void handle_collision(automa::ServiceProvider& svc, world::Map& map);
 	void on_player_hit(player::Player& player);
-	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f cam);
 	void destroy(bool completely, bool whiffed = false);
-	void seed(automa::ServiceProvider& svc, sf::Vector2<float> target = {});
-	void set_position(sf::Vector2<float> pos);
+	void seed(automa::ServiceProvider& svc, sf::Vector2f target = {});
+	void set_position(sf::Vector2f pos);
 	void set_team(Team to_team);
 	void set_firing_direction(Direction to_direction);
 	void multiply(float factor) { variables.damage_multiplier = std::min(variables.damage_multiplier * factor, variables.damage_multiplier * 5.f); }
@@ -77,9 +77,9 @@ class Projectile {
 	[[nodiscard]] auto whiffed() const -> bool { return variables.state.test(ProjectileState::whiffed); }
 	[[nodiscard]] auto poofed() const -> bool { return variables.state.test(ProjectileState::poof); }
 	[[nodiscard]] auto made_contact() const -> bool { return variables.state.test(ProjectileState::contact); }
-	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return physical.physics.position; }
-	[[nodiscard]] auto get_velocity() const -> sf::Vector2<float> { return physical.physics.apparent_velocity(); }
-	[[nodiscard]] auto get_destruction_point() const -> sf::Vector2<float> { return variables.destruction_point; }
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return physical.physics.position; }
+	[[nodiscard]] auto get_velocity() const -> sf::Vector2f { return physical.physics.apparent_velocity(); }
+	[[nodiscard]] auto get_destruction_point() const -> sf::Vector2f { return variables.destruction_point; }
 	[[nodiscard]] auto get_team() const -> Team { return metadata.team; }
 	[[nodiscard]] auto get_direction() const -> Direction { return physical.direction; }
 	[[nodiscard]] auto get_bounding_box() -> shape::Shape& { return physical.bounding_box; }
@@ -117,7 +117,7 @@ class Projectile {
 	struct {
 		shape::Shape bounding_box{};
 		Direction direction{};
-		sf::Vector2<float> max_dimensions{};
+		sf::Vector2f max_dimensions{};
 		shape::CircleCollider collider{4.f};
 		components::PhysicsComponent physics{};
 		std::optional<components::CircleSensor> sensor{};
@@ -126,8 +126,8 @@ class Projectile {
 
 	struct {
 		float damage_multiplier{1.f};
-		sf::Vector2<float> fired_point{};
-		sf::Vector2<float> destruction_point{};
+		sf::Vector2f fired_point{};
+		sf::Vector2f destruction_point{};
 		util::BitFlags<ProjectileState> state{};
 	} variables{};
 

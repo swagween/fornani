@@ -19,7 +19,7 @@ Player::Player(automa::ServiceProvider& svc)
 	anchor_point = collider.physics.position + player_dimensions_v * 0.5f;
 	collider.collision_depths = util::CollisionDepth();
 	health.set_invincibility(400);
-	hurtbox.set_dimensions(sf::Vector2<float>{12.f, 26.f});
+	hurtbox.set_dimensions(sf::Vector2f{12.f, 26.f});
 
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
 
@@ -28,10 +28,10 @@ Player::Player(automa::ServiceProvider& svc)
 	antennae.push_back(vfx::Gravitator(collider.physics.position, colors::bright_orange, antenna_force));
 	antennae.push_back(vfx::Gravitator(collider.physics.position, colors::bright_orange, antenna_force, {2.f, 4.f}));
 
-	antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2<float>{physics_stats.antenna_friction, physics_stats.antenna_friction}, 1.0f);
-	antennae[0].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
-	antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2<float>{physics_stats.antenna_friction, physics_stats.antenna_friction}, 1.0f);
-	antennae[1].collider.physics.maximum_velocity = sf::Vector2<float>(antenna_speed, antenna_speed);
+	antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2f{physics_stats.antenna_friction, physics_stats.antenna_friction}, 1.0f);
+	antennae[0].collider.physics.maximum_velocity = sf::Vector2f(antenna_speed, antenna_speed);
+	antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2f{physics_stats.antenna_friction, physics_stats.antenna_friction}, 1.0f);
+	antennae[1].collider.physics.maximum_velocity = sf::Vector2f(antenna_speed, antenna_speed);
 
 	texture_updater.load_base_texture(svc.assets.get_texture_modifiable("nani"));
 	texture_updater.load_pixel_map(svc.assets.get_texture_modifiable("nani_palette_default"));
@@ -122,7 +122,7 @@ void Player::update(world::Map& map) {
 	if (collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded() || switched || grounded()) { collider.physics.forced_acceleration = {}; }
 
 	collider.update(*m_services);
-	hurtbox.set_position(collider.hurtbox.get_position() - sf::Vector2<float>{0.f, 14.f});
+	hurtbox.set_position(collider.hurtbox.get_position() - sf::Vector2f{0.f, 14.f});
 	health.update();
 	health_indicator.update(*m_services, collider.physics.position);
 	orb_indicator.update(*m_services, collider.physics.position);
@@ -216,7 +216,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	win.draw(sprite);
 }
 
-void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	health_indicator.render(svc, win, cam);
 	orb_indicator.render(svc, win, cam);
 }
@@ -310,7 +310,7 @@ void Player::handle_turning() {
 
 void Player::flash_sprite() {
 	auto flash_rate = 30;
-	(health.invincibility.get_cooldown() / flash_rate) % 2 == 0 ? sprite.setColor(colors::red) : sprite.setColor(colors::blue);
+	(health.invincibility.get() / flash_rate) % 2 == 0 ? sprite.setColor(colors::red) : sprite.setColor(colors::blue);
 }
 
 void Player::calculate_sprite_offset() {
@@ -363,7 +363,7 @@ void Player::jump(world::Map& map) {
 			collider.physics.velocity.y = 0.f;
 			controller.get_jump().doublejump();
 			m_services->soundboard.flags.player.set(audio::Player::jump);
-			map.effects.push_back(entity::Effect(*m_services, "doublejump", sprite_position, sf::Vector2<float>{collider.physics.velocity.x * 0.1f, 0.f}, 0, 9));
+			map.effects.push_back(entity::Effect(*m_services, "doublejump", sprite_position, sf::Vector2f{collider.physics.velocity.x * 0.1f, 0.f}, 0, 9));
 		}
 		if (controller.get_jump().is_doublejump()) { animation.request(AnimState::backflip); }
 	}
@@ -404,8 +404,8 @@ void Player::shield() {
 	controller.get_shield().sensor.bounds.setPosition(collider.bounding_box.get_position() + collider.bounding_box.get_dimensions() * 0.5f);
 }
 
-void Player::set_position(sf::Vector2<float> new_pos, bool centered) {
-	sf::Vector2<float> offset{};
+void Player::set_position(sf::Vector2f new_pos, bool centered) {
+	sf::Vector2f offset{};
 	offset.x = centered ? collider.dimensions.x * 0.5f : 0.f;
 	collider.physics.position = new_pos - offset;
 	collider.sync_components();

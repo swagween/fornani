@@ -4,6 +4,6 @@
 	"gamepad": true,
 	"music_volume": 30.0,
 	"tutorial": false,
-	"fullscreen": true,
+	"fullscreen": false,
 	"military_time": false
 }

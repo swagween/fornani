@@ -11,16 +11,16 @@ Indicator::Indicator(automa::ServiceProvider& svc, IndicatorType type) : m_label
 	if (type == IndicatorType::orb) { color_fade = vfx::ColorFade({colors::ui_white, colors::goldenrod, colors::dark_orange}, 16, addition_time); }
 	float fric{0.85f};
 	gravitator = vfx::Gravitator(position, sf::Color::Transparent, 1.f);
-	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{fric, fric}, 2.0f);
+	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2f{fric, fric}, 2.0f);
 }
 
 void Indicator::shift() { position += {0.f, -20.f}; }
 
-void Indicator::update(automa::ServiceProvider& svc, sf::Vector2<float> pos) {
+void Indicator::update(automa::ServiceProvider& svc, sf::Vector2f pos) {
 	gravitator.update(svc);
 	gravitator.set_target_position(pos);
-	if (addition_limit.get_cooldown() == fadeout_time) { fadeout.start(fadeout_time); }
-	if (fadeout.running()) { gravitator.set_target_position(pos + sf::Vector2<float>{60.f, 0.f}); }
+	if (addition_limit.get() == fadeout_time) { fadeout.start(fadeout_time); }
+	if (fadeout.running()) { gravitator.set_target_position(pos + sf::Vector2f{60.f, 0.f}); }
 	addition_limit.update();
 	fadeout.update();
 	color_fade.update();
@@ -35,7 +35,7 @@ void Indicator::update(automa::ServiceProvider& svc, sf::Vector2<float> pos) {
 	}
 }
 
-void Indicator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Indicator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (svc.greyblock_mode()) {
 		return;
 	} else if (!addition_limit.is_complete()) {
@@ -57,7 +57,7 @@ void Indicator::add(float amount) {
 	color_fade.start();
 }
 
-void Indicator::set_position(sf::Vector2<float> pos) {
+void Indicator::set_position(sf::Vector2f pos) {
 	position = pos;
 	gravitator.set_position(pos);
 }

@@ -21,8 +21,8 @@ class WardrobeWidget {
   public:
 	explicit WardrobeWidget(automa::ServiceProvider& svc);
 	void update(player::Player& player);
-	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
-	void set_position(sf::Vector2<float> pos) { position = pos; }
+	void render(sf::RenderWindow& win, sf::Vector2f cam);
+	void set_position(sf::Vector2f pos) { position = pos; }
 	[[nodiscard]] auto get_sprite() -> sf::Sprite& { return out_nani; }
 
   private:
@@ -33,7 +33,7 @@ class WardrobeWidget {
 	sf::RenderTexture nani{};
 	sf::Sprite out_nani;
 	sf::RectangleShape background{};
-	sf::Vector2<float> position{};
+	sf::Vector2f position{};
 	sf::Vector2i m_dimensions{64, 128};
 
 	io::Logger m_logger{"gui"};

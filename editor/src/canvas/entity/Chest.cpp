@@ -23,7 +23,7 @@ void Chest::unserialize(dj::Json const& in) {
 
 void Chest::expose() { Entity::expose(); }
 
-void Chest::render(sf::RenderWindow& win, sf::Vector2<float> cam, float size) {
+void Chest::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{250, 120, 80, 80}) : drawbox.setFillColor(sf::Color{250, 120, 80, 10});
 	Entity::render(win, cam, size);
 }

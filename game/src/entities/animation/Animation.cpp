@@ -80,7 +80,7 @@ void Animation::switch_params() {
 	refresh();
 }
 
-void anim::Animation::log_info() const { NANI_LOG_INFO(m_logger, "\n\nCurrent Frame: [{}]\nFrame Timer: [{}]\n\n", frame.get_count(), frame_timer.get_cooldown()); }
+void anim::Animation::log_info() const { NANI_LOG_INFO(m_logger, "\n\nCurrent Frame: [{}]\nFrame Timer: [{}]\n\n", frame.get_count(), frame_timer.get()); }
 
 int Animation::get_frame() const { return frame.canceled() ? params.lookup : params.lookup + frame.get_count(); }
 

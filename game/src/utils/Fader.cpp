@@ -15,9 +15,9 @@ Fader::Fader(automa::ServiceProvider& svc, int time, std::string_view color) : t
 void Fader::update() {
 	timer.update();
 	if (interval == 0) { interval = 1; }
-	if (timer.get_cooldown() % interval == 0) {
+	if (timer.get() % interval == 0) {
 		progress.update();
-		interval = static_cast<int>(timer.get_cooldown() / 2);
+		interval = static_cast<int>(timer.get() / 2);
 	}
 	for (auto i{0}; i < order; ++i) { sprite.setTextureRect(sf::IntRect{{lookup, progress.get_count()}, {1, 1}}); }
 }

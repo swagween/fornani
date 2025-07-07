@@ -30,7 +30,7 @@ enum class PortalOrientation : std::uint8_t { top, bottom, left, right, central 
 class Portal {
 
   public:
-	using Vec = sf::Vector2<float>;
+	using Vec = sf::Vector2f;
 	using Vecu32 = sf::Vector2<std::uint32_t>;
 
 	Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked = false, bool already_open = false, int key_id = 0, int style = 0, sf::Vector2<int> map_dim = {});

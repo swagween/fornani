@@ -76,12 +76,12 @@ void Clipboard::paste(Canvas& canvas, Tool& tool) {
 	}
 }
 
-void Clipboard::render(Canvas& canvas, Tool& tool, sf::RenderWindow& win, sf::Vector2<float> offset) {
+void Clipboard::render(Canvas& canvas, Tool& tool, sf::RenderWindow& win, sf::Vector2f offset) {
 	m_box.setOutlineColor(sf::Color{200, 200, 200, 40});
 	m_box.setFillColor(sf::Color{150, 190, 110, 40});
 	m_box.setOutlineThickness(-2);
 	m_box.setSize(real_dimensions() * canvas.f_cell_size());
-	m_box.setPosition(tool.f_scaled_position() * canvas.f_cell_size() + offset - real_dimensions() * canvas.f_cell_size() + sf::Vector2<float>{canvas.f_cell_size(), canvas.f_cell_size()});
+	m_box.setPosition(tool.f_scaled_position() * canvas.f_cell_size() + offset - real_dimensions() * canvas.f_cell_size() + sf::Vector2f{canvas.f_cell_size(), canvas.f_cell_size()});
 	if (canvas.editable() && !tool.palette_mode) { win.draw(m_box); }
 }
 

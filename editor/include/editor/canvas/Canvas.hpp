@@ -83,14 +83,14 @@ class Canvas {
 	void clear_redo_states();
 	void hover();
 	void unhover();
-	void move(sf::Vector2<float> distance);
-	void set_position(sf::Vector2<float> to_position);
-	void set_origin(sf::Vector2<float> to_origin);
-	void set_offset_from_center(sf::Vector2<float> offset);
+	void move(sf::Vector2f distance);
+	void set_position(sf::Vector2f to_position);
+	void set_origin(sf::Vector2f to_origin);
+	void set_offset_from_center(sf::Vector2f offset);
 	void set_scale(float to_scale);
 	void resize(sf::Vector2i adjustment);
-	void center(sf::Vector2<float> point);
-	void constrain(sf::Vector2<float> bounds);
+	void center(sf::Vector2f point);
+	void constrain(sf::Vector2f bounds);
 	void zoom(float amount);
 	void set_backdrop_color(sf::Color color);
 	void set_grid_texture();
@@ -103,13 +103,13 @@ class Canvas {
 	[[nodiscard]] auto hovered() const -> bool { return state.test(CanvasState::hovered); }
 	[[nodiscard]] auto editable() const -> bool { return properties.test(CanvasProperties::editable); }
 	[[nodiscard]] auto chunk_dimensions() const -> sf::Vector2<std::uint32_t> { return dimensions / u_native_chunk_size(); }
-	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return position; }
-	[[nodiscard]] auto get_scaled_position() const -> sf::Vector2<float> { return position / scale; }
-	[[nodiscard]] auto get_real_dimensions() const -> sf::Vector2<float> { return real_dimensions * scale; }
-	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return real_dimensions * 0.5f; }
-	[[nodiscard]] auto get_origin() const -> sf::Vector2<float> { return origin; }
-	[[nodiscard]] auto get_offset_from_center() const -> sf::Vector2<float> { return offset_from_center; }
-	[[nodiscard]] auto get_scaled_center() const -> sf::Vector2<float> { return real_dimensions * 0.5f * scale; }
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return position; }
+	[[nodiscard]] auto get_scaled_position() const -> sf::Vector2f { return position / scale; }
+	[[nodiscard]] auto get_real_dimensions() const -> sf::Vector2f { return real_dimensions * scale; }
+	[[nodiscard]] auto get_center() const -> sf::Vector2f { return real_dimensions * 0.5f; }
+	[[nodiscard]] auto get_origin() const -> sf::Vector2f { return origin; }
+	[[nodiscard]] auto get_offset_from_center() const -> sf::Vector2f { return offset_from_center; }
+	[[nodiscard]] auto get_scaled_center() const -> sf::Vector2f { return real_dimensions * 0.5f * scale; }
 	[[nodiscard]] auto u_native_chunk_size() const -> std::uint32_t { return static_cast<std::uint32_t>(chunk_size_v); }
 	[[nodiscard]] auto i_native_chunk_size() const -> int { return chunk_size_v; }
 	[[nodiscard]] auto f_native_chunk_size() const -> float { return static_cast<float>(chunk_size_v); }
@@ -122,7 +122,7 @@ class Canvas {
 	[[nodiscard]] auto get_scale_vec() const -> sf::Vector2f { return fornani::constants::f_scale_vec * scale; }
 	[[nodiscard]] auto get_i_style() const -> int { return static_cast<int>(tile_style.get_type()); }
 	[[nodiscard]] auto within_zoom_limits(float delta) const -> bool { return get_scale() + delta >= min_scale && get_scale() + delta <= max_scale; }
-	[[nodiscard]] auto within_bounds(sf::Vector2<float> const& point) const -> bool { return point.x > position.x && point.x < real_dimensions.x + position.x && point.y > position.y && point.y < real_dimensions.y + position.y; }
+	[[nodiscard]] auto within_bounds(sf::Vector2f const& point) const -> bool { return point.x > position.x && point.x < real_dimensions.x + position.x && point.y > position.y && point.y < real_dimensions.y + position.y; }
 	[[nodiscard]] auto undo_states_size() const -> std::size_t { return map_states.size(); }
 	[[nodiscard]] auto redo_states_size() const -> std::size_t { return redo_states.size(); }
 	[[nodiscard]] auto middleground() const -> int { return map_states.back().get_middleground(); }
@@ -133,7 +133,7 @@ class Canvas {
 	void erase_at(int i, int j, int layer_index);
 	int tile_val_at(int i, int j, int layer);
 	int tile_val_at_scaled(int i, int j, int layer);
-	sf::Vector2<float> get_tile_position_at(int i, int j, int layer = 0);
+	sf::Vector2f get_tile_position_at(int i, int j, int layer = 0);
 	Tile& get_tile_at(int i, int j, int layer = 0);
 
 	// layers
@@ -178,11 +178,11 @@ class Canvas {
 	bool minimap{};
 
   private:
-	sf::Vector2<float> position{};
+	sf::Vector2f position{};
 	sf::RenderTexture grid_texture{};
-	sf::Vector2<float> origin{};
-	sf::Vector2<float> real_dimensions{};
-	sf::Vector2<float> offset_from_center{};
+	sf::Vector2f origin{};
+	sf::Vector2f real_dimensions{};
+	sf::Vector2f offset_from_center{};
 	std::deque<Map> map_states{};
 	std::deque<Map> redo_states{};
 	util::BitFlags<CanvasState> state{};

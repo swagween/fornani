@@ -4,7 +4,7 @@
 
 namespace fornani::entity {
 
-Effect::Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vector2<float> pos, sf::Vector2<float> vel, int type, int index, sf::Vector2i reflections) : type(type), sprite{svc.assets.get_texture("effect_" + label)} {
+Effect::Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vector2f pos, sf::Vector2f vel, int type, int index, sf::Vector2i reflections) : type(type), sprite{svc.assets.get_texture("effect_" + label)} {
 	auto framerate{16};
 	switch (index) {
 	case 0:
@@ -84,7 +84,7 @@ Effect::Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vecto
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineColor(colors::fucshia);
 	drawbox.setOutlineThickness(-1);
-	drawbox.setSize(static_cast<sf::Vector2<float>>(sprite_dimensions));
+	drawbox.setSize(static_cast<sf::Vector2f>(sprite_dimensions));
 	physics = components::PhysicsComponent({0.99f, 0.99f}, 1.f);
 	physics.position = pos;
 	physics.velocity = vel;
@@ -95,7 +95,7 @@ void Effect::update(automa::ServiceProvider& svc, world::Map& map) {
 	animation.update();
 }
 
-void Effect::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Effect::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	int u = type * sprite_dimensions.x;
 	int v = animation.get_frame() * sprite_dimensions.y;
 	sprite.setTextureRect({{u, v}, sprite_dimensions});

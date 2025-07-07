@@ -132,21 +132,21 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	state_function = state_function();
 }
 
-void Drop::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Drop::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);
 	} else {
-		if (!is_inactive() && !is_completely_gone() && (lifespan.get_cooldown() > 500 || (lifespan.get_cooldown() / 20) % 2 == 0)) { sprite.render(svc, win, cam); }
+		if (!is_inactive() && !is_completely_gone() && (lifespan.get() > 500 || (lifespan.get() / 20) % 2 == 0)) { sprite.render(svc, win, cam); }
 		sparkler.render(svc, win, cam);
 	}
 }
 
-void Drop::set_position(sf::Vector2<float> pos) {
+void Drop::set_position(sf::Vector2f pos) {
 	collider.physics.position = pos;
 	sparkler.set_position(pos);
 }
 
-void Drop::apply_force(sf::Vector2<float> force) { collider.physics.apply_force(force); }
+void Drop::apply_force(sf::Vector2f force) { collider.physics.apply_force(force); }
 
 void Drop::destroy_completely() {
 	lifespan.cancel();

@@ -42,7 +42,7 @@ void Portal::expose() {
 	ImGui::InputInt("Key ID", &key_id);
 }
 
-void Portal::render(sf::RenderWindow& win, sf::Vector2<float> cam, float size) {
+void Portal::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
 	Entity::render(win, cam, size);
 }

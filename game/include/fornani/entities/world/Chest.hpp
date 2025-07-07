@@ -35,8 +35,8 @@ class Chest final : public Animatable {
 	Chest(automa::ServiceProvider& svc, int id, ChestType type, int modifier);
 	void update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
-	void set_position(sf::Vector2<float> pos);
-	void set_position_from_scaled(sf::Vector2<float> scaled_pos);
+	void set_position(sf::Vector2f pos);
+	void set_position_from_scaled(sf::Vector2f scaled_pos);
 	shape::Shape& get_jumpbox() { return collider.jumpbox; }
 	shape::Collider& get_collider() { return collider; }
 

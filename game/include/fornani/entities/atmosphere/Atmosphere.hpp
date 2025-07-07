@@ -20,9 +20,9 @@ class Player;
 namespace fornani::vfx {
 class Atmosphere {
   public:
-	Atmosphere(automa::ServiceProvider& svc, sf::Vector2<float> span, int type);
+	Atmosphere(automa::ServiceProvider& svc, sf::Vector2f span, int type);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void debug();
 
   private:

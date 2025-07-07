@@ -18,7 +18,7 @@ void Eyebot::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 			auto const randx = util::random::random_range_float(-60.f, 60.f);
 			auto const randy = util::random::random_range_float(-60.f, 60.f);
 			sf::Vector2 const rand_vec{randx, randy};
-			sf::Vector2<float> const spawn = collider.physics.position + rand_vec;
+			sf::Vector2f const spawn = collider.physics.position + rand_vec;
 			map.spawn_enemy(5, spawn);
 		}
 	}

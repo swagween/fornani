@@ -20,15 +20,15 @@ class Projectile;
 namespace fornani::entity {
 class TreasureContainer {
   public:
-	TreasureContainer(automa::ServiceProvider& svc, item::Rarity rarity, sf::Vector2<float> position, int index = 0);
-	void update(automa::ServiceProvider& svc, sf::Vector2<float> target);
+	TreasureContainer(automa::ServiceProvider& svc, item::Rarity rarity, sf::Vector2f position, int index = 0);
+	void update(automa::ServiceProvider& svc, sf::Vector2f target);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	[[nodiscard]] auto destroyed() const -> bool { return health.is_dead(); }
 	[[nodiscard]] auto get_index() const -> int { return index; }
   private:
 	int index{};
-	sf::Vector2<float> root{};
+	sf::Vector2f root{};
 	item::Rarity rarity{};
 	float loot_multiplier{};
 	vfx::Gravitator gravitator{};

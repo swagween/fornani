@@ -20,10 +20,10 @@ enum class BreakableAttributes : std::uint8_t { bulletproof };
 
 class Breakable {
   public:
-	Breakable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style = 0, int state = 4);
+	Breakable(automa::ServiceProvider& svc, sf::Vector2f position, int style = 0, int state = 4);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void handle_collision(shape::Collider& other) const;
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, int power = 1);
 	void on_smash(automa::ServiceProvider& svc, world::Map& map, int power = 1);
 	void destroy() { state = 0; }
@@ -40,6 +40,6 @@ class Breakable {
 	float energy{};
 	float dampen{0.1f};
 	float hit_energy{8.f};
-	sf::Vector2<float> random_offset{};
+	sf::Vector2f random_offset{};
 };
 } // namespace fornani::world

@@ -41,8 +41,8 @@ class RectPath {
 	int m_current_step{};
 	float m_scale{};
 	bool m_step_completed{};
-	sf::Vector2<float> m_current_position{};
-	sf::Vector2<float> m_current_dimensions{};
+	sf::Vector2f m_current_position{};
+	sf::Vector2f m_current_dimensions{};
 	util::Cooldown m_interpolation;
 	util::InterpolationType m_interpolation_type{};
 	io::Logger m_logger{"util"};

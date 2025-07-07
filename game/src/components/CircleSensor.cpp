@@ -21,7 +21,7 @@ CircleSensor::CircleSensor(float radius) {
 	drawable = bounds;
 }
 
-void CircleSensor::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+void CircleSensor::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	drawable = bounds;
 	drawable.setOrigin({bounds.getRadius(), bounds.getRadius()});
 	drawable.setFillColor(active() ? sf::Color{20, 160, 160, 100} : sf::Color::Transparent);
@@ -29,7 +29,7 @@ void CircleSensor::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	win.draw(drawable);
 }
 
-void CircleSensor::set_position(sf::Vector2<float> position) { bounds.setPosition(position); }
+void CircleSensor::set_position(sf::Vector2f position) { bounds.setPosition(position); }
 
 bool CircleSensor::within_bounds(shape::Shape& shape) const {
 	if (shape.non_square()) { return shape.circle_SAT(bounds); }
@@ -39,6 +39,6 @@ bool CircleSensor::within_bounds(shape::Shape& shape) const {
 	return util::magnitude(closest - bounds.getPosition()) < bounds.getRadius();
 }
 
-sf::Vector2<float> CircleSensor::get_MTV(shape::Shape& shape) { return shape.circle_SAT_MTV(bounds); }
+sf::Vector2f CircleSensor::get_MTV(shape::Shape& shape) { return shape.circle_SAT_MTV(bounds); }
 
 } // namespace components

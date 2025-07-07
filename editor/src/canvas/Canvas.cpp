@@ -275,13 +275,13 @@ void Canvas::hover() { state.set(CanvasState::hovered); }
 
 void Canvas::unhover() { state.reset(CanvasState::hovered); }
 
-void Canvas::move(sf::Vector2<float> distance) { position += distance; }
+void Canvas::move(sf::Vector2f distance) { position += distance; }
 
-void Canvas::set_position(sf::Vector2<float> to_position) { position = to_position; }
+void Canvas::set_position(sf::Vector2f to_position) { position = to_position; }
 
-void Canvas::set_origin(sf::Vector2<float> to_origin) { origin = to_origin; }
+void Canvas::set_origin(sf::Vector2f to_origin) { origin = to_origin; }
 
-void Canvas::set_offset_from_center(sf::Vector2<float> offset) { offset_from_center = offset; }
+void Canvas::set_offset_from_center(sf::Vector2f offset) { offset_from_center = offset; }
 
 void Canvas::set_scale(float to_scale) { scale = to_scale; }
 
@@ -303,9 +303,9 @@ void Canvas::resize(sf::Vector2i adjustment) {
 	set_grid_texture();
 }
 
-void Canvas::center(sf::Vector2<float> point) { set_position(point - real_dimensions * 0.5f); }
+void Canvas::center(sf::Vector2f point) { set_position(point - real_dimensions * 0.5f); }
 
-void Canvas::constrain(sf::Vector2<float> bounds) {
+void Canvas::constrain(sf::Vector2f bounds) {
 	position.x = ccm::ext::clamp(position.x, -get_real_dimensions().x, bounds.x);
 	position.y = ccm::ext::clamp(position.y, -get_real_dimensions().y, bounds.y);
 }
@@ -376,7 +376,7 @@ int Canvas::tile_val_at_scaled(int i, int j, int layer) {
 	return map_states.back().layers.at(layer).grid.cells.at(idx).value;
 }
 
-sf::Vector2<float> Canvas::get_tile_position_at(int i, int j, int layer) {
+sf::Vector2f Canvas::get_tile_position_at(int i, int j, int layer) {
 	auto u = std::floor(i / 32);
 	auto v = std::floor(j / 32);
 	auto idx = static_cast<std::size_t>(u + v * dimensions.x);

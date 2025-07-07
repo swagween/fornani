@@ -11,7 +11,7 @@ void Eyedropper::update(Canvas& canvas) {
 
 void Eyedropper::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {}
 
-void Eyedropper::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) {}
+void Eyedropper::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) {}
 
 void Eyedropper::store_tile(int index) { tile = index; }
 

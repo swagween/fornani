@@ -52,7 +52,7 @@ struct Animation {
 	}
 	[[nodiscard]] auto totally_complete() const -> bool { return frame.get_count() == params.duration - 1 && frame_timer.is_almost_complete(); }
 	[[nodiscard]] auto keyframe_over() -> bool { return flags.consume(State::keyframe); }
-	[[nodiscard]] auto keyframe_started() const -> bool { return frame_timer.get_cooldown() == params.framerate; }
+	[[nodiscard]] auto keyframe_started() const -> bool { return frame_timer.get() == params.framerate; }
 	[[nodiscard]] auto just_started() const -> bool { return global_counter.get_count() == 1; }
 	[[nodiscard]] auto get_frame_count() const -> int { return frame.get_count(); }
 	[[nodiscard]] auto get_elapsed_ticks() const -> int { return global_counter.get_count(); }

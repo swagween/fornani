@@ -58,7 +58,7 @@ void Imp::update(automa::ServiceProvider& svc, world::Map& map, player::Player& 
 		attacks.stab.set_position(Enemy::collider.physics.position);
 		attacks.stab.origin.x = -10.f;
 	} else {
-		sf::Vector2<float> dir_offset{Enemy::collider.bounding_box.get_dimensions().x, 0.f};
+		sf::Vector2f dir_offset{Enemy::collider.bounding_box.get_dimensions().x, 0.f};
 		attacks.stab.set_position(Enemy::collider.physics.position + dir_offset);
 		attacks.stab.origin.x = 10.f;
 	}
@@ -109,7 +109,7 @@ void Imp::update(automa::ServiceProvider& svc, world::Map& map, player::Player& 
 	state_function = state_function();
 }
 
-void Imp::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Imp::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (died() || state == ImpState::dormant) { return; }
 	parts.weapon.render(svc, win, cam);
 	parts.hand.render(svc, win, cam);

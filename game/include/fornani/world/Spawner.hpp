@@ -21,12 +21,12 @@ enum class SpawnerAttributes {};
 
 class Spawner {
   public:
-	Spawner(automa::ServiceProvider& svc, sf::Vector2<float> position, int enemy_id = 0);
+	Spawner(automa::ServiceProvider& svc, sf::Vector2f position, int enemy_id = 0);
 	void update(automa::ServiceProvider& svc, Map& map);
 	void set_id(int const id) { enemy_id = id; }
 
   private:
-	sf::Vector2<float> position{};
+	sf::Vector2f position{};
 	util::BitFlags<SpawnerAttributes> attributes{};
 	int enemy_id{};
 	util::Cooldown spawn_timer{512};

@@ -13,7 +13,7 @@ void WeaponPackage::update(automa::ServiceProvider& svc, world::Map& map, enemy:
 	weapon.get()->set_firing_direction(enemy.get_actual_direction());
 }
 
-void WeaponPackage::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) { weapon->render(svc, win, cam); }
+void WeaponPackage::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) { weapon->render(svc, win, cam); }
 
 void WeaponPackage::shoot(automa::ServiceProvider& svc, world::Map& map) { weapon->shoot(svc, map); }
 

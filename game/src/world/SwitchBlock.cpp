@@ -8,7 +8,7 @@
 
 namespace fornani::world {
 
-SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, sf::Vector2<float> position, int button_id, int type) : type(static_cast<SwitchType>(type)), button_id(button_id), sprite{svc.assets.get_texture("switch_blocks")} {
+SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, sf::Vector2f position, int button_id, int type) : type(static_cast<SwitchType>(type)), button_id(button_id), sprite{svc.assets.get_texture("switch_blocks")} {
 	collider = shape::Collider({32.f, 32.f});
 	collider.physics.position = position;
 	collider.sync_components();
@@ -27,7 +27,7 @@ void SwitchBlock::update(automa::ServiceProvider& svc, Map& map, player::Player&
 
 void SwitchBlock::handle_collision(shape::Collider& other) const { other.handle_collider_collision(collider); }
 
-void SwitchBlock::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam, bool background) {
+void SwitchBlock::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool background) {
 	if (state == SwitchBlockState::empty && !background) { return; }
 	sprite.setPosition(collider.physics.position - cam);
 	sprite.setTextureRect(sf::IntRect{{static_cast<int>(type) * 32, static_cast<int>(state) * 32}, {32, 32}});

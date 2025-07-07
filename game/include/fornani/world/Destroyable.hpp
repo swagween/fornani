@@ -24,7 +24,7 @@ class Destroyable {
   public:
 	Destroyable(automa::ServiceProvider& svc, sf::Vector2<int> pos, int quest_id, int style_id = 0);
 	void update(automa::ServiceProvider& svc, Map& map, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile& proj) const;
 	shape::Shape& get_bounding_box();
 	[[nodiscard]] auto detonated() const -> bool { return flags.test(DestroyerState::detonated); }

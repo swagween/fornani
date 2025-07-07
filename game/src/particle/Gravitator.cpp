@@ -5,7 +5,7 @@
 namespace fornani::vfx {
 
 Gravitator::Gravitator(Vec pos, sf::Color col, float agf, Vec size) : scaled_position(pos), dimensions(size), color(col), attraction_force(agf) {
-	collider = shape::Collider(sf::Vector2<float>{4.f, 4.f}, sf::Vector2<float>{pos.x, pos.x});
+	collider = shape::Collider(sf::Vector2f{4.f, 4.f}, sf::Vector2f{pos.x, pos.x});
 	collider.bounding_box.set_dimensions({4.f, 4.f});
 	collider.physics.position = static_cast<Vec>(pos) * constants::f_cell_size;
 	collider.bounding_box = shape::Shape(collider.bounding_box.get_dimensions());
@@ -21,7 +21,7 @@ void Gravitator::update(automa::ServiceProvider& svc) {
 	collider.sync_components();
 }
 
-void Gravitator::add_force(sf::Vector2<float> force) { collider.physics.apply_force(force); }
+void Gravitator::add_force(sf::Vector2f force) { collider.physics.apply_force(force); }
 
 void Gravitator::set_position(Vec new_position) {
 	collider.physics.position = new_position;

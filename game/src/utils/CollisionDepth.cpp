@@ -44,7 +44,7 @@ void CollisionDepth::print() {
 	return;
 }
 
-void CollisionDepth::render(shape::Shape const& bounding_box, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void CollisionDepth::render(shape::Shape const& bounding_box, sf::RenderWindow& win, sf::Vector2f cam) {
 	collision_ray.setFillColor(sf::Color::Cyan);
 
 	// left

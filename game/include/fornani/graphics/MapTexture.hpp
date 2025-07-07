@@ -27,8 +27,8 @@ class MapTexture {
 	[[nodiscard]] auto get_id() const -> int { return m_room_id; }
 	[[nodiscard]] auto get_scale() const -> float { return m_scale; }
 	sf::RenderTexture& get(bool border = false);
-	sf::Vector2<float> get_position();
-	sf::Vector2<float> get_dimensions() const;
+	sf::Vector2f get_position();
+	sf::Vector2f get_dimensions() const;
 
   private:
 	sf::RenderTexture m_center_texture{};
@@ -37,7 +37,7 @@ class MapTexture {
 	sf::Color m_tile_color{};
 	sf::Color m_border_color{};
 	sf::Vector2<int> m_global_offset{};
-	sf::Vector2<float> m_map_dimensions{};
+	sf::Vector2f m_map_dimensions{};
 	util::BitFlags<MapTextureFlags> m_flags{};
 	bool m_ignore{};
 	int m_room_id{};

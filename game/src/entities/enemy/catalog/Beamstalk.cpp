@@ -46,7 +46,7 @@ void Beamstalk::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 	state_function = state_function();
 }
 
-void Beamstalk::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Beamstalk::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (died()) { return; }
 }
 

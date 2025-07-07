@@ -9,7 +9,7 @@
 
 namespace fornani::vfx {
 
-Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprite(svc.assets.get_texture("dragonfly"), {16, 16}) {
+Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2f start) : sprite(svc.assets.get_texture("dragonfly"), {16, 16}) {
 	physics.set_global_friction(0.97f);
 	physics.position = start;
 	physics.velocity = util::random::random_vector_float(-1.f, 1.f);
@@ -32,7 +32,7 @@ void Dragonfly::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 	sprite.update(physics.position, variant);
 }
 
-void Dragonfly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Dragonfly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (svc.greyblock_mode()) { return; }
 	sprite.render(svc, win, cam);
 	if (svc.greyblock_mode()) {

@@ -8,16 +8,16 @@
 namespace fornani::shape {
 
 Collider::Collider() {
-	dimensions = sf::Vector2<float>{default_dim, default_dim};
-	jumpbox.set_dimensions(sf::Vector2<float>(dimensions.x, default_jumpbox_height));
-	hurtbox.set_dimensions(sf::Vector2<float>(dimensions.x - 8.f, dimensions.y - 8.f));
+	dimensions = sf::Vector2f{default_dim, default_dim};
+	jumpbox.set_dimensions(sf::Vector2f(dimensions.x, default_jumpbox_height));
+	hurtbox.set_dimensions(sf::Vector2f(dimensions.x - 8.f, dimensions.y - 8.f));
 	sync_components();
 }
 
-Collider::Collider(sf::Vector2<float> dim, sf::Vector2<float> hbx_offset) : dimensions(dim), hurtbox_offset(hbx_offset) {
+Collider::Collider(sf::Vector2f dim, sf::Vector2f hbx_offset) : dimensions(dim), hurtbox_offset(hbx_offset) {
 	bounding_box.set_dimensions(dim);
-	jumpbox.set_dimensions(sf::Vector2<float>(dim.x, default_jumpbox_height));
-	hurtbox.set_dimensions(sf::Vector2<float>(dim.x - 8.f, dim.y - 8.f + hurtbox_offset.y));
+	jumpbox.set_dimensions(sf::Vector2f(dim.x, default_jumpbox_height));
+	hurtbox.set_dimensions(sf::Vector2f(dim.x - 8.f, dim.y - 8.f + hurtbox_offset.y));
 	sync_components();
 }
 
@@ -34,15 +34,15 @@ void Collider::sync_components() {
 	predictive_horizontal.set_dimensions({dimensions.x + 2.f * horizontal_detector_buffer, dimensions.y - 3.f * horizontal_detector_buffer});
 	predictive_combined.set_dimensions(dimensions);
 
-	vicinity.set_position(sf::Vector2<float>{physics.position.x - vicinity_pad + physics.apparent_velocity().x, physics.position.y - vicinity_pad + physics.apparent_velocity().y});
-	wallslider.set_position(sf::Vector2<float>{physics.position.x - wallslide_pad, physics.position.y + 2.f});
-	predictive_vertical.set_position(sf::Vector2<float>{physics.position.x + vertical_detector_buffer, physics.position.y - vertical_detector_buffer + physics.apparent_velocity().y});
-	predictive_horizontal.set_position(sf::Vector2<float>{physics.position.x - horizontal_detector_buffer + physics.apparent_velocity().x, physics.position.y + horizontal_detector_buffer});
-	predictive_combined.set_position(sf::Vector2<float>{physics.position.x + physics.apparent_velocity().x, physics.position.y + physics.apparent_velocity().y});
-	jumpbox.set_position(sf::Vector2<float>{physics.position.x, physics.position.y + dimensions.y});
-	hurtbox.set_position(sf::Vector2<float>(physics.position.x + (dimensions.x * 0.5f) - (hurtbox.get_dimensions().x * 0.5f), physics.position.y + (dimensions.y * 0.5f) - (hurtbox.get_dimensions().y * 0.5f) - (hurtbox_offset.y * 0.5f)));
-	vertical.set_position(sf::Vector2<float>{physics.position.x + dimensions.x * 0.5f - 0.5f, physics.position.y + depth_buffer});
-	horizontal.set_position(sf::Vector2<float>{physics.position.x + depth_buffer, physics.position.y + dimensions.y * 0.5f - 0.5f});
+	vicinity.set_position(sf::Vector2f{physics.position.x - vicinity_pad + physics.apparent_velocity().x, physics.position.y - vicinity_pad + physics.apparent_velocity().y});
+	wallslider.set_position(sf::Vector2f{physics.position.x - wallslide_pad, physics.position.y + 2.f});
+	predictive_vertical.set_position(sf::Vector2f{physics.position.x + vertical_detector_buffer, physics.position.y - vertical_detector_buffer + physics.apparent_velocity().y});
+	predictive_horizontal.set_position(sf::Vector2f{physics.position.x - horizontal_detector_buffer + physics.apparent_velocity().x, physics.position.y + horizontal_detector_buffer});
+	predictive_combined.set_position(sf::Vector2f{physics.position.x + physics.apparent_velocity().x, physics.position.y + physics.apparent_velocity().y});
+	jumpbox.set_position(sf::Vector2f{physics.position.x, physics.position.y + dimensions.y});
+	hurtbox.set_position(sf::Vector2f(physics.position.x + (dimensions.x * 0.5f) - (hurtbox.get_dimensions().x * 0.5f), physics.position.y + (dimensions.y * 0.5f) - (hurtbox.get_dimensions().y * 0.5f) - (hurtbox_offset.y * 0.5f)));
+	vertical.set_position(sf::Vector2f{physics.position.x + dimensions.x * 0.5f - 0.5f, physics.position.y + depth_buffer});
+	horizontal.set_position(sf::Vector2f{physics.position.x + depth_buffer, physics.position.y + dimensions.y * 0.5f - 0.5f});
 
 	draw_hurtbox.setFillColor(sf::Color::Transparent);
 	draw_hurtbox.setOutlineColor(sf::Color::Blue);
@@ -217,7 +217,7 @@ void Collider::detect_map_collision(world::Map& map) {
 	flags.state.reset(State::on_flat_surface);
 }
 
-void Collider::correct_x(sf::Vector2<float> mtv) {
+void Collider::correct_x(sf::Vector2f mtv) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
 	auto xdist = predictive_horizontal.get_position().x + horizontal_detector_buffer - physics.position.x;
 	auto correction = xdist + mtv.x;
@@ -225,7 +225,7 @@ void Collider::correct_x(sf::Vector2<float> mtv) {
 	physics.zero_x();
 }
 
-void Collider::correct_y(sf::Vector2<float> mtv) {
+void Collider::correct_y(sf::Vector2f mtv) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
 	// for large mtv values, overcorrect to prevent clipping
 	if (ccm::abs(mtv.x) > 12.f || ccm::abs(mtv.y) > 12.f) {
@@ -238,7 +238,7 @@ void Collider::correct_y(sf::Vector2<float> mtv) {
 	physics.zero_y();
 }
 
-void Collider::correct_x_y(sf::Vector2<float> mtv) {
+void Collider::correct_x_y(sf::Vector2f mtv) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
 	auto xdist = predictive_combined.get_position().x - physics.position.x;
 	auto correction = xdist + mtv.x;
@@ -250,7 +250,7 @@ void Collider::correct_x_y(sf::Vector2<float> mtv) {
 	physics.zero_y();
 }
 
-void Collider::correct_corner(sf::Vector2<float> mtv) {
+void Collider::correct_corner(sf::Vector2f mtv) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
 	if (ccm::abs(mtv.x) >= ccm::abs(mtv.y)) {
 		physics.position.x = predictive_combined.get_position().x + mtv.x;
@@ -266,7 +266,7 @@ void Collider::resolve_depths() {
 	if (!collision_depths) { return; }
 	auto downward = collision_depths.value().top_depth() > collision_depths.value().bottom_depth();
 	auto rightward = collision_depths.value().left_depth() > collision_depths.value().right_depth();
-	sf::Vector2<float> depth_diff{};
+	sf::Vector2f depth_diff{};
 	depth_diff.y = (collision_depths.value().top_depth() + collision_depths.value().bottom_depth()) * 0.5f;
 	depth_diff.x = (collision_depths.value().left_depth() + collision_depths.value().right_depth()) * 0.5f;
 	if (depth_diff.x < 8.f && depth_diff.y < 8.f) { return; }
@@ -276,7 +276,7 @@ void Collider::resolve_depths() {
 	physics.position.y += depth_diff.y;
 }
 
-bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::Vector2<float> velocity) {
+bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::Vector2f velocity) {
 	auto ret{false};
 	if (soft) {
 		if (!vicinity.overlaps(collider)) { return ret; }
@@ -377,7 +377,7 @@ void Collider::update(automa::ServiceProvider& svc) {
 	flags.state.test(State::grounded) ? physics.flags.set(components::State::grounded) : physics.flags.reset(components::State::grounded);
 }
 
-void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 
 	// draw predictive vertical
 	box.setSize(predictive_vertical.get_dimensions());
@@ -420,12 +420,12 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	win.draw(box);
 
 	// draw hurtbox
-	draw_hurtbox.setSize(sf::Vector2<float>{(float)hurtbox.get_dimensions().x, (float)hurtbox.get_dimensions().y});
+	draw_hurtbox.setSize(sf::Vector2f{(float)hurtbox.get_dimensions().x, (float)hurtbox.get_dimensions().y});
 	draw_hurtbox.setPosition(hurtbox.get_position() - cam);
 	// win.draw(draw_hurtbox);
 
 	// draw vicinity
-	box.setSize(sf::Vector2<float>{(float)vicinity.get_dimensions().x, (float)vicinity.get_dimensions().y});
+	box.setSize(sf::Vector2f{(float)vicinity.get_dimensions().x, (float)vicinity.get_dimensions().y});
 	box.setPosition(vicinity.get_position() - cam);
 	box.setFillColor(sf::Color::Transparent);
 	box.setOutlineColor(sf::Color{120, 60, 80, 180});
@@ -433,7 +433,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 	win.draw(box);
 
 	// draw wallslider
-	box.setSize(sf::Vector2<float>{(float)wallslider.get_dimensions().x, (float)wallslider.get_dimensions().y});
+	box.setSize(sf::Vector2f{(float)wallslider.get_dimensions().x, (float)wallslider.get_dimensions().y});
 	box.setPosition(wallslider.get_position() - cam);
 	has_left_wallslide_collision() || has_right_wallslide_collision() ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Transparent);
 	box.setOutlineColor(sf::Color{60, 60, 180, 100});
@@ -456,7 +456,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
 
 	if (collision_depths) { collision_depths.value().render(bounding_box, win, cam); }
 }
-void Collider::set_position(sf::Vector2<float> pos) {
+void Collider::set_position(sf::Vector2f pos) {
 	physics.position = pos;
 	sync_components();
 }
@@ -501,8 +501,8 @@ bool Collider::vertical_squish() const { return collision_depths ? collision_dep
 
 bool Collider::pushes(Collider& other) const { return (physics.position.x < other.physics.position.x && physics.apparent_velocity().x > 0.f) || (physics.position.x > other.physics.position.x && physics.apparent_velocity().x < 0.f); }
 
-sf::Vector2<float> Collider::snap_to_grid(float size, float scale, float factor) {
-	return sf::Vector2<float>{std::round((physics.position.x * size / factor) / (size * (scale / factor))), std::round((physics.position.y * size / factor) / (size * (scale / factor)))} * scale;
+sf::Vector2f Collider::snap_to_grid(float size, float scale, float factor) {
+	return sf::Vector2f{std::round((physics.position.x * size / factor) / (size * (scale / factor))), std::round((physics.position.y * size / factor) / (size * (scale / factor)))} * scale;
 }
 
 } // namespace fornani::shape

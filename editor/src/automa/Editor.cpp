@@ -80,7 +80,7 @@ void Editor::run() {
 		}
 
 		if (m_demo.trigger_demo) {
-			auto ppos = m_demo.custom_position ? sf::Vector2<float>{map.entities.variables.player_hot_start} * 32.f : sf::Vector2<float>{map.entities.variables.player_start} * 32.f;
+			auto ppos = m_demo.custom_position ? sf::Vector2f{map.entities.variables.player_hot_start} * 32.f : sf::Vector2f{map.entities.variables.player_start} * 32.f;
 			launch_demo(args, map.room_id, finder->paths.room_name, ppos);
 			if (!ImGui::SFML::Init(window->get())) { console.add_log("ImGui::SFML::Init() failed!\n"); };
 			init(finder->paths.room_name);
@@ -291,10 +291,10 @@ void Editor::logic() {
 
 	// set tool positions
 	ImGuiIO& io = ImGui::GetIO();
-	current_tool->set_position((sf::Vector2<float>{io.MousePos.x, io.MousePos.y} - target.get_position()) / target.get_scale());
-	secondary_tool->set_position((sf::Vector2<float>{io.MousePos.x, io.MousePos.y} - target.get_position()) / target.get_scale());
-	current_tool->set_window_position(sf::Vector2<float>{io.MousePos.x, io.MousePos.y});
-	secondary_tool->set_window_position(sf::Vector2<float>{io.MousePos.x, io.MousePos.y});
+	current_tool->set_position((sf::Vector2f{io.MousePos.x, io.MousePos.y} - target.get_position()) / target.get_scale());
+	secondary_tool->set_position((sf::Vector2f{io.MousePos.x, io.MousePos.y} - target.get_position()) / target.get_scale());
+	current_tool->set_window_position(sf::Vector2f{io.MousePos.x, io.MousePos.y});
+	secondary_tool->set_window_position(sf::Vector2f{io.MousePos.x, io.MousePos.y});
 }
 
 void Editor::load() {
@@ -365,7 +365,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	ImGuiViewport const* viewport = ImGui::GetMainViewport();
 	ImVec2 work_pos = viewport->WorkPos; // Use work area to avoid menu-bar/task-bar
 	ImVec2 work_size = viewport->WorkSize;
-	auto f_work_size = sf::Vector2<float>{static_cast<float>(work_size.x), static_cast<float>(work_size.y)};
+	auto f_work_size = sf::Vector2f{static_cast<float>(work_size.x), static_cast<float>(work_size.y)};
 
 	if (current_tool->entity_menu) {
 		if (current_tool->current_entity) { ImGui::OpenPopup("Entity Options"); }
@@ -1033,7 +1033,7 @@ void Editor::center_map() {
 	map.set_scale(1.f);
 }
 
-void Editor::launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2<float> player_position) {
+void Editor::launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2f player_position) {
 	m_demo.trigger_demo = false;
 	m_demo.custom_position = false;
 	pressed_keys = {};

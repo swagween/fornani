@@ -10,10 +10,10 @@ struct Option {
 	void set_string(std::string_view str);
 	sf::Text label;
 	sf::Color native_color{};
-	sf::Vector2<float> position{};
-	sf::Vector2<float> left_offset{};
-	sf::Vector2<float> right_offset{};
-	sf::Vector2<float> dot_offset{24.f, 2.f};
+	sf::Vector2f position{};
+	sf::Vector2f left_offset{};
+	sf::Vector2f right_offset{};
+	sf::Vector2f dot_offset{24.f, 2.f};
 	int index{};
 	bool highlighted{};
 	bool selected{};

@@ -65,7 +65,7 @@ enum class MapState : std::uint8_t { unobscure };
 enum class MapProperties : std::uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer, environmental_randomness };
 
 struct EnemySpawn {
-	sf::Vector2<float> pos{};
+	sf::Vector2f pos{};
 	int id{};
 };
 
@@ -77,10 +77,10 @@ class Map {
 	// methods
 	void load(automa::ServiceProvider& svc, int room_number, bool soft = false);
 	void update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos, sf::Vector2<float> target = {});
-	void spawn_enemy(int id, sf::Vector2<float> pos);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {});
+	void spawn_enemy(int id, sf::Vector2f pos);
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc) const;
@@ -89,21 +89,21 @@ class Map {
 	void handle_cell_collision(shape::CircleCollider& collider);
 	void shake_camera();
 	void clear();
-	void wrap(sf::Vector2<float>& position) const;
+	void wrap(sf::Vector2f& position) const;
 	std::vector<std::unique_ptr<world::Layer>>& get_layers();
 	std::unique_ptr<world::Layer>& get_middleground();
 	std::unique_ptr<world::Layer>& get_obscuring_layer();
 	npc::NPC& get_npc(int id);
 	sf::Vector2f get_spawn_position(int portal_source_map_id);
-	sf::Vector2<float> get_nearest_target_point(sf::Vector2<float> from);
-	sf::Vector2<float> last_checkpoint();
+	sf::Vector2f get_nearest_target_point(sf::Vector2f from);
+	sf::Vector2f last_checkpoint();
 
 	void debug();
 
 	bool nearby(shape::Shape& first, shape::Shape& second) const;
-	bool within_bounds(sf::Vector2<float> test) const;
+	bool within_bounds(sf::Vector2f test) const;
 	bool overlaps_middleground(shape::Shape& test);
-	[[nodiscard]] auto off_the_bottom(sf::Vector2<float> point) const -> bool { return point.y > real_dimensions.y + abyss_distance; }
+	[[nodiscard]] auto off_the_bottom(sf::Vector2f point) const -> bool { return point.y > real_dimensions.y + abyss_distance; }
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
 	[[nodiscard]] auto get_echo_count() const -> int { return sound.echo_count; }
 	[[nodiscard]] auto get_echo_rate() const -> int { return sound.echo_rate; }
@@ -113,9 +113,9 @@ class Map {
 	[[nodiscard]] auto has_reverse_obscuring_layer() const -> bool { return flags.properties.test(MapProperties::has_reverse_obscuring_layer); }
 	[[nodiscard]] auto get_biome_string() const -> std::string { return m_metadata.biome; }
 	[[nodiscard]] auto get_room_string() const -> std::string { return m_metadata.room; }
-	std::size_t get_index_at_position(sf::Vector2<float> position);
-	int get_tile_value_at_position(sf::Vector2<float> position);
-	Tile& get_cell_at_position(sf::Vector2<float> position);
+	std::size_t get_index_at_position(sf::Vector2f position);
+	int get_tile_value_at_position(sf::Vector2f position);
+	Tile& get_cell_at_position(sf::Vector2f position);
 
 	// layers
 	sf::Vector2<int> metagrid_coordinates{};
@@ -149,7 +149,8 @@ class Map {
 	std::vector<EnemySpawn> enemy_spawns{};
 	entity::SavePoint save_point;
 	std::vector<vfx::Atmosphere> atmosphere{};
-	std::vector<sf::Vector2<float>> target_points{};
+	std::vector<sf::Vector2f> target_points{};
+	std::vector<sf::Vector2f> home_points{};
 
 	// vfx
 	std::optional<vfx::Rain> rain{};

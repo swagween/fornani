@@ -10,7 +10,7 @@
 
 namespace fornani::world {
 
-Breakable::Breakable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int state) : style(style), state(state), sprite(svc.assets.get_texture("breakables")) {
+Breakable::Breakable(automa::ServiceProvider& svc, sf::Vector2f position, int style, int state) : style(style), state(state), sprite(svc.assets.get_texture("breakables")) {
 	collider = shape::Collider({32.f, 32.f});
 	collider.physics.position = position;
 	collider.sync_components();
@@ -30,7 +30,7 @@ void Breakable::handle_collision(shape::Collider& other) const {
 	other.handle_collider_collision(collider);
 }
 
-void Breakable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Breakable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (destroyed()) { return; }
 	sprite.setPosition(collider.physics.position - cam + random_offset);
 	sprite.setTextureRect(sf::IntRect{{style * 32, (state - 1) * 32}, {32, 32}});

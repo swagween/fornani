@@ -23,7 +23,7 @@ class Portrait {
 	void set_custom_portrait(sf::Sprite const& sp);
 	void render(sf::RenderWindow& win);
 	void reset(automa::ServiceProvider& svc);
-	void set_position(sf::Vector2<float> pos);
+	void set_position(sf::Vector2f pos);
 	void set_texture(sf::Texture const& texture);
 	void bring_in();
 	void send_out();
@@ -39,10 +39,10 @@ class Portrait {
 	int id{};
 	int emotion{1}; // 1-index to avoid communication errors
 	bool is_nani{};
-	sf::Vector2<float> dimensions{};
-	sf::Vector2<float> position{};
-	sf::Vector2<float> start_position{};
-	sf::Vector2<float> end_position{};
+	sf::Vector2f dimensions{};
+	sf::Vector2f position{};
+	sf::Vector2f start_position{};
+	sf::Vector2f end_position{};
 
 	components::PhysicsComponent m_physics{};
 	components::SteeringBehavior m_steering{};

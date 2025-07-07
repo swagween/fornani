@@ -44,9 +44,9 @@ struct BackgroundLayer {
 	float scroll_speed{};
 	float parallax{};
 	sf::Sprite sprite;
-	sf::Vector2<float> position{};
-	sf::Vector2<float> velocity{};
-	sf::Vector2<float> final_position{};
+	sf::Vector2f position{};
+	sf::Vector2f velocity{};
+	sf::Vector2f final_position{};
 };
 
 class Background {
@@ -54,7 +54,7 @@ class Background {
 	Background(fornani::data::ResourceFinder& finder, Backdrop backdrop);
 
 	void update();
-	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f& campos);
 	void debug();
 
 	BackgroundType type;

@@ -32,9 +32,9 @@ class Drop {
 	void set_value();
 	void set_texture(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc, world::Map& map);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	void set_position(sf::Vector2<float> pos);
-	void apply_force(sf::Vector2<float> force);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void set_position(sf::Vector2f pos);
+	void apply_force(sf::Vector2f force);
 
 	void destroy_completely();
 	void deactivate();
@@ -55,11 +55,11 @@ class Drop {
 
   private:
 	DropType type{};
-	sf::Vector2<float> drop_dimensions{20.f, 20.f};
+	sf::Vector2f drop_dimensions{20.f, 20.f};
 	shape::CircleCollider collider{16.f};
 	sf::Vector2<int> spritesheet_dimensions{};
-	sf::Vector2<float> sprite_dimensions{};
-	sf::Vector2<float> sprite_offset{};
+	sf::Vector2f sprite_dimensions{};
+	sf::Vector2f sprite_offset{};
 	anim::AnimatedSprite sprite;
 	util::Cooldown shine_cooldown{600};
 

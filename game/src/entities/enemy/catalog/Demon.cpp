@@ -46,7 +46,7 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		attacks.rush.origin.x = 20.f;
 		attacks.rush.hit_offset.x = 0.f;
 	} else {
-		sf::Vector2<float> dir_offset{Enemy::collider.bounding_box.get_dimensions().x, 0.f};
+		sf::Vector2f dir_offset{Enemy::collider.bounding_box.get_dimensions().x, 0.f};
 		attacks.stab.set_position(Enemy::collider.physics.position + dir_offset);
 		attacks.rush.set_position(Enemy::collider.physics.position + dir_offset);
 		attacks.stab.origin.x = 10.f;
@@ -91,7 +91,7 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		parts.shield.set_shield();
 	}
 
-	secondary_collider.physics.position = collider.physics.position - sf::Vector2<float>{0.f, 10.f};
+	secondary_collider.physics.position = collider.physics.position - sf::Vector2f{0.f, 10.f};
 	secondary_collider.physics.position.x += directions.actual.lnr == LNR::left ? 2.f : collider.dimensions.x - secondary_collider.dimensions.x - 2.f;
 	secondary_collider.sync_components();
 	if (player.collider.hurtbox.overlaps(secondary_collider.bounding_box) && !is_dormant()) { player.hurt(); }
@@ -126,7 +126,7 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	state_function = state_function();
 }
 
-void Demon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Demon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (died() || state == DemonState::dormant) { return; }
 	if (variant == DemonVariant::spearman) {
 		parts.spear.render(svc, win, cam);

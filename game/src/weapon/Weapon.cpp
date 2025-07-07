@@ -43,7 +43,6 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 	// gameplay
 	ammo.set_max(in_data["gameplay"]["attributes"]["ammo"].as<int>());
 	cooldowns.reload = util::Cooldown{in_data["gameplay"]["attributes"]["reload"].as<int>()};
-	cooldowns.down_time = util::Cooldown{cooldowns.reload};
 	specifications.multishot = in_data["gameplay"]["attributes"]["multishot"].as<int>();
 	specifications.cooldown_time = in_data["gameplay"]["attributes"]["cooldown_time"].as<int>();
 	specifications.recoil = in_data["gameplay"]["attributes"]["recoil"].as<float>();
@@ -55,11 +54,9 @@ Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
 
 void Weapon::update(automa::ServiceProvider& svc, Direction to_direction) {
 	ammo.update();
-	if ((ammo.empty() || !cooldowns.down_time.running()) && !cooldowns.reload.running() && !ammo.full()) { cooldowns.reload.start(); }
 	if (cooldowns.reload.is_almost_complete() && projectile.get_team() == Team::nani) { svc.soundboard.flags.arms.set(audio::Arms::reload); }
 	if (cooldowns.reload.is_almost_complete()) { ammo.refill(); }
 	cooldowns.reload.update();
-	if (!cooldowns.reload.running()) { cooldowns.down_time.update(); }
 
 	set_orientation(to_direction);
 	cooldowns.cooldown.update();
@@ -67,7 +64,7 @@ void Weapon::update(automa::ServiceProvider& svc, Direction to_direction) {
 	physical.physics.simple_update();
 }
 
-void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	physical.final_position = visual.position + physical.physics.position;
 	visual.sprite.setPosition(physical.final_position - cam);
 	win.draw(visual.sprite);
@@ -86,7 +83,7 @@ void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	}
 }
 
-void Weapon::render_ui(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> position) {
+void Weapon::render_ui(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f position) {
 	auto gun_dimensions = sf::Vector2<int>{48, 48};
 	visual.ui.setTextureRect(sf::IntRect({metadata.id * gun_dimensions.x, 0}, gun_dimensions));
 	visual.ui.setPosition(position);
@@ -103,7 +100,7 @@ void Weapon::lock() { flags.state.reset(WeaponState::unlocked); }
 
 void Weapon::shoot() {
 	cooldowns.cooldown.start(specifications.cooldown_time);
-	cooldowns.down_time.start();
+	if (!cooldowns.reload.running()) { cooldowns.reload.start(); }
 	active_projectiles.update();
 	ammo.use();
 	physical.physics.apply_force(firing_direction.get_vector() * -1.f);
@@ -125,25 +122,25 @@ bool Weapon::cooling_down() const { return !cooldowns.cooldown.is_complete(); }
 
 bool Weapon::can_shoot() const { return !cooling_down() && ammo.get_count() > 0; }
 
-void Weapon::set_position(sf::Vector2<float> pos) { visual.position = pos; }
+void Weapon::set_position(sf::Vector2f pos) { visual.position = pos; }
 
-void Weapon::force_position(sf::Vector2<float> pos) {
+void Weapon::force_position(sf::Vector2f pos) {
 	set_position(pos);
 	physical.physics.position = {};
 }
 
-void Weapon::set_barrel_point(sf::Vector2<float> point) { offsets.gameplay.barrel = point; }
+void Weapon::set_barrel_point(sf::Vector2f point) { offsets.gameplay.barrel = point; }
 
 void Weapon::set_orientation(Direction to_direction) {
-	auto right_scale = sf::Vector2<float>{1.f, 1.f};
-	auto left_scale = sf::Vector2<float>{-1.f, 1.f};
+	auto right_scale = sf::Vector2f{1.f, 1.f};
+	auto left_scale = sf::Vector2f{-1.f, 1.f};
 	auto neutral_rotation{0.0f};
 	auto up_rotation{-90.f};
 	auto down_rotation{90.f};
-	auto right_offset = sf::Vector2<float>{-offsets.render.global.x, -offsets.render.global.y};
-	auto left_offset = sf::Vector2<float>{offsets.render.global.x, -offsets.render.global.y};
-	auto right_barrel_offset = sf::Vector2<float>{offsets.render.barrel.x, offsets.render.barrel.y};
-	auto left_barrel_offset = sf::Vector2<float>{-offsets.render.barrel.x, offsets.render.barrel.y};
+	auto right_offset = sf::Vector2f{-offsets.render.global.x, -offsets.render.global.y};
+	auto left_offset = sf::Vector2f{offsets.render.global.x, -offsets.render.global.y};
+	auto right_barrel_offset = sf::Vector2f{offsets.render.barrel.x, offsets.render.barrel.y};
+	auto left_barrel_offset = sf::Vector2f{-offsets.render.barrel.x, offsets.render.barrel.y};
 	auto const& position = physical.final_position;
 	visual.sprite.setRotation(sf::degrees(neutral_rotation));
 	switch (firing_direction.lnr) {

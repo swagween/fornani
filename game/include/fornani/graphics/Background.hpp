@@ -23,7 +23,7 @@ struct BackgroundLayer {
 	float parallax{};
 	std::vector<sf::Sprite> sprites{};
 	components::PhysicsComponent physics{};
-	sf::Vector2<float> final_position{};
+	sf::Vector2f final_position{};
 };
 
 class Background {
@@ -32,7 +32,7 @@ class Background {
 	Background(automa::ServiceProvider& svc, int bg_id);
 
 	void update(automa::ServiceProvider& svc);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos);
 	void lock();
 	void lock_horizontally();
 	void lock_vertically();

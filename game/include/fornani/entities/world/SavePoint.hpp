@@ -26,7 +26,7 @@ inline anim::Parameters anim_params{0, 12, 24, -1};
 class SavePoint {
 
   public:
-	using Vec = sf::Vector2<float>;
+	using Vec = sf::Vector2f;
 	using Vecu16 = sf::Vector2<std::uint32_t>;
 
 	explicit SavePoint(automa::ServiceProvider& svc);

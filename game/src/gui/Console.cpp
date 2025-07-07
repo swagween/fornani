@@ -19,12 +19,14 @@ Console::Console(automa::ServiceProvider& svc)
 Console::Console(automa::ServiceProvider& svc, std::string_view message) : Console(svc) { load_single_message(message); }
 
 Console::Console(automa::ServiceProvider& svc, dj::Json& source, std::string_view key, OutputType type) : Console(svc) {
+	if (type == OutputType::no_skip) { m_exit_stall.start(); }
 	set_source(source);
 	load_and_launch(key, type);
 }
 
 void Console::update(automa::ServiceProvider& svc) {
 	m_began = false;
+	m_exit_stall.update();
 	if (!is_active()) { return; }
 	if (!m_writer) { return; }
 	handle_inputs(svc.controller_map);
@@ -153,7 +155,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 	bool responded{};
 
 	// check for exit
-	if (exit && m_output_type != OutputType::no_skip) {
+	if (exit && m_output_type != OutputType::no_skip && m_exit_stall.is_complete()) {
 		end();
 		return;
 	}
@@ -205,7 +207,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 	(skip && can_skip) ? m_writer->speed_up() : m_writer->slow_down();
 
 	if (finished) {
-		if (m_writer->exit_requested()) { end(); }
+		if (m_writer->exit_requested() && m_exit_stall.is_complete()) { end(); }
 	}
 }
 

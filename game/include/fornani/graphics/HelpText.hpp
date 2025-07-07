@@ -25,7 +25,7 @@ class HelpText {
 	void set_color(sf::Color color);
 	void set_string(std::string string);
 	void set_alpha(std::uint8_t a);
-	void set_position(sf::Vector2<float> pos);
+	void set_position(sf::Vector2f pos);
 	void start(int time = 195) { delay.start(time); }
 	void reset();
 	[[nodiscard]] auto ready() const -> bool { return delay.is_complete(); }
@@ -42,8 +42,8 @@ class HelpText {
 	sf::Color bg_color{};
 	float pad{30};
 	bool background{};
-	sf::Vector2<float> position{};
-	sf::Vector2<float> bg_offset{2.f, 2.f};
+	sf::Vector2f position{};
+	sf::Vector2f bg_offset{2.f, 2.f};
 };
 
 } // namespace fornani::text

@@ -18,7 +18,7 @@ class Archer final : public Enemy {
 	Archer& operator=(Archer&&) = delete;
 	Archer(automa::ServiceProvider& svc, world::Map& map);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 
 	fsm::StateFunction state_function = std::bind(&Archer::update_idle, this);
 	fsm::StateFunction update_idle();

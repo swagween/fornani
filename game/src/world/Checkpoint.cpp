@@ -6,7 +6,7 @@
 
 namespace fornani::world {
 
-Checkpoint::Checkpoint(automa::ServiceProvider& svc, sf::Vector2<float> pos) : bounds({32.f, 32.f}) { bounds.set_position(pos); }
+Checkpoint::Checkpoint(automa::ServiceProvider& svc, sf::Vector2f pos) : bounds({32.f, 32.f}) { bounds.set_position(pos); }
 
 void Checkpoint::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 	if (player.collider.bounding_box.overlaps(bounds)) {
@@ -15,7 +15,7 @@ void Checkpoint::update(automa::ServiceProvider& svc, Map& map, player::Player& 
 	}
 }
 
-void Checkpoint::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Checkpoint::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (svc.greyblock_mode()) {
 		bounds.render(win, cam);
 		if (reached()) {

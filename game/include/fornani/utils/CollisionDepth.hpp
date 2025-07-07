@@ -30,7 +30,7 @@ class CollisionDepth {
 	void maximize(CollisionDepth& other);
 	void print();
 	void reset() { iterations.start(); }
-	void render(shape::Shape const& bounding_box, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(shape::Shape const& bounding_box, sf::RenderWindow& win, sf::Vector2f cam);
 	[[nodiscard]] auto crushed() const -> bool { return (out_depth.bottom < -crush_threshold && out_depth.top > crush_threshold) || (out_depth.left > crush_threshold && out_depth.right < -crush_threshold); }
 	[[nodiscard]] bool horizontal_squish() const;
 	[[nodiscard]] bool vertical_squish() const;

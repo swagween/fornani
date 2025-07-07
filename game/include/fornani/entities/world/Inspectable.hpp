@@ -28,7 +28,7 @@ enum class InspectableFlags : std::uint8_t { hovered, hovered_trigger, activated
 
 class Inspectable {
   public:
-	using Vec = sf::Vector2<float>;
+	using Vec = sf::Vector2f;
 	using Vecu32 = sf::Vector2<std::uint32_t>;
 
 	Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, std::string_view key = "", int room_id = 0, int alternates = 0, int native = 0, bool aoc = false);

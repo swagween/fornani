@@ -62,7 +62,7 @@ void Archer::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	state_function = state_function();
 }
 
-void Archer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Archer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (died()) { return; }
 	parts.bow.render(svc, win, cam);
 	if (svc.greyblock_mode()) {}
@@ -125,7 +125,7 @@ fsm::StateFunction Archer::update_jump() {
 }
 
 fsm::StateFunction Archer::update_shoot() {
-	auto bow_frame = animation.frame_timer.get_cooldown() >= animation.params.framerate / 2 ? 1 : 2;
+	auto bow_frame = animation.frame_timer.get() >= animation.params.framerate / 2 ? 1 : 2;
 	parts.bow.sprite->setTextureRect(sf::IntRect{{82 * bow_frame, 0}, bow_dimensions});
 	if (animation.complete()) {
 		state = ArcherState::idle;

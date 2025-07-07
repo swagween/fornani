@@ -30,7 +30,7 @@
 				"attributes": {
 					"automatic": false,
 					"ammo": 4,
-					"reload": 160,
+					"reload": 300,
 					"cooldown_time": 30,
 					"recoil": 0.0
 				}
@@ -99,8 +99,8 @@
 			"gameplay": {
 				"attributes": {
 					"automatic": false,
-					"ammo": 2,
-					"reload": 160,
+					"ammo": 3,
+					"reload": 380,
 					"cooldown_time": 8,
 					"recoil": 0.8
 				}
@@ -161,8 +161,8 @@
 			"gameplay": {
 				"attributes": {
 					"automatic": true,
-					"ammo": -1,
-					"reload": 160,
+					"ammo": 100,
+					"reload": 1000,
 					"cooldown_time": 7,
 					"recoil": 0.15
 				}

@@ -121,7 +121,7 @@ class EntitySet {
   public:
 	EntitySet() = default;
 	EntitySet(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
-	void render(Canvas& map, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(Canvas& map, sf::RenderWindow& win, sf::Vector2f cam);
 	void load(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
 	bool save(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
 	void clear();

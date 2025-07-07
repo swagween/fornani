@@ -24,7 +24,7 @@ class Slide {
 	void update();
 	void calculate();
 	void slide();
-	[[nodiscard]] auto going() const -> bool { return begin_slide.get_cooldown() == begin_slide.get_native_time() - 1; }
+	[[nodiscard]] auto going() const -> bool { return begin_slide.get() == begin_slide.get_native_time() - 1; }
 	[[nodiscard]] auto can_exit() const -> bool { return begin_slide.is_complete(); }
 	[[nodiscard]] auto can_begin() const -> bool { return post_slide.is_complete(); }
 	[[nodiscard]] auto exhausted() const -> bool { return get_dampen() < slowness_limit; }

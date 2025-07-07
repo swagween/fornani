@@ -88,7 +88,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	triggers = {};
 }
 
-void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) {
+void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos) {
 	if (state_flags.test(NPCState::hidden)) { return; }
 	m_sprite.setPosition({collider.physics.position.x - campos.x + sprite_offset.x, collider.physics.position.y - campos.y + sprite_offset.y});
 
@@ -116,9 +116,9 @@ void NPC::force_engage() {
 	state_flags.set(NPCState::force_interact);
 }
 
-void NPC::set_position(sf::Vector2<float> pos) { collider.physics.position = pos; }
+void NPC::set_position(sf::Vector2f pos) { collider.physics.position = pos; }
 
-void NPC::set_position_from_scaled(sf::Vector2<float> scaled_pos) {
+void NPC::set_position_from_scaled(sf::Vector2f scaled_pos) {
 	auto new_pos = scaled_pos * 32.f;
 	auto round = static_cast<int>(collider.dimensions.y) % 32;
 	new_pos.y += static_cast<float>(32.f - round);

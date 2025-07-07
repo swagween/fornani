@@ -11,14 +11,14 @@ void Transition::update(player::Player& player) {
 	auto tt = static_cast<float>(m_cooldown.get_native_time());
 	if ((m_fade_in || m_fade_out) && !player.controller.walking_autonomously()) { player.controller.restrict_movement(); }
 	if (m_fade_out) {
-		auto timer = (tt - static_cast<float>(m_cooldown.get_cooldown())) / tt;
+		auto timer = (tt - static_cast<float>(m_cooldown.get())) / tt;
 		m_alpha = static_cast<std::uint8_t>(std::lerp(0, 255, timer));
 		if (m_cooldown.is_complete()) {
 			m_fade_out = false;
 			m_done = true;
 		}
 	} else if (m_fade_in) {
-		auto timer = static_cast<float>(m_cooldown.get_cooldown()) / tt;
+		auto timer = static_cast<float>(m_cooldown.get()) / tt;
 		m_alpha = static_cast<std::uint8_t>(std::lerp(0, 255, timer));
 		if (m_cooldown.is_complete()) { m_fade_in = false; }
 	}

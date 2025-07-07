@@ -15,7 +15,7 @@ void SavePoint::unserialize(dj::Json const& in) { Entity::unserialize(in); }
 
 void SavePoint::expose() { Entity::expose(); }
 
-void SavePoint::render(sf::RenderWindow& win, sf::Vector2<float> cam, float size) {
+void SavePoint::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{250, 10, 250, 100}) : drawbox.setFillColor(sf::Color{250, 10, 250, 60});
 	Entity::render(win, cam, size);
 }

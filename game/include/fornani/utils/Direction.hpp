@@ -87,7 +87,7 @@ struct Direction {
 	}
 	constexpr float as_float() const { return lnr == LNR::left ? -1.f : (lnr == LNR::right ? 1.f : 0.f); }
 	constexpr float as_float_und() const { return und == UND::up ? -1.f : (und == UND::down ? 1.f : 0.f); }
-	sf::Vector2<float> get_vector() const { return sf::Vector2<float>{as_float(), as_float_und()}; }
+	sf::Vector2f get_vector() const { return sf::Vector2f{as_float(), as_float_und()}; }
 
 	std::string print() const { return print_und() + ", " + print_lnr(); }
 	std::string print_und() const { return und == UND::up ? "up" : (und == UND::neutral ? "neutral" : "down"); }

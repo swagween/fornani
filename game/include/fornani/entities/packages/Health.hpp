@@ -11,7 +11,7 @@ class Health final : public Entity {
 
   public:
 	void update();
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	[[nodiscard]] auto get_i_hp() const -> int { return static_cast<int>(hp); }
 	[[nodiscard]] auto get_hp() const -> float { return hp; }
 	[[nodiscard]] auto get_i_max() const -> float { return static_cast<int>(max_hp); }

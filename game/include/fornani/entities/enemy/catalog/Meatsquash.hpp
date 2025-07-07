@@ -16,7 +16,7 @@ class Meatsquash final : public Enemy {
 	Meatsquash& operator=(Meatsquash&&) = delete;
 	Meatsquash(automa::ServiceProvider& svc, world::Map& map);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 
 	fsm::StateFunction state_function = std::bind(&Meatsquash::update_idle, this);
 	fsm::StateFunction update_idle();

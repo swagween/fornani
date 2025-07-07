@@ -77,8 +77,8 @@ bool Jump::jumpsquatting() const { return states.test(player::JumpState::jumpsqu
 
 bool Jump::jumpsquat_trigger() const { return triggers.test(player::JumpTrigger::jumpsquat); }
 
-int Jump::get_request() const { return request.get_cooldown(); }
+int Jump::get_request() const { return request.get(); }
 
-int Jump::get_cooldown() const { return cooldown.get_cooldown(); }
+int Jump::get() const { return cooldown.get(); }
 
 } // namespace player

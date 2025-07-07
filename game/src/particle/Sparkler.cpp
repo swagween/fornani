@@ -4,7 +4,7 @@
 
 namespace fornani::vfx {
 
-Sparkler::Sparkler(automa::ServiceProvider& svc, sf::Vector2<float> dimensions, sf::Color color, std::string_view type) : dimensions(dimensions), color(color), type(type) {
+Sparkler::Sparkler(automa::ServiceProvider& svc, sf::Vector2f dimensions, sf::Color color, std::string_view type) : dimensions(dimensions), color(color), type(type) {
 	auto const& in_data = svc.data.sparkler[type];
 	behavior.rate = in_data["rate"].as<float>();
 	drawbox.setFillColor(sf::Color::Transparent);
@@ -24,7 +24,7 @@ void Sparkler::update(automa::ServiceProvider& svc) {
 	std::erase_if(sparkles, [](auto const& s) { return s.done(); });
 }
 
-void Sparkler::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Sparkler::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (svc.greyblock_mode()) {
 		drawbox.setPosition(position - cam);
 		drawbox.setSize(dimensions);
@@ -34,9 +34,9 @@ void Sparkler::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 	}
 }
 
-void Sparkler::set_position(sf::Vector2<float> pos) { position = pos; }
+void Sparkler::set_position(sf::Vector2f pos) { position = pos; }
 
-void Sparkler::set_dimensions(sf::Vector2<float> dim) { dimensions = dim; }
+void Sparkler::set_dimensions(sf::Vector2f dim) { dimensions = dim; }
 
 void Sparkler::activate() { active = true; }
 

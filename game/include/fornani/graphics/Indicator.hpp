@@ -20,10 +20,10 @@ enum class IndicatorType : std::uint8_t { health, orb };
 class Indicator {
   public:
 	explicit Indicator(automa::ServiceProvider& svc, IndicatorType type = IndicatorType::health);
-	void update(automa::ServiceProvider& svc, sf::Vector2<float> pos = {0.f, 0.f});
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void update(automa::ServiceProvider& svc, sf::Vector2f pos = {0.f, 0.f});
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void add(float amount);
-	void set_position(sf::Vector2<float> pos);
+	void set_position(sf::Vector2f pos);
 	void shift();
 	[[nodiscard]] auto active() const -> bool { return addition_limit.running(); }
 	[[nodiscard]] auto get_amount() const -> float { return variables.amount; }
@@ -39,9 +39,9 @@ class Indicator {
 	util::Cooldown fadeout{};
 	int fadeout_time{32};
 	int addition_time{300};
-	sf::Vector2<float> position{};
-	sf::Vector2<float> shadow{2.f, 0.f};
-	sf::Vector2<float> offset{-8.f, -40.f};
+	sf::Vector2f position{};
+	sf::Vector2f shadow{2.f, 0.f};
+	sf::Vector2f offset{-8.f, -40.f};
 	vfx::ColorFade color_fade{};
 	vfx::Gravitator gravitator{};
 };

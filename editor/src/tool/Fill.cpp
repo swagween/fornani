@@ -17,7 +17,7 @@ void Fill::update(Canvas& canvas) {
 
 void Fill::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {}
 
-void Fill::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) {}
+void Fill::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) {}
 
 void Fill::fill_section(std::uint32_t const prev_val, std::uint32_t const new_val, std::uint32_t i, std::uint32_t j, Canvas& canvas) {
 	if (!canvas.editable()) { return; }

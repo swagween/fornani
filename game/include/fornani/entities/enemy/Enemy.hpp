@@ -48,7 +48,7 @@ enum class GeneralFlags : std::uint8_t {
 	has_invincible_channel,
 	invincible_secondary
 };
-enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, flip };
+enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, flip, advance };
 enum class Triggers : std::uint8_t { hostile, alert };
 enum class Variant : std::uint8_t { beast, soldier, elemental, worker, guardian };
 
@@ -75,16 +75,17 @@ class Enemy : public Animatable {
 	void set_external_id(std::pair<int, sf::Vector2<int>> code);
 
 	virtual void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	virtual void gui_render([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win, [[maybe_unused]] sf::Vector2<float> cam) {};
+	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	virtual void gui_render([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win, [[maybe_unused]] sf::Vector2f cam) {};
 
 	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 
 	void handle_player_collision(player::Player& player) const;
 	void handle_collision(shape::Collider& other);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	void on_crush(world::Map& map);
+	bool seek_home(world::Map& map);
 	void set_channel(EnemyChannel to) { Animatable::set_channel(static_cast<int>(to)); }
 	void request_flip() { flags.state.set(StateFlags::flip); }
 
@@ -99,7 +100,7 @@ class Enemy : public Animatable {
 	[[nodiscard]] auto get_collider() -> shape::Collider& { return collider; }
 	[[nodiscard]] auto get_secondary_collider() -> shape::Collider& { return secondary_collider; }
 	[[nodiscard]] auto died() const -> bool { return health.is_dead(); }
-	[[nodiscard]] auto just_died() const -> bool { return health.is_dead() && post_death.get_cooldown() == afterlife; }
+	[[nodiscard]] auto just_died() const -> bool { return health.is_dead() && post_death.get() == afterlife; }
 	[[nodiscard]] auto gone() const -> bool { return post_death.is_complete(); }
 	[[nodiscard]] auto player_collision() const -> bool { return flags.general.test(GeneralFlags::player_collision); }
 	[[nodiscard]] auto spawn_loot() const -> bool { return !flags.general.test(GeneralFlags::no_loot); }
@@ -109,7 +110,7 @@ class Enemy : public Animatable {
 	[[nodiscard]] auto get_actual_direction() const -> Direction { return directions.actual; }
 	[[nodiscard]] bool player_behind(player::Player& player) const;
 
-	void set_position(sf::Vector2<float> pos) {
+	void set_position(sf::Vector2f pos) {
 		collider.physics.position = pos;
 		collider.sync_components();
 		health_indicator.set_position(pos);
@@ -120,7 +121,7 @@ class Enemy : public Animatable {
 	}
 
 	void face_player(player::Player& player);
-	void set_position_from_scaled(sf::Vector2<float> pos);
+	void set_position_from_scaled(sf::Vector2f pos);
 	void hurt() { flags.state.set(StateFlags::hurt); }
 	void shake() { energy = hit_energy; }
 	void stop_shaking() { flags.state.reset(StateFlags::shaking); }
@@ -150,7 +151,7 @@ class Enemy : public Animatable {
 
 	struct {
 		int id{};
-		std::string_view variant{};
+		int variant{};
 		int external_id{};
 	} metadata{};
 
@@ -159,6 +160,7 @@ class Enemy : public Animatable {
 		std::vector<shape::Shape> hurtboxes{};
 		shape::Shape alert_range{};
 		shape::Shape hostile_range{};
+		shape::Shape home_detector{};
 	} physical{};
 
 	struct {

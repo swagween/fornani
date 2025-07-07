@@ -17,7 +17,7 @@ MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> o
 	selection = util::Circuit(static_cast<int>(options.size()));
 }
 
-void MiniMenu::update(automa::ServiceProvider& svc, sf::Vector2<float> dim, sf::Vector2<float> at_position) {
+void MiniMenu::update(automa::ServiceProvider& svc, sf::Vector2f dim, sf::Vector2f at_position) {
 	dimensions = dim;
 	m_nineslice.set_position(at_position);
 	m_nineslice.set_dimensions(dim);
@@ -47,6 +47,6 @@ void MiniMenu::down(automa::ServiceProvider& svc) {
 	svc.soundboard.flags.console.set(audio::Console::shift);
 }
 
-sf::Vector2<float> MiniMenu::get_dimensions() const { return dimensions; }
+sf::Vector2f MiniMenu::get_dimensions() const { return dimensions; }
 
 } // namespace fornani::gui

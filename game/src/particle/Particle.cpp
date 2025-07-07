@@ -8,7 +8,7 @@
 
 namespace fornani::vfx {
 
-Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> dim, std::string_view type, sf::Color color, Direction direction)
+Particle::Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f dim, std::string_view type, sf::Color color, Direction direction)
 	: position(pos), dimensions(dim), sprite_dimensions(dim), collider(dim.x), sprite{svc.assets.get_texture("particle_" + std::string{type})} {
 	box.setFillColor(color);
 	box.setSize(dimensions);
@@ -50,7 +50,7 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vec
 	if (util::random::percent_chance(50)) { sprite.scale({-1.f, 1.f}); }
 	sprite.setOrigin(dimensions * 0.5f);
 
-	if (in_data["fader"].as_bool()) { fader = util::Fader(svc, lifespan.get_cooldown(), in_data["color"].as_string()); }
+	if (in_data["fader"].as_bool()) { fader = util::Fader(svc, lifespan.get(), in_data["color"].as_string()); }
 	if (fader) { fader.value().get_sprite().setScale(dim); }
 }
 
@@ -63,7 +63,7 @@ void Particle::update(automa::ServiceProvider& svc, world::Map& map) {
 	if (fader) { fader.value().update(); }
 }
 
-void Particle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Particle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);
 	} else {

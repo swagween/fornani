@@ -23,7 +23,7 @@ class StateController {
 	int source_id{};
 	int save_point_id{};
 	MenuType submenu{};
-	sf::Vector2<float> player_position{};
+	sf::Vector2f player_position{};
 	util::BitFlags<Actions> actions{};
 	util::BitFlags<Status> status{};
 };

@@ -40,6 +40,6 @@ void CircleCollider::handle_collision(shape::Shape& shape, bool soft) {
 	sensor.set_position(physics.position);
 }
 
-void CircleCollider::render(sf::RenderWindow& win, sf::Vector2<float> cam) { sensor.render(win, cam); }
+void CircleCollider::render(sf::RenderWindow& win, sf::Vector2f cam) { sensor.render(win, cam); }
 
 } // namespace shape

@@ -6,11 +6,11 @@
 
 namespace fornani::entity {
 
-SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2<float> position, int index) : index(index), sprite(svc.assets.get_texture("spawnable_platform"), {64, 64}) {
+SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2f position, int index) : index(index), sprite(svc.assets.get_texture("spawnable_platform"), {64, 64}) {
 	collider = shape::Collider({64.f, 64.f});
 	collider.flags.general.set(shape::General::top_only_collision);
-	gravitator = vfx::Gravitator(sf::Vector2<float>{}, sf::Color::Transparent, 0.8f);
-	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.8f, 0.8f}, 1.0f);
+	gravitator = vfx::Gravitator(sf::Vector2f{}, sf::Color::Transparent, 0.8f);
+	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2f{0.8f, 0.8f}, 1.0f);
 	gravitator.set_position(position);
 	health.set_max(4.f);
 	sprite.set_origin({8.f, 8.f});
@@ -25,16 +25,16 @@ SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2<f
 	state = SpawnablePlatformState::dormant;
 }
 
-void SpawnablePlatform::update(automa::ServiceProvider& svc, player::Player& player, sf::Vector2<float> target) {
+void SpawnablePlatform::update(automa::ServiceProvider& svc, player::Player& player, sf::Vector2f target) {
 	gravitator.set_target_position(target - collider.dimensions * 0.5f);
 	gravitator.update(svc);
 	collider.update(svc);
 	collider.set_position(gravitator.position());
 	if (collidable()) { player.collider.handle_collider_collision(collider, false, true); }
 	collider.physics.previous_position = gravitator.position();
-	sensor.set_position(gravitator.position() + collider.dimensions * 0.5f - sf::Vector2<float>{0.f, 16.f});
+	sensor.set_position(gravitator.position() + collider.dimensions * 0.5f - sf::Vector2f{0.f, 16.f});
 	health.update();
-	sprite.update(util::round_to_even(gravitator.position() - sf::Vector2<float>{-4.f, 2.f}));
+	sprite.update(util::round_to_even(gravitator.position() - sf::Vector2f{-4.f, 2.f}));
 	state_function = state_function();
 }
 
@@ -45,7 +45,7 @@ void SpawnablePlatform::on_hit(automa::ServiceProvider& svc, world::Map& map, ar
 			svc.soundboard.flags.world.set(audio::World::breakable_hit);
 			if (health.is_dead()) {
 				svc.soundboard.flags.world.set(audio::World::block_toggle);
-				map.effects.push_back(entity::Effect(svc, "smoke", sensor.bounds.getPosition() - sf::Vector2<float>{32.f, 32.f}, {}, 0, 0));
+				map.effects.push_back(entity::Effect(svc, "smoke", sensor.bounds.getPosition() - sf::Vector2f{32.f, 32.f}, {}, 0, 0));
 				state = SpawnablePlatformState::opening;
 			}
 		}
@@ -53,7 +53,7 @@ void SpawnablePlatform::on_hit(automa::ServiceProvider& svc, world::Map& map, ar
 	}
 }
 
-void SpawnablePlatform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void SpawnablePlatform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);
 		sensor.render(win, cam);

@@ -10,7 +10,7 @@ class Layer {
 	Layer(std::uint8_t const o, bool const c, sf::Vector2<std::uint32_t> dim, float p = 1.f) : grid{dim}, render_order(o), collidable(c), dimensions(dim), parallax(p) {}
 	void clear();
 	void erase();
-	void set_position(sf::Vector2<float> to_position, float scale);
+	void set_position(sf::Vector2f to_position, float scale);
 	Grid grid;
 	std::uint8_t render_order{};
 	bool collidable{};

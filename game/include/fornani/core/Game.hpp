@@ -17,7 +17,7 @@ class Game {
   public:
 	Game(char** argv, WindowManager& window, Version& version, capo::IEngine& audio_engine);
 	~Game() = default;
-	void run(capo::IEngine& audio_engine, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2<float> player_position = {});
+	void run(capo::IEngine& audio_engine, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2f player_position = {});
 	void shutdown();
 
 	void playtest_sync();

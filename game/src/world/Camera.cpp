@@ -24,9 +24,9 @@ void Camera::update(automa::ServiceProvider& svc) {
 		m_flags.reset(CameraFlags::shake);
 		m_final_position = m_physics.position;
 	}
-	if (m_shake.timer.running() && m_shake.timer.get_cooldown() % m_shake.properties.frequency == 0) {
+	if (m_shake.timer.running() && m_shake.timer.get() % m_shake.properties.frequency == 0) {
 		m_shake.dampen.update();
-		auto diff = static_cast<float>(m_shake.dampen.get_cooldown()) * m_shake.properties.energy;
+		auto diff = static_cast<float>(m_shake.dampen.get()) * m_shake.properties.energy;
 		if (ccm::abs(diff) < 0.1f) {
 			m_shake.timer.cancel();
 			diff = 0.f;

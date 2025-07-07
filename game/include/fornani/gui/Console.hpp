@@ -7,6 +7,7 @@
 #include "fornani/gui/TextWriter.hpp"
 #include "fornani/io/Logger.hpp"
 #include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/NineSlice.hpp"
 #include "fornani/utils/RectPath.hpp"
 
@@ -101,6 +102,7 @@ class Console {
 	std::optional<ItemWidget> m_item_widget{};
 
 	util::BitFlags<ConsoleFlags> m_flags{};
+	util::Cooldown m_exit_stall{1200};
 
 	Portrait m_npc_portrait;
 	Portrait m_nani_portrait;

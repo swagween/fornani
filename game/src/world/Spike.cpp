@@ -10,7 +10,7 @@
 
 namespace fornani::world {
 
-Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vector2<float> position, sf::Vector2<int> direction, sf::Vector2<float> size, bool random)
+Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vector2f position, sf::Vector2<int> direction, sf::Vector2f size, bool random)
 	: size(size), hitbox(is_small() ? size * 32.f : size * 24.f), sprite{texture}, grid_position{is_small() ? position : position + constants::f_resolution_vec}, facing{direction}, collider{size * constants::f_cell_size} {
 	if (random) { attributes.set(SpikeAttributes::random); }
 	if (!is_small()) { attributes.set(SpikeAttributes::soft_reset); }
@@ -70,7 +70,7 @@ void Spike::handle_collision(shape::Collider& other) const {
 	other.handle_collider_collision(collider);
 }
 
-void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	auto tweak = is_small() ? constants::f_resolution_vec : sf::Vector2f{};
 	sprite.setPosition(grid_position + tweak - cam);
 	win.draw(sprite);

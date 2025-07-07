@@ -26,7 +26,7 @@ class Shield {
 	void damage(float amount = 0.f);
 	void reset_triggers();
 	void reset_all();
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 
 	[[nodiscard]] auto is_shielding() const -> bool { return flags.state.test(ShieldState::shielding); }
 	[[nodiscard]] auto recovering() const -> bool { return flags.state.test(ShieldState::recovery); }

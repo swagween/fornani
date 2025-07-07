@@ -18,12 +18,17 @@ class Health;
 namespace fornani::gui {
 class WidgetBar {
   public:
-	void set(automa::ServiceProvider& svc, int amount, sf::Vector2<int> dimensions, sf::Texture const& texture, sf::Vector2<float> origin, float pad = 2.f);
+	WidgetBar(automa::ServiceProvider& svc, int amount, sf::Vector2<int> dimensions, sf::Texture const& texture, sf::Vector2f origin, float pad = 2.f, bool compress = false);
 	void update(automa::ServiceProvider& svc, entity::Health& health, bool shake = false);
 	void render(sf::RenderWindow& win);
 
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_position; }
+
   private:
-	std::vector<Widget> widgets{};
-	sf::Vector2<float> position{};
+	int m_quantity{};
+	bool m_compress{};
+	std::vector<Widget> m_widgets{};
+	sf::Text m_text;
+	sf::Vector2f m_position{};
 };
 } // namespace fornani::gui

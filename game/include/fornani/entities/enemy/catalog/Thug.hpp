@@ -17,7 +17,7 @@ class Thug final : public Enemy {
 		Thug& operator = (Thug&&) = delete;
 		Thug(automa::ServiceProvider& svc, world::Map& map);
 		void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
-		void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+		void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 
 		fsm::StateFunction state_function = std::bind(&Thug::update_idle, this);
 		fsm::StateFunction update_idle();

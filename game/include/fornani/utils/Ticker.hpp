@@ -1,11 +1,11 @@
 
 #pragma once
 
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Cooldown.hpp>
 #include <chrono>
 #include <deque>
 #include <thread>
-#include "BitFlags.hpp"
-#include "Cooldown.hpp"
 
 namespace fornani::util {
 

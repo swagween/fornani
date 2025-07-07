@@ -46,7 +46,7 @@ class Editor {
 	void help_marker(char const* desc);
 	void export_layer_texture();
 	void center_map();
-	void launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2<float> player_position);
+	void launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2f player_position);
 	void shutdown(fornani::data::ResourceFinder& finder);
 	void reset_layers();
 	void delete_current_layer();
@@ -72,7 +72,7 @@ class Editor {
 	// for loading out layer pngs
 	sf::RenderTexture screencap{};
 
-	sf::Vector2<float> mouse_clicked_position{};
+	sf::Vector2f mouse_clicked_position{};
 
 	bool mouse_held{};
 	bool show_overlay{};

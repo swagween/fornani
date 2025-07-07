@@ -59,8 +59,8 @@ class VendorDialog {
 	float sale_price{};
 	float balance{};
 	std::unordered_map<int, int> get_npc_id{};
-	sf::Vector2<float> portrait_position{44.f, 18.f};
-	sf::Vector2<float> bring_in{};
+	sf::Vector2f portrait_position{44.f, 18.f};
+	sf::Vector2f bring_in{};
 	struct {
 		sf::Text vendor_name;
 		sf::Text buy_tab;
@@ -71,9 +71,9 @@ class VendorDialog {
 		sf::Text item_label;
 	} text;
 	struct {
-		sf::Vector2<float> item_label_position{232.f, 320.f};
-		sf::Vector2<float> price_position{232.f, 345.f};
-		sf::Vector2<float> rarity_pad{32.f, 32.f};
+		sf::Vector2f item_label_position{232.f, 320.f};
+		sf::Vector2f price_position{232.f, 345.f};
+		sf::Vector2f rarity_pad{32.f, 32.f};
 		float buffer{40.f};
 		int items_per_row{12};
 	} ui_constants{};

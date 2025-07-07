@@ -52,6 +52,7 @@
 			"num_hurtboxes": 1,
 			"alert_range": [ 200.0, 300.0 ],
 			"hostile_range": [ 600.0, 120.0 ],
+			"home_detector": [ 24.0, 80.0 ],
 			"friction": 0.98,
 			"gravity": 6.5
 		},
@@ -610,7 +611,7 @@
 		"attributes": {
 			"base_hp": 40,
 			"base_damage": 4.0,
-			"speed": 0.9,
+			"speed": 0.7,
 			"loot_multiplier": 2.0,
 			"drop_range": [ 8, 12 ],
 			"rare_drop_id": 0,
