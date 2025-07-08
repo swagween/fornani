@@ -233,8 +233,7 @@
 		},
 		"physical": {
 			"dimensions": [ 64, 64 ],
-			"sprite_dimensions": [ 120, 120 ],
-			"spritesheet_dimensions": [ 6, 7 ],
+			"sprite_dimensions": [ 60, 60 ],
 			"offset": [ 40, -23 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
@@ -598,7 +597,7 @@
 			"num_hurtboxes": 1,
 			"alert_range": [ 380.0, 64.0 ],
 			"hostile_range": [ 90.0, 32.0 ],
-			"friction": 0.99,
+			"friction": 0.96,
 			"gravity": 10.0
 		},
 		"visual": {
@@ -611,7 +610,7 @@
 		"attributes": {
 			"base_hp": 40,
 			"base_damage": 4.0,
-			"speed": 0.7,
+			"speed": 1.5,
 			"loot_multiplier": 2.0,
 			"drop_range": [ 8, 12 ],
 			"rare_drop_id": 0,

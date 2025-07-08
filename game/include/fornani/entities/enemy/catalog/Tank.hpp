@@ -66,6 +66,7 @@ class Tank final : public Enemy {
 	// extra detectors
 	shape::Shape m_vertical_range{};
 	shape::Shape m_shoulders{};
+	shape::Shape m_lower_range{};
 
 	// lookup, duration, framerate, num_loops
 	anim::Parameters idle{0, 6, 28, -1};

@@ -8,7 +8,8 @@ namespace fornani::gui {
 
 Console::Console(automa::ServiceProvider& svc)
 	: m_npc_portrait(svc), m_nani_portrait(svc, false), m_services(&svc), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard", 64}, m_styling{.corner_factor{28}, .edge_factor{1}, .padding_scale{1.1f}},
-	  m_nineslice(svc, svc.assets.get_texture("blue_console"), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}), m_mode{ConsoleMode::writing}, m_response_offset{-48.f, 16.f} {
+	  m_nineslice(svc, svc.assets.get_texture("blue_console"), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}), m_mode{ConsoleMode::writing}, m_response_offset{-48.f, 16.f},
+	  m_exit_stall{650} {
 	text_suite = svc.text.console;
 	m_path.set_section("open");
 	m_began = true;
@@ -144,6 +145,7 @@ void Console::include_portrait(int id) {
 std::string Console::get_key() const { return native_key; }
 
 void Console::handle_inputs(config::ControllerMap& controller) {
+	if (m_exit_stall.running()) { return; }
 	auto const& up = controller.digital_action_status(config::DigitalAction::menu_up).triggered;
 	auto const& down = controller.digital_action_status(config::DigitalAction::menu_down).triggered;
 	auto const& next = controller.digital_action_status(config::DigitalAction::menu_select).triggered;
@@ -155,7 +157,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 	bool responded{};
 
 	// check for exit
-	if (exit && m_output_type != OutputType::no_skip && m_exit_stall.is_complete()) {
+	if (exit && m_output_type != OutputType::no_skip) {
 		end();
 		return;
 	}
@@ -207,14 +209,13 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 	(skip && can_skip) ? m_writer->speed_up() : m_writer->slow_down();
 
 	if (finished) {
-		if (m_writer->exit_requested() && m_exit_stall.is_complete()) { end(); }
+		if (m_writer->exit_requested()) { end(); }
 	}
 }
 
 void Console::debug() {
 	ImGui::SetNextWindowSize(ImVec2{256.f, 128.f});
 	if (ImGui::Begin("Console Debug")) {
-		// if (ImGui::Button("Console Test")) { load_and_launch("test"); }
 		if (m_response) {
 			ImGui::Text("Response Selection: %i", m_response->get_selection());
 			get_response_code(m_response->get_selection()).debug();

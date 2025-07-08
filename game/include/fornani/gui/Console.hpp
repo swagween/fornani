@@ -102,7 +102,7 @@ class Console {
 	std::optional<ItemWidget> m_item_widget{};
 
 	util::BitFlags<ConsoleFlags> m_flags{};
-	util::Cooldown m_exit_stall{1200};
+	util::Cooldown m_exit_stall;
 
 	Portrait m_npc_portrait;
 	Portrait m_nani_portrait;

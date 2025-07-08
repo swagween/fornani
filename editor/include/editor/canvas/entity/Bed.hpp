@@ -1,16 +1,14 @@
 
 #pragma once
 
-#include <djson/json.hpp>
-#include <memory>
 #include "editor/canvas/Entity.hpp"
 
 namespace pi {
 
-class Chest : public Entity {
+class Bed : public Entity {
   public:
-	Chest(dj::Json const& in);
-	Chest(int type, int modifier, int id);
+	Bed(dj::Json const& in);
+	Bed(int id, bool flipped);
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;
@@ -18,8 +16,7 @@ class Chest : public Entity {
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
 
   private:
-	int m_type{};
-	int m_content_modifier{};
+	bool m_flipped{};
 };
 
 } // namespace pi

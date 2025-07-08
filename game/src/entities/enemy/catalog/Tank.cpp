@@ -21,6 +21,7 @@ Tank::Tank(automa::ServiceProvider& svc, world::Map& map, int variant)
 	directions.movement.lnr = LNR::neutral;
 	m_cooldowns.run.start();
 	m_vertical_range.set_dimensions({90.f, 1024.f});
+	m_lower_range.set_dimensions({200.f, 32.f});
 	m_shoulders.set_dimensions({120.f, 32.f});
 }
 
@@ -42,7 +43,9 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	secondary_collider.sync_components();
 
 	m_vertical_range.set_position(collider.bounding_box.get_position() - sf::Vector2f{(m_vertical_range.get_dimensions().x * 0.5f) - (collider.dimensions.x * 0.5f), (m_vertical_range.get_dimensions().y) - (collider.dimensions.y * 0.5f)});
-	m_shoulders.set_position(collider.bounding_box.get_position() - sf::Vector2f{(m_shoulders.get_dimensions().x * 0.5f) - (collider.dimensions.x * 0.5f), (m_shoulders.get_dimensions().y)});
+	m_shoulders.set_position(collider.bounding_box.get_position() - sf::Vector2f{(m_shoulders.get_dimensions().x * 0.5f) - (collider.dimensions.x * 0.5f), m_shoulders.get_dimensions().y});
+	m_lower_range.set_position(collider.bounding_box.get_position() - sf::Vector2f{(m_lower_range.get_dimensions().x * 0.5f) - (collider.dimensions.x * 0.5f), -(collider.dimensions.y - m_lower_range.get_dimensions().y)});
+
 	auto has_clearance = !m_caution.detected_ceiling(map, collider, sf::Vector2f{0.f, 32.f});
 	if (m_caution.detected_step(map, collider, directions.actual, sf::Vector2f{-16.f, 32.f}) && (collider.physics.is_moving_horizontally(0.01f) || is_mid_run()) && has_clearance) { request(TankState::jumpsquat); }
 
@@ -59,24 +62,10 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		sound.hurt_sound_cooldown.start();
 	}
 
-	hurt_effect.update();
-	m_cooldowns.post_jump.update();
-	m_cooldowns.alerted.update();
-
 	player.on_crush(map);
 
-	// try to go find a seat
-	if (!has_been_alerted()) {
-		if (seek_home(map)) { m_variant == TankVariant::typist ? request(TankState::type) : request(TankState::sleep); }
-		if (flags.state.test(StateFlags::advance)) { request(TankState::run); }
-	}
-	if (!flags.state.test(StateFlags::advance) && has_been_alerted()) { face_player(player); }
-
 	if (is_alert() && has_clearance) { request(TankState::jumpsquat); }
-	if (is_hostile() && has_been_alerted()) {
-		m_cooldowns.alerted.start();
-		request(TankState::shoot_horizontal);
-	}
+	if (is_hostile() && has_been_alerted()) { request(TankState::shoot_horizontal); }
 	if ((is_hostile() || is_alert()) && !has_been_alerted()) { request(TankState::alert); }
 
 	if (player.collider.bounding_box.overlaps(m_vertical_range) && has_been_alerted()) { request(TankState::shoot_vertical); }
@@ -84,8 +73,18 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		request(TankState::jumpsquat);
 		m_flags.set(TankFlags::shorthop);
 	}
+	if (player.collider.bounding_box.overlaps(m_lower_range) && has_been_alerted()) { request(TankState::jumpsquat); }
 
 	if (just_died()) { m_services->soundboard.flags.tank.set(audio::Tank::death); }
+
+	if (hostility_triggered() || alertness_triggered()) { m_cooldowns.alerted.start(); }
+	// try to go find a seat
+	if (!has_been_alerted()) {
+		if (flags.state.test(StateFlags::advance)) { request(TankState::run); }
+		if (seek_home(map)) { m_variant == TankVariant::typist ? request(TankState::type) : request(TankState::sleep); }
+	} else {
+		face_player(player);
+	}
 
 	if (directions.actual.lnr != directions.desired.lnr) { request(TankState::turn); }
 
@@ -93,6 +92,10 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 
 	auto gun_offset = m_state.actual == TankState::pocket ? sf::Vector2f{directions.actual.as_float() * -30.f, 12.f} : sf::Vector2f{0.f, 4.f};
 	m_gun.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center() + gun_offset);
+
+	hurt_effect.update();
+	m_cooldowns.post_jump.update();
+	m_cooldowns.alerted.update();
 }
 
 void Tank::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -104,19 +107,20 @@ void Tank::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 		m_vertical_range.render(win, cam);
 		m_caution.debug_render(win, cam);
 		m_shoulders.render(win, cam, sf::Color{230, 0, 20, 80});
+		m_lower_range.render(win, cam, sf::Color{130, 0, 230, 80});
 	}
 }
 
 fsm::StateFunction Tank::update_idle() {
 	animation.label = "idle";
 	m_state.actual = TankState::idle;
+	if (change_state(TankState::turn, turn)) { return TANK_BIND(update_turn); }
 	if (is_hostile() && !has_been_alerted()) { request(TankState::alert); }
 	if (m_cooldowns.alerted.is_complete() && m_flags.test(TankFlags::show_weapon)) { request(TankState::pocket); }
-	if (change_state(TankState::turn, turn)) { return TANK_BIND(update_turn); }
+	if (change_state(TankState::run, run)) { return TANK_BIND(update_run); }
 	if (change_state(TankState::pocket, pocket)) { return TANK_BIND(update_pocket); }
 	if (change_state(TankState::alert, alert)) { return TANK_BIND(update_alert); }
 	if (change_state(TankState::jumpsquat, jumpsquat)) { return TANK_BIND(update_jumpsquat); }
-	if (change_state(TankState::run, run)) { return TANK_BIND(update_run); }
 	if (has_been_alerted()) {
 		if (change_state(TankState::shoot_horizontal, shoot_horizontal)) { return TANK_BIND(update_shoot_horizontal); }
 		if (change_state(TankState::shoot_vertical, shoot_vertical)) { return TANK_BIND(update_shoot_vertical); }
@@ -150,7 +154,7 @@ fsm::StateFunction Tank::update_type() {
 	}
 	if (hostility_triggered()) { request(TankState::alert); }
 	if (is_hurt()) { request(TankState::alert); }
-	if (ccm::abs(collider.physics.actual_velocity().x) > 0.01f) { request(TankState::idle); }
+	// if (ccm::abs(collider.physics.actual_velocity().x) > 0.01f) { request(TankState::idle); }
 	if (change_state(TankState::alert, alert)) { return TANK_BIND(update_alert); }
 	if (change_state(TankState::idle, idle)) { return TANK_BIND(update_idle); }
 	return TANK_BIND(update_type);
@@ -316,8 +320,9 @@ fsm::StateFunction Tank::update_pocket() {
 	m_state.actual = TankState::pocket;
 	if (animation.complete()) {
 		m_flags.toggle(TankFlags::show_weapon);
+		if (change_state(TankState::turn, turn)) { return TANK_BIND(update_turn); }
 		if (change_state(TankState::shoot_vertical, shoot_vertical)) { return TANK_BIND(update_shoot_vertical); }
-		m_cooldowns.alerted.running() ? request(TankState::shoot_horizontal) : request(TankState::idle);
+		has_been_alerted() ? request(TankState::shoot_horizontal) : request(TankState::idle);
 		if (change_state(TankState::shoot_horizontal, shoot_horizontal)) { return TANK_BIND(update_shoot_horizontal); }
 		if (change_state(TankState::idle, idle)) { return TANK_BIND(update_idle); }
 	}

@@ -3,7 +3,7 @@
 
 namespace pi {
 
-Chest::Chest() : Entity("chests") { repeatable = false; }
+Chest::Chest(dj::Json const& in) : Entity(in, "chests") { unserialize(in); }
 
 Chest::Chest(int type, int modifier, int id) : Entity("chests", id, {1, 1}), m_type{type}, m_content_modifier{modifier} { repeatable = false; }
 

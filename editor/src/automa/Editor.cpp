@@ -411,6 +411,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	bool port{};
 	bool enem{};
 	bool chest{};
+	bool dest{};
+	bool beds{};
 	bool open_themes{};
 
 	// Main Menu
@@ -629,6 +631,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Platform", NULL, &plat)) {}
 			if (ImGui::MenuItem("Enemy", NULL, &enem)) {}
 			if (ImGui::MenuItem("Chest", NULL, &chest)) {}
+			if (ImGui::MenuItem("Destructible", NULL, &dest)) {}
+			if (ImGui::MenuItem("Bed", NULL, &beds)) {}
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 				current_tool->current_entity = std::make_unique<SavePoint>(map.room_id);
@@ -725,6 +729,16 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	if (chest) {
 		ImGui::OpenPopup("Chest Specifications");
 		label = "Chest Specifications";
+		popup_open = true;
+	}
+	if (dest) {
+		ImGui::OpenPopup("Destructible Specifications");
+		label = "Destructible Specifications";
+		popup_open = true;
+	}
+	if (beds) {
+		ImGui::OpenPopup("Bed Specifications");
+		label = "Bed Specifications";
 		popup_open = true;
 	}
 

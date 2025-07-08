@@ -1,5 +1,7 @@
 nani_add_sources(
+  Bed.cpp
   Chest.cpp
+  Destructible.cpp
         Inspectable.cpp
         Platform.cpp
         Portal.cpp

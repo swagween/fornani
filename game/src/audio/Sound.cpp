@@ -4,7 +4,7 @@
 
 namespace fornani::audio {
 
-Sound::Sound(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label, int echo_count, int echo_rate) : m_label(label) {
+Sound::Sound(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label, int echo_count, int echo_rate, float volume) : m_label(label), m_volume{volume} {
 	m_sounds.clear();
 	echo.rate = echo_rate;
 	echo.count = util::Cooldown{echo_count};
@@ -25,7 +25,7 @@ void Sound::update(automa::ServiceProvider& /*svc*/) {
 	if (echo.repeater.get() % echo.rate == 0) {
 		echo.repeater.start(echo.rate);
 		echo.count.update();
-		m_sounds.at(echo.count.get())->set_gain(native_volume * echo.count.get_cubic_normalized() * 0.2f);
+		m_sounds.at(echo.count.get())->set_gain(m_volume * echo.count.get_cubic_normalized() * 0.2f);
 		m_sounds.at(echo.count.get())->play();
 	}
 }
@@ -33,13 +33,11 @@ void Sound::update(automa::ServiceProvider& /*svc*/) {
 void Sound::play(bool repeat) {
 	auto& sound = m_sounds.back();
 	sound->set_looping(repeat);
+	sound->set_gain(m_volume);
 	sound->play();
 }
 
-void Sound::set_volume(float volume) {
-	native_volume = volume;
-	m_sounds.back()->set_gain(volume);
-}
+void Sound::set_volume(float volume) { m_sounds.back()->set_gain(volume * m_volume); }
 
 void Sound::set_pitch(float pitch) {
 	for (auto& s : m_sounds) { s->set_pitch(pitch); }

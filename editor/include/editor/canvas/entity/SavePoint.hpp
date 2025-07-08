@@ -11,7 +11,7 @@ namespace pi {
 
 class SavePoint : public Entity {
   public:
-	SavePoint();
+	SavePoint(dj::Json const& in);
 	SavePoint(int id);
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;

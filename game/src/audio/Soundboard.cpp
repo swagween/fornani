@@ -153,7 +153,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 }
 
 void Soundboard::play(capo::IEngine& engine, automa::ServiceProvider& svc, capo::Buffer const& buffer, float random_pitch_offset, float vol, int frequency, float attenuation, sf::Vector2f distance, int echo_count, int echo_rate) {
-	sound_pool.push_back(Sound(engine, buffer, "standard", echo_count, echo_rate));
+	sound_pool.push_back(Sound(engine, buffer, "standard", echo_count, echo_rate, m_volume_multiplier));
 	frequency != 0 ? repeat(svc, sound_pool.back(), frequency, random_pitch_offset, attenuation, distance) : randomize(svc, sound_pool.back(), random_pitch_offset, vol, attenuation, distance);
 }
 
@@ -163,7 +163,7 @@ void audio::Soundboard::simple_repeat(capo::IEngine& engine, capo::Buffer const&
 		if (sd.get_label() == label) { already_playing = true; }
 	}
 	if (!already_playing) {
-		sound_pool.push_back(Sound(engine, buffer, label));
+		sound_pool.push_back(Sound(engine, buffer, label, 0, 16, m_volume_multiplier));
 		sound_pool.back().play(true);
 	}
 }
@@ -183,9 +183,8 @@ void Soundboard::repeat(automa::ServiceProvider& svc, Sound& sound, int frequenc
 void Soundboard::randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol, float attenuation, sf::Vector2f distance, bool wait_until_over) {
 	auto random_pitch = random_pitch_offset == 0.f ? 0.f : util::random::random_range_float(-random_pitch_offset, random_pitch_offset);
 	sound.set_pitch(1.f + random_pitch);
-	sound.set_volume(vol);
 	auto scalar = distance.length() / attenuation;
-	sound.set_volume(vol - (scalar > vol ? vol : scalar));
+	sound.set_volume((vol - (scalar > vol ? vol : scalar)));
 	if (wait_until_over && sound.is_playing()) { return; }
 	sound.play();
 }

@@ -97,7 +97,7 @@ fsm::StateFunction Hulmet::update_run() {
 	m_state.actual = HulmetState::run;
 	flags.state.set(StateFlags::vulnerable);
 	auto sign = directions.actual.left() ? -1.f : 1.f;
-	collider.physics.apply_force({sign * 0.4f, 0.f});
+	collider.physics.apply_force({sign * attributes.speed, 0.f});
 	m_cooldowns.run.update();
 	if (change_state(HulmetState::turn, m_animations.turn)) {
 		m_cooldowns.run.start();
@@ -153,7 +153,7 @@ fsm::StateFunction Hulmet::update_roll() {
 	m_state.actual = HulmetState::roll;
 	flags.state.reset(StateFlags::vulnerable);
 	auto sign = directions.actual.left() ? -1.f : 1.f;
-	collider.physics.apply_force({sign * 0.8f, 0.f});
+	collider.physics.apply_force({sign * attributes.speed * 2.f, 0.f});
 	if (animation.complete()) {
 		m_cooldowns.post_roll.start();
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
@@ -176,7 +176,7 @@ fsm::StateFunction Hulmet::update_jump() {
 	flags.state.set(StateFlags::vulnerable);
 	if (impulse.running()) { collider.physics.apply_force({0, m_jump_force}); }
 	auto sign = directions.actual.left() ? -1.f : 1.f;
-	collider.physics.apply_force({sign * 0.4f, 0.f});
+	collider.physics.apply_force({sign * attributes.speed, 0.f});
 	if (animation.complete()) {
 		m_cooldowns.post_jump.start();
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }

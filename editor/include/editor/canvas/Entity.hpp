@@ -11,7 +11,9 @@ namespace pi {
 
 class Entity : public fornani::Polymorphic {
   public:
-	explicit Entity(std::string const& label, int const id = 0, sf::Vector2<std::uint32_t> dimensions = {}) : id(id), label(label), dimensions(dimensions) {};
+	explicit Entity(dj::Json const& in, std::string_view label);
+	explicit Entity(std::string_view label, int to_id, sf::Vector2<std::uint32_t> dim = {1, 1}) : id{to_id}, m_label{label}, dimensions{dim} {};
+
 	virtual std::unique_ptr<Entity> clone() const;
 	virtual void serialize(dj::Json& out);
 	virtual void unserialize(dj::Json const& in);
@@ -27,7 +29,7 @@ class Entity : public fornani::Polymorphic {
 
 	// helpers
 	sf::RectangleShape drawbox{};
-	[[nodiscard]] auto get_label() const -> std::string { return label; }
+	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2u { return position; }
 	[[nodiscard]] auto get_dimensions() const -> sf::Vector2u { return dimensions; }
 	[[nodiscard]] auto f_dimensions() const -> sf::Vector2f { return sf::Vector2f(dimensions); }
@@ -42,7 +44,7 @@ class Entity : public fornani::Polymorphic {
 
   private:
 	int id{};
-	std::string label{};
+	std::string m_label{};
 	sf::Vector2<std::uint32_t> position{};
 	sf::Vector2<std::uint32_t> dimensions{};
 

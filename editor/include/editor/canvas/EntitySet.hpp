@@ -4,12 +4,14 @@
 #include "editor/canvas/Entity.hpp"
 #include "fornani/io/Logger.hpp"
 
+#include <imgui.h>
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
-#include <imgui.h>
 
-#include <string_view>
 #include <filesystem>
+#include <memory>
+#include <string_view>
+#include <unordered_map>
 
 namespace fornani::data {
 class ResourceFinder;
@@ -19,7 +21,7 @@ namespace pi {
 
 class Canvas;
 
-//struct Animator : public Entity {
+// struct Animator : public Entity {
 //	Animator() : Entity("animators") { repeatable = true; }
 //	bool automatic{};
 //	bool foreground{};
@@ -28,11 +30,11 @@ class Canvas;
 //	void serialize(dj::Json& out) override { Entity::serialize(out); }
 //	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 //	void expose() override { Entity::expose(); }
-//};
+// };
 //
 
 //
-//struct InteractiveScenery : public Entity {
+// struct InteractiveScenery : public Entity {
 //	InteractiveScenery() : Entity("interactive_scenery") { repeatable = true; }
 //	int length{};
 //	int size{};
@@ -46,7 +48,7 @@ class Canvas;
 //	void expose() override { Entity::expose(); }
 //};
 //
-//struct NPC : public Entity {
+// struct NPC : public Entity {
 //	NPC() : Entity("npcs") {}
 //	bool background{};
 //	std::vector<std::vector<std::string>> suites{};
@@ -56,7 +58,7 @@ class Canvas;
 //	void expose() override { Entity::expose(); }
 //};
 
-//struct Chest : public Entity {
+// struct Chest : public Entity {
 //	Chest() : Entity("chests") {}
 //	int item_id{};
 //	int type{};
@@ -72,9 +74,9 @@ class Canvas;
 //	}
 //	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 //	void expose() override { Entity::expose(); }
-//};
+// };
 //
-//struct Scenery : public Entity {
+// struct Scenery : public Entity {
 //	Scenery() : Entity("scenery") { repeatable = true; }
 //	int style{};
 //	int layer{};
@@ -83,9 +85,9 @@ class Canvas;
 //	void serialize(dj::Json& out) override { Entity::serialize(out); }
 //	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 //	void expose() override { Entity::expose(); }
-//};
+// };
 //
-//struct SwitchBlock : public Entity {
+// struct SwitchBlock : public Entity {
 //	SwitchBlock() : Entity("switch_blocks") { repeatable = true; }
 //	int type{};
 //	std::unique_ptr<Entity> clone() const override { return std::make_unique<SwitchBlock>(*this); }
@@ -95,9 +97,9 @@ class Canvas;
 //	}
 //	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 //	void expose() override { Entity::expose(); }
-//};
+// };
 //
-//struct SwitchButton : public Entity {
+// struct SwitchButton : public Entity {
 //	SwitchButton(int id, int type) : Entity("switches", id), type(type) {}
 //	int type{};
 //	std::unique_ptr<Entity> clone() const override { return std::make_unique<SwitchButton>(*this); }
@@ -107,15 +109,21 @@ class Canvas;
 //	}
 //	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 //	void expose() override { Entity::expose(); }
-//};
+// };
 //
-//struct Destroyer : public Entity {
+// struct Destroyer : public Entity {
 //	Destroyer() : Entity("destroyers") { repeatable = true; }
 //	std::unique_ptr<Entity> clone() const override { return std::make_unique<Destroyer>(*this); }
 //	void serialize(dj::Json& out) override { Entity::serialize(out); }
 //	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
 //	void expose() override { Entity::expose(); }
-//};
+// };
+
+template <typename T>
+std::unique_ptr<Entity> create_entity(dj::Json const& in) {
+	return std::make_unique<T>(in);
+}
+using CreateEntitySignature = decltype(&create_entity<Entity>);
 
 class EntitySet {
   public:
@@ -139,6 +147,8 @@ class EntitySet {
 	struct {
 		dj::Json inspectables{};
 	} data{};
+
+	std::unordered_map<std::string, CreateEntitySignature> create_map;
 
 	fornani::io::Logger m_logger{"Pioneer"};
 };

@@ -2,7 +2,9 @@
 #include "editor/automa/PopupHandler.hpp"
 #include <imgui.h>
 #include <string>
+#include "editor/canvas/entity/Bed.hpp"
 #include "editor/canvas/entity/Chest.hpp"
+#include "editor/canvas/entity/Destructible.hpp"
 #include "editor/canvas/entity/Enemy.hpp"
 #include "editor/canvas/entity/Inspectable.hpp"
 #include "editor/canvas/entity/Platform.hpp"
@@ -156,6 +158,32 @@ void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& consol
 		if (ImGui::Button("Create")) {
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->current_entity = std::make_unique<Enemy>(id, variant);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		ImGui::EndPopup();
+	}
+	if (ImGui::BeginPopupModal("Destructible Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		static int id{};
+		ImGui::InputInt("ID", &id);
+		if (ImGui::Button("Create")) {
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<Destructible>(id);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		ImGui::EndPopup();
+	}
+	if (ImGui::BeginPopupModal("Bed Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		static bool flipped{};
+		ImGui::Checkbox("Flipped", &flipped);
+		ImGui::SameLine();
+		help_marker("By default, the foot of the bed is on the left");
+		if (ImGui::Button("Create")) {
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<Bed>(0, flipped);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();

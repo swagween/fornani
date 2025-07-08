@@ -334,13 +334,16 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					}
 					ImGui::EndTabItem();
 				}
-				if (ImGui::BeginTabItem("Sound")) {
+				if (ImGui::BeginTabItem("Audio")) {
 					ImGui::Separator();
+					static float sfxvol{services.soundboard.get_volume()};
+					ImGui::SliderFloat("##sfxvol", &sfxvol, 0.f, 1.f);
+					services.soundboard.set_volume(sfxvol);
+					ImGui::Text("Soundboard Volume %f", services.soundboard.get_volume());
 					ImGui::Text("Sound pool size: %i", static_cast<int>(services.soundboard.number_of_playng_sounds()));
 					ImGui::Separator();
 					ImGui::EndTabItem();
 				}
-				if (ImGui::BeginTabItem("Music")) { ImGui::EndTabItem(); }
 				if (ImGui::BeginTabItem("Story")) {
 					ImGui::Separator();
 					ImGui::Text("Piggybacking? %s", static_cast<bool>(player.piggybacker) ? "Yes" : "No");

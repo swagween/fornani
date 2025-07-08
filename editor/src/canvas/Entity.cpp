@@ -4,6 +4,8 @@
 
 namespace pi {
 
+Entity::Entity(dj::Json const& in, std::string_view label) : m_label{label} { unserialize(in); }
+
 std::unique_ptr<Entity> Entity::clone() const { return std::unique_ptr<Entity>(); }
 
 void Entity::serialize(dj::Json& out) {
@@ -24,7 +26,7 @@ void Entity::unserialize(dj::Json const& in) {
 }
 
 void Entity::expose() {
-	ImGui::Text("Category: %s", label.c_str());
+	ImGui::Text("Category: %s", m_label.c_str());
 	ImGui::Separator();
 	ImGui::InputInt("Entity ID", &id);
 	ImGui::Text("Position: (%i", position.x);

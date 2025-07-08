@@ -263,25 +263,23 @@ void Enemy::on_crush(world::Map& map) {
 bool Enemy::seek_home(world::Map& map) {
 	auto distance = std::numeric_limits<float>::max();
 	auto my_point = sf::Vector2f{};
-	for (auto& home : map.home_points) {
+	for (auto home : map.home_points) {
 		distance = std::min(distance, (home - physical.home_detector.get_center()).length());
 		if (distance < std::numeric_limits<float>::max()) { my_point = home; }
 	}
 
 	// my_point is our target
 	flags.state.reset(StateFlags::advance);
+	if (my_point.length() > 0.1f) {
+		flags.state.set(StateFlags::advance);
+		directions.desired.set((my_point.x < collider.get_center().x) ? LNR::left : LNR::right);
+		NANI_LOG_DEBUG(m_logger, "{}", directions.desired.print_lnr());
+	}
 	if (physical.home_detector.overlaps(my_point)) {
 		flags.state.reset(StateFlags::advance);
 		return true;
-	} else {
-		return false;
 	}
-	if (my_point.length() > 0.f) {
-		flags.state.set(StateFlags::advance);
-		directions.desired.set((my_point.x < collider.get_center().x) ? LNR::left : LNR::right);
-	} else {
-		return false;
-	}
+	return false;
 }
 
 bool Enemy::player_behind(player::Player& player) const { return player.collider.physics.position.x + player.collider.bounding_box.get_dimensions().x * 0.5f < collider.physics.position.x + collider.dimensions.x * 0.5f; }

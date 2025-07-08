@@ -31,7 +31,7 @@
 #include "fornani/weapon/Projectile.hpp"
 #include "fornani/world/Breakable.hpp"
 #include "fornani/world/Checkpoint.hpp"
-#include "fornani/world/Destroyable.hpp"
+#include "fornani/world/Destructible.hpp"
 #include "fornani/world/Layer.hpp"
 #include "fornani/world/Platform.hpp"
 #include "fornani/world/Pushable.hpp"
@@ -144,7 +144,7 @@ class Map {
 	std::vector<Spike> spikes{};
 	std::vector<std::unique_ptr<SwitchButton>> switch_buttons{};
 	std::vector<SwitchBlock> switch_blocks{};
-	std::vector<Destroyable> destroyers{};
+	std::vector<Destructible> destroyers{};
 	std::vector<Checkpoint> checkpoints{};
 	std::vector<EnemySpawn> enemy_spawns{};
 	entity::SavePoint save_point;

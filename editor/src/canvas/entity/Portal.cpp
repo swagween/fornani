@@ -3,10 +3,10 @@
 
 namespace pi {
 
-Portal::Portal() : Entity("portals") {}
-
 Portal::Portal(sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_id, int destination_id, bool locked, int key_id)
 	: Entity("portals", 0, dimensions), activate_on_contact(activate_on_contact), already_open(already_open), source_id(source_id), destination_id(destination_id), locked(locked), key_id(key_id) {}
+
+Portal::Portal(dj::Json const& in) : Entity(in, "portals") { unserialize(in); }
 
 std::unique_ptr<Entity> Portal::clone() const { return std::make_unique<Portal>(*this); }
 
@@ -21,12 +21,11 @@ void Portal::serialize(dj::Json& out) {
 }
 
 void Portal::unserialize(dj::Json const& in) {
-	Entity::unserialize(in);
-	activate_on_contact = static_cast<bool>(in["activate_on_contact"].as_bool());
-	already_open = static_cast<bool>(in["already_open"].as_bool());
+	activate_on_contact = in["activate_on_contact"].as_bool();
+	already_open = in["already_open"].as_bool();
 	source_id = in["source_id"].as<int>();
 	destination_id = in["destination_id"].as<int>();
-	locked = static_cast<bool>(in["locked"].as_bool());
+	locked = in["locked"].as_bool();
 	key_id = in["key_id"].as<int>();
 }
 

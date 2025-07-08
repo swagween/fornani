@@ -3,7 +3,7 @@
 
 namespace pi {
 
-SavePoint::SavePoint() : Entity("save_point", 0, {1, 1}) { unique = true; }
+SavePoint::SavePoint(dj::Json const& in) : Entity(in, "save_point") { unserialize(in); }
 
 SavePoint::SavePoint(int id) : Entity("save_point", id, {1, 1}) { unique = true; }
 

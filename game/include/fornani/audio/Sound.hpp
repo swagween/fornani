@@ -15,7 +15,7 @@ namespace fornani::audio {
 
 class Sound {
   public:
-	explicit Sound(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label, int echo_count = 0, int echo_rate = 16);
+	explicit Sound(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label, int echo_count = 0, int echo_rate = 16, float volume = 1.f);
 	void update(automa::ServiceProvider& svc);
 	void play(bool repeat = false);
 	void set_volume(float volume);
@@ -29,7 +29,7 @@ class Sound {
 
   private:
 	std::string m_label;
-	float native_volume{100.f};
+	float m_volume;
 	std::vector<std::unique_ptr<capo::ISource>> m_sounds{};
 	struct {
 		util::Cooldown count{};

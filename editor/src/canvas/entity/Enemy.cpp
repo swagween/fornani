@@ -3,7 +3,10 @@
 
 namespace pi {
 
-Enemy::Enemy() : Entity("enemies") { repeatable = true; }
+Enemy::Enemy(dj::Json const& in) : Entity(in, "enemies") {
+	unserialize(in);
+	repeatable = true;
+}
 
 Enemy::Enemy(int id, int variant) : Entity("enemies", id, {1, 1}), m_variant{variant} { repeatable = true; }
 

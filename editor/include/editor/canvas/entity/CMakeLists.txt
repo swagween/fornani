@@ -1,5 +1,7 @@
 nani_add_headers(
+  Bed.hpp
   Chest.hpp
+  Destructible.hpp
         Inspectable.hpp
         Platform.hpp
         Portal.hpp

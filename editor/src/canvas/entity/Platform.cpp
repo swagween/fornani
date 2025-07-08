@@ -3,8 +3,10 @@
 
 namespace pi {
 
-Platform::Platform() : Entity("platforms") { repeatable = true; }
-
+Platform::Platform(dj::Json const& in) : Entity(in, "platforms") {
+	unserialize(in);
+	repeatable = true;
+}
 Platform::Platform(sf::Vector2u dim, int extent, std::string type, float start) : Entity("platforms", 0, dim), extent(extent), type(type), start(start) { repeatable = true; }
 
 std::unique_ptr<Entity> Platform::clone() const { return std::make_unique<Platform>(*this); }

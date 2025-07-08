@@ -7,7 +7,7 @@ namespace pi {
 
 class Inspectable : public Entity {
   public:
-	Inspectable();
+	Inspectable(dj::Json const& in);
 	Inspectable(bool activate_on_contact, std::string key, std::vector<std::vector<std::string>> suites, std::vector<std::vector<std::string>> responses, int alternates);
 
 	std::unique_ptr<Entity> clone() const override;

@@ -1,7 +1,9 @@
 
 #include "editor/canvas/EntitySet.hpp"
 #include "editor/canvas/Canvas.hpp"
+#include "editor/canvas/entity/Bed.hpp"
 #include "editor/canvas/entity/Chest.hpp"
+#include "editor/canvas/entity/Destructible.hpp"
 #include "editor/canvas/entity/Enemy.hpp"
 #include "editor/canvas/entity/Inspectable.hpp"
 #include "editor/canvas/entity/Platform.hpp"
@@ -14,6 +16,15 @@
 namespace pi {
 
 EntitySet::EntitySet(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
+
+	create_map.emplace("beds", &create_entity<Bed>);
+	create_map.emplace("chest", &create_entity<Chest>);
+	create_map.emplace("enemies", &create_entity<Enemy>);
+	create_map.emplace("portals", &create_entity<Portal>);
+	create_map.emplace("platforms", &create_entity<Platform>);
+	create_map.emplace("save_point", &create_entity<SavePoint>);
+	create_map.emplace("inspectables", &create_entity<Inspectable>);
+	create_map.emplace("destructibles", &create_entity<Destructible>);
 
 	load(finder, metadata, room_name);
 
@@ -35,42 +46,9 @@ void EntitySet::render(Canvas& map, sf::RenderWindow& win, sf::Vector2f cam) {
 }
 
 void EntitySet::load(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
-
-	// general entities
 	for (auto const& [key, entry] : metadata.as_object()) {
-		if (std::string{key} == "inspectables") {
-			for (auto element : entry.as_array()) {
-				variables.entities.push_back(std::make_unique<Inspectable>());
-				variables.entities.back()->unserialize(element);
-			}
-		}
-		if (std::string{key} == "platforms") {
-			for (auto element : entry.as_array()) {
-				variables.entities.push_back(std::make_unique<Platform>());
-				variables.entities.back()->unserialize(element);
-			}
-		}
-		if (std::string{key} == "portals") {
-			for (auto element : entry.as_array()) {
-				variables.entities.push_back(std::make_unique<Portal>());
-				variables.entities.back()->unserialize(element);
-			}
-		}
-		if (std::string{key} == "enemies") {
-			for (auto element : entry.as_array()) {
-				variables.entities.push_back(std::make_unique<Enemy>());
-				variables.entities.back()->unserialize(element);
-			}
-		}
-		if (std::string{key} == "chests") {
-			for (auto element : entry.as_array()) {
-				variables.entities.push_back(std::make_unique<Chest>());
-				variables.entities.back()->unserialize(element);
-			}
-		}
-		if (std::string{key} == "save_point") {
-			variables.entities.push_back(std::make_unique<SavePoint>());
-			variables.entities.back()->unserialize(entry);
+		for (auto const& element : entry.as_array()) {
+			if (create_map.contains(std::string{key})) { variables.entities.push_back(create_map[key](element)); }
 		}
 	}
 }

@@ -67,7 +67,7 @@ class Hulmet final : public Enemy {
 		anim::Parameters shoot{28, 3, 24, 1};
 	} m_animations{};
 
-	float m_jump_force{-34.f};
+	float m_jump_force{-64.f};
 	int m_jump_time{4};
 
 	automa::ServiceProvider* m_services;

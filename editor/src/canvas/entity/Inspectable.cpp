@@ -3,7 +3,7 @@
 
 namespace pi {
 
-Inspectable::Inspectable() : Entity("inspectables") {}
+Inspectable::Inspectable(dj::Json const& in) : Entity(in, "inspectables") { unserialize(in); }
 
 Inspectable::Inspectable(bool activate_on_contact, std::string key, std::vector<std::vector<std::string>> suites, std::vector<std::vector<std::string>> responses, int alternates)
 	: Entity("inspectables", 0, {1, 1}), activate_on_contact(activate_on_contact), key(key), suites(suites), responses(responses), alternates(alternates) {}

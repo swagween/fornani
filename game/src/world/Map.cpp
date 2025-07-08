@@ -207,7 +207,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			pos.x = entry["position"][0].as<int>();
 			pos.y = entry["position"][1].as<int>();
 			auto quest_id = entry["quest_id"].as<int>();
-			destroyers.push_back(Destroyable(svc, pos, quest_id));
+			destroyers.push_back(Destructible(svc, pos, quest_id));
 		}
 	}
 
