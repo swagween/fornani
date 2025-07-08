@@ -1,6 +1,7 @@
 
 #include "fornani/gui/Console.hpp"
 
+#include <fornani/systems/Event.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/ControllerMap.hpp"
 
@@ -19,7 +20,7 @@ Console::Console(automa::ServiceProvider& svc)
 
 Console::Console(automa::ServiceProvider& svc, std::string_view message) : Console(svc) { load_single_message(message); }
 
-Console::Console(automa::ServiceProvider& svc, dj::Json& source, std::string_view key, OutputType type) : Console(svc) {
+Console::Console(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type) : Console(svc) {
 	if (type == OutputType::no_skip) { m_exit_stall.start(); }
 	set_source(source);
 	load_and_launch(key, type);
@@ -75,7 +76,7 @@ void Console::render(sf::RenderWindow& win) {
 	// m_writer->debug();
 }
 
-void Console::set_source(dj::Json& json) { text_suite = json; }
+void Console::set_source(dj::Json const& json) { text_suite = json; }
 
 void Console::set_nani_sprite(sf::Sprite const& sprite) { m_nani_portrait.set_texture(sprite.getTexture()); }
 
@@ -97,10 +98,10 @@ void Console::load_and_launch(std::string_view key, OutputType type) {
 	// load message codes
 	auto& in_data = text_suite[key]["codes"];
 	if (in_data) {
-		for (auto& code : in_data.as_array()) {
+		for (auto const& code : in_data.as_array()) {
 			if (code.as_array().size() < 5) { NANI_LOG_ERROR(m_logger, "Invalid Text Json data, too few codes were read!"); }
 			auto in_ints = std::vector<int>{};
-			for (auto& input : code.as_array()) { in_ints.push_back(input.as<int>()); }
+			for (auto const& input : code.as_array()) { in_ints.push_back(input.as<int>()); }
 			auto in_code = MessageCode{static_cast<CodeSource>(in_ints[0]), in_ints[1], in_ints[2], static_cast<MessageCodeType>(in_ints[3]), in_ints[4]};
 			// read extra values, if they exist
 			if (code.as_array().size() > 5) {
@@ -169,8 +170,10 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 		} else {
 			// do something with response selection
 			// set target suite if response code demands it
+			auto value = get_response_code(m_response->get_selection()).value;
 			if (get_response_code(m_response->get_selection()).is_suite_return()) { m_writer->set_suite(get_response_code(m_response->get_selection()).value); }
 			if (get_response_code(m_response->get_selection()).is_action()) { handle_actions(get_response_code(m_response->get_selection()).value); }
+			if (get_response_code(m_response->get_selection()).is_item()) { m_services->events.dispatch_event("GivePlayerKeyItem", value, item::ItemType::key, 1); }
 			if (get_response_code(m_response->get_selection()).is_exit()) {
 				end();
 				return;
@@ -203,7 +206,8 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 	}
 
 	// speed up text
-	if (released) { can_skip = true; }
+
+	if (released || m_writer->is_first_message()) { can_skip = true; }
 	if (m_writer->is_stalling()) { can_skip = false; }
 	if (m_output_type == OutputType::no_skip) { can_skip = false; }
 	(skip && can_skip) ? m_writer->speed_up() : m_writer->slow_down();

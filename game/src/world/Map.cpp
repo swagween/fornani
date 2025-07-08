@@ -173,17 +173,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			}
 		}
 		for (auto& entry : entities["inspectables"].as_array()) {
-			sf::Vector2<std::uint32_t> dim{};
-			sf::Vector2<std::uint32_t> pos{};
-			auto key = entry["key"].as_string();
-			pos.x = entry["position"][0].as<int>();
-			pos.y = entry["position"][1].as<int>();
-			dim.x = entry["dimensions"][0].as<int>();
-			dim.y = entry["dimensions"][1].as<int>();
-			auto alt = entry["alternates"].as<int>();
-			auto native = entry["native_id"].as<int>();
-			auto aoc = static_cast<bool>(entry["activate_on_contact"].as_bool());
-			inspectables.push_back(entity::Inspectable(svc, dim, pos, key, room_id, alt, native, aoc));
+			inspectables.push_back(entity::Inspectable(svc, entry, room_id));
 			if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
 		}
 
@@ -202,13 +192,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 			enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
 			if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
 		}
-		for (auto& entry : entities["destroyers"].as_array()) {
-			sf::Vector2<int> pos{};
-			pos.x = entry["position"][0].as<int>();
-			pos.y = entry["position"][1].as<int>();
-			auto quest_id = entry["quest_id"].as<int>();
-			destroyers.push_back(Destructible(svc, pos, quest_id));
-		}
+		for (auto& entry : entities["destructibles"].as_array()) { destroyers.push_back(Destructible(svc, entry)); }
 	}
 
 	for (auto& entry : entities["portals"].as_array()) {

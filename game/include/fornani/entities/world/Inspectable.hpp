@@ -1,7 +1,9 @@
 
 #pragma once
 
+#include <fornani/utils/Constants.hpp>
 #include "fornani/entities/animation/Animation.hpp"
+#include "fornani/utils/IWorldPositionable.hpp"
 #include "fornani/utils/Shape.hpp"
 
 #include <djson/json.hpp>
@@ -23,35 +25,29 @@ class Console;
 
 namespace fornani::entity {
 
-enum class InspectableAttributes : std::uint8_t { activate_on_contact };
+enum class InspectableAttributes : std::uint8_t { activate_on_contact, instant };
 enum class InspectableFlags : std::uint8_t { hovered, hovered_trigger, activated, destroy, engaged };
 
-class Inspectable {
+class Inspectable : public IWorldPositionable {
   public:
-	using Vec = sf::Vector2f;
 	using Vecu32 = sf::Vector2<std::uint32_t>;
 
-	Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, std::string_view key = "", int room_id = 0, int alternates = 0, int native = 0, bool aoc = false);
-	void update(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, dj::Json& set);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
+	Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int room);
+	Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, std::string_view key = "", int room_id = 0, int alternates = 0, int native = 0, bool aoc = false, bool instant = false);
+	void update(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, dj::Json const& set);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos);
 	void destroy() { flags.set(InspectableFlags::destroy); }
 	[[nodiscard]] auto destroyed() const -> bool { return flags.test(InspectableFlags::destroy); }
 	[[nodiscard]] auto get_id() const -> std::string { return id; }
 
-	Vec dimensions{};
-	Vec position{};
-	Vec offset{0.f, -36.f};
-	Vecu32 scaled_dimensions{};
-	Vecu32 scaled_position{};
+  private:
 	shape::Shape bounding_box{};
-
+	sf::Vector2f offset{0.f, -36.f};
+	std::string id{};
 	std::string key{};
+	int native_id{};
 	int alternates{};
 	int current_alt{};
-
-  private:
-	std::string id{};
-	int native_id{};
 	util::BitFlags<InspectableAttributes> attributes{};
 	util::BitFlags<InspectableFlags> flags{};
 	sf::Sprite sprite;

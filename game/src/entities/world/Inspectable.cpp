@@ -6,22 +6,34 @@
 
 namespace fornani::entity {
 
-Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, std::string_view key, int room_id, int alternates, int native, bool aoc)
-	: scaled_dimensions(dim), scaled_position(pos), key(key), alternates(alternates), sprite(svc.assets.get_texture("inspectable_indicator")) {
-	dimensions = static_cast<Vec>(dim * constants::u32_cell_size);
-	position = static_cast<Vec>(pos * constants::u32_cell_size);
-	bounding_box = shape::Shape(dimensions);
-	bounding_box.set_position(position);
+Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int room)
+	: IWorldPositionable({in["position"][0].as<std::uint32_t>(), in["position"][1].as<std::uint32_t>()}, {in["dimensions"][0].as<std::uint32_t>(), in["dimensions"][1].as<std::uint32_t>()}),
+	  sprite{svc.assets.get_texture("inspectable_indicator")} {
+	if (in["activate_on_contact"].as_bool()) { attributes.set(InspectableAttributes::activate_on_contact); }
+	if (in["instant"].as_bool()) { attributes.set(InspectableAttributes::instant); }
+	key = in["key"].as_string();
+	id = key.data() + std::to_string(room);
+	auto nat = in["native_id"].as<int>();
+	native_id = nat == 0 ? room : nat;
+	alternates = in["alternates"].as<int>();
+	bounding_box = shape::Shape(get_world_dimensions());
+	bounding_box.set_position(get_world_position());
+	animation.end();
+}
+
+Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, std::string_view key, int room_id, int alternates, int native, bool aoc, bool instant)
+	: IWorldPositionable(pos, dim), key(key), alternates(alternates), sprite(svc.assets.get_texture("inspectable_indicator")) {
+	bounding_box = shape::Shape(get_world_dimensions());
+	bounding_box.set_position(get_world_position());
 	animation.end();
 	id = key.data() + std::to_string(room_id);
 	native_id = native == 0 ? room_id : native;
 	if (aoc) { attributes.set(InspectableAttributes::activate_on_contact); }
+	if (instant) { attributes.set(InspectableAttributes::instant); }
 }
 
-void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, dj::Json& set) {
-	position = static_cast<Vec>(scaled_position * constants::u32_cell_size);
-	dimensions = static_cast<Vec>(scaled_dimensions * constants::u32_cell_size);
-	bounding_box.set_position(position);
+void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, dj::Json const& set) {
+	bounding_box.set_position(get_world_position());
 	flags.reset(InspectableFlags::activated);
 	animation.update();
 	m_indicator_cooldown.update();
@@ -39,8 +51,9 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, s
 		if (!m_indicator_cooldown.running()) { m_indicator_cooldown.start(); }
 	}
 	if (flags.test(InspectableFlags::activated)) {
-		for (auto choice : set.as_array()) {
-			if (choice["key"].as_string() == std::string{key}) { console = std::make_unique<gui::Console>(svc, choice, std::string{key + std::to_string(current_alt)}, gui::OutputType::instant); }
+		for (auto const& choice : set.as_array()) {
+			auto output_type = attributes.test(InspectableAttributes::instant) ? gui::OutputType::instant : gui::OutputType::gradual;
+			if (choice["key"].as_string() == std::string{key}) { console = std::make_unique<gui::Console>(svc, choice, std::string{key + std::to_string(current_alt)}, output_type); }
 		}
 	}
 	if (flags.test(InspectableFlags::hovered) && flags.consume(InspectableFlags::hovered_trigger) && animation.complete()) { animation.set_params(params); }
@@ -58,11 +71,11 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, s
 	if (!console) { flags.reset(InspectableFlags::engaged); }
 }
 
-void Inspectable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos) {
+void Inspectable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos) {
 	sf::RectangleShape box{};
 	auto u = 0;
 	auto v = animation.get_frame() * 32;
-	sprite.setPosition(position + offset - campos);
+	sprite.setPosition(get_world_position() + offset - campos);
 	sprite.setTextureRect(sf::IntRect{{u, v}, {32, 32}});
 
 	if (svc.greyblock_mode()) {
@@ -74,7 +87,7 @@ void Inspectable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Ve
 		box.setOutlineColor(sf::Color::White);
 		box.setOutlineThickness(-1);
 		box.setPosition(bounding_box.get_position() - campos);
-		box.setSize(dimensions);
+		box.setSize(get_world_dimensions());
 		win.draw(box);
 	} else if (!attributes.test(InspectableAttributes::activate_on_contact)) {
 		win.draw(sprite);

@@ -4,6 +4,7 @@ nani_add_sources(
         CollisionDepth.cpp
         Decoder.cpp
         Fader.cpp
+        IWorldPositionable.cpp
         NineSlice.cpp
         Random.cpp
         RectPath.cpp

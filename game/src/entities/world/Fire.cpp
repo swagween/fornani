@@ -14,7 +14,7 @@ Fire::Fire(automa::ServiceProvider& svc, sf::Vector2f position, int lookup)
 	sprite.push_params("basic", {0, 5, 18, -1});
 	sprite.set_params("basic");
 	sparkler.set_position(bounding_box.get_position());
-	inspectable.position = bounding_box.get_position();
+	inspectable.set_world_position(bounding_box.get_position());
 }
 
 void Fire::update(automa::ServiceProvider& svc, player::Player& player, Map& map, std::optional<std::unique_ptr<gui::Console>>& console, dj::Json& set) {

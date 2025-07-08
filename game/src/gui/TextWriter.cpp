@@ -165,6 +165,7 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	working_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
 	working_message.setString("");
 	working_str = {};
+	m_is_first = true;
 }
 
 void TextWriter::append(std::string_view content) {
@@ -253,6 +254,7 @@ bool TextWriter::request_next() {
 	// writer is writing, not ready
 	if (is_writing()) { return false; }
 	++m_iterators.index;
+	m_is_first = false;
 	reset();
 	if (m_iterators.index >= suite.at(m_iterators.current_suite_set).size()) { shutdown(); }
 	return true;

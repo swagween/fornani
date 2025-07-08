@@ -5,6 +5,8 @@ namespace pi {
 
 Destructible::Destructible(dj::Json const& in) : Entity(in, "destructibles") { unserialize(in); }
 
+Destructible::Destructible(int id) : Entity("destructibles", id) {}
+
 std::unique_ptr<Entity> Destructible::clone() const { return std::make_unique<Destructible>(*this); }
 
 void Destructible::serialize(dj::Json& out) { Entity::serialize(out); }

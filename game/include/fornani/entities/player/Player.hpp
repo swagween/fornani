@@ -161,6 +161,7 @@ class Player {
 	void update_invincibility();
 	void start_over();
 	void give_drop(item::DropType type, float value);
+	void give_item_by_id(int id, item::ItemType type, int amount);
 	void give_item(std::string_view label, item::ItemType type, int amount);
 	void add_to_hotbar(int id);
 	void remove_from_hotbar(int id);

@@ -1,11 +1,27 @@
 
 #include "fornani/automa/states/Dojo.hpp"
+#include <fornani/systems/Event.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
 
 namespace fornani::automa {
 
+static bool item_acquisition{};
+static bool item_music_played{};
+static int item_modifier{};
+
+static void trigger_item(int to) {
+	item_acquisition = true;
+	item_modifier = to;
+}
+
 Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameState(svc, player, scene, room_number), map(svc, player), gui_map(svc, player) {
+
+	// register game events
+	svc.events.register_event(new Event<int, item::ItemType, int>("GivePlayerKeyItem", std::bind(&player::Player::give_item_by_id, &player, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)));
+	auto ac = std::bind(&Dojo::acquire_item, &*this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	svc.events.register_event(new Event<int>("AcquireItem", &trigger_item));
+
 	svc.menu_controller.reset_vendor_dialog();
 	open_vendor = false;
 	if (!svc.data.room_discovered(room_number)) {
@@ -74,6 +90,12 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 
 void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
+
+	if (item_acquisition) { acquire_item(svc, *player, item_modifier); }
+	if (!m_console && item_music_played) {
+		svc.music_player.resume();
+		item_music_played = false;
+	}
 
 	// gamepad disconnected
 	if (svc.controller_map.process_gamepad_disconnection()) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
@@ -212,6 +234,16 @@ void Dojo::bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current) {
 		if (id == 0) { continue; } // intro
 		gui_map.clear();
 	}
+}
+
+void Dojo::acquire_item(ServiceProvider& svc, player::Player& player, int modifier) {
+	m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
+	m_console.value()->display_item(modifier);
+	m_console.value()->append(player.catalog.inventory.item_view(modifier).get_title());
+	m_console.value()->append("!");
+	svc.music_player.quick_play(svc.finder, "discovery");
+	item_acquisition = false;
+	item_music_played = true;
 }
 
 } // namespace fornani::automa

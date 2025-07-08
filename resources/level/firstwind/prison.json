@@ -3,14 +3,27 @@
     "beds": [
       {
         "dimensions": [
-          0,
-          0
+          1,
+          1
         ],
         "flipped": false,
         "id": 0,
         "position": [
-          6,
-          13
+          4,
+          12
+        ]
+      }
+    ],
+    "destructibles": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          12,
+          7
         ]
       }
     ],
@@ -23,15 +36,89 @@
           1
         ],
         "id": 0,
+        "instant": false,
         "key": "prison_guide",
         "position": [
           3,
           12
         ],
         "prison_guide0": {
+          "codes": [
+            [
+              0,
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              2,
+              22
+            ],
+            [
+              1,
+              0,
+              1,
+              0,
+              0
+            ]
+          ],
+          "responses": [
+            [
+              "Yes",
+              "No"
+            ]
+          ],
           "suite": [
             [
               "You find a note with your name written on it. Would you like to take it?"
+            ]
+          ]
+        }
+      },
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": false,
+        "key": "manual",
+        "manual0": {
+          "suite": [
+            [
+              "You find a small instruction manual. On the first page, it says, \"Press <> to open your inventory.\""
+            ]
+          ]
+        },
+        "position": [
+          10,
+          12
+        ]
+      },
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": false,
+        "key": "terminal",
+        "position": [
+          9,
+          12
+        ],
+        "terminal0": {
+          "suite": [
+            [
+              "Enter 4-digit clearance code:"
             ]
           ]
         }
@@ -1007,7 +1094,7 @@
         0,
         305,
         322,
-        0,
+        336,
         0,
         0,
         0,

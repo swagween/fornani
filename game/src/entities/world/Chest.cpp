@@ -50,23 +50,9 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 				state.set(ChestState::open);
 				Animatable::set_parameters(m_animations.opened);
 				svc.data.open_chest(m_id);
-				if (m_type == ChestType::gun) {
-					player.push_to_loadout(m_content_modifier);
-					console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
-					console.value()->display_gun(m_content_modifier);
-					console.value()->append(player.arsenal.value().get_weapon_at(m_content_modifier).get_label());
-					console.value()->append("!");
-					svc.music_player.quick_play(svc.finder, "discovery");
-				}
+				if (m_type == ChestType::gun) { svc.events.dispatch_event("AcquireGun", m_content_modifier); }
 				if (m_type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, {6, 12}, static_cast<float>(m_content_modifier), collider.bounding_box.get_position(), 100)); }
-				if (m_type == ChestType::item) {
-					player.give_item(m_item_label, item::ItemType::key, 1);
-					console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
-					console.value()->display_item(m_content_modifier);
-					console.value()->append(player.catalog.inventory.item_view(m_content_modifier).get_title());
-					console.value()->append("!");
-					svc.music_player.quick_play(svc.finder, "discovery");
-				}
+				if (m_type == ChestType::item) { svc.events.dispatch_event("AcquireItem", m_content_modifier); }
 			} else {
 				console = std::make_unique<gui::Console>(svc, svc.text.basic, "open_chest", gui::OutputType::instant);
 			}
@@ -77,7 +63,6 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 		} else {
 			svc.camera_controller.constrain();
 		}
-		if (!console && state.test(ChestState::open)) { svc.music_player.resume(); }
 	}
 }
 

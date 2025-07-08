@@ -1,6 +1,7 @@
 
 #include "fornani/entities/player/Player.hpp"
 
+#include <functional>
 #include "fornani/entities/item/Drop.hpp"
 #include "fornani/gui/Console.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
@@ -9,6 +10,8 @@
 #include "fornani/world/Map.hpp"
 
 namespace fornani::player {
+
+static void test_event(std::string_view s, item::ItemType typ, int a) {}
 
 Player::Player(automa::ServiceProvider& svc)
 	: arsenal(svc), m_services(&svc), controller(svc), animation(*this), sprite{svc.assets.get_texture("nani")}, camera_offset{32.f, -64.f}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{8},
@@ -601,6 +604,11 @@ void Player::give_drop(item::DropType type, float value) {
 	}
 }
 
+void Player::give_item_by_id(int id, item::ItemType type, int amount) {
+	give_item(m_services->data.item_label_from_id(id), type, amount);
+	m_services->events.dispatch_event("AcquireItem", id);
+}
+
 void Player::add_to_hotbar(int id) {
 	if (hotbar) {
 		hotbar.value().add(id);
@@ -623,6 +631,7 @@ void Player::set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_o
 
 void Player::give_item(std::string_view label, item::ItemType type, int amount) {
 	auto id{0};
+	NANI_LOG_DEBUG(m_logger, "Gave item {}", label);
 	for (auto i{0}; i < amount; ++i) { id = catalog.inventory.add_item(m_services->data.item, label, type); }
 	if (id == 29) {
 		health.increase_max_hp(1.f);

@@ -18,7 +18,8 @@ namespace pi {
 void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& console, char const* label, std::unique_ptr<Tool>& tool, int room_id) {
 	if (ImGui::BeginPopupModal("Inspectable Message", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 
-		static bool activate_on_contact{false};
+		static bool activate_on_contact{};
+		static bool instant{};
 		static char keybuffer[128] = "";
 		static char msgbuffer[512] = "";
 
@@ -29,13 +30,14 @@ void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& consol
 		ImGui::Separator();
 
 		ImGui::Checkbox("Activate on contact?", &activate_on_contact);
+		ImGui::Checkbox("Instant text output when read?", &instant);
 		ImGui::SameLine();
 
 		if (ImGui::Button("Create")) {
 			// switch to entity tool, and store the specified inspectable for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->ent_type = EntityType::inspectable;
-			tool->current_entity = std::make_unique<Inspectable>(activate_on_contact, std::string{keybuffer}, std::vector<std::vector<std::string>>{{std::string{msgbuffer}}}, std::vector<std::vector<std::string>>{}, 0);
+			tool->current_entity = std::make_unique<Inspectable>(activate_on_contact, std::string{keybuffer}, std::vector<std::vector<std::string>>{{std::string{msgbuffer}}}, std::vector<std::vector<std::string>>{}, 0, instant);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();

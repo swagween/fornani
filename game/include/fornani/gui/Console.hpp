@@ -29,6 +29,7 @@ enum class OutputType : std::uint8_t { instant, gradual, no_skip };
 enum class MessageCodeType : std::uint8_t { none, response, item, quest, voice, emotion, redirect, action, exit };
 enum class CodeSource : std::uint8_t { suite, response };
 
+/* code : [source, set, index, type, value] */
 struct MessageCode {
 	CodeSource source{};
 	int set{};
@@ -42,6 +43,7 @@ struct MessageCode {
 	[[nodiscard]] auto is_redirect() const -> bool { return source == CodeSource::suite && type == MessageCodeType::redirect; }
 	[[nodiscard]] auto is_suite_return() const -> bool { return source == CodeSource::response && type == MessageCodeType::response; }
 	[[nodiscard]] auto is_action() const -> bool { return type == MessageCodeType::action; }
+	[[nodiscard]] auto is_item() const -> bool { return type == MessageCodeType::item; }
 };
 
 class Console {
@@ -53,7 +55,7 @@ class Console {
 	/// <param name="svc"></param>
 	/// <param name="key"></param>
 	/// <param name="type"></param>
-	explicit Console(automa::ServiceProvider& svc, dj::Json& source, std::string_view key, OutputType type);
+	explicit Console(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type);
 	/// <summary>
 	/// @brief used for loading single messages (signs, inspectables, etc.)
 	/// </summary>
@@ -64,7 +66,7 @@ class Console {
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win);
 
-	void set_source(dj::Json& json);
+	void set_source(dj::Json const& json);
 	void set_nani_sprite(sf::Sprite const& sprite);
 	void handle_actions(int value);
 	void display_item(int item_id);

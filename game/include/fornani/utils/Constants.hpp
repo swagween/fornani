@@ -18,6 +18,7 @@ constexpr std::uint32_t u32_cell_size{static_cast<std::uint32_t>(u8_cell_size)};
 constexpr int i_cell_size{static_cast<int>(u32_cell_size)};
 constexpr float f_cell_size{static_cast<float>(u32_cell_size)};
 
+constexpr sf::Vector2<std::uint32_t> u32_cell_vec{u32_cell_size, u32_cell_size};
 constexpr sf::Vector2i i_cell_vec{i_cell_size, i_cell_size};
 constexpr sf::Vector2f f_cell_vec{f_cell_size, f_cell_size};
 
