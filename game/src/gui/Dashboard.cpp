@@ -2,6 +2,7 @@
 #include "fornani/gui/Dashboard.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/gui/gizmos/ClockGizmo.hpp"
+#include "fornani/gui/gizmos/InventoryGizmo.hpp"
 #include "fornani/gui/gizmos/MapGizmo.hpp"
 #include "fornani/gui/gizmos/WardrobeGizmo.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -40,11 +41,13 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 		// if (i["label"].as_string() == "radar_device") { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player)); }
 	}
 	auto clock_placement{sf::Vector2f{84.f, 142.f}};
-	auto wardrobe_placement{sf::Vector2f{svc.window->f_screen_dimensions().x + 26, 0.f}};
+	auto wardrobe_placement{sf::Vector2f{svc.window->f_screen_dimensions().x + 26.f, 0.f}};
+	auto inventory_placement{sf::Vector2f{-svc.window->f_screen_dimensions().x + 366.f, 32.f}};
 	// push gizmos in clockwise order so selection setting will work
 	m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player));
 	m_gizmos.push_back(std::make_unique<WardrobeGizmo>(svc, map, wardrobe_placement)); // have to stick this in the for loop once we have a clock item
 	m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map, clock_placement));	   // have to stick this in the for loop once we have a clock item
+	m_gizmos.push_back(std::make_unique<InventoryGizmo>(svc, map, inventory_placement));
 
 	m_sprite.setScale(constants::f_scale_vec);
 }

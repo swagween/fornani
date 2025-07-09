@@ -16,6 +16,7 @@ class Inventory {
 	void remove_item(int item_id, int amount);
 	void reveal_item(int item_id);
 	[[nodiscard]] bool has_item(int id) const;
+	[[nodiscard]] bool has_item(std::string_view label) const;
 	std::vector<std::unique_ptr<item::ApparelItem>> const& apparel_view() const { return m_apparel; };
 	std::vector<std::unique_ptr<item::KeyItem>> const& key_items_view() const { return m_key_items; };
 	item::Item& item_view(int id) const&;

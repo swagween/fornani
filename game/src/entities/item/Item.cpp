@@ -15,6 +15,8 @@ Item::Item(dj::Json& source, std::string_view label, ItemType type) : m_label{la
 	m_lookup.position = m_lookup.position.componentWiseMul(constants::i_resolution_vec);
 	m_lookup.size = constants::i_resolution_vec;
 
+	if (in_data["readable"].as_bool()) { m_flags.set(ItemFlags::readable); }
+
 	m_info.actual_title = in_data["actual_title"].as_string().data();
 	m_info.actual_description = in_data["actual_description"].as_string().data();
 	m_info.naive_title = in_data["naive_title"] ? in_data["naive_title"].as_string().data() : m_info.actual_title;

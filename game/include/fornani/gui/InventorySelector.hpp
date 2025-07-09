@@ -11,6 +11,7 @@ namespace fornani::gui {
 
 class InventorySelector {
 	friend class OutfitterGizmo;
+	friend class InventoryGizmo;
 
   public:
 	InventorySelector(sf::Vector2i range, sf::Vector2f spacing = constants::f_cell_vec);

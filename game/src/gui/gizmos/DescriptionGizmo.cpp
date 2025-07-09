@@ -28,9 +28,11 @@ void DescriptionGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] pla
 
 void DescriptionGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
 	if (is_foreground() != foreground) { return; }
-	Gizmo::render(svc, win, player, cam);
-	m_sprite.setPosition(m_physics.position - cam);
-	win.draw(m_sprite);
+	if (!m_flags.test(DescriptionGizmoFlags::text_only)) {
+		Gizmo::render(svc, win, player, cam);
+		m_sprite.setPosition(m_physics.position - cam);
+		win.draw(m_sprite);
+	}
 	m_bounds.position = m_text_offset + m_physics.position - cam;
 	if (m_text) { m_text->write_instant_message(win); }
 }

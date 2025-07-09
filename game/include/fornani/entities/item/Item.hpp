@@ -20,7 +20,7 @@ struct ItemInformation {
 };
 
 enum class ItemType : std::uint8_t { key, apparel, collectible };
-enum class ItemFlags : std::uint8_t { sellable, vendor_spawnable, gizmo, ability };
+enum class ItemFlags : std::uint8_t { sellable, vendor_spawnable, gizmo, ability, readable };
 enum class ItemState : std::uint8_t { revealed };
 
 class Item : public Polymorphic {

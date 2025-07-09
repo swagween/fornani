@@ -3,10 +3,13 @@
 
 #include "fornani/gui/Gizmo.hpp"
 #include "fornani/gui/TextWriter.hpp"
+#include "fornani/utils/BitFlags.hpp"
 
 #include <optional>
 
 namespace fornani::gui {
+
+enum class DescriptionGizmoFlags { text_only };
 
 class DescriptionGizmo : public Gizmo {
   public:
@@ -18,7 +21,10 @@ class DescriptionGizmo : public Gizmo {
 
 	void write(automa::ServiceProvider& svc, std::string_view message);
 
+	void set_text_only(bool flag) { flag ? m_flags.set(DescriptionGizmoFlags::text_only) : m_flags.reset(DescriptionGizmoFlags::text_only); }
+
   private:
+	util::BitFlags<DescriptionGizmoFlags> m_flags{};
 	sf::Sprite m_sprite;
 	std::optional<TextWriter> m_text{};
 	sf::FloatRect m_bounds;

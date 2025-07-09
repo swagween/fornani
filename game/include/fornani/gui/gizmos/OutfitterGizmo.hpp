@@ -30,7 +30,7 @@ class OutfitterGizmo : public Gizmo {
 	void init_sliders();
 	void update_sliders(player::Player& player);
 	void debug();
-	int m_max_slots{};
+	int m_max_slots;
 	int wardrobe_index;
 	int m_current_item_id{};
 	sf::Sprite m_sprite;

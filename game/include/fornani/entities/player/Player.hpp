@@ -85,7 +85,7 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class State { killed, dir_switch, show_weapon, impart_recoil, crushed, sleep, wake_up };
+enum class State { killed, dir_switch, show_weapon, impart_recoil, crushed, sleep, wake_up, busy };
 enum class Triggers { hurt };
 
 struct PlayerFlags {
@@ -117,6 +117,7 @@ class Player {
 	// state
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
 	[[nodiscard]] auto is_dead() const -> bool { return health.is_dead(); }
+	[[nodiscard]] auto is_busy() const -> bool { return flags.state.test(State::busy); }
 	[[nodiscard]] auto death_animation_over() -> bool { return animation.death_over(); }
 	[[nodiscard]] auto just_died() const -> bool { return flags.state.test(State::killed); }
 	[[nodiscard]] auto height() const -> float { return collider.dimensions.y; }
@@ -154,6 +155,8 @@ class Player {
 	void handle_map_collision(world::Map& map);
 	void update_antennae();
 	void sync_antennae();
+
+	void set_busy(bool flag) { flag ? flags.state.set(State::busy) : flags.state.reset(State::busy); }
 
 	bool grounded() const;
 	bool fire_weapon();

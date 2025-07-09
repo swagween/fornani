@@ -7,8 +7,14 @@ namespace fornani::player {
 
 int Inventory::add_item(dj::Json& source, std::string_view label, item::ItemType type) {
 	switch (type) {
-	case item::ItemType::apparel: m_apparel.push_back(std::make_unique<item::ApparelItem>(source, label)); return m_apparel.back()->get_id();
-	case item::ItemType::key: m_key_items.push_back(std::make_unique<item::KeyItem>(source, label)); return m_key_items.back()->get_id();
+	case item::ItemType::apparel:
+		if (!has_item(label)) { m_apparel.push_back(std::make_unique<item::ApparelItem>(source, label)); }
+		return m_apparel.back()->get_id();
+	case item::ItemType::key:
+		if (!has_item(label)) {
+			m_key_items.push_back(std::make_unique<item::KeyItem>(source, label));
+			return m_key_items.back()->get_id();
+		}
 	}
 	return 0;
 }
@@ -23,6 +29,15 @@ bool Inventory::has_item(int id) const {
 	}
 	for (auto& item : m_key_items) {
 		if (item->get_id() == id) { return true; }
+	}
+	return false;
+}
+bool Inventory::has_item(std::string_view label) const {
+	for (auto& item : m_apparel) {
+		if (item->get_label() == label) { return true; }
+	}
+	for (auto& item : m_key_items) {
+		if (item->get_label() == label) { return true; }
 	}
 	return false;
 }

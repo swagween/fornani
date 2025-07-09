@@ -38,11 +38,15 @@
 		"naive_description": "A tiny motor that Spencer needs to access Doc Willet's floppy disc.",
 		"unique": true
 	},
-	"gas_mask": {
+	"bryns_note": {
 		"id": 7,
-		"actual_title": "Gas Mask",
-		"naive_description": "You need this to navigate the Toxic Cavern without dying.",
-		"unique": true
+		"lookup": [ 6, 0 ],
+		"naive_title": "Mysterious Note",
+		"actual_title": "Bryn's Note",
+		"naive_description": "A mysterious note you found on your bookshelf.",
+		"actual_description": "A note that Bryn left for you before fleeing the Firstwind. It contains the clearance code you need to escape your holding cell.",
+		"unique": true,
+		"readable": true
 	},
 	"firstwind_hangar_key": {
 		"id": 8,
@@ -246,6 +250,12 @@
 		"unique": false,
 		"equippable": false,
 		"value": 12000
+	},
+	"gas_mask": {
+		"id": 178,
+		"actual_title": "Gas Mask",
+		"naive_description": "You need this to navigate the Toxic Cavern without dying.",
+		"unique": true
 	},
 	"chalcedony_tee": {
 		"id": 194,

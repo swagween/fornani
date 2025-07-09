@@ -50,7 +50,8 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, s
 	} else {
 		if (!m_indicator_cooldown.running()) { m_indicator_cooldown.start(); }
 	}
-	if (flags.test(InspectableFlags::activated)) {
+	if (flags.test(InspectableFlags::activated) && !player.is_busy()) {
+		player.set_busy(true);
 		for (auto const& choice : set.as_array()) {
 			auto output_type = attributes.test(InspectableAttributes::instant) ? gui::OutputType::instant : gui::OutputType::gradual;
 			if (choice["key"].as_string() == std::string{key}) { console = std::make_unique<gui::Console>(svc, choice, std::string{key + std::to_string(current_alt)}, output_type); }
@@ -68,7 +69,10 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, s
 			svc.data.destroy_inspectable(id);
 		}
 	}
-	if (!console) { flags.reset(InspectableFlags::engaged); }
+	if (!console) {
+		flags.reset(InspectableFlags::engaged);
+		player.set_busy(false);
+	}
 }
 
 void Inspectable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos) {

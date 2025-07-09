@@ -288,5 +288,43 @@
 				}
 			]
 		}
+	],
+	"inventory": [
+		{
+			"label": "start",
+			"path": [
+				{
+					"position": [ -540, 0 ]
+				},
+				{
+					"position": [ 0, 0 ]
+				}
+			]
+		},
+		{
+			"label": "open",
+			"path": [
+				{
+					"position": [ 0, 0 ]
+				},
+				{
+					"position": [ 0, -260 ]
+				}
+			]
+		},
+		{
+			"label": "close",
+			"path": [
+				{
+					"position": [ 0, -260 ]
+				},
+				{
+					"position": [ 0, 1 ]
+				},
+				{
+					"position": [ 0, 0 ]
+				}
+			]
+		}
 	]
 }

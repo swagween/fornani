@@ -2,6 +2,7 @@ nani_add_headers(
   MapGizmo.hpp
   ClockGizmo.hpp
   DescriptionGizmo.hpp
+  InventoryGizmo.hpp
   MapInfoGizmo.hpp
   OutfitterGizmo.hpp
   WardrobeGizmo.hpp
