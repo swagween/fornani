@@ -19,6 +19,7 @@ class Dojo final : public GameState {
 	void bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current = false);
 	void acquire_item(ServiceProvider& svc, player::Player& player, int modifier);
 	void acquire_gun(ServiceProvider& svc, player::Player& player, int modifier);
+	void read_item(int id);
 
 	world::Map map;
 	world::Map gui_map;
@@ -30,6 +31,8 @@ class Dojo final : public GameState {
 	std::optional<std::unique_ptr<gui::VendorDialog>> vendor_dialog{};
 	std::optional<std::unique_ptr<gui::PauseWindow>> pause_window{};
 	std::optional<std::unique_ptr<gui::InventoryWindow>> inventory_window{};
+
+	ServiceProvider* m_services;
 };
 
 } // namespace fornani::automa

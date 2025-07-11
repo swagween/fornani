@@ -34,6 +34,7 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 		a.num_loops = param["num_loops"].as<int>();
 		sprite.push_params(param["label"].as_string(), a);
 	}
+	sprite.set_scale(constants::f_scale_vec);
 	sprite.set_params("neutral", true);
 	sf::Vector2 const dim{static_cast<int>(sprite_dimensions.x), static_cast<int>(sprite_dimensions.y)};
 	sprite.set_dimensions(dim);
@@ -127,7 +128,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	if (type == DropType::orb) { v = rarity == priceless ? 3 : (rarity == rare ? 2 : (rarity == uncommon ? 1 : 0)); }
 	if (type == DropType::gem) { v = special_id; }
 	sprite.set_origin(sprite_dimensions * 0.5f);
-	sprite.update(collider.position() + sprite_offset, u, v, true);
+	sprite.update(collider.position() + sprite_offset, u, v);
 
 	state_function = state_function();
 }

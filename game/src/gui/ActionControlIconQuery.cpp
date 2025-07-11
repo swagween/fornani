@@ -1,6 +1,8 @@
 #include "fornani/gui/ActionControlIconQuery.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
+namespace fornani::gui {
+
 static auto get_controller_lookup(EInputActionOrigin btn) -> int {
 	if (btn >= EInputActionOrigin::k_EInputActionOrigin_PS4_X && btn <= EInputActionOrigin::k_EInputActionOrigin_PS4_Reserved10) { return 50; }
 	if (btn >= EInputActionOrigin::k_EInputActionOrigin_XBoxOne_A && btn <= EInputActionOrigin::k_EInputActionOrigin_XBoxOne_Reserved10) { return 114; }
@@ -38,8 +40,6 @@ sf::Vector2i get_controller_button_coordinates(EInputActionOrigin btn) {
 	return {buttoni % atlas_width, controller_section + buttoni / atlas_width};
 }
 
-namespace fornani::gui {
-
 auto get_action_control_icon(automa::ServiceProvider& svc, config::DigitalAction action) -> sf::Sprite {
 	auto source = svc.controller_map.digital_action_source(action);
 
@@ -51,9 +51,10 @@ auto get_action_control_icon(automa::ServiceProvider& svc, config::DigitalAction
 	}
 
 	sf::Sprite sprite{svc.assets.get_texture("controller_button_icons")};
-	auto dimensions = sf::Vector2<int>{36, 36};
-	sprite.setTextureRect(sf::IntRect{lookup * 36, dimensions});
+	auto dimensions = sf::Vector2<int>{18, 18};
+	sprite.setTextureRect(sf::IntRect{lookup * 18, dimensions});
 	sprite.setOrigin(sf::Vector2f{0.f, 8.f});
+	sprite.setScale(constants::f_scale_vec);
 
 	return sprite;
 }

@@ -2,6 +2,7 @@
 #include "fornani/setup/ControllerMap.hpp"
 #include <steam/isteaminput.h>
 #include <ccmath/ext/clamp.hpp>
+#include <fornani/gui/ActionControlIconQuery.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 
 #ifdef _MSC_VER
@@ -143,6 +144,18 @@ void ControllerMap::handle_event(std::optional<sf::Event> const event) {
 	} else if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
 		keys_pressed.erase(key_released->scancode);
 	}
+}
+
+void ControllerMap::flush_inputs() {
+	for (auto& [action, data] : digital_actions) {
+		auto& [steam_handle, action_status, primary_key, secondary_key, was_active_last_tick] = data;
+		action_status.triggered = false;
+	}
+}
+
+sf::Vector2i ControllerMap::get_icon_lookup_by_action(DigitalAction action) const {
+	auto source = digital_action_source(action);
+	return (source.controller_origin == k_EInputActionOrigin_None) ? gui::get_key_coordinates(source.key) : gui::get_controller_button_coordinates(source.controller_origin);
 }
 
 void ControllerMap::update() {

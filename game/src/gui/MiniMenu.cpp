@@ -1,11 +1,11 @@
-#include "fornani/gui/MiniMenu.hpp"
 
+#include "fornani/gui/MiniMenu.hpp"
 #include "fornani/automa/GameState.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::gui {
 
-MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt, sf::Vector2f start_position, bool white)
+MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string> opt, sf::Vector2f start_position, bool white)
 	: m_nineslice{svc, (white ? svc.assets.get_texture("cream_console") : svc.assets.get_texture("blue_console")), {28, 28}, {1, 1}} {
 	auto ctr{0};
 	for (auto& o : opt) {
@@ -15,6 +15,7 @@ MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> o
 		++ctr;
 	}
 	selection = util::Circuit(static_cast<int>(options.size()));
+	svc.soundboard.flags.console.set(audio::Console::menu_open);
 }
 
 void MiniMenu::update(automa::ServiceProvider& svc, sf::Vector2f dim, sf::Vector2f at_position) {
@@ -24,6 +25,7 @@ void MiniMenu::update(automa::ServiceProvider& svc, sf::Vector2f dim, sf::Vector
 	auto spacing = 12.f;
 	auto top_buffer = 18.f;
 	auto ctr{0};
+
 	for (auto& option : options) {
 		option.position = {m_nineslice.get_global_center().x,
 						   m_nineslice.get_position().y - m_nineslice.get_f_corner_dimensions().y + spacing + ctr * (option.label.getLocalBounds().size.y + spacing) - m_nineslice.get_local_center().y + top_buffer};
@@ -37,14 +39,23 @@ void MiniMenu::render(sf::RenderWindow& win, bool bg) {
 	for (auto& option : options) { win.draw(option.label); }
 }
 
-void MiniMenu::up(automa::ServiceProvider& svc) {
-	selection.modulate(-1);
-	svc.soundboard.flags.console.set(audio::Console::shift);
-}
-
-void MiniMenu::down(automa::ServiceProvider& svc) {
-	selection.modulate(1);
-	svc.soundboard.flags.console.set(audio::Console::shift);
+void MiniMenu::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
+	if (controller.digital_action_status(config::DigitalAction::menu_up).triggered) {
+		selection.modulate(-1);
+		soundboard.flags.menu.set(audio::Menu::shift);
+	}
+	if (controller.digital_action_status(config::DigitalAction::menu_down).triggered) {
+		selection.modulate(1);
+		soundboard.flags.menu.set(audio::Menu::shift);
+	}
+	if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
+		m_flags.set(MiniMenuFlags::selected);
+		soundboard.flags.menu.set(audio::Menu::forward_switch);
+	}
+	if (controller.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
+		m_flags.set(MiniMenuFlags::closed);
+		soundboard.flags.menu.set(audio::Menu::backward_switch);
+	}
 }
 
 sf::Vector2f MiniMenu::get_dimensions() const { return dimensions; }

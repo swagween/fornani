@@ -30,6 +30,7 @@ struct Message {
 
 enum class Codes : std::uint8_t { prompt, quest, item, voice, emotion, hash };
 enum class WriterMode : std::uint8_t { write, wait, close, stall, respond };
+enum class WriterFlags : std::uint8_t { input_hint };
 static constexpr int default_writing_speed_v{8};
 static constexpr int fast_writing_speed_v{1};
 
@@ -45,10 +46,12 @@ class TextWriter {
 	void set_bounds(sf::FloatRect to_bounds, bool wrap = false);
 	void append(std::string_view content);
 	void set_font_color(sf::Color to_color);
+	void set_font(sf::Font& to_font);
 	///@return true when we are able to progress in the writer, false if inputs should do nothing
 	bool request_next();
 	void speed_up();
 	void slow_down();
+	void insert_icon_at(int index, sf::Vector2i icon_lookup);
 
 	[[nodiscard]] auto is_responding() const -> bool { return m_mode == WriterMode::respond; }
 	[[nodiscard]] auto is_writing() const -> bool { return m_mode == WriterMode::write; }
@@ -70,6 +73,7 @@ class TextWriter {
 	void load_message(dj::Json& source, std::string_view key);
 	void write_instant_message(sf::RenderWindow& win);
 	void write_gradual_message(sf::RenderWindow& win);
+	void insert_input_hint(sf::RenderWindow& win, sf::Text& message);
 	void stylize(sf::Text& msg) const;
 	void set_suite(int to_suite);
 	void set_index(int to_index);
@@ -88,6 +92,8 @@ class TextWriter {
 	util::Cooldown m_delay;
 
 	std::deque<std::deque<Message>> suite{};
+
+	util::BitFlags<WriterFlags> m_flags{};
 
 	struct {
 		int current_suite_set{};
@@ -110,6 +116,10 @@ class TextWriter {
 	int m_text_size{};
 	bool m_hide_cursor{};
 	bool m_is_first{};
+
+	std::string m_input_code;
+
+	std::optional<sf::Sprite> m_input_icon{};
 
 	sf::RectangleShape cursor{};
 

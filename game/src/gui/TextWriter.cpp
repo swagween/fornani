@@ -1,20 +1,18 @@
 
 #include "fornani/gui/TextWriter.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-
 #include <SFML/Graphics.hpp>
 #include <ccmath/ext/clamp.hpp>
-
 #include <string>
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::gui {
 
 TextWriter::TextWriter(automa::ServiceProvider& svc)
 	: m_services(&svc), working_message{svc.text.fonts.basic}, zero_option{.data{svc.text.fonts.basic}}, m_font{&svc.text.fonts.basic}, m_mode{WriterMode::stall}, m_delay{util::Cooldown{32}}, m_writing_speed{default_writing_speed_v},
-	  m_delta_threshold{8.f}, m_text_size{16} {
+	  m_delta_threshold{8.f}, m_text_size{16}, m_input_code{"    "} {
 	bounds_box.setFillColor(sf::Color(200, 200, 10, 10));
 	bounds_box.setOutlineColor(sf::Color(255, 80, 80, 180));
-	bounds_box.setOutlineThickness(-1);
+	bounds_box.setOutlineThickness(-2.f);
 	cursor.setFillColor(colors::ui_white);
 	cursor.setSize({10.f, 16.f});
 }
@@ -60,7 +58,7 @@ void TextWriter::update() {
 
 	// append next character to working string
 	if (m_counters.tick.get_count() % m_writing_speed == 0) {
-		constrain();
+		if (m_services->ticker.every_x_ticks(16)) { constrain(); }
 		char const next_char = static_cast<char>(suite.at(m_iterators.current_suite_set).at(m_iterators.index).data.getString().getData()[m_counters.glyph.get_count()]);
 		working_str += next_char;
 		working_message.setString(working_str);
@@ -113,6 +111,7 @@ void TextWriter::wrap() {
 		char const current_char = static_cast<char>(current_message.getString().getData()[i]);
 		if (current_char == ' ') {
 			last_space_index = i;
+			if (last_space_index >= current_message.getString().getSize()) { return; }
 			std::string left = current_message.getString().substring(0, static_cast<std::size_t>(last_space_index + 1));
 			std::string right = current_message.getString().substring(static_cast<std::size_t>(last_space_index + 1));
 			auto next_space{std::distance(right.begin(), std::find_if(right.begin(), right.end(), [](auto const& c) { return c == ' '; }))};
@@ -211,7 +210,7 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	if (m_mode == WriterMode::stall) { return; }
 	static bool show_cursor;
 	static auto blink_rate{24};
-	auto cursor_offset{sf::Vector2f{8.f, 0.f}};
+	auto cursor_offset{sf::Vector2f{16.f, 0.f}};
 	if (m_iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
 	auto& current_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
@@ -222,6 +221,8 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 		auto last_glyph_position = current_message.findCharacterPos(working_message.getString().getSize() - 1);
 		cursor.setPosition(last_glyph_position + cursor_offset);
 		if (show_cursor && !m_hide_cursor) { win.draw(cursor); }
+		// insert an icon hint if there is one
+		if (m_flags.test(WriterFlags::input_hint) && m_input_icon) { insert_input_hint(win, current_message); }
 		return;
 	}
 	show_cursor = true;
@@ -231,6 +232,15 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	cursor.setPosition(last_glyph_position + cursor_offset);
 	win.draw(working_message);
 	if (!m_hide_cursor) { win.draw(cursor); }
+	if (m_flags.test(WriterFlags::input_hint) && m_input_icon) { insert_input_hint(win, working_message); }
+}
+
+void TextWriter::insert_input_hint(sf::RenderWindow& win, sf::Text& message) {
+	auto insertion_index = message.getString().find(m_input_code);
+	if (insertion_index == std::string::npos) { return; }
+	auto insertion_point = message.findCharacterPos(insertion_index);
+	m_input_icon->setPosition(insertion_point);
+	win.draw(*m_input_icon);
 }
 
 void TextWriter::set_font_color(sf::Color to_color) {
@@ -238,6 +248,8 @@ void TextWriter::set_font_color(sf::Color to_color) {
 	for (auto& msg : suite.back()) { msg.data.setFillColor(to_color); }
 	cursor.setFillColor(to_color);
 }
+
+void TextWriter::set_font(sf::Font& to_font) { m_font = &to_font; }
 
 void TextWriter::reset() {
 	slow_down();
@@ -249,6 +261,22 @@ void TextWriter::reset() {
 void TextWriter::speed_up() { m_writing_speed = fast_writing_speed_v; }
 
 void TextWriter::slow_down() { m_writing_speed = default_writing_speed_v; }
+
+void TextWriter::insert_icon_at(int index, sf::Vector2i icon_lookup) {
+	if (m_iterators.current_suite_set >= suite.size()) { return; }
+	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
+	auto& current_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
+	if (m_input_icon) { return; } // don't do this if we've already done it last tick
+	m_input_icon = sf::Sprite{m_services->assets.get_texture("controller_button_icons")};
+	m_input_icon->setTextureRect(sf::IntRect{icon_lookup * 18, {18, 18}});
+	m_input_icon->setScale(constants::f_scale_vec);
+	m_input_icon->setOrigin({-2.f, 4.f});
+	auto msg = current_message.getString();
+	auto first = msg.substring(0, index);
+	auto second = msg.substring(index, std::string::npos);
+	current_message.setString(first + m_input_code + second);
+	m_flags.set(WriterFlags::input_hint);
+}
 
 bool TextWriter::request_next() {
 	// writer is writing, not ready

@@ -25,6 +25,7 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map, 
 	m_background.setSize(svc.window->f_screen_dimensions());
 	m_dashboard->set_position(sf::Vector2f{250.f, 32.f}, true);
 	svc.soundboard.flags.console.set(audio::Console::menu_open);
+	svc.music_player.pause();
 }
 
 void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
@@ -65,7 +66,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	auto horizontal_dampen{0.7f}; // we want to display the gizmo's connection to the dashboard for wardrobe and inventory gizmos
 	auto target{sf::Vector2f{m_cell_dimensions.x * m_grid_position.x * horizontal_dampen, m_cell_dimensions.y * m_grid_position.y} + offset};
 	if (m_dashboard->get_selected_position().x == -1) { target += sf::Vector2f{48.f, 24.f}; } // inventory is slightly lower than other gizmos
-	m_camera.steering.seek(m_camera.physics, target, 0.003f);
+	m_camera.steering.seek(m_camera.physics, target, 0.0035f);
 	m_camera.physics.simple_update();
 	m_dashboard->set_position({250.f, 0.f});
 	m_dashboard->update(svc, player, map);

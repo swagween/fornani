@@ -104,6 +104,10 @@ class ControllerMap {
 	/// @details Used for keyboard controls.
 	void handle_event(std::optional<sf::Event> const event);
 
+	void flush_inputs();
+
+	sf::Vector2i get_icon_lookup_by_action(DigitalAction action) const;
+
 	/// @brief Returns whether there is a gamepad connected or not.
 	[[nodiscard]] auto gamepad_connected() const -> bool { return controller_handle != 0; }
 	[[nodiscard]] auto gamepad_disconnected() const -> bool { return controller_handle == 0; }

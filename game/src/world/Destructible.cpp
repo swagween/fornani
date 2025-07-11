@@ -17,7 +17,7 @@ Destructible::Destructible(automa::ServiceProvider& svc, dj::Json const& in, int
 
 void Destructible::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 	if (detonated()) { return; }
-	if (svc.quest.get_progression(fornani::QuestType::destroyers, quest_id) > 0) { flags.set(DestroyerState::detonated); }
+	if (svc.data.block_is_destroyed(quest_id)) { flags.set(DestroyerState::detonated); }
 	if (flags.test(DestroyerState::detonated)) {
 		svc.data.destroy_block(quest_id);
 		map.effects.push_back(entity::Effect(svc, "small_explosion", get_world_position(), {}, 0, 0));

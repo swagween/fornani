@@ -6,12 +6,12 @@ namespace fornani::item {
 
 Item::Item(dj::Json& source, std::string_view label, ItemType type) : m_label{label}, m_type{type} {
 	auto const& in_data = source[label];
+	m_category = static_cast<ItemCategory>(in_data["category"].as<int>());
 	m_id = in_data["id"].as<int>();
 	m_lookup.position.x = in_data["lookup"][0].as<int>();
 	m_lookup.position.y = in_data["lookup"][1].as<int>();
 	m_table_origin.x = in_data["origin"][0].as<int>();
 	m_table_origin.y = in_data["origin"][1].as<int>();
-	m_table_position = {in_data["lookup"][0].as<float>() - in_data["origin"][0].as<float>(), in_data["lookup"][1].as<float>() - in_data["origin"][1].as<float>()};
 	m_lookup.position = m_lookup.position.componentWiseMul(constants::i_resolution_vec);
 	m_lookup.size = constants::i_resolution_vec;
 
@@ -21,8 +21,6 @@ Item::Item(dj::Json& source, std::string_view label, ItemType type) : m_label{la
 	m_info.actual_description = in_data["actual_description"].as_string().data();
 	m_info.naive_title = in_data["naive_title"] ? in_data["naive_title"].as_string().data() : m_info.actual_title;
 	m_info.naive_description = in_data["naive_description"] ? in_data["naive_description"].as_string().data() : m_info.actual_description;
-
-	NANI_LOG_INFO(m_logger, "Loaded item {}", m_info.actual_title);
 }
 
 void Item::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f position) {
@@ -32,5 +30,12 @@ void Item::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f positi
 }
 
 void Item::reveal() { m_state.set(ItemState::revealed); }
+
+std::vector<std::string> Item::generate_menu_list() const {
+	auto ret = std::vector<std::string>();
+	if (m_flags.test(ItemFlags::readable)) { ret.push_back("read"); }
+	ret.push_back("cancel");
+	return ret;
+}
 
 } // namespace fornani::item

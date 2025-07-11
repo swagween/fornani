@@ -40,7 +40,9 @@
 	},
 	"bryns_note": {
 		"id": 7,
+		"category": 0,
 		"lookup": [ 6, 0 ],
+		"origin": [ 0, 0 ],
 		"naive_title": "Mysterious Note",
 		"actual_title": "Bryn's Note",
 		"naive_description": "A mysterious note you found on your bookshelf.",
@@ -118,7 +120,7 @@
 	},
 	"ashtown_raspberry_preserves": {
 		"id": 22,
-		"actual_title": "Ashtown Raspberry Preserves",
+		"actual_title": "Ashtown Preserves",
 		"naive_description": "A delicious raspberry treat. It would taste better on some toast, but it will still restore your health if you eat it.",
 		"unique": false,
 		"usable": true,
@@ -167,6 +169,7 @@
 	},
 	"heart_keychain": {
 		"id": 29,
+		"category": 5,
 		"actual_title": "Heart Keychain",
 		"naive_description": "A heart keychain. You attach it to your belt and it gives you extra life.",
 		"unique": false,
@@ -188,6 +191,7 @@
 	},
 	"red_jeans": {
 		"id": 209,
+		"category": 1,
 		"lookup": [ 0, 13 ],
 		"origin": [ 0, 10 ],
 		"actual_title": "Red Jeans",
@@ -199,6 +203,7 @@
 	},
 	"clay_statue": {
 		"id": 65,
+		"category": 2,
 		"actual_title": "Clay Statue",
 		"naive_description": "A common artifact of the ancient peoples.",
 		"rarity": 0,
@@ -208,6 +213,7 @@
 	},
 	"glass_statue": {
 		"id": 66,
+		"category": 2,
 		"actual_title": "Glass Statue",
 		"naive_description": "An uncommon artifact of the ancient peoples.",
 		"rarity": 1,
@@ -217,6 +223,7 @@
 	},
 	"bronze_statue": {
 		"id": 67,
+		"category": 2,
 		"actual_title": "Bronze Statue",
 		"naive_description": "A rare artifact of the ancient peoples.",
 		"rarity": 2,
@@ -226,6 +233,7 @@
 	},
 	"cinnabar_statue": {
 		"id": 68,
+		"category": 2,
 		"actual_title": "Cinnabar Statue",
 		"naive_description": "A very rare artifact of the ancient peoples.",
 		"rarity": 2,
@@ -235,6 +243,7 @@
 	},
 	"jade_statue": {
 		"id": 69,
+		"category": 2,
 		"actual_title": "Jade Statue",
 		"naive_description": "An incredibly rare artifact of the ancient peoples.",
 		"rarity": 2,
@@ -244,6 +253,7 @@
 	},
 	"alabaster_statue": {
 		"id": 70,
+		"category": 2,
 		"actual_title": "Alabaster Statue",
 		"naive_description": "A legendary artifact of the ancient peoples.",
 		"rarity": 3,
@@ -253,12 +263,14 @@
 	},
 	"gas_mask": {
 		"id": 178,
+		"category": 1,
 		"actual_title": "Gas Mask",
 		"naive_description": "You need this to navigate the Toxic Cavern without dying.",
 		"unique": true
 	},
 	"chalcedony_tee": {
 		"id": 194,
+		"category": 1,
 		"lookup": [ 1, 12 ],
 		"origin": [ 0, 10 ],
 		"actual_title": "Chalcedony Tee",
@@ -270,6 +282,7 @@
 	},
 	"navy_top": {
 		"id": 202,
+		"category": 1,
 		"lookup": [ 9, 12 ],
 		"origin": [ 0, 10 ],
 		"actual_title": "Navy Top",
@@ -281,6 +294,7 @@
 	},
 	"chalcedony_skirt": {
 		"id": 210,
+		"category": 1,
 		"lookup": [ 1, 13 ],
 		"origin": [ 0, 10 ],
 		"actual_title": "Chalcedony Skirt",
@@ -292,6 +306,7 @@
 	},
 	"green_pants": {
 		"id": 218,
+		"category": 1,
 		"lookup": [ 9, 13 ],
 		"origin": [ 0, 10 ],
 		"actual_title": "Green Pants",
@@ -303,6 +318,7 @@
 	},
 	"punk_hair_dye": {
 		"id": 84,
+		"category": 1,
 		"start_index": 160,
 		"actual_title": "Punk Hair Dye",
 		"naive_description": "A whacky and rebellious hair color.",
@@ -313,6 +329,7 @@
 	},
 	"punk_shirt": {
 		"id": 85,
+		"category": 1,
 		"start_index": 160,
 		"actual_title": "Punk Shirt",
 		"naive_description": "A shirt that awakens your rebellious spirit.",
@@ -323,6 +340,7 @@
 	},
 	"punk_pants": {
 		"id": 86,
+		"category": 1,
 		"start_index": 160,
 		"actual_title": "Punk Pants",
 		"naive_description": "Black pants with a rebellious chain accessory.",
@@ -333,6 +351,7 @@
 	},
 	"hairtie": {
 		"id": 87,
+		"category": 1,
 		"start_index": 160,
 		"actual_title": "Hairtie",
 		"naive_description": "Wear this to keep your hair from going all over the place all the time.",
@@ -343,6 +362,7 @@
 	},
 	"rhenite": {
 		"id": 97,
+		"category": 2,
 		"actual_title": "Rhenite",
 		"naive_description": "A rare red gem.",
 		"unique": false,
@@ -351,6 +371,7 @@
 	},
 	"sapphire": {
 		"id": 98,
+		"category": 2,
 		"actual_title": "Sapphire",
 		"naive_description": "A rare blue gem.",
 		"unique": false,

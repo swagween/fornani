@@ -30,26 +30,6 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 	if (!m_console) {
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
-			if (m_file_select_menu) {
-				m_file_select_menu->down(svc);
-			} else {
-				current_selection.modulate(1);
-				svc.data.load_blank_save(*player);
-				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
-				svc.soundboard.flags.menu.set(audio::Menu::shift);
-			}
-		}
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
-			if (m_file_select_menu) {
-				m_file_select_menu->up(svc);
-			} else {
-				current_selection.modulate(-1);
-				svc.data.load_blank_save(*player);
-				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
-				svc.soundboard.flags.menu.set(audio::Menu::shift);
-			}
-		}
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 			if (m_file_select_menu) {
 				m_file_select_menu = {};
@@ -84,6 +64,24 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 				// TODO: pull option strings from a .json to make localization easier in the future
 				m_file_select_menu = gui::MiniMenu(svc, {"play", "stats", "delete"}, options.at(current_selection.get()).position);
 				svc.soundboard.flags.console.set(audio::Console::menu_open);
+			}
+		}
+		if (m_file_select_menu) {
+			m_file_select_menu->handle_inputs(svc.controller_map, svc.soundboard);
+		} else {
+			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
+
+				current_selection.modulate(1);
+				svc.data.load_blank_save(*player);
+				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
+				svc.soundboard.flags.menu.set(audio::Menu::shift);
+			}
+			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
+
+				current_selection.modulate(-1);
+				svc.data.load_blank_save(*player);
+				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
+				svc.soundboard.flags.menu.set(audio::Menu::shift);
 			}
 		}
 	}

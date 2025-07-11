@@ -15,8 +15,7 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc) : m_menu(svc, {"resume", 
 void PauseWindow::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<Console>>& console) {
 	m_menu.update(svc, m_dimensions, svc.window->f_center_screen());
 	if (console) { return; }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) { m_menu.down(svc); }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) { m_menu.up(svc); }
+	m_menu.handle_inputs(svc.controller_map, svc.soundboard);
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		switch (m_menu.get_selection()) {
 		case 0:

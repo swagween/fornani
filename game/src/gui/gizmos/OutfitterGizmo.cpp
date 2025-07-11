@@ -30,7 +30,7 @@ OutfitterGizmo::OutfitterGizmo(automa::ServiceProvider& svc, world::Map& map, sf
 		++row;
 	}
 	m_selector.set_lookup({{307, 104}, {20, 20}}); // selector lookup on texture atlas
-	m_description = std::make_unique<DescriptionGizmo>(svc, map, m_placement, sf::IntRect{{}, {254, 98}}, sf::FloatRect{{44.f, 30.f}, {312.f, 120.f}});
+	m_description = std::make_unique<DescriptionGizmo>(svc, map, m_placement, sf::IntRect{{}, {254, 98}}, sf::FloatRect{{44.f, 30.f}, {312.f, 120.f}}, sf::Vector2f{374.f, 1600.f});
 }
 
 void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
@@ -52,11 +52,11 @@ void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 		for (auto& piece : player.catalog.inventory.apparel_view()) {
 			if (piece->get_id() == m_current_item_id) {
 				auto const& this_item = piece;
-				m_description->write(svc, this_item->get_title() + ": " + this_item->get_description());
+				m_description->write(svc, this_item->get_title() + ": " + this_item->get_description(), svc.text.fonts.basic);
 				found = true;
 			}
 		}
-		if (!found) { m_description->write(svc, "---"); }
+		if (!found) { m_description->write(svc, "---", svc.text.fonts.basic); }
 	}
 
 	// change outfit if player has selected item

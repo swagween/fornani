@@ -53,8 +53,8 @@ class GameState : public UniquePolymorphic {
 	GameState(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
 
 	virtual void tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine);
-	virtual void frame_update([[maybe_unused]] ServiceProvider& svc) {};
-	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win) {};
+	virtual void frame_update([[maybe_unused]] ServiceProvider& svc) {}
+	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win) {}
 
 	[[nodiscard]] auto is_ready() const -> bool { return flags.test(GameStateFlags::ready); }
 

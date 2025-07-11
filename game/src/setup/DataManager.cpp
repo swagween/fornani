@@ -109,9 +109,6 @@ void DataManager::load_data(std::string in_room) {
 	background = *dj::Json::from_file((finder.resource_path() + "/data/level/background_behaviors.json").c_str());
 	assert(!background.is_null());
 
-	// load item labels
-	// for (auto const& entry : item.object_view()) { m_services->tables.item_labels.insert({entry.second["index"].as<int>(), entry.first.data()}); }
-
 	// load marketplace
 	for (auto const& entry : npc.as_object()) {
 		if (!entry.second["vendor"]) { continue; }
@@ -125,6 +122,7 @@ void DataManager::load_data(std::string in_room) {
 
 	// load item labels
 	for (auto const& [key, entry] : item.as_object()) {
+		if (m_item_labels.contains(entry["id"].as<int>())) { continue; }
 		m_item_labels.insert({entry["id"].as<int>(), key});
 		NANI_LOG_INFO(m_logger, "Loaded data for item {}", key);
 	}

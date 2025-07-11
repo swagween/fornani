@@ -54,10 +54,16 @@ void Console::update(automa::ServiceProvider& svc) {
 	m_npc_portrait.update(svc);
 	m_nani_portrait.update(svc);
 	if (m_item_widget) { m_item_widget->update(svc); }
-	// check for response
+
+	// check for response or message code
 	for (auto& code : m_codes) {
 		if (code.set == m_writer->get_current_suite_set() && code.index == m_writer->get_index()) {
 			if (code.is_response() && m_writer->is_available()) { m_writer->respond(); }
+			if (get_message_code().is_input_hint() && m_writer) {
+				auto action_id = get_message_code().extras ? get_message_code().extras->at(0) : 0;
+				auto lookup = m_services->controller_map.get_icon_lookup_by_action(static_cast<config::DigitalAction>(action_id));
+				m_writer->insert_icon_at(get_message_code().value, lookup);
+			}
 		}
 	}
 }
@@ -174,6 +180,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 			if (get_response_code(m_response->get_selection()).is_suite_return()) { m_writer->set_suite(get_response_code(m_response->get_selection()).value); }
 			if (get_response_code(m_response->get_selection()).is_action()) { handle_actions(get_response_code(m_response->get_selection()).value); }
 			if (get_response_code(m_response->get_selection()).is_item()) { m_services->events.dispatch_event("GivePlayerKeyItem", value, item::ItemType::key, 1); }
+			if (get_response_code(m_response->get_selection()).is_destructible()) { m_services->data.destroy_block(get_response_code(m_response->get_selection()).value); }
 			if (get_response_code(m_response->get_selection()).is_exit()) {
 				end();
 				return;

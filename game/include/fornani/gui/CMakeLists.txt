@@ -7,6 +7,7 @@ nani_add_headers(
         HUD.hpp
         InventoryWindow.hpp
         ItemWidget.hpp
+        OrbDisplay.hpp
         MiniMap.hpp
         MiniMenu.hpp
         PauseWindow.hpp

@@ -1,0 +1,28 @@
+{
+	"<invalid>": {
+		"codes": [
+		],
+		"suite": [
+			[
+				"Failed to get item label from ID!"
+			]
+		],
+		"responses": [
+		]
+	},
+	"bryns_note": {
+		"codes": [
+		],
+		"suite": [
+			[
+				"Dear Nani...",
+				"I'm sorry that it was impossible for me to help any more than this, but I was pressed for time and Skycorps have eyes on me 24/7.",
+				"There is a console in your room that's hooked into the Firstwind's mainframe. If you enter the clearance code, you should be able to open the hatch at the top of your cell. After that, you'll just need to get out alive...",
+				"The clearance code is 25070.",
+				"- Bryn"
+			]
+		],
+		"responses": [
+		]
+	}
+}

@@ -16,6 +16,10 @@ TextManager::TextManager(ResourceFinder& finder)
 	basic = *dj::Json::from_file((finder.resource_path() + "/text/console/basic.json").c_str());
 	assert(!basic.is_null());
 
+	// basic
+	item = *dj::Json::from_file((finder.resource_path() + "/text/console/item.json").c_str());
+	assert(!item.is_null());
+
 	// NPCs
 	npc = *dj::Json::from_file((finder.resource_path() + "/text/console/npc.json").c_str());
 	assert(!npc.is_null());

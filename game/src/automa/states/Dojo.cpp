@@ -10,6 +10,7 @@ static bool item_acquisition{};
 static bool gun_acquisition{};
 static bool item_music_played{};
 static int item_modifier{};
+static bool b_read_item{};
 
 static void trigger_item(int to) {
 	item_acquisition = true;
@@ -19,14 +20,20 @@ static void trigger_gun(int to) {
 	gun_acquisition = true;
 	item_modifier = to;
 }
+static void trigger_read_item(int to) {
+	b_read_item = true;
+	item_modifier = to;
+}
 
-Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameState(svc, player, scene, room_number), map(svc, player), gui_map(svc, player) {
+Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameState(svc, player, scene, room_number), map(svc, player), gui_map(svc, player), m_services(&svc) {
 
 	// register game events
-	svc.events.register_event(new Event<int, item::ItemType, int>("GivePlayerKeyItem", std::bind(&player::Player::give_item_by_id, &player, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)));
-	auto ac = std::bind(&Dojo::acquire_item, &*this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-	svc.events.register_event(new Event<int>("AcquireItem", &trigger_item));
-	svc.events.register_event(new Event<int>("AcquireGun", &trigger_gun));
+	svc.events.register_event(std::make_unique<Event<int, item::ItemType, int>>("GivePlayerKeyItem", std::bind(&player::Player::give_item_by_id, &player, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)));
+	svc.events.register_event(std::make_unique<Event<int>>("ReadItem", &trigger_read_item));
+	svc.events.register_event(std::make_unique<Event<int>>("AcquireItem", &trigger_item));
+	svc.events.register_event(std::make_unique<Event<int>>("AcquireGun", &trigger_gun));
+
+	NANI_LOG_DEBUG(m_logger, "test: {}", svc.data.item_label_from_id(7));
 
 	svc.menu_controller.reset_vendor_dialog();
 	open_vendor = false;
@@ -99,6 +106,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	if (item_acquisition) { acquire_item(svc, *player, item_modifier); }
 	if (gun_acquisition) { acquire_gun(svc, *player, item_modifier); }
+	if (b_read_item) { read_item(item_modifier); }
 	if (!m_console && item_music_played) {
 		svc.music_player.resume();
 		item_music_played = false;
@@ -149,9 +157,12 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	svc.world_clock.update(svc);
 
-	if (inventory_window) {
+	if (inventory_window && !m_console) {
 		inventory_window.value()->update(svc, *player, map);
-		if (inventory_window.value()->exit_requested()) { inventory_window = {}; }
+		if (inventory_window.value()->exit_requested()) {
+			inventory_window = {};
+			svc.music_player.resume();
+		}
 		return;
 	}
 
@@ -221,10 +232,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(*player, win); }
 	if (vendor_dialog) { vendor_dialog.value()->render(svc, win, *player, map); }
-	if (inventory_window) {
-		inventory_window.value()->render(svc, win, *player);
-		return;
-	}
+	if (inventory_window) { inventory_window.value()->render(svc, win, *player); }
 	map.soft_reset.render(win);
 	map.transition.render(win);
 	map.bed_transition.render(win);
@@ -263,6 +271,12 @@ void Dojo::acquire_gun(ServiceProvider& svc, player::Player& player, int modifie
 	svc.music_player.quick_play(svc.finder, "discovery");
 	gun_acquisition = false;
 	item_music_played = true;
+}
+
+void Dojo::read_item(int id) {
+	m_console = std::make_unique<gui::Console>(*m_services, m_services->text.item, m_services->data.item_label_from_id(id), gui::OutputType::gradual);
+	NANI_LOG_DEBUG(m_logger, "Just Read Item.");
+	b_read_item = false;
 }
 
 } // namespace fornani::automa
