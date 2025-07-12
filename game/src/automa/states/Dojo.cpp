@@ -10,11 +10,13 @@ static bool item_acquisition{};
 static bool gun_acquisition{};
 static bool item_music_played{};
 static int item_modifier{};
+static int item_type{};
 static bool b_read_item{};
 
-static void trigger_item(int to) {
+static void trigger_item(int to, int type) {
 	item_acquisition = true;
 	item_modifier = to;
+	item_type = type;
 }
 static void trigger_gun(int to) {
 	gun_acquisition = true;
@@ -30,7 +32,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	// register game events
 	svc.events.register_event(std::make_unique<Event<int, item::ItemType, int>>("GivePlayerKeyItem", std::bind(&player::Player::give_item_by_id, &player, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)));
 	svc.events.register_event(std::make_unique<Event<int>>("ReadItem", &trigger_read_item));
-	svc.events.register_event(std::make_unique<Event<int>>("AcquireItem", &trigger_item));
+	svc.events.register_event(std::make_unique<Event<int, int>>("AcquireItem", &trigger_item));
 	svc.events.register_event(std::make_unique<Event<int>>("AcquireGun", &trigger_gun));
 
 	NANI_LOG_DEBUG(m_logger, "test: {}", svc.data.item_label_from_id(7));
@@ -104,7 +106,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
 
-	if (item_acquisition) { acquire_item(svc, *player, item_modifier); }
+	if (item_acquisition) { acquire_item(svc, *player, item_modifier, static_cast<item::ItemType>(item_type)); }
 	if (gun_acquisition) { acquire_gun(svc, *player, item_modifier); }
 	if (b_read_item) { read_item(item_modifier); }
 	if (!m_console && item_music_played) {
@@ -251,8 +253,8 @@ void Dojo::bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current) {
 	}
 }
 
-void Dojo::acquire_item(ServiceProvider& svc, player::Player& player, int modifier) {
-	player.give_item_by_id(modifier, item::ItemType::key, 1);
+void Dojo::acquire_item(ServiceProvider& svc, player::Player& player, int modifier, item::ItemType type) {
+	player.give_item_by_id(modifier, type, 1);
 	m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
 	m_console.value()->display_item(modifier);
 	m_console.value()->append(player.catalog.inventory.item_view(modifier).get_title());

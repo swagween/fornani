@@ -36,17 +36,15 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 	m_paths.map.set_section("start");
 
 	// populate dashboard depending on the player's inventory
-	auto const& items = svc.data.get_player_items();
-	for (auto& i : items.as_array()) {
-		// if (i["label"].as_string() == "radar_device") { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player)); }
-	}
+
 	auto clock_placement{sf::Vector2f{84.f, 142.f}};
 	auto wardrobe_placement{sf::Vector2f{svc.window->f_screen_dimensions().x + 26.f, 0.f}};
 	auto inventory_placement{sf::Vector2f{-svc.window->f_screen_dimensions().x + 366.f, 32.f}};
+
 	// push gizmos in clockwise order so selection setting will work
-	m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player));
-	m_gizmos.push_back(std::make_unique<WardrobeGizmo>(svc, map, wardrobe_placement)); // have to stick this in the for loop once we have a clock item
-	m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map, clock_placement));	   // have to stick this in the for loop once we have a clock item
+	if (player.catalog.inventory.has_item("radar_device")) { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player)); }
+	m_gizmos.push_back(std::make_unique<WardrobeGizmo>(svc, map, wardrobe_placement));
+	if (player.catalog.inventory.has_item("clock")) { m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map, clock_placement)); }
 	m_gizmos.push_back(std::make_unique<InventoryGizmo>(svc, map, inventory_placement));
 
 	m_sprite.setScale(constants::f_scale_vec);
@@ -75,10 +73,10 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 		case 3: button.position = {-1, 0}; break;
 		}
 		button.state = button.position == m_selected_position ? GizmoButtonState::hovered : GizmoButtonState::off;
-		if (button.state == GizmoButtonState::hovered && m_gizmos.size() > 0) { m_current_port = static_cast<DashboardPort>(ccm::ext::clamp(ctr, 0, static_cast<int>(m_gizmos.size() - 1))); }
+		if (button.state == GizmoButtonState::hovered) { m_current_port = static_cast<DashboardPort>(ccm::ext::clamp(ctr, 0, static_cast<int>(DashboardPort::invalid))); }
 		button.box.setPosition(svc.window->f_center_screen() + pos);
 		button.state == GizmoButtonState::hovered ? button.box.setOutlineColor(colors::bright_orange) : button.box.setOutlineColor(colors::dark_fucshia);
-		// win.draw(button.box);
+
 		++ctr;
 	}
 
@@ -93,6 +91,8 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 	m_constituents.top_right_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {});
 	m_constituents.arsenal_frontplate.render(win, m_sprite, render_position, {});
 	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, player, cam, true); }
+
+	// for (auto& button : m_debug.buttons) { win.draw(button.box); }
 }
 
 bool Dashboard::handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard) {

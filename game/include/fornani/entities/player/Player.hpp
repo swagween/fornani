@@ -139,6 +139,8 @@ class Player {
 	[[nodiscard]] auto get_desired_direction() const -> SimpleDirection { return m_directions.desired; }
 	[[nodiscard]] auto get_actual_direction() const -> SimpleDirection { return m_directions.actual; }
 
+	void set_desired_direction(SimpleDirection to) { m_directions.desired = to; }
+
 	// moves
 	void jump(world::Map& map);
 	void dash();

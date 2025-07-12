@@ -3,8 +3,8 @@
     "beds": [
       {
         "dimensions": [
-          0,
-          0
+          1,
+          1
         ],
         "flipped": true,
         "id": 0,
@@ -15,8 +15,8 @@
       },
       {
         "dimensions": [
-          0,
-          0
+          1,
+          1
         ],
         "flipped": false,
         "id": 0,
@@ -32,11 +32,11 @@
           1,
           1
         ],
-        "id": 1242,
-        "modifier": 12,
+        "id": 234,
+        "modifier": 17,
         "position": [
-          22,
-          10
+          10,
+          11
         ],
         "type": 2
       }

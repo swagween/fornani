@@ -174,7 +174,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		}
 		for (auto& entry : entities["inspectables"].as_array()) {
 			inspectables.push_back(entity::Inspectable(svc, entry, room_id));
-			if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
+			if (svc.data.inspectable_is_destroyed(inspectables.back().get_label())) { inspectables.back().destroy(); }
 		}
 
 		for (auto& entry : entities["enemies"].as_array()) {

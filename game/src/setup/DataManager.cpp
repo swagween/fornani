@@ -234,6 +234,13 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 		this_item["quantity"] = 1;
 		save["player_data"]["items"].push_back(this_item);
 	}
+	for (auto& item : player.catalog.inventory.gizmo_items_view()) {
+		dj::Json this_item{};
+		this_item["label"] = item->get_label();
+		this_item["type"] = static_cast<int>(item->get_type());
+		this_item["quantity"] = 1;
+		save["player_data"]["items"].push_back(this_item);
+	}
 
 	save["save_point_id"] = save_point_id;
 

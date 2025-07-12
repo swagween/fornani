@@ -1,10 +1,18 @@
 
 #include "fornani/entities/world/Inspectable.hpp"
+#include <fornani/systems/EventDispatcher.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/gui/Console.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::entity {
+
+static bool b_destroy{};
+static int b_id{};
+static void destroy_me(int id) {
+	b_destroy = true;
+	b_id = id;
+}
 
 Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int room)
 	: IWorldPositionable({in["position"][0].as<std::uint32_t>(), in["position"][1].as<std::uint32_t>()}, {in["dimensions"][0].as<std::uint32_t>(), in["dimensions"][1].as<std::uint32_t>()}),
@@ -12,24 +20,14 @@ Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int r
 	if (in["activate_on_contact"].as_bool()) { attributes.set(InspectableAttributes::activate_on_contact); }
 	if (in["instant"].as_bool()) { attributes.set(InspectableAttributes::instant); }
 	key = in["key"].as_string();
-	id = key.data() + std::to_string(room);
-	auto nat = in["native_id"].as<int>();
+	m_label = key.data() + std::to_string(room);
+	auto nat = in["id"].as<int>();
 	native_id = nat == 0 ? room : nat;
 	alternates = in["alternates"].as<int>();
 	bounding_box = shape::Shape(get_world_dimensions());
 	bounding_box.set_position(get_world_position());
 	animation.end();
-}
-
-Inspectable::Inspectable(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, std::string_view key, int room_id, int alternates, int native, bool aoc, bool instant)
-	: IWorldPositionable(pos, dim), key(key), alternates(alternates), sprite(svc.assets.get_texture("inspectable_indicator")) {
-	bounding_box = shape::Shape(get_world_dimensions());
-	bounding_box.set_position(get_world_position());
-	animation.end();
-	id = key.data() + std::to_string(room_id);
-	native_id = native == 0 ? room_id : native;
-	if (aoc) { attributes.set(InspectableAttributes::activate_on_contact); }
-	if (instant) { attributes.set(InspectableAttributes::instant); }
+	svc.events.register_event(std::make_unique<Event<int>>("DestroyInspectable", &destroy_me));
 }
 
 void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, dj::Json const& set) {
@@ -38,6 +36,8 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, s
 	animation.update();
 	m_indicator_cooldown.update();
 	if (m_indicator_cooldown.is_almost_complete()) { flags.reset(InspectableFlags::hovered); }
+	if (b_destroy) { destroy_by_id(b_id); }
+	if (flags.test(InspectableFlags::destroy) && !destroyed()) { svc.data.destroy_inspectable(m_label); }
 
 	// check for quest-based alternates
 	auto quest_status = svc.quest.get_progression(fornani::QuestType::inspectable, native_id);
@@ -47,8 +47,7 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, s
 		if (!flags.test(InspectableFlags::hovered)) { flags.set(InspectableFlags::hovered_trigger); }
 		flags.set(InspectableFlags::hovered);
 		if (player.controller.inspecting() || attributes.test(InspectableAttributes::activate_on_contact)) { flags.set(InspectableFlags::activated); }
-	} else {
-		if (!m_indicator_cooldown.running()) { m_indicator_cooldown.start(); }
+		m_indicator_cooldown.start();
 	}
 	if (flags.test(InspectableFlags::activated) && !player.is_busy()) {
 		player.set_busy(true);
@@ -60,14 +59,6 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, s
 	if (flags.test(InspectableFlags::hovered) && flags.consume(InspectableFlags::hovered_trigger) && animation.complete()) { animation.set_params(params); }
 	if (console) {
 		if (console.value()->get_key() == key) { flags.set(InspectableFlags::engaged); }
-	}
-	if (flags.test(InspectableFlags::engaged)) {
-		// if (player.transponder.shipments.quest.get_residue() == 9) {
-		//  TODO: properly handle inspectable codes from console
-		if (0 == 9) {
-			flags.set(InspectableFlags::destroy);
-			svc.data.destroy_inspectable(id);
-		}
 	}
 	if (!console) {
 		flags.reset(InspectableFlags::engaged);

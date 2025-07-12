@@ -179,7 +179,10 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 			auto value = get_response_code(m_response->get_selection()).value;
 			if (get_response_code(m_response->get_selection()).is_suite_return()) { m_writer->set_suite(get_response_code(m_response->get_selection()).value); }
 			if (get_response_code(m_response->get_selection()).is_action()) { handle_actions(get_response_code(m_response->get_selection()).value); }
-			if (get_response_code(m_response->get_selection()).is_item()) { m_services->events.dispatch_event("GivePlayerKeyItem", value, item::ItemType::key, 1); }
+			if (get_response_code(m_response->get_selection()).is_item()) {
+				m_services->events.dispatch_event("GivePlayerKeyItem", value, item::ItemType::key, 1);
+				if (get_response_code(m_response->get_selection()).extras) { m_services->events.dispatch_event("DestroyInspectable", get_response_code(m_response->get_selection()).extras->at(0)); }
+			}
 			if (get_response_code(m_response->get_selection()).is_destructible()) { m_services->data.destroy_block(get_response_code(m_response->get_selection()).value); }
 			if (get_response_code(m_response->get_selection()).is_exit()) {
 				end();

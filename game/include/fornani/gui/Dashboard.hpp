@@ -1,14 +1,13 @@
 
 #pragma once
 
+#include <SFML/Graphics.hpp>
+#include <fornani/io/Logger.hpp>
+#include <vector>
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/gui/Gizmo.hpp"
 #include "fornani/utils/RectPath.hpp"
-
-#include <SFML/Graphics.hpp>
-
-#include <vector>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -81,6 +80,8 @@ class Dashboard {
 		sf::RectangleShape box{};
 		std::vector<GizmoButton> buttons{};
 	} m_debug{};
+
+	io::Logger m_logger{"GUI"};
 };
 
 } // namespace fornani::gui

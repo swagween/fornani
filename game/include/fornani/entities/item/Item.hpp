@@ -19,7 +19,7 @@ struct ItemInformation {
 	std::string actual_description{};
 };
 
-enum class ItemType : std::uint8_t { key, apparel, collectible };
+enum class ItemType : std::uint8_t { key, apparel, collectible, gizmo };
 enum class ItemCategory : std::uint8_t { key, apparel, collectible, gizmo, ability, heart };
 enum class ItemFlags : std::uint8_t { sellable, vendor_spawnable, gizmo, ability, readable };
 enum class ItemState : std::uint8_t { revealed };

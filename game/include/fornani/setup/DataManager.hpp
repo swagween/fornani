@@ -95,10 +95,7 @@ class DataManager {
 		}
 		return false;
 	}
-	[[nodiscard]] auto item_label_from_id(int key) const -> std::string {
-		for (auto& item : m_item_labels) { NANI_LOG_DEBUG(m_logger, "item: [{} : {}]", item.first, item.second); }
-		return m_item_labels.contains(key) ? m_item_labels.at(key) : "<invalid>";
-	}
+	[[nodiscard]] auto item_label_from_id(int key) const -> std::string { return m_item_labels.contains(key) ? m_item_labels.at(key) : "<invalid>"; }
 	[[nodiscard]] auto item_label_view_from_id(int key) const -> std::string_view { return m_item_labels.contains(key) ? m_item_labels.at(key) : "<invalid>"; }
 
 	int get_room_index(int id);

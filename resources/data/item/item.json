@@ -70,6 +70,9 @@
 	},
 	"laboratory_key": {
 		"id": 11,
+		"category": 0,
+		"lookup": [ 7, 0 ],
+		"origin": [ 1, 0 ],
 		"actual_title": "Laboratory Key",
 		"naive_description": "Grants access to Firstwind's research lab.",
 		"unique": true
@@ -106,10 +109,25 @@
 	},
 	"radar_device": {
 		"id": 16,
+		"category": 3,
+		"lookup": [ 15, 0 ],
+		"origin": [ 0, 0 ],
+		"naive_title": "Radar Device",
 		"actual_title": "Radar Device",
-		"naive_description": "A map system. You can view the map by selecting this item, or pressing the designated key ([W] by default).",
-		"unique": true,
-		"usable": true
+		"naive_description": "A map system. It fits perfectly in the top slot of your pocket gizmo.",
+		"actual_description": "A map system. It fits perfectly in the top slot of your pocket gizmo.",
+		"unique": true
+	},
+	"clock": {
+		"id": 17,
+		"category": 3,
+		"lookup": [ 0, 1 ],
+		"origin": [ 1, 0 ],
+		"naive_title": "Clock",
+		"actual_title": "Clock",
+		"naive_description": "A clock that reads the current time of day. It was designed to fit snugly into your pocket gizmo.",
+		"actual_description": "A clock that reads the current time of day. It was designed to fit snugly into your pocket gizmo.",
+		"unique": true
 	},
 	"dog_leash": {
 		"id": 20,

@@ -17,7 +17,7 @@ class Dojo final : public GameState {
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
 	void bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current = false);
-	void acquire_item(ServiceProvider& svc, player::Player& player, int modifier);
+	void acquire_item(ServiceProvider& svc, player::Player& player, int modifier, item::ItemType type);
 	void acquire_gun(ServiceProvider& svc, player::Player& player, int modifier);
 	void read_item(int id);
 

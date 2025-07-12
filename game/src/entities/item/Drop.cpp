@@ -120,7 +120,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	sparkler.update(svc);
 	sparkler.set_position(collider.position());
 
-	sprite_offset = {0.f, static_cast<float>(drop_dimensions.y - sprite_dimensions.y) * 0.5f + 6.f};
+	sprite_offset = {0.f, static_cast<float>(drop_dimensions.y - sprite_dimensions.y) * 0.5f};
 
 	int u{};
 	int v{};

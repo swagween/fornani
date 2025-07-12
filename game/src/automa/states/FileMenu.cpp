@@ -11,6 +11,7 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	hud.orient(svc, player, true); // display hud preview for each file in the center of the screen
 	svc.state_controller.next_state = svc.data.load_progress(player, current_selection.get());
 	player.set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
+	player.set_desired_direction(SimpleDirection(LR::left));
 	player.antennae.at(0).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
 	player.antennae.at(1).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
 	player.hurt_cooldown.cancel();
@@ -30,6 +31,24 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 	if (!m_console) {
+		if (m_file_select_menu) {
+			m_file_select_menu->handle_inputs(svc.controller_map, svc.soundboard);
+		} else {
+			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
+
+				current_selection.modulate(1);
+				svc.data.load_blank_save(*player);
+				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
+				svc.soundboard.flags.menu.set(audio::Menu::shift);
+			}
+			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
+
+				current_selection.modulate(-1);
+				svc.data.load_blank_save(*player);
+				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
+				svc.soundboard.flags.menu.set(audio::Menu::shift);
+			}
+		}
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 			if (m_file_select_menu) {
 				m_file_select_menu = {};
@@ -63,25 +82,6 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			} else {
 				// TODO: pull option strings from a .json to make localization easier in the future
 				m_file_select_menu = gui::MiniMenu(svc, {"play", "stats", "delete"}, options.at(current_selection.get()).position);
-				svc.soundboard.flags.console.set(audio::Console::menu_open);
-			}
-		}
-		if (m_file_select_menu) {
-			m_file_select_menu->handle_inputs(svc.controller_map, svc.soundboard);
-		} else {
-			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
-
-				current_selection.modulate(1);
-				svc.data.load_blank_save(*player);
-				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
-				svc.soundboard.flags.menu.set(audio::Menu::shift);
-			}
-			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
-
-				current_selection.modulate(-1);
-				svc.data.load_blank_save(*player);
-				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
-				svc.soundboard.flags.menu.set(audio::Menu::shift);
 			}
 		}
 	}

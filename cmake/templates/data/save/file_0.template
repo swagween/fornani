@@ -38,7 +38,7 @@
 			},
 			{
 				"label": "radar_device",
-				"type": 0,
+				"type": 3,
 				"quantity": 1
 			},
 			{

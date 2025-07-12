@@ -18,7 +18,7 @@ namespace pi {
 EntitySet::EntitySet(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 
 	create_map.emplace("beds", &create_entity<Bed>);
-	create_map.emplace("chest", &create_entity<Chest>);
+	create_map.emplace("chests", &create_entity<Chest>);
 	create_map.emplace("enemies", &create_entity<Enemy>);
 	create_map.emplace("portals", &create_entity<Portal>);
 	create_map.emplace("platforms", &create_entity<Platform>);

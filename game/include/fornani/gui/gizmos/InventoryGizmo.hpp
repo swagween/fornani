@@ -12,6 +12,13 @@
 namespace fornani::gui {
 
 enum class InventoryGizmoFlags : std::uint8_t { is_item_hovered };
+enum class InventoryZoneType : std::uint8_t { ability, key, collectible, gizmo, COUNT };
+
+struct InventoryZone {
+	sf::Vector2i table_dimensions{};
+	sf::Vector2f cell_size{};
+	sf::Vector2f render_offset{};
+};
 
 class InventoryGizmo : public Gizmo {
   public:
@@ -20,33 +27,37 @@ class InventoryGizmo : public Gizmo {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground = false) override;
 	bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
 	[[nodiscard]] auto is_item_hovered() const -> int { return m_flags.test(InventoryGizmoFlags::is_item_hovered); }
+	[[nodiscard]] auto is(InventoryZoneType type) const -> bool { return static_cast<InventoryZoneType>(m_zone_iterator.get()) == type; }
 
   private:
 	void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 	void on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 
 	void handle_menu_selection(int selection);
+	void switch_zones(int modulation);
+	void write_description(item::Item& piece, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam);
 
-	int m_max_slots;
+	std::array<InventoryZone, static_cast<int>(InventoryZoneType::COUNT)> m_zones;
+	std::array<sf::Vector2i, static_cast<int>(InventoryZoneType::COUNT)> m_remembered_locations{};
+	util::Circuit m_zone_iterator{static_cast<int>(InventoryZoneType::COUNT), static_cast<int>(InventoryZoneType::key)};
+
 	int m_current_item_lookup{};
 	int m_current_item_id{};
 
 	util::RectPath m_path;
 	util::RectPath m_lid_path;
 
-	InventorySelector m_selector;
+	std::unique_ptr<InventorySelector> m_selector;
 	std::unique_ptr<DescriptionGizmo> m_description;
 	OrbDisplay m_orb_display;
 	std::optional<MiniMenu> m_item_menu{};
-
-	sf::Vector2f m_inventory_offset;
 
 	sf::Sprite m_sprite;
 	sf::Sprite m_item_sprite;
 
 	util::BitFlags<InventoryGizmoFlags> m_flags{};
 
-	item::Item* m_current_item;
+	std::optional<item::Item*> m_current_item{};
 	automa::ServiceProvider* m_services;
 };
 

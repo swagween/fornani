@@ -57,8 +57,8 @@ void TextWriter::update() {
 	if (!is_writing()) { return; }
 
 	// append next character to working string
+	if (m_services->ticker.every_x_ticks(16)) { constrain(); }
 	if (m_counters.tick.get_count() % m_writing_speed == 0) {
-		if (m_services->ticker.every_x_ticks(16)) { constrain(); }
 		char const next_char = static_cast<char>(suite.at(m_iterators.current_suite_set).at(m_iterators.index).data.getString().getData()[m_counters.glyph.get_count()]);
 		working_str += next_char;
 		working_message.setString(working_str);
@@ -210,7 +210,7 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	if (m_mode == WriterMode::stall) { return; }
 	static bool show_cursor;
 	static auto blink_rate{24};
-	auto cursor_offset{sf::Vector2f{16.f, 0.f}};
+	auto cursor_offset{sf::Vector2f{8.f, 0.f}};
 	if (m_iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
 	auto& current_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
