@@ -597,8 +597,8 @@
 			"num_hurtboxes": 1,
 			"alert_range": [ 380.0, 64.0 ],
 			"hostile_range": [ 90.0, 32.0 ],
-			"friction": 0.96,
-			"gravity": 10.0
+			"friction": 0.98,
+			"gravity": 16.0
 		},
 		"visual": {
 			"effect_type": 0,
@@ -610,7 +610,7 @@
 		"attributes": {
 			"base_hp": 40,
 			"base_damage": 4.0,
-			"speed": 1.5,
+			"speed": 0.5,
 			"loot_multiplier": 2.0,
 			"drop_range": [ 8, 12 ],
 			"rare_drop_id": 0,

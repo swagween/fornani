@@ -27,9 +27,9 @@
 			"gameplay": {
 				"attributes": {
 					"automatic": false,
-					"ammo": 4,
-					"reload": 160,
-					"cooldown_time": 50,
+					"ammo": 3,
+					"reload": 360,
+					"cooldown_time": 36,
 					"recoil": 0.0
 				}
 			},
@@ -341,6 +341,70 @@
 						"num_sprites": 1,
 						"num_frames": 1,
 						"framerate": 18
+					}
+				}
+			}
+		},
+		{
+			"metadata": {
+				"label": "Skycorps SMG",
+				"tag": "skycorps_smg"
+			},
+			"visual": {
+				"texture_lookup": 0,
+				"dimensions": [ 18, 8 ],
+				"offsets": {
+					"global": [ 0.0, 0.0 ],
+					"barrel": [ 0.0, 0.0 ],
+					"stock": [ 0, 0 ]
+				},
+				"spray": {
+					"dimensions": [ 2.0, 2.0 ],
+					"type": "fast_burst",
+					"color": "goldenrod"
+				},
+				"secondary_spray": {
+					"dimensions": [ 4.0, 4.0 ],
+					"type": "peckett",
+					"color": "white"
+				}
+			},
+			"gameplay": {
+				"attributes": {
+					"automatic": false,
+					"ammo": 8,
+					"reload": 160,
+					"cooldown_time": 16,
+					"recoil": 0.0
+				}
+			},
+			"audio": { "shoot": 2 },
+			"class_package": {
+				"projectile": {
+					"type": 0,
+					"dimensions": [
+						14.0,
+						14.0
+					],
+					"attributes": {
+						"base_damage": 1,
+						"lifespan": 440,
+						"lifespan_variance": 80,
+						"speed": 14.5,
+						"variance": 0.4,
+						"stun_time": 0.0,
+						"knockback": 0.0,
+						"transcendent": false,
+						"persistent": false,
+						"constrained": false,
+						"range_variance": 0.0,
+						"acceleration_factor": 0.0,
+						"dampen_factor": 0.996
+					},
+					"animation": {
+						"num_sprites": 1,
+						"num_frames": 4,
+						"framerate": 24
 					}
 				}
 			}

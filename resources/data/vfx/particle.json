@@ -293,6 +293,24 @@
 		"color": "save"
 	},
 
+	"dash": {
+		"load": 3,
+		"rate": 2.0,
+		"expulsion": 4.0,
+		"expulsion_variance": 3.0,
+		"cone": 0.98,
+		"friction": 0.999,
+		"elasticity": 0.0,
+		"gravity": 0.0,
+		"lifespan": 160,
+		"lifespan_variance": 90,
+		"dimensions": [ 3, 3 ],
+		"animated": false,
+		"colliding": false,
+		"fader": true,
+		"color": "save"
+	},
+
 	"smoke": {
 		"load": 2,
 		"rate": 4.0,

@@ -8,7 +8,7 @@
 namespace fornani::enemy {
 
 Tank::Tank(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, "tank"), m_variant{static_cast<TankVariant>(variant)}, m_weapon(svc, 0), m_services(&svc), m_map(&map), m_gun{svc.assets.get_texture("tank_gun"), 2.0f, 0.65f, {-12.f, 6.f}} {
+	: Enemy(svc, "tank"), m_variant{static_cast<TankVariant>(variant)}, m_weapon(svc, 6), m_services(&svc), m_map(&map), m_gun{svc.assets.get_texture("tank_gun"), 2.0f, 0.65f, {-12.f, 6.f}} {
 	animation.set_params(idle);
 	m_gun.set_magnitude(1.f);
 	m_weapon.clip_cooldown_time = 360;
@@ -80,8 +80,8 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	if (hostility_triggered() || alertness_triggered()) { m_cooldowns.alerted.start(); }
 	// try to go find a seat
 	if (!has_been_alerted()) {
-		if (flags.state.test(StateFlags::advance)) { request(TankState::run); }
 		if (seek_home(map)) { m_variant == TankVariant::typist ? request(TankState::type) : request(TankState::sleep); }
+		if (flags.state.test(StateFlags::advance)) { request(TankState::run); }
 	} else {
 		face_player(player);
 	}
@@ -154,8 +154,8 @@ fsm::StateFunction Tank::update_type() {
 	}
 	if (hostility_triggered()) { request(TankState::alert); }
 	if (is_hurt()) { request(TankState::alert); }
-	// if (ccm::abs(collider.physics.actual_velocity().x) > 0.01f) { request(TankState::idle); }
 	if (change_state(TankState::alert, alert)) { return TANK_BIND(update_alert); }
+	if (change_state(TankState::run, run)) { return TANK_BIND(update_run); }
 	if (change_state(TankState::idle, idle)) { return TANK_BIND(update_idle); }
 	return TANK_BIND(update_type);
 }
@@ -207,7 +207,7 @@ fsm::StateFunction Tank::update_shoot_horizontal() {
 	m_state.actual = TankState::shoot_horizontal;
 	m_flags.set(TankFlags::show_weapon);
 	if (change_state(TankState::turn, turn)) { return TANK_BIND(update_turn); }
-	if (!m_weapon.get().cooling_down() && animation.get_frame_count() == 0) {
+	if (!m_weapon.get().cooling_down() && animation.get_frame_count() == 2) {
 		m_weapon.shoot(*m_services, *m_map);
 		m_gun.set_position(m_gun.get_position() + directions.actual.get_vector() * -18.f);
 	}

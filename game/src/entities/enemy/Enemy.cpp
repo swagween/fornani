@@ -229,9 +229,12 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 	if (proj.get_team() == arms::Team::guardian) { return; }
 	if (proj.get_team() == arms::Team::beast) { return; }
 	if (flags.state.test(StateFlags::invisible)) { return; }
-	if (!(proj.get_bounding_box().overlaps(collider.bounding_box) || proj.get_bounding_box().overlaps(secondary_collider.bounding_box))) { return; }
+	auto hit_main = proj.get_bounding_box().overlaps(collider.bounding_box);
+	auto hit_second = proj.get_bounding_box().overlaps(secondary_collider.bounding_box);
+	if (!(hit_main || hit_second)) { return; }
 	flags.state.set(enemy::StateFlags::shot);
-	if (((proj.get_bounding_box().overlaps(secondary_collider.bounding_box) && flags.general.test(GeneralFlags::invincible_secondary)) || !flags.state.test(enemy::StateFlags::vulnerable)) && !died()) {
+	auto secondary_collision = hit_second && !hit_main;
+	if (((secondary_collision && flags.general.test(GeneralFlags::invincible_secondary)) || !flags.state.test(enemy::StateFlags::vulnerable)) && !died()) {
 		map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position(), {}, 0, 6));
 		svc.soundboard.flags.world.set(audio::World::hard_hit);
 	} else if (flags.state.test(enemy::StateFlags::vulnerable) && !died()) {
@@ -263,9 +266,9 @@ void Enemy::on_crush(world::Map& map) {
 bool Enemy::seek_home(world::Map& map) {
 	auto distance = std::numeric_limits<float>::max();
 	auto my_point = sf::Vector2f{};
+	for (auto home : map.home_points) { distance = std::min(distance, (home - physical.home_detector.get_center()).length()); }
 	for (auto home : map.home_points) {
-		distance = std::min(distance, (home - physical.home_detector.get_center()).length());
-		if (distance < std::numeric_limits<float>::max()) { my_point = home; }
+		if ((home - physical.home_detector.get_center()).length() <= distance && distance < 2048.f) { my_point = home; }
 	}
 
 	// my_point is our target
@@ -273,7 +276,6 @@ bool Enemy::seek_home(world::Map& map) {
 	if (my_point.length() > 0.1f) {
 		flags.state.set(StateFlags::advance);
 		directions.desired.set((my_point.x < collider.get_center().x) ? LNR::left : LNR::right);
-		NANI_LOG_DEBUG(m_logger, "{}", directions.desired.print_lnr());
 	}
 	if (physical.home_detector.overlaps(my_point)) {
 		flags.state.reset(StateFlags::advance);

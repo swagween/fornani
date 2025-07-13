@@ -14,7 +14,7 @@ namespace fornani::player {
 static void test_event(std::string_view s, item::ItemType typ, int a) {}
 
 Player::Player(automa::ServiceProvider& svc)
-	: arsenal(svc), m_services(&svc), controller(svc), animation(*this), sprite{svc.assets.get_texture("nani")}, camera_offset{32.f, -64.f}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{8},
+	: arsenal(svc), m_services(&svc), controller(svc), animation(*this), sprite{svc.assets.get_texture("nani")}, camera_offset{32.f, -64.f}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},
 	  m_directions{.desired{LR::left}, .actual{LR::right}}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, collider{player_dimensions_v} {
 	sprite.setScale(constants::f_scale_vec);
 	svc.data.load_player_params(*this);
@@ -93,7 +93,6 @@ void Player::update(world::Map& map) {
 
 	// player-controlled actions
 	if (hotbar) { hotbar.value().switch_weapon(*m_services, static_cast<int>(controller.arms_switch())); }
-	// jump(map);
 	wallslide();
 	update_animation();
 	update_sprite();
@@ -126,7 +125,9 @@ void Player::update(world::Map& map) {
 	if (orb_indicator.active()) { health_indicator.shift(); }
 	update_invincibility();
 	update_weapon();
-
+	if (controller.is_dashing() && m_services->ticker.every_x_ticks(8)) {
+		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.get_center() - sf::Vector2f{0.f, 4.f}, sf::Vector2f{8.f, 8.f}, "dash", colors::ui_white, get_actual_direction()));
+	}
 	if (animation.is_state(AnimState::slide) && m_services->ticker.every_x_ticks(12)) {
 		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "slide", colors::ui_white, Direction(UND::up)));
 	}
@@ -158,9 +159,6 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 	// dashing effect
 	sprite.setPosition(sprite_position);
-	if (svc.ticker.every_x_frames(4) && animation.is_state(AnimState::dash)) { dash_effect.update(sprite, collider.physics.position); }
-	if (svc.ticker.every_x_frames(12)) { dash_effect.flush(); }
-	dash_effect.drag(win, cam);
 
 	// get UV coords
 	auto frames_per_col = 10;

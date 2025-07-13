@@ -21,16 +21,16 @@
       "room_id": 103
     },
     {
+      "label": "barracks.json",
+      "room_id": 102
+    },
+    {
       "label": "deck.json",
       "room_id": 106
     },
     {
       "label": "prison.json",
       "room_id": 100
-    },
-    {
-      "label": "vent.json",
-      "room_id": 102
     },
     {
       "label": "border_test.json",

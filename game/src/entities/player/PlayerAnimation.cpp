@@ -419,10 +419,12 @@ fsm::StateFunction PlayerAnimation::update_hurt() {
 fsm::StateFunction PlayerAnimation::update_dash() {
 	animation.label = "dash";
 	m_actual = AnimState::dash;
+	m_player->flags.state.reset(State::show_weapon);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"))) { return PA_BIND(update_wallslide); }
 	if (animation.complete()) {
+		m_player->flags.state.set(State::show_weapon);
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 		if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }

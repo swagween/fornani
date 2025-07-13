@@ -180,7 +180,7 @@
 						"power": 1,
 						"lifespan": 100,
 						"lifespan_variance": 0,
-						"speed": 24.5,
+						"speed": 18.5,
 						"variance": 0.2,
 						"stun_time": 0.0,
 						"knockback": 0.0,
@@ -189,7 +189,7 @@
 						"constrained": false,
 						"range_variance": 8.0,
 						"acceleration_factor": 0.0,
-						"dampen_factor": 0.998
+						"dampen_factor": 0.999
 					},
 					"animation": {
 						"num_sprites": 5,

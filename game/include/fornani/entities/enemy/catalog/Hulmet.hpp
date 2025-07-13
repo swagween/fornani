@@ -8,7 +8,7 @@
 
 namespace fornani::enemy {
 
-enum class HulmetState { idle, turn, run, jump, alert, sleep, shoot, roll };
+enum class HulmetState { idle, turn, run, jump, alert, sleep, shoot, roll, panic, reload };
 enum class HulmetVariant { gunner, bodyguard };
 
 class Hulmet final : public Enemy {
@@ -26,6 +26,8 @@ class Hulmet final : public Enemy {
 	fsm::StateFunction update_sleep();
 	fsm::StateFunction update_shoot();
 	fsm::StateFunction update_roll();
+	fsm::StateFunction update_panic();
+	fsm::StateFunction update_reload();
 
 	[[nodiscard]] auto is_mid_run() { return m_cooldowns.run.is_almost_complete(); }
 
@@ -51,7 +53,7 @@ class Hulmet final : public Enemy {
 		util::Cooldown post_fire{400};
 		util::Cooldown alerted{1600};
 		util::Cooldown post_jump{200};
-		util::Cooldown post_roll{60};
+		util::Cooldown post_roll{200};
 		util::Cooldown run{80};
 	} m_cooldowns{};
 
@@ -65,9 +67,11 @@ class Hulmet final : public Enemy {
 		anim::Parameters sleep{14, 6, 64, 3};
 		anim::Parameters alert{20, 6, 24, 0};
 		anim::Parameters shoot{28, 3, 24, 1};
+		anim::Parameters panic{31, 7, 24, 0};
+		anim::Parameters reload{38, 5, 64, 0};
 	} m_animations{};
 
-	float m_jump_force{-64.f};
+	float m_jump_force;
 	int m_jump_time{4};
 
 	automa::ServiceProvider* m_services;

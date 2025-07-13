@@ -20,7 +20,7 @@ void SpriteHistory::drag(sf::RenderWindow& win, sf::Vector2f cam) {
 	auto a{m_dimness_limit};
 	auto range{0.f};
 	for (auto& pair : m_pairs) {
-		pair.first.setColor(sf::Color(255, 255, 255, a));
+		pair.first.setColor(sf::Color(180, 180, 255, a));
 		pair.first.setPosition(pair.second - cam);
 		win.draw(pair.first);
 		a = ccm::lerp(m_dimness_limit, 255, range);
