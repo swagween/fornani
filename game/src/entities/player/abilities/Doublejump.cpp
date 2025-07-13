@@ -12,13 +12,15 @@ Doublejump::Doublejump(automa::ServiceProvider& svc, world::Map& map, shape::Col
 	m_state = AnimState::backflip;
 	svc.soundboard.flags.player.set(audio::Player::jump);
 	map.effects.push_back(entity::Effect(svc, "doublejump", collider.get_center() - sf::Vector2f{0.f, 8.f}, sf::Vector2f{collider.physics.velocity.x * 0.1f, 0.f}, 0, 9));
-	m_duration.start(6);
+	m_duration.start(256);
 }
 
 void Doublejump::update(shape::Collider& collider, PlayerController& controller) {
+	if (!m_flags.test(AbilityFlags::active)) {
+		collider.physics.acceleration.y = m_vertical_multiplier;
+		collider.physics.velocity.y = 0.f;
+	}
 	Ability::update(collider, controller);
-	collider.physics.acceleration.y = m_vertical_multiplier;
-	collider.physics.velocity.y = 0.f;
 }
 
 } // namespace fornani::player

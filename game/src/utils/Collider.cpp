@@ -364,6 +364,7 @@ void Collider::handle_collider_collision(Collider const& collider, bool soft, bo
 	if (handle_collider_collision(collider.bounding_box, soft, collider.physics.apparent_velocity() * 4.f)) {
 		if (momentum) { physics.forced_momentum = collider.physics.position - collider.physics.previous_position; }
 	}
+	if (jumpbox.overlaps(collider.bounding_box)) { flags.external_state.set(ExternalState::grounded); }
 }
 
 void Collider::update(automa::ServiceProvider& svc) {

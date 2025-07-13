@@ -1,82 +1,36 @@
-#include "fornani/entities/player/abilities/Jump.hpp"
+
+#include <fornani/entities/player/PlayerController.hpp>
+#include <fornani/entities/player/abilities/Jump.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/utils/Collider.hpp>
+#include <fornani/world/Map.hpp>
 
 namespace fornani::player {
 
-void Jump::update() {
-	cooldown.update();
-	if (!cooldown.is_complete()) {
-		states.set(JumpState::jump_began);
-		coyote_time.cancel();
-	} else {
-		states.reset(JumpState::jump_began);
+Jump::Jump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider) : Ability(svc, map, collider), m_request{12}, m_multiplier{-13.76f}, m_soundboard{&svc.soundboard} {
+	m_type = AbilityType::jump;
+	m_state = AnimState::rise;
+	m_duration.start(256);
+	m_request.start();
+}
+
+void Jump::update(shape::Collider& collider, PlayerController& controller) {
+	if (m_request.running()) {
+		m_request.update();
+		if (controller.grounded()) {
+			m_soundboard->flags.player.set(audio::Player::jump);
+			m_request.cancel();
+		} else {
+			if (m_request.is_complete()) { m_flags.set(AbilityFlags::failed); }
+			if (m_request.is_complete() && !failed()) { m_soundboard->flags.player.set(audio::Player::jump); }
+			return;
+		}
 	}
-	request.update();
-	coyote_time.update();
+	if (!m_flags.test(AbilityFlags::active)) {
+		collider.physics.acceleration.y = m_multiplier;
+		collider.physics.velocity.y = 0.f;
+	}
+	Ability::update(collider, controller);
 }
-
-void Jump::reset_triggers() { triggers = {}; }
-
-void Jump::reset_all() {
-	triggers = {};
-	states = {};
-}
-
-void Jump::request_jump() { request.start(request_time); }
-
-void Jump::cancel() {
-	triggers.set(JumpTrigger::is_released);
-	states.reset(JumpState::jump_held);
-	states.set(JumpState::jumping);
-}
-
-void Jump::prevent() { request.cancel(); }
-
-void Jump::start() {
-	cooldown.start(cooldown_time);
-	states.set(player::JumpState::jumping);
-	triggers.reset(player::JumpTrigger::just_jumped);
-}
-
-void Jump::reset() {
-	states.reset(player::JumpState::jumping);
-	triggers.reset(player::JumpTrigger::is_released);
-}
-
-void Jump::start_jumpsquat() {
-	triggers.set(player::JumpTrigger::jumpsquat);
-	states.set(player::JumpState::jumpsquatting);
-}
-
-void Jump::stop_jumpsquatting() { states.reset(player::JumpState::jumpsquatting); }
-
-void Jump::reset_jumpsquat_trigger() { triggers.reset(player::JumpTrigger::jumpsquat); }
-
-void Jump::reset_just_jumped() { triggers.reset(player::JumpTrigger::just_jumped); }
-
-void Jump::reset_jumping() { states.reset(player::JumpState::jumping); }
-
-bool Jump::requested() const { return !request.is_complete(); }
-
-bool Jump::launched() const { return !cooldown.is_complete(); }
-
-bool Jump::released() const { return triggers.test(player::JumpTrigger::is_released) && states.test(player::JumpState::jumping); }
-
-bool Jump::began() const { return states.test(player::JumpState::jump_began); }
-
-bool Jump::can_jump() const { return states.test(player::JumpState::can_jump); }
-
-bool Jump::jumping() const { return states.test(player::JumpState::jumping); }
-
-bool Jump::just_jumped() const { return triggers.test(player::JumpTrigger::just_jumped); }
-
-bool Jump::held() const { return states.test(player::JumpState::jump_held); }
-
-bool Jump::jumpsquatting() const { return states.test(player::JumpState::jumpsquatting); }
-
-bool Jump::jumpsquat_trigger() const { return triggers.test(player::JumpTrigger::jumpsquat); }
-
-int Jump::get_request() const { return request.get(); }
-
-int Jump::get() const { return cooldown.get(); }
 
 } // namespace fornani::player

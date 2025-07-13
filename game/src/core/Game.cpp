@@ -382,15 +382,12 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Separator();
 								ImGui::Text("World Grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");
 								ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
-								ImGui::Text("Coyote Time: %i", player.controller.get_jump().get_coyote());
 								ImGui::Text("Push Time: %i", player.cooldowns.push.get());
 								ImGui::Separator();
 								ImGui::Text("Jump");
 								ImGui::Separator();
 								ImGui::Text("Jumping? %s", player.collider.jumping() ? "Yes" : "No");
-								ImGui::Text("Can Jump? %s", player.controller.can_jump() ? "Yes" : "No");
-								ImGui::Text("Jump Count: %i", player.controller.get_jump().get_count());
-								ImGui::Text("Jump Request: %i", player.controller.get_jump().get_request());
+								ImGui::Text("Can Jump? %s", player.can_jump() ? "Yes" : "No");
 								ImGui::Text("Downhill? %s", player.collider.downhill() ? "Yes" : "No");
 								ImGui::Text("Wallsliding? %s", player.controller.get_wallslide().is_wallsliding() ? "Yes" : "No");
 								ImGui::Text("On Ramp? %s", player.collider.on_ramp() ? "Yes" : "No");

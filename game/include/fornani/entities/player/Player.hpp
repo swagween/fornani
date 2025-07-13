@@ -23,6 +23,10 @@
 #include "fornani/utils/QuestCode.hpp"
 #include "fornani/weapon/Hotbar.hpp"
 
+namespace fornani {
+class Game;
+}
+
 namespace fornani::gui {
 class Console;
 class InventoryWindow;
@@ -104,6 +108,7 @@ class Player {
 
 	friend class PlayerController;
 	friend class PlayerAnimation;
+	friend class fornani::Game;
 
 	// member functions
 	void update(world::Map& map);
@@ -145,8 +150,6 @@ class Player {
 	void set_desired_direction(SimpleDirection to) { m_directions.desired = to; }
 
 	// moves
-	void jump(world::Map& map);
-	void dash();
 	void wallslide();
 
 	void set_position(sf::Vector2f new_pos, bool centered = false);
@@ -253,6 +256,7 @@ class Player {
 	[[nodiscard]] auto can_dash() const -> bool;
 	[[nodiscard]] auto can_doublejump() const -> bool;
 	[[nodiscard]] auto can_roll() const -> bool;
+	[[nodiscard]] auto can_jump() const -> bool;
 
 	struct {
 		float stop{5.8f};

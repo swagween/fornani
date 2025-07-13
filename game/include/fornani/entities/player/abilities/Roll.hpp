@@ -2,10 +2,6 @@
 
 #include <fornani/entities/player/abilities/Ability.hpp>
 
-namespace fornani::audio {
-class Soundboard;
-}
-
 namespace fornani::player {
 class Roll : public Ability {
   public:

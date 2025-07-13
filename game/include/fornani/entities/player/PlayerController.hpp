@@ -38,6 +38,7 @@ enum class Sprint : std::uint8_t { released };
 class PlayerController {
 
   public:
+	friend class Player;
 	explicit PlayerController(automa::ServiceProvider& svc);
 
 	void update(automa::ServiceProvider& svc, world::Map& map, Player& player);
@@ -63,6 +64,8 @@ class PlayerController {
 	[[nodiscard]] auto last_requested_direction() -> SimpleDirection const& { return m_last_requested_direction; }
 	[[nodiscard]] auto is_dashing() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::dash) : false; }
 	[[nodiscard]] auto is_ability_active() const -> bool { return m_ability ? m_ability.value()->is_active() : false; }
+	[[nodiscard]] auto is_ability_cancelled() const -> bool { return m_ability ? m_ability.value()->cancelled() : false; }
+	[[nodiscard]] auto is_animation_request() const -> bool { return m_ability ? m_ability.value()->is_animation_request() : false; }
 
 	[[nodiscard]] auto nothing_pressed() -> bool { return key_map[ControllerInput::move_x] == 0.f && key_map[ControllerInput::jump] == 0.f && key_map[ControllerInput::inspect] == 0.f; }
 	[[nodiscard]] auto moving() -> bool { return key_map[ControllerInput::move_x] != 0.f; }
@@ -87,7 +90,6 @@ class PlayerController {
 	[[nodiscard]] auto has_arsenal() const -> bool { return hard_state.test(HardState::has_arsenal); }
 	[[nodiscard]] auto hook_held() const -> bool { return hook_flags.test(Hook::hook_held); }
 	[[nodiscard]] auto inspecting() -> bool { return key_map[ControllerInput::inspect] == 1.f; }
-	[[nodiscard]] auto can_jump() const -> bool { return (flags.test(MovementState::grounded) || jump.coyote()) || jump.can_doublejump() || wallslide.is_wallsliding(); }
 	[[nodiscard]] auto sprint_released() const -> bool { return sprint_flags.test(Sprint::released); }
 
 	[[nodiscard]] auto vertical_movement() -> float { return key_map[ControllerInput::move_y]; }
@@ -95,13 +97,14 @@ class PlayerController {
 	[[nodiscard]] auto sliding_movement() -> float { return key_map[ControllerInput::slide]; }
 	[[nodiscard]] auto arms_switch() -> float { return key_map[ControllerInput::arms_switch]; }
 
-	[[nodiscard]] auto get_jump() -> Jump& { return jump; }
 	[[nodiscard]] auto get_wallslide() -> Wallslide& { return wallslide; }
 	[[nodiscard]] auto get_slide() -> Slide& { return slide; }
 
 	Direction direction{};
 
   private:
+	void flush_ability() { m_ability = {}; }
+
 	std::unordered_map<ControllerInput, float> key_map{};
 	util::BitFlags<MovementState> flags{};	// unused
 	util::BitFlags<HardState> hard_state{}; // unused
@@ -112,7 +115,6 @@ class PlayerController {
 
 	std::optional<std::unique_ptr<Ability>> m_ability{};
 
-	Jump jump{};
 	Wallslide wallslide{};
 	Slide slide{};
 

@@ -25,7 +25,6 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	}
 	if (hard_state.test(HardState::no_move)) {
 		key_map = {};
-		jump = {};
 		return;
 	}
 	if (walking_autonomously()) { return; }
@@ -86,9 +85,9 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		}
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).triggered) {
-		if (player.can_doublejump() && !jump.coyote()) {
+		if (player.can_jump()) { m_ability = std::make_unique<Jump>(svc, map, player.collider); }
+		if (player.can_doublejump()) {
 			m_ability = std::make_unique<Doublejump>(svc, map, player.collider);
-			NANI_LOG_DEBUG(m_logger, "double jumped!");
 			player.m_ability_usage.doublejump.update();
 		}
 	}
@@ -97,6 +96,15 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	}
 	if (m_ability) {
 		m_ability.value()->update(player.collider, *this);
+
+		// stop rising if player releases jump control
+		if (m_ability.value()->is(AbilityType::jump) || m_ability.value()->is(AbilityType::doublejump)) {
+			if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).released) { m_ability.value()->cancel(); }
+			if (m_ability.value()->cancelled() && player.collider.physics.apparent_velocity().y < 0.0f) {
+				player.collider.physics.acceleration.y *= player.physics_stats.jump_release_multiplier;
+				m_ability.value()->fail();
+			}
+		}
 		if (m_ability.value()->is_done() || m_ability.value()->failed()) { m_ability = {}; }
 	}
 	/* end abilities */
@@ -160,7 +168,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 
 	key_map[ControllerInput::inspect] = inspected ? 1.f : 0.f;
 
-	bool can_launch = !restricted() && (flags.test(MovementState::grounded) || wallslide.is_wallsliding()) && !jump.launched();
+	/*bool can_launch = !restricted() && (flags.test(MovementState::grounded) || wallslide.is_wallsliding()) && !jump.launched();
 	can_launch ? jump.states.set(JumpState::can_jump) : jump.states.reset(JumpState::can_jump);
 
 	if (jump_started) { jump.request_jump(); }
@@ -179,7 +187,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		jump.start_coyote();
 		jump.jump_counter.start();
 	}
-	jump.update();
+	jump.update();*/
 }
 
 void PlayerController::clean() {
@@ -232,8 +240,6 @@ void PlayerController::prevent_movement() {
 	key_map[ControllerInput::jump] = 0.f;
 	key_map[ControllerInput::sprint] = 0.f;
 	key_map[ControllerInput::slide] = 0.f;
-	jump.reset_all();
-	jump.prevent();
 	flags.set(MovementState::restricted);
 }
 

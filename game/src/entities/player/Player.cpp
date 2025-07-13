@@ -68,10 +68,8 @@ void Player::update(world::Map& map) {
 	update_direction();
 	grounded() ? controller.ground() : controller.unground();
 
-	// if (!catalog.abilities.has_ability(AbilityType::doublejump)) { controller.get_jump().jump_counter.cancel(); }
-
 	controller.update(*m_services, map, *this);
-	if (collider.hit_ceiling_ramp()) { controller.get_jump().cancel(); }
+	if (collider.hit_ceiling_ramp()) { controller.flush_ability(); }
 
 	// do this elsehwere later
 	if (collider.flags.state.test(shape::State::just_landed)) {
@@ -95,13 +93,13 @@ void Player::update(world::Map& map) {
 
 	// player-controlled actions
 	if (hotbar) { hotbar.value().switch_weapon(*m_services, static_cast<int>(controller.arms_switch())); }
-	jump(map);
+	// jump(map);
 	wallslide();
 	update_animation();
 	update_sprite();
 
 	// check keystate
-	if (!controller.get_jump().jumpsquatting()) { walk(); }
+	walk();
 	if (!controller.moving() && (!force_cooldown.running() || collider.world_grounded())) { collider.physics.acceleration.x = 0.0f; }
 
 	// weapon
@@ -153,7 +151,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	calculate_sprite_offset();
 	if (flags.state.test(State::crushed)) { return; }
 	// debug
-	collider.colors.local = controller.can_jump() ? colors::green : colors::green;
+	collider.colors.local = can_jump() ? colors::green : colors::green;
 
 	// piggybacker
 	if (piggybacker) { piggybacker.value().render(svc, win, cam); }
@@ -237,12 +235,12 @@ void Player::update_animation() {
 
 	if (collider.physics.apparent_velocity().y > thresholds.suspend && !grounded()) { animation.request(AnimState::fall); }
 
-	if (controller.get_ability_animation() && controller.is_ability_active()) { animation.request(*controller.get_ability_animation()); }
+	if (controller.get_ability_animation() && controller.is_ability_active() && controller.is_animation_request()) { animation.request(*controller.get_ability_animation()); }
 
 	if (catalog.abilities.has_ability(AbilityType::wallslide)) {
 		if (controller.get_wallslide().is_wallsliding()) { animation.request(AnimState::wallslide); }
 	}
-	if (controller.moving() && grounded() && controller.can_jump()) {
+	if (controller.moving() && grounded()) {
 		if (collider.has_left_wallslide_collision() && controller.horizontal_movement() < 0.f) { cooldowns.push.update(); }
 		if (collider.has_right_wallslide_collision() && controller.horizontal_movement() > 0.f) { cooldowns.push.update(); }
 		if (cooldowns.push.is_complete() && (collider.has_right_wallslide_collision() || collider.has_left_wallslide_collision())) { animation.request(AnimState::push); }
@@ -301,50 +299,6 @@ void Player::set_idle() {
 }
 
 void Player::piggyback(int id) { piggybacker = Piggybacker(*m_services, m_services->tables.npc_label.at(id), collider.physics.position); }
-
-void Player::jump(world::Map& map) {
-	if (is_dead() || animation.is_state(AnimState::die)) { return; }
-	if (is_in_animation(AnimState::sleep) || is_in_animation(AnimState::wake_up)) { return; }
-	if (controller.get_jump().began()) {
-		collider.flags.movement.set(shape::Movement::jumping);
-		animation.request(AnimState::rise);
-		if (controller.get_wallslide().is_wallsliding()) { controller.walljump(); }
-		if (m_services->ticker.every_x_ticks(20)) { map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "jump", colors::ui_white, Direction(UND::up))); }
-	} else {
-		collider.flags.movement.reset(shape::Movement::jumping);
-	}
-	if (controller.get_jump().jumpsquat_trigger()) {
-		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "jump", colors::ui_white, Direction(UND::up)));
-		controller.get_jump().start_jumpsquat();
-		controller.get_jump().reset_jumpsquat_trigger();
-		collider.flags.movement.set(shape::Movement::jumping);
-	}
-	if (controller.get_jump().jumpsquatting()) {
-		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "jump", colors::ui_white, Direction(UND::up)));
-		controller.get_jump().stop_jumpsquatting();
-		controller.get_jump().start();
-		collider.physics.acceleration.y = -physics_stats.jump_velocity;
-		collider.physics.velocity.y = 0.f;
-		animation.request(AnimState::rise);
-		if (controller.get_wallslide().is_wallsliding()) { controller.walljump(); }
-		controller.get_wallslide().is_wallsliding() ? m_services->soundboard.flags.player.set(audio::Player::walljump) : m_services->soundboard.flags.player.set(audio::Player::jump);
-		collider.flags.movement.set(shape::Movement::jumping);
-	} else if (controller.get_jump().released() && controller.get_jump().jumping() && !controller.get_jump().held() && collider.physics.apparent_velocity().y < 0.0f) {
-		collider.physics.acceleration.y *= physics_stats.jump_release_multiplier;
-		controller.get_jump().reset();
-	}
-	if (collider.flags.state.test(shape::State::just_landed)) { controller.get_jump().reset_jumping(); }
-	/*if (catalog.abilities.has_ability(AbilityType::doublejump)) {
-		if (controller.get_jump().just_doublejumped()) {
-			collider.physics.velocity.y = 0.f;
-			controller.get_jump().doublejump();
-			m_services->soundboard.flags.player.set(audio::Player::jump);
-			map.effects.push_back(entity::Effect(*m_services, "doublejump", sprite_position, sf::Vector2f{collider.physics.velocity.x * 0.1f, 0.f}, 0, 9));
-			controller.stop_dashing();
-		}
-		if (controller.get_jump().is_doublejump()) { animation.request(AnimState::backflip); }
-	}*/
-}
 
 void Player::wallslide() {
 	if (!catalog.abilities.has_ability(AbilityType::wallslide)) { return; }
@@ -637,6 +591,7 @@ void Player::pop_from_loadout(int id) {
 SimpleDirection Player::entered_from() const { return (collider.physics.position.x < constants::f_cell_size * 8.f) ? SimpleDirection(LR::right) : SimpleDirection(LR::left); }
 
 bool Player::can_dash() const {
+	if (health.is_dead()) { return false; }
 	if (!catalog.inventory.has_item("old_ivory_amulet")) { return false; }
 	if (grounded()) { return false; }
 	if (m_ability_usage.dash.get_count() > 0) { return false; }
@@ -644,6 +599,7 @@ bool Player::can_dash() const {
 }
 
 bool Player::can_doublejump() const {
+	if (health.is_dead()) { return false; }
 	if (!catalog.inventory.has_item("sky_pendant")) { return false; }
 	if (controller.is_wallsliding()) { return false; }
 	if (grounded()) { return false; }
@@ -652,9 +608,17 @@ bool Player::can_doublejump() const {
 }
 
 bool Player::can_roll() const {
+	if (health.is_dead()) { return false; }
 	if (!catalog.inventory.has_item("woodshine_totem")) { return false; }
 	if (controller.is_wallsliding()) { return false; }
 	if (grounded()) { return false; }
+	return true;
+}
+
+bool Player::can_jump() const {
+	if (health.is_dead()) { return false; }
+	if (controller.is_wallsliding()) { return false; }
+	if (can_doublejump()) { return false; }
 	return true;
 }
 
