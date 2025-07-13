@@ -62,7 +62,7 @@ namespace fornani::world {
 
 enum class LevelState : std::uint8_t { game_over, camera_shake, spawn_enemy };
 enum class MapState : std::uint8_t { unobscure };
-enum class MapProperties : std::uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer, environmental_randomness };
+enum class MapProperties : std::uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer, environmental_randomness, day_night_shift };
 
 struct EnemySpawn {
 	sf::Vector2f pos{};

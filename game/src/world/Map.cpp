@@ -55,7 +55,10 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	m_middleground = svc.data.map_jsons.at(room_lookup).metadata["tile"]["middleground"].as<int>();
 	svc.data.map_jsons.at(room_lookup).metadata["tile"]["flags"]["obscuring"].as_bool() ? flags.properties.set(MapProperties::has_obscuring_layer) : flags.properties.reset(MapProperties::has_obscuring_layer);
 	svc.data.map_jsons.at(room_lookup).metadata["tile"]["flags"]["reverse_obscuring"].as_bool() ? flags.properties.set(MapProperties::has_reverse_obscuring_layer) : flags.properties.reset(MapProperties::has_reverse_obscuring_layer);
+
+	// map properties
 	if (meta["properties"]["environmental_randomness"].as_bool()) { flags.properties.set(MapProperties::environmental_randomness); }
+	if (meta["properties"]["day_night_shift"].as_bool()) { flags.properties.set(MapProperties::day_night_shift); }
 
 	m_letterbox_color = style_id == 2 ? colors::pioneer_black : colors::ui_black;
 
@@ -462,7 +465,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	if (save_point.id != -1) { save_point.render(svc, win, cam); }
 
 	if (!svc.greyblock_mode()) {
-		for (auto& layer : get_layers()) { layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam); }
+		for (auto& layer : get_layers()) { layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, flags.properties.test(MapProperties::day_night_shift)); }
 	}
 
 	// foreground enemies

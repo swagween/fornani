@@ -29,7 +29,9 @@ WardrobeGizmo::WardrobeGizmo(automa::ServiceProvider& svc, world::Map& map, sf::
 	m_health_display.sockets.setScale(constants::f_scale_vec);
 	m_core.push_params("idle", {0, 1, 128, 0});
 	m_core.push_params("beat", {1, 9, 32, 0}, "idle");
+	m_core.push_params("beat_fast", {0, 9, 16, 0}, "idle");
 	m_light.push_params("blink", {0, 8, 32, -1});
+	m_light.push_params("blink_fast", {0, 8, 16, -1});
 	m_core.set_params("idle");
 	m_light.set_params("blink");
 }
@@ -47,7 +49,15 @@ void WardrobeGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player
 		if (m_outfitter->has_changed()) { m_wardrobe_update = true; }
 		m_outfitter->update(svc, player, map, m_placement + m_path.get_position());
 	}
-	if (svc.ticker.every_x_ticks(600)) { m_core.set_params("beat"); }
+	// handle heartbeat
+	if (player.health.is_critical()) {
+		if (svc.ticker.every_x_ticks(300)) { m_core.set_params("beat_fast"); }
+		m_light.set_framerate(16);
+	} else {
+		if (svc.ticker.every_x_ticks(600)) { m_core.set_params("beat"); }
+		m_light.set_framerate(32);
+	}
+
 	m_path.update();
 	player.wardrobe_widget.set_position(m_placement + m_path.get_position() + m_nani_offset);
 	m_core.update(m_placement + m_path.get_position());

@@ -42,10 +42,12 @@ void Gizmo::deselect() {
 }
 
 void Constituent::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin) const {
+	auto previous_origin = sprite.getOrigin();
 	sprite.setOrigin(origin);
 	sprite.setPosition(position - cam);
 	sprite.setTextureRect(lookup);
 	win.draw(sprite);
+	sprite.setOrigin(previous_origin);
 }
 
 void FreeConstituent::update() {

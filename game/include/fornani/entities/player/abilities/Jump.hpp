@@ -18,10 +18,8 @@ enum class JumpState : std::uint8_t {
 	jumpsquatting, // (USED)
 	is_pressed,	   // true if jump released midair, reset upon landing (USED)
 	jumping,	   // true if jumpsquat is over, false once player lands (USED)
-	jump_began     // true if just jumped, but must be active for a cooldown period to avoid next-frame cancelling
+	jump_began	   // true if just jumped, but must be active for a cooldown period to avoid next-frame cancelling
 };
-
-enum class DoublejumpState : std::uint8_t { can_doublejump };
 
 class Jump {
   public:
@@ -36,6 +34,7 @@ class Jump {
 	[[nodiscard]] auto just_doublejumped() const -> bool { return jump_counter.get_count() == 1; }
 	[[nodiscard]] auto get_coyote() const -> int { return coyote_time.get(); }
 	[[nodiscard]] auto get_count() const -> int { return jump_counter.get_count(); }
+	[[nodiscard]] auto is_doublejump_cooling_down() const -> bool { return m_dj_cooldown.running(); }
 
 	void request_jump();
 	void cancel();
@@ -65,10 +64,11 @@ class Jump {
 	util::BitFlags<JumpState> states{};
 	util::Counter jump_counter{};
 
-	private:
+  private:
 	util::Cooldown cooldown{};
 	util::Cooldown request{};
 	util::Cooldown coyote_time{8};
+	util::Cooldown m_dj_cooldown{8};
 };
 
 } // namespace fornani::player

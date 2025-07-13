@@ -44,8 +44,8 @@
 	},
 	"night": {
 		"dimensions": [
-			1920,
-			512
+			960,
+			256
 		],
 		"lock": {
 			"vertical": true

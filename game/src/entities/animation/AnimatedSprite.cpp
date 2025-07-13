@@ -1,8 +1,6 @@
 
 #include "fornani/entities/animation/AnimatedSprite.hpp"
-
 #include "fornani/service/ServiceProvider.hpp"
-
 #include "fornani/utils/Random.hpp"
 
 namespace fornani::anim {
@@ -36,6 +34,8 @@ void AnimatedSprite::set_params(std::string_view label, bool force) {
 		NANI_LOG_WARN(m_logger, "Undefined parameters set for animation {}", label.data());
 	}
 }
+
+void AnimatedSprite::set_framerate(int to) { animation.params.framerate = to; }
 
 void AnimatedSprite::set_dimensions(sf::Vector2<int> dim) { dimensions = dim; }
 

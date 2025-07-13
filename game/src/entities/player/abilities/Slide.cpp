@@ -1,4 +1,4 @@
-#include "fornani/entities/player/Slide.hpp"
+#include "fornani/entities/player/abilities/Slide.hpp"
 
 namespace fornani::player {
 
@@ -12,4 +12,4 @@ void Slide::calculate() { begin_normal = static_cast<float>(friction.get()) / st
 
 void Slide::slide() { flags.reset(SlideFlags::break_out); }
 
-} // namespace player
+} // namespace fornani::player

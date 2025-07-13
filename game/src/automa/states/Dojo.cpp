@@ -9,14 +9,13 @@ namespace fornani::automa {
 static bool item_acquisition{};
 static bool gun_acquisition{};
 static bool item_music_played{};
-static int item_modifier{};
-static int item_type{};
+static bool b_reveal_item{};
 static bool b_read_item{};
+static int item_modifier{};
 
-static void trigger_item(int to, int type) {
+static void trigger_item(int to) {
 	item_acquisition = true;
 	item_modifier = to;
-	item_type = type;
 }
 static void trigger_gun(int to) {
 	gun_acquisition = true;
@@ -26,13 +25,18 @@ static void trigger_read_item(int to) {
 	b_read_item = true;
 	item_modifier = to;
 }
+static void trigger_reveal_item(int to) {
+	b_reveal_item = true;
+	item_modifier = to;
+}
 
 Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameState(svc, player, scene, room_number), map(svc, player), gui_map(svc, player), m_services(&svc) {
 
 	// register game events
-	svc.events.register_event(std::make_unique<Event<int, item::ItemType, int>>("GivePlayerKeyItem", std::bind(&player::Player::give_item_by_id, &player, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)));
+	svc.events.register_event(std::make_unique<Event<int, int>>("GivePlayerItem", std::bind(&player::Player::give_item_by_id, &player, std::placeholders::_1, std::placeholders::_2)));
+	svc.events.register_event(std::make_unique<Event<int>>("RevealItem", &trigger_reveal_item));
 	svc.events.register_event(std::make_unique<Event<int>>("ReadItem", &trigger_read_item));
-	svc.events.register_event(std::make_unique<Event<int, int>>("AcquireItem", &trigger_item));
+	svc.events.register_event(std::make_unique<Event<int>>("AcquireItem", &trigger_item));
 	svc.events.register_event(std::make_unique<Event<int>>("AcquireGun", &trigger_gun));
 
 	NANI_LOG_DEBUG(m_logger, "test: {}", svc.data.item_label_from_id(7));
@@ -106,9 +110,14 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
 
-	if (item_acquisition) { acquire_item(svc, *player, item_modifier, static_cast<item::ItemType>(item_type)); }
+	// handle events
+	if (item_acquisition) { acquire_item(svc, *player, item_modifier); }
 	if (gun_acquisition) { acquire_gun(svc, *player, item_modifier); }
 	if (b_read_item) { read_item(item_modifier); }
+	if (b_reveal_item) {
+		player->catalog.inventory.reveal_item(item_modifier);
+		b_reveal_item = false;
+	}
 	if (!m_console && item_music_played) {
 		svc.music_player.resume();
 		item_music_played = false;
@@ -197,7 +206,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	// TODO: re-do this once I reimplement regular inventory + collectible items. we will check collectible_items_view, or something else.
-	if (player->visit_history.traveled_far() || svc.data.marketplace.at(3).inventory.key_items_view().empty()) {
+	if (player->visit_history.traveled_far() || svc.data.marketplace.at(3).inventory.items_view().empty()) {
 		util::random::set_vendor_seed();
 		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
 		player->visit_history.clear();
@@ -253,8 +262,8 @@ void Dojo::bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current) {
 	}
 }
 
-void Dojo::acquire_item(ServiceProvider& svc, player::Player& player, int modifier, item::ItemType type) {
-	player.give_item_by_id(modifier, type, 1);
+void Dojo::acquire_item(ServiceProvider& svc, player::Player& player, int modifier) {
+	player.give_item_by_id(modifier, 1);
 	m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
 	m_console.value()->display_item(modifier);
 	m_console.value()->append(player.catalog.inventory.item_view(modifier).get_title());
@@ -277,7 +286,6 @@ void Dojo::acquire_gun(ServiceProvider& svc, player::Player& player, int modifie
 
 void Dojo::read_item(int id) {
 	m_console = std::make_unique<gui::Console>(*m_services, m_services->text.item, m_services->data.item_label_from_id(id), gui::OutputType::gradual);
-	NANI_LOG_DEBUG(m_logger, "Just Read Item.");
 	b_read_item = false;
 }
 

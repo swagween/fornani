@@ -43,7 +43,7 @@ void Layer::generate_textures(sf::Texture const& tex) {
 	}
 }
 
-void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg) const {
+void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg, bool day_night_shift) const {
 	if (background() != is_bg) { return; }
 	if (m_barrier) {
 		auto spr = sf::Sprite{m_barrier->getTexture()};
@@ -53,7 +53,9 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics
 		spr.setPosition(-cam - sf::Vector2f{2 * border});
 		win.draw(spr);
 	}
-	std::vector<sf::Sprite> sprites{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.twilight.getTexture()}, sf::Sprite{m_texture.night.getTexture()}};
+	auto sprites = day_night_shift ? std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.twilight.getTexture()}, sf::Sprite{m_texture.night.getTexture()}}
+								   : std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.day.getTexture()}};
+
 	auto ctr{0};
 	for (auto& sprite : sprites) {
 		std::uint8_t alpha = ccm::lerp(0, 255, fade);

@@ -4,7 +4,6 @@
 #include "fornani/particle/Effect.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/world/Map.hpp"
-#include "fornani/world/SwitchBlock.hpp"
 
 namespace fornani::world {
 

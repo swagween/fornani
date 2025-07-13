@@ -24,6 +24,7 @@ class AnimatedSprite {
 	void push_params(std::string_view label, Parameters in_params);
 	void push_params(std::string_view label, Parameters in_params, std::string_view target_animation);
 	void set_params(std::string_view label, bool force = false);
+	void set_framerate(int to);
 	void set_dimensions(sf::Vector2<int> dim);
 	void set_position(sf::Vector2f pos);
 	void set_scale(sf::Vector2f scale);

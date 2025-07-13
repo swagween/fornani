@@ -10,23 +10,24 @@
 
 namespace fornani::bg {
 
-constexpr int tile_dim{256};
+constexpr auto bleed_v = sf::Vector2i{2, 0};
 
-Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "dusk"}, {5, "night"}, {3, "woods"}, {4, "canopy"}, {18, "woods"}} {
+Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "dusk"}, {1, "night"}, {3, "woods"}, {4, "canopy"}, {18, "woods"}} {
 	auto type = labels.contains(bg_id) ? labels.at(bg_id) : "black";
 	auto const& in_data = svc.data.background[type];
 	dimensions.x = in_data["dimensions"][0].as<int>();
 	dimensions.y = in_data["dimensions"][1].as<int>();
-	scroll_pane = dimensions;
+	scroll_pane = (dimensions - bleed_v) * 2;
 	if (in_data["lock"]["horizontal"].as_bool()) { lock_horizontally(); }
 	if (in_data["lock"]["vertical"].as_bool()) { lock_vertically(); }
 	auto index{0};
 	for (auto& layer : in_data["layers"].as_array()) {
 		layers.push_back({index, layer["scroll_speed"].as<float>(), layer["parallax"].as<float>()});
 		layers.back().physics.set_global_friction(1.f);
-		for (auto i{0}; i < svc.world_clock.num_cycles(); ++i) {
+		for (auto i{0}; i < num_cycles(); ++i) {
 			layers.back().sprites.push_back(sf::Sprite{svc.assets.get_texture("background_" + type)});
-			layers.back().sprites.back().setTextureRect(sf::IntRect{{i * dimensions.x, dimensions.y * index}, dimensions});
+			layers.back().sprites.back().setTextureRect(sf::IntRect{{i * dimensions.x + bleed_v.x / 2, dimensions.y * index}, dimensions - bleed_v});
+			layers.back().sprites.back().setScale(constants::f_scale_vec);
 		}
 		++index;
 	}
@@ -40,8 +41,7 @@ void Background::update(automa::ServiceProvider& svc) {
 }
 
 void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	auto epsilon = 0.99999f;
-
+	auto epsilon = 0.9999f;
 	for (auto& layer : layers) {
 		// backtrack sprites for infinite scroll effect
 		if (layer.physics.position.x < -scroll_pane.x && !locked_horizontally()) { layer.physics.position.x = 0.f; }
@@ -55,9 +55,9 @@ void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 		if (locked_horizontally()) { layer.final_position.x = ccm::ext::clamp(layer.final_position.x, std::min(static_cast<float>(-scroll_pane.x + svc.window->i_screen_dimensions().x), -1 + epsilon), 0.f); }
 		auto ctr{0};
 		for (auto& sprite : layer.sprites) {
-			for (auto i{0}; i < 2; ++i) {
-				for (auto j{0}; j < 2; ++j) {
-					sprite.setPosition(layer.final_position + sf::Vector2f{static_cast<float>(dimensions.x * epsilon) * static_cast<float>(i), static_cast<float>(dimensions.y * epsilon) * static_cast<float>(j)});
+			for (auto i{0}; i <= 2; i += 2) {
+				for (auto j{0}; j <= 2; j += 2) {
+					sprite.setPosition(layer.final_position + sf::Vector2f{static_cast<float>(dimensions.x - bleed_v.x) * static_cast<float>(i), static_cast<float>(dimensions.y - bleed_v.y) * static_cast<float>(j)});
 					shifter.render(svc, win, sprite, ctr);
 				}
 			}

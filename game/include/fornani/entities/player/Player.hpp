@@ -124,9 +124,7 @@ class Player {
 	[[nodiscard]] auto width() const -> float { return collider.dimensions.x; }
 	[[nodiscard]] auto arsenal_size() const -> std::size_t { return arsenal ? arsenal.value().size() : 0; }
 	[[nodiscard]] auto quick_direction_switch() const -> bool { return flags.state.test(State::dir_switch); }
-	[[nodiscard]] auto shielding() -> bool { return controller.get_shield().is_shielding(); }
 	[[nodiscard]] auto pushing() const -> bool { return animation.is_state(AnimState::push) || animation.is_state(AnimState::between_push); }
-	[[nodiscard]] auto has_shield() const -> bool { return catalog.abilities.has_ability(Abilities::shield); }
 	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.inventory.has_item(id); }
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
 	[[nodiscard]] auto has_map() const -> bool { return catalog.inventory.has_item(16); }
@@ -145,7 +143,6 @@ class Player {
 	void jump(world::Map& map);
 	void dash();
 	void wallslide();
-	void shield();
 
 	void set_position(sf::Vector2f new_pos, bool centered = false);
 	void freeze_position();
@@ -166,8 +163,8 @@ class Player {
 	void update_invincibility();
 	void start_over();
 	void give_drop(item::DropType type, float value);
-	void give_item_by_id(int id, item::ItemType type, int amount);
-	void give_item(std::string_view label, item::ItemType type, int amount);
+	void give_item_by_id(int id, int amount);
+	void give_item(std::string_view label, int amount);
 	void add_to_hotbar(int id);
 	void remove_from_hotbar(int id);
 	void set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_outfit);

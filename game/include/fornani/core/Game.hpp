@@ -40,7 +40,6 @@ class Game {
 	struct {
 		bool musicplayer{};
 		bool b_dash{};
-		bool b_shield{};
 		bool b_wallslide{};
 		bool b_doublejump{};
 		struct {

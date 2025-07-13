@@ -3,6 +3,6 @@
 
 namespace fornani::item {
 
-KeyItem::KeyItem(dj::Json& source, std::string_view label) : Item(source, label, ItemType::key) {}
+KeyItem::KeyItem(dj::Json& source, std::string_view label) : Item(source, label) {}
 
 } // namespace fornani::item

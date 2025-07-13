@@ -1,4 +1,4 @@
-#include "fornani/entities/player/Wallslide.hpp"
+#include "fornani/entities/player/abilities/Wallslide.hpp"
 
 namespace fornani::player {
 
@@ -17,4 +17,4 @@ void Wallslide::reset_all() {
 
 void Wallslide::request_walljump() { walljump_request.start(walljump_request_time); }
 
-} // namespace player
+} // namespace fornani::player

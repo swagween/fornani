@@ -3,6 +3,6 @@
 
 namespace fornani::item {
 
-GizmoItem::GizmoItem(dj::Json& source, std::string_view label) : Item(source, label, ItemType::gizmo) {}
+GizmoItem::GizmoItem(dj::Json& source, std::string_view label) : Item(source, label) {}
 
 } // namespace fornani::item

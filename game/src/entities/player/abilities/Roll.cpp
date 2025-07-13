@@ -1,4 +1,4 @@
-#include "fornani/entities/player/Roll.hpp"
+#include "fornani/entities/player/abilities/Roll.hpp"
 
 namespace fornani::player {
 void Roll::update() { roll_window.update(); }
@@ -9,4 +9,4 @@ void Roll::request() {
 	roll_window.start();
 	flags.reset(RollFlags::can_roll);
 }
-} // namespace player
+} // namespace fornani::player

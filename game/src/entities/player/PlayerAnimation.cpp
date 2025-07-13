@@ -13,7 +13,7 @@ PlayerAnimation::PlayerAnimation(Player& plr)
 	: m_player(&plr), m_params{{"idle", {20, 8, 7 * rate, -1, false, true}}, {"turn", {33, 3, 4 * rate, 0}},		 {"sharp_turn", {16, 2, 5 * rate, 0}}, {"run", {44, 4, 6 * rate, -1}},		 {"sprint", {10, 6, 4 * rate, -1}},
 							   {"shield", {80, 3, 4 * rate, -1, true}},		 {"between_push", {85, 1, 4 * rate, 0}}, {"push", {86, 4, 7 * rate, -1}},	   {"rise", {40, 4, 6 * rate, 0}},		 {"walljump", {40, 4, 6 * rate, 0}},
 							   {"suspend", {30, 3, 7 * rate, -1}},			 {"fall", {62, 4, 5 * rate, -1}},		 {"stop", {74, 2, 4 * rate, 0}},	   {"land", {56, 2, 4 * rate, 0}},		 {"inspect", {37, 2, 7 * rate, -1, true}},
-							   {"sit", {50, 4, 6 * rate, -1, true}},		 {"hurt", {76, 2, 7 * rate, 0}},		 {"dash", {0, 4, 6 * rate, 0}},		   {"wallslide", {66, 4, 7 * rate, -1}}, {"die", {76, 4, 8 * rate, -1, true}},
+							   {"sit", {50, 4, 6 * rate, -1, true}},		 {"hurt", {76, 2, 7 * rate, 0}},		 {"dash", {0, 4, 4 * rate, 0}},		   {"wallslide", {66, 4, 7 * rate, -1}}, {"die", {76, 4, 8 * rate, -1, true}},
 							   {"backflip", {90, 6, 5 * rate, 0}},			 {"slide", {96, 4, 4 * rate, -1}},		 {"get_up", {57, 1, 5 * rate, 0}},	   {"roll", {100, 4, 5 * rate, 0}},		 {"shoot", {104, 3, 8 * rate, 0}},
 							   {"sleep", {4, 4, 8 * rate, -1, true}},		 {"wake_up", {8, 2, 8 * rate, 0}}},
 	  state_function{std::bind(&PlayerAnimation::update_idle, this)}, m_buffer{16} {
@@ -418,15 +418,24 @@ fsm::StateFunction PlayerAnimation::update_hurt() {
 fsm::StateFunction PlayerAnimation::update_dash() {
 	animation.label = "dash";
 	m_actual = AnimState::dash;
-	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
+	if (change_state(AnimState::die, get_params("die"), true)) {
+		m_player->controller.stop_dashing();
+		return PA_BIND(update_die);
+	}
+	if (change_state(AnimState::backflip, get_params("backflip"))) {
+		m_player->controller.stop_dashing();
+		return PA_BIND(update_backflip);
+	}
+	if (change_state(AnimState::wallslide, get_params("wallslide"))) {
+		m_player->controller.stop_dashing();
+		return PA_BIND(update_wallslide);
+	}
 	if (animation.complete()) {
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
-		if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
 		if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 		if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 		if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }
-		if (change_state(AnimState::wallslide, get_params("wallslide"))) { return PA_BIND(update_wallslide); }
 		if (change_state(AnimState::push, get_params("between_push"))) { return PA_BIND(update_between_push); }
 		if (change_state(AnimState::suspend, get_params("suspend"))) { return PA_BIND(update_suspend); }
 		if (change_state(AnimState::fall, get_params("fall"))) { return PA_BIND(update_fall); }
@@ -525,6 +534,7 @@ fsm::StateFunction PlayerAnimation::update_die() {
 fsm::StateFunction PlayerAnimation::update_backflip() {
 	animation.label = "backflip";
 	m_actual = AnimState::backflip;
+	m_player->controller.stop_dashing();
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }

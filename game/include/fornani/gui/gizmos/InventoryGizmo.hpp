@@ -27,7 +27,7 @@ class InventoryGizmo : public Gizmo {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground = false) override;
 	bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
 	[[nodiscard]] auto is_item_hovered() const -> int { return m_flags.test(InventoryGizmoFlags::is_item_hovered); }
-	[[nodiscard]] auto is(InventoryZoneType type) const -> bool { return static_cast<InventoryZoneType>(m_zone_iterator.get()) == type; }
+	[[nodiscard]] auto get_zone_type() const -> InventoryZoneType { return static_cast<InventoryZoneType>(m_zone_iterator.get()); }
 
   private:
 	void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
@@ -37,12 +37,16 @@ class InventoryGizmo : public Gizmo {
 	void switch_zones(int modulation);
 	void write_description(item::Item& piece, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam);
 
+	[[nodiscard]] auto zone_match(item::ItemType type) const -> bool { return static_cast<InventoryZoneType>(type) == get_zone_type(); }
+
 	std::array<InventoryZone, static_cast<int>(InventoryZoneType::COUNT)> m_zones;
 	std::array<sf::Vector2i, static_cast<int>(InventoryZoneType::COUNT)> m_remembered_locations{};
 	util::Circuit m_zone_iterator{static_cast<int>(InventoryZoneType::COUNT), static_cast<int>(InventoryZoneType::key)};
 
 	int m_current_item_lookup{};
 	int m_current_item_id{};
+
+	bool m_just_switched{};
 
 	util::RectPath m_path;
 	util::RectPath m_lid_path;

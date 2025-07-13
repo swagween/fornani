@@ -34,7 +34,6 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, s
 	bounding_box.set_position(get_world_position());
 	flags.reset(InspectableFlags::activated);
 	animation.update();
-	m_indicator_cooldown.update();
 	if (m_indicator_cooldown.is_almost_complete()) { flags.reset(InspectableFlags::hovered); }
 	if (b_destroy) { destroy_by_id(b_id); }
 	if (flags.test(InspectableFlags::destroy) && !destroyed()) { svc.data.destroy_inspectable(m_label); }
@@ -47,7 +46,9 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, s
 		if (!flags.test(InspectableFlags::hovered)) { flags.set(InspectableFlags::hovered_trigger); }
 		flags.set(InspectableFlags::hovered);
 		if (player.controller.inspecting() || attributes.test(InspectableAttributes::activate_on_contact)) { flags.set(InspectableFlags::activated); }
-		m_indicator_cooldown.start();
+	} else {
+		m_indicator_cooldown.update();
+		if (!m_indicator_cooldown.running()) { m_indicator_cooldown.start(); }
 	}
 	if (flags.test(InspectableFlags::activated) && !player.is_busy()) {
 		player.set_busy(true);

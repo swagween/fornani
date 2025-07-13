@@ -21,7 +21,7 @@ StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, std::string_v
 	title.setString("post-game stats");
 	std::string statistics = "death count: " + std::to_string(svc.stats.player.death_count.get_count()) + "\norbs collected: " + std::to_string(svc.stats.treasure.total_orbs_collected.get_count()) +
 							 "\nrooms discovered: " + std::to_string(svc.data.discovered_rooms.size()) + " / 25\nguns collected: " + std::to_string(player.arsenal_size()) +
-							 " / 2\n items found: " + std::to_string(player.catalog.inventory.key_items_view().size()) + " / 9\n'get bryn's gun' speedrun time: " + svc.stats.tt_formatted() + " seconds";
+							 " / 2\n items found: " + std::to_string(player.catalog.inventory.items_view().size()) + " / 9\n'get bryn's gun' speedrun time: " + svc.stats.tt_formatted() + " seconds";
 	stats.setString(statistics);
 	stats.setLineSpacing(2.0f);
 	svc.music_player.load(svc.finder, "firstwind");

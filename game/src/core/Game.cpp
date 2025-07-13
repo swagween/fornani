@@ -405,7 +405,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Actual Y Velocity: %.2f", player.collider.physics.actual_velocity().y);
 								ImGui::Text("Actual Speed: %.2f", player.collider.physics.actual_speed());
 								ImGui::Separator();
-								ImGui::Text("Inventory Size: %i", static_cast<int>(player.catalog.inventory.key_items_view().size()));
+								ImGui::Text("Inventory Size: %i", static_cast<int>(player.catalog.inventory.items_view().size()));
 								ImGui::Text("Visit History: ");
 								for (auto& room : player.visit_history.rooms_visited) {
 									ImGui::Text("%i, ", room);
@@ -498,7 +498,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							if (ImGui::BeginTabItem("Catalog")) {
 								ImGui::Separator();
 								ImGui::Text("Inventory");
-								for (auto& item : player.catalog.inventory.key_items_view()) {
+								for (auto& item : player.catalog.inventory.items_view()) {
 									ImGui::Text("%s", item->get_label().data());
 									ImGui::SameLine();
 								}
@@ -506,13 +506,11 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 
 								ImGui::Text("Abilities");
 								ImGui::Checkbox("Dash", &playtest.b_dash);
-								ImGui::Checkbox("Shield", &playtest.b_shield);
 								ImGui::Checkbox("Wallslide", &playtest.b_wallslide);
 								ImGui::Checkbox("Double Jump", &playtest.b_doublejump);
-								playtest.b_dash ? player.catalog.abilities.give_ability(player::Abilities::dash) : player.catalog.abilities.remove_ability(player::Abilities::dash);
-								playtest.b_shield ? player.catalog.abilities.give_ability(player::Abilities::shield) : player.catalog.abilities.remove_ability(player::Abilities::shield);
-								playtest.b_wallslide ? player.catalog.abilities.give_ability(player::Abilities::wall_slide) : player.catalog.abilities.remove_ability(player::Abilities::wall_slide);
-								playtest.b_doublejump ? player.catalog.abilities.give_ability(player::Abilities::double_jump) : player.catalog.abilities.remove_ability(player::Abilities::double_jump);
+								playtest.b_dash ? player.catalog.abilities.give_ability(player::AbilityType::dash) : player.catalog.abilities.remove_ability(player::AbilityType::dash);
+								playtest.b_wallslide ? player.catalog.abilities.give_ability(player::AbilityType::wall_slide) : player.catalog.abilities.remove_ability(player::AbilityType::wall_slide);
+								playtest.b_doublejump ? player.catalog.abilities.give_ability(player::AbilityType::double_jump) : player.catalog.abilities.remove_ability(player::AbilityType::double_jump);
 
 								ImGui::EndTabItem();
 							}

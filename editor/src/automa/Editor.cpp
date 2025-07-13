@@ -618,8 +618,14 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				}
 				ImGui::EndMenu();
 			}
+			static bool mp_randomness{};
+			static bool mp_shift{};
 			if (ImGui::MenuItem("Include in Minimap", "", &map.minimap)) {}
+			if (ImGui::MenuItem("Environmental Randomness", "", &mp_randomness)) {}
+			if (ImGui::MenuItem("Day Night Shift", "", &mp_shift)) {}
 			if (ImGui::MenuItem("Themes", "", &open_themes)) {}
+			mp_randomness ? map.set_property(fornani::world::MapProperties::environmental_randomness) : map.reset_property(fornani::world::MapProperties::environmental_randomness);
+			mp_shift ? map.set_property(fornani::world::MapProperties::day_night_shift) : map.reset_property(fornani::world::MapProperties::day_night_shift);
 
 			ImGui::EndMenu();
 		}

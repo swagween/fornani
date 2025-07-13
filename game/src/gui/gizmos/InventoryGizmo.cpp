@@ -13,7 +13,7 @@ InventoryGizmo::InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, sf
 	: Gizmo("Inventory", false), m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "inventory", 128, util::InterpolationType::cubic},
 	  m_lid_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "inventory", 128, util::InterpolationType::cubic}, m_sprite{svc.assets.get_texture("inventory_gizmo")},
 	  m_item_sprite{svc.assets.get_texture("inventory_items")},
-	  m_zones{InventoryZone{{9, 1}, {38.f, 36.f}, {412.f, 16.f}}, InventoryZone{{12, 4}, {36.f, 36.f}, {48.f, 114.f}}, InventoryZone{{7, 2}, {42.f, 62.f}, {164.f, 278.f}}, InventoryZone{{8, 1}, {60.f, 36.f}, {402.f, 428.f}}},
+	  m_zones{InventoryZone{{9, 1}, {38.f, 36.f}, {412.f, 16.f}}, InventoryZone{{12, 4}, {36.f, 36.f}, {48.f, 114.f}}, InventoryZone{{7, 2}, {42.f, 62.f}, {164.f, 278.f}}, InventoryZone{{8, 1}, {60.f, 36.f}, {404.f, 430.f}}},
 	  m_selector(std::make_unique<InventorySelector>(m_zones.at(static_cast<int>(InventoryZoneType::key)).table_dimensions, m_zones.at(static_cast<int>(InventoryZoneType::key)).cell_size)), m_orb_display(svc), m_services(&svc) {
 	m_dashboard_port = DashboardPort::inventory;
 	m_path.set_section("start");
@@ -22,7 +22,7 @@ InventoryGizmo::InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, sf
 	m_sprite.setScale(constants::f_scale_vec);
 	m_item_sprite.setScale(constants::f_scale_vec);
 	m_selector->set_lookup({{448, 0}, {18, 18}});
-	m_description = std::make_unique<DescriptionGizmo>(svc, map, m_placement, sf::IntRect{}, sf::FloatRect{{572.f, 194.f}, {240.f, 180.f}}, sf::Vector2f{});
+	m_description = std::make_unique<DescriptionGizmo>(svc, map, m_placement, sf::IntRect{}, sf::FloatRect{{572.f, 194.f}, {200.f, 200.f}}, sf::Vector2f{});
 	m_description->set_text_only(true);
 }
 
@@ -36,30 +36,33 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 
 	auto& current_zone = m_zones.at(m_zone_iterator.get());
 
+	if (get_zone_type() == InventoryZoneType::key) { m_selector->set_lookup({{448, 0}, {18, 18}}); }
+	if (get_zone_type() == InventoryZoneType::collectible) { m_selector->set_lookup({{448, 0}, {18, 18}}); }
+	if (get_zone_type() == InventoryZoneType::gizmo) { m_selector->set_lookup({{448, 18}, {22, 22}}); }
+	if (get_zone_type() == InventoryZoneType::ability) { m_selector->set_lookup({{448, 40}, {20, 20}}); }
+
 	bool found{};
-	if (is(InventoryZoneType::key)) {
-		for (auto& piece : player.catalog.inventory.key_items_view()) {
-			if (piece->get_table_index(current_zone.table_dimensions.x) == m_current_item_lookup) {
+	for (auto& piece : player.catalog.inventory.items_view()) {
+		if (piece->get_table_index(current_zone.table_dimensions.x) == m_current_item_lookup) {
+			if (zone_match(piece->get_type())) {
+				m_current_item = piece.get();
 				m_current_item_id = piece->get_id();
 				m_flags.set(InventoryGizmoFlags::is_item_hovered);
 				found = true;
 			}
 		}
 	}
-	if (is(InventoryZoneType::gizmo)) {
-		for (auto& piece : player.catalog.inventory.gizmo_items_view()) {
-			if (piece->get_table_index(current_zone.table_dimensions.x) == m_current_item_lookup) {
-				m_current_item_id = piece->get_id();
-				m_flags.set(InventoryGizmoFlags::is_item_hovered);
-				found = true;
-			}
-		}
-	}
+
 	if (!found) { m_flags.reset(InventoryGizmoFlags::is_item_hovered); }
 
 	m_path.update();
 	m_lid_path.update();
-	m_selector->set_position(m_physics.position + m_path.get_position() + m_placement + current_zone.render_offset);
+	auto selector_offset = sf::Vector2f{};
+	if (get_zone_type() == InventoryZoneType::key) { selector_offset = sf::Vector2f{2.f, 2.f}; }
+	if (get_zone_type() == InventoryZoneType::collectible) { selector_offset = sf::Vector2f{}; }
+	if (get_zone_type() == InventoryZoneType::gizmo) { selector_offset = sf::Vector2f{6.f, 6.f}; }
+	if (get_zone_type() == InventoryZoneType::ability) { selector_offset = sf::Vector2f{2.f, 2.f}; }
+	m_selector->set_position(m_physics.position + m_path.get_position() + m_placement + current_zone.render_offset - selector_offset);
 	m_selector->update();
 
 	m_orb_display.update(player.wallet.get_balance());
@@ -84,30 +87,28 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		win.draw(m_sprite);
 
 		if (m_description) {
-			if (is(InventoryZoneType::key)) {
-				for (auto& piece : player.catalog.inventory.key_items_view()) { write_description(*piece, win, player, cam); }
+			for (auto& piece : player.catalog.inventory.items_view()) {
+				if (zone_match(piece->get_type())) { write_description(*piece, win, player, cam); }
 			}
-			if (is(InventoryZoneType::gizmo)) {
-				for (auto& piece : player.catalog.inventory.gizmo_items_view()) { write_description(*piece, win, player, cam); }
-			}
-			if (!is_item_hovered()) {
-				m_description->adjust_bounds(cam);
-				m_description->write(svc, "---", svc.text.fonts.basic);
-				m_description->render(svc, win, player, cam - m_path.get_position());
-			}
+		}
+		if (!is_item_hovered()) {
+			m_description->adjust_bounds(cam);
+			m_description->write(svc, "---", m_services->text.fonts.basic);
+			m_description->render(svc, win, player, cam - m_path.get_position());
 		}
 
 		auto orb_offset = sf::Vector2f{208.f, 419.f};
 		m_orb_display.render(win, m_placement + m_path.get_position() - cam + orb_offset);
 
-		auto slot_dim = 36.f;
-		auto key_origin = m_placement + m_path.get_position() - cam + m_zones.at(static_cast<std::size_t>(InventoryZoneType::key)).render_offset;
-		for (auto& item : player.catalog.inventory.key_items_view()) { item->render(win, m_item_sprite, key_origin + item->get_f_origin() * slot_dim); }
-		auto gizmo_origin = m_placement + m_path.get_position() - cam + m_zones.at(static_cast<std::size_t>(InventoryZoneType::gizmo)).render_offset;
-		for (auto& item : player.catalog.inventory.gizmo_items_view()) { item->render(win, m_item_sprite, gizmo_origin + item->get_f_origin() * slot_dim); }
+		for (auto& item : player.catalog.inventory.items_view()) {
+			auto iterator = static_cast<std::size_t>(item->get_type());
+			if (iterator >= m_zones.size()) { continue; }
+			auto const& zone = m_zones.at(iterator);
+			auto where = m_placement + m_path.get_position() - cam + zone.render_offset + item->get_f_origin().componentWiseMul(zone.cell_size);
+			item->render(win, m_item_sprite, where);
+		}
 
 		if (is_selected()) { m_selector->render(win, m_sprite, cam, {}); }
-
 		if (m_item_menu) { m_item_menu->render(win); }
 	}
 }
@@ -126,23 +127,29 @@ bool InventoryGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_un
 		} else {
 			m_remembered_locations.at(m_zone_iterator.get()) = m_selector->get_index();
 			if (controller.digital_action_status(config::DigitalAction::menu_up).triggered) {
+				m_description->flush();
 				if (m_selector->move_direction({0, -1}).up()) { switch_zones(-1); }
 				soundboard.flags.menu.set(audio::Menu::shift);
 			}
 			if (controller.digital_action_status(config::DigitalAction::menu_down).triggered) {
+				m_description->flush();
 				if (m_selector->move_direction({0, 1}).down()) { switch_zones(1); }
 				soundboard.flags.menu.set(audio::Menu::shift);
 			}
 			if (controller.digital_action_status(config::DigitalAction::menu_left).triggered) {
+				m_description->flush();
 				if (m_selector->move_direction({-1, 0}).left()) {}
 				soundboard.flags.menu.set(audio::Menu::shift);
 			}
 			if (controller.digital_action_status(config::DigitalAction::menu_right).triggered) {
+				m_description->flush();
 				if (m_selector->move_direction({1, 0}).right()) {}
 				soundboard.flags.menu.set(audio::Menu::shift);
 			}
 			if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
+				NANI_LOG_DEBUG(m_logger, "selected");
 				if (is_item_hovered() && m_current_item) {
+					NANI_LOG_DEBUG(m_logger, "created minimenu");
 					auto list = m_current_item.value()->generate_menu_list();
 					if (list.size() > 1) {
 						m_item_menu = MiniMenu(*m_services, list, m_selector->get_menu_position(), true);

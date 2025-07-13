@@ -1,6 +1,9 @@
 {
 	"bryns_notebook": {
 		"id": 1,
+		"category": 1,
+		"lookup": [ 0, 0 ],
+		"origin": [ 2, 0 ],
 		"actual_title": "Bryn's Notebook",
 		"naive_description": "Bryn's personal notebook. It's sealed shut with a tiny padlock... Not that you were going to read it anyway.",
 		"hidden_description": "Bryn's personal notebook. It's sealed shut with a tiny padlock... Not that you were going to read it anyway.",
@@ -40,7 +43,7 @@
 	},
 	"bryns_note": {
 		"id": 7,
-		"category": 0,
+		"category": 1,
 		"lookup": [ 6, 0 ],
 		"origin": [ 0, 0 ],
 		"naive_title": "Mysterious Note",
@@ -70,8 +73,8 @@
 	},
 	"laboratory_key": {
 		"id": 11,
-		"category": 0,
-		"lookup": [ 7, 0 ],
+		"category": 1,
+		"lookup": [ 10, 0 ],
 		"origin": [ 1, 0 ],
 		"actual_title": "Laboratory Key",
 		"naive_description": "Grants access to Firstwind's research lab.",
@@ -209,7 +212,7 @@
 	},
 	"red_jeans": {
 		"id": 209,
-		"category": 1,
+		"category": 4,
 		"lookup": [ 0, 13 ],
 		"origin": [ 0, 10 ],
 		"actual_title": "Red Jeans",
@@ -281,14 +284,14 @@
 	},
 	"gas_mask": {
 		"id": 178,
-		"category": 1,
+		"category": 4,
 		"actual_title": "Gas Mask",
 		"naive_description": "You need this to navigate the Toxic Cavern without dying.",
 		"unique": true
 	},
 	"chalcedony_tee": {
 		"id": 194,
-		"category": 1,
+		"category": 4,
 		"lookup": [ 1, 12 ],
 		"origin": [ 0, 10 ],
 		"actual_title": "Chalcedony Tee",
@@ -300,19 +303,19 @@
 	},
 	"navy_top": {
 		"id": 202,
-		"category": 1,
+		"category": 4,
 		"lookup": [ 9, 12 ],
-		"origin": [ 0, 10 ],
+		"origin": [ 9, 2 ],
 		"actual_title": "Navy Top",
 		"naive_description": "A traditional Kariba garment with a gold trim.",
 		"unique": true,
 		"equippable": true,
 		"apparel_type": 1,
-		"value": 3000
+		"value": 300
 	},
 	"chalcedony_skirt": {
 		"id": 210,
-		"category": 1,
+		"category": 4,
 		"lookup": [ 1, 13 ],
 		"origin": [ 0, 10 ],
 		"actual_title": "Chalcedony Skirt",
@@ -324,7 +327,7 @@
 	},
 	"green_pants": {
 		"id": 218,
-		"category": 1,
+		"category": 4,
 		"lookup": [ 9, 13 ],
 		"origin": [ 0, 10 ],
 		"actual_title": "Green Pants",
@@ -336,7 +339,7 @@
 	},
 	"punk_hair_dye": {
 		"id": 84,
-		"category": 1,
+		"category": 4,
 		"start_index": 160,
 		"actual_title": "Punk Hair Dye",
 		"naive_description": "A whacky and rebellious hair color.",
@@ -347,7 +350,7 @@
 	},
 	"punk_shirt": {
 		"id": 85,
-		"category": 1,
+		"category": 4,
 		"start_index": 160,
 		"actual_title": "Punk Shirt",
 		"naive_description": "A shirt that awakens your rebellious spirit.",
@@ -358,7 +361,7 @@
 	},
 	"punk_pants": {
 		"id": 86,
-		"category": 1,
+		"category": 4,
 		"start_index": 160,
 		"actual_title": "Punk Pants",
 		"naive_description": "Black pants with a rebellious chain accessory.",
@@ -369,7 +372,7 @@
 	},
 	"hairtie": {
 		"id": 87,
-		"category": 1,
+		"category": 4,
 		"start_index": 160,
 		"actual_title": "Hairtie",
 		"naive_description": "Wear this to keep your hair from going all over the place all the time.",

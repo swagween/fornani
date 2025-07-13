@@ -145,6 +145,7 @@ void TextWriter::load_single_message(std::string_view message) {
 	message_container.back().data.setString(message.data());
 	stylize(message_container.back().data);
 	suite.push_back(message_container);
+	constrain();
 }
 
 void TextWriter::load_message(dj::Json& source, std::string_view key) {

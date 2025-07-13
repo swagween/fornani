@@ -1,13 +1,13 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <fornani/entities/player/abilities/Dash.hpp>
+#include <fornani/entities/player/abilities/Jump.hpp>
+#include <fornani/entities/player/abilities/Roll.hpp>
+#include <fornani/entities/player/abilities/Slide.hpp>
+#include <fornani/entities/player/abilities/Wallslide.hpp>
 #include <deque>
 #include <optional>
 #include <unordered_map>
-#include "Jump.hpp"
-#include "Roll.hpp"
-#include "Shield.hpp"
-#include "Slide.hpp"
-#include "Wallslide.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Direction.hpp"
 
@@ -104,7 +104,6 @@ class PlayerController {
 
 	[[nodiscard]] auto get_jump() -> Jump& { return jump; }
 	[[nodiscard]] auto get_wallslide() -> Wallslide& { return wallslide; }
-	[[nodiscard]] auto get_shield() -> Shield& { return shield; }
 	[[nodiscard]] auto get_slide() -> Slide& { return slide; }
 	Roll roll{};
 
@@ -121,10 +120,9 @@ class PlayerController {
 
 	Jump jump{};
 	Wallslide wallslide{};
-	Shield shield;
 	Slide slide{};
 
-	int dash_request{};
+	int dash_request{-1};
 	int dash_count{};
 
 	struct {

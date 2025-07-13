@@ -22,6 +22,7 @@ class DescriptionGizmo : public Gizmo {
 	void write(automa::ServiceProvider& svc, std::string_view message, sf::Font& font);
 	void set_offset(sf::Vector2f const offset = {});
 	void adjust_bounds(sf::Vector2f const adjustment);
+	void flush() { m_text = {}; }
 
 	void set_text_only(bool flag) { flag ? m_flags.set(DescriptionGizmoFlags::text_only) : m_flags.reset(DescriptionGizmoFlags::text_only); }
 

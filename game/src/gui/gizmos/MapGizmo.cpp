@@ -45,7 +45,6 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	} else if (m_switched) {
 		on_close(svc, player, map);
 	}
-	if (m_state == GizmoState::selected) { svc.soundboard.flags.pioneer.set(audio::Pioneer::hum); }
 	if (m_path.get_section() == 0 && m_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::chain); }
 	if (m_path.get_section() == 0 && m_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::boot); }
 	if (m_path.get_section() == 0 && m_path.completed_step(2)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::open); }

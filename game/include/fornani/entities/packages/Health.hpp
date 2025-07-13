@@ -8,6 +8,7 @@ namespace fornani::entity {
 enum class HPState : std::uint8_t { hit };
 class Health final : public Entity {
 	float const default_max{8.f};
+	float const critical_threshold{0.34f};
 
   public:
 	void update();
@@ -19,6 +20,7 @@ class Health final : public Entity {
 	[[nodiscard]] auto get_limit() const -> float { return hp_limit; }
 	[[nodiscard]] auto get_taken_point() const -> float { return static_cast<float>(taken_point); }
 	[[nodiscard]] auto is_dead() const -> bool { return hp <= 0.f; }
+	[[nodiscard]] auto is_critical() const -> float { return get_normalized() < 0.34f; }
 	[[nodiscard]] auto invincible() const -> bool { return !invincibility.is_complete(); }
 	[[nodiscard]] auto full() const -> bool { return hp == max_hp; }
 	[[nodiscard]] auto empty() const -> bool { return is_dead(); }

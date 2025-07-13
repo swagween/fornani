@@ -17,7 +17,9 @@
 		],
 		"equipped_gun": 0,
 		"abilities": [
-
+			0,
+			1,
+			2
 		],
 		"wardrobe": {
 			"hairstyle": 0,
@@ -28,32 +30,34 @@
 		"items": [
 			{
 				"label": "navy_top",
-				"type": 1,
 				"quantity": 1
 			},
 			{
 				"label": "green_pants",
-				"type": 1,
 				"quantity": 1
 			},
 			{
 				"label": "radar_device",
-				"type": 3,
+				"quantity": 1
+			},
+			{
+				"label": "bryns_notebook",
+				"quantity": 1
+			},
+			{
+				"label": "laboratory_key",
 				"quantity": 1
 			},
 			{
 				"label": "red_jeans",
-				"type": 1,
 				"quantity": 1
 			},
 			{
 				"label": "chalcedony_tee",
-				"type": 1,
 				"quantity": 1
 			},
 			{
 				"label": "chalcedony_skirt",
-				"type": 1,
 				"quantity": 1
 			}
 		],

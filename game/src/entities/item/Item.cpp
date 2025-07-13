@@ -4,10 +4,10 @@
 
 namespace fornani::item {
 
-Item::Item(dj::Json& source, std::string_view label, ItemType type) : m_label{label}, m_type{type} {
+Item::Item(dj::Json& source, std::string_view label) : m_label{label} {
 	auto const& in_data = source[label];
-	m_category = static_cast<ItemCategory>(in_data["category"].as<int>());
 	m_id = in_data["id"].as<int>();
+	m_type = static_cast<ItemType>(in_data["category"].as<int>());
 	m_lookup.position.x = in_data["lookup"][0].as<int>();
 	m_lookup.position.y = in_data["lookup"][1].as<int>();
 	m_table_origin.x = in_data["origin"][0].as<int>();

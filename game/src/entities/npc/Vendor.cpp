@@ -15,13 +15,13 @@ void Vendor::generate_inventory(automa::ServiceProvider& svc) {
 		// TODO: allow for different item types. Vendors may also be able to sell some key items and apparel.
 		if (rand < 2) {
 			auto const choice = util::random::random_range(0, static_cast<int>(rare_items.size() - 1), selection);
-			inventory.add_item(svc.data.item, rare_items.at(choice), item::ItemType::collectible);
+			inventory.add_item(svc.data.item, rare_items.at(choice));
 		} else if (rand < 50) {
 			auto const choice = util::random::random_range(0, static_cast<int>(uncommon_items.size() - 1), selection);
-			inventory.add_item(svc.data.item, uncommon_items.at(choice), item::ItemType::collectible);
+			inventory.add_item(svc.data.item, uncommon_items.at(choice));
 		} else {
 			auto const choice = util::random::random_range(0, static_cast<int>(common_items.size() - 1), selection);
-			inventory.add_item(svc.data.item, common_items.at(choice), item::ItemType::collectible);
+			inventory.add_item(svc.data.item, common_items.at(choice));
 		}
 	}
 }

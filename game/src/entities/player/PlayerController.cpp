@@ -4,7 +4,7 @@
 
 namespace fornani::player {
 
-PlayerController::PlayerController(automa::ServiceProvider& svc) : shield(svc), cooldowns{.inspect = util::Cooldown(64)} {
+PlayerController::PlayerController(automa::ServiceProvider& svc) : cooldowns{.inspect = util::Cooldown(64)} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::jump, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));

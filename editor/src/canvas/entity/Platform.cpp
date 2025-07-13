@@ -18,7 +18,12 @@ void Platform::serialize(dj::Json& out) {
 	out["start"] = start;
 }
 
-void Platform::unserialize(dj::Json const& in) { Entity::unserialize(in); }
+void Platform::unserialize(dj::Json const& in) {
+	Entity::unserialize(in);
+	extent = in["extent"].as<int>();
+	type = in["type"].as_string();
+	start = in["start"].as<float>();
+}
 
 void Platform::expose() {
 	Entity::expose();

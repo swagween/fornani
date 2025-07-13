@@ -36,6 +36,8 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 		if (!m_dashboard->handle_inputs(controller, svc.soundboard)) { m_grid_position = {}; }
 	}
 
+	svc.soundboard.flags.pioneer.set(audio::Pioneer::hum);
+
 	m_background.setFillColor(util::ColorUtils::fade_in(colors::pioneer_black));
 
 	if (m_view == InventoryView::dashboard) {

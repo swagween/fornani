@@ -1,6 +1,5 @@
 
 #include "fornani/setup/DataManager.hpp"
-
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/ControllerMap.hpp"
@@ -217,28 +216,14 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	// items and abilities
 	save["player_data"]["abilities"] = dj::Json::empty_array();
 	save["player_data"]["items"] = dj::Json::empty_array();
-	if (player.catalog.abilities.has_ability(player::Abilities::dash)) { save["player_data"]["abilities"].push_back("dash"); }
-	if (player.catalog.abilities.has_ability(player::Abilities::wall_slide)) { save["player_data"]["abilities"].push_back("wallslide"); }
-	if (player.catalog.abilities.has_ability(player::Abilities::double_jump)) { save["player_data"]["abilities"].push_back("doublejump"); }
-	for (auto& item : player.catalog.inventory.key_items_view()) {
+	if (player.catalog.abilities.has_ability(player::AbilityType::dash)) { save["player_data"]["abilities"].push_back(1); }
+	if (player.catalog.abilities.has_ability(player::AbilityType::wall_slide)) { save["player_data"]["abilities"].push_back(0); }
+	if (player.catalog.abilities.has_ability(player::AbilityType::double_jump)) { save["player_data"]["abilities"].push_back(2); }
+	for (auto& item : player.catalog.inventory.items_view()) {
 		dj::Json this_item{};
 		this_item["label"] = item->get_label();
-		this_item["type"] = static_cast<int>(item->get_type());
 		this_item["quantity"] = 1;
-		save["player_data"]["items"].push_back(this_item);
-	}
-	for (auto& item : player.catalog.inventory.apparel_view()) {
-		dj::Json this_item{};
-		this_item["label"] = item->get_label();
-		this_item["type"] = static_cast<int>(item->get_type());
-		this_item["quantity"] = 1;
-		save["player_data"]["items"].push_back(this_item);
-	}
-	for (auto& item : player.catalog.inventory.gizmo_items_view()) {
-		dj::Json this_item{};
-		this_item["label"] = item->get_label();
-		this_item["type"] = static_cast<int>(item->get_type());
-		this_item["quantity"] = 1;
+		this_item["revealed"] = item->is_revealed();
 		save["player_data"]["items"].push_back(this_item);
 	}
 
@@ -281,7 +266,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	for (auto& vendor : marketplace) {
 		vendor.second.inventory = {};
 		for (auto& v : save["marketplace"].as_array()) {
-			for (auto& id : v.as_array()) { vendor.second.inventory.add_item(item, item["label"].as_string(), static_cast<item::ItemType>(item["type"].as<int>())); }
+			for (auto& id : v.as_array()) { vendor.second.inventory.add_item(item, item["label"].as_string()); }
 		}
 	}
 
@@ -344,7 +329,10 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	player.catalog.abilities.clear();
 	player.catalog.inventory = {};
 	for (auto& ability : save["player_data"]["abilities"].as_array()) { player.catalog.abilities.give_ability(ability.as<int>()); }
-	for (auto& item : save["player_data"]["items"].as_array()) { player.give_item(item["label"].as_string(), static_cast<item::ItemType>(item["type"].as<int>()), item["quantity"].as<int>()); }
+	for (auto& item : save["player_data"]["items"].as_array()) {
+		player.give_item(item["label"].as_string(), item["quantity"].as<int>());
+		if (item["revealed"].as_bool()) { player.catalog.inventory.reveal_item(item_id_from_label(item["label"].as_string())); }
+	}
 
 	// wardrobe
 	auto& wardrobe = player.catalog.wardrobe;
@@ -596,6 +584,13 @@ void DataManager::save_controls(config::ControllerMap& controller) {
 }
 
 void DataManager::reset_controls() { controls = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/defaults.json").c_str()); }
+
+auto DataManager::item_id_from_label(std::string_view label) const -> int {
+	for (auto const& l : m_item_labels) {
+		if (l.second == label) { return l.first; }
+	}
+	return 0;
+}
 
 int DataManager::get_room_index(int id) {
 	auto ctr{0};

@@ -64,6 +64,10 @@ void Console::update(automa::ServiceProvider& svc) {
 				auto lookup = m_services->controller_map.get_icon_lookup_by_action(static_cast<config::DigitalAction>(action_id));
 				m_writer->insert_icon_at(get_message_code().value, lookup);
 			}
+			if (get_message_code().is_reveal_item() && m_writer && m_process_codes) {
+				svc.events.dispatch_event("RevealItem", get_message_code().value);
+				m_process_codes = false;
+			}
 		}
 	}
 }
@@ -163,6 +167,8 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 	static bool can_skip{};
 	bool responded{};
 
+	if (next) { m_process_codes = true; }
+
 	// check for exit
 	if (exit && m_output_type != OutputType::no_skip) {
 		end();
@@ -180,7 +186,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 			if (get_response_code(m_response->get_selection()).is_suite_return()) { m_writer->set_suite(get_response_code(m_response->get_selection()).value); }
 			if (get_response_code(m_response->get_selection()).is_action()) { handle_actions(get_response_code(m_response->get_selection()).value); }
 			if (get_response_code(m_response->get_selection()).is_item()) {
-				m_services->events.dispatch_event("GivePlayerKeyItem", value, item::ItemType::key, 1);
+				m_services->events.dispatch_event("GivePlayerItem", value, 1);
 				if (get_response_code(m_response->get_selection()).extras) { m_services->events.dispatch_event("DestroyInspectable", get_response_code(m_response->get_selection()).extras->at(0)); }
 			}
 			if (get_response_code(m_response->get_selection()).is_destructible()) { m_services->data.destroy_block(get_response_code(m_response->get_selection()).value); }

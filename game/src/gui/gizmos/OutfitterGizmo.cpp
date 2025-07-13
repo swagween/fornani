@@ -49,7 +49,8 @@ void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 	if (m_description) {
 		m_description->update(svc, player, map, m_physics.position + m_path.get_dimensions());
 		bool found{};
-		for (auto& piece : player.catalog.inventory.apparel_view()) {
+		for (auto& piece : player.catalog.inventory.items_view()) {
+			if (piece->get_type() != item::ItemType::apparel) { continue; }
 			if (piece->get_id() == m_current_item_id) {
 				auto const& this_item = piece;
 				m_description->write(svc, this_item->get_title() + ": " + this_item->get_description(), svc.text.fonts.basic);
@@ -104,10 +105,11 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		// draw item sprites
 		auto column{0.f};
 		auto row{0.f};
-		for (auto& item : player.catalog.inventory.apparel_view()) {
+		for (auto& item : player.catalog.inventory.items_view()) {
+			if (item->get_type() != item::ItemType::apparel) { continue; }
 			m_apparel_sprite.setTextureRect(item->get_lookup());
 			m_apparel_sprite.setOrigin({-6.f, -6.f}); // center sprite in window
-			item->render(win, m_apparel_sprite, m_physics.position + m_placement + m_grid_offset + item->get_table_position().componentWiseMul(m_selector.get_spacing()) - cam);
+			item->render(win, m_apparel_sprite, m_physics.position + m_placement + m_grid_offset + item->get_f_origin().componentWiseMul(m_selector.get_spacing()) - cam);
 		}
 
 		m_selector.render(win, m_sprite, cam, selection_origin);

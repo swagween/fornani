@@ -21,6 +21,10 @@
       "room_id": 103
     },
     {
+      "label": "deck.json",
+      "room_id": 106
+    },
+    {
       "label": "prison.json",
       "room_id": 100
     },
