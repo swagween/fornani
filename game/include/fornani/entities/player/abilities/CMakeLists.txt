@@ -2,6 +2,7 @@ nani_add_sources(
   Ability.hpp
         Jump.hpp
         Dash.hpp
+        Doublejump.hpp
         Roll.hpp
         Slide.hpp
         Wallslide.hpp

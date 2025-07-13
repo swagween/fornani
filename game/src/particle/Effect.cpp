@@ -33,11 +33,13 @@ Effect::Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vecto
 		spritesheet_dimensions = {1, 4};
 		break;
 	case 5:
+		// medium flash
 		sprite.setOrigin({32.f, 32.f});
 		sprite_dimensions = {64, 64};
 		spritesheet_dimensions = {1, 5};
 		break;
 	case 6:
+		// small flash
 		sprite.setOrigin({16.f, 16.f});
 		sprite_dimensions = {32, 32};
 		spritesheet_dimensions = {1, 4};

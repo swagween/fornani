@@ -93,6 +93,11 @@ struct PlayerFlags {
 	util::BitFlags<Triggers> triggers{};
 };
 
+struct AbilityUsage {
+	util::Counter dash{};
+	util::Counter doublejump{};
+};
+
 class Player {
   public:
 	Player(automa::ServiceProvider& svc);
@@ -181,9 +186,6 @@ class Player {
 	// map helpers
 	SimpleDirection entered_from() const;
 
-	// for debug mode
-	std::string print_direction(bool lr);
-
 	// for ledge testing
 	entity::Caution caution{};
 
@@ -248,6 +250,9 @@ class Player {
   private:
 	void set_facing_direction(SimpleDirection to_direction) { m_directions.desired = to_direction; }
 
+	[[nodiscard]] auto can_dash() const -> bool;
+	[[nodiscard]] auto can_doublejump() const -> bool;
+
 	struct {
 		float stop{5.8f};
 		float wallslide{-1.5f};
@@ -272,6 +277,8 @@ class Player {
 		components::SteeringBehavior target{};
 		components::PhysicsComponent physics{};
 	} m_camera{};
+
+	AbilityUsage m_ability_usage{};
 
 	io::Logger m_logger{"player"};
 };

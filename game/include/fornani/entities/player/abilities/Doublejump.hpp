@@ -2,17 +2,16 @@
 #pragma once
 
 #include <fornani/entities/player/abilities/Ability.hpp>
+#include <fornani/utils/Cooldown.hpp>
 
 namespace fornani::player {
-class Dash : public Ability {
+class Doublejump : public Ability {
   public:
-	Dash(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction);
+	Doublejump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider);
 	void update(shape::Collider& collider, PlayerController& controller) override;
 
   private:
 	util::Cooldown m_start{12};
 	float m_vertical_multiplier;
-	float m_horizontal_multiplier;
-	int m_rate;
 };
 } // namespace fornani::player

@@ -1,9 +1,8 @@
+
 #include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-
 #include <ccmath/ext/clamp.hpp>
-
 #include <cmath>
+#include "fornani/service/ServiceProvider.hpp"
 
 // TODO: Replace functions in here with ccmath functions instead.
 

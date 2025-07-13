@@ -1,5 +1,6 @@
 
 #include "fornani/entities/player/PlayerController.hpp"
+#include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::player {
@@ -18,7 +19,7 @@ PlayerController::PlayerController(automa::ServiceProvider& svc) : cooldowns{.in
 	direction.lnr = LNR::right;
 }
 
-void PlayerController::update(automa::ServiceProvider& svc) {
+void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Player& player) {
 	if (walking_autonomously()) {
 		prevent_movement();
 		key_map[ControllerInput::move_x] = direction.lnr == LNR::left ? -walk_speed_v : walk_speed_v;
@@ -79,6 +80,29 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto const& dash_left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered && !grounded() && left;
 	auto const& dash_right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered && !grounded() && right;
 
+	key_map[ControllerInput::move_y] = 0.f;
+	if (up) { key_map[ControllerInput::move_y] -= 1.f; }
+	if (down) { key_map[ControllerInput::move_y] += 1.f; }
+
+	/* handle abilities */
+	if (player.grounded()) { player.m_ability_usage = {}; }
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered) {
+		if (player.can_dash()) {
+			m_ability = std::make_unique<Dash>(svc, map, player.collider, player.get_actual_direction());
+			player.m_ability_usage.dash.update();
+		}
+	}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).triggered) {
+		if (player.can_doublejump()) {
+			m_ability = std::make_unique<Doublejump>(svc, map, player.collider);
+			player.m_ability_usage.doublejump.update();
+		}
+	}
+	if (m_ability) {
+		m_ability.value()->update(player.collider, *this);
+		if (m_ability.value()->is_done()) { m_ability = {}; }
+	}
+
 	key_map[ControllerInput::move_x] = 0.f;
 	// keyboard
 	if (svc.controller_map.is_gamepad()) {
@@ -87,10 +111,6 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		if (left) { key_map[ControllerInput::move_x] -= walk_speed_v; }
 		if (right) { key_map[ControllerInput::move_x] += walk_speed_v; }
 	}
-
-	key_map[ControllerInput::move_y] = 0.f;
-	if (up) { key_map[ControllerInput::move_y] -= 1.f; }
-	if (down) { key_map[ControllerInput::move_y] += 1.f; }
 
 	// shield
 	key_map[ControllerInput::shield] = 0.f;
@@ -117,9 +137,9 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	direction.set_intermediate(left, right, up, down);
 
 	// dash
-	key_map[ControllerInput::dash] = dash_left && !dash_right ? -1.f : key_map[ControllerInput::dash];
+	/*key_map[ControllerInput::dash] = dash_left && !dash_right ? -1.f : key_map[ControllerInput::dash];
 	key_map[ControllerInput::dash] = dash_right && !dash_left ? 1.f : key_map[ControllerInput::dash];
-	if (key_map[ControllerInput::dash] != 0.f && dash_count == 0) { dash_request = dash_time; }
+	if (key_map[ControllerInput::dash] != 0.f && dash_count == 0) { dash_request = dash_time; }*/
 
 	// sprint
 	if (sprint_release) { sprint_flags.set(Sprint::released); }
@@ -176,7 +196,6 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 		jump.start_coyote();
 		jump.jump_counter.start();
 	}
-	decrement_requests();
 	jump.update();
 }
 
@@ -206,20 +225,7 @@ void PlayerController::unrestrict() {
 
 void PlayerController::uninspect() { key_map[ControllerInput::inspect] = 0.f; }
 
-void PlayerController::stop_dashing() { key_map[ControllerInput::dash] = 0.f; }
-
-void PlayerController::decrement_requests() {
-	--dash_request;
-	if (dash_request < 0) { dash_request = -1; }
-}
-
-void PlayerController::reset_dash_count() { dash_count = 0; }
-
-void PlayerController::cancel_dash_request() { dash_request = -1; }
-
 void player::PlayerController::reset_vertical_movement() { key_map[ControllerInput::move_y] = 0.f; }
-
-void PlayerController::dash() { dash_count = 1; }
 
 void PlayerController::walljump() { flags.set(MovementState::walljumping); }
 
@@ -250,11 +256,6 @@ void PlayerController::prevent_movement() {
 
 void PlayerController::release_hook() { hook_flags.reset(Hook::hook_released); }
 
-void PlayerController::nullify_dash() {
-	cancel_dash_request();
-	stop_dashing();
-}
-
 void PlayerController::stop_walljumping() { flags.reset(MovementState::walljumping); }
 
 void PlayerController::set_arsenal(bool const has) { has ? hard_state.set(HardState::has_arsenal) : hard_state.reset(HardState::has_arsenal); }
@@ -265,6 +266,10 @@ std::optional<float> PlayerController::get_controller_state(ControllerInput key)
 	} else {
 		return std::nullopt;
 	}
+}
+std::optional<AnimState> PlayerController::get_ability_animation() const {
+	if (m_ability) { return m_ability.value()->get_animation(); }
+	return std::nullopt;
 }
 
 } // namespace fornani::player

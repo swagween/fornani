@@ -1,14 +1,7 @@
 
 #pragma once
-#include <fornani/entities/player/abilities/Dash.hpp>
-#include <fornani/entities/player/abilities/Jump.hpp>
-#include <fornani/entities/player/abilities/Roll.hpp>
-#include <fornani/entities/player/abilities/Slide.hpp>
-#include <fornani/entities/player/abilities/Wallslide.hpp>
-#include "fornani/utils/BitFlags.hpp"
 
-#include <memory>
-#include <optional>
+#include "fornani/utils/BitFlags.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -20,7 +13,7 @@ class Console;
 
 namespace fornani::player {
 
-enum class AbilityType : std::uint8_t { wall_slide, dash, double_jump, respiration };
+enum class AbilityType : std::uint8_t { wallslide, dash, doublejump, respiration };
 
 class AbilityManager {
   public:
@@ -32,7 +25,6 @@ class AbilityManager {
 
   private:
 	util::BitFlags<AbilityType> ability_flags{};
-	std::optional<std::unique_ptr<Ability>> m_active_ability{};
 };
 
 } // namespace fornani::player

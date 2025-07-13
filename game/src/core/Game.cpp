@@ -509,8 +509,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Checkbox("Wallslide", &playtest.b_wallslide);
 								ImGui::Checkbox("Double Jump", &playtest.b_doublejump);
 								playtest.b_dash ? player.catalog.abilities.give_ability(player::AbilityType::dash) : player.catalog.abilities.remove_ability(player::AbilityType::dash);
-								playtest.b_wallslide ? player.catalog.abilities.give_ability(player::AbilityType::wall_slide) : player.catalog.abilities.remove_ability(player::AbilityType::wall_slide);
-								playtest.b_doublejump ? player.catalog.abilities.give_ability(player::AbilityType::double_jump) : player.catalog.abilities.remove_ability(player::AbilityType::double_jump);
+								playtest.b_wallslide ? player.catalog.abilities.give_ability(player::AbilityType::wallslide) : player.catalog.abilities.remove_ability(player::AbilityType::wallslide);
+								playtest.b_doublejump ? player.catalog.abilities.give_ability(player::AbilityType::doublejump) : player.catalog.abilities.remove_ability(player::AbilityType::doublejump);
 
 								ImGui::EndTabItem();
 							}

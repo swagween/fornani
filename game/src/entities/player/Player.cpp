@@ -58,7 +58,6 @@ void Player::update(world::Map& map) {
 	invincible() ? collider.draw_hurtbox.setFillColor(colors::red) : collider.draw_hurtbox.setFillColor(colors::blue);
 
 	collider.flags.general.set(shape::General::complex);
-	if (!catalog.abilities.has_ability(AbilityType::dash)) { controller.nullify_dash(); }
 
 	collider.physics.gravity = physics_stats.grav;
 	collider.physics.maximum_velocity = physics_stats.maximum_velocity;
@@ -69,11 +68,10 @@ void Player::update(world::Map& map) {
 	update_direction();
 	grounded() ? controller.ground() : controller.unground();
 
-	if (!catalog.abilities.has_ability(AbilityType::double_jump)) { controller.get_jump().jump_counter.cancel(); }
-	controller.update(*m_services);
-	if (collider.hit_ceiling_ramp()) { controller.get_jump().cancel(); }
+	// if (!catalog.abilities.has_ability(AbilityType::doublejump)) { controller.get_jump().jump_counter.cancel(); }
 
-	if (grounded()) { controller.reset_dash_count(); }
+	controller.update(*m_services, map, *this);
+	if (collider.hit_ceiling_ramp()) { controller.get_jump().cancel(); }
 
 	// do this elsehwere later
 	if (collider.flags.state.test(shape::State::just_landed)) {
@@ -97,7 +95,6 @@ void Player::update(world::Map& map) {
 
 	// player-controlled actions
 	if (hotbar) { hotbar.value().switch_weapon(*m_services, static_cast<int>(controller.arms_switch())); }
-	dash();
 	jump(map);
 	wallslide();
 	update_animation();
@@ -131,14 +128,6 @@ void Player::update(world::Map& map) {
 	if (orb_indicator.active()) { health_indicator.shift(); }
 	update_invincibility();
 	update_weapon();
-
-	if (catalog.abilities.has_ability(AbilityType::dash)) {
-		if (!(animation.is_state(AnimState::dash)) && !controller.dash_requested()) {
-			controller.stop_dashing();
-			controller.cancel_dash_request();
-			collider.flags.dash.reset(shape::Dash::dash_cancel_collision);
-		}
-	}
 
 	if (animation.is_state(AnimState::slide) && m_services->ticker.every_x_ticks(12)) {
 		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "slide", colors::ui_white, Direction(UND::up)));
@@ -230,9 +219,9 @@ void Player::update_animation() {
 	if (grounded()) {
 		if (controller.inspecting()) { animation.request(AnimState::inspect); }
 		if (!(animation.is_state(AnimState::land) || animation.is_state(AnimState::rise))) {
-			if (controller.nothing_pressed() && !controller.dashing() && !(animation.is_state(AnimState::inspect)) && !(animation.is_state(AnimState::sit))) { animation.request(AnimState::idle); }
-			if (controller.moving() && !controller.dashing() && !controller.sprinting()) { animation.request(AnimState::run); }
-			if (controller.moving() && controller.sprinting() && !controller.dashing()) { animation.request(AnimState::sprint); }
+			if (controller.nothing_pressed() && !controller.is_dashing() && !(animation.is_state(AnimState::inspect)) && !(animation.is_state(AnimState::sit))) { animation.request(AnimState::idle); }
+			if (controller.moving() && !controller.is_dashing() && !controller.sprinting()) { animation.request(AnimState::run); }
+			if (controller.moving() && controller.sprinting() && !controller.is_dashing()) { animation.request(AnimState::sprint); }
 			if ((animation.is_state(AnimState::sprint) || animation.is_state(AnimState::roll)) && controller.sliding() && controller.get_slide().can_begin()) { animation.request(AnimState::slide); }
 			if (abs(collider.physics.velocity.x) > thresholds.stop && !controller.moving()) { animation.request(AnimState::stop); }
 			if (hotbar && arsenal) {
@@ -248,14 +237,9 @@ void Player::update_animation() {
 
 	if (collider.physics.apparent_velocity().y > thresholds.suspend && !grounded()) { animation.request(AnimState::fall); }
 
-	if (catalog.abilities.has_ability(AbilityType::dash)) {
-		if (controller.dashing() && controller.can_dash()) { animation.request(AnimState::dash); }
-		if (controller.dash_requested()) {
-			animation.request(AnimState::dash);
-			flags.state.reset(State::show_weapon);
-		}
-	}
-	if (catalog.abilities.has_ability(AbilityType::wall_slide)) {
+	if (controller.get_ability_animation()) { animation.request(*controller.get_ability_animation()); }
+
+	if (catalog.abilities.has_ability(AbilityType::wallslide)) {
 		if (controller.get_wallslide().is_wallsliding()) { animation.request(AnimState::wallslide); }
 	}
 	if (controller.moving() && grounded() && controller.can_jump()) {
@@ -351,7 +335,7 @@ void Player::jump(world::Map& map) {
 		controller.get_jump().reset();
 	}
 	if (collider.flags.state.test(shape::State::just_landed)) { controller.get_jump().reset_jumping(); }
-	if (catalog.abilities.has_ability(AbilityType::double_jump)) {
+	/*if (catalog.abilities.has_ability(AbilityType::doublejump)) {
 		if (controller.get_jump().just_doublejumped()) {
 			collider.physics.velocity.y = 0.f;
 			controller.get_jump().doublejump();
@@ -360,27 +344,11 @@ void Player::jump(world::Map& map) {
 			controller.stop_dashing();
 		}
 		if (controller.get_jump().is_doublejump()) { animation.request(AnimState::backflip); }
-	}
-}
-
-void Player::dash() {
-	if (!catalog.abilities.has_ability(AbilityType::dash)) { return; }
-	if (controller.get_jump().is_doublejump_cooling_down()) { return; }
-	if (animation.is_state(AnimState::dash) || controller.dash_requested()) {
-		collider.flags.movement.set(shape::Movement::dashing);
-		collider.physics.acceleration.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
-		collider.physics.velocity.y = controller.vertical_movement() * physics_stats.vertical_dash_multiplier;
-
-		if (!collider.flags.dash.test(shape::Dash::dash_cancel_collision)) {
-			collider.physics.acceleration.x += controller.dash_value() * physics_stats.dash_speed;
-			collider.physics.velocity.x += controller.dash_value() * physics_stats.dash_speed;
-		}
-		controller.dash();
-	}
+	}*/
 }
 
 void Player::wallslide() {
-	if (!catalog.abilities.has_ability(AbilityType::wall_slide)) { return; }
+	if (!catalog.abilities.has_ability(AbilityType::wallslide)) { return; }
 	controller.get_wallslide().end();
 	if (!grounded() && collider.physics.velocity.y > thresholds.wallslide) {
 		if ((collider.has_left_wallslide_collision() && controller.moving_left()) || (collider.has_right_wallslide_collision() && controller.moving_right())) {
@@ -669,12 +637,19 @@ void Player::pop_from_loadout(int id) {
 
 SimpleDirection Player::entered_from() const { return (collider.physics.position.x < constants::f_cell_size * 8.f) ? SimpleDirection(LR::right) : SimpleDirection(LR::left); }
 
-std::string Player::print_direction(bool lr) {
-	if (lr) {
-		if (controller.facing_left()) return "LEFT";
-		if (controller.facing_right()) return "RIGHT";
-	}
-	return "NULL";
+bool Player::can_dash() const {
+	if (!catalog.abilities.has_ability(AbilityType::dash)) { return false; }
+	if (grounded()) { return false; }
+	if (m_ability_usage.dash.get_count() > 0) { return false; }
+	return true;
+}
+
+bool Player::can_doublejump() const {
+	if (!catalog.abilities.has_ability(AbilityType::doublejump)) { return false; }
+	if (controller.is_wallsliding()) { return false; }
+	if (grounded()) { return false; }
+	if (m_ability_usage.doublejump.get_count() > 0) { return false; }
+	return true;
 }
 
 } // namespace fornani::player

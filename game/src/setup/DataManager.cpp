@@ -217,8 +217,8 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["player_data"]["abilities"] = dj::Json::empty_array();
 	save["player_data"]["items"] = dj::Json::empty_array();
 	if (player.catalog.abilities.has_ability(player::AbilityType::dash)) { save["player_data"]["abilities"].push_back(1); }
-	if (player.catalog.abilities.has_ability(player::AbilityType::wall_slide)) { save["player_data"]["abilities"].push_back(0); }
-	if (player.catalog.abilities.has_ability(player::AbilityType::double_jump)) { save["player_data"]["abilities"].push_back(2); }
+	if (player.catalog.abilities.has_ability(player::AbilityType::wallslide)) { save["player_data"]["abilities"].push_back(0); }
+	if (player.catalog.abilities.has_ability(player::AbilityType::doublejump)) { save["player_data"]["abilities"].push_back(2); }
 	for (auto& item : player.catalog.inventory.items_view()) {
 		dj::Json this_item{};
 		this_item["label"] = item->get_label();

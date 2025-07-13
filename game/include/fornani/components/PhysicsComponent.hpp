@@ -24,7 +24,7 @@ enum class State { grounded };
 
 class PhysicsComponent {
   public:
-	PhysicsComponent() : ground_friction(FRICTION_DEFAULT), air_friction(FRICTION_DEFAULT), mass(MASS_DEFAULT){};
+	PhysicsComponent() : ground_friction(FRICTION_DEFAULT), air_friction(FRICTION_DEFAULT), mass(MASS_DEFAULT) {};
 	PhysicsComponent(sf::Vector2f fric, float ma, sf::Vector2f max_vel = sf::Vector2{UNIVERSAL_MAX_SPEED, UNIVERSAL_MAX_SPEED}, float grav = 0.0f)
 		: ground_friction(fric), air_friction(fric), mass(ma), gravity(grav), maximum_velocity(max_vel) {}
 
@@ -80,7 +80,7 @@ class PhysicsComponent {
 
 	util::BitFlags<State> flags{};
 	Direction direction{};
-	
+
 	float epsilon{0.0001f};
 };
 

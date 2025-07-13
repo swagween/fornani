@@ -1,6 +1,8 @@
 nani_add_sources(
+  Ability.cpp
         Jump.cpp
         Dash.cpp
+        Doublejump.cpp
         Roll.cpp
         Slide.cpp
         Wallslide.cpp
