@@ -62,6 +62,7 @@ class PlayerController {
 	std::optional<AnimState> get_ability_animation() const;
 	[[nodiscard]] auto last_requested_direction() -> SimpleDirection const& { return m_last_requested_direction; }
 	[[nodiscard]] auto is_dashing() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::dash) : false; }
+	[[nodiscard]] auto is_ability_active() const -> bool { return m_ability ? m_ability.value()->is_active() : false; }
 
 	[[nodiscard]] auto nothing_pressed() -> bool { return key_map[ControllerInput::move_x] == 0.f && key_map[ControllerInput::jump] == 0.f && key_map[ControllerInput::inspect] == 0.f; }
 	[[nodiscard]] auto moving() -> bool { return key_map[ControllerInput::move_x] != 0.f; }
@@ -97,7 +98,6 @@ class PlayerController {
 	[[nodiscard]] auto get_jump() -> Jump& { return jump; }
 	[[nodiscard]] auto get_wallslide() -> Wallslide& { return wallslide; }
 	[[nodiscard]] auto get_slide() -> Slide& { return slide; }
-	Roll roll{};
 
 	Direction direction{};
 
@@ -119,5 +119,7 @@ class PlayerController {
 	struct {
 		util::Cooldown inspect{};
 	} cooldowns{};
+
+	io::Logger m_logger{"Controller"};
 };
 } // namespace fornani::player

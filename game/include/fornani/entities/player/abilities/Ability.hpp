@@ -21,6 +21,7 @@ struct ServiceProvider;
 }
 
 namespace fornani::player {
+enum class AbilityFlags { failed, active };
 class PlayerController;
 class Ability : public Polymorphic {
   public:
@@ -29,13 +30,16 @@ class Ability : public Polymorphic {
 
 	[[nodiscard]] auto is(AbilityType test) const -> bool { return m_type == test; }
 	[[nodiscard]] auto is_done() const -> bool { return m_duration.is_complete(); }
+	[[nodiscard]] auto is_active() const -> bool { return m_flags.test(AbilityFlags::active); }
 	[[nodiscard]] auto get_animation() const -> AnimState { return m_state; }
+	[[nodiscard]] auto failed() const -> bool { return m_flags.test(AbilityFlags::failed); }
 
   protected:
 	util::Cooldown m_duration;
 	Direction m_direction;
 	AnimState m_state{};
 	AbilityType m_type;
+	util::BitFlags<AbilityFlags> m_flags{};
 
 	io::Logger m_logger{"Ability"};
 };

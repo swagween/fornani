@@ -371,6 +371,7 @@ fsm::StateFunction PlayerAnimation::update_land() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
+	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
 	if (animation.complete()) {
 		m_player->controller.get_slide().end();
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
@@ -555,14 +556,11 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 		return PA_BIND(update_rise);
 	}
 
-	if (slider.broke_out() && !m_player->controller.roll.rolling()) {
-		m_player->controller.get_slide().end();
+	/*if (slider.broke_out() && !m_player->controller.roll.rolling()) {
 		request(AnimState::get_up);
 		animation.set_params(get_params("get_up"));
 		return PA_BIND(update_get_up);
-	}
-
-	m_player->controller.roll.break_out();
+	}*/
 
 	if (!m_player->grounded()) {
 		m_player->controller.get_slide().end();
@@ -640,42 +638,20 @@ fsm::StateFunction PlayerAnimation::update_roll() {
 	m_actual = AnimState::roll;
 	auto& controller = m_player->controller;
 	controller.reset_vertical_movement();
-	auto sign = m_player->controller.moving_left() ? -1.f : 1.f;
-	if (!m_player->controller.moving()) { sign = m_player->controller.facing_left() ? -1.f : 1.f; }
-	m_player->collider.physics.velocity.x = m_player->physics_stats.roll_speed * sign;
-	if (!controller.roll.rolling()) {
-		controller.roll.direction.lnr = controller.direction.lnr;
-		m_player->m_services->soundboard.flags.player.set(audio::Player::roll);
-	}
-	controller.roll.roll();
 	if (change_state(AnimState::inspect, get_params("inspect"))) {
 		m_player->collider.physics.stop_x();
-		controller.roll.break_out();
 		return PA_BIND(update_inspect);
 	}
-	if (change_state(AnimState::die, get_params("die"), true)) {
-		controller.roll.break_out();
-		return PA_BIND(update_die);
-	}
-	if (change_state(AnimState::hurt, get_params("hurt"))) {
-		controller.roll.break_out();
-		return PA_BIND(update_hurt);
-	}
-	if (change_state(AnimState::rise, get_params("rise"))) {
-		controller.roll.break_out();
-		return PA_BIND(update_rise);
-	}
-	if (change_state(AnimState::suspend, get_params("suspend"))) {
-		controller.roll.break_out();
-		return PA_BIND(update_suspend);
-	}
+	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
+	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
+	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
+	if (change_state(AnimState::suspend, get_params("suspend"))) { return PA_BIND(update_suspend); }
 
 	if (animation.complete()) {
 		if (controller.sliding() && !m_player->firing_weapon()) {
 			animation.set_params(get_params("slide"));
 			return PA_BIND(update_slide);
 		} else {
-			controller.roll.break_out();
 			if (controller.sprinting()) {
 				animation.set_params(get_params("sprint"));
 				return PA_BIND(update_sprint);
@@ -685,11 +661,11 @@ fsm::StateFunction PlayerAnimation::update_roll() {
 		}
 	}
 
-	if (controller.roll.direction.lnr != controller.direction.lnr) {
+	/*if (controller.roll.direction.lnr != controller.direction.lnr) {
 		m_player->collider.physics.hard_stop_x();
 		animation.set_params(get_params("sharp_turn"));
 		return PA_BIND(update_sharp_turn);
-	}
+	}*/
 
 	return PA_BIND(update_roll);
 }

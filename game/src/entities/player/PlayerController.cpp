@@ -9,7 +9,6 @@ PlayerController::PlayerController(automa::ServiceProvider& svc) : cooldowns{.in
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::jump, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
-	key_map.insert(std::make_pair(ControllerInput::shield, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::arms_switch, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::inspect, 0.f));
@@ -33,8 +32,6 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 
 	auto const& left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_left).held;
 	auto const& right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_right).held;
-	// TODO: get this to work
-	// auto const& throttle = svc.controller_map.analog_action_status(config::AnalogAction::platformer_movement).x;
 	auto const& up = svc.controller_map.digital_action_status(config::DigitalAction::platformer_up).held;
 	auto const& down = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).held;
 
@@ -60,10 +57,6 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	auto const& right_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_right).released;
 	auto const& down_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).released;
 	auto const& down_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).triggered;
-
-	auto const& slide_held = svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).held;
-	auto const& slide_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).released;
-	auto const& slide_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).triggered;
 
 	auto it{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).triggered};
 	auto ir{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).released};
@@ -93,15 +86,20 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		}
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).triggered) {
-		if (player.can_doublejump()) {
+		if (player.can_doublejump() && !jump.coyote()) {
 			m_ability = std::make_unique<Doublejump>(svc, map, player.collider);
+			NANI_LOG_DEBUG(m_logger, "double jumped!");
 			player.m_ability_usage.doublejump.update();
 		}
 	}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).triggered) {
+		if (!m_ability && player.can_roll() && sprint) { m_ability = std::make_unique<Roll>(svc, map, player.collider, player.get_actual_direction()); }
+	}
 	if (m_ability) {
 		m_ability.value()->update(player.collider, *this);
-		if (m_ability.value()->is_done()) { m_ability = {}; }
+		if (m_ability.value()->is_done() || m_ability.value()->failed()) { m_ability = {}; }
 	}
+	/* end abilities */
 
 	key_map[ControllerInput::move_x] = 0.f;
 	// keyboard
@@ -111,20 +109,6 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		if (left) { key_map[ControllerInput::move_x] -= walk_speed_v; }
 		if (right) { key_map[ControllerInput::move_x] += walk_speed_v; }
 	}
-
-	// shield
-	key_map[ControllerInput::shield] = 0.f;
-
-	// roll
-	roll.update();
-	if (slide_pressed && moving() && sprint) { roll.request(); }
-	if (grounded()) { roll.reset(); }
-
-	// slide
-	slide.update();
-	key_map[ControllerInput::slide] = 0.f;
-	if (moving() && slide_held && grounded()) { key_map[ControllerInput::slide] = key_map[ControllerInput::move_x]; }
-	if ((slide_released || (left_released || right_released)) && !roll.rolling()) { slide.break_out(); }
 
 	// sprint
 	key_map[ControllerInput::sprint] = 0.f;
@@ -190,7 +174,6 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (jump.requested() && can_jump()) {
 		jump.triggers.set(JumpTrigger::jumpsquat);
 		jump.prevent();
-		if (!jump.coyote()) { jump.doublejump(); }
 	}
 	if (grounded()) {
 		jump.start_coyote();

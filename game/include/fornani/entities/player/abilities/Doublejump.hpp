@@ -2,7 +2,6 @@
 #pragma once
 
 #include <fornani/entities/player/abilities/Ability.hpp>
-#include <fornani/utils/Cooldown.hpp>
 
 namespace fornani::player {
 class Doublejump : public Ability {
@@ -11,7 +10,6 @@ class Doublejump : public Ability {
 	void update(shape::Collider& collider, PlayerController& controller) override;
 
   private:
-	util::Cooldown m_start{12};
 	float m_vertical_multiplier;
 };
 } // namespace fornani::player

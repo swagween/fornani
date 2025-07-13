@@ -25,5 +25,26 @@
 		],
 		"responses": [
 		]
+	},
+	"woodshine_totem": {
+		"codes": [
+			[
+				0,
+				0,
+				2,
+				10,
+				86,
+				7
+			]
+		],
+		"suite": [
+			[
+				"You've kept this treasure close ever since your mother gave it to you. It is a symbol of your Kariba origins, and it represents your faithfulness to the tribe.",
+				"You are grateful that Doctor Willett had given you this pocket gizmo in which to store it, otherwise it might have been confiscated by Skycorps.",
+				"This totem grants you the ability to roll on the ground right as you land by pressing  . It will give you a slight speed boost."
+			]
+		],
+		"responses": [
+		]
 	}
 }

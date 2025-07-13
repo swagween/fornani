@@ -398,5 +398,113 @@
 		"unique": false,
 		"rarity": 2,
 		"value": 11000
+	},
+	"pioneer_medal": {
+		"id": 113,
+		"category": 0,
+		"lookup": [ 0, 7 ],
+		"origin": [ 0, 0 ],
+		"naive_title": "Pioneer Medal",
+		"actual_title": "Pioneer Medal",
+		"naive_description": "A heavy medal crafted from old pioneer scrap metal. It grants you the ability to slide on the ground.",
+		"actual_description": "A heavy medal crafted from old pioneer scrap metal. It grants you the ability to slide on the ground.",
+		"unique": true,
+		"readable": true
+	},
+	"woodshine_totem": {
+		"id": 114,
+		"category": 0,
+		"lookup": [ 1, 7 ],
+		"origin": [ 1, 0 ],
+		"naive_title": "Woodshine Totem",
+		"actual_title": "Woodshine Totem",
+		"naive_description": "An old stone totem that your mother gave you on your sixteenth birthday. It grants you the ability to slide when you land on the ground.",
+		"actual_description": "An old stone totem that your mother gave you on your sixteenth birthday. It grants you the ability to slide when you land on the ground.",
+		"unique": true,
+		"readable": true
+	},
+	"kariba_talisman": {
+		"id": 115,
+		"category": 0,
+		"lookup": [ 2, 7 ],
+		"origin": [ 2, 0 ],
+		"naive_title": "Kariba Talisman",
+		"actual_title": "Kariba Talisman",
+		"naive_description": "An ancient talisman that hums with an ominous energy. It grants you the ability to slide on and jump off of walls.",
+		"actual_description": "An ancient talisman that hums with an ominous energy. It grants you the ability to slide on and jump off of walls.",
+		"unique": true,
+		"readable": true
+	},
+	"pirag_charm": {
+		"id": 116,
+		"category": 0,
+		"lookup": [ 3, 7 ],
+		"origin": [ 3, 0 ],
+		"naive_title": "Mysterious Charm",
+		"actual_title": "Pirag Charm",
+		"naive_description": "A mysterious charm of unknown origin. It doesn't seem to do anything.",
+		"actual_description": "A mysterious charm of unknown origin. It allows you to see the life force of your enemies.",
+		"unique": true,
+		"readable": true
+	},
+	"old_ivory_amulet": {
+		"id": 117,
+		"category": 0,
+		"lookup": [ 4, 7 ],
+		"origin": [ 4, 0 ],
+		"naive_title": "Old Ivory Amulet",
+		"actual_title": "Old Ivory Amulet",
+		"naive_description": "A powerful amulet covered in a layer of verdigris. It allows you to dash forward in the air.",
+		"actual_description": "A powerful amulet covered in a layer of verdigris. It allows you to dash forward in the air.",
+		"unique": true,
+		"readable": true
+	},
+	"sky_pendant": {
+		"id": 118,
+		"category": 0,
+		"lookup": [ 5, 7 ],
+		"origin": [ 5, 0 ],
+		"naive_title": "Sky Pendant",
+		"actual_title": "Sky Pendant",
+		"naive_description": "A light pendant that you can wear around your neck. It allows you to jump a second time while in the air.",
+		"actual_description": "A light pendant that you can wear around your neck. It allows you to jump a second time while in the air.",
+		"unique": true,
+		"readable": true
+	},
+	"forest_token": {
+		"id": 119,
+		"category": 0,
+		"lookup": [ 6, 7 ],
+		"origin": [ 6, 0 ],
+		"naive_title": "Forest Token",
+		"actual_title": "Forest Token",
+		"naive_description": "A small iron token that you found in the abandoned forest. It allows you to kick and stun certain enemies after dashing.",
+		"actual_description": "A small iron token that you found in the abandoned forest. It allows you to kick and stun certain enemies after dashing.",
+		"unique": true,
+		"readable": true
+	},
+	"imbier_totem": {
+		"id": 120,
+		"category": 0,
+		"lookup": [ 7, 7 ],
+		"origin": [ 7, 0 ],
+		"naive_title": "Imbier Totem",
+		"actual_title": "Imbier Totem",
+		"naive_description": "A sinister totem from the depths of Imbier Temple. It allows you to dash a second time while in the air.",
+		"actual_description": "A sinister totem from the depths of Imbier Temple. It allows you to dash a second time while in the air.",
+		"unique": true,
+		"readable": true
+	},
+	"ancient_periapt": {
+		"id": 121,
+		"category": 0,
+		"lookup": [ 8, 7 ],
+		"origin": [ 8, 0 ],
+		"naive_title": "Ancient Periapt",
+		"actual_title": "Ancient Periapt",
+		"naive_description": "A golden charm that is always warm to the touch. It allows you to dash in any direction.",
+		"actual_description": "A golden charm that is always warm to the touch. It allows you to dash in any direction.",
+		"unique": true,
+		"readable": true
 	}
 }

@@ -4,7 +4,6 @@ namespace fornani::player {
 
 void Jump::update() {
 	cooldown.update();
-	m_dj_cooldown.update();
 	if (!cooldown.is_complete()) {
 		states.set(JumpState::jump_began);
 		coyote_time.cancel();
@@ -31,11 +30,6 @@ void Jump::cancel() {
 }
 
 void Jump::prevent() { request.cancel(); }
-
-void Jump::doublejump() {
-	jump_counter.update();
-	m_dj_cooldown.start();
-}
 
 void Jump::start() {
 	cooldown.start(cooldown_time);

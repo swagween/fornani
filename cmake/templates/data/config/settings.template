@@ -2,7 +2,8 @@
 	"auto_sprint": false,
 	"keyboard": true,
 	"gamepad": true,
-	"music_volume": 30.0,
+	"music_volume": 0.5,
+	"sfx_volume": 0.5,
 	"tutorial": false,
 	"fullscreen": false,
 	"military_time": false

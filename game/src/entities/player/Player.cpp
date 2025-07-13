@@ -237,7 +237,7 @@ void Player::update_animation() {
 
 	if (collider.physics.apparent_velocity().y > thresholds.suspend && !grounded()) { animation.request(AnimState::fall); }
 
-	if (controller.get_ability_animation()) { animation.request(*controller.get_ability_animation()); }
+	if (controller.get_ability_animation() && controller.is_ability_active()) { animation.request(*controller.get_ability_animation()); }
 
 	if (catalog.abilities.has_ability(AbilityType::wallslide)) {
 		if (controller.get_wallslide().is_wallsliding()) { animation.request(AnimState::wallslide); }
@@ -255,7 +255,6 @@ void Player::update_animation() {
 		flags.state.reset(State::show_weapon);
 	}
 
-	if (controller.roll.is_valid() && grounded() && controller.moving()) { animation.request(AnimState::roll); }
 	// for sliding down ramps
 	animation.is_state(AnimState::slide) ? collider.flags.animation.set(shape::Animation::sliding) : collider.flags.animation.reset(shape::Animation::sliding);
 	if (animation.is_state(AnimState::roll)) { collider.flags.animation.set(shape::Animation::sliding); }
@@ -638,17 +637,24 @@ void Player::pop_from_loadout(int id) {
 SimpleDirection Player::entered_from() const { return (collider.physics.position.x < constants::f_cell_size * 8.f) ? SimpleDirection(LR::right) : SimpleDirection(LR::left); }
 
 bool Player::can_dash() const {
-	if (!catalog.abilities.has_ability(AbilityType::dash)) { return false; }
+	if (!catalog.inventory.has_item("old_ivory_amulet")) { return false; }
 	if (grounded()) { return false; }
 	if (m_ability_usage.dash.get_count() > 0) { return false; }
 	return true;
 }
 
 bool Player::can_doublejump() const {
-	if (!catalog.abilities.has_ability(AbilityType::doublejump)) { return false; }
+	if (!catalog.inventory.has_item("sky_pendant")) { return false; }
 	if (controller.is_wallsliding()) { return false; }
 	if (grounded()) { return false; }
 	if (m_ability_usage.doublejump.get_count() > 0) { return false; }
+	return true;
+}
+
+bool Player::can_roll() const {
+	if (!catalog.inventory.has_item("woodshine_totem")) { return false; }
+	if (controller.is_wallsliding()) { return false; }
+	if (grounded()) { return false; }
 	return true;
 }
 

@@ -29,12 +29,8 @@ class Jump {
 
 	void start_coyote() { coyote_time.start(); }
 	[[nodiscard]] auto coyote() const -> bool { return coyote_time.running(); }
-	[[nodiscard]] auto can_doublejump() const -> bool { return jump_counter.get_count() == 0; }
-	[[nodiscard]] auto is_doublejump() const -> bool { return jump_counter.get_count() >= 1; }
-	[[nodiscard]] auto just_doublejumped() const -> bool { return jump_counter.get_count() == 1; }
 	[[nodiscard]] auto get_coyote() const -> int { return coyote_time.get(); }
 	[[nodiscard]] auto get_count() const -> int { return jump_counter.get_count(); }
-	[[nodiscard]] auto is_doublejump_cooling_down() const -> bool { return m_dj_cooldown.running(); }
 
 	void request_jump();
 	void cancel();
@@ -56,7 +52,6 @@ class Jump {
 	void start();
 	void reset();
 	void prevent();
-	void doublejump();
 	int get_request() const;
 	int get() const;
 
@@ -68,7 +63,6 @@ class Jump {
 	util::Cooldown cooldown{};
 	util::Cooldown request{};
 	util::Cooldown coyote_time{8};
-	util::Cooldown m_dj_cooldown{8};
 };
 
 } // namespace fornani::player

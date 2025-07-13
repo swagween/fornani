@@ -10,7 +10,6 @@ class Dash : public Ability {
 	void update(shape::Collider& collider, PlayerController& controller) override;
 
   private:
-	util::Cooldown m_start{12};
 	float m_vertical_multiplier;
 	float m_horizontal_multiplier;
 	int m_rate;

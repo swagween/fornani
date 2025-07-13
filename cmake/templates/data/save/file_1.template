@@ -26,6 +26,10 @@
 		},
 		"items": [
 			{
+				"label": "woodshine_totem",
+				"quantity": 1
+			},
+			{
 				"label": "navy_top",
 				"type": 1,
 				"quantity": 1

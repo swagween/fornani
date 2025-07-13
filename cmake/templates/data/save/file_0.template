@@ -29,6 +29,18 @@
 		},
 		"items": [
 			{
+				"label": "woodshine_totem",
+				"quantity": 1
+			},
+			{
+				"label": "old_ivory_amulet",
+				"quantity": 1
+			},
+			{
+				"label": "sky_pendant",
+				"quantity": 1
+			},
+			{
 				"label": "navy_top",
 				"quantity": 1
 			},
