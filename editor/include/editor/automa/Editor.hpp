@@ -3,6 +3,7 @@
 
 #include <imgui.h>
 #include <SFML/Graphics.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 #include <chrono>
 #include <cstdio>
 #include <filesystem>
@@ -34,7 +35,7 @@ class Editor {
   public:
 	int const TILE_WIDTH{32};
 	int const NUM_TOOLS{6};
-	Editor(char** argv, WindowManager& window, fornani::data::ResourceFinder& finder);
+	Editor(char** argv, fornani::WindowManager& window, fornani::data::ResourceFinder& finder, fornani::Version& version, capo::IEngine& engine);
 	void run();
 	void init(std::string const& load_path);
 	void handle_events(std::optional<sf::Event> event, sf::RenderWindow& win);
@@ -88,8 +89,9 @@ class Editor {
 	std::uint32_t selected_block{};
 
   private:
-	WindowManager* window;
+	fornani::WindowManager* window;
 	fornani::data::ResourceFinder* finder;
+	fornani::automa::ServiceProvider m_services;
 	PopupHandler popup{};
 	std::optional<Clipboard> m_clipboard{};
 	std::unique_ptr<Tool> current_tool;

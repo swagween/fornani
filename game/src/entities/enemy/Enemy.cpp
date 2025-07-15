@@ -114,7 +114,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (map.off_the_bottom(collider.physics.position)) {
 		if (svc.ticker.every_x_ticks(10)) { health.inflict(4.f); }
 	}
-	if (just_died() && !flags.general.test(GeneralFlags::post_death_render)) { map.effects.push_back(entity::Effect(svc, "large_explosion", collider.physics.position, collider.physics.velocity, visual.effect_type, visual.effect_size)); }
+	if (just_died() && !flags.general.test(GeneralFlags::post_death_render)) { map.effects.push_back(entity::Effect(svc, "large_explosion", collider.physics.position, collider.physics.velocity, visual.effect_type)); }
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) {
 		health_indicator.update(svc, collider.physics.position);
 		post_death.update();
@@ -235,7 +235,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 	flags.state.set(enemy::StateFlags::shot);
 	auto secondary_collision = hit_second && !hit_main;
 	if (((secondary_collision && flags.general.test(GeneralFlags::invincible_secondary)) || !flags.state.test(enemy::StateFlags::vulnerable)) && !died()) {
-		map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position(), {}, 0, 6));
+		map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position()));
 		svc.soundboard.flags.world.set(audio::World::hard_hit);
 	} else if (flags.state.test(enemy::StateFlags::vulnerable) && !died()) {
 		if (proj.persistent()) { proj.damage_over_time(); }
@@ -244,7 +244,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 			health.inflict(proj.get_damage());
 			health_indicator.add(-proj.get_damage());
 			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
-			map.effects.push_back(entity::Effect(svc, "hit_flash", proj.get_position(), {}, 0, 11, {1, 1}));
+			map.effects.push_back(entity::Effect(svc, "hit_flash", proj.get_position()));
 			hitstun.start(32);
 		}
 		svc.soundboard.flags.world.set(audio::World::projectile_hit);

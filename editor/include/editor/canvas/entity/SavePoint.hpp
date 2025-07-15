@@ -11,8 +11,8 @@ namespace pi {
 
 class SavePoint : public Entity {
   public:
-	SavePoint(dj::Json const& in);
-	SavePoint(int id);
+	SavePoint(fornani::automa::ServiceProvider& svc, dj::Json const& in);
+	SavePoint(fornani::automa::ServiceProvider& svc, int id);
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;

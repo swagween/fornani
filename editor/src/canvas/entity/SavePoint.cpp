@@ -3,9 +3,9 @@
 
 namespace pi {
 
-SavePoint::SavePoint(dj::Json const& in) : Entity(in, "save_point") { unserialize(in); }
+SavePoint::SavePoint(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "save_point") { unserialize(in); }
 
-SavePoint::SavePoint(int id) : Entity("save_point", id, {1, 1}) { unique = true; }
+SavePoint::SavePoint(fornani::automa::ServiceProvider& svc, int id) : Entity(svc, "save_point", id, {1, 1}) { unique = true; }
 
 std::unique_ptr<Entity> SavePoint::clone() const { return std::make_unique<SavePoint>(*this); }
 

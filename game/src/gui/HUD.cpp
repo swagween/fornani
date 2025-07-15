@@ -39,7 +39,7 @@ void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 	player.health.flags.reset(entity::HPState::hit);
 }
 
-void HUD::render(player::Player& player, sf::RenderWindow& win) {
+void HUD::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win) {
 
 	// HEARTS
 	health_bar.render(win);
@@ -68,7 +68,7 @@ void HUD::render(player::Player& player, sf::RenderWindow& win) {
 		auto pointer_index{0};
 		auto const hotbar_size = player.hotbar.value().size();
 		for (int i = 0; i < hotbar_size; ++i) {
-			auto gun_index = player.hotbar.value().get_id(i);
+			auto gun_index = svc.data.get_gun_id_from_tag(player.hotbar.value().get_tag(i));
 			sprites.gun.setTextureRect(sf::IntRect({gun_dimensions.x, gun_index * gun_dimensions.y}, gun_dimensions));
 			sprites.gun.setPosition({origins.gun.x + pointer_dimensions.x + gun_pad_horiz + 2.f, origins.gun.y - i * gun_dimensions.y - i * gun_pad_vert});
 			win.draw(sprites.gun);

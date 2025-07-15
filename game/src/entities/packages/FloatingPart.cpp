@@ -79,7 +79,7 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 		for (auto& proj : map.active_projectiles) {
 			if (proj.get_bounding_box().overlaps(shieldbox.value())) {
 				if (!proj.destruction_initiated()) {
-					map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position(), {}, 0, 6));
+					map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position()));
 					if (proj.get_direction().up_or_down()) { map.effects.back().rotate(); }
 					svc.soundboard.flags.world.set(audio::World::hard_hit);
 				}

@@ -43,7 +43,7 @@ struct MapDebug {
 
 struct ServiceProvider {
 	ServiceProvider(char** argv, Version& version, WindowManager& window, capo::IEngine& audio_engine)
-		: finder(argv), text{finder}, data(*this, argv), version(&version), window(&window), assets{finder}, sounds{finder}, music_player{audio_engine}, ambience_player{audio_engine} {};
+		: finder(argv), text{finder}, data(*this), version(&version), window(&window), assets{finder}, sounds{finder}, music_player{audio_engine}, ambience_player{audio_engine} {};
 
 	util::Stopwatch stopwatch{}; // TODO: Remove. Make Free-Standing.
 	data::ResourceFinder finder;

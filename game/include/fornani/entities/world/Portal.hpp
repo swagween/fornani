@@ -1,8 +1,10 @@
 
 #pragma once
 
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Shape.hpp"
+#include <fornani/graphics/Drawable.hpp>
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/IWorldPositionable.hpp>
+#include <fornani/utils/Shape.hpp>
 
 #include <optional>
 
@@ -27,15 +29,13 @@ enum class PortalState : std::uint8_t { activated, ready, locked, unlocked };
 enum class PortalRenderState : std::uint8_t { closed, open };
 enum class PortalOrientation : std::uint8_t { top, bottom, left, right, central };
 
-class Portal {
+class Portal : public Drawable, public IWorldPositionable {
 
   public:
-	using Vec = sf::Vector2f;
-	using Vecu32 = sf::Vector2<std::uint32_t>;
-
-	Portal(automa::ServiceProvider& svc, Vecu32 dim, Vecu32 pos, int src, int dest, bool activate_on_contact, bool locked = false, bool already_open = false, int key_id = 0, int style = 0, sf::Vector2<int> map_dim = {});
+	Portal(automa::ServiceProvider& svc, sf::Vector2<std::uint32_t> dim, sf::Vector2<std::uint32_t> pos, int src, int dest, bool activate_on_contact, bool locked = false, bool already_open = false, int key_id = 0, int style = 0,
+		   sf::Vector2i map_dim = {});
 	void update(automa::ServiceProvider& svc);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f const campos);
 	void handle_activation(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, int room_id, graphics::Transition& transition);
 	void change_states(automa::ServiceProvider& svc, int room_id, graphics::Transition& transition);
 	void close() { state = PortalRenderState::closed; }
@@ -49,15 +49,10 @@ class Portal {
 	[[nodiscard]] auto is_top() const -> bool { return meta.orientation == PortalOrientation::top; }
 	[[nodiscard]] auto is_left() const -> bool { return meta.orientation == PortalOrientation::left; }
 	[[nodiscard]] auto is_right() const -> bool { return meta.orientation == PortalOrientation::right; }
-
-	Vec dimensions{};
-	Vec position{};
-	Vec offset{0.f, 32.f};
-	Vecu32 scaled_dimensions{};
-	Vecu32 scaled_position{};
 	shape::Shape bounding_box{};
 
   private:
+	int m_style{};
 	struct {
 		int source_map_id{};	  // where to place the player once they arrive (check all portals in the destination until you match)
 		int destination_map_id{}; // where to send the player
@@ -71,9 +66,6 @@ class Portal {
 	} flags{};
 
 	PortalRenderState state{};
-
-	sf::Sprite sprite;
-	sf::IntRect lookup{};
 };
 
 } // namespace fornani::entity

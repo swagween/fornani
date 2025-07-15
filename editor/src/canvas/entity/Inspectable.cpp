@@ -3,10 +3,13 @@
 
 namespace pi {
 
-Inspectable::Inspectable(dj::Json const& in) : Entity(in, "inspectables") { unserialize(in); }
+Inspectable::Inspectable(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "inspectables") {
+	unserialize(in);
+	m_textured = false;
+}
 
-Inspectable::Inspectable(bool activate_on_contact, std::string key, std::vector<std::vector<std::string>> suites, std::vector<std::vector<std::string>> responses, int alternates, bool instant)
-	: Entity("inspectables", 0, {1, 1}), m_activate_on_contact{activate_on_contact}, m_key{key}, m_suites{suites}, m_responses{responses}, m_alternates{alternates}, m_instant{instant} {}
+Inspectable::Inspectable(fornani::automa::ServiceProvider& svc, bool activate_on_contact, std::string key, std::vector<std::vector<std::string>> suites, std::vector<std::vector<std::string>> responses, int alternates, bool instant)
+	: Entity(svc, "inspectables", 0, {1, 1}), m_activate_on_contact{activate_on_contact}, m_key{key}, m_suites{suites}, m_responses{responses}, m_alternates{alternates}, m_instant{instant} {}
 
 std::unique_ptr<Entity> Inspectable::clone() const { return std::make_unique<Inspectable>(*this); }
 

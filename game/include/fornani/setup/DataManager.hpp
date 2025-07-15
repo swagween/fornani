@@ -41,10 +41,10 @@ struct EnemyState {
 	bool permanent{};
 };
 
-class DataManager {
+class DataManager final {
 
   public:
-	DataManager(automa::ServiceProvider& svc, char** argv);
+	explicit DataManager(automa::ServiceProvider& svc);
 	// game save
 	void load_data(std::string in_room = "");
 	void save_progress(player::Player& player, int save_point_id);
@@ -98,6 +98,8 @@ class DataManager {
 	[[nodiscard]] auto item_label_from_id(int key) const -> std::string { return m_item_labels.contains(key) ? m_item_labels.at(key) : "<invalid>"; }
 	[[nodiscard]] auto item_label_view_from_id(int key) const -> std::string_view { return m_item_labels.contains(key) ? m_item_labels.at(key) : "<invalid>"; }
 	[[nodiscard]] auto item_id_from_label(std::string_view label) const -> int;
+	[[nodiscard]] auto get_gun_tag_from_id(int id) const -> std::string_view;
+	[[nodiscard]] auto get_gun_id_from_tag(std::string_view tag) const -> int;
 
 	int get_room_index(int id);
 	int get_npc_location(int npc_id);
@@ -110,6 +112,7 @@ class DataManager {
 	dj::Json enemy_weapon{};
 	dj::Json drop{};
 	dj::Json particle{};
+	dj::Json effect{};
 	dj::Json sparkler{};
 	dj::Json map_styles{};
 	dj::Json npc{};

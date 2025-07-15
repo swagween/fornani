@@ -73,7 +73,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 		for (auto& portal : map.portals) {
 			if (portal.get_destination() == svc.state_controller.source_id) {
 				found_one = true;
-				sf::Vector2f spawn_position{portal.position.x + (portal.dimensions.x * 0.5f), portal.position.y + portal.dimensions.y - player.height()};
+				sf::Vector2f spawn_position{portal.get_world_position().x + (portal.get_world_dimensions().x * 0.5f), portal.get_world_position().y + portal.get_world_dimensions().y - player.height()};
 				player.set_position(spawn_position, true);
 				camera.force_center(player.get_camera_focus_point());
 				if (portal.activate_on_contact() && portal.is_left_or_right()) {
@@ -241,7 +241,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.render_background(svc, win, camera.get_position());
 	map.render(svc, win, camera.get_position());
 
-	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(*player, win); }
+	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(svc, *player, win); }
 	if (vendor_dialog) { vendor_dialog.value()->render(svc, win, *player, map); }
 	if (inventory_window) { inventory_window.value()->render(svc, win, *player); }
 	map.soft_reset.render(win);
@@ -274,10 +274,12 @@ void Dojo::acquire_item(ServiceProvider& svc, player::Player& player, int modifi
 }
 
 void Dojo::acquire_gun(ServiceProvider& svc, player::Player& player, int modifier) {
-	player.push_to_loadout(modifier);
+	auto tag = svc.data.get_gun_tag_from_id(modifier);
+	NANI_LOG_DEBUG(m_logger, "Gun Tag: {}", tag.data());
+	player.push_to_loadout(tag);
 	m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
 	m_console.value()->display_gun(modifier);
-	m_console.value()->append(player.arsenal.value().get_weapon_at(modifier).get_label());
+	m_console.value()->append(player.arsenal.value().get_weapon_at(tag).get_label());
 	m_console.value()->append("!");
 	svc.music_player.quick_play(svc.finder, "discovery");
 	gun_acquisition = false;

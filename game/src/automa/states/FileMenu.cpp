@@ -137,7 +137,7 @@ void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (loading.is_complete()) {
 		left_dot.render(svc, win, {});
 		right_dot.render(svc, win, {});
-		hud.render(*player, win);
+		hud.render(svc, *player, win);
 		if (m_file_select_menu) { m_file_select_menu->render(win); }
 	}
 	if (m_console) {

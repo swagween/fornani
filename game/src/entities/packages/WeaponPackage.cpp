@@ -4,7 +4,7 @@
 
 namespace fornani::entity {
 
-WeaponPackage::WeaponPackage(automa::ServiceProvider& svc, int id) { weapon = std::make_unique<arms::Weapon>(svc, id, true); }
+WeaponPackage::WeaponPackage(automa::ServiceProvider& svc, std::string_view tag) { weapon = std::make_unique<arms::Weapon>(svc, tag, true); }
 
 void WeaponPackage::update(automa::ServiceProvider& svc, world::Map& map, enemy::Enemy& enemy) {
 	weapon->update(svc, direction);

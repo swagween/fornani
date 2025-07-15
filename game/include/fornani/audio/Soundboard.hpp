@@ -32,7 +32,7 @@ enum class Step : std::uint8_t { basic, grass };
 enum class Enemy : std::uint8_t { hit_squeak, hit_high, hit_medium, hit_low, standard_death, jump_low };
 
 enum class Frdog : std::uint8_t { hurt, death };
-enum class Hulmet : std::uint8_t { hurt };
+enum class Hulmet : std::uint8_t { hurt, alert };
 enum class Tank : std::uint8_t { alert_1, alert_2, hurt_1, hurt_2, death };
 enum class Thug : std::uint8_t { alert_1, alert_2, hurt_1, hurt_2, death };
 enum class Minigus : std::uint8_t { hurt_1, hurt_2, hurt_3, laugh, laugh_2, jump, land, step, punch, snap, build_invincibility, invincible, invincibility_lost, ok };

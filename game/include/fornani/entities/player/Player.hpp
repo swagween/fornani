@@ -173,8 +173,8 @@ class Player {
 	void give_drop(item::DropType type, float value);
 	void give_item_by_id(int id, int amount);
 	void give_item(std::string_view label, int amount);
-	void add_to_hotbar(int id);
-	void remove_from_hotbar(int id);
+	void add_to_hotbar(std::string_view tag);
+	void remove_from_hotbar(std::string_view tag);
 	void set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_outfit);
 	[[nodiscard]] auto get_outfit() -> std::array<int, static_cast<int>(ApparelType::END)> { return catalog.wardrobe.get(); }
 
@@ -183,8 +183,8 @@ class Player {
 	void map_reset();
 
 	arms::Weapon& equipped_weapon();
-	void push_to_loadout(int id, bool from_save = false);
-	void pop_from_loadout(int id);
+	void push_to_loadout(std::string_view tag, bool from_save = false);
+	void pop_from_loadout(std::string_view tag);
 
 	// map helpers
 	SimpleDirection entered_from() const;

@@ -7,7 +7,8 @@
 
 namespace fornani::enemy {
 
-Hulmet::Hulmet(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "hulmet"), m_services(&svc), m_map(&map), m_parts{.gun{svc.assets.get_texture("hulmet_gun"), 2.0f, 0.85f, {-12.f, 6.f}}}, m_weapon{svc, 0}, m_jump_force{-48.f} {
+Hulmet::Hulmet(automa::ServiceProvider& svc, world::Map& map)
+	: Enemy(svc, "hulmet"), m_services(&svc), m_map(&map), m_parts{.gun{svc.assets.get_texture("hulmet_gun"), 2.0f, 0.85f, {-12.f, 6.f}}}, m_weapon{svc, "skycorps_ar"}, m_jump_force{-48.f} {
 	animation.set_params(m_animations.idle);
 	m_parts.gun.set_magnitude(2.f);
 	m_weapon.clip_cooldown_time = 360;
@@ -47,6 +48,13 @@ void Hulmet::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	if (m_state.actual == HulmetState::roll) { cancel_shake(); }
 
 	secondary_collider.set_position(collider.bounding_box.get_position() + sf::Vector2f{4.f, -8.f});
+
+	if (flags.state.test(StateFlags::hurt)) {
+		hurt_effect.start();
+		if (sound.hurt_sound_cooldown.is_complete()) { svc.soundboard.flags.hulmet.set(audio::Hulmet::hurt); }
+		flags.state.reset(StateFlags::hurt);
+		sound.hurt_sound_cooldown.start();
+	}
 
 	state_function = state_function();
 }
@@ -140,6 +148,7 @@ fsm::StateFunction Hulmet::update_alert() {
 	m_state.actual = HulmetState::alert;
 	flags.state.set(StateFlags::vulnerable);
 	m_cooldowns.alerted.start();
+	if (animation.just_started()) { m_services->soundboard.flags.hulmet.set(audio::Hulmet::alert); }
 	if (animation.complete()) {
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
 		if (change_state(HulmetState::roll, m_animations.roll)) { return HULMET_BIND(update_roll); }
@@ -232,6 +241,8 @@ fsm::StateFunction Hulmet::update_panic() {
 	animation.label = "panic";
 	m_state.actual = HulmetState::panic;
 	flags.state.set(StateFlags::vulnerable);
+	m_cooldowns.alerted.start();
+	if (animation.just_started()) { m_services->soundboard.flags.hulmet.set(audio::Hulmet::alert); }
 	if (animation.complete()) {
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
 		util::random::percent_chance(50) ? request(HulmetState::shoot) : request(HulmetState::roll);

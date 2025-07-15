@@ -346,7 +346,7 @@ void Player::update_weapon() {
 	if (!hotbar) { return; }
 	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching
 	for (auto& weapon : arsenal.value().get_loadout()) {
-		hotbar->has(weapon->get_id()) ? weapon->set_hotbar() : weapon->set_reserved();
+		hotbar->has(weapon->get_tag()) ? weapon->set_hotbar() : weapon->set_reserved();
 		weapon->set_firing_direction(controller.direction);
 		if (controller.get_wallslide().is_wallsliding()) { weapon->get_firing_direction().flip(); }
 		weapon->update(*m_services, controller.direction);
@@ -511,18 +511,18 @@ void Player::give_item_by_id(int id, int amount) {
 	m_services->events.dispatch_event("AcquireItem", id);
 }
 
-void Player::add_to_hotbar(int id) {
+void Player::add_to_hotbar(std::string_view tag) {
 	if (hotbar) {
-		hotbar.value().add(id);
+		hotbar.value().add(tag);
 	} else {
 		hotbar = arms::Hotbar(1);
-		hotbar.value().add(id);
+		hotbar.value().add(tag);
 	}
 }
 
-void Player::remove_from_hotbar(int id) {
+void Player::remove_from_hotbar(std::string_view tag) {
 	if (hotbar) {
-		hotbar.value().remove(id);
+		hotbar.value().remove(tag);
 		if (hotbar.value().size() < 1) { hotbar = {}; }
 	}
 }
@@ -559,27 +559,27 @@ void Player::map_reset() {
 	if (arsenal) { arsenal.value().reset(); }
 }
 
-arms::Weapon& Player::equipped_weapon() { return arsenal.value().get_weapon_at(hotbar.value().get_id()); }
+arms::Weapon& Player::equipped_weapon() { return arsenal.value().get_weapon_at(hotbar.value().get_tag()); }
 
-void Player::push_to_loadout(int id, bool from_save) {
+void Player::push_to_loadout(std::string_view tag, bool from_save) {
 	if (!arsenal) { arsenal = arms::Arsenal(*m_services); }
 	if (!hotbar && !from_save) { hotbar = arms::Hotbar(1); }
-	if (id == 0 && !from_save) {
+	if (tag == "bryns_gun" && !from_save) {
 		m_services->stats.time_trials.bryns_gun = m_services->ticker.in_game_seconds_passed.count();
 		auto bg = util::QuestKey{1, 111, 1};
 		m_services->quest.process(*m_services, bg);
 	}
-	if (id == 10 && !from_save) { m_services->quest.progress(fornani::QuestType::destroyers, 122, 1); }
-	arsenal.value().push_to_loadout(id);
-	if (!from_save) { hotbar.value().add(id); }
+	if (tag == "gnat" && !from_save) { m_services->quest.progress(fornani::QuestType::destroyers, 122, 1); }
+	arsenal.value().push_to_loadout(tag);
+	if (!from_save) { hotbar.value().add(tag); }
 	m_services->stats.player.guns_collected.update();
 }
 
-void Player::pop_from_loadout(int id) {
+void Player::pop_from_loadout(std::string_view tag) {
 	if (!arsenal) { throw std::runtime_error("Cannot pop weapon from empty Arsenal."); }
 	if (!hotbar) { throw std::runtime_error("Cannot pop weapon from empty Hotbar."); }
-	arsenal.value().pop_from_loadout(id);
-	hotbar.value().remove(id);
+	arsenal.value().pop_from_loadout(tag);
+	hotbar.value().remove(tag);
 	if (arsenal.value().empty()) {
 		arsenal = {};
 		hotbar = {};

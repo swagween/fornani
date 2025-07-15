@@ -18,6 +18,10 @@
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 
+namespace fornani::automa {
+struct ServiceProvider;
+}
+
 namespace fornani::data {
 class ResourceFinder;
 }
@@ -74,7 +78,7 @@ class Canvas {
 	Canvas(fornani::data::ResourceFinder& finder, sf::Vector2<std::uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers = default_num_layers_v);
 	void update(Tool& tool);
 	void render(sf::RenderWindow& win, sf::Sprite& tileset);
-	bool load(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local = false);
+	bool load(fornani::automa::ServiceProvider& svc, fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local = false);
 	bool save(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name);
 	void clear();
 	void save_state(Tool& tool, bool force = false);

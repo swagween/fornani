@@ -1,8 +1,8 @@
 #include "editor/setup/EditorApplication.hpp"
 #include "editor/automa/Editor.hpp"
 
-#include <cassert>
 #include <imgui.h>
+#include <cassert>
 #include <imgui-SFML.h>
 
 namespace pi {
@@ -19,7 +19,7 @@ EditorApplication::EditorApplication(char** argv) : finder(argv), metadata(game_
 	assert(!app_settings.is_null());
 
 	// create window
-	window.create(metadata.long_title(), static_cast<bool>(app_settings["fullscreen"].as_bool()));
+	window.create(metadata.long_title(), app_settings["fullscreen"].as_bool(), {1920, 1080});
 	window.set();
 
 	// set app icon
@@ -33,7 +33,7 @@ EditorApplication::EditorApplication(char** argv) : finder(argv), metadata(game_
 }
 
 void EditorApplication::launch(char** argv) {
-	std::unique_ptr editor = std::make_unique<Editor>(argv, window, finder);
+	std::unique_ptr editor = std::make_unique<Editor>(argv, window, finder, metadata, *m_engine);
 	editor->run();
 }
 

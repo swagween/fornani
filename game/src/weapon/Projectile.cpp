@@ -12,7 +12,7 @@ namespace fornani::arms {
 Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon, bool enemy)
 	: metadata{.id = id, .label = label}, m_weapon(&weapon), visual{.sprite{svc.assets.get_texture("projectile_" + std::string{label})}} {
 
-	auto const& in_data = enemy ? svc.data.enemy_weapon["weapons"][id]["class_package"]["projectile"] : svc.data.weapon["weapons"][id]["class_package"]["projectile"];
+	auto const& in_data = enemy ? svc.data.enemy_weapon[label]["class_package"]["projectile"] : svc.data.weapon[label]["class_package"]["projectile"];
 
 	metadata.type = static_cast<ProjectileType>(in_data["type"].as<int>());
 	physical.bounding_box = shape::Shape({in_data["dimensions"][0].as<float>(), in_data["dimensions"][1].as<float>()});
@@ -123,7 +123,7 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 	physical.collider.set_position(physical.physics.position);
 	if (map.check_cell_collision_circle(physical.collider, false)) {
 		if (!destruction_initiated()) {
-			map.effects.push_back(entity::Effect(svc, "bullet_hit", variables.destruction_point + physical.physics.position, {}, effect_type(), 2));
+			map.effects.push_back(entity::Effect(svc, "bullet_hit", variables.destruction_point + physical.physics.position, {}, effect_type()));
 			if (physical.direction.lnr == LNR::neutral) { map.effects.back().rotate(); }
 			// auto listener_position = sf::Vector2f{sf::Listener::getPosition().x, sf::Listener::getPosition().z};
 			// TODO: use capo engine here

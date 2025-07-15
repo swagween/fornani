@@ -11,7 +11,7 @@ Dash::Dash(automa::ServiceProvider& svc, world::Map& map, shape::Collider& colli
 	m_type = AbilityType::dash;
 	m_state = AnimState::dash;
 	m_duration.start(64);
-	map.effects.push_back(entity::Effect(svc, "small_flash", collider.get_center(), sf::Vector2f{collider.physics.velocity.x * 0.5f, 0.f}, 0, 6));
+	map.effects.push_back(entity::Effect(svc, "small_flash", collider.get_center(), sf::Vector2f{collider.physics.apparent_velocity().x * 0.5f, 0.f}));
 	svc.soundboard.flags.player.set(audio::Player::dash);
 }
 

@@ -19,11 +19,13 @@ class Drawable : public sf::Drawable, Polymorphic {
 	Drawable(automa::ServiceProvider& svc, std::string_view label);
 	void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const override;
 
-	void set_texture_rect(sf::IntRect to) { m_sprite.setTextureRect(to); }
-	void set_position(sf::Vector2f to) { m_sprite.setPosition(to); }
-	void set_origin(sf::Vector2f to) { m_sprite.setOrigin(to); }
-	void set_scale(sf::Vector2f to) { m_sprite.setScale(to); }
+	void set_texture_rect(sf::IntRect const to) { m_sprite.setTextureRect(to); }
+	void set_position(sf::Vector2f const to) { m_sprite.setPosition(to); }
+	void set_origin(sf::Vector2f const to) { m_sprite.setOrigin(to); }
+	void set_scale(sf::Vector2f const to) { m_sprite.setScale(to); }
+	void rotate(sf::Angle const rotation) { m_sprite.rotate(rotation); }
 
+	void scale(sf::Vector2f const to) { m_sprite.scale(to); }
 	void center() { set_origin(m_sprite.getLocalBounds().getCenter()); }
 	void flip(std::pair<bool, bool> orientation = {true, false});
 

@@ -18,7 +18,7 @@ SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, sf::Vector2f position, in
 void SwitchBlock::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 	if (state != SwitchBlockState::empty) { handle_collision(player.collider); }
 	if (switched()) {
-		map.effects.push_back(entity::Effect(svc, "small_explosion", collider.physics.position, {}, 0, 0));
+		map.effects.push_back(entity::Effect(svc, "small_explosion", collider.physics.position));
 		svc.soundboard.flags.world.set(audio::World::block_toggle);
 	}
 	previous_state = state;
@@ -42,7 +42,7 @@ void SwitchBlock::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Pr
 	if (state == SwitchBlockState::empty) { return; }
 	if (proj.get_bounding_box().overlaps(collider.bounding_box)) {
 		if (!proj.destruction_initiated()) {
-			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position(), {}, 0, 6));
+			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position()));
 			svc.soundboard.flags.world.set(audio::World::hard_hit);
 		}
 		proj.destroy(false);

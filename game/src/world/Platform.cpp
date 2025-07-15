@@ -51,11 +51,12 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vect
 	animation.set_params({0, 4, 16, -1});
 	auto scaled_dim = dimensions / constants::f_cell_size;
 	if (scaled_dim.x == 1) { offset = {0, 0}; }
-	if (scaled_dim.x == 2) { offset = {32, 0}; }
-	if (scaled_dim.x == 3) { offset = {0, 32}; }
-	if (scaled_dim.y == 2) { offset = {0, 64}; }
-	if (scaled_dim.y == 3) { offset = {0, 128}; }
+	if (scaled_dim.x == 2) { offset = {16, 0}; }
+	if (scaled_dim.x == 3) { offset = {0, 16}; }
+	if (scaled_dim.y == 2) { offset = {0, 32}; }
+	if (scaled_dim.y == 3) { offset = {0, 64}; }
 	switch_up.start();
+	sprite.setScale(constants::f_scale_vec);
 }
 
 void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -168,10 +169,10 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	track_shape.setPosition(-cam);
 	sprite.setPosition(physics.position - cam);
-	auto const u = state * 96;
-	auto const v = animation.get_frame() * 224;
+	auto const u = state * 48;
+	auto const v = animation.get_frame() * 112;
 	auto lookup = sf::Vector2<int>{u, v} + offset;
-	sprite.setTextureRect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(dimensions)));
+	sprite.setTextureRect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(dimensions) / 2));
 	if (svc.greyblock_mode()) {
 		win.draw(track_shape);
 		Collider::render(win, cam);
@@ -184,7 +185,7 @@ void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proje
 	if (proj.transcendent()) { return; }
 	if (proj.get_bounding_box().overlaps(bounding_box)) {
 		if (!proj.destruction_initiated()) {
-			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position(), physics.velocity * 10.f, proj.effect_type(), 2));
+			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position(), physics.velocity * 10.f));
 			if (proj.get_direction().lnr == LNR::neutral) { map.effects.back().rotate(); }
 			svc.soundboard.flags.world.set(audio::World::wall_hit);
 		}

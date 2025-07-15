@@ -10,15 +10,15 @@ class Arsenal {
   public:
 	explicit Arsenal(automa::ServiceProvider& svc);
 
-	void push_to_loadout(int id);
-	void pop_from_loadout(int id);
+	void push_to_loadout(std::string_view tag);
+	void pop_from_loadout(std::string_view tag);
 	void reset();
 	constexpr void clear() { loadout.clear(); }
-	Weapon& get_weapon_at(int id);
+	Weapon& get_weapon_at(std::string_view tag);
 	constexpr std::vector<std::unique_ptr<Weapon>>& get_loadout() { return loadout; }
 	[[nodiscard]] auto size() const -> std::size_t { return loadout.size(); }
 	[[nodiscard]] auto empty() const -> bool { return loadout.empty(); }
-	bool has(int id);
+	bool has(std::string_view tag);
 
   private:
 	std::vector<std::unique_ptr<Weapon>> loadout{};

@@ -78,6 +78,10 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.world.test(World::door_unlock)) { play(engine, svc, svc.sounds.get_buffer("door_unlock")); }
 	flags.world.test(World::pushable_move) ? simple_repeat(engine, svc.sounds.get_buffer("pushable_move"), "pushable_move") : stop("pushable_move");
 
+	// hulmet
+	if (flags.hulmet.test(Hulmet::hurt)) { play(engine, svc, svc.sounds.get_buffer("hulmet_hurt"), 0.1f); }
+	if (flags.hulmet.test(Hulmet::alert)) { play(engine, svc, svc.sounds.get_buffer("hulmet_alert"), 0.1f); }
+
 	// tank
 	if (flags.tank.test(Tank::alert_1)) { play(engine, svc, svc.sounds.get_buffer("tank_alert_1")); }
 	if (flags.tank.test(Tank::alert_2)) { play(engine, svc, svc.sounds.get_buffer("tank_alert_2")); }

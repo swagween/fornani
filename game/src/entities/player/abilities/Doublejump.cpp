@@ -11,7 +11,7 @@ Doublejump::Doublejump(automa::ServiceProvider& svc, world::Map& map, shape::Col
 	m_type = AbilityType::doublejump;
 	m_state = AnimState::backflip;
 	svc.soundboard.flags.player.set(audio::Player::jump);
-	map.effects.push_back(entity::Effect(svc, "doublejump", collider.get_center() - sf::Vector2f{0.f, 8.f}, sf::Vector2f{collider.physics.velocity.x * 0.1f, 0.f}, 0, 9));
+	map.effects.push_back(entity::Effect(svc, "doublejump", collider.get_center() - sf::Vector2f{0.f, 8.f}, sf::Vector2f{collider.physics.apparent_velocity().x * 0.1f, 0.f}));
 	m_duration.start(256);
 }
 

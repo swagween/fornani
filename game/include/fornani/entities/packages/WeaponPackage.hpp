@@ -12,7 +12,7 @@ namespace fornani::entity {
 
 class WeaponPackage : public Entity {
   public:
-	WeaponPackage(automa::ServiceProvider& svc, int id);
+	WeaponPackage(automa::ServiceProvider& svc, std::string_view tag);
 	void update(automa::ServiceProvider& svc, world::Map& map, enemy::Enemy& enemy);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	void shoot(automa::ServiceProvider& svc, world::Map& map);

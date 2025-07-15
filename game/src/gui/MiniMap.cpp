@@ -34,7 +34,7 @@ void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (map.save_point.id > 0) { m_markers.push_back({MapIconFlags::save, map.save_point.position * m_texture_scale + room_pos, room}); }
 	for (auto& bed : map.beds) { m_markers.push_back({MapIconFlags::bed, bed.bounding_box.get_position() * m_texture_scale / constants::f_cell_size + room_pos, room}); }
 	for (auto& door : map.portals) {
-		if (!door.activate_on_contact()) { m_markers.push_back({MapIconFlags::door, door.position * m_texture_scale / constants::f_cell_size + room_pos, room}); }
+		if (!door.activate_on_contact()) { m_markers.push_back({MapIconFlags::door, door.get_world_position() * m_texture_scale / constants::f_cell_size + room_pos, room}); }
 	}
 	if (current) {
 		m_player_position = player.collider.get_center() * m_texture_scale / constants::f_cell_size + room_pos;

@@ -7,8 +7,8 @@ namespace pi {
 
 class Bed : public Entity {
   public:
-	Bed(dj::Json const& in);
-	Bed(int id, bool flipped);
+	Bed(fornani::automa::ServiceProvider& svc, dj::Json const& in);
+	Bed(fornani::automa::ServiceProvider& svc, int id, bool flipped);
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;

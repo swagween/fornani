@@ -13,6 +13,19 @@
           38
         ],
         "type": 2
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 51174,
+        "modifier": 100,
+        "position": [
+          14,
+          35
+        ],
+        "type": 1
       }
     ],
     "platforms": [

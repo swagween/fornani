@@ -52,7 +52,7 @@ void Breakable::on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile&
 			svc.soundboard.flags.world.set(audio::World::breakable_hit);
 		}
 		if (destroyed()) {
-			map.effects.push_back(entity::Effect(svc, "small_explosion", collider.physics.position, {}, 0, 0));
+			map.effects.push_back(entity::Effect(svc, "small_explosion", collider.physics.position));
 			svc.soundboard.flags.world.set(audio::World::breakable_shatter);
 		}
 		proj.destroy(false);
@@ -65,7 +65,7 @@ void Breakable::on_smash(automa::ServiceProvider& svc, world::Map& map, int powe
 	energy = hit_energy;
 	svc.soundboard.flags.world.set(audio::World::breakable_hit);
 	if (destroyed()) {
-		map.effects.push_back(entity::Effect(svc, "small_explosion", collider.physics.position, {}, 0, 0));
+		map.effects.push_back(entity::Effect(svc, "small_explosion", collider.physics.position));
 		svc.soundboard.flags.world.set(audio::World::breakable_shatter);
 	}
 }

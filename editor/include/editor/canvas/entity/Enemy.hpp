@@ -11,8 +11,8 @@ namespace pi {
 
 class Enemy : public Entity {
   public:
-	Enemy(dj::Json const& in);
-	Enemy(int id, int variant = 0);
+	Enemy(fornani::automa::ServiceProvider& svc, dj::Json const& in);
+	Enemy(fornani::automa::ServiceProvider& svc, int id, int variant = 0);
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;

@@ -21,7 +21,7 @@ void Tile::on_hit(automa::ServiceProvider& svc, player::Player& player, world::M
 			if (!is_collidable() || is_platform()) { return; }
 			if (!proj.transcendent()) {
 				if (!proj.destruction_initiated()) {
-					map.effects.push_back(entity::Effect(svc, "wall_hit", proj.get_destruction_point() + proj.get_position(), {}, proj.effect_type(), 2));
+					map.effects.push_back(entity::Effect(svc, "wall_hit", proj.get_destruction_point() + proj.get_position(), {}, proj.effect_type()));
 					if (proj.get_direction().lnr == LNR::neutral) { map.effects.back().rotate(); }
 				}
 				proj.destroy(false);

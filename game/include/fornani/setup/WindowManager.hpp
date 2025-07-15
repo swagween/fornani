@@ -2,9 +2,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <fornani/io/Logger.hpp>
 #include <memory>
-
-#include "fornani/io/Logger.hpp"
 
 namespace fornani {
 
@@ -14,7 +13,7 @@ class WindowManager {
 	sf::View get_view() const { return game_view; }
 	sf::FloatRect get_viewport() const { return game_port; }
 	void set();
-	void create(std::string const& title, bool fullscreen);
+	void create(std::string const& title, bool fullscreen, sf::Vector2i const dimensions);
 	void restore_view();
 	void set_screencap();
 	[[nodiscard]] auto i_screen_dimensions() const -> sf::Vector2<int> { return m_screen_dimensions; }
@@ -37,8 +36,8 @@ class WindowManager {
 	sf::View game_view{};
 	sf::VideoMode mode{};
 	sf::FloatRect game_port{};
-	sf::Vector2<int> aspects{3840, 2048};
-	sf::Vector2<int> m_screen_dimensions{};
+	sf::Vector2i aspects{3840, 2048};
+	sf::Vector2i m_screen_dimensions{};
 	bool is_fullscreen{};
 
 	io::Logger m_logger{"windowing"};

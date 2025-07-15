@@ -7,8 +7,8 @@ namespace pi {
 
 class Inspectable : public Entity {
   public:
-	Inspectable(dj::Json const& in);
-	Inspectable(bool activate_on_contact, std::string key, std::vector<std::vector<std::string>> suites, std::vector<std::vector<std::string>> responses, int alternates, bool instant);
+	Inspectable(fornani::automa::ServiceProvider& svc, dj::Json const& in);
+	Inspectable(fornani::automa::ServiceProvider& svc, bool activate_on_contact, std::string key, std::vector<std::vector<std::string>> suites, std::vector<std::vector<std::string>> responses, int alternates, bool instant);
 
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;

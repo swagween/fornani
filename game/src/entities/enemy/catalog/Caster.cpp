@@ -8,7 +8,7 @@ namespace fornani::enemy {
 
 Caster::Caster(automa::ServiceProvider& svc, world::Map& map)
 	: Enemy(svc, "caster"), m_services(&svc), m_map(&map), parts{.scepter{svc.assets.get_texture("caster_scepter"), 2.0f, 0.85f, {-16.f, 38.f}}, .wand{svc.assets.get_texture("caster_wand"), 2.0f, 0.85f, {-40.f, 48.f}}},
-	  energy_ball(svc, 3) {
+	  energy_ball(svc, "energy_ball") {
 	animation.set_params(dormant);
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.physics.air_friction = {0.9f, 0.9f};
@@ -79,7 +79,7 @@ void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		cooldowns.invisibility.update();
 		if (cooldowns.invisibility.is_complete()) {
 			flags.state.reset(StateFlags::invisible);
-			m_map->effects.push_back(entity::Effect(*m_services, "small_flash", collider.physics.position, {}, 0, 4));
+			m_map->effects.push_back(entity::Effect(*m_services, "small_flash", collider.physics.position));
 		}
 	}
 
@@ -144,7 +144,7 @@ void Caster::teleport() {
 			collider.sync_components();
 		} else {
 			done = true;
-			m_map->effects.push_back(entity::Effect(*m_services, "smoke", original, {}, 2, 0));
+			m_map->effects.push_back(entity::Effect(*m_services, "medium_flash", original));
 			m_services->soundboard.flags.world.set(audio::World::block_toggle);
 			target.set_position(collider.physics.position);
 			parts.wand.set_position(collider.get_center());
@@ -240,7 +240,7 @@ fsm::StateFunction Caster::update_dormant() {
 	if (cooldowns.awaken.is_complete() || flags.state.test(StateFlags::shot)) {
 		cooldowns.awaken.cancel();
 		flags.state.set(StateFlags::vulnerable);
-		m_map->effects.push_back(entity::Effect(*m_services, "small_explosion", collider.physics.position, {}, 2, 0));
+		m_map->effects.push_back(entity::Effect(*m_services, "small_explosion", collider.physics.position));
 		m_services->soundboard.flags.world.set(audio::World::block_toggle);
 		state = CasterState::idle;
 		animation.set_params(idle);

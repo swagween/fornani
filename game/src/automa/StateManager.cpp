@@ -25,10 +25,7 @@ StateManager::StateManager(ServiceProvider& svc, player::Player& player, MenuTyp
 void StateManager::process_state(ServiceProvider& svc, player::Player& player, fornani::Game& game) {
 	if (svc.state_controller.actions.test(Actions::trigger_submenu)) {
 		switch (svc.state_controller.submenu) {
-		case MenuType::file_select:
-			set_current_state(std::make_unique<FileMenu>(svc, player, "file"));
-			game.playtest_sync();
-			break;
+		case MenuType::file_select: set_current_state(std::make_unique<FileMenu>(svc, player, "file")); break;
 		case MenuType::options: set_current_state(std::make_unique<OptionsMenu>(svc, player, "options")); break;
 		case MenuType::settings: set_current_state(std::make_unique<SettingsMenu>(svc, player, "settings")); break;
 		case MenuType::controls: set_current_state(std::make_unique<ControlsMenu>(svc, player, "controls_platformer")); break;
@@ -86,7 +83,6 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 		} else {
 			game.flags.set(fornani::GameFlags::in_game);
 			set_current_state(std::make_unique<Dojo>(svc, player, "dojo", svc.state_controller.next_state));
-			game.playtest_sync();
 		}
 	}
 }

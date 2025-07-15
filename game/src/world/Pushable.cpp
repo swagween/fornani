@@ -95,7 +95,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		if (platform.bounding_box.overlaps(collider.jumpbox)) { collider.handle_collider_collision(platform.bounding_box); }
 	}
 	if (collider.flags.state.test(shape::State::just_landed)) {
-		map.effects.push_back(entity::Effect(svc, "dust", {collider.physics.position.x + constants::f_cell_size * (size / 2.f), collider.physics.position.y + (size - 1) * constants::f_cell_size}, {}, 0, 10));
+		map.effects.push_back(entity::Effect(svc, "dust", {collider.physics.position.x + constants::f_cell_size * (size / 2.f), collider.physics.position.y + (size - 1) * constants::f_cell_size}));
 		svc.soundboard.flags.world.set(audio::World::thud);
 	}
 	collider.reset();
@@ -143,9 +143,9 @@ void Pushable::reset(automa::ServiceProvider& svc, world::Map& map) {
 	auto index = size == 1 ? 0 : 1;
 	auto offset = size == 1 ? sf::Vector2f{} : sf::Vector2f{5.f, 5.f};
 	auto label = size == 1 ? "small_explosion" : "large_explosion";
-	map.effects.push_back(entity::Effect(svc, label, collider.physics.position + offset, {}, 0, index));
+	map.effects.push_back(entity::Effect(svc, label, collider.physics.position + offset));
 	collider.physics.position = start_position;
-	map.effects.push_back(entity::Effect(svc, label, collider.physics.position + offset, {}, 0, index));
+	map.effects.push_back(entity::Effect(svc, label, collider.physics.position + offset));
 }
 
 } // namespace fornani::world

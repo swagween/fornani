@@ -31,8 +31,6 @@ Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& 
 	// controls
 	services.data.load_controls(services.controller_map);
 	services.data.load_settings();
-	// sounds
-	playtest.musicplayer = true;
 
 	background.setSize(sf::Vector2f{services.window->get().getSize()});
 	background.setFillColor(colors::ui_black);
@@ -463,32 +461,13 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								}
 								ImGui::Text("Hotbar:");
 								if (player.hotbar) {
-									for (auto& gun : player.hotbar.value().get_ids()) { ImGui::Text("%i", gun); }
+									for (auto& gun : player.hotbar.value().get_tags()) { ImGui::Text("%s", gun.c_str()); }
 								}
 								ImGui::Text("Player has arsenal? %s", player.arsenal ? "Yes" : "No");
 								ImGui::Text("Loadout Size: %zu", player.arsenal ? player.arsenal.value().size() : 0);
-								playtest_sync();
-								ImGui::Checkbox("Bryn's Gun", &playtest.weapons.bryn);
-								toggle_weapon(playtest.weapons.bryn, 0);
-								ImGui::Checkbox("Plasmer", &playtest.weapons.plasmer);
-								toggle_weapon(playtest.weapons.plasmer, 1);
-								ImGui::Checkbox("Tomahawk", &playtest.weapons.tomahawk);
-								toggle_weapon(playtest.weapons.tomahawk, 3);
-								ImGui::Checkbox("Grappling Hook", &playtest.weapons.grapple);
-								toggle_weapon(playtest.weapons.grapple, 4);
-								ImGui::Checkbox("Grenade Launcher", &playtest.weapons.grenade);
-								toggle_weapon(playtest.weapons.grenade, 5);
-								ImGui::Checkbox("Staple Gun", &playtest.weapons.staple_gun);
-								toggle_weapon(playtest.weapons.staple_gun, 8);
-								ImGui::Checkbox("Indie", &playtest.weapons.indie);
-								toggle_weapon(playtest.weapons.indie, 9);
-								ImGui::Checkbox("Gnat", &playtest.weapons.gnat);
-								toggle_weapon(playtest.weapons.gnat, 10);
-								ImGui::Separator();
 
 								if (ImGui::Button("Clear Loadout")) {
 									if (player.arsenal) { player.arsenal = {}; }
-									playtest.weapons = {};
 								}
 								ImGui::EndTabItem();
 							}
@@ -500,14 +479,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 									ImGui::SameLine();
 								}
 								ImGui::Separator();
-
-								ImGui::Text("Abilities");
-								ImGui::Checkbox("Dash", &playtest.b_dash);
-								ImGui::Checkbox("Wallslide", &playtest.b_wallslide);
-								ImGui::Checkbox("Double Jump", &playtest.b_doublejump);
-								playtest.b_dash ? player.catalog.abilities.give_ability(player::AbilityType::dash) : player.catalog.abilities.remove_ability(player::AbilityType::dash);
-								playtest.b_wallslide ? player.catalog.abilities.give_ability(player::AbilityType::wallslide) : player.catalog.abilities.remove_ability(player::AbilityType::wallslide);
-								playtest.b_doublejump ? player.catalog.abilities.give_ability(player::AbilityType::doublejump) : player.catalog.abilities.remove_ability(player::AbilityType::doublejump);
 
 								ImGui::EndTabItem();
 							}
@@ -565,35 +536,6 @@ void Game::take_screenshot(sf::Texture& screencap) {
 	auto filename = std::filesystem::path{"screenshot_" + time_str + ".png"};
 	auto target = destination / filename;
 	if (screencap.copyToImage().saveToFile(target.string())) { NANI_LOG_INFO(m_logger, "screenshot {} saved to {}", filename.string(), destination.string()); }
-}
-
-void Game::playtest_sync() {
-	if (!player.arsenal) {
-		playtest.weapons = {};
-		return;
-	}
-	playtest.weapons.bryn = player.arsenal.value().has(0);
-	playtest.weapons.plasmer = player.arsenal.value().has(1);
-	playtest.weapons.tomahawk = player.arsenal.value().has(3);
-	playtest.weapons.grapple = player.arsenal.value().has(4);
-	playtest.weapons.grenade = player.arsenal.value().has(5);
-	playtest.weapons.staple_gun = player.arsenal.value().has(8);
-	playtest.weapons.indie = player.arsenal.value().has(9);
-	playtest.weapons.gnat = player.arsenal.value().has(10);
-}
-
-void Game::toggle_weapon(bool flag, int id) {
-	if (!player.arsenal && flag) {
-		player.push_to_loadout(id);
-		return;
-	}
-	if (player.arsenal) {
-		if (flag && !player.arsenal.value().has(id)) {
-			player.push_to_loadout(id);
-		} else if (!flag && player.arsenal.value().has(id)) {
-			player.pop_from_loadout(id);
-		}
-	}
 }
 
 } // namespace fornani

@@ -20,7 +20,7 @@ void Destructible::update(automa::ServiceProvider& svc, Map& map, player::Player
 	if (svc.data.block_is_destroyed(quest_id)) { flags.set(DestroyerState::detonated); }
 	if (flags.test(DestroyerState::detonated)) {
 		svc.data.destroy_block(quest_id);
-		map.effects.push_back(entity::Effect(svc, "small_explosion", get_world_position(), {}, 0, 0));
+		map.effects.push_back(entity::Effect(svc, "small_explosion", get_world_position()));
 		svc.soundboard.flags.world.set(audio::World::block_toggle);
 	}
 	player.collider.handle_collider_collision(collider);
@@ -43,7 +43,7 @@ void Destructible::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::P
 	if (proj.transcendent()) { return; }
 	if (proj.get_bounding_box().overlaps(collider.bounding_box)) {
 		if (!proj.destruction_initiated()) {
-			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position(), {}, proj.effect_type(), 2));
+			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position()));
 			if (proj.get_direction().lnr == LNR::neutral) { map.effects.back().rotate(); }
 			svc.soundboard.flags.world.set(audio::World::wall_hit);
 		}

@@ -20,8 +20,6 @@ class Game {
 	void run(capo::IEngine& audio_engine, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2f player_position = {});
 	void shutdown();
 
-	void playtest_sync();
-	void toggle_weapon(bool flag, int id);
 	util::BitFlags<GameFlags> flags{};
 	util::BitFlags<KeyboardFlags> key_flags{};
 
@@ -36,23 +34,6 @@ class Game {
 		float height_ratio{};
 		float width_ratio{};
 	} measurements{};
-
-	struct {
-		bool musicplayer{};
-		bool b_dash{};
-		bool b_wallslide{};
-		bool b_doublejump{};
-		struct {
-			bool bryn{};
-			bool grenade{};
-			bool plasmer{};
-			bool tomahawk{};
-			bool grapple{};
-			bool staple_gun{};
-			bool indie{};
-			bool gnat{};
-		} weapons{};
-	} playtest{};
 
 	struct {
 		int sample{};

@@ -13,7 +13,7 @@ void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
 
 	// create window
 	auto fullscreen = demo_fullscreen.first ? demo_fullscreen.second : static_cast<bool>(m_app_settings["fullscreen"].as_bool());
-	m_window.create(m_metadata.long_title(), fullscreen);
+	m_window.create(m_metadata.long_title(), fullscreen, {960, 512});
 	m_window.set();
 
 	auto entire_window = sf::View(sf::FloatRect{{}, sf::Vector2f{sf::VideoMode::getDesktopMode().size}});

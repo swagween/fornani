@@ -5,12 +5,17 @@
 
 namespace fornani::arms {
 
-Weapon::Weapon(automa::ServiceProvider& svc, int id, bool enemy)
-	: metadata{.id = id, .label = enemy ? svc.data.enemy_weapon["weapons"][id]["metadata"]["label"].as_string() : svc.data.weapon["weapons"][id]["metadata"]["label"].as_string()},
-	  projectile(svc, enemy ? svc.data.enemy_weapon["weapons"][id]["metadata"]["tag"].as_string() : svc.data.weapon["weapons"][id]["metadata"]["tag"].as_string(), id, *this, enemy),
+Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
+	: metadata{.id = enemy ? svc.data.enemy_weapon[tag]["metadata"]["id"].as<int>() : svc.data.weapon[tag]["metadata"]["id"].as<int>(),
+			   .tag = tag.data(),
+			   .label = enemy ? svc.data.enemy_weapon[tag]["metadata"]["label"].as_string() : svc.data.weapon[tag]["metadata"]["label"].as_string()},
+	  projectile(svc, tag, enemy ? svc.data.enemy_weapon[tag]["metadata"]["id"].as<int>() : svc.data.weapon[tag]["metadata"]["id"].as<int>(), *this, enemy),
 	  visual{.sprite{sf::Sprite{svc.assets.get_texture("guns")}}, .ui{sf::Sprite{svc.assets.get_texture("inventory_guns")}}} {
 
-	auto const& in_data = enemy ? svc.data.enemy_weapon["weapons"][id] : svc.data.weapon["weapons"][id];
+	auto const& in_data = enemy ? svc.data.enemy_weapon[tag] : svc.data.weapon[tag];
+
+	NANI_LOG_DEBUG(m_logger, "Tag: {}", tag.data());
+	NANI_LOG_DEBUG(m_logger, "Label: {}", in_data["metadata"]["label"].as_string().data());
 
 	// metadata
 	metadata.description = in_data["metadata"]["description"].as_string();

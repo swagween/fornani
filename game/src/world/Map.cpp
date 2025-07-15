@@ -291,7 +291,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 			enemy_catalog.push_enemy(*m_services, *this, spawn.id, true);
 			enemy_catalog.enemies.back()->set_position(spawn.pos);
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
-			effects.push_back(entity::Effect(*m_services, "small_flash", spawn.pos + enemy_catalog.enemies.back()->get_collider().dimensions * 0.5f, {}, 0, 4));
+			effects.push_back(entity::Effect(*m_services, "small_flash", spawn.pos + enemy_catalog.enemies.back()->get_collider().dimensions * 0.5f, {}, 0));
 		}
 		enemy_spawns.clear();
 		flags.state.reset(LevelState::spawn_enemy);
@@ -370,7 +370,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& portal : portals) { portal.handle_activation(svc, *player, console, room_id, transition); }
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, svc.data.map_jsons.at(room_lookup).metadata["entities"]["inspectables"]); }
 	for (auto& animator : animators) { animator.update(svc); }
-	for (auto& effect : effects) { effect.update(svc, *this); }
+	for (auto& effect : effects) { effect.update(); }
 	for (auto& atm : atmosphere) { atm.update(svc, *this, *player); }
 	for (auto& platform : platforms) { platform.update(svc, *this, *player); }
 	for (auto& spawner : spawners) { spawner.update(svc, *this); }
@@ -475,7 +475,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 		enemy->gui_render(svc, win, cam);
 	}
 
-	for (auto& effect : effects) { effect.render(svc, win, cam); }
+	for (auto& effect : effects) { effect.render(win, cam); }
 
 	player->render_indicators(svc, win, cam);
 
@@ -555,7 +555,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	for (auto& proj : active_projectiles) {
 		proj.update(svc, *player);
 		if (proj.whiffed() && !proj.poofed() && !proj.made_contact()) {
-			effects.push_back(entity::Effect(svc, "bullet_whiff", proj.get_position(), proj.get_velocity(), proj.effect_type(), 8));
+			effects.push_back(entity::Effect(svc, "bullet_whiff", proj.get_position(), proj.get_velocity() * 0.05f, proj.effect_type()));
 			proj.poof();
 		}
 	}
@@ -706,7 +706,7 @@ npc::NPC& Map::get_npc(int id) {
 
 sf::Vector2f Map::get_spawn_position(int portal_source_map_id) {
 	for (auto& portal : portals) {
-		if (portal.get_source() == portal_source_map_id) { return (portal.position); }
+		if (portal.get_source() == portal_source_map_id) { return (portal.get_world_position()); }
 	}
 	return real_dimensions * 0.5f;
 }

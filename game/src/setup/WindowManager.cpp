@@ -26,10 +26,10 @@ void WindowManager::set() {
 	m_window->setKeyRepeatEnabled(false);
 }
 
-void WindowManager::create(std::string const& title, bool const fullscreen) {
+void WindowManager::create(std::string const& title, bool const fullscreen, sf::Vector2i const dimensions) {
 	is_fullscreen = fullscreen;
 	// set window constants
-	m_screen_dimensions = {aspects.x / 4, aspects.y / 4};
+	m_screen_dimensions = dimensions;
 	u_screen_dimensions = {static_cast<std::uint16_t>(m_screen_dimensions.x), static_cast<std::uint16_t>(m_screen_dimensions.y)};
 	display_dimensions = {static_cast<unsigned>(sf::VideoMode::getDesktopMode().size.x), static_cast<unsigned>(sf::VideoMode::getDesktopMode().size.y)};
 	mode = fullscreen ? sf::VideoMode(display_dimensions) : sf::VideoMode(u_screen_dimensions);

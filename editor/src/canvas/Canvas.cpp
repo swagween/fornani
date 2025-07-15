@@ -93,7 +93,7 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 	}
 }
 
-bool Canvas::load(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local) {
+bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local) {
 
 	auto success{true};
 	map_states.clear();
@@ -117,7 +117,7 @@ bool Canvas::load(fornani::data::ResourceFinder& finder, std::string const& regi
 	}
 	assert(!metadata.is_null());
 
-	if (!local) { entities = EntitySet{finder, metadata["entities"], room_name}; }
+	if (!local) { entities = EntitySet{svc, finder, metadata["entities"], room_name}; }
 
 	auto const& meta = metadata["meta"];
 	room_id = meta["room_id"].as<int>();

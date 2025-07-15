@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/io/Logger.hpp>
 #include <optional>
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
@@ -41,7 +42,7 @@ struct EmitterAttributes {
 
 class Weapon {
   public:
-	Weapon(automa::ServiceProvider& svc, int id, bool enemy = false);
+	explicit Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy = false);
 
 	void update(automa::ServiceProvider& svc, Direction to_direction);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
@@ -89,6 +90,7 @@ class Weapon {
 	[[nodiscard]] auto get_global_offset() const -> sf::Vector2f { return offsets.render.global; };
 	[[nodiscard]] auto get_recoil() const -> float { return specifications.recoil; }
 	[[nodiscard]] auto get_multishot() const -> int { return specifications.multishot; }
+	[[nodiscard]] auto get_tag() const -> std::string_view { return metadata.tag; }
 	[[nodiscard]] auto get_label() const -> std::string_view { return metadata.label; }
 	[[nodiscard]] auto get_type() const -> ProjectileType { return projectile.get_type(); }
 	[[nodiscard]] auto get_ui_color() const -> int { return static_cast<int>(visual.color); }
@@ -103,6 +105,7 @@ class Weapon {
   private:
 	struct {
 		int id{};
+		std::string tag{};
 		std::string label{};
 		std::string description{};
 	} metadata{};
@@ -144,6 +147,8 @@ class Weapon {
 		util::Cooldown cooldown{};
 		util::Cooldown reload{};
 	} cooldowns{};
+
+	io::Logger m_logger{"Arms"};
 };
 
 } // namespace fornani::arms

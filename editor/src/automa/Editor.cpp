@@ -16,8 +16,9 @@
 
 namespace pi {
 
-Editor::Editor(char** argv, WindowManager& window, fornani::data::ResourceFinder& finder)
-	: window(&window), finder(&finder), map(finder, SelectionType::canvas), palette(finder, SelectionType::palette), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()), grid_refresh(16), active_layer{0} {
+Editor::Editor(char** argv, fornani::WindowManager& window, fornani::data::ResourceFinder& finder, fornani::Version& version, capo::IEngine& engine)
+	: window(&window), finder(&finder), m_services(argv, version, window, engine), map(finder, SelectionType::canvas), palette(finder, SelectionType::palette), current_tool(std::make_unique<Hand>()),
+	  secondary_tool(std::make_unique<Hand>()), grid_refresh(16), active_layer{0} {
 
 	args = argv;
 	if (!tool_texture.loadFromFile((finder.paths.editor / "gui" / "tools.png").string())) { console.add_log("Failed to load tool texture.\n"); }
@@ -298,8 +299,8 @@ void Editor::logic() {
 }
 
 void Editor::load() {
-	if (!map.load(*finder, finder->paths.region, finder->paths.room_name)) { console.add_log("Encountered an error loading file!"); }
-	if (!palette.load(*finder, "palette", "palette.json", true)) { console.add_log("Encountered an error loading palette!"); }
+	if (!map.load(m_services, *finder, finder->paths.region, finder->paths.room_name)) { console.add_log("Encountered an error loading file!"); }
+	if (!palette.load(m_services, *finder, "palette", "palette.json", true)) { console.add_log("Encountered an error loading palette!"); }
 	map.set_origin({});
 	palette.set_origin({});
 	reset_layers();
@@ -641,7 +642,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Bed", NULL, &beds)) {}
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-				current_tool->current_entity = std::make_unique<SavePoint>(map.room_id);
+				current_tool->current_entity = std::make_unique<SavePoint>(m_services, map.room_id);
 			}
 			ImGui::Separator();
 			if (ImGui::MenuItem("Player Placer")) {
@@ -748,7 +749,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		popup_open = true;
 	}
 
-	popup.launch(*finder, console, label.c_str(), current_tool, map.room_id);
+	popup.launch(m_services, *finder, console, label.c_str(), current_tool, map.room_id);
 
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 

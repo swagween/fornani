@@ -6,7 +6,7 @@
 
 namespace fornani::data {
 
-DataManager::DataManager(automa::ServiceProvider& svc, char** argv) : m_services(&svc) { load_data(); }
+DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc) { load_data(); }
 
 void DataManager::load_data(std::string in_room) {
 	m_services->stopwatch.start();
@@ -81,6 +81,8 @@ void DataManager::load_data(std::string in_room) {
 	assert(!drop.is_null());
 	particle = *dj::Json::from_file((finder.resource_path() + "/data/vfx/particle.json").c_str());
 	assert(!particle.is_null());
+	effect = *dj::Json::from_file((finder.resource_path() + "/data/vfx/effect.json").c_str());
+	assert(!effect.is_null());
 	sparkler = *dj::Json::from_file((finder.resource_path() + "/data/vfx/sparkler.json").c_str());
 	assert(!sparkler.is_null());
 	npc = *dj::Json::from_file((finder.resource_path() + "/data/npc/npc_data.json").c_str());
@@ -198,13 +200,10 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["player_data"]["hotbar"] = dj::Json::empty_array();
 	// push player arsenal
 	if (player.arsenal) {
-		for (auto& gun : player.arsenal.value().get_loadout()) {
-			int this_id = gun->get_id();
-			save["player_data"]["arsenal"].push_back(this_id);
-		}
+		for (auto& gun : player.arsenal.value().get_loadout()) { save["player_data"]["arsenal"].push_back(gun->get_tag()); }
 		if (player.hotbar) {
-			for (auto& id : player.hotbar.value().get_ids()) { save["player_data"]["hotbar"].push_back(id); }
-			save["player_data"]["equipped_gun"] = player.hotbar.value().get_id();
+			for (auto& id : player.hotbar.value().get_tags()) { save["player_data"]["hotbar"].push_back(id); }
+			save["player_data"]["equipped_gun"] = player.hotbar.value().get_tag();
 		}
 	}
 
@@ -316,12 +315,15 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	// load player's arsenal
 	player.arsenal = {};
 	player.hotbar = {};
-	for (auto& gun_id : save["player_data"]["arsenal"].as_array()) { player.push_to_loadout(gun_id.as<int>(), true); }
+	for (auto& gun_tag : save["player_data"]["arsenal"].as_array()) {
+		player.push_to_loadout(gun_tag.as_string(), true);
+		NANI_LOG_INFO(m_logger, "Pushed {} to loadout.", gun_tag.as_string());
+	}
 	if (!save["player_data"]["hotbar"].as_array().empty()) {
 		if (!player.hotbar) { player.hotbar = arms::Hotbar(1); }
 		if (player.hotbar) {
-			for (auto& gun_id : save["player_data"]["hotbar"].as_array()) { player.hotbar.value().add(gun_id.as<int>()); }
-			auto equipped_gun = save["player_data"]["equipped_gun"].as<int>();
+			for (auto& gun_tag : save["player_data"]["hotbar"].as_array()) { player.hotbar.value().add(gun_tag.as_string()); }
+			auto equipped_gun = save["player_data"]["equipped_gun"].as_string();
 			player.hotbar.value().set_selection(equipped_gun);
 		}
 	}
@@ -593,6 +595,14 @@ auto DataManager::item_id_from_label(std::string_view label) const -> int {
 	}
 	return 0;
 }
+
+auto DataManager::get_gun_tag_from_id(int id) const -> std::string_view {
+	for (auto const& gun : weapon.as_object()) {
+		if (gun.second["metadata"]["id"].as<int>() == id) { return gun.first; }
+	}
+}
+
+auto DataManager::get_gun_id_from_tag(std::string_view tag) const -> int { return weapon[tag]["metadata"]["id"].as<int>(); }
 
 int DataManager::get_room_index(int id) {
 	auto ctr{0};

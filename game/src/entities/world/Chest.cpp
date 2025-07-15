@@ -7,7 +7,7 @@
 
 namespace fornani::entity {
 
-Chest::Chest(automa::ServiceProvider& svc, int id, ChestType type, int modifier) : Animatable(svc, "chest", {16, 16}), m_id(id), m_type{type}, m_content_modifier{modifier}, collider{{28.f, 28.f}} {
+Chest::Chest(automa::ServiceProvider& svc, int id, ChestType type, int modifier) : Animatable(svc, "chests", {16, 16}), m_id(id), m_type{type}, m_content_modifier{modifier}, collider{{28.f, 28.f}} {
 	collider.physics.elasticity = 0.1f;
 	collider.physics.set_global_friction(0.999f);
 	collider.stats.GRAV = 6.2f;

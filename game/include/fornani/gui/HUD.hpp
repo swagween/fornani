@@ -24,7 +24,7 @@ class HUD {
   public:
 	HUD(automa::ServiceProvider& svc, player::Player& player);
 	void update(automa::ServiceProvider& svc, player::Player& player);
-	void render(player::Player& player, sf::RenderWindow& win);
+	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win);
 	void orient(automa::ServiceProvider& svc, player::Player& player, bool file_preview = false);
 
   private:

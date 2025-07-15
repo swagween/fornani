@@ -250,7 +250,7 @@ fsm::StateFunction Demon::update_dormant() {
 	if (cooldowns.awaken.is_complete() || flags.state.test(StateFlags::shot)) {
 		cooldowns.awaken.cancel();
 		flags.state.set(StateFlags::vulnerable);
-		m_map->effects.push_back(entity::Effect(*m_services, "small_explosion", collider.physics.position, {}, 2, 0));
+		m_map->effects.push_back(entity::Effect(*m_services, "small_explosion", collider.physics.position, {}, 2));
 		m_services->soundboard.flags.world.set(audio::World::block_toggle);
 		m_services->soundboard.flags.demon.set(audio::Demon::snort);
 		state = DemonState::jump;

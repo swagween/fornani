@@ -1,13 +1,17 @@
 
 #include "editor/canvas/entity/Platform.hpp"
+#include <fornani/graphics/Colors.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/utils/Constants.hpp>
 
 namespace pi {
 
-Platform::Platform(dj::Json const& in) : Entity(in, "platforms") {
+Platform::Platform(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "platforms") {
 	unserialize(in);
-	repeatable = true;
+	init(svc);
 }
-Platform::Platform(sf::Vector2u dim, int extent, std::string type, float start) : Entity("platforms", 0, dim), extent(extent), type(type), start(start) { repeatable = true; }
+
+Platform::Platform(fornani::automa::ServiceProvider& svc, sf::Vector2u dim, int extent, std::string type, float start) : Entity(svc, "platforms", 0, dim), extent(extent), type(type), start(start) { init(svc); }
 
 std::unique_ptr<Entity> Platform::clone() const { return std::make_unique<Platform>(*this); }
 
@@ -33,7 +37,34 @@ void Platform::expose() {
 
 void Platform::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{255, 255, 60, 100}) : drawbox.setFillColor(sf::Color{255, 255, 60, 40});
+	m_track.setScale(sf::Vector2f{size, size} / fornani::constants::f_cell_size);
+	m_track.setPosition(sf::Vector2f{position} * size + cam + f_dimensions() * size * 0.5f);
+	win.draw(m_track);
 	Entity::render(win, cam, size);
+	win.draw(m_track);
+}
+
+void Platform::init(fornani::automa::ServiceProvider& svc) {
+	repeatable = true;
+	auto offset = sf::Vector2i{};
+	if (get_dimensions().x == 1) { offset = {0, 0}; }
+	if (get_dimensions().x == 2) { offset = {16, 0}; }
+	if (get_dimensions().x == 3) { offset = {0, 16}; }
+	if (get_dimensions().y == 2) { offset = {0, 32}; }
+	if (get_dimensions().y == 3) { offset = {0, 64}; }
+	set_texture_rect(sf::IntRect{{offset}, {sf::Vector2i{get_dimensions()} * fornani::constants::i_cell_resolution}});
+	m_track.setFillColor(sf::Color::Transparent);
+	auto color = fornani::colors::goldenrod;
+	color.a = 80;
+	m_track.setOutlineColor(color);
+	m_track.setOutlineThickness(2.f);
+	auto const& in_data = svc.data.platform[type];
+	auto bounds = sf::Vector2f{};
+	for (auto const& point : in_data["track"].as_array()) {
+		bounds.x = std::max(bounds.x, point[0].as<float>());
+		bounds.y = std::max(bounds.y, point[1].as<float>());
+	}
+	m_track.setSize(bounds * static_cast<float>(extent));
 }
 
 } // namespace pi

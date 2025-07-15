@@ -9,8 +9,8 @@ namespace pi {
 
 class Chest : public Entity {
   public:
-	Chest(dj::Json const& in);
-	Chest(int type, int modifier, int id);
+	Chest(fornani::automa::ServiceProvider& svc, dj::Json const& in);
+	Chest(fornani::automa::ServiceProvider& svc, int type, int modifier, int id);
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;
@@ -20,6 +20,7 @@ class Chest : public Entity {
   private:
 	int m_type{};
 	int m_content_modifier{};
+	fornani::automa::ServiceProvider* m_services;
 };
 
 } // namespace pi

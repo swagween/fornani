@@ -11,15 +11,11 @@
 			"y": 180.000001
 		},
 		"arsenal": [
-			0,
-			1,
-			2
+			"bryns_gun",
+			"gnat"
 		],
-		"equipped_gun": 0,
+		"equipped_gun": "gnat",
 		"abilities": [
-			0,
-			1,
-			2
 		],
 		"wardrobe": {
 			"hairstyle": 0,
@@ -89,9 +85,8 @@
 			}
 		},
 		"hotbar": [
-			0,
-			1,
-			2
+			"bryns_gun",
+			"gnat"
 		]
 	},
 	"save_point_id": 4200,

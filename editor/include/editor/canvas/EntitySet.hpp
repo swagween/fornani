@@ -120,17 +120,17 @@ class Canvas;
 // };
 
 template <typename T>
-std::unique_ptr<Entity> create_entity(dj::Json const& in) {
-	return std::make_unique<T>(in);
+std::unique_ptr<Entity> create_entity(fornani::automa::ServiceProvider& svc, dj::Json const& in) {
+	return std::make_unique<T>(svc, in);
 }
 using CreateEntitySignature = decltype(&create_entity<Entity>);
 
 class EntitySet {
   public:
 	EntitySet() = default;
-	EntitySet(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
+	EntitySet(fornani::automa::ServiceProvider& svc, fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
 	void render(Canvas& map, sf::RenderWindow& win, sf::Vector2f cam);
-	void load(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
+	void load(fornani::automa::ServiceProvider& svc, fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
 	bool save(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
 	void clear();
 	bool has_entity_at(sf::Vector2<std::uint32_t> pos, bool highlighted_only = false) const;

@@ -3,10 +3,19 @@
 
 namespace pi {
 
-Portal::Portal(sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_id, int destination_id, bool locked, int key_id)
-	: Entity("portals", 0, dimensions), activate_on_contact(activate_on_contact), already_open(already_open), source_id(source_id), destination_id(destination_id), locked(locked), key_id(key_id) {}
+Portal::Portal(fornani::automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_id, int destination_id, bool locked, int key_id)
+	: Entity(svc, "portals", 0, dimensions), activate_on_contact(activate_on_contact), already_open(already_open), source_id(source_id), destination_id(destination_id), locked(locked), key_id(key_id) {
+	set_texture_rect(sf::IntRect{{16 * already_open, 0}, {16, 32}});
+	set_origin({0.f, 16.f});
+	if (activate_on_contact) { m_textured = false; }
+}
 
-Portal::Portal(dj::Json const& in) : Entity(in, "portals") { unserialize(in); }
+Portal::Portal(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals") {
+	unserialize(in);
+	set_texture_rect(sf::IntRect{{16 * already_open, 0}, {16, 32}});
+	set_origin({0.f, 16.f});
+	if (activate_on_contact) { m_textured = false; }
+}
 
 std::unique_ptr<Entity> Portal::clone() const { return std::make_unique<Portal>(*this); }
 

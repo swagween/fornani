@@ -7,8 +7,8 @@ namespace pi {
 
 class Destructible : public Entity {
   public:
-	Destructible(dj::Json const& in);
-	Destructible(int id);
+	Destructible(fornani::automa::ServiceProvider& svc, dj::Json const& in);
+	Destructible(fornani::automa::ServiceProvider& svc, int id);
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;

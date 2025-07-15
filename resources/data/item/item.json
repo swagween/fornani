@@ -421,8 +421,8 @@
 		"origin": [ 1, 0 ],
 		"naive_title": "Woodshine Totem",
 		"actual_title": "Woodshine Totem",
-		"naive_description": "An old stone totem that your mother gave you on your sixteenth birthday. It grants you the ability to slide when you land on the ground.",
-		"actual_description": "An old stone totem that your mother gave you on your sixteenth birthday. It grants you the ability to slide when you land on the ground.",
+		"naive_description": "An old stone totem that your mother gave you on your sixteenth birthday. It grants you the ability to roll when you land on the ground.",
+		"actual_description": "An old stone totem that your mother gave you on your sixteenth birthday. It grants you the ability to roll when you land on the ground.",
 		"unique": true,
 		"readable": true
 	},

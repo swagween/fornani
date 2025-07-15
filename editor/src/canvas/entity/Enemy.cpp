@@ -3,12 +3,12 @@
 
 namespace pi {
 
-Enemy::Enemy(dj::Json const& in) : Entity(in, "enemies") {
+Enemy::Enemy(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "enemies") {
 	unserialize(in);
 	repeatable = true;
 }
 
-Enemy::Enemy(int id, int variant) : Entity("enemies", id, {1, 1}), m_variant{variant} { repeatable = true; }
+Enemy::Enemy(fornani::automa::ServiceProvider& svc, int id, int variant) : Entity(svc, "enemies", id, {1, 1}), m_variant{variant} { repeatable = true; }
 
 std::unique_ptr<Entity> Enemy::clone() const { return std::make_unique<Enemy>(*this); }
 

@@ -8,7 +8,7 @@
 namespace fornani::enemy {
 
 Tank::Tank(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, "tank"), m_variant{static_cast<TankVariant>(variant)}, m_weapon(svc, 6), m_services(&svc), m_map(&map), m_gun{svc.assets.get_texture("tank_gun"), 2.0f, 0.65f, {-12.f, 6.f}} {
+	: Enemy(svc, "tank"), m_variant{static_cast<TankVariant>(variant)}, m_weapon(svc, "skycorps_smg"), m_services(&svc), m_map(&map), m_gun{svc.assets.get_texture("tank_gun"), 2.0f, 0.65f, {-12.f, 6.f}} {
 	animation.set_params(idle);
 	m_gun.set_magnitude(1.f);
 	m_weapon.clip_cooldown_time = 360;

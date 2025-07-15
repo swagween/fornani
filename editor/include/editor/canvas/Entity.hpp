@@ -4,15 +4,20 @@
 #include <imgui.h>
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
-#include "fornani/io/Logger.hpp"
-#include "fornani/utils/Polymorphic.hpp"
+#include <fornani/graphics/Drawable.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/Constants.hpp>
+
+namespace fornani::automa {
+struct ServiceProvider;
+}
 
 namespace pi {
 
-class Entity : public fornani::Polymorphic {
+class Entity : public fornani::Drawable {
   public:
-	explicit Entity(dj::Json const& in, std::string_view label);
-	explicit Entity(std::string_view label, int to_id, sf::Vector2<std::uint32_t> dim = {1, 1}) : id{to_id}, m_label{label}, dimensions{dim} {};
+	explicit Entity(fornani::automa::ServiceProvider& svc, dj::Json const& in, std::string_view label);
+	explicit Entity(fornani::automa::ServiceProvider& svc, std::string_view label, int to_id, sf::Vector2<std::uint32_t> dim = {1, 1});
 
 	virtual std::unique_ptr<Entity> clone() const;
 	virtual void serialize(dj::Json& out);
@@ -42,13 +47,15 @@ class Entity : public fornani::Polymorphic {
 		return false;
 	}
 
+  protected:
+	bool m_textured{true};
+	sf::Vector2<std::uint32_t> position{};
+	sf::Vector2<std::uint32_t> dimensions{};
+	fornani::io::Logger m_logger{"Pioneer"};
+
   private:
 	int id{};
 	std::string m_label{};
-	sf::Vector2<std::uint32_t> position{};
-	sf::Vector2<std::uint32_t> dimensions{};
-
-	fornani::io::Logger m_logger{"Pioneer"};
 };
 
 } // namespace pi

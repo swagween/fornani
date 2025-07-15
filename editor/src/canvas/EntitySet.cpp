@@ -15,7 +15,7 @@
 
 namespace pi {
 
-EntitySet::EntitySet(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
+EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 
 	create_map.emplace("beds", &create_entity<Bed>);
 	create_map.emplace("chests", &create_entity<Chest>);
@@ -26,7 +26,7 @@ EntitySet::EntitySet(fornani::data::ResourceFinder& finder, dj::Json& metadata, 
 	create_map.emplace("inspectables", &create_entity<Inspectable>);
 	create_map.emplace("destructibles", &create_entity<Destructible>);
 
-	load(finder, metadata, room_name);
+	load(svc, finder, metadata, room_name);
 
 	player_box.setFillColor(sf::Color{100, 200, 100, 30});
 	player_box.setOutlineColor(sf::Color{100, 200, 100, 120});
@@ -45,10 +45,10 @@ void EntitySet::render(Canvas& map, sf::RenderWindow& win, sf::Vector2f cam) {
 	for (auto& ent : variables.entities) { ent->render(win, cam, map.f_cell_size()); }
 }
 
-void EntitySet::load(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
+void EntitySet::load(fornani::automa::ServiceProvider& svc, fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 	for (auto const& [key, entry] : metadata.as_object()) {
 		for (auto const& element : entry.as_array()) {
-			if (create_map.contains(std::string{key})) { variables.entities.push_back(create_map[key](element)); }
+			if (create_map.contains(std::string{key})) { variables.entities.push_back(create_map[key](svc, element)); }
 		}
 	}
 }

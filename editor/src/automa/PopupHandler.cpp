@@ -1,6 +1,9 @@
 
 #include "editor/automa/PopupHandler.hpp"
 #include <imgui.h>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/setup/ResourceFinder.hpp>
+#include <fornani/utils/Random.hpp>
 #include <string>
 #include "editor/canvas/entity/Bed.hpp"
 #include "editor/canvas/entity/Chest.hpp"
@@ -11,11 +14,11 @@
 #include "editor/canvas/entity/Portal.hpp"
 #include "editor/gui/Console.hpp"
 #include "editor/tool/Tool.hpp"
-#include "fornani/setup/ResourceFinder.hpp"
 
 namespace pi {
 
-void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& console, char const* label, std::unique_ptr<Tool>& tool, int room_id) {
+void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::data::ResourceFinder& finder, Console& console, char const* label, std::unique_ptr<Tool>& tool, int room_id) {
+
 	if (ImGui::BeginPopupModal("Inspectable Message", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 
 		static bool activate_on_contact{};
@@ -37,7 +40,7 @@ void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& consol
 			// switch to entity tool, and store the specified inspectable for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->ent_type = EntityType::inspectable;
-			tool->current_entity = std::make_unique<Inspectable>(activate_on_contact, std::string{keybuffer}, std::vector<std::vector<std::string>>{{std::string{msgbuffer}}}, std::vector<std::vector<std::string>>{}, 0, instant);
+			tool->current_entity = std::make_unique<Inspectable>(svc, activate_on_contact, std::string{keybuffer}, std::vector<std::vector<std::string>>{{std::string{msgbuffer}}}, std::vector<std::vector<std::string>>{}, 0, instant);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -91,7 +94,7 @@ void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& consol
 			// switch to entity tool, and store the specified portal for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->ent_type = EntityType::platform;
-			tool->current_entity = std::make_unique<Platform>(sf::Vector2<std::uint32_t>{static_cast<std::uint32_t>(x), static_cast<std::uint32_t>(y)}, extent, type, start);
+			tool->current_entity = std::make_unique<Platform>(svc, sf::Vector2<std::uint32_t>{static_cast<std::uint32_t>(x), static_cast<std::uint32_t>(y)}, extent, type, start);
 			console.add_log(std::string{"Initialized platform with type " + type}.c_str());
 			ImGui::CloseCurrentPopup();
 		}
@@ -144,7 +147,7 @@ void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& consol
 		if (ImGui::Button("Create")) {
 			// switch to entity tool, and store the specified portal for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<Portal>(sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, activate_on_contact, already_open, room_id, destination, locked, key_id);
+			tool->current_entity = std::make_unique<Portal>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, activate_on_contact, already_open, room_id, destination, locked, key_id);
 			console.add_log(std::string{"Room ID: " + std::to_string(room_id)}.c_str());
 			ImGui::CloseCurrentPopup();
 		}
@@ -159,7 +162,7 @@ void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& consol
 		ImGui::InputInt("Variant", &variant);
 		if (ImGui::Button("Create")) {
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<Enemy>(id, variant);
+			tool->current_entity = std::make_unique<Enemy>(svc, id, variant);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -171,7 +174,7 @@ void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& consol
 		ImGui::InputInt("ID", &id);
 		if (ImGui::Button("Create")) {
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<Destructible>(id);
+			tool->current_entity = std::make_unique<Destructible>(svc, id);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -185,7 +188,7 @@ void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& consol
 		help_marker("By default, the foot of the bed is on the left");
 		if (ImGui::Button("Create")) {
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<Bed>(0, flipped);
+			tool->current_entity = std::make_unique<Bed>(svc, 0, flipped);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -193,20 +196,66 @@ void PopupHandler::launch(fornani::data::ResourceFinder& finder, Console& consol
 		ImGui::EndPopup();
 	}
 	if (ImGui::BeginPopupModal("Chest Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-		static int id{};
+
+		static int id{fornani::util::random::random_range(10000, 99999)};
 		static int modifier{};
 		static int type{};
-		ImGui::InputInt("ID", &id);
-		ImGui::InputInt("Type", &type);
+		static char const* label{"item_label"};
+		static char const* types[3] = {"gun", "orb", "item"};
+		static bool custom{};
+
+		ImGui::Text("ID: %i", id);
+		ImGui::SameLine();
+		ImGui::Checkbox("##custom", &custom);
+		ImGui::SameLine();
+		help_marker("Unique ID for the chest. No need to change this unless you want to.");
+		if (custom) { ImGui::InputInt("ID", &id); }
+		auto ctr{0};
+		if (ImGui::BeginCombo("Type", types[type])) {
+			for (auto const& t : types) {
+				if (ImGui::Selectable(t)) { type = ctr; }
+				++ctr;
+			}
+			ImGui::EndCombo();
+		}
+
 		ImGui::SameLine();
 		help_marker("0 for gun, 1 for orbs, 2 for item");
-		ImGui::InputInt("Content Modifier", &modifier);
-		ImGui::SameLine();
-		help_marker("Defines the contents of the chest. For guns and items, it is the Item ID. For orbs, it defines the rarity (1 - 100).");
+
+		if (type == 0 || type == 2) {
+			if (ImGui::BeginCombo("Contents", label, ImGuiComboFlags_HeightLargest)) {
+				switch (type) {
+				case 0:
+					for (auto const& gun : svc.data.weapon.as_object()) {
+						if (ImGui::Selectable(gun.first.c_str())) {
+							modifier = gun.second["metadata"]["id"].as<int>();
+							label = gun.first.c_str();
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+					break;
+				case 2:
+					for (auto const& item : svc.data.item.as_object()) {
+						if (ImGui::Selectable(item.first.c_str())) {
+							modifier = item.second["id"].as<int>();
+							label = item.first.c_str();
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+					break;
+				default: break;
+				}
+				ImGui::EndCombo();
+			}
+		} else if (type == 1) {
+			ImGui::SliderInt("##rarity", &modifier, 1, 100);
+			ImGui::SameLine();
+			help_marker("Defines the rarity of the contents. 1 is most common, 100 is rarest.");
+		}
 
 		if (ImGui::Button("Create")) {
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<Chest>(type, modifier, id);
+			tool->current_entity = std::make_unique<Chest>(svc, type, modifier, id);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
