@@ -28,8 +28,8 @@ constexpr static float walk_speed_v{0.62f};
 constexpr static float sprint_speed_v{1.0f};
 constexpr static float sprint_threshold_v{0.01f};
 
-enum class ControllerInput : std::uint8_t { move_x, jump, sprint, shield, shoot, arms_switch, inspect, dash, move_y, slide };
-enum class MovementState : std::uint8_t { restricted, grounded, walking_autonomously, walljumping };
+enum class ControllerInput : std::uint8_t { move_x, sprint, shoot, arms_switch, inspect, move_y, slide };
+enum class MovementState : std::uint8_t { restricted, walking_autonomously, walljumping };
 enum class HardState : std::uint8_t { no_move, has_arsenal };
 
 enum class Hook : std::uint8_t { hook_released, hook_held };
@@ -39,13 +39,11 @@ class PlayerController {
 
   public:
 	friend class Player;
-	explicit PlayerController(automa::ServiceProvider& svc);
+	explicit PlayerController(automa::ServiceProvider& svc, Player& player);
 
 	void update(automa::ServiceProvider& svc, world::Map& map, Player& player);
 	void clean();
 	void stop();
-	void ground();
-	void unground();
 	void restrict_movement();
 	void unrestrict();
 	void uninspect();
@@ -67,7 +65,7 @@ class PlayerController {
 	[[nodiscard]] auto is_ability_cancelled() const -> bool { return m_ability ? m_ability.value()->cancelled() : false; }
 	[[nodiscard]] auto is_animation_request() const -> bool { return m_ability ? m_ability.value()->is_animation_request() : false; }
 
-	[[nodiscard]] auto nothing_pressed() -> bool { return key_map[ControllerInput::move_x] == 0.f && key_map[ControllerInput::jump] == 0.f && key_map[ControllerInput::inspect] == 0.f; }
+	[[nodiscard]] auto nothing_pressed() -> bool { return key_map[ControllerInput::move_x] == 0.f && key_map[ControllerInput::inspect] == 0.f; }
 	[[nodiscard]] auto moving() -> bool { return key_map[ControllerInput::move_x] != 0.f; }
 	[[nodiscard]] auto sprinting() -> bool { return ccm::abs(key_map[ControllerInput::move_x]) > walk_speed_v + sprint_threshold_v; }
 	[[nodiscard]] auto moving_left() -> bool { return key_map[ControllerInput::move_x] < 0.f; }
@@ -75,12 +73,12 @@ class PlayerController {
 	[[nodiscard]] auto facing_left() const -> bool { return direction.lnr == LNR::left; }
 	[[nodiscard]] auto facing_right() const -> bool { return direction.lnr == LNR::right; }
 	[[nodiscard]] auto restricted() const -> bool { return flags.test(MovementState::restricted); }
-	[[nodiscard]] auto grounded() const -> bool { return flags.test(MovementState::grounded); }
+	[[nodiscard]] auto grounded() const -> bool;
 	[[nodiscard]] auto is_walljumping() const -> bool { return flags.test(MovementState::walljumping); }
 	[[nodiscard]] auto walking_autonomously() const -> bool { return flags.test(MovementState::walking_autonomously); }
 	[[nodiscard]] auto shot() -> bool { return key_map[ControllerInput::shoot] == 1.f; }
 	[[nodiscard]] auto sliding() -> bool { return key_map[ControllerInput::slide] != 0.f; }
-	[[nodiscard]] auto is_sprinting() -> bool { return key_map[ControllerInput::move_x] > walk_speed_v; }
+	[[nodiscard]] auto is_sprinting() -> bool { return ccm::abs(key_map[ControllerInput::move_x]) > walk_speed_v; }
 	[[nodiscard]] auto is_wallsliding() const -> bool { return wallslide.is_wallsliding(); }
 	[[nodiscard]] auto released_hook() -> bool {
 		auto const ret = hook_flags.test(Hook::hook_released);
@@ -121,6 +119,8 @@ class PlayerController {
 	struct {
 		util::Cooldown inspect{};
 	} cooldowns{};
+
+	Player* m_player;
 
 	io::Logger m_logger{"Controller"};
 };

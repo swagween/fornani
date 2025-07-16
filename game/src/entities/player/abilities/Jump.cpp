@@ -16,6 +16,7 @@ Jump::Jump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& colli
 
 void Jump::update(shape::Collider& collider, PlayerController& controller) {
 	if (m_request.running()) {
+		collider.flags.movement.reset(shape::Movement::jumping);
 		m_request.update();
 		if (controller.grounded()) {
 			m_soundboard->flags.player.set(audio::Player::jump);
@@ -29,6 +30,7 @@ void Jump::update(shape::Collider& collider, PlayerController& controller) {
 	if (!m_flags.test(AbilityFlags::active)) {
 		collider.physics.acceleration.y = m_multiplier;
 		collider.physics.velocity.y = 0.f;
+		collider.flags.movement.set(shape::Movement::jumping);
 	}
 	Ability::update(collider, controller);
 }

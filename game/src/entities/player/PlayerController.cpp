@@ -5,14 +5,12 @@
 
 namespace fornani::player {
 
-PlayerController::PlayerController(automa::ServiceProvider& svc) : cooldowns{.inspect = util::Cooldown(64)} {
+PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect = util::Cooldown(64)} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
-	key_map.insert(std::make_pair(ControllerInput::jump, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::arms_switch, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::inspect, 0.f));
-	key_map.insert(std::make_pair(ControllerInput::dash, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::slide, 0.f));
 	direction.und = UND::neutral;
 	direction.lnr = LNR::right;
@@ -128,16 +126,9 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 
 	direction.set_intermediate(left, right, up, down);
 
-	// dash
-	/*key_map[ControllerInput::dash] = dash_left && !dash_right ? -1.f : key_map[ControllerInput::dash];
-	key_map[ControllerInput::dash] = dash_right && !dash_left ? 1.f : key_map[ControllerInput::dash];
-	if (key_map[ControllerInput::dash] != 0.f && dash_count == 0) { dash_request = dash_time; }*/
-
 	// sprint
 	if (sprint_release) { sprint_flags.set(Sprint::released); }
 	if (grounded()) { sprint_flags = {}; }
-
-	key_map[ControllerInput::jump] = jump_started ? 1.f : 0.f;
 
 	if (shoot_pressed) { key_map[ControllerInput::shoot] = 1.f; }
 	if (shoot_released) {
@@ -167,27 +158,6 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	key_map[ControllerInput::arms_switch] = arms_switch_right ? 1.f : key_map[ControllerInput::arms_switch];
 
 	key_map[ControllerInput::inspect] = inspected ? 1.f : 0.f;
-
-	/*bool can_launch = !restricted() && (flags.test(MovementState::grounded) || wallslide.is_wallsliding()) && !jump.launched();
-	can_launch ? jump.states.set(JumpState::can_jump) : jump.states.reset(JumpState::can_jump);
-
-	if (jump_started) { jump.request_jump(); }
-	if (jump_held) {
-		jump.states.set(JumpState::jump_held);
-	} else {
-		jump.states.reset(JumpState::jump_held);
-	}
-	if (jump_released) { jump.triggers.set(JumpTrigger::is_released); }
-
-	if (jump.requested() && can_jump()) {
-		jump.triggers.set(JumpTrigger::jumpsquat);
-		jump.prevent();
-	}
-	if (grounded()) {
-		jump.start_coyote();
-		jump.jump_counter.start();
-	}
-	jump.update();*/
 }
 
 void PlayerController::clean() {
@@ -195,14 +165,7 @@ void PlayerController::clean() {
 	hook_flags = {};
 }
 
-void PlayerController::stop() {
-	key_map[ControllerInput::move_x] = 0.f;
-	key_map[ControllerInput::jump] = 0.f;
-}
-
-void PlayerController::ground() { flags.set(MovementState::grounded); }
-
-void PlayerController::unground() { flags.reset(MovementState::grounded); }
+void PlayerController::stop() { key_map[ControllerInput::move_x] = 0.f; }
 
 void PlayerController::restrict_movement() {
 	flags.set(MovementState::restricted);
@@ -233,11 +196,9 @@ void PlayerController::set_shot(bool flag) { key_map[ControllerInput::shoot] = f
 void PlayerController::prevent_movement() {
 	key_map[ControllerInput::move_x] = 0.f;
 	key_map[ControllerInput::move_y] = 0.f;
-	key_map[ControllerInput::dash] = 0.f;
 	key_map[ControllerInput::arms_switch] = 0.f;
 	key_map[ControllerInput::inspect] = 0.f;
 	key_map[ControllerInput::shoot] = 0.f;
-	key_map[ControllerInput::jump] = 0.f;
 	key_map[ControllerInput::sprint] = 0.f;
 	key_map[ControllerInput::slide] = 0.f;
 	flags.set(MovementState::restricted);
@@ -260,5 +221,7 @@ std::optional<AnimState> PlayerController::get_ability_animation() const {
 	if (m_ability) { return m_ability.value()->get_animation(); }
 	return std::nullopt;
 }
+
+bool PlayerController::grounded() const { return m_player->grounded(); }
 
 } // namespace fornani::player

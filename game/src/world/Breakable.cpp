@@ -52,7 +52,7 @@ void Breakable::on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile&
 			svc.soundboard.flags.world.set(audio::World::breakable_hit);
 		}
 		if (destroyed()) {
-			map.effects.push_back(entity::Effect(svc, "small_explosion", collider.physics.position));
+			map.effects.push_back(entity::Effect(svc, "small_explosion", collider.get_center()));
 			svc.soundboard.flags.world.set(audio::World::breakable_shatter);
 		}
 		proj.destroy(false);

@@ -1,12 +1,10 @@
-#include "fornani/world/Spawner.hpp"
 
-#include <cmath>
+#include "fornani/world/Spawner.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/world/Map.hpp"
-
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::world {
 

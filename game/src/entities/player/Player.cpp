@@ -14,7 +14,7 @@ namespace fornani::player {
 static void test_event(std::string_view s, item::ItemType typ, int a) {}
 
 Player::Player(automa::ServiceProvider& svc)
-	: arsenal(svc), m_services(&svc), controller(svc), animation(*this), sprite{svc.assets.get_texture("nani")}, camera_offset{32.f, -64.f}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},
+	: arsenal(svc), m_services(&svc), controller(svc, *this), animation(*this), sprite{svc.assets.get_texture("nani")}, camera_offset{32.f, -32.f}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},
 	  m_directions{.desired{LR::left}, .actual{LR::right}}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, collider{player_dimensions_v} {
 	sprite.setScale(constants::f_scale_vec);
 	svc.data.load_player_params(*this);
@@ -48,12 +48,13 @@ void Player::update(world::Map& map) {
 
 	// camera stuff
 	camera_offset.x = controller.facing_left() ? -32.f : 32.f;
-	if (controller.sprinting()) { controller.reset_vertical_movement(); }
-	m_camera.physics.set_global_friction(0.88f);
+	m_camera.physics.set_global_friction(0.85f);
 	auto skew{controller.vertical_movement() < 0.f ? 120.f : 160.f};
-	m_camera.target.seek(m_camera.physics, sf::Vector2f{0.f, skew} * controller.vertical_movement(), 0.002f);
-	m_camera.physics.simple_update();
-	camera_offset.y = -64.f + m_camera.physics.position.y;
+	if (!controller.is_dashing() && !controller.is_sprinting()) {
+		m_camera.target.seek(m_camera.physics, sf::Vector2f{0.f, skew} * controller.vertical_movement(), 0.001f);
+		m_camera.physics.simple_update();
+	}
+	camera_offset.y = -32.f + m_camera.physics.position.y;
 
 	invincible() ? collider.draw_hurtbox.setFillColor(colors::red) : collider.draw_hurtbox.setFillColor(colors::blue);
 
@@ -66,7 +67,6 @@ void Player::update(world::Map& map) {
 	if (flags.state.test(State::crushed)) { collider.physics.gravity = 0.f; }
 
 	update_direction();
-	grounded() ? controller.ground() : controller.unground();
 
 	controller.update(*m_services, map, *this);
 	if (collider.hit_ceiling_ramp()) { controller.flush_ability(); }
@@ -218,7 +218,7 @@ void Player::update_animation() {
 			if (controller.nothing_pressed() && !controller.is_dashing() && !(animation.is_state(AnimState::inspect)) && !(animation.is_state(AnimState::sit))) { animation.request(AnimState::idle); }
 			if (controller.moving() && !controller.is_dashing() && !controller.sprinting()) { animation.request(AnimState::run); }
 			if (controller.moving() && controller.sprinting() && !controller.is_dashing()) { animation.request(AnimState::sprint); }
-			if ((animation.is_state(AnimState::sprint) || animation.is_state(AnimState::roll)) && controller.sliding() && controller.get_slide().can_begin()) { animation.request(AnimState::slide); }
+			if ((animation.is_state(AnimState::sprint) || animation.is_state(AnimState::roll)) && controller.get_slide().can_begin()) { animation.request(AnimState::slide); }
 			if (abs(collider.physics.velocity.x) > thresholds.stop && !controller.moving()) { animation.request(AnimState::stop); }
 			if (hotbar && arsenal) {
 				if (controller.shot() && equipped_weapon().can_shoot()) { animation.request(AnimState::shoot); }
