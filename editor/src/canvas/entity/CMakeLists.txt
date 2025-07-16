@@ -7,4 +7,6 @@ nani_add_sources(
         Portal.cpp
         SavePoint.cpp
         Enemy.cpp
+        SwitchBlock.cpp
+        SwitchButton.cpp
 )

@@ -100,6 +100,7 @@ class DataManager final {
 	[[nodiscard]] auto item_id_from_label(std::string_view label) const -> int;
 	[[nodiscard]] auto get_gun_tag_from_id(int id) const -> std::string_view;
 	[[nodiscard]] auto get_gun_id_from_tag(std::string_view tag) const -> int;
+	[[nodiscard]] auto get_room_data_from_id(int id) const& -> std::optional<dj::Json>;
 
 	int get_room_index(int id);
 	int get_npc_location(int npc_id);

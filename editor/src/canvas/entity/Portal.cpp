@@ -1,16 +1,17 @@
 
 #include "editor/canvas/entity/Portal.hpp"
+#include <fornani/service/ServiceProvider.hpp>
 
 namespace pi {
 
 Portal::Portal(fornani::automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_id, int destination_id, bool locked, int key_id)
-	: Entity(svc, "portals", 0, dimensions), activate_on_contact(activate_on_contact), already_open(already_open), source_id(source_id), destination_id(destination_id), locked(locked), key_id(key_id) {
+	: Entity(svc, "portals", 0, dimensions), activate_on_contact(activate_on_contact), already_open(already_open), source_id(source_id), destination_id(destination_id), locked(locked), key_id(key_id), m_services(&svc) {
 	set_texture_rect(sf::IntRect{{16 * already_open, 0}, {16, 32}});
 	set_origin({0.f, 16.f});
 	if (activate_on_contact) { m_textured = false; }
 }
 
-Portal::Portal(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals") {
+Portal::Portal(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals"), m_services(&svc) {
 	unserialize(in);
 	set_texture_rect(sf::IntRect{{16 * already_open, 0}, {16, 32}});
 	set_origin({0.f, 16.f});
@@ -48,6 +49,18 @@ void Portal::expose() {
 	ImGui::Separator();
 	ImGui::Checkbox("Locked", &locked);
 	ImGui::InputInt("Key ID", &key_id);
+	ImGui::Separator();
+	if (auto const& roomdata = m_services->data.get_room_data_from_id(destination_id)) {
+		if (ImGui::Button("Load Destination Room")) {
+			auto const& roomstr = roomdata.value()["label"].as_string();
+			auto const& regionstr = roomdata.value()["region"].as_string();
+			NANI_LOG_DEBUG(m_logger, "Region: {}", regionstr);
+			NANI_LOG_DEBUG(m_logger, "Room: {}", roomstr);
+			m_services->events.dispatch_event("LoadFile", regionstr, roomstr);
+		}
+	} else {
+		if (ImGui::Button("Create Destination Room")) { m_services->events.dispatch_event("NewFile", destination_id); }
+	}
 }
 
 void Portal::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {

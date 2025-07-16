@@ -16,9 +16,29 @@
 
 namespace pi {
 
+static bool b_load_file{};
+static bool b_new_file{};
+static bool b_close_entity_popup{};
+static int b_new_id{};
+
+static std::string to_region{};
+static std::string to_room{};
+static void load_file(std::string const& toregion, std::string const& toroom) {
+	b_load_file = true;
+	to_region = toregion;
+	to_room = toroom;
+}
+static void new_file(int id) {
+	b_new_file = true;
+	b_new_id = id;
+}
+
 Editor::Editor(char** argv, fornani::WindowManager& window, fornani::data::ResourceFinder& finder, fornani::Version& version, capo::IEngine& engine)
 	: window(&window), finder(&finder), m_services(argv, version, window, engine), map(finder, SelectionType::canvas), palette(finder, SelectionType::palette), current_tool(std::make_unique<Hand>()),
 	  secondary_tool(std::make_unique<Hand>()), grid_refresh(16), active_layer{0} {
+
+	m_services.events.register_event(std::make_unique<fornani::Event<std::string, std::string>>("LoadFile", &load_file));
+	m_services.events.register_event(std::make_unique<fornani::Event<int>>("NewFile", &new_file));
 
 	args = argv;
 	if (!tool_texture.loadFromFile((finder.paths.editor / "gui" / "tools.png").string())) { console.add_log("Failed to load tool texture.\n"); }
@@ -235,6 +255,14 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 
 void Editor::logic() {
 
+	if (b_load_file) {
+		finder->paths.region = to_region;
+		finder->paths.room_name = to_room;
+		load();
+		b_load_file = false;
+		b_close_entity_popup = true;
+	}
+
 	auto& target = palette_mode() ? palette : map;
 	auto& tool = right_mouse_pressed() ? secondary_tool : current_tool;
 	map.constrain(window->f_screen_dimensions());
@@ -396,11 +424,12 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	if (ImGui::BeginPopupContextWindow("Edit Entity")) {
 		if (current_tool->current_entity) {
 			current_tool->current_entity.value()->expose();
-			if (ImGui::Button("Save Changes")) {
+			if (ImGui::Button("Save Changes") || b_new_file || b_close_entity_popup) {
 				for (auto& ent : map.entities.variables.entities) {
 					if (ent->highlighted) { ent->overwrite = true; }
 				}
 				current_tool->suppress_until_released();
+				b_close_entity_popup = false;
 				ImGui::CloseCurrentPopup();
 			}
 		}
@@ -414,7 +443,85 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	bool chest{};
 	bool dest{};
 	bool beds{};
+	bool sbtn{};
+	bool sblk{};
 	bool open_themes{};
+
+	bool new_room{b_new_file};
+
+	if (new_room) {
+		ImGui::CloseCurrentPopup();
+		ImGui::OpenPopup("New Room");
+	}
+	if (ImGui::BeginPopupModal("New Room", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		popup_open = true;
+		b_new_file = false;
+		ImGui::Text("Please enter a new room name.");
+		ImGui::Text("Convention is all lowercase, snake-case, and of the format `room_name`.");
+		ImGui::Separator();
+		ImGui::NewLine();
+		static char regbuffer[128] = "";
+		static char roombuffer[128] = "";
+
+		ImGui::InputTextWithHint("Region Name", "firstwind", regbuffer, IM_ARRAYSIZE(regbuffer));
+		ImGui::InputTextWithHint("Room Name", "boiler_room", roombuffer, IM_ARRAYSIZE(roombuffer));
+		ImGui::Separator();
+		ImGui::NewLine();
+
+		ImGui::Text("Please specify the dimensions of the level in chunks (16x16 tiles)");
+		ImGui::Separator();
+		ImGui::NewLine();
+
+		static int width{1};
+		static int height{1};
+		static int metagrid_x{};
+		static int metagrid_y{};
+
+		width = ccm::ext::clamp(width, 1, std::numeric_limits<int>::max());
+		height = ccm::ext::clamp(height, 1, std::numeric_limits<int>::max());
+
+		ImGui::InputInt("Width", &width);
+		ImGui::NewLine();
+
+		ImGui::InputInt("Height", &height);
+		ImGui::Separator();
+		ImGui::NewLine();
+
+		ImGui::Text("Metagrid Position");
+		ImGui::InputInt("X", &metagrid_x);
+		ImGui::SameLine();
+
+		ImGui::InputInt("Y", &metagrid_y);
+		ImGui::Separator();
+		ImGui::NewLine();
+
+		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		ImGui::SameLine();
+		if (ImGui::Button("Create")) {
+
+			static int style_current = static_cast<int>(map.tile_style.get_type());
+			static int bg_current = static_cast<int>(map.background->type.get_type());
+
+			map = Canvas(*finder, {static_cast<std::uint32_t>(width * chunk_size_v), static_cast<std::uint32_t>(height * chunk_size_v)}, SelectionType::canvas, static_cast<StyleType>(style_current), static_cast<Backdrop>(bg_current));
+			map.metagrid_coordinates = {metagrid_x, metagrid_y};
+			finder->paths.region = regbuffer;
+			finder->paths.room_name = std::string{roombuffer} + ".json";
+			map.room_id = b_new_id;
+			save();
+			load();
+			reset_layers();
+			map.center(window->f_center_screen());
+			dj::Json this_room{};
+			this_room["room_id"] = b_new_id;
+			this_room["region"] = finder->paths.region;
+			this_room["label"] = finder->paths.room_name;
+			m_services.data.map_table["rooms"].push_back(this_room);
+			console.add_log(std::string{"In folder " + finder->paths.region}.c_str());
+			console.add_log(std::string{"Created new room with id " + std::to_string(b_new_id) + " and name " + finder->paths.room_name}.c_str());
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 
 	// Main Menu
 	menu_hovered = false;
@@ -482,6 +589,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		if (new_popup) { ImGui::OpenPopup("New File"); }
 		if (ImGui::BeginPopupModal("New File", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 			popup_open = true;
+			b_new_file = false;
 			ImGui::Text("Please enter a new room name.");
 			ImGui::Text("Convention is all lowercase, snake-case, and of the format `room_name`.");
 			ImGui::Separator();
@@ -640,6 +748,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Chest", NULL, &chest)) {}
 			if (ImGui::MenuItem("Destructible", NULL, &dest)) {}
 			if (ImGui::MenuItem("Bed", NULL, &beds)) {}
+			if (ImGui::MenuItem("Switch Block", NULL, &sblk)) {}
+			if (ImGui::MenuItem("Switch Button", NULL, &sbtn)) {}
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 				current_tool->current_entity = std::make_unique<SavePoint>(m_services, map.room_id);
@@ -746,6 +856,16 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	if (beds) {
 		ImGui::OpenPopup("Bed Specifications");
 		label = "Bed Specifications";
+		popup_open = true;
+	}
+	if (sbtn) {
+		ImGui::OpenPopup("Switch Button Specifications");
+		label = "Switch Button Specifications";
+		popup_open = true;
+	}
+	if (sblk) {
+		ImGui::OpenPopup("Switch Block Specifications");
+		label = "Switch Block Specifications";
 		popup_open = true;
 	}
 

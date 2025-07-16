@@ -14,21 +14,6 @@
         ]
       }
     ],
-    "chests": [
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 14614,
-        "modifier": 17,
-        "position": [
-          22,
-          12
-        ],
-        "type": 2
-      }
-    ],
     "destructibles": [
       {
         "dimensions": [

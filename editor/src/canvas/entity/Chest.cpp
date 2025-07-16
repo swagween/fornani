@@ -20,7 +20,6 @@ void Chest::serialize(dj::Json& out) {
 	Entity::serialize(out);
 	out["type"] = m_type;
 	out["modifier"] = m_content_modifier;
-	NANI_LOG_DEBUG(m_logger, "Type: {}", m_type);
 }
 
 void Chest::unserialize(dj::Json const& in) {

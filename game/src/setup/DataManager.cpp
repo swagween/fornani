@@ -50,6 +50,7 @@ void DataManager::load_data(std::string in_room) {
 			auto entry = dj::Json{};
 			entry["room_id"] = this_id;
 			entry["label"] = this_name;
+			entry["region"] = this_biome;
 			map_table["rooms"].push_back(entry);
 		}
 	}
@@ -603,6 +604,16 @@ auto DataManager::get_gun_tag_from_id(int id) const -> std::string_view {
 }
 
 auto DataManager::get_gun_id_from_tag(std::string_view tag) const -> int { return weapon[tag]["metadata"]["id"].as<int>(); }
+
+auto DataManager::get_room_data_from_id(int id) const& -> std::optional<dj::Json> {
+	for (auto const& room : map_table["rooms"].as_array()) {
+		if (room["room_id"].as<int>() == id) {
+			return room;
+			NANI_LOG_DEBUG(m_logger, "Found room {}", id);
+		}
+	}
+	return std::nullopt;
+}
 
 int DataManager::get_room_index(int id) {
 	auto ctr{0};

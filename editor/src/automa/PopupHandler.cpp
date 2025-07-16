@@ -5,13 +5,7 @@
 #include <fornani/setup/ResourceFinder.hpp>
 #include <fornani/utils/Random.hpp>
 #include <string>
-#include "editor/canvas/entity/Bed.hpp"
-#include "editor/canvas/entity/Chest.hpp"
-#include "editor/canvas/entity/Destructible.hpp"
-#include "editor/canvas/entity/Enemy.hpp"
-#include "editor/canvas/entity/Inspectable.hpp"
-#include "editor/canvas/entity/Platform.hpp"
-#include "editor/canvas/entity/Portal.hpp"
+#include "editor/canvas/EntitySet.hpp"
 #include "editor/gui/Console.hpp"
 #include "editor/tool/Tool.hpp"
 
@@ -256,6 +250,44 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::data::
 		if (ImGui::Button("Create")) {
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->current_entity = std::make_unique<Chest>(svc, type, modifier, id);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		ImGui::EndPopup();
+	}
+	if (ImGui::BeginPopupModal("Switch Button Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		static int id{};
+		static int type{};
+		ImGui::InputInt("ID", &id);
+		ImGui::InputInt("Type", &type);
+		if (ImGui::Button("Create")) {
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<SwitchButton>(svc, id, type);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		ImGui::EndPopup();
+	}
+	if (ImGui::BeginPopupModal("Switch Block Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		static int id{};
+		static int type{};
+		ImGui::InputInt("ID", &id);
+		static char const* types[4] = {"toggler", "permanent", "movable", "alternator"};
+
+		auto ctr{0};
+		if (ImGui::BeginCombo("Type", types[type])) {
+			for (auto const& t : types) {
+				if (ImGui::Selectable(t)) { type = ctr; }
+				++ctr;
+			}
+			ImGui::EndCombo();
+		}
+
+		if (ImGui::Button("Create")) {
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<SwitchBlock>(svc, id, type);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();

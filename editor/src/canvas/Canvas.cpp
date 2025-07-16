@@ -67,9 +67,9 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 					tileset.setOrigin(get_origin());
 					tileset.setPosition(cell.scaled_position() + position);
 					if (layer.render_order == get_layers().layers.size() - 1) {
-						if (flags.show_obscured_layer) { win.draw(tileset); }
+						if (flags.show_obscured_layer || !get_layers().m_flags.has_obscuring_layer) { win.draw(tileset); }
 					} else if (layer.render_order == get_layers().layers.size() - 2) {
-						if (flags.show_reverse_obscured_layer) { win.draw(tileset); }
+						if (flags.show_reverse_obscured_layer || !get_layers().m_flags.has_reverse_obscuring_layer) { win.draw(tileset); }
 					} else {
 						win.draw(tileset);
 					}

@@ -151,8 +151,8 @@ class Canvas {
 		bool show_grid{true};
 		bool show_all_layers{true};
 		bool show_current_layer{false};
-		bool show_obscured_layer{true};
-		bool show_reverse_obscured_layer{true};
+		bool show_obscured_layer{false};
+		bool show_reverse_obscured_layer{false};
 		bool show_indicated_layers{true};
 		bool show_entities{true};
 		bool show_background{};

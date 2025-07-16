@@ -12,6 +12,16 @@
 #include <memory>
 #include <string_view>
 #include <unordered_map>
+#include "editor/canvas/entity/Bed.hpp"
+#include "editor/canvas/entity/Chest.hpp"
+#include "editor/canvas/entity/Destructible.hpp"
+#include "editor/canvas/entity/Enemy.hpp"
+#include "editor/canvas/entity/Inspectable.hpp"
+#include "editor/canvas/entity/Platform.hpp"
+#include "editor/canvas/entity/Portal.hpp"
+#include "editor/canvas/entity/SavePoint.hpp"
+#include "editor/canvas/entity/SwitchBlock.hpp"
+#include "editor/canvas/entity/SwitchButton.hpp"
 
 namespace fornani::data {
 class ResourceFinder;
@@ -21,108 +31,11 @@ namespace pi {
 
 class Canvas;
 
-// struct Animator : public Entity {
-//	Animator() : Entity("animators") { repeatable = true; }
-//	bool automatic{};
-//	bool foreground{};
-//	int style{};
-//	std::unique_ptr<Entity> clone() const override { return std::make_unique<Animator>(*this); }
-//	void serialize(dj::Json& out) override { Entity::serialize(out); }
-//	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
-//	void expose() override { Entity::expose(); }
-// };
-//
-
-//
-// struct InteractiveScenery : public Entity {
-//	InteractiveScenery() : Entity("interactive_scenery") { repeatable = true; }
-//	int length{};
-//	int size{};
-//	bool foreground{};
-//	int type{};
-//	bool has_platform{};
-//	std::vector<int> link_indeces{};
-//	std::unique_ptr<Entity> clone() const override { return std::make_unique<InteractiveScenery>(*this); }
-//	void serialize(dj::Json& out) override { Entity::serialize(out); }
-//	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
-//	void expose() override { Entity::expose(); }
-//};
-//
-// struct NPC : public Entity {
-//	NPC() : Entity("npcs") {}
-//	bool background{};
-//	std::vector<std::vector<std::string>> suites{};
-//	std::unique_ptr<Entity> clone() const override { return std::make_unique<NPC>(*this); }
-//	void serialize(dj::Json& out) override { Entity::serialize(out); }
-//	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
-//	void expose() override { Entity::expose(); }
-//};
-
-// struct Chest : public Entity {
-//	Chest() : Entity("chests") {}
-//	int item_id{};
-//	int type{};
-//	float rarity{};
-//	int amount{};
-//	std::unique_ptr<Entity> clone() const override { return std::make_unique<Chest>(*this); }
-//	void serialize(dj::Json& out) override {
-//		Entity::serialize(out);
-//		out["item_id"] = item_id;
-//		out["type"] = type;
-//		out["rarity"] = rarity;
-//		out["amount"] = amount;
-//	}
-//	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
-//	void expose() override { Entity::expose(); }
-// };
-//
-// struct Scenery : public Entity {
-//	Scenery() : Entity("scenery") { repeatable = true; }
-//	int style{};
-//	int layer{};
-//	int variant{};
-//	std::unique_ptr<Entity> clone() const override { return std::make_unique<Scenery>(*this); }
-//	void serialize(dj::Json& out) override { Entity::serialize(out); }
-//	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
-//	void expose() override { Entity::expose(); }
-// };
-//
-// struct SwitchBlock : public Entity {
-//	SwitchBlock() : Entity("switch_blocks") { repeatable = true; }
-//	int type{};
-//	std::unique_ptr<Entity> clone() const override { return std::make_unique<SwitchBlock>(*this); }
-//	void serialize(dj::Json& out) override {
-//		Entity::serialize(out);
-//		out["type"] = type;
-//	}
-//	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
-//	void expose() override { Entity::expose(); }
-// };
-//
-// struct SwitchButton : public Entity {
-//	SwitchButton(int id, int type) : Entity("switches", id), type(type) {}
-//	int type{};
-//	std::unique_ptr<Entity> clone() const override { return std::make_unique<SwitchButton>(*this); }
-//	void serialize(dj::Json& out) override {
-//		Entity::serialize(out);
-//		out["type"] = type;
-//	}
-//	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
-//	void expose() override { Entity::expose(); }
-// };
-//
-// struct Destroyer : public Entity {
-//	Destroyer() : Entity("destroyers") { repeatable = true; }
-//	std::unique_ptr<Entity> clone() const override { return std::make_unique<Destroyer>(*this); }
-//	void serialize(dj::Json& out) override { Entity::serialize(out); }
-//	void unserialize(dj::Json& in) override { Entity::unserialize(in); }
-//	void expose() override { Entity::expose(); }
-// };
-
 template <typename T>
 std::unique_ptr<Entity> create_entity(fornani::automa::ServiceProvider& svc, dj::Json const& in) {
 	return std::make_unique<T>(svc, in);
 }
+
 using CreateEntitySignature = decltype(&create_entity<Entity>);
 
 class EntitySet {
@@ -144,12 +57,7 @@ class EntitySet {
 
   private:
 	sf::RectangleShape player_box{};
-	struct {
-		dj::Json inspectables{};
-	} data{};
-
 	std::unordered_map<std::string, CreateEntitySignature> create_map;
-
 	fornani::io::Logger m_logger{"Pioneer"};
 };
 

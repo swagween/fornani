@@ -7,4 +7,6 @@ nani_add_headers(
         Portal.hpp
         SavePoint.hpp
         Enemy.hpp
+        SwitchBlock.hpp
+        SwitchButton.hpp
 )

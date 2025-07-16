@@ -244,16 +244,16 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		pos.y = entry["position"][1].as<float>();
 		pos *= constants::f_cell_size;
 		auto type = entry["type"].as<int>();
-		auto button_id = entry["button_id"].as<int>();
+		auto button_id = entry["id"].as<int>();
 		switch_blocks.push_back(SwitchBlock(svc, pos, button_id, type));
 	}
-	for (auto& entry : entities["switches"].as_array()) {
+	for (auto& entry : entities["switch_buttons"].as_array()) {
 		sf::Vector2f pos{};
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();
 		pos *= constants::f_cell_size;
 		auto type = entry["type"].as<int>();
-		auto button_id = entry["button_id"].as<int>();
+		auto button_id = entry["id"].as<int>();
 		switch_buttons.push_back(std::make_unique<SwitchButton>(svc, pos, button_id, type, *this));
 	}
 

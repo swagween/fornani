@@ -1,14 +1,6 @@
 
 #include "editor/canvas/EntitySet.hpp"
 #include "editor/canvas/Canvas.hpp"
-#include "editor/canvas/entity/Bed.hpp"
-#include "editor/canvas/entity/Chest.hpp"
-#include "editor/canvas/entity/Destructible.hpp"
-#include "editor/canvas/entity/Enemy.hpp"
-#include "editor/canvas/entity/Inspectable.hpp"
-#include "editor/canvas/entity/Platform.hpp"
-#include "editor/canvas/entity/Portal.hpp"
-#include "editor/canvas/entity/SavePoint.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
 
 #include <cassert>
@@ -25,6 +17,8 @@ EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::data::Resou
 	create_map.emplace("save_point", &create_entity<SavePoint>);
 	create_map.emplace("inspectables", &create_entity<Inspectable>);
 	create_map.emplace("destructibles", &create_entity<Destructible>);
+	create_map.emplace("switch_blocks", &create_entity<SwitchBlock>);
+	create_map.emplace("switch_buttons", &create_entity<SwitchButton>);
 
 	load(svc, finder, metadata, room_name);
 
@@ -57,10 +51,7 @@ bool EntitySet::save(fornani::data::ResourceFinder& finder, dj::Json& metadata, 
 
 	if (variables.entities.empty()) { return true; }
 
-	// clean jsons
-	data = {};
-
-	auto wipe = dj::Json::empty_array();
+	auto const& wipe = dj::Json::empty_array();
 
 	// general entities
 	for (auto& ent : variables.entities) {

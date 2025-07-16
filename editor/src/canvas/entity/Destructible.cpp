@@ -6,9 +6,13 @@ namespace pi {
 Destructible::Destructible(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "destructibles") {
 	unserialize(in);
 	set_texture_rect(sf::IntRect{{}, fornani::constants::i_resolution_vec});
+	repeatable = true;
 }
 
-Destructible::Destructible(fornani::automa::ServiceProvider& svc, int id) : Entity(svc, "destructibles", id) { set_texture_rect(sf::IntRect{{}, fornani::constants::i_resolution_vec}); }
+Destructible::Destructible(fornani::automa::ServiceProvider& svc, int id) : Entity(svc, "destructibles", id) {
+	set_texture_rect(sf::IntRect{{}, fornani::constants::i_resolution_vec});
+	repeatable = true;
+}
 
 std::unique_ptr<Entity> Destructible::clone() const { return std::make_unique<Destructible>(*this); }
 

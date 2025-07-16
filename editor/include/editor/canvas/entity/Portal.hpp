@@ -23,6 +23,8 @@ class Portal : public Entity {
 	int destination_id{};
 	bool locked{};
 	int key_id{};
+
+	fornani::automa::ServiceProvider* m_services;
 };
 
 } // namespace pi

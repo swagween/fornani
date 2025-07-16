@@ -8,7 +8,7 @@ Bed::Bed(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc
 	set_texture_rect(sf::IntRect{{}, {32, 16}});
 }
 
-Bed::Bed(fornani::automa::ServiceProvider& svc, int id, bool flipped) : Entity(svc, "beds", id), m_flipped{flipped} {}
+Bed::Bed(fornani::automa::ServiceProvider& svc, int id, bool flipped) : Entity(svc, "beds", id), m_flipped{flipped} { set_texture_rect(sf::IntRect{{}, {32, 16}}); }
 
 std::unique_ptr<Entity> Bed::clone() const { return std::make_unique<Bed>(*this); }
 
