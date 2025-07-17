@@ -5,7 +5,7 @@
 
 namespace fornani::player {
 
-PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect = util::Cooldown(64)} {
+PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect = util::Cooldown(64)}, post_slide{80} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
@@ -75,6 +75,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (down) { key_map[ControllerInput::move_y] += 1.f; }
 
 	/* handle abilities */
+	post_slide.update();
 	if (player.grounded()) { player.m_ability_usage = {}; }
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered) {
 		if (player.can_dash()) {
@@ -92,6 +93,9 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).triggered) {
 		if (!m_ability && player.can_roll() && sprint) { m_ability = std::make_unique<Roll>(svc, map, player.collider, player.get_actual_direction()); }
 	}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).held) {
+		if (!m_ability && player.can_slide() && sprint && !post_slide.running()) { m_ability = std::make_unique<Slide>(svc, map, player.collider, player.get_actual_direction()); }
+	}
 	if (m_ability) {
 		m_ability.value()->update(player.collider, *this);
 
@@ -102,6 +106,10 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 				player.collider.physics.acceleration.y *= player.physics_stats.jump_release_multiplier;
 				m_ability.value()->fail();
 			}
+		}
+		if (m_ability.value()->is(AbilityType::slide) && svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).released) {
+			m_ability.value()->cancel();
+			NANI_LOG_DEBUG(m_logger, "Broke out.");
 		}
 		if (m_ability.value()->is_done() || m_ability.value()->failed()) { m_ability = {}; }
 	}

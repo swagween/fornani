@@ -256,6 +256,7 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 void Editor::logic() {
 
 	if (b_load_file) {
+		save();
 		finder->paths.region = to_region;
 		finder->paths.room_name = to_room;
 		load();
@@ -270,6 +271,8 @@ void Editor::logic() {
 
 	window_hovered = ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemActive();
 	current_tool->palette_mode = palette_mode();
+
+	if (tool->type == ToolType::entity_editor) { map.flags.show_entities = true; }
 
 	// tool logic
 	if (available() && !palette_mode()) { map.save_state(*tool); }

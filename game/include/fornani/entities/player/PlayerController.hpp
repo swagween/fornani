@@ -61,9 +61,14 @@ class PlayerController {
 	std::optional<AnimState> get_ability_animation() const;
 	[[nodiscard]] auto last_requested_direction() -> SimpleDirection const& { return m_last_requested_direction; }
 	[[nodiscard]] auto is_dashing() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::dash) : false; }
+	[[nodiscard]] auto is_sliding() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::slide) : false; }
 	[[nodiscard]] auto is_ability_active() const -> bool { return m_ability ? m_ability.value()->is_active() : false; }
 	[[nodiscard]] auto is_ability_cancelled() const -> bool { return m_ability ? m_ability.value()->cancelled() : false; }
 	[[nodiscard]] auto is_animation_request() const -> bool { return m_ability ? m_ability.value()->is_animation_request() : false; }
+	[[nodiscard]] auto get_ability_type() const -> std::optional<AbilityType> {
+		if (m_ability) { return m_ability.value()->get_type(); }
+		return std::nullopt;
+	}
 
 	[[nodiscard]] auto nothing_pressed() -> bool { return key_map[ControllerInput::move_x] == 0.f && key_map[ControllerInput::inspect] == 0.f; }
 	[[nodiscard]] auto moving() -> bool { return key_map[ControllerInput::move_x] != 0.f; }
@@ -77,7 +82,6 @@ class PlayerController {
 	[[nodiscard]] auto is_walljumping() const -> bool { return flags.test(MovementState::walljumping); }
 	[[nodiscard]] auto walking_autonomously() const -> bool { return flags.test(MovementState::walking_autonomously); }
 	[[nodiscard]] auto shot() -> bool { return key_map[ControllerInput::shoot] == 1.f; }
-	[[nodiscard]] auto sliding() -> bool { return key_map[ControllerInput::slide] != 0.f; }
 	[[nodiscard]] auto is_sprinting() -> bool { return ccm::abs(key_map[ControllerInput::move_x]) > walk_speed_v; }
 	[[nodiscard]] auto is_wallsliding() const -> bool { return wallslide.is_wallsliding(); }
 	[[nodiscard]] auto released_hook() -> bool {
@@ -96,9 +100,10 @@ class PlayerController {
 	[[nodiscard]] auto arms_switch() -> float { return key_map[ControllerInput::arms_switch]; }
 
 	[[nodiscard]] auto get_wallslide() -> Wallslide& { return wallslide; }
-	[[nodiscard]] auto get_slide() -> Slide& { return slide; }
 
 	Direction direction{};
+
+	util::Cooldown post_slide;
 
   private:
 	void flush_ability() { m_ability = {}; }
@@ -114,7 +119,6 @@ class PlayerController {
 	std::optional<std::unique_ptr<Ability>> m_ability{};
 
 	Wallslide wallslide{};
-	Slide slide{};
 
 	struct {
 		util::Cooldown inspect{};

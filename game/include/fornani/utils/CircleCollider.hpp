@@ -28,6 +28,7 @@ class CircleCollider {
 	[[nodiscard]] auto collided() const -> bool { return flags.test(CircleColliderFlags::collided); }
 	[[nodiscard]] auto collides_with(Shape& shape) const -> bool { return sensor.within_bounds(shape); }
 	[[nodiscard]] auto position() const -> sf::Vector2f { return physics.position; }
+	[[nodiscard]] auto get_global_center() const -> sf::Vector2f { return physics.position + sensor.get_local_center() * 0.5f; }
 	[[nodiscard]] auto boundary_width() const -> float { return boundary.second.x - boundary.first.x; }
 	components::PhysicsComponent physics{};
 	std::pair<sf::Vector2f, sf::Vector2f> boundary{};

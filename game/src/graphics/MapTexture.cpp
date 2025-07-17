@@ -29,17 +29,17 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 	m_border_texture.clear(sf::Color::Transparent);
 
 	for (auto& cell : middleground->grid.cells) {
-		auto obscured{obscuring->grid.cells.at(cell.one_d_index).is_occupied() && map.has_obscuring_layer()};
-		if (!cell.is_breakable()) {
+		auto obscured = obscuring->grid.cells.at(cell.one_d_index).is_occupied() && map.has_obscuring_layer(); // not sure if i want to use this yet
+		if (cell.is_minimap_drawable()) {
 			if (!cell.is_occupied() || cell.is_platform()) {
 				m_tile_box.setFillColor(m_tile_color);
 				m_tile_box.setPosition(cell.f_scaled_position() * m_scale);
 				cell.is_platform() ? m_tile_box.setFillColor(colors::pioneer_dark_red) : m_tile_box.setFillColor(colors::pioneer_dark_red);
 				cell.is_platform() ? m_tile_box.setScale({1.f, 0.75f}) : m_tile_box.setScale({1.f, 1.f});
 				cell.is_platform() ? m_tile_box.setOrigin({0.0f, -0.25f * m_scale}) : m_tile_box.setOrigin({});
-				if (!obscured) { m_center_texture.draw(m_tile_box); }
+				m_center_texture.draw(m_tile_box);
 				m_tile_box.setFillColor(m_border_color);
-				if (!obscured) { m_border_texture.draw(m_tile_box); }
+				m_border_texture.draw(m_tile_box);
 			}
 		}
 	}

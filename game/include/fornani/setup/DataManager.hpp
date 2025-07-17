@@ -98,7 +98,7 @@ class DataManager final {
 	[[nodiscard]] auto item_label_from_id(int key) const -> std::string { return m_item_labels.contains(key) ? m_item_labels.at(key) : "<invalid>"; }
 	[[nodiscard]] auto item_label_view_from_id(int key) const -> std::string_view { return m_item_labels.contains(key) ? m_item_labels.at(key) : "<invalid>"; }
 	[[nodiscard]] auto item_id_from_label(std::string_view label) const -> int;
-	[[nodiscard]] auto get_gun_tag_from_id(int id) const -> std::string_view;
+	[[nodiscard]] auto get_gun_tag_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] auto get_gun_id_from_tag(std::string_view tag) const -> int;
 	[[nodiscard]] auto get_room_data_from_id(int id) const& -> std::optional<dj::Json>;
 

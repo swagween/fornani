@@ -1,12 +1,13 @@
 #include "fornani/graphics/SpriteRotator.hpp"
-#include "fornani/utils/Math.hpp"
 #include <numbers>
+#include "fornani/utils/Constants.hpp"
+#include "fornani/utils/Math.hpp"
 
 namespace fornani::vfx {
 
 void SpriteRotator::handle_rotation(sf::Sprite& sprite, sf::Vector2f direction, int num_angles, bool radial) {
 
-	sprite.setScale({1.f, 1.f});
+	sprite.setScale(constants::f_scale_vec);
 	sprite.setRotation(sf::degrees(0.f));
 
 	sprite_angle_index = 0;
@@ -28,19 +29,16 @@ void SpriteRotator::handle_rotation(sf::Sprite& sprite, sf::Vector2f direction, 
 	auto positive_angle = angle + pi + slice;
 
 	if (radial) {
-		if (positive_angle <= two_pi && positive_angle > three_halves_pi) { sprite.setRotation(sf::degrees(90.f));
-		}
+		if (positive_angle <= two_pi && positive_angle > three_halves_pi) { sprite.setRotation(sf::degrees(90.f)); }
 		if (positive_angle <= three_halves_pi + slice && positive_angle > pi) {}
-		if (positive_angle <= pi && positive_angle > half_pi) { sprite.setRotation(sf::degrees(270.f));
-		}
-		if (positive_angle <= half_pi || positive_angle > two_pi) { sprite.setRotation(sf::degrees(180.f));
-		}
+		if (positive_angle <= pi && positive_angle > half_pi) { sprite.setRotation(sf::degrees(270.f)); }
+		if (positive_angle <= half_pi || positive_angle > two_pi) { sprite.setRotation(sf::degrees(180.f)); }
 	} else {
-		if (positive_angle <= two_pi && positive_angle > three_halves_pi) { sprite.setScale({-1.f, 1.f}); }
+		if (positive_angle <= two_pi && positive_angle > three_halves_pi) { sprite.scale({-1.f, 1.f}); }
 		if (positive_angle <= three_halves_pi + slice && positive_angle > pi) {}
 		if (positive_angle <= pi && positive_angle > half_pi) {}
-		if (positive_angle <= half_pi || positive_angle > two_pi) { sprite.setScale({-1.f, 1.f}); }
+		if (positive_angle <= half_pi || positive_angle > two_pi) { sprite.scale({-1.f, 1.f}); }
 	}
 }
 
-} // namespace vfx
+} // namespace fornani::vfx

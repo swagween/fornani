@@ -94,6 +94,11 @@ void PhysicsComponent::zero_y() {
 
 void PhysicsComponent::hitstun() {}
 
+void PhysicsComponent::set_friction_componentwise(sf::Vector2f fric) {
+	ground_friction = fric;
+	air_friction = fric;
+}
+
 void PhysicsComponent::set_constant_friction(sf::Vector2f fric) {
 	ground_friction = {fric.x, fric.x};
 	air_friction = {fric.y, fric.y};

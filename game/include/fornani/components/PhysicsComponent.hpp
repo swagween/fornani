@@ -67,6 +67,7 @@ class PhysicsComponent {
 	void hitstun();
 	void set_constant_friction(sf::Vector2f fric);
 	void set_global_friction(float fric);
+	void set_friction_componentwise(sf::Vector2f fric);
 
 	[[nodiscard]] auto actual_velocity() const -> sf::Vector2f { return position - previous_position; }
 	[[nodiscard]] auto apparent_velocity() const -> sf::Vector2f { return real_velocity; }

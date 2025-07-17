@@ -1,9 +1,9 @@
 {
-	"heart": {
+	"hearts": {
 		"sprite_dimensions": [ 13, 12 ],
-		"spritesheet_dimensions": [ 12, 2 ],
+		"initial_velocity": [ 40, 40 ],
 		"type": 0,
-		"friction": 0.8,
+		"friction": [ 0.99, 1.0 ],
 		"gravity": 0.7,
 		"animation": {
 			"num_sprites": 2,
@@ -18,11 +18,11 @@
 		}
 	},
 
-	"orb": {
+	"orbs": {
 		"sprite_dimensions": [ 12, 12 ],
-		"spritesheet_dimensions": [ 7, 4 ],
+		"initial_velocity": [ 40, 80 ],
 		"type": 1,
-		"friction": 0.998,
+		"friction": [ 0.99, 1.0 ],
 		"gravity": 6.0,
 		"animation": {
 			"num_sprites": 4,
@@ -36,11 +36,11 @@
 			]
 		}
 	},
-	"gem": {
+	"gems": {
 		"sprite_dimensions": [ 32.0, 32.0 ],
-		"spritesheet_dimensions": [ 5, 2 ],
+		"initial_velocity": [ 40, 180 ],
 		"type": 2,
-		"friction": 0.99,
+		"friction": [ 0.99, 1.0 ],
 		"gravity": 6.9,
 		"animation": {
 			"num_sprites": 2,

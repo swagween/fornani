@@ -51,9 +51,24 @@
       "room_id": 106
     },
     {
+      "label": "hold.json",
+      "region": "firstwind",
+      "room_id": 107
+    },
+    {
+      "label": "laboratory.json",
+      "region": "firstwind",
+      "room_id": 110
+    },
+    {
       "label": "prison.json",
       "region": "firstwind",
       "room_id": 100
+    },
+    {
+      "label": "store_room.json",
+      "region": "firstwind",
+      "room_id": 109
     },
     {
       "label": "border_test.json",

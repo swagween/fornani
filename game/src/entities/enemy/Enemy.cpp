@@ -114,7 +114,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (map.off_the_bottom(collider.physics.position)) {
 		if (svc.ticker.every_x_ticks(10)) { health.inflict(4.f); }
 	}
-	if (just_died() && !flags.general.test(GeneralFlags::post_death_render)) { map.effects.push_back(entity::Effect(svc, "large_explosion", collider.physics.position, collider.physics.velocity, visual.effect_type)); }
+	if (just_died() && !flags.general.test(GeneralFlags::post_death_render)) { map.effects.push_back(entity::Effect(svc, "large_explosion", collider.physics.position, collider.physics.apparent_velocity() * 0.5f, visual.effect_type)); }
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) {
 		health_indicator.update(svc, collider.physics.position);
 		post_death.update();

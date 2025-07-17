@@ -13,15 +13,17 @@ Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float prob
 	std::string_view key{};
 	for (int i = 0; i < drop_rate; ++i) {
 		if (util::random::percent_chance(0.08f) && special) {
-			key = "gem";
+			key = "gems";
 		} else if (util::random::percent_chance(8) && !flags.test(LootState::heart_dropped)) {
-			key = "heart";
+			key = "hearts";
 			flags.set(LootState::heart_dropped);
 		} else {
-			key = "orb";
+			key = "orbs";
 		}
-		float randx = util::random::random_range_float(-40.0f, 40.0f);
-		float randy = util::random::random_range_float(-40.0f, 40.0f);
+		auto xinit = svc.data.drop[key]["initial_velocity"][0].as<float>();
+		auto yinit = svc.data.drop[key]["initial_velocity"][1].as<float>();
+		float randx = util::random::random_range_float(-xinit, xinit);
+		float randy = util::random::random_range_float(-yinit, yinit);
 		drops.push_back(std::make_unique<Drop>(svc, key, probability, delay_time, special_id));
 		drops.back()->set_position(pos);
 		drops.back()->apply_force({randx, randy});
@@ -38,13 +40,13 @@ void Loot::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 				svc.soundboard.flags.item.set(audio::Item::gem);
 			} else if (drop->get_type() == DropType::heart) {
 				svc.soundboard.flags.item.set(audio::Item::heal);
-			} else if (drop->get_rarity() == common) {
+			} else if (drop->get_rarity() == Rarity::common) {
 				svc.soundboard.flags.item.set(audio::Item::orb_low);
-			} else if (drop->get_rarity() == uncommon) {
+			} else if (drop->get_rarity() == Rarity::uncommon) {
 				svc.soundboard.flags.item.set(audio::Item::orb_medium);
-			} else if (drop->get_rarity() == rare) {
+			} else if (drop->get_rarity() == Rarity::rare) {
 				svc.soundboard.flags.item.set(audio::Item::orb_high);
-			} else if (drop->get_rarity() == priceless) {
+			} else if (drop->get_rarity() == Rarity::priceless) {
 				svc.soundboard.flags.item.set(audio::Item::orb_max);
 			}
 			drop->deactivate();

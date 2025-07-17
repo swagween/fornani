@@ -2,8 +2,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/Shape.hpp"
 #include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Shape.hpp"
 
 namespace fornani::components {
 enum class SensorState : std::uint8_t { active };
@@ -21,6 +21,7 @@ class CircleSensor {
 	auto activate() -> void { state.set(SensorState::active); }
 	auto deactivate() -> void { state.reset(SensorState::active); }
 	[[nodiscard]] auto active() const -> bool { return state.test(SensorState::active); }
+	[[nodiscard]] auto get_local_center() const -> sf::Vector2f { return bounds.getLocalBounds().getCenter(); }
 
   private:
 	util::BitFlags<SensorState> state{};

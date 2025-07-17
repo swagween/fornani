@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/graphics/Animatable.hpp>
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/io/Logger.hpp"
 #include "fornani/particle/Sparkler.hpp"
@@ -20,17 +21,16 @@ class Map;
 namespace fornani::item {
 
 enum class DropType : std::uint8_t { heart, orb, gem };
-enum Rarity : std::uint8_t { common, uncommon, rare, priceless };
+enum class Rarity : std::uint8_t { common, uncommon, rare, priceless };
 enum class GemType : std::uint8_t { rhenite, sapphire };
 enum class DropFlags : std::uint8_t { neutral, shining };
 
-class Drop {
+class Drop : public Animatable {
 
   public:
 	Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time = 0, int special_id = 0);
 	void seed(float probability);
 	void set_value();
-	void set_texture(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f pos);
@@ -57,10 +57,8 @@ class Drop {
 	DropType type{};
 	sf::Vector2f drop_dimensions{20.f, 20.f};
 	shape::CircleCollider collider{16.f};
-	sf::Vector2<int> spritesheet_dimensions{};
-	sf::Vector2f sprite_dimensions{};
-	sf::Vector2f sprite_offset{};
-	anim::AnimatedSprite sprite;
+	std::vector<anim::Parameters> m_parameters{};
+	sf::Vector2f m_sprite_dimensions{};
 	util::Cooldown shine_cooldown{600};
 
 	int num_sprites{}; // 2 for hearts, 4 for orbs

@@ -218,7 +218,6 @@ void Player::update_animation() {
 			if (controller.nothing_pressed() && !controller.is_dashing() && !(animation.is_state(AnimState::inspect)) && !(animation.is_state(AnimState::sit))) { animation.request(AnimState::idle); }
 			if (controller.moving() && !controller.is_dashing() && !controller.sprinting()) { animation.request(AnimState::run); }
 			if (controller.moving() && controller.sprinting() && !controller.is_dashing()) { animation.request(AnimState::sprint); }
-			if ((animation.is_state(AnimState::sprint) || animation.is_state(AnimState::roll)) && controller.get_slide().can_begin()) { animation.request(AnimState::slide); }
 			if (abs(collider.physics.velocity.x) > thresholds.stop && !controller.moving()) { animation.request(AnimState::stop); }
 			if (hotbar && arsenal) {
 				if (controller.shot() && equipped_weapon().can_shoot()) { animation.request(AnimState::shoot); }
@@ -610,6 +609,14 @@ bool Player::can_roll() const {
 	if (!catalog.inventory.has_item("woodshine_totem")) { return false; }
 	if (controller.is_wallsliding()) { return false; }
 	if (grounded()) { return false; }
+	return true;
+}
+
+bool Player::can_slide() const {
+	if (health.is_dead()) { return false; }
+	if (!catalog.inventory.has_item("pioneer_medal")) { return false; }
+	if (controller.is_wallsliding()) { return false; }
+	if (!grounded()) { return false; }
 	return true;
 }
 

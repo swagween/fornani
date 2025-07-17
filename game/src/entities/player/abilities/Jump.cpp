@@ -7,7 +7,7 @@
 
 namespace fornani::player {
 
-Jump::Jump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider) : Ability(svc, map, collider), m_request{12}, m_multiplier{-13.76f}, m_soundboard{&svc.soundboard} {
+Jump::Jump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider) : Ability(svc, map, collider), m_request{12}, m_post_jump{4}, m_multiplier{-13.76f}, m_soundboard{&svc.soundboard}, m_map{&map}, m_services{&svc} {
 	m_type = AbilityType::jump;
 	m_state = AnimState::rise;
 	m_duration.start(256);
@@ -15,6 +15,7 @@ Jump::Jump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& colli
 }
 
 void Jump::update(shape::Collider& collider, PlayerController& controller) {
+	m_post_jump.update();
 	if (m_request.running()) {
 		collider.flags.movement.reset(shape::Movement::jumping);
 		m_request.update();
@@ -31,6 +32,10 @@ void Jump::update(shape::Collider& collider, PlayerController& controller) {
 		collider.physics.acceleration.y = m_multiplier;
 		collider.physics.velocity.y = 0.f;
 		collider.flags.movement.set(shape::Movement::jumping);
+		m_map->effects.push_back(entity::Effect(*m_services, "jump", collider.get_center(), {collider.physics.apparent_velocity().x * 0.1f, 0.f}));
+		m_post_jump.start();
+	} else if (m_post_jump.is_complete()) {
+		collider.flags.movement.reset(shape::Movement::jumping);
 	}
 	Ability::update(collider, controller);
 }

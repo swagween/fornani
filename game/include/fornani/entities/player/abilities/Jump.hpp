@@ -13,7 +13,10 @@ class Jump : public Ability {
   private:
 	float m_multiplier;
 	util::Cooldown m_request;
+	util::Cooldown m_post_jump;
 	audio::Soundboard* m_soundboard;
+	world::Map* m_map;
+	automa::ServiceProvider* m_services;
 };
 
 } // namespace fornani::player

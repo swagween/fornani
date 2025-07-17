@@ -382,6 +382,20 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
 								ImGui::Text("Push Time: %i", player.cooldowns.push.get());
 								ImGui::Separator();
+								ImGui::Text("Ability");
+								ImGui::Text("Current: ");
+								ImGui::SameLine();
+								auto ability_type = player.controller.get_ability_type();
+								if (ability_type) {
+									switch (ability_type.value()) {
+									case player::AbilityType::dash: ImGui::Text("dash"); break;
+									case player::AbilityType::jump: ImGui::Text("jump"); break;
+									case player::AbilityType::doublejump: ImGui::Text("doublejump"); break;
+									case player::AbilityType::slide: ImGui::Text("slide"); break;
+									case player::AbilityType::roll: ImGui::Text("roll"); break;
+									}
+								}
+								ImGui::Separator();
 								ImGui::Text("Jump");
 								ImGui::Separator();
 								ImGui::Text("Jumping? %s", player.collider.jumping() ? "Yes" : "No");

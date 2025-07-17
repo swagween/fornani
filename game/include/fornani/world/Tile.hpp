@@ -60,6 +60,8 @@ struct Tile {
 			   (value == special_index_v + 48 || value == special_index_v + 50);
 	}
 	[[nodiscard]] auto is_positive_ramp() const -> bool { return is_ground_ramp() && !is_negative_ramp(); }
+	[[nodiscard]] auto is_minimap_drawable() const -> bool { return !is_special(); }
+
 	[[nodiscard]] auto scaled_position() const -> sf::Vector2i { return sf::Vector2i{bounding_box.get_position()}; }
 	[[nodiscard]] auto f_scaled_position() const -> sf::Vector2f { return bounding_box.get_position() / m_spacing; }
 	[[nodiscard]] auto get_local_center() const -> sf::Vector2f { return bounding_box.get_dimensions() * 0.5f; }

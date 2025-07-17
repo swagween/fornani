@@ -2,6 +2,7 @@
 #include "fornani/graphics/Animatable.hpp"
 #include "fornani/graphics/Drawable.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/Random.hpp"
 
 namespace fornani {
 
@@ -12,6 +13,10 @@ void Animatable::tick() {
 	auto u = m_channel * m_dimensions.x;
 	auto v = animation.get_frame() * m_dimensions.y;
 	set_texture_rect(sf::IntRect{{u, v}, m_dimensions});
+}
+
+void Animatable::random_start() {
+	if (animation.params.duration > 1) { animation.frame.set(util::random::random_range(0, animation.params.duration - 1)); }
 }
 
 } // namespace fornani

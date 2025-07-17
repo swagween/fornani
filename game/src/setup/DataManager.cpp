@@ -597,10 +597,11 @@ auto DataManager::item_id_from_label(std::string_view label) const -> int {
 	return 0;
 }
 
-auto DataManager::get_gun_tag_from_id(int id) const -> std::string_view {
+auto DataManager::get_gun_tag_from_id(int id) const -> std::optional<std::string_view> {
 	for (auto const& gun : weapon.as_object()) {
 		if (gun.second["metadata"]["id"].as<int>() == id) { return gun.first; }
 	}
+	return std::nullopt;
 }
 
 auto DataManager::get_gun_id_from_tag(std::string_view tag) const -> int { return weapon[tag]["metadata"]["id"].as<int>(); }

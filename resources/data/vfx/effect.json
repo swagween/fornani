@@ -11,10 +11,16 @@
 		"framerate": 12,
 		"dimensions": [ 16, 16 ]
 	},
-	"double_jump": {
+	"doublejump": {
 		"frame_count": 5,
 		"framerate": 16,
 		"dimensions": [ 24, 24 ]
+	},
+	"jump": {
+		"frame_count": 5,
+		"framerate": 16,
+		"dimensions": [ 16, 16 ],
+		"x_reflection": true
 	},
 	"dust": {
 		"frame_count": 5,

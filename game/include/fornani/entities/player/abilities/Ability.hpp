@@ -36,6 +36,7 @@ class Ability : public Polymorphic {
 	void cancel() { m_flags.set(AbilityFlags::cancelled); }
 
 	[[nodiscard]] auto is(AbilityType test) const -> bool { return m_type == test; }
+	[[nodiscard]] auto get_type() const -> AbilityType { return m_type; }
 	[[nodiscard]] auto is_done() const -> bool { return m_duration.is_complete(); }
 	[[nodiscard]] auto is_active() const -> bool { return m_flags.test(AbilityFlags::active); }
 	[[nodiscard]] auto get_animation() const -> AnimState { return m_state; }

@@ -5,25 +5,20 @@
 
 namespace fornani::item {
 
-Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time, int special_id) : sparkler(svc, drop_dimensions, colors::ui_white, "drop"), special_id(special_id), sprite{svc.assets.get_texture("hearts")} {
+Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time, int special_id)
+	: Animatable(svc, key, {svc.data.drop[key]["sprite_dimensions"][0].as<int>(), svc.data.drop[key]["sprite_dimensions"][1].as<int>()}), sparkler(svc, drop_dimensions, colors::ui_white, "drop"), special_id(special_id) {
 
 	collider.physics.elasticity = 0.5f;
 
-	sprite_dimensions.x = svc.data.drop[key]["sprite_dimensions"][0].as<float>();
-	sprite_dimensions.y = svc.data.drop[key]["sprite_dimensions"][1].as<float>();
-	spritesheet_dimensions.x = svc.data.drop[key]["spritesheet_dimensions"][0].as<int>();
-	spritesheet_dimensions.y = svc.data.drop[key]["spritesheet_dimensions"][1].as<int>();
+	m_sprite_dimensions.x = svc.data.drop[key]["sprite_dimensions"][0].as<float>();
+	m_sprite_dimensions.y = svc.data.drop[key]["sprite_dimensions"][1].as<float>();
+	set_origin(m_sprite_dimensions * 0.5f);
 
 	type = static_cast<DropType>(svc.data.drop[key]["type"].as<int>());
 	if (type == DropType::gem) { collider.physics.elasticity = 1.f; }
 
-	collider.physics.set_global_friction(svc.data.drop[key]["friction"].as<float>());
-	collider.physics.air_friction.y = 1.f;
-	collider.physics.air_friction.x = 0.99f;
-	collider.physics.ground_friction.y = 1.f;
-	collider.physics.ground_friction.x = 0.99f;
+	collider.physics.set_friction_componentwise({svc.data.drop[key]["friction"][0].as<float>(), svc.data.drop[key]["friction"][1].as<float>()});
 	collider.physics.gravity = svc.data.drop[key]["gravity"].as<float>();
-	collider.physics.maximum_velocity = {640.f, 640.f};
 
 	auto& in_anim = svc.data.drop[key]["animation"];
 	num_sprites = in_anim["num_sprites"].as<int>();
@@ -32,15 +27,13 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 		a.duration = param["duration"].as<int>();
 		a.framerate = param["framerate"].as<int>();
 		a.num_loops = param["num_loops"].as<int>();
-		sprite.push_params(param["label"].as_string(), a);
+		m_parameters.push_back(a);
 	}
-	sprite.set_scale(constants::f_scale_vec);
-	sprite.set_params("neutral", true);
-	sf::Vector2 const dim{static_cast<int>(sprite_dimensions.x), static_cast<int>(sprite_dimensions.y)};
-	sprite.set_dimensions(dim);
+
+	if (!m_parameters.empty()) { set_parameters(m_parameters[0]); }
 
 	// randomly seed the animation start frame so drops in the same loot animate out of sync
-	sprite.random_start();
+	random_start();
 
 	auto rand_cooldown_offset = util::random::random_range(0, 50);
 	auto const rand_shine_offset = util::random::random_range(0, 600);
@@ -50,27 +43,26 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 	delay.start(delay_time);
 	seed(probability);
 	set_value();
-	set_texture(svc);
 
 	sparkler.set_dimensions(drop_dimensions);
 }
 
 void Drop::seed(float probability) {
 	if (auto const random_sample = util::random::random_range_float(0.0f, 1.0f); random_sample < probability * constants.priceless) {
-		rarity = priceless;
+		rarity = Rarity::priceless;
 	} else if (random_sample < probability * constants.rare) {
-		rarity = rare;
+		rarity = Rarity::rare;
 	} else if (random_sample < probability * constants.uncommon) {
-		rarity = uncommon;
+		rarity = Rarity::uncommon;
 	} else {
-		rarity = common;
+		rarity = Rarity::common;
 	}
 }
 
 void Drop::set_value() {
 	// heart
 	if (type == DropType::heart) {
-		if (rarity == priceless || rarity == rare) {
+		if (rarity == Rarity::priceless || rarity == Rarity::rare) {
 			value = 3;
 		} else {
 			value = 1;
@@ -80,25 +72,18 @@ void Drop::set_value() {
 
 	// orb
 	switch (rarity) {
-	case priceless: value = 100; break;
-	case rare: value = 20; break;
-	case uncommon: value = 5; break;
-	case common: value = 1; break;
+	case Rarity::priceless: value = 100; break;
+	case Rarity::rare: value = 20; break;
+	case Rarity::uncommon: value = 5; break;
+	case Rarity::common: value = 1; break;
 	}
 
 	// gem
 	if (type == DropType::gem) { value = special_id; }
 }
 
-void Drop::set_texture(automa::ServiceProvider& svc) {
-	switch (type) {
-	case DropType::heart: sprite.set_texture(svc.assets.get_texture("hearts")); break;
-	case DropType::orb: sprite.set_texture(svc.assets.get_texture("orbs")); break;
-	case DropType::gem: sprite.set_texture(svc.assets.get_texture("gems")); break;
-	}
-}
-
 void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
+	tick();
 	delay.update();
 	collider.update(svc);
 	collider.handle_map_collision(map);
@@ -118,28 +103,23 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	afterlife.update();
 
 	sparkler.update(svc);
-	sparkler.set_position(collider.position());
+	sparkler.set_position(collider.position() - sparkler.get_dimensions() * 0.5f);
 
-	sprite_offset = {0.f, static_cast<float>(drop_dimensions.y - sprite_dimensions.y) * 0.5f};
-
-	int u{};
 	int v{};
-	if (type == DropType::heart) { v = rarity == priceless || rarity == rare ? 1 : 0; }
-	if (type == DropType::orb) { v = rarity == priceless ? 3 : (rarity == rare ? 2 : (rarity == uncommon ? 1 : 0)); }
+	if (type == DropType::heart) { v = rarity == Rarity::priceless || rarity == Rarity::rare ? 1 : 0; }
+	if (type == DropType::orb) { v = rarity == Rarity::priceless ? 3 : (rarity == Rarity::rare ? 2 : (rarity == Rarity::uncommon ? 1 : 0)); }
 	if (type == DropType::gem) { v = special_id; }
-	sprite.set_origin(sprite_dimensions * 0.5f);
-	sprite.update(collider.position() + sprite_offset, u, v);
+	set_channel(v);
 
 	state_function = state_function();
 }
 
 void Drop::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (svc.greyblock_mode()) {
-		collider.render(win, cam);
-	} else {
-		if (!is_inactive() && !is_completely_gone() && (lifespan.get() > 500 || (lifespan.get() / 20) % 2 == 0)) { sprite.render(svc, win, cam); }
-		sparkler.render(svc, win, cam);
-	}
+	auto sprite_offset = sf::Vector2f{0.f, m_sprite_dimensions.y * 2.f - drop_dimensions.y};
+	Animatable::set_position(collider.position() + sprite_offset - cam);
+	if (!is_inactive() && !is_completely_gone() && (lifespan.get() > 500 || (lifespan.get() / 20) % 2 == 0)) { win.draw(*this); }
+	sparkler.render(svc, win, cam);
+	if (svc.greyblock_mode()) { collider.render(win, cam); }
 }
 
 void Drop::set_position(sf::Vector2f pos) {
@@ -166,16 +146,16 @@ int Drop::get_value() const { return value; }
 
 fsm::StateFunction Drop::update_neutral() {
 	shine_cooldown.update();
-	if (sprite.size() > 1 && shine_cooldown.is_complete()) {
-		sprite.set_params("shine", true);
+	if (Animatable::is_complete() && m_parameters.size() > 1) {
+		set_parameters(m_parameters[1]);
 		return DROP_BIND(update_shining);
 	}
 	return DROP_BIND(update_neutral);
 }
 
 fsm::StateFunction Drop::update_shining() {
-	if (sprite.complete()) {
-		sprite.set_params("neutral", true);
+	if (Animatable::is_complete()) {
+		if (!m_parameters.empty()) { set_parameters(m_parameters[0]); }
 		shine_cooldown.start();
 		return DROP_BIND(update_neutral);
 	}

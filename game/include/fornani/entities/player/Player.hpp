@@ -256,6 +256,7 @@ class Player {
 	[[nodiscard]] auto can_dash() const -> bool;
 	[[nodiscard]] auto can_doublejump() const -> bool;
 	[[nodiscard]] auto can_roll() const -> bool;
+	[[nodiscard]] auto can_slide() const -> bool;
 	[[nodiscard]] auto can_jump() const -> bool;
 
 	struct {

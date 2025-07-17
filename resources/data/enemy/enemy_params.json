@@ -622,7 +622,7 @@
 			"gravity": true,
 			"map_collision": true,
 			"player_collision": false,
-			"foreground": true,
+			"foreground": false,
 			"rare_drops": false
 		}
 	}

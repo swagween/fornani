@@ -14,7 +14,9 @@ class Animatable : public Drawable {
 	void set_parameters(anim::Parameters params) { animation.set_params(params); }
 	void set_channel(int to) { m_channel = to; }
 	void tick();
+	void random_start();
 
+	[[nodiscard]] auto is_complete() -> bool { return animation.complete(); }
 	[[nodiscard]] auto get_f_dimensions() const -> sf::Vector2f { return sf::Vector2f{m_dimensions}; }
 
 	anim::Animation animation;

@@ -7,7 +7,7 @@
 
 namespace fornani::player {
 
-Ability::Ability(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction) : m_direction{direction}, m_type{AbilityType::invalid} { m_animation_trigger.start(); }
+Ability::Ability(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction) : m_direction{direction}, m_type{AbilityType::invalid}, m_duration{256} { m_animation_trigger.start(); }
 
 void Ability::update(shape::Collider& collider, PlayerController& controller) {
 	m_duration.update();
