@@ -29,15 +29,19 @@
 				"quantity": 1
 			},
 			{
+				"label": "kariba_talisman",
+				"quantity": 1
+			},
+			{
+				"label": "imbier_totem",
+				"quantity": 1
+			},
+			{
 				"label": "pioneer_medal",
 				"quantity": 1
 			},
 			{
 				"label": "old_ivory_amulet",
-				"quantity": 1
-			},
-			{
-				"label": "sky_pendant",
 				"quantity": 1
 			},
 			{

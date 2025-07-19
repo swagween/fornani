@@ -28,7 +28,7 @@
 			"primary_key": "C"
 		},
 		"platformer_inspect": {
-			"primary_key": "Down"
+			"primary_key": "V"
 		},
 		"platformer_arms_switch_left": {
 			"primary_key": "A"

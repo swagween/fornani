@@ -11,10 +11,13 @@
 
 namespace fornani::player {
 
+constexpr auto wallslide_threshold_v = 0.1f;
+constexpr auto walljump_force_v = -16.f;
+
 static void test_event(std::string_view s, item::ItemType typ, int a) {}
 
 Player::Player(automa::ServiceProvider& svc)
-	: arsenal(svc), m_services(&svc), controller(svc, *this), animation(*this), sprite{svc.assets.get_texture("nani")}, camera_offset{32.f, -32.f}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},
+	: arsenal(svc), m_services(&svc), controller(svc, *this), animation(*this), sprite{svc.assets.get_texture("nani")}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},
 	  m_directions{.desired{LR::left}, .actual{LR::right}}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, collider{player_dimensions_v} {
 	sprite.setScale(constants::f_scale_vec);
 	svc.data.load_player_params(*this);
@@ -47,14 +50,13 @@ void Player::update(world::Map& map) {
 	cooldowns.tutorial.update();
 
 	// camera stuff
-	camera_offset.x = controller.facing_left() ? -32.f : 32.f;
-	m_camera.physics.set_global_friction(0.85f);
-	auto skew{controller.vertical_movement() < 0.f ? 120.f : 160.f};
-	if (!controller.is_dashing() && !controller.is_sprinting()) {
-		m_camera.target.seek(m_camera.physics, sf::Vector2f{0.f, skew} * controller.vertical_movement(), 0.001f);
-		m_camera.physics.simple_update();
-	}
-	camera_offset.y = -32.f + m_camera.physics.position.y;
+	auto camx = controller.direction.as_float() * 32.f;
+	auto skew = 160.f;
+	m_camera.target_point = sf::Vector2f{camx, skew * controller.vertical_movement()};
+	if (controller.is_dashing() || m_services->controller_map.digital_action_status(config::DigitalAction::platformer_sprint).held) { m_camera.target_point = sf::Vector2f{camx, 0.f}; }
+
+	m_camera.camera.center(get_camera_focus_point());
+	m_camera.camera.update(*m_services);
 
 	invincible() ? collider.draw_hurtbox.setFillColor(colors::red) : collider.draw_hurtbox.setFillColor(colors::blue);
 
@@ -93,7 +95,6 @@ void Player::update(world::Map& map) {
 
 	// player-controlled actions
 	if (hotbar) { hotbar.value().switch_weapon(*m_services, static_cast<int>(controller.arms_switch())); }
-	wallslide();
 	update_animation();
 	update_sprite();
 
@@ -102,12 +103,15 @@ void Player::update(world::Map& map) {
 	if (!controller.moving() && (!force_cooldown.running() || collider.world_grounded())) { collider.physics.acceleration.x = 0.0f; }
 
 	// weapon
+	if (controller.is(AbilityType::walljump)) { accumulated_forces.push_back({walljump_force_v * controller.get_ability_direction().as_float(), 0.f}); }
 	if (controller.shot() || controller.arms_switch()) { animation.idle_timer.start(); }
 	if (flags.state.test(State::impart_recoil) && arsenal) {
 		if (controller.direction.und == UND::down) { accumulated_forces.push_back({0.f, -equipped_weapon().get_recoil()}); }
 		if (controller.direction.und == UND::up) { accumulated_forces.push_back({0.f, equipped_weapon().get_recoil()}); }
 		flags.state.reset(State::impart_recoil);
 	}
+	auto crouch_offset = sf::Vector2f{controller.direction.as_float() * 12.f, 10.f};
+	m_weapon_socket = animation.is_state(AnimState::crawl) || animation.is_state(AnimState::crouch) ? collider.get_center() + crouch_offset : collider.get_center();
 
 	force_cooldown.update();
 	for (auto& force : accumulated_forces) { collider.physics.apply_force(force); }
@@ -180,6 +184,16 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		box.setPosition(hurtbox.get_position() - cam);
 		box.setSize(hurtbox.get_dimensions());
 		win.draw(box);
+		// camera control debug
+		sf::RectangleShape camera_target{};
+		camera_target.setFillColor(colors::pioneer_red);
+		camera_target.setSize({4.f, 4.f});
+		camera_target.setOrigin({2.f, 2.f});
+		camera_target.setPosition(m_camera.target_point + collider.get_center() - cam);
+		win.draw(camera_target);
+		camera_target.setFillColor(colors::green);
+		camera_target.setPosition(svc.window->f_center_screen());
+		win.draw(camera_target);
 	} else {
 		antennae[1].render(svc, win, cam, 1);
 		win.draw(sprite);
@@ -225,7 +239,7 @@ void Player::update_animation() {
 			handle_turning();
 		}
 	} else {
-		if (collider.physics.apparent_velocity().y > -thresholds.suspend && collider.physics.apparent_velocity().y < thresholds.suspend && !controller.get_wallslide().is_wallsliding() && !controller.is_walljumping()) {
+		if (collider.physics.apparent_velocity().y > -thresholds.suspend && collider.physics.apparent_velocity().y < thresholds.suspend && !controller.is_wallsliding() && !controller.is_walljumping()) {
 			animation.request(AnimState::suspend);
 		}
 	}
@@ -234,9 +248,6 @@ void Player::update_animation() {
 
 	if (controller.get_ability_animation() && controller.is_ability_active() && controller.is_animation_request()) { animation.request(*controller.get_ability_animation()); }
 
-	if (catalog.abilities.has_ability(AbilityType::wallslide)) {
-		if (controller.get_wallslide().is_wallsliding()) { animation.request(AnimState::wallslide); }
-	}
 	if (controller.moving() && grounded()) {
 		if (collider.has_left_wallslide_collision() && controller.horizontal_movement() < 0.f) { cooldowns.push.update(); }
 		if (collider.has_right_wallslide_collision() && controller.horizontal_movement() > 0.f) { cooldowns.push.update(); }
@@ -249,10 +260,7 @@ void Player::update_animation() {
 		animation.request(AnimState::die);
 		flags.state.reset(State::show_weapon);
 	}
-
-	// for sliding down ramps
-	animation.is_state(AnimState::slide) ? collider.flags.animation.set(shape::Animation::sliding) : collider.flags.animation.reset(shape::Animation::sliding);
-	if (animation.is_state(AnimState::roll)) { collider.flags.animation.set(shape::Animation::sliding); }
+	if (controller.is_crouching() && grounded()) { controller.moving() ? animation.request(AnimState::crawl) : animation.request(AnimState::crouch); }
 
 	if (flags.state.consume(State::sleep)) { animation.request(player::AnimState::sleep); }
 	if (flags.state.consume(State::wake_up)) { animation.request(player::AnimState::wake_up); }
@@ -297,17 +305,6 @@ void Player::set_idle() {
 
 void Player::piggyback(int id) { piggybacker = Piggybacker(*m_services, m_services->tables.npc_label.at(id), collider.physics.position); }
 
-void Player::wallslide() {
-	if (!catalog.abilities.has_ability(AbilityType::wallslide)) { return; }
-	controller.get_wallslide().end();
-	if (!grounded() && collider.physics.velocity.y > thresholds.wallslide) {
-		if ((collider.has_left_wallslide_collision() && controller.moving_left()) || (collider.has_right_wallslide_collision() && controller.moving_right())) {
-			controller.get_wallslide().start();
-			collider.physics.acceleration.y = std::min(collider.physics.acceleration.y, physics_stats.wallslide_speed);
-		}
-	}
-}
-
 void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	sf::Vector2f offset{};
 	offset.x = centered ? collider.dimensions.x * 0.5f : 0.f;
@@ -319,7 +316,7 @@ void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	orb_indicator.set_position(new_pos);
 	if (arsenal && hotbar) {
 		equipped_weapon().update(*m_services, controller.direction);
-		equipped_weapon().force_position(collider.get_center());
+		equipped_weapon().force_position(m_weapon_socket);
 	}
 }
 
@@ -347,9 +344,9 @@ void Player::update_weapon() {
 	for (auto& weapon : arsenal.value().get_loadout()) {
 		hotbar->has(weapon->get_tag()) ? weapon->set_hotbar() : weapon->set_reserved();
 		weapon->set_firing_direction(controller.direction);
-		if (controller.get_wallslide().is_wallsliding()) { weapon->get_firing_direction().flip(); }
+		if (controller.is_wallsliding()) { weapon->get_firing_direction().flip(); }
 		weapon->update(*m_services, controller.direction);
-		weapon->set_position(collider.get_center());
+		weapon->set_position(m_weapon_socket);
 	}
 }
 
@@ -589,41 +586,51 @@ SimpleDirection Player::entered_from() const { return (collider.physics.position
 
 bool Player::can_dash() const {
 	if (health.is_dead()) { return false; }
-	if (!catalog.inventory.has_item("old_ivory_amulet")) { return false; }
 	if (grounded()) { return false; }
-	if (m_ability_usage.dash.get_count() > 0) { return false; }
+	if (!catalog.inventory.has_item("old_ivory_amulet")) { return false; }
+	if (m_ability_usage.dash.get_count() > 0) {
+		if (catalog.inventory.has_item("imbier_totem") && m_ability_usage.dash.get_count() < 2) { return true; }
+		return false;
+	}
 	return true;
 }
 
 bool Player::can_doublejump() const {
 	if (health.is_dead()) { return false; }
-	if (!catalog.inventory.has_item("sky_pendant")) { return false; }
 	if (controller.is_wallsliding()) { return false; }
 	if (grounded()) { return false; }
 	if (m_ability_usage.doublejump.get_count() > 0) { return false; }
+	if (!catalog.inventory.has_item("sky_pendant")) { return false; }
 	return true;
 }
 
 bool Player::can_roll() const {
 	if (health.is_dead()) { return false; }
-	if (!catalog.inventory.has_item("woodshine_totem")) { return false; }
 	if (controller.is_wallsliding()) { return false; }
 	if (grounded()) { return false; }
+	if (!catalog.inventory.has_item("woodshine_totem")) { return false; }
 	return true;
 }
 
 bool Player::can_slide() const {
 	if (health.is_dead()) { return false; }
-	if (!catalog.inventory.has_item("pioneer_medal")) { return false; }
-	if (controller.is_wallsliding()) { return false; }
+	if (controller.is_wallsliding() || controller.slid_in_air()) { return false; }
 	if (!grounded()) { return false; }
+	if (!catalog.inventory.has_item("pioneer_medal")) { return false; }
 	return true;
 }
 
 bool Player::can_jump() const {
 	if (health.is_dead()) { return false; }
 	if (controller.is_wallsliding()) { return false; }
-	if (can_doublejump()) { return false; }
+	if (!grounded()) { return false; }
+	return true;
+}
+
+bool Player::can_wallslide() const {
+	if (health.is_dead()) { return false; }
+	if (collider.physics.apparent_velocity().y < wallslide_threshold_v) { return false; }
+	if (!catalog.inventory.has_item("kariba_talisman")) { return false; }
 	return true;
 }
 

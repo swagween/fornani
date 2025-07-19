@@ -60,9 +60,8 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	hud.orient(svc, player); // reset hud position to corner
 	svc.soundboard.turn_on();
 
-	camera.set_bounds(map.real_dimensions);
-	camera.update(svc);
-	camera.force_center(player.get_camera_focus_point());
+	player.set_camera_bounds(map.real_dimensions);
+	player.force_camera_center();
 
 	// TODO: refactor player initialization
 	player.collider.physics.zero();
@@ -75,7 +74,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 				found_one = true;
 				sf::Vector2f spawn_position{portal.get_world_position().x + (portal.get_world_dimensions().x * 0.5f), portal.get_world_position().y + portal.get_world_dimensions().y - player.height()};
 				player.set_position(spawn_position, true);
-				camera.force_center(player.get_camera_focus_point());
+				player.force_camera_center();
 				if (portal.activate_on_contact() && portal.is_left_or_right()) {
 					enter_room.start(90);
 				} else {
@@ -223,9 +222,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	player->update(map);
 	map.update(svc, m_console);
 
-	camera.center(player->get_camera_focus_point());
-	camera.update(svc);
-
 	map.debug_mode = debug_mode;
 
 	player->controller.clean();
@@ -238,8 +234,8 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 void Dojo::frame_update(ServiceProvider& svc) {}
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
-	map.render_background(svc, win, camera.get_position());
-	map.render(svc, win, camera.get_position());
+	map.render_background(svc, win, player->get_camera_position());
+	map.render(svc, win, player->get_camera_position());
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(svc, *player, win); }
 	if (vendor_dialog) { vendor_dialog.value()->render(svc, win, *player, map); }

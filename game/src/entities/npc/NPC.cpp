@@ -78,9 +78,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 			// do something clever in Soundboard
 		}
 	}
-	// if (!console && state_flags.test(NPCState::engaged)) { pop_conversation(); }
 	if (state_flags.test(NPCState::talking)) {
-		player.camera_offset.y = 32.f;
 		svc.camera_controller.free();
 	} else {
 		svc.camera_controller.constrain();

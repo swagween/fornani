@@ -13,7 +13,7 @@ class Console;
 
 namespace fornani::player {
 
-enum class AbilityType : std::uint8_t { jump, slide, roll, wallslide, vision, dash, doublejump, dash_kick, double_dash, omnidirectional_dash, invalid };
+enum class AbilityType : std::uint8_t { jump, slide, roll, wallslide, vision, dash, doublejump, dash_kick, double_dash, omnidirectional_dash, walljump, invalid };
 
 class AbilityManager {
   public:

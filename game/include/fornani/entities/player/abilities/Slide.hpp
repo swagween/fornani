@@ -5,8 +5,6 @@
 
 namespace fornani::player {
 
-enum class SlideFlags : std::uint8_t { break_out, started };
-
 class Slide : public Ability {
   public:
 	Slide(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction);

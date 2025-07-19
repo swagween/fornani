@@ -38,7 +38,9 @@ enum class AnimState : std::uint8_t {
 	roll,
 	shoot,
 	sleep,
-	wake_up
+	wake_up,
+	crouch,
+	crawl
 };
 
 enum class AnimTriggers : std::uint8_t { flip, end_death };
@@ -55,9 +57,6 @@ class PlayerAnimation {
 	util::BitFlags<AnimTriggers> triggers{};
 	util::Counter idle_timer{};
 	util::Cooldown post_death{400};
-	struct {
-		util::Cooldown walljump{24};
-	} cooldowns{};
 
 	void update();
 	void start();
@@ -99,6 +98,8 @@ class PlayerAnimation {
 	fsm::StateFunction update_shoot();
 	fsm::StateFunction update_sleep();
 	fsm::StateFunction update_wake_up();
+	fsm::StateFunction update_crouch();
+	fsm::StateFunction update_crawl();
 
 	bool change_state(AnimState next, anim::Parameters params, bool hard = false);
 	void request(AnimState to_state);

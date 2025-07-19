@@ -384,9 +384,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Separator();
 								ImGui::Text("Ability");
 								ImGui::Text("Current: ");
-								ImGui::SameLine();
 								auto ability_type = player.controller.get_ability_type();
 								if (ability_type) {
+									ImGui::SameLine();
 									switch (ability_type.value()) {
 									case player::AbilityType::dash: ImGui::Text("dash"); break;
 									case player::AbilityType::jump: ImGui::Text("jump"); break;
@@ -396,12 +396,16 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 									}
 								}
 								ImGui::Separator();
-								ImGui::Text("Jump");
+								ImGui::Text("Sliding? %s", player.controller.is_sliding() ? "Yes" : "No");
+								ImGui::Text("Can Slide? %s", player.can_slide() ? "Yes" : "No");
+								ImGui::Text("Post-Slide Cooldown: %i", player.controller.post_slide.get());
+								ImGui::Separator();
+								ImGui::Text("Crouching? %s", player.controller.is_crouching() ? "Yes" : "No");
 								ImGui::Separator();
 								ImGui::Text("Jumping? %s", player.collider.jumping() ? "Yes" : "No");
 								ImGui::Text("Can Jump? %s", player.can_jump() ? "Yes" : "No");
 								ImGui::Text("Downhill? %s", player.collider.downhill() ? "Yes" : "No");
-								ImGui::Text("Wallsliding? %s", player.controller.get_wallslide().is_wallsliding() ? "Yes" : "No");
+								ImGui::Text("Wallsliding? %s", player.controller.is_wallsliding() ? "Yes" : "No");
 								ImGui::Text("On Ramp? %s", player.collider.on_ramp() ? "Yes" : "No");
 								ImGui::Separator();
 								ImGui::Text("X Position: %.2f", player.collider.physics.position.x / constants::f_cell_size);

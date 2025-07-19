@@ -6,6 +6,7 @@
 #include <fornani/entities/player/abilities/Jump.hpp>
 #include <fornani/entities/player/abilities/Roll.hpp>
 #include <fornani/entities/player/abilities/Slide.hpp>
+#include <fornani/entities/player/abilities/Walljump.hpp>
 #include <fornani/entities/player/abilities/Wallslide.hpp>
 #include <deque>
 #include <optional>
@@ -29,10 +30,10 @@ constexpr static float sprint_speed_v{1.0f};
 constexpr static float sprint_threshold_v{0.01f};
 
 enum class ControllerInput : std::uint8_t { move_x, sprint, shoot, arms_switch, inspect, move_y, slide };
-enum class MovementState : std::uint8_t { restricted, walking_autonomously, walljumping };
+enum class MovementState : std::uint8_t { restricted, walking_autonomously, walljumping, crouch };
 enum class HardState : std::uint8_t { no_move, has_arsenal };
+enum class InputState : std::uint8_t { slide_in_air };
 
-enum class Hook : std::uint8_t { hook_released, hook_held };
 enum class Sprint : std::uint8_t { released };
 
 class PlayerController {
@@ -53,15 +54,18 @@ class PlayerController {
 	void stop_walking_autonomously();
 	void set_shot(bool flag);
 	void prevent_movement();
-	void release_hook();
 	void stop_walljumping();
 	void set_arsenal(bool const has);
 
 	std::optional<float> get_controller_state(ControllerInput key) const;
 	std::optional<AnimState> get_ability_animation() const;
 	[[nodiscard]] auto last_requested_direction() -> SimpleDirection const& { return m_last_requested_direction; }
+	[[nodiscard]] auto is(AbilityType type) const -> bool { return m_ability ? m_ability.value()->is(type) : false; }
 	[[nodiscard]] auto is_dashing() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::dash) : false; }
 	[[nodiscard]] auto is_sliding() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::slide) : false; }
+	[[nodiscard]] auto is_wallsliding() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::wallslide) : false; }
+	[[nodiscard]] auto slid_in_air() const -> bool { return input_flags.test(InputState::slide_in_air); }
+	[[nodiscard]] auto is_crouching() const -> bool { return flags.test(MovementState::crouch); }
 	[[nodiscard]] auto is_ability_active() const -> bool { return m_ability ? m_ability.value()->is_active() : false; }
 	[[nodiscard]] auto is_ability_cancelled() const -> bool { return m_ability ? m_ability.value()->cancelled() : false; }
 	[[nodiscard]] auto is_animation_request() const -> bool { return m_ability ? m_ability.value()->is_animation_request() : false; }
@@ -69,6 +73,7 @@ class PlayerController {
 		if (m_ability) { return m_ability.value()->get_type(); }
 		return std::nullopt;
 	}
+	[[nodiscard]] auto get_ability_direction() const -> Direction { return m_ability ? m_ability.value()->get_direction() : Direction{}; }
 
 	[[nodiscard]] auto nothing_pressed() -> bool { return key_map[ControllerInput::move_x] == 0.f && key_map[ControllerInput::inspect] == 0.f; }
 	[[nodiscard]] auto moving() -> bool { return key_map[ControllerInput::move_x] != 0.f; }
@@ -83,14 +88,7 @@ class PlayerController {
 	[[nodiscard]] auto walking_autonomously() const -> bool { return flags.test(MovementState::walking_autonomously); }
 	[[nodiscard]] auto shot() -> bool { return key_map[ControllerInput::shoot] == 1.f; }
 	[[nodiscard]] auto is_sprinting() -> bool { return ccm::abs(key_map[ControllerInput::move_x]) > walk_speed_v; }
-	[[nodiscard]] auto is_wallsliding() const -> bool { return wallslide.is_wallsliding(); }
-	[[nodiscard]] auto released_hook() -> bool {
-		auto const ret = hook_flags.test(Hook::hook_released);
-		hook_flags.reset(Hook::hook_released);
-		return ret;
-	}
 	[[nodiscard]] auto has_arsenal() const -> bool { return hard_state.test(HardState::has_arsenal); }
-	[[nodiscard]] auto hook_held() const -> bool { return hook_flags.test(Hook::hook_held); }
 	[[nodiscard]] auto inspecting() -> bool { return key_map[ControllerInput::inspect] == 1.f; }
 	[[nodiscard]] auto sprint_released() const -> bool { return sprint_flags.test(Sprint::released); }
 
@@ -99,11 +97,10 @@ class PlayerController {
 	[[nodiscard]] auto sliding_movement() -> float { return key_map[ControllerInput::slide]; }
 	[[nodiscard]] auto arms_switch() -> float { return key_map[ControllerInput::arms_switch]; }
 
-	[[nodiscard]] auto get_wallslide() -> Wallslide& { return wallslide; }
-
 	Direction direction{};
 
 	util::Cooldown post_slide;
+	util::Cooldown post_wallslide;
 
   private:
 	void flush_ability() { m_ability = {}; }
@@ -112,13 +109,11 @@ class PlayerController {
 	util::BitFlags<MovementState> flags{};	// unused
 	util::BitFlags<HardState> hard_state{}; // unused
 	util::BitFlags<Sprint> sprint_flags{};
-	util::BitFlags<Hook> hook_flags{};
+	util::BitFlags<InputState> input_flags{};
 
 	SimpleDirection m_last_requested_direction{};
 
 	std::optional<std::unique_ptr<Ability>> m_ability{};
-
-	Wallslide wallslide{};
 
 	struct {
 		util::Cooldown inspect{};

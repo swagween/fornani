@@ -23,7 +23,6 @@ class Dojo final : public GameState {
 
 	world::Map map;
 	world::Map gui_map;
-	fornani::Camera camera{};
 	bool show_colliders{false};
 	bool open_vendor{};
 	util::Cooldown enter_room{};

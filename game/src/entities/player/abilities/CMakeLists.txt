@@ -6,4 +6,5 @@ nani_add_sources(
         Roll.cpp
         Slide.cpp
         Wallslide.cpp
+        Walljump.cpp
 )

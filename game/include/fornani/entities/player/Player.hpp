@@ -22,6 +22,7 @@
 #include "fornani/utils/Collider.hpp"
 #include "fornani/utils/QuestCode.hpp"
 #include "fornani/weapon/Hotbar.hpp"
+#include "fornani/world/Camera.hpp"
 
 namespace fornani {
 class Game;
@@ -141,7 +142,8 @@ class Player {
 	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lnr == LNR::left; }
 	[[nodiscard]] auto switched_weapon() const -> bool { return hotbar->switched(); }
 	[[nodiscard]] auto firing_weapon() -> bool { return controller.shot(); }
-	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2f { return collider.get_center() + camera_offset; }
+	[[nodiscard]] auto get_camera_position() const -> sf::Vector2f { return m_camera.camera.get_position(); }
+	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2f { return collider.get_center() + m_camera.target_point; }
 	[[nodiscard]] auto get_facing_scale() const -> sf::Vector2f { return controller.facing_left() ? sf::Vector2f{-1.f, 1.f} : sf::Vector2f{1.f, 1.f}; }
 	[[nodiscard]] auto is_in_animation(AnimState check) const -> bool { return animation.get_state() == check; }
 	[[nodiscard]] auto get_desired_direction() const -> SimpleDirection { return m_directions.desired; }
@@ -149,8 +151,8 @@ class Player {
 
 	void set_desired_direction(SimpleDirection to) { m_directions.desired = to; }
 
-	// moves
-	void wallslide();
+	void set_camera_bounds(sf::Vector2f to_bounds) { m_camera.camera.set_bounds(to_bounds); }
+	void force_camera_center() { m_camera.camera.force_center(get_camera_focus_point()); }
 
 	void set_position(sf::Vector2f new_pos, bool centered = false);
 	void freeze_position();
@@ -206,7 +208,6 @@ class Player {
 	std::optional<arms::Arsenal> arsenal{};
 	std::optional<arms::Hotbar> hotbar{};
 
-	sf::Vector2f camera_offset{};
 	sf::Vector2f anchor_point{};
 	sf::Vector2f sprite_offset{10.f, -3.f};
 	sf::Vector2i m_sprite_dimensions;
@@ -258,6 +259,7 @@ class Player {
 	[[nodiscard]] auto can_roll() const -> bool;
 	[[nodiscard]] auto can_slide() const -> bool;
 	[[nodiscard]] auto can_jump() const -> bool;
+	[[nodiscard]] auto can_wallslide() const -> bool;
 
 	struct {
 		float stop{5.8f};
@@ -280,9 +282,11 @@ class Player {
 	} m_directions{};
 
 	struct {
-		components::SteeringBehavior target{};
-		components::PhysicsComponent physics{};
+		Camera camera{};
+		sf::Vector2f target_point{};
 	} m_camera{};
+
+	sf::Vector2f m_weapon_socket{};
 
 	AbilityUsage m_ability_usage{};
 

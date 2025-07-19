@@ -38,6 +38,7 @@ struct Animation {
 	void update();
 	void set_params(Parameters new_params, bool hard = true);
 	void switch_params();
+	void set_frame(int to) { frame.set(to); }
 	void end() { frame.cancel(); }
 	void log_info() const;
 	int get_frame() const;

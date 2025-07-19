@@ -5,7 +5,9 @@
 
 namespace fornani::player {
 
-PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect = util::Cooldown(64)}, post_slide{80} {
+constexpr static float crawl_speed_v{0.32f};
+
+PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect = util::Cooldown(64)}, post_slide{80}, post_wallslide{32} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
@@ -76,6 +78,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 
 	/* handle abilities */
 	post_slide.update();
+	post_wallslide.update();
 	if (player.grounded()) { player.m_ability_usage = {}; }
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered) {
 		if (player.can_dash()) {
@@ -89,18 +92,36 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 			m_ability = std::make_unique<Doublejump>(svc, map, player.collider);
 			player.m_ability_usage.doublejump.update();
 		}
+		if (is_wallsliding()) { m_ability = std::make_unique<Walljump>(svc, map, player.collider, player.get_actual_direction()); }
+	}
+
+	// crouching, rolling, and sliding
+	flags.reset(MovementState::crouch);
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).held) {
+		if (!grounded()) { input_flags.set(InputState::slide_in_air); }
+		if (!m_ability && player.can_slide() && sprint && !post_slide.running() && moving()) { m_ability = std::make_unique<Slide>(svc, map, player.collider, player.get_actual_direction()); }
+		if (!sprint) { flags.set(MovementState::crouch); }
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).triggered) {
 		if (!m_ability && player.can_roll() && sprint) { m_ability = std::make_unique<Roll>(svc, map, player.collider, player.get_actual_direction()); }
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).held) {
-		if (!m_ability && player.can_slide() && sprint && !post_slide.running()) { m_ability = std::make_unique<Slide>(svc, map, player.collider, player.get_actual_direction()); }
+	if (m_ability) {
+		if (m_ability.value()->is(AbilityType::roll)) { input_flags.reset(InputState::slide_in_air); }
 	}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).released) { input_flags.reset(InputState::slide_in_air); }
+
+	// wallslide
+	if ((left && player.collider.has_left_wallslide_collision() || right && player.collider.has_right_wallslide_collision())) {
+		if (player.can_wallslide() && !post_wallslide.running()) {
+			if (is(AbilityType::jump) || !m_ability) { m_ability = std::make_unique<Wallslide>(svc, map, player.collider, player.get_actual_direction()); }
+		}
+	}
+
 	if (m_ability) {
 		m_ability.value()->update(player.collider, *this);
 
 		// stop rising if player releases jump control
-		if (m_ability.value()->is(AbilityType::jump) || m_ability.value()->is(AbilityType::doublejump)) {
+		if (is(AbilityType::jump) || is(AbilityType::doublejump) || is(AbilityType::walljump)) {
 			if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).released) { m_ability.value()->cancel(); }
 			if (m_ability.value()->cancelled() && player.collider.physics.apparent_velocity().y < 0.0f) {
 				player.collider.physics.acceleration.y *= player.physics_stats.jump_release_multiplier;
@@ -108,8 +129,8 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 			}
 		}
 		if (m_ability.value()->is(AbilityType::slide) && svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).released) {
-			m_ability.value()->cancel();
-			NANI_LOG_DEBUG(m_logger, "Broke out.");
+			m_ability.value()->fail();
+			post_slide.start();
 		}
 		if (m_ability.value()->is_done() || m_ability.value()->failed()) { m_ability = {}; }
 	}
@@ -120,8 +141,8 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (svc.controller_map.is_gamepad()) {
 		key_map[ControllerInput::move_x] = svc.controller_map.get_joystick_throttle().x;
 	} else {
-		if (left) { key_map[ControllerInput::move_x] -= walk_speed_v; }
-		if (right) { key_map[ControllerInput::move_x] += walk_speed_v; }
+		if (left) { key_map[ControllerInput::move_x] -= is_crouching() && grounded() ? crawl_speed_v : walk_speed_v; }
+		if (right) { key_map[ControllerInput::move_x] += is_crouching() && grounded() ? crawl_speed_v : walk_speed_v; }
 	}
 
 	// sprint
@@ -139,10 +160,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (grounded()) { sprint_flags = {}; }
 
 	if (shoot_pressed) { key_map[ControllerInput::shoot] = 1.f; }
-	if (shoot_released) {
-		key_map[ControllerInput::shoot] = 0.f;
-		hook_flags.set(Hook::hook_released);
-	}
+	if (shoot_released) { key_map[ControllerInput::shoot] = 0.f; }
 
 	bool firing_automatic = false;
 	if (!restricted() && (!shot() || !has_arsenal())) {
@@ -168,10 +186,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	key_map[ControllerInput::inspect] = inspected ? 1.f : 0.f;
 }
 
-void PlayerController::clean() {
-	flags = {};
-	hook_flags = {};
-}
+void PlayerController::clean() { flags = {}; }
 
 void PlayerController::stop() { key_map[ControllerInput::move_x] = 0.f; }
 
@@ -211,8 +226,6 @@ void PlayerController::prevent_movement() {
 	key_map[ControllerInput::slide] = 0.f;
 	flags.set(MovementState::restricted);
 }
-
-void PlayerController::release_hook() { hook_flags.reset(Hook::hook_released); }
 
 void PlayerController::stop_walljumping() { flags.reset(MovementState::walljumping); }
 

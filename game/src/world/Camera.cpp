@@ -7,7 +7,7 @@
 
 namespace fornani {
 
-Camera::Camera() { m_physics.set_global_friction(0.89f); }
+Camera::Camera() { m_physics.set_global_friction(0.86f); }
 
 void Camera::update(automa::ServiceProvider& svc) {
 	m_view.size = svc.window->f_screen_dimensions();
@@ -45,7 +45,7 @@ void Camera::center(sf::Vector2f new_position) {
 	m_forced_target_position = aim;
 	m_target_position = get_clamped_position(aim);
 	auto const to_position = m_state == graphics::CameraState::free ? m_forced_target_position : m_target_position;
-	m_steering.target(m_physics, to_position, 0.002f);
+	m_steering.seek(m_physics, to_position, 0.0015f);
 }
 
 void Camera::force_center(sf::Vector2f new_position) {
