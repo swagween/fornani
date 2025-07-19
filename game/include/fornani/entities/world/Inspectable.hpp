@@ -41,6 +41,7 @@ class Inspectable : public IWorldPositionable {
 	}
 	[[nodiscard]] auto destroyed() const -> bool { return flags.test(InspectableFlags::destroy); }
 	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
+	[[nodiscard]] auto get_id() const -> int { return native_id; }
 
   private:
 	shape::Shape bounding_box{};

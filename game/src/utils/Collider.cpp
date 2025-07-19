@@ -45,7 +45,7 @@ void Collider::sync_components() {
 	horizontal.set_position(sf::Vector2f{physics.position.x + depth_buffer, physics.position.y + dimensions.y * 0.5f - 0.5f});
 
 	draw_hurtbox.setFillColor(sf::Color::Transparent);
-	draw_hurtbox.setOutlineColor(sf::Color::Blue);
+	draw_hurtbox.setOutlineColor(sf::Color::Magenta);
 	draw_hurtbox.setOutlineThickness(-1);
 	draw_hurtbox.setSize(hurtbox.get_dimensions());
 	draw_hurtbox.setPosition(hurtbox.get_position());
@@ -421,12 +421,12 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	win.draw(box);
 
 	// draw hurtbox
-	draw_hurtbox.setSize(sf::Vector2f{(float)hurtbox.get_dimensions().x, (float)hurtbox.get_dimensions().y});
+	draw_hurtbox.setSize(sf::Vector2f{hurtbox.get_dimensions()});
 	draw_hurtbox.setPosition(hurtbox.get_position() - cam);
-	// win.draw(draw_hurtbox);
+	win.draw(draw_hurtbox);
 
 	// draw vicinity
-	box.setSize(sf::Vector2f{(float)vicinity.get_dimensions().x, (float)vicinity.get_dimensions().y});
+	box.setSize(sf::Vector2f{vicinity.get_dimensions()});
 	box.setPosition(vicinity.get_position() - cam);
 	box.setFillColor(sf::Color::Transparent);
 	box.setOutlineColor(sf::Color{120, 60, 80, 180});
@@ -434,7 +434,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	win.draw(box);
 
 	// draw wallslider
-	box.setSize(sf::Vector2f{(float)wallslider.get_dimensions().x, (float)wallslider.get_dimensions().y});
+	box.setSize(sf::Vector2f{wallslider.get_dimensions()});
 	box.setPosition(wallslider.get_position() - cam);
 	has_left_wallslide_collision() || has_right_wallslide_collision() ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Transparent);
 	box.setOutlineColor(sf::Color{60, 60, 180, 100});

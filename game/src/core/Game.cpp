@@ -393,6 +393,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 									case player::AbilityType::doublejump: ImGui::Text("doublejump"); break;
 									case player::AbilityType::slide: ImGui::Text("slide"); break;
 									case player::AbilityType::roll: ImGui::Text("roll"); break;
+									case player::AbilityType::walljump: ImGui::Text("walljump"); break;
+									case player::AbilityType::wallslide: ImGui::Text("wallslide"); break;
 									}
 								}
 								ImGui::Separator();
@@ -406,6 +408,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Can Jump? %s", player.can_jump() ? "Yes" : "No");
 								ImGui::Text("Downhill? %s", player.collider.downhill() ? "Yes" : "No");
 								ImGui::Text("Wallsliding? %s", player.controller.is_wallsliding() ? "Yes" : "No");
+								ImGui::Text("Walljumping? %s", player.controller.is_walljumping() ? "Yes" : "No");
 								ImGui::Text("On Ramp? %s", player.collider.on_ramp() ? "Yes" : "No");
 								ImGui::Separator();
 								ImGui::Text("X Position: %.2f", player.collider.physics.position.x / constants::f_cell_size);

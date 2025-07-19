@@ -27,7 +27,7 @@ class Camera {
 	Camera();
 	void update(automa::ServiceProvider& svc);
 	void set_bounds(sf::Vector2f to_bounds);
-	void center(sf::Vector2f new_position);
+	void center(sf::Vector2f new_position, float const force_multiplier = 1.f);
 	void force_center(sf::Vector2f new_position);
 	void begin_shake();
 
@@ -39,6 +39,7 @@ class Camera {
 	[[nodiscard]] auto get_clamped_position(sf::Vector2f const position) const -> sf::Vector2f;
 	components::PhysicsComponent m_physics{};
 	components::SteeringBehavior m_steering{};
+	float m_steering_force{};
 	sf::FloatRect m_bounds{}; // map bounds
 	sf::FloatRect m_view{};	  // window view (screen dimensions)
 

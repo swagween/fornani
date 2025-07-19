@@ -36,7 +36,7 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, s
 	animation.update();
 	if (m_indicator_cooldown.is_almost_complete()) { flags.reset(InspectableFlags::hovered); }
 	if (b_destroy) { destroy_by_id(b_id); }
-	if (flags.test(InspectableFlags::destroy) && !destroyed()) { svc.data.destroy_inspectable(m_label); }
+	if (flags.test(InspectableFlags::destroy) && !destroyed()) { svc.data.destroy_inspectable(native_id); }
 
 	// check for quest-based alternates
 	auto quest_status = svc.quest.get_progression(fornani::QuestType::inspectable, native_id);

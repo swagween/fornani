@@ -83,10 +83,44 @@
 			{
 				"activate_on_contact": false,
 				"alternates": 0,
+				"id": 1101,
 				"bryns_shelf0": {
+					"codes": [
+						[
+							0,
+							0,
+							0,
+							1,
+							0
+						],
+						[
+							1,
+							0,
+							0,
+							2,
+							1,
+							1101
+						],
+						[
+							1,
+							0,
+							1,
+							1,
+							1
+						]
+					],
+					"responses": [
+						[
+							"Yes",
+							"No"
+						]
+					],
 					"suite": [
 						[
 							"You find a small diary sealed with a padlock. Would you like to take it?"
+						],
+						[
+							"That's probably the polite thing to do..."
 						]
 					]
 				},
@@ -94,7 +128,6 @@
 					1,
 					1
 				],
-				"id": 0,
 				"instant": false,
 				"key": "bryns_shelf",
 				"position": [

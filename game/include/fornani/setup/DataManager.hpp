@@ -67,7 +67,7 @@ class DataManager final {
 	void unlock_door(int id);
 	void activate_switch(int id);
 	void destroy_block(int id);
-	void destroy_inspectable(std::string_view id);
+	void destroy_inspectable(int id);
 	void push_quest(util::QuestKey key);
 	void set_npc_location(int npc_id, int room_id);
 	void kill_enemy(int room_id, int id, int distance, bool permanent);
@@ -80,7 +80,7 @@ class DataManager final {
 	bool chest_is_open(int id) const;
 	bool switch_is_activated(int id) const;
 	bool block_is_destroyed(int id) const;
-	bool inspectable_is_destroyed(std::string_view id) const;
+	bool inspectable_is_destroyed(int id) const;
 	bool room_discovered(int id) const;
 	bool enemy_is_fallen(int room_id, int id) const;
 
@@ -154,7 +154,7 @@ class DataManager final {
 	std::vector<int> unlocked_doors{};
 	std::vector<int> activated_switches{};
 	std::vector<int> destroyed_blocks{};
-	std::vector<std::string> destroyed_inspectables{};
+	std::vector<int> destroyed_inspectables{};
 	std::vector<util::QuestKey> quest_progressions{};
 
 	std::unordered_map<int, std::string> m_item_labels{};

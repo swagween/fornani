@@ -176,8 +176,8 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		key_map[ControllerInput::slide] = 0.f;
 	}
 
-	if ((left_pressed || left) && !firing_automatic) { m_last_requested_direction.set(LR::left); }
-	if ((right_pressed || right) && !firing_automatic) { m_last_requested_direction.set(LR::right); }
+	if ((left_pressed || left) && !firing_automatic && !is_crouching()) { m_last_requested_direction.set(LR::left); }
+	if ((right_pressed || right) && !firing_automatic && !is_crouching()) { m_last_requested_direction.set(LR::right); }
 
 	key_map[ControllerInput::arms_switch] = 0.f;
 	key_map[ControllerInput::arms_switch] = arms_switch_left ? -1.f : key_map[ControllerInput::arms_switch];

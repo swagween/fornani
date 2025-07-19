@@ -57,10 +57,6 @@
 				"quantity": 1
 			},
 			{
-				"label": "bryns_notebook",
-				"quantity": 1
-			},
-			{
 				"label": "laboratory_key",
 				"quantity": 1
 			},
@@ -184,8 +180,6 @@
 		]
 	],
 	"destroyed_inspectables": [
-		"bookshelf110",
-		"leap115"
 	],
 	"tutorial": {
 		"state": 4,

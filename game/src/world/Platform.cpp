@@ -136,7 +136,8 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			switch (direction.lnr) {
 			case LNR::left: state = 3; break;
 			case LNR::right: state = 4; break;
-			default: NANI_LOG_WARN(m_logger, "Unknown direction was passed. Did you forget to add a case to the switch?"); break;
+			case LNR::neutral: break;
+			default: break;
 			}
 		}
 	}

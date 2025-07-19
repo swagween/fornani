@@ -288,7 +288,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	for (auto& chest : save["opened_chests"].as_array()) { opened_chests.push_back(chest.as<int>()); }
 	for (auto& s : save["activated_switches"].as_array()) { activated_switches.push_back(s.as<int>()); }
 	for (auto& block : save["destroyed_blocks"].as_array()) { destroyed_blocks.push_back(block.as<int>()); }
-	for (auto& inspectable : save["destroyed_inspectables"].as_array()) { destroyed_inspectables.push_back(inspectable.as_string().data()); }
+	for (auto& inspectable : save["destroyed_inspectables"].as_array()) { destroyed_inspectables.push_back(inspectable.as<int>()); }
 	for (auto& q : save["quest_progressions"].as_array()) {
 		auto type = q[0].as<int>();
 		auto id = q[1].as<int>();
@@ -482,7 +482,7 @@ void DataManager::destroy_block(int id) {
 	destroyed_blocks.push_back(id);
 }
 
-void DataManager::destroy_inspectable(std::string_view id) { destroyed_inspectables.push_back(id.data()); }
+void DataManager::destroy_inspectable(int id) { destroyed_inspectables.push_back(id); }
 
 void DataManager::push_quest(util::QuestKey key) {
 	for (auto& entry : quest_progressions) {
@@ -551,7 +551,7 @@ bool DataManager::block_is_destroyed(int id) const {
 	return false;
 }
 
-bool DataManager::inspectable_is_destroyed(std::string_view id) const {
+bool DataManager::inspectable_is_destroyed(int id) const {
 	for (auto& i : destroyed_inspectables) {
 		if (i == id) { return true; }
 	}

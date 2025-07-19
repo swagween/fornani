@@ -617,11 +617,11 @@ fsm::StateFunction PlayerAnimation::update_roll() {
 	m_actual = AnimState::roll;
 	auto& controller = m_player->controller;
 	controller.reset_vertical_movement();
+	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::inspect, get_params("inspect"))) {
 		m_player->collider.physics.stop_x();
 		return PA_BIND(update_inspect);
 	}
-	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::suspend, get_params("suspend"))) { return PA_BIND(update_suspend); }

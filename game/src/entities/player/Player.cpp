@@ -12,9 +12,7 @@
 namespace fornani::player {
 
 constexpr auto wallslide_threshold_v = 0.1f;
-constexpr auto walljump_force_v = -16.f;
-
-static void test_event(std::string_view s, item::ItemType typ, int a) {}
+constexpr auto walljump_force_v = -24.f;
 
 Player::Player(automa::ServiceProvider& svc)
 	: arsenal(svc), m_services(&svc), controller(svc, *this), animation(*this), sprite{svc.assets.get_texture("nani")}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},
@@ -28,8 +26,8 @@ Player::Player(automa::ServiceProvider& svc)
 	hurtbox.set_dimensions(sf::Vector2f{12.f, 26.f});
 
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
-
-	collider.physics.set_constant_friction({physics_stats.ground_fric, physics_stats.air_fric});
+	collider.physics.maximum_velocity = physics_stats.maximum_velocity;
+	collider.flags.general.set(shape::General::complex);
 
 	antennae.push_back(vfx::Gravitator(collider.physics.position, colors::bright_orange, antenna_force));
 	antennae.push_back(vfx::Gravitator(collider.physics.position, colors::bright_orange, antenna_force, {2.f, 4.f}));
@@ -54,24 +52,21 @@ void Player::update(world::Map& map) {
 	auto skew = 160.f;
 	m_camera.target_point = sf::Vector2f{camx, skew * controller.vertical_movement()};
 	if (controller.is_dashing() || m_services->controller_map.digital_action_status(config::DigitalAction::platformer_sprint).held) { m_camera.target_point = sf::Vector2f{camx, 0.f}; }
-
-	m_camera.camera.center(get_camera_focus_point());
+	auto force_multiplier = 1.f - ccm::abs(controller.vertical_movement() / 1.5f);
+	m_camera.camera.center(get_camera_focus_point(), force_multiplier);
 	m_camera.camera.update(*m_services);
 
 	invincible() ? collider.draw_hurtbox.setFillColor(colors::red) : collider.draw_hurtbox.setFillColor(colors::blue);
-
-	collider.flags.general.set(shape::General::complex);
-
-	collider.physics.gravity = physics_stats.grav;
-	collider.physics.maximum_velocity = physics_stats.maximum_velocity;
-	collider.physics.ground_friction = {physics_stats.ground_fric, physics_stats.ground_fric};
-	collider.physics.air_friction = {physics_stats.air_fric, physics_stats.air_fric};
 	if (flags.state.test(State::crushed)) { collider.physics.gravity = 0.f; }
+
+	collider.physics.set_constant_friction({physics_stats.ground_fric, physics_stats.air_fric});
+	collider.physics.gravity = physics_stats.grav;
 
 	update_direction();
 
 	controller.update(*m_services, map, *this);
 	if (collider.hit_ceiling_ramp()) { controller.flush_ability(); }
+	controller.is_crouching() ? collider.flags.movement.set(shape::Movement::crouching) : collider.flags.movement.reset(shape::Movement::crouching);
 
 	// do this elsehwere later
 	if (collider.flags.state.test(shape::State::just_landed)) {
@@ -93,12 +88,9 @@ void Player::update(world::Map& map) {
 	m_directions.desired = controller.last_requested_direction();
 	controller.direction.lnr = m_directions.desired.as<LNR>();
 
-	// player-controlled actions
 	if (hotbar) { hotbar.value().switch_weapon(*m_services, static_cast<int>(controller.arms_switch())); }
 	update_animation();
 	update_sprite();
-
-	// check keystate
 	walk();
 	if (!controller.moving() && (!force_cooldown.running() || collider.world_grounded())) { collider.physics.acceleration.x = 0.0f; }
 
@@ -176,7 +168,6 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 	if (svc.greyblock_mode()) {
 		win.draw(sprite);
-		collider.render(win, cam);
 		sf::RectangleShape box{};
 		box.setFillColor(sf::Color::Transparent);
 		box.setOutlineColor(colors::green);
@@ -194,6 +185,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		camera_target.setFillColor(colors::green);
 		camera_target.setPosition(svc.window->f_center_screen());
 		win.draw(camera_target);
+		collider.render(win, cam);
 	} else {
 		antennae[1].render(svc, win, cam, 1);
 		win.draw(sprite);
@@ -256,11 +248,11 @@ void Player::update_animation() {
 	if (animation.is_state(AnimState::sit)) { flags.state.reset(State::show_weapon); }
 	if (hurt_cooldown.running()) { animation.request(AnimState::hurt); }
 	if (controller.inspecting()) { animation.request(AnimState::inspect); }
+	if (controller.is_crouching() && grounded()) { controller.moving() ? animation.request(AnimState::crawl) : animation.request(AnimState::crouch); }
 	if (is_dead()) {
 		animation.request(AnimState::die);
 		flags.state.reset(State::show_weapon);
 	}
-	if (controller.is_crouching() && grounded()) { controller.moving() ? animation.request(AnimState::crawl) : animation.request(AnimState::crouch); }
 
 	if (flags.state.consume(State::sleep)) { animation.request(player::AnimState::sleep); }
 	if (flags.state.consume(State::wake_up)) { animation.request(player::AnimState::wake_up); }
@@ -405,6 +397,8 @@ void Player::update_antennae() {
 		} else if (animation.get_frame() == 53) {
 			antenna_offset.y = -11.f;
 		} else if (animation.get_frame() == 79) {
+			antenna_offset.y = 2.f;
+		} else if (controller.is_crouching()) {
 			antenna_offset.y = 2.f;
 		} else {
 			antenna_offset.y = -17.f;

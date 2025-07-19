@@ -58,7 +58,7 @@ enum class PermaFlags : std::uint8_t { world_grounded, downhill };
 
 enum class Collision : std::uint8_t { any_collision, has_left_collision, has_right_collision, has_top_collision, has_bottom_collision, ramp_collision };
 enum class Dash : std::uint8_t { dash_cancel_collision };
-enum class Movement : std::uint8_t { dashing, jumping };
+enum class Movement : std::uint8_t { dashing, jumping, crouching };
 
 struct PhysicsStats {
 	float GRAV{0.002f};
