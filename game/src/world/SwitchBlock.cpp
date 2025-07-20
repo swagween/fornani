@@ -11,6 +11,8 @@ SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, sf::Vector2f position, in
 	collider = shape::Collider(constants::f_cell_vec);
 	collider.physics.position = position;
 	collider.sync_components();
+	m_state = SwitchBlockState::full;
+	m_previous_state = SwitchBlockState::full;
 	if (svc.data.switch_is_activated(button_id)) { m_state = SwitchBlockState::empty; }
 	set_channel(static_cast<int>(m_type));
 }

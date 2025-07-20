@@ -75,11 +75,13 @@ void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	sprite.setPosition(grid_position + tweak - cam);
 	win.draw(sprite);
 	if (svc.greyblock_mode()) {
+		collider.render(win, cam);
 		drawbox.setPosition(hitbox.get_position() - cam);
 		drawbox.setSize(hitbox.get_dimensions());
+		drawbox.setOutlineColor(colors::ui_white);
+		drawbox.setOutlineThickness(-1.f);
 		drawbox.setFillColor(sf::Color{249, 12, 48, 64});
 		win.draw(drawbox);
-		collider.render(win, cam);
 	}
 }
 

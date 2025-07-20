@@ -423,6 +423,8 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	// draw hurtbox
 	draw_hurtbox.setSize(sf::Vector2f{hurtbox.get_dimensions()});
 	draw_hurtbox.setPosition(hurtbox.get_position() - cam);
+	draw_hurtbox.setOutlineColor(colors::ui_white);
+	draw_hurtbox.setOutlineThickness(-1.f);
 	win.draw(draw_hurtbox);
 
 	// draw vicinity

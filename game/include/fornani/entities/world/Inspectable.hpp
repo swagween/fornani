@@ -30,8 +30,6 @@ enum class InspectableFlags : std::uint8_t { hovered, hovered_trigger, activated
 
 class Inspectable : public IWorldPositionable {
   public:
-	using Vecu32 = sf::Vector2<std::uint32_t>;
-
 	Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int room);
 	void update(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, dj::Json const& set);
 	void destroy() { flags.set(InspectableFlags::destroy); }

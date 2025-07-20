@@ -14,7 +14,7 @@ namespace pi {
 void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::data::ResourceFinder& finder, Console& console, char const* label, std::unique_ptr<Tool>& tool, int room_id) {
 
 	if (ImGui::BeginPopupModal("Inspectable Message", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-
+		m_is_open = true;
 		static bool activate_on_contact{};
 		static bool instant{};
 		static char keybuffer[128] = "";
@@ -31,6 +31,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::data::
 		ImGui::SameLine();
 
 		if (ImGui::Button("Create")) {
+			m_is_open = false;
 			// switch to entity tool, and store the specified inspectable for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->ent_type = EntityType::inspectable;
@@ -38,10 +39,14 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::data::
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		if (ImGui::Button("Close")) {
+			m_is_open = false;
+			ImGui::CloseCurrentPopup();
+		}
 		ImGui::EndPopup();
 	}
 	if (ImGui::BeginPopupModal("Platform Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
 
 		static dj::Json in_specs{};
 		in_specs = *dj::Json::from_file(std::string{finder.paths.resources.string() + "/data/level/platform.json"}.c_str());
@@ -85,6 +90,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::data::
 		ImGui::NewLine();
 
 		if (ImGui::Button("Create")) {
+			m_is_open = false;
 			// switch to entity tool, and store the specified portal for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->ent_type = EntityType::platform;
@@ -93,10 +99,14 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::data::
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		if (ImGui::Button("Close")) {
+			m_is_open = false;
+			ImGui::CloseCurrentPopup();
+		}
 		ImGui::EndPopup();
 	}
 	if (ImGui::BeginPopupModal("Portal Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
 
 		static int width{0};
 		static int height{0};
@@ -139,6 +149,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::data::
 		ImGui::NewLine();
 
 		if (ImGui::Button("Create")) {
+			m_is_open = false;
 			// switch to entity tool, and store the specified portal for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->current_entity = std::make_unique<Portal>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, activate_on_contact, already_open, room_id, destination, locked, key_id);
@@ -146,50 +157,69 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::data::
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		if (ImGui::Button("Close")) {
+			m_is_open = false;
+			ImGui::CloseCurrentPopup();
+		}
 		ImGui::EndPopup();
 	}
 	if (ImGui::BeginPopupModal("Enemy Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
 		static int id{};
 		static int variant{};
 		ImGui::InputInt("ID", &id);
 		ImGui::InputInt("Variant", &variant);
 		if (ImGui::Button("Create")) {
+			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->current_entity = std::make_unique<Enemy>(svc, id, variant);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		if (ImGui::Button("Close")) {
+			m_is_open = false;
+			ImGui::CloseCurrentPopup();
+		}
 		ImGui::EndPopup();
 	}
 	if (ImGui::BeginPopupModal("Destructible Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
 		static int id{};
 		ImGui::InputInt("ID", &id);
 		if (ImGui::Button("Create")) {
+			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->current_entity = std::make_unique<Destructible>(svc, id);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		if (ImGui::Button("Close")) {
+			m_is_open = false;
+			ImGui::CloseCurrentPopup();
+		}
 		ImGui::EndPopup();
 	}
 	if (ImGui::BeginPopupModal("Bed Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
 		static bool flipped{};
 		ImGui::Checkbox("Flipped", &flipped);
 		ImGui::SameLine();
 		help_marker("By default, the foot of the bed is on the left");
 		if (ImGui::Button("Create")) {
+			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->current_entity = std::make_unique<Bed>(svc, 0, flipped);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		if (ImGui::Button("Close")) {
+			m_is_open = false;
+			ImGui::CloseCurrentPopup();
+		}
 		ImGui::EndPopup();
 	}
 	if (ImGui::BeginPopupModal("Chest Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
 
 		static int id{fornani::util::random::random_range(10000, 99999)};
 		static int modifier{};
@@ -248,29 +278,20 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::data::
 		}
 
 		if (ImGui::Button("Create")) {
+			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->current_entity = std::make_unique<Chest>(svc, type, modifier, id);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		if (ImGui::Button("Close")) {
+			m_is_open = false;
+			ImGui::CloseCurrentPopup();
+		}
 		ImGui::EndPopup();
 	}
 	if (ImGui::BeginPopupModal("Switch Button Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-		static int id{};
-		static int type{};
-		ImGui::InputInt("ID", &id);
-		ImGui::InputInt("Type", &type);
-		if (ImGui::Button("Create")) {
-			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<SwitchButton>(svc, id, type);
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
-		ImGui::EndPopup();
-	}
-	if (ImGui::BeginPopupModal("Switch Block Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
 		static int id{};
 		static int type{};
 		ImGui::InputInt("ID", &id);
@@ -286,12 +307,45 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::data::
 		}
 
 		if (ImGui::Button("Create")) {
+			m_is_open = false;
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<SwitchButton>(svc, id, type);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Close")) {
+			m_is_open = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+	if (ImGui::BeginPopupModal("Switch Block Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
+		static int id{};
+		static int type{};
+		ImGui::InputInt("ID", &id);
+		static char const* types[4] = {"toggler", "permanent", "movable", "alternator"};
+
+		auto ctr{0};
+		if (ImGui::BeginCombo("Type", types[type])) {
+			for (auto const& t : types) {
+				if (ImGui::Selectable(t)) { type = ctr; }
+				++ctr;
+			}
+			ImGui::EndCombo();
+		}
+
+		if (ImGui::Button("Create")) {
+			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->current_entity = std::make_unique<SwitchBlock>(svc, id, type);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		if (ImGui::Button("Close")) {
+			m_is_open = false;
+			ImGui::CloseCurrentPopup();
+		}
 		ImGui::EndPopup();
 	}
 }

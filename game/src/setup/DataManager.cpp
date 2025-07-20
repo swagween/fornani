@@ -59,8 +59,8 @@ void DataManager::load_data(std::string in_room) {
 	assert(!map_table.is_null());
 	for (auto const& room : map_table["rooms"].as_array()) {
 		auto id = room["room_id"].as<int>();
-		if (m_services->tables.get_map_label.contains(id)) { continue; }
-		m_services->tables.get_map_label.insert(std::make_pair(id, room["label"].as_string()));
+		if (m_map_labels.contains(id)) { continue; }
+		m_map_labels.insert(std::make_pair(id, room["label"].as_string()));
 		rooms.push_back(room["room_id"].as<int>());
 	}
 
@@ -409,7 +409,7 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 	// load player's arsenal
 	player.arsenal = {};
 
-	return m_services->tables.get_map_label.at(1);
+	return m_map_labels.at(1);
 }
 
 void DataManager::load_player_params(player::Player& player) {
@@ -612,6 +612,13 @@ auto DataManager::get_room_data_from_id(int id) const& -> std::optional<dj::Json
 			return room;
 			NANI_LOG_DEBUG(m_logger, "Found room {}", id);
 		}
+	}
+	return std::nullopt;
+}
+
+auto DataManager::get_npc_label_from_id(int id) const -> std::optional<std::string_view> {
+	for (auto const& n : npc.as_object()) {
+		if (n.second["metadata"]["id"].as<int>() == id) { return n.first; }
 	}
 	return std::nullopt;
 }

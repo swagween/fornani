@@ -142,7 +142,7 @@ void Editor::run() {
 void Editor::init(std::string const& load_path) {}
 
 void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindow& win) {
-
+	if (popup.is_open()) { return; }
 	auto& source = palette_mode() || current_tool->has_palette_selection ? palette : map;
 
 	// keyboard events

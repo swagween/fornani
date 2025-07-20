@@ -101,6 +101,7 @@ class DataManager final {
 	[[nodiscard]] auto get_gun_tag_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] auto get_gun_id_from_tag(std::string_view tag) const -> int;
 	[[nodiscard]] auto get_room_data_from_id(int id) const& -> std::optional<dj::Json>;
+	[[nodiscard]] auto get_npc_label_from_id(int id) const -> std::optional<std::string_view>;
 
 	int get_room_index(int id);
 	int get_npc_location(int npc_id);
@@ -158,6 +159,7 @@ class DataManager final {
 	std::vector<util::QuestKey> quest_progressions{};
 
 	std::unordered_map<int, std::string> m_item_labels{};
+	std::unordered_map<int, std::string> m_map_labels{};
 
 	io::Logger m_logger{"data"};
 };

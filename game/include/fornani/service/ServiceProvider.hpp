@@ -12,7 +12,6 @@
 #include "fornani/setup/AccessibilityService.hpp"
 #include "fornani/setup/ControllerMap.hpp"
 #include "fornani/setup/DataManager.hpp"
-#include "fornani/setup/Tables.hpp"
 #include "fornani/setup/TextManager.hpp"
 #include "fornani/setup/Version.hpp"
 #include "fornani/setup/WindowManager.hpp"
@@ -47,7 +46,6 @@ struct ServiceProvider {
 
 	util::Stopwatch stopwatch{}; // TODO: Remove. Make Free-Standing.
 	data::ResourceFinder finder;
-	lookup::Tables tables{};
 	data::TextManager text;
 	data::DataManager data;
 	Version* version;	   // TODO: Remove. Make Free-Standing.

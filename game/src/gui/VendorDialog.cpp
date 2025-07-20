@@ -38,7 +38,7 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	orb.sprite.set_params("neutral", true);
 
 	// text
-	text.vendor_name.setString(svc.tables.get_npc_label_formatted(npc_id));
+	text.vendor_name.setString(svc.data.get_npc_label_from_id(npc_id)->data());
 	text.orb_count.setString(player.wallet.get_balance_string());
 	text.buy_tab.setString("BUY");
 	text.sell_tab.setString("SELL");

@@ -51,8 +51,11 @@ void Player::update(world::Map& map) {
 	auto camx = controller.direction.as_float() * 32.f;
 	auto skew = 160.f;
 	m_camera.target_point = sf::Vector2f{camx, skew * controller.vertical_movement()};
-	if (controller.is_dashing() || m_services->controller_map.digital_action_status(config::DigitalAction::platformer_sprint).held) { m_camera.target_point = sf::Vector2f{camx, 0.f}; }
 	auto force_multiplier = 1.f - ccm::abs(controller.vertical_movement() / 1.5f);
+	if (controller.is_dashing() || m_services->controller_map.digital_action_status(config::DigitalAction::platformer_sprint).held) {
+		force_multiplier = 1.f;
+		m_camera.target_point = sf::Vector2f{camx, 0.f};
+	}
 	m_camera.camera.center(get_camera_focus_point(), force_multiplier);
 	m_camera.camera.update(*m_services);
 
@@ -114,7 +117,7 @@ void Player::update(world::Map& map) {
 	if (collider.has_horizontal_collision() || collider.flags.external_state.test(shape::ExternalState::vert_world_collision) || collider.world_grounded() || switched || grounded()) { collider.physics.forced_acceleration = {}; }
 
 	collider.update(*m_services);
-	hurtbox.set_position(collider.hurtbox.get_position() - sf::Vector2f{0.f, 14.f});
+	hurtbox.set_position(collider.hurtbox.get_position() - sf::Vector2f{0.f, 10.f});
 	health.update();
 	health_indicator.update(*m_services, collider.physics.position);
 	orb_indicator.update(*m_services, collider.physics.position);
@@ -295,7 +298,7 @@ void Player::set_idle() {
 	animation.state_function = std::bind(&PlayerAnimation::update_idle, &animation);
 }
 
-void Player::piggyback(int id) { piggybacker = Piggybacker(*m_services, m_services->tables.npc_label.at(id), collider.physics.position); }
+void Player::piggyback(int id) { piggybacker = Piggybacker(*m_services, *m_services->data.get_npc_label_from_id(id), collider.physics.position); }
 
 void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	sf::Vector2f offset{};

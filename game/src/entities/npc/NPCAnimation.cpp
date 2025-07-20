@@ -5,8 +5,9 @@ namespace fornani::npc {
 
 NPCAnimation::NPCAnimation(automa::ServiceProvider& svc, int id) {
 
-	m_label = svc.tables.npc_label.at(id);
-	auto const& in_data = svc.data.npc[m_label];
+	auto label = svc.data.get_npc_label_from_id(id);
+	if (!label) { return; }
+	auto const& in_data = svc.data.npc[*label];
 
 	NPC_idle.lookup = in_data["animation"]["idle"][0].as<int>();
 	NPC_idle.duration = in_data["animation"]["idle"][1].as<int>();
@@ -88,7 +89,7 @@ fsm::StateFunction NPCAnimation::update_walk() {
 	}
 	animation_flags = {};
 	animation_flags.set(NPCAnimState::walk);
-	//std::cout << "w";
+	// std::cout << "w";
 	return std::move(state_function);
 }
 
@@ -99,4 +100,4 @@ fsm::StateFunction NPCAnimation::update_inspect() {
 	return NPC_BIND(update_inspect);
 }
 
-} // namespace npc
+} // namespace fornani::npc
