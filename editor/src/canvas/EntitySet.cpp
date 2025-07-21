@@ -19,6 +19,7 @@ EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::data::Resou
 	create_map.emplace("destructibles", &create_entity<Destructible>);
 	create_map.emplace("switch_blocks", &create_entity<SwitchBlock>);
 	create_map.emplace("switch_buttons", &create_entity<SwitchButton>);
+	create_map.emplace("timer_blocks", &create_entity<TimerBlock>);
 
 	load(svc, finder, metadata, room_name);
 

@@ -28,4 +28,5 @@ nani_add_headers(
         Ticker.hpp
         WorldClock.hpp
         RectPath.hpp
+        WorldTimer.hpp
 )

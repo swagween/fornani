@@ -83,8 +83,6 @@ void Editor::run() {
 		if (!tileset_textures.back().loadFromFile((finder->paths.resources / "image" / "tile" / filename).string())) { console.add_log(std::string{"Failed to load " + filename}.c_str()); }
 	}
 
-	init("new_file");
-
 	bool debug_mode = false;
 
 	wallpaper.setSize(window->f_screen_dimensions());
@@ -104,7 +102,6 @@ void Editor::run() {
 			auto ppos = m_demo.custom_position ? sf::Vector2f{map.entities.variables.player_hot_start} * 32.f : sf::Vector2f{map.entities.variables.player_start} * 32.f;
 			launch_demo(args, map.room_id, finder->paths.room_name, ppos);
 			if (!ImGui::SFML::Init(window->get())) { console.add_log("ImGui::SFML::Init() failed!\n"); };
-			init(finder->paths.room_name);
 		}
 
 		// events
@@ -138,8 +135,6 @@ void Editor::run() {
 		window->get().display();
 	}
 }
-
-void Editor::init(std::string const& load_path) {}
 
 void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindow& win) {
 	if (popup.is_open()) { return; }
@@ -448,6 +443,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	bool beds{};
 	bool sbtn{};
 	bool sblk{};
+	bool timr{};
 	bool open_themes{};
 
 	bool new_room{b_new_file};
@@ -753,6 +749,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Bed", NULL, &beds)) {}
 			if (ImGui::MenuItem("Switch Block", NULL, &sblk)) {}
 			if (ImGui::MenuItem("Switch Button", NULL, &sbtn)) {}
+			if (ImGui::MenuItem("Timer Block", NULL, &timr)) {}
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 				current_tool->current_entity = std::make_unique<SavePoint>(m_services, map.room_id);
@@ -869,6 +866,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	if (sblk) {
 		ImGui::OpenPopup("Switch Block Specifications");
 		label = "Switch Block Specifications";
+		popup_open = true;
+	}
+	if (timr) {
+		ImGui::OpenPopup("Timer Block Specifications");
+		label = "Timer Block Specifications";
 		popup_open = true;
 	}
 

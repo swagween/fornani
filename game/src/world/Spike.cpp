@@ -11,7 +11,7 @@
 namespace fornani::world {
 
 Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vector2f position, sf::Vector2<int> direction, sf::Vector2f size, bool random)
-	: size(size), hitbox(is_small() ? size * 32.f : size * 24.f), sprite{texture}, grid_position{is_small() ? position : position + constants::f_resolution_vec}, facing{direction}, collider{size * constants::f_cell_size} {
+	: size(size), hitbox(is_small() ? size * 32.f : size * 24.f), sprite{texture}, grid_position{is_small() ? position : position + constants::f_resolution_vec}, facing{-direction, true}, collider{size * constants::f_cell_size} {
 	if (random) { attributes.set(SpikeAttributes::random); }
 	if (!is_small()) { attributes.set(SpikeAttributes::soft_reset); }
 	if (facing.left_or_right() && facing.up_or_down() && is_small()) { facing.neutralize_lr(); } // small spikes prefer to face up or down
@@ -25,7 +25,7 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vecto
 	if (facing.right()) { sprite.rotate(sf::degrees(90)); }
 	if (facing.down()) { sprite.rotate(sf::degrees(180)); }
 	auto x_off = is_small() ? 0.f : 56.f;
-	auto y_off = is_small() ? -2.f : 32.f;
+	auto y_off = is_small() ? -8.f : 32.f;
 	offset = sf::Vector2f{x_off, y_off};
 	auto factor = -24.f;
 	auto collider_offset = facing.get_vector() * factor;
@@ -35,6 +35,9 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vecto
 		offset = {y_off, x_off};
 		auto rotation = sf::Vector2f{hitbox.get_dimensions().y, hitbox.get_dimensions().x};
 		hitbox.set_dimensions(rotation);
+	} else if (facing.down()) {
+		y_off *= -1.f;
+		offset = sf::Vector2f{x_off, y_off};
 	}
 	hitbox.set_position(position - offset);
 	collider.fix();

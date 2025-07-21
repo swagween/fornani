@@ -38,6 +38,7 @@
 #include "fornani/world/Spawner.hpp"
 #include "fornani/world/Spike.hpp"
 #include "fornani/world/SwitchBlock.hpp"
+#include "fornani/world/TimerBlock.hpp"
 
 #include <optional>
 #include <vector>
@@ -62,7 +63,7 @@ namespace fornani::world {
 
 enum class LevelState : std::uint8_t { game_over, camera_shake, spawn_enemy };
 enum class MapState : std::uint8_t { unobscure };
-enum class MapProperties : std::uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer, environmental_randomness, day_night_shift };
+enum class MapProperties : std::uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer, environmental_randomness, day_night_shift, timer };
 
 struct EnemySpawn {
 	sf::Vector2f pos{};
@@ -146,6 +147,7 @@ class Map {
 	std::vector<SwitchBlock> switch_blocks{};
 	std::vector<Destructible> destroyers{};
 	std::vector<Checkpoint> checkpoints{};
+	std::vector<TimerBlock> timer_blocks{};
 	std::vector<EnemySpawn> enemy_spawns{};
 	entity::SavePoint save_point;
 	std::vector<vfx::Atmosphere> atmosphere{};

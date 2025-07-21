@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <fornani/systems/TimeTrialRegistry.hpp>
 #include "fornani/entities/npc/Vendor.hpp"
 #include "fornani/io/File.hpp"
 #include "fornani/io/Logger.hpp"
@@ -128,6 +129,9 @@ class DataManager final {
 	dj::Json frdog{};
 	dj::Json hulmet{};
 
+	// time trials
+	dj::Json time_trial_data{};
+
 	int current_save{};
 	std::array<io::File, 3> files{};
 	io::File blank_file{};
@@ -149,6 +153,8 @@ class DataManager final {
 	std::unordered_map<int, npc::Vendor> marketplace{};
 	std::unordered_map<int, int> npc_locations{};
 	std::vector<EnemyState> fallen_enemies{};
+
+	TimeTrialRegistry time_trial_registry{};
 
   private:
 	std::vector<int> opened_chests{};

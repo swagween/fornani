@@ -1,5 +1,5 @@
 #include "fornani/world/Platform.hpp"
-#include <cmath>
+#include <fornani/utils/Math.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -16,6 +16,7 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vect
 	if (in_data["repeating"].as_bool()) { flags.attributes.set(PlatformAttributes::repeating); }
 	if (in_data["player_activated"].as_bool()) { flags.attributes.set(PlatformAttributes::player_activated); }
 	if (in_data["player_controlled"].as_bool()) { flags.attributes.set(PlatformAttributes::player_controlled); }
+	flags.attributes.set(PlatformAttributes::ease);
 
 	metrics.speed = in_data["speed"].as<float>();
 
@@ -65,7 +66,10 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	player.collider.handle_collider_collision(*this);
 	if (player.collider.jumped_into() && physics.velocity.y > 0.f) { player.collider.physics.apply_force(physics.velocity * 8.f); }
 	player.on_crush(map);
-	for (auto const& enemy : map.enemy_catalog.enemies) { enemy->on_crush(map); }
+	for (auto const& enemy : map.enemy_catalog.enemies) {
+		if (enemy->has_map_collision()) { enemy->get_collider().handle_collider_collision(*this); }
+		enemy->on_crush(map);
+	}
 	switch_up.update();
 
 	// map changes
@@ -107,8 +111,13 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		auto const len = (end - start).length();
 		if (auto const edge_end = edge_start + (len / path_length); edge_end >= path_position) {
 			constexpr auto skip_value{16.f};
-			physics.position.x = std::lerp(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));
-			physics.position.y = std::lerp(start.y, end.y, (path_position - edge_start) / (edge_end - edge_start));
+			if (flags.attributes.test(PlatformAttributes::ease)) {
+				physics.position.x = util::ease_in_out(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));
+				physics.position.y = util::ease_in_out(start.y, end.y, (path_position - edge_start) / (edge_end - edge_start));
+			} else {
+				physics.position.x = std::lerp(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));
+				physics.position.y = std::lerp(start.y, end.y, (path_position - edge_start) / (edge_end - edge_start));
+			}
 			physics.velocity = physics.position - old_position;
 			physics.real_velocity = physics.velocity;
 			// set direction

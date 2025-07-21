@@ -17,15 +17,20 @@ class Stopwatch {
 	using Time = std::chrono::duration<float, std::milli>;
 	using TimeSec = std::chrono::duration<float>;
 
-	void start() { start_time = Clk::now(); };
+	void start() { start_time = Clk::now(); }
 	void stop() {
 		elapsed_time = Clk::now() - start_time;
 		seconds = std::chrono::duration_cast<TimeSec>(elapsed_time);
 		snapshot.history.push_back(elapsed_time.count());
 		calculate_snapshot();
-	};
-	[[nodiscard]] float seconds_passed() const { return seconds.count(); }
-	[[nodiscard]] float get_snapshot() const { return snapshot.average_elapsed_ms; }
+	}
+
+	[[nodiscard]] auto get_time() const -> float { return seconds.count(); }
+	[[nodiscard]] auto seconds_passed() const -> float { return seconds.count(); }
+	[[nodiscard]] auto get_snapshot() const -> float { return snapshot.average_elapsed_ms; }
+	[[nodiscard]] auto get_elapsed_time() const -> TimeSec { return std::chrono::duration_cast<TimeSec>(Clk::now() - start_time); }
+	[[nodiscard]] auto get_readout() const -> std::string { return std::format("{:.3f}", get_elapsed_time().count()); }
+	[[nodiscard]] auto get_final() const -> std::string { return std::format("{:.3f}", seconds.count()); }
 	void print_time() const { NANI_LOG_DEBUG(m_logger, "Elapsed Time: {:.5f} seconds", seconds.count()); }
 
 	Time elapsed_time{};

@@ -1,7 +1,5 @@
 
 #include "fornani/entities/player/Player.hpp"
-
-#include <functional>
 #include "fornani/entities/item/Drop.hpp"
 #include "fornani/gui/Console.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
@@ -12,7 +10,7 @@
 namespace fornani::player {
 
 constexpr auto wallslide_threshold_v = 0.1f;
-constexpr auto walljump_force_v = -24.f;
+constexpr auto walljump_force_v = -28.f;
 
 Player::Player(automa::ServiceProvider& svc)
 	: arsenal(svc), m_services(&svc), controller(svc, *this), animation(*this), sprite{svc.assets.get_texture("nani")}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},

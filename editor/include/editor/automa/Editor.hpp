@@ -37,7 +37,6 @@ class Editor {
 	int const NUM_TOOLS{6};
 	Editor(char** argv, fornani::WindowManager& window, fornani::data::ResourceFinder& finder, fornani::Version& version, capo::IEngine& engine);
 	void run();
-	void init(std::string const& load_path);
 	void handle_events(std::optional<sf::Event> event, sf::RenderWindow& win);
 	void logic();
 	void load();

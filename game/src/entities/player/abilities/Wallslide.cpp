@@ -7,7 +7,7 @@
 
 namespace fornani::player {
 
-Wallslide::Wallslide(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction) : Ability(svc, map, collider, direction), m_speed_multiplier{2.65f}, m_map{&map}, m_services{&svc}, m_base_grav{0.6f} {
+Wallslide::Wallslide(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction) : Ability(svc, map, collider, direction), m_speed_multiplier{4.65f}, m_map{&map}, m_services{&svc}, m_base_grav{0.9f} {
 	m_type = AbilityType::wallslide;
 	m_state = AnimState::wallslide;
 	m_duration.start();

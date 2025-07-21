@@ -26,6 +26,9 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
 	svc.state_flags.reset(automa::StateFlags::hide_hud);
 
+	svc.world_timer.set_tag("nani");
+	svc.world_timer.set_course(room_number);
+
 	int ctr{};
 	for (auto& room : svc.data.map_jsons) {
 		if (room.id == room_number) { room_lookup = ctr; }
@@ -59,6 +62,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	// map properties
 	if (meta["properties"]["environmental_randomness"].as_bool()) { flags.properties.set(MapProperties::environmental_randomness); }
 	if (meta["properties"]["day_night_shift"].as_bool()) { flags.properties.set(MapProperties::day_night_shift); }
+	if (meta["properties"]["timer"].as_bool()) { flags.properties.set(MapProperties::timer); }
 
 	m_letterbox_color = style_id == 2 ? colors::pioneer_black : colors::ui_black;
 
@@ -256,6 +260,13 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		auto button_id = entry["id"].as<int>();
 		switch_buttons.push_back(std::make_unique<SwitchButton>(svc, pos, button_id, type, *this));
 	}
+	for (auto& entry : entities["timer_blocks"].as_array()) {
+		sf::Vector2<std::uint32_t> pos{};
+		pos.x = entry["position"][0].as<std::uint32_t>();
+		pos.y = entry["position"][1].as<std::uint32_t>();
+		auto type = static_cast<TimerBlockType>(entry["type"].as<int>());
+		timer_blocks.push_back(TimerBlock(svc, pos, type, entry["id"].as<int>()));
+	}
 
 	generate_collidable_layer();
 
@@ -383,6 +394,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& pushable : pushables) { pushable.update(svc, *this, *player); }
 	for (auto& spike : spikes) { spike.update(svc, *player, *this); }
 	for (auto& vine : vines) { vine->update(svc, *this, *player); }
+	for (auto& timer_block : timer_blocks) { timer_block.update(svc, *this, *player); }
 	player->handle_map_collision(*this);
 	if (cooldowns.loading.is_complete()) { transition.update(*player); }
 	if (cooldowns.loading.is_complete()) { bed_transition.update(*player); }
@@ -487,6 +499,8 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 	if (rain) { rain.value().render(svc, win, cam); }
 
+	if (flags.properties.test(MapProperties::timer)) { svc.world_timer.render(win, sf::Vector2f{32.f, 32.f}); }
+
 	if (svc.greyblock_mode()) {
 		center_box.setPosition({});
 		center_box.setFillColor(sf::Color(80, 80, 80, 60));
@@ -528,6 +542,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	for (auto& animator : animators) {
 		if (!animator.is_foreground()) { animator.render(svc, win, cam); }
 	}
+	for (auto& timer_block : timer_blocks) { timer_block.render(svc, win, cam); }
 }
 
 void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target) {

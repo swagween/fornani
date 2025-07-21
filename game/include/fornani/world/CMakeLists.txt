@@ -12,4 +12,5 @@ nani_add_headers(
         SwitchBlock.hpp
         SwitchButton.hpp
         Tile.hpp
+        TimerBlock.hpp
 )

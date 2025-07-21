@@ -11,4 +11,5 @@ nani_add_sources(
         Shape.cpp
         Ticker.cpp
         WorldClock.cpp
+        WorldTimer.cpp
 )

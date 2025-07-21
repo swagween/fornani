@@ -21,6 +21,7 @@ void SwitchBlock::update(automa::ServiceProvider& svc, Map& map, player::Player&
 	tick();
 	set_parameters({static_cast<int>(m_state), 1, 1, -1});
 	if (m_state != SwitchBlockState::empty) { handle_collision(player.collider); }
+	for (auto& enemy : map.enemy_catalog.enemies) { handle_collision(enemy->get_collider()); }
 	if (switched()) {
 		map.effects.push_back(entity::Effect(svc, "small_explosion", collider.get_center()));
 		svc.soundboard.flags.world.set(audio::World::block_toggle);

@@ -74,6 +74,12 @@ void DataManager::load_data(std::string in_room) {
 	}
 	blank_file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/new_game.json").c_str());
 
+	time_trial_data = *dj::Json::from_file((finder.resource_path() + "/data/save/time_trials.json").c_str());
+	assert(!time_trial_data.is_null());
+	for (auto const& course : time_trial_data["trials"].as_array()) {
+		for (auto const& time : course["times"].as_array()) { time_trial_registry.register_time(*m_services, course["course_id"].as<int>(), time["player_tag"].as_string(), time["time"].as<float>()); }
+	}
+
 	weapon = *dj::Json::from_file((finder.resource_path() + "/data/weapon/weapon_data.json").c_str());
 	assert(!weapon.is_null());
 	enemy_weapon = *dj::Json::from_file((finder.resource_path() + "/data/weapon/enemy_weapons.json").c_str());

@@ -1,8 +1,9 @@
+
 #include "fornani/world/Checkpoint.hpp"
+#include "fornani/entities/player/Player.hpp"
+#include "fornani/particle/Effect.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/world/Map.hpp"
-#include "fornani/particle/Effect.hpp"
-#include "fornani/entities/player/Player.hpp"
 
 namespace fornani::world {
 
@@ -30,4 +31,4 @@ void Checkpoint::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 	}
 }
 
-} // namespace world
+} // namespace fornani::world

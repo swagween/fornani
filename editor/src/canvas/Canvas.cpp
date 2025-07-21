@@ -148,6 +148,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::data::Resource
 	if (meta["background"]) { background = std::make_unique<Background>(finder, static_cast<Backdrop>(meta["background"].as<int>())); }
 	if (meta["properties"]["environmental_randomness"].as_bool()) { m_map_properties.set(fornani::world::MapProperties::environmental_randomness); }
 	if (meta["properties"]["day_night_shift"].as_bool()) { m_map_properties.set(fornani::world::MapProperties::day_night_shift); }
+	if (meta["properties"]["timer"].as_bool()) { m_map_properties.set(fornani::world::MapProperties::timer); }
 
 	// tiles
 	auto counter{0};
@@ -204,6 +205,7 @@ bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& regi
 	metadata["meta"]["cutscene_on_entry"]["source"] = cutscene.source;
 	metadata["meta"]["properties"]["environmental_randomness"] = m_map_properties.test(fornani::world::MapProperties::environmental_randomness);
 	metadata["meta"]["properties"]["day_night_shift"] = m_map_properties.test(fornani::world::MapProperties::day_night_shift);
+	metadata["meta"]["properties"]["timer"] = m_map_properties.test(fornani::world::MapProperties::timer);
 
 	metadata["tile"]["layers"] = dj::Json::empty_array();
 	for (auto i{0}; i < last_layer(); ++i) { metadata["tile"]["layers"].push_back(dj::Json::empty_array()); }

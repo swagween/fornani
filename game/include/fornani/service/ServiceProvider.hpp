@@ -23,6 +23,7 @@
 #include "fornani/utils/Stopwatch.hpp"
 #include "fornani/utils/Ticker.hpp"
 #include "fornani/utils/WorldClock.hpp"
+#include "fornani/utils/WorldTimer.hpp"
 
 #include <ranges>
 
@@ -60,6 +61,7 @@ struct ServiceProvider {
 	util::BitFlags<StateFlags> state_flags{};
 	util::Ticker ticker{}; // TODO: Remove. Make Free-Standing. This one is gonna be hard to remove as the underlying logic needs to change for many functions.
 	WorldClock world_clock{};
+	WorldTimer world_timer{*this};
 	StateController state_controller{};
 	MenuController menu_controller{};
 	audio::Soundboard soundboard{*this}; // TODO: Remove. Make Free-Standing. Maybe?

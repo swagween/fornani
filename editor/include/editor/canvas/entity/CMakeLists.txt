@@ -9,4 +9,5 @@ nani_add_headers(
         Enemy.hpp
         SwitchBlock.hpp
         SwitchButton.hpp
+        TimerBlock.hpp
 )

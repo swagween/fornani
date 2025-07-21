@@ -20,7 +20,7 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class PlatformAttributes : std::uint8_t { sticky, loop, repeating, player_activated, player_controlled, up_down, side_to_side };
+enum class PlatformAttributes : std::uint8_t { sticky, loop, repeating, player_activated, player_controlled, up_down, side_to_side, ease };
 enum class PlatformState : std::uint8_t { moving };
 
 class Platform : public shape::Collider {

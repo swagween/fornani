@@ -22,6 +22,7 @@
 #include "editor/canvas/entity/SavePoint.hpp"
 #include "editor/canvas/entity/SwitchBlock.hpp"
 #include "editor/canvas/entity/SwitchButton.hpp"
+#include "editor/canvas/entity/TimerBlock.hpp"
 
 namespace fornani::data {
 class ResourceFinder;

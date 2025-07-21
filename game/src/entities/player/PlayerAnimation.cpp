@@ -489,6 +489,8 @@ fsm::StateFunction PlayerAnimation::update_wallslide() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::walljump, get_params("walljump"), true)) { return PA_BIND(update_walljump); }
 	if (change_state(AnimState::rise, get_params("walljump"), true)) { return PA_BIND(update_walljump); }
+	if (change_state(AnimState::crouch, get_params("crouch"))) { return PA_BIND(update_crouch); }
+	if (change_state(AnimState::crawl, get_params("crouch"), true)) { return PA_BIND(update_crouch); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }

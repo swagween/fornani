@@ -1,6 +1,11 @@
 {
   "rooms": [
     {
+      "label": "firstwind.json",
+      "region": "firstwind",
+      "room_id": 990
+    },
+    {
       "label": "new_file.json",
       "region": "firstwind",
       "room_id": 1
@@ -31,9 +36,19 @@
       "room_id": 102
     },
     {
+      "label": "boiler_room.json",
+      "region": "firstwind",
+      "room_id": 118
+    },
+    {
       "label": "bridge.json",
       "region": "firstwind",
       "room_id": 120
+    },
+    {
+      "label": "cargo_room.json",
+      "region": "firstwind",
+      "room_id": 104
     },
     {
       "label": "cell.json",
@@ -94,6 +109,11 @@
       "label": "hub.json",
       "region": "firstwind",
       "room_id": 4200
+    },
+    {
+      "label": "race.json",
+      "region": "firstwind",
+      "room_id": 9902
     },
     {
       "label": "shop.json",

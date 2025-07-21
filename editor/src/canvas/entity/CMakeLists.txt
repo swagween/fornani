@@ -9,4 +9,5 @@ nani_add_sources(
         Enemy.cpp
         SwitchBlock.cpp
         SwitchButton.cpp
+        TimerBlock.cpp
 )
