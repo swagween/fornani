@@ -10,13 +10,22 @@
 			"file 2",
 			"file 3"
 		],
+		"play": [
+			"story",
+			"trials"
+		],
 		"stat": [
 			"save screenshot",
 			"exit to menu"
 		],
 		"options": [
 			"controls",
-			"settings"
+			"settings",
+			"credits"
+		],
+		"trials": [
+			"corridor",
+			"challenge"
 		],
 		"controls_platformer": [
 			"< platformer >",
@@ -28,6 +37,7 @@
 			"shoot",
 			"sprint",
 			"slide",
+			"dash",
 			"inspect",
 			"arms_switch_left",
 			"arms_switch_right",
@@ -59,7 +69,14 @@
 			"military time: "
 		],
 		"credits": [
-			""
+			"creator",
+			"dev",
+			"lib",
+			"design",
+			"visuals",
+			"sound",
+			"playtesters",
+			"special_thanks"
 		]
 	},
 	"config": {
@@ -69,7 +86,13 @@
 		"file": {
 			"top_buffer": 186
 		},
+		"trials": {
+			"top_buffer": 60
+		},
 		"options": {
+			"top_buffer": 186
+		},
+		"play": {
 			"top_buffer": 186
 		},
 		"controls_platformer": {

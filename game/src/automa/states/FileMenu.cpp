@@ -5,7 +5,8 @@
 
 namespace fornani::automa {
 
-FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number), map(svc, player) {
+FileMenu::FileMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "file"), map(svc, player) {
+	m_parent_menu = MenuType::play;
 	current_selection = util::Circuit(num_files);
 	svc.data.load_blank_save(player);
 	hud.orient(svc, player, true); // display hud preview for each file in the center of the screen
@@ -17,45 +18,25 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, std::string_vie
 	player.hurt_cooldown.cancel();
 
 	loading.start(4);
-
-	title.setSize(svc.window->f_screen_dimensions());
-	title.setFillColor(colors::ui_black);
-
 	refresh(svc);
-
-	left_dot.set_position(options.at(current_selection.get()).left_offset);
-	right_dot.set_position(options.at(current_selection.get()).right_offset);
+	player.animation.force(player::AnimState::run, "run");
 }
 
 void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-	GameState::tick_update(svc, engine);
-	svc.controller_map.set_action_set(config::ActionSet::Menu);
+	m_input_authorized = !m_file_select_menu;
+	MenuState::tick_update(svc, engine);
 	if (!m_console) {
 		if (m_file_select_menu) {
 			m_file_select_menu->handle_inputs(svc.controller_map, svc.soundboard);
 		} else {
-			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
-
-				current_selection.modulate(1);
+			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered || svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
 				svc.data.load_blank_save(*player);
 				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
-				svc.soundboard.flags.menu.set(audio::Menu::shift);
-			}
-			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
-
-				current_selection.modulate(-1);
-				svc.data.load_blank_save(*player);
-				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
-				svc.soundboard.flags.menu.set(audio::Menu::shift);
 			}
 		}
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 			if (m_file_select_menu) {
 				m_file_select_menu = {};
-				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-			} else {
-				svc.state_controller.submenu = MenuType::main;
-				svc.state_controller.actions.set(Actions::exit_submenu);
 				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 			}
 		}
@@ -100,14 +81,7 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	auto minimenu_pos{opt.position + sf::Vector2f{opt.label.getLocalBounds().getCenter().x + minimenu_dim.x * 0.5f + 2.f * spacing, 0.f}};
 	if (m_file_select_menu) { m_file_select_menu->update(svc, minimenu_dim, minimenu_pos); }
 
-	left_dot.update(svc);
-	right_dot.update(svc);
-	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
-	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
-
 	player->animation.request(player::AnimState::run);
-	player->collider.physics.acceleration = {};
-	player->collider.physics.velocity = {};
 	player->collider.physics.zero();
 	player->collider.reset();
 	player->controller.autonomous_walk();
@@ -117,13 +91,11 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	player->update(map);
 	player->controller.direction.lnr = LNR::left;
 
-	if (m_console) { m_console.value()->update(svc); }
 	hud.update(svc, *player);
 
 	loading.update();
 
 	player->controller.clean();
-	svc.soundboard.play_sounds(engine, svc);
 	player->flags.triggers = {};
 }
 
@@ -131,12 +103,10 @@ void FileMenu::frame_update(ServiceProvider& svc) {}
 
 void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!loading.is_complete()) { return; }
-	win.draw(title);
+	MenuState::render(svc, win);
 	for (auto& option : options) { win.draw(option.label); }
 	player->render(svc, win, {});
 	if (loading.is_complete()) {
-		left_dot.render(svc, win, {});
-		right_dot.render(svc, win, {});
 		hud.render(svc, *player, win);
 		if (m_file_select_menu) { m_file_select_menu->render(win); }
 	}

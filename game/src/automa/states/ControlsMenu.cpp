@@ -10,16 +10,14 @@ namespace fornani::automa {
 constexpr std::array<std::string_view, 2> tabs = {"controls_platformer", "controls_menu"};
 constexpr std::array<std::string_view, 2> tab_id_prefixes = {"platformer_", "menu_"};
 
-ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, "controls_platformer", room_number), instruction(svc.text.fonts.title), m_current_tab{tabs.size()} {
-	change_scene(svc, "controls_platformer");
+ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "controls_platformer"), instruction(svc.text.fonts.title), m_current_tab{tabs.size()}, m_scene{"controls_platformer"} {
+	m_parent_menu = MenuType::options;
+	change_scene(svc, m_scene);
 	instruction.setLineSpacing(1.5f);
-	instruction.setLetterSpacing(title_letter_spacing);
+	instruction.setLetterSpacing(1.f);
 	instruction.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
 	instruction.setPosition({svc.window->i_screen_dimensions().x * 0.5f - instruction.getLocalBounds().getCenter().x, svc.window->i_screen_dimensions().y - 120.f});
 	instruction.setFillColor(colors::dark_grey);
-
-	left_dot.set_position(options.at(current_selection.get()).left_offset);
-	right_dot.set_position(options.at(current_selection.get()).right_offset);
 	loading.start(2);
 
 	debug.setFillColor(sf::Color::Transparent);
@@ -29,7 +27,8 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, std::st
 }
 
 void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-	GameState::tick_update(svc, engine);
+	m_input_authorized = !binding_mode;
+	MenuState::tick_update(svc, engine);
 	binding_mode ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 
@@ -55,16 +54,12 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	auto this_selection = current_selection.get();
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered && !binding_mode) {
-		current_selection.modulate(-1);
 		while (!options.at(current_selection.get()).selectable && current_selection.get() != this_selection) { current_selection.modulate(-1); }
 		option_is_selected = false;
-		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered && !binding_mode) {
-		current_selection.modulate(1);
 		while (!options.at(current_selection.get()).selectable && current_selection.get() != this_selection) { current_selection.modulate(1); }
 		option_is_selected = false;
-		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_left).triggered && option_is_selected && current_selection.get() == 0) {
 		m_current_tab.modulate(-1);
@@ -73,11 +68,6 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).triggered && option_is_selected && current_selection.get() == 0) {
 		m_current_tab.modulate(1);
 		change_scene(svc, tabs[m_current_tab.get()]);
-	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && !binding_mode) {
-		svc.state_controller.submenu = MenuType::options;
-		svc.state_controller.actions.set(Actions::exit_submenu);
-		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
@@ -108,24 +98,17 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	refresh_controls(svc);
 
 	loading.update();
-	left_dot.update(svc);
-	right_dot.update(svc);
-	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
-	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
-
-	svc.soundboard.play_sounds(engine, svc);
 }
 
 void ControlsMenu::frame_update(ServiceProvider& svc) {}
 
 void ControlsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
+	MenuState::render(svc, win);
 	if (loading.is_complete()) {
 		for (auto& option : options) { win.draw(option.label); }
 		for (auto& control : control_list) { win.draw(control); }
 		win.draw(instruction);
 	}
-	left_dot.render(svc, win, {});
-	right_dot.render(svc, win, {});
 }
 
 void ControlsMenu::refresh_controls(ServiceProvider& svc) {
@@ -133,7 +116,7 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 	for (auto& option : options) {
 		option.update(svc, current_selection.get());
 		if (ctr > 0 && ctr < options.size() - 2) {
-			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), scene));
+			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), m_scene));
 			auto id = std::string(tab_id_prefixes.at(current_tab)) + static_cast<std::string>(option.label.getString());
 			auto action = svc.controller_map.get_action_by_identifier(id.data());
 
@@ -142,7 +125,7 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 			control.setOrigin({control.getLocalBounds().size.x, control.getLocalBounds().getCenter().y});
 			control.setPosition({svc.window->i_screen_dimensions().x * 0.5f + center_offset, option.position.y});
 			control.setCharacterSize(16);
-			control.setLetterSpacing(title_letter_spacing);
+			control.setLetterSpacing(1.f);
 			control.setFillColor(option.label.getFillColor());
 			control.setOrigin(control.getLocalBounds().getCenter());
 			option.selectable = !svc.controller_map.gamepad_connected() && svc.controller_map.is_gamepad_input_enabled();
@@ -158,14 +141,14 @@ void ControlsMenu::restore_defaults(ServiceProvider& svc) {
 }
 
 void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change_to) {
-	scene = to_change_to;
 
+	m_scene = to_change_to;
 	options.clear();
 	control_list.clear();
 	auto const& in_data = svc.data.menu["options"];
-	for (auto& entry : in_data[scene].as_array()) { options.push_back(Option(svc, entry.as_string())); }
+	for (auto& entry : in_data[to_change_to].as_array()) { options.push_back(Option(svc, entry.as_string())); }
 	if (!options.empty()) { current_selection = util::Circuit(static_cast<int>(options.size())); }
-	top_buffer = svc.data.menu["config"][scene]["top_buffer"].as<float>();
+	top_buffer = svc.data.menu["config"][to_change_to]["top_buffer"].as<float>();
 	int ctr{};
 	for (auto& option : options) {
 		if (ctr == 0 || ctr >= options.size() - 2) {

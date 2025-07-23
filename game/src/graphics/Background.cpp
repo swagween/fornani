@@ -8,7 +8,7 @@
 
 #include <ccmath/ext/clamp.hpp>
 
-namespace fornani::bg {
+namespace fornani::graphics {
 
 constexpr auto bleed_v = sf::Vector2i{2, 0};
 
@@ -101,4 +101,4 @@ void Background::debug() {
 	ImGui::End();
 }
 
-} // namespace fornani::bg
+} // namespace fornani::graphics

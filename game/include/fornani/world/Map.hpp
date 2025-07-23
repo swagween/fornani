@@ -158,7 +158,7 @@ class Map {
 	std::optional<vfx::Rain> rain{};
 	std::optional<std::vector<Fire>> fire{};
 
-	std::unique_ptr<bg::Background> background{};
+	std::unique_ptr<graphics::Background> background{};
 	graphics::Transition transition;
 	graphics::Transition bed_transition;
 	graphics::Transition soft_reset;

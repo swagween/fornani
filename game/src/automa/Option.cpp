@@ -9,7 +9,7 @@ namespace fornani::automa {
 Option::Option(ServiceProvider& svc, std::string_view lbl, bool red) : red(red), label(svc.text.fonts.title), selectable{true} {
 	label.setString(lbl.data());
 	label.setCharacterSize(16);
-	label.setLetterSpacing(title_letter_spacing);
+	label.setLetterSpacing(1.f);
 	red ? label.setFillColor(colors::red) : label.setFillColor(colors::ui_white);
 	label.setOrigin(label.getLocalBounds().getCenter());
 	native_color = colors::dark_grey;

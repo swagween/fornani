@@ -1,15 +1,15 @@
 #pragma once
 
-#include "fornani/automa/GameState.hpp"
+#include "fornani/automa/MenuState.hpp"
 
 namespace fornani::automa {
 
 enum class SettingsToggles : std::uint8_t { autosprint, tutorial, gamepad, music, sfx, fullscreen, military_time };
 enum class SettingsMenuMode : std::uint8_t { ready, adjust };
 
-class SettingsMenu final : public GameState {
+class SettingsMenu final : public MenuState {
   public:
-	SettingsMenu(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
+	SettingsMenu(ServiceProvider& svc, player::Player& player);
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;

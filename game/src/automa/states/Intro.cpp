@@ -31,7 +31,6 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	player->controller.clean();
-	svc.soundboard.play_sounds(engine, svc);
 	player->flags.triggers = {};
 }
 

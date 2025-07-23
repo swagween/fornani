@@ -106,7 +106,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
 		if (meta["weather"]["leaves"]) { rain = vfx::Rain(meta["weather"]["leaves"]["intensity"].as<int>(), meta["weather"]["leaves"]["fall_speed"].as<float>(), meta["weather"]["leaves"]["slant"].as<float>(), true, true); }
 
-		background = std::make_unique<bg::Background>(svc, meta["background"].as<int>());
+		background = std::make_unique<graphics::Background>(svc, meta["background"].as<int>());
 		styles.breakables = meta["styles"]["breakables"].as<int>();
 		styles.pushables = meta["styles"]["pushables"].as<int>();
 

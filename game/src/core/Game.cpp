@@ -32,8 +32,7 @@ Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& 
 	services.data.load_controls(services.controller_map);
 	services.data.load_settings();
 
-	background.setSize(sf::Vector2f{services.window->get().getSize()});
-	background.setFillColor(colors::ui_black);
+	m_background = std::make_unique<graphics::Background>(services, -1);
 }
 
 void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2f player_position) {
@@ -47,7 +46,6 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 	if (demo) {
 		services.debug_flags.set(automa::DebugFlags::demo_mode);
 		flags.set(GameFlags::in_game);
-		game_state.get_current_state().target_folder.paths.scene = levelpath;
 		services.music_player.turn_off();
 		services.data.load_progress(player, 0);
 		game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", room_id, levelpath.filename().string()));
@@ -102,6 +100,11 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 						services.soundboard.flags.menu.set(audio::Menu::backward_switch);
 					}
 				}
+				if (key_pressed->scancode == sf::Keyboard::Scancode::R && key_flags.test(KeyboardFlags::control)) {
+					game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", room_id, levelpath.filename().string()));
+					player.set_position(player_position);
+					services.world_timer.restart();
+				}
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Equal) { take_screenshot(services.window->screencap); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Y) {
 					auto view = services.window->get_view();
@@ -151,6 +154,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 				m_game_menu = std::make_unique<automa::StateManager>(services, player, automa::MenuType::controls);
 				game_state.get_current_state().flags.reset(automa::GameStateFlags::controls_request);
 			}
+			if (game_state.get_current_state().get_type() == automa::StateType::menu) { m_background->update(services); }
 		});
 		if (m_game_menu) {
 			m_game_menu.value()->get_current_state().frame_update(services);
@@ -177,7 +181,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 
 		services.window->get().clear();
 		if (services.window->fullscreen()) { services.window->get().setView(entire_window); }
-		services.window->get().draw(background);
+		if (game_state.get_current_state().get_type() == automa::StateType::menu) { m_background->render(services, services.window->get(), {}); }
 		if (!zooming) { services.window->restore_view(); }
 
 		if (m_game_menu) {
@@ -224,10 +228,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
 				if (ImGui::BeginTabItem("General")) {
-					if (ImGui::Button("Exit to Main Menu")) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, "main")); }
+					if (ImGui::Button("Exit to Main Menu")) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player)); }
 					ImGui::Text("In Game? %s", services.in_game() ? "Yes" : "No");
-					ImGui::Text("Region: %s", game_state.get_current_state().target_folder.paths.region.string().c_str());
-					ImGui::Text("Room: %s", game_state.get_current_state().target_folder.paths.room.string().c_str());
 					ImGui::Text("debug mode: %s", services.debug_mode() ? "Enabled" : "Disabled");
 					ImGui::Text("demo mode: %s", services.demo_mode() ? "Enabled" : "Disabled");
 					if (ImGui::Button("Toggle Debug Mode")) { services.toggle_debug(); }
@@ -293,7 +295,13 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Gamepad Enabled? %s", services.controller_map.is_gamepad_input_enabled() ? "Yes" : "No");
 					ImGui::EndTabItem();
 				}
-				if (ImGui::BeginTabItem("Inventory")) { ImGui::EndTabItem(); }
+				if (ImGui::BeginTabItem("Time Trials")) {
+					auto list = services.data.time_trial_registry.readout_attempts(9902);
+					if (list) {
+						for (auto const& time : list.value()) { ImGui::Text("%.3f", time.time); }
+					}
+					ImGui::EndTabItem();
+				}
 				if (ImGui::BeginTabItem("NPC")) {
 					ImGui::Separator();
 					for (auto& entry : services.data.npc_locations) {

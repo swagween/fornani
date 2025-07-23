@@ -103,6 +103,7 @@ class PlayerAnimation {
 
 	bool change_state(AnimState next, anim::Parameters params, bool hard = false);
 	void request(AnimState to_state);
+	void force(AnimState to_state, std::string_view key);
 
 	Player* m_player;
 

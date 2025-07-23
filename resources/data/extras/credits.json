@@ -1,0 +1,155 @@
+{
+	"creator": [
+		{
+			"name": "alex frasca",
+			"description": "creator"
+		}
+	],
+	"dev": [
+		{
+			"name": "alex frasca",
+			"description": "lead dev"
+		},
+		{
+			"name": "alejandro perea",
+			"description": "steam support"
+		},
+		{
+			"name": "karn kaul",
+			"description": "consulting"
+		},
+		{
+			"name": "lapinozz",
+			"description": "consulting"
+		},
+		{
+			"name": "gdbobby",
+			"description": "shader support"
+		},
+		{
+			"name": "ian pike",
+			"description": "cmake support"
+		}
+	],
+	"lib": [
+		{
+			"name": "omar cornut",
+			"description": "dearimgui, imgui-sfml"
+		},
+		{
+			"name": "elias daler",
+			"description": "imgui-sfml"
+		},
+		{
+			"name": "mischa aster alff",
+			"description": "imgui-sfml"
+		},
+		{
+			"name": "sfml team",
+			"description": "sfml"
+		},
+		{
+			"name": "karn kaul",
+			"description": "djson, capo, juke"
+		},
+		{
+			"name": "alex frasca",
+			"description": "juke"
+		},
+		{
+			"name": "ian pike",
+			"description": "ccmath"
+		}
+	],
+	"design": [
+		{
+			"name": "alex frasca",
+			"description": "lead designer"
+		},
+		{
+			"name": "tck",
+			"description": "concept art\ngame design\nnarrative design",
+			"line_breaks": 2
+		},
+		{
+			"name": "zach causey",
+			"description": "concept art\ngame design\nenemy design",
+			"line_breaks": 2
+		}
+	],
+	"visuals": [
+		{
+			"name": "alex frasca",
+			"description": "lead artist"
+		},
+		{
+			"name": "tck",
+			"description": "inventory gizmo art\nbackground art support\nenemy art support\nenvironment art support",
+			"line_breaks": 3
+		},
+		{
+			"name": "zach causey",
+			"description": "enemy art support"
+		},
+		{
+			"name": "codeman38",
+			"description": "kongtext font (title)"
+		},
+		{
+			"name": "mbommeli",
+			"description": "pixeljfverdana font (game text)"
+		}
+	],
+	"sound": [
+		{
+			"name": "alex frasca",
+			"description": "lead songwriter/sound designer"
+		},
+		{
+			"name": "tck",
+			"description": "minigus theme\nnpc and enemy sfx",
+			"line_breaks": 1
+		},
+		{
+			"name": "vilkas_sound",
+			"description": "gui sfx"
+		},
+		{
+			"name": "newagesoup",
+			"description": "gui sfx"
+		},
+		{
+			"name": "lavacoal123",
+			"description": "gui sfx"
+		}
+	],
+	"playtesters": [
+		{
+			"name": "zach causey"
+		},
+		{ "name": "seyff" },
+		{ "name": "lukas kawalec" },
+		{ "name": "alejandro perea" },
+		{ "name": "noalot" },
+		{ "name": "max" },
+		{ "name": "jeanne plounevez" },
+		{ "name": "hubert" },
+		{ "name": "stanplayzz" },
+		{ "name": "tck" }
+
+	],
+	"special_thanks": [
+		{
+			"name": "jeanne plounevez"
+		},
+		{
+			"name": "cpp gamedev community"
+		},
+		{
+			"name": "sfml team"
+		},
+		{
+			"name": "silverweed"
+		}
+	]
+}

@@ -13,7 +13,7 @@ namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace fornani::bg {
+namespace fornani::graphics {
 
 enum class BackgroundAttributes : std::uint8_t { lock };
 
@@ -55,4 +55,4 @@ class Background {
 	graphics::DayNightShifter shifter{};
 };
 
-} // namespace fornani::bg
+} // namespace fornani::graphics

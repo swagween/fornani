@@ -4,44 +4,49 @@
 
 namespace fornani::automa {
 
-CreditsMenu::CreditsMenu(ServiceProvider& svc, player::Player& player, std::string_view room_name, int room_number) : GameState(svc, player, room_name, room_number) {
-	left_dot.set_position(options.at(current_selection.get()).left_offset);
-	right_dot.set_position(options.at(current_selection.get()).right_offset);
+CreditsMenu::CreditsMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "credits"), m_loading{8} {
+	m_parent_menu = MenuType::options;
+	m_data = *dj::Json::from_file((svc.finder.resource_path() + "/data/extras/credits.json").c_str());
+	assert(!m_data.is_null());
+	m_loading.start();
 }
 
 void CreditsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-	GameState::tick_update(svc, engine);
-	svc.controller_map.set_action_set(config::ActionSet::Menu);
-
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
-		current_selection.modulate(1);
-		svc.soundboard.flags.menu.set(audio::Menu::shift);
+	MenuState::tick_update(svc, engine);
+	m_loading.update();
+	for (auto& option : options) {
+		option.position.x = 64.f;
+		option.update(svc, current_selection.get());
+		option.label.setOrigin({});
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
-		current_selection.modulate(-1);
-		svc.soundboard.flags.menu.set(audio::Menu::shift);
+	std::string lookup = options.at(current_selection.get()).label.getString();
+	m_credits.clear();
+	for (auto const& credit : m_data[lookup].as_array()) {
+		auto next = sf::Text{svc.text.fonts.basic};
+		next.setFillColor(colors::bright_orange);
+		next.setCharacterSize(16);
+		next.setString(credit["name"].as_string());
+		auto desc = next;
+		desc.setString(credit["description"].as_string());
+		desc.setFillColor(colors::dark_orange);
+		m_credits.push_back(Credit{next, desc, credit["line_breaks"].as<int>()});
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
-		svc.state_controller.actions.set(Actions::exit_submenu);
-		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-	}
-	for (auto& option : options) { option.update(svc, current_selection.get()); }
-	left_dot.update(svc);
-	right_dot.update(svc);
-	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
-	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
-
-	svc.soundboard.play_sounds(engine, svc);
 }
 
 void CreditsMenu::frame_update(ServiceProvider& svc) {}
 
 void CreditsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
-
-	for (auto& option : options) { win.draw(option.label); }
-
-	left_dot.render(svc, win, {0, 0});
-	right_dot.render(svc, win, {0, 0});
+	if (m_loading.running()) { return; }
+	MenuState::render(svc, win);
+	auto ctr = 0.f;
+	auto spacing = 24.f;
+	for (auto& credit : m_credits) {
+		credit.name.setPosition({360.f, spacing * ctr + top_buffer});
+		credit.description.setPosition({540.f, spacing * ctr + top_buffer});
+		win.draw(credit.name);
+		win.draw(credit.description);
+		ctr += 1 + credit.line_breaks;
+	}
 }
 
 } // namespace fornani::automa

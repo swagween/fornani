@@ -8,6 +8,7 @@
 #include "fornani/automa/states/Intro.hpp"
 #include "fornani/automa/states/MainMenu.hpp"
 #include "fornani/automa/states/OptionsMenu.hpp"
+#include "fornani/automa/states/PlayMenu.hpp"
 #include "fornani/automa/states/SettingsMenu.hpp"
 #include "fornani/automa/states/StatSheet.hpp"
 #include "fornani/core/Game.hpp"
@@ -16,28 +17,29 @@ namespace fornani::automa {
 
 StateManager::StateManager(ServiceProvider& svc, player::Player& player, MenuType type) {
 	switch (type) {
-	case MenuType::main: g_current_state = std::make_unique<MainMenu>(svc, player, "main"); break;
-	case MenuType::settings: g_current_state = std::make_unique<SettingsMenu>(svc, player, "settings"); break;
-	case MenuType::controls: g_current_state = std::make_unique<ControlsMenu>(svc, player, "controls"); break;
+	case MenuType::main: g_current_state = std::make_unique<MainMenu>(svc, player); break;
+	case MenuType::settings: g_current_state = std::make_unique<SettingsMenu>(svc, player); break;
+	case MenuType::controls: g_current_state = std::make_unique<ControlsMenu>(svc, player); break;
 	}
 }
 
 void StateManager::process_state(ServiceProvider& svc, player::Player& player, fornani::Game& game) {
 	if (svc.state_controller.actions.test(Actions::trigger_submenu)) {
 		switch (svc.state_controller.submenu) {
-		case MenuType::file_select: set_current_state(std::make_unique<FileMenu>(svc, player, "file")); break;
-		case MenuType::options: set_current_state(std::make_unique<OptionsMenu>(svc, player, "options")); break;
-		case MenuType::settings: set_current_state(std::make_unique<SettingsMenu>(svc, player, "settings")); break;
-		case MenuType::controls: set_current_state(std::make_unique<ControlsMenu>(svc, player, "controls_platformer")); break;
-		case MenuType::credits: set_current_state(std::make_unique<CreditsMenu>(svc, player, "credits")); break;
+		case MenuType::play: set_current_state(std::make_unique<PlayMenu>(svc, player)); break;
+		case MenuType::file_select: set_current_state(std::make_unique<FileMenu>(svc, player)); break;
+		case MenuType::options: set_current_state(std::make_unique<OptionsMenu>(svc, player)); break;
+		case MenuType::settings: set_current_state(std::make_unique<SettingsMenu>(svc, player)); break;
+		case MenuType::controls: set_current_state(std::make_unique<ControlsMenu>(svc, player)); break;
+		case MenuType::credits: set_current_state(std::make_unique<CreditsMenu>(svc, player)); break;
 		default: break;
 		}
 		svc.state_controller.actions.reset(Actions::trigger_submenu);
 	}
 	if (svc.state_controller.actions.test(Actions::exit_submenu)) {
 		switch (svc.state_controller.submenu) {
-		case MenuType::options: set_current_state(std::make_unique<OptionsMenu>(svc, player, "options")); break;
-		default: set_current_state(std::make_unique<MainMenu>(svc, player, "main")); break;
+		case MenuType::options: set_current_state(std::make_unique<OptionsMenu>(svc, player)); break;
+		default: set_current_state(std::make_unique<MainMenu>(svc, player)); break;
 		}
 		svc.state_controller.actions.reset(Actions::exit_submenu);
 	}
@@ -91,7 +93,7 @@ void StateManager::return_to_main_menu(ServiceProvider& svc, player::Player& pla
 	if (svc.demo_mode()) {
 		svc.state_controller.actions.set(Actions::shutdown);
 	} else {
-		set_current_state(std::make_unique<MainMenu>(svc, player, "main"));
+		set_current_state(std::make_unique<MainMenu>(svc, player));
 	}
 	svc.state_controller.actions.reset(Actions::player_death);
 	svc.state_controller.actions.reset(Actions::trigger);
@@ -101,7 +103,7 @@ void StateManager::return_to_main_menu(ServiceProvider& svc, player::Player& pla
 }
 
 void StateManager::print_stats(ServiceProvider& svc, player::Player& player) {
-	set_current_state(std::make_unique<StatSheet>(svc, player, "stat"));
+	set_current_state(std::make_unique<StatSheet>(svc, player));
 	svc.state_controller.actions.reset(Actions::print_stats);
 	svc.state_controller.actions.reset(Actions::trigger);
 }

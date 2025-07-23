@@ -20,6 +20,7 @@ struct TrialAttempt {
 class TimeTrialRegistry {
   public:
 	bool register_time(automa::ServiceProvider& svc, int course, std::string_view tag, float time);
+	void insert_time(int course, std::string_view tag, float time);
 	std::optional<std::vector<TrialAttempt>> readout_attempts(int const course);
 
   private:

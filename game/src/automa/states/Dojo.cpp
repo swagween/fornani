@@ -32,14 +32,14 @@ static void trigger_reveal_item(int to) {
 
 Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameState(svc, player, scene, room_number), map(svc, player), gui_map(svc, player), m_services(&svc) {
 
+	m_type = StateType::game;
+
 	// register game events
 	svc.events.register_event(std::make_unique<Event<int, int>>("GivePlayerItem", std::bind(&player::Player::give_item_by_id, &player, std::placeholders::_1, std::placeholders::_2)));
 	svc.events.register_event(std::make_unique<Event<int>>("RevealItem", &trigger_reveal_item));
 	svc.events.register_event(std::make_unique<Event<int>>("ReadItem", &trigger_read_item));
 	svc.events.register_event(std::make_unique<Event<int>>("AcquireItem", &trigger_item));
 	svc.events.register_event(std::make_unique<Event<int>>("AcquireGun", &trigger_gun));
-
-	NANI_LOG_DEBUG(m_logger, "test: {}", svc.data.item_label_from_id(7));
 
 	svc.menu_controller.reset_vendor_dialog();
 	open_vendor = false;
@@ -130,8 +130,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	loading.is_complete() && !vendor_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
 	loading.update();
 
-	svc.soundboard.play_sounds(engine, svc, map.get_echo_count(), map.get_echo_rate());
-
 	// set action set
 	if (pause_window || m_console) {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
@@ -162,7 +160,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			player->wardrobe_widget.update(*player);
 			m_console.value()->set_nani_sprite(player->wardrobe_widget.get_sprite());
 		}
-		m_console.value()->update(svc);
 	}
 
 	svc.world_clock.update(svc);

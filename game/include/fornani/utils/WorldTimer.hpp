@@ -17,6 +17,7 @@ enum class WorldTimerFlags : std::uint8_t { running };
 class WorldTimer {
   public:
 	WorldTimer(automa::ServiceProvider& svc);
+	void restart();
 	void start();
 	void finish(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win, sf::Vector2f position);

@@ -5,7 +5,8 @@
 
 namespace fornani::automa {
 
-StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number), stats(svc.text.fonts.basic), title(svc.text.fonts.title) {
+StatSheet::StatSheet(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "stat"), stats(svc.text.fonts.basic), title(svc.text.fonts.title) {
+	m_parent_menu = MenuType::file_select;
 	current_selection = util::Circuit(static_cast<int>(options.size()));
 	auto ctr{1};
 	for (auto& option : options) {
@@ -14,8 +15,6 @@ StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, std::string_v
 		option.position = {svc.window->f_center_screen().x, svc.window->f_screen_dimensions().y - 60.f - ctr * 28.f};
 		++ctr;
 	}
-	left_dot.set_position(options.at(0).left_offset);
-	right_dot.set_position(options.at(0).right_offset);
 	stats = options.at(0).label;
 	title = options.at(0).label;
 	title.setString("post-game stats");
@@ -30,17 +29,7 @@ StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, std::string_v
 }
 
 void StatSheet::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-	GameState::tick_update(svc, engine);
-	svc.controller_map.set_action_set(config::ActionSet::Menu);
-
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
-		current_selection.modulate(1);
-		svc.soundboard.flags.menu.set(audio::Menu::shift);
-	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
-		current_selection.modulate(-1);
-		svc.soundboard.flags.menu.set(audio::Menu::shift);
-	}
+	MenuState::tick_update(svc, engine);
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		if (current_selection.get() == 1) {
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
@@ -61,22 +50,15 @@ void StatSheet::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 	stats.setPosition({200.f, 120.f});
 	title.setPosition({svc.window->f_screen_dimensions().x * 0.5f, 60.f});
-	left_dot.update(svc);
-	right_dot.update(svc);
-	left_dot.set_target_position(options.at(current_selection.get()).left_offset);
-	right_dot.set_target_position(options.at(current_selection.get()).right_offset);
-	svc.soundboard.play_sounds(engine, svc);
 }
 
 void StatSheet::frame_update(ServiceProvider& svc) {}
 
 void StatSheet::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!loading.is_complete()) { return; }
-	for (auto& option : options) { win.draw(option.label); }
+	MenuState::render(svc, win);
 	win.draw(stats);
 	win.draw(title);
-	left_dot.render(svc, win, {0, 0});
-	right_dot.render(svc, win, {0, 0});
 }
 
 } // namespace fornani::automa

@@ -10,6 +10,11 @@ WorldTimer::WorldTimer(automa::ServiceProvider& svc) : m_text{svc.text.fonts.tit
 	m_text.setCharacterSize(16);
 }
 
+void WorldTimer::restart() {
+	m_timer = util::Stopwatch{};
+	m_flags.reset(WorldTimerFlags::running);
+}
+
 void WorldTimer::start() {
 	m_timer.start();
 	m_flags.set(WorldTimerFlags::running);

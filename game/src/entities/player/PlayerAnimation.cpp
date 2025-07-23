@@ -747,6 +747,13 @@ void player::PlayerAnimation::request(AnimState to_state) {
 	m_buffer.start();
 }
 
+void player::PlayerAnimation::force(AnimState to_state, std::string_view key) {
+	m_requested = {};
+	m_requested.set(to_state);
+	change_state(to_state, get_params(key.data()), true);
+	m_buffer.start();
+}
+
 anim::Parameters const& player::PlayerAnimation::get_params(std::string const& key) { return m_params.contains(key) ? m_params.at(key) : m_params.at("idle"); }
 
 } // namespace fornani::player

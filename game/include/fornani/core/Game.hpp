@@ -1,10 +1,13 @@
+
 #pragma once
+
 #include <capo/engine.hpp>
+#include <fornani/automa/StateManager.hpp>
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/graphics/Background.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/utils/BitFlags.hpp>
 #include <filesystem>
-#include "fornani/automa/StateManager.hpp"
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/utils/BitFlags.hpp"
 #include <imgui-SFML.h>
 
 namespace fornani {
@@ -43,7 +46,7 @@ class Game {
 	player::Player player;
 	automa::StateManager game_state;
 	std::optional<std::unique_ptr<automa::StateManager>> m_game_menu;
-	sf::RectangleShape background{};
+	std::unique_ptr<graphics::Background> m_background{};
 
 	io::Logger m_logger{"core"};
 };
