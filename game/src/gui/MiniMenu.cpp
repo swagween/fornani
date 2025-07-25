@@ -22,13 +22,15 @@ void MiniMenu::update(automa::ServiceProvider& svc, sf::Vector2f dim, sf::Vector
 	dimensions = dim;
 	m_nineslice.set_position(at_position);
 	m_nineslice.set_dimensions(dim);
-	auto spacing = 12.f;
+	auto spacing = 32.f;
 	auto top_buffer = 18.f;
 	auto ctr{0};
 
 	for (auto& option : options) {
-		option.position = {m_nineslice.get_global_center().x,
-						   m_nineslice.get_position().y - m_nineslice.get_f_corner_dimensions().y + spacing + ctr * (option.label.getLocalBounds().size.y + spacing) - m_nineslice.get_local_center().y + top_buffer};
+		auto ypos = m_nineslice.get_position().y - m_nineslice.get_f_corner_dimensions().y + spacing + ctr * (option.label.getLocalBounds().size.y + spacing) - m_nineslice.get_local_center().y;
+		ypos = m_nineslice.get_position().y - m_nineslice.get_f_corner_dimensions().y + ctr * (option.label.getLocalBounds().size.y + spacing) - m_nineslice.get_local_center().y;
+		ypos = m_nineslice.get_position().y + ctr * spacing;
+		option.position = {m_nineslice.get_global_center().x, ypos};
 		option.update(svc, selection.get());
 		++ctr;
 	}

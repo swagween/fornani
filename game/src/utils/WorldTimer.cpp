@@ -5,7 +5,7 @@
 
 namespace fornani {
 
-WorldTimer::WorldTimer(automa::ServiceProvider& svc) : m_text{svc.text.fonts.title}, m_flash{80} {
+WorldTimer::WorldTimer(automa::ServiceProvider& svc) : m_text{svc.text.fonts.title}, m_flash{80}, m_dt{&svc.ticker.dt_scalar} {
 	m_text.setFillColor(colors::ui_white);
 	m_text.setCharacterSize(16);
 }
@@ -24,11 +24,11 @@ void WorldTimer::finish(automa::ServiceProvider& svc) {
 	m_timer.stop();
 	m_flags.reset(WorldTimerFlags::running);
 	m_flash.start();
-	svc.data.time_trial_registry.register_time(svc, m_course, m_player_tag, m_timer.get_time());
+	svc.data.time_trial_registry.register_time(svc, m_course, m_player_tag, m_timer.get_time() * *m_dt);
 }
 
 void WorldTimer::render(sf::RenderWindow& win, sf::Vector2f position) {
-	is_running() ? m_text.setString(m_timer.get_readout()) : m_text.setString(m_timer.get_final());
+	is_running() ? m_text.setString(m_timer.get_readout(*m_dt)) : m_text.setString(m_timer.get_final(*m_dt));
 	if (m_flash.running()) {
 		m_flash.get() % 16 < 8 ? m_text.setFillColor(colors::goldenrod) : m_text.setFillColor(colors::red);
 	} else {

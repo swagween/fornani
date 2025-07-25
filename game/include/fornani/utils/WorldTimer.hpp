@@ -32,6 +32,7 @@ class WorldTimer {
 	util::Stopwatch m_timer{};
 	sf::Text m_text;
 	int m_course{};
+	float* m_dt;
 	std::string m_player_tag{};
 };
 

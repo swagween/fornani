@@ -1,11 +1,6 @@
 {
   "rooms": [
     {
-      "label": "firstwind.json",
-      "region": "firstwind",
-      "room_id": 990
-    },
-    {
       "label": "new_file.json",
       "region": "firstwind",
       "room_id": 1
@@ -113,12 +108,22 @@
     {
       "label": "race.json",
       "region": "firstwind",
-      "room_id": 9902
+      "room_id": 9899
     },
     {
       "label": "shop.json",
       "region": "base",
       "room_id": 4201
+    },
+    {
+      "label": "firstwind.json",
+      "region": "firstwind",
+      "room_id": 990
+    },
+    {
+      "label": "race.json",
+      "region": "firstwind",
+      "room_id": 9902
     }
   ]
 }

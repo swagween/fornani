@@ -104,6 +104,7 @@ class PlayerController {
 
   private:
 	void flush_ability() { m_ability = {}; }
+	Direction m_dash_direction{};
 
 	std::unordered_map<ControllerInput, float> key_map{};
 	util::BitFlags<MovementState> flags{};	// unused

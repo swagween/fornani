@@ -103,13 +103,17 @@
 			0
 		],
 		"minimap": false,
-		"music": "",
+		"music": "dusken",
+		"player_start": [
+			32,
+			288
+		],
 		"properties": {
 			"day_night_shift": false,
 			"environmental_randomness": false,
 			"timer": true
 		},
-		"room_id": 9899,
+		"room_id": 9902,
 		"style": 0
 	},
 	"tile": {

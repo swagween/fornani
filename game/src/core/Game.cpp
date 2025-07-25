@@ -2,6 +2,7 @@
 #include "fornani/automa/states/Dojo.hpp"
 #include "fornani/automa/states/MainMenu.hpp"
 #include "fornani/automa/states/SettingsMenu.hpp"
+#include "fornani/automa/states/Trial.hpp"
 #include "fornani/graphics/Colors.hpp"
 #include "fornani/gui/ActionContextBar.hpp"
 #include "fornani/setup/WindowManager.hpp"
@@ -100,11 +101,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 						services.soundboard.flags.menu.set(audio::Menu::backward_switch);
 					}
 				}
-				if (key_pressed->scancode == sf::Keyboard::Scancode::R && key_flags.test(KeyboardFlags::control)) {
-					game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", room_id, levelpath.filename().string()));
-					player.set_position(player_position);
-					services.world_timer.restart();
-				}
+				if (key_pressed->scancode == sf::Keyboard::Scancode::R && key_flags.test(KeyboardFlags::control)) { restart_trial(levelpath); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Equal) { take_screenshot(services.window->screencap); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Y) {
 					auto view = services.window->get_view();
@@ -164,6 +161,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		}
 
 		if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(services.window->screencap); }
+		if (services.state_controller.actions.consume(automa::Actions::restart)) { restart_trial(levelpath); }
 
 		ImGui::SetMouseCursor(ImGuiMouseCursor_None);
 		ImGuiIO& io = ImGui::GetIO();
@@ -566,5 +564,7 @@ void Game::take_screenshot(sf::Texture& screencap) {
 	auto target = destination / filename;
 	if (screencap.copyToImage().saveToFile(target.string())) { NANI_LOG_INFO(m_logger, "screenshot {} saved to {}", filename.string(), destination.string()); }
 }
+
+void Game::restart_trial(std::filesystem::path const& levelpath) { game_state.set_current_state(std::make_unique<automa::Trial>(services, player, "trial", services.state_controller.next_state, levelpath.filename().string())); }
 
 } // namespace fornani

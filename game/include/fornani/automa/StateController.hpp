@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/BitFlags.hpp"
+#include <fornani/utils/BitFlags.hpp>
 
 namespace fornani::graphics {
 class Transition;
@@ -10,7 +10,7 @@ class Transition;
 namespace fornani::automa {
 
 enum class MenuType : std::uint8_t { main, file_select, options, settings, credits, controls, play, trials };
-enum class Actions : std::uint8_t { trigger_submenu, save_loaded, exit_submenu, trigger, shutdown, player_death, intro_done, retry, death_mode, main_menu, print_stats, screenshot, end_demo, delete_file };
+enum class Actions : std::uint8_t { trigger_submenu, save_loaded, exit_submenu, trigger, trials, shutdown, player_death, intro_done, retry, death_mode, main_menu, print_stats, screenshot, end_demo, delete_file, restart };
 enum class Status : std::uint8_t { out_of_bounds };
 
 class StateController {

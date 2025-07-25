@@ -146,6 +146,7 @@ class Canvas {
 	// layers
 	sf::Vector2<std::uint32_t> dimensions{};
 	sf::Vector2<int> metagrid_coordinates{};
+	sf::Vector2f m_player_start{};
 
 	struct {
 		bool show_grid{true};

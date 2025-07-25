@@ -28,7 +28,7 @@ void CreditsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		next.setString(credit["name"].as_string());
 		auto desc = next;
 		desc.setString(credit["description"].as_string());
-		desc.setFillColor(colors::dark_orange);
+		desc.setFillColor(colors::dark_fucshia);
 		m_credits.push_back(Credit{next, desc, credit["line_breaks"].as<int>()});
 	}
 }

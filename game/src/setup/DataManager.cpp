@@ -73,6 +73,7 @@ void DataManager::load_data(std::string in_room) {
 		++ctr;
 	}
 	blank_file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/new_game.json").c_str());
+	trial_file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/trial_save.json").c_str());
 
 	time_trial_data = *dj::Json::from_file((finder.resource_path() + "/data/save/time_trials.json").c_str());
 	assert(!time_trial_data.is_null());
@@ -416,6 +417,23 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 	player.arsenal = {};
 
 	return m_map_labels.at(1);
+}
+
+void DataManager::load_trial_save(player::Player& player) const {
+
+	auto const& save = trial_file.save_data;
+	assert(!save.is_null());
+
+	// set player data based on save file
+	player.health.set_max(save["player_data"]["max_hp"].as<float>());
+	player.health.set_hp(save["player_data"]["hp"].as<float>());
+	for (auto& item : save["player_data"]["items"].as_array()) {
+		player.give_item(item["label"].as_string(), item["quantity"].as<int>());
+		if (item["revealed"].as_bool()) { player.catalog.inventory.reveal_item(item_id_from_label(item["label"].as_string())); }
+	}
+
+	// load player's arsenal
+	player.arsenal = {};
 }
 
 void DataManager::load_player_params(player::Player& player) {

@@ -524,7 +524,6 @@ void Player::set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_o
 
 void Player::give_item(std::string_view label, int amount) {
 	auto id{0};
-	NANI_LOG_DEBUG(m_logger, "Gave item {}", label);
 	for (auto i{0}; i < amount; ++i) { id = catalog.inventory.add_item(m_services->data.item, label); }
 	if (id == 29) {
 		health.increase_max_hp(1.f);
@@ -548,6 +547,8 @@ void Player::map_reset() {
 	set_idle();
 	flags.state.reset(State::killed);
 	if (arsenal) { arsenal.value().reset(); }
+	health.invincibility.cancel();
+	controller.flush_ability();
 }
 
 arms::Weapon& Player::equipped_weapon() { return arsenal.value().get_weapon_at(hotbar.value().get_tag()); }
@@ -589,6 +590,8 @@ bool Player::can_dash() const {
 	}
 	return true;
 }
+
+bool Player::can_omnidirectional_dash() const { return catalog.inventory.has_item("ancient_periapt"); }
 
 bool Player::can_doublejump() const {
 	if (health.is_dead()) { return false; }

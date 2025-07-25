@@ -68,6 +68,7 @@ if (NOT FORNANI_PRODUCTION_BUILD)
     configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/file_2.template" "${FORNANI_ROOT_DIR}/resources/data/save/file_2.json" COPYONLY)
 endif ()
 configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/new_game.template" "${FORNANI_ROOT_DIR}/resources/data/save/new_game.json" COPYONLY)
+configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/trial_save.template" "${FORNANI_ROOT_DIR}/resources/data/save/trial_save.json" COPYONLY)
 configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/time_trials.template" "${FORNANI_ROOT_DIR}/resources/data/save/time_trials.json" COPYONLY)
 
 # Generate config files

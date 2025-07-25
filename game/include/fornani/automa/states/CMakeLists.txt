@@ -10,4 +10,5 @@ nani_add_headers(
         SettingsMenu.hpp
         StatSheet.hpp
         TrialsMenu.hpp
+        Trial.hpp
 )

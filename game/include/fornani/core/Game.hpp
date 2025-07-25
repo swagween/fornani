@@ -29,6 +29,7 @@ class Game {
   private:
 	void playtester_portal(sf::RenderWindow& window);
 	void take_screenshot(sf::Texture& screencap);
+	void restart_trial(std::filesystem::path const& levelpath);
 
 	automa::ServiceProvider services;
 

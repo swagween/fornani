@@ -11,6 +11,8 @@
 #include "fornani/automa/states/PlayMenu.hpp"
 #include "fornani/automa/states/SettingsMenu.hpp"
 #include "fornani/automa/states/StatSheet.hpp"
+#include "fornani/automa/states/Trial.hpp"
+#include "fornani/automa/states/TrialsMenu.hpp"
 #include "fornani/core/Game.hpp"
 
 namespace fornani::automa {
@@ -32,6 +34,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 		case MenuType::settings: set_current_state(std::make_unique<SettingsMenu>(svc, player)); break;
 		case MenuType::controls: set_current_state(std::make_unique<ControlsMenu>(svc, player)); break;
 		case MenuType::credits: set_current_state(std::make_unique<CreditsMenu>(svc, player)); break;
+		case MenuType::trials: set_current_state(std::make_unique<TrialsMenu>(svc, player)); break;
 		default: break;
 		}
 		svc.state_controller.actions.reset(Actions::trigger_submenu);
@@ -39,6 +42,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 	if (svc.state_controller.actions.test(Actions::exit_submenu)) {
 		switch (svc.state_controller.submenu) {
 		case MenuType::options: set_current_state(std::make_unique<OptionsMenu>(svc, player)); break;
+		case MenuType::play: set_current_state(std::make_unique<PlayMenu>(svc, player)); break;
 		default: set_current_state(std::make_unique<MainMenu>(svc, player)); break;
 		}
 		svc.state_controller.actions.reset(Actions::exit_submenu);
@@ -70,6 +74,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 			svc.music_player.stop();
 		}
 	}
+	if (svc.state_controller.actions.consume(Actions::trials)) { set_current_state(std::make_unique<Trial>(svc, player, "trial", svc.state_controller.next_state)); }
 	if (svc.state_controller.actions.consume(Actions::trigger)) {
 		if (svc.state_controller.actions.test(Actions::print_stats)) {
 			print_stats(svc, player);

@@ -123,7 +123,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	// gamepad disconnected
-	if (svc.controller_map.process_gamepad_disconnection()) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
+	if (svc.controller_map.process_gamepad_disconnection()) { pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{"resume", "settings", "controls", "quit"}); }
 
 	svc.a11y.set_action_ctx_bar_enabled(false);
 
@@ -210,7 +210,9 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	// in-game menus
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc, gui_map, *player); }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) {
+		pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{"resume", "settings", "controls", "quit", "restart"});
+	}
 
 	enter_room.update();
 	if (!m_console && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }

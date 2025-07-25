@@ -10,4 +10,5 @@ nani_add_sources(
         SettingsMenu.cpp
         StatSheet.cpp
         TrialsMenu.cpp
+        Trial.cpp
 )

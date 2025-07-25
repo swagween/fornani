@@ -55,6 +55,7 @@ class DataManager final {
 	void delete_file(int index);
 	void write_death_count(player::Player& player);
 	std::string_view load_blank_save(player::Player& player, bool state_switch = false) const;
+	void load_trial_save(player::Player& player) const;
 	dj::Json& get_save() { return files.at(current_save).save_data; }
 	dj::Json& get_player_items() { return files.at(current_save).save_data["player_data"]["items"]; }
 	io::File& get_file() { return files.at(current_save); }
@@ -135,6 +136,7 @@ class DataManager final {
 	int current_save{};
 	std::array<io::File, 3> files{};
 	io::File blank_file{};
+	io::File trial_file{};
 
 	dj::Json player_params{};
 	dj::Json menu{};

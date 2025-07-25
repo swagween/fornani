@@ -114,6 +114,7 @@ class Map {
 	[[nodiscard]] auto has_reverse_obscuring_layer() const -> bool { return flags.properties.test(MapProperties::has_reverse_obscuring_layer); }
 	[[nodiscard]] auto get_biome_string() const -> std::string { return m_metadata.biome; }
 	[[nodiscard]] auto get_room_string() const -> std::string { return m_metadata.room; }
+	[[nodiscard]] auto get_player_start() const -> sf::Vector2f { return m_player_start; }
 	std::size_t get_index_at_position(sf::Vector2f position);
 	int get_tile_value_at_position(sf::Vector2f position);
 	Tile& get_cell_at_position(sf::Vector2f position);
@@ -201,6 +202,7 @@ class Map {
 
   private:
 	int abyss_distance{512};
+	sf::Vector2f m_player_start{};
 	struct {
 		std::string biome{};
 		std::string room{};

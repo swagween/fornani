@@ -31,6 +31,8 @@ class Stopwatch {
 	[[nodiscard]] auto get_elapsed_time() const -> TimeSec { return std::chrono::duration_cast<TimeSec>(Clk::now() - start_time); }
 	[[nodiscard]] auto get_readout() const -> std::string { return std::format("{:.3f}", get_elapsed_time().count()); }
 	[[nodiscard]] auto get_final() const -> std::string { return std::format("{:.3f}", seconds.count()); }
+	[[nodiscard]] auto get_readout(float dt) const -> std::string { return std::format("{:.3f}", get_elapsed_time().count() * dt); }
+	[[nodiscard]] auto get_final(float dt) const -> std::string { return std::format("{:.3f}", seconds.count() * dt); }
 	void print_time() const { NANI_LOG_DEBUG(m_logger, "Elapsed Time: {:.5f} seconds", seconds.count()); }
 
 	Time elapsed_time{};

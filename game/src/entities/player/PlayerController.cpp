@@ -64,6 +64,12 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	auto const& left_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_left).triggered;
 	auto const& right_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_right).triggered;
 
+	// set dash direction
+	if (up) { m_dash_direction = Direction{{0, 1}}; }
+	if (down) { m_dash_direction = Direction{{0, -1}}; }
+	if (left) { m_dash_direction = Direction{{-1, 0}}; }
+	if (right) { m_dash_direction = Direction{{1, 0}}; }
+
 	// inspect
 	auto const& inspected = (it) && grounded() && !left && !right;
 	cooldowns.inspect.update();
@@ -82,7 +88,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (player.grounded()) { player.m_ability_usage = {}; }
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered) {
 		if (player.can_dash()) {
-			m_ability = std::make_unique<Dash>(svc, map, player.collider, player.get_actual_direction());
+			m_ability = std::make_unique<Dash>(svc, map, player.collider, m_dash_direction, player.can_omnidirectional_dash());
 			player.m_ability_usage.dash.update();
 		}
 	}

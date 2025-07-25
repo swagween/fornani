@@ -49,6 +49,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
 	dimensions.y = meta["dimensions"][1].as<int>();
+	m_player_start.x = meta["player_start"][0].as<float>();
+	m_player_start.y = meta["player_start"][1].as<float>();
 	real_dimensions = {static_cast<float>(dimensions.x) * constants::f_cell_size, static_cast<float>(dimensions.y) * constants::f_cell_size};
 	auto style_value = meta["style"].as<int>();
 	style_label = svc.data.map_styles["styles"][style_value]["label"].as_string().data();

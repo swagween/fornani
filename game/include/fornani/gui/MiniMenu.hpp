@@ -30,6 +30,7 @@ class MiniMenu {
 	void update(automa::ServiceProvider& svc, sf::Vector2f dim, sf::Vector2f at_position);
 	void render(sf::RenderWindow& win, bool bg = true);
 	void handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard);
+	void set_dimensions(sf::Vector2f to) { m_nineslice.set_dimensions(to); }
 
 	sf::Vector2f get_dimensions() const;
 

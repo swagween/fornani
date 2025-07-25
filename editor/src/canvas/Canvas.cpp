@@ -126,6 +126,8 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::data::Resource
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
 	dimensions.y = meta["dimensions"][1].as<int>();
+	m_player_start.x = meta["player_start"][0].as<float>();
+	m_player_start.y = meta["player_start"][1].as<float>();
 	real_dimensions = {static_cast<float>(dimensions.x) * fornani::constants::f_cell_size, static_cast<float>(dimensions.y) * fornani::constants::f_cell_size};
 	auto style_value = meta["style"].as<int>();
 	tile_style = Style(static_cast<StyleType>(style_value));
@@ -188,6 +190,8 @@ bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& regi
 	metadata["meta"]["metagrid"][1] = metagrid_coordinates.y;
 	metadata["meta"]["dimensions"][0] = dimensions.x;
 	metadata["meta"]["dimensions"][1] = dimensions.y;
+	metadata["meta"]["player_start"][0] = m_player_start.x;
+	metadata["meta"]["player_start"][1] = m_player_start.y;
 	metadata["meta"]["style"] = static_cast<int>(tile_style.get_type());
 	metadata["meta"]["biome"] = tile_style.get_label();
 	metadata["meta"]["background"] = static_cast<int>(background->type.get_type());

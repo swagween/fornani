@@ -255,6 +255,7 @@ class Player {
 	void set_facing_direction(SimpleDirection to_direction) { m_directions.desired = to_direction; }
 
 	[[nodiscard]] auto can_dash() const -> bool;
+	[[nodiscard]] auto can_omnidirectional_dash() const -> bool;
 	[[nodiscard]] auto can_doublejump() const -> bool;
 	[[nodiscard]] auto can_roll() const -> bool;
 	[[nodiscard]] auto can_slide() const -> bool;
