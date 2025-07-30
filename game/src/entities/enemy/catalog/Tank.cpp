@@ -51,10 +51,10 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 
 	player.collider.handle_collider_collision(secondary_collider);
 	if (svc.ticker.every_x_ticks(20)) {
-		if (util::random::percent_chance(8) && !m_caution.danger()) { request(TankState::run); }
+		if (random::percent_chance(8) && !m_caution.danger()) { request(TankState::run); }
 	}
 
-	m_sounds.hurt = util::random::percent_chance(50) ? audio::Tank::hurt_1 : audio::Tank::hurt_2;
+	m_sounds.hurt = random::percent_chance(50) ? audio::Tank::hurt_1 : audio::Tank::hurt_2;
 	if (flags.state.test(StateFlags::hurt)) {
 		hurt_effect.start();
 		if (sound.hurt_sound_cooldown.is_complete()) { svc.soundboard.flags.tank.set(m_sounds.hurt); }
@@ -149,7 +149,7 @@ fsm::StateFunction Tank::update_type() {
 	animation.label = "type";
 	m_state.actual = TankState::type;
 	if (m_services->ticker.every_second()) {
-		if (util::random::percent_chance(10)) { request(TankState::drink); }
+		if (random::percent_chance(10)) { request(TankState::drink); }
 		if (change_state(TankState::drink, drink)) { return TANK_BIND(update_drink); }
 	}
 	if (hostility_triggered()) { request(TankState::alert); }
@@ -302,7 +302,7 @@ fsm::StateFunction Tank::update_alert() {
 	m_state.actual = TankState::alert;
 	if (animation.just_started()) {
 		m_cooldowns.alerted.start();
-		if (util::random::percent_chance(50)) {
+		if (random::percent_chance(50)) {
 			m_services->soundboard.flags.tank.set(audio::Tank::alert_1);
 		} else {
 			m_services->soundboard.flags.tank.set(audio::Tank::alert_2);

@@ -10,7 +10,7 @@ constexpr static int imp_framerate{16};
 
 Imp::Imp(automa::ServiceProvider& svc, world::Map& map)
 	: Enemy(svc, "imp"), m_services(&svc), m_map(&map),
-	  parts{.weapon = util::random::percent_chance(50) ? entity::FloatingPart{svc.assets.get_texture("imp_knife"),
+	  parts{.weapon = random::percent_chance(50) ? entity::FloatingPart{svc.assets.get_texture("imp_knife"),
 																			  {72, 40},
 																			  {{0, 1, imp_framerate, -1}, {1, 1, imp_framerate, 0}, {2, 1, imp_framerate, -1}, {3, 3, imp_framerate, 0}, {5, 1, imp_framerate, 0}, {6, 1, imp_framerate, 0}},
 																			  {"idle", "lift", "run", "attack", "dormant", "swoosh"},
@@ -79,7 +79,7 @@ void Imp::update(automa::ServiceProvider& svc, world::Map& map, player::Player& 
 	parts.weapon.set_hitbox();
 
 	if (svc.ticker.every_x_ticks(200)) {
-		if (util::random::percent_chance(4) && !caution.danger()) { state = ImpState::run; }
+		if (random::percent_chance(4) && !caution.danger()) { state = ImpState::run; }
 	}
 
 	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
@@ -95,7 +95,7 @@ void Imp::update(automa::ServiceProvider& svc, world::Map& map, player::Player& 
 	if (!collider.grounded()) { state = ImpState::fall; }
 
 	if (is_alert() && !is_hostile() && svc.ticker.every_x_ticks(32)) {
-		if (util::random::percent_chance(50)) {
+		if (random::percent_chance(50)) {
 			state = ImpState::run;
 		} else {
 			state = ImpState::jump;
@@ -172,7 +172,7 @@ fsm::StateFunction Imp::update_jump() {
 	attacks.stab.disable();
 	if (animation.just_started()) {
 		cooldowns.jump.start();
-		rand_jump = util::random::percent_chance(50) ? -1.f : 1.f;
+		rand_jump = random::percent_chance(50) ? -1.f : 1.f;
 		if (cooldowns.post_attack.running()) { rand_jump = directions.actual.lnr == LNR::left ? 1.f : -1.f; } // always jump backwards after a attack otherwise it feels unfair
 	}
 	if (cooldowns.jump.running() && animation.get_frame_count() > jumpsquat_frame) { collider.physics.apply_force({0, -3.5f}); }

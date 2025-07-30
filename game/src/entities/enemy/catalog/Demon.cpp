@@ -27,7 +27,7 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map)
 	attacks.rush.origin = {20.f, 16.f};
 	attacks.rush.hit_offset = {0.f, 0.f};
 
-	variant = util::random::percent_chance(50) ? DemonVariant::spearman : DemonVariant::warrior;
+	variant = random::percent_chance(50) ? DemonVariant::spearman : DemonVariant::warrior;
 	if (variant == DemonVariant::spearman) { health.set_max(56); }
 
 	cooldowns.awaken.start();
@@ -97,7 +97,7 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (player.collider.hurtbox.overlaps(secondary_collider.bounding_box) && !is_dormant()) { player.hurt(); }
 
 	if (svc.ticker.every_x_ticks(200)) {
-		if (util::random::percent_chance(4) && !caution.danger()) { state = DemonState::run; }
+		if (random::percent_chance(4) && !caution.danger()) { state = DemonState::run; }
 	}
 
 	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
@@ -112,7 +112,7 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (is_hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { state = DemonState::jumpsquat; } // player is already in hostile range
 
 	if (is_alert() && !is_hostile() && svc.ticker.every_x_ticks(32)) {
-		if (util::random::percent_chance(50)) {
+		if (random::percent_chance(50)) {
 			state = DemonState::run;
 		} else {
 			state = DemonState::jumpsquat;
@@ -183,7 +183,7 @@ fsm::StateFunction Demon::update_jump() {
 	animation.label = "jump";
 	if (animation.just_started()) {
 		cooldowns.jump.start();
-		rand_jump = util::random::percent_chance(50) ? -1.f : 1.f;
+		rand_jump = random::percent_chance(50) ? -1.f : 1.f;
 		if (cooldowns.post_rush.running()) { rand_jump = directions.actual.lnr == LNR::left ? 1.f : -1.f; } // always jump backwards after a rush otherwise it feels unfair
 	}
 	if (cooldowns.jump.running()) { collider.physics.apply_force({0, -2.5f}); }

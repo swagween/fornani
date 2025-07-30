@@ -16,18 +16,18 @@ Vine::Vine(automa::ServiceProvider& svc, sf::Vector2f position, int length, int 
 	drawbox.setSize({8.f, 8.f});
 	if (reversed) { flags.set(VineFlags::reverse); }
 	auto index = util::Circuit(4);
-	auto last_index = util::random::random_range(0, 3);
+	auto last_index = random::random_range(0, 3);
 	auto ctr{0};
 	for (auto& link : chain.links) {
-		index.set(util::random::random_range(0, index.get_order()));
+		index.set(random::random_range(0, index.get_order()));
 		if (index.get() == last_index) { index.modulate(1); }
-		auto const sign = util::random::percent_chance(50) ? -1 : 1;
+		auto const sign = random::percent_chance(50) ? -1 : 1;
 		encodings.push_back({index.get(), sign});
 		last_index = index.get();
 		// optionally add treasure container to vine segment
-		if (util::random::percent_chance(5)) {
+		if (random::percent_chance(5)) {
 			auto rarity = item::Rarity::common;
-			if (auto random_sample = util::random::random_range_float(0.0f, 1.0f); random_sample < constants.priceless) {
+			if (auto random_sample = random::random_range_float(0.0f, 1.0f); random_sample < constants.priceless) {
 				rarity = item::Rarity::priceless;
 			} else if (random_sample < constants.rare) {
 				rarity = item::Rarity::rare;

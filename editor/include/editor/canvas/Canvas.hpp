@@ -28,7 +28,7 @@ class ResourceFinder;
 
 namespace pi {
 
-enum class StyleType : std::uint8_t { firstwind, overturned, base, factory, greatwing, END };
+enum class StyleType : std::uint8_t { firstwind, overturned, base, factory, greatwing, kariba, END };
 
 enum class CanvasProperties { editable };
 enum class CanvasState { hovered };
@@ -53,6 +53,7 @@ class Style {
 		case StyleType::base: label = "base"; break;
 		case StyleType::factory: label = "factory"; break;
 		case StyleType::greatwing: label = "greatwing"; break;
+		case StyleType::kariba: label = "kariba"; break;
 		default: label = "<none>"; break;
 		}
 		label_c_str = label.c_str();

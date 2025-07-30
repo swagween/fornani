@@ -57,7 +57,7 @@ FloatingPart::FloatingPart(sf::Color color, sf::Vector2f dimensions, float force
 void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, Direction direction, sf::Vector2f scale, sf::Vector2f position) {
 	if (init) {
 		gravitator->set_position(position + actual);
-		m_movement.time = util::random::random_range_float(0.f, 2.f * static_cast<float>(std::numbers::pi));
+		m_movement.time = random::random_range_float(0.f, 2.f * static_cast<float>(std::numbers::pi));
 		init = false;
 	}
 	actual = direction.lnr == LNR::left ? position + left : position + right;

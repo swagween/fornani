@@ -1,0 +1,14 @@
+{
+	"trials": [
+		{
+			"course_id": 9902,
+			"standards": [ 4.0, 3.85, 3.7 ]
+		},
+		{
+			"course_id": 990,
+			"standards": [ 40.0, 30.0, 25.0 ]
+		}
+
+	]
+
+}

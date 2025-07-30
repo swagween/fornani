@@ -12,15 +12,15 @@ Atmosphere::Atmosphere(automa::ServiceProvider& svc, sf::Vector2f span, int type
 	auto density{32};
 	auto const chunks = (span.x / (constants::f_cell_size * 16.f)) * (span.y / (constants::f_cell_size * 16.f));
 	for (auto i{0}; i < density * chunks; ++i) {
-		auto const startx = util::random::random_range_float(0.f, span.x);
-		auto const starty = util::random::random_range_float(0.f, span.y);
+		auto const startx = random::random_range_float(0.f, span.x);
+		auto const starty = random::random_range_float(0.f, span.y);
 		fireflies.push_back(std::make_unique<Firefly>(svc, sf::Vector2{startx, starty}));
 	}
 	if (type == 1) {
 		density = 4;
 		for (auto i{0}; i < density * chunks; ++i) {
-			auto startx = util::random::random_range_float(0.f, span.x);
-			auto starty = util::random::random_range_float(0.f, span.y);
+			auto startx = random::random_range_float(0.f, span.x);
+			auto starty = random::random_range_float(0.f, span.y);
 			dragonflies.push_back(Dragonfly(svc, {startx, starty}));
 		}
 	}

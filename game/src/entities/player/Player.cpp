@@ -9,8 +9,8 @@
 
 namespace fornani::player {
 
-constexpr auto wallslide_threshold_v = 0.1f;
-constexpr auto walljump_force_v = -28.f;
+constexpr auto wallslide_threshold_v = -0.16f;
+constexpr auto walljump_force_v = 24.6f;
 
 Player::Player(automa::ServiceProvider& svc)
 	: arsenal(svc), m_services(&svc), controller(svc, *this), animation(*this), sprite{svc.assets.get_texture("nani")}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},
@@ -50,7 +50,7 @@ void Player::update(world::Map& map) {
 	auto skew = 160.f;
 	m_camera.target_point = sf::Vector2f{camx, skew * controller.vertical_movement()};
 	auto force_multiplier = 1.f - ccm::abs(controller.vertical_movement() / 1.5f);
-	if (controller.is_dashing() || m_services->controller_map.digital_action_status(config::DigitalAction::platformer_sprint).held) {
+	if (controller.is_dashing() || controller.sprint_held()) {
 		force_multiplier = 1.f;
 		m_camera.target_point = sf::Vector2f{camx, 0.f};
 	}
@@ -96,7 +96,7 @@ void Player::update(world::Map& map) {
 	if (!controller.moving() && (!force_cooldown.running() || collider.world_grounded())) { collider.physics.acceleration.x = 0.0f; }
 
 	// weapon
-	if (controller.is(AbilityType::walljump)) { accumulated_forces.push_back({walljump_force_v * controller.get_ability_direction().as_float(), 0.f}); }
+	if (controller.is(AbilityType::walljump) && controller.is_ability_active()) { accumulated_forces.push_back({walljump_force_v * controller.get_ability_direction().as_float(), 0.f}); }
 	if (controller.shot() || controller.arms_switch()) { animation.idle_timer.start(); }
 	if (flags.state.test(State::impart_recoil) && arsenal) {
 		if (controller.direction.und == UND::down) { accumulated_forces.push_back({0.f, -equipped_weapon().get_recoil()}); }

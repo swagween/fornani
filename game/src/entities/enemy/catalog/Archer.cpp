@@ -15,7 +15,7 @@ Archer::Archer(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "arch
 	directions.actual.lnr = LNR::left;
 	directions.movement.lnr = LNR::neutral;
 
-	variant = util::random::percent_chance(70) ? ArcherVariant::huntress : ArcherVariant::defender;
+	variant = random::percent_chance(70) ? ArcherVariant::huntress : ArcherVariant::defender;
 	parts.bow.sprite->setTextureRect(sf::IntRect{{0, 0}, bow_dimensions});
 	parts.bow.sprite->setOrigin({32.f, 32.f});
 }
@@ -39,7 +39,7 @@ void Archer::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	parts.bow.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center() + shooting_offset);
 
 	if (svc.ticker.every_x_ticks(200)) {
-		if (util::random::percent_chance(4) && !caution.danger()) { state = ArcherState::run; }
+		if (random::percent_chance(4) && !caution.danger()) { state = ArcherState::run; }
 	}
 
 	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
@@ -109,7 +109,7 @@ fsm::StateFunction Archer::update_jump() {
 	animation.label = "jump";
 	if (animation.just_started()) {
 		cooldowns.jump.start();
-		rand_jump = util::random::percent_chance(50) ? -1.f : 1.f;
+		rand_jump = random::percent_chance(50) ? -1.f : 1.f;
 	}
 	if (cooldowns.jump.running()) { collider.physics.apply_force({0, -2.5f}); }
 	if (!collider.grounded()) { collider.physics.apply_force({rand_jump * 2.f, 0.f}); }

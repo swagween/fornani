@@ -11,7 +11,7 @@ namespace fornani::components {
 void SteeringBehavior::smooth_random_walk(PhysicsComponent& physics, float dampen, float radius) {
 	wander = physics.position + util::unit(physics.velocity) * (radius + radius / 3.f);
 	wander_radius = radius;
-	wander_displacement += util::random::random_range_float(-0.08f, 0.08f);
+	wander_displacement += random::random_range_float(-0.08f, 0.08f);
 	float const theta = wander_displacement + ::std::atan2(physics.velocity.y, physics.velocity.x);
 	float const x = radius * ::std::cos(theta);
 	float const y = radius * ::std::sin(theta);

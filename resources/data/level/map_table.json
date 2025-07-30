@@ -1,129 +1,172 @@
 {
   "rooms": [
     {
+      "folder": "config",
       "label": "new_file.json",
       "region": "firstwind",
       "room_id": 1
     },
     {
+      "folder": "config",
       "label": "placeholder.json",
       "region": "firstwind",
       "room_id": 99
     },
     {
+      "folder": "config",
       "label": "placeholder_2.json",
       "region": "firstwind",
       "room_id": 98
     },
     {
+      "folder": "config",
       "label": "test_chamber.json",
       "region": "base",
       "room_id": 90
     },
     {
+      "folder": "firstwind",
       "label": "atrium.json",
       "region": "firstwind",
       "room_id": 103
     },
     {
+      "folder": "firstwind",
       "label": "barracks.json",
       "region": "firstwind",
       "room_id": 102
     },
     {
+      "folder": "firstwind",
       "label": "boiler_room.json",
       "region": "firstwind",
       "room_id": 118
     },
     {
+      "folder": "firstwind",
       "label": "bridge.json",
       "region": "firstwind",
       "room_id": 120
     },
     {
+      "folder": "firstwind",
       "label": "cargo_room.json",
       "region": "firstwind",
       "room_id": 104
     },
     {
+      "folder": "firstwind",
       "label": "cell.json",
       "region": "firstwind",
       "room_id": 101
     },
     {
+      "folder": "firstwind",
       "label": "corridor.json",
       "region": "firstwind",
       "room_id": 105
     },
     {
+      "folder": "firstwind",
       "label": "deck.json",
       "region": "firstwind",
       "room_id": 106
     },
     {
+      "folder": "firstwind",
       "label": "hold.json",
       "region": "firstwind",
       "room_id": 107
     },
     {
+      "folder": "firstwind",
       "label": "laboratory.json",
       "region": "firstwind",
       "room_id": 110
     },
     {
+      "folder": "firstwind",
       "label": "prison.json",
       "region": "firstwind",
       "room_id": 100
     },
     {
+      "folder": "firstwind",
       "label": "store_room.json",
       "region": "firstwind",
       "room_id": 109
     },
     {
+      "folder": "kariba",
+      "label": "antechamber.json",
+      "region": "kariba",
+      "room_id": 400
+    },
+    {
+      "folder": "test",
+      "label": "abilities.json",
+      "region": "kariba",
+      "room_id": 97
+    },
+    {
+      "folder": "test",
       "label": "border_test.json",
       "region": "firstwind",
       "room_id": 4204
     },
     {
+      "folder": "test",
       "label": "challenge.json",
       "region": "firstwind",
       "room_id": 42009
     },
     {
+      "folder": "test",
       "label": "dojo.json",
       "region": "base",
       "room_id": 4203
     },
     {
+      "folder": "test",
       "label": "farm.json",
       "region": "overturned",
       "room_id": 4205
     },
     {
+      "folder": "test",
       "label": "hub.json",
       "region": "firstwind",
       "room_id": 4200
     },
     {
+      "folder": "test",
       "label": "race.json",
       "region": "firstwind",
       "room_id": 9899
     },
     {
+      "folder": "test",
       "label": "shop.json",
       "region": "base",
       "room_id": 4201
     },
     {
-      "label": "firstwind.json",
+      "folder": "trials",
+      "label": "corridor.json",
+      "region": "firstwind",
+      "room_id": 9902
+    },
+    {
+      "folder": "trials",
+      "label": "mayhem.json",
       "region": "firstwind",
       "room_id": 990
     },
     {
-      "label": "race.json",
+      "folder": "trials",
+      "label": "platform.json",
       "region": "firstwind",
-      "room_id": 9902
+      "room_id": 9901
     }
   ]
 }

@@ -32,7 +32,7 @@ constexpr static float sprint_threshold_v{0.01f};
 enum class ControllerInput : std::uint8_t { move_x, sprint, shoot, arms_switch, inspect, move_y, slide };
 enum class MovementState : std::uint8_t { restricted, walking_autonomously, walljumping, crouch };
 enum class HardState : std::uint8_t { no_move, has_arsenal };
-enum class InputState : std::uint8_t { slide_in_air };
+enum class InputState : std::uint8_t { slide_in_air, sprint };
 
 enum class Sprint : std::uint8_t { released };
 
@@ -78,6 +78,7 @@ class PlayerController {
 	[[nodiscard]] auto nothing_pressed() -> bool { return key_map[ControllerInput::move_x] == 0.f && key_map[ControllerInput::inspect] == 0.f; }
 	[[nodiscard]] auto moving() -> bool { return key_map[ControllerInput::move_x] != 0.f; }
 	[[nodiscard]] auto sprinting() -> bool { return ccm::abs(key_map[ControllerInput::move_x]) > walk_speed_v + sprint_threshold_v; }
+	[[nodiscard]] auto sprint_held() -> bool { return input_flags.test(InputState::sprint); }
 	[[nodiscard]] auto moving_left() -> bool { return key_map[ControllerInput::move_x] < 0.f; }
 	[[nodiscard]] auto moving_right() -> bool { return key_map[ControllerInput::move_x] > 0.f; }
 	[[nodiscard]] auto facing_left() const -> bool { return direction.lnr == LNR::left; }

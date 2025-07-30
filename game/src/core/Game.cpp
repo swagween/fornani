@@ -68,7 +68,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 
 		static bool zooming{};
 
-		auto smp = util::random::percent_chance(10) ? 1 : 0;
+		auto smp = random::percent_chance(10) ? 1 : 0;
 		rng_test.sample += smp;
 		++rng_test.total;
 

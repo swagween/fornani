@@ -7,14 +7,14 @@
 namespace fornani::item {
 Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float probability, sf::Vector2f pos, int delay_time, bool special, int special_id) {
 
-	auto const drop_rate = util::random::random_range(drop_range.x, drop_range.y);
+	auto const drop_rate = random::random_range(drop_range.x, drop_range.y);
 	position = pos;
 
 	std::string_view key{};
 	for (int i = 0; i < drop_rate; ++i) {
-		if (util::random::percent_chance(0.08f) && special) {
+		if (random::percent_chance(0.08f) && special) {
 			key = "gems";
-		} else if (util::random::percent_chance(8) && !flags.test(LootState::heart_dropped)) {
+		} else if (random::percent_chance(8) && !flags.test(LootState::heart_dropped)) {
 			key = "hearts";
 			flags.set(LootState::heart_dropped);
 		} else {
@@ -22,8 +22,8 @@ Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float prob
 		}
 		auto xinit = svc.data.drop[key]["initial_velocity"][0].as<float>();
 		auto yinit = svc.data.drop[key]["initial_velocity"][1].as<float>();
-		float randx = util::random::random_range_float(-xinit, xinit);
-		float randy = util::random::random_range_float(-yinit, yinit);
+		float randx = random::random_range_float(-xinit, xinit);
+		float randy = random::random_range_float(-yinit, yinit);
 		drops.push_back(std::make_unique<Drop>(svc, key, probability, delay_time, special_id));
 		drops.back()->set_position(pos);
 		drops.back()->apply_force({randx, randy});

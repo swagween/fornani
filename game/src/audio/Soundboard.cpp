@@ -186,7 +186,7 @@ void Soundboard::repeat(automa::ServiceProvider& svc, Sound& sound, int frequenc
 }
 
 void Soundboard::randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol, float attenuation, sf::Vector2f distance, bool wait_until_over) {
-	auto random_pitch = random_pitch_offset == 0.f ? 0.f : util::random::random_range_float(-random_pitch_offset, random_pitch_offset);
+	auto random_pitch = random_pitch_offset == 0.f ? 0.f : random::random_range_float(-random_pitch_offset, random_pitch_offset);
 	sound.set_pitch(1.f + random_pitch);
 	auto scalar = distance.length() / attenuation;
 	sound.set_volume((vol - (scalar > vol ? vol : scalar)));

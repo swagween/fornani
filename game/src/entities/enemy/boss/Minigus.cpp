@@ -192,9 +192,9 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 
 	if (flags.state.test(StateFlags::hurt)) {
 		cooldowns.hurt.start();
-		if (util::random::percent_chance(40)) {
+		if (random::percent_chance(40)) {
 			// voice.hurt_1.play();
-		} else if (util::random::percent_chance(40)) {
+		} else if (random::percent_chance(40)) {
 			// voice.hurt_2.play();
 		} else {
 			// voice.hurt_3.play();
@@ -205,13 +205,13 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (just_died()) {}
 
 	if (minigun.flags.test(MinigunFlags::exhausted) && cooldowns.firing.is_complete()) {
-		if (util::random::percent_chance(12)) { state = MinigusState::reload; }
+		if (random::percent_chance(12)) { state = MinigusState::reload; }
 	}
 
 	if (gun.clip_cooldown.is_complete() && !minigun.flags.test(MinigunFlags::exhausted) && !cooldowns.post_charge.running() && is_hostile()) {
-		// if (util::random::percent_chance(snap_chance) && !flags.state.test(StateFlags::vulnerable) && Enemy::collider.grounded() && !(counters.snap.get_count() > 1) && half_health()) { state = MinigusState::snap; }
-		if (util::random::percent_chance(fire_chance)) {
-			if (util::random::percent_chance(50)) {
+		// if (random::percent_chance(snap_chance) && !flags.state.test(StateFlags::vulnerable) && Enemy::collider.grounded() && !(counters.snap.get_count() > 1) && half_health()) { state = MinigusState::snap; }
+		if (random::percent_chance(fire_chance)) {
+			if (random::percent_chance(50)) {
 				state = MinigusState::jump_shoot;
 			} else {
 				state = MinigusState::shoot;
@@ -220,7 +220,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	}
 
 	if (player.collider.bounding_box.overlaps(Enemy::collider.vicinity)) {
-		if (util::random::percent_chance(30)) {
+		if (random::percent_chance(30)) {
 			state = MinigusState::run;
 		} else {
 			state = MinigusState::jumpsquat;
@@ -248,8 +248,8 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (!status.test(MinigusFlags::second_phase) && half_health()) { state = MinigusState::struggle; }
 
 	if (half_health()) {
-		auto pos = secondary_collider.physics.position + util::random::random_vector_float(10.f, 40.f);
-		if (svc.ticker.every_x_ticks(10) && util::random::percent_chance(5)) { map.effects.push_back(entity::Effect(svc, "puff", pos, {0.f, 4.f}, 3)); }
+		auto pos = secondary_collider.physics.position + random::random_vector_float(10.f, 40.f);
+		if (svc.ticker.every_x_ticks(10) && random::percent_chance(5)) { map.effects.push_back(entity::Effect(svc, "puff", pos, {0.f, 4.f}, 3)); }
 	}
 
 	// NPC stuff
@@ -369,7 +369,7 @@ fsm::StateFunction Minigus::update_shoot() {
 				animation.set_params(rush);
 				return MINIGUS_BIND(update_rush);
 			}
-			if (util::random::percent_chance(50)) {
+			if (random::percent_chance(50)) {
 				state = MinigusState::run;
 				animation.set_params(run);
 				return MINIGUS_BIND(update_run);
@@ -486,7 +486,7 @@ fsm::StateFunction Minigus::update_jump_shoot() {
 			return MINIGUS_BIND(update_rush);
 		}
 
-		if (util::random::percent_chance(50)) {
+		if (random::percent_chance(50)) {
 			state = MinigusState::idle;
 			animation.set_params(idle);
 			return MINIGUS_BIND(update_idle);
@@ -510,7 +510,7 @@ fsm::StateFunction Minigus::update_reload() {
 		if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
 
 		if (invincible()) {
-			if (util::random::percent_chance(50)) {
+			if (random::percent_chance(50)) {
 				state = MinigusState::shoot;
 				animation.set_params(shoot);
 				return MINIGUS_BIND(update_shoot);
@@ -520,7 +520,7 @@ fsm::StateFunction Minigus::update_reload() {
 			return MINIGUS_BIND(update_jump_shoot);
 
 		} else {
-			if (util::random::percent_chance(40)) {
+			if (random::percent_chance(40)) {
 				state = MinigusState::laugh;
 				animation.set_params(laugh);
 				return MINIGUS_BIND(update_laugh);
@@ -552,7 +552,7 @@ fsm::StateFunction Minigus::update_turn() {
 				animation.set_params(rush);
 				return MINIGUS_BIND(update_rush);
 			}
-			if (util::random::percent_chance(50)) {
+			if (random::percent_chance(50)) {
 				state = MinigusState::shoot;
 				animation.set_params(shoot);
 				return MINIGUS_BIND(update_shoot);
@@ -686,7 +686,7 @@ fsm::StateFunction Minigus::update_build_invincibility() {
 fsm::StateFunction Minigus::update_laugh() {
 	if (animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "laugh"); }
 	if (animation.just_started()) {
-		if (util::random::percent_chance(50)) {
+		if (random::percent_chance(50)) {
 			// voice.laugh_1.play();
 		} else {
 			// voice.laugh_2.play();
@@ -701,7 +701,7 @@ fsm::StateFunction Minigus::update_laugh() {
 				return MINIGUS_BIND(update_snap);
 			}
 			if (change_state(MinigusState::turn, turn)) { return MINIGUS_BIND(update_turn); }
-			if (util::random::percent_chance(50)) {
+			if (random::percent_chance(50)) {
 				state = MinigusState::shoot;
 				animation.set_params(shoot);
 				return MINIGUS_BIND(update_shoot);
@@ -728,8 +728,8 @@ fsm::StateFunction Minigus::update_snap() {
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
 	if (animation.complete()) {
 		for (int i{0}; i < 2; ++i) {
-			auto randx = util::random::random_range_float(-80.f, 80.f);
-			auto randy = util::random::random_range_float(-160.f, 0.f);
+			auto randx = random::random_range_float(-80.f, 80.f);
+			auto randy = random::random_range_float(-160.f, 0.f);
 			sf::Vector2f rand_vec{randx, randy};
 			sf::Vector2f spawn = Enemy::collider.get_center() + rand_vec;
 			m_map->spawn_enemy(5, spawn);
@@ -772,7 +772,7 @@ fsm::StateFunction Minigus::update_struggle() {
 	minigun.animation.set_params(minigun.neutral);
 	minigun.state = MinigunState::neutral;
 	// always do
-	sf::Vector2f pos = secondary_collider.physics.position + util::random::random_vector_float(0.f, 50.f);
+	sf::Vector2f pos = secondary_collider.physics.position + random::random_vector_float(0.f, 50.f);
 	if (m_services->ticker.every_x_ticks(80)) { m_map->effects.push_back(entity::Effect(*m_services, "puff", pos, {}, 3)); }
 	Enemy::shake();
 

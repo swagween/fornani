@@ -19,7 +19,7 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vecto
 	sprite.setOrigin(size * 8.f);
 	sprite.setScale(constants::f_scale_vec);
 	if (attributes.test(SpikeAttributes::random)) {
-		if (util::random::percent_chance(50)) { sprite.scale({-1.f, 1.f}); }
+		if (random::percent_chance(50)) { sprite.scale({-1.f, 1.f}); }
 	}
 	if (facing.left()) { sprite.rotate(sf::degrees(-90)); }
 	if (facing.right()) { sprite.rotate(sf::degrees(90)); }

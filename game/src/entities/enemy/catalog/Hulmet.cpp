@@ -22,12 +22,12 @@ void Hulmet::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	Enemy::update(svc, map, player);
 	if (died()) { return; }
 	if (svc.ticker.every_second()) {
-		if (util::random::percent_chance(20)) { request(HulmetState::run); }
+		if (random::percent_chance(20)) { request(HulmetState::run); }
 	}
 	face_player(player);
 	if (is_alert() && !m_cooldowns.post_fire.running()) { request(HulmetState::shoot); }
 	if (is_hostile() && !m_cooldowns.post_roll.running()) { request(HulmetState::roll); }
-	if (alertness_triggered() && !m_cooldowns.alerted.running()) { util::random::percent_chance(50) ? request(HulmetState::panic) : request(HulmetState::alert); }
+	if (alertness_triggered() && !m_cooldowns.alerted.running()) { random::percent_chance(50) ? request(HulmetState::panic) : request(HulmetState::alert); }
 	if (directions.actual.lnr != directions.desired.lnr) { request(HulmetState::turn); }
 	auto detected_projectile = m_caution.projectile_detected(map, physical.hostile_range, arms::Team::skycorps);
 	auto towards_me = (detected_projectile.left() && directions.actual.right()) || (detected_projectile.right() && directions.actual.left());
@@ -245,7 +245,7 @@ fsm::StateFunction Hulmet::update_panic() {
 	if (animation.just_started()) { m_services->soundboard.flags.hulmet.set(audio::Hulmet::alert); }
 	if (animation.complete()) {
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
-		util::random::percent_chance(50) ? request(HulmetState::shoot) : request(HulmetState::roll);
+		random::percent_chance(50) ? request(HulmetState::shoot) : request(HulmetState::roll);
 		if (change_state(HulmetState::shoot, m_animations.shoot)) { return HULMET_BIND(update_shoot); }
 		if (change_state(HulmetState::roll, m_animations.roll)) { return HULMET_BIND(update_roll); }
 	}

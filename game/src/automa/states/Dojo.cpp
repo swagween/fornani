@@ -203,16 +203,14 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	// TODO: re-do this once I reimplement regular inventory + collectible items. we will check collectible_items_view, or something else.
 	if (player->visit_history.traveled_far() || svc.data.marketplace.at(3).inventory.items_view().empty()) {
-		util::random::set_vendor_seed();
+		random::set_vendor_seed();
 		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
 		player->visit_history.clear();
 	}
 
 	// in-game menus
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc, gui_map, *player); }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) {
-		pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{"resume", "settings", "controls", "quit", "restart"});
-	}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{"resume", "settings", "controls", "quit"}); }
 
 	enter_room.update();
 	if (!m_console && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }

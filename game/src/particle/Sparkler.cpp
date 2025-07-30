@@ -14,9 +14,9 @@ Sparkler::Sparkler(automa::ServiceProvider& svc, sf::Vector2f dimensions, sf::Co
 }
 
 void Sparkler::update(automa::ServiceProvider& svc) {
-	if (util::random::percent_chance(behavior.rate)) {
-		auto const x = util::random::random_range_float(0.f, dimensions.x);
-		auto const y = util::random::random_range_float(0.f, dimensions.y);
+	if (random::percent_chance(behavior.rate)) {
+		auto const x = random::random_range_float(0.f, dimensions.x);
+		auto const y = random::random_range_float(0.f, dimensions.y);
 		sf::Vector2 const point{position.x + x, position.y + y};
 		if (active) { sparkles.push_back(Spark(svc, point, color, type)); }
 	}

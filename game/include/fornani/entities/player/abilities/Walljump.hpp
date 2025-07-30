@@ -12,5 +12,6 @@ class Walljump : public Ability {
   private:
 	float m_vertical_multiplier;
 	float m_horizontal_multiplier;
+	util::Cooldown m_beginning;
 };
 } // namespace fornani::player

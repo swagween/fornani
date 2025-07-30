@@ -51,6 +51,7 @@ void DataManager::load_data(std::string in_room) {
 			entry["room_id"] = this_id;
 			entry["label"] = this_name;
 			entry["region"] = this_biome;
+			entry["folder"] = this_region.path().filename().string();
 			map_table["rooms"].push_back(entry);
 		}
 	}
@@ -78,7 +79,7 @@ void DataManager::load_data(std::string in_room) {
 	time_trial_data = *dj::Json::from_file((finder.resource_path() + "/data/save/time_trials.json").c_str());
 	assert(!time_trial_data.is_null());
 	for (auto const& course : time_trial_data["trials"].as_array()) {
-		for (auto const& time : course["times"].as_array()) { time_trial_registry.insert_time(course["course_id"].as<int>(), time["player_tag"].as_string().data(), time["time"].as<float>()); }
+		for (auto const& time : course["times"].as_array()) { time_trial_registry.insert_time(*m_services, course["course_id"].as<int>(), time["player_tag"].as_string().data(), time["time"].as<float>()); }
 	}
 
 	weapon = *dj::Json::from_file((finder.resource_path() + "/data/weapon/weapon_data.json").c_str());

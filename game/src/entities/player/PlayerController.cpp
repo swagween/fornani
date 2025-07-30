@@ -7,7 +7,7 @@ namespace fornani::player {
 
 constexpr static float crawl_speed_v{0.32f};
 
-PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect = util::Cooldown(64)}, post_slide{80}, post_wallslide{32} {
+PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect = util::Cooldown(64)}, post_slide{80}, post_wallslide{16} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
@@ -41,6 +41,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		sprint = !sprint;
 		sprint_release = sprint_pressed;
 	}
+	sprint ? input_flags.set(InputState::sprint) : input_flags.reset(InputState::sprint);
 
 	auto const& jump_started = svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).triggered;
 	auto const& jump_held = svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).held;
@@ -117,9 +118,9 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).released) { input_flags.reset(InputState::slide_in_air); }
 
 	// wallslide
-	if ((left && player.collider.has_left_wallslide_collision() || right && player.collider.has_right_wallslide_collision())) {
+	if ((left && player.collider.has_left_wallslide_collision()) || (right && player.collider.has_right_wallslide_collision())) {
 		if (player.can_wallslide() && !post_wallslide.running()) {
-			if (is(AbilityType::jump) || !m_ability) { m_ability = std::make_unique<Wallslide>(svc, map, player.collider, player.get_actual_direction()); }
+			if (!is(AbilityType::walljump)) { m_ability = std::make_unique<Wallslide>(svc, map, player.collider, player.get_actual_direction()); }
 		}
 	}
 

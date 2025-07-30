@@ -221,7 +221,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::data::
 	if (ImGui::BeginPopupModal("Chest Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
 
-		static int id{fornani::util::random::random_range(10000, 99999)};
+		static int id{fornani::random::random_range(10000, 99999)};
 		static int modifier{};
 		static int type{};
 		static char const* label{"item_label"};

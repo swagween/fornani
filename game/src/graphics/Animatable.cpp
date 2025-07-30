@@ -16,7 +16,7 @@ void Animatable::tick() {
 }
 
 void Animatable::random_start() {
-	if (animation.params.duration > 1) { animation.frame.set(util::random::random_range(0, animation.params.duration - 1)); }
+	if (animation.params.duration > 1) { animation.frame.set(random::random_range(0, animation.params.duration - 1)); }
 }
 
 } // namespace fornani

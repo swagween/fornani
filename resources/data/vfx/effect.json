@@ -16,6 +16,16 @@
 		"framerate": 16,
 		"dimensions": [ 24, 24 ]
 	},
+	"dash": {
+		"frame_count": 4,
+		"framerate": 16,
+		"dimensions": [ 16, 16 ]
+	},
+	"walljump": {
+		"frame_count": 4,
+		"framerate": 16,
+		"dimensions": [ 16, 16 ]
+	},
 	"jump": {
 		"frame_count": 5,
 		"framerate": 16,
