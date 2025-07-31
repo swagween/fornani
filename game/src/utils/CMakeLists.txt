@@ -9,6 +9,7 @@ nani_add_sources(
         Random.cpp
         RectPath.cpp
         Shape.cpp
+        Stopwatch.cpp
         Ticker.cpp
         WorldClock.cpp
         WorldTimer.cpp

@@ -41,7 +41,10 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
 	m_reset.update();
 	// gamepad disconnected
-	if (svc.controller_map.process_gamepad_disconnection()) { pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{"resume", "settings", "controls", "quit", "restart"}); }
+	if (svc.controller_map.process_gamepad_disconnection()) {
+		pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{"resume", "settings", "controls", "quit", "restart"});
+		svc.world_timer.pause();
+	}
 
 	svc.a11y.set_action_ctx_bar_enabled(false);
 
@@ -66,7 +69,10 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			flags.set(GameStateFlags::controls_request);
 			pause_window.value()->reset();
 		}
-		if (pause_window.value()->exit_requested()) { pause_window = {}; }
+		if (pause_window.value()->exit_requested()) {
+			pause_window = {};
+			svc.world_timer.resume();
+		}
 		return;
 	}
 
@@ -75,6 +81,7 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	// in-game menus
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) {
 		pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{"resume", "settings", "controls", "quit", "restart"});
+		svc.world_timer.pause();
 	}
 
 	if (!m_console && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }

@@ -74,7 +74,7 @@ void TrialsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 void TrialsMenu::switch_selections(ServiceProvider& svc) {
 	m_listings.clear();
-	auto course = m_courses.at(current_selection.get()).id; // obviously do this differently later
+	auto course = m_courses.at(current_selection.get()).id;
 	auto list = svc.data.time_trial_registry.readout_attempts(course);
 	if (list) {
 		std::sort(list->begin(), list->end(), [](TrialAttempt const& a, TrialAttempt const& b) { return a.time < b.time; });
