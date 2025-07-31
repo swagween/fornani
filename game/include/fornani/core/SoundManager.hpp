@@ -11,7 +11,7 @@ namespace fornani::core {
 
 class SoundManager {
   public:
-	explicit SoundManager(data::ResourceFinder const& finder);
+	explicit SoundManager(ResourceFinder const& finder);
 	capo::Buffer const& get_buffer(std::string const& label);
 
   private:

@@ -3,7 +3,7 @@
 
 namespace fornani::core {
 
-SoundManager::SoundManager(data::ResourceFinder const& finder) {
+SoundManager::SoundManager(ResourceFinder const& finder) {
 	namespace fs = std::filesystem;
 	auto sfx_dir = fs::path{finder.resource_path()} / "audio" / "sfx";
 	auto file = sfx_dir / fs::path{"error_sound.wav"};

@@ -7,7 +7,7 @@
 
 namespace pi {
 
-EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
+EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 
 	create_map.emplace("beds", &create_entity<Bed>);
 	create_map.emplace("chests", &create_entity<Chest>);
@@ -40,7 +40,7 @@ void EntitySet::render(Canvas& map, sf::RenderWindow& win, sf::Vector2f cam) {
 	for (auto& ent : variables.entities) { ent->render(win, cam, map.f_cell_size()); }
 }
 
-void EntitySet::load(fornani::automa::ServiceProvider& svc, fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
+void EntitySet::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 	for (auto const& [key, entry] : metadata.as_object()) {
 		for (auto const& element : entry.as_array()) {
 			if (create_map.contains(std::string{key})) { variables.entities.push_back(create_map[key](svc, element)); }
@@ -48,7 +48,7 @@ void EntitySet::load(fornani::automa::ServiceProvider& svc, fornani::data::Resou
 	}
 }
 
-bool EntitySet::save(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
+bool EntitySet::save(fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 
 	if (variables.entities.empty()) { return true; }
 

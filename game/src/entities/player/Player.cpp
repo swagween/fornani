@@ -1,5 +1,6 @@
 
 #include "fornani/entities/player/Player.hpp"
+#include <fornani/utils/Random.hpp>
 #include "fornani/entities/item/Drop.hpp"
 #include "fornani/gui/Console.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
@@ -38,6 +39,10 @@ Player::Player(automa::ServiceProvider& svc)
 	texture_updater.load_base_texture(svc.assets.get_texture_modifiable("nani"));
 	texture_updater.load_pixel_map(svc.assets.get_texture_modifiable("nani_palette_default"));
 	catalog.wardrobe.set_palette(svc.assets.get_texture_modifiable("nani_palette_default"));
+
+	m_lighting.physics.velocity = random::random_vector_float(-1.f, 1.f);
+	m_lighting.physics.set_global_friction(0.95f);
+	m_lighting.physics.position = collider.physics.position;
 }
 
 void Player::update(world::Map& map) {
@@ -84,6 +89,12 @@ void Player::update(world::Map& map) {
 		m_services->soundboard.play_step(val, map.native_style_id, true);
 	}
 	collider.flags.state.reset(shape::State::just_landed);
+
+	// lighting
+	auto light_target = collider.get_center() + sf::Vector2f{controller.direction.as_float() * 12.f, 0.f};
+	m_lighting.steering.seek(m_lighting.physics, light_target, 0.0052f);
+	m_lighting.steering.smooth_random_walk(m_lighting.physics, 0.0041f, 64.f);
+	m_lighting.physics.simple_update();
 
 	// check direction switch
 	m_directions.desired = controller.last_requested_direction();

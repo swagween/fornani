@@ -46,7 +46,7 @@ struct ServiceProvider {
 		: finder(argv), text{finder}, data(*this), version(&version), window(&window), assets{finder}, sounds{finder}, music_player{audio_engine}, ambience_player{audio_engine} {};
 
 	util::Stopwatch stopwatch{}; // TODO: Remove. Make Free-Standing.
-	data::ResourceFinder finder;
+	ResourceFinder finder;
 	data::TextManager text;
 	data::DataManager data;
 	Version* version;	   // TODO: Remove. Make Free-Standing.

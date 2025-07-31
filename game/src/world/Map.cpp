@@ -1,5 +1,5 @@
+
 #include "fornani/world/Map.hpp"
-#include <imgui.h>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/graphics/Colors.hpp"
 #include "fornani/gui/Console.hpp"
@@ -9,6 +9,7 @@
 #include "fornani/utils/Math.hpp"
 #include "fornani/utils/Random.hpp"
 
+#include <imgui.h>
 #include <ccmath/ext/clamp.hpp>
 
 namespace fornani::world {
@@ -65,6 +66,12 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	if (meta["properties"]["environmental_randomness"].as_bool()) { flags.properties.set(MapProperties::environmental_randomness); }
 	if (meta["properties"]["day_night_shift"].as_bool()) { flags.properties.set(MapProperties::day_night_shift); }
 	if (meta["properties"]["timer"].as_bool()) { flags.properties.set(MapProperties::timer); }
+	if (meta["properties"]["lighting"].as_bool()) {
+		flags.properties.set(MapProperties::lighting);
+		m_palette = Palette{m_metadata.biome, svc.finder};
+		point_light.unserialize(svc.data.light["candlelight"]);
+		darken_factor = meta["shader"]["darken_factor"].as<float>();
+	}
 
 	m_letterbox_color = style_id == 2 ? colors::pioneer_black : colors::ui_black;
 
@@ -439,7 +446,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	}
 }
 
-void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam) {
 	// check for a switch to greyblock mode
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
 		style_id = style_id == static_cast<int>(lookup::Style::provisional) ? native_style_id : static_cast<int>(lookup::Style::provisional);
@@ -479,7 +486,14 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	if (save_point.id != -1) { save_point.render(svc, win, cam); }
 
 	if (!svc.greyblock_mode()) {
-		for (auto& layer : get_layers()) { layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, flags.properties.test(MapProperties::day_night_shift)); }
+		for (auto& layer : get_layers()) {
+			if (flags.properties.test(MapProperties::lighting) && m_palette && shader) {
+				shader->Finalize();
+				layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, flags.properties.test(MapProperties::day_night_shift));
+			} else {
+				layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, flags.properties.test(MapProperties::day_night_shift));
+			}
+		}
 	}
 
 	// foreground enemies
@@ -518,14 +532,21 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	}
 }
 
-void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam) {
 	if (!svc.greyblock_mode()) {
 		background->render(svc, win, cam);
 		for (auto& layer : scenery_layers) {
 			for (auto& piece : layer) { piece->render(svc, win, cam); }
 		}
 		if (!svc.greyblock_mode()) {
-			for (auto& layer : get_layers()) { layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true); }
+			for (auto& layer : get_layers()) {
+				if (flags.properties.test(MapProperties::lighting) && m_palette && shader) {
+					shader->Finalize();
+					layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true);
+				} else {
+					layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true);
+				}
+			}
 		}
 		for (auto& npc : npcs) {
 			if (npc.background()) { npc.render(svc, win, cam); }

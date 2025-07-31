@@ -6,7 +6,7 @@ namespace fornani::audio {
 
 Ambience::Ambience(capo::IEngine& audio_engine) : tracks{.open{audio_engine}, .closed{audio_engine}} {}
 
-void Ambience::load(data::ResourceFinder& finder, std::string_view source) {
+void Ambience::load(ResourceFinder& finder, std::string_view source) {
 	if (source.empty()) { return; }
 	tracks.open.turn_on();
 	tracks.closed.turn_on();

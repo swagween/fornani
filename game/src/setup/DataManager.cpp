@@ -12,6 +12,7 @@ void DataManager::load_data(std::string in_room) {
 	m_services->stopwatch.start();
 	NANI_LOG_INFO(m_logger, "Data loading started.");
 	auto const& finder = m_services->finder;
+
 	// populate map table
 	auto room_path = std::filesystem::path{finder.resource_path()};
 	auto room_list = room_path / "level";
@@ -106,6 +107,8 @@ void DataManager::load_data(std::string in_room) {
 	assert(!map_styles.is_null());
 	action_names = *dj::Json::from_file((finder.resource_path() + "/data/gui/action_names.json").c_str());
 	assert(!action_names.is_null());
+	light = *dj::Json::from_file((finder.resource_path() + "/data/vfx/light.json").c_str());
+	assert(!light.is_null());
 
 	enemy = *dj::Json::from_file((finder.resource_path() + "/data/enemy/enemy_params.json").c_str());
 	assert(!enemy.is_null());

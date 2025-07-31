@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics/Text.hpp>
 #include <djson/json.hpp>
-#include "ResourceFinder.hpp"
+#include <fornani/setup/ResourceFinder.hpp>
 
 namespace fornani::data {
 

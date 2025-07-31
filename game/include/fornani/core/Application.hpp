@@ -18,7 +18,7 @@ class Application : public UniquePolymorphic {
 	virtual void launch(char** argv, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2f player_position = {});
 
   protected:
-	data::ResourceFinder m_finder;
+	ResourceFinder m_finder;
 	dj::Json m_game_info{};
 	dj::Json m_app_settings{};
 	Version m_metadata;

@@ -1,5 +1,6 @@
 
 #include <fornani/automa/GameState.hpp>
+#include <fornani/shader/LightShader.hpp>
 #include <memory>
 #include <optional>
 
@@ -12,13 +13,12 @@ class Trial final : public GameState {
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
 
-	world::Map map;
-	std::optional<std::unique_ptr<gui::PauseWindow>> pause_window{};
-
-	ServiceProvider* m_services;
-
   private:
 	util::Cooldown m_reset;
+	std::optional<LightShader> m_shader{};
+	ServiceProvider* m_services;
+	world::Map map;
+	std::optional<std::unique_ptr<gui::PauseWindow>> pause_window{};
 };
 
 } // namespace fornani::automa

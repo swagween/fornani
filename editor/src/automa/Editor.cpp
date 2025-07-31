@@ -33,7 +33,7 @@ static void new_file(int id) {
 	b_new_id = id;
 }
 
-Editor::Editor(char** argv, fornani::WindowManager& window, fornani::data::ResourceFinder& finder, fornani::Version& version, capo::IEngine& engine)
+Editor::Editor(char** argv, fornani::WindowManager& window, fornani::ResourceFinder& finder, fornani::Version& version, capo::IEngine& engine)
 	: window(&window), finder(&finder), m_services(argv, version, window, engine), map(finder, SelectionType::canvas), palette(finder, SelectionType::palette), current_tool(std::make_unique<Hand>()),
 	  secondary_tool(std::make_unique<Hand>()), grid_refresh(16), active_layer{0} {
 
@@ -1192,7 +1192,7 @@ void Editor::launch_demo(char** argv, int room_id, std::filesystem::path path, s
 	demo.launch(argv, true, room_id, finder->paths.room_name, player_position);
 }
 
-void Editor::shutdown(fornani::data::ResourceFinder& finder) {
+void Editor::shutdown(fornani::ResourceFinder& finder) {
 	user_data["region"] = finder.paths.region;
 	user_data["room"] = finder.paths.room_name;
 	if (!user_data.to_file((finder.paths.editor / "data" / "config" / "user.json").string().c_str())) { console.add_log("Failed to save user data."); }

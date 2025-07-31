@@ -13,8 +13,8 @@ enum class MusicPlayerState : std::uint8_t { on, off };
 class MusicPlayer {
   public:
 	explicit MusicPlayer(capo::IEngine& audio_engine);
-	void quick_play(data::ResourceFinder const& finder, std::string_view song_name);
-	void load(data::ResourceFinder const& finder, std::string_view song_name);
+	void quick_play(ResourceFinder const& finder, std::string_view song_name);
+	void load(ResourceFinder const& finder, std::string_view song_name);
 	void load(std::string_view path);
 	void play_once();
 	void play_looped();

@@ -11,7 +11,7 @@ namespace fornani::gui {
 
 class MapPlugin {
   public:
-	MapPlugin(data::ResourceFinder& finder, std::string_view p, sf::IntRect lookup, audio::Pioneer sound);
+	MapPlugin(ResourceFinder& finder, std::string_view p, sf::IntRect lookup, audio::Pioneer sound);
 	void update(audio::Soundboard& soundboard);
 	void render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin) const;
 

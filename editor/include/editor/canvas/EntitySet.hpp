@@ -24,7 +24,7 @@
 #include "editor/canvas/entity/SwitchButton.hpp"
 #include "editor/canvas/entity/TimerBlock.hpp"
 
-namespace fornani::data {
+namespace fornani {
 class ResourceFinder;
 }
 
@@ -42,10 +42,10 @@ using CreateEntitySignature = decltype(&create_entity<Entity>);
 class EntitySet {
   public:
 	EntitySet() = default;
-	EntitySet(fornani::automa::ServiceProvider& svc, fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
+	EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
 	void render(Canvas& map, sf::RenderWindow& win, sf::Vector2f cam);
-	void load(fornani::automa::ServiceProvider& svc, fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
-	bool save(fornani::data::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
+	void load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
+	bool save(fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
 	void clear();
 	bool has_entity_at(sf::Vector2<std::uint32_t> pos, bool highlighted_only = false) const;
 	bool overlaps(Entity& other) const;

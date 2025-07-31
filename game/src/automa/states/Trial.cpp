@@ -108,8 +108,8 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 void Trial::frame_update(ServiceProvider& svc) {}
 
 void Trial::render(ServiceProvider& svc, sf::RenderWindow& win) {
-	map.render_background(svc, win, player->get_camera_position());
-	map.render(svc, win, player->get_camera_position());
+	map.render_background(svc, win, m_shader, player->get_camera_position());
+	map.render(svc, win, m_shader, player->get_camera_position());
 
 	map.soft_reset.render(win);
 	if (pause_window) { pause_window.value()->render(svc, win); }

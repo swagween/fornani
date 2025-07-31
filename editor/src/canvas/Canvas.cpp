@@ -8,9 +8,9 @@
 
 namespace pi {
 
-Canvas::Canvas(fornani::data::ResourceFinder& finder, SelectionType type, StyleType style, Backdrop backdrop, int num_layers) : Canvas(finder, {}, type, style, backdrop, num_layers) {}
+Canvas::Canvas(fornani::ResourceFinder& finder, SelectionType type, StyleType style, Backdrop backdrop, int num_layers) : Canvas(finder, {}, type, style, backdrop, num_layers) {}
 
-Canvas::Canvas(fornani::data::ResourceFinder& finder, sf::Vector2<std::uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers)
+Canvas::Canvas(fornani::ResourceFinder& finder, sf::Vector2<std::uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers)
 	: type(type), tile_style{style}, background{std::make_unique<Background>(finder, backdrop)} {
 	type == SelectionType::canvas ? properties.set(CanvasProperties::editable) : properties.reset(CanvasProperties::editable);
 	dimensions = dim;
@@ -93,7 +93,7 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 	}
 }
 
-bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local) {
+bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local) {
 
 	auto success{true};
 	map_states.clear();
@@ -151,6 +151,9 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::data::Resource
 	if (meta["properties"]["environmental_randomness"].as_bool()) { m_map_properties.set(fornani::world::MapProperties::environmental_randomness); }
 	if (meta["properties"]["day_night_shift"].as_bool()) { m_map_properties.set(fornani::world::MapProperties::day_night_shift); }
 	if (meta["properties"]["timer"].as_bool()) { m_map_properties.set(fornani::world::MapProperties::timer); }
+	if (meta["properties"]["lighting"].as_bool()) { m_map_properties.set(fornani::world::MapProperties::lighting); }
+
+	m_darken_factor = meta["shader"]["darken_factor"].as<float>();
 
 	// tiles
 	auto counter{0};
@@ -174,7 +177,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::data::Resource
 	return success;
 }
 
-bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name) {
+bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, std::string const& room_name) {
 
 	std::filesystem::create_directory(finder.paths.levels / std::filesystem::path{region});
 
@@ -210,6 +213,8 @@ bool Canvas::save(fornani::data::ResourceFinder& finder, std::string const& regi
 	metadata["meta"]["properties"]["environmental_randomness"] = m_map_properties.test(fornani::world::MapProperties::environmental_randomness);
 	metadata["meta"]["properties"]["day_night_shift"] = m_map_properties.test(fornani::world::MapProperties::day_night_shift);
 	metadata["meta"]["properties"]["timer"] = m_map_properties.test(fornani::world::MapProperties::timer);
+	metadata["meta"]["properties"]["lighting"] = m_map_properties.test(fornani::world::MapProperties::lighting);
+	metadata["meta"]["shader"]["darken_factor"] = m_darken_factor;
 
 	metadata["tile"]["layers"] = dj::Json::empty_array();
 	for (auto i{0}; i < last_layer(); ++i) { metadata["tile"]["layers"].push_back(dj::Json::empty_array()); }

@@ -11,7 +11,7 @@
 
 namespace pi {
 
-void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::data::ResourceFinder& finder, Console& console, char const* label, std::unique_ptr<Tool>& tool, int room_id) {
+void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, Console& console, char const* label, std::unique_ptr<Tool>& tool, int room_id) {
 
 	if (ImGui::BeginPopupModal("Inspectable Message", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;

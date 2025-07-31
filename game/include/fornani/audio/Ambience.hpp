@@ -13,7 +13,7 @@ namespace fornani::audio {
 class Ambience {
   public:
 	explicit Ambience(capo::IEngine& audio_engine);
-	void load(data::ResourceFinder& finder, std::string_view source);
+	void load(ResourceFinder& finder, std::string_view source);
 	void play();
 	void set_balance(float balance);
 	struct {

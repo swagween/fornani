@@ -41,6 +41,9 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	svc.events.register_event(std::make_unique<Event<int>>("AcquireItem", &trigger_item));
 	svc.events.register_event(std::make_unique<Event<int>>("AcquireGun", &trigger_gun));
 
+	// create shaders
+	m_shader = LightShader(svc.finder);
+
 	svc.menu_controller.reset_vendor_dialog();
 	open_vendor = false;
 	if (!svc.data.room_discovered(room_number)) {
@@ -57,6 +60,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 		bake_maps(svc, {map.room_id}, true);
 		bake_maps(svc, svc.data.rooms);
 	}
+
 	hud.orient(svc, player); // reset hud position to corner
 	svc.soundboard.turn_on();
 
@@ -104,6 +108,8 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 
 	player.controller.prevent_movement();
 	loading.start();
+	m_shader->AddPointLight(map.point_light);
+	m_shader->set_darken(map.darken_factor);
 }
 
 void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
@@ -231,8 +237,16 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 void Dojo::frame_update(ServiceProvider& svc) {}
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
-	map.render_background(svc, win, player->get_camera_position());
-	map.render(svc, win, player->get_camera_position());
+	if (m_shader) {
+		map.render_background(svc, win, m_shader, player->get_camera_position());
+		map.render(svc, win, m_shader, player->get_camera_position());
+
+		m_shader->ClearPointLights();
+		auto converted = player->get_lantern_position() - player->get_camera_position();
+		converted.y = svc.window->f_screen_dimensions().y - converted.y;
+		map.point_light.position = converted;
+		m_shader->AddPointLight(map.point_light);
+	}
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(svc, *player, win); }
 	if (vendor_dialog) { vendor_dialog.value()->render(svc, win, *player, map); }

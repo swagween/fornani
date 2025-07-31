@@ -2,7 +2,7 @@
 
 namespace fornani::core {
 
-AssetManager::AssetManager(data::ResourceFinder const& finder) {
+AssetManager::AssetManager(ResourceFinder const& finder) {
 
 	// doing stuff the new way will be done up here. the goal is to slowly but surely get rid of the bottom
 
@@ -23,6 +23,35 @@ AssetManager::AssetManager(data::ResourceFinder const& finder) {
 			m_textures.insert({image_str.substr(0, image_str.find('.')), sf::Texture{image.path()}});
 		}
 	}
+
+	// load palettes
+	auto palette_dir = image_dir / "palette";
+	auto pal_dir{(finder.paths.resources / fs::path{"shader/palettes/palette.json"}).string()};
+	auto swatches = dj::Json{};
+	for (auto const& palette : fs::recursive_directory_iterator(palette_dir)) {
+		if (palette.path().extension() != ".png") { continue; }
+		auto filename = palette.path().filename();
+		filename.replace_extension();
+		auto filestr = filename.string();
+		auto lookup = filestr.substr(0, std::distance(filestr.begin(), std::find(filestr.begin(), filestr.end(), '.')));
+		auto tag = filestr.substr(8, filestr.size());
+		auto& palette_tex = get_texture(lookup);
+		auto palette_data = palette_tex.copyToImage();
+		auto palette_image_data = palette_data.getPixelsPtr();
+		int width = palette_data.getSize().x;
+		int height = palette_data.getSize().y;
+		int total_array_size = width * height * 4;
+		for (int i = 0; i < total_array_size; ++i) {
+			if (i % 4 == 0) {
+				auto next = dj::Json::empty_array();
+				next.push_back(palette_image_data[i]);
+				next.push_back(palette_image_data[i + 1]);
+				next.push_back(palette_image_data[i + 2]);
+				swatches[tag].push_back(next);
+			}
+		}
+	}
+	if (!swatches.to_file(pal_dir)) { NANI_LOG_ERROR(m_logger, "Failed to save palette data."); }
 }
 
 sf::Texture const& AssetManager::get_texture(std::string const& label) { return m_textures.contains(label) ? m_textures.at(label) : m_null_texture; }

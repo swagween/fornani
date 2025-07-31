@@ -199,7 +199,7 @@ void MapGizmo::on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::P
 	m_motherboard_path.set_section("start");
 }
 
-MapPlugin::MapPlugin(data::ResourceFinder& finder, std::string_view p, sf::IntRect lookup, audio::Pioneer sound)
+MapPlugin::MapPlugin(ResourceFinder& finder, std::string_view p, sf::IntRect lookup, audio::Pioneer sound)
 	: m_path(finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, p, 48, util::InterpolationType::linear), constituent{.lookup{lookup}, .position{}}, m_delay{random::random_range(0, 128)}, m_sound(sound) {
 	m_path.set_section("start");
 	m_delay.start();

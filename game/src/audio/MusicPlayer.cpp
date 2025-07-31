@@ -9,7 +9,7 @@ using namespace std::chrono_literals;
 
 MusicPlayer::MusicPlayer(capo::IEngine& audio_engine) : m_jukebox{audio_engine}, m_ringtone{audio_engine} {}
 
-void MusicPlayer::quick_play(data::ResourceFinder const& finder, std::string_view song_name) {
+void MusicPlayer::quick_play(ResourceFinder const& finder, std::string_view song_name) {
 	m_jukebox.stop();
 	if (is_off()) { return; }
 	auto path = std::filesystem::path{finder.resource_path() + "/audio/songs/" + song_name.data() + ".xm"};
@@ -18,7 +18,7 @@ void MusicPlayer::quick_play(data::ResourceFinder const& finder, std::string_vie
 	m_ringtone.set_gain(m_jukebox.get_gain());
 }
 
-void MusicPlayer::load(data::ResourceFinder const& finder, std::string_view song_name) {
+void MusicPlayer::load(ResourceFinder const& finder, std::string_view song_name) {
 	if (is_off()) { return; }
 	if (song_name.empty()) { return; }
 	if (song_name == m_current_song) { return; }

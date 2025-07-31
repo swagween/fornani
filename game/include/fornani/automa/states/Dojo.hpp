@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/shader/LightShader.hpp>
 #include "fornani/automa/GameState.hpp"
 #include "fornani/gui/VendorDialog.hpp"
 #include "fornani/world/Camera.hpp"
@@ -31,6 +32,8 @@ class Dojo final : public GameState {
 	std::optional<std::unique_ptr<gui::PauseWindow>> pause_window{};
 	std::optional<std::unique_ptr<gui::InventoryWindow>> inventory_window{};
 
+  private:
+	std::optional<LightShader> m_shader{};
 	ServiceProvider* m_services;
 };
 

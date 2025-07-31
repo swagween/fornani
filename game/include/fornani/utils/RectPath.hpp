@@ -10,7 +10,7 @@
 #include <filesystem>
 #include <vector>
 
-namespace fornani::data {
+namespace fornani {
 class ResourceFinder;
 }
 namespace fornani::util {
@@ -22,7 +22,7 @@ struct PathSection {
 
 class RectPath {
   public:
-	RectPath(data::ResourceFinder& finder, std::filesystem::path source, std::string_view type, int interpolation = 64, util::InterpolationType it = InterpolationType::cubic);
+	RectPath(ResourceFinder& finder, std::filesystem::path source, std::string_view type, int interpolation = 64, util::InterpolationType it = InterpolationType::cubic);
 	void update();
 	void set_section(std::string_view to_section);
 	void reset();

@@ -22,7 +22,7 @@ namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace fornani::data {
+namespace fornani {
 class ResourceFinder;
 }
 
@@ -75,12 +75,12 @@ class Tool;
 class Canvas {
 
   public:
-	Canvas(fornani::data::ResourceFinder& finder, SelectionType type, StyleType style = StyleType::firstwind, Backdrop backdrop = Backdrop::black, int num_layers = default_num_layers_v);
-	Canvas(fornani::data::ResourceFinder& finder, sf::Vector2<std::uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers = default_num_layers_v);
+	Canvas(fornani::ResourceFinder& finder, SelectionType type, StyleType style = StyleType::firstwind, Backdrop backdrop = Backdrop::black, int num_layers = default_num_layers_v);
+	Canvas(fornani::ResourceFinder& finder, sf::Vector2<std::uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers = default_num_layers_v);
 	void update(Tool& tool);
 	void render(sf::RenderWindow& win, sf::Sprite& tileset);
-	bool load(fornani::automa::ServiceProvider& svc, fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local = false);
-	bool save(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name);
+	bool load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local = false);
+	bool save(fornani::ResourceFinder& finder, std::string const& region, std::string const& room_name);
 	void clear();
 	void save_state(Tool& tool, bool force = false);
 	void undo();
@@ -201,6 +201,8 @@ class Canvas {
 	sf::RectangleShape gridbox{};
 	sf::RectangleShape chunkbox{};
 	sf::RectangleShape border{};
+
+	float m_darken_factor{};
 
 	SelectionType type{};
 

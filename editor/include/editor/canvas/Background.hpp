@@ -7,7 +7,7 @@
 
 #include "fornani/io/Logger.hpp"
 
-namespace fornani::data {
+namespace fornani {
 class ResourceFinder;
 }
 
@@ -51,7 +51,7 @@ struct BackgroundLayer {
 
 class Background {
   public:
-	Background(fornani::data::ResourceFinder& finder, Backdrop backdrop);
+	Background(fornani::ResourceFinder& finder, Backdrop backdrop);
 
 	void update();
 	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f& campos);

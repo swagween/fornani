@@ -20,7 +20,7 @@
 #include "fornani/utils/Cooldown.hpp"
 #include <imgui-SFML.h>
 
-namespace fornani::data {
+namespace fornani {
 class ResourceFinder;
 }
 
@@ -35,7 +35,7 @@ class Editor {
   public:
 	int const TILE_WIDTH{32};
 	int const NUM_TOOLS{6};
-	Editor(char** argv, fornani::WindowManager& window, fornani::data::ResourceFinder& finder, fornani::Version& version, capo::IEngine& engine);
+	Editor(char** argv, fornani::WindowManager& window, fornani::ResourceFinder& finder, fornani::Version& version, capo::IEngine& engine);
 	void run();
 	void handle_events(std::optional<sf::Event> event, sf::RenderWindow& win);
 	void logic();
@@ -47,7 +47,7 @@ class Editor {
 	void export_layer_texture();
 	void center_map();
 	void launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2f player_position);
-	void shutdown(fornani::data::ResourceFinder& finder);
+	void shutdown(fornani::ResourceFinder& finder);
 	void reset_layers();
 	void delete_current_layer();
 	[[nodiscard]] auto control_pressed() const -> bool { return pressed_keys.test(PressedKeys::control); }
@@ -89,7 +89,7 @@ class Editor {
 
   private:
 	fornani::WindowManager* window;
-	fornani::data::ResourceFinder* finder;
+	fornani::ResourceFinder* finder;
 	fornani::automa::ServiceProvider m_services;
 	PopupHandler popup{};
 	std::optional<Clipboard> m_clipboard{};

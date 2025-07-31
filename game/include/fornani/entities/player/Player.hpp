@@ -143,6 +143,7 @@ class Player {
 	[[nodiscard]] auto switched_weapon() const -> bool { return hotbar->switched(); }
 	[[nodiscard]] auto firing_weapon() -> bool { return controller.shot(); }
 	[[nodiscard]] auto get_camera_position() const -> sf::Vector2f { return m_camera.camera.get_position(); }
+	[[nodiscard]] auto get_lantern_position() const -> sf::Vector2f { return m_lighting.physics.position; }
 	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2f { return collider.get_center() + m_camera.target_point; }
 	[[nodiscard]] auto get_facing_scale() const -> sf::Vector2f { return controller.facing_left() ? sf::Vector2f{-1.f, 1.f} : sf::Vector2f{1.f, 1.f}; }
 	[[nodiscard]] auto is_in_animation(AnimState check) const -> bool { return animation.get_state() == check; }
@@ -261,6 +262,11 @@ class Player {
 	[[nodiscard]] auto can_slide() const -> bool;
 	[[nodiscard]] auto can_jump() const -> bool;
 	[[nodiscard]] auto can_wallslide() const -> bool;
+
+	struct {
+		components::SteeringBehavior steering{};
+		components::PhysicsComponent physics{};
+	} m_lighting{};
 
 	struct {
 		float stop{5.8f};

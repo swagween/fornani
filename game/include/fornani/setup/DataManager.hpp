@@ -124,6 +124,7 @@ class DataManager final {
 	dj::Json platform{};
 	dj::Json cutscene{};
 	dj::Json action_names{};
+	dj::Json light{};
 
 	// enemy
 	dj::Json enemy{};

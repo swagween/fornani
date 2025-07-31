@@ -14,6 +14,14 @@
 		"biome": "base",
 		"background": 4,
 		"music": "",
+		"shader": {
+			"darken_factor": 4
+		},
+		"properties": {
+			"day_night_shift": false,
+			"environmental_randomness": false,
+			"lighting": true
+		},
 		"ambience": "",
 		"camera_effects": {
 			"shake": {
@@ -2135,13 +2143,14 @@
 				"background": true,
 				"suites": [
 					[
-						1, 4
+						1,
+						4
 					],
 					[
 						4
 					],
-					[ 3, 4],
-					[4]
+					[ 3, 4 ],
+					[ 4 ]
 				]
 			}
 		]

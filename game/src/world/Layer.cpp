@@ -1,5 +1,7 @@
 
 #include "fornani/world/Layer.hpp"
+#include <fornani/shader/LightShader.hpp>
+#include <fornani/shader/Palette.hpp>
 #include "fornani/graphics/DayNightShifter.hpp"
 #include "fornani/utils/Constants.hpp"
 #include "fornani/utils/WorldClock.hpp"
@@ -65,6 +67,28 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics
 		if (obscuring()) { shifter.render(svc, win, sprite, ctr, alpha); }
 		if (reverse_obscuring()) { shifter.render(svc, win, sprite, ctr, revalpha); }
 		if (not_obscuring()) { shifter.render(svc, win, sprite, ctr); }
+		++ctr;
+	}
+}
+
+void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, LightShader& shader, Palette& palette, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg, bool day_night_shift) const {
+	if (background() != is_bg) { return; }
+	if (m_barrier) {
+		auto spr = sf::Sprite{m_barrier->getTexture()};
+		auto border = sf::Vector2i{512, 512};
+		spr.setTextureRect(sf::IntRect{-border, {sf::Vector2i{m_barrier->getSize()} + 2 * border}});
+		spr.setScale(constants::f_scale_vec);
+		spr.setPosition(-cam - sf::Vector2f{2 * border});
+		win.draw(spr);
+	}
+	auto sprites = day_night_shift ? std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.twilight.getTexture()}, sf::Sprite{m_texture.night.getTexture()}}
+								   : std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.day.getTexture()}};
+
+	auto ctr{0};
+	for (auto& sprite : sprites) {
+		sprite.setScale(constants::f_scale_vec);
+		sprite.setPosition(-cam * m_parallax);
+		shader.Submit(win, palette, sprite);
 		++ctr;
 	}
 }

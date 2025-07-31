@@ -11,7 +11,7 @@ namespace fornani::core {
 
 class AssetManager {
   public:
-	explicit AssetManager(data::ResourceFinder const& finder);
+	explicit AssetManager(ResourceFinder const& finder);
 
 	sf::Texture const& get_texture(std::string const& label);
 	sf::Texture& get_texture_modifiable(std::string const& label);

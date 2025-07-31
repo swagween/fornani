@@ -9,7 +9,7 @@
 
 namespace fornani::util {
 
-RectPath::RectPath(data::ResourceFinder& finder, std::filesystem::path source, std::string_view type, int interpolation, util::InterpolationType it) : m_scale{2.f}, m_interpolation{interpolation}, m_interpolation_type{it} {
+RectPath::RectPath(ResourceFinder& finder, std::filesystem::path source, std::string_view type, int interpolation, util::InterpolationType it) : m_scale{2.f}, m_interpolation{interpolation}, m_interpolation_type{it} {
 	auto in_data = *dj::Json::from_file((finder.resource_path() + source.string()).c_str());
 	assert(!in_data.is_null());
 	for (auto& path : in_data[type].as_array()) {

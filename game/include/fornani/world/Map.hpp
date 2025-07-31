@@ -40,6 +40,9 @@
 #include "fornani/world/SwitchBlock.hpp"
 #include "fornani/world/TimerBlock.hpp"
 
+#include <fornani/shader/LightShader.hpp>
+#include <fornani/shader/Palette.hpp>
+
 #include <optional>
 #include <vector>
 
@@ -63,7 +66,7 @@ namespace fornani::world {
 
 enum class LevelState : std::uint8_t { game_over, camera_shake, spawn_enemy };
 enum class MapState : std::uint8_t { unobscure };
-enum class MapProperties : std::uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer, environmental_randomness, day_night_shift, timer };
+enum class MapProperties : std::uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer, environmental_randomness, day_night_shift, timer, lighting };
 
 struct EnemySpawn {
 	sf::Vector2f pos{};
@@ -78,8 +81,8 @@ class Map {
 	// methods
 	void load(automa::ServiceProvider& svc, int room_number, bool soft = false);
 	void update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
-	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
+	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {});
 	void spawn_enemy(int id, sf::Vector2f pos);
 	void manage_projectiles(automa::ServiceProvider& svc);
@@ -199,8 +202,11 @@ class Map {
 	// debug
 	util::Stopwatch stopwatch{};
 	util::Cooldown end_demo{500};
+	PointLight point_light{};
+	float darken_factor{};
 
   private:
+	std::optional<Palette> m_palette{};
 	int abyss_distance{512};
 	sf::Vector2f m_player_start{};
 	struct {
