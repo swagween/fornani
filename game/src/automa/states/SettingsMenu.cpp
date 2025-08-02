@@ -27,7 +27,6 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player)
 
 void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	m_input_authorized = !adjust_mode() && !m_console;
-	MenuState::tick_update(svc, engine);
 	adjust_mode() ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
 	svc.controller_map.set_action_set(config::ActionSet::Menu);
 	if (!m_console) {
@@ -69,6 +68,7 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			options.at(static_cast<int>(SettingsToggles::military_time)).label.setString(toggleables.military_time.getString() + (svc.world_clock.is_military() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 		}
 	}
+	MenuState::tick_update(svc, engine);
 	for (auto& option : options) {
 		option.update(svc, current_selection.get());
 		option.label.setLetterSpacing(1.2f);

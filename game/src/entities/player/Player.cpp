@@ -207,6 +207,13 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	if (arsenal && hotbar) {
 		if (flags.state.test(State::show_weapon)) { equipped_weapon().render(svc, win, cam); }
 	}
+
+	// light debug
+	auto lightpos = sf::RectangleShape{{2.f, 2.f}};
+	lightpos.setOrigin({1.f, 1.f});
+	lightpos.setFillColor(colors::pioneer_red);
+	lightpos.setPosition(get_lantern_position() - cam);
+	win.draw(lightpos);
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f forced_position) {

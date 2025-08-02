@@ -1,7 +1,7 @@
 {
 	"candlelight": {
 		"luminosity": 2.90,
-		"radius": 348.0,
+		"radius": 4.0,
 		"attenuation_constant": 0.61,
 		"attenuation_linear": 1.306,
 		"attenuation_quadratic": 2.50,

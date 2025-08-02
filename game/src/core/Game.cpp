@@ -38,7 +38,7 @@ Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& 
 
 void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2f player_position) {
 
-	if (services.window->fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
+	if (services.window->is_fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
 
 	measurements.win_size.x = services.window->get().getSize().x;
 	measurements.win_size.y = services.window->get().getSize().y;
@@ -178,7 +178,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 #endif
 
 		services.window->get().clear();
-		if (services.window->fullscreen()) { services.window->get().setView(entire_window); }
+		if (services.window->is_fullscreen()) { services.window->get().setView(entire_window); }
 		if (game_state.get_current_state().get_type() == automa::StateType::menu) { m_background->render(services, services.window->get(), {}); }
 		if (!zooming) { services.window->restore_view(); }
 

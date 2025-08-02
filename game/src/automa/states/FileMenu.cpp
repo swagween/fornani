@@ -23,7 +23,7 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc
 }
 
 void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-	m_input_authorized = !m_file_select_menu;
+	m_input_authorized = !m_file_select_menu && !m_console;
 	MenuState::tick_update(svc, engine);
 	if (!m_console) {
 		if (m_file_select_menu) {
@@ -66,7 +66,6 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			}
 		}
 	}
-
 	for (auto& option : options) { option.update(svc, current_selection.get()); }
 
 	// file deletion requested

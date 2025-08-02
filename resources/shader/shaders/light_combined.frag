@@ -13,8 +13,12 @@ varying vec2 texPosition;
 uniform sampler2D palette;
 uniform sampler2D texture;
 
-uniform int palette_size;
+uniform float u_px;
 uniform float u_darken;
+uniform vec2 u_tex_size;
+uniform vec2 u_parity;
+
+uniform int palette_size;
 
 //point light variables
 uniform int pointlight_count;
@@ -55,6 +59,11 @@ vec4 pixel = texture2D(texture, fragTexCoord);
 
 float cross2D(vec2 a, vec2 b) { return a.x * b.y - a.y * b.x; }
 
+vec2 aspectNormalizedCoord(vec2 uv) {
+    float aspect = u_tex_size.x / u_tex_size.y;
+    return vec2((uv.x - 0.5) * aspect + 0.5, uv.y);
+}
+
 void global_shift(float amount) {
 	float f_size = float(palette_size);
 	for (int i = 0; i < palette_size; i++) {
@@ -91,9 +100,7 @@ float CalculatePointLightShift(vec2 point, int light) {
     if(lightDistance == 0.0 || lightDistance > pointlight_radius[light]) {
         return 0.0;
     }
-    lightDistance = lightDistance / pointlight_radius[light] * pointlight_distance_scaling[light] + pointlight_distance_flat[light];
-    //vec2 lightDir = point - pointlight_position[light];
-    //lightDir = lightDir / lightDistance;
+    lightDistance = lightDistance / (pointlight_radius[light] * pointlight_distance_scaling[light] + pointlight_distance_flat[light]);
 
     float attenuation = 1.0 / 
                     (
@@ -132,23 +139,11 @@ float CalculateSpotLightShift(vec2 point, int light) {
 
 void main() {
 
-// darken first
-	float u_px = float(2.0);
-	vec2 pixelPoint = gl_FragCoord.xy;
-	pixelPoint = floor(pixelPoint / u_px) * u_px;
+	vec2 pixelPoint = aspectNormalizedCoord(vec2(fragTexCoord.x, 1.0 - fragTexCoord.y));
 	gl_FragColor = gl_Color * pixel;
-
-
-	pixelPoint = floor(pixelPoint / u_px) * u_px;
-    //to_discard was giving me trouble
 
 	float highest_amount = 0.0;
 	for(int light = 0; light < pointlight_count; light++){
-        //int localShift = CalculatePointLightShift(pixelPoint, light);
-        //if(result.x == 1.0){
-            //i think theres a better way to calculate dithering, but ill come back to this
-            //localShift = clamp(localShift - 1, 0, localShift);
-        //}
         highest_amount = max(highest_amount, CalculatePointLightShift(pixelPoint, light));
     }
     for(int light = 0; light < spotlight_count; light++){
@@ -157,29 +152,30 @@ void main() {
     
     float fraction = fract(highest_amount);
     highest_amount = highest_amount - fraction;
-    
-    if(highest_amount >= 1.0) {
+	
+	vec2 texPoint = floor(pixelPoint * u_tex_size);
+	if(highest_amount >= 1.0) {
+		float t = mod(texPoint.x, 2.0);
+		float u = mod(texPoint.y, 2.0);
+		vec2 t_comp = vec2(0.0, 1.0);
+		vec2 u_comp = vec2(0.0, 1.0);
 	if(fraction < 0.1) {
-		float t = mod(pixelPoint.x, 2.0 * u_px);
-		float u = mod(pixelPoint.y, 2.0 * u_px);
-		if ((t == 0.0 && u == 1.0 * u_px) || (t == 1.0 * u_px && u == 0.0) || (t == 1.0 * u_px && u == 1.0 * u_px)) { 
+		if ((t == t_comp.x && u == u_comp.y) || (t == t_comp.y && u == u_comp.x) || (t == t_comp.y && u == u_comp.y)) { 
             highest_amount -= 1.0;
         }
     } else if(fraction < 0.15) {
-		float t = mod(pixelPoint.x, 2.0 * u_px);
-		float u = mod(pixelPoint.y, 2.0 * u_px);
-		if ((t == 0.0 && u == 1.0 * u_px) || (t == 1.0 * u_px && u == 0.0)) { 
+		if ((t == t_comp.x && u == u_comp.y ) || (t == t_comp.y && u == u_comp.x)) { 
             highest_amount -= 1.0;
         }
     }
     else if(fraction < 0.2) {
-        if((mod(pixelPoint.x, 4.0) == 0.0) && (mod(pixelPoint.y, 4.0) == 0.0)){
-            highest_amount -= 1.0;
+		if ((t == t_comp.x && u == u_comp.x)) { 
+			highest_amount -= 1.0;
         }
     }
     }
 
-
+	
 	gl_FragColor = gl_Color * shift(highest_amount - u_darken);
-	//gl_FragColor = gl_Color * source;
+	
 }

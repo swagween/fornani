@@ -21,7 +21,7 @@ void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
 	background.setFillColor(colors::ui_black);
 
 	m_window.get().clear();
-	if (m_window.fullscreen()) { m_window.get().setView(entire_window); }
+	if (m_window.is_fullscreen()) { m_window.get().setView(entire_window); }
 	m_window.get().draw(background);
 	m_window.restore_view();
 	m_window.get().display();

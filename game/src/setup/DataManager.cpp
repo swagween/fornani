@@ -137,7 +137,6 @@ void DataManager::load_data(std::string in_room) {
 	for (auto const& [key, entry] : item.as_object()) {
 		if (m_item_labels.contains(entry["id"].as<int>())) { continue; }
 		m_item_labels.insert({entry["id"].as<int>(), key});
-		NANI_LOG_INFO(m_logger, "Loaded data for item {}", key);
 	}
 
 	m_services->stopwatch.stop();
@@ -327,10 +326,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	// load player's arsenal
 	player.arsenal = {};
 	player.hotbar = {};
-	for (auto& gun_tag : save["player_data"]["arsenal"].as_array()) {
-		player.push_to_loadout(gun_tag.as_string(), true);
-		NANI_LOG_INFO(m_logger, "Pushed {} to loadout.", gun_tag.as_string());
-	}
+	for (auto& gun_tag : save["player_data"]["arsenal"].as_array()) { player.push_to_loadout(gun_tag.as_string(), true); }
 	if (!save["player_data"]["hotbar"].as_array().empty()) {
 		if (!player.hotbar) { player.hotbar = arms::Hotbar(1); }
 		if (player.hotbar) {

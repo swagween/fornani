@@ -64,6 +64,10 @@ void LightShader::AddSpotLight(sf::Vector2f position, sf::Vector2f direction, in
 }
 
 void LightShader::Finalize() {
+	m_shader.setUniform("u_px", m_scale);
+	m_shader.setUniform("u_tex_size", sf::Glsl::Vec2{m_texture_size});
+	m_shader.setUniform("u_parity", sf::Glsl::Vec2{m_parity});
+
 	m_shader.setUniform("pointlight_count", currentPointLight + 1);
 	m_shader.setUniformArray("pointlight_position", pointlightPosition.data(), pointlightPosition.size());
 	m_shader.setUniformArray("pointlight_luminence", pointlightLuminosity.data(), pointlightLuminosity.size());
@@ -87,7 +91,7 @@ void LightShader::Finalize() {
 	m_shader.setUniformArray("spotlight_distance_scaling", spotlightDistanceScaling.data(), spotlightDistanceScaling.size());
 	m_shader.setUniformArray("spotlight_distance_flat", spotlightDistanceFlat.data(), spotlightDistanceFlat.size());
 
-	m_shader.setUniform("u_darken", darken_factor);
+	m_shader.setUniform("u_darken", m_darken_factor);
 }
 
 void LightShader::Submit(sf::RenderWindow& win, Palette& palette, sf::Sprite const& sprite) {

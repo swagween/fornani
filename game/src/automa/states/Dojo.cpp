@@ -110,10 +110,10 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	loading.start();
 	m_shader->AddPointLight(map.point_light);
 	m_shader->set_darken(map.darken_factor);
+	m_shader->set_texture_size(map.real_dimensions / constants::f_scale_factor);
 }
 
 void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-	GameState::tick_update(svc, engine);
 
 	// handle events
 	if (item_acquisition) { acquire_item(svc, *player, item_modifier); }
@@ -147,7 +147,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	if (pause_window) {
-		if (m_console) { m_console.value()->update(svc); }
 		pause_window.value()->update(svc, m_console);
 		if (pause_window.value()->settings_requested()) {
 			flags.set(GameStateFlags::settings_request);
@@ -158,8 +157,10 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			pause_window.value()->reset();
 		}
 		if (pause_window.value()->exit_requested()) { pause_window = {}; }
+		GameState::tick_update(svc, engine);
 		return;
 	}
+	GameState::tick_update(svc, engine);
 
 	if (m_console) {
 		if (m_console.value()->just_began()) {
@@ -240,11 +241,12 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (m_shader) {
 		map.render_background(svc, win, m_shader, player->get_camera_position());
 		map.render(svc, win, m_shader, player->get_camera_position());
-
+		m_shader->set_parity(sf::Vector2i{player->get_camera_position()});
 		m_shader->ClearPointLights();
-		auto converted = player->get_lantern_position() - player->get_camera_position();
-		converted.y = svc.window->f_screen_dimensions().y - converted.y;
-		map.point_light.position = converted;
+		float aspect = map.real_dimensions.x / map.real_dimensions.y;
+		auto uv = player->get_lantern_position().componentWiseDiv(map.real_dimensions);
+		auto normalized = sf::Vector2f{(uv.x - 0.5f) * aspect + 0.5f, uv.y};
+		map.point_light.position = normalized;
 		m_shader->AddPointLight(map.point_light);
 	}
 

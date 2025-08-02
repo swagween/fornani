@@ -16,19 +16,20 @@ class WindowManager {
 	void create(std::string const& title, bool fullscreen, sf::Vector2i const dimensions);
 	void restore_view();
 	void set_screencap();
-	[[nodiscard]] auto i_screen_dimensions() const -> sf::Vector2<int> { return m_screen_dimensions; }
-	[[nodiscard]] auto f_screen_dimensions() const -> sf::Vector2f { return sf::Vector2f{static_cast<float>(m_screen_dimensions.x), static_cast<float>(m_screen_dimensions.y)}; }
+
+	[[nodiscard]] auto i_screen_dimensions() const -> sf::Vector2i { return m_screen_dimensions; }
+	[[nodiscard]] auto f_screen_dimensions() const -> sf::Vector2f { return sf::Vector2f{m_screen_dimensions}; }
+	[[nodiscard]] auto u_screen_dimensions() const -> sf::Vector2u { return sf::Vector2u{m_screen_dimensions}; }
+	[[nodiscard]] auto get_display_dimensions() const -> sf::Vector2u { return sf::VideoMode::getDesktopMode().size; }
+	[[nodiscard]] auto get_f_display_dimensions() const -> sf::Vector2f { return sf::Vector2f{sf::VideoMode::getDesktopMode().size}; }
+	[[nodiscard]] auto get_letterbox() const -> sf::Vector2f { return m_letterbox; }
+	[[nodiscard]] auto get_bounds() const -> sf::Vector2f;
 	[[nodiscard]] auto f_center_screen() const -> sf::Vector2f { return f_screen_dimensions() * 0.5f; }
-	[[nodiscard]] auto fullscreen() const -> bool { return is_fullscreen; }
-	[[nodiscard]] auto in_window(sf::Vector2f point, sf::Vector2f dimensions) const -> bool {
-		if (point.x + dimensions.x < 0.f || point.x - dimensions.x > f_screen_dimensions().x) { return false; }
-		if (point.y + dimensions.y < 0.f || point.y - dimensions.y > f_screen_dimensions().y) { return false; }
-		return true;
-	}
+	[[nodiscard]] auto is_fullscreen() const -> bool { return m_fullscreen; }
+	[[nodiscard]] auto in_window(sf::Vector2f point, sf::Vector2f dimensions) const -> bool;
+	[[nodiscard]] auto get_scale() const -> float;
 
 	sf::Texture screencap{};
-	sf::Vector2u u_screen_dimensions{};
-	sf::Vector2u display_dimensions{};
 
   private:
 	std::unique_ptr<sf::RenderWindow> m_window{};
@@ -38,7 +39,8 @@ class WindowManager {
 	sf::FloatRect game_port{};
 	sf::Vector2i aspects{3840, 2048};
 	sf::Vector2i m_screen_dimensions{};
-	bool is_fullscreen{};
+	sf::Vector2f m_letterbox{1.f, 1.f};
+	bool m_fullscreen{};
 
 	io::Logger m_logger{"windowing"};
 };

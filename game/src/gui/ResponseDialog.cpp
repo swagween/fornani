@@ -44,6 +44,7 @@ bool ResponseDialog::handle_inputs(config::ControllerMap& controller, audio::Sou
 		m_selection.modulate(-1);
 	}
 	if (down) {
+		NANI_LOG_DEBUG(m_logger, "down!");
 		soundboard.flags.console.set(audio::Console::shift);
 		m_selection.modulate(1);
 	}

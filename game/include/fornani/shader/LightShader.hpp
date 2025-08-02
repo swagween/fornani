@@ -55,7 +55,11 @@ class LightShader {
 		AddSpotLight(spotlight.position, spotlight.direction, spotlight.luminosity, spotlight.radius, spotlight.attenuation_constant, spotlight.attenuation_linear, spotlight.attenuation_quadratic, spotlight.cutoffAngle,
 					 spotlight.outerCutoffAngle, spotlight.distanceScaling, spotlight.distanceFlat);
 	}
-	void set_darken(float const to) { darken_factor = to; }
+
+	void set_scale(float const to) { m_scale = to; }
+	void set_darken(float const to) { m_darken_factor = to; }
+	void set_texture_size(sf::Vector2f const to) { m_texture_size = to; }
+	void set_parity(sf::Vector2i const reference) { m_parity = sf::Vector2f{static_cast<float>(std::abs(reference.x) % 2), static_cast<float>(std::abs(reference.y) % 2)}; }
 
 	void Finalize();
 	void Submit(sf::RenderWindow& win, Palette& palette, sf::Sprite const& sprite);
@@ -90,7 +94,10 @@ class LightShader {
   private:
 	sf::Shader m_shader{};
 
-	float darken_factor{2.f};
+	float m_scale{2.f};
+	float m_darken_factor{2.f};
+	sf::Vector2f m_texture_size{};
+	sf::Vector2f m_parity{};
 
 	io::Logger m_logger{"shader"};
 };

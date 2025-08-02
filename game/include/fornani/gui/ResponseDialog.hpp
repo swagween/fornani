@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/io/Logger.hpp>
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/utils/Circuit.hpp"
@@ -52,6 +53,8 @@ class ResponseDialog {
 	int m_index{};
 	bool m_ready{};
 	util::Circuit m_selection;
+
+	io::Logger m_logger{"Console"};
 };
 
 } // namespace fornani::gui
