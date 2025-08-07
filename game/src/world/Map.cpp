@@ -69,7 +69,6 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	if (meta["properties"]["lighting"].as_bool()) {
 		flags.properties.set(MapProperties::lighting);
 		m_palette = Palette{m_metadata.biome, svc.finder};
-		point_light.unserialize(svc.data.light["candlelight"]);
 		darken_factor = meta["shader"]["darken_factor"].as<float>();
 	}
 
@@ -98,6 +97,11 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		for (auto& entry : meta["atmosphere"].as_array()) {
 			if (entry.as<int>() == 1) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, 1)); }
 		}
+
+		for (auto& pl : entities["lights"].as_array()) {
+			point_lights.push_back(PointLight(svc.data.light[pl["label"].as_string()], sf::Vector2f{pl["position"][0].as<float>() + 0.5f, pl["position"][1].as<float>() + 0.5f} * constants::f_cell_size));
+		}
+
 		if (meta["camera_effects"]) {
 			m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
 			m_camera_effects.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
@@ -404,6 +408,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& spike : spikes) { spike.update(svc, *player, *this); }
 	for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	for (auto& timer_block : timer_blocks) { timer_block.update(svc, *this, *player); }
+	for (auto& pl : point_lights) { pl.update(); }
 	player->handle_map_collision(*this);
 	if (cooldowns.loading.is_complete()) { transition.update(*player); }
 	if (cooldowns.loading.is_complete()) { bed_transition.update(*player); }

@@ -213,7 +213,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	lightpos.setOrigin({1.f, 1.f});
 	lightpos.setFillColor(colors::pioneer_red);
 	lightpos.setPosition(get_lantern_position() - cam);
-	win.draw(lightpos);
+	// win.draw(lightpos);
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f forced_position) {

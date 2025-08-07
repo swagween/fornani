@@ -17,6 +17,7 @@
 #include "editor/canvas/entity/Destructible.hpp"
 #include "editor/canvas/entity/Enemy.hpp"
 #include "editor/canvas/entity/Inspectable.hpp"
+#include "editor/canvas/entity/Light.hpp"
 #include "editor/canvas/entity/Platform.hpp"
 #include "editor/canvas/entity/Portal.hpp"
 #include "editor/canvas/entity/SavePoint.hpp"

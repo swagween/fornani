@@ -377,6 +377,34 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		}
 		ImGui::EndPopup();
 	}
+	if (ImGui::BeginPopupModal("Light Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
+		static int id{fornani::random::random_range(10000, 99999)};
+		static char const* types[2] = {"lantern", "candlelight"};
+		static int type{};
+
+		auto ctr{0};
+		if (ImGui::BeginCombo("Type", types[type])) {
+			for (auto const& t : types) {
+				if (ImGui::Selectable(t)) { type = ctr; }
+				++ctr;
+			}
+			ImGui::EndCombo();
+		}
+
+		if (ImGui::Button("Create")) {
+			m_is_open = false;
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<Light>(svc, id, types[type]);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Close")) {
+			m_is_open = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 }
 
 void PopupHandler::help_marker(char const* desc) {

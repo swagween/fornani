@@ -108,7 +108,6 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 
 	player.controller.prevent_movement();
 	loading.start();
-	m_shader->AddPointLight(map.point_light);
 	m_shader->set_darken(map.darken_factor);
 	m_shader->set_texture_size(map.real_dimensions / constants::f_scale_factor);
 }
@@ -238,16 +237,26 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 void Dojo::frame_update(ServiceProvider& svc) {}
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
+
+	// TODO: do this somewhere else
 	if (m_shader) {
 		map.render_background(svc, win, m_shader, player->get_camera_position());
 		map.render(svc, win, m_shader, player->get_camera_position());
-		m_shader->set_parity(sf::Vector2i{player->get_camera_position()});
 		m_shader->ClearPointLights();
+
 		float aspect = map.real_dimensions.x / map.real_dimensions.y;
-		auto uv = player->get_lantern_position().componentWiseDiv(map.real_dimensions);
-		auto normalized = sf::Vector2f{(uv.x - 0.5f) * aspect + 0.5f, uv.y};
-		map.point_light.position = normalized;
-		m_shader->AddPointLight(map.point_light);
+		for (auto& pl : map.point_lights) {
+			auto uv = pl.get_position().componentWiseDiv(map.real_dimensions);
+			auto normalized = sf::Vector2f{(uv.x - 0.5f) * aspect + 0.5f, uv.y};
+			pl.position = normalized;
+			m_shader->AddPointLight(pl);
+		}
+
+		auto puv = player->get_lantern_position().componentWiseDiv(map.real_dimensions);
+		auto normalized = sf::Vector2f{(puv.x - 0.5f) * aspect + 0.5f, puv.y};
+		auto ppl = PointLight(svc.data.light["candlelight"], puv);
+		ppl.position = normalized;
+		m_shader->AddPointLight(ppl);
 	}
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(svc, *player, win); }

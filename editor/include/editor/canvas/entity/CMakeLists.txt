@@ -3,6 +3,7 @@ nani_add_headers(
   Chest.hpp
   Destructible.hpp
         Inspectable.hpp
+        Light.hpp
         Platform.hpp
         Portal.hpp
         SavePoint.hpp

@@ -202,7 +202,7 @@ class Map {
 	// debug
 	util::Stopwatch stopwatch{};
 	util::Cooldown end_demo{500};
-	PointLight point_light{};
+	std::vector<PointLight> point_lights{};
 	float darken_factor{};
 
   private:

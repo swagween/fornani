@@ -59,6 +59,10 @@ vec4 pixel = texture2D(texture, fragTexCoord);
 
 float cross2D(vec2 a, vec2 b) { return a.x * b.y - a.y * b.x; }
 
+int imod(int x, int y) {
+    return x - (x / y) * y;
+}
+
 vec2 aspectNormalizedCoord(vec2 uv) {
     float aspect = u_tex_size.x / u_tex_size.y;
     return vec2((uv.x - 0.5) * aspect + 0.5, uv.y);
@@ -137,10 +141,29 @@ float CalculateSpotLightShift(vec2 point, int light) {
     return spotlight_luminence[light] * attenuation * spotValue;
 }
 
+bool isPixelShadowed(ivec2 texel, float fraction) {
+    int x = imod(texel.x, 2);
+    int y = imod(texel.y, 2);
+
+    if (fraction < 0.1) {
+        return ((x == 0 && y == 1) || (x == 1 && y == 0) || (x == 1 && y == 1));
+    } else if (fraction < 0.15) {
+        return ((x == 0 && y == 1) || (x == 1 && y == 0));
+    } else if (fraction < 0.2) {
+        return (x == 0 && y == 1);
+    }
+
+    return false;
+}
+
 void main() {
 
-	vec2 pixelPoint = aspectNormalizedCoord(vec2(fragTexCoord.x, 1.0 - fragTexCoord.y));
-	gl_FragColor = gl_Color * pixel;
+float max_light = 3.0;
+vec2 uv = gl_TexCoord[0].xy;
+ivec2 texelCoord = ivec2(floor(uv * u_tex_size));
+vec2 texelSize = 1.0 / u_tex_size;
+vec2 snappedUV = (floor(uv * u_tex_size) + 0.5) * texelSize;
+vec2 pixelPoint = aspectNormalizedCoord(vec2(snappedUV.x, 1.0 - snappedUV.y));
 
 	float highest_amount = 0.0;
 	for(int light = 0; light < pointlight_count; light++){
@@ -152,30 +175,12 @@ void main() {
     
     float fraction = fract(highest_amount);
     highest_amount = highest_amount - fraction;
-	
-	vec2 texPoint = floor(pixelPoint * u_tex_size);
-	if(highest_amount >= 1.0) {
-		float t = mod(texPoint.x, 2.0);
-		float u = mod(texPoint.y, 2.0);
-		vec2 t_comp = vec2(0.0, 1.0);
-		vec2 u_comp = vec2(0.0, 1.0);
-	if(fraction < 0.1) {
-		if ((t == t_comp.x && u == u_comp.y) || (t == t_comp.y && u == u_comp.x) || (t == t_comp.y && u == u_comp.y)) { 
-            highest_amount -= 1.0;
-        }
-    } else if(fraction < 0.15) {
-		if ((t == t_comp.x && u == u_comp.y ) || (t == t_comp.y && u == u_comp.x)) { 
-            highest_amount -= 1.0;
-        }
-    }
-    else if(fraction < 0.2) {
-		if ((t == t_comp.x && u == u_comp.x)) { 
-			highest_amount -= 1.0;
-        }
-    }
-    }
 
-	
+	if(highest_amount >= 1.0 && isPixelShadowed(texelCoord, fraction)) {
+        highest_amount -= 1.0;
+    }
+	if(highest_amount > max_light) { highest_amount = max_light; }
+
 	gl_FragColor = gl_Color * shift(highest_amount - u_darken);
 	
 }

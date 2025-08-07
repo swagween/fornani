@@ -9,6 +9,12 @@
 
 namespace fornani {
 
+void PointLight::update() {
+	steering.seek(physics, world_position, 0.0052f);
+	steering.smooth_random_walk(physics, 0.0041f, 64.f);
+	physics.simple_update();
+}
+
 void PointLight::unserialize(dj::Json const& in) {
 	luminosity = in["luminosity"].as<float>();
 	radius = in["radius"].as<float>();

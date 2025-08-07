@@ -3,6 +3,7 @@ nani_add_sources(
   Chest.cpp
   Destructible.cpp
         Inspectable.cpp
+        Light.cpp
         Platform.cpp
         Portal.cpp
         SavePoint.cpp

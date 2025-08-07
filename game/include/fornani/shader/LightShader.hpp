@@ -2,15 +2,29 @@
 
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
+#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/shader/Palette.hpp>
+#include <fornani/utils/Constants.hpp>
+#include <fornani/utils/Random.hpp>
 
 #define USING_LIGHT_COLORS false
 
 namespace fornani {
 
 struct PointLight {
+	PointLight() = default;
+	PointLight(dj::Json const& in, sf::Vector2f pos) : world_position{pos} {
+		unserialize(in);
+		physics.velocity = random::random_vector_float(-1.f, 1.f);
+		physics.set_global_friction(0.95f);
+	}
+	void update();
+	[[nodiscard]] auto get_position() const -> auto { return physics.position; }
 	sf::Vector2f position;
+	sf::Vector2f world_position;
+
 #if USING_LIGHT_COLORS
 	sf::Color color; // not really set up, but its possible to shift/mix/blend/whatever colors while maintaining the palette shift
 #endif
@@ -23,6 +37,10 @@ struct PointLight {
 	float distance_scaling;
 	float distance_flat;
 	void unserialize(dj::Json const& in);
+
+  private:
+	components::SteeringBehavior steering{};
+	components::PhysicsComponent physics{};
 };
 struct SpotLight {
 	sf::Vector2f position;

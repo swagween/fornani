@@ -11,15 +11,16 @@ EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFin
 
 	create_map.emplace("beds", &create_entity<Bed>);
 	create_map.emplace("chests", &create_entity<Chest>);
+	create_map.emplace("lights", &create_entity<Light>);
 	create_map.emplace("enemies", &create_entity<Enemy>);
 	create_map.emplace("portals", &create_entity<Portal>);
 	create_map.emplace("platforms", &create_entity<Platform>);
 	create_map.emplace("save_point", &create_entity<SavePoint>);
-	create_map.emplace("inspectables", &create_entity<Inspectable>);
-	create_map.emplace("destructibles", &create_entity<Destructible>);
-	create_map.emplace("switch_blocks", &create_entity<SwitchBlock>);
-	create_map.emplace("switch_buttons", &create_entity<SwitchButton>);
 	create_map.emplace("timer_blocks", &create_entity<TimerBlock>);
+	create_map.emplace("inspectables", &create_entity<Inspectable>);
+	create_map.emplace("switch_blocks", &create_entity<SwitchBlock>);
+	create_map.emplace("destructibles", &create_entity<Destructible>);
+	create_map.emplace("switch_buttons", &create_entity<SwitchButton>);
 
 	load(svc, finder, metadata, room_name);
 

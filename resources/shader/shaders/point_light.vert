@@ -11,6 +11,6 @@ void main()
     gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
     gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
     gl_FrontColor = gl_Color;
-    fragTexCoord = gl_TexCoord[0].st;
+    fragTexCoord = gl_TexCoord[0].xy;
     texPosition = inTexCoord.xy;
 }

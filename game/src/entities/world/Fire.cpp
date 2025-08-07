@@ -7,12 +7,18 @@
 namespace fornani::world {
 
 Fire::Fire(automa::ServiceProvider& svc, sf::Vector2f position, int lookup)
-	: size(lookup == 244 ? 2 : 1), bounding_box{{48.f, 48.f}}, sprite_offset{-12.f, -38.f}, sparkler(svc, {48.f, 48.f}, sf::Color::White, "fire"), sprite(svc.assets.get_texture("fire"), {72, 86}) {
+	: size(lookup == 244 ? 2 : 1), bounding_box{{20.f, 20.f}}, sprite_offset{-2.f, -20.f}, sparkler(svc, {32.f, 32.f}, sf::Color::White, "fire"), sprite(svc.assets.get_texture("fire"), {20, 20}) {
 	auto bb_offset = constants::f_cell_vec - bounding_box.get_dimensions();
 	bounding_box.set_position(position + sf::Vector2f{bb_offset.x * 0.5f, bb_offset.y});
 	sprite.push_params("basic", {0, 5, 18, -1});
 	sprite.set_params("basic");
 	sparkler.set_position(bounding_box.get_position());
+	if (size == 2) {
+		sprite.set_texture(svc.assets.get_texture("bonfire"));
+		sprite.set_dimensions({36, 43});
+		sprite_offset = {-12.f, -38.f};
+		bounding_box.set_dimensions({48.f, 48.f});
+	}
 	// inspectable.set_world_position(bounding_box.get_position());
 }
 
