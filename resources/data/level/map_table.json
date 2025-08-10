@@ -62,6 +62,18 @@
     },
     {
       "folder": "firstwind",
+      "label": "chamber.json",
+      "region": "firstwind",
+      "room_id": 111
+    },
+    {
+      "folder": "firstwind",
+      "label": "closet.json",
+      "region": "firstwind",
+      "room_id": 108
+    },
+    {
+      "folder": "firstwind",
       "label": "corridor.json",
       "region": "firstwind",
       "room_id": 105
@@ -74,9 +86,21 @@
     },
     {
       "folder": "firstwind",
+      "label": "hangar.json",
+      "region": "firstwind",
+      "room_id": 116
+    },
+    {
+      "folder": "firstwind",
       "label": "hold.json",
       "region": "firstwind",
       "room_id": 107
+    },
+    {
+      "folder": "firstwind",
+      "label": "infirmary.json",
+      "region": "firstwind",
+      "room_id": 114
     },
     {
       "folder": "firstwind",
@@ -92,15 +116,33 @@
     },
     {
       "folder": "firstwind",
+      "label": "sterncastle.json",
+      "region": "firstwind",
+      "room_id": 115
+    },
+    {
+      "folder": "firstwind",
       "label": "store_room.json",
       "region": "firstwind",
       "room_id": 109
+    },
+    {
+      "folder": "firstwind",
+      "label": "utility_closet.json",
+      "region": "firstwind",
+      "room_id": 112
     },
     {
       "folder": "kariba",
       "label": "antechamber.json",
       "region": "kariba",
       "room_id": 400
+    },
+    {
+      "folder": "kariba",
+      "label": "cellar.json",
+      "region": "kariba",
+      "room_id": 410
     },
     {
       "folder": "test",
@@ -137,6 +179,12 @@
       "label": "hub.json",
       "region": "firstwind",
       "room_id": 4200
+    },
+    {
+      "folder": "test",
+      "label": "plat_test.json",
+      "region": "firstwind",
+      "room_id": 123213
     },
     {
       "folder": "test",

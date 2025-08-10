@@ -1,4 +1,15 @@
 {
+	"player": {
+		"luminosity": 1.00,
+		"radius": 0.6,
+		"attenuation_constant": 0.61,
+		"attenuation_linear": 1.306,
+		"attenuation_quadratic": 2.50,
+		"distance_flat": 0.0,
+		"distance_scaling": 1.0,
+		"flicker_rate": 0.0,
+		"flicker_radius": 0.0
+	},
 	"candlelight": {
 		"luminosity": 2.90,
 		"radius": 0.5,
@@ -6,7 +17,15 @@
 		"attenuation_linear": 1.306,
 		"attenuation_quadratic": 2.50,
 		"distance_flat": 0.0,
-		"distance_scaling": 1.0
+		"distance_scaling": 1.0,
+		"flicker_rate": 0.8,
+		"flicker_radius": 0.001,
+		"steering": {
+			"dampen": 0.0041,
+			"radius": 64.0,
+			"force": 0.0052,
+			"friction": 0.95
+		}
 	},
 	"lantern": {
 		"luminosity": 4.90,
@@ -15,6 +34,14 @@
 		"attenuation_linear": 1.306,
 		"attenuation_quadratic": 2.50,
 		"distance_flat": 0.0,
-		"distance_scaling": 1.0
+		"distance_scaling": 1.0,
+		"flicker_rate": 0.2,
+		"flicker_radius": 0.005,
+		"steering": {
+			"dampen": 0.0041,
+			"radius": 64.0,
+			"force": 0.0052,
+			"friction": 0.95
+		}
 	}
 }

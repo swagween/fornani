@@ -727,14 +727,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				}
 				ImGui::EndMenu();
 			}
-			static bool mp_randomness{};
-			static bool mp_shift{};
-			if (ImGui::MenuItem("Include in Minimap", "", &map.minimap)) {}
-			if (ImGui::MenuItem("Environmental Randomness", "", &mp_randomness)) {}
-			if (ImGui::MenuItem("Day Night Shift", "", &mp_shift)) {}
 			if (ImGui::MenuItem("Themes", "", &open_themes)) {}
-			mp_randomness ? map.set_property(fornani::world::MapProperties::environmental_randomness) : map.reset_property(fornani::world::MapProperties::environmental_randomness);
-			mp_shift ? map.set_property(fornani::world::MapProperties::day_night_shift) : map.reset_property(fornani::world::MapProperties::day_night_shift);
 
 			ImGui::EndMenu();
 		}
@@ -1090,6 +1083,21 @@ void Editor::gui_render(sf::RenderWindow& win) {
 						}
 					}
 				}
+				ImGui::Separator();
+				static bool mp_randomness{};
+				static bool mp_shift{};
+				static bool mp_lighting{};
+				static int darken{};
+				if (ImGui::MenuItem("Include in Minimap", "", &map.minimap)) {}
+				if (ImGui::MenuItem("Environmental Randomness", "", &mp_randomness)) {}
+				if (ImGui::MenuItem("Day Night Shift", "", &mp_shift)) {}
+				if (ImGui::MenuItem("Lighting", "", &mp_lighting)) {}
+				ImGui::Text("Shadow Level: ");
+				ImGui::SameLine();
+				if (ImGui::InputInt("##slv", &darken)) { map.darken_factor = static_cast<float>(darken); }
+				mp_randomness ? map.set_property(fornani::world::MapProperties::environmental_randomness) : map.reset_property(fornani::world::MapProperties::environmental_randomness);
+				mp_shift ? map.set_property(fornani::world::MapProperties::day_night_shift) : map.reset_property(fornani::world::MapProperties::day_night_shift);
+				mp_lighting ? map.set_property(fornani::world::MapProperties::lighting) : map.reset_property(fornani::world::MapProperties::lighting);
 				reset_layers();
 				ImGui::EndMenu();
 			}

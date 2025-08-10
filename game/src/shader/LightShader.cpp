@@ -10,9 +10,16 @@
 namespace fornani {
 
 void PointLight::update() {
-	steering.seek(physics, world_position, 0.0052f);
-	steering.smooth_random_walk(physics, 0.0041f, 64.f);
-	physics.simple_update();
+	if (m_has_steering) {
+		m_steering.seek(m_physics, world_position, m_steering_force);
+		m_steering.smooth_random_walk(m_physics, m_steering_dampen, m_steering_radius);
+		m_physics.simple_update();
+	} else {
+		m_physics.position = world_position;
+	}
+	m_counter.update();
+	auto adjustment = std::sin(m_counter.get() * flicker_rate);
+	attenuation_linear += adjustment * flicker_radius;
 }
 
 void PointLight::unserialize(dj::Json const& in) {
@@ -23,6 +30,15 @@ void PointLight::unserialize(dj::Json const& in) {
 	attenuation_quadratic = in["attenuation_quadratic"].as<float>();
 	distance_scaling = in["distance_scaling"].as<float>();
 	distance_flat = in["distance_flat"].as<float>();
+	flicker_rate = in["flicker_rate"].as<float>();
+	flicker_radius = in["flicker_radius"].as<float>();
+	if (in["steering"].is_object()) {
+		m_has_steering = true;
+		m_steering_force = in["steering"]["force"].as<float>();
+		m_steering_dampen = in["steering"]["dampen"].as<float>();
+		m_steering_radius = in["steering"]["radius"].as<float>();
+		m_physics.set_global_friction(in["steering"]["friction"].as<float>());
+	}
 }
 
 LightShader::LightShader(ResourceFinder& finder) {

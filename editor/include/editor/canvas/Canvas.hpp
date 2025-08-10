@@ -160,6 +160,8 @@ class Canvas {
 		bool show_background{};
 	} flags{};
 
+	float darken_factor{};
+
 	EntitySet entities;
 	dj::Json metadata{};
 	Style tile_style;
@@ -201,8 +203,6 @@ class Canvas {
 	sf::RectangleShape gridbox{};
 	sf::RectangleShape chunkbox{};
 	sf::RectangleShape border{};
-
-	float m_darken_factor{};
 
 	SelectionType type{};
 

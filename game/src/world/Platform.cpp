@@ -8,7 +8,7 @@
 namespace fornani::world {
 
 Platform::Platform(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector2f dimensions, float extent, std::string_view specifications, float start_point, int style)
-	: shape::Collider(dimensions, position), path_position(start_point), sprite{svc.assets.get_texture("platforms")} {
+	: shape::Collider(dimensions, position), path_position(start_point), sprite{svc.assets.get_texture("platforms")}, switch_up{3} {
 
 	auto const& in_data = svc.data.platform[specifications];
 	if (in_data["sticky"].as_bool()) { flags.attributes.set(PlatformAttributes::sticky); }
@@ -16,7 +16,7 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vect
 	if (in_data["repeating"].as_bool()) { flags.attributes.set(PlatformAttributes::repeating); }
 	if (in_data["player_activated"].as_bool()) { flags.attributes.set(PlatformAttributes::player_activated); }
 	if (in_data["player_controlled"].as_bool()) { flags.attributes.set(PlatformAttributes::player_controlled); }
-	flags.attributes.set(PlatformAttributes::ease);
+	if (in_data["ease"].as_bool()) { flags.attributes.set(PlatformAttributes::ease); }
 
 	metrics.speed = in_data["speed"].as<float>();
 
@@ -58,9 +58,12 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vect
 	if (scaled_dim.y == 3) { offset = {0, 64}; }
 	switch_up.start();
 	sprite.setScale(constants::f_scale_vec);
+
+	NANI_LOG_DEBUG(m_logger, "Path pos: [{}]", path_position);
 }
 
 void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	Collider::update(svc);
 	auto const old_position = physics.position;
 	auto edge_start = 0.f;
 	player.collider.handle_collider_collision(*this);
@@ -86,24 +89,16 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	for (auto& block : map.switch_blocks) {
 		if (block.on()) { handle_collider_collision(block.get_hurtbox()); }
 	}
-	for (auto& platform : map.platforms) {
-		if (&platform != this && native_direction.lnr != platform.native_direction.lnr) { handle_collider_collision(platform.hurtbox); }
-	}
-	if (flags.state.test(PlatformState::moving)) {
-		if (native_direction.lnr == LNR::left) {
-			if (Collider::flags.external_state.consume(shape::ExternalState::horiz_collider_collision) && !switch_up.running()) {
-				switch_directions();
-				switch_up.start();
-			}
-		} else {
-			if (Collider::flags.external_state.consume(shape::ExternalState::vert_collider_collision) && !switch_up.running()) {
-				switch_directions();
-				switch_up.start();
-			}
-		}
-	}
 	// init direction to oppose player
 	direction.lnr = player.controller.direction.lnr == LNR::left ? LNR::right : LNR::left;
+
+	if (flags.state.test(PlatformState::moving) && !switch_up.running()) {
+		if (native_direction.lnr == LNR::left) {
+			if (Collider::flags.external_state.consume(shape::ExternalState::horiz_collider_collision)) { switch_directions(); }
+		} else {
+			if (Collider::flags.external_state.consume(shape::ExternalState::vert_collider_collision)) { switch_directions(); }
+		}
+	}
 
 	for (std::size_t x = 0; x < track.size() - 1; ++x) {
 		auto const start = track[x];
@@ -138,6 +133,10 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		}
 	}
 
+	// handle platform collisions
+	for (auto& platform : map.platforms) {
+		// if (&platform != this && native_direction.lnr != platform.native_direction.lnr) { handle_collider_collision(platform.hurtbox); }
+	}
 	if (player.controller.direction.lnr != direction.lnr && flags.attributes.test(PlatformAttributes::player_controlled) && player.collider.jumpbox.overlaps(bounding_box)) { switch_directions(); }
 	if (flags.attributes.test(PlatformAttributes::player_controlled)) {
 		state = 2;
@@ -206,6 +205,8 @@ void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proje
 void Platform::switch_directions() {
 	std::ranges::reverse(track);
 	path_position = 1.0f - path_position;
+	switch_up.start();
+	NANI_LOG_DEBUG(m_logger, "switched ires");
 }
 
 } // namespace fornani::world

@@ -7,6 +7,7 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/shader/Palette.hpp>
 #include <fornani/utils/Constants.hpp>
+#include <fornani/utils/Counter.hpp>
 #include <fornani/utils/Random.hpp>
 
 #define USING_LIGHT_COLORS false
@@ -17,11 +18,11 @@ struct PointLight {
 	PointLight() = default;
 	PointLight(dj::Json const& in, sf::Vector2f pos) : world_position{pos} {
 		unserialize(in);
-		physics.velocity = random::random_vector_float(-1.f, 1.f);
-		physics.set_global_friction(0.95f);
+		m_physics.velocity = random::random_vector_float(-1.f, 1.f);
+		m_physics.position = pos;
 	}
 	void update();
-	[[nodiscard]] auto get_position() const -> auto { return physics.position; }
+	[[nodiscard]] auto get_position() const -> auto { return m_physics.position; }
 	sf::Vector2f position;
 	sf::Vector2f world_position;
 
@@ -36,11 +37,18 @@ struct PointLight {
 	float attenuation_quadratic;
 	float distance_scaling;
 	float distance_flat;
+	float flicker_rate;
+	float flicker_radius;
 	void unserialize(dj::Json const& in);
 
   private:
-	components::SteeringBehavior steering{};
-	components::PhysicsComponent physics{};
+	components::SteeringBehavior m_steering{};
+	components::PhysicsComponent m_physics{};
+	util::FloatCounter m_counter{};
+	float m_steering_dampen{};
+	float m_steering_radius{};
+	float m_steering_force{};
+	bool m_has_steering{};
 };
 struct SpotLight {
 	sf::Vector2f position;

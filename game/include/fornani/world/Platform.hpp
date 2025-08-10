@@ -56,7 +56,7 @@ class Platform : public shape::Collider {
 	float path_position{};
 	sf::Sprite sprite;
 	anim::Animation animation{};
-	util::Cooldown switch_up{3};
+	util::Cooldown switch_up;
 	int style{};
 	int state{};
 	sf::Vector2<int> offset{};

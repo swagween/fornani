@@ -32,5 +32,7 @@ constexpr sf::Vector2i tileset_dimensions{16, 32};
 
 constexpr int i_chunk_size{16};
 constexpr float f_chunk_size{static_cast<float>(i_chunk_size)};
+constexpr float small_value{0.01f};
+constexpr float tiny_value{0.0001f};
 
 } // namespace fornani::constants

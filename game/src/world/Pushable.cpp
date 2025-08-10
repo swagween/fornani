@@ -84,6 +84,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		if (other.collider.wallslider.overlaps(collider.bounding_box)) {
 			if (collider.pushes(other.collider)) { other.collider.physics.velocity.x = collider.physics.velocity.x * 2.f; }
 		}
+		if (other.collider.jumpbox.overlaps(collider.bounding_box)) { other.collider.physics.velocity.x = collider.physics.velocity.x; }
 		collider.handle_collider_collision(other.collider.bounding_box);
 	}
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }

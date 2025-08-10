@@ -15,7 +15,7 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vecto
 	if (random) { attributes.set(SpikeAttributes::random); }
 	if (!is_small()) { attributes.set(SpikeAttributes::soft_reset); }
 	if (facing.left_or_right() && facing.up_or_down() && is_small()) { facing.neutralize_lr(); } // small spikes prefer to face up or down
-	is_small() ? sprite.setTextureRect(sf::IntRect{{240, 496}, constants::i_resolution_vec}) : sprite.setTextureRect(sf::IntRect{{}, {192, 128}});
+	is_small() ? sprite.setTextureRect(sf::IntRect{{240, 496}, constants::i_resolution_vec}) : sprite.setTextureRect(sf::IntRect{{}, {96, 64}});
 	sprite.setOrigin(size * 8.f);
 	sprite.setScale(constants::f_scale_vec);
 	if (attributes.test(SpikeAttributes::random)) {

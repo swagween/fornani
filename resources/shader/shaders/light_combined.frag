@@ -79,18 +79,18 @@ void global_shift(float amount) {
 }
 
 vec4 shift(float amount) {
-    vec4 pixel = source;
+    vec4 px = source;
 
-	for (int i = 0; i < palette_size; i++) {
+	for (int i = 0; i <= palette_size; i++) {
 		float fi = float(i);
 		vec4 swatch = texture2D(palette, vec2(fi / float(palette_size), 0));
 		if (source.rgb == swatch.rgb) { 
             //need something here to clamp this texture pull to the border, if its not already there
             fi = clamp((fi + amount) / float(palette_size), 0.0, 1.0);
-			pixel = texture2D(palette, vec2(fi, 0)); 
+			px = texture2D(palette, vec2(fi, 0)); 
 		}
 	}
-    return pixel;
+    return px;
 }
 
 vec4 saturateColor(vec4 inputColor, float saturationAmount) {

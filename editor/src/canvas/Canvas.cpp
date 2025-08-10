@@ -153,7 +153,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 	if (meta["properties"]["timer"].as_bool()) { m_map_properties.set(fornani::world::MapProperties::timer); }
 	if (meta["properties"]["lighting"].as_bool()) { m_map_properties.set(fornani::world::MapProperties::lighting); }
 
-	m_darken_factor = meta["shader"]["darken_factor"].as<float>();
+	darken_factor = meta["shader"]["darken_factor"].as<float>();
 
 	// tiles
 	auto counter{0};
@@ -214,7 +214,7 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 	metadata["meta"]["properties"]["day_night_shift"] = m_map_properties.test(fornani::world::MapProperties::day_night_shift);
 	metadata["meta"]["properties"]["timer"] = m_map_properties.test(fornani::world::MapProperties::timer);
 	metadata["meta"]["properties"]["lighting"] = m_map_properties.test(fornani::world::MapProperties::lighting);
-	metadata["meta"]["shader"]["darken_factor"] = m_darken_factor;
+	metadata["meta"]["shader"]["darken_factor"] = darken_factor;
 
 	metadata["tile"]["layers"] = dj::Json::empty_array();
 	for (auto i{0}; i < last_layer(); ++i) { metadata["tile"]["layers"].push_back(dj::Json::empty_array()); }

@@ -45,10 +45,15 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, s
 	if (bounding_box.overlaps(player.collider.hurtbox)) {
 		if (!flags.test(InspectableFlags::hovered)) { flags.set(InspectableFlags::hovered_trigger); }
 		flags.set(InspectableFlags::hovered);
-		if (player.controller.inspecting() || attributes.test(InspectableAttributes::activate_on_contact)) { flags.set(InspectableFlags::activated); }
+		if (attributes.test(InspectableAttributes::activate_on_contact) && flags.test(InspectableFlags::can_engage)) {
+			flags.set(InspectableFlags::activated);
+			flags.reset(InspectableFlags::can_engage);
+		}
+		if (player.controller.inspecting()) { flags.set(InspectableFlags::activated); }
 	} else {
 		m_indicator_cooldown.update();
 		if (!m_indicator_cooldown.running()) { m_indicator_cooldown.start(); }
+		flags.set(InspectableFlags::can_engage);
 	}
 	if (flags.test(InspectableFlags::activated) && !player.is_busy()) {
 		player.set_busy(true);
