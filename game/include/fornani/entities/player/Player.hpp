@@ -157,6 +157,7 @@ class Player {
 
 	void set_position(sf::Vector2f new_pos, bool centered = false);
 	void freeze_position();
+	void shake_sprite();
 	void update_direction();
 	void update_weapon();
 	void walk();
@@ -294,6 +295,7 @@ class Player {
 	} m_camera{};
 
 	sf::Vector2f m_weapon_socket{};
+	util::Cooldown m_sprite_shake;
 
 	AbilityUsage m_ability_usage{};
 

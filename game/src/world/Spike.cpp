@@ -58,6 +58,8 @@ void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::
 		}
 		if (player.hurtbox.overlaps(hitbox) && map.soft_reset.not_started() && !player.invincible()) {
 			player.hurt();
+			player.freeze_position();
+			player.shake_sprite();
 			if (!player.is_dead()) {
 				soft_reset = true;
 				map.soft_reset.start();

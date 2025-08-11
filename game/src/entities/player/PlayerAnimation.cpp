@@ -103,6 +103,7 @@ fsm::StateFunction PlayerAnimation::update_sprint() {
 	m_player->controller.reset_vertical_movement();
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
+	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
 	if (!m_player->firing_weapon()) {
 		if (change_state(AnimState::crouch, get_params("crouch"))) { return PA_BIND(update_crouch); }
 		if (change_state(AnimState::crawl, get_params("crouch"), true)) { return PA_BIND(update_crouch); }

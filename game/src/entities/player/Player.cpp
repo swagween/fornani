@@ -15,7 +15,7 @@ constexpr auto walljump_force_v = 24.6f;
 
 Player::Player(automa::ServiceProvider& svc)
 	: arsenal(svc), m_services(&svc), controller(svc, *this), animation(*this), sprite{svc.assets.get_texture("nani")}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},
-	  m_directions{.desired{LR::left}, .actual{LR::right}}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, collider{player_dimensions_v} {
+	  m_directions{.desired{LR::left}, .actual{LR::right}}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, collider{player_dimensions_v}, m_sprite_shake{80} {
 	sprite.setScale(constants::f_scale_vec);
 	svc.data.load_player_params(*this);
 
@@ -169,12 +169,19 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	sprite.setPosition(sprite_position);
 
 	// get UV coords
+	static auto shake_offset = sf::Vector2f{};
+	if (m_sprite_shake.running()) {
+		auto shake_me = m_sprite_shake.get() % 4 == 0;
+		shake_offset = shake_me ? random::random_vector_float(-6.f, 6.f) : shake_offset;
+	} else {
+		shake_offset = {};
+	}
 	auto frames_per_col = 10;
 	auto u = (animation.get_frame() / frames_per_col) * m_sprite_dimensions.x;
 	auto v = (animation.get_frame() % frames_per_col) * m_sprite_dimensions.y;
 	sprite.setTextureRect(sf::IntRect({u, v}, m_sprite_dimensions));
 	sprite.setOrigin(sprite.getLocalBounds().getCenter());
-	sprite.setPosition(sprite_position - cam);
+	sprite.setPosition(sprite_position - cam + shake_offset);
 
 	if (arsenal && hotbar) { collider.flags.general.set(shape::General::complex); }
 
@@ -235,6 +242,7 @@ void Player::assign_texture(sf::Texture& tex) { sprite.setTexture(tex); }
 
 void Player::update_animation() {
 
+	m_sprite_shake.update();
 	flags.state.set(State::show_weapon);
 
 	if (grounded()) {
@@ -335,6 +343,8 @@ void Player::freeze_position() {
 	set_position(collider.physics.previous_position);
 	collider.physics.zero();
 }
+
+void Player::shake_sprite() { m_sprite_shake.start(); }
 
 void Player::update_direction() {
 	directions.movement.lnr = collider.physics.apparent_velocity().x > 0.f ? LNR::right : LNR::left;
@@ -639,6 +649,7 @@ bool Player::can_slide() const {
 bool Player::can_jump() const {
 	if (health.is_dead()) { return false; }
 	if (controller.is_wallsliding()) { return false; }
+	if (animation.is_state(AnimState::sleep)) { return false; }
 	if (!grounded()) { return false; }
 	return true;
 }

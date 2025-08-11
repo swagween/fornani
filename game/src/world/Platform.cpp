@@ -60,11 +60,28 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vect
 	sprite.setScale(constants::f_scale_vec);
 
 	NANI_LOG_DEBUG(m_logger, "Path pos: [{}]", path_position);
+	auto edge_start = 0.f;
+	for (std::size_t x = 0; x < track.size() - 1; ++x) {
+		auto const start = track[x];
+		auto const end = track[x + 1];
+		auto const len = (end - start).length();
+		if (auto const edge_end = edge_start + (len / path_length); edge_end >= path_position) {
+			constexpr auto skip_value{32.f};
+			if (flags.attributes.test(PlatformAttributes::ease)) {
+				physics.position.x = util::ease_in_out(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));
+				physics.position.y = util::ease_in_out(start.y, end.y, (path_position - edge_start) / (edge_end - edge_start));
+			} else {
+				physics.position.x = std::lerp(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));
+				physics.position.y = std::lerp(start.y, end.y, (path_position - edge_start) / (edge_end - edge_start));
+			}
+		}
+	}
+	sync_components();
 }
 
 void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	Collider::update(svc);
 	auto const old_position = physics.position;
+	Collider::update(svc);
 	auto edge_start = 0.f;
 	player.collider.handle_collider_collision(*this);
 	if (player.collider.jumped_into() && physics.velocity.y > 0.f) { player.collider.physics.apply_force(physics.velocity * 8.f); }
@@ -88,6 +105,12 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	}
 	for (auto& block : map.switch_blocks) {
 		if (block.on()) { handle_collider_collision(block.get_hurtbox()); }
+	}
+	// handle platform collisions
+	if (!switch_up.running()) {
+		for (auto& platform : map.platforms) {
+			if (&platform != this && native_direction.lnr != platform.native_direction.lnr) { handle_collider_collision(platform.hurtbox, true); }
+		}
 	}
 	// init direction to oppose player
 	direction.lnr = player.controller.direction.lnr == LNR::left ? LNR::right : LNR::left;
@@ -131,11 +154,6 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		} else {
 			edge_start = edge_end;
 		}
-	}
-
-	// handle platform collisions
-	for (auto& platform : map.platforms) {
-		// if (&platform != this && native_direction.lnr != platform.native_direction.lnr) { handle_collider_collision(platform.hurtbox); }
 	}
 	if (player.controller.direction.lnr != direction.lnr && flags.attributes.test(PlatformAttributes::player_controlled) && player.collider.jumpbox.overlaps(bounding_box)) { switch_directions(); }
 	if (flags.attributes.test(PlatformAttributes::player_controlled)) {
@@ -206,7 +224,6 @@ void Platform::switch_directions() {
 	std::ranges::reverse(track);
 	path_position = 1.0f - path_position;
 	switch_up.start();
-	NANI_LOG_DEBUG(m_logger, "switched ires");
 }
 
 } // namespace fornani::world
