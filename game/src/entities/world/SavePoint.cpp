@@ -6,43 +6,36 @@
 
 namespace fornani::entity {
 
-SavePoint::SavePoint(automa::ServiceProvider& svc) : sprite{svc.assets.get_texture("save_point")} {
-	id = -1;
-	dimensions = {32, 32};
-	bounding_box = shape::Shape(dimensions);
-	proximity_box = shape::Shape(dimensions * 16.f);
-	drawbox.setFillColor(sf::Color::Transparent);
-	drawbox.setOutlineThickness(-1);
-	drawbox.setSize(dimensions);
+SavePoint::SavePoint(automa::ServiceProvider& svc, int id, Vecu32 position)
+	: IWorldPositionable(position), Animatable(svc, "save_point", {32, 32}), m_id{id}, m_anim_params{0, 12, 24, -1}, bounding_box{constants::f_cell_vec}, proximity_box{constants::f_cell_vec * 8.f} {
 
-	animation.set_params(anim_params);
+	set_parameters(m_anim_params);
 
-	sparkler = vfx::Sparkler(svc, dimensions, colors::green, "save_point");
-	sparkler.set_position(position);
+	sparkler = vfx::Sparkler(svc, constants::f_cell_vec, colors::green, "save_point");
+	sparkler.set_position(get_world_position());
 }
 
 void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console) {
 
-	animation.update();
+	Animatable::tick();
 	sparkler.update(svc);
 	intensity < 2 ? sparkler.set_color(colors::periwinkle) : sparkler.set_color(colors::ui_white);
 
-	sf::Vector2f proximity_offset = proximity_box.get_dimensions() * 0.5f + dimensions * 0.5f;
-	position = static_cast<Vec>(scaled_position) * 32.f;
-	sparkler.set_position(position);
-	bounding_box.set_position(position);
-	proximity_box.set_position(position - proximity_offset);
+	sf::Vector2f proximity_offset = (proximity_box.get_dimensions() - bounding_box.get_dimensions()) * 0.5f;
+	sparkler.set_position(get_world_position());
+	bounding_box.set_position(get_world_position());
+	proximity_box.set_position(get_world_position() - proximity_offset);
 	activated = false;
 
-	if (player.collider.bounding_box.SAT(proximity_box)) {
-		if (player.collider.bounding_box.SAT(bounding_box)) {
+	if (player.collider.bounding_box.overlaps(proximity_box)) {
+		if (player.collider.bounding_box.overlaps(bounding_box)) {
 			intensity = 3;
 			if (animation.keyframe_over()) { animation.params.framerate = 4; }
 			if (player.controller.inspecting()) {
 				if (can_activate) {
 					activated = true;
 					save(svc, player);
-					svc.state_controller.save_point_id = id;
+					svc.state_controller.save_point_id = m_id;
 					svc.soundboard.flags.world.set(audio::World::save);
 					console = std::make_unique<gui::Console>(svc, svc.text.basic, "save", gui::OutputType::gradual);
 				}
@@ -56,30 +49,32 @@ void SavePoint::update(automa::ServiceProvider& svc, player::Player& player, std
 		intensity = 1;
 		if (animation.keyframe_over()) { animation.params.framerate = 12; }
 	}
+	set_channel(intensity);
 }
 
-void SavePoint::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos) {
-
+void SavePoint::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos) {
+	auto offset = sf::Vector2f{-constants::f_cell_vec.x * 0.5f, -get_f_dimensions().y};
+	Animatable::set_position(get_world_position() - campos + offset);
+	win.draw(*this);
 	sparkler.render(svc, win, campos);
-
-	auto offset = sf::Vector2f{16.f, 32.f};
-	sprite.setPosition(position - offset - campos);
-
-	int u = static_cast<int>(intensity) * static_cast<int>(sprite_dimensions.x);
-	int v = static_cast<int>(animation.get_frame() * sprite_dimensions.y);
-	sprite.setTextureRect(sf::IntRect({u, v}, {static_cast<int>(sprite_dimensions.x), static_cast<int>(sprite_dimensions.y)}));
-
-	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
-		drawbox.setPosition(position - campos);
-		activated ? drawbox.setOutlineColor(colors::green) : drawbox.setOutlineColor(colors::dark_orange);
-		win.draw(drawbox);
-	} else {
-		win.draw(sprite);
+	if (svc.greyblock_mode()) {
+		sf::RectangleShape box{};
+		box.setFillColor(sf::Color::Transparent);
+		box.setPosition(proximity_box.get_position() - campos);
+		box.setSize(proximity_box.get_dimensions());
+		box.setOutlineColor(sf::Color::Blue);
+		box.setOutlineThickness(-2.f);
+		win.draw(box);
+		box.setPosition(bounding_box.get_position() - campos);
+		box.setSize(bounding_box.get_dimensions());
+		box.setOutlineColor(sf::Color::Green);
+		box.setOutlineThickness(-2.f);
+		win.draw(box);
 	}
 }
 
 void SavePoint::save(automa::ServiceProvider& svc, player::Player& player) {
-	svc.data.save_progress(player, id);
+	svc.data.save_progress(player, m_id);
 	can_activate = false;
 }
 

@@ -792,6 +792,7 @@ fsm::StateFunction player::PlayerAnimation::update_crouch() {
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::suspend, get_params("suspend"))) { return PA_BIND(update_suspend); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"))) { return PA_BIND(update_wallslide); }
+	if (change_state(AnimState::push, get_params("between_push"))) { return PA_BIND(update_between_push); }
 	if (animation.complete()) {
 		if (change_state(AnimState::crawl, get_params("crawl"), true)) { return PA_BIND(update_crawl); }
 	}
@@ -810,6 +811,7 @@ fsm::StateFunction player::PlayerAnimation::update_crawl() {
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::suspend, get_params("suspend"))) { return PA_BIND(update_suspend); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"))) { return PA_BIND(update_wallslide); }
+	if (change_state(AnimState::push, get_params("between_push"))) { return PA_BIND(update_between_push); }
 	if (change_state(AnimState::crouch, get_params("crouch"), true)) {
 		animation.set_frame(4);
 		return PA_BIND(update_crouch);

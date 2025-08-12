@@ -116,6 +116,12 @@
     },
     {
       "folder": "firstwind",
+      "label": "server_room.json",
+      "region": "firstwind",
+      "room_id": 119
+    },
+    {
+      "folder": "firstwind",
       "label": "sterncastle.json",
       "region": "firstwind",
       "room_id": 115
@@ -131,6 +137,12 @@
       "label": "utility_closet.json",
       "region": "firstwind",
       "room_id": 112
+    },
+    {
+      "folder": "firstwind",
+      "label": "wing.json",
+      "region": "firstwind",
+      "room_id": 117
     },
     {
       "folder": "kariba",

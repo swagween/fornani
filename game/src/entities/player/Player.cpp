@@ -267,15 +267,15 @@ void Player::update_animation() {
 
 	if (controller.get_ability_animation() && controller.is_ability_active() && controller.is_animation_request()) { animation.request(*controller.get_ability_animation()); }
 
+	if (animation.is_state(AnimState::sit)) { flags.state.reset(State::show_weapon); }
+	if (controller.inspecting()) { animation.request(AnimState::inspect); }
+	if (controller.is_crouching() && grounded()) { controller.moving() ? animation.request(AnimState::crawl) : animation.request(AnimState::crouch); }
 	if (controller.moving() && grounded()) {
 		if (collider.has_left_wallslide_collision() && controller.horizontal_movement() < 0.f) { cooldowns.push.update(); }
 		if (collider.has_right_wallslide_collision() && controller.horizontal_movement() > 0.f) { cooldowns.push.update(); }
 		if (cooldowns.push.is_complete() && (collider.has_right_wallslide_collision() || collider.has_left_wallslide_collision())) { animation.request(AnimState::push); }
 	}
-	if (animation.is_state(AnimState::sit)) { flags.state.reset(State::show_weapon); }
 	if (hurt_cooldown.running()) { animation.request(AnimState::hurt); }
-	if (controller.inspecting()) { animation.request(AnimState::inspect); }
-	if (controller.is_crouching() && grounded()) { controller.moving() ? animation.request(AnimState::crawl) : animation.request(AnimState::crouch); }
 	if (is_dead()) {
 		animation.request(AnimState::die);
 		flags.state.reset(State::show_weapon);

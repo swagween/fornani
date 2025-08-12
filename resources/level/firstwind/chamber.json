@@ -119,6 +119,23 @@
           4
         ],
         "source_id": 111
+      },
+      {
+        "activate_on_contact": false,
+        "already_open": false,
+        "destination_id": 119,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "key_id": 0,
+        "locked": false,
+        "position": [
+          86,
+          5
+        ],
+        "source_id": 111
       }
     ]
   },
@@ -150,13 +167,13 @@
       1
     ],
     "minimap": false,
-    "music": "",
+    "music": "dusken",
     "player_start": [
       0,
       0
     ],
     "properties": {
-      "day_night_shift": false,
+      "day_night_shift": true,
       "environmental_randomness": false,
       "lighting": false,
       "timer": false

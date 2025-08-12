@@ -1,11 +1,12 @@
 
 #pragma once
 
-#include "fornani/entities/animation/Animation.hpp"
+#include <fornani/graphics/Animatable.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/IWorldPositionable.hpp>
+#include <optional>
 #include "fornani/particle/Sparkler.hpp"
 #include "fornani/utils/Shape.hpp"
-
-#include <optional>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -21,38 +22,28 @@ class Console;
 
 namespace fornani::entity {
 
-inline anim::Parameters anim_params{0, 12, 24, -1};
-
-class SavePoint {
+class SavePoint : public IWorldPositionable, Animatable {
 
   public:
-	using Vec = sf::Vector2f;
-	using Vecu16 = sf::Vector2<std::uint32_t>;
+	using Vecu32 = sf::Vector2<std::uint32_t>;
 
-	explicit SavePoint(automa::ServiceProvider& svc);
+	explicit SavePoint(automa::ServiceProvider& svc, int id, Vecu32 position);
 
 	void update(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos);
+	void save(automa::ServiceProvider& svc, player::Player& player);
 
-	void save(automa::ServiceProvider& svc, player::Player& player); // talk to SaveDataManager to write current progress to save.json
-
-	Vec dimensions{32, 32};
-	Vec sprite_dimensions{64.f, 64.f};
-	Vec position{};
-	Vecu16 scaled_position{};
+  private:
+	anim::Parameters m_anim_params;
 	shape::Shape bounding_box{};
 	shape::Shape proximity_box{};
-	sf::Sprite sprite;
-	sf::RectangleShape drawbox{}; // for debug
-	anim::Animation animation{};
 	vfx::Sparkler sparkler{};
 	bool activated{};
 	bool can_activate{true};
-
-	int id{};
-
-  private:
+	int m_id{};
 	int intensity{};
+
+	io::Logger m_logger{"Entity"};
 };
 
 } // namespace fornani::entity

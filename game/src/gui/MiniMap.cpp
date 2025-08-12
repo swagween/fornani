@@ -31,7 +31,7 @@ void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, player::Player
 	// populate entity data for icons
 	if (!map.is_minimap()) { return; } // don't care about test maps
 	auto room_pos{current_map->get_position()};
-	if (map.save_point.id > 0) { m_markers.push_back({MapIconFlags::save, map.save_point.position * m_texture_scale + room_pos, room}); }
+	if (map.save_point) { m_markers.push_back({MapIconFlags::save, map.save_point->get_world_position() * m_texture_scale / constants::f_cell_size + room_pos, room}); }
 	for (auto& bed : map.beds) { m_markers.push_back({MapIconFlags::bed, bed.bounding_box.get_position() * m_texture_scale / constants::f_cell_size + room_pos, room}); }
 	for (auto& door : map.portals) {
 		if (!door.activate_on_contact()) { m_markers.push_back({MapIconFlags::door, door.get_world_position() * m_texture_scale / constants::f_cell_size + room_pos, room}); }
@@ -109,12 +109,12 @@ void MiniMap::clear_atlas() { m_atlas.clear(); }
 void MiniMap::move(sf::Vector2f direction) {
 	auto speed = m_speed;
 	if (ccm::abs(direction.x) + ccm::abs(direction.y) > 1.f) { speed /= ccm::sqrt(2.f); }
-	m_steering.target(m_physics, m_physics.position - direction * speed, 0.003f);
+	m_steering.target(m_physics, m_physics.position - direction * speed, 0.002f);
 }
 
 void MiniMap::zoom(float amount) {
 	auto prev_ratio = get_ratio();
-	auto max_scale{16.f};
+	auto max_scale{64.f};
 	m_scale = ccm::ext::clamp(m_scale + amount, m_texture_scale, m_texture_scale * max_scale);
 	m_zoom_limit = m_scale == m_texture_scale || m_scale == m_texture_scale * max_scale;
 	auto r_delta = get_ratio() - prev_ratio;

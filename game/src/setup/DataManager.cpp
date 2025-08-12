@@ -563,6 +563,7 @@ bool DataManager::chest_is_open(int id) const {
 
 bool DataManager::switch_is_activated(int id) const {
 	for (auto& s : activated_switches) {
+		NANI_LOG_DEBUG(m_logger, "Checking switch {} against {}", id, s);
 		if (s == id) { return true; }
 	}
 	return false;

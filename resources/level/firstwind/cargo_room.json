@@ -109,6 +109,19 @@
         ],
         "source_id": 104
       }
+    ],
+    "save_point": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 104,
+        "position": [
+          18,
+          7
+        ]
+      }
     ]
   },
   "meta": {
@@ -139,7 +152,7 @@
       1
     ],
     "minimap": false,
-    "music": "",
+    "music": "dusken",
     "player_start": [
       0,
       0

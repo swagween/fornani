@@ -76,7 +76,7 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 	collider.reset_ground_flags();
 	collider.physics.acceleration = {};
 	if (collider.collision_depths) {
-		if (collider.collision_depths.value().vertical_squish()) { state = SwitchButtonState::pressed; }
+		// if (collider.collision_depths.value().vertical_squish()) { state = SwitchButtonState::pressed; }
 		collider.collision_depths.value().update();
 	}
 

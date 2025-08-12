@@ -58,15 +58,9 @@ bool EntitySet::save(fornani::ResourceFinder& finder, dj::Json& metadata, std::s
 	// general entities
 	for (auto& ent : variables.entities) {
 		auto label = ent->get_label();
-		if (ent->unique) {
-			ent->serialize(metadata[label]);
-			NANI_LOG_INFO(m_logger, "Serialized unique entity with label <{}>", label);
-		} else {
-			auto entry = wipe;
-			ent->serialize(entry);
-			metadata[label].push_back(entry);
-			NANI_LOG_INFO(m_logger, "Serialized unique entity with label <{}>", label);
-		}
+		auto entry = wipe;
+		ent->serialize(entry);
+		metadata[label].push_back(entry);
 	}
 
 	if (!metadata.to_file((finder.paths.levels / room_name).string().c_str())) { return false; }

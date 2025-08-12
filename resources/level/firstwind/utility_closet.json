@@ -33,17 +33,19 @@
         "source_id": 112
       }
     ],
-    "save_point": {
-      "dimensions": [
-        1,
-        1
-      ],
-      "id": 112,
-      "position": [
-        6,
-        10
-      ]
-    }
+    "save_point": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 112,
+        "position": [
+          6,
+          10
+        ]
+      }
+    ]
   },
   "meta": {
     "ambience": "",
@@ -73,7 +75,7 @@
       0
     ],
     "minimap": false,
-    "music": "",
+    "music": "none",
     "player_start": [
       0,
       0

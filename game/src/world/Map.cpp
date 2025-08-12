@@ -15,7 +15,7 @@
 namespace fornani::world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player)
-	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc.window->f_screen_dimensions(), 96), bed_transition(svc.window->f_screen_dimensions(), 192), soft_reset(svc.window->f_screen_dimensions(), 64), m_services(&svc),
+	: player(&player), enemy_catalog(svc), transition(svc.window->f_screen_dimensions(), 96), bed_transition(svc.window->f_screen_dimensions(), 192), soft_reset(svc.window->f_screen_dimensions(), 64), m_services(&svc),
 	  cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(2)}} {}
 
 void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
@@ -29,6 +29,8 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
 	svc.world_timer.set_tag("nani");
 	svc.world_timer.set_course(room_number);
+
+	save_point = {};
 
 	int ctr{};
 	for (auto& room : svc.data.map_jsons) {
@@ -88,7 +90,7 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		}
 		if (meta["music"].is_string()) {
 			svc.music_player.load(svc.finder, meta["music"].as_string());
-			svc.music_player.play_looped();
+			if (meta["music"].as_string() != "none") { svc.music_player.play_looped(); }
 		}
 		if (meta["ambience"].is_string()) {
 			svc.ambience_player.load(svc.finder, meta["ambience"].as_string());
@@ -234,12 +236,10 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 		portals.back().update(svc);
 	}
 
-	auto const& savept = entities["save_point"];
-	auto save_id = svc.state_controller.save_point_id;
-	save_point.id = savept.as_object().contains("position") ? room_id : -1;
-	save_point.scaled_position.x = savept["position"][0].as<int>();
-	save_point.scaled_position.y = savept["position"][1].as<int>();
-	save_point.position = {static_cast<float>(save_point.scaled_position.x), static_cast<float>(save_point.scaled_position.y)};
+	for (auto& entry : entities["save_point"].as_array()) {
+		auto save_id = svc.state_controller.save_point_id;
+		save_point = entity::SavePoint(svc, room_id, sf::Vector2<std::uint32_t>{entry["position"][0].as<std::uint32_t>(), entry["position"][1].as<std::uint32_t>()});
+	}
 
 	for (auto& entry : entities["platforms"].as_array()) {
 		sf::Vector2f dim{};
@@ -414,7 +414,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	if (cooldowns.loading.is_complete()) { bed_transition.update(*player); }
 	soft_reset.update(*player);
 	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
-	if (save_point.id != -1) { save_point.update(svc, *player, console); }
+	if (save_point) { save_point->update(svc, *player, console); }
 	if (rain) { rain.value().update(svc, *this); }
 
 	player->collider.reset_ground_flags();
@@ -488,7 +488,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		if (vine->foreground()) { vine->render(svc, win, cam); }
 	}
 
-	if (save_point.id != -1) { save_point.render(svc, win, cam); }
+	if (save_point) { save_point->render(svc, win, cam); }
 
 	if (!svc.greyblock_mode()) {
 		for (auto& layer : get_layers()) {

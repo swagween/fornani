@@ -63,12 +63,21 @@
       4
     ],
     "minimap": false,
-    "music": "",
+    "music": "none",
+    "player_start": [
+      0,
+      0
+    ],
     "properties": {
       "day_night_shift": false,
-      "environmental_randomness": false
+      "environmental_randomness": false,
+      "lighting": false,
+      "timer": false
     },
     "room_id": 109,
+    "shader": {
+      "darken_factor": 0
+    },
     "style": 0
   },
   "tile": {

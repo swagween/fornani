@@ -153,7 +153,7 @@ class Map {
 	std::vector<Checkpoint> checkpoints{};
 	std::vector<TimerBlock> timer_blocks{};
 	std::vector<EnemySpawn> enemy_spawns{};
-	entity::SavePoint save_point;
+	std::optional<entity::SavePoint> save_point;
 	std::vector<vfx::Atmosphere> atmosphere{};
 	std::vector<sf::Vector2f> target_points{};
 	std::vector<sf::Vector2f> home_points{};
