@@ -23,10 +23,10 @@ class ControllerMap;
 namespace fornani::gui {
 
 enum class ConsoleMode : std::uint8_t { writing, responding, off };
-enum class ConsoleFlags : std::uint8_t { portrait_included };
+enum class ConsoleFlags : std::uint8_t { portrait_included, no_exit };
 enum class OutputType : std::uint8_t { instant, gradual, no_skip };
 
-enum class MessageCodeType : std::uint8_t { none, response, item, quest, voice, emotion, redirect, action, exit, destructible, input_hint, reveal_item };
+enum class MessageCodeType : std::uint8_t { none, response, item, quest, voice, emotion, redirect, action, exit, destructible, input_hint, reveal_item, start_battle };
 enum class CodeSource : std::uint8_t { suite, response };
 
 /* code : [source, set, index, type, value] */
@@ -47,6 +47,8 @@ struct MessageCode {
 	[[nodiscard]] auto is_destructible() const -> bool { return type == MessageCodeType::destructible; }
 	[[nodiscard]] auto is_input_hint() const -> bool { return type == MessageCodeType::input_hint; }
 	[[nodiscard]] auto is_reveal_item() const -> bool { return type == MessageCodeType::reveal_item; }
+	[[nodiscard]] auto is_start_battle() const -> bool { return type == MessageCodeType::start_battle; }
+	[[nodiscard]] auto is_voice_cue() const -> bool { return type == MessageCodeType::voice; }
 };
 
 class Console {
@@ -71,6 +73,7 @@ class Console {
 
 	void set_source(dj::Json const& json);
 	void set_nani_sprite(sf::Sprite const& sprite);
+	void set_no_exit(bool flag) { flag ? m_flags.set(ConsoleFlags::no_exit) : m_flags.reset(ConsoleFlags::no_exit); }
 	void handle_actions(int value);
 	void display_item(int item_id);
 	void display_gun(int gun_id);
@@ -87,6 +90,7 @@ class Console {
 	[[nodiscard]] auto exit_requested() const -> bool { return m_mode == ConsoleMode::off; }
 	[[nodiscard]] auto just_began() const -> bool { return m_began; }
 	[[nodiscard]] auto get_message_code() const -> MessageCode;
+	[[nodiscard]] auto get_previous_message_code() const -> MessageCode;
 	[[nodiscard]] auto get_response_code(int which) const -> MessageCode;
 
 	util::RectPath m_path;
@@ -126,6 +130,8 @@ class Console {
 	util::NineSlice m_nineslice;
 	bool m_began{};
 	bool m_process_codes{};
+	bool m_process_code_before{};
+	bool m_process_code_after{};
 };
 
 } // namespace fornani::gui

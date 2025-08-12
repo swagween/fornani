@@ -37,11 +37,11 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 void Intro::frame_update(ServiceProvider& svc) { hud.update(svc, *player); }
 
 void Intro::render(ServiceProvider& svc, sf::RenderWindow& win) {
+	win.draw(title);
 	if (m_console) {
 		m_console.value()->render(win);
 		m_console.value()->write(win, false);
 	}
-	win.draw(title);
 }
 
 void Intro::toggle_pause_menu(ServiceProvider& svc) { svc.ticker.paused() ? svc.ticker.unpause() : svc.ticker.pause(); }

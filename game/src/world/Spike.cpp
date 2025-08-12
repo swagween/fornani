@@ -39,7 +39,7 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vecto
 		y_off *= -1.f;
 		offset = sf::Vector2f{x_off, y_off};
 	}
-	hitbox.set_position(position - offset);
+	is_small() ? hitbox.set_position(position) : hitbox.set_position(position - offset);
 	collider.fix();
 }
 

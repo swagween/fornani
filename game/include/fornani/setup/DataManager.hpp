@@ -45,6 +45,7 @@ struct EnemyState {
 class DataManager final {
 
   public:
+	friend class Game;
 	explicit DataManager(automa::ServiceProvider& svc);
 	// game save
 	void load_data(std::string in_room = "");
@@ -160,6 +161,7 @@ class DataManager final {
 	TimeTrialRegistry time_trial_registry{};
 
   private:
+	[[nodiscard]] auto get_destroyed_inspectables() const -> std::vector<int> { return destroyed_inspectables; }
 	std::vector<int> opened_chests{};
 	std::vector<int> unlocked_doors{};
 	std::vector<int> activated_switches{};

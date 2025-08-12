@@ -18,7 +18,7 @@ Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scen
 		svc.data.rooms.push_back(room_number);
 		svc.data.load_data(room_name.data());
 	} else {
-		map.load(svc, room_number);
+		map.load(svc, m_console, room_number);
 	}
 
 	svc.state_controller.player_position = map.get_player_start();

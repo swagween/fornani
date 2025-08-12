@@ -34,7 +34,6 @@ void MapInfoGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player:
 	m_physics.simple_update();
 	m_clip_path.update();
 	if (m_clip_path.get_section() == 1 && m_clip_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::drag); }
-	auto small_distance{16.f};
 }
 
 void MapInfoGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {

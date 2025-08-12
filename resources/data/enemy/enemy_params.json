@@ -234,7 +234,7 @@
 		"physical": {
 			"dimensions": [ 64, 64 ],
 			"sprite_dimensions": [ 60, 60 ],
-			"offset": [ 40, -23 ],
+			"offset": [ 0, -27 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 300.0, 300.0 ],

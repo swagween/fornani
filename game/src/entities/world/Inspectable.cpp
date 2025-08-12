@@ -35,7 +35,10 @@ void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, s
 	flags.reset(InspectableFlags::activated);
 	animation.update();
 	if (m_indicator_cooldown.is_almost_complete()) { flags.reset(InspectableFlags::hovered); }
-	if (b_destroy) { destroy_by_id(b_id); }
+	if (b_destroy) {
+		destroy_by_id(b_id);
+		b_destroy = false;
+	}
 	if (flags.test(InspectableFlags::destroy) && !destroyed()) { svc.data.destroy_inspectable(native_id); }
 
 	// check for quest-based alternates

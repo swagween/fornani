@@ -5,8 +5,18 @@
 
 namespace fornani::npc {
 
+static int s_voice_cue{};
+static bool b_cue{};
+static void voice_cue(int index) {
+	b_cue = true;
+	s_voice_cue = index;
+}
+
 NPC::NPC(automa::ServiceProvider& svc, std::string_view label, int id)
 	: id(id), m_label(label), animation_machine(std::make_unique<NPCAnimation>(svc, id)), m_indicator(svc.assets.get_texture("arrow_indicator"), {32, 32}), m_sprite{svc.assets.get_npc_texture(label.data())} {
+
+	svc.events.register_event(std::make_unique<Event<int>>("VoiceCue", &voice_cue));
+
 	m_indicator.set_origin({0.f, 48.f});
 	m_indicator.push_params("neutral", {0, 15, 16, 0, true});
 	m_indicator.end();
@@ -70,13 +80,9 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	}
 	if (state_flags.test(NPCState::engaged) && triggers.consume(NPCTrigger::engaged) && m_indicator.complete()) { m_indicator.set_params("neutral", true); }
 
-	if (state_flags.test(NPCState::engaged) || state_flags.test(NPCState::cutscene)) {
-		// voice cues
-		// TODO: properly handle voice cues from the console
-		auto voice_cue{1};
-		if (voice_cue != 0) {
-			// do something clever in Soundboard
-		}
+	if (b_cue) {
+		svc.soundboard.flags.npc.set(static_cast<audio::NPC>(s_voice_cue));
+		b_cue = false;
 	}
 	if (state_flags.test(NPCState::talking)) {
 		svc.camera_controller.free();

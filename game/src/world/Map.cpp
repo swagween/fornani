@@ -18,8 +18,112 @@ Map::Map(automa::ServiceProvider& svc, player::Player& player)
 	: player(&player), enemy_catalog(svc), transition(svc.window->f_screen_dimensions(), 96), bed_transition(svc.window->f_screen_dimensions(), 192), soft_reset(svc.window->f_screen_dimensions(), 64), m_services(&svc),
 	  cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(2)}} {}
 
-void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
-	// for debugging
+void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number) {
+
+	unserialize(svc, room_number);
+
+	auto const& metadata = svc.data.map_jsons.at(room_lookup).metadata;
+	auto const& entities = metadata["entities"];
+	for (auto entry : entities["npcs"].as_array()) {
+		sf::Vector2f pos{};
+		pos.x = entry["position"][0].as<float>();
+		pos.y = entry["position"][1].as<float>();
+		auto id = entry["id"].as<int>();
+		auto npc_label{entry["label"].as_string()};
+		npcs.push_back(npc::NPC(svc, npc_label, id));
+		auto npc_state = svc.quest.get_progression(fornani::QuestType::npc, id);
+		for (auto convo : entry["suites"][npc_state].as_array()) {
+			npcs.back().push_conversation(convo.as<int>());
+			NANI_LOG_DEBUG(m_logger, "Pushed conversation {}", convo.as<int>());
+		}
+		npcs.back().set_position_from_scaled(pos);
+		if (static_cast<bool>(entry["background"].as_bool())) { npcs.back().push_to_background(); }
+		if (static_cast<bool>(entry["hidden"].as_bool())) { npcs.back().hide(); }
+		if (svc.quest.get_progression(fornani::QuestType::hidden_npcs, id) > 0) { npcs.back().unhide(); }
+		npcs.back().set_current_location(room_id);
+	}
+
+	for (auto& entry : entities["chests"].as_array()) {
+		sf::Vector2f pos{};
+		pos.x = entry["position"][0].as<float>();
+		pos.y = entry["position"][1].as<float>();
+		chests.push_back(entity::Chest(svc, entry["id"].as<int>(), static_cast<entity::ChestType>(entry["type"].as<int>()), entry["modifier"].as<int>()));
+		chests.back().set_position_from_scaled(pos);
+	}
+
+	for (auto& entry : entities["animators"].as_array()) {
+		sf::Vector2<int> scaled_dim{};
+		sf::Vector2<int> scaled_pos{};
+		scaled_pos.x = entry["position"][0].as<int>();
+		scaled_pos.y = entry["position"][1].as<int>();
+		scaled_dim.x = entry["dimensions"][0].as<int>();
+		scaled_dim.y = entry["dimensions"][1].as<int>();
+		auto automatic = static_cast<bool>(entry["automatic"].as_bool());
+		auto astyle = static_cast<bool>(entry["style"].as<int>());
+		auto lg = scaled_dim.x == 2;
+		auto foreground = static_cast<bool>(entry["foreground"].as_bool());
+		auto aid = entry["id"].as<int>();
+		auto a = entity::Animator(svc, m_metadata.biome, scaled_pos, foreground);
+		animators.push_back(a);
+	}
+	for (auto& entry : entities["beds"].as_array()) {
+		sf::Vector2f pos{};
+		pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
+		pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
+		auto flipped = static_cast<bool>(entry["flipped"].as_bool());
+		beds.push_back(entity::Bed(svc, pos, native_style_id, flipped));
+	}
+	for (auto& entry : entities["scenery"]["basic"].as_array()) {
+		sf::Vector2f pos{};
+		pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
+		pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
+		auto var = entry["variant"].as<int>();
+		auto lyr = entry["layer"].as<int>();
+		auto parallax = entry["parallax"].as<float>();
+		scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, style_id, lyr, var, parallax));
+	}
+	for (auto& entry : entities["scenery"]["vines"].as_array()) {
+		sf::Vector2f pos{};
+		pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
+		pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
+		auto fg = static_cast<bool>(entry["foreground"].as_bool());
+		auto rev = static_cast<bool>(entry["reversed"].as_bool());
+		vines.push_back(std::make_unique<entity::Vine>(svc, pos, entry["length"].as<int>(), entry["size"].as<int>(), fg, rev));
+		if (entry["platform"]) {
+			for (auto& link : entry["platform"]["link_indeces"].as_array()) { vines.back()->add_platform(svc, link.as<int>()); }
+		}
+	}
+	for (auto& entry : entities["inspectables"].as_array()) {
+		inspectables.push_back(entity::Inspectable(svc, entry, room_id));
+		if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
+	}
+
+	for (auto& entry : entities["destructibles"].as_array()) { destroyers.push_back(Destructible(svc, entry)); }
+
+	for (auto& entry : entities["enemies"].as_array()) {
+		int id{};
+		sf::Vector2f pos{};
+		sf::Vector2<int> start{};
+		pos.x = entry["position"][0].as<float>();
+		pos.y = entry["position"][1].as<float>();
+		start.x = entry["start_direction"][0].as<int>();
+		start.y = entry["start_direction"][1].as<int>();
+		auto variant = entry["variant"].as<int>();
+		enemy_catalog.push_enemy(svc, *this, console, entry["id"].as<int>(), false, variant, start);
+		enemy_catalog.enemies.back()->set_position_from_scaled({pos * constants::f_cell_size});
+		enemy_catalog.enemies.back()->get_collider().physics.zero();
+		enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
+		if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
+	}
+
+	generate_layer_textures(svc);
+	player->map_reset();
+	transition.end();
+	cooldowns.fade_obscured.start();
+	cooldowns.loading.start();
+}
+
+void Map::unserialize(automa::ServiceProvider& svc, int room_number) {
 	center_box.setSize(svc.window->f_screen_dimensions() * 0.5f);
 	flags.state.reset(LevelState::game_over);
 	if (!player->is_dead()) { svc.state_controller.actions.reset(automa::Actions::death_mode); }
@@ -78,144 +182,51 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 
 	auto const& entities = metadata["entities"];
 
-	if (!soft) {
-		svc.current_room = room_number;
-		if (meta["cutscene_on_entry"]["flag"].as_bool()) {
-			auto ctype = meta["cutscene_on_entry"]["type"].as<int>();
-			auto cid = meta["cutscene_on_entry"]["id"].as<int>();
-			auto csource = meta["cutscene_on_entry"]["source"].as<int>();
-			auto cutscene = util::QuestKey{ctype, cid, csource};
-			svc.quest.process(svc, cutscene);
-			cutscene_catalog.push_cutscene(svc, *this, cid);
-		}
-		if (meta["music"].is_string()) {
-			svc.music_player.load(svc.finder, meta["music"].as_string());
-			if (meta["music"].as_string() != "none") { svc.music_player.play_looped(); }
-		}
-		if (meta["ambience"].is_string()) {
-			svc.ambience_player.load(svc.finder, meta["ambience"].as_string());
-			svc.ambience_player.play();
-		}
-		for (auto& entry : meta["atmosphere"].as_array()) {
-			if (entry.as<int>() == 1) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, 1)); }
-		}
-
-		for (auto& pl : entities["lights"].as_array()) {
-			point_lights.push_back(PointLight(svc.data.light[pl["label"].as_string()], sf::Vector2f{pl["position"][0].as<float>() + 0.5f, pl["position"][1].as<float>() + 0.5f} * constants::f_cell_size));
-		}
-
-		if (meta["camera_effects"]) {
-			m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
-			m_camera_effects.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
-			m_camera_effects.shake_properties.start_time = meta["camera_effects"]["shake"]["start_time"].as<float>();
-			m_camera_effects.shake_properties.dampen_factor = meta["camera_effects"]["shake"]["dampen_factor"].as<int>();
-			m_camera_effects.cooldown = util::Cooldown{meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>()};
-			m_camera_effects.shake_properties.shaking = m_camera_effects.shake_properties.frequency > 0;
-			m_camera_effects.cooldown.start();
-		}
-
-		sound.echo_count = meta["sound"]["echo_count"].as<int>();
-		sound.echo_rate = meta["sound"]["echo_rate"].as<int>();
-
-		if (meta["weather"]["rain"]) { rain = vfx::Rain(meta["weather"]["rain"]["intensity"].as<int>(), meta["weather"]["rain"]["fall_speed"].as<float>(), meta["weather"]["rain"]["slant"].as<float>()); }
-		if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
-		if (meta["weather"]["leaves"]) { rain = vfx::Rain(meta["weather"]["leaves"]["intensity"].as<int>(), meta["weather"]["leaves"]["fall_speed"].as<float>(), meta["weather"]["leaves"]["slant"].as<float>(), true, true); }
-
-		background = std::make_unique<graphics::Background>(svc, meta["background"].as<int>());
-		styles.breakables = meta["styles"]["breakables"].as<int>();
-		styles.pushables = meta["styles"]["pushables"].as<int>();
-
-		for (auto entry : entities["npcs"].as_array()) {
-			sf::Vector2f pos{};
-			pos.x = entry["position"][0].as<float>();
-			pos.y = entry["position"][1].as<float>();
-			auto id = entry["id"].as<int>();
-			auto npc_label{entry["label"].as_string()};
-			npcs.push_back(npc::NPC(svc, npc_label, id));
-			auto npc_state = svc.quest.get_progression(fornani::QuestType::npc, id);
-			for (auto convo : entry["suites"][npc_state].as_array()) {
-				npcs.back().push_conversation(convo.as<int>());
-				NANI_LOG_DEBUG(m_logger, "Pushed conversation {}", convo.as<int>());
-			}
-			npcs.back().set_position_from_scaled(pos);
-			if (static_cast<bool>(entry["background"].as_bool())) { npcs.back().push_to_background(); }
-			if (static_cast<bool>(entry["hidden"].as_bool())) { npcs.back().hide(); }
-			if (svc.quest.get_progression(fornani::QuestType::hidden_npcs, id) > 0) { npcs.back().unhide(); }
-			npcs.back().set_current_location(room_id);
-		}
-
-		for (auto& entry : entities["chests"].as_array()) {
-			sf::Vector2f pos{};
-			pos.x = entry["position"][0].as<float>();
-			pos.y = entry["position"][1].as<float>();
-			chests.push_back(entity::Chest(svc, entry["id"].as<int>(), static_cast<entity::ChestType>(entry["type"].as<int>()), entry["modifier"].as<int>()));
-			chests.back().set_position_from_scaled(pos);
-		}
-
-		for (auto& entry : entities["animators"].as_array()) {
-			sf::Vector2<int> scaled_dim{};
-			sf::Vector2<int> scaled_pos{};
-			scaled_pos.x = entry["position"][0].as<int>();
-			scaled_pos.y = entry["position"][1].as<int>();
-			scaled_dim.x = entry["dimensions"][0].as<int>();
-			scaled_dim.y = entry["dimensions"][1].as<int>();
-			auto automatic = static_cast<bool>(entry["automatic"].as_bool());
-			auto astyle = static_cast<bool>(entry["style"].as<int>());
-			auto lg = scaled_dim.x == 2;
-			auto foreground = static_cast<bool>(entry["foreground"].as_bool());
-			auto aid = entry["id"].as<int>();
-			auto a = entity::Animator(svc, m_metadata.biome, scaled_pos, foreground);
-			animators.push_back(a);
-		}
-		for (auto& entry : entities["beds"].as_array()) {
-			sf::Vector2f pos{};
-			pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
-			pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
-			auto flipped = static_cast<bool>(entry["flipped"].as_bool());
-			beds.push_back(entity::Bed(svc, pos, native_style_id, flipped));
-		}
-		for (auto& entry : entities["scenery"]["basic"].as_array()) {
-			sf::Vector2f pos{};
-			pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
-			pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
-			auto var = entry["variant"].as<int>();
-			auto lyr = entry["layer"].as<int>();
-			auto parallax = entry["parallax"].as<float>();
-			scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, style_id, lyr, var, parallax));
-		}
-		for (auto& entry : entities["scenery"]["vines"].as_array()) {
-			sf::Vector2f pos{};
-			pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
-			pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
-			auto fg = static_cast<bool>(entry["foreground"].as_bool());
-			auto rev = static_cast<bool>(entry["reversed"].as_bool());
-			vines.push_back(std::make_unique<entity::Vine>(svc, pos, entry["length"].as<int>(), entry["size"].as<int>(), fg, rev));
-			if (entry["platform"]) {
-				for (auto& link : entry["platform"]["link_indeces"].as_array()) { vines.back()->add_platform(svc, link.as<int>()); }
-			}
-		}
-		for (auto& entry : entities["inspectables"].as_array()) {
-			inspectables.push_back(entity::Inspectable(svc, entry, room_id));
-			if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
-		}
-
-		for (auto& entry : entities["enemies"].as_array()) {
-			int id{};
-			sf::Vector2f pos{};
-			sf::Vector2<int> start{};
-			pos.x = entry["position"][0].as<float>();
-			pos.y = entry["position"][1].as<float>();
-			start.x = entry["start_direction"][0].as<int>();
-			start.y = entry["start_direction"][1].as<int>();
-			auto variant = entry["variant"].as<int>();
-			enemy_catalog.push_enemy(svc, *this, entry["id"].as<int>(), false, variant, start);
-			enemy_catalog.enemies.back()->set_position_from_scaled({pos * constants::f_cell_size});
-			enemy_catalog.enemies.back()->get_collider().physics.zero();
-			enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
-			if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
-		}
-		for (auto& entry : entities["destructibles"].as_array()) { destroyers.push_back(Destructible(svc, entry)); }
+	svc.current_room = room_number;
+	if (meta["cutscene_on_entry"]["flag"].as_bool()) {
+		auto ctype = meta["cutscene_on_entry"]["type"].as<int>();
+		auto cid = meta["cutscene_on_entry"]["id"].as<int>();
+		auto csource = meta["cutscene_on_entry"]["source"].as<int>();
+		auto cutscene = util::QuestKey{ctype, cid, csource};
+		svc.quest.process(svc, cutscene);
+		cutscene_catalog.push_cutscene(svc, *this, cid);
 	}
+	if (meta["music"].is_string()) {
+		svc.music_player.load(svc.finder, meta["music"].as_string());
+		if (meta["music"].as_string() != "none") { svc.music_player.play_looped(); }
+	}
+	if (meta["ambience"].is_string()) {
+		svc.ambience_player.load(svc.finder, meta["ambience"].as_string());
+		svc.ambience_player.play();
+	}
+	for (auto& entry : meta["atmosphere"].as_array()) {
+		if (entry.as<int>() == 1) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, 1)); }
+	}
+
+	for (auto& pl : entities["lights"].as_array()) {
+		point_lights.push_back(PointLight(svc.data.light[pl["label"].as_string()], sf::Vector2f{pl["position"][0].as<float>() + 0.5f, pl["position"][1].as<float>() + 0.5f} * constants::f_cell_size));
+	}
+
+	if (meta["camera_effects"]) {
+		m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
+		m_camera_effects.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
+		m_camera_effects.shake_properties.start_time = meta["camera_effects"]["shake"]["start_time"].as<float>();
+		m_camera_effects.shake_properties.dampen_factor = meta["camera_effects"]["shake"]["dampen_factor"].as<int>();
+		m_camera_effects.cooldown = util::Cooldown{meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>()};
+		m_camera_effects.shake_properties.shaking = m_camera_effects.shake_properties.frequency > 0;
+		m_camera_effects.cooldown.start();
+	}
+
+	sound.echo_count = meta["sound"]["echo_count"].as<int>();
+	sound.echo_rate = meta["sound"]["echo_rate"].as<int>();
+
+	if (meta["weather"]["rain"]) { rain = vfx::Rain(meta["weather"]["rain"]["intensity"].as<int>(), meta["weather"]["rain"]["fall_speed"].as<float>(), meta["weather"]["rain"]["slant"].as<float>()); }
+	if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
+	if (meta["weather"]["leaves"]) { rain = vfx::Rain(meta["weather"]["leaves"]["intensity"].as<int>(), meta["weather"]["leaves"]["fall_speed"].as<float>(), meta["weather"]["leaves"]["slant"].as<float>(), true, true); }
+
+	background = std::make_unique<graphics::Background>(svc, meta["background"].as<int>());
+	styles.breakables = meta["styles"]["breakables"].as<int>();
+	styles.pushables = meta["styles"]["pushables"].as<int>();
 
 	for (auto& entry : entities["portals"].as_array()) {
 		sf::Vector2<std::uint32_t> pos{};
@@ -282,14 +293,6 @@ void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
 	}
 
 	generate_collidable_layer();
-
-	if (!soft) {
-		generate_layer_textures(svc);
-		player->map_reset();
-		transition.end();
-		cooldowns.fade_obscured.start();
-		cooldowns.loading.start();
-	}
 }
 
 void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console) {
@@ -312,7 +315,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 
 	if (flags.state.test(LevelState::spawn_enemy)) {
 		for (auto& spawn : enemy_spawns) {
-			enemy_catalog.push_enemy(*m_services, *this, spawn.id, true);
+			enemy_catalog.push_enemy(*m_services, *this, console, spawn.id, true);
 			enemy_catalog.enemies.back()->set_position(spawn.pos);
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 			effects.push_back(entity::Effect(*m_services, "small_flash", spawn.pos + enemy_catalog.enemies.back()->get_collider().dimensions * 0.5f, {}, 0));

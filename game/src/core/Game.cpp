@@ -270,6 +270,11 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 
 					ImGui::EndTabItem();
 				}
+				if (ImGui::BeginTabItem("Data")) {
+					ImGui::Text("Destroyed Inspectables: ");
+					for (auto& i : services.data.get_destroyed_inspectables()) { ImGui::Text("%i, ", i); }
+					ImGui::EndTabItem();
+				}
 				if (ImGui::BeginTabItem("Tests")) {
 
 					ImGui::Text("Angle");

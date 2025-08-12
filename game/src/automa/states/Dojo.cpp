@@ -56,7 +56,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 		svc.data.rooms.push_back(room_number);
 		svc.data.load_data(room_name.data());
 	} else {
-		map.load(svc, room_number);
+		map.load(svc, m_console, room_number);
 		bake_maps(svc, {map.room_id}, true);
 		bake_maps(svc, svc.data.rooms);
 	}

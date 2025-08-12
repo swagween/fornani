@@ -79,7 +79,8 @@ class Map {
 	Map(automa::ServiceProvider& svc, player::Player& player);
 
 	// methods
-	void load(automa::ServiceProvider& svc, int room_number, bool soft = false);
+	void load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number);
+	void unserialize(automa::ServiceProvider& svc, int room_number);
 	void update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);

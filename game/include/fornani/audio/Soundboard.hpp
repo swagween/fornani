@@ -35,12 +35,45 @@ enum class Frdog : std::uint8_t { hurt, death };
 enum class Hulmet : std::uint8_t { hurt, alert };
 enum class Tank : std::uint8_t { alert_1, alert_2, hurt_1, hurt_2, death };
 enum class Thug : std::uint8_t { alert_1, alert_2, hurt_1, hurt_2, death };
-enum class Minigus : std::uint8_t { hurt_1, hurt_2, hurt_3, laugh, laugh_2, jump, land, step, punch, snap, build_invincibility, invincible, invincibility_lost, ok };
 enum class Minigun : std::uint8_t { charge, reload, neutral, firing };
 enum class Demon : std::uint8_t { hurt, alert, death, snort, up_snort };
 enum class Archer : std::uint8_t { hurt, flee, death };
 enum class Beamstalk : std::uint8_t { hurt, death };
 enum class Meatsquash : std::uint8_t { hurt, death, chomp, whip, swallow };
+
+enum class Minigus : std::uint8_t {
+	hurt_1,
+	hurt_2,
+	hurt_3,
+	laugh_1,
+	laugh_2,
+	jump,
+	land,
+	step,
+	punch,
+	snap,
+	build,
+	invincible,
+	invincibility_lost,
+	ok,
+	crash,
+	woob,
+	getit,
+	deepspeak,
+	mother,
+	momma,
+	quick_breath,
+	long_moan,
+	poh,
+	soda,
+	doge,
+	charge,
+	pizza,
+	greatidea,
+	dontlookatme,
+	grunt
+};
+enum class NPC : std::uint8_t { minigus_greatidea, minigus_dontlookatme, minigus_laugh, minigus_getit, minigus_pizza, minigus_grunt };
 
 class Soundboard {
   public:
@@ -79,6 +112,7 @@ class Soundboard {
 		util::BitFlags<Archer> archer{};
 		util::BitFlags<Beamstalk> beamstalk{};
 		util::BitFlags<Meatsquash> meatsquash{};
+		util::BitFlags<NPC> npc{};
 	} flags{};
 
 	void play(capo::IEngine& engine, automa::ServiceProvider& svc, capo::Buffer const& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2f distance = {}, int echo_count = 0,

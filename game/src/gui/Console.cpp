@@ -34,7 +34,10 @@ void Console::update(automa::ServiceProvider& svc) {
 	handle_inputs(svc.controller_map);
 	if (is_active()) { m_path.update(); }
 	if (m_path.finished() && m_writer) {
-		if (m_writer->is_stalling()) { m_writer->start(); }
+		if (m_writer->is_stalling()) {
+			m_writer->start();
+			m_process_code_before = true;
+		}
 	}
 	if (!m_writer) { return; }
 	if (m_writer->is_writing()) { svc.soundboard.flags.console.set(audio::Console::speech); }
@@ -67,6 +70,14 @@ void Console::update(automa::ServiceProvider& svc) {
 			if (get_message_code().is_reveal_item() && m_writer && m_process_codes) {
 				svc.events.dispatch_event("RevealItem", get_message_code().value);
 				m_process_codes = false;
+			}
+			if (get_message_code().is_start_battle() && m_process_code_after) {
+				svc.events.dispatch_event("StartBattle", get_message_code().value);
+				m_process_code_after = false;
+			}
+			if (get_message_code().is_voice_cue() && m_writer && m_process_code_before) {
+				svc.events.dispatch_event("VoiceCue", get_message_code().value);
+				m_process_code_before = false;
 			}
 		}
 	}
@@ -145,7 +156,7 @@ void Console::append(std::string_view key) { m_writer->append(key); }
 
 void Console::end() {
 	m_services->soundboard.flags.console.set(audio::Console::done);
-	m_mode = ConsoleMode::off;
+	m_mode = ConsoleMode::off; // handle exit codes
 }
 
 void Console::include_portrait(int id) {
@@ -160,7 +171,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 	auto const& up = controller.digital_action_status(config::DigitalAction::menu_up).triggered;
 	auto const& down = controller.digital_action_status(config::DigitalAction::menu_down).triggered;
 	auto const& next = controller.digital_action_status(config::DigitalAction::menu_select).triggered;
-	auto const& exit = controller.digital_action_status(config::DigitalAction::menu_cancel).triggered;
+	auto const& exit = controller.digital_action_status(config::DigitalAction::menu_cancel).triggered && !m_flags.test(ConsoleFlags::no_exit);
 	auto const& skip = controller.digital_action_status(config::DigitalAction::menu_select).held;
 	auto const& released = controller.digital_action_status(config::DigitalAction::menu_select).released;
 	static bool finished{};
@@ -217,12 +228,17 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 			if (code.extras) { m_writer->set_index(code.extras.value()[0]); }
 		}
 		m_services->soundboard.flags.console.set(audio::Console::next);
+		for (auto& code : m_codes) {
+			if (code.set == m_writer->get_current_suite_set() && code.index == m_writer->get_index()) {
+				if (get_message_code().is_start_battle()) { m_services->events.dispatch_event("StartBattle", get_message_code().value); }
+			}
+		}
 		finished = m_writer->request_next();
+		m_process_code_before = true;
 		can_skip = false;
 	}
 
 	// speed up text
-
 	if (released || m_writer->is_first_message()) { can_skip = true; }
 	if (m_writer->is_stalling()) { can_skip = false; }
 	if (m_output_type == OutputType::no_skip) { can_skip = false; }
@@ -249,6 +265,13 @@ void Console::debug() {
 auto Console::get_message_code() const -> MessageCode {
 	for (auto& code : m_codes) {
 		if (code.index == m_writer->get_index() && code.source == CodeSource::suite && code.set == m_writer->get_current_suite_set()) { return code; }
+	}
+	return MessageCode();
+}
+
+auto Console::get_previous_message_code() const -> MessageCode {
+	for (auto& code : m_codes) {
+		if (code.index == m_writer->get_index() - 1 && code.source == CodeSource::suite && code.set == m_writer->get_current_suite_set() - 1) { return code; }
 	}
 	return MessageCode();
 }
