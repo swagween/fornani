@@ -267,7 +267,9 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map) {
 	// auto const& sellable_items = player.catalog.inventory.sellable_items;
 	auto& player_inventory = player.catalog.inventory;
-	auto& vendor = map.get_npc(npc_id).get_vendor();
+	/*auto& get_vendor = map.get_npc(npc_id);
+	if (!get_vendor.has_value()) { return; }*/
+	// auto& vendor = get_vendor.value()->get_vendor();
 	auto const& selector = state == VendorState::sell ? m_sell_selector : m_buy_selector;
 
 	text.orb_count.setOrigin(sf::Vector2{text.orb_count.getLocalBounds().size.x, 0.f});

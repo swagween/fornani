@@ -151,6 +151,12 @@
       "room_id": 117
     },
     {
+      "folder": "greatwing",
+      "label": "bridge.json",
+      "region": "greatwing",
+      "room_id": 601
+    },
+    {
       "folder": "kariba",
       "label": "antechamber.json",
       "region": "kariba",

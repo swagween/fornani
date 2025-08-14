@@ -1,37 +1,32 @@
 #include "fornani/entities/npc/NPCAnimation.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::npc {
 
-NPCAnimation::NPCAnimation(automa::ServiceProvider& svc, int id) {
+NPCAnimation::NPCAnimation(dj::Json const& in_data) {
 
-	auto label = svc.data.get_npc_label_from_id(id);
-	if (!label) { return; }
-	auto const& in_data = svc.data.npc[*label];
+	NPC_idle.lookup = in_data["idle"][0].as<int>();
+	NPC_idle.duration = in_data["idle"][1].as<int>();
+	NPC_idle.framerate = in_data["idle"][2].as<int>();
+	NPC_idle.num_loops = in_data["idle"][3].as<int>();
+	NPC_idle.repeat_last_frame = static_cast<bool>(in_data["idle"][4].as_bool());
 
-	NPC_idle.lookup = in_data["animation"]["idle"][0].as<int>();
-	NPC_idle.duration = in_data["animation"]["idle"][1].as<int>();
-	NPC_idle.framerate = in_data["animation"]["idle"][2].as<int>();
-	NPC_idle.num_loops = in_data["animation"]["idle"][3].as<int>();
-	NPC_idle.repeat_last_frame = static_cast<bool>(in_data["animation"]["idle"][4].as_bool());
+	NPC_walk.lookup = in_data["walk"][0].as<int>();
+	NPC_walk.duration = in_data["walk"][1].as<int>();
+	NPC_walk.framerate = in_data["walk"][2].as<int>();
+	NPC_walk.num_loops = in_data["walk"][3].as<int>();
+	NPC_walk.repeat_last_frame = static_cast<bool>(in_data["walk"][4].as_bool());
 
-	NPC_walk.lookup = in_data["animation"]["walk"][0].as<int>();
-	NPC_walk.duration = in_data["animation"]["walk"][1].as<int>();
-	NPC_walk.framerate = in_data["animation"]["walk"][2].as<int>();
-	NPC_walk.num_loops = in_data["animation"]["walk"][3].as<int>();
-	NPC_walk.repeat_last_frame = static_cast<bool>(in_data["animation"]["walk"][4].as_bool());
+	NPC_turn.lookup = in_data["turn"][0].as<int>();
+	NPC_turn.duration = in_data["turn"][1].as<int>();
+	NPC_turn.framerate = in_data["turn"][2].as<int>();
+	NPC_turn.num_loops = in_data["turn"][3].as<int>();
+	NPC_turn.repeat_last_frame = static_cast<bool>(in_data["turn"][4].as_bool());
 
-	NPC_turn.lookup = in_data["animation"]["turn"][0].as<int>();
-	NPC_turn.duration = in_data["animation"]["turn"][1].as<int>();
-	NPC_turn.framerate = in_data["animation"]["turn"][2].as<int>();
-	NPC_turn.num_loops = in_data["animation"]["turn"][3].as<int>();
-	NPC_turn.repeat_last_frame = static_cast<bool>(in_data["animation"]["turn"][4].as_bool());
-
-	NPC_inspect.lookup = in_data["animation"]["inspect"][0].as<int>();
-	NPC_inspect.duration = in_data["animation"]["inspect"][1].as<int>();
-	NPC_inspect.framerate = in_data["animation"]["inspect"][2].as<int>();
-	NPC_inspect.num_loops = in_data["animation"]["inspect"][3].as<int>();
-	NPC_inspect.repeat_last_frame = static_cast<bool>(in_data["animation"]["inspect"][4].as_bool());
+	NPC_inspect.lookup = in_data["inspect"][0].as<int>();
+	NPC_inspect.duration = in_data["inspect"][1].as<int>();
+	NPC_inspect.framerate = in_data["inspect"][2].as<int>();
+	NPC_inspect.num_loops = in_data["inspect"][3].as<int>();
+	NPC_inspect.repeat_last_frame = static_cast<bool>(in_data["inspect"][4].as_bool());
 
 	animation_flags.set(NPCAnimState::idle);
 	animation.set_params(NPC_idle);

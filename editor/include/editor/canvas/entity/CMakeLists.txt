@@ -4,6 +4,7 @@ nani_add_headers(
   Destructible.hpp
         Inspectable.hpp
         Light.hpp
+        NPC.hpp
         Platform.hpp
         Portal.hpp
         SavePoint.hpp

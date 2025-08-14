@@ -9,4 +9,5 @@ add_subdirectory(world)
 
 nani_add_sources(
     Entity.cpp
+    Mobile.cpp
 )

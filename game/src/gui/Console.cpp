@@ -34,10 +34,7 @@ void Console::update(automa::ServiceProvider& svc) {
 	handle_inputs(svc.controller_map);
 	if (is_active()) { m_path.update(); }
 	if (m_path.finished() && m_writer) {
-		if (m_writer->is_stalling()) {
-			m_writer->start();
-			m_process_code_before = true;
-		}
+		if (m_writer->is_stalling()) { m_writer->start(); }
 	}
 	if (!m_writer) { return; }
 	if (m_writer->is_writing()) { svc.soundboard.flags.console.set(audio::Console::speech); }
@@ -129,6 +126,7 @@ void Console::handle_actions(int value) {
 
 void Console::load_and_launch(std::string_view key, OutputType type) {
 	m_writer = std::make_unique<TextWriter>(*m_services, text_suite, key);
+	m_process_code_before = true;
 	// load message codes
 	auto& in_data = text_suite[key]["codes"];
 	if (in_data) {
@@ -247,7 +245,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 			}
 		}
 		finished = m_writer->request_next();
-		m_process_code_before = true;
+		m_process_code_before = !finished;
 		can_skip = false;
 	}
 
@@ -258,7 +256,10 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 	(skip && can_skip) ? m_writer->speed_up() : m_writer->slow_down();
 
 	if (finished) {
-		if (m_writer->exit_requested()) { end(); }
+		if (m_writer->exit_requested()) {
+			end();
+			m_process_code_before = false;
+		}
 	}
 }
 

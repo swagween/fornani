@@ -1,5 +1,6 @@
 #pragma once
 
+#include <fornani/entities/Mobile.hpp>
 #include <string_view>
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/entities/Entity.hpp"
@@ -10,7 +11,6 @@
 #include "fornani/graphics/Indicator.hpp"
 #include "fornani/io/Logger.hpp"
 #include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Collider.hpp"
 #include "fornani/utils/Math.hpp"
 #include "fornani/utils/Polymorphic.hpp"
 #include "fornani/utils/StateFunction.hpp"
@@ -68,7 +68,7 @@ struct Flags {
 	util::BitFlags<Triggers> triggers{};
 };
 
-class Enemy : public Animatable {
+class Enemy : public Mobile {
   public:
 	Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned = false, int variant = 0, sf::Vector2<int> start_direction = {-1, 0});
 
@@ -108,8 +108,6 @@ class Enemy : public Animatable {
 	[[nodiscard]] auto is_foreground() const -> bool { return flags.general.test(GeneralFlags::foreground); }
 	[[nodiscard]] auto is_transcendent() const -> bool { return flags.general.test(GeneralFlags::transcendent); }
 	[[nodiscard]] auto permadeath() const -> bool { return flags.general.test(GeneralFlags::permadeath); }
-	[[nodiscard]] auto get_actual_direction() const -> Direction { return directions.actual; }
-	[[nodiscard]] bool player_behind(player::Player& player) const;
 
 	void set_position(sf::Vector2f pos) {
 		collider.physics.position = pos;
@@ -121,7 +119,6 @@ class Enemy : public Animatable {
 		m_random_offset = {};
 	}
 
-	void face_player(player::Player& player);
 	void set_position_from_scaled(sf::Vector2f pos);
 	void hurt() { flags.state.set(StateFlags::hurt); }
 	void shake() { energy = hit_energy; }
@@ -134,7 +131,6 @@ class Enemy : public Animatable {
 
   protected:
 	std::string label{};
-	shape::Collider collider{};
 	shape::Collider secondary_collider{};
 	Flags flags{};
 	Attributes attributes{};
@@ -142,11 +138,6 @@ class Enemy : public Animatable {
 	util::Cooldown hitstun{};
 	util::Cooldown impulse{};
 	int afterlife{200};
-	struct {
-		Direction actual{};
-		Direction desired{};
-		Direction movement{};
-	} directions{};
 
 	util::Cooldown hurt_effect{};
 

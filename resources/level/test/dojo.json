@@ -26,45 +26,18 @@
         ]
       }
     ],
-    "chests": [
+    "npcs": [
       {
         "dimensions": [
           1,
           1
         ],
         "id": 0,
-        "modifier": 120,
+        "label": "gobe",
         "position": [
           10,
-          11
-        ],
-        "type": 2
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 3,
-        "modifier": 1,
-        "position": [
-          12,
-          11
-        ],
-        "type": 0
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 46186,
-        "modifier": 16,
-        "position": [
-          18,
           10
-        ],
-        "type": 2
+        ]
       }
     ],
     "portals": [
@@ -116,11 +89,20 @@
     ],
     "minimap": false,
     "music": "",
+    "player_start": [
+      0,
+      0
+    ],
     "properties": {
-      "day_night_shift": false,
-      "environmental_randomness": false
+      "day_night_shift": true,
+      "environmental_randomness": false,
+      "lighting": false,
+      "timer": false
     },
     "room_id": 4203,
+    "shader": {
+      "darken_factor": 0
+    },
     "style": 2
   },
   "tile": {

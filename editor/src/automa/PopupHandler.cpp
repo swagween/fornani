@@ -182,6 +182,40 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		}
 		ImGui::EndPopup();
 	}
+	if (ImGui::BeginPopupModal("NPC Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
+
+		static dj::Json in_specs{};
+		in_specs = *dj::Json::from_file(std::string{finder.paths.resources.string() + "/data/npc/npc_data.json"}.c_str());
+		assert(!in_specs.is_null());
+
+		static int id{fornani::random::random_range(10000, 99999)};
+		static std::string label{};
+
+		ImGui::Separator();
+		ImGui::Text("Name");
+		auto ctr{0};
+		static int selected{};
+		for (auto const& [key, count] : in_specs.as_object()) {
+			if (ImGui::Selectable(std::string{key}.c_str(), selected == ctr, ImGuiSelectableFlags_DontClosePopups)) {
+				label = std::string{key};
+				selected = ctr;
+			}
+			++ctr;
+		}
+		if (ImGui::Button("Create")) {
+			m_is_open = false;
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<NPC>(svc, id, label);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Close")) {
+			m_is_open = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 	if (ImGui::BeginPopupModal("Destructible Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
 		static int id{};
@@ -204,7 +238,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		static bool flipped{};
 		ImGui::Checkbox("Flipped", &flipped);
 		ImGui::SameLine();
-		help_marker("By default, the foot of the bed is on the left");
+		help_marker("By default, the foot of the bed is on the right");
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));

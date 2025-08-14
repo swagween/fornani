@@ -4,6 +4,7 @@ nani_add_sources(
   Destructible.cpp
         Inspectable.cpp
         Light.cpp
+        NPC.cpp
         Platform.cpp
         Portal.cpp
         SavePoint.cpp

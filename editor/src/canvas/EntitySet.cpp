@@ -10,6 +10,7 @@ namespace pi {
 EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 
 	create_map.emplace("beds", &create_entity<Bed>);
+	create_map.emplace("npcs", &create_entity<NPC>);
 	create_map.emplace("chests", &create_entity<Chest>);
 	create_map.emplace("lights", &create_entity<Light>);
 	create_map.emplace("enemies", &create_entity<Enemy>);

@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/graphics/Drawable.hpp>
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/utils/BitFlags.hpp"
@@ -16,7 +17,7 @@ enum class PortraitFlags : std::uint8_t { custom };
 constexpr float pad_x{20.f};
 constexpr float pad_y{20.f};
 
-class Portrait {
+class Portrait : public Drawable {
   public:
 	explicit Portrait(automa::ServiceProvider& svc, bool left = true);
 	void update(automa::ServiceProvider& svc);
@@ -32,7 +33,6 @@ class Portrait {
 	[[nodiscard]] auto get_emotion() const -> int { return emotion; }
 
   private:
-	sf::Sprite sprite;
 	sf::Sprite window;
 	std::string_view label{};
 	util::BitFlags<PortraitFlags> flags{};

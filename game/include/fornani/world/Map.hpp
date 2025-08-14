@@ -98,7 +98,6 @@ class Map {
 	std::vector<std::unique_ptr<world::Layer>>& get_layers();
 	std::unique_ptr<world::Layer>& get_middleground();
 	std::unique_ptr<world::Layer>& get_obscuring_layer();
-	npc::NPC& get_npc(int id);
 	sf::Vector2f get_spawn_position(int portal_source_map_id);
 	sf::Vector2f get_nearest_target_point(sf::Vector2f from);
 	sf::Vector2f last_checkpoint();
@@ -142,7 +141,7 @@ class Map {
 	std::array<std::vector<std::unique_ptr<vfx::Scenery>>, 6> scenery_layers{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};
-	std::vector<npc::NPC> npcs{};
+	std::vector<std::unique_ptr<npc::NPC>> npcs{};
 	std::vector<Platform> platforms{};
 	std::vector<Breakable> breakables{};
 	std::vector<Pushable> pushables{};

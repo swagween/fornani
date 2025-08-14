@@ -24,23 +24,23 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 
 	auto const& metadata = svc.data.map_jsons.at(room_lookup).metadata;
 	auto const& entities = metadata["entities"];
-	for (auto entry : entities["npcs"].as_array()) {
+	for (auto const& entry : entities["npcs"].as_array()) {
 		sf::Vector2f pos{};
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();
-		auto id = entry["id"].as<int>();
-		auto npc_label{entry["label"].as_string()};
-		npcs.push_back(npc::NPC(svc, npc_label, id));
-		auto npc_state = svc.quest.get_progression(fornani::QuestType::npc, id);
-		for (auto convo : entry["suites"][npc_state].as_array()) {
-			npcs.back().push_conversation(convo.as<int>());
+		auto npc_label = entry["label"].as_string();
+		auto npc_id = svc.data.npc[npc_label]["id"].as<int>();
+		npcs.push_back(std::make_unique<npc::NPC>(svc, npc_label));
+		auto npc_state = svc.quest.get_progression(fornani::QuestType::npc, npc_id);
+		for (auto const& convo : entry["suites"][npc_state].as_array()) {
+			npcs.back()->push_conversation(convo.as<int>());
 			NANI_LOG_DEBUG(m_logger, "Pushed conversation {}", convo.as<int>());
 		}
-		npcs.back().set_position_from_scaled(pos);
-		if (static_cast<bool>(entry["background"].as_bool())) { npcs.back().push_to_background(); }
-		if (static_cast<bool>(entry["hidden"].as_bool())) { npcs.back().hide(); }
-		if (svc.quest.get_progression(fornani::QuestType::hidden_npcs, id) > 0) { npcs.back().unhide(); }
-		npcs.back().set_current_location(room_id);
+		npcs.back()->set_position_from_scaled(pos);
+		if (static_cast<bool>(entry["background"].as_bool())) { npcs.back()->push_to_background(); }
+		if (static_cast<bool>(entry["hidden"].as_bool())) { npcs.back()->hide(); }
+		if (svc.quest.get_progression(fornani::QuestType::hidden_npcs, npc_id) > 0) { npcs.back()->unhide(); }
+		npcs.back()->set_current_location(room_id);
 	}
 
 	for (auto& entry : entities["chests"].as_array()) {
@@ -311,8 +311,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		}
 	}
 
-	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->update(svc, console, *this, *player); }
-
 	if (flags.state.test(LevelState::spawn_enemy)) {
 		for (auto& spawn : enemy_spawns) {
 			enemy_catalog.push_enemy(*m_services, *this, console, spawn.id, true);
@@ -344,17 +342,17 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	// TODO: refactor this
 	if (svc.player_dat.piggy_id != 0) {
 		for (auto& n : npcs) {
-			if (n.get_id() == svc.player_dat.piggy_id) { n.hide(); }
+			if (n->get_id() == svc.player_dat.piggy_id) { n->hide(); }
 		}
 	}
 	if (svc.player_dat.drop_piggy) {
 		svc.player_dat.drop_piggy = false;
 		for (auto& n : npcs) {
-			if (n.get_id() == svc.player_dat.piggy_id) {
-				n.unhide();
-				n.set_position(player->collider.physics.position);
-				n.apply_force({32.f, -32.f});
-				n.set_current_location(room_id);
+			if (n->get_id() == svc.player_dat.piggy_id) {
+				n->unhide();
+				n->set_position(player->collider.physics.position);
+				n->apply_force({32.f, -32.f});
+				n->set_current_location(room_id);
 			}
 		}
 		svc.player_dat.piggy_id = 0;
@@ -365,7 +363,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	std::erase_if(breakables, [](auto const& b) { return b.destroyed(); });
 	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
 	std::erase_if(destroyers, [](auto const& d) { return d.detonated(); });
-	std::erase_if(npcs, [](auto const& n) { return n.piggybacking(); });
+	std::erase_if(npcs, [](auto const& n) { return n->piggybacking(); });
 	enemy_catalog.update();
 
 	manage_projectiles(svc);
@@ -393,7 +391,8 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 	for (auto& chest : chests) { chest.update(svc, *this, console, *player); }
-	for (auto& npc : npcs) { npc.update(svc, *this, console, *player); }
+	for (auto& npc : npcs) { npc->update(svc, *this, console, *player); }
+	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->update(svc, console, *this, *player); }
 	for (auto& portal : portals) { portal.handle_activation(svc, *player, console, room_id, transition); }
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, svc.data.map_jsons.at(room_lookup).metadata["entities"]["inspectables"]); }
 	for (auto& animator : animators) { animator.update(svc); }
@@ -469,7 +468,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& bed : beds) { bed.render(svc, win, cam); }
 	for (auto& chest : chests) { chest.render(win, cam); }
 	for (auto& npc : npcs) {
-		if (!npc.background()) { npc.render(svc, win, cam); }
+		if (!npc->background()) { npc->render(svc, win, cam); }
 	}
 	player->render(svc, win, cam);
 	for (auto& enemy : enemy_catalog.enemies) {
@@ -557,7 +556,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 			}
 		}
 		for (auto& npc : npcs) {
-			if (npc.background()) { npc.render(svc, win, cam); }
+			if (npc->background()) { npc->render(svc, win, cam); }
 		}
 		for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam, true); }
 	} else {
@@ -741,14 +740,6 @@ std::vector<std::unique_ptr<world::Layer>>& Map::get_layers() { return m_service
 std::unique_ptr<world::Layer>& Map::get_middleground() { return m_services->data.get_layers(room_id).at(m_middleground); }
 
 std::unique_ptr<world::Layer>& Map::get_obscuring_layer() { return m_services->data.get_layers(room_id).at(static_cast<std::size_t>(m_services->data.get_layers(room_id).size() - 1)); }
-
-npc::NPC& Map::get_npc(int id) {
-	for (auto& npc : npcs) {
-		if (npc.get_id() == id) { return npc; }
-	}
-	NANI_LOG_ERROR(m_logger, "Tried to get NPC that didn't exist! ID: {}", id);
-	std::exit(1);
-}
 
 sf::Vector2f Map::get_spawn_position(int portal_source_map_id) {
 	for (auto& portal : portals) {

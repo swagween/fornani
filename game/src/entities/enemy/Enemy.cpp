@@ -12,10 +12,12 @@
 namespace fornani::enemy {
 
 Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
-	: Animatable(svc, "enemy_" + std::string{label}, {svc.data.enemy[label]["physical"]["sprite_dimensions"][0].as<int>(), svc.data.enemy[label]["physical"]["sprite_dimensions"][1].as<int>()}), metadata{.variant{variant}}, label(label),
-	  health_indicator{svc}, directions{.actual{start_direction}, .desired{start_direction}}, hurt_effect{128} {
+	: Mobile(svc, "enemy_" + std::string{label}, sf::Vector2i{svc.data.enemy[label]["physical"]["sprite_dimensions"][0].as<int>(), svc.data.enemy[label]["physical"]["sprite_dimensions"][1].as<int>()}), metadata{.variant{variant}},
+	  label(label), health_indicator{svc}, hurt_effect{128} {
 
 	if (spawned) { flags.general.set(GeneralFlags::spawned); }
+	directions.actual = Direction{start_direction};
+	directions.desired = Direction{start_direction};
 
 	auto const& in_data = svc.data.enemy[label];
 	auto const& in_metadata = in_data["metadata"];
@@ -283,10 +285,6 @@ bool Enemy::seek_home(world::Map& map) {
 	}
 	return false;
 }
-
-bool Enemy::player_behind(player::Player& player) const { return player.collider.physics.position.x + player.collider.bounding_box.get_dimensions().x * 0.5f < collider.physics.position.x + collider.dimensions.x * 0.5f; }
-
-void Enemy::face_player(player::Player& player) { directions.desired.set((player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right); }
 
 void Enemy::set_position_from_scaled(sf::Vector2f pos) {
 	auto new_pos = pos;

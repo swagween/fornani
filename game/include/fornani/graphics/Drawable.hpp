@@ -33,6 +33,8 @@ class Drawable : public sf::Drawable, Polymorphic {
 	[[nodiscard]] auto get_window_position() const -> sf::Vector2f { return m_sprite.getPosition(); }
 
   protected:
+	void set_texture(sf::Texture const& to) { m_sprite.setTexture(to); }
+	void set_sprite(sf::Sprite const& sprite) { m_sprite = sprite; }
 	io::Logger m_logger{"Rendering"};
 
   private:

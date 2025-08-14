@@ -154,10 +154,6 @@
 			]
 		}
 	},
-	"minigus2": {
-	},
-	"minigus3": {
-	},
 	"dr_go1": {
 		"suite": [
 			[ "Oh!", "I wasn't expecting a Kariba to stroll in here.", "I suspect we are in our final hours, merely waiting for the Firstwind to lose her ability to fly and spiral down into the gas giant.", "It will be a graceless end, that's for certain.%0" ],
@@ -291,67 +287,91 @@
 		"responses": [
 		]
 	},
-	"lady_nimbus1": {
-		"suite": [
-			[ "Gus... Gus...?", "Gus, do you copy?" ]
-		],
-		"responses": [
-		]
+	"lady_nimbus": {
+		"1": {
+			"suite": [
+				[ "Gus... Gus...?", "Gus, do you copy?" ]
+			],
+			"responses": [
+			]
+		},
+		"2": {
+			"codes": [
+				[ 0, 0, 0, 5, 2 ],
+				[ 0, 0, 2, 5, 1 ]
+			],
+			"suite": [
+				[ "Flee?!", "What do you mean?", "The ship has been securely ours for months." ]
+			],
+			"responses": [
+			]
+		},
+		"3": {
+			"codes": [
+			],
+			"suite": [
+				[ "...", "It is unlike you to fail me so, Gus." ]
+			],
+			"responses": [
+			]
+		},
+		"4": {
+			"suite": [
+				[ "Your next paycheck isn't going to exist, I'm afraid." ]
+			],
+			"responses": [
+			]
+		},
+		"5": {
+			"suite": [
+				[ "I'll see to it that it won't.", "I have no interest in wasting any more time dealing with Nani.", "I'm sending Lynx after her, and that'll be the end of it." ]
+			],
+			"responses": [
+			]
+		}
 	},
-	"hologus1": {
-		"suite": [
-			[ "&1My Lady...?", "I'm here. I have an unstable connection here, and I can barely hear you.", "I had to flee Firstwind." ]
-		],
-		"responses": [
-		]
-	},
-	"lady_nimbus2": {
-		"suite": [
-			[ "Flee?!", "What do you mean?", "The ship has been securely ours for months." ]
-		],
-		"responses": [
-		]
-	},
-	"hologus2": {
-		"suite": [
-			[ "&2My mask was compromised. And besides, the storms up here are ferocious.", "And I have even worse news...", "The Kariba girl escaped." ]
-		],
-		"responses": [
-		]
-	},
-	"lady_nimbus3": {
-		"suite": [
-			[ "...", "It is unlike you to fail me so, Gus." ]
-		],
-		"responses": [
-		]
-	},
-	"hologus3": {
-		"suite": [
-			[ "&5I got nothing at all to say. She had a gun, and she's pretty nimble.", "I won't underestimate her again.", "And, by the way, it seems like her memories might be coming back, so I'd bet my next paycheck she's going to try to find her brother." ]
-		],
-		"responses": [
-		]
-	},
-	"lady_nimbus4": {
-		"suite": [
-			[ "Your next paycheck isn't going to exist, I'm afraid." ]
-		],
-		"responses": [
-		]
-	},
-	"hologus4": {
-		"suite": [
-			[ "&4@2I set myself up for that one, I guess.", "&6@1Anyway, do us both a favor and get someone else to deal with the Kariba for now.", "I'll need to properly prepare for the next time I fight her, if it comes to that." ]
-		],
-		"responses": [
-		]
-	},
-	"lady_nimbus5": {
-		"suite": [
-			[ "I'll see to it that it won't.", "I have no interest in wasting any more time dealing with Nani.", "I'm sending Lynx after her, and that'll be the end of it." ]
-		],
-		"responses": [
-		]
+	"hologus": {
+		"1": {
+			"codes": [
+				[ 0, 0, 4, 1, 0 ]
+			],
+			"suite": [
+				[ "My Lady...?", "I'm here. I have an unstable connection here, and I can barely hear you.", "I had to flee Firstwind." ]
+			],
+			"responses": [
+			]
+		},
+		"2": {
+			"codes": [
+				[ 0, 0, 4, 1, 3 ]
+			],
+			"suite": [
+				[ "My mask was compromised. And besides, the storms up here are ferocious.", "And I have even worse news...", "The Kariba girl escaped." ]
+			],
+			"responses": [
+			]
+		},
+		"3": {
+			"codes": [
+				[ 0, 0, 4, 1, 5 ]
+			],
+			"suite": [
+				[ "I got nothing at all to say. She had a gun, and she's pretty nimble.", "I won't underestimate her again.", "And, by the way, it seems like her memories might be coming back, so I'd bet my next paycheck she's going to try to find her brother." ]
+			],
+			"responses": [
+			]
+		},
+		"4": {
+			"codes": [
+				[ 0, 0, 0, 4, 2 ],
+				[ 0, 0, 0, 5, 2 ],
+				[ 0, 0, 1, 5, 1 ]
+			],
+			"suite": [
+				[ "I set myself up for that one, I guess.", "Anyway, do us both a favor and get someone else to deal with the Kariba for now.", "I'll need to properly prepare for the next time I fight her, if it comes to that." ]
+			],
+			"responses": [
+			]
+		}
 	}
 }

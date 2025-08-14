@@ -43,7 +43,7 @@
 					10.0
 				],
 				"attributes": {
-					"base_damage": 8,
+					"base_damage": 80,
 					"lifespan": 85,
 					"lifespan_variance": 0,
 					"speed": 20.5,

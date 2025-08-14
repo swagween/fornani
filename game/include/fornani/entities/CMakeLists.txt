@@ -9,4 +9,5 @@ add_subdirectory(world)
 
 nani_add_headers(
         Entity.hpp
+        Mobile.hpp
 )
