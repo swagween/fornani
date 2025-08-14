@@ -59,7 +59,7 @@ void Player::update(world::Map& map) {
 		force_multiplier = 1.f;
 		m_camera.target_point = sf::Vector2f{camx, 0.f};
 	}
-	m_camera.camera.center(get_camera_focus_point(), force_multiplier);
+	if (!is_dead()) { m_camera.camera.center(get_camera_focus_point(), force_multiplier); }
 	m_camera.camera.update(*m_services);
 
 	invincible() ? collider.draw_hurtbox.setFillColor(colors::red) : collider.draw_hurtbox.setFillColor(colors::blue);

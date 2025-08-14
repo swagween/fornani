@@ -12,8 +12,8 @@ static bool b_start{};
 static void start_battle(int battle) { b_start = true; }
 
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console)
-	: Enemy(svc, "minigus"), gun(svc, "minigun"), soda(svc, "soda_gun"), m_services(&svc), npc::NPC(svc, "minigus", 7), m_map(&map), health_bar(svc), sparkler(svc, Enemy::collider.vicinity.get_dimensions(), colors::ui_white, "minigus"),
-	  m_console{&console}, m_mode{MinigusMode::neutral}, m_minigun{svc} {
+	: Enemy(svc, "minigus"), gun(svc, "minigun"), soda(svc, "soda_gun"), m_services(&svc), npc::NPC(svc, "minigus", 7), m_map(&map), health_bar(svc, "minigus"),
+	  sparkler(svc, Enemy::collider.vicinity.get_dimensions(), colors::ui_white, "minigus"), m_console{&console}, m_mode{MinigusMode::neutral}, m_minigun{svc} {
 
 	svc.events.register_event(std::make_unique<Event<int>>("StartBattle", &start_battle));
 
@@ -53,7 +53,7 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	attacks.rush.origin = {40.f, 10.f};
 	attacks.rush.hit_offset = {-20.f, 0.f};
 
-	distant_range.set_dimensions({900, 200});
+	distant_range.set_dimensions({800, 800});
 	Enemy::collider.stats.GRAV = 6.0f;
 	sprite_direction.lnr = LNR::left;
 	directions.actual.lnr = LNR::left;
@@ -64,9 +64,13 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 }
 
 void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (init) {
+		m_minigun.set_physics_position(Enemy::collider.get_center());
+		init = false;
+	}
 	sparkler.update(svc);
 	sparkler.set_position(Enemy::collider.vicinity.get_position());
-	health_bar.update(svc, {svc.window->f_center_screen().x, 50.f}, health);
+	health_bar.update(health.get_normalized());
 
 	if (map.off_the_bottom(Enemy::collider.physics.position)) {
 		post_death.cancel();
@@ -247,15 +251,18 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 
 	if (half_health()) {
 		auto pos = secondary_collider.physics.position + random::random_vector_float(10.f, 40.f);
-		if (svc.ticker.every_x_ticks(10) && random::percent_chance(5)) { map.effects.push_back(entity::Effect(svc, "puff", pos, {0.f, 4.f}, 3)); }
+		if (svc.ticker.every_x_ticks(10) && random::percent_chance(5)) { map.effects.push_back(entity::Effect(svc, "puff", pos, {0.f, -0.01f}, 3)); }
 	}
 
-	// NPC stuff
+	if (player.is_dead()) { request(MinigusState::laugh); }
 
+	// NPC stuff
 	if (player.collider.bounding_box.overlaps(distant_range) && !state_flags.test(npc::NPCState::introduced) && state_flags.test(npc::NPCState::force_interact)) { triggers.set(npc::NPCTrigger::distant_interact); }
 
-	// XXX TODO: get console here
 	NPC::update(svc, map, *m_console, player);
+	if (m_console) {
+		if (m_console->has_value()) { m_console->value()->set_no_exit(true); }
+	}
 	console_complete = static_cast<bool>(m_console);
 
 	if (b_start) {
@@ -272,7 +279,6 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		svc.music_player.load(svc.finder, "minigus");
 		svc.music_player.play_looped();
 		status.set(MinigusFlags::theme_song);
-		if (m_console) { m_console->value()->set_no_exit(true); }
 	}
 
 	if (health.is_dead() && !status.test(MinigusFlags::over_and_out) && !status.test(MinigusFlags::goodbye)) { request(MinigusState::struggle); }
@@ -285,6 +291,7 @@ void Minigus::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	NPC::render(svc, win, cam);
 	Enemy::render(svc, win, cam);
 
+	m_minigun.set_scale(get_scale());
 	m_minigun.render(cam);
 	sparkler.render(svc, win, cam);
 
@@ -308,11 +315,9 @@ void Minigus::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf
 fsm::StateFunction Minigus::update_idle() {
 	m_state.actual = MinigusState::idle;
 	if (animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "idle"); }
-	if (!is_battle_mode()) {
-		request(MinigusState::idle);
-		if (change_state(MinigusState::idle, idle)) { return MINIGUS_BIND(update_idle); }
-	}
+	if (!is_battle_mode()) { request(MinigusState::idle); }
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
+	if (change_state(MinigusState::laugh, laugh)) { return MINIGUS_BIND(update_laugh); }
 	if (change_state(MinigusState::jumpsquat, jumpsquat)) { return MINIGUS_BIND(update_jumpsquat); }
 	if (change_state(MinigusState::run, run)) { return MINIGUS_BIND(update_run); }
 	if (change_state(MinigusState::reload, reload)) { return MINIGUS_BIND(update_reload); }
@@ -534,7 +539,6 @@ fsm::StateFunction Minigus::update_turn() {
 	directions.desired.lock();
 	if (animation.complete()) {
 		request_flip();
-		m_minigun.flip();
 		if (invincible()) {
 			counters.invincible_turn.update();
 			if (m_minigun.flags.test(MinigunFlags::exhausted)) {
@@ -792,12 +796,13 @@ fsm::StateFunction Minigus::update_struggle() {
 			triggers.set(npc::NPCTrigger::distant_interact);
 			flush_conversations();
 			push_conversation(2);
-			m_services->music_player.stop();
+			m_services->music_player.pause();
 			m_services->soundboard.flags.minigus.set(audio::Minigus::crash);
 			m_services->soundboard.flags.minigus.set(audio::Minigus::quick_breath);
 			m_services->soundboard.flags.minigus.set(audio::Minigus::long_moan);
 		}
-		if (!animation.just_started() && console_complete && !status.test(MinigusFlags::exit_scene)) {
+		if (!animation.just_started() && !m_console->has_value() && !status.test(MinigusFlags::exit_scene)) {
+			NANI_LOG_DEBUG(m_logger, "Exit cooldown started");
 			status.set(MinigusFlags::exit_scene);
 			cooldowns.exit.start();
 		}
@@ -805,6 +810,7 @@ fsm::StateFunction Minigus::update_struggle() {
 		flags.state.set(StateFlags::special_death_mode);
 
 		if (cooldowns.exit.is_complete() && status.test(MinigusFlags::exit_scene)) {
+			NANI_LOG_DEBUG(m_logger, "Goodbye started");
 			triggers.set(npc::NPCTrigger::distant_interact);
 			m_services->music_player.stop();
 			flush_conversations();

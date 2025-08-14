@@ -16,8 +16,8 @@ PlayerAnimation::PlayerAnimation(Player& plr)
 							   {"run", {44, 4, 6 * rate, -1}},
 							   {"sprint", {10, 6, 4 * rate, -1}},
 							   {"shield", {80, 3, 4 * rate, -1, true}},
-							   {"between_push", {85, 1, 4 * rate, 0}},
-							   {"push", {86, 4, 7 * rate, -1}},
+							   {"between_push", {85, 1, 2 * rate, 0}},
+							   {"push", {86, 4, 5 * rate, -1}},
 							   {"rise", {40, 4, 6 * rate, 0}},
 							   {"walljump", {40, 4, 6 * rate, 0}},
 							   {"suspend", {30, 3, 7 * rate, -1}},
@@ -613,6 +613,7 @@ fsm::StateFunction PlayerAnimation::update_die() {
 		triggers.reset(AnimTriggers::end_death);
 		m_player->m_services->state_controller.actions.set(automa::Actions::death_mode); // set here, reset on map load
 	}
+	if (animation.get_frame() > 2 && !m_player->collider.grounded()) { animation.set_frame(2); }
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();
 	m_player->collider.collision_depths = {};

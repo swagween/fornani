@@ -49,6 +49,7 @@ struct MessageCode {
 	[[nodiscard]] auto is_reveal_item() const -> bool { return type == MessageCodeType::reveal_item; }
 	[[nodiscard]] auto is_start_battle() const -> bool { return type == MessageCodeType::start_battle; }
 	[[nodiscard]] auto is_voice_cue() const -> bool { return type == MessageCodeType::voice; }
+	[[nodiscard]] auto is_emotion() const -> bool { return type == MessageCodeType::emotion; }
 };
 
 class Console {

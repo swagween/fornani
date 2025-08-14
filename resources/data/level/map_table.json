@@ -86,6 +86,12 @@
     },
     {
       "folder": "firstwind",
+      "label": "fall.json",
+      "region": "firstwind",
+      "room_id": 199
+    },
+    {
+      "folder": "firstwind",
       "label": "hangar.json",
       "region": "firstwind",
       "room_id": 116
@@ -155,6 +161,12 @@
       "label": "cellar.json",
       "region": "kariba",
       "room_id": 410
+    },
+    {
+      "folder": "overturned",
+      "label": "landing.json",
+      "region": "overturned",
+      "room_id": 200
     },
     {
       "folder": "test",

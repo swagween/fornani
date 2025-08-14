@@ -59,7 +59,6 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vect
 	switch_up.start();
 	sprite.setScale(constants::f_scale_vec);
 
-	NANI_LOG_DEBUG(m_logger, "Path pos: [{}]", path_position);
 	auto edge_start = 0.f;
 	for (std::size_t x = 0; x < track.size() - 1; ++x) {
 		auto const start = track[x];

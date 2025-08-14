@@ -54,33 +54,46 @@ void Console::update(automa::ServiceProvider& svc) {
 		m_response->set_position(m_position + m_response_offset);
 		m_response->update();
 	}
-	m_npc_portrait.update(svc);
-	m_nani_portrait.update(svc);
 	if (m_item_widget) { m_item_widget->update(svc); }
 
 	// check for response or message code
+
+	bool processed{};
 	for (auto& code : m_codes) {
-		if (code.set == m_writer->get_current_suite_set() && code.index == m_writer->get_index()) {
+		if (code.set == m_writer->get_current_suite_set() && code.index == m_writer->get_index() && m_writer) {
 			if (code.is_response() && m_writer->is_available()) { m_writer->respond(); }
-			if (get_message_code().is_input_hint() && m_writer) {
-				auto action_id = get_message_code().extras ? get_message_code().extras->at(0) : 0;
+			if (code.is_input_hint()) {
+				auto action_id = code.extras ? code.extras->at(0) : 0;
 				auto lookup = m_services->controller_map.get_icon_lookup_by_action(static_cast<config::DigitalAction>(action_id));
-				m_writer->insert_icon_at(get_message_code().value, lookup);
+				m_writer->insert_icon_at(code.value, lookup);
 			}
-			if (get_message_code().is_reveal_item() && m_writer && m_process_codes) {
-				svc.events.dispatch_event("RevealItem", get_message_code().value);
+			if (code.is_reveal_item() && m_process_codes) {
+				svc.events.dispatch_event("RevealItem", code.value);
 				m_process_codes = false;
 			}
-			if (get_message_code().is_start_battle() && m_process_code_after) {
-				svc.events.dispatch_event("StartBattle", get_message_code().value);
+			if (code.is_start_battle() && m_process_code_after) {
+				svc.events.dispatch_event("StartBattle", code.value);
 				m_process_code_after = false;
 			}
-			if (get_message_code().is_voice_cue() && m_writer && m_process_code_before) {
-				svc.events.dispatch_event("VoiceCue", get_message_code().value);
-				m_process_code_before = false;
+			if (code.is_voice_cue() && m_process_code_before) {
+				svc.events.dispatch_event("VoiceCue", code.value);
+				NANI_LOG_DEBUG(m_logger, "Voice!");
+				processed = true;
+			}
+			if (code.is_emotion() && m_process_code_before) {
+				m_npc_portrait.set_emotion(code.value);
+				NANI_LOG_DEBUG(m_logger, "Emotion!");
+				processed = true;
+			}
+			if (code.is_destructible() && m_process_codes) {
+				m_services->data.destroy_block(code.value);
+				m_process_codes = false;
 			}
 		}
 	}
+	if (processed) { m_process_code_before = false; }
+	m_npc_portrait.update(svc);
+	m_nani_portrait.update(svc);
 }
 
 void Console::render(sf::RenderWindow& win) {

@@ -107,14 +107,16 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.minigus.test(Minigus::deepspeak)) { play(engine, svc, svc.sounds.get_buffer("minigus_deepspeak")); }
 	if (flags.minigus.test(Minigus::quick_breath)) { play(engine, svc, svc.sounds.get_buffer("minigus_quick_breath")); }
 	if (flags.minigus.test(Minigus::long_moan)) { play(engine, svc, svc.sounds.get_buffer("minigus_long_moan")); }
-	if (flags.minigus.test(Minigus::poh)) { play(engine, svc, svc.sounds.get_buffer("minigus_long_poh")); }
-	if (flags.minigus.test(Minigus::soda)) { play(engine, svc, svc.sounds.get_buffer("minigus_long_soda")); }
+	if (flags.minigus.test(Minigus::poh)) { play(engine, svc, svc.sounds.get_buffer("minigus_poh")); }
+	if (flags.minigus.test(Minigus::soda)) { play(engine, svc, svc.sounds.get_buffer("minigus_soda")); }
 	if (flags.minigus.test(Minigus::doge)) { play(engine, svc, svc.sounds.get_buffer("minigus_doge")); }
-	if (flags.minigus.test(Minigus::charge)) { play(engine, svc, svc.sounds.get_buffer("minigus_charge")); }
+	if (flags.minigus.test(Minigus::charge)) { play(engine, svc, svc.sounds.get_buffer("minigus_gun_charge")); }
 	if (flags.minigus.test(Minigus::pizza)) { play(engine, svc, svc.sounds.get_buffer("minigus_pizza")); }
 	if (flags.minigus.test(Minigus::greatidea)) { play(engine, svc, svc.sounds.get_buffer("minigus_greatidea")); }
 	if (flags.minigus.test(Minigus::dontlookatme)) { play(engine, svc, svc.sounds.get_buffer("minigus_dontlookatme")); }
 	if (flags.minigus.test(Minigus::grunt)) { play(engine, svc, svc.sounds.get_buffer("minigus_grunt")); }
+	if (flags.minigus.test(Minigus::ok)) { play(engine, svc, svc.sounds.get_buffer("minigus_ok_1")); }
+	if (flags.minigus.test(Minigus::exhale)) { play(engine, svc, svc.sounds.get_buffer("minigus_exhale")); }
 
 	// npc
 	if (flags.npc.test(NPC::minigus_getit)) { play(engine, svc, svc.sounds.get_buffer("minigus_getit")); }

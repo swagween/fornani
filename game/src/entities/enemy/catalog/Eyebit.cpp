@@ -20,8 +20,7 @@ void Eyebit::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	seeker_cooldown.update();
 	flags.state.set(StateFlags::vulnerable); // eyebit is always vulnerable
 
-	// reset animation states to determine next animation state
-	directions.desired.lnr = (player.collider.physics.position.x < collider.physics.position.x) ? LNR::left : LNR::right;
+	face_player(player);
 
 	state_function = state_function();
 
@@ -52,7 +51,7 @@ fsm::StateFunction Eyebit::update_idle() {
 fsm::StateFunction Eyebit::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
-		flip();
+		request_flip();
 		state.set(EyebitState::idle);
 		animation.set_params(idle);
 		return EYEBIT_BIND(update_idle);

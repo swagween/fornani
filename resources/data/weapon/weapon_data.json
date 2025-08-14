@@ -29,7 +29,7 @@
 			"attributes": {
 				"automatic": false,
 				"ammo": 4,
-				"reload": 300,
+				"reload": 260,
 				"cooldown_time": 30,
 				"recoil": 0.0
 			}

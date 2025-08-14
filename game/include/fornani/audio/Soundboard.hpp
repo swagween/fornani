@@ -71,8 +71,10 @@ enum class Minigus : std::uint8_t {
 	pizza,
 	greatidea,
 	dontlookatme,
-	grunt
+	grunt,
+	exhale
 };
+
 enum class NPC : std::uint8_t { minigus_greatidea, minigus_dontlookatme, minigus_laugh, minigus_getit, minigus_pizza, minigus_grunt };
 
 class Soundboard {

@@ -7,7 +7,7 @@
 #include "fornani/entities/packages/Caution.hpp"
 #include "fornani/entities/packages/Shockwave.hpp"
 #include "fornani/graphics/SpriteHistory.hpp"
-#include "fornani/gui/StatusBar.hpp"
+#include "fornani/gui/BossHealth.hpp"
 #include "fornani/io/Logger.hpp"
 #include "fornani/particle/Sparkler.hpp"
 
@@ -26,6 +26,7 @@ class Minigun : public Animatable {
 	Minigun(automa::ServiceProvider& svc) : Animatable(svc, "minigus_minigun", {39, 15}) {}
 	void update(sf::Vector2f const target);
 	void render(sf::Vector2f const cam);
+	void set_physics_position(sf::Vector2f const to) { m_physics.position = to; }
 	MinigunState state{};
 	sf::Vector2f offset{};
 	anim::Parameters neutral{21, 4, 28, -1};
@@ -82,9 +83,10 @@ class Minigus : public Enemy, public npc::NPC {
 
 	bool anim_debug{};
 	bool console_complete{};
+	bool init{true};
 	MinigusMode m_mode{};
 	util::BitFlags<MinigusFlags> status{};
-	gui::StatusBar health_bar;
+	gui::BossHealth health_bar;
 	graphics::SpriteHistory sprite_history{8};
 
 	Direction sprite_direction{};
@@ -106,7 +108,6 @@ class Minigus : public Enemy, public npc::NPC {
 	float snap_chance{10.f};
 	float rush_chance{20.f};
 	float rush_speed{8.f};
-	int health_bar_size{600};
 
 	// packages
 	entity::WeaponPackage gun;

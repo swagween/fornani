@@ -116,6 +116,46 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
 	}
 
+	for (auto& entry : entities["platforms"].as_array()) {
+		sf::Vector2f dim{};
+		sf::Vector2f pos{};
+		pos.x = entry["position"][0].as<float>();
+		pos.y = entry["position"][1].as<float>();
+		dim.x = entry["dimensions"][0].as<float>();
+		dim.y = entry["dimensions"][1].as<float>();
+		pos *= constants::f_cell_size;
+		dim *= constants::f_cell_size;
+		auto start = entry["start"].as<float>();
+		start = ccm::ext::clamp(start, 0.f, 1.f);
+		auto type = entry["type"].as_string();
+		platforms.push_back(Platform(svc, pos, dim, entry["extent"].as<float>(), type, start, entry["style"].as<int>()));
+	}
+	for (auto& entry : entities["switch_blocks"].as_array()) {
+		sf::Vector2f pos{};
+		pos.x = entry["position"][0].as<float>();
+		pos.y = entry["position"][1].as<float>();
+		pos *= constants::f_cell_size;
+		auto type = entry["type"].as<int>();
+		auto button_id = entry["id"].as<int>();
+		switch_blocks.push_back(SwitchBlock(svc, pos, button_id, type));
+	}
+	for (auto& entry : entities["switch_buttons"].as_array()) {
+		sf::Vector2f pos{};
+		pos.x = entry["position"][0].as<float>();
+		pos.y = entry["position"][1].as<float>();
+		pos *= constants::f_cell_size;
+		auto type = entry["type"].as<int>();
+		auto button_id = entry["id"].as<int>();
+		switch_buttons.push_back(std::make_unique<SwitchButton>(svc, pos, button_id, type, *this));
+	}
+	for (auto& entry : entities["timer_blocks"].as_array()) {
+		sf::Vector2<std::uint32_t> pos{};
+		pos.x = entry["position"][0].as<std::uint32_t>();
+		pos.y = entry["position"][1].as<std::uint32_t>();
+		auto type = static_cast<TimerBlockType>(entry["type"].as<int>());
+		timer_blocks.push_back(TimerBlock(svc, pos, type, entry["id"].as<int>()));
+	}
+
 	generate_layer_textures(svc);
 	player->map_reset();
 	transition.end();
@@ -250,46 +290,6 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number) {
 	for (auto& entry : entities["save_point"].as_array()) {
 		auto save_id = svc.state_controller.save_point_id;
 		save_point = entity::SavePoint(svc, room_id, sf::Vector2<std::uint32_t>{entry["position"][0].as<std::uint32_t>(), entry["position"][1].as<std::uint32_t>()});
-	}
-
-	for (auto& entry : entities["platforms"].as_array()) {
-		sf::Vector2f dim{};
-		sf::Vector2f pos{};
-		pos.x = entry["position"][0].as<float>();
-		pos.y = entry["position"][1].as<float>();
-		dim.x = entry["dimensions"][0].as<float>();
-		dim.y = entry["dimensions"][1].as<float>();
-		pos *= constants::f_cell_size;
-		dim *= constants::f_cell_size;
-		auto start = entry["start"].as<float>();
-		start = ccm::ext::clamp(start, 0.f, 1.f);
-		auto type = entry["type"].as_string();
-		platforms.push_back(Platform(svc, pos, dim, entry["extent"].as<float>(), type, start, entry["style"].as<int>()));
-	}
-	for (auto& entry : entities["switch_blocks"].as_array()) {
-		sf::Vector2f pos{};
-		pos.x = entry["position"][0].as<float>();
-		pos.y = entry["position"][1].as<float>();
-		pos *= constants::f_cell_size;
-		auto type = entry["type"].as<int>();
-		auto button_id = entry["id"].as<int>();
-		switch_blocks.push_back(SwitchBlock(svc, pos, button_id, type));
-	}
-	for (auto& entry : entities["switch_buttons"].as_array()) {
-		sf::Vector2f pos{};
-		pos.x = entry["position"][0].as<float>();
-		pos.y = entry["position"][1].as<float>();
-		pos *= constants::f_cell_size;
-		auto type = entry["type"].as<int>();
-		auto button_id = entry["id"].as<int>();
-		switch_buttons.push_back(std::make_unique<SwitchButton>(svc, pos, button_id, type, *this));
-	}
-	for (auto& entry : entities["timer_blocks"].as_array()) {
-		sf::Vector2<std::uint32_t> pos{};
-		pos.x = entry["position"][0].as<std::uint32_t>();
-		pos.y = entry["position"][1].as<std::uint32_t>();
-		auto type = static_cast<TimerBlockType>(entry["type"].as<int>());
-		timer_blocks.push_back(TimerBlock(svc, pos, type, entry["id"].as<int>()));
 	}
 
 	generate_collidable_layer();
