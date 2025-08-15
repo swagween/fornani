@@ -1,4 +1,5 @@
 nani_add_sources(
+  Animator.cpp
   Bed.cpp
   Chest.cpp
   Destructible.cpp

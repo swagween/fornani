@@ -1,5 +1,33 @@
 {
   "entities": {
+    "animators": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 6,
+        "label": "small",
+        "position": [
+          16,
+          10
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 6,
+        "label": "small",
+        "position": [
+          79,
+          11
+        ]
+      }
+    ],
     "enemies": [
       {
         "dimensions": [
@@ -227,7 +255,7 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
+      "day_night_shift": true,
       "environmental_randomness": false,
       "lighting": false,
       "timer": false

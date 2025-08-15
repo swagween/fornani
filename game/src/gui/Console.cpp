@@ -82,9 +82,13 @@ void Console::update(automa::ServiceProvider& svc) {
 				NANI_LOG_DEBUG(m_logger, "Emotion!");
 				processed = true;
 			}
-			if (code.is_destructible() && m_process_codes) {
-				m_services->data.destroy_block(code.value);
-				m_process_codes = false;
+			if (code.extras) {
+				if (!code.extras->empty()) {
+					if (code.is_destructible() && m_process_codes && code.extras->at(0) == 1) {
+						m_services->data.destroy_block(code.value);
+						m_process_codes = false;
+					}
+				}
 			}
 		}
 	}
@@ -245,7 +249,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 			}
 		}
 		finished = m_writer->request_next();
-		m_process_code_before = !finished;
+		m_process_code_before = finished;
 		can_skip = false;
 	}
 

@@ -1,5 +1,33 @@
 {
   "entities": {
+    "animators": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 1,
+        "label": "small",
+        "position": [
+          2,
+          20
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 11,
+        "label": "small",
+        "position": [
+          5,
+          13
+        ]
+      }
+    ],
     "beds": [
       {
         "dimensions": [
@@ -158,7 +186,7 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
+      "day_night_shift": true,
       "environmental_randomness": false,
       "lighting": false,
       "timer": false

@@ -1,5 +1,46 @@
 {
   "entities": {
+    "animators": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 11,
+        "label": "small",
+        "position": [
+          30,
+          14
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "label": "small",
+        "position": [
+          20,
+          22
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 6,
+        "label": "small",
+        "position": [
+          21,
+          22
+        ]
+      }
+    ],
     "beds": [
       {
         "dimensions": [
@@ -120,7 +161,7 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
+      "day_night_shift": true,
       "environmental_randomness": false,
       "lighting": false,
       "timer": false
@@ -2752,8 +2793,8 @@
         0,
         0,
         0,
-        0,
-        0,
+        306,
+        306,
         77,
         0,
         0,
@@ -2800,8 +2841,8 @@
         0,
         0,
         0,
-        0,
-        0,
+        322,
+        322,
         0,
         0,
         0,

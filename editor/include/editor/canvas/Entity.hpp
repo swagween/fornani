@@ -34,6 +34,7 @@ class Entity : public fornani::Drawable {
 
 	// helpers
 	sf::RectangleShape drawbox{};
+	[[nodiscard]] auto get_id() const -> int { return m_id; }
 	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2u { return position; }
 	[[nodiscard]] auto get_dimensions() const -> sf::Vector2u { return dimensions; }
@@ -54,7 +55,7 @@ class Entity : public fornani::Drawable {
 	fornani::io::Logger m_logger{"Pioneer"};
 
   private:
-	int id{};
+	int m_id{};
 	std::string m_label{};
 };
 

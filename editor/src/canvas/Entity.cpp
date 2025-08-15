@@ -8,12 +8,12 @@ namespace pi {
 
 Entity::Entity(fornani::automa::ServiceProvider& svc, dj::Json const& in, std::string_view label) : Drawable(svc, label), m_label{label} { unserialize(in); }
 
-Entity::Entity(fornani::automa::ServiceProvider& svc, std::string_view label, int to_id, sf::Vector2<std::uint32_t> dim) : Drawable(svc, label), id{to_id}, m_label{label}, dimensions{dim} {}
+Entity::Entity(fornani::automa::ServiceProvider& svc, std::string_view label, int to_id, sf::Vector2<std::uint32_t> dim) : Drawable(svc, label), m_id{to_id}, m_label{label}, dimensions{dim} {}
 
 std::unique_ptr<Entity> Entity::clone() const { return std::unique_ptr<Entity>(); }
 
 void Entity::serialize(dj::Json& out) {
-	out["id"] = id;
+	out["id"] = m_id;
 	out["position"][0] = position.x;
 	out["position"][1] = position.y;
 	out["dimensions"][0] = dimensions.x;
@@ -21,8 +21,8 @@ void Entity::serialize(dj::Json& out) {
 }
 
 void Entity::unserialize(dj::Json const& in) {
-	id = in["id"].as<int>();
-	NANI_LOG_INFO(m_logger, "Unserializing entity with id {}", id);
+	m_id = in["id"].as<int>();
+	NANI_LOG_INFO(m_logger, "Unserializing entity with id {}", m_id);
 	position.x = in["position"][0].as<std::uint32_t>();
 	position.y = in["position"][1].as<std::uint32_t>();
 	dimensions.x = in["dimensions"][0].as<std::uint32_t>();
@@ -32,7 +32,7 @@ void Entity::unserialize(dj::Json const& in) {
 void Entity::expose() {
 	ImGui::Text("Category: %s", m_label.c_str());
 	ImGui::Separator();
-	ImGui::InputInt("Entity ID", &id);
+	ImGui::InputInt("Entity ID", &m_id);
 	ImGui::Text("Position: (%i", position.x);
 	ImGui::SameLine();
 	ImGui::Text(", %i)", position.y);

@@ -1,5 +1,72 @@
 {
   "entities": {
+    "animators": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 7,
+        "label": "small",
+        "position": [
+          12,
+          11
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 4,
+        "label": "small",
+        "position": [
+          6,
+          11
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 10,
+        "label": "small",
+        "position": [
+          23,
+          6
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 10,
+        "label": "small",
+        "position": [
+          16,
+          6
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 11,
+        "label": "small",
+        "position": [
+          19,
+          6
+        ]
+      }
+    ],
     "beds": [
       {
         "dimensions": [
@@ -225,7 +292,7 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
+      "day_night_shift": true,
       "environmental_randomness": false,
       "lighting": false,
       "timer": false
@@ -1479,14 +1546,14 @@
         0,
         0,
         0,
+        305,
+        0,
+        0,
+        305,
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        305,
         0,
         0,
         0,

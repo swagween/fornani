@@ -446,6 +446,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	bool timr{};
 	bool lght{};
 	bool npcs{};
+	bool anim{};
 	bool open_themes{};
 
 	bool new_room{b_new_file};
@@ -747,6 +748,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Timer Block", NULL, &timr)) {}
 			if (ImGui::MenuItem("Light", NULL, &lght)) {}
 			if (ImGui::MenuItem("NPC", NULL, &npcs)) {}
+			if (ImGui::MenuItem("Animator", NULL, &anim)) {}
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 				current_tool->current_entity = std::make_unique<SavePoint>(m_services, map.room_id);
@@ -878,6 +880,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	if (npcs) {
 		ImGui::OpenPopup("NPC Specifications");
 		label = "NPC Specifications";
+		popup_open = true;
+	}
+	if (anim) {
+		ImGui::OpenPopup("Animator Specifications");
+		label = "Animator Specifications";
 		popup_open = true;
 	}
 

@@ -233,6 +233,32 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		}
 		ImGui::EndPopup();
 	}
+	if (ImGui::BeginPopupModal("Animator Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
+		static int id{};
+		static char const* label{"small"};
+		static char const* types[2] = {"small", "large"};
+		ImGui::InputInt("ID (fix later, should be image buttons)", &id);
+		auto ctr{0};
+		if (ImGui::BeginCombo("Type", types[0])) {
+			for (auto const& t : types) {
+				if (ImGui::Selectable(t)) { label = t; }
+			}
+			ImGui::EndCombo();
+		}
+		if (ImGui::Button("Create")) {
+			m_is_open = false;
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<Animator>(svc, id, label);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Close")) {
+			m_is_open = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 	if (ImGui::BeginPopupModal("Bed Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
 		static bool flipped{};

@@ -1,5 +1,34 @@
 {
   "entities": {
+    "animators": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 11,
+        "label": "small",
+        "position": [
+          6,
+          11
+        ]
+      }
+    ],
+    "beds": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "flipped": true,
+        "id": 0,
+        "position": [
+          4,
+          11
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,
@@ -54,7 +83,7 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
+      "day_night_shift": true,
       "environmental_randomness": false,
       "lighting": false,
       "timer": false
@@ -512,7 +541,7 @@
         0,
         0,
         0,
-        0,
+        305,
         0,
         0,
         0,

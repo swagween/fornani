@@ -12,6 +12,7 @@
 #include <memory>
 #include <string_view>
 #include <unordered_map>
+#include "editor/canvas/entity/Animator.hpp"
 #include "editor/canvas/entity/Bed.hpp"
 #include "editor/canvas/entity/Chest.hpp"
 #include "editor/canvas/entity/Destructible.hpp"

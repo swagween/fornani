@@ -1,5 +1,202 @@
 {
   "entities": {
+    "animators": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "label": "small",
+        "position": [
+          9,
+          12
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "label": "small",
+        "position": [
+          16,
+          12
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 1,
+        "label": "small",
+        "position": [
+          10,
+          12
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 2,
+        "label": "small",
+        "position": [
+          19,
+          12
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 2,
+        "label": "small",
+        "position": [
+          20,
+          12
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 2,
+        "label": "small",
+        "position": [
+          12,
+          12
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 3,
+        "label": "small",
+        "position": [
+          11,
+          12
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 4,
+        "label": "small",
+        "position": [
+          15,
+          12
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 5,
+        "label": "small",
+        "position": [
+          14,
+          12
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 6,
+        "label": "small",
+        "position": [
+          18,
+          12
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 7,
+        "label": "small",
+        "position": [
+          21,
+          12
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 9,
+        "label": "small",
+        "position": [
+          8,
+          13
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 9,
+        "label": "small",
+        "position": [
+          13,
+          13
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 9,
+        "label": "small",
+        "position": [
+          17,
+          13
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 9,
+        "label": "small",
+        "position": [
+          22,
+          13
+        ]
+      }
+    ],
     "chests": [
       {
         "dimensions": [
@@ -99,7 +296,7 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
+      "day_night_shift": true,
       "environmental_randomness": false,
       "lighting": false,
       "timer": false

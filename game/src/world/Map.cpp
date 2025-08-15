@@ -52,19 +52,10 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	}
 
 	for (auto& entry : entities["animators"].as_array()) {
-		sf::Vector2<int> scaled_dim{};
-		sf::Vector2<int> scaled_pos{};
+		sf::Vector2i scaled_pos{};
 		scaled_pos.x = entry["position"][0].as<int>();
 		scaled_pos.y = entry["position"][1].as<int>();
-		scaled_dim.x = entry["dimensions"][0].as<int>();
-		scaled_dim.y = entry["dimensions"][1].as<int>();
-		auto automatic = static_cast<bool>(entry["automatic"].as_bool());
-		auto astyle = static_cast<bool>(entry["style"].as<int>());
-		auto lg = scaled_dim.x == 2;
-		auto foreground = static_cast<bool>(entry["foreground"].as_bool());
-		auto aid = entry["id"].as<int>();
-		auto a = entity::Animator(svc, m_metadata.biome, scaled_pos, foreground);
-		animators.push_back(a);
+		animators.push_back(entity::Animator(svc, entry["label"].as_string(), entry["id"].as<int>(), scaled_pos, entry["foreground"].as_bool()));
 	}
 	for (auto& entry : entities["beds"].as_array()) {
 		sf::Vector2f pos{};
@@ -395,7 +386,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->update(svc, console, *this, *player); }
 	for (auto& portal : portals) { portal.handle_activation(svc, *player, console, room_id, transition); }
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, svc.data.map_jsons.at(room_lookup).metadata["entities"]["inspectables"]); }
-	for (auto& animator : animators) { animator.update(svc); }
+	for (auto& animator : animators) { animator.update(); }
 	for (auto& effect : effects) { effect.update(); }
 	for (auto& atm : atmosphere) { atm.update(svc, *this, *player); }
 	for (auto& platform : platforms) { platform.update(svc, *this, *player); }
@@ -515,7 +506,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	player->render_indicators(svc, win, cam);
 
 	for (auto& animator : animators) {
-		if (animator.is_foreground()) { animator.render(svc, win, cam); }
+		if (animator.is_foreground()) { animator.render(win, cam); }
 	}
 
 	for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
@@ -570,7 +561,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		if (!vine->foreground()) { vine->render(svc, win, cam); }
 	}
 	for (auto& animator : animators) {
-		if (!animator.is_foreground()) { animator.render(svc, win, cam); }
+		if (!animator.is_foreground()) { animator.render(win, cam); }
 	}
 	for (auto& timer_block : timer_blocks) { timer_block.render(svc, win, cam); }
 }

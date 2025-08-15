@@ -1,5 +1,46 @@
 {
   "entities": {
+    "animators": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 6,
+        "label": "small",
+        "position": [
+          9,
+          22
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 5,
+        "label": "small",
+        "position": [
+          20,
+          61
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 4,
+        "label": "small",
+        "position": [
+          22,
+          61
+        ]
+      }
+    ],
     "chests": [
       {
         "dimensions": [
