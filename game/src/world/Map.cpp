@@ -23,7 +23,54 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	unserialize(svc, room_number);
 
 	auto const& metadata = svc.data.map_jsons.at(room_lookup).metadata;
+	auto const& meta = metadata["meta"];
 	auto const& entities = metadata["entities"];
+
+	svc.current_room = room_number;
+	if (meta["cutscene_on_entry"]["flag"].as_bool()) {
+		auto ctype = meta["cutscene_on_entry"]["type"].as<int>();
+		auto cid = meta["cutscene_on_entry"]["id"].as<int>();
+		auto csource = meta["cutscene_on_entry"]["source"].as<int>();
+		auto cutscene = util::QuestKey{ctype, cid, csource};
+		svc.quest.process(svc, cutscene);
+		cutscene_catalog.push_cutscene(svc, *this, cid);
+	}
+	if (meta["music"].is_string()) {
+		svc.music_player.load(svc.finder, meta["music"].as_string());
+		svc.music_player.play_looped();
+	}
+	if (meta["ambience"].is_string()) {
+		svc.ambience_player.load(svc.finder, meta["ambience"].as_string());
+		svc.ambience_player.play();
+	}
+	for (auto& entry : meta["atmosphere"].as_array()) {
+		if (entry.as<int>() == 1) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, 1)); }
+	}
+	for (auto& pl : entities["lights"].as_array()) {
+		point_lights.push_back(PointLight(svc.data.light[pl["label"].as_string()], sf::Vector2f{pl["position"][0].as<float>() + 0.5f, pl["position"][1].as<float>() + 0.5f} * constants::f_cell_size));
+	}
+
+	if (meta["camera_effects"]) {
+		m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
+		m_camera_effects.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
+		m_camera_effects.shake_properties.start_time = meta["camera_effects"]["shake"]["start_time"].as<float>();
+		m_camera_effects.shake_properties.dampen_factor = meta["camera_effects"]["shake"]["dampen_factor"].as<int>();
+		m_camera_effects.cooldown = util::Cooldown{meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>()};
+		m_camera_effects.shake_properties.shaking = m_camera_effects.shake_properties.frequency > 0;
+		m_camera_effects.cooldown.start();
+	}
+
+	sound.echo_count = meta["sound"]["echo_count"].as<int>();
+	sound.echo_rate = meta["sound"]["echo_rate"].as<int>();
+
+	if (meta["weather"]["rain"]) { rain = vfx::Rain(meta["weather"]["rain"]["intensity"].as<int>(), meta["weather"]["rain"]["fall_speed"].as<float>(), meta["weather"]["rain"]["slant"].as<float>()); }
+	if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
+	if (meta["weather"]["leaves"]) { rain = vfx::Rain(meta["weather"]["leaves"]["intensity"].as<int>(), meta["weather"]["leaves"]["fall_speed"].as<float>(), meta["weather"]["leaves"]["slant"].as<float>(), true, true); }
+
+	background = std::make_unique<graphics::Background>(svc, meta["background"].as<int>());
+	styles.breakables = meta["styles"]["breakables"].as<int>();
+	styles.pushables = meta["styles"]["pushables"].as<int>();
+
 	for (auto const& entry : entities["npcs"].as_array()) {
 		sf::Vector2f pos{};
 		pos.x = entry["position"][0].as<float>();
@@ -213,52 +260,6 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number) {
 
 	auto const& entities = metadata["entities"];
 
-	svc.current_room = room_number;
-	if (meta["cutscene_on_entry"]["flag"].as_bool()) {
-		auto ctype = meta["cutscene_on_entry"]["type"].as<int>();
-		auto cid = meta["cutscene_on_entry"]["id"].as<int>();
-		auto csource = meta["cutscene_on_entry"]["source"].as<int>();
-		auto cutscene = util::QuestKey{ctype, cid, csource};
-		svc.quest.process(svc, cutscene);
-		cutscene_catalog.push_cutscene(svc, *this, cid);
-	}
-	if (meta["music"].is_string()) {
-		svc.music_player.load(svc.finder, meta["music"].as_string());
-		if (meta["music"].as_string() != "none") { svc.music_player.play_looped(); }
-	}
-	if (meta["ambience"].is_string()) {
-		svc.ambience_player.load(svc.finder, meta["ambience"].as_string());
-		svc.ambience_player.play();
-	}
-	for (auto& entry : meta["atmosphere"].as_array()) {
-		if (entry.as<int>() == 1) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, 1)); }
-	}
-
-	for (auto& pl : entities["lights"].as_array()) {
-		point_lights.push_back(PointLight(svc.data.light[pl["label"].as_string()], sf::Vector2f{pl["position"][0].as<float>() + 0.5f, pl["position"][1].as<float>() + 0.5f} * constants::f_cell_size));
-	}
-
-	if (meta["camera_effects"]) {
-		m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
-		m_camera_effects.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
-		m_camera_effects.shake_properties.start_time = meta["camera_effects"]["shake"]["start_time"].as<float>();
-		m_camera_effects.shake_properties.dampen_factor = meta["camera_effects"]["shake"]["dampen_factor"].as<int>();
-		m_camera_effects.cooldown = util::Cooldown{meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>()};
-		m_camera_effects.shake_properties.shaking = m_camera_effects.shake_properties.frequency > 0;
-		m_camera_effects.cooldown.start();
-	}
-
-	sound.echo_count = meta["sound"]["echo_count"].as<int>();
-	sound.echo_rate = meta["sound"]["echo_rate"].as<int>();
-
-	if (meta["weather"]["rain"]) { rain = vfx::Rain(meta["weather"]["rain"]["intensity"].as<int>(), meta["weather"]["rain"]["fall_speed"].as<float>(), meta["weather"]["rain"]["slant"].as<float>()); }
-	if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
-	if (meta["weather"]["leaves"]) { rain = vfx::Rain(meta["weather"]["leaves"]["intensity"].as<int>(), meta["weather"]["leaves"]["fall_speed"].as<float>(), meta["weather"]["leaves"]["slant"].as<float>(), true, true); }
-
-	background = std::make_unique<graphics::Background>(svc, meta["background"].as<int>());
-	styles.breakables = meta["styles"]["breakables"].as<int>();
-	styles.pushables = meta["styles"]["pushables"].as<int>();
-
 	for (auto& entry : entities["portals"].as_array()) {
 		sf::Vector2<std::uint32_t> pos{};
 		sf::Vector2<std::uint32_t> dim{};
@@ -289,7 +290,6 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number) {
 void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console) {
 	auto& layers = svc.data.get_layers(room_id);
 	flags.state.reset(LevelState::camera_shake);
-	cooldowns.loading.update();
 
 	// camera effects
 	if (svc.ticker.every_second() && m_camera_effects.shake_properties.shaking) {
@@ -324,6 +324,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	flags.map_state.test(MapState::unobscure) ? cooldowns.fade_obscured.update() : cooldowns.fade_obscured.reverse();
 	if (check_cell_collision(player->collider, true)) {
 		if (!flags.map_state.test(MapState::unobscure)) { cooldowns.fade_obscured.start(); }
+		if (cooldowns.loading.running()) { cooldowns.fade_obscured.cancel(); }
 		flags.map_state.set(MapState::unobscure);
 	} else {
 		if (flags.map_state.test(MapState::unobscure)) { cooldowns.fade_obscured.cancel(); }
@@ -413,7 +414,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	player->collider.reset_ground_flags();
 
 	// ambience
-	svc.ambience_player.set_balance(cooldowns.fade_obscured.get_normalized() * 100.f);
+	svc.ambience_player.set_balance(cooldowns.fade_obscured.get_normalized());
 
 	// check if player died
 	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && cooldowns.loading.is_complete()) {
@@ -442,6 +443,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 			svc.state_controller.actions.set(automa::Actions::trigger);
 		}
 	}
+	cooldowns.loading.update();
 }
 
 void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam) {
@@ -621,11 +623,11 @@ void Map::generate_collidable_layer(bool live) {
 		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position(), styles.breakables)); }
 		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position() + pushable_offset, styles.pushables, cell.value - 483)); }
 		if (cell.is_big_spike()) {
-			spikes.push_back(
-				Spike(*m_services, m_services->assets.get_texture("big_spike"), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {6.f, 4.f}, flags.properties.test(MapProperties::environmental_randomness)));
+			spikes.push_back(Spike(*m_services, m_services->assets.get_texture("big_spike"), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {6.f, 4.f}, style_id,
+								   flags.properties.test(MapProperties::environmental_randomness)));
 		}
 		if (cell.is_spike()) {
-			spikes.push_back(Spike(*m_services, m_services->assets.get_tileset(m_metadata.biome), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {1.f, 1.f},
+			spikes.push_back(Spike(*m_services, m_services->assets.get_tileset(m_metadata.biome), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {1.f, 1.f}, style_id,
 								   flags.properties.test(MapProperties::environmental_randomness)));
 		}
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position(), 5)); }

@@ -7,7 +7,7 @@
 
 namespace fornani::vfx {
 
-Firefly::Firefly(automa::ServiceProvider& svc, sf::Vector2f start) : sprite(svc.assets.get_texture("firefly"), {9, 9}) {
+Firefly::Firefly(automa::ServiceProvider& svc, sf::Vector2f start) : sprite(svc.assets.get_texture("firefly"), {3, 3}) {
 	physics.set_global_friction(0.99f);
 	physics.position = start;
 	physics.velocity = random::random_vector_float(-1.f, 1.f);
@@ -18,7 +18,8 @@ Firefly::Firefly(automa::ServiceProvider& svc, sf::Vector2f start) : sprite(svc.
 	light = util::Cooldown(rand_time);
 	auto offset = random::random_range(0, light.get_native_time());
 	light.start(offset);
-	sprite.set_origin({4.5f, 4.5f});
+	sprite.set_origin({1.5f, 1.5f});
+	sprite.set_scale(constants::f_scale_vec);
 	variant = random::percent_chance(60) ? 0 : random::percent_chance(50) ? 1 : random::percent_chance(50) ? 2 : 3;
 	if (variant == 0 && random::percent_chance(30)) {
 		trail = std::make_unique<graphics::SpriteHistory>();

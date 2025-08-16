@@ -28,6 +28,8 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc
 	instruction.setFillColor(colors::dark_grey);
 
 	svc.data.load_blank_save(player);
+	svc.ambience_player.load(svc.finder, "none");
+	svc.ambience_player.play();
 	player.animation.force(player::AnimState::run, "run");
 	player.controller.autonomous_walk();
 	player.set_position({svc.window->f_center_screen().x + 80.f, 360.f});

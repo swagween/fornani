@@ -20,7 +20,9 @@ class Ambience {
 		MusicPlayer open;
 		MusicPlayer closed;
 	} tracks;
-	float volume_multiplier = 0.05f;
+
+  private:
+	float m_volume_multiplier;
 };
 
 } // namespace fornani::audio

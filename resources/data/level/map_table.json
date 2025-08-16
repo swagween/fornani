@@ -170,9 +170,21 @@
     },
     {
       "folder": "overturned",
+      "label": "deadfall.json",
+      "region": "overturned",
+      "room_id": 202
+    },
+    {
+      "folder": "overturned",
       "label": "landing.json",
       "region": "overturned",
       "room_id": 200
+    },
+    {
+      "folder": "overturned",
+      "label": "outer_branches.json",
+      "region": "overturned",
+      "room_id": 201
     },
     {
       "folder": "test",

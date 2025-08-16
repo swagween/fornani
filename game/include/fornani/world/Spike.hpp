@@ -20,7 +20,7 @@ enum class SpikeAttributes : std::uint8_t { no_collision, soft_reset, random };
 
 class Spike {
   public:
-	Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vector2f position, sf::Vector2<int> direction, sf::Vector2f size, bool random = false);
+	Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vector2f position, sf::Vector2<int> direction, sf::Vector2f size, int style, bool random = false);
 	void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 	void handle_collision(shape::Collider& other) const;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);

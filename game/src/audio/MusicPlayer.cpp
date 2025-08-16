@@ -21,11 +21,6 @@ void MusicPlayer::quick_play(ResourceFinder const& finder, std::string_view song
 void MusicPlayer::load(ResourceFinder const& finder, std::string_view song_name) {
 	if (is_off()) { return; }
 	if (song_name.empty()) { return; }
-	if (song_name == "none") {
-		stop();
-		m_current_song = song_name;
-		return;
-	}
 	if (song_name == m_current_song) { return; }
 	m_current_song = song_name;
 	auto path = std::filesystem::path{finder.resource_path() + "/audio/songs/" + song_name.data() + ".xm"};

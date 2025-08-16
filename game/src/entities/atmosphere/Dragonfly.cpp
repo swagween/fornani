@@ -9,14 +9,15 @@
 
 namespace fornani::vfx {
 
-Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2f start) : sprite(svc.assets.get_texture("dragonfly"), {16, 16}) {
+Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2f start) : sprite(svc.assets.get_texture("dragonfly"), {8, 8}) {
 	physics.set_global_friction(0.97f);
 	physics.position = start;
 	physics.velocity = random::random_vector_float(-1.f, 1.f);
 	sprite.push_params("neutral", {0, 3, 16, -1});
 	sprite.set_params("neutral");
 	sprite.random_start();
-	sprite.set_origin({12.f, 12.f});
+	sprite.set_origin({4.f, 4.f});
+	sprite.set_scale(constants::f_scale_vec);
 	variant = random::percent_chance(60) ? 0 : random::percent_chance(50) ? 1 : random::percent_chance(50) ? 2 : 3;
 	forces.seek = 0.000052f;
 	forces.walk = 0.0113f;

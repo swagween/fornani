@@ -280,7 +280,7 @@
     ]
   },
   "meta": {
-    "ambience": "",
+    "ambience": "none",
     "background": 1,
     "biome": "firstwind",
     "camera_effects": {
@@ -307,7 +307,7 @@
       1
     ],
     "minimap": false,
-    "music": "",
+    "music": "dusken",
     "player_start": [
       0,
       0
@@ -10017,7 +10017,7 @@
         35,
         1,
         35,
-        511,
+        0,
         0,
         511,
         35,
@@ -10065,7 +10065,7 @@
         35,
         1,
         35,
-        511,
+        0,
         0,
         511,
         35,
