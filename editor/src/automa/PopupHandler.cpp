@@ -1,11 +1,11 @@
 
 #include "editor/automa/PopupHandler.hpp"
 #include <imgui.h>
+#include <fornani/entity/EntitySet.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
 #include <fornani/utils/Random.hpp>
 #include <string>
-#include "editor/canvas/EntitySet.hpp"
 #include "editor/gui/Console.hpp"
 #include "editor/tool/Tool.hpp"
 
@@ -35,7 +35,8 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			// switch to entity tool, and store the specified inspectable for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->ent_type = EntityType::inspectable;
-			tool->current_entity = std::make_unique<Inspectable>(svc, activate_on_contact, std::string{keybuffer}, std::vector<std::vector<std::string>>{{std::string{msgbuffer}}}, std::vector<std::vector<std::string>>{}, 0, instant);
+			tool->current_entity =
+				std::make_unique<fornani::Inspectable>(svc, activate_on_contact, std::string{keybuffer}, std::vector<std::vector<std::string>>{{std::string{msgbuffer}}}, std::vector<std::vector<std::string>>{}, 0, instant);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -94,7 +95,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			// switch to entity tool, and store the specified portal for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->ent_type = EntityType::platform;
-			tool->current_entity = std::make_unique<Platform>(svc, sf::Vector2<std::uint32_t>{static_cast<std::uint32_t>(x), static_cast<std::uint32_t>(y)}, extent, type, start);
+			tool->current_entity = std::make_unique<fornani::Platform>(svc, sf::Vector2<std::uint32_t>{static_cast<std::uint32_t>(x), static_cast<std::uint32_t>(y)}, extent, type, start);
 			console.add_log(std::string{"Initialized platform with type " + type}.c_str());
 			ImGui::CloseCurrentPopup();
 		}
@@ -152,7 +153,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			m_is_open = false;
 			// switch to entity tool, and store the specified portal for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<Portal>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, activate_on_contact, already_open, room_id, destination, locked, key_id);
+			tool->current_entity = std::make_unique<fornani::Portal>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, activate_on_contact, already_open, room_id, destination, locked, key_id);
 			console.add_log(std::string{"Room ID: " + std::to_string(room_id)}.c_str());
 			ImGui::CloseCurrentPopup();
 		}
@@ -172,7 +173,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<Enemy>(svc, id, variant);
+			tool->current_entity = std::make_unique<fornani::Enemy>(svc, id, variant);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -206,7 +207,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<NPC>(svc, id, label);
+			tool->current_entity = std::make_unique<fornani::NPC>(svc, id, label);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -223,7 +224,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<Destructible>(svc, id);
+			tool->current_entity = std::make_unique<fornani::Destructible>(svc, id);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -249,7 +250,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<Animator>(svc, id, label);
+			tool->current_entity = std::make_unique<fornani::Animator>(svc, id, label);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -268,7 +269,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<Bed>(svc, 0, flipped);
+			tool->current_entity = std::make_unique<fornani::Bed>(svc, 0, flipped);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -340,7 +341,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<Chest>(svc, type, modifier, id);
+			tool->current_entity = std::make_unique<fornani::Chest>(svc, type, modifier, id);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -369,7 +370,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<SwitchButton>(svc, id, type);
+			tool->current_entity = std::make_unique<fornani::SwitchButton>(svc, id, type);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -398,7 +399,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<SwitchBlock>(svc, id, type);
+			tool->current_entity = std::make_unique<fornani::SwitchBlock>(svc, id, type);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -427,7 +428,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<TimerBlock>(svc, id, type);
+			tool->current_entity = std::make_unique<fornani::TimerBlock>(svc, id, type);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -455,7 +456,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<Light>(svc, id, types[type]);
+			tool->current_entity = std::make_unique<fornani::Light>(svc, id, types[type]);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();

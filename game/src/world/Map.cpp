@@ -22,9 +22,10 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 
 	unserialize(svc, room_number);
 
-	auto const& metadata = svc.data.map_jsons.at(room_lookup).metadata;
+	auto& metadata = svc.data.map_jsons.at(room_lookup).metadata;
 	auto const& meta = metadata["meta"];
-	auto const& entities = metadata["entities"];
+	auto& entities = metadata["entities"];
+	if (entities.is_object()) { m_entities = EntitySet(svc, svc.finder, entities, m_metadata.room); }
 
 	svc.current_room = room_number;
 	if (meta["cutscene_on_entry"]["flag"].as_bool()) {
@@ -377,6 +378,9 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		enemy->post_update(svc, *this, *player);
 	}
 
+	if (m_entities) {
+		for (auto& entity : m_entities.value().variables.entities) { entity->update(svc, *this, console, *player); }
+	}
 	if (fire) {
 		for (auto& f : fire.value()) { f.update(svc, *player, *this, console, inspectable_data); }
 	}
@@ -385,7 +389,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& chest : chests) { chest.update(svc, *this, console, *player); }
 	for (auto& npc : npcs) { npc->update(svc, *this, console, *player); }
 	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->update(svc, console, *this, *player); }
-	for (auto& portal : portals) { portal.handle_activation(svc, *player, console, room_id, transition); }
+	// for (auto& portal : portals) { portal.handle_activation(svc, *player, console, room_id, transition); }
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, svc.data.map_jsons.at(room_lookup).metadata["entities"]["inspectables"]); }
 	for (auto& animator : animators) { animator.update(); }
 	for (auto& effect : effects) { effect.update(); }
@@ -454,7 +458,10 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		svc.debug_flags.reset(automa::DebugFlags::greyblock_trigger);
 	}
 
-	for (auto& portal : portals) { portal.render(svc, win, cam); }
+	if (m_entities) {
+		for (auto& entity : m_entities.value().variables.entities) { entity->render(win, cam, 1.0); }
+	}
+	// for (auto& portal : portals) { portal.render(svc, win, cam); }
 	if (fire) {
 		for (auto& f : fire.value()) { f.render(svc, win, cam); }
 	}

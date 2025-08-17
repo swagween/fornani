@@ -2,10 +2,10 @@
 #pragma once
 
 #include "Background.hpp"
-#include "EntitySet.hpp"
 #include "Map.hpp"
 #include "editor/util/BitFlags.hpp"
 #include "editor/util/SelectBox.hpp"
+#include "fornani/entity/EntitySet.hpp"
 #include "fornani/graphics/CameraController.hpp"
 #include "fornani/utils/Constants.hpp"
 #include "fornani/world/Map.hpp"
@@ -162,7 +162,7 @@ class Canvas {
 
 	float darken_factor{};
 
-	EntitySet entities;
+	fornani::EntitySet entities;
 	dj::Json metadata{};
 	Style tile_style;
 

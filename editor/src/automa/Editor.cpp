@@ -1,6 +1,6 @@
 
 #include "editor/automa/Editor.hpp"
-#include "editor/canvas/entity/SavePoint.hpp"
+#include <fornani/entity/SavePoint.hpp>
 #include "editor/gui/Console.hpp"
 #include "fornani/core/Application.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
@@ -39,6 +39,8 @@ Editor::Editor(char** argv, fornani::WindowManager& window, fornani::ResourceFin
 
 	m_services.events.register_event(std::make_unique<fornani::Event<std::string, std::string>>("LoadFile", &load_file));
 	m_services.events.register_event(std::make_unique<fornani::Event<int>>("NewFile", &new_file));
+
+	m_services.set_editor(true);
 
 	args = argv;
 	if (!tool_texture.loadFromFile((finder.paths.editor / "gui" / "tools.png").string())) { console.add_log("Failed to load tool texture.\n"); }
@@ -751,7 +753,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Animator", NULL, &anim)) {}
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-				current_tool->current_entity = std::make_unique<SavePoint>(m_services, map.room_id);
+				current_tool->current_entity = std::make_unique<fornani::SavePoint>(m_services, map.room_id);
 			}
 			ImGui::Separator();
 			if (ImGui::MenuItem("Player Placer")) {

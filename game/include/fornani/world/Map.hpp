@@ -40,6 +40,8 @@
 #include "fornani/world/SwitchBlock.hpp"
 #include "fornani/world/TimerBlock.hpp"
 
+#include <fornani/entity/EntitySet.hpp>
+
 #include <fornani/shader/LightShader.hpp>
 #include <fornani/shader/Palette.hpp>
 
@@ -206,6 +208,8 @@ class Map {
 	float darken_factor{};
 
   private:
+	std::optional<EntitySet> m_entities{};
+
 	std::optional<Palette> m_palette{};
 	int abyss_distance{512};
 	sf::Vector2f m_player_start{};

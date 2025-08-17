@@ -29,7 +29,7 @@
 
 namespace fornani::automa {
 enum class DebugFlags : std::uint8_t { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
-enum class AppFlags : std::uint8_t { fullscreen, tutorial, in_game };
+enum class AppFlags : std::uint8_t { fullscreen, tutorial, in_game, editor };
 enum class StateFlags : std::uint8_t { hide_hud, no_menu };
 struct PlayerDat {
 	void set_piggy_id(int const id) { piggy_id = id; }
@@ -84,9 +84,11 @@ struct ServiceProvider {
 	void toggle_tutorial() { tutorial() ? app_flags.reset(AppFlags::tutorial) : app_flags.set(AppFlags::tutorial); }
 	void toggle_debug() { debug_mode() ? debug_flags.reset(DebugFlags::debug_mode) : debug_flags.set(DebugFlags::debug_mode); }
 	void set_fullscreen(bool flag) { flag ? app_flags.set(AppFlags::fullscreen) : app_flags.reset(AppFlags::fullscreen); }
+	void set_editor(bool flag) { flag ? app_flags.set(AppFlags::editor) : app_flags.reset(AppFlags::editor); }
 	void set_tutorial(bool flag) { flag ? app_flags.set(AppFlags::tutorial) : app_flags.reset(AppFlags::tutorial); }
 
 	[[nodiscard]] auto fullscreen() const -> bool { return app_flags.test(AppFlags::fullscreen); }
+	[[nodiscard]] auto is_editor() const -> bool { return app_flags.test(AppFlags::editor); }
 	[[nodiscard]] auto tutorial() const -> bool { return app_flags.test(AppFlags::tutorial); }
 	[[nodiscard]] auto in_game() const -> bool { return app_flags.test(AppFlags::in_game); }
 	[[nodiscard]] auto hide_hud() const -> bool { return state_flags.test(StateFlags::hide_hud); }

@@ -39,6 +39,7 @@ Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& 
 void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2f player_position) {
 
 	if (services.window->is_fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
+	services.set_editor(false);
 
 	measurements.win_size.x = services.window->get().getSize().x;
 	measurements.win_size.y = services.window->get().getSize().y;

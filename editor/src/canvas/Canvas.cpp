@@ -82,7 +82,7 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 			}
 		}
 	}
-	if (flags.show_entities) { entities.render(*this, win, get_position()); }
+	if (flags.show_entities) { entities.render(win, get_position(), get_origin(), f_cell_size()); }
 	if (flags.show_grid && !states_empty()) {
 		auto grid_sprite = sf::Sprite(grid_texture.getTexture());
 		grid_sprite.setPosition(position);
@@ -117,7 +117,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 	}
 	assert(!metadata.is_null());
 
-	if (!local) { entities = EntitySet{svc, finder, metadata["entities"], room_name}; }
+	if (!local) { entities = fornani::EntitySet{svc, finder, metadata["entities"], room_name}; }
 
 	auto const& meta = metadata["meta"];
 	room_id = meta["room_id"].as<int>();

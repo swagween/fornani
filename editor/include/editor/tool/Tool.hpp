@@ -77,7 +77,7 @@ class Tool : public fornani::UniquePolymorphic {
 	bool primary{};
 	bool trigger_switch{false};
 	std::uint32_t tile{};
-	std::optional<std::unique_ptr<Entity>> current_entity{};
+	std::optional<std::unique_ptr<fornani::Entity>> current_entity{};
 	std::optional<SelectBox> selection{};
 
 	ToolType type{};

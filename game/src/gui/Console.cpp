@@ -113,7 +113,7 @@ void Console::render(sf::RenderWindow& win) {
 
 void Console::set_source(dj::Json const& json) { text_suite = json; }
 
-void Console::set_nani_sprite(sf::Sprite const& sprite) { m_nani_portrait.set_custom_portrait(sprite); }
+void Console::set_nani_sprite(sf::Sprite const& sprite) { m_nani_portrait.set_texture(sprite.getTexture()); }
 
 void Console::handle_actions(int value) {
 	switch (value) {
