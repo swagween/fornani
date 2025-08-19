@@ -72,15 +72,15 @@ void EntitySet::clear() { variables = {}; }
 
 bool EntitySet::has_entity_at(sf::Vector2<std::uint32_t> pos, bool highlighted_only) const {
 	for (auto& s : variables.entities) {
-		if (s->contains_position(pos)) { return highlighted_only ? s->highlighted : true; }
+		if (s->contains_point(pos)) { return highlighted_only ? s->highlighted : true; }
 	}
 	return false;
 }
 
 bool EntitySet::overlaps(Entity& other) const {
-	for (auto i{0u}; i < other.get_dimensions().x; ++i) {
-		for (auto j{0u}; j < other.get_dimensions().y; ++j) {
-			if (has_entity_at(other.get_position() + sf::Vector2u{i, j})) { return true; }
+	for (auto i{0u}; i < other.get_grid_dimensions().x; ++i) {
+		for (auto j{0u}; j < other.get_grid_dimensions().y; ++j) {
+			if (has_entity_at(other.get_grid_position() + sf::Vector2u{i, j})) { return true; }
 		}
 	}
 	return false;

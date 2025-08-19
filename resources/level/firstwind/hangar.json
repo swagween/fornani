@@ -145,7 +145,7 @@
     "portals": [
       {
         "activate_on_contact": false,
-        "already_open": true,
+        "already_open": false,
         "destination_id": 117,
         "dimensions": [
           1,

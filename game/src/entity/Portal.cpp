@@ -8,7 +8,7 @@
 namespace fornani {
 
 Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_id, int destination_id, bool locked, int key_id)
-	: IWorldPositionable(position, dimensions), Entity(svc, "portals", 0, dimensions), source_id(source_id), destination_id(destination_id), key_id(key_id), m_services(&svc) {
+	: Entity(svc, "portals", 0, dimensions), source_id(source_id), destination_id(destination_id), key_id(key_id), m_services(&svc) {
 	set_texture_rect(sf::IntRect{{16 * already_open, 0}, {16, 32}});
 	set_origin({0.f, 16.f});
 	if (activate_on_contact) { m_textured = false; }
@@ -16,20 +16,20 @@ Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activ
 	if (already_open) { m_attributes.set(PortalAttributes::already_open); }
 }
 
-Portal::Portal(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals"), IWorldPositionable(position, dimensions), m_services(&svc) {
+Portal::Portal(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals"), m_services(&svc) {
 	unserialize(in);
-	auto channel = already_open() ? 1 : 0;
+	auto channel = is_already_open() ? 1 : 0;
 	set_texture_rect(sf::IntRect{{16 * channel, 0}, {16, 32}});
 	set_origin({0.f, 16.f});
-	if (activate_on_contact()) { m_textured = false; }
+	if (is_activate_on_contact()) { m_textured = false; }
 	bounding_box = shape::Shape(get_world_dimensions());
 	bounding_box.set_position(get_world_position());
 	m_orientation = PortalOrientation::central;
-	if (position.x == 0) { m_orientation = PortalOrientation::left; }
-	if (position.y == 0) { m_orientation = PortalOrientation::top; }
-	if (position.x > 0 && dimensions.y > 0) { m_orientation = PortalOrientation::right; }
-	if (position.y > 0 && dimensions.x > 0) { m_orientation = PortalOrientation::bottom; }
-	if (already_open()) {
+	if (get_grid_position().x == 0) { m_orientation = PortalOrientation::left; }
+	if (get_grid_position().y == 0) { m_orientation = PortalOrientation::top; }
+	if (get_grid_position().x > 0 && get_grid_dimensions().y > 1) { m_orientation = PortalOrientation::right; }
+	if (get_grid_position().y > 0 && get_grid_dimensions().x > 1) { m_orientation = PortalOrientation::bottom; }
+	if (is_already_open()) {
 		m_render_state = PortalRenderState::open;
 		m_attributes.set(PortalAttributes::already_open);
 	}
@@ -40,8 +40,8 @@ std::unique_ptr<Entity> Portal::clone() const { return std::make_unique<Portal>(
 
 void Portal::serialize(dj::Json& out) {
 	Entity::serialize(out);
-	out["activate_on_contact"] = activate_on_contact();
-	out["already_open"] = already_open();
+	out["activate_on_contact"] = is_activate_on_contact();
+	out["already_open"] = is_already_open();
 	out["source_id"] = source_id;
 	out["destination_id"] = destination_id;
 	out["locked"] = is_locked();
@@ -59,15 +59,21 @@ void Portal::unserialize(dj::Json const& in) {
 
 void Portal::expose() {
 	Entity::expose();
+	static bool activate_on_contact{is_activate_on_contact()};
+	static bool already_open{is_already_open()};
+	static bool locked{is_locked()};
 	ImGui::InputInt("Source Room ID", &source_id);
 	ImGui::InputInt("Destination Room ID", &destination_id);
 	ImGui::Separator();
-	// ImGui::Checkbox("Activate on Contact", &activate_on_contact);
-	// ImGui::Checkbox("Already Open", &already_open);
+	ImGui::Checkbox("Activate on Contact", &activate_on_contact);
+	ImGui::Checkbox("Already Open", &already_open);
 	ImGui::Separator();
-	// ImGui::Checkbox("Locked", &locked);
+	ImGui::Checkbox("Locked", &locked);
 	ImGui::InputInt("Key ID", &key_id);
 	ImGui::Separator();
+	activate_on_contact ? m_attributes.set(PortalAttributes::activate_on_contact) : m_attributes.reset(PortalAttributes::activate_on_contact);
+	already_open ? m_attributes.set(PortalAttributes::already_open) : m_attributes.reset(PortalAttributes::already_open);
+	locked ? m_state.set(PortalState::locked) : m_state.reset(PortalState::locked);
 	if (auto const& roomdata = m_services->data.get_room_data_from_id(destination_id)) {
 		if (ImGui::Button("Load Destination Room")) {
 			auto const& roomstr = roomdata.value()["label"].as_string();
@@ -139,9 +145,10 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 void Portal::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
 	Entity::render(win, cam, size);
-	Drawable::set_scale(constants::f_scale_vec);
+	if (m_editor) { return; }
+	Animatable::set_scale(constants::f_scale_vec);
 	if (!m_attributes.test(PortalAttributes::activate_on_contact)) {
-		Drawable::set_position(get_world_position() - cam);
+		Animatable::set_position(get_world_position() - cam);
 		win.draw(*this);
 	}
 }

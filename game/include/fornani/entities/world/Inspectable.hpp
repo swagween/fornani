@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/entity/Entity.hpp>
 #include <fornani/utils/Constants.hpp>
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/utils/IWorldPositionable.hpp"
@@ -31,7 +32,7 @@ enum class InspectableFlags : std::uint8_t { hovered, hovered_trigger, activated
 class Inspectable : public IWorldPositionable {
   public:
 	Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int room);
-	void update(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, dj::Json const& set);
+	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player);
 	void destroy() { flags.set(InspectableFlags::destroy); }
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos);
 	void destroy_by_id(int id) {

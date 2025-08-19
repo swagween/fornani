@@ -26,8 +26,6 @@ class Dojo final : public GameState {
 	world::Map gui_map;
 	bool show_colliders{false};
 	bool open_vendor{};
-	util::Cooldown enter_room{};
-	util::Cooldown loading{32};
 	std::optional<std::unique_ptr<gui::VendorDialog>> vendor_dialog{};
 	std::optional<std::unique_ptr<gui::PauseWindow>> pause_window{};
 	std::optional<std::unique_ptr<gui::InventoryWindow>> inventory_window{};
@@ -35,6 +33,9 @@ class Dojo final : public GameState {
   private:
 	std::optional<LightShader> m_shader{};
 	ServiceProvider* m_services;
+
+	util::Cooldown m_enter_room;
+	util::Cooldown m_loading;
 };
 
 } // namespace fornani::automa

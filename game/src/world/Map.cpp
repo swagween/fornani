@@ -261,7 +261,7 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number) {
 
 	auto const& entities = metadata["entities"];
 
-	for (auto& entry : entities["portals"].as_array()) {
+	/*for (auto& entry : entities["portals"].as_array()) {
 		sf::Vector2<std::uint32_t> pos{};
 		sf::Vector2<std::uint32_t> dim{};
 		pos.x = entry["position"][0].as<int>();
@@ -278,7 +278,7 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number) {
 		auto mapdim = sf::Vector2<int>{dimensions};
 		portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, already_open, key_id, door_style, mapdim));
 		portals.back().update(svc);
-	}
+	}*/
 
 	for (auto& entry : entities["save_point"].as_array()) {
 		auto save_id = svc.state_controller.save_point_id;
@@ -390,7 +390,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& npc : npcs) { npc->update(svc, *this, console, *player); }
 	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->update(svc, console, *this, *player); }
 	// for (auto& portal : portals) { portal.handle_activation(svc, *player, console, room_id, transition); }
-	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, svc.data.map_jsons.at(room_lookup).metadata["entities"]["inspectables"]); }
+	for (auto& inspectable : inspectables) { inspectable.update(svc, *this, console, *player); }
 	for (auto& animator : animators) { animator.update(); }
 	for (auto& effect : effects) { effect.update(); }
 	for (auto& atm : atmosphere) { atm.update(svc, *this, *player); }
@@ -459,8 +459,11 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	}
 
 	if (m_entities) {
-		for (auto& entity : m_entities.value().variables.entities) { entity->render(win, cam, 1.0); }
+		// TODO: uncomment below once all entities have been refactored!
+		// for (auto& entity : m_entities.value().variables.entities) { entity->render(win, cam, 1.0); }
+		for (auto p : get_portals()) { p->render(win, cam, 1.0); }
 	}
+
 	// for (auto& portal : portals) { portal.render(svc, win, cam); }
 	if (fire) {
 		for (auto& f : fire.value()) { f.render(svc, win, cam); }
@@ -573,6 +576,32 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		if (!animator.is_foreground()) { animator.render(win, cam); }
 	}
 	for (auto& timer_block : timer_blocks) { timer_block.render(svc, win, cam); }
+}
+
+bool Map::handle_entry(player::Player& player, util::Cooldown& enter_room) {
+	auto ret = false;
+	if (!m_entities) { return false; }
+	for (auto const& entity : m_entities.value().variables.entities) {
+		if (auto* portal = dynamic_cast<Portal*>(entity.get())) {
+			if (portal->get_destination() == m_services->state_controller.source_id) {
+				ret = true;
+				sf::Vector2f spawn_position{portal->get_world_position().x + (portal->get_world_dimensions().x * 0.5f), portal->get_world_position().y + portal->get_world_dimensions().y - player.height()};
+				player.set_position(spawn_position, true);
+				player.force_camera_center();
+				if (portal->is_activate_on_contact() && portal->is_left_or_right()) {
+					enter_room.start();
+				} else {
+					if (!portal->is_already_open()) { portal->close(); }
+					player.set_idle();
+				}
+				if (portal->is_bottom()) {
+					player.collider.physics.acceleration.y = -player.physics_stats.jump_velocity;
+					player.collider.physics.acceleration.x = player.controller.facing_left() ? -player.physics_stats.x_acc : player.physics_stats.x_acc;
+				}
+			}
+		}
+	}
+	return ret;
 }
 
 void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target) {
@@ -715,7 +744,7 @@ void Map::shake_camera() { flags.state.set(LevelState::camera_shake); }
 
 void Map::clear() {
 	dimensions = {};
-	portals.clear();
+	// portals.clear();
 	platforms.clear();
 	breakables.clear();
 	pushables.clear();
@@ -740,13 +769,6 @@ std::vector<std::unique_ptr<world::Layer>>& Map::get_layers() { return m_service
 std::unique_ptr<world::Layer>& Map::get_middleground() { return m_services->data.get_layers(room_id).at(m_middleground); }
 
 std::unique_ptr<world::Layer>& Map::get_obscuring_layer() { return m_services->data.get_layers(room_id).at(static_cast<std::size_t>(m_services->data.get_layers(room_id).size() - 1)); }
-
-sf::Vector2f Map::get_spawn_position(int portal_source_map_id) {
-	for (auto& portal : portals) {
-		if (portal.get_source() == portal_source_map_id) { return (portal.get_world_position()); }
-	}
-	return real_dimensions * 0.5f;
-}
 
 sf::Vector2f Map::get_nearest_target_point(sf::Vector2f from) {
 	auto ret = sf::Vector2f{};
@@ -795,5 +817,13 @@ std::size_t Map::get_index_at_position(sf::Vector2f position) { return get_middl
 int Map::get_tile_value_at_position(sf::Vector2f position) { return get_middleground()->grid.get_cell(get_index_at_position(position)).value; }
 
 Tile& Map::get_cell_at_position(sf::Vector2f position) { return get_middleground()->grid.cells.at(get_index_at_position(position)); }
+
+std::vector<Portal*> Map::get_portals() {
+	std::vector<Portal*> portals;
+	for (auto const& entity : m_entities.value().variables.entities) {
+		if (auto* portal = dynamic_cast<Portal*>(entity.get())) { portals.push_back(portal); }
+	}
+	return portals;
+}
 
 } // namespace fornani::world

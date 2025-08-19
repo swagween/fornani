@@ -14,7 +14,7 @@ enum class PortalState : std::uint8_t { activated, ready, locked, unlocked };
 enum class PortalRenderState : std::uint8_t { closed, open };
 enum class PortalOrientation : std::uint8_t { top, bottom, left, right, central };
 
-class Portal : public Entity, public IWorldPositionable {
+class Portal : public Entity {
   public:
 	Portal(automa::ServiceProvider& svc, dj::Json const& in);
 	Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_map_id, int destination_map_id, bool locked, int key_id);
@@ -25,11 +25,12 @@ class Portal : public Entity, public IWorldPositionable {
 	void expose() override;
 	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
+	void close() { m_render_state = PortalRenderState::closed; }
 
 	[[nodiscard]] auto get_source() const -> int { return source_id; }
 	[[nodiscard]] auto get_destination() const -> int { return destination_id; }
-	[[nodiscard]] auto activate_on_contact() const -> bool { return m_attributes.test(PortalAttributes::activate_on_contact); }
-	[[nodiscard]] auto already_open() const -> bool { return m_attributes.test(PortalAttributes::already_open); }
+	[[nodiscard]] auto is_activate_on_contact() const -> bool { return m_attributes.test(PortalAttributes::activate_on_contact); }
+	[[nodiscard]] auto is_already_open() const -> bool { return m_attributes.test(PortalAttributes::already_open); }
 	[[nodiscard]] auto is_locked() const -> bool { return m_state.test(PortalState::locked); }
 	[[nodiscard]] auto is_top_or_bottom() const -> bool { return is_bottom() || is_top(); }
 	[[nodiscard]] auto is_left_or_right() const -> bool { return is_left() || is_right(); }

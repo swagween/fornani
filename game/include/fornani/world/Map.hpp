@@ -11,7 +11,6 @@
 #include "fornani/entities/world/Chest.hpp"
 #include "fornani/entities/world/Fire.hpp"
 #include "fornani/entities/world/Inspectable.hpp"
-#include "fornani/entities/world/Portal.hpp"
 #include "fornani/entities/world/SavePoint.hpp"
 #include "fornani/entities/world/Vine.hpp"
 #include "fornani/graphics/Background.hpp"
@@ -86,6 +85,7 @@ class Map {
 	void update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
+	bool handle_entry(player::Player& player, util::Cooldown& enter_room);
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {});
 	void spawn_enemy(int id, sf::Vector2f pos);
 	void manage_projectiles(automa::ServiceProvider& svc);
@@ -100,7 +100,6 @@ class Map {
 	std::vector<std::unique_ptr<world::Layer>>& get_layers();
 	std::unique_ptr<world::Layer>& get_middleground();
 	std::unique_ptr<world::Layer>& get_obscuring_layer();
-	sf::Vector2f get_spawn_position(int portal_source_map_id);
 	sf::Vector2f get_nearest_target_point(sf::Vector2f from);
 	sf::Vector2f last_checkpoint();
 
@@ -120,9 +119,12 @@ class Map {
 	[[nodiscard]] auto get_biome_string() const -> std::string { return m_metadata.biome; }
 	[[nodiscard]] auto get_room_string() const -> std::string { return m_metadata.room; }
 	[[nodiscard]] auto get_player_start() const -> sf::Vector2f { return m_player_start; }
+	[[nodiscard]] auto has_entities() const -> bool { return m_entities.has_value(); }
 	std::size_t get_index_at_position(sf::Vector2f position);
 	int get_tile_value_at_position(sf::Vector2f position);
 	Tile& get_cell_at_position(sf::Vector2f position);
+
+	std::vector<Portal*> get_portals();
 
 	// layers
 	sf::Vector2<int> metagrid_coordinates{};
@@ -134,7 +136,7 @@ class Map {
 	// entities
 	std::vector<arms::Projectile> active_projectiles{};
 	std::vector<vfx::Emitter> active_emitters{};
-	std::vector<entity::Portal> portals{};
+	// std::vector<entity::Portal> portals{};
 	std::vector<entity::Inspectable> inspectables{};
 	std::vector<entity::Bed> beds{};
 	std::vector<entity::Animator> animators{};

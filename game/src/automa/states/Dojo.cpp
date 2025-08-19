@@ -30,7 +30,8 @@ static void trigger_reveal_item(int to) {
 	item_modifier = to;
 }
 
-Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameState(svc, player, scene, room_number), map(svc, player), gui_map(svc, player), m_services(&svc) {
+Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name)
+	: GameState(svc, player, scene, room_number), map(svc, player), gui_map(svc, player), m_services(&svc), m_enter_room{100}, m_loading{4} {
 
 	m_type = StateType::game;
 
@@ -72,26 +73,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 
 	bool found_one{};
 	// only search for door entry if room was not loaded from main menu and player didn't die
-	if (!svc.state_controller.actions.test(Actions::save_loaded) && !svc.state_controller.actions.test(Actions::player_death)) {
-		for (auto& portal : map.portals) {
-			if (portal.get_destination() == svc.state_controller.source_id) {
-				found_one = true;
-				sf::Vector2f spawn_position{portal.get_world_position().x + (portal.get_world_dimensions().x * 0.5f), portal.get_world_position().y + portal.get_world_dimensions().y - player.height()};
-				player.set_position(spawn_position, true);
-				player.force_camera_center();
-				if (portal.activate_on_contact() && portal.is_left_or_right()) {
-					enter_room.start(90);
-				} else {
-					if (!portal.already_open()) { portal.close(); }
-					player.set_idle();
-				}
-				if (portal.is_bottom()) {
-					player.collider.physics.acceleration.y = -player.physics_stats.jump_velocity;
-					player.collider.physics.acceleration.x = player.controller.facing_left() ? -player.physics_stats.x_acc : player.physics_stats.x_acc;
-				}
-			}
-		}
-	}
+	if (!svc.state_controller.actions.test(Actions::save_loaded) && !svc.state_controller.actions.test(Actions::player_death)) { found_one = map.handle_entry(player, m_enter_room); }
 	if (!found_one) {
 		float ppx = svc.data.get_save()["player_data"]["position"]["x"].as<float>();
 		float ppy = svc.data.get_save()["player_data"]["position"]["y"].as<float>();
@@ -107,7 +89,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	player.visit_history.push_room(room_number);
 
 	player.controller.prevent_movement();
-	loading.start();
+	m_loading.start();
 	m_shader->set_darken(map.darken_factor);
 	m_shader->set_texture_size(map.real_dimensions / constants::f_scale_factor);
 }
@@ -132,8 +114,8 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	svc.a11y.set_action_ctx_bar_enabled(false);
 
-	loading.is_complete() && !vendor_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
-	loading.update();
+	m_loading.is_complete() && !vendor_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
+	m_loading.update();
 
 	// set action set
 	if (pause_window || m_console) {
@@ -218,9 +200,9 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc, gui_map, *player); }
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{"resume", "settings", "controls", "quit"}); }
 
-	enter_room.update();
+	m_enter_room.update();
 	if (!m_console && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
-	if (enter_room.running()) { player->controller.autonomous_walk(); }
+	if (m_enter_room.running()) { player->controller.autonomous_walk(); }
 
 	player->update(map);
 	map.update(svc, m_console);

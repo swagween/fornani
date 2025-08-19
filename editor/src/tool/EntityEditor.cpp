@@ -33,7 +33,7 @@ void EntityEditor::update(Canvas& canvas) {
 	if (selector_mode()) {
 		ent_type = EntityType::none;
 		for (auto& ent : canvas.entities.variables.entities) {
-			if (!entity_menu || active) { ent->highlighted = ent->contains_position(scaled_position()); }
+			if (!entity_menu || active) { ent->highlighted = ent->contains_point(scaled_position()); }
 			if (active && ent->highlighted && is_ready()) {
 				current_entity = ent->clone();
 				entity_menu = true;
@@ -68,7 +68,7 @@ void EntityEditor::update(Canvas& canvas) {
 
 	if (placer_mode() && is_ready() && canvas.editable()) {
 		disable_highlight = false;
-		if (current_entity) { current_entity.value()->set_position(scaled_position() - current_entity.value()->get_dimensions() + sf::Vector2<std::uint32_t>(1, 1)); }
+		if (current_entity) { current_entity.value()->set_position(scaled_position() - current_entity.value()->get_grid_dimensions() + sf::Vector2<std::uint32_t>(1, 1)); }
 		// user duplicated an existing entity
 		if (!current_entity) {
 			for (auto& ent : canvas.entities.variables.entities) {
@@ -124,8 +124,9 @@ void EntityEditor::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f of
 		box.setOutlineColor(sf::Color{200, 200, 200, 80});
 		box.setFillColor(sf::Color{100, 190, 190, 80});
 		box.setOutlineThickness(-2);
-		box.setSize({current_entity.value()->get_dimensions().x * canvas.f_cell_size(), current_entity.value()->get_dimensions().y * canvas.f_cell_size()});
-		box.setPosition({(scaled_position().x - current_entity.value()->get_dimensions().x + 1) * canvas.f_cell_size() + offset.x, (scaled_position().y - current_entity.value()->get_dimensions().y + 1) * canvas.f_cell_size() + offset.y});
+		box.setSize({current_entity.value()->get_grid_dimensions().x * canvas.f_cell_size(), current_entity.value()->get_grid_dimensions().y * canvas.f_cell_size()});
+		box.setPosition(
+			{(scaled_position().x - current_entity.value()->get_grid_dimensions().x + 1) * canvas.f_cell_size() + offset.x, (scaled_position().y - current_entity.value()->get_grid_dimensions().y + 1) * canvas.f_cell_size() + offset.y});
 		win.draw(box);
 	}
 }

@@ -1,6 +1,7 @@
 
 #include "fornani/entities/world/Inspectable.hpp"
 #include <fornani/systems/EventDispatcher.hpp>
+#include <fornani/world/Map.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/gui/Console.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -30,7 +31,8 @@ Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int r
 	svc.events.register_event(std::make_unique<Event<int>>("DestroyInspectable", &destroy_me));
 }
 
-void Inspectable::update(automa::ServiceProvider& svc, player::Player& player, std::optional<std::unique_ptr<gui::Console>>& console, dj::Json const& set) {
+void Inspectable::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
+	auto const& set = svc.data.map_jsons.at(map.room_lookup).metadata["entities"]["inspectables"];
 	bounding_box.set_position(get_world_position());
 	flags.reset(InspectableFlags::activated);
 	animation.update();
