@@ -152,7 +152,7 @@
     ],
     "properties": {
       "day_night_shift": true,
-      "environmental_randomness": false,
+      "environmental_randomness": true,
       "lighting": false,
       "timer": false
     },

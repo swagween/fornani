@@ -61,7 +61,7 @@ void Bed::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	m_sprite.setPosition(bounding_box.get_center() - cam);
 	win.draw(m_sprite);
 	if (!fadeout.running()) { return; }
-	sparkler.render(svc, win, cam);
+	sparkler.render(win, cam);
 }
 
 } // namespace fornani::entity

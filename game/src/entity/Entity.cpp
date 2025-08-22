@@ -13,7 +13,7 @@ Entity::Entity(automa::ServiceProvider& svc, dj::Json const& in, std::string_vie
 	m_editor = svc.is_editor();
 }
 
-Entity::Entity(automa::ServiceProvider& svc, std::string_view label, int to_id, sf::Vector2<std::uint32_t> dim) : Animatable(svc, label), m_id{to_id}, m_label{label}, IWorldPositionable{{}, dim} {}
+Entity::Entity(automa::ServiceProvider& svc, std::string_view label, int to_id, sf::Vector2<std::uint32_t> dim) : Animatable(svc, label), m_id{to_id}, m_label{label}, IWorldPositionable{{}, dim} { m_editor = svc.is_editor(); }
 
 std::unique_ptr<Entity> Entity::clone() const { return std::unique_ptr<Entity>(); }
 
@@ -48,7 +48,7 @@ auto Entity::contains_point(sf::Vector2u test) const -> bool {
 	return false;
 }
 
-void Entity::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {}
+void Entity::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) { tick(); }
 
 void Entity::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	if (!m_editor) { return; }

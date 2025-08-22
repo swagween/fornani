@@ -91,8 +91,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
 				services.controller_map.set_keyboard_input_detected(true);
 				services.controller_map.set_last_key_pressed(key_pressed->scancode);
-				if (key_pressed->scancode == sf::Keyboard::Scancode::LControl) { key_flags.set(KeyboardFlags::control); }
-				if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_flags.test(KeyboardFlags::control)) {
+				if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_pressed->control) {
 					services.toggle_debug();
 					if (flags.test(GameFlags::playtest)) {
 						flags.reset(GameFlags::playtest);
@@ -102,7 +101,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 						services.soundboard.flags.menu.set(audio::Menu::backward_switch);
 					}
 				}
-				if (key_pressed->scancode == sf::Keyboard::Scancode::R && key_flags.test(KeyboardFlags::control)) { restart_trial(levelpath); }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::R && key_pressed->control) { restart_trial(levelpath); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Equal) { take_screenshot(services.window->screencap); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Y) {
 					auto view = services.window->get_view();
@@ -111,10 +110,6 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 					zooming = !zooming;
 				}
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Escape) { m_game_menu = {}; }
-			}
-
-			if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
-				if (key_released->scancode == sf::Keyboard::Scancode::LControl) { key_flags.reset(KeyboardFlags::control); }
 			}
 
 			if (auto const* joystick_moved = event->getIf<sf::Event::JoystickMoved>()) {
@@ -227,6 +222,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
 				if (ImGui::BeginTabItem("General")) {
+					ImGui::Text("World");
+					ImGui::Text("Save Point ID: %i", services.state_controller.save_point_id);
+					ImGui::Separator();
 					if (ImGui::Button("Exit to Main Menu")) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player)); }
 					ImGui::Text("In Game? %s", services.in_game() ? "Yes" : "No");
 					ImGui::Text("debug mode: %s", services.debug_mode() ? "Enabled" : "Disabled");

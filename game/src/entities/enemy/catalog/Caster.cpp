@@ -6,9 +6,9 @@
 
 namespace fornani::enemy {
 
-Caster::Caster(automa::ServiceProvider& svc, world::Map& map)
+Caster::Caster(automa::ServiceProvider& svc, world::Map& map, int variant)
 	: Enemy(svc, "caster"), m_services(&svc), m_map(&map), parts{.scepter{svc.assets.get_texture("caster_scepter"), 2.0f, 0.85f, {-16.f, 38.f}}, .wand{svc.assets.get_texture("caster_wand"), 2.0f, 0.85f, {-40.f, 48.f}}},
-	  energy_ball(svc, "energy_ball") {
+	  energy_ball(svc, "energy_ball"), m_variant{static_cast<CasterVariant>(variant)} {
 	animation.set_params(dormant);
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.physics.air_friction = {0.9f, 0.9f};
@@ -23,8 +23,7 @@ Caster::Caster(automa::ServiceProvider& svc, world::Map& map)
 	target.collider.physics = components::PhysicsComponent(sf::Vector2f{0.96f, 0.98f}, 1.0f);
 	target.collider.physics.maximum_velocity = sf::Vector2f(20.f, 20.f);
 
-	variant = random::percent_chance(15) ? CasterVariant::tyrant : CasterVariant::apprentice;
-	if (variant == CasterVariant::apprentice) { flags.general.reset(GeneralFlags::rare_drops); }
+	if (m_variant == CasterVariant::apprentice) { flags.general.reset(GeneralFlags::rare_drops); }
 
 	cooldowns.awaken.start();
 	parts.scepter.sprite->setTextureRect(sf::IntRect{{0, 0}, scepter_dimensions});
@@ -126,8 +125,9 @@ void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 }
 
 void Caster::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	Enemy::render(svc, win, cam);
 	if (died() || state == CasterState::dormant || flags.state.test(StateFlags::invisible)) { return; }
-	variant == CasterVariant::apprentice ? parts.scepter.render(svc, win, cam) : parts.wand.render(svc, win, cam);
+	m_variant == CasterVariant::apprentice ? parts.scepter.render(svc, win, cam) : parts.wand.render(svc, win, cam);
 	if (svc.greyblock_mode()) {}
 }
 
@@ -198,9 +198,9 @@ fsm::StateFunction Caster::update_signal() {
 		cooldowns.rapid_fire.start(208);
 	}
 	if (m_services->ticker.every_x_ticks(20)) { flash.update(); }
-	parts.scepter.sprite->setTextureRect(sf::IntRect{{0, 20 + 20 * flash.get_alternator()}, scepter_dimensions});
-	parts.wand.sprite->setTextureRect(sf::IntRect{{0, 62 + 62 * flash.get_alternator()}, wand_dimensions});
-	if (variant == CasterVariant::tyrant) { cooldowns.rapid_fire.update(); }
+	parts.scepter.sprite->setTextureRect(sf::IntRect{{0, scepter_dimensions.y + scepter_dimensions.y * flash.get_alternator()}, scepter_dimensions});
+	parts.wand.sprite->setTextureRect(sf::IntRect{{0, wand_dimensions.y + wand_dimensions.y * flash.get_alternator()}, wand_dimensions});
+	if (m_variant == CasterVariant::tyrant) { cooldowns.rapid_fire.update(); }
 	if (cooldowns.rapid_fire.is_almost_complete()) {
 		m_map->spawn_projectile_at(*m_services, energy_ball.get(), energy_ball.get().get_barrel_point(), attack_target);
 		cooldowns.rapid_fire.start();
@@ -212,7 +212,7 @@ fsm::StateFunction Caster::update_signal() {
 		auto sign = directions.actual.lnr == LNR::left ? 1.f : -1.f;
 		parts.scepter.sprite->rotate(sf::degrees(-90.f) * sign);
 		cooldowns.post_cast.start();
-		if (variant == CasterVariant::apprentice) {
+		if (m_variant == CasterVariant::apprentice) {
 			m_map->spawn_projectile_at(*m_services, energy_ball.get(), energy_ball.get().get_barrel_point(), attack_target);
 			m_services->soundboard.flags.weapon.set(audio::Weapon::energy_ball);
 		} // only shoot at end for apprentice

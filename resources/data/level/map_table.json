@@ -170,9 +170,21 @@
     },
     {
       "folder": "overturned",
+      "label": "crash_site.json",
+      "region": "overturned",
+      "room_id": 204
+    },
+    {
+      "folder": "overturned",
       "label": "deadfall.json",
       "region": "overturned",
       "room_id": 202
+    },
+    {
+      "folder": "overturned",
+      "label": "deep_forest.json",
+      "region": "overturned",
+      "room_id": 208
     },
     {
       "folder": "overturned",
@@ -182,9 +194,51 @@
     },
     {
       "folder": "overturned",
+      "label": "mimic_farm.json",
+      "region": "overturned",
+      "room_id": 212
+    },
+    {
+      "folder": "overturned",
+      "label": "mimic_house.json",
+      "region": "overturned",
+      "room_id": 230
+    },
+    {
+      "folder": "overturned",
       "label": "outer_branches.json",
       "region": "overturned",
       "room_id": 201
+    },
+    {
+      "folder": "overturned",
+      "label": "thicket.json",
+      "region": "overturned",
+      "room_id": 229
+    },
+    {
+      "folder": "overturned",
+      "label": "throughway.json",
+      "region": "overturned",
+      "room_id": 211
+    },
+    {
+      "folder": "overturned",
+      "label": "tunnel.json",
+      "region": "overturned",
+      "room_id": 206
+    },
+    {
+      "folder": "overturned",
+      "label": "upper_canopy.json",
+      "region": "overturned",
+      "room_id": 203
+    },
+    {
+      "folder": "pioneer",
+      "label": "base.json",
+      "region": "base",
+      "room_id": 300
     },
     {
       "folder": "test",

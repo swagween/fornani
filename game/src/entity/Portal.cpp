@@ -88,6 +88,7 @@ void Portal::expose() {
 }
 
 void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
+	Entity::update(svc, map, console, player);
 	auto lookup = sf::IntRect({static_cast<int>(m_render_state) * constants::i_cell_resolution, map.style_id * constants::i_cell_resolution * 2}, {constants::i_cell_resolution, constants::i_cell_resolution * 2});
 	set_texture_rect(lookup);
 	if (bounding_box.overlaps(player.collider.bounding_box)) {

@@ -17,7 +17,7 @@ class Demon final : public Enemy {
 	Demon() = delete;
 	~Demon() override {}
 	Demon& operator=(Demon&&) = delete;
-	Demon(automa::ServiceProvider& svc, world::Map& map);
+	Demon(automa::ServiceProvider& svc, world::Map& map, int variant);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	[[nodiscard]] auto is_dormant() const -> bool { return state == DemonState::dormant || cooldowns.awaken.running(); }
@@ -35,7 +35,7 @@ class Demon final : public Enemy {
 
   private:
 	DemonState state{};
-	DemonVariant variant{};
+	DemonVariant m_variant{};
 
 	// packages
 	struct {
@@ -49,7 +49,6 @@ class Demon final : public Enemy {
 		entity::Attack rush{};
 	} attacks{};
 	entity::Caution caution{};
-
 
 	struct {
 		util::Cooldown jump{40};

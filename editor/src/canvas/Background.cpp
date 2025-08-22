@@ -35,11 +35,16 @@ void Background::update() {
 
 void Background::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f& campos) {
 	for (auto& layer : layers) {
-		layer.sprite.setOrigin(sf::Vector2f{static_cast<float>(dimensions.x), static_cast<float>(dimensions.y)} * 0.5f + canvas.get_offset_from_center());
-		layer.final_position = canvas.get_scaled_center() + canvas.get_position() + canvas.get_offset_from_center() * layer.parallax;
-		layer.sprite.setScale({canvas.get_scale(), canvas.get_scale()});
-		layer.sprite.setPosition(layer.final_position);
-		win.draw(layer.sprite);
+		for (auto i = -1.f; i < 2.f; ++i) {
+			for (auto j = -1.f; j < 2.f; ++j) {
+				layer.sprite.setOrigin(sf::Vector2f{static_cast<float>(dimensions.x), static_cast<float>(dimensions.y)} * 0.5f + canvas.get_offset_from_center());
+				layer.final_position = canvas.get_scaled_center() + canvas.get_position() + canvas.get_offset_from_center() * layer.parallax;
+				layer.sprite.setScale(fornani::constants::f_scale_vec * canvas.get_scale());
+				auto tile_offset = sf::Vector2f{static_cast<float>(dimensions.x) * i, static_cast<float>(dimensions.y) * j};
+				layer.sprite.setPosition(layer.final_position + tile_offset * canvas.get_scale() * fornani::constants::f_scale_factor);
+				win.draw(layer.sprite);
+			}
+		}
 	}
 }
 

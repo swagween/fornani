@@ -118,7 +118,7 @@ void Drop::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 	auto sprite_offset = sf::Vector2f{0.f, m_sprite_dimensions.y * 2.f - drop_dimensions.y};
 	Animatable::set_position(collider.position() + sprite_offset - cam);
 	if (!is_inactive() && !is_completely_gone() && (lifespan.get() > 500 || (lifespan.get() / 20) % 2 == 0)) { win.draw(*this); }
-	sparkler.render(svc, win, cam);
+	sparkler.render(win, cam);
 	if (svc.greyblock_mode()) { collider.render(win, cam); }
 }
 

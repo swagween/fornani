@@ -31,6 +31,7 @@ constexpr sf::Vector2f f_inverse_scale_vec{-f_scale_factor, f_scale_factor};
 constexpr sf::Vector2i tileset_dimensions{16, 32};
 
 constexpr int i_chunk_size{16};
+constexpr std::uint32_t u32_chunk_size{static_cast<std::uint32_t>(i_chunk_size)};
 constexpr float f_chunk_size{static_cast<float>(i_chunk_size)};
 constexpr float small_value{0.01f};
 constexpr float tiny_value{0.0001f};

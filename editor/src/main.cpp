@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 	NANI_LOG_INFO(main_logger, "SteamAPI has been initialized.");
 
 	pi::EditorApplication app{argv};
-	app.launch(argv);
+	app.run(argv);
 	ImGui::SFML::Shutdown();
 
 	return EXIT_SUCCESS;

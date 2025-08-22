@@ -26,7 +26,7 @@ class Drawable : public sf::Drawable, Polymorphic {
 	void rotate(sf::Angle const rotation) { m_sprite.rotate(rotation); }
 
 	void scale(sf::Vector2f const to) { m_sprite.scale(to); }
-	void center() { set_origin(m_sprite.getLocalBounds().getCenter()); }
+	void center(sf::Vector2f offset = {}) { set_origin(m_sprite.getLocalBounds().getCenter() + offset); }
 	void flip(std::pair<bool, bool> orientation = {true, false});
 
 	[[nodiscard]] auto get_scale() const -> sf::Vector2f { return m_sprite.getScale(); }

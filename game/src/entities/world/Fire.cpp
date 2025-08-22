@@ -36,7 +36,7 @@ void Fire::update(automa::ServiceProvider& svc, player::Player& player, Map& map
 
 void Fire::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	sprite.render(svc, win, cam);
-	sparkler.render(svc, win, cam);
+	sparkler.render(win, cam);
 	// inspectable.render(svc, win, cam);
 	if (svc.greyblock_mode()) {}
 }

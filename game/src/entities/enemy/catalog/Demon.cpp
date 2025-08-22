@@ -6,9 +6,13 @@
 
 namespace fornani::enemy {
 
-Demon::Demon(automa::ServiceProvider& svc, world::Map& map)
+Demon::Demon(automa::ServiceProvider& svc, world::Map& map, int variant)
 	: Enemy(svc, "demon"), m_services(&svc), m_map(&map),
-	  parts{.spear{svc.assets.get_texture("demon_spear"), 2.0f, 0.85f, {-16.f, 8.f}}, .sword{svc.assets.get_texture("demon_sword"), 2.0f, 0.85f, {-4.f, 8.f}}, .shield{svc.assets.get_texture("demon_shield"), 2.0f, 0.85f, {-28.f, 8.f}}} {
+	  parts{.spear{svc.assets.get_texture("demon_spear"), 2.0f, 0.85f, {-16.f, 8.f}}, .sword{svc.assets.get_texture("demon_sword"), 2.0f, 0.85f, {-4.f, 8.f}}, .shield{svc.assets.get_texture("demon_shield"), 2.0f, 0.85f, {-28.f, 8.f}}},
+	  m_variant{static_cast<DemonVariant>(variant)} {
+
+	;
+
 	animation.set_params(dormant);
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};
@@ -27,13 +31,13 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map)
 	attacks.rush.origin = {20.f, 16.f};
 	attacks.rush.hit_offset = {0.f, 0.f};
 
-	variant = random::percent_chance(50) ? DemonVariant::spearman : DemonVariant::warrior;
-	if (variant == DemonVariant::spearman) { health.set_max(56); }
+	if (m_variant == DemonVariant::spearman) { health.set_max(56); }
 
 	cooldowns.awaken.start();
 }
 
 void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	Enemy::update(svc, map, player);
 	if (died()) {
 		Enemy::update(svc, map, player);
 		return;
@@ -79,14 +83,13 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	state = {};
 	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
 	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
-	Enemy::update(svc, map, player);
 	if (!is_dormant()) {
 		parts.spear.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
 		parts.sword.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
 		parts.shield.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
 	}
-	if (variant == DemonVariant::spearman) { parts.spear.set_hitbox(); }
-	if (variant == DemonVariant::warrior) {
+	if (m_variant == DemonVariant::spearman) { parts.spear.set_hitbox(); }
+	if (m_variant == DemonVariant::warrior) {
 		parts.sword.set_hitbox();
 		parts.shield.set_shield();
 	}
@@ -119,6 +122,12 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		}
 	}
 
+	if (!is_hostile() && !is_alert()) {
+		if (svc.ticker.every_x_ticks(48)) {
+			if (random::percent_chance(10)) { state = DemonState::run; }
+		}
+	}
+
 	if (just_died()) { m_services->soundboard.flags.demon.set(audio::Demon::death); }
 
 	if (directions.actual.lnr != directions.desired.lnr) { state = DemonState::turn; }
@@ -127,8 +136,9 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 }
 
 void Demon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	Enemy::render(svc, win, cam);
 	if (died() || state == DemonState::dormant) { return; }
-	if (variant == DemonVariant::spearman) {
+	if (m_variant == DemonVariant::spearman) {
 		parts.spear.render(svc, win, cam);
 	} else {
 		parts.shield.render(svc, win, cam);

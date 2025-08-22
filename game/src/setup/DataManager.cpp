@@ -112,6 +112,7 @@ void DataManager::load_data(std::string in_room) {
 
 	enemy = *dj::Json::from_file((finder.resource_path() + "/data/enemy/enemy_params.json").c_str());
 	assert(!enemy.is_null());
+
 	frdog = *dj::Json::from_file((finder.resource_path() + "/data/enemy/frdog.json").c_str());
 	assert(!frdog.is_null());
 	hulmet = *dj::Json::from_file((finder.resource_path() + "/data/enemy/hulmet.json").c_str());
@@ -643,6 +644,13 @@ auto DataManager::get_room_data_from_id(int id) const& -> std::optional<dj::Json
 auto DataManager::get_npc_label_from_id(int id) const -> std::optional<std::string_view> {
 	for (auto const& n : npc.as_object()) {
 		if (n.second["metadata"]["id"].as<int>() == id) { return n.first; }
+	}
+	return std::nullopt;
+}
+
+auto DataManager::get_enemy_label_from_id(int id) const -> std::optional<std::string_view> {
+	for (auto const& [key, entry] : enemy.as_object()) {
+		if (entry["metadata"]["id"].as<int>() == id) { return key; }
 	}
 	return std::nullopt;
 }

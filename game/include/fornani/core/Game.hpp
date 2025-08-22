@@ -14,7 +14,6 @@ namespace fornani {
 
 class WindowManager;
 enum class GameFlags { playtest, in_game, draw_cursor };
-enum class KeyboardFlags { control };
 
 class Game {
   public:
@@ -24,7 +23,6 @@ class Game {
 	void shutdown();
 
 	util::BitFlags<GameFlags> flags{};
-	util::BitFlags<KeyboardFlags> key_flags{};
 
   private:
 	void playtester_portal(sf::RenderWindow& window);

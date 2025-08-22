@@ -276,9 +276,8 @@
 		},
 		"physical": {
 			"dimensions": [ 28, 28 ],
-			"sprite_dimensions": [ 72, 72 ],
-			"spritesheet_dimensions": [ 3, 6 ],
-			"offset": [ 11, -24 ],
+			"sprite_dimensions": [ 36, 36 ],
+			"offset": [ 0, -21 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 600.0, 300.0 ],
@@ -321,9 +320,9 @@
 		},
 		"physical": {
 			"dimensions": [ 28, 28 ],
-			"sprite_dimensions": [ 72, 72 ],
+			"sprite_dimensions": [ 36, 36 ],
 			"spritesheet_dimensions": [ 3, 4 ],
-			"offset": [ 11, -24 ],
+			"offset": [ 0, -21 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 600.0, 600.0 ],
@@ -415,8 +414,8 @@
 		},
 		"physical": {
 			"dimensions": [ 14, 14 ],
-			"sprite_dimensions": [ 80, 40 ],
-			"offset": [ 11, -18 ],
+			"sprite_dimensions": [ 40, 20 ],
+			"offset": [ 0, -12 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 1600.0, 1600.0 ],
@@ -451,46 +450,6 @@
 			"map_collision": true,
 			"player_collision": false,
 			"foreground": false,
-			"rare_drops": false
-		}
-	},
-	"hauler": {
-		"metadata": {
-			"id": 6,
-			"variant": "skycorps"
-		},
-		"physical": {
-			"dimensions": [ 44, 44 ],
-			"sprite_dimensions": [ 80, 80 ],
-			"spritesheet_dimensions": [ 5, 4 ],
-			"offset": [ 20, -14 ],
-			"num_colliders": 1,
-			"num_hurtboxes": 1,
-			"alert_range": [ 200.0, 300.0 ],
-			"hostile_range": [ 600.0, 24.0 ],
-			"friction": 0.98,
-			"gravity": 6.5
-		},
-		"visual": {
-			"effect_type": 0,
-			"effect_size": 1
-		},
-		"attributes": {
-			"base_hp": 40,
-			"base_damage": 2.0,
-			"speed": 1.0,
-			"loot_multiplier": 2.0,
-			"drop_range": [ 5, 8 ]
-		},
-		"animation": {
-			"duration": 2,
-			"framerate": 20
-		},
-		"general": {
-			"mobile": true,
-			"gravity": true,
-			"map_collision": true,
-			"player_collision": true,
 			"rare_drops": false
 		}
 	},

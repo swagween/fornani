@@ -25,7 +25,6 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	auto& metadata = svc.data.map_jsons.at(room_lookup).metadata;
 	auto const& meta = metadata["meta"];
 	auto& entities = metadata["entities"];
-	if (entities.is_object()) { m_entities = EntitySet(svc, svc.finder, entities, m_metadata.room); }
 
 	svc.current_room = room_number;
 	if (meta["cutscene_on_entry"]["flag"].as_bool()) {
@@ -203,6 +202,16 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 }
 
 void Map::unserialize(automa::ServiceProvider& svc, int room_number) {
+
+	int ctr{};
+	for (auto& room : svc.data.map_jsons) {
+		if (room.id == room_number) { room_lookup = ctr; }
+		++ctr;
+	}
+	auto& metadata = svc.data.map_jsons.at(room_lookup).metadata;
+	auto const& meta = metadata["meta"];
+	auto& entities = metadata["entities"];
+
 	center_box.setSize(svc.window->f_screen_dimensions() * 0.5f);
 	flags.state.reset(LevelState::game_over);
 	if (!player->is_dead()) { svc.state_controller.actions.reset(automa::Actions::death_mode); }
@@ -213,14 +222,6 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number) {
 	svc.world_timer.set_tag("nani");
 	svc.world_timer.set_course(room_number);
 
-	save_point = {};
-
-	int ctr{};
-	for (auto& room : svc.data.map_jsons) {
-		if (room.id == room_number) { room_lookup = ctr; }
-		++ctr;
-	}
-	auto const& metadata = svc.data.map_jsons.at(room_lookup).metadata;
 	m_metadata.biome = svc.data.map_jsons.at(room_lookup).biome_label;
 	m_metadata.room = svc.data.map_jsons.at(room_lookup).room_label;
 	inspectable_data = svc.data.map_jsons.at(room_lookup).metadata["entities"]["inspectables"];
@@ -228,7 +229,6 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number) {
 	// check for enemy respawns
 	svc.data.respawn_enemies(room_id, player->visit_history.distance_traveled_from(room_id));
 
-	auto const& meta = metadata["meta"];
 	room_id = meta["room_id"].as<int>();
 	if (meta["minimap"].as_bool()) { flags.properties.set(MapProperties::minimap); }
 	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
@@ -258,8 +258,7 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number) {
 	}
 
 	m_letterbox_color = style_id == 2 ? colors::pioneer_black : colors::ui_black;
-
-	auto const& entities = metadata["entities"];
+	if (entities.is_object()) { m_entities = EntitySet(svc, svc.finder, entities, m_metadata.room); }
 
 	/*for (auto& entry : entities["portals"].as_array()) {
 		sf::Vector2<std::uint32_t> pos{};
@@ -280,10 +279,10 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number) {
 		portals.back().update(svc);
 	}*/
 
-	for (auto& entry : entities["save_point"].as_array()) {
+	/*for (auto& entry : entities["save_point"].as_array()) {
 		auto save_id = svc.state_controller.save_point_id;
 		save_point = entity::SavePoint(svc, room_id, sf::Vector2<std::uint32_t>{entry["position"][0].as<std::uint32_t>(), entry["position"][1].as<std::uint32_t>()});
-	}
+	}*/
 
 	generate_collidable_layer();
 }
@@ -412,7 +411,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	if (cooldowns.loading.is_complete()) { bed_transition.update(*player); }
 	soft_reset.update(*player);
 	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
-	if (save_point) { save_point->update(svc, *player, console); }
+	// if (save_point) { save_point->update(svc, *player, console); }
 	if (rain) { rain.value().update(svc, *this); }
 
 	player->collider.reset_ground_flags();
@@ -461,7 +460,8 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	if (m_entities) {
 		// TODO: uncomment below once all entities have been refactored!
 		// for (auto& entity : m_entities.value().variables.entities) { entity->render(win, cam, 1.0); }
-		for (auto p : get_portals()) { p->render(win, cam, 1.0); }
+		for (auto p : get_entities<Portal>()) { p->render(win, cam, 1.0); }
+		for (auto s : get_entities<SavePoint>()) { s->render(win, cam, 1.0); }
 	}
 
 	// for (auto& portal : portals) { portal.render(svc, win, cam); }
@@ -493,7 +493,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		if (vine->foreground()) { vine->render(svc, win, cam); }
 	}
 
-	if (save_point) { save_point->render(svc, win, cam); }
+	// if (save_point) { save_point->render(svc, win, cam); }
 
 	if (!svc.greyblock_mode()) {
 		for (auto& layer : get_layers()) {
@@ -817,13 +817,5 @@ std::size_t Map::get_index_at_position(sf::Vector2f position) { return get_middl
 int Map::get_tile_value_at_position(sf::Vector2f position) { return get_middleground()->grid.get_cell(get_index_at_position(position)).value; }
 
 Tile& Map::get_cell_at_position(sf::Vector2f position) { return get_middleground()->grid.cells.at(get_index_at_position(position)); }
-
-std::vector<Portal*> Map::get_portals() {
-	std::vector<Portal*> portals;
-	for (auto const& entity : m_entities.value().variables.entities) {
-		if (auto* portal = dynamic_cast<Portal*>(entity.get())) { portals.push_back(portal); }
-	}
-	return portals;
-}
 
 } // namespace fornani::world

@@ -166,14 +166,18 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 	}
 	if (ImGui::BeginPopupModal("Enemy Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
-		static int id{};
+		static int selected{};
 		static int variant{};
-		ImGui::InputInt("ID", &id);
+
+		ImGui::Text("Type:");
+		for (auto const& [key, entry] : svc.data.enemy.as_object()) {
+			if (ImGui::Selectable(std::string{key}.c_str(), selected == entry["metadata"]["id"].as<int>(), ImGuiSelectableFlags_DontClosePopups)) { selected = entry["metadata"]["id"].as<int>(); }
+		}
 		ImGui::InputInt("Variant", &variant);
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<fornani::Enemy>(svc, id, variant);
+			tool->current_entity = std::make_unique<fornani::Enemy>(svc, selected, variant);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();

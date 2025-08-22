@@ -12,6 +12,8 @@ class IWorldPositionable {
 
 	void set_grid_position(sf::Vector2<std::uint32_t> to) { m_position = to; }
 	void set_grid_position(sf::Vector2i to) { m_position = sf::Vector2<std::uint32_t>{to}; }
+	void set_grid_dimensions(sf::Vector2<std::uint32_t> to) { m_dimensions = to; }
+	void set_grid_dimensions(sf::Vector2i to) { m_dimensions = sf::Vector2<std::uint32_t>{to}; }
 	void set_world_position(sf::Vector2f to) { m_position = sf::Vector2<std::uint32_t>{to / constants::f_cell_size}; }
 	void set_world_dimensions(sf::Vector2f to) { m_dimensions = sf::Vector2<std::uint32_t>{to / constants::f_cell_size}; }
 

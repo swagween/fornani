@@ -4,7 +4,6 @@ nani_add_headers(
         Chest.hpp
         Fire.hpp
         Inspectable.hpp
-        SavePoint.hpp
         SpawnablePlatform.hpp
         TreasureContainer.hpp
         Vine.hpp

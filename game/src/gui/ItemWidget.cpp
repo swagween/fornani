@@ -32,7 +32,7 @@ void ItemWidget::render(automa::ServiceProvider& svc, sf::RenderWindow& win) {
 	auto v = static_cast<int>(std::floor((idx / 16)) * dim.y);
 	m_sprites.item.setTextureRect(sf::IntRect({u, v}, dim));
 	win.draw(m_sprites.item);
-	sparkler.render(svc, win, {});
+	sparkler.render(win, {});
 }
 
 void ItemWidget::bring_in() { m_path.set_section("in"); }

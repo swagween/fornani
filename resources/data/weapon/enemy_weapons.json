@@ -204,8 +204,8 @@
 			"projectile": {
 				"type": 0,
 				"dimensions": [
-					32.0,
-					32.0
+					16.0,
+					16.0
 				],
 				"attributes": {
 					"base_damage": 2,

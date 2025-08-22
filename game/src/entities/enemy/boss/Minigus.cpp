@@ -52,7 +52,7 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	attacks.rush.origin = {40.f, 10.f};
 	attacks.rush.hit_offset = {-20.f, 0.f};
 
-	distant_range.set_dimensions({800, 800});
+	distant_range.set_dimensions({720, 800});
 	Enemy::collider.stats.GRAV = 6.0f;
 	sprite_direction.lnr = LNR::left;
 	Enemy::directions.actual.lnr = LNR::left;
@@ -292,7 +292,7 @@ void Minigus::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 
 	m_minigun.set_scale(Enemy::get_scale());
 	m_minigun.render(cam);
-	sparkler.render(svc, win, cam);
+	sparkler.render(win, cam);
 
 	if (!svc.greyblock_mode()) {
 		win.draw(m_minigun);

@@ -8,26 +8,27 @@ namespace fornani::enemy {
 
 constexpr static int imp_framerate{16};
 
-Imp::Imp(automa::ServiceProvider& svc, world::Map& map)
+Imp::Imp(automa::ServiceProvider& svc, world::Map& map, int variant)
 	: Enemy(svc, "imp"), m_services(&svc), m_map(&map),
 	  parts{.weapon = random::percent_chance(50) ? entity::FloatingPart{svc.assets.get_texture("imp_knife"),
-																			  {72, 40},
-																			  {{0, 1, imp_framerate, -1}, {1, 1, imp_framerate, 0}, {2, 1, imp_framerate, -1}, {3, 3, imp_framerate, 0}, {5, 1, imp_framerate, 0}, {6, 1, imp_framerate, 0}},
-																			  {"idle", "lift", "run", "attack", "dormant", "swoosh"},
-																			  2.0f,
-																			  0.85f,
-																			  {0.f, -30.f},
-																			  1}
-													   : entity::FloatingPart{svc.assets.get_texture("imp_fork"),
-																			  {82, 34},
-																			  {{0, 1, imp_framerate, -1}, {1, 1, imp_framerate, 0}, {2, 1, imp_framerate, -1}, {3, 3, imp_framerate, 9}, {0, 1, imp_framerate, -1}, {6, 1, imp_framerate, 0}},
-																			  {"idle", "lift", "run", "attack", "dormant", "swoosh"},
-																			  2.0f,
-																			  0.85f,
-																			  {0.f, -30.f},
-																			  2},
-			.hand{colors::ui_black, {4.f, 4.f}, 2.0f, 0.85f, {-32.f, 8.f}}},
-	  dormant{0, 1, imp_framerate, -1}, idle{1, 6, imp_framerate, -1}, turn{7, 3, imp_framerate, 0}, run{10, 8, imp_framerate, -1}, jump{18, 5, imp_framerate, 0}, fall{24, 3, imp_framerate, -1}, attack{27, 7, imp_framerate, 0} {
+																		{36, 20},
+																		{{0, 1, imp_framerate, -1}, {1, 1, imp_framerate, 0}, {2, 1, imp_framerate, -1}, {3, 3, imp_framerate, 0}, {5, 1, imp_framerate, 0}, {6, 1, imp_framerate, 0}},
+																		{"idle", "lift", "run", "attack", "dormant", "swoosh"},
+																		2.0f,
+																		0.85f,
+																		{0.f, -30.f},
+																		1}
+												 : entity::FloatingPart{svc.assets.get_texture("imp_fork"),
+																		{41, 17},
+																		{{0, 1, imp_framerate, -1}, {1, 1, imp_framerate, 0}, {2, 1, imp_framerate, -1}, {3, 3, imp_framerate, 9}, {0, 1, imp_framerate, -1}, {6, 1, imp_framerate, 0}},
+																		{"idle", "lift", "run", "attack", "dormant", "swoosh"},
+																		2.0f,
+																		0.85f,
+																		{0.f, -30.f},
+																		2},
+			.hand{colors::ui_black, {4.f, 4.f}, 2.0f, 0.85f, {-14.f, -4.f}}},
+	  dormant{0, 1, imp_framerate, -1}, idle{1, 6, imp_framerate, -1}, turn{7, 3, imp_framerate, 0}, run{10, 8, imp_framerate, -1}, jump{18, 5, imp_framerate, 0}, fall{24, 3, imp_framerate, -1}, attack{27, 7, imp_framerate, 0},
+	  m_variant{static_cast<ImpVariant>(variant)} {
 
 	animation.set_params(dormant);
 	collider.physics.maximum_velocity = {40.f, 12.f};
@@ -41,7 +42,6 @@ Imp::Imp(automa::ServiceProvider& svc, world::Map& map)
 	attacks.stab.hit.bounds.setRadius(28);
 	attacks.stab.origin = {-10.f, -26.f};
 
-	variant = parts.weapon.get_id() == 1 ? ImpVariant::knife : ImpVariant::fork;
 	// if (variant == ImpVariant::knife) { visual.sprite.setTexture(svc.assets.get_texture("enemy_knife_imp")); }
 	parts.weapon.animated_sprite->set_params("idle");
 
@@ -110,6 +110,7 @@ void Imp::update(automa::ServiceProvider& svc, world::Map& map, player::Player& 
 }
 
 void Imp::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	Enemy::render(svc, win, cam);
 	if (died() || state == ImpState::dormant) { return; }
 	parts.weapon.render(svc, win, cam);
 	parts.hand.render(svc, win, cam);
@@ -175,7 +176,7 @@ fsm::StateFunction Imp::update_jump() {
 		rand_jump = random::percent_chance(50) ? -1.f : 1.f;
 		if (cooldowns.post_attack.running()) { rand_jump = directions.actual.lnr == LNR::left ? 1.f : -1.f; } // always jump backwards after a attack otherwise it feels unfair
 	}
-	if (cooldowns.jump.running() && animation.get_frame_count() > jumpsquat_frame) { collider.physics.apply_force({0, -3.5f}); }
+	if (cooldowns.jump.running() && animation.get_frame_count() > jumpsquat_frame) { collider.physics.apply_force({0, -2.5f}); }
 	if (!collider.grounded() && animation.get_frame_count() > jumpsquat_frame) { collider.physics.apply_force({rand_jump * 2.f, 0.f}); }
 	if (animation.get_frame_count() > jumpsquat_frame) { cooldowns.jump.update(); }
 	if (cooldowns.jump.is_complete()) {
@@ -208,7 +209,7 @@ fsm::StateFunction Imp::update_attack() {
 	attacks.stab.enable();
 	if (animation.just_started()) { parts.weapon.animated_sprite->set_params("attack"); }
 	if (parts.weapon.animated_sprite->complete()) { parts.weapon.animated_sprite->set_params("swoosh"); }
-	auto force{16.f};
+	auto force{3.f};
 	force *= directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	collider.physics.apply_force({force, 0.f});
 	if (animation.complete()) {

@@ -3,7 +3,7 @@
 
 #include <imgui.h>
 #include <SFML/Graphics.hpp>
-#include <fornani/service/ServiceProvider.hpp>
+#include <editor/automa/EditorState.hpp>
 #include <chrono>
 #include <cstdio>
 #include <filesystem>
@@ -20,34 +20,26 @@
 #include "fornani/utils/Cooldown.hpp"
 #include <imgui-SFML.h>
 
-namespace fornani {
-class ResourceFinder;
-}
-
 namespace pi {
 
 enum class GlobalFlags : std::uint8_t { shutdown, palette_mode };
-enum class PressedKeys : std::uint8_t { control, shift, mouse_left, mouse_right, space };
 
 constexpr static std::uint8_t max_layers_v{32};
 
-class Editor {
+class Editor final : public EditorState {
   public:
-	int const TILE_WIDTH{32};
-	int const NUM_TOOLS{6};
-	Editor(char** argv, fornani::WindowManager& window, fornani::ResourceFinder& finder, fornani::Version& version, capo::IEngine& engine);
-	void run();
-	void handle_events(std::optional<sf::Event> event, sf::RenderWindow& win);
-	void logic();
+	Editor(fornani::automa::ServiceProvider& svc);
+	EditorStateType run() override;
+	void handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) override;
+	void logic() override;
+	void render(sf::RenderWindow& win) override;
+	void gui_render(sf::RenderWindow& win);
 	void load();
 	bool save();
-	void render(sf::RenderWindow& win);
-	void gui_render(sf::RenderWindow& win);
 	void help_marker(char const* desc);
 	void export_layer_texture();
 	void center_map();
 	void launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2f player_position);
-	void shutdown(fornani::ResourceFinder& finder);
 	void reset_layers();
 	void delete_current_layer();
 	[[nodiscard]] auto control_pressed() const -> bool { return pressed_keys.test(PressedKeys::control); }
@@ -65,7 +57,6 @@ class Editor {
 	std::vector<sf::Texture> tileset_textures{};
 	sf::Texture tool_texture{};
 
-	sf::RectangleShape wallpaper{};
 	sf::RectangleShape target_shape{};
 	sf::RectangleShape selector{};
 
@@ -88,16 +79,11 @@ class Editor {
 	std::uint32_t selected_block{};
 
   private:
-	fornani::WindowManager* window;
-	fornani::ResourceFinder* finder;
-	fornani::automa::ServiceProvider m_services;
 	PopupHandler popup{};
 	std::optional<Clipboard> m_clipboard{};
 	std::unique_ptr<Tool> current_tool;
 	std::unique_ptr<Tool> secondary_tool;
-	util::BitFlags<PressedKeys> pressed_keys{};
 	util::BitFlags<GlobalFlags> flags{};
-	dj::Json user_data{};
 	char** args{};
 	Console console{};
 	struct {

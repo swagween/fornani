@@ -4,7 +4,6 @@ nani_add_sources(
         Chest.cpp
         Fire.cpp
         Inspectable.cpp
-        SavePoint.cpp
         SpawnablePlatform.cpp
         TreasureContainer.cpp
         Vine.cpp

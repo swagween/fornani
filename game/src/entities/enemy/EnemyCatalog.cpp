@@ -29,12 +29,12 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[m
 	case 4: enemies.push_back(std::make_unique<Eyebot>(svc)); break;
 	case 5: enemies.push_back(std::make_unique<Eyebit>(svc, spawned)); break;
 	case 6: enemies.push_back(std::make_unique<Minigus>(svc, map, console)); break;
-	case 7: enemies.push_back(std::make_unique<Demon>(svc, map)); break;
-	case 8: enemies.push_back(std::make_unique<Caster>(svc, map)); break;
+	case 7: enemies.push_back(std::make_unique<Demon>(svc, map, variant)); break;
+	case 8: enemies.push_back(std::make_unique<Caster>(svc, map, variant)); break;
 	case 9: enemies.push_back(std::make_unique<Archer>(svc, map)); break;
 	case 10: enemies.push_back(std::make_unique<Beamstalk>(svc, map, start_direction)); break;
 	case 11: enemies.push_back(std::make_unique<Meatsquash>(svc, map)); break;
-	case 12: enemies.push_back(std::make_unique<Imp>(svc, map)); break;
+	case 12: enemies.push_back(std::make_unique<Imp>(svc, map, variant)); break;
 	case 13: enemies.push_back(std::make_unique<Hulmet>(svc, map)); break;
 	default: enemies.push_back(std::make_unique<Frdog>(svc)); break;
 	}

@@ -11,7 +11,6 @@
 #include "fornani/entities/world/Chest.hpp"
 #include "fornani/entities/world/Fire.hpp"
 #include "fornani/entities/world/Inspectable.hpp"
-#include "fornani/entities/world/SavePoint.hpp"
 #include "fornani/entities/world/Vine.hpp"
 #include "fornani/graphics/Background.hpp"
 #include "fornani/graphics/CameraController.hpp"
@@ -124,7 +123,14 @@ class Map {
 	int get_tile_value_at_position(sf::Vector2f position);
 	Tile& get_cell_at_position(sf::Vector2f position);
 
-	std::vector<Portal*> get_portals();
+	template <typename T>
+	std::vector<T*> get_entities() {
+		std::vector<T*> ret;
+		for (auto const& entity : m_entities.value().variables.entities) {
+			if (auto* portal = dynamic_cast<T*>(entity.get())) { ret.push_back(portal); }
+		}
+		return ret;
+	}
 
 	// layers
 	sf::Vector2<int> metagrid_coordinates{};
@@ -157,7 +163,6 @@ class Map {
 	std::vector<Checkpoint> checkpoints{};
 	std::vector<TimerBlock> timer_blocks{};
 	std::vector<EnemySpawn> enemy_spawns{};
-	std::optional<entity::SavePoint> save_point;
 	std::vector<vfx::Atmosphere> atmosphere{};
 	std::vector<sf::Vector2f> target_points{};
 	std::vector<sf::Vector2f> home_points{};
