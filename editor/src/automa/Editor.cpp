@@ -1,5 +1,6 @@
 
 #include "editor/automa/Editor.hpp"
+#include <editor/util/Constants.hpp>
 #include "editor/gui/Console.hpp"
 #include "fornani/core/Application.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
@@ -33,7 +34,8 @@ static void new_file(int id) {
 }
 
 Editor::Editor(fornani::automa::ServiceProvider& svc)
-	: EditorState(svc), map(svc.finder, SelectionType::canvas), palette(svc.finder, SelectionType::palette), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()), grid_refresh(16), active_layer{0} {
+	: EditorState(svc), map(svc.finder, SelectionType::canvas), palette(svc.finder, SelectionType::palette), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()), grid_refresh(16), active_layer{0},
+	  m_tool_sprite{svc.assets.get_texture("editor_tools")} {
 
 	p_target_state = EditorStateType::editor;
 
@@ -41,8 +43,6 @@ Editor::Editor(fornani::automa::ServiceProvider& svc)
 	svc.events.register_event(std::make_unique<fornani::Event<int>>("NewFile", &new_file));
 
 	svc.set_editor(true);
-
-	if (!tool_texture.loadFromFile((svc.finder.paths.editor / "gui" / "tools.png").string())) { console.add_log("Failed to load tool texture.\n"); }
 
 	for (int i = 0; i < static_cast<int>(StyleType::END); ++i) {
 		m_themes.styles.push_back(Style{static_cast<StyleType>(i)});
@@ -84,11 +84,11 @@ Editor::Editor(fornani::automa::ServiceProvider& svc)
 	p_wallpaper.setFillColor(colors.backdrop);
 }
 
-EditorStateType Editor::run() {
+EditorStateType Editor::run(char** argv) {
 
 	if (m_demo.trigger_demo) {
 		auto ppos = m_demo.custom_position ? sf::Vector2f{map.entities.variables.player_hot_start} * 32.f : sf::Vector2f{map.entities.variables.player_start} * 32.f;
-		launch_demo(args, map.room_id, p_services->finder.paths.room_name, ppos);
+		launch_demo(argv, map.room_id, p_services->finder.paths.room_name, ppos);
 		if (!ImGui::SFML::Init(p_services->window->get())) { console.add_log("ImGui::SFML::Init() failed!\n"); };
 	}
 
@@ -103,6 +103,7 @@ EditorStateType Editor::run() {
 	ImGui::SFML::Render(p_services->window->get());
 	p_services->window->get().display();
 
+	if (p_target_state != EditorStateType::editor) { save(); }
 	return p_target_state;
 }
 
@@ -341,12 +342,12 @@ void Editor::render(sf::RenderWindow& win) {
 	}
 
 	// render custom cursor
-	auto tool = sf::Sprite{tool_texture};
 	current_tool->render(map, win, map.get_position());
 	current_tool->render(palette, win, palette.get_position());
-	tool.setTextureRect({{static_cast<int>(current_tool->type) * 32, static_cast<int>(current_tool->status) * 32}, {32, 32}});
-	tool.setPosition(current_tool->get_window_position());
-	if (!ImGui::GetIO().MouseDrawCursor) { win.draw(tool); }
+	m_tool_sprite.setTextureRect({{static_cast<int>(current_tool->type) * constants::tool_size_v, static_cast<int>(current_tool->status) * constants::tool_size_v}, {constants::tool_size_v, constants::tool_size_v}});
+	m_tool_sprite.setScale(sf::Vector2f{constants::ui_tool_scale_v, constants::ui_tool_scale_v});
+	m_tool_sprite.setPosition(current_tool->get_window_position());
+	if (!ImGui::GetIO().MouseDrawCursor) { win.draw(m_tool_sprite); }
 
 	// ImGui stuff
 	gui_render(win);
@@ -416,6 +417,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	bool lght{};
 	bool npcs{};
 	bool anim{};
+	bool vine{};
 	bool open_themes{};
 
 	bool new_room{b_new_file};
@@ -720,6 +722,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Light", NULL, &lght)) {}
 			if (ImGui::MenuItem("NPC", NULL, &npcs)) {}
 			if (ImGui::MenuItem("Animator", NULL, &anim)) {}
+			if (ImGui::MenuItem("Vine", NULL, &vine)) {}
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 				current_tool->current_entity = std::make_unique<fornani::SavePoint>(*p_services, map.room_id);
@@ -861,6 +864,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		label = "Animator Specifications";
 		popup_open = true;
 	}
+	if (vine) {
+		ImGui::OpenPopup("Vine Specifications");
+		label = "Vine Specifications";
+		popup_open = true;
+	}
 
 	popup.launch(*p_services, p_services->finder, console, label.c_str(), current_tool, map.room_id);
 
@@ -873,7 +881,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	window_pos.y = PAD;
 	window_flags |= ImGuiWindowFlags_NoMove;
 
-	ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+	ImGui::SetNextWindowBgAlpha(0.35f);
 	if (show_overlay) {
 		ImGui::ShowDemoWindow();
 		ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always);
@@ -975,18 +983,20 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::BeginMenu("Tools")) { ImGui::EndMenu(); }
 
 			ImGui::EndMenuBar();
-			static auto tools = sf::Sprite{tool_texture};
-			for (int i = 0; i < static_cast<int>(ToolType::END); i++) {
+			auto tools = sf::Sprite{p_services->assets.get_texture("editor_tools")};
+			tools.setScale(sf::Vector2f{constants::ui_tool_scale_v, constants::ui_tool_scale_v});
+			for (int i = 0; i < static_cast<int>(ToolType::eyedropper); i++) {
 				ImGui::PushID(i);
-				tools.setTextureRect(sf::IntRect{{i * 32, 0}, {32, 32}});
-				ImGui::ImageButton(std::to_string(i).c_str(), tools, {32.f, 32.f}, sf::Color::Transparent, sf::Color::White);
-				if (ImGui::IsItemHovered()) {
+				tools.setTextureRect(sf::IntRect{{i * constants::tool_size_v, 0}, {constants::tool_size_v, constants::tool_size_v}});
+				ImGui::ImageButton(std::to_string(i).c_str(), tools, ImVec2{constants::tool_size_v * constants::ui_tool_scale_v, constants::tool_size_v * constants::ui_tool_scale_v}, sf::Color::Transparent, sf::Color::White);
+				// TODO: get labels appropriately, if I decide I want them
+				/*if (ImGui::IsItemHovered()) {
 					ImGui::BeginTooltip();
 					ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
 					ImGui::Text(current_tool->get_label().c_str());
 					ImGui::PopTextWrapPos();
 					ImGui::EndTooltip();
-				}
+				}*/
 				if (ImGui::IsItemClicked()) {
 					switch (static_cast<ToolType>(i)) {
 					case ToolType::brush: current_tool = std::move(std::make_unique<Brush>()); break;

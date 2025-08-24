@@ -8,20 +8,8 @@
     },
     {
       "folder": "config",
-      "label": "placeholder.json",
-      "region": "firstwind",
-      "room_id": 99
-    },
-    {
-      "folder": "config",
-      "label": "placeholder_2.json",
-      "region": "firstwind",
-      "room_id": 98
-    },
-    {
-      "folder": "config",
       "label": "test_chamber.json",
-      "region": "base",
+      "region": "pioneer",
       "room_id": 90
     },
     {
@@ -62,6 +50,12 @@
     },
     {
       "folder": "firstwind",
+      "label": "challenge.json",
+      "region": "firstwind",
+      "room_id": 42009
+    },
+    {
+      "folder": "firstwind",
       "label": "chamber.json",
       "region": "firstwind",
       "room_id": 111
@@ -76,7 +70,7 @@
       "folder": "firstwind",
       "label": "corridor.json",
       "region": "firstwind",
-      "room_id": 105
+      "room_id": 9902
     },
     {
       "folder": "firstwind",
@@ -116,9 +110,33 @@
     },
     {
       "folder": "firstwind",
+      "label": "mayhem.json",
+      "region": "firstwind",
+      "room_id": 990
+    },
+    {
+      "folder": "firstwind",
+      "label": "platform.json",
+      "region": "firstwind",
+      "room_id": 9901
+    },
+    {
+      "folder": "firstwind",
+      "label": "plat_test.json",
+      "region": "firstwind",
+      "room_id": 123213
+    },
+    {
+      "folder": "firstwind",
       "label": "prison.json",
       "region": "firstwind",
       "room_id": 100
+    },
+    {
+      "folder": "firstwind",
+      "label": "race.json",
+      "region": "firstwind",
+      "room_id": 9899
     },
     {
       "folder": "firstwind",
@@ -158,6 +176,12 @@
     },
     {
       "folder": "kariba",
+      "label": "abilities.json",
+      "region": "kariba",
+      "room_id": 97
+    },
+    {
+      "folder": "kariba",
       "label": "antechamber.json",
       "region": "kariba",
       "room_id": 400
@@ -167,6 +191,18 @@
       "label": "cellar.json",
       "region": "kariba",
       "room_id": 410
+    },
+    {
+      "folder": "overturned",
+      "label": "burrow.json",
+      "region": "overturned",
+      "room_id": 233
+    },
+    {
+      "folder": "overturned",
+      "label": "cove.json",
+      "region": "overturned",
+      "room_id": 216
     },
     {
       "folder": "overturned",
@@ -188,9 +224,39 @@
     },
     {
       "folder": "overturned",
+      "label": "den.json",
+      "region": "overturned",
+      "room_id": 232
+    },
+    {
+      "folder": "overturned",
+      "label": "forest_wall.json",
+      "region": "overturned",
+      "room_id": 207
+    },
+    {
+      "folder": "overturned",
+      "label": "hanging_roots.json",
+      "region": "overturned",
+      "room_id": 213
+    },
+    {
+      "folder": "overturned",
+      "label": "inner_passage.json",
+      "region": "overturned",
+      "room_id": 210
+    },
+    {
+      "folder": "overturned",
       "label": "landing.json",
       "region": "overturned",
       "room_id": 200
+    },
+    {
+      "folder": "overturned",
+      "label": "lower_glades.json",
+      "region": "overturned",
+      "room_id": 217
     },
     {
       "folder": "overturned",
@@ -206,9 +272,33 @@
     },
     {
       "folder": "overturned",
+      "label": "nest.json",
+      "region": "overturned",
+      "room_id": 234
+    },
+    {
+      "folder": "overturned",
       "label": "outer_branches.json",
       "region": "overturned",
       "room_id": 201
+    },
+    {
+      "folder": "overturned",
+      "label": "passage.json",
+      "region": "overturned",
+      "room_id": 218
+    },
+    {
+      "folder": "overturned",
+      "label": "precipice.json",
+      "region": "overturned",
+      "room_id": 209
+    },
+    {
+      "folder": "overturned",
+      "label": "ruins.json",
+      "region": "overturned",
+      "room_id": 214
     },
     {
       "folder": "overturned",
@@ -230,33 +320,39 @@
     },
     {
       "folder": "overturned",
+      "label": "underhang.json",
+      "region": "overturned",
+      "room_id": 205
+    },
+    {
+      "folder": "overturned",
       "label": "upper_canopy.json",
       "region": "overturned",
       "room_id": 203
     },
     {
+      "folder": "overturned",
+      "label": "upper_glades.json",
+      "region": "overturned",
+      "room_id": 231
+    },
+    {
       "folder": "pioneer",
       "label": "base.json",
-      "region": "base",
+      "region": "pioneer",
       "room_id": 300
     },
     {
-      "folder": "test",
-      "label": "abilities.json",
-      "region": "kariba",
-      "room_id": 97
+      "folder": "pioneer",
+      "label": "bryns_room.json",
+      "region": "pioneer",
+      "room_id": 301
     },
     {
       "folder": "test",
       "label": "border_test.json",
       "region": "kariba",
       "room_id": 4204
-    },
-    {
-      "folder": "test",
-      "label": "challenge.json",
-      "region": "firstwind",
-      "room_id": 42009
     },
     {
       "folder": "test",
@@ -278,39 +374,9 @@
     },
     {
       "folder": "test",
-      "label": "plat_test.json",
-      "region": "firstwind",
-      "room_id": 123213
-    },
-    {
-      "folder": "test",
-      "label": "race.json",
-      "region": "firstwind",
-      "room_id": 9899
-    },
-    {
-      "folder": "test",
       "label": "shop.json",
       "region": "base",
       "room_id": 4201
-    },
-    {
-      "folder": "trials",
-      "label": "corridor.json",
-      "region": "firstwind",
-      "room_id": 9902
-    },
-    {
-      "folder": "trials",
-      "label": "mayhem.json",
-      "region": "firstwind",
-      "room_id": 990
-    },
-    {
-      "folder": "trials",
-      "label": "platform.json",
-      "region": "firstwind",
-      "room_id": 9901
     }
   ]
 }

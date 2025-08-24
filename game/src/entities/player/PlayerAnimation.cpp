@@ -647,6 +647,8 @@ fsm::StateFunction PlayerAnimation::update_backflip() {
 	if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }
 	if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
+	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
+	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 	if (animation.complete()) {
 		animation.set_params(get_params("suspend"));
 		return PA_BIND(update_suspend);

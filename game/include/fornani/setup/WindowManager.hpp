@@ -16,6 +16,7 @@ class WindowManager {
 	void create(std::string const& title, bool fullscreen, sf::Vector2i const dimensions);
 	void restore_view();
 	void set_screencap();
+	void set_view(sf::View& to) { m_window->setView(to); }
 
 	[[nodiscard]] auto i_screen_dimensions() const -> sf::Vector2i { return m_screen_dimensions; }
 	[[nodiscard]] auto f_screen_dimensions() const -> sf::Vector2f { return sf::Vector2f{m_screen_dimensions}; }

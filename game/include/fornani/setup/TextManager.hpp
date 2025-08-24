@@ -16,16 +16,17 @@ class TextManager {
 	dj::Json inspectables{};
 	dj::Json basic{};
 	dj::Json item{};
-
 	dj::Json npc{};
 
 	struct {
 		std::filesystem::path title{};
 		std::filesystem::path basic{};
+		std::filesystem::path config{};
 	} sources{};
 	struct {
 		sf::Font title{};
 		sf::Font basic{};
+		sf::Font config{};
 	} fonts{};
 };
 

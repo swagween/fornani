@@ -13,7 +13,7 @@ enum class PressedKeys : std::uint8_t { control, shift, mouse_left, mouse_middle
 class EditorState {
   public:
 	EditorState(fornani::automa::ServiceProvider& svc);
-	virtual EditorStateType run() { return EditorStateType::editor; }
+	virtual EditorStateType run(char** argv) { return EditorStateType::editor; }
 	virtual void handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) {}
 	virtual void logic() {}
 	virtual void render(sf::RenderWindow& win);

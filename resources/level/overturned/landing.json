@@ -95,7 +95,7 @@
       23,
       10
     ],
-    "minimap": false,
+    "minimap": true,
     "music": "whispering_island",
     "player_start": [
       0,

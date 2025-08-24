@@ -29,7 +29,7 @@ constexpr static std::uint8_t max_layers_v{32};
 class Editor final : public EditorState {
   public:
 	Editor(fornani::automa::ServiceProvider& svc);
-	EditorStateType run() override;
+	EditorStateType run(char** argv) override;
 	void handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) override;
 	void logic() override;
 	void render(sf::RenderWindow& win) override;
@@ -55,7 +55,6 @@ class Editor final : public EditorState {
 	Canvas palette;
 
 	std::vector<sf::Texture> tileset_textures{};
-	sf::Texture tool_texture{};
 
 	sf::RectangleShape target_shape{};
 	sf::RectangleShape selector{};
@@ -79,12 +78,12 @@ class Editor final : public EditorState {
 	std::uint32_t selected_block{};
 
   private:
+	sf::Sprite m_tool_sprite;
 	PopupHandler popup{};
 	std::optional<Clipboard> m_clipboard{};
 	std::unique_ptr<Tool> current_tool;
 	std::unique_ptr<Tool> secondary_tool;
 	util::BitFlags<GlobalFlags> flags{};
-	char** args{};
 	Console console{};
 	struct {
 		sf::Color backdrop{};

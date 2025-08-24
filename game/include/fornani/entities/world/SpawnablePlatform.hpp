@@ -1,10 +1,10 @@
 #pragma once
 
-#include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/utils/Collider.hpp"
-#include "fornani/particle/Gravitator.hpp"
 #include "fornani/components/CircleSensor.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/entities/packages/Health.hpp"
+#include "fornani/particle/Gravitator.hpp"
+#include "fornani/utils/Collider.hpp"
 #include "fornani/utils/StateFunction.hpp"
 #define SPAWNABLE_PLAT_BIND(f) std::bind(&SpawnablePlatform::f, this)
 
@@ -27,7 +27,6 @@ class SpawnablePlatform {
 	[[nodiscard]] auto collidable() const -> bool { return state == SpawnablePlatformState::open || state == SpawnablePlatformState::opening || state == SpawnablePlatformState::fading; }
 
   private:
-
 	fsm::StateFunction state_function = std::bind(&SpawnablePlatform::update_dormant, this);
 	fsm::StateFunction update_open();
 	fsm::StateFunction update_opening();

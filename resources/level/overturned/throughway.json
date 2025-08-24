@@ -98,15 +98,15 @@
       40,
       12
     ],
-    "minimap": false,
+    "minimap": true,
     "music": "",
     "player_start": [
       0,
       0
     ],
     "properties": {
-      "day_night_shift": false,
-      "environmental_randomness": false,
+      "day_night_shift": true,
+      "environmental_randomness": true,
       "lighting": false,
       "timer": false
     },

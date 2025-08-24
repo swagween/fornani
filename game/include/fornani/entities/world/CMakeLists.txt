@@ -6,5 +6,4 @@ nani_add_headers(
         Inspectable.hpp
         SpawnablePlatform.hpp
         TreasureContainer.hpp
-        Vine.hpp
 )

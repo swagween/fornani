@@ -20,15 +20,21 @@ void DataManager::load_data(std::string in_room) {
 		if (!this_region.is_directory()) { continue; }
 		for (auto const& this_room : std::filesystem::recursive_directory_iterator(this_region)) {
 			if (this_room.path().extension() != ".json") { continue; }
-			auto room_data = *dj::Json::from_file((this_room.path()).string().c_str());
-			if (room_data.is_null()) { continue; }
+
+			auto room_data_result = dj::Json::from_file(this_room.path().string());
+			if (!room_data_result) {
+				NANI_LOG_ERROR(m_logger, "Failed to load room data for path {}.", this_room.path().string());
+				continue;
+			}
+			auto room_data = std::move(*room_data_result);
+
 			auto this_id = room_data["meta"]["room_id"].as<int>();
 			auto this_name = this_room.path().filename().string();
 			auto this_biome = room_data["meta"]["biome"].is_string() ? room_data["meta"]["biome"].as_string().data() : this_region.path().filename().string();
 			if (is_duplicate_room(this_id)) { continue; }
 			auto room_str = this_room.path().filename().string();
 			room_str = room_str.substr(0, room_str.find('.'));
-			map_jsons.push_back(MapData{this_id, room_data, this_biome, room_str});
+			map_jsons.push_back(MapData{this_id, room_data, this_region.path().filename().string(), this_biome, room_str});
 
 			// cache map layers
 			sf::Vector2<std::uint32_t> dimensions{};

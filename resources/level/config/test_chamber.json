@@ -1,37 +1,99 @@
 {
+  "entities": {
+    "inspectables": [
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "backslashtest0": {
+          "suite": [
+            [
+              "Here is a regular quote, \"Hello World!\" followed by a tough test: \\\"Manually escaping!\\\""
+            ]
+          ]
+        },
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": false,
+        "key": "backslashtest",
+        "position": [
+          13,
+          18
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "activate_on_contact": false,
+        "already_open": false,
+        "destination_id": 1,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "key_id": 0,
+        "locked": false,
+        "position": [
+          23,
+          18
+        ],
+        "source_id": 90
+      }
+    ]
+  },
   "meta": {
-    "room_id": 90,
-    "minimap": false,
-    "metagrid": [
-      -3,
-      0
-    ],
-    "dimensions": [
-      32,
-      48
-    ],
-    "style": 2,
-    "biome": "base",
-    "background": 4,
-    "music": "",
     "ambience": "",
+    "background": 4,
+    "biome": "pioneer",
     "camera_effects": {
       "shake": {
-        "frequency": 0,
-        "energy": 0.000000,
-        "start_time": 0,
         "dampen_factor": 0,
-        "frequency_in_seconds": 0
+        "energy": 0,
+        "frequency": 0,
+        "frequency_in_seconds": 0,
+        "start_time": 0
       }
     },
     "cutscene_on_entry": {
       "flag": false,
-      "type": 0,
       "id": 0,
-      "source": 0
-    }
+      "source": 0,
+      "type": 0
+    },
+    "dimensions": [
+      32,
+      48
+    ],
+    "metagrid": [
+      -3,
+      0
+    ],
+    "minimap": false,
+    "music": "",
+    "player_start": [
+      0,
+      0
+    ],
+    "properties": {
+      "day_night_shift": true,
+      "environmental_randomness": false,
+      "lighting": false,
+      "timer": false
+    },
+    "room_id": 90,
+    "shader": {
+      "darken_factor": 0
+    },
+    "style": 2
   },
   "tile": {
+    "flags": {
+      "obscuring": false,
+      "reverse_obscuring": false
+    },
     "layers": [
       [
         0,
@@ -6578,10 +6640,10 @@
         503,
         503,
         503,
-        1,
-        1,
-        1,
-        1,
+        3,
+        3,
+        3,
+        3,
         1,
         0,
         0,
@@ -6802,25 +6864,25 @@
         1,
         1,
         1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
         1,
         1,
         1,
@@ -12338,31 +12400,16 @@
         0
       ]
     ],
-    "flags": {
-      "obscuring": false,
-      "reverse_obscuring": false
-    },
-    "middleground": 4
-  },
-  "entities": {
-    "portals": [
-      {
-        "id": 0,
-        "position": [
-          23,
-          18
-        ],
-        "dimensions": [
-          1,
-          1
-        ],
-        "activate_on_contact": false,
-        "already_open": false,
-        "source_id": 90,
-        "destination_id": 1,
-        "locked": false,
-        "key_id": 0
-      }
+    "middleground": 4,
+    "parallax": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
     ]
   }
 }

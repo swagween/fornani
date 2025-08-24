@@ -4,8 +4,6 @@ namespace fornani::core {
 
 AssetManager::AssetManager(ResourceFinder const& finder) {
 
-	// doing stuff the new way will be done up here. the goal is to slowly but surely get rid of the bottom
-
 	namespace fs = std::filesystem;
 	auto p_folder{fs::path{"image"}};
 	auto p_app{p_folder / fs::path{"app"}};

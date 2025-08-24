@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <fornani/setup/MapData.hpp>
 #include <fornani/systems/TimeTrialRegistry.hpp>
 #include "fornani/entities/npc/Vendor.hpp"
 #include "fornani/io/File.hpp"
@@ -28,13 +29,6 @@ class Player;
 }
 
 namespace fornani::data {
-
-struct MapData {
-	int id{};
-	dj::Json metadata{};
-	std::string biome_label{};
-	std::string room_label{};
-};
 
 struct EnemyState {
 	std::pair<int, int> code{};

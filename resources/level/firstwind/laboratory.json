@@ -669,7 +669,7 @@
       9,
       2
     ],
-    "minimap": false,
+    "minimap": true,
     "music": "abandoned",
     "player_start": [
       0,

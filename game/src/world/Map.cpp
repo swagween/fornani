@@ -120,7 +120,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		auto parallax = entry["parallax"].as<float>();
 		scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, style_id, lyr, var, parallax));
 	}
-	for (auto& entry : entities["scenery"]["vines"].as_array()) {
+	/*for (auto& entry : entities["scenery"]["vines"].as_array()) {
 		sf::Vector2f pos{};
 		pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
 		pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
@@ -130,7 +130,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		if (entry["platform"]) {
 			for (auto& link : entry["platform"]["link_indeces"].as_array()) { vines.back()->add_platform(svc, link.as<int>()); }
 		}
-	}
+	}*/
 	for (auto& entry : entities["inspectables"].as_array()) {
 		inspectables.push_back(entity::Inspectable(svc, entry, room_id));
 		if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
@@ -368,7 +368,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		for (auto& destroyer : destroyers) { destroyer.on_hit(svc, *this, proj); }
 		for (auto& block : switch_blocks) { block.on_hit(svc, *this, proj); }
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
-		for (auto& vine : vines) { vine->on_hit(svc, *this, proj); }
+		// for (auto& vine : vines) { vine->on_hit(svc, *this, proj); }
 		proj.handle_collision(svc, *this);
 		proj.on_player_hit(*player);
 	}
@@ -403,7 +403,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& breakable : breakables) { breakable.update(svc, *player); }
 	for (auto& pushable : pushables) { pushable.update(svc, *this, *player); }
 	for (auto& spike : spikes) { spike.update(svc, *player, *this); }
-	for (auto& vine : vines) { vine->update(svc, *this, *player); }
+	// for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	for (auto& timer_block : timer_blocks) { timer_block.update(svc, *this, *player); }
 	for (auto& pl : point_lights) { pl.update(); }
 	player->handle_map_collision(*this);
@@ -462,6 +462,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		// for (auto& entity : m_entities.value().variables.entities) { entity->render(win, cam, 1.0); }
 		for (auto p : get_entities<Portal>()) { p->render(win, cam, 1.0); }
 		for (auto s : get_entities<SavePoint>()) { s->render(win, cam, 1.0); }
+		for (auto v : get_entities<Vine>()) { v->render(win, cam, 1.0); }
 	}
 
 	// for (auto& portal : portals) { portal.render(svc, win, cam); }
@@ -489,11 +490,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
 	for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
-	for (auto& vine : vines) {
+	/*for (auto& vine : vines) {
 		if (vine->foreground()) { vine->render(svc, win, cam); }
-	}
-
-	// if (save_point) { save_point->render(svc, win, cam); }
+	}*/
 
 	if (!svc.greyblock_mode()) {
 		for (auto& layer : get_layers()) {
@@ -569,9 +568,9 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		win.draw(box);
 	}
 
-	for (auto& vine : vines) {
+	/*for (auto& vine : vines) {
 		if (!vine->foreground()) { vine->render(svc, win, cam); }
-	}
+	}*/
 	for (auto& animator : animators) {
 		if (!animator.is_foreground()) { animator.render(win, cam); }
 	}

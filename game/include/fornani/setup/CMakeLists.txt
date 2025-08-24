@@ -3,6 +3,7 @@ nani_add_headers(
         ControllerMap.hpp
         DataManager.hpp
         EnumLookups.hpp
+        MapData.hpp
         ResourceFinder.hpp
         Tables.hpp
         TextManager.hpp

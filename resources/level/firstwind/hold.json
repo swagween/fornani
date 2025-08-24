@@ -547,7 +547,7 @@
       15,
       -2
     ],
-    "minimap": false,
+    "minimap": true,
     "music": "dusken",
     "player_start": [
       0,

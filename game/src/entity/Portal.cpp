@@ -49,6 +49,7 @@ void Portal::serialize(dj::Json& out) {
 }
 
 void Portal::unserialize(dj::Json const& in) {
+	Entity::unserialize(in);
 	in["activate_on_contact"].as_bool() ? m_attributes.set(PortalAttributes::activate_on_contact) : m_attributes.reset(PortalAttributes::activate_on_contact);
 	in["already_open"].as_bool() ? m_attributes.set(PortalAttributes::already_open) : m_attributes.reset(PortalAttributes::already_open);
 	source_id = in["source_id"].as<int>();

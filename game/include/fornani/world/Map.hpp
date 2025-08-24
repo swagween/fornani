@@ -11,7 +11,6 @@
 #include "fornani/entities/world/Chest.hpp"
 #include "fornani/entities/world/Fire.hpp"
 #include "fornani/entities/world/Inspectable.hpp"
-#include "fornani/entities/world/Vine.hpp"
 #include "fornani/graphics/Background.hpp"
 #include "fornani/graphics/CameraController.hpp"
 #include "fornani/graphics/DayNightShifter.hpp"
@@ -147,7 +146,6 @@ class Map {
 	std::vector<entity::Bed> beds{};
 	std::vector<entity::Animator> animators{};
 	std::vector<entity::Effect> effects{};
-	std::vector<std::unique_ptr<entity::Vine>> vines{};
 	std::array<std::vector<std::unique_ptr<vfx::Scenery>>, 6> scenery_layers{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};

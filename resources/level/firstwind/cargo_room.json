@@ -179,7 +179,7 @@
       4,
       1
     ],
-    "minimap": false,
+    "minimap": true,
     "music": "dusken",
     "player_start": [
       0,

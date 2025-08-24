@@ -22,6 +22,7 @@
 #include <fornani/entity/SwitchBlock.hpp>
 #include <fornani/entity/SwitchButton.hpp>
 #include <fornani/entity/TimerBlock.hpp>
+#include <fornani/entity/Vine.hpp>
 #include <filesystem>
 #include <memory>
 #include <string_view>

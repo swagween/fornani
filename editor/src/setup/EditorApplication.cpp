@@ -51,7 +51,7 @@ void EditorApplication::run(char** argv) {
 			}
 			m_state->handle_events(*event, window.get());
 		}
-		auto to_state = m_state->run();
+		auto to_state = m_state->run(argv);
 		if (to_state != m_current_state) {
 			switch (to_state) {
 			case EditorStateType::editor: m_state = std::make_unique<Editor>(m_services); break;

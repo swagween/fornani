@@ -3,6 +3,7 @@
 
 #include <cmath>
 
+#include <editor/util/Constants.hpp>
 #include "editor/canvas/Canvas.hpp"
 #include "editor/canvas/Clipboard.hpp"
 #include "editor/util/SelectBox.hpp"
@@ -13,7 +14,6 @@
 
 namespace pi {
 
-enum class ToolType : std::uint8_t { brush, fill, marquee, erase, hand, entity_editor, eyedropper, END };
 enum class EntityType : std::uint8_t { none, portal, inspectable, critter, chest, animator, player_placer, platform, save_point, switch_button, switch_block, interactive_scenery, scenery };
 enum class EntityMode : std::uint8_t { selector, placer, eraser, mover, editor };
 enum class ToolStatus : std::uint8_t { usable, unusable, loaded };

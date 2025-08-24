@@ -6,5 +6,4 @@ nani_add_sources(
         Inspectable.cpp
         SpawnablePlatform.cpp
         TreasureContainer.cpp
-        Vine.cpp
 )
