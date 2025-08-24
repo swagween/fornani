@@ -15,8 +15,8 @@ namespace pi {
 constexpr auto spacing_v = 24.f;
 constexpr sf::Color excluded_room_color_v{120, 80, 80, 20};
 constexpr sf::Color highlighted_excluded_room_color_v{120, 100, 80, 60};
-constexpr sf::Color room_color_v{80, 120, 180, 60};
-constexpr sf::Color highighted_room_color_v{60, 130, 190, 90};
+constexpr sf::Color room_color_v{79, 22, 32, 180};
+constexpr sf::Color highighted_room_color_v{201, 9, 42, 180};
 
 class Room {
   public:

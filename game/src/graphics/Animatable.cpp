@@ -19,4 +19,6 @@ void Animatable::random_start() {
 	if (animation.params.duration > 1) { animation.frame.set(random::random_range(0, animation.params.duration - 1)); }
 }
 
+void Animatable::random_frame_start() { animation.frame_timer.randomize(); }
+
 } // namespace fornani

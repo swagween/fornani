@@ -12,8 +12,8 @@ static bool menu_open{};
 static bool window_hovered{};
 static bool clicked{};
 
-Metagrid::Metagrid(fornani::automa::ServiceProvider& svc) : EditorState(svc), m_workspace{{256, 128}}, m_tool{std::make_unique<Cursor>(svc)} {
-	// svc.data.load_data();
+Metagrid::Metagrid(fornani::automa::ServiceProvider& svc) : EditorState(svc), m_workspace{{256, 128}}, m_tool{std::make_unique<Cursor>(svc)}, m_background_color{fornani::colors::pioneer_black} {
+	svc.data.load_data();
 	p_target_state = EditorStateType::metagrid;
 	p_wallpaper.setFillColor(m_background_color);
 	p_wallpaper.setSize(p_services->window->f_screen_dimensions());

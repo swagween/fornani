@@ -7,8 +7,8 @@
 
 namespace fornani {
 
-Entity::Entity(automa::ServiceProvider& svc, dj::Json const& in, std::string_view label)
-	: Animatable(svc, label), m_label{label}, IWorldPositionable({in["position"][0].as<std::uint32_t>(), in["position"][1].as<std::uint32_t>()}, {in["dimensions"][0].as<std::uint32_t>(), in["dimensions"][1].as<std::uint32_t>()}) {
+Entity::Entity(automa::ServiceProvider& svc, dj::Json const& in, std::string_view label, sf::Vector2i dim)
+	: Animatable(svc, label, dim), m_label{label}, IWorldPositionable({in["position"][0].as<std::uint32_t>(), in["position"][1].as<std::uint32_t>()}, {in["dimensions"][0].as<std::uint32_t>(), in["dimensions"][1].as<std::uint32_t>()}) {
 	unserialize(in);
 	m_editor = svc.is_editor();
 }

@@ -8,7 +8,7 @@
 
 namespace fornani::player {
 
-Walljump::Walljump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction) : Ability(svc, map, collider, direction), m_vertical_multiplier{-11.f}, m_horizontal_multiplier{-24.f}, m_beginning{12} {
+Walljump::Walljump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction) : Ability(svc, map, collider, direction), m_vertical_multiplier{-11.f}, m_beginning{24} {
 	m_type = AbilityType::walljump;
 	m_state = AnimState::backflip;
 	svc.soundboard.flags.player.set(audio::Player::walljump);

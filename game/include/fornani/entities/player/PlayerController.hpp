@@ -102,6 +102,7 @@ class PlayerController {
 
 	util::Cooldown post_slide;
 	util::Cooldown post_wallslide;
+	util::Cooldown wallslide_slowdown;
 
   private:
 	void flush_ability() { m_ability = {}; }

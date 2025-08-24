@@ -13,7 +13,7 @@ constexpr auto metagrid_dimensions_v = sf::Vector2u{512, 512};
 struct Point {
   public:
 	Point(int one_d_index, sf::Vector2u dim) : m_position{one_d_index % static_cast<int>(dim.x), one_d_index / static_cast<int>(dim.x)} {
-		dot.setFillColor(fornani::colors::dark_grey);
+		dot.setFillColor(sf::Color{48, 35, 7});
 		dot.setSize({2.f, 2.f});
 		dot.setPosition(get_board_position());
 	}

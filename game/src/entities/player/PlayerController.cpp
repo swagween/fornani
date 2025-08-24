@@ -7,7 +7,7 @@ namespace fornani::player {
 
 constexpr static float crawl_speed_v{0.32f};
 
-PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect = util::Cooldown(64)}, post_slide{80}, post_wallslide{16} {
+PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect = util::Cooldown(64)}, post_slide{80}, post_wallslide{16}, wallslide_slowdown{64} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
@@ -120,9 +120,15 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	// wallslide
 	if ((left && player.collider.has_left_wallslide_collision()) || (right && player.collider.has_right_wallslide_collision())) {
 		if (player.can_wallslide() && !post_wallslide.running()) {
-			if (!is(AbilityType::walljump)) { m_ability = std::make_unique<Wallslide>(svc, map, player.collider, player.get_actual_direction()); }
+			/*if (player.can_wallslide() && !post_wallslide.running() && !sprint_held()) {*/
+			if (!is(AbilityType::walljump)) {
+				if (!is(AbilityType::wallslide)) { wallslide_slowdown.start(); }
+				m_ability = std::make_unique<Wallslide>(svc, map, player.collider, player.get_actual_direction());
+			}
 		}
 	}
+	if (!is(AbilityType::wallslide)) { player.collider.physics.maximum_velocity.y = player.physics_stats.maximum_velocity.y; }
+	wallslide_slowdown.update();
 
 	if (m_ability) {
 		m_ability.value()->update(player.collider, *this);

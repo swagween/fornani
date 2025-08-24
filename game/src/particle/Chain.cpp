@@ -6,11 +6,13 @@
 
 namespace fornani::vfx {
 
+constexpr auto y_dampen_v = 0.3f;
+
 Chain::Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2f position, int num_links, bool reversed, float spacing) : Chain(svc, svc.assets.get_texture("null"), params, position, num_links, reversed, spacing) {}
 
-vfx::Chain::Chain(automa::ServiceProvider& svc, sf::Texture const& tex, SpringParameters params, sf::Vector2f position, int num_links, bool reversed, float spacing) : root(position), m_sprite{tex} {
+vfx::Chain::Chain(automa::ServiceProvider& svc, sf::Texture const& tex, SpringParameters params, sf::Vector2f position, int num_links, bool reversed, float spacing) : m_root(position), m_sprite{tex}, m_external_dampen{0.07f} {
 	for (int i{0}; i < num_links; ++i) { links.push_back(Spring({params})); }
-	grav = params.grav;
+	m_grav = params.grav;
 	int ctr{};
 	auto sign = reversed ? -1.f : 1.f;
 	for (auto& link : links) {
@@ -31,20 +33,17 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	auto external_force = sf::Vector2f{};
 	auto ctr{0};
 	for (auto& link : links) {
-		if (ctr < links.size() - 1) {
-			link.set_bob(links.at(static_cast<std::size_t>(ctr + 1)).get_anchor());
-		} else {
-		}
+		if (ctr < links.size() - 1) { link.set_bob(links.at(static_cast<std::size_t>(ctr + 1)).get_anchor()); }
 		if (!link.is_locked()) {
 			if (link.cousin) { link.set_anchor(link.cousin.value()->get_bob()); }
 		}
 		if (link.sensor.within_bounds(player.collider.bounding_box)) {
 			link.sensor.activate();
-			external_force = {player.collider.physics.velocity.x * external_dampen * dampen, player.collider.physics.velocity.y * external_dampen * 0.3f * dampen};
+			external_force = {player.collider.physics.velocity.x * m_external_dampen * dampen, player.collider.physics.velocity.y * m_external_dampen * y_dampen_v * dampen};
 		} else {
 			link.sensor.deactivate();
 		}
-		link.update(svc, grav, external_force, !link.is_locked(), ctr == links.size() - 1);
+		link.update(svc, m_grav, external_force, !link.is_locked(), ctr == links.size() - 1);
 		++ctr;
 	}
 }
@@ -92,6 +91,16 @@ void vfx::Chain::snap_to_axis(bool vert) {
 	if (links.empty()) { return; }
 	auto snap = vert ? links.at(0).get_anchor().x : links.at(0).get_anchor().y;
 	for (auto& link : links) { vert ? link.set_anchor({snap, link.get_anchor().y}) : link.set_anchor({link.get_anchor().x, snap}); }
+}
+
+void Chain::simulate(automa::ServiceProvider& svc, int amount) {
+	for (auto i = 0; i < amount; ++i) {
+		auto ctr = 0;
+		for (auto& link : links) {
+			link.update(svc, m_grav, {}, !link.is_locked(), ctr == links.size() - 1);
+			++ctr;
+		}
+	}
 }
 
 bool Chain::moving() const {

@@ -29,7 +29,7 @@ namespace fornani {
 
 class Entity : public Animatable, public IWorldPositionable {
   public:
-	explicit Entity(automa::ServiceProvider& svc, dj::Json const& in, std::string_view label);
+	explicit Entity(automa::ServiceProvider& svc, dj::Json const& in, std::string_view label, sf::Vector2i dim = constants::i_cell_vec);
 	explicit Entity(automa::ServiceProvider& svc, std::string_view label, int to_id, sf::Vector2<std::uint32_t> dim = {1, 1});
 
 	virtual std::unique_ptr<Entity> clone() const;

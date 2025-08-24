@@ -16,7 +16,7 @@ class Metagrid final : public EditorState {
 	void render(sf::RenderWindow& win) override;
 
   private:
-	sf::Color m_background_color{21, 21, 20};
+	sf::Color m_background_color;
 	Workspace m_workspace;
 	sf::Vector2f m_camera{};
 	sf::Vector2f m_dragged_position{};

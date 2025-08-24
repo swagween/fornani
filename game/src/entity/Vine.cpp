@@ -15,13 +15,12 @@ Vine::Vine(automa::ServiceProvider& svc, int length, int size, bool foreground, 
 	init();
 }
 
-Vine::Vine(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "vines"), m_services(&svc), m_chain(svc, {0.995f, 0.08f, 1.f, 64.f}, get_world_position(), in["length"].as<int>()), m_spacing{0.f, 128.f} {
+Vine::Vine(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "vines", segment_size_v), m_services(&svc), m_chain(svc, {0.995f, 0.06f, 16.f, 14.f}, get_world_position(), in["length"].as<int>()), m_spacing{0.f, 128.f} {
 	unserialize(in);
 	init();
 }
 
 void Vine::init() {
-	set_texture_rect(sf::IntRect({0, 0}, segment_size_v));
 	Animatable::center();
 	auto index = util::Circuit(4);
 	auto last_index = random::random_range(0, 3);
@@ -33,7 +32,7 @@ void Vine::init() {
 		encodings.push_back({index.get(), sign});
 		last_index = index.get();
 		// optionally add treasure container to vine segment
-		if (random::percent_chance(5)) {
+		if (random::percent_chance(25)) {
 			auto rarity = item::Rarity::common;
 			if (auto random_sample = random::random_range_float(0.0f, 1.0f); random_sample < constants.priceless) {
 				rarity = item::Rarity::priceless;
@@ -50,7 +49,6 @@ void Vine::init() {
 		++ctr;
 	}
 	repeatable = false;
-	NANI_LOG_DEBUG(m_logger, "Unserialized a vine");
 }
 
 // std::unique_ptr<Entity> Vine::clone() const { return std::make_unique<Vine>(*this); }
@@ -103,11 +101,9 @@ void Vine::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	auto current = 0.f;
 	auto total = static_cast<float>(m_chain.links.size());
 	for (auto& link : m_chain.links) {
-		Animatable::set_texture_rect(sf::IntRect({0, encodings.at(ctr).at(0) * segment_size_v.y}, segment_size_v));
+		Animatable::set_texture_rect(sf::IntRect({static_cast<int>((current / static_cast<float>(m_length)) * 3.f) * segment_size_v.x, encodings.at(ctr).at(0) * segment_size_v.y}, segment_size_v));
 		Animatable::set_scale(sf::Vector2f{static_cast<float>(encodings.at(ctr).at(1)), 1.f} * constants::f_scale_factor);
-		Animatable::set_scale(constants ::f_scale_vec);
 		Animatable::set_position(util::round_to_even(link.get_bob()) - cam);
-		Animatable::set_channel(static_cast<int>((current / m_length) * 3.f));
 		win.draw(*this);
 		++ctr;
 		++current;

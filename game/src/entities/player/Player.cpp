@@ -11,7 +11,7 @@
 namespace fornani::player {
 
 constexpr auto wallslide_threshold_v = -0.16f;
-constexpr auto walljump_force_v = 24.6f;
+constexpr auto walljump_force_v = 8.6f;
 
 Player::Player(automa::ServiceProvider& svc)
 	: arsenal(svc), m_services(&svc), controller(svc, *this), animation(*this), sprite{svc.assets.get_texture("nani")}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},
