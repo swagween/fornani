@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <fornani/entities/world/SpawnablePlatform.hpp>
@@ -28,9 +29,9 @@ enum class VineFlags : std::uint8_t { foreground, reverse };
 class Vine : public Entity {
   public:
 	Vine(automa::ServiceProvider& svc, dj::Json const& in);
-	Vine(automa::ServiceProvider& svc, int length = 8, int size = 2, bool foreground = true, bool reversed = false);
+	Vine(automa::ServiceProvider& svc, int length = 8, int size = 2, bool foreground = true, bool reversed = false, std::vector<int> const platform_indeces = {});
 
-	// std::unique_ptr<Entity> clone() const override;
+	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;
 	void expose() override;
@@ -39,6 +40,42 @@ class Vine : public Entity {
 
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) const;
 	void add_platform(automa::ServiceProvider& svc, int link_index);
+
+	// Copy constructor
+	Vine(Vine const& other) : Entity(other), m_length(other.m_length), m_chain(other.m_chain), m_services(other.m_services) {
+		if (other.m_treasure_balls) {
+			m_treasure_balls.emplace();
+			for (auto const& tb_ptr : *other.m_treasure_balls) { m_treasure_balls->push_back(tb_ptr->clone()); }
+		}
+		if (other.m_spawnable_platforms) {
+			m_spawnable_platforms.emplace();
+			for (auto const& sp_ptr : *other.m_spawnable_platforms) { m_spawnable_platforms->push_back(sp_ptr->clone()); }
+		}
+	}
+
+	// Copy assignment
+	Vine& operator=(Vine const& other) {
+		if (this != &other) {
+			Entity::operator=(other);
+			m_length = other.m_length;
+
+			if (other.m_treasure_balls) {
+				std::vector<std::unique_ptr<entity::TreasureContainer>> new_tb;
+				for (auto const& tb_ptr : *other.m_treasure_balls) { new_tb.push_back(tb_ptr->clone()); }
+				m_treasure_balls = std::move(new_tb);
+			} else {
+				m_treasure_balls.reset();
+			}
+			if (other.m_spawnable_platforms) {
+				std::vector<std::unique_ptr<entity::SpawnablePlatform>> new_sp;
+				for (auto const& sp_ptr : *other.m_spawnable_platforms) { new_sp.push_back(sp_ptr->clone()); }
+				m_spawnable_platforms = std::move(new_sp);
+			} else {
+				m_spawnable_platforms.reset();
+			}
+		}
+		return *this;
+	}
 
 	[[nodiscard]] auto is_foreground() const -> bool { return m_flags.test(VineFlags::foreground); }
 

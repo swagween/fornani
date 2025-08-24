@@ -10,8 +10,12 @@ namespace fornani {
 
 constexpr auto segment_size_v = sf::Vector2i{64, 64};
 
-Vine::Vine(automa::ServiceProvider& svc, int length, int size, bool foreground, bool reversed)
+Vine::Vine(automa::ServiceProvider& svc, int length, int size, bool foreground, bool reversed, std::vector<int> const platform_indeces)
 	: Entity(svc, "vines", 0), m_length(length), m_chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, get_world_position(), length, reversed), m_services(&svc), m_spacing{0.f, 128.f} {
+	for (auto const& i : platform_indeces) {
+		if (i == -1) { continue; }
+		add_platform(svc, i);
+	}
 	init();
 }
 
@@ -32,7 +36,7 @@ void Vine::init() {
 		encodings.push_back({index.get(), sign});
 		last_index = index.get();
 		// optionally add treasure container to vine segment
-		if (random::percent_chance(25)) {
+		if (random::percent_chance(8)) {
 			auto rarity = item::Rarity::common;
 			if (auto random_sample = random::random_range_float(0.0f, 1.0f); random_sample < constants.priceless) {
 				rarity = item::Rarity::priceless;
@@ -51,18 +55,24 @@ void Vine::init() {
 	repeatable = false;
 }
 
-// std::unique_ptr<Entity> Vine::clone() const { return std::make_unique<Vine>(*this); }
+std::unique_ptr<Entity> Vine::clone() const { return std::make_unique<Vine>(*this); }
 
 void Vine::serialize(dj::Json& out) {
 	Entity::serialize(out);
 	out["foreground"] = is_foreground();
 	out["length"] = m_length;
+	if (m_spawnable_platforms) {
+		for (auto const& plat : m_spawnable_platforms.value()) { out["platform"]["link_indeces"].push_back(plat->get_index()); }
+	}
 }
 
 void Vine::unserialize(dj::Json const& in) {
 	Entity::unserialize(in);
 	in["foreground"].as_bool() ? m_flags.set(VineFlags::foreground) : m_flags.reset(VineFlags::foreground);
 	m_length = in["length"].as<int>();
+	if (in["platform"]) {
+		for (auto& link : in["platform"]["link_indeces"].as_array()) { add_platform(*m_services, link.as<int>()); }
+	}
 }
 
 void Vine::expose() { Entity::expose(); }

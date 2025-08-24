@@ -96,8 +96,8 @@
       16
     ],
     "metagrid": [
-      0,
-      0
+      25,
+      3
     ],
     "minimap": false,
     "music": "",
@@ -109,6 +109,16 @@
       "obscuring": null,
       "reverse_obscuring": null
     },
+    "ignore_lighting": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "layers": [
       [
         0,

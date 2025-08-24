@@ -27,6 +27,7 @@ class TreasureContainer : public Animatable {
 	void update(automa::ServiceProvider& svc, sf::Vector2f target);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	std::unique_ptr<TreasureContainer> clone() const { return std::make_unique<TreasureContainer>(*this); }
 	[[nodiscard]] auto destroyed() const -> bool { return health.is_dead(); }
 	[[nodiscard]] auto get_index() const -> int { return index; }
 

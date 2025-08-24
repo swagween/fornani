@@ -26,9 +26,15 @@
 		"framerate": 16,
 		"dimensions": [ 16, 16 ]
 	},
+	"wallslide": {
+		"frame_count": 4,
+		"framerate": 16,
+		"dimensions": [ 16, 16 ],
+		"x_reflection": true
+	},
 	"jump": {
 		"frame_count": 5,
-		"framerate": 16,
+		"framerate": 32,
 		"dimensions": [ 16, 16 ],
 		"x_reflection": true
 	},

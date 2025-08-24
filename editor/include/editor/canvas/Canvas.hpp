@@ -101,9 +101,11 @@ class Canvas {
 	void set_grid_texture();
 	void activate_middleground();
 	Map& get_layers();
+	Layer& get_active_layer();
 	sf::Vector2<int> get_tile_coord(int lookup);
 	void set_property(fornani::world::MapProperties to_set) { m_map_properties.set(to_set); }
 	void reset_property(fornani::world::MapProperties to_reset) { m_map_properties.reset(to_reset); }
+	[[nodiscard]] auto test_property(fornani::world::MapProperties to_test) const -> bool { return m_map_properties.test(to_test); }
 
 	[[nodiscard]] auto get_selection_type() const -> SelectionType { return type; }
 	[[nodiscard]] auto states_empty() const -> bool { return map_states.empty(); }

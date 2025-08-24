@@ -50,6 +50,14 @@ void Player::update(world::Map& map) {
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 	cooldowns.tutorial.update();
 
+	// map effects
+	if (controller.is_wallsliding()) {
+		auto freq = controller.wallslide_slowdown.get_quadratic_normalized() * 80.f;
+		if (m_services->ticker.every_x_ticks(std::clamp(static_cast<int>(freq), 32, 80))) {
+			map.effects.push_back(entity::Effect(*m_services, "wallslide", collider.get_center() + sf::Vector2f{12.f * controller.direction.as_float(), 0.f}, {}));
+		}
+	}
+
 	// camera stuff
 	auto camx = controller.direction.as_float() * 32.f;
 	auto skew = 160.f;
@@ -165,7 +173,6 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	// piggybacker
 	if (piggybacker) { piggybacker.value().render(svc, win, cam); }
 
-	// dashing effect
 	sprite.setPosition(sprite_position);
 
 	// get UV coords

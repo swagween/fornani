@@ -89,7 +89,7 @@
     ]
   },
   "meta": {
-    "ambience": "",
+    "ambience": "overturned",
     "background": 3,
     "biome": "overturned",
     "camera_effects": {
@@ -116,7 +116,7 @@
       17
     ],
     "minimap": true,
-    "music": "",
+    "music": "whispering_island",
     "player_start": [
       0,
       0
@@ -138,6 +138,16 @@
       "obscuring": false,
       "reverse_obscuring": false
     },
+    "ignore_lighting": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "layers": [
       [
         0,

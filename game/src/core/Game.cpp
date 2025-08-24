@@ -48,7 +48,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 	if (demo) {
 		services.debug_flags.set(automa::DebugFlags::demo_mode);
 		flags.set(GameFlags::in_game);
-		services.music_player.turn_off();
+		// services.music_player.turn_off();
 		services.data.load_progress(player, 0);
 		game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", room_id, levelpath.filename().string()));
 		services.state_controller.demo_level = room_id;

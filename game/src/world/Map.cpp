@@ -496,7 +496,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 
 	if (!svc.greyblock_mode()) {
 		for (auto& layer : get_layers()) {
-			if (flags.properties.test(MapProperties::lighting) && m_palette && shader) {
+			if (flags.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
 				shader->Finalize();
 				layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, flags.properties.test(MapProperties::day_night_shift));
 			} else {
@@ -549,7 +549,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		}
 		if (!svc.greyblock_mode()) {
 			for (auto& layer : get_layers()) {
-				if (flags.properties.test(MapProperties::lighting) && m_palette && shader) {
+				if (flags.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
 					shader->Finalize();
 					layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true);
 				} else {

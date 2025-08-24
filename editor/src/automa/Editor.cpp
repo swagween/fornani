@@ -1082,9 +1082,9 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					}
 				}
 				ImGui::Separator();
-				static bool mp_randomness{};
-				static bool mp_shift{};
-				static bool mp_lighting{};
+				static bool mp_randomness{map.test_property(fornani::world::MapProperties::environmental_randomness)};
+				static bool mp_shift{map.test_property(fornani::world::MapProperties::day_night_shift)};
+				static bool mp_lighting{map.test_property(fornani::world::MapProperties::lighting)};
 				static int darken{};
 				if (ImGui::MenuItem("Include in Minimap", "", &map.minimap)) {}
 				if (ImGui::MenuItem("Environmental Randomness", "", &mp_randomness)) {}
@@ -1120,11 +1120,16 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					ImGui::Checkbox("Show Grid", &map.flags.show_grid);
 					ImGui::EndTabItem();
 				}
-				if (ImGui::BeginTabItem("Layer")) {
+				if (ImGui::BeginTabItem("Layer Settings")) {
 					if (ImGui::Checkbox("Show All Layers", &map.flags.show_all_layers)) { map.flags.show_current_layer = !map.flags.show_all_layers; };
 					ImGui::Checkbox("Show Obscuring Layer", &map.flags.show_obscured_layer);
 					ImGui::Checkbox("Show Reverse Obscuring Layer", &map.flags.show_reverse_obscured_layer);
 					ImGui::Checkbox("Show Indicated Layers", &map.flags.show_indicated_layers);
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Layer Properties")) {
+					if (ImGui::Checkbox("Ignore Lighting", &map.get_active_layer().ignore_lighting)) {};
+					ImGui::SliderFloat("Parallax Factor", &map.get_active_layer().parallax, 0.f, 1.f);
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();

@@ -70,7 +70,7 @@
       "folder": "firstwind",
       "label": "corridor.json",
       "region": "firstwind",
-      "room_id": 9902
+      "room_id": 105
     },
     {
       "folder": "firstwind",
@@ -158,6 +158,12 @@
     },
     {
       "folder": "firstwind",
+      "label": "straightaway.json",
+      "region": "firstwind",
+      "room_id": 9902
+    },
+    {
+      "folder": "firstwind",
       "label": "utility_closet.json",
       "region": "firstwind",
       "room_id": 112
@@ -184,7 +190,7 @@
       "folder": "kariba",
       "label": "antechamber.json",
       "region": "kariba",
-      "room_id": 400
+      "room_id": 500
     },
     {
       "folder": "kariba",
@@ -236,6 +242,18 @@
     },
     {
       "folder": "overturned",
+      "label": "graveyard.json",
+      "region": "overturned",
+      "room_id": 402
+    },
+    {
+      "folder": "overturned",
+      "label": "grove.json",
+      "region": "overturned",
+      "room_id": 215
+    },
+    {
+      "folder": "overturned",
       "label": "hanging_roots.json",
       "region": "overturned",
       "room_id": 213
@@ -245,6 +263,12 @@
       "label": "inner_passage.json",
       "region": "overturned",
       "room_id": 210
+    },
+    {
+      "folder": "overturned",
+      "label": "kariba_fields.json",
+      "region": "overturned",
+      "room_id": 220
     },
     {
       "folder": "overturned",
@@ -278,6 +302,12 @@
     },
     {
       "folder": "overturned",
+      "label": "outcrop.json",
+      "region": "overturned",
+      "room_id": 228
+    },
+    {
+      "folder": "overturned",
       "label": "outer_branches.json",
       "region": "overturned",
       "room_id": 201
@@ -290,6 +320,12 @@
     },
     {
       "folder": "overturned",
+      "label": "pioneer_trail.json",
+      "region": "overturned",
+      "room_id": 227
+    },
+    {
+      "folder": "overturned",
       "label": "precipice.json",
       "region": "overturned",
       "room_id": 209
@@ -299,6 +335,12 @@
       "label": "ruins.json",
       "region": "overturned",
       "room_id": 214
+    },
+    {
+      "folder": "overturned",
+      "label": "statuary.json",
+      "region": "overturned",
+      "room_id": 401
     },
     {
       "folder": "overturned",
@@ -334,7 +376,31 @@
       "folder": "overturned",
       "label": "upper_glades.json",
       "region": "overturned",
-      "room_id": 231
+      "room_id": 235
+    },
+    {
+      "folder": "overturned",
+      "label": "village.json",
+      "region": "overturned",
+      "room_id": 400
+    },
+    {
+      "folder": "overturned",
+      "label": "village_access_tunnel.json",
+      "region": "overturned",
+      "room_id": 221
+    },
+    {
+      "folder": "overturned",
+      "label": "vine_fields.json",
+      "region": "overturned",
+      "room_id": 225
+    },
+    {
+      "folder": "overturned",
+      "label": "yard.json",
+      "region": "overturned",
+      "room_id": 219
     },
     {
       "folder": "pioneer",
@@ -347,6 +413,12 @@
       "label": "bryns_room.json",
       "region": "pioneer",
       "room_id": 301
+    },
+    {
+      "folder": "pioneer",
+      "label": "willetts_room.json",
+      "region": "pioneer",
+      "room_id": 303
     },
     {
       "folder": "test",

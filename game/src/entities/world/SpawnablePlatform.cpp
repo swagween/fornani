@@ -6,16 +6,16 @@
 
 namespace fornani::entity {
 
-SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2f position, int index) : index(index), sprite(svc.assets.get_texture("spawnable_platform"), {64, 64}) {
+SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2f position, int index) : index(index), sprite(svc.assets.get_texture("spawnable_platform"), {32, 32}) {
 	collider = shape::Collider({64.f, 64.f});
 	collider.flags.general.set(shape::General::top_only_collision);
 	gravitator = vfx::Gravitator(sf::Vector2f{}, sf::Color::Transparent, 0.8f);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2f{0.8f, 0.8f}, 1.0f);
 	gravitator.set_position(position);
 	health.set_max(4.f);
-	sprite.set_origin({8.f, 8.f});
-	sensor.bounds.setRadius(20.f);
-	sensor.bounds.setOrigin({20.f, 20.f});
+	sprite.set_origin({2.f, 4.f});
+	sensor.bounds.setRadius(24.f);
+	sensor.bounds.setOrigin({24.f, 24.f});
 	sprite.push_params("dormant", {0, 1, 8, -1});
 	sprite.push_params("opening", {1, 2, 8, 0});
 	sprite.push_params("open", {3, 4, 28, 3});
@@ -45,7 +45,7 @@ void SpawnablePlatform::on_hit(automa::ServiceProvider& svc, world::Map& map, ar
 			svc.soundboard.flags.world.set(audio::World::breakable_hit);
 			if (health.is_dead()) {
 				svc.soundboard.flags.world.set(audio::World::block_toggle);
-				map.effects.push_back(entity::Effect(svc, "hit_effect", sensor.bounds.getPosition() - sf::Vector2f{32.f, 32.f}));
+				map.effects.push_back(entity::Effect(svc, "small_explosion", sensor.bounds.getPosition()));
 				state = SpawnablePlatformState::opening;
 			}
 		}

@@ -11,7 +11,7 @@ Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activ
 	: Entity(svc, "portals", 0, dimensions), source_id(source_id), destination_id(destination_id), key_id(key_id), m_services(&svc) {
 	set_texture_rect(sf::IntRect{{16 * already_open, 0}, {16, 32}});
 	set_origin({0.f, 16.f});
-	if (activate_on_contact) { m_textured = false; }
+	if (activate_on_contact || dimensions.x * dimensions.y > 1) { m_textured = false; }
 	if (activate_on_contact) { m_attributes.set(PortalAttributes::activate_on_contact); }
 	if (already_open) { m_attributes.set(PortalAttributes::already_open); }
 }
@@ -28,7 +28,7 @@ Portal::Portal(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, i
 	if (get_grid_position().x == 0) { m_orientation = PortalOrientation::left; }
 	if (get_grid_position().y == 0) { m_orientation = PortalOrientation::top; }
 	if (get_grid_position().x > 0 && get_grid_dimensions().y > 1) { m_orientation = PortalOrientation::right; }
-	if (get_grid_position().y > 0 && get_grid_dimensions().x > 1) { m_orientation = PortalOrientation::bottom; }
+	if (get_grid_position().y > 0 && get_grid_dimensions().x > 1 && get_grid_dimensions().y == 1) { m_orientation = PortalOrientation::bottom; }
 	if (is_already_open()) {
 		m_render_state = PortalRenderState::open;
 		m_attributes.set(PortalAttributes::already_open);
@@ -149,7 +149,7 @@ void Portal::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	Entity::render(win, cam, size);
 	if (m_editor) { return; }
 	Animatable::set_scale(constants::f_scale_vec);
-	if (!m_attributes.test(PortalAttributes::activate_on_contact)) {
+	if (!m_attributes.test(PortalAttributes::activate_on_contact) && get_grid_dimensions().x * get_grid_dimensions().y == 1) {
 		Animatable::set_position(get_world_position() - cam);
 		win.draw(*this);
 	}

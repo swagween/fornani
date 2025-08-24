@@ -25,6 +25,7 @@ class DayNightShifter;
 namespace fornani::world {
 
 enum class LayerType : std::uint8_t { background, middleground, foreground, reverse_obscuring, obscuring };
+enum class LayerFlags : std::uint8_t { ignore_lighting };
 
 struct LayerTexture {
 	sf::RenderTexture day{};
@@ -35,7 +36,7 @@ struct LayerTexture {
 class Layer {
   public:
 	friend class Map;
-	Layer(std::uint8_t o, sf::Vector2i partition, sf::Vector2<std::uint32_t> dim, dj::Json& source, float spacing, bool has_obscuring, bool has_reverse_obscuring, float parallax = 1.f)
+	Layer(std::uint8_t o, sf::Vector2i partition, sf::Vector2<std::uint32_t> dim, dj::Json& source, float spacing, bool has_obscuring, bool has_reverse_obscuring, float parallax = 1.f, bool ignore_lighting = false)
 		: m_render_order(o), collidable(o == partition.x), dimensions(dim), grid(dim, source, spacing), m_parallax{parallax} {
 		auto order = static_cast<int>(o);
 		if (order < partition.x) { m_type = LayerType::background; }
@@ -43,6 +44,7 @@ class Layer {
 		if (order > partition.x) { m_type = LayerType::foreground; }
 		if (order == partition.y - 2 && has_reverse_obscuring) { m_type = LayerType::reverse_obscuring; }
 		if (order == partition.y - 1 && has_obscuring) { m_type = LayerType::obscuring; }
+		ignore_lighting ? m_flags.set(LayerFlags::ignore_lighting) : m_flags.reset(LayerFlags::ignore_lighting);
 	}
 	[[nodiscard]] auto background() const -> bool { return m_type == LayerType::background; }
 	[[nodiscard]] auto foreground() const -> bool { return m_type == LayerType::foreground; }
@@ -53,6 +55,7 @@ class Layer {
 	[[nodiscard]] auto get_render_order() const -> std::uint8_t { return m_render_order; }
 	[[nodiscard]] auto get_i_render_order() const -> int { return static_cast<int>(m_render_order); }
 	[[nodiscard]] auto get_layer_type() const -> LayerType { return m_type; }
+	[[nodiscard]] auto ignore_lighting() const -> bool { return m_flags.test(LayerFlags::ignore_lighting); }
 	bool collidable{};
 	sf::Vector2<std::uint32_t> dimensions{};
 
@@ -67,6 +70,7 @@ class Layer {
 	LayerTexture m_texture{};
 	std::optional<sf::RenderTexture> m_barrier{};
 	float m_parallax;
+	util::BitFlags<LayerFlags> m_flags{};
 
 	io::Logger m_logger{"world"};
 };

@@ -286,13 +286,23 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 	if (ImGui::BeginPopupModal("Vine Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
 		static int length{};
+		static int link_index{-1};
 		static bool foreground{};
+		static bool reversed{};
 		ImGui::InputInt("Length", &length);
+		ImGui::InputInt("Platform Link Index", &link_index);
+		link_index = std::clamp(link_index, -1, length - 1);
+		ImGui::SameLine();
+		help_marker("(Optional) Defines which link will contain a platform for the player to jump on. -1 means no platform. It is possible for vines to have multiple platforms, but this editor doesn't yet support this edge case. To do "
+					"this, edit the level.json manually.");
 		ImGui::Checkbox("Foreground?", &foreground);
+		ImGui::Checkbox("Reversed?", &reversed);
+		ImGui::SameLine();
+		help_marker("(not yet supported)");
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<fornani::Vine>(svc, length, 2, foreground);
+			tool->current_entity = std::make_unique<fornani::Vine>(svc, length, 2, foreground, reversed, std::vector<int>{link_index});
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
