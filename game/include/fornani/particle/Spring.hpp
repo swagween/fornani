@@ -1,10 +1,9 @@
 
 #pragma once
 
-
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/components/CircleSensor.hpp"
 #include <optional>
+#include "fornani/components/CircleSensor.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
 
 namespace fornani::vfx {
 struct SpringParameters {
@@ -21,6 +20,7 @@ class Spring {
 	Spring(SpringParameters params, sf::Vector2f anchor, sf::Vector2f bob);
 	void calculate();
 	void update(automa::ServiceProvider& svc, float custom_grav = 1.5f, sf::Vector2f external_force = {}, bool loose = false, bool sag = false);
+	void simulate(float custom_grav = 1.5f, bool loose = false, bool sag = false);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void calculate_force();
 	void reverse_anchor_and_bob();
@@ -56,9 +56,9 @@ class Spring {
 
 	SpringParameters params{};
 
-	//drawables for debugging
+	// drawables for debugging
 	sf::CircleShape bob_shape{};
 	sf::CircleShape anchor_shape{};
 };
 
-} // namespace vfx
+} // namespace fornani::vfx

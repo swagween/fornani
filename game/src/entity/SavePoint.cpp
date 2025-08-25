@@ -6,17 +6,17 @@
 
 namespace fornani {
 
-SavePoint::SavePoint(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "save_point"), m_anim_params{0, 12, 24, -1}, bounding_box{constants::f_cell_vec}, proximity_box{constants::f_cell_vec * 8.f} {
+SavePoint::SavePoint(fornani::automa::ServiceProvider& svc, dj::Json const& in)
+	: Entity(svc, in, "save_point"), m_anim_params{0, 12, 24, -1}, bounding_box{constants::f_cell_vec}, proximity_box{constants::f_cell_vec * 8.f}, sparkler{svc, constants::f_cell_vec, colors::green, "save_point"} {
 	unserialize(in);
 	set_texture_rect(sf::IntRect{{}, fornani::constants::i_resolution_vec});
 	unique = true;
 
 	set_parameters(m_anim_params);
-	sparkler = vfx::Sparkler(svc, constants::f_cell_vec, colors::green, "save_point");
 	sparkler.set_position(get_world_position());
 }
 
-SavePoint::SavePoint(fornani::automa::ServiceProvider& svc, int id) : Entity(svc, "save_point", id, {1, 1}) {
+SavePoint::SavePoint(fornani::automa::ServiceProvider& svc, int id) : Entity(svc, "save_point", id, {1, 1}), sparkler{svc, constants::f_cell_vec, colors::green, "save_point"} {
 	unique = true;
 	set_texture_rect(sf::IntRect{{}, fornani::constants::i_resolution_vec});
 }

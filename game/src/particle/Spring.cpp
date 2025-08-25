@@ -1,8 +1,7 @@
 
-#include "fornani/particle/Spring.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-
 #include <ccmath/ext/clamp.hpp>
+#include <fornani/particle/Spring.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 
 namespace fornani::vfx {
 
@@ -28,6 +27,17 @@ void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2
 		variables.anchor_physics.apply_force(external_force);
 		variables.anchor_physics.update(svc);
 	}
+	bob = variables.bob_physics.position;
+	if (loose) { anchor = variables.anchor_physics.position; }
+	sensor.bounds.setPosition(bob);
+}
+
+void Spring::simulate(float custom_grav, bool loose, bool sag) {
+	variables.bob_physics.gravity = sag ? custom_grav : 0.f;
+	variables.anchor_physics.gravity = sag ? custom_grav : 0.f;
+	calculate();
+	variables.bob_physics.simple_update();
+	if (loose) { variables.anchor_physics.simple_update(); }
 	bob = variables.bob_physics.position;
 	if (loose) { anchor = variables.anchor_physics.position; }
 	sensor.bounds.setPosition(bob);

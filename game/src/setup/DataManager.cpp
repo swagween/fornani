@@ -13,6 +13,24 @@ void DataManager::load_data(std::string in_room) {
 	NANI_LOG_INFO(m_logger, "Data loading started.");
 	auto const& finder = m_services->finder;
 
+	// load audio library
+	auto audio_path = std::filesystem::path{finder.resource_path()} / "audio";
+	auto song_list = audio_path / "songs";
+	auto ambience_list = audio_path / "ambience";
+	constexpr auto text = R"({"songs": [], "ambience": []})";
+	auto result = dj::Json::parse(text);
+	audio_library = result.value();
+	assert(!audio_library.is_null());
+	// populate library json
+	for (auto const& song : std::filesystem::recursive_directory_iterator(song_list)) {
+		if (song.path().extension() != ".xm") { continue; }
+		audio_library["music"].push_back(song.path().stem().string());
+	}
+	for (auto const& library : std::filesystem::recursive_directory_iterator(ambience_list)) {
+		if (!library.is_directory()) { continue; }
+		audio_library["ambience"].push_back(library.path().filename().string());
+	}
+
 	// populate map table
 	auto room_path = std::filesystem::path{finder.resource_path()};
 	auto room_list = room_path / "level";

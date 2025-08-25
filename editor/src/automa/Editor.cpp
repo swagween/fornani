@@ -35,9 +35,11 @@ static void new_file(int id) {
 
 Editor::Editor(fornani::automa::ServiceProvider& svc)
 	: EditorState(svc), map(svc.finder, SelectionType::canvas), palette(svc.finder, SelectionType::palette), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()), grid_refresh(16), active_layer{0},
-	  m_tool_sprite{svc.assets.get_texture("editor_tools")} {
+	  m_tool_sprite{svc.assets.get_texture("editor_tools")}, m_services(&svc) {
 
 	p_target_state = EditorStateType::editor;
+
+	svc.music_player.set_volume(0.2f);
 
 	svc.events.register_event(std::make_unique<fornani::Event<std::string, std::string>>("LoadFile", &load_file));
 	svc.events.register_event(std::make_unique<fornani::Event<int>>("NewFile", &new_file));
@@ -423,7 +425,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	bool new_room{b_new_file};
 
 	if (new_room) {
-		ImGui::CloseCurrentPopup();
+		// ImGui::CloseCurrentPopup();
 		ImGui::OpenPopup("New Room");
 	}
 	if (ImGui::BeginPopupModal("New Room", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
@@ -783,18 +785,34 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		ImGui::EndMainMenuBar();
 	}
 
-	if (open_themes) { ImGui::OpenPopup("Level Themes"); }
+	if (open_themes) {
+		ImGui::OpenPopup("Level Themes");
+		open_themes = false;
+	}
+	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 	if (ImGui::BeginPopupModal("Level Themes", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-		static char musbuffer[128] = "";
-		static char ambbuffer[128] = "";
-		ImGui::InputTextWithHint("Music", "whispering_island", musbuffer, IM_ARRAYSIZE(musbuffer));
-		ImGui::InputTextWithHint("Ambience", "overturned", ambbuffer, IM_ARRAYSIZE(ambbuffer));
-		if (ImGui::Button("Apply")) {
-			if (std::string{musbuffer}.size() > 0) { map.m_theme.music = musbuffer; }
-			if (std::string{ambbuffer}.size() > 0) { map.m_theme.ambience = ambbuffer; }
+		ImGui::Text("Music:");
+		auto i = 0;
+		for (auto const& entry : m_services->data.audio_library["music"].as_array()) {
+			ImGui::PushID(i);
+			if (ImGui::ArrowButton(std::to_string(i).c_str(), ImGuiDir::ImGuiDir_Right)) {
+				m_services->music_player.load(m_services->finder, entry.as_string());
+				m_services->music_player.play_looped();
+			}
+			ImGui::SameLine();
+			if (ImGui::Selectable(entry.as_string().c_str(), false, ImGuiSelectableFlags_DontClosePopups)) { map.m_theme.music = entry.as_string(); }
+			ImGui::PopID();
+			++i;
+		}
+		ImGui::Text("Ambience:");
+		for (auto const& entry : m_services->data.audio_library["ambience"].as_array()) {
+			if (ImGui::Selectable(entry.as_string().c_str(), false, ImGuiSelectableFlags_DontClosePopups)) { map.m_theme.ambience = entry.as_string(); }
+		}
+		if (ImGui::Button("Close")) {
+			m_services->music_player.pause();
 			ImGui::CloseCurrentPopup();
 		}
-		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
 		ImGui::EndPopup();
 	}
 

@@ -9,9 +9,10 @@
 namespace fornani {
 
 constexpr auto segment_size_v = sf::Vector2i{64, 64};
+constexpr auto simulations_v = 32;
 
 Vine::Vine(automa::ServiceProvider& svc, int length, int size, bool foreground, bool reversed, std::vector<int> const platform_indeces)
-	: Entity(svc, "vines", 0), m_length(length), m_chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, get_world_position(), length, reversed), m_services(&svc), m_spacing{0.f, 128.f} {
+	: Entity(svc, "vines", 0), m_length(length), m_chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, get_world_position(), length, reversed, 2.f), m_services(&svc), m_init{64} {
 	for (auto const& i : platform_indeces) {
 		if (i == -1) { continue; }
 		add_platform(svc, i);
@@ -19,12 +20,13 @@ Vine::Vine(automa::ServiceProvider& svc, int length, int size, bool foreground, 
 	init();
 }
 
-Vine::Vine(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "vines", segment_size_v), m_services(&svc), m_chain(svc, {0.995f, 0.06f, 16.f, 14.f}, get_world_position(), in["length"].as<int>()), m_spacing{0.f, 128.f} {
+Vine::Vine(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "vines", segment_size_v), m_services(&svc), m_chain(svc, {0.995f, 0.06f, 16.f, 14.f}, get_world_position(), in["length"].as<int>(), false, 2.f), m_init{64} {
 	unserialize(in);
 	init();
 }
 
 void Vine::init() {
+	m_init.start();
 	Animatable::center();
 	auto index = util::Circuit(4);
 	auto last_index = random::random_range(0, 3);
@@ -36,7 +38,7 @@ void Vine::init() {
 		encodings.push_back({index.get(), sign});
 		last_index = index.get();
 		// optionally add treasure container to vine segment
-		if (random::percent_chance(8)) {
+		if (random::percent_chance(5)) {
 			auto rarity = item::Rarity::common;
 			if (auto random_sample = random::random_range_float(0.0f, 1.0f); random_sample < constants.priceless) {
 				rarity = item::Rarity::priceless;
@@ -53,6 +55,9 @@ void Vine::init() {
 		++ctr;
 	}
 	repeatable = false;
+	// m_chain.set_position(get_world_position());
+	NANI_LOG_DEBUG(m_logger, "simulating vines...");
+	m_chain.simulate(*m_services, 128);
 }
 
 std::unique_ptr<Entity> Vine::clone() const { return std::make_unique<Vine>(*this); }
@@ -79,8 +84,12 @@ void Vine::expose() { Entity::expose(); }
 
 void Vine::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
 	Entity::update(svc, map, console, player);
-	m_chain.set_position(get_world_position());
-	m_chain.update(svc, map, player);
+	if (m_init.running()) {
+		for (int i = 0; i < simulations_v; ++i) { m_chain.update(svc, map, player); }
+	} else {
+		m_chain.update(svc, map, player);
+	}
+	m_init.update();
 	if (m_treasure_balls) {
 		for (auto const& ball : m_treasure_balls.value()) { ball->update(svc, m_chain.links.at(ball->get_index()).get_bob()); }
 		std::erase_if(m_treasure_balls.value(), [](auto const& b) { return b->destroyed(); });

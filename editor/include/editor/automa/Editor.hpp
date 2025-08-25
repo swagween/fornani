@@ -117,6 +117,8 @@ class Editor final : public EditorState {
 		bool custom_position{};
 	} m_demo{};
 	int m_middleground{};
+
+	fornani::automa::ServiceProvider* m_services;
 };
 
 } // namespace pi

@@ -97,7 +97,11 @@ void Chain::simulate(automa::ServiceProvider& svc, int amount) {
 	for (auto i = 0; i < amount; ++i) {
 		auto ctr = 0;
 		for (auto& link : links) {
-			link.update(svc, m_grav, {}, !link.is_locked(), ctr == links.size() - 1);
+			if (ctr < links.size() - 1) { link.set_bob(links.at(static_cast<std::size_t>(ctr + 1)).get_anchor()); }
+			if (!link.is_locked()) {
+				if (link.cousin) { link.set_anchor(link.cousin.value()->get_bob()); }
+			}
+			link.simulate(m_grav, !link.is_locked(), ctr == links.size() - 1);
 			++ctr;
 		}
 	}

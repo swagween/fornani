@@ -260,6 +260,12 @@
     },
     {
       "folder": "overturned",
+      "label": "hovel.json",
+      "region": "overturned",
+      "room_id": 236
+    },
+    {
+      "folder": "overturned",
       "label": "inner_passage.json",
       "region": "overturned",
       "room_id": 210

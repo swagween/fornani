@@ -10,6 +10,7 @@ void EditorState::render(sf::RenderWindow& win) {
 
 	// ImGui update
 	ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+	if (!win.setActive(true)) {}
 	ImGui::SFML::Update(p_services->window->get(), p_delta_clock.getElapsedTime());
 	p_delta_clock.restart();
 

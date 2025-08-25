@@ -49,6 +49,9 @@ void EditorApplication::run(char** argv) {
 				shutdown();
 				return;
 			}
+			if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
+				if (key_pressed->scancode == sf::Keyboard::Scancode::F12) { continue; }
+			}
 			m_state->handle_events(*event, window.get());
 		}
 		auto to_state = m_state->run(argv);

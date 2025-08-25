@@ -84,7 +84,6 @@ class Vine : public Entity {
 	std::optional<std::vector<std::unique_ptr<entity::TreasureContainer>>> m_treasure_balls{};
 	std::optional<std::vector<std::unique_ptr<entity::SpawnablePlatform>>> m_spawnable_platforms{};
 	util::BitFlags<VineFlags> m_flags{};
-	sf::Vector2f m_spacing;
 	int m_length{};
 	vfx::Chain m_chain;
 	std::vector<std::array<int, 2>> encodings{};
@@ -94,6 +93,7 @@ class Vine : public Entity {
 		float uncommon{0.1f};
 		float special{0.001f};
 	} constants{};
+	util::Cooldown m_init;
 
 	automa::ServiceProvider* m_services;
 };

@@ -141,6 +141,7 @@ class DataManager final {
 	dj::Json settings{};
 	dj::Json map_table{};
 	dj::Json background{};
+	dj::Json audio_library{};
 
 	std::vector<MapData> map_jsons{};
 	std::vector<std::vector<std::unique_ptr<world::Layer>>> map_layers{};
