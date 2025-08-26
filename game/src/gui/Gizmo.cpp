@@ -41,6 +41,11 @@ void Gizmo::deselect() {
 	m_switched = true;
 }
 
+void Gizmo::close() {
+	m_state = GizmoState::closed;
+	m_exit_trigger = true;
+}
+
 void Constituent::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin) const {
 	auto previous_origin = sprite.getOrigin();
 	sprite.setOrigin(origin);

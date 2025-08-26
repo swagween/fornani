@@ -42,13 +42,20 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	Gizmo::update(svc, player, map, position);
 	if (m_state == GizmoState::selected && m_switched) {
 		on_open(svc, player, map);
-	} else if (m_switched) {
+	} else if (m_switched || m_exit_trigger) {
 		on_close(svc, player, map);
 	}
-	if (m_path.get_section() == 0 && m_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::chain); }
-	if (m_path.get_section() == 0 && m_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::boot); }
-	if (m_path.get_section() == 0 && m_path.completed_step(2)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::open); }
-	if (m_path.get_section() == 1 && m_path.completed_step(2)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::hard_slot); }
+	if (is_closed() && m_exit_trigger) {
+		m_path.set_section("end");
+		m_exit_trigger = false;
+	}
+
+	if (!is_closed()) {
+		if (m_path.get_section() == 0 && m_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::chain); }
+		if (m_path.get_section() == 0 && m_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::boot); }
+		if (m_path.get_section() == 0 && m_path.completed_step(2)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::open); }
+		if (m_path.get_section() == 1 && m_path.completed_step(2)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::hard_slot); }
+	}
 
 	m_path.update();
 	m_motherboard_path.update();

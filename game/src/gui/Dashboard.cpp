@@ -135,4 +135,8 @@ bool Dashboard::select_gizmo() {
 
 void Dashboard::hover(sf::Vector2i direction) {}
 
+void Dashboard::close() {
+	for (auto& gizmo : m_gizmos) { gizmo->close(); }
+}
+
 } // namespace fornani::gui

@@ -34,6 +34,12 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 		on_close(svc, player, map);
 	}
 
+	if (is_closed() && m_exit_trigger) {
+		m_path.set_section("end");
+		m_lid_path.set_section("end");
+		m_exit_trigger = false;
+	}
+
 	auto& current_zone = m_zones.at(m_zone_iterator.get());
 
 	if (get_zone_type() == InventoryZoneType::key) { m_selector->set_lookup({{448, 0}, {18, 18}}); }

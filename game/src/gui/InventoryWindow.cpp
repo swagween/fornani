@@ -11,7 +11,7 @@
 namespace fornani::gui {
 
 InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map, player::Player& player)
-	: m_cell_dimensions{svc.window->f_screen_dimensions()}, m_dashboard{std::make_unique<Dashboard>(svc, map, player, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}} {
+	: m_cell_dimensions{svc.window->f_screen_dimensions()}, m_dashboard{std::make_unique<Dashboard>(svc, map, player, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}}, m_exit{64} {
 	m_debug.border.setFillColor(sf::Color{12, 12, 20});
 	m_debug.border.setSize(svc.window->f_screen_dimensions());
 	m_debug.border.setOutlineColor(colors::green);
@@ -25,20 +25,23 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map, 
 	m_background.setSize(svc.window->f_screen_dimensions());
 	m_dashboard->set_position(sf::Vector2f{250.f, 32.f}, true);
 	svc.soundboard.flags.console.set(audio::Console::menu_open);
-	svc.music_player.pause();
+	svc.music_player.filter_fade_in(80.f, 40.f);
+	svc.ambience_player.set_balance(1.f);
+	util::ColorUtils::reset();
 }
 
 void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
 
 	auto& controller = svc.controller_map;
 
+	m_exit.update();
 	if (m_view == InventoryView::focused) {
 		if (!m_dashboard->handle_inputs(controller, svc.soundboard)) { m_grid_position = {}; }
 	}
 
 	svc.soundboard.flags.pioneer.set(audio::Pioneer::hum);
 
-	m_background.setFillColor(util::ColorUtils::fade_in(colors::pioneer_black));
+	m_view == InventoryView::exit ? m_background.setFillColor(util::ColorUtils::fade_out(colors::pioneer_black)) : m_background.setFillColor(util::ColorUtils::fade_in(colors::pioneer_black));
 
 	if (m_view == InventoryView::dashboard) {
 		auto const& up = controller.digital_action_status(config::DigitalAction::menu_up).held;
@@ -70,13 +73,16 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	if (m_dashboard->get_selected_position().x == -1) { target += sf::Vector2f{48.f, 24.f}; } // inventory is slightly lower than other gizmos
 	m_camera.steering.seek(m_camera.physics, target, 0.0035f);
 	m_camera.physics.simple_update();
-	m_dashboard->set_position({250.f, 0.f});
+	m_view == InventoryView::exit ? m_dashboard->set_position({250.f, 800.f}) : m_dashboard->set_position({250.f, 0.f});
 	m_dashboard->update(svc, player, map);
 
 	if (controller.digital_action_status(config::DigitalAction::menu_cancel).triggered) { m_view = m_view == InventoryView::focused ? InventoryView::dashboard : InventoryView::exit; }
 	if (controller.digital_action_status(config::DigitalAction::inventory_close).triggered) { m_view = InventoryView::exit; }
-	if (exit_requested()) {
+	if (m_view == InventoryView::exit && !m_exit.running()) {
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+		svc.music_player.filter_fade_out();
+		m_exit.start();
+		m_dashboard->close();
 		util::ColorUtils::reset();
 	}
 }

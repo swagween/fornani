@@ -128,6 +128,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		bool has_focus = services.window->get().hasFocus();
 		services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services, &audio_engine = audio_engine] {
 			services.controller_map.update();
+			services.music_player.update();
 			if (services.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && m_game_menu) {
 				if (m_game_menu.value()->get_current_state().is_ready()) {
 					m_game_menu = {};

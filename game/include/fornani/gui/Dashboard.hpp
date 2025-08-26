@@ -40,6 +40,7 @@ class Dashboard {
 	bool handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard);
 	void set_position(sf::Vector2f to_position, bool force = false);
 	void set_selection(sf::Vector2i to_selection);
+	void close();
 	///@returns false if gizmo does not exist
 	bool select_gizmo();
 	void hover(sf::Vector2i direction);

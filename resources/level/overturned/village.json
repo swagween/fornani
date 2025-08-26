@@ -72,7 +72,7 @@
     ]
   },
   "meta": {
-    "ambience": "",
+    "ambience": "overturned",
     "background": 3,
     "biome": "overturned",
     "camera_effects": {
@@ -99,7 +99,7 @@
       15
     ],
     "minimap": true,
-    "music": "",
+    "music": "home_again",
     "player_start": [
       0,
       0

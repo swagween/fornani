@@ -20,6 +20,15 @@ struct ColorUtils {
 		return ret;
 	}
 
+	static sf::Color fade_out(sf::Color const color, int rate = m_fader.get_native_time()) {
+		if (m_fader.is_almost_complete()) { return color; }
+		if (!m_fader.running()) { m_fader.start(rate); }
+		auto ret{color};
+		ret.a = ccm::lerp(0u, 255u, m_fader.get_normalized());
+		m_fader.update();
+		return ret;
+	}
+
 	static void reset() { m_fader = Cooldown{default_fader_time}; }
 
   private:

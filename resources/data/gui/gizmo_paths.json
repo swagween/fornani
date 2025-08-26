@@ -46,6 +46,15 @@
 					"dimensions": [ 2, 2 ]
 				}
 			]
+		},
+		{
+			"label": "end",
+			"path": [
+				{ "position": [ 67, 53 ] },
+				{
+					"position": [ 67, -64 ]
+				}
+			]
 		}
 	],
 	"dashboard_minimap": [
@@ -255,6 +264,17 @@
 					"dimensions": [ 0, 0 ]
 				}
 			]
+		},
+		{
+			"label": "end",
+			"path": [
+				{
+					"position": [ -158, 0 ]
+				},
+				{
+					"position": [ 64, 0 ]
+				}
+			]
 		}
 	],
 	"wardrobe_outfitter": [
@@ -268,6 +288,17 @@
 				{
 					"position": [ 0, 0 ],
 					"dimensions": [ 5, 122 ]
+				}
+			]
+		},
+		{
+			"label": "end",
+			"path": [
+				{
+					"position": [ 0, 0 ]
+				},
+				{
+					"position": [ 256, 0 ]
 				}
 			]
 		},
@@ -298,6 +329,17 @@
 				},
 				{
 					"position": [ 0, 0 ]
+				}
+			]
+		},
+		{
+			"label": "end",
+			"path": [
+				{
+					"position": [ 0, 0 ]
+				},
+				{
+					"position": [ -540, 0 ]
 				}
 			]
 		},

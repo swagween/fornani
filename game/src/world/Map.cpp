@@ -416,9 +416,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 
 	player->collider.reset_ground_flags();
 
-	// ambience
-	svc.ambience_player.set_balance(cooldowns.fade_obscured.get_normalized());
-
 	// check if player died
 	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && cooldowns.loading.is_complete()) {
 		svc.app_flags.reset(automa::AppFlags::in_game);

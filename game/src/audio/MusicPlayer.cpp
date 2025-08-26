@@ -1,13 +1,17 @@
 
 #include "fornani/audio/MusicPlayer.hpp"
 #include <ccmath/ext/clamp.hpp>
+#include <fornani/utils/Constants.hpp>
 #include <filesystem>
 
 namespace fornani::audio {
 
 using namespace std::chrono_literals;
 
-MusicPlayer::MusicPlayer(capo::IEngine& audio_engine) : m_jukebox{audio_engine}, m_ringtone{audio_engine} {}
+MusicPlayer::MusicPlayer(capo::IEngine& audio_engine) : m_jukebox{audio_engine}, m_ringtone{audio_engine}, m_filter{.fade = util::Cooldown{default_filter_fade_speed_v}} {
+	m_filter.fade.start();
+	NANI_LOG_INFO(m_logger, "Created a MusicPlayer.");
+}
 
 void MusicPlayer::quick_play(ResourceFinder const& finder, std::string_view song_name) {
 	m_jukebox.stop();
@@ -42,7 +46,16 @@ void MusicPlayer::play_looped() {
 	m_jukebox.play();
 }
 
-void MusicPlayer::update() {}
+void MusicPlayer::update() {
+	if (!m_jukebox.has_file()) { return; }
+	auto hi = m_filter.hi_target * m_filter.fade.get_inverse_normalized();
+	auto lo = (juke::sample_rate_v - m_filter.lo_target) * m_filter.fade.get_inverse_normalized();
+	auto hi_cutoff = std::clamp(hi, constants::small_value, juke::sample_rate_v);
+	auto lo_cutoff = std::clamp(juke::sample_rate_v - lo, constants::small_value, juke::sample_rate_v);
+	m_jukebox.set_cutoff(juke::FilterType::high, hi_cutoff, juke::sample_rate_v);
+	m_jukebox.set_cutoff(juke::FilterType::low, lo_cutoff, juke::sample_rate_v);
+	m_flags.test(MusicPlayerFlags::filtering) ? m_filter.fade.update() : m_filter.fade.reverse();
+}
 
 void MusicPlayer::pause() { m_jukebox.pause(); }
 
@@ -64,5 +77,15 @@ void MusicPlayer::turn_on() { m_state = MusicPlayerState::on; }
 void MusicPlayer::set_volume(float vol) { m_jukebox.set_gain(ccm::ext::clamp(vol, 0.f, 1.f)); }
 
 void MusicPlayer::adjust_volume(float delta) { set_volume(get_volume() + delta); }
+
+void MusicPlayer::filter_fade_in(float const hi, float const lo, int speed) {
+	m_filter.fade = util::Cooldown{speed};
+	m_filter.fade.start();
+	m_filter.hi_target = hi;
+	m_filter.lo_target = lo;
+	m_flags.set(MusicPlayerFlags::filtering);
+}
+
+void MusicPlayer::filter_fade_out() { m_flags.reset(MusicPlayerFlags::filtering); }
 
 } // namespace fornani::audio

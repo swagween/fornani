@@ -33,7 +33,7 @@ class Soundboard;
 
 namespace fornani::gui {
 
-enum class GizmoState : std::uint8_t { neutral, hovered, selected };
+enum class GizmoState : std::uint8_t { neutral, hovered, selected, closed };
 enum class DashboardPort : std::uint8_t { minimap, wardrobe, arsenal, inventory, invalid };
 
 struct Constituent {
@@ -56,6 +56,7 @@ class Gizmo : public UniquePolymorphic {
 	virtual void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground = false);
 	virtual bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard);
+	void close();
 	void select();
 	void deselect();
 	[[nodiscard]] auto is_foreground() const -> bool { return m_foreground; }
@@ -63,6 +64,7 @@ class Gizmo : public UniquePolymorphic {
 	[[nodiscard]] auto is_neutral() const -> bool { return m_state == GizmoState::neutral; }
 	[[nodiscard]] auto is_hovered() const -> bool { return m_state == GizmoState::hovered; }
 	[[nodiscard]] auto is_selected() const -> bool { return m_state == GizmoState::selected; }
+	[[nodiscard]] auto is_closed() const -> bool { return m_state == GizmoState::closed; }
 	[[nodiscard]] auto get_dashboard_port() const -> DashboardPort { return m_dashboard_port ? *m_dashboard_port : DashboardPort::invalid; }
 
   protected:
@@ -70,6 +72,7 @@ class Gizmo : public UniquePolymorphic {
 	virtual void on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map);
 	bool m_switched{};
 	bool m_foreground{};
+	bool m_exit_trigger{};
 	std::string m_label{};
 	GizmoState m_state{};
 	std::optional<DashboardPort> m_dashboard_port{}; // determines the index in the dashboard's gizmo vector

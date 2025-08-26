@@ -45,6 +45,10 @@ void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 		wire_sound.start();
 		m_init = false;
 	}
+	if (is_closed() && m_exit_trigger) {
+		m_path.set_section("end");
+		m_exit_trigger = false;
+	}
 
 	if (m_description) {
 		m_description->update(svc, player, map, m_physics.position + m_path.get_dimensions());

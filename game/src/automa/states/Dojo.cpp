@@ -154,11 +154,11 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	if (inventory_window && !m_console) {
 		inventory_window.value()->update(svc, *player, map);
-		if (inventory_window.value()->exit_requested()) {
-			inventory_window = {};
-			svc.music_player.resume();
-		}
+		if (inventory_window.value()->exit_requested()) { inventory_window = {}; }
+		svc.ambience_player.set_balance(svc.music_player.get_fade().get_normalized());
 		return;
+	} else {
+		svc.ambience_player.set_balance(map.cooldowns.fade_obscured.get_normalized());
 	}
 
 	// TODO: move this somehwere else

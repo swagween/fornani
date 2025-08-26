@@ -43,6 +43,10 @@ void WardrobeGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player
 	} else if (m_switched) {
 		on_close(svc, player, map);
 	}
+	if (is_closed() && m_exit_trigger) {
+		m_path.set_section("end");
+		m_exit_trigger = false;
+	}
 
 	if (m_outfitter) {
 		// check for outfit change
