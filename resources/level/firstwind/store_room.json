@@ -30,6 +30,30 @@
         "type": 2
       }
     ],
+    "inspectables": [
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": false,
+        "key": "store_room_terminal",
+        "position": [
+          10,
+          11
+        ],
+        "store_room_terminal0": {
+          "suite": [
+            [
+              "You see a bunch of numbers under a column labeled \"INV CODES\"."
+            ]
+          ]
+        }
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,

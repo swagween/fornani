@@ -50,13 +50,20 @@
 	},
 
 	"dr_go": {
+		"id": 16,
 		"dimensions": [ 24, 24 ],
 		"sprite_dimensions": [ 20, 20 ],
-		"sprite_offset": [ 20, -14 ],
-		"animation": {
-			"idle": [ 0, 6, 40, -1, false ],
-			"turn": [ 6, 2, 40, 0, false ]
-		}
+		"sprite_offset": [ 0, -17 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 6, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 2, 40, 0, false ]
+			}
+		]
 	},
 	"mirin": {
 		"dimensions": [ 24, 24 ],
@@ -100,12 +107,20 @@
 		"dimensions": [ 24, 48 ],
 		"sprite_dimensions": [ 23, 32 ],
 		"sprite_offset": [ 8.0, -14.0 ],
-		"animation": {
-			"idle": [ 0, 1, 40, -1, false ],
-			"turn": [ 1, 1, 40, 0, false ],
-			"shift": [ 1, 4, 40, 0, false ],
-			"inspect": [ 5, 1, 40, -1, false ]
-		}
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 1, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 1, 1, 40, -1, false ]
+			},
+			{
+				"label": "shift",
+				"parameters": [ 1, 4, 40, 0, false ]
+			}
+		]
 	},
 	"hologus": {
 		"id": 23,

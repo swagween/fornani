@@ -79,6 +79,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		auto npc_id = svc.data.npc[npc_label]["id"].as<int>();
 		npcs.push_back(std::make_unique<npc::NPC>(svc, npc_label));
 		auto npc_state = svc.quest.get_progression(fornani::QuestType::npc, npc_id);
+		NANI_LOG_DEBUG(m_logger, "NPC state {}", npc_state);
 		for (auto const& convo : entry["suites"][npc_state].as_array()) {
 			npcs.back()->push_conversation(convo.as<int>());
 			NANI_LOG_DEBUG(m_logger, "Pushed conversation {}", convo.as<int>());
@@ -460,6 +461,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		for (auto p : get_entities<Portal>()) { p->render(win, cam, 1.0); }
 		for (auto s : get_entities<SavePoint>()) { s->render(win, cam, 1.0); }
 		for (auto v : get_entities<Vine>()) { v->render(win, cam, 1.0); }
+		// for (auto n : get_entities<NPC>()) { n->render(win, cam, 1.0); }
 	}
 
 	// for (auto& portal : portals) { portal.render(svc, win, cam); }

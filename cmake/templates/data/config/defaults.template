@@ -25,10 +25,10 @@
 			"primary_key": "Down"
 		},
 		"platformer_dash": {
-			"primary_key": "C"
+			"primary_key": "Z"
 		},
 		"platformer_inspect": {
-			"primary_key": "V"
+			"primary_key": "C"
 		},
 		"platformer_arms_switch_left": {
 			"primary_key": "A"

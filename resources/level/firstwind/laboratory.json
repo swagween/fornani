@@ -607,6 +607,72 @@
           13,
           12
         ]
+      },
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": false,
+        "key": "willett_studies",
+        "position": [
+          26,
+          6
+        ],
+        "willett_studies0": {
+          "suite": [
+            [
+              "You find a notebook with dozens of pages of complex diagrams and half-formed thoughts. Some of the pages are ripped out."
+            ]
+          ]
+        }
+      },
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": false,
+        "key": "willett_ruins",
+        "position": [
+          7,
+          12
+        ],
+        "willett_ruins0": {
+          "suite": [
+            [
+              "There is a drawing of what seems to be an entrance to an ancient ruin. Beside it is written: \"Lost Kariba burial ground. Much to learn here.\""
+            ]
+          ]
+        }
+      },
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "bryn_stuff0": {
+          "suite": [
+            [
+              "You find an anthropology textbook and an expired pilot's license."
+            ]
+          ]
+        },
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": false,
+        "key": "bryn_stuff",
+        "position": [
+          12,
+          6
+        ]
       }
     ],
     "portals": [
@@ -692,6 +758,16 @@
       "obscuring": false,
       "reverse_obscuring": false
     },
+    "ignore_lighting": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "layers": [
       [
         0,

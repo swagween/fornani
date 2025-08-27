@@ -67,10 +67,10 @@ void Weapon::update(automa::ServiceProvider& svc, Direction to_direction) {
 	cooldowns.cooldown.update();
 	physical.steering.seek(physical.physics, {}, 0.01f);
 	physical.physics.simple_update();
+	physical.final_position = visual.position + physical.physics.position;
 }
 
 void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	physical.final_position = visual.position + physical.physics.position;
 	visual.sprite.setPosition(physical.final_position - cam);
 	win.draw(visual.sprite);
 	if (svc.greyblock_mode()) {

@@ -29,10 +29,13 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	}
 	if (walking_autonomously()) { return; }
 
+	auto dash_and_jump_combined = svc.controller_map.is_bound_to_same_input(config::DigitalAction::platformer_dash, config::DigitalAction::platformer_jump);
+
 	auto const& left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_left).held;
 	auto const& right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_right).held;
 	auto const& up = svc.controller_map.digital_action_status(config::DigitalAction::platformer_up).held;
 	auto const& down = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).held;
+	auto const any_direction_held = left || right || up || down;
 
 	auto sprint = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).held;
 	auto sprint_release = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).released;
@@ -88,14 +91,17 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	post_wallslide.update();
 	if (player.grounded()) { player.m_ability_usage = {}; }
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered) {
-		if (player.can_dash()) {
+		auto const dj_guard = (dash_and_jump_combined && any_direction_held) || !dash_and_jump_combined;
+		if (player.can_dash() && !is_wallsliding() && dj_guard) {
 			m_ability = std::make_unique<Dash>(svc, map, player.collider, m_dash_direction, player.can_omnidirectional_dash());
 			player.m_ability_usage.dash.update();
 		}
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).triggered) {
 		if (player.can_jump()) { m_ability = std::make_unique<Jump>(svc, map, player.collider); }
-		if (player.can_doublejump()) {
+		// guard for when player has jump and dash bound to the same key
+		auto const dash_exhausted = !player.can_dash() && !is_dashing();
+		if ((player.can_doublejump() && !dash_and_jump_combined) || (player.can_doublejump() && dash_and_jump_combined && (!any_direction_held || dash_exhausted))) {
 			m_ability = std::make_unique<Doublejump>(svc, map, player.collider);
 			player.m_ability_usage.doublejump.update();
 		}
@@ -120,7 +126,6 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	// wallslide
 	if ((left && player.collider.has_left_wallslide_collision()) || (right && player.collider.has_right_wallslide_collision())) {
 		if (player.can_wallslide() && !post_wallslide.running()) {
-			/*if (player.can_wallslide() && !post_wallslide.running() && !sprint_held()) {*/
 			if (!is(AbilityType::walljump)) {
 				if (!is(AbilityType::wallslide)) { wallslide_slowdown.start(); }
 				m_ability = std::make_unique<Wallslide>(svc, map, player.collider, player.get_actual_direction());

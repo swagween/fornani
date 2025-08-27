@@ -47,6 +47,7 @@ void Beamstalk::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 }
 
 void Beamstalk::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	Enemy::render(svc, win, cam);
 	if (died()) { return; }
 }
 

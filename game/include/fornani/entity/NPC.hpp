@@ -19,6 +19,7 @@ class NPC : public Entity {
 
   private:
 	std::string m_label{};
+	std::vector<std::vector<int>> m_suites{};
 };
 
 } // namespace fornani

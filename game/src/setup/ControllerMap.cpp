@@ -1,9 +1,9 @@
 
-#include "fornani/setup/ControllerMap.hpp"
 #include <steam/isteaminput.h>
 #include <ccmath/ext/clamp.hpp>
 #include <fornani/gui/ActionControlIconQuery.hpp>
-#include "fornani/service/ServiceProvider.hpp"
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/setup/ControllerMap.hpp>
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -407,6 +407,8 @@ auto config::ControllerMap::has_forbidden_duplicate_binding() const -> bool {
 	}
 	return false;
 }
+
+auto ControllerMap::is_bound_to_same_input(DigitalAction first, DigitalAction second) const -> bool { return digital_actions.at(first).primary_binding == digital_actions.at(second).primary_binding; }
 
 bool ControllerMap::process_gamepad_disconnection() {
 	auto ret = out.gamepad_disconnected;

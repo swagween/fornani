@@ -78,6 +78,26 @@
         ]
       }
     ],
+    "npcs": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 16505,
+        "label": "dr_go",
+        "position": [
+          16,
+          10
+        ],
+        "suites": [
+          [
+            1,
+            2
+          ]
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,
@@ -178,6 +198,16 @@
       "obscuring": false,
       "reverse_obscuring": false
     },
+    "ignore_lighting": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "layers": [
       [
         69,

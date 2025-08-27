@@ -493,6 +493,7 @@ fsm::StateFunction PlayerAnimation::update_dash() {
 	if (animation.complete()) {
 		m_player->flags.state.set(State::show_weapon);
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
+		if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 		if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 		if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
@@ -790,6 +791,7 @@ fsm::StateFunction player::PlayerAnimation::update_wake_up() {
 fsm::StateFunction player::PlayerAnimation::update_crouch() {
 	animation.label = "crouch";
 	m_actual = AnimState::crouch;
+	m_player->flags.state.reset(State::show_weapon);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }

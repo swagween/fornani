@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/entities/Mobile.hpp>
+#include <fornani/utils/ID.hpp>
 #include "fornani/entities/Entity.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/entities/npc/NPCAnimation.hpp"
@@ -43,7 +44,6 @@ class NPC : public Mobile {
 	void set_position(sf::Vector2f pos);
 	void apply_force(sf::Vector2f force) { collider.physics.apply_force(force); };
 	void set_position_from_scaled(sf::Vector2f scaled_pos);
-	void set_id(int new_id);
 	void start_conversation(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console);
 	void push_conversation(int convo);
 	void pop_conversation();
@@ -54,7 +54,7 @@ class NPC : public Mobile {
 	void set_current_location(int location) { current_location = location; }
 	[[nodiscard]] auto background() const -> bool { return state_flags.test(NPCState::background); }
 	[[nodiscard]] auto num_suites() const -> int { return static_cast<int>(conversations.size()); }
-	[[nodiscard]] auto get_id() const -> int { return id; }
+	[[nodiscard]] auto get_id() const -> int { return m_id.get_specifier(); }
 	[[nodiscard]] auto is_vendor() const -> bool { return static_cast<bool>(vendor); }
 	[[nodiscard]] auto piggybacking() const -> bool { return state_flags.test(NPCState::piggybacking); }
 	[[nodiscard]] auto hidden() const -> bool { return state_flags.test(NPCState::hidden); }
@@ -74,8 +74,8 @@ class NPC : public Mobile {
   private:
 	anim::AnimatedSprite m_indicator;
 	std::vector<anim::Parameters> m_params{};
-	int id{};
 	int current_location{};
+	ID m_id;
 
 	struct {
 		float walk_threshold{0.5f};

@@ -145,6 +145,7 @@ class ControllerMap {
 	/// @return Returns true if keyboard control bindings have a duplicate.
 	[[nodiscard]] auto has_forbidden_duplicate_binding() const -> bool;
 	[[nodiscard]] auto was_keyboard_input_detected() const -> bool { return m_keyboard_input_detected; }
+	[[nodiscard]] auto is_bound_to_same_input(DigitalAction first, DigitalAction second) const -> bool;
 
 	/// @brief Processes gamepad disconnection to pause the game.
 	/// @return Returns true if gamepad was just disconnected, otherwise returns false.

@@ -15,7 +15,7 @@ static void voice_cue(int index) {
 
 NPC::NPC(automa::ServiceProvider& svc, std::string_view label)
 	: Mobile(svc, "npc_" + std::string{label}, {svc.data.npc[label]["sprite_dimensions"][0].as<int>(), svc.data.npc[label]["sprite_dimensions"][1].as<int>()}), m_label(label),
-	  m_indicator(svc.assets.get_texture("arrow_indicator"), {16, 16}), id{svc.data.npc[label]["id"].as<int>()} {
+	  m_indicator(svc.assets.get_texture("arrow_indicator"), {16, 16}), m_id{svc.data.npc[label]["id"].as<int>()} {
 
 	svc.events.register_event(std::make_unique<Event<int>>("VoiceCue", &voice_cue));
 
@@ -25,7 +25,7 @@ NPC::NPC(automa::ServiceProvider& svc, std::string_view label)
 	auto const& in_data = svc.data.npc[label];
 
 	m_offset = sf::Vector2f{svc.data.npc[label]["sprite_offset"][0].as<float>(), svc.data.npc[label]["sprite_offset"][1].as<float>()};
-	if (in_data["vendor"] && svc.data.marketplace.contains(id)) { vendor = &svc.data.marketplace.at(id); }
+	if (in_data["vendor"] && svc.data.marketplace.contains(get_id())) { vendor = &svc.data.marketplace.at(get_id()); }
 
 	collider = shape::Collider({svc.data.npc[label]["dimensions"][0].as<float>(), svc.data.npc[label]["dimensions"][1].as<float>()});
 	collider.sync_components();
@@ -43,9 +43,9 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	tick();
 	face_player(player);
 	if (piggybacking()) { current_location = -1; }
-	svc.data.set_npc_location(id, current_location);
+	svc.data.set_npc_location(get_id(), current_location);
 	if (state_flags.test(NPCState::hidden)) { return; }
-	svc.player_dat.piggy_id == id ? state_flags.set(NPCState::piggybacking) : state_flags.reset(NPCState::piggybacking);
+	svc.player_dat.piggy_id == get_id() ? state_flags.set(NPCState::piggybacking) : state_flags.reset(NPCState::piggybacking);
 	if (abs(collider.physics.velocity.x) > physical.walk_threshold) {}
 
 	m_indicator.update(collider.physics.position);
@@ -59,6 +59,7 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	if (player.collider.bounding_box.overlaps(collider.bounding_box) || (triggers.test(NPCTrigger::distant_interact) && state_flags.test(NPCState::force_interact))) {
 		if (!state_flags.test(NPCState::engaged)) { triggers.set(NPCTrigger::engaged); }
 		state_flags.set(NPCState::engaged);
+		if (conversations.empty()) { NANI_LOG_DEBUG(m_logger, "convos empty!"); }
 		if ((player.controller.inspecting() || state_flags.test(NPCState::force_interact)) && !conversations.empty()) { start_conversation(svc, console); }
 	} else {
 		state_flags.reset(NPCState::engaged);
@@ -104,14 +105,12 @@ void NPC::set_position_from_scaled(sf::Vector2f scaled_pos) {
 	set_position(new_pos);
 }
 
-void NPC::set_id(int new_id) { id = new_id; }
-
 void NPC::start_conversation(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console) {
 	state_flags.set(NPCState::introduced);
 	std::string name = std::string(m_label);
 	std::string target = std::to_string(conversations.front());
 	console = std::make_unique<gui::Console>(svc, svc.text.npc[name], target, gui::OutputType::gradual);
-	console.value()->include_portrait(id);
+	console.value()->include_portrait(get_id());
 }
 
 void NPC::push_conversation(int convo) { conversations.push_back(convo); }

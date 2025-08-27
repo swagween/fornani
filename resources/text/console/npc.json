@@ -154,27 +154,44 @@
 			]
 		}
 	},
-	"dr_go1": {
-		"suite": [
-			[ "Oh!", "I wasn't expecting a Kariba to stroll in here.", "I suspect we are in our final hours, merely waiting for the Firstwind to lose her ability to fly and spiral down into the gas giant.", "It will be a graceless end, that's for certain.%0" ],
-			[ "I'm Dr. Go.", "I was enlisted by Skycorps some years ago, and they assigned me here against my will.", "No matter. I will do my duties here until I am relieved of them, or some other end befalls us." ],
-			[ "We're not entirely certain, as the crew have a tendency to forget we exist, and as such they don't tell us much.", "But from what I've heard through passing transmissions, this ship is enduring high-altitude storms beyond her capacity." ],
-			[ "This is the infirmary.", "Here, I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around.", "Perhaps they all escaped and left us here to die." ]
-		],
-		"responses": [
-			[ "Who are you?%0", "What's going on?%1", "Where am I?%2" ]
-		]
-	},
-	"dr_go2": {
-		"suite": [
-			[ "Hello again.%0" ],
-			[ "I'm Dr. Go.", "I was enlisted by Skycorps some years ago, and they assigned me here against my will.", "No matter. I will do my duties here until I am relieved of them, or some other end befalls us." ],
-			[ "We're not entirely certain, as the crew have a tendency to forget we exist, and as such they don't tell us much.", "But from what I've heard through passing transmissions, this ship is enduring high-altitude storms beyond her capacity." ],
-			[ "This is the infirmary.", "Here, Mirin and I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around.", "Perhaps they all escaped and left us here to die." ]
-		],
-		"responses": [
-			[ "Who are you?%0", "What's going on?%1", "Where am I?%2" ]
-		]
+	"dr_go": {
+		"1": {
+			"suite": [
+				[ "Oh!", "I wasn't expecting a Kariba to stroll in here.", "I suspect we are in our final hours, merely waiting for the Firstwind to lose her ability to fly and spiral down into the gas giant.", "It will be a graceless end, that's for certain." ],
+				[ "I'm Dr. Go.", "I was enlisted by Skycorps some years ago, and they assigned me here against my will.", "No matter. I will do my duties here until I am relieved of them, or some other end befalls us." ],
+				[ "We're not entirely certain, as the crew have a tendency to forget we exist, and as such they don't tell us much.", "But from what I've heard through passing transmissions, this ship is enduring high-altitude storms beyond her capacity." ],
+				[ "This is the infirmary.", "Here, I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around.", "Perhaps they all escaped and left us here to die." ]
+			],
+			"responses": [
+				[ "Who are you?", "What's going on?", "Where am I?" ]
+			],
+			"codes": [
+				[ 0, 0, 3, 1, 0 ],
+				[ 0, 1, 2, 1, 0 ],
+				[ 0, 2, 1, 1, 0 ],
+				[ 0, 3, 2, 1, 0 ],
+				[ 1, 0, 0, 1, 1 ],
+				[ 1, 0, 1, 1, 2 ],
+				[ 1, 0, 2, 1, 3 ]
+			]
+		},
+		"2": {
+			"suite": [
+				[ "Hello again." ],
+				[ "I'm Dr. Go.", "I was enlisted by Skycorps some years ago, and they assigned me here against my will.", "No matter. I will do my duties here until I am relieved of them, or some other end befalls us." ],
+				[ "We're not entirely certain, as the crew have a tendency to forget we exist, and as such they don't tell us much.", "But from what I've heard through passing transmissions, this ship is enduring high-altitude storms beyond her capacity." ],
+				[ "This is the infirmary.", "Here, Mirin and I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around.", "Perhaps they all escaped and left us here to die." ]
+			],
+			"responses": [
+				[ "Who are you?", "What's going on?", "Where am I?" ]
+			],
+			"codes": [
+				[ 0, 0, 0, 1, 0 ],
+				[ 1, 0, 0, 1, 1 ],
+				[ 1, 0, 1, 1, 2 ],
+				[ 1, 0, 2, 1, 3 ]
+			]
+		}
 	},
 	"mirin1": {
 		"suite": [

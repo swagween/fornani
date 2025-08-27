@@ -1,8 +1,8 @@
 {
-	"auto_sprint": false,
+	"auto_sprint": true,
 	"keyboard": true,
 	"gamepad": true,
-	"music_volume": 0.5,
+	"music_volume": 0.25,
 	"sfx_volume": 0.5,
 	"tutorial": false,
 	"fullscreen": true,
