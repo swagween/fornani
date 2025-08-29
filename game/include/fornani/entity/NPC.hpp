@@ -10,7 +10,7 @@ namespace fornani {
 class NPC : public Entity {
   public:
 	NPC(automa::ServiceProvider& svc, dj::Json const& in);
-	NPC(automa::ServiceProvider& svc, int id, std::string_view label);
+	NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vector<std::vector<int>> const suites);
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;

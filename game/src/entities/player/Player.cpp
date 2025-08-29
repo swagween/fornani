@@ -53,8 +53,8 @@ void Player::update(world::Map& map) {
 	// map effects
 	if (controller.is_wallsliding()) {
 		auto freq = controller.wallslide_slowdown.get_quadratic_normalized() * 80.f;
-		if (m_services->ticker.every_x_ticks(std::clamp(static_cast<int>(freq), 32, 80))) {
-			map.effects.push_back(entity::Effect(*m_services, "wallslide", collider.get_center() + sf::Vector2f{12.f * controller.direction.as_float(), 0.f}, {}));
+		if (m_services->ticker.every_x_ticks(std::clamp(static_cast<int>(freq), 24, 80))) {
+			map.effects.push_back(entity::Effect(*m_services, "wallslide", collider.get_center() + sf::Vector2f{12.f * controller.direction.as_float(), -8.f}, collider.physics.apparent_velocity() * 0.3f));
 		}
 	}
 
@@ -596,7 +596,8 @@ void Player::push_to_loadout(std::string_view tag, bool from_save) {
 		auto bg = util::QuestKey{1, 111, 1};
 		m_services->quest.process(*m_services, bg);
 	}
-	if (tag == "gnat" && !from_save) { m_services->quest.progress(fornani::QuestType::destroyers, 122, 1); }
+	if (tag == "gnat" && !from_save) { /*m_services->quest.progress(fornani::QuestType::destroyers, 122, 1);*/
+	}
 	arsenal.value().push_to_loadout(tag);
 	if (!from_save) { hotbar.value().add(tag); }
 	m_services->stats.player.guns_collected.update();

@@ -2,7 +2,7 @@
 #include "fornani/story/QuestTracker.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace fornani {
+namespace fornani::quest {
 
 QuestTracker::QuestTracker() {
 	suites.temporaries.quests.insert({4, {4, "player_retry"}});
@@ -87,4 +87,4 @@ void QuestTracker::process(automa::ServiceProvider& svc, util::QuestKey key) {
 	svc.data.push_quest(key);
 }
 
-} // namespace fornani
+} // namespace fornani::quest

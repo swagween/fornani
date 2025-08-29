@@ -193,6 +193,12 @@
 			0
 		]
 	],
+	"quests": [
+		{
+			"tag": "npc_dialogue",
+			"status": [ [ 18, 0 ] ]
+		}
+	],
 	"destroyed_inspectables": [
 	],
 	"tutorial": {

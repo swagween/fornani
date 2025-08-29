@@ -18,6 +18,19 @@
         ],
         "source_id": 230
       }
+    ],
+    "save_point": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 230,
+        "position": [
+          7,
+          12
+        ]
+      }
     ]
   },
   "meta": {
@@ -70,6 +83,16 @@
       "obscuring": false,
       "reverse_obscuring": false
     },
+    "ignore_lighting": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "layers": [
       [
         96,

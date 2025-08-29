@@ -1,399 +1,517 @@
 {
-	"justin1": {
-		"suite": [
-			[ "Barf! Barf!" ]
-		],
-		"responses": [
-		]
-	},
-	"justin2": {
-		"suite": [
-			[ "Barf! Barf!%0" ],
-			[ "Grrr...$3#3#2#", "Barf!!$200#24#1#", "Barf, barf!$201#24#1#" ],
-			[ "(Whine)" ]
-		],
-		"responses": [
-			[ "(Take the dog)$3#24#2#%0", "(Leave the dog)%1" ]
-		]
-	},
-	"justin3": {
-		"suite": [
-			[ "Barf!" ]
-		],
-		"responses": [
-		]
-	},
-	"gobe": {
-		"1": {
-			"suite": [
-				[ "...$3#3#1#", "Huh?", "Oh! A lost girl wanders my way, hmm?", "I say, it shocks me a bit to see another friendly face around here. What's your story?%0" ],
-				[ "Well, you're welcome to this here farmhouse. It's been abandoned ever since Old Mimic passed, and so I've been stopping by every now and again to do some upkeep.", "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.$3#24#1#", "Could you go find him for me? The past weeks of hard travel have left me a bit tired.%0" ],
-				[ "A lost little brother, hmm? Well, my heart aches to hear that.", "You know, there are others of your kind at Woodshine. It seems like it'd be a good place to start.", "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.$3#24#1#", "Could you go find him for me? The past weeks of hard travel have left me a bit tired.%1" ],
-				[ "Now, that's awful kind. Here, take this. You'll need it if you want to properly wrangle him up.$9#1#1#^20" ]
-			],
-			"responses": [
-				[ "I'm just looking for a place to rest.%0", "I'm looking for my little brother.%1" ],
-				[ "Sure thing!%1" ],
-				[ "Sure thing!%0" ]
-			]
-		},
-		"2": {
-			"suite": [
-				[ "So? Have you found my dog yet? I'm starting to get worried...%0" ],
-				[ "Well, if it's any help, he tends to climb to real high places when he's afraid.", "Good luck!" ]
-			],
-			"responses": [
-				[ "Not yet...%0" ]
-			]
-		},
-		"3": {
-			"suite": [
-				[ "Oh, Justin! My precious thing!$201#24#2#", "Well, you've really gone and done it, haven't you?$3#3#3#", "I say, I was beginning to fear for this lil' guy's life. I owe you a great debt, friend!$3#24#3#%0" ],
-				[ "Well, I've got to thank you somehow...", "Say, I'd be happy to trade some stuff with you. Normally I don't vend outside of Ashtown, but for you I'll make an exception!", "What do you say?%0" ],
-				[ "Here's what I've got.$70#1#1#" ],
-				[ "Alright then, I'll see ya around!" ]
-			],
-			"responses": [
-				[ "Hey, don't mention it!%0" ],
-				[ "Sure, let's trade!%0", "Maybe later.%1" ]
-			]
-		},
-		"4": {
-			"codes": [
-				[ 0, 0, 0, 1, 0 ],
-				[ 0, 2, 1, 1, 0 ],
-				[ 0, 3, 1, 1, 0 ],
-				[ 1, 0, 0, 1, 1 ],
-				[ 1, 0, 1, 1, 2 ],
-				[ 1, 0, 2, 1, 3 ]
-			],
-			"suite": [
-				[ "Yes?" ],
-				[ "Sure thing! Here's what I've picked up over the last few weeks..." ],
-				[ "I'm a surveyor of this land, and I've been exploring its farthest and darkest reaches for as long as I can remember.", "Justin and I tend to find stuff along the way and pick it up, so if you're ever in the market for random junk, I'm your guy!" ],
-				[ "Well, the Overturned Forest, if ya ain't talkin' specifics. At least, that's what we Grand-Islanders call it.", "But shouldn't you know, anyhow? You're a Kariba after all, and, last I checked, all your kind come from here." ]
-			],
-			"responses": [
-				[ "I'd like to trade things with you.", "Who are you?", "Where are we?" ]
-			]
-		}
-	},
-	"bryn1": {
-		"suite": [
-			[ "Who's there?" ],
-			[ "Wait..." ]
-		],
-		"responses": [ [] ]
-	},
-	"bryn2": {
-		"suite": [
-			[ "You're that girl they took prisoner on Firstwind.%0" ],
-			[ "Well, I don't know how you made it down here alive, but I suppose that's neither here nor there.", "As it turns out, Doc Willet and I were prisoners there, too. A few weeks ago, Skycorps masqueraded as pirates and hijacked the ship from us.", "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way." ],
-			[ "Well, in a way, Doc Willet and I were prisoners there, too. A few weeks ago, Skycorps masqueraded as pirates and hijacked the ship from us.", "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way." ],
-			[ "It's our airship. Or, at least, it was our airship. A few weeks ago, Skycorps masqueraded as pirates and hijacked it from us.", "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way." ]
-		],
-		"responses": [
-			[ "That's me.%0", "How do you know?%1", "Firstwind...?%2" ]
-		]
-	},
-	"bryn3": {
-		"suite": [
-			[ "If you're looking for a place to rest, you're welcome to use my bedroom. It's the second door on the left." ]
-		],
-		"responses": [
-			[]
-		]
-	},
-	"minigus": {
-		"1": {
-			"suite": [
-				[ "Well, would you look at that!", "The sorry little Kariba has escaped her cell.", "You know, I'm not exactly surprised. The storms up here are getting worse, and the crew seem more interested in staying alive than retaining prisoners.", "And yet a prisoner you shall remain, if I have anything to say about it.", "Now tell me, girl, what do you plan to do with that pathetic little pistol of yours?" ],
-				[ "I asked you a question.", "But I'll be kind, considering you haven't much longer to live. My name is Gus, and I lead Lady Nimbus's feared Harpoon Squad.", "You see, we do whatever cleaning up needs to be done down on the island.", "But anyway, I'm tired of talkin' to you. Get ready to die!" ],
-				[ "Hah!", "Sure is some tough talk for a scrawny girl.", "So, let's see what you've got, then." ],
-				[ "...", "Your brother...?", "I guess even my trusty little gadget can't completely erase your memories.", "But either way, you'll get no further information from me on that front.", "Now, I'm tired of talkin' to you. Get ready to die!" ]
-			],
-			"responses": [
-				[ "Who are you?", "Whatever I need to do.", "Where is my brother?" ]
-			],
-			"codes": [
-				[ 0, 0, 4, 1, 0 ],
-				[ 0, 0, 0, 4, 4 ],
-				[ 0, 1, 0, 4, 3 ],
-				[ 0, 2, 0, 4, 2 ],
-				[ 0, 2, 0, 5, 2 ],
-				[ 0, 2, 1, 5, 1 ],
-				[ 0, 3, 1, 4, 1 ],
-				[ 0, 1, 3, 12, 0 ],
-				[ 0, 2, 2, 12, 0 ],
-				[ 0, 3, 4, 12, 0 ],
-				[ 1, 0, 0, 1, 1 ],
-				[ 1, 0, 1, 1, 2 ],
-				[ 1, 0, 2, 1, 3 ]
-			]
-		},
-		"2": {
-			"suite": [
-				[ "...", "GAH!!!", "My mask!! What have you done?!" ]
-			],
-			"responses": [
-			],
-			"codes": [
-				[ 0, 0, 0, 5, 3 ],
-				[ 0, 0, 2, 9, 1171, 1 ]
-			]
-		},
-		"3": {
-			"suite": [
-				[ "This isn't over!" ]
-			],
-			"responses": [
-			],
-			"codes": [
-				[ 0, 0, 0, 5, 3 ],
-				[ 0, 0, 0, 4, 5 ]
-			]
-		}
-	},
-	"dr_go": {
-		"1": {
-			"suite": [
-				[ "Oh!", "I wasn't expecting a Kariba to stroll in here.", "I suspect we are in our final hours, merely waiting for the Firstwind to lose her ability to fly and spiral down into the gas giant.", "It will be a graceless end, that's for certain." ],
-				[ "I'm Dr. Go.", "I was enlisted by Skycorps some years ago, and they assigned me here against my will.", "No matter. I will do my duties here until I am relieved of them, or some other end befalls us." ],
-				[ "We're not entirely certain, as the crew have a tendency to forget we exist, and as such they don't tell us much.", "But from what I've heard through passing transmissions, this ship is enduring high-altitude storms beyond her capacity." ],
-				[ "This is the infirmary.", "Here, I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around.", "Perhaps they all escaped and left us here to die." ]
-			],
-			"responses": [
-				[ "Who are you?", "What's going on?", "Where am I?" ]
-			],
-			"codes": [
-				[ 0, 0, 3, 1, 0 ],
-				[ 0, 1, 2, 1, 0 ],
-				[ 0, 2, 1, 1, 0 ],
-				[ 0, 3, 2, 1, 0 ],
-				[ 1, 0, 0, 1, 1 ],
-				[ 1, 0, 1, 1, 2 ],
-				[ 1, 0, 2, 1, 3 ]
-			]
-		},
-		"2": {
-			"suite": [
-				[ "Hello again." ],
-				[ "I'm Dr. Go.", "I was enlisted by Skycorps some years ago, and they assigned me here against my will.", "No matter. I will do my duties here until I am relieved of them, or some other end befalls us." ],
-				[ "We're not entirely certain, as the crew have a tendency to forget we exist, and as such they don't tell us much.", "But from what I've heard through passing transmissions, this ship is enduring high-altitude storms beyond her capacity." ],
-				[ "This is the infirmary.", "Here, Mirin and I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around.", "Perhaps they all escaped and left us here to die." ]
-			],
-			"responses": [
-				[ "Who are you?", "What's going on?", "Where am I?" ]
-			],
-			"codes": [
-				[ 0, 0, 0, 1, 0 ],
-				[ 1, 0, 0, 1, 1 ],
-				[ 1, 0, 1, 1, 2 ],
-				[ 1, 0, 2, 1, 3 ]
-			]
-		}
-	},
-	"mirin1": {
-		"suite": [
-			[ "&1You must be one of the prisoners we scooped up some months back.", "@2You know, despite everything that's happened between our tribes, I would never wish any of this upon you.", "@1There's something about being so high up in the sky that tends to bring our people together." ]
-		],
-		"responses": [
-		]
-	},
-	"mirin2": {
-		"suite": [
-			[ "@2I'm not sure what you want me to tell you. I'm not exactly itching to chit-chat at a time like this.", "@1...", "&2@2Okay, that was a bit rude. Sorry.", "@1I've just been trying to come to terms with my impending death. I hope you understand." ]
-		],
-		"responses": [
-		]
-	},
-	"mirin3": {
-		"suite": [
-			[ "&1@1What's up?%0" ],
-			[ "@2I'm Mirin. I'm Dr. Go's daughter, and though I have no qualifications to be a nurse, that's what I am." ],
-			[ "&3@3If I knew the answer to that, we wouldn't be having this conversation.", "@1We're miles in the sky, and the last time I looked outside, I saw nothing but raging clouds." ],
-			[ "&3@3Godspeed, girl. If we somehow all make it out of this alive, I'll buy you a drink." ]
-		],
-		"responses": [
-			[ "Who are you?%0", "How can I get back to the island?%1", "See you later.%2" ]
-		]
-	},
-	"carl1": {
-		"suite": [
-			[ "&1What in the heck are my eyes seein' right now...?", "Now, I ain't know how you snuck your way down here, but I'm tellin' you now, it was a bad idea.", "The ship's goin' down, little lady.", "If I was you I'd find the nearest escape hatch and go for a swim in the clouds.", "&3Say, would you grab me a soda if you got nothin' else to do?" ]
-		],
-		"responses": [
-		]
-	},
-	"carl2": {
-		"suite": [
-			[ "&2So... Any updates on that soda?%0" ],
-			[ "&1Name's Carl. I'm guardin' the cargo here, and my shift doesn't end for another six months.", "I'm a simple man. I have a job to do, and I'm gon' do it until it's done. Even if it kills me." ],
-			[ "&3Why, it's the cargo room! Unless you were speakin' in more general terms, in which case, this is the Firstwind.", "She's an old research vessel that Skycorps... er... borrowed.", "Anyhow, I been livin' and workin' here for the better part of three months on a long-term contract, as they call it." ],
-			[ "&3Say, would you grab me a soda if you got nothin' else to do?" ]
-		],
-		"responses": [
-			[ "Who are you?%0", "What is this place?%1" ]
-		]
-	},
-	"bit1": {
-		"suite": [
-			[ "...$3#20#1#", "Psst... Hey!", "Hey, you!", "I don't know how you managed to escape your cell, but, er... I'm in a bit of a bind here, as you can see.", "Would you help me out?%0" ],
-			[ "I appreciate it... you know, I'll owe you big time if you can manage to get me outta here.", "You might find the key to this cell lying around the ship somewhere.", "If you do, you should be able to use it on that there door and let me free!" ],
-			[ "Well uh... okay. If you change your mind, you'll know where to find me." ]
-		],
-		"responses": [
-			[ "Sure.%0", "I had better get going...%1" ]
-		]
-	},
-	"bit2": {
-		"suite": [
-			[ "Listen, I don't wanna rush you, but...", "I'm starting to get pretty hungry, and I haven't seen the jailer in a few days...%0" ],
-			[ "I'm not gonna sugarcoat it. We're in prison.", "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!", "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below.", "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here." ]
-		],
-		"responses": [
-			[ "Where are we?%0" ]
-		]
-	},
-	"bit3": {
-		"suite": [
-			[ "Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya." ]
-		],
-		"responses": [
-		]
-	},
-	"bit4": {
-		"suite": [
-			[ "I can't believe it... You actually did it!$33#12#2#", "I really can't thank you enough...", "Heh, like I said... I owe you big time!$3#20#2#1#2#" ]
-		],
-		"responses": [
-		]
-	},
-	"bit9": {
-		"suite": [
-			[ "I can't believe it... You actually did it!$33#12#2#", "I really can't thank you enough, stranger!", "Heh, I guess I owe you big time!$3#20#2#1#2#" ]
-		],
-		"responses": [
-		]
-	},
-	"bit5": {
-		"suite": [
-			[ "...", "I, er... I'll have to gather some stuff here before I head out. But I'll be right behind ya!" ]
-		],
-		"responses": [
-		]
-	},
-	"bit6": {
-		"suite": [
-			[ "Listen, I don't exactly have much to give you right now.", "I'm sure you understand...", "But! Fear not! If we bump into each other again someday, I'll have something for you!" ]
-		],
-		"responses": [
-		]
-	},
-	"bit7": {
-		"suite": [
-			[ "Heh... See ya around!" ]
-		],
-		"responses": [
-		]
-	},
-	"bit8": {
-		"suite": [
-			[ "Thanks again for helping me. Stay safe out there!" ]
-		],
-		"responses": [
-		]
-	},
-	"lady_nimbus": {
-		"1": {
-			"suite": [
-				[ "Gus... Gus...?", "Gus, do you copy?" ]
-			],
-			"responses": [
-			]
-		},
-		"2": {
-			"codes": [
-				[ 0, 0, 0, 5, 2 ],
-				[ 0, 0, 2, 5, 1 ]
-			],
-			"suite": [
-				[ "Flee?!", "What do you mean?", "The ship has been securely ours for months." ]
-			],
-			"responses": [
-			]
-		},
-		"3": {
-			"codes": [
-				[ 0, 0, 0, 5, 3 ],
-				[ 0, 0, 1, 5, 1 ]
-			],
-			"suite": [
-				[ "...", "It is unlike you to fail me so, Gus." ]
-			],
-			"responses": [
-			]
-		},
-		"4": {
-			"suite": [
-				[ "Your next paycheck isn't going to exist, I'm afraid." ]
-			],
-			"responses": [
-			]
-		},
-		"5": {
-			"codes": [
-				[ 0, 0, 2, 5, 3 ]
-			],
-			"suite": [
-				[ "I'll see to it that it won't.", "I have no interest in wasting any more time dealing with Nani.", "I'm sending Lynx after her, and that'll be the end of it." ]
-			],
-			"responses": [
-			]
-		}
-	},
-	"hologus": {
-		"1": {
-			"codes": [
-				[ 0, 0, 0, 4, 1 ]
-			],
-			"suite": [
-				[ "My Lady...?", "I'm here. I have an unstable connection here, and I can barely hear you.", "I had to flee Firstwind." ]
-			],
-			"responses": [
-			]
-		},
-		"2": {
-			"codes": [
-				[ 0, 0, 0, 4, 3 ]
-			],
-			"suite": [
-				[ "My mask was compromised. And besides, the storms up here are ferocious.", "And I have even worse news...", "The Kariba girl escaped." ]
-			],
-			"responses": [
-			]
-		},
-		"3": {
-			"codes": [
-				[ 0, 0, 0, 4, 5 ]
-			],
-			"suite": [
-				[ "I got nothing at all to say. She had a gun, and she's pretty nimble.", "I won't underestimate her again.", "And, by the way, it seems like her memories might be coming back, so I'd bet my next paycheck she's going to try to find her brother." ]
-			],
-			"responses": [
-			]
-		},
-		"4": {
-			"codes": [
-				[ 0, 0, 0, 4, 2 ],
-				[ 0, 0, 0, 5, 2 ],
-				[ 0, 0, 1, 5, 1 ]
-			],
-			"suite": [
-				[ "I set myself up for that one, I guess.", "Anyway, do us both a favor and get someone else to deal with the Kariba for now.", "I'll need to properly prepare for the next time I fight her, if it comes to that." ]
-			],
-			"responses": [
-			]
-		}
-	}
+  "justin1": {
+    "suite": [["Barf! Barf!"]],
+    "responses": []
+  },
+  "justin2": {
+    "suite": [
+      ["Barf! Barf!%0"],
+      ["Grrr...$3#3#2#", "Barf!!$200#24#1#", "Barf, barf!$201#24#1#"],
+      ["(Whine)"]
+    ],
+    "responses": [["(Take the dog)$3#24#2#%0", "(Leave the dog)%1"]]
+  },
+  "justin3": {
+    "suite": [["Barf!"]],
+    "responses": []
+  },
+  "gobe": {
+    "1": {
+      "suite": [
+        [
+          "...$3#3#1#",
+          "Huh?",
+          "Oh! A lost girl wanders my way, hmm?",
+          "I say, it shocks me a bit to see another friendly face around here. What's your story?%0"
+        ],
+        [
+          "Well, you're welcome to this here farmhouse. It's been abandoned ever since Old Mimic passed, and so I've been stopping by every now and again to do some upkeep.",
+          "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.$3#24#1#",
+          "Could you go find him for me? The past weeks of hard travel have left me a bit tired.%0"
+        ],
+        [
+          "A lost little brother, hmm? Well, my heart aches to hear that.",
+          "You know, there are others of your kind at Woodshine. It seems like it'd be a good place to start.",
+          "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.$3#24#1#",
+          "Could you go find him for me? The past weeks of hard travel have left me a bit tired.%1"
+        ],
+        [
+          "Now, that's awful kind. Here, take this. You'll need it if you want to properly wrangle him up.$9#1#1#^20"
+        ]
+      ],
+      "responses": [
+        ["I'm just looking for a place to rest.%0", "I'm looking for my little brother.%1"],
+        ["Sure thing!%1"],
+        ["Sure thing!%0"]
+      ]
+    },
+    "2": {
+      "suite": [
+        ["So? Have you found my dog yet? I'm starting to get worried...%0"],
+        [
+          "Well, if it's any help, he tends to climb to real high places when he's afraid.",
+          "Good luck!"
+        ]
+      ],
+      "responses": [["Not yet...%0"]]
+    },
+    "3": {
+      "suite": [
+        [
+          "Oh, Justin! My precious thing!$201#24#2#",
+          "Well, you've really gone and done it, haven't you?$3#3#3#",
+          "I say, I was beginning to fear for this lil' guy's life. I owe you a great debt, friend!$3#24#3#%0"
+        ],
+        [
+          "Well, I've got to thank you somehow...",
+          "Say, I'd be happy to trade some stuff with you. Normally I don't vend outside of Ashtown, but for you I'll make an exception!",
+          "What do you say?%0"
+        ],
+        ["Here's what I've got.$70#1#1#"],
+        ["Alright then, I'll see ya around!"]
+      ],
+      "responses": [["Hey, don't mention it!%0"], ["Sure, let's trade!%0", "Maybe later.%1"]]
+    },
+    "4": {
+      "codes": [
+        [0, 0, 0, 1, 0],
+        [0, 2, 1, 1, 0],
+        [0, 3, 1, 1, 0],
+        [1, 0, 0, 1, 1],
+        [1, 0, 1, 1, 2],
+        [1, 0, 2, 1, 3]
+      ],
+      "suite": [
+        ["Yes?"],
+        ["Sure thing! Here's what I've picked up over the last few weeks..."],
+        [
+          "I'm a surveyor of this land, and I've been exploring its farthest and darkest reaches for as long as I can remember.",
+          "Justin and I tend to find stuff along the way and pick it up, so if you're ever in the market for random junk, I'm your guy!"
+        ],
+        [
+          "Well, the Overturned Forest, if ya ain't talkin' specifics. At least, that's what we Grand-Islanders call it.",
+          "But shouldn't you know, anyhow? You're a Kariba after all, and, last I checked, all your kind come from here."
+        ]
+      ],
+      "responses": [["I'd like to trade things with you.", "Who are you?", "Where are we?"]]
+    }
+  },
+  "bryn1": {
+    "suite": [["Who's there?"], ["Wait..."]],
+    "responses": [[]]
+  },
+  "bryn2": {
+    "suite": [
+      ["You're that girl they took prisoner on Firstwind.%0"],
+      [
+        "Well, I don't know how you made it down here alive, but I suppose that's neither here nor there.",
+        "As it turns out, Doc Willet and I were prisoners there, too. A few weeks ago, Skycorps masqueraded as pirates and hijacked the ship from us.",
+        "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way."
+      ],
+      [
+        "Well, in a way, Doc Willet and I were prisoners there, too. A few weeks ago, Skycorps masqueraded as pirates and hijacked the ship from us.",
+        "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way."
+      ],
+      [
+        "It's our airship. Or, at least, it was our airship. A few weeks ago, Skycorps masqueraded as pirates and hijacked it from us.",
+        "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way."
+      ]
+    ],
+    "responses": [["That's me.%0", "How do you know?%1", "Firstwind...?%2"]]
+  },
+  "bryn3": {
+    "suite": [
+      [
+        "If you're looking for a place to rest, you're welcome to use my bedroom. It's the second door on the left."
+      ]
+    ],
+    "responses": [[]]
+  },
+  "minigus": {
+    "1": {
+      "suite": [
+        [
+          "Well, would you look at that!",
+          "The sorry little Kariba has escaped her cell.",
+          "You know, I'm not exactly surprised. The storms up here are getting worse, and the crew seem more interested in staying alive than retaining prisoners.",
+          "And yet a prisoner you shall remain, if I have anything to say about it.",
+          "Now tell me, girl, what do you plan to do with that pathetic little pistol of yours?"
+        ],
+        [
+          "I asked you a question.",
+          "But I'll be kind, considering you haven't much longer to live. My name is Gus, and I lead Lady Nimbus's feared Harpoon Squad.",
+          "You see, we do whatever cleaning up needs to be done down on the island.",
+          "But anyway, I'm tired of talkin' to you. Get ready to die!"
+        ],
+        [
+          "Hah!",
+          "Sure is some tough talk for a scrawny girl.",
+          "So, let's see what you've got, then."
+        ],
+        [
+          "...",
+          "Your brother...?",
+          "I guess even my trusty little gadget can't completely erase your memories.",
+          "But either way, you'll get no further information from me on that front.",
+          "Now, I'm tired of talkin' to you. Get ready to die!"
+        ]
+      ],
+      "responses": [["Who are you?", "Whatever I need to do.", "Where is my brother?"]],
+      "codes": [
+        [0, 0, 4, 1, 0],
+        [0, 0, 0, 4, 4],
+        [0, 1, 0, 4, 3],
+        [0, 2, 0, 4, 2],
+        [0, 2, 0, 5, 2],
+        [0, 2, 1, 5, 1],
+        [0, 3, 1, 4, 1],
+        [0, 1, 3, 12, 0],
+        [0, 2, 2, 12, 0],
+        [0, 3, 4, 12, 0],
+        [1, 0, 0, 1, 1],
+        [1, 0, 1, 1, 2],
+        [1, 0, 2, 1, 3]
+      ]
+    },
+    "2": {
+      "suite": [["...", "GAH!!!", "My mask!! What have you done?!"]],
+      "responses": [],
+      "codes": [
+        [0, 0, 0, 5, 3],
+        [0, 0, 2, 9, 1171, 1]
+      ]
+    },
+    "3": {
+      "suite": [["This isn't over!"]],
+      "responses": [],
+      "codes": [
+        [0, 0, 0, 5, 3],
+        [0, 0, 0, 4, 5]
+      ]
+    }
+  },
+  "billy": {
+    "1": {
+      "suite": [["Hnnngh..."]]
+    }
+  },
+  "dr_go": {
+    "1": {
+      "suite": [["Oh!", "I wasn't expecting a Kariba to stroll in here.", "Are you sick?"]],
+      "responses": [[]],
+      "codes": [
+        [0, 0, 2, 13, 16],
+        [0, 0, 0, 3, 2, 16]
+      ]
+    },
+    "2": {
+      "suite": [
+        ["How can I help you?"],
+        [
+          "I'm Dr. Go.",
+          "I was enlisted by Skycorps some years ago, and they assigned me here against my will.",
+          "No matter. I will do my duties here until I am relieved of them, or some other end befalls us."
+        ],
+        [
+          "We're not entirely certain, as the crew have a tendency to forget we exist, and as such they don't tell us much.",
+          "But from what I've heard through passing transmissions, this ship is enduring high-altitude storms beyond her capacity."
+        ],
+        [
+          "This is the infirmary.",
+          "Here, Mirin and I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around.",
+          "Perhaps they all escaped and left us here to die."
+        ]
+      ],
+      "responses": [["Who are you?", "What's going on?", "Where am I?"]],
+      "codes": [
+        [0, 0, 0, 1, 0],
+        [0, 1, 2, 1, 0],
+        [0, 2, 1, 1, 0],
+        [0, 3, 2, 1, 0],
+        [1, 0, 0, 1, 1],
+        [1, 0, 1, 1, 2],
+        [1, 0, 2, 1, 3]
+      ]
+    }
+  },
+  "mirin": {
+    "1": {
+      "suite": [
+        [
+          "You must be one of the prisoners we scooped up some months back.",
+          "You know, despite everything that's happened between our tribes, I would never wish any of this upon you.",
+          "There's something about being so high up in the sky that tends to bring our people together."
+        ]
+      ],
+      "responses": [],
+      "codes": [
+        [0, 0, 2, 13, 18],
+        [0, 0, 0, 3, 2, 18]
+      ]
+    },
+    "2": {
+      "suite": [
+        [
+          "I'm not sure what you want me to tell you. I'm not exactly itching to chit-chat at a time like this.",
+          "...",
+          "Okay, that was a bit rude. Sorry.",
+          "I've just been trying to come to terms with my impending death. I hope you understand."
+        ]
+      ],
+      "responses": [],
+      "codes": [[0, 0, 2, 13, 18]]
+    },
+    "3": {
+      "suite": [
+        ["What's up?"],
+        [
+          "I'm Mirin. I'm Dr. Go's daughter, and though I have no qualifications to be a nurse, that's what I am."
+        ],
+        [
+          "If I knew the answer to that, we wouldn't be having this conversation.",
+          "We're miles in the sky, and the last time I looked outside, I saw nothing but raging clouds."
+        ],
+        [
+          "Damn, your captors must have whacked you over the head or something.",
+          "We're the Ooplo, and we've been at war with your people for the last hundred years.",
+          "The Kariba come, they kill one of us, they leave, repeat.",
+          "The tables really turned when Skycorps came in and took our side against you. It was our turn to do the needless killing, and we went way overboard.",
+          "For that, I'm sorry, although neither I nor anyone I know had much of anything to do with the actual fighting.",
+          "In the end, we Ooplo got what was coming to us when Skycorps basically enslaved us all.",
+          "I coun't myself lucky. At least I wasn't turned into one of their mutation experiments."
+        ]
+      ],
+      "responses": [
+        ["Who are you?", "How can I get back to the island?", "Tell me about your tribe."]
+      ],
+      "codes": [
+        [0, 0, 0, 1, 0],
+        [0, 1, 0, 1, 0],
+        [0, 2, 1, 1, 0],
+        [0, 3, 6, 1, 0],
+        [1, 0, 0, 1, 1],
+        [1, 0, 1, 1, 2],
+        [1, 0, 2, 1, 3]
+      ]
+    }
+  },
+  "carl": {
+    "1": {
+      "suite": [
+        [
+          "What in the heck are my eyes seein' right now...?",
+          "Now, I ain't know how you snuck your way down here, but I'm tellin' you now, it was a bad idea.",
+          "The ship's goin' down, little lady.",
+          "If I was you I'd find the nearest escape hatch and go for a swim in the clouds.",
+          "Say, would you grab me a soda if you got nothin' else to do?"
+        ]
+      ],
+      "responses": [],
+      "codes": [[0, 0, 2, 13, 17]]
+    },
+    "2": {
+      "suite": [
+        ["So... Any updates on that soda?"],
+        [
+          "Name's Carl. I'm guardin' the cargo here, and my shift doesn't end for another six months.",
+          "I'm a simple man. I have a job to do, and I'm gon' do it until it's done. Even if it kills me."
+        ],
+        [
+          "Why, it's the cargo room! Unless you were speakin' in more general terms, in which case, this is the Firstwind.",
+          "She's an old research vessel that Skycorps... er... borrowed.",
+          "Anyhow, I been livin' and workin' here for the better part of three months on a long-term contract, as they call it."
+        ],
+        [
+          "You know, I ain't never heard of 'em until they came and busted down my front door and took me prisoner. As much as I wasn't happy about that, they've been treating me alright. I make lots more money than I ever did before.",
+          "But lemme tell ya, I sure do miss my dog.",
+          "Anyhow, they force me to sit in this cargo hold all day to make sure no one steals anything. Say, now that I mention it, don't go tamperin', ya got that?"
+        ]
+      ],
+      "responses": [["Who are you?", "What is this place?", "Tell me about Skycorps."]],
+      "codes": [
+        [0, 0, 0, 1, 0],
+        [0, 1, 1, 1, 0],
+        [0, 2, 2, 1, 0],
+        [0, 3, 2, 1, 0],
+        [1, 0, 0, 1, 1],
+        [1, 0, 1, 1, 2],
+        [1, 0, 2, 1, 3]
+      ]
+    }
+  },
+  "bit1": {
+    "suite": [
+      [
+        "...$3#20#1#",
+        "Psst... Hey!",
+        "Hey, you!",
+        "I don't know how you managed to escape your cell, but, er... I'm in a bit of a bind here, as you can see.",
+        "Would you help me out?%0"
+      ],
+      [
+        "I appreciate it... you know, I'll owe you big time if you can manage to get me outta here.",
+        "You might find the key to this cell lying around the ship somewhere.",
+        "If you do, you should be able to use it on that there door and let me free!"
+      ],
+      ["Well uh... okay. If you change your mind, you'll know where to find me."]
+    ],
+    "responses": [["Sure.%0", "I had better get going...%1"]]
+  },
+  "bit2": {
+    "suite": [
+      [
+        "Listen, I don't wanna rush you, but...",
+        "I'm starting to get pretty hungry, and I haven't seen the jailer in a few days...%0"
+      ],
+      [
+        "I'm not gonna sugarcoat it. We're in prison.",
+        "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!",
+        "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below.",
+        "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here."
+      ]
+    ],
+    "responses": [["Where are we?%0"]]
+  },
+  "bit3": {
+    "suite": [
+      [
+        "Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya."
+      ]
+    ],
+    "responses": []
+  },
+  "bit4": {
+    "suite": [
+      [
+        "I can't believe it... You actually did it!$33#12#2#",
+        "I really can't thank you enough...",
+        "Heh, like I said... I owe you big time!$3#20#2#1#2#"
+      ]
+    ],
+    "responses": []
+  },
+  "bit9": {
+    "suite": [
+      [
+        "I can't believe it... You actually did it!$33#12#2#",
+        "I really can't thank you enough, stranger!",
+        "Heh, I guess I owe you big time!$3#20#2#1#2#"
+      ]
+    ],
+    "responses": []
+  },
+  "bit5": {
+    "suite": [
+      [
+        "...",
+        "I, er... I'll have to gather some stuff here before I head out. But I'll be right behind ya!"
+      ]
+    ],
+    "responses": []
+  },
+  "bit6": {
+    "suite": [
+      [
+        "Listen, I don't exactly have much to give you right now.",
+        "I'm sure you understand...",
+        "But! Fear not! If we bump into each other again someday, I'll have something for you!"
+      ]
+    ],
+    "responses": []
+  },
+  "bit7": {
+    "suite": [["Heh... See ya around!"]],
+    "responses": []
+  },
+  "bit8": {
+    "suite": [["Thanks again for helping me. Stay safe out there!"]],
+    "responses": []
+  },
+  "lady_nimbus": {
+    "1": {
+      "suite": [["Gus... Gus...?", "Gus, do you copy?"]],
+      "responses": []
+    },
+    "2": {
+      "codes": [
+        [0, 0, 0, 5, 2],
+        [0, 0, 2, 5, 1]
+      ],
+      "suite": [["Flee?!", "What do you mean?", "The ship has been securely ours for months."]],
+      "responses": []
+    },
+    "3": {
+      "codes": [
+        [0, 0, 0, 5, 3],
+        [0, 0, 1, 5, 1]
+      ],
+      "suite": [["...", "It is unlike you to fail me so, Gus."]],
+      "responses": []
+    },
+    "4": {
+      "suite": [["Your next paycheck isn't going to exist, I'm afraid."]],
+      "responses": []
+    },
+    "5": {
+      "codes": [[0, 0, 2, 5, 3]],
+      "suite": [
+        [
+          "I'll see to it that it won't.",
+          "I have no interest in wasting any more time dealing with Nani.",
+          "I'm sending Lynx after her, and that'll be the end of it."
+        ]
+      ],
+      "responses": []
+    }
+  },
+  "hologus": {
+    "1": {
+      "codes": [[0, 0, 0, 4, 1]],
+      "suite": [
+        [
+          "My Lady...?",
+          "I'm here. I have an unstable connection here, and I can barely hear you.",
+          "I had to flee Firstwind."
+        ]
+      ],
+      "responses": []
+    },
+    "2": {
+      "codes": [[0, 0, 0, 4, 3]],
+      "suite": [
+        [
+          "My mask was compromised. And besides, the storms up here are ferocious.",
+          "And I have even worse news...",
+          "The Kariba girl escaped."
+        ]
+      ],
+      "responses": []
+    },
+    "3": {
+      "codes": [[0, 0, 0, 4, 5]],
+      "suite": [
+        [
+          "I got nothing at all to say. She had a gun, and she's pretty nimble.",
+          "I won't underestimate her again.",
+          "And, by the way, it seems like her memories might be coming back, so I'd bet my next paycheck she's going to try to find her brother."
+        ]
+      ],
+      "responses": []
+    },
+    "4": {
+      "codes": [
+        [0, 0, 0, 4, 2],
+        [0, 0, 0, 5, 2],
+        [0, 0, 1, 5, 1]
+      ],
+      "suite": [
+        [
+          "I set myself up for that one, I guess.",
+          "Anyway, do us both a favor and get someone else to deal with the Kariba for now.",
+          "I'll need to properly prepare for the next time I fight her, if it comes to that."
+        ]
+      ],
+      "responses": []
+    }
+  }
 }

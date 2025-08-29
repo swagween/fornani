@@ -29,6 +29,21 @@
         ]
       }
     ],
+    "chests": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 77010,
+        "modifier": 113,
+        "position": [
+          2,
+          12
+        ],
+        "type": 2
+      }
+    ],
     "lights": [
       {
         "dimensions": [

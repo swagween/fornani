@@ -189,6 +189,8 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 		save["marketplace"].push_back(out_vendor);
 	}
 
+	m_services->quest_table.serialize(save);
+
 	// write opened chests and doors
 	save["map_data"]["world_time"]["hours"] = m_services->world_clock.get_hours();
 	save["map_data"]["world_time"]["minutes"] = m_services->world_clock.get_minutes();
@@ -317,6 +319,8 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	quest_progressions.clear();
 	npc_locations.clear();
 	fallen_enemies.clear();
+
+	m_services->quest_table.unserialize(save);
 
 	m_services->world_clock.set_time(save["map_data"]["world_time"]["hours"].as<int>(), save["map_data"]["world_time"]["minutes"].as<int>());
 	for (auto& room : save["discovered_rooms"].as_array()) { discovered_rooms.push_back(room.as<int>()); }
@@ -667,8 +671,8 @@ auto DataManager::get_room_data_from_id(int id) const& -> std::optional<dj::Json
 }
 
 auto DataManager::get_npc_label_from_id(int id) const -> std::optional<std::string_view> {
-	for (auto const& n : npc.as_object()) {
-		if (n.second["metadata"]["id"].as<int>() == id) { return n.first; }
+	for (auto const& [key, entry] : npc.as_object()) {
+		if (entry["id"].as<int>() == id) { return key; }
 	}
 	return std::nullopt;
 }

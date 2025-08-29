@@ -1,4 +1,7 @@
+
 #pragma once
+
+#include <fornani/story/Quest.hpp>
 #include "fornani/audio/Ambience.hpp"
 #include "fornani/audio/MusicPlayer.hpp"
 #include "fornani/audio/Soundboard.hpp"
@@ -43,7 +46,7 @@ struct MapDebug {
 
 struct ServiceProvider {
 	ServiceProvider(char** argv, Version& version, WindowManager& window, capo::IEngine& audio_engine)
-		: finder(argv), text{finder}, data(*this), version(&version), window(&window), assets{finder}, sounds{finder}, music_player{audio_engine}, ambience_player{audio_engine} {};
+		: finder(argv), text{finder}, data(*this), version(&version), window(&window), assets{finder}, sounds{finder}, music_player{audio_engine}, ambience_player{audio_engine}, quest_registry{finder}, quest_table{quest_registry} {};
 
 	util::Stopwatch stopwatch{}; // TODO: Remove. Make Free-Standing.
 	ResourceFinder finder;
@@ -67,7 +70,9 @@ struct ServiceProvider {
 	audio::Soundboard soundboard{*this}; // TODO: Remove. Make Free-Standing. Maybe?
 	audio::MusicPlayer music_player;
 	audio::Ambience ambience_player;
-	QuestTracker quest{};
+	quest::QuestTracker quest{};
+	QuestRegistry quest_registry;
+	QuestTable quest_table;
 	StatTracker stats{};
 	PlayerDat player_dat{};
 	MapDebug map_debug{};

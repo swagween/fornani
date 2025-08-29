@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/entities/Mobile.hpp>
+#include <fornani/utils/Circuit.hpp>
 #include <fornani/utils/ID.hpp>
 #include "fornani/entities/Entity.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
@@ -32,8 +33,10 @@ class Player;
 
 namespace fornani::npc {
 
+enum class NPCFlags : std::uint8_t { has_turn_animation };
 enum class NPCState : std::uint8_t { engaged, force_interact, introduced, background, talking, cutscene, piggybacking, hidden };
 enum class NPCTrigger : std::uint8_t { distant_interact, engaged, cutscene };
+enum class NPCAnimationState : std::uint8_t { idle, turn, walk, inspect };
 
 class NPC : public Mobile {
   public:
@@ -64,6 +67,8 @@ class NPC : public Mobile {
   protected:
 	util::BitFlags<NPCState> state_flags{};
 	util::BitFlags<NPCTrigger> triggers{};
+	util::BitFlags<NPCFlags> p_flags{};
+	NPCAnimationState m_anim_state{};
 	std::deque<int> conversations{};
 	std::optional<Vendor*> vendor;
 	std::string m_label{};
@@ -72,9 +77,11 @@ class NPC : public Mobile {
 	io::Logger m_logger{"npc"};
 
   private:
-	anim::AnimatedSprite m_indicator;
-	std::vector<anim::Parameters> m_params{};
+	void update_animation();
+	Animatable m_indicator;
+	std::unordered_map<std::string, anim::Parameters> m_params{};
 	int current_location{};
+	util::Circuit m_current_conversation;
 	ID m_id;
 
 	struct {

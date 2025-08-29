@@ -10,7 +10,8 @@
 namespace fornani::automa {
 struct ServiceProvider;
 }
-namespace fornani {
+
+namespace fornani::quest {
 
 // needs some further thinking
 
@@ -64,4 +65,4 @@ class QuestTracker {
 	} suites{};
 };
 
-} // namespace fornani
+} // namespace fornani::quest

@@ -211,6 +211,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	player->controller.clean();
 	player->flags.triggers = {};
+	if (!m_console) { player->flags.state.reset(player::State::busy); }
 
 	map.background->update(svc);
 	hud.update(svc, *player);

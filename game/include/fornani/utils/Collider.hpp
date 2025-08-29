@@ -110,6 +110,8 @@ class Collider {
 	[[nodiscard]] auto perma_grounded() const -> bool { return flags.perma_state.test(PermaFlags::world_grounded); }
 	[[nodiscard]] auto crushed() const -> bool { return collision_depths ? collision_depths.value().crushed() : false; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return physics.position + dimensions * 0.5f; }
+	[[nodiscard]] auto get_top() const -> sf::Vector2f { return sf::Vector2f{physics.position.x + dimensions.x * 0.5f, physics.position.y}; }
+	[[nodiscard]] auto get_bottom() const -> sf::Vector2f { return sf::Vector2f{physics.position.x + dimensions.x * 0.5f, physics.position.y + dimensions.y}; }
 	[[nodiscard]] auto get_average_tick_position() const -> sf::Vector2f { return physics.previous_position; }
 	[[nodiscard]] auto get_below_point(int side = 0) const -> sf::Vector2f {
 		return side == 0 ? jumpbox.get_position() + jumpbox.get_dimensions() * 0.5f : side == -1 ? jumpbox.get_position() + sf::Vector2f{0.f, 4.f} : jumpbox.get_position() + jumpbox.get_dimensions() - sf::Vector2f{0.f, 4.f};

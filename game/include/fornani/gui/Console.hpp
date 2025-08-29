@@ -26,7 +26,7 @@ enum class ConsoleMode : std::uint8_t { writing, responding, off };
 enum class ConsoleFlags : std::uint8_t { portrait_included, no_exit };
 enum class OutputType : std::uint8_t { instant, gradual, no_skip };
 
-enum class MessageCodeType : std::uint8_t { none, response, item, quest, voice, emotion, redirect, action, exit, destructible, input_hint, reveal_item, start_battle };
+enum class MessageCodeType : std::uint8_t { none, response, item, quest, voice, emotion, redirect, action, exit, destructible, input_hint, reveal_item, start_battle, pop_conversation };
 enum class CodeSource : std::uint8_t { suite, response };
 
 /* code : [source, set, index, type, value] */
@@ -50,6 +50,7 @@ struct MessageCode {
 	[[nodiscard]] auto is_start_battle() const -> bool { return type == MessageCodeType::start_battle; }
 	[[nodiscard]] auto is_voice_cue() const -> bool { return type == MessageCodeType::voice; }
 	[[nodiscard]] auto is_emotion() const -> bool { return type == MessageCodeType::emotion; }
+	[[nodiscard]] auto is_pop_conversation() const -> bool { return type == MessageCodeType::pop_conversation; }
 };
 
 class Console {

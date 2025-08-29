@@ -44,8 +44,8 @@ void Inspectable::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_
 	if (flags.test(InspectableFlags::destroy) && !destroyed()) { svc.data.destroy_inspectable(native_id); }
 
 	// check for quest-based alternates
-	auto quest_status = svc.quest.get_progression(fornani::QuestType::inspectable, native_id);
-	if (quest_status > 0) { current_alt = quest_status; }
+	/*auto quest_status = svc.quest.get_progression(quest::QuestType::inspectable, native_id);
+	if (quest_status > 0) { current_alt = quest_status; }*/
 
 	if (bounding_box.overlaps(player.collider.hurtbox)) {
 		if (!flags.test(InspectableFlags::hovered)) { flags.set(InspectableFlags::hovered_trigger); }

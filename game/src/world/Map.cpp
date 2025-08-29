@@ -78,8 +78,8 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		auto npc_label = entry["label"].as_string();
 		auto npc_id = svc.data.npc[npc_label]["id"].as<int>();
 		npcs.push_back(std::make_unique<npc::NPC>(svc, npc_label));
-		auto npc_state = svc.quest.get_progression(fornani::QuestType::npc, npc_id);
-		NANI_LOG_DEBUG(m_logger, "NPC state {}", npc_state);
+		auto npc_state = svc.quest_table.get_quest_progression("npc_dialogue", npc_id);
+		NANI_LOG_DEBUG(m_logger, "NPC State: {}", npc_state);
 		for (auto const& convo : entry["suites"][npc_state].as_array()) {
 			npcs.back()->push_conversation(convo.as<int>());
 			NANI_LOG_DEBUG(m_logger, "Pushed conversation {}", convo.as<int>());
@@ -87,7 +87,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		npcs.back()->set_position_from_scaled(pos);
 		if (static_cast<bool>(entry["background"].as_bool())) { npcs.back()->push_to_background(); }
 		if (static_cast<bool>(entry["hidden"].as_bool())) { npcs.back()->hide(); }
-		if (svc.quest.get_progression(fornani::QuestType::hidden_npcs, npc_id) > 0) { npcs.back()->unhide(); }
+		// if (svc.quest.get_progression(fornani::QuestType::hidden_npcs, npc_id) > 0) { npcs.back()->unhide(); }
 		npcs.back()->set_current_location(room_id);
 	}
 

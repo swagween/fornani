@@ -355,16 +355,26 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Story")) {
+					ImGui::SeparatorText("Quest Info");
+					for (auto i = 0; i < services.quest_registry.get_size(); ++i) { ImGui::Text("Title: %s", services.quest_registry.get_quest_metadata(i).get_title().data()); }
+
+					for (auto i = 0; i < services.quest_registry.get_size(); ++i) {
+						ImGui::Separator();
+						ImGui::Text("Quest Title: %s", services.quest_registry.get_quest_metadata(i).get_title().data());
+						ImGui::Text("Quest Tag: %s", services.quest_registry.get_quest_metadata(i).get_tag().data());
+						ImGui::Text("Mirin Progression: %i", services.quest_table.get_quest_progression(services.quest_registry.get_quest_metadata(i).get_tag().data(), 18));
+						ImGui::Text("Go Progression: %i", services.quest_table.get_quest_progression(services.quest_registry.get_quest_metadata(i).get_tag().data(), 16));
+					}
 					ImGui::Separator();
 					ImGui::Text("Piggybacking? %s", static_cast<bool>(player.piggybacker) ? "Yes" : "No");
 					ImGui::Separator();
 					ImGui::Text("Quest Progress:");
-					ImGui::Text("Bit: %i", services.quest.get_progression(QuestType::npc, 20));
+					/*ImGui::Text("Bit: %i", services.quest.get_progression(QuestType::npc, 20));
 					ImGui::Text("Justin: %i", services.quest.get_progression(QuestType::npc, 24));
 					ImGui::Text("Justin Hidden: %i", services.quest.get_progression(fornani::QuestType::hidden_npcs, 24));
 					ImGui::Text("Gobe: %i", services.quest.get_progression(QuestType::npc, 3));
 					ImGui::Text("Bryn's Notebook: %i", services.quest.get_progression(QuestType::inspectable, 1));
-					ImGui::Text("Boiler: %i", services.quest.get_progression(QuestType::inspectable, 110));
+					ImGui::Text("Boiler: %i", services.quest.get_progression(QuestType::inspectable, 110));*/
 					ImGui::Separator();
 					ImGui::Text("Stats:");
 					ImGui::Text("Death count: %i", services.stats.player.death_count.get_count());

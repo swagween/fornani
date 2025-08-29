@@ -150,12 +150,12 @@ void TextWriter::load_single_message(std::string_view message) {
 
 void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	flush();
-	NANI_LOG_DEBUG(m_logger, "NPC suite: {}", key.data());
+	// NANI_LOG_DEBUG(m_logger, "NPC suite: {}", key.data());
 	// suite
 	for (auto set : source[key]["suite"].as_array()) {
 		auto this_set = std::deque<Message>{};
 		for (auto msg : set.as_array()) {
-			NANI_LOG_DEBUG(m_logger, "Message: {}", msg.as_string());
+			// NANI_LOG_DEBUG(m_logger, "Message: {}", msg.as_string());
 			this_set.push_back({sf::Text(*m_font), false});
 			this_set.back().data.setString(msg.as_string().data());
 			stylize(this_set.back().data);

@@ -8,7 +8,7 @@ namespace fornani::audio {
 
 using namespace std::chrono_literals;
 
-MusicPlayer::MusicPlayer(capo::IEngine& audio_engine) : m_jukebox{audio_engine}, m_ringtone{audio_engine}, m_filter{.fade = util::Cooldown{default_filter_fade_speed_v}} {
+MusicPlayer::MusicPlayer(capo::IEngine& audio_engine) : m_jukebox{audio_engine}, m_ringtone{audio_engine}, m_filter{.fade = util::Cooldown{600}} {
 	m_filter.fade.start();
 	NANI_LOG_INFO(m_logger, "Created a MusicPlayer.");
 }
@@ -48,8 +48,8 @@ void MusicPlayer::play_looped() {
 
 void MusicPlayer::update() {
 	if (!m_jukebox.has_file()) { return; }
-	auto hi = m_filter.hi_target * m_filter.fade.get_inverse_normalized();
-	auto lo = (juke::sample_rate_v - m_filter.lo_target) * m_filter.fade.get_inverse_normalized();
+	auto hi = m_filter.hi_target * m_filter.fade.get_inverse_cubic_normalized();
+	auto lo = (juke::sample_rate_v - m_filter.lo_target) * m_filter.fade.get_inverse_cubic_normalized();
 	auto hi_cutoff = std::clamp(hi, constants::small_value, juke::sample_rate_v);
 	auto lo_cutoff = std::clamp(juke::sample_rate_v - lo, constants::small_value, juke::sample_rate_v);
 	m_jukebox.set_cutoff(juke::FilterType::high, hi_cutoff, juke::sample_rate_v);

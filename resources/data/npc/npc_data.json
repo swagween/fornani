@@ -53,7 +53,7 @@
 		"id": 16,
 		"dimensions": [ 24, 24 ],
 		"sprite_dimensions": [ 20, 20 ],
-		"sprite_offset": [ 0, -17 ],
+		"sprite_offset": [ 0, -7 ],
 		"animation": [
 			{
 				"label": "idle",
@@ -66,22 +66,48 @@
 		]
 	},
 	"mirin": {
+		"id": 18,
 		"dimensions": [ 24, 24 ],
 		"sprite_dimensions": [ 20, 20 ],
-		"sprite_offset": [ 20, -14 ],
-		"animation": {
-			"idle": [ 0, 6, 40, -1, false ],
-			"turn": [ 6, 2, 40, 0, false ]
-		}
+		"sprite_offset": [ 0, -7 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 6, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 2, 40, 0, false ]
+			}
+		]
 	},
 	"carl": {
+		"id": 17,
 		"dimensions": [ 24, 24 ],
 		"sprite_dimensions": [ 20, 20 ],
-		"sprite_offset": [ 20, -14 ],
-		"animation": {
-			"idle": [ 0, 6, 40, -1, false ],
-			"turn": [ 6, 2, 40, 0, false ]
-		}
+		"sprite_offset": [ 0, -7 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 6, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 2, 40, 0, false ]
+			}
+		]
+	},
+	"billy": {
+		"id": 25,
+		"dimensions": [ 24, 24 ],
+		"sprite_dimensions": [ 23, 11 ],
+		"sprite_offset": [ -11, 2 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 1, 40, -1, false ]
+			}
+		]
 	},
 	"bit": {
 		"dimensions": [ 24, 24 ],

@@ -196,6 +196,9 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 
 		static int id{fornani::random::random_range(10000, 99999)};
 		static std::string label{};
+		static std::vector<int> quantities{};
+		static int iterations{};
+		static std::vector<std::vector<int>> suites{};
 
 		ImGui::Separator();
 		ImGui::Text("Name");
@@ -208,10 +211,25 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			}
 			++ctr;
 		}
+		ImGui::InputInt("Number of Possible Conversations", &iterations);
+		suites.resize(static_cast<std::size_t>(iterations));
+		quantities.resize(static_cast<std::size_t>(iterations));
+		for (auto i = 0; i < iterations; ++i) {
+			ImGui::SeparatorText(std::to_string(i).c_str());
+			ImGui::InputInt("Number of Suites", &quantities.at(i));
+			suites.at(i).resize(static_cast<std::size_t>(quantities.at(i)));
+			for (auto j = 0; j < quantities.at(i); ++j) {
+				ImGui::SeparatorText(std::to_string(j).c_str());
+				ImGui::PushID(j);
+				ImGui::InputInt(std::to_string(j).c_str(), &suites.at(i).at(j));
+				ImGui::PopID();
+			}
+		}
+
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<fornani::NPC>(svc, id, label);
+			tool->current_entity = std::make_unique<fornani::NPC>(svc, id, label, suites);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();

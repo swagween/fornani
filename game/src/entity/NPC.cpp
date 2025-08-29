@@ -7,9 +7,21 @@ namespace fornani {
 NPC::NPC(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "npcs") {
 	unserialize(in);
 	repeatable = false;
+	auto tag = svc.data.get_npc_label_from_id(get_id());
+	if (tag) {
+		set_texture(svc.assets.get_texture("npc_" + std::string{tag.value()}));
+		center();
+	}
 }
 
-NPC::NPC(automa::ServiceProvider& svc, int id, std::string_view label) : Entity(svc, "npcs", id, {1, 1}), m_label{label} { repeatable = false; }
+NPC::NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vector<std::vector<int>> const suites) : Entity(svc, "npcs", id, {1, 1}), m_label{label}, m_suites{suites} {
+	repeatable = false;
+	auto tag = svc.data.get_npc_label_from_id(get_id());
+	if (tag) {
+		set_texture(svc.assets.get_texture("npc_" + std::string{tag.value()}));
+		center();
+	}
+}
 
 std::unique_ptr<Entity> NPC::clone() const { return std::make_unique<NPC>(*this); }
 
