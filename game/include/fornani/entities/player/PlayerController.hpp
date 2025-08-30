@@ -56,6 +56,7 @@ class PlayerController {
 	void prevent_movement();
 	void stop_walljumping();
 	void set_arsenal(bool const has);
+	void set_direction(Direction to);
 
 	std::optional<float> get_controller_state(ControllerInput key) const;
 	std::optional<AnimState> get_ability_animation() const;

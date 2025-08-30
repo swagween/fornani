@@ -360,10 +360,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 
 					for (auto i = 0; i < services.quest_registry.get_size(); ++i) {
 						ImGui::Separator();
-						ImGui::Text("Quest Title: %s", services.quest_registry.get_quest_metadata(i).get_title().data());
-						ImGui::Text("Quest Tag: %s", services.quest_registry.get_quest_metadata(i).get_tag().data());
-						ImGui::Text("Mirin Progression: %i", services.quest_table.get_quest_progression(services.quest_registry.get_quest_metadata(i).get_tag().data(), 18));
-						ImGui::Text("Go Progression: %i", services.quest_table.get_quest_progression(services.quest_registry.get_quest_metadata(i).get_tag().data(), 16));
+						auto const& meta = services.quest_registry.get_quest_metadata(i);
+						auto tag = meta.get_tag().data();
+						ImGui::Text(services.quest_table.print_progressions(tag).c_str());
 					}
 					ImGui::Separator();
 					ImGui::Text("Piggybacking? %s", static_cast<bool>(player.piggybacker) ? "Yes" : "No");

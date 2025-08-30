@@ -249,6 +249,11 @@ void PlayerController::stop_walljumping() { flags.reset(MovementState::walljumpi
 
 void PlayerController::set_arsenal(bool const has) { has ? hard_state.set(HardState::has_arsenal) : hard_state.reset(HardState::has_arsenal); }
 
+void PlayerController::set_direction(Direction to) {
+	direction = to;
+	m_last_requested_direction.set(to.lnr);
+}
+
 std::optional<float> PlayerController::get_controller_state(ControllerInput key) const {
 	if (auto search = key_map.find(key); search != key_map.end()) {
 		return search->second;

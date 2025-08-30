@@ -79,10 +79,10 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		auto npc_id = svc.data.npc[npc_label]["id"].as<int>();
 		npcs.push_back(std::make_unique<npc::NPC>(svc, npc_label));
 		auto npc_state = svc.quest_table.get_quest_progression("npc_dialogue", npc_id);
-		NANI_LOG_DEBUG(m_logger, "NPC State: {}", npc_state);
+		if (npc_id == 16) { NANI_LOG_DEBUG(m_logger, "NPC State: {}", npc_state); }
 		for (auto const& convo : entry["suites"][npc_state].as_array()) {
 			npcs.back()->push_conversation(convo.as<int>());
-			NANI_LOG_DEBUG(m_logger, "Pushed conversation {}", convo.as<int>());
+			if (npc_id == 16) { NANI_LOG_DEBUG(m_logger, "Pushed conversation {}", convo.as<int>()); }
 		}
 		npcs.back()->set_position_from_scaled(pos);
 		if (static_cast<bool>(entry["background"].as_bool())) { npcs.back()->push_to_background(); }

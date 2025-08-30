@@ -92,6 +92,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	m_loading.start();
 	m_shader->set_darken(map.darken_factor);
 	m_shader->set_texture_size(map.real_dimensions / constants::f_scale_factor);
+	svc.app_flags.reset(automa::AppFlags::custom_map_start);
 }
 
 void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {

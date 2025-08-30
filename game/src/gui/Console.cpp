@@ -31,6 +31,7 @@ void Console::update(automa::ServiceProvider& svc) {
 	m_exit_stall.update();
 	if (!is_active()) { return; }
 	if (!m_writer) { return; }
+
 	handle_inputs(svc.controller_map);
 	if (is_active()) { m_path.update(); }
 	if (m_path.finished() && m_writer) {
@@ -54,8 +55,8 @@ void Console::update(automa::ServiceProvider& svc) {
 	if (m_item_widget) { m_item_widget->update(svc); }
 
 	// check for response or message code
-
 	bool processed{};
+	bool processed_after{};
 	for (auto& code : m_codes) {
 		if (code.set == m_writer->get_current_suite_set() && code.index == m_writer->get_index() && m_writer) {
 			if (code.is_response() && m_writer->is_available()) { m_writer->respond(); }
@@ -70,7 +71,7 @@ void Console::update(automa::ServiceProvider& svc) {
 			}
 			if (code.is_start_battle() && m_process_code_after) {
 				svc.events.dispatch_event("StartBattle", code.value);
-				m_process_code_after = false;
+				processed_after = true;
 			}
 			if (code.is_pop_conversation() && m_process_code_before) {
 				svc.events.dispatch_event("PopConversation", code.value);
@@ -177,6 +178,7 @@ void Console::append(std::string_view key) { m_writer->append(key); }
 void Console::end() {
 	m_services->soundboard.flags.console.set(audio::Console::done);
 	m_mode = ConsoleMode::off; // handle exit codes
+	m_writer = {};
 }
 
 void Console::include_portrait(int id) {
@@ -187,6 +189,7 @@ void Console::include_portrait(int id) {
 std::string Console::get_key() const { return native_key; }
 
 void Console::handle_inputs(config::ControllerMap& controller) {
+	m_process_code_after = false;
 	if (m_exit_stall.running()) { return; }
 	auto const& up = controller.digital_action_status(config::DigitalAction::menu_up).triggered;
 	auto const& down = controller.digital_action_status(config::DigitalAction::menu_down).triggered;
@@ -196,9 +199,14 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 	auto const& released = controller.digital_action_status(config::DigitalAction::menu_select).released;
 	static bool finished{};
 	static bool can_skip{};
+	static bool just_started{};
+	static bool can_process{};
 	bool responded{};
 
-	if (next) { m_process_codes = true; }
+	if (next) {
+		m_process_codes = true;
+		if (m_writer->is_ready()) { m_process_code_after = true; }
+	}
 
 	// check for exit
 	if (exit && m_output_type != OutputType::no_skip) {
@@ -255,6 +263,8 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 		}
 		finished = m_writer->request_next();
 		m_process_code_before = finished;
+		m_process_code_after = true;
+		just_started = finished;
 		can_skip = false;
 	}
 
@@ -266,6 +276,8 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 
 	if (finished) {
 		if (m_writer->exit_requested()) {
+			auto current_code = get_message_code();
+			if (current_code.is_item() && m_process_code_after) { m_services->events.dispatch_event("GivePlayerItem", current_code.value, 1); }
 			end();
 			m_process_code_before = false;
 		}

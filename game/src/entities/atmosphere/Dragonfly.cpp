@@ -34,7 +34,7 @@ void Dragonfly::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 }
 
 void Dragonfly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (svc.greyblock_mode()) { return; }
+	// if (svc.greyblock_mode()) { return; }
 	sprite.render(svc, win, cam);
 	if (svc.greyblock_mode()) {
 		sf::RectangleShape drawbox{};

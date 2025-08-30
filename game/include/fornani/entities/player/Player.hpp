@@ -123,12 +123,15 @@ class Player {
 	void flash_sprite();
 	void calculate_sprite_offset();
 	void set_idle();
+	void set_sleeping();
+	void set_direction(Direction to);
 	void piggyback(int id);
 
 	// state
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
 	[[nodiscard]] auto is_dead() const -> bool { return health.is_dead(); }
 	[[nodiscard]] auto is_busy() const -> bool { return flags.state.test(State::busy); }
+	[[nodiscard]] auto is_in_custom_sleep_event() const -> bool { return animation.is_sleep_timer_running(); }
 	[[nodiscard]] auto death_animation_over() -> bool { return animation.death_over(); }
 	[[nodiscard]] auto just_died() const -> bool { return flags.state.test(State::killed); }
 	[[nodiscard]] auto height() const -> float { return collider.dimensions.y; }

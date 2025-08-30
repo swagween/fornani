@@ -63,8 +63,8 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 
 	if (b_pop && b_index == get_id()) {
 		m_current_conversation.modulate(1);
-		NANI_LOG_DEBUG(m_logger, "Current conversation N: {}", m_current_conversation.get());
-		NANI_LOG_DEBUG(m_logger, "Current order N: {}", m_current_conversation.get_order());
+		// NANI_LOG_DEBUG(m_logger, "Current conversation N: {}", m_current_conversation.get());
+		// NANI_LOG_DEBUG(m_logger, "Current order N: {}", m_current_conversation.get_order());
 		b_pop = false;
 	}
 
@@ -132,8 +132,8 @@ void NPC::start_conversation(automa::ServiceProvider& svc, std::optional<std::un
 	state_flags.set(NPCState::introduced);
 	std::string name = std::string(m_label);
 	std::string target = std::to_string(conversations.at(m_current_conversation.get()));
-	NANI_LOG_DEBUG(m_logger, "Current conversation S iterator: {}", m_current_conversation.get());
-	NANI_LOG_DEBUG(m_logger, "Current conversation S actual: {}", conversations.at(m_current_conversation.get()));
+	// NANI_LOG_DEBUG(m_logger, "Current conversation S iterator: {}", m_current_conversation.get());
+	// NANI_LOG_DEBUG(m_logger, "Current conversation S actual: {}", conversations.at(m_current_conversation.get()));
 	console = std::make_unique<gui::Console>(svc, svc.text.npc[name], target, gui::OutputType::gradual);
 	console.value()->include_portrait(get_id());
 }
@@ -141,7 +141,7 @@ void NPC::start_conversation(automa::ServiceProvider& svc, std::optional<std::un
 void NPC::push_conversation(int convo) {
 	conversations.push_back(convo);
 	m_current_conversation.set_order(static_cast<int>(conversations.size()));
-	NANI_LOG_DEBUG(m_logger, "Current order Push: {}", static_cast<int>(conversations.size()));
+	// NANI_LOG_DEBUG(m_logger, "Current order Push: {}", static_cast<int>(conversations.size()));
 }
 
 void NPC::pop_conversation() {

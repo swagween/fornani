@@ -12,7 +12,6 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc
 	hud.orient(svc, player, true); // display hud preview for each file in the center of the screen
 	svc.state_controller.next_state = svc.data.load_progress(player, current_selection.get());
 	player.set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
-	player.set_desired_direction(SimpleDirection(LR::left));
 	player.antennae.at(0).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
 	player.antennae.at(1).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
 	player.hurt_cooldown.cancel();
@@ -88,7 +87,6 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	player->set_position({svc.window->i_screen_dimensions().x * 0.5f + 80, 360});
 	player->update(map);
-	player->controller.direction.lnr = LNR::left;
 
 	hud.update(svc, *player);
 

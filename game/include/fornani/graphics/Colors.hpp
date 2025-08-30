@@ -27,7 +27,7 @@ constexpr sf::Color night{19, 18, 16};
 constexpr sf::Color ui_black{12, 12, 20};
 constexpr sf::Color mythic_green{175, 227, 125};
 constexpr sf::Color console_blue{24, 34, 67};
-constexpr sf::Color beige{217, 214, 160};
+constexpr sf::Color beige{195, 185, 136};
 constexpr sf::Color treasure_blue{15, 104, 248};
 constexpr sf::Color bright_purple{219, 194, 255};
 constexpr sf::Color pioneer_red{229, 59, 68};

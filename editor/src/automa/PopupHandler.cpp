@@ -215,6 +215,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		suites.resize(static_cast<std::size_t>(iterations));
 		quantities.resize(static_cast<std::size_t>(iterations));
 		for (auto i = 0; i < iterations; ++i) {
+			ImGui::PushID(i);
 			ImGui::SeparatorText(std::to_string(i).c_str());
 			ImGui::InputInt("Number of Suites", &quantities.at(i));
 			suites.at(i).resize(static_cast<std::size_t>(quantities.at(i)));
@@ -224,6 +225,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 				ImGui::InputInt(std::to_string(j).c_str(), &suites.at(i).at(j));
 				ImGui::PopID();
 			}
+			ImGui::PopID();
 		}
 
 		if (ImGui::Button("Create")) {

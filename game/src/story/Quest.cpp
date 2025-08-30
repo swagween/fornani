@@ -8,7 +8,7 @@ QuestProgression::QuestProgression(std::vector<std::pair<QuestIdentifier, Progre
 }
 
 void QuestProgression::progress(QuestIdentifier const identifier, int const amount, int const source) {
-	if (!progressions.contains(identifier)) { return; }
+	if (!progressions.contains(identifier)) { progressions.insert({identifier, 0}); }
 	if (std::find(m_sources.begin(), m_sources.end(), source) == m_sources.end() || source == -1) {
 		progressions.at(identifier) += amount;
 		if (source != -1) { m_sources.push_back(source); }
@@ -50,6 +50,7 @@ QuestRegistry::QuestRegistry(ResourceFinder& finder) {
 	auto index = 0;
 	for (auto const& entry : quest_data.as_array()) {
 		m_registry.insert({index, Quest{entry}});
+		m_indeces.insert({entry["tag"].as_string(), index});
 		++index;
 	}
 }
@@ -89,6 +90,17 @@ void QuestTable::progress_quest(std::string_view tag, int const amount, int cons
 
 void QuestTable::set_quest_progression(std::string_view tag, QuestIdentifier const identifier, int const amount, std::vector<int> sources) {
 	if (m_quests.contains(tag.data())) { m_quests.at(tag.data()).set_progression(identifier, amount, sources); }
+}
+
+auto QuestTable::print_progressions(std::string_view tag, std::string_view identifier) const -> std::string {
+	if (!m_quests.contains(tag.data())) { return "<null>"; }
+	auto ret = std::string{};
+	for (auto const& p : m_quests.at(tag.data()).progressions) {
+		std::string next = tag.data();
+		auto id = identifier.empty() ? std::to_string(p.first) : identifier.data();
+		ret += next + ": " + id + " - " + std::to_string(p.second) + "\n";
+	}
+	return ret;
 }
 
 } // namespace fornani

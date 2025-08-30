@@ -41,7 +41,7 @@ PlayerAnimation::PlayerAnimation(Player& plr)
 							   {"wake_up", {8, 2, 8 * rate, 0}},
 							   {"crouch", {110, 5, 4 * rate, -1, true}},
 							   {"crawl", {114, 4, 6 * rate, -1}}},
-	  state_function{std::bind(&PlayerAnimation::update_idle, this)}, m_buffer{16} {
+	  state_function{std::bind(&PlayerAnimation::update_idle, this)}, m_buffer{16}, m_sleep_timer{512} {
 	state_function = state_function();
 	animation.set_params(get_params("idle"));
 	animation.start();
@@ -54,11 +54,14 @@ void PlayerAnimation::update() {
 	if (m_player->is_dead()) { request(AnimState::die); }
 	if (m_buffer.is_complete()) { m_requested = {}; }
 	m_buffer.update();
+	m_sleep_timer.update();
 }
 
 void PlayerAnimation::start() { animation.start(); }
 
 bool PlayerAnimation::stepped() const { return (animation.get_frame() == 44 || animation.get_frame() == 46 || animation.get_frame() == 10 || animation.get_frame() == 13 || animation.get_frame() == 16) && animation.keyframe_started(); }
+
+void PlayerAnimation::set_sleep_timer() { m_sleep_timer.start(); }
 
 fsm::StateFunction PlayerAnimation::update_idle() {
 	animation.label = "idle";
@@ -571,6 +574,7 @@ fsm::StateFunction PlayerAnimation::update_wallslide() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::walljump, get_params("walljump"), true)) { return PA_BIND(update_walljump); }
 	if (change_state(AnimState::rise, get_params("walljump"), true)) { return PA_BIND(update_walljump); }
+	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 	if (change_state(AnimState::crouch, get_params("crouch"))) { return PA_BIND(update_crouch); }
 	if (change_state(AnimState::crawl, get_params("crouch"), true)) { return PA_BIND(update_crouch); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
@@ -769,7 +773,12 @@ fsm::StateFunction player::PlayerAnimation::update_sleep() {
 	m_player->flags.state.reset(State::show_weapon);
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();
-	if (change_state(AnimState::wake_up, get_params("wake_up"), true)) { return PA_BIND(update_wake_up); }
+	NANI_LOG_DEBUG(m_logger, "zzz...");
+	if (m_sleep_timer.is_almost_complete()) { request(AnimState::wake_up); }
+	if (change_state(AnimState::wake_up, get_params("wake_up"), true)) {
+		NANI_LOG_DEBUG(m_logger, "Woke up!");
+		return PA_BIND(update_wake_up);
+	}
 	return PA_BIND(update_sleep);
 }
 
@@ -847,6 +856,7 @@ void player::PlayerAnimation::force(AnimState to_state, std::string_view key) {
 	m_requested.set(to_state);
 	change_state(to_state, get_params(key.data()), true);
 	m_buffer.start();
+	NANI_LOG_DEBUG(m_logger, "Animation set to {}", key.data());
 }
 
 anim::Parameters const& player::PlayerAnimation::get_params(std::string const& key) { return m_params.contains(key) ? m_params.at(key) : m_params.at("idle"); }

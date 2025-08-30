@@ -69,7 +69,9 @@ class PlayerAnimation {
 	[[nodiscard]] auto was_requested_externally(AnimState check) const -> bool { return m_requested_external.test(check); }
 	[[nodiscard]] auto get_state() const -> AnimState { return m_actual; }
 	[[nodiscard]] auto is_state(AnimState check) const -> bool { return m_actual == check; }
+	[[nodiscard]] auto is_sleep_timer_running() const -> bool { return m_sleep_timer.running(); }
 	bool stepped() const;
+	void set_sleep_timer();
 
 	fsm::StateFunction state_function;
 
@@ -120,6 +122,7 @@ class PlayerAnimation {
 	util::BitFlags<AnimState> m_requested{};
 	util::BitFlags<AnimState> m_requested_external{};
 	util::Cooldown m_buffer;
+	util::Cooldown m_sleep_timer;
 	AnimState m_actual{};
 
 	io::Logger m_logger{"animation"};

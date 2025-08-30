@@ -28,7 +28,7 @@
 		"title": "NPC Dialogue",
 		"tag": "npc_dialogue",
 		"displayed": false,
-		"subquests": [ 18, 16 ]
+		"subquests": [ 18, 16, 17, 20 ]
 	},
 
 	{

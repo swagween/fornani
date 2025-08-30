@@ -19,58 +19,66 @@
     "1": {
       "suite": [
         [
-          "...$3#3#1#",
+          "...",
           "Huh?",
           "Oh! A lost girl wanders my way, hmm?",
-          "I say, it shocks me a bit to see another friendly face around here. What's your story?%0"
+          "It's not every day I see another friendly face around here. What's your story?"
         ],
         [
           "Well, you're welcome to this here farmhouse. It's been abandoned ever since Old Mimic passed, and so I've been stopping by every now and again to do some upkeep.",
-          "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.$3#24#1#",
-          "Could you go find him for me? The past weeks of hard travel have left me a bit tired.%0"
+          "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.",
+          "Could you go find him for me? The past weeks of hard travel have left me a bit tired."
         ],
         [
-          "A lost little brother, hmm? Well, my heart aches to hear that.",
-          "You know, there are others of your kind at Woodshine. It seems like it'd be a good place to start.",
-          "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.$3#24#1#",
-          "Could you go find him for me? The past weeks of hard travel have left me a bit tired.%1"
+          "A lost brother, eh? Well, my heart aches to hear that.",
+          "You know, there are others of your kind at Woodshine, east of here. It seems like it'd be a good place to start.",
+          "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.",
+          "Could you go find him for me? The past weeks of hard travel have left me a bit tired."
         ],
         [
-          "Now, that's awful kind. Here, take this. You'll need it if you want to properly wrangle him up.$9#1#1#^20"
+          "Now, that's awful kind. Here, take this. You'll need it if you want to properly wrangle him up."
         ]
       ],
       "responses": [
-        ["I'm just looking for a place to rest.%0", "I'm looking for my little brother.%1"],
-        ["Sure thing!%1"],
-        ["Sure thing!%0"]
+        ["I'm just looking for a place to rest.", "I'm looking for my older brother."],
+        ["Sure thing!"]
+      ],
+      "codes": [
+        [0, 0, 3, 1, 0],
+        [1, 0, 0, 1, 1],
+        [1, 0, 1, 1, 2],
+        [0, 1, 2, 1, 1],
+        [0, 2, 3, 1, 1],
+        [1, 1, 0, 1, 3],
+        [0, 3, 0, 2, 20]
       ]
     },
     "2": {
       "suite": [
-        ["So? Have you found my dog yet? I'm starting to get worried...%0"],
+        ["So? Have you found my dog yet? I'm starting to get worried..."],
         [
           "Well, if it's any help, he tends to climb to real high places when he's afraid.",
           "Good luck!"
         ]
       ],
-      "responses": [["Not yet...%0"]]
+      "responses": [["Not yet..."]]
     },
     "3": {
       "suite": [
         [
-          "Oh, Justin! My precious thing!$201#24#2#",
-          "Well, you've really gone and done it, haven't you?$3#3#3#",
-          "I say, I was beginning to fear for this lil' guy's life. I owe you a great debt, friend!$3#24#3#%0"
+          "Oh, Justin! My precious thing!",
+          "Well, you've really gone and done it, haven't you?",
+          "I say, I was beginning to fear for this lil' guy's life. I owe you a great debt, friend!"
         ],
         [
           "Well, I've got to thank you somehow...",
           "Say, I'd be happy to trade some stuff with you. Normally I don't vend outside of Ashtown, but for you I'll make an exception!",
-          "What do you say?%0"
+          "What do you say?"
         ],
-        ["Here's what I've got.$70#1#1#"],
+        ["Here's what I've got."],
         ["Alright then, I'll see ya around!"]
       ],
-      "responses": [["Hey, don't mention it!%0"], ["Sure, let's trade!%0", "Maybe later.%1"]]
+      "responses": [["Hey, don't mention it!"], ["Sure, let's trade!", "Maybe later."]]
     },
     "4": {
       "codes": [
@@ -246,7 +254,9 @@
       "responses": [],
       "codes": [
         [0, 0, 2, 13, 18],
-        [0, 0, 0, 3, 2, 18]
+        [0, 0, 0, 3, 2, 18],
+        [0, 0, 1, 5, 2],
+        [0, 0, 2, 5, 1]
       ]
     },
     "2": {
@@ -259,7 +269,10 @@
         ]
       ],
       "responses": [],
-      "codes": [[0, 0, 2, 13, 18]]
+      "codes": [
+        [0, 0, 2, 13, 18],
+        [0, 0, 2, 5, 2]
+      ]
     },
     "3": {
       "suite": [
@@ -291,7 +304,9 @@
         [0, 3, 6, 1, 0],
         [1, 0, 0, 1, 1],
         [1, 0, 1, 1, 2],
-        [1, 0, 2, 1, 3]
+        [1, 0, 2, 1, 3],
+        [0, 3, 3, 5, 2],
+        [0, 3, 6, 5, 3]
       ]
     }
   },
@@ -307,7 +322,10 @@
         ]
       ],
       "responses": [],
-      "codes": [[0, 0, 2, 13, 17]]
+      "codes": [
+        [0, 0, 2, 13, 17],
+        [0, 0, 0, 3, 17]
+      ]
     },
     "2": {
       "suite": [

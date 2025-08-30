@@ -20,6 +20,7 @@ class SimpleDirection {
 	SimpleDirection(LR to) : lr{to} {}
 
 	void set(LR to) { lr = to; }
+	void set(LNR to) { lr = to == LNR::left ? LR::left : LR::right; }
 	void flip() { lr = left() ? LR::right : LR::left; }
 
 	[[nodiscard]] auto left() const -> bool { return lr == LR::left; }

@@ -51,10 +51,12 @@ class QuestRegistry {
 	QuestRegistry(ResourceFinder& finder);
 
 	[[nodiscard]] auto get_quest_metadata(int index) const& -> Quest { return m_registry.contains(index) ? m_registry.at(index) : null_quest; }
+	[[nodiscard]] auto get_index_from_tag(std::string_view tag) const -> std::size_t { return m_indeces.contains(tag.data()) ? m_indeces.at(tag.data()) : -1; }
 	[[nodiscard]] auto get_size() const -> std::size_t { return m_registry.size(); }
 
   private:
 	std::unordered_map<int, Quest> m_registry{};
+	std::unordered_map<std::string, std::size_t> m_indeces{};
 	Quest null_quest{};
 
 	io::Logger m_logger{"quest"};
@@ -71,6 +73,7 @@ class QuestTable {
 	void set_quest_progression(std::string_view tag, QuestIdentifier const identifier, int const amount, std::vector<int> sources);
 
 	[[nodiscard]] auto get_quest_progression(std::string_view tag, QuestIdentifier const identifier = 0) const -> ProgressionState { return m_quests.contains(tag.data()) ? m_quests.at(tag.data()).get_progression(identifier) : 0; }
+	[[nodiscard]] auto print_progressions(std::string_view tag, std::string_view identifier = "") const -> std::string;
 
   private:
 	void start_quest(std::string_view tag, std::vector<std::pair<QuestIdentifier, ProgressionState>> status);

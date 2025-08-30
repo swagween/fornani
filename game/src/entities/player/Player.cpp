@@ -289,7 +289,10 @@ void Player::update_animation() {
 	}
 
 	if (flags.state.consume(State::sleep)) { animation.request(player::AnimState::sleep); }
-	if (flags.state.consume(State::wake_up)) { animation.request(player::AnimState::wake_up); }
+	if (flags.state.consume(State::wake_up)) {
+		NANI_LOG_DEBUG(m_logger, "Wake up flag was true");
+		animation.request(player::AnimState::wake_up);
+	}
 
 	animation.update();
 }
@@ -324,9 +327,21 @@ void Player::calculate_sprite_offset() {
 }
 
 void Player::set_idle() {
-	animation.request(AnimState::idle);
-	animation.animation.set_params(animation.get_params("idle"));
+	animation.force(AnimState::idle, "idle");
 	animation.state_function = std::bind(&PlayerAnimation::update_idle, &animation);
+}
+
+void Player::set_sleeping() {
+	animation.force(AnimState::idle, "sleep");
+	animation.state_function = std::bind(&PlayerAnimation::update_sleep, &animation);
+	animation.animation.set_frame(3);
+}
+
+void Player::set_direction(Direction to) {
+	m_directions.actual.set(to.lnr);
+	m_directions.desired.set(to.lnr);
+	controller.set_direction(to);
+	sprite.setScale({constants::f_scale_vec.x * to.as_float(), constants::f_scale_vec.y});
 }
 
 void Player::piggyback(int id) { piggybacker = Piggybacker(*m_services, *m_services->data.get_npc_label_from_id(id), collider.physics.position); }
@@ -579,7 +594,7 @@ void Player::total_reset() {
 }
 
 void Player::map_reset() {
-	set_idle();
+	if (!m_services->app_flags.test(automa::AppFlags::custom_map_start)) { set_idle(); }
 	flags.state.reset(State::killed);
 	if (arsenal) { arsenal.value().reset(); }
 	health.invincibility.cancel();

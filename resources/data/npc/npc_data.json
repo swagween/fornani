@@ -1,155 +1,155 @@
 {
-	"bryn": {
-		"dimensions": [ 24, 24 ],
-		"sprite_dimensions": [ 48, 48 ],
-		"spritesheet_dimensions": [ 4, 4 ],
-		"sprite_offset": [ 12, -11 ],
-		"sprite_origin": [ 24, 12 ],
-		"animation": {
-			"idle": [ 0, 8, 30, -1, false ],
-			"walk": [ 8, 4, 24, -1, false ],
-			"turn": [ 12, 2, 30, 0, false ],
-			"inspect": [ 14, 2, 32, -1, true ]
-		}
-	},
+  "bryn": {
+    "dimensions": [24, 24],
+    "sprite_dimensions": [48, 48],
+    "spritesheet_dimensions": [4, 4],
+    "sprite_offset": [12, -11],
+    "sprite_origin": [24, 12],
+    "animation": {
+      "idle": [0, 8, 30, -1, false],
+      "walk": [8, 4, 24, -1, false],
+      "turn": [12, 2, 30, 0, false],
+      "inspect": [14, 2, 32, -1, true]
+    }
+  },
 
-	"gobe": {
-		"id": 3,
-		"dimensions": [ 24, 24 ],
-		"sprite_dimensions": [ 37, 32 ],
-		"sprite_offset": [ -12, -39 ],
-		"animation": [
-			{
-				"label": "idle",
-				"parameters": [ 0, 8, 40, -1, false ]
-			},
-			{
-				"label": "walk",
-				"parameters": [ 8, 4, 24, -1, false ]
-			},
-			{
-				"label": "walk",
-				"parameters": [ 12, 2, 40, 0, false ]
-			},
-			{
-				"label": "inspect",
-				"parameters": [ 14, 2, 32, -1, true ]
-			}
-		],
-		"vendor": {
-			"id": 3,
-			"upcharge": 0.2,
-			"common_items": [ "clay_statue", "bronze_bracelet", "clamp" ],
-			"uncommon_items": [ "red_jeans" ],
-			"rare_items": [ "sapphire" ]
-		}
-	},
-	"minigus": {
-		"id": 7,
-		"dimensions": [ 24, 24 ]
-	},
+  "gobe": {
+    "id": 3,
+    "dimensions": [24, 24],
+    "sprite_dimensions": [37, 32],
+    "sprite_offset": [13, -19],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 8, 40, -1, false]
+      },
+      {
+        "label": "walk",
+        "parameters": [8, 4, 24, -1, false]
+      },
+      {
+        "label": "walk",
+        "parameters": [12, 2, 40, 0, false]
+      },
+      {
+        "label": "inspect",
+        "parameters": [14, 2, 32, -1, true]
+      }
+    ],
+    "vendor": {
+      "id": 3,
+      "upcharge": 0.2,
+      "common_items": ["clay_statue", "bronze_bracelet", "clamp"],
+      "uncommon_items": ["red_jeans"],
+      "rare_items": ["sapphire"]
+    }
+  },
+  "minigus": {
+    "id": 7,
+    "dimensions": [24, 24]
+  },
 
-	"dr_go": {
-		"id": 16,
-		"dimensions": [ 24, 24 ],
-		"sprite_dimensions": [ 20, 20 ],
-		"sprite_offset": [ 0, -7 ],
-		"animation": [
-			{
-				"label": "idle",
-				"parameters": [ 0, 6, 40, -1, false ]
-			},
-			{
-				"label": "turn",
-				"parameters": [ 6, 2, 40, 0, false ]
-			}
-		]
-	},
-	"mirin": {
-		"id": 18,
-		"dimensions": [ 24, 24 ],
-		"sprite_dimensions": [ 20, 20 ],
-		"sprite_offset": [ 0, -7 ],
-		"animation": [
-			{
-				"label": "idle",
-				"parameters": [ 0, 6, 40, -1, false ]
-			},
-			{
-				"label": "turn",
-				"parameters": [ 6, 2, 40, 0, false ]
-			}
-		]
-	},
-	"carl": {
-		"id": 17,
-		"dimensions": [ 24, 24 ],
-		"sprite_dimensions": [ 20, 20 ],
-		"sprite_offset": [ 0, -7 ],
-		"animation": [
-			{
-				"label": "idle",
-				"parameters": [ 0, 6, 40, -1, false ]
-			},
-			{
-				"label": "turn",
-				"parameters": [ 6, 2, 40, 0, false ]
-			}
-		]
-	},
-	"billy": {
-		"id": 25,
-		"dimensions": [ 24, 24 ],
-		"sprite_dimensions": [ 23, 11 ],
-		"sprite_offset": [ -11, 2 ],
-		"animation": [
-			{
-				"label": "idle",
-				"parameters": [ 0, 1, 40, -1, false ]
-			}
-		]
-	},
-	"bit": {
-		"dimensions": [ 24, 24 ],
-		"sprite_dimensions": [ 20, 20 ],
-		"sprite_offset": [ 20, -14 ],
-		"animation": {
-			"idle": [ 0, 6, 40, -1, false ],
-			"turn": [ 6, 2, 40, 0, false ]
-		}
-	},
-	"justin": {
-		"dimensions": [ 18, 18 ],
-		"sprite_dimensions": [ 18, 18 ],
-		"sprite_offset": [ 18, -18 ],
-		"animation": {
-			"idle": [ 0, 4, 40, -1, false ],
-			"walk": [ 4, 4, 40, 0, false ],
-			"turn": [ 7, 1, 40, 0, false ]
-		}
-	},
-	"lady_nimbus": {
-		"id": 22,
-		"dimensions": [ 24, 48 ],
-		"sprite_dimensions": [ 23, 32 ],
-		"sprite_offset": [ 8.0, -14.0 ],
-		"animation": [
-			{
-				"label": "idle",
-				"parameters": [ 0, 1, 40, -1, false ]
-			},
-			{
-				"label": "turn",
-				"parameters": [ 1, 1, 40, -1, false ]
-			},
-			{
-				"label": "shift",
-				"parameters": [ 1, 4, 40, 0, false ]
-			}
-		]
-	},
-	"hologus": {
-		"id": 23,
-		"dimensions": [ 24, 24 ]
-	}
+  "dr_go": {
+    "id": 16,
+    "dimensions": [24, 24],
+    "sprite_dimensions": [20, 20],
+    "sprite_offset": [0, -7],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 6, 40, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [6, 2, 40, 0, false]
+      }
+    ]
+  },
+  "mirin": {
+    "id": 18,
+    "dimensions": [24, 24],
+    "sprite_dimensions": [20, 20],
+    "sprite_offset": [0, -7],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 6, 40, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [6, 2, 40, 0, false]
+      }
+    ]
+  },
+  "carl": {
+    "id": 17,
+    "dimensions": [24, 24],
+    "sprite_dimensions": [20, 20],
+    "sprite_offset": [0, -7],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 6, 40, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [6, 2, 40, 0, false]
+      }
+    ]
+  },
+  "billy": {
+    "id": 25,
+    "dimensions": [24, 24],
+    "sprite_dimensions": [23, 11],
+    "sprite_offset": [-11, 2],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 1, 40, -1, false]
+      }
+    ]
+  },
+  "bit": {
+    "dimensions": [24, 24],
+    "sprite_dimensions": [20, 20],
+    "sprite_offset": [20, -14],
+    "animation": {
+      "idle": [0, 6, 40, -1, false],
+      "turn": [6, 2, 40, 0, false]
+    }
+  },
+  "justin": {
+    "dimensions": [18, 18],
+    "sprite_dimensions": [18, 18],
+    "sprite_offset": [18, -18],
+    "animation": {
+      "idle": [0, 4, 40, -1, false],
+      "walk": [4, 4, 40, 0, false],
+      "turn": [7, 1, 40, 0, false]
+    }
+  },
+  "lady_nimbus": {
+    "id": 22,
+    "dimensions": [24, 48],
+    "sprite_dimensions": [23, 32],
+    "sprite_offset": [8.0, -14.0],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 1, 40, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [1, 1, 40, -1, false]
+      },
+      {
+        "label": "shift",
+        "parameters": [1, 4, 40, 0, false]
+      }
+    ]
+  },
+  "hologus": {
+    "id": 23,
+    "dimensions": [24, 24]
+  }
 }
