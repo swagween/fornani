@@ -37,7 +37,7 @@ enum class StateFlags : std::uint8_t { hide_hud, no_menu };
 struct PlayerDat {
 	void set_piggy_id(int const id) { piggy_id = id; }
 	void unpiggy() { drop_piggy = true; }
-	int piggy_id{};
+	int piggy_id{-1};
 	bool drop_piggy{};
 };
 struct MapDebug {

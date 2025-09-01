@@ -1,5 +1,6 @@
 
 #include <imgui.h>
+#include <editor/automa/DialogueEditor.hpp>
 #include <editor/automa/Editor.hpp>
 #include <editor/automa/Metagrid.hpp>
 #include <editor/setup/EditorApplication.hpp>
@@ -59,6 +60,7 @@ void EditorApplication::run(char** argv) {
 			switch (to_state) {
 			case EditorStateType::editor: m_state = std::make_unique<Editor>(m_services); break;
 			case EditorStateType::metagrid: m_state = std::make_unique<Metagrid>(m_services); break;
+			case EditorStateType::dialogue_editor: m_state = std::make_unique<DialogueEditor>(m_services); break;
 			}
 			m_current_state = to_state;
 		}

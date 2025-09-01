@@ -1,41 +1,38 @@
 [
-	{
-		"title": "Free Bit",
-		"tag": "free_bit",
-		"target": 2,
-		"objectives": [
-			"Find the key to Bit's cell.",
-			"Free Bit from his cell."
-		],
-		"displayed": true
-	},
+  {
+    "title": "Free Bit",
+    "tag": "free_bit",
+    "target": 2,
+    "objectives": ["Find the key to Bit's cell.", "Free Bit from his cell."],
+    "displayed": true
+  },
 
-	{
-		"title": "Discover the mystery of the Firstwind Laboratory terminal",
-		"tag": "firstwind_mystery",
-		"target": 5,
-		"objectives": [
-			"Enter the username.",
-			"Enter the authorization key.",
-			"Open the chest.",
-			"Find the Boiler Room.",
-			"Open the chest."
-		],
-		"displayed": true
-	},
+  {
+    "title": "Discover the mystery of the Firstwind Laboratory terminal",
+    "tag": "firstwind_mystery",
+    "target": 5,
+    "objectives": [
+      "Enter the username.",
+      "Enter the authorization key.",
+      "Open the chest.",
+      "Find the Boiler Room.",
+      "Open the chest."
+    ],
+    "displayed": true
+  },
 
-	{
-		"title": "NPC Dialogue",
-		"tag": "npc_dialogue",
-		"displayed": false,
-		"subquests": [ 18, 16, 17, 20 ]
-	},
+  {
+    "title": "NPC Dialogue",
+    "tag": "npc_dialogue",
+    "displayed": false,
+    "subquests": [0, 3, 18, 16, 17, 20]
+  },
 
-	{
-		"title": "Collect vermite shards",
-		"tag": "collect_vermite",
-		"target": 24,
-		"objectives": [ "Collect all the vermite shards." ],
-		"displayed": true
-	}
+  {
+    "title": "Collect vermite shards",
+    "tag": "collect_vermite",
+    "target": 24,
+    "objectives": ["Collect all the vermite shards."],
+    "displayed": true
+  }
 ]

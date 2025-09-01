@@ -77,12 +77,14 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		pos.y = entry["position"][1].as<float>();
 		auto npc_label = entry["label"].as_string();
 		auto npc_id = svc.data.npc[npc_label]["id"].as<int>();
+		NANI_LOG_DEBUG(m_logger, "NPC Label: {}", npc_label);
+		NANI_LOG_DEBUG(m_logger, "NPC ID: {}", npc_id);
 		npcs.push_back(std::make_unique<npc::NPC>(svc, npc_label));
 		auto npc_state = svc.quest_table.get_quest_progression("npc_dialogue", npc_id);
-		if (npc_id == 16) { NANI_LOG_DEBUG(m_logger, "NPC State: {}", npc_state); }
+		NANI_LOG_DEBUG(m_logger, "NPC State: {}", npc_state);
 		for (auto const& convo : entry["suites"][npc_state].as_array()) {
 			npcs.back()->push_conversation(convo.as<int>());
-			if (npc_id == 16) { NANI_LOG_DEBUG(m_logger, "Pushed conversation {}", convo.as<int>()); }
+			NANI_LOG_DEBUG(m_logger, "Pushed conversation {}", convo.as<int>());
 		}
 		npcs.back()->set_position_from_scaled(pos);
 		if (static_cast<bool>(entry["background"].as_bool())) { npcs.back()->push_to_background(); }
@@ -333,9 +335,9 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	}
 
 	// TODO: refactor this
-	if (svc.player_dat.piggy_id != 0) {
+	if (svc.player_dat.piggy_id != -1) {
 		for (auto& n : npcs) {
-			if (n->get_id() == svc.player_dat.piggy_id) { n->hide(); }
+			// if (n->get_id() == svc.player_dat.piggy_id) { n->hide(); }
 		}
 	}
 	if (svc.player_dat.drop_piggy) {
@@ -348,7 +350,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 				n->set_current_location(room_id);
 			}
 		}
-		svc.player_dat.piggy_id = 0;
+		svc.player_dat.piggy_id = -1;
 	}
 
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });

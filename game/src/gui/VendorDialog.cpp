@@ -10,7 +10,7 @@
 namespace fornani::gui {
 
 VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id)
-	: vendor_id(vendor_id), portrait(svc), info(svc, "outline_console"), m_buy_selector{{2, 1}}, m_sell_selector{{2, 1}}, orb{.sprite{anim::AnimatedSprite(svc.assets.get_texture("orbs"), {24, 24})}},
+	: vendor_id(vendor_id), portrait(svc, vendor_id), info(svc, "outline_console"), m_buy_selector{{2, 1}}, m_sell_selector{{2, 1}}, orb{.sprite{anim::AnimatedSprite(svc.assets.get_texture("orbs"), {24, 24})}},
 	  artwork{svc.assets.get_texture("vendor_background")}, ui{svc.assets.get_texture("vendor_ui")}, text{.vendor_name{svc.text.fonts.title},
 																										  .buy_tab{svc.text.fonts.title},
 																										  .sell_tab{svc.text.fonts.title},
@@ -26,7 +26,6 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	ui.setTextureRect(sf::IntRect{{0, static_cast<int>(state) * svc.window->i_screen_dimensions().y}, {svc.window->i_screen_dimensions()}});
 	get_npc_id.insert({1, 3});
 	npc_id = get_npc_id.at(vendor_id);
-	portrait.set_id(npc_id);
 
 	for (auto& in_anim = svc.data.drop["orb"]["animation"]; auto& param : in_anim["params"].as_array()) {
 		anim::Parameters a{};

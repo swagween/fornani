@@ -145,7 +145,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
 
 	if (m_console) {
-		if (m_console.value()->just_began()) {
+		if (m_console.value()->was_response_created() && !m_console.value()->has_nani_portrait()) {
 			player->wardrobe_widget.update(*player);
 			m_console.value()->set_nani_sprite(player->wardrobe_widget.get_sprite());
 		}

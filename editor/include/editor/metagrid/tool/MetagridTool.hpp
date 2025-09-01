@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <editor/metagrid/Room.hpp>
 #include <editor/util/Constants.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Polymorphic.hpp>

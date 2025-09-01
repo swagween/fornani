@@ -1,16 +1,27 @@
 {
   "bryn": {
+    "id": 0,
     "dimensions": [24, 24],
-    "sprite_dimensions": [48, 48],
-    "spritesheet_dimensions": [4, 4],
-    "sprite_offset": [12, -11],
-    "sprite_origin": [24, 12],
-    "animation": {
-      "idle": [0, 8, 30, -1, false],
-      "walk": [8, 4, 24, -1, false],
-      "turn": [12, 2, 30, 0, false],
-      "inspect": [14, 2, 32, -1, true]
-    }
+    "sprite_dimensions": [24, 24],
+    "sprite_offset": [0, -11],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 8, 30, -1, false]
+      },
+      {
+        "label": "walk",
+        "parameters": [8, 4, 24, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [12, 2, 32, 0, false]
+      },
+      {
+        "label": "inspect",
+        "parameters": [14, 2, 32, -1, false]
+      }
+    ]
   },
 
   "gobe": {
@@ -28,7 +39,7 @@
         "parameters": [8, 4, 24, -1, false]
       },
       {
-        "label": "walk",
+        "label": "turn",
         "parameters": [12, 2, 40, 0, false]
       },
       {

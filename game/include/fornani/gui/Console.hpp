@@ -1,15 +1,15 @@
 
 #pragma once
 
-#include "fornani/gui/ItemWidget.hpp"
-#include "fornani/gui/Portrait.hpp"
-#include "fornani/gui/ResponseDialog.hpp"
-#include "fornani/gui/TextWriter.hpp"
-#include "fornani/io/Logger.hpp"
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/NineSlice.hpp"
-#include "fornani/utils/RectPath.hpp"
+#include <fornani/gui/ItemWidget.hpp>
+#include <fornani/gui/Portrait.hpp>
+#include <fornani/gui/ResponseDialog.hpp>
+#include <fornani/gui/TextWriter.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/NineSlice.hpp>
+#include <fornani/utils/RectPath.hpp>
 
 #include <SFML/Graphics.hpp>
 
@@ -23,7 +23,8 @@ class ControllerMap;
 namespace fornani::gui {
 
 enum class ConsoleMode : std::uint8_t { writing, responding, off };
-enum class ConsoleFlags : std::uint8_t { portrait_included, no_exit };
+enum class ConsoleFlags : std::uint8_t { no_exit };
+enum class ConsoleTriggers : std::uint8_t { response_created };
 enum class OutputType : std::uint8_t { instant, gradual, no_skip };
 
 enum class MessageCodeType : std::uint8_t { none, response, item, quest, voice, emotion, redirect, action, exit, destructible, input_hint, reveal_item, start_battle, pop_conversation };
@@ -56,6 +57,7 @@ struct MessageCode {
 class Console {
   public:
 	explicit Console(automa::ServiceProvider& svc);
+
 	/// <summary>
 	/// @brief for standard loading and launching, data-driven text
 	/// </summary>
@@ -63,6 +65,7 @@ class Console {
 	/// <param name="key"></param>
 	/// <param name="type"></param>
 	explicit Console(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type);
+
 	/// <summary>
 	/// @brief used for loading single messages (signs, inspectables, etc.)
 	/// </summary>
@@ -91,9 +94,11 @@ class Console {
 	[[nodiscard]] auto is_complete() const -> bool { return !is_active(); }
 	[[nodiscard]] auto exit_requested() const -> bool { return m_mode == ConsoleMode::off; }
 	[[nodiscard]] auto just_began() const -> bool { return m_began; }
-	[[nodiscard]] auto get_message_code() const -> MessageCode;
-	[[nodiscard]] auto get_previous_message_code() const -> MessageCode;
+	[[nodiscard]] auto get_message_codes() const -> std::optional<std::vector<MessageCode>>;
+	[[nodiscard]] auto get_previous_message_code() const -> std::optional<MessageCode>;
 	[[nodiscard]] auto get_response_code(int which) const -> MessageCode;
+	[[nodiscard]] auto has_nani_portrait() const -> bool { return static_cast<bool>(m_nani_portrait); }
+	[[nodiscard]] auto was_response_created() const -> bool { return m_triggers.test(ConsoleTriggers::response_created); }
 
 	util::RectPath m_path;
 	dj::Json text_suite{};
@@ -109,31 +114,36 @@ class Console {
 
 	std::unique_ptr<TextWriter> m_writer;
 	std::optional<ResponseDialog> m_response{};
-	std::vector<MessageCode> m_codes{};
 	std::optional<ItemWidget> m_item_widget{};
+	std::optional<Portrait> m_npc_portrait;
+	std::optional<Portrait> m_nani_portrait;
+	std::vector<MessageCode> m_codes{};
 
 	util::BitFlags<ConsoleFlags> m_flags{};
+	util::BitFlags<ConsoleTriggers> m_triggers{};
 	util::Cooldown m_exit_stall;
-
-	Portrait m_npc_portrait;
-	Portrait m_nani_portrait;
 
 	sf::Vector2f m_position{};
 	sf::Vector2f m_dimensions{};
 	sf::Vector2f m_response_offset;
+
 	OutputType m_output_type{};
 	ConsoleMode m_mode{};
-	io::Logger m_logger{"gui"};
+
 	struct {
 		int corner_factor{};
 		int edge_factor{};
 		float padding_scale{};
 	} m_styling{};
+
 	util::NineSlice m_nineslice;
+
 	bool m_began{};
 	bool m_process_codes{};
 	bool m_process_code_before{};
 	bool m_process_code_after{};
+
+	io::Logger m_logger{"gui"};
 };
 
 } // namespace fornani::gui

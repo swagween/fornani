@@ -781,6 +781,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		}
 
 		if (ImGui::Button("Metagrid")) { p_target_state = EditorStateType::metagrid; }
+		if (ImGui::Button("Dialogue")) { p_target_state = EditorStateType::dialogue_editor; }
 
 		ImGui::EndMainMenuBar();
 	}

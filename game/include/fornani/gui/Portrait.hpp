@@ -12,33 +12,31 @@ struct ServiceProvider;
 
 namespace fornani::gui {
 
-enum class PortraitFlags : std::uint8_t { custom };
+enum class PortraitFlags : std::uint8_t { custom, right };
 
 constexpr float pad_x{20.f};
 constexpr float pad_y{20.f};
 
 class Portrait : public Drawable {
   public:
-	explicit Portrait(automa::ServiceProvider& svc, bool left = true);
+	explicit Portrait(automa::ServiceProvider& svc, sf::Texture const& texture, int id, bool left = true);
+	explicit Portrait(automa::ServiceProvider& svc, int id, bool left = true);
 	void update(automa::ServiceProvider& svc);
-	void set_custom_portrait(sf::Sprite const& sp);
 	void render(sf::RenderWindow& win);
 	void reset(automa::ServiceProvider& svc);
 	void set_position(sf::Vector2f pos);
-	void set_texture(sf::Texture const& texture);
 	void bring_in();
 	void send_out();
 	void set_emotion(int new_emotion);
-	void set_id(int new_id);
-	[[nodiscard]] auto get_emotion() const -> int { return emotion; }
+
+	[[nodiscard]] auto get_emotion() const -> int { return m_emotion; }
 
   private:
 	sf::Sprite window;
 	std::string_view label{};
 	util::BitFlags<PortraitFlags> flags{};
-	int id{};
-	int emotion{1}; // 1-index to avoid communication errors
-	bool is_nani{};
+	int m_id{};
+	int m_emotion{};
 	sf::Vector2f dimensions{};
 	sf::Vector2f position{};
 	sf::Vector2f start_position{};

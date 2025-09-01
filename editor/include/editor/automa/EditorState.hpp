@@ -7,7 +7,7 @@
 
 namespace pi {
 
-enum class EditorStateType : std::uint8_t { editor, metagrid };
+enum class EditorStateType : std::uint8_t { editor, metagrid, dialogue_editor };
 enum class PressedKeys : std::uint8_t { control, shift, mouse_left, mouse_middle, mouse_right, space };
 
 class EditorState {

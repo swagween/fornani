@@ -104,12 +104,6 @@
     },
     {
       "folder": "firstwind",
-      "label": "laboratory.json",
-      "region": "firstwind",
-      "room_id": 110
-    },
-    {
-      "folder": "firstwind",
       "label": "mayhem.json",
       "region": "firstwind",
       "room_id": 990
@@ -197,6 +191,12 @@
       "label": "cellar.json",
       "region": "kariba",
       "room_id": 410
+    },
+    {
+      "folder": "kariba",
+      "label": "dungeon.json",
+      "region": "kariba",
+      "room_id": 420
     },
     {
       "folder": "overturned",

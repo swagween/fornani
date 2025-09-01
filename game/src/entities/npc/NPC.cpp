@@ -56,7 +56,8 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	if (piggybacking()) { current_location = -1; }
 	svc.data.set_npc_location(get_id(), current_location);
 	if (state_flags.test(NPCState::hidden)) { return; }
-	svc.player_dat.piggy_id == get_id() ? state_flags.set(NPCState::piggybacking) : state_flags.reset(NPCState::piggybacking);
+	// NANI_LOG_DEBUG(m_logger, "NPC exists!");
+	// svc.player_dat.piggy_id == get_id() ? state_flags.set(NPCState::piggybacking) : state_flags.reset(NPCState::piggybacking);
 	if (abs(collider.physics.velocity.x) > physical.walk_threshold) {}
 
 	m_indicator.tick();

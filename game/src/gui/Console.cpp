@@ -8,8 +8,8 @@
 namespace fornani::gui {
 
 Console::Console(automa::ServiceProvider& svc)
-	: m_npc_portrait(svc), m_nani_portrait(svc, false), m_services(&svc), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard", 64}, m_styling{.corner_factor{28}, .edge_factor{1}, .padding_scale{1.1f}},
-	  m_nineslice(svc, svc.assets.get_texture("blue_console"), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}), m_mode{ConsoleMode::writing}, m_response_offset{-48.f, 16.f},
+	: m_services(&svc), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard", 64}, m_styling{.corner_factor{28}, .edge_factor{1}, .padding_scale{1.1f}},
+	  m_nineslice(svc, svc.assets.get_texture("blue_console"), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}), m_mode{ConsoleMode::writing}, m_response_offset{-64.f, 16.f},
 	  m_exit_stall{650} {
 	text_suite = svc.text.console;
 	m_path.set_section("open");
@@ -27,11 +27,10 @@ Console::Console(automa::ServiceProvider& svc, dj::Json const& source, std::stri
 }
 
 void Console::update(automa::ServiceProvider& svc) {
-	m_began = false;
 	m_exit_stall.update();
 	if (!is_active()) { return; }
 	if (!m_writer) { return; }
-
+	m_began = false;
 	handle_inputs(svc.controller_map);
 	if (is_active()) { m_path.update(); }
 	if (m_path.finished() && m_writer) {
@@ -56,23 +55,15 @@ void Console::update(automa::ServiceProvider& svc) {
 
 	// check for response or message code
 	bool processed{};
-	bool processed_after{};
-	for (auto& code : m_codes) {
-		if (code.set == m_writer->get_current_suite_set() && code.index == m_writer->get_index() && m_writer) {
+	if (auto codes = get_message_codes()) {
+		for (auto& code : codes.value()) {
 			if (code.is_response() && m_writer->is_available()) { m_writer->respond(); }
 			if (code.is_input_hint()) {
 				auto action_id = code.extras ? code.extras->at(0) : 0;
 				auto lookup = m_services->controller_map.get_icon_lookup_by_action(static_cast<config::DigitalAction>(action_id));
 				m_writer->insert_icon_at(code.value, lookup);
 			}
-			if (code.is_reveal_item() && m_process_codes) {
-				svc.events.dispatch_event("RevealItem", code.value);
-				m_process_codes = false;
-			}
-			if (code.is_start_battle() && m_process_code_after) {
-				svc.events.dispatch_event("StartBattle", code.value);
-				processed_after = true;
-			}
+
 			if (code.is_pop_conversation() && m_process_code_before) {
 				svc.events.dispatch_event("PopConversation", code.value);
 				svc.quest_table.progress_quest("npc_dialogue", 1, -1, code.value);
@@ -83,8 +74,8 @@ void Console::update(automa::ServiceProvider& svc) {
 				NANI_LOG_DEBUG(m_logger, "Voice!");
 				processed = true;
 			}
-			if (code.is_emotion() && m_process_code_before) {
-				m_npc_portrait.set_emotion(code.value);
+			if (code.is_emotion() && m_process_code_before && m_npc_portrait) {
+				m_npc_portrait->set_emotion(code.value);
 				NANI_LOG_DEBUG(m_logger, "Emotion!");
 				processed = true;
 			}
@@ -98,20 +89,21 @@ void Console::update(automa::ServiceProvider& svc) {
 			}
 		}
 	}
+
 	if (processed) { m_process_code_before = false; }
-	m_npc_portrait.update(svc);
-	m_nani_portrait.update(svc);
+	if (m_npc_portrait) { m_npc_portrait->update(svc); }
+	if (m_nani_portrait) { m_nani_portrait->update(svc); }
 }
 
 void Console::render(sf::RenderWindow& win) {
-	// debug();
+	debug();
 	if (!m_writer || !is_active()) { return; }
 	m_nineslice.render(win);
 	if (m_item_widget) { m_item_widget->render(*m_services, win); }
-	if (m_flags.test(ConsoleFlags::portrait_included)) {
-		m_npc_portrait.render(win);
-		m_mode == ConsoleMode::responding ? m_nani_portrait.bring_in() : m_nani_portrait.send_out();
-		m_nani_portrait.render(win);
+	if (m_npc_portrait) { m_npc_portrait->render(win); }
+	if (m_nani_portrait) {
+		m_nani_portrait->render(win);
+		m_mode == ConsoleMode::responding ? m_nani_portrait->bring_in() : m_nani_portrait->send_out();
 	}
 	if (m_response) { m_response->render(win); }
 	// m_writer->debug();
@@ -119,7 +111,7 @@ void Console::render(sf::RenderWindow& win) {
 
 void Console::set_source(dj::Json const& json) { text_suite = json; }
 
-void Console::set_nani_sprite(sf::Sprite const& sprite) { m_nani_portrait.set_texture(sprite.getTexture()); }
+void Console::set_nani_sprite(sf::Sprite const& sprite) { m_nani_portrait = Portrait(*m_services, sprite.getTexture(), 5, false); }
 
 void Console::handle_actions(int value) {
 	switch (value) {
@@ -155,8 +147,6 @@ void Console::load_and_launch(std::string_view key, OutputType type) {
 	}
 	m_output_type = type;
 	native_key = key;
-	m_npc_portrait.reset(*m_services);
-	m_nani_portrait.reset(*m_services);
 }
 
 void Console::load_single_message(std::string_view message) { m_writer = std::make_unique<TextWriter>(*m_services, message); }
@@ -181,14 +171,12 @@ void Console::end() {
 	m_writer = {};
 }
 
-void Console::include_portrait(int id) {
-	m_flags.set(ConsoleFlags::portrait_included);
-	m_npc_portrait.set_id(id);
-}
+void Console::include_portrait(int id) { m_npc_portrait = Portrait{*m_services, id}; }
 
 std::string Console::get_key() const { return native_key; }
 
 void Console::handle_inputs(config::ControllerMap& controller) {
+	m_triggers = {};
 	m_process_code_after = false;
 	if (m_exit_stall.running()) { return; }
 	auto const& up = controller.digital_action_status(config::DigitalAction::menu_up).triggered;
@@ -240,27 +228,42 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 
 	// create response dialog
 	if (next && m_writer->is_responding() && !responded) {
-		// create a response dialog, feed it inputs, and await its closure before resuming m_writer
-		m_response = ResponseDialog(m_services->text, text_suite, native_key, get_message_code().value, m_position + m_response_offset);
-		m_mode = ConsoleMode::responding;
-		m_writer->wait();
-		m_services->soundboard.flags.console.set(audio::Console::next);
-		return;
-	}
 
-	// go to next message or exit
-	if ((next && m_writer->is_ready()) || responded) {
-		auto code = get_message_code();
-		if (code.is_redirect() && !responded) {
-			m_writer->set_suite(code.value);
-			if (code.extras) { m_writer->set_index(code.extras.value()[0]); }
-		}
-		m_services->soundboard.flags.console.set(audio::Console::next);
-		for (auto& code : m_codes) {
-			if (code.set == m_writer->get_current_suite_set() && code.index == m_writer->get_index()) {
-				if (get_message_code().is_start_battle()) { m_services->events.dispatch_event("StartBattle", get_message_code().value); }
+		if (auto codes = get_message_codes()) {
+			for (auto& code : codes.value()) {
+				if (code.is_response()) {
+					// create a response dialog, feed it inputs, and await its closure before resuming m_writer
+					m_response = ResponseDialog(m_services->text, text_suite, native_key, code.value, m_position + m_response_offset);
+					m_mode = ConsoleMode::responding;
+					m_writer->wait();
+					m_services->soundboard.flags.console.set(audio::Console::next);
+					m_triggers.set(ConsoleTriggers::response_created);
+					return;
+				}
 			}
 		}
+	}
+
+	// player presses next at end of message
+	if ((next && m_writer->is_ready()) || responded) {
+
+		// process message codes that should trigger at the end of a message
+
+		if (auto codes = get_message_codes()) {
+			for (auto& code : codes.value()) {
+				if (code.is_redirect() && !responded) {
+					m_writer->set_suite(code.value);
+					if (code.extras) { m_writer->set_index(code.extras.value()[0]); }
+				}
+				if (code.is_start_battle()) { m_services->events.dispatch_event("StartBattle", code.value); }
+				if (code.is_reveal_item() && m_process_codes) { m_services->events.dispatch_event("RevealItem", code.value); }
+				if (code.is_item() && m_process_code_after) { m_services->events.dispatch_event("GivePlayerItem", code.value, 1); }
+				m_services->soundboard.flags.console.set(audio::Console::next);
+				NANI_LOG_DEBUG(m_logger, "Requested next with code {}", code.value);
+			}
+		}
+
+		// go to next message or exit
 		finished = m_writer->request_next();
 		m_process_code_before = finished;
 		m_process_code_after = true;
@@ -276,8 +279,6 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 
 	if (finished) {
 		if (m_writer->exit_requested()) {
-			auto current_code = get_message_code();
-			if (current_code.is_item() && m_process_code_after) { m_services->events.dispatch_event("GivePlayerItem", current_code.value, 1); }
 			end();
 			m_process_code_before = false;
 		}
@@ -285,30 +286,42 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 }
 
 void Console::debug() {
-	ImGui::SetNextWindowSize(ImVec2{256.f, 128.f});
+	ImGui::SetNextWindowSize(ImVec2{256.f, 256.f});
 	if (ImGui::Begin("Console Debug")) {
+		m_nani_portrait ? ImGui::Text("Nani Included") : ImGui::Text("<no nani portrait>");
 		if (m_response) {
 			ImGui::Text("Response Selection: %i", m_response->get_selection());
 			get_response_code(m_response->get_selection()).debug();
+		} else {
 			ImGui::Separator();
+			ImGui::Text("<no response>");
 		}
-		if (m_writer) { get_message_code().debug(); }
+		if (m_writer) {
+			if (auto codes = get_message_codes()) {
+				for (auto& code : codes.value()) { code.debug(); }
+			}
+		} else {
+			ImGui::Separator();
+			ImGui::Text("<no writer>");
+		}
 		ImGui::End();
 	}
 }
 
-auto Console::get_message_code() const -> MessageCode {
+auto Console::get_message_codes() const -> std::optional<std::vector<MessageCode>> {
+	auto ret = std::vector<MessageCode>{};
 	for (auto& code : m_codes) {
-		if (code.index == m_writer->get_index() && code.source == CodeSource::suite && code.set == m_writer->get_current_suite_set()) { return code; }
+		if (code.index == m_writer->get_index() && code.source == CodeSource::suite && code.set == m_writer->get_current_suite_set()) { ret.push_back(code); }
 	}
-	return MessageCode();
+	if (!ret.empty()) { return ret; }
+	return std::nullopt;
 }
 
-auto Console::get_previous_message_code() const -> MessageCode {
+auto Console::get_previous_message_code() const -> std::optional<MessageCode> {
 	for (auto& code : m_codes) {
 		if (code.index == m_writer->get_index() - 1 && code.source == CodeSource::suite && code.set == m_writer->get_current_suite_set() - 1) { return code; }
 	}
-	return MessageCode();
+	return std::nullopt;
 }
 
 auto Console::get_response_code(int which) const -> MessageCode {
@@ -320,6 +333,7 @@ auto Console::get_response_code(int which) const -> MessageCode {
 }
 
 void MessageCode::debug() {
+	ImGui::SeparatorText("Message Code");
 	ImGui::Text("Source: %s", source == CodeSource::suite ? "suite" : "response");
 	ImGui::Text("Index: %i", index);
 	ImGui::Text("Type: %i", static_cast<int>(type));
@@ -327,7 +341,6 @@ void MessageCode::debug() {
 	if (extras) {
 		for (auto& extra : *extras) { ImGui::Text("Extra: %i", extra); }
 	}
-	ImGui::Separator();
 }
 
 } // namespace fornani::gui

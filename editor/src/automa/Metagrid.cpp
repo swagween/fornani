@@ -103,8 +103,6 @@ void Metagrid::render(sf::RenderWindow& win) {
 	auto view = std::span<Room>(m_rooms);
 	if (!pressed_keys.test(PressedKeys::mouse_left) && !menu_open && !window_hovered) { m_highlighted_room = &view[it]; }
 
-	m_tool->render(win);
-
 	// ImGui stuff
 	bool options_popup{clicked && found_one && m_tool->is(MetagridToolType::cursor)};
 	if (ImGui::BeginMainMenuBar()) {
@@ -198,6 +196,8 @@ void Metagrid::render(sf::RenderWindow& win) {
 		if (!m_highlighted_room.value()->serialize(*p_services)) { NANI_LOG_INFO(p_logger, "Failed to save metadata for {}", m_highlighted_room.value()->get_label()); }
 		serialize = false;
 	}
+
+	m_tool->render(win);
 }
 
 } // namespace pi
