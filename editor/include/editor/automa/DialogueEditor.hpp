@@ -25,6 +25,7 @@ class DialogueEditor final : public EditorState {
 	sf::Vector2f m_current_mouse_position{};
 	std::unique_ptr<MetagridTool> m_tool;
 	std::optional<DialogueSuite> m_suite{};
+	std::optional<Node> m_current_node{};
 	dj::Json* m_data;
 };
 

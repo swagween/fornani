@@ -38,7 +38,9 @@ struct MessageCode {
 	MessageCodeType type{};
 	int value{};
 	std::optional<std::vector<int>> extras{};
+
 	void debug();
+
 	[[nodiscard]] auto is_exit() const -> bool { return type == MessageCodeType::exit; }
 	[[nodiscard]] auto is_response() const -> bool { return source == CodeSource::suite && type == MessageCodeType::response; }
 	[[nodiscard]] auto is_redirect() const -> bool { return source == CodeSource::suite && type == MessageCodeType::redirect; }
@@ -52,6 +54,11 @@ struct MessageCode {
 	[[nodiscard]] auto is_voice_cue() const -> bool { return type == MessageCodeType::voice; }
 	[[nodiscard]] auto is_emotion() const -> bool { return type == MessageCodeType::emotion; }
 	[[nodiscard]] auto is_pop_conversation() const -> bool { return type == MessageCodeType::pop_conversation; }
+
+	// editor helpers
+	void mark_for_deletion() { delete_me = true; }
+	[[nodiscard]] auto is_marked_for_deletion() const -> bool { return delete_me; }
+	bool delete_me{};
 };
 
 class Console {

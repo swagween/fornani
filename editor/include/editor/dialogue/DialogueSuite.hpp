@@ -3,66 +3,49 @@
 
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
+#include <editor/dialogue/Node.hpp>
 #include <fornani/graphics/Colors.hpp>
 #include <fornani/gui/Console.hpp>
 #include <string_view>
 
 namespace pi {
 
-class Node {
-  public:
-	Node(sf::Font const& font, std::string_view message) : m_text{sf::Text{font}} {
-		if (m_text) {
-			m_text->setString(message.data());
-			m_text->setFillColor(fornani::colors::nani_white);
-			m_text->setCharacterSize(10);
-			box.setSize(m_text->getLocalBounds().size * 1.5f);
-		}
-		box.setOutlineColor(fornani::colors::blue);
-		box.setOutlineThickness(2.f);
-		box.setFillColor(fornani::colors::dark_grey);
-	}
-
-	void render(sf::RenderWindow& win, sf::Vector2f cam) {
-		box.setPosition(m_position - cam);
-		win.draw(box);
-		if (m_text) {
-			m_text->setPosition(m_position - cam);
-			win.draw(*m_text);
-		}
-	}
-
-	void set_position(sf::Vector2f to) { m_position = to; }
-
-	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_position; }
-	[[nodiscard]] auto get_size() const -> sf::Vector2f { return box.getLocalBounds().size; }
-
-  private:
-	sf::Vector2f m_position{};
-	std::optional<sf::Text> m_text;
-	sf::RectangleShape box{};
-};
-
 class DialogueSuite {
   public:
-	DialogueSuite(sf::Font const& font, dj::Json const& in, std::string_view host, std::string_view tag);
+	DialogueSuite(sf::Font& font, dj::Json const& in, std::string_view host, std::string_view tag);
 	void serialize(dj::Json& out);
 
-	void add_message(std::string_view message, int set_index = 0, int message_index = 0);
-
+	void add_message(std::string_view message, NodeType type, int set_index = 0, int message_index = 0);
+	void add_code(fornani::gui::MessageCodeType type, int value);
+	void update(sf::Vector2f position);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 
+	void swap_node(Node other);
+	void unhover_all();
+
+	// ImGui
+	void print_codes();
+
+	[[nodiscard]] auto get_current_node() const -> std::optional<Node>;
 	[[nodiscard]] auto get_host() const& -> std::string { return m_host; }
 	[[nodiscard]] auto get_tag() const& -> std::string { return m_tag; }
+	[[nodiscard]] auto get_current_set() const -> std::size_t { return m_current_set; }
+	[[nodiscard]] auto get_current_index() const -> std::size_t { return m_current_index; }
+	[[nodiscard]] auto is_any_node_hovered() const -> bool;
 
   private:
 	std::string m_host{};
 	std::string m_tag{};
 
-	std::vector<std::vector<Node>> m_nodes;
-	std::vector<std::vector<std::string>> m_suite{};
-	std::vector<std::vector<std::string>> m_responses{};
-	std::vector<std::vector<fornani::gui::MessageCode>> m_codes{};
+	NodeType m_current_type{};
+	std::size_t m_current_set{};
+	std::size_t m_current_index{};
+
+	std::vector<NodeSet> m_suite;
+	std::vector<NodeSet> m_responses;
+	std::vector<fornani::gui::MessageCode> m_codes{};
+
+	sf::Font* m_font;
 };
 
 } // namespace pi

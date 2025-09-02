@@ -1,7 +1,13 @@
 {
   "alba": {
     "2": {
-      "suite": [["welcome to suite 2"], ["second set", "another message"]]
+      "codes": [
+        [1, 0, 0, 1, 4],
+        [1, 0, 0, 1, 0],
+        [0, 2, 0, 1, 2]
+      ],
+      "responses": [["I'm nineteen.", "I'm seven."]],
+      "suite": [["Too young to party."], ["stay"], ["again"]]
     },
     "3": {
       "suite": [["test..."], ["hello", "this is a longer message"]]

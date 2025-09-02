@@ -14,6 +14,9 @@ static bool clicked{};
 static bool new_file{};
 static bool open_file{};
 static bool add_message{};
+static bool edit_message{};
+static bool add_code{};
+static bool is_any_node_hovered{};
 
 DialogueEditor::DialogueEditor(fornani::automa::ServiceProvider& svc) : EditorState(svc), m_tool{std::make_unique<Cursor>(svc)}, m_background_color{fornani::colors::pioneer_black}, m_data{&svc.text.npc} {
 	svc.data.load_data();
@@ -55,6 +58,8 @@ void DialogueEditor::handle_events(std::optional<sf::Event> event, sf::RenderWin
 			if (!pressed_keys.test(PressedKeys::mouse_left)) {
 				clicked = !menu_open;
 				m_left_clicked_position = sf::Vector2f{m_current_mouse_position - m_camera};
+				if (m_suite) { is_any_node_hovered = m_suite->is_any_node_hovered(); }
+				if (!is_any_node_hovered) { clicked = false; }
 			}
 			pressed_keys.set(PressedKeys::mouse_left);
 		}
@@ -78,11 +83,15 @@ void DialogueEditor::logic() {
 	if (pressed_keys.test(PressedKeys::mouse_right)) { m_camera += m_current_mouse_position - m_dragged_position; }
 	m_dragged_position = sf::Vector2f{m_current_mouse_position};
 	m_tool->update(m_current_mouse_position);
+	if (m_suite) { m_suite->update(m_current_mouse_position); }
 }
 
 void DialogueEditor::render(sf::RenderWindow& win) {
 
+	menu_open = false;
+
 	// ImGui stuff
+	bool options_popup{clicked && m_tool->is(MetagridToolType::cursor)};
 
 	// main toolbar
 	auto PAD = 28.f;
@@ -92,8 +101,19 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 	ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, {1.f, 0.f});
 	if (ImGui::Begin("Info", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration)) {
 		if (m_suite) {
+			ImGui::SeparatorText("General");
 			ImGui::Text("Host NPC: %s", m_suite->get_host().c_str());
 			ImGui::Text("Tag: %s", m_suite->get_tag().c_str());
+			ImGui::Text("Current Set: %i", m_suite->get_current_set());
+			ImGui::Text("Current Index: %i", m_suite->get_current_index());
+			ImGui::SeparatorText("Codes");
+			m_suite->print_codes();
+			ImGui::SeparatorText("Debug");
+			if (ImGui::TreeNode("Flags")) {
+				ImGui::Text("Any Node Hovered: %s", is_any_node_hovered ? "True" : "False");
+				ImGui::Text("Menu Open: %s", menu_open ? "True" : "False");
+				ImGui::TreePop();
+			}
 		}
 		ImGui::End();
 	}
@@ -108,13 +128,29 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 		ImGui::EndMainMenuBar();
 	}
 
+	if (ImGui::BeginPopupContextWindow("Node Options")) {
+		menu_open = true;
+		if (ImGui::MenuItem("Edit")) {
+			if (m_suite) {
+				if (m_current_node = m_suite->get_current_node()) { edit_message = true; }
+			}
+		}
+		if (ImGui::MenuItem("Add Code")) {
+			if (m_suite) {
+				if (m_current_node = m_suite->get_current_node()) { add_code = true; }
+			}
+		}
+		ImGui::EndPopup();
+	}
+
 	if (add_message) {
 		static char messagebuf[512] = "";
 		ImGui::OpenPopup("New Message");
 		if (ImGui::BeginPopupModal("New Message", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+			menu_open = true;
 			ImGui::InputTextWithHint("Message", "message...", messagebuf, IM_ARRAYSIZE(messagebuf));
 			if (ImGui::Button("Add")) {
-				if (m_suite) { m_suite->add_message(messagebuf); }
+				if (m_suite) { m_suite->add_message(messagebuf, NodeType::suite); }
 				ImGui::CloseCurrentPopup();
 				add_message = false;
 			}
@@ -126,11 +162,88 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 		}
 	}
 
+	if (add_code) {
+		ImGui::OpenPopup("Add Code");
+		add_code = false;
+	}
+	static char messagebuf[512] = "";
+	if (edit_message && is_any_node_hovered) {
+		ImGui::OpenPopup("Edit Message");
+		std::strncpy(messagebuf, m_current_node->get_message().c_str(), sizeof(messagebuf) - 1);
+		messagebuf[sizeof(messagebuf) - 1] = '\0';
+		edit_message = false;
+	}
+	if (m_current_node) {
+		if (ImGui::BeginPopupModal("Edit Message", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+			options_popup = false;
+			ImGui::InputTextWithHint("Message", "message...", messagebuf, IM_ARRAYSIZE(messagebuf));
+			if (ImGui::Button("Apply")) {
+				auto to_node = Node(p_services->text.fonts.basic, messagebuf, m_current_node->get_type());
+				if (m_suite) { m_suite->swap_node(to_node); }
+				ImGui::CloseCurrentPopup();
+			}
+			if (ImGui::Button("Cancel")) { ImGui::CloseCurrentPopup(); }
+			ImGui::EndPopup();
+		}
+	} // tool node selection options
+	if (ImGui::BeginPopupContextWindow("Add Code")) {
+		menu_open = true;
+		static auto ri = 0;
+		options_popup = false;
+		if (ImGui::TreeNode("Response")) {
+			if (m_suite) {
+				ImGui::InputInt("Response Index", &ri);
+				if (ImGui::Button("Add")) {
+					m_suite->add_code(fornani::gui::MessageCodeType::response, ri);
+					ImGui::CloseCurrentPopup();
+				}
+			}
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Special")) {
+			if (m_suite) {
+				ImGui::SeparatorText("NPC Emotion");
+				ImGui::InputInt("Emotion", &ri);
+				if (ImGui::Button("Add##a")) {
+					m_suite->add_code(fornani::gui::MessageCodeType::emotion, ri);
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::SeparatorText("Pop Conversation");
+				ImGui::InputInt("NPC ID", &ri);
+				if (ImGui::Button("Add##b")) {
+					m_suite->add_code(fornani::gui::MessageCodeType::pop_conversation, ri);
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::SeparatorText("Give Item");
+				for (auto const& item : p_services->data.item.as_object()) {
+					if (ImGui::Selectable(item.first.c_str())) {
+						ri = item.second["id"].as<int>();
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+				if (ImGui::Button("Add##c")) {
+					m_suite->add_code(fornani::gui::MessageCodeType::item, ri);
+					ImGui::CloseCurrentPopup();
+				}
+			}
+			ImGui::TreePop();
+		}
+		if (ImGui::Button("Cancel")) { ImGui::CloseCurrentPopup(); }
+		ImGui::EndPopup();
+	}
+	if (options_popup) {
+		if (m_suite) {
+			ImGui::OpenPopup("Node Options");
+			clicked = false;
+		}
+	}
+
 	if (new_file) {
 		static char hostbuf[128] = "";
 		static char tagbuf[128] = "";
 		ImGui::OpenPopup("New Dialogue");
 		if (ImGui::BeginPopupModal("New Dialogue", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+			menu_open = true;
 			ImGui::InputTextWithHint("NPC Name", "name", hostbuf, IM_ARRAYSIZE(hostbuf));
 			ImGui::InputTextWithHint("Tag", "tag", tagbuf, IM_ARRAYSIZE(tagbuf));
 			if (ImGui::Button("Create")) {
@@ -151,21 +264,20 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 		static std::string this_tag{};
 		ImGui::OpenPopup("Open Dialogue");
 		if (ImGui::BeginPopupModal("Open Dialogue", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+			menu_open = true;
 			for (auto const& [host, entry] : m_data->as_object()) {
 				if (ImGui::TreeNode(host.c_str())) {
 					for (auto const& [conversation, entry] : entry.as_object()) {
 						if (ImGui::Selectable(conversation.c_str())) {
 							this_tag = conversation;
 							this_host = host;
+							m_suite = DialogueSuite{p_services->text.fonts.basic, *m_data, this_host, this_tag};
+							ImGui::CloseCurrentPopup();
+							open_file = false;
 						}
 					}
 					ImGui::TreePop();
 				}
-			}
-			if (ImGui::Button("Open")) {
-				m_suite = DialogueSuite{p_services->text.fonts.config, *m_data, this_host, this_tag};
-				ImGui::CloseCurrentPopup();
-				open_file = false;
 			}
 			if (ImGui::Button("Close")) {
 				ImGui::CloseCurrentPopup();
@@ -175,7 +287,10 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 		}
 	}
 
-	if (m_suite) { m_suite->render(win, {-100.f, -100.f}); }
+	if (m_suite) {
+		if (menu_open) { m_suite->unhover_all(); }
+		m_suite->render(win, {-100.f, -100.f});
+	}
 	m_tool->render(win);
 }
 
