@@ -18,7 +18,6 @@ class DialogueEditor final : public EditorState {
   private:
 	void save();
 	sf::Color m_background_color;
-	sf::Vector2f m_camera{};
 	sf::Vector2f m_dragged_position{};
 	sf::Vector2f m_left_clicked_position{};
 	sf::Vector2f m_right_clicked_position{};
@@ -27,6 +26,8 @@ class DialogueEditor final : public EditorState {
 	std::optional<DialogueSuite> m_suite{};
 	std::optional<Node> m_current_node{};
 	dj::Json* m_data;
+
+	sf::Vector2f m_camera{-100.f, -100.f};
 };
 
 } // namespace pi

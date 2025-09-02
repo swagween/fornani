@@ -23,12 +23,36 @@
       }
     ]
   },
+  "dr_willett": {
+    "id": 2,
+    "dimensions": [24, 24],
+    "sprite_dimensions": [24, 24],
+    "sprite_offset": [0, -11],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 8, 30, -1, false]
+      },
+      {
+        "label": "walk",
+        "parameters": [8, 4, 24, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [0, 1, 32, 0, false]
+      },
+      {
+        "label": "inspect",
+        "parameters": [14, 2, 32, -1, false]
+      }
+    ]
+  },
 
   "gobe": {
     "id": 3,
     "dimensions": [24, 24],
-    "sprite_dimensions": [37, 32],
-    "sprite_offset": [13, -19],
+    "sprite_dimensions": [51, 32],
+    "sprite_offset": [25, -19],
     "animation": [
       {
         "label": "idle",

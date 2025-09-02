@@ -106,6 +106,26 @@
         ]
       }
     ],
+    "npcs": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 87398,
+        "label": "dr_willett",
+        "position": [
+          11,
+          16
+        ],
+        "suites": [
+          [
+            1,
+            2
+          ]
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,

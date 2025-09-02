@@ -17,11 +17,12 @@ class DialogueSuite {
 
 	void add_message(std::string_view message, NodeType type, int set_index = 0, int message_index = 0);
 	void add_code(fornani::gui::MessageCodeType type, int value);
-	void update(sf::Vector2f position);
+	void update(sf::Vector2f position, bool clicked);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 
 	void swap_node(Node other);
 	void unhover_all();
+	void deselect_all();
 
 	// ImGui
 	void print_codes();
@@ -32,6 +33,7 @@ class DialogueSuite {
 	[[nodiscard]] auto get_current_set() const -> std::size_t { return m_current_set; }
 	[[nodiscard]] auto get_current_index() const -> std::size_t { return m_current_index; }
 	[[nodiscard]] auto is_any_node_hovered() const -> bool;
+	[[nodiscard]] auto is_any_node_selected() const -> bool;
 
   private:
 	std::string m_host{};

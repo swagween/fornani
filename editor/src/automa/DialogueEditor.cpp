@@ -8,7 +8,6 @@
 
 namespace pi {
 
-static bool menu_open{};
 static bool window_hovered{};
 static bool clicked{};
 static bool new_file{};
@@ -17,6 +16,7 @@ static bool add_message{};
 static bool edit_message{};
 static bool add_code{};
 static bool is_any_node_hovered{};
+static bool is_any_node_selected{};
 
 DialogueEditor::DialogueEditor(fornani::automa::ServiceProvider& svc) : EditorState(svc), m_tool{std::make_unique<Cursor>(svc)}, m_background_color{fornani::colors::pioneer_black}, m_data{&svc.text.npc} {
 	svc.data.load_data();
@@ -29,8 +29,8 @@ EditorStateType DialogueEditor::run(char** argv) {
 	logic();
 
 	ImGuiIO& io = ImGui::GetIO();
-	window_hovered = ImGui::IsAnyItemHovered();
-	io.MouseDrawCursor = menu_open || window_hovered;
+	window_hovered = io.WantCaptureMouse;
+	io.MouseDrawCursor = window_hovered;
 	p_services->window->get().setMouseCursorVisible(io.MouseDrawCursor);
 
 	EditorState::render(p_services->window->get());
@@ -56,9 +56,11 @@ void DialogueEditor::handle_events(std::optional<sf::Event> event, sf::RenderWin
 		if (button_pressed->button == sf::Mouse::Button::Middle) { pressed_keys.set(PressedKeys::mouse_middle); }
 		if (button_pressed->button == sf::Mouse::Button::Left) {
 			if (!pressed_keys.test(PressedKeys::mouse_left)) {
-				clicked = !menu_open;
+				if (m_suite) { m_suite->deselect_all(); }
+				clicked = !window_hovered;
 				m_left_clicked_position = sf::Vector2f{m_current_mouse_position - m_camera};
 				if (m_suite) { is_any_node_hovered = m_suite->is_any_node_hovered(); }
+				if (m_suite) { is_any_node_selected = m_suite->is_any_node_selected(); }
 				if (!is_any_node_hovered) { clicked = false; }
 			}
 			pressed_keys.set(PressedKeys::mouse_left);
@@ -76,22 +78,25 @@ void DialogueEditor::handle_events(std::optional<sf::Event> event, sf::RenderWin
 		}
 		if (button_released->button == sf::Mouse::Button::Right) { pressed_keys.reset(PressedKeys::mouse_right); }
 	}
+	if (auto const* scrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
+		auto zoom_factor = 10.f;
+		auto delta = scrolled->delta * zoom_factor;
+		m_camera.y -= delta;
+	}
 }
 
 void DialogueEditor::logic() {
-	auto last_workspace_position = menu_open ? m_left_clicked_position : m_current_mouse_position;
-	if (pressed_keys.test(PressedKeys::mouse_right)) { m_camera += m_current_mouse_position - m_dragged_position; }
+	auto last_workspace_position = window_hovered ? m_left_clicked_position : m_current_mouse_position;
+	if (pressed_keys.test(PressedKeys::mouse_right)) { m_camera -= m_current_mouse_position - m_dragged_position; }
 	m_dragged_position = sf::Vector2f{m_current_mouse_position};
 	m_tool->update(m_current_mouse_position);
-	if (m_suite) { m_suite->update(m_current_mouse_position); }
+	if (m_suite) { m_suite->update(m_current_mouse_position, clicked); }
 }
 
 void DialogueEditor::render(sf::RenderWindow& win) {
 
-	menu_open = false;
-
 	// ImGui stuff
-	bool options_popup{clicked && m_tool->is(MetagridToolType::cursor)};
+	bool options_popup{clicked && m_tool->is(MetagridToolType::cursor) && is_any_node_hovered};
 
 	// main toolbar
 	auto PAD = 28.f;
@@ -108,12 +113,33 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 			ImGui::Text("Current Index: %i", m_suite->get_current_index());
 			ImGui::SeparatorText("Codes");
 			m_suite->print_codes();
-			ImGui::SeparatorText("Debug");
-			if (ImGui::TreeNode("Flags")) {
+			ImGui::Separator();
+			if (ImGui::TreeNode("Debug Flags")) {
 				ImGui::Text("Any Node Hovered: %s", is_any_node_hovered ? "True" : "False");
-				ImGui::Text("Menu Open: %s", menu_open ? "True" : "False");
+				ImGui::Text("Any Node Selected: %s", is_any_node_selected ? "True" : "False");
+				ImGui::Text("Window Hovered: %s", window_hovered ? "True" : "False");
 				ImGui::TreePop();
 			}
+		}
+		static std::string this_host{};
+		static std::string this_tag{};
+		ImGui::SeparatorText("Library");
+		if (ImGui::TreeNode("Open Dialogue")) {
+			for (auto const& [host, entry] : m_data->as_object()) {
+				if (ImGui::TreeNode(host.c_str())) {
+					for (auto const& [conversation, entry] : entry.as_object()) {
+						if (ImGui::Selectable(conversation.c_str())) {
+							this_tag = conversation;
+							this_host = host;
+							m_suite = DialogueSuite{p_services->text.fonts.basic, *m_data, this_host, this_tag};
+							ImGui::CloseCurrentPopup();
+							open_file = false;
+						}
+					}
+					ImGui::TreePop();
+				}
+			}
+			ImGui::TreePop();
 		}
 		ImGui::End();
 	}
@@ -129,7 +155,6 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 	}
 
 	if (ImGui::BeginPopupContextWindow("Node Options")) {
-		menu_open = true;
 		if (ImGui::MenuItem("Edit")) {
 			if (m_suite) {
 				if (m_current_node = m_suite->get_current_node()) { edit_message = true; }
@@ -147,7 +172,6 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 		static char messagebuf[512] = "";
 		ImGui::OpenPopup("New Message");
 		if (ImGui::BeginPopupModal("New Message", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-			menu_open = true;
 			ImGui::InputTextWithHint("Message", "message...", messagebuf, IM_ARRAYSIZE(messagebuf));
 			if (ImGui::Button("Add")) {
 				if (m_suite) { m_suite->add_message(messagebuf, NodeType::suite); }
@@ -167,7 +191,7 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 		add_code = false;
 	}
 	static char messagebuf[512] = "";
-	if (edit_message && is_any_node_hovered) {
+	if (edit_message && is_any_node_selected) {
 		ImGui::OpenPopup("Edit Message");
 		std::strncpy(messagebuf, m_current_node->get_message().c_str(), sizeof(messagebuf) - 1);
 		messagebuf[sizeof(messagebuf) - 1] = '\0';
@@ -187,7 +211,6 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 		}
 	} // tool node selection options
 	if (ImGui::BeginPopupContextWindow("Add Code")) {
-		menu_open = true;
 		static auto ri = 0;
 		options_popup = false;
 		if (ImGui::TreeNode("Response")) {
@@ -243,7 +266,6 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 		static char tagbuf[128] = "";
 		ImGui::OpenPopup("New Dialogue");
 		if (ImGui::BeginPopupModal("New Dialogue", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-			menu_open = true;
 			ImGui::InputTextWithHint("NPC Name", "name", hostbuf, IM_ARRAYSIZE(hostbuf));
 			ImGui::InputTextWithHint("Tag", "tag", tagbuf, IM_ARRAYSIZE(tagbuf));
 			if (ImGui::Button("Create")) {
@@ -264,7 +286,6 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 		static std::string this_tag{};
 		ImGui::OpenPopup("Open Dialogue");
 		if (ImGui::BeginPopupModal("Open Dialogue", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-			menu_open = true;
 			for (auto const& [host, entry] : m_data->as_object()) {
 				if (ImGui::TreeNode(host.c_str())) {
 					for (auto const& [conversation, entry] : entry.as_object()) {
@@ -288,8 +309,8 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 	}
 
 	if (m_suite) {
-		if (menu_open) { m_suite->unhover_all(); }
-		m_suite->render(win, {-100.f, -100.f});
+		if (window_hovered) { m_suite->unhover_all(); }
+		m_suite->render(win, m_camera);
 	}
 	m_tool->render(win);
 }

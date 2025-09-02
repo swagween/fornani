@@ -18,93 +18,95 @@
       "suite": [["Hnnngh..."]]
     }
   },
-  "bit1": {
-    "responses": [["Sure.%0", "I had better get going...%1"]],
-    "suite": [
-      [
-        "...$3#20#1#",
-        "Psst... Hey!",
-        "Hey, you!",
-        "I don't know how you managed to escape your cell, but, er... I'm in a bit of a bind here, as you can see.",
-        "Would you help me out?%0"
-      ],
-      [
-        "I appreciate it... you know, I'll owe you big time if you can manage to get me outta here.",
-        "You might find the key to this cell lying around the ship somewhere.",
-        "If you do, you should be able to use it on that there door and let me free!"
-      ],
-      ["Well uh... okay. If you change your mind, you'll know where to find me."]
-    ]
-  },
-  "bit2": {
-    "responses": [["Where are we?%0"]],
-    "suite": [
-      [
-        "Listen, I don't wanna rush you, but...",
-        "I'm starting to get pretty hungry, and I haven't seen the jailer in a few days...%0"
-      ],
-      [
-        "I'm not gonna sugarcoat it. We're in prison.",
-        "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!",
-        "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below.",
-        "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here."
+  "bit": {
+    "1": {
+      "responses": [["Sure.", "I had better get going..."]],
+      "suite": [
+        [
+          "...",
+          "Psst... Hey!",
+          "Hey, you!",
+          "I don't know how you managed to escape your cell, but, er... I'm still in a bit of a bind here myself.",
+          "Would you help me out?"
+        ],
+        [
+          "I appreciate it... you know, I'll owe you big time if you can manage to get me outta here.",
+          "You might find the key to this cell lying around the ship somewhere.",
+          "If you do, you should be able to use it on that there door and let me free!"
+        ],
+        ["Well uh... okay. If you change your mind, you'll know where to find me."]
       ]
-    ]
-  },
-  "bit3": {
-    "responses": [],
-    "suite": [
-      [
-        "Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya."
+    },
+    "2": {
+      "responses": [["Where are we?"]],
+      "suite": [
+        [
+          "Listen, I don't wanna rush you, but...",
+          "I'm starting to get pretty hungry, and I haven't seen the jailer in a few days..."
+        ],
+        [
+          "I'm not gonna sugarcoat it. We're in prison.",
+          "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!",
+          "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below.",
+          "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here."
+        ]
       ]
-    ]
-  },
-  "bit4": {
-    "responses": [],
-    "suite": [
-      [
-        "I can't believe it... You actually did it!$33#12#2#",
-        "I really can't thank you enough...",
-        "Heh, like I said... I owe you big time!$3#20#2#1#2#"
+    },
+    "3": {
+      "responses": [],
+      "suite": [
+        [
+          "Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya."
+        ]
       ]
-    ]
-  },
-  "bit5": {
-    "responses": [],
-    "suite": [
-      [
-        "...",
-        "I, er... I'll have to gather some stuff here before I head out. But I'll be right behind ya!"
+    },
+    "4": {
+      "responses": [],
+      "suite": [
+        [
+          "I can't believe it... You actually did it!",
+          "I really can't thank you enough...",
+          "Heh, like I said... I owe you big time!"
+        ]
       ]
-    ]
-  },
-  "bit6": {
-    "responses": [],
-    "suite": [
-      [
-        "Listen, I don't exactly have much to give you right now.",
-        "I'm sure you understand...",
-        "But! Fear not! If we bump into each other again someday, I'll have something for you!"
+    },
+    "5": {
+      "responses": [],
+      "suite": [
+        [
+          "...",
+          "I, er... I'll have to gather some stuff here before I head out. But I'll be right behind ya!"
+        ]
       ]
-    ]
-  },
-  "bit7": {
-    "responses": [],
-    "suite": [["Heh... See ya around!"]]
-  },
-  "bit8": {
-    "responses": [],
-    "suite": [["Thanks again for helping me. Stay safe out there!"]]
-  },
-  "bit9": {
-    "responses": [],
-    "suite": [
-      [
-        "I can't believe it... You actually did it!$33#12#2#",
-        "I really can't thank you enough, stranger!",
-        "Heh, I guess I owe you big time!$3#20#2#1#2#"
+    },
+    "6": {
+      "responses": [],
+      "suite": [
+        [
+          "Listen, I don't exactly have much to give you right now.",
+          "I'm sure you understand...",
+          "But! Fear not! If we bump into each other again someday, I'll have something for you!"
+        ]
       ]
-    ]
+    },
+    "7": {
+      "responses": [],
+      "suite": [["Heh... See ya around!"]]
+    },
+    "8": {
+      "responses": [],
+      "suite": [["Thanks again for helping me. Stay safe out there!"]]
+    },
+    "9": {
+      "responses": [],
+      "suite": [
+        [
+          "I can't believe it... You actually did it!",
+          "I really can't thank you enough, stranger!",
+          "Heh, I guess I owe you big time!"
+        ]
+      ]
+    }
   },
   "bryn": {
     "1": {
@@ -166,7 +168,7 @@
         [
           "Another long story, but that one I at least owe it to tell you...",
           "Willett and I were taking her over from Grand Island to do some research in places just like these.",
-          "Then, one night, we and our crew were raided by pirates--or, what we thought were pirates.",
+          "Then, one night, we and our crew were raided by pirates - or, what we thought were pirates.",
           "Turns out, it was Skycorps. Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us.",
           "Luckily Doc had an escape plan, but unfortunately that plan didn't include you or anyone else on the crew.",
           "Skycorps had already tossed most of us in holding cells, but Doc and I were wanted by higher-ups, so they kept us in the bridge.",
@@ -230,37 +232,6 @@
         ]
       ]
     }
-  },
-  "bryn1": {
-    "responses": [[]],
-    "suite": [["Who's there?"], ["Wait..."]]
-  },
-  "bryn2": {
-    "responses": [["That's me.%0", "How do you know?%1", "Firstwind...?%2"]],
-    "suite": [
-      ["You're that girl they took prisoner on Firstwind.%0"],
-      [
-        "Well, I don't know how you made it down here alive, but I suppose that's neither here nor there.",
-        "As it turns out, Doc Willet and I were prisoners there, too. A few weeks ago, Skycorps masqueraded as pirates and hijacked the ship from us.",
-        "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way."
-      ],
-      [
-        "Well, in a way, Doc Willet and I were prisoners there, too. A few weeks ago, Skycorps masqueraded as pirates and hijacked the ship from us.",
-        "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way."
-      ],
-      [
-        "It's our airship. Or, at least, it was our airship. A few weeks ago, Skycorps masqueraded as pirates and hijacked it from us.",
-        "We're just researchers come to study the discoveries of the old pioneers who originally setup camp here way back when. We never intended to step on Skycorps' toes, but I guess they didn't see it that way."
-      ]
-    ]
-  },
-  "bryn3": {
-    "responses": [[]],
-    "suite": [
-      [
-        "If you're looking for a place to rest, you're welcome to use my bedroom. It's the second door on the left."
-      ]
-    ]
   },
   "carl": {
     "1": {
@@ -344,6 +315,126 @@
           "This is the infirmary.",
           "Here, Mirin and I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around.",
           "Perhaps they all escaped and left us here to die."
+        ]
+      ]
+    }
+  },
+  "dr_willett": {
+    "1": {
+      "codes": [
+        [0, 1, 0, 1, 1],
+        [0, 2, 4, 1, 2],
+        [0, 3, 6, 1, 2],
+        [0, 0, 4, 1, 0],
+        [1, 0, 0, 1, 1],
+        [1, 1, 0, 1, 2],
+        [1, 1, 1, 1, 3],
+        [1, 2, 0, 1, 4],
+        [0, 4, 3, 2, 17],
+        [0, 4, 4, 13, 2]
+      ],
+      "responses": [
+        ["It sure is."],
+        ["Bryn left me a note.", "I had to fight my way out."],
+        ["I can try to find her."]
+      ],
+      "suite": [
+        [
+          "Good heavens!",
+          "Why, you scared me half to death. I don't know if my old heart can take many more such frights.",
+          "...",
+          "Do my eyes deceive me?",
+          "Is that really you, Nani?"
+        ],
+        [
+          "Well, I can't say I understand just how you got yourself off that ship, but I am impressed nonetheless."
+        ],
+        [
+          "Ah, yes... Bryn. My courageous student.",
+          "A touch too courageous, if you ask me!",
+          "The darling thing is trapped in a ruin.",
+          "Again.",
+          "I haven't had a transmission from her in a few days now, so I am beginning to worry."
+        ],
+        [
+          "I hadn't even noticed, you've got a gun!",
+          "Let me see...",
+          "Yes, I know this weapon. It belongs to Bryn, my courageous student.",
+          "A touch too courageous, if you ask me!",
+          "The darling thing is trapped in a ruin.",
+          "Again.",
+          "I haven't had a transmission from her in a few days now, so I am beginning to worry."
+        ],
+        [
+          "That would be excellent. Despite what it may seem, these old knees aren't much fit for spelunking!",
+          "Oh, before you go...",
+          "Have a look at this. It seems like it connects perfectly with that gizmo you've got at your hip!",
+          "With that, you should be able to track your lifeforce and see any gear you might be wearing.",
+          "Maybe it's not terribly useful for you, but it's taking up valuable space on my workbench."
+        ]
+      ]
+    },
+    "2": {
+      "codes": [
+        [0, 0, 0, 1, 0],
+        [0, 1, 3, 1, 0],
+        [0, 2, 4, 1, 0],
+        [0, 3, 0, 1, 1],
+        [0, 6, 5, 1, 2],
+        [1, 2, 0, 1, 7],
+        [1, 1, 2, 1, 6],
+        [1, 1, 1, 1, 5],
+        [1, 1, 0, 1, 4],
+        [1, 0, 2, 1, 3],
+        [1, 0, 1, 1, 2],
+        [1, 0, 0, 1, 1]
+      ],
+      "responses": [
+        ["Where are the ruins?", "What is this place?", "I'm curious..."],
+        ["Do you know where my brother is?", "Tell me about Bryn.", "Tell me about Skycorps."],
+        ["Caroline?"]
+      ],
+      "suite": [
+        ["So... Any luck finding Bryn?"],
+        [
+          "The ruins are southeast of here. You might need to do a bit of acrobatics to get there if you take the low road - in some areas, the overturned forest hangs precariously above the clouds.",
+          "Alternatively, you can take the high road, but it will be a much longer journey.",
+          "The ruins themselves are difficult to miss. There is a massive entrance ornamented with carvings of the ancient Kariba.",
+          "I heard your brother tell me stories of you two exploring them. I suppose you've since forgotten?"
+        ],
+        [
+          "This is an old base established by the long-dead pioneers who first discovered this island.",
+          "From what I gathered about what they left behind, they used it as an outpost of sorts to defend and hide against the native tribes who did not want them here.",
+          "I imagine that, after some time, they were either killed by the natives or simply died from a lack of resources.",
+          "Anyway, it seemed like the perfect spot for me and Bryn to find shelter after crash-landing in our escape pod.",
+          "We've been here for some months, now, ever on the run from Skycorps."
+        ],
+        ["Tell me what you'd like to know."],
+        [
+          "Well, that's a sore topic, to say the very least.",
+          "He stole a priceless artifact and ran off with it.",
+          "If you ever do find him, could you let him know that I'd like it back?"
+        ],
+        [
+          "Bryn is the brightest and hardest-working student I've ever met, apart perhaps from your brother.",
+          "But forgive me if I hesitate to laud him after the incident.",
+          "Anyway, Bryn was in my 'Anthropology of Ancient Peoples' seminar over on Grand Island some years back, and she's been joining me here on post-graduate expeditions to study the Ancient Kariba.",
+          "She's grown quite attached to her studies recently.",
+          "She reminds me a lot of myself when I was her age, in fact.",
+          "Let's just hope she doesn't make the same mistake I made and let some money-hungry corporation take advantage of her brilliant mind."
+        ],
+        [
+          "It's a mega-corporation that frankly doesn't know what it wants to be anymore.",
+          "You might be surprised to know that I was its co-founder.",
+          "Yes, that's right, co-founder!",
+          "But some years ago, Caroline and I had some disagreements about the company's mission, so I stepped down and opted to conduct some research on my own.",
+          "Ever since, Caroline and her indentured goons have been hunting me down and trying to steal the research that is rightfully mine.",
+          "It seems that's all anyone wants to do these days."
+        ],
+        [
+          "Lady Nimbus. Skycorps's CEO.",
+          "She would have done better to just leave me alone, but it's too late now.",
+          "I will take her and all of Skycorps down after what they've done!"
         ]
       ]
     }
@@ -488,21 +579,19 @@
       ]
     }
   },
-  "justin1": {
-    "responses": [],
-    "suite": [["Barf! Barf!"]]
-  },
-  "justin2": {
-    "responses": [["(Take the dog)$3#24#2#%0", "(Leave the dog)%1"]],
-    "suite": [
-      ["Barf! Barf!%0"],
-      ["Grrr...$3#3#2#", "Barf!!$200#24#1#", "Barf, barf!$201#24#1#"],
-      ["(Whine)"]
-    ]
-  },
-  "justin3": {
-    "responses": [],
-    "suite": [["Barf!"]]
+  "justin": {
+    "1": {
+      "responses": [],
+      "suite": [["Barf! Barf!"]]
+    },
+    "2": {
+      "responses": [["(Take the dog)", "(Leave the dog)"]],
+      "suite": [["Barf! Barf!"], ["Grrr...", "Barf!!", "Barf, barf!"], ["(Whine)"]]
+    },
+    "3": {
+      "responses": [],
+      "suite": [["Barf!"]]
+    }
   },
   "lady_nimbus": {
     "1": {

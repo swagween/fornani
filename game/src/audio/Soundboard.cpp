@@ -25,7 +25,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.console.test(Console::next)) { play(engine, svc, svc.sounds.get_buffer("menu_next")); }
 	if (flags.console.test(Console::shift)) { play(engine, svc, svc.sounds.get_buffer("menu_shift")); }
 	if (flags.console.test(Console::menu_open)) { play(engine, svc, svc.sounds.get_buffer("menu_open")); }
-	if (flags.console.test(Console::speech)) { play(engine, svc, svc.sounds.get_buffer("menu_shift"), 0.2f, 100.f, 16); }
+	if (flags.console.test(Console::speech)) { play(engine, svc, svc.sounds.get_buffer("menu_shift"), 0.15f, 100.f, 16); }
 
 	// pioneer
 	if (flags.pioneer.test(Pioneer::back)) { play(engine, svc, svc.sounds.get_buffer("pioneer_back")); }

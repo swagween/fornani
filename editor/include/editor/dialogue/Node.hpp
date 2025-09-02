@@ -15,10 +15,11 @@ class Node {
 	Node(sf::Font const& font, std::string_view message, NodeType type);
 	Node& operator=(Node const& other);
 
-	void update(sf::Vector2f position);
+	void update(sf::Vector2f position, bool clicked);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f to) { m_position = to; }
 	void set_hovered(bool to) { m_hovered = to; }
+	void set_selected(bool to) { m_selected = to; }
 	void set_message(std::string const& to) { m_text->setString(to); }
 
 	[[nodiscard]] auto get_message() const -> std::string { return m_text ? m_text->getString() : ""; }
@@ -26,6 +27,7 @@ class Node {
 	[[nodiscard]] auto get_size() const -> sf::Vector2f { return box.getLocalBounds().size; }
 	[[nodiscard]] auto get_type() const -> NodeType { return m_type; }
 	[[nodiscard]] auto is_hovered() const -> bool { return m_hovered; }
+	[[nodiscard]] auto is_selected() const -> bool { return m_selected; }
 
   private:
 	sf::Vector2f m_position{};
@@ -33,6 +35,7 @@ class Node {
 	sf::RectangleShape box{};
 	NodeType m_type{};
 	bool m_hovered{};
+	bool m_selected{};
 };
 
 struct NodeSet {
@@ -42,6 +45,7 @@ struct NodeSet {
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f to) { m_position = to; }
 	void unhover_all();
+	void deselect_all();
 
 	[[nodiscard]] auto get_size() const -> sf::Vector2f { return m_tab.getLocalBounds().size; }
 	[[nodiscard]] auto is(NodeType const comparison) const -> bool { return type == comparison; }

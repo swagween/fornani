@@ -258,7 +258,6 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 				if (code.is_start_battle()) { m_services->events.dispatch_event("StartBattle", code.value); }
 				if (code.is_reveal_item() && m_process_codes) { m_services->events.dispatch_event("RevealItem", code.value); }
 				if (code.is_item() && m_process_code_after) { m_services->events.dispatch_event("GivePlayerItem", code.value, 1); }
-				m_services->soundboard.flags.console.set(audio::Console::next);
 				NANI_LOG_DEBUG(m_logger, "Requested next with code {}", code.value);
 			}
 		}
@@ -269,6 +268,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 		m_process_code_after = true;
 		just_started = finished;
 		can_skip = false;
+		m_services->soundboard.flags.console.set(audio::Console::next);
 	}
 
 	// speed up text
@@ -279,6 +279,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 
 	if (finished) {
 		if (m_writer->exit_requested()) {
+			m_services->soundboard.flags.console.set(audio::Console::done);
 			end();
 			m_process_code_before = false;
 		}

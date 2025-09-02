@@ -75,15 +75,15 @@ void DialogueSuite::add_code(fornani::gui::MessageCodeType type, int value) {
 	m_codes.push_back(fornani::gui::MessageCode{source, set, index, type, value});
 }
 
-void DialogueSuite::update(sf::Vector2f position) {
+void DialogueSuite::update(sf::Vector2f position, bool clicked) {
 	auto previous_position = sf::Vector2f{};
 	auto buffer = 8.f;
 	for (auto const i : {0, 1}) {
 		auto& source = i == 0 ? m_suite : m_responses;
 		for (auto [n, node_set] : std::views::enumerate(source)) {
 			for (auto [i, node] : std::views::enumerate(node_set.nodes)) {
-				node.update(position);
-				if (node.is_hovered()) {
+				node.update(position, clicked);
+				if (node.is_selected()) {
 					m_current_type = node.get_type();
 					m_current_index = i;
 					m_current_set = n;
@@ -140,9 +140,28 @@ auto DialogueSuite::is_any_node_hovered() const -> bool {
 	return false;
 }
 
+auto DialogueSuite::is_any_node_selected() const -> bool {
+	for (auto& node_set : m_suite) {
+		for (auto& node : node_set.nodes) {
+			if (node.is_selected()) { return true; }
+		}
+	}
+	for (auto& node_set : m_responses) {
+		for (auto& node : node_set.nodes) {
+			if (node.is_selected()) { return true; }
+		}
+	}
+	return false;
+}
+
 void DialogueSuite::unhover_all() {
 	for (auto& node_set : m_suite) { node_set.unhover_all(); }
 	for (auto& node_set : m_responses) { node_set.unhover_all(); }
+}
+
+void DialogueSuite::deselect_all() {
+	for (auto& node_set : m_suite) { node_set.deselect_all(); }
+	for (auto& node_set : m_responses) { node_set.deselect_all(); }
 }
 
 } // namespace pi

@@ -27,12 +27,17 @@ Node& Node::operator=(Node const& other) {
 	return *this;
 }
 
-void Node::update(sf::Vector2f position) { m_hovered = box.getGlobalBounds().contains(position); }
+void Node::update(sf::Vector2f position, bool clicked) {
+	m_hovered = box.getGlobalBounds().contains(position);
+	if (m_hovered && clicked) { m_selected = true; }
+}
 
 void Node::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setPosition(m_position - cam);
-	m_hovered ? box.setFillColor(fornani::colors::pioneer_dark_red) : box.setFillColor(sf::Color::Transparent);
-	m_hovered ? box.setOutlineThickness(-4.f) : box.setOutlineThickness(-2.f);
+	m_hovered || m_selected ? box.setFillColor(fornani::colors::pioneer_dark_red) : box.setFillColor(sf::Color::Transparent);
+	m_hovered || m_selected ? box.setOutlineThickness(-4.f) : box.setOutlineThickness(-2.f);
+	m_type == NodeType::suite ? box.setOutlineColor(fornani::colors::pioneer_red) : box.setOutlineColor(fornani::colors::dark_goldenrod);
+	if (m_selected) { box.setOutlineColor(fornani::colors::ui_white); }
 	win.draw(box);
 	if (m_text) {
 		m_text->setPosition(box.getGlobalBounds().getCenter());
@@ -66,6 +71,10 @@ void NodeSet::render(sf::RenderWindow& win, sf::Vector2f cam) {
 
 void NodeSet::unhover_all() {
 	for (auto& node : nodes) { node.set_hovered(false); }
+}
+
+void NodeSet::deselect_all() {
+	for (auto& node : nodes) { node.set_selected(false); }
 }
 
 } // namespace pi
