@@ -1,6 +1,10 @@
+
 #pragma once
+
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/Collider.hpp"
+#include <fornani/shader/LightShader.hpp>
+#include <fornani/shader/Palette.hpp>
+#include <fornani/utils/Collider.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -23,7 +27,7 @@ class Spike {
 	Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vector2f position, sf::Vector2<int> direction, sf::Vector2f size, int style, bool random = false);
 	void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 	void handle_collision(shape::Collider& other) const;
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, std::optional<Palette>& palette, sf::Vector2f cam);
 	shape::Shape& get_bounding_box() { return collider.bounding_box; }
 	shape::Shape& get_hurtbox() { return collider.hurtbox; }
 

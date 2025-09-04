@@ -28,7 +28,7 @@
     }
   },
   "lantern": {
-    "luminosity": 4.9,
+    "luminosity": 1.9,
     "radius": 0.5,
     "attenuation_constant": 0.21,
     "attenuation_linear": 1.306,

@@ -94,6 +94,26 @@
         ]
       }
     ],
+    "npcs": [
+      {
+        "background": true,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 17613,
+        "label": "bit",
+        "position": [
+          13,
+          14
+        ],
+        "suites": [
+          [
+            1
+          ]
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,

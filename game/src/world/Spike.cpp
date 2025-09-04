@@ -72,10 +72,14 @@ void Spike::handle_collision(shape::Collider& other) const {
 	other.handle_collider_collision(collider);
 }
 
-void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, std::optional<Palette>& palette, sf::Vector2f cam) {
 	auto tweak = is_small() ? constants::f_resolution_vec : sf::Vector2f{};
 	sprite.setPosition(grid_position + tweak - cam);
-	win.draw(sprite);
+	if (shader && palette) {
+		shader->Submit(win, palette.value(), sprite);
+	} else {
+		win.draw(sprite);
+	}
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);
 		drawbox.setPosition(hitbox.get_position() - cam);

@@ -14,6 +14,8 @@ Node::Node(sf::Font const& font, std::string_view message, NodeType type) : m_te
 		m_text->setOrigin(m_text->getLocalBounds().getCenter());
 	}
 	type == NodeType::suite ? box.setOutlineColor(fornani::colors::pioneer_red) : box.setOutlineColor(fornani::colors::dark_goldenrod);
+	m_code_indicator.setSize({8.f, 8.f});
+	m_code_indicator.setOrigin(sf::Vector2f{box_buffer.x * 2.f, -box.getSize().y * 0.5f} + m_code_indicator.getLocalBounds().getCenter());
 }
 
 Node& Node::operator=(Node const& other) {
@@ -34,8 +36,10 @@ void Node::update(sf::Vector2f position, bool clicked) {
 
 void Node::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setPosition(m_position - cam);
+	m_code_indicator.setPosition(m_position - cam);
 	m_hovered || m_selected ? box.setFillColor(fornani::colors::pioneer_dark_red) : box.setFillColor(sf::Color::Transparent);
 	m_hovered || m_selected ? box.setOutlineThickness(-4.f) : box.setOutlineThickness(-2.f);
+	m_hovered || m_selected ? m_code_indicator.setFillColor(fornani::colors::periwinkle) : m_code_indicator.setFillColor(fornani::colors::dark_grey);
 	m_type == NodeType::suite ? box.setOutlineColor(fornani::colors::pioneer_red) : box.setOutlineColor(fornani::colors::dark_goldenrod);
 	if (m_selected) { box.setOutlineColor(fornani::colors::ui_white); }
 	win.draw(box);
@@ -43,6 +47,7 @@ void Node::render(sf::RenderWindow& win, sf::Vector2f cam) {
 		m_text->setPosition(box.getGlobalBounds().getCenter());
 		win.draw(*m_text);
 	}
+	if (m_coded) { win.draw(m_code_indicator); }
 }
 
 void NodeSet::update(sf::Vector2f position) {

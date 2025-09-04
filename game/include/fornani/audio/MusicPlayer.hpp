@@ -22,6 +22,7 @@ class MusicPlayer {
 	void quick_play(ResourceFinder const& finder, std::string_view song_name);
 	void load(ResourceFinder const& finder, std::string_view song_name);
 	void load(std::string_view path);
+	void play_song_by_id(ResourceFinder const& finder, int id);
 	void play_once();
 	void play_looped();
 	void update();
@@ -58,6 +59,8 @@ class MusicPlayer {
 		float lo_target{};
 		util::Cooldown fade{};
 	} m_filter{};
+
+	std::unordered_map<int, std::string> m_name_from_id{};
 
 	io::Logger m_logger{"Audio"};
 };

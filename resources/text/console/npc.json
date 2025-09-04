@@ -20,6 +20,11 @@
   },
   "bit": {
     "1": {
+      "codes": [
+        [0, 0, 4, 1, 0],
+        [1, 0, 0, 1, 1],
+        [1, 0, 1, 1, 2]
+      ],
       "responses": [["Sure.", "I had better get going..."]],
       "suite": [
         [
@@ -322,6 +327,8 @@
   "dr_willett": {
     "1": {
       "codes": [
+        [0, 0, 0, 14, 0],
+        [0, 0, 1, 14, 1],
         [0, 1, 0, 1, 1],
         [0, 2, 4, 1, 2],
         [0, 3, 6, 1, 2],
@@ -330,8 +337,8 @@
         [1, 1, 0, 1, 2],
         [1, 1, 1, 1, 3],
         [1, 2, 0, 1, 4],
-        [0, 4, 3, 2, 17],
-        [0, 4, 4, 13, 2]
+        [0, 4, 4, 13, 2],
+        [0, 4, 2, 2, 18]
       ],
       "responses": [
         ["It sure is."],
@@ -340,9 +347,9 @@
       ],
       "suite": [
         [
-          "Good heavens!",
-          "Why, you scared me half to death. I don't know if my old heart can take many more such frights.",
           "...",
+          "Good heavens, you scared me half to death. I don't know if my old heart can take many more such frights.",
+          "Wait a second...",
           "Do my eyes deceive me?",
           "Is that really you, Nani?"
         ],
@@ -387,7 +394,10 @@
         [1, 1, 0, 1, 4],
         [1, 0, 2, 1, 3],
         [1, 0, 1, 1, 2],
-        [1, 0, 0, 1, 1]
+        [1, 0, 0, 1, 1],
+        [0, 4, 2, 1, 1],
+        [0, 5, 5, 1, 1],
+        [0, 7, 2, 1, 1]
       ],
       "responses": [
         ["Where are the ruins?", "What is this place?", "I'm curious..."],

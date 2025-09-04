@@ -145,23 +145,39 @@
     ]
   },
   "bit": {
+    "id": 20,
     "dimensions": [24, 24],
     "sprite_dimensions": [20, 20],
-    "sprite_offset": [20, -14],
-    "animation": {
-      "idle": [0, 6, 40, -1, false],
-      "turn": [6, 2, 40, 0, false]
-    }
+    "sprite_offset": [0, -7],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 6, 40, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [6, 2, 40, 0, false]
+      }
+    ]
   },
   "justin": {
     "dimensions": [18, 18],
     "sprite_dimensions": [18, 18],
     "sprite_offset": [18, -18],
-    "animation": {
-      "idle": [0, 4, 40, -1, false],
-      "walk": [4, 4, 40, 0, false],
-      "turn": [7, 1, 40, 0, false]
-    }
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 4, 40, -1, false]
+      },
+      {
+        "label": "walk",
+        "parameters": [4, 4, 24, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [7, 1, 40, 0, false]
+      }
+    ]
   },
   "lady_nimbus": {
     "id": 22,

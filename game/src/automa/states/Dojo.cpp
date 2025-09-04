@@ -11,7 +11,9 @@ static bool gun_acquisition{};
 static bool item_music_played{};
 static bool b_reveal_item{};
 static bool b_read_item{};
+static bool b_play_song{};
 static int item_modifier{};
+static int song_id{};
 
 static void trigger_item(int to) {
 	item_acquisition = true;
@@ -29,6 +31,10 @@ static void trigger_reveal_item(int to) {
 	b_reveal_item = true;
 	item_modifier = to;
 }
+static void trigger_song(int to) {
+	b_play_song = true;
+	song_id = to;
+}
 
 Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name)
 	: GameState(svc, player, scene, room_number), map(svc, player), gui_map(svc, player), m_services(&svc), m_enter_room{100}, m_loading{4} {
@@ -41,6 +47,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	svc.events.register_event(std::make_unique<Event<int>>("ReadItem", &trigger_read_item));
 	svc.events.register_event(std::make_unique<Event<int>>("AcquireItem", &trigger_item));
 	svc.events.register_event(std::make_unique<Event<int>>("AcquireGun", &trigger_gun));
+	svc.events.register_event(std::make_unique<Event<int>>("PlaySong", &trigger_song));
 
 	// create shaders
 	m_shader = LightShader(svc.finder);
@@ -96,10 +103,13 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 }
 
 void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-
 	// handle events
 	if (item_acquisition) { acquire_item(svc, *player, item_modifier); }
 	if (gun_acquisition) { acquire_gun(svc, *player, item_modifier); }
+	if (b_play_song) {
+		svc.music_player.play_song_by_id(svc.finder, song_id);
+		b_play_song = false;
+	}
 	if (b_read_item) { read_item(item_modifier); }
 	if (b_reveal_item) {
 		player->catalog.inventory.reveal_item(item_modifier);
@@ -266,10 +276,12 @@ void Dojo::bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current) {
 
 void Dojo::acquire_item(ServiceProvider& svc, player::Player& player, int modifier) {
 	player.give_item_by_id(modifier, 1);
-	m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
+	if (!m_console) {
+		m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
+		m_console.value()->append(player.catalog.inventory.item_view(modifier).get_title());
+		m_console.value()->append("!");
+	}
 	m_console.value()->display_item(modifier);
-	m_console.value()->append(player.catalog.inventory.item_view(modifier).get_title());
-	m_console.value()->append("!");
 	svc.music_player.quick_play(svc.finder, "discovery");
 	item_acquisition = false;
 	item_music_played = true;

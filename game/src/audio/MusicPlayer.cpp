@@ -10,7 +10,8 @@ using namespace std::chrono_literals;
 
 MusicPlayer::MusicPlayer(capo::IEngine& audio_engine) : m_jukebox{audio_engine}, m_ringtone{audio_engine}, m_filter{.fade = util::Cooldown{600}} {
 	m_filter.fade.start();
-	NANI_LOG_INFO(m_logger, "Created a MusicPlayer.");
+	m_name_from_id.insert({0, "none"});
+	m_name_from_id.insert({1, "glitchified"});
 }
 
 void MusicPlayer::quick_play(ResourceFinder const& finder, std::string_view song_name) {
@@ -34,6 +35,16 @@ void MusicPlayer::load(ResourceFinder const& finder, std::string_view song_name)
 void MusicPlayer::load(std::string_view path) {
 	if (is_off()) { return; }
 	m_jukebox.load_media(std::filesystem::path{path});
+}
+
+void MusicPlayer::play_song_by_id(ResourceFinder const& finder, int id) {
+	if (!m_name_from_id.contains(id)) { return; }
+	m_jukebox.stop();
+	if (is_off()) { return; }
+	auto path = std::filesystem::path{finder.resource_path() + "/audio/songs/" + m_name_from_id.at(id).data() + ".xm"};
+	m_ringtone.load_media(path);
+	m_ringtone.play();
+	m_ringtone.set_gain(m_jukebox.get_gain());
 }
 
 void MusicPlayer::play_once() {

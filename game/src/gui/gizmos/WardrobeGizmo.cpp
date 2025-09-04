@@ -134,22 +134,28 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 }
 
 bool WardrobeGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
-	if (is_selected()) { m_outfitter->handle_inputs(controller, soundboard); }
+	if (is_selected()) {
+		if (m_outfitter) { m_outfitter->handle_inputs(controller, soundboard); }
+	}
 	return Gizmo::handle_inputs(controller, soundboard);
 }
 
 void WardrobeGizmo::on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {
 	Gizmo::on_open(svc, player, map);
 	if (is_selected()) {
-		m_outfitter = std::make_unique<OutfitterGizmo>(svc, map, sf::Vector2f{288.f, 36.f});
-		m_outfitter->select();
+		if (player.catalog.inventory.has_item("outfitter_gizmo")) {
+			m_outfitter = std::make_unique<OutfitterGizmo>(svc, map, sf::Vector2f{288.f, 36.f});
+			m_outfitter->select();
+		}
 	}
 }
 
 void WardrobeGizmo::on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {
 	Gizmo::on_close(svc, player, map);
-	m_outfitter->close();
-	m_outfitter->deselect();
+	if (m_outfitter) {
+		m_outfitter->close();
+		m_outfitter->deselect();
+	}
 }
 
 } // namespace fornani::gui

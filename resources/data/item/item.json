@@ -142,6 +142,28 @@
     "actual_description": "A clock that reads the current time of day. It was designed to fit snugly into your pocket gizmo.",
     "unique": true
   },
+  "status_gizmo": {
+    "id": 18,
+    "category": 3,
+    "lookup": [1, 1],
+    "origin": [2, 0],
+    "naive_title": "Status Gizmo",
+    "actual_title": "Status Gizmo",
+    "naive_description": "A gizmo that attaches to your inventory dashboard and displays your current outfit and lifeforce.",
+    "actual_description": "A gizmo that attaches to your inventory dashboard and displays your current outfit and lifeforce.",
+    "unique": true
+  },
+  "outfitter_gizmo": {
+    "id": 19,
+    "category": 3,
+    "lookup": [2, 1],
+    "origin": [3, 0],
+    "naive_title": "Outfitter Gizmo",
+    "actual_title": "Outfitter Gizmo",
+    "naive_description": "A gizmo that attaches to your status gizmo and enables you to change your outfit.",
+    "actual_description": "A gizmo that attaches to your status gizmo and enables you to change your outfit.",
+    "unique": true
+  },
   "dog_leash": {
     "id": 20,
     "category": 1,

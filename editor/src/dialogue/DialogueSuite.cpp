@@ -29,6 +29,8 @@ DialogueSuite::DialogueSuite(sf::Font& font, dj::Json const& in, std::string_vie
 			extras.push_back(extra.as<int>());
 		}
 		m_codes.push_back(fornani::gui::MessageCode{source, set, index, type, value, extras});
+		auto& src = source == fornani::gui::CodeSource::suite ? m_suite : m_responses;
+		src.at(set).nodes.at(index).set_coded(true);
 	}
 }
 
@@ -73,6 +75,8 @@ void DialogueSuite::add_code(fornani::gui::MessageCodeType type, int value) {
 	auto set = static_cast<int>(m_current_set);
 	auto index = static_cast<int>(m_current_index);
 	m_codes.push_back(fornani::gui::MessageCode{source, set, index, type, value});
+	auto& src = source == fornani::gui::CodeSource::suite ? m_suite : m_responses;
+	src.at(set).nodes.at(index).set_coded(true);
 }
 
 void DialogueSuite::update(sf::Vector2f position, bool clicked) {
@@ -112,7 +116,11 @@ void DialogueSuite::swap_node(Node other) {
 void DialogueSuite::print_codes() {
 	for (auto [i, code] : std::views::enumerate(m_codes)) {
 		ImGui::PushID(i);
-		if (ImGui::Button("X##i")) { code.mark_for_deletion(); }
+		if (ImGui::Button("X##i")) {
+			code.mark_for_deletion();
+			auto& src = code.source == fornani::gui::CodeSource::suite ? m_suite : m_responses;
+			src.at(code.set).nodes.at(code.index).set_coded(false);
+		}
 		ImGui::SameLine();
 		ImGui::Text("[ %i, %i, %i, %i, %i ]", code.source, code.set, code.index, code.type, code.value);
 		ImGui::PopID();

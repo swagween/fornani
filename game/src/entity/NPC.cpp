@@ -27,6 +27,7 @@ std::unique_ptr<Entity> NPC::clone() const { return std::make_unique<NPC>(*this)
 
 void NPC::serialize(dj::Json& out) {
 	Entity::serialize(out);
+	out["background"] = m_background;
 	out["label"] = m_label;
 	for (auto& suite : m_suites) {
 		auto entry = dj::Json::empty_array();
@@ -37,6 +38,7 @@ void NPC::serialize(dj::Json& out) {
 
 void NPC::unserialize(dj::Json const& in) {
 	Entity::unserialize(in);
+	m_background = in["background"].as_bool();
 	m_label = in["label"].as_string();
 	for (auto const& suite : in["suites"].as_array()) {
 		auto entry = std::vector<int>{};

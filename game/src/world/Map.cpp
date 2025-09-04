@@ -1,5 +1,6 @@
 
 #include "fornani/world/Map.hpp"
+#include <ranges>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/graphics/Colors.hpp"
 #include "fornani/gui/Console.hpp"
@@ -87,8 +88,8 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 			NANI_LOG_DEBUG(m_logger, "Pushed conversation {}", convo.as<int>());
 		}
 		npcs.back()->set_position_from_scaled(pos);
-		if (static_cast<bool>(entry["background"].as_bool())) { npcs.back()->push_to_background(); }
-		if (static_cast<bool>(entry["hidden"].as_bool())) { npcs.back()->hide(); }
+		if (entry["background"].as_bool()) { npcs.back()->push_to_background(); }
+		if (entry["hidden"].as_bool()) { npcs.back()->hide(); }
 		// if (svc.quest.get_progression(fornani::QuestType::hidden_npcs, npc_id) > 0) { npcs.back()->unhide(); }
 		npcs.back()->set_current_location(room_id);
 	}
@@ -487,7 +488,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& pushable : pushables) { pushable.render(svc, win, cam); }
 	for (auto& destroyer : destroyers) { destroyer.render(svc, win, cam); }
 	for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
-	for (auto& spike : spikes) { spike.render(svc, win, cam); }
+	for (auto& spike : spikes) { spike.render(svc, win, shader, m_palette, cam); }
 	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
 	for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
@@ -523,7 +524,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 
 	for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
 
-	if (rain) { rain.value().render(svc, win, cam); }
+	if (rain) { rain->render(svc, win, cam); }
 
 	if (flags.properties.test(MapProperties::timer)) { svc.world_timer.render(win, sf::Vector2f{32.f, 32.f}); }
 
@@ -549,7 +550,12 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 			for (auto& piece : layer) { piece->render(svc, win, cam); }
 		}
 		if (!svc.greyblock_mode()) {
-			for (auto& layer : get_layers()) {
+			for (auto [i, layer] : std::views::enumerate(get_layers())) {
+				if (i == 1) {
+					for (auto& npc : npcs) {
+						if (npc->background()) { npc->render(svc, win, cam); }
+					}
+				}
 				if (flags.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
 					shader->Finalize();
 					layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true);
@@ -557,9 +563,6 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 					layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true);
 				}
 			}
-		}
-		for (auto& npc : npcs) {
-			if (npc->background()) { npc->render(svc, win, cam); }
 		}
 		for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam, true); }
 	} else {

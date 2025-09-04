@@ -94,10 +94,8 @@ void DialogueEditor::logic() {
 }
 
 void DialogueEditor::render(sf::RenderWindow& win) {
-
 	// ImGui stuff
 	bool options_popup{clicked && m_tool->is(MetagridToolType::cursor) && is_any_node_hovered};
-
 	// main toolbar
 	auto PAD = 28.f;
 	ImVec2 window_pos{};

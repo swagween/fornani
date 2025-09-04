@@ -108,6 +108,7 @@
     ],
     "npcs": [
       {
+        "background": false,
         "dimensions": [
           1,
           1
@@ -130,7 +131,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
-        "destination_id": 209,
+        "destination_id": 302,
         "dimensions": [
           1,
           1

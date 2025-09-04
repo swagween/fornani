@@ -69,6 +69,10 @@ void Console::update(automa::ServiceProvider& svc) {
 				svc.quest_table.progress_quest("npc_dialogue", 1, -1, code.value);
 				processed = true;
 			}
+			if (code.is_play_song() && m_process_code_before) {
+				svc.events.dispatch_event("PlaySong", code.value);
+				processed = true;
+			}
 			if (code.is_voice_cue() && m_process_code_before) {
 				svc.events.dispatch_event("VoiceCue", code.value);
 				NANI_LOG_DEBUG(m_logger, "Voice!");

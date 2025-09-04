@@ -194,9 +194,33 @@
     },
     {
       "folder": "kariba",
+      "label": "crucible.json",
+      "region": "kariba",
+      "room_id": 503
+    },
+    {
+      "folder": "kariba",
       "label": "dungeon.json",
       "region": "kariba",
       "room_id": 420
+    },
+    {
+      "folder": "kariba",
+      "label": "foyer.json",
+      "region": "kariba",
+      "room_id": 502
+    },
+    {
+      "folder": "kariba",
+      "label": "stairwell.json",
+      "region": "kariba",
+      "room_id": 501
+    },
+    {
+      "folder": "kariba",
+      "label": "west_wing.json",
+      "region": "kariba",
+      "room_id": 504
     },
     {
       "folder": "overturned",
@@ -419,6 +443,12 @@
       "label": "bryns_room.json",
       "region": "pioneer",
       "room_id": 301
+    },
+    {
+      "folder": "pioneer",
+      "label": "solary.json",
+      "region": "pioneer",
+      "room_id": 302
     },
     {
       "folder": "pioneer",
