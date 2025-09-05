@@ -1,6 +1,6 @@
 #include "fornani/entities/world/Bed.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/gui/Console.hpp"
+#include <fornani/gui/console/Console.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/world/Map.hpp"
 

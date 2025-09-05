@@ -4,8 +4,8 @@
 #include <fornani/core/Common.hpp>
 #include <fornani/gui/ItemWidget.hpp>
 #include <fornani/gui/Portrait.hpp>
-#include <fornani/gui/ResponseDialog.hpp>
-#include <fornani/gui/TextWriter.hpp>
+#include <fornani/gui/console/ResponseDialog.hpp>
+#include <fornani/gui/console/TextWriter.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Cooldown.hpp>

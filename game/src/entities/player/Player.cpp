@@ -2,7 +2,7 @@
 #include "fornani/entities/player/Player.hpp"
 #include <fornani/utils/Random.hpp>
 #include "fornani/entities/item/Drop.hpp"
-#include "fornani/gui/Console.hpp"
+#include <fornani/gui/console/Console.hpp>
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Constants.hpp"

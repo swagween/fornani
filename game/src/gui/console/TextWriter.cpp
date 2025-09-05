@@ -1,7 +1,7 @@
 
-#include "fornani/gui/TextWriter.hpp"
 #include <SFML/Graphics.hpp>
 #include <ccmath/ext/clamp.hpp>
+#include <fornani/gui/console/TextWriter.hpp>
 #include <string>
 #include "fornani/service/ServiceProvider.hpp"
 
@@ -158,7 +158,7 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 			// NANI_LOG_DEBUG(m_logger, "Message: {}", msg.as_string());
 
 			this_set.push_back({sf::Text(*m_font), false});
-			this_set.back().data.setString(msg.as_string().data());
+			this_set.back().data.setString(msg["message"].as_string().data());
 			stylize(this_set.back().data);
 			if (msg["codes"].is_array()) {
 				this_set.back().codes = std::vector<MessageCode>{};
@@ -300,17 +300,6 @@ Message& TextWriter::current_message() {
 	if (m_iterators.current_suite_set >= suite.size()) { return zero_option; }
 	if (suite.at(m_iterators.current_suite_set).empty()) { return zero_option; }
 	return suite.at(m_iterators.current_suite_set).at(m_iterators.index);
-}
-
-MessageCode::MessageCode(dj::Json const& in) {
-	type = static_cast<MessageCodeType>(in[0].as<int>());
-	value = in[1].as<int>();
-	if (in.as_array().size() > 2) {
-		extras = std::vector<int>{};
-		for (auto [i, extra] : std::views::enumerate(in.as_array())) {
-			if (i > 2) { extras->push_back(extra.as<int>()); }
-		}
-	}
 }
 
 } // namespace fornani::gui

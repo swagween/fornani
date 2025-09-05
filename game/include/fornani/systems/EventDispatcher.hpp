@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <fornani/gui/Console.hpp>
+#include <fornani/gui/console/Console.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/systems/Event.hpp>
 #include <map>

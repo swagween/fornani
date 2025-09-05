@@ -1,7 +1,7 @@
 
 #include "fornani/entities/player/Wardrobe.hpp"
 #include "fornani/graphics/TextureUpdater.hpp"
-#include "fornani/gui/Console.hpp"
+#include <fornani/gui/console/Console.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::player {

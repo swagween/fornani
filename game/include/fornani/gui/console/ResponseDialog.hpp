@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <fornani/gui/TextWriter.hpp>
+#include <fornani/gui/console/TextWriter.hpp>
 #include <fornani/io/Logger.hpp>
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/SteeringBehavior.hpp"

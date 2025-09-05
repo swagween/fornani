@@ -1,7 +1,7 @@
 
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Console.hpp"
+#include <fornani/gui/console/Console.hpp>
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/graphics/MapTexture.hpp"

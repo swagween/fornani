@@ -28,7 +28,6 @@ DialogueSuite::DialogueSuite(sf::Font& font, dj::Json const& in, std::string_vie
 			if (i < 5) { continue; }
 			extras.push_back(extra.as<int>());
 		}
-		m_codes.push_back(fornani::gui::MessageCode{source, set, index, type, value, extras});
 		auto& src = source == fornani::gui::CodeSource::suite ? m_suite : m_responses;
 		src.at(set).nodes.at(index).set_coded(true);
 	}
@@ -55,22 +54,6 @@ void DialogueSuite::serialize(dj::Json& out) {
 		}
 		out[m_host][m_tag]["responses"].push_back(current);
 	}
-	for (auto const& code : m_codes) {
-		auto cde = dj::Json::empty_array();
-		auto tag = code.source == NodeType::suite ? "suite" : "responses";
-		for (auto [i, ste] : std::views::enumerate(out[m_host][m_tag][tag].as_array())) {
-			for (auto [j, set] : std::views::enumerate(ste.as_array())) {
-				if (i == code.set && j == code.index) {
-					cde.push_back(static_cast<int>(code.type));
-					cde.push_back(code.value);
-					if (code.extras) {
-						for (auto const& extra : code.extras.value()) { cde.push_back(extra); }
-					}
-					out[m_host][m_tag][tag][i][j]["codes"].push_back(cde);
-				}
-			}
-		}
-	}
 }
 
 void DialogueSuite::add_message(std::string_view message, NodeType type, int set_index, int message_index) {
@@ -85,7 +68,6 @@ void DialogueSuite::add_code(fornani::gui::MessageCodeType type, int value) {
 	auto source = static_cast<fornani::gui::CodeSource>(m_current_type);
 	auto set = static_cast<int>(m_current_set);
 	auto index = static_cast<int>(m_current_index);
-	m_codes.push_back(fornani::gui::MessageCode{source, set, index, type, value});
 	auto& src = source == fornani::gui::CodeSource::suite ? m_suite : m_responses;
 	src.at(set).nodes.at(index).set_coded(true);
 }
@@ -109,7 +91,6 @@ void DialogueSuite::update(sf::Vector2f position, bool clicked) {
 			previous_position.y += node_set.get_size().y + buffer;
 		}
 	}
-	std::erase_if(m_codes, [](auto c) { return c.is_marked_for_deletion(); });
 }
 
 void DialogueSuite::render(sf::RenderWindow& win, sf::Vector2f cam) {
@@ -124,23 +105,7 @@ void DialogueSuite::swap_node(Node other) {
 	source.at(m_current_set).nodes.at(m_current_index) = other;
 }
 
-void DialogueSuite::print_codes() {
-	for (auto [i, code] : std::views::enumerate(m_codes)) {
-		ImGui::PushID(i);
-		if (m_current_type == code.source && m_current_set == code.set && m_current_index == code.index) {
-			ImGui::Text(">");
-			ImGui::SameLine();
-		}
-		if (ImGui::Button("X##i")) {
-			code.mark_for_deletion();
-			auto& src = code.source == fornani::gui::CodeSource::suite ? m_suite : m_responses;
-			src.at(code.set).nodes.at(code.index).set_coded(false);
-		}
-		ImGui::SameLine();
-		ImGui::Text("[ %i, %i, %i, %i, %i ]", code.source, code.set, code.index, code.type, code.value);
-		ImGui::PopID();
-	}
-}
+void DialogueSuite::print_codes() {}
 
 auto DialogueSuite::get_current_node() const -> std::optional<Node> {
 	auto& source = m_current_type == NodeType::suite ? m_suite : m_responses;

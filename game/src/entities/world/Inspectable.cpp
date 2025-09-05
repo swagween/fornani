@@ -3,7 +3,7 @@
 #include <fornani/systems/EventDispatcher.hpp>
 #include <fornani/world/Map.hpp>
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/gui/Console.hpp"
+#include <fornani/gui/console/Console.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::entity {

@@ -1,105 +1,73 @@
 {
-	"save": {
-		"suite": [
-			[ "Game saved." ]
-		]
-	},
-	"bed": {
-		"suite": [
-			[ "You awaken feeling well-rested." ]
-		],
-		"responses": [ [] ]
-	},
-	"chest": {
-		"suite": [
-			[ "Obtained " ]
-		]
-	},
-	"open_chest": {
-		"suite": [
-			[ "It's already been opened." ]
-		]
-	},
-	"locked_door": {
-		"suite": [
-			[ "It's locked." ]
-		]
-	},
-	"unlocked_door": {
-		"suite": [
-			[ "Used " ]
-		]
-	},
-	"death": {
-		"codes": [
-			[ 0, 0, 1, 1, 0 ],
-			[ 1, 0, 0, 7, 2 ],
-			[ 1, 0, 1, 7, 1 ]
-		],
-		"suite": [
-			[ "You died.", "Would you like to retry?" ]
-		],
-		"responses": [ [ "Yes", "No" ] ]
-	},
-	"test": {
-		"codes": [
-			[ 0, 0, 1, 1, 0 ],
-			[ 0, 1, 0, 1, 1 ],
-			[ 1, 0, 0, 1, 1, 0 ],
-			[ 1, 0, 1, 1, 2, 0 ],
-			[ 1, 1, 0, 1, 3, 0 ],
-			[ 1, 1, 1, 1, 4, 0 ]
-		],
-		"suite": [
-			[
-				"Hello.",
-				"Do you want to chat?"
-			],
-			[ "Great. What's your favorite color?" ],
-			[ "Alright, see ya later." ],
-			[ "Just like sunflowers." ],
-			[ "Like the sky!", "I respect that." ]
-		],
-		"responses": [
-			[ "Sure", "No" ],
-			[ "Yellow", "Blue" ]
-		]
-	},
-	"menu_return": {
-		"codes": [
-			[ 0, 0, 0, 1, 0 ],
-			[ 1, 0, 0, 7, 1 ],
-			[ 1, 0, 1, 0, 0 ]
-		],
-		"suite": [
-			[
-				"You will lose any unsaved progress. Are you sure?"
-			]
-		],
-		"responses": [ [ "Yes", "No" ] ]
-	},
-	"intro": {
-		"suite": [
-			[ "You are lost and you are cold.", "There is not much you remember from the last days, but you know well that they were filled with anguish.", "You awaken now after a slumber of unknown length. The world shakes around you.", "...", "You are looking for your brother." ]
-		]
-	},
-	"delete_file": {
-		"codes": [
-			[ 0, 0, 0, 1, 0 ],
-			[ 1, 0, 0, 7, 3 ],
-			[ 1, 0, 1, 8, 0 ]
-		],
-		"suite": [
-			[
-				"This action cannot be undone. Are you sure you want to delete this file?",
-				"File deleted."
-			]
-		],
-		"responses": [ [ "Yes", "No" ] ]
-	},
-	"fullscreen": {
-		"suite": [
-			[ "Fullscreen settings will take effect the next time the game is opened." ]
-		]
-	}
+  "save": {
+    "suite": [["Game saved."]]
+  },
+  "bed": {
+    "suite": [["You awaken feeling well-rested."]],
+    "responses": [[]]
+  },
+  "chest": {
+    "suite": [["Obtained "]]
+  },
+  "open_chest": {
+    "suite": [["It's already been opened."]]
+  },
+  "locked_door": {
+    "suite": [["It's locked."]]
+  },
+  "unlocked_door": {
+    "suite": [["Used "]]
+  },
+  "death": {
+    "suite": [
+      [{ "message": "You died." }, { "message": "Would you like to retry?", "codes": [[1, 0]] }]
+    ],
+    "responses": [
+      [
+        { "message": "Yes", "codes": [[7, 2]] },
+        { "message": "No", "codes": [[7, 1]] }
+      ]
+    ]
+  },
+  "menu_return": {
+    "codes": [
+      [0, 0, 0, 1, 0],
+      [1, 0, 0, 7, 1],
+      [1, 0, 1, 0, 0]
+    ],
+    "suite": [
+      [{ "message": "You will lose any unsaved progress. Are you sure?", "codes": [[1, 0]] }]
+    ],
+    "responses": [
+      [
+        { "message": "Yes", "codes": [[7, 1]] },
+        { "message": "No", "codes": [[0, 0]] }
+      ]
+    ]
+  },
+  "intro": {
+    "suite": [
+      [
+        "You are lost and you are cold.",
+        "There is not much you remember from the last days, but you know well that they were filled with anguish.",
+        "You awaken now after a slumber of unknown length. The world shakes around you.",
+        "...",
+        "You are looking for your brother."
+      ]
+    ]
+  },
+  "delete_file": {
+    "codes": [
+      [0, 0, 0, 1, 0],
+      [1, 0, 0, 7, 3],
+      [1, 0, 1, 8, 0]
+    ],
+    "suite": [
+      ["This action cannot be undone. Are you sure you want to delete this file?", "File deleted."]
+    ],
+    "responses": [["Yes", "No"]]
+  },
+  "fullscreen": {
+    "suite": [["Fullscreen settings will take effect the next time the game is opened."]]
+  }
 }

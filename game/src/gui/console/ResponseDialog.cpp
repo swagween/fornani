@@ -1,5 +1,5 @@
 
-#include "fornani/gui/ResponseDialog.hpp"
+#include <fornani/gui/console/ResponseDialog.hpp>
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/graphics/Colors.hpp"
 #include "fornani/setup/ControllerMap.hpp"
@@ -11,7 +11,7 @@ ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, std::s
 	auto& set = source[key]["responses"][index];
 	for (auto& msg : set.as_array()) {
 		responses.push_back(Message{sf::Text(text.fonts.basic), false});
-		responses.back().data.setString(msg.as_string().data());
+		responses.back().data.setString(msg["message"].as_string().data());
 		stylize(responses.back().data);
 		if (msg["codes"].is_array()) {
 			responses.back().codes = std::vector<MessageCode>{};

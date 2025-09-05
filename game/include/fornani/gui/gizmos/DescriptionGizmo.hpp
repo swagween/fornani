@@ -2,7 +2,7 @@
 #pragma once
 
 #include "fornani/gui/Gizmo.hpp"
-#include "fornani/gui/TextWriter.hpp"
+#include <fornani/gui/console/TextWriter.hpp>
 #include "fornani/utils/BitFlags.hpp"
 
 #include <optional>

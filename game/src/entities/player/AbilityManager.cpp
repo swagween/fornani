@@ -1,5 +1,5 @@
 #include "fornani/entities/player/AbilityManager.hpp"
-#include "fornani/gui/Console.hpp"
+#include <fornani/gui/console/Console.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::player {

@@ -4,7 +4,7 @@
 #include <fornani/automa/Option.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/graphics/Background.hpp"
-#include "fornani/gui/Console.hpp"
+#include <fornani/gui/console/Console.hpp>
 #include "fornani/gui/HUD.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/gui/PauseWindow.hpp"

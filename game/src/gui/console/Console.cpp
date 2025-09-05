@@ -1,5 +1,5 @@
 
-#include "fornani/gui/Console.hpp"
+#include <fornani/gui/console/Console.hpp>
 
 #include <fornani/systems/Event.hpp>
 #include "fornani/service/ServiceProvider.hpp"

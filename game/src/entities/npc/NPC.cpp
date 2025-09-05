@@ -1,7 +1,7 @@
 
 #include "fornani/entities/npc/NPC.hpp"
+#include <fornani/gui/console/Console.hpp>
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/gui/Console.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::npc {

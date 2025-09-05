@@ -1,59 +1,97 @@
 {
-  "alba": {
-    "2": {
-      "codes": [
-        [1, 0, 0, 1, 4],
-        [1, 0, 0, 1, 0],
-        [0, 2, 0, 1, 2]
-      ],
-      "responses": [["I'm nineteen.", "I'm seven."]],
-      "suite": [["Too young to party."], ["stay"], ["again"]]
-    },
-    "3": {
-      "suite": [["test..."], ["hello", "this is a longer message"]]
-    }
-  },
   "billy": {
     "1": {
-      "suite": [["Hnnngh..."]]
+      "responses": [],
+      "suite": [
+        [
+          {
+            "message": "Hnnngh..."
+          }
+        ]
+      ]
     }
   },
   "bit": {
     "1": {
-      "codes": [
-        [0, 0, 4, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2]
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "Sure."
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "I had better get going..."
+          }
+        ]
       ],
-      "responses": [["Sure.", "I had better get going..."]],
       "suite": [
         [
-          "...",
-          "Psst... Hey!",
-          "Hey, you!",
-          "I don't know how you managed to escape your cell, but, er... I'm still in a bit of a bind here myself.",
-          "Would you help me out?"
+          {
+            "message": "..."
+          },
+          {
+            "message": "Psst... Hey!"
+          },
+          {
+            "message": "Hey, you!"
+          },
+          {
+            "message": "I don't know how you managed to escape your cell, but, er... I'm still in a bit of a bind here myself."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Would you help me out?"
+          }
         ],
         [
-          "I appreciate it... you know, I'll owe you big time if you can manage to get me outta here.",
-          "You might find the key to this cell lying around the ship somewhere.",
-          "If you do, you should be able to use it on that there door and let me free!"
+          {
+            "message": "I appreciate it... you know, I'll owe you big time if you can manage to get me outta here."
+          },
+          {
+            "message": "You might find the key to this cell lying around the ship somewhere."
+          },
+          {
+            "message": "If you do, you should be able to use it on that there door and let me free!"
+          }
         ],
-        ["Well uh... okay. If you change your mind, you'll know where to find me."]
+        [
+          {
+            "message": "Well uh... okay. If you change your mind, you'll know where to find me."
+          }
+        ]
       ]
     },
     "2": {
-      "responses": [["Where are we?"]],
+      "responses": [
+        [
+          {
+            "message": "Where are we?"
+          }
+        ]
+      ],
       "suite": [
         [
-          "Listen, I don't wanna rush you, but...",
-          "I'm starting to get pretty hungry, and I haven't seen the jailer in a few days..."
+          {
+            "message": "Listen, I don't wanna rush you, but..."
+          },
+          {
+            "message": "I'm starting to get pretty hungry, and I haven't seen the jailer in a few days..."
+          }
         ],
         [
-          "I'm not gonna sugarcoat it. We're in prison.",
-          "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!",
-          "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below.",
-          "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here."
+          {
+            "message": "I'm not gonna sugarcoat it. We're in prison."
+          },
+          {
+            "message": "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!"
+          },
+          {
+            "message": "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below."
+          },
+          {
+            "message": "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here."
+          }
         ]
       ]
     },
@@ -61,7 +99,9 @@
       "responses": [],
       "suite": [
         [
-          "Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya."
+          {
+            "message": "Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya."
+          }
         ]
       ]
     },
@@ -69,9 +109,15 @@
       "responses": [],
       "suite": [
         [
-          "I can't believe it... You actually did it!",
-          "I really can't thank you enough...",
-          "Heh, like I said... I owe you big time!"
+          {
+            "message": "I can't believe it... You actually did it!"
+          },
+          {
+            "message": "I really can't thank you enough..."
+          },
+          {
+            "message": "Heh, like I said... I owe you big time!"
+          }
         ]
       ]
     },
@@ -79,8 +125,12 @@
       "responses": [],
       "suite": [
         [
-          "...",
-          "I, er... I'll have to gather some stuff here before I head out. But I'll be right behind ya!"
+          {
+            "message": "..."
+          },
+          {
+            "message": "I, er... I'll have to gather some stuff here before I head out. But I'll be right behind ya!"
+          }
         ]
       ]
     },
@@ -88,507 +138,1013 @@
       "responses": [],
       "suite": [
         [
-          "Listen, I don't exactly have much to give you right now.",
-          "I'm sure you understand...",
-          "But! Fear not! If we bump into each other again someday, I'll have something for you!"
+          {
+            "message": "Listen, I don't exactly have much to give you right now."
+          },
+          {
+            "message": "I'm sure you understand..."
+          },
+          {
+            "message": "But! Fear not! If we bump into each other again someday, I'll have something for you!"
+          }
         ]
       ]
     },
     "7": {
       "responses": [],
-      "suite": [["Heh... See ya around!"]]
+      "suite": [
+        [
+          {
+            "message": "Heh... See ya around!"
+          }
+        ]
+      ]
     },
     "8": {
       "responses": [],
-      "suite": [["Thanks again for helping me. Stay safe out there!"]]
+      "suite": [
+        [
+          {
+            "message": "Thanks again for helping me. Stay safe out there!"
+          }
+        ]
+      ]
     },
     "9": {
       "responses": [],
       "suite": [
         [
-          "I can't believe it... You actually did it!",
-          "I really can't thank you enough, stranger!",
-          "Heh, I guess I owe you big time!"
+          {
+            "message": "I can't believe it... You actually did it!"
+          },
+          {
+            "message": "I really can't thank you enough, stranger!"
+          },
+          {
+            "message": "Heh, I guess I owe you big time!"
+          }
         ]
       ]
     }
   },
   "bryn": {
     "1": {
-      "codes": [
-        [0, 0, 1, 1, 0],
-        [0, 0, 0, 5, 1],
-        [0, 0, 1, 5, 0],
-        [0, 2, 1, 5, 1],
-        [0, 2, 2, 5, 0],
-        [0, 2, 3, 5, 2],
-        [0, 2, 5, 5, 1],
-        [0, 3, 0, 5, 0],
-        [0, 4, 4, 5, 1],
-        [0, 4, 8, 5, 2],
-        [0, 4, 0, 5, 0],
-        [0, 5, 0, 5, 0],
-        [0, 6, 1, 5, 2],
-        [0, 3, 1, 9, 420],
-        [0, 0, 1, 1, 0],
-        [1, 0, 0, 1, 1],
-        [0, 1, 1, 1, 1],
-        [1, 1, 0, 1, 2],
-        [0, 2, 5, 1, 2],
-        [1, 2, 0, 1, 3],
-        [1, 3, 0, 1, 4],
-        [0, 4, 8, 1, 3],
-        [0, 5, 2, 1, 3],
-        [1, 3, 1, 1, 5],
-        [1, 3, 2, 1, 6],
-        [0, 3, 1, 13, 0],
-        [0, 3, 2, 2, 115],
-        [0, 3, 3, 1, 3]
-      ],
       "responses": [
-        ["What are you doing in this place?"],
-        ["Technology...?"],
-        ["Uhhh..."],
-        ["What happened on Firstwind?", "I'm looking for my brother.", "Let's leave."]
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "What are you doing in this place?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "Technology...?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 3]],
+            "message": "Uhhh..."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 4]],
+            "message": "What happened on Firstwind?"
+          },
+          {
+            "codes": [[1, 5]],
+            "message": "I'm looking for my brother."
+          },
+          {
+            "codes": [[1, 6]],
+            "message": "Let's leave."
+          }
+        ]
       ],
       "suite": [
         [
-          "Well, I'll be honest, you're about the last person I was expecting to see down here.",
-          "I was beginning to think I'd never see anyone again."
+          {
+            "codes": [[5, 1]],
+            "message": "Well, I'll be honest, you're about the last person I was expecting to see down here."
+          },
+          {
+            "codes": [
+              [1, 0],
+              [5, 0],
+              [1, 0]
+            ],
+            "message": "I was beginning to think I'd never see anyone again."
+          }
         ],
         [
-          "It's... a long story. But I signed up for it, really.",
-          "Sometimes, if you want to study ancient peoples, you might end up getting captured by their ancient technology."
+          {
+            "message": "It's... a long story. But I signed up for it, really."
+          },
+          {
+            "codes": [[1, 1]],
+            "message": "Sometimes, if you want to study ancient peoples, you might end up getting captured by their ancient technology."
+          }
         ],
         [
-          "Well, that's what Doc Willett and I think it might be.",
-          "I don't know, it's hard to tell. But don't you think these creatures are rather fascinating?",
-          "...",
-          "Look at me, rambling.",
-          "I can't believe you made it off Firstwind alive!",
-          "Wait... is that my gun?!"
+          {
+            "message": "Well, that's what Doc Willett and I think it might be."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "I don't know, it's hard to tell. But don't you think these creatures are rather fascinating?"
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "..."
+          },
+          {
+            "codes": [[5, 2]],
+            "message": "Look at me, rambling."
+          },
+          {
+            "message": "I can't believe you made it off Firstwind alive!"
+          },
+          {
+            "codes": [
+              [5, 1],
+              [1, 2]
+            ],
+            "message": "Wait... is that my gun?!"
+          }
         ],
         [
-          "No matter. We need to get out of this place and back to the base.",
-          "I presume you've already stumbled into Dr. Willett if you decided to come poking around these ruins.",
-          "Oh, and by the way, take this relic I found.",
-          "It supposedly grants you the power to cling onto and jump off of walls. I hope you find it useful."
+          {
+            "codes": [[5, 0]],
+            "message": "No matter. We need to get out of this place and back to the base."
+          },
+          {
+            "codes": [
+              [9, 420],
+              [13, 0]
+            ],
+            "message": "I presume you've already stumbled into Dr. Willett if you decided to come poking around these ruins."
+          },
+          {
+            "codes": [[2, 115]],
+            "message": "Oh, and by the way, take this relic I found."
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "It supposedly grants you the power to cling onto and jump off of walls. I hope you find it useful."
+          }
         ],
         [
-          "Another long story, but that one I at least owe it to tell you...",
-          "Willett and I were taking her over from Grand Island to do some research in places just like these.",
-          "Then, one night, we and our crew were raided by pirates - or, what we thought were pirates.",
-          "Turns out, it was Skycorps. Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us.",
-          "Luckily Doc had an escape plan, but unfortunately that plan didn't include you or anyone else on the crew.",
-          "Skycorps had already tossed most of us in holding cells, but Doc and I were wanted by higher-ups, so they kept us in the bridge.",
-          "I didn't really know what to do... I was too scared to stay behind, but I couldn't just abandon you either.",
-          "I decided the least I could do was try to pass along a message so that you might have some chance to escape, and so I had someone from our crew hide a note in your food.",
-          "I presume you got the message, otherwise we wouldn't be having this conversation."
+          {
+            "codes": [[5, 0]],
+            "message": "Another long story, but that one I at least owe it to tell you..."
+          },
+          {
+            "message": "Willett and I were taking her over from Grand Island to do some research in places just like these."
+          },
+          {
+            "message": "Then, one night, we and our crew were raided by pirates - or, what we thought were pirates."
+          },
+          {
+            "message": "Turns out, it was Skycorps. Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "Luckily Doc had an escape plan, but unfortunately that plan didn't include you or anyone else on the crew."
+          },
+          {
+            "message": "Skycorps had already tossed most of us in holding cells, but Doc and I were wanted by higher-ups, so they kept us in the bridge."
+          },
+          {
+            "message": "I didn't really know what to do... I was too scared to stay behind, but I couldn't just abandon you either."
+          },
+          {
+            "message": "I decided the least I could do was try to pass along a message so that you might have some chance to escape, and so I had someone from our crew hide a note in your food."
+          },
+          {
+            "codes": [
+              [5, 2],
+              [1, 3]
+            ],
+            "message": "I presume you got the message, otherwise we wouldn't be having this conversation."
+          }
         ],
         [
-          "Aren't we all?",
-          "...sigh...",
-          "God, I miss him, despite everything he did. I just want to know if he's still alive..."
+          {
+            "codes": [[5, 0]],
+            "message": "Aren't we all?"
+          },
+          {
+            "message": "...sigh..."
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "God, I miss him, despite everything he did. I just want to know if he's still alive..."
+          }
         ],
         [
-          "You go ahead. I need to gather a few artifacts for study first.",
-          "Don't worry about me--you've taken care of all the threats, and I know the way home!"
+          {
+            "message": "You go ahead. I need to gather a few artifacts for study first."
+          },
+          {
+            "codes": [[5, 2]],
+            "message": "Don't worry about me--you've taken care of all the threats, and I know the way home!"
+          }
         ]
       ]
     },
     "2": {
-      "codes": [
-        [0, 0, 0, 1, 0],
-        [0, 1, 8, 1, 0],
-        [0, 2, 3, 1, 0],
-        [0, 3, 4, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2],
-        [1, 0, 2, 1, 3]
-      ],
       "responses": [
         [
-          "What happened on Firstwind?",
-          "What do you know about my brother?",
-          "Tell me about these ruins."
+          {
+            "codes": [[1, 1]],
+            "message": "What happened on Firstwind?"
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "What do you know about my brother?"
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "Tell me about these ruins."
+          }
         ]
       ],
       "suite": [
-        ["Yeah?"],
         [
-          "Another long story, but that one I at least owe it to tell you...",
-          "Willett and I were taking her over from Grand Island to do some research in places just like these.",
-          "Then, one night, we and our crew were raided by pirates--or, what we thought were pirates.",
-          "Turns out, it was Skycorps. Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us.",
-          "Luckily Doc had an escape plan, but unfortunately that plan didn't include you or anyone else on the crew.",
-          "Skycorps had already tossed most of us in holding cells, but Doc and I were wanted by higher-ups, so they kept us in the bridge.",
-          "I didn't really know what to do... I was too scared to stay behind, but I couldn't just abandon you either.",
-          "I decided the least I could do was try to pass along a message so that you might have some chance to escape, and so I had someone from our crew hide a note in your food.",
-          "I presume you got the message, otherwise we wouldn't be having this conversation."
+          {
+            "codes": [[1, 0]],
+            "message": "Yeah?"
+          }
         ],
         [
-          "Well, no one knows where he went or what his plans are.",
-          "He had stolen an artifact from Doc--not sure which one, but that hardly matters--and ran away.",
-          "He gave us no warning, and I struggle to piece together what his motive could have been...",
-          "Ugh, I don't know. He's really protective of Kariba stuff, and understandably so, but I just can't wrap my mind around that kind of betrayal."
+          {
+            "message": "Another long story, but that one I at least owe it to tell you..."
+          },
+          {
+            "message": "Willett and I were taking her over from Grand Island to do some research in places just like these."
+          },
+          {
+            "message": "Then, one night, we and our crew were raided by pirates--or, what we thought were pirates."
+          },
+          {
+            "message": "Turns out, it was Skycorps. Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us."
+          },
+          {
+            "message": "Luckily Doc had an escape plan, but unfortunately that plan didn't include you or anyone else on the crew."
+          },
+          {
+            "message": "Skycorps had already tossed most of us in holding cells, but Doc and I were wanted by higher-ups, so they kept us in the bridge."
+          },
+          {
+            "message": "I didn't really know what to do... I was too scared to stay behind, but I couldn't just abandon you either."
+          },
+          {
+            "message": "I decided the least I could do was try to pass along a message so that you might have some chance to escape, and so I had someone from our crew hide a note in your food."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "I presume you got the message, otherwise we wouldn't be having this conversation."
+          }
         ],
         [
-          "They are the ruins of the ancient Kariba. Your ancestors.",
-          "This one in particular is the most in-tact that we currently know about, and it's become clear to me that it's also the most active.",
-          "The rhenite energy that fills these chambers is almost too much for a human like me to stomach.",
-          "Anyhow, I came to study these strange beings that you've no doubt encountered in great number.",
-          "I believe they are hiding a deep truth about our world and about this fabulous island, and I am intent on discovering what that is."
+          {
+            "message": "Well, no one knows where he went or what his plans are."
+          },
+          {
+            "message": "He had stolen an artifact from Doc--not sure which one, but that hardly matters--and ran away."
+          },
+          {
+            "message": "He gave us no warning, and I struggle to piece together what his motive could have been..."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Ugh, I don't know. He's really protective of Kariba stuff, and understandably so, but I just can't wrap my mind around that kind of betrayal."
+          }
+        ],
+        [
+          {
+            "message": "They are the ruins of the ancient Kariba. Your ancestors."
+          },
+          {
+            "message": "This one in particular is the most in-tact that we currently know about, and it's become clear to me that it's also the most active."
+          },
+          {
+            "message": "The rhenite energy that fills these chambers is almost too much for a human like me to stomach."
+          },
+          {
+            "message": "Anyhow, I came to study these strange beings that you've no doubt encountered in great number."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "I believe they are hiding a deep truth about our world and about this fabulous island, and I am intent on discovering what that is."
+          }
         ]
       ]
     }
   },
   "carl": {
     "1": {
-      "codes": [
-        [0, 0, 2, 13, 17],
-        [0, 0, 0, 3, 17]
-      ],
       "responses": [],
       "suite": [
         [
-          "What in the heck are my eyes seein' right now...?",
-          "Now, I ain't know how you snuck your way down here, but I'm tellin' you now, it was a bad idea.",
-          "The ship's goin' down, little lady.",
-          "If I was you I'd find the nearest escape hatch and go for a swim in the clouds.",
-          "Say, would you grab me a soda if you got nothin' else to do?"
+          {
+            "codes": [[3, 17]],
+            "message": "What in the heck are my eyes seein' right now...?"
+          },
+          {
+            "message": "Now, I ain't know how you snuck your way down here, but I'm tellin' you now, it was a bad idea."
+          },
+          {
+            "codes": [[13, 17]],
+            "message": "The ship's goin' down, little lady."
+          },
+          {
+            "message": "If I was you I'd find the nearest escape hatch and go for a swim in the clouds."
+          },
+          {
+            "message": "Say, would you grab me a soda if you got nothin' else to do?"
+          }
         ]
       ]
     },
     "2": {
-      "codes": [
-        [0, 0, 0, 1, 0],
-        [0, 1, 1, 1, 0],
-        [0, 2, 2, 1, 0],
-        [0, 3, 2, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2],
-        [1, 0, 2, 1, 3]
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "Who are you?"
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "What is this place?"
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "Tell me about Skycorps."
+          }
+        ]
       ],
-      "responses": [["Who are you?", "What is this place?", "Tell me about Skycorps."]],
       "suite": [
-        ["So... Any updates on that soda?"],
         [
-          "Name's Carl. I'm guardin' the cargo here, and my shift doesn't end for another six months.",
-          "I'm a simple man. I have a job to do, and I'm gon' do it until it's done. Even if it kills me."
+          {
+            "codes": [[1, 0]],
+            "message": "So... Any updates on that soda?"
+          }
         ],
         [
-          "Why, it's the cargo room! Unless you were speakin' in more general terms, in which case, this is the Firstwind.",
-          "She's an old research vessel that Skycorps... er... borrowed.",
-          "Anyhow, I been livin' and workin' here for the better part of three months on a long-term contract, as they call it."
+          {
+            "message": "Name's Carl. I'm guardin' the cargo here, and my shift doesn't end for another six months."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "I'm a simple man. I have a job to do, and I'm gon' do it until it's done. Even if it kills me."
+          }
         ],
         [
-          "You know, I ain't never heard of 'em until they came and busted down my front door and took me prisoner. As much as I wasn't happy about that, they've been treating me alright. I make lots more money than I ever did before.",
-          "But lemme tell ya, I sure do miss my dog.",
-          "Anyhow, they force me to sit in this cargo hold all day to make sure no one steals anything. Say, now that I mention it, don't go tamperin', ya got that?"
+          {
+            "message": "Why, it's the cargo room! Unless you were speakin' in more general terms, in which case, this is the Firstwind."
+          },
+          {
+            "message": "She's an old research vessel that Skycorps... er... borrowed."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Anyhow, I been livin' and workin' here for the better part of three months on a long-term contract, as they call it."
+          }
+        ],
+        [
+          {
+            "message": "You know, I ain't never heard of 'em until they came and busted down my front door and took me prisoner. As much as I wasn't happy about that, they've been treating me alright. I make lots more money than I ever did before."
+          },
+          {
+            "message": "But lemme tell ya, I sure do miss my dog."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Anyhow, they force me to sit in this cargo hold all day to make sure no one steals anything. Say, now that I mention it, don't go tamperin', ya got that?"
+          }
         ]
       ]
     }
   },
   "dr_go": {
     "1": {
-      "codes": [
-        [0, 0, 2, 13, 16],
-        [0, 0, 0, 3, 2, 16]
-      ],
       "responses": [[]],
-      "suite": [["Oh!", "I wasn't expecting a Kariba to stroll in here.", "Are you sick?"]]
+      "suite": [
+        [
+          {
+            "codes": [[3, 2, 16]],
+            "message": "Oh!"
+          },
+          {
+            "message": "I wasn't expecting a Kariba to stroll in here."
+          },
+          {
+            "codes": [[13, 16]],
+            "message": "Are you sick?"
+          }
+        ]
+      ]
     },
     "2": {
-      "codes": [
-        [0, 0, 0, 1, 0],
-        [0, 1, 2, 1, 0],
-        [0, 2, 1, 1, 0],
-        [0, 3, 2, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2],
-        [1, 0, 2, 1, 3]
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "Who are you?"
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "What's going on?"
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "Where am I?"
+          }
+        ]
       ],
-      "responses": [["Who are you?", "What's going on?", "Where am I?"]],
       "suite": [
-        ["How can I help you?"],
         [
-          "I'm Dr. Go.",
-          "I was enlisted by Skycorps some years ago, and they assigned me here against my will.",
-          "No matter. I will do my duties here until I am relieved of them, or some other end befalls us."
+          {
+            "codes": [[1, 0]],
+            "message": "How can I help you?"
+          }
         ],
         [
-          "We're not entirely certain, as the crew have a tendency to forget we exist, and as such they don't tell us much.",
-          "But from what I've heard through passing transmissions, this ship is enduring high-altitude storms beyond her capacity."
+          {
+            "message": "I'm Dr. Go."
+          },
+          {
+            "message": "I was enlisted by Skycorps some years ago, and they assigned me here against my will."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "No matter. I will do my duties here until I am relieved of them, or some other end befalls us."
+          }
         ],
         [
-          "This is the infirmary.",
-          "Here, Mirin and I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around.",
-          "Perhaps they all escaped and left us here to die."
+          {
+            "message": "We're not entirely certain, as the crew have a tendency to forget we exist, and as such they don't tell us much."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "But from what I've heard through passing transmissions, this ship is enduring high-altitude storms beyond her capacity."
+          }
+        ],
+        [
+          {
+            "message": "This is the infirmary."
+          },
+          {
+            "message": "Here, Mirin and I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Perhaps they all escaped and left us here to die."
+          }
         ]
       ]
     }
   },
   "dr_willett": {
     "1": {
-      "codes": [
-        [0, 0, 0, 14, 0],
-        [0, 0, 1, 14, 1],
-        [0, 1, 0, 1, 1],
-        [0, 2, 4, 1, 2],
-        [0, 3, 6, 1, 2],
-        [0, 0, 4, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 1, 0, 1, 2],
-        [1, 1, 1, 1, 3],
-        [1, 2, 0, 1, 4],
-        [0, 4, 4, 13, 2],
-        [0, 4, 2, 2, 18]
-      ],
       "responses": [
-        ["It sure is."],
-        ["Bryn left me a note.", "I had to fight my way out."],
-        ["I can try to find her."]
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "It sure is."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "Bryn left me a note."
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "I had to fight my way out."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 4]],
+            "message": "I can try to find her."
+          }
+        ]
       ],
       "suite": [
         [
-          "...",
-          "Good heavens, you scared me half to death. I don't know if my old heart can take many more such frights.",
-          "Wait a second...",
-          "Do my eyes deceive me?",
-          "Is that really you, Nani?"
+          {
+            "codes": [[14, 0]],
+            "message": "..."
+          },
+          {
+            "codes": [[14, 1]],
+            "message": "Good heavens, you scared me half to death. I don't know if my old heart can take many more such frights."
+          },
+          {
+            "message": "Wait a second..."
+          },
+          {
+            "message": "Do my eyes deceive me?"
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Is that really you, Nani?"
+          }
         ],
         [
-          "Well, I can't say I understand just how you got yourself off that ship, but I am impressed nonetheless."
+          {
+            "codes": [[1, 1]],
+            "message": "Well, I can't say I understand just how you got yourself off that ship, but I am impressed nonetheless."
+          }
         ],
         [
-          "Ah, yes... Bryn. My courageous student.",
-          "A touch too courageous, if you ask me!",
-          "The darling thing is trapped in a ruin.",
-          "Again.",
-          "I haven't had a transmission from her in a few days now, so I am beginning to worry."
+          {
+            "message": "Ah, yes... Bryn. My courageous student."
+          },
+          {
+            "message": "A touch too courageous, if you ask me!"
+          },
+          {
+            "message": "The darling thing is trapped in a ruin."
+          },
+          {
+            "message": "Again."
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "I haven't had a transmission from her in a few days now, so I am beginning to worry."
+          }
         ],
         [
-          "I hadn't even noticed, you've got a gun!",
-          "Let me see...",
-          "Yes, I know this weapon. It belongs to Bryn, my courageous student.",
-          "A touch too courageous, if you ask me!",
-          "The darling thing is trapped in a ruin.",
-          "Again.",
-          "I haven't had a transmission from her in a few days now, so I am beginning to worry."
+          {
+            "message": "I hadn't even noticed, you've got a gun!"
+          },
+          {
+            "message": "Let me see..."
+          },
+          {
+            "message": "Yes, I know this weapon. It belongs to Bryn, my courageous student."
+          },
+          {
+            "message": "A touch too courageous, if you ask me!"
+          },
+          {
+            "message": "The darling thing is trapped in a ruin."
+          },
+          {
+            "message": "Again."
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "I haven't had a transmission from her in a few days now, so I am beginning to worry."
+          }
         ],
         [
-          "That would be excellent. Despite what it may seem, these old knees aren't much fit for spelunking!",
-          "Oh, before you go...",
-          "Have a look at this. It seems like it connects perfectly with that gizmo you've got at your hip!",
-          "With that, you should be able to track your lifeforce and see any gear you might be wearing.",
-          "Maybe it's not terribly useful for you, but it's taking up valuable space on my workbench."
+          {
+            "message": "That would be excellent. Despite what it may seem, these old knees aren't much fit for spelunking!"
+          },
+          {
+            "message": "Oh, before you go..."
+          },
+          {
+            "codes": [[2, 18]],
+            "message": "Have a look at this. It seems like it connects perfectly with that gizmo you've got at your hip!"
+          },
+          {
+            "message": "With that, you should be able to track your lifeforce and see any gear you might be wearing."
+          },
+          {
+            "codes": [[13, 2]],
+            "message": "Maybe it's not terribly useful for you, but it's taking up valuable space on my workbench."
+          }
         ]
       ]
     },
     "2": {
-      "codes": [
-        [0, 0, 0, 1, 0],
-        [0, 1, 3, 1, 0],
-        [0, 2, 4, 1, 0],
-        [0, 3, 0, 1, 1],
-        [0, 6, 5, 1, 2],
-        [1, 2, 0, 1, 7],
-        [1, 1, 2, 1, 6],
-        [1, 1, 1, 1, 5],
-        [1, 1, 0, 1, 4],
-        [1, 0, 2, 1, 3],
-        [1, 0, 1, 1, 2],
-        [1, 0, 0, 1, 1],
-        [0, 4, 2, 1, 1],
-        [0, 5, 5, 1, 1],
-        [0, 7, 2, 1, 1]
-      ],
       "responses": [
-        ["Where are the ruins?", "What is this place?", "I'm curious..."],
-        ["Do you know where my brother is?", "Tell me about Bryn.", "Tell me about Skycorps."],
-        ["Caroline?"]
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "Where are the ruins?"
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "What is this place?"
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "I'm curious..."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 4]],
+            "message": "Do you know where my brother is?"
+          },
+          {
+            "codes": [[1, 5]],
+            "message": "Tell me about Bryn."
+          },
+          {
+            "codes": [[1, 6]],
+            "message": "Tell me about Skycorps."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 7]],
+            "message": "Caroline?"
+          }
+        ]
       ],
       "suite": [
-        ["So... Any luck finding Bryn?"],
         [
-          "The ruins are southeast of here. You might need to do a bit of acrobatics to get there if you take the low road - in some areas, the overturned forest hangs precariously above the clouds.",
-          "Alternatively, you can take the high road, but it will be a much longer journey.",
-          "The ruins themselves are difficult to miss. There is a massive entrance ornamented with carvings of the ancient Kariba.",
-          "I heard your brother tell me stories of you two exploring them. I suppose you've since forgotten?"
+          {
+            "codes": [[1, 0]],
+            "message": "So... Any luck finding Bryn?"
+          }
         ],
         [
-          "This is an old base established by the long-dead pioneers who first discovered this island.",
-          "From what I gathered about what they left behind, they used it as an outpost of sorts to defend and hide against the native tribes who did not want them here.",
-          "I imagine that, after some time, they were either killed by the natives or simply died from a lack of resources.",
-          "Anyway, it seemed like the perfect spot for me and Bryn to find shelter after crash-landing in our escape pod.",
-          "We've been here for some months, now, ever on the run from Skycorps."
-        ],
-        ["Tell me what you'd like to know."],
-        [
-          "Well, that's a sore topic, to say the very least.",
-          "He stole a priceless artifact and ran off with it.",
-          "If you ever do find him, could you let him know that I'd like it back?"
-        ],
-        [
-          "Bryn is the brightest and hardest-working student I've ever met, apart perhaps from your brother.",
-          "But forgive me if I hesitate to laud him after the incident.",
-          "Anyway, Bryn was in my 'Anthropology of Ancient Peoples' seminar over on Grand Island some years back, and she's been joining me here on post-graduate expeditions to study the Ancient Kariba.",
-          "She's grown quite attached to her studies recently.",
-          "She reminds me a lot of myself when I was her age, in fact.",
-          "Let's just hope she doesn't make the same mistake I made and let some money-hungry corporation take advantage of her brilliant mind."
+          {
+            "message": "The ruins are southeast of here. You might need to do a bit of acrobatics to get there if you take the low road - in some areas, the overturned forest hangs precariously above the clouds."
+          },
+          {
+            "message": "Alternatively, you can take the high road, but it will be a much longer journey."
+          },
+          {
+            "message": "The ruins themselves are difficult to miss. There is a massive entrance ornamented with carvings of the ancient Kariba."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "I heard your brother tell me stories of you two exploring them. I suppose you've since forgotten?"
+          }
         ],
         [
-          "It's a mega-corporation that frankly doesn't know what it wants to be anymore.",
-          "You might be surprised to know that I was its co-founder.",
-          "Yes, that's right, co-founder!",
-          "But some years ago, Caroline and I had some disagreements about the company's mission, so I stepped down and opted to conduct some research on my own.",
-          "Ever since, Caroline and her indentured goons have been hunting me down and trying to steal the research that is rightfully mine.",
-          "It seems that's all anyone wants to do these days."
+          {
+            "message": "This is an old base established by the long-dead pioneers who first discovered this island."
+          },
+          {
+            "message": "From what I gathered about what they left behind, they used it as an outpost of sorts to defend and hide against the native tribes who did not want them here."
+          },
+          {
+            "message": "I imagine that, after some time, they were either killed by the natives or simply died from a lack of resources."
+          },
+          {
+            "message": "Anyway, it seemed like the perfect spot for me and Bryn to find shelter after crash-landing in our escape pod."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "We've been here for some months, now, ever on the run from Skycorps."
+          }
         ],
         [
-          "Lady Nimbus. Skycorps's CEO.",
-          "She would have done better to just leave me alone, but it's too late now.",
-          "I will take her and all of Skycorps down after what they've done!"
+          {
+            "codes": [[1, 1]],
+            "message": "Tell me what you'd like to know."
+          }
+        ],
+        [
+          {
+            "message": "Well, that's a sore topic, to say the very least."
+          },
+          {
+            "message": "He stole a priceless artifact and ran off with it."
+          },
+          {
+            "codes": [[1, 1]],
+            "message": "If you ever do find him, could you let him know that I'd like it back?"
+          }
+        ],
+        [
+          {
+            "message": "Bryn is the brightest and hardest-working student I've ever met, apart perhaps from your brother."
+          },
+          {
+            "message": "But forgive me if I hesitate to laud him after the incident."
+          },
+          {
+            "message": "Anyway, Bryn was in my 'Anthropology of Ancient Peoples' seminar over on Grand Island some years back, and she's been joining me here on post-graduate expeditions to study the Ancient Kariba."
+          },
+          {
+            "message": "She's grown quite attached to her studies recently."
+          },
+          {
+            "message": "She reminds me a lot of myself when I was her age, in fact."
+          },
+          {
+            "codes": [[1, 1]],
+            "message": "Let's just hope she doesn't make the same mistake I made and let some money-hungry corporation take advantage of her brilliant mind."
+          }
+        ],
+        [
+          {
+            "message": "It's a mega-corporation that frankly doesn't know what it wants to be anymore."
+          },
+          {
+            "message": "You might be surprised to know that I was its co-founder."
+          },
+          {
+            "message": "Yes, that's right, co-founder!"
+          },
+          {
+            "message": "But some years ago, Caroline and I had some disagreements about the company's mission, so I stepped down and opted to conduct some research on my own."
+          },
+          {
+            "message": "Ever since, Caroline and her indentured goons have been hunting me down and trying to steal the research that is rightfully mine."
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "It seems that's all anyone wants to do these days."
+          }
+        ],
+        [
+          {
+            "message": "Lady Nimbus. Skycorps's CEO."
+          },
+          {
+            "message": "She would have done better to just leave me alone, but it's too late now."
+          },
+          {
+            "codes": [[1, 1]],
+            "message": "I will take her and all of Skycorps down after what they've done!"
+          }
         ]
       ]
     }
   },
   "gobe": {
     "1": {
-      "codes": [
-        [0, 3, 0, 13, 3],
-        [0, 0, 3, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2],
-        [0, 1, 2, 1, 1],
-        [0, 2, 3, 1, 1],
-        [1, 1, 0, 1, 3],
-        [0, 3, 0, 2, 20]
-      ],
       "responses": [
-        ["I'm just looking for a place to rest.", "I'm looking for my older brother."],
-        ["Sure thing!"]
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "I'm just looking for a place to rest."
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "I'm looking for my older brother."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 3]],
+            "message": "Sure thing!"
+          }
+        ]
       ],
       "suite": [
         [
-          "...",
-          "Huh?",
-          "Oh! A lost girl wanders my way, hmm?",
-          "It's not every day I see another friendly face around here. What's your story?"
+          {
+            "message": "..."
+          },
+          {
+            "message": "Huh?"
+          },
+          {
+            "message": "Oh! A lost girl wanders my way, hmm?"
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "It's not every day I see another friendly face around here. What's your story?"
+          }
         ],
         [
-          "Well, you're welcome to this here farmhouse. It's been abandoned ever since Old Mimic passed, and so I've been stopping by every now and again to do some upkeep.",
-          "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.",
-          "Could you go find him for me? The past weeks of hard travel have left me a bit tired."
+          {
+            "message": "Well, you're welcome to this here farmhouse. It's been abandoned ever since Old Mimic passed, and so I've been stopping by every now and again to do some upkeep."
+          },
+          {
+            "message": "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods."
+          },
+          {
+            "codes": [[1, 1]],
+            "message": "Could you go find him for me? The past weeks of hard travel have left me a bit tired."
+          }
         ],
         [
-          "A lost brother, eh? Well, my heart aches to hear that.",
-          "You know, there are others of your kind at Woodshine, east of here. It seems like it'd be a good place to start.",
-          "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods.",
-          "Could you go find him for me? The past weeks of hard travel have left me a bit tired."
+          {
+            "message": "A lost brother, eh? Well, my heart aches to hear that."
+          },
+          {
+            "message": "You know, there are others of your kind at Woodshine, east of here. It seems like it'd be a good place to start."
+          },
+          {
+            "message": "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods."
+          },
+          {
+            "codes": [[1, 1]],
+            "message": "Could you go find him for me? The past weeks of hard travel have left me a bit tired."
+          }
         ],
         [
-          "Now, that's awful kind. Here, take this. You'll need it if you want to properly wrangle him up."
+          {
+            "codes": [
+              [13, 3],
+              [2, 20]
+            ],
+            "message": "Now, that's awful kind. Here, take this. You'll need it if you want to properly wrangle him up."
+          }
         ]
       ]
     },
     "2": {
-      "responses": [["Not yet..."]],
-      "suite": [
-        ["So? Have you found my dog yet? I'm starting to get worried..."],
+      "responses": [
         [
-          "Well, if it's any help, he tends to climb to real high places when he's afraid.",
-          "Good luck!"
+          {
+            "message": "Not yet..."
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "message": "So? Have you found my dog yet? I'm starting to get worried..."
+          }
+        ],
+        [
+          {
+            "message": "Well, if it's any help, he tends to climb to real high places when he's afraid."
+          },
+          {
+            "message": "Good luck!"
+          }
         ]
       ]
     },
     "3": {
-      "responses": [["Hey, don't mention it!"], ["Sure, let's trade!", "Maybe later."]],
+      "responses": [
+        [
+          {
+            "message": "Hey, don't mention it!"
+          }
+        ],
+        [
+          {
+            "message": "Sure, let's trade!"
+          },
+          {
+            "message": "Maybe later."
+          }
+        ]
+      ],
       "suite": [
         [
-          "Oh, Justin! My precious thing!",
-          "Well, you've really gone and done it, haven't you?",
-          "I say, I was beginning to fear for this lil' guy's life. I owe you a great debt, friend!"
+          {
+            "message": "Oh, Justin! My precious thing!"
+          },
+          {
+            "message": "Well, you've really gone and done it, haven't you?"
+          },
+          {
+            "message": "I say, I was beginning to fear for this lil' guy's life. I owe you a great debt, friend!"
+          }
         ],
         [
-          "Well, I've got to thank you somehow...",
-          "Say, I'd be happy to trade some stuff with you. Normally I don't vend outside of Ashtown, but for you I'll make an exception!",
-          "What do you say?"
+          {
+            "message": "Well, I've got to thank you somehow..."
+          },
+          {
+            "message": "Say, I'd be happy to trade some stuff with you. Normally I don't vend outside of Ashtown, but for you I'll make an exception!"
+          },
+          {
+            "message": "What do you say?"
+          }
         ],
-        ["Here's what I've got."],
-        ["Alright then, I'll see ya around!"]
+        [
+          {
+            "message": "Here's what I've got."
+          }
+        ],
+        [
+          {
+            "message": "Alright then, I'll see ya around!"
+          }
+        ]
       ]
     },
     "4": {
-      "codes": [
-        [0, 0, 0, 1, 0],
-        [0, 2, 1, 1, 0],
-        [0, 3, 1, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2],
-        [1, 0, 2, 1, 3]
-      ],
-      "responses": [["I'd like to trade things with you.", "Who are you?", "Where are we?"]],
-      "suite": [
-        ["Yes?"],
-        ["Sure thing! Here's what I've picked up over the last few weeks..."],
+      "responses": [
         [
-          "I'm a surveyor of this land, and I've been exploring its farthest and darkest reaches for as long as I can remember.",
-          "Justin and I tend to find stuff along the way and pick it up, so if you're ever in the market for random junk, I'm your guy!"
+          {
+            "codes": [[1, 1]],
+            "message": "I'd like to trade things with you."
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "Who are you?"
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "Where are we?"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [[1, 0]],
+            "message": "Yes?"
+          }
         ],
         [
-          "Well, the Overturned Forest, if ya ain't talkin' specifics. At least, that's what we Grand-Islanders call it.",
-          "But shouldn't you know, anyhow? You're a Kariba after all, and, last I checked, all your kind come from here."
+          {
+            "message": "Sure thing! Here's what I've picked up over the last few weeks..."
+          }
+        ],
+        [
+          {
+            "message": "I'm a surveyor of this land, and I've been exploring its farthest and darkest reaches for as long as I can remember."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Justin and I tend to find stuff along the way and pick it up, so if you're ever in the market for random junk, I'm your guy!"
+          }
+        ],
+        [
+          {
+            "message": "Well, the Overturned Forest, if ya ain't talkin' specifics. At least, that's what we Grand-Islanders call it."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "But shouldn't you know, anyhow? You're a Kariba after all, and, last I checked, all your kind come from here."
+          }
         ]
       ]
     }
   },
   "hologus": {
     "1": {
-      "codes": [[0, 0, 0, 4, 1]],
       "responses": [],
       "suite": [
         [
-          "My Lady...?",
-          "I'm here. I have an unstable connection here, and I can barely hear you.",
-          "I had to flee Firstwind."
+          {
+            "codes": [[4, 1]],
+            "message": "My Lady...?"
+          },
+          {
+            "message": "I'm here. I have an unstable connection here, and I can barely hear you."
+          },
+          {
+            "message": "I had to flee Firstwind."
+          }
         ]
       ]
     },
     "2": {
-      "codes": [[0, 0, 0, 4, 3]],
       "responses": [],
       "suite": [
         [
-          "My mask was compromised. And besides, the storms up here are ferocious.",
-          "And I have even worse news...",
-          "The Kariba girl escaped."
+          {
+            "codes": [[4, 3]],
+            "message": "My mask was compromised. And besides, the storms up here are ferocious."
+          },
+          {
+            "message": "And I have even worse news..."
+          },
+          {
+            "message": "The Kariba girl escaped."
+          }
         ]
       ]
     },
     "3": {
-      "codes": [[0, 0, 0, 4, 5]],
       "responses": [],
       "suite": [
         [
-          "I got nothing at all to say. She had a gun, and she's pretty nimble.",
-          "I won't underestimate her again.",
-          "And, by the way, it seems like her memories might be coming back, so I'd bet my next paycheck she's going to try to find her brother."
+          {
+            "codes": [[4, 5]],
+            "message": "I got nothing at all to say. She had a gun, and she's pretty nimble."
+          },
+          {
+            "message": "I won't underestimate her again."
+          },
+          {
+            "message": "And, by the way, it seems like her memories might be coming back, so I'd bet my next paycheck she's going to try to find her brother."
+          }
         ]
       ]
     },
     "4": {
-      "codes": [
-        [0, 0, 0, 4, 2],
-        [0, 0, 0, 5, 1],
-        [0, 0, 1, 5, 0]
-      ],
       "responses": [],
       "suite": [
         [
-          "I set myself up for that one, I guess.",
-          "Anyway, do us both a favor and get someone else to deal with the Kariba for now.",
-          "I'll need to properly prepare for the next time I fight her, if it comes to that."
+          {
+            "codes": [
+              [4, 2],
+              [5, 1]
+            ],
+            "message": "I set myself up for that one, I guess."
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "Anyway, do us both a favor and get someone else to deal with the Kariba for now."
+          },
+          {
+            "message": "I'll need to properly prepare for the next time I fight her, if it comes to that."
+          }
         ]
       ]
     }
@@ -596,181 +1152,373 @@
   "justin": {
     "1": {
       "responses": [],
-      "suite": [["Barf! Barf!"]]
+      "suite": [
+        [
+          {
+            "message": "Barf! Barf!"
+          }
+        ]
+      ]
     },
     "2": {
-      "responses": [["(Take the dog)", "(Leave the dog)"]],
-      "suite": [["Barf! Barf!"], ["Grrr...", "Barf!!", "Barf, barf!"], ["(Whine)"]]
+      "responses": [
+        [
+          {
+            "message": "(Take the dog)"
+          },
+          {
+            "message": "(Leave the dog)"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "message": "Barf! Barf!"
+          }
+        ],
+        [
+          {
+            "message": "Grrr..."
+          },
+          {
+            "message": "Barf!!"
+          },
+          {
+            "message": "Barf, barf!"
+          }
+        ],
+        [
+          {
+            "message": "(Whine)"
+          }
+        ]
+      ]
     },
     "3": {
       "responses": [],
-      "suite": [["Barf!"]]
+      "suite": [
+        [
+          {
+            "message": "Barf!"
+          }
+        ]
+      ]
     }
   },
   "lady_nimbus": {
     "1": {
       "responses": [],
-      "suite": [["Gus... Gus...?", "Gus, do you copy?"]]
+      "suite": [
+        [
+          {
+            "message": "Gus... Gus...?"
+          },
+          {
+            "message": "Gus, do you copy?"
+          }
+        ]
+      ]
     },
     "2": {
-      "codes": [
-        [0, 0, 0, 5, 1],
-        [0, 0, 2, 5, 0]
-      ],
       "responses": [],
-      "suite": [["Flee?!", "What do you mean?", "The ship has been securely ours for months."]]
+      "suite": [
+        [
+          {
+            "codes": [[5, 1]],
+            "message": "Flee?!"
+          },
+          {
+            "message": "What do you mean?"
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "The ship has been securely ours for months."
+          }
+        ]
+      ]
     },
     "3": {
-      "codes": [
-        [0, 0, 0, 5, 2],
-        [0, 0, 1, 5, 0]
-      ],
       "responses": [],
-      "suite": [["...", "It is unlike you to fail me so, Gus."]]
+      "suite": [
+        [
+          {
+            "codes": [[5, 2]],
+            "message": "..."
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "It is unlike you to fail me so, Gus."
+          }
+        ]
+      ]
     },
     "4": {
       "responses": [],
-      "suite": [["Your next paycheck isn't going to exist, I'm afraid."]]
+      "suite": [
+        [
+          {
+            "message": ""
+          }
+        ]
+      ]
     },
     "5": {
       "codes": [[0, 0, 2, 5, 2]],
       "responses": [],
       "suite": [
         [
-          "I'll see to it that it won't.",
-          "I have no interest in wasting any more time dealing with Nani.",
-          "I'm sending Lynx after her, and that'll be the end of it."
+          {
+            "message": "I'll see to it that it won't."
+          },
+          {
+            "message": "I have no interest in wasting any more time dealing with Nani."
+          },
+          {
+            "codes": [[5, 2]],
+            "message": "I'm sending Lynx after her, and that'll be the end of it."
+          }
         ]
       ]
     }
   },
   "minigus": {
     "1": {
-      "codes": [
-        [0, 0, 4, 1, 0],
-        [0, 0, 0, 4, 4],
-        [0, 1, 0, 4, 3],
-        [0, 2, 0, 4, 2],
-        [0, 2, 0, 5, 1],
-        [0, 2, 1, 5, 0],
-        [0, 3, 1, 4, 1],
-        [0, 1, 3, 12, 0],
-        [0, 2, 2, 12, 0],
-        [0, 3, 4, 12, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2],
-        [1, 0, 2, 1, 3]
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "Who are you?"
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "Whatever I need to do."
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "Where is my brother?"
+          }
+        ]
       ],
-      "responses": [["Who are you?", "Whatever I need to do.", "Where is my brother?"]],
       "suite": [
         [
-          "Well, would you look at that!",
-          "The sorry little Kariba has escaped her cell.",
-          "You know, I'm not exactly surprised. The storms up here are getting worse, and the crew seem more interested in staying alive than retaining prisoners.",
-          "And yet a prisoner you shall remain, if I have anything to say about it.",
-          "Now tell me, girl, what do you plan to do with that pathetic little pistol of yours?"
+          {
+            "codes": [[4, 4]],
+            "message": "Well, would you look at that!"
+          },
+          {
+            "message": "The sorry little Kariba has escaped her cell."
+          },
+          {
+            "message": "You know, I'm not exactly surprised. The storms up here are getting worse, and the crew seem more interested in staying alive than retaining prisoners."
+          },
+          {
+            "message": "And yet a prisoner you shall remain, if I have anything to say about it."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Now tell me, girl, what do you plan to do with that pathetic little pistol of yours?"
+          }
         ],
         [
-          "I asked you a question.",
-          "But I'll be kind, considering you haven't much longer to live. My name is Gus, and I lead Lady Nimbus's feared Harpoon Squad.",
-          "You see, we do whatever cleaning up needs to be done down on the island.",
-          "But anyway, I'm tired of talkin' to you. Get ready to die!"
+          {
+            "codes": [[4, 3]],
+            "message": "I asked you a question."
+          },
+          {
+            "message": "But I'll be kind, considering you haven't much longer to live. My name is Gus, and I lead Lady Nimbus's feared Harpoon Squad."
+          },
+          {
+            "message": "You see, we do whatever cleaning up needs to be done down on the island."
+          },
+          {
+            "codes": [[12, 0]],
+            "message": "But anyway, I'm tired of talkin' to you. Get ready to die!"
+          }
         ],
         [
-          "Hah!",
-          "Sure is some tough talk for a scrawny girl.",
-          "So, let's see what you've got, then."
+          {
+            "codes": [
+              [4, 2],
+              [5, 1]
+            ],
+            "message": "Hah!"
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "Sure is some tough talk for a scrawny girl."
+          },
+          {
+            "codes": [[12, 0]],
+            "message": "So, let's see what you've got, then."
+          }
         ],
         [
-          "...",
-          "Your brother...?",
-          "I guess even my trusty little gadget can't completely erase your memories.",
-          "But either way, you'll get no further information from me on that front.",
-          "Now, I'm tired of talkin' to you. Get ready to die!"
+          {
+            "message": "..."
+          },
+          {
+            "codes": [[4, 1]],
+            "message": "Your brother...?"
+          },
+          {
+            "message": "I guess even my trusty little gadget can't completely erase your memories."
+          },
+          {
+            "message": "But either way, you'll get no further information from me on that front."
+          },
+          {
+            "codes": [[12, 0]],
+            "message": "Now, I'm tired of talkin' to you. Get ready to die!"
+          }
         ]
       ]
     },
     "2": {
-      "codes": [
-        [0, 0, 0, 5, 3],
-        [0, 0, 2, 9, 1171, 1]
-      ],
       "responses": [],
-      "suite": [["...", "GAH!!!", "My mask!! What have you done?!"]]
+      "suite": [
+        [
+          {
+            "codes": [[5, 3]],
+            "message": "..."
+          },
+          {
+            "message": "GAH!!!"
+          },
+          {
+            "codes": [[9, 1171, 1]],
+            "message": "My mask!! What have you done?!"
+          }
+        ]
+      ]
     },
     "3": {
-      "codes": [
-        [0, 0, 0, 5, 3],
-        [0, 0, 0, 4, 5]
-      ],
       "responses": [],
-      "suite": [["This isn't over!"]]
+      "suite": [
+        [
+          {
+            "codes": [
+              [5, 3],
+              [4, 5]
+            ],
+            "message": "This isn't over!"
+          }
+        ]
+      ]
     }
   },
   "mirin": {
     "1": {
-      "codes": [
-        [0, 0, 2, 13, 18],
-        [0, 0, 0, 3, 2, 18],
-        [0, 0, 1, 5, 1],
-        [0, 0, 2, 5, 0]
-      ],
       "responses": [],
       "suite": [
         [
-          "You must be one of the prisoners we scooped up some months back.",
-          "You know, despite everything that's happened between our tribes, I would never wish any of this upon you.",
-          "There's something about being so high up in the sky that tends to bring our people together."
+          {
+            "codes": [[3, 2, 18]],
+            "message": "You must be one of the prisoners we scooped up some months back."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "You know, despite everything that's happened between our tribes, I would never wish any of this upon you."
+          },
+          {
+            "codes": [
+              [13, 18],
+              [5, 0]
+            ],
+            "message": "There's something about being so high up in the sky that tends to bring our people together."
+          }
         ]
       ]
     },
     "2": {
-      "codes": [
-        [0, 0, 2, 13, 18],
-        [0, 0, 2, 5, 1]
-      ],
       "responses": [],
       "suite": [
         [
-          "I'm not sure what you want me to tell you. I'm not exactly itching to chit-chat at a time like this.",
-          "...",
-          "Okay, that was a bit rude. Sorry.",
-          "I've just been trying to come to terms with my impending death. I hope you understand."
+          {
+            "message": "I'm not sure what you want me to tell you. I'm not exactly itching to chit-chat at a time like this."
+          },
+          {
+            "message": "..."
+          },
+          {
+            "codes": [
+              [13, 18],
+              [5, 1]
+            ],
+            "message": "Okay, that was a bit rude. Sorry."
+          },
+          {
+            "message": "I've just been trying to come to terms with my impending death. I hope you understand."
+          }
         ]
       ]
     },
     "3": {
-      "codes": [
-        [0, 0, 0, 1, 0],
-        [0, 1, 0, 1, 0],
-        [0, 2, 1, 1, 0],
-        [0, 3, 6, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2],
-        [1, 0, 2, 1, 3],
-        [0, 3, 3, 5, 1],
-        [0, 3, 6, 5, 2]
-      ],
       "responses": [
-        ["Who are you?", "How can I get back to the island?", "Tell me about your tribe."]
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "Who are you?"
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "How can I get back to the island?"
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "Tell me about your tribe."
+          }
+        ]
       ],
       "suite": [
-        ["What's up?"],
         [
-          "I'm Mirin. I'm Dr. Go's daughter, and though I have no qualifications to be a nurse, that's what I am."
+          {
+            "codes": [[1, 0]],
+            "message": "What's up?"
+          }
         ],
         [
-          "If I knew the answer to that, we wouldn't be having this conversation.",
-          "We're miles in the sky, and the last time I looked outside, I saw nothing but raging clouds."
+          {
+            "codes": [[1, 0]],
+            "message": "I'm Mirin. I'm Dr. Go's daughter, and though I have no qualifications to be a nurse, that's what I am."
+          }
         ],
         [
-          "Damn, your captors must have whacked you over the head or something.",
-          "We're the Ooplo, and we've been at war with your people for the last hundred years.",
-          "The Kariba come, they kill one of us, they leave, repeat.",
-          "The tables really turned when Skycorps came in and took our side against you. It was our turn to do the needless killing, and we went way overboard.",
-          "For that, I'm sorry, although neither I nor anyone I know had much of anything to do with the actual fighting.",
-          "In the end, we Ooplo got what was coming to us when Skycorps basically enslaved us all.",
-          "I coun't myself lucky. At least I wasn't turned into one of their mutation experiments."
+          {
+            "message": "If I knew the answer to that, we wouldn't be having this conversation."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "We're miles in the sky, and the last time I looked outside, I saw nothing but raging clouds."
+          }
+        ],
+        [
+          {
+            "message": "Damn, your captors must have whacked you over the head or something."
+          },
+          {
+            "message": "We're the Ooplo, and we've been at war with your people for the last hundred years."
+          },
+          {
+            "message": "The Kariba come, they kill one of us, they leave, repeat."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "The tables really turned when Skycorps came in and took our side against you. It was our turn to do the needless killing, and we went way overboard."
+          },
+          {
+            "message": "For that, I'm sorry, although neither I nor anyone I know had much of anything to do with the actual fighting."
+          },
+          {
+            "message": "In the end, we Ooplo got what was coming to us when Skycorps basically enslaved us all."
+          },
+          {
+            "codes": [
+              [1, 0],
+              [5, 2]
+            ],
+            "message": "I coun't myself lucky. At least I wasn't turned into one of their mutation experiments."
+          }
         ]
       ]
     }

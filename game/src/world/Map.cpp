@@ -1,9 +1,9 @@
 
 #include "fornani/world/Map.hpp"
+#include <fornani/gui/console/Console.hpp>
 #include <ranges>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/graphics/Colors.hpp"
-#include "fornani/gui/Console.hpp"
 #include "fornani/gui/Portrait.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/EnumLookups.hpp"

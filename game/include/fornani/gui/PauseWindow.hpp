@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "fornani/gui/Console.hpp"
+#include <fornani/gui/console/Console.hpp>
 #include "fornani/gui/MiniMenu.hpp"
 
 #include <optional>

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/gui/Console.hpp"
+#include <fornani/gui/console/Console.hpp>
 #include "fornani/gui/InventorySelector.hpp"
 #include "fornani/gui/MiniMenu.hpp"
 #include "fornani/gui/Portrait.hpp"

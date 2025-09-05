@@ -5,7 +5,7 @@
 #include <djson/json.hpp>
 #include <editor/dialogue/Node.hpp>
 #include <fornani/graphics/Colors.hpp>
-#include <fornani/gui/Console.hpp>
+#include <fornani/gui/console/Console.hpp>
 #include <string_view>
 
 namespace pi {
@@ -47,7 +47,6 @@ class DialogueSuite {
 
 	std::vector<NodeSet> m_suite;
 	std::vector<NodeSet> m_responses;
-	std::vector<fornani::gui::MessageCode> m_codes{};
 
 	sf::Font* m_font;
 };

@@ -1,7 +1,7 @@
 
 #include "fornani/entities/enemy/boss/Minigus.hpp"
+#include <fornani/gui/console/Console.hpp>
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/gui/Console.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
 #include "fornani/world/Map.hpp"
