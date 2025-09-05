@@ -18,10 +18,8 @@ Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activ
 
 Portal::Portal(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals"), m_services(&svc) {
 	unserialize(in);
-	auto channel = is_already_open() ? 1 : 0;
-	set_texture_rect(sf::IntRect{{16 * channel, 0}, {16, 32}});
-	set_origin({0.f, 16.f});
 	if (is_activate_on_contact()) { m_textured = false; }
+	set_origin({0.f, 16.f});
 	bounding_box = shape::Shape(get_world_dimensions());
 	bounding_box.set_position(get_world_position());
 	m_orientation = PortalOrientation::central;
@@ -90,6 +88,7 @@ void Portal::expose() {
 
 void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
 	Entity::update(svc, map, console, player);
+	m_render_state = is_already_open() ? PortalRenderState::open : is_locked() ? PortalRenderState::locked : m_render_state;
 	auto lookup = sf::IntRect({static_cast<int>(m_render_state) * constants::i_cell_resolution, map.style_id * constants::i_cell_resolution * 2}, {constants::i_cell_resolution, constants::i_cell_resolution * 2});
 	set_texture_rect(lookup);
 	if (bounding_box.overlaps(player.collider.bounding_box)) {
@@ -158,7 +157,7 @@ void Portal::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 void Portal::change_states(automa::ServiceProvider& svc, int room_id, graphics::Transition& transition) {
 	if (!m_attributes.test(PortalAttributes::activate_on_contact) && transition.not_started()) {
 		m_render_state = PortalRenderState::open;
-		if (!m_attributes.test(PortalAttributes::already_open)) { svc.soundboard.flags.world.set(audio::World::door_open); }
+		if (!m_attributes.test(PortalAttributes::already_open) && !is_large()) { svc.soundboard.flags.world.set(audio::World::door_open); }
 	}
 	transition.start();
 	if (transition.is_done()) {

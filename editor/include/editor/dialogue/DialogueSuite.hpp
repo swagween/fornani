@@ -10,6 +10,8 @@
 
 namespace pi {
 
+using NodeType = fornani::gui::CodeSource;
+
 class DialogueSuite {
   public:
 	DialogueSuite(sf::Font& font, dj::Json const& in, std::string_view host, std::string_view tag);

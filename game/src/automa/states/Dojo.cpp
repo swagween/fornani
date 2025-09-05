@@ -248,9 +248,9 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 		auto puv = player->get_lantern_position().componentWiseDiv(map.real_dimensions);
 		auto normalized = sf::Vector2f{(puv.x - 0.5f) * aspect + 0.5f, puv.y};
-		auto ppl = PointLight(svc.data.light["player"], puv);
+		auto ppl = PointLight(svc.data.light["lantern"], puv);
 		ppl.position = normalized;
-		// m_shader->AddPointLight(ppl);
+		if (player->has_item("lantern")) { m_shader->AddPointLight(ppl); }
 	}
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(svc, *player, win); }

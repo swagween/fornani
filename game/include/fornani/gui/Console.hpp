@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/core/Common.hpp>
 #include <fornani/gui/ItemWidget.hpp>
 #include <fornani/gui/Portrait.hpp>
 #include <fornani/gui/ResponseDialog.hpp>
@@ -26,9 +27,6 @@ enum class ConsoleMode : std::uint8_t { writing, responding, off };
 enum class ConsoleFlags : std::uint8_t { no_exit };
 enum class ConsoleTriggers : std::uint8_t { response_created };
 enum class OutputType : std::uint8_t { instant, gradual, no_skip };
-
-enum class MessageCodeType : std::uint8_t { none, response, item, quest, voice, emotion, redirect, action, exit, destructible, input_hint, reveal_item, start_battle, pop_conversation, play_song };
-enum class CodeSource : std::uint8_t { suite, response };
 
 /* code : [source, set, index, type, value] */
 struct MessageCode {

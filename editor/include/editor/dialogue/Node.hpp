@@ -2,13 +2,14 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <fornani/core/Common.hpp>
 #include <fornani/graphics/Colors.hpp>
 #include <optional>
 #include <string_view>
 
 namespace pi {
 
-enum class NodeType : std::uint8_t { suite, response };
+using NodeType = fornani::gui::CodeSource;
 
 class Node {
   public:

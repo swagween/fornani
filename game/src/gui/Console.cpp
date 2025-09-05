@@ -63,7 +63,10 @@ void Console::update(automa::ServiceProvider& svc) {
 				auto lookup = m_services->controller_map.get_icon_lookup_by_action(static_cast<config::DigitalAction>(action_id));
 				m_writer->insert_icon_at(code.value, lookup);
 			}
-
+			if (code.is_destructible() && m_process_code_before) {
+				m_services->data.destroy_block(code.value);
+				processed = true;
+			}
 			if (code.is_pop_conversation() && m_process_code_before) {
 				svc.events.dispatch_event("PopConversation", code.value);
 				svc.quest_table.progress_quest("npc_dialogue", 1, -1, code.value);
@@ -100,7 +103,7 @@ void Console::update(automa::ServiceProvider& svc) {
 }
 
 void Console::render(sf::RenderWindow& win) {
-	debug();
+	// debug();
 	if (!m_writer || !is_active()) { return; }
 	m_nineslice.render(win);
 	if (m_item_widget) { m_item_widget->render(*m_services, win); }

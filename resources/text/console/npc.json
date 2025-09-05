@@ -2,30 +2,98 @@
   "alba": {
     "2": {
       "codes": [
-        [1, 0, 0, 1, 4],
-        [1, 0, 0, 1, 0],
-        [0, 2, 0, 1, 2]
+        [
+          1,
+          0,
+          0,
+          1,
+          4
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          1,
+          2
+        ]
       ],
-      "responses": [["I'm nineteen.", "I'm seven."]],
-      "suite": [["Too young to party."], ["stay"], ["again"]]
+      "responses": [
+        [
+          "I'm nineteen.",
+          "I'm seven."
+        ]
+      ],
+      "suite": [
+        [
+          "Too young to party."
+        ],
+        [
+          "stay"
+        ],
+        [
+          "again"
+        ]
+      ]
     },
     "3": {
-      "suite": [["test..."], ["hello", "this is a longer message"]]
+      "suite": [
+        [
+          "test..."
+        ],
+        [
+          "hello",
+          "this is a longer message"
+        ]
+      ]
     }
   },
   "billy": {
     "1": {
-      "suite": [["Hnnngh..."]]
+      "suite": [
+        [
+          "Hnnngh..."
+        ]
+      ]
     }
   },
   "bit": {
     "1": {
       "codes": [
-        [0, 0, 4, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2]
+        [
+          0,
+          0,
+          4,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          0,
+          1,
+          1,
+          2
+        ]
       ],
-      "responses": [["Sure.", "I had better get going..."]],
+      "responses": [
+        [
+          "Sure.",
+          "I had better get going..."
+        ]
+      ],
       "suite": [
         [
           "...",
@@ -39,11 +107,17 @@
           "You might find the key to this cell lying around the ship somewhere.",
           "If you do, you should be able to use it on that there door and let me free!"
         ],
-        ["Well uh... okay. If you change your mind, you'll know where to find me."]
+        [
+          "Well uh... okay. If you change your mind, you'll know where to find me."
+        ]
       ]
     },
     "2": {
-      "responses": [["Where are we?"]],
+      "responses": [
+        [
+          "Where are we?"
+        ]
+      ],
       "suite": [
         [
           "Listen, I don't wanna rush you, but...",
@@ -96,11 +170,19 @@
     },
     "7": {
       "responses": [],
-      "suite": [["Heh... See ya around!"]]
+      "suite": [
+        [
+          "Heh... See ya around!"
+        ]
+      ]
     },
     "8": {
       "responses": [],
-      "suite": [["Thanks again for helping me. Stay safe out there!"]]
+      "suite": [
+        [
+          "Thanks again for helping me. Stay safe out there!"
+        ]
+      ]
     },
     "9": {
       "responses": [],
@@ -116,38 +198,218 @@
   "bryn": {
     "1": {
       "codes": [
-        [0, 0, 1, 1, 0],
-        [0, 0, 0, 5, 1],
-        [0, 0, 1, 5, 0],
-        [0, 2, 1, 5, 1],
-        [0, 2, 2, 5, 0],
-        [0, 2, 3, 5, 2],
-        [0, 2, 5, 5, 1],
-        [0, 3, 0, 5, 0],
-        [0, 4, 4, 5, 1],
-        [0, 4, 8, 5, 2],
-        [0, 4, 0, 5, 0],
-        [0, 5, 0, 5, 0],
-        [0, 6, 1, 5, 2],
-        [0, 0, 1, 1, 0],
-        [1, 0, 0, 1, 1],
-        [0, 1, 1, 1, 1],
-        [1, 1, 0, 1, 2],
-        [0, 2, 5, 1, 2],
-        [1, 2, 0, 1, 3],
-        [0, 3, 1, 1, 3],
-        [1, 3, 0, 1, 4],
-        [0, 4, 8, 1, 3],
-        [0, 5, 2, 1, 3],
-        [1, 3, 1, 1, 5],
-        [1, 3, 2, 1, 6],
-        [0, 6, 1, 13, 0]
+        [
+          0,
+          0,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          5,
+          1
+        ],
+        [
+          0,
+          0,
+          1,
+          5,
+          0
+        ],
+        [
+          0,
+          2,
+          1,
+          5,
+          1
+        ],
+        [
+          0,
+          2,
+          2,
+          5,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          5,
+          2
+        ],
+        [
+          0,
+          2,
+          5,
+          5,
+          1
+        ],
+        [
+          0,
+          3,
+          0,
+          5,
+          0
+        ],
+        [
+          0,
+          4,
+          4,
+          5,
+          1
+        ],
+        [
+          0,
+          4,
+          8,
+          5,
+          2
+        ],
+        [
+          0,
+          4,
+          0,
+          5,
+          0
+        ],
+        [
+          0,
+          5,
+          0,
+          5,
+          0
+        ],
+        [
+          0,
+          6,
+          1,
+          5,
+          2
+        ],
+        [
+          0,
+          3,
+          1,
+          9,
+          420
+        ],
+        [
+          0,
+          0,
+          1,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          2,
+          5,
+          1,
+          2
+        ],
+        [
+          1,
+          2,
+          0,
+          1,
+          3
+        ],
+        [
+          1,
+          3,
+          0,
+          1,
+          4
+        ],
+        [
+          0,
+          4,
+          8,
+          1,
+          3
+        ],
+        [
+          0,
+          5,
+          2,
+          1,
+          3
+        ],
+        [
+          1,
+          3,
+          1,
+          1,
+          5
+        ],
+        [
+          1,
+          3,
+          2,
+          1,
+          6
+        ],
+        [
+          0,
+          3,
+          1,
+          13,
+          0
+        ],
+        [
+          0,
+          3,
+          2,
+          2,
+          115
+        ],
+        [
+          0,
+          3,
+          3,
+          1,
+          3
+        ]
       ],
       "responses": [
-        ["What are you doing in this place?"],
-        ["Technology...?"],
-        ["Uhhh..."],
-        ["What happened on Firstwind?", "I'm looking for my brother, actually.", "Let's leave."]
+        [
+          "What are you doing in this place?"
+        ],
+        [
+          "Technology...?"
+        ],
+        [
+          "Uhhh..."
+        ],
+        [
+          "What happened on Firstwind?",
+          "I'm looking for my brother.",
+          "Let's leave."
+        ]
       ],
       "suite": [
         [
@@ -168,7 +430,9 @@
         ],
         [
           "No matter. We need to get out of this place and back to the base.",
-          "I presume you've already stumbled into Dr. Willett if you decided to come poking around these ruins."
+          "I presume you've already stumbled into Dr. Willett if you decided to come poking around these ruins.",
+          "Oh, and by the way, take this relic I found.",
+          "It supposedly grants you the power to cling onto and jump off of walls. I hope you find it useful."
         ],
         [
           "Another long story, but that one I at least owe it to tell you...",
@@ -194,13 +458,55 @@
     },
     "2": {
       "codes": [
-        [0, 0, 0, 1, 0],
-        [0, 1, 8, 1, 0],
-        [0, 2, 3, 1, 0],
-        [0, 3, 4, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2],
-        [1, 0, 2, 1, 3]
+        [
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          8,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          1,
+          0
+        ],
+        [
+          0,
+          3,
+          4,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          0,
+          1,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          2,
+          1,
+          3
+        ]
       ],
       "responses": [
         [
@@ -210,7 +516,9 @@
         ]
       ],
       "suite": [
-        ["Yeah?"],
+        [
+          "Yeah?"
+        ],
         [
           "Another long story, but that one I at least owe it to tell you...",
           "Willett and I were taking her over from Grand Island to do some research in places just like these.",
@@ -241,8 +549,20 @@
   "carl": {
     "1": {
       "codes": [
-        [0, 0, 2, 13, 17],
-        [0, 0, 0, 3, 17]
+        [
+          0,
+          0,
+          2,
+          13,
+          17
+        ],
+        [
+          0,
+          0,
+          0,
+          3,
+          17
+        ]
       ],
       "responses": [],
       "suite": [
@@ -257,17 +577,67 @@
     },
     "2": {
       "codes": [
-        [0, 0, 0, 1, 0],
-        [0, 1, 1, 1, 0],
-        [0, 2, 2, 1, 0],
-        [0, 3, 2, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2],
-        [1, 0, 2, 1, 3]
+        [
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          0,
+          1,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          2,
+          1,
+          3
+        ]
       ],
-      "responses": [["Who are you?", "What is this place?", "Tell me about Skycorps."]],
+      "responses": [
+        [
+          "Who are you?",
+          "What is this place?",
+          "Tell me about Skycorps."
+        ]
+      ],
       "suite": [
-        ["So... Any updates on that soda?"],
+        [
+          "So... Any updates on that soda?"
+        ],
         [
           "Name's Carl. I'm guardin' the cargo here, and my shift doesn't end for another six months.",
           "I'm a simple man. I have a job to do, and I'm gon' do it until it's done. Even if it kills me."
@@ -288,25 +658,96 @@
   "dr_go": {
     "1": {
       "codes": [
-        [0, 0, 2, 13, 16],
-        [0, 0, 0, 3, 2, 16]
+        [
+          0,
+          0,
+          2,
+          13,
+          16
+        ],
+        [
+          0,
+          0,
+          0,
+          3,
+          2,
+          16
+        ]
       ],
-      "responses": [[]],
-      "suite": [["Oh!", "I wasn't expecting a Kariba to stroll in here.", "Are you sick?"]]
+      "responses": [
+        []
+      ],
+      "suite": [
+        [
+          "Oh!",
+          "I wasn't expecting a Kariba to stroll in here.",
+          "Are you sick?"
+        ]
+      ]
     },
     "2": {
       "codes": [
-        [0, 0, 0, 1, 0],
-        [0, 1, 2, 1, 0],
-        [0, 2, 1, 1, 0],
-        [0, 3, 2, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2],
-        [1, 0, 2, 1, 3]
+        [
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          0,
+          1,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          2,
+          1,
+          3
+        ]
       ],
-      "responses": [["Who are you?", "What's going on?", "Where am I?"]],
+      "responses": [
+        [
+          "Who are you?",
+          "What's going on?",
+          "Where am I?"
+        ]
+      ],
       "suite": [
-        ["How can I help you?"],
+        [
+          "How can I help you?"
+        ],
         [
           "I'm Dr. Go.",
           "I was enlisted by Skycorps some years ago, and they assigned me here against my will.",
@@ -327,23 +768,102 @@
   "dr_willett": {
     "1": {
       "codes": [
-        [0, 0, 0, 14, 0],
-        [0, 0, 1, 14, 1],
-        [0, 1, 0, 1, 1],
-        [0, 2, 4, 1, 2],
-        [0, 3, 6, 1, 2],
-        [0, 0, 4, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 1, 0, 1, 2],
-        [1, 1, 1, 1, 3],
-        [1, 2, 0, 1, 4],
-        [0, 4, 4, 13, 2],
-        [0, 4, 2, 2, 18]
+        [
+          0,
+          0,
+          0,
+          14,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          14,
+          1
+        ],
+        [
+          0,
+          1,
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          2,
+          4,
+          1,
+          2
+        ],
+        [
+          0,
+          3,
+          6,
+          1,
+          2
+        ],
+        [
+          0,
+          0,
+          4,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          0,
+          1,
+          2
+        ],
+        [
+          1,
+          1,
+          1,
+          1,
+          3
+        ],
+        [
+          1,
+          2,
+          0,
+          1,
+          4
+        ],
+        [
+          0,
+          4,
+          4,
+          13,
+          2
+        ],
+        [
+          0,
+          4,
+          2,
+          2,
+          18
+        ]
       ],
       "responses": [
-        ["It sure is."],
-        ["Bryn left me a note.", "I had to fight my way out."],
-        ["I can try to find her."]
+        [
+          "It sure is."
+        ],
+        [
+          "Bryn left me a note.",
+          "I had to fight my way out."
+        ],
+        [
+          "I can try to find her."
+        ]
       ],
       "suite": [
         [
@@ -383,29 +903,131 @@
     },
     "2": {
       "codes": [
-        [0, 0, 0, 1, 0],
-        [0, 1, 3, 1, 0],
-        [0, 2, 4, 1, 0],
-        [0, 3, 0, 1, 1],
-        [0, 6, 5, 1, 2],
-        [1, 2, 0, 1, 7],
-        [1, 1, 2, 1, 6],
-        [1, 1, 1, 1, 5],
-        [1, 1, 0, 1, 4],
-        [1, 0, 2, 1, 3],
-        [1, 0, 1, 1, 2],
-        [1, 0, 0, 1, 1],
-        [0, 4, 2, 1, 1],
-        [0, 5, 5, 1, 1],
-        [0, 7, 2, 1, 1]
+        [
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          3,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          4,
+          1,
+          0
+        ],
+        [
+          0,
+          3,
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          6,
+          5,
+          1,
+          2
+        ],
+        [
+          1,
+          2,
+          0,
+          1,
+          7
+        ],
+        [
+          1,
+          1,
+          2,
+          1,
+          6
+        ],
+        [
+          1,
+          1,
+          1,
+          1,
+          5
+        ],
+        [
+          1,
+          1,
+          0,
+          1,
+          4
+        ],
+        [
+          1,
+          0,
+          2,
+          1,
+          3
+        ],
+        [
+          1,
+          0,
+          1,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          4,
+          2,
+          1,
+          1
+        ],
+        [
+          0,
+          5,
+          5,
+          1,
+          1
+        ],
+        [
+          0,
+          7,
+          2,
+          1,
+          1
+        ]
       ],
       "responses": [
-        ["Where are the ruins?", "What is this place?", "I'm curious..."],
-        ["Do you know where my brother is?", "Tell me about Bryn.", "Tell me about Skycorps."],
-        ["Caroline?"]
+        [
+          "Where are the ruins?",
+          "What is this place?",
+          "I'm curious..."
+        ],
+        [
+          "Do you know where my brother is?",
+          "Tell me about Bryn.",
+          "Tell me about Skycorps."
+        ],
+        [
+          "Caroline?"
+        ]
       ],
       "suite": [
-        ["So... Any luck finding Bryn?"],
+        [
+          "So... Any luck finding Bryn?"
+        ],
         [
           "The ruins are southeast of here. You might need to do a bit of acrobatics to get there if you take the low road - in some areas, the overturned forest hangs precariously above the clouds.",
           "Alternatively, you can take the high road, but it will be a much longer journey.",
@@ -419,7 +1041,9 @@
           "Anyway, it seemed like the perfect spot for me and Bryn to find shelter after crash-landing in our escape pod.",
           "We've been here for some months, now, ever on the run from Skycorps."
         ],
-        ["Tell me what you'd like to know."],
+        [
+          "Tell me what you'd like to know."
+        ],
         [
           "Well, that's a sore topic, to say the very least.",
           "He stole a priceless artifact and ran off with it.",
@@ -452,18 +1076,71 @@
   "gobe": {
     "1": {
       "codes": [
-        [0, 3, 0, 13, 3],
-        [0, 0, 3, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2],
-        [0, 1, 2, 1, 1],
-        [0, 2, 3, 1, 1],
-        [1, 1, 0, 1, 3],
-        [0, 3, 0, 2, 20]
+        [
+          0,
+          3,
+          0,
+          13,
+          3
+        ],
+        [
+          0,
+          0,
+          3,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          0,
+          1,
+          1,
+          2
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          1
+        ],
+        [
+          0,
+          2,
+          3,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          0,
+          1,
+          3
+        ],
+        [
+          0,
+          3,
+          0,
+          2,
+          20
+        ]
       ],
       "responses": [
-        ["I'm just looking for a place to rest.", "I'm looking for my older brother."],
-        ["Sure thing!"]
+        [
+          "I'm just looking for a place to rest.",
+          "I'm looking for my older brother."
+        ],
+        [
+          "Sure thing!"
+        ]
       ],
       "suite": [
         [
@@ -489,9 +1166,15 @@
       ]
     },
     "2": {
-      "responses": [["Not yet..."]],
+      "responses": [
+        [
+          "Not yet..."
+        ]
+      ],
       "suite": [
-        ["So? Have you found my dog yet? I'm starting to get worried..."],
+        [
+          "So? Have you found my dog yet? I'm starting to get worried..."
+        ],
         [
           "Well, if it's any help, he tends to climb to real high places when he's afraid.",
           "Good luck!"
@@ -499,7 +1182,15 @@
       ]
     },
     "3": {
-      "responses": [["Hey, don't mention it!"], ["Sure, let's trade!", "Maybe later."]],
+      "responses": [
+        [
+          "Hey, don't mention it!"
+        ],
+        [
+          "Sure, let's trade!",
+          "Maybe later."
+        ]
+      ],
       "suite": [
         [
           "Oh, Justin! My precious thing!",
@@ -511,23 +1202,73 @@
           "Say, I'd be happy to trade some stuff with you. Normally I don't vend outside of Ashtown, but for you I'll make an exception!",
           "What do you say?"
         ],
-        ["Here's what I've got."],
-        ["Alright then, I'll see ya around!"]
+        [
+          "Here's what I've got."
+        ],
+        [
+          "Alright then, I'll see ya around!"
+        ]
       ]
     },
     "4": {
       "codes": [
-        [0, 0, 0, 1, 0],
-        [0, 2, 1, 1, 0],
-        [0, 3, 1, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2],
-        [1, 0, 2, 1, 3]
+        [
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          3,
+          1,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          0,
+          1,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          2,
+          1,
+          3
+        ]
       ],
-      "responses": [["I'd like to trade things with you.", "Who are you?", "Where are we?"]],
+      "responses": [
+        [
+          "I'd like to trade things with you.",
+          "Who are you?",
+          "Where are we?"
+        ]
+      ],
       "suite": [
-        ["Yes?"],
-        ["Sure thing! Here's what I've picked up over the last few weeks..."],
+        [
+          "Yes?"
+        ],
+        [
+          "Sure thing! Here's what I've picked up over the last few weeks..."
+        ],
         [
           "I'm a surveyor of this land, and I've been exploring its farthest and darkest reaches for as long as I can remember.",
           "Justin and I tend to find stuff along the way and pick it up, so if you're ever in the market for random junk, I'm your guy!"
@@ -541,7 +1282,15 @@
   },
   "hologus": {
     "1": {
-      "codes": [[0, 0, 0, 4, 1]],
+      "codes": [
+        [
+          0,
+          0,
+          0,
+          4,
+          1
+        ]
+      ],
       "responses": [],
       "suite": [
         [
@@ -552,7 +1301,15 @@
       ]
     },
     "2": {
-      "codes": [[0, 0, 0, 4, 3]],
+      "codes": [
+        [
+          0,
+          0,
+          0,
+          4,
+          3
+        ]
+      ],
       "responses": [],
       "suite": [
         [
@@ -563,7 +1320,15 @@
       ]
     },
     "3": {
-      "codes": [[0, 0, 0, 4, 5]],
+      "codes": [
+        [
+          0,
+          0,
+          0,
+          4,
+          5
+        ]
+      ],
       "responses": [],
       "suite": [
         [
@@ -575,9 +1340,27 @@
     },
     "4": {
       "codes": [
-        [0, 0, 0, 4, 2],
-        [0, 0, 0, 5, 1],
-        [0, 0, 1, 5, 0]
+        [
+          0,
+          0,
+          0,
+          4,
+          2
+        ],
+        [
+          0,
+          0,
+          0,
+          5,
+          1
+        ],
+        [
+          0,
+          0,
+          1,
+          5,
+          0
+        ]
       ],
       "responses": [],
       "suite": [
@@ -592,44 +1375,121 @@
   "justin": {
     "1": {
       "responses": [],
-      "suite": [["Barf! Barf!"]]
+      "suite": [
+        [
+          "Barf! Barf!"
+        ]
+      ]
     },
     "2": {
-      "responses": [["(Take the dog)", "(Leave the dog)"]],
-      "suite": [["Barf! Barf!"], ["Grrr...", "Barf!!", "Barf, barf!"], ["(Whine)"]]
+      "responses": [
+        [
+          "(Take the dog)",
+          "(Leave the dog)"
+        ]
+      ],
+      "suite": [
+        [
+          "Barf! Barf!"
+        ],
+        [
+          "Grrr...",
+          "Barf!!",
+          "Barf, barf!"
+        ],
+        [
+          "(Whine)"
+        ]
+      ]
     },
     "3": {
       "responses": [],
-      "suite": [["Barf!"]]
+      "suite": [
+        [
+          "Barf!"
+        ]
+      ]
     }
   },
   "lady_nimbus": {
     "1": {
       "responses": [],
-      "suite": [["Gus... Gus...?", "Gus, do you copy?"]]
+      "suite": [
+        [
+          "Gus... Gus...?",
+          "Gus, do you copy?"
+        ]
+      ]
     },
     "2": {
       "codes": [
-        [0, 0, 0, 5, 1],
-        [0, 0, 2, 5, 0]
+        [
+          0,
+          0,
+          0,
+          5,
+          1
+        ],
+        [
+          0,
+          0,
+          2,
+          5,
+          0
+        ]
       ],
       "responses": [],
-      "suite": [["Flee?!", "What do you mean?", "The ship has been securely ours for months."]]
+      "suite": [
+        [
+          "Flee?!",
+          "What do you mean?",
+          "The ship has been securely ours for months."
+        ]
+      ]
     },
     "3": {
       "codes": [
-        [0, 0, 0, 5, 2],
-        [0, 0, 1, 5, 0]
+        [
+          0,
+          0,
+          0,
+          5,
+          2
+        ],
+        [
+          0,
+          0,
+          1,
+          5,
+          0
+        ]
       ],
       "responses": [],
-      "suite": [["...", "It is unlike you to fail me so, Gus."]]
+      "suite": [
+        [
+          "...",
+          "It is unlike you to fail me so, Gus."
+        ]
+      ]
     },
     "4": {
       "responses": [],
-      "suite": [["Your next paycheck isn't going to exist, I'm afraid."]]
+      "suite": [
+        [
+          "Your next paycheck isn't going to exist, I'm afraid."
+        ]
+      ]
     },
     "5": {
-      "codes": [[0, 0, 2, 5, 2]],
+      "codes": [
+        [
+          0,
+          0,
+          2,
+          5,
+          2
+        ]
+      ],
       "responses": [],
       "suite": [
         [
@@ -643,21 +1503,105 @@
   "minigus": {
     "1": {
       "codes": [
-        [0, 0, 4, 1, 0],
-        [0, 0, 0, 4, 4],
-        [0, 1, 0, 4, 3],
-        [0, 2, 0, 4, 2],
-        [0, 2, 0, 5, 1],
-        [0, 2, 1, 5, 0],
-        [0, 3, 1, 4, 1],
-        [0, 1, 3, 12, 0],
-        [0, 2, 2, 12, 0],
-        [0, 3, 4, 12, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2],
-        [1, 0, 2, 1, 3]
+        [
+          0,
+          0,
+          4,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          4,
+          4
+        ],
+        [
+          0,
+          1,
+          0,
+          4,
+          3
+        ],
+        [
+          0,
+          2,
+          0,
+          4,
+          2
+        ],
+        [
+          0,
+          2,
+          0,
+          5,
+          1
+        ],
+        [
+          0,
+          2,
+          1,
+          5,
+          0
+        ],
+        [
+          0,
+          3,
+          1,
+          4,
+          1
+        ],
+        [
+          0,
+          1,
+          3,
+          12,
+          0
+        ],
+        [
+          0,
+          2,
+          2,
+          12,
+          0
+        ],
+        [
+          0,
+          3,
+          4,
+          12,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          0,
+          1,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          2,
+          1,
+          3
+        ]
       ],
-      "responses": [["Who are you?", "Whatever I need to do.", "Where is my brother?"]],
+      "responses": [
+        [
+          "Who are you?",
+          "Whatever I need to do.",
+          "Where is my brother?"
+        ]
+      ],
       "suite": [
         [
           "Well, would you look at that!",
@@ -688,28 +1632,88 @@
     },
     "2": {
       "codes": [
-        [0, 0, 0, 5, 3],
-        [0, 0, 2, 9, 1171, 1]
+        [
+          0,
+          0,
+          0,
+          5,
+          3
+        ],
+        [
+          0,
+          0,
+          2,
+          9,
+          1171,
+          1
+        ]
       ],
       "responses": [],
-      "suite": [["...", "GAH!!!", "My mask!! What have you done?!"]]
+      "suite": [
+        [
+          "...",
+          "GAH!!!",
+          "My mask!! What have you done?!"
+        ]
+      ]
     },
     "3": {
       "codes": [
-        [0, 0, 0, 5, 3],
-        [0, 0, 0, 4, 5]
+        [
+          0,
+          0,
+          0,
+          5,
+          3
+        ],
+        [
+          0,
+          0,
+          0,
+          4,
+          5
+        ]
       ],
       "responses": [],
-      "suite": [["This isn't over!"]]
+      "suite": [
+        [
+          "This isn't over!"
+        ]
+      ]
     }
   },
   "mirin": {
     "1": {
       "codes": [
-        [0, 0, 2, 13, 18],
-        [0, 0, 0, 3, 2, 18],
-        [0, 0, 1, 5, 1],
-        [0, 0, 2, 5, 0]
+        [
+          0,
+          0,
+          2,
+          13,
+          18
+        ],
+        [
+          0,
+          0,
+          0,
+          3,
+          2,
+          18
+        ],
+        [
+          0,
+          0,
+          1,
+          5,
+          1
+        ],
+        [
+          0,
+          0,
+          2,
+          5,
+          0
+        ]
       ],
       "responses": [],
       "suite": [
@@ -722,8 +1726,20 @@
     },
     "2": {
       "codes": [
-        [0, 0, 2, 13, 18],
-        [0, 0, 2, 5, 1]
+        [
+          0,
+          0,
+          2,
+          13,
+          18
+        ],
+        [
+          0,
+          0,
+          2,
+          5,
+          1
+        ]
       ],
       "responses": [],
       "suite": [
@@ -737,21 +1753,81 @@
     },
     "3": {
       "codes": [
-        [0, 0, 0, 1, 0],
-        [0, 1, 0, 1, 0],
-        [0, 2, 1, 1, 0],
-        [0, 3, 6, 1, 0],
-        [1, 0, 0, 1, 1],
-        [1, 0, 1, 1, 2],
-        [1, 0, 2, 1, 3],
-        [0, 3, 3, 5, 1],
-        [0, 3, 6, 5, 2]
+        [
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          3,
+          6,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          0,
+          1,
+          1,
+          2
+        ],
+        [
+          1,
+          0,
+          2,
+          1,
+          3
+        ],
+        [
+          0,
+          3,
+          3,
+          5,
+          1
+        ],
+        [
+          0,
+          3,
+          6,
+          5,
+          2
+        ]
       ],
       "responses": [
-        ["Who are you?", "How can I get back to the island?", "Tell me about your tribe."]
+        [
+          "Who are you?",
+          "How can I get back to the island?",
+          "Tell me about your tribe."
+        ]
       ],
       "suite": [
-        ["What's up?"],
+        [
+          "What's up?"
+        ],
         [
           "I'm Mirin. I'm Dr. Go's daughter, and though I have no qualifications to be a nurse, that's what I am."
         ],

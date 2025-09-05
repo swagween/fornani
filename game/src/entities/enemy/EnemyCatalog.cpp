@@ -12,6 +12,7 @@
 #include "fornani/entities/enemy/catalog/Meatsquash.hpp"
 #include "fornani/entities/enemy/catalog/Tank.hpp"
 #include "fornani/entities/enemy/catalog/Thug.hpp"
+#include "fornani/entities/enemy/boss/Miaag.hpp"
 
 namespace fornani::enemy {
 
@@ -36,6 +37,7 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[m
 	case 11: enemies.push_back(std::make_unique<Meatsquash>(svc, map)); break;
 	case 12: enemies.push_back(std::make_unique<Imp>(svc, map, variant)); break;
 	case 13: enemies.push_back(std::make_unique<Hulmet>(svc, map)); break;
+	case 14: enemies.push_back(std::make_unique<Miaag>(svc, map)); break;
 	default: enemies.push_back(std::make_unique<Frdog>(svc)); break;
 	}
 }

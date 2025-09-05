@@ -463,7 +463,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		// for (auto& entity : m_entities.value().variables.entities) { entity->render(win, cam, 1.0); }
 		for (auto p : get_entities<Portal>()) { p->render(win, cam, 1.0); }
 		for (auto s : get_entities<SavePoint>()) { s->render(win, cam, 1.0); }
-		for (auto v : get_entities<Vine>()) { v->render(win, cam, 1.0); }
+		for (auto v : get_entities<Vine>()) {
+			if (!v->is_foreground()) { v->render(win, cam, 1.0); }
+		}
 		// for (auto n : get_entities<NPC>()) { n->render(win, cam, 1.0); }
 	}
 
@@ -492,9 +494,6 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
 	for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
-	/*for (auto& vine : vines) {
-		if (vine->foreground()) { vine->render(svc, win, cam); }
-	}*/
 
 	if (!svc.greyblock_mode()) {
 		for (auto& layer : get_layers()) {
@@ -504,6 +503,12 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 			} else {
 				layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, flags.properties.test(MapProperties::day_night_shift));
 			}
+		}
+	}
+
+	if (m_entities) {
+		for (auto v : get_entities<Vine>()) {
+			if (v->is_foreground()) { v->render(win, cam, 1.0); }
 		}
 	}
 
@@ -560,7 +565,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 					shader->Finalize();
 					layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true);
 				} else {
-					layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true);
+					layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true, flags.properties.test(MapProperties::day_night_shift));
 				}
 			}
 		}

@@ -25,6 +25,7 @@ class IWorldPositionable {
 	[[nodiscard]] auto get_world_dimensions() const -> sf::Vector2f { return sf::Vector2f{m_dimensions} * constants::f_cell_size; }
 	[[nodiscard]] auto get_local_center() const -> sf::Vector2f { return get_world_dimensions() * 0.5f; }
 	[[nodiscard]] auto get_global_center() const -> sf::Vector2f { return get_world_position() + get_local_center(); }
+	[[nodiscard]] auto is_large() const -> bool { return get_grid_dimensions().x * get_grid_dimensions().y > 1; }
 
   protected:
 	sf::Vector2<std::uint32_t> m_position{};

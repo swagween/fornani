@@ -18,6 +18,7 @@ Vine::Vine(automa::ServiceProvider& svc, int length, int size, bool foreground, 
 		add_platform(svc, i);
 	}
 	init();
+	foreground ? m_flags.set(VineFlags::foreground) : m_flags.reset(VineFlags::foreground);
 }
 
 Vine::Vine(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "vines", segment_size_v), m_services(&svc), m_chain(svc, {0.995f, 0.06f, 16.f, 14.f}, get_world_position(), in["length"].as<int>(), false, 2.f), m_init{64} {

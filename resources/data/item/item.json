@@ -102,11 +102,15 @@
     "hidden_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
     "unique": true
   },
-  "staple_box": {
+  "lantern": {
     "id": 14,
-    "actual_title": "Staple Box",
-    "naive_description": "A box of staples.",
-    "hidden_description": "A box of staples.",
+    "category": 1,
+    "lookup": [13, 0],
+    "origin": [6, 0],
+    "naive_title": "Lantern",
+    "actual_title": "Lantern",
+    "naive_description": "An oil-fueled lantern that will light up any dark areas.",
+    "hidden_description": "An oil-fueled lantern that will light up any dark areas.",
     "unique": true
   },
   "boiler_key": {
@@ -246,6 +250,26 @@
     "actual_title": "Loop's Mixtape",
     "naive_description": "A mixtape with your brother's handwriting on the label. Your heart fills with sadness and rage when you look at it.",
     "hidden_description": "A mixtape that Loop hid in the woods when you were younger. You can play it on a jukebox.",
+    "unique": true
+  },
+  "dome_key": {
+    "id": 32,
+    "category": 1,
+    "lookup": [15, 1],
+    "origin": [11, 0],
+    "actual_title": "Dome Key",
+    "naive_description": "A key that radiates malice.",
+    "hidden_description": "A key that radiates malice.",
+    "unique": true
+  },
+  "ruins_key": {
+    "id": 33,
+    "category": 1,
+    "lookup": [0, 2],
+    "origin": [12, 0],
+    "actual_title": "Ruins Key",
+    "naive_description": "The key to exit the Kariba Ruins.",
+    "hidden_description": "The key to exit the Kariba Ruins.",
     "unique": true
   },
   "red_jeans": {

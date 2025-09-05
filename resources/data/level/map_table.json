@@ -190,7 +190,7 @@
       "folder": "kariba",
       "label": "cellar.json",
       "region": "kariba",
-      "room_id": 410
+      "room_id": 505
     },
     {
       "folder": "kariba",
@@ -200,9 +200,21 @@
     },
     {
       "folder": "kariba",
+      "label": "dome.json",
+      "region": "kariba",
+      "room_id": 508
+    },
+    {
+      "folder": "kariba",
       "label": "dungeon.json",
       "region": "kariba",
       "room_id": 420
+    },
+    {
+      "folder": "kariba",
+      "label": "east_wing.json",
+      "region": "kariba",
+      "room_id": 507
     },
     {
       "folder": "kariba",
@@ -212,15 +224,33 @@
     },
     {
       "folder": "kariba",
+      "label": "oubliette.json",
+      "region": "kariba",
+      "room_id": 506
+    },
+    {
+      "folder": "kariba",
       "label": "stairwell.json",
       "region": "kariba",
       "room_id": 501
     },
     {
       "folder": "kariba",
+      "label": "vault.json",
+      "region": "kariba",
+      "room_id": 509
+    },
+    {
+      "folder": "kariba",
       "label": "west_wing.json",
       "region": "kariba",
       "room_id": 504
+    },
+    {
+      "folder": "overturned",
+      "label": "alcove.json",
+      "region": "overturned",
+      "room_id": 237
     },
     {
       "folder": "overturned",

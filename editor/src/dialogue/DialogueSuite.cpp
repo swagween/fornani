@@ -116,6 +116,10 @@ void DialogueSuite::swap_node(Node other) {
 void DialogueSuite::print_codes() {
 	for (auto [i, code] : std::views::enumerate(m_codes)) {
 		ImGui::PushID(i);
+		if (m_current_type == code.source && m_current_set == code.set && m_current_index == code.index) {
+			ImGui::Text(">");
+			ImGui::SameLine();
+		}
 		if (ImGui::Button("X##i")) {
 			code.mark_for_deletion();
 			auto& src = code.source == fornani::gui::CodeSource::suite ? m_suite : m_responses;
