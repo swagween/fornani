@@ -146,53 +146,166 @@
         [0, 3, 3, 1, 3]
       ],
       "responses": [
-        ["What are you doing in this place?"],
-        ["Technology...?"],
-        ["Uhhh..."],
-        ["What happened on Firstwind?", "I'm looking for my brother.", "Let's leave."]
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "What are you doing in this place?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "Technology...?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 3]],
+            "message": "Uhhh..."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 4]],
+            "message": "What happened on Firstwind?"
+          },
+          {
+            "codes": [[1, 5]],
+            "message": "I'm looking for my brother."
+          },
+          {
+            "codes": [[1, 6]],
+            "message": "Let's leave."
+          }
+        ]
       ],
       "suite": [
         [
-          "Well, I'll be honest, you're about the last person I was expecting to see down here.",
-          "I was beginning to think I'd never see anyone again."
+          {
+            "codes": [[5, 1]],
+            "message": "Well, I'll be honest, you're about the last person I was expecting to see down here."
+          },
+          {
+            "codes": [
+              [1, 0],
+              [5, 0]
+            ],
+            "message": "I was beginning to think I'd never see anyone again."
+          }
         ],
         [
-          "It's... a long story. But I signed up for it, really.",
-          "Sometimes, if you want to study ancient peoples, you might end up getting captured by their ancient technology."
+          {
+            "message": "It's... a long story. But I signed up for it, really."
+          },
+          {
+            "codes": [[1, 1]],
+            "message": "Sometimes, if you want to study ancient peoples, you might end up getting captured by their ancient technology."
+          }
         ],
         [
-          "Well, that's what Doc Willett and I think it might be.",
-          "I don't know, it's hard to tell. But don't you think these creatures are rather fascinating?",
-          "...",
-          "Look at me, rambling.",
-          "I can't believe you made it off Firstwind alive!",
-          "Wait... is that my gun?!"
+          {
+            "message": "Well, that's what Doc Willett and I think it might be."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "I don't know, it's hard to tell. But don't you think these creatures are rather fascinating?"
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "..."
+          },
+          {
+            "codes": [[5, 2]],
+            "message": "Look at me, rambling."
+          },
+          {
+            "message": "I can't believe you made it off Firstwind alive!"
+          },
+          {
+            "codes": [
+              [5, 1],
+              [1, 2]
+            ],
+            "message": "Wait... is that my gun?!"
+          }
         ],
         [
-          "No matter. We need to get out of this place and back to the base.",
-          "I presume you've already stumbled into Dr. Willett if you decided to come poking around these ruins.",
-          "Oh, and by the way, take this relic I found.",
-          "It supposedly grants you the power to cling onto and jump off of walls. I hope you find it useful."
+          {
+            "codes": [[5, 0]],
+            "message": "No matter. We need to get out of this place and back to the base."
+          },
+          {
+            "codes": [
+              [9, 420],
+              [13, 0]
+            ],
+            "message": "I presume you've already stumbled into Dr. Willett if you decided to come poking around these ruins."
+          },
+          {
+            "codes": [[2, 115]],
+            "message": "Oh, and by the way, take this relic I found."
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "It supposedly grants you the power to cling onto and jump off of walls. I hope you find it useful."
+          }
         ],
         [
-          "Another long story, but that one I at least owe it to tell you...",
-          "Willett and I were taking her over from Grand Island to do some research in places just like these.",
-          "Then, one night, we and our crew were raided by pirates - or, what we thought were pirates.",
-          "Turns out, it was Skycorps. Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us.",
-          "Luckily Doc had an escape plan, but unfortunately that plan didn't include you or anyone else on the crew.",
-          "Skycorps had already tossed most of us in holding cells, but Doc and I were wanted by higher-ups, so they kept us in the bridge.",
-          "I didn't really know what to do... I was too scared to stay behind, but I couldn't just abandon you either.",
-          "I decided the least I could do was try to pass along a message so that you might have some chance to escape, and so I had someone from our crew hide a note in your food.",
-          "I presume you got the message, otherwise we wouldn't be having this conversation."
+          {
+            "codes": [[5, 0]],
+            "message": "Another long story, but that one I at least owe it to tell you..."
+          },
+          {
+            "message": "Willett and I were taking her over from Grand Island to do some research in places just like these."
+          },
+          {
+            "message": "Then, one night, we and our crew were raided by pirates - or, what we thought were pirates."
+          },
+          {
+            "message": "Turns out, it was Skycorps. Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "Luckily Doc had an escape plan, but unfortunately that plan didn't include you or anyone else on the crew."
+          },
+          {
+            "message": "Skycorps had already tossed most of us in holding cells, but Doc and I were wanted by higher-ups, so they kept us in the bridge."
+          },
+          {
+            "message": "I didn't really know what to do... I was too scared to stay behind, but I couldn't just abandon you either."
+          },
+          {
+            "message": "I decided the least I could do was try to pass along a message so that you might have some chance to escape, and so I had someone from our crew hide a note in your food."
+          },
+          {
+            "codes": [
+              [5, 2],
+              [1, 3]
+            ],
+            "message": "I presume you got the message, otherwise we wouldn't be having this conversation."
+          }
         ],
         [
-          "Aren't we all?",
-          "...sigh...",
-          "God, I miss him, despite everything he did. I just want to know if he's still alive..."
+          {
+            "codes": [[5, 0]],
+            "message": "Aren't we all?"
+          },
+          {
+            "message": "...sigh..."
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "God, I miss him, despite everything he did. I just want to know if he's still alive..."
+          }
         ],
         [
-          "You go ahead. I need to gather a few artifacts for study first.",
-          "Don't worry about me--you've taken care of all the threats, and I know the way home!"
+          {
+            "message": "You go ahead. I need to gather a few artifacts for study first."
+          },
+          {
+            "codes": [[5, 2]],
+            "message": "Don't worry about me--you've taken care of all the threats, and I know the way home!"
+          }
         ]
       ]
     },

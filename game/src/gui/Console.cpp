@@ -136,22 +136,6 @@ void Console::handle_actions(int value) {
 void Console::load_and_launch(std::string_view key, OutputType type) {
 	m_writer = std::make_unique<TextWriter>(*m_services, text_suite, key);
 	m_process_code_before = true;
-	// load message codes
-	auto& in_data = text_suite[key]["codes"];
-	if (in_data) {
-		for (auto const& code : in_data.as_array()) {
-			if (code.as_array().size() < 5) { NANI_LOG_ERROR(m_logger, "Invalid Text Json data, too few codes were read!"); }
-			auto in_ints = std::vector<int>{};
-			for (auto const& input : code.as_array()) { in_ints.push_back(input.as<int>()); }
-			auto in_code = MessageCode{static_cast<CodeSource>(in_ints[0]), in_ints[1], in_ints[2], static_cast<MessageCodeType>(in_ints[3]), in_ints[4]};
-			// read extra values, if they exist
-			if (code.as_array().size() > 5) {
-				in_code.extras = std::vector<int>{};
-				for (auto i{5}; i < code.as_array().size(); ++i) { in_code.extras->push_back(in_ints[i]); }
-			}
-			m_codes.push_back(in_code);
-		}
-	}
 	m_output_type = type;
 	native_key = key;
 }
@@ -216,20 +200,23 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 		} else {
 			// do something with response selection
 			// set target suite if response code demands it
-			auto value = get_response_code(m_response->get_selection()).value;
-			if (get_response_code(m_response->get_selection()).is_suite_return()) { m_writer->set_suite(get_response_code(m_response->get_selection()).value); }
-			if (get_response_code(m_response->get_selection()).is_action()) { handle_actions(get_response_code(m_response->get_selection()).value); }
-			if (get_response_code(m_response->get_selection()).is_item()) {
-				m_services->events.dispatch_event("GivePlayerItem", value, 1);
-				if (get_response_code(m_response->get_selection()).extras) { m_services->events.dispatch_event("DestroyInspectable", get_response_code(m_response->get_selection()).extras->at(0)); }
+			if (auto response_codes = get_response_codes(m_response->get_selection())) {
+				for (auto const& cde : response_codes.value()) {
+					if (cde.is_response()) { m_writer->set_suite(cde.value); }
+					if (cde.is_action()) { handle_actions(cde.value); }
+					if (cde.is_item()) {
+						m_services->events.dispatch_event("GivePlayerItem", cde.value, 1);
+						if (cde.extras) { m_services->events.dispatch_event("DestroyInspectable", cde.extras->at(0)); }
+					}
+					if (cde.is_destructible()) { m_services->data.destroy_block(cde.value); }
+					if (cde.is_exit()) {
+						end();
+						return;
+					}
+					m_response = {};
+					responded = true;
+				}
 			}
-			if (get_response_code(m_response->get_selection()).is_destructible()) { m_services->data.destroy_block(get_response_code(m_response->get_selection()).value); }
-			if (get_response_code(m_response->get_selection()).is_exit()) {
-				end();
-				return;
-			}
-			m_response = {};
-			responded = true;
 		}
 	}
 
@@ -299,7 +286,6 @@ void Console::debug() {
 		m_nani_portrait ? ImGui::Text("Nani Included") : ImGui::Text("<no nani portrait>");
 		if (m_response) {
 			ImGui::Text("Response Selection: %i", m_response->get_selection());
-			get_response_code(m_response->get_selection()).debug();
 		} else {
 			ImGui::Separator();
 			ImGui::Text("<no response>");
@@ -317,33 +303,18 @@ void Console::debug() {
 }
 
 auto Console::get_message_codes() const -> std::optional<std::vector<MessageCode>> {
-	auto ret = std::vector<MessageCode>{};
-	for (auto& code : m_codes) {
-		if (code.index == m_writer->get_index() && code.source == CodeSource::suite && code.set == m_writer->get_current_suite_set()) { ret.push_back(code); }
-	}
-	if (!ret.empty()) { return ret; }
-	return std::nullopt;
+	if (!m_writer) { return std::nullopt; }
+	if (!m_writer->current_message().codes) { return std::nullopt; }
+	return m_writer->current_message().codes;
 }
 
-auto Console::get_previous_message_code() const -> std::optional<MessageCode> {
-	for (auto& code : m_codes) {
-		if (code.index == m_writer->get_index() - 1 && code.source == CodeSource::suite && code.set == m_writer->get_current_suite_set() - 1) { return code; }
-	}
-	return std::nullopt;
-}
-
-auto Console::get_response_code(int which) const -> MessageCode {
-	if (!m_response) { return m_codes.back(); }
-	for (auto& code : m_codes) {
-		if (code.index == which && code.source == CodeSource::response && code.set == m_response->get_index()) { return code; }
-	}
-	return MessageCode();
+auto Console::get_response_codes(int which) const -> std::optional<std::vector<MessageCode>> {
+	if (!m_response) { return std::nullopt; }
+	return m_response->get_codes(which);
 }
 
 void MessageCode::debug() {
 	ImGui::SeparatorText("Message Code");
-	ImGui::Text("Source: %s", source == CodeSource::suite ? "suite" : "response");
-	ImGui::Text("Index: %i", index);
 	ImGui::Text("Type: %i", static_cast<int>(type));
 	ImGui::Text("Value: %i", value);
 	if (extras) {

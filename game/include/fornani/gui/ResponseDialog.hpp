@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/gui/TextWriter.hpp>
 #include <fornani/io/Logger.hpp>
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
@@ -36,17 +37,21 @@ struct ResponseIndicator {
 class ResponseDialog {
   public:
 	ResponseDialog(data::TextManager& text, dj::Json& source, std::string_view key, int index = 0, sf::Vector2f start_position = {});
+
 	/// @return true if dialog is still processing inputs, false when exit is requested
 	bool handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard);
 	void render(sf::RenderWindow& win);
 	void update();
 	void set_position(sf::Vector2f to_position);
+
 	[[nodiscard]] auto get_selection() const -> int { return m_selection.get(); }
 	[[nodiscard]] auto get_index() const -> int { return m_index; }
+	[[nodiscard]] auto get_codes(std::size_t index) const -> std::optional<std::vector<MessageCode>>;
+
+	std::vector<Message> responses{};
 
   private:
 	void stylize(sf::Text& message) const;
-	std::vector<sf::Text> m_responses{};
 	sf::Vector2f m_position{};
 	ResponseIndicator m_indicator{};
 	int m_text_size;

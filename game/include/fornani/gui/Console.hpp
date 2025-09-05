@@ -28,38 +28,6 @@ enum class ConsoleFlags : std::uint8_t { no_exit };
 enum class ConsoleTriggers : std::uint8_t { response_created };
 enum class OutputType : std::uint8_t { instant, gradual, no_skip };
 
-/* code : [source, set, index, type, value] */
-struct MessageCode {
-	CodeSource source{};
-	int set{};
-	int index{};
-	MessageCodeType type{};
-	int value{};
-	std::optional<std::vector<int>> extras{};
-
-	void debug();
-
-	[[nodiscard]] auto is_exit() const -> bool { return type == MessageCodeType::exit; }
-	[[nodiscard]] auto is_response() const -> bool { return source == CodeSource::suite && type == MessageCodeType::response; }
-	[[nodiscard]] auto is_redirect() const -> bool { return source == CodeSource::suite && type == MessageCodeType::redirect; }
-	[[nodiscard]] auto is_suite_return() const -> bool { return source == CodeSource::response && type == MessageCodeType::response; }
-	[[nodiscard]] auto is_action() const -> bool { return type == MessageCodeType::action; }
-	[[nodiscard]] auto is_item() const -> bool { return type == MessageCodeType::item; }
-	[[nodiscard]] auto is_destructible() const -> bool { return type == MessageCodeType::destructible; }
-	[[nodiscard]] auto is_input_hint() const -> bool { return type == MessageCodeType::input_hint; }
-	[[nodiscard]] auto is_reveal_item() const -> bool { return type == MessageCodeType::reveal_item; }
-	[[nodiscard]] auto is_start_battle() const -> bool { return type == MessageCodeType::start_battle; }
-	[[nodiscard]] auto is_voice_cue() const -> bool { return type == MessageCodeType::voice; }
-	[[nodiscard]] auto is_emotion() const -> bool { return type == MessageCodeType::emotion; }
-	[[nodiscard]] auto is_pop_conversation() const -> bool { return type == MessageCodeType::pop_conversation; }
-	[[nodiscard]] auto is_play_song() const -> bool { return type == MessageCodeType::play_song; }
-
-	// editor helpers
-	void mark_for_deletion() { delete_me = true; }
-	[[nodiscard]] auto is_marked_for_deletion() const -> bool { return delete_me; }
-	bool delete_me{};
-};
-
 class Console {
   public:
 	explicit Console(automa::ServiceProvider& svc);
@@ -101,8 +69,7 @@ class Console {
 	[[nodiscard]] auto exit_requested() const -> bool { return m_mode == ConsoleMode::off; }
 	[[nodiscard]] auto just_began() const -> bool { return m_began; }
 	[[nodiscard]] auto get_message_codes() const -> std::optional<std::vector<MessageCode>>;
-	[[nodiscard]] auto get_previous_message_code() const -> std::optional<MessageCode>;
-	[[nodiscard]] auto get_response_code(int which) const -> MessageCode;
+	[[nodiscard]] auto get_response_codes(int which) const -> std::optional<std::vector<MessageCode>>;
 	[[nodiscard]] auto has_nani_portrait() const -> bool { return static_cast<bool>(m_nani_portrait); }
 	[[nodiscard]] auto was_response_created() const -> bool { return m_triggers.test(ConsoleTriggers::response_created); }
 
@@ -123,7 +90,6 @@ class Console {
 	std::optional<ItemWidget> m_item_widget{};
 	std::optional<Portrait> m_npc_portrait;
 	std::optional<Portrait> m_nani_portrait;
-	std::vector<MessageCode> m_codes{};
 
 	util::BitFlags<ConsoleFlags> m_flags{};
 	util::BitFlags<ConsoleTriggers> m_triggers{};

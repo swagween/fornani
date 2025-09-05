@@ -10,11 +10,15 @@ namespace fornani::gui {
 ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, std::string_view key, int index, sf::Vector2f start_position) : m_text_size{16}, m_selection{1}, m_index{index} {
 	auto& set = source[key]["responses"][index];
 	for (auto& msg : set.as_array()) {
-		m_responses.push_back(sf::Text(text.fonts.basic));
-		m_responses.back().setString(msg.as_string().data());
-		stylize(m_responses.back());
+		responses.push_back(Message{sf::Text(text.fonts.basic), false});
+		responses.back().data.setString(msg.as_string().data());
+		stylize(responses.back().data);
+		if (msg["codes"].is_array()) {
+			responses.back().codes = std::vector<MessageCode>{};
+			for (auto const& code : msg["codes"].as_array()) { responses.back().codes->push_back(MessageCode{code}); }
+		}
 	}
-	m_selection = util::Circuit{static_cast<int>(m_responses.size())};
+	m_selection = util::Circuit{static_cast<int>(responses.size())};
 	m_indicator.shape.setSize({4.f, 4.f});
 	m_indicator.shape.setFillColor(colors::bright_orange);
 	m_indicator.shape.setOrigin({2.f, 2.f});
@@ -22,6 +26,12 @@ ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, std::s
 	m_indicator.position = start_position;
 	m_indicator.physics.position = start_position;
 	m_position = start_position;
+}
+
+auto ResponseDialog::get_codes(std::size_t index) const -> std::optional<std::vector<MessageCode>> {
+	if (index >= responses.size()) { return std::nullopt; }
+	if (!responses.at(index).codes) { return std::nullopt; }
+	return responses.at(index).codes;
 }
 
 void ResponseDialog::stylize(sf::Text& message) const {
@@ -44,7 +54,6 @@ bool ResponseDialog::handle_inputs(config::ControllerMap& controller, audio::Sou
 		m_selection.modulate(-1);
 	}
 	if (down) {
-		NANI_LOG_DEBUG(m_logger, "down!");
 		soundboard.flags.console.set(audio::Console::shift);
 		m_selection.modulate(1);
 	}
@@ -54,7 +63,8 @@ bool ResponseDialog::handle_inputs(config::ControllerMap& controller, audio::Sou
 
 void ResponseDialog::render(sf::RenderWindow& win) {
 	auto ctr{0.f};
-	for (auto& res : m_responses) {
+	for (auto& response : responses) {
+		auto& res = response.data;
 		auto is_current = ctr == m_selection.as<float>();
 		is_current ? res.setFillColor(colors::ui_white) : res.setFillColor(colors::blue);
 		auto xoff = is_current ? 0.f : 4.f;

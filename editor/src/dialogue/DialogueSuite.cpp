@@ -38,27 +38,38 @@ void DialogueSuite::serialize(dj::Json& out) {
 	out[m_host][m_tag]["suite"] = dj::Json::empty_array();
 	for (auto& node_set : m_suite) {
 		dj::Json current = dj::Json::empty_array();
-		for (auto& node : node_set.nodes) { current.push_back(node.get_message()); }
+		for (auto& node : node_set.nodes) {
+			auto message = dj::Json::empty_object();
+			message["message"] = node.get_message();
+			current.push_back(message);
+		}
 		out[m_host][m_tag]["suite"].push_back(current);
 	}
 	out[m_host][m_tag]["responses"] = dj::Json::empty_array();
 	for (auto& node_set : m_responses) {
 		dj::Json current = dj::Json::empty_array();
-		for (auto& node : node_set.nodes) { current.push_back(node.get_message()); }
+		for (auto& node : node_set.nodes) {
+			auto message = dj::Json::empty_object();
+			message["message"] = node.get_message();
+			current.push_back(message);
+		}
 		out[m_host][m_tag]["responses"].push_back(current);
 	}
-	out[m_host][m_tag]["codes"] = dj::Json::empty_array();
 	for (auto const& code : m_codes) {
-		dj::Json current = dj::Json::empty_array();
-		current.push_back(static_cast<int>(code.source));
-		current.push_back(code.set);
-		current.push_back(code.index);
-		current.push_back(static_cast<int>(code.type));
-		current.push_back(code.value);
-		if (code.extras) {
-			for (auto const& extra : code.extras.value()) { current.push_back(extra); }
+		auto cde = dj::Json::empty_array();
+		auto tag = code.source == NodeType::suite ? "suite" : "responses";
+		for (auto [i, ste] : std::views::enumerate(out[m_host][m_tag][tag].as_array())) {
+			for (auto [j, set] : std::views::enumerate(ste.as_array())) {
+				if (i == code.set && j == code.index) {
+					cde.push_back(static_cast<int>(code.type));
+					cde.push_back(code.value);
+					if (code.extras) {
+						for (auto const& extra : code.extras.value()) { cde.push_back(extra); }
+					}
+					out[m_host][m_tag][tag][i][j]["codes"].push_back(cde);
+				}
+			}
 		}
-		out[m_host][m_tag]["codes"].push_back(current);
 	}
 }
 
