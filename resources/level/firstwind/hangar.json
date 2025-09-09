@@ -329,6 +329,16 @@
       "obscuring": false,
       "reverse_obscuring": false
     },
+    "ignore_lighting": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "layers": [
       [
         117,

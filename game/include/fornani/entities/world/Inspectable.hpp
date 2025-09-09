@@ -31,7 +31,7 @@ enum class InspectableFlags : std::uint8_t { hovered, hovered_trigger, activated
 
 class Inspectable : public IWorldPositionable {
   public:
-	Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int room);
+	Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int room, int index);
 	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player);
 	void destroy() { flags.set(InspectableFlags::destroy); }
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos);
@@ -50,6 +50,7 @@ class Inspectable : public IWorldPositionable {
 	int native_id{};
 	int alternates{};
 	int current_alt{};
+	int m_index{};
 	util::BitFlags<InspectableAttributes> attributes{};
 	util::BitFlags<InspectableFlags> flags{};
 	sf::Sprite sprite;

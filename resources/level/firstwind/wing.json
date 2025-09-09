@@ -35,19 +35,25 @@
           1,
           1
         ],
-        "fall0": {
-          "suite": [
-            [
-              "There's no way but down..."
-            ]
-          ]
-        },
+        "fall0": [],
         "id": 0,
         "instant": false,
         "key": "fall",
         "position": [
           72,
           8
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "There's no way but down..."
+                }
+              ]
+            ]
+          }
         ]
       }
     ],

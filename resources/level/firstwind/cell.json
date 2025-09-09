@@ -29,6 +29,7 @@
         ]
       }
     ],
+    "inspectables": [],
     "portals": [
       {
         "activate_on_contact": false,
@@ -74,7 +75,7 @@
     ],
     "metagrid": [
       1,
-      -1
+      0
     ],
     "minimap": true,
     "music": "",
@@ -99,6 +100,16 @@
       "obscuring": false,
       "reverse_obscuring": false
     },
+    "ignore_lighting": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "layers": [
       [
         0,

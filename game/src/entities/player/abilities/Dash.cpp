@@ -25,9 +25,9 @@ void Dash::update(shape::Collider& collider, PlayerController& controller) {
 		collider.physics.acceleration.x = controller.horizontal_movement() * m_vertical_multiplier;
 		collider.physics.velocity.x = controller.horizontal_movement() * m_vertical_multiplier;
 
-		collider.physics.acceleration.y = m_direction.down() ? m_direction.as_float_und() * m_horizontal_multiplier * collider.physics.gravity : m_direction.as_float_und() * m_horizontal_multiplier;
-		collider.physics.velocity.y = m_direction.down() ? m_direction.as_float_und() * m_horizontal_multiplier * collider.physics.gravity : m_direction.as_float_und() * m_horizontal_multiplier;
-		if (m_duration.is_complete()) { collider.physics.acceleration.y = 0.f; }
+		collider.physics.acceleration.y = m_direction.down() ? m_direction.as_float_und() * m_horizontal_multiplier * 100.f : m_direction.as_float_und() * m_horizontal_multiplier;
+		collider.physics.velocity.y = m_direction.down() ? m_direction.as_float_und() * m_horizontal_multiplier * 100.f : m_direction.as_float_und() * m_horizontal_multiplier;
+		if (m_duration.is_complete() && !m_direction.down()) { collider.physics.acceleration.y = 0.f; }
 	} else {
 		collider.physics.velocity.y = 0.f;
 		collider.physics.acceleration.y = controller.vertical_movement() * m_vertical_multiplier;

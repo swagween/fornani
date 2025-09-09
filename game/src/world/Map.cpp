@@ -124,19 +124,8 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		auto parallax = entry["parallax"].as<float>();
 		scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, style_id, lyr, var, parallax));
 	}
-	/*for (auto& entry : entities["scenery"]["vines"].as_array()) {
-		sf::Vector2f pos{};
-		pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
-		pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
-		auto fg = static_cast<bool>(entry["foreground"].as_bool());
-		auto rev = static_cast<bool>(entry["reversed"].as_bool());
-		vines.push_back(std::make_unique<entity::Vine>(svc, pos, entry["length"].as<int>(), entry["size"].as<int>(), fg, rev));
-		if (entry["platform"]) {
-			for (auto& link : entry["platform"]["link_indeces"].as_array()) { vines.back()->add_platform(svc, link.as<int>()); }
-		}
-	}*/
-	for (auto& entry : entities["inspectables"].as_array()) {
-		inspectables.push_back(entity::Inspectable(svc, entry, room_id));
+	for (auto [i, entry] : std::views::enumerate(entities["inspectables"].as_array())) {
+		inspectables.push_back(entity::Inspectable(svc, entry, room_id, i));
 		if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
 	}
 

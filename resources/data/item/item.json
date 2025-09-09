@@ -485,6 +485,19 @@
     "rarity": 2,
     "value": 11000
   },
+  "vermite": {
+    "id": 104,
+    "category": 2,
+    "lookup": [7, 6],
+    "origin": [0, 6],
+    "naive_title": "Vermite",
+    "actual_title": "Vermite",
+    "naive_description": "A legendary iridescent gem formed in the gizzard of the Mother Worm.",
+    "actual_description": "A legendary iridescent gem formed in the gizzard of the Mother Worm.",
+    "unique": false,
+    "rarity": 3,
+    "value": 29000
+  },
   "pioneer_medal": {
     "id": 113,
     "category": 0,

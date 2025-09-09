@@ -20,6 +20,12 @@ Console::Console(automa::ServiceProvider& svc)
 
 Console::Console(automa::ServiceProvider& svc, std::string_view message) : Console(svc) { load_single_message(message); }
 
+Console::Console(automa::ServiceProvider& svc, dj::Json const& source, OutputType type) : Console(svc) {
+	if (type == OutputType::no_skip) { m_exit_stall.start(); }
+	set_source(source);
+	load_and_launch(type);
+}
+
 Console::Console(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type) : Console(svc) {
 	if (type == OutputType::no_skip) { m_exit_stall.start(); }
 	set_source(source);
@@ -131,6 +137,13 @@ void Console::handle_actions(int value) {
 		break;
 	case 3: m_services->state_controller.actions.set(automa::Actions::delete_file); break;
 	}
+}
+
+void Console::load_and_launch(OutputType type) {
+	m_writer = std::make_unique<TextWriter>(*m_services, text_suite);
+	m_process_code_before = true;
+	m_output_type = type;
+	native_key = null_key;
 }
 
 void Console::load_and_launch(std::string_view key, OutputType type) {

@@ -4,13 +4,7 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "backslashtest0": {
-          "suite": [
-            [
-              "Here is a regular quote, \"Hello World!\" followed by a tough test: \\\"Manually escaping!\\\""
-            ]
-          ]
-        },
+        "backslashtest0": [],
         "dimensions": [
           1,
           1
@@ -21,6 +15,18 @@
         "position": [
           13,
           18
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "Here is a regular quote, \"Hello World!\" followed by a tough test: \\\"Manually escaping!\\\""
+                }
+              ]
+            ]
+          }
         ]
       }
     ],
@@ -94,6 +100,16 @@
       "obscuring": false,
       "reverse_obscuring": false
     },
+    "ignore_lighting": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "layers": [
       [
         0,

@@ -72,13 +72,19 @@
           24,
           15
         ],
-        "rat0": {
-          "suite": [
-            [
-              "There's a rat. Do you want to take it?"
+        "rat0": [],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "There's a rat. Do you want to take it?"
+                }
+              ]
             ]
-          ]
-        }
+          }
+        ]
       },
       {
         "activate_on_contact": false,
@@ -94,13 +100,19 @@
           2,
           21
         ],
-        "username0": {
-          "suite": [
-            [
-              "Laboratory Username: bfoster"
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "Laboratory Username: bfoster"
+                }
+              ]
             ]
-          ]
-        }
+          }
+        ],
+        "username0": []
       }
     ],
     "npcs": [
@@ -200,7 +212,7 @@
     ],
     "metagrid": [
       4,
-      1
+      2
     ],
     "minimap": true,
     "music": "dusken",

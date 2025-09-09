@@ -24,6 +24,7 @@
         ]
       }
     ],
+    "inspectables": [],
     "portals": [
       {
         "activate_on_contact": false,

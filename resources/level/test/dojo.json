@@ -26,6 +26,7 @@
         ]
       }
     ],
+    "inspectables": [],
     "npcs": [
       {
         "dimensions": [
@@ -110,6 +111,16 @@
       "obscuring": false,
       "reverse_obscuring": false
     },
+    "ignore_lighting": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "layers": [
       [
         0,

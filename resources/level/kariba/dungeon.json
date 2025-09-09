@@ -42,6 +42,7 @@
         ]
       }
     ],
+    "inspectables": [],
     "npcs": [
       {
         "background": false,

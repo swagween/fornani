@@ -104,6 +104,12 @@
     },
     {
       "folder": "firstwind",
+      "label": "laboratory.json",
+      "region": "firstwind",
+      "room_id": 110
+    },
+    {
+      "folder": "firstwind",
       "label": "mayhem.json",
       "region": "firstwind",
       "room_id": 990

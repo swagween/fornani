@@ -45,13 +45,19 @@
           10,
           11
         ],
-        "store_room_terminal0": {
-          "suite": [
-            [
-              "You see a bunch of numbers under a column labeled \"INV CODES\"."
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "You see a bunch of numbers under a column labeled \"INV CODES\"."
+                }
+              ]
             ]
-          ]
-        }
+          }
+        ],
+        "store_room_terminal0": []
       }
     ],
     "portals": [

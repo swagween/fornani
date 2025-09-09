@@ -144,13 +144,7 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "atrium_bridge0": {
-          "suite": [
-            [
-              "- Bridge -"
-            ]
-          ]
-        },
+        "atrium_bridge0": [],
         "dimensions": [
           1,
           1
@@ -161,18 +155,24 @@
         "position": [
           7,
           8
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "- Bridge -"
+                }
+              ]
+            ]
+          }
         ]
       },
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "cargo0": {
-          "suite": [
-            [
-              "- Cargo Room -"
-            ]
-          ]
-        },
+        "cargo0": [],
         "dimensions": [
           1,
           1
@@ -183,18 +183,24 @@
         "position": [
           5,
           58
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "- Cargo Room -"
+                }
+              ]
+            ]
+          }
         ]
       },
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "atrium_docs0": {
-          "suite": [
-            [
-              "You find a textbook from a place called Grand Island University. This sets off a spark in your mind, but you can't figure out why."
-            ]
-          ]
-        },
+        "atrium_docs0": [],
         "dimensions": [
           1,
           1
@@ -205,18 +211,24 @@
         "position": [
           21,
           62
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "You find a textbook from a place called Grand Island University. This sets off a spark in your mind, but you can't figure out why."
+                }
+              ]
+            ]
+          }
         ]
       },
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "caution10": {
-          "suite": [
-            [
-              "Caution! Ventilation shafts drain to ship exterior. A fall means certain death."
-            ]
-          ]
-        },
+        "caution10": [],
         "dimensions": [
           1,
           1
@@ -227,6 +239,18 @@
         "position": [
           39,
           60
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "Caution! Ventilation shafts drain to ship exterior. A fall means certain death."
+                }
+              ]
+            ]
+          }
         ]
       }
     ],

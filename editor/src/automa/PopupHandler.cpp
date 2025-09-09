@@ -35,8 +35,8 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			// switch to entity tool, and store the specified inspectable for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->ent_type = EntityType::inspectable;
-			tool->current_entity =
-				std::make_unique<fornani::Inspectable>(svc, activate_on_contact, std::string{keybuffer}, std::vector<std::vector<std::string>>{{std::string{msgbuffer}}}, std::vector<std::vector<std::string>>{}, 0, instant);
+			tool->current_entity = std::make_unique<fornani::Inspectable>(svc, std::vector<std::vector<fornani::gui::BasicMessage>>{{fornani::gui::BasicMessage{std::string{msgbuffer}}}},
+																		  std::vector<std::vector<fornani::gui::BasicMessage>>{}, activate_on_contact, std::string{keybuffer}, 0, instant);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();

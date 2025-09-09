@@ -300,6 +300,7 @@ class Player {
 
 	sf::Vector2f m_weapon_socket{};
 	util::Cooldown m_sprite_shake;
+	util::Cooldown m_hurt_cooldown;
 
 	AbilityUsage m_ability_usage{};
 

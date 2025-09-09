@@ -15,6 +15,7 @@
         "type": 1
       }
     ],
+    "inspectables": [],
     "portals": [
       {
         "activate_on_contact": true,

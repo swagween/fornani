@@ -2,6 +2,7 @@
   "entities": {
     "npcs": [
       {
+        "background": false,
         "dimensions": [
           1,
           1

@@ -163,37 +163,25 @@
         "id": 0,
         "instant": false,
         "key": "king",
-        "king0": {
-          "suite": [
-            [
-              "The inscription reads, \"Miaag, King of the Kariba.\""
-            ]
-          ]
-        },
         "position": [
           18,
           44
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "message": "The inscription reads, \"Miaag, King of the Kariba.\""
+                }
+              ]
+            ]
+          }
         ]
       },
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "deity0": {
-          "codes": [
-            [
-              0,
-              0,
-              0,
-              12,
-              509
-            ]
-          ],
-          "suite": [
-            [
-              "\"Deity Miaag\""
-            ]
-          ]
-        },
         "dimensions": [
           1,
           1
@@ -204,6 +192,23 @@
         "position": [
           25,
           44
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [
+                    [
+                      12,
+                      509
+                    ]
+                  ],
+                  "message": "\"Deity Miaag\""
+                }
+              ]
+            ]
+          }
         ]
       },
       {
@@ -220,13 +225,17 @@
           22,
           44
         ],
-        "worm0": {
-          "suite": [
-            [
-              "\"Miaag imbued with the power of the worm.\""
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "message": "\"Miaag. He absorbs the power of the Mother.\""
+                }
+              ]
             ]
-          ]
-        }
+          }
+        ]
       }
     ],
     "portals": [

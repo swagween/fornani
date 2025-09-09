@@ -1,5 +1,7 @@
 {
-  "entities": null,
+  "entities": {
+    "inspectables": []
+  },
   "meta": {
     "ambience": "",
     "background": -1,
@@ -46,6 +48,16 @@
       "obscuring": false,
       "reverse_obscuring": false
     },
+    "ignore_lighting": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "layers": [
       [
         0,

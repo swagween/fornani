@@ -11,7 +11,7 @@
 		"hurt_acc": 2.150000,
 		"maximum_velocity": {
 			"x": 32.490000,
-			"y": 21.680000
+			"y": 18.680000
 		},
 		"mass": 1.000000,
 		"vertical_dash_multiplier": 1.837000,

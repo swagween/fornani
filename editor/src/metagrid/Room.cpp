@@ -20,7 +20,7 @@ bool Room::serialize(fornani::automa::ServiceProvider& svc) {
 	m_data->metadata["meta"]["minimap"] = m_include_in_minimap;
 	m_data->metadata["meta"]["metagrid"][0] = m_position.x;
 	m_data->metadata["meta"]["metagrid"][1] = m_position.y;
-	return m_data->metadata.to_file((svc.finder.paths.levels / std::filesystem::path{m_data->biome_label} / std::filesystem::path{m_data->room_label + ".json"}).string().c_str());
+	return m_data->metadata.to_file((svc.finder.paths.levels / std::filesystem::path{m_data->region_label} / std::filesystem::path{m_data->room_label + ".json"}).string().c_str());
 }
 
 void Room::render(sf::RenderWindow& win, sf::Vector2f cam) {

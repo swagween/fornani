@@ -17,6 +17,8 @@ TextWriter::TextWriter(automa::ServiceProvider& svc)
 	cursor.setSize({10.f, 16.f});
 }
 
+TextWriter::TextWriter(automa::ServiceProvider& svc, dj::Json& source) : TextWriter(svc) { load_message(source); }
+
 TextWriter::TextWriter(automa::ServiceProvider& svc, dj::Json& source, std::string_view key) : TextWriter(svc) { load_message(source, key); }
 
 TextWriter::TextWriter(automa::ServiceProvider& svc, std::string_view message) : TextWriter(svc) { load_single_message(message); }
@@ -141,29 +143,48 @@ void TextWriter::constrain() {
 void TextWriter::load_single_message(std::string_view message) {
 	flush();
 	auto message_container = std::deque<Message>{};
-	message_container.push_back({sf::Text(*m_font), false});
+	message_container.push_back({sf::Text(*m_font)});
 	message_container.back().data.setString(message.data());
 	stylize(message_container.back().data);
 	suite.push_back(message_container);
 	constrain();
 }
 
+void TextWriter::load_message(dj::Json& source) {
+	flush();
+	for (auto const& set : source["suite"].as_array()) {
+		auto this_set = std::deque<Message>{};
+		for (auto const& msg : set.as_array()) {
+			auto codes = std::vector<MessageCode>{};
+			if (msg["codes"].is_array()) {
+				for (auto const& code : msg["codes"].as_array()) { codes.push_back(MessageCode{code}); }
+			}
+			this_set.push_back({sf::Text(*m_font), codes});
+			this_set.back().data.setString(msg["message"].as_string().data());
+			NANI_LOG_DEBUG(m_logger, "Loaded message: {}", msg["message"].as_string());
+			stylize(this_set.back().data);
+		}
+		suite.push_back(this_set);
+		NANI_LOG_DEBUG(m_logger, "Pushed a set.");
+	}
+	working_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
+	working_message.setString("");
+	working_str = {};
+	m_is_first = true;
+}
+
 void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	flush();
-	// NANI_LOG_DEBUG(m_logger, "NPC suite: {}", key.data());
-	// suite
-	for (auto set : source[key]["suite"].as_array()) {
+	for (auto const& set : source[key]["suite"].as_array()) {
 		auto this_set = std::deque<Message>{};
-		for (auto msg : set.as_array()) {
-			// NANI_LOG_DEBUG(m_logger, "Message: {}", msg.as_string());
-
-			this_set.push_back({sf::Text(*m_font), false});
+		for (auto const& msg : set.as_array()) {
+			auto codes = std::vector<MessageCode>{};
+			if (msg["codes"].is_array()) {
+				for (auto const& code : msg["codes"].as_array()) { codes.push_back(MessageCode{code}); }
+			}
+			this_set.push_back({sf::Text(*m_font), codes});
 			this_set.back().data.setString(msg["message"].as_string().data());
 			stylize(this_set.back().data);
-			if (msg["codes"].is_array()) {
-				this_set.back().codes = std::vector<MessageCode>{};
-				for (auto const& code : msg["codes"].as_array()) { this_set.back().codes->push_back(MessageCode{code}); }
-			}
 		}
 		suite.push_back(this_set);
 	}

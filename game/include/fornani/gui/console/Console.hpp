@@ -41,6 +41,13 @@ class Console {
 	explicit Console(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type);
 
 	/// <summary>
+	/// @brief for standard loading and launching, data-driven text with pre-supplied key
+	/// </summary>
+	/// <param name="svc"></param>
+	/// <param name="type"></param>
+	explicit Console(automa::ServiceProvider& svc, dj::Json const& source, OutputType type);
+
+	/// <summary>
 	/// @brief used for loading single messages (signs, inspectables, etc.)
 	/// </summary>
 	/// <param name="svc"></param>
@@ -81,6 +88,7 @@ class Console {
 
   protected:
 	void load_and_launch(std::string_view key, OutputType type = OutputType::gradual);
+	void load_and_launch(OutputType type = OutputType::gradual);
 	void load_single_message(std::string_view message);
 	void handle_inputs(config::ControllerMap& controller);
 	void debug();

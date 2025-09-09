@@ -8,9 +8,9 @@
 namespace fornani::gui {
 
 ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, std::string_view key, int index, sf::Vector2f start_position) : m_text_size{16}, m_selection{1}, m_index{index} {
-	auto& set = source[key]["responses"][index];
+	auto& set = key == null_key ? source["responses"][index] : source[key]["responses"][index];
 	for (auto& msg : set.as_array()) {
-		responses.push_back(Message{sf::Text(text.fonts.basic), false});
+		responses.push_back(Message{sf::Text(text.fonts.basic)});
 		responses.back().data.setString(msg["message"].as_string().data());
 		stylize(responses.back().data);
 		if (msg["codes"].is_array()) {

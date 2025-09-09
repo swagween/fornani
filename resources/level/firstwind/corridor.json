@@ -69,13 +69,19 @@
           91,
           5
         ],
-        "to_hold0": {
-          "suite": [
-            [
-              "- The Hold -"
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "- The Hold -"
+                }
+              ]
             ]
-          ]
-        }
+          }
+        ],
+        "to_hold0": []
       }
     ],
     "platforms": [

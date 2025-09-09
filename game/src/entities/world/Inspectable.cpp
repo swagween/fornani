@@ -1,9 +1,9 @@
 
 #include "fornani/entities/world/Inspectable.hpp"
+#include <fornani/gui/console/Console.hpp>
 #include <fornani/systems/EventDispatcher.hpp>
 #include <fornani/world/Map.hpp>
 #include "fornani/entities/player/Player.hpp"
-#include <fornani/gui/console/Console.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::entity {
@@ -15,9 +15,9 @@ static void destroy_me(int id) {
 	b_id = id;
 }
 
-Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int room)
+Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int room, int index)
 	: IWorldPositionable({in["position"][0].as<std::uint32_t>(), in["position"][1].as<std::uint32_t>()}, {in["dimensions"][0].as<std::uint32_t>(), in["dimensions"][1].as<std::uint32_t>()}),
-	  sprite{svc.assets.get_texture("inspectable_indicator")} {
+	  sprite{svc.assets.get_texture("inspectable_indicator")}, m_index{index} {
 	if (in["activate_on_contact"].as_bool()) { attributes.set(InspectableAttributes::activate_on_contact); }
 	if (in["instant"].as_bool()) { attributes.set(InspectableAttributes::instant); }
 	key = in["key"].as_string();
@@ -32,7 +32,7 @@ Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int r
 }
 
 void Inspectable::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
-	auto const& set = svc.data.map_jsons.at(map.room_lookup).metadata["entities"]["inspectables"];
+	auto const& set = svc.data.map_jsons.at(map.room_lookup).metadata["entities"]["inspectables"][m_index];
 	bounding_box.set_position(get_world_position());
 	flags.reset(InspectableFlags::activated);
 	animation.update();
@@ -62,11 +62,10 @@ void Inspectable::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_
 	}
 	if (flags.test(InspectableFlags::activated) && !player.is_busy()) {
 		player.set_busy(true);
-		for (auto const& choice : set.as_array()) {
-			auto output_type = attributes.test(InspectableAttributes::instant) ? gui::OutputType::instant : gui::OutputType::gradual;
-			if (choice["key"].as_string() == std::string{key}) { console = std::make_unique<gui::Console>(svc, choice, std::string{key + std::to_string(current_alt)}, output_type); }
-		}
+		auto output_type = attributes.test(InspectableAttributes::instant) ? gui::OutputType::instant : gui::OutputType::gradual;
+		console = std::make_unique<gui::Console>(svc, set["series"][current_alt], output_type);
 	}
+
 	if (flags.test(InspectableFlags::hovered) && flags.consume(InspectableFlags::hovered_trigger) && animation.complete()) { animation.set_params(params); }
 	if (console) {
 		if (console.value()->get_key() == key) { flags.set(InspectableFlags::engaged); }

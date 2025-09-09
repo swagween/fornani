@@ -15,6 +15,7 @@ struct MessageCode {
 	int value{};
 	std::optional<std::vector<int>> extras{};
 
+	void serialize(dj::Json& out) const;
 	void debug();
 
 	[[nodiscard]] auto is_exit() const -> bool { return type == MessageCodeType::exit; }
@@ -39,7 +40,12 @@ struct MessageCode {
 
 struct Message {
 	sf::Text data;
-	bool prompt{};
+	std::optional<std::vector<MessageCode>> codes{};
+};
+
+// for creation of Inspectables
+struct BasicMessage {
+	std::string data{};
 	std::optional<std::vector<MessageCode>> codes{};
 };
 

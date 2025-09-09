@@ -42,23 +42,7 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "crouch_tut0": {
-          "codes": [
-            [
-              0,
-              0,
-              0,
-              10,
-              87,
-              7
-            ]
-          ],
-          "suite": [
-            [
-              "It's a training manual. It reads, \"the soldier who crouches on the ground by pressing  may better view enemies and terrain below.\""
-            ]
-          ]
-        },
+        "crouch_tut0": [],
         "dimensions": [
           1,
           1
@@ -69,18 +53,30 @@
         "position": [
           35,
           14
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [
+                    [
+                      10,
+                      87,
+                      7
+                    ]
+                  ],
+                  "message": "It's a training manual. It reads, \"the soldier who crouches on the ground by pressing  may better view enemies and terrain below.\""
+                }
+              ]
+            ]
+          }
         ]
       },
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "barracks_switch0": {
-          "suite": [
-            [
-              "\"...to activate, apply a force of any kind to the top. Switches like these will open paths previously obscured.\""
-            ]
-          ]
-        },
+        "barracks_switch0": [],
         "dimensions": [
           1,
           1
@@ -91,6 +87,18 @@
         "position": [
           30,
           23
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "\"...to activate, apply a force of any kind to the top. Switches like these will open paths previously obscured.\""
+                }
+              ]
+            ]
+          }
         ]
       }
     ],
@@ -233,7 +241,7 @@
     ],
     "metagrid": [
       2,
-      -1
+      0
     ],
     "minimap": true,
     "music": "",

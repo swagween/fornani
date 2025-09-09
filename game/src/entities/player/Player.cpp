@@ -1,8 +1,8 @@
 
 #include "fornani/entities/player/Player.hpp"
+#include <fornani/gui/console/Console.hpp>
 #include <fornani/utils/Random.hpp>
 #include "fornani/entities/item/Drop.hpp"
-#include <fornani/gui/console/Console.hpp>
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Constants.hpp"
@@ -15,7 +15,7 @@ constexpr auto walljump_force_v = 8.6f;
 
 Player::Player(automa::ServiceProvider& svc)
 	: arsenal(svc), m_services(&svc), controller(svc, *this), animation(*this), sprite{svc.assets.get_texture("nani")}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},
-	  m_directions{.desired{LR::left}, .actual{LR::right}}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, collider{player_dimensions_v}, m_sprite_shake{80} {
+	  m_directions{.desired{LR::left}, .actual{LR::right}}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, collider{player_dimensions_v}, m_sprite_shake{80}, m_hurt_cooldown{64} {
 	sprite.setScale(constants::f_scale_vec);
 	svc.data.load_player_params(*this);
 
@@ -49,6 +49,8 @@ void Player::update(world::Map& map) {
 	caution.avoid_ledges(map, collider, controller.direction, 8);
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 	cooldowns.tutorial.update();
+	if (m_hurt_cooldown.is_almost_complete()) { m_services->music_player.filter_fade_out(); }
+	m_hurt_cooldown.update();
 
 	// map effects
 	if (controller.is_wallsliding()) {
@@ -408,7 +410,10 @@ void Player::walk() {
 void Player::hurt(float amount, bool force) {
 	if (health.is_dead()) { return; }
 	if (!health.invincible() || force) {
-		m_services->ticker.slow_down(25);
+		m_services->music_player.filter_fade_in(80.f, 40.f, 32);
+		m_services->ambience_player.set_balance(1.f);
+		m_services->ticker.slow_down(32);
+		m_hurt_cooldown.start();
 		health.inflict(amount, force);
 		health_indicator.add(-amount);
 		collider.physics.velocity.y = 0.0f;
@@ -648,6 +653,7 @@ bool Player::can_doublejump() const {
 	if (health.is_dead()) { return false; }
 	if (controller.is_wallsliding()) { return false; }
 	if (grounded()) { return false; }
+	if ((collider.has_left_wallslide_collision() || collider.has_right_wallslide_collision()) && can_wallslide()) { return false; }
 	if (m_ability_usage.doublejump.get_count() > 0) { return false; }
 	if (!catalog.inventory.has_item("sky_pendant")) { return false; }
 	return true;

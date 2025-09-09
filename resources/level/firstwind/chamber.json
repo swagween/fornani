@@ -4,13 +4,7 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "danger0": {
-          "suite": [
-            [
-              "Danger! Steep Drop-off!"
-            ]
-          ]
-        },
+        "danger0": [],
         "dimensions": [
           1,
           1
@@ -21,6 +15,18 @@
         "position": [
           73,
           13
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "Danger! Steep Drop-off!"
+                }
+              ]
+            ]
+          }
         ]
       }
     ],
@@ -189,6 +195,16 @@
       "obscuring": false,
       "reverse_obscuring": false
     },
+    "ignore_lighting": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "layers": [
       [
         117,

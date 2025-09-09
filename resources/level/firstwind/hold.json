@@ -103,19 +103,25 @@
           1,
           1
         ],
-        "hold_10": {
-          "suite": [
-            [
-              "- to Hangar and Outer Deck -"
-            ]
-          ]
-        },
+        "hold_10": [],
         "id": 0,
         "instant": true,
         "key": "hold_1",
         "position": [
           24,
           24
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "- to Hangar and Outer Deck -"
+                }
+              ]
+            ]
+          }
         ]
       },
       {
@@ -125,19 +131,25 @@
           1,
           1
         ],
-        "hold_20": {
-          "suite": [
-            [
-              "- Hangar -"
-            ]
-          ]
-        },
+        "hold_20": [],
         "id": 0,
         "instant": true,
         "key": "hold_2",
         "position": [
           26,
           55
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "- Hangar -"
+                }
+              ]
+            ]
+          }
         ]
       },
       {
@@ -147,19 +159,25 @@
           1,
           1
         ],
-        "hold_30": {
-          "suite": [
-            [
-              "- Outer Deck -"
-            ]
-          ]
-        },
+        "hold_30": [],
         "id": 0,
         "instant": true,
         "key": "hold_3",
         "position": [
           5,
           91
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "- Outer Deck -"
+                }
+              ]
+            ]
+          }
         ]
       },
       {
@@ -170,18 +188,24 @@
           1
         ],
         "id": 0,
-        "infirmary0": {
-          "suite": [
-            [
-              "- Infirmary -"
-            ]
-          ]
-        },
+        "infirmary0": [],
         "instant": true,
         "key": "infirmary",
         "position": [
           27,
           7
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "- Infirmary -"
+                }
+              ]
+            ]
+          }
         ]
       },
       {
@@ -194,16 +218,22 @@
         "id": 0,
         "instant": true,
         "key": "laboratory_password",
-        "laboratory_password0": {
-          "suite": [
-            [
-              "Laboratory console authorization key: 66724"
-            ]
-          ]
-        },
+        "laboratory_password0": [],
         "position": [
           2,
           32
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [],
+                  "message": "Laboratory console authorization key: 66724"
+                }
+              ]
+            ]
+          }
         ]
       }
     ],

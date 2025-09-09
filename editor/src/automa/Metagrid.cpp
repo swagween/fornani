@@ -18,56 +18,68 @@ Metagrid::Metagrid(fornani::automa::ServiceProvider& svc) : EditorState(svc), m_
 	p_wallpaper.setFillColor(m_background_color);
 	p_wallpaper.setSize(p_services->window->f_screen_dimensions());
 	for (auto& map : svc.data.map_jsons) { m_rooms.push_back(Room(svc, map)); }
+	return;
 
-	// here we convert legacy inspectables
+	// here we convert legacy inspectables.
 	for (auto& map : svc.data.map_jsons) {
+		auto new_map = dj::Json{};
+		new_map = map.metadata;
+		new_map["entities"]["inspectables"] = dj::Json::empty_array();
 		for (auto& inspectable : map.metadata["entities"]["inspectables"].as_array()) {
-			for (auto [key, item] : inspectable.as_object()) {
-				auto key_to_change = inspectable["key"].as_string() + "0";
+			auto new_inspectable = dj::Json{};
+			new_inspectable = inspectable;
 
-				// get extsiting message
-				auto msg = inspectable[key_to_change]["suite"][0][0].as_string();
+			// make new inspectables and push them to the new map
 
-				auto wipe = dj::Json::empty_object();
-				auto wipearr = dj::Json::empty_array();
-				if (key == key_to_change) { item = wipe; }
-			}
+			for (auto& [key, item] : inspectable.as_object()) {
+				auto old_tag = inspectable["key"].as_string() + "0";
 
-			// make new json with correct structure from existing inspectable, then push it to series
+				if (key != old_tag) { continue; }
+				new_inspectable[old_tag] = dj::Json::empty_array();
 
-			auto my_code = std::vector<std::vector<int>>{};
-			for (auto& code : inspectable["codes"].as_array()) {
-				auto arr = std::vector<int>{};
-				for (auto& c : code.as_array()) { arr.push_back(c.as<int>()); }
-				my_code.push_back(arr);
-			}
-			auto series = dj::Json{};
-			auto next = dj::Json{};
-			for (auto k = 0; k < 2; ++k) {
-				auto lookup = k == 0 ? "suite" : "responses";
-				for (auto [i, suite] : std::views::enumerate(inspectable[lookup].as_array())) {
-					auto collection = dj::Json{};
-					// we are in the set now
-					for (auto [j, msg] : std::views::enumerate(suite.as_array())) {
-						auto mini = dj::Json{};
-						// convert text entry into small message json object
-						mini["message"] = suite.as_string();
-						auto clean_code = dj::Json::empty_array();
-						for (auto& c : my_code) {
-							if (c[0] == k && c[1] == i && c[2] == j) {
-								auto arr = dj::Json::empty_array();
-								for (auto& num : c) { arr.push_back(num); }
-								clean_code.push_back(arr);
-							}
-						}
-						mini["codes"] = clean_code;
-						collection.push_back(mini);
-					}
-					next[k].push_back(collection);
+				// make new json with correct structure from existing inspectable, then push it to series
+				auto my_code = std::vector<std::vector<int>>{};
+				for (auto& code : inspectable[old_tag]["codes"].as_array()) {
+					auto arr = std::vector<int>{};
+					for (auto& c : code.as_array()) { arr.push_back(c.as<int>()); }
+					my_code.push_back(arr);
 				}
+				auto series = dj::Json{};
+				auto k = 0;
+				auto next = dj::Json{};
+				for (auto& [tag, set] : inspectable[old_tag].as_object()) {
+					k = tag == "suite" ? 0 : tag == "responses" ? 1 : 2;
+					if (k > 1) { continue; }
+					NANI_LOG_DEBUG(p_logger, "K was {}", k);
+					for (auto [i, suite] : std::views::enumerate(inspectable[old_tag][tag].as_array())) {
+						auto collection = dj::Json{};
+						// we are in the set now
+						for (auto [j, msg] : std::views::enumerate(suite.as_array())) {
+							auto mini = dj::Json{};
+							// convert text entry into small message json object
+							mini["message"] = msg.as_string();
+							auto clean_code = dj::Json::empty_array();
+							for (auto& c : my_code) {
+								if (c[0] == k && c[1] == i && c[2] == j) {
+									auto arr = dj::Json::empty_array();
+									for (auto [l, num] : std::views::enumerate(c)) {
+										if (l > 2) { arr.push_back(num); }
+									}
+									clean_code.push_back(arr);
+								}
+							}
+							mini["codes"] = clean_code;
+							collection.push_back(mini);
+						}
+						next[tag].push_back(collection);
+					}
+				}
+				series.push_back(next);
+				new_inspectable["series"] = std::move(series);
 			}
-			series.push_back(next);
+			new_map["entities"]["inspectables"].push_back(new_inspectable);
 		}
+		if (!new_map.to_file((svc.finder.paths.levels / std::filesystem::path{"updated"} / map.region_label / std::filesystem::path{map.room_label + ".json"}).string())) {}
 	}
 	//
 }
