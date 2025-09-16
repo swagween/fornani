@@ -249,6 +249,13 @@ void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& w
 
 void Player::assign_texture(sf::Texture& tex) { sprite.setTexture(tex); }
 
+void Player::start_tick() { collider.flags.external_state.reset(shape::ExternalState::grounded); }
+
+void Player::end_tick() {
+	controller.clean();
+	flags.triggers = {};
+}
+
 void Player::update_animation() {
 
 	m_sprite_shake.update();
@@ -492,7 +499,7 @@ void Player::sync_antennae() {
 	}
 }
 
-bool Player::grounded() const { return collider.flags.state.test(shape::State::grounded); }
+bool Player::grounded() const { return collider.flags.external_state.test(shape::ExternalState::grounded); }
 
 bool Player::fire_weapon() {
 	if (!arsenal || !hotbar) { return false; }

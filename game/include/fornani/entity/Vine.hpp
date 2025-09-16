@@ -40,6 +40,7 @@ class Vine : public Entity {
 
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) const;
 	void add_platform(automa::ServiceProvider& svc, int link_index);
+	void remove_platform(int link_index);
 
 	// Copy constructor
 	Vine(Vine const& other) : Entity(other), m_length(other.m_length), m_chain(other.m_chain), m_services(other.m_services) {

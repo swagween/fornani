@@ -12,7 +12,7 @@ MapTexture::MapTexture(automa::ServiceProvider& svc) : m_border_color{colors::pi
 
 void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, float scale, bool current, bool undiscovered) {
 	m_room_id = room;
-	map.unserialize(svc, room);
+	map.unserialize(svc, room, true);
 	if (!map.is_minimap()) {
 		m_ignore = true;
 		return;

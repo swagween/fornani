@@ -11,6 +11,7 @@ Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<
 	collider.physics.air_friction = {0.95f, 0.999f};
 	collider.flags.general.set(shape::General::complex);
 	beam.get().set_team(arms::Team::beast);
+	directions.actual = Direction(start_direction);
 }
 
 void Beamstalk::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -18,13 +19,9 @@ void Beamstalk::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 		Enemy::update(svc, map, player);
 		return;
 	}
-
 	post_beam.update();
 	flags.state.set(StateFlags::vulnerable); // always vulnerable
 
-	// reset animation states to determine next animation state
-	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
-	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
 	Enemy::update(svc, map, player);
 	beam.update(svc, map, *this);
 	auto bp = collider.get_center();

@@ -17,6 +17,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	metadata.type = static_cast<ProjectileType>(in_data["type"].as<int>());
 	physical.bounding_box = shape::Shape({in_data["dimensions"][0].as<float>(), in_data["dimensions"][1].as<float>()});
 	visual.sprite.set_dimensions({in_data["dimensions"][0].as<int>(), in_data["dimensions"][1].as<int>()});
+	visual.sprite.set_scale(constants::f_scale_vec);
 
 	metadata.specifications.base_damage = in_data["attributes"]["base_damage"].as<float>();
 	metadata.specifications.power = in_data["attributes"]["power"] ? in_data["attributes"]["power"].as<int>() : 1;
@@ -207,7 +208,7 @@ void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2f target) {
 	}
 	if (sprite_flip()) {
 		auto scale = physical.direction.left_or_right() ? sf::Vector2f{1.f, -1.f} : sf::Vector2f{-1.f, 1.f};
-		if (random::percent_chance(50)) { visual.sprite.set_scale(scale); }
+		if (random::percent_chance(50)) { visual.sprite.set_scale(scale * constants::f_scale_factor); }
 	}
 }
 

@@ -174,7 +174,7 @@ void DataManager::load_data(std::string in_room) {
 	}
 
 	m_services->stopwatch.stop();
-	m_services->stopwatch.print_time();
+	m_services->stopwatch.print_time("data loaded");
 	m_services->stopwatch.start();
 }
 

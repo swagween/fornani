@@ -24,7 +24,7 @@ void Inspectable::serialize(dj::Json& out) {
 	out["key"] = m_key;
 	out["alternates"] = m_alternates;
 	out["series"] = dj::Json::empty_array();
-	for (auto i{0}; i < m_suites.size(); ++i) {
+	for (auto i{0}; i < 1; ++i) {
 		auto next = dj::Json{};
 		for (auto j = 0; j < 2; ++j) {
 			auto& from_set = j == 0 ? m_suites : m_responses;
@@ -43,6 +43,7 @@ void Inspectable::serialize(dj::Json& out) {
 			}
 		}
 		out["series"].push_back(next);
+		NANI_LOG_DEBUG(m_logger, "Serialized a series entry.");
 	}
 }
 
@@ -53,6 +54,8 @@ void Inspectable::unserialize(dj::Json const& in) {
 	m_instant = in["instant"].as_bool();
 	m_key = in["key"].as_string();
 	m_alternates = in["alternates"].as<int>();
+	m_suites.clear();
+	m_responses.clear();
 	for (auto const& entry : in["series"].as_array()) {
 		for (auto j = 0; j < 2; ++j) {
 			auto& to_set = j == 0 ? m_suites : m_responses;

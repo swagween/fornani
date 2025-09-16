@@ -215,13 +215,14 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (!m_console && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
 	if (m_enter_room.running()) { player->controller.autonomous_walk(); }
 
+	// physical tick
 	player->update(map);
+	player->start_tick();
 	map.update(svc, m_console);
 
 	map.debug_mode = debug_mode;
 
-	player->controller.clean();
-	player->flags.triggers = {};
+	player->end_tick();
 	if (!m_console) { player->flags.state.reset(player::State::busy); }
 
 	map.background->update(svc);

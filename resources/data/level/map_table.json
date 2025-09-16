@@ -194,6 +194,12 @@
     },
     {
       "folder": "kariba",
+      "label": "bastion.json",
+      "region": "kariba",
+      "room_id": 511
+    },
+    {
+      "folder": "kariba",
       "label": "cellar.json",
       "region": "kariba",
       "room_id": 505
@@ -230,9 +236,21 @@
     },
     {
       "folder": "kariba",
+      "label": "hidden_passage.json",
+      "region": "kariba",
+      "room_id": 512
+    },
+    {
+      "folder": "kariba",
       "label": "oubliette.json",
       "region": "kariba",
       "room_id": 506
+    },
+    {
+      "folder": "kariba",
+      "label": "solarium.json",
+      "region": "kariba",
+      "room_id": 510
     },
     {
       "folder": "kariba",

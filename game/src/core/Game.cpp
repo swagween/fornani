@@ -61,7 +61,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 
 	NANI_LOG_INFO(m_logger, "Success");
 	services.stopwatch.stop();
-	services.stopwatch.print_time();
+	services.stopwatch.print_time("game started");
 
 	sf::Clock delta_clock{};
 
@@ -155,7 +155,6 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			m_game_menu.value()->get_current_state().frame_update(services);
 		} else {
 			game_state.get_current_state().frame_update(services);
-			game_state.process_state(services, player, *this);
 		}
 
 		if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(services.window->screencap); }
@@ -192,6 +191,8 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		services.window->get().display();
 
 		services.ticker.end_frame();
+
+		if (!m_game_menu) { game_state.process_state(services, player, *this); }
 	}
 	shutdown();
 }
@@ -368,12 +369,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Piggybacking? %s", static_cast<bool>(player.piggybacker) ? "Yes" : "No");
 					ImGui::Separator();
 					ImGui::Text("Quest Progress:");
-					/*ImGui::Text("Bit: %i", services.quest.get_progression(QuestType::npc, 20));
-					ImGui::Text("Justin: %i", services.quest.get_progression(QuestType::npc, 24));
-					ImGui::Text("Justin Hidden: %i", services.quest.get_progression(fornani::QuestType::hidden_npcs, 24));
-					ImGui::Text("Gobe: %i", services.quest.get_progression(QuestType::npc, 3));
-					ImGui::Text("Bryn's Notebook: %i", services.quest.get_progression(QuestType::inspectable, 1));
-					ImGui::Text("Boiler: %i", services.quest.get_progression(QuestType::inspectable, 110));*/
 					ImGui::Separator();
 					ImGui::Text("Stats:");
 					ImGui::Text("Death count: %i", services.stats.player.death_count.get_count());
@@ -399,9 +394,11 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Desired Direction: %s", player.get_desired_direction().print().c_str());
 								ImGui::Text("Actual Direction: %s", player.get_actual_direction().print().c_str());
 								ImGui::Separator();
+								ImGui::Text("Grounded? %s", player.grounded() ? "Yes" : "No");
 								ImGui::Text("World Grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");
 								ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
 								ImGui::Text("Push Time: %i", player.cooldowns.push.get());
+								ImGui::Text("Acceleration Multiplier: %f", player.collider.acceleration_multiplier);
 								ImGui::Separator();
 								ImGui::Text("Ability");
 								ImGui::Text("Current: ");

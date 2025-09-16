@@ -135,7 +135,7 @@ void NPC::start_conversation(automa::ServiceProvider& svc, std::optional<std::un
 	std::string target = std::to_string(conversations.at(m_current_conversation.get()));
 	// NANI_LOG_DEBUG(m_logger, "Current conversation S iterator: {}", m_current_conversation.get());
 	// NANI_LOG_DEBUG(m_logger, "Current conversation S actual: {}", conversations.at(m_current_conversation.get()));
-	console = std::make_unique<gui::Console>(svc, svc.text.npc[name][target], gui::OutputType::gradual);
+	console = std::make_unique<gui::Console>(svc, svc.text.npc[name][target], static_cast<gui::OutputType>(svc.text.npc[name][target]["output"].as<int>()));
 	console.value()->include_portrait(get_id());
 }
 

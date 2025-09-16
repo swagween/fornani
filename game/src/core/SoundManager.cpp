@@ -9,8 +9,6 @@ SoundManager::SoundManager(ResourceFinder const& finder) {
 	auto file = sfx_dir / fs::path{"error_sound.wav"};
 	auto file_str = file.string();
 
-	// if (!m_deleteme.loadFromFile(file)) { NANI_LOG_WARN(m_logger, "Failed to load sf buffer."); }
-
 	// null buffer for lookup failures
 	if (!m_null_buffer.decode_file(file_str.c_str(), capo::Encoding::Wav)) { NANI_LOG_WARN(m_logger, "Failed to load null buffer."); };
 

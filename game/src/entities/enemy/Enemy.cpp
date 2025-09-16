@@ -123,7 +123,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		return;
 	}
 
-	health.update(); // on hit
+	health.update();
 	auto flash_rate = 64;
 	set_channel(EnemyChannel::standard);
 	if (flags.general.test(GeneralFlags::has_invincible_channel)) { flags.state.test(StateFlags::vulnerable) ? set_channel(EnemyChannel::standard) : set_channel(EnemyChannel::invincible); }
@@ -149,9 +149,17 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	health_indicator.update(svc, collider.physics.position);
 
 	if (flags.general.test(GeneralFlags::map_collision)) {
-		for (auto& breakable : map.breakables) { breakable.handle_collision(collider); }
+		for (auto const& it : map.breakable_iterators[map.get_chunk_id_from_position(collider.physics.position)]) { it->handle_collision(collider); }
+		for (auto& pushable : map.pushables) {
+			pushable.handle_collision(collider);
+			collider.handle_collider_collision(pushable.collider);
+			if (pushable.get_size() == 1) {
+				pushable.collider.handle_collider_collision(collider.bounding_box);
+				pushable.collider.handle_collider_collision(secondary_collider.bounding_box);
+			}
+		}
 		for (auto& spike : map.spikes) { spike.handle_collision(collider); }
-		collider.detect_map_collision(map);
+		collider.detect_map_collision(map); // This causes significant lag
 		secondary_collider.detect_map_collision(map);
 	}
 	for (auto& other : map.enemy_catalog.enemies) {
@@ -203,10 +211,10 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);
-		secondary_collider.render(win, cam);
-		physical.alert_range.render(win, cam);
-		physical.hostile_range.render(win, cam);
-		physical.home_detector.render(win, cam, colors::blue);
+		// secondary_collider.render(win, cam);
+		// physical.alert_range.render(win, cam);
+		// physical.hostile_range.render(win, cam);
+		// physical.home_detector.render(win, cam, colors::blue);
 	}
 	// debug();
 }

@@ -277,7 +277,7 @@
 		"physical": {
 			"dimensions": [ 28, 28 ],
 			"sprite_dimensions": [ 36, 36 ],
-			"offset": [ 0, -21 ],
+			"offset": [ 0, -17 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 600.0, 300.0 ],
@@ -460,7 +460,7 @@
 		},
 		"physical": {
 			"dimensions": [ 80, 80 ],
-			"sprite_dimensions": [ 200, 200 ],
+			"sprite_dimensions": [ 100, 100 ],
 			"spritesheet_dimensions": [ 3, 28 ],
 			"offset": [ 32, -32 ],
 			"num_colliders": 1,
@@ -507,7 +507,7 @@
 		},
 		"physical": {
 			"dimensions": [ 192, 100 ],
-			"sprite_dimensions": [ 256, 256 ],
+			"sprite_dimensions": [ 128, 128 ],
 			"offset": [ 96, -110 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,

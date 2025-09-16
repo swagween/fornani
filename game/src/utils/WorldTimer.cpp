@@ -54,6 +54,6 @@ void WorldTimer::render(sf::RenderWindow& win, sf::Vector2f position) {
 	win.draw(m_text);
 }
 
-void WorldTimer::debug() { m_timer.print_time(); }
+void WorldTimer::debug() { m_timer.print_time("world timer"); }
 
 } // namespace fornani

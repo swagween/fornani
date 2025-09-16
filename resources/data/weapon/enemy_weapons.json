@@ -322,20 +322,20 @@
 			"projectile": {
 				"type": 0,
 				"dimensions": [
-					32.0,
-					32.0
+					16.0,
+					16.0
 				],
 				"attributes": {
-					"base_damage": 2,
-					"lifespan": 660,
+					"base_damage": 1,
+					"lifespan": 600,
 					"lifespan_variance": 0,
 					"speed": 34.5,
 					"variance": 0.5,
 					"stun_time": 0.0,
 					"knockback": 0.0,
-					"range_variance": 0.0,
 					"acceleration_factor": 0.0,
-					"dampen_factor": 0.995,
+					"dampen_factor": 0.993,
+					"dampen_variance": 0.002,
 					"sprite_flip": true
 				},
 				"animation": {

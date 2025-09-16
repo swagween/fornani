@@ -28,11 +28,14 @@ std::unique_ptr<Entity> Enemy::clone() const { return std::make_unique<Enemy>(*t
 void Enemy::serialize(dj::Json& out) {
 	Entity::serialize(out);
 	out["variant"] = m_variant;
+	out["start_direction"][0] = m_start_direction.x;
+	out["start_direction"][1] = m_start_direction.y;
 }
 
 void Enemy::unserialize(dj::Json const& in) {
 	Entity::unserialize(in);
 	m_variant = in["variant"].as<int>();
+	m_start_direction = sf::Vector2i{in["start_direction"][0].as<int>(), in["start_direction"][1].as<int>()};
 }
 
 void Enemy::expose() {

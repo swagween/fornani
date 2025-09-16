@@ -1,6 +1,5 @@
 {
   "entities": {
-    "inspectables": [],
     "portals": [
       {
         "activate_on_contact": true,
@@ -127,7 +126,7 @@
       false,
       false,
       false,
-      false,
+      true,
       false,
       false,
       false

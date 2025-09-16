@@ -7,6 +7,8 @@
 
 namespace fornani::shape {
 
+constexpr auto vicinity_pad_v = 33.f;
+
 Collider::Collider() {
 	dimensions = sf::Vector2f{default_dim, default_dim};
 	jumpbox.set_dimensions(sf::Vector2f(dimensions.x, default_jumpbox_height));
@@ -24,7 +26,7 @@ Collider::Collider(sf::Vector2f dim, sf::Vector2f hbx_offset) : dimensions(dim),
 void Collider::sync_components() {
 	bounding_box.set_position(physics.position);
 	bounding_box.set_dimensions(dimensions);
-	vicinity.set_dimensions({dimensions.x + 2.f * vicinity_pad, dimensions.y + 2.f * vicinity_pad});
+	vicinity.set_dimensions({dimensions.x + 2.f * vicinity_pad_v, dimensions.y + 2.f * vicinity_pad_v});
 	wallslider.set_dimensions({dimensions.x + 2.f * wallslide_pad, dimensions.y * 0.6f});
 
 	vertical.set_dimensions({1.f, dimensions.y - 2.f * depth_buffer});
@@ -34,7 +36,7 @@ void Collider::sync_components() {
 	predictive_horizontal.set_dimensions({dimensions.x + 2.f * horizontal_detector_buffer, dimensions.y - 3.f * horizontal_detector_buffer});
 	predictive_combined.set_dimensions(dimensions);
 
-	vicinity.set_position(sf::Vector2f{physics.position.x - vicinity_pad + physics.apparent_velocity().x, physics.position.y - vicinity_pad + physics.apparent_velocity().y});
+	vicinity.set_position(sf::Vector2f{physics.position.x - vicinity_pad_v + physics.apparent_velocity().x, physics.position.y - vicinity_pad_v + physics.apparent_velocity().y});
 	wallslider.set_position(sf::Vector2f{physics.position.x - wallslide_pad, physics.position.y + 2.f});
 	predictive_vertical.set_position(sf::Vector2f{physics.position.x + vertical_detector_buffer, physics.position.y - vertical_detector_buffer + physics.apparent_velocity().y});
 	predictive_horizontal.set_position(sf::Vector2f{physics.position.x - horizontal_detector_buffer + physics.apparent_velocity().x, physics.position.y + horizontal_detector_buffer});
@@ -53,7 +55,11 @@ void Collider::sync_components() {
 
 void Collider::handle_map_collision(world::Tile const& tile) {
 	if (collision_depths) {
-		if (collision_depths.value().crushed()) { return; }
+		if (collision_depths.value().crushed()) {
+			NANI_LOG_DEBUG(m_logger, "Crushed!");
+			collision_depths->print();
+			return;
+		}
 	}
 
 	flags.collision = {};
@@ -77,6 +83,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	mtvs.actual = bounding_box.get_MTV(bounding_box, cell);
 
 	// let's first settle all actual block collisions
+	auto is_on_ramp = jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.apparent_velocity().y > -0.001f && bottom() >= cell.top() - 1.f && tile.is_ground_ramp();
 	if (!is_ramp) {
 		if (collision_depths) { collision_depths.value().calculate(*this, cell); }
 		bool vert{};
@@ -94,7 +101,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			}
 			vert = true;
 		}
-		auto skip_the_corner{tile.ramp_adjacent() && on_ramp()};
+		auto skip_the_corner = tile.ramp_adjacent();
 		if (predictive_horizontal.SAT(cell) && !skip_the_corner && !vert) {
 			mtvs.horizontal.x > 0.f ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision);
 			flags.dash.set(Dash::dash_cancel_collision);
@@ -143,10 +150,10 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.external_state.set(ExternalState::world_collision);
 		}
 		// collider is on a ramp
-		if (jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.apparent_velocity().y > -0.001f && bottom() >= cell.top() - 1.f && tile.is_ground_ramp()) {
+		if (is_on_ramp) {
 			flags.external_state.set(ExternalState::on_ramp);
 			acceleration_multiplier = cell.get_radial_factor();
-			auto to_the_right = physics.position.x + dimensions.x > cell.get_position().x + 32.f;
+			auto to_the_right = physics.position.x + dimensions.x > cell.get_position().x + constants::f_cell_size;
 			auto positive_input = to_the_right ? cell.get_height_at(physics.position.x + dimensions.x - cell.get_position().x) : cell.get_height_at(physics.position.x + dimensions.x - cell.get_position().x);
 			if (tile.is_negative_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(physics.position.x - cell.get_position().x)); }
 			if (tile.is_positive_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, positive_input); }
@@ -192,7 +199,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 }
 
 void Collider::detect_map_collision(world::Map& map) {
-	flags.external_state.reset(ExternalState::grounded);
+	// flags.external_state.reset(ExternalState::grounded);
 	flags.external_state.reset(ExternalState::on_ramp);
 	flags.external_state.reset(ExternalState::tile_debug_flag);
 	flags.perma_state = {};
@@ -386,7 +393,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setOutlineColor(sf::Color{255, 0, 0, 220});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
-	win.draw(box);
+	// win.draw(box);
 
 	// draw predictive horizontal
 	box.setSize(predictive_horizontal.get_dimensions());
@@ -394,7 +401,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setOutlineColor(sf::Color{80, 0, 255, 220});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
-	win.draw(box);
+	// win.draw(box);
 
 	// draw predictive combined
 	box.setSize(predictive_combined.get_dimensions());
@@ -402,7 +409,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setOutlineColor(sf::Color{255, 255, 80, 180});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
-	win.draw(box);
+	// win.draw(box);
 
 	// draw bounding box
 	box.setSize(dimensions);
@@ -418,14 +425,14 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setFillColor(sf::Color::Blue);
 	box.setOutlineColor(sf::Color::Transparent);
 	flags.external_state.test(ExternalState::grounded) ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Yellow);
-	win.draw(box);
+	// win.draw(box);
 
 	// draw hurtbox
 	draw_hurtbox.setSize(sf::Vector2f{hurtbox.get_dimensions()});
 	draw_hurtbox.setPosition(hurtbox.get_position() - cam);
 	draw_hurtbox.setOutlineColor(colors::ui_white);
 	draw_hurtbox.setOutlineThickness(-1.f);
-	win.draw(draw_hurtbox);
+	// win.draw(draw_hurtbox);
 
 	// draw vicinity
 	box.setSize(sf::Vector2f{vicinity.get_dimensions()});
@@ -441,7 +448,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	has_left_wallslide_collision() || has_right_wallslide_collision() ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Transparent);
 	box.setOutlineColor(sf::Color{60, 60, 180, 100});
 	box.setOutlineThickness(-1);
-	win.draw(box);
+	// win.draw(box);
 
 	// draw physics position
 	if (collision_depths) {

@@ -20,7 +20,7 @@ enum class BreakableAttributes : std::uint8_t { bulletproof };
 
 class Breakable {
   public:
-	Breakable(automa::ServiceProvider& svc, sf::Vector2f position, int style = 0, int state = 4);
+	Breakable(automa::ServiceProvider& svc, sf::Vector2f position, int chunk_id, int style = 0, int state = 4);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void handle_collision(shape::Collider& other) const;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
@@ -30,6 +30,7 @@ class Breakable {
 	shape::Shape& get_bounding_box() { return collider.bounding_box; }
 	shape::Shape& get_hurtbox() { return collider.hurtbox; }
 	[[nodiscard]] auto destroyed() const -> bool { return state <= 1; }
+	[[nodiscard]] auto get_chunk_id() const -> int { return m_chunk_id; }
 	shape::Collider collider{};
 
   private:
@@ -37,6 +38,7 @@ class Breakable {
 	sf::Sprite sprite;
 	int style{};
 	int state{};
+	int m_chunk_id{};
 	float energy{};
 	float dampen{0.1f};
 	float hit_energy{8.f};

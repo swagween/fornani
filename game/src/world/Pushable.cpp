@@ -27,6 +27,7 @@ Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2f position, int styl
 	start_box = collider.bounding_box;
 	sprite.setTextureRect(sf::IntRect{{style * 2 * constants::i_cell_resolution, (size - 1) * constants::i_cell_resolution}, constants::i_resolution_vec * size});
 	sprite.setScale(constants::f_scale_vec);
+	collider.flags.general.reset(shape::General::complex);
 }
 
 void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
@@ -37,13 +38,12 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	if (weakened.is_complete()) { hit_count.start(); }
 	player.on_crush(map);
 	for (auto& enemy : map.enemy_catalog.enemies) { enemy->on_crush(map); }
-
 	// reset position if it's far away, and if the player isn't overlapping the start position
 	if (hit_count.get_count() > 2 || map.off_the_bottom(collider.physics.position)) {
 		bool can_respawn = true;
 		if (player.collider.bounding_box.overlaps(start_box)) { can_respawn = false; }
-		for (auto& p : map.pushables) {
-			if (p.get_bounding_box().overlaps(start_box) && &p != this) { can_respawn = false; }
+		for (auto& pushable : map.pushables) {
+			if (pushable.get_bounding_box().overlaps(start_box) && &pushable != this) { can_respawn = false; }
 		}
 		if (can_respawn) {
 			reset(svc, map);
@@ -62,14 +62,6 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	}
 
 	player.collider.handle_collider_collision(collider);
-	for (auto& enemy : map.enemy_catalog.enemies) {
-		if (enemy->is_transcendent()) { continue; }
-		enemy->get_collider().handle_collider_collision(collider);
-		if (size == 1) {
-			collider.handle_collider_collision(enemy->get_collider().bounding_box);
-			collider.handle_collider_collision(enemy->get_secondary_collider().bounding_box);
-		}
-	}
 	if (size == 1) { collider.handle_collider_collision(player.collider.bounding_box); } // big ones should crush the player
 	if (ccm::abs(collider.physics.forced_momentum.x) > 0.1f || ccm::abs(collider.physics.forced_momentum.y) > 0.1f) { set_moving(); }
 	collider.physics.impart_momentum();
@@ -78,16 +70,18 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		collider.physics.forced_momentum = {};
 	}
 	collider.update(svc);
-	collider.detect_map_collision(map);
-	for (auto& other : map.pushables) {
-		if (&other == this) { continue; }
-		if (other.collider.wallslider.overlaps(collider.bounding_box)) {
-			if (collider.pushes(other.collider)) { other.collider.physics.velocity.x = collider.physics.velocity.x * 2.f; }
+	bool map_coll = true;
+	for (auto& pushable : map.pushables) {
+		if (&pushable == this) { continue; }
+		if (!pushable.collider.vicinity.overlaps(collider.vicinity)) { continue; }
+		if (pushable.collider.wallslider.overlaps(collider.bounding_box)) {
+			if (collider.pushes(pushable.collider)) { pushable.collider.physics.velocity.x = collider.physics.velocity.x * 2.f; }
 		}
-		if (other.collider.jumpbox.overlaps(collider.bounding_box)) { other.collider.physics.velocity.x = collider.physics.velocity.x; }
-		collider.handle_collider_collision(other.collider.bounding_box);
+		if (pushable.collider.jumpbox.overlaps(collider.bounding_box)) { pushable.collider.physics.velocity.x = collider.physics.velocity.x; }
+		if (collider.handle_collider_collision(pushable.collider.bounding_box)) { map_coll = false; }
 	}
-	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
+	if (map_coll) { collider.detect_map_collision(map); }
+	for (auto const& it : map.breakable_iterators[map.get_chunk_id_from_position(collider.physics.position)]) { collider.handle_collider_collision(it->get_bounding_box()); }
 	for (auto& block : map.switch_blocks) {
 		if (block.on()) { collider.handle_collider_collision(block.get_bounding_box()); }
 	}

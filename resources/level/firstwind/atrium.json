@@ -113,6 +113,10 @@
           9,
           21
         ],
+        "start_direction": [
+          0,
+          0
+        ],
         "variant": 1
       },
       {
@@ -124,6 +128,10 @@
         "position": [
           13,
           38
+        ],
+        "start_direction": [
+          0,
+          0
         ],
         "variant": 0
       },
@@ -137,6 +145,10 @@
           31,
           36
         ],
+        "start_direction": [
+          0,
+          0
+        ],
         "variant": 0
       }
     ],
@@ -144,7 +156,6 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "atrium_bridge0": [],
         "dimensions": [
           1,
           1
@@ -161,7 +172,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "- Bridge -"
                 }
               ]
@@ -172,7 +182,6 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "cargo0": [],
         "dimensions": [
           1,
           1
@@ -189,7 +198,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "- Cargo Room -"
                 }
               ]
@@ -200,7 +208,6 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "atrium_docs0": [],
         "dimensions": [
           1,
           1
@@ -217,7 +224,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "You find a textbook from a place called Grand Island University. This sets off a spark in your mind, but you can't figure out why."
                 }
               ]
@@ -228,7 +234,6 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "caution10": [],
         "dimensions": [
           1,
           1
@@ -245,7 +250,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "Caution! Ventilation shafts drain to ship exterior. A fall means certain death."
                 }
               ]

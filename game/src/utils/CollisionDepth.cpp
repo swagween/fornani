@@ -4,6 +4,8 @@
 
 namespace fornani::util {
 
+constexpr auto crush_threshold_v = sf::Vector2f{8.f, 16.f};
+
 void CollisionDepth::calculate(shape::Collider const& native, shape::Shape const& other) {
 	if (iterations.get_count() == 0) { collision_direction = CollisionDirection::none; }
 	if (other.top() < native.hurtbox.bottom() && other.bottom() > native.hurtbox.top() && other.get_center().x < native.get_center().x) { candidate.left = other.right() - native.left(); }
@@ -42,6 +44,12 @@ void CollisionDepth::print() {
 	NANI_LOG_INFO(m_logger, "Top...: {}", out_depth.top);
 	NANI_LOG_INFO(m_logger, "Bottom: {}", out_depth.bottom);
 	return;
+}
+
+static auto is_within_crush_range(float const test, bool positive) { return positive ? test > crush_threshold_v.x && test < crush_threshold_v.y : test < -crush_threshold_v.x && test > -crush_threshold_v.y; }
+
+bool CollisionDepth::crushed() const {
+	return (is_within_crush_range(out_depth.bottom, false) && is_within_crush_range(out_depth.top, true)) || (is_within_crush_range(out_depth.right, false) && is_within_crush_range(out_depth.left, true));
 }
 
 void CollisionDepth::render(shape::Shape const& bounding_box, sf::RenderWindow& win, sf::Vector2f cam) {

@@ -14,7 +14,7 @@ class Map;
 class Fire {
   public:
 	Fire(automa::ServiceProvider& svc, sf::Vector2f position, int lookup);
-	void update(automa::ServiceProvider& svc, player::Player& player, Map& map, std::optional<std::unique_ptr<gui::Console>>& console, dj::Json& set);
+	void update(automa::ServiceProvider& svc, player::Player& player, Map& map, std::optional<std::unique_ptr<gui::Console>>& console);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 
   private:

@@ -1,12 +1,13 @@
 
 #pragma once
 
+#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/CollisionDepth.hpp>
+#include <fornani/utils/Shape.hpp>
+#include <fornani/world/Tile.hpp>
 #include <optional>
-#include "BitFlags.hpp"
-#include "Shape.hpp"
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/utils/CollisionDepth.hpp"
-#include "fornani/world/Tile.hpp"
 
 namespace fornani::world {
 class Map;
@@ -14,13 +15,12 @@ class Map;
 
 namespace fornani::shape {
 
-constexpr float default_dim = 24.0f;
-constexpr float vicinity_pad = 32.f;
-constexpr float wallslide_pad = 5.f;
+constexpr auto default_dim = 24.0f;
+constexpr auto wallslide_pad = 5.f;
 
-constexpr float default_jumpbox_height = 4.0f;
-constexpr float default_detector_width = 4.f;
-constexpr float default_detector_height = 18.f;
+constexpr auto default_jumpbox_height = 4.0f;
+constexpr auto default_detector_width = 4.f;
+constexpr auto default_detector_height = 18.f;
 
 enum class General : std::uint8_t { ignore_resolution, complex, pushable, soft, top_only_collision, no_move };
 enum class Animation : std::uint8_t { just_landed, sliding };
@@ -176,6 +176,8 @@ class Collider {
 
 	sf::RectangleShape box{};
 	sf::RectangleShape draw_hurtbox{};
+
+	io::Logger m_logger{"Collider"};
 };
 
 } // namespace fornani::shape

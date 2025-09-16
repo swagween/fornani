@@ -19,7 +19,13 @@ void Stopwatch::stop() {
 	m_stored_time = get_elapsed_time();
 }
 
-void Stopwatch::print_time() const { NANI_LOG_DEBUG(m_logger, "Elapsed Time: {:.5f} seconds", as_seconds().count()); }
+void Stopwatch::print_time(std::string_view message) const { NANI_LOG_DEBUG(m_logger, "Elapsed Time: {:.5f} seconds. Message: {}", as_seconds().count(), message.data()); }
+
+void Stopwatch::benchmark(std::string_view message) {
+	stop();
+	print_time(message);
+	start();
+}
 
 [[nodiscard]] auto Stopwatch::get_elapsed_time() const -> DurationSeconds { return std::chrono::duration_cast<DurationSeconds>(Clock::now() - m_start_time + m_stored_time); }
 

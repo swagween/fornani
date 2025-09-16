@@ -12,7 +12,7 @@ SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2f 
 	gravitator = vfx::Gravitator(sf::Vector2f{}, sf::Color::Transparent, 0.8f);
 	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2f{0.8f, 0.8f}, 1.0f);
 	gravitator.set_position(position);
-	health.set_max(4.f);
+	health.set_max(1.f);
 	sprite.set_origin({2.f, 4.f});
 	sensor.bounds.setRadius(24.f);
 	sensor.bounds.setOrigin({24.f, 24.f});

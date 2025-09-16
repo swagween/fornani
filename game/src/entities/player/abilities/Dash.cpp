@@ -20,21 +20,24 @@ Dash::Dash(automa::ServiceProvider& svc, world::Map& map, shape::Collider& colli
 void Dash::update(shape::Collider& collider, PlayerController& controller) {
 	Ability::update(collider, controller);
 	collider.flags.state.reset(shape::State::just_landed);
+	auto const& vert = collider.acceleration_multiplier * m_vertical_multiplier;
+	auto const& horiz = collider.acceleration_multiplier * m_horizontal_multiplier;
+	auto terminal_vel = 100.f;
 	if (m_omni && m_direction.up_or_down()) {
 		collider.physics.velocity.x = 0.f;
-		collider.physics.acceleration.x = controller.horizontal_movement() * m_vertical_multiplier;
-		collider.physics.velocity.x = controller.horizontal_movement() * m_vertical_multiplier;
+		collider.physics.acceleration.x = controller.horizontal_movement() * vert;
+		collider.physics.velocity.x = controller.horizontal_movement() * vert;
 
-		collider.physics.acceleration.y = m_direction.down() ? m_direction.as_float_und() * m_horizontal_multiplier * 100.f : m_direction.as_float_und() * m_horizontal_multiplier;
-		collider.physics.velocity.y = m_direction.down() ? m_direction.as_float_und() * m_horizontal_multiplier * 100.f : m_direction.as_float_und() * m_horizontal_multiplier;
+		collider.physics.acceleration.y = m_direction.down() ? m_direction.as_float_und() * horiz * terminal_vel : m_direction.as_float_und() * horiz;
+		collider.physics.velocity.y = m_direction.down() ? m_direction.as_float_und() * horiz * terminal_vel : m_direction.as_float_und() * horiz;
 		if (m_duration.is_complete() && !m_direction.down()) { collider.physics.acceleration.y = 0.f; }
 	} else {
 		collider.physics.velocity.y = 0.f;
-		collider.physics.acceleration.y = controller.vertical_movement() * m_vertical_multiplier;
-		collider.physics.velocity.y = controller.vertical_movement() * m_vertical_multiplier;
+		collider.physics.acceleration.y = controller.vertical_movement() * vert;
+		collider.physics.velocity.y = controller.vertical_movement() * vert;
 
-		collider.physics.acceleration.x = m_direction.as_float() * m_horizontal_multiplier;
-		collider.physics.velocity.x = m_direction.as_float() * m_horizontal_multiplier;
+		collider.physics.acceleration.x = m_direction.as_float() * horiz;
+		collider.physics.velocity.x = m_direction.as_float() * horiz;
 		if (m_duration.is_complete()) { collider.physics.acceleration.x = 0.f; }
 	}
 }

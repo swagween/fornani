@@ -194,7 +194,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	cooldowns.loading.start();
 }
 
-void Map::unserialize(automa::ServiceProvider& svc, int room_number) {
+void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) {
 
 	int ctr{};
 	for (auto& room : svc.data.map_jsons) {
@@ -217,7 +217,6 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number) {
 
 	m_metadata.biome = svc.data.map_jsons.at(room_lookup).biome_label;
 	m_metadata.room = svc.data.map_jsons.at(room_lookup).room_label;
-	inspectable_data = svc.data.map_jsons.at(room_lookup).metadata["entities"]["inspectables"];
 
 	// check for enemy respawns
 	svc.data.respawn_enemies(room_id, player->visit_history.distance_traveled_from(room_id));
@@ -250,6 +249,8 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number) {
 		darken_factor = meta["shader"]["darken_factor"].as<float>();
 	}
 
+	breakable_iterators.resize(static_cast<std::size_t>((dimensions.x * dimensions.y) / constants::u32_chunk_size));
+
 	m_letterbox_color = style_id == 2 ? colors::pioneer_black : colors::ui_black;
 	if (entities.is_object()) { m_entities = EntitySet(svc, svc.finder, entities, m_metadata.room); }
 
@@ -277,7 +278,7 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number) {
 		save_point = entity::SavePoint(svc, room_id, sf::Vector2<std::uint32_t>{entry["position"][0].as<std::uint32_t>(), entry["position"][1].as<std::uint32_t>()});
 	}*/
 
-	generate_collidable_layer();
+	generate_collidable_layer(live);
 }
 
 void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console) {
@@ -343,9 +344,18 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		svc.player_dat.piggy_id = -1;
 	}
 
+	for (auto it = breakables.begin(); it != breakables.end();) {
+		if (it->destroyed()) {
+			auto& chunk_vec = breakable_iterators[it->get_chunk_id()];
+			std::erase(chunk_vec, it);
+			it = breakables.erase(it);
+		} else {
+			++it;
+		}
+	}
+
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
 	std::erase_if(effects, [](auto& e) { return e.done(); });
-	std::erase_if(breakables, [](auto const& b) { return b.destroyed(); });
 	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
 	std::erase_if(destroyers, [](auto const& d) { return d.detonated(); });
 	std::erase_if(npcs, [](auto const& n) { return n->piggybacking(); });
@@ -355,8 +365,9 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	svc.map_debug.active_projectiles = active_projectiles.size();
 	for (auto& proj : active_projectiles) {
 		if (proj.destruction_initiated()) { continue; }
+		proj.register_chunk(get_chunk_id_from_position(proj.get_position()));
 		for (auto& platform : platforms) { platform.on_hit(svc, *this, proj); }
-		for (auto& breakable : breakables) { breakable.on_hit(svc, *this, proj); }
+		for (auto const& it : breakable_iterators[proj.get_chunk_id()]) { it->on_hit(svc, *this, proj); }
 		for (auto& pushable : pushables) { pushable.on_hit(svc, *this, proj); }
 		for (auto& destroyer : destroyers) { destroyer.on_hit(svc, *this, proj); }
 		for (auto& block : switch_blocks) { block.on_hit(svc, *this, proj); }
@@ -374,7 +385,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		for (auto& entity : m_entities.value().variables.entities) { entity->update(svc, *this, console, *player); }
 	}
 	if (fire) {
-		for (auto& f : fire.value()) { f.update(svc, *player, *this, console, inspectable_data); }
+		for (auto& f : fire.value()) { f.update(svc, *player, *this, console); }
 	}
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
@@ -394,7 +405,10 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& checkpoint : checkpoints) { checkpoint.update(svc, *this, *player); }
 	for (auto& bed : beds) { bed.update(svc, *this, console, *player, bed_transition); }
 	for (auto& breakable : breakables) { breakable.update(svc, *player); }
-	for (auto& pushable : pushables) { pushable.update(svc, *this, *player); }
+	for (auto& pushable : pushables) {
+		pushable.register_chunk(get_chunk_id_from_position(pushable.collider.get_center()));
+		pushable.update(svc, *this, *player);
+	}
 	for (auto& spike : spikes) { spike.update(svc, *player, *this); }
 	// for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	for (auto& timer_block : timer_blocks) { timer_block.update(svc, *this, *player); }
@@ -601,11 +615,18 @@ bool Map::handle_entry(player::Player& player, util::Cooldown& enter_room) {
 	return ret;
 }
 
+auto Map::get_chunk_id_from_position(sf::Vector2f pos) const -> std::uint8_t {
+	auto clookup = (pos / constants::f_cell_size) / constants::f_chunk_size;
+	auto ulookup = sf::Vector2u{clookup};
+	return static_cast<std::uint8_t>(ulookup.y * get_chunk_dimensions().x + ulookup.x);
+}
+
 void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target) {
 	active_projectiles.push_back(weapon.projectile);
 	active_projectiles.back().set_position(pos);
 	active_projectiles.back().seed(svc, target);
 	active_projectiles.back().update(svc, *player);
+	active_projectiles.back().register_chunk(get_chunk_id_from_position(pos));
 
 	if (weapon.secondary_emitter) {
 		active_emitters.push_back(vfx::Emitter(svc, weapon.get_barrel_point(), weapon.secondary_emitter.value().dimensions, weapon.secondary_emitter.value().type, weapon.secondary_emitter.value().color, weapon.get_firing_direction()));
@@ -651,9 +672,13 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 void Map::generate_collidable_layer(bool live) {
 	auto pushable_offset = sf::Vector2f{1.f, 0.f};
 	for (auto& cell : get_middleground()->grid.cells) {
+		auto chunk_id = cell.get_chunk_id();
 		get_middleground()->grid.check_neighbors(cell.one_d_index);
 		if (live) { continue; }
-		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position(), styles.breakables)); }
+		if (cell.is_breakable()) {
+			breakables.push_back(Breakable(*m_services, cell.position(), chunk_id, style_id));
+			breakable_iterators[chunk_id].push_back(std::prev(breakables.end()));
+		}
 		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position() + pushable_offset, styles.pushables, cell.value - 483)); }
 		if (cell.is_big_spike()) {
 			spikes.push_back(Spike(*m_services, m_services->assets.get_texture("big_spike"), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {6.f, 4.f}, style_id,

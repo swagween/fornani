@@ -61,6 +61,7 @@ class Projectile {
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f cam);
 	void destroy(bool completely, bool whiffed = false);
 	void seed(automa::ServiceProvider& svc, sf::Vector2f target = {});
+	void register_chunk(std::uint8_t chunk) { m_chunk_id = chunk; }
 	void set_position(sf::Vector2f pos);
 	void set_team(Team to_team);
 	void set_firing_direction(Direction to_direction);
@@ -84,6 +85,8 @@ class Projectile {
 	[[nodiscard]] auto get_direction() const -> Direction { return physical.direction; }
 	[[nodiscard]] auto get_bounding_box() -> shape::Shape& { return physical.bounding_box; }
 	[[nodiscard]] auto can_damage() const -> bool { return damage_timer.is_almost_complete() || !persistent(); }
+
+	[[nodiscard]] auto get_chunk_id() const -> std::uint8_t { return m_chunk_id; }
 
 	[[nodiscard]] auto omnidirectional() const -> bool { return metadata.attributes.test(ProjectileAttributes::omnidirectional); }
 	[[nodiscard]] auto transcendent() const -> bool { return metadata.attributes.test(ProjectileAttributes::transcendent); }
@@ -130,6 +133,8 @@ class Projectile {
 		sf::Vector2f destruction_point{};
 		util::BitFlags<ProjectileState> state{};
 	} variables{};
+
+	std::uint8_t m_chunk_id{};
 
 	util::Cooldown cooldown{};
 	util::Cooldown lifetime{};

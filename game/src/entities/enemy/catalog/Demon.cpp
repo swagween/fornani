@@ -11,13 +11,11 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map, int variant)
 	  parts{.spear{svc.assets.get_texture("demon_spear"), 2.0f, 0.85f, {-16.f, 8.f}}, .sword{svc.assets.get_texture("demon_sword"), 2.0f, 0.85f, {-4.f, 8.f}}, .shield{svc.assets.get_texture("demon_shield"), 2.0f, 0.85f, {-28.f, 8.f}}},
 	  m_variant{static_cast<DemonVariant>(variant)} {
 
-	;
-
 	animation.set_params(dormant);
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};
 	collider.flags.general.set(shape::General::complex);
-	secondary_collider = shape::Collider({22.f, 22.f});
+	secondary_collider = shape::Collider({30.f, 30.f});
 	directions.desired.lnr = LNR::left;
 	directions.actual.lnr = LNR::left;
 	directions.movement.lnr = LNR::neutral;

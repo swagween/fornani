@@ -4,20 +4,28 @@
 
 #include <ccmath/ext/clamp.hpp>
 #include <cmath>
+#include <ranges>
 
 namespace fornani::world {
 
+static auto calculate_chunk_id(sf::Vector2u const dim, sf::Vector2u const lookup) -> std::uint8_t {
+	auto chunk_lookup = lookup / constants::u32_chunk_size;
+	auto chunk_w = dim.x / constants::u32_chunk_size;
+	return static_cast<std::uint8_t>(chunk_lookup.y * chunk_w + chunk_lookup.x);
+}
+
 Grid::Grid(sf::Vector2u d, dj::Json& source, float s) : dimensions(d), m_spacing(s) {
 	auto size = static_cast<std::size_t>(dimensions.x * dimensions.y);
+	if (size < 1) { return; }
 	cells.reserve(size);
-	auto i{0};
-	for (auto& cell : source.as_array()) {
+	for (auto [i, cell] : std::views::enumerate(source.as_array())) {
 		auto value = cell.as<int>();
 		auto xidx = static_cast<std::uint32_t>(std::floor(i % dimensions.x));
 		auto yidx = static_cast<std::uint32_t>(std::floor(i / dimensions.x));
-		cells.push_back(Tile({xidx, yidx}, {xidx * m_spacing, yidx * m_spacing}, value, i, m_spacing));
+		auto lookup = sf::Vector2<std::uint32_t>{xidx, yidx};
+		auto chunk_id = calculate_chunk_id(d, lookup);
+		cells.push_back(Tile(lookup, {xidx * m_spacing, yidx * m_spacing}, value, i, m_spacing, chunk_id));
 		seed_vertex(i);
-		++i;
 	}
 }
 

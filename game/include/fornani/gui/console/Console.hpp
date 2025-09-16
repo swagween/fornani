@@ -26,7 +26,7 @@ namespace fornani::gui {
 enum class ConsoleMode : std::uint8_t { writing, responding, off };
 enum class ConsoleFlags : std::uint8_t { no_exit };
 enum class ConsoleTriggers : std::uint8_t { response_created };
-enum class OutputType : std::uint8_t { instant, gradual, no_skip };
+enum class OutputType : std::uint8_t { gradual, instant, no_exit, no_skip };
 
 class Console {
   public:
@@ -79,6 +79,7 @@ class Console {
 	[[nodiscard]] auto get_response_codes(int which) const -> std::optional<std::vector<MessageCode>>;
 	[[nodiscard]] auto has_nani_portrait() const -> bool { return static_cast<bool>(m_nani_portrait); }
 	[[nodiscard]] auto was_response_created() const -> bool { return m_triggers.test(ConsoleTriggers::response_created); }
+	[[nodiscard]] auto can_exit() const -> bool { return m_output_type != OutputType::no_skip && m_output_type != OutputType::no_exit; }
 
 	util::RectPath m_path;
 	dj::Json text_suite{};

@@ -19,6 +19,7 @@ class Enemy : public Entity {
 
   private:
 	int m_variant{};
+	sf::Vector2i m_start_direction{};
 };
 
 } // namespace fornani

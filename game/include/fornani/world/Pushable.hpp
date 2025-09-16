@@ -30,10 +30,16 @@ class Pushable {
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	void reset(automa::ServiceProvider& svc, world::Map& map);
 	void set_moving() { state.set(PushableState::moving); }
+	void register_chunk(std::uint8_t chunk) { m_chunk_id = chunk; }
+
 	shape::Shape& get_bounding_box() { return collider.bounding_box; }
 	shape::Shape& get_hurtbox() { return collider.hurtbox; }
+
 	[[nodiscard]] auto unmoved() const { return !state.test(PushableState::moved); }
 	[[nodiscard]] auto is_moving() const { return state.test(PushableState::moving); }
+	[[nodiscard]] auto get_chunk_id() const -> std::uint8_t { return m_chunk_id; }
+	[[nodiscard]] auto get_size() const -> int { return size; }
+
 	shape::Collider collider{};
 	shape::Shape start_box{};
 
@@ -54,5 +60,6 @@ class Pushable {
 	sf::Vector2f start_position{};
 	util::Counter hit_count{};
 	util::Cooldown weakened{64};
+	std::uint8_t m_chunk_id{};
 };
 } // namespace fornani::world

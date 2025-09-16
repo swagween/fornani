@@ -81,7 +81,30 @@ void Vine::unserialize(dj::Json const& in) {
 	}
 }
 
-void Vine::expose() { Entity::expose(); }
+void Vine::expose() {
+	Entity::expose();
+	static bool fg = is_foreground();
+	ImGui::Checkbox("Foreground", &fg);
+	ImGui::InputInt("Length", &m_length);
+	for (auto [i, link] : std::views::enumerate(m_chain.links)) {
+		ImGui::PushID(i);
+		if (ImGui::SmallButton("+")) { add_platform(*m_services, i); }
+		ImGui::SameLine();
+		if (ImGui::SmallButton("-")) { remove_platform(i); }
+		ImGui::SameLine();
+		ImGui::Text("%i: ", i);
+		if (m_spawnable_platforms) {
+			for (auto const& plat : m_spawnable_platforms.value()) {
+				if (plat->get_index() == i) {
+					ImGui::SameLine();
+					ImGui::Text("Platform");
+				}
+			}
+		}
+		ImGui::PopID();
+	}
+	fg ? m_flags.set(VineFlags::foreground) : m_flags.reset(VineFlags::foreground);
+}
 
 void Vine::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
 	Entity::update(svc, map, console, player);
@@ -134,11 +157,16 @@ void Vine::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 }
 
 void Vine::add_platform(automa::ServiceProvider& svc, int link_index) {
-	m_treasure_balls = {}; // don't want them to get in the way
 	if (link_index > m_chain.links.size() || link_index < 0) { return; }
 	auto& link = m_chain.links.at(link_index);
 	if (!m_spawnable_platforms) { m_spawnable_platforms = std::vector<std::unique_ptr<entity::SpawnablePlatform>>{}; }
 	m_spawnable_platforms.value().push_back(std::make_unique<entity::SpawnablePlatform>(svc, link.get_anchor(), link_index));
+}
+
+void Vine::remove_platform(int link_index) {
+	if (!m_spawnable_platforms) { return; }
+	std::erase_if(m_spawnable_platforms.value(), [link_index](auto const& p) { return p->get_index() == link_index; });
+	if (m_spawnable_platforms->empty()) { m_spawnable_platforms = {}; }
 }
 
 } // namespace fornani

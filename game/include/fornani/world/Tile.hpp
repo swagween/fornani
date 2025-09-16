@@ -6,16 +6,22 @@
 namespace fornani::automa {
 struct ServiceProvider;
 }
+
 namespace fornani::player {
 class Player;
 }
+
 namespace fornani::arms {
 class Projectile;
 }
+
 namespace fornani::world {
+
 class Map;
+
 enum class TileType : std::uint8_t { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire, home };
 enum class TileState : std::uint8_t { ramp_adjacent, big_ramp, covered };
+
 constexpr static int special_index_v{448};
 
 struct Tile {
@@ -28,12 +34,13 @@ struct Tile {
 		if ((val >= special_index_v + 32 && val <= special_index_v + 35) || (val >= special_index_v + 48 && val <= special_index_v + 51)) { ret = 3; }
 		return ret;
 	}
-	Tile(sf::Vector2<std::uint32_t> i, sf::Vector2f p, std::uint32_t val, std::uint32_t odi, float spacing);
+	Tile(sf::Vector2<std::uint32_t> i, sf::Vector2f p, std::uint32_t val, std::uint32_t odi, float spacing, std::uint8_t chunk_id);
 
 	void on_hit(automa::ServiceProvider& svc, player::Player& player, world::Map& map, arms::Projectile& proj);
 	void render(sf::RenderWindow& win, sf::RectangleShape& draw, sf::Vector2f cam);
 	void draw(sf::RenderTexture& tex);
 	void set_type();
+
 	[[nodiscard]] auto is_occupied() const -> bool { return value > 0; }
 	[[nodiscard]] auto is_collidable() const -> bool { return type == TileType::solid || is_ramp() || is_spawner() || is_platform(); }
 	[[nodiscard]] auto is_solid() const -> bool { return type == TileType::solid; }
@@ -67,6 +74,7 @@ struct Tile {
 	[[nodiscard]] auto get_local_center() const -> sf::Vector2f { return bounding_box.get_dimensions() * 0.5f; }
 	[[nodiscard]] auto get_global_center() const -> sf::Vector2f { return bounding_box.get_position() + bounding_box.get_dimensions() * 0.5f; }
 	[[nodiscard]] auto position() const -> sf::Vector2f { return bounding_box.get_position(); }
+	[[nodiscard]] auto get_chunk_id() const -> std::uint8_t { return m_chunk_id; };
 
 	sf::Vector2<std::uint32_t> index;
 	std::uint32_t one_d_index;
@@ -83,6 +91,7 @@ struct Tile {
 
   private:
 	float m_spacing;
+	std::uint8_t m_chunk_id{};
 };
 
 } // namespace fornani::world

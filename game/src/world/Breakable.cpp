@@ -10,7 +10,7 @@
 
 namespace fornani::world {
 
-Breakable::Breakable(automa::ServiceProvider& svc, sf::Vector2f position, int style, int state) : style(style), state(state), sprite(svc.assets.get_texture("breakables")) {
+Breakable::Breakable(automa::ServiceProvider& svc, sf::Vector2f position, int chunk_id, int style, int state) : m_chunk_id{chunk_id}, style(style), state(state), sprite(svc.assets.get_texture("breakables")) {
 	collider = shape::Collider({32.f, 32.f});
 	collider.physics.position = position;
 	collider.sync_components();

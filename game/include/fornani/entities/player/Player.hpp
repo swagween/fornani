@@ -117,6 +117,8 @@ class Player {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f forced_position);
 	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void assign_texture(sf::Texture& tex);
+	void start_tick();
+	void end_tick();
 	void update_animation();
 	void update_sprite();
 	void handle_turning();

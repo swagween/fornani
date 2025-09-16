@@ -201,7 +201,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 	}
 
 	// check for exit
-	if (exit && m_output_type != OutputType::no_skip) {
+	if (exit && can_exit()) {
 		end();
 		return;
 	}

@@ -1,22 +1,21 @@
 {
   "save": {
-    "suite": [["Game saved."]]
+    "suite": [[{ "message": "Game saved." }]]
   },
   "bed": {
-    "suite": [["You awaken feeling well-rested."]],
-    "responses": [[]]
+    "suite": [[{ "message": "You awaken feeling well-rested." }]]
   },
   "chest": {
-    "suite": [["Obtained "]]
+    "suite": [[{ "message": "Obtained " }]]
   },
   "open_chest": {
-    "suite": [["It's already been opened."]]
+    "suite": [[{ "message": "It's already been opened." }]]
   },
   "locked_door": {
-    "suite": [["It's locked."]]
+    "suite": [[{ "message": "It's locked." }]]
   },
   "unlocked_door": {
-    "suite": [["Used "]]
+    "suite": [[{ "message": "Used " }]]
   },
   "death": {
     "suite": [
@@ -30,11 +29,6 @@
     ]
   },
   "menu_return": {
-    "codes": [
-      [0, 0, 0, 1, 0],
-      [1, 0, 0, 7, 1],
-      [1, 0, 1, 0, 0]
-    ],
     "suite": [
       [{ "message": "You will lose any unsaved progress. Are you sure?", "codes": [[1, 0]] }]
     ],

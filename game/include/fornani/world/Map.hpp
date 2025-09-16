@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/utils/Constants.hpp>
 #include "fornani/audio/Ambience.hpp"
 #include "fornani/entities/atmosphere/Atmosphere.hpp"
 #include "fornani/entities/enemy/EnemyCatalog.hpp"
@@ -42,10 +43,9 @@
 #include <fornani/shader/LightShader.hpp>
 #include <fornani/shader/Palette.hpp>
 
+#include <list>
 #include <optional>
 #include <vector>
-
-constexpr unsigned int u_chunk_size_v{16u};
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -79,7 +79,7 @@ class Map {
 
 	// methods
 	void load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number);
-	void unserialize(automa::ServiceProvider& svc, int room_number);
+	void unserialize(automa::ServiceProvider& svc, int room_number, bool live = false);
 	void update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
@@ -106,11 +106,12 @@ class Map {
 	bool nearby(shape::Shape& first, shape::Shape& second) const;
 	bool within_bounds(sf::Vector2f test) const;
 	bool overlaps_middleground(shape::Shape& test);
+	[[nodiscard]] auto get_chunk_id_from_position(sf::Vector2f pos) const -> std::uint8_t;
+	[[nodiscard]] auto get_chunk_dimensions() const -> sf::Vector2u { return dimensions / constants::u32_chunk_size; };
 	[[nodiscard]] auto off_the_bottom(sf::Vector2f point) const -> bool { return point.y > real_dimensions.y + abyss_distance; }
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
 	[[nodiscard]] auto get_echo_count() const -> int { return sound.echo_count; }
 	[[nodiscard]] auto get_echo_rate() const -> int { return sound.echo_rate; }
-	[[nodiscard]] auto chunk_dimensions() const -> sf::Vector2u { return dimensions / u_chunk_size_v; }
 	[[nodiscard]] auto is_minimap() const -> bool { return flags.properties.test(MapProperties::minimap); }
 	[[nodiscard]] auto has_obscuring_layer() const -> bool { return flags.properties.test(MapProperties::has_obscuring_layer); }
 	[[nodiscard]] auto has_reverse_obscuring_layer() const -> bool { return flags.properties.test(MapProperties::has_reverse_obscuring_layer); }
@@ -136,8 +137,6 @@ class Map {
 	sf::Vector2f real_dimensions{}; // pixel dimensions (maybe useless)
 	sf::Vector2u dimensions{};		// points on the 32x32-unit grid
 
-	dj::Json inspectable_data{};
-
 	// entities
 	std::vector<arms::Projectile> active_projectiles{};
 	std::vector<vfx::Emitter> active_emitters{};
@@ -151,8 +150,11 @@ class Map {
 	std::vector<entity::Chest> chests{};
 	std::vector<std::unique_ptr<npc::NPC>> npcs{};
 	std::vector<Platform> platforms{};
-	std::vector<Breakable> breakables{};
+
+	std::list<Breakable> breakables{};
+	std::vector<std::vector<std::list<Breakable>::iterator>> breakable_iterators{};
 	std::vector<Pushable> pushables{};
+
 	std::vector<Spawner> spawners{};
 	std::vector<Spike> spikes{};
 	std::vector<std::unique_ptr<SwitchButton>> switch_buttons{};

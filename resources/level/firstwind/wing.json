@@ -24,6 +24,10 @@
           54,
           9
         ],
+        "start_direction": [
+          0,
+          0
+        ],
         "variant": 0
       }
     ],
@@ -35,7 +39,6 @@
           1,
           1
         ],
-        "fall0": [],
         "id": 0,
         "instant": false,
         "key": "fall",
@@ -48,7 +51,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "There's no way but down..."
                 }
               ]

@@ -28,7 +28,8 @@ class Stopwatch {
 	[[nodiscard]] auto get_final(float dt) const -> std::string { return std::format("{:.3f}", stored_time_as_seconds().count() * dt); }
 	[[nodiscard]] auto stored_time_as_seconds() const -> DurationSeconds { return std::chrono::duration_cast<DurationSeconds>(m_stored_time); }
 	[[nodiscard]] auto as_seconds() const -> DurationSeconds { return std::chrono::duration_cast<DurationSeconds>(get_elapsed_time()); }
-	void print_time() const;
+	void print_time(std::string_view message) const;
+	void benchmark(std::string_view message);
 
   private:
 	DurationMilliseconds m_stored_time{};
