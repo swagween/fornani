@@ -40,7 +40,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	auto sprint = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).held;
 	auto sprint_release = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).released;
 	auto sprint_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).triggered;
-	if (svc.controller_map.is_autosprint_enabled()) {
+	if (svc.controller_map.is_autosprint_enabled() && !svc.controller_map.is_gamepad()) {
 		sprint = !sprint;
 		sprint_release = sprint_pressed;
 	}
@@ -154,10 +154,10 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	}
 	/* end abilities */
 
+	// horizontal movement
 	key_map[ControllerInput::move_x] = 0.f;
-	// keyboard
 	if (svc.controller_map.is_gamepad()) {
-		key_map[ControllerInput::move_x] = svc.controller_map.get_joystick_throttle().x;
+		key_map[ControllerInput::move_x] = is_crouching() && grounded() ? crawl_speed_v * svc.controller_map.get_joystick_throttle().x : svc.controller_map.get_joystick_throttle().x;
 	} else {
 		if (left) { key_map[ControllerInput::move_x] -= is_crouching() && grounded() ? crawl_speed_v : walk_speed_v; }
 		if (right) { key_map[ControllerInput::move_x] += is_crouching() && grounded() ? crawl_speed_v : walk_speed_v; }
@@ -166,8 +166,11 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	// sprint
 	key_map[ControllerInput::sprint] = 0.f;
 	if (moving() && sprint && !sprint_released()) {
-		if (left) { key_map[ControllerInput::move_x] = -sprint_speed_v; }
-		if (right) { key_map[ControllerInput::move_x] = sprint_speed_v; }
+		if (svc.controller_map.is_gamepad()) {
+		} else {
+			if (left) { key_map[ControllerInput::move_x] = -sprint_speed_v; }
+			if (right) { key_map[ControllerInput::move_x] = sprint_speed_v; }
+		}
 		key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x];
 	}
 

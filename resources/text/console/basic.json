@@ -42,26 +42,35 @@
   "intro": {
     "suite": [
       [
-        "You are lost and you are cold.",
-        "There is not much you remember from the last days, but you know well that they were filled with anguish.",
-        "You awaken now after a slumber of unknown length. The world shakes around you.",
-        "...",
-        "You are looking for your brother."
+        { "message": "You are lost and you are cold." },
+        {
+          "message": "There is not much you remember from the last days, but you know well that they were filled with anguish."
+        },
+        {
+          "message": "You awaken now after a slumber of unknown length. The world shakes around you."
+        },
+        { "message": "..." },
+        { "message": "You are looking for your brother." }
       ]
     ]
   },
   "delete_file": {
-    "codes": [
-      [0, 0, 0, 1, 0],
-      [1, 0, 0, 7, 3],
-      [1, 0, 1, 8, 0]
-    ],
     "suite": [
-      ["This action cannot be undone. Are you sure you want to delete this file?", "File deleted."]
+      [
+        { "message": "This action cannot be undone. Are you sure you want to delete this file?" },
+        { "message": "File deleted." }
+      ]
     ],
-    "responses": [["Yes", "No"]]
+    "responses": [
+      [
+        { "codes": [[7, 3]], "message": "Yes" },
+        { "codes": [[8, 0]], "message": "No" }
+      ]
+    ]
   },
   "fullscreen": {
-    "suite": [["Fullscreen settings will take effect the next time the game is opened."]]
+    "suite": [
+      [{ "message": "Fullscreen settings will take effect the next time the game is opened." }]
+    ]
   }
 }

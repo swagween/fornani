@@ -4,7 +4,6 @@
       {
         "activate_on_contact": true,
         "alternates": 0,
-        "below0": [],
         "dimensions": [
           1,
           1
@@ -21,7 +20,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "You peer cautiously over the ledge. Below rages a sea of clouds over an endless abyss."
                 }
               ]

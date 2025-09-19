@@ -33,7 +33,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 	collider = shape::Collider(dimensions);
 	collider.sync_components();
 	collider.physics.set_global_friction(in_physical["friction"].as<float>());
-	collider.stats.GRAV = in_physical["gravity"].as<float>();
+	attributes.gravity = in_physical["gravity"].as<float>();
 
 	secondary_collider = shape::Collider(dimensions);
 	secondary_collider.sync_components();
@@ -99,6 +99,12 @@ void Enemy::set_external_id(std::pair<int, sf::Vector2<int>> code) {
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
 	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
+
+	if (!flags.general.test(GeneralFlags::gravity)) {
+		collider.stats.GRAV = 0.f;
+	} else {
+		collider.stats.GRAV = attributes.gravity;
+	}
 
 	impulse.update();
 	sound.hurt_sound_cooldown.update();

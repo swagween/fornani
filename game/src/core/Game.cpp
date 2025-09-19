@@ -114,6 +114,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			}
 
 			if (auto const* joystick_moved = event->getIf<sf::Event::JoystickMoved>()) {
+				services.controller_map.set_keyboard_input_detected(false);
 				auto jx = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::X);
 				auto jy = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::Y);
 				services.controller_map.set_joystick_throttle(sf::Vector2f{jx, jy});
@@ -295,9 +296,10 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Input")) {
-					ImGui::Text("Current Input Device: %s", "TODO"); // XXX services.controller_map.is_gamepad() ? "Gamepad" : "Keyboard
+					ImGui::Text("Current Input Device: %s", services.controller_map.last_controller_type_used() == config::ControllerType::gamepad ? "Gamepad" : "Keyboard");
 					ImGui::Text("Gamepad Status: %s", services.controller_map.gamepad_connected() ? "Connected" : "Disconnected");
 					ImGui::Text("Gamepad Enabled? %s", services.controller_map.is_gamepad_input_enabled() ? "Yes" : "No");
+					ImGui::Text("Joystick Throttle: %.3f", services.controller_map.get_joystick_throttle().x);
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Time Trials")) {

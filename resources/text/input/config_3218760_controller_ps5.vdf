@@ -247,7 +247,7 @@
 					{
 						"bindings"
 						{
-							"binding"		"game_action Platformer platformer_shoot, #action_platformer_shoot, , "
+							"binding"		"game_action Platformer platformer_shoot, #action_platformer_dash, , "
 						}
 						"settings"
 						{
@@ -267,7 +267,7 @@
 					{
 						"bindings"
 						{
-							"binding"		"game_action Platformer platformer_shoot, #action_platformer_shoot, , "
+							"binding"		"game_action Platformer platformer_shoot, #action_platformer_dash, , "
 						}
 						"settings"
 						{

@@ -35,11 +35,11 @@ MenuState::MenuState(ServiceProvider& svc, player::Player& player, std::string_v
 		dot.rect.setOrigin(dot.rect.getSize() * 0.5f);
 		++which;
 	}
-	svc.controller_map.set_action_set(config::ActionSet::Menu);
 }
 
 void MenuState::tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
+	svc.controller_map.set_action_set(config::ActionSet::Menu);
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered && m_input_authorized) {
 		current_selection.modulate(1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);

@@ -15,6 +15,17 @@ MessageCode::MessageCode(dj::Json const& in) {
 	}
 }
 
+MessageCode::MessageCode(std::vector<int> in) {
+	type = static_cast<MessageCodeType>(in[0]);
+	value = in[1];
+	if (in.size() > 2) {
+		extras = std::vector<int>{};
+		for (auto [i, in] : std::views::enumerate(in)) {
+			if (i > 1) { extras->push_back(in); }
+		}
+	}
+}
+
 void MessageCode::serialize(dj::Json& out) const {
 	auto this_code = dj::Json{};
 	this_code.push_back(static_cast<int>(type));

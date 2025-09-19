@@ -60,6 +60,7 @@ struct Attributes {
 	sf::Vector2<int> drop_range{};
 	int rare_drop_id{};
 	int respawn_distance{};
+	float gravity{};
 };
 
 struct Flags {

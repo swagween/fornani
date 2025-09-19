@@ -1,18 +1,20 @@
-#include "fornani/entities/enemy/EnemyCatalog.hpp"
-#include "fornani/entities/enemy/boss/Minigus.hpp"
-#include "fornani/entities/enemy/catalog/Archer.hpp"
-#include "fornani/entities/enemy/catalog/Beamstalk.hpp"
-#include "fornani/entities/enemy/catalog/Caster.hpp"
-#include "fornani/entities/enemy/catalog/Demon.hpp"
-#include "fornani/entities/enemy/catalog/Eyebit.hpp"
-#include "fornani/entities/enemy/catalog/Eyebot.hpp"
-#include "fornani/entities/enemy/catalog/Frdog.hpp"
-#include "fornani/entities/enemy/catalog/Hulmet.hpp"
-#include "fornani/entities/enemy/catalog/Imp.hpp"
-#include "fornani/entities/enemy/catalog/Meatsquash.hpp"
-#include "fornani/entities/enemy/catalog/Tank.hpp"
-#include "fornani/entities/enemy/catalog/Thug.hpp"
-#include "fornani/entities/enemy/boss/Miaag.hpp"
+
+#include <fornani/entities/enemy/EnemyCatalog.hpp>
+#include <fornani/entities/enemy/boss/Lynx.hpp>
+#include <fornani/entities/enemy/boss/Miaag.hpp>
+#include <fornani/entities/enemy/boss/Minigus.hpp>
+#include <fornani/entities/enemy/catalog/Archer.hpp>
+#include <fornani/entities/enemy/catalog/Beamstalk.hpp>
+#include <fornani/entities/enemy/catalog/Caster.hpp>
+#include <fornani/entities/enemy/catalog/Demon.hpp>
+#include <fornani/entities/enemy/catalog/Eyebit.hpp>
+#include <fornani/entities/enemy/catalog/Eyebot.hpp>
+#include <fornani/entities/enemy/catalog/Frdog.hpp>
+#include <fornani/entities/enemy/catalog/Hulmet.hpp>
+#include <fornani/entities/enemy/catalog/Imp.hpp>
+#include <fornani/entities/enemy/catalog/Meatsquash.hpp>
+#include <fornani/entities/enemy/catalog/Tank.hpp>
+#include <fornani/entities/enemy/catalog/Thug.hpp>
 
 namespace fornani::enemy {
 
@@ -38,6 +40,7 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[m
 	case 12: enemies.push_back(std::make_unique<Imp>(svc, map, variant)); break;
 	case 13: enemies.push_back(std::make_unique<Hulmet>(svc, map)); break;
 	case 14: enemies.push_back(std::make_unique<Miaag>(svc, map)); break;
+	case 15: enemies.push_back(std::make_unique<Lynx>(svc, map, console)); break;
 	default: enemies.push_back(std::make_unique<Frdog>(svc)); break;
 	}
 }

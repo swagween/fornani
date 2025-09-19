@@ -12,6 +12,7 @@ static bool window_hovered{};
 static bool clicked{};
 static bool new_file{};
 static bool open_file{};
+static bool add_set{};
 static bool add_message{};
 static bool edit_message{};
 static bool add_code{};
@@ -50,13 +51,14 @@ void DialogueEditor::handle_events(std::optional<sf::Event> event, sf::RenderWin
 			if (key_pressed->scancode == sf::Keyboard::Scancode::O) { open_file = true; }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::S) { save(); }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::M) { add_message = true; }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::A) { add_set = true; }
 		}
 	}
 	if (auto const* button_pressed = event->getIf<sf::Event::MouseButtonPressed>()) {
 		if (button_pressed->button == sf::Mouse::Button::Middle) { pressed_keys.set(PressedKeys::mouse_middle); }
 		if (button_pressed->button == sf::Mouse::Button::Left) {
 			if (!pressed_keys.test(PressedKeys::mouse_left)) {
-				if (m_suite) { m_suite->deselect_all(); }
+				if (m_suite && !window_hovered) { m_suite->deselect_all(); }
 				clicked = !window_hovered;
 				m_left_clicked_position = sf::Vector2f{m_current_mouse_position - m_camera};
 				if (m_suite) { is_any_node_hovered = m_suite->is_any_node_hovered(); }
@@ -111,13 +113,6 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 			ImGui::Text("Current Index: %i", m_suite->get_current_index());
 			ImGui::SeparatorText("Codes");
 			m_suite->print_codes();
-			ImGui::Separator();
-			if (ImGui::TreeNode("Debug Flags")) {
-				ImGui::Text("Any Node Hovered: %s", is_any_node_hovered ? "True" : "False");
-				ImGui::Text("Any Node Selected: %s", is_any_node_selected ? "True" : "False");
-				ImGui::Text("Window Hovered: %s", window_hovered ? "True" : "False");
-				ImGui::TreePop();
-			}
 		}
 		static std::string this_host{};
 		static std::string this_tag{};
@@ -139,6 +134,10 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 			}
 			ImGui::TreePop();
 		}
+		ImGui::SeparatorText("Debug");
+		ImGui::Text("Any Node Hovered: %s", is_any_node_hovered ? "True" : "False");
+		ImGui::Text("Any Node Selected: %s", is_any_node_selected ? "True" : "False");
+		ImGui::Text("Window Hovered: %s", window_hovered ? "True" : "False");
 		ImGui::End();
 	}
 
@@ -146,6 +145,8 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("New Dialogue Suite", "Ctrl+N")) { new_file = true; }
 			if (ImGui::MenuItem("Open Dialogue Suite", "Ctrl+O")) { open_file = true; }
+			if (ImGui::MenuItem("Add Message", "Ctrl+M")) { add_message = true; }
+			if (ImGui::MenuItem("Add Set", "Ctrl+A")) { add_set = true; }
 			ImGui::EndMenu();
 		}
 		if (ImGui::Button("Editor")) { p_target_state = EditorStateType::editor; }
@@ -179,6 +180,24 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 			if (ImGui::Button("Cancel")) {
 				ImGui::CloseCurrentPopup();
 				add_message = false;
+			}
+			ImGui::EndPopup();
+		}
+	}
+
+	if (add_set) {
+		static char messagebuf[512] = "";
+		ImGui::OpenPopup("New Message");
+		if (ImGui::BeginPopupModal("New Message", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+			ImGui::InputTextWithHint("Message", "message...", messagebuf, IM_ARRAYSIZE(messagebuf));
+			if (ImGui::Button("Add")) {
+				if (m_suite) { m_suite->add_set(messagebuf, NodeType::suite); }
+				ImGui::CloseCurrentPopup();
+				add_set = false;
+			}
+			if (ImGui::Button("Cancel")) {
+				ImGui::CloseCurrentPopup();
+				add_set = false;
 			}
 			ImGui::EndPopup();
 		}

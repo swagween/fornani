@@ -47,6 +47,7 @@ void MainMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 	loading.update();
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
+		NANI_LOG_DEBUG(m_logger, "Menu Select Triggered.");
 		if (current_selection.get() == menu_selection_id.at(MenuSelection::play)) {
 			svc.state_controller.submenu = MenuType::play;
 			svc.state_controller.actions.set(Actions::trigger_submenu);

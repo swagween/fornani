@@ -248,6 +248,12 @@
     },
     {
       "folder": "kariba",
+      "label": "pantry.json",
+      "region": "kariba",
+      "room_id": 513
+    },
+    {
+      "folder": "kariba",
       "label": "solarium.json",
       "region": "kariba",
       "room_id": 510

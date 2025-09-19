@@ -28,7 +28,6 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player)
 void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	m_input_authorized = !adjust_mode() && !m_console;
 	adjust_mode() ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
-	svc.controller_map.set_action_set(config::ActionSet::Menu);
 	if (!m_console) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
 			if (adjust_mode()) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }

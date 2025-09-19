@@ -89,6 +89,7 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) : m_stick_sensitivity
 	menu_action_set = SteamInput()->GetActionSetHandle("Menu");
 	inventory_action_layer = SteamInput()->GetActionSetHandle("Menu_Inventory");
 	map_action_layer = SteamInput()->GetActionSetHandle("Menu_Map");
+	active_action_set = ActionSet::Platformer;
 }
 
 void ControllerMap::setup_action_handles() {
@@ -161,9 +162,8 @@ sf::Vector2i ControllerMap::get_icon_lookup_by_action(DigitalAction action) cons
 void ControllerMap::update() {
 	SteamInput()->RunFrame();
 	m_actions_queried_this_update.clear();
-
-	SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, SteamInput()->GetActionSetHandle("MenuControls"));
 	std::unordered_set<EInputActionOrigin> buttons_pressed_this_tick{};
+
 	for (auto& [action, data] : digital_actions) {
 		auto& [steam_handle, action_status, primary_key, secondary_key, was_active_last_tick] = data;
 
@@ -205,7 +205,8 @@ void ControllerMap::update() {
 			action_status.released = false;
 			// Avoid actions being immediately triggered when switching action sets
 			if (!action_status.held && was_active_last_tick) {
-				// std::cout << "Pressed " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
+				auto data = SteamInput()->GetDigitalActionData(controller_handle, steam_handle);
+				// NANI_LOG_DEBUG(m_logger, "Pressed {}", SteamInput()->GetStringForDigitalActionName(steam_handle));
 				action_status.triggered = true;
 			} else {
 				action_status.triggered = false;
@@ -214,7 +215,7 @@ void ControllerMap::update() {
 		} else {
 			action_status.triggered = false;
 			if (action_status.held) {
-				// std::cout << "Released " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
+				// NANI_LOG_DEBUG(m_logger, "Released {}", SteamInput()->GetStringForDigitalActionName(steam_handle));
 				action_status.released = true;
 			} else {
 				action_status.released = false;
@@ -261,7 +262,7 @@ void ControllerMap::set_action_set(ActionSet set) {
 		case ActionSet::Platformer: SteamInput()->ActivateActionSet(controller_handle, platformer_action_set); break;
 		}
 	}
-	active_action_set = set;
+	if (controller_handle) { active_action_set = set; }
 }
 
 [[nodiscard]] auto ControllerMap::digital_action_status(DigitalAction action) -> DigitalActionStatus {

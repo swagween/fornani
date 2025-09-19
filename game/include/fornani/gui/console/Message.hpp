@@ -11,6 +11,7 @@ namespace fornani::gui {
 
 struct MessageCode {
 	MessageCode(dj::Json const& in);
+	MessageCode(std::vector<int> in);
 	MessageCodeType type{};
 	int value{};
 	std::optional<std::vector<int>> extras{};

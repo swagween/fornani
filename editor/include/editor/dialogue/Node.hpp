@@ -2,8 +2,10 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <djson/json.hpp>
 #include <fornani/core/Common.hpp>
 #include <fornani/graphics/Colors.hpp>
+#include <fornani/gui/console/Message.hpp>
 #include <optional>
 #include <string_view>
 
@@ -13,16 +15,19 @@ using NodeType = fornani::gui::CodeSource;
 
 class Node {
   public:
+	Node(dj::Json const& in_code, sf::Font const& font, std::string_view message, NodeType type);
 	Node(sf::Font const& font, std::string_view message, NodeType type);
 	Node& operator=(Node const& other);
 
+	void serialize(dj::Json& out);
 	void update(sf::Vector2f position, bool clicked);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f to) { m_position = to; }
 	void set_hovered(bool to) { m_hovered = to; }
 	void set_selected(bool to) { m_selected = to; }
-	void set_coded(bool to) { m_coded = to; }
+	void add_code(std::vector<int> code);
 	void set_message(std::string const& to) { m_text->setString(to); }
+	void print_codes();
 
 	[[nodiscard]] auto get_message() const -> std::string { return m_text ? m_text->getString() : ""; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_position; }
@@ -33,6 +38,7 @@ class Node {
 	[[nodiscard]] auto has_code() const -> bool { return m_coded; }
 
   private:
+	std::vector<fornani::gui::MessageCode> m_codes{};
 	sf::Vector2f m_position{};
 	std::optional<sf::Text> m_text;
 	sf::RectangleShape box{};

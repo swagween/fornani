@@ -64,7 +64,7 @@ void Player::update(world::Map& map) {
 	auto camx = controller.direction.as_float() * 32.f;
 	auto skew = 160.f;
 	m_camera.target_point = sf::Vector2f{camx, skew * controller.vertical_movement()};
-	auto force_multiplier = 1.f - ccm::abs(controller.vertical_movement() / 1.5f);
+	auto force_multiplier = 1.f - ccm::abs(controller.vertical_movement());
 	if (controller.is_dashing() || controller.sprint_held()) {
 		force_multiplier = 1.f;
 		m_camera.target_point = sf::Vector2f{camx, 0.f};

@@ -113,6 +113,7 @@ class ControllerMap {
 	[[nodiscard]] auto gamepad_disconnected() const -> bool { return controller_handle == 0; }
 	[[nodiscard]] auto digital_action_status(DigitalAction action) -> DigitalActionStatus;
 	[[nodiscard]] auto analog_action_status(AnalogAction action) const -> AnalogActionStatus { return analog_actions.at(action).second; }
+	[[nodiscard]] auto get_action_set() const -> ActionSet { return active_action_set; }
 	[[nodiscard]] auto digital_action_name(DigitalAction action) const -> std::string_view;
 	[[nodiscard]] auto digital_action_source(DigitalAction action) const -> DigitalActionSource;
 	[[nodiscard]] auto digital_action_source_name(DigitalAction action) const -> std::string_view;

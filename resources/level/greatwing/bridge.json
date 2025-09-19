@@ -1,8 +1,8 @@
 {
   "entities": {
-    "inspectables": [],
     "npcs": [
       {
+        "background": false,
         "dimensions": [
           0,
           0
@@ -24,6 +24,7 @@
         ]
       },
       {
+        "background": false,
         "dimensions": [
           0,
           0
@@ -98,7 +99,7 @@
       0
     ],
     "properties": {
-      "day_night_shift": true,
+      "day_night_shift": false,
       "environmental_randomness": false,
       "lighting": false,
       "timer": false
@@ -115,14 +116,14 @@
       "reverse_obscuring": false
     },
     "ignore_lighting": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ],
     "layers": [
       [

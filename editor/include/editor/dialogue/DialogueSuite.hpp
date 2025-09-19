@@ -17,7 +17,8 @@ class DialogueSuite {
 	DialogueSuite(sf::Font& font, dj::Json const& in, std::string_view host, std::string_view tag);
 	void serialize(dj::Json& out);
 
-	void add_message(std::string_view message, NodeType type, int set_index = 0, int message_index = 0);
+	void add_set(std::string_view message, NodeType type);
+	void add_message(std::string_view message, NodeType type);
 	void add_code(fornani::gui::MessageCodeType type, int value);
 	void update(sf::Vector2f position, bool clicked);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);

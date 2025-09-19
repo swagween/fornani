@@ -30,7 +30,6 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	m_input_authorized = !binding_mode;
 	MenuState::tick_update(svc, engine);
 	binding_mode ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
-	svc.controller_map.set_action_set(config::ActionSet::Menu);
 
 	// reset gamepad settings color
 	options.at(options.size() - 2).selectable = svc.controller_map.gamepad_connected();
