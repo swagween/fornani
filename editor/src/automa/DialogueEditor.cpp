@@ -335,7 +335,7 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 void DialogueEditor::save() {
 	if (m_suite) {
 		m_suite->serialize(*m_data);
-		if (!m_data->to_file((p_services->finder.paths.resources / "text" / "console" / "new_npc.json").string())) { NANI_LOG_ERROR(p_logger, "Failed to serialize NPC dialogue suite {}!", m_suite->get_host()); }
+		if (!m_data->to_file((p_services->finder.paths.resources / "text" / "console" / "npc.json").string())) { NANI_LOG_ERROR(p_logger, "Failed to serialize NPC dialogue suite {}!", m_suite->get_host()); }
 	}
 }
 

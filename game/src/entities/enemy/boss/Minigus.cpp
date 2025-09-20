@@ -13,7 +13,8 @@ static void start_battle(int battle) { b_start = true; }
 
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console)
 	: Enemy(svc, "minigus"), gun(svc, "minigun"), soda(svc, "soda_gun"), m_services(&svc), npc::NPC(svc, "minigus"), m_map(&map), health_bar(svc, "minigus"),
-	  sparkler(svc, Enemy::collider.vicinity.get_dimensions(), colors::ui_white, "minigus"), m_console{&console}, m_mode{MinigusMode::neutral}, m_minigun{svc} {
+	  sparkler(svc, Enemy::collider.vicinity.get_dimensions(), colors::ui_white, "minigus"), m_console{&console}, m_mode{MinigusMode::neutral}, m_minigun{svc},
+	  attacks{.left_shockwave{{50, 600, 3, {-0.6f, 0.f}}}, .right_shockwave{{50, 600, 3, {0.6f, 0.f}}}} {
 
 	svc.events.register_event(std::make_unique<Event<int>>("StartBattle", &start_battle));
 

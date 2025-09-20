@@ -26,6 +26,7 @@ class SimpleDirection {
 	[[nodiscard]] auto left() const -> bool { return lr == LR::left; }
 	[[nodiscard]] auto right() const -> bool { return lr == LR::right; }
 	[[nodiscard]] auto print() const -> std::string { return left() ? "left" : "right"; }
+	[[nodiscard]] auto as_float() const -> float { return lr == LR::left ? -1.f : 1.f; }
 
 	bool operator==(SimpleDirection const& other) const { return other.lr == lr; }
 	bool operator!=(SimpleDirection const& other) const { return other.lr != lr; }

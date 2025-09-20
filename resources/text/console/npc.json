@@ -1283,6 +1283,71 @@
       ]
     }
   },
+  "lynx": {
+    "1": {
+      "output": 2,
+      "responses": [
+        [{ "codes": [[1, 1]], "message": "You know who I am?" }],
+        [{ "codes": [[1, 2]], "message": "Why are you here, then?" }]
+      ],
+      "suite": [
+        [
+          {
+            "message": "..."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "You must be Nani."
+          },
+          {
+            "codes": [
+              [5, 0],
+              [1, 0]
+            ],
+            "message": "I knew you'd find this path eventually, but I wasn't expecting you to arrive here so soon."
+          }
+        ],
+        [
+          {
+            "message": "Of course. You know, I used to be like you, years ago. Full of spirit, and determined to cut down everything in my path."
+          },
+          {
+            "message": "You do remind me of your brother in that way."
+          },
+          {
+            "codes": [
+              [5, 1],
+              [1, 1]
+            ],
+            "message": "No matter. I am not here to redeem you or convince you of anything."
+          }
+        ],
+        [
+          {
+            "message": "To teach you a lesson I learned long ago."
+          },
+          {
+            "codes": [[12, 0]],
+            "message": "Enough talking, now. It is time you prove to me why Gus couldn't take care of you himself!"
+          }
+        ]
+      ]
+    },
+    "2": {
+      "output": 2,
+      "responses": [],
+      "suite": [
+        [
+          {
+            "message": "Augh..."
+          },
+          {
+            "message": "I have failed..."
+          }
+        ]
+      ]
+    }
+  },
   "minigus": {
     "1": {
       "responses": [

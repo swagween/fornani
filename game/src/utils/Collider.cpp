@@ -374,11 +374,11 @@ void Collider::handle_collider_collision(Collider const& collider, bool soft, bo
 	if (jumpbox.overlaps(collider.bounding_box)) { flags.external_state.set(ExternalState::grounded); }
 }
 
-void Collider::update(automa::ServiceProvider& svc) {
+void Collider::update(automa::ServiceProvider& svc, bool simple) {
 	if (!on_ramp()) { acceleration_multiplier = 1.f; }
 	flags.external_state = {};
 	adjust_acceleration();
-	if (!flags.general.test(General::no_move)) { physics.update(svc); }
+	if (!flags.general.test(General::no_move)) { simple ? physics.simple_update() : physics.update(svc); }
 	sync_components();
 	flags.state.reset(State::just_collided);
 	physics.gravity = flags.state.test(State::grounded) ? 0.0f : stats.GRAV;

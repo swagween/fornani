@@ -409,5 +409,66 @@
 				}
 			}
 		}
+	},
+	"shuriken": {
+		"metadata": {
+			"id": 7,
+			"label": "Shuriken"
+		},
+		"visual": {
+			"texture_lookup": 0,
+			"dimensions": [ 8, 8 ],
+			"offsets": {
+				"global": [ 0.0, 0.0 ],
+				"barrel": [ 0.0, 0.0 ],
+				"stock": [ 0, 0 ]
+			},
+			"spray": {
+				"dimensions": [ 8.0, 8.0 ],
+				"type": "twinkle",
+				"color": "white"
+			}
+		},
+		"gameplay": {
+			"attributes": {
+				"automatic": true,
+				"ammo": 3,
+				"reload": 160,
+				"cooldown_time": 50,
+				"recoil": 0.0
+			}
+		},
+		"audio": { "shoot": 2 },
+		"class_package": {
+			"projectile": {
+				"type": 0,
+				"dimensions": [
+					16.0,
+					16.0
+				],
+				"attributes": {
+					"base_damage": 1,
+					"lifespan": 600,
+					"lifespan_variance": 0,
+					"speed": 11.5,
+					"variance": 0.2,
+					"stun_time": 0.0,
+					"knockback": 0.0,
+					"transcendent": false,
+					"omnidirectional": true,
+					"reflect": true,
+					"range_variance": 0.0,
+					"acceleration_factor": 0.0,
+					"dampen_factor": 0.0,
+					"gravity": 0.04,
+					"elasticity": 0.95
+				},
+				"animation": {
+					"num_sprites": 1,
+					"num_frames": 4,
+					"framerate": 18
+				}
+			}
+		}
 	}
 }

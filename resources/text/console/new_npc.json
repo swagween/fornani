@@ -1,19 +1,4 @@
 {
-  "alba": {
-    "1": {
-      "responses": [],
-      "suite": [
-        [
-          {
-            "message": "Hello"
-          },
-          {
-            "message": "What's up?"
-          }
-        ]
-      ]
-    }
-  },
   "billy": {
     "1": {
       "responses": [],
@@ -1821,6 +1806,12 @@
           }
         ]
       ]
+    }
+  },
+  "lynx": {
+    "1": {
+      "responses": [],
+      "suite": []
     }
   },
   "minigus": {

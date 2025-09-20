@@ -3,8 +3,6 @@
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/world/Map.hpp"
 
-
-
 namespace fornani::entity {
 
 void Attack::update() {
@@ -22,6 +20,11 @@ void Attack::handle_player(player::Player& player) {
 	hit.within_bounds(player.collider.bounding_box) ? hit.activate() : hit.deactivate();
 }
 
+void Attack::set_constant_radius(float to) {
+	sensor.bounds.setRadius(to);
+	hit.bounds.setRadius(to);
+}
+
 void Attack::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	sensor.render(win, cam);
 	hit.render(win, cam);
@@ -31,4 +34,4 @@ void Attack::enable() { hit.activate(); }
 
 void Attack::disable() { hit.deactivate(); }
 
-} // namespace entity
+} // namespace fornani::entity

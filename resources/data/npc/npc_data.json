@@ -83,6 +83,10 @@
     "id": 7,
     "dimensions": [24, 24]
   },
+  "lynx": {
+    "id": 21,
+    "dimensions": [24, 24]
+  },
 
   "dr_go": {
     "id": 16,

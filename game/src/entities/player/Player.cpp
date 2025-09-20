@@ -21,7 +21,7 @@ Player::Player(automa::ServiceProvider& svc)
 
 	anchor_point = collider.physics.position + player_dimensions_v * 0.5f;
 	collider.collision_depths = util::CollisionDepth();
-	health.set_invincibility(400);
+	health.set_invincibility(300);
 	hurtbox.set_dimensions(sf::Vector2f{12.f, 26.f});
 
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);

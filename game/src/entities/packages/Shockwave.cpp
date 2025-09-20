@@ -5,13 +5,13 @@
 
 namespace fornani::entity {
 
-Shockwave::Shockwave(sf::Vector2f speed) : speed(speed) {
+Shockwave::Shockwave(ShockwaveParameters parameters) : m_parameters{parameters} {
 	hit.bounds.setRadius(16.f);
 	hit.bounds.setOrigin({8.f, 8.f});
 }
 
-void Shockwave::start(int time) {
-	lifetime.start(time);
+void Shockwave::start() {
+	lifetime.start(m_parameters.lifetime);
 	hit.bounds.setPosition(origin);
 	position = origin;
 }
@@ -19,9 +19,9 @@ void Shockwave::start(int time) {
 void Shockwave::update(automa::ServiceProvider& svc, world::Map& map) {
 	lifetime.update();
 	if (lifetime.is_complete()) { return; }
-	position = position + speed;
-	if (svc.ticker.every_x_ticks(50)) {
-		map.effects.push_back(entity::Effect(svc, "small_explosion", position, {0.f, -0.1f}, 3));
+	position = position + m_parameters.speed;
+	if (svc.ticker.every_x_ticks(m_parameters.frequency)) {
+		map.effects.push_back(entity::Effect(svc, "small_explosion", position, {0.f, -0.1f}, m_parameters.style));
 		hit.bounds.setPosition(position);
 	}
 }

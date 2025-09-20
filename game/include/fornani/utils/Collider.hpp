@@ -80,7 +80,7 @@ class Collider {
 	void resolve_depths();
 	bool handle_collider_collision(Shape const& collider, bool soft = false, sf::Vector2f velocity = {}); // returns true if grounded on collider
 	void handle_collider_collision(Collider const& collider, bool soft = false, bool momentum = false);
-	void update(automa::ServiceProvider& svc);
+	void update(automa::ServiceProvider& svc, bool simple = false);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f pos);
 	void reset();

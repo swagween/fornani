@@ -4,6 +4,9 @@
 #include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/entities/enemy/Enemy.hpp>
 #include <fornani/entities/npc/NPC.hpp>
+#include <fornani/entities/packages/Attack.hpp>
+#include <fornani/entities/packages/Caution.hpp>
+#include <fornani/entities/packages/Shockwave.hpp>
 #include <fornani/gui/BossHealth.hpp>
 #include <fornani/particle/Sparkler.hpp>
 
@@ -11,7 +14,7 @@
 
 namespace fornani::enemy {
 
-enum class LynxState : std::uint8_t { sit, get_up, idle, jump, forward_slash, levitate, run, downward_slam, prepare_shuriken, toss_shuriken, upward_slash, triple_slash, turn };
+enum class LynxState : std::uint8_t { sit, get_up, idle, jump, forward_slash, levitate, run, downward_slam, prepare_shuriken, toss_shuriken, upward_slash, triple_slash, turn, aerial_slash, prepare_slash, defeat };
 enum class LynxFlags : std::uint8_t { conversing, battle_mode, second_phase };
 
 class Lynx final : public Enemy, public npc::NPC {
@@ -25,6 +28,7 @@ class Lynx final : public Enemy, public npc::NPC {
 
 	[[nodiscard]] auto invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable); }
 	[[nodiscard]] auto half_health() const -> bool { return health.get_hp() < health.get_max() * 0.5f; }
+	[[nodiscard]] auto is_state(LynxState test) const -> bool { return m_state.actual == test; }
 
 	fsm::StateFunction state_function = std::bind(&Lynx::update_sit, this);
 	fsm::StateFunction update_sit();
@@ -40,25 +44,46 @@ class Lynx final : public Enemy, public npc::NPC {
 	fsm::StateFunction update_upward_slash();
 	fsm::StateFunction update_triple_slash();
 	fsm::StateFunction update_turn();
+	fsm::StateFunction update_aerial_slash();
+	fsm::StateFunction update_prepare_slash();
+	fsm::StateFunction update_defeat();
 
   private:
 	struct {
 		LynxState actual{};
 		LynxState desired{};
 	} m_state{};
+
 	struct {
 		util::Cooldown run;
+		util::Cooldown post_hurt;
 	} m_cooldowns{};
+
+	struct {
+		std::array<entity::Attack, 3> slash{};
+		entity::Shockwave left_shockwave;
+		entity::Shockwave right_shockwave;
+	} m_attacks{};
+
 	util::BitFlags<LynxFlags> m_flags{};
 	void request(LynxState to) { m_state.desired = to; }
 	bool change_state(LynxState next, anim::Parameters params);
 	gui::BossHealth m_health_bar;
 	vfx::Sparkler m_magic{};
+	shape::Shape m_distant_range{};
 
 	components::SteeringBehavior m_steering{};
+	entity::Caution m_caution{};
+
+	entity::WeaponPackage m_shuriken;
+	sf::Vector2f m_attack_target{};
 
 	std::optional<std::unique_ptr<gui::Console>>* m_console;
 	automa::ServiceProvider* m_services;
+	world::Map* m_map;
+
+	sf::Vector2f m_player_target{};
+	sf::Vector2f m_home{};
 
 	std::unordered_map<std::string, anim::Parameters> m_params;
 	anim::Parameters const& get_params(std::string const& key);

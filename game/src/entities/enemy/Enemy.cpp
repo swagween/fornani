@@ -134,7 +134,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	set_channel(EnemyChannel::standard);
 	if (flags.general.test(GeneralFlags::has_invincible_channel)) { flags.state.test(StateFlags::vulnerable) ? set_channel(EnemyChannel::standard) : set_channel(EnemyChannel::invincible); }
 	if (hurt_effect.running()) { set_channel((hurt_effect.get() / flash_rate) % 2 == 0 ? EnemyChannel::hurt_1 : EnemyChannel::hurt_2); }
-	if (hurt_effect.running()) { shake(); }
+	if (hurt_effect.running() && !flags.state.test(StateFlags::no_shake)) { shake(); }
 	hurt_effect.update();
 
 	// shake
@@ -150,7 +150,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 
 	// stuff that slows down from hitstun
-	collider.update(svc);
+	collider.update(svc, flags.state.test(StateFlags::simple_physics));
 	secondary_collider.update(svc);
 	health_indicator.update(svc, collider.physics.position);
 

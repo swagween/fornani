@@ -118,6 +118,28 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.minigus.test(Minigus::ok)) { play(engine, svc, svc.sounds.get_buffer("minigus_ok_1")); }
 	if (flags.minigus.test(Minigus::exhale)) { play(engine, svc, svc.sounds.get_buffer("minigus_exhale")); }
 
+	// lynx
+	if (flags.lynx.test(Lynx::ping_1)) { play(engine, svc, svc.sounds.get_buffer("lynx_ping_1"), 0.1f); }
+	if (flags.lynx.test(Lynx::ping_2)) { play(engine, svc, svc.sounds.get_buffer("lynx_ping_2"), 0.1f); }
+	if (flags.lynx.test(Lynx::swipe_1)) { play(engine, svc, svc.sounds.get_buffer("lynx_swipe_1"), 0.1f); }
+	if (flags.lynx.test(Lynx::swipe_2)) { play(engine, svc, svc.sounds.get_buffer("lynx_swipe_2"), 0.1f); }
+	if (flags.lynx.test(Lynx::shing)) { play(engine, svc, svc.sounds.get_buffer("lynx_shing"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::prepare)) { play(engine, svc, svc.sounds.get_buffer("lynx_prepare")); }
+	if (flags.lynx.test(Lynx::slam)) { play(engine, svc, svc.sounds.get_buffer("lynx_slam"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::hoah)) { play(engine, svc, svc.sounds.get_buffer("lynx_hoah"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::defeat)) { play(engine, svc, svc.sounds.get_buffer("lynx_defeat"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::hah)) { play(engine, svc, svc.sounds.get_buffer("lynx_hah"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::heuh)) { play(engine, svc, svc.sounds.get_buffer("lynx_heuh"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::hiyyah)) { play(engine, svc, svc.sounds.get_buffer("lynx_hiyyah"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::hnnyah)) { play(engine, svc, svc.sounds.get_buffer("lynx_hnnyah"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::huh)) { play(engine, svc, svc.sounds.get_buffer("lynx_huh"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::hurt_1)) { play(engine, svc, svc.sounds.get_buffer("lynx_hurt_1"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::hurt_2)) { play(engine, svc, svc.sounds.get_buffer("lynx_hurt_2"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::hurt_3)) { play(engine, svc, svc.sounds.get_buffer("lynx_hurt_3"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::hurt_4)) { play(engine, svc, svc.sounds.get_buffer("lynx_hurt_4"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::huuyeah)) { play(engine, svc, svc.sounds.get_buffer("lynx_huuyeah"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::nngyah)) { play(engine, svc, svc.sounds.get_buffer("lynx_nngyah"), 0.f, 50.f); }
+
 	// npc
 	if (flags.npc.test(NPC::minigus_getit)) { play(engine, svc, svc.sounds.get_buffer("minigus_getit")); }
 	if (flags.npc.test(NPC::minigus_laugh)) { play(engine, svc, svc.sounds.get_buffer("minigus_laugh_1")); }
@@ -195,7 +217,8 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 }
 
 void Soundboard::play(capo::IEngine& engine, automa::ServiceProvider& svc, capo::Buffer const& buffer, float random_pitch_offset, float vol, int frequency, float attenuation, sf::Vector2f distance, int echo_count, int echo_rate) {
-	sound_pool.push_back(Sound(engine, buffer, "standard", echo_count, echo_rate, m_volume_multiplier));
+	if (vol == 0.f) { return; }
+	sound_pool.push_back(Sound(engine, buffer, "standard", echo_count, echo_rate, m_volume_multiplier * (vol / 100.f)));
 	frequency != 0 ? repeat(svc, sound_pool.back(), frequency, random_pitch_offset, attenuation, distance) : randomize(svc, sound_pool.back(), random_pitch_offset, vol, attenuation, distance);
 }
 

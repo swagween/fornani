@@ -91,6 +91,7 @@ class Map {
 	void generate_layer_textures(automa::ServiceProvider& svc) const;
 	bool check_cell_collision(shape::Collider& collider, bool foreground = false);
 	bool check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms = true);
+	sf::Vector2i get_circle_collision_result(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	void handle_cell_collision(shape::CircleCollider& collider);
 	void shake_camera();
 	void clear();

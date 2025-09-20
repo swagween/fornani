@@ -14,6 +14,7 @@ class Attack {
 	void update();
 	void set_position(sf::Vector2f position);
 	void handle_player(player::Player& player);
+	void set_constant_radius(float to);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void enable();
 	void disable();

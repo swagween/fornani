@@ -108,7 +108,6 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		flags.state.reset(StateFlags::hurt);
 	}
 
-	hurt_effect.update();
 	if (is_hostile() && !cooldowns.post_rush.running()) { state = DemonState::signal; }
 	if (is_hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { state = DemonState::jumpsquat; } // player is already in hostile range
 

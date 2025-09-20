@@ -68,6 +68,7 @@ class Projectile {
 	void multiply(float factor) { variables.damage_multiplier = std::min(variables.damage_multiplier * factor, variables.damage_multiplier * 5.f); }
 	void poof();
 	void damage_over_time();
+	void bounce_off_surface(sf::Vector2i direction);
 
 	[[nodiscard]] auto effect_type() const -> int { return visual.effect_type; }
 	[[nodiscard]] auto get_type() const -> ProjectileType { return metadata.type; }
@@ -94,6 +95,7 @@ class Projectile {
 	[[nodiscard]] auto sprite_flip() const -> bool { return metadata.attributes.test(ProjectileAttributes::sprite_flip); }
 	[[nodiscard]] auto persistent() const -> bool { return metadata.attributes.test(ProjectileAttributes::persistent); }
 	[[nodiscard]] auto boomerang() const -> bool { return metadata.attributes.test(ProjectileAttributes::boomerang); }
+	[[nodiscard]] auto reflect() const -> bool { return metadata.attributes.test(ProjectileAttributes::reflect); }
 	[[nodiscard]] auto wander() const -> bool { return metadata.attributes.test(ProjectileAttributes::wander); }
 
   private:

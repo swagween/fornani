@@ -744,6 +744,27 @@ bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool coll
 	return false;
 }
 
+sf::Vector2i Map::get_circle_collision_result(shape::CircleCollider& collider, bool collide_with_platforms) {
+	auto& grid = get_middleground()->grid;
+	auto& layers = m_services->data.get_layers(room_id);
+	auto top = get_index_at_position(collider.boundary.first);
+	auto bottom = get_index_at_position(collider.boundary.second);
+	auto right = static_cast<std::size_t>(collider.boundary_width() / constants::f_cell_size);
+	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
+		auto left{0};
+		for (auto j{left}; j <= right; ++j) {
+			auto index = i + j;
+			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
+			auto& cell = grid.get_cell(static_cast<int>(index));
+			if (!cell.is_collidable() || cell.is_ceiling_ramp()) { continue; }
+			if (cell.is_platform() && !collide_with_platforms) { continue; }
+			cell.collision_check = true;
+			if (collider.collides_with(cell.bounding_box)) { return collider.get_collision_result(cell.bounding_box); }
+		}
+	}
+	return {};
+}
+
 void Map::handle_cell_collision(shape::CircleCollider& collider) {
 	auto& grid = get_middleground()->grid;
 	auto top = get_index_at_position(collider.boundary.first);

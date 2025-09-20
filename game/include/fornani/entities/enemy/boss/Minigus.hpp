@@ -100,8 +100,8 @@ class Minigus : public Enemy, public npc::NPC {
 		entity::Attack punch{};
 		entity::Attack uppercut{};
 		entity::Attack rush{};
-		entity::Shockwave left_shockwave{{-0.6f, 0.f}};
-		entity::Shockwave right_shockwave{{0.6f, 0.f}};
+		entity::Shockwave left_shockwave;
+		entity::Shockwave right_shockwave;
 	} attacks{};
 
 	float fire_chance{2.f};

@@ -262,7 +262,7 @@ void ControllerMap::set_action_set(ActionSet set) {
 		case ActionSet::Platformer: SteamInput()->ActivateActionSet(controller_handle, platformer_action_set); break;
 		}
 	}
-	if (controller_handle) { active_action_set = set; }
+	active_action_set = set;
 }
 
 [[nodiscard]] auto ControllerMap::digital_action_status(DigitalAction action) -> DigitalActionStatus {

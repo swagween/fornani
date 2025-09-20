@@ -121,6 +121,15 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map) {
 	if (transcendent()) { return; }
 	physical.collider.update(svc);
+	if (reflect()) {
+		auto result = map.get_circle_collision_result(physical.collider, false);
+		physical.collider.handle_map_collision(map);
+		if (result.x == 0 && result.y == 0) { return; }
+		bounce_off_surface(result);
+		if (physical.collider.collided()) { svc.soundboard.flags.world.set(audio::World::wall_hit); }
+		physical.collider.physics.acceleration = {};
+		return;
+	}
 	physical.collider.set_position(physical.physics.position);
 	if (map.check_cell_collision_circle(physical.collider, false)) {
 		if (!destruction_initiated()) {
@@ -227,6 +236,11 @@ void Projectile::poof() { variables.state.set(arms::ProjectileState::poof); }
 
 void Projectile::damage_over_time() {
 	if (damage_timer.is_complete()) { damage_timer.start(); }
+}
+
+void Projectile::bounce_off_surface(sf::Vector2i direction) {
+	if (std::abs(direction.x) > 0) { physical.physics.velocity.x *= -1.f * metadata.specifications.elasticty; }
+	if (std::abs(direction.y) > 0) { physical.physics.velocity.y *= -1.f * metadata.specifications.elasticty; }
 }
 
 } // namespace fornani::arms

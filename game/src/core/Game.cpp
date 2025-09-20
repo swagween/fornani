@@ -299,6 +299,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Current Input Device: %s", services.controller_map.last_controller_type_used() == config::ControllerType::gamepad ? "Gamepad" : "Keyboard");
 					ImGui::Text("Gamepad Status: %s", services.controller_map.gamepad_connected() ? "Connected" : "Disconnected");
 					ImGui::Text("Gamepad Enabled? %s", services.controller_map.is_gamepad_input_enabled() ? "Yes" : "No");
+					ImGui::Text("Action Set: %i", services.controller_map.get_action_set());
 					ImGui::Text("Joystick Throttle: %.3f", services.controller_map.get_joystick_throttle().x);
 					ImGui::EndTabItem();
 				}
