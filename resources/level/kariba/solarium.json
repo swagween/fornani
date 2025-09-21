@@ -56,7 +56,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": true,
-      "lighting": false,
+      "lighting": true,
       "timer": false
     },
     "room_id": 510,

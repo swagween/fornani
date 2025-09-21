@@ -14,9 +14,6 @@ enum class DemonVariant { warrior, spearman };
 class Demon final : public Enemy {
 
   public:
-	Demon() = delete;
-	~Demon() override {}
-	Demon& operator=(Demon&&) = delete;
 	Demon(automa::ServiceProvider& svc, world::Map& map, int variant);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;

@@ -1,17 +1,18 @@
 
 #pragma once
 
-#include "fornani/components/CircleSensor.hpp"
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/graphics/SpriteHistory.hpp"
-#include "fornani/io/Logger.hpp"
-#include "fornani/particle/Gravitator.hpp"
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/CircleCollider.hpp"
-#include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/Direction.hpp"
-#include "fornani/utils/Shape.hpp"
+#include <fornani/components/CircleSensor.hpp>
+#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/entities/animation/AnimatedSprite.hpp>
+#include <fornani/graphics/Animatable.hpp>
+#include <fornani/graphics/SpriteHistory.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/particle/Gravitator.hpp>
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/CircleCollider.hpp>
+#include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/Direction.hpp>
+#include <fornani/utils/Shape.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -52,7 +53,7 @@ struct ProjectileSpecifications {
 
 enum class ProjectileState : std::uint8_t { initialized, destruction_initiated, destroyed, whiffed, poof, contact };
 
-class Projectile {
+class Projectile : public Animatable {
   public:
 	Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon, bool enemy);
 	void update(automa::ServiceProvider& svc, player::Player& player);
@@ -79,12 +80,12 @@ class Projectile {
 	[[nodiscard]] auto whiffed() const -> bool { return variables.state.test(ProjectileState::whiffed); }
 	[[nodiscard]] auto poofed() const -> bool { return variables.state.test(ProjectileState::poof); }
 	[[nodiscard]] auto made_contact() const -> bool { return variables.state.test(ProjectileState::contact); }
-	[[nodiscard]] auto get_position() const -> sf::Vector2f { return physical.physics.position; }
-	[[nodiscard]] auto get_velocity() const -> sf::Vector2f { return physical.physics.apparent_velocity(); }
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return physical.collider.physics.position; }
+	[[nodiscard]] auto get_velocity() const -> sf::Vector2f { return physical.collider.physics.apparent_velocity(); }
 	[[nodiscard]] auto get_destruction_point() const -> sf::Vector2f { return variables.destruction_point; }
 	[[nodiscard]] auto get_team() const -> Team { return metadata.team; }
 	[[nodiscard]] auto get_direction() const -> Direction { return physical.direction; }
-	[[nodiscard]] auto get_bounding_box() -> shape::Shape& { return physical.bounding_box; }
+	[[nodiscard]] auto get_collider() -> shape::CircleCollider& { return physical.collider; }
 	[[nodiscard]] auto can_damage() const -> bool { return damage_timer.is_almost_complete() || !persistent(); }
 
 	[[nodiscard]] auto get_chunk_id() const -> std::uint8_t { return m_chunk_id; }
@@ -113,18 +114,16 @@ class Projectile {
 		int sprite_index{};
 		int num_angles{};
 		RenderType render_type{};
-		anim::AnimatedSprite sprite;
 		sf::Vector2<int> dimensions{};
 		graphics::SpriteHistory sprite_history{};
+		vfx::SpriteRotator rotator{};
 		Direction direction{};
 	} visual;
 
 	struct {
-		shape::Shape bounding_box{};
 		Direction direction{};
 		sf::Vector2f max_dimensions{};
 		shape::CircleCollider collider{4.f};
-		components::PhysicsComponent physics{};
 		std::optional<components::CircleSensor> sensor{};
 		components::SteeringBehavior steering{};
 	} physical{};

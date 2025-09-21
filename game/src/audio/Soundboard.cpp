@@ -63,6 +63,8 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.world.test(World::breakable_hit)) { play(engine, svc, svc.sounds.get_buffer("breakable_hit"), 0.1f); }
 	if (flags.world.test(World::hard_hit)) { play(engine, svc, svc.sounds.get_buffer("hard_hit"), 0.1f, 60.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.world.test(World::projectile_hit)) { play(engine, svc, svc.sounds.get_buffer("projectile_hit"), 0.2f); }
+	if (flags.world.test(World::clink)) { play(engine, svc, svc.sounds.get_buffer("clink"), 0.2f); }
+	if (flags.world.test(World::vibration)) { play(engine, svc, svc.sounds.get_buffer("vibration")); }
 
 	if (!svc.in_game()) {
 		flags = {};
@@ -123,22 +125,24 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.lynx.test(Lynx::ping_2)) { play(engine, svc, svc.sounds.get_buffer("lynx_ping_2"), 0.1f); }
 	if (flags.lynx.test(Lynx::swipe_1)) { play(engine, svc, svc.sounds.get_buffer("lynx_swipe_1"), 0.1f); }
 	if (flags.lynx.test(Lynx::swipe_2)) { play(engine, svc, svc.sounds.get_buffer("lynx_swipe_2"), 0.1f); }
-	if (flags.lynx.test(Lynx::shing)) { play(engine, svc, svc.sounds.get_buffer("lynx_shing"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::shing)) { play(engine, svc, svc.sounds.get_buffer("lynx_shing"), 0.f, 70.f); }
 	if (flags.lynx.test(Lynx::prepare)) { play(engine, svc, svc.sounds.get_buffer("lynx_prepare")); }
-	if (flags.lynx.test(Lynx::slam)) { play(engine, svc, svc.sounds.get_buffer("lynx_slam"), 0.f, 50.f); }
-	if (flags.lynx.test(Lynx::hoah)) { play(engine, svc, svc.sounds.get_buffer("lynx_hoah"), 0.f, 50.f); }
-	if (flags.lynx.test(Lynx::defeat)) { play(engine, svc, svc.sounds.get_buffer("lynx_defeat"), 0.f, 50.f); }
-	if (flags.lynx.test(Lynx::hah)) { play(engine, svc, svc.sounds.get_buffer("lynx_hah"), 0.f, 50.f); }
-	if (flags.lynx.test(Lynx::heuh)) { play(engine, svc, svc.sounds.get_buffer("lynx_heuh"), 0.f, 50.f); }
-	if (flags.lynx.test(Lynx::hiyyah)) { play(engine, svc, svc.sounds.get_buffer("lynx_hiyyah"), 0.f, 50.f); }
-	if (flags.lynx.test(Lynx::hnnyah)) { play(engine, svc, svc.sounds.get_buffer("lynx_hnnyah"), 0.f, 50.f); }
-	if (flags.lynx.test(Lynx::huh)) { play(engine, svc, svc.sounds.get_buffer("lynx_huh"), 0.f, 50.f); }
-	if (flags.lynx.test(Lynx::hurt_1)) { play(engine, svc, svc.sounds.get_buffer("lynx_hurt_1"), 0.f, 50.f); }
-	if (flags.lynx.test(Lynx::hurt_2)) { play(engine, svc, svc.sounds.get_buffer("lynx_hurt_2"), 0.f, 50.f); }
-	if (flags.lynx.test(Lynx::hurt_3)) { play(engine, svc, svc.sounds.get_buffer("lynx_hurt_3"), 0.f, 50.f); }
-	if (flags.lynx.test(Lynx::hurt_4)) { play(engine, svc, svc.sounds.get_buffer("lynx_hurt_4"), 0.f, 50.f); }
-	if (flags.lynx.test(Lynx::huuyeah)) { play(engine, svc, svc.sounds.get_buffer("lynx_huuyeah"), 0.f, 50.f); }
-	if (flags.lynx.test(Lynx::nngyah)) { play(engine, svc, svc.sounds.get_buffer("lynx_nngyah"), 0.f, 50.f); }
+	if (flags.lynx.test(Lynx::slam)) { play(engine, svc, svc.sounds.get_buffer("lynx_slam"), 0.f, 70.f); }
+	if (flags.lynx.test(Lynx::hoah)) { play(engine, svc, svc.sounds.get_buffer("lynx_hoah"), 0.f, 70.f); }
+	if (flags.lynx.test(Lynx::defeat)) { play(engine, svc, svc.sounds.get_buffer("lynx_defeat"), 0.f, 70.f); }
+	if (flags.lynx.test(Lynx::hah)) { play(engine, svc, svc.sounds.get_buffer("lynx_hah"), 0.f, 70.f); }
+	if (flags.lynx.test(Lynx::heuh)) { play(engine, svc, svc.sounds.get_buffer("lynx_heuh"), 0.f, 70.f); }
+	if (flags.lynx.test(Lynx::hiyyah)) { play(engine, svc, svc.sounds.get_buffer("lynx_hiyyah"), 0.f, 70.f); }
+	if (flags.lynx.test(Lynx::hnnyah)) { play(engine, svc, svc.sounds.get_buffer("lynx_hnnyah"), 0.f, 70.f); }
+	if (flags.lynx.test(Lynx::huh)) { play(engine, svc, svc.sounds.get_buffer("lynx_huh"), 0.f, 70.f); }
+	if (flags.lynx.test(Lynx::hurt_1)) { play(engine, svc, svc.sounds.get_buffer("lynx_hurt_1"), 0.f); }
+	if (flags.lynx.test(Lynx::hurt_2)) { play(engine, svc, svc.sounds.get_buffer("lynx_hurt_2"), 0.f, 70.f); }
+	if (flags.lynx.test(Lynx::hurt_3)) { play(engine, svc, svc.sounds.get_buffer("lynx_hurt_3"), 0.f, 40.f); }
+	if (flags.lynx.test(Lynx::hurt_4)) { play(engine, svc, svc.sounds.get_buffer("lynx_hurt_4"), 0.f, 40.f); }
+	if (flags.lynx.test(Lynx::huuyeah)) { play(engine, svc, svc.sounds.get_buffer("lynx_huuyeah"), 0.f, 70.f); }
+	if (flags.lynx.test(Lynx::nngyah)) { play(engine, svc, svc.sounds.get_buffer("lynx_nngyah"), 0.f, 70.f); }
+	if (flags.lynx.test(Lynx::yyah)) { play(engine, svc, svc.sounds.get_buffer("lynx_yyah"), 0.f, 70.f); }
+	if (flags.lynx.test(Lynx::laugh)) { play(engine, svc, svc.sounds.get_buffer("lynx_laugh"), 0.f, 70.f); }
 
 	// npc
 	if (flags.npc.test(NPC::minigus_getit)) { play(engine, svc, svc.sounds.get_buffer("minigus_getit")); }

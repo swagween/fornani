@@ -130,7 +130,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 
 	health.update();
-	auto flash_rate = 64;
+	auto flash_rate = 32;
 	set_channel(EnemyChannel::standard);
 	if (flags.general.test(GeneralFlags::has_invincible_channel)) { flags.state.test(StateFlags::vulnerable) ? set_channel(EnemyChannel::standard) : set_channel(EnemyChannel::invincible); }
 	if (hurt_effect.running()) { set_channel((hurt_effect.get() / flash_rate) % 2 == 0 ? EnemyChannel::hurt_1 : EnemyChannel::hurt_2); }
@@ -141,7 +141,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
 	if (svc.ticker.every_x_ticks(20)) { m_random_offset = random::random_vector_float(-energy, energy); }
-	if (hitstun.running()) {
+	if (hitstun.running() && !flags.state.test(StateFlags::no_slowdown)) {
 		hitstun.update();
 		if (svc.ticker.every_x_ticks(4)) {
 		} else {
@@ -245,8 +245,8 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 	if (proj.get_team() == arms::Team::guardian) { return; }
 	if (proj.get_team() == arms::Team::beast) { return; }
 	if (flags.state.test(StateFlags::invisible)) { return; }
-	auto hit_main = proj.get_bounding_box().overlaps(collider.bounding_box);
-	auto hit_second = proj.get_bounding_box().overlaps(secondary_collider.bounding_box);
+	auto hit_main = proj.get_collider().collides_with(collider.bounding_box);
+	auto hit_second = proj.get_collider().collides_with(secondary_collider.bounding_box);
 	if (!(hit_main || hit_second)) { return; }
 	flags.state.set(enemy::StateFlags::shot);
 	auto secondary_collision = hit_second && !hit_main;

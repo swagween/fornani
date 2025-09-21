@@ -15,7 +15,10 @@ void CircleCollider::update(automa::ServiceProvider& svc) {
 	boundary.second = physics.position + bound;
 }
 
-void CircleCollider::handle_map_collision(world::Map& map) { map.handle_cell_collision(*this); }
+void CircleCollider::handle_map_collision(world::Map& map) {
+	flags.reset(CircleColliderFlags::collided);
+	map.handle_cell_collision(*this);
+}
 
 void CircleCollider::handle_collision(shape::Shape& shape, bool soft) {
 	if (!sensor.within_bounds(shape)) { return; }
@@ -34,7 +37,7 @@ void CircleCollider::handle_collision(shape::Shape& shape, bool soft) {
 		physics.position.x += circle_right_of ? abs(mtv.x) * leeway + nudge : abs(mtv.x) * -leeway - nudge;
 		physics.position.y += circle_below ? abs(mtv.y) * leeway + nudge : abs(mtv.y) * -leeway - nudge;
 	}
-	if (!soft) { vertical ? physics.zero_y() : physics.zero_x(); }
+	if (!soft) { vertical ? physics.collide({0, 1}) : physics.collide({1, 0}); }
 	flags.set(CircleColliderFlags::collided);
 	sensor.set_position(physics.position);
 }
@@ -54,5 +57,9 @@ auto CircleCollider::get_collision_result(Shape& shape) const -> sf::Vector2i {
 	}
 	return ret;
 }
+
+[[nodiscard]] auto CircleCollider::get_global_center() const -> sf::Vector2f { return physics.position; }
+
+[[nodiscard]] auto CircleCollider::get_local_center() const -> sf::Vector2f { return sensor.get_local_center(); }
 
 } // namespace fornani::shape

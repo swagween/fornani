@@ -209,7 +209,7 @@ void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 
 void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
 	if (proj.transcendent()) { return; }
-	if (proj.get_bounding_box().overlaps(bounding_box)) {
+	if (proj.get_collider().collides_with(bounding_box)) {
 		if (!proj.destruction_initiated()) {
 			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position(), physics.apparent_velocity()));
 			if (proj.get_direction().lnr == LNR::neutral) { map.effects.back().rotate(); }

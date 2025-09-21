@@ -404,6 +404,12 @@
     },
     {
       "folder": "overturned",
+      "label": "outpost.json",
+      "region": "overturned",
+      "room_id": 238
+    },
+    {
+      "folder": "overturned",
       "label": "passage.json",
       "region": "overturned",
       "room_id": 218

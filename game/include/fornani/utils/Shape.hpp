@@ -19,15 +19,15 @@ class Shape {
 
 	Vec perp(Vec edg) const;
 
-	Vec get_normalized(Vec const v);
+	Vec get_normalized(Vec const v) const;
 	Vec get_normal(Vec const v);
-	Vec project_on_axis(std::vector<Vec> const vertices, Vec const axis);
-	Vec project_circle_on_axis(Vec center, float radius, Vec const axis);
+	Vec project_on_axis(std::vector<Vec> const vertices, Vec const axis) const;
+	Vec project_circle_on_axis(Vec center, float radius, Vec const axis) const;
 	std::vector<Vec> get_vertices(Shape const& shape);
 	std::vector<sf::Vector2f> get_poles(sf::CircleShape const& circle);
 	Vec get_MTV(Shape const& obb1, Shape const& obb2);
 	bool SAT(Shape const& other);
-	bool circle_SAT(sf::CircleShape const& circle);
+	bool circle_SAT(sf::CircleShape const& circle) const;
 	sf::Vector2f circle_SAT_MTV(sf::CircleShape const& circle);
 	bool overlaps(Shape const& other) const;
 	bool overlaps(sf::Vector2f point) const;

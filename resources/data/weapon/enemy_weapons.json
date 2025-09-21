@@ -41,6 +41,7 @@
 					7.0,
 					7.0
 				],
+				"radius": 4.0,
 				"attributes": {
 					"base_damage": 1,
 					"lifespan": 1880,
@@ -100,6 +101,7 @@
 					7.0,
 					7.0
 				],
+				"radius": 4.0,
 				"attributes": {
 					"base_damage": 1,
 					"lifespan": 880,
@@ -150,6 +152,7 @@
 					11.0,
 					6.0
 				],
+				"radius": 4.0,
 				"attributes": {
 					"base_damage": 1,
 					"power": 3,
@@ -207,6 +210,7 @@
 					16.0,
 					16.0
 				],
+				"radius": 16.0,
 				"attributes": {
 					"base_damage": 2,
 					"lifespan": 880,
@@ -265,6 +269,7 @@
 					44.0,
 					44.0
 				],
+				"radius": 4.0,
 				"attributes": {
 					"base_damage": 2,
 					"lifespan": 880,
@@ -325,6 +330,7 @@
 					16.0,
 					16.0
 				],
+				"radius": 8.0,
 				"attributes": {
 					"base_damage": 1,
 					"lifespan": 600,
@@ -387,6 +393,7 @@
 					7.0,
 					7.0
 				],
+				"radius": 4.0,
 				"attributes": {
 					"base_damage": 1,
 					"lifespan": 440,
@@ -446,12 +453,13 @@
 					16.0,
 					16.0
 				],
+				"radius": 12.0,
 				"attributes": {
 					"base_damage": 1,
-					"lifespan": 600,
+					"lifespan": 500,
 					"lifespan_variance": 0,
 					"speed": 11.5,
-					"variance": 0.2,
+					"variance": 0.0,
 					"stun_time": 0.0,
 					"knockback": 0.0,
 					"transcendent": false,
@@ -459,14 +467,14 @@
 					"reflect": true,
 					"range_variance": 0.0,
 					"acceleration_factor": 0.0,
-					"dampen_factor": 0.0,
-					"gravity": 0.04,
-					"elasticity": 0.95
+					"dampen_factor": 0.998,
+					"gravity": 1.6,
+					"elasticity": 0.98
 				},
 				"animation": {
 					"num_sprites": 1,
 					"num_frames": 4,
-					"framerate": 18
+					"framerate": 14
 				}
 			}
 		}

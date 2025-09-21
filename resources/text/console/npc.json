@@ -1304,7 +1304,7 @@
               [5, 0],
               [1, 0]
             ],
-            "message": "I knew you'd find this path eventually, but I wasn't expecting you to arrive here so soon."
+            "message": "I knew you'd come traveling down this road eventually, but I wasn't expecting you to arrive here so soon."
           }
         ],
         [
@@ -1329,6 +1329,24 @@
           {
             "codes": [[12, 0]],
             "message": "Enough talking, now. It is time you prove to me why Gus couldn't take care of you himself!"
+          }
+        ]
+      ]
+    },
+    "3": {
+      "output": 2,
+      "responses": [],
+      "suite": [
+        [
+          {
+            "codes": [[5, 2]],
+            "message": "HYEAHAH!"
+          },
+          {
+            "message": "It's been a long time since I've had a real challenge like this..."
+          },
+          {
+            "message": "Bring it on!"
           }
         ]
       ]

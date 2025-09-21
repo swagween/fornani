@@ -783,6 +783,10 @@ void Map::handle_cell_collision(shape::CircleCollider& collider) {
 	}
 }
 
+void Map::clear_projectiles() {
+	for (auto& proj : active_projectiles) { proj.destroy(false); }
+}
+
 void Map::shake_camera() { flags.state.set(LevelState::camera_shake); }
 
 void Map::clear() {

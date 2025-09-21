@@ -26,6 +26,10 @@
           15,
           58
         ],
+        "start_direction": [
+          0,
+          0
+        ],
         "variant": 0
       },
       {
@@ -37,6 +41,10 @@
         "position": [
           28,
           41
+        ],
+        "start_direction": [
+          0,
+          0
         ],
         "variant": 1
       }

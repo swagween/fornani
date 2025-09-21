@@ -41,7 +41,7 @@ void SwitchBlock::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf
 void SwitchBlock::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) const {
 	if (proj.transcendent()) { return; }
 	if (m_state == SwitchBlockState::empty) { return; }
-	if (proj.get_bounding_box().overlaps(collider.bounding_box)) {
+	if (proj.get_collider().collides_with(collider.bounding_box)) {
 		if (!proj.destruction_initiated()) {
 			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position()));
 			svc.soundboard.flags.world.set(audio::World::hard_hit);

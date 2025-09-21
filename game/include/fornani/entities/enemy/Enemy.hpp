@@ -48,7 +48,7 @@ enum class GeneralFlags : std::uint8_t {
 	has_invincible_channel,
 	invincible_secondary
 };
-enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, flip, advance, simple_physics, no_shake };
+enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, flip, advance, simple_physics, no_shake, out_of_zone, no_slowdown };
 enum class Triggers : std::uint8_t { hostile, alert };
 enum class Variant : std::uint8_t { beast, soldier, elemental, worker, guardian };
 

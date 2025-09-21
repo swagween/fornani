@@ -2,10 +2,10 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/Polymorphic.hpp>
 #include <string_view>
 #include <utility>
-#include "fornani/io/Logger.hpp"
-#include "fornani/utils/Polymorphic.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -31,6 +31,8 @@ class Drawable : public sf::Drawable, Polymorphic {
 
 	[[nodiscard]] auto get_scale() const -> sf::Vector2f { return m_sprite.getScale(); }
 	[[nodiscard]] auto get_window_position() const -> sf::Vector2f { return m_sprite.getPosition(); }
+
+	sf::Sprite& get_sprite() { return m_sprite; }
 
   protected:
 	void set_texture(sf::Texture const& to) { m_sprite.setTexture(to); }

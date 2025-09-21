@@ -1,7 +1,8 @@
-#include "fornani/graphics/SpriteRotator.hpp"
+
+#include <fornani/graphics/SpriteRotator.hpp>
+#include <fornani/utils/Constants.hpp>
+#include <fornani/utils/Math.hpp>
 #include <numbers>
-#include "fornani/utils/Constants.hpp"
-#include "fornani/utils/Math.hpp"
 
 namespace fornani::vfx {
 

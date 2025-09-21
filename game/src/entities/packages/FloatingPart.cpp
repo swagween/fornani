@@ -77,7 +77,7 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 	if (shieldbox) {
 		for (auto& proj : map.active_projectiles) {
-			if (proj.get_bounding_box().overlaps(shieldbox.value())) {
+			if (proj.get_collider().collides_with(shieldbox.value())) {
 				if (!proj.destruction_initiated()) {
 					map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position()));
 					if (proj.get_direction().up_or_down()) { map.effects.back().rotate(); }

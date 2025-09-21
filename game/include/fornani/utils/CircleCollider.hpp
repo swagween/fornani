@@ -1,9 +1,9 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "Shape.hpp"
-#include "fornani/components/CircleSensor.hpp"
-#include "fornani/components/PhysicsComponent.hpp"
+#include <fornani/components/CircleSensor.hpp>
+#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/utils/Shape.hpp>
 
 #include <utility>
 
@@ -29,10 +29,12 @@ class CircleCollider {
 	void set_position(sf::Vector2f pos) { physics.position = pos; }
 
 	[[nodiscard]] auto collided() const -> bool { return flags.test(CircleColliderFlags::collided); }
-	[[nodiscard]] auto collides_with(Shape& shape) const -> bool { return sensor.within_bounds(shape); }
+	[[nodiscard]] auto collides_with(Shape const& shape) const -> bool { return sensor.within_bounds(shape); }
 	[[nodiscard]] auto get_collision_result(Shape& shape) const -> sf::Vector2i;
 	[[nodiscard]] auto position() const -> sf::Vector2f { return physics.position; }
-	[[nodiscard]] auto get_global_center() const -> sf::Vector2f { return physics.position + sensor.get_local_center() * 0.5f; }
+	[[nodiscard]] auto get_global_center() const -> sf::Vector2f;
+	[[nodiscard]] auto get_local_center() const -> sf::Vector2f;
+	[[nodiscard]] auto get_radius() const -> float { return sensor.bounds.getRadius(); }
 	[[nodiscard]] auto boundary_width() const -> float { return boundary.second.x - boundary.first.x; }
 
 	components::PhysicsComponent physics{};

@@ -14,7 +14,7 @@
 
 namespace fornani::enemy {
 
-enum class LynxState : std::uint8_t { sit, get_up, idle, jump, forward_slash, levitate, run, downward_slam, prepare_shuriken, toss_shuriken, upward_slash, triple_slash, turn, aerial_slash, prepare_slash, defeat };
+enum class LynxState : std::uint8_t { sit, get_up, idle, jump, forward_slash, levitate, run, downward_slam, prepare_shuriken, toss_shuriken, upward_slash, triple_slash, turn, aerial_slash, prepare_slash, defeat, second_phase };
 enum class LynxFlags : std::uint8_t { conversing, battle_mode, second_phase };
 
 class Lynx final : public Enemy, public npc::NPC {
@@ -29,6 +29,8 @@ class Lynx final : public Enemy, public npc::NPC {
 	[[nodiscard]] auto invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable); }
 	[[nodiscard]] auto half_health() const -> bool { return health.get_hp() < health.get_max() * 0.5f; }
 	[[nodiscard]] auto is_state(LynxState test) const -> bool { return m_state.actual == test; }
+	[[nodiscard]] auto is_levitating() const -> bool { return is_state(LynxState::levitate) || is_state(LynxState::second_phase); }
+	[[nodiscard]] auto slam_follow() const -> bool { return is_state(LynxState::downward_slam) && half_health() && Enemy::animation.get_frame_count() < 6; }
 
 	fsm::StateFunction state_function = std::bind(&Lynx::update_sit, this);
 	fsm::StateFunction update_sit();
@@ -47,6 +49,7 @@ class Lynx final : public Enemy, public npc::NPC {
 	fsm::StateFunction update_aerial_slash();
 	fsm::StateFunction update_prepare_slash();
 	fsm::StateFunction update_defeat();
+	fsm::StateFunction update_second_phase();
 
   private:
 	struct {
@@ -57,7 +60,12 @@ class Lynx final : public Enemy, public npc::NPC {
 	struct {
 		util::Cooldown run;
 		util::Cooldown post_hurt;
+		util::Cooldown start_levitate;
 	} m_cooldowns{};
+
+	struct {
+		util::Counter slam{};
+	} m_counters{};
 
 	struct {
 		std::array<entity::Attack, 3> slash{};

@@ -109,4 +109,17 @@ void PhysicsComponent::set_global_friction(float fric) {
 	air_friction = {fric, fric};
 }
 
+void PhysicsComponent::collide(sf::Vector2i direction) {
+	if (direction.x == 1) {
+		acceleration.x *= -elasticity;
+		velocity.x *= -elasticity;
+		real_velocity.x *= -elasticity;
+	}
+	if (direction.y == 1) {
+		acceleration.y *= -elasticity;
+		velocity.y *= -elasticity;
+		real_velocity.y *= -elasticity;
+	}
+}
+
 } // namespace fornani::components

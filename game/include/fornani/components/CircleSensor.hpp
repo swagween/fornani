@@ -2,11 +2,17 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Shape.hpp"
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Shape.hpp>
+
+namespace fornani::shape {
+class CircleCollider;
+}
 
 namespace fornani::components {
+
 enum class SensorState : std::uint8_t { active };
+
 class CircleSensor {
   public:
 	CircleSensor();
@@ -15,7 +21,8 @@ class CircleSensor {
 	void set_position(sf::Vector2f position);
 	sf::CircleShape bounds{};
 	sf::CircleShape drawable{};
-	bool within_bounds(shape::Shape& shape) const;
+	bool within_bounds(shape::Shape const& shape) const;
+	bool within_bounds(shape::CircleCollider const& shape) const;
 	sf::Vector2f get_MTV(shape::Shape& shape);
 
 	auto activate() -> void { state.set(SensorState::active); }

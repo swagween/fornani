@@ -12,9 +12,6 @@ enum class CasterVariant { apprentice, tyrant };
 class Caster final : public Enemy {
 
   public:
-	Caster() = delete;
-	~Caster() override {}
-	Caster& operator=(Caster&&) = delete;
 	Caster(automa::ServiceProvider& svc, world::Map& map, int variant);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;

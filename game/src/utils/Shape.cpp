@@ -51,18 +51,15 @@ void Shape::set_position(Vec const new_pos) {
 	}
 }
 
-// Returns normalized vector
-Shape::Vec Shape::get_normalized(Vec const v) {
+Shape::Vec Shape::get_normalized(Vec const v) const {
 	float length = util::magnitude(v);
 	if (length == 0.f) { return Vec(); }
 	return Vec(v.x / length, v.y / length);
 }
 
-// Returns right hand perpendicular vector
 Shape::Vec Shape::get_normal(Vec const v) { return Vec(-v.y, v.x); }
 
-// Find minimum and maximum projections of each vertex on the axis
-Shape::Vec Shape::project_on_axis(std::vector<Vec> const vertices, Vec const axis) {
+Shape::Vec Shape::project_on_axis(std::vector<Vec> const vertices, Vec const axis) const {
 	float min = std::numeric_limits<float>::infinity();
 	float max = -std::numeric_limits<float>::infinity();
 	for (auto& vertex : vertices) {
@@ -73,7 +70,7 @@ Shape::Vec Shape::project_on_axis(std::vector<Vec> const vertices, Vec const axi
 	return Vec(min, max);
 }
 
-Shape::Vec Shape::project_circle_on_axis(Vec center, float radius, Vec const axis) {
+Shape::Vec Shape::project_circle_on_axis(Vec center, float radius, Vec const axis) const {
 	float projection = dot_product(center, axis);
 	return Vec(projection - radius, projection + radius);
 }
@@ -191,7 +188,7 @@ bool Shape::SAT(Shape const& other) {
 	return true;
 }
 
-bool Shape::circle_SAT(sf::CircleShape const& circle) {
+bool Shape::circle_SAT(sf::CircleShape const& circle) const {
 	auto normals = get_normals();
 	for (auto& axis : normals) {
 		auto proj1 = project_on_axis(vertices, axis);

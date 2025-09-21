@@ -44,8 +44,8 @@ void Breakable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 void Breakable::on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile& proj, int power) {
 	if (proj.transcendent()) { return; }
 	if (destroyed()) { return; }
-	if (!collider.vicinity.overlaps(proj.get_bounding_box())) { return; }
-	if (proj.get_bounding_box().overlaps(collider.bounding_box)) {
+	if (!proj.get_collider().collides_with(collider.vicinity)) { return; }
+	if (proj.get_collider().collides_with(collider.bounding_box)) {
 		if (!proj.destruction_initiated()) {
 			state -= power == 1 ? static_cast<int>(proj.get_power()) : power;
 			energy = hit_energy;

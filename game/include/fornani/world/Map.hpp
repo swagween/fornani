@@ -93,6 +93,7 @@ class Map {
 	bool check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	sf::Vector2i get_circle_collision_result(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	void handle_cell_collision(shape::CircleCollider& collider);
+	void clear_projectiles();
 	void shake_camera();
 	void clear();
 	void wrap(sf::Vector2f& position) const;

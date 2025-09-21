@@ -41,7 +41,7 @@ void Destructible::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 void Destructible::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) const {
 	if (detonated()) { return; }
 	if (proj.transcendent()) { return; }
-	if (proj.get_bounding_box().overlaps(collider.bounding_box)) {
+	if (proj.get_collider().collides_with(collider.bounding_box)) {
 		if (!proj.destruction_initiated()) {
 			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position()));
 			if (proj.get_direction().lnr == LNR::neutral) { map.effects.back().rotate(); }
