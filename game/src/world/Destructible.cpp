@@ -1,3 +1,4 @@
+
 #include "fornani/world/Destructible.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"
@@ -13,23 +14,29 @@ Destructible::Destructible(automa::ServiceProvider& svc, dj::Json const& in, int
 	collider.sync_components();
 	sprite.setScale(constants::f_scale_vec);
 	sprite.setTextureRect(sf::IntRect{{style_id * constants::i_cell_resolution, 0}, constants::i_resolution_vec});
+	in["inverse"].as_bool() ? m_attributes.set(DestructibleAttributes::inverse) : m_attributes.reset(DestructibleAttributes::inverse);
+	m_state = in["inverse"].as_bool() ? 0 : 1;
 }
 
+auto Destructible::ignore_updates() const -> bool { return is_destroyed() || is_unrevealed(); }
+
+auto Destructible::delete_me() const -> bool { return is_destroyed(); }
+
 void Destructible::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
-	if (detonated()) { return; }
-	if (svc.data.block_is_destroyed(quest_id)) { flags.set(DestroyerState::detonated); }
-	if (flags.test(DestroyerState::detonated)) {
-		svc.data.destroy_block(quest_id);
-		map.effects.push_back(entity::Effect(svc, "small_explosion", get_world_position()));
+	auto state = svc.data.get_destructible_state(quest_id);
+	if (state != m_state && state != -1) {
+		m_state = state;
+		map.effects.push_back(entity::Effect(svc, "small_explosion", get_global_center()));
 		svc.soundboard.flags.world.set(audio::World::block_toggle);
 	}
+	if (ignore_updates()) { return; }
 	player.collider.handle_collider_collision(collider);
 	for (auto& e : map.enemy_catalog.enemies) { e->get_collider().handle_collider_collision(collider); }
 	for (auto& c : map.chests) { c.get_collider().handle_collider_collision(collider); }
 }
 
 void Destructible::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (detonated()) { return; }
+	if (ignore_updates()) { return; }
 	sprite.setPosition(collider.physics.position - cam);
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);
@@ -39,7 +46,7 @@ void Destructible::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 }
 
 void Destructible::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) const {
-	if (detonated()) { return; }
+	if (ignore_updates()) { return; }
 	if (proj.transcendent()) { return; }
 	if (proj.get_collider().collides_with(collider.bounding_box)) {
 		if (!proj.destruction_initiated()) {

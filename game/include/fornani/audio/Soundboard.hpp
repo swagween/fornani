@@ -75,7 +75,7 @@ enum class Minigus : std::uint8_t {
 	exhale
 };
 
-enum class Lynx : std::uint8_t { prepare, shing, ping_1, ping_2, swipe_1, swipe_2, slam, hoah, defeat, hah, heuh, hiyyah, hnnyah, huh, hurt_1, hurt_2, hurt_3, hurt_4, huuyeah, nngyah, yyah, laugh };
+enum class Lynx : std::uint8_t { prepare, shing, ping_1, ping_2, swipe_1, swipe_2, slam, hoah, defeat, hah, heuh, hiyyah, hnnyah, huh, hurt_1, hurt_2, hurt_3, hurt_4, huuyeah, nngyah, yyah, laugh, giggle };
 
 enum class NPC : std::uint8_t { minigus_greatidea, minigus_dontlookatme, minigus_laugh, minigus_getit, minigus_pizza, minigus_grunt };
 

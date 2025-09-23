@@ -129,7 +129,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
 	}
 
-	for (auto& entry : entities["destructibles"].as_array()) { destroyers.push_back(Destructible(svc, entry)); }
+	for (auto& entry : entities["destructibles"].as_array()) { destroyers.push_back(Destructible(svc, entry, style_id)); }
 
 	for (auto& entry : entities["enemies"].as_array()) {
 		int id{};
@@ -357,7 +357,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
 	std::erase_if(effects, [](auto& e) { return e.done(); });
 	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
-	std::erase_if(destroyers, [](auto const& d) { return d.detonated(); });
+	std::erase_if(destroyers, [](auto const& d) { return d.delete_me(); });
 	std::erase_if(npcs, [](auto const& n) { return n->piggybacking(); });
 	enemy_catalog.update();
 

@@ -230,7 +230,12 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	for (auto& door : unlocked_doors) { save["unlocked_doors"].push_back(door); }
 	for (auto& chest : opened_chests) { save["opened_chests"].push_back(chest); }
 	for (auto& s : activated_switches) { save["activated_switches"].push_back(s); }
-	for (auto& block : destroyed_blocks) { save["destroyed_blocks"].push_back(block); }
+	for (auto& block : destructible_states) {
+		auto state = dj::Json{};
+		state.push_back({block.first});
+		state.push_back({block.second});
+		save["destroyed_blocks"].push_back(state);
+	}
 	for (auto& i : destroyed_inspectables) { save["destroyed_inspectables"].push_back(i); }
 	for (auto& q : quest_progressions) {
 		auto out_quest = dj::Json::empty_array();
@@ -321,7 +326,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	discovered_rooms.clear();
 	unlocked_doors.clear();
 	opened_chests.clear();
-	destroyed_blocks.clear();
+	destructible_states.clear();
 	activated_switches.clear();
 	destroyed_inspectables.clear();
 	quest_progressions.clear();
@@ -335,7 +340,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	for (auto& door : save["unlocked_doors"].as_array()) { unlocked_doors.push_back(door.as<int>()); }
 	for (auto& chest : save["opened_chests"].as_array()) { opened_chests.push_back(chest.as<int>()); }
 	for (auto& s : save["activated_switches"].as_array()) { activated_switches.push_back(s.as<int>()); }
-	for (auto& block : save["destroyed_blocks"].as_array()) { destroyed_blocks.push_back(block.as<int>()); }
+	for (auto& block : save["destroyed_blocks"].as_array()) { destructible_states.push_back(std::make_pair(block[0].as<int>(), block[1].as<int>())); }
 	for (auto& inspectable : save["destroyed_inspectables"].as_array()) { destroyed_inspectables.push_back(inspectable.as<int>()); }
 	for (auto& q : save["quest_progressions"].as_array()) {
 		auto type = q[0].as<int>();
@@ -539,9 +544,15 @@ void DataManager::activate_switch(int id) {
 	if (!switch_is_activated(id)) { activated_switches.push_back(id); }
 }
 
-void DataManager::destroy_block(int id) {
-	if (std::find(destroyed_blocks.begin(), destroyed_blocks.end(), id) != destroyed_blocks.end()) { return; }
-	destroyed_blocks.push_back(id);
+void DataManager::increment_destructible_state(int id, bool inverse) {
+	for (auto [i, d] : std::views::enumerate(destructible_states)) {
+		if (d.first == id) {
+			d.second = std::clamp(d.second + 1, 0, 3);
+			return;
+		}
+	}
+	auto state = inverse ? 1 : 2;
+	destructible_states.push_back({id, inverse});
 }
 
 void DataManager::destroy_inspectable(int id) { destroyed_inspectables.push_back(id); }
@@ -609,13 +620,6 @@ bool DataManager::switch_is_activated(int id) const {
 	return false;
 }
 
-bool DataManager::block_is_destroyed(int id) const {
-	for (auto& b : destroyed_blocks) {
-		if (b == id) { return true; }
-	}
-	return false;
-}
-
 bool DataManager::inspectable_is_destroyed(int id) const {
 	for (auto& i : destroyed_inspectables) {
 		if (i == id) { return true; }
@@ -635,6 +639,13 @@ bool DataManager::enemy_is_fallen(int room_id, int id) const {
 		if (enemy.code.first == room_id && enemy.code.second == id) { return true; }
 	}
 	return false;
+}
+
+int DataManager::get_destructible_state(int id) const {
+	for (auto [i, d] : std::views::enumerate(destructible_states)) {
+		if (d.first == id) { return d.second; }
+	}
+	return -1;
 }
 
 void DataManager::load_controls(config::ControllerMap& controller) {

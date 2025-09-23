@@ -1323,9 +1323,7 @@
           }
         ],
         [
-          {
-            "message": "To teach you a lesson I learned long ago."
-          },
+          { "codes": [[9, 25702]], "message": "To teach you a lesson I learned long ago." },
           {
             "codes": [[12, 0]],
             "message": "Enough talking, now. It is time you prove to me why Gus couldn't take care of you himself!"
@@ -1339,13 +1337,14 @@
       "suite": [
         [
           {
-            "codes": [[5, 2]],
+            "codes": [[5, 2, 1]],
             "message": "HYEAHAH!"
           },
           {
             "message": "It's been a long time since I've had a real challenge like this..."
           },
           {
+            "codes": [[5, 3, 1]],
             "message": "Bring it on!"
           }
         ]
@@ -1357,9 +1356,14 @@
       "suite": [
         [
           {
+            "codes": [[9, 25703, 1]],
             "message": "Augh..."
           },
           {
+            "codes": [
+              [9, 25701],
+              [9, 25702]
+            ],
             "message": "I have failed..."
           }
         ]

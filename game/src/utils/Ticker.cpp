@@ -29,9 +29,17 @@ void Ticker::calculate_fps() {
 	seconds_passed = Sec::zero();
 }
 
-void Ticker::slow_down(int time) { slowdown.start(time); }
+void Ticker::slow_down(int time, float target, float rate) {
+	slowdown.start(time);
+	slowdown_target = target;
+	slowdown_rate = rate;
+}
 
-void Ticker::freeze_frame(int time) { freezeframe.start(time); }
+void Ticker::freeze_frame(int time, float target) {
+	freezeframe.start(time);
+	slowdown_target = target;
+	slowdown_rate = 0.1f;
+}
 
 void Ticker::set_time(Sec time) {
 	in_game_seconds_passed = time;
@@ -46,4 +54,4 @@ void Ticker::reset_dt() {
 	dt_scalar = 1.f;
 }
 
-} // namespace util
+} // namespace fornani::util

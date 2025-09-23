@@ -1,24 +1,6 @@
 {
   "entities": {
-    "inspectables": [],
     "portals": [
-      {
-        "activate_on_contact": true,
-        "already_open": false,
-        "destination_id": 214,
-        "dimensions": [
-          4,
-          1
-        ],
-        "id": 0,
-        "key_id": 0,
-        "locked": false,
-        "position": [
-          22,
-          0
-        ],
-        "source_id": 216
-      },
       {
         "activate_on_contact": true,
         "already_open": false,
@@ -33,6 +15,23 @@
         "position": [
           6,
           15
+        ],
+        "source_id": 216
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "destination_id": 214,
+        "dimensions": [
+          4,
+          1
+        ],
+        "id": 0,
+        "key_id": 0,
+        "locked": false,
+        "position": [
+          23,
+          0
         ],
         "source_id": 216
       }
@@ -72,8 +71,8 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
-      "environmental_randomness": false,
+      "day_night_shift": true,
+      "environmental_randomness": true,
       "lighting": false,
       "timer": false
     },
@@ -2178,37 +2177,6 @@
         96,
         96,
         96,
-        0,
-        0,
-        0,
-        0,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
         96,
         0,
         0,
@@ -2247,6 +2215,37 @@
         0,
         0,
         96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        0,
+        0,
+        0,
+        0,
+        0,
         96,
         96,
         96,

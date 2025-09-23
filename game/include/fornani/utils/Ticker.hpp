@@ -36,10 +36,10 @@ class Ticker {
 		ft = Sec{tick_rate};
 
 		if (!flags.test(TickerFlags::forced_slowdown)) {
-			if (slowdown.running()) { dt_scalar -= 0.05f; }
-			if (slowdown.is_complete()) { dt_scalar += 0.05f; }
-			dt_scalar = ccm::ext::clamp(dt_scalar, slowdown_rate, 1.f);
-			if (freezeframe.running()) { dt_scalar = 0.1f; }
+			if (slowdown.running()) { dt_scalar -= slowdown_rate; }
+			if (slowdown.is_complete()) { dt_scalar += slowdown_rate; }
+			dt_scalar = ccm::ext::clamp(dt_scalar, slowdown_target, 1.f);
+			if (freezeframe.running()) { dt_scalar = slowdown_target; }
 		}
 
 		new_time = Clk::now();
@@ -77,8 +77,8 @@ class Ticker {
 	void start_frame();
 	void end_frame();
 	void calculate_fps();
-	void slow_down(int time);
-	void freeze_frame(int time);
+	void slow_down(int time, float target = 0.2f, float rate = 0.05f);
+	void freeze_frame(int time, float rate = 0.1f);
 	void set_time(Sec time);
 	void scale_dt();
 	void reset_dt();
@@ -127,7 +127,8 @@ class Ticker {
 	std::deque<Sec> frame_list{};
 	BitFlags<TickerFlags> flags{};
 	BitFlags<Period> periods{};
-	float slowdown_rate{0.2f};
+	float slowdown_target{};
+	float slowdown_rate{};
 	Cooldown slowdown{};
 	Cooldown freezeframe{};
 };

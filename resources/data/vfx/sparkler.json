@@ -57,6 +57,23 @@
 		"color": "fire"
 	},
 
+	"portrait_sparkle": {
+		"rate": 12.0,
+		"volatility": 0.7,
+		"wobble": 0.03,
+		"frequency": 0.005,
+		"speed": 0.3,
+		"lifespan": 260,
+		"lifespan_variance": 195,
+		"animation": {
+			"label": "sparkle",
+			"variants": 5,
+			"num_frames": 8,
+			"framerate": 18,
+			"dimensions": [ 9, 9 ]
+		}
+	},
+
 	"lynx_magic": {
 		"rate": 6.0,
 		"volatility": 0.7,

@@ -9,7 +9,7 @@ Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<
 	animation.set_params(idle);
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};
-	collider.flags.general.set(shape::General::complex);
+	// collider.flags.general.set(shape::General::complex);
 	beam.get().set_team(arms::Team::beast);
 	directions.actual = Direction(start_direction);
 }
@@ -29,6 +29,9 @@ void Beamstalk::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 	bp.y -= 16.f;
 	beam.get().set_barrel_point(bp);
 
+	secondary_collider.set_position(collider.physics.position);
+	secondary_collider.dimensions = collider.dimensions;
+	secondary_collider.update(svc);
 	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
 		m_services->soundboard.flags.beamstalk.set(audio::Beamstalk::hurt);
 		hurt_effect.start(128);

@@ -22,7 +22,8 @@ namespace fornani::world {
 
 class Map;
 
-enum class DestroyerState : std::uint8_t { detonated };
+enum class DestructibleState : std::uint8_t { unrevealed, solid, destroyed };
+enum class DestructibleAttributes : std::uint8_t { inverse };
 
 class Destructible : public IWorldPositionable {
   public:
@@ -31,12 +32,19 @@ class Destructible : public IWorldPositionable {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile& proj) const;
 	shape::Shape& get_bounding_box();
-	[[nodiscard]] auto detonated() const -> bool { return flags.test(DestroyerState::detonated); }
+
+	[[nodiscard]] auto is_inverse() const -> bool { return m_attributes.test(DestructibleAttributes::inverse); }
+	[[nodiscard]] auto is_unrevealed() const -> bool { return static_cast<DestructibleState>(m_state) == DestructibleState::unrevealed; }
+	[[nodiscard]] auto is_solid() const -> bool { return static_cast<DestructibleState>(m_state) == DestructibleState::solid; }
+	[[nodiscard]] auto is_destroyed() const -> bool { return static_cast<DestructibleState>(m_state) == DestructibleState::destroyed; }
+	[[nodiscard]] auto ignore_updates() const -> bool;
+	[[nodiscard]] auto delete_me() const -> bool;
 
   private:
 	int quest_id{};
 	shape::Collider collider{};
-	util::BitFlags<DestroyerState> flags{};
+	int m_state{};
+	util::BitFlags<DestructibleAttributes> m_attributes{};
 	sf::Sprite sprite;
 };
 

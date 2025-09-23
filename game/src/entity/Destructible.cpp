@@ -17,11 +17,20 @@ Destructible::Destructible(automa::ServiceProvider& svc, int id) : Entity(svc, "
 
 std::unique_ptr<Entity> Destructible::clone() const { return std::make_unique<Destructible>(*this); }
 
-void Destructible::serialize(dj::Json& out) { Entity::serialize(out); }
+void Destructible::serialize(dj::Json& out) {
+	Entity::serialize(out);
+	out["inverse"] = m_inverse;
+}
 
-void Destructible::unserialize(dj::Json const& in) { Entity::unserialize(in); }
+void Destructible::unserialize(dj::Json const& in) {
+	Entity::unserialize(in);
+	m_inverse = in["inverse"].as_bool();
+}
 
-void Destructible::expose() { Entity::expose(); }
+void Destructible::expose() {
+	Entity::expose();
+	ImGui::Checkbox("Inverse", &m_inverse);
+}
 
 void Destructible::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});

@@ -15,7 +15,7 @@ constexpr auto walljump_force_v = 8.6f;
 
 Player::Player(automa::ServiceProvider& svc)
 	: arsenal(svc), m_services(&svc), controller(svc, *this), animation(*this), sprite{svc.assets.get_texture("nani")}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},
-	  m_directions{.desired{LR::left}, .actual{LR::right}}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, collider{player_dimensions_v}, m_sprite_shake{80}, m_hurt_cooldown{64} {
+	  m_directions{.desired{LR::left}, .actual{LR::right}}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, collider{player_dimensions_v}, m_sprite_shake{40}, m_hurt_cooldown{64} {
 	sprite.setScale(constants::f_scale_vec);
 	svc.data.load_player_params(*this);
 
@@ -181,7 +181,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	static auto shake_offset = sf::Vector2f{};
 	if (m_sprite_shake.running()) {
 		auto shake_me = m_sprite_shake.get() % 4 == 0;
-		shake_offset = shake_me ? random::random_vector_float(-6.f, 6.f) : shake_offset;
+		shake_offset = shake_me ? random::random_vector_float(-4.f, 4.f) : shake_offset;
 	} else {
 		shake_offset = {};
 	}
@@ -419,7 +419,8 @@ void Player::hurt(float amount, bool force) {
 	if (!health.invincible() || force) {
 		m_services->music_player.filter_fade_in(80.f, 40.f, 32);
 		m_services->ambience_player.set_balance(1.f);
-		m_services->ticker.slow_down(32);
+		m_services->ticker.freeze_frame(12 * std::min(static_cast<int>(amount), 3));
+		m_sprite_shake.start();
 		m_hurt_cooldown.start();
 		health.inflict(amount, force);
 		health_indicator.add(-amount);

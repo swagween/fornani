@@ -30,7 +30,7 @@
 				"automatic": false,
 				"ammo": 4,
 				"reload": 260,
-				"cooldown_time": 30,
+				"cooldown_time": 16,
 				"recoil": 0.0
 			}
 		},
@@ -112,7 +112,7 @@
 				"dimensions": [ 12.0, 12.0 ],
 				"radius": 4.0,
 				"attributes": {
-					"base_damage": 10,
+					"base_damage": 12,
 					"power": 3,
 					"lifespan": 60,
 					"lifespan_variance": 0,

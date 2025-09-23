@@ -1,10 +1,11 @@
 
 #pragma once
 
+#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/graphics/Drawable.hpp>
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/components/SteeringBehavior.hpp"
-#include "fornani/utils/BitFlags.hpp"
+#include <fornani/particle/Sparkler.hpp>
+#include <fornani/utils/BitFlags.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -28,6 +29,8 @@ class Portrait : public Drawable {
 	void bring_in();
 	void send_out();
 	void set_emotion(int new_emotion);
+	void add_sparkler(std::string_view tag);
+	void remove_sparkler();
 
 	[[nodiscard]] auto get_emotion() const -> int { return m_emotion; }
 
@@ -41,6 +44,10 @@ class Portrait : public Drawable {
 	sf::Vector2f position{};
 	sf::Vector2f start_position{};
 	sf::Vector2f end_position{};
+
+	std::optional<vfx::Sparkler> m_sparkler{};
+
+	automa::ServiceProvider* m_services;
 
 	components::PhysicsComponent m_physics{};
 	components::SteeringBehavior m_steering{};

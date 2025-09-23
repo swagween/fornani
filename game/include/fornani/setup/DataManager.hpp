@@ -63,7 +63,7 @@ class DataManager final {
 	void open_chest(int id);
 	void unlock_door(int id);
 	void activate_switch(int id);
-	void destroy_block(int id);
+	void increment_destructible_state(int id, bool inverse = false);
 	void destroy_inspectable(int id);
 	void push_quest(util::QuestKey key);
 	void set_npc_location(int npc_id, int room_id);
@@ -76,10 +76,11 @@ class DataManager final {
 	bool door_is_unlocked(int id) const;
 	bool chest_is_open(int id) const;
 	bool switch_is_activated(int id) const;
-	bool block_is_destroyed(int id) const;
 	bool inspectable_is_destroyed(int id) const;
 	bool room_discovered(int id) const;
 	bool enemy_is_fallen(int room_id, int id) const;
+
+	int get_destructible_state(int id) const;
 
 	// support user-defined control mapping
 	void load_controls(config::ControllerMap& controller);
@@ -161,7 +162,7 @@ class DataManager final {
 	std::vector<int> opened_chests{};
 	std::vector<int> unlocked_doors{};
 	std::vector<int> activated_switches{};
-	std::vector<int> destroyed_blocks{};
+	std::vector<std::pair<int, int>> destructible_states{};
 	std::vector<int> destroyed_inspectables{};
 	std::vector<util::QuestKey> quest_progressions{};
 

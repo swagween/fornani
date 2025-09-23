@@ -143,6 +143,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.lynx.test(Lynx::nngyah)) { play(engine, svc, svc.sounds.get_buffer("lynx_nngyah"), 0.f, 70.f); }
 	if (flags.lynx.test(Lynx::yyah)) { play(engine, svc, svc.sounds.get_buffer("lynx_yyah"), 0.f, 70.f); }
 	if (flags.lynx.test(Lynx::laugh)) { play(engine, svc, svc.sounds.get_buffer("lynx_laugh"), 0.f, 70.f); }
+	if (flags.lynx.test(Lynx::giggle)) { play(engine, svc, svc.sounds.get_buffer("lynx_giggle"), 0.f, 70.f); }
 
 	// npc
 	if (flags.npc.test(NPC::minigus_getit)) { play(engine, svc, svc.sounds.get_buffer("minigus_getit")); }

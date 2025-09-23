@@ -3,7 +3,7 @@
     "portals": [
       {
         "activate_on_contact": true,
-        "already_open": false,
+        "already_open": true,
         "destination_id": 227,
         "dimensions": [
           1,
@@ -51,19 +51,6 @@
           22
         ],
         "source_id": 225
-      }
-    ],
-    "save_point": [
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 225,
-        "position": [
-          94,
-          21
-        ]
       }
     ]
   },
