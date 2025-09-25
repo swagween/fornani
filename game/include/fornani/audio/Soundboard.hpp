@@ -22,7 +22,7 @@ enum class Pioneer : std::uint8_t { select, click, back, open, close, slot, chai
 enum class Console : std::uint8_t { next, done, shift, select, speech, menu_open };
 enum class World : std::uint8_t { load, save, chest, breakable_shatter, breakable_hit, hard_hit, thud, small_crash, switch_press, block_toggle, wall_hit, soft_tap, pushable_move, door_open, door_unlock, projectile_hit, clink, vibration };
 enum class Item : std::uint8_t { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip, vendor_sale };
-enum class Player : std::uint8_t { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll };
+enum class Player : std::uint8_t { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll, wallslide };
 enum class Weapon : std::uint8_t { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, plasmer, underdog, peckett_710 };
 enum class Arms : std::uint8_t { reload };
 enum class Transmission : std::uint8_t { statics };
@@ -126,8 +126,9 @@ class Soundboard {
   private:
 	void repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset = 0.f, float attenuation = 1.f, sf::Vector2f distance = {});
 	void randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol = 100.f, float attenuation = 1.f, sf::Vector2f distance = {}, bool wait_until_over = false);
-	void simple_repeat(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label);
-	void stop(std::string const& label);
+	void simple_repeat(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label, int fade = 16);
+	void stop(std::string_view label);
+	void fade_out(std::string_view label);
 
 	std::vector<Sound> sound_pool{};
 	float m_volume_multiplier{0.5f};

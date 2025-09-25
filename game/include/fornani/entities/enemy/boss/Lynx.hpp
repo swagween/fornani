@@ -84,6 +84,7 @@ class Lynx final : public Enemy, public npc::NPC {
 		util::Cooldown run;
 		util::Cooldown post_hurt;
 		util::Cooldown post_shuriken_toss;
+		util::Cooldown post_levitate;
 		util::Cooldown start_levitate;
 		util::Cooldown throw_shuriken;
 	} m_cooldowns{};
@@ -117,9 +118,6 @@ class Lynx final : public Enemy, public npc::NPC {
 
 	sf::Vector2f m_player_target{};
 	sf::Vector2f m_home{};
-
-	std::unordered_map<std::string, anim::Parameters> m_params;
-	anim::Parameters const& get_params(std::string const& key);
 };
 
 } // namespace fornani::enemy

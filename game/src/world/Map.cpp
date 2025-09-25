@@ -16,8 +16,7 @@
 namespace fornani::world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player)
-	: player(&player), enemy_catalog(svc), transition(svc.window->f_screen_dimensions(), 96), bed_transition(svc.window->f_screen_dimensions(), 192), soft_reset(svc.window->f_screen_dimensions(), 64), m_services(&svc),
-	  cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(2)}} {}
+	: player(&player), enemy_catalog(svc), transition(svc.window->f_screen_dimensions(), 96), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(2)}} {}
 
 void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number) {
 
@@ -403,7 +402,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
 	for (auto& destroyer : destroyers) { destroyer.update(svc, *this, *player); }
 	for (auto& checkpoint : checkpoints) { checkpoint.update(svc, *this, *player); }
-	for (auto& bed : beds) { bed.update(svc, *this, console, *player, bed_transition); }
+	for (auto& bed : beds) { bed.update(svc, *this, console, *player, transition); }
 	for (auto& breakable : breakables) { breakable.update(svc, *player); }
 	for (auto& pushable : pushables) {
 		pushable.register_chunk(get_chunk_id_from_position(pushable.collider.get_center()));
@@ -415,8 +414,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& pl : point_lights) { pl.update(); }
 	player->handle_map_collision(*this);
 	if (cooldowns.loading.is_complete()) { transition.update(*player); }
-	if (cooldowns.loading.is_complete()) { bed_transition.update(*player); }
-	soft_reset.update(*player);
 	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
 	// if (save_point) { save_point->update(svc, *player, console); }
 	if (rain) { rain.value().update(svc, *this); }
@@ -443,8 +440,9 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 
 	if (svc.state_controller.actions.test(automa::Actions::retry)) { flags.state.set(LevelState::game_over); }
 	if (!console && flags.state.test(LevelState::game_over)) {
-		transition.start();
-		if (transition.is_done()) {
+		if (!flags.state.test(LevelState::transitioning)) { transition.start(); }
+		flags.state.set(LevelState::transitioning);
+		if (transition.is(graphics::TransitionState::black)) {
 			player->start_over();
 			svc.state_controller.actions.set(automa::Actions::player_death);
 			svc.state_controller.actions.set(automa::Actions::trigger);

@@ -17,6 +17,7 @@ class Dojo final : public GameState {
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
+	std::optional<std::reference_wrapper<world::Map>> get_map() override { return map; }
 	void bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current = false);
 	void acquire_item(ServiceProvider& svc, player::Player& player, int modifier);
 	void acquire_gun(ServiceProvider& svc, player::Player& player, int modifier);

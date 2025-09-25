@@ -19,7 +19,7 @@ PlayerAnimation::PlayerAnimation(Player& plr)
 							   {"between_push", {85, 1, 2 * rate, 0}},
 							   {"push", {86, 4, 5 * rate, -1}},
 							   {"rise", {40, 4, 6 * rate, 0}},
-							   {"walljump", {40, 4, 6 * rate, 0}},
+							   {"walljump", {90, 6, 6 * rate, 0}},
 							   {"suspend", {30, 3, 7 * rate, -1}},
 							   {"fall", {62, 4, 5 * rate, -1}},
 							   {"stop", {74, 2, 4 * rate, 0}},
@@ -773,7 +773,6 @@ fsm::StateFunction player::PlayerAnimation::update_sleep() {
 	m_player->flags.state.reset(State::show_weapon);
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();
-	NANI_LOG_DEBUG(m_logger, "zzz...");
 	if (m_sleep_timer.is_almost_complete()) { request(AnimState::wake_up); }
 	if (change_state(AnimState::wake_up, get_params("wake_up"), true)) {
 		NANI_LOG_DEBUG(m_logger, "Woke up!");

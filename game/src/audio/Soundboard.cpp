@@ -195,6 +195,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.player.test(Player::slide)) { play(engine, svc, svc.sounds.get_buffer("nani_slide"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.player.test(Player::walljump)) { play(engine, svc, svc.sounds.get_buffer("nani_walljump"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.player.test(Player::roll)) { play(engine, svc, svc.sounds.get_buffer("nani_roll"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	flags.player.test(Player::wallslide) ? simple_repeat(engine, svc.sounds.get_buffer("nani_wallslide"), "nani_wallslide", 32) : fade_out("nani_wallslide");
 	// steps
 	if (flags.step.test(Step::basic)) { play(engine, svc, svc.sounds.get_buffer("nani_steps"), 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.step.test(Step::grass)) { play(engine, svc, svc.sounds.get_buffer("nani_steps_grass"), 0.3f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
@@ -227,18 +228,25 @@ void Soundboard::play(capo::IEngine& engine, automa::ServiceProvider& svc, capo:
 	frequency != 0 ? repeat(svc, sound_pool.back(), frequency, random_pitch_offset, attenuation, distance) : randomize(svc, sound_pool.back(), random_pitch_offset, vol, attenuation, distance);
 }
 
-void audio::Soundboard::simple_repeat(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label) {
+void Soundboard::simple_repeat(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label, int fade) {
 	bool already_playing{};
 	for (auto& sd : sound_pool) {
 		if (sd.get_label() == label) { already_playing = true; }
 	}
 	if (!already_playing) {
-		sound_pool.push_back(Sound(engine, buffer, label, 0, 16, m_volume_multiplier));
+		sound_pool.push_back(Sound(engine, buffer, label, 0, 16, m_volume_multiplier, fade));
+		sound_pool.back().set_fading(true);
 		sound_pool.back().play(true);
 	}
 }
 
-void audio::Soundboard::stop(std::string const& label) {
+void Soundboard::fade_out(std::string_view label) {
+	for (auto& s : sound_pool) {
+		if (s.get_label() == label) { s.fade_out(); }
+	}
+}
+
+void Soundboard::stop(std::string_view label) {
 	std::erase_if(sound_pool, [label](auto const& s) { return s.get_label() == label; });
 }
 

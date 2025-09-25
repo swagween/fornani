@@ -44,22 +44,22 @@ void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::
 	collider.update(svc);
 	handle_collision(player.collider);
 	if (attributes.test(SpikeAttributes::soft_reset)) {
-		if (map.soft_reset.is_done()) { player.controller.unrestrict(); }
-		if (soft_reset && map.soft_reset.is_done()) {
+		if (map.transition.is(graphics::TransitionState::black)) { player.controller.unrestrict(); }
+		if (soft_reset && map.transition.is(graphics::TransitionState::black)) {
 			player.set_position(map.last_checkpoint());
 			player.collider.physics.zero();
 			player.controller.prevent_movement();
 			player.controller.restrict_movement();
-			map.soft_reset.end();
+			map.transition.end();
 			soft_reset = false;
 		}
-		if (player.hurtbox.overlaps(hitbox) && map.soft_reset.not_started() && !player.invincible()) {
+		if (player.hurtbox.overlaps(hitbox) && map.transition.is(graphics::TransitionState::inactive) && !player.invincible()) {
 			player.hurt();
 			player.freeze_position();
 			player.shake_sprite();
 			if (!player.is_dead()) {
 				soft_reset = true;
-				map.soft_reset.start();
+				map.transition.start();
 			}
 		}
 	} else {

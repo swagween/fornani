@@ -2,9 +2,9 @@
 #pragma once
 
 #include <fornani/automa/Option.hpp>
+#include <fornani/gui/console/Console.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/graphics/Background.hpp"
-#include <fornani/gui/console/Console.hpp>
 #include "fornani/gui/HUD.hpp"
 #include "fornani/gui/InventoryWindow.hpp"
 #include "fornani/gui/PauseWindow.hpp"
@@ -38,6 +38,7 @@ class GameState : public UniquePolymorphic {
 	virtual void tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine);
 	virtual void frame_update([[maybe_unused]] ServiceProvider& svc) {}
 	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win) {}
+	virtual std::optional<std::reference_wrapper<world::Map>> get_map() { return std::nullopt; }
 
 	[[nodiscard]] auto is_ready() const -> bool { return flags.test(GameStateFlags::ready); }
 	[[nodiscard]] auto get_type() const -> StateType { return m_type; }

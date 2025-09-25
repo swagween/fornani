@@ -111,7 +111,6 @@ void Trial::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	map.render_background(svc, win, m_shader, player->get_camera_position());
 	map.render(svc, win, m_shader, player->get_camera_position());
 
-	map.soft_reset.render(win);
 	if (pause_window) { pause_window.value()->render(svc, win); }
 	if (m_console) {
 		m_console.value()->render(win);

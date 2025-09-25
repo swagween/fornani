@@ -85,6 +85,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 	if (in_general["uncrushable"].as_bool()) { flags.general.set(GeneralFlags::uncrushable); }
 	if (in_general["foreground"].as_bool()) { flags.general.set(GeneralFlags::foreground); }
 	if (in_general["rare_drops"].as_bool()) { flags.general.set(GeneralFlags::rare_drops); }
+	if (in_general["spike_collision"].as_bool()) { flags.general.set(GeneralFlags::spike_collision); }
 	if (!flags.general.test(GeneralFlags::gravity)) { collider.stats.GRAV = 0.f; }
 	if (!flags.general.test(GeneralFlags::uncrushable)) { collider.collision_depths = util::CollisionDepth(); }
 
@@ -122,7 +123,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (map.off_the_bottom(collider.physics.position)) {
 		if (svc.ticker.every_x_ticks(10)) { health.inflict(4.f); }
 	}
-	if (just_died() && !flags.general.test(GeneralFlags::post_death_render)) { map.effects.push_back(entity::Effect(svc, "large_explosion", collider.physics.position, collider.physics.apparent_velocity() * 0.5f, visual.effect_type)); }
+	if (just_died() && !flags.general.test(GeneralFlags::post_death_render)) { map.effects.push_back(entity::Effect(svc, "large_explosion", collider.get_center(), collider.physics.apparent_velocity() * 0.5f, visual.effect_type)); }
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) {
 		health_indicator.update(svc, collider.physics.position);
 		post_death.update();
@@ -164,7 +165,9 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 				pushable.collider.handle_collider_collision(secondary_collider.bounding_box);
 			}
 		}
-		for (auto& spike : map.spikes) { spike.handle_collision(collider); }
+		if (flags.general.test(GeneralFlags::spike_collision)) {
+			for (auto& spike : map.spikes) { spike.handle_collision(collider); }
+		}
 		collider.detect_map_collision(map); // This causes significant lag
 		secondary_collider.detect_map_collision(map);
 	}
@@ -211,9 +214,9 @@ void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::P
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
-	auto sprite_position = collider.get_center() - cam + m_random_offset + m_native_offset;
+	auto horizontal_offset = sf::Vector2f{directions.actual.as_float(), 1.f};
+	auto sprite_position = collider.get_center() - cam + m_random_offset + m_native_offset.componentWiseMul(horizontal_offset);
 	Drawable::set_position(sprite_position);
-	Drawable::draw(win);
 
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);
@@ -223,6 +226,8 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 		// physical.home_detector.render(win, cam, colors::blue);
 	}
 	// debug();
+
+	Drawable::draw(win);
 }
 
 void Enemy::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -306,6 +311,8 @@ void Enemy::set_position_from_scaled(sf::Vector2f pos) {
 	new_pos.y += static_cast<float>(32.f - round);
 	set_position(new_pos);
 }
+
+anim::Parameters const& Enemy::get_params(std::string const& key) { return m_params.contains(key) ? m_params.at(key) : m_params.at("idle"); }
 
 void Enemy::debug() {
 	static bool* b_debug{};

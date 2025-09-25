@@ -4,8 +4,9 @@
 
 namespace fornani::audio {
 
-Sound::Sound(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label, int echo_count, int echo_rate, float volume) : m_label(label), m_volume{volume} {
+Sound::Sound(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label, int echo_count, int echo_rate, float volume, int fade) : m_label(label), m_volume{volume}, m_fade{fade} {
 	m_sounds.clear();
+	m_fade.start();
 	echo.rate = echo_rate;
 	echo.count = util::Cooldown{echo_count};
 	echo.repeater.start(echo.rate);
@@ -19,6 +20,11 @@ Sound::Sound(capo::IEngine& engine, capo::Buffer const& buffer, std::string cons
 }
 
 void Sound::update(automa::ServiceProvider& /*svc*/) {
+	auto& sound = m_sounds.back();
+	m_fading ? sound->set_gain(m_volume * m_fade.get_inverse_normalized()) : sound->set_gain(m_volume);
+	m_fading_out ? m_fade.reverse() : m_fade.update();
+	if (m_fading_out && m_fade.started()) { delete_me = true; }
+
 	echo.repeater.update();
 	if (!is_echoing()) { return; }
 	if (echo.rate < 1) { return; }
@@ -42,5 +48,7 @@ void Sound::set_volume(float volume) { m_sounds.back()->set_gain(volume * m_volu
 void Sound::set_pitch(float pitch) {
 	for (auto& s : m_sounds) { s->set_pitch(pitch); }
 }
+
+void Sound::fade_out() { m_fading_out = true; }
 
 } // namespace fornani::audio

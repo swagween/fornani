@@ -57,10 +57,10 @@
       16
     ],
     "metagrid": [
-      55,
-      55
+      53,
+      22
     ],
-    "minimap": false,
+    "minimap": true,
     "music": "none",
     "player_start": [
       0,

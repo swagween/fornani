@@ -105,8 +105,11 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 			m_ability = std::make_unique<Doublejump>(svc, map, player.collider);
 			player.m_ability_usage.doublejump.update();
 		}
-		if (is_wallsliding()) { m_ability = std::make_unique<Walljump>(svc, map, player.collider, player.get_actual_direction()); }
+		auto can_walljump = (player.collider.has_right_wallslide_collision() || player.collider.has_left_wallslide_collision()) && !player.collider.grounded();
+		auto jump_direction = player.collider.has_right_wallslide_collision() ? Direction{LR::right} : player.collider.has_left_wallslide_collision() ? Direction{LR::left} : Direction{};
+		if (can_walljump) { m_ability = std::make_unique<Walljump>(svc, map, player.collider, jump_direction); }
 	}
+	if (!is_wallsliding()) { svc.soundboard.flags.player.reset(audio::Player::wallslide); }
 
 	// crouching, rolling, and sliding
 	flags.reset(MovementState::crouch);
@@ -205,6 +208,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	key_map[ControllerInput::arms_switch] = arms_switch_right ? 1.f : key_map[ControllerInput::arms_switch];
 
 	key_map[ControllerInput::inspect] = inspected ? 1.f : 0.f;
+	if (inspected) { NANI_LOG_DEBUG(m_logger, "Inspected!"); }
 }
 
 void PlayerController::clean() { flags = {}; }

@@ -11,7 +11,7 @@ Wallslide::Wallslide(automa::ServiceProvider& svc, world::Map& map, shape::Colli
 	m_type = AbilityType::wallslide;
 	m_state = AnimState::wallslide;
 	m_duration.start();
-	// svc.soundboard.flags.player.set(audio::Player::wallslide);
+	svc.soundboard.flags.player.set(audio::Player::wallslide);
 }
 
 void Wallslide::update(shape::Collider& collider, PlayerController& controller) {

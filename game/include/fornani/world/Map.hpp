@@ -63,7 +63,7 @@ class InventoryWindow;
 
 namespace fornani::world {
 
-enum class LevelState : std::uint8_t { game_over, camera_shake, spawn_enemy };
+enum class LevelState : std::uint8_t { game_over, camera_shake, spawn_enemy, transitioning };
 enum class MapState : std::uint8_t { unobscure };
 enum class MapProperties : std::uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer, environmental_randomness, day_night_shift, timer, lighting };
 
@@ -175,8 +175,6 @@ class Map {
 
 	std::unique_ptr<graphics::Background> background{};
 	graphics::Transition transition;
-	graphics::Transition bed_transition;
-	graphics::Transition soft_reset;
 
 	enemy::EnemyCatalog enemy_catalog;
 	CutsceneCatalog cutscene_catalog;

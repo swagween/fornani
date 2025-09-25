@@ -91,17 +91,16 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 	m_render_state = is_already_open() ? PortalRenderState::open : is_locked() ? PortalRenderState::locked : m_render_state;
 	auto lookup = sf::IntRect({static_cast<int>(m_render_state) * constants::i_cell_resolution, map.style_id * constants::i_cell_resolution * 2}, {constants::i_cell_resolution, constants::i_cell_resolution * 2});
 	set_texture_rect(lookup);
+	if (!map.transition.is(graphics::TransitionState::inactive)) { m_state.reset(PortalState::ready); }
 	if (bounding_box.overlaps(player.collider.bounding_box)) {
-		if (m_attributes.test(PortalAttributes::activate_on_contact) && m_state.test(PortalState::ready)) {
-			m_state.set(PortalState::activated);
+		if (m_attributes.test(PortalAttributes::activate_on_contact)) {
+			if (!m_state.test(PortalState::transitioning) && m_state.test(PortalState::ready)) { m_state.set(PortalState::activated); }
 			if (is_left_or_right()) {
-				player.controller.prevent_movement();
 				player.controller.autonomous_walk();
 				player.walk();
 			}
 		} else if (player.controller.inspecting()) {
 			m_state.set(PortalState::activated);
-			player.controller.prevent_movement();
 		}
 		// player just entered room via border portal
 		if (!m_state.test(PortalState::ready) && m_attributes.test(PortalAttributes::activate_on_contact) && is_left_or_right()) {
@@ -115,7 +114,6 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 		m_state.set(PortalState::ready);
 	}
 	if (m_state.test(PortalState::activated)) {
-		player.controller.prevent_movement();
 		if (!console) {
 			if (m_state.test(PortalState::unlocked)) {
 				change_states(svc, map.room_id, map.transition);
@@ -141,6 +139,21 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 		if (m_state.test(PortalState::unlocked)) { return; }
 		change_states(svc, map.room_id, map.transition);
 	}
+	if (m_state.test(PortalState::transitioning)) {
+		if (map.transition.is(graphics::TransitionState::black)) {
+			m_state.reset(PortalState::transitioning);
+			if (svc.data.exists(destination_id)) {
+				svc.state_controller.next_state = destination_id;
+			} else {
+				svc.state_controller.next_state = source_id;
+				source_id = destination_id;
+				destination_id = map.room_id;
+				svc.state_controller.status.set(automa::Status::out_of_bounds);
+			}
+			svc.state_controller.actions.set(automa::Actions::trigger);
+			svc.state_controller.refresh(source_id);
+		}
+	}
 }
 
 void Portal::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
@@ -155,23 +168,15 @@ void Portal::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 }
 
 void Portal::change_states(automa::ServiceProvider& svc, int room_id, graphics::Transition& transition) {
-	if (!m_attributes.test(PortalAttributes::activate_on_contact) && transition.not_started()) {
+	if (!m_attributes.test(PortalAttributes::activate_on_contact)) {
 		m_render_state = PortalRenderState::open;
 		if (!m_attributes.test(PortalAttributes::already_open) && !is_large()) { svc.soundboard.flags.world.set(audio::World::door_open); }
 	}
-	transition.start();
-	if (transition.is_done()) {
-		if (svc.data.exists(destination_id)) {
-			svc.state_controller.next_state = destination_id;
-		} else {
-			svc.state_controller.next_state = source_id;
-			source_id = destination_id;
-			destination_id = room_id;
-			svc.state_controller.status.set(automa::Status::out_of_bounds);
-		}
-		svc.state_controller.actions.set(automa::Actions::trigger);
-		svc.state_controller.refresh(source_id);
+	if (m_state.test(PortalState::activated)) {
+		transition.start();
+		m_state.set(PortalState::transitioning);
 	}
+	m_state.reset(PortalState::activated);
 }
 
 } // namespace fornani

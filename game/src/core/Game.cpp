@@ -202,6 +202,9 @@ void Game::shutdown() { ImGui::SFML::Shutdown(); }
 
 void Game::playtester_portal(sf::RenderWindow& window) {
 	if (!flags.test(GameFlags::playtest)) { return; }
+
+	auto const& map = game_state.get_current_state().get_map();
+
 	bool* b_debug{};
 	float const PAD = 10.0f;
 	static int corner = 1;
@@ -227,6 +230,10 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
 				if (ImGui::BeginTabItem("General")) {
 					ImGui::Text("World");
+					if (map) {
+						ImGui::Text("Transition State: %s", map->get().transition.as_string().c_str());
+						ImGui::Text("Transition Cooldown: %.5f", map->get().transition.get_cooldown());
+					}
 					ImGui::Text("Save Point ID: %i", services.state_controller.save_point_id);
 					ImGui::Separator();
 					if (ImGui::Button("Exit to Main Menu")) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player)); }
@@ -419,11 +426,14 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 									}
 								}
 								ImGui::Separator();
+								ImGui::Text("Can Move? %s", player.controller.can_move() ? "Yes" : "No");
+								ImGui::Separator();
 								ImGui::Text("Sliding? %s", player.controller.is_sliding() ? "Yes" : "No");
 								ImGui::Text("Can Slide? %s", player.can_slide() ? "Yes" : "No");
 								ImGui::Text("Post-Slide Cooldown: %i", player.controller.post_slide.get());
 								ImGui::Separator();
 								ImGui::Text("Crouching? %s", player.controller.is_crouching() ? "Yes" : "No");
+								ImGui::Text("Inspecting? %s", player.controller.inspecting() ? "Yes" : "No");
 								ImGui::Separator();
 								ImGui::Text("Jumping? %s", player.collider.jumping() ? "Yes" : "No");
 								ImGui::Text("Can Jump? %s", player.can_jump() ? "Yes" : "No");

@@ -15,9 +15,11 @@
     "suite": [[{ "message": "It's locked." }]]
   },
   "unlocked_door": {
+    "output": 2,
     "suite": [[{ "message": "Used " }]]
   },
   "death": {
+    "output": 2,
     "suite": [
       [{ "message": "You died." }, { "message": "Would you like to retry?", "codes": [[1, 0]] }]
     ],

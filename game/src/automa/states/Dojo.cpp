@@ -100,6 +100,8 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	m_shader->set_darken(map.darken_factor);
 	m_shader->set_texture_size(map.real_dimensions / constants::f_scale_factor);
 	svc.app_flags.reset(automa::AppFlags::custom_map_start);
+
+	NANI_LOG_INFO(m_logger, "New Dojo instance created.");
 }
 
 void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
@@ -193,7 +195,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			map.transition.start();
 			open_vendor = true;
 		}
-		if (open_vendor && map.transition.is_done()) {
+		if (open_vendor && map.transition.is(graphics::TransitionState::black)) {
 			vendor_dialog = std::make_unique<gui::VendorDialog>(svc, map, *player, svc.menu_controller.get_menu_id());
 			svc.controller_map.set_action_set(config::ActionSet::Menu);
 			svc.soundboard.flags.console.set(audio::Console::menu_open);
@@ -257,9 +259,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(svc, *player, win); }
 	if (vendor_dialog) { vendor_dialog.value()->render(svc, win, *player, map); }
 	if (inventory_window) { inventory_window.value()->render(svc, win, *player); }
-	map.soft_reset.render(win);
 	map.transition.render(win);
-	map.bed_transition.render(win);
 	if (pause_window) { pause_window.value()->render(svc, win); }
 	if (m_console) {
 		m_console.value()->render(win);

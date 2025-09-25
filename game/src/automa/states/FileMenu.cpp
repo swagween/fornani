@@ -83,6 +83,7 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	player->collider.physics.zero();
 	player->collider.reset();
 	player->controller.autonomous_walk();
+	player->collider.flags.external_state.set(shape::ExternalState::grounded);
 	player->collider.flags.state.set(shape::State::grounded);
 
 	player->set_position({svc.window->i_screen_dimensions().x * 0.5f + 80, 360});
