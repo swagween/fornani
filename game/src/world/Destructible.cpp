@@ -15,7 +15,10 @@ Destructible::Destructible(automa::ServiceProvider& svc, dj::Json const& in, int
 	sprite.setScale(constants::f_scale_vec);
 	sprite.setTextureRect(sf::IntRect{{style_id * constants::i_cell_resolution, 0}, constants::i_resolution_vec});
 	in["inverse"].as_bool() ? m_attributes.set(DestructibleAttributes::inverse) : m_attributes.reset(DestructibleAttributes::inverse);
+	in["enemy_clear"].as_bool() ? m_attributes.set(DestructibleAttributes::enemy_clear) : m_attributes.reset(DestructibleAttributes::enemy_clear);
 	m_state = in["inverse"].as_bool() ? 0 : 1;
+	auto state = svc.data.get_destructible_state(quest_id);
+	if (state == 2) { m_state = 2; }
 }
 
 auto Destructible::ignore_updates() const -> bool { return is_destroyed() || is_unrevealed(); }
@@ -23,6 +26,7 @@ auto Destructible::ignore_updates() const -> bool { return is_destroyed() || is_
 auto Destructible::delete_me() const -> bool { return is_destroyed(); }
 
 void Destructible::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
+	if (map.enemies_cleared() && is_enemy_clear()) { svc.data.increment_destructible_state(quest_id, is_inverse()); }
 	auto state = svc.data.get_destructible_state(quest_id);
 	if (state != m_state && state != -1) {
 		m_state = state;

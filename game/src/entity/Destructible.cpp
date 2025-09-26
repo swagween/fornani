@@ -20,16 +20,19 @@ std::unique_ptr<Entity> Destructible::clone() const { return std::make_unique<De
 void Destructible::serialize(dj::Json& out) {
 	Entity::serialize(out);
 	out["inverse"] = m_inverse;
+	out["enemy_clear"] = m_enemy_clear;
 }
 
 void Destructible::unserialize(dj::Json const& in) {
 	Entity::unserialize(in);
 	m_inverse = in["inverse"].as_bool();
+	m_enemy_clear = in["enemy_clear"].as_bool();
 }
 
 void Destructible::expose() {
 	Entity::expose();
 	ImGui::Checkbox("Inverse", &m_inverse);
+	ImGui::Checkbox("Enemy Clear", &m_enemy_clear);
 }
 
 void Destructible::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {

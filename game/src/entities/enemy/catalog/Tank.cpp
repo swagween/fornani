@@ -39,8 +39,10 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 
 	// reset animation states to determine next animation state
 	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
-	secondary_collider.physics.position = collider.physics.position - sf::Vector2f{-26.f, 14.f};
-	secondary_collider.sync_components();
+	if (secondary_collider) {
+		secondary_collider->physics.position = collider.physics.position - sf::Vector2f{-26.f, 14.f};
+		secondary_collider->sync_components();
+	}
 
 	m_vertical_range.set_position(collider.bounding_box.get_position() - sf::Vector2f{(m_vertical_range.get_dimensions().x * 0.5f) - (collider.dimensions.x * 0.5f), (m_vertical_range.get_dimensions().y) - (collider.dimensions.y * 0.5f)});
 	m_shoulders.set_position(collider.bounding_box.get_position() - sf::Vector2f{(m_shoulders.get_dimensions().x * 0.5f) - (collider.dimensions.x * 0.5f), m_shoulders.get_dimensions().y});
@@ -49,7 +51,7 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	auto has_clearance = !m_caution.detected_ceiling(map, collider, sf::Vector2f{0.f, 32.f});
 	if (m_caution.detected_step(map, collider, directions.actual, sf::Vector2f{-16.f, 32.f}) && (collider.physics.is_moving_horizontally(0.01f) || is_mid_run()) && has_clearance) { request(TankState::jumpsquat); }
 
-	player.collider.handle_collider_collision(secondary_collider);
+	if (secondary_collider) { player.collider.handle_collider_collision(*secondary_collider); }
 	if (svc.ticker.every_x_ticks(20)) {
 		if (random::percent_chance(8) && !m_caution.danger()) { request(TankState::run); }
 	}

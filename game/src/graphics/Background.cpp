@@ -12,7 +12,7 @@ namespace fornani::graphics {
 
 constexpr auto bleed_v = sf::Vector2i{2, 0};
 
-Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "dusk"}, {1, "night"}, {3, "woods"}, {4, "canopy"}, {18, "woods"}} {
+Background::Background(automa::ServiceProvider& svc, int bg_id) : labels{{0, "dusk"}, {1, "night"}, {3, "woods"}, {4, "canopy"}, {18, "woods"}, {19, "pale_garden"}} {
 	auto type = labels.contains(bg_id) ? labels.at(bg_id) : "black";
 	auto const& in_data = svc.data.background[type];
 	dimensions.x = in_data["dimensions"][0].as<int>();

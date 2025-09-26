@@ -249,7 +249,10 @@ void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& w
 
 void Player::assign_texture(sf::Texture& tex) { sprite.setTexture(tex); }
 
-void Player::start_tick() { collider.flags.external_state.reset(shape::ExternalState::grounded); }
+void Player::start_tick() {
+	collider.flags.external_state.reset(shape::ExternalState::grounded);
+	controller.stop_walking_autonomously();
+}
 
 void Player::end_tick() {
 	controller.clean();

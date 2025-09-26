@@ -298,6 +298,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	if (flags.state.test(LevelState::spawn_enemy)) {
 		for (auto& spawn : enemy_spawns) {
 			enemy_catalog.push_enemy(*m_services, *this, console, spawn.id, true);
+			enemy_catalog.enemies.back()->intangible_start(64);
 			enemy_catalog.enemies.back()->set_position(spawn.pos);
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 			effects.push_back(entity::Effect(*m_services, "small_flash", spawn.pos + enemy_catalog.enemies.back()->get_collider().dimensions * 0.5f, {}, 0));

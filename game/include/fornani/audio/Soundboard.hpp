@@ -20,10 +20,32 @@ enum class SoundboardState : std::uint8_t { on, off };
 enum class Menu : std::uint8_t { select, shift, forward_switch, backward_switch, error };
 enum class Pioneer : std::uint8_t { select, click, back, open, close, slot, chain, boot, buzz, fast_click, hard_slot, hum, sync, scan, drag, wires };
 enum class Console : std::uint8_t { next, done, shift, select, speech, menu_open };
-enum class World : std::uint8_t { load, save, chest, breakable_shatter, breakable_hit, hard_hit, thud, small_crash, switch_press, block_toggle, wall_hit, soft_tap, pushable_move, door_open, door_unlock, projectile_hit, clink, vibration };
+enum class World : std::uint8_t {
+	load,
+	save,
+	chest,
+	breakable_shatter,
+	breakable_hit,
+	hard_hit,
+	thud,
+	small_crash,
+	switch_press,
+	block_toggle,
+	wall_hit,
+	soft_tap,
+	pushable_move,
+	door_open,
+	door_unlock,
+	projectile_hit,
+	clink,
+	vibration,
+	gem_hit_1,
+	gem_hit_2
+};
 enum class Item : std::uint8_t { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip, vendor_sale };
 enum class Player : std::uint8_t { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll, wallslide };
-enum class Weapon : std::uint8_t { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, plasmer, underdog, peckett_710 };
+enum class Weapon : std::uint8_t { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, plasmer, underdog, peckett_710, pulse };
+enum class Projectile : std::uint8_t { basic, shuriken, pulse };
 enum class Arms : std::uint8_t { reload };
 enum class Transmission : std::uint8_t { statics };
 enum class Step : std::uint8_t { basic, grass };
@@ -40,6 +62,7 @@ enum class Demon : std::uint8_t { hurt, alert, death, snort, up_snort };
 enum class Archer : std::uint8_t { hurt, flee, death };
 enum class Beamstalk : std::uint8_t { hurt, death };
 enum class Meatsquash : std::uint8_t { hurt, death, chomp, whip, swallow };
+enum class Summoner : std::uint8_t { hurt_1, hurt_2, death, block_1, block_2, summon, hah };
 
 enum class Minigus : std::uint8_t {
 	hurt_1,
@@ -100,6 +123,7 @@ class Soundboard {
 		util::BitFlags<Item> item{};
 		util::BitFlags<Player> player{};
 		util::BitFlags<Weapon> weapon{};
+		util::BitFlags<Projectile> projectile{};
 		util::BitFlags<Arms> arms{};
 		util::BitFlags<Transmission> transmission{};
 		util::BitFlags<Step> step{};
@@ -114,6 +138,7 @@ class Soundboard {
 		util::BitFlags<Minigun> minigun{};
 		util::BitFlags<Demon> demon{};
 		util::BitFlags<Archer> archer{};
+		util::BitFlags<Summoner> summoner{};
 		util::BitFlags<Beamstalk> beamstalk{};
 		util::BitFlags<Meatsquash> meatsquash{};
 		util::BitFlags<Lynx> lynx{};

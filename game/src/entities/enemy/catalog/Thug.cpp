@@ -69,10 +69,6 @@ void Thug::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
 	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
 	Enemy::update(svc, map, player);
-	secondary_collider.physics.position = collider.physics.position - sf::Vector2f{0.f, 14.f};
-	secondary_collider.physics.position.x += directions.actual.lnr == LNR::left ? 10.f : collider.dimensions.x - secondary_collider.dimensions.x - 10.f;
-	secondary_collider.sync_components();
-	player.collider.handle_collider_collision(secondary_collider);
 
 	if (svc.ticker.every_x_ticks(200)) {
 		if (random::percent_chance(20) && !caution.danger()) { state = ThugState::run; }

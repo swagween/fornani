@@ -46,6 +46,8 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	visual.num_angles = in_data["animation"]["angles"].as<int>();
 	visual.effect_type = in_data["visual"]["effect_type"].as<int>();
 
+	audio.hit = static_cast<audio::Projectile>(in_data["audio"]["hit"].as<int>());
+
 	metadata.specifications.lifespan = in_data["attributes"]["lifespan"].as<int>();
 	metadata.specifications.lifespan_variance = in_data["attributes"]["lifespan_variance"].as<int>();
 	auto var = random::random_range(-metadata.specifications.lifespan_variance, metadata.specifications.lifespan_variance);
@@ -104,7 +106,7 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 	if (transcendent()) { return; }
 	if (reflect()) {
 		physical.collider.handle_map_collision(map);
-		if (physical.collider.collided()) { svc.soundboard.flags.world.set(audio::World::clink); }
+		if (physical.collider.collided()) { svc.soundboard.flags.projectile.set(audio.hit); }
 		physical.collider.physics.acceleration = {};
 		return;
 	}

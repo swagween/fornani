@@ -427,6 +427,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								}
 								ImGui::Separator();
 								ImGui::Text("Can Move? %s", player.controller.can_move() ? "Yes" : "No");
+								ImGui::Text("Walking Autonomously? %s", player.controller.walking_autonomously() ? "Yes" : "No");
 								ImGui::Separator();
 								ImGui::Text("Sliding? %s", player.controller.is_sliding() ? "Yes" : "No");
 								ImGui::Text("Can Slide? %s", player.can_slide() ? "Yes" : "No");

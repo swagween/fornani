@@ -6,11 +6,10 @@
 namespace fornani::arms {
 
 Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
-	: metadata{.id = enemy ? svc.data.enemy_weapon[tag]["metadata"]["id"].as<int>() : svc.data.weapon[tag]["metadata"]["id"].as<int>(),
-			   .tag = tag.data(),
-			   .label = enemy ? svc.data.enemy_weapon[tag]["metadata"]["label"].as_string() : svc.data.weapon[tag]["metadata"]["label"].as_string()},
-	  projectile(svc, tag, enemy ? svc.data.enemy_weapon[tag]["metadata"]["id"].as<int>() : svc.data.weapon[tag]["metadata"]["id"].as<int>(), *this, enemy),
-	  visual{.sprite{sf::Sprite{svc.assets.get_texture("guns")}}, .ui{sf::Sprite{svc.assets.get_texture("inventory_guns")}}} {
+	: Drawable(svc, "guns"), metadata{.id = enemy ? svc.data.enemy_weapon[tag]["metadata"]["id"].as<int>() : svc.data.weapon[tag]["metadata"]["id"].as<int>(),
+									  .tag = tag.data(),
+									  .label = enemy ? svc.data.enemy_weapon[tag]["metadata"]["label"].as_string() : svc.data.weapon[tag]["metadata"]["label"].as_string()},
+	  projectile(svc, tag, enemy ? svc.data.enemy_weapon[tag]["metadata"]["id"].as<int>() : svc.data.weapon[tag]["metadata"]["id"].as<int>(), *this, enemy), visual{.ui{sf::Sprite{svc.assets.get_texture("inventory_guns")}}} {
 
 	auto const& in_data = enemy ? svc.data.enemy_weapon[tag] : svc.data.weapon[tag];
 
@@ -41,9 +40,9 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 		} catch (std::out_of_range) { secondary_emitter.value().color = colors::white; }
 		secondary_emitter.value().type = in_data["visual"]["secondary_spray"]["type"].as_string();
 	}
-	visual.texture_lookup = in_data["visual"]["texture_lookup"].as<int>() * 16;
-	visual.sprite.setTextureRect(sf::IntRect{{0, visual.texture_lookup}, visual.dimensions}); // TODO: allow for custom gun animations
-	visual.sprite.setOrigin(offsets.render.global);
+	visual.texture_lookup = in_data["visual"]["texture_lookup"].as<int>() * 8;
+	set_texture_rect(sf::IntRect{{0, visual.texture_lookup}, visual.dimensions}); // TODO: allow for custom gun animations
+	set_origin(offsets.render.global);
 
 	// gameplay
 	ammo.set_max(in_data["gameplay"]["attributes"]["ammo"].as<int>());
@@ -71,8 +70,8 @@ void Weapon::update(automa::ServiceProvider& svc, Direction to_direction) {
 }
 
 void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	visual.sprite.setPosition(physical.final_position - cam);
-	win.draw(visual.sprite);
+	Drawable::set_position(physical.final_position - cam);
+	win.draw(*this);
 	if (svc.greyblock_mode()) {
 		sf::RectangleShape box{};
 		box.setSize({2.f, 2.f});
@@ -137,37 +136,35 @@ void Weapon::force_position(sf::Vector2f pos) {
 void Weapon::set_barrel_point(sf::Vector2f point) { offsets.gameplay.barrel = point; }
 
 void Weapon::set_orientation(Direction to_direction) {
-	auto right_scale = sf::Vector2f{1.f, 1.f};
-	auto left_scale = sf::Vector2f{-1.f, 1.f};
+	auto right_scale = constants::f_scale_vec;
+	auto left_scale = sf::Vector2f{-constants::f_scale_factor, constants::f_scale_factor};
 	auto neutral_rotation{0.0f};
-	auto up_rotation{-90.f};
-	auto down_rotation{90.f};
 	auto right_offset = sf::Vector2f{-offsets.render.global.x, -offsets.render.global.y};
 	auto left_offset = sf::Vector2f{offsets.render.global.x, -offsets.render.global.y};
 	auto right_barrel_offset = sf::Vector2f{offsets.render.barrel.x, offsets.render.barrel.y};
 	auto left_barrel_offset = sf::Vector2f{-offsets.render.barrel.x, offsets.render.barrel.y};
 	auto const& position = physical.final_position;
-	visual.sprite.setRotation(sf::degrees(neutral_rotation));
+	set_rotation(sf::degrees(neutral_rotation));
 	switch (firing_direction.lnr) {
 	case LNR::right:
-		visual.sprite.setScale(right_scale);
+		set_scale(right_scale);
 		offsets.gameplay.barrel = position + right_offset + right_barrel_offset;
 		break;
 	case LNR::left:
-		visual.sprite.setScale(left_scale);
+		set_scale(left_scale);
 		offsets.gameplay.barrel = position + left_offset + left_barrel_offset;
 		break;
 	default: break;
 	}
 	switch (firing_direction.und) {
 	case UND::up:
-		to_direction.right() ? visual.sprite.rotate(sf::degrees(-90)) : visual.sprite.rotate(sf::degrees(90));
+		to_direction.right() ? Drawable::rotate(sf::degrees(-90)) : Drawable::rotate(sf::degrees(90));
 		if (to_direction.left()) { offsets.gameplay.barrel = {position.x - left_offset.y - left_barrel_offset.y, position.y + left_offset.x + left_barrel_offset.x}; }
 		if (to_direction.right()) { offsets.gameplay.barrel = {position.x + right_offset.y + right_barrel_offset.y, position.y - right_offset.x - right_barrel_offset.x}; }
 		firing_direction.neutralize_lr();
 		break;
 	case UND::down:
-		to_direction.lnr == LNR::right ? visual.sprite.rotate(sf::degrees(90)) : visual.sprite.rotate(sf::degrees(-90));
+		to_direction.lnr == LNR::right ? Drawable::rotate(sf::degrees(90)) : Drawable::rotate(sf::degrees(-90));
 		if (to_direction.left()) { offsets.gameplay.barrel = {position.x + left_offset.y + left_barrel_offset.y, position.y - left_offset.x - left_barrel_offset.x}; }
 		if (to_direction.right()) { offsets.gameplay.barrel = {position.x - right_offset.y - right_barrel_offset.y, position.y + right_offset.x + right_barrel_offset.x}; }
 		firing_direction.neutralize_lr();

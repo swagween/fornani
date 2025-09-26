@@ -533,7 +533,6 @@ void DataManager::save_player_params(player::Player& player) {
 	player_params["physics"]["slide_speed"] = player.physics_stats.slide_speed;
 
 	if (!player_params.dj::Json::to_file((finder.resource_path() + "/data/player/physics_params.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save physics params!"); }
-	// std::cout << " success!\n";
 }
 
 void DataManager::open_chest(int id) { opened_chests.push_back(id); }
@@ -547,12 +546,12 @@ void DataManager::activate_switch(int id) {
 void DataManager::increment_destructible_state(int id, bool inverse) {
 	for (auto [i, d] : std::views::enumerate(destructible_states)) {
 		if (d.first == id) {
-			d.second = std::clamp(d.second + 1, 0, 3);
+			d.second = std::clamp(d.second + 1, 0, 2);
 			return;
 		}
 	}
 	auto state = inverse ? 1 : 2;
-	destructible_states.push_back({id, inverse});
+	destructible_states.push_back({id, state});
 }
 
 void DataManager::destroy_inspectable(int id) { destroyed_inspectables.push_back(id); }

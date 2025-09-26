@@ -30,8 +30,8 @@ constexpr static float sprint_speed_v{1.0f};
 constexpr static float sprint_threshold_v{0.01f};
 
 enum class ControllerInput : std::uint8_t { move_x, sprint, shoot, arms_switch, inspect, move_y, slide };
-enum class MovementState : std::uint8_t { restricted, walking_autonomously, walljumping, crouch };
-enum class HardState : std::uint8_t { no_move, has_arsenal };
+enum class MovementState : std::uint8_t { restricted, walljumping, crouch };
+enum class HardState : std::uint8_t { no_move, has_arsenal, walking_autonomously };
 enum class InputState : std::uint8_t { slide_in_air, sprint };
 
 enum class Sprint : std::uint8_t { released };
@@ -88,7 +88,7 @@ class PlayerController {
 	[[nodiscard]] auto restricted() const -> bool { return flags.test(MovementState::restricted); }
 	[[nodiscard]] auto grounded() const -> bool;
 	[[nodiscard]] auto is_walljumping() const -> bool { return flags.test(MovementState::walljumping); }
-	[[nodiscard]] auto walking_autonomously() const -> bool { return flags.test(MovementState::walking_autonomously); }
+	[[nodiscard]] auto walking_autonomously() const -> bool { return hard_state.test(HardState::walking_autonomously); }
 	[[nodiscard]] auto shot() -> bool { return key_map[ControllerInput::shoot] == 1.f; }
 	[[nodiscard]] auto is_sprinting() -> bool { return ccm::abs(key_map[ControllerInput::move_x]) > walk_speed_v; }
 	[[nodiscard]] auto has_arsenal() const -> bool { return hard_state.test(HardState::has_arsenal); }

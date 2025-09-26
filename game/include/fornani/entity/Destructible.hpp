@@ -17,6 +17,7 @@ class Destructible : public Entity {
 
   private:
 	bool m_inverse{};
+	bool m_enemy_clear{};
 };
 
 } // namespace fornani

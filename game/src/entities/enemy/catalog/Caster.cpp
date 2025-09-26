@@ -13,7 +13,6 @@ Caster::Caster(automa::ServiceProvider& svc, world::Map& map, int variant)
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.physics.air_friction = {0.9f, 0.9f};
 	collider.flags.general.set(shape::General::complex);
-	secondary_collider = shape::Collider({22.f, 22.f});
 	directions.desired.lnr = LNR::left;
 	directions.actual.lnr = LNR::left;
 	directions.movement.lnr = LNR::neutral;
@@ -97,10 +96,6 @@ void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		parts.scepter.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
 		parts.wand.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
 	}
-
-	secondary_collider.physics.position = collider.physics.position - sf::Vector2f{0.f, 10.f};
-	secondary_collider.physics.position.x += directions.actual.lnr == LNR::left ? 2.f : collider.dimensions.x - secondary_collider.dimensions.x - 2.f;
-	secondary_collider.sync_components();
 
 	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
 		m_services->soundboard.flags.demon.set(audio::Demon::hurt);

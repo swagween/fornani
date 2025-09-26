@@ -47,9 +47,10 @@ enum class GeneralFlags : std::uint8_t {
 	permadeath,
 	has_invincible_channel,
 	invincible_secondary,
-	spike_collision
+	spike_collision,
+	sturdy
 };
-enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, flip, advance, simple_physics, no_shake, out_of_zone, no_slowdown };
+enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, flip, advance, simple_physics, no_shake, out_of_zone, no_slowdown, intangible };
 enum class Triggers : std::uint8_t { hostile, alert };
 enum class Variant : std::uint8_t { beast, soldier, elemental, worker, guardian };
 
@@ -100,7 +101,7 @@ class Enemy : public Mobile {
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
 	[[nodiscard]] auto get_external_id() const -> int { return metadata.external_id; }
 	[[nodiscard]] auto get_collider() -> shape::Collider& { return collider; }
-	[[nodiscard]] auto get_secondary_collider() -> shape::Collider& { return secondary_collider; }
+	[[nodiscard]] auto get_secondary_collider() -> std::optional<shape::Collider>& { return secondary_collider; }
 	[[nodiscard]] auto died() const -> bool { return health.is_dead(); }
 	[[nodiscard]] auto just_died() const -> bool { return health.is_dead() && post_death.get() == afterlife; }
 	[[nodiscard]] auto gone() const -> bool { return post_death.is_complete(); }
@@ -111,6 +112,7 @@ class Enemy : public Mobile {
 	[[nodiscard]] auto is_transcendent() const -> bool { return flags.general.test(GeneralFlags::transcendent); }
 	[[nodiscard]] auto permadeath() const -> bool { return flags.general.test(GeneralFlags::permadeath); }
 
+	void intangible_start(int time) { intangibility.start(time); }
 	void set_position(sf::Vector2f pos) {
 		collider.physics.position = pos;
 		collider.sync_components();
@@ -136,12 +138,13 @@ class Enemy : public Mobile {
 	anim::Parameters const& get_params(std::string const& key);
 
 	std::string label{};
-	shape::Collider secondary_collider{};
+	std::optional<shape::Collider> secondary_collider{};
 	Flags flags{};
 	Attributes attributes{};
 	util::Cooldown post_death{};
 	util::Cooldown hitstun{};
 	util::Cooldown impulse{};
+	util::Cooldown intangibility{};
 	int afterlife{200};
 
 	util::Cooldown hurt_effect{};

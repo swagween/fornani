@@ -78,6 +78,8 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.world.test(World::block_toggle)) { play(engine, svc, svc.sounds.get_buffer("block_toggle"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.world.test(World::door_open)) { play(engine, svc, svc.sounds.get_buffer("door_open"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.world.test(World::door_unlock)) { play(engine, svc, svc.sounds.get_buffer("door_unlock")); }
+	if (flags.world.test(World::gem_hit_1)) { play(engine, svc, svc.sounds.get_buffer("gem_hit_1"), 0.2f, 50.f); }
+	if (flags.world.test(World::gem_hit_2)) { play(engine, svc, svc.sounds.get_buffer("gem_hit_2"), 0.2f, 50.f); }
 	flags.world.test(World::pushable_move) ? simple_repeat(engine, svc.sounds.get_buffer("pushable_move"), "pushable_move") : stop("pushable_move");
 
 	// hulmet
@@ -167,6 +169,10 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.demon.test(Demon::up_snort)) { play(engine, svc, svc.sounds.get_buffer("demon_up_snort"), 0.2f); }
 	if (flags.demon.test(Demon::alert)) { play(engine, svc, svc.sounds.get_buffer("demon_alert")); }
 
+	// summoner
+	if (flags.summoner.test(Summoner::block_1)) { play(engine, svc, svc.sounds.get_buffer("summoner_block_1"), 0.2f, 20.f); }
+	if (flags.summoner.test(Summoner::block_2)) { play(engine, svc, svc.sounds.get_buffer("summoner_block_2"), 0.2f, 20.f); }
+
 	// general enemy
 	if (flags.enemy.test(Enemy::hit_low)) { play(engine, svc, svc.sounds.get_buffer("hit_low")); }
 	if (flags.enemy.test(Enemy::hit_medium)) { play(engine, svc, svc.sounds.get_buffer("hit_medium")); }
@@ -206,14 +212,17 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.player.test(Player::arms_switch)) { play(engine, svc, svc.sounds.get_buffer("arms_switch"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.arms.test(Arms::reload)) { play(engine, svc, svc.sounds.get_buffer("arms_reload"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 
-	// gun
 	if (flags.weapon.test(Weapon::bryns_gun)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_bg"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::gnat)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_gnat"), 0.1f, 100.f, 2, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::wasp)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_wasp"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::skycorps_ar)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_skycorps_ar"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.weapon.test(Weapon::pulse)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_pulse"), 0.2f, 20.f); }
 
-	// enemy gun
 	if (flags.weapon.test(Weapon::energy_ball)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_energy_ball"), 0.1f); }
+
+	if (flags.projectile.test(Projectile::basic)) { play(engine, svc, svc.sounds.get_buffer("wall_hit"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.projectile.test(Projectile::shuriken)) { play(engine, svc, svc.sounds.get_buffer("clink"), 0.2f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.projectile.test(Projectile::pulse)) { play(engine, svc, svc.sounds.get_buffer("projectile_pulse"), 0.2f, 10.f, 0, 1.f, {}, echo_count, echo_rate); }
 
 	// reset flags
 	flags = {};

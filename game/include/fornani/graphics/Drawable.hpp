@@ -23,6 +23,7 @@ class Drawable : public sf::Drawable, Polymorphic {
 	void set_position(sf::Vector2f const to) { m_sprite.setPosition(to); }
 	void set_origin(sf::Vector2f const to) { m_sprite.setOrigin(to); }
 	void set_scale(sf::Vector2f const to) { m_sprite.setScale(to); }
+	void set_rotation(sf::Angle const to) { m_sprite.setRotation(to); }
 	void rotate(sf::Angle const rotation) { m_sprite.rotate(rotation); }
 
 	void scale(sf::Vector2f const to) { m_sprite.scale(to); }

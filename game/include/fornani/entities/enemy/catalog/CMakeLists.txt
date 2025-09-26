@@ -8,7 +8,9 @@ nani_add_headers(
         Frdog.hpp
         Imp.hpp
         Meatsquash.hpp
+        Minion.hpp
         Tank.hpp
         Thug.hpp
         Hulmet.hpp
+        Summoner.hpp
 )

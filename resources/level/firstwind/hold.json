@@ -80,6 +80,10 @@
           8,
           22
         ],
+        "start_direction": [
+          0,
+          0
+        ],
         "variant": 1
       },
       {
@@ -92,7 +96,27 @@
           17,
           50
         ],
+        "start_direction": [
+          0,
+          0
+        ],
         "variant": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 13,
+        "position": [
+          9,
+          5
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
       }
     ],
     "inspectables": [
@@ -103,7 +127,6 @@
           1,
           1
         ],
-        "hold_10": [],
         "id": 0,
         "instant": true,
         "key": "hold_1",
@@ -116,7 +139,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "- to Hangar and Outer Deck -"
                 }
               ]
@@ -131,7 +153,6 @@
           1,
           1
         ],
-        "hold_20": [],
         "id": 0,
         "instant": true,
         "key": "hold_2",
@@ -144,7 +165,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "- Hangar -"
                 }
               ]
@@ -159,7 +179,6 @@
           1,
           1
         ],
-        "hold_30": [],
         "id": 0,
         "instant": true,
         "key": "hold_3",
@@ -172,7 +191,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "- Outer Deck -"
                 }
               ]
@@ -188,7 +206,6 @@
           1
         ],
         "id": 0,
-        "infirmary0": [],
         "instant": true,
         "key": "infirmary",
         "position": [
@@ -200,7 +217,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "- Infirmary -"
                 }
               ]
@@ -218,7 +234,6 @@
         "id": 0,
         "instant": true,
         "key": "laboratory_password",
-        "laboratory_password0": [],
         "position": [
           2,
           32
@@ -228,7 +243,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "Laboratory console authorization key: 66724"
                 }
               ]

@@ -8,7 +8,9 @@ nani_add_sources(
         Frdog.cpp
         Imp.cpp
         Meatsquash.cpp
+        Minion.cpp
         Tank.cpp
         Thug.cpp
         Hulmet.cpp
+        Summoner.cpp
 )

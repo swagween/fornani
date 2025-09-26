@@ -434,6 +434,12 @@
     },
     {
       "folder": "overturned",
+      "label": "springs.json",
+      "region": "overturned",
+      "room_id": 239
+    },
+    {
+      "folder": "overturned",
       "label": "statuary.json",
       "region": "overturned",
       "room_id": 401

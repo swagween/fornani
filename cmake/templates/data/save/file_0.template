@@ -12,7 +12,9 @@
 		},
 		"arsenal": [
 			"bryns_gun",
-			"gnat"
+			"gnat",
+			"wasp",
+			"pulsar"
 		],
 		"equipped_gun": "gnat",
 		"abilities": [
@@ -110,7 +112,9 @@
 		},
 		"hotbar": [
 			"bryns_gun",
-			"gnat"
+			"gnat",
+			"wasp",
+			"pulsar"
 		]
 	},
 	"save_point_id": 4200,

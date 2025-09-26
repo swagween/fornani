@@ -96,21 +96,21 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 		if (m_attributes.test(PortalAttributes::activate_on_contact)) {
 			if (!m_state.test(PortalState::transitioning) && m_state.test(PortalState::ready)) { m_state.set(PortalState::activated); }
 			if (is_left_or_right()) {
-				player.controller.autonomous_walk();
-				player.walk();
+				if (map.transition.is(graphics::TransitionState::fading_to_black)) {
+					auto towards = player.entered_from().left() ? SimpleDirection{LR::right} : SimpleDirection{LR::left};
+					player.controller.direction.set_from_simple(towards);
+					player.controller.autonomous_walk();
+					player.walk();
+				} else if (!m_state.test(PortalState::ready)) {
+					player.controller.direction.set_from_simple(player.entered_from());
+					player.controller.autonomous_walk();
+					player.walk();
+				}
 			}
 		} else if (player.controller.inspecting()) {
 			m_state.set(PortalState::activated);
 		}
-		// player just entered room via border portal
-		if (!m_state.test(PortalState::ready) && m_attributes.test(PortalAttributes::activate_on_contact) && is_left_or_right()) {
-			player.controller.direction.set_from_simple(player.entered_from());
-			player.controller.prevent_movement();
-			player.controller.autonomous_walk();
-			player.walk();
-		}
 	} else {
-		if (!m_state.test(PortalState::ready) && m_attributes.test(PortalAttributes::activate_on_contact)) { player.controller.stop_walking_autonomously(); }
 		m_state.set(PortalState::ready);
 	}
 	if (m_state.test(PortalState::activated)) {

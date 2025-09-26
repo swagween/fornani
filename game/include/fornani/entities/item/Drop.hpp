@@ -21,6 +21,7 @@ class Map;
 namespace fornani::item {
 
 enum class DropType : std::uint8_t { heart, orb, gem };
+enum class DropState : std::uint8_t { neutral, shining };
 enum class Rarity : std::uint8_t { common, uncommon, rare, priceless };
 enum class GemType : std::uint8_t { rhenite, sapphire };
 enum class DropFlags : std::uint8_t { neutral, shining };
@@ -54,6 +55,13 @@ class Drop : public Animatable {
 	fsm::StateFunction update_shining();
 
   private:
+	struct {
+		DropState actual{};
+		DropState desired{};
+	} m_state{};
+	void request(DropState to) { m_state.desired = to; }
+	bool change_state(DropState next, anim::Parameters params);
+
 	DropType type{};
 	sf::Vector2f drop_dimensions{20.f, 20.f};
 	shape::CircleCollider collider{16.f};

@@ -19,9 +19,19 @@ PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player)
 }
 
 void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Player& player) {
+
+	auto sprint = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).held;
+	auto sprint_release = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).released;
+	auto sprint_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).triggered;
+	if (svc.controller_map.is_autosprint_enabled() && !svc.controller_map.is_gamepad()) {
+		sprint = !sprint;
+		sprint_release = sprint_pressed;
+	}
+	sprint ? input_flags.set(InputState::sprint) : input_flags.reset(InputState::sprint);
+
 	if (walking_autonomously()) {
-		prevent_movement();
-		key_map[ControllerInput::move_x] = direction.lnr == LNR::left ? -walk_speed_v : walk_speed_v;
+		auto speed = sprint ? sprint_speed_v : walk_speed_v;
+		key_map[ControllerInput::move_x] = direction.lnr == LNR::left ? -speed : speed;
 	}
 	if (hard_state.test(HardState::no_move)) {
 		key_map = {};
@@ -36,15 +46,6 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	auto const& up = svc.controller_map.digital_action_status(config::DigitalAction::platformer_up).held;
 	auto const& down = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).held;
 	auto const any_direction_held = left || right || up || down;
-
-	auto sprint = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).held;
-	auto sprint_release = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).released;
-	auto sprint_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).triggered;
-	if (svc.controller_map.is_autosprint_enabled() && !svc.controller_map.is_gamepad()) {
-		sprint = !sprint;
-		sprint_release = sprint_pressed;
-	}
-	sprint ? input_flags.set(InputState::sprint) : input_flags.reset(InputState::sprint);
 
 	auto const& jump_started = svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).triggered;
 	auto const& jump_held = svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).held;
@@ -231,13 +232,9 @@ void player::PlayerController::reset_vertical_movement() { key_map[ControllerInp
 
 void PlayerController::walljump() { flags.set(MovementState::walljumping); }
 
-void PlayerController::autonomous_walk() {
-	direction.lnr == LNR::right ? key_map[ControllerInput::move_x] = walk_speed_v : key_map[ControllerInput::move_x] = -walk_speed_v;
-	if (sprinting()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }
-	flags.set(MovementState::walking_autonomously);
-}
+void PlayerController::autonomous_walk() { hard_state.set(HardState::walking_autonomously); }
 
-void PlayerController::stop_walking_autonomously() { flags.reset(MovementState::walking_autonomously); }
+void PlayerController::stop_walking_autonomously() { hard_state.reset(HardState::walking_autonomously); }
 
 void PlayerController::set_shot(bool flag) { key_map[ControllerInput::shoot] = flag ? 1.f : 0.f; }
 

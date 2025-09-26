@@ -121,6 +121,8 @@ class Map {
 	[[nodiscard]] auto get_room_string() const -> std::string { return m_metadata.room; }
 	[[nodiscard]] auto get_player_start() const -> sf::Vector2f { return m_player_start; }
 	[[nodiscard]] auto has_entities() const -> bool { return m_entities.has_value(); }
+	[[nodiscard]] auto enemies_cleared() const -> bool { return enemy_catalog.enemies.empty() && cooldowns.loading.is_complete(); }
+
 	std::size_t get_index_at_position(sf::Vector2f position);
 	int get_tile_value_at_position(sf::Vector2f position);
 	Tile& get_cell_at_position(sf::Vector2f position);

@@ -81,7 +81,8 @@
 			"gravity": true,
 			"map_collision": true,
 			"player_collision": true,
-			"rare_drops": false
+			"rare_drops": false,
+			"secondary_collider": true
 		}
 	},
 	"thug": {
@@ -266,7 +267,8 @@
 			"gravity": true,
 			"map_collision": true,
 			"player_collision": true,
-			"rare_drops": false
+			"rare_drops": false,
+			"secondary_collider": true
 		}
 	},
 	"demon": {
@@ -311,7 +313,8 @@
 			"map_collision": true,
 			"player_collision": false,
 			"foreground": true,
-			"rare_drops": false
+			"rare_drops": false,
+			"secondary_collider": true
 		}
 	},
 	"caster": {
@@ -581,7 +584,8 @@
 			"map_collision": true,
 			"player_collision": false,
 			"foreground": false,
-			"rare_drops": false
+			"rare_drops": false,
+			"secondary_collider": true
 		}
 	},
 	"miaag": {
@@ -666,6 +670,92 @@
 			"player_collision": false,
 			"foreground": true,
 			"rare_drops": true
+		}
+	},
+	"summoner": {
+		"metadata": {
+			"id": 16,
+			"variant": "guardian"
+		},
+		"physical": {
+			"dimensions": [ 40, 94 ],
+			"sprite_dimensions": [ 64, 64 ],
+			"offset": [ 0, -16 ],
+			"num_colliders": 1,
+			"num_hurtboxes": 1,
+			"alert_range": [ 380.0, 64.0 ],
+			"hostile_range": [ 90.0, 32.0 ],
+			"friction": 0.99,
+			"gravity": 12.0
+		},
+		"visual": {
+			"effect_type": 0,
+			"effect_size": 1
+		},
+		"audio": {
+			"hit": -1
+		},
+		"attributes": {
+			"base_hp": 210,
+			"base_damage": 4.0,
+			"speed": 2.5,
+			"loot_multiplier": 30.0,
+			"drop_range": [ 10, 15 ],
+			"rare_drop_id": 0,
+			"respawn_distance": 8,
+			"permadeath": false,
+			"secondary_collider": false
+		},
+		"general": {
+			"mobile": true,
+			"gravity": true,
+			"map_collision": true,
+			"player_collision": false,
+			"foreground": true,
+			"rare_drops": true,
+			"sturdy": true
+		}
+	},
+	"minion": {
+		"metadata": {
+			"id": 17,
+			"variant": "guardian"
+		},
+		"physical": {
+			"dimensions": [ 20, 20 ],
+			"sprite_dimensions": [ 16, 16 ],
+			"offset": [ 0, -5 ],
+			"num_colliders": 1,
+			"num_hurtboxes": 1,
+			"alert_range": [ 380.0, 64.0 ],
+			"hostile_range": [ 90.0, 32.0 ],
+			"friction": 0.99,
+			"gravity": 20.0
+		},
+		"visual": {
+			"effect_type": 0,
+			"effect_size": 1
+		},
+		"audio": {
+			"hit": -1
+		},
+		"attributes": {
+			"base_hp": 4,
+			"base_damage": 1.0,
+			"speed": 2.5,
+			"loot_multiplier": 1.0,
+			"drop_range": [ 0, 0 ],
+			"rare_drop_id": 0,
+			"respawn_distance": 8,
+			"permadeath": false
+		},
+		"general": {
+			"mobile": true,
+			"gravity": true,
+			"map_collision": true,
+			"player_collision": false,
+			"foreground": true,
+			"rare_drops": false
 		}
 	}
 }

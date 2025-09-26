@@ -35,7 +35,9 @@
           1,
           1
         ],
+        "enemy_clear": false,
         "id": 420,
+        "inverse": false,
         "position": [
           3,
           6
@@ -1030,7 +1032,7 @@
         0,
         0,
         0,
-        0,
+        134,
         0,
         0,
         0,

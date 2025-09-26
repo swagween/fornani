@@ -13,4 +13,8 @@ constexpr auto null_key = "null";
 
 } // namespace gui
 
+constexpr auto gem_chance_v = 0.08f;
+constexpr auto heart_chance_v = 8.f;
+constexpr auto enemy_limit_v = 64;
+
 } // namespace fornani

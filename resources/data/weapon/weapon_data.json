@@ -7,10 +7,10 @@
 		},
 		"visual": {
 			"texture_lookup": 0,
-			"dimensions": [ 18, 8 ],
+			"dimensions": [ 9, 4 ],
 			"offsets": {
-				"global": [ -3.0, 5.0 ],
-				"barrel": [ 18.0, 2.0 ],
+				"global": [ -1.5, 2.5 ],
+				"barrel": [ 9.0, 1.0 ],
 				"stock": [ 0, 0 ]
 			},
 			"ui": { "color": 1 },
@@ -30,7 +30,7 @@
 				"automatic": false,
 				"ammo": 4,
 				"reload": 260,
-				"cooldown_time": 16,
+				"cooldown_time": 1,
 				"recoil": 0.0
 			}
 		},
@@ -78,10 +78,10 @@
 		},
 		"visual": {
 			"texture_lookup": 1,
-			"dimensions": [ 20, 12 ],
+			"dimensions": [ 10, 6 ],
 			"offsets": {
-				"global": [ -3.0, 5.0 ],
-				"barrel": [ 20.0, 3.0 ],
+				"global": [ -1.5, 2.5 ],
+				"barrel": [ 10.0, 1.5 ],
 				"stock": [ 0, 0 ]
 			},
 			"ui": { "color": 3 },
@@ -109,7 +109,7 @@
 		"class_package": {
 			"projectile": {
 				"type": 0,
-				"dimensions": [ 12.0, 12.0 ],
+				"dimensions": [ 6, 6 ],
 				"radius": 4.0,
 				"attributes": {
 					"base_damage": 12,
@@ -143,10 +143,10 @@
 		},
 		"visual": {
 			"texture_lookup": 2,
-			"dimensions": [ 26, 10 ],
+			"dimensions": [ 13, 5 ],
 			"offsets": {
-				"global": [ 0.0, 8.0 ],
-				"barrel": [ 26.0, 3.0 ],
+				"global": [ 0.5, 1.5 ],
+				"barrel": [ 13.0, 1.5 ],
 				"stock": [ 0, 0 ]
 			},
 			"ui": { "color": 6 },
@@ -192,6 +192,68 @@
 					"num_frames": 1,
 					"framerate": 8,
 					"angles": 4
+				}
+			}
+		}
+	},
+	"pulsar": {
+		"metadata": {
+			"id": 13,
+			"label": "Pulsar",
+			"description": "An energy-powered gun that Dr. Willett built for you. It uses an ancient energy drawn from rhenite and vermite crystals."
+		},
+		"visual": {
+			"texture_lookup": 13,
+			"dimensions": [ 12, 6 ],
+			"offsets": {
+				"global": [ -0.5, 3.5 ],
+				"barrel": [ 13.0, 1.5 ],
+				"stock": [ 0, 0 ]
+			},
+			"ui": { "color": 6 },
+			"spray": {
+				"dimensions": [ 3.0, 3.0 ],
+				"type": "guardian",
+				"color": "white"
+			}
+		},
+		"gameplay": {
+			"attributes": {
+				"automatic": false,
+				"ammo": 3,
+				"reload": 100,
+				"cooldown_time": 3,
+				"recoil": 0.45
+			}
+		},
+		"audio": { "shoot": 2 },
+		"class_package": {
+			"projectile": {
+				"type": 0,
+				"dimensions": [ 12.0, 12.0 ],
+				"radius": 12.0,
+				"audio": { "hit": 2 },
+				"attributes": {
+					"base_damage": 10,
+					"lifespan": 400,
+					"lifespan_variance": 0,
+					"speed": 15.0,
+					"variance": 0.0,
+					"stun_time": 0.0,
+					"knockback": 0.0,
+					"transcendent": false,
+					"omnidirectional": false,
+					"reflect": true,
+					"range_variance": 0.0,
+					"acceleration_factor": 2.0,
+					"dampen_factor": 0.998,
+					"gravity": 0.8,
+					"elasticity": 0.98
+				},
+				"animation": {
+					"num_sprites": 1,
+					"num_frames": 5,
+					"framerate": 14
 				}
 			}
 		}

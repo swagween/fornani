@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/audio/Soundboard.hpp>
 #include <fornani/components/CircleSensor.hpp>
 #include <fornani/components/PhysicsComponent.hpp>
 #include <fornani/entities/animation/AnimatedSprite.hpp>
@@ -119,6 +120,10 @@ class Projectile : public Animatable {
 		vfx::SpriteRotator rotator{};
 		Direction direction{};
 	} visual;
+
+	struct {
+		audio::Projectile hit{};
+	} audio;
 
 	struct {
 		Direction direction{};

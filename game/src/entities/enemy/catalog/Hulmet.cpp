@@ -47,7 +47,7 @@ void Hulmet::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	m_weapon.barrel_offset = sf::Vector2f{directions.actual.as_float() * 40.f, 0.f};
 	if (m_state.actual == HulmetState::roll) { cancel_shake(); }
 
-	secondary_collider.set_position(collider.bounding_box.get_position() + sf::Vector2f{4.f, -8.f});
+	if (secondary_collider) { secondary_collider->set_position(collider.bounding_box.get_position() + sf::Vector2f{4.f, -8.f}); }
 
 	if (flags.state.test(StateFlags::hurt)) {
 		hurt_effect.start();

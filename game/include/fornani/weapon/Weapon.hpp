@@ -40,7 +40,7 @@ struct EmitterAttributes {
 	sf::Color color{};
 };
 
-class Weapon {
+class Weapon : public Drawable {
   public:
 	explicit Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy = false);
 
@@ -122,7 +122,6 @@ class Weapon {
 	} physical{};
 
 	struct {
-		sf::Sprite sprite;
 		sf::Sprite ui;
 		sf::Vector2f position{};
 		sf::Vector2<int> dimensions{};

@@ -1,5 +1,6 @@
 
 #include "fornani/entities/item/Loot.hpp"
+#include <fornani/core/Common.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
@@ -12,9 +13,9 @@ Loot::Loot(automa::ServiceProvider& svc, sf::Vector2<int> drop_range, float prob
 
 	std::string_view key{};
 	for (int i = 0; i < drop_rate; ++i) {
-		if (random::percent_chance(0.08f) && special) {
+		if (random::percent_chance(gem_chance_v) && special) {
 			key = "gems";
-		} else if (random::percent_chance(8) && !flags.test(LootState::heart_dropped)) {
+		} else if (random::percent_chance(heart_chance_v) && !flags.test(LootState::heart_dropped)) {
 			key = "hearts";
 			flags.set(LootState::heart_dropped);
 		} else {

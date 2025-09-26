@@ -49,7 +49,7 @@ void TreasureContainer::on_hit(automa::ServiceProvider& svc, world::Map& map, ar
 				map.effects.push_back(entity::Effect(svc, "small_explosion", sensor.bounds.getPosition() - sf::Vector2f{8.f, 8.f}));
 			}
 		}
-		proj.destroy(false);
+		// proj.destroy(false);
 	}
 }
 
