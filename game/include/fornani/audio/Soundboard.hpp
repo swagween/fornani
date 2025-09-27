@@ -51,7 +51,7 @@ enum class Transmission : std::uint8_t { statics };
 enum class Step : std::uint8_t { basic, grass };
 
 // critters
-enum class Enemy : std::uint8_t { hit_squeak, hit_high, hit_medium, hit_low, standard_death, jump_low };
+enum class Enemy : std::uint8_t { hit_squeak, hit_high, hit_medium, hit_low, standard_death, jump_low, high_death, low_death };
 
 enum class Frdog : std::uint8_t { hurt, death };
 enum class Hulmet : std::uint8_t { hurt, alert };

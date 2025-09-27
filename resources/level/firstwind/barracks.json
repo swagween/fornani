@@ -11,6 +11,10 @@
           40,
           22
         ],
+        "start_direction": [
+          0,
+          0
+        ],
         "variant": 0
       },
       {
@@ -22,6 +26,10 @@
         "position": [
           21,
           22
+        ],
+        "start_direction": [
+          0,
+          0
         ],
         "variant": 0
       },
@@ -35,6 +43,10 @@
           39,
           22
         ],
+        "start_direction": [
+          0,
+          0
+        ],
         "variant": 0
       }
     ],
@@ -42,7 +54,6 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "crouch_tut0": [],
         "dimensions": [
           1,
           1
@@ -76,7 +87,6 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "barracks_switch0": [],
         "dimensions": [
           1,
           1
@@ -93,7 +103,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "\"...to activate, apply a force of any kind to the top. Switches like these will open paths previously obscured.\""
                 }
               ]

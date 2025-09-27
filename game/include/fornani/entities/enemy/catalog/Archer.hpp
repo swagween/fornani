@@ -19,6 +19,7 @@ class Archer final : public Enemy {
 	Archer(automa::ServiceProvider& svc, world::Map& map);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
+	[[nodiscard]] auto is_state(ArcherState test) const -> bool { return m_state.actual == test; }
 
 	fsm::StateFunction state_function = std::bind(&Archer::update_idle, this);
 	fsm::StateFunction update_idle();
@@ -28,14 +29,19 @@ class Archer final : public Enemy {
 	fsm::StateFunction update_shoot();
 
   private:
-	ArcherState state{};
 	ArcherVariant variant{};
+	entity::WeaponPackage m_bow;
+
+	struct {
+		ArcherState actual{};
+		ArcherState desired{};
+	} m_state{};
 
 	// packages
 	struct {
 		entity::FloatingPart bow;
 	} parts;
-	sf::Vector2<int> bow_dimensions{82, 82};
+	sf::Vector2<int> bow_dimensions{41, 41};
 
 	entity::Caution caution{};
 
@@ -44,18 +50,14 @@ class Archer final : public Enemy {
 		util::Cooldown post_jump{400};
 	} cooldowns{};
 
-	// lookup, duration, framerate, num_loops
-	anim::Parameters idle{0, 8, 28, -1};
-	anim::Parameters turn{8, 1, 28, 0};
-	anim::Parameters run{9, 4, 28, 4};
-	anim::Parameters jump{9, 1, 48, 0};
-	anim::Parameters shoot{13, 1, 164, 0};
+	sf::Vector2f m_player_target{};
 
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;
 
 	float rand_jump{};
 
+	void request(ArcherState to) { m_state.desired = to; }
 	bool change_state(ArcherState next, anim::Parameters params);
 };
 

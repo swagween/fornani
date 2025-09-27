@@ -86,11 +86,17 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	if (!m_console && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
 
-	if (!m_reset.running()) { player->update(map); }
+	if (!m_reset.running()) {
+		player->update(map);
+		player->start_tick();
+	}
 	map.update(svc, m_console);
 
-	player->controller.clean();
-	player->flags.triggers = {};
+	map.debug_mode = debug_mode;
+
+	player->end_tick();
+	if (!m_console) { player->flags.state.reset(player::State::busy); }
+
 	if (player->is_dead()) {
 		map.transition.start();
 		player->health.refill();

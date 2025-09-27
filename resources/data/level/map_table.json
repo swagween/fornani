@@ -290,6 +290,12 @@
     },
     {
       "folder": "overturned",
+      "label": "causeway.json",
+      "region": "overturned",
+      "room_id": 240
+    },
+    {
+      "folder": "overturned",
       "label": "cove.json",
       "region": "overturned",
       "room_id": 216
@@ -320,6 +326,24 @@
     },
     {
       "folder": "overturned",
+      "label": "depths.json",
+      "region": "overturned",
+      "room_id": 241
+    },
+    {
+      "folder": "overturned",
+      "label": "ditch.json",
+      "region": "overturned",
+      "room_id": 247
+    },
+    {
+      "folder": "overturned",
+      "label": "dugout.json",
+      "region": "overturned",
+      "room_id": 245
+    },
+    {
+      "folder": "overturned",
       "label": "forest_wall.json",
       "region": "overturned",
       "room_id": 207
@@ -341,6 +365,12 @@
       "label": "hanging_roots.json",
       "region": "overturned",
       "room_id": 213
+    },
+    {
+      "folder": "overturned",
+      "label": "hole.json",
+      "region": "overturned",
+      "room_id": 242
     },
     {
       "folder": "overturned",
@@ -392,6 +422,12 @@
     },
     {
       "folder": "overturned",
+      "label": "nettles.json",
+      "region": "overturned",
+      "room_id": 244
+    },
+    {
+      "folder": "overturned",
       "label": "outcrop.json",
       "region": "overturned",
       "room_id": 228
@@ -428,6 +464,12 @@
     },
     {
       "folder": "overturned",
+      "label": "roots.json",
+      "region": "overturned",
+      "room_id": 243
+    },
+    {
+      "folder": "overturned",
       "label": "ruins.json",
       "region": "overturned",
       "room_id": 214
@@ -455,6 +497,12 @@
       "label": "throughway.json",
       "region": "overturned",
       "room_id": 211
+    },
+    {
+      "folder": "overturned",
+      "label": "trunks.json",
+      "region": "overturned",
+      "room_id": 246
     },
     {
       "folder": "overturned",

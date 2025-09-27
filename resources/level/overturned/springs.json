@@ -17,6 +17,23 @@
           7
         ],
         "source_id": 239
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "destination_id": 240,
+        "dimensions": [
+          2,
+          1
+        ],
+        "id": 0,
+        "key_id": 0,
+        "locked": false,
+        "position": [
+          39,
+          0
+        ],
+        "source_id": 239
       }
     ]
   },
@@ -54,8 +71,8 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
-      "environmental_randomness": false,
+      "day_night_shift": true,
+      "environmental_randomness": true,
       "lighting": false,
       "timer": false
     },

@@ -1,19 +1,19 @@
 #pragma once
 
+#include <fornani/audio/Soundboard.hpp>
+#include <fornani/entities/Entity.hpp>
 #include <fornani/entities/Mobile.hpp>
+#include <fornani/entities/packages/FloatingPart.hpp>
+#include <fornani/entities/packages/Health.hpp>
+#include <fornani/entities/packages/WeaponPackage.hpp>
+#include <fornani/graphics/Animatable.hpp>
+#include <fornani/graphics/Indicator.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Math.hpp>
+#include <fornani/utils/Polymorphic.hpp>
+#include <fornani/utils/StateFunction.hpp>
 #include <string_view>
-#include "fornani/audio/Soundboard.hpp"
-#include "fornani/entities/Entity.hpp"
-#include "fornani/entities/packages/FloatingPart.hpp"
-#include "fornani/entities/packages/Health.hpp"
-#include "fornani/entities/packages/WeaponPackage.hpp"
-#include "fornani/graphics/Animatable.hpp"
-#include "fornani/graphics/Indicator.hpp"
-#include "fornani/io/Logger.hpp"
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Math.hpp"
-#include "fornani/utils/Polymorphic.hpp"
-#include "fornani/utils/StateFunction.hpp"
 
 namespace fornani::player {
 class Player;
@@ -30,6 +30,7 @@ class Projectile;
 namespace fornani::enemy {
 
 enum class EnemyChannel : std::uint8_t { standard, hurt_1, hurt_2, invincible };
+enum class EnemySize : std::uint8_t { tiny, small, medium, large, giant };
 enum class GeneralFlags : std::uint8_t {
 	mobile,
 	gravity,
@@ -50,7 +51,7 @@ enum class GeneralFlags : std::uint8_t {
 	spike_collision,
 	sturdy
 };
-enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, flip, advance, simple_physics, no_shake, out_of_zone, no_slowdown, intangible };
+enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, simple_physics, no_shake, out_of_zone, no_slowdown, intangible };
 enum class Triggers : std::uint8_t { hostile, alert };
 enum class Variant : std::uint8_t { beast, soldier, elemental, worker, guardian };
 
@@ -63,6 +64,7 @@ struct Attributes {
 	int rare_drop_id{};
 	int respawn_distance{};
 	float gravity{};
+	EnemySize size{EnemySize::medium};
 };
 
 struct Flags {
@@ -80,8 +82,8 @@ class Enemy : public Mobile {
 	virtual void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	virtual void gui_render([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win, [[maybe_unused]] sf::Vector2f cam) {};
+	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 
-	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 
 	void handle_player_collision(player::Player& player) const;
@@ -90,7 +92,6 @@ class Enemy : public Mobile {
 	void on_crush(world::Map& map);
 	bool seek_home(world::Map& map);
 	void set_channel(EnemyChannel to) { Animatable::set_channel(static_cast<int>(to)); }
-	void request_flip() { flags.state.set(StateFlags::flip); }
 
 	[[nodiscard]] auto is_hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto is_alert() const -> bool { return flags.state.test(StateFlags::alert); }

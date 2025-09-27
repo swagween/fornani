@@ -390,7 +390,10 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 	for (auto& chest : chests) { chest.update(svc, *this, console, *player); }
-	for (auto& npc : npcs) { npc->update(svc, *this, console, *player); }
+	for (auto& npc : npcs) {
+		npc->update(svc, *this, console, *player);
+		npc->post_update(svc, *this, *player);
+	}
 	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->update(svc, console, *this, *player); }
 	// for (auto& portal : portals) { portal.handle_activation(svc, *player, console, room_id, transition); }
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *this, console, *player); }

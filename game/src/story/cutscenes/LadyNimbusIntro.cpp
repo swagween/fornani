@@ -1,7 +1,7 @@
 
 #include "fornani/story/cutscene/LadyNimbusIntro.hpp"
-#include "fornani/entities/player/Player.hpp"
 #include <fornani/gui/console/Console.hpp>
+#include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/world/Map.hpp"
 
@@ -10,15 +10,20 @@ namespace fornani {
 LadyNimbusIntro::LadyNimbusIntro(automa::ServiceProvider& svc) : Cutscene(svc, 601, "lady_nimbus_intro") { cooldowns.beginning.start(); }
 
 void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
-	if (complete()) {
+
+	if (complete() && map.transition.is(graphics::TransitionState::inactive)) {
 		map.transition.start();
+		return;
+	} else if (complete() && map.transition.is(graphics::TransitionState::black)) {
 		svc.state_controller.switch_rooms(199, metadata.target_state_on_end, map.transition);
 		svc.state_flags.reset(automa::StateFlags::no_menu);
+		svc.state_flags.reset(automa::StateFlags::cutscene);
 		return;
 	}
 
 	svc.state_flags.set(automa::StateFlags::hide_hud);
 	svc.state_flags.set(automa::StateFlags::no_menu);
+	svc.state_flags.set(automa::StateFlags::cutscene);
 	cooldowns.beginning.update();
 	cooldowns.pause.update();
 	cooldowns.long_pause.update();
@@ -26,7 +31,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 
 	if (metadata.no_player) {
 		player.set_position({3200.f, -64.f});
-		player.controller.prevent_movement();
+		player.controller.restrict_movement();
 		player.collider.physics.zero_y();
 	}
 

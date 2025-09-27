@@ -540,7 +540,7 @@ fsm::StateFunction Minigus::update_turn() {
 	if (change_state(MinigusState::struggle, struggle)) { return MINIGUS_BIND(update_struggle); }
 	Enemy::directions.desired.lock();
 	if (Enemy::animation.complete()) {
-		request_flip();
+		Enemy::request_flip();
 		if (invincible()) {
 			counters.invincible_turn.update();
 			if (m_minigun.flags.test(MinigunFlags::exhausted)) {

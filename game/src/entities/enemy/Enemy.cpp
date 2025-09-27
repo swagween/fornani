@@ -52,6 +52,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 	attributes.rare_drop_id = in_attributes["rare_drop_id"].as<int>();
 	attributes.respawn_distance = in_attributes["respawn_distance"].as<int>();
 	if (in_attributes["permadeath"].as_bool()) { flags.general.set(GeneralFlags::permadeath); };
+	if (in_attributes["size"]) { attributes.size = static_cast<EnemySize>(in_attributes["size"].as<int>()); }
 
 	visual.effect_size = in_visual["effect_size"].as<int>();
 	visual.effect_type = in_visual["effect_type"].as<int>();
@@ -121,7 +122,14 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
 		map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.get_center(), 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id));
-		svc.soundboard.flags.enemy.set(audio::Enemy::standard_death);
+		switch (attributes.size) {
+		case EnemySize::tiny: svc.soundboard.flags.enemy.set(audio::Enemy::high_death); break;
+		case EnemySize::small: svc.soundboard.flags.enemy.set(audio::Enemy::high_death); break;
+		case EnemySize::medium: svc.soundboard.flags.enemy.set(audio::Enemy::standard_death); break;
+		case EnemySize::large: svc.soundboard.flags.enemy.set(audio::Enemy::low_death); break;
+		case EnemySize::giant: svc.soundboard.flags.enemy.set(audio::Enemy::low_death); break;
+		default: svc.soundboard.flags.enemy.set(audio::Enemy::standard_death); break;
+		}
 		map.spawn_counter.update(-1);
 	}
 	flags.triggers = {};
@@ -212,12 +220,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	handle_player_collision(player);
-	if (flags.state.consume(StateFlags::flip)) {
-		if (directions.desired.lnr != directions.actual.lnr) { flip(); }
-		directions.desired.unlock();
-		directions.actual = directions.desired;
-	}
-	Animatable::tick();
+	Mobile::post_update(svc, map, player);
 }
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {

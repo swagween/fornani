@@ -279,7 +279,7 @@
 		"physical": {
 			"dimensions": [ 40, 40 ],
 			"sprite_dimensions": [ 128, 80 ],
-			"offset": [ 0, -25 ],
+			"offset": [ 0, -27 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 600.0, 300.0 ],
@@ -370,10 +370,9 @@
 			"variant": "guardian"
 		},
 		"physical": {
-			"dimensions": [ 20, 60 ],
-			"sprite_dimensions": [ 64, 64 ],
-			"spritesheet_dimensions": [ 2, 9 ],
-			"offset": [ 11, 28 ],
+			"dimensions": [ 30, 30 ],
+			"sprite_dimensions": [ 32, 32 ],
+			"offset": [ 0, -14 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 1600.0, 1600.0 ],
@@ -747,7 +746,8 @@
 			"drop_range": [ 0, 0 ],
 			"rare_drop_id": 0,
 			"respawn_distance": 8,
-			"permadeath": false
+			"permadeath": false,
+			"size": 1
 		},
 		"general": {
 			"mobile": true,

@@ -545,7 +545,7 @@ fsm::StateFunction Lynx::update_turn() {
 		if (i == 1) { slash.set_constant_radius(32.f); }
 	}
 	if (Enemy::animation.complete()) {
-		request_flip();
+		Enemy::request_flip();
 		request(LynxState::idle);
 		if (change_state(LynxState::idle, get_params("idle"))) { return LYNX_BIND(update_idle); }
 	}

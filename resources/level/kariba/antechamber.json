@@ -1,5 +1,33 @@
 {
   "entities": {
+    "inspectables": [
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": false,
+        "key": "darkness",
+        "position": [
+          18,
+          7
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "message": "The ruins swallow him who journeys forth without a guiding light."
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,
@@ -34,6 +62,19 @@
           7
         ],
         "source_id": 500
+      }
+    ],
+    "save_point": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 500,
+        "position": [
+          20,
+          7
+        ]
       }
     ]
   },
@@ -71,8 +112,8 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
-      "environmental_randomness": false,
+      "day_night_shift": true,
+      "environmental_randomness": true,
       "lighting": true,
       "timer": false
     },
@@ -822,8 +863,8 @@
         0,
         0,
         0,
-        0,
-        0,
+        372,
+        373,
         0,
         0,
         0,
@@ -854,8 +895,8 @@
         0,
         0,
         0,
-        0,
-        0,
+        388,
+        389,
         0,
         0,
         0,

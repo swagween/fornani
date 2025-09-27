@@ -253,22 +253,23 @@
     "class_package": {
       "projectile": {
         "type": 0,
-        "dimensions": [44.0, 44.0],
-        "radius": 4.0,
+        "dimensions": [22.0, 22.0],
+        "radius": 11.0,
         "attributes": {
-          "base_damage": 2,
-          "lifespan": 880,
+          "base_damage": 1,
+          "lifespan": 800,
           "lifespan_variance": 0,
-          "speed": 10.5,
-          "variance": 0.2,
+          "speed": 19.5,
+          "variance": 0.0,
           "stun_time": 0.0,
           "knockback": 0.0,
-          "transcendent": true,
+          "transcendent": false,
           "omnidirectional": true,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
           "dampen_factor": 0.0,
-          "gravity": 0.4
+          "gravity": 0.01,
+          "elasticity": 0.0
         },
         "animation": {
           "num_sprites": 1,

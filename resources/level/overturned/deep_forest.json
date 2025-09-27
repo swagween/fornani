@@ -1,5 +1,59 @@
 {
   "entities": {
+    "inspectables": [
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": true,
+        "key": "the_way",
+        "position": [
+          68,
+          53
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "message": "< Kariba Ruins          Woodshine Village >"
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": true,
+        "key": "the_way_2",
+        "position": [
+          29,
+          30
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "message": "Old Mimic's Farm ^          Woodshine Village >         Kariba Ruins >"
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": true,
@@ -2596,6 +2650,7 @@
         0,
         0,
         0,
+        388,
         0,
         0,
         0,
@@ -4474,8 +4529,7 @@
         0,
         0,
         0,
-        0,
-        0,
+        388,
         0,
         0,
         0,
@@ -45048,7 +45102,7 @@
         96,
         0,
         0,
-        0,
+        497,
         96,
         96,
         96,
@@ -45207,7 +45261,7 @@
         96,
         480,
         0,
-        0,
+        497,
         96,
         96,
         96,
@@ -45367,7 +45421,7 @@
         0,
         0,
         0,
-        0,
+        481,
         96,
         96,
         96,
@@ -45448,7 +45502,7 @@
         0,
         0,
         0,
-        0,
+        481,
         96,
         96,
         96,
@@ -45529,8 +45583,8 @@
         0,
         0,
         0,
-        0,
-        0,
+        462,
+        463,
         96,
         96,
         96,

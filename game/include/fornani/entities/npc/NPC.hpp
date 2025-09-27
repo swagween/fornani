@@ -42,6 +42,7 @@ class NPC : public Mobile {
   public:
 	NPC(automa::ServiceProvider& svc, std::string_view label);
 	void update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player);
+	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos);
 	void force_engage();
 	void set_position(sf::Vector2f pos);

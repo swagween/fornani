@@ -1259,7 +1259,7 @@
       "suite": [
         [
           {
-            "message": ""
+            "message": "Your next paycheck isn't going to exist, I'm afraid."
           }
         ]
       ]
@@ -1467,7 +1467,7 @@
       "suite": [
         [
           {
-            "codes": [[5, 3]],
+            "codes": [[5, 2]],
             "message": "..."
           },
           {
@@ -1486,7 +1486,7 @@
         [
           {
             "codes": [
-              [5, 3],
+              [5, 2],
               [4, 5]
             ],
             "message": "This isn't over!"

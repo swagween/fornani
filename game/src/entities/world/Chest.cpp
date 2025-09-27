@@ -1,7 +1,7 @@
 
 #include "fornani/entities/world/Chest.hpp"
-#include "fornani/entities/player/Player.hpp"
 #include <fornani/gui/console/Console.hpp>
+#include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/world/Map.hpp"
 
@@ -66,7 +66,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 }
 
 void Chest::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	auto sprite_position = collider.physics.position - cam + sf::Vector2f{0.f, 1.f};
+	auto sprite_position = collider.physics.position - cam + sf::Vector2f{0.f, -2.f};
 	Drawable::set_position(sprite_position);
 	win.draw(*this);
 }

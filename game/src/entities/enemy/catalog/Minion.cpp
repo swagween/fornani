@@ -57,16 +57,14 @@ fsm::StateFunction Minion::update_idle() {
 	m_state.actual = MinionState::idle;
 	if (change_state(MinionState::turn, get_params("turn"))) { return MINION_BIND(update_turn); }
 	if (change_state(MinionState::blink, get_params("blink"))) { return MINION_BIND(update_blink); }
-	if (collider.grounded()) {
-		if (change_state(MinionState::jump, get_params("jump"))) { return MINION_BIND(update_jump); }
-	}
+	if (change_state(MinionState::jump, get_params("jump")) && collider.grounded()) { return MINION_BIND(update_jump); }
 	return MINION_BIND(update_idle);
 }
 
 fsm::StateFunction Minion::update_blink() {
 	m_state.actual = MinionState::blink;
 	if (animation.is_complete()) {
-		if (change_state(MinionState::jump, get_params("jump"))) { return MINION_BIND(update_jump); }
+		if (change_state(MinionState::jump, get_params("jump")) && collider.grounded()) { return MINION_BIND(update_jump); }
 		if (change_state(MinionState::turn, get_params("turn"))) { return MINION_BIND(update_turn); }
 		request(MinionState::idle);
 		if (change_state(MinionState::idle, get_params("idle"))) { return MINION_BIND(update_idle); }
@@ -90,7 +88,7 @@ fsm::StateFunction Minion::update_turn() {
 	m_state.actual = MinionState::turn;
 	if (animation.complete()) {
 		request_flip();
-		if (change_state(MinionState::jump, get_params("jump"))) { return MINION_BIND(update_jump); }
+		if (change_state(MinionState::jump, get_params("jump")) && collider.grounded()) { return MINION_BIND(update_jump); }
 		request(MinionState::idle);
 		if (change_state(MinionState::idle, get_params("idle"))) { return MINION_BIND(update_idle); }
 	}

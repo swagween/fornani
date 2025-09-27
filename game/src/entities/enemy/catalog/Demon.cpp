@@ -15,6 +15,7 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map, int variant)
 				{"rush", {11, 1, demon_framerate * 2, 0}}, {"stab", {11, 3, demon_framerate, 0}},	 {"uppercut", {14, 3, demon_framerate, 0}}, {"jumpsquat", {11, 1, demon_framerate * 3, 0}}, {"dormant", {18, 1, demon_framerate * 5, -1}}};
 
 	animation.set_params(get_params("dormant"));
+	if (map.style_id == 5) { animation.set_params(get_params("idle")); }
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.flags.general.set(shape::General::complex);
 	collider.physics.air_friction = {0.95f, 0.999f};
@@ -152,8 +153,9 @@ void Demon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	} else {
 		if (!is_state(DemonState::stab) && !is_state(DemonState::uppercut)) { parts.sword.render(svc, win, cam); }
 	}
-	if (attacks.stab.hit.active()) { attacks.stab.render(win, cam); }
-	if (svc.greyblock_mode()) {}
+	if (svc.greyblock_mode()) {
+		if (attacks.stab.hit.active()) { attacks.stab.render(win, cam); }
+	}
 }
 
 fsm::StateFunction Demon::update_idle() {
@@ -259,7 +261,7 @@ fsm::StateFunction Demon::update_stab() {
 		random::percent_chance(50) ? m_services->soundboard.flags.lynx.set(audio::Lynx::swipe_1) : m_services->soundboard.flags.lynx.set(audio::Lynx::swipe_2);
 		cooldowns.stab.start();
 	}
-	if (!m_flags.test(DemonFlags::parrying) && cooldowns.stab.running()) {
+	if (cooldowns.stab.running()) {
 		auto force = 60.f * directions.actual.as_float();
 		collider.physics.acceleration.x = force;
 	}

@@ -12,11 +12,11 @@ struct ServiceProvider;
 }
 namespace pi {
 
-constexpr auto spacing_v = 24.f;
+constexpr auto spacing_v = 32.f;
 constexpr sf::Color excluded_room_color_v{120, 80, 80, 20};
 constexpr sf::Color highlighted_excluded_room_color_v{120, 100, 80, 60};
-constexpr sf::Color room_color_v{79, 22, 32, 180};
-constexpr sf::Color highighted_room_color_v{201, 9, 42, 180};
+constexpr sf::Color room_color_v{79, 22, 32, 220};
+constexpr sf::Color highighted_room_color_v{79, 22, 32, 100};
 
 class Room {
   public:
@@ -41,6 +41,7 @@ class Room {
 
   private:
 	sf::RectangleShape m_box{};
+	sf::RenderTexture m_texture{};
 	sf::Vector2i m_position{};
 	sf::Text m_label;
 	sf::Text m_biome;

@@ -269,6 +269,7 @@ class Player {
 	[[nodiscard]] auto can_slide() const -> bool;
 	[[nodiscard]] auto can_jump() const -> bool;
 	[[nodiscard]] auto can_wallslide() const -> bool;
+	[[nodiscard]] auto can_walljump() const -> bool;
 
 	struct {
 		components::SteeringBehavior steering{};

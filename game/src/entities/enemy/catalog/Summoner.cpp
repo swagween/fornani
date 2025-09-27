@@ -92,10 +92,10 @@ void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		if (!m_cooldowns.post_summon.running() && can_summon) {
 			request(SummonerState::summon);
 		} else {
-			if (random::percent_chance(20)) { request(SummonerState::walk); }
+			if (random::percent_chance(20) && !m_cooldowns.post_walk.running()) { request(SummonerState::walk); }
 		}
 	}
-	if (player.collider.bounding_box.overlaps(collider.vicinity)) { request(SummonerState::walk); }
+	if (player.collider.bounding_box.overlaps(collider.vicinity) && !m_cooldowns.post_walk.running()) { request(SummonerState::walk); }
 
 	// caution
 	auto incoming_projectile = m_caution.projectile_detected(map, physical.alert_range, arms::Team::skycorps);
@@ -188,6 +188,7 @@ fsm::StateFunction Summoner::update_walk() {
 	if (change_state(SummonerState::horizontal_pulse, get_params("horizontal_pulse"))) { return SUMMONER_BIND(update_horizontal_pulse); }
 	if (change_state(SummonerState::vertical_pulse, get_params("vertical_pulse"))) { return SUMMONER_BIND(update_vertical_pulse); }
 	if (m_cooldowns.walk.is_almost_complete()) {
+		m_cooldowns.post_walk.start();
 		if (change_state(SummonerState::dodge, get_params("dodge"))) { return SUMMONER_BIND(update_dodge); }
 		if (change_state(SummonerState::turn, get_params("turn"))) { return SUMMONER_BIND(update_turn); }
 		request(SummonerState::idle);
@@ -247,6 +248,7 @@ fsm::StateFunction Summoner::update_vertical_pulse() {
 fsm::StateFunction Summoner::update_begin_summon() {
 	m_state.actual = SummonerState::begin_summon;
 	if (animation.is_complete()) {
+		m_services->soundboard.flags.summoner.set(audio::Summoner::summon);
 		request(SummonerState::summon);
 		if (change_state(SummonerState::summon, get_params("summon"))) { return SUMMONER_BIND(update_summon); }
 	}

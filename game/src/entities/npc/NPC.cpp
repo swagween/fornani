@@ -50,7 +50,6 @@ NPC::NPC(automa::ServiceProvider& svc, std::string_view label)
 }
 
 void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player) {
-	tick();
 	face_player(player);
 	update_animation();
 	if (piggybacking()) { current_location = -1; }
@@ -99,6 +98,8 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	}
 	triggers = {};
 }
+
+void NPC::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) { Mobile::post_update(svc, map, player); }
 
 void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos) {
 	if (state_flags.test(NPCState::hidden)) { return; }
@@ -158,8 +159,7 @@ void NPC::update_animation() {
 		m_anim_state = NPCAnimationState::turn;
 	}
 	if (m_anim_state == NPCAnimationState::turn && animation.complete()) {
-		if (directions.actual.lnr != directions.desired.lnr) { flip(); }
-		directions.actual.lnr = directions.desired.lnr;
+		request_flip();
 		set_parameters(m_params.at("idle"));
 		m_anim_state = NPCAnimationState::idle;
 	}

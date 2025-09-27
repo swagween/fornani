@@ -62,9 +62,9 @@ void Player::update(world::Map& map) {
 
 	// camera stuff
 	auto camx = controller.direction.as_float() * 32.f;
-	auto skew = 160.f;
+	auto skew = 180.f;
 	m_camera.target_point = sf::Vector2f{camx, skew * controller.vertical_movement()};
-	auto force_multiplier = 1.f - ccm::abs(controller.vertical_movement());
+	auto force_multiplier = 1.f;
 	if (controller.is_dashing() || controller.sprint_held()) {
 		force_multiplier = 1.f;
 		m_camera.target_point = sf::Vector2f{camx, 0.f};
@@ -697,6 +697,12 @@ bool Player::can_jump() const {
 bool Player::can_wallslide() const {
 	if (health.is_dead()) { return false; }
 	if (collider.physics.apparent_velocity().y < wallslide_threshold_v) { return false; }
+	if (!catalog.inventory.has_item("kariba_talisman")) { return false; }
+	return true;
+}
+
+bool Player::can_walljump() const {
+	if (health.is_dead()) { return false; }
 	if (!catalog.inventory.has_item("kariba_talisman")) { return false; }
 	return true;
 }

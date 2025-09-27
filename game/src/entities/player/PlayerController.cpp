@@ -20,6 +20,8 @@ PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player)
 
 void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Player& player) {
 
+	if (svc.state_flags.test(automa::StateFlags::cutscene)) { return; }
+
 	auto sprint = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).held;
 	auto sprint_release = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).released;
 	auto sprint_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).triggered;
@@ -106,7 +108,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 			m_ability = std::make_unique<Doublejump>(svc, map, player.collider);
 			player.m_ability_usage.doublejump.update();
 		}
-		auto can_walljump = (player.collider.has_right_wallslide_collision() || player.collider.has_left_wallslide_collision()) && !player.collider.grounded();
+		auto can_walljump = (player.collider.has_right_wallslide_collision() || player.collider.has_left_wallslide_collision()) && !player.collider.grounded() && player.can_walljump();
 		auto jump_direction = player.collider.has_right_wallslide_collision() ? Direction{LR::right} : player.collider.has_left_wallslide_collision() ? Direction{LR::left} : Direction{};
 		if (can_walljump) { m_ability = std::make_unique<Walljump>(svc, map, player.collider, jump_direction); }
 	}

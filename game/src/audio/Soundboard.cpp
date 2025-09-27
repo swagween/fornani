@@ -172,6 +172,9 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	// summoner
 	if (flags.summoner.test(Summoner::block_1)) { play(engine, svc, svc.sounds.get_buffer("summoner_block_1"), 0.2f, 20.f); }
 	if (flags.summoner.test(Summoner::block_2)) { play(engine, svc, svc.sounds.get_buffer("summoner_block_2"), 0.2f, 20.f); }
+	if (flags.summoner.test(Summoner::hurt_1)) { play(engine, svc, svc.sounds.get_buffer("summoner_hurt_1"), 0.2f, 20.f); }
+	if (flags.summoner.test(Summoner::hurt_2)) { play(engine, svc, svc.sounds.get_buffer("summoner_hurt_2"), 0.2f, 20.f); }
+	if (flags.summoner.test(Summoner::summon)) { play(engine, svc, svc.sounds.get_buffer("summoner_summon"), 0.2f, 40.f); }
 
 	// general enemy
 	if (flags.enemy.test(Enemy::hit_low)) { play(engine, svc, svc.sounds.get_buffer("hit_low")); }
@@ -179,6 +182,8 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.enemy.test(Enemy::hit_high)) { play(engine, svc, svc.sounds.get_buffer("hit_high")); }
 	if (flags.enemy.test(Enemy::hit_squeak)) { play(engine, svc, svc.sounds.get_buffer("hit_squeak")); }
 	if (flags.enemy.test(Enemy::standard_death)) { play(engine, svc, svc.sounds.get_buffer("standard_death")); }
+	if (flags.enemy.test(Enemy::high_death)) { play(engine, svc, svc.sounds.get_buffer("high_death")); }
+	if (flags.enemy.test(Enemy::low_death)) { play(engine, svc, svc.sounds.get_buffer("low_death")); }
 	if (flags.enemy.test(Enemy::jump_low)) { play(engine, svc, svc.sounds.get_buffer("jump_low")); }
 
 	// item

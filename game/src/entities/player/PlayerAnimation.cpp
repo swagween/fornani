@@ -310,6 +310,8 @@ fsm::StateFunction PlayerAnimation::update_suspend() {
 	animation.label = "suspend";
 	m_actual = AnimState::suspend;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
+	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
+	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"))) { return PA_BIND(update_wallslide); }
