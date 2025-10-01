@@ -15,7 +15,6 @@
         "type": 2
       }
     ],
-    "inspectables": [],
     "platforms": [
       {
         "dimensions": [
@@ -182,13 +181,13 @@
       "reverse_obscuring": false
     },
     "ignore_lighting": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ],
     "layers": [
       [

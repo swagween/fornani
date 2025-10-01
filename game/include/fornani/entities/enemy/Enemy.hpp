@@ -3,6 +3,7 @@
 #include <fornani/audio/Soundboard.hpp>
 #include <fornani/entities/Entity.hpp>
 #include <fornani/entities/Mobile.hpp>
+#include <fornani/entities/animation/StateMachine.hpp>
 #include <fornani/entities/packages/FloatingPart.hpp>
 #include <fornani/entities/packages/Health.hpp>
 #include <fornani/entities/packages/WeaponPackage.hpp>
@@ -29,7 +30,7 @@ class Projectile;
 
 namespace fornani::enemy {
 
-enum class EnemyChannel : std::uint8_t { standard, hurt_1, hurt_2, invincible };
+enum class EnemyChannel : std::uint8_t { standard, hurt_1, hurt_2, invincible, extra_1, extra_2 };
 enum class EnemySize : std::uint8_t { tiny, small, medium, large, giant };
 enum class GeneralFlags : std::uint8_t {
 	mobile,
@@ -49,7 +50,8 @@ enum class GeneralFlags : std::uint8_t {
 	has_invincible_channel,
 	invincible_secondary,
 	spike_collision,
-	sturdy
+	sturdy,
+	custom_channels
 };
 enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, simple_physics, no_shake, out_of_zone, no_slowdown, intangible };
 enum class Triggers : std::uint8_t { hostile, alert };
@@ -149,6 +151,8 @@ class Enemy : public Mobile {
 	int afterlife{200};
 
 	util::Cooldown hurt_effect{};
+
+	EnemyChannel m_custom_channel{};
 
 	struct {
 		int id{};

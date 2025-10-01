@@ -51,7 +51,7 @@ class HUD {
 	sf::Vector2<int> orb_text_dimensions{18, 16};
 	sf::Vector2<int> ammo_dimensions{10, 28};
 	sf::Vector2f f_ammo_dimensions{10.f, 28.f};
-	sf::Vector2<int> gun_dimensions{66, 18};
+	sf::Vector2<int> gun_dimensions{33, 9};
 	sf::Vector2<int> pointer_dimensions{14, 10};
 	sf::Vector2f corner_pad{};
 

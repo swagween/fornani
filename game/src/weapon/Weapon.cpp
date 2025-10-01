@@ -110,9 +110,9 @@ void Weapon::shoot() {
 	physical.physics.apply_force(firing_direction.get_vector() * -1.f);
 }
 
-void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map) {
+void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f target) {
 	shoot();
-	map.spawn_projectile_at(svc, *this, get_barrel_point());
+	map.spawn_projectile_at(svc, *this, get_barrel_point(), target);
 	svc.soundboard.flags.weapon.set(m_audio.shoot);
 }
 

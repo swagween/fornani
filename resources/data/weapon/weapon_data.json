@@ -74,7 +74,7 @@
 		"metadata": {
 			"id": 1,
 			"label": "Wasp",
-			"description": "A powerful pistol that Bryn gave to you."
+			"description": "A powerful pistol that Bryn gave to you in exchange for her gun that you found in Firstwind's laboratory."
 		},
 		"visual": {
 			"texture_lookup": 1,
@@ -109,7 +109,7 @@
 		"class_package": {
 			"projectile": {
 				"type": 0,
-				"dimensions": [ 6, 6 ],
+				"dimensions": [ 12, 12 ],
 				"radius": 4.0,
 				"attributes": {
 					"base_damage": 12,
@@ -210,7 +210,7 @@
 				"barrel": [ 13.0, 1.5 ],
 				"stock": [ 0, 0 ]
 			},
-			"ui": { "color": 6 },
+			"ui": { "color": 2 },
 			"spray": {
 				"dimensions": [ 3.0, 3.0 ],
 				"type": "guardian",
@@ -234,7 +234,7 @@
 				"radius": 12.0,
 				"audio": { "hit": 2 },
 				"attributes": {
-					"base_damage": 10,
+					"base_damage": 100,
 					"lifespan": 400,
 					"lifespan_variance": 0,
 					"speed": 15.0,

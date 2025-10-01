@@ -10,10 +10,10 @@
 
 namespace fornani::enemy {
 
-enum class MiaagState : std::uint8_t { idle, hurt, closed, dying, blinking, dormant, chomp, turn, awaken };
+enum class MiaagState : std::uint8_t { idle, hurt, closed, dying, blinking, dormant, chomp, turn, awaken, spellcast };
 enum class MiaagFlags : std::uint8_t { battle_mode, second_phase };
 
-class Miaag : public Enemy {
+class Miaag : public Enemy, public StateMachine<MiaagState> {
   public:
 	Miaag(automa::ServiceProvider& svc, world::Map& map);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
@@ -21,6 +21,8 @@ class Miaag : public Enemy {
 	void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 
 	[[nodiscard]] auto invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable); }
+	[[nodiscard]] auto battle_mode() const -> bool { return m_flags.test(MiaagFlags::battle_mode); }
+	[[nodiscard]] auto second_phase() const -> bool { return m_flags.test(MiaagFlags::second_phase); }
 	[[nodiscard]] auto half_health() const -> bool { return health.get_hp() < health.get_max() * 0.5f; }
 
 	fsm::StateFunction state_function = std::bind(&Miaag::update_dormant, this);
@@ -30,23 +32,31 @@ class Miaag : public Enemy {
 	fsm::StateFunction update_hurt();
 	fsm::StateFunction update_closed();
 	fsm::StateFunction update_chomp();
+	fsm::StateFunction update_spellcast();
 	fsm::StateFunction update_turn();
 
   private:
-	struct {
-		MiaagState actual{};
-		MiaagState desired{};
-	} m_state{};
 	util::BitFlags<MiaagFlags> m_flags{};
-	void request(MiaagState to) { m_state.desired = to; }
 	bool change_state(MiaagState next, anim::Parameters params);
 	gui::BossHealth m_health_bar;
 	vfx::Sparkler m_breath{};
 
 	components::SteeringBehavior m_steering{};
+	entity::WeaponPackage m_magic;
+	sf::Vector2f m_player_target{};
+	sf::Vector2f m_target_point{};
 
-	std::unordered_map<std::string, anim::Parameters> m_params;
-	anim::Parameters const& get_params(std::string const& key);
+	struct {
+		util::Cooldown fire;
+		util::Cooldown charge;
+		util::Cooldown limit;
+		util::Cooldown post_magic;
+		util::Cooldown interlude;
+		util::Cooldown chomped;
+	} m_cooldowns;
+
+	automa::ServiceProvider* m_services;
+	world::Map* m_map;
 };
 
 } // namespace fornani::enemy

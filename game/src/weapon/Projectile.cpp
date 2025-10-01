@@ -11,7 +11,7 @@ namespace fornani::arms {
 
 Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon, bool enemy)
 	: Animatable(svc, "projectile_" + std::string{label}), metadata{.id = id, .label = label}, m_weapon(&weapon),
-	  physical{.collider{enemy ? svc.data.enemy_weapon[label]["class_package"]["projectile"]["radius"].as<float>() : svc.data.weapon[label]["class_package"]["projectile"]["radius"].as<float>()}} {
+	  physical{.collider{enemy ? svc.data.enemy_weapon[label]["class_package"]["projectile"]["radius"].as<float>() : svc.data.weapon[label]["class_package"]["projectile"]["radius"].as<float>()}}, m_reflected{48} {
 
 	auto const& in_data = enemy ? svc.data.enemy_weapon[label]["class_package"]["projectile"] : svc.data.weapon[label]["class_package"]["projectile"];
 
@@ -42,6 +42,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	if (in_data["attributes"]["wander"].as_bool()) { metadata.attributes.set(ProjectileAttributes::wander); }
 	if (in_data["attributes"]["reflect"].as_bool()) { metadata.attributes.set(ProjectileAttributes::reflect); }
 	if (in_data["attributes"]["sprite_flip"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sprite_flip); }
+	if (in_data["attributes"]["sticky"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sticky); }
 
 	visual.num_angles = in_data["animation"]["angles"].as<int>();
 	visual.effect_type = in_data["visual"]["effect_type"].as<int>();
@@ -75,6 +76,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	tick();
 	cooldown.update();
 	lifetime.update();
+	m_reflected.update();
 	damage_timer.update();
 	if (variables.state.test(ProjectileState::destruction_initiated) && !metadata.attributes.test(ProjectileAttributes::constrained)) { destroy(true); }
 
@@ -89,7 +91,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	}
 
 	// animation
-	if (visual.num_angles > 0 && !sprite_flip()) { visual.rotator.handle_rotation(get_sprite(), physical.collider.physics.velocity, visual.num_angles); }
+	if (visual.num_angles > 0 && !sprite_flip() && !is_stuck()) { visual.rotator.handle_rotation(get_sprite(), physical.collider.physics.velocity, visual.num_angles); }
 	set_channel(visual.rotator.get_sprite_angle_index());
 	if (physical.sensor) { physical.sensor->set_position(physical.collider.get_global_center()); }
 
@@ -102,12 +104,23 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 }
 
 void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map) {
-	physical.collider.update(svc);
+	if (!is_stuck()) { physical.collider.update(svc); }
 	if (transcendent()) { return; }
 	if (reflect()) {
 		physical.collider.handle_map_collision(map);
-		if (physical.collider.collided()) { svc.soundboard.flags.projectile.set(audio.hit); }
+		if (physical.collider.collided() && !m_reflected.running()) {
+			svc.soundboard.flags.projectile.set(audio.hit);
+			m_reflected.start();
+		}
 		physical.collider.physics.acceleration = {};
+		return;
+	}
+	if (sticky()) {
+		physical.collider.handle_map_collision(map);
+		if (physical.collider.collided() && !is_stuck()) {
+			svc.soundboard.flags.projectile.set(audio.hit);
+			variables.state.set(ProjectileState::stuck);
+		}
 		return;
 	}
 	if (map.check_cell_collision_circle(physical.collider, false)) {
@@ -123,7 +136,7 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 }
 
 void Projectile::on_player_hit(player::Player& player) {
-	if (metadata.team == arms::Team::nani) { return; }
+	if (metadata.team == arms::Team::nani || is_stuck()) { return; }
 	if (player.is_dead()) { return; }
 	if (physical.sensor) {
 		if (physical.sensor.value().within_bounds(player.hurtbox)) { player.hurt(metadata.specifications.base_damage); }
@@ -157,8 +170,9 @@ void Projectile::destroy(bool completely, bool whiffed) {
 	variables.state.set(ProjectileState::destroyed);
 }
 
-void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2f target) {
+void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2f target, float speed_multiplier) {
 	float var = random::random_range_float(-metadata.specifications.variance, metadata.specifications.variance);
+	metadata.specifications.speed *= speed_multiplier;
 	if (omnidirectional()) {
 		physical.collider.physics.velocity = util::unit(target) * metadata.specifications.speed;
 		return;

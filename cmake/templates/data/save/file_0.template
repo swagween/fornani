@@ -71,6 +71,14 @@
 				"quantity": 1
 			},
 			{
+				"label": "outfitter_gizmo",
+				"quantity": 1
+			},
+			{
+				"label": "status_gizmo",
+				"quantity": 1
+			},
+			{
 				"label": "laboratory_key",
 				"quantity": 1
 			},

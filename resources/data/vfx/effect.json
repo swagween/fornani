@@ -1,89 +1,95 @@
 {
-	"hit_flash": {
-		"frame_count": 5,
-		"framerate": 12,
-		"dimensions": [ 32, 32 ],
-		"x_reflection": true,
-		"y_reflection": true
-	},
-	"inv_hit": {
-		"frame_count": 4,
-		"framerate": 12,
-		"dimensions": [ 16, 16 ]
-	},
-	"doublejump": {
-		"frame_count": 5,
-		"framerate": 16,
-		"dimensions": [ 24, 24 ]
-	},
-	"dash": {
-		"frame_count": 4,
-		"framerate": 16,
-		"dimensions": [ 16, 16 ]
-	},
-	"walljump": {
-		"frame_count": 4,
-		"framerate": 16,
-		"dimensions": [ 16, 16 ]
-	},
-	"wallslide": {
-		"frame_count": 4,
-		"framerate": 16,
-		"dimensions": [ 16, 16 ],
-		"x_reflection": true
-	},
-	"jump": {
-		"frame_count": 5,
-		"framerate": 32,
-		"dimensions": [ 16, 16 ],
-		"x_reflection": true
-	},
-	"dust": {
-		"frame_count": 5,
-		"framerate": 32,
-		"dimensions": [ 32, 32 ],
-		"x_reflection": true
-	},
-	"small_explosion": {
-		"frame_count": 7,
-		"framerate": 16,
-		"dimensions": [ 18, 18 ]
-	},
-	"large_explosion": {
-		"frame_count": 8,
-		"framerate": 16,
-		"dimensions": [ 27, 27 ]
-	},
-	"huge_explosion": {
-		"frame_count": 10,
-		"framerate": 16,
-		"dimensions": [ 96, 96 ]
-	},
-	"bullet_whiff": {
-		"frame_count": 4,
-		"framerate": 16,
-		"dimensions": [ 16, 16 ]
-	},
-	"bullet_hit": {
-		"frame_count": 4,
-		"framerate": 16,
-		"dimensions": [ 8, 16 ]
-	},
-	"puff": {
-		"frame_count": 4,
-		"framerate": 32,
-		"dimensions": [ 16, 16 ],
-		"x_reflection": true
-	},
-	"small_flash": {
-		"frame_count": 4,
-		"framerate": 16,
-		"dimensions": [ 16, 16 ]
-	},
-	"medium_flash": {
-		"frame_count": 5,
-		"framerate": 16,
-		"dimensions": [ 32, 32 ]
-	}
-
+  "hit_flash": {
+    "frame_count": 5,
+    "framerate": 12,
+    "dimensions": [32, 32],
+    "x_reflection": true,
+    "y_reflection": true
+  },
+  "inv_hit": {
+    "frame_count": 4,
+    "framerate": 12,
+    "dimensions": [16, 16]
+  },
+  "doublejump": {
+    "frame_count": 5,
+    "framerate": 16,
+    "dimensions": [24, 24]
+  },
+  "dash": {
+    "frame_count": 4,
+    "framerate": 16,
+    "dimensions": [16, 16]
+  },
+  "walljump": {
+    "frame_count": 4,
+    "framerate": 16,
+    "dimensions": [16, 16]
+  },
+  "wallslide": {
+    "frame_count": 4,
+    "framerate": 16,
+    "dimensions": [16, 16],
+    "x_reflection": true
+  },
+  "jump": {
+    "frame_count": 5,
+    "framerate": 32,
+    "dimensions": [16, 16],
+    "x_reflection": true
+  },
+  "dust": {
+    "frame_count": 5,
+    "framerate": 32,
+    "dimensions": [32, 32],
+    "x_reflection": true
+  },
+  "small_explosion": {
+    "frame_count": 7,
+    "framerate": 16,
+    "dimensions": [18, 18]
+  },
+  "large_explosion": {
+    "frame_count": 8,
+    "framerate": 16,
+    "dimensions": [27, 27]
+  },
+  "huge_explosion": {
+    "frame_count": 10,
+    "framerate": 16,
+    "dimensions": [96, 96]
+  },
+  "bullet_whiff": {
+    "frame_count": 4,
+    "framerate": 16,
+    "dimensions": [16, 16]
+  },
+  "bullet_hit": {
+    "frame_count": 4,
+    "framerate": 16,
+    "dimensions": [8, 16]
+  },
+  "puff": {
+    "frame_count": 4,
+    "framerate": 32,
+    "dimensions": [16, 16],
+    "x_reflection": true
+  },
+  "small_flash": {
+    "frame_count": 4,
+    "framerate": 16,
+    "dimensions": [16, 16]
+  },
+  "medium_flash": {
+    "frame_count": 5,
+    "framerate": 16,
+    "dimensions": [32, 32]
+  },
+  "demon_breath": {
+    "frame_count": 5,
+    "framerate": 12,
+    "dimensions": [32, 32],
+    "x_reflection": true,
+    "y_reflection": true
+  }
 }

@@ -13,9 +13,6 @@ enum class ArcherVariant { huntress, defender };
 class Archer final : public Enemy {
 
   public:
-	Archer() = delete;
-	~Archer() override {}
-	Archer& operator=(Archer&&) = delete;
 	Archer(automa::ServiceProvider& svc, world::Map& map);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
@@ -48,6 +45,7 @@ class Archer final : public Enemy {
 	struct {
 		util::Cooldown jump{40};
 		util::Cooldown post_jump{400};
+		util::Cooldown post_shoot{600};
 	} cooldowns{};
 
 	sf::Vector2f m_player_target{};

@@ -12,5 +12,6 @@ nani_add_headers(
         Tank.hpp
         Thug.hpp
         Hulmet.hpp
+        Spitefly.hpp
         Summoner.hpp
 )

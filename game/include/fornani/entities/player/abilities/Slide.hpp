@@ -16,6 +16,9 @@ class Slide : public Ability {
 	float m_minimum_threshold;
 	world::Map* m_map;
 	util::Cooldown m_post_slide{};
+	util::Counter m_accumulated_speed{};
+
+	automa::ServiceProvider* m_services;
 };
 
 } // namespace fornani::player

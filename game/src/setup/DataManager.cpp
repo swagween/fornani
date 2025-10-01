@@ -543,14 +543,14 @@ void DataManager::activate_switch(int id) {
 	if (!switch_is_activated(id)) { activated_switches.push_back(id); }
 }
 
-void DataManager::increment_destructible_state(int id, bool inverse) {
+void DataManager::switch_destructible_state(int id, bool inverse) {
 	for (auto [i, d] : std::views::enumerate(destructible_states)) {
 		if (d.first == id) {
-			d.second = std::clamp(d.second + 1, 0, 2);
+			d.second = (d.second + 1) % 2;
 			return;
 		}
 	}
-	auto state = inverse ? 1 : 2;
+	auto state = inverse ? 0 : 1;
 	destructible_states.push_back({id, state});
 }
 
@@ -571,7 +571,7 @@ void DataManager::set_npc_location(int npc_id, int room_id) {
 
 void DataManager::kill_enemy(int room_id, int id, int distance, bool permanent) {
 	for (auto& e : fallen_enemies) {
-		if (e.code.first == room_id && e.code.second) { return; }
+		if (e.code.first == room_id && e.code.second == id) { return; }
 	}
 	fallen_enemies.push_back({{room_id, id}, distance, permanent});
 }

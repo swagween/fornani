@@ -15,7 +15,7 @@ class WeaponPackage : public Entity {
 	WeaponPackage(automa::ServiceProvider& svc, std::string_view tag);
 	void update(automa::ServiceProvider& svc, world::Map& map, enemy::Enemy& enemy);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
-	void shoot(automa::ServiceProvider& svc, world::Map& map);
+	void shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f target = {});
 	void set_team(arms::Team team);
 	[[nodiscard]] auto get() const -> arms::Weapon& { return *weapon; }
 	[[nodiscard]] auto barrel_point() const -> sf::Vector2f { return weapon->get_barrel_point(); }

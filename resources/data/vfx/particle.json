@@ -329,6 +329,24 @@
     "color": "save"
   },
 
+  "super_slide": {
+    "load": 8,
+    "rate": 2.0,
+    "expulsion": 28.0,
+    "expulsion_variance": 18.0,
+    "cone": 0.98,
+    "friction": 0.995,
+    "elasticity": 0.0,
+    "gravity": 0.3,
+    "lifespan": 160,
+    "lifespan_variance": 40,
+    "dimensions": [3, 3],
+    "animated": false,
+    "colliding": false,
+    "fader": true,
+    "color": "yellow"
+  },
+
   "dash": {
     "load": 3,
     "rate": 2.0,

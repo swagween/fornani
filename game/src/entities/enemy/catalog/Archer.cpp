@@ -34,6 +34,7 @@ void Archer::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	m_player_target = player.collider.get_center() - correction;
 
 	cooldowns.post_jump.update();
+	cooldowns.post_shoot.update();
 
 	flags.state.set(StateFlags::vulnerable); // archer is always vulnerable
 	caution.avoid_ledges(map, collider, directions.actual, 3);
@@ -62,7 +63,7 @@ void Archer::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 
 	if (is_hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { request(ArcherState::run); }
 
-	if (is_alert() && !is_hostile() && svc.ticker.every_x_ticks(900)) { request(ArcherState::shoot); }
+	if (is_alert() && !is_hostile() && svc.ticker.every_x_ticks(900) && !cooldowns.post_shoot.running()) { request(ArcherState::shoot); }
 
 	if (just_died()) { m_services->soundboard.flags.archer.set(audio::Archer::death); }
 
@@ -137,9 +138,9 @@ fsm::StateFunction Archer::update_shoot() {
 		m_bow.get().set_barrel_point(bp);
 		m_map->spawn_projectile_at(*m_services, m_bow.get(), m_bow.get().get_barrel_point(), m_player_target - m_bow.get().get_barrel_point());
 		parts.bow.sprite->setTextureRect(sf::IntRect{{0, 0}, bow_dimensions});
+		cooldowns.post_shoot.start();
 		request(ArcherState::idle);
 		if (change_state(ArcherState::idle, get_params("idle"))) { return ARCHER_BIND(update_idle); }
-		return ARCHER_BIND(update_idle);
 	}
 	return ARCHER_BIND(update_shoot);
 }

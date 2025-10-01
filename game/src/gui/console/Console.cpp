@@ -101,14 +101,6 @@ void Console::update(automa::ServiceProvider& svc) {
 				NANI_LOG_DEBUG(m_logger, "Emotion!");
 				processed = true;
 			}
-			if (code.extras) {
-				if (!code.extras->empty()) {
-					if (code.is_destructible() && m_process_codes && code.extras->at(0) == 1) {
-						m_services->data.increment_destructible_state(code.value);
-						m_process_codes = false;
-					}
-				}
-			}
 		}
 	}
 
@@ -230,7 +222,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 						m_services->events.dispatch_event("GivePlayerItem", cde.value, 1);
 						if (cde.extras) { m_services->events.dispatch_event("DestroyInspectable", cde.extras->at(0)); }
 					}
-					if (cde.is_destructible()) { m_services->data.increment_destructible_state(cde.value); }
+					if (cde.is_destructible()) { m_services->data.switch_destructible_state(cde.value); }
 					if (cde.is_exit()) {
 						end();
 						return;
@@ -274,9 +266,9 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 				if (code.is_start_battle()) { m_services->events.dispatch_event("StartBattle", code.value); }
 				if (code.is_reveal_item() && m_process_codes) { m_services->events.dispatch_event("RevealItem", code.value); }
 				if (code.is_item() && m_process_code_after) { m_services->events.dispatch_event("GivePlayerItem", code.value, 1); }
-				if (code.is_destructible() && m_process_codes) {
+				if (code.is_destructible() && m_process_code_after) {
 					auto inverse = code.extras ? code.extras->at(0) : 0;
-					m_services->data.increment_destructible_state(code.value, static_cast<bool>(inverse));
+					m_services->data.switch_destructible_state(code.value, static_cast<bool>(inverse));
 				}
 				NANI_LOG_DEBUG(m_logger, "Requested next with code {}", code.value);
 			}

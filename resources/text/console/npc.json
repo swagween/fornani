@@ -1323,7 +1323,7 @@
           }
         ],
         [
-          { "codes": [[9, 25702]], "message": "To teach you a lesson I learned long ago." },
+          { "codes": [[9, 25702, 1]], "message": "To teach you a lesson I learned long ago." },
           {
             "codes": [[12, 0]],
             "message": "Enough talking, now. It is time you prove to me why Gus couldn't take care of you himself!"

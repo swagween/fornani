@@ -229,10 +229,10 @@ fsm::StateFunction PlayerAnimation::update_turn() {
 		triggers.set(AnimTriggers::flip);
 		return PA_BIND(update_rise);
 	}
+	if (change_state(AnimState::slide, get_params("slide"), true)) { return PA_BIND(update_slide); }
 	if (animation.complete()) {
 		triggers.set(AnimTriggers::flip);
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
-		if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 		if (change_state(AnimState::crouch, get_params("crouch"))) { return PA_BIND(update_crouch); }
 		if (change_state(AnimState::crawl, get_params("crouch"), true)) { return PA_BIND(update_crouch); }
 		if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }
@@ -262,11 +262,11 @@ fsm::StateFunction PlayerAnimation::update_sharp_turn() {
 		triggers.set(AnimTriggers::flip);
 		return PA_BIND(update_rise);
 	}
+	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 	if (animation.complete()) {
 		triggers.set(AnimTriggers::flip);
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
-		if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 		if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }
 		if (change_state(AnimState::suspend, get_params("suspend"))) { return PA_BIND(update_suspend); }
 		if (change_state(AnimState::push, get_params("between_push"))) { return PA_BIND(update_between_push); }
@@ -436,6 +436,7 @@ fsm::StateFunction PlayerAnimation::update_land() {
 	if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
+	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 	if (animation.complete()) {
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 		if (change_state(AnimState::crouch, get_params("crouch"))) { return PA_BIND(update_crouch); }
@@ -668,7 +669,7 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 	m_actual = AnimState::slide;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
-
+	if (change_state(AnimState::get_up, get_params("get_up"))) { return PA_BIND(update_get_up); }
 	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 	if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
@@ -680,7 +681,6 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 		request(AnimState::get_up);
 		if (change_state(AnimState::get_up, get_params("get_up"))) { return PA_BIND(update_get_up); }
 	}
-
 	return PA_BIND(update_slide);
 }
 

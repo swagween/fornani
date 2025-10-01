@@ -85,6 +85,23 @@
           71
         ],
         "source_id": 204
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "destination_id": 250,
+        "dimensions": [
+          23,
+          1
+        ],
+        "id": 0,
+        "key_id": 0,
+        "locked": false,
+        "position": [
+          4,
+          0
+        ],
+        "source_id": 204
       }
     ],
     "vines": [

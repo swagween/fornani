@@ -12,5 +12,6 @@ nani_add_sources(
         Tank.cpp
         Thug.cpp
         Hulmet.cpp
+        Spitefly.cpp
         Summoner.cpp
 )

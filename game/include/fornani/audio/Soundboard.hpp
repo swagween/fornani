@@ -43,8 +43,8 @@ enum class World : std::uint8_t {
 	gem_hit_2
 };
 enum class Item : std::uint8_t { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip, vendor_sale };
-enum class Player : std::uint8_t { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll, wallslide };
-enum class Weapon : std::uint8_t { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, plasmer, underdog, peckett_710, pulse };
+enum class Player : std::uint8_t { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll, wallslide, super_slide };
+enum class Weapon : std::uint8_t { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, plasmer, underdog, peckett_710, pulse, demon_magic };
 enum class Projectile : std::uint8_t { basic, shuriken, pulse };
 enum class Arms : std::uint8_t { reload };
 enum class Transmission : std::uint8_t { statics };
@@ -97,8 +97,8 @@ enum class Minigus : std::uint8_t {
 	grunt,
 	exhale
 };
-
 enum class Lynx : std::uint8_t { prepare, shing, ping_1, ping_2, swipe_1, swipe_2, slam, hoah, defeat, hah, heuh, hiyyah, hnnyah, huh, hurt_1, hurt_2, hurt_3, hurt_4, huuyeah, nngyah, yyah, laugh, giggle };
+enum class Miaag : std::uint8_t { growl, hiss, hurt, roar, chomp };
 
 enum class NPC : std::uint8_t { minigus_greatidea, minigus_dontlookatme, minigus_laugh, minigus_getit, minigus_pizza, minigus_grunt };
 
@@ -142,6 +142,7 @@ class Soundboard {
 		util::BitFlags<Beamstalk> beamstalk{};
 		util::BitFlags<Meatsquash> meatsquash{};
 		util::BitFlags<Lynx> lynx{};
+		util::BitFlags<Miaag> miaag{};
 		util::BitFlags<NPC> npc{};
 	} flags{};
 

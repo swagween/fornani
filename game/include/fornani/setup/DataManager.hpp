@@ -63,7 +63,7 @@ class DataManager final {
 	void open_chest(int id);
 	void unlock_door(int id);
 	void activate_switch(int id);
-	void increment_destructible_state(int id, bool inverse = false);
+	void switch_destructible_state(int id, bool inverse = false);
 	void destroy_inspectable(int id);
 	void push_quest(util::QuestKey key);
 	void set_npc_location(int npc_id, int room_id);

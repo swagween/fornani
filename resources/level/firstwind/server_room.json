@@ -212,7 +212,6 @@
         "type": 2
       }
     ],
-    "inspectables": [],
     "platforms": [
       {
         "dimensions": [
@@ -291,7 +290,7 @@
       0
     ],
     "minimap": true,
-    "music": "",
+    "music": "dusken",
     "player_start": [
       0,
       0

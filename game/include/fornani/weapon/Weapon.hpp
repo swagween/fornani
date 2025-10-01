@@ -53,7 +53,7 @@ class Weapon : public Drawable {
 	void unlock();
 	void lock();
 	void shoot();
-	void shoot(automa::ServiceProvider& svc, world::Map& map);
+	void shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f target);
 	void decrement_projectiles();
 
 	bool is_equipped() const;

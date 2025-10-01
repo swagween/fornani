@@ -147,6 +147,13 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.lynx.test(Lynx::laugh)) { play(engine, svc, svc.sounds.get_buffer("lynx_laugh"), 0.f, 70.f); }
 	if (flags.lynx.test(Lynx::giggle)) { play(engine, svc, svc.sounds.get_buffer("lynx_giggle"), 0.f, 70.f); }
 
+	// miaag
+	if (flags.miaag.test(Miaag::growl)) { play(engine, svc, svc.sounds.get_buffer("miaag_growl")); }
+	if (flags.miaag.test(Miaag::hiss)) { play(engine, svc, svc.sounds.get_buffer("miaag_hiss")); }
+	if (flags.miaag.test(Miaag::hurt)) { play(engine, svc, svc.sounds.get_buffer("miaag_hurt"), 0.1f, 50.f); }
+	if (flags.miaag.test(Miaag::roar)) { play(engine, svc, svc.sounds.get_buffer("miaag_roar"), 0.1f, 50.f); }
+	if (flags.miaag.test(Miaag::chomp)) { play(engine, svc, svc.sounds.get_buffer("miaag_chomp")); }
+
 	// npc
 	if (flags.npc.test(NPC::minigus_getit)) { play(engine, svc, svc.sounds.get_buffer("minigus_getit")); }
 	if (flags.npc.test(NPC::minigus_laugh)) { play(engine, svc, svc.sounds.get_buffer("minigus_laugh_1")); }
@@ -204,6 +211,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.player.test(Player::dash)) { play(engine, svc, svc.sounds.get_buffer("nani_dash"), 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.player.test(Player::death)) { play(engine, svc, svc.sounds.get_buffer("nani_death")); }
 	if (flags.player.test(Player::slide)) { play(engine, svc, svc.sounds.get_buffer("nani_slide"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.player.test(Player::super_slide)) { play(engine, svc, svc.sounds.get_buffer("nani_super_slide"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.player.test(Player::walljump)) { play(engine, svc, svc.sounds.get_buffer("nani_walljump"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.player.test(Player::roll)) { play(engine, svc, svc.sounds.get_buffer("nani_roll"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	flags.player.test(Player::wallslide) ? simple_repeat(engine, svc.sounds.get_buffer("nani_wallslide"), "nani_wallslide", 32) : fade_out("nani_wallslide");
@@ -222,6 +230,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.weapon.test(Weapon::wasp)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_wasp"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::skycorps_ar)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_skycorps_ar"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::pulse)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_pulse"), 0.2f, 20.f); }
+	if (flags.weapon.test(Weapon::demon_magic)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_demon_magic"), 0.1f, 40.f); }
 
 	if (flags.weapon.test(Weapon::energy_ball)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_energy_ball"), 0.1f); }
 

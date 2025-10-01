@@ -297,7 +297,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 
 	if (flags.state.test(LevelState::spawn_enemy)) {
 		for (auto& spawn : enemy_spawns) {
-			enemy_catalog.push_enemy(*m_services, *this, console, spawn.id, true);
+			enemy_catalog.push_enemy(*m_services, *this, console, spawn.id, true, spawn.variant);
 			enemy_catalog.enemies.back()->intangible_start(64);
 			enemy_catalog.enemies.back()->set_position(spawn.pos);
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
@@ -357,7 +357,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
 	std::erase_if(effects, [](auto& e) { return e.done(); });
 	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
-	std::erase_if(destroyers, [](auto const& d) { return d.delete_me(); });
 	std::erase_if(npcs, [](auto const& n) { return n->piggybacking(); });
 	enemy_catalog.update();
 
@@ -367,7 +366,9 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		if (proj.destruction_initiated()) { continue; }
 		proj.register_chunk(get_chunk_id_from_position(proj.get_position()));
 		for (auto& platform : platforms) { platform.on_hit(svc, *this, proj); }
-		for (auto const& it : breakable_iterators[proj.get_chunk_id()]) { it->on_hit(svc, *this, proj); }
+		if (proj.get_chunk_id() < breakable_iterators.size()) {
+			for (auto const& it : breakable_iterators[proj.get_chunk_id()]) { it->on_hit(svc, *this, proj); }
+		}
 		for (auto& pushable : pushables) { pushable.on_hit(svc, *this, proj); }
 		for (auto& destroyer : destroyers) { destroyer.on_hit(svc, *this, proj); }
 		for (auto& block : switch_blocks) { block.on_hit(svc, *this, proj); }
@@ -493,7 +494,6 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& platform : platforms) { platform.render(svc, win, cam); }
 	for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
 	for (auto& pushable : pushables) { pushable.render(svc, win, cam); }
-	for (auto& destroyer : destroyers) { destroyer.render(svc, win, cam); }
 	for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
 	for (auto& spike : spikes) { spike.render(svc, win, shader, m_palette, cam); }
 	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
@@ -510,6 +510,8 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 			}
 		}
 	}
+
+	for (auto& destroyer : destroyers) { destroyer.render(svc, win, cam); }
 
 	if (m_entities) {
 		for (auto v : get_entities<Vine>()) {
@@ -623,10 +625,10 @@ auto Map::get_chunk_id_from_position(sf::Vector2f pos) const -> std::uint8_t {
 	return static_cast<std::uint8_t>(ulookup.y * get_chunk_dimensions().x + ulookup.x);
 }
 
-void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target) {
+void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target, float speed_multiplier) {
 	active_projectiles.push_back(weapon.projectile);
 	active_projectiles.back().set_position(pos);
-	active_projectiles.back().seed(svc, target);
+	active_projectiles.back().seed(svc, target, speed_multiplier);
 	active_projectiles.back().update(svc, *player);
 	active_projectiles.back().register_chunk(get_chunk_id_from_position(pos));
 
@@ -639,8 +641,8 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon
 	}
 }
 
-void Map::spawn_enemy(int id, sf::Vector2f pos) {
-	enemy_spawns.push_back({pos, id});
+void Map::spawn_enemy(int id, sf::Vector2f pos, int variant) {
+	enemy_spawns.push_back({pos, id, variant});
 	spawn_counter.update();
 	flags.state.set(LevelState::spawn_enemy);
 }

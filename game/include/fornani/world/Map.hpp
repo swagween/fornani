@@ -70,6 +70,7 @@ enum class MapProperties : std::uint8_t { minimap, has_obscuring_layer, has_reve
 struct EnemySpawn {
 	sf::Vector2f pos{};
 	int id{};
+	int variant{};
 };
 
 class Map {
@@ -84,8 +85,8 @@ class Map {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	bool handle_entry(player::Player& player, util::Cooldown& enter_room);
-	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {});
-	void spawn_enemy(int id, sf::Vector2f pos);
+	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {}, float speed_multiplier = 1.f);
+	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0);
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc) const;

@@ -146,9 +146,6 @@ void Player::update(world::Map& map) {
 	if (controller.is_dashing() && m_services->ticker.every_x_ticks(8)) {
 		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.get_center() - sf::Vector2f{0.f, 4.f}, sf::Vector2f{8.f, 8.f}, "dash", colors::ui_white, get_actual_direction()));
 	}
-	if (animation.is_state(AnimState::slide) && m_services->ticker.every_x_ticks(12)) {
-		map.active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), "slide", colors::ui_white, Direction(UND::up)));
-	}
 
 	update_antennae();
 	// piggybacker

@@ -8,6 +8,12 @@
     },
     {
       "folder": "config",
+      "label": "nighty.json",
+      "region": "greatwing",
+      "room_id": 99900
+    },
+    {
+      "folder": "config",
       "label": "test_chamber.json",
       "region": "pioneer",
       "room_id": 90
@@ -350,6 +356,12 @@
     },
     {
       "folder": "overturned",
+      "label": "gaias_house.json",
+      "region": "overturned",
+      "room_id": 404
+    },
+    {
+      "folder": "overturned",
       "label": "graveyard.json",
       "region": "overturned",
       "room_id": 402
@@ -440,6 +452,12 @@
     },
     {
       "folder": "overturned",
+      "label": "outer_wall.json",
+      "region": "overturned",
+      "room_id": 251
+    },
+    {
+      "folder": "overturned",
       "label": "outpost.json",
       "region": "overturned",
       "room_id": 238
@@ -461,6 +479,12 @@
       "label": "precipice.json",
       "region": "overturned",
       "room_id": 209
+    },
+    {
+      "folder": "overturned",
+      "label": "ridge.json",
+      "region": "overturned",
+      "room_id": 250
     },
     {
       "folder": "overturned",

@@ -34,7 +34,7 @@ enum class Team : std::uint8_t { nani, skycorps, guardian, pioneer, beast };
 enum class ProjectileType : std::uint8_t { bullet, missile, melee };
 enum class RenderType : std::uint8_t { animated, single_sprite, multi_sprite };
 
-enum class ProjectileAttributes : std::uint8_t { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip };
+enum class ProjectileAttributes : std::uint8_t { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky };
 struct ProjectileSpecifications {
 	float base_damage{};
 	int power{};
@@ -52,7 +52,7 @@ struct ProjectileSpecifications {
 	float elasticty{};
 };
 
-enum class ProjectileState : std::uint8_t { initialized, destruction_initiated, destroyed, whiffed, poof, contact };
+enum class ProjectileState : std::uint8_t { initialized, destruction_initiated, destroyed, whiffed, poof, contact, stuck };
 
 class Projectile : public Animatable {
   public:
@@ -62,7 +62,7 @@ class Projectile : public Animatable {
 	void on_player_hit(player::Player& player);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f cam);
 	void destroy(bool completely, bool whiffed = false);
-	void seed(automa::ServiceProvider& svc, sf::Vector2f target = {});
+	void seed(automa::ServiceProvider& svc, sf::Vector2f target = {}, float speed_multiplier = 1.f);
 	void register_chunk(std::uint8_t chunk) { m_chunk_id = chunk; }
 	void set_position(sf::Vector2f pos);
 	void set_team(Team to_team);
@@ -80,6 +80,7 @@ class Projectile : public Animatable {
 	[[nodiscard]] auto get_power() const -> float { return static_cast<float>(metadata.specifications.power); }
 	[[nodiscard]] auto whiffed() const -> bool { return variables.state.test(ProjectileState::whiffed); }
 	[[nodiscard]] auto poofed() const -> bool { return variables.state.test(ProjectileState::poof); }
+	[[nodiscard]] auto is_stuck() const -> bool { return variables.state.test(ProjectileState::stuck); }
 	[[nodiscard]] auto made_contact() const -> bool { return variables.state.test(ProjectileState::contact); }
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return physical.collider.physics.position; }
 	[[nodiscard]] auto get_velocity() const -> sf::Vector2f { return physical.collider.physics.apparent_velocity(); }
@@ -98,6 +99,7 @@ class Projectile : public Animatable {
 	[[nodiscard]] auto persistent() const -> bool { return metadata.attributes.test(ProjectileAttributes::persistent); }
 	[[nodiscard]] auto boomerang() const -> bool { return metadata.attributes.test(ProjectileAttributes::boomerang); }
 	[[nodiscard]] auto reflect() const -> bool { return metadata.attributes.test(ProjectileAttributes::reflect); }
+	[[nodiscard]] auto sticky() const -> bool { return metadata.attributes.test(ProjectileAttributes::sticky); }
 	[[nodiscard]] auto wander() const -> bool { return metadata.attributes.test(ProjectileAttributes::wander); }
 
   private:
@@ -144,6 +146,7 @@ class Projectile : public Animatable {
 
 	util::Cooldown cooldown{};
 	util::Cooldown lifetime{};
+	util::Cooldown m_reflected;
 	util::Cooldown damage_timer{};
 	Weapon* m_weapon;
 

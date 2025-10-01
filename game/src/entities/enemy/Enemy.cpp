@@ -145,9 +145,14 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	health.update();
 	auto flash_rate = 32;
-	set_channel(EnemyChannel::standard);
+	if (!flags.general.test(GeneralFlags::custom_channels)) {
+		set_channel(EnemyChannel::standard);
+	} else {
+		set_channel(m_custom_channel);
+	}
 	if (flags.general.test(GeneralFlags::has_invincible_channel)) { flags.state.test(StateFlags::vulnerable) ? set_channel(EnemyChannel::standard) : set_channel(EnemyChannel::invincible); }
 	if (hurt_effect.running()) { set_channel((hurt_effect.get() / flash_rate) % 2 == 0 ? EnemyChannel::hurt_1 : EnemyChannel::hurt_2); }
+
 	if (hurt_effect.running() && !flags.state.test(StateFlags::no_shake)) { shake(); }
 	hurt_effect.update();
 
