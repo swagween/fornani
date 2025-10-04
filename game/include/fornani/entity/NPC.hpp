@@ -3,6 +3,7 @@
 
 #include <djson/json.hpp>
 #include <fornani/entity/Entity.hpp>
+#include <fornani/story/Quest.hpp>
 #include <memory>
 
 namespace fornani {
@@ -20,8 +21,10 @@ class NPC : public Entity {
   private:
 	std::string m_label{};
 	std::vector<std::vector<int>> m_suites{};
+	std::vector<QuestContingency> m_contingencies{};
 
 	bool m_background{};
+	bool m_hidden{};
 };
 
 } // namespace fornani

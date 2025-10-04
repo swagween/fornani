@@ -3,6 +3,7 @@
 #include <fornani/gui/console/Console.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::npc {
 
@@ -37,24 +38,23 @@ NPC::NPC(automa::ServiceProvider& svc, std::string_view label)
 	collider = shape::Collider({svc.data.npc[label]["dimensions"][0].as<float>(), svc.data.npc[label]["dimensions"][1].as<float>()});
 	collider.sync_components();
 
-	collider.physics.set_global_friction(0.99f);
-	collider.stats.GRAV = 6.2f;
+	collider.physics.set_friction_componentwise({0.95f, 0.995f});
+	collider.stats.GRAV = 16.2f;
 
 	for (auto const& in_anim : in_data["animation"].as_array()) {
 		m_params.insert({in_anim["label"].as_string(), {in_anim["parameters"][0].as<int>(), in_anim["parameters"][1].as<int>(), in_anim["parameters"][2].as<int>(), in_anim["parameters"][3].as<int>(), in_anim["parameters"][4].as_bool()}});
 		if (in_anim["label"].as_string() == "turn") { p_flags.set(NPCFlags::has_turn_animation); }
 	}
 	if (m_params.contains("idle")) { set_parameters(m_params.at("idle")); }
-	m_anim_state = NPCAnimationState::idle;
+	request(NPCAnimationState::idle);
 	directions.actual.lnr = LNR::left;
 }
 
 void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player) {
 	face_player(player);
-	update_animation();
 	if (piggybacking()) { current_location = -1; }
 	svc.data.set_npc_location(get_id(), current_location);
-	if (state_flags.test(NPCState::hidden)) { return; }
+	if (hidden()) { return; }
 	// NANI_LOG_DEBUG(m_logger, "NPC exists!");
 	// svc.player_dat.piggy_id == get_id() ? state_flags.set(NPCState::piggybacking) : state_flags.reset(NPCState::piggybacking);
 	if (abs(collider.physics.velocity.x) > physical.walk_threshold) {}
@@ -70,6 +70,9 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 
 	collider.update(svc);
 	collider.detect_map_collision(map);
+	for (auto& destructible : map.destructibles) {
+		if (!destructible.ignore_updates()) { collider.handle_collider_collision(destructible.get_bounding_box()); }
+	}
 	collider.reset();
 	collider.physics.acceleration = {};
 
@@ -97,12 +100,20 @@ void NPC::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 		svc.camera_controller.constrain();
 	}
 	triggers = {};
+
+	if (!collider.grounded()) { request(NPCAnimationState::fall); }
+	if (directions.actual.lnr != directions.desired.lnr) { request(NPCAnimationState::turn); }
+
+	state_function = state_function();
 }
 
-void NPC::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) { Mobile::post_update(svc, map, player); }
+void NPC::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (hidden()) { return; }
+	Mobile::post_update(svc, map, player);
+}
 
 void NPC::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos) {
-	if (state_flags.test(NPCState::hidden)) { return; }
+	if (hidden()) { return; }
 	Animatable::set_position(collider.get_center() + m_offset - campos);
 	auto indicator_offset = sf::Vector2f{0.f, -constants::f_cell_size};
 	m_indicator.set_position(collider.get_top() + indicator_offset - campos);
@@ -119,6 +130,13 @@ void NPC::force_engage() {
 	state_flags.set(NPCState::cutscene);
 	triggers.set(NPCTrigger::distant_interact);
 	state_flags.set(NPCState::force_interact);
+}
+
+void NPC::disengage() {
+	state_flags.reset(NPCState::engaged);
+	state_flags.reset(NPCState::cutscene);
+	triggers.reset(NPCTrigger::distant_interact);
+	state_flags.reset(NPCState::force_interact);
 }
 
 void NPC::set_position(sf::Vector2f pos) { collider.physics.position = pos; }
@@ -153,16 +171,70 @@ void NPC::pop_conversation() {
 
 void NPC::flush_conversations() { conversations.clear(); }
 
-void NPC::update_animation() {
-	if (m_anim_state == NPCAnimationState::idle && directions.desired.lnr != directions.actual.lnr && p_flags.test(NPCFlags::has_turn_animation)) {
-		set_parameters(m_params.at("turn"));
-		m_anim_state = NPCAnimationState::turn;
+void NPC::walk() { request(NPCAnimationState::walk); }
+
+fsm::StateFunction NPC::update_idle() {
+	p_state.actual = NPCAnimationState::idle;
+	if (change_state(NPCAnimationState::fall, get_params("fall"))) { return NPC_BIND(update_fall); }
+	if (change_state(NPCAnimationState::turn, get_params("turn"))) { return NPC_BIND(update_turn); }
+	if (collider.grounded()) {
+		if (change_state(NPCAnimationState::walk, get_params("walk"))) { return NPC_BIND(update_walk); }
 	}
-	if (m_anim_state == NPCAnimationState::turn && animation.complete()) {
+	return NPC_BIND(update_idle);
+}
+
+fsm::StateFunction NPC::update_walk() {
+	p_state.actual = NPCAnimationState::walk;
+	collider.physics.acceleration.x = 2.8f;
+	if (change_state(NPCAnimationState::turn, get_params("turn"))) { return NPC_BIND(update_turn); }
+	if (change_state(NPCAnimationState::idle, get_params("idle"))) { return NPC_BIND(update_idle); }
+	return NPC_BIND(update_walk);
+}
+
+fsm::StateFunction NPC::update_inspect() {
+	p_state.actual = NPCAnimationState::inspect;
+	if (change_state(NPCAnimationState::turn, get_params("turn"))) { return NPC_BIND(update_turn); }
+	if (change_state(NPCAnimationState::walk, get_params("walk"))) { return NPC_BIND(update_walk); }
+	return NPC_BIND(update_inspect);
+}
+
+fsm::StateFunction NPC::update_turn() {
+	p_state.actual = NPCAnimationState::turn;
+	directions.desired.lock();
+	if (animation.is_complete()) {
 		request_flip();
-		set_parameters(m_params.at("idle"));
-		m_anim_state = NPCAnimationState::idle;
+		if (change_state(NPCAnimationState::walk, get_params("walk"))) { return NPC_BIND(update_walk); }
+		request(NPCAnimationState::idle);
+		if (change_state(NPCAnimationState::idle, get_params("idle"))) { return NPC_BIND(update_idle); }
 	}
+	return NPC_BIND(update_turn);
+}
+
+fsm::StateFunction NPC::update_fall() {
+	p_state.actual = NPCAnimationState::fall;
+	if (collider.grounded()) {
+		request(NPCAnimationState::land);
+		if (change_state(NPCAnimationState::land, get_params("land"))) { return NPC_BIND(update_land); }
+	}
+	return NPC_BIND(update_fall);
+}
+
+fsm::StateFunction NPC::update_land() {
+	p_state.actual = NPCAnimationState::land;
+	if (animation.is_complete()) {
+		if (change_state(NPCAnimationState::turn, get_params("turn"))) { return NPC_BIND(update_turn); }
+		if (change_state(NPCAnimationState::idle, get_params("idle"))) { return NPC_BIND(update_idle); }
+		if (change_state(NPCAnimationState::walk, get_params("walk"))) { return NPC_BIND(update_walk); }
+	}
+	return NPC_BIND(update_land);
+}
+
+bool NPC::change_state(NPCAnimationState next, anim::Parameters params) {
+	if (p_state.desired == next) {
+		set_parameters(params);
+		return true;
+	}
+	return false;
 }
 
 } // namespace fornani::npc

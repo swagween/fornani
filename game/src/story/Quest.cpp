@@ -14,9 +14,24 @@ void QuestProgression::progress(QuestIdentifier const identifier, int const amou
 		if (source != -1) { m_sources.push_back(source); }
 	}
 }
+
+void QuestProgression::progress(Subquest const identifier, int const amount, int const source) {
+	if (!subquest_progressions.contains(identifier)) { subquest_progressions.insert({identifier, 0}); }
+	if (std::find(m_sources.begin(), m_sources.end(), source) == m_sources.end() || source == -1) {
+		subquest_progressions.at(identifier) += amount;
+		if (source != -1) { m_sources.push_back(source); }
+	}
+}
+
 void QuestProgression::set_progression(QuestIdentifier const identifier, int const amount, std::vector<int> const sources) {
-	if (!progressions.contains(identifier)) { return; }
+	if (!progressions.contains(identifier)) { progressions.insert({identifier, 0}); }
 	progressions.at(identifier) = amount;
+	m_sources = sources;
+}
+
+void QuestProgression::set_progression(Subquest const identifier, int const amount, std::vector<int> const sources) {
+	if (!subquest_progressions.contains(identifier)) { subquest_progressions.insert({identifier, 0}); }
+	subquest_progressions.at(identifier) = amount;
 	m_sources = sources;
 }
 
@@ -26,11 +41,11 @@ Quest::Quest(dj::Json const& in) {
 	m_progression_target = in["target"].as<int>();
 	for (auto const& objective : in["objectives"].as_array()) { m_objectives.push_back(objective.as_string()); }
 	if (in["subquests"].is_array()) {
-		m_subquests = std::vector<int>{};
+		m_subquests = std::vector<Subquest>{};
 	} else {
-		m_subquests = {0};
+		m_subquests = {};
 	}
-	for (auto const& subquest : in["subquests"].as_array()) { m_subquests->push_back(subquest.as<int>()); }
+	for (auto const& subquest : in["subquests"].as_array()) { m_subquests->push_back(Subquest{subquest["tag"].as_string(), subquest["id"].as<int>()}); }
 }
 
 auto Quest::get_objectives() const -> std::string {
@@ -68,6 +83,13 @@ void QuestTable::serialize(dj::Json& to_save) {
 			out_status.push_back(progression.second);
 			out_quest["status"].push_back(out_status);
 		}
+		for (auto& progression : quest.subquest_progressions) {
+			dj::Json out_status{};
+			out_status["tag"] = progression.first.tag;
+			out_status["id"] = progression.first.id;
+			out_status["status"].push_back(progression.second);
+			out_quest["subquests"].push_back(out_status);
+		}
 		to_save["quests"].push_back(out_quest);
 	}
 }
@@ -88,8 +110,19 @@ void QuestTable::progress_quest(std::string_view tag, int const amount, int cons
 	m_quests.at(tag.data()).progress(identifier, amount, source);
 }
 
+void QuestTable::progress_quest(std::string_view tag, Subquest const subquest, int const amount, int const source, QuestIdentifier const identifier) {
+	if (!m_quests.contains(tag.data())) { start_quest(tag, {{identifier, 0}}); }
+	m_quests.at(tag.data()).progress(subquest, amount, source);
+}
+
 void QuestTable::set_quest_progression(std::string_view tag, QuestIdentifier const identifier, int const amount, std::vector<int> sources) {
-	if (m_quests.contains(tag.data())) { m_quests.at(tag.data()).set_progression(identifier, amount, sources); }
+	if (!m_quests.contains(tag.data())) { start_quest(tag, {{identifier, 0}}); }
+	m_quests.at(tag.data()).set_progression(identifier, amount, sources);
+}
+
+void QuestTable::set_quest_progression(std::string_view tag, Subquest const subquest, int const amount, std::vector<int> const sources, QuestIdentifier const identifier) {
+	if (!m_quests.contains(tag.data())) { start_quest(tag, {{identifier, 0}}); }
+	m_quests.at(tag.data()).set_progression(subquest, amount, sources);
 }
 
 auto QuestTable::print_progressions(std::string_view tag, std::string_view identifier) const -> std::string {
@@ -100,7 +133,38 @@ auto QuestTable::print_progressions(std::string_view tag, std::string_view ident
 		auto id = identifier.empty() ? std::to_string(p.first) : identifier.data();
 		ret += next + ": " + id + " - " + std::to_string(p.second) + "\n";
 	}
+	for (auto const& p : m_quests.at(tag.data()).subquest_progressions) {
+		std::string next = tag.data();
+		auto label = identifier.empty() ? p.first.tag.data() : identifier.data();
+		auto id = identifier.empty() ? std::to_string(p.first.id) : identifier.data();
+		ret += label + next + ": " + id + " - " + std::to_string(p.second) + "\n";
+	}
 	return ret;
+}
+
+auto QuestTable::are_contingencies_met(std::vector<QuestContingency> const& set) const -> bool {
+	for (auto const& contingency : set) {
+		if (contingency.strict) {
+			if (get_quest_progression(contingency.tag) != contingency.requirement) { return false; }
+		} else {
+			if (get_quest_progression(contingency.tag) < contingency.requirement) { return false; }
+		}
+	}
+	return true;
+}
+
+QuestContingency::QuestContingency(dj::Json const& in) {
+	tag = in["tag"].as_string();
+	requirement = in["requirement"].as<int>();
+	strict = in["strict"].as_bool();
+}
+
+void QuestContingency::serialize(dj::Json& out) const {
+	auto entry = dj::Json{};
+	entry["tag"] = tag;
+	entry["requirement"] = requirement;
+	entry["strict"] = strict;
+	out.push_back(entry);
 }
 
 } // namespace fornani

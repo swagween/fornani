@@ -710,7 +710,8 @@
 			"player_collision": false,
 			"foreground": true,
 			"rare_drops": true,
-			"sturdy": true
+			"sturdy": true,
+			"semipermanent": true
 		}
 	},
 	"minion": {

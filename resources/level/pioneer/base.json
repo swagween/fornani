@@ -113,6 +113,7 @@
           1,
           1
         ],
+        "hidden": false,
         "id": 87398,
         "label": "dr_willett",
         "position": [
@@ -126,6 +127,36 @@
           ],
           [
             2
+          ],
+          [
+            3
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "contingencies": [
+          {
+            "requirement": 1,
+            "strict": false,
+            "tag": "defeat_miaag"
+          }
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "hidden": false,
+        "id": 24359,
+        "label": "bryn",
+        "position": [
+          8,
+          16
+        ],
+        "suites": [
+          [
+            5,
+            6
           ]
         ]
       }

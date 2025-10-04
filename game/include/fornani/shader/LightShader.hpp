@@ -90,6 +90,8 @@ class LightShader {
 	void Finalize();
 	void Submit(sf::RenderWindow& win, Palette& palette, sf::Sprite const& sprite);
 
+	void debug();
+
 	// if youd like some additional safety, add a boolean, create a BeginShader function, set the boolean to true, and turn it off at the end of submit
 	// you could potentially use a wrapper object as well, that calls Begin, AddLight or whatever on construction, then finalize and submit on deconstruction
 

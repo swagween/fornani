@@ -32,6 +32,7 @@ Spark::Spark(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Color color, st
 		m_sprite = Animatable(svc, "sparkler_" + in_anim["label"].as_string(), {in_anim["dimensions"][0].as<int>(), in_anim["dimensions"][1].as<int>()});
 		m_sprite->set_parameters({0, in_anim["num_frames"].as<int>(), in_anim["framerate"].as<int>(), 0});
 		m_sprite->set_channel(random::random_range(0, in_anim["variants"].as<int>()));
+		m_sprite->center();
 	}
 }
 

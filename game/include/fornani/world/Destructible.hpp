@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <djson\json.hpp>
+#include <fornani/io/Logger.hpp>
 #include <fornani/utils/IWorldPositionable.hpp>
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Collider.hpp"
@@ -46,6 +47,8 @@ class Destructible : public IWorldPositionable {
 	int m_state{};
 	util::BitFlags<DestructibleAttributes> m_attributes{};
 	sf::Sprite sprite;
+
+	io::Logger m_logger{"Destructible"};
 };
 
 } // namespace fornani::world

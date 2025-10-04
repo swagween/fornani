@@ -83,6 +83,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 	if (in_general["rare_drops"].as_bool()) { flags.general.set(GeneralFlags::rare_drops); }
 	if (in_general["spike_collision"].as_bool()) { flags.general.set(GeneralFlags::spike_collision); }
 	if (in_general["sturdy"].as_bool()) { flags.general.set(GeneralFlags::sturdy); }
+	if (in_general["semipermanent"].as_bool()) { flags.general.set(GeneralFlags::semipermanent); }
 	if (!flags.general.test(GeneralFlags::gravity)) { collider.stats.GRAV = 0.f; }
 	if (!flags.general.test(GeneralFlags::uncrushable)) { collider.collision_depths = util::CollisionDepth(); }
 	if (in_general["secondary_collider"].as_bool()) {
@@ -118,7 +119,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 
-	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.external_id, attributes.respawn_distance, permadeath()); }
+	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.external_id, attributes.respawn_distance, permadeath(), flags.general.test(GeneralFlags::semipermanent)); }
 	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
 		map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.get_center(), 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id));
@@ -330,8 +331,6 @@ void Enemy::set_position_from_scaled(sf::Vector2f pos) {
 	new_pos.y += static_cast<float>(32.f - round);
 	set_position(new_pos);
 }
-
-anim::Parameters const& Enemy::get_params(std::string const& key) { return m_params.contains(key) ? m_params.at(key) : m_params.at("idle"); }
 
 void Enemy::debug() {
 	static bool* b_debug{};

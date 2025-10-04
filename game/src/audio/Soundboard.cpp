@@ -46,7 +46,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.pioneer.test(Pioneer::boot)) { play(engine, svc, svc.sounds.get_buffer("pioneer_boot"), 0.f, 40.f); }
 
 	// transmission
-	if (flags.transmission.test(Transmission::statics)) { play(engine, svc, svc.sounds.get_buffer("block_toggle")); }
+	if (flags.transmission.test(Transmission::statics)) { play(engine, svc, svc.sounds.get_buffer("radio_begin_transmission")); }
 
 	// always play console and menu sounds
 	if (status == SoundboardState::off) {
@@ -203,6 +203,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.item.test(Item::gem)) { play(engine, svc, svc.sounds.get_buffer("gem_get"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.item.test(Item::get)) { play(engine, svc, svc.sounds.get_buffer("item_get")); }
 	if (flags.item.test(Item::equip)) { play(engine, svc, svc.sounds.get_buffer("item_equip")); }
+	if (flags.item.test(Item::unequip)) { play(engine, svc, svc.sounds.get_buffer("item_unequip")); }
 	if (flags.item.test(Item::vendor_sale)) { play(engine, svc, svc.sounds.get_buffer("vendor_sale")); }
 
 	// player

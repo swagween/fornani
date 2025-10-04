@@ -2,6 +2,7 @@ nani_add_sources(
   Animator.cpp
   Bed.cpp
   Chest.cpp
+  CutsceneTrigger.cpp
   Entity.cpp
   EntitySet.cpp
   Destructible.cpp

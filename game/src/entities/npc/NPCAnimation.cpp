@@ -44,12 +44,12 @@ fsm::StateFunction NPCAnimation::update_idle() {
 	if (animation_flags.test(NPCAnimState::turn)) {
 		animation_flags.reset(NPCAnimState::idle);
 		animation.set_params(NPC_turn);
-		return NPC_BIND(update_turn);
+		return NPCANIM_BIND(update_turn);
 	}
 	if (animation_flags.test(NPCAnimState::walk)) {
 		animation_flags.reset(NPCAnimState::idle);
 		animation.set_params(NPC_walk);
-		return NPC_BIND(update_walk);
+		return NPCANIM_BIND(update_walk);
 	}
 	animation_flags = {};
 	animation_flags.set(NPCAnimState::idle);
@@ -63,7 +63,7 @@ fsm::StateFunction NPCAnimation::update_turn() {
 		animation_flags = {};
 		animation_flags.set(NPCAnimState::idle);
 		animation.set_params(NPC_idle);
-		return NPC_BIND(update_idle);
+		return NPCANIM_BIND(update_idle);
 	}
 	animation_flags = {};
 	animation_flags.set(NPCAnimState::turn);
@@ -75,12 +75,12 @@ fsm::StateFunction NPCAnimation::update_walk() {
 	if (animation_flags.test(NPCAnimState::turn)) {
 		animation_flags = {};
 		animation.set_params(NPC_turn);
-		return NPC_BIND(update_turn);
+		return NPCANIM_BIND(update_turn);
 	}
 	if (animation_flags.test(NPCAnimState::idle)) {
 		animation_flags = {};
 		animation.set_params(NPC_idle);
-		return NPC_BIND(update_idle);
+		return NPCANIM_BIND(update_idle);
 	}
 	animation_flags = {};
 	animation_flags.set(NPCAnimState::walk);
@@ -92,7 +92,7 @@ fsm::StateFunction NPCAnimation::update_inspect() {
 	animation.label = "inspect";
 	animation_flags = {};
 	animation_flags.set(NPCAnimState::inspect);
-	return NPC_BIND(update_inspect);
+	return NPCANIM_BIND(update_inspect);
 }
 
 } // namespace fornani::npc

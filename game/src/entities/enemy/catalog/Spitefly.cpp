@@ -25,7 +25,7 @@ Spitefly::Spitefly(automa::ServiceProvider& svc, world::Map& map, int variant) :
 		m_bomb->get().set_team(arms::Team::guardian);
 	}
 
-	is_albino() ? collider.physics.set_friction_componentwise({0.98f, 0.98f}) : collider.physics.set_friction_componentwise({0.99f, 0.99f});
+	is_albino() ? collider.physics.set_friction_componentwise({0.99f, 0.99f}) : collider.physics.set_friction_componentwise({0.99f, 0.99f});
 	if (is_albino()) {
 		flags.general.set(GeneralFlags::custom_channels);
 		m_custom_channel = EnemyChannel::invincible;
@@ -49,7 +49,8 @@ void Spitefly::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	if (m_bomb_part) { m_bomb_part->update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center()); }
 
 	if (is_active()) {
-		m_steering.seek(Enemy::collider.physics, player.collider.get_center(), 0.0001f);
+		auto force = is_albino() ? 0.00012f : 0.0001f;
+		m_steering.seek(Enemy::collider.physics, player.collider.get_center(), force);
 		if (is_bomb()) {
 			if (m_bomb) {
 				if (svc.ticker.every_x_ticks(1000)) {

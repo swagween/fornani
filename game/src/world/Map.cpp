@@ -79,18 +79,32 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		auto npc_id = svc.data.npc[npc_label]["id"].as<int>();
 		NANI_LOG_DEBUG(m_logger, "NPC Label: {}", npc_label);
 		NANI_LOG_DEBUG(m_logger, "NPC ID: {}", npc_id);
-		npcs.push_back(std::make_unique<npc::NPC>(svc, npc_label));
-		auto npc_state = svc.quest_table.get_quest_progression("npc_dialogue", npc_id);
-		NANI_LOG_DEBUG(m_logger, "NPC State: {}", npc_state);
-		for (auto const& convo : entry["suites"][npc_state].as_array()) {
-			npcs.back()->push_conversation(convo.as<int>());
-			NANI_LOG_DEBUG(m_logger, "Pushed conversation {}", convo.as<int>());
+		auto push = true;
+		auto fail_tag = std::string{};
+		if (entry["contingencies"].is_array()) {
+			for (auto const& contingency : entry["contingencies"].as_array()) {
+				auto cont = QuestContingency{contingency};
+				if (!svc.quest_table.are_contingencies_met({cont})) {
+					push = false;
+					fail_tag = contingency["tag"].as_string();
+				}
+			}
 		}
-		npcs.back()->set_position_from_scaled(pos);
-		if (entry["background"].as_bool()) { npcs.back()->push_to_background(); }
-		if (entry["hidden"].as_bool()) { npcs.back()->hide(); }
-		// if (svc.quest.get_progression(fornani::QuestType::hidden_npcs, npc_id) > 0) { npcs.back()->unhide(); }
-		npcs.back()->set_current_location(room_id);
+		if (push) {
+			npcs.push_back(std::make_unique<npc::NPC>(svc, npc_label));
+			auto npc_state = svc.quest_table.get_quest_progression("npc_dialogue", {npc_label, room_id});
+			NANI_LOG_DEBUG(m_logger, "NPC State: {}", npc_state);
+			for (auto const& convo : entry["suites"][npc_state].as_array()) {
+				npcs.back()->push_conversation(convo.as<int>());
+				NANI_LOG_DEBUG(m_logger, "Pushed conversation {}", convo.as<int>());
+			}
+			npcs.back()->set_position_from_scaled(pos);
+			if (entry["background"].as_bool()) { npcs.back()->push_to_background(); }
+			if (entry["hidden"].as_bool()) { npcs.back()->hide(); }
+			npcs.back()->set_current_location(room_id);
+		} else {
+			NANI_LOG_DEBUG(m_logger, "NPC did not meet contingency for quest {}.", fail_tag);
+		}
 	}
 
 	for (auto& entry : entities["chests"].as_array()) {
@@ -128,7 +142,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
 	}
 
-	for (auto& entry : entities["destructibles"].as_array()) { destroyers.push_back(Destructible(svc, entry, style_id)); }
+	for (auto& entry : entities["destructibles"].as_array()) { destructibles.push_back(Destructible(svc, entry, style_id)); }
 
 	for (auto& entry : entities["enemies"].as_array()) {
 		int id{};
@@ -344,13 +358,17 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		svc.player_dat.piggy_id = -1;
 	}
 
-	for (auto it = breakables.begin(); it != breakables.end();) {
-		if (it->destroyed()) {
-			auto& chunk_vec = breakable_iterators[it->get_chunk_id()];
-			std::erase(chunk_vec, it);
-			it = breakables.erase(it);
-		} else {
-			++it;
+	if (!breakables.empty()) {
+		for (auto it = breakables.begin(); it != breakables.end();) {
+			if (it->destroyed()) {
+				if (it->get_chunk_id() < breakable_iterators.size()) {
+					auto& chunk_vec = breakable_iterators[it->get_chunk_id()];
+					std::erase(chunk_vec, it);
+					it = breakables.erase(it);
+				}
+			} else {
+				++it;
+			}
 		}
 	}
 
@@ -370,7 +388,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 			for (auto const& it : breakable_iterators[proj.get_chunk_id()]) { it->on_hit(svc, *this, proj); }
 		}
 		for (auto& pushable : pushables) { pushable.on_hit(svc, *this, proj); }
-		for (auto& destroyer : destroyers) { destroyer.on_hit(svc, *this, proj); }
+		for (auto& destroyer : destructibles) { destroyer.on_hit(svc, *this, proj); }
 		for (auto& block : switch_blocks) { block.on_hit(svc, *this, proj); }
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
 		for (auto vine : get_entities<Vine>()) { vine->on_hit(svc, *this, proj); }
@@ -405,7 +423,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& spawner : spawners) { spawner.update(svc, *this); }
 	for (auto& switch_block : switch_blocks) { switch_block.update(svc, *this, *player); }
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
-	for (auto& destroyer : destroyers) { destroyer.update(svc, *this, *player); }
+	for (auto& destroyer : destructibles) { destroyer.update(svc, *this, *player); }
 	for (auto& checkpoint : checkpoints) { checkpoint.update(svc, *this, *player); }
 	for (auto& bed : beds) { bed.update(svc, *this, console, *player, transition); }
 	for (auto& breakable : breakables) { breakable.update(svc, *player); }
@@ -469,6 +487,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		// for (auto& entity : m_entities.value().variables.entities) { entity->render(win, cam, 1.0); }
 		for (auto p : get_entities<Portal>()) { p->render(win, cam, 1.0); }
 		for (auto s : get_entities<SavePoint>()) { s->render(win, cam, 1.0); }
+		if (svc.greyblock_mode()) {
+			for (auto c : get_entities<CutsceneTrigger>()) { c->render(win, cam, c->get_f_grid_dimensions().x); }
+		}
 		for (auto v : get_entities<Vine>()) {
 			if (!v->is_foreground()) { v->render(win, cam, 1.0); }
 		}
@@ -511,7 +532,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		}
 	}
 
-	for (auto& destroyer : destroyers) { destroyer.render(svc, win, cam); }
+	for (auto& destroyer : destructibles) { destroyer.render(svc, win, cam); }
 
 	if (m_entities) {
 		for (auto v : get_entities<Vine>()) {
@@ -642,9 +663,21 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon
 }
 
 void Map::spawn_enemy(int id, sf::Vector2f pos, int variant) {
+	auto break_out = 0;
+	while (player->distant_vicinity.contains_point(pos) && break_out < 32) {
+		auto distance = player->collider.get_center() - pos;
+		pos += distance;
+		++break_out;
+	}
 	enemy_spawns.push_back({pos, id, variant});
 	spawn_counter.update();
 	flags.state.set(LevelState::spawn_enemy);
+}
+
+void Map::reveal_npc(std::string_view label) {
+	for (auto& npc : npcs) {
+		if (npc->get_label() == label) { npc->unhide(); }
+	}
 }
 
 void Map::manage_projectiles(automa::ServiceProvider& svc) {
@@ -679,7 +712,7 @@ void Map::generate_collidable_layer(bool live) {
 		auto chunk_id = cell.get_chunk_id();
 		get_middleground()->grid.check_neighbors(cell.one_d_index);
 		if (live) { continue; }
-		if (cell.is_breakable()) {
+		if (cell.is_breakable() && chunk_id < breakable_iterators.size()) {
 			breakables.push_back(Breakable(*m_services, cell.position(), chunk_id, style_id));
 			breakable_iterators[chunk_id].push_back(std::prev(breakables.end()));
 		}
@@ -787,6 +820,13 @@ void Map::handle_cell_collision(shape::CircleCollider& collider) {
 	}
 }
 
+void Map::handle_breakable_collision(shape::CircleCollider& collider) {
+	auto chunk = get_chunk_id_from_position(collider.physics.position);
+	if (chunk < breakable_iterators.size()) {
+		for (auto const& it : breakable_iterators[chunk]) { collider.handle_collision(it->get_bounding_box()); }
+	}
+}
+
 void Map::clear_projectiles() {
 	for (auto& proj : active_projectiles) { proj.destroy(false); }
 }
@@ -800,7 +840,7 @@ void Map::clear() {
 	breakables.clear();
 	pushables.clear();
 	spikes.clear();
-	destroyers.clear();
+	destructibles.clear();
 	switch_blocks.clear();
 	switch_buttons.clear();
 	chests.clear();

@@ -6,7 +6,7 @@
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/utils/IWorldPositionable.hpp"
 #include "fornani/utils/Shape.hpp"
-
+#include <fornani/io/Logger.hpp>
 #include <djson/json.hpp>
 
 #include <optional>
@@ -57,6 +57,8 @@ class Inspectable : public IWorldPositionable {
 	anim::Animation animation{};
 	anim::Parameters params{0, 14, 18, 0};
 	util::Cooldown m_indicator_cooldown{1600};
+
+	io::Logger m_logger{"Inspectable"};
 };
 
 } // namespace fornani::entity

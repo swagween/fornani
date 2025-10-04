@@ -13,4 +13,6 @@ void CameraController::free() { m_state = CameraState::free; }
 
 void CameraController::constrain() { m_state = CameraState::constrained; }
 
+void CameraController::set_owner(CameraOwner to) { m_owner = to; }
+
 } // namespace fornani::graphics

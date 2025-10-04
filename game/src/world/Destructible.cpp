@@ -16,25 +16,24 @@ Destructible::Destructible(automa::ServiceProvider& svc, dj::Json const& in, int
 	sprite.setTextureRect(sf::IntRect{{style_id * constants::i_cell_resolution, 0}, constants::i_resolution_vec});
 	in["inverse"].as_bool() ? m_attributes.set(DestructibleAttributes::inverse) : m_attributes.reset(DestructibleAttributes::inverse);
 	in["enemy_clear"].as_bool() ? m_attributes.set(DestructibleAttributes::enemy_clear) : m_attributes.reset(DestructibleAttributes::enemy_clear);
-	m_state = in["inverse"].as_bool() ? 1 : 0;
 	auto state = svc.data.get_destructible_state(quest_id);
-	if (state != -1) { m_state = state; }
+	m_state = state != -1 ? state : 0;
+	m_state = in["inverse"].as_bool() ? 1 : m_state;
 }
 
 auto Destructible::ignore_updates() const -> bool { return is_destroyed(); }
 
 void Destructible::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
-	if (map.enemies_cleared() && is_enemy_clear() && is_solid()) { svc.data.switch_destructible_state(quest_id, is_inverse()); }
 	auto state = svc.data.get_destructible_state(quest_id);
 	if (state != m_state && state != -1) {
 		m_state = state;
 		map.effects.push_back(entity::Effect(svc, "small_explosion", get_global_center()));
 		svc.soundboard.flags.world.set(audio::World::block_toggle);
 	}
+	if (map.enemies_cleared() && is_enemy_clear() && m_state == 0) { svc.data.switch_destructible_state(quest_id); }
 	if (ignore_updates()) { return; }
 	player.collider.handle_collider_collision(collider);
 	for (auto& e : map.enemy_catalog.enemies) { e->get_collider().handle_collider_collision(collider); }
-	for (auto& c : map.chests) { c.get_collider().handle_collider_collision(collider); }
 }
 
 void Destructible::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {

@@ -37,7 +37,7 @@ class Bed {
 	shape::Shape bounding_box{};
 
   private:
-	vfx::Sparkler sparkler{};
+	vfx::Sparkler sparkler;
 	util::BitFlags<BedFlags> flags{};
 	util::Cooldown fadeout{200};
 	sf::Sprite m_sprite;

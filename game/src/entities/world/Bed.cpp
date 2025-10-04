@@ -8,8 +8,7 @@ namespace fornani::entity {
 
 constexpr auto bed_dimensions_v = sf::Vector2f{64.f, 32.f};
 
-Bed::Bed(automa::ServiceProvider& svc, sf::Vector2f position, int style, bool flipped) : m_sprite{svc.assets.get_texture("beds")} {
-	sparkler = vfx::Sparkler(svc, bed_dimensions_v, colors::ui_white, "bed");
+Bed::Bed(automa::ServiceProvider& svc, sf::Vector2f position, int style, bool flipped) : m_sprite{svc.assets.get_texture("beds")}, sparkler{svc, bed_dimensions_v, colors::ui_white, "bed"} {
 	sparkler.set_position(position);
 	bounding_box = shape::Shape(bed_dimensions_v);
 	bounding_box.set_position(position);

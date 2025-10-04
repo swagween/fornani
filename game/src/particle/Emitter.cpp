@@ -12,25 +12,29 @@ Emitter::Emitter(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector
 	particle_dimensions.x = in_data["dimensions"][0].as<float>();
 	particle_dimensions.y = in_data["dimensions"][1].as<float>();
 
-	cooldown = util::Cooldown(variables.load);
-	cooldown.start();
+	m_load = util::Cooldown(variables.load);
+	m_load.start();
 	drawbox.setFillColor(sf::Color::Transparent);
 	drawbox.setOutlineThickness(-1);
 	drawbox.setOutlineColor(sf::Color::Red);
 	drawbox.setSize(dimensions);
+
+	auto x = random::random_range_float(0.f, dimensions.x);
+	auto y = random::random_range_float(0.f, dimensions.y);
+	sf::Vector2f point{position.x + x, position.y + y};
+	particles.push_back(Particle(svc, point, particle_dimensions, type, color, direction));
 }
 
 void Emitter::update(automa::ServiceProvider& svc, world::Map& map) {
-	cooldown.update();
-	if (cooldown.is_complete()) { deactivate(); }
-	if (active && (random::percent_chance(variables.rate) || particles.empty())) {
+	m_load.update();
+	std::erase_if(particles, [](auto const& p) { return p.done(); });
+	if (m_load.running() && (random::percent_chance(variables.rate) || particles.empty())) {
 		auto x = random::random_range_float(0.f, dimensions.x);
 		auto y = random::random_range_float(0.f, dimensions.y);
 		sf::Vector2f point{position.x + x, position.y + y};
 		particles.push_back(Particle(svc, point, particle_dimensions, type, color, direction));
 	}
 	for (auto& particle : particles) { particle.update(svc, map); }
-	std::erase_if(particles, [](auto const& p) { return p.done(); });
 }
 
 void Emitter::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -44,7 +48,5 @@ void Emitter::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 void Emitter::set_position(sf::Vector2f pos) { position = pos; }
 
 void Emitter::set_dimensions(sf::Vector2f dim) { dimensions = dim; }
-
-void Emitter::deactivate() { active = false; }
 
 } // namespace fornani::vfx

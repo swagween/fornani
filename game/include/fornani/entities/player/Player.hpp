@@ -206,6 +206,7 @@ class Player {
 	PlayerController controller;
 	shape::Collider collider{};
 	shape::Shape hurtbox{};
+	shape::Shape distant_vicinity{};
 	PlayerAnimation animation;
 	entity::Health health{};
 	Wallet wallet{};

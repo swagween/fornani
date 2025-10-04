@@ -9,6 +9,12 @@
 
 namespace fornani {
 
+constexpr auto max_light_v = 3.f;
+
+auto linear_debug = 3.0f;
+auto lumin_debug = 2.5f;
+auto rad_debug = 0.39f;
+
 void PointLight::update() {
 	if (m_has_steering) {
 		m_steering.seek(m_physics, world_position, m_steering_force);
@@ -23,9 +29,12 @@ void PointLight::update() {
 }
 
 void PointLight::unserialize(dj::Json const& in) {
+	luminosity = lumin_debug;
 	luminosity = in["luminosity"].as<float>();
+	radius = rad_debug;
 	radius = in["radius"].as<float>();
 	attenuation_constant = in["attenuation_constant"].as<float>();
+	attenuation_linear = linear_debug;
 	attenuation_linear = in["attenuation_linear"].as<float>();
 	attenuation_quadratic = in["attenuation_quadratic"].as<float>();
 	distance_scaling = in["distance_scaling"].as<float>();
@@ -47,6 +56,7 @@ LightShader::LightShader(ResourceFinder& finder) {
 	auto frag = finder.paths.resources / fs::path{"shader/shaders/light_combined.frag"};
 	if (!m_shader.loadFromFile(vert, frag)) { NANI_LOG_WARN(m_logger, "Failed to load shader {}", frag.string()); }
 }
+
 void LightShader::AddPointLight(sf::Vector2f position, int luminosity, float radius, float att_c, float att_l, float att_q, float distanceScaling, float distanceFlat) {
 	if (currentPointLight >= (MAX_POINT_LIGHTS - 1)) {
 		NANI_LOG_WARN(m_logger, "Maximum lights reached.");
@@ -89,6 +99,7 @@ void LightShader::Finalize() {
 	m_shader.setUniform("u_px", m_scale);
 	m_shader.setUniform("u_tex_size", sf::Glsl::Vec2{m_texture_size});
 	m_shader.setUniform("u_parity", sf::Glsl::Vec2{m_parity});
+	m_shader.setUniform("u_max_light", max_light_v);
 
 	m_shader.setUniform("pointlight_count", currentPointLight + 1);
 	m_shader.setUniformArray("pointlight_position", pointlightPosition.data(), pointlightPosition.size());
@@ -147,6 +158,12 @@ void LightShader::ClearSpotLights() {
 	spotlight_cutoff.clear();
 	spotlight_outerCutoff.clear();
 	spotlightDistanceScaling.clear();
+}
+
+void LightShader::debug() {
+	ImGui::SliderFloat("Luminosity: ", &lumin_debug, 0.f, 400.f);
+	ImGui::SliderFloat("Attenuation: ", &linear_debug, 0.f, 400.f);
+	ImGui::SliderFloat("Redius: ", &rad_debug, 0.f, 100.f);
 }
 
 } // namespace fornani

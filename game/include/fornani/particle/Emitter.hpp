@@ -14,8 +14,7 @@ class Emitter {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f pos);
 	void set_dimensions(sf::Vector2f dim);
-	void deactivate();
-	[[nodiscard]] auto done() const -> bool { return particles.empty() && !cooldown.started(); }
+	[[nodiscard]] auto done() const -> bool { return particles.empty(); }
 
   private:
 	std::vector<Particle> particles{};
@@ -28,12 +27,11 @@ class Emitter {
 		float rate{};
 	} variables{};
 
-	std::string_view type{};
+	std::string type{};
 	sf::Color color{};
 	sf::RectangleShape drawbox{}; // for debug
-	util::Cooldown cooldown{};
+	util::Cooldown m_load{};
 	Direction direction{};
-	bool active{true};
 };
 
-} // namespace vfx
+} // namespace fornani::vfx

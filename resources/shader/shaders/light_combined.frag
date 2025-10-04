@@ -15,6 +15,7 @@ uniform sampler2D texture;
 
 uniform float u_px;
 uniform float u_darken;
+uniform float u_max_light;
 uniform vec2 u_tex_size;
 uniform vec2 u_parity;
 
@@ -100,20 +101,27 @@ vec4 saturateColor(vec4 inputColor, float saturationAmount) {
 }
 
 float CalculatePointLightShift(vec2 point, int light) {
-    float lightDistance = length(point - pointlight_position[light]);
-    if(lightDistance == 0.0 || lightDistance > pointlight_radius[light]) {
+    // Compute distance in pixel units (do NOT normalize)
+    vec2 lightDir = point - pointlight_position[light];
+    float lightDistance = length(lightDir);
+
+    // Early out if too far
+	float norm_radius = pointlight_radius[light] / u_tex_size.y;
+    if (lightDistance == 0.0 || lightDistance > norm_radius) {
         return 0.0;
     }
-    lightDistance = lightDistance / (pointlight_radius[light] * pointlight_distance_scaling[light] + pointlight_distance_flat[light]);
 
-    float attenuation = 1.0 / 
-                    (
-                        pointlight_attenuation_constant[light] +
-                        pointlight_attenuation_linear[light] * lightDistance +
-                        pointlight_attenuation_quadratic[light] * lightDistance * lightDistance
-                    );
+    // Inverse quadratic falloff with fixed pixel radius
+    float attenuation = pointlight_attenuation_linear[light] * (
+        1.0 - clamp(
+            (lightDistance * lightDistance) /
+            (norm_radius * norm_radius),
+            0.0, 1.0)
+    );
+
     return pointlight_luminence[light] * attenuation;
 }
+
 
 float CalculateSpotLightShift(vec2 point, int light) {
     vec2 lightDirection = point - spotlight_position[light];
@@ -145,11 +153,11 @@ bool isPixelShadowed(ivec2 texel, float fraction) {
     int x = imod(texel.x, 2);
     int y = imod(texel.y, 2);
 
-    if (fraction < 0.1) {
+    if (fraction < 0.2) {
         return ((x == 0 && y == 1) || (x == 1 && y == 0) || (x == 1 && y == 1));
-    } else if (fraction < 0.15) {
+    } else if (fraction < 0.3) {
         return ((x == 0 && y == 1) || (x == 1 && y == 0));
-    } else if (fraction < 0.2) {
+    } else if (fraction < 0.4) {
         return (x == 0 && y == 1);
     }
 
@@ -158,12 +166,11 @@ bool isPixelShadowed(ivec2 texel, float fraction) {
 
 void main() {
 
-float max_light = 3.0;
 vec2 uv = gl_TexCoord[0].xy;
 ivec2 texelCoord = ivec2(floor(uv * u_tex_size));
 vec2 texelSize = 1.0 / u_tex_size;
 vec2 snappedUV = (floor(uv * u_tex_size) + 0.5) * texelSize;
-vec2 pixelPoint = aspectNormalizedCoord(vec2(snappedUV.x, 1.0 - snappedUV.y));
+ vec2 pixelPoint = aspectNormalizedCoord(vec2(snappedUV.x, 1.0 - snappedUV.y));
 
 	float highest_amount = 0.0;
 	for(int light = 0; light < pointlight_count; light++){
@@ -179,7 +186,7 @@ vec2 pixelPoint = aspectNormalizedCoord(vec2(snappedUV.x, 1.0 - snappedUV.y));
 	if(highest_amount >= 1.0 && isPixelShadowed(texelCoord, fraction)) {
         highest_amount -= 1.0;
     }
-	if(highest_amount > max_light) { highest_amount = max_light; }
+	if(highest_amount > u_max_light) { highest_amount = u_max_light; }
 
 	gl_FragColor = gl_Color * shift(highest_amount - u_darken);
 	

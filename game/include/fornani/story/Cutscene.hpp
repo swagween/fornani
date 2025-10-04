@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/io/Logger.hpp>
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Polymorphic.hpp"
@@ -30,7 +31,7 @@ class Cutscene : public UniquePolymorphic {
   public:
 	Cutscene(automa::ServiceProvider& svc, int id, std::string_view label);
 
-	virtual void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] world::Map& map, [[maybe_unused]] player::Player& player){};
+	virtual void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] world::Map& map, [[maybe_unused]] player::Player& player) {};
 	[[nodiscard]] auto complete() const -> bool { return flags.test(CutsceneFlags::complete); }
 
   protected:
@@ -52,6 +53,8 @@ class Cutscene : public UniquePolymorphic {
 
 	// debug
 	bool debug{};
+
+	io::Logger p_logger{"Cutscene"};
 };
 
 } // namespace fornani

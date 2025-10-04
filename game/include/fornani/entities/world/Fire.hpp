@@ -21,7 +21,7 @@ class Fire {
 	int size{};
 	shape::Shape bounding_box{};
 	anim::AnimatedSprite sprite;
-	vfx::Sparkler sparkler{};
+	vfx::Sparkler sparkler;
 	// entity::Inspectable inspectable;
 	sf::Vector2f sprite_offset{};
 };

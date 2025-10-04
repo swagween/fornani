@@ -233,6 +233,12 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					if (map) {
 						ImGui::Text("Transition State: %s", map->get().transition.as_string().c_str());
 						ImGui::Text("Transition Cooldown: %.5f", map->get().transition.get_cooldown());
+						ImGui::SeparatorText("Entities");
+						ImGui::Text("Active Loot: %i", map->get().active_loot.size());
+						ImGui::Indent();
+						for (auto& loot : map->get().active_loot) { ImGui::Text("Loot Size: %i", loot.get_size()); }
+						ImGui::Text("Active Projectiles: %i", map->get().active_projectiles.size());
+						ImGui::Text("Active Emitters: %i", map->get().active_emitters.size());
 					}
 					ImGui::Text("Save Point ID: %i", services.state_controller.save_point_id);
 					ImGui::Separator();

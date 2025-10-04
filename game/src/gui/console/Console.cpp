@@ -71,7 +71,9 @@ void Console::update(automa::ServiceProvider& svc) {
 			}
 			if (code.is_pop_conversation() && m_process_code_before) {
 				svc.events.dispatch_event("PopConversation", code.value);
-				svc.quest_table.progress_quest("npc_dialogue", 1, -1, code.value);
+				auto label = svc.data.get_npc_label_from_id(code.value);
+				if (label && code.extras) { svc.quest_table.progress_quest("npc_dialogue", {label.value().data(), code.extras->at(0)}, 1, -1, code.value); }
+
 				processed = true;
 			}
 			if (code.is_play_song() && m_process_code_before) {
@@ -145,6 +147,7 @@ void Console::load_and_launch(OutputType type) {
 	m_process_code_before = true;
 	m_output_type = type;
 	native_key = null_key;
+	update(*m_services);
 }
 
 void Console::load_and_launch(std::string_view key, OutputType type) {
@@ -266,6 +269,13 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 				if (code.is_start_battle()) { m_services->events.dispatch_event("StartBattle", code.value); }
 				if (code.is_reveal_item() && m_process_codes) { m_services->events.dispatch_event("RevealItem", code.value); }
 				if (code.is_item() && m_process_code_after) { m_services->events.dispatch_event("GivePlayerItem", code.value, 1); }
+				if (code.is_weapon() && m_process_code_after) { m_services->events.dispatch_event("AcquireGun", code.value); }
+				if (code.is_remove_weapon() && m_process_code_after) { m_services->events.dispatch_event("RemovePlayerWeapon", code.value); }
+				if (code.is_destroy_inspectable()) {
+					m_services->data.destroy_inspectable(code.value);
+					m_services->events.dispatch_event("DestroyInspectable", code.value);
+					NANI_LOG_DEBUG(m_logger, "Destroyed Inspectable with ID {}", code.value);
+				}
 				if (code.is_destructible() && m_process_code_after) {
 					auto inverse = code.extras ? code.extras->at(0) : 0;
 					m_services->data.switch_destructible_state(code.value, static_cast<bool>(inverse));

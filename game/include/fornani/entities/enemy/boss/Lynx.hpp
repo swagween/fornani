@@ -103,7 +103,7 @@ class Lynx final : public Enemy, public npc::NPC {
 	void request(LynxState to) { m_state.desired = to; }
 	bool change_state(LynxState next, anim::Parameters params);
 	gui::BossHealth m_health_bar;
-	vfx::Sparkler m_magic{};
+	vfx::Sparkler m_magic;
 	shape::Shape m_distant_range{};
 
 	components::SteeringBehavior m_steering{};

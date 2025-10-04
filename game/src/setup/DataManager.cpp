@@ -224,6 +224,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 		entry.push_back(enemy.code.second);
 		entry.push_back(enemy.respawn_distance);
 		entry.push_back(static_cast<int>(enemy.permanent));
+		entry.push_back(static_cast<int>(enemy.semipermanent));
 		save["map_data"]["fallen_enemies"].push_back(entry);
 	}
 	for (auto& room : discovered_rooms) { save["discovered_rooms"].push_back(room); }
@@ -352,7 +353,9 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 		m_services->quest.process(*m_services, quest_progressions.back());
 	}
 	for (auto& location : save["npc_locations"].as_array()) { npc_locations.insert({location[0].as<int>(), location[1].as<int>()}); }
-	for (auto& enemy : save["map_data"]["fallen_enemies"].as_array()) { fallen_enemies.push_back({std::make_pair(enemy[0].as<int>(), enemy[1].as<int>()), enemy[2].as<int>(), static_cast<bool>(enemy[3].as<int>())}); };
+	for (auto& enemy : save["map_data"]["fallen_enemies"].as_array()) {
+		fallen_enemies.push_back({std::make_pair(enemy[0].as<int>(), enemy[1].as<int>()), enemy[2].as<int>(), static_cast<bool>(enemy[3].as<int>()), static_cast<bool>(enemy[4].as<int>())});
+	};
 	player.piggybacker = {};
 	m_services->player_dat.set_piggy_id(save["piggybacker"].as<int>());
 	m_services->player_dat.drop_piggy = false;
@@ -547,6 +550,7 @@ void DataManager::switch_destructible_state(int id, bool inverse) {
 	for (auto [i, d] : std::views::enumerate(destructible_states)) {
 		if (d.first == id) {
 			d.second = (d.second + 1) % 2;
+			NANI_LOG_DEBUG(m_logger, "State was set to {} in DataManager.", d.second);
 			return;
 		}
 	}
@@ -569,11 +573,11 @@ void DataManager::set_npc_location(int npc_id, int room_id) {
 	npc_locations.at(npc_id) = room_id;
 }
 
-void DataManager::kill_enemy(int room_id, int id, int distance, bool permanent) {
+void DataManager::kill_enemy(int room_id, int id, int distance, bool permanent, bool semipermanent) {
 	for (auto& e : fallen_enemies) {
 		if (e.code.first == room_id && e.code.second == id) { return; }
 	}
-	fallen_enemies.push_back({{room_id, id}, distance, permanent});
+	fallen_enemies.push_back({{room_id, id}, distance, permanent, semipermanent});
 }
 
 void DataManager::respawn_enemy(int room_id, int id) {
@@ -585,7 +589,7 @@ void DataManager::respawn_enemies(int room_id, int distance) {
 }
 
 void DataManager::respawn_all() {
-	std::erase_if(fallen_enemies, [](auto const& i) { return !i.permanent; });
+	std::erase_if(fallen_enemies, [](auto const& i) { return !i.permanent && !i.semipermanent; });
 }
 
 bool data::DataManager::is_duplicate_room(int id) const {
@@ -642,7 +646,9 @@ bool DataManager::enemy_is_fallen(int room_id, int id) const {
 
 int DataManager::get_destructible_state(int id) const {
 	for (auto [i, d] : std::views::enumerate(destructible_states)) {
-		if (d.first == id) { return d.second; }
+		if (d.first == id) {
+			return d.second;
+		}
 	}
 	return -1;
 }

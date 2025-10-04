@@ -32,6 +32,10 @@ struct MessageCode {
 	[[nodiscard]] auto is_emotion() const -> bool { return type == MessageCodeType::emotion; }
 	[[nodiscard]] auto is_pop_conversation() const -> bool { return type == MessageCodeType::pop_conversation; }
 	[[nodiscard]] auto is_play_song() const -> bool { return type == MessageCodeType::play_song; }
+	[[nodiscard]] auto is_weapon() const -> bool { return type == MessageCodeType::weapon; }
+	[[nodiscard]] auto is_remove_weapon() const -> bool { return type == MessageCodeType::remove_weapon; }
+	[[nodiscard]] auto is_remove_item() const -> bool { return type == MessageCodeType::remove_item; }
+	[[nodiscard]] auto is_destroy_inspectable() const -> bool { return type == MessageCodeType::destroy_inspectable; }
 
 	// editor helpers
 	void mark_for_deletion() { delete_me = true; }

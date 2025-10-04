@@ -100,7 +100,7 @@
 			"attributes": {
 				"automatic": false,
 				"ammo": 3,
-				"reload": 380,
+				"reload": 180,
 				"cooldown_time": 8,
 				"recoil": 0.8
 			}
@@ -110,13 +110,13 @@
 			"projectile": {
 				"type": 0,
 				"dimensions": [ 12, 12 ],
-				"radius": 4.0,
+				"radius": 10.0,
 				"attributes": {
-					"base_damage": 12,
+					"base_damage": 10,
 					"power": 3,
-					"lifespan": 60,
+					"lifespan": 50,
 					"lifespan_variance": 0,
-					"speed": 29.5,
+					"speed": 39.5,
 					"variance": 0.1,
 					"stun_time": 0.0,
 					"knockback": 0.0,

@@ -28,7 +28,7 @@ class SavePoint : public Entity {
 	anim::Parameters m_anim_params;
 	shape::Shape bounding_box{};
 	shape::Shape proximity_box{};
-	vfx::Sparkler sparkler{};
+	vfx::Sparkler sparkler;
 	bool activated{};
 	bool can_activate{true};
 	int intensity{};

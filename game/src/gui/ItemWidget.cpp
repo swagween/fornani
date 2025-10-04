@@ -6,14 +6,13 @@ namespace fornani::gui {
 
 ItemWidget::ItemWidget(automa::ServiceProvider& svc, ItemWidgetType type, int id)
 	: m_id{id}, m_type{type}, m_sprites{.sticker{svc.assets.get_texture("item_sticker")}, .item = type == ItemWidgetType::item ? sf::Sprite{svc.assets.get_texture("inventory_items")} : sf::Sprite{svc.assets.get_texture("inventory_guns")}},
-	  m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "sticker", 128, util::InterpolationType::quadratic} {
+	  m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "sticker", 128, util::InterpolationType::quadratic}, sparkler{svc, constants::f_cell_vec, colors::ui_white, "item"} {
 	bring_in();
 	auto dim = type == ItemWidgetType::item ? sf::Vector2f{16.f, 16.f} : sf::Vector2f{24.f, 24.f};
 	m_sprites.item.setScale(constants::f_scale_vec);
 	m_sprites.sticker.setScale(constants::f_scale_vec);
 	m_sprites.sticker.setOrigin(m_sprites.sticker.getLocalBounds().getCenter());
 	m_sprites.item.setOrigin(dim / 2.f);
-	sparkler = vfx::Sparkler(svc, constants::f_cell_vec, colors::ui_white, "item");
 }
 
 void ItemWidget::update(automa::ServiceProvider& svc) {

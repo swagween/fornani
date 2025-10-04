@@ -10,7 +10,7 @@
         "modifier": 32,
         "position": [
           11,
-          56
+          60
         ],
         "type": 2
       }
@@ -25,112 +25,112 @@
         "id": 51101,
         "inverse": false,
         "position": [
+          37,
+          68
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": true,
+        "id": 51101,
+        "inverse": false,
+        "position": [
+          37,
+          69
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": true,
+        "id": 51101,
+        "inverse": false,
+        "position": [
+          38,
+          69
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": true,
+        "id": 51101,
+        "inverse": false,
+        "position": [
+          38,
+          68
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": true,
+        "id": 51101,
+        "inverse": false,
+        "position": [
+          39,
+          68
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": true,
+        "id": 51101,
+        "inverse": false,
+        "position": [
+          40,
+          68
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": true,
+        "id": 51101,
+        "inverse": false,
+        "position": [
+          39,
+          69
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": true,
+        "id": 51101,
+        "inverse": false,
+        "position": [
+          40,
+          69
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": true,
+        "id": 51101,
+        "inverse": false,
+        "position": [
           11,
-          57
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "enemy_clear": true,
-        "id": 51101,
-        "inverse": false,
-        "position": [
-          37,
-          68
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "enemy_clear": true,
-        "id": 51101,
-        "inverse": false,
-        "position": [
-          37,
-          69
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "enemy_clear": true,
-        "id": 51101,
-        "inverse": false,
-        "position": [
-          38,
-          69
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "enemy_clear": true,
-        "id": 51101,
-        "inverse": false,
-        "position": [
-          38,
-          68
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "enemy_clear": true,
-        "id": 51101,
-        "inverse": false,
-        "position": [
-          39,
-          68
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "enemy_clear": true,
-        "id": 51101,
-        "inverse": false,
-        "position": [
-          40,
-          68
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "enemy_clear": true,
-        "id": 51101,
-        "inverse": false,
-        "position": [
-          39,
-          69
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "enemy_clear": true,
-        "id": 51101,
-        "inverse": false,
-        "position": [
-          40,
-          69
+          61
         ]
       }
     ],
@@ -18366,7 +18366,7 @@
         3,
         3,
         3,
-        0,
+        3,
         3,
         456,
         457,
@@ -18414,7 +18414,7 @@
         3,
         3,
         3,
-        0,
+        3,
         3,
         0,
         0,
@@ -18460,10 +18460,10 @@
         3,
         448,
         449,
-        450,
-        451,
-        0,
-        0,
+        454,
+        3,
+        3,
+        3,
         0,
         0,
         0,
@@ -18509,9 +18509,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        3,
+        3,
+        3,
         0,
         0,
         0,
@@ -18557,9 +18557,9 @@
         0,
         0,
         0,
+        3,
         0,
-        0,
-        0,
+        3,
         0,
         0,
         0,
@@ -18605,9 +18605,9 @@
         0,
         0,
         0,
+        70,
         0,
-        0,
-        0,
+        70,
         0,
         0,
         0,

@@ -420,6 +420,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	bool npcs{};
 	bool anim{};
 	bool vine{};
+	bool cuts{};
 	bool open_themes{};
 
 	bool new_room{b_new_file};
@@ -725,6 +726,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("NPC", NULL, &npcs)) {}
 			if (ImGui::MenuItem("Animator", NULL, &anim)) {}
 			if (ImGui::MenuItem("Vine", NULL, &vine)) {}
+			if (ImGui::MenuItem("Cutscene Trigger", NULL, &cuts)) {}
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 				current_tool->current_entity = std::make_unique<fornani::SavePoint>(*p_services, map.room_id);
@@ -886,6 +888,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	if (vine) {
 		ImGui::OpenPopup("Vine Specifications");
 		label = "Vine Specifications";
+		popup_open = true;
+	}
+	if (cuts) {
+		ImGui::OpenPopup("Cutscene Trigger Specifications");
+		label = "Cutscene Trigger  Specifications";
 		popup_open = true;
 	}
 

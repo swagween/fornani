@@ -29,7 +29,7 @@ class ItemWidget {
 		sf::Sprite item;
 	} m_sprites;
 	util::RectPath m_path;
-	vfx::Sparkler sparkler{};
+	vfx::Sparkler sparkler;
 };
 
 } // namespace fornani::gui

@@ -67,7 +67,7 @@ class Summoner final : public Enemy {
 	void request(SummonerState to) { m_state.desired = to; }
 	bool change_state(SummonerState next, anim::Parameters params);
 
-	vfx::Sparkler m_magic{};
+	vfx::Sparkler m_magic;
 	shape::Shape m_distant_range{};
 
 	entity::Caution m_caution{};

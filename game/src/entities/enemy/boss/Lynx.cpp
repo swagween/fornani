@@ -39,7 +39,7 @@ Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, std::optional<std::uni
 		{"laugh", {73, 4, lynx_framerate * 2, 4}},
 		{"stagger", {77, 1, lynx_framerate * 4, -1}},
 	};
-	Enemy::animation.set_params(get_params("sit"));
+	Enemy::animation.set_params(Enemy::get_params("sit"));
 	svc.events.register_event(std::make_unique<Event<int>>("StartBattle", &lynx_start_battle));
 	flags.state.set(StateFlags::no_shake);
 	flags.general.set(GeneralFlags::post_death_render);
@@ -264,7 +264,7 @@ void Lynx::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 
 fsm::StateFunction Lynx::update_sit() {
 	m_state.actual = LynxState::sit;
-	if (change_state(LynxState::get_up, get_params("get_up"))) { return LYNX_BIND(update_get_up); }
+	if (change_state(LynxState::get_up, Enemy::get_params("get_up"))) { return LYNX_BIND(update_get_up); }
 	return LYNX_BIND(update_sit);
 }
 
@@ -272,14 +272,14 @@ fsm::StateFunction Lynx::update_get_up() {
 	m_state.actual = LynxState::get_up;
 	m_flags.set(LynxFlags::battle_mode);
 	if (Enemy::animation.complete()) {
-		if (change_state(LynxState::aerial_slash, get_params("aerial_slash"))) { return LYNX_BIND(update_aerial_slash); }
-		if (change_state(LynxState::forward_slash, get_params("forward_slash"))) { return LYNX_BIND(update_forward_slash); }
-		if (change_state(LynxState::triple_slash, get_params("triple_slash"))) { return LYNX_BIND(update_triple_slash); }
-		if (change_state(LynxState::upward_slash, get_params("upward_slash"))) { return LYNX_BIND(update_upward_slash); }
-		if (change_state(LynxState::downward_slam, get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
-		if (change_state(LynxState::levitate, get_params("levitate"))) { return LYNX_BIND(update_levitate); }
+		if (change_state(LynxState::aerial_slash, Enemy::get_params("aerial_slash"))) { return LYNX_BIND(update_aerial_slash); }
+		if (change_state(LynxState::forward_slash, Enemy::get_params("forward_slash"))) { return LYNX_BIND(update_forward_slash); }
+		if (change_state(LynxState::triple_slash, Enemy::get_params("triple_slash"))) { return LYNX_BIND(update_triple_slash); }
+		if (change_state(LynxState::upward_slash, Enemy::get_params("upward_slash"))) { return LYNX_BIND(update_upward_slash); }
+		if (change_state(LynxState::downward_slam, Enemy::get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
+		if (change_state(LynxState::levitate, Enemy::get_params("levitate"))) { return LYNX_BIND(update_levitate); }
 		request(LynxState::idle);
-		if (change_state(LynxState::idle, get_params("idle"))) { return LYNX_BIND(update_idle); }
+		if (change_state(LynxState::idle, Enemy::get_params("idle"))) { return LYNX_BIND(update_idle); }
 	}
 	return LYNX_BIND(update_get_up);
 }
@@ -287,27 +287,27 @@ fsm::StateFunction Lynx::update_get_up() {
 fsm::StateFunction Lynx::update_idle() {
 	m_state.actual = LynxState::idle;
 	m_counters.slam.cancel();
-	if (change_state(LynxState::defeat, get_params("defeat"))) { return LYNX_BIND(update_defeat); }
-	if (change_state(LynxState::second_phase, get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
-	if (change_state(LynxState::laugh, get_params("laugh"))) { return LYNX_BIND(update_laugh); }
-	if (change_state(LynxState::turn, get_params("turn"))) { return LYNX_BIND(update_turn); }
-	if (change_state(LynxState::aerial_slash, get_params("aerial_slash"))) { return LYNX_BIND(update_aerial_slash); }
-	if (change_state(LynxState::forward_slash, get_params("forward_slash"))) { return LYNX_BIND(update_forward_slash); }
-	if (change_state(LynxState::triple_slash, get_params("triple_slash"))) { return LYNX_BIND(update_triple_slash); }
-	if (change_state(LynxState::upward_slash, get_params("upward_slash"))) { return LYNX_BIND(update_upward_slash); }
-	if (change_state(LynxState::downward_slam, get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
-	if (change_state(LynxState::run, get_params("run"))) { return LYNX_BIND(update_run); }
-	if (change_state(LynxState::jump, get_params("jump"))) { return LYNX_BIND(update_jump); }
-	if (change_state(LynxState::levitate, get_params("levitate"))) { return LYNX_BIND(update_levitate); }
-	if (change_state(LynxState::prepare_shuriken, get_params("prepare_shuriken"))) { return LYNX_BIND(update_prepare_shuriken); }
-	if (change_state(LynxState::prepare_slash, get_params("prepare_slash"))) { return LYNX_BIND(update_prepare_slash); }
+	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
+	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
+	if (change_state(LynxState::laugh, Enemy::get_params("laugh"))) { return LYNX_BIND(update_laugh); }
+	if (change_state(LynxState::turn, Enemy::get_params("turn"))) { return LYNX_BIND(update_turn); }
+	if (change_state(LynxState::aerial_slash, Enemy::get_params("aerial_slash"))) { return LYNX_BIND(update_aerial_slash); }
+	if (change_state(LynxState::forward_slash, Enemy::get_params("forward_slash"))) { return LYNX_BIND(update_forward_slash); }
+	if (change_state(LynxState::triple_slash, Enemy::get_params("triple_slash"))) { return LYNX_BIND(update_triple_slash); }
+	if (change_state(LynxState::upward_slash, Enemy::get_params("upward_slash"))) { return LYNX_BIND(update_upward_slash); }
+	if (change_state(LynxState::downward_slam, Enemy::get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
+	if (change_state(LynxState::run, Enemy::get_params("run"))) { return LYNX_BIND(update_run); }
+	if (change_state(LynxState::jump, Enemy::get_params("jump"))) { return LYNX_BIND(update_jump); }
+	if (change_state(LynxState::levitate, Enemy::get_params("levitate"))) { return LYNX_BIND(update_levitate); }
+	if (change_state(LynxState::prepare_shuriken, Enemy::get_params("prepare_shuriken"))) { return LYNX_BIND(update_prepare_shuriken); }
+	if (change_state(LynxState::prepare_slash, Enemy::get_params("prepare_slash"))) { return LYNX_BIND(update_prepare_slash); }
 	return LYNX_BIND(update_idle);
 }
 
 fsm::StateFunction Lynx::update_jump() {
 	m_state.actual = LynxState::jump;
-	if (change_state(LynxState::defeat, get_params("defeat"))) { return LYNX_BIND(update_defeat); }
-	if (change_state(LynxState::second_phase, get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
+	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
+	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 
 	// check if battle is over and Lynx peaced out
 	if (health.is_dead()) {
@@ -327,8 +327,8 @@ fsm::StateFunction Lynx::update_jump() {
 				request(LynxState::aerial_slash);
 				flags.state.reset(StateFlags::out_of_zone);
 			}
-			if (change_state(LynxState::aerial_slash, get_params("aerial_slash"))) { return LYNX_BIND(update_aerial_slash); }
-			if (change_state(LynxState::downward_slam, get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
+			if (change_state(LynxState::aerial_slash, Enemy::get_params("aerial_slash"))) { return LYNX_BIND(update_aerial_slash); }
+			if (change_state(LynxState::downward_slam, Enemy::get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
 		}
 	}
 	return LYNX_BIND(update_jump);
@@ -336,8 +336,8 @@ fsm::StateFunction Lynx::update_jump() {
 
 fsm::StateFunction Lynx::update_forward_slash() {
 	m_state.actual = LynxState::forward_slash;
-	if (change_state(LynxState::defeat, get_params("defeat"))) { return LYNX_BIND(update_defeat); }
-	if (change_state(LynxState::second_phase, get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
+	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
+	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 	if (Enemy::animation.just_started()) { random::percent_chance(50) ? m_services->soundboard.flags.lynx.set(audio::Lynx::heuh) : m_services->soundboard.flags.lynx.set(audio::Lynx::huh); }
 	if (Enemy::animation.get_frame_count() == 2 && Enemy::animation.keyframe_started()) {
 		random::percent_chance(50) ? m_services->soundboard.flags.lynx.set(audio::Lynx::swipe_1) : m_services->soundboard.flags.lynx.set(audio::Lynx::swipe_2);
@@ -351,15 +351,15 @@ fsm::StateFunction Lynx::update_forward_slash() {
 	if (Enemy::animation.complete()) {
 		flags.general.set(GeneralFlags::gravity);
 		request(LynxState::idle);
-		if (change_state(LynxState::idle, get_params("idle"))) { return LYNX_BIND(update_idle); }
+		if (change_state(LynxState::idle, Enemy::get_params("idle"))) { return LYNX_BIND(update_idle); }
 	}
 	return LYNX_BIND(update_forward_slash);
 }
 
 fsm::StateFunction Lynx::update_levitate() {
 	m_state.actual = LynxState::levitate;
-	if (change_state(LynxState::defeat, get_params("defeat"))) { return LYNX_BIND(update_defeat); }
-	if (change_state(LynxState::second_phase, get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
+	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
+	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 	if (Enemy::animation.just_started()) {
 		m_cooldowns.start_levitate.start();
 		m_services->soundboard.flags.lynx.set(audio::Lynx::yyah);
@@ -376,29 +376,29 @@ fsm::StateFunction Lynx::update_levitate() {
 		flags.state.reset(StateFlags::simple_physics);
 		m_flags.set(LynxFlags::just_levitated);
 		request(LynxState::downward_slam);
-		if (change_state(LynxState::downward_slam, get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
+		if (change_state(LynxState::downward_slam, Enemy::get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
 	}
 	return LYNX_BIND(update_levitate);
 }
 
 fsm::StateFunction Lynx::update_run() {
 	m_state.actual = LynxState::run;
-	if (change_state(LynxState::defeat, get_params("defeat"))) { return LYNX_BIND(update_defeat); }
-	if (change_state(LynxState::second_phase, get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
+	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
+	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 	Enemy::collider.physics.acceleration.x = Enemy::directions.actual.as_float() * attributes.speed;
 	if (Enemy::animation.just_started()) { m_cooldowns.run.start(); }
-	if (change_state(LynxState::turn, get_params("turn"))) { return LYNX_BIND(update_turn); }
+	if (change_state(LynxState::turn, Enemy::get_params("turn"))) { return LYNX_BIND(update_turn); }
 	if (!m_cooldowns.run.running()) {
 		request(LynxState::forward_slash);
-		if (change_state(LynxState::forward_slash, get_params("forward_slash"))) { return LYNX_BIND(update_forward_slash); }
+		if (change_state(LynxState::forward_slash, Enemy::get_params("forward_slash"))) { return LYNX_BIND(update_forward_slash); }
 	}
 	return LYNX_BIND(update_run);
 }
 
 fsm::StateFunction Lynx::update_downward_slam() {
 	m_state.actual = LynxState::downward_slam;
-	if (change_state(LynxState::defeat, get_params("defeat"))) { return LYNX_BIND(update_defeat); }
-	if (change_state(LynxState::second_phase, get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
+	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
+	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 	if (slam_follow()) {
 		flags.state.set(StateFlags::simple_physics);
 	} else {
@@ -447,16 +447,16 @@ fsm::StateFunction Lynx::update_downward_slam() {
 			if (m_flags.test(LynxFlags::just_levitated)) {
 				m_flags.reset(LynxFlags::just_levitated);
 				request(LynxState::laugh);
-				if (change_state(LynxState::laugh, get_params("laugh"))) { return LYNX_BIND(update_laugh); }
+				if (change_state(LynxState::laugh, Enemy::get_params("laugh"))) { return LYNX_BIND(update_laugh); }
 			}
 			flags.state.set(StateFlags::vulnerable);
-			if (change_state(LynxState::turn, get_params("turn"))) { return LYNX_BIND(update_turn); }
+			if (change_state(LynxState::turn, Enemy::get_params("turn"))) { return LYNX_BIND(update_turn); }
 			request(LynxState::jump);
-			if (change_state(LynxState::jump, get_params("jump"))) { return LYNX_BIND(update_jump); }
+			if (change_state(LynxState::jump, Enemy::get_params("jump"))) { return LYNX_BIND(update_jump); }
 		}
 		flags.state.set(StateFlags::vulnerable);
 		request(LynxState::idle);
-		if (change_state(LynxState::idle, get_params("idle"))) { return LYNX_BIND(update_idle); }
+		if (change_state(LynxState::idle, Enemy::get_params("idle"))) { return LYNX_BIND(update_idle); }
 	}
 	return LYNX_BIND(update_downward_slam);
 }
@@ -464,11 +464,11 @@ fsm::StateFunction Lynx::update_downward_slam() {
 fsm::StateFunction Lynx::update_prepare_shuriken() {
 	m_state.actual = LynxState::prepare_shuriken;
 	if (Enemy::animation.just_started()) { m_services->soundboard.flags.lynx.set(audio::Lynx::nngyah); }
-	if (change_state(LynxState::defeat, get_params("defeat"))) { return LYNX_BIND(update_defeat); }
-	if (change_state(LynxState::second_phase, get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
+	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
+	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 	if (Enemy::animation.complete()) {
 		request(LynxState::toss_shuriken);
-		if (change_state(LynxState::toss_shuriken, get_params("toss_shuriken"))) { return LYNX_BIND(update_toss_shuriken); }
+		if (change_state(LynxState::toss_shuriken, Enemy::get_params("toss_shuriken"))) { return LYNX_BIND(update_toss_shuriken); }
 	}
 	return LYNX_BIND(update_prepare_shuriken);
 }
@@ -480,19 +480,19 @@ fsm::StateFunction Lynx::update_toss_shuriken() {
 		m_map->spawn_projectile_at(*m_services, m_shuriken.get(), m_shuriken.get().get_barrel_point(), m_attack_target);
 		m_services->soundboard.flags.lynx.set(audio::Lynx::shing);
 	}
-	if (change_state(LynxState::defeat, get_params("defeat"))) { return LYNX_BIND(update_defeat); }
-	if (change_state(LynxState::second_phase, get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
+	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
+	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 	if (Enemy::animation.complete()) {
 		request(LynxState::idle);
-		if (change_state(LynxState::idle, get_params("idle"))) { return LYNX_BIND(update_idle); }
+		if (change_state(LynxState::idle, Enemy::get_params("idle"))) { return LYNX_BIND(update_idle); }
 	}
 	return LYNX_BIND(update_toss_shuriken);
 }
 
 fsm::StateFunction Lynx::update_upward_slash() {
 	m_state.actual = LynxState::upward_slash;
-	if (change_state(LynxState::defeat, get_params("defeat"))) { return LYNX_BIND(update_defeat); }
-	if (change_state(LynxState::second_phase, get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
+	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
+	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 	if (Enemy::animation.just_started()) { random::percent_chance(50) ? m_services->soundboard.flags.lynx.set(audio::Lynx::hoah) : m_services->soundboard.flags.lynx.set(audio::Lynx::huh); }
 	if (Enemy::animation.get_frame_count() == 1 && Enemy::animation.keyframe_started()) {
 		random::percent_chance(50) ? m_services->soundboard.flags.lynx.set(audio::Lynx::swipe_1) : m_services->soundboard.flags.lynx.set(audio::Lynx::swipe_2);
@@ -505,17 +505,17 @@ fsm::StateFunction Lynx::update_upward_slash() {
 	}
 	if (Enemy::animation.complete()) {
 		flags.general.set(GeneralFlags::gravity);
-		if (change_state(LynxState::turn, get_params("turn"))) { return LYNX_BIND(update_turn); }
+		if (change_state(LynxState::turn, Enemy::get_params("turn"))) { return LYNX_BIND(update_turn); }
 		request(LynxState::idle);
-		if (change_state(LynxState::idle, get_params("idle"))) { return LYNX_BIND(update_idle); }
+		if (change_state(LynxState::idle, Enemy::get_params("idle"))) { return LYNX_BIND(update_idle); }
 	}
 	return LYNX_BIND(update_upward_slash);
 }
 
 fsm::StateFunction Lynx::update_triple_slash() {
 	m_state.actual = LynxState::triple_slash;
-	if (change_state(LynxState::defeat, get_params("defeat"))) { return LYNX_BIND(update_defeat); }
-	if (change_state(LynxState::second_phase, get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
+	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
+	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 	auto sign = Enemy::directions.actual.as_float();
 	for (auto& slash : m_attacks.slash) {
 		slash.set_position(Enemy::collider.get_center() + sf::Vector2f{36.f * sign, -20.f});
@@ -523,15 +523,15 @@ fsm::StateFunction Lynx::update_triple_slash() {
 	}
 	if (Enemy::animation.complete()) {
 		request(LynxState::idle);
-		if (change_state(LynxState::idle, get_params("idle"))) { return LYNX_BIND(update_idle); }
+		if (change_state(LynxState::idle, Enemy::get_params("idle"))) { return LYNX_BIND(update_idle); }
 	}
 	return LYNX_BIND(update_triple_slash);
 }
 
 fsm::StateFunction Lynx::update_turn() {
 	m_state.actual = LynxState::turn;
-	if (change_state(LynxState::defeat, get_params("defeat"))) { return LYNX_BIND(update_defeat); }
-	if (change_state(LynxState::second_phase, get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
+	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
+	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 	if (Enemy::animation.just_started()) { m_services->soundboard.flags.lynx.set(audio::Lynx::huuyeah); }
 	Enemy::directions.desired.lock();
 	if (Enemy::animation.get_frame_count() == 4 && Enemy::animation.keyframe_started()) {
@@ -547,15 +547,15 @@ fsm::StateFunction Lynx::update_turn() {
 	if (Enemy::animation.complete()) {
 		Enemy::request_flip();
 		request(LynxState::idle);
-		if (change_state(LynxState::idle, get_params("idle"))) { return LYNX_BIND(update_idle); }
+		if (change_state(LynxState::idle, Enemy::get_params("idle"))) { return LYNX_BIND(update_idle); }
 	}
 	return LYNX_BIND(update_turn);
 }
 
 fsm::StateFunction Lynx::update_aerial_slash() {
 	m_state.actual = LynxState::aerial_slash;
-	if (change_state(LynxState::defeat, get_params("defeat"))) { return LYNX_BIND(update_defeat); }
-	if (change_state(LynxState::second_phase, get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
+	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
+	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 	if (Enemy::animation.just_started()) { random::percent_chance(50) ? m_services->soundboard.flags.lynx.set(audio::Lynx::hoah) : m_services->soundboard.flags.lynx.set(audio::Lynx::huh); }
 	if (Enemy::animation.just_started()) { Enemy::collider.physics.acceleration.x = Enemy::directions.actual.as_float() * 600.f; }
 	if (Enemy::animation.get_frame_count() == 1 && Enemy::animation.keyframe_started()) {
@@ -570,24 +570,24 @@ fsm::StateFunction Lynx::update_aerial_slash() {
 	if (Enemy::animation.complete()) {
 		flags.general.set(GeneralFlags::gravity);
 		if (Enemy::collider.grounded()) {
-			if (change_state(LynxState::turn, get_params("turn"))) { return LYNX_BIND(update_turn); }
+			if (change_state(LynxState::turn, Enemy::get_params("turn"))) { return LYNX_BIND(update_turn); }
 		}
 		Enemy::collider.grounded() ? request(LynxState::upward_slash) : request(LynxState::downward_slam);
-		if (change_state(LynxState::upward_slash, get_params("upward_slash"))) { return LYNX_BIND(update_upward_slash); }
-		if (change_state(LynxState::downward_slam, get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
+		if (change_state(LynxState::upward_slash, Enemy::get_params("upward_slash"))) { return LYNX_BIND(update_upward_slash); }
+		if (change_state(LynxState::downward_slam, Enemy::get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
 	}
 	return LYNX_BIND(update_aerial_slash);
 }
 
 fsm::StateFunction Lynx::update_prepare_slash() {
 	m_state.actual = LynxState::prepare_slash;
-	if (change_state(LynxState::defeat, get_params("defeat"))) { return LYNX_BIND(update_defeat); }
-	if (change_state(LynxState::second_phase, get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
+	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
+	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 	if (Enemy::animation.just_started()) { m_services->soundboard.flags.lynx.set(audio::Lynx::hnnyah); }
 	if (Enemy::animation.get_frame_count() == 1 && Enemy::animation.keyframe_started()) { m_services->soundboard.flags.lynx.set(audio::Lynx::prepare); }
 	if (Enemy::animation.complete()) {
 		request(LynxState::aerial_slash);
-		if (change_state(LynxState::aerial_slash, get_params("aerial_slash"))) { return LYNX_BIND(update_aerial_slash); }
+		if (change_state(LynxState::aerial_slash, Enemy::get_params("aerial_slash"))) { return LYNX_BIND(update_aerial_slash); }
 	}
 	return LYNX_BIND(update_prepare_slash);
 }
@@ -607,7 +607,7 @@ fsm::StateFunction Lynx::update_defeat() {
 	}
 	if (Enemy::animation.complete()) {
 		request(LynxState::jump);
-		if (change_state(LynxState::jump, get_params("jump"))) { return LYNX_BIND(update_jump); }
+		if (change_state(LynxState::jump, Enemy::get_params("jump"))) { return LYNX_BIND(update_jump); }
 	}
 	return LYNX_BIND(update_defeat);
 }
@@ -616,7 +616,7 @@ fsm::StateFunction Lynx::update_second_phase() {
 	m_state.actual = LynxState::second_phase;
 	m_flags.set(LynxFlags::second_phase);
 	flags.state.reset(StateFlags::vulnerable);
-	if (change_state(LynxState::defeat, get_params("defeat"))) { return LYNX_BIND(update_defeat); }
+	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
 	if (Enemy::animation.just_started()) { m_services->soundboard.flags.lynx.set(audio::Lynx::laugh); }
 	flags.general.reset(GeneralFlags::gravity);
 	flags.state.set(StateFlags::simple_physics);
@@ -627,7 +627,7 @@ fsm::StateFunction Lynx::update_second_phase() {
 		flags.general.set(GeneralFlags::gravity);
 		flags.state.reset(StateFlags::simple_physics);
 		request(LynxState::downward_slam);
-		if (change_state(LynxState::downward_slam, get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
+		if (change_state(LynxState::downward_slam, Enemy::get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
 	}
 	return LYNX_BIND(update_second_phase);
 }
@@ -639,7 +639,7 @@ fsm::StateFunction Lynx::update_laugh() {
 	if (Enemy::animation.complete()) {
 		m_cooldowns.post_levitate.start();
 		request(LynxState::idle);
-		if (change_state(LynxState::idle, get_params("idle"))) { return LYNX_BIND(update_idle); }
+		if (change_state(LynxState::idle, Enemy::get_params("idle"))) { return LYNX_BIND(update_idle); }
 	}
 	return LYNX_BIND(update_laugh);
 }
@@ -648,7 +648,7 @@ fsm::StateFunction Lynx::update_stagger() {
 	m_state.actual = LynxState::stagger;
 	if (Enemy::collider.grounded()) {
 		request(LynxState::defeat);
-		if (change_state(LynxState::defeat, get_params("defeat"))) { return LYNX_BIND(update_defeat); }
+		if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
 	}
 	return LYNX_BIND(update_stagger);
 }

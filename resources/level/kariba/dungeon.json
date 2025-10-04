@@ -47,10 +47,18 @@
     "npcs": [
       {
         "background": false,
+        "contingencies": [
+          {
+            "requirement": 0,
+            "strict": true,
+            "tag": "defeat_miaag"
+          }
+        ],
         "dimensions": [
           1,
           1
         ],
+        "hidden": false,
         "id": 75113,
         "label": "bryn",
         "position": [
@@ -129,20 +137,20 @@
       35
     ],
     "minimap": true,
-    "music": "ritual",
+    "music": "bryns_turn",
     "player_start": [
       0,
       0
     ],
     "properties": {
-      "day_night_shift": true,
+      "day_night_shift": false,
       "environmental_randomness": true,
       "lighting": true,
       "timer": false
     },
     "room_id": 420,
     "shader": {
-      "darken_factor": 1
+      "darken_factor": 3
     },
     "style": 5
   },
@@ -152,10 +160,10 @@
       "reverse_obscuring": false
     },
     "ignore_lighting": [
-      false,
-      false,
       true,
-      true
+      true,
+      false,
+      false
     ],
     "layers": [
       [

@@ -24,6 +24,7 @@ Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int r
 	m_label = key.data() + std::to_string(room);
 	auto nat = in["id"].as<int>();
 	native_id = nat == 0 ? room : nat;
+	NANI_LOG_DEBUG(m_logger, "Created Inspectable with Native ID {}", native_id);
 	alternates = in["alternates"].as<int>();
 	bounding_box = shape::Shape(get_world_dimensions());
 	bounding_box.set_position(get_world_position());
@@ -38,10 +39,11 @@ void Inspectable::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_
 	animation.update();
 	if (m_indicator_cooldown.is_almost_complete()) { flags.reset(InspectableFlags::hovered); }
 	if (b_destroy) {
+		NANI_LOG_DEBUG(m_logger, "destroy_me() successfully called!", native_id);
 		destroy_by_id(b_id);
 		b_destroy = false;
 	}
-	if (flags.test(InspectableFlags::destroy) && !destroyed()) { svc.data.destroy_inspectable(native_id); }
+	if (svc.data.inspectable_is_destroyed(native_id)) { flags.set(InspectableFlags::destroy); }
 
 	// check for quest-based alternates
 	/*auto quest_status = svc.quest.get_progression(quest::QuestType::inspectable, native_id);

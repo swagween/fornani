@@ -15,6 +15,26 @@
         "type": 2
       }
     ],
+    "cutscene_triggers": [
+      {
+        "contingencies": [
+          {
+            "requirement": 1,
+            "strict": true,
+            "tag": "defeat_miaag"
+          }
+        ],
+        "dimensions": [
+          16,
+          9
+        ],
+        "id": 509,
+        "position": [
+          26,
+          36
+        ]
+      }
+    ],
     "destructibles": [
       {
         "dimensions": [
@@ -498,7 +518,7 @@
           1,
           1
         ],
-        "id": 0,
+        "id": 5091,
         "instant": false,
         "key": "deity",
         "position": [
@@ -514,6 +534,10 @@
                     [
                       12,
                       509
+                    ],
+                    [
+                      18,
+                      5091
                     ]
                   ],
                   "message": "\"Deity Miaag\""
@@ -547,6 +571,28 @@
               ]
             ]
           }
+        ]
+      }
+    ],
+    "npcs": [
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "hidden": true,
+        "id": 48353,
+        "label": "bryn",
+        "position": [
+          7,
+          26
+        ],
+        "suites": [
+          [
+            3,
+            4
+          ]
         ]
       }
     ],
@@ -1679,6 +1725,9 @@
         1,
         1,
         1,
+        150,
+        151,
+        152,
         1,
         1,
         1,
@@ -1724,6 +1773,9 @@
         1,
         1,
         1,
+        166,
+        199,
+        168,
         1,
         1,
         1,
@@ -1769,15 +1821,9 @@
         1,
         1,
         1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
+        182,
+        183,
+        184,
         1,
         1,
         1,

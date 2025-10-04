@@ -109,6 +109,16 @@
 			}
 		},
 		{
+			"name": "ninja-msvc-ubsan",
+			"displayName": "Ninja MSVC UBSan",
+			"description": "UBSan build configuration using Ninja Multi-config",
+			"inherits": "base-msvc",
+			"binaryDir": "${sourceDir}/out/ubsan",
+			"cacheVariables": {
+				"CMAKE_CXX_FLAGS_INIT": "-fsanitize=undefined"
+			}
+		},
+		{
 			"name": "ninja-tsan",
 			"displayName": "Ninja TSan",
 			"description": "TSan build configuration using Ninja Multi-config",
@@ -183,6 +193,21 @@
 			"name": "UBSan Debug",
 			"configurePreset": "ninja-ubsan",
 			"configuration": "Debug"
+		},
+		{
+			"name": "ASan Debug",
+			"configurePreset": "ninja-msvc-asan",
+			"configuration": "Debug"
+		},
+		{
+			"name": "ASan RelWithDebInfo",
+			"configurePreset": "ninja-msvc-asan",
+			"configuration": "RelWithDebInfo"
+		},
+		{
+			"name": "UBSan RelWithDebInfo",
+			"configurePreset": "ninja-msvc-ubsan",
+			"configuration": "RelWithDebInfo"
 		}
 	],
 	"testPresets": [

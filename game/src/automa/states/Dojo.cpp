@@ -8,6 +8,7 @@ namespace fornani::automa {
 
 static bool item_acquisition{};
 static bool gun_acquisition{};
+static bool gun_removal{};
 static bool item_music_played{};
 static bool b_reveal_item{};
 static bool b_read_item{};
@@ -35,6 +36,10 @@ static void trigger_song(int to) {
 	b_play_song = true;
 	song_id = to;
 }
+static void trigger_remove_gun(int which) {
+	gun_removal = true;
+	item_modifier = which;
+}
 
 Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name)
 	: GameState(svc, player, scene, room_number), map(svc, player), gui_map(svc, player), m_services(&svc), m_enter_room{100}, m_loading{4} {
@@ -48,6 +53,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	svc.events.register_event(std::make_unique<Event<int>>("AcquireItem", &trigger_item));
 	svc.events.register_event(std::make_unique<Event<int>>("AcquireGun", &trigger_gun));
 	svc.events.register_event(std::make_unique<Event<int>>("PlaySong", &trigger_song));
+	svc.events.register_event(std::make_unique<Event<int>>("RemovePlayerWeapon", &trigger_remove_gun));
 
 	// create shaders
 	m_shader = LightShader(svc.finder);
@@ -108,6 +114,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	// handle events
 	if (item_acquisition) { acquire_item(svc, *player, item_modifier); }
 	if (gun_acquisition) { acquire_gun(svc, *player, item_modifier); }
+	if (gun_removal) { remove_gun(svc, *player, item_modifier); }
 	if (b_play_song) {
 		svc.music_player.play_song_by_id(svc.finder, song_id);
 		b_play_song = false;
@@ -254,6 +261,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		auto ppl = PointLight(svc.data.light["lantern"], puv);
 		ppl.position = normalized;
 		if (player->has_item("lantern")) { m_shader->AddPointLight(ppl); }
+		// m_shader->debug();
 	}
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(svc, *player, win); }
@@ -293,13 +301,30 @@ void Dojo::acquire_gun(ServiceProvider& svc, player::Player& player, int modifie
 	if (!tag) { return; }
 	NANI_LOG_DEBUG(m_logger, "Gun Tag: {}", tag->data());
 	player.push_to_loadout(tag.value());
-	m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
+	if (!m_console) {
+		m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
+		m_console.value()->append(player.arsenal.value().get_weapon_at(tag.value()).get_label());
+		m_console.value()->append("!");
+	}
 	m_console.value()->display_gun(modifier);
-	m_console.value()->append(player.arsenal.value().get_weapon_at(tag.value()).get_label());
-	m_console.value()->append("!");
 	svc.music_player.quick_play(svc.finder, "discovery");
 	gun_acquisition = false;
 	item_music_played = true;
+}
+
+void Dojo::remove_gun(ServiceProvider& svc, player::Player& player, int modifier) {
+	auto tag = svc.data.get_gun_tag_from_id(modifier);
+	if (!tag) { return; }
+	NANI_LOG_DEBUG(m_logger, "Gun Tag: {}", tag->data());
+	player.pop_from_loadout(tag.value());
+	if (!m_console) {
+		m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "removed", gui::OutputType::no_skip);
+		m_console.value()->append(player.arsenal.value().get_weapon_at(tag.value()).get_label());
+		m_console.value()->append(".");
+	}
+	svc.soundboard.flags.item.set(audio::Item::unequip);
+	m_console.value()->display_gun(modifier);
+	gun_removal = false;
 }
 
 void Dojo::read_item(int id) {

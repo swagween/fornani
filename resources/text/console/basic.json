@@ -8,6 +8,9 @@
   "chest": {
     "suite": [[{ "message": "Obtained " }]]
   },
+  "removed": {
+    "suite": [[{ "message": "Removed " }]]
+  },
   "open_chest": {
     "suite": [[{ "message": "It's already been opened." }]]
   },

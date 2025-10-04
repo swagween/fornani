@@ -2,6 +2,7 @@ nani_add_headers(
   Animator.hpp
   Bed.hpp
   Chest.hpp
+  CutsceneTrigger.hpp
   Destructible.hpp
   Entity.hpp
   EntitySet.hpp

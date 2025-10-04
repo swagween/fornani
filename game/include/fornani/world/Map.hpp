@@ -87,6 +87,7 @@ class Map {
 	bool handle_entry(player::Player& player, util::Cooldown& enter_room);
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {}, float speed_multiplier = 1.f);
 	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0);
+	void reveal_npc(std::string_view label);
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc) const;
@@ -94,6 +95,7 @@ class Map {
 	bool check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	sf::Vector2i get_circle_collision_result(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	void handle_cell_collision(shape::CircleCollider& collider);
+	void handle_breakable_collision(shape::CircleCollider& collider);
 	void clear_projectiles();
 	void shake_camera();
 	void clear();
@@ -164,7 +166,7 @@ class Map {
 	std::vector<Spike> spikes{};
 	std::vector<std::unique_ptr<SwitchButton>> switch_buttons{};
 	std::vector<SwitchBlock> switch_blocks{};
-	std::vector<Destructible> destroyers{};
+	std::vector<Destructible> destructibles{};
 	std::vector<Checkpoint> checkpoints{};
 	std::vector<TimerBlock> timer_blocks{};
 	std::vector<EnemySpawn> enemy_spawns{};

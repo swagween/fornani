@@ -241,6 +241,7 @@ void PlayerController::stop_walking_autonomously() { hard_state.reset(HardState:
 void PlayerController::set_shot(bool flag) { key_map[ControllerInput::shoot] = flag ? 1.f : 0.f; }
 
 void PlayerController::prevent_movement() {
+	flush_ability();
 	key_map[ControllerInput::move_x] = 0.f;
 	key_map[ControllerInput::move_y] = 0.f;
 	key_map[ControllerInput::arms_switch] = 0.f;

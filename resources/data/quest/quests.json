@@ -25,7 +25,11 @@
     "title": "NPC Dialogue",
     "tag": "npc_dialogue",
     "displayed": false,
-    "subquests": [0, 3, 18, 16, 17, 20]
+    "subquests": [
+      { "tag": "bryn", "id": 420 },
+      { "tag": "bryn", "id": 509 },
+      { "tag": "bryn", "id": 300 }
+    ]
   },
 
   {
@@ -33,6 +37,14 @@
     "tag": "collect_vermite",
     "target": 24,
     "objectives": ["Collect all the vermite shards."],
+    "displayed": true
+  },
+
+  {
+    "title": "Defeat Miaag",
+    "tag": "defeat_miaag",
+    "target": 1,
+    "objectives": ["Defeat the corrupted King Miaag and escape the Kariba Ruins."],
     "displayed": true
   }
 ]

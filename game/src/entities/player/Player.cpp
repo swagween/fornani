@@ -12,6 +12,7 @@ namespace fornani::player {
 
 constexpr auto wallslide_threshold_v = -0.16f;
 constexpr auto walljump_force_v = 8.6f;
+constexpr auto light_offset_v = 12.f;
 
 Player::Player(automa::ServiceProvider& svc)
 	: arsenal(svc), m_services(&svc), controller(svc, *this), animation(*this), sprite{svc.assets.get_texture("nani")}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},
@@ -42,7 +43,9 @@ Player::Player(automa::ServiceProvider& svc)
 
 	m_lighting.physics.velocity = random::random_vector_float(-1.f, 1.f);
 	m_lighting.physics.set_global_friction(0.95f);
-	m_lighting.physics.position = collider.physics.position;
+	m_lighting.physics.position = collider.get_center();
+
+	distant_vicinity.set_dimensions({256.f, 256.f});
 }
 
 void Player::update(world::Map& map) {
@@ -51,6 +54,7 @@ void Player::update(world::Map& map) {
 	cooldowns.tutorial.update();
 	if (m_hurt_cooldown.is_almost_complete()) { m_services->music_player.filter_fade_out(); }
 	m_hurt_cooldown.update();
+	distant_vicinity.set_position(collider.get_center() - distant_vicinity.get_dimensions() * 0.5f);
 
 	// map effects
 	if (controller.is_wallsliding()) {
@@ -69,7 +73,8 @@ void Player::update(world::Map& map) {
 		force_multiplier = 1.f;
 		m_camera.target_point = sf::Vector2f{camx, 0.f};
 	}
-	if (!is_dead()) { m_camera.camera.center(get_camera_focus_point(), force_multiplier); }
+	if (!is_dead() && m_services->camera_controller.is_owned_by(graphics::CameraOwner::player)) { m_camera.camera.center(get_camera_focus_point(), force_multiplier); }
+	if (m_services->camera_controller.is_owned_by(graphics::CameraOwner::system)) { m_camera.camera.center(m_services->camera_controller.get_position()); }
 	m_camera.camera.update(*m_services);
 
 	invincible() ? collider.draw_hurtbox.setFillColor(colors::red) : collider.draw_hurtbox.setFillColor(colors::blue);
@@ -101,7 +106,7 @@ void Player::update(world::Map& map) {
 	collider.flags.state.reset(shape::State::just_landed);
 
 	// lighting
-	auto light_target = collider.get_center() + sf::Vector2f{controller.direction.as_float() * 12.f, 0.f};
+	auto light_target = collider.get_center() + sf::Vector2f{controller.direction.as_float() * light_offset_v, 0.f};
 	m_lighting.steering.seek(m_lighting.physics, light_target, 0.0052f);
 	m_lighting.steering.smooth_random_walk(m_lighting.physics, 0.0041f, 64.f);
 	m_lighting.physics.simple_update();
@@ -199,6 +204,12 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		box.setOutlineThickness(-1);
 		box.setPosition(hurtbox.get_position() - cam);
 		box.setSize(hurtbox.get_dimensions());
+		win.draw(box);
+		box.setFillColor(sf::Color::Transparent);
+		box.setOutlineColor(colors::bright_purple);
+		box.setOutlineThickness(-1);
+		box.setPosition(distant_vicinity.get_position() - cam);
+		box.setSize(distant_vicinity.get_dimensions());
 		win.draw(box);
 		// camera control debug
 		sf::RectangleShape camera_target{};
@@ -364,6 +375,7 @@ void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	sync_antennae();
 	health_indicator.set_position(new_pos);
 	orb_indicator.set_position(new_pos);
+	m_lighting.physics.position = collider.get_center() + sf::Vector2f{controller.direction.as_float() * light_offset_v, 0.f};
 	if (arsenal && hotbar) {
 		equipped_weapon().update(*m_services, controller.direction);
 		equipped_weapon().force_position(m_weapon_socket);
@@ -540,6 +552,7 @@ void Player::start_over() {
 }
 
 void Player::give_drop(item::DropType type, float value) {
+	if (is_dead()) { return; }
 	if (type == item::DropType::heart) {
 		health.heal(value);
 		health_indicator.add(value);
@@ -624,7 +637,7 @@ void Player::push_to_loadout(std::string_view tag, bool from_save) {
 		auto bg = util::QuestKey{1, 111, 1};
 		m_services->quest.process(*m_services, bg);
 	}
-	if (tag == "gnat" && !from_save) { /*m_services->quest.progress(fornani::QuestType::destroyers, 122, 1);*/
+	if (tag == "gnat" && !from_save) { /*m_services->quest.progress(fornani::QuestType::destructibles, 122, 1);*/
 	}
 	arsenal.value().push_to_loadout(tag);
 	if (!from_save) { hotbar.value().add(tag); }

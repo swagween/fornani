@@ -31,6 +31,7 @@ class Chain {
 	void lock_ends();
 	void set_texture_rect(sf::IntRect rect);
 	void snap_to_axis(bool vert = true);
+	void set_free(bool to) { m_free = to; }
 	void simulate(automa::ServiceProvider& svc, int amount);
 	std::vector<Spring> links{};
 	std::vector<components::PhysicsComponent> joints{};
@@ -40,6 +41,7 @@ class Chain {
 	sf::Vector2f m_root{};
 	float m_external_dampen;
 	float m_grav{1.f};
+	bool m_free{};
 	sf::Sprite m_sprite;
 };
 

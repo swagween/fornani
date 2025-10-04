@@ -43,7 +43,7 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		} else {
 			link.sensor.deactivate();
 		}
-		link.update(svc, m_grav, external_force, !link.is_locked(), ctr == links.size() - 1);
+		link.update(svc, m_grav, external_force, !link.is_locked(), m_free ? true : ctr == links.size() - 1);
 		++ctr;
 	}
 }

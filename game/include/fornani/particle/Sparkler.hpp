@@ -8,7 +8,6 @@ namespace fornani::vfx {
 
 class Sparkler {
   public:
-	Sparkler() = default;
 	explicit Sparkler(automa::ServiceProvider& svc, sf::Vector2f dimensions = {2.f, 2.f}, sf::Color color = sf::Color::White, std::string_view type = "");
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
@@ -24,7 +23,7 @@ class Sparkler {
 	std::vector<Spark> sparkles{};
 	sf::Vector2f dimensions{};
 	sf::Vector2f position{};
-	std::string_view type{};
+	std::string type{};
 
 	automa::ServiceProvider* m_services;
 

@@ -519,6 +519,39 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		}
 		ImGui::EndPopup();
 	}
+	if (ImGui::BeginPopupModal("Cutscene Trigger Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
+
+		static int width{0};
+		static int height{0};
+		static int id{0};
+
+		ImGui::InputInt("Width", &width);
+		ImGui::Separator();
+		ImGui::NewLine();
+
+		ImGui::InputInt("Height", &height);
+		ImGui::Separator();
+		ImGui::NewLine();
+
+		ImGui::InputInt("Cutscene ID", &id);
+		ImGui::Separator();
+		ImGui::NewLine();
+
+		if (ImGui::Button("Create")) {
+			m_is_open = false;
+			// switch to entity tool, and store the specified portal for placement
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<fornani::CutsceneTrigger>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, id);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Close")) {
+			m_is_open = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 }
 
 void PopupHandler::help_marker(char const* desc) {

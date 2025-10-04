@@ -4,7 +4,7 @@
 #include <djson/json.hpp>
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/utils/StateFunction.hpp"
-#define NPC_BIND(f) std::bind(&NPCAnimation::f, this)
+#define NPCANIM_BIND(f) std::bind(&NPCAnimation::f, this)
 
 namespace fornani::npc {
 

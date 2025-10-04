@@ -5,7 +5,7 @@
 #include "fornani/entities/item/Item.hpp"
 #include "fornani/graphics/Animatable.hpp"
 #include "fornani/particle/Sparkler.hpp"
-#include "fornani/utils/Collider.hpp"
+#include "fornani/utils/CircleCollider.hpp"
 
 #include <optional>
 
@@ -37,11 +37,10 @@ class Chest final : public Animatable {
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f pos);
 	void set_position_from_scaled(sf::Vector2f scaled_pos);
-	shape::Shape& get_jumpbox() { return collider.jumpbox; }
-	shape::Collider& get_collider() { return collider; }
+	shape::CircleCollider& get_collider() { return collider; }
 
   private:
-	shape::Collider collider{};
+	shape::CircleCollider collider;
 
 	util::BitFlags<ChestState> state{};
 	ChestType m_type{};

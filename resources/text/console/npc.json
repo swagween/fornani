@@ -282,7 +282,7 @@
           {
             "codes": [
               [9, 420],
-              [13, 0]
+              [13, 0, 420]
             ],
             "message": "I presume you've already stumbled into Dr. Willett if you decided to come poking around these ruins."
           },
@@ -439,6 +439,195 @@
           {
             "codes": [[1, 0]],
             "message": "I believe they are hiding a deep truth about our world and about this fabulous island, and I am intent on discovering what that is."
+          }
+        ]
+      ]
+    },
+    "3": {
+      "output": 2,
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "What was that thing I just fought?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "What is rhenite, exactly?"
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "We should probably get out of here..."
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [[5, 0]],
+            "message": "Nani... I was hoping to find you here in one piece."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "I was a bit too proud to admit it before, but... I was trapped here. So... you kind of saved my life."
+          }
+        ],
+        [
+          {
+            "codes": [[5, 1]],
+            "message": "That was King Miaag. Or, whatever was left of him."
+          },
+          {
+            "message": "In his later years he became consumed by the intoxicating energy produced by rhenite crystals."
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "It is the same energy that inhabits the creatures of this ruin, and of the Overturned Forest."
+          },
+          {
+            "message": "And, in fact, I believe it to be what Skycorps is using to mutate their Ooplo servants, and to do who knows whatever else."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "Miaag here was surely one of rhenite's first victims. And just look what it turned him into..."
+          },
+          {
+            "message": "I could be wrong, but I suspect the reason these ruins are more or less off-limits is that the Kariba wanted to hide the truth about Miaag. Perhaps from Skycorps and Grand-Islanders, or perhaps from everyone altogether."
+          },
+          {
+            "codes": [[1, 1]],
+            "message": "But it's hard to say for sure, really."
+          }
+        ],
+        [
+          {
+            "codes": [[5, 0]],
+            "message": "It's a compound formed by the Mother Worm."
+          },
+          {
+            "message": "Since the dawn of this island, its inhabitants have lived in symbiosis with the Mother Worm. The Kariba and other tribes perform rituals and sing songs to the Mother, and in return she produces rhenite, which gives life and energy to the island."
+          },
+          {
+            "message": "Rhenite has since been used, abused, locked away, worshipped, stolen, returned... It's quite the commodity of interest around here, despite the other equally marvellous things the Mother produces."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "And these are not just stories - it is all substantiated through old texts and stone tablets that we've found in the ancient ruins of this forest."
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "If this is all novel to you, Nani, you should speak to your father about it. Doubtless he's told you before, but it seems like your memory is a bit out of whack since Skycorps took Firstwind."
+          },
+          {
+            "codes": [[13, 0, 509]],
+            "message": "I really hope they didn't torture you or anything..."
+          }
+        ],
+        [
+          {
+            "codes": [[5, 2]],
+            "message": "You're right. I'm rambling again."
+          },
+          {
+            "codes": [
+              [13, 0, 509],
+              [5, 1]
+            ],
+            "message": "You know what, I'll hang around for a little longer. I'm interested to find any clues that Miaag and his people might have left behind in this place."
+          }
+        ]
+      ]
+    },
+    "4": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "message": "You go on ahead. I'd like to do a bit more digging."
+          },
+          {
+            "message": "Head back to the old pioneers' base where you met Doc. I'll meet you there!"
+          }
+        ]
+      ]
+    },
+    "5": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "Sure."
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "I'd rather keep this one..."
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [[5, 2]],
+            "message": "Welcome back!"
+          },
+          {
+            "message": "Listen, I can't thank you enough for getting me out of those ruins."
+          },
+          {
+            "codes": [
+              [13, 0, 300],
+              [5, 1]
+            ],
+            "message": "If you ever need help with anything, or want to learn more about the Ancient Kariba, I'll be here!"
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "By the way, I'd love to get my gun back if you don't mind. I have a decent replacement for it that we nabbed from a Skycorps thug, so you won't have to go unarmed. But I get it if you want to keep mine, too. After all, I'm the one who left it behind."
+          },
+          {
+            "codes": [
+              [5, 1],
+              [1, 0]
+            ],
+            "message": "So, what do you say? Do you want to trade guns?"
+          }
+        ],
+        [
+          {
+            "codes": [
+              [5, 2],
+              [16, 0]
+            ],
+            "message": "That means a lot, really!"
+          },
+          {
+            "codes": [
+              [5, 1],
+              [15, 1]
+            ],
+            "message": "Here, as promised..."
+          }
+        ],
+        [
+          {
+            "codes": [[5, 0]],
+            "message": "It's hard to blame you, really. That old pistol is one-of-a-kind, and I imagine you've grown just as attached to it as I had."
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "Well, if you ever decide to change your mind, I'm here."
+          }
+        ]
+      ]
+    },
+    "6": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "message": "What's up?"
           }
         ]
       ]
@@ -875,6 +1064,16 @@
           }
         ]
       ]
+    },
+    "3": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "message": "I suppose I owe you some gratitude for rescuing my student."
+          }
+        ]
+      ]
     }
   },
   "gobe": {
@@ -1287,8 +1486,18 @@
     "1": {
       "output": 2,
       "responses": [
-        [{ "codes": [[1, 1]], "message": "You know who I am?" }],
-        [{ "codes": [[1, 2]], "message": "Why are you here, then?" }]
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "You know who I am?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "Why are you here, then?"
+          }
+        ]
       ],
       "suite": [
         [
@@ -1323,29 +1532,13 @@
           }
         ],
         [
-          { "codes": [[9, 25702, 1]], "message": "To teach you a lesson I learned long ago." },
+          {
+            "codes": [[9, 25702, 1]],
+            "message": "To teach you a lesson I learned long ago."
+          },
           {
             "codes": [[12, 0]],
             "message": "Enough talking, now. It is time you prove to me why Gus couldn't take care of you himself!"
-          }
-        ]
-      ]
-    },
-    "3": {
-      "output": 2,
-      "responses": [],
-      "suite": [
-        [
-          {
-            "codes": [[5, 2, 1]],
-            "message": "HYEAHAH!"
-          },
-          {
-            "message": "It's been a long time since I've had a real challenge like this..."
-          },
-          {
-            "codes": [[5, 3, 1]],
-            "message": "Bring it on!"
           }
         ]
       ]
@@ -1365,6 +1558,25 @@
               [9, 25702]
             ],
             "message": "I have failed..."
+          }
+        ]
+      ]
+    },
+    "3": {
+      "output": 2,
+      "responses": [],
+      "suite": [
+        [
+          {
+            "codes": [[5, 2, 1]],
+            "message": "HYEAHAH!"
+          },
+          {
+            "message": "It's been a long time since I've had a real challenge like this..."
+          },
+          {
+            "codes": [[5, 3, 1]],
+            "message": "Bring it on!"
           }
         ]
       ]
@@ -1474,7 +1686,7 @@
             "message": "GAH!!!"
           },
           {
-            "codes": [[9, 1171, 1]],
+            "codes": [[9, 1171]],
             "message": "My mask!! What have you done?!"
           }
         ]

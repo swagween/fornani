@@ -8,27 +8,46 @@
 namespace fornani::enemy {
 
 static bool b_miaag_start{};
+constexpr sf::Vector2f anchor_position_v{23.f, 22.f}; // where on the level the chain is connected
 static void miaag_start_battle(int battle) { b_miaag_start = true; }
+auto constexpr miaag_floor_destructibles = 50901;
+auto constexpr miaag_outer_destructibles = 50902;
+auto constexpr miaag_exit_destructibles = 509;
 
 Miaag::Miaag(automa::ServiceProvider& svc, world::Map& map)
-	: Enemy(svc, "miaag"), m_health_bar(svc, "miaag"), m_magic{svc, "demon_magic"}, m_services{&svc}, m_map{&map}, m_cooldowns{.fire{48}, .charge{320}, .limit{960}, .post_magic{800}, .interlude{1000}, .chomped{800}} {
+	: Enemy(svc, "miaag"), m_health_bar(svc, "miaag"), m_magic{svc, "demon_magic"}, m_services{&svc}, m_map{&map}, m_cooldowns{.fire{48}, .charge{320}, .limit{960}, .post_magic{800}, .interlude{1000}, .chomped{800}, .post_death{1600}},
+	  m_spine_sprite{svc.assets.get_texture("miaag_spines")}, m_spine{std::make_unique<vfx::Chain>(svc, vfx::SpringParameters{0.99f, 0.08f, 1.f, 4.f}, anchor_position_v * constants::f_cell_size, 8, false)} {
 	m_params = {{"idle", {0, 7, 40, -1}}, {"chomp", {7, 9, 20, 0}},	   {"spellcast", {7, 5, 80, 0, true}}, {"hurt", {9, 1, 1000, 0}},
 				{"turn", {16, 1, 40, 0}}, {"closed", {15, 1, 40, -1}}, {"awaken", {17, 4, 40, 0}},		   {"dormant", {17, 1, 40, -1}}};
+
 	Enemy::animation.set_params(get_params("dormant"));
 	svc.events.register_event(std::make_unique<Event<int>>("StartBattle", &miaag_start_battle));
 	m_magic.set_team(arms::Team::guardian);
 	flags.general.set(GeneralFlags::custom_channels);
+	flags.general.set(GeneralFlags::post_death_render);
 	flags.state.set(StateFlags::simple_physics);
 	auto home = random::random_range(0, map.home_points.size() - 1);
 	m_target_point = map.home_points.at(home);
+	m_spine_sprite.setScale(constants::f_scale_vec);
+	m_spine_sprite.setOrigin({40.5f, 26.f});
+	for (auto const& link : m_spine->links) { m_spine_lookups.push_back(random::random_range(0, 2)); }
+	m_spine->set_free(true);
 }
 
 void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	m_cooldowns.post_death.update();
+	if (m_cooldowns.post_death.is_almost_complete()) {
+		svc.data.switch_destructible_state(miaag_exit_destructibles);
+		svc.quest_table.progress_quest("defeat_miaag", 1, 509);
+		svc.music_player.play_looped();
+		svc.quest_table.set_quest_progression("npc_dialogue", {"dr_willett", 300}, 2, {300, 509}, 2);
+	}
+
+	// early exit after death
+	if (m_flags.test(MiaagFlags::gone)) { return; }
+
 	Enemy::update(svc, map, player);
 	face_player(player);
-	auto const floor_destructibles = 50901;
-	auto const outer_destructibles = 50902;
-	auto const exit_destructibles = 509;
 
 	m_cooldowns.fire.update();
 	m_cooldowns.charge.update();
@@ -40,6 +59,8 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	m_magic.update(svc, map, *this);
 	m_player_target = player.collider.get_center() + sf::Vector2f{0.f, -80.f};
 	m_health_bar.update(health.get_normalized());
+	m_spine->set_end_position(collider.get_center());
+	m_spine->update(svc, map, player);
 
 	if (half_health()) {
 		if (!second_phase()) {
@@ -52,29 +73,17 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		}
 	}
 	if (m_cooldowns.interlude.is_almost_complete() && !player.is_dead()) {
-		svc.data.switch_destructible_state(floor_destructibles);
+		svc.data.switch_destructible_state(miaag_floor_destructibles);
 		svc.music_player.load(svc.finder, "strife");
 		svc.soundboard.flags.miaag.set(audio::Miaag::growl);
 		svc.music_player.play_looped();
-	}
-	if (health.is_dead()) {
-		if (battle_mode()) {
-			svc.camera_controller.shake(10, 0.8f, 200, 20);
-			svc.soundboard.flags.world.set(audio::World::vibration);
-			svc.soundboard.flags.miaag.set(audio::Miaag::growl);
-			svc.music_player.stop();
-			svc.music_player.load(svc.finder, "ritual");
-			svc.data.switch_destructible_state(exit_destructibles);
-			svc.data.switch_destructible_state(floor_destructibles);
-			svc.data.switch_destructible_state(outer_destructibles);
-			m_flags.reset(MiaagFlags::battle_mode);
-		}
 	}
 
 	// movement
 	auto movement_force = m_cooldowns.charge.running() ? 0.00005f : 0.0001f;
 	if (battle_mode()) { m_steering.seek(Enemy::collider.physics, m_target_point + random::random_vector_float(-64.f, 64.f), movement_force); }
 
+	if (directions.actual.lnr != directions.desired.lnr) { request(MiaagState::turn); }
 	// attacks and animations
 	if (battle_mode() && svc.ticker.every_x_ticks(1000) && !m_cooldowns.post_magic.running()) {
 		if (second_phase()) {
@@ -86,19 +95,35 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		auto home = random::random_range(0, map.home_points.size() - 1);
 		m_target_point = map.home_points.at(home);
 	}
-	if (directions.actual.lnr != directions.desired.lnr) { request(MiaagState::turn); }
 
 	// effects
 	if (m_cooldowns.interlude.running()) {
 		if (m_cooldowns.interlude.get() % 32 == 0) {
-			for (auto& destructible : map.destroyers) {
-				if (destructible.get_id() == floor_destructibles) {
+			for (auto& destructible : map.destructibles) {
+				if (destructible.get_id() == miaag_floor_destructibles) {
 					map.effects.push_back(entity::Effect(*m_services, "puff", destructible.get_global_center(), {0.f, -0.2f}, 2));
 					map.effects.back().random_start();
 				}
 			}
 		}
 		request(MiaagState::hurt);
+	}
+	if (health.is_dead() && !m_flags.test(MiaagFlags::gone)) {
+		request(MiaagState::hurt);
+		if (battle_mode()) {
+			m_services->camera_controller.shake(10, 0.8f, 200, 20);
+			m_services->soundboard.flags.world.set(audio::World::vibration);
+			m_services->soundboard.flags.miaag.set(audio::Miaag::growl);
+			m_services->music_player.stop();
+			m_services->music_player.load(m_services->finder, "ritual");
+			m_services->data.switch_destructible_state(miaag_floor_destructibles);
+			m_services->data.switch_destructible_state(miaag_outer_destructibles);
+			m_flags.reset(MiaagFlags::battle_mode);
+		}
+	}
+	if (health.is_dead()) {
+		post_death.start(afterlife);
+		flags.state.set(StateFlags::special_death_mode);
 	}
 
 	if (flags.state.test(StateFlags::hurt)) {
@@ -112,7 +137,7 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	if (b_miaag_start) {
 		m_flags.set(MiaagFlags::battle_mode);
-		svc.data.switch_destructible_state(outer_destructibles);
+		svc.data.switch_destructible_state(miaag_outer_destructibles);
 		request(MiaagState::awaken);
 		b_miaag_start = false;
 		svc.music_player.load(svc.finder, "scuffle");
@@ -122,7 +147,18 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	state_function = state_function();
 }
 
-void Miaag::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) { Enemy::render(svc, win, cam); }
+void Miaag::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	if (m_flags.test(MiaagFlags::gone)) { return; }
+	if (battle_mode()) {
+		for (auto [i, link] : std::views::enumerate(m_spine->links)) {
+			m_spine_sprite.setTextureRect(sf::IntRect{{0, 52 * m_spine_lookups[i]}, {81, 52}});
+			m_spine_sprite.setPosition(link.get_bob() - cam);
+			win.draw(m_spine_sprite);
+		}
+	}
+	Enemy::render(svc, win, cam);
+	if (svc.greyblock_mode()) { m_spine->render(svc, win, cam); }
+}
 
 void Miaag::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (m_flags.test(MiaagFlags::battle_mode)) { m_health_bar.render(win); }
@@ -155,11 +191,18 @@ fsm::StateFunction Miaag::update_idle() {
 
 fsm::StateFunction Miaag::update_hurt() {
 	p_state.actual = MiaagState::hurt;
-	if (m_services->ticker.every_x_ticks(32)) { m_map->effects.push_back(entity::Effect(*m_services, "large_explosion", collider.get_center() + random::random_vector_float(-80.f, 80.f), {}, 2)); }
-	shake();
+	if (!m_flags.test(MiaagFlags::gone)) {
+		if (m_services->ticker.every_x_ticks(32)) { m_map->effects.push_back(entity::Effect(*m_services, "large_explosion", collider.get_center() + random::random_vector_float(-80.f, 80.f), {}, 2)); }
+		shake();
+	}
 	if (animation.complete()) {
-		request(MiaagState::idle);
-		if (change_state(MiaagState::idle, get_params("idle"))) { return MIAAG_BIND(update_idle); }
+		if (health.is_dead() && !m_flags.test(MiaagFlags::gone)) {
+			m_cooldowns.post_death.start();
+			m_flags.set(MiaagFlags::gone);
+		} else {
+			request(MiaagState::idle);
+			if (change_state(MiaagState::idle, get_params("idle"))) { return MIAAG_BIND(update_idle); }
+		}
 	}
 	return MIAAG_BIND(update_hurt);
 }
@@ -189,8 +232,7 @@ fsm::StateFunction Miaag::update_spellcast() {
 		}
 		if (m_cooldowns.fire.is_complete()) {
 			m_magic.get().set_barrel_point(collider.get_center());
-			m_magic.shoot(*m_services, *m_map);
-			m_map->spawn_projectile_at(*m_services, m_magic.get(), collider.get_center(), m_player_target - collider.get_center());
+			m_magic.shoot(*m_services, *m_map, m_player_target - collider.get_center());
 			m_services->soundboard.flags.weapon.set(audio::Weapon::demon_magic);
 			m_cooldowns.fire.start();
 		}

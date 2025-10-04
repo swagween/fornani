@@ -90,13 +90,15 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	collider.update(svc);
 	collider.handle_map_collision(map);
 	map.handle_cell_collision(collider);
-	for (auto& breakable : map.breakables) { collider.handle_collision(breakable.get_bounding_box()); }
+	map.handle_breakable_collision(collider);
 	for (auto& pushable : map.pushables) { collider.handle_collision(pushable.get_bounding_box(), true); }
 	for (auto& platform : map.platforms) { collider.handle_collision(platform.bounding_box); }
 	for (auto& block : map.switch_blocks) {
 		if (block.on()) { collider.handle_collision(block.get_bounding_box()); }
 	}
-	for (auto& destroyer : map.destroyers) { collider.handle_collision(destroyer.get_bounding_box()); }
+	for (auto& destructible : map.destructibles) {
+		if (!destructible.ignore_updates()) { collider.handle_collision(destructible.get_bounding_box()); }
+	}
 	for (auto& spike : map.spikes) { collider.handle_collision(spike.get_bounding_box()); }
 	if (collider.collided() && type == DropType::gem && !is_inactive() && std::abs(collider.physics.velocity.y) > 1.f) {
 		random::percent_chance(50) ? svc.soundboard.flags.world.set(audio::World::gem_hit_1) : svc.soundboard.flags.world.set(audio::World::gem_hit_2);

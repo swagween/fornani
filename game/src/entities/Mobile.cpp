@@ -20,4 +20,6 @@ void Mobile::post_update(automa::ServiceProvider& svc, world::Map& map, player::
 	Animatable::tick();
 }
 
+anim::Parameters const& Mobile::get_params(std::string const& key) { return m_params.contains(key) ? m_params.at(key) : m_params.at("idle"); }
+
 } // namespace fornani

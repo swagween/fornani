@@ -34,6 +34,7 @@ struct EnemyState {
 	std::pair<int, int> code{};
 	int respawn_distance{};
 	bool permanent{};
+	bool semipermanent{};
 };
 
 class DataManager final {
@@ -67,7 +68,7 @@ class DataManager final {
 	void destroy_inspectable(int id);
 	void push_quest(util::QuestKey key);
 	void set_npc_location(int npc_id, int room_id);
-	void kill_enemy(int room_id, int id, int distance, bool permanent);
+	void kill_enemy(int room_id, int id, int distance, bool permanent, bool semipermanent);
 	void respawn_enemy(int room_id, int id);
 	void respawn_enemies(int room_id, int distance);
 	void respawn_all();

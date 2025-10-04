@@ -128,7 +128,7 @@ class Minigus : public Enemy, public npc::NPC {
 		util::Cooldown struggle{400};
 	} cooldowns{};
 
-	vfx::Sparkler sparkler{};
+	vfx::Sparkler sparkler;
 
 	struct {
 		util::Counter snap{};

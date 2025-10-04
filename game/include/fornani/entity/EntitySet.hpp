@@ -11,6 +11,7 @@
 #include <fornani/entity/Animator.hpp>
 #include <fornani/entity/Bed.hpp>
 #include <fornani/entity/Chest.hpp>
+#include <fornani/entity/CutsceneTrigger.hpp>
 #include <fornani/entity/Destructible.hpp>
 #include <fornani/entity/Enemy.hpp>
 #include <fornani/entity/Inspectable.hpp>

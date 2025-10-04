@@ -20,10 +20,14 @@ class Mobile : public Animatable {
 	void face_player(player::Player& player);
 	[[nodiscard]] bool player_behind(player::Player& player) const;
 	[[nodiscard]] auto get_actual_direction() const -> Direction { return directions.actual; }
+	[[nodiscard]] auto get_global_center() const -> sf::Vector2f { return collider.get_center(); }
+	[[nodiscard]] auto get_collider() -> shape::Collider& { return collider; }
 
   protected:
 	shape::Collider collider{};
 	void request_flip() { p_flags.set(MobileState::flip); }
+	std::unordered_map<std::string, anim::Parameters> m_params;
+	anim::Parameters const& get_params(std::string const& key);
 	struct {
 		Direction actual{};
 		Direction desired{};

@@ -27,7 +27,7 @@ class Spark {
 	sf::Vector2f position{};
 	util::Cooldown lifespan{};
 	int frame{};
-	std::string_view type{};
+	std::string type{};
 
 	struct {
 		float wobble{0.1f};

@@ -42,7 +42,7 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vecto
 
 void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
 	collider.update(svc);
-	handle_collision(player.collider);
+	if (!player.is_dead()) { handle_collision(player.collider); }
 	if (attributes.test(SpikeAttributes::soft_reset)) {
 		if (map.transition.is(graphics::TransitionState::black)) { player.controller.unrestrict(); }
 		if (soft_reset && map.transition.is(graphics::TransitionState::black)) {

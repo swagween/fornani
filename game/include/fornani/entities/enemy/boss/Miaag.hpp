@@ -4,6 +4,7 @@
 #include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/entities/enemy/Enemy.hpp>
 #include <fornani/gui/BossHealth.hpp>
+#include <fornani/particle/Chain.hpp>
 #include <fornani/particle/Sparkler.hpp>
 
 #define MIAAG_BIND(f) std::bind(&Miaag::f, this)
@@ -11,7 +12,7 @@
 namespace fornani::enemy {
 
 enum class MiaagState : std::uint8_t { idle, hurt, closed, dying, blinking, dormant, chomp, turn, awaken, spellcast };
-enum class MiaagFlags : std::uint8_t { battle_mode, second_phase };
+enum class MiaagFlags : std::uint8_t { battle_mode, second_phase, gone };
 
 class Miaag : public Enemy, public StateMachine<MiaagState> {
   public:
@@ -39,7 +40,9 @@ class Miaag : public Enemy, public StateMachine<MiaagState> {
 	util::BitFlags<MiaagFlags> m_flags{};
 	bool change_state(MiaagState next, anim::Parameters params);
 	gui::BossHealth m_health_bar;
-	vfx::Sparkler m_breath{};
+	std::unique_ptr<vfx::Chain> m_spine{};
+	std::vector<int> m_spine_lookups{};
+	sf::Sprite m_spine_sprite;
 
 	components::SteeringBehavior m_steering{};
 	entity::WeaponPackage m_magic;
@@ -53,6 +56,7 @@ class Miaag : public Enemy, public StateMachine<MiaagState> {
 		util::Cooldown post_magic;
 		util::Cooldown interlude;
 		util::Cooldown chomped;
+		util::Cooldown post_death;
 	} m_cooldowns;
 
 	automa::ServiceProvider* m_services;

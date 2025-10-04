@@ -51,7 +51,8 @@ enum class GeneralFlags : std::uint8_t {
 	invincible_secondary,
 	spike_collision,
 	sturdy,
-	custom_channels
+	custom_channels,
+	semipermanent
 };
 enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, simple_physics, no_shake, out_of_zone, no_slowdown, intangible };
 enum class Triggers : std::uint8_t { hostile, alert };
@@ -137,9 +138,6 @@ class Enemy : public Mobile {
 	void debug();
 
   protected:
-	std::unordered_map<std::string, anim::Parameters> m_params;
-	anim::Parameters const& get_params(std::string const& key);
-
 	std::string label{};
 	std::optional<shape::Collider> secondary_collider{};
 	Flags flags{};
