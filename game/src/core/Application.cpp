@@ -29,6 +29,7 @@ void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
 
 void Application::launch(char** argv, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2f player_position) {
 	std::unique_ptr game = std::make_unique<Game>(argv, m_window, m_metadata, *m_engine);
+	game->set_file(m_file);
 	game->run(*m_engine, demo, room_id, levelpath, player_position);
 }
 

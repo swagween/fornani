@@ -57,22 +57,6 @@ void Tile::draw(sf::RenderTexture& tex) {
 	if (is_occupied()) { bounding_box.draw(tex); }
 }
 
-void Tile::set_type() {
-	type = TileType::empty;
-	if (value < special_index_v && value > 0) { type = TileType::solid; }
-	if ((value < special_index_v + 16 && value >= special_index_v) || (value >= ceiling_single_ramp && value <= ceiling_single_ramp + 3)) { type = TileType::ceiling_ramp; }
-	if ((value < special_index_v + 32 && value >= special_index_v + 16) || (value >= floor_single_ramp && value <= floor_single_ramp + 3)) { type = TileType::ground_ramp; }
-	if (value < special_index_v + 48 && value >= special_index_v + 44) { type = TileType::platform; }
-	if (value < special_index_v + 38 && value >= special_index_v + 36) { type = TileType::pushable; }
-	if (value == special_index_v + 38) { type = TileType::target; }
-	if (value == special_index_v + 39) { type = TileType::spawner; }
-	if (value == special_index_v + 40) { type = TileType::home; }
-	if (value == special_index_v + 52) { type = TileType::bonfire; }
-	if (value == special_index_v + 53) { type = TileType::campfire; }
-	if (value == special_index_v + 54) { type = TileType::checkpoint; }
-	if (value == special_index_v + 55) { type = TileType::breakable; }
-	if (value == special_index_v + 62) { type = TileType::big_spike; }
-	if (value == special_index_v + 63) { type = TileType::spike; }
-}
+void Tile::set_type() { type = get_type_by_value(value); }
 
 } // namespace fornani::world

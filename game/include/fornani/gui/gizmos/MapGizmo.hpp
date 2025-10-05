@@ -34,7 +34,7 @@ class MapGizmo : public Gizmo {
 	void on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 	std::vector<MapPlugin> m_plugins;
 	std::unique_ptr<Gizmo> m_info{};
-	std::unique_ptr<MiniMap> m_minimap{};
+	MiniMap* m_minimap;
 	std::vector<std::unique_ptr<vfx::Chain>> m_chains{};
 	util::NineSlice m_map_screen;
 	util::NineSlice m_map_shadow;

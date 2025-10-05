@@ -214,6 +214,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.player.test(Player::slide)) { play(engine, svc, svc.sounds.get_buffer("nani_slide"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.player.test(Player::super_slide)) { play(engine, svc, svc.sounds.get_buffer("nani_super_slide"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.player.test(Player::walljump)) { play(engine, svc, svc.sounds.get_buffer("nani_walljump"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.player.test(Player::doublejump)) { play(engine, svc, svc.sounds.get_buffer("nani_doublejump"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.player.test(Player::roll)) { play(engine, svc, svc.sounds.get_buffer("nani_roll"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	flags.player.test(Player::wallslide) ? simple_repeat(engine, svc.sounds.get_buffer("nani_wallslide"), "nani_wallslide", 32) : fade_out("nani_wallslide");
 	// steps

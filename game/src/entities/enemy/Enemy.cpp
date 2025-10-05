@@ -269,6 +269,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 	if (proj.get_team() == arms::Team::beast) { return; }
 	if (flags.state.test(StateFlags::intangible)) { return; }
 	if (flags.state.test(StateFlags::invisible)) { return; }
+	if (health.is_dead()) { return; }
 	auto hit_main = proj.get_collider().collides_with(collider.bounding_box);
 	auto hit_second = secondary_collider ? proj.get_collider().collides_with(secondary_collider->bounding_box) : false;
 	if (!(hit_main || hit_second)) { return; }

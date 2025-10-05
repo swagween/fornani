@@ -7,7 +7,7 @@
 
 namespace fornani::player {
 
-Roll::Roll(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction) : Ability(svc, map, collider, direction), m_request{32}, m_multiplier{11.5f}, m_soundboard{&svc.soundboard} {
+Roll::Roll(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction) : Ability(svc, map, collider, direction), m_request{32}, m_multiplier{13.5f}, m_soundboard{&svc.soundboard} {
 	m_type = AbilityType::roll;
 	m_state = AnimState::roll;
 	m_duration.start(64);
@@ -15,6 +15,10 @@ Roll::Roll(automa::ServiceProvider& svc, world::Map& map, shape::Collider& colli
 }
 
 void Roll::update(shape::Collider& collider, PlayerController& controller) {
+	if (m_direction.lnr != collider.get_direction().lnr) {
+		m_state = AnimState::turn_slide;
+		m_multiplier *= 0.99f;
+	}
 	if (m_request.running()) {
 		m_request.update();
 		if (m_request.is_complete() && !collider.grounded()) { m_flags.set(AbilityFlags::failed); }

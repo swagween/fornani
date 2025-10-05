@@ -10,37 +10,41 @@ constexpr auto rate{4};
 // { lookup, duration, framerate, num_loops (-1 for infinite), repeat_last_frame, interruptible }
 
 PlayerAnimation::PlayerAnimation(Player& plr)
-	: m_player(&plr), m_params{{"idle", {20, 8, 7 * rate, -1, false, true}},
-							   {"turn", {33, 3, 4 * rate, 0}},
-							   {"sharp_turn", {16, 2, 5 * rate, 0}},
-							   {"run", {44, 4, 6 * rate, -1}},
-							   {"sprint", {10, 6, 4 * rate, -1}},
-							   {"shield", {80, 3, 4 * rate, -1, true}},
-							   {"between_push", {85, 1, 2 * rate, 0}},
-							   {"push", {86, 4, 5 * rate, -1}},
-							   {"rise", {40, 4, 6 * rate, 0}},
-							   {"walljump", {90, 6, 6 * rate, 0}},
-							   {"suspend", {30, 3, 7 * rate, -1}},
-							   {"fall", {62, 4, 5 * rate, -1}},
-							   {"stop", {74, 2, 4 * rate, 0}},
-							   {"land", {56, 2, 4 * rate, 0}},
-							   {"inspect", {37, 2, 7 * rate, -1, true}},
-							   {"sit", {50, 4, 6 * rate, -1, true}},
-							   {"hurt", {76, 2, 7 * rate, 0}},
-							   {"dash", {0, 4, 4 * rate, 0}},
-							   {"dash_up", {120, 4, 4 * rate, 0}},
-							   {"dash_down", {124, 4, 4 * rate, 0}},
-							   {"wallslide", {66, 4, 7 * rate, -1}},
-							   {"die", {76, 4, 8 * rate, -1, true}},
-							   {"backflip", {90, 6, 5 * rate, 0}},
-							   {"slide", {96, 4, 4 * rate, -1}},
-							   {"get_up", {57, 1, 5 * rate, 0}},
-							   {"roll", {100, 4, 5 * rate, 0}},
-							   {"shoot", {104, 3, 8 * rate, 0}},
-							   {"sleep", {4, 4, 8 * rate, -1, true}},
-							   {"wake_up", {8, 2, 8 * rate, 0}},
-							   {"crouch", {110, 5, 4 * rate, -1, true}},
-							   {"crawl", {114, 4, 6 * rate, -1}}},
+	: m_player(&plr),
+	  m_params{
+		  {"idle", {20, 8, 7 * rate, -1, false, true}},
+		  {"turn", {33, 3, 4 * rate, 0}},
+		  {"sharp_turn", {16, 2, 5 * rate, 0}},
+		  {"run", {44, 4, 6 * rate, -1}},
+		  {"sprint", {10, 6, 4 * rate, -1}},
+		  {"shield", {80, 3, 4 * rate, -1, true}},
+		  {"between_push", {85, 1, 2 * rate, 0}},
+		  {"push", {86, 4, 5 * rate, -1}},
+		  {"rise", {40, 4, 6 * rate, 0}},
+		  {"walljump", {90, 6, 6 * rate, 0}},
+		  {"suspend", {30, 3, 7 * rate, -1}},
+		  {"fall", {62, 4, 5 * rate, -1}},
+		  {"stop", {74, 2, 4 * rate, 0}},
+		  {"land", {56, 2, 4 * rate, 0}},
+		  {"inspect", {37, 2, 7 * rate, -1, true}},
+		  {"sit", {50, 4, 6 * rate, -1, true}},
+		  {"hurt", {76, 2, 7 * rate, 0}},
+		  {"dash", {0, 4, 4 * rate, 0}},
+		  {"dash_up", {120, 4, 4 * rate, 0}},
+		  {"dash_down", {124, 4, 4 * rate, 0}},
+		  {"wallslide", {66, 4, 7 * rate, -1}},
+		  {"die", {76, 4, 8 * rate, -1, true}},
+		  {"backflip", {90, 6, 7 * rate, 0}},
+		  {"slide", {96, 4, 4 * rate, -1}},
+		  {"get_up", {57, 1, 5 * rate, 0}},
+		  {"roll", {100, 4, 5 * rate, 0}},
+		  {"shoot", {104, 3, 8 * rate, 0}},
+		  {"sleep", {4, 4, 8 * rate, -1, true}},
+		  {"wake_up", {8, 2, 8 * rate, 0}},
+		  {"crouch", {110, 5, 4 * rate, -1, true}},
+		  {"crawl", {114, 4, 6 * rate, -1}},
+		  {"turn_slide", {130, 7, 4 * rate, 0}},
+	  },
 	  state_function{std::bind(&PlayerAnimation::update_idle, this)}, m_buffer{16}, m_sleep_timer{512} {
 	state_function = state_function();
 	animation.set_params(get_params("idle"));
@@ -107,6 +111,7 @@ fsm::StateFunction PlayerAnimation::update_sprint() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
+	if (change_state(AnimState::turn_slide, get_params("turn_slide"))) { return PA_BIND(update_turn_slide); }
 	if (!m_player->firing_weapon()) {
 		if (change_state(AnimState::crouch, get_params("crouch"))) { return PA_BIND(update_crouch); }
 		if (change_state(AnimState::crawl, get_params("crouch"), true)) { return PA_BIND(update_crouch); }
@@ -338,6 +343,7 @@ fsm::StateFunction PlayerAnimation::update_fall() {
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
+	if (change_state(AnimState::turn_slide, get_params("turn_slide"))) { return PA_BIND(update_turn_slide); }
 	if (change_state(AnimState::crouch, get_params("crouch"))) { return PA_BIND(update_crouch); }
 	if (change_state(AnimState::crawl, get_params("crouch"), true)) { return PA_BIND(update_crouch); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
@@ -436,6 +442,7 @@ fsm::StateFunction PlayerAnimation::update_land() {
 	if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
+	if (change_state(AnimState::turn_slide, get_params("turn_slide"))) { return PA_BIND(update_turn_slide); }
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 	if (animation.complete()) {
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
@@ -670,6 +677,7 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::get_up, get_params("get_up"))) { return PA_BIND(update_get_up); }
+	if (change_state(AnimState::turn_slide, get_params("turn_slide"))) { return PA_BIND(update_turn_slide); }
 	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 	if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
@@ -738,6 +746,36 @@ fsm::StateFunction PlayerAnimation::update_roll() {
 		}
 	}
 	return PA_BIND(update_roll);
+}
+
+fsm::StateFunction PlayerAnimation::update_turn_slide() {
+	animation.label = "turn_slide";
+	m_actual = AnimState::turn_slide;
+	auto& controller = m_player->controller;
+	controller.reset_vertical_movement();
+	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
+	if (change_state(AnimState::inspect, get_params("inspect"))) {
+		m_player->collider.physics.stop_x();
+		return PA_BIND(update_inspect);
+	}
+	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
+	if (change_state(AnimState::rise, get_params("backflip"))) { return PA_BIND(update_backflip); }
+	if (change_state(AnimState::suspend, get_params("suspend"))) { return PA_BIND(update_suspend); }
+
+	if (animation.complete()) {
+		if (controller.is_sliding() && !m_player->firing_weapon()) {
+			animation.set_params(get_params("slide"));
+			return PA_BIND(update_slide);
+		} else {
+			if (controller.sprinting()) {
+				animation.set_params(get_params("sprint"));
+				return PA_BIND(update_sprint);
+			}
+			animation.set_params(get_params("idle"));
+			return PA_BIND(update_idle);
+		}
+	}
+	return PA_BIND(update_turn_slide);
 }
 
 fsm::StateFunction PlayerAnimation::update_shoot() {

@@ -1,18 +1,12 @@
 
 #pragma once
 
-#include "Tile.hpp"
-
 #include <djson/json.hpp>
-
+#include <fornani/core/Common.hpp>
+#include <fornani/world/Tile.hpp>
 #include <vector>
 
 namespace fornani::world {
-
-constexpr int CEIL_SLANT_INDEX = 448;
-constexpr int FLOOR_SLANT_INDEX = 464;
-constexpr int ceiling_single_ramp = 480;
-constexpr int floor_single_ramp = 496;
 
 class Grid {
   public:

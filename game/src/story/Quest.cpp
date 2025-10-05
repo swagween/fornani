@@ -94,11 +94,25 @@ void QuestTable::serialize(dj::Json& to_save) {
 	}
 }
 
+/*{
+	  "status": [[18, 0]],
+	  "subquests": [
+		{
+		  "id": 420,
+		  "status": [1],
+		  "tag": "bryn"
+		}
+	  ],
+	  "tag": "npc_dialogue"
+	}*/
 void QuestTable::unserialize(dj::Json const& from_save) {
 	m_quests.clear();
 	for (auto const& in_quest : from_save["quests"].as_array()) {
 		auto status = std::vector<std::pair<int, ProgressionState>>{};
 		for (auto const& s : in_quest["status"].as_array()) { status.push_back({s[0].as<int>(), s[1].as<int>()}); }
+		if (in_quest["subquests"].is_array()) {
+			for (auto const& subquest : in_quest["subquests"].as_array()) { set_quest_progression(in_quest["tag"].as_string(), Subquest{subquest["tag"].as_string(), subquest["id"].as<int>()}, subquest["status"][0].as<int>(), {}); }
+		}
 		m_quests.insert({in_quest["tag"].as_string(), QuestProgression{status}});
 	}
 }

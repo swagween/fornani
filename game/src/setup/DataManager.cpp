@@ -6,7 +6,7 @@
 
 namespace fornani::data {
 
-DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc) { load_data(); }
+DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc), minimap{svc} { load_data(); }
 
 void DataManager::load_data(std::string in_room) {
 	m_services->stopwatch.start();
@@ -78,6 +78,7 @@ void DataManager::load_data(std::string in_room) {
 				map_layers.back().push_back(std::make_unique<world::Layer>(ctr, partition, dimensions, in_tile["layers"][ctr], constants::f_cell_size, ho, hro, parallax, ignore_lighting));
 				++ctr;
 			}
+			if (room_data["meta"]["minimap"].as_bool()) { minimap.bake(*m_services, room_data); }
 
 			// write to map table
 			auto entry = dj::Json{};
@@ -98,6 +99,8 @@ void DataManager::load_data(std::string in_room) {
 		m_map_labels.insert(std::make_pair(id, room["label"].as_string()));
 		rooms.push_back(room["room_id"].as<int>());
 	}
+
+	for (auto& id : discovered_rooms) {}
 
 	auto ctr{0};
 	for (auto& file : files) {
@@ -182,7 +185,6 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	auto& save = files.at(current_save).save_data;
 	files.at(current_save).write();
 	// set file data based on player state
-	save["player_data"]["max_hp"] = player.health.get_max();
 	save["player_data"]["hp"] = player.health.get_hp();
 	save["player_data"]["orbs"] = player.wallet.get_balance();
 	save["player_data"]["position"]["x"] = player.collider.physics.position.x;
@@ -365,7 +367,6 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	m_services->state_controller.save_point_id = save_pt_id;
 
 	// set player data based on save file
-	player.health.set_max(save["player_data"]["max_hp"].as<float>());
 	player.health.set_hp(save["player_data"]["hp"].as<float>());
 	player.wallet.set_balance(save["player_data"]["orbs"].as<int>());
 
@@ -646,9 +647,7 @@ bool DataManager::enemy_is_fallen(int room_id, int id) const {
 
 int DataManager::get_destructible_state(int id) const {
 	for (auto [i, d] : std::views::enumerate(destructible_states)) {
-		if (d.first == id) {
-			return d.second;
-		}
+		if (d.first == id) { return d.second; }
 	}
 	return -1;
 }

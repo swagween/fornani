@@ -2,16 +2,16 @@
 
 #pragma once
 
-#include <fornani/setup/MapData.hpp>
-#include <fornani/systems/TimeTrialRegistry.hpp>
-#include "fornani/entities/npc/Vendor.hpp"
-#include "fornani/io/File.hpp"
-#include "fornani/io/Logger.hpp"
-#include "fornani/utils/QuestCode.hpp"
-#include "fornani/world/Layer.hpp"
-
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
+#include <fornani/entities/npc/Vendor.hpp>
+#include <fornani/gui/MiniMap.hpp>
+#include <fornani/io/File.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/setup/MapData.hpp>
+#include <fornani/systems/TimeTrialRegistry.hpp>
+#include <fornani/utils/QuestCode.hpp>
+#include <fornani/world/Layer.hpp>
 
 #include <array>
 #include <string>
@@ -146,6 +146,7 @@ class DataManager final {
 	dj::Json audio_library{};
 
 	std::vector<MapData> map_jsons{};
+	gui::MiniMap minimap;
 	std::vector<std::vector<std::unique_ptr<world::Layer>>> map_layers{};
 	int num_layers{8};
 	std::vector<int> rooms{};

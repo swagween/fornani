@@ -51,6 +51,7 @@ Player::Player(automa::ServiceProvider& svc)
 void Player::update(world::Map& map) {
 	caution.avoid_ledges(map, collider, controller.direction, 8);
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
+	collider.set_direction(Direction{m_directions.actual});
 	cooldowns.tutorial.update();
 	if (m_hurt_cooldown.is_almost_complete()) { m_services->music_player.filter_fade_out(); }
 	m_hurt_cooldown.update();
@@ -62,6 +63,9 @@ void Player::update(world::Map& map) {
 		if (m_services->ticker.every_x_ticks(std::clamp(static_cast<int>(freq), 24, 80))) {
 			map.effects.push_back(entity::Effect(*m_services, "wallslide", collider.get_center() + sf::Vector2f{12.f * controller.direction.as_float(), -8.f}, collider.physics.apparent_velocity() * 0.3f));
 		}
+	}
+	if (controller.is_rolling()) {
+		if (m_services->ticker.every_x_ticks(40)) { map.effects.push_back(entity::Effect(*m_services, "roll", collider.get_center(), sf::Vector2f{collider.physics.apparent_velocity().x * 0.1f, 0.f})); }
 	}
 
 	// camera stuff

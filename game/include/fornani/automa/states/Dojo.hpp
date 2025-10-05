@@ -18,14 +18,12 @@ class Dojo final : public GameState {
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
 	std::optional<std::reference_wrapper<world::Map>> get_map() override { return map; }
-	void bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current = false);
 	void acquire_item(ServiceProvider& svc, player::Player& player, int modifier);
 	void acquire_gun(ServiceProvider& svc, player::Player& player, int modifier);
 	void remove_gun(ServiceProvider& svc, player::Player& player, int modifier);
 	void read_item(int id);
 
 	world::Map map;
-	world::Map gui_map;
 	bool show_colliders{false};
 	bool open_vendor{};
 	std::optional<std::unique_ptr<gui::VendorDialog>> vendor_dialog{};

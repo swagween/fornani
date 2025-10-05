@@ -20,6 +20,7 @@ class Game {
 	Game(char** argv, WindowManager& window, Version& version, capo::IEngine& audio_engine);
 	~Game() = default;
 	void run(capo::IEngine& audio_engine, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2f player_position = {});
+	void set_file(int to) { services.editor_settings.save_file = to; }
 	void shutdown();
 
 	util::BitFlags<GameFlags> flags{};

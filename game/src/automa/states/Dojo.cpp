@@ -42,7 +42,7 @@ static void trigger_remove_gun(int which) {
 }
 
 Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name)
-	: GameState(svc, player, scene, room_number), map(svc, player), gui_map(svc, player), m_services(&svc), m_enter_room{100}, m_loading{4} {
+	: GameState(svc, player, scene, room_number), map(svc, player), m_services(&svc), m_enter_room{100}, m_loading{4} {
 
 	m_type = StateType::game;
 
@@ -71,8 +71,6 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 		svc.data.load_data(room_name.data());
 	} else {
 		map.load(svc, m_console, room_number);
-		bake_maps(svc, {map.room_id}, true);
-		bake_maps(svc, svc.data.rooms);
 	}
 
 	hud.orient(svc, player); // reset hud position to corner
@@ -217,7 +215,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	// in-game menus
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc, gui_map, *player); }
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc, map, *player); }
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{"resume", "settings", "controls", "quit"}); }
 
 	m_enter_room.update();
@@ -274,13 +272,6 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		m_console.value()->write(win);
 	}
 	if (svc.debug_mode()) { map.debug(); }
-}
-
-void Dojo::bake_maps(ServiceProvider& svc, std::vector<int> ids, bool current) {
-	for (auto const& id : ids) {
-		if (id == 0) { continue; } // intro
-		gui_map.clear();
-	}
 }
 
 void Dojo::acquire_item(ServiceProvider& svc, player::Player& player, int modifier) {

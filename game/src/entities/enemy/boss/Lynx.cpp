@@ -148,7 +148,7 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	if (m_flags.test(LynxFlags::battle_mode)) {
 		auto incoming_projectile = m_caution.projectile_detected(map, Enemy::physical.alert_range, arms::Team::skycorps);
 		if (incoming_projectile.lnr != LNR::neutral) {
-			if (incoming_projectile.lnr != Enemy::directions.actual.lnr) {
+			if (incoming_projectile.lnr != Enemy::directions.actual.lnr && random::percent_chance(90)) {
 				random::percent_chance(50) ? request(LynxState::forward_slash) : request(LynxState::upward_slash);
 				if (is_hurt()) {
 					random::percent_chance(50) ? request(LynxState::jump) : request(LynxState::prepare_slash);
@@ -211,23 +211,25 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 
 	NPC::update(svc, map, *m_console, player);
 
-	// first phase starts
-	if (b_lynx_start && !m_console->has_value()) {
-		m_flags.set(LynxFlags::battle_mode);
-		request(LynxState::get_up);
-		b_lynx_start = false;
-		svc.music_player.load(svc.finder, "tumult");
-		svc.music_player.play_looped();
-		flags.general.set(GeneralFlags::has_invincible_channel);
-		flags.state.set(StateFlags::vulnerable);
-	}
-	// second phase starts
-	if (half_health() && !m_flags.test(LynxFlags::second_phase)) {
-		request(LynxState::second_phase);
-		svc.music_player.filter_fade_in(80.f, 40.f);
-		triggers.set(npc::NPCTrigger::distant_interact);
-		flush_conversations();
-		push_conversation(3);
+	if (!health.is_dead()) {
+		// first phase starts
+		if (b_lynx_start && !m_console->has_value()) {
+			m_flags.set(LynxFlags::battle_mode);
+			request(LynxState::get_up);
+			b_lynx_start = false;
+			svc.music_player.load(svc.finder, "tumult");
+			svc.music_player.play_looped();
+			flags.general.set(GeneralFlags::has_invincible_channel);
+			flags.state.set(StateFlags::vulnerable);
+		}
+		// second phase starts
+		if (half_health() && !m_flags.test(LynxFlags::second_phase)) {
+			request(LynxState::second_phase);
+			svc.music_player.filter_fade_in(80.f, 40.f);
+			triggers.set(npc::NPCTrigger::distant_interact);
+			flush_conversations();
+			push_conversation(3);
+		}
 	}
 	if (m_flags.test(LynxFlags::battle_mode)) { flags.state.set(StateFlags::vulnerable); }
 	m_magic.deactivate();

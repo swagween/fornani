@@ -6,9 +6,9 @@
 
 namespace fornani::entity {
 
-void Health::set_max(float amount) {
+void Health::set_max(float amount, bool memory) {
 	max_hp = amount;
-	hp = amount;
+	if (!memory) { hp = amount; }
 }
 
 void Health::set_hp(float amount) { hp = amount; }
@@ -55,7 +55,7 @@ void Health::inflict(float amount, bool force) {
 	}
 }
 
-void Health::increase_max_hp(float amount) { set_max(max_hp + amount); }
+void Health::increase_max_hp(float amount) { set_max(max_hp + amount, true); }
 
 void Health::reset() { hp = max_hp; }
 

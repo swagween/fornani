@@ -7,10 +7,10 @@
 
 namespace fornani::player {
 
-Doublejump::Doublejump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider) : Ability(svc, map, collider), m_vertical_multiplier{-12.f} {
+Doublejump::Doublejump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider) : Ability(svc, map, collider), m_vertical_multiplier{-14.f} {
 	m_type = AbilityType::doublejump;
 	m_state = AnimState::backflip;
-	svc.soundboard.flags.player.set(audio::Player::jump);
+	svc.soundboard.flags.player.set(audio::Player::doublejump);
 	map.effects.push_back(entity::Effect(svc, "doublejump", collider.get_center() - sf::Vector2f{0.f, 8.f}, sf::Vector2f{collider.physics.apparent_velocity().x * 0.1f, 0.f}));
 	m_duration.start(256);
 }

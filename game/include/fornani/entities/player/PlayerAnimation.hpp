@@ -42,7 +42,8 @@ enum class AnimState : std::uint8_t {
 	crouch,
 	crawl,
 	dash_up,
-	dash_down
+	dash_down,
+	turn_slide
 };
 
 enum class AnimTriggers : std::uint8_t { flip, end_death };
@@ -101,6 +102,7 @@ class PlayerAnimation {
 	fsm::StateFunction update_slide();
 	fsm::StateFunction update_get_up();
 	fsm::StateFunction update_roll();
+	fsm::StateFunction update_turn_slide();
 	fsm::StateFunction update_shoot();
 	fsm::StateFunction update_sleep();
 	fsm::StateFunction update_wake_up();

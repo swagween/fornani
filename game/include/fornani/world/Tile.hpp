@@ -1,7 +1,10 @@
+
 #pragma once
+
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Shape.hpp"
+#include <fornani/core/Common.hpp>
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Shape.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -23,6 +26,24 @@ enum class TileType : std::uint8_t { empty, solid, platform, ceiling_ramp, groun
 enum class TileState : std::uint8_t { ramp_adjacent, big_ramp, covered };
 
 constexpr static int special_index_v{448};
+
+constexpr auto get_type_by_value(int const val) -> TileType {
+	if (val < special_index_v && val > 0) { return TileType::solid; }
+	if ((val < special_index_v + 16 && val >= special_index_v) || (val >= ceiling_single_ramp && val <= ceiling_single_ramp + 3)) { return TileType::ceiling_ramp; }
+	if ((val < special_index_v + 32 && val >= special_index_v + 16) || (val >= floor_single_ramp && val <= floor_single_ramp + 3)) { return TileType::ground_ramp; }
+	if (val < special_index_v + 48 && val >= special_index_v + 44) { return TileType::platform; }
+	if (val < special_index_v + 38 && val >= special_index_v + 36) { return TileType::pushable; }
+	if (val == special_index_v + 38) { return TileType::target; }
+	if (val == special_index_v + 39) { return TileType::spawner; }
+	if (val == special_index_v + 40) { return TileType::home; }
+	if (val == special_index_v + 52) { return TileType::bonfire; }
+	if (val == special_index_v + 53) { return TileType::campfire; }
+	if (val == special_index_v + 54) { return TileType::checkpoint; }
+	if (val == special_index_v + 55) { return TileType::breakable; }
+	if (val == special_index_v + 62) { return TileType::big_spike; }
+	if (val == special_index_v + 63) { return TileType::spike; }
+	return TileType::empty;
+}
 
 struct Tile {
 

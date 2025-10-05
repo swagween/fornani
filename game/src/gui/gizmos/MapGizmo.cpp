@@ -10,7 +10,7 @@
 namespace fornani::gui {
 
 MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player)
-	: Gizmo("Minimap", false), m_minimap{std::make_unique<MiniMap>(svc)}, m_sprite{svc.assets.get_texture("map_gizmo")}, m_plugin_sprite{svc.assets.get_texture("map_gizmo")}, m_icon_sprite{svc.assets.get_texture("map_gizmo")},
+	: Gizmo("Minimap", false), m_minimap{&svc.data.minimap}, m_sprite{svc.assets.get_texture("map_gizmo")}, m_plugin_sprite{svc.assets.get_texture("map_gizmo")}, m_icon_sprite{svc.assets.get_texture("map_gizmo")},
 	  m_map_screen(svc, svc.assets.get_texture("map_screen"), {45, 45}, {1, 1}), m_map_shadow(svc, svc.assets.get_texture("map_shadow"), {45, 45}, {1, 1}),
 	  m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap", 32, util::InterpolationType::quadratic},
 	  m_motherboard_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap_motherboard", 108, util::InterpolationType::linear},
@@ -29,7 +29,8 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player
 	m_physics.position = sf::Vector2f{0.f, svc.window->f_screen_dimensions().y};
 	m_icon_sprite.setOrigin({3.f, 3.f});
 	m_icon_sprite.setScale(constants::f_scale_vec);
-	for (auto& id : svc.data.discovered_rooms) { m_minimap->bake(svc, map, player, id, id == svc.current_room); }
+	m_minimap->set_textures(svc);
+	m_minimap->set_markers(map, player);
 	m_minimap->center();
 	m_sprite.setScale(constants::f_scale_vec);
 	m_plugin_sprite.setScale(constants::f_scale_vec);

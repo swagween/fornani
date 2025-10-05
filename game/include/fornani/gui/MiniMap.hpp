@@ -31,6 +31,9 @@ struct MapIcon {
 class MiniMap {
   public:
 	explicit MiniMap(automa::ServiceProvider& svc);
+	void set_textures(automa::ServiceProvider& svc);
+	void set_markers(world::Map& map, player::Player& player);
+	void bake(automa::ServiceProvider& svc, dj::Json const& in);
 	void bake(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int room, bool current = false, bool undiscovered = false);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, sf::Sprite& icon_sprite);
 	void update();
@@ -57,6 +60,7 @@ class MiniMap {
 	float m_scale{8.f};
 	float m_speed{};
 	float m_texture_scale{};
+	Resolution m_resolution{};
 	sf::FloatRect m_extent{};
 	sf::Vector2f m_port_position{};
 	sf::Vector2f m_port_dimensions{};
@@ -66,8 +70,8 @@ class MiniMap {
 	components::PhysicsComponent m_physics{};
 	components::SteeringBehavior m_steering{};
 	MapTexture m_texture;
-	sf::Sprite m_cursor;
-	sf::Sprite m_map_sprite;
+	std::optional<sf::Sprite> m_cursor;
+	std::optional<sf::Sprite> m_map_sprite;
 	sf::RectangleShape m_border{};
 	std::vector<MapIcon> m_markers{};
 	std::vector<std::unique_ptr<MapTexture>> m_atlas{};

@@ -33,6 +33,15 @@ constexpr auto null_key = "null";
 
 } // namespace gui
 
+namespace world {
+
+constexpr int CEIL_SLANT_INDEX = 448;
+constexpr int FLOOR_SLANT_INDEX = 464;
+constexpr int ceiling_single_ramp = 480;
+constexpr int floor_single_ramp = 496;
+
+} // namespace world
+
 constexpr auto gem_chance_v = 0.08f;
 constexpr auto heart_chance_v = 8.f;
 constexpr auto enemy_limit_v = 64;

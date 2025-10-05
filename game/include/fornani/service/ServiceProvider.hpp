@@ -43,6 +43,9 @@ struct PlayerDat {
 struct MapDebug {
 	int active_projectiles{};
 };
+struct EditorSettings {
+	int save_file{};
+};
 
 struct ServiceProvider {
 	ServiceProvider(char** argv, Version& version, WindowManager& window, capo::IEngine& audio_engine)
@@ -79,6 +82,7 @@ struct ServiceProvider {
 	util::Logger logger{};
 	config::AccessibilityService a11y{};
 	graphics::CameraController camera_controller{};
+	EditorSettings editor_settings{};
 	int current_room{}; // TODO: Find a better way to deliver this info to the MiniMap.
 
 	// debug stuff

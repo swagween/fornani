@@ -35,16 +35,12 @@ Miaag::Miaag(automa::ServiceProvider& svc, world::Map& map)
 }
 
 void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	m_cooldowns.post_death.update();
 	if (m_cooldowns.post_death.is_almost_complete()) {
 		svc.data.switch_destructible_state(miaag_exit_destructibles);
 		svc.quest_table.progress_quest("defeat_miaag", 1, 509);
 		svc.music_player.play_looped();
 		svc.quest_table.set_quest_progression("npc_dialogue", {"dr_willett", 300}, 2, {300, 509}, 2);
 	}
-
-	// early exit after death
-	if (m_flags.test(MiaagFlags::gone)) { return; }
 
 	Enemy::update(svc, map, player);
 	face_player(player);
@@ -55,6 +51,7 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	m_cooldowns.post_magic.update();
 	m_cooldowns.interlude.update();
 	m_cooldowns.chomped.update();
+	m_cooldowns.post_death.update();
 
 	m_magic.update(svc, map, *this);
 	m_player_target = player.collider.get_center() + sf::Vector2f{0.f, -80.f};

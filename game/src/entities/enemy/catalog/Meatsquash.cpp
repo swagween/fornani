@@ -15,9 +15,11 @@ Meatsquash::Meatsquash(automa::ServiceProvider& svc, world::Map& map) : Enemy(sv
 	directions.movement.lnr = LNR::neutral;
 	collider.set_top_only();
 
-	attacks.bite.sensor.bounds.setRadius(96.f);
-	attacks.bite.hit.bounds.setRadius(96.f);
+	attacks.bite.sensor.bounds.setRadius(90.f);
+	attacks.bite.hit.bounds.setRadius(90.f);
 	attacks.bite.origin = {0.f, 0.f};
+
+	flags.state.reset(StateFlags::vulnerable);
 }
 
 void Meatsquash::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -25,15 +27,9 @@ void Meatsquash::update(automa::ServiceProvider& svc, world::Map& map, player::P
 		Enemy::update(svc, map, player);
 		return;
 	}
-
-	flags.state.set(StateFlags::vulnerable); // always vulnerable
-
-	// reset animation states to determine next animation state
-	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
-	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
 	Enemy::update(svc, map, player);
 
-	auto bite_offset = sf::Vector2f{0.f, -88.f};
+	auto bite_offset = sf::Vector2f{0.f, -98.f};
 	attacks.bite.set_position(collider.get_center() + bite_offset);
 	attacks.bite.update();
 	attacks.bite.handle_player(player);
@@ -57,7 +53,8 @@ void Meatsquash::update(automa::ServiceProvider& svc, world::Map& map, player::P
 
 void Meatsquash::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (died()) { return; }
-	// attacks.bite.render(win, cam);
+	Enemy::render(svc, win, cam);
+	attacks.bite.render(win, cam);
 }
 
 fsm::StateFunction Meatsquash::update_idle() {

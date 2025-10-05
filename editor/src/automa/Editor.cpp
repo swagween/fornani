@@ -1144,6 +1144,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					ImGui::Checkbox("Show Entities", &map.flags.show_entities);
 					ImGui::Checkbox("Show Background", &map.flags.show_background);
 					ImGui::Checkbox("Show Grid", &map.flags.show_grid);
+					ImGui::SliderInt("Demo Save File", &m_services->editor_settings.save_file, 0, 2);
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Layer Settings")) {
@@ -1233,6 +1234,7 @@ void Editor::launch_demo(char** argv, int room_id, std::filesystem::path path, s
 	console.add_log("> Launching Demo");
 	console.add_log(std::string{"Room ID: " + std::to_string(room_id) + "; Room Name: " + p_services->finder.paths.room_name}.c_str());
 	demo.init(argv, {true, m_demo.fullscreen});
+	demo.set_file(m_services->editor_settings.save_file);
 	demo.launch(argv, true, room_id, p_services->finder.paths.room_name, player_position);
 }
 

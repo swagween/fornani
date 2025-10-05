@@ -43,6 +43,7 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			if (m_file_select_menu) {
 				switch (m_file_select_menu->get_selection()) {
 				case 0:
+					svc.data.load_blank_save(*player);
 					svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get(), true);
 					svc.state_controller.actions.set(Actions::trigger);
 					svc.state_controller.actions.set(Actions::save_loaded);

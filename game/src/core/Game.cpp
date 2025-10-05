@@ -49,7 +49,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		services.debug_flags.set(automa::DebugFlags::demo_mode);
 		flags.set(GameFlags::in_game);
 		// services.music_player.turn_off();
-		services.data.load_progress(player, 0);
+		services.data.load_progress(player, services.editor_settings.save_file);
 		game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", room_id, levelpath.filename().string()));
 		services.state_controller.demo_level = room_id;
 		NANI_LOG_INFO(m_logger, "Launching demo in room {} from folder {} ", room_id, levelpath.filename().string());
@@ -409,6 +409,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Last Requested Direction: %s", player.controller.last_requested_direction().print().c_str());
 								ImGui::Text("Desired Direction: %s", player.get_desired_direction().print().c_str());
 								ImGui::Text("Actual Direction: %s", player.get_actual_direction().print().c_str());
+								ImGui::Text("Collider Direction: %s", player.collider.get_direction().print().c_str());
+								ImGui::Text("Ability Direction: %s", player.controller.get_ability_direction().print().c_str());
 								ImGui::Separator();
 								ImGui::Text("Grounded? %s", player.grounded() ? "Yes" : "No");
 								ImGui::Text("World Grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");

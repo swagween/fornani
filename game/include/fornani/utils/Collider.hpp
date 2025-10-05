@@ -83,6 +83,7 @@ class Collider {
 	void update(automa::ServiceProvider& svc, bool simple = false);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f pos);
+	void set_direction(Direction to) { m_direction = to; }
 	void reset();
 	void reset_ground_flags();
 	void set_top_only();
@@ -123,6 +124,7 @@ class Collider {
 	[[nodiscard]] auto bottom() const -> float { return bounding_box.bottom(); }
 	[[nodiscard]] auto downhill() const -> bool { return flags.perma_state.test(PermaFlags::downhill); }
 	[[nodiscard]] auto hit_ceiling_ramp() const -> bool { return flags.external_state.test(ExternalState::ceiling_ramp_hit); }
+	[[nodiscard]] auto get_direction() const -> Direction { return m_direction; }
 
 	Shape bounding_box{};
 	Shape predictive_vertical{};
@@ -176,6 +178,8 @@ class Collider {
 
 	sf::RectangleShape box{};
 	sf::RectangleShape draw_hurtbox{};
+
+	Direction m_direction{};
 
 	io::Logger m_logger{"Collider"};
 };

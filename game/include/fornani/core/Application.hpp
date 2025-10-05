@@ -16,6 +16,7 @@ class Application : public UniquePolymorphic {
 	explicit Application(char** argv, char const* loading_screen = "/image/gui/loading.png") : m_finder(argv), m_metadata(m_game_info, m_finder) {};
 	virtual void init(char** argv, std::pair<bool, bool> demo_fullscreen = {});
 	virtual void launch(char** argv, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2f player_position = {});
+	void set_file(int to) { m_file = to; };
 
   protected:
 	ResourceFinder m_finder;
@@ -24,6 +25,7 @@ class Application : public UniquePolymorphic {
 	Version m_metadata;
 	WindowManager m_window{};
 	std::unique_ptr<capo::IEngine> m_engine{capo::create_engine()};
+	int m_file{};
 	io::Logger m_logger{"Application"};
 };
 

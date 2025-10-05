@@ -114,9 +114,9 @@
 				"attributes": {
 					"base_damage": 10,
 					"power": 3,
-					"lifespan": 50,
+					"lifespan": 70,
 					"lifespan_variance": 0,
-					"speed": 39.5,
+					"speed": 70.0,
 					"variance": 0.1,
 					"stun_time": 0.0,
 					"knockback": 0.0,
@@ -125,7 +125,7 @@
 					"constrained": false,
 					"range_variance": 0.0,
 					"acceleration_factor": 0.0,
-					"dampen_factor": 0.0
+					"dampen_factor": 0.97
 				},
 				"animation": {
 					"num_sprites": 1,

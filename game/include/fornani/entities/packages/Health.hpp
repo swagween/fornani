@@ -1,8 +1,10 @@
+
 #pragma once
+
 #include <SFML/Graphics.hpp>
-#include "fornani/entities/Entity.hpp"
-#include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/Counter.hpp"
+#include <fornani/entities/Entity.hpp>
+#include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/Counter.hpp>
 
 namespace fornani::entity {
 enum class HPState : std::uint8_t { hit };
@@ -25,7 +27,8 @@ class Health final : public Entity {
 	[[nodiscard]] auto full() const -> bool { return hp == max_hp; }
 	[[nodiscard]] auto empty() const -> bool { return is_dead(); }
 	[[nodiscard]] auto get_normalized() const -> float { return hp / max_hp; }
-	void set_max(float amount);
+
+	void set_max(float amount, bool memory = false);
 	void set_hp(float amount);
 	void set_invincibility(float amount);
 	void heal(float amount);
