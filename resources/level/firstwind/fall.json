@@ -1,6 +1,5 @@
 {
   "entities": {
-    "inspectables": [],
     "portals": [
       {
         "activate_on_contact": true,
@@ -73,7 +72,7 @@
     ],
     "properties": {
       "day_night_shift": true,
-      "environmental_randomness": false,
+      "environmental_randomness": true,
       "lighting": false,
       "timer": false
     },
@@ -89,7 +88,7 @@
       "reverse_obscuring": false
     },
     "ignore_lighting": [
-      null
+      false
     ],
     "layers": [
       [

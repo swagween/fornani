@@ -35,7 +35,7 @@
     ]
   },
   "meta": {
-    "ambience": "",
+    "ambience": "none",
     "background": 3,
     "biome": "overturned",
     "camera_effects": {
@@ -62,14 +62,14 @@
       18
     ],
     "minimap": true,
-    "music": "",
+    "music": "home_again",
     "player_start": [
       0,
       0
     ],
     "properties": {
-      "day_night_shift": false,
-      "environmental_randomness": false,
+      "day_night_shift": true,
+      "environmental_randomness": true,
       "lighting": false,
       "timer": false
     },

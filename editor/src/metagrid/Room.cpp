@@ -47,6 +47,7 @@ void Room::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	m_box.setPosition(get_board_position() + cam);
 	win.draw(m_box);
 	auto sprite = sf::Sprite{m_texture.getTexture()};
+	m_include_in_minimap ? sprite.setColor(sf::Color::White) : sprite.setColor(fornani::colors::periwinkle);
 	sprite.setPosition(m_box.getPosition());
 	sprite.scale({spacing_v / fornani::constants::f_chunk_size, spacing_v / fornani::constants::f_chunk_size});
 	win.draw(sprite);

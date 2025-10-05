@@ -38,7 +38,7 @@
         ],
         [
           {
-            "message": "Take a gander!"
+            "message": "Here's what I've got..."
           }
         ],
         [
@@ -53,20 +53,6 @@
           },
           {
             "message": "Say, you've been gone for a while without a word. Does your father know you're back around here again?"
-          }
-        ],
-        [
-          {
-            "message": "Well, it's the last place on the island that any Kariba call home, as far as I know."
-          },
-          {
-            "message": "It's been raided and ransacked and whittled down to what it is now over the last hundred years or so, and lately the residents have been keen to lay low and let the place get overgrown."
-          },
-          {
-            "message": "They prefer to keep quiet after the hell your brother raised against Skycorps. To them, protecting the sacred grounds is more important than raising arms against them."
-          },
-          {
-            "message": "Things have been much calmer ever since he left. You wouldn't happen to know where he went off to, now, would you?"
           }
         ]
       ]

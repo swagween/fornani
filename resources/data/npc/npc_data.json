@@ -168,6 +168,18 @@
 			}
 		]
 	},
+	"otto": {
+		"id": 1,
+		"dimensions": [ 32, 32 ],
+		"sprite_dimensions": [ 32, 32 ],
+		"sprite_offset": [ 0, -16 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 4, 80, -1, false ]
+			}
+		]
+	},
 	"bit": {
 		"id": 20,
 		"dimensions": [ 24, 24 ],

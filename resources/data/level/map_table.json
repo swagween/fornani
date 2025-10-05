@@ -302,6 +302,12 @@
     },
     {
       "folder": "overturned",
+      "label": "attic.json",
+      "region": "overturned",
+      "room_id": 408
+    },
+    {
+      "folder": "overturned",
       "label": "burrow.json",
       "region": "overturned",
       "room_id": 233
@@ -509,6 +515,12 @@
       "label": "ruins.json",
       "region": "overturned",
       "room_id": 214
+    },
+    {
+      "folder": "overturned",
+      "label": "shop.json",
+      "region": "overturned",
+      "room_id": 405
     },
     {
       "folder": "overturned",
