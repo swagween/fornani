@@ -8,6 +8,7 @@ resources/editor/export/*
 **/.vs/*
 **/.vscode/*
 **/.idea/*
+**/.history/*
 .idea/*
 .vs/*
 .vscode/*
