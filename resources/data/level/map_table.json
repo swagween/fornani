@@ -302,6 +302,12 @@
     },
     {
       "folder": "overturned",
+      "label": "ambers_house.json",
+      "region": "overturned",
+      "room_id": 409
+    },
+    {
+      "folder": "overturned",
       "label": "attic.json",
       "region": "overturned",
       "room_id": 408
@@ -407,6 +413,12 @@
       "label": "hovel.json",
       "region": "overturned",
       "room_id": 236
+    },
+    {
+      "folder": "overturned",
+      "label": "inn.json",
+      "region": "overturned",
+      "room_id": 406
     },
     {
       "folder": "overturned",
@@ -548,6 +560,12 @@
     },
     {
       "folder": "overturned",
+      "label": "town_hall.json",
+      "region": "overturned",
+      "room_id": 407
+    },
+    {
+      "folder": "overturned",
       "label": "trunks.json",
       "region": "overturned",
       "room_id": 246
@@ -593,6 +611,12 @@
       "label": "vine_fields.json",
       "region": "overturned",
       "room_id": 225
+    },
+    {
+      "folder": "overturned",
+      "label": "warehouse.json",
+      "region": "overturned",
+      "room_id": 403
     },
     {
       "folder": "overturned",
