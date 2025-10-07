@@ -3,6 +3,7 @@
 
 #include <fornani/entity/Entity.hpp>
 #include <fornani/gui/console/Message.hpp>
+#include <fornani/story/Quest.hpp>
 
 namespace fornani {
 
@@ -24,6 +25,7 @@ class Inspectable : public Entity {
 	std::vector<std::vector<gui::BasicMessage>> m_suites{};
 	std::vector<std::vector<gui::BasicMessage>> m_responses{};
 	int m_alternates{};
+	std::vector<QuestContingency> m_contingencies{};
 };
 
 } // namespace fornani

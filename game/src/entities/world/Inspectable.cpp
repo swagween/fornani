@@ -52,7 +52,7 @@ void Inspectable::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_
 	if (bounding_box.overlaps(player.collider.hurtbox)) {
 		if (!flags.test(InspectableFlags::hovered)) { flags.set(InspectableFlags::hovered_trigger); }
 		flags.set(InspectableFlags::hovered);
-		if (attributes.test(InspectableAttributes::activate_on_contact) && flags.test(InspectableFlags::can_engage)) {
+		if (attributes.test(InspectableAttributes::activate_on_contact) && flags.test(InspectableFlags::can_engage) && player.collider.grounded()) {
 			flags.set(InspectableFlags::activated);
 			flags.reset(InspectableFlags::can_engage);
 		}

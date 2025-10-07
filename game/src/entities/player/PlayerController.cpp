@@ -104,13 +104,14 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		if (player.can_jump()) { m_ability = std::make_unique<Jump>(svc, map, player.collider); }
 		// guard for when player has jump and dash bound to the same key
 		auto const dash_exhausted = !player.can_dash() && !is_dashing();
-		if ((player.can_doublejump() && !dash_and_jump_combined) || (player.can_doublejump() && dash_and_jump_combined && (!any_direction_held || dash_exhausted))) {
+		auto can_walljump = (player.collider.has_right_wallslide_collision() || player.collider.has_left_wallslide_collision()) && !player.collider.grounded() && player.can_walljump();
+		auto jump_direction = player.collider.has_right_wallslide_collision() ? Direction{LR::right} : player.collider.has_left_wallslide_collision() ? Direction{LR::left} : Direction{};
+		if (can_walljump) {
+			m_ability = std::make_unique<Walljump>(svc, map, player.collider, jump_direction);
+		} else if ((player.can_doublejump() && !dash_and_jump_combined) || (player.can_doublejump() && dash_and_jump_combined && (!any_direction_held || dash_exhausted))) {
 			m_ability = std::make_unique<Doublejump>(svc, map, player.collider);
 			player.m_ability_usage.doublejump.update();
 		}
-		auto can_walljump = (player.collider.has_right_wallslide_collision() || player.collider.has_left_wallslide_collision()) && !player.collider.grounded() && player.can_walljump();
-		auto jump_direction = player.collider.has_right_wallslide_collision() ? Direction{LR::right} : player.collider.has_left_wallslide_collision() ? Direction{LR::left} : Direction{};
-		if (can_walljump) { m_ability = std::make_unique<Walljump>(svc, map, player.collider, jump_direction); }
 	}
 	if (!is_wallsliding()) { svc.soundboard.flags.player.reset(audio::Player::wallslide); }
 

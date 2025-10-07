@@ -18,11 +18,20 @@ Dash::Dash(automa::ServiceProvider& svc, world::Map& map, shape::Collider& colli
 }
 
 void Dash::update(shape::Collider& collider, PlayerController& controller) {
+	if (m_direction.lnr != controller.last_requested_direction().as<LNR>() && collider.grounded()) {
+		m_state = AnimState::turn_slide;
+		m_horizontal_multiplier *= 0.99f;
+		m_animation_trigger.start();
+	}
 	Ability::update(collider, controller);
 	collider.flags.state.reset(shape::State::just_landed);
 	auto const& vert = collider.acceleration_multiplier * m_vertical_multiplier;
 	auto const& horiz = collider.acceleration_multiplier * m_horizontal_multiplier;
 	auto terminal_vel = 100.f;
+	if (collider.hit_ceiling_ramp()) {
+		m_horizontal_multiplier *= 0.9f;
+		m_vertical_multiplier *= 0.0f;
+	}
 	if (m_omni && m_direction.up_or_down()) {
 		collider.physics.velocity.x = 0.f;
 		collider.physics.acceleration.x = controller.horizontal_movement() * vert;

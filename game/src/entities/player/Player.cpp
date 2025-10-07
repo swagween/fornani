@@ -64,9 +64,10 @@ void Player::update(world::Map& map) {
 			map.effects.push_back(entity::Effect(*m_services, "wallslide", collider.get_center() + sf::Vector2f{12.f * controller.direction.as_float(), -8.f}, collider.physics.apparent_velocity() * 0.3f));
 		}
 	}
-	if (controller.is_rolling()) {
-		if (m_services->ticker.every_x_ticks(40)) { map.effects.push_back(entity::Effect(*m_services, "roll", collider.get_center(), sf::Vector2f{collider.physics.apparent_velocity().x * 0.1f, 0.f})); }
+	if (controller.is_rolling() || animation.is_state(AnimState::turn_slide)) {
+		if (m_services->ticker.every_x_ticks(24)) { map.effects.push_back(entity::Effect(*m_services, "roll", collider.get_center(), sf::Vector2f{collider.physics.apparent_velocity().x * 0.1f, 0.f})); }
 	}
+	animation.is_state(AnimState::turn_slide) && animation.animation.get_frame_count() > 4 ? m_services->soundboard.flags.player.set(audio::Player::turn_slide) : m_services->soundboard.flags.player.reset(audio::Player::turn_slide);
 
 	// camera stuff
 	auto camx = controller.direction.as_float() * 32.f;
@@ -323,7 +324,7 @@ void Player::update_animation() {
 
 void Player::update_sprite() {
 
-	if (!grounded()) {
+	if (!grounded() || controller.is_dashing()) {
 		if (m_directions.desired != m_directions.actual) { animation.triggers.set(AnimTriggers::flip); }
 	}
 	if (animation.triggers.consume(AnimTriggers::flip)) {
@@ -602,10 +603,10 @@ void Player::set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_o
 	for (auto i{0}; i < to_outfit.size(); ++i) { catalog.wardrobe.equip(static_cast<ApparelType>(i), to_outfit[i]); }
 }
 
-void Player::give_item(std::string_view label, int amount) {
+void Player::give_item(std::string_view label, int amount, bool from_save) {
 	auto id{0};
 	for (auto i{0}; i < amount; ++i) { id = catalog.inventory.add_item(m_services->data.item, label); }
-	if (id == 29) {
+	if (id == 29 && !from_save) {
 		health.increase_max_hp(1.f);
 		m_services->soundboard.flags.item.set(audio::Item::health_increase);
 	}
@@ -641,8 +642,7 @@ void Player::push_to_loadout(std::string_view tag, bool from_save) {
 		auto bg = util::QuestKey{1, 111, 1};
 		m_services->quest.process(*m_services, bg);
 	}
-	if (tag == "gnat" && !from_save) { /*m_services->quest.progress(fornani::QuestType::destructibles, 122, 1);*/
-	}
+	if (tag == "gnat" && !from_save) { m_services->data.switch_destructible_state(103); }
 	arsenal.value().push_to_loadout(tag);
 	if (!from_save) { hotbar.value().add(tag); }
 	m_services->stats.player.guns_collected.update();

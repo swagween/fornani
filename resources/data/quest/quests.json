@@ -26,9 +26,11 @@
     "tag": "npc_dialogue",
     "displayed": false,
     "subquests": [
+      { "tag": "mirin", "id": 114 },
       { "tag": "bryn", "id": 420 },
       { "tag": "bryn", "id": 509 },
-      { "tag": "bryn", "id": 300 }
+      { "tag": "bryn", "id": 300 },
+      { "tag": "krub", "id": 406 }
     ]
   },
 

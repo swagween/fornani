@@ -180,6 +180,26 @@
 			}
 		]
 	},
+	"krub": {
+		"id": 26,
+		"dimensions": [ 60, 60 ],
+		"sprite_dimensions": [ 40, 40 ],
+		"sprite_offset": [ 0, -10 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 10, 60, -1, false ]
+			},
+			{
+				"label": "pull_pants",
+				"parameters": [ 10, 6, 60, 0, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 16, 3, 40, 0, false ]
+			}
+		]
+	},
 	"bit": {
 		"id": 20,
 		"dimensions": [ 24, 24 ],

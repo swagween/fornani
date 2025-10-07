@@ -72,13 +72,11 @@
           24,
           15
         ],
-        "rat0": [],
         "series": [
           {
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "There's a rat. Do you want to take it?"
                 }
               ]
@@ -105,22 +103,30 @@
             "suite": [
               [
                 {
-                  "codes": [],
+                  "codes": [
+                    [
+                      3,
+                      1,
+                      1,
+                      110
+                    ]
+                  ],
                   "message": "Laboratory Username: bfoster"
                 }
               ]
             ]
           }
-        ],
-        "username0": []
+        ]
       }
     ],
     "npcs": [
       {
+        "background": false,
         "dimensions": [
           1,
           1
         ],
+        "hidden": false,
         "id": 53338,
         "label": "carl",
         "position": [

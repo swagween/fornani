@@ -159,7 +159,7 @@
 		"gameplay": {
 			"attributes": {
 				"automatic": true,
-				"ammo": 100,
+				"ammo": -1,
 				"reload": 1000,
 				"cooldown_time": 7,
 				"recoil": 0.15

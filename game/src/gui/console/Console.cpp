@@ -69,11 +69,17 @@ void Console::update(automa::ServiceProvider& svc) {
 				auto lookup = m_services->controller_map.get_icon_lookup_by_action(static_cast<config::DigitalAction>(action_id));
 				m_writer->insert_icon_at(code.value, lookup);
 			}
+			if (code.is_quest() && m_process_code_before) {
+				auto label = svc.data.get_npc_label_from_id(code.value);
+				if (label && code.extras) {
+					if (code.extras->size() > 1) { svc.quest_table.progress_quest(svc.quest_registry.get_quest_metadata(code.value).get_tag(), code.extras->at(0), code.extras->at(1)); }
+				}
+				processed = true;
+			}
 			if (code.is_pop_conversation() && m_process_code_before) {
 				svc.events.dispatch_event("PopConversation", code.value);
 				auto label = svc.data.get_npc_label_from_id(code.value);
 				if (label && code.extras) { svc.quest_table.progress_quest("npc_dialogue", {label.value().data(), code.extras->at(0)}, 1, -1, code.value); }
-
 				processed = true;
 			}
 			if (code.is_play_song() && m_process_code_before) {

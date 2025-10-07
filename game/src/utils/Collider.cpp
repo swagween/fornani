@@ -144,6 +144,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 				physics.position.y += ccm::abs(mtvs.combined.y) * 4.f;
 				if (physics.apparent_velocity().y < 0.f) { physics.zero_y(); }
 				flags.external_state.set(ExternalState::ceiling_ramp_hit);
+				physics.acceleration.x *= 0.9f;
 			}
 			// cancel dash
 			flags.dash.set(Dash::dash_cancel_collision);

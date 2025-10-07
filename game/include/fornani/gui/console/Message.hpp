@@ -22,6 +22,7 @@ struct MessageCode {
 	[[nodiscard]] auto is_exit() const -> bool { return type == MessageCodeType::exit; }
 	[[nodiscard]] auto is_response() const -> bool { return type == MessageCodeType::response; }
 	[[nodiscard]] auto is_redirect() const -> bool { return type == MessageCodeType::redirect; }
+	[[nodiscard]] auto is_quest() const -> bool { return type == MessageCodeType::quest; }
 	[[nodiscard]] auto is_action() const -> bool { return type == MessageCodeType::action; }
 	[[nodiscard]] auto is_item() const -> bool { return type == MessageCodeType::item; }
 	[[nodiscard]] auto is_destructible() const -> bool { return type == MessageCodeType::destructible; }

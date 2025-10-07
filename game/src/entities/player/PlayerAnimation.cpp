@@ -498,6 +498,7 @@ fsm::StateFunction PlayerAnimation::update_dash() {
 	m_actual = AnimState::dash;
 	m_player->flags.state.reset(State::show_weapon);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
+	if (change_state(AnimState::turn_slide, get_params("turn_slide"))) { return PA_BIND(update_turn_slide); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"), true)) { return PA_BIND(update_wallslide); }
 	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }

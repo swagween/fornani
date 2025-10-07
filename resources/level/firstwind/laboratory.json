@@ -226,6 +226,13 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
+        "contingencies": [
+          {
+            "requirement": 1,
+            "strict": false,
+            "tag": "firstwind_mystery"
+          }
+        ],
         "dimensions": [
           1,
           1
@@ -239,9 +246,28 @@
         ],
         "series": [
           {
+            "responses": [
+              [
+                {
+                  "codes": [
+                    [
+                      9,
+                      1102
+                    ]
+                  ],
+                  "message": "bfoster"
+                }
+              ]
+            ],
             "suite": [
               [
                 {
+                  "codes": [
+                    [
+                      1,
+                      0
+                    ]
+                  ],
                   "message": "Please enter username:"
                 }
               ]

@@ -138,7 +138,18 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, style_id, lyr, var, parallax));
 	}
 	for (auto [i, entry] : std::views::enumerate(entities["inspectables"].as_array())) {
-		inspectables.push_back(entity::Inspectable(svc, entry, room_id, i));
+		auto push = true;
+		auto fail_tag = std::string{};
+		if (entry["contingencies"].is_array()) {
+			for (auto const& contingency : entry["contingencies"].as_array()) {
+				auto cont = QuestContingency{contingency};
+				if (!svc.quest_table.are_contingencies_met({cont})) {
+					push = false;
+					fail_tag = contingency["tag"].as_string();
+				}
+			}
+		}
+		if (push) { inspectables.push_back(entity::Inspectable(svc, entry, room_id, i)); }
 		if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
 	}
 

@@ -66,7 +66,7 @@ class PlayerController {
 	[[nodiscard]] auto is_dashing() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::dash) : false; }
 	[[nodiscard]] auto is_sliding() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::slide) : false; }
 	[[nodiscard]] auto is_wallsliding() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::wallslide) : false; }
-	[[nodiscard]] auto is_rolling() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::roll) : false; }
+	[[nodiscard]] auto is_rolling() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::roll) && m_ability.value()->is_active() : false; }
 	[[nodiscard]] auto slid_in_air() const -> bool { return input_flags.test(InputState::slide_in_air); }
 	[[nodiscard]] auto is_crouching() const -> bool { return flags.test(MovementState::crouch); }
 	[[nodiscard]] auto is_ability_active() const -> bool { return m_ability ? m_ability.value()->is_active() : false; }

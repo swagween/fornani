@@ -45,6 +45,7 @@ void Inspectable::serialize(dj::Json& out) {
 		out["series"].push_back(next);
 		NANI_LOG_DEBUG(m_logger, "Serialized a series entry.");
 	}
+	for (auto& contingency : m_contingencies) { contingency.serialize(out["contingencies"]); }
 }
 
 void Inspectable::unserialize(dj::Json const& in) {
@@ -74,6 +75,7 @@ void Inspectable::unserialize(dj::Json const& in) {
 			}
 		}
 	}
+	for (auto const& contingency : in["contingencies"].as_array()) { m_contingencies.push_back(QuestContingency(contingency)); }
 }
 
 void Inspectable::expose() {

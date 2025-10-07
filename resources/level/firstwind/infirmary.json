@@ -85,6 +85,7 @@
           1,
           1
         ],
+        "hidden": false,
         "id": 16505,
         "label": "dr_go",
         "position": [
@@ -107,6 +108,7 @@
           1,
           1
         ],
+        "hidden": false,
         "id": 57394,
         "label": "mirin",
         "position": [
@@ -134,6 +136,7 @@
           1,
           1
         ],
+        "hidden": false,
         "id": 21458,
         "label": "billy",
         "position": [
