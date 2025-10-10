@@ -1,8 +1,10 @@
-#pragma once
-#include <SFML/Graphics.hpp>
-#include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/particle/Gravitator.hpp"
 
+#pragma once
+
+#include <SFML/Graphics.hpp>
+#include <fornani/core/Common.hpp>
+#include <fornani/entities/animation/AnimatedSprite.hpp>
+#include <fornani/particle/Gravitator.hpp>
 #include <vector>
 
 namespace fornani::player {
@@ -29,6 +31,7 @@ class FloatingPart {
 	void set_magnitude(float magnitude);
 	void move(sf::Vector2f distance) const;
 	void apply_force(sf::Vector2f force) { gravitator->add_force(force); }
+	void set_team(arms::Team to) { m_team = to; }
 
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return gravitator->collider.bounding_box.get_position(); }
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return gravitator->collider.get_center(); }
@@ -40,6 +43,7 @@ class FloatingPart {
 
   private:
 	int m_id{};
+	arms::Team m_team{arms::Team::skycorps}; // default to enemy team
 	std::unique_ptr<vfx::Gravitator> gravitator{};
 	sf::Vector2f left{};
 	sf::Vector2f right{};

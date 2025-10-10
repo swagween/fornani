@@ -36,14 +36,14 @@
         ],
         "id": 1,
         "position": [
-          19,
-          9
+          80,
+          10
         ],
         "start_direction": [
           0,
           0
         ],
-        "variant": 0
+        "variant": 1
       },
       {
         "dimensions": [
@@ -52,8 +52,8 @@
         ],
         "id": 1,
         "position": [
-          80,
-          10
+          16,
+          9
         ],
         "start_direction": [
           0,
@@ -7221,9 +7221,9 @@
         0,
         0,
         0,
+        0,
         503,
-        503,
-        503,
+        0,
         0,
         0,
         0,

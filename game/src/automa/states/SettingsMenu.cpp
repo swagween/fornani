@@ -40,6 +40,7 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
 			if (adjust_mode()) {
 				m_mode = SettingsMenuMode::ready;
+				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 			} else {
 				svc.data.save_settings();
 			}
@@ -65,6 +66,9 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 				.label.setString(toggleables.gamepad.getString() + (svc.controller_map.is_gamepad_input_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 			options.at(static_cast<int>(SettingsToggles::fullscreen)).label.setString(toggleables.fullscreen.getString() + (svc.fullscreen() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 			options.at(static_cast<int>(SettingsToggles::military_time)).label.setString(toggleables.military_time.getString() + (svc.world_clock.is_military() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+		} else if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered && adjust_mode()) {
+			m_mode = SettingsMenuMode::ready;
+			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 		}
 	}
 	MenuState::tick_update(svc, engine);
@@ -88,10 +92,10 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 void SettingsMenu::frame_update(ServiceProvider& svc) {}
 
 void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
-	MenuState::render(svc, win);
 	auto index = is(SettingsToggles::music) ? static_cast<int>(SettingsToggles::music) : static_cast<int>(SettingsToggles::sfx);
 
 	adjust_mode() ? options.at(index).label.setFillColor(colors::red) : options.at(index).label.setFillColor(options.at(index).label.getFillColor());
+	MenuState::render(svc, win);
 	if (is(SettingsToggles::music)) { options.at(index).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music_player.get_volume() * 100.f)) + "%"); }
 	if (is(SettingsToggles::sfx)) { options.at(index).label.setString(sfx_label.getString() + std::to_string(static_cast<int>(svc.soundboard.get_volume() * 100.f)) + "%"); }
 

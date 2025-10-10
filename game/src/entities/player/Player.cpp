@@ -67,7 +67,8 @@ void Player::update(world::Map& map) {
 	if (controller.is_rolling() || animation.is_state(AnimState::turn_slide)) {
 		if (m_services->ticker.every_x_ticks(24)) { map.effects.push_back(entity::Effect(*m_services, "roll", collider.get_center(), sf::Vector2f{collider.physics.apparent_velocity().x * 0.1f, 0.f})); }
 	}
-	animation.is_state(AnimState::turn_slide) && animation.animation.get_frame_count() > 4 ? m_services->soundboard.flags.player.set(audio::Player::turn_slide) : m_services->soundboard.flags.player.reset(audio::Player::turn_slide);
+	animation.is_state(AnimState::turn_slide) && (animation.animation.get_frame_count() > 2 && animation.animation.get_frame_count() < 6) ? m_services->soundboard.flags.player.set(audio::Player::turn_slide)
+																																		  : m_services->soundboard.flags.player.reset(audio::Player::turn_slide);
 
 	// camera stuff
 	auto camx = controller.direction.as_float() * 32.f;

@@ -73,7 +73,7 @@ class Collider {
 	void sync_components();
 	void handle_map_collision(world::Tile const& tile);
 	void detect_map_collision(world::Map& map);
-	void correct_x(sf::Vector2f mtv);
+	void correct_x(sf::Vector2f mtv, bool has_velocity = false);
 	void correct_y(sf::Vector2f mtv);
 	void correct_x_y(sf::Vector2f mtv);
 	void correct_corner(sf::Vector2f mtv);

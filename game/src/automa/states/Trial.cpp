@@ -6,7 +6,7 @@
 
 namespace fornani::automa {
 
-Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameState(svc, player, scene, room_number), map(svc, player), m_services(&svc), m_reset{256} {
+Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameState(svc, player, scene, room_number), map(svc, player), m_services(&svc), m_reset{64} {
 
 	m_type = StateType::game;
 

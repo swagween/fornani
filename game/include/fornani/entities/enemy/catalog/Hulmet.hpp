@@ -8,10 +8,11 @@
 
 namespace fornani::enemy {
 
-enum class HulmetState { idle, turn, run, jump, alert, sleep, shoot, roll, panic, reload };
-enum class HulmetVariant { gunner, bodyguard };
+enum class HulmetState : std::uint8_t { idle, turn, run, jump, alert, sleep, shoot, roll, panic, reload };
+enum class HulmetVariant : std::uint8_t { gunner, bodyguard };
+enum class HulmetFlags : std::uint8_t { out_of_ammo };
 
-class Hulmet final : public Enemy {
+class Hulmet final : public Enemy, public StateMachine<HulmetState> {
   public:
 	Hulmet(automa::ServiceProvider& svc, world::Map& map);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
@@ -30,15 +31,10 @@ class Hulmet final : public Enemy {
 	fsm::StateFunction update_reload();
 
 	[[nodiscard]] auto is_mid_run() { return m_cooldowns.run.is_almost_complete(); }
+	[[nodiscard]] auto was_alerted() { return m_cooldowns.alerted.running(); }
+	[[nodiscard]] auto is_out_of_ammo() { return m_flags.test(HulmetFlags::out_of_ammo); }
 
   private:
-	void request(HulmetState to) { m_state.desired = to; }
-
-	struct {
-		HulmetState actual{};
-		HulmetState desired{};
-	} m_state{};
-
 	HulmetVariant m_variant{};
 
 	// packages
@@ -51,7 +47,7 @@ class Hulmet final : public Enemy {
 
 	struct {
 		util::Cooldown post_fire{400};
-		util::Cooldown alerted{1600};
+		util::Cooldown alerted{1800};
 		util::Cooldown post_jump{200};
 		util::Cooldown post_roll{200};
 		util::Cooldown run{80};
@@ -70,6 +66,8 @@ class Hulmet final : public Enemy {
 		anim::Parameters panic{31, 7, 24, 0};
 		anim::Parameters reload{38, 5, 64, 0};
 	} m_animations{};
+
+	util::BitFlags<HulmetFlags> m_flags{};
 
 	float m_jump_force;
 	int m_jump_time{4};

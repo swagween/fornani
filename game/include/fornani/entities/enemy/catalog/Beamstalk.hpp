@@ -10,9 +10,6 @@ enum class BeamstalkState { idle, charge, shoot, relax };
 class Beamstalk final : public Enemy {
 
   public:
-	Beamstalk() = delete;
-	~Beamstalk() override = default;
-	Beamstalk& operator=(Beamstalk&&) = delete;
 	Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;

@@ -13,6 +13,19 @@
           63,
           8
         ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 11701,
+        "inverse": true,
+        "position": [
+          36,
+          3
+        ]
       }
     ],
     "enemies": [
@@ -892,7 +905,7 @@
         0,
         0,
         0,
-        0,
+        202,
         0,
         0,
         0,

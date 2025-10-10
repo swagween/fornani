@@ -152,8 +152,10 @@ void NPC::start_conversation(automa::ServiceProvider& svc, std::optional<std::un
 	state_flags.set(NPCState::introduced);
 	std::string name = std::string(m_label);
 	std::string target = std::to_string(conversations.at(m_current_conversation.get()));
-	// NANI_LOG_DEBUG(m_logger, "Current conversation S iterator: {}", m_current_conversation.get());
-	// NANI_LOG_DEBUG(m_logger, "Current conversation S actual: {}", conversations.at(m_current_conversation.get()));
+	if (!svc.text.npc[name][target].is_object()) {
+		NANI_LOG_ERROR(m_logger, "Tried to start a conversation that doesn't exist!");
+		return;
+	}
 	console = std::make_unique<gui::Console>(svc, svc.text.npc[name][target], static_cast<gui::OutputType>(svc.text.npc[name][target]["output"].as<int>()));
 	console.value()->include_portrait(get_id());
 }

@@ -54,8 +54,8 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
-      "environmental_randomness": false,
+      "day_night_shift": true,
+      "environmental_randomness": true,
       "lighting": false,
       "timer": false
     },
@@ -2545,7 +2545,7 @@
         0,
         21,
         22,
-        205,
+        96,
         96,
         96,
         96,
@@ -3059,7 +3059,7 @@
         124,
         0,
         0,
-        0,
+        218,
         218,
         218,
         218,

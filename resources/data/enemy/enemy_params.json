@@ -570,7 +570,7 @@
 			"base_damage": 4.0,
 			"speed": 0.5,
 			"loot_multiplier": 2.0,
-			"drop_range": [ 8, 12 ],
+			"drop_range": [ 3, 4 ],
 			"rare_drop_id": 0,
 			"respawn_distance": 4,
 			"permadeath": false

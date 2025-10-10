@@ -184,7 +184,7 @@
 		"id": 26,
 		"dimensions": [ 60, 60 ],
 		"sprite_dimensions": [ 40, 40 ],
-		"sprite_offset": [ 0, -10 ],
+		"sprite_offset": [ 0, -9 ],
 		"animation": [
 			{
 				"label": "idle",
@@ -197,6 +197,50 @@
 			{
 				"label": "turn",
 				"parameters": [ 16, 3, 40, 0, false ]
+			}
+		]
+	},
+	"wames": {
+		"id": 27,
+		"dimensions": [ 32, 32 ],
+		"sprite_dimensions": [ 32, 32 ],
+		"sprite_offset": [ 0, -15 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 8, 60, -1, false ]
+			}
+		]
+	},
+	"amber": {
+		"id": 28,
+		"dimensions": [ 32, 32 ],
+		"sprite_dimensions": [ 26, 26 ],
+		"sprite_offset": [ 0, -9 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 6, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 3, 30, 0, false ]
+			}
+		]
+	},
+	"mildreth": {
+		"id": 29,
+		"dimensions": [ 32, 32 ],
+		"sprite_dimensions": [ 22, 22 ],
+		"sprite_offset": [ 0, -5 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 6, 60, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 3, 40, 0, false ]
 			}
 		]
 	},

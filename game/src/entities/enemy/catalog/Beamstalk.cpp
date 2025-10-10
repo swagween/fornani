@@ -11,6 +11,7 @@ Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<
 	collider.physics.air_friction = {0.95f, 0.999f};
 	// collider.flags.general.set(shape::General::complex);
 	beam.get().set_team(arms::Team::beast);
+	if (start_direction.lengthSquared() == 0) { start_direction.x = -1; } // default to facing left
 	directions.actual = Direction(start_direction);
 }
 

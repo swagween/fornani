@@ -11,6 +11,7 @@ TrialsMenu::TrialsMenu(ServiceProvider& svc, player::Player& player) : MenuState
 			auto dot = std::distance(label.begin(), std::find(label.begin(), label.end(), '.'));
 			auto name = label.substr(0, dot);
 			m_courses.push_back(CourseListing{name, map["room_id"].as<int>()});
+			NANI_LOG_INFO(m_logger, "Added trial course [{}]", map["label"].as_string());
 		}
 	}
 

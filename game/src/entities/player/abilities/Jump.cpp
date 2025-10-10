@@ -7,7 +7,7 @@
 
 namespace fornani::player {
 
-Jump::Jump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider) : Ability(svc, map, collider), m_request{12}, m_post_jump{8}, m_multiplier{-13.76f}, m_soundboard{&svc.soundboard}, m_map{&map}, m_services{&svc} {
+Jump::Jump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider) : Ability(svc, map, collider), m_request{24}, m_post_jump{8}, m_multiplier{-13.76f}, m_soundboard{&svc.soundboard}, m_map{&map}, m_services{&svc} {
 	m_type = AbilityType::jump;
 	m_state = AnimState::rise;
 	m_duration.start(256);
@@ -29,6 +29,11 @@ void Jump::update(shape::Collider& collider, PlayerController& controller) {
 		}
 	}
 	if (!m_flags.test(AbilityFlags::active)) {
+		// this clause allows for players to jump while rolling up steep ramps
+		if (collider.flags.external_state.test(shape::ExternalState::on_ramp)) {
+			collider.physics.acceleration.x *= 0.5f;
+			collider.physics.velocity.x *= 0.5f;
+		}
 		collider.physics.acceleration.y = m_multiplier;
 		collider.physics.velocity.y = 0.f;
 		collider.flags.movement.set(shape::Movement::jumping);

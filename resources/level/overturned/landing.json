@@ -15,6 +15,60 @@
         "type": 1
       }
     ],
+    "destructibles": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 20001,
+        "inverse": true,
+        "position": [
+          11,
+          1
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 20001,
+        "inverse": true,
+        "position": [
+          12,
+          1
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 20001,
+        "inverse": true,
+        "position": [
+          13,
+          1
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 20001,
+        "inverse": true,
+        "position": [
+          14,
+          1
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": true,

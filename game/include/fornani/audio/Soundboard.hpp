@@ -54,7 +54,7 @@ enum class Step : std::uint8_t { basic, grass };
 enum class Enemy : std::uint8_t { hit_squeak, hit_high, hit_medium, hit_low, standard_death, jump_low, high_death, low_death };
 
 enum class Frdog : std::uint8_t { hurt, death };
-enum class Hulmet : std::uint8_t { hurt, alert };
+enum class Hulmet : std::uint8_t { hurt, alert, reload };
 enum class Tank : std::uint8_t { alert_1, alert_2, hurt_1, hurt_2, death };
 enum class Thug : std::uint8_t { alert_1, alert_2, hurt_1, hurt_2, death };
 enum class Minigun : std::uint8_t { charge, reload, neutral, firing };

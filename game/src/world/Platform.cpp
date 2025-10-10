@@ -82,7 +82,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	auto const old_position = physics.position;
 	Collider::update(svc);
 	auto edge_start = 0.f;
-	player.collider.handle_collider_collision(*this);
+	player.collider.handle_collider_collision(*this, false, true);
 	if (player.collider.jumped_into() && physics.velocity.y > 0.f) { player.collider.physics.apply_force(physics.velocity * 8.f); }
 	player.on_crush(map);
 	for (auto const& enemy : map.enemy_catalog.enemies) {
@@ -141,7 +141,8 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			direction.lnr = physics.velocity.x > 0.0f ? LNR::right : LNR::left;
 			direction.und = physics.velocity.y > 0.0f ? UND::down : UND::up;
 
-			if (player.collider.jumpbox.overlaps(bounding_box) && !player.collider.perma_grounded() && flags.attributes.test(PlatformAttributes::sticky)) {
+			if (player.collider.jumpbox.overlaps(bounding_box) && !player.collider.perma_grounded() && flags.attributes.test(PlatformAttributes::sticky) &&
+				!(player.collider.has_left_wallslide_collision() || player.collider.has_right_wallslide_collision())) {
 				if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) { player.collider.physics.forced_momentum = physics.position - old_position; }
 			}
 			for (auto& pushable : map.pushables) {

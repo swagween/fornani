@@ -21,7 +21,7 @@
     ]
   },
   "meta": {
-    "ambience": "",
+    "ambience": "firstwind",
     "background": 5,
     "biome": "junkyard",
     "camera_effects": {
@@ -48,7 +48,7 @@
       36
     ],
     "minimap": true,
-    "music": "",
+    "music": "bronze_statue",
     "player_start": [
       0,
       0

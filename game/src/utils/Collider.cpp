@@ -225,12 +225,12 @@ void Collider::detect_map_collision(world::Map& map) {
 	flags.state.reset(State::on_flat_surface);
 }
 
-void Collider::correct_x(sf::Vector2f mtv) {
+void Collider::correct_x(sf::Vector2f mtv, bool has_velocity) {
 	if (flags.general.test(General::ignore_resolution)) { return; }
 	auto xdist = predictive_horizontal.get_position().x + horizontal_detector_buffer - physics.position.x;
 	auto correction = xdist + mtv.x;
 	physics.position.x += correction;
-	physics.zero_x();
+	if (!has_velocity) { physics.zero_x(); }
 }
 
 void Collider::correct_y(sf::Vector2f mtv) {
@@ -340,7 +340,8 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 		flags.external_state.set(ExternalState::collider_collision);
 		flags.external_state.set(ExternalState::horiz_collider_collision);
 		flags.external_state.reset(ExternalState::vert_collider_collision);
-		correct_x(mtvs.horizontal + velocity);
+		auto has_velocity = velocity.length() > constants::tiny_value;
+		correct_x(mtvs.horizontal + velocity, has_velocity);
 	}
 	if (predictive_combined.overlaps(collider) && corner_collision) {
 		flags.collision.set(Collision::any_collision);
@@ -369,7 +370,7 @@ void Collider::handle_collider_collision(Collider const& collider, bool soft, bo
 	if (collider.flags.general.test(General::top_only_collision)) {
 		if (jumpbox.get_position().y > collider.physics.position.y + 4.f || physics.acceleration.y < 0.0f) { return; }
 	}
-	if (handle_collider_collision(collider.bounding_box, soft, collider.physics.apparent_velocity() * 4.f)) {
+	if (handle_collider_collision(collider.bounding_box, soft, collider.physics.apparent_velocity() * 8.f)) {
 		if (momentum) { physics.forced_momentum = collider.physics.position - collider.physics.previous_position; }
 	}
 	if (jumpbox.overlaps(collider.bounding_box)) { flags.external_state.set(ExternalState::grounded); }
@@ -449,7 +450,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	has_left_wallslide_collision() || has_right_wallslide_collision() ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Transparent);
 	box.setOutlineColor(sf::Color{60, 60, 180, 100});
 	box.setOutlineThickness(-1);
-	// win.draw(box);
+	win.draw(box);
 
 	// draw physics position
 	if (collision_depths) {

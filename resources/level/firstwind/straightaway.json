@@ -1,6 +1,5 @@
 {
   "entities": {
-    "inspectables": [],
     "timer_blocks": [
       {
         "dimensions": [
@@ -100,8 +99,8 @@
       16
     ],
     "metagrid": [
-      -8,
-      7
+      -6,
+      6
     ],
     "minimap": false,
     "music": "dusken",
@@ -112,9 +111,13 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "lighting": false,
       "timer": true
     },
     "room_id": 9902,
+    "shader": {
+      "darken_factor": 0
+    },
     "style": 0
   },
   "tile": {
@@ -123,14 +126,14 @@
       "reverse_obscuring": false
     },
     "ignore_lighting": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ],
     "layers": [
       [

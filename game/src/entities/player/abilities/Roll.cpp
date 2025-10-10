@@ -7,7 +7,7 @@
 
 namespace fornani::player {
 
-Roll::Roll(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction) : Ability(svc, map, collider, direction), m_request{32}, m_multiplier{13.5f}, m_soundboard{&svc.soundboard} {
+Roll::Roll(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction) : Ability(svc, map, collider, direction), m_request{32}, m_multiplier{13.0f}, m_soundboard{&svc.soundboard} {
 	m_type = AbilityType::roll;
 	m_state = AnimState::roll;
 	m_duration.start(64);
@@ -31,7 +31,7 @@ void Roll::update(shape::Collider& collider, PlayerController& controller) {
 	}
 	Ability::update(collider, controller);
 	collider.physics.acceleration.x = m_direction.as_float() * m_multiplier;
-	collider.physics.velocity.x = m_direction.as_float() * m_multiplier;
+	if (!collider.has_horizontal_collision()) { collider.physics.velocity.x = m_direction.as_float() * m_multiplier; }
 }
 
 } // namespace fornani::player

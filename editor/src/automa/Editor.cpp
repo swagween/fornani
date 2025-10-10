@@ -19,6 +19,7 @@ namespace pi {
 static bool b_load_file{};
 static bool b_new_file{};
 static bool b_close_entity_popup{};
+static bool b_reloaded{};
 static int b_new_id{};
 
 static std::string to_region{};
@@ -61,6 +62,7 @@ Editor::Editor(fornani::automa::ServiceProvider& svc)
 	std::string msg = "Loading room: <" + p_services->finder.region_and_room().string() + ">";
 	console.add_log(msg.data());
 	load();
+	console.add_log(std::string{"Room ID: " + std::to_string(map.room_id)}.data());
 	map.activate_middleground();
 	palette.flags.show_entities = false;
 
@@ -303,6 +305,7 @@ void Editor::load() {
 	map.set_origin({});
 	palette.set_origin({});
 	reset_layers();
+	b_reloaded = true;
 }
 
 bool Editor::save() { return map.save(p_services->finder, p_services->finder.paths.region, p_services->finder.paths.room_name); }
@@ -1111,6 +1114,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				static bool mp_randomness{map.test_property(fornani::world::MapProperties::environmental_randomness)};
 				static bool mp_shift{map.test_property(fornani::world::MapProperties::day_night_shift)};
 				static bool mp_lighting{map.test_property(fornani::world::MapProperties::lighting)};
+				if (b_reloaded) {
+					mp_randomness = map.test_property(fornani::world::MapProperties::environmental_randomness);
+					mp_shift = map.test_property(fornani::world::MapProperties::day_night_shift);
+					mp_lighting = map.test_property(fornani::world::MapProperties::lighting);
+				}
 				static int darken{};
 				if (ImGui::MenuItem("Include in Minimap", "", &map.minimap)) {}
 				if (ImGui::MenuItem("Environmental Randomness", "", &mp_randomness)) {}
@@ -1161,6 +1169,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				}
 				ImGui::EndTabBar();
 			}
+			ImGui::Separator();
+			ImGui::Text("Room ID: %u", map.room_id);
 
 			prev_window_size = ImGui::GetWindowSize();
 			prev_window_pos = ImGui::GetWindowPos();
@@ -1176,6 +1186,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		ImGui::PopTextWrapPos();
 		ImGui::EndTooltip();
 	}
+
+	b_reloaded = false;
 }
 
 void Editor::help_marker(char const* desc) {

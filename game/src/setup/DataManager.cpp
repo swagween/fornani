@@ -88,6 +88,7 @@ void DataManager::load_data(std::string in_room) {
 			entry["folder"] = this_region.path().filename().string();
 			map_table["rooms"].push_back(entry);
 			NANI_LOG_INFO(m_logger, "Added to map table: {}", this_name);
+			NANI_LOG_INFO(m_logger, "In folder: {}", this_region.path().filename().string());
 		}
 	}
 	if (!map_table.to_file((finder.resource_path() + "/data/level/map_table.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save map table!"); }

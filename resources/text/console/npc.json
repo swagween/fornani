@@ -1,4 +1,16 @@
 {
+  "amber": {
+    "1": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "message": "The Mother Worm lives in us all."
+          }
+        ]
+      ]
+    }
+  },
   "billy": {
     "1": {
       "responses": [],
@@ -16,11 +28,21 @@
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "Sure."
           },
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "I had better get going..."
           }
         ]
@@ -40,7 +62,12 @@
             "message": "I don't know how you managed to escape your cell, but, er... I'm still in a bit of a bind here myself."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "Would you help me out?"
           }
         ],
@@ -189,36 +216,67 @@
   },
   "bryn": {
     "1": {
+      "output": 2,
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "What are you doing in this place?"
           }
         ],
         [
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "Technology...?"
           }
         ],
         [
           {
-            "codes": [[1, 3]],
+            "codes": [
+              [
+                1,
+                3
+              ]
+            ],
             "message": "Uhhh..."
           }
         ],
         [
           {
-            "codes": [[1, 4]],
+            "codes": [
+              [
+                1,
+                4
+              ]
+            ],
             "message": "What happened on Firstwind?"
           },
           {
-            "codes": [[1, 5]],
+            "codes": [
+              [
+                1,
+                5
+              ]
+            ],
             "message": "I'm looking for my brother."
           },
           {
-            "codes": [[1, 6]],
+            "codes": [
+              [
+                1,
+                6
+              ]
+            ],
             "message": "Let's leave."
           }
         ]
@@ -226,14 +284,28 @@
       "suite": [
         [
           {
-            "codes": [[5, 1]],
+            "codes": [
+              [
+                5,
+                1
+              ]
+            ],
             "message": "Well, I'll be honest, you're about the last person I was expecting to see down here."
           },
           {
             "codes": [
-              [1, 0],
-              [5, 0],
-              [1, 0]
+              [
+                1,
+                0
+              ],
+              [
+                5,
+                0
+              ],
+              [
+                1,
+                0
+              ]
             ],
             "message": "I was beginning to think I'd never see anyone again."
           }
@@ -243,7 +315,12 @@
             "message": "It's... a long story. But I signed up for it, really."
           },
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "Sometimes, if you want to study ancient peoples, you might end up getting captured by their ancient technology."
           }
         ],
@@ -252,52 +329,107 @@
             "message": "Well, that's what Doc Willett and I think it might be."
           },
           {
-            "codes": [[5, 1]],
+            "codes": [
+              [
+                5,
+                1
+              ]
+            ],
             "message": "I don't know, it's hard to tell. But don't you think these creatures are rather fascinating?"
           },
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [
+                5,
+                0
+              ]
+            ],
             "message": "..."
           },
           {
-            "codes": [[5, 2]],
+            "codes": [
+              [
+                5,
+                2
+              ]
+            ],
             "message": "Look at me, rambling."
           },
           {
+            "codes": [
+              [
+                9,
+                20001,
+                1
+              ]
+            ],
             "message": "I can't believe you made it off Firstwind alive!"
           },
           {
             "codes": [
-              [5, 1],
-              [1, 2]
+              [
+                5,
+                1
+              ],
+              [
+                1,
+                2
+              ]
             ],
             "message": "Wait... is that my gun?!"
           }
         ],
         [
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [
+                5,
+                0
+              ]
+            ],
             "message": "No matter. We need to get out of this place and back to the base."
           },
           {
             "codes": [
-              [9, 420],
-              [13, 0, 420]
+              [
+                9,
+                420
+              ],
+              [
+                13,
+                0,
+                420
+              ]
             ],
             "message": "I presume you've already stumbled into Dr. Willett if you decided to come poking around these ruins."
           },
           {
-            "codes": [[2, 115]],
+            "codes": [
+              [
+                2,
+                115
+              ]
+            ],
             "message": "Oh, and by the way, take this relic I found."
           },
           {
-            "codes": [[1, 3]],
+            "codes": [
+              [
+                1,
+                3
+              ]
+            ],
             "message": "It supposedly grants you the power to cling onto and jump off of walls. I hope you find it useful."
           }
         ],
         [
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [
+                5,
+                0
+              ]
+            ],
             "message": "Another long story, but that one I at least owe it to tell you..."
           },
           {
@@ -310,7 +442,12 @@
             "message": "Turns out, it was Skycorps. Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us."
           },
           {
-            "codes": [[5, 1]],
+            "codes": [
+              [
+                5,
+                1
+              ]
+            ],
             "message": "Luckily Doc had an escape plan, but unfortunately that plan didn't include you or anyone else on the crew."
           },
           {
@@ -324,22 +461,38 @@
           },
           {
             "codes": [
-              [5, 2],
-              [1, 3]
+              [
+                5,
+                2
+              ],
+              [
+                1,
+                3
+              ]
             ],
             "message": "I presume you got the message, otherwise we wouldn't be having this conversation."
           }
         ],
         [
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [
+                5,
+                0
+              ]
+            ],
             "message": "Aren't we all?"
           },
           {
             "message": "...sigh..."
           },
           {
-            "codes": [[1, 3]],
+            "codes": [
+              [
+                1,
+                3
+              ]
+            ],
             "message": "God, I miss him, despite everything he did. I just want to know if he's still alive..."
           }
         ],
@@ -348,7 +501,12 @@
             "message": "You go ahead. I need to gather a few artifacts for study first."
           },
           {
-            "codes": [[5, 2]],
+            "codes": [
+              [
+                5,
+                2
+              ]
+            ],
             "message": "Don't worry about me--you've taken care of all the threats, and I know the way home!"
           }
         ]
@@ -358,15 +516,30 @@
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "What happened on Firstwind?"
           },
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "What do you know about my brother?"
           },
           {
-            "codes": [[1, 3]],
+            "codes": [
+              [
+                1,
+                3
+              ]
+            ],
             "message": "Tell me about these ruins."
           }
         ]
@@ -374,7 +547,12 @@
       "suite": [
         [
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "Yeah?"
           }
         ],
@@ -404,7 +582,12 @@
             "message": "I decided the least I could do was try to pass along a message so that you might have some chance to escape, and so I had someone from our crew hide a note in your food."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "I presume you got the message, otherwise we wouldn't be having this conversation."
           }
         ],
@@ -419,7 +602,12 @@
             "message": "He gave us no warning, and I struggle to piece together what his motive could have been..."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "Ugh, I don't know. He's really protective of Kariba stuff, and understandably so, but I just can't wrap my mind around that kind of betrayal."
           }
         ],
@@ -437,7 +625,12 @@
             "message": "Anyhow, I came to study these strange beings that you've no doubt encountered in great number."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "I believe they are hiding a deep truth about our world and about this fabulous island, and I am intent on discovering what that is."
           }
         ]
@@ -448,17 +641,32 @@
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "What was that thing I just fought?"
           }
         ],
         [
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "What is rhenite, exactly?"
           },
           {
-            "codes": [[1, 3]],
+            "codes": [
+              [
+                1,
+                3
+              ]
+            ],
             "message": "We should probably get out of here..."
           }
         ]
@@ -466,44 +674,79 @@
       "suite": [
         [
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [
+                5,
+                0
+              ]
+            ],
             "message": "Nani... I was hoping to find you here in one piece."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "I was a bit too proud to admit it before, but... I was trapped here. So... you kind of saved my life."
           }
         ],
         [
           {
-            "codes": [[5, 1]],
+            "codes": [
+              [
+                5,
+                1
+              ]
+            ],
             "message": "That was King Miaag. Or, whatever was left of him."
           },
           {
             "message": "In his later years he became consumed by the intoxicating energy produced by rhenite crystals."
           },
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [
+                5,
+                0
+              ]
+            ],
             "message": "It is the same energy that inhabits the creatures of this ruin, and of the Overturned Forest."
           },
           {
             "message": "And, in fact, I believe it to be what Skycorps is using to mutate their Ooplo servants, and to do who knows whatever else."
           },
           {
-            "codes": [[5, 1]],
+            "codes": [
+              [
+                5,
+                1
+              ]
+            ],
             "message": "Miaag here was surely one of rhenite's first victims. And just look what it turned him into..."
           },
           {
             "message": "I could be wrong, but I suspect the reason these ruins are more or less off-limits is that the Kariba wanted to hide the truth about Miaag. Perhaps from Skycorps and Grand-Islanders, or perhaps from everyone altogether."
           },
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "But it's hard to say for sure, really."
           }
         ],
         [
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [
+                5,
+                0
+              ]
+            ],
             "message": "It's a compound formed by the Mother Worm."
           },
           {
@@ -513,27 +756,55 @@
             "message": "Rhenite has since been used, abused, locked away, worshipped, stolen, returned... It's quite the commodity of interest around here, despite the other equally marvellous things the Mother produces."
           },
           {
-            "codes": [[5, 1]],
+            "codes": [
+              [
+                5,
+                1
+              ]
+            ],
             "message": "And these are not just stories - it is all substantiated through old texts and stone tablets that we've found in the ancient ruins of this forest."
           },
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [
+                5,
+                0
+              ]
+            ],
             "message": "If this is all novel to you, Nani, you should speak to your father about it. Doubtless he's told you before, but it seems like your memory is a bit out of whack since Skycorps took Firstwind."
           },
           {
-            "codes": [[13, 0, 509]],
+            "codes": [
+              [
+                13,
+                0,
+                509
+              ]
+            ],
             "message": "I really hope they didn't torture you or anything..."
           }
         ],
         [
           {
-            "codes": [[5, 2]],
+            "codes": [
+              [
+                5,
+                2
+              ]
+            ],
             "message": "You're right. I'm rambling again."
           },
           {
             "codes": [
-              [13, 0, 509],
-              [5, 1]
+              [
+                13,
+                0,
+                509
+              ],
+              [
+                5,
+                1
+              ]
             ],
             "message": "You know what, I'll hang around for a little longer. I'm interested to find any clues that Miaag and his people might have left behind in this place."
           }
@@ -557,11 +828,21 @@
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "Sure."
           },
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "I'd rather keep this one..."
           }
         ]
@@ -569,7 +850,12 @@
       "suite": [
         [
           {
-            "codes": [[5, 2]],
+            "codes": [
+              [
+                5,
+                2
+              ]
+            ],
             "message": "Welcome back!"
           },
           {
@@ -577,19 +863,37 @@
           },
           {
             "codes": [
-              [13, 0, 300],
-              [5, 1]
+              [
+                13,
+                0,
+                300
+              ],
+              [
+                5,
+                1
+              ]
             ],
             "message": "If you ever need help with anything, or want to learn more about the Ancient Kariba, I'll be here!"
           },
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [
+                5,
+                0
+              ]
+            ],
             "message": "By the way, I'd love to get my gun back if you don't mind. I have a decent replacement for it that we nabbed from a Skycorps thug, so you won't have to go unarmed. But I get it if you want to keep mine, too. After all, I'm the one who left it behind."
           },
           {
             "codes": [
-              [5, 1],
-              [1, 0]
+              [
+                5,
+                1
+              ],
+              [
+                1,
+                0
+              ]
             ],
             "message": "So, what do you say? Do you want to trade guns?"
           }
@@ -597,26 +901,48 @@
         [
           {
             "codes": [
-              [5, 2],
-              [16, 0]
+              [
+                5,
+                2
+              ],
+              [
+                16,
+                0
+              ]
             ],
             "message": "That means a lot, really!"
           },
           {
             "codes": [
-              [5, 1],
-              [15, 1]
+              [
+                5,
+                1
+              ],
+              [
+                15,
+                1
+              ]
             ],
             "message": "Here, as promised..."
           }
         ],
         [
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [
+                5,
+                0
+              ]
+            ],
             "message": "It's hard to blame you, really. That old pistol is one-of-a-kind, and I imagine you've grown just as attached to it as I had."
           },
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [
+                5,
+                0
+              ]
+            ],
             "message": "Well, if you ever decide to change your mind, I'm here."
           }
         ]
@@ -639,14 +965,25 @@
       "suite": [
         [
           {
-            "codes": [[3, 17]],
+            "codes": [
+              [
+                3,
+                17
+              ]
+            ],
             "message": "What in the heck are my eyes seein' right now...?"
           },
           {
             "message": "Now, I ain't know how you snuck your way down here, but I'm tellin' you now, it was a bad idea."
           },
           {
-            "codes": [[13, 17, 110]],
+            "codes": [
+              [
+                13,
+                17,
+                110
+              ]
+            ],
             "message": "The ship's goin' down, little lady."
           },
           {
@@ -662,15 +999,30 @@
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "Who are you?"
           },
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "What is this place?"
           },
           {
-            "codes": [[1, 3]],
+            "codes": [
+              [
+                1,
+                3
+              ]
+            ],
             "message": "Tell me about Skycorps."
           }
         ]
@@ -678,7 +1030,12 @@
       "suite": [
         [
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "So... Any updates on that soda?"
           }
         ],
@@ -687,7 +1044,12 @@
             "message": "Name's Carl. I'm guardin' the cargo here, and my shift doesn't end for another six months."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "I'm a simple man. I have a job to do, and I'm gon' do it until it's done. Even if it kills me."
           }
         ],
@@ -699,7 +1061,12 @@
             "message": "She's an old research vessel that Skycorps... er... borrowed."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "Anyhow, I been livin' and workin' here for the better part of three months on a long-term contract, as they call it."
           }
         ],
@@ -711,7 +1078,12 @@
             "message": "But lemme tell ya, I sure do miss my dog."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "Anyhow, they force me to sit in this cargo hold all day to make sure no one steals anything. Say, now that I mention it, don't go tamperin', ya got that?"
           }
         ]
@@ -720,18 +1092,32 @@
   },
   "dr_go": {
     "1": {
-      "responses": [[]],
+      "responses": [
+        []
+      ],
       "suite": [
         [
           {
-            "codes": [[3, 2, 16]],
+            "codes": [
+              [
+                3,
+                2,
+                16
+              ]
+            ],
             "message": "Oh!"
           },
           {
             "message": "I wasn't expecting a Kariba to stroll in here."
           },
           {
-            "codes": [[13, 16, 114]],
+            "codes": [
+              [
+                13,
+                16,
+                114
+              ]
+            ],
             "message": "Are you sick?"
           }
         ]
@@ -741,15 +1127,30 @@
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "Who are you?"
           },
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "What's going on?"
           },
           {
-            "codes": [[1, 3]],
+            "codes": [
+              [
+                1,
+                3
+              ]
+            ],
             "message": "Where am I?"
           }
         ]
@@ -757,7 +1158,12 @@
       "suite": [
         [
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "How can I help you?"
           }
         ],
@@ -769,7 +1175,12 @@
             "message": "I was enlisted by Skycorps some years ago, and they assigned me here against my will."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "No matter. I will do my duties here until I am relieved of them, or some other end befalls us."
           }
         ],
@@ -778,7 +1189,12 @@
             "message": "We're not entirely certain, as the crew have a tendency to forget we exist, and as such they don't tell us much."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "But from what I've heard through passing transmissions, this ship is enduring high-altitude storms beyond her capacity."
           }
         ],
@@ -790,7 +1206,12 @@
             "message": "Here, Mirin and I take care of the sick amongst our crew. It's been a rough couple of weeks since the storms started hitting, and these days I'm not even sure if the pilot is still around."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "Perhaps they all escaped and left us here to die."
           }
         ]
@@ -803,23 +1224,43 @@
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "It sure is."
           }
         ],
         [
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "Bryn left me a note."
           },
           {
-            "codes": [[1, 3]],
+            "codes": [
+              [
+                1,
+                3
+              ]
+            ],
             "message": "I had to fight my way out."
           }
         ],
         [
           {
-            "codes": [[1, 4]],
+            "codes": [
+              [
+                1,
+                4
+              ]
+            ],
             "message": "I can try to find her."
           }
         ]
@@ -827,11 +1268,21 @@
       "suite": [
         [
           {
-            "codes": [[14, 0]],
+            "codes": [
+              [
+                14,
+                0
+              ]
+            ],
             "message": "..."
           },
           {
-            "codes": [[14, 1]],
+            "codes": [
+              [
+                14,
+                1
+              ]
+            ],
             "message": "Good heavens, you scared me half to death. I don't know if my old heart can take many more such frights."
           },
           {
@@ -841,13 +1292,23 @@
             "message": "Do my eyes deceive me?"
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "Is that really you, Nani?"
           }
         ],
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "Well, I can't say I understand just how you got yourself off that ship, but I am impressed nonetheless."
           }
         ],
@@ -865,7 +1326,12 @@
             "message": "Again."
           },
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "I haven't had a transmission from her in a few days now, so I am beginning to worry."
           }
         ],
@@ -889,7 +1355,12 @@
             "message": "Again."
           },
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "I haven't had a transmission from her in a few days now, so I am beginning to worry."
           }
         ],
@@ -901,14 +1372,25 @@
             "message": "Oh, before you go..."
           },
           {
-            "codes": [[2, 18]],
+            "codes": [
+              [
+                2,
+                18
+              ]
+            ],
             "message": "Have a look at this. It seems like it connects perfectly with that gizmo you've got at your hip!"
           },
           {
             "message": "With that, you should be able to track your lifeforce and see any gear you might be wearing."
           },
           {
-            "codes": [[13, 2, 300]],
+            "codes": [
+              [
+                13,
+                2,
+                300
+              ]
+            ],
             "message": "Maybe it's not terribly useful for you, but it's taking up valuable space on my workbench."
           }
         ]
@@ -918,35 +1400,70 @@
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "Where are the ruins?"
           },
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "What is this place?"
           },
           {
-            "codes": [[1, 3]],
+            "codes": [
+              [
+                1,
+                3
+              ]
+            ],
             "message": "I'm curious..."
           }
         ],
         [
           {
-            "codes": [[1, 4]],
+            "codes": [
+              [
+                1,
+                4
+              ]
+            ],
             "message": "Do you know where my brother is?"
           },
           {
-            "codes": [[1, 5]],
+            "codes": [
+              [
+                1,
+                5
+              ]
+            ],
             "message": "Tell me about Bryn."
           },
           {
-            "codes": [[1, 6]],
+            "codes": [
+              [
+                1,
+                6
+              ]
+            ],
             "message": "Tell me about Skycorps."
           }
         ],
         [
           {
-            "codes": [[1, 7]],
+            "codes": [
+              [
+                1,
+                7
+              ]
+            ],
             "message": "Caroline?"
           }
         ]
@@ -954,7 +1471,12 @@
       "suite": [
         [
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "So... Any luck finding Bryn?"
           }
         ],
@@ -963,14 +1485,22 @@
             "message": "The ruins are southeast of here. You might need to do a bit of acrobatics to get there if you take the low road - in some areas, the overturned forest hangs precariously above the clouds."
           },
           {
-            "message": "Alternatively, you can take the high road, but it will be a much longer journey."
+            "message": "Alternatively, you can take the high road, which ought to be a much safer and easier journey."
           },
           {
-            "message": "The ruins themselves are difficult to miss. There is a massive entrance ornamented with carvings of the ancient Kariba."
+            "message": "However, I must warn you! The ruins are a very dark and sinister place. You mustn't venture inside without a lantern!"
           },
           {
-            "codes": [[1, 0]],
-            "message": "I heard your brother tell me stories of you two exploring them. I suppose you've since forgotten?"
+            "message": "I don't have one myself to give you, but you ought to be able to buy one in Woodshine Village. So head there first if you haven't already."
+          },
+          {
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
+            "message": "You should have no trouble finding Woodshine if you head east and a bit north from here. Though I imagine you might know the way, considering you've lived there your whole life."
           }
         ],
         [
@@ -987,13 +1517,23 @@
             "message": "Anyway, it seemed like the perfect spot for me and Bryn to find shelter after crash-landing in our escape pod."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "We've been here for some months, now, ever on the run from Skycorps."
           }
         ],
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "Tell me what you'd like to know."
           }
         ],
@@ -1005,7 +1545,12 @@
             "message": "He stole a priceless artifact and ran off with it."
           },
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "If you ever do find him, could you let him know that I'd like it back?"
           }
         ],
@@ -1026,7 +1571,12 @@
             "message": "She reminds me a lot of myself when I was her age, in fact."
           },
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "Let's just hope she doesn't make the same mistake I made and let some money-hungry corporation take advantage of her brilliant mind."
           }
         ],
@@ -1047,7 +1597,12 @@
             "message": "Ever since, Caroline and her indentured goons have been hunting me down and trying to steal the research that is rightfully mine."
           },
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "It seems that's all anyone wants to do these days."
           }
         ],
@@ -1059,7 +1614,12 @@
             "message": "She would have done better to just leave me alone, but it's too late now."
           },
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "I will take her and all of Skycorps down after what they've done!"
           }
         ]
@@ -1081,17 +1641,32 @@
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "I'm just looking for a place to rest."
           },
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "I'm looking for my older brother."
           }
         ],
         [
           {
-            "codes": [[1, 3]],
+            "codes": [
+              [
+                1,
+                3
+              ]
+            ],
             "message": "Sure thing!"
           }
         ]
@@ -1108,7 +1683,12 @@
             "message": "Oh! A lost girl wanders my way, hmm?"
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "It's not every day I see another friendly face around here. What's your story?"
           }
         ],
@@ -1120,7 +1700,12 @@
             "message": "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods."
           },
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "Could you go find him for me? The past weeks of hard travel have left me a bit tired."
           }
         ],
@@ -1135,15 +1720,26 @@
             "message": "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods."
           },
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "Could you go find him for me? The past weeks of hard travel have left me a bit tired."
           }
         ],
         [
           {
             "codes": [
-              [13, 3],
-              [2, 20]
+              [
+                13,
+                3
+              ],
+              [
+                2,
+                20
+              ]
             ],
             "message": "Now, that's awful kind. Here, take this. You'll need it if you want to properly wrangle him up."
           }
@@ -1229,15 +1825,30 @@
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "I'd like to trade things with you."
           },
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "Who are you?"
           },
           {
-            "codes": [[1, 3]],
+            "codes": [
+              [
+                1,
+                3
+              ]
+            ],
             "message": "Where are we?"
           }
         ]
@@ -1245,7 +1856,12 @@
       "suite": [
         [
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "Yes?"
           }
         ],
@@ -1259,7 +1875,12 @@
             "message": "I'm a surveyor of this land, and I've been exploring its farthest and darkest reaches for as long as I can remember."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "Justin and I tend to find stuff along the way and pick it up, so if you're ever in the market for random junk, I'm your guy!"
           }
         ],
@@ -1268,7 +1889,12 @@
             "message": "Well, the Overturned Forest, if ya ain't talkin' specifics. At least, that's what we Grand-Islanders call it."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "But shouldn't you know, anyhow? You're a Kariba after all, and, last I checked, all your kind come from here."
           }
         ]
@@ -1281,7 +1907,12 @@
       "suite": [
         [
           {
-            "codes": [[4, 1]],
+            "codes": [
+              [
+                4,
+                1
+              ]
+            ],
             "message": "My Lady...?"
           },
           {
@@ -1298,7 +1929,12 @@
       "suite": [
         [
           {
-            "codes": [[4, 3]],
+            "codes": [
+              [
+                4,
+                3
+              ]
+            ],
             "message": "My mask was compromised. And besides, the storms up here are ferocious."
           },
           {
@@ -1315,7 +1951,12 @@
       "suite": [
         [
           {
-            "codes": [[4, 5]],
+            "codes": [
+              [
+                4,
+                5
+              ]
+            ],
             "message": "I got nothing at all to say. She had a gun, and she's pretty nimble."
           },
           {
@@ -1333,13 +1974,24 @@
         [
           {
             "codes": [
-              [4, 2],
-              [5, 1]
+              [
+                4,
+                2
+              ],
+              [
+                5,
+                1
+              ]
             ],
             "message": "I set myself up for that one, I guess."
           },
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [
+                5,
+                0
+              ]
+            ],
             "message": "Anyway, do us both a favor and get someone else to deal with the Kariba for now."
           },
           {
@@ -1411,17 +2063,32 @@
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "I was held hostage by Skycorps."
           },
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "You know, just... my usual thing."
           }
         ],
         [
           {
-            "codes": [[1, 3]],
+            "codes": [
+              [
+                1,
+                3
+              ]
+            ],
             "message": "Where can I find my dad?"
           }
         ]
@@ -1429,7 +2096,12 @@
       "suite": [
         [
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "Ho, there! If it isn't Nani Ba come to pay us another visit. Where have you been?"
           }
         ],
@@ -1439,8 +2111,15 @@
           },
           {
             "codes": [
-              [1, 1],
-              [13, 26, 406]
+              [
+                1,
+                1
+              ],
+              [
+                13,
+                26,
+                406
+              ]
             ],
             "message": "Say, if you haven't payed your dad a visit yet, I'm sure he'd be thrilled to see you."
           }
@@ -1451,8 +2130,15 @@
           },
           {
             "codes": [
-              [1, 1],
-              [13, 26, 406]
+              [
+                1,
+                1
+              ],
+              [
+                13,
+                26,
+                406
+              ]
             ],
             "message": "Anyhow, if you haven't payed your dad a visit yet, I'm sure he'd be thrilled to see you."
           }
@@ -1504,14 +2190,24 @@
       "suite": [
         [
           {
-            "codes": [[5, 1]],
+            "codes": [
+              [
+                5,
+                1
+              ]
+            ],
             "message": "Flee?!"
           },
           {
             "message": "What do you mean?"
           },
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [
+                5,
+                0
+              ]
+            ],
             "message": "The ship has been securely ours for months."
           }
         ]
@@ -1522,11 +2218,21 @@
       "suite": [
         [
           {
-            "codes": [[5, 2]],
+            "codes": [
+              [
+                5,
+                2
+              ]
+            ],
             "message": "..."
           },
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [
+                5,
+                0
+              ]
+            ],
             "message": "It is unlike you to fail me so, Gus."
           }
         ]
@@ -1553,7 +2259,12 @@
             "message": "I have no interest in wasting any more time dealing with Nani."
           },
           {
-            "codes": [[5, 2]],
+            "codes": [
+              [
+                5,
+                2
+              ]
+            ],
             "message": "I'm sending Lynx after her, and that'll be the end of it."
           }
         ]
@@ -1566,13 +2277,23 @@
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "You know who I am?"
           }
         ],
         [
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "Why are you here, then?"
           }
         ]
@@ -1583,13 +2304,24 @@
             "message": "..."
           },
           {
-            "codes": [[5, 1]],
+            "codes": [
+              [
+                5,
+                1
+              ]
+            ],
             "message": "You must be Nani."
           },
           {
             "codes": [
-              [5, 0],
-              [1, 0]
+              [
+                5,
+                0
+              ],
+              [
+                1,
+                0
+              ]
             ],
             "message": "I knew you'd come traveling down this road eventually, but I wasn't expecting you to arrive here so soon."
           }
@@ -1603,19 +2335,36 @@
           },
           {
             "codes": [
-              [5, 1],
-              [1, 1]
+              [
+                5,
+                1
+              ],
+              [
+                1,
+                1
+              ]
             ],
             "message": "No matter. I am not here to redeem you or convince you of anything."
           }
         ],
         [
           {
-            "codes": [[9, 25702, 1]],
+            "codes": [
+              [
+                9,
+                25702,
+                1
+              ]
+            ],
             "message": "To teach you a lesson I learned long ago."
           },
           {
-            "codes": [[12, 0]],
+            "codes": [
+              [
+                12,
+                0
+              ]
+            ],
             "message": "Enough talking, now. It is time you prove to me why Gus couldn't take care of you himself!"
           }
         ]
@@ -1627,13 +2376,25 @@
       "suite": [
         [
           {
-            "codes": [[9, 25703, 1]],
+            "codes": [
+              [
+                9,
+                25703,
+                1
+              ]
+            ],
             "message": "Augh..."
           },
           {
             "codes": [
-              [9, 25701],
-              [9, 25702]
+              [
+                9,
+                25701
+              ],
+              [
+                9,
+                25702
+              ]
             ],
             "message": "I have failed..."
           }
@@ -1646,15 +2407,39 @@
       "suite": [
         [
           {
-            "codes": [[5, 2, 1]],
+            "codes": [
+              [
+                5,
+                2,
+                1
+              ]
+            ],
             "message": "HYEAHAH!"
           },
           {
             "message": "It's been a long time since I've had a real challenge like this..."
           },
           {
-            "codes": [[5, 3, 1]],
+            "codes": [
+              [
+                5,
+                3,
+                1
+              ]
+            ],
             "message": "Bring it on!"
+          }
+        ]
+      ]
+    }
+  },
+  "mildreth": {
+    "1": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "message": "My granddaughter doesn't know what she's thinking, marrying a human."
           }
         ]
       ]
@@ -1665,15 +2450,30 @@
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "Who are you?"
           },
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "Whatever I need to do."
           },
           {
-            "codes": [[1, 3]],
+            "codes": [
+              [
+                1,
+                3
+              ]
+            ],
             "message": "Where is my brother?"
           }
         ]
@@ -1681,7 +2481,17 @@
       "suite": [
         [
           {
-            "codes": [[4, 4]],
+            "codes": [
+              [
+                9,
+                11701,
+                1
+              ],
+              [
+                4,
+                4
+              ]
+            ],
             "message": "Well, would you look at that!"
           },
           {
@@ -1694,13 +2504,23 @@
             "message": "And yet a prisoner you shall remain, if I have anything to say about it."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "Now tell me, girl, what do you plan to do with that pathetic little pistol of yours?"
           }
         ],
         [
           {
-            "codes": [[4, 3]],
+            "codes": [
+              [
+                4,
+                3
+              ]
+            ],
             "message": "I asked you a question."
           },
           {
@@ -1710,24 +2530,45 @@
             "message": "You see, we do whatever cleaning up needs to be done down on the island."
           },
           {
-            "codes": [[12, 0]],
+            "codes": [
+              [
+                12,
+                0
+              ]
+            ],
             "message": "But anyway, I'm tired of talkin' to you. Get ready to die!"
           }
         ],
         [
           {
             "codes": [
-              [4, 2],
-              [5, 1]
+              [
+                4,
+                2
+              ],
+              [
+                5,
+                1
+              ]
             ],
             "message": "Hah!"
           },
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [
+                5,
+                0
+              ]
+            ],
             "message": "Sure is some tough talk for a scrawny girl."
           },
           {
-            "codes": [[12, 0]],
+            "codes": [
+              [
+                12,
+                0
+              ]
+            ],
             "message": "So, let's see what you've got, then."
           }
         ],
@@ -1736,7 +2577,12 @@
             "message": "..."
           },
           {
-            "codes": [[4, 1]],
+            "codes": [
+              [
+                4,
+                1
+              ]
+            ],
             "message": "Your brother...?"
           },
           {
@@ -1746,7 +2592,12 @@
             "message": "But either way, you'll get no further information from me on that front."
           },
           {
-            "codes": [[12, 0]],
+            "codes": [
+              [
+                12,
+                0
+              ]
+            ],
             "message": "Now, I'm tired of talkin' to you. Get ready to die!"
           }
         ]
@@ -1757,14 +2608,24 @@
       "suite": [
         [
           {
-            "codes": [[5, 2]],
+            "codes": [
+              [
+                5,
+                2
+              ]
+            ],
             "message": "..."
           },
           {
             "message": "GAH!!!"
           },
           {
-            "codes": [[9, 1171]],
+            "codes": [
+              [
+                9,
+                1171
+              ]
+            ],
             "message": "My mask!! What have you done?!"
           }
         ]
@@ -1776,8 +2637,14 @@
         [
           {
             "codes": [
-              [5, 2],
-              [4, 5]
+              [
+                5,
+                2
+              ],
+              [
+                4,
+                5
+              ]
             ],
             "message": "This isn't over!"
           }
@@ -1791,17 +2658,35 @@
       "suite": [
         [
           {
-            "codes": [[3, 2, 18]],
+            "codes": [
+              [
+                3,
+                2,
+                18
+              ]
+            ],
             "message": "You must be one of the prisoners we scooped up some months back."
           },
           {
-            "codes": [[5, 1]],
+            "codes": [
+              [
+                5,
+                1
+              ]
+            ],
             "message": "You know, despite everything that's happened between our tribes, I would never wish any of this upon you."
           },
           {
             "codes": [
-              [13, 18, 114],
-              [5, 0]
+              [
+                13,
+                18,
+                114
+              ],
+              [
+                5,
+                0
+              ]
             ],
             "message": "There's something about being so high up in the sky that tends to bring our people together."
           }
@@ -1820,8 +2705,15 @@
           },
           {
             "codes": [
-              [13, 18, 114],
-              [5, 1]
+              [
+                13,
+                18,
+                114
+              ],
+              [
+                5,
+                1
+              ]
             ],
             "message": "Okay, that was a bit rude. Sorry."
           },
@@ -1835,15 +2727,30 @@
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "Who are you?"
           },
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "How can I get back to the island?"
           },
           {
-            "codes": [[1, 3]],
+            "codes": [
+              [
+                1,
+                3
+              ]
+            ],
             "message": "Tell me about your tribe."
           }
         ]
@@ -1851,13 +2758,23 @@
       "suite": [
         [
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "What's up?"
           }
         ],
         [
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "I'm Mirin. I'm Dr. Go's daughter, and though I have no qualifications to be a nurse, that's what I am."
           }
         ],
@@ -1866,7 +2783,12 @@
             "message": "If I knew the answer to that, we wouldn't be having this conversation."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "We're miles in the sky, and the last time I looked outside, I saw nothing but raging clouds."
           }
         ],
@@ -1881,7 +2803,12 @@
             "message": "The Kariba come, they kill one of us, they leave, repeat."
           },
           {
-            "codes": [[5, 1]],
+            "codes": [
+              [
+                5,
+                1
+              ]
+            ],
             "message": "The tables really turned when Skycorps came in and took our side against you. It was our turn to do the needless killing, and we went way overboard."
           },
           {
@@ -1892,8 +2819,14 @@
           },
           {
             "codes": [
-              [1, 0],
-              [5, 2]
+              [
+                1,
+                0
+              ],
+              [
+                5,
+                2
+              ]
             ],
             "message": "I coun't myself lucky. At least I wasn't turned into one of their mutation experiments."
           }
@@ -1906,15 +2839,30 @@
       "responses": [
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [
+                1,
+                1
+              ]
+            ],
             "message": "What have you got for sale?"
           },
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [
+                1,
+                2
+              ]
+            ],
             "message": "Are you from around here?"
           },
           {
-            "codes": [[1, 3]],
+            "codes": [
+              [
+                1,
+                3
+              ]
+            ],
             "message": "Tell me about Woodshine."
           }
         ]
@@ -1922,7 +2870,12 @@
       "suite": [
         [
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [
+                1,
+                0
+              ]
+            ],
             "message": "How can I help you?"
           }
         ],
@@ -1957,6 +2910,18 @@
           },
           {
             "message": "Things have been much calmer ever since he left. You wouldn't happen to know where he went off to, now, would you?"
+          }
+        ]
+      ]
+    }
+  },
+  "wames": {
+    "1": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "message": "Your father is right to be worried about you. Yours is too reckless a spirit!"
           }
         ]
       ]

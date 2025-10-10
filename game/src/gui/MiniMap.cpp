@@ -28,7 +28,13 @@ void MiniMap::set_markers(world::Map& map, player::Player& player) {
 	auto room_pos = (*it)->get_position();
 
 	m_player_position = player.collider.get_center() * m_texture_scale / constants::f_cell_size + room_pos;
-	m_markers.push_back({MapIconFlags::nani, m_player_position, map.room_id});
+
+	auto mit = std::find_if(m_markers.begin(), m_markers.end(), [](auto const& marker) { return marker.type == MapIconFlags::nani; });
+	if (mit != m_markers.end()) {
+		mit->position = m_player_position;
+	} else {
+		m_markers.push_back({MapIconFlags::nani, m_player_position, map.room_id});
+	}
 }
 
 void MiniMap::bake(automa::ServiceProvider& svc, dj::Json const& in) {

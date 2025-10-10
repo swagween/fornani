@@ -4,6 +4,7 @@
 #include <fornani/audio/Soundboard.hpp>
 #include <fornani/components/CircleSensor.hpp>
 #include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/core/Common.hpp>
 #include <fornani/entities/animation/AnimatedSprite.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/SpriteHistory.hpp>
@@ -30,7 +31,6 @@ class Player;
 namespace fornani::arms {
 
 class Weapon;
-enum class Team : std::uint8_t { nani, skycorps, guardian, pioneer, beast };
 enum class ProjectileType : std::uint8_t { bullet, missile, melee };
 enum class RenderType : std::uint8_t { animated, single_sprite, multi_sprite };
 

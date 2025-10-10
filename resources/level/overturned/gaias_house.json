@@ -68,7 +68,7 @@
       0
     ],
     "properties": {
-      "day_night_shift": true,
+      "day_night_shift": false,
       "environmental_randomness": true,
       "lighting": false,
       "timer": false
@@ -444,6 +444,7 @@
         0,
         0,
         0,
+        400,
         0,
         0,
         0,
@@ -540,6 +541,7 @@
         0,
         0,
         0,
+        386,
         0,
         0,
         0,
@@ -555,9 +557,7 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        384,
         0,
         0,
         0,

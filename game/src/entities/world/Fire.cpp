@@ -7,25 +7,21 @@
 namespace fornani::world {
 
 Fire::Fire(automa::ServiceProvider& svc, sf::Vector2f position, int lookup)
-	: size(lookup == 244 ? 2 : 1), bounding_box{{20.f, 20.f}}, sprite_offset{-2.f, -20.f}, sparkler(svc, {32.f, 32.f}, sf::Color::White, "fire"), sprite(svc.assets.get_texture("fire"), {20, 20}) {
-	auto bb_offset = constants::f_cell_vec - bounding_box.get_dimensions();
-	bounding_box.set_position(position + sf::Vector2f{bb_offset.x * 0.5f, bb_offset.y});
-	sprite.push_params("basic", {0, 5, 18, -1});
-	sprite.set_params("basic");
+	: Animatable(svc, "fire", {20, 20}), size(lookup == 244 ? 2 : 1), bounding_box{{32.f, 32.f}}, sprite_offset{-4.f, -8.f}, sparkler(svc, {32.f, 32.f}, sf::Color::White, "fire") {
+	bounding_box.set_position(position);
+	set_parameters({0, 5, 18, -1});
 	sparkler.set_position(bounding_box.get_position());
 	if (size == 2) {
-		sprite.set_texture(svc.assets.get_texture("bonfire"));
-		sprite.set_dimensions({36, 43});
+		set_texture(svc.assets.get_texture("bonfire"));
+		set_dimensions({36, 43});
 		sprite_offset = {-12.f, -38.f};
 		bounding_box.set_dimensions({48.f, 48.f});
 	}
-	// inspectable.set_world_position(bounding_box.get_position());
 }
 
 void Fire::update(automa::ServiceProvider& svc, player::Player& player, Map& map, std::optional<std::unique_ptr<gui::Console>>& console) {
-	// inspectable.update(svc, player, console, set);
+	tick();
 	sparkler.update(svc);
-	sprite.update(bounding_box.get_position() + sprite_offset);
 	if (svc.ticker.every_x_ticks(64)) {
 		auto direction = Direction{};
 		direction.und = UND::up;
@@ -35,9 +31,9 @@ void Fire::update(automa::ServiceProvider& svc, player::Player& player, Map& map
 }
 
 void Fire::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	sprite.render(svc, win, cam);
+	set_position(bounding_box.get_position() + sprite_offset - cam);
+	win.draw(*this);
 	sparkler.render(win, cam);
-	// inspectable.render(svc, win, cam);
 	if (svc.greyblock_mode()) {}
 }
 

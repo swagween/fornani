@@ -56,12 +56,6 @@
     },
     {
       "folder": "firstwind",
-      "label": "challenge.json",
-      "region": "firstwind",
-      "room_id": 42009
-    },
-    {
-      "folder": "firstwind",
       "label": "chamber.json",
       "region": "firstwind",
       "room_id": 111
@@ -116,18 +110,6 @@
     },
     {
       "folder": "firstwind",
-      "label": "mayhem.json",
-      "region": "firstwind",
-      "room_id": 990
-    },
-    {
-      "folder": "firstwind",
-      "label": "platform.json",
-      "region": "firstwind",
-      "room_id": 9901
-    },
-    {
-      "folder": "firstwind",
       "label": "plat_test.json",
       "region": "firstwind",
       "room_id": 123213
@@ -137,12 +119,6 @@
       "label": "prison.json",
       "region": "firstwind",
       "room_id": 100
-    },
-    {
-      "folder": "firstwind",
-      "label": "race.json",
-      "region": "firstwind",
-      "room_id": 9899
     },
     {
       "folder": "firstwind",
@@ -410,6 +386,12 @@
     },
     {
       "folder": "overturned",
+      "label": "hollows_rest.json",
+      "region": "overturned",
+      "room_id": 412
+    },
+    {
+      "folder": "overturned",
       "label": "hovel.json",
       "region": "overturned",
       "room_id": 236
@@ -500,6 +482,12 @@
     },
     {
       "folder": "overturned",
+      "label": "peegles_house.json",
+      "region": "overturned",
+      "room_id": 411
+    },
+    {
+      "folder": "overturned",
       "label": "pioneer_trail.json",
       "region": "overturned",
       "room_id": 227
@@ -509,6 +497,12 @@
       "label": "precipice.json",
       "region": "overturned",
       "room_id": 209
+    },
+    {
+      "folder": "overturned",
+      "label": "rectory.json",
+      "region": "overturned",
+      "room_id": 410
     },
     {
       "folder": "overturned",
@@ -683,6 +677,18 @@
       "label": "mayhem.json",
       "region": "firstwind",
       "room_id": 9900
+    },
+    {
+      "folder": "trials",
+      "label": "platform.json",
+      "region": "firstwind",
+      "room_id": 9901
+    },
+    {
+      "folder": "trials",
+      "label": "race.json",
+      "region": "firstwind",
+      "room_id": 9899
     }
   ]
 }
