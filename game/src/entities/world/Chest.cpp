@@ -53,8 +53,10 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 				state.set(ChestState::open);
 				Animatable::set_parameters(m_animations.opened);
 				svc.data.open_chest(m_id);
+				auto fmodifier = static_cast<float>(m_content_modifier);
+				auto range_modifier = std::max(6, static_cast<int>(m_content_modifier / 8.f));
 				if (m_type == ChestType::gun) { svc.events.dispatch_event("AcquireGun", m_content_modifier); }
-				if (m_type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, {6, 12}, static_cast<float>(m_content_modifier), collider.get_global_center(), 100)); }
+				if (m_type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, {range_modifier, range_modifier * 2}, fmodifier, collider.get_global_center(), 100, true, map.get_special_drop_id())); }
 				if (m_type == ChestType::item) { svc.events.dispatch_event("AcquireItem", m_content_modifier); }
 			} else {
 				console = std::make_unique<gui::Console>(svc, svc.text.basic, "open_chest", gui::OutputType::instant);

@@ -1,10 +1,10 @@
 
-#include "editor/canvas/Canvas.hpp"
-#include <cassert>
-#include "editor/tool/Tool.hpp"
-#include "fornani/setup/ResourceFinder.hpp"
-
 #include <ccmath/ext/clamp.hpp>
+#include <editor/canvas/Canvas.hpp>
+#include <editor/tool/Tool.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/setup/ResourceFinder.hpp>
+#include <cassert>
 
 namespace pi {
 
@@ -119,9 +119,26 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 
 	if (!local) { entities = fornani::EntitySet{svc, finder, metadata["entities"], room_name}; }
 
+	for (auto const& room : svc.data.map_jsons) { NANI_LOG_DEBUG(m_logger, "Room from data: {}", room.room_label); }
+	auto name = room_name.substr(0, room_name.find('.'));
+	auto it = std::find_if(svc.data.map_jsons.begin(), svc.data.map_jsons.end(), [name](auto const& r) { return r.room_label == name; });
+	NANI_LOG_DEBUG(m_logger, "Room from canvas: {}", name);
+	if (it == svc.data.map_jsons.end()) {
+		NANI_LOG_WARN(m_logger, "Map json not found!");
+		success = false;
+	}
+	// fetch template data
+	auto const& in_template = svc.data.map_templates;
+	auto bstr = metadata["meta"]["biome"].as_string();
+	auto bit = std::find_if(svc.data.map_templates.begin(), svc.data.map_templates.end(), [bstr](auto const& r) { return r.biome_label == bstr; });
+	if (bit == svc.data.map_templates.end() && success) { NANI_LOG_WARN(m_logger, "Tried to fetch template data for a nonexistent biome: {}!", it->biome_label); }
+
 	auto const& meta = metadata["meta"];
+	auto const& t_meta = bit->metadata;
+	assert(!t_meta.is_null());
+	m_use_template = meta["use_template"].as_bool();
+	m_attributes = m_use_template ? fornani::world::MapAttributes{t_meta} : fornani::world::MapAttributes{meta};
 	room_id = meta["room_id"].as<int>();
-	minimap = static_cast<bool>(meta["minimap"].as_bool());
 	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
@@ -129,11 +146,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 	m_player_start.x = meta["player_start"][0].as<float>();
 	m_player_start.y = meta["player_start"][1].as<float>();
 	real_dimensions = {static_cast<float>(dimensions.x) * fornani::constants::f_cell_size, static_cast<float>(dimensions.y) * fornani::constants::f_cell_size};
-	auto style_value = meta["style"].as<int>();
-	tile_style = Style(static_cast<StyleType>(style_value));
-	m_theme.music = meta["music"].as_string();
-	m_theme.ambience = meta["ambience"].as_string();
-	for (auto& in : meta["atmosphere"].as_array()) { m_theme.atmosphere.push_back(in.as<int>()); };
+	tile_style = Style(static_cast<StyleType>(m_attributes.style_id));
 	if (meta["camera_effects"]) {
 		m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
 		m_camera_effects.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
@@ -147,11 +160,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 		cutscene.id = meta["cutscene_on_entry"]["id"].as<int>();
 		cutscene.source = meta["cutscene_on_entry"]["source"].as<int>();
 	}
-	if (meta["background"]) { background = std::make_unique<Background>(finder, static_cast<Backdrop>(meta["background"].as<int>())); }
-	if (meta["properties"]["environmental_randomness"].as_bool()) { m_map_properties.set(fornani::world::MapProperties::environmental_randomness); }
-	if (meta["properties"]["day_night_shift"].as_bool()) { m_map_properties.set(fornani::world::MapProperties::day_night_shift); }
-	if (meta["properties"]["timer"].as_bool()) { m_map_properties.set(fornani::world::MapProperties::timer); }
-	if (meta["properties"]["lighting"].as_bool()) { m_map_properties.set(fornani::world::MapProperties::lighting); }
+	background = std::make_unique<Background>(finder, static_cast<Backdrop>(m_attributes.background_id));
 
 	darken_factor = meta["shader"]["darken_factor"].as<float>();
 
@@ -189,19 +198,15 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 
 	// metadata
 	metadata["meta"]["room_id"] = room_id;
-	metadata["meta"]["minimap"] = minimap;
 	metadata["meta"]["metagrid"][0] = metagrid_coordinates.x;
 	metadata["meta"]["metagrid"][1] = metagrid_coordinates.y;
 	metadata["meta"]["dimensions"][0] = dimensions.x;
 	metadata["meta"]["dimensions"][1] = dimensions.y;
 	metadata["meta"]["player_start"][0] = m_player_start.x;
 	metadata["meta"]["player_start"][1] = m_player_start.y;
-	metadata["meta"]["style"] = static_cast<int>(tile_style.get_type());
 	metadata["meta"]["biome"] = tile_style.get_label();
-	metadata["meta"]["background"] = static_cast<int>(background->type.get_type());
-	metadata["meta"]["music"] = m_theme.music;
-	for (auto& entry : m_theme.atmosphere) { metadata["meta"]["atmosphere"].push_back(entry); }
-	metadata["meta"]["ambience"] = m_theme.ambience;
+	metadata["meta"]["use_template"] = m_use_template;
+	metadata["meta"]["minimap"] = m_attributes.properties.test(fornani::world::MapProperties::minimap);
 	metadata["meta"]["camera_effects"]["shake"]["frequency"] = m_camera_effects.shake_properties.frequency;
 	metadata["meta"]["camera_effects"]["shake"]["energy"] = m_camera_effects.shake_properties.energy;
 	metadata["meta"]["camera_effects"]["shake"]["start_time"] = m_camera_effects.shake_properties.start_time;
@@ -211,11 +216,8 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 	metadata["meta"]["cutscene_on_entry"]["type"] = cutscene.type;
 	metadata["meta"]["cutscene_on_entry"]["id"] = cutscene.id;
 	metadata["meta"]["cutscene_on_entry"]["source"] = cutscene.source;
-	metadata["meta"]["properties"]["environmental_randomness"] = m_map_properties.test(fornani::world::MapProperties::environmental_randomness);
-	metadata["meta"]["properties"]["day_night_shift"] = m_map_properties.test(fornani::world::MapProperties::day_night_shift);
-	metadata["meta"]["properties"]["timer"] = m_map_properties.test(fornani::world::MapProperties::timer);
-	metadata["meta"]["properties"]["lighting"] = m_map_properties.test(fornani::world::MapProperties::lighting);
 	metadata["meta"]["shader"]["darken_factor"] = darken_factor;
+	if (!m_use_template) { m_attributes.serialize(metadata["meta"]); }
 
 	metadata["tile"]["layers"] = dj::Json::empty_array();
 	for (auto i{0}; i < last_layer(); ++i) { metadata["tile"]["layers"].push_back(dj::Json::empty_array()); }
@@ -253,7 +255,7 @@ void Canvas::clear() {
 		for (auto& layer : map_states.back().layers) { layer.erase(); }
 		map_states.back().layers.clear();
 	}
-	m_theme.atmosphere.clear();
+	m_attributes.atmosphere.clear();
 }
 
 void Canvas::save_state(Tool& tool, bool force) {

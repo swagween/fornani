@@ -14,9 +14,9 @@ namespace pi {
 
 constexpr auto spacing_v = 32.f;
 constexpr sf::Color excluded_room_color_v{120, 80, 80, 20};
-constexpr sf::Color highlighted_excluded_room_color_v{120, 100, 80, 60};
+constexpr sf::Color highlighted_excluded_room_color_v{120, 100, 80, 100};
 constexpr sf::Color room_color_v{79, 22, 32, 220};
-constexpr sf::Color highighted_room_color_v{79, 22, 32, 100};
+constexpr sf::Color highighted_room_color_v{79, 22, 32, 180};
 
 class Room {
   public:
@@ -38,6 +38,7 @@ class Room {
 	[[nodiscard]] auto get_biome() const -> std::string { return m_biome.getString(); }
 
 	fornani::ID id;
+	bool no_border{};
 
   private:
 	sf::RectangleShape m_box{};

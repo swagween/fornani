@@ -798,25 +798,42 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 	if (ImGui::BeginPopupModal("Level Themes", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		static int music_selected{};
+		static int ambience_selected{};
+		static std::string music_str{};
+		static std::string ambience_str{};
 		ImGui::Text("Music:");
 		auto i = 0;
-		for (auto const& entry : m_services->data.audio_library["music"].as_array()) {
+		for (auto [i, entry] : std::views::enumerate(m_services->data.audio_library["music"].as_array())) {
 			ImGui::PushID(i);
 			if (ImGui::ArrowButton(std::to_string(i).c_str(), ImGuiDir::ImGuiDir_Right)) {
 				m_services->music_player.load(m_services->finder, entry.as_string());
 				m_services->music_player.play_looped();
 			}
 			ImGui::SameLine();
-			if (ImGui::Selectable(entry.as_string().c_str(), false, ImGuiSelectableFlags_DontClosePopups)) { map.m_theme.music = entry.as_string(); }
+			if (ImGui::Selectable(entry.as_string().c_str(), i == music_selected, ImGuiSelectableFlags_DontClosePopups)) {
+				music_str = entry.as_string();
+				music_selected = i;
+			}
 			ImGui::PopID();
 			++i;
 		}
 		ImGui::Text("Ambience:");
-		for (auto const& entry : m_services->data.audio_library["ambience"].as_array()) {
-			if (ImGui::Selectable(entry.as_string().c_str(), false, ImGuiSelectableFlags_DontClosePopups)) { map.m_theme.ambience = entry.as_string(); }
+		for (auto [i, entry] : std::views::enumerate(m_services->data.audio_library["ambience"].as_array())) {
+			if (ImGui::Selectable(entry.as_string().c_str(), i == ambience_selected, ImGuiSelectableFlags_DontClosePopups)) {
+				ambience_str = entry.as_string();
+				ambience_selected = i;
+			}
 		}
 		if (ImGui::Button("Close")) {
 			m_services->music_player.pause();
+			ImGui::CloseCurrentPopup();
+		}
+		if (ImGui::Button("Confirm")) {
+			m_services->music_player.pause();
+			map.set_music(music_str);
+			NANI_LOG_DEBUG(p_logger, "Set music to {}", music_str);
+			map.set_ambience(ambience_str);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
@@ -1120,7 +1137,6 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					mp_lighting = map.test_property(fornani::world::MapProperties::lighting);
 				}
 				static int darken{};
-				if (ImGui::MenuItem("Include in Minimap", "", &map.minimap)) {}
 				if (ImGui::MenuItem("Environmental Randomness", "", &mp_randomness)) {}
 				if (ImGui::MenuItem("Day Night Shift", "", &mp_shift)) {}
 				if (ImGui::MenuItem("Lighting", "", &mp_lighting)) {}

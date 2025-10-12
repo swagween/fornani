@@ -53,11 +53,6 @@
     ]
   },
   "meta": {
-    "ambience": "overturned",
-    "atmosphere": [
-      1
-    ],
-    "background": 3,
     "biome": "overturned",
     "camera_effects": {
       "shake": {
@@ -83,22 +78,15 @@
       12
     ],
     "minimap": true,
-    "music": "whispering_island",
     "player_start": [
       0,
       0
     ],
-    "properties": {
-      "day_night_shift": false,
-      "environmental_randomness": false,
-      "lighting": false,
-      "timer": false
-    },
     "room_id": 201,
     "shader": {
       "darken_factor": 0
     },
-    "style": 1
+    "use_template": true
   },
   "tile": {
     "flags": {

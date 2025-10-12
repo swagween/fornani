@@ -107,7 +107,7 @@ void Player::update(world::Map& map) {
 			below_point = collider.get_below_point(1);
 			val = map.get_tile_value_at_position(below_point);
 		}
-		m_services->soundboard.play_step(val, map.native_style_id, true);
+		m_services->soundboard.play_step(val, map.get_style_id(), true);
 	}
 	collider.flags.state.reset(shape::State::just_landed);
 
@@ -170,7 +170,7 @@ void Player::update(world::Map& map) {
 
 	// step sounds
 	if (m_services->in_game()) {
-		if (animation.stepped() && abs(collider.physics.velocity.x) > 2.5f) { m_services->soundboard.play_step(map.get_tile_value_at_position(collider.get_below_point()), map.native_style_id); }
+		if (animation.stepped() && abs(collider.physics.velocity.x) > 2.5f) { m_services->soundboard.play_step(map.get_tile_value_at_position(collider.get_below_point()), map.get_style_id()); }
 	}
 }
 

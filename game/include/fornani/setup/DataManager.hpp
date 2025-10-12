@@ -146,6 +146,7 @@ class DataManager final {
 	dj::Json audio_library{};
 
 	std::vector<MapData> map_jsons{};
+	std::vector<MapTemplate> map_templates{};
 	gui::MiniMap minimap;
 	std::vector<std::vector<std::unique_ptr<world::Layer>>> map_layers{};
 	int num_layers{8};

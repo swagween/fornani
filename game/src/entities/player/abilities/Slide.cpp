@@ -8,7 +8,7 @@
 namespace fornani::player {
 
 Slide::Slide(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction)
-	: Ability(svc, map, collider, direction), m_speed_multiplier{6.5f}, m_minimum_threshold{0.3f}, m_dampen{0.9f}, m_map{&map}, m_services{&svc} {
+	: Ability(svc, map, collider, direction), m_speed_multiplier{7.5f}, m_minimum_threshold{0.3f}, m_dampen{0.95f}, m_map{&map}, m_services{&svc} {
 	m_type = AbilityType::slide;
 	m_state = AnimState::slide;
 	m_duration = util::Cooldown{512};

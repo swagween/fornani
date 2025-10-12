@@ -1,48 +1,45 @@
 
 #pragma once
 
-#include <fornani/utils/Constants.hpp>
-#include "fornani/audio/Ambience.hpp"
-#include "fornani/entities/atmosphere/Atmosphere.hpp"
-#include "fornani/entities/enemy/EnemyCatalog.hpp"
-#include "fornani/entities/item/Loot.hpp"
-#include "fornani/entities/npc/NPC.hpp"
-#include "fornani/entities/world/Animator.hpp"
-#include "fornani/entities/world/Bed.hpp"
-#include "fornani/entities/world/Chest.hpp"
-#include "fornani/entities/world/Fire.hpp"
-#include "fornani/entities/world/Inspectable.hpp"
-#include "fornani/graphics/Background.hpp"
-#include "fornani/graphics/CameraController.hpp"
-#include "fornani/graphics/DayNightShifter.hpp"
-#include "fornani/graphics/Rain.hpp"
-#include "fornani/graphics/Scenery.hpp"
-#include "fornani/graphics/Transition.hpp"
-#include "fornani/io/Logger.hpp"
-#include "fornani/particle/Effect.hpp"
-#include "fornani/particle/Emitter.hpp"
-#include "fornani/story/CutsceneCatalog.hpp"
-#include "fornani/utils/CircleCollider.hpp"
-#include "fornani/utils/Shape.hpp"
-#include "fornani/utils/Stopwatch.hpp"
-#include "fornani/weapon/Grenade.hpp"
-#include "fornani/weapon/Projectile.hpp"
-#include "fornani/world/Breakable.hpp"
-#include "fornani/world/Checkpoint.hpp"
-#include "fornani/world/Destructible.hpp"
-#include "fornani/world/Layer.hpp"
-#include "fornani/world/Platform.hpp"
-#include "fornani/world/Pushable.hpp"
-#include "fornani/world/Spawner.hpp"
-#include "fornani/world/Spike.hpp"
-#include "fornani/world/SwitchBlock.hpp"
-#include "fornani/world/TimerBlock.hpp"
-
+#include <fornani/audio/Ambience.hpp>
+#include <fornani/entities/atmosphere/Atmosphere.hpp>
+#include <fornani/entities/enemy/EnemyCatalog.hpp>
+#include <fornani/entities/item/Loot.hpp>
+#include <fornani/entities/npc/NPC.hpp>
+#include <fornani/entities/world/Animator.hpp>
+#include <fornani/entities/world/Bed.hpp>
+#include <fornani/entities/world/Chest.hpp>
+#include <fornani/entities/world/Fire.hpp>
+#include <fornani/entities/world/Inspectable.hpp>
 #include <fornani/entity/EntitySet.hpp>
-
+#include <fornani/graphics/Background.hpp>
+#include <fornani/graphics/CameraController.hpp>
+#include <fornani/graphics/DayNightShifter.hpp>
+#include <fornani/graphics/Rain.hpp>
+#include <fornani/graphics/Scenery.hpp>
+#include <fornani/graphics/Transition.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/particle/Effect.hpp>
+#include <fornani/particle/Emitter.hpp>
 #include <fornani/shader/LightShader.hpp>
 #include <fornani/shader/Palette.hpp>
-
+#include <fornani/story/CutsceneCatalog.hpp>
+#include <fornani/utils/CircleCollider.hpp>
+#include <fornani/utils/Constants.hpp>
+#include <fornani/utils/Shape.hpp>
+#include <fornani/utils/Stopwatch.hpp>
+#include <fornani/weapon/Grenade.hpp>
+#include <fornani/weapon/Projectile.hpp>
+#include <fornani/world/Breakable.hpp>
+#include <fornani/world/Checkpoint.hpp>
+#include <fornani/world/Destructible.hpp>
+#include <fornani/world/Layer.hpp>
+#include <fornani/world/Platform.hpp>
+#include <fornani/world/Pushable.hpp>
+#include <fornani/world/Spawner.hpp>
+#include <fornani/world/Spike.hpp>
+#include <fornani/world/SwitchBlock.hpp>
+#include <fornani/world/TimerBlock.hpp>
 #include <list>
 #include <optional>
 #include <vector>
@@ -65,12 +62,31 @@ namespace fornani::world {
 
 enum class LevelState : std::uint8_t { game_over, camera_shake, spawn_enemy, transitioning };
 enum class MapState : std::uint8_t { unobscure };
-enum class MapProperties : std::uint8_t { minimap, has_obscuring_layer, has_reverse_obscuring_layer, environmental_randomness, day_night_shift, timer, lighting };
+enum class LayerProperties : std::uint8_t { has_obscuring_layer, has_reverse_obscuring_layer };
+enum class MapProperties : std::uint8_t { minimap, environmental_randomness, day_night_shift, timer, lighting };
 
 struct EnemySpawn {
 	sf::Vector2f pos{};
 	int id{};
 	int variant{};
+};
+
+struct MapAttributes {
+	MapAttributes() = default;
+	MapAttributes(dj::Json const& in);
+	util::BitFlags<MapProperties> properties{};
+	std::string ambience{};
+	std::string music{};
+	std::vector<int> atmosphere{};
+	int style_id{};
+	int special_drop_id{};
+	int background_id{};
+	sf::Color border_color{};
+
+	void serialize(dj::Json& out);
+
+  private:
+	io::Logger m_logger{"Map"};
 };
 
 class Map {
@@ -111,20 +127,25 @@ class Map {
 	bool nearby(shape::Shape& first, shape::Shape& second) const;
 	bool within_bounds(sf::Vector2f test) const;
 	bool overlaps_middleground(shape::Shape& test);
+
+	[[nodiscard]] auto get_style_id() const -> int { return m_attributes.style_id; }
+	[[nodiscard]] auto get_special_drop_id() const -> int { return m_attributes.special_drop_id; }
 	[[nodiscard]] auto get_chunk_id_from_position(sf::Vector2f pos) const -> std::uint8_t;
 	[[nodiscard]] auto get_chunk_dimensions() const -> sf::Vector2u { return dimensions / constants::u32_chunk_size; };
 	[[nodiscard]] auto off_the_bottom(sf::Vector2f point) const -> bool { return point.y > real_dimensions.y + abyss_distance; }
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
 	[[nodiscard]] auto get_echo_count() const -> int { return sound.echo_count; }
 	[[nodiscard]] auto get_echo_rate() const -> int { return sound.echo_rate; }
-	[[nodiscard]] auto is_minimap() const -> bool { return flags.properties.test(MapProperties::minimap); }
-	[[nodiscard]] auto has_obscuring_layer() const -> bool { return flags.properties.test(MapProperties::has_obscuring_layer); }
-	[[nodiscard]] auto has_reverse_obscuring_layer() const -> bool { return flags.properties.test(MapProperties::has_reverse_obscuring_layer); }
+	[[nodiscard]] auto is_minimap() const -> bool { return m_attributes.properties.test(MapProperties::minimap); }
+	[[nodiscard]] auto has_obscuring_layer() const -> bool { return m_layer_properties.test(LayerProperties::has_obscuring_layer); }
+	[[nodiscard]] auto has_reverse_obscuring_layer() const -> bool { return m_layer_properties.test(LayerProperties::has_reverse_obscuring_layer); }
 	[[nodiscard]] auto get_biome_string() const -> std::string { return m_metadata.biome; }
 	[[nodiscard]] auto get_room_string() const -> std::string { return m_metadata.room; }
 	[[nodiscard]] auto get_player_start() const -> sf::Vector2f { return m_player_start; }
 	[[nodiscard]] auto has_entities() const -> bool { return m_entities.has_value(); }
 	[[nodiscard]] auto enemies_cleared() const -> bool { return enemy_catalog.enemies.empty() && cooldowns.loading.is_complete(); }
+
+	dj::Json const& get_json_data(automa::ServiceProvider& svc) const;
 
 	std::size_t get_index_at_position(sf::Vector2f position);
 	int get_tile_value_at_position(sf::Vector2f position);
@@ -188,9 +209,6 @@ class Map {
 
 	std::string style_label{};
 
-	int room_lookup{};
-	int style_id{};
-	int native_style_id{};
 	struct {
 		int breakables{};
 		int pushables{};
@@ -199,9 +217,9 @@ class Map {
 	float collision_barrier{2.5f};
 
 	int room_id{}; // should be assigned to its constituent chunks
-	bool game_over{false};
-	bool show_minimap{false};
-	bool debug_mode{false};
+	bool debug_mode{};
+	bool game_over{};
+	bool use_template{};
 
 	player::Player* player;
 	automa::ServiceProvider* m_services;
@@ -220,31 +238,34 @@ class Map {
 	float darken_factor{};
 
   private:
+	MapAttributes m_attributes{};
+	util::BitFlags<LayerProperties> m_layer_properties{};
 	std::optional<EntitySet> m_entities{};
 
 	std::optional<Palette> m_palette{};
 	int abyss_distance{512};
 	sf::Vector2f m_player_start{};
+
 	struct {
 		std::string biome{};
 		std::string room{};
 	} m_metadata{};
+
 	struct {
 		graphics::ShakeProperties shake_properties{};
 		util::Cooldown cooldown{};
 		graphics::DayNightShifter shifter{};
 	} m_camera_effects{};
-	struct {
-		util::BitFlags<LevelState> state{};
-		util::BitFlags<MapState> map_state{};
-		util::BitFlags<MapProperties> properties{};
-	} flags{};
+
 	struct {
 		int echo_rate{};
 		int echo_count{};
 	} sound{};
+	struct {
+		util::BitFlags<LevelState> state{};
+		util::BitFlags<MapState> map_state{};
+	} flags{};
 	int m_middleground{};
-	sf::Color m_letterbox_color{};
 
 	io::Logger m_logger{"Map"};
 };

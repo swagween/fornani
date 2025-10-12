@@ -33,7 +33,7 @@ Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int r
 }
 
 void Inspectable::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
-	auto const& set = svc.data.map_jsons.at(map.room_lookup).metadata["entities"]["inspectables"][m_index];
+	auto const& set = map.get_json_data(svc)["entities"]["inspectables"][m_index];
 	bounding_box.set_position(get_world_position());
 	flags.reset(InspectableFlags::activated);
 	animation.update();

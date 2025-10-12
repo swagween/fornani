@@ -22,9 +22,20 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 
 	unserialize(svc, room_number);
 
-	auto& metadata = svc.data.map_jsons.at(room_lookup).metadata;
+	auto it = std::find_if(svc.data.map_jsons.begin(), svc.data.map_jsons.end(), [room_number](auto const& r) { return r.id == room_number; });
+	if (it == svc.data.map_jsons.end()) { return; }
+
+	auto& metadata = it->metadata;
 	auto const& meta = metadata["meta"];
 	auto& entities = metadata["entities"];
+
+	// process properties
+	svc.music_player.load(svc.finder, m_attributes.music);
+	svc.music_player.play_looped();
+	svc.ambience_player.load(svc.finder, m_attributes.ambience);
+	svc.ambience_player.play();
+	for (auto const& atmo : m_attributes.atmosphere) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, atmo)); }
+	background = std::make_unique<graphics::Background>(svc, m_attributes.background_id);
 
 	svc.current_room = room_number;
 	if (meta["cutscene_on_entry"]["flag"].as_bool()) {
@@ -34,17 +45,6 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		auto cutscene = util::QuestKey{ctype, cid, csource};
 		svc.quest.process(svc, cutscene);
 		cutscene_catalog.push_cutscene(svc, *this, cid);
-	}
-	if (meta["music"].is_string()) {
-		svc.music_player.load(svc.finder, meta["music"].as_string());
-		svc.music_player.play_looped();
-	}
-	if (meta["ambience"].is_string()) {
-		svc.ambience_player.load(svc.finder, meta["ambience"].as_string());
-		svc.ambience_player.play();
-	}
-	for (auto& entry : meta["atmosphere"].as_array()) {
-		if (entry.as<int>() == 1) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, 1)); }
 	}
 	for (auto& pl : entities["lights"].as_array()) {
 		point_lights.push_back(PointLight(svc.data.light[pl["label"].as_string()], sf::Vector2f{pl["position"][0].as<float>() + 0.5f, pl["position"][1].as<float>() + 0.5f} * constants::f_cell_size));
@@ -67,7 +67,6 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
 	if (meta["weather"]["leaves"]) { rain = vfx::Rain(meta["weather"]["leaves"]["intensity"].as<int>(), meta["weather"]["leaves"]["fall_speed"].as<float>(), meta["weather"]["leaves"]["slant"].as<float>(), true, true); }
 
-	background = std::make_unique<graphics::Background>(svc, meta["background"].as<int>());
 	styles.breakables = meta["styles"]["breakables"].as<int>();
 	styles.pushables = meta["styles"]["pushables"].as<int>();
 
@@ -126,7 +125,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
 		pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
 		auto flipped = static_cast<bool>(entry["flipped"].as_bool());
-		beds.push_back(entity::Bed(svc, pos, native_style_id, flipped));
+		beds.push_back(entity::Bed(svc, pos, m_attributes.style_id, flipped));
 	}
 	for (auto& entry : entities["scenery"]["basic"].as_array()) {
 		sf::Vector2f pos{};
@@ -135,7 +134,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		auto var = entry["variant"].as<int>();
 		auto lyr = entry["layer"].as<int>();
 		auto parallax = entry["parallax"].as<float>();
-		scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, style_id, lyr, var, parallax));
+		scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, m_attributes.style_id, lyr, var, parallax));
 	}
 	for (auto [i, entry] : std::views::enumerate(entities["inspectables"].as_array())) {
 		auto push = true;
@@ -153,7 +152,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
 	}
 
-	for (auto& entry : entities["destructibles"].as_array()) { destructibles.push_back(Destructible(svc, entry, style_id)); }
+	for (auto& entry : entities["destructibles"].as_array()) { destructibles.push_back(Destructible(svc, entry, m_attributes.style_id)); }
 
 	for (auto& entry : entities["enemies"].as_array()) {
 		int id{};
@@ -220,14 +219,30 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 
 void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) {
 
-	int ctr{};
-	for (auto& room : svc.data.map_jsons) {
-		if (room.id == room_number) { room_lookup = ctr; }
-		++ctr;
+	NANI_LOG_DEBUG(m_logger, "Unserializing map...");
+
+	auto it = std::find_if(svc.data.map_jsons.begin(), svc.data.map_jsons.end(), [room_number](auto const& r) { return r.id == room_number; });
+	if (it == svc.data.map_jsons.end()) {
+		NANI_LOG_WARN(m_logger, "Map json not found!");
+		return;
 	}
-	auto& metadata = svc.data.map_jsons.at(room_lookup).metadata;
+
+	// fetch template data
+	auto const& in_template = svc.data.map_templates;
+	auto bit = std::find_if(svc.data.map_templates.begin(), svc.data.map_templates.end(), [it](auto const& r) { return r.biome_label == it->biome_label; });
+	if (bit == svc.data.map_templates.end()) {
+		NANI_LOG_WARN(m_logger, "Tried to fetch template data for a nonexistent biome!");
+	} else {
+		m_attributes = MapAttributes{bit->metadata};
+	}
+
+	auto& metadata = it->metadata;
 	auto const& meta = metadata["meta"];
 	auto& entities = metadata["entities"];
+
+	use_template = meta["use_template"].as_bool();
+	if (!use_template) { m_attributes = MapAttributes{meta}; } // install metadata override
+	if (meta["minimap"].as_bool()) { m_attributes.properties.set(MapProperties::minimap); }
 
 	center_box.setSize(svc.window->f_screen_dimensions() * 0.5f);
 	flags.state.reset(LevelState::game_over);
@@ -239,14 +254,13 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 	svc.world_timer.set_tag("nani");
 	svc.world_timer.set_course(room_number);
 
-	m_metadata.biome = svc.data.map_jsons.at(room_lookup).biome_label;
-	m_metadata.room = svc.data.map_jsons.at(room_lookup).room_label;
+	m_metadata.biome = it->biome_label;
+	m_metadata.room = it->room_label;
 
 	// check for enemy respawns
 	svc.data.respawn_enemies(room_id, player->visit_history.distance_traveled_from(room_id));
 
 	room_id = meta["room_id"].as<int>();
-	if (meta["minimap"].as_bool()) { flags.properties.set(MapProperties::minimap); }
 	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
@@ -254,53 +268,26 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 	m_player_start.x = meta["player_start"][0].as<float>();
 	m_player_start.y = meta["player_start"][1].as<float>();
 	real_dimensions = {static_cast<float>(dimensions.x) * constants::f_cell_size, static_cast<float>(dimensions.y) * constants::f_cell_size};
-	auto style_value = meta["style"].as<int>();
-	style_label = svc.data.map_styles["styles"][style_value]["label"].as_string().data();
-	style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
-	if (svc.greyblock_mode()) { style_id = static_cast<int>(lookup::Style::provisional); }
-	native_style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
-	m_middleground = svc.data.map_jsons.at(room_lookup).metadata["tile"]["middleground"].as<int>();
-	svc.data.map_jsons.at(room_lookup).metadata["tile"]["flags"]["obscuring"].as_bool() ? flags.properties.set(MapProperties::has_obscuring_layer) : flags.properties.reset(MapProperties::has_obscuring_layer);
-	svc.data.map_jsons.at(room_lookup).metadata["tile"]["flags"]["reverse_obscuring"].as_bool() ? flags.properties.set(MapProperties::has_reverse_obscuring_layer) : flags.properties.reset(MapProperties::has_reverse_obscuring_layer);
 
-	// map properties
-	if (meta["properties"]["environmental_randomness"].as_bool()) { flags.properties.set(MapProperties::environmental_randomness); }
-	if (meta["properties"]["day_night_shift"].as_bool()) { flags.properties.set(MapProperties::day_night_shift); }
-	if (meta["properties"]["timer"].as_bool()) { flags.properties.set(MapProperties::timer); }
-	if (meta["properties"]["lighting"].as_bool()) {
-		flags.properties.set(MapProperties::lighting);
+	if (m_attributes.properties.test(MapProperties::lighting)) {
 		m_palette = Palette{m_metadata.biome, svc.finder};
 		darken_factor = meta["shader"]["darken_factor"].as<float>();
+		NANI_LOG_DEBUG(m_logger, "Map darken factor: {}", darken_factor);
+		if (m_palette->get_size() == 0) {
+			m_attributes.properties.reset(MapProperties::lighting);
+			m_palette = {};
+			NANI_LOG_WARN(m_logger, "Map Properties > Lighting is TRUE but there exists no palette for the style!");
+		}
 	}
+
+	m_middleground = metadata["tile"]["middleground"].as<int>();
+	metadata["tile"]["flags"]["obscuring"].as_bool() ? m_layer_properties.set(LayerProperties::has_obscuring_layer) : m_layer_properties.reset(LayerProperties::has_obscuring_layer);
+	metadata["tile"]["flags"]["reverse_obscuring"].as_bool() ? m_layer_properties.set(LayerProperties::has_reverse_obscuring_layer) : m_layer_properties.reset(LayerProperties::has_reverse_obscuring_layer);
 
 	breakable_iterators.resize(static_cast<std::size_t>((dimensions.x * dimensions.y) / constants::u32_chunk_size));
 
-	m_letterbox_color = style_id == 2 ? colors::pioneer_black : colors::ui_black;
+	m_attributes.border_color = m_attributes.style_id == 2 ? colors::pioneer_black : colors::ui_black;
 	if (entities.is_object()) { m_entities = EntitySet(svc, svc.finder, entities, m_metadata.room); }
-
-	/*for (auto& entry : entities["portals"].as_array()) {
-		sf::Vector2<std::uint32_t> pos{};
-		sf::Vector2<std::uint32_t> dim{};
-		pos.x = entry["position"][0].as<int>();
-		pos.y = entry["position"][1].as<int>();
-		dim.x = entry["dimensions"][0].as<int>();
-		dim.y = entry["dimensions"][1].as<int>();
-		auto src_id = entry["source_id"].as<int>();
-		auto dest_id = entry["destination_id"].as<int>();
-		auto aoc = static_cast<bool>(entry["activate_on_contact"].as_bool());
-		auto locked = static_cast<bool>(entry["locked"].as_bool());
-		auto already_open = static_cast<bool>(entry["already_open"].as_bool());
-		auto key_id = entry["key_id"].as<int>();
-		auto door_style = native_style_id;
-		auto mapdim = sf::Vector2<int>{dimensions};
-		portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, already_open, key_id, door_style, mapdim));
-		portals.back().update(svc);
-	}*/
-
-	/*for (auto& entry : entities["save_point"].as_array()) {
-		auto save_id = svc.state_controller.save_point_id;
-		save_point = entity::SavePoint(svc, room_id, sf::Vector2<std::uint32_t>{entry["position"][0].as<std::uint32_t>(), entry["position"][1].as<std::uint32_t>()});
-	}*/
 
 	generate_collidable_layer(live);
 }
@@ -488,7 +475,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam) {
 	// check for a switch to greyblock mode
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
-		style_id = style_id == static_cast<int>(lookup::Style::provisional) ? native_style_id : static_cast<int>(lookup::Style::provisional);
 		generate_layer_textures(svc);
 		svc.debug_flags.reset(automa::DebugFlags::greyblock_trigger);
 	}
@@ -534,11 +520,11 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 
 	if (!svc.greyblock_mode()) {
 		for (auto& layer : get_layers()) {
-			if (flags.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
+			if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
 				shader->Finalize();
-				layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, flags.properties.test(MapProperties::day_night_shift));
+				layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
 			} else {
-				layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, flags.properties.test(MapProperties::day_night_shift));
+				layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
 			}
 		}
 	}
@@ -570,7 +556,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 
 	if (rain) { rain->render(svc, win, cam); }
 
-	if (flags.properties.test(MapProperties::timer)) { svc.world_timer.render(win, sf::Vector2f{32.f, 32.f}); }
+	if (m_attributes.properties.test(MapProperties::timer)) { svc.world_timer.render(win, sf::Vector2f{32.f, 32.f}); }
 
 	if (svc.greyblock_mode()) {
 		center_box.setPosition({});
@@ -600,11 +586,11 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 						if (npc->background()) { npc->render(svc, win, cam); }
 					}
 				}
-				if (flags.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
+				if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
 					shader->Finalize();
 					layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true);
 				} else {
-					layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true, flags.properties.test(MapProperties::day_night_shift));
+					layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true, m_attributes.properties.test(MapProperties::day_night_shift));
 				}
 			}
 		}
@@ -724,17 +710,17 @@ void Map::generate_collidable_layer(bool live) {
 		get_middleground()->grid.check_neighbors(cell.one_d_index);
 		if (live) { continue; }
 		if (cell.is_breakable() && chunk_id < breakable_iterators.size()) {
-			breakables.push_back(Breakable(*m_services, cell.position(), chunk_id, style_id));
+			breakables.push_back(Breakable(*m_services, cell.position(), chunk_id, m_attributes.style_id));
 			breakable_iterators[chunk_id].push_back(std::prev(breakables.end()));
 		}
 		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position() + pushable_offset, styles.pushables, cell.value - 483)); }
 		if (cell.is_big_spike()) {
-			spikes.push_back(Spike(*m_services, m_services->assets.get_texture("big_spike"), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {6.f, 4.f}, style_id,
-								   flags.properties.test(MapProperties::environmental_randomness)));
+			spikes.push_back(Spike(*m_services, m_services->assets.get_texture("big_spike"), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {6.f, 4.f}, m_attributes.style_id,
+								   m_attributes.properties.test(MapProperties::environmental_randomness)));
 		}
 		if (cell.is_spike()) {
-			spikes.push_back(Spike(*m_services, m_services->assets.get_tileset(m_metadata.biome), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {1.f, 1.f}, style_id,
-								   flags.properties.test(MapProperties::environmental_randomness)));
+			spikes.push_back(Spike(*m_services, m_services->assets.get_tileset(m_metadata.biome), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {1.f, 1.f}, m_attributes.style_id,
+								   m_attributes.properties.test(MapProperties::environmental_randomness)));
 		}
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position(), 5)); }
 		if (cell.is_target()) { target_points.push_back(cell.get_global_center()); }
@@ -914,10 +900,53 @@ bool Map::overlaps_middleground(shape::Shape& test) {
 	return false;
 }
 
+dj::Json const& Map::get_json_data(automa::ServiceProvider& svc) const {
+	auto rid = room_id;
+	auto const it = std::find_if(svc.data.map_jsons.begin(), svc.data.map_jsons.end(), [rid](auto const& r) { return r.id == rid; });
+	return it->metadata;
+}
+
 std::size_t Map::get_index_at_position(sf::Vector2f position) { return get_middleground()->grid.get_index_at_position(position); }
 
 int Map::get_tile_value_at_position(sf::Vector2f position) { return get_middleground()->grid.get_cell(get_index_at_position(position)).value; }
 
 Tile& Map::get_cell_at_position(sf::Vector2f position) { return get_middleground()->grid.cells.at(get_index_at_position(position)); }
+
+MapAttributes::MapAttributes(dj::Json const& in) {
+	// map properties
+	if (in["properties"]["environmental_randomness"].as_bool()) { properties.set(MapProperties::environmental_randomness); }
+	if (in["properties"]["day_night_shift"].as_bool()) { properties.set(MapProperties::day_night_shift); }
+	if (in["properties"]["timer"].as_bool()) { properties.set(MapProperties::timer); }
+	if (in["properties"]["lighting"].as_bool()) { properties.set(MapProperties::lighting); }
+	if (in["minimap"].as_bool()) { properties.set(MapProperties::minimap); }
+
+	music = in["music"].as_string();
+	ambience = in["ambience"].as_string();
+	for (auto& entry : in["atmosphere"].as_array()) { atmosphere.push_back(entry.as<int>()); }
+
+	style_id = in["style"].as<int>();
+	special_drop_id = in["special_drop_id"].as<int>();
+	background_id = in["background"].as<int>();
+	border_color = sf::Color{in["border_color"][0].as<std::uint8_t>(), in["border_color"][1].as<std::uint8_t>(), in["border_color"][2].as<std::uint8_t>()};
+}
+
+void MapAttributes::serialize(dj::Json& out) {
+	out["properties"]["environmental_randomness"] = properties.test(fornani::world::MapProperties::environmental_randomness);
+	out["properties"]["day_night_shift"] = properties.test(fornani::world::MapProperties::day_night_shift);
+	out["properties"]["timer"] = properties.test(fornani::world::MapProperties::timer);
+	out["properties"]["lighting"] = properties.test(fornani::world::MapProperties::lighting);
+
+	out["music"] = music;
+	NANI_LOG_DEBUG(m_logger, "Serialized music: {}", music);
+	out["ambience"] = ambience;
+	for (auto& atmo : atmosphere) { out["atmosphere"].push_back(atmo); }
+
+	out["style"] = style_id;
+	out["special_drop_id"] = special_drop_id;
+	out["background"] = background_id;
+	out["border_color"].push_back(border_color.r);
+	out["border_color"].push_back(border_color.g);
+	out["border_color"].push_back(border_color.b);
+}
 
 } // namespace fornani::world

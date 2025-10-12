@@ -14,4 +14,10 @@ struct MapData {
 	std::string room_label{};
 };
 
+struct MapTemplate {
+	dj::Json metadata{};
+	std::string region_label{};
+	std::string biome_label{};
+};
+
 } // namespace fornani::data

@@ -30,8 +30,9 @@ void Roll::update(shape::Collider& collider, PlayerController& controller) {
 		return;
 	}
 	Ability::update(collider, controller);
-	collider.physics.acceleration.x = m_direction.as_float() * m_multiplier;
-	if (!collider.has_horizontal_collision()) { collider.physics.velocity.x = m_direction.as_float() * m_multiplier; }
+	auto mult = m_direction.as_float() * m_multiplier * collider.acceleration_multiplier;
+	collider.physics.acceleration.x = mult;
+	if (!collider.has_horizontal_collision()) { collider.physics.velocity.x = mult; }
 }
 
 } // namespace fornani::player

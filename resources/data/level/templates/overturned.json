@@ -1,0 +1,15 @@
+{
+  "ambience": "overturned",
+  "atmosphere": [1],
+  "background": 3,
+  "minimap": true,
+  "music": "whispering_island",
+  "properties": {
+    "day_night_shift": true,
+    "environmental_randomness": true,
+    "lighting": false,
+    "timer": false
+  },
+  "style": 1,
+  "special_drop_id": 0
+}

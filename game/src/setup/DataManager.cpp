@@ -31,9 +31,30 @@ void DataManager::load_data(std::string in_room) {
 		audio_library["ambience"].push_back(library.path().filename().string());
 	}
 
-	// populate map table
 	auto room_path = std::filesystem::path{finder.resource_path()};
 	auto room_list = room_path / "level";
+	auto template_list = room_path / "data" / "level" / "templates";
+	// populate map templates
+
+	for (auto const& this_biome : std::filesystem::recursive_directory_iterator(template_list)) {
+		if (this_biome.path().extension() != ".json") {
+			NANI_LOG_ERROR(m_logger, "Found a template with an extension other than \".json\": {}.", this_biome.path().filename().string());
+			continue;
+		}
+		auto template_data_result = dj::Json::from_file(this_biome.path().string());
+		if (!template_data_result) {
+			NANI_LOG_ERROR(m_logger, "Failed to load template data for path {}.", this_biome.path().string());
+			continue;
+		}
+		auto template_data = std::move(*template_data_result);
+		auto region = this_biome.path().filename().string();
+		region = region.substr(0, region.find('.'));
+		auto biome = template_data["biome"].is_string() ? template_data["biome"].as_string().data() : region;
+		map_templates.push_back(MapTemplate{template_data, region, biome});
+		NANI_LOG_INFO(m_logger, "Created template with region [{}] and biome [{}].", region, biome);
+	}
+
+	// populate map table
 	for (auto const& this_region : std::filesystem::recursive_directory_iterator(room_list)) {
 		if (!this_region.is_directory()) { continue; }
 		NANI_LOG_INFO(m_logger, "Reading levels from folder: {}", this_region.path().filename().string());

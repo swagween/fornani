@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "Background.hpp"
-#include "Map.hpp"
+#include "editor/canvas/Background.hpp"
+#include "editor/canvas/Map.hpp"
 #include "editor/util/BitFlags.hpp"
 #include "editor/util/SelectBox.hpp"
 #include "fornani/entity/EntitySet.hpp"
@@ -32,12 +32,6 @@ enum class StyleType : std::uint8_t { firstwind, overturned, pioneer, factory, g
 
 enum class CanvasProperties { editable };
 enum class CanvasState { hovered };
-
-struct Theme {
-	std::string music{};
-	std::string ambience{};
-	std::vector<int> atmosphere{};
-};
 
 constexpr inline int chunk_size_v{16};
 constexpr inline int default_num_layers_v{8};
@@ -101,12 +95,17 @@ class Canvas {
 	void set_backdrop_color(sf::Color color);
 	void set_grid_texture();
 	void activate_middleground();
+	void set_music(std::string_view to) { m_attributes.music = to; }
+	void set_ambience(std::string_view to) { m_attributes.ambience = to; }
+
 	Map& get_layers();
 	Layer& get_active_layer();
 	sf::Vector2<int> get_tile_coord(int lookup);
-	void set_property(fornani::world::MapProperties to_set) { m_map_properties.set(to_set); }
-	void reset_property(fornani::world::MapProperties to_reset) { m_map_properties.reset(to_reset); }
-	[[nodiscard]] auto test_property(fornani::world::MapProperties to_test) const -> bool { return m_map_properties.test(to_test); }
+
+	void set_property(fornani::world::MapProperties to_set) { m_attributes.properties.set(to_set); }
+	void reset_property(fornani::world::MapProperties to_reset) { m_attributes.properties.reset(to_reset); }
+
+	[[nodiscard]] auto test_property(fornani::world::MapProperties to_test) const -> bool { return m_attributes.properties.test(to_test); }
 
 	[[nodiscard]] auto get_selection_type() const -> SelectionType { return type; }
 	[[nodiscard]] auto states_empty() const -> bool { return map_states.empty(); }
@@ -169,7 +168,6 @@ class Canvas {
 	dj::Json metadata{};
 	Style tile_style;
 
-	Theme m_theme{};
 	std::unique_ptr<Background> background{};
 
 	struct {
@@ -189,9 +187,11 @@ class Canvas {
 
 	std::uint32_t room_id{};
 
-	bool minimap{};
+	bool m_use_template{};
 
   private:
+	fornani::world::MapAttributes m_attributes{};
+
 	sf::Vector2f position{};
 	sf::RenderTexture grid_texture{};
 	sf::Vector2f origin{};
@@ -201,7 +201,6 @@ class Canvas {
 	std::deque<Map> redo_states{};
 	util::BitFlags<CanvasState> state{};
 	util::BitFlags<CanvasProperties> properties{};
-	util::BitFlags<fornani::world::MapProperties> m_map_properties{};
 	sf::RectangleShape box{};
 	sf::RectangleShape gridbox{};
 	sf::RectangleShape chunkbox{};

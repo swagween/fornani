@@ -147,12 +147,14 @@ void Metagrid::render(sf::RenderWindow& win) {
 	static auto current_room = 0;
 	static bool serialize{};
 	static bool ignore_test_levels{true};
+	static bool hide_room_borders{};
 
 	// render rooms
 	auto found_one{false};
 	auto it = 0;
 	auto ctr = 0;
 	for (auto& r : m_rooms) {
+		r.no_border = hide_room_borders;
 		if (!r.is_minimap() && ignore_test_levels) {
 			++ctr;
 			continue;
@@ -217,6 +219,7 @@ void Metagrid::render(sf::RenderWindow& win) {
 		ImGui::Text("Current Tool: %s", m_tool->get_label().data());
 		ImGui::Text("Workspace Coordinates: (%i, %i)", m_tool->get_workspace_coordinates(m_camera).x, m_tool->get_workspace_coordinates(m_camera).y);
 		ImGui::Checkbox("Ignore Test Levels", &ignore_test_levels);
+		ImGui::Checkbox("Hide Room Borders", &hide_room_borders);
 
 		ImGui::End();
 	}
