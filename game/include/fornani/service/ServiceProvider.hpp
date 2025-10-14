@@ -34,12 +34,7 @@ namespace fornani::automa {
 enum class DebugFlags : std::uint8_t { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
 enum class AppFlags : std::uint8_t { fullscreen, tutorial, in_game, editor, custom_map_start };
 enum class StateFlags : std::uint8_t { hide_hud, no_menu, cutscene };
-struct PlayerDat {
-	void set_piggy_id(int const id) { piggy_id = id; }
-	void unpiggy() { drop_piggy = true; }
-	int piggy_id{-1};
-	bool drop_piggy{};
-};
+
 struct MapDebug {
 	int active_projectiles{};
 };
@@ -77,7 +72,6 @@ struct ServiceProvider {
 	QuestRegistry quest_registry;
 	QuestTable quest_table;
 	StatTracker stats{};
-	PlayerDat player_dat{};
 	MapDebug map_debug{};
 	util::Logger logger{};
 	config::AccessibilityService a11y{};

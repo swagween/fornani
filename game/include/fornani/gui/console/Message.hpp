@@ -37,6 +37,8 @@ struct MessageCode {
 	[[nodiscard]] auto is_remove_weapon() const -> bool { return type == MessageCodeType::remove_weapon; }
 	[[nodiscard]] auto is_remove_item() const -> bool { return type == MessageCodeType::remove_item; }
 	[[nodiscard]] auto is_destroy_inspectable() const -> bool { return type == MessageCodeType::destroy_inspectable; }
+	[[nodiscard]] auto is_piggyback() const -> bool { return type == MessageCodeType::piggyback; }
+	[[nodiscard]] auto is_open_vendor() const -> bool { return type == MessageCodeType::open_vendor; }
 
 	// editor helpers
 	void mark_for_deletion() { delete_me = true; }

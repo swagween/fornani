@@ -70,8 +70,7 @@ void Console::update(automa::ServiceProvider& svc) {
 				m_writer->insert_icon_at(code.value, lookup);
 			}
 			if (code.is_quest() && m_process_code_before) {
-				auto label = svc.data.get_npc_label_from_id(code.value);
-				if (label && code.extras) {
+				if (code.extras) {
 					if (code.extras->size() > 1) { svc.quest_table.progress_quest(svc.quest_registry.get_quest_metadata(code.value).get_tag(), code.extras->at(0), code.extras->at(1)); }
 				}
 				processed = true;
@@ -79,7 +78,10 @@ void Console::update(automa::ServiceProvider& svc) {
 			if (code.is_pop_conversation() && m_process_code_before) {
 				svc.events.dispatch_event("PopConversation", code.value);
 				auto label = svc.data.get_npc_label_from_id(code.value);
-				if (label && code.extras) { svc.quest_table.progress_quest("npc_dialogue", {label.value().data(), code.extras->at(0)}, 1, -1, code.value); }
+				if (label && code.extras) {
+					svc.quest_table.progress_quest("npc_dialogue", {label.value().data(), code.extras->at(0)}, 1, -1, code.value);
+					NANI_LOG_DEBUG(m_logger, "Progressed NPC dialogue for NPC {} in room {}.", label.value().data(), code.extras->at(0));
+				}
 				processed = true;
 			}
 			if (code.is_play_song() && m_process_code_before) {
@@ -226,7 +228,22 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 			if (auto response_codes = get_response_codes(m_response->get_selection())) {
 				for (auto const& cde : response_codes.value()) {
 					if (cde.is_response()) { m_writer->set_suite(cde.value); }
+					if (cde.is_pop_conversation()) {
+						m_services->events.dispatch_event("PopConversation", cde.value);
+						auto label = m_services->data.get_npc_label_from_id(cde.value);
+						if (label && cde.extras) {
+							m_services->quest_table.progress_quest("npc_dialogue", {label.value().data(), cde.extras->at(0)}, 1, -1, cde.value);
+							NANI_LOG_DEBUG(m_logger, "Progressed NPC dialogue for NPC {} in room {}.", label.value().data(), cde.extras->at(0));
+						}
+					}
 					if (cde.is_action()) { handle_actions(cde.value); }
+					if (cde.is_quest()) {
+						if (cde.extras) {
+							if (cde.extras->size() > 1) { m_services->quest_table.progress_quest(m_services->quest_registry.get_quest_metadata(cde.value).get_tag(), cde.extras->at(0), cde.extras->at(1)); }
+						}
+					}
+					if (cde.is_piggyback()) { m_services->events.dispatch_event("PiggybackNPC", cde.value); }
+					if (cde.is_open_vendor()) { m_services->events.dispatch_event("OpenVendor", cde.value); }
 					if (cde.is_item()) {
 						m_services->events.dispatch_event("GivePlayerItem", cde.value, 1);
 						if (cde.extras) { m_services->events.dispatch_event("DestroyInspectable", cde.extras->at(0)); }

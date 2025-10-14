@@ -43,7 +43,7 @@ Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, std::optional<std::uni
 	svc.events.register_event(std::make_unique<Event<int>>("StartBattle", &lynx_start_battle));
 	flags.state.set(StateFlags::no_shake);
 	flags.general.set(GeneralFlags::post_death_render);
-	state_flags.set(npc::NPCState::force_interact);
+	set_force_interact(true);
 	flags.state.reset(StateFlags::vulnerable);
 
 	m_shuriken.get().set_team(arms::Team::skycorps);
@@ -204,8 +204,8 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		request(LynxState::laugh);
 	}
 
-	if (player.collider.bounding_box.overlaps(m_distant_range) && !state_flags.test(npc::NPCState::introduced) && state_flags.test(npc::NPCState::force_interact)) {
-		triggers.set(npc::NPCTrigger::distant_interact);
+	if (player.collider.bounding_box.overlaps(m_distant_range) && !was_introduced() && is_force_interact()) {
+		set_distant_interact(true);
 		svc.music_player.stop();
 	}
 
@@ -226,7 +226,7 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		if (half_health() && !m_flags.test(LynxFlags::second_phase)) {
 			request(LynxState::second_phase);
 			svc.music_player.filter_fade_in(80.f, 40.f);
-			triggers.set(npc::NPCTrigger::distant_interact);
+			set_distant_interact(true);
 			flush_conversations();
 			push_conversation(3);
 		}
@@ -247,7 +247,7 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 }
 
 void Lynx::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	NPC::render(svc, win, cam);
+	NPC::render(win, cam);
 	Enemy::render(svc, win, cam);
 	if (b_lynx_debug) {
 		for (auto& slash : m_attacks.slash) {
@@ -600,7 +600,7 @@ fsm::StateFunction Lynx::update_defeat() {
 	flags.state.reset(StateFlags::simple_physics);
 	if (Enemy::animation.just_started()) {
 		m_flags.reset(LynxFlags::battle_mode);
-		triggers.set(npc::NPCTrigger::distant_interact);
+		set_distant_interact(true);
 		m_map->clear_projectiles();
 		flush_conversations();
 		push_conversation(2);

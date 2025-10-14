@@ -30,7 +30,9 @@
       { "tag": "bryn", "id": 420 },
       { "tag": "bryn", "id": 509 },
       { "tag": "bryn", "id": 300 },
-      { "tag": "krub", "id": 406 }
+      { "tag": "krub", "id": 406 },
+      { "tag": "gobe", "id": 212 },
+      { "tag": "justin", "id": 247 }
     ]
   },
 
@@ -47,6 +49,17 @@
     "tag": "defeat_miaag",
     "target": 1,
     "objectives": ["Defeat the corrupted King Miaag and escape the Kariba Ruins."],
+    "displayed": true
+  },
+
+  {
+    "title": "Rescue Justin",
+    "tag": "rescue_justin",
+    "target": 2,
+    "objectives": [
+      "Find Gobe's dog. He is somewhere near Old Mimic's Farm.",
+      "Return Justin to Gobe at Old Mimic's Farm."
+    ],
     "displayed": true
   }
 ]

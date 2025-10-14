@@ -122,6 +122,8 @@ class QuestTable {
 	void start_quest(std::string_view tag, std::vector<std::pair<QuestIdentifier, ProgressionState>> status);
 	QuestRegistry* m_registry;
 	std::unordered_map<std::string, QuestProgression> m_quests{};
+
+	io::Logger m_logger{"Quest"};
 };
 
 } // namespace fornani

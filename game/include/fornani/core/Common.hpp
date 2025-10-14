@@ -25,8 +25,11 @@ enum class MessageCodeType : std::uint8_t {
 	weapon,
 	remove_weapon,
 	remove_item,
-	destroy_inspectable
+	destroy_inspectable,
+	piggyback,
+	open_vendor
 };
+
 enum class CodeSource : std::uint8_t { suite, response };
 
 constexpr auto null_key = "null";

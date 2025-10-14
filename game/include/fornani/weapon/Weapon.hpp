@@ -40,7 +40,7 @@ struct EmitterAttributes {
 	sf::Color color{};
 };
 
-class Weapon : public Drawable {
+class Weapon : public Animatable {
   public:
 	explicit Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy = false);
 
@@ -145,6 +145,7 @@ class Weapon : public Drawable {
 	struct {
 		util::Cooldown cooldown{};
 		util::Cooldown reload{};
+		util::Cooldown shoot_effect{};
 	} cooldowns{};
 
 	io::Logger m_logger{"Arms"};

@@ -27,6 +27,7 @@ class Animatable : public Drawable {
 	void random_frame_start();
 
 	[[nodiscard]] auto is_complete() -> bool { return animation.complete(); }
+	[[nodiscard]] auto get_dimensions() const -> sf::Vector2i { return m_dimensions; }
 	[[nodiscard]] auto get_f_dimensions() const -> sf::Vector2f { return sf::Vector2f{m_dimensions}; }
 
 	anim::Animation animation;

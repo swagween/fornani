@@ -13,7 +13,9 @@ static bool item_music_played{};
 static bool b_reveal_item{};
 static bool b_read_item{};
 static bool b_play_song{};
+static bool b_open_vendor{};
 static int item_modifier{};
+static int vendor_id{};
 static int song_id{};
 
 static void trigger_item(int to) {
@@ -40,6 +42,10 @@ static void trigger_remove_gun(int which) {
 	gun_removal = true;
 	item_modifier = which;
 }
+static void open_vendor(int which) {
+	b_open_vendor = true;
+	vendor_id = which;
+}
 
 Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name)
 	: GameState(svc, player, scene, room_number), map(svc, player), m_services(&svc), m_enter_room{100}, m_loading{4} {
@@ -54,12 +60,12 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	svc.events.register_event(std::make_unique<Event<int>>("AcquireGun", &trigger_gun));
 	svc.events.register_event(std::make_unique<Event<int>>("PlaySong", &trigger_song));
 	svc.events.register_event(std::make_unique<Event<int>>("RemovePlayerWeapon", &trigger_remove_gun));
+	svc.events.register_event(std::make_unique<Event<int>>("OpenVendor", &open_vendor));
 
 	// create shaders
 	m_shader = LightShader(svc.finder);
 
 	svc.menu_controller.reset_vendor_dialog();
-	open_vendor = false;
 	if (!svc.data.room_discovered(room_number)) {
 		svc.data.discovered_rooms.push_back(room_number);
 		svc.stats.world.rooms_discovered.update();
@@ -91,8 +97,6 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 		sf::Vector2f player_pos = {ppx, ppy};
 		player.set_position(player_pos);
 	}
-
-	if (player.piggybacker) { player.piggybacker.value().set_position(player.collider.physics.position); }
 
 	// save was loaded from a json, or player died, so we successfully skipped door search
 	svc.state_controller.actions.reset(Actions::save_loaded);
@@ -181,10 +185,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	// TODO: move this somehwere else
 	if (vendor_dialog) {
-		if (open_vendor) {
-			map.transition.end();
-			open_vendor = false;
-		}
 		map.transition.update(*player);
 		vendor_dialog.value()->update(svc, map, *player);
 		if (!vendor_dialog.value()->is_open()) {
@@ -196,14 +196,17 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	if (!m_console) {
-		if (svc.menu_controller.vendor_dialog_opened()) {
+		if (b_open_vendor && map.transition.is(graphics::TransitionState::inactive)) {
 			map.transition.start();
-			open_vendor = true;
+			NANI_LOG_DEBUG(m_logger, "Vendor Started");
 		}
-		if (open_vendor && map.transition.is(graphics::TransitionState::black)) {
-			vendor_dialog = std::make_unique<gui::VendorDialog>(svc, map, *player, svc.menu_controller.get_menu_id());
+		if (b_open_vendor && map.transition.is(graphics::TransitionState::black)) {
+			map.transition.end();
+			NANI_LOG_DEBUG(m_logger, "Vendor Opened");
+			vendor_dialog = std::make_unique<gui::VendorDialog>(svc, map, *player, vendor_id);
 			svc.controller_map.set_action_set(config::ActionSet::Menu);
 			svc.soundboard.flags.console.set(audio::Console::menu_open);
+			b_open_vendor = false;
 		}
 	}
 
@@ -261,6 +264,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		if (player->has_item("lantern")) { m_shader->AddPointLight(ppl); }
 		// m_shader->debug();
 	}
+	m_console || svc.state_flags.test(automa::StateFlags::cutscene) ? svc.state_flags.set(automa::StateFlags::hide_hud) : svc.state_flags.reset(automa::StateFlags::hide_hud);
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(svc, *player, win); }
 	if (vendor_dialog) { vendor_dialog.value()->render(svc, win, *player, map); }

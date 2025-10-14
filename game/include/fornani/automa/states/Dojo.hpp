@@ -25,7 +25,6 @@ class Dojo final : public GameState {
 
 	world::Map map;
 	bool show_colliders{false};
-	bool open_vendor{};
 	std::optional<std::unique_ptr<gui::VendorDialog>> vendor_dialog{};
 	std::optional<std::unique_ptr<gui::PauseWindow>> pause_window{};
 	std::optional<std::unique_ptr<gui::InventoryWindow>> inventory_window{};

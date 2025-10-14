@@ -5,7 +5,6 @@
 #include <fornani/entities/atmosphere/Atmosphere.hpp>
 #include <fornani/entities/enemy/EnemyCatalog.hpp>
 #include <fornani/entities/item/Loot.hpp>
-#include <fornani/entities/npc/NPC.hpp>
 #include <fornani/entities/world/Animator.hpp>
 #include <fornani/entities/world/Bed.hpp>
 #include <fornani/entities/world/Chest.hpp>
@@ -176,7 +175,7 @@ class Map {
 	std::array<std::vector<std::unique_ptr<vfx::Scenery>>, 6> scenery_layers{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};
-	std::vector<std::unique_ptr<npc::NPC>> npcs{};
+	// std::vector<std::unique_ptr<npc::NPC>> npcs{};
 	std::vector<Platform> platforms{};
 
 	std::list<Breakable> breakables{};

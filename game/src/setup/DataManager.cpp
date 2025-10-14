@@ -227,7 +227,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	// write opened chests and doors
 	save["map_data"]["world_time"]["hours"] = m_services->world_clock.get_hours();
 	save["map_data"]["world_time"]["minutes"] = m_services->world_clock.get_minutes();
-	save["piggybacker"] = m_services->player_dat.piggy_id;
+	save["piggybacker"] = player.get_piggybacker_id();
 	save["npc_locations"] = dj::Json::empty_array();
 	save["map_data"]["fallen_enemies"] = dj::Json::empty_array();
 	save["discovered_rooms"] = dj::Json::empty_array();
@@ -382,8 +382,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 		fallen_enemies.push_back({std::make_pair(enemy[0].as<int>(), enemy[1].as<int>()), enemy[2].as<int>(), static_cast<bool>(enemy[3].as<int>()), static_cast<bool>(enemy[4].as<int>())});
 	};
 	player.piggybacker = {};
-	m_services->player_dat.set_piggy_id(save["piggybacker"].as<int>());
-	m_services->player_dat.drop_piggy = false;
+	if (save["piggybacker"].as<int>() != 0) { player.piggyback(save["piggybacker"].as<int>()); }
 
 	int save_pt_id = save["save_point_id"].as<int>();
 	int room_id = save_pt_id;

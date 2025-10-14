@@ -44,6 +44,7 @@ class Entity : public Animatable, public IWorldPositionable {
 	bool unique{};
 
 	bool highlighted{};
+	bool copyable{true};
 	bool selected{};
 
 	// helpers

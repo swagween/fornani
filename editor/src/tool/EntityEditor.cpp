@@ -35,7 +35,7 @@ void EntityEditor::update(Canvas& canvas) {
 		for (auto& ent : canvas.entities.variables.entities) {
 			if (!entity_menu || active) { ent->highlighted = ent->contains_point(scaled_position()); }
 			if (active && ent->highlighted && is_ready()) {
-				current_entity = ent->clone();
+				if (ent->copyable) { current_entity = ent->clone(); }
 				entity_menu = true;
 			}
 		}

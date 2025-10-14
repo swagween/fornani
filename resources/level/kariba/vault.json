@@ -581,8 +581,9 @@
           1,
           1
         ],
+        "face_player": true,
         "hidden": true,
-        "id": 48353,
+        "id": 509,
         "label": "bryn",
         "position": [
           7,
@@ -637,6 +638,11 @@
     "ambience": "",
     "background": 3,
     "biome": "kariba",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -676,7 +682,9 @@
     "shader": {
       "darken_factor": 1
     },
-    "style": 5
+    "special_drop_id": 0,
+    "style": 5,
+    "use_template": false
   },
   "tile": {
     "flags": {

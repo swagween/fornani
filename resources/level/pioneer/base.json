@@ -113,6 +113,7 @@
           1,
           1
         ],
+        "face_player": true,
         "hidden": false,
         "id": 87398,
         "label": "dr_willett",
@@ -146,6 +147,7 @@
           1,
           1
         ],
+        "face_player": true,
         "hidden": false,
         "id": 24359,
         "label": "bryn",

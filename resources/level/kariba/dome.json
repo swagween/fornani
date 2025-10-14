@@ -87,6 +87,11 @@
     "ambience": "",
     "background": 19,
     "biome": "kariba",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -126,7 +131,9 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 5
+    "special_drop_id": 0,
+    "style": 5,
+    "use_template": false
   },
   "tile": {
     "flags": {

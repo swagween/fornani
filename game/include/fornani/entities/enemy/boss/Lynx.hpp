@@ -3,10 +3,10 @@
 
 #include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/entities/enemy/Enemy.hpp>
-#include <fornani/entities/npc/NPC.hpp>
 #include <fornani/entities/packages/Attack.hpp>
 #include <fornani/entities/packages/Caution.hpp>
 #include <fornani/entities/packages/Shockwave.hpp>
+#include <fornani/entity/NPC.hpp>
 #include <fornani/gui/BossHealth.hpp>
 #include <fornani/particle/Sparkler.hpp>
 
@@ -37,7 +37,7 @@ enum class LynxState : std::uint8_t {
 };
 enum class LynxFlags : std::uint8_t { conversing, battle_mode, second_phase, just_levitated, player_defeated };
 
-class Lynx final : public Enemy, public npc::NPC {
+class Lynx final : public Enemy, public NPC {
   public:
 	Lynx(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;

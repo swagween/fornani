@@ -70,13 +70,6 @@ void QuestTracker::process(automa::ServiceProvider& svc, util::QuestKey key) {
 	if (key.type == 69) { svc.state_controller.actions.set(automa::Actions::print_stats); }
 	if (key.type == 70) { svc.menu_controller.open_vendor_dialog(key.id); }
 	if (key.type == 97) { svc.state_controller.actions.set(automa::Actions::delete_file); }
-	if (key.type == 200) { svc.player_dat.set_piggy_id(key.id); }
-	if (key.type == 201) {
-		if (svc.player_dat.piggy_id == key.id) {
-			svc.player_dat.unpiggy();
-			progress(QuestType::hidden_npcs, key.id, key.source_id, key.amount, key.hard_set);
-		};
-	}
 	if (key.type == 299) { svc.state_controller.actions.set(automa::Actions::end_demo); }
 	// std::cout << "Processed: " << out.type << ", " << out.id << ", " << out.source_id << ", " << out.amount << ", " << out.hard_set << "\n";
 	if (key.hard_set > 0) {

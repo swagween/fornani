@@ -12,9 +12,8 @@ static bool b_start{};
 static void start_battle(int battle) { b_start = true; }
 
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console)
-	: Enemy(svc, "minigus"), gun(svc, "minigun"), soda(svc, "soda_gun"), m_services(&svc), npc::NPC(svc, "minigus"), m_map(&map), health_bar(svc, "minigus"),
-	  sparkler(svc, Enemy::collider.vicinity.get_dimensions(), colors::ui_white, "minigus"), m_console{&console}, m_mode{MinigusMode::neutral}, m_minigun{svc},
-	  attacks{.left_shockwave{{50, 600, 3, {-0.6f, 0.f}}}, .right_shockwave{{50, 600, 3, {0.6f, 0.f}}}} {
+	: Enemy(svc, "minigus"), gun(svc, "minigun"), soda(svc, "soda_gun"), m_services(&svc), NPC(svc, "minigus"), m_map(&map), health_bar(svc, "minigus"), sparkler(svc, Enemy::collider.vicinity.get_dimensions(), colors::ui_white, "minigus"),
+	  m_console{&console}, m_mode{MinigusMode::neutral}, m_minigun{svc}, attacks{.left_shockwave{{50, 600, 3, {-0.6f, 0.f}}}, .right_shockwave{{50, 600, 3, {0.6f, 0.f}}}} {
 
 	svc.events.register_event(std::make_unique<Event<int>>("StartBattle", &start_battle));
 
@@ -29,7 +28,7 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	cooldowns.exit.start();
 	afterlife = 2000;
 
-	state_flags.set(npc::NPCState::force_interact);
+	set_force_interact(true);
 	flags.general.set(GeneralFlags::post_death_render);
 	flags.general.set(GeneralFlags::has_invincible_channel);
 
@@ -104,7 +103,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	cooldowns.hurt.update();
 	cooldowns.player_punch.update();
 	if (status.test(MinigusFlags::exit_scene)) { cooldowns.exit.update(); }
-	if (state_flags.test(npc::NPCState::introduced)) { cooldowns.vulnerability.update(); }
+	if (was_introduced()) { cooldowns.vulnerability.update(); }
 
 	if (svc.ticker.every_x_ticks(32)) { hurt_color.update(); }
 
@@ -259,7 +258,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (player.is_dead()) { request(MinigusState::laugh); }
 
 	// NPC stuff
-	if (player.collider.bounding_box.overlaps(distant_range) && !state_flags.test(npc::NPCState::introduced) && state_flags.test(npc::NPCState::force_interact)) { triggers.set(npc::NPCTrigger::distant_interact); }
+	if (player.collider.bounding_box.overlaps(distant_range) && !was_introduced() && is_force_interact()) { set_distant_interact(true); }
 
 	NPC::update(svc, map, *m_console, player);
 	if (m_console) {
@@ -270,14 +269,14 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (b_start) {
 		m_mode = MinigusMode::battle_one;
 		status.set(MinigusFlags::battle_mode);
-		triggers.reset(npc::NPCTrigger::distant_interact);
+		set_distant_interact(false);
 		svc.music_player.load(svc.finder, "scuffle");
 		svc.music_player.play_looped();
 		cooldowns.vulnerability.start();
 		b_start = false;
 	}
 
-	if (state_flags.test(npc::NPCState::introduced) && !status.test(MinigusFlags::theme_song)) {
+	if (was_introduced() && !status.test(MinigusFlags::theme_song)) {
 		svc.music_player.load(svc.finder, "minigus");
 		svc.music_player.play_looped();
 		status.set(MinigusFlags::theme_song);
@@ -290,7 +289,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 }
 
 void Minigus::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	NPC::render(svc, win, cam);
+	NPC::render(win, cam);
 	Enemy::render(svc, win, cam);
 
 	m_minigun.set_scale(Enemy::get_scale());
@@ -797,7 +796,7 @@ fsm::StateFunction Minigus::update_struggle() {
 	if (health.is_dead()) {
 		if (Enemy::animation.just_started()) {
 			status.reset(MinigusFlags::battle_mode);
-			triggers.set(npc::NPCTrigger::distant_interact);
+			set_distant_interact(true);
 			flush_conversations();
 			push_conversation(2);
 			m_services->music_player.pause();
@@ -815,7 +814,7 @@ fsm::StateFunction Minigus::update_struggle() {
 
 		if (cooldowns.exit.is_complete() && status.test(MinigusFlags::exit_scene)) {
 			NANI_LOG_DEBUG(m_logger, "Goodbye started");
-			triggers.set(npc::NPCTrigger::distant_interact);
+			set_distant_interact(true);
 			m_services->music_player.stop();
 			flush_conversations();
 			push_conversation(3);

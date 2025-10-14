@@ -125,7 +125,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	//	}
 	//	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) { /*selector.go_down();*/
 	//	}
-	//	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) { close(); }
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) { close(); }
 	// } else {
 	//	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) { m_item_menu->down(svc); }
 	//	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) { m_item_menu->up(svc); }

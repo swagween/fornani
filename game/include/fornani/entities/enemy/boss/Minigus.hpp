@@ -1,8 +1,8 @@
 #pragma once
 
 #include <capo/engine.hpp>
+#include <fornani/entity/NPC.hpp>
 #include "fornani/entities/enemy/Enemy.hpp"
-#include "fornani/entities/npc/NPC.hpp"
 #include "fornani/entities/packages/Attack.hpp"
 #include "fornani/entities/packages/Caution.hpp"
 #include "fornani/entities/packages/Shockwave.hpp"
@@ -40,7 +40,7 @@ class Minigun : public Animatable {
 	components::SteeringBehavior m_steering{};
 };
 
-class Minigus : public Enemy, public npc::NPC {
+class Minigus : public Enemy, public NPC {
 
   public:
 	Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console);

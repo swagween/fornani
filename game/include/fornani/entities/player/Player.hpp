@@ -148,6 +148,7 @@ class Player {
 	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lnr == LNR::left; }
 	[[nodiscard]] auto switched_weapon() const -> bool { return hotbar->switched(); }
 	[[nodiscard]] auto firing_weapon() -> bool { return controller.shot(); }
+	[[nodiscard]] auto get_piggyback_socket() const -> sf::Vector2f { return m_piggyback_socket; }
 	[[nodiscard]] auto get_camera_position() const -> sf::Vector2f { return m_camera.camera.get_position(); }
 	[[nodiscard]] auto get_lantern_position() const -> sf::Vector2f { return m_lighting.physics.position; }
 	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2f { return collider.get_center() + m_camera.target_point; }
@@ -155,6 +156,7 @@ class Player {
 	[[nodiscard]] auto is_in_animation(AnimState check) const -> bool { return animation.get_state() == check; }
 	[[nodiscard]] auto get_desired_direction() const -> SimpleDirection { return m_directions.desired; }
 	[[nodiscard]] auto get_actual_direction() const -> SimpleDirection { return m_directions.actual; }
+	[[nodiscard]] auto get_piggybacker_id() const -> int { return piggybacker ? piggybacker->get_id() : 0; }
 
 	void set_desired_direction(SimpleDirection to) { m_directions.desired = to; }
 
@@ -303,6 +305,7 @@ class Player {
 	} m_camera{};
 
 	sf::Vector2f m_weapon_socket{};
+	sf::Vector2f m_piggyback_socket{};
 	util::Cooldown m_sprite_shake;
 	util::Cooldown m_hurt_cooldown;
 

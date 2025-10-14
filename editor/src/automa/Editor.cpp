@@ -370,7 +370,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	auto f_work_size = sf::Vector2f{static_cast<float>(work_size.x), static_cast<float>(work_size.y)};
 
 	if (current_tool->entity_menu) {
-		if (current_tool->current_entity) { ImGui::OpenPopup("Entity Options"); }
+		if (current_tool->current_entity) {
+			ImGui::OpenPopup("Entity Options");
+		} else {
+			ImGui::OpenPopup("Non-Copyable Entity Options");
+		}
 	}
 	if (current_tool->entity_mode == EntityMode::editor) {
 		if (current_tool->current_entity) { ImGui::OpenPopup("Edit Entity"); }
@@ -388,6 +392,13 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			current_tool->entity_mode = EntityMode::placer;
 			current_tool->entity_menu = false;
 		}
+		if (ImGui::MenuItem("Delete")) {
+			current_tool->entity_mode = EntityMode::eraser;
+			current_tool->entity_menu = false;
+		}
+		ImGui::EndPopup();
+	}
+	if (ImGui::BeginPopupContextWindow("Non-Copyable Entity Options")) {
 		if (ImGui::MenuItem("Delete")) {
 			current_tool->entity_mode = EntityMode::eraser;
 			current_tool->entity_menu = false;

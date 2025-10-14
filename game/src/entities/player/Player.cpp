@@ -56,6 +56,7 @@ void Player::update(world::Map& map) {
 	if (m_hurt_cooldown.is_almost_complete()) { m_services->music_player.filter_fade_out(); }
 	m_hurt_cooldown.update();
 	distant_vicinity.set_position(collider.get_center() - distant_vicinity.get_dimensions() * 0.5f);
+	m_piggyback_socket = collider.get_top() + sf::Vector2f{-8.f * m_directions.actual.as_float(), -16.f};
 
 	// map effects
 	if (controller.is_wallsliding()) {
@@ -159,10 +160,8 @@ void Player::update(world::Map& map) {
 	}
 
 	update_antennae();
-	// piggybacker
-	if (m_services->player_dat.piggy_id == 0 && piggybacker) { piggybacker = {}; }
-	if (m_services->player_dat.piggy_id != 0 && !piggybacker) { piggyback(m_services->player_dat.piggy_id); }
-	if (piggybacker) { piggybacker.value().update(*m_services, *this); }
+
+	if (piggybacker) { piggybacker->update(*m_services, *this); }
 
 	if (is_dead()) {
 		for (auto& a : antennae) { a.collider.detect_map_collision(map); }
@@ -181,7 +180,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	collider.colors.local = can_jump() ? colors::green : colors::green;
 
 	// piggybacker
-	if (piggybacker) { piggybacker.value().render(svc, win, cam); }
+	if (piggybacker) { piggybacker->render(svc, win, cam); }
 
 	sprite.setPosition(sprite_position);
 
@@ -370,7 +369,13 @@ void Player::set_direction(Direction to) {
 	sprite.setScale({constants::f_scale_vec.x * to.as_float(), constants::f_scale_vec.y});
 }
 
-void Player::piggyback(int id) { piggybacker = Piggybacker(*m_services, *m_services->data.get_npc_label_from_id(id), collider.physics.position); }
+void Player::piggyback(int id) {
+	if (!piggybacker) {
+		piggybacker = Piggybacker(*m_services, *m_services->data.get_npc_label_from_id(id), collider.physics.position);
+	} else {
+		piggybacker = {};
+	}
+}
 
 void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	sf::Vector2f offset{};

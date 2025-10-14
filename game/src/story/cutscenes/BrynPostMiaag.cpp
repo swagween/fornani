@@ -33,15 +33,22 @@ void BrynPostMiaag::update(automa::ServiceProvider& svc, std::optional<std::uniq
 
 	if (console) { console.value()->set_no_exit(true); }
 
+	auto npcs = map.get_entities<NPC>();
+	auto bit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 0; });
+	auto& bryn = *bit;
+
 	auto total_suites{0};
-	for (auto& npc : map.npcs) { total_suites += npc->num_suites(); }
+	for (auto& npc : npcs) { total_suites += npc->get_number_of_suites(); }
 	total_conversations = std::max(total_conversations, total_suites);
 	if (cooldowns.end.is_almost_complete()) {
 		flags.set(CutsceneFlags::complete);
 		return;
 	}
-	if (cooldowns.beginning.is_almost_complete()) { map.reveal_npc("bryn"); }
-	if (map.npcs.empty()) { return; }
+	if (cooldowns.beginning.is_almost_complete()) {
+		map.reveal_npc("bryn");
+		NANI_LOG_DEBUG(p_logger, "Bryn was revealed.");
+	}
+	if (npcs.empty()) { return; }
 	if (cooldowns.beginning.running()) {
 		player.controller.prevent_movement();
 		player.controller.set_direction(Direction{UND::neutral, LNR::left});
@@ -49,19 +56,18 @@ void BrynPostMiaag::update(automa::ServiceProvider& svc, std::optional<std::uniq
 	}
 
 	// get npcs
-	auto& bryn = *std::ranges::find_if(map.npcs, [](auto& n) { return n->get_id() == 0; });
 	if (cooldowns.end.running()) { bryn->disengage(); }
 	if (bryn->get_collider().bounding_box.overlaps(player.collider.vicinity)) {
 		if (!console) {
 			bryn->force_engage();
-			bryn->request(npc::NPCAnimationState::idle);
+			bryn->request(NPCAnimationState::idle);
 			cooldowns.end.start(4);
 		}
 	} else {
 		bryn->walk();
 	}
 	svc.camera_controller.set_owner(graphics::CameraOwner::system);
-	svc.camera_controller.set_position(bryn->get_global_center());
+	svc.camera_controller.set_position(bryn->Mobile::get_global_center());
 }
 
 } // namespace fornani

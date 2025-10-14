@@ -70,7 +70,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	styles.breakables = meta["styles"]["breakables"].as<int>();
 	styles.pushables = meta["styles"]["pushables"].as<int>();
 
-	for (auto const& entry : entities["npcs"].as_array()) {
+	/*for (auto const& entry : entities["npcs"].as_array()) {
 		sf::Vector2f pos{};
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();
@@ -104,7 +104,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		} else {
 			NANI_LOG_DEBUG(m_logger, "NPC did not meet contingency for quest {}.", fail_tag);
 		}
-	}
+	}*/
 
 	for (auto& entry : entities["chests"].as_array()) {
 		sf::Vector2f pos{};
@@ -337,25 +337,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		flags.map_state.reset(MapState::unobscure);
 	}
 
-	// TODO: refactor this
-	if (svc.player_dat.piggy_id != -1) {
-		for (auto& n : npcs) {
-			// if (n->get_id() == svc.player_dat.piggy_id) { n->hide(); }
-		}
-	}
-	if (svc.player_dat.drop_piggy) {
-		svc.player_dat.drop_piggy = false;
-		for (auto& n : npcs) {
-			if (n->get_id() == svc.player_dat.piggy_id) {
-				n->unhide();
-				n->set_position(player->collider.physics.position);
-				n->apply_force({32.f, -32.f});
-				n->set_current_location(room_id);
-			}
-		}
-		svc.player_dat.piggy_id = -1;
-	}
-
 	if (!breakables.empty()) {
 		for (auto it = breakables.begin(); it != breakables.end();) {
 			if (it->destroyed()) {
@@ -373,7 +354,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
 	std::erase_if(effects, [](auto& e) { return e.done(); });
 	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
-	std::erase_if(npcs, [](auto const& n) { return n->piggybacking(); });
 	enemy_catalog.update();
 
 	manage_projectiles(svc);
@@ -407,10 +387,9 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 	for (auto& chest : chests) { chest.update(svc, *this, console, *player); }
-	for (auto& npc : npcs) {
+	/*for (auto& npc : npcs) {
 		npc->update(svc, *this, console, *player);
-		npc->post_update(svc, *this, *player);
-	}
+	}*/
 	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->update(svc, console, *this, *player); }
 	// for (auto& portal : portals) { portal.handle_activation(svc, *player, console, room_id, transition); }
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *this, console, *player); }
@@ -484,6 +463,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		// for (auto& entity : m_entities.value().variables.entities) { entity->render(win, cam, 1.0); }
 		for (auto p : get_entities<Portal>()) { p->render(win, cam, 1.0); }
 		for (auto s : get_entities<SavePoint>()) { s->render(win, cam, 1.0); }
+		for (auto n : get_entities<NPC>()) {
+			if (!n->is_background()) { n->render(win, cam); }
+		}
 		if (svc.greyblock_mode()) {
 			for (auto c : get_entities<CutsceneTrigger>()) { c->render(win, cam, c->get_f_grid_dimensions().x); }
 		}
@@ -499,9 +481,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	}
 	for (auto& bed : beds) { bed.render(svc, win, cam); }
 	for (auto& chest : chests) { chest.render(win, cam); }
-	for (auto& npc : npcs) {
+	/*for (auto& npc : npcs) {
 		if (!npc->background()) { npc->render(svc, win, cam); }
-	}
+	}*/
 	player->render(svc, win, cam);
 	for (auto& enemy : enemy_catalog.enemies) {
 		if (!enemy->is_foreground()) { enemy->render(svc, win, cam); }
@@ -582,8 +564,10 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		if (!svc.greyblock_mode()) {
 			for (auto [i, layer] : std::views::enumerate(get_layers())) {
 				if (i == 1) {
-					for (auto& npc : npcs) {
-						if (npc->background()) { npc->render(svc, win, cam); }
+					if (m_entities) {
+						for (auto n : get_entities<NPC>()) {
+							if (n->is_background()) { n->render(win, cam); }
+						}
 					}
 				}
 				if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
@@ -672,8 +656,17 @@ void Map::spawn_enemy(int id, sf::Vector2f pos, int variant) {
 }
 
 void Map::reveal_npc(std::string_view label) {
-	for (auto& npc : npcs) {
-		if (npc->get_label() == label) { npc->unhide(); }
+	if (!m_entities) {
+		NANI_LOG_DEBUG(m_logger, "No NPCs to reveal...");
+		NANI_LOG_DEBUG(m_logger, "Label was {}", label);
+		return;
+	}
+	for (auto n : get_entities<NPC>()) {
+		NANI_LOG_DEBUG(m_logger, "Trying {}", n->get_tag());
+		if (n->get_tag() == label) {
+			n->unhide();
+			NANI_LOG_DEBUG(m_logger, "Unhid NPC with label '{}'.", label);
+		}
 	}
 }
 
@@ -841,7 +834,7 @@ void Map::clear() {
 	switch_blocks.clear();
 	switch_buttons.clear();
 	chests.clear();
-	npcs.clear();
+	// npcs.clear();
 	checkpoints.clear();
 }
 

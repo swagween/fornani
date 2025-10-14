@@ -41,18 +41,26 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 	if (console) { console.value()->set_no_exit(true); }
 
 	auto total_suites{0};
-	for (auto& npc : map.npcs) { total_suites += npc->num_suites(); }
+
+	auto npcs = map.get_entities<NPC>();
+	auto nit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 22; });
+	auto hit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 23; });
+
+	if (nit == npcs.end() || hit == npcs.end()) {
+		NANI_LOG_ERROR(p_logger, "Missing NPC from cutscene!");
+		return;
+	}
+	auto& nimbus = *nit;
+	auto& hologus = *hit;
+
+	for (auto n : npcs) { total_suites += n->get_number_of_suites(); }
 	total_conversations = std::max(total_conversations, total_suites);
 	if (cooldowns.end.get() == 1) {
 		flags.set(CutsceneFlags::complete);
 		return;
 	}
-	if (map.npcs.size() < 2) { return; }
+	if (npcs.size() < 2) { return; }
 	if (cooldowns.beginning.running()) { return; }
-
-	// get npcs
-	auto& nimbus = *std::ranges::find_if(map.npcs, [](auto& n) { return n->get_id() == 22; });
-	auto& hologus = *std::ranges::find_if(map.npcs, [](auto& n) { return n->get_id() == 23; });
 
 	// dialog
 	switch (progress) {

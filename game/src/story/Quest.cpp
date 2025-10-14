@@ -122,6 +122,7 @@ void QuestTable::start_quest(std::string_view tag, std::vector<std::pair<QuestId
 void QuestTable::progress_quest(std::string_view tag, int const amount, int const source, QuestIdentifier const identifier) {
 	if (!m_quests.contains(tag.data())) { start_quest(tag, {{identifier, 0}}); }
 	m_quests.at(tag.data()).progress(identifier, amount, source);
+	NANI_LOG_DEBUG(m_logger, "Progressed quest {} by {} from source {}", tag, amount, source);
 }
 
 void QuestTable::progress_quest(std::string_view tag, Subquest const subquest, int const amount, int const source, QuestIdentifier const identifier) {

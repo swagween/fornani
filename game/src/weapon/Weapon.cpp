@@ -6,10 +6,11 @@
 namespace fornani::arms {
 
 Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
-	: Drawable(svc, "guns"), metadata{.id = enemy ? svc.data.enemy_weapon[tag]["metadata"]["id"].as<int>() : svc.data.weapon[tag]["metadata"]["id"].as<int>(),
-									  .tag = tag.data(),
-									  .label = enemy ? svc.data.enemy_weapon[tag]["metadata"]["label"].as_string() : svc.data.weapon[tag]["metadata"]["label"].as_string()},
-	  projectile(svc, tag, enemy ? svc.data.enemy_weapon[tag]["metadata"]["id"].as<int>() : svc.data.weapon[tag]["metadata"]["id"].as<int>(), *this, enemy), visual{.ui{sf::Sprite{svc.assets.get_texture("inventory_guns")}}} {
+	: Animatable(svc, "guns", {24, 8}), metadata{.id = enemy ? svc.data.enemy_weapon[tag]["metadata"]["id"].as<int>() : svc.data.weapon[tag]["metadata"]["id"].as<int>(),
+												 .tag = tag.data(),
+												 .label = enemy ? svc.data.enemy_weapon[tag]["metadata"]["label"].as_string() : svc.data.weapon[tag]["metadata"]["label"].as_string()},
+	  projectile(svc, tag, enemy ? svc.data.enemy_weapon[tag]["metadata"]["id"].as<int>() : svc.data.weapon[tag]["metadata"]["id"].as<int>(), *this, enemy), visual{.ui{sf::Sprite{svc.assets.get_texture("inventory_guns")}}},
+	  cooldowns{.shoot_effect{64}} {
 
 	auto const& in_data = enemy ? svc.data.enemy_weapon[tag] : svc.data.weapon[tag];
 
@@ -40,8 +41,6 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 		} catch (std::out_of_range) { secondary_emitter.value().color = colors::white; }
 		secondary_emitter.value().type = in_data["visual"]["secondary_spray"]["type"].as_string();
 	}
-	visual.texture_lookup = in_data["visual"]["texture_lookup"].as<int>() * 8;
-	set_texture_rect(sf::IntRect{{0, visual.texture_lookup}, visual.dimensions}); // TODO: allow for custom gun animations
 	set_origin(offsets.render.global);
 
 	// gameplay
@@ -54,13 +53,17 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 
 	// audio
 	m_audio.shoot = static_cast<audio::Weapon>(in_data["audio"]["shoot"].as<int>());
+
+	set_parameters({in_data["visual"]["texture_lookup"].as<int>(), 1, 32, -1});
 }
 
 void Weapon::update(automa::ServiceProvider& svc, Direction to_direction) {
 	ammo.update();
+	tick();
 	if (cooldowns.reload.is_almost_complete() && projectile.get_team() == Team::nani) { svc.soundboard.flags.arms.set(audio::Arms::reload); }
 	if (cooldowns.reload.is_almost_complete()) { ammo.refill(); }
 	cooldowns.reload.update();
+	cooldowns.shoot_effect.update();
 
 	set_orientation(to_direction);
 	cooldowns.cooldown.update();
@@ -70,7 +73,8 @@ void Weapon::update(automa::ServiceProvider& svc, Direction to_direction) {
 }
 
 void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	Drawable::set_position(physical.final_position - cam);
+	Animatable::set_position(physical.final_position - cam);
+	set_channel(cooldowns.shoot_effect.is_complete() ? 0 : cooldowns.shoot_effect.halfway() ? 2 : 1);
 	win.draw(*this);
 	if (svc.greyblock_mode()) {
 		sf::RectangleShape box{};
@@ -108,6 +112,7 @@ void Weapon::shoot() {
 	active_projectiles.update();
 	ammo.use();
 	physical.physics.apply_force(firing_direction.get_vector() * -1.f);
+	cooldowns.shoot_effect.start();
 }
 
 void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f target) {

@@ -194,10 +194,11 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		in_specs = *dj::Json::from_file(std::string{finder.paths.resources.string() + "/data/npc/npc_data.json"}.c_str());
 		assert(!in_specs.is_null());
 
-		static int id{fornani::random::random_range(10000, 99999)};
+		static int id{room_id};
 		static std::string label{};
 		static std::vector<int> quantities{};
 		static int iterations{};
+		static bool face_player{};
 		static std::vector<std::vector<int>> suites{};
 
 		ImGui::Separator();
