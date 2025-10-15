@@ -84,6 +84,7 @@ void Console::update(automa::ServiceProvider& svc) {
 				}
 				processed = true;
 			}
+			if (code.is_open_vendor()) { m_services->events.dispatch_event("OpenVendor", code.value); }
 			if (code.is_play_song() && m_process_code_before) {
 				svc.events.dispatch_event("PlaySong", code.value);
 				processed = true;

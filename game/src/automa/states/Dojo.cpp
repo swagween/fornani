@@ -143,7 +143,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (pause_window || m_console) {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
 		svc.controller_map.set_joystick_throttle({});
-	} else if (inventory_window) {
+	} else if (inventory_window || vendor_dialog) {
 		svc.controller_map.set_action_set(config::ActionSet::Inventory);
 	} else {
 		svc.controller_map.set_action_set(config::ActionSet::Platformer);

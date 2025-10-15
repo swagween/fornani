@@ -109,6 +109,7 @@ class DataManager final {
 
 	// gui
 	dj::Json m_console_paths{};
+	dj::Json gui_text{};
 
 	dj::Json weapon{};
 	dj::Json enemy_weapon{};

@@ -1,8 +1,11 @@
 
 #include "fornani/gui/VendorDialog.hpp"
+#include <algorithm>
+#include <cctype>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/graphics/Transition.hpp"
 #include "fornani/service/ServiceProvider.hpp"
+#include "fornani/utils/ColorUtils.hpp"
 #include "fornani/utils/Math.hpp"
 #include "fornani/utils/Random.hpp"
 #include "fornani/world/Map.hpp"
@@ -10,20 +13,23 @@
 namespace fornani::gui {
 
 VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id)
-	: vendor_id(vendor_id), portrait(svc, vendor_id), info(svc, "outline_console"), m_buy_selector{{2, 1}}, m_sell_selector{{2, 1}}, orb{.sprite{anim::AnimatedSprite(svc.assets.get_texture("orbs"), {24, 24})}},
-	  artwork{svc.assets.get_texture("vendor_background")}, ui{svc.assets.get_texture("vendor_ui")}, text{.vendor_name{svc.text.fonts.title},
-																										  .buy_tab{svc.text.fonts.title},
-																										  .sell_tab{svc.text.fonts.title},
-																										  .orb_count{svc.text.fonts.title},
-																										  .price{svc.text.fonts.title},
-																										  .price_number{svc.text.fonts.title},
-																										  .item_label{svc.text.fonts.title}} {
+	: vendor_id(vendor_id), m_buy_selector{{7, 4}, {18.f, 18.f}}, m_sell_selector{{2, 1}}, orb{.sprite{anim::AnimatedSprite(svc.assets.get_texture("orbs"), {24, 24})}}, m_artwork{svc, "vendor_background"},
+	  text{.vendor_name{svc.text.fonts.title},
+		   .buy_tab{svc.text.fonts.title},
+		   .sell_tab{svc.text.fonts.title},
+		   .orb_count{svc.text.fonts.title},
+		   .price{svc.text.fonts.title},
+		   .price_number{svc.text.fonts.title},
+		   .item_label{svc.text.fonts.title}},
+	  m_constituents{VendorConstituent{svc, "portrait", {{}, {96, 144}}, 64},	   VendorConstituent{svc, "wares", {{0, 335}, {200, 118}}, 200, util::InterpolationType::cubic},
+					 VendorConstituent{svc, "description", {{96, 0}, {256, 137}}}, VendorConstituent{svc, "name", {{0, 144}, {103, 58}}, 32},
+					 VendorConstituent{svc, "core", {{0, 202}, {207, 133}}},	   VendorConstituent{svc, "nani", {{207, 190}, {171, 145}}, 64},
+					 VendorConstituent{svc, "selection", {{200, 335}, {162, 95}}}},
+	  m_intro{300}, m_vendor_portrait{svc, "character_portraits"}, m_orb_display{svc}, m_selector_sprite{svc, "vendor_gizmo"} {
 	flags.set(VendorDialogStatus::opened);
-	artwork.setTextureRect(sf::IntRect{{0, (vendor_id - 1) * svc.window->i_screen_dimensions().y}, {svc.window->i_screen_dimensions()}});
-	artwork.setOrigin(svc.window->f_center_screen());
-	artwork.setPosition(svc.window->f_center_screen());
-	state = VendorState::buy;
-	ui.setTextureRect(sf::IntRect{{0, static_cast<int>(state) * svc.window->i_screen_dimensions().y}, {svc.window->i_screen_dimensions()}});
+	m_artwork.set_texture_rect(sf::IntRect{{0, (vendor_id - 1) * (svc.window->i_screen_dimensions().y / constants::i_scale_factor)}, {svc.window->i_screen_dimensions() / constants::i_scale_factor}});
+	m_artwork.set_origin(svc.window->f_center_screen() / constants::f_scale_factor);
+	m_artwork.set_position(svc.window->f_center_screen());
 	get_npc_id.insert({1, 3});
 	npc_id = get_npc_id.at(vendor_id);
 
@@ -37,318 +43,147 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	orb.sprite.set_params("neutral", true);
 
 	// text
-	text.vendor_name.setString(svc.data.get_npc_label_from_id(npc_id)->data());
-	text.orb_count.setString(player.wallet.get_balance_string());
-	text.buy_tab.setString("BUY");
-	text.sell_tab.setString("SELL");
-	text.price.setString("PRICE: ");
+	auto lbl = svc.data.get_npc_label_from_id(npc_id);
+	if (lbl) {
+		std::string str = lbl->data();
+		std::ranges::transform(str, str.begin(), [](unsigned char c) { return static_cast<char>(std::toupper(c)); });
+		text.vendor_name.setString(str);
+	}
+	text.buy_tab.setString(svc.data.gui_text["vendor"]["buy"].as_string());
+	text.sell_tab.setString(svc.data.gui_text["vendor"]["sell"].as_string());
+	text.price.setString(svc.data.gui_text["vendor"]["price"].as_string());
 	// font
 	text.vendor_name.setCharacterSize(16);
-	text.orb_count.setCharacterSize(16);
 	text.buy_tab.setCharacterSize(16);
 	text.sell_tab.setCharacterSize(16);
 	text.price.setCharacterSize(16);
 	text.item_label.setCharacterSize(16);
 	text.price_number.setCharacterSize(16);
 	// colors
-	text.vendor_name.setFillColor(colors::ui_white);
-	text.orb_count.setFillColor(colors::ui_white);
-	text.price.setFillColor(colors::red);
-	text.item_label.setFillColor(colors::red);
+	text.vendor_name.setFillColor(colors::pioneer_red);
+	text.price.setFillColor(colors::pioneer_red);
+	text.item_label.setFillColor(colors::pioneer_red);
 	text.price_number.setFillColor(colors::periwinkle);
 	// origins
-	text.vendor_name.setOrigin(text.vendor_name.getLocalBounds().getCenter());
-	text.buy_tab.setOrigin({text.buy_tab.getLocalBounds().getCenter().x, 0.f});
-	text.sell_tab.setOrigin({text.sell_tab.getLocalBounds().getCenter().x, 0.f});
+	text.buy_tab.setOrigin({0.f, text.buy_tab.getLocalBounds().getCenter().y});
+	text.sell_tab.setOrigin({0.f, text.sell_tab.getLocalBounds().getCenter().y});
+	text.price.setOrigin({0.f, text.price.getLocalBounds().getCenter().y});
+
+	m_vendor_portrait.set_texture_rect(sf::IntRect{{npc_id * 64, 0}, {64, 128}});
+	m_buy_selector.set_lookup({{103, 182}, {20, 20}});
+
+	// background color
+	m_background.setFillColor(colors::pioneer_black);
+	m_background.setSize(svc.window->f_screen_dimensions());
 
 	refresh(player, map);
-	init = true;
-	intro.start();
+	m_intro.start();
+	for (auto& c : m_constituents) { c.update(); }
+	util::ColorUtils::reset();
+
+	m_description = std::make_unique<DescriptionGizmo>(svc, map, sf::Vector2f{}, sf::IntRect{}, sf::FloatRect{{360.f, 60.f}, {200.f, 200.f}}, sf::Vector2f{});
+	m_description->set_text_only(true);
 }
 
-// TODO: bring this back
 void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	// if (init) {
-	//	update_table(player, map, true);
-	//	init = false;
-	// }
-	// intro.update();
-	// if (intro.is_almost_complete()) {
-	//	bring_in = {svc.window->f_screen_dimensions().x, 0.f};
-	//	bring_in_cooldown.start();
-	// }
-	// if (intro.running()) {
-	//	auto scale = util::ease_in_out(1.f, 1.3f, intro.get_normalized());
-	//	artwork.setScale({scale, scale});
-	//	return;
-	// }
-	// bring_in_cooldown.update();
-	// if (bring_in_cooldown.running()) {
-	//	auto dest = svc.window->f_screen_dimensions().x;
-	//	bring_in.x = util::ease_in_out(dest, 0.f, 1.f - bring_in_cooldown.get_normalized());
-	// } else {
-	//	bring_in = {};
-	// }
 
-	// artwork.setScale({1.f, 1.f});
+	m_intro.update();
+	if (is_opening()) { return; }
 
-	//// asset positions
-	// text.vendor_name.setPosition(sf::Vector2f{108, 290} + bring_in);
-	// text.buy_tab.setPosition(sf::Vector2f{276, 28} + bring_in);
-	// text.sell_tab.setPosition(sf::Vector2f{404, 28} + bring_in);
-	// text.price.setPosition(ui_constants.price_position + bring_in);
-	// text.item_label.setPosition(ui_constants.item_label_position + bring_in);
-	// text.price_number.setPosition(sf::Vector2f{text.price.getPosition().x + text.price.getLocalBounds().size.x, text.price.getPosition().y} + bring_in);
-	// ui.setPosition(bring_in);
-	// portrait.set_position(portrait_position + bring_in);
-	// text.orb_count.setPosition(sf::Vector2f{svc.window->f_screen_dimensions().x - 72.f, 36.f} + bring_in);
+	auto& controller = svc.controller_map;
+	if (controller.digital_action_status(config::DigitalAction::menu_up).triggered) {
+		m_description->flush();
+		if (m_buy_selector.move_direction({0, -1}).up()) {}
+		svc.soundboard.flags.menu.set(audio::Menu::shift);
+	}
+	if (controller.digital_action_status(config::DigitalAction::menu_down).triggered) {
+		m_description->flush();
+		if (m_buy_selector.move_direction({0, 1}).down()) {}
+		svc.soundboard.flags.menu.set(audio::Menu::shift);
+	}
+	if (controller.digital_action_status(config::DigitalAction::menu_left).triggered) {
+		m_description->flush();
+		if (m_buy_selector.move_direction({-1, 0}).left()) {}
+		svc.soundboard.flags.menu.set(audio::Menu::shift);
+	}
+	if (controller.digital_action_status(config::DigitalAction::menu_right).triggered) {
+		m_description->flush();
+		if (m_buy_selector.move_direction({1, 0}).right()) {}
+		svc.soundboard.flags.menu.set(audio::Menu::shift);
+	}
 
-	// state == VendorState::buy ? text.buy_tab.setFillColor(colors::red) : text.buy_tab.setFillColor(colors::blue);
-	// state == VendorState::sell ? text.sell_tab.setFillColor(colors::red) : text.sell_tab.setFillColor(colors::blue);
-	// bool exchanged{};
-	// orb.sprite.update(sf::Vector2f{svc.window->f_screen_dimensions().x - 60.f, 32.f} + bring_in, 0, 0, true);
-	// text.orb_count.setString(player.wallet.get_balance_string());
-	// if (opening()) { return; }
+	m_orb_display.update(player.wallet.get_balance());
+	if (m_description) { m_description->update(svc, player, map, m_constituents[2].get_window_position() + sf::Vector2f{108.f, 108.f}); }
 
-	// auto& sellable_items = player.catalog.inventory.sellable_items;
-	// auto& player_inventory = player.catalog.inventory;
-	// auto& vendor = map.get_npc(npc_id).get_vendor();
-	// auto& selector = state == VendorState::sell ? m_sell_selector : m_buy_selector;
+	!flags.test(VendorDialogStatus::opened) ? m_background.setFillColor(util::ColorUtils::fade_out(colors::pioneer_black)) : m_background.setFillColor(util::ColorUtils::fade_in(colors::pioneer_black));
 
-	// if (!m_item_menu) {
-	//	// TODO: refactor input handling in VendorDialog
-	//	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_left).triggered) { /*selector.go_left();*/
-	//	}
-	//	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).triggered) { /*selector.go_right();*/
-	//	}
-	//	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) { /* selector.go_up();*/
-	//	}
-	//	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) { /*selector.go_down();*/
-	//	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) { close(); }
-	// } else {
-	//	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) { m_item_menu->down(svc); }
-	//	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) { m_item_menu->up(svc); }
-	//	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) { m_item_menu = {}; }
-	// }
-	// if (!m_item_menu && (svc.controller_map.digital_action_status(config::DigitalAction::menu_tab_left).triggered || svc.controller_map.digital_action_status(config::DigitalAction::menu_tab_right).triggered)) {
-	//	state = state == VendorState::buy ? VendorState::sell : VendorState::buy;
-	//	/*selector.switch_sections({1, 0});*/
-	//	update_table(player, map, true);
-	//	ui.setTextureRect(sf::IntRect{{0, static_cast<int>(state) * svc.window->i_screen_dimensions().y}, {svc.window->i_screen_dimensions()}});
-	//	svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
-	//	refresh(player, map);
-	// }
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_tab_left).triggered) {
+		m_state = is_buying() ? VendorState::sell : VendorState::buy;
+		svc.soundboard.flags.menu.set(audio::Menu::select);
+	}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_tab_right).triggered) {
+		m_state = is_buying() ? VendorState::sell : VendorState::buy;
+		svc.soundboard.flags.menu.set(audio::Menu::select);
+	}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
+		close();
+		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+	}
 
-	// for (auto& idx : sellable_items) {
-	//	auto& item = player_inventory.get_item_at_index(idx);
-	//	if (!flags.test(VendorDialogStatus::opened)) { item.set_offset({}); }
-	// }
-	// auto ctr{0};
-	// switch (state) {
-	// case VendorState::buy:
-	//	if (vendor.inventory.items.empty()) { break; }
-	//	ctr = 0;
-	//	m_item_menu = MiniMenu(svc, {"buy", "cancel"}, selector.get_menu_position(), true);
-	//	// TODO: refactor selector dimension updates
-	//	/*selector.update();
-	//	selector.set_size(static_cast<int>(vendor.inventory.items.size()));*/
-	//	if (vendor.inventory.items.size() < 1) { text.price_number.setString("..."); }
-	//	for (auto& item : vendor.inventory.items) {
-	//		item.update(svc, ctr, ui_constants.items_per_row, {});
-	//		ctr == selector.get_current_selection() ? item.select() : item.deselect();
-	//		if (item.selected()) {
-	//			// TODO: refactor selector dimension updates
-	//			/*selector.set_position(item.get_position());*/
-	//			info.load_single_message(item.get_description());
-	//			auto f_value = static_cast<float>(item.get_value());
-	//			sale_price = f_value + f_value * vendor.get_upcharge();
-	//			text.price_number.setString(std::format("{}", sale_price));
-	//		}
-	//		++ctr;
-	//	}
-	//	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
-	//		if (m_item_menu) {
-	//			switch (m_item_menu->get_selection()) {
-	//			case 0:
-	//				if (selector.get_current_selection() < vendor.inventory.items.size()) {
-	//					if (player.wallet.get_balance() <= sale_price) {
-	//						svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-	//						m_item_menu = {};
-	//						break;
-	//					}
-	//					auto item_id = vendor.inventory.items.at(selector.get_current_selection()).get_id();
-	//					player.give_item(item_id, 1);
-	//					player.give_drop(item::DropType::orb, -sale_price);
-	//					balance -= sale_price;
-	//					vendor.inventory.remove_item(svc, item_id, 1);
-	//					svc.soundboard.flags.item.set(audio::Item::vendor_sale);
-	//					exchanged = true;
-	//				}
-	//				m_item_menu = {};
-	//				break;
-	//			case 1:
-	//				m_item_menu = {};
-	//				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-	//				break;
-	//			}
-	//		} else {
-	//			if (selector.get_current_selection() < vendor.inventory.items.size()) {
-	//				m_item_menu = MiniMenu(svc, {"buy", "cancel"}, selector.get_menu_position(), true);
-	//				svc.soundboard.flags.console.set(audio::Console::menu_open);
-	//			} else {
-	//				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-	//			}
-	//		}
-	//	}
-	//	break;
-	// case VendorState::sell:
-	//	if (sellable_items.empty()) { break; }
-	//	ctr = 0;
-	//	m_item_menu = MiniMenu(svc, {"sell", "cancel"}, selector.get_menu_position(), true);
-	//	// TODO: refactor selector dimension updates
-	//	/*selector.set_size(static_cast<int>(sellable_items.size()));
-	//	selector.update();*/
-	//	if (sellable_items.size() < 1) { text.price_number.setString("..."); }
-	//	for (auto const& idx : sellable_items) {
-	//		auto& item = player_inventory.get_item_at_index(idx);
-	//		item.update(svc, ctr, ui_constants.items_per_row, {});
-	//		ctr == selector.get_current_selection() ? item.select() : item.deselect();
-	//		if (item.selected()) {
-	//			// TODO: refactor selector dimension updates
-	//			/*selector.set_position(item.get_position());*/
-	//			info.load_single_message(item.get_description());
-	//			auto const f_value = static_cast<float>(item.get_value());
-	//			sale_price = f_value - f_value * vendor.get_upcharge();
-	//			text.price_number.setString(std::format("{}", sale_price));
-	//		}
-	//		++ctr;
-	//	}
-	//	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
-	//		if (m_item_menu) {
-	//			switch (m_item_menu->get_selection()) {
-	//			case 0:
-	//				if (selector.get_current_selection() < sellable_items.size()) {
-	//					auto& item = player_inventory.get_item_at_index(sellable_items.at(selector.get_current_selection()));
-	//					if (item.is_equipped()) { player.unequip_item(item.get_apparel_type(), item.get_id()); }
-	//					vendor.inventory.add_item(svc, item.get_id(), 1);
-	//					player.take_item(item.get_id());
-	//					player.give_drop(item::DropType::orb, sale_price);
-	//					balance += sale_price;
-	//					svc.soundboard.flags.item.set(audio::Item::vendor_sale);
-	//					flags.set(VendorDialogStatus::made_sale);
-	//					exchanged = true;
-	//				}
-	//				m_item_menu = {};
-	//				break;
-	//			case 1:
-	//				m_item_menu = {};
-	//				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-	//				break;
-	//			}
-	//		} else {
-	//			if (selector.get_current_selection() < sellable_items.size()) {
-	//				m_item_menu = MiniMenu(svc, {"sell", "cancel"}, selector.get_menu_position(), true);
-	//				svc.soundboard.flags.console.set(audio::Console::menu_open);
-	//			} else {
-	//				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-	//			}
-	//		}
-	//	}
-	//	break;
-	// }
-	// info.update(svc);
-	// constexpr auto minimenu_dim = sf::Vector2{108.f, 108.f};
-	// if (m_item_menu) { m_item_menu->update(svc, minimenu_dim, selector.get_menu_position()); }
-	// update_table(player, map, true);
+	for (auto& c : m_constituents) { c.update(); }
+
+	is_buying() ? m_constituents[6].set_texture_rect({{200, 335}, {81, 95}}) : m_constituents[6].set_texture_rect({{281, 335}, {81, 95}}); // selection
+
+	auto selector_offset = m_buy_selector.get_menu_position() + sf::Vector2f{16.f, 28.f};
+	m_buy_selector.set_position(m_constituents[1].get_window_position() + selector_offset);
+	m_buy_selector.update();
+
+	// update text
+	is_buying() ? text.buy_tab.setFillColor(colors::pioneer_red) : text.buy_tab.setFillColor(colors::pioneer_dark_red);
+	is_selling() ? text.sell_tab.setFillColor(colors::pioneer_red) : text.sell_tab.setFillColor(colors::pioneer_dark_red);
+	auto bx_off = is_selling() ? 8.f : 0.f;
+	auto sx_off = is_buying() ? 8.f : 0.f;
+	text.buy_tab.setPosition(m_constituents[6].get_window_position() + sf::Vector2f{50.f + bx_off, 52.f});
+	text.sell_tab.setPosition(m_constituents[6].get_window_position() + sf::Vector2f{50.f + sx_off, 142.f});
+	text.vendor_name.setPosition(m_constituents[3].get_window_position() + sf::Vector2f{26.f, 34.f});
+	text.price.setPosition(m_constituents[4].get_window_position() + sf::Vector2f{72.f, 164.f});
 }
 
 void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map) {
-	// auto const& sellable_items = player.catalog.inventory.sellable_items;
-	auto& player_inventory = player.catalog.inventory;
-	/*auto& get_vendor = map.get_npc(npc_id);
-	if (!get_vendor.has_value()) { return; }*/
-	// auto& vendor = get_vendor.value()->get_vendor();
-	auto const& selector = state == VendorState::sell ? m_sell_selector : m_buy_selector;
+	win.draw(m_artwork);
+	if (is_opening()) { return; }
+	win.draw(m_background);
+	auto nani = player.wardrobe_widget.get_sprite();
+	nani.setPosition(m_constituents[5].get_window_position() + sf::Vector2f{196.f, 14.f});
+	win.draw(nani);
+	m_vendor_portrait.set_position(m_constituents[0].get_window_position() + sf::Vector2f{20.f, 10.f});
+	win.draw(m_vendor_portrait);
+	for (auto& c : m_constituents) { c.render(win); }
+	m_orb_display.render(win, m_constituents[5].get_window_position() + sf::Vector2f{24.f, 238.f});
+	m_buy_selector.render(win, m_selector_sprite.get_sprite(), {}, {});
 
-	text.orb_count.setOrigin(sf::Vector2{text.orb_count.getLocalBounds().size.x, 0.f});
-	win.draw(artwork);
-	win.draw(ui);
-	win.draw(text.vendor_name);
 	win.draw(text.buy_tab);
 	win.draw(text.sell_tab);
-	win.draw(text.orb_count);
+	win.draw(text.vendor_name);
 	win.draw(text.price);
-	win.draw(text.price_number);
-	orb.sprite.render(svc, win, {});
-	portrait.render(win);
-	if (info.is_active()) {
-		info.render(win);
-		info.write(win, true);
-	}
-	// TODO: update with new Selector rendering
-	switch (state) {
-	case VendorState::buy:
-		// if (vendor.inventory.items.empty()) { break; }
-		// if (!opening()) { /*selector.render(win);*/
-		// }
-		// for (auto& item : vendor.inventory.items) {
-		//	if (!opening()) { item.render(svc, win, {0.f, 0.f}); }
-		//	if (item.selected()) {
-		//		text.item_label.setString(item.get_label().data());
-		//		win.draw(text.item_label);
-		//	}
-		// }
-		break;
-	case VendorState::sell:
-		// if (player.catalog.inventory.sellable_items.empty()) { break; }
-		// if (!opening()) { /*selector.render(win);*/
-		// }
-		// for (auto const& idx : sellable_items) {
-		//	auto& item = player_inventory.get_item_at_index(idx);
-		//	if (!opening()) { item.render(svc, win, {0.f, 0.f}); }
-		//	if (item.selected()) {
-		//		text.item_label.setString(item.get_label().data());
-		//		win.draw(text.item_label);
-		//	}
-		// }
-		break;
-	}
-	if (m_item_menu) { m_item_menu->render(win); }
-	if (intro.running()) { win.draw(artwork); }
 }
 
 void VendorDialog::close() { flags.reset(VendorDialogStatus::opened); }
 
-void VendorDialog::update_table(player::Player& player, world::Map& map, bool new_dim) {
-	/*auto const& vendor = map.get_npc(npc_id).get_vendor();
-	auto& selector = state == VendorState::sell ? m_sell_selector : m_buy_selector;
-	auto const num_items = (state == VendorState::sell) ? player.catalog.inventory.sellable_items.size() : vendor.inventory.items.size();
-	auto const ipr = ui_constants.items_per_row;
-	auto const dim = sf::Vector2{std::min(static_cast<int>(num_items), ipr), static_cast<int>(std::ceil(static_cast<float>(num_items) / static_cast<float>(ipr)))};*/
-	// TODO: refactor selection changes in ui elements
-	/*if (new_dim) { selector.set_size(static_cast<int>(num_items)); }
-	selector.set_dimensions(dim);
-	selector.update();*/
+void VendorDialog::update_table(player::Player& player, world::Map& map, bool new_dim) {}
+
+void VendorDialog::refresh(player::Player& player, world::Map& map) const {}
+
+VendorConstituent::VendorConstituent(automa::ServiceProvider& svc, std::string_view label, sf::IntRect lookup, int speed, util::InterpolationType type)
+	: Drawable(svc, "vendor_gizmo"), path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "vendor_" + std::string{label}, speed, type} {
+	set_texture_rect(lookup);
 }
 
-void VendorDialog::refresh(player::Player& player, world::Map& map) const {
-	/*auto const& sellable_items = player.catalog.inventory.sellable_items;
-	auto& player_inventory = player.catalog.inventory;
-	auto& vendor = map.get_npc(npc_id).get_vendor();
-	for (auto& idx : sellable_items) {
-		auto& item = player_inventory.get_item_at_index(idx);
-		auto const randv = random::random_vector_float(-16.f, 16.f);
-		auto const startpos = item.get_position() + randv;
-		item.gravitator.set_position(startpos);
-		item.set_offset(sf::Vector2{214.f - 24.f, 62.f - 24.f});
-	}
-	for (auto& item : vendor.inventory.items) {
-		auto const randv = random::random_vector_float(-16.f, 16.f);
-		auto const startpos = item.get_position() + randv;
-		item.gravitator.set_position(startpos);
-		item.set_offset(sf::Vector2{214.f - 24.f, 62.f - 24.f});
-	}*/
+void VendorConstituent::update() {
+	path.update();
+	set_position(path.get_position());
 }
+
+void VendorConstituent::render(sf::RenderWindow& win) { win.draw(*this); }
 
 } // namespace fornani::gui

@@ -198,6 +198,9 @@ void DataManager::load_data(std::string in_room) {
 		m_item_labels.insert({entry["id"].as<int>(), key});
 	}
 
+	gui_text = *dj::Json::from_file((finder.resource_path() + "/text/console/gui.json").c_str());
+	assert(!gui_text.is_null());
+
 	m_services->stopwatch.stop();
 	m_services->stopwatch.print_time("data loaded");
 	m_services->stopwatch.start();

@@ -1,0 +1,8 @@
+{
+	"vendor": {
+		"buy": "BUY",
+		"sell": "SELL",
+		"price": "PRICE:",
+		"value": "VALUE:"
+	}
+}
