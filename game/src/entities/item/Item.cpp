@@ -21,6 +21,9 @@ Item::Item(dj::Json& source, std::string_view label) : m_label{label} {
 	m_info.actual_description = in_data["actual_description"].as_string().data();
 	m_info.naive_title = in_data["naive_title"] ? in_data["naive_title"].as_string().data() : m_info.actual_title;
 	m_info.naive_description = in_data["naive_description"] ? in_data["naive_description"].as_string().data() : m_info.actual_description;
+
+	m_stats.value = in_data["value"].as<int>();
+	m_stats.rarity = static_cast<Rarity>(in_data["rarity"].as<int>());
 }
 
 void Item::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f position) {

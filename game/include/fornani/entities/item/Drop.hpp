@@ -1,13 +1,14 @@
 
 #pragma once
 
+#include <fornani/core/Common.hpp>
+#include <fornani/entities/animation/AnimatedSprite.hpp>
 #include <fornani/graphics/Animatable.hpp>
-#include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/io/Logger.hpp"
-#include "fornani/particle/Sparkler.hpp"
-#include "fornani/utils/CircleCollider.hpp"
-#include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/StateFunction.hpp"
+#include <fornani/io/Logger.hpp>
+#include <fornani/particle/Sparkler.hpp>
+#include <fornani/utils/CircleCollider.hpp>
+#include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/StateFunction.hpp>
 #define DROP_BIND(f) std::bind(&Drop::f, this)
 
 namespace fornani::automa {
@@ -22,7 +23,6 @@ namespace fornani::item {
 
 enum class DropType : std::uint8_t { heart, orb, gem };
 enum class DropState : std::uint8_t { neutral, shining };
-enum class Rarity : std::uint8_t { common, uncommon, rare, priceless };
 enum class GemType : std::uint8_t { rhenite, sapphire };
 enum class DropFlags : std::uint8_t { neutral, shining };
 

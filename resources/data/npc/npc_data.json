@@ -58,6 +58,7 @@
 
   "gobe": {
     "id": 3,
+    "vendor_id": 1,
     "dimensions": [24, 24],
     "sprite_dimensions": [51, 32],
     "sprite_offset": [0, -19],
@@ -80,11 +81,11 @@
       }
     ],
     "vendor": {
-      "id": 3,
       "upcharge": 0.2,
       "common_items": ["clay_statue", "bronze_bracelet", "clamp"],
       "uncommon_items": ["red_jeans"],
-      "rare_items": ["sapphire"]
+      "rare_items": ["sapphire"],
+      "guaranteed_finite_items": ["lantern"]
     }
   },
   "minigus": {

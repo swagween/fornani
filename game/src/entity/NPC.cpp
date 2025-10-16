@@ -45,7 +45,10 @@ NPC::NPC(automa::ServiceProvider& svc, dj::Json const& in)
 	auto const& in_data = svc.data.npc[m_label];
 
 	m_offset = sf::Vector2f{svc.data.npc[m_label]["sprite_offset"][0].as<float>(), svc.data.npc[m_label]["sprite_offset"][1].as<float>()};
-	if (in_data["vendor"] && svc.data.marketplace.contains(get_id())) { vendor = &svc.data.marketplace.at(get_id()); }
+	if (in_data["vendor"] && svc.data.marketplace.contains(get_specifier())) {
+		vendor = &svc.data.marketplace.at(get_specifier());
+		NANI_LOG_INFO(Entity::m_logger, "This NPC is a vendor: {}", get_tag());
+	}
 
 	collider = shape::Collider({svc.data.npc[m_label]["dimensions"][0].as<float>(), svc.data.npc[m_label]["dimensions"][1].as<float>()});
 	collider.sync_components();

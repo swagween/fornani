@@ -1,13 +1,12 @@
 
 #pragma once
 
-#include "fornani/io/Logger.hpp"
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Polymorphic.hpp"
-
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
-
+#include <fornani/core/Common.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Polymorphic.hpp>
 #include <string_view>
 
 namespace fornani::item {
@@ -17,6 +16,11 @@ struct ItemInformation {
 	std::string actual_title{};
 	std::string naive_description{};
 	std::string actual_description{};
+};
+
+struct ItemStats {
+	int value{};
+	Rarity rarity{};
 };
 
 enum class ItemType : std::uint8_t { ability, key, collectible, gizmo, apparel };
@@ -34,6 +38,8 @@ class Item : public Polymorphic {
 
 	[[nodiscard]] auto get_id() const -> int { return m_id; }
 	[[nodiscard]] auto get_type() const -> ItemType { return m_type; }
+	[[nodiscard]] auto get_rarity() const -> Rarity { return m_stats.rarity; }
+	[[nodiscard]] auto get_value() const -> int { return m_stats.value; }
 	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
 	[[nodiscard]] auto get_title() const -> std::string { return is_revealed() ? m_info.actual_title : m_info.naive_title; }
 	[[nodiscard]] auto get_description() const -> std::string { return is_revealed() ? m_info.actual_description : m_info.naive_description; }
@@ -56,6 +62,7 @@ class Item : public Polymorphic {
 	sf::Vector2i m_table_origin{};
 	std::string m_label;
 	ItemInformation m_info{};
+	ItemStats m_stats{};
 	ItemType m_type;
 	util::BitFlags<ItemFlags> m_flags{};
 	util::BitFlags<ItemState> m_state{};

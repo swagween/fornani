@@ -24,6 +24,7 @@ void Vendor::generate_inventory(automa::ServiceProvider& svc) {
 			inventory.add_item(svc.data.item, common_items.at(choice));
 		}
 	}
+	for (auto const& gfi : guaranteed_finite_items) { inventory.add_item(svc.data.item, gfi); }
 }
 
 } // namespace fornani::npc

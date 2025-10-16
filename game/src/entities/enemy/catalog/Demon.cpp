@@ -28,6 +28,7 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map, int variant)
 	attacks.stab.sensor.bounds.setRadius(10);
 	attacks.stab.sensor.drawable.setFillColor(colors::blue);
 	parts.shield.set_team(arms::Team::guardian);
+	flags.state.set(StateFlags::no_shake);
 
 	cooldowns.awaken.start();
 }

@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <fornani/entities/animation/AnimatedSprite.hpp>
+#include <fornani/entity/NPC.hpp>
 #include <fornani/gui/InventorySelector.hpp>
 #include <fornani/gui/MiniMenu.hpp>
 #include <fornani/gui/OrbDisplay.hpp>
@@ -28,6 +29,7 @@ namespace fornani::gui {
 
 enum class VendorDialogStatus : std::uint8_t { opened, made_sale };
 enum class VendorState : std::uint8_t { buy, sell };
+enum class VendorConstituentType : std::uint8_t { portrait, wares, description, name, core, selection, nani };
 
 struct VendorConstituent : public Drawable {
 	VendorConstituent(automa::ServiceProvider& svc, std::string_view label, sf::IntRect lookup, int speed = 128, util::InterpolationType type = util::InterpolationType::quadratic);
@@ -41,7 +43,7 @@ class VendorDialog {
 	VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map);
-	void close();
+	void close(automa::ServiceProvider& svc);
 	void update_table(player::Player& player, world::Map& map, bool new_dim);
 	void refresh(player::Player& player, world::Map& map) const;
 
@@ -66,16 +68,20 @@ class VendorDialog {
 	OrbDisplay m_orb_display;
 	sf::RectangleShape m_background{};
 
+	NPC* my_npc;
+
 	int vendor_id{};
 	int npc_id{};
 
 	float sale_price{};
 	float balance{};
-	std::unordered_map<int, int> get_npc_id{};
 	sf::Vector2f portrait_position{44.f, 18.f};
 	sf::Vector2f bring_in{};
 
 	std::array<VendorConstituent, 7> m_constituents;
+
+	std::array<std::array<int, 8>, 4> m_items_list{};
+	Drawable m_item_sprite;
 
 	struct {
 		sf::Text vendor_name;
@@ -96,6 +102,8 @@ class VendorDialog {
 	struct {
 		anim::AnimatedSprite sprite;
 	} orb;
+
+	io::Logger m_logger{"Vendor"};
 };
 
 } // namespace fornani::gui

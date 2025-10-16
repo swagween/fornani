@@ -29,6 +29,11 @@ void Archer::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		return;
 	}
 
+	if (secondary_collider) {
+		secondary_collider->physics.position = collider.physics.position - sf::Vector2f{0.f, 24.f};
+		secondary_collider->sync_components();
+	}
+
 	auto distance = (player.collider.get_center() - collider.get_center()).length();
 	auto correction = sf::Vector2f{0.f, sqrt(distance)};
 	m_player_target = player.collider.get_center() - correction;

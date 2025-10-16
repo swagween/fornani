@@ -49,6 +49,10 @@ namespace arms {
 enum class Team : std::uint8_t { nani, skycorps, guardian, pioneer, beast };
 }
 
+namespace item {
+enum class Rarity : std::uint8_t { common, uncommon, rare, priceless };
+}
+
 constexpr auto gem_chance_v = 0.08f;
 constexpr auto heart_chance_v = 8.f;
 constexpr auto enemy_limit_v = 64;

@@ -111,7 +111,9 @@
     "actual_title": "Lantern",
     "naive_description": "An oil-fueled lantern that will light up any dark areas.",
     "hidden_description": "An oil-fueled lantern that will light up any dark areas.",
-    "unique": true
+    "unique": true,
+    "rarity": 2,
+    "value": 2100
   },
   "boiler_key": {
     "id": 15,
@@ -189,6 +191,7 @@
   },
   "bronze_bracelet": {
     "id": 23,
+    "lookup": [10, 1],
     "actual_title": "Bronze Bracelet",
     "naive_description": "A common treasure item.",
     "unique": false,
@@ -221,6 +224,7 @@
   },
   "clamp": {
     "id": 27,
+    "lookup": [6, 1],
     "actual_title": "Clamp",
     "naive_description": "A painted metal clamp. It could be useful for home improvements.",
     "unique": false,
@@ -282,10 +286,12 @@
     "unique": true,
     "equippable": true,
     "apparel_type": 0,
+    "rarity": 2,
     "value": 1220
   },
   "clay_statue": {
     "id": 65,
+    "lookup": [0, 4],
     "category": 2,
     "actual_title": "Clay Statue",
     "naive_description": "A common artifact of the ancient peoples.",

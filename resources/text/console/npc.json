@@ -1209,7 +1209,7 @@
         ],
         [
           {
-            "codes": [[20, 1]],
+            "codes": [[20, 3]],
             "message": "Sure, let's trade!"
           },
           { "codes": [[1, 2]], "message": "Maybe later." }
@@ -1274,7 +1274,7 @@
         ],
         [
           {
-            "codes": [[20, 1]],
+            "codes": [[20, 3]],
             "message": "Sure thing! Here's what I've picked up over the last few weeks..."
           }
         ],

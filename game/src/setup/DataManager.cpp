@@ -74,10 +74,7 @@ void DataManager::load_data(std::string in_room) {
 			auto this_id = room_data["meta"]["room_id"].as<int>();
 			auto this_name = this_room.path().filename().string();
 			auto this_biome = room_data["meta"]["biome"].is_string() ? room_data["meta"]["biome"].as_string().data() : this_region.path().filename().string();
-			if (is_duplicate_room(this_id)) {
-				NANI_LOG_ERROR(m_logger, "Found a file with a duplicate room ID: {}. ID: {}", this_room.path().filename().string(), this_id);
-				continue;
-			}
+			if (is_duplicate_room(this_id)) { continue; }
 			auto room_str = this_room.path().filename().string();
 			room_str = room_str.substr(0, room_str.find('.'));
 			map_jsons.push_back(MapData{this_id, room_data, this_region.path().filename().string(), this_biome, room_str});
@@ -108,8 +105,6 @@ void DataManager::load_data(std::string in_room) {
 			entry["region"] = this_biome;
 			entry["folder"] = this_region.path().filename().string();
 			map_table["rooms"].push_back(entry);
-			NANI_LOG_INFO(m_logger, "Added to map table: {}", this_name);
-			NANI_LOG_INFO(m_logger, "In folder: {}", this_region.path().filename().string());
 		}
 	}
 	if (!map_table.to_file((finder.resource_path() + "/data/level/map_table.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save map table!"); }
@@ -183,13 +178,15 @@ void DataManager::load_data(std::string in_room) {
 
 	// load marketplace
 	for (auto const& entry : npc.as_object()) {
-		if (!entry.second["vendor"]) { continue; }
-		marketplace.insert({entry.second["vendor"]["id"].as<int>(), npc::Vendor()});
-		auto& vendor = marketplace.at(entry.second["vendor"]["id"].as<int>());
+		if (!entry.second["vendor"].is_object()) { continue; }
+		marketplace.insert({entry.second["id"].as<int>(), npc::Vendor()});
+		auto& vendor = marketplace.at(entry.second["id"].as<int>());
 		vendor.set_upcharge(entry.second["vendor"]["upcharge"].as<float>());
 		for (auto& item : entry.second["vendor"]["common_items"].as_array()) { vendor.common_items.push_back(item.as_string().data()); }
 		for (auto& item : entry.second["vendor"]["uncommon_items"].as_array()) { vendor.uncommon_items.push_back(item.as_string().data()); }
 		for (auto& item : entry.second["vendor"]["rare_items"].as_array()) { vendor.rare_items.push_back(item.as_string().data()); }
+		for (auto& item : entry.second["vendor"]["guaranteed_finite_items"].as_array()) { vendor.guaranteed_finite_items.push_back(item.as_string().data()); }
+		NANI_LOG_INFO(m_logger, "Created Vendor in marketplace with ID {}", entry.second["id"].as<int>());
 	}
 
 	// load item labels
@@ -621,10 +618,7 @@ void DataManager::respawn_all() {
 
 bool data::DataManager::is_duplicate_room(int id) const {
 	for (auto& json : map_jsons) {
-		if (json.id == id) {
-			NANI_LOG_ERROR(m_logger, ">>> found a dup! room: {}, ID: {}", json.room_label, id);
-			return true;
-		}
+		if (json.id == id) { return true; }
 	}
 	return false;
 }
@@ -714,10 +708,7 @@ auto DataManager::get_gun_id_from_tag(std::string_view tag) const -> int { retur
 
 auto DataManager::get_room_data_from_id(int id) const& -> std::optional<dj::Json> {
 	for (auto const& room : map_table["rooms"].as_array()) {
-		if (room["room_id"].as<int>() == id) {
-			return room;
-			NANI_LOG_DEBUG(m_logger, "Found room {}", id);
-		}
+		if (room["room_id"].as<int>() == id) { return room; }
 	}
 	return std::nullopt;
 }

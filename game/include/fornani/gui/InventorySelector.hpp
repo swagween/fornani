@@ -25,6 +25,7 @@ class InventorySelector {
 	[[nodiscard]] auto get_horizonal_index() const -> int { return m_selection[0].get(); }
 	[[nodiscard]] auto get_vertical_index() const -> int { return m_selection[1].get(); }
 	[[nodiscard]] auto get_spacing() const -> sf::Vector2f { return m_spacing; };
+	[[nodiscard]] auto get_table_position_from_index(int index) const -> sf::Vector2f { return sf::Vector2f{static_cast<float>(index % m_table_dimensions.x), static_cast<float>(index / m_table_dimensions.x)}.componentWiseMul(m_spacing); };
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_body.physics.position; };
 	[[nodiscard]] auto get_menu_position() const -> sf::Vector2f { return sf::Vector2f{m_selection[0].as<float>(), m_selection[1].as<float>()}.componentWiseMul(m_spacing); };
 

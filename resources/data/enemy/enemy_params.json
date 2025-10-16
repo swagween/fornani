@@ -405,7 +405,8 @@
 			"map_collision": true,
 			"player_collision": false,
 			"foreground": false,
-			"rare_drops": false
+			"rare_drops": false,
+			"secondary_collider": true
 		}
 	},
 	"imp": {

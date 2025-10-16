@@ -119,7 +119,6 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 
 	if (!local) { entities = fornani::EntitySet{svc, finder, metadata["entities"], room_name}; }
 
-	for (auto const& room : svc.data.map_jsons) { NANI_LOG_DEBUG(m_logger, "Room from data: {}", room.room_label); }
 	auto name = room_name.substr(0, room_name.find('.'));
 	auto it = std::find_if(svc.data.map_jsons.begin(), svc.data.map_jsons.end(), [name](auto const& r) { return r.room_label == name; });
 	NANI_LOG_DEBUG(m_logger, "Room from canvas: {}", name);

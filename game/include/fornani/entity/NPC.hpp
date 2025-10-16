@@ -60,6 +60,9 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	[[nodiscard]] auto get_number_of_suites() const -> int { return static_cast<int>(conversations.size()); }
 	[[nodiscard]] auto get_tag() const -> std::string { return m_label; }
 	[[nodiscard]] auto get_specifier() const -> int { return m_id.get(); }
+	[[nodiscard]] auto get_vendor_id() const -> int { return get_specifier(); }
+
+	[[nodiscard]] auto get_vendor() const -> std::optional<npc::Vendor*> { return vendor; }
 
   protected:
 	void set_force_interact(bool to) { to ? m_state.set(NPCState::force_interact) : m_state.reset(NPCState::force_interact); }
@@ -77,6 +80,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	sf::Vector2f m_offset{};
 	std::optional<npc::Vendor*> vendor;
 	int current_location{};
+	int vendor_id{};
 	automa::ServiceProvider* m_services;
 
 	/* data-driven members */
