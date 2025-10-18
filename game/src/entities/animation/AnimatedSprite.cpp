@@ -67,4 +67,14 @@ void AnimatedSprite::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	}
 }
 
+void AnimatedSprite::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, LightShader& shader, Palette& palette) {
+	if (!svc.greyblock_mode()) {
+		sprite.setPosition(position - cam);
+		shader.submit(win, palette, sprite);
+	} else {
+		drawbox.setPosition(position - cam);
+		win.draw(drawbox);
+	}
+}
+
 } // namespace fornani::anim

@@ -2,12 +2,18 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/components/SteeringBehavior.hpp>
+#include <fornani/gui/Gizmo.hpp>
 #include <fornani/io/Logger.hpp>
+#include <fornani/shader/Palette.hpp>
+#include <fornani/utils/RectPath.hpp>
 #include <vector>
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/components/SteeringBehavior.hpp"
-#include "fornani/gui/Gizmo.hpp"
-#include "fornani/utils/RectPath.hpp"
+
+namespace fornani {
+class LightShader;
+class Palette;
+} // namespace fornani
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -36,7 +42,7 @@ class Dashboard {
   public:
 	Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f dimensions);
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, LightShader& shader);
 	bool handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard);
 	void set_position(sf::Vector2f to_position, bool force = false);
 	void set_selection(sf::Vector2i to_selection);
@@ -55,7 +61,9 @@ class Dashboard {
 	DashboardPort m_current_port{};
 	DashboardState m_state{};
 
+	Palette m_palette;
 	sf::Sprite m_sprite;
+	util::Cooldown m_light_shift{light_shift_time_v};
 
 	struct {
 		Constituent top_left_frontplate;

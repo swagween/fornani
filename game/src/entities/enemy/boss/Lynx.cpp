@@ -14,7 +14,7 @@ constexpr auto lynx_framerate = 8;
 constexpr auto run_threshold_v = 0.002f;
 
 Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console)
-	: Enemy(svc, "lynx"), NPC(svc, "lynx"), m_health_bar(svc, "lynx"),
+	: Enemy(svc, "lynx"), NPC(svc, std::string_view{"lynx"}), m_health_bar(svc, "lynx"),
 
 	  m_console{&console}, m_map{&map}, m_cooldowns{.run{240}, .post_hurt{64}, .post_shuriken_toss{1200}, .post_levitate{1000}, .start_levitate{150}, .throw_shuriken{60}}, m_services{&svc},
 	  m_attacks{.left_shockwave{{30, 400, 2, {-1.5f, 0.f}}}, .right_shockwave{{30, 400, 2, {1.5f, 0.f}}}}, m_shuriken(svc, "shuriken"), m_magic{svc, {40.f, 40.f}, colors::white, "lynx_magic"} {
@@ -210,6 +210,7 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	}
 
 	NPC::update(svc, map, *m_console, player);
+	if (m_console->has_value()) { set_force_interact(false); }
 
 	if (!health.is_dead()) {
 		// first phase starts
@@ -227,6 +228,7 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 			request(LynxState::second_phase);
 			svc.music_player.filter_fade_in(80.f, 40.f);
 			set_distant_interact(true);
+			set_force_interact(true);
 			flush_conversations();
 			push_conversation(3);
 		}
@@ -601,6 +603,7 @@ fsm::StateFunction Lynx::update_defeat() {
 	if (Enemy::animation.just_started()) {
 		m_flags.reset(LynxFlags::battle_mode);
 		set_distant_interact(true);
+		set_force_interact(true);
 		m_map->clear_projectiles();
 		flush_conversations();
 		push_conversation(2);

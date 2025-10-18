@@ -80,18 +80,18 @@ void WardrobeGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player
 	}
 }
 
-void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
+void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
+	Gizmo::render(svc, win, player, shader, palette, cam, foreground);
 	if (is_foreground() != foreground) { return; }
-	Gizmo::render(svc, win, player, cam);
 
 	// insertion pins
 	m_sprite.setTextureRect(sf::IntRect{{330, 10}, {7, 80}});
 	auto pin_offset{sf::Vector2f{260.f, 72.f}};
 	m_sprite.setPosition(m_placement + m_path.get_position() + pin_offset - cam);
-	win.draw(m_sprite);
+	shader.submit(win, palette, m_sprite);
 
 	// outfitter
-	if (m_outfitter) { m_outfitter->render(svc, win, player, cam, foreground); }
+	if (m_outfitter) { m_outfitter->render(svc, win, player, shader, palette, cam, foreground); }
 
 	// player portrait + scanline
 	player.wardrobe_widget.render(win, cam);
@@ -102,7 +102,7 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	win.draw(m_scanline);
 
 	// main piece
-	m_core.render(svc, win, cam);
+	m_core.render(svc, win, cam, shader, palette);
 
 	// small add-ons
 	player.render(svc, win, cam, m_placement + m_path.get_position() + m_pawn_offset);
@@ -112,7 +112,7 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	auto offset{sf::Vector2f{10.f, 4.f}};
 	m_health_display.hearts.setPosition(m_placement + m_path.get_position() + m_health_display.position + offset - cam);
 	m_health_display.sockets.setPosition(m_placement + m_path.get_position() + m_health_display.position - cam);
-	win.draw(m_health_display.sockets);
+	shader.submit(win, palette, m_health_display.sockets);
 	win.draw(m_health_display.hearts);
 
 	// wardrobe display
@@ -154,7 +154,7 @@ void WardrobeGizmo::on_close(automa::ServiceProvider& svc, [[maybe_unused]] play
 	Gizmo::on_close(svc, player, map);
 	if (m_outfitter) {
 		m_outfitter->close();
-		m_outfitter->deselect();
+		m_outfitter->neutralize();
 	}
 }
 

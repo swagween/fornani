@@ -30,7 +30,8 @@ class Dojo final : public GameState {
 	std::optional<std::unique_ptr<gui::InventoryWindow>> inventory_window{};
 
   private:
-	std::optional<LightShader> m_shader{};
+	std::optional<LightShader> m_world_shader{};
+	std::optional<LightShader> m_gui_shader{};
 	ServiceProvider* m_services;
 
 	util::Cooldown m_enter_room;

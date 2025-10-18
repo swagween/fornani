@@ -66,6 +66,9 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.world.test(World::clink)) { play(engine, svc, svc.sounds.get_buffer("clink"), 0.2f); }
 	if (flags.world.test(World::vibration)) { play(engine, svc, svc.sounds.get_buffer("vibration")); }
 
+	// vendor
+	if (flags.item.test(Item::vendor_sale)) { play(engine, svc, svc.sounds.get_buffer("vendor_sale")); }
+
 	if (!svc.in_game()) {
 		flags = {};
 		proximities = {};
@@ -205,7 +208,6 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.item.test(Item::get)) { play(engine, svc, svc.sounds.get_buffer("item_get")); }
 	if (flags.item.test(Item::equip)) { play(engine, svc, svc.sounds.get_buffer("item_equip")); }
 	if (flags.item.test(Item::unequip)) { play(engine, svc, svc.sounds.get_buffer("item_unequip")); }
-	if (flags.item.test(Item::vendor_sale)) { play(engine, svc, svc.sounds.get_buffer("vendor_sale")); }
 
 	// player
 	if (flags.player.test(Player::jump)) { play(engine, svc, svc.sounds.get_buffer("nani_jump"), 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }

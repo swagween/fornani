@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "fornani/gui/Gizmo.hpp"
 #include <fornani/gui/console/TextWriter.hpp>
+#include "fornani/gui/Gizmo.hpp"
 #include "fornani/utils/BitFlags.hpp"
 
 #include <optional>
@@ -16,7 +16,7 @@ class DescriptionGizmo : public Gizmo {
 	/// @brief A text description for the highlighted item. Should be used for any gizmo that has item views.
 	DescriptionGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement, sf::IntRect lookup, sf::FloatRect text_bounds, sf::Vector2f start_position);
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) override;
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground = false) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground = false) override;
 	bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
 
 	void write(automa::ServiceProvider& svc, std::string_view message, sf::Font& font);

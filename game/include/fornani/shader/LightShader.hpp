@@ -50,7 +50,7 @@ struct PointLight {
 	float m_steering_force{};
 	bool m_has_steering{};
 };
-struct SpotLight {
+struct Spotlight {
 	sf::Vector2f position;
 	sf::Vector2f direction;
 	float radius;
@@ -58,10 +58,10 @@ struct SpotLight {
 	float attenuation_constant;
 	float attenuation_linear;
 	float attenuation_quadratic;
-	float cutoffAngle;
-	float outerCutoffAngle;
-	float distanceScaling;
-	float distanceFlat;
+	float cutoff_angle;
+	float outer_cutoff_angle;
+	float distance_scaling;
+	float distance_flat;
 };
 
 class ResourceFinder;
@@ -69,55 +69,58 @@ class LightShader {
   public:
 	LightShader(ResourceFinder& finder);
 
-	void ClearPointLights();
-	void ClearSpotLights();
+	void clear_point_lights();
+	void clear_spotlights();
 
-	void AddPointLight(sf::Vector2f position, int luminosity, float radius, float att_c, float att_l, float att_q, float distanceScaling, float distanceFlat);
-	void AddPointLight(PointLight pointlight) {
-		AddPointLight(pointlight.position, pointlight.luminosity, pointlight.radius, pointlight.attenuation_constant, pointlight.attenuation_linear, pointlight.attenuation_quadratic, pointlight.distance_scaling, pointlight.distance_flat);
+	void add_point_light(sf::Vector2f position, int luminosity, float radius, float att_c, float att_l, float att_q, float distance_scaling, float distance_flat);
+	void add_point_light(PointLight pointlight) {
+		add_point_light(pointlight.position, pointlight.luminosity, pointlight.radius, pointlight.attenuation_constant, pointlight.attenuation_linear, pointlight.attenuation_quadratic, pointlight.distance_scaling, pointlight.distance_flat);
 	}
-	void AddSpotLight(sf::Vector2f position, sf::Vector2f direction, int luminosity, float radius, float att_c, float att_l, float att_q, float cutoff, float outerCutoff, float distanceScaling, float distanceFlat);
-	void AddSpotLight(SpotLight spotlight) {
-		AddSpotLight(spotlight.position, spotlight.direction, spotlight.luminosity, spotlight.radius, spotlight.attenuation_constant, spotlight.attenuation_linear, spotlight.attenuation_quadratic, spotlight.cutoffAngle,
-					 spotlight.outerCutoffAngle, spotlight.distanceScaling, spotlight.distanceFlat);
+	void add_spotlight(sf::Vector2f position, sf::Vector2f direction, int luminosity, float radius, float att_c, float att_l, float att_q, float cutoff, float outer_cutoff, float distance_scaling, float distance_flat);
+	void add_spotlight(Spotlight spotlight) {
+		add_spotlight(spotlight.position, spotlight.direction, spotlight.luminosity, spotlight.radius, spotlight.attenuation_constant, spotlight.attenuation_linear, spotlight.attenuation_quadratic, spotlight.cutoff_angle,
+					  spotlight.outer_cutoff_angle, spotlight.distance_scaling, spotlight.distance_flat);
 	}
 
 	void set_scale(float const to) { m_scale = to; }
-	void set_darken(float const to) { m_darken_factor = to; }
+	void set_darken(float const to) {
+		m_darken_factor = to;
+		finalize();
+	}
 	void set_texture_size(sf::Vector2f const to) { m_texture_size = to; }
 	void set_parity(sf::Vector2i const reference) { m_parity = sf::Vector2f{static_cast<float>(std::abs(reference.x) % 2), static_cast<float>(std::abs(reference.y) % 2)}; }
 
-	void Finalize();
-	void Submit(sf::RenderWindow& win, Palette& palette, sf::Sprite const& sprite);
+	void finalize();
+	void submit(sf::RenderWindow& win, Palette& palette, sf::Sprite const& sprite);
 
 	void debug();
 
 	// if youd like some additional safety, add a boolean, create a BeginShader function, set the boolean to true, and turn it off at the end of submit
 	// you could potentially use a wrapper object as well, that calls Begin, AddLight or whatever on construction, then finalize and submit on deconstruction
 
-	int currentPointLight = 0;
-	int currentSpotLight = 0;
+	int current_point_light{};
+	int current_spotlight{};
 
-	std::vector<sf::Vector2f> pointlightPosition{};
-	std::vector<float> pointlightLuminosity{};
-	std::vector<float> pointlightRadius{};
-	std::vector<float> pointlightAttenuation_constant{};
-	std::vector<float> pointlightAttenuation_linear{};
-	std::vector<float> pointlightAttenuation_quadratic{};
-	std::vector<float> pointlightDistanceScaling{};
-	std::vector<float> pointlightDistanceFlat{};
+	std::vector<sf::Vector2f> pointlight_position{};
+	std::vector<float> pointlight_luminosity{};
+	std::vector<float> pointlight_radius{};
+	std::vector<float> pointlight_attenuation_constant{};
+	std::vector<float> pointlight_attenuation_linear{};
+	std::vector<float> pointlight_attenuation_quadratic{};
+	std::vector<float> pointlight_distance_scaling{};
+	std::vector<float> pointlight_distance_flat{};
 
-	std::vector<sf::Vector2f> spotlightPosition{};
-	std::vector<sf::Vector2f> spotlightDirection{};
-	std::vector<float> spotlightLuminosity{};
-	std::vector<float> spotlightRadius{};
-	std::vector<float> spotlightAttenuation_constant{};
-	std::vector<float> spotlightAttenuation_linear{};
-	std::vector<float> spotlightAttenuation_quadratic{};
+	std::vector<sf::Vector2f> spotlight_position{};
+	std::vector<sf::Vector2f> spotlight_direction{};
+	std::vector<float> spotlight_luminosity{};
+	std::vector<float> spotlight_radius{};
+	std::vector<float> spotlight_attenuation_constant{};
+	std::vector<float> spotlight_attenuation_linear{};
+	std::vector<float> spotlight_attenuation_quadratic{};
 	std::vector<float> spotlight_cutoff{};
-	std::vector<float> spotlight_outerCutoff{};
-	std::vector<float> spotlightDistanceScaling{};
-	std::vector<float> spotlightDistanceFlat{};
+	std::vector<float> spotlight_outer_cutoff{};
+	std::vector<float> spotlight_distance_scaling{};
+	std::vector<float> spotlight_distance_flat{};
 
   private:
 	sf::Shader m_shader{};

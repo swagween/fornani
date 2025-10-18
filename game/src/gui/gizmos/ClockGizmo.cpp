@@ -30,9 +30,9 @@ void ClockGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::P
 	m_physics.simple_update();
 }
 
-void ClockGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
+void ClockGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
+	Gizmo::render(svc, win, player, shader, palette, cam, foreground);
 	if (is_foreground() != foreground) { return; }
-	Gizmo::render(svc, win, player, cam);
 	auto current_time{svc.world_clock.get_normalized_time()};
 	auto angle{(util::f_pi * 2.f) * -current_time - util::f_pi * 0.5f}; // start at (0, 1); midnight
 	auto direction{util::get_direction_from_angle(angle)};
@@ -41,7 +41,7 @@ void ClockGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[m
 	m_sprites.hand.setScale(constants::f_scale_vec);
 	m_sprites.hand.setTextureRect(sf::IntRect{{0, m_rotator.get_sprite_angle_index() * 8}, {8, 8}});
 	m_sprites.hand.setPosition(m_sprites.clock.getPosition() + direction * 32.f);
-	win.draw(m_sprites.clock);
+	shader.submit(win, palette, m_sprites.clock);
 	win.draw(m_sprites.hand);
 	m_text.readout.setPosition(m_readout_position - cam);
 	win.draw(m_text.readout);

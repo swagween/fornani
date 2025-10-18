@@ -10,6 +10,8 @@ InventorySelector::InventorySelector(sf::Vector2i range, sf::Vector2f spacing) :
 
 void InventorySelector::update() { m_body.update(); }
 
+void InventorySelector::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin, LightShader& shader, Palette& palette) { m_body.constituent.render(win, sprite, cam, origin, shader, palette); }
+
 void InventorySelector::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin) { m_body.constituent.render(win, sprite, cam, origin); }
 
 void InventorySelector::set_position(sf::Vector2f to_position, bool force) {

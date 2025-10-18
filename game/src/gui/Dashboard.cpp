@@ -20,7 +20,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 																												 .top_right_slot{{{370, 0}, {64, 127}}, {290.f, 0.f}},
 																												 .arsenal_slot{{{253, 127}, {184, 137}}, {52, 218}},
 																												 .motherboard{{{434, 0}, {222, 212}}, {14.f, 68.f}}},
-	  m_paths{.map{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_minimap", 32, util::InterpolationType::quadratic}} {
+	  m_paths{.map{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_minimap", 32, util::InterpolationType::quadratic}}, m_palette{"pioneer", svc.finder} {
 	m_debug.box.setFillColor(sf::Color{180, 150, 20, 50});
 	m_debug.box.setOutlineThickness(-2.f);
 	m_debug.box.setOutlineColor(sf::Color{220, 180, 10, 180});
@@ -53,16 +53,43 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {
 	auto& controller = svc.controller_map;
 	m_paths.map.update();
-	for (auto& gizmo : m_gizmos) { gizmo->update(svc, player, map, m_physical.physics.position + m_paths.map.get_position()); }
+	m_light_shift.update();
+	for (auto& gizmo : m_gizmos) {
+		gizmo->update(svc, player, map, m_physical.physics.position + m_paths.map.get_position());
+		gizmo->neutralize();
+		if (m_current_port == DashboardPort::minimap && gizmo->get_label() == "Clock") { gizmo->select(); }
+		if (m_current_port == gizmo->get_dashboard_port()) { gizmo->hover(); }
+	}
 	m_physical.physics.simple_update();
+	if (svc.ticker.every_second()) {
+		for (auto& gizmo : m_gizmos) { gizmo->report(); }
+	}
+
+	if (svc.ticker.every_second()) {
+		NANI_LOG_INFO(m_logger, "	------	");
+		NANI_LOG_INFO(m_logger, "Dashboard State:");
+		switch (m_state) {
+		case DashboardState::home: NANI_LOG_INFO(m_logger, "home"); break;
+		case DashboardState::hovering: NANI_LOG_INFO(m_logger, "hovering"); break;
+		case DashboardState::gizmo: NANI_LOG_INFO(m_logger, "gizmo"); break;
+		}
+		NANI_LOG_INFO(m_logger, "Dashboard Port:");
+		switch (m_current_port) {
+		case DashboardPort::invalid: NANI_LOG_INFO(m_logger, "invalid"); break;
+		case DashboardPort::minimap: NANI_LOG_INFO(m_logger, "minimap"); break;
+		case DashboardPort::wardrobe: NANI_LOG_INFO(m_logger, "wardrobe"); break;
+		default: NANI_LOG_INFO(m_logger, "some other port"); break;
+		}
+	}
 }
 
-void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam) {
+void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, LightShader& shader) {
 
 	m_debug.box.setPosition(m_physical.physics.position - cam);
 	auto pos{sf::Vector2f{}};
 	auto ctr{0};
 	auto dist{256.f};
+	m_current_port = DashboardPort::invalid;
 	for (auto& button : m_debug.buttons) {
 		pos.x = ctr % 2 == 0 ? 0.f : ctr == 1 ? dist : -dist;
 		pos.y = ctr % 2 == 1 ? 0.f : ctr == 2 ? dist * 0.5f : -dist * 0.5f;
@@ -80,17 +107,30 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 		++ctr;
 	}
 
+	auto max_dark = 2.f;
+	auto darken_factor = m_light_shift.running() ? 1.f : max_dark;
+
 	// dashboard constituents
 	auto render_position{-m_physical.physics.position + cam};
-	m_constituents.motherboard.render(win, m_sprite, render_position, {});
-	m_constituents.top_left_slot.render(win, m_sprite, render_position - m_paths.map.get_position(), {});
-	m_constituents.top_right_slot.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {});
-	m_constituents.arsenal_slot.render(win, m_sprite, render_position, {});
-	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, player, cam, false); }
-	m_constituents.top_left_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position(), {});
-	m_constituents.top_right_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {});
-	m_constituents.arsenal_frontplate.render(win, m_sprite, render_position, {});
-	for (auto& gizmo : m_gizmos) { gizmo->render(svc, win, player, cam, true); }
+	is_home() ? shader.set_darken(0.f) : shader.set_darken(darken_factor);
+	m_constituents.motherboard.render(win, m_sprite, render_position, {}, shader, m_palette);
+	m_constituents.top_left_slot.render(win, m_sprite, render_position - m_paths.map.get_position(), {}, shader, m_palette);
+	m_constituents.top_right_slot.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {}, shader, m_palette);
+	m_constituents.arsenal_slot.render(win, m_sprite, render_position, {}, shader, m_palette);
+	for (auto& gizmo : m_gizmos) {
+		shader.set_darken(max_dark);
+		gizmo->render(svc, win, player, shader, m_palette, cam, false);
+	}
+	is_home() ? shader.set_darken(0.f) : shader.set_darken(darken_factor);
+	if (m_state == DashboardState::gizmo && m_current_port == DashboardPort::minimap) { shader.set_darken(0.f); }
+	m_constituents.top_left_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position(), {}, shader, m_palette);
+	m_constituents.top_right_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {}, shader, m_palette);
+	is_home() ? shader.set_darken(0.f) : shader.set_darken(darken_factor);
+	m_constituents.arsenal_frontplate.render(win, m_sprite, render_position, {}, shader, m_palette);
+	for (auto& gizmo : m_gizmos) {
+		shader.set_darken(max_dark);
+		gizmo->render(svc, win, player, shader, m_palette, cam, true);
+	}
 
 	// for (auto& button : m_debug.buttons) { win.draw(button.box); }
 }
@@ -101,6 +141,8 @@ bool Dashboard::handle_inputs(config::ControllerMap& controller, audio::Soundboa
 			if (!gizmo->handle_inputs(controller, soundboard)) {
 				if (gizmo->get_dashboard_port() == DashboardPort::minimap) { m_paths.map.set_section("close"); } // only adjust dashboard art for map gizmo
 				m_state = DashboardState::home;
+				m_current_port = DashboardPort::invalid;
+				m_selected_position = {};
 				return false;
 			}
 		}
@@ -117,8 +159,11 @@ void Dashboard::set_position(sf::Vector2f to_position, bool force) {
 }
 
 void Dashboard::set_selection(sf::Vector2i to_selection) {
+	auto same = m_selected_position == to_selection;
 	m_selected_position = to_selection;
-	m_state = (to_selection.x == 0 && to_selection.y == 0) ? DashboardState::home : DashboardState::hovering;
+	auto switched = to_selection.x == 0 && to_selection.y == 0;
+	if (is_home() && !switched && !same) { m_light_shift.start(); }
+	m_state = switched ? DashboardState::home : DashboardState::hovering;
 }
 
 bool Dashboard::select_gizmo() {

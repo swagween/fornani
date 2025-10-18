@@ -36,12 +36,12 @@ void MapInfoGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player:
 	if (m_clip_path.get_section() == 1 && m_clip_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::drag); }
 }
 
-void MapInfoGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
+void MapInfoGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
 	if (is_foreground() != foreground) { return; }
-	Gizmo::render(svc, win, player, cam);
+	Gizmo::render(svc, win, player, shader, palette, cam);
 	m_sprites.panel.setPosition(m_physics.position - cam);
-	m_constituents.left_clip.render(win, m_sprites.clip, cam - m_physics.position - m_clip_path.get_position(), {});
-	m_constituents.right_clip.render(win, m_sprites.clip, cam - m_physics.position - m_clip_path.get_position() - m_clip_path.get_dimensions(), {});
+	m_constituents.left_clip.render(win, m_sprites.clip, cam - m_physics.position - m_clip_path.get_position(), {}, shader, palette);
+	m_constituents.right_clip.render(win, m_sprites.clip, cam - m_physics.position - m_clip_path.get_position() - m_clip_path.get_dimensions(), {}, shader, palette);
 	win.draw(m_sprites.panel);
 	m_text.biome.setPosition(m_physics.position + sf::Vector2f{40.f, 16.f} - cam);
 	m_text.room.setPosition(m_physics.position + sf::Vector2f{40.f, 40.f} - cam);

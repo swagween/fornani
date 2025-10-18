@@ -38,11 +38,45 @@ NPC::NPC(automa::ServiceProvider& svc, dj::Json const& in)
 
 	NANI_LOG_DEBUG(Entity::m_logger, "Created NPC with label {}", m_label);
 
+	init(svc, svc.data.npc[m_label]);
+	set_position_from_scaled(sf::Vector2f{in["position"][0].as<float>(), in["position"][1].as<float>()});
+	auto push = true;
+	auto fail_tag = std::string{};
+	if (in["contingencies"].is_array()) {
+		for (auto const& contingency : in["contingencies"].as_array()) {
+			auto cont = QuestContingency{contingency};
+			if (!svc.quest_table.are_contingencies_met({cont})) {
+				hide();
+				fail_tag = contingency["tag"].as_string();
+				NANI_LOG_DEBUG(Entity::m_logger, "NPC did not meet contingency for quest {}.", fail_tag);
+			}
+		}
+	}
+	auto npc_state = svc.quest_table.get_quest_progression("npc_dialogue", {m_label, in["id"].as<int>()});
+	for (auto const& convo : in["suites"][npc_state].as_array()) {
+		push_conversation(convo.as<int>());
+		NANI_LOG_DEBUG(Entity::m_logger, "Pushed conversation {}", convo.as<int>());
+	}
+}
+
+NPC::NPC(automa::ServiceProvider& svc, std::string_view label)
+	: Entity(svc, "npcs", 0), Mobile(svc, "npc_" + std::string{label}), m_label(label), m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[label]["id"].as<int>()}, m_current_conversation{1}, m_services{&svc} {
+	init(svc, svc.data.npc[m_label]);
+}
+
+NPC::NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vector<std::vector<int>> const suites)
+	: Entity(svc, "npcs", id, {1, 1}), Mobile(svc, "npc_" + std::string{label}, {svc.data.npc[label]["sprite_dimensions"][0].as<int>(), svc.data.npc[label]["sprite_dimensions"][1].as<int>()}), m_label(label),
+	  m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[label]["id"].as<int>()}, m_current_conversation{1}, m_suites{suites}, m_services{&svc} {
+	repeatable = false;
+	copyable = false;
+	m_flags.set(NPCFlags::face_player); // default to face player
+}
+
+void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
+
 	svc.events.register_event(std::make_unique<Event<int>>("VoiceCue", &voice_cue));
 	svc.events.register_event(std::make_unique<Event<int>>("PopConversation", &pop_convo));
 	svc.events.register_event(std::make_unique<Event<int>>("PiggybackNPC", &piggyback_me));
-
-	auto const& in_data = svc.data.npc[m_label];
 
 	m_offset = sf::Vector2f{svc.data.npc[m_label]["sprite_offset"][0].as<float>(), svc.data.npc[m_label]["sprite_offset"][1].as<float>()};
 	if (in_data["vendor"] && svc.data.marketplace.contains(get_specifier())) {
@@ -63,37 +97,10 @@ NPC::NPC(automa::ServiceProvider& svc, dj::Json const& in)
 	if (m_params.contains("idle")) { Mobile::set_parameters(m_params.at("idle")); }
 	request(NPCAnimationState::idle);
 	directions.actual.lnr = LNR::left;
-
-	set_position_from_scaled(sf::Vector2f{in["position"][0].as<float>(), in["position"][1].as<float>()});
-	auto push = true;
-	auto fail_tag = std::string{};
-	if (in["contingencies"].is_array()) {
-		for (auto const& contingency : in["contingencies"].as_array()) {
-			auto cont = QuestContingency{contingency};
-			if (!svc.quest_table.are_contingencies_met({cont})) {
-				hide();
-				fail_tag = contingency["tag"].as_string();
-				NANI_LOG_DEBUG(Entity::m_logger, "NPC did not meet contingency for quest {}.", fail_tag);
-			}
-		}
-	}
-	auto npc_state = svc.quest_table.get_quest_progression("npc_dialogue", {m_label, in["id"].as<int>()});
-	NANI_LOG_DEBUG(Entity::m_logger, "NPC State: {}", npc_state);
-	for (auto const& convo : in["suites"][npc_state].as_array()) {
-		push_conversation(convo.as<int>());
-		NANI_LOG_DEBUG(Entity::m_logger, "Pushed conversation {}", convo.as<int>());
-	}
+	if (in_data["no_animation"].as_bool()) { m_flags.set(NPCFlags::no_animation); }
 
 	if (m_hidden) { m_state.set(NPCState::hidden); }
 	if (m_background) { m_flags.set(NPCFlags::background); }
-}
-
-NPC::NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vector<std::vector<int>> const suites)
-	: Entity(svc, "npcs", id, {1, 1}), Mobile(svc, "npc_" + std::string{label}, {svc.data.npc[label]["sprite_dimensions"][0].as<int>(), svc.data.npc[label]["sprite_dimensions"][1].as<int>()}), m_label(label),
-	  m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[label]["id"].as<int>()}, m_current_conversation{1}, m_suites{suites}, m_services{&svc} {
-	repeatable = false;
-	copyable = false;
-	m_flags.set(NPCFlags::face_player); // default to face player
 }
 
 void NPC::serialize(dj::Json& out) {
@@ -203,7 +210,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	if (!collider.grounded()) { request(NPCAnimationState::fall); }
 	if (directions.actual.lnr != directions.desired.lnr) { request(NPCAnimationState::turn); }
 
-	state_function = std::move(state_function());
+	if (!m_flags.test(NPCFlags::no_animation)) { state_function = std::move(state_function()); }
 	if (is_hidden()) { return; }
 	Mobile::post_update(svc, map, player);
 }
@@ -220,9 +227,9 @@ void NPC::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 		if (m_services->greyblock_mode()) {
 			collider.render(win, cam);
 		} else {
-			win.draw(static_cast<Mobile&>(*this));
+			if (!m_flags.test(NPCFlags::no_animation)) { win.draw(static_cast<Mobile&>(*this)); }
 		}
-		win.draw(m_indicator);
+		if (!m_flags.test(NPCFlags::no_animation)) { win.draw(m_indicator); }
 	}
 }
 

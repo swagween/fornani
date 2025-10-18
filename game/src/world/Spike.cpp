@@ -76,7 +76,7 @@ void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::opt
 	auto tweak = is_small() ? constants::f_resolution_vec : sf::Vector2f{};
 	sprite.setPosition(grid_position + tweak - cam);
 	if (shader && palette) {
-		shader->Submit(win, palette.value(), sprite);
+		shader->submit(win, palette.value(), sprite);
 	} else {
 		win.draw(sprite);
 	}

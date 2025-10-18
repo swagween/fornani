@@ -101,6 +101,7 @@
   "lynx": {
     "id": 21,
     "dimensions": [24, 24],
+    "no_animation": true,
     "animation": [
       {
         "label": "idle",

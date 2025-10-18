@@ -52,6 +52,8 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 	}
 	auto& nimbus = *nit;
 	auto& hologus = *hit;
+	if (console.has_value()) { nimbus->disengage(); }
+	if (console.has_value()) { hologus->disengage(); }
 
 	for (auto n : npcs) { total_suites += n->get_number_of_suites(); }
 	total_conversations = std::max(total_conversations, total_suites);
@@ -72,7 +74,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 		}
 		break;
 	case 1:
-		if (cooldowns.long_pause.get() == 256) { svc.soundboard.flags.transmission.set(audio::Transmission::statics); }
+		if (cooldowns.long_pause.get() == 500) { svc.soundboard.flags.transmission.set(audio::Transmission::statics); }
 		if (!console && !cooldowns.long_pause.running()) {
 			cooldowns.long_pause.start();
 			nimbus->pop_conversation();

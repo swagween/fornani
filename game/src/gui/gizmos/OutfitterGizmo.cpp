@@ -94,17 +94,16 @@ void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 	if (m_path.completed_step(1)) { m_wires.set_params("plug"); }
 }
 
-void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
-	if (is_foreground() != foreground) { return; }
-	Gizmo::render(svc, win, player, cam);
+void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
+	Gizmo::render(svc, win, player, shader, palette, cam, foreground);
 	m_sprite.setTextureRect(sf::IntRect{{0, 18}, {304, 116}});
 	m_sprite.setPosition(m_physics.position + m_placement - cam);
 
-	if (m_description) { m_description->render(svc, win, player, cam); }
-	win.draw(m_sprite);
+	if (m_description) { m_description->render(svc, win, player, shader, palette, cam); }
+	shader.submit(win, palette, m_sprite);
 	if (is_selected()) {
 		auto selection_origin{sf::Vector2f{-3.f, -3.f}};
-		m_row.render(win, m_sprite, cam, selection_origin - sf::Vector2f{1.f, 1.f});
+		m_row.render(win, m_sprite, cam, selection_origin - sf::Vector2f{1.f, 1.f}, shader, palette);
 
 		// draw item sprites
 		auto column{0.f};
@@ -116,8 +115,8 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 			item->render(win, m_apparel_sprite, m_physics.position + m_placement + m_grid_offset + item->get_f_origin().componentWiseMul(m_selector.get_spacing()) - cam);
 		}
 
-		m_selector.render(win, m_sprite, cam, selection_origin);
-		for (auto& slider : m_sliders) { slider.body.constituent.render(win, m_sprite, cam, {}); }
+		m_selector.render(win, m_sprite, cam, selection_origin, shader, palette);
+		for (auto& slider : m_sliders) { slider.body.constituent.render(win, m_sprite, cam, {}, shader, palette); }
 	}
 	m_wires.render(svc, win, cam);
 	// debug();

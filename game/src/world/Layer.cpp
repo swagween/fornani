@@ -88,7 +88,7 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, LightSha
 	for (auto& sprite : sprites) {
 		sprite.setScale(constants::f_scale_vec);
 		sprite.setPosition(-cam * m_parallax);
-		shader.Submit(win, palette, sprite);
+		shader.submit(win, palette, sprite);
 		++ctr;
 	}
 }

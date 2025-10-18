@@ -80,27 +80,27 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 	if (!is_selected()) { m_item_menu = {}; }
 }
 
-void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
+void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
+	Gizmo::render(svc, win, player, shader, palette, cam, foreground);
 	auto& current_zone = m_zones.at(m_zone_iterator.get());
 	if (foreground) { // lid
 		m_sprite.setTextureRect(sf::IntRect{{0, 249}, {448, 249}});
 		m_sprite.setPosition(m_placement + m_lid_path.get_position() - cam);
-		win.draw(m_sprite);
+		shader.submit(win, palette, m_sprite);
 	} else {
-		Gizmo::render(svc, win, player, cam);
 		m_sprite.setTextureRect(sf::IntRect{{}, {448, 249}});
 		m_sprite.setPosition(m_placement + m_path.get_position() - cam);
-		win.draw(m_sprite);
+		shader.submit(win, palette, m_sprite);
 
 		if (m_description) {
 			for (auto& piece : player.catalog.inventory.items_view()) {
-				if (zone_match(piece->get_type())) { write_description(*piece, win, player, cam); }
+				if (zone_match(piece->get_type())) { write_description(*piece, win, player, shader, palette, cam); }
 			}
 		}
 		if (!is_item_hovered()) {
 			m_description->adjust_bounds(cam);
 			m_description->write(svc, "---", m_services->text.fonts.basic);
-			m_description->render(svc, win, player, cam - m_path.get_position());
+			m_description->render(svc, win, player, shader, palette, cam - m_path.get_position());
 		}
 
 		auto orb_offset = sf::Vector2f{208.f, 419.f};
@@ -114,7 +114,7 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 			item->render(win, m_item_sprite, where);
 		}
 
-		if (is_selected()) { m_selector->render(win, m_sprite, cam, {}); }
+		if (is_selected()) { m_selector->render(win, m_sprite, cam, {}, shader, palette); }
 		if (m_item_menu) { m_item_menu->render(win); }
 	}
 }
@@ -208,17 +208,17 @@ void InventoryGizmo::switch_zones(int modulation) {
 	m_selector->set_selection(m_remembered_locations.at(m_zone_iterator.get()));
 }
 
-void InventoryGizmo::write_description(item::Item& piece, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam) {
+void InventoryGizmo::write_description(item::Item& piece, sf::RenderWindow& win, player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam) {
 	auto title_offset = sf::Vector2f{36.f, 80.f};
 	auto& current_zone = m_zones.at(m_zone_iterator.get());
 	if (piece.get_table_index(current_zone.table_dimensions.x) == m_current_item_lookup) {
 		m_description->adjust_bounds(cam);
 		m_description->adjust_bounds(title_offset);
 		m_description->write(*m_services, piece.get_title(), m_services->text.fonts.basic);
-		m_description->render(*m_services, win, player, cam);
+		m_description->render(*m_services, win, player, shader, palette, cam);
 		m_description->adjust_bounds(-title_offset);
 		m_description->write(*m_services, piece.get_description(), m_services->text.fonts.basic);
-		m_description->render(*m_services, win, player, cam);
+		m_description->render(*m_services, win, player, shader, palette, cam);
 	}
 }
 

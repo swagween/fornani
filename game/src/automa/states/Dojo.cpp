@@ -63,7 +63,8 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	svc.events.register_event(std::make_unique<Event<int>>("OpenVendor", &open_vendor));
 
 	// create shaders
-	m_shader = LightShader(svc.finder);
+	m_world_shader = LightShader(svc.finder);
+	m_gui_shader = LightShader(svc.finder);
 
 	svc.menu_controller.reset_vendor_dialog();
 	if (!svc.data.room_discovered(room_number)) {
@@ -105,8 +106,9 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 
 	player.controller.prevent_movement();
 	m_loading.start();
-	m_shader->set_darken(map.darken_factor);
-	m_shader->set_texture_size(map.real_dimensions / constants::f_scale_factor);
+	m_world_shader->set_darken(map.darken_factor);
+	m_world_shader->set_texture_size(map.real_dimensions / constants::f_scale_factor);
+	m_gui_shader->set_texture_size(svc.window->f_screen_dimensions() * 3.f); // 3 is the number of screen-sized "cells" in the inventory window
 	svc.app_flags.reset(automa::AppFlags::custom_map_start);
 
 	NANI_LOG_INFO(m_logger, "New Dojo instance created.");
@@ -190,7 +192,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		if (!vendor_dialog.value()->is_open()) {
 			if (vendor_dialog.value()->made_profit()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
 			vendor_dialog = {};
-			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+			if (m_gui_shader) { m_gui_shader->set_darken(0.f); }
 		}
 		return;
 	}
@@ -244,31 +246,34 @@ void Dojo::frame_update(ServiceProvider& svc) {}
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	// TODO: do this somewhere else
-	if (m_shader) {
-		map.render_background(svc, win, m_shader, player->get_camera_position());
-		map.render(svc, win, m_shader, player->get_camera_position());
-		m_shader->ClearPointLights();
+	if (m_world_shader) {
+		map.render_background(svc, win, m_world_shader, player->get_camera_position());
+		map.render(svc, win, m_world_shader, player->get_camera_position());
+		m_world_shader->clear_point_lights();
 
 		float aspect = map.real_dimensions.x / map.real_dimensions.y;
 		for (auto& pl : map.point_lights) {
 			auto uv = pl.get_position().componentWiseDiv(map.real_dimensions);
 			auto normalized = sf::Vector2f{(uv.x - 0.5f) * aspect + 0.5f, uv.y};
 			pl.position = normalized;
-			m_shader->AddPointLight(pl);
+			m_world_shader->add_point_light(pl);
 		}
 
 		auto puv = player->get_lantern_position().componentWiseDiv(map.real_dimensions);
 		auto normalized = sf::Vector2f{(puv.x - 0.5f) * aspect + 0.5f, puv.y};
 		auto ppl = PointLight(svc.data.light["lantern"], puv);
 		ppl.position = normalized;
-		if (player->has_item("lantern")) { m_shader->AddPointLight(ppl); }
+		if (player->has_item("lantern")) { m_world_shader->add_point_light(ppl); }
 		// m_shader->debug();
 	}
+
 	m_console || svc.state_flags.test(automa::StateFlags::cutscene) ? svc.state_flags.set(automa::StateFlags::hide_hud) : svc.state_flags.reset(automa::StateFlags::hide_hud);
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(svc, *player, win); }
-	if (vendor_dialog) { vendor_dialog.value()->render(svc, win, *player, map); }
-	if (inventory_window) { inventory_window.value()->render(svc, win, *player); }
+
+	if (vendor_dialog && m_gui_shader) { vendor_dialog.value()->render(svc, win, *player, map, *m_gui_shader); }
+	if (inventory_window && m_gui_shader) { inventory_window.value()->render(svc, win, *player, *m_gui_shader); }
+
 	map.transition.render(win);
 	if (pause_window) { pause_window.value()->render(svc, win); }
 	if (m_console) {

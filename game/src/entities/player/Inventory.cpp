@@ -10,11 +10,12 @@ int Inventory::add_item(dj::Json& source, std::string_view label) {
 		m_items.push_back(std::make_unique<item::Item>(source, label));
 		return m_items.back()->get_id();
 	}
-
 	return 0;
 }
 
-void Inventory::remove_item(int item_id, int amount) {}
+void Inventory::remove_item(int item_id, int amount) {
+	std::erase_if(m_items, [item_id](auto const& i) { return i->get_id() == item_id; });
+}
 
 void Inventory::reveal_item(int item_id) {
 	for (auto const& item : m_items) {

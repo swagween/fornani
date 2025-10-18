@@ -12,8 +12,9 @@ static bool b_start{};
 static void start_battle(int battle) { b_start = true; }
 
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console)
-	: Enemy(svc, "minigus"), gun(svc, "minigun"), soda(svc, "soda_gun"), m_services(&svc), NPC(svc, "minigus"), m_map(&map), health_bar(svc, "minigus"), sparkler(svc, Enemy::collider.vicinity.get_dimensions(), colors::ui_white, "minigus"),
-	  m_console{&console}, m_mode{MinigusMode::neutral}, m_minigun{svc}, attacks{.left_shockwave{{50, 600, 3, {-0.6f, 0.f}}}, .right_shockwave{{50, 600, 3, {0.6f, 0.f}}}} {
+	: Enemy(svc, "minigus"), gun(svc, "minigun"), soda(svc, "soda_gun"), m_services(&svc), NPC(svc, std::string_view{"minigus"}), m_map(&map), health_bar(svc, "minigus"),
+	  sparkler(svc, Enemy::collider.vicinity.get_dimensions(), colors::ui_white, "minigus"), m_console{&console}, m_mode{MinigusMode::neutral}, m_minigun{svc},
+	  attacks{.left_shockwave{{50, 600, 3, {-0.6f, 0.f}}}, .right_shockwave{{50, 600, 3, {0.6f, 0.f}}}} {
 
 	svc.events.register_event(std::make_unique<Event<int>>("StartBattle", &start_battle));
 
@@ -36,6 +37,7 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	m_minigun.center();
 	m_minigun.set_parameters(m_minigun.neutral);
 	flags.state.set(StateFlags::vulnerable);
+	flags.state.set(StateFlags::no_slowdown);
 
 	attacks.punch.sensor.bounds.setRadius(60);
 	attacks.punch.sensor.drawable.setFillColor(colors::blue);
@@ -262,7 +264,10 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 
 	NPC::update(svc, map, *m_console, player);
 	if (m_console) {
-		if (m_console->has_value()) { m_console->value()->set_no_exit(true); }
+		if (m_console->has_value()) {
+			m_console->value()->set_no_exit(true);
+			set_force_interact(false);
+		}
 	}
 	console_complete = static_cast<bool>(m_console);
 
@@ -270,6 +275,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		m_mode = MinigusMode::battle_one;
 		status.set(MinigusFlags::battle_mode);
 		set_distant_interact(false);
+		set_force_interact(false);
 		svc.music_player.load(svc.finder, "scuffle");
 		svc.music_player.play_looped();
 		cooldowns.vulnerability.start();
@@ -797,6 +803,7 @@ fsm::StateFunction Minigus::update_struggle() {
 		if (Enemy::animation.just_started()) {
 			status.reset(MinigusFlags::battle_mode);
 			set_distant_interact(true);
+			set_force_interact(true);
 			flush_conversations();
 			push_conversation(2);
 			m_services->music_player.pause();
@@ -815,6 +822,7 @@ fsm::StateFunction Minigus::update_struggle() {
 		if (cooldowns.exit.is_complete() && status.test(MinigusFlags::exit_scene)) {
 			NANI_LOG_DEBUG(m_logger, "Goodbye started");
 			set_distant_interact(true);
+			set_force_interact(true);
 			m_services->music_player.stop();
 			flush_conversations();
 			push_conversation(3);

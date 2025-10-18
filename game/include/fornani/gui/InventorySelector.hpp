@@ -2,10 +2,10 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <fornani/gui/Gizmo.hpp>
+#include <fornani/utils/Circuit.hpp>
+#include <fornani/utils/Constants.hpp>
 #include <array>
-#include "fornani/gui/Gizmo.hpp"
-#include "fornani/utils/Circuit.hpp"
-#include "fornani/utils/Constants.hpp"
 
 namespace fornani::gui {
 
@@ -17,6 +17,7 @@ class InventorySelector {
   public:
 	InventorySelector(sf::Vector2i range, sf::Vector2f spacing = constants::f_cell_vec);
 	void update();
+	void render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin, LightShader& shader, Palette& palette);
 	void render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin);
 
 	[[nodiscard]] auto get_current_selection() const -> int { return m_selection[0].get() + m_selection[1].get() * m_table_dimensions.x; }
@@ -24,10 +25,15 @@ class InventorySelector {
 	[[nodiscard]] auto get_index() const -> sf::Vector2i { return sf::Vector2i{m_selection[0].get(), m_selection[1].get()}; }
 	[[nodiscard]] auto get_horizonal_index() const -> int { return m_selection[0].get(); }
 	[[nodiscard]] auto get_vertical_index() const -> int { return m_selection[1].get(); }
-	[[nodiscard]] auto get_spacing() const -> sf::Vector2f { return m_spacing; };
-	[[nodiscard]] auto get_table_position_from_index(int index) const -> sf::Vector2f { return sf::Vector2f{static_cast<float>(index % m_table_dimensions.x), static_cast<float>(index / m_table_dimensions.x)}.componentWiseMul(m_spacing); };
-	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_body.physics.position; };
-	[[nodiscard]] auto get_menu_position() const -> sf::Vector2f { return sf::Vector2f{m_selection[0].as<float>(), m_selection[1].as<float>()}.componentWiseMul(m_spacing); };
+	[[nodiscard]] auto get_spacing() const -> sf::Vector2f { return m_spacing; }
+	[[nodiscard]] auto get_table_position_from_index(int index) const -> sf::Vector2f { return sf::Vector2f{static_cast<float>(index % m_table_dimensions.x), static_cast<float>(index / m_table_dimensions.x)}.componentWiseMul(m_spacing); }
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_body.physics.position; }
+	[[nodiscard]] auto get_menu_position() const -> sf::Vector2f { return sf::Vector2f{m_selection[0].as<float>(), m_selection[1].as<float>()}.componentWiseMul(m_spacing); }
+
+	template <typename T>
+	bool matches(T x, T y) const {
+		return get_index().x == static_cast<int>(x) && get_index().y == static_cast<int>(y);
+	}
 
   private:
 	void set_lookup(sf::IntRect to_lookup) { m_body.constituent.lookup = to_lookup; }

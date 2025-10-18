@@ -126,27 +126,27 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	m_map_shadow.set_dimensions(m_path.get_dimensions());
 }
 
-void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
+void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
+	Gizmo::render(svc, win, player, shader, palette, cam, foreground);
 	if (is_foreground() != foreground) { return; }
-	Gizmo::render(svc, win, player, cam);
 	auto render_position{-m_placement + cam};
 	m_constituents.gizmo.motherboard.position = m_path.get_position() + m_motherboard_path.get_position() - m_map_screen.get_f_corner_dimensions();
-	m_constituents.gizmo.motherboard.render(win, m_sprite, render_position, sf::Vector2f{100.f, -6.f});
+	m_constituents.gizmo.motherboard.render(win, m_sprite, render_position, sf::Vector2f{100.f, -6.f}, shader, palette);
 	m_minimap->render(svc, win, player, cam, m_icon_sprite);
 	m_icon_sprite.setScale(constants::f_scale_vec);
 	m_map_screen.render(win, cam);
 	m_map_shadow.render(win, cam);
 	for (auto& chain : m_chains) { chain->render(svc, win, cam); }
-	for (auto& plugin : m_plugins) { plugin.render(win, m_plugin_sprite, cam, {}); }
-	if (m_info) { m_info->render(svc, win, player, cam, foreground); }
+	for (auto& plugin : m_plugins) { plugin.render(win, m_plugin_sprite, cam, {}, shader, palette); }
+	if (m_info) { m_info->render(svc, win, player, shader, palette, cam, foreground); }
 	m_constituents.gizmo.top_left.position = m_path.get_position();
-	m_constituents.gizmo.top_left.render(win, m_sprite, render_position, sf::Vector2f{66.f, 54.f});
+	m_constituents.gizmo.top_left.render(win, m_sprite, render_position, sf::Vector2f{66.f, 54.f}, shader, palette);
 	m_constituents.gizmo.top_right.position = m_path.get_position() + sf::Vector2f{m_path.get_dimensions().x, 0.f};
-	m_constituents.gizmo.top_right.render(win, m_sprite, render_position, sf::Vector2f{1.f, 54.f});
+	m_constituents.gizmo.top_right.render(win, m_sprite, render_position, sf::Vector2f{1.f, 54.f}, shader, palette);
 	m_constituents.gizmo.bottom_left.position = m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y};
-	m_constituents.gizmo.bottom_left.render(win, m_sprite, render_position, sf::Vector2f{53.f, 1.f});
+	m_constituents.gizmo.bottom_left.render(win, m_sprite, render_position, sf::Vector2f{53.f, 1.f}, shader, palette);
 	m_constituents.gizmo.bottom_right.position = m_path.get_position() + m_path.get_dimensions();
-	m_constituents.gizmo.bottom_right.render(win, m_sprite, render_position, sf::Vector2f{1.f, 1.f});
+	m_constituents.gizmo.bottom_right.render(win, m_sprite, render_position, sf::Vector2f{1.f, 1.f}, shader, palette);
 }
 
 bool MapGizmo::handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard) {
@@ -221,6 +221,6 @@ void MapPlugin::update(audio::Soundboard& soundboard) {
 	if (m_path.completed_step(3)) { soundboard.flags.pioneer.set(m_sound); }
 }
 
-void MapPlugin::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin) const { constituent.render(win, sprite, cam, origin); }
+void MapPlugin::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin, LightShader& shader, Palette& palette) const { constituent.render(win, sprite, cam, origin, shader, palette); }
 
 } // namespace fornani::gui

@@ -503,7 +503,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	if (!svc.greyblock_mode()) {
 		for (auto& layer : get_layers()) {
 			if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
-				shader->Finalize();
+				shader->finalize();
 				layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
 			} else {
 				layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
@@ -571,7 +571,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 					}
 				}
 				if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
-					shader->Finalize();
+					shader->finalize();
 					layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true);
 				} else {
 					layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true, m_attributes.properties.test(MapProperties::day_night_shift));
@@ -647,7 +647,7 @@ void Map::spawn_enemy(int id, sf::Vector2f pos, int variant) {
 	auto break_out = 0;
 	while (player->distant_vicinity.contains_point(pos) && break_out < 32) {
 		auto distance = player->collider.get_center() - pos;
-		pos += distance;
+		pos -= distance;
 		++break_out;
 	}
 	enemy_spawns.push_back({pos, id, variant});

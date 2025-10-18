@@ -1,14 +1,17 @@
 
 #pragma once
 
-#include "fornani/entities/animation/Animation.hpp"
-#include "fornani/graphics/SpriteRotator.hpp"
-#include "fornani/io/Logger.hpp"
-
 #include <SFML/Graphics.hpp>
-
+#include <fornani/entities/animation/Animation.hpp>
+#include <fornani/graphics/SpriteRotator.hpp>
+#include <fornani/io/Logger.hpp>
 #include <string_view>
 #include <unordered_map>
+
+namespace fornani {
+class LightShader;
+class Palette;
+} // namespace fornani
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -18,7 +21,6 @@ namespace fornani::anim {
 
 class AnimatedSprite {
   public:
-	// ReSharper disable once CppNonExplicitConvertingConstructor
 	AnimatedSprite(sf::Texture const& texture, sf::Vector2<int> dimensions = {32, 32});
 	void update(sf::Vector2f pos, int u = 0, int v = 0, bool horiz = false);
 	void push_params(std::string_view label, Parameters in_params);
@@ -34,6 +36,7 @@ class AnimatedSprite {
 	void handle_rotation(sf::Vector2f direction, int num_angles, bool radial = true);
 	void end();
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool debug = false);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, LightShader& shader, Palette& palette);
 	[[nodiscard]] auto get_frame() const -> int { return animation.get_frame(); }
 	[[nodiscard]] auto just_started() const -> bool { return animation.just_started(); }
 	[[nodiscard]] auto complete() -> bool { return animation.complete(); }

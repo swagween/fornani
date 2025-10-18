@@ -15,14 +15,17 @@
 
 namespace fornani {
 
-enum class NPCFlags : std::uint8_t { has_turn_animation, face_player, background };
+enum class NPCFlags : std::uint8_t { has_turn_animation, face_player, background, no_animation };
 enum class NPCState : std::uint8_t { engaged, force_interact, introduced, talking, cutscene, piggybacking, hidden, distant_interact, just_engaged };
 enum class NPCAnimationState : std::uint8_t { idle, turn, walk, inspect, fall, land };
 
 class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState> {
   public:
 	NPC(automa::ServiceProvider& svc, dj::Json const& in);
+	NPC(automa::ServiceProvider& svc, std::string_view label);
 	NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vector<std::vector<int>> const suites);
+	void init(automa::ServiceProvider& svc, dj::Json const& in_data);
+
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;
 	void expose() override;

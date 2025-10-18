@@ -113,7 +113,7 @@
     "hidden_description": "An oil-fueled lantern that will light up any dark areas.",
     "unique": true,
     "rarity": 2,
-    "value": 2100
+    "value": 1800
   },
   "boiler_key": {
     "id": 15,

@@ -170,7 +170,7 @@ vec2 uv = gl_TexCoord[0].xy;
 ivec2 texelCoord = ivec2(floor(uv * u_tex_size));
 vec2 texelSize = 1.0 / u_tex_size;
 vec2 snappedUV = (floor(uv * u_tex_size) + 0.5) * texelSize;
- vec2 pixelPoint = aspectNormalizedCoord(vec2(snappedUV.x, 1.0 - snappedUV.y));
+vec2 pixelPoint = aspectNormalizedCoord(vec2(snappedUV.x, 1.0 - snappedUV.y));
 
 	float highest_amount = 0.0;
 	for(int light = 0; light < pointlight_count; light++){

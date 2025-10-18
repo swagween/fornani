@@ -57,77 +57,78 @@ LightShader::LightShader(ResourceFinder& finder) {
 	if (!m_shader.loadFromFile(vert, frag)) { NANI_LOG_WARN(m_logger, "Failed to load shader {}", frag.string()); }
 }
 
-void LightShader::AddPointLight(sf::Vector2f position, int luminosity, float radius, float att_c, float att_l, float att_q, float distanceScaling, float distanceFlat) {
-	if (currentPointLight >= (MAX_POINT_LIGHTS - 1)) {
+void LightShader::add_point_light(sf::Vector2f position, int luminosity, float radius, float att_c, float att_l, float att_q, float distance_scaling, float distance_flat) {
+	if (current_point_light >= (MAX_POINT_LIGHTS - 1)) {
 		NANI_LOG_WARN(m_logger, "Maximum lights reached.");
 		return;
 	}
 
-	pointlightPosition.push_back(position);
-	pointlightLuminosity.push_back(luminosity);
-	pointlightRadius.push_back(radius);
-	pointlightAttenuation_constant.push_back(att_c);
-	pointlightAttenuation_linear.push_back(att_l);
-	pointlightAttenuation_quadratic.push_back(att_q);
-	pointlightDistanceScaling.push_back(distanceScaling);
-	pointlightDistanceFlat.push_back(distanceFlat);
+	pointlight_position.push_back(position);
+	pointlight_luminosity.push_back(luminosity);
+	pointlight_radius.push_back(radius);
+	pointlight_attenuation_constant.push_back(att_c);
+	pointlight_attenuation_linear.push_back(att_l);
+	pointlight_attenuation_quadratic.push_back(att_q);
+	pointlight_distance_scaling.push_back(distance_scaling);
+	pointlight_distance_flat.push_back(distance_flat);
 
-	currentPointLight++;
+	current_point_light++;
 }
-void LightShader::AddSpotLight(sf::Vector2f position, sf::Vector2f direction, int luminosity, float radius, float att_c, float att_l, float att_q, float cutoff, float outerCutoff, float distanceScaling, float distanceFlat) {
 
-	if (currentSpotLight >= (MAX_POINT_LIGHTS - 1)) {
+void LightShader::add_spotlight(sf::Vector2f position, sf::Vector2f direction, int luminosity, float radius, float att_c, float att_l, float att_q, float cutoff, float outer_cutoff, float distance_scaling, float distance_flat) {
+	if (current_spotlight >= (MAX_POINT_LIGHTS - 1)) {
 		NANI_LOG_WARN(m_logger, "Maximum lights reached.");
 		return;
 	}
-	spotlightPosition.push_back(position);
-	spotlightDirection.push_back(direction);
-	spotlightLuminosity.push_back(luminosity);
-	spotlightRadius.push_back(radius);
-	spotlightAttenuation_constant.push_back(att_c);
-	spotlightAttenuation_linear.push_back(att_l);
-	spotlightAttenuation_quadratic.push_back(att_q);
+
+	spotlight_position.push_back(position);
+	spotlight_direction.push_back(direction);
+	spotlight_luminosity.push_back(luminosity);
+	spotlight_radius.push_back(radius);
+	spotlight_attenuation_constant.push_back(att_c);
+	spotlight_attenuation_linear.push_back(att_l);
+	spotlight_attenuation_quadratic.push_back(att_q);
 	spotlight_cutoff.push_back(cutoff);
-	spotlight_outerCutoff.push_back(outerCutoff);
-	spotlightDistanceScaling.push_back(distanceScaling);
-	spotlightDistanceFlat.push_back(distanceFlat);
+	spotlight_outer_cutoff.push_back(outer_cutoff);
+	spotlight_distance_scaling.push_back(distance_scaling);
+	spotlight_distance_flat.push_back(distance_flat);
 
-	currentSpotLight++;
+	current_spotlight++;
 }
 
-void LightShader::Finalize() {
+void LightShader::finalize() {
 	m_shader.setUniform("u_px", m_scale);
 	m_shader.setUniform("u_tex_size", sf::Glsl::Vec2{m_texture_size});
 	m_shader.setUniform("u_parity", sf::Glsl::Vec2{m_parity});
 	m_shader.setUniform("u_max_light", max_light_v);
 
-	m_shader.setUniform("pointlight_count", currentPointLight + 1);
-	m_shader.setUniformArray("pointlight_position", pointlightPosition.data(), pointlightPosition.size());
-	m_shader.setUniformArray("pointlight_luminence", pointlightLuminosity.data(), pointlightLuminosity.size());
-	m_shader.setUniformArray("pointlight_radius", pointlightRadius.data(), pointlightRadius.size());
-	m_shader.setUniformArray("pointlight_attenuation_constant", pointlightAttenuation_constant.data(), pointlightAttenuation_constant.size());
-	m_shader.setUniformArray("pointlight_attenuation_linear", pointlightAttenuation_linear.data(), pointlightAttenuation_linear.size());
-	m_shader.setUniformArray("pointlight_attenuation_quadratic", pointlightAttenuation_quadratic.data(), pointlightAttenuation_quadratic.size());
-	m_shader.setUniformArray("pointlight_distance_scaling", pointlightDistanceScaling.data(), pointlightDistanceScaling.size());
-	m_shader.setUniformArray("pointlight_distance_flat", pointlightDistanceFlat.data(), pointlightDistanceFlat.size());
+	m_shader.setUniform("pointlight_count", current_point_light + 1);
+	m_shader.setUniformArray("pointlight_position", pointlight_position.data(), pointlight_position.size());
+	m_shader.setUniformArray("pointlight_luminence", pointlight_luminosity.data(), pointlight_luminosity.size());
+	m_shader.setUniformArray("pointlight_radius", pointlight_radius.data(), pointlight_radius.size());
+	m_shader.setUniformArray("pointlight_attenuation_constant", pointlight_attenuation_constant.data(), pointlight_attenuation_constant.size());
+	m_shader.setUniformArray("pointlight_attenuation_linear", pointlight_attenuation_linear.data(), pointlight_attenuation_linear.size());
+	m_shader.setUniformArray("pointlight_attenuation_quadratic", pointlight_attenuation_quadratic.data(), pointlight_attenuation_quadratic.size());
+	m_shader.setUniformArray("pointlight_distance_scaling", pointlight_distance_scaling.data(), pointlight_distance_scaling.size());
+	m_shader.setUniformArray("pointlight_distance_flat", pointlight_distance_flat.data(), pointlight_distance_flat.size());
 
-	m_shader.setUniform("spotlight_count", currentSpotLight + 1);
-	m_shader.setUniformArray("spotlight_position", spotlightPosition.data(), spotlightPosition.size());
-	m_shader.setUniformArray("spotlight_direction", spotlightDirection.data(), spotlightDirection.size());
-	m_shader.setUniformArray("spotlight_luminence", spotlightLuminosity.data(), spotlightLuminosity.size());
-	m_shader.setUniformArray("spotlight_radius", spotlightRadius.data(), spotlightRadius.size());
-	m_shader.setUniformArray("spotlight_attenuation_constant", spotlightAttenuation_constant.data(), spotlightAttenuation_constant.size());
-	m_shader.setUniformArray("spotlight_attenuation_linear", spotlightAttenuation_linear.data(), spotlightAttenuation_linear.size());
-	m_shader.setUniformArray("spotlight_attenuation_quadratic", spotlightAttenuation_quadratic.data(), spotlightAttenuation_quadratic.size());
+	m_shader.setUniform("spotlight_count", current_spotlight + 1);
+	m_shader.setUniformArray("spotlight_position", spotlight_position.data(), spotlight_position.size());
+	m_shader.setUniformArray("spotlight_direction", spotlight_direction.data(), spotlight_direction.size());
+	m_shader.setUniformArray("spotlight_luminence", spotlight_luminosity.data(), spotlight_luminosity.size());
+	m_shader.setUniformArray("spotlight_radius", spotlight_radius.data(), spotlight_radius.size());
+	m_shader.setUniformArray("spotlight_attenuation_constant", spotlight_attenuation_constant.data(), spotlight_attenuation_constant.size());
+	m_shader.setUniformArray("spotlight_attenuation_linear", spotlight_attenuation_linear.data(), spotlight_attenuation_linear.size());
+	m_shader.setUniformArray("spotlight_attenuation_quadratic", spotlight_attenuation_quadratic.data(), spotlight_attenuation_quadratic.size());
 	m_shader.setUniformArray("spotlight_cutoff", spotlight_cutoff.data(), spotlight_cutoff.size());
-	m_shader.setUniformArray("spotlight_outerCutoff", spotlight_outerCutoff.data(), spotlight_outerCutoff.size());
-	m_shader.setUniformArray("spotlight_distance_scaling", spotlightDistanceScaling.data(), spotlightDistanceScaling.size());
-	m_shader.setUniformArray("spotlight_distance_flat", spotlightDistanceFlat.data(), spotlightDistanceFlat.size());
+	m_shader.setUniformArray("spotlight_outerCutoff", spotlight_outer_cutoff.data(), spotlight_outer_cutoff.size());
+	m_shader.setUniformArray("spotlight_distance_scaling", spotlight_distance_scaling.data(), spotlight_distance_scaling.size());
+	m_shader.setUniformArray("spotlight_distance_flat", spotlight_distance_flat.data(), spotlight_distance_flat.size());
 
 	m_shader.setUniform("u_darken", m_darken_factor);
 }
 
-void LightShader::Submit(sf::RenderWindow& win, Palette& palette, sf::Sprite const& sprite) {
+void LightShader::submit(sf::RenderWindow& win, Palette& palette, sf::Sprite const& sprite) {
 	m_shader.setUniform("palette_size", static_cast<int>(palette.get_size()));
 	m_shader.setUniform("palette", palette.get_texture().getTexture());
 	m_shader.setUniform("texture", sprite.getTexture());
@@ -135,29 +136,29 @@ void LightShader::Submit(sf::RenderWindow& win, Palette& palette, sf::Sprite con
 	win.draw(sprite, &m_shader);
 }
 
-void LightShader::ClearPointLights() {
-	currentPointLight = 0;
-	pointlightPosition.clear();
-	pointlightLuminosity.clear();
-	pointlightRadius.clear();
-	pointlightAttenuation_constant.clear();
-	pointlightAttenuation_linear.clear();
-	pointlightAttenuation_quadratic.clear();
-	pointlightDistanceScaling.clear();
+void LightShader::clear_point_lights() {
+	current_point_light = 0;
+	pointlight_position.clear();
+	pointlight_luminosity.clear();
+	pointlight_radius.clear();
+	pointlight_attenuation_constant.clear();
+	pointlight_attenuation_linear.clear();
+	pointlight_attenuation_quadratic.clear();
+	pointlight_distance_scaling.clear();
 }
 
-void LightShader::ClearSpotLights() {
-	currentSpotLight = 0;
-	spotlightPosition.clear();
-	spotlightDirection.clear();
-	spotlightLuminosity.clear();
-	spotlightRadius.clear();
-	spotlightAttenuation_constant.clear();
-	spotlightAttenuation_linear.clear();
-	spotlightAttenuation_quadratic.clear();
+void LightShader::clear_spotlights() {
+	current_spotlight = 0;
+	spotlight_position.clear();
+	spotlight_direction.clear();
+	spotlight_luminosity.clear();
+	spotlight_radius.clear();
+	spotlight_attenuation_constant.clear();
+	spotlight_attenuation_linear.clear();
+	spotlight_attenuation_quadratic.clear();
 	spotlight_cutoff.clear();
-	spotlight_outerCutoff.clear();
-	spotlightDistanceScaling.clear();
+	spotlight_outer_cutoff.clear();
+	spotlight_distance_scaling.clear();
 }
 
 void LightShader::debug() {

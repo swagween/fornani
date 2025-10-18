@@ -1,6 +1,5 @@
 {
   "entities": {
-    "inspectables": [],
     "portals": [
       {
         "activate_on_contact": false,
@@ -42,6 +41,11 @@
     "ambience": "",
     "background": 3,
     "biome": "pioneer",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -79,9 +83,11 @@
     },
     "room_id": 302,
     "shader": {
-      "darken_factor": 0
+      "darken_factor": 3
     },
-    "style": 2
+    "special_drop_id": 0,
+    "style": 2,
+    "use_template": false
   },
   "tile": {
     "flags": {
@@ -93,10 +99,10 @@
       false,
       false,
       false,
-      false,
-      false,
-      false,
-      false
+      true,
+      true,
+      true,
+      true
     ],
     "layers": [
       [

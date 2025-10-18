@@ -10,6 +10,8 @@
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/gui/gizmos/DescriptionGizmo.hpp>
 #include <fornani/gui/gizmos/InventoryGizmo.hpp>
+#include <fornani/shader/LightShader.hpp>
+#include <fornani/shader/Palette.hpp>
 #include <fornani/utils/RectPath.hpp>
 #include <optional>
 
@@ -27,7 +29,7 @@ class Vendor;
 
 namespace fornani::gui {
 
-enum class VendorDialogStatus : std::uint8_t { opened, made_sale };
+enum class VendorDialogStatus : std::uint8_t { opened, made_sale, closed, intro_done };
 enum class VendorState : std::uint8_t { buy, sell };
 enum class VendorConstituentType : std::uint8_t { portrait, wares, description, name, core, selection, nani };
 
@@ -35,14 +37,14 @@ struct VendorConstituent : public Drawable {
 	VendorConstituent(automa::ServiceProvider& svc, std::string_view label, sf::IntRect lookup, int speed = 128, util::InterpolationType type = util::InterpolationType::quadratic);
 	util::RectPath path;
 	void update();
-	void render(sf::RenderWindow& win);
+	void render(sf::RenderWindow& win, LightShader& shader, Palette& palette);
 };
 
 class VendorDialog {
   public:
 	VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map, LightShader& shader);
 	void close(automa::ServiceProvider& svc);
 	void update_table(player::Player& player, world::Map& map, bool new_dim);
 	void refresh(player::Player& player, world::Map& map) const;
@@ -52,14 +54,18 @@ class VendorDialog {
 	[[nodiscard]] auto is_selling() const -> bool { return m_state == VendorState::sell; }
 	[[nodiscard]] auto made_sale() const -> bool { return flags.test(VendorDialogStatus::made_sale); }
 	[[nodiscard]] auto made_profit() const -> bool { return balance > 0.f; }
-	[[nodiscard]] auto is_opening() const -> bool { return m_intro.running(); }
+	[[nodiscard]] auto is_opening() const -> bool { return m_intro.running() || flags.test(VendorDialogStatus::intro_done); }
+	[[nodiscard]] auto is_closing() const -> bool { return m_outro.running() || flags.test(VendorDialogStatus::closed); }
 
   private:
+	bool fade_logic(automa::ServiceProvider& svc, world::Map& map);
 	VendorState m_state{};
 	InventorySelector m_buy_selector;
 	InventorySelector m_sell_selector;
 	std::optional<MiniMenu> m_item_menu{};
-	util::Cooldown m_intro{};
+	util::Cooldown m_intro;
+	util::Cooldown m_fade_in;
+	util::Cooldown m_outro;
 	util::BitFlags<VendorDialogStatus> flags{};
 	std::unique_ptr<DescriptionGizmo> m_description;
 	Drawable m_artwork;
@@ -67,6 +73,7 @@ class VendorDialog {
 	Drawable m_vendor_portrait;
 	OrbDisplay m_orb_display;
 	sf::RectangleShape m_background{};
+	Palette m_palette;
 
 	NPC* my_npc;
 

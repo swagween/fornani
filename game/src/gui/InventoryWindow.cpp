@@ -48,12 +48,20 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 		auto const& down = controller.digital_action_status(config::DigitalAction::menu_down).held;
 		auto const& left = controller.digital_action_status(config::DigitalAction::menu_left).held;
 		auto const& right = controller.digital_action_status(config::DigitalAction::menu_right).held;
+		auto const& up_released = controller.digital_action_status(config::DigitalAction::menu_up).released;
+		auto const& down_released = controller.digital_action_status(config::DigitalAction::menu_down).released;
+		auto const& left_released = controller.digital_action_status(config::DigitalAction::menu_left).released;
+		auto const& right_released = controller.digital_action_status(config::DigitalAction::menu_right).released;
 		auto const& selected = controller.digital_action_status(config::DigitalAction::menu_select).triggered;
-		m_dashboard->set_selection({0, 0});
-		if (up) { m_dashboard->set_selection({0, -1}); }
-		if (down) { m_dashboard->set_selection({0, 1}); }
-		if (left) { m_dashboard->set_selection({-1, 0}); }
-		if (right) { m_dashboard->set_selection({1, 0}); }
+		if (up && m_dashboard->is_home()) { m_dashboard->set_selection({0, -1}); }
+		if (down && m_dashboard->is_home()) { m_dashboard->set_selection({0, 1}); }
+		if (left && m_dashboard->is_home()) { m_dashboard->set_selection({-1, 0}); }
+		if (right && m_dashboard->is_home()) { m_dashboard->set_selection({1, 0}); }
+		if (up_released && m_dashboard->get_selected_position() == sf::Vector2i{0, -1}) { m_dashboard->set_selection({0, 0}); }
+		if (down_released && m_dashboard->get_selected_position() == sf::Vector2i{0, 1}) { m_dashboard->set_selection({0, 0}); }
+		if (left_released && m_dashboard->get_selected_position() == sf::Vector2i{-1, 0}) { m_dashboard->set_selection({0, 0}); }
+		if (right_released && m_dashboard->get_selected_position() == sf::Vector2i{1, 0}) { m_dashboard->set_selection({0, 0}); }
+
 		if (controller.gamepad_connected()) { m_dashboard->set_selection(controller.get_i_joystick_throttle(true)); }
 		if (selected && m_dashboard->is_hovering()) {
 			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = ccm::ext::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
@@ -87,7 +95,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	}
 }
 
-void InventoryWindow::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player) {
+void InventoryWindow::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, LightShader& shader) {
 	win.draw(m_background);
 	for (auto i{-1}; i < 4; i += 2) {
 		for (auto j{-1}; j < 4; j += 2) {
@@ -95,7 +103,7 @@ void InventoryWindow::render(automa::ServiceProvider& svc, sf::RenderWindow& win
 			// win.draw(m_debug.center);
 		}
 	}
-	m_dashboard->render(svc, win, player, m_camera.physics.position);
+	m_dashboard->render(svc, win, player, m_camera.physics.position, shader);
 }
 
 } // namespace fornani::gui

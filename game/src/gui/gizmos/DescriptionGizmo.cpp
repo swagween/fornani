@@ -27,12 +27,12 @@ void DescriptionGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] pla
 	if (m_text) { m_text->update(); }
 }
 
-void DescriptionGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, sf::Vector2f cam, bool foreground) {
+void DescriptionGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
 	if (is_foreground() != foreground) { return; }
 	if (!m_flags.test(DescriptionGizmoFlags::text_only)) {
-		Gizmo::render(svc, win, player, cam);
+		Gizmo::render(svc, win, player, shader, palette, cam);
 		m_sprite.setPosition(m_physics.position - cam);
-		win.draw(m_sprite);
+		shader.submit(win, palette, m_sprite);
 	}
 	if (m_text) { m_text->write_instant_message(win); }
 }
