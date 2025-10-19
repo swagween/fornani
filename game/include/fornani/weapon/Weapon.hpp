@@ -1,21 +1,23 @@
 
 #pragma once
 
+#include <fornani/io/Logger.hpp>
 #include <optional>
-#include "Ammo.hpp"
-#include "Projectile.hpp"
+#include "fornani/audio/Soundboard.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/utils/BitFlags.hpp"
+#include "fornani/weapon/Ammo.hpp"
+#include "fornani/weapon/Projectile.hpp"
 
 namespace fornani::arms {
 
-enum class WeaponState : uint8_t { unlocked, equipped, reloading };
-enum class InventoryState : uint8_t { reserve, hotbar };
-enum class UIFlags : uint8_t { selected };
-enum class UIColor { white, periwinkle, green, orange, fucshia, purple, mythic };
+enum class WeaponState : std::uint8_t { unlocked, equipped, reloading };
+enum class WeaponAttributes : std::uint8_t { automatic };
+enum class InventoryState : std::uint8_t { reserve, hotbar };
+enum class UIFlags : std::uint8_t { selected };
+enum class UIColor : std::uint8_t { white, periwinkle, green, orange, fucshia, purple, mythic };
 
-enum class WeaponAttributes : uint8_t { automatic };
 struct WeaponSpecifications {
 	int cooldown_time{};
 	int multishot{};
@@ -24,33 +26,34 @@ struct WeaponSpecifications {
 
 struct Offsets {
 	struct {
-		sf::Vector2<float> global{};
-		sf::Vector2<float> barrel{};
+		sf::Vector2f global{};
+		sf::Vector2f barrel{};
 	} render{};
 	struct {
-		sf::Vector2<float> barrel{};
+		sf::Vector2f barrel{};
 	} gameplay{};
 };
 
 struct EmitterAttributes {
-	sf::Vector2<float> dimensions{};
-	std::string_view type{};
+	sf::Vector2f dimensions{};
+	std::string type{};
 	sf::Color color{};
 };
 
-class Weapon {
+class Weapon : public Animatable {
   public:
-	Weapon(automa::ServiceProvider& svc, int id, bool enemy = false);
+	explicit Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy = false);
 
-	void update(automa::ServiceProvider& svc, dir::Direction to_direction);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	void render_ui(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> position);
+	void update(automa::ServiceProvider& svc, Direction to_direction);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void render_ui(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f position);
 
 	void equip();
 	void unequip();
 	void unlock();
 	void lock();
 	void shoot();
+	void shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f target);
 	void decrement_projectiles();
 
 	bool is_equipped() const;
@@ -58,12 +61,12 @@ class Weapon {
 	bool cooling_down() const;
 	bool can_shoot() const;
 
-	void set_position(sf::Vector2<float> pos);
-	void force_position(sf::Vector2<float> pos);
-	void set_barrel_point(sf::Vector2<float> point);
-	void set_orientation(dir::Direction to_direction);
+	void set_position(sf::Vector2f pos);
+	void force_position(sf::Vector2f pos);
+	void set_barrel_point(sf::Vector2f point);
+	void set_orientation(Direction to_direction);
 	void set_team(Team team);
-	void set_firing_direction(dir::Direction to_direction);
+	void set_firing_direction(Direction to_direction);
 	void reset();
 
 	void set_hotbar() { inventory_state = InventoryState::hotbar; }
@@ -75,22 +78,24 @@ class Weapon {
 	[[nodiscard]] auto shot() const -> bool { return cooldowns.cooldown.just_started(); }
 	[[nodiscard]] auto automatic() const -> bool { return attributes.test(WeaponAttributes::automatic); }
 	[[nodiscard]] auto get_id() const -> int { return metadata.id; }
-	[[nodiscard]] auto get_sound_id() const -> int { return audio.shoot; }
+	[[nodiscard]] auto get_sound_id() const -> int { return static_cast<int>(m_audio.shoot); }
 	[[nodiscard]] auto get_active_projectiles() const -> int { return active_projectiles.get_count(); }
 	[[nodiscard]] auto get_inventory_state() const -> int { return static_cast<int>(inventory_state); }
-	[[nodiscard]] auto get_ui_position() const -> sf::Vector2<float> { return visual.ui.getPosition(); }
+	[[nodiscard]] auto get_ui_position() const -> sf::Vector2f { return visual.ui.getPosition(); }
 	[[nodiscard]] auto get_description() const -> std::string_view { return metadata.description; }
 	[[nodiscard]] auto multishot() const -> bool { return specifications.multishot != 0; }
-	[[nodiscard]] auto get_barrel_point() const -> sf::Vector2<float> { return offsets.gameplay.barrel; }
-	[[nodiscard]] auto get_cooldown() const -> int { return cooldowns.cooldown.get_cooldown(); }
-	[[nodiscard]] auto get_firing_direction() & -> dir::Direction& { return firing_direction; }
-	[[nodiscard]] auto get_global_offset() const -> sf::Vector2<float> { return offsets.render.global; };
+	[[nodiscard]] auto get_barrel_point() const -> sf::Vector2f { return offsets.gameplay.barrel; }
+	[[nodiscard]] auto get_cooldown() const -> int { return cooldowns.cooldown.get(); }
+	[[nodiscard]] auto get_firing_direction() & -> Direction& { return firing_direction; }
+	[[nodiscard]] auto get_global_offset() const -> sf::Vector2f { return offsets.render.global; };
 	[[nodiscard]] auto get_recoil() const -> float { return specifications.recoil; }
 	[[nodiscard]] auto get_multishot() const -> int { return specifications.multishot; }
+	[[nodiscard]] auto get_tag() const -> std::string_view { return metadata.tag; }
 	[[nodiscard]] auto get_label() const -> std::string_view { return metadata.label; }
 	[[nodiscard]] auto get_type() const -> ProjectileType { return projectile.get_type(); }
 	[[nodiscard]] auto get_ui_color() const -> int { return static_cast<int>(visual.color); }
-	[[nodiscard]] auto get_recoil_force() const -> sf::Vector2<float> { return sf::Vector2<float>{-specifications.recoil, 0.f}; }
+	[[nodiscard]] auto get_recoil_force() const -> sf::Vector2f { return sf::Vector2f{-specifications.recoil, 0.f}; }
+	[[nodiscard]] auto get_reload() const -> util::Cooldown { return cooldowns.reload; }
 
 	Projectile projectile;
 	Ammo ammo{};
@@ -100,27 +105,27 @@ class Weapon {
   private:
 	struct {
 		int id{};
-		std::string_view label{};
-		std::string_view description{};
+		std::string tag{};
+		std::string label{};
+		std::string description{};
 	} metadata{};
 
 	Offsets offsets{};
-	dir::Direction firing_direction{};
+	Direction firing_direction{};
 	WeaponSpecifications specifications{};
 	util::BitFlags<WeaponAttributes> attributes{};
 
 	struct {
 		components::PhysicsComponent physics{};
 		components::SteeringBehavior steering{};
-		sf::Vector2<float> final_position{};
+		sf::Vector2f final_position{};
 	} physical{};
 
 	struct {
-		sf::Sprite sprite;
 		sf::Sprite ui;
-		sf::Vector2<float> position{};
+		sf::Vector2f position{};
 		sf::Vector2<int> dimensions{};
-		std::vector<sf::Vector2<float>> anchor_points{};
+		std::vector<sf::Vector2f> anchor_points{};
 		UIColor color{};
 		int texture_lookup{};
 	} visual;
@@ -131,8 +136,8 @@ class Weapon {
 	} flags{};
 
 	struct {
-		int shoot{};
-	} audio{};
+		audio::Weapon shoot{};
+	} m_audio{};
 
 	util::Counter active_projectiles{};
 	InventoryState inventory_state{};
@@ -140,8 +145,10 @@ class Weapon {
 	struct {
 		util::Cooldown cooldown{};
 		util::Cooldown reload{};
-		util::Cooldown down_time{};
+		util::Cooldown shoot_effect{};
 	} cooldowns{};
+
+	io::Logger m_logger{"Arms"};
 };
 
 } // namespace fornani::arms

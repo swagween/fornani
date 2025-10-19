@@ -7,15 +7,17 @@ namespace pi {
 
 class Layer {
   public:
-	Layer(uint8_t const o, bool const c, sf::Vector2<uint32_t> dim) : grid{dim}, render_order(o), collidable(c), dimensions(dim) {}
+	Layer(std::uint8_t const o, bool const c, sf::Vector2<std::uint32_t> dim, float p = 1.f, bool const il = false) : grid{dim}, render_order(o), collidable(c), dimensions(dim), parallax(p), ignore_lighting(il) {}
 	void clear();
 	void erase();
-	void set_position(sf::Vector2<float> to_position, float scale);
+	void set_position(sf::Vector2f to_position, float scale);
 	Grid grid;
-	uint8_t render_order{};
+	std::uint8_t render_order{};
 	bool collidable{};
 	bool active{};
-	sf::Vector2<uint32_t> dimensions{};
+	bool ignore_lighting{};
+	float parallax{};
+	sf::Vector2<std::uint32_t> dimensions{};
 	std::string label{};
 	char const* label_cstr{};
 };

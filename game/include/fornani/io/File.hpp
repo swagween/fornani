@@ -6,14 +6,13 @@
 
 namespace fornani::io {
 
-enum class FileFlags : uint8_t { new_file };
+enum class FileFlags : std::uint8_t { new_file };
 
 class File {
   public:
 	[[nodiscard]] auto is_new() const -> bool { return flags.test(FileFlags::new_file); }
 	void write() {
-		dj::Boolean flag{};
-		save_data["status"]["new"] = flag;
+		save_data["status"]["new"] = false;
 		flags.reset(FileFlags::new_file);
 	}
 	int id{};

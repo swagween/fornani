@@ -1,7 +1,7 @@
 #include "fornani/graphics/TextureUpdater.hpp"
 #include <SFML/Graphics.hpp>
 
-namespace fornani::flfx {
+namespace fornani::graphics {
 
 void TextureUpdater::load_pixel_map(sf::Texture& map_texture) {
 	map.clear();
@@ -14,10 +14,10 @@ void TextureUpdater::load_pixel_map(sf::Texture& map_texture) {
 	for (int i = 0; i < total_array_size; ++i) {
 		sf::Color current_pixel{};
 		if (i % 4 == 0) {
-			uint8_t r = map_image_data[i];
-			uint8_t g = map_image_data[i + 1];
-			uint8_t b = map_image_data[i + 2];
-			uint8_t a = map_image_data[i + 3];
+			std::uint8_t r = map_image_data[i];
+			std::uint8_t g = map_image_data[i + 1];
+			std::uint8_t b = map_image_data[i + 2];
+			std::uint8_t a = map_image_data[i + 3];
 			current_pixel = sf::Color{r, g, b, a};
 			map_colors.push_back(current_pixel);
 		}
@@ -46,10 +46,10 @@ void TextureUpdater::load_palette(sf::Texture& palette_texture) {
 	for (int i = 0; i < total_array_size; ++i) {
 		sf::Color current_pixel{};
 		if (i % 4 == 0) {
-			uint8_t r = palette_image_data[i];
-			uint8_t g = palette_image_data[i + 1];
-			uint8_t b = palette_image_data[i + 2];
-			uint8_t a = palette_image_data[i + 3];
+			std::uint8_t r = palette_image_data[i];
+			std::uint8_t g = palette_image_data[i + 1];
+			std::uint8_t b = palette_image_data[i + 2];
+			std::uint8_t a = palette_image_data[i + 3];
 			current_pixel = sf::Color{r, g, b, a};
 			palette_colors.push_back(current_pixel);
 		}
@@ -99,7 +99,7 @@ void TextureUpdater::update_texture(sf::Texture& texture) {
 	image.clear();
 }
 
-void flfx::TextureUpdater::debug_render(sf::RenderWindow& win, sf::Vector2<float>& campos) {
+void graphics::TextureUpdater::debug_render(sf::RenderWindow& win, sf::Vector2f& campos) {
 	debug.setSize({8.f, 8.f});
 	int i{};
 	for (auto& color : map_colors) {
@@ -119,4 +119,4 @@ void flfx::TextureUpdater::debug_render(sf::RenderWindow& win, sf::Vector2<float
 
 sf::Texture& TextureUpdater::get_dynamic_texture() { return dynamic_texture; }
 
-} // namespace flfx
+} // namespace graphics

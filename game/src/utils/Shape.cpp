@@ -1,6 +1,7 @@
 
 #include "fornani/utils/Shape.hpp"
 #include <ccmath/math/power/sqrt.hpp>
+#include <fornani/graphics/Colors.hpp>
 #include "fornani/utils/Math.hpp"
 
 namespace fornani::shape {
@@ -21,7 +22,7 @@ void Shape::set_dimensions(Vec const new_dim) {
 	vertices[3].y = vertices[0].y + new_dim.y;
 }
 
-sf::Vector2<float> Shape::perp(Vec edg) const {
+sf::Vector2f Shape::perp(Vec edg) const {
 	Vec temp = Vec(-edg.y, edg.x);
 	float mag;
 	float a_squared = temp.x * temp.x;
@@ -50,18 +51,15 @@ void Shape::set_position(Vec const new_pos) {
 	}
 }
 
-// Returns normalized vector
-Shape::Vec Shape::get_normalized(Vec const v) {
+Shape::Vec Shape::get_normalized(Vec const v) const {
 	float length = util::magnitude(v);
 	if (length == 0.f) { return Vec(); }
 	return Vec(v.x / length, v.y / length);
 }
 
-// Returns right hand perpendicular vector
-Shape::Vec Shape::get_normal(const Vec v) { return Vec(-v.y, v.x); }
+Shape::Vec Shape::get_normal(Vec const v) { return Vec(-v.y, v.x); }
 
-// Find minimum and maximum projections of each vertex on the axis
-Shape::Vec Shape::project_on_axis(const std::vector<Vec> vertices, const Vec axis) {
+Shape::Vec Shape::project_on_axis(std::vector<Vec> const vertices, Vec const axis) const {
 	float min = std::numeric_limits<float>::infinity();
 	float max = -std::numeric_limits<float>::infinity();
 	for (auto& vertex : vertices) {
@@ -72,15 +70,15 @@ Shape::Vec Shape::project_on_axis(const std::vector<Vec> vertices, const Vec axi
 	return Vec(min, max);
 }
 
-Shape::Vec Shape::project_circle_on_axis(Vec center, float radius, Vec const axis) {
+Shape::Vec Shape::project_circle_on_axis(Vec center, float radius, Vec const axis) const {
 	float projection = dot_product(center, axis);
 	return Vec(projection - radius, projection + radius);
 }
 
 std::vector<Shape::Vec> Shape::get_vertices(Shape const& shape) { return shape.vertices; }
 
-std::vector<sf::Vector2<float>> Shape::get_poles(sf::CircleShape const& circle) {
-	auto ret = std::vector<sf::Vector2<float>>{};
+std::vector<sf::Vector2f> Shape::get_poles(sf::CircleShape const& circle) {
+	auto ret = std::vector<sf::Vector2f>{};
 	auto normals = get_normals();
 	for (auto& normal : normals) {
 		auto r1 = circle.getPosition() + normal * circle.getRadius();
@@ -190,15 +188,15 @@ bool Shape::SAT(Shape const& other) {
 	return true;
 }
 
-bool Shape::circle_SAT(sf::CircleShape const& circle) {
+bool Shape::circle_SAT(sf::CircleShape const& circle) const {
 	auto normals = get_normals();
 	for (auto& axis : normals) {
 		auto proj1 = project_on_axis(vertices, axis);
 		auto proj2 = project_circle_on_axis(circle.getPosition(), circle.getRadius(), axis);
 		if (!are_overlapping(proj1, proj2)) { return false; }
 	}
-	//check fourth axis
-	auto closest_vertex_axis{sf::Vector2<float>{}};
+	// check fourth axis
+	auto closest_vertex_axis{sf::Vector2f{}};
 	auto distance{std::numeric_limits<float>::max()};
 	auto min_dist{std::numeric_limits<float>::max()};
 	for (auto& vertex : vertices) {
@@ -215,8 +213,8 @@ bool Shape::circle_SAT(sf::CircleShape const& circle) {
 	return true;
 }
 
-sf::Vector2<float> Shape::circle_SAT_MTV(sf::CircleShape const& circle) {
-	auto ret = sf::Vector2<float>{};
+sf::Vector2f Shape::circle_SAT_MTV(sf::CircleShape const& circle) {
+	auto ret = sf::Vector2f{};
 	auto min_overlap = std::numeric_limits<float>::max();
 	auto normals = get_normals();
 	for (auto& axis : normals) {
@@ -230,7 +228,7 @@ sf::Vector2<float> Shape::circle_SAT_MTV(sf::CircleShape const& circle) {
 		if (!are_overlapping(proj1, proj2)) { return {}; }
 	}
 	// check fourth axis
-	auto closest_vertex_axis{sf::Vector2<float>{}};
+	auto closest_vertex_axis{sf::Vector2f{}};
 	auto distance{std::numeric_limits<float>::max()};
 	auto min_dist{std::numeric_limits<float>::max()};
 	for (auto& vertex : vertices) {
@@ -261,7 +259,15 @@ bool Shape::overlaps(Shape const& other) const {
 	return ret;
 }
 
-bool Shape::contains_point(Vec point) { 
+bool Shape::overlaps(sf::Vector2f point) const {
+	if (vertices.at(0).x > point.x) { return false; }
+	if (vertices.at(1).x < point.x) { return false; }
+	if (vertices.at(0).y > point.y) { return false; }
+	if (vertices.at(2).y < point.y) { return false; }
+	return true;
+}
+
+bool Shape::contains_point(Vec point) {
 	bool ret{true};
 	if (vertices.at(0).x > point.x) { ret = false; }
 	if (vertices.at(1).x < point.x) { ret = false; }
@@ -270,22 +276,20 @@ bool Shape::contains_point(Vec point) {
 	return ret;
 }
 
-void Shape::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Shape::render(sf::RenderWindow& win, sf::Vector2f cam, sf::Color color) {
 	if (vertices.size() == 4) {
-		auto color = non_square() ? sf::Color{0, 0, 255, 48} : sf::Color{0, 255, 255, 48};
-		sf::Vertex line1[] = {{vertices[0] - cam, color}, {vertices[1] - cam, color}, {vertices[2] - cam, color}};
+		auto mcolor = non_square() ? sf::Color{0, 0, 255, 48} : color;
+		sf::Vertex line1[] = {{vertices[0] - cam, mcolor}, {vertices[1] - cam, mcolor}, {vertices[2] - cam, mcolor}};
 		win.draw(line1, 3, sf::PrimitiveType::Triangles);
-		sf::Vertex line2[] = {{vertices[0] - cam, color}, {vertices[2] - cam, color}, {vertices[3] - cam, color}};
+		sf::Vertex line2[] = {{vertices[0] - cam, mcolor}, {vertices[2] - cam, mcolor}, {vertices[3] - cam, mcolor}};
 		win.draw(line2, 3, sf::PrimitiveType::Triangles);
 	}
 }
 
 void Shape::draw(sf::RenderTexture& tex) {
-	uint8_t alpha = 212;
+	std::uint8_t alpha = 212;
 	if (vertices.size() == 3) {
-		sf::Vertex line[] = {{vertices[0], sf::Color{255, 255, 0, 100}},
-							 {vertices[1], sf::Color{255, 255, 0, 100}},
-							 {vertices[2], sf::Color{255, 255, 0, 100}}};
+		sf::Vertex line[] = {{vertices[0], sf::Color{255, 255, 0, 100}}, {vertices[1], sf::Color{255, 255, 0, 100}}, {vertices[2], sf::Color{255, 255, 0, 100}}};
 		tex.draw(line, 3, sf::PrimitiveType::Triangles);
 	}
 	if (vertices.size() == 4) {
@@ -306,18 +310,16 @@ void Shape::draw(sf::RenderTexture& tex) {
 	}
 }
 
-std::vector<sf::Vector2<float>> Shape::get_normals() const {
-	std::vector<sf::Vector2<float>> ret{};
+std::vector<sf::Vector2f> Shape::get_normals() const {
+	std::vector<sf::Vector2f> ret{};
 	auto edges = get_edges();
-	for (auto i{0}; i < vertices.size(); ++i) {
-		ret.push_back(perp(edges[i]));
-	}
+	for (auto i{0}; i < vertices.size(); ++i) { ret.push_back(perp(edges[i])); }
 	return ret;
 }
 
-std::vector<sf::Vector2<float>> Shape::get_edges() const {
-	std::vector<sf::Vector2<float>> ret{};
-	for (auto i{0}; i < vertices.size(); ++i) { ret.push_back({vertices[static_cast<size_t>(i + 1) % vertices.size()].x - vertices[i].x, vertices[static_cast<size_t>(i + 1) % vertices.size()].y - vertices[i].y}); }
+std::vector<sf::Vector2f> Shape::get_edges() const {
+	std::vector<sf::Vector2f> ret{};
+	for (auto i{0}; i < vertices.size(); ++i) { ret.push_back({vertices[static_cast<std::size_t>(i + 1) % vertices.size()].x - vertices[i].x, vertices[static_cast<std::size_t>(i + 1) % vertices.size()].y - vertices[i].y}); }
 	return ret;
 }
 
@@ -383,7 +385,8 @@ bool Shape::AABB_is_left_collision(Shape const& immovable) {
 	if (immovable.vertices.size() < 4) {
 		return false;
 	} else {
-		return (get_position().x - epsilon < immovable.vertices[1].x && (get_position().y + get_dimensions().y) > vertices[1].y + small_value && get_position().y < vertices[2].y - small_value && get_position().x + get_dimensions().x > immovable.vertices[1].x);
+		return (get_position().x - epsilon < immovable.vertices[1].x && (get_position().y + get_dimensions().y) > vertices[1].y + small_value && get_position().y < vertices[2].y - small_value &&
+				get_position().x + get_dimensions().x > immovable.vertices[1].x);
 	}
 }
 
@@ -391,8 +394,9 @@ bool Shape::AABB_is_right_collision(Shape const& immovable) {
 	if (vertices.size() < 4) {
 		return false;
 	} else {
-		return (get_position().x + get_dimensions().x + epsilon > immovable.vertices[0].x && (get_position().y + get_dimensions().y) > vertices[1].y + small_value && get_position().y < vertices[2].y - small_value && get_position().x < immovable.vertices[0].x);
+		return (get_position().x + get_dimensions().x + epsilon > immovable.vertices[0].x && (get_position().y + get_dimensions().y) > vertices[1].y + small_value && get_position().y < vertices[2].y - small_value &&
+				get_position().x < immovable.vertices[0].x);
 	}
 }
 
-} // namespace shape
+} // namespace fornani::shape

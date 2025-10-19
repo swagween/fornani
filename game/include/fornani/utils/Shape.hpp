@@ -2,7 +2,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <algorithm>
+
 #include <vector>
 
 namespace fornani::shape {
@@ -10,7 +10,7 @@ namespace fornani::shape {
 class Shape {
 
   public:
-	using Vec = sf::Vector2<float>;
+	using Vec = sf::Vector2f;
 
 	explicit Shape(Vec dim = {32.f, 32.f}, int num_vertices = 4);
 
@@ -19,20 +19,21 @@ class Shape {
 
 	Vec perp(Vec edg) const;
 
-	Vec get_normalized(Vec const v);
+	Vec get_normalized(Vec const v) const;
 	Vec get_normal(Vec const v);
-	Vec project_on_axis(std::vector<Vec> const vertices, Vec const axis);
-	Vec project_circle_on_axis(Vec center, float radius, Vec const axis);
+	Vec project_on_axis(std::vector<Vec> const vertices, Vec const axis) const;
+	Vec project_circle_on_axis(Vec center, float radius, Vec const axis) const;
 	std::vector<Vec> get_vertices(Shape const& shape);
-	std::vector<sf::Vector2<float>> get_poles(sf::CircleShape const& circle);
+	std::vector<sf::Vector2f> get_poles(sf::CircleShape const& circle);
 	Vec get_MTV(Shape const& obb1, Shape const& obb2);
 	bool SAT(Shape const& other);
-	bool circle_SAT(sf::CircleShape const& circle);
-	sf::Vector2<float> circle_SAT_MTV(sf::CircleShape const& circle);
+	bool circle_SAT(sf::CircleShape const& circle) const;
+	sf::Vector2f circle_SAT_MTV(sf::CircleShape const& circle);
 	bool overlaps(Shape const& other) const;
+	bool overlaps(sf::Vector2f point) const;
 	bool contains_point(Vec point);
 	void draw(sf::RenderTexture& tex);
-	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(sf::RenderWindow& win, sf::Vector2f cam, sf::Color color = sf::Color{0, 255, 255, 48});
 	std::vector<Vec> get_normals() const;
 	std::vector<Vec> get_edges() const;
 
@@ -43,9 +44,9 @@ class Shape {
 		if (vertices.size() < 4) { return true; }
 		return vertices[0].y != vertices[1].y || vertices[2].y != vertices[3].y;
 	}
-	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return position; }
-	[[nodiscard]] auto get_dimensions() const -> sf::Vector2<float> { return non_square() ? sf::Vector2<float>{32.f, 32.f} : vertices[2] - vertices[0]; }
-	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return get_position() + get_dimensions() * 0.5f; }
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return position; }
+	[[nodiscard]] auto get_dimensions() const -> sf::Vector2f { return non_square() ? sf::Vector2f{32.f, 32.f} : vertices[2] - vertices[0]; }
+	[[nodiscard]] auto get_center() const -> sf::Vector2f { return get_position() + get_dimensions() * 0.5f; }
 	[[nodiscard]] auto left() const -> float { return get_position().x; }
 	[[nodiscard]] auto right() const -> float { return get_position().x + get_dimensions().x; }
 	[[nodiscard]] auto top() const -> float { return get_position().y; }
@@ -61,7 +62,7 @@ class Shape {
 	std::vector<Vec> vertices{};
 
   private:
-	sf::Vector2<float> position;
+	sf::Vector2f position;
 	int tile_id{};
 };
 

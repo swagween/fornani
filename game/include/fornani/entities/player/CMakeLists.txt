@@ -1,17 +1,13 @@
 nani_add_headers(
         AbilityManager.hpp
         Catalog.hpp
-        Indicator.hpp
         Inventory.hpp
-        Jump.hpp
         Piggybacker.hpp
         Player.hpp
         PlayerAnimation.hpp
         PlayerController.hpp
-        Roll.hpp
-        Shield.hpp
-        Slide.hpp
         VisitHistory.hpp
         Wallet.hpp
         Wardrobe.hpp
 )
+add_subdirectory(abilities)

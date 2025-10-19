@@ -1,82 +1,81 @@
 {
   "save": {
-    "suite": [
-      [ "Game saved." ]
-    ],
-    "responses": [ [] ]
+    "suite": [[{ "message": "Game saved." }]]
   },
   "bed": {
-    "suite": [
-      [ "Would you like to sleep?%0" ],
-      [ "Getting cozy...$88#1#1#", "...", "You awaken feeling well-rested." ]
-    ],
-    "responses": [ [ "Yes%0", "No%1" ] ]
+    "suite": [[{ "message": "You awaken feeling well-rested." }]]
   },
   "chest": {
-    "suite": [
-      [ "Obtained " ]
-    ],
-    "responses": [ [] ]
+    "suite": [[{ "message": "Obtained " }]]
+  },
+  "removed": {
+    "suite": [[{ "message": "Removed " }]]
   },
   "open_chest": {
-    "suite": [
-      [ "It's already been opened." ]
-    ],
-    "responses": [ [] ]
+    "suite": [[{ "message": "It's already been opened." }]]
   },
   "locked_door": {
-    "suite": [
-      [ "It's locked." ]
-    ],
-    "responses": [ [] ]
+    "suite": [[{ "message": "It's locked." }]]
   },
   "unlocked_door": {
-    "suite": [
-      [ "Used $200#1#1" ]
-    ],
-    "responses": [ [] ]
+    "output": 2,
+    "suite": [[{ "message": "Used " }]]
   },
   "death": {
+    "output": 2,
     "suite": [
-      [ "You died.", "Would you like to retry?%0" ]
+      [{ "message": "You died." }, { "message": "Would you like to retry?", "codes": [[1, 0]] }]
     ],
-    "responses": [ [ "Yes$27#1#1#", "No%1" ] ]
+    "responses": [
+      [
+        { "message": "Yes", "codes": [[7, 2]] },
+        { "message": "No", "codes": [[7, 1]] }
+      ]
+    ]
   },
   "menu_return": {
     "suite": [
-      [ "You will lose unsaved progress. Are you sure?%0" ]
+      [{ "message": "You will lose any unsaved progress. Are you sure?", "codes": [[1, 0]] }]
     ],
-    "responses": [ [ "Yes$89#1#1#", "No%1" ] ]
+    "responses": [
+      [
+        { "message": "Yes", "codes": [[7, 1]] },
+        { "message": "No", "codes": [[0, 0]] }
+      ]
+    ]
   },
   "intro": {
     "suite": [
-      [ "You are lost and you are cold.", "There is not much you remember from the last days, but you know well that they were filled with anguish.", "You awaken now after a slumber of unknown length. The world shakes around you.", "...", "You are looking for your brother." ]
-    ],
-    "responses": [ [] ]
-  },
-  "end_demo": {
-    "suite": [
-      [ "Congratulations on completing the playtester edition of Fornani!", "Printing results...$69#1#1#" ]
-    ],
-    "responses": [ [] ]
+      [
+        { "message": "You are lost and you are cold." },
+        {
+          "message": "There is not much you remember from the last days, but you know well that they were filled with anguish."
+        },
+        {
+          "message": "You awaken now after a slumber of unknown length. The world shakes around you."
+        },
+        { "message": "..." },
+        { "message": "You are looking for your brother." }
+      ]
+    ]
   },
   "delete_file": {
     "suite": [
-      [ "This action cannot be undone. Are you sure you want to delete this file?%0" ],
-      [ "File deleted." ]
+      [
+        { "message": "This action cannot be undone. Are you sure you want to delete this file?" },
+        { "message": "File deleted." }
+      ]
     ],
-    "responses": [ [ "Yes$97#1#1#", "No%1" ] ]
+    "responses": [
+      [
+        { "codes": [[7, 3]], "message": "Yes" },
+        { "codes": [[8, 0]], "message": "No" }
+      ]
+    ]
   },
   "fullscreen": {
     "suite": [
-      [ "Fullscreen settings will take effect the next time the game is opened." ]
-    ],
-    "responses": [ [ ] ]
-  },
-  "out_of_bounds": {
-    "suite": [
-      [ "You cannot go that way." ]
-    ],
-    "responses": [ [ ] ]
+      [{ "message": "Fullscreen settings will take effect the next time the game is opened." }]
+    ]
   }
 }

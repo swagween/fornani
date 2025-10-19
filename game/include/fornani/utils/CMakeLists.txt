@@ -7,11 +7,14 @@ nani_add_headers(
         CollisionDepth.hpp
         Constants.hpp
         Cooldown.hpp
+        ColorUtils.hpp
         Counter.hpp
         Cycle.hpp
         Decoder.hpp
         Direction.hpp
         Fader.hpp
+        ID.hpp
+        IWorldPositionable.hpp
         Math.hpp
         NineSlice.hpp
         QuestCode.hpp
@@ -25,6 +28,6 @@ nani_add_headers(
         Stopwatch.hpp
         Ticker.hpp
         WorldClock.hpp
-        Tracy.hpp
         RectPath.hpp
+        WorldTimer.hpp
 )

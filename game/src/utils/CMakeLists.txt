@@ -4,9 +4,13 @@ nani_add_sources(
         CollisionDepth.cpp
         Decoder.cpp
         Fader.cpp
+        IWorldPositionable.cpp
         NineSlice.cpp
+        Random.cpp
         RectPath.cpp
         Shape.cpp
+        Stopwatch.cpp
         Ticker.cpp
         WorldClock.cpp
+        WorldTimer.cpp
 )

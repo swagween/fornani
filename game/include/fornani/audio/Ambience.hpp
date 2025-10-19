@@ -12,14 +12,17 @@ namespace fornani::audio {
 
 class Ambience {
   public:
-	void load(data::ResourceFinder& finder, std::string_view source);
+	explicit Ambience(capo::IEngine& audio_engine);
+	void load(ResourceFinder& finder, std::string_view source);
 	void play();
 	void set_balance(float balance);
 	struct {
-		MusicPlayer open{};
-		MusicPlayer closed{};
-	} tracks{};
-	float volume_multiplier = 0.05f;
+		MusicPlayer open;
+		MusicPlayer closed;
+	} tracks;
+
+  private:
+	float m_volume_multiplier;
 };
 
-} // namespace audio
+} // namespace fornani::audio

@@ -3,100 +3,69 @@
 
 namespace fornani::util {
 
-NineSlice::NineSlice(automa::ServiceProvider& svc, int corner_factor, int edge_factor) : sprite{svc.assets.t_blue_console}, corner_factor(corner_factor), edge_factor(edge_factor) {
-	float fric{0.93f};
-	gravitator = vfx::Gravitator(svc.constants.f_center_screen, sf::Color::Transparent, 0.4f);
-	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{fric, fric}, 2.0f);
+NineSlice::NineSlice(automa::ServiceProvider& svc, sf::Texture const& tex, sf::Vector2i corner, sf::Vector2i edge) : m_sprite{tex}, m_corner_dimensions{corner}, m_edge_dimensions{edge}, m_native_scale{constants::f_scale_vec} {}
+
+void NineSlice::render(sf::RenderWindow& win, sf::Vector2f cam) {
+	auto half_edge{m_dimensions * 0.5f};
+	auto f_dim{sf::Vector2f{m_dimensions}};
+	auto f_corner{sf::Vector2f{static_cast<float>(m_corner_dimensions.x), static_cast<float>(m_corner_dimensions.y)}};
+
+	m_sprite.setScale(m_native_scale); // refresh scale
+
+	// corners
+	// top left
+	m_sprite.setOrigin(f_corner);
+	m_sprite.setTextureRect(sf::IntRect{{}, m_corner_dimensions});
+	m_sprite.setPosition(m_physics.position - cam + m_render_offset);
+	win.draw(m_sprite);
+	// top right
+	m_sprite.setOrigin({0.f, f_corner.y});
+	m_sprite.setTextureRect(sf::IntRect{{m_corner_dimensions.x + m_edge_dimensions.x, 0}, m_corner_dimensions});
+	m_sprite.setPosition(m_physics.position + sf::Vector2f{f_dim.x, 0.f} - cam + m_render_offset);
+	win.draw(m_sprite);
+	// bottom left
+	m_sprite.setOrigin({f_corner.x, 0.f});
+	m_sprite.setTextureRect(sf::IntRect{{0, m_corner_dimensions.y + m_edge_dimensions.y}, m_corner_dimensions});
+	m_sprite.setPosition(m_physics.position + sf::Vector2f{0.f, f_dim.y} - cam + m_render_offset);
+	win.draw(m_sprite);
+	// bottom right
+	m_sprite.setOrigin({});
+	m_sprite.setTextureRect(sf::IntRect{{m_corner_dimensions + m_edge_dimensions}, m_corner_dimensions});
+	m_sprite.setPosition(m_physics.position + f_dim - cam + m_render_offset);
+	win.draw(m_sprite);
+
+	// edges
+	// top middle
+	m_sprite.setOrigin({0.f, f_corner.y});
+	m_sprite.setScale({m_dimensions.x, m_native_scale.y});
+	m_sprite.setTextureRect(sf::IntRect{{m_corner_dimensions.x, 0}, {m_edge_dimensions.x, m_corner_dimensions.y}});
+	m_sprite.setPosition(m_physics.position - cam + m_render_offset);
+	win.draw(m_sprite);
+	// bottom middle
+	m_sprite.setOrigin({});
+	m_sprite.setScale({m_dimensions.x, m_native_scale.y});
+	m_sprite.setTextureRect(sf::IntRect{{m_corner_dimensions.x, m_corner_dimensions.y + m_edge_dimensions.y}, {m_edge_dimensions.x, m_corner_dimensions.y}});
+	m_sprite.setPosition(m_physics.position + sf::Vector2f{0.f, f_dim.y} - cam + m_render_offset);
+	win.draw(m_sprite);
+	// middle left
+	m_sprite.setOrigin({f_corner.x, 0.f});
+	m_sprite.setScale({m_native_scale.x, m_dimensions.y});
+	m_sprite.setTextureRect(sf::IntRect{{0, m_corner_dimensions.y}, {m_corner_dimensions.x, m_edge_dimensions.y}});
+	m_sprite.setPosition(m_physics.position - cam + m_render_offset);
+	win.draw(m_sprite);
+	// middle right
+	m_sprite.setOrigin({});
+	m_sprite.setScale({m_native_scale.x, m_dimensions.y});
+	m_sprite.setTextureRect(sf::IntRect{{m_corner_dimensions.x + m_edge_dimensions.x, m_corner_dimensions.y}, {m_corner_dimensions.x, m_edge_dimensions.y}});
+	m_sprite.setPosition(m_physics.position + sf::Vector2f{f_dim.x, 0.f} - cam + m_render_offset);
+	win.draw(m_sprite);
+
+	// middle
+	m_sprite.setOrigin({});
+	m_sprite.setScale({m_dimensions.x, m_dimensions.y});
+	m_sprite.setTextureRect(sf::IntRect{m_corner_dimensions, m_edge_dimensions});
+	m_sprite.setPosition(m_physics.position - cam + m_render_offset);
+	win.draw(m_sprite);
 }
 
-void NineSlice::set_texture(sf::Texture& tex) { sprite.setTexture(tex); }
-
-void NineSlice::set_origin(sf::Vector2<float> origin) { sprite.setOrigin(origin); }
-
-void NineSlice::update(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float corner_dim, float edge_dim) {
-	corner_dimensions = corner_dim;
-	edge_dimensions = edge_dim;
-	native_dimensions = dimensions;
-	gravitator.set_target_position(position);
-	gravitator.update(svc);
-	if (native_scale < 1.f) { global_scale = 1.f - appear.get_cubic_normalized(); }
-	appear.update();
-
-	// set position for the 9-slice console box
-	sprite.setPosition(gravitator.collider.physics.position);
-}
-
-void NineSlice::direct_update(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float corner_dim, float edge_dim) {
-	corner_dimensions = corner_dim;
-	edge_dimensions = edge_dim;
-	native_dimensions = dimensions;
-	global_scale = 1.f;
-	native_scale = 1.f;
-
-	// set position for the 9-slice console box
-	sprite.setPosition(position);
-}
-
-void NineSlice::render(sf::RenderWindow& win) {
-	
-	auto middle = sf::Vector2<float>{(native_dimensions.x - 2.f * corner_dimensions) / edge_dimensions, (native_dimensions.y - 2.f * corner_dimensions) / edge_dimensions};
-	auto half_edge = sf::Vector2<float>{edge_dimensions * 0.5f, edge_dimensions * 0.5f};
-
-	// draw
-	sprite.setTextureRect(sf::IntRect{{0, 0}, {corner_factor, corner_factor}});
-	sprite.setOrigin({corner_dimensions + middle.x, corner_dimensions + middle.y});
-	sprite.setScale(sf::Vector2<float>{global_scale, global_scale});
-	win.draw(sprite);
-	sprite.setTextureRect(sf::IntRect{{corner_factor, 0}, {edge_factor, corner_factor}});
-	sprite.setOrigin({half_edge.x, corner_dimensions + middle.y});
-	sprite.setScale(sf::Vector2<float>{middle.x, 1.f} * global_scale);
-	win.draw(sprite);
-	sprite.setTextureRect(sf::IntRect{{corner_factor + edge_factor, 0}, {corner_factor, corner_factor}});
-	sprite.setOrigin({-middle.x, corner_dimensions + middle.y});
-	sprite.setScale(sf::Vector2<float>{global_scale, global_scale});
-	win.draw(sprite);
-	sprite.setTextureRect(sf::IntRect{{0, corner_factor}, {corner_factor, edge_factor}});
-	sprite.setOrigin({corner_dimensions + middle.x, half_edge.y});
-	sprite.setScale(sf::Vector2<float>{1.f, middle.y} * global_scale);
-	win.draw(sprite);
-	sprite.setTextureRect(sf::IntRect{{corner_factor, corner_factor}, {edge_factor, edge_factor}});
-	sprite.setOrigin(half_edge);
-	sprite.setScale(sf::Vector2<float>{middle.x, middle.y} * global_scale);
-	win.draw(sprite);
-	sprite.setTextureRect(sf::IntRect{{corner_factor + edge_factor, corner_factor}, {corner_factor, edge_factor}});
-	sprite.setOrigin({-middle.x, half_edge.y});
-	sprite.setScale(sf::Vector2<float>{1.f, middle.y} * global_scale);
-	win.draw(sprite);
-	sprite.setTextureRect(sf::IntRect{{0, corner_factor + edge_factor}, {corner_factor, corner_factor}});
-	sprite.setOrigin({corner_dimensions + middle.x, -middle.y});
-	sprite.setScale(sf::Vector2<float>{global_scale, global_scale});
-	win.draw(sprite);
-	sprite.setTextureRect(sf::IntRect{{corner_factor, corner_factor + edge_factor}, {edge_factor, corner_factor}});
-	sprite.setOrigin({half_edge.x, -middle.y});
-	sprite.setScale(sf::Vector2<float>{middle.x, 1.f} * global_scale);
-	win.draw(sprite);
-	sprite.setTextureRect(sf::IntRect{{corner_factor + edge_factor, corner_factor + edge_factor}, {corner_factor, corner_factor}});
-	sprite.setOrigin({-middle.x, -middle.y});
-	sprite.setScale(sf::Vector2<float>{global_scale, global_scale});
-	win.draw(sprite);
-}
-
-void NineSlice::start(automa::ServiceProvider& svc, sf::Vector2<float> position, float start_scale, sf::Vector2<int> direction, float border) {
-	native_scale = start_scale;
-	global_scale = start_scale;
-	appear.start();
-	auto x = direction.x == -1 ? -(native_dimensions.x + border) : direction.x == 1 ? svc.constants.f_screen_dimensions.x + native_dimensions.x + border : position.x;
-	auto y = direction.y == -1 ? -(native_dimensions.y + border) : direction.y == 1 ? svc.constants.f_screen_dimensions.y + native_dimensions.y + border : position.y;
-	gravitator.set_position({x, y});
-}
-
-void NineSlice::end() {
-	appear.start();
-	set_scale(native_scale);
-}
-
-void NineSlice::speed_up_appearance(int rate) {
-	for (auto i{0}; i < rate; ++i) { appear.update(); }
-}
-
-} // namespace util
+} // namespace fornani::util

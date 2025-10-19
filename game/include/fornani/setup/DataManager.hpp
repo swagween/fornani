@@ -4,11 +4,17 @@
 
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
+#include <fornani/entities/npc/Vendor.hpp>
+#include <fornani/gui/MiniMap.hpp>
+#include <fornani/io/File.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/setup/MapData.hpp>
+#include <fornani/systems/TimeTrialRegistry.hpp>
+#include <fornani/utils/QuestCode.hpp>
+#include <fornani/world/Layer.hpp>
+
 #include <array>
 #include <string>
-#include "fornani/io/File.hpp"
-#include "fornani/utils/QuestCode.hpp"
-#include "fornani/world/Map.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -24,21 +30,18 @@ class Player;
 
 namespace fornani::data {
 
-struct MapData {
-	int id{};
-	dj::Json metadata{};
-};
-
 struct EnemyState {
 	std::pair<int, int> code{};
 	int respawn_distance{};
 	bool permanent{};
+	bool semipermanent{};
 };
 
-class DataManager {
+class DataManager final {
 
   public:
-	DataManager(automa::ServiceProvider& svc, char** argv);
+	friend class Game;
+	explicit DataManager(automa::ServiceProvider& svc);
 	// game save
 	void load_data(std::string in_room = "");
 	void save_progress(player::Player& player, int save_point_id);
@@ -48,7 +51,9 @@ class DataManager {
 	void delete_file(int index);
 	void write_death_count(player::Player& player);
 	std::string_view load_blank_save(player::Player& player, bool state_switch = false) const;
+	void load_trial_save(player::Player& player) const;
 	dj::Json& get_save() { return files.at(current_save).save_data; }
+	dj::Json& get_player_items() { return files.at(current_save).save_data["player_data"]["items"]; }
 	io::File& get_file() { return files.at(current_save); }
 
 	// tweaking
@@ -59,11 +64,11 @@ class DataManager {
 	void open_chest(int id);
 	void unlock_door(int id);
 	void activate_switch(int id);
-	void destroy_block(int id);
-	void destroy_inspectable(std::string_view id);
+	void switch_destructible_state(int id, bool inverse = false);
+	void destroy_inspectable(int id);
 	void push_quest(util::QuestKey key);
 	void set_npc_location(int npc_id, int room_id);
-	void kill_enemy(int room_id, int id, int distance, bool permanent);
+	void kill_enemy(int room_id, int id, int distance, bool permanent, bool semipermanent);
 	void respawn_enemy(int room_id, int id);
 	void respawn_enemies(int room_id, int distance);
 	void respawn_all();
@@ -72,10 +77,11 @@ class DataManager {
 	bool door_is_unlocked(int id) const;
 	bool chest_is_open(int id) const;
 	bool switch_is_activated(int id) const;
-	bool block_is_destroyed(int id) const;
-	bool inspectable_is_destroyed(std::string_view id) const;
+	bool inspectable_is_destroyed(int id) const;
 	bool room_discovered(int id) const;
 	bool enemy_is_fallen(int room_id, int id) const;
+
+	int get_destructible_state(int id) const;
 
 	// support user-defined control mapping
 	void load_controls(config::ControllerMap& controller);
@@ -88,18 +94,28 @@ class DataManager {
 		}
 		return false;
 	}
+	[[nodiscard]] auto item_label_from_id(int key) const -> std::string { return m_item_labels.contains(key) ? m_item_labels.at(key) : "<invalid>"; }
+	[[nodiscard]] auto item_label_view_from_id(int key) const -> std::string_view { return m_item_labels.contains(key) ? m_item_labels.at(key) : "<invalid>"; }
+	[[nodiscard]] auto item_id_from_label(std::string_view label) const -> int;
+	[[nodiscard]] auto get_gun_tag_from_id(int id) const -> std::optional<std::string_view>;
+	[[nodiscard]] auto get_gun_id_from_tag(std::string_view tag) const -> int;
+	[[nodiscard]] auto get_room_data_from_id(int id) const& -> std::optional<dj::Json>;
+	[[nodiscard]] auto get_npc_label_from_id(int id) const -> std::optional<std::string_view>;
+	[[nodiscard]] auto get_enemy_label_from_id(int id) const -> std::optional<std::string_view>;
 
 	int get_room_index(int id);
 	int get_npc_location(int npc_id);
-	std::vector<world::Layer>& get_layers(int id);
+	std::vector<std::unique_ptr<world::Layer>>& get_layers(int id);
 
 	// gui
 	dj::Json m_console_paths{};
+	dj::Json gui_text{};
 
 	dj::Json weapon{};
 	dj::Json enemy_weapon{};
 	dj::Json drop{};
 	dj::Json particle{};
+	dj::Json effect{};
 	dj::Json sparkler{};
 	dj::Json map_styles{};
 	dj::Json npc{};
@@ -107,15 +123,20 @@ class DataManager {
 	dj::Json platform{};
 	dj::Json cutscene{};
 	dj::Json action_names{};
+	dj::Json light{};
 
 	// enemy
 	dj::Json enemy{};
 	dj::Json frdog{};
 	dj::Json hulmet{};
 
+	// time trials
+	dj::Json time_trial_data{};
+
 	int current_save{};
 	std::array<io::File, 3> files{};
 	io::File blank_file{};
+	io::File trial_file{};
 
 	dj::Json player_params{};
 	dj::Json menu{};
@@ -123,9 +144,12 @@ class DataManager {
 	dj::Json settings{};
 	dj::Json map_table{};
 	dj::Json background{};
+	dj::Json audio_library{};
 
 	std::vector<MapData> map_jsons{};
-	std::vector<std::vector<world::Layer>> map_layers{};
+	std::vector<MapTemplate> map_templates{};
+	gui::MiniMap minimap;
+	std::vector<std::vector<std::unique_ptr<world::Layer>>> map_layers{};
 	int num_layers{8};
 	std::vector<int> rooms{};
 	std::vector<int> discovered_rooms{};
@@ -135,13 +159,21 @@ class DataManager {
 	std::unordered_map<int, int> npc_locations{};
 	std::vector<EnemyState> fallen_enemies{};
 
+	TimeTrialRegistry time_trial_registry{};
+
   private:
+	[[nodiscard]] auto get_destroyed_inspectables() const -> std::vector<int> { return destroyed_inspectables; }
 	std::vector<int> opened_chests{};
 	std::vector<int> unlocked_doors{};
 	std::vector<int> activated_switches{};
-	std::vector<int> destroyed_blocks{};
-	std::vector<std::string> destroyed_inspectables{};
+	std::vector<std::pair<int, int>> destructible_states{};
+	std::vector<int> destroyed_inspectables{};
 	std::vector<util::QuestKey> quest_progressions{};
+
+	std::unordered_map<int, std::string> m_item_labels{};
+	std::unordered_map<int, std::string> m_map_labels{};
+
+	io::Logger m_logger{"data"};
 };
 
 } // namespace fornani::data

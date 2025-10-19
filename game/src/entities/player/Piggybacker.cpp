@@ -1,29 +1,31 @@
-#include "fornani/entities/player/Piggybacker.hpp"
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/service/ServiceProvider.hpp"
+
+#include <fornani/entities/player/Piggybacker.hpp>
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 
 namespace fornani::player {
 
-Piggybacker::Piggybacker(automa::ServiceProvider& svc, std::string_view label, sf::Vector2<float> position) : sprite{svc.assets.npcs.at(label)} {
-	auto const& in_data = svc.data.npc[label];
-	auto dimensions = sf::Vector2<int>{in_data["sprite_dimensions"][0].as<int>(), in_data["sprite_dimensions"][1].as<int>()};
-	sprite.setTextureRect(sf::IntRect{{}, dimensions});
-	gravitator = vfx::Gravitator(sf::Vector2<float>{}, sf::Color::Transparent, 0.8f);
-	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.9f, 0.9f}, 1.0f);
-	gravitator.set_position(position);
-	sprite.setOrigin(static_cast<sf::Vector2<float>>(dimensions) * 0.5f);
-	offset.y = -static_cast<float>(dimensions.y) * 0.6f;
+Piggybacker::Piggybacker(automa::ServiceProvider& svc, std::string_view label, sf::Vector2f position)
+	: Animatable(svc, "npc_" + std::string{label}, {svc.data.npc[label]["sprite_dimensions"][0].as<int>(), svc.data.npc[label]["sprite_dimensions"][1].as<int>()}), m_id{svc.data.npc[label]["id"].as<int>()} {
+	center();
+	NANI_LOG_DEBUG(m_logger, "Created a Piggybacker with Label {}", label);
+	auto const& in_anim = svc.data.npc[label]["animation"];
+	for (auto const& anim : in_anim.as_array()) {
+		if (anim["label"].as_string() == "piggyback") { set_parameters({anim["parameters"][0].as<int>(), anim["parameters"][1].as<int>(), anim["parameters"][2].as<int>(), anim["parameters"][3].as<int>(), anim["parameters"][4].as_bool()}); }
+	}
+	m_steering.physics.position = position;
 }
 
 void Piggybacker::update(automa::ServiceProvider& svc, Player& player) {
-	sprite.setScale({player.sprite.getScale().x * -1.f, player.sprite.getScale().y});
-	offset.x = player.collider.dimensions.x * 0.5f;
-	gravitator.set_target_position(player.collider.physics.position + offset);
-	gravitator.update(svc);
+	m_steering.physics.position = player.get_piggyback_socket();
+	/*m_steering.seek(player.get_piggyback_socket(), 0.02f);*/
+	set_scale(player.get_actual_direction().right() ? constants::f_scale_vec : constants::f_inverse_scale_vec);
+	tick();
 }
 
-void Piggybacker::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	sprite.setPosition(gravitator.position() - cam);
-	win.draw(sprite);
+void Piggybacker::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	Animatable::set_position(m_steering.physics.position - cam);
+	win.draw(*this);
 }
-} // namespace player
+
+} // namespace fornani::player

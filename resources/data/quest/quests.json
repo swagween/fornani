@@ -1,0 +1,65 @@
+[
+  {
+    "title": "Free Bit",
+    "tag": "free_bit",
+    "target": 2,
+    "objectives": ["Find the key to Bit's cell.", "Free Bit from his cell."],
+    "displayed": true
+  },
+
+  {
+    "title": "Discover the mystery of the Firstwind Laboratory terminal",
+    "tag": "firstwind_mystery",
+    "target": 5,
+    "objectives": [
+      "Enter the username.",
+      "Enter the authorization key.",
+      "Open the chest.",
+      "Find the Boiler Room.",
+      "Open the chest."
+    ],
+    "displayed": true
+  },
+
+  {
+    "title": "NPC Dialogue",
+    "tag": "npc_dialogue",
+    "displayed": false,
+    "subquests": [
+      { "tag": "mirin", "id": 114 },
+      { "tag": "bryn", "id": 420 },
+      { "tag": "bryn", "id": 509 },
+      { "tag": "bryn", "id": 300 },
+      { "tag": "krub", "id": 406 },
+      { "tag": "gobe", "id": 212 },
+      { "tag": "justin", "id": 247 }
+    ]
+  },
+
+  {
+    "title": "Collect vermite shards",
+    "tag": "collect_vermite",
+    "target": 24,
+    "objectives": ["Collect all the vermite shards."],
+    "displayed": true
+  },
+
+  {
+    "title": "Defeat Miaag",
+    "tag": "defeat_miaag",
+    "target": 1,
+    "objectives": ["Defeat the corrupted King Miaag and escape the Kariba Ruins."],
+    "displayed": true
+  },
+
+  {
+    "title": "Rescue Justin",
+    "tag": "rescue_justin",
+    "target": 2,
+    "objectives": [
+      "Find Gobe's dog. He is somewhere near Old Mimic's Farm.",
+      "Return Justin to Gobe at Old Mimic's Farm."
+    ],
+    "displayed": true
+  }
+]

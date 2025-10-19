@@ -1,6 +1,5 @@
+
 #include "fornani/world/SwitchButton.hpp"
-#include <algorithm>
-#include <cmath>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -9,7 +8,7 @@
 
 namespace fornani::world {
 
-SwitchButton::SwitchButton(automa::ServiceProvider& svc, sf::Vector2<float> position, int id, int type, Map& map) : sprite(svc.assets.t_switches, {32, 16}), id(id), type(static_cast<SwitchType>(type)) {
+SwitchButton::SwitchButton(automa::ServiceProvider& svc, sf::Vector2f position, int id, int type, Map& map) : sprite(svc.assets.get_texture("switch_buttons"), {16, 8}), id(id), type(static_cast<SwitchType>(type)) {
 	collider = shape::Collider({32.f, 14.f});
 	collider.physics.position = position;
 	collider.physics.position.y += 18.f;
@@ -64,7 +63,7 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 		if (platform.bounding_box.overlaps(sensor)) { state = SwitchButtonState::pressed; }
 	}
 	for (auto& chest : map.chests) {
-		if (chest.get_jumpbox().overlaps(sensor)) { state = SwitchButtonState::pressed; }
+		if (chest.get_collider().collides_with(sensor)) { state = SwitchButtonState::pressed; }
 	}
 	for (auto& pushable : map.pushables) {
 		if (pushable.collider.jumpbox.overlaps(sensor)) { state = SwitchButtonState::pressed; }
@@ -77,7 +76,7 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 	collider.reset_ground_flags();
 	collider.physics.acceleration = {};
 	if (collider.collision_depths) {
-		if (collider.collision_depths.value().vertical_squish()) { state = SwitchButtonState::pressed; }
+		// if (collider.collision_depths.value().vertical_squish()) { state = SwitchButtonState::pressed; }
 		collider.collision_depths.value().update();
 	}
 
@@ -88,14 +87,14 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 
 void SwitchButton::handle_collision(shape::Collider& other) const { other.handle_collider_collision(collider); }
 
-void SwitchButton::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void SwitchButton::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (svc.greyblock_mode()) {
 		collider.render(win, cam);
 		sensorbox.setPosition(sensor.get_position() - cam);
 		sensorbox.setSize(sensor.get_dimensions());
 		sensorbox.setFillColor(sf::Color::Transparent);
 		sensorbox.setOutlineThickness(-4);
-		pressed() ? sensorbox.setOutlineColor(svc.styles.colors.dark_fucshia) : sensorbox.setOutlineColor(svc.styles.colors.mythic_green);
+		pressed() ? sensorbox.setOutlineColor(colors::dark_fucshia) : sensorbox.setOutlineColor(colors::mythic_green);
 		win.draw(sensorbox);
 		return;
 	}
@@ -104,7 +103,7 @@ void SwitchButton::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 
 void SwitchButton::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
 	if (proj.transcendent()) { return; }
-	if (proj.get_bounding_box().overlaps(collider.bounding_box)) {
+	if (proj.get_collider().collides_with(collider.bounding_box)) {
 		state = SwitchButtonState::pressed;
 		if (!proj.destruction_initiated()) { svc.soundboard.flags.world.set(audio::World::breakable_hit); }
 		proj.destroy(false);
@@ -113,7 +112,7 @@ void SwitchButton::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::P
 
 fsm::StateFunction SwitchButton::update_unpressed() {
 	external = SwitchButtonState::unpressed;
-	sensor.set_position(collider.physics.position + sf::Vector2<float>{2.f, 0.f});
+	sensor.set_position(collider.physics.position + sf::Vector2f{2.f, 0.f});
 	if (sprite.just_started()) { shine_cooldown.start(); }
 	shine_cooldown.update();
 	if (change_state(SwitchButtonState::pressed, "squished")) {
@@ -130,7 +129,7 @@ fsm::StateFunction SwitchButton::update_unpressed() {
 
 fsm::StateFunction SwitchButton::update_shining() {
 	external = SwitchButtonState::unpressed;
-	sensor.set_position(collider.physics.position + sf::Vector2<float>{2.f, 0.f});
+	sensor.set_position(collider.physics.position + sf::Vector2f{2.f, 0.f});
 	if (change_state(SwitchButtonState::pressed, "squished")) {
 		collider.dimensions.y = 10.f;
 		collider.physics.position.y += 4.f;
@@ -144,7 +143,7 @@ fsm::StateFunction SwitchButton::update_shining() {
 
 fsm::StateFunction SwitchButton::update_squished() {
 	external = SwitchButtonState::unpressed;
-	sensor.set_position(collider.physics.position + sf::Vector2<float>{2.f, -4.f});
+	sensor.set_position(collider.physics.position + sf::Vector2f{2.f, -4.f});
 	if (sprite.complete()) {
 		if (change_state(SwitchButtonState::pressed, "pressed")) {
 			collider.dimensions.y = 4.f;
@@ -163,7 +162,7 @@ fsm::StateFunction SwitchButton::update_squished() {
 fsm::StateFunction SwitchButton::update_pressed() {
 	external = SwitchButtonState::pressed;
 	if (sprite.just_started()) { triggers.set(SwitchButtonState::pressed); }
-	sensor.set_position(collider.physics.position + sf::Vector2<float>{2.f, -10.f});
+	sensor.set_position(collider.physics.position + sf::Vector2f{2.f, -10.f});
 	if (change_state(SwitchButtonState::unpressed, "rising")) {
 		collider.dimensions.y = 10.f;
 		collider.physics.position.y -= 6.f;
@@ -174,7 +173,7 @@ fsm::StateFunction SwitchButton::update_pressed() {
 }
 
 fsm::StateFunction SwitchButton::update_rising() {
-	sensor.set_position(collider.physics.position + sf::Vector2<float>{2.f, -4.f});
+	sensor.set_position(collider.physics.position + sf::Vector2f{2.f, -4.f});
 	external = SwitchButtonState::unpressed;
 	if (sprite.complete()) {
 		if (change_state(SwitchButtonState::unpressed, "neutral")) {

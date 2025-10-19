@@ -1,22 +1,23 @@
 nani_add_headers(
         ActionContextBar.hpp
         ActionControlIconQuery.hpp
-        Console.hpp
+        BossHealth.hpp
         Dashboard.hpp
         Gizmo.hpp
         HUD.hpp
         InventoryWindow.hpp
         ItemWidget.hpp
+        OrbDisplay.hpp
         MiniMap.hpp
         MiniMenu.hpp
         PauseWindow.hpp
         Portrait.hpp
-        Selector.hpp
+        InventorySelector.hpp
         StatusBar.hpp
-        TextWriter.hpp
         VendorDialog.hpp
         WardrobeWidget.hpp
         Widget.hpp
         WidgetBar.hpp
 )
+add_subdirectory(console)
 add_subdirectory(gizmos)

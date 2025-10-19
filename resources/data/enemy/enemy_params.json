@@ -45,14 +45,12 @@
 			"variant": "skycorps"
 		},
 		"physical": {
-			"dimensions": [ 40, 40 ],
-			"sprite_dimensions": [ 80, 80 ],
-			"spritesheet_dimensions": [ 5, 4 ],
-			"offset": [ 22, -19 ],
-			"num_colliders": 1,
-			"num_hurtboxes": 1,
+			"dimensions": [ 80, 80 ],
+			"sprite_dimensions": [ 64, 64 ],
+			"offset": [ 0, -23 ],
 			"alert_range": [ 200.0, 300.0 ],
-			"hostile_range": [ 600.0, 24.0 ],
+			"hostile_range": [ 600.0, 120.0 ],
+			"home_detector": [ 24.0, 80.0 ],
 			"friction": 0.98,
 			"gravity": 6.5
 		},
@@ -64,7 +62,7 @@
 			"hit": -1
 		},
 		"attributes": {
-			"base_hp": 40,
+			"base_hp": 120,
 			"base_damage": 2.0,
 			"speed": 1.0,
 			"loot_multiplier": 4.0,
@@ -81,7 +79,8 @@
 			"gravity": true,
 			"map_collision": true,
 			"player_collision": true,
-			"rare_drops": false
+			"rare_drops": false,
+			"secondary_collider": true
 		}
 	},
 	"thug": {
@@ -128,9 +127,6 @@
 			"player_collision": true,
 			"rare_drops": false
 		}
-	},
-	"hulmet": {
-
 	},
 
 	"eyebot": {
@@ -187,9 +183,8 @@
 		},
 		"physical": {
 			"dimensions": [ 28, 28 ],
-			"sprite_dimensions": [ 32, 32 ],
-			"spritesheet_dimensions": [ 3, 2 ],
-			"offset": [ 8, 8 ],
+			"sprite_dimensions": [ 16, 16 ],
+			"offset": [ -4, -4 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 900.0, 900.0 ],
@@ -236,9 +231,8 @@
 		},
 		"physical": {
 			"dimensions": [ 64, 64 ],
-			"sprite_dimensions": [ 120, 120 ],
-			"spritesheet_dimensions": [ 6, 7 ],
-			"offset": [ 40, -23 ],
+			"sprite_dimensions": [ 60, 60 ],
+			"offset": [ 0, -27 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 300.0, 300.0 ],
@@ -254,7 +248,7 @@
 			"hit": -1
 		},
 		"attributes": {
-			"base_hp": 600,
+			"base_hp": 800,
 			"base_damage": 1.0,
 			"speed": 0.5,
 			"loot_multiplier": 25.0,
@@ -271,7 +265,8 @@
 			"gravity": true,
 			"map_collision": true,
 			"player_collision": true,
-			"rare_drops": false
+			"rare_drops": false,
+			"secondary_collider": true
 		}
 	},
 	"demon": {
@@ -280,10 +275,9 @@
 			"variant": "guardian"
 		},
 		"physical": {
-			"dimensions": [ 28, 28 ],
-			"sprite_dimensions": [ 72, 72 ],
-			"spritesheet_dimensions": [ 3, 6 ],
-			"offset": [ 11, -24 ],
+			"dimensions": [ 40, 40 ],
+			"sprite_dimensions": [ 128, 80 ],
+			"offset": [ 0, -27 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 600.0, 300.0 ],
@@ -299,7 +293,7 @@
 			"hit": -1
 		},
 		"attributes": {
-			"base_hp": 46,
+			"base_hp": 108,
 			"base_damage": 1.0,
 			"speed": 0.7,
 			"loot_multiplier": 5.0,
@@ -316,7 +310,9 @@
 			"gravity": true,
 			"map_collision": true,
 			"player_collision": false,
-			"rare_drops": false
+			"foreground": true,
+			"rare_drops": false,
+			"secondary_collider": true
 		}
 	},
 	"caster": {
@@ -326,9 +322,9 @@
 		},
 		"physical": {
 			"dimensions": [ 28, 28 ],
-			"sprite_dimensions": [ 72, 72 ],
+			"sprite_dimensions": [ 36, 36 ],
 			"spritesheet_dimensions": [ 3, 4 ],
-			"offset": [ 11, -24 ],
+			"offset": [ 0, -21 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 600.0, 600.0 ],
@@ -372,10 +368,9 @@
 			"variant": "guardian"
 		},
 		"physical": {
-			"dimensions": [ 20, 60 ],
-			"sprite_dimensions": [ 64, 64 ],
-			"spritesheet_dimensions": [ 2, 9 ],
-			"offset": [ 11, 28 ],
+			"dimensions": [ 30, 30 ],
+			"sprite_dimensions": [ 32, 32 ],
+			"offset": [ 0, -14 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 1600.0, 1600.0 ],
@@ -410,7 +405,8 @@
 			"map_collision": true,
 			"player_collision": false,
 			"foreground": false,
-			"rare_drops": false
+			"rare_drops": false,
+			"secondary_collider": true
 		}
 	},
 	"imp": {
@@ -420,8 +416,8 @@
 		},
 		"physical": {
 			"dimensions": [ 14, 14 ],
-			"sprite_dimensions": [ 80, 40 ],
-			"offset": [ 11, -18 ],
+			"sprite_dimensions": [ 40, 20 ],
+			"offset": [ 0, -12 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 1600.0, 1600.0 ],
@@ -459,46 +455,6 @@
 			"rare_drops": false
 		}
 	},
-	"hauler": {
-		"metadata": {
-			"id": 6,
-			"variant": "skycorps"
-		},
-		"physical": {
-			"dimensions": [ 44, 44 ],
-			"sprite_dimensions": [ 80, 80 ],
-			"spritesheet_dimensions": [ 5, 4 ],
-			"offset": [ 20, -14 ],
-			"num_colliders": 1,
-			"num_hurtboxes": 1,
-			"alert_range": [ 200.0, 300.0 ],
-			"hostile_range": [ 600.0, 24.0 ],
-			"friction": 0.98,
-			"gravity": 6.5
-		},
-		"visual": {
-			"effect_type": 0,
-			"effect_size": 1
-		},
-		"attributes": {
-			"base_hp": 40,
-			"base_damage": 2.0,
-			"speed": 1.0,
-			"loot_multiplier": 2.0,
-			"drop_range": [ 5, 8 ]
-		},
-		"animation": {
-			"duration": 2,
-			"framerate": 20
-		},
-		"general": {
-			"mobile": true,
-			"gravity": true,
-			"map_collision": true,
-			"player_collision": true,
-			"rare_drops": false
-		}
-	},
 	"beamstalk": {
 		"metadata": {
 			"id": 10,
@@ -506,8 +462,7 @@
 		},
 		"physical": {
 			"dimensions": [ 80, 80 ],
-			"sprite_dimensions": [ 200, 200 ],
-			"spritesheet_dimensions": [ 3, 28 ],
+			"sprite_dimensions": [ 100, 100 ],
 			"offset": [ 32, -32 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
@@ -553,8 +508,8 @@
 		},
 		"physical": {
 			"dimensions": [ 192, 100 ],
-			"sprite_dimensions": [ 256, 256 ],
-			"offset": [ 96, -110 ],
+			"sprite_dimensions": [ 128, 128 ],
+			"offset": [ 0, -75 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 180.0, 180.0 ],
@@ -587,6 +542,261 @@
 			"foreground": true,
 			"rare_drops": true
 		}
+	},
+	"hulmet": {
+		"metadata": {
+			"id": 13,
+			"variant": "skycorps"
+		},
+		"physical": {
+			"dimensions": [ 32, 32 ],
+			"sprite_dimensions": [ 32, 32 ],
+			"offset": [ 0, -15 ],
+			"num_colliders": 1,
+			"num_hurtboxes": 1,
+			"alert_range": [ 380.0, 64.0 ],
+			"hostile_range": [ 90.0, 32.0 ],
+			"friction": 0.98,
+			"gravity": 16.0
+		},
+		"visual": {
+			"effect_type": 0,
+			"effect_size": 1
+		},
+		"audio": {
+			"hit": -1
+		},
+		"attributes": {
+			"base_hp": 40,
+			"base_damage": 4.0,
+			"speed": 0.5,
+			"loot_multiplier": 2.0,
+			"drop_range": [ 3, 4 ],
+			"rare_drop_id": 0,
+			"respawn_distance": 4,
+			"permadeath": false
+		},
+		"general": {
+			"mobile": true,
+			"gravity": true,
+			"map_collision": true,
+			"player_collision": false,
+			"foreground": false,
+			"rare_drops": false,
+			"secondary_collider": true
+		}
+	},
+	"miaag": {
+		"metadata": {
+			"id": 14,
+			"variant": "demon"
+		},
+		"physical": {
+			"dimensions": [ 128, 128 ],
+			"sprite_dimensions": [ 80, 80 ],
+			"offset": [ 0, 0 ],
+			"num_colliders": 1,
+			"num_hurtboxes": 1,
+			"alert_range": [ 380.0, 64.0 ],
+			"hostile_range": [ 90.0, 32.0 ],
+			"friction": 0.98,
+			"gravity": 0.0
+		},
+		"visual": {
+			"effect_type": 0,
+			"effect_size": 1
+		},
+		"audio": {
+			"hit": -1
+		},
+		"attributes": {
+			"base_hp": 800,
+			"base_damage": 4.0,
+			"speed": 0.5,
+			"loot_multiplier": 40.0,
+			"drop_range": [ 30, 35 ],
+			"rare_drop_id": 0,
+			"respawn_distance": 4,
+			"permadeath": true
+		},
+		"general": {
+			"mobile": true,
+			"gravity": false,
+			"map_collision": false,
+			"player_collision": false,
+			"foreground": false,
+			"rare_drops": true
+		}
+	},
+	"lynx": {
+		"metadata": {
+			"id": 15,
+			"variant": "skycorps"
+		},
+		"physical": {
+			"dimensions": [ 40, 40 ],
+			"sprite_dimensions": [ 128, 81 ],
+			"offset": [ -4, -36 ],
+			"num_colliders": 1,
+			"num_hurtboxes": 1,
+			"alert_range": [ 380.0, 64.0 ],
+			"hostile_range": [ 90.0, 32.0 ],
+			"friction": 0.99,
+			"gravity": 24.0
+		},
+		"visual": {
+			"effect_type": 0,
+			"effect_size": 1
+		},
+		"audio": {
+			"hit": -1
+		},
+		"attributes": {
+			"base_hp": 1200,
+			"base_damage": 4.0,
+			"speed": 2.5,
+			"loot_multiplier": 40.0,
+			"drop_range": [ 30, 35 ],
+			"rare_drop_id": 0,
+			"respawn_distance": 4,
+			"permadeath": true
+		},
+		"general": {
+			"mobile": true,
+			"gravity": true,
+			"map_collision": true,
+			"player_collision": false,
+			"foreground": true,
+			"rare_drops": true
+		}
+	},
+	"summoner": {
+		"metadata": {
+			"id": 16,
+			"variant": "guardian"
+		},
+		"physical": {
+			"dimensions": [ 40, 94 ],
+			"sprite_dimensions": [ 64, 64 ],
+			"offset": [ 0, -16 ],
+			"num_colliders": 1,
+			"num_hurtboxes": 1,
+			"alert_range": [ 380.0, 64.0 ],
+			"hostile_range": [ 90.0, 32.0 ],
+			"friction": 0.99,
+			"gravity": 12.0
+		},
+		"visual": {
+			"effect_type": 0,
+			"effect_size": 1
+		},
+		"audio": {
+			"hit": -1
+		},
+		"attributes": {
+			"base_hp": 210,
+			"base_damage": 4.0,
+			"speed": 2.5,
+			"loot_multiplier": 30.0,
+			"drop_range": [ 10, 15 ],
+			"rare_drop_id": 0,
+			"respawn_distance": 8,
+			"permadeath": false,
+			"secondary_collider": false
+		},
+		"general": {
+			"mobile": true,
+			"gravity": true,
+			"map_collision": true,
+			"player_collision": false,
+			"foreground": true,
+			"rare_drops": true,
+			"sturdy": true,
+			"semipermanent": true
+		}
+	},
+	"minion": {
+		"metadata": {
+			"id": 17,
+			"variant": "guardian"
+		},
+		"physical": {
+			"dimensions": [ 20, 20 ],
+			"sprite_dimensions": [ 16, 16 ],
+			"offset": [ 0, -5 ],
+			"num_colliders": 1,
+			"num_hurtboxes": 1,
+			"alert_range": [ 380.0, 64.0 ],
+			"hostile_range": [ 90.0, 32.0 ],
+			"friction": 0.99,
+			"gravity": 20.0
+		},
+		"visual": {
+			"effect_type": 0,
+			"effect_size": 1
+		},
+		"audio": {
+			"hit": -1
+		},
+		"attributes": {
+			"base_hp": 4,
+			"base_damage": 1.0,
+			"speed": 2.5,
+			"loot_multiplier": 1.0,
+			"drop_range": [ 0, 0 ],
+			"rare_drop_id": 0,
+			"respawn_distance": 8,
+			"permadeath": false,
+			"size": 1
+		},
+		"general": {
+			"mobile": true,
+			"gravity": true,
+			"map_collision": true,
+			"player_collision": false,
+			"foreground": true,
+			"rare_drops": false
+		}
+	},
+	"spitefly": {
+		"metadata": {
+			"id": 18,
+			"variant": "guardian"
+		},
+		"physical": {
+			"dimensions": [ 20, 20 ],
+			"sprite_dimensions": [ 40, 40 ],
+			"offset": [ 0, 10 ],
+			"alert_range": [ 900.0, 900.0 ],
+			"hostile_range": [ 500.0, 500.0 ],
+			"friction": 0.99,
+			"gravity": 0.5
+		},
+		"visual": {
+			"effect_type": 0,
+			"effect_size": 1
+		},
+		"audio": {
+			"hit": -1
+		},
+		"attributes": {
+			"base_hp": 22,
+			"base_damage": 1.0,
+			"speed": 2.5,
+			"loot_multiplier": 1.0,
+			"drop_range": [ 2, 3 ],
+			"rare_drop_id": 0,
+			"respawn_distance": 2,
+			"permadeath": false,
+			"size": 1
+		},
+		"general": {
+			"mobile": true,
+			"gravity": true,
+			"map_collision": true,
+			"player_collision": false,
+			"foreground": true,
+			"rare_drops": false
+		}
 	}
-
 }

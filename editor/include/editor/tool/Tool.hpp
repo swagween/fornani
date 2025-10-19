@@ -3,34 +3,33 @@
 
 #include <cmath>
 
+#include <editor/util/Constants.hpp>
 #include "editor/canvas/Canvas.hpp"
 #include "editor/canvas/Clipboard.hpp"
 #include "editor/util/SelectBox.hpp"
+#include "fornani/utils/Polymorphic.hpp"
 
 #include <optional>
 #include <string_view>
 
 namespace pi {
 
-enum class ToolType : std::uint8_t { brush, fill, marquee, erase, hand, entity_editor, eyedropper };
 enum class EntityType : std::uint8_t { none, portal, inspectable, critter, chest, animator, player_placer, platform, save_point, switch_button, switch_block, interactive_scenery, scenery };
 enum class EntityMode : std::uint8_t { selector, placer, eraser, mover, editor };
 enum class ToolStatus : std::uint8_t { usable, unusable, loaded };
 
-class Tool {
+class Tool : public fornani::UniquePolymorphic {
   public:
 	Tool(std::string_view label, ToolType type) : label(label), type(type) {}
-	Tool& operator=(Tool const&) = delete;
-	virtual ~Tool() = default;
 	virtual void update(Canvas& canvas);
 	virtual void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) = 0;
-	virtual void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) = 0;
+	virtual void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) = 0;
 	virtual void store_tile(int index) = 0;
 	virtual void clear() = 0;
 	virtual void set_usability(bool const flag);
 
-	void set_position(sf::Vector2<float> to_position);
-	void set_window_position(sf::Vector2<float> to_position);
+	void set_position(sf::Vector2f to_position);
+	void set_window_position(sf::Vector2f to_position);
 	void activate();
 	void deactivate();
 	void suppress_until_released();
@@ -42,13 +41,13 @@ class Tool {
 
 	[[nodiscard]] auto get_label() const -> std::string { return label; };
 	[[nodiscard]] auto get_tooltip() const -> std::string { return tooltip; }
-	[[nodiscard]] auto f_position() const -> sf::Vector2<float> { return position; }
-	[[nodiscard]] auto scaled_position() const -> sf::Vector2<uint32_t> { return {static_cast<uint32_t>(std::floor(position.x / 32.f)), static_cast<uint32_t>(std::floor(position.y / 32.f))}; }
-	[[nodiscard]] auto scaled_position_ceiling() const -> sf::Vector2<uint32_t> { return {static_cast<uint32_t>(std::ceil(position.x / 32.f)), static_cast<uint32_t>(std::ceil(position.y / 32.f))}; }
-	[[nodiscard]] auto f_scaled_position() const -> sf::Vector2<float> { return {static_cast<float>(scaled_position().x), static_cast<float>(scaled_position().y)}; }
-	[[nodiscard]] auto scaled_clicked_position() const -> sf::Vector2<uint32_t> { return {static_cast<uint32_t>(std::floor(clicked_position.x / 32.f)), static_cast<uint32_t>(std::floor(clicked_position.y / 32.f))}; }
-	[[nodiscard]] auto get_window_position() const -> sf::Vector2<float> { return window_position; }
-	[[nodiscard]] auto get_window_position_scaled() const -> sf::Vector2<float> { return window_position / 32.f; }
+	[[nodiscard]] auto f_position() const -> sf::Vector2f { return position; }
+	[[nodiscard]] auto scaled_position() const -> sf::Vector2<std::uint32_t> { return {static_cast<std::uint32_t>(std::floor(position.x / 32.f)), static_cast<std::uint32_t>(std::floor(position.y / 32.f))}; }
+	[[nodiscard]] auto scaled_position_ceiling() const -> sf::Vector2<std::uint32_t> { return {static_cast<std::uint32_t>(std::ceil(position.x / 32.f)), static_cast<std::uint32_t>(std::ceil(position.y / 32.f))}; }
+	[[nodiscard]] auto f_scaled_position() const -> sf::Vector2f { return {static_cast<float>(scaled_position().x), static_cast<float>(scaled_position().y)}; }
+	[[nodiscard]] auto scaled_clicked_position() const -> sf::Vector2<std::uint32_t> { return {static_cast<std::uint32_t>(std::floor(clicked_position.x / 32.f)), static_cast<std::uint32_t>(std::floor(clicked_position.y / 32.f))}; }
+	[[nodiscard]] auto get_window_position() const -> sf::Vector2f { return window_position; }
+	[[nodiscard]] auto get_window_position_scaled() const -> sf::Vector2f { return window_position / 32.f; }
 	[[nodiscard]] auto palette_interactable() const -> bool { return type == ToolType::marquee || type == ToolType::eyedropper; }
 	[[nodiscard]] auto get_selection_type() const -> SelectionType { return selection_type; }
 	[[nodiscard]] auto is_ready() const -> bool { return ready; }
@@ -59,7 +58,7 @@ class Tool {
 	[[nodiscard]] auto highlight_canvas() const -> bool { return (is_paintable() || type == ToolType::erase) && !disable_highlight; }
 	[[nodiscard]] auto is_paintable() const -> bool { return type == ToolType::brush || type == ToolType::fill; };
 
-	bool in_bounds(sf::Vector2<uint32_t>& bounds) const;
+	bool in_bounds(sf::Vector2<std::uint32_t>& bounds) const;
 
 	bool pervasive{};
 	bool contiguous{};
@@ -77,8 +76,8 @@ class Tool {
 
 	bool primary{};
 	bool trigger_switch{false};
-	uint32_t tile{};
-	std::optional<std::unique_ptr<Entity>> current_entity{};
+	std::uint32_t tile{};
+	std::optional<std::unique_ptr<fornani::Entity>> current_entity{};
 	std::optional<SelectBox> selection{};
 
 	ToolType type{};
@@ -96,10 +95,10 @@ class Tool {
 	SelectionType selection_type{};
 	float scale{};
 	int max_size{32};
-	sf::Vector2<float> position{};
-	sf::Vector2<float> clicked_position{};
-	sf::Vector2<float> relative_position{};
-	sf::Vector2<float> window_position{};
+	sf::Vector2f position{};
+	sf::Vector2f clicked_position{};
+	sf::Vector2f relative_position{};
+	sf::Vector2f window_position{};
 	std::string tooltip{};
 
   private:
@@ -111,7 +110,7 @@ class Hand : public Tool {
 	Hand() : Tool("Hand", ToolType::hand) {}
 	void update(Canvas& canvas) override;
 	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) override;
-	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) override;
+	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) override;
 	void store_tile(int index) override;
 	void clear() override;
 };
@@ -121,7 +120,7 @@ class Brush : public Tool {
 	Brush() : Tool("Brush", ToolType::brush) {}
 	void update(Canvas& canvas) override;
 	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) override;
-	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) override;
+	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) override;
 	void store_tile(int index) override;
 	void clear() override;
 };
@@ -131,7 +130,7 @@ class Erase : public Tool {
 	Erase() : Tool("Eraser", ToolType::erase) {}
 	void update(Canvas& canvas) override;
 	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) override;
-	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) override;
+	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) override;
 	void store_tile(int index) override;
 	void clear() override;
 };
@@ -141,12 +140,12 @@ class Fill : public Tool {
 	Fill() : Tool("Fill", ToolType::fill) {}
 	void update(Canvas& canvas) override;
 	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) override;
-	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) override;
+	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) override;
 	void store_tile(int index) override;
 	void clear() override;
 
-	void fill_section(uint32_t prev_val, uint32_t new_val, uint32_t i, uint32_t j, Canvas& canvas);
-	void replace_all(uint32_t prev_val, uint32_t new_val, uint32_t i, uint32_t j, Canvas& canvas);
+	void fill_section(std::uint32_t prev_val, std::uint32_t new_val, std::uint32_t i, std::uint32_t j, Canvas& canvas);
+	void replace_all(std::uint32_t prev_val, std::uint32_t new_val, std::uint32_t i, std::uint32_t j, Canvas& canvas);
 };
 
 class EntityEditor : public Tool {
@@ -154,7 +153,7 @@ class EntityEditor : public Tool {
 	explicit EntityEditor(EntityMode to_mode = EntityMode::selector);
 	void update(Canvas& canvas) override;
 	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) override;
-	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) override;
+	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) override;
 	void store_tile(int index) override;
 	void clear() override;
 	void set_mode(EntityMode to_mode);
@@ -171,7 +170,7 @@ class Marquee : public Tool {
 	Marquee() : Tool("Marquee", ToolType::marquee) {}
 	void update(Canvas& canvas) override;
 	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) override;
-	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) override;
+	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) override;
 	void store_tile(int index) override;
 	void clear() override;
 };
@@ -181,7 +180,7 @@ class Eyedropper : public Tool {
 	Eyedropper() : Tool("Eyedropper", ToolType::eyedropper) {}
 	void update(Canvas& canvas) override;
 	void handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) override;
-	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) override;
+	void render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) override;
 	void store_tile(int index) override;
 	void clear() override;
 };

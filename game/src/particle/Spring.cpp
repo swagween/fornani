@@ -1,6 +1,7 @@
 
-#include "fornani/particle/Spring.hpp"
-#include "fornani/service/ServiceProvider.hpp"
+#include <ccmath/ext/clamp.hpp>
+#include <fornani/particle/Spring.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 
 namespace fornani::vfx {
 
@@ -12,11 +13,11 @@ Spring::Spring(SpringParameters params) : params(params) {
 	sensor.bounds.setOrigin({sensor.bounds.getRadius(), sensor.bounds.getRadius()});
 }
 
-Spring::Spring(SpringParameters params, sf::Vector2<float> anchor, sf::Vector2<float> bob) : anchor(anchor), bob(bob) {  }
+Spring::Spring(SpringParameters params, sf::Vector2f anchor, sf::Vector2f bob) : anchor(anchor), bob(bob) {}
 
 void Spring::calculate() { calculate_force(); }
 
-void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2<float> external_force, bool loose, bool sag) {
+void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2f external_force, bool loose, bool sag) {
 	variables.bob_physics.gravity = sag ? custom_grav : 0.f;
 	variables.anchor_physics.gravity = sag ? custom_grav : 0.f;
 	calculate();
@@ -31,7 +32,18 @@ void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2
 	sensor.bounds.setPosition(bob);
 }
 
-void Spring::render(sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Spring::simulate(float custom_grav, bool loose, bool sag) {
+	variables.bob_physics.gravity = sag ? custom_grav : 0.f;
+	variables.anchor_physics.gravity = sag ? custom_grav : 0.f;
+	calculate();
+	variables.bob_physics.simple_update();
+	if (loose) { variables.anchor_physics.simple_update(); }
+	bob = variables.bob_physics.position;
+	if (loose) { anchor = variables.anchor_physics.position; }
+	sensor.bounds.setPosition(bob);
+}
+
+void Spring::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	bob_shape.setRadius(8.f);
 	anchor_shape.setRadius(6.f);
 	bob_shape.setOrigin({bob_shape.getRadius(), bob_shape.getRadius()});
@@ -55,10 +67,12 @@ void Spring::calculate_force() {
 	float mag = sqrt(variables.spring_force.x * variables.spring_force.x + variables.spring_force.y * variables.spring_force.y);
 	variables.extension = mag - params.rest_length;
 
+	if (mag == 0.f) { return; }
+
 	variables.spring_force /= mag;
 	variables.spring_force *= -params.spring_constant * variables.extension;
-	variables.spring_force.x = std::clamp(variables.spring_force.x, -spring_max, spring_max);
-	variables.spring_force.y = std::clamp(variables.spring_force.y, -spring_max, spring_max);
+	variables.spring_force.x = ccm::ext::clamp(variables.spring_force.x, -spring_max, spring_max);
+	variables.spring_force.y = ccm::ext::clamp(variables.spring_force.y, -spring_max, spring_max);
 	variables.bob_physics.acceleration = variables.spring_force;
 	variables.anchor_physics.acceleration = -variables.spring_force;
 }
@@ -70,12 +84,12 @@ void Spring::reverse_anchor_and_bob() {
 	variables.bob_physics.position = bob;
 }
 
-void Spring::set_anchor(sf::Vector2<float> point) {
+void Spring::set_anchor(sf::Vector2f point) {
 	anchor = point;
 	variables.anchor_physics.position = point;
 }
 
-void Spring::set_bob(sf::Vector2<float> point) {
+void Spring::set_bob(sf::Vector2f point) {
 	bob = point;
 	variables.bob_physics.position = point;
 }
@@ -84,15 +98,15 @@ void Spring::set_rest_length(float point) { params.rest_length = point; }
 
 void Spring::set_force(float force) { params.spring_constant = force; }
 
-sf::Vector2<float>& Spring::get_bob() { return bob; }
+sf::Vector2f& Spring::get_bob() { return bob; }
 
-sf::Vector2<float>& Spring::get_anchor() { return anchor; }
+sf::Vector2f& Spring::get_anchor() { return anchor; }
 
-sf::Vector2<float> Spring::get_rope(int index) {
-	auto ret = sf::Vector2<float>{};
+sf::Vector2f Spring::get_rope(int index) {
+	auto ret = sf::Vector2f{};
 	ret = (bob - anchor) / (float)num_links;
 	ret = bob - ret * (float)index;
 	return ret;
 }
 
-} // namespace vfx
+} // namespace fornani::vfx

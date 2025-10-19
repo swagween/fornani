@@ -2,41 +2,44 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/Cooldown.hpp"
-
-namespace fornani::automa {
-struct ServiceProvider;
-}
+#include <fornani/graphics/Colors.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/Counter.hpp>
 
 namespace fornani::player {
 class Player;
 }
 
-namespace fornani::flfx {
+namespace fornani::graphics {
+
+enum class TransitionState : std::uint8_t { inactive, fading_to_black, black, fading_out };
 
 class Transition {
 
   public:
-	Transition(automa::ServiceProvider& svc, int d);
-
+	Transition(sf::Vector2f screen_dim, int duration, sf::Color color = colors::ui_black);
 	void update(player::Player& player);
 	void render(sf::RenderWindow& win);
 	void start();
 	void end();
-	[[nodiscard]] auto not_started() const -> bool { return !fade_out && !done; }
-	[[nodiscard]] auto is_done() const -> bool { return done; }
+
+	[[nodiscard]] auto has_waited(int time) -> bool { return m_hang_time.get_count() >= time; }
+	[[nodiscard]] auto is(TransitionState test) const -> bool { return m_state == test; }
+	[[nodiscard]] auto get_cooldown() const -> float { return m_cooldown.get_normalized(); }
+	[[nodiscard]] auto as_string() const -> std::string;
 
   private:
-	int duration{};
-	util::Cooldown cooldown{};
-	uint8_t alpha{255};
-	bool done{};
-	bool fade_out{};
-	bool fade_in{};
-	int rate{4};
+	util::Counter m_hang_time{};
+	util::Cooldown m_cooldown;
+	std::uint8_t m_alpha;
 
-	sf::RectangleShape box{};
-	sf::Color color{};
+	TransitionState m_state{};
+
+	sf::RectangleShape m_box;
+	sf::Color m_color;
+
+	io::Logger m_logger{"Graphics"};
 };
 
-} // namespace flfx
+} // namespace fornani::graphics

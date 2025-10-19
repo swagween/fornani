@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <string>
 
-namespace fornani::data {
+namespace fornani {
 
 namespace fs = std::filesystem;
 
@@ -29,4 +29,4 @@ class ResourceFinder {
 	} paths{};
 };
 
-} // namespace fornani::data
+} // namespace fornani

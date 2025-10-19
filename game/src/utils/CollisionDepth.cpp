@@ -1,9 +1,10 @@
 #include "fornani/utils/CollisionDepth.hpp"
-#include "fornani/utils/Shape.hpp"
 #include "fornani/utils/Collider.hpp"
-#include <iostream>
+#include "fornani/utils/Shape.hpp"
 
 namespace fornani::util {
+
+constexpr auto crush_threshold_v = sf::Vector2f{8.f, 16.f};
 
 void CollisionDepth::calculate(shape::Collider const& native, shape::Shape const& other) {
 	if (iterations.get_count() == 0) { collision_direction = CollisionDirection::none; }
@@ -13,8 +14,7 @@ void CollisionDepth::calculate(shape::Collider const& native, shape::Shape const
 	if (other.left() < native.hurtbox.right() && other.right() > native.hurtbox.left() && other.get_center().y > native.get_center().y) { candidate.bottom = other.top() - native.bottom(); }
 	try_push();
 	iterations.update();
-	collision_direction = other.overlaps(native.horizontal) ? CollisionDirection::horizontal : collision_direction;
-	collision_direction = other.overlaps(native.vertical) && !horizontal_squish() ? CollisionDirection::vertical : collision_direction;
+	collision_direction = std::abs(out_depth.left) + std::abs(out_depth.right) > std::abs(out_depth.top) + std::abs(out_depth.bottom) ? CollisionDirection::vertical : CollisionDirection::horizontal;
 }
 
 void CollisionDepth::update() {
@@ -37,29 +37,22 @@ void CollisionDepth::maximize(CollisionDepth& other) {
 }
 
 void CollisionDepth::print() {
-	std::cout << "Stream size: " << stream.size() << "\n";
-	std::cout << ">>>\n";
-	std::cout << "-Out Depth-\n";
-	std::cout << "Left..: " << out_depth.left << "\n";
-	std::cout << "Right.: " << out_depth.right << "\n";
-	std::cout << "Top...: " << out_depth.top << "\n";
-	std::cout << "Bottom: " << out_depth.bottom << "\n";
-	std::cout << ">>>\n\n\n";
+	NANI_LOG_INFO(m_logger, "Stream size: {}", stream.size());
+	NANI_LOG_INFO(m_logger, "-Out Depth-");
+	NANI_LOG_INFO(m_logger, "Left..: {}", out_depth.left);
+	NANI_LOG_INFO(m_logger, "Right.: {}", out_depth.right);
+	NANI_LOG_INFO(m_logger, "Top...: {}", out_depth.top);
+	NANI_LOG_INFO(m_logger, "Bottom: {}", out_depth.bottom);
 	return;
-	std::cout << ">>>\n";
-	std::cout << "-Stream-\n";
-	auto ctr{0};
-	for (auto& depth : stream) {
-		std::cout << "Slot " << ctr << ":\n";
-		std::cout << "Left..: " << depth.left << "\n";
-		std::cout << "Right.: " << depth.right << "\n";
-		std::cout << "Top...: " << depth.top << "\n";
-		std::cout << "Bottom: " << depth.bottom << "\n";
-		++ctr;
-	}
 }
 
-void CollisionDepth::render(shape::Shape const& bounding_box, sf::RenderWindow& win, sf::Vector2<float> cam) {
+static auto is_within_crush_range(float const test, bool positive) { return positive ? test > crush_threshold_v.x && test < crush_threshold_v.y : test < -crush_threshold_v.x && test > -crush_threshold_v.y; }
+
+bool CollisionDepth::crushed() const {
+	return (is_within_crush_range(out_depth.bottom, false) && is_within_crush_range(out_depth.top, true)) || (is_within_crush_range(out_depth.right, false) && is_within_crush_range(out_depth.left, true));
+}
+
+void CollisionDepth::render(shape::Shape const& bounding_box, sf::RenderWindow& win, sf::Vector2f cam) {
 	collision_ray.setFillColor(sf::Color::Cyan);
 
 	// left
@@ -86,4 +79,4 @@ bool CollisionDepth::vertical_squish() const { return collision_direction == Col
 
 void CollisionDepth::try_push() { stream.push_back(candidate); }
 
-} // namespace util
+} // namespace fornani::util

@@ -10,12 +10,13 @@
 namespace fornani::automa {
 struct ServiceProvider;
 }
-namespace fornani {
+
+namespace fornani::quest {
 
 // needs some further thinking
 
-enum class QuestStatus : uint8_t { not_started, started, complete };
-enum class QuestType : uint8_t { null, inspectable, item, npc, standard, destroyers, time_trials, fetch_text, cutscene, hidden_npcs }; // don't reorder these
+enum class QuestStatus : std::uint8_t { not_started, started, complete };
+enum class QuestType : std::uint8_t { null, inspectable, item, npc, standard, destructibles, time_trials, fetch_text, cutscene, hidden_npcs }; // don't reorder these
 
 struct Quest {
 	int id{};
@@ -57,11 +58,11 @@ class QuestTracker {
 		QuestSuite inspectables{};
 		QuestSuite npc{};
 		QuestSuite item{};
-		QuestSuite destroyers{};
+		QuestSuite destructibles{};
 		QuestSuite time_trials{};
 		QuestSuite cutscene{};
 		QuestSuite hidden_npcs{};
 	} suites{};
 };
 
-} // namespace fornani
+} // namespace fornani::quest

@@ -18,8 +18,8 @@ class WindowManager {
 	void set_screencap();
 	void resize();
 	[[nodiscard]] auto fullscreen() const -> bool { return is_fullscreen; }
-	[[nodiscard]] auto f_screen_dimensions() const -> sf::Vector2<float> { return sf::Vector2<float>{static_cast<float>(dimensions.current.x), static_cast<float>(dimensions.current.y)}; }
-	[[nodiscard]] auto f_center_screen() const -> sf::Vector2<float> { return f_screen_dimensions() * 0.5f; }
+	[[nodiscard]] auto f_screen_dimensions() const -> sf::Vector2f { return sf::Vector2f{static_cast<float>(dimensions.current.x), static_cast<float>(dimensions.current.y)}; }
+	[[nodiscard]] auto f_center_screen() const -> sf::Vector2f { return f_screen_dimensions() * 0.5f; }
 
 	sf::Texture screencap{};
 

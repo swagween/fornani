@@ -17,9 +17,9 @@ class Imp final : public Enemy {
 	Imp() = delete;
 	~Imp() override {}
 	Imp& operator=(Imp&&) = delete;
-	Imp(automa::ServiceProvider& svc, world::Map& map);
-	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
-	void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	Imp(automa::ServiceProvider& svc, world::Map& map, int variant);
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	[[nodiscard]] auto is_dormant() const -> bool { return state == ImpState::dormant || cooldowns.awaken.running(); }
 
 	fsm::StateFunction state_function = std::bind(&Imp::update_dormant, this);
@@ -33,7 +33,7 @@ class Imp final : public Enemy {
 
   private:
 	ImpState state{};
-	ImpVariant variant{};
+	ImpVariant m_variant{};
 
 	// packages
 	struct {

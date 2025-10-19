@@ -8,10 +8,12 @@ namespace fornani {
 
 class Version {
   public:
-	Version(dj::Json& info, data::ResourceFinder& finder) {
+	Version(dj::Json& info, ResourceFinder& finder) {
 		// TODO: Move this to a cmake config file instead of looking for a json file.
 		// load version info
-		info = dj::Json::from_file((finder.resource_path() + "/data/config/version.json").c_str());
+
+		info = *dj::Json::from_file((finder.resource_path() + "/data/config/version.json").c_str());
+
 		assert(!info.is_null());
 
 		title = info["title"].as_string();

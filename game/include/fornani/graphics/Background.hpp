@@ -2,8 +2,8 @@
 #pragma once
 
 #include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/utils/BitFlags.hpp"
 #include "fornani/graphics/DayNightShifter.hpp"
+#include "fornani/utils/BitFlags.hpp"
 
 #include <unordered_map>
 
@@ -13,9 +13,9 @@ namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace fornani::bg {
+namespace fornani::graphics {
 
-enum class BackgroundAttributes : uint8_t { lock };
+enum class BackgroundAttributes : std::uint8_t { lock };
 
 struct BackgroundLayer {
 	int render_layer{};
@@ -23,7 +23,7 @@ struct BackgroundLayer {
 	float parallax{};
 	std::vector<sf::Sprite> sprites{};
 	components::PhysicsComponent physics{};
-	sf::Vector2<float> final_position{};
+	sf::Vector2f final_position{};
 };
 
 class Background {
@@ -32,7 +32,7 @@ class Background {
 	Background(automa::ServiceProvider& svc, int bg_id);
 
 	void update(automa::ServiceProvider& svc);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos);
 	void lock();
 	void lock_horizontally();
 	void lock_vertically();
@@ -47,7 +47,7 @@ class Background {
 	sf::Vector2<int> dimensions{};
 	sf::Vector2<int> start_offset{};
 	bool* b_debug{};
-	std::unordered_map<int, std::string_view> labels{};
+	std::unordered_map<int, std::string> labels{};
 	struct {
 		util::BitFlags<BackgroundAttributes> vertical{};
 		util::BitFlags<BackgroundAttributes> horizontal{};
@@ -55,4 +55,4 @@ class Background {
 	graphics::DayNightShifter shifter{};
 };
 
-} // namespace bg
+} // namespace fornani::graphics

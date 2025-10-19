@@ -1,6 +1,8 @@
+
 #pragma once
+
 #include <SFML/Graphics.hpp>
-#include <string_view>
+#include <string>
 #include "fornani/automa/Option.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Circuit.hpp"
@@ -10,30 +12,42 @@ namespace fornani::automa {
 struct ServiceProvider;
 }
 
+namespace fornani::config {
+class ControllerMap;
+}
+
+namespace fornani::audio {
+class Soundboard;
+}
+
 namespace fornani::gui {
+
+enum class MiniMenuFlags { selected, closed };
+
 class MiniMenu {
   public:
-	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string_view> opt, sf::Vector2f start_position, bool white = false);
-	void update(automa::ServiceProvider& svc, sf::Vector2<float> dim, sf::Vector2<float> at_position);
+	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string> opt, sf::Vector2f start_position, bool white = false);
+	void update(automa::ServiceProvider& svc, sf::Vector2f dim, sf::Vector2f at_position);
 	void render(sf::RenderWindow& win, bool bg = true);
-	void set_origin(sf::Vector2<float> origin);
-	void up(automa::ServiceProvider& svc);
-	void down(automa::ServiceProvider& svc);
-	void speed_up_appearance(int const rate) { sprite.speed_up_appearance(rate); }
-	void set_force(float const force) { sprite.set_force(force); }
-	void set_fric(float const fric) { sprite.set_fric(fric); }
-	sf::Vector2<float> get_dimensions() const;
+	void handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard);
+	void set_dimensions(sf::Vector2f to) { m_nineslice.set_dimensions(to); }
+
+	sf::Vector2f get_dimensions() const;
+
 	[[nodiscard]] auto get_selection() const -> int { return selection.get(); }
-	sf::Vector2<float> position{};
-	sf::Vector2<float> draw_position{};
+	[[nodiscard]] auto was_selected() const -> int { return m_flags.test(MiniMenuFlags::selected); }
+	[[nodiscard]] auto was_closed() const -> int { return m_flags.test(MiniMenuFlags::closed); }
+	[[nodiscard]] auto was_last_option() const -> int { return selection.get() == options.size() - 1; }
+
+	sf::Vector2f position{};
+	sf::Vector2f draw_position{};
 
   private:
-	sf::Vector2<float> dimensions{};
+	util::BitFlags<MiniMenuFlags> m_flags{};
+	sf::Vector2f dimensions{};
 	int maximum{};
 	int index{};
-	float corner{56.f};
-	float edge{2.f};
-	util::NineSlice sprite;
+	util::NineSlice m_nineslice;
 	util::Circuit selection{1};
 	std::vector<automa::Option> options;
 };

@@ -1,10 +1,13 @@
 nani_add_sources(
+        Animatable.cpp
         Background.cpp
         CameraController.cpp
         ColorFade.cpp
         DayNightShifter.cpp
         Droplet.cpp
+        Drawable.cpp
         HelpText.cpp
+        Indicator.cpp
         MapTexture.cpp
         Rain.cpp
         Scenery.cpp

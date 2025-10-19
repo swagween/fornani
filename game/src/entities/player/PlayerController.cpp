@@ -1,44 +1,53 @@
 
 #include "fornani/entities/player/PlayerController.hpp"
+#include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::player {
 
-PlayerController::PlayerController(automa::ServiceProvider& svc) : shield(svc), cooldowns{.inspect = util::Cooldown(64)} {
+constexpr static float crawl_speed_v{0.32f};
+
+PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect = util::Cooldown(64)}, post_slide{80}, post_wallslide{16}, wallslide_slowdown{64} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
-	key_map.insert(std::make_pair(ControllerInput::jump, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
-	key_map.insert(std::make_pair(ControllerInput::shield, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::arms_switch, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::inspect, 0.f));
-	key_map.insert(std::make_pair(ControllerInput::dash, 0.f));
-	direction.und = dir::UND::neutral;
-	direction.lr = dir::LR::right;
+	key_map.insert(std::make_pair(ControllerInput::slide, 0.f));
+	direction.und = UND::neutral;
+	direction.lnr = LNR::right;
 }
 
-void PlayerController::update(automa::ServiceProvider& svc) {
-	if (walking_autonomously()) {
-		prevent_movement();
-		key_map[ControllerInput::move_x] = direction.lr == dir::LR::left ? -1.f : 1.f;
+void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Player& player) {
+
+	if (svc.state_flags.test(automa::StateFlags::cutscene)) { return; }
+
+	auto sprint = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).held;
+	auto sprint_release = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).released;
+	auto sprint_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).triggered;
+	if (svc.controller_map.is_autosprint_enabled() && !svc.controller_map.is_gamepad()) {
+		sprint = !sprint;
+		sprint_release = sprint_pressed;
 	}
-	if (hard_state.test(HardState::no_move) || walking_autonomously()) { return; }
+	sprint ? input_flags.set(InputState::sprint) : input_flags.reset(InputState::sprint);
+
+	if (walking_autonomously()) {
+		auto speed = sprint ? sprint_speed_v : walk_speed_v;
+		key_map[ControllerInput::move_x] = direction.lnr == LNR::left ? -speed : speed;
+	}
+	if (hard_state.test(HardState::no_move)) {
+		key_map = {};
+		return;
+	}
+	if (walking_autonomously()) { return; }
+
+	auto dash_and_jump_combined = svc.controller_map.is_bound_to_same_input(config::DigitalAction::platformer_dash, config::DigitalAction::platformer_jump);
 
 	auto const& left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_left).held;
 	auto const& right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_right).held;
 	auto const& up = svc.controller_map.digital_action_status(config::DigitalAction::platformer_up).held;
 	auto const& down = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).held;
-
-	auto sprint = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).held;
-	auto sprint_release = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).released;
-	auto sprint_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).triggered;
-	if (svc.controller_map.is_autosprint_enabled()) {
-		sprint = !sprint;
-		sprint_release = sprint_pressed;
-	}
-
-	auto const& shielding = svc.controller_map.digital_action_status(config::DigitalAction::platformer_shield).held;
-	auto const& shield_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_shield).released;
+	auto const any_direction_held = left || right || up || down;
 
 	auto const& jump_started = svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).triggered;
 	auto const& jump_held = svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).held;
@@ -58,126 +67,157 @@ void PlayerController::update(automa::ServiceProvider& svc) {
 	auto it{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).triggered};
 	auto ir{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).released};
 	auto ih{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).held && cooldowns.inspect.is_almost_complete()};
-	auto const& inspected = (ir) && grounded() && !left && !right;
+
+	auto const& left_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_left).triggered;
+	auto const& right_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_right).triggered;
+
+	// set dash direction
+	if (up) { m_dash_direction = Direction{{0, 1}}; }
+	if (down) { m_dash_direction = Direction{{0, -1}}; }
+	if (left) { m_dash_direction = Direction{{-1, 0}}; }
+	if (right) { m_dash_direction = Direction{{1, 0}}; }
+
+	// inspect
+	auto const& inspected = (it) && grounded() && !left && !right;
 	cooldowns.inspect.update();
 	if (it) { cooldowns.inspect.start(); }
 
-	/* Dash ability and grappling hook will remain out of scope for the demo. */
-
-	auto const& dash_left = false;	// XXX svc.controller_map.label_to_control.at("tertiary_action").triggered() && !grounded() && left;
-	auto const& dash_right = false; // XXX svc.controller_map.label_to_control.at("tertiary_action").triggered() && !grounded() && right;
-
-	auto const& hook_held = false; // XXX svc.controller_map.label_to_control.at("secondary_action").held();
-
-	horizontal_inputs.push_back(key_map[ControllerInput::move_x]);
-	if (horizontal_inputs.size() > quick_turn_sample_size) { horizontal_inputs.pop_front(); }
-
-	key_map[ControllerInput::move_x] = 0.f;
-	if (left) { key_map[ControllerInput::move_x] -= 1.f; }
-	if (right) { key_map[ControllerInput::move_x] += 1.f; }
+	auto const& dash_left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered && !grounded() && left;
+	auto const& dash_right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered && !grounded() && right;
 
 	key_map[ControllerInput::move_y] = 0.f;
 	if (up) { key_map[ControllerInput::move_y] -= 1.f; }
 	if (down) { key_map[ControllerInput::move_y] += 1.f; }
 
-	// shield
-	key_map[ControllerInput::shield] = 0.f;
-	if (!shield.recovering() && grounded()) {
-		if (shielding) { key_map[ControllerInput::shield] = 1.0f; }
-		if (shielding) { shield.flags.triggers.set(ShieldTrigger::shield_up); }
-		if (shield_released && shield.is_shielding()) { shield.pop(); }
+	/* handle abilities */
+	post_slide.update();
+	post_wallslide.update();
+	if (player.grounded()) { player.m_ability_usage = {}; }
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered) {
+		auto const dj_guard = (dash_and_jump_combined && any_direction_held) || !dash_and_jump_combined;
+		if (player.can_dash() && !is_wallsliding() && dj_guard) {
+			m_ability = std::make_unique<Dash>(svc, map, player.collider, m_dash_direction, player.can_omnidirectional_dash());
+			player.m_ability_usage.dash.update();
+		}
+	}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).triggered) {
+		if (player.can_jump()) { m_ability = std::make_unique<Jump>(svc, map, player.collider); }
+		// guard for when player has jump and dash bound to the same key
+		auto const dash_exhausted = !player.can_dash() && !is_dashing();
+		auto can_walljump = (player.collider.has_right_wallslide_collision() || player.collider.has_left_wallslide_collision()) && !player.collider.grounded() && player.can_walljump();
+		auto jump_direction = player.collider.has_right_wallslide_collision() ? Direction{LR::right} : player.collider.has_left_wallslide_collision() ? Direction{LR::left} : Direction{};
+		if (can_walljump) {
+			m_ability = std::make_unique<Walljump>(svc, map, player.collider, jump_direction);
+		} else if ((player.can_doublejump() && !dash_and_jump_combined) || (player.can_doublejump() && dash_and_jump_combined && (!any_direction_held || dash_exhausted))) {
+			m_ability = std::make_unique<Doublejump>(svc, map, player.collider);
+			player.m_ability_usage.doublejump.update();
+		}
+	}
+	if (!is_wallsliding()) { svc.soundboard.flags.player.reset(audio::Player::wallslide); }
+
+	// crouching, rolling, and sliding
+	flags.reset(MovementState::crouch);
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).held) {
+		if (!grounded()) { input_flags.set(InputState::slide_in_air); }
+		if (!m_ability && player.can_slide() && sprint && !post_slide.running() && moving()) { m_ability = std::make_unique<Slide>(svc, map, player.collider, player.get_actual_direction()); }
+		if (!sprint) { flags.set(MovementState::crouch); }
+	}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).triggered) {
+		if (!m_ability && player.can_roll() && sprint) { m_ability = std::make_unique<Roll>(svc, map, player.collider, player.get_actual_direction()); }
+	}
+	if (m_ability) {
+		if (m_ability.value()->is(AbilityType::roll)) { input_flags.reset(InputState::slide_in_air); }
+	}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).released) { input_flags.reset(InputState::slide_in_air); }
+
+	// wallslide
+	if ((left && player.collider.has_left_wallslide_collision()) || (right && player.collider.has_right_wallslide_collision())) {
+		if (player.can_wallslide() && !post_wallslide.running()) {
+			if (!is(AbilityType::walljump)) {
+				if (!is(AbilityType::wallslide)) { wallslide_slowdown.start(); }
+				m_ability = std::make_unique<Wallslide>(svc, map, player.collider, player.get_actual_direction());
+			}
+		}
+	}
+	if (!is(AbilityType::wallslide)) { player.collider.physics.maximum_velocity.y = player.physics_stats.maximum_velocity.y; }
+	wallslide_slowdown.update();
+
+	if (m_ability) {
+		m_ability.value()->update(player.collider, *this);
+
+		// stop rising if player releases jump control
+		if (is(AbilityType::jump) || is(AbilityType::doublejump) || is(AbilityType::walljump)) {
+			if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).released) { m_ability.value()->cancel(); }
+			if (m_ability.value()->cancelled() && player.collider.physics.apparent_velocity().y < 0.0f) {
+				player.collider.physics.acceleration.y *= player.physics_stats.jump_release_multiplier;
+				m_ability.value()->fail();
+			}
+		}
+		if (m_ability.value()->is(AbilityType::slide) && svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).released) {
+			m_ability.value()->fail();
+			post_slide.start();
+		}
+		if (m_ability.value()->is_done() || m_ability.value()->failed()) { m_ability = {}; }
+	}
+	/* end abilities */
+
+	// horizontal movement
+	key_map[ControllerInput::move_x] = 0.f;
+	if (svc.controller_map.is_gamepad()) {
+		key_map[ControllerInput::move_x] = is_crouching() && grounded() ? crawl_speed_v * svc.controller_map.get_joystick_throttle().x : svc.controller_map.get_joystick_throttle().x;
+	} else {
+		if (left) { key_map[ControllerInput::move_x] -= is_crouching() && grounded() ? crawl_speed_v : walk_speed_v; }
+		if (right) { key_map[ControllerInput::move_x] += is_crouching() && grounded() ? crawl_speed_v : walk_speed_v; }
 	}
 
-	// roll
-	roll.update();
-	if (down_pressed && moving() && sprint) { roll.request(); }
-	if (grounded()) { roll.reset(); }
-
-	// slide
-	slide.update();
-	key_map[ControllerInput::slide] = 0.f;
-	if (moving() && down && grounded()) { key_map[ControllerInput::slide] = key_map[ControllerInput::move_x]; }
-	if ((down_released || (left_released || right_released)) && !roll.rolling()) { slide.break_out(); }
-
+	// sprint
 	key_map[ControllerInput::sprint] = 0.f;
-	if (moving() && sprint && !sprint_released()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }
+	if (moving() && sprint && !sprint_released()) {
+		if (svc.controller_map.is_gamepad()) {
+		} else {
+			if (left) { key_map[ControllerInput::move_x] = -sprint_speed_v; }
+			if (right) { key_map[ControllerInput::move_x] = sprint_speed_v; }
+		}
+		key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x];
+	}
 
 	direction.set_intermediate(left, right, up, down);
-
-	key_map[ControllerInput::dash] = dash_left && !dash_right ? -1.f : key_map[ControllerInput::dash];
-	key_map[ControllerInput::dash] = dash_right && !dash_left ? 1.f : key_map[ControllerInput::dash];
-	if (key_map[ControllerInput::dash] != 0.f && dash_count == 0) { dash_request = dash_time; }
-
-	// hook
-	hook_held ? hook_flags.set(Hook::hook_held) : hook_flags.reset(Hook::hook_held);
 
 	// sprint
 	if (sprint_release) { sprint_flags.set(Sprint::released); }
 	if (grounded()) { sprint_flags = {}; }
 
-	key_map[ControllerInput::jump] = jump_started ? 1.f : 0.f;
-
 	if (shoot_pressed) { key_map[ControllerInput::shoot] = 1.f; }
-	if (shoot_released) {
-		key_map[ControllerInput::shoot] = 0.f;
-		hook_flags.set(Hook::hook_released);
-	}
+	if (shoot_released) { key_map[ControllerInput::shoot] = 0.f; }
 
+	bool firing_automatic = false;
 	if (!restricted() && (!shot() || !has_arsenal())) {
-		direction.lr = moving_left() ? dir::LR::left : direction.lr;
-		direction.lr = moving_right() ? dir::LR::right : direction.lr;
-		direction.und = dir::UND::neutral;
-		direction.und = up ? dir::UND::up : direction.und;
-		direction.und = down && !grounded() ? dir::UND::down : direction.und;
-	} else if (((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left)) && has_arsenal()) {
+		direction.lnr = moving_left() ? LNR::left : direction.lnr;
+		direction.lnr = moving_right() ? LNR::right : direction.lnr;
+		direction.und = UND::neutral;
+		direction.und = up ? UND::up : direction.und;
+		direction.und = down && !grounded() ? UND::down : direction.und;
+	} else if (((moving_left() && direction.lnr == LNR::right) || (moving_right() && direction.lnr == LNR::left)) && has_arsenal()) {
 		key_map[ControllerInput::move_x] *= backwards_dampen;
-	} else if (((moving_left() && direction.lr == dir::LR::right) || (moving_right() && direction.lr == dir::LR::left))) {
+		firing_automatic = true;
+	} else if (((moving_left() && direction.lnr == LNR::right) || (moving_right() && direction.lnr == LNR::left))) {
 		key_map[ControllerInput::slide] = 0.f;
 	}
+
+	if ((left_pressed || left) && !firing_automatic && !is_crouching()) { m_last_requested_direction.set(LR::left); }
+	if ((right_pressed || right) && !firing_automatic && !is_crouching()) { m_last_requested_direction.set(LR::right); }
 
 	key_map[ControllerInput::arms_switch] = 0.f;
 	key_map[ControllerInput::arms_switch] = arms_switch_left ? -1.f : key_map[ControllerInput::arms_switch];
 	key_map[ControllerInput::arms_switch] = arms_switch_right ? 1.f : key_map[ControllerInput::arms_switch];
 
 	key_map[ControllerInput::inspect] = inspected ? 1.f : 0.f;
-
-	bool can_launch = !restricted() && (flags.test(MovementState::grounded) || wallslide.is_wallsliding()) && !jump.launched();
-	can_launch ? jump.states.set(JumpState::can_jump) : jump.states.reset(JumpState::can_jump);
-
-	if (jump_started) { jump.request_jump(); }
-	if (jump_held) {
-		jump.states.set(JumpState::jump_held);
-	} else {
-		jump.states.reset(JumpState::jump_held);
-	}
-	if (jump_released) { jump.triggers.set(JumpTrigger::is_released); }
-
-	if (jump.requested() && can_jump()) {
-		jump.triggers.set(JumpTrigger::jumpsquat);
-		jump.prevent();
-		if (!jump.coyote()) { jump.doublejump(); }
-	}
-	if (grounded()) {
-		jump.start_coyote();
-		jump.jump_counter.start();
-	}
-	decrement_requests();
-	jump.update();
+	if (inspected) { NANI_LOG_DEBUG(m_logger, "Inspected!"); }
 }
 
-void PlayerController::clean() {
-	flags = {};
-	hook_flags = {};
-}
+void PlayerController::clean() { flags = {}; }
 
-void PlayerController::stop() {
-	key_map[ControllerInput::move_x] = 0.f;
-	key_map[ControllerInput::jump] = 0.f;
-}
-
-void PlayerController::ground() { flags.set(MovementState::grounded); }
-
-void PlayerController::unground() { flags.reset(MovementState::grounded); }
+void PlayerController::stop() { key_map[ControllerInput::move_x] = 0.f; }
 
 void PlayerController::restrict_movement() {
 	flags.set(MovementState::restricted);
@@ -191,58 +231,36 @@ void PlayerController::unrestrict() {
 
 void PlayerController::uninspect() { key_map[ControllerInput::inspect] = 0.f; }
 
-void PlayerController::stop_dashing() { key_map[ControllerInput::dash] = 0.f; }
-
-void PlayerController::decrement_requests() {
-	--dash_request;
-	if (dash_request < 0) { dash_request = -1; }
-}
-
-void PlayerController::reset_dash_count() { dash_count = 0; }
-
-void PlayerController::cancel_dash_request() { dash_request = -1; }
-
 void player::PlayerController::reset_vertical_movement() { key_map[ControllerInput::move_y] = 0.f; }
-
-void PlayerController::dash() { dash_count = 1; }
 
 void PlayerController::walljump() { flags.set(MovementState::walljumping); }
 
-void PlayerController::autonomous_walk() {
-	direction.lr == dir::LR::right ? key_map[ControllerInput::move_x] = 1.f : key_map[ControllerInput::move_x] = -1.f;
-	if (sprinting()) { key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x]; }
-	flags.set(MovementState::walking_autonomously);
-}
+void PlayerController::autonomous_walk() { hard_state.set(HardState::walking_autonomously); }
 
-void PlayerController::stop_walking_autonomously() { flags.reset(MovementState::walking_autonomously); }
+void PlayerController::stop_walking_autonomously() { hard_state.reset(HardState::walking_autonomously); }
 
 void PlayerController::set_shot(bool flag) { key_map[ControllerInput::shoot] = flag ? 1.f : 0.f; }
 
 void PlayerController::prevent_movement() {
+	flush_ability();
 	key_map[ControllerInput::move_x] = 0.f;
 	key_map[ControllerInput::move_y] = 0.f;
-	key_map[ControllerInput::dash] = 0.f;
 	key_map[ControllerInput::arms_switch] = 0.f;
 	key_map[ControllerInput::inspect] = 0.f;
 	key_map[ControllerInput::shoot] = 0.f;
-	key_map[ControllerInput::jump] = 0.f;
 	key_map[ControllerInput::sprint] = 0.f;
 	key_map[ControllerInput::slide] = 0.f;
-	jump.reset_all();
-	jump.prevent();
 	flags.set(MovementState::restricted);
-}
-
-void PlayerController::release_hook() { hook_flags.reset(Hook::hook_released); }
-
-void PlayerController::nullify_dash() {
-	cancel_dash_request();
-	stop_dashing();
 }
 
 void PlayerController::stop_walljumping() { flags.reset(MovementState::walljumping); }
 
 void PlayerController::set_arsenal(bool const has) { has ? hard_state.set(HardState::has_arsenal) : hard_state.reset(HardState::has_arsenal); }
+
+void PlayerController::set_direction(Direction to) {
+	direction = to;
+	m_last_requested_direction.set(to.lnr);
+}
 
 std::optional<float> PlayerController::get_controller_state(ControllerInput key) const {
 	if (auto search = key_map.find(key); search != key_map.end()) {
@@ -251,5 +269,11 @@ std::optional<float> PlayerController::get_controller_state(ControllerInput key)
 		return std::nullopt;
 	}
 }
+std::optional<AnimState> PlayerController::get_ability_animation() const {
+	if (m_ability) { return m_ability.value()->get_animation(); }
+	return std::nullopt;
+}
+
+bool PlayerController::grounded() const { return m_player->grounded(); }
 
 } // namespace fornani::player

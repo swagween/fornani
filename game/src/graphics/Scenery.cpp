@@ -5,7 +5,9 @@
 
 namespace fornani::vfx {
 
-Scenery::Scenery(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int layer, int variant, float parallax) : position(position), properties{style, layer, variant, parallax}, sprite{svc.assets.get_scenery(style)} {
+// TODO: reimplement scenery to be more flexible.
+
+Scenery::Scenery(automa::ServiceProvider& svc, sf::Vector2f position, int style, int layer, int variant, float parallax) : position(position), properties{style, layer, variant, parallax}, sprite{svc.assets.get_texture("null")} {
 	auto u = variant * dimensions.x;
 	auto v = layer * dimensions.y;
 	properties.parallax = 1.f - 0.1f / static_cast<float>((layer + 1));
@@ -13,9 +15,9 @@ Scenery::Scenery(automa::ServiceProvider& svc, sf::Vector2<float> position, int 
 	sprite.setOrigin(f_dimensions * 0.5f);
 }
 
-void Scenery::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Scenery::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	sprite.setPosition(util::round_to_even(position) - cam * properties.parallax);
 	win.draw(sprite);
 }
 
-} // namespace vfx
+} // namespace fornani::vfx

@@ -1,5 +1,5 @@
 nani_add_headers(
         BitFlags.hpp
-        Lookup.hpp
+        Constants.hpp
         SelectBox.hpp
 )

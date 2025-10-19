@@ -1,21 +1,21 @@
 
 #include "fornani/entities/packages/FloatingPart.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
-#include <algorithm>
+#include "fornani/world/Map.hpp"
+
 #include <numbers>
 
 #include "fornani/utils/Random.hpp"
 
 namespace fornani::entity {
 
-FloatingPart::FloatingPart(sf::Texture& tex, float force, float friction, sf::Vector2<float> offset, int id) : sprite{tex}, textured{true}, init{true}, m_id{id} {
+FloatingPart::FloatingPart(sf::Texture const& tex, float force, float friction, sf::Vector2f offset, int id) : sprite{tex}, textured{true}, init{true}, m_id{id} {
 	sprite->setOrigin(sprite->getLocalBounds().getCenter());
-	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2<float>{}, sf::Color::Yellow, force);
-	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2<float>{friction, friction}, 1.0f);
-	gravitator->collider.physics.maximum_velocity = sf::Vector2<float>(20.f, 20.f);
+	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2f{}, sf::Color::Yellow, force);
+	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2f{friction, friction}, 1.0f);
+	gravitator->collider.physics.maximum_velocity = sf::Vector2f(20.f, 20.f);
 	left = offset;
 	right = offset;
 	right.x *= -1.f;
@@ -24,12 +24,12 @@ FloatingPart::FloatingPart(sf::Texture& tex, float force, float friction, sf::Ve
 	debugbox.setOutlineThickness(-1);
 }
 
-FloatingPart::FloatingPart(sf::Texture& tex, sf::Vector2i dimensions, std::vector<anim::Parameters> params, std::vector<std::string_view> labels, float force, float friction, sf::Vector2<float> offset, int id)
+FloatingPart::FloatingPart(sf::Texture const& tex, sf::Vector2i dimensions, std::vector<anim::Parameters> params, std::vector<std::string_view> labels, float force, float friction, sf::Vector2f offset, int id)
 	: textured{true}, init{true}, m_id{id} {
 	animated_sprite = anim::AnimatedSprite(tex, dimensions);
-	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2<float>{}, sf::Color::Yellow, force);
-	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2<float>{friction, friction}, 1.0f);
-	gravitator->collider.physics.maximum_velocity = sf::Vector2<float>(20.f, 20.f);
+	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2f{}, sf::Color::Yellow, force);
+	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2f{friction, friction}, 1.0f);
+	gravitator->collider.physics.maximum_velocity = sf::Vector2f(20.f, 20.f);
 	left = offset;
 	right = offset;
 	right.x *= -1.f;
@@ -42,28 +42,28 @@ FloatingPart::FloatingPart(sf::Texture& tex, sf::Vector2i dimensions, std::vecto
 	}
 }
 
-FloatingPart::FloatingPart(sf::Color color, sf::Vector2f dimensions, float force, float friction, sf::Vector2<float> offset, int id) : textured{false}, init{true}, m_id{id} {
+FloatingPart::FloatingPart(sf::Color color, sf::Vector2f dimensions, float force, float friction, sf::Vector2f offset, int id) : textured{false}, init{true}, m_id{id} {
 	drawbox = sf::RectangleShape();
 	drawbox->setSize(dimensions);
 	drawbox->setFillColor(color);
-	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2<float>{}, sf::Color::Yellow, force);
-	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2<float>{friction, friction}, 1.0f);
-	gravitator->collider.physics.maximum_velocity = sf::Vector2<float>(20.f, 20.f);
+	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2f{}, sf::Color::Yellow, force);
+	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2f{friction, friction}, 1.0f);
+	gravitator->collider.physics.maximum_velocity = sf::Vector2f(20.f, 20.f);
 	left = offset;
 	right = offset;
 	right.x *= -1.f;
 }
 
-void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, dir::Direction direction, sf::Vector2<float> scale, sf::Vector2<float> position) {
+void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, Direction direction, sf::Vector2f scale, sf::Vector2f position) {
 	if (init) {
 		gravitator->set_position(position + actual);
-		movement.time = util::Random::random_range_float(0.f, 2.f * static_cast<float>(std::numbers::pi));
+		m_movement.time = random::random_range_float(0.f, 2.f * static_cast<float>(std::numbers::pi));
 		init = false;
 	}
-	actual = direction.lr == dir::LR::left ? position + left : position + right;
-	movement.time += movement.rate;
-	auto const tweak = movement.magnitude * std::sin(movement.time);
-	if (tweak == 0.f) { movement.time = 0.f; }
+	actual = direction.lnr == LNR::left ? position + left : position + right;
+	m_movement.time += m_movement.rate;
+	auto const tweak = m_movement.magnitude * std::sin(m_movement.time);
+	if (tweak == 0.f) { m_movement.time = 0.f; }
 	actual.y += tweak;
 	gravitator->set_target_position(actual);
 	gravitator->update(svc);
@@ -77,9 +77,10 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 	if (shieldbox) {
 		for (auto& proj : map.active_projectiles) {
-			if (proj.get_bounding_box().overlaps(shieldbox.value())) {
+			if (proj.get_team() == m_team) { continue; }
+			if (proj.get_collider().collides_with(shieldbox.value())) {
 				if (!proj.destruction_initiated()) {
-					map.effects.push_back(entity::Effect(svc, proj.get_destruction_point() + proj.get_position(), {}, 0, 6));
+					map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position()));
 					if (proj.get_direction().up_or_down()) { map.effects.back().rotate(); }
 					svc.soundboard.flags.world.set(audio::World::hard_hit);
 				}
@@ -89,7 +90,7 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 }
 
-void FloatingPart::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void FloatingPart::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (sprite) { sprite->setPosition(gravitator->position() - cam); }
 	if (sprite) { win.draw(*sprite); }
 	if (animated_sprite) { animated_sprite->render(svc, win, cam); }
@@ -110,20 +111,22 @@ void FloatingPart::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 	}
 }
 
-void FloatingPart::set_shield(sf::Vector2<float> dim, sf::Vector2<float> pos) {
+void FloatingPart::set_shield(sf::Vector2f dim, sf::Vector2f pos) {
 	if ((dim.x == 0.f || dim.y == 0.f) && sprite) { dim = sprite->getLocalBounds().size; }
 	if (!shieldbox) { shieldbox = shape::Shape(dim); }
 	if (pos.x == 0.f && pos.y == 0.f && sprite) { pos = gravitator->position() - sprite->getLocalBounds().getCenter(); }
 	shieldbox.value().set_position(pos);
 }
 
-void FloatingPart::set_hitbox(sf::Vector2<float> dim, sf::Vector2<float> pos) {
+void FloatingPart::set_hitbox(sf::Vector2f dim, sf::Vector2f pos) {
 	if ((dim.x == 0.f || dim.y == 0.f) && sprite) { dim = sprite->getLocalBounds().size; }
 	if (!hitbox) { hitbox = shape::Shape(dim); }
 	if (pos.x == 0.f && pos.y == 0.f && sprite) { pos = gravitator->position() - sprite->getLocalBounds().getCenter(); }
 	hitbox.value().set_position(pos);
 }
 
-void FloatingPart::move(sf::Vector2<float> distance) const { gravitator->set_target_position(gravitator->position() + distance); }
+void FloatingPart::set_magnitude(float magnitude) { m_movement.magnitude = magnitude; }
+
+void FloatingPart::move(sf::Vector2f distance) const { gravitator->set_target_position(gravitator->position() + distance); }
 
 } // namespace fornani::entity

@@ -1,7 +1,10 @@
 
 #pragma once
 
-#include <SFML/Audio.hpp>
+#include <capo/engine.hpp>
+#include <fornani/io/Logger.hpp>
+#include <ranges>
+#include <string>
 #include "fornani/utils/Cooldown.hpp"
 
 namespace fornani::automa {
@@ -12,26 +15,36 @@ namespace fornani::audio {
 
 class Sound {
   public:
-	explicit Sound(const sf::SoundBuffer& buffer, int echo_count = 0, int echo_rate = 16);
+	explicit Sound(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label, int echo_count = 0, int echo_rate = 16, float volume = 1.f, int fade = 16);
 	void update(automa::ServiceProvider& svc);
-	void play();
+	void play(bool repeat = false);
 	void set_volume(float volume);
 	void set_pitch(float pitch);
-	[[nodiscard]] auto get_status() const -> sf::Sound::Status {
-		return std::ranges::find_if(sounds, [](auto& s) { return s.getStatus() == sf::Sound::Status::Playing; }) == std::ranges::end(sounds) ? sf::Sound::Status::Stopped : sf::Sound::Status::Playing;
-	}
+	void fade_out();
+	void set_fading(bool fading) { m_fading = fading; }
+
+	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
 	[[nodiscard]] auto is_echoing() const -> bool { return echo.count.running(); }
-	[[nodiscard]] auto is_playing() const -> bool { return get_status() == sf::Sound::Status::Playing; }
-	[[nodiscard]] auto is_running() const -> bool { return is_playing() || is_echoing(); }
+	[[nodiscard]] auto is_playing() const -> bool {
+		return std::ranges::find_if(m_sounds, [](auto& s) { return s->is_playing(); }) != std::ranges::end(m_sounds);
+	}
+	[[nodiscard]] auto is_running() const -> bool { return (is_playing() || is_echoing()) && !delete_me; }
 
   private:
-	float native_volume{100.f};
-	std::vector<sf::Sound> sounds{};
+	util::Cooldown m_fade{};
+	std::string m_label;
+	float m_volume;
+	bool delete_me{};
+	bool m_fading{};
+	bool m_fading_out{};
+	std::vector<std::unique_ptr<capo::ISource>> m_sounds{};
 	struct {
 		util::Cooldown count{};
 		util::Cooldown repeater{};
 		int rate{};
 	} echo{};
+
+	io::Logger m_logger{"Audio"};
 };
 
-} // namespace audio
+} // namespace fornani::audio

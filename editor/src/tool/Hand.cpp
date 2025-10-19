@@ -21,7 +21,7 @@ void Hand::update(Canvas& canvas) {
 
 void Hand::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {}
 
-void Hand::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) {}
+void Hand::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) {}
 
 void Hand::store_tile(int index) {}
 

@@ -11,13 +11,13 @@ namespace fornani::vfx {
 
 class Scenery {
   public:
-	Scenery(automa::ServiceProvider& svc, sf::Vector2<float> position, int style, int layer, int variant, float parallax = 1.f);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	Scenery(automa::ServiceProvider& svc, sf::Vector2f position, int style, int layer, int variant, float parallax = 1.f);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 
   private:
 	sf::Vector2<int> dimensions{320, 320};
-	sf::Vector2<float> f_dimensions{320.f, 320.f};
-	sf::Vector2<float> position{};
+	sf::Vector2f f_dimensions{320.f, 320.f};
+	sf::Vector2f position{};
 	sf::Sprite sprite;
 	struct {
 		int style{};   // to match room style

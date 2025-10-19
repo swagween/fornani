@@ -2,7 +2,7 @@
 #pragma once
 #include <limits>
 
-#include "ccmath/ext/normalize.hpp"
+#include <ccmath/ext/clamp.hpp>
 
 namespace fornani::util {
 
@@ -18,6 +18,24 @@ class Counter {
 
   private:
 	int incrementor{};
+};
+
+constexpr auto default_interval{0.1f};
+class FloatCounter {
+  public:
+	FloatCounter(float const interval = default_interval) : m_interval{interval} {}
+	constexpr void reset() { m_value = 0.f; }
+	constexpr void update() { m_value = ccm::ext::clamp(m_value + m_interval, 0, std::numeric_limits<int>::max()); }
+	constexpr void update(float const amount) { m_value = ccm::ext::clamp(m_value + amount, 0, std::numeric_limits<int>::max()); }
+	constexpr void set(int const value) { m_value = value; }
+	constexpr void cancel() { m_value = -1.f; }
+	[[nodiscard]] auto running() const -> bool { return m_value != 0.f; }
+	[[nodiscard]] auto canceled() const -> bool { return m_value == -1.f; }
+	[[nodiscard]] auto get() const -> int { return m_value; }
+
+  private:
+	float m_value{};
+	float m_interval{};
 };
 
 } // namespace fornani::util

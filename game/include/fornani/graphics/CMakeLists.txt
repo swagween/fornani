@@ -1,10 +1,14 @@
 nani_add_headers(
+        Animatable.hpp
         Background.hpp
         CameraController.hpp
         ColorFade.hpp
+        Colors.hpp
         DayNightShifter.hpp
         Droplet.hpp
+        Drawable.hpp
         HelpText.hpp
+        Indicator.hpp
         MapTexture.hpp
         Rain.hpp
         Scenery.hpp

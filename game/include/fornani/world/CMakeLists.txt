@@ -1,8 +1,9 @@
 nani_add_headers(
         Breakable.hpp
         Camera.hpp
-        Destroyable.hpp
+        Destructible.hpp
         Grid.hpp
+        Layer.hpp
         Map.hpp
         Platform.hpp
         Pushable.hpp
@@ -11,4 +12,5 @@ nani_add_headers(
         SwitchBlock.hpp
         SwitchButton.hpp
         Tile.hpp
+        TimerBlock.hpp
 )

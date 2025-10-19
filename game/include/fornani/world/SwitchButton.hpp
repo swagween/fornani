@@ -21,15 +21,15 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class SwitchType : uint8_t { toggler, permanent, movable, alternator };
-enum class SwitchButtonState : uint8_t { unpressed, pressed };
+enum class SwitchType : std::uint8_t { toggler, permanent, movable, alternator };
+enum class SwitchButtonState : std::uint8_t { unpressed, pressed };
 
 class SwitchButton {
   public:
-	SwitchButton(automa::ServiceProvider& svc, sf::Vector2<float> position, int id, int type, Map& map);
+	SwitchButton(automa::ServiceProvider& svc, sf::Vector2f position, int id, int type, Map& map);
 	void update(automa::ServiceProvider& svc, Map& map, player::Player& player);
 	void handle_collision(shape::Collider& other) const;
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	shape::Shape& get_bounding_box() { return collider.bounding_box; }
 	shape::Shape& get_hurtbox() { return collider.hurtbox; }
@@ -47,7 +47,7 @@ class SwitchButton {
 
   private:
 	int id{};
-	sf::Vector2<float> sprite_dimensions{};
+	sf::Vector2f sprite_dimensions{};
 	util::Cooldown shine_cooldown{800};
 	SwitchType type{};
 	SwitchButtonState state{};

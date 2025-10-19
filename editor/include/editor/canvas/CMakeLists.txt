@@ -1,10 +1,7 @@
-add_subdirectory(entity)
 nani_add_headers(
         Background.hpp
         Canvas.hpp
         Clipboard.hpp
-        Entity.hpp
-        EntitySet.hpp
         Grid.hpp
         Layer.hpp
         Tile.hpp

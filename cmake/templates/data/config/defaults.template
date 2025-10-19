@@ -1,82 +1,76 @@
 {
-  "controls": {
-    "platformer_left": {
-      "primary_key": "Left"
-    },
-    "platformer_right": {
-      "primary_key": "Right"
-    },
-    "platformer_up": {
-      "primary_key": "Up"
-    },
-    "platformer_down": {
-      "primary_key": "Down"
-    },
-    "platformer_jump": {
-      "primary_key": "Z"
-    },
-    "platformer_shoot": {
-      "primary_key": "X"
-    },
-    "platformer_sprint": {
-      "primary_key": "LShift"
-    },
-    "platformer_shield": {
-      "primary_key": "V"
-    },
-    "platformer_inspect": {
-      "primary_key": "Down"
-    },
-    "platformer_arms_switch_left": {
-      "primary_key": "A"
-    },
-    "platformer_arms_switch_right": {
-      "primary_key": "S"
-    },
-    "platformer_open_inventory": {
-      "primary_key": "E"
-    },
-    "platformer_open_map": {
-      "primary_key": "W"
-    },
-    "platformer_toggle_pause": {
-      "primary_key": "Esc"
-    },
-    "inventory_open_map": {
-      "primary_key": "W"
-    },
-    "inventory_close": {
-      "primary_key": "E"
-    },
-    "map_open_inventory": {
-      "primary_key": "E"
-    },
-    "map_close": {
-      "primary_key": "W"
-    },
-    "menu_left": {
-      "primary_key": "Left"
-    },
-    "menu_right": {
-      "primary_key": "Right"
-    },
-    "menu_up": {
-      "primary_key": "Up"
-    },
-    "menu_down": {
-      "primary_key": "Down"
-    },
-    "menu_select": {
-      "primary_key": "Z"
-    },
-    "menu_cancel": {
-      "primary_key": "X"
-    },
-    "menu_switch_left": {
-      "primary_key": "A"
-    },
-    "menu_switch_right": {
-      "primary_key": "S"
-    }
-  }
+	"controls": {
+		"platformer_left": {
+			"primary_key": "Left"
+		},
+		"platformer_right": {
+			"primary_key": "Right"
+		},
+		"platformer_up": {
+			"primary_key": "Up"
+		},
+		"platformer_down": {
+			"primary_key": "Down"
+		},
+		"platformer_jump": {
+			"primary_key": "Z"
+		},
+		"platformer_shoot": {
+			"primary_key": "X"
+		},
+		"platformer_sprint": {
+			"primary_key": "LShift"
+		},
+		"platformer_slide": {
+			"primary_key": "Down"
+		},
+		"platformer_dash": {
+			"primary_key": "Z"
+		},
+		"platformer_inspect": {
+			"primary_key": "C"
+		},
+		"platformer_arms_switch_left": {
+			"primary_key": "A"
+		},
+		"platformer_arms_switch_right": {
+			"primary_key": "S"
+		},
+		"platformer_open_inventory": {
+			"primary_key": "E"
+		},
+		"platformer_toggle_pause": {
+			"primary_key": "Esc"
+		},
+		"inventory_close": {
+			"primary_key": "E"
+		},
+		"menu_left": {
+			"primary_key": "Left"
+		},
+		"menu_right": {
+			"primary_key": "Right"
+		},
+		"menu_up": {
+			"primary_key": "Up"
+		},
+		"menu_down": {
+			"primary_key": "Down"
+		},
+		"menu_select": {
+			"primary_key": "Z"
+		},
+		"menu_cancel": {
+			"primary_key": "X"
+		},
+		"menu_tab_left": {
+			"primary_key": "A"
+		},
+		"menu_tab_right": {
+			"primary_key": "S"
+		},
+		"menu_confirm": {
+			"primary_key": "Enter"
+		}
+	}
 }

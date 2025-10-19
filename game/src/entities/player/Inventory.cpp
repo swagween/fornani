@@ -1,84 +1,46 @@
+
 #include "fornani/entities/player/Inventory.hpp"
-#include "fornani/gui/Console.hpp"
+#include <fornani/gui/console/Console.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::player {
 
-Inventory::Inventory() {}
-
-void Inventory::update(automa::ServiceProvider& svc) {
-	int index{};
-	for (auto& item : items) {
-		item.update(svc, index, items_per_row, ui_offset);
-		++index;
+int Inventory::add_item(dj::Json& source, std::string_view label) {
+	if (!has_item(label)) {
+		m_items.push_back(std::make_unique<item::Item>(source, label));
+		return m_items.back()->get_id();
 	}
+	return 0;
 }
 
-void Inventory::add_item(automa::ServiceProvider& svc, int item_id, int amount) {
-	if (item_id == 0) { return; }
-	bool found{};
-	for (auto& item : items) {
-		if (item.get_id() == item_id) {
-			item.add_item(amount);
-			found = true;
-		}
-	}
-	if (!found) {
-		items.push_back(item::Item(svc, svc.tables.item_labels.at(item_id)));
-		items.back().set_id(item_id);
-		items.back().add_item(amount);
-		svc.stats.player.items_collected.update();
-	}
-	update(svc);
-	if (svc.in_game()) { svc.soundboard.flags.item.set(audio::Item::get); }
-	push_sellables();
-}
-
-void Inventory::remove_item(automa::ServiceProvider& svc, int item_id, int amount) {
-	for (auto& item : items) {
-		if (item.get_id() == item_id) {
-			item.subtract_item(amount);
-		}
-	}
-	std::erase_if(items, [](auto const& i) { return i.depleted(); });
-	push_sellables();
+void Inventory::remove_item(int item_id, int amount) {
+	std::erase_if(m_items, [item_id](auto const& i) { return i->get_id() == item_id; });
 }
 
 void Inventory::reveal_item(int item_id) {
-	for (auto& item : items) {
-		if (item.get_id() == item_id) { item.reveal(); }
+	for (auto const& item : m_items) {
+		if (item->get_id() == item_id) { item->reveal(); }
 	}
-}
-
-void Inventory::push_sellables() {
-	sellable_items.clear();
-	auto index{0};
-	for (auto& item : items) {
-		if (item.sellable()) { sellable_items.push_back(index); }
-		++index;
-	}
-}
-
-item::Item& Inventory::get_item(int id) {
-	for (auto& item : items) {
-		if (item.get_id() == id) { return item; }
-	}
-	return items.at(0);
-}
-
-item::Item& Inventory::get_item_at_index(int index) { return items.at(index); }
-
-void Inventory::clear() {
-	items.clear();
-	sellable_items.clear();
 }
 
 bool Inventory::has_item(int id) const {
-	auto ret{false};
-	for (auto& item : items) {
-		if (item.get_id() == id) { ret = true; }
+	for (auto& item : m_items) {
+		if (item->get_id() == id) { return true; }
 	}
-	return ret;
+	return false;
+}
+bool Inventory::has_item(std::string_view label) const {
+	for (auto& item : m_items) {
+		if (item->get_label() == label) { return true; }
+	}
+	return false;
 }
 
-} // namespace player
+item::Item& Inventory::item_view(int id) const& {
+	for (auto const& item : m_items) {
+		if (item->get_id() == id) { return *item; }
+	}
+	return *m_items.back();
+}
+
+} // namespace fornani::player

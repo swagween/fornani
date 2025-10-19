@@ -1,11 +1,14 @@
 
 #pragma once
 
-#include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/particle/Sparkler.hpp"
-#include "fornani/utils/CircleCollider.hpp"
-#include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/StateFunction.hpp"
+#include <fornani/core/Common.hpp>
+#include <fornani/entities/animation/AnimatedSprite.hpp>
+#include <fornani/graphics/Animatable.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/particle/Sparkler.hpp>
+#include <fornani/utils/CircleCollider.hpp>
+#include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/StateFunction.hpp>
 #define DROP_BIND(f) std::bind(&Drop::f, this)
 
 namespace fornani::automa {
@@ -18,22 +21,21 @@ class Map;
 
 namespace fornani::item {
 
-enum class DropType : uint8_t { heart, orb, gem };
-enum Rarity : uint8_t { common, uncommon, rare, priceless };
-enum class GemType : uint8_t { rhenite, sapphire };
-enum class DropFlags : uint8_t { neutral, shining };
+enum class DropType : std::uint8_t { heart, orb, gem };
+enum class DropState : std::uint8_t { neutral, shining };
+enum class GemType : std::uint8_t { rhenite, sapphire };
+enum class DropFlags : std::uint8_t { neutral, shining };
 
-class Drop {
+class Drop : public Animatable {
 
   public:
 	Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time = 0, int special_id = 0);
 	void seed(float probability);
 	void set_value();
-	void set_texture(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc, world::Map& map);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	void set_position(sf::Vector2<float> pos);
-	void apply_force(sf::Vector2<float> force);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void set_position(sf::Vector2f pos);
+	void apply_force(sf::Vector2f force);
 
 	void destroy_completely();
 	void deactivate();
@@ -53,13 +55,18 @@ class Drop {
 	fsm::StateFunction update_shining();
 
   private:
+	struct {
+		DropState actual{};
+		DropState desired{};
+	} m_state{};
+	void request(DropState to) { m_state.desired = to; }
+	bool change_state(DropState next, anim::Parameters params);
+
 	DropType type{};
-	sf::Vector2<float> drop_dimensions{20.f, 20.f};
+	sf::Vector2f drop_dimensions{20.f, 20.f};
 	shape::CircleCollider collider{16.f};
-	sf::Vector2<int> spritesheet_dimensions{};
-	sf::Vector2<float> sprite_dimensions{};
-	sf::Vector2<float> sprite_offset{};
-	anim::AnimatedSprite sprite;
+	std::vector<anim::Parameters> m_parameters{};
+	sf::Vector2f m_sprite_dimensions{};
 	util::Cooldown shine_cooldown{600};
 
 	int num_sprites{}; // 2 for hearts, 4 for orbs
@@ -86,6 +93,8 @@ class Drop {
 	} constants{};
 
 	bool dead{};
+
+	io::Logger m_logger{"drop"};
 };
 
 } // namespace fornani::item

@@ -5,15 +5,12 @@
 	"player_data": {
 		"max_hp": 3.000000,
 		"hp": 3.000000,
-		"orbs": 495,
+		"orbs": 0,
 		"position": {
-			"x": 352.256104,
-			"y": 320.000000
+			"x": 147.84,
+			"y": 394.88
 		},
 		"arsenal": [
-			0,
-			1,
-			2
 		],
 		"equipped_gun": 0,
 		"abilities": [
@@ -26,155 +23,52 @@
 		},
 		"items": [
 			{
-				"id": 22,
+				"label": "woodshine_totem",
 				"quantity": 1
 			},
 			{
-				"id": 20,
+				"label": "navy_top",
+				"type": 1,
 				"quantity": 1
 			},
 			{
-				"id": 1,
-				"quantity": 1
-			},
-			{
-				"id": 16,
-				"quantity": 1
-			},
-			{
-				"id": 97,
-				"quantity": 1
-			},
-			{
-				"id": 81,
+				"label": "green_pants",
+				"type": 1,
 				"quantity": 1
 			}
 		],
 		"stats": {
-			"death_count": 84,
-			"bullets_fired": 2793,
+			"death_count": 0,
+			"bullets_fired": 0,
 			"guns_collected": 0,
-			"items_collected": 27,
-			"orbs_collected": 495,
-			"blue_orbs": 1,
-			"highest_indicator_amount": 310,
-			"enemies_killed": 8,
-			"rooms_discovered": 25,
-			"seconds_played": 1361.797607,
+			"items_collected": 0,
+			"orbs_collected": 0,
+			"blue_orbs": 0,
+			"highest_indicator_amount": 0,
+			"enemies_killed": 0,
+			"rooms_discovered": 0,
+			"seconds_played": 0.0,
 			"time_trials": {
 				"bryns_gun": 0.000000
 			}
 		},
 		"hotbar": [
-			0,
-			1,
-			2
 		]
 	},
-	"save_point_id": 99,
+	"save_point_id": 100,
 	"unlocked_doors": [
-
 	],
 	"opened_chests": [
-		567911
 	],
 	"activated_switches": [
-		445,
-		44
 	],
 	"destroyed_blocks": [
-		115
 	],
 	"quest_progressions": [
-		[
-			88,
-			1,
-			1,
-			1,
-			0
-		],
-		[
-			3,
-			3,
-			1,
-			1,
-			0
-		],
-		[
-			3,
-			24,
-			1,
-			1,
-			0
-		],
-		[
-			9,
-			1,
-			1,
-			1,
-			0
-		],
-		[
-			70,
-			1,
-			1,
-			1,
-			0
-		],
-		[
-			3,
-			20,
-			1,
-			1,
-			0
-		],
-		[
-			0,
-			0,
-			0,
-			1,
-			0
-		],
-		[
-			5,
-			115,
-			2,
-			1,
-			0
-		],
-		[
-			9,
-			2,
-			1,
-			1,
-			0
-		],
-		[
-			8,
-			6001,
-			6001,
-			1,
-			0
-		]
 	],
 	"destroyed_inspectables": [
-		"bookshelf110",
-		"leap115"
 	],
-	"tutorial": {
-		"state": 4,
-		"closed": true,
-		"on": false,
-		"jump": true,
-		"shoot": true,
-		"sprint": true,
-		"map": true,
-		"inventory": true
-	},
 	"discovered_rooms": [
-		100,
-		102,
-		103
 	],
 	"piggybacker": 0,
 	"marketplace": [
@@ -218,15 +112,11 @@
 	],
 	"map_data": {
 		"world_time": {
-			"hours": 12,
-			"minutes": 49
+			"hours": 8,
+			"minutes": 30
 		},
 		"fallen_enemies": [
 			[
-				20094,
-				55482869,
-				4,
-				0
 			]
 		]
 	}

@@ -6,31 +6,41 @@
 
 namespace fornani::world {
 
-Tile::Tile(sf::Vector2<uint32_t> i, sf::Vector2<float> p, uint32_t val, uint32_t odi) : index(i), value(val), one_d_index(odi), bounding_box({32.f, 32.f}, evaluate(val)) {
+Tile::Tile(sf::Vector2<std::uint32_t> i, sf::Vector2f p, std::uint32_t val, std::uint32_t odi, float spacing, std::uint8_t chunk_id)
+	: index(i), value(val), one_d_index(odi), bounding_box({32.f, 32.f}, evaluate(val)), m_spacing(spacing), m_chunk_id{chunk_id} {
 	set_type();
 	bounding_box.set_position(p);
 }
 
 void Tile::on_hit(automa::ServiceProvider& svc, player::Player& player, world::Map& map, arms::Projectile& proj) {
 	if (proj.transcendent()) { return; }
-	if (!map.nearby(bounding_box, proj.get_bounding_box())) {
-		return;
-	} else {
-		collision_check = true;
-		if ((proj.get_bounding_box().overlaps(bounding_box) && is_occupied())) {
-			if (!is_collidable() || is_platform()) { return; }
-			if (!proj.transcendent()) {
-				if (!proj.destruction_initiated()) {
-					map.effects.push_back(entity::Effect(svc, proj.get_destruction_point() + proj.get_position(), {}, proj.effect_type(), 2));
-					if (proj.get_direction().lr == dir::LR::neutral) { map.effects.back().rotate(); }
-				}
-				proj.destroy(false);
+	// if (!map.nearby(bounding_box, proj.get_collider())) { return; }
+	collision_check = true;
+	if ((proj.get_collider().collides_with(bounding_box) && is_occupied())) {
+		if (!is_collidable() || is_platform()) { return; }
+		if (!proj.reflect()) {
+			if (!proj.destruction_initiated()) {
+				map.effects.push_back(entity::Effect(svc, "wall_hit", proj.get_destruction_point() + proj.get_position(), {}, proj.effect_type()));
+				if (proj.get_direction().lnr == LNR::neutral) { map.effects.back().rotate(); }
 			}
+			proj.destroy(false);
+		} else {
+			auto direction = sf::Vector2i{};
+			direction.x = proj.get_collider().get_local_center().x < bounding_box.get_center().x ? -1 : 1;
+			direction.y = proj.get_collider().get_local_center().y < bounding_box.get_center().y ? -1 : 1;
+			auto side_collision = std::abs(proj.get_collider().get_local_center().x - bounding_box.get_center().x) > std::abs(proj.get_collider().get_local_center().y - bounding_box.get_center().y);
+			if (side_collision) {
+				direction.y = 0;
+			} else {
+				direction.x = 0;
+			}
+			proj.bounce_off_surface(direction);
+			svc.soundboard.flags.item.set(audio::Item::gem);
 		}
 	}
 }
 
-void Tile::render(sf::RenderWindow& win, sf::RectangleShape& draw, sf::Vector2<float> cam) {
+void Tile::render(sf::RenderWindow& win, sf::RectangleShape& draw, sf::Vector2f cam) {
 	draw.setSize({32.f, 32.f});
 	draw.setFillColor(sf::Color::Transparent);
 	draw.setOutlineThickness(-2.f);
@@ -47,54 +57,6 @@ void Tile::draw(sf::RenderTexture& tex) {
 	if (is_occupied()) { bounding_box.draw(tex); }
 }
 
-void Tile::set_type() {
-	type = TileType::empty;
-	if (value < special_index_v && value > 0) {
-		type = TileType::solid;
-		return;
-	}
-	if ((value < special_index_v + 16 && value >= special_index_v) || (value >= ceiling_single_ramp && value <= ceiling_single_ramp + 3)) {
-		type = TileType::ceiling_ramp;
-		return;
-	}
-	if ((value < special_index_v + 32 && value >= special_index_v + 16) || (value >= floor_single_ramp && value <= floor_single_ramp + 3)) {
-		type = TileType::ground_ramp;
-		return;
-	}
-	if (value < special_index_v + 48 && value >= special_index_v + 44) {
-		type = TileType::platform;
-		return;
-	}
-	if (value < special_index_v + 38 && value >= special_index_v + 36) {
-		type = TileType::pushable;
-		return;
-	}
-	if (value == special_index_v + 38) {
-		type = TileType::target;
-		return;
-	}
-	if (value == special_index_v + 39) {
-		type = TileType::spawner;
-		return;
-	}
-	if (value == special_index_v + 52) {
-		type = TileType::bonfire;
-		return;
-	}
-	if (value == special_index_v + 53) {
-		type = TileType::campfire;
-		return;
-	}
-	if (value == special_index_v + 54) {
-		type = TileType::checkpoint;
-		return;
-	}
-	if (value == special_index_v + 55) {
-		type = TileType::breakable;
-		return;
-	}
-	if (value == special_index_v + 62) { type = TileType::big_spike; }
-	if (value == special_index_v + 63) { type = TileType::spike; }
-}
+void Tile::set_type() { type = get_type_by_value(value); }
 
 } // namespace fornani::world

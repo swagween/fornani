@@ -1,76 +1,41 @@
+
 #include "fornani/gui/ItemWidget.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::gui {
 
-ItemWidget::ItemWidget(automa::ServiceProvider& svc) : sprites{.item = sf::Sprite{svc.assets.t_items}, .gun = sf::Sprite{svc.assets.t_guns}} {
-	dimensions = sf::Vector2<float>{32.f, 32.f};
-	gun_dimensions = sf::Vector2<float>{48.f, 48.f};
-	pad.x = svc.constants.screen_dimensions.x * 0.5f;
-	pad.y = 230.f;
-	end_position = sf::Vector2<float>{pad.x, svc.constants.screen_dimensions.y - pad.y - dimensions.y};
+ItemWidget::ItemWidget(automa::ServiceProvider& svc, ItemWidgetType type, int id)
+	: m_id{id}, m_type{type}, m_sprites{.sticker{svc.assets.get_texture("item_sticker")}, .item = type == ItemWidgetType::item ? sf::Sprite{svc.assets.get_texture("inventory_items")} : sf::Sprite{svc.assets.get_texture("inventory_guns")}},
+	  m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "sticker", 128, util::InterpolationType::quadratic}, sparkler{svc, constants::f_cell_vec, colors::ui_white, "item"} {
 	bring_in();
-	float fric{0.9f};
-	gravitator = vfx::Gravitator(start_position, sf::Color::Transparent, 1.f);
-	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{fric, fric}, 2.0f);
-	sprites.item.setOrigin(dimensions * 0.5f);
-	sprites.gun.setOrigin(gun_dimensions * 0.5f);
-	sprites.item.setTextureRect(sf::IntRect({(id - 1) * static_cast<int>(dimensions.x), 0}, {static_cast<int>(dimensions.x), static_cast<int>(dimensions.y)}));
-	gravitator.set_target_position(position);
-	sparkler = vfx::Sparkler(svc, dimensions, svc.styles.colors.ui_white, "item");
-	sticker.setFillColor(svc.styles.colors.console_blue);
-	sticker.setRadius(32.f);
-	sticker.setOrigin({sticker.getRadius(), sticker.getRadius()});
-	sticker.setPointCount(32);
+	auto dim = type == ItemWidgetType::item ? sf::Vector2f{16.f, 16.f} : sf::Vector2f{24.f, 24.f};
+	m_sprites.item.setScale(constants::f_scale_vec);
+	m_sprites.sticker.setScale(constants::f_scale_vec);
+	m_sprites.sticker.setOrigin(m_sprites.sticker.getLocalBounds().getCenter());
+	m_sprites.item.setOrigin(dim / 2.f);
 }
 
 void ItemWidget::update(automa::ServiceProvider& svc) {
-	gravitator.set_target_position(position);
-	gravitator.update(svc);
 	sparkler.update(svc);
-	sprites.item.setPosition(gravitator.collider.physics.position);
-	sprites.gun.setPosition(gravitator.collider.physics.position);
-	flags.test(WidgetFlags::gun) ? sticker.setPosition(sprites.gun.getPosition()) : sticker.setPosition(sprites.item.getPosition());
-	sparkler.set_position(sticker.getPosition() - sparkler.get_dimensions() * 0.5f);
+	m_path.update();
+	m_sprites.sticker.setPosition(m_path.get_position());
+	m_sprites.item.setPosition(m_path.get_position());
+	sparkler.set_position(m_sprites.sticker.getPosition() - sparkler.get_dimensions() * 0.5f);
 }
 
 void ItemWidget::render(automa::ServiceProvider& svc, sf::RenderWindow& win) {
-	win.draw(sticker);
-	auto u = static_cast<int>(((id - 1) % 16) * dimensions.x);
-	auto v = static_cast<int>(std::floor((static_cast<float>(id - 1) / 16.f)) * dimensions.y);
-	sprites.item.setTextureRect(sf::IntRect({u, v}, static_cast<sf::Vector2<int>>(dimensions)));
-	sprites.gun.setTextureRect(sf::IntRect({id * (int)gun_dimensions.x, 0}, {static_cast<int>(gun_dimensions.x), static_cast<int>(gun_dimensions.y)}));
-	if (flags.test(WidgetFlags::gun)) {
-		win.draw(sprites.gun);
-	} else {
-		win.draw(sprites.item);
-	}
-	sparkler.render(svc, win, {});
+	auto dim = m_type == ItemWidgetType::item ? sf::Vector2i{16, 16} : sf::Vector2i{24, 24};
+	win.draw(m_sprites.sticker);
+	auto idx = m_type == ItemWidgetType::item ? m_id - 1 : m_id;
+	auto u = (idx % 16) * dim.x;
+	auto v = static_cast<int>(std::floor((idx / 16)) * dim.y);
+	m_sprites.item.setTextureRect(sf::IntRect({u, v}, dim));
+	win.draw(m_sprites.item);
+	sparkler.render(win, {});
 }
 
-void ItemWidget::reset(automa::ServiceProvider& svc) {
-	start_position = {position.x, -64.f};
-	set_position(start_position);
-}
+void ItemWidget::bring_in() { m_path.set_section("in"); }
 
-void ItemWidget::set_position(sf::Vector2<float> pos) {
-	sprites.item.setPosition(pos);
-	gravitator.set_position(pos);
-}
+void ItemWidget::send_out() { m_path.set_section("out"); }
 
-void ItemWidget::bring_in() { position = end_position; }
-
-void ItemWidget::send_out() { position = start_position; }
-
-void ItemWidget::set_id(int new_id, bool is_gun) {
-	id = new_id;
-	if (is_gun) {
-		flags.set(WidgetFlags::gun);
-	} else {
-		flags.reset(WidgetFlags::gun);
-	}
-	sprites.item.setTextureRect(sf::IntRect({(id - 1) * (int)dimensions.x, 0}, {(int)dimensions.x, (int)dimensions.y}));
-	sprites.gun.setTextureRect(sf::IntRect({id * (int)gun_dimensions.x, 0}, {(int)gun_dimensions.x, (int)gun_dimensions.y}));
-}
-
-} // namespace gui
+} // namespace fornani::gui

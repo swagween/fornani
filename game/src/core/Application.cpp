@@ -1,38 +1,36 @@
 
 #include "fornani/core/Application.hpp"
-
-#include <iostream>
-
-#include "fornani/utils/Tracy.hpp"
+#include "fornani/graphics/Colors.hpp"
 
 namespace fornani {
 
 void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
-	NANI_ZoneScopedN("Application::Application");
-	std::cout << "Resource path: " << m_finder.resource_path() << std::endl;
-	std::cout << "> Launching " << m_metadata.long_title() << "\n";
+	NANI_LOG_INFO(m_logger, "> Launching");
+	NANI_LOG_INFO(m_logger, "Resource path: {}", m_finder.resource_path());
 
-	m_app_settings = dj::Json::from_file((m_finder.resource_path() + "/data/config/settings.json").c_str());
+	m_app_settings = *dj::Json::from_file((m_finder.resource_path() + "/data/config/settings.json").c_str());
 	assert(!m_app_settings.is_null());
 
 	// create window
 	auto fullscreen = demo_fullscreen.first ? demo_fullscreen.second : static_cast<bool>(m_app_settings["fullscreen"].as_bool());
-	m_window.create(m_metadata.long_title(), fullscreen);
+	m_window.create(m_metadata.long_title(), fullscreen, {960, 512});
 	m_window.set();
 
-	// set app icon
-	sf::Image icon{};
-	if (!icon.loadFromFile(m_finder.resource_path() + "/image/app/icon.png")) { std::cout << "Failed to load application icon.\n"; };
-	m_window.get().setIcon({256, 256}, icon.getPixelsPtr());
+	auto entire_window = sf::View(sf::FloatRect{{}, sf::Vector2f{sf::VideoMode::getDesktopMode().size}});
+	auto background = sf::RectangleShape{sf::Vector2f{sf::VideoMode::getDesktopMode().size}};
+	background.setFillColor(colors::ui_black);
 
 	m_window.get().clear();
-	m_window.get().draw(m_loading);
+	if (m_window.is_fullscreen()) { m_window.get().setView(entire_window); }
+	m_window.get().draw(background);
+	m_window.restore_view();
 	m_window.get().display();
 }
 
-void Application::launch(char** argv, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2<float> player_position) {
-	std::unique_ptr game = std::make_unique<Game>(argv, m_window, m_metadata);
-	game->run(demo, room_id, levelpath, player_position);
+void Application::launch(char** argv, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2f player_position) {
+	std::unique_ptr game = std::make_unique<Game>(argv, m_window, m_metadata, *m_engine);
+	game->set_file(m_file);
+	game->run(*m_engine, demo, room_id, levelpath, player_position);
 }
 
 } // namespace fornani

@@ -13,18 +13,18 @@ namespace fornani::vfx {
 class Gravitator {
 
   public:
-	using Vec = sf::Vector2<float>;
-	using Vecu16 = sf::Vector2<uint32_t>;
+	using Vec = sf::Vector2f;
+	using Vecu16 = sf::Vector2<std::uint32_t>;
 
 	Gravitator() = default;
 	Gravitator(Vec pos, sf::Color col, float agf, Vec size = {4.f, 4.f});
 	void update(automa::ServiceProvider& svc);
-	void add_force(sf::Vector2<float> force);
+	void add_force(sf::Vector2f force);
 	void set_position(Vec new_position);
 	void set_target_position(Vec new_position);
 	void demagnetize(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos, int history = 0);
-	[[nodiscard]] auto position() const -> sf::Vector2<float> { return collider.physics.position; }
+	[[nodiscard]] auto position() const -> sf::Vector2f { return collider.physics.position; }
 
 	shape::Collider collider{};
 	Vecu16 scaled_position{};

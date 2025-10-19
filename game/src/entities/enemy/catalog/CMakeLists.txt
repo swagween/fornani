@@ -6,9 +6,12 @@ nani_add_sources(
         Eyebit.cpp
         Eyebot.cpp
         Frdog.cpp
-        Hauler.cpp
         Imp.cpp
         Meatsquash.cpp
+        Minion.cpp
         Tank.cpp
         Thug.cpp
+        Hulmet.cpp
+        Spitefly.cpp
+        Summoner.cpp
 )

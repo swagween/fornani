@@ -18,22 +18,28 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class PushableAttributes : uint8_t { bulletproof };
-enum class PushableState : uint8_t { moved, moving };
+enum class PushableAttributes : std::uint8_t { bulletproof };
+enum class PushableState : std::uint8_t { moved, moving };
 
 class Pushable {
   public:
-	Pushable(automa::ServiceProvider& svc, sf::Vector2<float> position, int style = 0, int size = 1);
+	Pushable(automa::ServiceProvider& svc, sf::Vector2f position, int style = 0, int size = 1);
 	void update(automa::ServiceProvider& svc, Map& map, player::Player& player);
 	void handle_collision(shape::Collider& other) const;
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	void reset(automa::ServiceProvider& svc, world::Map& map);
 	void set_moving() { state.set(PushableState::moving); }
+	void register_chunk(std::uint8_t chunk) { m_chunk_id = chunk; }
+
 	shape::Shape& get_bounding_box() { return collider.bounding_box; }
 	shape::Shape& get_hurtbox() { return collider.hurtbox; }
+
 	[[nodiscard]] auto unmoved() const { return !state.test(PushableState::moved); }
 	[[nodiscard]] auto is_moving() const { return state.test(PushableState::moving); }
+	[[nodiscard]] auto get_chunk_id() const -> std::uint8_t { return m_chunk_id; }
+	[[nodiscard]] auto get_size() const -> int { return size; }
+
 	shape::Collider collider{};
 	shape::Shape start_box{};
 
@@ -48,11 +54,12 @@ class Pushable {
 	float speed{64.f};
 	float energy{};
 	float hit_energy{8.f};
-	sf::Vector2<float> snap{};
-	sf::Vector2<float> random_offset{};
-	sf::Vector2<float> sprite_offset{-1.f, 0.f};
-	sf::Vector2<float> start_position{};
+	sf::Vector2f snap{};
+	sf::Vector2f random_offset{};
+	sf::Vector2f sprite_offset{-1.f, 0.f};
+	sf::Vector2f start_position{};
 	util::Counter hit_count{};
 	util::Cooldown weakened{64};
+	std::uint8_t m_chunk_id{};
 };
 } // namespace fornani::world

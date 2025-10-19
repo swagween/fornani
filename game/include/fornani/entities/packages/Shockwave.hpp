@@ -6,30 +6,41 @@
 namespace fornani::world {
 class Map;
 }
+
 namespace fornani::player {
 class Player;
 }
+
 namespace fornani::automa {
 struct ServiceProvider;
 }
+
+struct ShockwaveParameters {
+	int frequency{};
+	int lifetime{};
+	int style{};
+	sf::Vector2f speed{};
+};
 
 namespace fornani::entity {
 
 class Shockwave {
   public:
 	Shockwave() = default;
-	explicit Shockwave(sf::Vector2<float> speed);
-	void start(int time = 600);
+	explicit Shockwave(ShockwaveParameters parameters);
+	void start();
 	void update(automa::ServiceProvider& svc, world::Map& map);
-	void set_position(sf::Vector2<float> to_position);
+	void set_position(sf::Vector2f to_position);
 	void handle_player(player::Player& player);
-	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(sf::RenderWindow& win, sf::Vector2f cam);
 
 	components::CircleSensor hit{};
-	sf::Vector2<float> position{};
-	sf::Vector2<float> origin{};
-	sf::Vector2<float> speed{};
+	sf::Vector2f position{};
+	sf::Vector2f origin{};
 	util::Cooldown lifetime{};
+
+  private:
+	ShockwaveParameters m_parameters{};
 };
 
 } // namespace fornani::entity

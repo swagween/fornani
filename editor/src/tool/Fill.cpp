@@ -17,9 +17,9 @@ void Fill::update(Canvas& canvas) {
 
 void Fill::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {}
 
-void Fill::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float> offset) {}
+void Fill::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) {}
 
-void Fill::fill_section(uint32_t const prev_val, uint32_t const new_val, uint32_t i, uint32_t j, Canvas& canvas) {
+void Fill::fill_section(std::uint32_t const prev_val, std::uint32_t const new_val, std::uint32_t i, std::uint32_t j, Canvas& canvas) {
 	if (!canvas.editable()) { return; }
 	if (i < 0 || i >= canvas.dimensions.x || j < 0 || j >= canvas.dimensions.y) {
 		return;
@@ -38,7 +38,7 @@ void Fill::fill_section(uint32_t const prev_val, uint32_t const new_val, uint32_
 	}
 }
 
-void Fill::replace_all(uint32_t const prev_val, uint32_t const new_val, uint32_t i, uint32_t j, Canvas& canvas) {
+void Fill::replace_all(std::uint32_t const prev_val, std::uint32_t const new_val, std::uint32_t i, std::uint32_t j, Canvas& canvas) {
 	if (pervasive) {
 		for (auto k{0}; k < canvas.get_layers().layers.size(); ++k) { canvas.replace_tile(prev_val, new_val, k); }
 	} else {

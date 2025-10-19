@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-namespace fornani::flfx {
+namespace fornani::graphics {
 
 class TextureUpdater {
 
@@ -15,7 +15,7 @@ class TextureUpdater {
 	void load_palette(sf::Texture& palette_texture);
 	void update_texture(sf::Texture& texture);
 
-	void debug_render(sf::RenderWindow& win, sf::Vector2<float>& campos);
+	void debug_render(sf::RenderWindow& win, sf::Vector2f& campos);
 
 	sf::Texture& get_dynamic_texture();
 
@@ -32,4 +32,4 @@ class TextureUpdater {
 	sf::Texture base_texture{};
 	sf::Texture dynamic_texture{};
 };
-} // namespace flfx
+} // namespace graphics

@@ -1,28 +1,52 @@
 #pragma once
 
+#include <capo/engine.hpp>
+#include <fornani/entity/NPC.hpp>
 #include "fornani/entities/enemy/Enemy.hpp"
-#include "fornani/entities/npc/NPC.hpp"
 #include "fornani/entities/packages/Attack.hpp"
 #include "fornani/entities/packages/Caution.hpp"
 #include "fornani/entities/packages/Shockwave.hpp"
 #include "fornani/graphics/SpriteHistory.hpp"
-#include "fornani/gui/StatusBar.hpp"
+#include "fornani/gui/BossHealth.hpp"
+#include "fornani/io/Logger.hpp"
+#include "fornani/particle/Sparkler.hpp"
+
 #define MINIGUS_BIND(f) std::bind(&Minigus::f, this)
 
 namespace fornani::enemy {
 
+enum class MinigusMode { neutral, battle_one, battle_two, last_words, exit };
 enum class MinigusState { idle, turn, run, shoot, jump_shoot, hurt, jump, jumpsquat, reload, punch, uppercut, build_invincibility, laugh, snap, rush, struggle, exit, drink, throw_can };
 enum class MinigusFlags { recently_hurt, distant_range_activated, battle_mode, theme_song, exit_scene, over_and_out, goodbye, threw_can, punched, soda_pop, second_phase };
 enum class MinigunState { deactivated, neutral, charging, firing };
 enum class MinigunFlags { exhausted, charging };
 
-class Minigus : public Enemy, public npc::NPC {
+class Minigun : public Animatable {
+  public:
+	Minigun(automa::ServiceProvider& svc) : Animatable(svc, "minigus_minigun", {39, 15}) {}
+	void update(sf::Vector2f const target);
+	void render(sf::Vector2f const cam);
+	void set_physics_position(sf::Vector2f const to) { m_physics.position = to; }
+	MinigunState state{};
+	sf::Vector2f offset{};
+	anim::Parameters neutral{21, 4, 28, -1};
+	anim::Parameters deactivated{11, 2, 48, -1};
+	anim::Parameters charging{0, 11, 38, 0};
+	anim::Parameters firing{13, 8, 10, 1};
+	util::BitFlags<MinigunFlags> flags{};
+
+  private:
+	components::PhysicsComponent m_physics{};
+	components::SteeringBehavior m_steering{};
+};
+
+class Minigus : public Enemy, public NPC {
 
   public:
-	Minigus(automa::ServiceProvider& svc, world::Map& map, gui::Console& console);
-	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
-	void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
-	void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console);
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
+	void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	[[nodiscard]] auto invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable); }
 	[[nodiscard]] auto half_health() const -> bool { return health.get_hp() < health.get_max() * 0.5f; }
 
@@ -48,46 +72,42 @@ class Minigus : public Enemy, public npc::NPC {
 	fsm::StateFunction update_throw_can();
 
   private:
-	bool anim_debug{};
-	MinigusState state{};
-	util::BitFlags<MinigusFlags> status{};
-	gui::StatusBar health_bar;
-	flfx::SpriteHistory sprite_history{};
+	void request(MinigusState to) { m_state.desired = to; }
+	[[nodiscard]] auto is(MinigusState const test) const -> bool { return m_state.actual == test; }
+	[[nodiscard]] auto is_battle_mode() const -> bool { return (m_mode == MinigusMode::battle_one || m_mode == MinigusMode::battle_two) && !m_console->has_value(); }
 
-	dir::Direction sprite_direction{};
-	dir::Direction pre_direction{};
-	dir::Direction post_direction{};
-	dir::Direction movement_direction{};
+	struct {
+		MinigusState actual{};
+		MinigusState desired{};
+	} m_state{};
+
+	bool anim_debug{};
+	bool console_complete{};
+	bool init{true};
+	MinigusMode m_mode{};
+	util::BitFlags<MinigusFlags> status{};
+	gui::BossHealth health_bar;
+	graphics::SpriteHistory sprite_history{8};
+
+	Direction sprite_direction{};
+	Direction movement_direction{};
 
 	shape::Shape distant_range{};
 
-	struct {
-		sf::Sprite sprite;
-		anim::Animation animation{};
-		MinigunState state{};
-		anim::Parameters neutral{21, 4, 28, -1};
-		anim::Parameters deactivated{11, 2, 48, -1};
-		anim::Parameters charging{0, 11, 38, 0};
-		anim::Parameters firing{13, 8, 10, 1};
-		sf::Vector2<float> offset{0, 64};
-		sf::Vector2<int> dimensions{78, 30};
-		dir::Direction direction;
-		util::BitFlags<MinigunFlags> flags{};
-	} minigun;
+	Minigun m_minigun;
 
 	struct {
 		entity::Attack punch{};
 		entity::Attack uppercut{};
 		entity::Attack rush{};
-		entity::Shockwave left_shockwave{{-0.6f, 0.f}};
-		entity::Shockwave right_shockwave{{0.6f, 0.f}};
+		entity::Shockwave left_shockwave;
+		entity::Shockwave right_shockwave;
 	} attacks{};
 
 	float fire_chance{2.f};
 	float snap_chance{10.f};
 	float rush_chance{20.f};
 	float rush_speed{8.f};
-	int health_bar_size{600};
 
 	// packages
 	entity::WeaponPackage gun;
@@ -108,56 +128,12 @@ class Minigus : public Enemy, public npc::NPC {
 		util::Cooldown struggle{400};
 	} cooldowns{};
 
-	vfx::Sparkler sparkler{};
+	vfx::Sparkler sparkler;
 
 	struct {
 		util::Counter snap{};
 		util::Counter invincible_turn{};
 	} counters{};
-
-	struct {
-		sf::Sound jump;
-		sf::Sound land;
-		sf::Sound crash;
-		sf::Sound step;
-		sf::Sound punch;
-		sf::Sound snap;
-		sf::Sound lose_inv;
-		sf::Sound charge;
-		sf::Sound build;
-		sf::Sound inv;
-		sf::Sound soda;
-	} sounds;
-
-	struct {
-		sf::Sound hurt_1;
-		sf::Sound hurt_2;
-		sf::Sound hurt_3;
-		sf::Sound laugh_1;
-		sf::Sound laugh_2;
-		sf::Sound grunt;
-		sf::Sound aww;
-		sf::Sound babyimhome;
-		sf::Sound deepspeak;
-		sf::Sound doge;
-		sf::Sound dontlookatme;
-		sf::Sound exhale;
-		sf::Sound getit;
-		sf::Sound greatidea;
-		sf::Sound itsagreatday;
-		sf::Sound long_death;
-		sf::Sound long_moan;
-		sf::Sound momma;
-		sf::Sound mother;
-		sf::Sound ok_1;
-		sf::Sound ok_2;
-		sf::Sound pizza;
-		sf::Sound poh;
-		sf::Sound quick_breath;
-		sf::Sound thatisverysneeze; //dash cue
-		sf::Sound whatisit;
-		sf::Sound woob; //jumping
-	} voice;
 
 	util::Cycle hurt_color{2};
 
@@ -184,9 +160,12 @@ class Minigus : public Enemy, public npc::NPC {
 
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;
-	gui::Console* m_console;
 
 	bool change_state(MinigusState next, anim::Parameters params);
+
+	std::optional<std::unique_ptr<gui::Console>>* m_console;
+
+	io::Logger m_logger{"boss"};
 };
 
 } // namespace fornani::enemy

@@ -1,23 +1,24 @@
 #include "fornani/entities/atmosphere/Dragonfly.hpp"
 #include <numbers>
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
+#include "fornani/world/Map.hpp"
 
 #include "fornani/utils/Random.hpp"
 
 namespace fornani::vfx {
 
-Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2<float> start) : sprite(svc.assets.t_dragonfly, {16, 16}) {
+Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2f start) : sprite(svc.assets.get_texture("dragonfly"), {8, 8}) {
 	physics.set_global_friction(0.97f);
 	physics.position = start;
-	physics.velocity = util::Random::random_vector_float(-1.f, 1.f);
+	physics.velocity = random::random_vector_float(-1.f, 1.f);
 	sprite.push_params("neutral", {0, 3, 16, -1});
 	sprite.set_params("neutral");
 	sprite.random_start();
-	sprite.set_origin({12.f, 12.f});
-	variant = util::Random::percent_chance(60) ? 0 : util::Random::percent_chance(50) ? 1 : util::Random::percent_chance(50) ? 2 : 3;
+	sprite.set_origin({4.f, 4.f});
+	sprite.set_scale(constants::f_scale_vec);
+	variant = random::percent_chance(60) ? 0 : random::percent_chance(50) ? 1 : random::percent_chance(50) ? 2 : 3;
 	forces.seek = 0.000052f;
 	forces.walk = 0.0113f;
 	forces.evade = 0.873f;
@@ -32,13 +33,13 @@ void Dragonfly::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 	sprite.update(physics.position, variant);
 }
 
-void Dragonfly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (svc.greyblock_mode()) { return; }
+void Dragonfly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	// if (svc.greyblock_mode()) { return; }
 	sprite.render(svc, win, cam);
 	if (svc.greyblock_mode()) {
 		sf::RectangleShape drawbox{};
 		drawbox.setSize({2.f, 2.f});
-		drawbox.setFillColor(svc.styles.colors.ui_white);
+		drawbox.setFillColor(colors::ui_white);
 		drawbox.setPosition(physics.position - cam);
 		win.draw(drawbox);
 		steering.render(svc, win, cam);

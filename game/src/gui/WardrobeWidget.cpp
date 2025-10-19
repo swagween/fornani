@@ -1,59 +1,43 @@
-#include "fornani/gui/Portrait.hpp"
-#include "fornani/service/ServiceProvider.hpp"
+
 #include "fornani/gui/WardrobeWidget.hpp"
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::gui {
 
-gui::WardrobeWidget::WardrobeWidget(const automa::ServiceProvider& svc)
-	: sprites{.base = sf::Sprite{svc.assets.t_wardrobe_base}, .shirt = sf::Sprite{svc.assets.t_wardrobe_blue_shirt}, .pants = sf::Sprite{svc.assets.t_wardrobe_green_pants}, .hairstyle = sf::Sprite{svc.assets.t_wardrobe_default_hair}},
-	  out_nani{svc.assets.t_null} {
-	background.setFillColor(svc.styles.colors.ui_black);
-	background.setOutlineColor(svc.styles.colors.ui_white);
-	background.setOutlineThickness(2.f);
-	background.setSize(dimensions);
-	background.setOrigin(dimensions * 0.5f);
+gui::WardrobeWidget::WardrobeWidget(automa::ServiceProvider& svc)
+	: m_base{sf::Sprite{svc.assets.get_texture("wardrobe_base")}}, m_outfit{sf::Sprite{svc.assets.get_texture("wardrobe_outfits")}}, out_nani{sf::Sprite{svc.assets.get_texture("null")}} {
+	background.setFillColor(colors::pioneer_black);
+	background.setSize(f_dimensions());
 	if (!nani.resize({128, 256})) { NANI_LOG_WARN(m_logger, "nani.resize() failed!"); }
+	m_base.setScale(constants::f_scale_vec);
+	m_outfit.setScale(constants::f_scale_vec);
 }
 
-void WardrobeWidget::update(automa::ServiceProvider& svc, player::Player& player) {
-	switch (player.catalog.categories.wardrobe.get_variant(player::ApparelType::pants)) {
-	case 0: sprites.pants.setTexture(svc.assets.t_wardrobe_green_pants); break;
-	case 1: sprites.pants.setTexture(svc.assets.t_wardrobe_red_jeans); break;
-	case 3: sprites.pants.setTexture(svc.assets.t_wardrobe_chalcedony_skirt); break;
-	case 6: sprites.pants.setTexture(svc.assets.t_wardrobe_punk_pants); break;
-	default: break;;
-	}
-	switch (player.catalog.categories.wardrobe.get_variant(player::ApparelType::hairstyle)) {
-	case 0: sprites.hairstyle.setTexture(svc.assets.t_wardrobe_default_hair); break;
-	case 4: sprites.hairstyle.setTexture(svc.assets.t_wardrobe_punk_hair); break;
-	case 7: sprites.hairstyle.setTexture(svc.assets.t_wardrobe_ponytail); break;
-	default: break;;
-	}
-	switch (player.catalog.categories.wardrobe.get_variant(player::ApparelType::shirt)) {
-	case 0: sprites.shirt.setTexture(svc.assets.t_wardrobe_blue_shirt); break;
-	case 2: sprites.shirt.setTexture(svc.assets.t_wardrobe_chalcedony_tee); break;
-	case 5: sprites.shirt.setTexture(svc.assets.t_wardrobe_punk_shirt); break;
-	default: break;;
-	}
-	player.catalog.categories.wardrobe.update(player.texture_updater);
-
-	//set out_texture for updating console portrait
+void WardrobeWidget::update(player::Player& player) {
+	player.catalog.wardrobe.update(player.texture_updater);
 	nani.clear(sf::Color::Transparent);
-	nani.draw(sprites.base);
-	nani.draw(sprites.pants);
-	nani.draw(sprites.shirt);
-	nani.draw(sprites.hairstyle);
+	nani.draw(m_base);
+	for (auto piece{static_cast<int>(player::ApparelType::END) - 1}; piece >= 0; --piece) {
+		m_outfit.setTextureRect(get_lookup(static_cast<player::ApparelType>(piece), player));
+		nani.draw(m_outfit);
+	}
 	nani.display();
 	out_nani = sf::Sprite(nani.getTexture());
 }
 
-void WardrobeWidget::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	background.setPosition(position);
+void WardrobeWidget::render(sf::RenderWindow& win, sf::Vector2f cam) {
+	background.setPosition(position - cam);
 	win.draw(background);
-	out_nani.setPosition(position);
-	out_nani.setOrigin(dimensions * 0.5f);
+	out_nani.setPosition(position - cam);
 	win.draw(out_nani);
 }
 
-} // namespace gui
+auto WardrobeWidget::get_lookup(player::ApparelType type, player::Player& player) const -> sf::IntRect {
+	auto i_type{static_cast<int>(type)};
+	auto variant{player.catalog.wardrobe.get_variant(type)};
+	auto coords{sf::Vector2i{variant, i_type}};
+	return sf::IntRect{coords.componentWiseMul(m_dimensions), m_dimensions};
+}
+
+} // namespace fornani::gui

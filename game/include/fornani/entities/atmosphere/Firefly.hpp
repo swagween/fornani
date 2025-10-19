@@ -23,9 +23,9 @@ namespace fornani::vfx {
 
 class Firefly {
   public:
-	Firefly(automa::ServiceProvider& svc, sf::Vector2<float> start);
+	Firefly(automa::ServiceProvider& svc, sf::Vector2f start);
 	void update(automa::ServiceProvider& svc, world::Map& map);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
   private:
 	components::PhysicsComponent physics{};
 	components::SteeringBehavior steering{};
@@ -33,7 +33,7 @@ class Firefly {
 	util::Cooldown light{};
 	int variant{};
 	bool glowing{};
-	std::optional<std::unique_ptr<flfx::SpriteHistory>> trail{};
+	std::optional<std::unique_ptr<graphics::SpriteHistory>> trail{};
 };
 
 } // namespace fornani::vfx

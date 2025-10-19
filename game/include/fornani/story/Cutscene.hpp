@@ -1,10 +1,15 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <string_view>
+#include <fornani/io/Logger.hpp>
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
+#include "fornani/utils/Polymorphic.hpp"
+
+#include <SFML/Graphics.hpp>
+
+#include <optional>
+#include <string_view>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -20,14 +25,13 @@ class Player;
 }
 namespace fornani {
 
-enum class CutsceneFlags : uint8_t { complete };
+enum class CutsceneFlags : std::uint8_t { complete };
 
-class Cutscene {
+class Cutscene : public UniquePolymorphic {
   public:
-	virtual ~Cutscene() = default;
 	Cutscene(automa::ServiceProvider& svc, int id, std::string_view label);
 
-	virtual void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] gui::Console& console, [[maybe_unused]] world::Map& map, [[maybe_unused]] player::Player& player) {};
+	virtual void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] world::Map& map, [[maybe_unused]] player::Player& player) {};
 	[[nodiscard]] auto complete() const -> bool { return flags.test(CutsceneFlags::complete); }
 
   protected:
@@ -49,6 +53,8 @@ class Cutscene {
 
 	// debug
 	bool debug{};
+
+	io::Logger p_logger{"Cutscene"};
 };
 
 } // namespace fornani

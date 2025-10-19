@@ -1,10 +1,10 @@
 #pragma once
 
-#include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/utils/Collider.hpp"
-#include "fornani/particle/Gravitator.hpp"
 #include "fornani/components/CircleSensor.hpp"
+#include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/entities/packages/Health.hpp"
+#include "fornani/particle/Gravitator.hpp"
+#include "fornani/utils/Collider.hpp"
 #include "fornani/utils/StateFunction.hpp"
 #define SPAWNABLE_PLAT_BIND(f) std::bind(&SpawnablePlatform::f, this)
 
@@ -16,18 +16,20 @@ class Player;
 }
 
 namespace fornani::entity {
-enum class SpawnablePlatformState : uint8_t { open, opening, fading, closing, dormant };
+enum class SpawnablePlatformState : std::uint8_t { open, opening, fading, closing, dormant };
 class SpawnablePlatform {
   public:
-	SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2<float> position, int index = 0);
-	void update(automa::ServiceProvider& svc, player::Player& player, sf::Vector2<float> target);
+	SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2f position, int index = 0);
+	SpawnablePlatform(SpawnablePlatform const& other) : sprite(other.sprite), index(other.index) {}
+
+	void update(automa::ServiceProvider& svc, player::Player& player, sf::Vector2f target);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	std::unique_ptr<SpawnablePlatform> clone() const { return std::make_unique<SpawnablePlatform>(*this); }
 	[[nodiscard]] auto get_index() const -> int { return index; }
 	[[nodiscard]] auto collidable() const -> bool { return state == SpawnablePlatformState::open || state == SpawnablePlatformState::opening || state == SpawnablePlatformState::fading; }
 
   private:
-
 	fsm::StateFunction state_function = std::bind(&SpawnablePlatform::update_dormant, this);
 	fsm::StateFunction update_open();
 	fsm::StateFunction update_opening();

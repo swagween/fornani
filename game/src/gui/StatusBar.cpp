@@ -1,47 +1,48 @@
+
 #include "fornani/gui/StatusBar.hpp"
-#include <algorithm>
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::gui {
 
-StatusBar::StatusBar(automa::ServiceProvider& svc, sf::Vector2<int> dim, float size) : dimensions(dim), size(size) {
-	gravitator = vfx::Gravitator({0, 0}, svc.styles.colors.bright_orange, 0.9f);
-	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2<float>{0.9f, 0.9f}, 1.0f);
-	debug_rects.filled.setFillColor(svc.styles.colors.red);
-	debug_rects.taken.setFillColor(svc.styles.colors.goldenrod);
-	debug_rects.gone.setFillColor(svc.styles.colors.navy_blue);
-	debug_rects.filled.setPosition({svc.constants.screen_dimensions.x * 0.5f, 60.f});
-	debug_rects.filled.setSize({200.f, 20.f});
-	debug_rects.filled.setOrigin(debug_rects.filled.getSize() * 0.5f);
-	debug_rects.taken.setPosition({svc.constants.screen_dimensions.x * 0.5f, 60.f});
-	debug_rects.taken.setSize({200.f, 20.f});
-	debug_rects.taken.setOrigin(debug_rects.filled.getSize() * 0.5f);
-	debug_rects.gone.setPosition({svc.constants.screen_dimensions.x * 0.5f, 60.f});
-	debug_rects.gone.setSize({200.f, 20.f});
-	debug_rects.gone.setOrigin(debug_rects.filled.getSize() * 0.5f);
-	current_state = BarState::full;
+StatusBar::StatusBar(automa::ServiceProvider& svc, sf::Vector2f dim, std::vector<sf::Color> colors, bool centered) : m_dimensions(dim) {
+	m_rects.filled.setFillColor(colors[0]);
+	m_rects.taken.setFillColor(colors[1]);
+	m_rects.gone.setFillColor(colors[2]);
+
+	m_rects.filled.setSize(m_dimensions);
+	m_rects.taken.setSize(m_dimensions);
+	m_rects.gone.setSize(m_dimensions);
+
+	if (centered) {
+		m_rects.gone.setOrigin(m_rects.gone.getLocalBounds().getCenter());
+		m_rects.filled.setOrigin(m_rects.gone.getLocalBounds().getCenter());
+		m_rects.taken.setOrigin(m_rects.gone.getLocalBounds().getCenter());
+	}
 }
 
-void StatusBar::update(automa::ServiceProvider& svc, float current) {
+void StatusBar::update(automa::ServiceProvider& svc, sf::Vector2f position, entity::Health& status, bool ease) { update(svc, position, status.get_normalized(), status.get_taken_point()); }
 
-	auto filled = std::lerp(0, size, current);
-	auto f_filled = static_cast<float>(filled);
+void StatusBar::update(automa::ServiceProvider& svc, sf::Vector2f position, float fraction, float taken, bool ease) {
+	m_rects.gone.setPosition(position);
+	m_rects.taken.setPosition(position);
+	m_rects.filled.setPosition(position);
 
-	gravitator.set_target_position(position);
-	gravitator.update(svc);
+	if (ease) {
+		m_steering.seek(m_physics, position);
+	} else {
+		m_physics.position = position;
+	}
+	m_physics.update(svc);
 
-	debug_rects.filled.setSize({f_filled, 10.f});
-	debug_rects.gone.setSize({size, 10.f});
-	debug_rects.taken.setSize({f_filled, 10.f});
-	debug_rects.filled.setOrigin(debug_rects.gone.getSize() * 0.5f);
-	debug_rects.gone.setOrigin(debug_rects.gone.getSize() * 0.5f);
-	debug_rects.taken.setOrigin(debug_rects.gone.getSize() * 0.5f);
-	current_state = filled == size ? BarState::full : current_state;
-	current_state = filled <= 0 ? BarState::empty : current_state;
+	m_rects.filled.setSize({m_dimensions.x * fraction, m_dimensions.y});
+	m_rects.taken.setSize({m_dimensions.x * taken, m_dimensions.y});
+	m_rects.gone.setSize(m_dimensions);
 }
+
 void StatusBar::render(sf::RenderWindow& win) {
-	win.draw(debug_rects.gone);
-	win.draw(debug_rects.taken);
-	win.draw(debug_rects.filled);
+	win.draw(m_rects.gone);
+	win.draw(m_rects.taken);
+	win.draw(m_rects.filled);
 }
-} // namespace gui
+
+} // namespace fornani::gui

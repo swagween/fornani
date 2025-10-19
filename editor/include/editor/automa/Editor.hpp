@@ -1,53 +1,45 @@
 
 #pragma once
 
+#include <imgui.h>
 #include <SFML/Graphics.hpp>
-#include "editor/canvas/Canvas.hpp"
-#include "editor/util/BitFlags.hpp"
-#include "editor/canvas/Clipboard.hpp"
-#include "editor/tool/Tool.hpp"
-#include "editor/setup/WindowManager.hpp"
-#include "editor/gui/Console.hpp"
-#include "editor/automa/PopupHandler.hpp"
-#include "fornani/utils/Cooldown.hpp"
-#include <imgui-SFML.h>
+#include <editor/automa/EditorState.hpp>
+#include <chrono>
+#include <cstdio>
+#include <filesystem>
+#include <memory>
 #include <sstream>
 #include <string_view>
-#include <filesystem>
-#include <cstdio>
-#include <memory>
-#include <chrono>
-#include <imgui.h>
-
-namespace fornani::data {
-class ResourceFinder;
-}
+#include "editor/automa/PopupHandler.hpp"
+#include "editor/canvas/Canvas.hpp"
+#include "editor/canvas/Clipboard.hpp"
+#include "editor/gui/Console.hpp"
+#include "editor/setup/WindowManager.hpp"
+#include "editor/tool/Tool.hpp"
+#include "editor/util/BitFlags.hpp"
+#include "fornani/utils/Cooldown.hpp"
+#include <imgui-SFML.h>
 
 namespace pi {
 
-enum class GlobalFlags { shutdown, palette_mode };
-enum class PressedKeys { control, shift, mouse_left, mouse_right, space };
+enum class GlobalFlags : std::uint8_t { shutdown, palette_mode };
 
-constexpr static uint8_t max_layers_v{32};
+constexpr static std::uint8_t max_layers_v{32};
 
-class Editor {
+class Editor final : public EditorState {
   public:
-	int const TILE_WIDTH{32};
-	int const NUM_TOOLS{6};
-	Editor(char** argv, WindowManager& window, fornani::data::ResourceFinder& finder);
-	void run();
-	void init(std::string const& load_path);
-	void handle_events(std::optional<sf::Event> event, sf::RenderWindow& win);
-	void logic();
+	Editor(fornani::automa::ServiceProvider& svc);
+	EditorStateType run(char** argv) override;
+	void handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) override;
+	void logic() override;
+	void render(sf::RenderWindow& win) override;
+	void gui_render(sf::RenderWindow& win);
 	void load();
 	bool save();
-	void render(sf::RenderWindow& win);
-	void gui_render(sf::RenderWindow& win);
 	void help_marker(char const* desc);
 	void export_layer_texture();
 	void center_map();
-	void launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2<float> player_position);
-	void shutdown(fornani::data::ResourceFinder& finder);
+	void launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2f player_position);
 	void reset_layers();
 	void delete_current_layer();
 	[[nodiscard]] auto control_pressed() const -> bool { return pressed_keys.test(PressedKeys::control); }
@@ -63,16 +55,14 @@ class Editor {
 	Canvas palette;
 
 	std::vector<sf::Texture> tileset_textures{};
-	sf::Texture tool_texture{};
 
-	sf::RectangleShape wallpaper{};
 	sf::RectangleShape target_shape{};
 	sf::RectangleShape selector{};
 
 	// for loading out layer pngs
 	sf::RenderTexture screencap{};
 
-	sf::Vector2<float> mouse_clicked_position{};
+	sf::Vector2f mouse_clicked_position{};
 
 	bool mouse_held{};
 	bool show_overlay{};
@@ -85,19 +75,15 @@ class Editor {
 	bool menu_hovered{};
 	bool popup_open{};
 	int active_layer{};
-	uint32_t selected_block{};
+	std::uint32_t selected_block{};
 
   private:
-	WindowManager* window;
-	fornani::data::ResourceFinder* finder;
+	sf::Sprite m_tool_sprite;
 	PopupHandler popup{};
 	std::optional<Clipboard> m_clipboard{};
 	std::unique_ptr<Tool> current_tool;
 	std::unique_ptr<Tool> secondary_tool;
-	util::BitFlags<PressedKeys> pressed_keys{};
 	util::BitFlags<GlobalFlags> flags{};
-	dj::Json user_data{};
-	char** args{};
 	Console console{};
 	struct {
 		sf::Color backdrop{};
@@ -113,11 +99,11 @@ class Editor {
 		std::vector<BackgroundType> backdrops{};
 	} m_themes{};
 	struct {
-		std::string style_str[static_cast<size_t>(StyleType::END)];
-		std::string bg_str[static_cast<size_t>(StyleType::END)];
+		std::string style_str[static_cast<std::size_t>(StyleType::END)];
+		std::string bg_str[static_cast<std::size_t>(StyleType::END)];
 		std::string layer_str[max_layers_v];
-		char const* styles[static_cast<size_t>(StyleType::END)];
-		char const* backdrops[static_cast<size_t>(Backdrop::END)];
+		char const* styles[static_cast<std::size_t>(StyleType::END)];
+		char const* backdrops[static_cast<std::size_t>(Backdrop::END)];
 		char const* layers[max_layers_v];
 	} m_labels{};
 	struct {
@@ -131,6 +117,8 @@ class Editor {
 		bool custom_position{};
 	} m_demo{};
 	int m_middleground{};
+
+	fornani::automa::ServiceProvider* m_services;
 };
 
 } // namespace pi

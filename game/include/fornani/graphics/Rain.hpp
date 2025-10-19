@@ -17,7 +17,7 @@ class Rain {
   public:
 	explicit Rain(int intensity = 1, float fall_speed = 0.999f, float slant = -1.f, bool snow = false, bool collision = true);
 	void update(automa::ServiceProvider& svc, world::Map& map);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 
   private:
 	std::vector<Droplet> drops{};
@@ -28,7 +28,7 @@ class Rain {
 	float sway{};
 	float z{};
 	bool collision{};
-	sf::Vector2<float> dimensions{};
+	sf::Vector2f dimensions{};
 	sf::RectangleShape raindrop{};
 };
 } // namespace fornani::vfx

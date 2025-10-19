@@ -1,0 +1,20 @@
+nani_add_sources(
+  Animator.cpp
+  Bed.cpp
+  Chest.cpp
+  CutsceneTrigger.cpp
+  Entity.cpp
+  EntitySet.cpp
+  Destructible.cpp
+        Inspectable.cpp
+        Light.cpp
+        NPC.cpp
+        Platform.cpp
+        Portal.cpp
+        SavePoint.cpp
+        Enemy.cpp
+        SwitchBlock.cpp
+        SwitchButton.cpp
+        TimerBlock.cpp
+        Vine.cpp
+)

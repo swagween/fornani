@@ -12,7 +12,7 @@ class Eyebot final : public Enemy {
 
   public:
 	explicit Eyebot(automa::ServiceProvider& svc);
-	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 
 	fsm::StateFunction state_function = std::bind(&Eyebot::update_idle, this);
 	fsm::StateFunction update_idle();

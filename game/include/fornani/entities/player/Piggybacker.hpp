@@ -1,21 +1,26 @@
 
 #pragma once
 
-#include "fornani/particle/Gravitator.hpp"
+#include <fornani/components/SteeringComponent.hpp>
+#include <fornani/graphics/Animatable.hpp>
 #include <string_view>
 
 namespace fornani::player {
+
 class Player;
-class Piggybacker {
+
+class Piggybacker : public Animatable {
   public:
-	Piggybacker(automa::ServiceProvider& svc, std::string_view label, sf::Vector2<float> position);
+	Piggybacker(automa::ServiceProvider& svc, std::string_view label, sf::Vector2f position);
 	void update(automa::ServiceProvider& svc, Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	void set_position(sf::Vector2<float> position) { gravitator.set_position(position); }
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void set_position(sf::Vector2f position) { m_steering.physics.position = position; }
+
+	[[nodiscard]] auto get_id() const -> int { return m_id; }
+
   private:
-	vfx::Gravitator gravitator{};
-	sf::Sprite sprite;
-	sf::Vector2<float> offset{};
+	int m_id{};
+	components::SteeringComponent m_steering{};
 };
 
 } // namespace fornani::player

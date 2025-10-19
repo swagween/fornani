@@ -28,12 +28,12 @@
 				"platformer_jump"		"#action_platformer_jump"
 				"platformer_shoot"		"#action_platformer_shoot"
 				"platformer_sprint"		"#action_platformer_sprint"
-				"platformer_shield"		"#action_platformer_shield"
+				"platformer_slide"		"#action_platformer_slide"
+				"platformer_dash"		"#action_platformer_dash"
 				"platformer_inspect"		"#action_platformer_inspect"
 				"platformer_arms_switch_left"		"#action_platformer_arms_switch_left"
 				"platformer_arms_switch_right"		"#action_platformer_arms_switch_right"
 				"platformer_open_inventory"		"#action_platformer_open_inventory"
-				"platformer_open_map"		"#action_platformer_open_map"
 				"platformer_toggle_pause"		"#action_platformer_toggle_pause"
 			}
 		}
@@ -49,6 +49,8 @@
 				"menu_down"		"#action_menu_down"
 				"menu_select"		"#action_menu_select"
 				"menu_cancel"		"#action_menu_cancel"
+				"menu_tab_left"		"#action_menu_tab_left"
+				"menu_tab_right"		"#action_menu_tab_right"
 			}
 			"Layers"
 			{
@@ -86,7 +88,7 @@
 			}
 			"Button"
 			{
-				"map_close"		"#action_map_close"
+				"map_movement"		"#action_map_movement"
 			}
 		}
 	}
@@ -102,15 +104,14 @@
 			"action_platformer_jump"		"Jump"
 			"action_platformer_shoot"		"Use Weapon"
 			"action_platformer_sprint"		"Sprint"
-			"action_platformer_shield"		"Shield"
+			"action_platformer_slide"		"Slide"
+			"action_platformer_dash"		"Dash"
 			"action_platformer_inspect"		"Inspect"
 			"action_platformer_arms_switch_left"		"Switch to Previous Weapon"
 			"action_platformer_arms_switch_right"		"Switch to Next Weapon"
 			"action_platformer_open_inventory"		"Open Inventory"
 			"action_platformer_toggle_pause"		"Pause"
-			"action_platformer_open_map"		"Open Map"
-			"platformer_open_map"		"Open Map"
-			"platformer_toggle_pause"		"Pause/Unpause"
+			"action_platformer_movement"		"Horizontal Movement"
 			"set_menu"		"Menu Controls"
 			"action_menu_left"		"Left"
 			"action_menu_right"		"Right"
@@ -118,11 +119,12 @@
 			"action_menu_down"		"Down"
 			"action_menu_select"		"Select"
 			"action_menu_cancel"		"Cancel"
+			"action_menu_tab_left"		"Tab Left"
+			"action_menu_tab_right"	"Tab Right"
 			"layer_inventory"		"Inventory"
 			"action_inventory_close"		"Close Inventory"
 			"layer_map"		"Map"
 			"action_map_movement"		"Pan Map"
-			"action_map_close"		"Close Map"
 		}
 	}
 	"group"
@@ -189,7 +191,7 @@
 					{
 						"bindings"
 						{
-							"binding"		"game_action Platformer platformer_open_inventory, , "
+							"binding"		"game_action Platformer platformer_dash, , "
 						}
 					}
 				}
@@ -215,7 +217,7 @@
 					{
 						"bindings"
 						{
-							"binding"		"game_action Platformer platformer_sprint, , "
+							"binding"		"game_action Platformer platformer_slide, , "
 						}
 						"settings"
 						{
@@ -245,7 +247,7 @@
 					{
 						"bindings"
 						{
-							"binding"		"game_action Platformer platformer_shoot, #action_platformer_shoot, , "
+							"binding"		"game_action Platformer platformer_shoot, #action_platformer_dash, , "
 						}
 						"settings"
 						{
@@ -265,7 +267,7 @@
 					{
 						"bindings"
 						{
-							"binding"		"game_action Platformer platformer_shoot, #action_platformer_shoot, , "
+							"binding"		"game_action Platformer platformer_shoot, #action_platformer_dash, , "
 						}
 						"settings"
 						{
@@ -339,36 +341,6 @@
 		"description"		""
 		"inputs"
 		{
-		}
-	}
-	"group"
-	{
-		"id"		"9"
-		"mode"		"four_buttons"
-		"name"		""
-		"description"		""
-		"inputs"
-		{
-			"button_y"
-			{
-				"activators"
-				{
-					"Full_Press"
-					{
-						"bindings"
-						{
-							"binding"		"game_action Menu_Inventory inventory_close, , "
-						}
-					}
-				}
-				"disabled_activators"
-				{
-				}
-			}
-		}
-		"settings"
-		{
-			"layer"		"1"
 		}
 	}
 	"group"
@@ -460,13 +432,6 @@
 							"binding"		"game_action Platformer platformer_up, , "
 						}
 					}
-					"Full_Press"
-					{
-						"bindings"
-						{
-							"binding"		"game_action Platformer platformer_inspect, , "
-						}
-					}
 				}
 				"disabled_activators"
 				{
@@ -481,13 +446,6 @@
 						"bindings"
 						{
 							"binding"		"game_action Platformer platformer_down, , "
-						}
-					}
-					"Full_Press"
-					{
-						"bindings"
-						{
-							"binding"		"game_action Platformer platformer_inspect, , "
 						}
 					}
 				}
@@ -599,22 +557,6 @@
 						"bindings"
 						{
 							"binding"		"game_action Platformer platformer_left, , "
-						}
-					}
-				}
-				"disabled_activators"
-				{
-				}
-			}
-			"click"
-			{
-				"activators"
-				{
-					"Full_Press"
-					{
-						"bindings"
-						{
-							"binding"		"game_action Platformer platformer_down, , "
 						}
 					}
 				}
@@ -739,36 +681,7 @@
 		"gameactions"
 		{
 			"Menu"		"Menu_Map map_movement"
-		}
-	}
-	"group"
-	{
-		"id"		"25"
-		"mode"		"single_button"
-		"name"		""
-		"description"		""
-		"inputs"
-		{
-			"click"
-			{
-				"activators"
-				{
-					"Full_Press"
-					{
-						"bindings"
-						{
-							"binding"		"game_action Menu_Map map_close, , "
-						}
-					}
-				}
-				"disabled_activators"
-				{
-				}
-			}
-		}
-		"settings"
-		{
-			"layer"		"1"
+			"Platformer"		"platformer_movement"
 		}
 	}
 	"group"
@@ -813,7 +726,7 @@
 					{
 						"bindings"
 						{
-							"binding"		"game_action Platformer platformer_open_map, , "
+							"binding"		"game_action Platformer platformer_open_inventory, , "
 						}
 					}
 				}
@@ -855,7 +768,7 @@
 					{
 						"bindings"
 						{
-							"binding"		"game_action Platformer platformer_open_map, , "
+							"binding"		"game_action Platformer platformer_open_inventory, , "
 						}
 					}
 				}
@@ -985,7 +898,7 @@
 					{
 						"bindings"
 						{
-							"binding"		"game_action Menu_Map map_close, , "
+							"binding"		"game_action Menu_Inventory inventory_close, , "
 						}
 					}
 				}

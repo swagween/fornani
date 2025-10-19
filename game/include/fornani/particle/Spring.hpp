@@ -1,10 +1,9 @@
 
 #pragma once
 
-
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/components/CircleSensor.hpp"
 #include <optional>
+#include "fornani/components/CircleSensor.hpp"
+#include "fornani/components/PhysicsComponent.hpp"
 
 namespace fornani::vfx {
 struct SpringParameters {
@@ -18,20 +17,21 @@ class Spring {
   public:
 	Spring() = default;
 	Spring(SpringParameters params);
-	Spring(SpringParameters params, sf::Vector2<float> anchor, sf::Vector2<float> bob);
+	Spring(SpringParameters params, sf::Vector2f anchor, sf::Vector2f bob);
 	void calculate();
-	void update(automa::ServiceProvider& svc, float custom_grav = 1.5f, sf::Vector2<float> external_force = {}, bool loose = false, bool sag = false);
-	void render(sf::RenderWindow& win, sf::Vector2<float> cam);
+	void update(automa::ServiceProvider& svc, float custom_grav = 1.5f, sf::Vector2f external_force = {}, bool loose = false, bool sag = false);
+	void simulate(float custom_grav = 1.5f, bool loose = false, bool sag = false);
+	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void calculate_force();
 	void reverse_anchor_and_bob();
-	void set_anchor(sf::Vector2<float> point);
-	void set_bob(sf::Vector2<float> point);
+	void set_anchor(sf::Vector2f point);
+	void set_bob(sf::Vector2f point);
 	void set_rest_length(float point);
 	void set_force(float force);
 	void lock() { locked = true; };
-	sf::Vector2<float>& get_bob();
-	sf::Vector2<float>& get_anchor();
-	sf::Vector2<float> get_rope(int index);
+	sf::Vector2f& get_bob();
+	sf::Vector2f& get_anchor();
+	sf::Vector2f get_rope(int index);
 	SpringParameters& get_params() { return params; }
 	components::CircleSensor sensor{8.f};
 	std::optional<Spring*> cousin{};
@@ -42,23 +42,23 @@ class Spring {
 
 	struct {
 		float extension{};
-		sf::Vector2<float> spring_force{};
+		sf::Vector2f spring_force{};
 		components::PhysicsComponent bob_physics{};
 		components::PhysicsComponent anchor_physics{};
 	} variables{};
 
   private:
-	sf::Vector2<float> anchor{};
-	sf::Vector2<float> bob{};
-	sf::Vector2<float> coil{};
+	sf::Vector2f anchor{};
+	sf::Vector2f bob{};
+	sf::Vector2f coil{};
 	float spring_max{64.f};
 	bool locked{};
 
 	SpringParameters params{};
 
-	//drawables for debugging
+	// drawables for debugging
 	sf::CircleShape bob_shape{};
 	sf::CircleShape anchor_shape{};
 };
 
-} // namespace vfx
+} // namespace fornani::vfx

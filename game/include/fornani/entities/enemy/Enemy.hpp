@@ -1,16 +1,19 @@
 #pragma once
 
-#include "fornani/entities/Entity.hpp"
-#include "fornani/utils/Collider.hpp"
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/entities/animation/Animation.hpp"
-#include "fornani/utils/StateFunction.hpp"
-#include "fornani/utils/Math.hpp"
-#include "fornani/entities/packages/Health.hpp"
-#include "fornani/entities/packages/WeaponPackage.hpp"
-#include "fornani/entities/player/Indicator.hpp"
-#include "fornani/audio/Soundboard.hpp"
-#include "fornani/io/Logger.hpp"
+#include <fornani/audio/Soundboard.hpp>
+#include <fornani/entities/Entity.hpp>
+#include <fornani/entities/Mobile.hpp>
+#include <fornani/entities/animation/StateMachine.hpp>
+#include <fornani/entities/packages/FloatingPart.hpp>
+#include <fornani/entities/packages/Health.hpp>
+#include <fornani/entities/packages/WeaponPackage.hpp>
+#include <fornani/graphics/Animatable.hpp>
+#include <fornani/graphics/Indicator.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Math.hpp>
+#include <fornani/utils/Polymorphic.hpp>
+#include <fornani/utils/StateFunction.hpp>
 #include <string_view>
 
 namespace fornani::player {
@@ -21,16 +24,40 @@ namespace fornani::world {
 class Map;
 }
 
-namespace fornani::arns {
+namespace fornani::arms {
 class Projectile;
 }
 
 namespace fornani::enemy {
 
-enum class GeneralFlags : uint8_t { mobile, gravity, player_collision, hurt_on_contact, map_collision, post_death_render, no_loot, custom_sounds, uncrushable, foreground, spawned, transcendent, rare_drops, permadeath };
-enum class StateFlags : uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible };
-enum class Triggers : uint8_t { hostile, alert };
-enum class Variant : uint8_t { beast, soldier, elemental, worker, guardian };
+enum class EnemyChannel : std::uint8_t { standard, hurt_1, hurt_2, invincible, extra_1, extra_2 };
+enum class EnemySize : std::uint8_t { tiny, small, medium, large, giant };
+enum class GeneralFlags : std::uint8_t {
+	mobile,
+	gravity,
+	player_collision,
+	hurt_on_contact,
+	map_collision,
+	post_death_render,
+	no_loot,
+	custom_sounds,
+	uncrushable,
+	foreground,
+	spawned,
+	transcendent,
+	rare_drops,
+	permadeath,
+	has_invincible_channel,
+	invincible_secondary,
+	spike_collision,
+	sturdy,
+	custom_channels,
+	semipermanent
+};
+enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, simple_physics, no_shake, out_of_zone, no_slowdown, intangible };
+enum class Triggers : std::uint8_t { hostile, alert };
+enum class Variant : std::uint8_t { beast, soldier, elemental, worker, guardian };
+
 struct Attributes {
 	float base_hp{};
 	float base_damage{};
@@ -39,6 +66,8 @@ struct Attributes {
 	sf::Vector2<int> drop_range{};
 	int rare_drop_id{};
 	int respawn_distance{};
+	float gravity{};
+	EnemySize size{EnemySize::medium};
 };
 
 struct Flags {
@@ -47,75 +76,85 @@ struct Flags {
 	util::BitFlags<Triggers> triggers{};
 };
 
-class Enemy : public entity::Entity {
+class Enemy : public Mobile {
   public:
 	Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned = false, int variant = 0, sf::Vector2<int> start_direction = {-1, 0});
+
 	void set_external_id(std::pair<int, sf::Vector2<int>> code);
-	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
-	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
-	virtual void unique_update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] player::Player& player){};
-	virtual void unique_render([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win, [[maybe_unused]] sf::Vector2<float> cam){};
-	virtual void gui_render([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win, [[maybe_unused]] sf::Vector2<float> cam){};
+
+	virtual void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
+	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	virtual void gui_render([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win, [[maybe_unused]] sf::Vector2f cam) {};
+	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+
+	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+
 	void handle_player_collision(player::Player& player) const;
 	void handle_collision(shape::Collider& other);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	void on_crush(world::Map& map);
-	[[nodiscard]] auto hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
-	[[nodiscard]] auto alert() const -> bool { return flags.state.test(StateFlags::alert); }
-	[[nodiscard]] auto is_hurt() const -> bool { return flags.state.test(StateFlags::hurt); }
+	bool seek_home(world::Map& map);
+	void set_channel(EnemyChannel to) { Animatable::set_channel(static_cast<int>(to)); }
+
+	[[nodiscard]] auto is_hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
+	[[nodiscard]] auto is_alert() const -> bool { return flags.state.test(StateFlags::alert); }
+	[[nodiscard]] auto is_hurt() const -> bool { return hurt_effect.running(); }
 	[[nodiscard]] auto hostility_triggered() const -> bool { return flags.triggers.test(Triggers::hostile); }
 	[[nodiscard]] auto alertness_triggered() const -> bool { return flags.triggers.test(Triggers::alert); }
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
 	[[nodiscard]] auto get_external_id() const -> int { return metadata.external_id; }
 	[[nodiscard]] auto get_collider() -> shape::Collider& { return collider; }
-	[[nodiscard]] auto get_secondary_collider() -> shape::Collider& { return secondary_collider; }
+	[[nodiscard]] auto get_secondary_collider() -> std::optional<shape::Collider>& { return secondary_collider; }
 	[[nodiscard]] auto died() const -> bool { return health.is_dead(); }
-	[[nodiscard]] auto just_died() const -> bool { return health.is_dead() && post_death.get_cooldown() == afterlife; }
+	[[nodiscard]] auto just_died() const -> bool { return health.is_dead() && post_death.get() == afterlife; }
 	[[nodiscard]] auto gone() const -> bool { return post_death.is_complete(); }
 	[[nodiscard]] auto player_collision() const -> bool { return flags.general.test(GeneralFlags::player_collision); }
+	[[nodiscard]] auto has_map_collision() const -> bool { return flags.general.test(GeneralFlags::map_collision); }
 	[[nodiscard]] auto spawn_loot() const -> bool { return !flags.general.test(GeneralFlags::no_loot); }
 	[[nodiscard]] auto is_foreground() const -> bool { return flags.general.test(GeneralFlags::foreground); }
 	[[nodiscard]] auto is_transcendent() const -> bool { return flags.general.test(GeneralFlags::transcendent); }
 	[[nodiscard]] auto permadeath() const -> bool { return flags.general.test(GeneralFlags::permadeath); }
-	[[nodiscard]] bool player_behind(player::Player& player) const;
-	void set_position(sf::Vector2<float> pos) {
+
+	void intangible_start(int time) { intangibility.start(time); }
+	void set_position(sf::Vector2f pos) {
 		collider.physics.position = pos;
 		collider.sync_components();
 		health_indicator.set_position(pos);
 	}
-	void set_position_from_scaled(sf::Vector2<float> pos);
+	void cancel_shake() {
+		energy = {};
+		m_random_offset = {};
+	}
+
+	void set_position_from_scaled(sf::Vector2f pos);
 	void hurt() { flags.state.set(StateFlags::hurt); }
 	void shake() { energy = hit_energy; }
 	void stop_shaking() { flags.state.reset(StateFlags::shaking); }
 
 	entity::Health health{};
-	player::Indicator health_indicator;
-	anim::Animation animation{};
-	struct {
-		dir::Direction actual{};
-		dir::Direction desired{};
-		dir::Direction movement{};
-	} directions{};
+	graphics::Indicator health_indicator;
+
+	void debug();
 
   protected:
-	std::string_view label{};
-	shape::Collider collider{};
-	shape::Collider secondary_collider{};
-	std::vector<anim::Parameters> animation_parameters{};
+	std::string label{};
+	std::optional<shape::Collider> secondary_collider{};
 	Flags flags{};
 	Attributes attributes{};
 	util::Cooldown post_death{};
 	util::Cooldown hitstun{};
+	util::Cooldown impulse{};
+	util::Cooldown intangibility{};
 	int afterlife{200};
 
 	util::Cooldown hurt_effect{};
 
+	EnemyChannel m_custom_channel{};
+
 	struct {
 		int id{};
-		std::string_view variant{};
+		int variant{};
 		int external_id{};
 	} metadata{};
 
@@ -124,10 +163,10 @@ class Enemy : public entity::Entity {
 		std::vector<shape::Shape> hurtboxes{};
 		shape::Shape alert_range{};
 		shape::Shape hostile_range{};
+		shape::Shape home_detector{};
 	} physical{};
 
 	struct {
-		sf::Sprite sprite;
 		int effect_type{};
 		int effect_size{};
 	} visual;
@@ -141,7 +180,12 @@ class Enemy : public entity::Entity {
 	float energy{};
 	float dampen{0.1f};
 	float hit_energy{6.f};
+
 	fornani::io::Logger m_logger{"Enemy"};
+
+  private:
+	sf::Vector2f m_random_offset{};
+	sf::Vector2f m_native_offset{};
 };
 
 } // namespace fornani::enemy

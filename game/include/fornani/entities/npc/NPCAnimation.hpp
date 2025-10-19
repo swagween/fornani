@@ -1,14 +1,10 @@
 
 #pragma once
 
+#include <djson/json.hpp>
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/utils/StateFunction.hpp"
-#include <string_view>
-#define NPC_BIND(f) std::bind(&NPCAnimation::f, this)
-
-namespace fornani::automa {
-struct ServiceProvider;
-}
+#define NPCANIM_BIND(f) std::bind(&NPCAnimation::f, this)
 
 namespace fornani::npc {
 
@@ -17,8 +13,7 @@ enum class NPCCommunication { sprite_flip };
 
 class NPCAnimation {
   public:
-	NPCAnimation() = default;
-	NPCAnimation(automa::ServiceProvider& svc, int id);
+	NPCAnimation(dj::Json const& in_data);
 	void update();
 	anim::Parameters NPC_idle{};
 	anim::Parameters NPC_walk{};
@@ -36,4 +31,4 @@ class NPCAnimation {
 	std::string_view m_label{};
 };
 
-} // namespace npc
+} // namespace fornani::npc

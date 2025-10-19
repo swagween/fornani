@@ -20,17 +20,17 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class PlatformAttributes : uint8_t { sticky, loop, repeating, player_activated, player_controlled, up_down, side_to_side };
-enum class PlatformState : uint8_t { moving };
+enum class PlatformAttributes : std::uint8_t { sticky, loop, repeating, player_activated, player_controlled, up_down, side_to_side, ease };
+enum class PlatformState : std::uint8_t { moving };
 
 class Platform : public shape::Collider {
   public:
-	Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float extent, std::string_view specifications, float start_point = 0.f, int style = 0);
+	Platform(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector2f dimensions, float extent, std::string_view specifications, float start_point = 0.f, int style = 0);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	void switch_directions();
-	dir::Direction direction{};
+	Direction direction{};
 	util::Counter counter{};
 
   private:
@@ -48,15 +48,15 @@ class Platform : public shape::Collider {
 		util::BitFlags<PlatformState> state{};
 	} flags{};
 
-	dir::Direction native_direction{};
+	Direction native_direction{};
 
 	sf::ConvexShape track_shape{};
-	std::vector<sf::Vector2<float>> track{};
+	std::vector<sf::Vector2f> track{};
 	float path_length{};
 	float path_position{};
 	sf::Sprite sprite;
 	anim::Animation animation{};
-	util::Cooldown switch_up{3};
+	util::Cooldown switch_up;
 	int style{};
 	int state{};
 	sf::Vector2<int> offset{};

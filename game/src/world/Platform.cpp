@@ -1,5 +1,5 @@
 #include "fornani/world/Platform.hpp"
-#include <cmath>
+#include <fornani/utils/Math.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -7,8 +7,8 @@
 
 namespace fornani::world {
 
-Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf::Vector2<float> dimensions, float extent, std::string_view specifications, float start_point, int style)
-	: shape::Collider(dimensions, position), path_position(start_point), sprite{svc.assets.platform_lookup.at(style)} {
+Platform::Platform(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector2f dimensions, float extent, std::string_view specifications, float start_point, int style)
+	: shape::Collider(dimensions, position), path_position(start_point), sprite{svc.assets.get_texture("platforms")}, switch_up{3} {
 
 	auto const& in_data = svc.data.platform[specifications];
 	if (in_data["sticky"].as_bool()) { flags.attributes.set(PlatformAttributes::sticky); }
@@ -16,10 +16,11 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 	if (in_data["repeating"].as_bool()) { flags.attributes.set(PlatformAttributes::repeating); }
 	if (in_data["player_activated"].as_bool()) { flags.attributes.set(PlatformAttributes::player_activated); }
 	if (in_data["player_controlled"].as_bool()) { flags.attributes.set(PlatformAttributes::player_controlled); }
+	if (in_data["ease"].as_bool()) { flags.attributes.set(PlatformAttributes::ease); }
 
 	metrics.speed = in_data["speed"].as<float>();
 
-	for (auto& point : in_data["track"].array_view()) {
+	for (auto& point : in_data["track"].as_array()) {
 		track.push_back({position.x + (point[0].as<float>() * extent), position.y + (point[1].as<float>() * extent)});
 		if (point[0].as<float>() > 0.f) { flags.attributes.set(PlatformAttributes::side_to_side); }
 		if (point[1].as<float>() > 0.f) { flags.attributes.set(PlatformAttributes::up_down); }
@@ -28,7 +29,7 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 	if (flags.attributes.test(PlatformAttributes::loop)) { track.push_back(track.at(0)); }
 
 	for (std::size_t x = 0; x < track.size() - 1; ++x) {
-		path_length += compute_length(track[x + 1] - track[x]);
+		path_length += (track[x + 1] - track[x]).length();
 		track_shape.setPoint(x, track[x] + dimensions * 0.5f);
 	}
 
@@ -36,35 +37,58 @@ Platform::Platform(automa::ServiceProvider& svc, sf::Vector2<float> position, sf
 	track_shape.setOutlineColor(sf::Color(135, 132, 149, 140));
 	track_shape.setOutlineThickness(2);
 
-	direction.lr = dir::LR::neutral;
-	direction.und = dir::UND::neutral;
+	direction.lnr = LNR::neutral;
+	direction.und = UND::neutral;
 
 	// for collision handling
 	if (track.size() > 1) {
-		native_direction.lr = flags.attributes.test(PlatformAttributes::side_to_side) ? dir::LR::left : dir::LR::neutral;
-		native_direction.und = flags.attributes.test(PlatformAttributes::up_down) ? dir::UND::down : dir::UND::neutral;
+		native_direction.lnr = flags.attributes.test(PlatformAttributes::side_to_side) ? LNR::left : LNR::neutral;
+		native_direction.und = flags.attributes.test(PlatformAttributes::up_down) ? UND::down : UND::neutral;
 	}
 
 	counter.start();
 
 	// set visuals
 	animation.set_params({0, 4, 16, -1});
-	auto scaled_dim = dimensions / svc.constants.cell_size;
+	auto scaled_dim = dimensions / constants::f_cell_size;
 	if (scaled_dim.x == 1) { offset = {0, 0}; }
-	if (scaled_dim.x == 2) { offset = {32, 0}; }
-	if (scaled_dim.x == 3) { offset = {0, 32}; }
-	if (scaled_dim.y == 2) { offset = {0, 64}; }
-	if (scaled_dim.y == 3) { offset = {0, 128}; }
+	if (scaled_dim.x == 2) { offset = {16, 0}; }
+	if (scaled_dim.x == 3) { offset = {0, 16}; }
+	if (scaled_dim.y == 2) { offset = {0, 32}; }
+	if (scaled_dim.y == 3) { offset = {0, 64}; }
 	switch_up.start();
+	sprite.setScale(constants::f_scale_vec);
+
+	auto edge_start = 0.f;
+	for (std::size_t x = 0; x < track.size() - 1; ++x) {
+		auto const start = track[x];
+		auto const end = track[x + 1];
+		auto const len = (end - start).length();
+		if (auto const edge_end = edge_start + (len / path_length); edge_end >= path_position) {
+			constexpr auto skip_value{32.f};
+			if (flags.attributes.test(PlatformAttributes::ease)) {
+				physics.position.x = util::ease_in_out(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));
+				physics.position.y = util::ease_in_out(start.y, end.y, (path_position - edge_start) / (edge_end - edge_start));
+			} else {
+				physics.position.x = std::lerp(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));
+				physics.position.y = std::lerp(start.y, end.y, (path_position - edge_start) / (edge_end - edge_start));
+			}
+		}
+	}
+	sync_components();
 }
 
 void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	auto const old_position = physics.position;
+	Collider::update(svc);
 	auto edge_start = 0.f;
-	player.collider.handle_collider_collision(*this);
+	player.collider.handle_collider_collision(*this, false, true);
 	if (player.collider.jumped_into() && physics.velocity.y > 0.f) { player.collider.physics.apply_force(physics.velocity * 8.f); }
 	player.on_crush(map);
-	for (auto const& enemy : map.enemy_catalog.enemies) { enemy->on_crush(map); }
+	for (auto const& enemy : map.enemy_catalog.enemies) {
+		if (enemy->has_map_collision()) { enemy->get_collider().handle_collider_collision(*this); }
+		enemy->on_crush(map);
+	}
 	switch_up.update();
 
 	// map changes
@@ -81,40 +105,44 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	for (auto& block : map.switch_blocks) {
 		if (block.on()) { handle_collider_collision(block.get_hurtbox()); }
 	}
-	for (auto& platform : map.platforms) {
-		if (&platform != this && native_direction.lr != platform.native_direction.lr) { handle_collider_collision(platform.hurtbox); }
-	}
-	if (flags.state.test(PlatformState::moving)) {
-		if (native_direction.lr == dir::LR::left) {
-			if (Collider::flags.external_state.consume(shape::ExternalState::horiz_collider_collision) && !switch_up.running()) {
-				switch_directions();
-				switch_up.start();
-			}
-		} else {
-			if (Collider::flags.external_state.consume(shape::ExternalState::vert_collider_collision) && !switch_up.running()) {
-				switch_directions();
-				switch_up.start();
-			}
+	// handle platform collisions
+	if (!switch_up.running()) {
+		for (auto& platform : map.platforms) {
+			if (&platform != this && native_direction.lnr != platform.native_direction.lnr) { handle_collider_collision(platform.hurtbox, true); }
 		}
 	}
 	// init direction to oppose player
-	direction.lr = player.controller.direction.lr == dir::LR::left ? dir::LR::right : dir::LR::left;
+	direction.lnr = player.controller.direction.lnr == LNR::left ? LNR::right : LNR::left;
+
+	if (flags.state.test(PlatformState::moving) && !switch_up.running()) {
+		if (native_direction.lnr == LNR::left) {
+			if (Collider::flags.external_state.consume(shape::ExternalState::horiz_collider_collision)) { switch_directions(); }
+		} else {
+			if (Collider::flags.external_state.consume(shape::ExternalState::vert_collider_collision)) { switch_directions(); }
+		}
+	}
 
 	for (std::size_t x = 0; x < track.size() - 1; ++x) {
 		auto const start = track[x];
 		auto const end = track[x + 1];
-		auto const len = compute_length(end - start);
+		auto const len = (end - start).length();
 		if (auto const edge_end = edge_start + (len / path_length); edge_end >= path_position) {
 			constexpr auto skip_value{16.f};
-			physics.position.x = std::lerp(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));
-			physics.position.y = std::lerp(start.y, end.y, (path_position - edge_start) / (edge_end - edge_start));
+			if (flags.attributes.test(PlatformAttributes::ease)) {
+				physics.position.x = util::ease_in_out(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));
+				physics.position.y = util::ease_in_out(start.y, end.y, (path_position - edge_start) / (edge_end - edge_start));
+			} else {
+				physics.position.x = std::lerp(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));
+				physics.position.y = std::lerp(start.y, end.y, (path_position - edge_start) / (edge_end - edge_start));
+			}
 			physics.velocity = physics.position - old_position;
 			physics.real_velocity = physics.velocity;
 			// set direction
-			direction.lr = physics.velocity.x > 0.0f ? dir::LR::right : dir::LR::left;
-			direction.und = physics.velocity.y > 0.0f ? dir::UND::down : dir::UND::up;
+			direction.lnr = physics.velocity.x > 0.0f ? LNR::right : LNR::left;
+			direction.und = physics.velocity.y > 0.0f ? UND::down : UND::up;
 
-			if (player.collider.jumpbox.overlaps(bounding_box) && !player.collider.perma_grounded() && flags.attributes.test(PlatformAttributes::sticky)) {
+			if (player.collider.jumpbox.overlaps(bounding_box) && !player.collider.perma_grounded() && flags.attributes.test(PlatformAttributes::sticky) &&
+				!(player.collider.has_left_wallslide_collision() || player.collider.has_right_wallslide_collision())) {
 				if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) { player.collider.physics.forced_momentum = physics.position - old_position; }
 			}
 			for (auto& pushable : map.pushables) {
@@ -127,15 +155,15 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			edge_start = edge_end;
 		}
 	}
-
-	if (player.controller.direction.lr != direction.lr && flags.attributes.test(PlatformAttributes::player_controlled) && player.collider.jumpbox.overlaps(bounding_box)) { switch_directions(); }
+	if (player.controller.direction.lnr != direction.lnr && flags.attributes.test(PlatformAttributes::player_controlled) && player.collider.jumpbox.overlaps(bounding_box)) { switch_directions(); }
 	if (flags.attributes.test(PlatformAttributes::player_controlled)) {
 		state = 2;
 		if (player.collider.jumpbox.overlaps(bounding_box)) {
-			switch (direction.lr) {
-			case dir::LR::left: state = 3; break;
-			case dir::LR::right: state = 4; break;
-			default: NANI_LOG_WARN(m_logger, "Unknown direction was passed. Did you forget to add a case to the switch?"); break;
+			switch (direction.lnr) {
+			case LNR::left: state = 3; break;
+			case LNR::right: state = 4; break;
+			case LNR::neutral: break;
+			default: break;
 			}
 		}
 	}
@@ -165,13 +193,13 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	animation.update();
 }
 
-void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	track_shape.setPosition(-cam);
 	sprite.setPosition(physics.position - cam);
-	auto const u = state * 96;
-	auto const v = animation.get_frame() * 224;
+	auto const u = state * 48;
+	auto const v = animation.get_frame() * 112;
 	auto lookup = sf::Vector2<int>{u, v} + offset;
-	sprite.setTextureRect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(dimensions)));
+	sprite.setTextureRect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(dimensions) / 2));
 	if (svc.greyblock_mode()) {
 		win.draw(track_shape);
 		Collider::render(win, cam);
@@ -182,11 +210,11 @@ void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 
 void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
 	if (proj.transcendent()) { return; }
-	if (proj.get_bounding_box().overlaps(bounding_box)) {
+	if (proj.get_collider().collides_with(bounding_box)) {
 		if (!proj.destruction_initiated()) {
-			map.effects.push_back(entity::Effect(svc, proj.get_destruction_point() + proj.get_position(), physics.velocity * 10.f, proj.effect_type(), 2));
-			if (proj.get_direction().lr == dir::LR::neutral) { map.effects.back().rotate(); }
-			svc.soundboard.flags.world.set(audio::World::wall_hit);
+			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position(), physics.apparent_velocity()));
+			if (proj.get_direction().lnr == LNR::neutral) { map.effects.back().rotate(); }
+			svc.soundboard.flags.world.set(audio::World::hard_hit);
 		}
 		proj.destroy(false);
 	}
@@ -195,6 +223,7 @@ void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proje
 void Platform::switch_directions() {
 	std::ranges::reverse(track);
 	path_position = 1.0f - path_position;
+	switch_up.start();
 }
 
 } // namespace fornani::world

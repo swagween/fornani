@@ -2,8 +2,9 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "fornani/components/PhysicsComponent.hpp"
+#include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/graphics/CameraController.hpp"
-#include "fornani/particle/Gravitator.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
 
@@ -13,50 +14,42 @@ struct ServiceProvider;
 
 namespace fornani {
 
-constexpr float CAM_FRICTION = 0.89f;
-constexpr float CAM_MASS = 1.0f;
-constexpr float CAM_GRAV = 0.09f;
+struct CameraShake {
+	util::Cooldown timer{};
+	util::Cooldown dampen{};
+	graphics::ShakeProperties properties{};
+};
 
-constexpr int CX_OFFSET = 60;
-constexpr int CY_OFFSET = 60;
-
-constexpr int border_buffer{32};
-
-enum class CamFlags : uint8_t { shake };
+enum class CameraFlags : std::uint8_t { shake };
 
 class Camera {
   public:
 	Camera();
 	void update(automa::ServiceProvider& svc);
-	void restrict_movement(sf::Vector2<float>& bounds);
-	void fix_horizontally(sf::Vector2<float> map_dim);
-	void fix_vertically(sf::Vector2<float> map_dim);
-	void set_position(sf::Vector2<float> new_pos);
-	void center(sf::Vector2<float> new_position);
-	void force_center(sf::Vector2<float> new_position);
+	void set_bounds(sf::Vector2f to_bounds);
+	void center(sf::Vector2f new_position, float const force_multiplier = 1.f);
+	void force_center(sf::Vector2f new_position);
 	void begin_shake();
 
-	[[nodiscard]] auto get_observed_velocity() const -> sf::Vector2<float> { return observed_velocity; }
-	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return display_position; }
-	[[nodiscard]] auto within_frame(int x, int y) const -> bool { return (x > 0) && (x < screen_dimensions.x + border_buffer) && (y > 0) && (y < screen_dimensions.y + border_buffer); }
+	[[nodiscard]] auto get_observed_velocity() const -> sf::Vector2f { return m_physics.apparent_velocity(); }
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_final_position; }
+	[[nodiscard]] auto within_frame(sf::Vector2f point) const -> bool { return m_bounds.contains(point); }
 
   private:
-	vfx::Gravitator gravitator{};
-	sf::Vector2<int> screen_dimensions{};
-	sf::RectangleShape bounding_box{};
-	sf::Vector2<float> display_position{};
-	sf::Vector2<float> observed_velocity{};
-	sf::Vector2<float> previous_position{};
-	sf::Vector2<float> target{};
-	sf::Vector2<float> map_bounds_offset{};
-	util::BitFlags<CamFlags> flags{};
-	float grav_force{CAM_GRAV};
+	[[nodiscard]] auto get_clamped_position(sf::Vector2f const position) const -> sf::Vector2f;
+	components::PhysicsComponent m_physics{};
+	components::SteeringBehavior m_steering{};
+	float m_steering_force{};
+	sf::FloatRect m_bounds{}; // map bounds
+	sf::FloatRect m_view{};	  // window view (screen dimensions)
 
-	struct {
-		util::Cooldown timer{};
-		util::Cooldown dampen{};
-		graphics::ShakeProperties properties{};
-	} shake{};
+	sf::Vector2f m_final_position{};
+	sf::Vector2f m_forced_target_position{}; // forced target, for use when camera is shaking or force-focused
+	sf::Vector2f m_target_position{};		 // standard target, experiences bounds restrictions
+
+	util::BitFlags<CameraFlags> m_flags{};
+	graphics::CameraState m_state{};
+	CameraShake m_shake{};
 };
 
 } // namespace fornani

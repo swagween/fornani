@@ -1,10 +1,12 @@
 
 #pragma once
 
+#include <fornani/gui/StatusBar.hpp>
+#include <fornani/gui/WidgetBar.hpp>
+#include <optional>
 #include <string>
-#include "fornani/utils/BitFlags.hpp"
 #include "fornani/particle/Gravitator.hpp"
-#include "WidgetBar.hpp"
+#include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Stopwatch.hpp"
 
 namespace fornani::automa {
@@ -22,15 +24,15 @@ class HUD {
   public:
 	HUD(automa::ServiceProvider& svc, player::Player& player);
 	void update(automa::ServiceProvider& svc, player::Player& player);
-	void render(player::Player& player, sf::RenderWindow& win);
+	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win);
 	void orient(automa::ServiceProvider& svc, player::Player& player, bool file_preview = false);
 
   private:
 	struct {
-		sf::Vector2<float> hp{};
-		sf::Vector2<float> orb{};
-		sf::Vector2<float> ammo{};
-		sf::Vector2<float> gun{};
+		sf::Vector2f hp{};
+		sf::Vector2f orb{};
+		sf::Vector2f ammo{};
+		sf::Vector2f gun{};
 	} origins{};
 
 	struct {
@@ -39,17 +41,19 @@ class HUD {
 		sf::Sprite pointer;
 	} sprites;
 
-	WidgetBar health_bar{};
-	WidgetBar ammo_bar{};
+	StatusBar m_reload_bar;
+	WidgetBar health_bar;
+	std::optional<WidgetBar> ammo_bar{};
 	std::string digits{};
 
 	sf::Vector2<int> heart_dimensions{18, 18};
-	sf::Vector2<float> f_heart_dimensions{18.f, 18.f};
+	sf::Vector2f f_heart_dimensions{18.f, 18.f};
 	sf::Vector2<int> orb_text_dimensions{18, 16};
 	sf::Vector2<int> ammo_dimensions{10, 28};
-	sf::Vector2<float> f_ammo_dimensions{10.f, 28.f};
-	sf::Vector2<int> gun_dimensions{66, 18};
+	sf::Vector2f f_ammo_dimensions{10.f, 28.f};
+	sf::Vector2<int> gun_dimensions{33, 9};
 	sf::Vector2<int> pointer_dimensions{14, 10};
+	sf::Vector2f corner_pad{};
 
 	int PAD{4};
 	int HP_pad{2};
@@ -62,4 +66,4 @@ class HUD {
 	int orb_label_index{10};
 };
 
-} // namespace gui
+} // namespace fornani::gui

@@ -12,18 +12,21 @@ class Player;
 }
 
 namespace fornani::gui {
-enum class State : uint8_t { added, neutral, taken, gone };
+enum class WidgetState : std::uint8_t { added, neutral, taken, gone };
 class Widget {
   public:
-	Widget(automa::ServiceProvider& svc, sf::Texture& texture, sf::Vector2<int> dim, int index);
+	Widget(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vector2<int> dim, int index);
 	void update(automa::ServiceProvider& svc, int max);
 	void render(sf::RenderWindow& win);
 	void shake() { shaking.start(); }
-	State current_state{};
+
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return origin + position; }
+
+	WidgetState current_state{};
 	vfx::Gravitator gravitator{};
-	sf::Vector2<float> position{};
-	sf::Vector2<float> draw_position{};
-	sf::Vector2<float> origin{};
+	sf::Vector2f position{};
+	sf::Vector2f draw_position{};
+	sf::Vector2f origin{};
 
   private:
 	sf::Sprite sprite;

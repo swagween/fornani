@@ -3,8 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/entities/Entity.hpp"
 #include "fornani/entities/animation/Animation.hpp"
+#include "fornani/graphics/Animatable.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -12,19 +12,16 @@ struct ServiceProvider;
 
 namespace fornani::entity {
 
-class Effect final : public Entity {
+class Effect final : public Animatable {
   public:
-	Effect(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> vel, int type = 0, int index = 0, sf::Vector2i reflections = {});
-	void update(automa::ServiceProvider& svc, world::Map& map) override;
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0);
+	void update();
+	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void rotate();
 	[[nodiscard]] auto done() -> bool { return animation.complete(); }
 
   private:
-	anim::Animation animation{};
 	components::PhysicsComponent physics{};
-	int type{};
-	sf::Sprite sprite;
 };
 
 } // namespace fornani::entity

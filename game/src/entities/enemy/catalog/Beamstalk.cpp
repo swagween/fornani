@@ -1,34 +1,28 @@
 #include "fornani/entities/enemy/catalog/Beamstalk.hpp"
-#include "fornani/world/Map.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/service/ServiceProvider.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::enemy {
 
-Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction) : Enemy(svc, "beamstalk", false, 0, start_direction), m_services(&svc), m_map(&map), beam(svc, 5), fire_rate{4} {
+Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction) : Enemy(svc, "beamstalk", false, 0, start_direction), m_services(&svc), m_map(&map), beam(svc, "green_beam"), fire_rate{4} {
 	animation.set_params(idle);
 	collider.physics.maximum_velocity = {8.f, 12.f};
 	collider.physics.air_friction = {0.95f, 0.999f};
-	collider.flags.general.set(shape::General::complex);
+	// collider.flags.general.set(shape::General::complex);
 	beam.get().set_team(arms::Team::beast);
+	if (start_direction.lengthSquared() == 0) { start_direction.x = -1; } // default to facing left
+	directions.actual = Direction(start_direction);
 }
 
-void Beamstalk::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void Beamstalk::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (died()) {
 		Enemy::update(svc, map, player);
 		return;
 	}
-
-	svc.soundboard.play(svc, svc.assets.b_heavy_move, 0.f, 100.f, 64, 5.f, player.collider.get_center() - collider.get_center());
-
 	post_beam.update();
 	flags.state.set(StateFlags::vulnerable); // always vulnerable
 
-	// reset animation states to determine next animation state
-	directions.desired.lr = (player.collider.get_center().x < collider.get_center().x) ? dir::LR::left : dir::LR::right;
-	directions.movement.lr = collider.physics.velocity.x > 0.f ? dir::LR::right : dir::LR::left;
-	if (directions.actual.lr == dir::LR::right && visual.sprite.getScale() == sf::Vector2<float>{1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
-	if (directions.actual.lr == dir::LR::left && visual.sprite.getScale() == sf::Vector2<float>{-1.f, 1.f}) { visual.sprite.scale({-1.f, 1.f}); }
 	Enemy::update(svc, map, player);
 	beam.update(svc, map, *this);
 	auto bp = collider.get_center();
@@ -36,7 +30,7 @@ void Beamstalk::unique_update(automa::ServiceProvider& svc, world::Map& map, pla
 	bp.y -= 16.f;
 	beam.get().set_barrel_point(bp);
 
-	if(flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
+	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
 		m_services->soundboard.flags.beamstalk.set(audio::Beamstalk::hurt);
 		hurt_effect.start(128);
 		flags.state.reset(StateFlags::hurt);
@@ -44,13 +38,14 @@ void Beamstalk::unique_update(automa::ServiceProvider& svc, world::Map& map, pla
 
 	hurt_effect.update();
 
-	if (hostile() && !hostility_triggered() && !post_beam.running()) { state = BeamstalkState::charge; }
+	if (is_hostile() && !hostility_triggered() && !post_beam.running()) { state = BeamstalkState::charge; }
 	if (just_died()) { m_services->soundboard.flags.beamstalk.set(audio::Beamstalk::death); }
 
 	state_function = state_function();
 }
 
-void Beamstalk::unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Beamstalk::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	Enemy::render(svc, win, cam);
 	if (died()) { return; }
 }
 
@@ -111,4 +106,4 @@ bool Beamstalk::change_state(BeamstalkState next, anim::Parameters params) {
 	return false;
 }
 
-} // namespace enemy
+} // namespace fornani::enemy

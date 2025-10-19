@@ -6,7 +6,7 @@
 
 namespace fornani::enemy {
 
-enum class MeatsquashState : uint8_t { idle, chomp, swallow, open };
+enum class MeatsquashState : std::uint8_t { idle, chomp, swallow, open };
 
 class Meatsquash final : public Enemy {
 
@@ -15,8 +15,8 @@ class Meatsquash final : public Enemy {
 	~Meatsquash() override {}
 	Meatsquash& operator=(Meatsquash&&) = delete;
 	Meatsquash(automa::ServiceProvider& svc, world::Map& map);
-	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
-	void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 
 	fsm::StateFunction state_function = std::bind(&Meatsquash::update_idle, this);
 	fsm::StateFunction update_idle();

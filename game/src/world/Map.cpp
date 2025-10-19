@@ -1,294 +1,300 @@
+
 #include "fornani/world/Map.hpp"
-#include <imgui.h>
+#include <fornani/gui/console/Console.hpp>
+#include <ranges>
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/gui/Console.hpp"
+#include "fornani/graphics/Colors.hpp"
 #include "fornani/gui/Portrait.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/EnumLookups.hpp"
 #include "fornani/utils/Math.hpp"
-
-#include <tracy/Tracy.hpp>
-
-#include <iostream>
-
 #include "fornani/utils/Random.hpp"
+
+#include <imgui.h>
+#include <ccmath/ext/clamp.hpp>
 
 namespace fornani::world {
 
-Map::Map(automa::ServiceProvider& svc, player::Player& player, gui::Console& console)
-	: player(&player), enemy_catalog(svc), save_point(svc), transition(svc, 96), soft_reset(svc, 64), m_services(&svc), m_console(&console), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(2)}}, barrier{1.f, 1.f},
-	  scaled_barrier{barrier * svc.constants.cell_size} {}
+Map::Map(automa::ServiceProvider& svc, player::Player& player)
+	: player(&player), enemy_catalog(svc), transition(svc.window->f_screen_dimensions(), 96), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(2)}} {}
 
-void Map::load(automa::ServiceProvider& svc, int room_number, bool soft) {
-	// for debugging
-	center_box.setSize(svc.constants.f_screen_dimensions * 0.5f);
+void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number) {
+
+	unserialize(svc, room_number);
+
+	auto it = std::find_if(svc.data.map_jsons.begin(), svc.data.map_jsons.end(), [room_number](auto const& r) { return r.id == room_number; });
+	if (it == svc.data.map_jsons.end()) { return; }
+
+	auto& metadata = it->metadata;
+	auto const& meta = metadata["meta"];
+	auto& entities = metadata["entities"];
+
+	// process properties
+	svc.music_player.load(svc.finder, m_attributes.music);
+	svc.music_player.play_looped();
+	svc.ambience_player.load(svc.finder, m_attributes.ambience);
+	svc.ambience_player.play();
+	for (auto const& atmo : m_attributes.atmosphere) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, atmo)); }
+	background = std::make_unique<graphics::Background>(svc, m_attributes.background_id);
+
+	svc.current_room = room_number;
+	if (meta["cutscene_on_entry"]["flag"].as_bool()) {
+		auto ctype = meta["cutscene_on_entry"]["type"].as<int>();
+		auto cid = meta["cutscene_on_entry"]["id"].as<int>();
+		auto csource = meta["cutscene_on_entry"]["source"].as<int>();
+		auto cutscene = util::QuestKey{ctype, cid, csource};
+		svc.quest.process(svc, cutscene);
+		cutscene_catalog.push_cutscene(svc, *this, cid);
+	}
+	for (auto& pl : entities["lights"].as_array()) {
+		point_lights.push_back(PointLight(svc.data.light[pl["label"].as_string()], sf::Vector2f{pl["position"][0].as<float>() + 0.5f, pl["position"][1].as<float>() + 0.5f} * constants::f_cell_size));
+	}
+
+	if (meta["camera_effects"]) {
+		m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
+		m_camera_effects.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
+		m_camera_effects.shake_properties.start_time = meta["camera_effects"]["shake"]["start_time"].as<float>();
+		m_camera_effects.shake_properties.dampen_factor = meta["camera_effects"]["shake"]["dampen_factor"].as<int>();
+		m_camera_effects.cooldown = util::Cooldown{meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>()};
+		m_camera_effects.shake_properties.shaking = m_camera_effects.shake_properties.frequency > 0;
+		m_camera_effects.cooldown.start();
+	}
+
+	sound.echo_count = meta["sound"]["echo_count"].as<int>();
+	sound.echo_rate = meta["sound"]["echo_rate"].as<int>();
+
+	if (meta["weather"]["rain"]) { rain = vfx::Rain(meta["weather"]["rain"]["intensity"].as<int>(), meta["weather"]["rain"]["fall_speed"].as<float>(), meta["weather"]["rain"]["slant"].as<float>()); }
+	if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
+	if (meta["weather"]["leaves"]) { rain = vfx::Rain(meta["weather"]["leaves"]["intensity"].as<int>(), meta["weather"]["leaves"]["fall_speed"].as<float>(), meta["weather"]["leaves"]["slant"].as<float>(), true, true); }
+
+	styles.breakables = meta["styles"]["breakables"].as<int>();
+	styles.pushables = meta["styles"]["pushables"].as<int>();
+
+	/*for (auto const& entry : entities["npcs"].as_array()) {
+		sf::Vector2f pos{};
+		pos.x = entry["position"][0].as<float>();
+		pos.y = entry["position"][1].as<float>();
+		auto npc_label = entry["label"].as_string();
+		auto npc_id = svc.data.npc[npc_label]["id"].as<int>();
+		NANI_LOG_DEBUG(m_logger, "NPC Label: {}", npc_label);
+		NANI_LOG_DEBUG(m_logger, "NPC ID: {}", npc_id);
+		auto push = true;
+		auto fail_tag = std::string{};
+		if (entry["contingencies"].is_array()) {
+			for (auto const& contingency : entry["contingencies"].as_array()) {
+				auto cont = QuestContingency{contingency};
+				if (!svc.quest_table.are_contingencies_met({cont})) {
+					push = false;
+					fail_tag = contingency["tag"].as_string();
+				}
+			}
+		}
+		if (push) {
+			npcs.push_back(std::make_unique<npc::NPC>(svc, npc_label));
+			auto npc_state = svc.quest_table.get_quest_progression("npc_dialogue", {npc_label, room_id});
+			NANI_LOG_DEBUG(m_logger, "NPC State: {}", npc_state);
+			for (auto const& convo : entry["suites"][npc_state].as_array()) {
+				npcs.back()->push_conversation(convo.as<int>());
+				NANI_LOG_DEBUG(m_logger, "Pushed conversation {}", convo.as<int>());
+			}
+			npcs.back()->set_position_from_scaled(pos);
+			if (entry["background"].as_bool()) { npcs.back()->push_to_background(); }
+			if (entry["hidden"].as_bool()) { npcs.back()->hide(); }
+			npcs.back()->set_current_location(room_id);
+		} else {
+			NANI_LOG_DEBUG(m_logger, "NPC did not meet contingency for quest {}.", fail_tag);
+		}
+	}*/
+
+	for (auto& entry : entities["chests"].as_array()) {
+		sf::Vector2f pos{};
+		pos.x = entry["position"][0].as<float>();
+		pos.y = entry["position"][1].as<float>();
+		chests.push_back(entity::Chest(svc, entry["id"].as<int>(), static_cast<entity::ChestType>(entry["type"].as<int>()), entry["modifier"].as<int>()));
+		chests.back().set_position_from_scaled(pos);
+	}
+
+	for (auto& entry : entities["animators"].as_array()) {
+		sf::Vector2i scaled_pos{};
+		scaled_pos.x = entry["position"][0].as<int>();
+		scaled_pos.y = entry["position"][1].as<int>();
+		animators.push_back(entity::Animator(svc, entry["label"].as_string(), entry["id"].as<int>(), scaled_pos, entry["foreground"].as_bool()));
+	}
+	for (auto& entry : entities["beds"].as_array()) {
+		sf::Vector2f pos{};
+		pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
+		pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
+		auto flipped = static_cast<bool>(entry["flipped"].as_bool());
+		beds.push_back(entity::Bed(svc, pos, m_attributes.style_id, flipped));
+	}
+	for (auto& entry : entities["scenery"]["basic"].as_array()) {
+		sf::Vector2f pos{};
+		pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
+		pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
+		auto var = entry["variant"].as<int>();
+		auto lyr = entry["layer"].as<int>();
+		auto parallax = entry["parallax"].as<float>();
+		scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, m_attributes.style_id, lyr, var, parallax));
+	}
+	for (auto [i, entry] : std::views::enumerate(entities["inspectables"].as_array())) {
+		auto push = true;
+		auto fail_tag = std::string{};
+		if (entry["contingencies"].is_array()) {
+			for (auto const& contingency : entry["contingencies"].as_array()) {
+				auto cont = QuestContingency{contingency};
+				if (!svc.quest_table.are_contingencies_met({cont})) {
+					push = false;
+					fail_tag = contingency["tag"].as_string();
+				}
+			}
+		}
+		if (push) { inspectables.push_back(entity::Inspectable(svc, entry, room_id, i)); }
+		if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
+	}
+
+	for (auto& entry : entities["destructibles"].as_array()) { destructibles.push_back(Destructible(svc, entry, m_attributes.style_id)); }
+
+	for (auto& entry : entities["enemies"].as_array()) {
+		int id{};
+		sf::Vector2f pos{};
+		sf::Vector2<int> start{};
+		pos.x = entry["position"][0].as<float>();
+		pos.y = entry["position"][1].as<float>();
+		start.x = entry["start_direction"][0].as<int>();
+		start.y = entry["start_direction"][1].as<int>();
+		auto variant = entry["variant"].as<int>();
+		enemy_catalog.push_enemy(svc, *this, console, entry["id"].as<int>(), false, variant, start);
+		enemy_catalog.enemies.back()->set_position_from_scaled({pos * constants::f_cell_size});
+		enemy_catalog.enemies.back()->get_collider().physics.zero();
+		enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
+		if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
+	}
+
+	for (auto& entry : entities["platforms"].as_array()) {
+		sf::Vector2f dim{};
+		sf::Vector2f pos{};
+		pos.x = entry["position"][0].as<float>();
+		pos.y = entry["position"][1].as<float>();
+		dim.x = entry["dimensions"][0].as<float>();
+		dim.y = entry["dimensions"][1].as<float>();
+		pos *= constants::f_cell_size;
+		dim *= constants::f_cell_size;
+		auto start = entry["start"].as<float>();
+		start = ccm::ext::clamp(start, 0.f, 1.f);
+		auto type = entry["type"].as_string();
+		platforms.push_back(Platform(svc, pos, dim, entry["extent"].as<float>(), type, start, entry["style"].as<int>()));
+	}
+	for (auto& entry : entities["switch_blocks"].as_array()) {
+		sf::Vector2f pos{};
+		pos.x = entry["position"][0].as<float>();
+		pos.y = entry["position"][1].as<float>();
+		pos *= constants::f_cell_size;
+		auto type = entry["type"].as<int>();
+		auto button_id = entry["id"].as<int>();
+		switch_blocks.push_back(SwitchBlock(svc, pos, button_id, type));
+	}
+	for (auto& entry : entities["switch_buttons"].as_array()) {
+		sf::Vector2f pos{};
+		pos.x = entry["position"][0].as<float>();
+		pos.y = entry["position"][1].as<float>();
+		pos *= constants::f_cell_size;
+		auto type = entry["type"].as<int>();
+		auto button_id = entry["id"].as<int>();
+		switch_buttons.push_back(std::make_unique<SwitchButton>(svc, pos, button_id, type, *this));
+	}
+	for (auto& entry : entities["timer_blocks"].as_array()) {
+		sf::Vector2<std::uint32_t> pos{};
+		pos.x = entry["position"][0].as<std::uint32_t>();
+		pos.y = entry["position"][1].as<std::uint32_t>();
+		auto type = static_cast<TimerBlockType>(entry["type"].as<int>());
+		timer_blocks.push_back(TimerBlock(svc, pos, type, entry["id"].as<int>()));
+	}
+
+	generate_layer_textures(svc);
+	player->map_reset();
+	transition.end();
+	cooldowns.fade_obscured.start();
+	cooldowns.loading.start();
+}
+
+void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) {
+
+	NANI_LOG_DEBUG(m_logger, "Unserializing map...");
+
+	auto it = std::find_if(svc.data.map_jsons.begin(), svc.data.map_jsons.end(), [room_number](auto const& r) { return r.id == room_number; });
+	if (it == svc.data.map_jsons.end()) {
+		NANI_LOG_WARN(m_logger, "Map json not found!");
+		return;
+	}
+
+	// fetch template data
+	auto const& in_template = svc.data.map_templates;
+	auto bit = std::find_if(svc.data.map_templates.begin(), svc.data.map_templates.end(), [it](auto const& r) { return r.biome_label == it->biome_label; });
+	if (bit == svc.data.map_templates.end()) {
+		NANI_LOG_WARN(m_logger, "Tried to fetch template data for a nonexistent biome!");
+	} else {
+		m_attributes = MapAttributes{bit->metadata};
+	}
+
+	auto& metadata = it->metadata;
+	auto const& meta = metadata["meta"];
+	auto& entities = metadata["entities"];
+
+	use_template = meta["use_template"].as_bool();
+	if (!use_template) { m_attributes = MapAttributes{meta}; } // install metadata override
+	if (meta["minimap"].as_bool()) { m_attributes.properties.set(MapProperties::minimap); }
+
+	center_box.setSize(svc.window->f_screen_dimensions() * 0.5f);
 	flags.state.reset(LevelState::game_over);
 	if (!player->is_dead()) { svc.state_controller.actions.reset(automa::Actions::death_mode); }
 	spawn_counter.start();
 
 	svc.state_flags.reset(automa::StateFlags::hide_hud);
 
-	int ctr{};
-	for (auto& room : svc.data.map_jsons) {
-		if (room.id == room_number) { room_lookup = ctr; }
-		++ctr;
-	}
-	auto const& metadata = svc.data.map_jsons.at(room_lookup).metadata;
-	inspectable_data = svc.data.map_jsons.at(room_lookup).metadata["entities"]["inspectables"];
+	svc.world_timer.set_tag("nani");
+	svc.world_timer.set_course(room_number);
+
+	m_metadata.biome = it->biome_label;
+	m_metadata.room = it->room_label;
 
 	// check for enemy respawns
 	svc.data.respawn_enemies(room_id, player->visit_history.distance_traveled_from(room_id));
 
-	auto const& meta = metadata["meta"];
 	room_id = meta["room_id"].as<int>();
-	if (meta["minimap"].as_bool()) { flags.properties.set(MapProperties::minimap); }
 	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
 	dimensions.y = meta["dimensions"][1].as<int>();
-	real_dimensions = {static_cast<float>(dimensions.x) * svc.constants.cell_size, static_cast<float>(dimensions.y) * svc.constants.cell_size};
-	auto style_value = meta["style"].as<int>();
-	style_label = svc.data.map_styles["styles"][style_value]["label"].as_string();
-	style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
-	if (svc.greyblock_mode()) { style_id = static_cast<int>(lookup::Style::provisional); }
-	native_style_id = svc.data.map_styles["styles"][style_value]["id"].as<int>();
-	m_middleground = svc.data.map_jsons.at(room_lookup).metadata["tile"]["middleground"].as<int>();
-	svc.data.map_jsons.at(room_lookup).metadata["tile"]["flags"]["obscuring"].as_bool() ? flags.properties.set(MapProperties::has_obscuring_layer) : flags.properties.reset(MapProperties::has_obscuring_layer);
-	svc.data.map_jsons.at(room_lookup).metadata["tile"]["flags"]["reverse_obscuring"].as_bool() ? flags.properties.set(MapProperties::has_reverse_obscuring_layer) : flags.properties.reset(MapProperties::has_reverse_obscuring_layer);
+	m_player_start.x = meta["player_start"][0].as<float>();
+	m_player_start.y = meta["player_start"][1].as<float>();
+	real_dimensions = {static_cast<float>(dimensions.x) * constants::f_cell_size, static_cast<float>(dimensions.y) * constants::f_cell_size};
 
-	auto const& entities = metadata["entities"];
-
-	if (!soft) {
-		svc.current_room = room_number;
-		if (meta["cutscene_on_entry"]["flag"].as_bool()) {
-			auto ctype = meta["cutscene_on_entry"]["type"].as<int>();
-			auto cid = meta["cutscene_on_entry"]["id"].as<int>();
-			auto csource = meta["cutscene_on_entry"]["source"].as<int>();
-			auto cutscene = util::QuestKey{ctype, cid, csource};
-			svc.quest.process(svc, cutscene);
-			if (svc.quest.get_progression(fornani::QuestType::cutscene, 6001) > 0) { std::cout << "cutscene requested!\n"; }
-			cutscene_catalog.push_cutscene(svc, *this, *m_console, cid);
-		}
-		if (meta["music"].is_string()) {
-			svc.music.load(svc.finder, meta["music"].as_string());
-			svc.music.play_looped(10);
-		}
-		if (meta["ambience"].is_string()) {
-			ambience.load(svc.finder, meta["ambience"].as_string());
-			ambience.play();
-		}
-		for (auto& entry : meta["atmosphere"].array_view()) {
-			if (entry.as<int>() == 1) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, 1)); }
-		}
-		if (meta["camera_effects"]) {
-			m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
-			m_camera_effects.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
-			m_camera_effects.shake_properties.start_time = meta["camera_effects"]["shake"]["start_time"].as<float>();
-			m_camera_effects.shake_properties.dampen_factor = meta["camera_effects"]["shake"]["dampen_factor"].as<int>();
-			m_camera_effects.cooldown = util::Cooldown{meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>()};
-			m_camera_effects.shake_properties.shaking = m_camera_effects.shake_properties.frequency > 0;
-		}
-
-		sound.echo_count = meta["sound"]["echo_count"].as<int>();
-		sound.echo_rate = meta["sound"]["echo_rate"].as<int>();
-
-		if (meta["weather"]["rain"]) { rain = vfx::Rain(meta["weather"]["rain"]["intensity"].as<int>(), meta["weather"]["rain"]["fall_speed"].as<float>(), meta["weather"]["rain"]["slant"].as<float>()); }
-		if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
-		if (meta["weather"]["leaves"]) { rain = vfx::Rain(meta["weather"]["leaves"]["intensity"].as<int>(), meta["weather"]["leaves"]["fall_speed"].as<float>(), meta["weather"]["leaves"]["slant"].as<float>(), true, true); }
-
-		background = std::make_unique<bg::Background>(svc, meta["background"].as<int>());
-		styles.breakables = meta["styles"]["breakables"].as<int>();
-		styles.pushables = meta["styles"]["pushables"].as<int>();
-
-		for (auto& entry : entities["npcs"].array_view()) {
-			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<float>();
-			pos.y = entry["position"][1].as<float>();
-			auto id = entry["id"].as<int>();
-			npcs.push_back(npc::NPC(svc, id));
-			auto npc_state = svc.quest.get_progression(fornani::QuestType::npc, id);
-			for (auto& convo : entry["suites"][npc_state].array_view()) { npcs.back().push_conversation(convo.as_string()); }
-			npcs.back().set_position_from_scaled(pos);
-			if ((bool)entry["background"].as_bool()) { npcs.back().push_to_background(); }
-			if (static_cast<bool>(entry["hidden"].as_bool())) { npcs.back().hide(); }
-			if (svc.quest.get_progression(fornani::QuestType::hidden_npcs, id) > 0) { npcs.back().unhide(); }
-			npcs.back().set_current_location(room_id);
-		}
-		for (auto& entry : entities["chests"].array_view()) {
-			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<float>();
-			pos.y = entry["position"][1].as<float>();
-			chests.push_back(entity::Chest(svc, entry["id"].as<int>()));
-			chests.back().set_item(entry["item_id"].as<int>());
-			chests.back().set_amount(entry["amount"].as<int>());
-			chests.back().set_rarity(entry["rarity"].as<float>());
-			if (entry["type"].as<int>() == 1) { chests.back().set_type(entity::ChestType::gun); }
-			if (entry["type"].as<int>() == 2) { chests.back().set_type(entity::ChestType::orbs); }
-			if (entry["type"].as<int>() == 3) { chests.back().set_type(entity::ChestType::item); }
-			chests.back().set_position_from_scaled(pos);
-		}
-
-		for (auto& entry : entities["animators"].array_view()) {
-			sf::Vector2<int> scaled_dim{};
-			sf::Vector2<int> scaled_pos{};
-			scaled_pos.x = entry["position"][0].as<int>();
-			scaled_pos.y = entry["position"][1].as<int>();
-			scaled_dim.x = entry["dimensions"][0].as<int>();
-			scaled_dim.y = entry["dimensions"][1].as<int>();
-			auto automatic = (bool)entry["automatic"].as_bool();
-			auto astyle = (bool)entry["style"].as<int>();
-			auto lg = scaled_dim.x == 2;
-			auto foreground = (bool)entry["foreground"].as_bool();
-			auto aid = entry["id"].as<int>();
-			auto a = entity::Animator(svc, scaled_pos, aid, lg, automatic, foreground, astyle);
-			animators.push_back(a);
-		}
-		for (auto& entry : entities["beds"].array_view()) {
-			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
-			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
-			beds.push_back(entity::Bed(svc, pos, room_lookup));
-		}
-		for (auto& entry : entities["scenery"]["basic"].array_view()) {
-			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
-			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
-			auto var = entry["variant"].as<int>();
-			auto lyr = entry["layer"].as<int>();
-			auto parallax = entry["parallax"].as<float>();
-			scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, style_id, lyr, var, parallax));
-		}
-		for (auto& entry : entities["scenery"]["vines"].array_view()) {
-			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
-			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
-			auto fg = static_cast<bool>(entry["foreground"].as_bool());
-			auto rev = static_cast<bool>(entry["reversed"].as_bool());
-			vines.push_back(std::make_unique<entity::Vine>(svc, pos, entry["length"].as<int>(), entry["size"].as<int>(), fg, rev));
-			if (entry["platform"]) {
-				for (auto& link : entry["platform"]["link_indeces"].array_view()) { vines.back()->add_platform(svc, link.as<int>()); }
-			}
-		}
-		for (auto& entry : entities["scenery"]["grass"].array_view()) {
-			sf::Vector2<float> pos{};
-			pos.x = entry["position"][0].as<float>() * svc.constants.cell_size;
-			pos.y = entry["position"][1].as<float>() * svc.constants.cell_size;
-			auto fg = static_cast<bool>(entry["foreground"].as_bool());
-			grass.push_back(std::make_unique<entity::Grass>(svc, pos, 8, entry["size"].as<int>(), fg));
-		}
-		for (auto& entry : entities["inspectables"].array_view()) {
-			sf::Vector2<uint32_t> dim{};
-			sf::Vector2<uint32_t> pos{};
-			auto key = entry["key"].as_string();
-			pos.x = entry["position"][0].as<int>();
-			pos.y = entry["position"][1].as<int>();
-			dim.x = entry["dimensions"][0].as<int>();
-			dim.y = entry["dimensions"][1].as<int>();
-			auto alt = entry["alternates"].as<int>();
-			auto native = entry["native_id"].as<int>();
-			auto aoc = static_cast<bool>(entry["activate_on_contact"].as_bool());
-			inspectables.push_back(entity::Inspectable(svc, dim, pos, key, room_id, alt, native, aoc));
-			if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
-		}
-
-		for (auto& entry : entities["enemies"].array_view()) {
-			int id{};
-			sf::Vector2<float> pos{};
-			sf::Vector2<int> start{};
-			pos.x = entry["position"][0].as<float>();
-			pos.y = entry["position"][1].as<float>();
-			start.x = entry["start_direction"][0].as<int>();
-			start.y = entry["start_direction"][1].as<int>();
-			auto variant = entry["variant"].as<int>();
-			enemy_catalog.push_enemy(svc, *this, *m_console, entry["id"].as<int>(), false, variant, start);
-			enemy_catalog.enemies.back()->set_position_from_scaled({pos * svc.constants.cell_size});
-			enemy_catalog.enemies.back()->get_collider().physics.zero();
-			enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
-			std::cout << "Enemy external id: " << enemy_catalog.enemies.back()->get_external_id() << "\n";
-			if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
-		}
-		for (auto& entry : entities["destroyers"].array_view()) {
-			sf::Vector2<int> pos{};
-			pos.x = entry["position"][0].as<int>();
-			pos.y = entry["position"][1].as<int>();
-			auto quest_id = entry["quest_id"].as<int>();
-			destroyers.push_back(Destroyable(svc, pos, quest_id));
+	if (m_attributes.properties.test(MapProperties::lighting)) {
+		m_palette = Palette{m_metadata.biome, svc.finder};
+		darken_factor = meta["shader"]["darken_factor"].as<float>();
+		NANI_LOG_DEBUG(m_logger, "Map darken factor: {}", darken_factor);
+		if (m_palette->get_size() == 0) {
+			m_attributes.properties.reset(MapProperties::lighting);
+			m_palette = {};
+			NANI_LOG_WARN(m_logger, "Map Properties > Lighting is TRUE but there exists no palette for the style!");
 		}
 	}
 
-	for (auto& entry : entities["portals"].array_view()) {
-		sf::Vector2<uint32_t> pos{};
-		sf::Vector2<uint32_t> dim{};
-		pos.x = entry["position"][0].as<int>();
-		pos.y = entry["position"][1].as<int>();
-		dim.x = entry["dimensions"][0].as<int>();
-		dim.y = entry["dimensions"][1].as<int>();
-		auto src_id = entry["source_id"].as<int>();
-		auto dest_id = entry["destination_id"].as<int>();
-		auto aoc = static_cast<bool>(entry["activate_on_contact"].as_bool());
-		auto locked = static_cast<bool>(entry["locked"].as_bool());
-		auto already_open = static_cast<bool>(entry["already_open"].as_bool());
-		auto key_id = entry["key_id"].as<int>();
-		auto door_style = native_style_id;
-		auto mapdim = sf::Vector2<int>{dimensions};
-		portals.push_back(entity::Portal(svc, dim, pos, src_id, dest_id, aoc, locked, already_open, key_id, door_style, mapdim));
-		portals.back().update(svc);
-	}
+	m_middleground = metadata["tile"]["middleground"].as<int>();
+	metadata["tile"]["flags"]["obscuring"].as_bool() ? m_layer_properties.set(LayerProperties::has_obscuring_layer) : m_layer_properties.reset(LayerProperties::has_obscuring_layer);
+	metadata["tile"]["flags"]["reverse_obscuring"].as_bool() ? m_layer_properties.set(LayerProperties::has_reverse_obscuring_layer) : m_layer_properties.reset(LayerProperties::has_reverse_obscuring_layer);
 
-	auto const& savept = entities["save_point"];
-	auto save_id = svc.state_controller.save_point_id;
-	save_point.id = savept.contains("position") ? room_id : -1;
-	save_point.scaled_position.x = savept["position"][0].as<int>();
-	save_point.scaled_position.y = savept["position"][1].as<int>();
+	breakable_iterators.resize(static_cast<std::size_t>((dimensions.x * dimensions.y) / constants::u32_chunk_size));
 
-	for (auto& entry : entities["platforms"].array_view()) {
-		sf::Vector2<float> dim{};
-		sf::Vector2<float> pos{};
-		pos.x = entry["position"][0].as<float>();
-		pos.y = entry["position"][1].as<float>();
-		dim.x = entry["dimensions"][0].as<float>();
-		dim.y = entry["dimensions"][1].as<float>();
-		pos *= svc.constants.cell_size;
-		dim *= svc.constants.cell_size;
-		auto start = entry["start"].as<float>();
-		start = std::clamp(start, 0.f, 1.f);
-		auto type = entry["type"].as_string();
-		platforms.push_back(Platform(svc, pos, dim, entry["extent"].as<float>(), type, start, entry["style"].as<int>()));
-	}
-	for (auto& entry : entities["switch_blocks"].array_view()) {
-		sf::Vector2<float> pos{};
-		pos.x = entry["position"][0].as<float>();
-		pos.y = entry["position"][1].as<float>();
-		pos *= svc.constants.cell_size;
-		auto type = entry["type"].as<int>();
-		auto button_id = entry["button_id"].as<int>();
-		switch_blocks.push_back(SwitchBlock(svc, pos, button_id, type));
-	}
-	for (auto& entry : entities["switches"].array_view()) {
-		sf::Vector2<float> pos{};
-		pos.x = entry["position"][0].as<float>();
-		pos.y = entry["position"][1].as<float>();
-		pos *= svc.constants.cell_size;
-		auto type = entry["type"].as<int>();
-		auto button_id = entry["button_id"].as<int>();
-		switch_buttons.push_back(std::make_unique<SwitchButton>(svc, pos, button_id, type, *this));
-	}
+	m_attributes.border_color = m_attributes.style_id == 2 ? colors::pioneer_black : colors::ui_black;
+	if (entities.is_object()) { m_entities = EntitySet(svc, svc.finder, entities, m_metadata.room); }
 
-	generate_collidable_layer();
-
-	if (!soft) {
-		generate_layer_textures(svc);
-		player->map_reset();
-		transition.end();
-		cooldowns.fade_obscured.start();
-		cooldowns.loading.start();
-	}
+	generate_collidable_layer(live);
 }
 
-void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
+void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console) {
 	auto& layers = svc.data.get_layers(room_id);
 	flags.state.reset(LevelState::camera_shake);
-	cooldowns.loading.update();
 
 	// camera effects
 	if (svc.ticker.every_second() && m_camera_effects.shake_properties.shaking) {
@@ -296,19 +302,18 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 		if (m_camera_effects.cooldown.is_complete()) {
 			svc.camera_controller.shake(m_camera_effects.shake_properties);
 			auto shake_time = m_camera_effects.cooldown.get_native_time();
-			auto diff = util::Random::random_range(-shake_time / 2, shake_time / 2);
+			auto diff = random::random_range(-shake_time / 2, shake_time / 2);
 			m_camera_effects.cooldown.start(shake_time + diff);
 		}
 	}
 
-	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->update(svc, console, *this, *player); }
-
 	if (flags.state.test(LevelState::spawn_enemy)) {
 		for (auto& spawn : enemy_spawns) {
-			enemy_catalog.push_enemy(*m_services, *this, *m_console, spawn.id, true);
+			enemy_catalog.push_enemy(*m_services, *this, console, spawn.id, true, spawn.variant);
+			enemy_catalog.enemies.back()->intangible_start(64);
 			enemy_catalog.enemies.back()->set_position(spawn.pos);
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
-			effects.push_back(entity::Effect(*m_services, spawn.pos + enemy_catalog.enemies.back()->get_collider().dimensions * 0.5f, {}, 0, 4));
+			effects.push_back(entity::Effect(*m_services, "small_flash", spawn.pos + enemy_catalog.enemies.back()->get_collider().dimensions * 0.5f, {}, 0));
 		}
 		enemy_spawns.clear();
 		flags.state.reset(LevelState::spawn_enemy);
@@ -325,129 +330,103 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	flags.map_state.test(MapState::unobscure) ? cooldowns.fade_obscured.update() : cooldowns.fade_obscured.reverse();
 	if (check_cell_collision(player->collider, true)) {
 		if (!flags.map_state.test(MapState::unobscure)) { cooldowns.fade_obscured.start(); }
+		if (cooldowns.loading.running()) { cooldowns.fade_obscured.cancel(); }
 		flags.map_state.set(MapState::unobscure);
 	} else {
 		if (flags.map_state.test(MapState::unobscure)) { cooldowns.fade_obscured.cancel(); }
 		flags.map_state.reset(MapState::unobscure);
 	}
 
-	for (auto& grenade : active_grenades) {
-		if (player->shielding() && player->controller.get_shield().sensor.within_bounds(grenade.bounding_box)) {
-			player->controller.get_shield().damage();
-			grenade.physics.velocity *= -1.f;
-		}
-		if (grenade.detonated() && grenade.sensor.within_bounds(player->hurtbox)) { player->hurt(grenade.get_damage()); }
-		for (auto& enemy : enemy_catalog.enemies) {
-			if (grenade.detonated() && grenade.sensor.within_bounds(enemy->get_collider().hurtbox)) {
-				enemy->hurt();
-				enemy->health.inflict(grenade.get_damage());
-				enemy->health_indicator.add(grenade.get_damage());
-				if (enemy->just_died() && enemy->spawn_loot()) {
-					svc.stats.enemy.enemies_killed.update();
-					active_loot.push_back(item::Loot(svc, enemy->get_attributes().drop_range, enemy->get_attributes().loot_multiplier, enemy->get_collider().bounding_box.get_position()));
-					svc.soundboard.flags.frdog.set(audio::Frdog::death);
+	if (!breakables.empty()) {
+		for (auto it = breakables.begin(); it != breakables.end();) {
+			if (it->destroyed()) {
+				if (it->get_chunk_id() < breakable_iterators.size()) {
+					auto& chunk_vec = breakable_iterators[it->get_chunk_id()];
+					std::erase(chunk_vec, it);
+					it = breakables.erase(it);
 				}
+			} else {
+				++it;
 			}
 		}
-	}
-
-	for (auto& grenade : active_grenades) {
-		for (auto& breakable : breakables) {
-			if (grenade.detonated() && grenade.sensor.within_bounds(breakable.get_bounding_box())) { breakable.destroy(); }
-		}
-	}
-
-	// TODO: refactor this
-	if (svc.player_dat.piggy_id != 0) {
-		for (auto& n : npcs) {
-			if (n.get_id() == svc.player_dat.piggy_id) { n.hide(); }
-		}
-	}
-	if (svc.player_dat.drop_piggy) {
-		svc.player_dat.drop_piggy = false;
-		for (auto& n : npcs) {
-			if (n.get_id() == svc.player_dat.piggy_id) {
-				n.unhide();
-				n.set_position(player->collider.physics.position);
-				n.apply_force({32.f, -32.f});
-				n.set_current_location(room_id);
-			}
-		}
-		svc.player_dat.piggy_id = 0;
 	}
 
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
 	std::erase_if(effects, [](auto& e) { return e.done(); });
-	std::erase_if(active_grenades, [](auto const& g) { return g.detonated(); });
-	std::erase_if(breakables, [](auto const& b) { return b.destroyed(); });
 	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
-	std::erase_if(destroyers, [](auto const& d) { return d.detonated(); });
-	std::erase_if(npcs, [](auto const& n) { return n.piggybacking(); });
+	enemy_catalog.update();
 
 	manage_projectiles(svc);
 	svc.map_debug.active_projectiles = active_projectiles.size();
 	for (auto& proj : active_projectiles) {
 		if (proj.destruction_initiated()) { continue; }
+		proj.register_chunk(get_chunk_id_from_position(proj.get_position()));
 		for (auto& platform : platforms) { platform.on_hit(svc, *this, proj); }
-		for (auto& breakable : breakables) { breakable.on_hit(svc, *this, proj); }
+		if (proj.get_chunk_id() < breakable_iterators.size()) {
+			for (auto const& it : breakable_iterators[proj.get_chunk_id()]) { it->on_hit(svc, *this, proj); }
+		}
 		for (auto& pushable : pushables) { pushable.on_hit(svc, *this, proj); }
-		for (auto& destroyer : destroyers) { destroyer.on_hit(svc, *this, proj); }
+		for (auto& destroyer : destructibles) { destroyer.on_hit(svc, *this, proj); }
 		for (auto& block : switch_blocks) { block.on_hit(svc, *this, proj); }
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
-		for (auto& vine : vines) { vine->on_hit(svc, *this, proj); }
+		for (auto vine : get_entities<Vine>()) { vine->on_hit(svc, *this, proj); }
 		proj.handle_collision(svc, *this);
 		proj.on_player_hit(*player);
 	}
 	for (auto& enemy : enemy_catalog.enemies) {
-		enemy->unique_update(svc, *this, *player);
+		enemy->update(svc, *this, *player);
 		enemy->post_update(svc, *this, *player);
 	}
 
+	if (m_entities) {
+		for (auto& entity : m_entities.value().variables.entities) { entity->update(svc, *this, console, *player); }
+	}
 	if (fire) {
-		for (auto& f : fire.value()) { f.update(svc, *player, *this, console, inspectable_data); }
+		for (auto& f : fire.value()) { f.update(svc, *player, *this, console); }
 	}
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
-	for (auto& grenade : active_grenades) { grenade.update(svc, *player, *this); }
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 	for (auto& chest : chests) { chest.update(svc, *this, console, *player); }
-	for (auto& npc : npcs) { npc.update(svc, *this, console, *player); }
-	for (auto& portal : portals) { portal.handle_activation(svc, *player, console, room_id, transition); }
-	for (auto& inspectable : inspectables) { inspectable.update(svc, *player, console, svc.data.map_jsons.at(room_lookup).metadata["entities"]["inspectables"]); }
-	for (auto& animator : animators) { animator.update(svc, *player); }
-	for (auto& effect : effects) { effect.update(svc, *this); }
+	/*for (auto& npc : npcs) {
+		npc->update(svc, *this, console, *player);
+	}*/
+	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->update(svc, console, *this, *player); }
+	// for (auto& portal : portals) { portal.handle_activation(svc, *player, console, room_id, transition); }
+	for (auto& inspectable : inspectables) { inspectable.update(svc, *this, console, *player); }
+	for (auto& animator : animators) { animator.update(); }
+	for (auto& effect : effects) { effect.update(); }
 	for (auto& atm : atmosphere) { atm.update(svc, *this, *player); }
 	for (auto& platform : platforms) { platform.update(svc, *this, *player); }
 	for (auto& spawner : spawners) { spawner.update(svc, *this); }
 	for (auto& switch_block : switch_blocks) { switch_block.update(svc, *this, *player); }
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
-	for (auto& destroyer : destroyers) { destroyer.update(svc, *this, *player); }
+	for (auto& destroyer : destructibles) { destroyer.update(svc, *this, *player); }
 	for (auto& checkpoint : checkpoints) { checkpoint.update(svc, *this, *player); }
 	for (auto& bed : beds) { bed.update(svc, *this, console, *player, transition); }
 	for (auto& breakable : breakables) { breakable.update(svc, *player); }
-	for (auto& pushable : pushables) { pushable.update(svc, *this, *player); }
+	for (auto& pushable : pushables) {
+		pushable.register_chunk(get_chunk_id_from_position(pushable.collider.get_center()));
+		pushable.update(svc, *this, *player);
+	}
 	for (auto& spike : spikes) { spike.update(svc, *player, *this); }
-	for (auto& vine : vines) { vine->update(svc, *this, *player); }
-	for (auto& g : grass) { g->update(svc, *this, *player); }
+	// for (auto& vine : vines) { vine->update(svc, *this, *player); }
+	for (auto& timer_block : timer_blocks) { timer_block.update(svc, *this, *player); }
+	for (auto& pl : point_lights) { pl.update(); }
 	player->handle_map_collision(*this);
 	if (cooldowns.loading.is_complete()) { transition.update(*player); }
-	soft_reset.update(*player);
 	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
-	if (save_point.id != -1) { save_point.update(svc, *player, console); }
+	// if (save_point) { save_point->update(svc, *player, console); }
 	if (rain) { rain.value().update(svc, *this); }
 
 	player->collider.reset_ground_flags();
 
-	// ambience
-	ambience.set_balance(cooldowns.fade_obscured.get_normalized() * 100.f);
-
 	// check if player died
 	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && cooldowns.loading.is_complete()) {
 		svc.app_flags.reset(automa::AppFlags::in_game);
-		console.set_source(svc.text.basic);
-		console.load_and_launch("death");
+		console = std::make_unique<gui::Console>(svc, svc.text.basic, "death", gui::OutputType::gradual);
 		flags.state.set(LevelState::game_over);
-		svc.music.load(svc.finder, "mortem");
-		svc.music.play_looped(10);
+		svc.music_player.load(svc.finder, "mortem");
+		svc.music_player.play_looped();
 		svc.soundboard.turn_off();
 		svc.stats.player.death_count.update();
 	}
@@ -455,291 +434,205 @@ void Map::update(automa::ServiceProvider& svc, gui::Console& console) {
 	// demo only
 	if (svc.state_controller.actions.consume(automa::Actions::end_demo)) { end_demo.start(); }
 	end_demo.update();
-	if (end_demo.get_cooldown() == 1) {
-		m_console->set_source(svc.text.basic);
-		m_console->load_and_launch("end_demo");
-	}
-	if (svc.state_controller.actions.test(automa::Actions::print_stats) && console.is_complete()) { svc.state_controller.actions.set(automa::Actions::trigger); }
+	if (end_demo.get() == 1) { console = std::make_unique<gui::Console>(svc, svc.text.basic, "end_demo", gui::OutputType::gradual); }
+	if (svc.state_controller.actions.test(automa::Actions::print_stats) && !console) { svc.state_controller.actions.set(automa::Actions::trigger); }
 	// demo only
 
 	if (svc.state_controller.actions.test(automa::Actions::retry)) { flags.state.set(LevelState::game_over); }
-	if (console.is_complete() && flags.state.test(LevelState::game_over)) {
-		transition.start();
-		if (transition.is_done()) {
+	if (!console && flags.state.test(LevelState::game_over)) {
+		if (!flags.state.test(LevelState::transitioning)) { transition.start(); }
+		flags.state.set(LevelState::transitioning);
+		if (transition.is(graphics::TransitionState::black)) {
 			player->start_over();
 			svc.state_controller.actions.set(automa::Actions::player_death);
 			svc.state_controller.actions.set(automa::Actions::trigger);
 		}
 	}
+	cooldowns.loading.update();
 }
 
-void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	ZoneScopedN("Map::render");
+void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam) {
 	// check for a switch to greyblock mode
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
-		style_id = style_id == static_cast<int>(lookup::Style::provisional) ? native_style_id : static_cast<int>(lookup::Style::provisional);
 		generate_layer_textures(svc);
 		svc.debug_flags.reset(automa::DebugFlags::greyblock_trigger);
 	}
 
-	{
-		ZoneScopedN("Map::render - portals");
-		for (auto& portal : portals) { portal.render(svc, win, cam); }
+	if (m_entities) {
+		// TODO: uncomment below once all entities have been refactored!
+		// for (auto& entity : m_entities.value().variables.entities) { entity->render(win, cam, 1.0); }
+		for (auto p : get_entities<Portal>()) { p->render(win, cam, 1.0); }
+		for (auto s : get_entities<SavePoint>()) { s->render(win, cam, 1.0); }
+		for (auto n : get_entities<NPC>()) {
+			if (!n->is_background()) { n->render(win, cam); }
+		}
+		if (svc.greyblock_mode()) {
+			for (auto c : get_entities<CutsceneTrigger>()) { c->render(win, cam, c->get_f_grid_dimensions().x); }
+		}
+		for (auto v : get_entities<Vine>()) {
+			if (!v->is_foreground()) { v->render(win, cam, 1.0); }
+		}
+		// for (auto n : get_entities<NPC>()) { n->render(win, cam, 1.0); }
 	}
+
+	// for (auto& portal : portals) { portal.render(svc, win, cam); }
 	if (fire) {
-		ZoneScopedN("Map::render - fires");
 		for (auto& f : fire.value()) { f.render(svc, win, cam); }
 	}
-	{
-		ZoneScopedN("Map::render - chests");
-		for (auto& chest : chests) { chest.render(svc, win, cam); }
+	for (auto& bed : beds) { bed.render(svc, win, cam); }
+	for (auto& chest : chests) { chest.render(win, cam); }
+	/*for (auto& npc : npcs) {
+		if (!npc->background()) { npc->render(svc, win, cam); }
+	}*/
+	player->render(svc, win, cam);
+	for (auto& enemy : enemy_catalog.enemies) {
+		if (!enemy->is_foreground()) { enemy->render(svc, win, cam); }
 	}
-	{
-		ZoneScopedN("Map::render - npcs");
-		for (auto& npc : npcs) {
-			if (!npc.background()) { npc.render(svc, win, cam); }
-		}
-	}
-	{
-		ZoneScopedN("Map::render - active grenades");
-		for (auto& grenade : active_grenades) { grenade.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - player");
-		player->render(svc, win, cam);
-	}
-	{
-		ZoneScopedN("Map::render - enemies");
-		for (auto& enemy : enemy_catalog.enemies) {
-			if (!enemy->is_foreground()) {
-				enemy->render(svc, win, cam);
-				enemy->unique_render(svc, win, cam);
-			}
-		}
-	}
-	{
-		ZoneScopedN("Map::render - active projectiles");
-		for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - active loot");
-		for (auto& loot : active_loot) { loot.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - active emmitters");
-		for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - platforms");
-		for (auto& platform : platforms) { platform.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - breakables");
-		for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - pushables");
-		for (auto& pushable : pushables) { pushable.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - destroyers");
-		for (auto& destroyer : destroyers) { destroyer.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - checkpoints");
-		for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - spikes");
-		for (auto& spike : spikes) { spike.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - switch blocks");
-		for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - switch buttons");
-		for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - beds");
-		for (auto& bed : beds) { bed.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - atmosphere");
-		for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
-	}
-	{
-		ZoneScopedN("Map::render - vines");
-		for (auto& vine : vines) {
-			if (vine->foreground()) { vine->render(svc, win, cam); }
-		}
-	}
-	{
-		ZoneScopedN("Map::render - grass");
-		for (auto& g : grass) {
-			if (g->foreground()) { g->render(svc, win, cam); }
-		}
-	}
-
-	if (save_point.id != -1) {
-		ZoneScopedN("Map::render - save point");
-		save_point.render(svc, win, cam);
-	}
-
-	// map foreground tiles
-	if (!svc.greyblock_mode()) {
-		std::vector<sf::Sprite> sprites{sf::Sprite{textures.foreground.day.getTexture()}, sf::Sprite{textures.foreground.twilight.getTexture()}, sf::Sprite{textures.foreground.night.getTexture()}};
-		auto ctr{0};
-		for (auto& sprite : sprites) {
-			sprite.setPosition(-cam - scaled_barrier);
-			m_camera_effects.shifter.render(svc, win, sprite, ctr);
-			++ctr;
-		}
-	}
-
-	{
-		ZoneScopedN("Map::render - forground enemies");
-		// foreground enemies
-		for (auto& enemy : enemy_catalog.enemies) {
-			if (enemy->is_foreground()) {
-				enemy->render(svc, win, cam);
-				enemy->unique_render(svc, win, cam);
-			}
-			enemy->render_indicators(svc, win, cam);
-			enemy->gui_render(svc, win, cam);
-		}
-	}
+	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
+	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
+	for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
+	for (auto& platform : platforms) { platform.render(svc, win, cam); }
+	for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
+	for (auto& pushable : pushables) { pushable.render(svc, win, cam); }
+	for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
+	for (auto& spike : spikes) { spike.render(svc, win, shader, m_palette, cam); }
+	for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam); }
+	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
+	for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
 
 	if (!svc.greyblock_mode()) {
-		// draw obscuring layer
-		if (textures.obscuring) {
-			std::vector<sf::Sprite> obs_sprites{sf::Sprite{textures.obscuring.value().day.getTexture()}, sf::Sprite{textures.obscuring.value().twilight.getTexture()}, sf::Sprite{textures.obscuring.value().night.getTexture()}};
-
-			auto ctr{0};
-			for (auto& sprite : obs_sprites) {
-				sprite.setPosition(-cam - scaled_barrier);
-				std::uint8_t alpha = std::lerp(0, 255, cooldowns.fade_obscured.get_normalized());
-				if (alpha != 0) { m_camera_effects.shifter.render(svc, win, sprite, ctr, alpha); }
-				++ctr;
-			}
-		}
-		if (textures.reverse_obscuring) {
-			std::vector<sf::Sprite> rev_sprites{sf::Sprite{textures.reverse_obscuring.value().day.getTexture()}, sf::Sprite{textures.reverse_obscuring.value().twilight.getTexture()},
-												sf::Sprite{textures.reverse_obscuring.value().night.getTexture()}};
-
-			auto ctr{0};
-			for (auto& sprite : rev_sprites) {
-				sprite.setPosition(-cam - scaled_barrier);
-				std::uint8_t revalpha = std::lerp(0, 255, 1.f - cooldowns.fade_obscured.get_normalized());
-				if (revalpha != 0) { m_camera_effects.shifter.render(svc, win, sprite, ctr, revalpha); }
-				++ctr;
+		for (auto& layer : get_layers()) {
+			if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
+				shader->finalize();
+				layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
+			} else {
+				layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
 			}
 		}
 	}
 
-	{
-		ZoneScopedN("Map::render - effects");
-		for (auto& effect : effects) { effect.render(svc, win, cam); }
+	for (auto& destroyer : destructibles) { destroyer.render(svc, win, cam); }
+
+	if (m_entities) {
+		for (auto v : get_entities<Vine>()) {
+			if (v->is_foreground()) { v->render(win, cam, 1.0); }
+		}
 	}
+
+	// foreground enemies
+	for (auto& enemy : enemy_catalog.enemies) {
+		if (enemy->is_foreground()) { enemy->render(svc, win, cam); }
+		enemy->render_indicators(svc, win, cam);
+		enemy->gui_render(svc, win, cam);
+	}
+
+	for (auto& effect : effects) { effect.render(win, cam); }
 
 	player->render_indicators(svc, win, cam);
 
-	if (real_dimensions.y < svc.constants.f_screen_dimensions.y) {
-		auto ydiff = (svc.constants.f_screen_dimensions.y - real_dimensions.y) * 0.5f;
-		borderbox.setFillColor(svc.styles.colors.ui_black);
-		borderbox.setSize({svc.constants.f_screen_dimensions.x, ydiff});
-		borderbox.setPosition({});
-		win.draw(borderbox);
-
-		borderbox.setPosition({0.0f, real_dimensions.y + ydiff});
-		win.draw(borderbox);
-	}
-	if (real_dimensions.x < svc.constants.f_screen_dimensions.x) {
-		auto xdiff = (svc.constants.f_screen_dimensions.x - real_dimensions.x) * 0.5f;
-		borderbox.setFillColor(svc.styles.colors.ui_black);
-		borderbox.setSize({xdiff, svc.constants.f_screen_dimensions.y});
-		borderbox.setPosition({});
-		win.draw(borderbox);
-
-		borderbox.setPosition({real_dimensions.x + xdiff, 0.0f});
-		win.draw(borderbox);
+	for (auto& animator : animators) {
+		if (animator.is_foreground()) { animator.render(win, cam); }
 	}
 
-	{
-		ZoneScopedN("Map::render - animator");
-		for (auto& animator : animators) {
-			if (animator.foreground()) { animator.render(svc, win, cam); }
-		}
-	}
-	{
-		ZoneScopedN("Map::render - inspectables");
-		for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
-	}
-	if (rain) {
-		ZoneScopedN("Map::render - rain");
-		rain.value().render(svc, win, cam);
-	}
+	for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
+
+	if (rain) { rain->render(svc, win, cam); }
+
+	if (m_attributes.properties.test(MapProperties::timer)) { svc.world_timer.render(win, sf::Vector2f{32.f, 32.f}); }
 
 	if (svc.greyblock_mode()) {
 		center_box.setPosition({});
 		center_box.setFillColor(sf::Color(80, 80, 80, 60));
 		win.draw(center_box);
-		center_box.setPosition(svc.constants.f_screen_dimensions * 0.5f);
+		center_box.setPosition(svc.window->f_screen_dimensions() * 0.5f);
 		win.draw(center_box);
 		center_box.setFillColor(sf::Color(100, 100, 100, 60));
-		center_box.setPosition({svc.constants.f_screen_dimensions.x * 0.5f, 0.f});
+		center_box.setPosition({svc.window->f_screen_dimensions().x * 0.5f, 0.f});
 		win.draw(center_box);
-		center_box.setPosition({0.f, svc.constants.f_screen_dimensions.y * 0.5f});
+		center_box.setPosition({0.f, svc.window->f_screen_dimensions().y * 0.5f});
 		win.draw(center_box);
-		sf::Sprite greyblock{textures.greyblock.getTexture()};
-		greyblock.setPosition(-cam);
-		win.draw(greyblock);
-		get_middleground().grid.render(win, cam);
+		get_middleground()->grid.render(win, cam);
 	}
 }
 
-void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	ZoneScopedN("Map::render_background");
+void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam) {
 	if (!svc.greyblock_mode()) {
 		background->render(svc, win, cam);
 		for (auto& layer : scenery_layers) {
 			for (auto& piece : layer) { piece->render(svc, win, cam); }
 		}
-		std::vector<sf::Sprite> sprites{sf::Sprite{textures.background.day.getTexture()}, sf::Sprite{textures.background.twilight.getTexture()}, sf::Sprite{textures.background.night.getTexture()}};
-		auto ctr{0};
-		for (auto& sprite : sprites) {
-			sprite.setPosition(-cam - scaled_barrier);
-			m_camera_effects.shifter.render(svc, win, sprite, ctr);
-			++ctr;
-		}
-		for (auto& npc : npcs) {
-			if (npc.background()) { npc.render(svc, win, cam); }
+		if (!svc.greyblock_mode()) {
+			for (auto [i, layer] : std::views::enumerate(get_layers())) {
+				if (i == 1) {
+					if (m_entities) {
+						for (auto n : get_entities<NPC>()) {
+							if (n->is_background()) { n->render(win, cam); }
+						}
+					}
+				}
+				if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
+					shader->finalize();
+					layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true);
+				} else {
+					layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true, m_attributes.properties.test(MapProperties::day_night_shift));
+				}
+			}
 		}
 		for (auto& switch_block : switch_blocks) { switch_block.render(svc, win, cam, true); }
 	} else {
 		sf::RectangleShape box{};
-		box.setFillColor(svc.styles.colors.black);
-		box.setSize(svc.constants.f_screen_dimensions);
+		box.setFillColor(colors::black);
+		box.setSize(svc.window->f_screen_dimensions());
 		win.draw(box);
 	}
 
-	for (auto& vine : vines) {
+	/*for (auto& vine : vines) {
 		if (!vine->foreground()) { vine->render(svc, win, cam); }
-	}
-	for (auto& g : grass) {
-		if (!g->foreground()) { g->render(svc, win, cam); }
-	}
+	}*/
 	for (auto& animator : animators) {
-		if (!animator.foreground()) { animator.render(svc, win, cam); }
+		if (!animator.is_foreground()) { animator.render(win, cam); }
 	}
+	for (auto& timer_block : timer_blocks) { timer_block.render(svc, win, cam); }
 }
 
-void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2<float> pos, sf::Vector2<float> target) {
+bool Map::handle_entry(player::Player& player, util::Cooldown& enter_room) {
+	auto ret = false;
+	if (!m_entities) { return false; }
+	for (auto const& entity : m_entities.value().variables.entities) {
+		if (auto* portal = dynamic_cast<Portal*>(entity.get())) {
+			if (portal->get_destination() == m_services->state_controller.source_id) {
+				ret = true;
+				sf::Vector2f spawn_position{portal->get_world_position().x + (portal->get_world_dimensions().x * 0.5f), portal->get_world_position().y + portal->get_world_dimensions().y - player.height()};
+				player.set_position(spawn_position, true);
+				player.force_camera_center();
+				if (portal->is_activate_on_contact() && portal->is_left_or_right()) {
+					enter_room.start();
+				} else {
+					if (!portal->is_already_open()) { portal->close(); }
+					player.set_idle();
+				}
+				if (portal->is_bottom()) {
+					player.collider.physics.acceleration.y = -player.physics_stats.jump_velocity;
+					player.collider.physics.acceleration.x = player.controller.facing_left() ? -player.physics_stats.x_acc : player.physics_stats.x_acc;
+				}
+			}
+		}
+	}
+	return ret;
+}
+
+auto Map::get_chunk_id_from_position(sf::Vector2f pos) const -> std::uint8_t {
+	auto clookup = (pos / constants::f_cell_size) / constants::f_chunk_size;
+	auto ulookup = sf::Vector2u{clookup};
+	return static_cast<std::uint8_t>(ulookup.y * get_chunk_dimensions().x + ulookup.x);
+}
+
+void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target, float speed_multiplier) {
 	active_projectiles.push_back(weapon.projectile);
 	active_projectiles.back().set_position(pos);
-	active_projectiles.back().seed(svc, target);
+	active_projectiles.back().seed(svc, target, speed_multiplier);
 	active_projectiles.back().update(svc, *player);
+	active_projectiles.back().register_chunk(get_chunk_id_from_position(pos));
 
 	if (weapon.secondary_emitter) {
 		active_emitters.push_back(vfx::Emitter(svc, weapon.get_barrel_point(), weapon.secondary_emitter.value().dimensions, weapon.secondary_emitter.value().type, weapon.secondary_emitter.value().color, weapon.get_firing_direction()));
@@ -750,17 +643,38 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon
 	}
 }
 
-void Map::spawn_enemy(int id, sf::Vector2<float> pos) {
-	enemy_spawns.push_back({pos, id});
+void Map::spawn_enemy(int id, sf::Vector2f pos, int variant) {
+	auto break_out = 0;
+	while (player->distant_vicinity.contains_point(pos) && break_out < 32) {
+		auto distance = player->collider.get_center() - pos;
+		pos -= distance;
+		++break_out;
+	}
+	enemy_spawns.push_back({pos, id, variant});
 	spawn_counter.update();
 	flags.state.set(LevelState::spawn_enemy);
+}
+
+void Map::reveal_npc(std::string_view label) {
+	if (!m_entities) {
+		NANI_LOG_DEBUG(m_logger, "No NPCs to reveal...");
+		NANI_LOG_DEBUG(m_logger, "Label was {}", label);
+		return;
+	}
+	for (auto n : get_entities<NPC>()) {
+		NANI_LOG_DEBUG(m_logger, "Trying {}", n->get_tag());
+		if (n->get_tag() == label) {
+			n->unhide();
+			NANI_LOG_DEBUG(m_logger, "Unhid NPC with label '{}'.", label);
+		}
+	}
 }
 
 void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	for (auto& proj : active_projectiles) {
 		proj.update(svc, *player);
 		if (proj.whiffed() && !proj.poofed() && !proj.made_contact()) {
-			effects.push_back(entity::Effect(svc, proj.get_position(), proj.get_velocity(), proj.effect_type(), 8));
+			effects.push_back(entity::Effect(svc, "bullet_whiff", proj.get_position(), proj.get_velocity() * 0.05f, proj.effect_type()));
 			proj.poof();
 		}
 	}
@@ -771,7 +685,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	// TODO: refactor this and move it into appropriate classes
 	if (player->fire_weapon()) {
 		svc.stats.player.bullets_fired.update();
-		sf::Vector2<float> tweak = player->controller.facing_left() ? sf::Vector2<float>{0.f, 0.f} : sf::Vector2<float>{-3.f, 0.f};
+		sf::Vector2f tweak = player->controller.facing_left() ? sf::Vector2f{0.f, 0.f} : sf::Vector2f{-3.f, 0.f};
 		if (player->equipped_weapon().multishot()) {
 			for (int i = 0; i < player->equipped_weapon().get_multishot(); ++i) { spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point()); }
 		} else {
@@ -783,16 +697,27 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 }
 
 void Map::generate_collidable_layer(bool live) {
-	auto pushable_offset = sf::Vector2<float>{1.f, 0.f};
-	for (auto& cell : get_middleground().grid.cells) {
-		get_middleground().grid.check_neighbors(cell.one_d_index);
+	auto pushable_offset = sf::Vector2f{1.f, 0.f};
+	for (auto& cell : get_middleground()->grid.cells) {
+		auto chunk_id = cell.get_chunk_id();
+		get_middleground()->grid.check_neighbors(cell.one_d_index);
 		if (live) { continue; }
-		if (cell.is_breakable()) { breakables.push_back(Breakable(*m_services, cell.position(), styles.breakables)); }
+		if (cell.is_breakable() && chunk_id < breakable_iterators.size()) {
+			breakables.push_back(Breakable(*m_services, cell.position(), chunk_id, m_attributes.style_id));
+			breakable_iterators[chunk_id].push_back(std::prev(breakables.end()));
+		}
 		if (cell.is_pushable()) { pushables.push_back(Pushable(*m_services, cell.position() + pushable_offset, styles.pushables, cell.value - 483)); }
-		if (cell.is_big_spike()) { spikes.push_back(Spike(*m_services, m_services->assets.t_big_spike, cell.position(), get_middleground().grid.get_solid_neighbors(cell.one_d_index), {6.f, 4.f})); }
-		if (cell.is_spike()) { spikes.push_back(Spike(*m_services, m_services->assets.tilesets.at(style_id), cell.position(), get_middleground().grid.get_solid_neighbors(cell.one_d_index), {1.f, 1.f})); }
+		if (cell.is_big_spike()) {
+			spikes.push_back(Spike(*m_services, m_services->assets.get_texture("big_spike"), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {6.f, 4.f}, m_attributes.style_id,
+								   m_attributes.properties.test(MapProperties::environmental_randomness)));
+		}
+		if (cell.is_spike()) {
+			spikes.push_back(Spike(*m_services, m_services->assets.get_tileset(m_metadata.biome), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {1.f, 1.f}, m_attributes.style_id,
+								   m_attributes.properties.test(MapProperties::environmental_randomness)));
+		}
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position(), 5)); }
-		if (cell.is_target()) { target_points.push_back(cell.get_center()); }
+		if (cell.is_target()) { target_points.push_back(cell.get_global_center()); }
+		if (cell.is_home()) { home_points.push_back(cell.get_global_center()); }
 		if (cell.is_checkpoint()) { checkpoints.push_back(Checkpoint(*m_services, cell.position())); }
 		if (cell.is_fire()) {
 			if (!fire) { fire = std::vector<Fire>{}; }
@@ -801,83 +726,17 @@ void Map::generate_collidable_layer(bool live) {
 	}
 }
 
-void Map::generate_layer_textures(automa::ServiceProvider& svc) {
-	auto& layers = svc.data.get_layers(room_id);
-	if (has_obscuring_layer()) { textures.obscuring = LayerTexture(); }
-	if (has_reverse_obscuring_layer()) { textures.reverse_obscuring = LayerTexture(); }
-	for (auto cycle{0}; cycle < static_cast<int>(fornani::TimeOfDay::END); ++cycle) {
-		for (auto& layer : layers) {
-			auto changed{layer.get_i_render_order() == 0 || layer.middleground()};
-			auto finished{layer.get_i_render_order() == m_middleground - 1 || layer.get_i_render_order() == layers.size() - 1};
-			auto time = static_cast<fornani::TimeOfDay>(cycle);
-			auto& tex{time == fornani::TimeOfDay::day ? (!layer.background() ? textures.foreground.day : textures.background.day)
-													  : (time == fornani::TimeOfDay::twilight ? (!layer.background() ? textures.foreground.twilight : textures.background.twilight)
-														 : !layer.background()				  ? textures.foreground.night
-																							  : textures.background.night)};
-
-			sf::Vector2u size{static_cast<unsigned int>(layer.grid.dimensions.x + barrier.x * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size),
-							  static_cast<unsigned int>(layer.grid.dimensions.y + barrier.y * 2.f) * static_cast<unsigned int>(svc.constants.i_cell_size)};
-			if (changed) {
-				if (!tex.resize(size)) { std::cout << "Layer texture not created.\n"; }
-				tex.clear(sf::Color::Transparent);
-			}
-			if (layer.obscuring()) {
-				auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
-				if (!obs_tex.resize(size)) { std::cout << "Obscuring layer texture not created.\n"; }
-				obs_tex.clear(sf::Color::Transparent);
-			}
-			if (layer.reverse_obscuring()) {
-				auto& rev_obs_tex{time == fornani::TimeOfDay::day ? textures.reverse_obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.reverse_obscuring.value().twilight : textures.reverse_obscuring.value().night)};
-				if (!rev_obs_tex.resize(size)) { std::cout << "Reverse layer texture not created.\n"; }
-				rev_obs_tex.clear(sf::Color::Transparent);
-			}
-			sf::Sprite tile{svc.assets.tilesets.at(style_id)};
-			for (auto& cell : layer.grid.cells) {
-				if (cell.is_occupied() && !cell.is_special()) {
-					auto x_coord = static_cast<int>((cell.value % svc.constants.tileset_scaled.x) * svc.constants.i_cell_size) + (cycle * 512);
-					auto y_coord = static_cast<int>(std::floor(cell.value / svc.constants.tileset_scaled.x) * svc.constants.i_cell_size);
-					tile.setTextureRect(sf::IntRect({x_coord, y_coord}, {svc.constants.i_cell_size, svc.constants.i_cell_size}));
-					tile.setPosition(cell.position() + scaled_barrier);
-					auto normal{true};
-					if (layer.obscuring()) {
-						auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
-						obs_tex.draw(tile);
-						normal = false;
-					}
-					if (layer.reverse_obscuring()) {
-						auto& rev_obs_tex{time == fornani::TimeOfDay::day ? textures.reverse_obscuring.value().day
-																		  : (time == fornani::TimeOfDay::twilight ? textures.reverse_obscuring.value().twilight : textures.reverse_obscuring.value().night)};
-						rev_obs_tex.draw(tile);
-						normal = false;
-					}
-					if (normal) { tex.draw(tile); }
-					if (layer.middleground()) { draw_barrier(tex, tile, cell); }
-				}
-			}
-			if (finished) { tex.display(); }
-			if (layer.obscuring()) {
-				auto& obs_tex{time == fornani::TimeOfDay::day ? textures.obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.obscuring.value().twilight : textures.obscuring.value().night)};
-				obs_tex.display();
-			}
-			if (layer.reverse_obscuring()) {
-				auto& rev_obs_tex{time == fornani::TimeOfDay::day ? textures.reverse_obscuring.value().day : (time == fornani::TimeOfDay::twilight ? textures.reverse_obscuring.value().twilight : textures.reverse_obscuring.value().night)};
-				rev_obs_tex.display();
-			}
-			if (layer.middleground()) {
-				if (!textures.greyblock.resize(size)) { std::cout << "Layer texture not created.\n"; }
-				get_middleground().grid.draw(textures.greyblock);
-			}
-		}
-	}
+void Map::generate_layer_textures(automa::ServiceProvider& svc) const {
+	for (auto& layer : svc.data.get_layers(room_id)) { layer->generate_textures(svc.assets.get_tileset(m_metadata.biome)); }
 }
 
 bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
-	auto& grid = foreground ? get_obscuring_layer().grid : get_middleground().grid;
+	auto& grid = foreground ? get_obscuring_layer()->grid : get_middleground()->grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.vicinity.vertices.at(0));
 	auto bottom = get_index_at_position(collider.vicinity.vertices.at(3));
 	auto right = get_index_at_position(collider.vicinity.vertices.at(1)) - top;
-	for (auto i{top}; i <= bottom; i += static_cast<size_t>(dimensions.x)) {
+	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
 			auto index = i + j;
@@ -892,12 +751,12 @@ bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
 }
 
 bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms) {
-	auto& grid = get_middleground().grid;
+	auto& grid = get_middleground()->grid;
 	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.boundary.first);
 	auto bottom = get_index_at_position(collider.boundary.second);
-	auto right = static_cast<size_t>(collider.boundary_width() / m_services->constants.cell_size);
-	for (auto i{top}; i <= bottom; i += static_cast<size_t>(dimensions.x)) {
+	auto right = static_cast<std::size_t>(collider.boundary_width() / constants::f_cell_size);
+	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
 			auto index = i + j;
@@ -912,12 +771,33 @@ bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool coll
 	return false;
 }
 
-void Map::handle_cell_collision(shape::CircleCollider& collider) {
-	auto& grid = get_middleground().grid;
+sf::Vector2i Map::get_circle_collision_result(shape::CircleCollider& collider, bool collide_with_platforms) {
+	auto& grid = get_middleground()->grid;
+	auto& layers = m_services->data.get_layers(room_id);
 	auto top = get_index_at_position(collider.boundary.first);
 	auto bottom = get_index_at_position(collider.boundary.second);
-	auto right = static_cast<size_t>(collider.boundary_width() / m_services->constants.cell_size);
-	for (auto i{top}; i <= bottom; i += static_cast<size_t>(dimensions.x)) {
+	auto right = static_cast<std::size_t>(collider.boundary_width() / constants::f_cell_size);
+	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
+		auto left{0};
+		for (auto j{left}; j <= right; ++j) {
+			auto index = i + j;
+			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
+			auto& cell = grid.get_cell(static_cast<int>(index));
+			if (!cell.is_collidable() || cell.is_ceiling_ramp()) { continue; }
+			if (cell.is_platform() && !collide_with_platforms) { continue; }
+			cell.collision_check = true;
+			if (collider.collides_with(cell.bounding_box)) { return collider.get_collision_result(cell.bounding_box); }
+		}
+	}
+	return {};
+}
+
+void Map::handle_cell_collision(shape::CircleCollider& collider) {
+	auto& grid = get_middleground()->grid;
+	auto top = get_index_at_position(collider.boundary.first);
+	auto bottom = get_index_at_position(collider.boundary.second);
+	auto right = static_cast<std::size_t>(collider.boundary_width() / constants::f_cell_size);
+	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
 			auto index = i + j;
@@ -930,54 +810,49 @@ void Map::handle_cell_collision(shape::CircleCollider& collider) {
 	}
 }
 
+void Map::handle_breakable_collision(shape::CircleCollider& collider) {
+	auto chunk = get_chunk_id_from_position(collider.physics.position);
+	if (chunk < breakable_iterators.size()) {
+		for (auto const& it : breakable_iterators[chunk]) { collider.handle_collision(it->get_bounding_box()); }
+	}
+}
+
+void Map::clear_projectiles() {
+	for (auto& proj : active_projectiles) { proj.destroy(false); }
+}
+
 void Map::shake_camera() { flags.state.set(LevelState::camera_shake); }
 
 void Map::clear() {
 	dimensions = {};
-	portals.clear();
+	// portals.clear();
 	platforms.clear();
 	breakables.clear();
 	pushables.clear();
 	spikes.clear();
-	destroyers.clear();
+	destructibles.clear();
 	switch_blocks.clear();
 	switch_buttons.clear();
 	chests.clear();
-	npcs.clear();
+	// npcs.clear();
 	checkpoints.clear();
 }
 
-void Map::wrap(sf::Vector2<float>& position) const {
+void Map::wrap(sf::Vector2f& position) const {
 	if (position.x < 0.f) { position.x = real_dimensions.x; }
 	if (position.y < 0.f) { position.y = real_dimensions.y; }
 	if (position.x > real_dimensions.x) { position.x = 0.f; }
 	if (position.y > real_dimensions.y) { position.y = 0.f; }
 }
 
-std::vector<Layer>& Map::get_layers() { return m_services->data.get_layers(room_id); }
+std::vector<std::unique_ptr<world::Layer>>& Map::get_layers() { return m_services->data.get_layers(room_id); }
 
-Layer& Map::get_middleground() { return m_services->data.get_layers(room_id).at(m_middleground); }
+std::unique_ptr<world::Layer>& Map::get_middleground() { return m_services->data.get_layers(room_id).at(m_middleground); }
 
-Layer& Map::get_obscuring_layer() { return m_services->data.get_layers(room_id).at(static_cast<std::size_t>(m_services->data.get_layers(room_id).size() - 1)); }
+std::unique_ptr<world::Layer>& Map::get_obscuring_layer() { return m_services->data.get_layers(room_id).at(static_cast<std::size_t>(m_services->data.get_layers(room_id).size() - 1)); }
 
-npc::NPC& Map::get_npc(int id) {
-	for (auto& npc : npcs) {
-		if (npc.get_id() == id) { return npc; }
-	}
-
-	std::cerr << "Tried to get NPC that didn't exist! ID: " << id << std::endl;
-	std::exit(1);
-}
-
-sf::Vector2<float> Map::get_spawn_position(int portal_source_map_id) {
-	for (auto& portal : portals) {
-		if (portal.get_source() == portal_source_map_id) { return (portal.position); }
-	}
-	return Vec(300.f, 390.f);
-}
-
-sf::Vector2<float> Map::get_nearest_target_point(sf::Vector2<float> from) {
-	auto ret = sf::Vector2<float>{};
+sf::Vector2f Map::get_nearest_target_point(sf::Vector2f from) {
+	auto ret = sf::Vector2f{};
 	auto dist = std::numeric_limits<float>::max();
 	for (auto& target : target_points) {
 		auto test = util::magnitude(from - target);
@@ -989,7 +864,7 @@ sf::Vector2<float> Map::get_nearest_target_point(sf::Vector2<float> from) {
 	return ret;
 }
 
-sf::Vector2<float> Map::last_checkpoint() {
+sf::Vector2f Map::last_checkpoint() {
 	for (auto& checkpoint : checkpoints) {
 		if (checkpoint.reached()) { return checkpoint.position(); }
 	}
@@ -997,63 +872,74 @@ sf::Vector2<float> Map::last_checkpoint() {
 }
 
 void Map::debug() {
+	for (auto& enemy : enemy_catalog.enemies) { enemy->debug(); }
+#if defined(FORNANI_PRODUCTION)
 	background->debug();
 	// for (auto& atm : atmosphere) { atm.debug(); }
+#endif
 }
 
 bool Map::nearby(shape::Shape& first, shape::Shape& second) const {
-	return abs(first.get_position().x + first.get_dimensions().x * 0.5f - second.get_position().x) < lookup::unit_size_f * collision_barrier && abs(first.get_position().y - second.get_position().y) < lookup::unit_size_f * collision_barrier;
+	return abs(first.get_position().x + first.get_dimensions().x * 0.5f - second.get_position().x) < constants::f_cell_size * collision_barrier &&
+		   abs(first.get_position().y - second.get_position().y) < constants::f_cell_size * collision_barrier;
 }
 
-bool Map::within_bounds(sf::Vector2<float> test) const { return test.x > 0.f && test.x < real_dimensions.x && test.y > 0.f && test.y < real_dimensions.y; }
+bool Map::within_bounds(sf::Vector2f test) const { return test.x > 0.f && test.x < real_dimensions.x && test.y > 0.f && test.y < real_dimensions.y; }
 
 bool Map::overlaps_middleground(shape::Shape& test) {
-	for (auto& cell : get_middleground().grid.cells) {
+	for (auto& cell : get_middleground()->grid.cells) {
 		if (test.overlaps(cell.bounding_box) && cell.is_solid()) { return true; }
 	}
 	return false;
 }
 
-std::size_t Map::get_index_at_position(sf::Vector2<float> position) { return get_middleground().grid.get_index_at_position(position); }
+dj::Json const& Map::get_json_data(automa::ServiceProvider& svc) const {
+	auto rid = room_id;
+	auto const it = std::find_if(svc.data.map_jsons.begin(), svc.data.map_jsons.end(), [rid](auto const& r) { return r.id == rid; });
+	return it->metadata;
+}
 
-int Map::get_tile_value_at_position(sf::Vector2<float> position) { return get_middleground().grid.get_cell(get_index_at_position(position)).value; }
+std::size_t Map::get_index_at_position(sf::Vector2f position) { return get_middleground()->grid.get_index_at_position(position); }
 
-Tile& Map::get_cell_at_position(sf::Vector2<float> position) { return get_middleground().grid.cells.at(get_index_at_position(position)); }
+int Map::get_tile_value_at_position(sf::Vector2f position) { return get_middleground()->grid.get_cell(get_index_at_position(position)).value; }
 
-void world::Map::draw_barrier(sf::RenderTexture& tex, sf::Sprite& tile, Tile& cell) {
-	sf::Vector2f offset = 2.f * scaled_barrier;
-	if (cell.index.x == 0) {
-		tile.setPosition(cell.position());
-		tex.draw(tile);
-	}
-	if (cell.index.y == 0) {
-		tile.setPosition(cell.position());
-		tex.draw(tile);
-	}
-	if (cell.index.x == dimensions.x - 1) {
-		tile.setPosition(cell.position() + offset);
-		tex.draw(tile);
-	}
-	if (cell.index.y == dimensions.y - 1) {
-		tile.setPosition(cell.position() + offset);
-		tex.draw(tile);
-	}
-	if (cell.index.x == 0 && cell.index.y == dimensions.y - 1) {
-		tile.setPosition(cell.position() + sf::Vector2f{0.f, scaled_barrier.y});
-		tex.draw(tile);
-		tile.setPosition(cell.position() + sf::Vector2f{0.f, 2.f * scaled_barrier.y});
-		tex.draw(tile);
-		tile.setPosition(cell.position() + sf::Vector2f{scaled_barrier.x, 2.f * scaled_barrier.y});
-		tex.draw(tile);
-	}
-	if (cell.index.y == 0 && cell.index.x == dimensions.x - 1) {
-		tile.setPosition(cell.position() + sf::Vector2f{scaled_barrier.x, 0.f});
-		tex.draw(tile);
-		tile.setPosition(cell.position() + sf::Vector2f{2.f * scaled_barrier.x, 0.f});
-		tex.draw(tile);
-		tile.setPosition(cell.position() + sf::Vector2f{2.f * scaled_barrier.x, scaled_barrier.y});
-		tex.draw(tile);
-	}
+Tile& Map::get_cell_at_position(sf::Vector2f position) { return get_middleground()->grid.cells.at(get_index_at_position(position)); }
+
+MapAttributes::MapAttributes(dj::Json const& in) {
+	// map properties
+	if (in["properties"]["environmental_randomness"].as_bool()) { properties.set(MapProperties::environmental_randomness); }
+	if (in["properties"]["day_night_shift"].as_bool()) { properties.set(MapProperties::day_night_shift); }
+	if (in["properties"]["timer"].as_bool()) { properties.set(MapProperties::timer); }
+	if (in["properties"]["lighting"].as_bool()) { properties.set(MapProperties::lighting); }
+	if (in["minimap"].as_bool()) { properties.set(MapProperties::minimap); }
+
+	music = in["music"].as_string();
+	ambience = in["ambience"].as_string();
+	for (auto& entry : in["atmosphere"].as_array()) { atmosphere.push_back(entry.as<int>()); }
+
+	style_id = in["style"].as<int>();
+	special_drop_id = in["special_drop_id"].as<int>();
+	background_id = in["background"].as<int>();
+	border_color = sf::Color{in["border_color"][0].as<std::uint8_t>(), in["border_color"][1].as<std::uint8_t>(), in["border_color"][2].as<std::uint8_t>()};
+}
+
+void MapAttributes::serialize(dj::Json& out) {
+	out["properties"]["environmental_randomness"] = properties.test(fornani::world::MapProperties::environmental_randomness);
+	out["properties"]["day_night_shift"] = properties.test(fornani::world::MapProperties::day_night_shift);
+	out["properties"]["timer"] = properties.test(fornani::world::MapProperties::timer);
+	out["properties"]["lighting"] = properties.test(fornani::world::MapProperties::lighting);
+
+	out["music"] = music;
+	NANI_LOG_DEBUG(m_logger, "Serialized music: {}", music);
+	out["ambience"] = ambience;
+	for (auto& atmo : atmosphere) { out["atmosphere"].push_back(atmo); }
+
+	out["style"] = style_id;
+	out["special_drop_id"] = special_drop_id;
+	out["background"] = background_id;
+	out["border_color"].push_back(border_color.r);
+	out["border_color"].push_back(border_color.g);
+	out["border_color"].push_back(border_color.b);
 }
 
 } // namespace fornani::world

@@ -1,0 +1,20 @@
+nani_add_headers(
+  Animator.hpp
+  Bed.hpp
+  Chest.hpp
+  CutsceneTrigger.hpp
+  Destructible.hpp
+  Entity.hpp
+  EntitySet.hpp
+        Inspectable.hpp
+        Light.hpp
+        NPC.hpp
+        Platform.hpp
+        Portal.hpp
+        SavePoint.hpp
+        Enemy.hpp
+        SwitchBlock.hpp
+        SwitchButton.hpp
+        TimerBlock.hpp
+        Vine.hpp
+)

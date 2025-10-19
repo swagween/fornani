@@ -1,0 +1,539 @@
+{
+  "minimap": [
+    {
+      "label": "open",
+      "path": [
+        {
+          "position": [67, 53],
+          "dimensions": [2, 2]
+        },
+        {
+          "position": [67, -87],
+          "dimensions": [2, 2]
+        },
+        {
+          "position": [-29, -87],
+          "dimensions": [233, 2]
+        },
+        {
+          "position": [-29, -175],
+          "dimensions": [233, 89]
+        }
+      ]
+    },
+    {
+      "label": "close",
+      "path": [
+        {
+          "position": [-29, -175],
+          "dimensions": [233, 89]
+        },
+        {
+          "position": [65, -175],
+          "dimensions": [3, 2]
+        },
+        {
+          "position": [67, -175],
+          "dimensions": [2, 2]
+        },
+        {
+          "position": [67, 59],
+          "dimensions": [2, 2]
+        },
+        {
+          "position": [67, 53],
+          "dimensions": [2, 2]
+        }
+      ]
+    },
+    {
+      "label": "end",
+      "path": [
+        { "position": [67, 53] },
+        {
+          "position": [67, -360]
+        }
+      ]
+    }
+  ],
+  "dashboard_minimap": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [0, 0],
+          "dimensions": [0, 0]
+        }
+      ]
+    },
+    {
+      "label": "open",
+      "path": [
+        {
+          "position": [0, 0],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [0, -142],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [-96, -142],
+          "dimensions": [233, 0]
+        }
+      ]
+    },
+    {
+      "label": "close",
+      "path": [
+        {
+          "position": [-96, -142],
+          "dimensions": [233, 0]
+        },
+        {
+          "position": [0, -142],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [0, 0],
+          "dimensions": [0, 0]
+        }
+      ]
+    }
+  ],
+  "minimap_info": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [105, 22],
+          "dimensions": [0, 0]
+        }
+      ]
+    },
+    {
+      "label": "open",
+      "path": [
+        {
+          "position": [105, 22],
+          "dimensions": [0, 1]
+        },
+        {
+          "position": [105, 22],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [-109, 22],
+          "dimensions": [337, 0]
+        },
+        {
+          "position": [-107, 22],
+          "dimensions": [333, 0]
+        }
+      ]
+    }
+  ],
+  "minimap_motherboard": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [0, -2048],
+          "dimensions": [0, 0]
+        }
+      ]
+    },
+    {
+      "label": "open",
+      "path": [
+        {
+          "position": [60, 0],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [50, 0],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [0, 0],
+          "dimensions": [0, 0]
+        }
+      ]
+    }
+  ],
+  "plugin_nani": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [-80, -173],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [-79, -173],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [-78, -173],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [47, -173],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [43, -173],
+          "dimensions": [0, 0]
+        }
+      ]
+    }
+  ],
+  "plugin_save": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [-80, -188],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [-79, -188],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [-78, -188],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [35, -188],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [31, -188],
+          "dimensions": [0, 0]
+        }
+      ]
+    }
+  ],
+  "plugin_bed": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [-80, -142],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [-79, -142],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [-78, -142],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [18, -142],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [14, -142],
+          "dimensions": [0, 0]
+        }
+      ]
+    }
+  ],
+  "wardrobe": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [64, 0],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [63, 0],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [-159, 0],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [-158, 0],
+          "dimensions": [0, 0]
+        }
+      ]
+    },
+    {
+      "label": "end",
+      "path": [
+        {
+          "position": [-158, 0]
+        },
+        {
+          "position": [64, 0]
+        }
+      ]
+    }
+  ],
+  "wardrobe_outfitter": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [256, 0],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [0, 0],
+          "dimensions": [5, 122]
+        }
+      ]
+    },
+    {
+      "label": "end",
+      "path": [
+        {
+          "position": [0, 0]
+        },
+        {
+          "position": [256, 0]
+        }
+      ]
+    },
+    {
+      "label": "close",
+      "path": [
+        {
+          "position": [0, 0],
+          "dimensions": [5, 122]
+        },
+        {
+          "position": [4, 0],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [256, 0],
+          "dimensions": [0, 0]
+        }
+      ]
+    }
+  ],
+  "inventory": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [-540, 0]
+        },
+        {
+          "position": [0, 0]
+        }
+      ]
+    },
+    {
+      "label": "end",
+      "path": [
+        {
+          "position": [0, 0]
+        },
+        {
+          "position": [-540, 0]
+        }
+      ]
+    },
+    {
+      "label": "open",
+      "path": [
+        {
+          "position": [0, 0]
+        },
+        {
+          "position": [0, -260]
+        }
+      ]
+    },
+    {
+      "label": "close",
+      "path": [
+        {
+          "position": [0, -260]
+        },
+        {
+          "position": [0, 1]
+        },
+        {
+          "position": [0, 0]
+        }
+      ]
+    }
+  ],
+  "vendor_wares": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [99, -100]
+        },
+        {
+          "position": [99, 27]
+        }
+      ]
+    },
+    {
+      "label": "end",
+      "path": [
+        {
+          "position": [99, 27]
+        },
+        {
+          "position": [99, -100]
+        }
+      ]
+    }
+  ],
+  "vendor_portrait": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [-100, 5]
+        },
+        {
+          "position": [9, 5]
+        }
+      ]
+    },
+    {
+      "label": "end",
+      "path": [
+        {
+          "position": [9, 5]
+        },
+        {
+          "position": [-100, 5]
+        }
+      ]
+    }
+  ],
+  "vendor_core": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [70, 300]
+        },
+        {
+          "position": [70, 118]
+        }
+      ]
+    },
+    {
+      "label": "end",
+      "path": [
+        {
+          "position": [70, 118]
+        },
+        {
+          "position": [70, 300]
+        }
+      ]
+    }
+  ],
+  "vendor_name": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [-80, 145]
+        },
+        {
+          "position": [6, 145]
+        }
+      ]
+    },
+    {
+      "label": "end",
+      "path": [
+        {
+          "position": [6, 145]
+        },
+        {
+          "position": [-80, 145]
+        }
+      ]
+    }
+  ],
+  "vendor_description": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [500, 112]
+        },
+        {
+          "position": [213, 112]
+        }
+      ]
+    },
+    {
+      "label": "end",
+      "path": [
+        {
+          "position": [213, 112]
+        },
+        {
+          "position": [500, 112]
+        }
+      ]
+    }
+  ],
+  "vendor_nani": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [500, 2]
+        },
+        {
+          "position": [307, 2]
+        }
+      ]
+    },
+    {
+      "label": "end",
+      "path": [
+        {
+          "position": [307, 2]
+        },
+        {
+          "position": [500, 2]
+        }
+      ]
+    }
+  ],
+  "vendor_selection": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [500, 20]
+        },
+        {
+          "position": [293, 20]
+        }
+      ]
+    },
+    {
+      "label": "end",
+      "path": [
+        {
+          "position": [500, 20]
+        },
+        {
+          "position": [293, 20]
+        }
+      ]
+    }
+  ]
+}

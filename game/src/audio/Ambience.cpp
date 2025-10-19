@@ -1,29 +1,32 @@
+
 #include "fornani/audio/Ambience.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::audio {
 
-void Ambience::load(data::ResourceFinder& finder, std::string_view source) {
-	if (source.empty()) { return; }
+Ambience::Ambience(capo::IEngine& audio_engine) : tracks{.open{audio_engine}, .closed{audio_engine}}, m_volume_multiplier{0.2f} {}
+
+void Ambience::load(ResourceFinder& finder, std::string_view source) {
+	if (source.empty()) { source = "none"; }
 	tracks.open.turn_on();
 	tracks.closed.turn_on();
+	tracks.open.set_volume(0.f);
+	tracks.closed.set_volume(0.f);
 	std::string source_str = source.data();
-	tracks.open.simple_load(finder.resource_path() + "/audio/ambience/" + source_str + "/open");
-	tracks.closed.simple_load(finder.resource_path() + "/audio/ambience/" + source_str + "/closed");
+	tracks.open.load(finder.resource_path() + "/audio/ambience/" + source_str + "/open.xm");
+	tracks.closed.load(finder.resource_path() + "/audio/ambience/" + source_str + "/closed.xm");
 }
 
 void Ambience::play() {
-	tracks.open.switch_on();
-	tracks.closed.switch_on();
-	tracks.open.play_looped(5);
-	tracks.closed.play_looped(5);
+	tracks.open.play_looped();
+	tracks.closed.play_looped();
 }
 
 void Ambience::set_balance(float balance) {
 	tracks.open.update();
 	tracks.closed.update();
-	auto actual = balance * volume_multiplier;
-	auto inverse = (100.f - balance) * volume_multiplier;
+	auto actual = balance * m_volume_multiplier;
+	auto inverse = (1.f - balance) * m_volume_multiplier;
 	tracks.open.set_volume(actual);
 	tracks.closed.set_volume(inverse);
 }

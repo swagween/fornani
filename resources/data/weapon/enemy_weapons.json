@@ -1,338 +1,642 @@
 {
-  "weapons": [
-    {
-      "metadata": {
-        "label": "Skycorps AR"
+  "skycorps_ar": {
+    "metadata": {
+      "id": 0,
+      "label": "Skycorps AR",
+      "tag": "skycorps_ar"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [18, 8],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
       },
-      "visual": {
-        "texture_lookup": 0,
-        "dimensions": [ 18, 8 ],
-        "offsets": {
-          "global": [ -3.0, 5.0 ],
-          "barrel": [ 18.0, 2.0 ],
-          "stock": [ 0, 0 ]
-        },
-        "spray": {
-          "dimensions": [ 2.0, 2.0 ],
-          "type": "fast_burst",
-          "color": "goldenrod"
-        }
+      "spray": {
+        "dimensions": [2.0, 2.0],
+        "type": "fast_burst",
+        "color": "goldenrod"
       },
-      "gameplay": {
-        "attributes": {
-          "automatic": false,
-          "ammo": 4,
-          "reload": 160,
-          "cooldown_time": 50,
-          "recoil": 0.0
-        }
-      },
-      "audio": { "shoot": 2 },
-      "class_package": {
-        "projectile": {
-          "type": 0,
-          "dimensions": [
-            14.0,
-            14.0
-          ],
-          "attributes": {
-            "base_damage": 1,
-            "lifespan": 1880,
-            "lifespan_variance": 0,
-            "speed": 10.5,
-            "variance": 0.1,
-            "stun_time": 0.0,
-            "knockback": 0.0,
-            "transcendent": false,
-            "persistent": false,
-            "constrained": false,
-            "range_variance": 0.0,
-            "acceleration_factor": 0.0,
-            "dampen_factor": 0.0
-          },
-          "animation": {
-            "num_sprites": 1,
-            "num_frames": 4,
-            "framerate": 24
-          }
-        }
+      "secondary_spray": {
+        "dimensions": [4.0, 4.0],
+        "type": "peckett",
+        "color": "white"
       }
     },
-    {
-      "metadata": {
-        "label": "Minigun"
-      },
-      "visual": {
-        "texture_lookup": 0,
-        "dimensions": [ 78, 30 ],
-        "offsets": {
-          "global": [ 0.0, 0.0 ],
-          "barrel": [ 0.0, 20.0 ],
-          "stock": [ 0, 0 ]
-        },
-        "spray": {
-          "dimensions": [ 2.0, 2.0 ],
-          "type": "twinkle",
-          "color": "white"
-        }
-      },
-      "gameplay": {
-        "attributes": {
-          "automatic": true,
-          "ammo": 32,
-          "reload": 1,
-          "cooldown_time": 20,
-          "recoil": 0.0
-        }
-      },
-      "audio": { "shoot": 3 },
-      "class_package": {
-        "projectile": {
-          "type": 0,
-          "dimensions": [
-            14.0,
-            14.0
-          ],
-          "attributes": {
-            "base_damage": 1,
-            "lifespan": 880,
-            "speed": 16.0,
-            "variance": 0.1
-          },
-          "animation": {
-            "num_sprites": 1,
-            "num_frames": 4,
-            "framerate": 18
-          }
-        }
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 3,
+        "reload": 360,
+        "cooldown_time": 36,
+        "recoil": 0.0
       }
     },
-    {
-      "metadata": {
-        "label": "Soda Gun"
-      },
-      "visual": {
-        "texture_lookup": 0,
-        "dimensions": [ 18, 8 ],
-        "offsets": {
-          "global": [ 0.0, 0.0 ],
-          "barrel": [ 0.0, -10.0 ],
-          "stock": [ 0, 0 ]
-        },
-        "spray": {
-          "dimensions": [ 8.0, 8.0 ],
-          "type": "thick_burst",
-          "color": "white"
-        }
-      },
-      "gameplay": {
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [7.0, 7.0],
+        "radius": 4.0,
         "attributes": {
-          "automatic": false,
-          "ammo": 4,
-          "reload": 160,
-          "cooldown_time": 50,
-          "recoil": 0.0
-        }
-      },
-      "audio": { "shoot": 2 },
-      "class_package": {
-        "projectile": {
-          "type": 0,
-          "dimensions": [
-            22.0,
-            12.0
-          ],
-          "attributes": {
-            "base_damage": 1,
-            "lifespan": 660,
-            "lifespan_variance": 0,
-            "speed": 24.5,
-            "variance": 0.4,
-            "stun_time": 0.0,
-            "knockback": 0.0,
-            "range_variance": 0.0,
-            "acceleration_factor": 0.0,
-            "dampen_factor": 0.0
-          },
-          "animation": {
-            "num_sprites": 1,
-            "num_frames": 6,
-            "framerate": 18
-          }
-        }
-      }
-    },
-    {
-      "metadata": {
-        "label": "Energy Ball"
-      },
-      "visual": {
-        "texture_lookup": 0,
-        "dimensions": [ 18, 8 ],
-        "offsets": {
-          "global": [ -3.0, 5.0 ],
-          "barrel": [ 18.0, 2.0 ],
-          "stock": [ 0, 0 ]
+          "base_damage": 1,
+          "lifespan": 1880,
+          "lifespan_variance": 0,
+          "speed": 10.5,
+          "variance": 0.1,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "persistent": false,
+          "constrained": false,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.0
         },
-        "spray": {
-          "dimensions": [ 8.0, 8.0 ],
-          "type": "pulse",
-          "color": "white"
-        }
-      },
-      "gameplay": {
-        "attributes": {
-          "automatic": true,
-          "ammo": 3,
-          "reload": 160,
-          "cooldown_time": 50,
-          "recoil": 0.0
-        }
-      },
-      "audio": { "shoot": 2 },
-      "class_package": {
-        "projectile": {
-          "type": 0,
-          "dimensions": [
-            32.0,
-            32.0
-          ],
-          "attributes": {
-            "base_damage": 2,
-            "lifespan": 880,
-            "lifespan_variance": 0,
-            "speed": 10.5,
-            "variance": 0.2,
-            "stun_time": 0.0,
-            "knockback": 0.0,
-            "transcendent": true,
-            "omnidirectional": true,
-            "range_variance": 0.0,
-            "acceleration_factor": 0.0,
-            "dampen_factor": 0.0
-          },
-          "animation": {
-            "num_sprites": 1,
-            "num_frames": 4,
-            "framerate": 24
-          }
-        }
-      }
-    },
-    {
-      "metadata": {
-        "label": "Demon Bow"
-      },
-      "visual": {
-        "texture_lookup": 0,
-        "dimensions": [ 18, 8 ],
-        "offsets": {
-          "global": [ -3.0, 5.0 ],
-          "barrel": [ 18.0, 2.0 ],
-          "stock": [ 0, 0 ]
-        },
-        "spray": {
-          "dimensions": [ 8.0, 8.0 ],
-          "type": "pulse",
-          "color": "white"
-        }
-      },
-      "gameplay": {
-        "attributes": {
-          "automatic": true,
-          "ammo": 3,
-          "reload": 160,
-          "cooldown_time": 50,
-          "recoil": 0.0
-        }
-      },
-      "audio": { "shoot": 2 },
-      "class_package": {
-        "projectile": {
-          "type": 0,
-          "dimensions": [
-            44.0,
-            44.0
-          ],
-          "attributes": {
-            "base_damage": 2,
-            "lifespan": 880,
-            "lifespan_variance": 0,
-            "speed": 10.5,
-            "variance": 0.2,
-            "stun_time": 0.0,
-            "knockback": 0.0,
-            "transcendent": true,
-            "omnidirectional": true,
-            "range_variance": 0.0,
-            "acceleration_factor": 0.0,
-            "dampen_factor": 0.0,
-            "gravity": 0.4
-          },
-          "animation": {
-            "num_sprites": 1,
-            "num_frames": 1,
-            "framerate": 24,
-            "angles": 6
-          }
-        }
-      }
-    },
-    {
-      "metadata": {
-        "label": "Green Beam"
-      },
-      "visual": {
-        "texture_lookup": 0,
-        "dimensions": [ 18, 8 ],
-        "offsets": {
-          "global": [ 0.0, 0.0 ],
-          "barrel": [ 0.0, 0.0 ],
-          "stock": [ 0, 0 ]
-        },
-        "spray": {
-          "dimensions": [ 8.0, 8.0 ],
-          "type": "green_beam",
-          "color": "green"
-        }
-      },
-      "gameplay": {
-        "attributes": {
-          "automatic": false,
-          "ammo": 4,
-          "reload": 160,
-          "cooldown_time": 50,
-          "recoil": 0.0
-        }
-      },
-      "audio": { "shoot": 2 },
-      "class_package": {
-        "projectile": {
-          "type": 0,
-          "dimensions": [
-            32.0,
-            32.0
-          ],
-          "attributes": {
-            "base_damage": 2,
-            "lifespan": 660,
-            "lifespan_variance": 0,
-            "speed": 34.5,
-            "variance": 0.5,
-            "stun_time": 0.0,
-            "knockback": 0.0,
-            "range_variance": 0.0,
-            "acceleration_factor": 0.0,
-            "dampen_factor": 0.995,
-            "sprite_flip": true
-          },
-          "animation": {
-            "num_sprites": 1,
-            "num_frames": 1,
-            "framerate": 18
-          }
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 24
         }
       }
     }
-  ]
+  },
+  "minigun": {
+    "metadata": {
+      "id": 1,
+      "label": "Minigun"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [78, 30],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 20.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [2.0, 2.0],
+        "type": "twinkle",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": true,
+        "ammo": 32,
+        "reload": 1,
+        "cooldown_time": 20,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 3 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [7.0, 7.0],
+        "radius": 4.0,
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 880,
+          "speed": 16.0,
+          "variance": 0.1
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 18
+        }
+      }
+    }
+  },
+  "soda_gun": {
+    "metadata": {
+      "id": 2,
+      "label": "Soda Gun"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [18, 8],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, -10.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "thick_burst",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 4,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [11.0, 6.0],
+        "radius": 4.0,
+        "attributes": {
+          "base_damage": 1,
+          "power": 3,
+          "lifespan": 660,
+          "lifespan_variance": 0,
+          "speed": 24.5,
+          "variance": 0.4,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 6,
+          "framerate": 18
+        }
+      }
+    }
+  },
+  "energy_ball": {
+    "metadata": {
+      "id": 3,
+      "label": "Energy Ball"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [18, 8],
+      "offsets": {
+        "global": [-3.0, 5.0],
+        "barrel": [18.0, 2.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "pulse",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": true,
+        "ammo": 3,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [16.0, 16.0],
+        "radius": 16.0,
+        "attributes": {
+          "base_damage": 2,
+          "lifespan": 880,
+          "lifespan_variance": 0,
+          "speed": 10.5,
+          "variance": 0.2,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": true,
+          "omnidirectional": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 24
+        }
+      }
+    }
+  },
+  "demon_bow": {
+    "metadata": {
+      "id": 4,
+      "label": "Demon Bow"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [18, 8],
+      "offsets": {
+        "global": [-3.0, 5.0],
+        "barrel": [18.0, 2.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "pulse",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": true,
+        "ammo": 3,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [22.0, 22.0],
+        "radius": 4.0,
+        "audio": { "hit": 1 },
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 3000,
+          "lifespan_variance": 0,
+          "speed": 19.5,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "omnidirectional": true,
+          "sticky": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.0,
+          "gravity": 0.01,
+          "elasticity": 0.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 1,
+          "framerate": 24,
+          "angles": 6
+        }
+      }
+    }
+  },
+  "green_beam": {
+    "metadata": {
+      "id": 5,
+      "label": "Green Beam"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [18, 8],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "green_beam",
+        "color": "green"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 4,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [16.0, 16.0],
+        "radius": 8.0,
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 600,
+          "lifespan_variance": 0,
+          "speed": 34.5,
+          "variance": 0.5,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.993,
+          "dampen_variance": 0.002,
+          "sprite_flip": true
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 1,
+          "framerate": 18
+        }
+      }
+    }
+  },
+  "skycorps_smg": {
+    "metadata": {
+      "id": 6,
+      "label": "Skycorps SMG"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [18, 8],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [2.0, 2.0],
+        "type": "fast_burst",
+        "color": "goldenrod"
+      },
+      "secondary_spray": {
+        "dimensions": [4.0, 4.0],
+        "type": "peckett",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 8,
+        "reload": 160,
+        "cooldown_time": 16,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [7.0, 7.0],
+        "radius": 4.0,
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 440,
+          "lifespan_variance": 80,
+          "speed": 14.5,
+          "variance": 0.4,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "persistent": false,
+          "constrained": false,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.996
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 24
+        }
+      }
+    }
+  },
+  "shuriken": {
+    "metadata": {
+      "id": 7,
+      "label": "Shuriken"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [8, 8],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "twinkle",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": true,
+        "ammo": 3,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [16.0, 16.0],
+        "radius": 12.0,
+        "audio": { "hit": 1 },
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 500,
+          "lifespan_variance": 0,
+          "speed": 11.5,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "omnidirectional": true,
+          "reflect": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.998,
+          "gravity": 1.6,
+          "elasticity": 0.98
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 14
+        }
+      }
+    }
+  },
+  "pulse": {
+    "metadata": {
+      "id": 8,
+      "label": "Pulse"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [8, 8],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "guardian",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": true,
+        "ammo": 3,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [12.0, 12.0],
+        "radius": 12.0,
+        "audio": { "hit": 2 },
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 400,
+          "lifespan_variance": 0,
+          "speed": 10.0,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "omnidirectional": true,
+          "reflect": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 2.0,
+          "dampen_factor": 0.998,
+          "gravity": 0.4,
+          "elasticity": 0.98
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 5,
+          "framerate": 14
+        }
+      }
+    }
+  },
+  "demon_bomb": {
+    "metadata": {
+      "id": 9,
+      "label": "Demon Bomb"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [8, 8],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "pulse",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": true,
+        "ammo": 3,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [12.0, 12.0],
+        "radius": 12.0,
+        "audio": { "hit": 2 },
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 800,
+          "lifespan_variance": 0,
+          "speed": 0.2,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "omnidirectional": true,
+          "reflect": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.998,
+          "gravity": 1.9,
+          "elasticity": 0.98
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 14
+        }
+      }
+    }
+  },
+  "demon_magic": {
+    "metadata": {
+      "id": 10,
+      "label": "Demon Magic"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [8, 8],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "pulse",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": true,
+        "ammo": 3,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 16 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [32.0, 32.0],
+        "radius": 32.0,
+        "audio": { "hit": 2 },
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 1000,
+          "lifespan_variance": 0,
+          "speed": 13.2,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "omnidirectional": true,
+          "reflect": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.998,
+          "gravity": 2.4,
+          "elasticity": 0.99
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 14
+        }
+      }
+    }
+  }
 }

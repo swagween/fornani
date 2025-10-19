@@ -1,6 +1,7 @@
 #include "fornani/graphics/Rain.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::vfx {
 
@@ -20,11 +21,11 @@ void Rain::update(automa::ServiceProvider& svc, world::Map& map) {
 	float offset = -slant * 32.f;
 	if (svc.ticker.every_x_ticks(4)) {
 		for (int i{0}; i < intensity; ++i) {
-			z = util::Random::random_range_float(0.999f, 1.f);
+			z = random::random_range_float(0.999f, 1.f);
 			// fall_speed *= z;
-			auto const start_x = util::Random::random_range_float(offset, map.real_dimensions.x + offset);
-			auto const start_y = util::Random::random_range_float(-64.f, 0.f);
-			auto const tweak = util::Random::random_range_float(-variance, variance);
+			auto const start_x = random::random_range_float(offset, map.real_dimensions.x + offset);
+			auto const start_y = random::random_range_float(-64.f, 0.f);
+			auto const tweak = random::random_range_float(-variance, variance);
 			sf::Vector2 const start{start_x, start_y};
 			drops.push_back(Droplet{start, {slant, sway, fall_speed}, tweak});
 			drops.back().z = z;
@@ -34,7 +35,7 @@ void Rain::update(automa::ServiceProvider& svc, world::Map& map) {
 	std::erase_if(drops, [](auto const& d) { return d.decayed(); });
 }
 
-void Rain::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
+void Rain::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	for (auto& drop : drops) {
 		drop.collided() ? raindrop.setSize({dimensions.x, dimensions.x}) : raindrop.setSize(dimensions);
 		drop.collided() ? raindrop.setOrigin({dimensions.x * 0.5f, dimensions.x}) : raindrop.setOrigin({dimensions.x * 0.5f, dimensions.y});

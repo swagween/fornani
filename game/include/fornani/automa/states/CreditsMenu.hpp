@@ -1,16 +1,29 @@
 
 #pragma once
 
-#include "fornani/automa/GameState.hpp"
+#include <djson/json.hpp>
+#include <fornani/automa/MenuState.hpp>
+#include <vector>
 
 namespace fornani::automa {
 
-class CreditsMenu final : public GameState {
+struct Credit {
+	sf::Text name;
+	sf::Text description;
+	int line_breaks{};
+};
+
+class CreditsMenu final : public MenuState {
   public:
-	CreditsMenu(ServiceProvider& svc, player::Player& player, std::string_view room_name = "", int room_number = 0);
-	void tick_update(ServiceProvider& svc) override;
+	CreditsMenu(ServiceProvider& svc, player::Player& player);
+	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
+
+  private:
+	dj::Json m_data{};
+	std::vector<Credit> m_credits;
+	util::Cooldown m_loading;
 };
 
 } // namespace fornani::automa

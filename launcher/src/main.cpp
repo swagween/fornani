@@ -47,14 +47,7 @@ int main(int argc, char** argv) {
 
 	NANI_LOG_INFO(main_logger, "SteamAPI has been initialized.");
 
-	CPPTRACE_TRY { app.launch(argv); }
-	CPPTRACE_CATCH(std::exception const& e) {
-		NANI_LOG_ERROR(main_logger,
-					   "Exception: {}\n"
-					   "Trace:\n"
-					   "{}\n",
-					   e.what(), cpptrace::from_current_exception().to_string());
-	}
+	app.launch(argv);
 
 	return EXIT_SUCCESS;
 }

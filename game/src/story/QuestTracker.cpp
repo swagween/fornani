@@ -2,7 +2,7 @@
 #include "fornani/story/QuestTracker.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-namespace fornani {
+namespace fornani::quest {
 
 QuestTracker::QuestTracker() {
 	suites.temporaries.quests.insert({4, {4, "player_retry"}});
@@ -20,32 +20,32 @@ QuestTracker::QuestTracker() {
 	suites.inspectables.quests.insert({1, Quest{1, "bryns_notebook"}});
 	suites.inspectables.quests.insert({110, Quest{110, "firstwind_lab_computer"}});
 	suites.inspectables.quests.insert({111, Quest{111, "firstwind_lab_timer"}});
-	suites.destroyers.quests.insert({110, Quest{110, "firstwind_lab_destroyers"}});
-	suites.destroyers.quests.insert({115, Quest{115, "firstwind_deck_destroyers"}});
-	suites.destroyers.quests.insert({122, Quest{122, "firstwind_atrium_destroyers"}});
+	suites.destructibles.quests.insert({110, Quest{110, "firstwind_lab_destructibles"}});
+	suites.destructibles.quests.insert({115, Quest{115, "firstwind_deck_destructibles"}});
+	suites.destructibles.quests.insert({122, Quest{122, "firstwind_atrium_destructibles"}});
 	suites.cutscene.quests.insert({3002, Quest{3002, "junkyard_test"}});
 	suites.cutscene.quests.insert({6001, Quest{6001, "lady_numbus_1"}});
 }
 
-int QuestTracker::get_progression(QuestType type, int id) { 
+int QuestTracker::get_progression(QuestType type, int id) {
 	auto ret{0};
 	if (type == QuestType::npc) { ret = suites.npc.get_progression(id); }
 	if (type == QuestType::item) { ret = suites.item.get_progression(id); }
 	if (type == QuestType::inspectable) { ret = suites.inspectables.get_progression(id); }
 	if (type == QuestType::standard) { ret = suites.standard.get_progression(id); }
-	if (type == QuestType::destroyers) { ret = suites.destroyers.get_progression(id); }
+	if (type == QuestType::destructibles) { ret = suites.destructibles.get_progression(id); }
 	if (type == QuestType::time_trials) { ret = suites.time_trials.get_progression(id); }
 	if (type == QuestType::fetch_text) { ret = suites.fetch_text.get_progression(id); }
 	if (type == QuestType::cutscene) { ret = suites.cutscene.get_progression(id); }
 	if (type == QuestType::hidden_npcs) { ret = suites.hidden_npcs.get_progression(id); }
-	return ret; 
+	return ret;
 }
 void QuestTracker::progress(QuestType type, int id, int source, int amount, bool hard_set) {
 	if (type == QuestType::npc && suites.npc.quests.contains(id)) { suites.npc.quests.at(id).progress(source, amount, hard_set); }
 	if (type == QuestType::item && suites.item.quests.contains(id)) { suites.item.quests.at(id).progress(source, amount, hard_set); }
 	if (type == QuestType::standard && suites.standard.quests.contains(id)) { suites.standard.quests.at(id).progress(source, amount, hard_set); }
 	if (type == QuestType::inspectable && suites.inspectables.quests.contains(id)) { suites.inspectables.quests.at(id).progress(source, amount, hard_set); }
-	if (type == QuestType::destroyers && suites.destroyers.quests.contains(id)) { suites.destroyers.quests.at(id).progress(source, amount, hard_set); }
+	if (type == QuestType::destructibles && suites.destructibles.quests.contains(id)) { suites.destructibles.quests.at(id).progress(source, amount, hard_set); }
 	if (type == QuestType::time_trials && suites.time_trials.quests.contains(id)) { suites.time_trials.quests.at(id).progress(source, amount, hard_set); }
 	if (type == QuestType::fetch_text && suites.fetch_text.quests.contains(id)) { suites.fetch_text.quests.at(id).progress(source, amount, hard_set); }
 	if (type == QuestType::cutscene && suites.cutscene.quests.contains(id)) { suites.cutscene.quests.at(id).progress(source, amount, hard_set); }
@@ -57,7 +57,7 @@ void QuestTracker::reset(QuestType type, int id) {
 	if (type == QuestType::item) { suites.item.reset(id); }
 	if (type == QuestType::standard) { suites.standard.reset(id); }
 	if (type == QuestType::inspectable) { suites.inspectables.reset(id); }
-	if (type == QuestType::destroyers) { suites.destroyers.reset(id); }
+	if (type == QuestType::destructibles) { suites.destructibles.reset(id); }
 	if (type == QuestType::time_trials) { suites.time_trials.reset(id); }
 	if (type == QuestType::fetch_text) { suites.fetch_text.reset(id); }
 	if (type == QuestType::cutscene) { suites.cutscene.reset(id); }
@@ -66,18 +66,10 @@ void QuestTracker::reset(QuestType type, int id) {
 
 void QuestTracker::process(automa::ServiceProvider& svc, util::QuestKey key) {
 	if (key.type == 27) { svc.state_controller.actions.set(automa::Actions::retry); }
-	if (key.type == 88) { svc.state_controller.actions.set(automa::Actions::sleep); }
 	if (key.type == 89) { svc.state_controller.actions.set(automa::Actions::main_menu); }
 	if (key.type == 69) { svc.state_controller.actions.set(automa::Actions::print_stats); }
 	if (key.type == 70) { svc.menu_controller.open_vendor_dialog(key.id); }
 	if (key.type == 97) { svc.state_controller.actions.set(automa::Actions::delete_file); }
-	if (key.type == 200) { svc.player_dat.set_piggy_id(key.id); }
-	if (key.type == 201) {
-		if (svc.player_dat.piggy_id == key.id) {
-			svc.player_dat.unpiggy();
-			progress(QuestType::hidden_npcs, key.id, key.source_id, key.amount, key.hard_set);
-		};
-	}
 	if (key.type == 299) { svc.state_controller.actions.set(automa::Actions::end_demo); }
 	// std::cout << "Processed: " << out.type << ", " << out.id << ", " << out.source_id << ", " << out.amount << ", " << out.hard_set << "\n";
 	if (key.hard_set > 0) {
@@ -88,5 +80,4 @@ void QuestTracker::process(automa::ServiceProvider& svc, util::QuestKey key) {
 	svc.data.push_quest(key);
 }
 
-
-} // namespace fornani
+} // namespace fornani::quest

@@ -1,7 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <deque>
-#include "Counter.hpp"
+#include "fornani/io/Logger.hpp"
+#include "fornani/utils/Counter.hpp"
 
 namespace fornani::shape {
 class Shape;
@@ -10,7 +11,7 @@ class Collider;
 
 namespace fornani::util {
 
-enum class CollisionDirection : uint8_t { none, vertical, horizontal };
+enum class CollisionDirection : std::uint8_t { none, vertical, horizontal };
 
 struct Depth {
 	float left{};
@@ -29,8 +30,8 @@ class CollisionDepth {
 	void maximize(CollisionDepth& other);
 	void print();
 	void reset() { iterations.start(); }
-	void render(shape::Shape const& bounding_box, sf::RenderWindow& win, sf::Vector2<float> cam);
-	[[nodiscard]] auto crushed() const -> bool { return (out_depth.bottom < -crush_threshold && out_depth.top > crush_threshold) || (out_depth.left > crush_threshold && out_depth.right < -crush_threshold); }
+	void render(shape::Shape const& bounding_box, sf::RenderWindow& win, sf::Vector2f cam);
+	[[nodiscard]] auto crushed() const -> bool;
 	[[nodiscard]] bool horizontal_squish() const;
 	[[nodiscard]] bool vertical_squish() const;
 
@@ -47,11 +48,13 @@ class CollisionDepth {
 	Depth candidate{};
 	Depth out_depth{};
 	std::deque<Depth> stream{};
-	size_t stream_size{16};
+	std::size_t stream_size{16};
 	float crush_threshold{8.0f};
 	float depth_throwaway{12.0f};
 	float depth_maximum{12.0f};
 	sf::RectangleShape collision_ray{};
+
+	io::Logger m_logger{"collision"};
 };
 
 } // namespace fornani::util

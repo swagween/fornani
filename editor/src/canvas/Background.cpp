@@ -1,16 +1,16 @@
 
 #include "editor/canvas/Background.hpp"
 #include <imgui.h>
-#include <algorithm>
+
 #include "editor/canvas/Canvas.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
 
 namespace pi {
 
-Background::Background(fornani::data::ResourceFinder& finder, Backdrop backdrop) : type{backdrop} {
+Background::Background(fornani::ResourceFinder& finder, Backdrop backdrop) : type{backdrop} {
 	std::string bg_type = type.get_label();
-	std::string doc = bg_type + ".png";
-	auto bg = dj::Json::from_file((finder.paths.resources / "data/level/background_behaviors.json").string().c_str());
+	std::string doc = "background_" + bg_type + ".png";
+	auto bg = *dj::Json::from_file((finder.paths.resources / "data/level/background_behaviors.json").string().c_str());
 	assert(!bg.is_null());
 	if (!texture.loadFromFile((finder.paths.resources / "image/background" / doc).string())) { NANI_LOG_WARN(m_logger, "Failed to load background {} ", type.get_label()); }
 
@@ -19,7 +19,7 @@ Background::Background(fornani::data::ResourceFinder& finder, Backdrop backdrop)
 	dimensions.y = in_data["dimensions"][1].as<int>();
 	scroll_pane = dimensions;
 	auto index{0};
-	for (auto& layer : in_data["layers"].array_view()) {
+	for (auto& layer : in_data["layers"].as_array()) {
 		layers.push_back(BackgroundLayer(texture, index, layer["scroll_speed"].as<float>(), layer["parallax"].as<float>()));
 		layers.back().sprite.setTextureRect(sf::IntRect{{0, dimensions.y * index}, dimensions});
 		++index;
@@ -33,13 +33,18 @@ void Background::update() {
 	}
 }
 
-void Background::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2<float>& campos) {
+void Background::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f& campos) {
 	for (auto& layer : layers) {
-		layer.sprite.setOrigin(sf::Vector2<float>{static_cast<float>(dimensions.x), static_cast<float>(dimensions.y)} * 0.5f + canvas.get_offset_from_center());
-		layer.final_position = canvas.get_scaled_center() + canvas.get_position() + canvas.get_offset_from_center() * layer.parallax;
-		layer.sprite.setScale({canvas.get_scale(), canvas.get_scale()});
-		layer.sprite.setPosition(layer.final_position);
-		win.draw(layer.sprite);
+		for (auto i = -1.f; i < 2.f; ++i) {
+			for (auto j = -1.f; j < 2.f; ++j) {
+				layer.sprite.setOrigin(sf::Vector2f{static_cast<float>(dimensions.x), static_cast<float>(dimensions.y)} * 0.5f + canvas.get_offset_from_center());
+				layer.final_position = canvas.get_scaled_center() + canvas.get_position() + canvas.get_offset_from_center() * layer.parallax;
+				layer.sprite.setScale(fornani::constants::f_scale_vec * canvas.get_scale());
+				auto tile_offset = sf::Vector2f{static_cast<float>(dimensions.x) * i, static_cast<float>(dimensions.y) * j};
+				layer.sprite.setPosition(layer.final_position + tile_offset * canvas.get_scale() * fornani::constants::f_scale_factor);
+				win.draw(layer.sprite);
+			}
+		}
 	}
 }
 
@@ -69,6 +74,6 @@ void Background::debug() {
 	ImGui::End();
 }
 
-BackgroundLayer::BackgroundLayer(sf::Texture& texture, int index, float speed, float parallax) : sprite(texture), render_layer(index), scroll_speed(speed), parallax(parallax) {}
+BackgroundLayer::BackgroundLayer(sf::Texture const& texture, int index, float speed, float parallax) : sprite(texture), render_layer(index), scroll_speed(speed), parallax(parallax) {}
 
 } // namespace pi

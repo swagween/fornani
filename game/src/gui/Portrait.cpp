@@ -1,53 +1,54 @@
+
 #include "fornani/gui/Portrait.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::gui {
 
-Portrait::Portrait(automa::ServiceProvider& svc, bool left) : is_nani(!left), sprite{svc.assets.t_portraits}, window{svc.assets.t_portrait_window} {
-	dimensions = sf::Vector2<float>{128, 256};
-	end_position = sf::Vector2{pad_x, svc.constants.screen_dimensions.y - pad_y - dimensions.y};
+Portrait::Portrait(automa::ServiceProvider& svc, sf::Texture const& texture, int id, bool left) : Portrait(svc, id, left) {
+	Drawable::set_texture(texture);
+	set_scale({1.f, 1.f});
+	flags.set(PortraitFlags::custom);
+	set_texture_rect(sf::IntRect({}, sf::Vector2i{dimensions * constants::f_scale_factor}));
+}
+
+Portrait::Portrait(automa::ServiceProvider& svc, int id, bool left) : Drawable(svc, "character_portraits"), window{svc.assets.get_texture("portrait_window")}, m_id{id}, m_services{&svc} {
+	dimensions = sf::Vector2f{64, 128};
+	end_position = sf::Vector2{pad_x, svc.window->i_screen_dimensions().y - pad_y - dimensions.y * constants::f_scale_factor};
 	bring_in();
-	if (is_nani) {
-		end_position.x = svc.constants.screen_dimensions.x - pad_x - dimensions.x;
-		id = 5; // nani :)
-	}
-	float constexpr fric{0.85f};
-	gravitator = vfx::Gravitator(start_position, sf::Color::Transparent, 1.f);
-	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2{fric, fric}, 2.0f);
-	sprite.setTextureRect(sf::IntRect({id * static_cast<int>(dimensions.x), (emotion - 1) * static_cast<int>(dimensions.y)}, {static_cast<int>(dimensions.x), static_cast<int>(dimensions.y)}));
-	gravitator.set_target_position(position);
+	if (!left) { end_position.x = svc.window->i_screen_dimensions().x - pad_x - dimensions.x * constants::f_scale_factor; }
+	left ? flags.reset(PortraitFlags::right) : flags.set(PortraitFlags::right);
+	reset(svc);
 }
 
 void Portrait::update(automa::ServiceProvider& svc) {
-	gravitator.set_target_position(position);
-	gravitator.update(svc);
-	window.setPosition(gravitator.position());
-	sprite.setPosition(gravitator.position());
-}
-
-void Portrait::set_custom_portrait(sf::Sprite const& sp) {
-	sprite = sp;
-	sprite.setOrigin({});
-	flags.set(PortraitFlags::custom);
+	m_steering.target(m_physics, position, 0.005f);
+	m_physics.simple_update();
+	window.setPosition(m_physics.position);
+	Drawable::set_position(m_physics.position);
+	if (m_sparkler) {
+		m_sparkler->set_position(m_physics.position);
+		m_sparkler->update(svc);
+	}
 }
 
 void Portrait::render(sf::RenderWindow& win) {
-	if (!flags.test(PortraitFlags::custom)) { sprite.setTextureRect(sf::IntRect({id * static_cast<int>(dimensions.x), (emotion - 1) * static_cast<int>(dimensions.y)}, static_cast<sf::Vector2<int>>(dimensions))); }
+	if (!flags.test(PortraitFlags::custom)) { set_texture_rect(sf::IntRect(sf::Vector2i{dimensions}.componentWiseMul({m_id, m_emotion}), sf::Vector2i{dimensions})); }
 	win.draw(window);
-	win.draw(sprite);
+	win.draw(*this);
+	if (m_sparkler) { m_sparkler->render(win, {}); }
 }
 
 void Portrait::reset(automa::ServiceProvider& svc) {
 	start_position = {-128.f, position.y};
-	if (is_nani) { start_position.x = svc.constants.screen_dimensions.x + 132.f; }
+	if (flags.test(PortraitFlags::right)) { start_position.x = svc.window->i_screen_dimensions().x + 132.f; }
 	set_position(start_position);
-	emotion = 1;
+	m_emotion = 0;
 }
 
-void Portrait::set_position(sf::Vector2<float> pos) {
+void Portrait::set_position(sf::Vector2f pos) {
 	window.setPosition(pos);
-	sprite.setPosition(pos);
-	gravitator.set_position(pos);
+	Drawable::set_position(pos);
+	m_physics.position = pos;
 }
 
 void Portrait::bring_in() { position = end_position; }
@@ -55,13 +56,12 @@ void Portrait::bring_in() { position = end_position; }
 void Portrait::send_out() { position = start_position; }
 
 void Portrait::set_emotion(int new_emotion) {
-	emotion = new_emotion;
-	set_position(start_position);
+	m_emotion = new_emotion;
+	Portrait::set_position(start_position);
 }
 
-void Portrait::set_id(int new_id) {
-	id = new_id;
-	if (!flags.test(PortraitFlags::custom)) { sprite.setTextureRect(sf::IntRect({id * static_cast<int>(dimensions.x), (emotion - 1) * (int)dimensions.y}, {(int)dimensions.x, (int)dimensions.y})); }
-}
+void Portrait::add_sparkler(std::string_view tag) { m_sparkler = vfx::Sparkler(*m_services, dimensions * constants::f_scale_factor, colors::ui_black, tag); }
+
+void Portrait::remove_sparkler() { m_sparkler = {}; }
 
 } // namespace fornani::gui

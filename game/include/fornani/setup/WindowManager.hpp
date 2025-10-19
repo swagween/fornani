@@ -2,40 +2,46 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-
-#include "fornani/io/Logger.hpp"
+#include <fornani/io/Logger.hpp>
+#include <memory>
 
 namespace fornani {
 
 class WindowManager {
   public:
-	sf::RenderWindow& get() { return window; }
+	sf::RenderWindow& get() { return *m_window.get(); }
 	sf::View get_view() const { return game_view; }
 	sf::FloatRect get_viewport() const { return game_port; }
 	void set();
-	void create(std::string const& title, bool fullscreen);
+	void create(std::string const& title, bool fullscreen, sf::Vector2i const dimensions);
 	void restore_view();
 	void set_screencap();
-	[[nodiscard]] auto f_screen_dimensions() const -> sf::Vector2<float> { return sf::Vector2<float>{static_cast<float>(screen_dimensions.x), static_cast<float>(screen_dimensions.y)}; }
-	[[nodiscard]] auto fullscreen() const -> bool { return is_fullscreen; }
-	[[nodiscard]] auto in_window(sf::Vector2<float> point, sf::Vector2<float> dimensions) const -> bool {
-		if (point.x + dimensions.x < 0.f || point.x - dimensions.x > f_screen_dimensions().x) { return false; }
-		if (point.y + dimensions.y < 0.f || point.y - dimensions.y > f_screen_dimensions().y) { return false; }
-		return true;
-	}
+	void set_view(sf::View& to) { m_window->setView(to); }
+
+	[[nodiscard]] auto i_screen_dimensions() const -> sf::Vector2i { return m_screen_dimensions; }
+	[[nodiscard]] auto f_screen_dimensions() const -> sf::Vector2f { return sf::Vector2f{m_screen_dimensions}; }
+	[[nodiscard]] auto u_screen_dimensions() const -> sf::Vector2u { return sf::Vector2u{m_screen_dimensions}; }
+	[[nodiscard]] auto get_display_dimensions() const -> sf::Vector2u { return sf::VideoMode::getDesktopMode().size; }
+	[[nodiscard]] auto get_f_display_dimensions() const -> sf::Vector2f { return sf::Vector2f{sf::VideoMode::getDesktopMode().size}; }
+	[[nodiscard]] auto get_letterbox() const -> sf::Vector2f { return m_letterbox; }
+	[[nodiscard]] auto get_bounds() const -> sf::Vector2f;
+	[[nodiscard]] auto f_center_screen() const -> sf::Vector2f { return f_screen_dimensions() * 0.5f; }
+	[[nodiscard]] auto is_fullscreen() const -> bool { return m_fullscreen; }
+	[[nodiscard]] auto in_window(sf::Vector2f point, sf::Vector2f dimensions) const -> bool;
+	[[nodiscard]] auto get_scale() const -> float;
 
 	sf::Texture screencap{};
-	sf::Vector2<int> screen_dimensions{};
-	sf::Vector2u u_screen_dimensions{};
-	sf::Vector2u display_dimensions{};
 
   private:
-	sf::RenderWindow window;
+	std::unique_ptr<sf::RenderWindow> m_window{};
+	sf::Image m_icon;
 	sf::View game_view{};
 	sf::VideoMode mode{};
 	sf::FloatRect game_port{};
-	sf::Vector2<int> aspects{3840, 2048};
-	bool is_fullscreen{};
+	sf::Vector2i aspects{3840, 2048};
+	sf::Vector2i m_screen_dimensions{};
+	sf::Vector2f m_letterbox{1.f, 1.f};
+	bool m_fullscreen{};
 
 	io::Logger m_logger{"windowing"};
 };

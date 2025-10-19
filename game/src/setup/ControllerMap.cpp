@@ -1,10 +1,9 @@
-#include "fornani/setup/ControllerMap.hpp"
+
 #include <steam/isteaminput.h>
-
-#include <tracy/Tracy.hpp>
-
-#include <iostream>
-#include "fornani/service/ServiceProvider.hpp"
+#include <ccmath/ext/clamp.hpp>
+#include <fornani/gui/ActionControlIconQuery.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/setup/ControllerMap.hpp>
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -22,28 +21,25 @@ auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 	case DigitalAction::platformer_jump:
 	case DigitalAction::platformer_shoot:
 	case DigitalAction::platformer_sprint:
-	case DigitalAction::platformer_shield:
+	case DigitalAction::platformer_slide:
+	case DigitalAction::platformer_dash:
 	case DigitalAction::platformer_inspect:
 	case DigitalAction::platformer_arms_switch_left:
 	case DigitalAction::platformer_arms_switch_right:
 	case DigitalAction::platformer_open_inventory:
-	case DigitalAction::platformer_open_map:
 	case DigitalAction::platformer_toggle_pause: return ActionSet::Platformer;
 
-	case DigitalAction::inventory_open_map:
 	case DigitalAction::inventory_close: return ActionSet::Inventory;
-
-	case DigitalAction::map_open_inventory:
-	case DigitalAction::map_close: return ActionSet::Map;
 
 	case DigitalAction::menu_left:
 	case DigitalAction::menu_right:
 	case DigitalAction::menu_up:
 	case DigitalAction::menu_down:
 	case DigitalAction::menu_select:
-	case DigitalAction::menu_switch_right:
-	case DigitalAction::menu_switch_left:
-	case DigitalAction::menu_cancel: return ActionSet::Menu;
+	case DigitalAction::menu_tab_right:
+	case DigitalAction::menu_tab_left:
+	case DigitalAction::menu_cancel:
+	case DigitalAction::menu_confirm: return ActionSet::Menu;
 
 	case DigitalAction::COUNT:
 	default: assert(false && "Invalid action set in get_action_set_from_action");
@@ -66,26 +62,26 @@ bool parent_action_set(ActionSet set, ActionSet* parent) {
 	return false;
 }
 
-ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
-	std::cout << "Initializing Steam Input" << std::endl;
+ControllerMap::ControllerMap(automa::ServiceProvider& svc) : m_stick_sensitivity{0.2f} {
+	NANI_LOG_INFO(m_logger, "Initializing Steam Input");
 	if (!SteamInput()->Init(true)) {
-		std::cout << "Could not initialize Steam Input!" << std::endl;
+		NANI_LOG_WARN(m_logger, "Could not initialize Steam Input!");
 	} else {
-		std::cout << "Steam Input initialized" << std::endl;
+		NANI_LOG_INFO(m_logger, "Steam Input initialized");
 	}
 	// TODO When we have a proper Steam App ID assigned, upload the steam input manifest into the game's depot.
 	std::string input_action_manifest_path = svc.finder.resource_path() + "\\text\\input\\steam_input_manifest.vdf";
 	if (!SteamInput()->SetInputActionManifestFilePath(input_action_manifest_path.c_str())) {
 		// uh oh
-		std::cout << "Could not set Action Manifest file path!" << std::endl;
-		std::cout << "Path: " << input_action_manifest_path << std::endl;
+		NANI_LOG_ERROR(m_logger, "Could not set Action Manifest file path!");
+		NANI_LOG_ERROR(m_logger, "Path: {}", input_action_manifest_path);
 	}
 	SteamInput()->EnableDeviceCallbacks();
 
 	SteamInput()->RunFrame();
 	setup_action_handles();
 
-	for (auto const& [action_id, action_name] : svc.data.action_names.object_view()) {
+	for (auto const& [action_id, action_name] : svc.data.action_names.as_object()) {
 		auto action = get_action_by_identifier(action_id);
 		digital_action_names[action] = action_name.as_string();
 	}
@@ -93,6 +89,7 @@ ControllerMap::ControllerMap(automa::ServiceProvider& svc) {
 	menu_action_set = SteamInput()->GetActionSetHandle("Menu");
 	inventory_action_layer = SteamInput()->GetActionSetHandle("Menu_Inventory");
 	map_action_layer = SteamInput()->GetActionSetHandle("Menu_Map");
+	active_action_set = ActionSet::Platformer;
 }
 
 void ControllerMap::setup_action_handles() {
@@ -109,21 +106,16 @@ void ControllerMap::setup_action_handles() {
 	DEFINE_ACTION(platformer_jump);
 	DEFINE_ACTION(platformer_shoot);
 	DEFINE_ACTION(platformer_sprint);
-	DEFINE_ACTION(platformer_shield);
+	DEFINE_ACTION(platformer_slide);
+	DEFINE_ACTION(platformer_dash);
 	DEFINE_ACTION(platformer_inspect);
 	DEFINE_ACTION(platformer_arms_switch_left);
 	DEFINE_ACTION(platformer_arms_switch_right);
 	DEFINE_ACTION(platformer_open_inventory);
-	DEFINE_ACTION(platformer_open_map);
 	DEFINE_ACTION(platformer_toggle_pause);
 
 	// Inventory controls
-	DEFINE_ACTION(inventory_open_map);
 	DEFINE_ACTION(inventory_close);
-
-	// Map controls
-	DEFINE_ACTION(map_open_inventory);
-	DEFINE_ACTION(map_close);
 
 	// Menu controls
 	DEFINE_ACTION(menu_left);
@@ -131,12 +123,14 @@ void ControllerMap::setup_action_handles() {
 	DEFINE_ACTION(menu_up);
 	DEFINE_ACTION(menu_down);
 	DEFINE_ACTION(menu_select);
-	DEFINE_ACTION(menu_switch_left);
-	DEFINE_ACTION(menu_switch_right);
+	DEFINE_ACTION(menu_tab_left);
+	DEFINE_ACTION(menu_tab_right);
 	DEFINE_ACTION(menu_cancel);
+	DEFINE_ACTION(menu_confirm);
 
 	// Analog actions
 	analog_actions.insert({AnalogAction::map_movement, {SteamInput()->GetAnalogActionHandle("map_movement"), AnalogActionStatus(AnalogAction::map_movement)}});
+	analog_actions.insert({AnalogAction::platformer_movement, {SteamInput()->GetAnalogActionHandle("platformer_movement"), AnalogActionStatus(AnalogAction::platformer_movement)}});
 
 #undef DEFINE_ACTION
 #undef STR
@@ -153,13 +147,23 @@ void ControllerMap::handle_event(std::optional<sf::Event> const event) {
 	}
 }
 
+void ControllerMap::flush_inputs() {
+	for (auto& [action, data] : digital_actions) {
+		auto& [steam_handle, action_status, primary_key, secondary_key, was_active_last_tick] = data;
+		action_status.triggered = false;
+	}
+}
+
+sf::Vector2i ControllerMap::get_icon_lookup_by_action(DigitalAction action) const {
+	auto source = digital_action_source(action);
+	return (source.controller_origin == k_EInputActionOrigin_None) ? gui::get_key_coordinates(source.key) : gui::get_controller_button_coordinates(source.controller_origin);
+}
+
 void ControllerMap::update() {
-	ZoneScopedN("ControllerMap::update");
 	SteamInput()->RunFrame();
 	m_actions_queried_this_update.clear();
-
-	// SteamInput()->ActivateActionSet(STEAM_INPUT_HANDLE_ALL_CONTROLLERS, SteamInput()->GetActionSetHandle("MenuControls"));
 	std::unordered_set<EInputActionOrigin> buttons_pressed_this_tick{};
+
 	for (auto& [action, data] : digital_actions) {
 		auto& [steam_handle, action_status, primary_key, secondary_key, was_active_last_tick] = data;
 
@@ -201,7 +205,8 @@ void ControllerMap::update() {
 			action_status.released = false;
 			// Avoid actions being immediately triggered when switching action sets
 			if (!action_status.held && was_active_last_tick) {
-				// std::cout << "Pressed " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
+				auto data = SteamInput()->GetDigitalActionData(controller_handle, steam_handle);
+				// NANI_LOG_DEBUG(m_logger, "Pressed {}", SteamInput()->GetStringForDigitalActionName(steam_handle));
 				action_status.triggered = true;
 			} else {
 				action_status.triggered = false;
@@ -210,7 +215,7 @@ void ControllerMap::update() {
 		} else {
 			action_status.triggered = false;
 			if (action_status.held) {
-				// std::cout << "Released " << SteamInput()->GetStringForDigitalActionName(steam_handle) << std::endl;
+				// NANI_LOG_DEBUG(m_logger, "Released {}", SteamInput()->GetStringForDigitalActionName(steam_handle));
 				action_status.released = true;
 			} else {
 				action_status.released = false;
@@ -226,6 +231,8 @@ void ControllerMap::update() {
 
 		auto const data = SteamInput()->GetAnalogActionData(controller_handle, steam_handle);
 
+		if (data.bActive) { NANI_LOG_DEBUG(m_logger, "Analog action data: [ {}, {} ]", data.x, data.y); }
+
 		if (data.bActive) {
 			action_status.x = data.x;
 			action_status.y = data.y;
@@ -234,11 +241,13 @@ void ControllerMap::update() {
 			action_status.y = 0.f;
 		}
 	}
+
+	if (last_controller_type_used() != ControllerType::gamepad) { m_joystick_throttle = {}; }
 }
 
 void ControllerMap::set_action_set(ActionSet set) {
 	if (controller_handle && set != active_action_set) {
-		std::cout << "Set action set to " << (int)set << std::endl;
+		NANI_LOG_DEBUG(m_logger, "Set action set to {}", static_cast<int>(set));
 		SteamInput()->DeactivateAllActionSetLayers(controller_handle);
 		switch (set) {
 		case ActionSet::Inventory:
@@ -262,13 +271,20 @@ void ControllerMap::set_action_set(ActionSet set) {
 	return digital_actions.at(action).status;
 }
 
-[[nodiscard]] auto ControllerMap::digital_action_name(DigitalAction action) const -> std::string_view { return digital_action_names.at(action); }
+[[nodiscard]] auto ControllerMap::digital_action_name(DigitalAction action) const -> std::string_view {
+	if (digital_action_names.contains(action)) {
+		return digital_action_names.at(action);
+	} else {
+		NANI_LOG_ERROR(m_logger, "Action missing from action_names.json");
+		return std::string_view{};
+	}
+}
 
 [[nodiscard]] auto ControllerMap::digital_action_source(DigitalAction action) const -> DigitalActionSource {
 	auto controller_origin = k_EInputActionOrigin_None;
 	if (controller_handle) {
 		auto action_set = get_action_set_from_action(action);
-		InputActionSetHandle_t handle;
+		InputActionSetHandle_t handle{};
 		switch (action_set) {
 		case ActionSet::Inventory: handle = inventory_action_layer; break;
 		case ActionSet::Map: handle = map_action_layer; break;
@@ -287,7 +303,7 @@ void ControllerMap::set_action_set(ActionSet set) {
 [[nodiscard]] auto ControllerMap::digital_action_source_name(DigitalAction action) const -> std::string_view {
 	if (controller_handle) {
 		auto action_set = get_action_set_from_action(action);
-		InputActionSetHandle_t handle;
+		InputActionSetHandle_t handle{};
 		switch (action_set) {
 		case ActionSet::Inventory: handle = inventory_action_layer; break;
 		case ActionSet::Map: handle = map_action_layer; break;
@@ -307,7 +323,7 @@ void ControllerMap::set_action_set(ActionSet set) {
 }
 
 void ControllerMap::handle_gamepad_connection(SteamInputDeviceConnected_t* data) {
-	std::cout << "Connected controller with handle = " << data->m_ulConnectedDeviceHandle << std::endl;
+	NANI_LOG_INFO(m_logger, "Connected controller with handle [{}]", data->m_ulConnectedDeviceHandle);
 	controller_handle = data->m_ulConnectedDeviceHandle;
 	last_controller_ty_used = ControllerType::gamepad; // Quickly switch to gamepad input
 	setup_action_handles();
@@ -315,7 +331,7 @@ void ControllerMap::handle_gamepad_connection(SteamInputDeviceConnected_t* data)
 }
 
 void ControllerMap::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t* data) {
-	std::cout << "Disconnected controller with handle = " << data->m_ulDisconnectedDeviceHandle << std::endl;
+	NANI_LOG_INFO(m_logger, "Disconnected controller with handle [{}] ", data->m_ulDisconnectedDeviceHandle);
 	if (controller_handle != 0) { out.gamepad_disconnected = true; }
 	controller_handle = 0;
 	last_controller_ty_used = ControllerType::keyboard; // Quickly switch to keyboard input
@@ -345,9 +361,10 @@ auto ControllerMap::key_to_string(sf::Keyboard::Scancode key) const -> std::stri
 																			{sf::Keyboard::Scancode::Period, "Period"}, {sf::Keyboard::Scancode::Num1, "1"},
 																			{sf::Keyboard::Scancode::Num2, "2"},		{sf::Keyboard::Scancode::Num3, "3"},
 																			{sf::Keyboard::Scancode::Space, "Space"},	{sf::Keyboard::Scancode::LControl, "LControl"},
-																			{sf::Keyboard::Scancode::Escape, "Esc"},	{sf::Keyboard::Scancode::Unknown, "None"}};
+																			{sf::Keyboard::Scancode::Enter, "Enter"},	{sf::Keyboard::Scancode::Escape, "Esc"},
+																			{sf::Keyboard::Scancode::Unknown, "None"}};
 
-	return map.at(key);
+	return map.contains(key) ? map.at(key) : "<Unknown>";
 }
 
 auto ControllerMap::string_to_key(std::string_view string) const -> sf::Keyboard::Scancode {
@@ -372,12 +389,27 @@ auto ControllerMap::string_to_key(std::string_view string) const -> sf::Keyboard
 																			{"Space", sf::Keyboard::Scancode::Space},	{"LControl", sf::Keyboard::Scancode::LControl},
 																			{"Esc", sf::Keyboard::Scancode::Escape},	{"Enter", sf::Keyboard::Scancode::Enter}};
 
-	if (map.contains(string)) {
-		return map.at(string);
-	} else {
-		return sf::Keyboard::Scancode::Unknown;
-	}
+	return map.contains(string) ? map.at(string) : sf::Keyboard::Scancode::Unknown;
 }
+
+auto config::ControllerMap::has_forbidden_duplicate_binding() const -> bool {
+	for (auto& binding : digital_actions) {
+		for (auto& other : digital_actions) {
+			if (get_action_set_from_action(binding.first) != get_action_set_from_action(other.first)) { continue; }
+			if (other.first != binding.first && binding.second.primary_binding == other.second.primary_binding) {
+				if (binding.first == DigitalAction::menu_select) { return true; }
+				if (binding.first == DigitalAction::menu_confirm) { return true; }
+				if (binding.first == DigitalAction::menu_up) { return true; }
+				if (binding.first == DigitalAction::menu_down) { return true; }
+				if (binding.first == DigitalAction::menu_left) { return true; }
+				if (binding.first == DigitalAction::menu_right) { return true; }
+			}
+		}
+	}
+	return false;
+}
+
+auto ControllerMap::is_bound_to_same_input(DigitalAction first, DigitalAction second) const -> bool { return digital_actions.at(first).primary_binding == digital_actions.at(second).primary_binding; }
 
 bool ControllerMap::process_gamepad_disconnection() {
 	auto ret = out.gamepad_disconnected;
@@ -385,8 +417,12 @@ bool ControllerMap::process_gamepad_disconnection() {
 	return ret;
 }
 
-void ControllerMap::set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Scancode key) { digital_actions.at(action).primary_binding = key; }
-void ControllerMap::set_secondary_keyboard_binding(DigitalAction action, sf::Keyboard::Scancode key) { digital_actions.at(action).secondary_binding = key; }
+void ControllerMap::set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Scancode key) {
+	if (digital_actions.contains(action)) { digital_actions.at(action).primary_binding = key; }
+}
+void ControllerMap::set_secondary_keyboard_binding(DigitalAction action, sf::Keyboard::Scancode key) {
+	if (digital_actions.contains(action)) { digital_actions.at(action).secondary_binding = key; }
+}
 
 auto ControllerMap::get_primary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Scancode { return digital_actions.at(action).primary_binding; }
 auto ControllerMap::get_secondary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Scancode { return digital_actions.at(action).secondary_binding; }
@@ -399,37 +435,60 @@ void ControllerMap::reset_digital_action_states() {
 }
 
 auto ControllerMap::get_action_by_identifier(std::string_view id) -> config::DigitalAction {
-	static std::unordered_map<std::string_view, config::DigitalAction> const map = {
-		{"platformer_left", config::DigitalAction::platformer_left},
-		{"platformer_right", config::DigitalAction::platformer_right},
-		{"platformer_up", config::DigitalAction::platformer_up},
-		{"platformer_down", config::DigitalAction::platformer_down},
-		{"platformer_jump", config::DigitalAction::platformer_jump},
-		{"platformer_shoot", config::DigitalAction::platformer_shoot},
-		{"platformer_sprint", config::DigitalAction::platformer_sprint},
-		{"platformer_shield", config::DigitalAction::platformer_shield},
-		{"platformer_inspect", config::DigitalAction::platformer_inspect},
-		{"platformer_arms_switch_left", config::DigitalAction::platformer_arms_switch_left},
-		{"platformer_arms_switch_right", config::DigitalAction::platformer_arms_switch_right},
-		{"platformer_open_inventory", config::DigitalAction::platformer_open_inventory},
-		{"platformer_open_map", config::DigitalAction::platformer_open_map},
-		{"platformer_toggle_pause", config::DigitalAction::platformer_toggle_pause},
-		{"inventory_open_map", config::DigitalAction::inventory_open_map},
-		{"inventory_close", config::DigitalAction::inventory_close},
-		{"map_open_inventory", config::DigitalAction::map_open_inventory},
-		{"map_close", config::DigitalAction::map_close},
-		{"menu_left", config::DigitalAction::menu_left},
-		{"menu_right", config::DigitalAction::menu_right},
-		{"menu_up", config::DigitalAction::menu_up},
-		{"menu_down", config::DigitalAction::menu_down},
-		{"menu_select", config::DigitalAction::menu_select},
-		{"menu_cancel", config::DigitalAction::menu_cancel},
-		{"menu_switch_left", config::DigitalAction::menu_switch_left},
-		{"menu_switch_right", config::DigitalAction::menu_switch_right},
-	};
+	static std::unordered_map<std::string_view, config::DigitalAction> const map = {{"platformer_left", config::DigitalAction::platformer_left},
+																					{"platformer_right", config::DigitalAction::platformer_right},
+																					{"platformer_up", config::DigitalAction::platformer_up},
+																					{"platformer_down", config::DigitalAction::platformer_down},
+																					{"platformer_jump", config::DigitalAction::platformer_jump},
+																					{"platformer_shoot", config::DigitalAction::platformer_shoot},
+																					{"platformer_sprint", config::DigitalAction::platformer_sprint},
+																					{"platformer_slide", config::DigitalAction::platformer_slide},
+																					{"platformer_dash", config::DigitalAction::platformer_dash},
+																					{"platformer_inspect", config::DigitalAction::platformer_inspect},
+																					{"platformer_arms_switch_left", config::DigitalAction::platformer_arms_switch_left},
+																					{"platformer_arms_switch_right", config::DigitalAction::platformer_arms_switch_right},
+																					{"platformer_open_inventory", config::DigitalAction::platformer_open_inventory},
+																					{"platformer_toggle_pause", config::DigitalAction::platformer_toggle_pause},
+																					{"inventory_close", config::DigitalAction::inventory_close},
+																					{"menu_left", config::DigitalAction::menu_left},
+																					{"menu_right", config::DigitalAction::menu_right},
+																					{"menu_up", config::DigitalAction::menu_up},
+																					{"menu_down", config::DigitalAction::menu_down},
+																					{"menu_select", config::DigitalAction::menu_select},
+																					{"menu_cancel", config::DigitalAction::menu_cancel},
+																					{"menu_tab_left", config::DigitalAction::menu_tab_left},
+																					{"menu_tab_right", config::DigitalAction::menu_tab_right},
+																					{"menu_confirm", config::DigitalAction::menu_confirm}};
 
-	return map.at(id);
+	return map.contains(id) ? map.at(id) : config::DigitalAction::COUNT;
 }
+
+auto config::ControllerMap::get_joystick_throttle() const -> sf::Vector2f {
+	if (!gamepad_connected()) { return {}; }
+	return m_joystick_throttle;
+}
+
+auto ControllerMap::get_i_joystick_throttle(bool exclusive) const -> sf::Vector2i {
+	if (!gamepad_connected()) { return {}; }
+	auto ret = sf::Vector2i{static_cast<int>(std::ceil(m_joystick_throttle.x)), static_cast<int>(std::ceil(m_joystick_throttle.y))};
+	if (exclusive) {
+		if (abs(m_joystick_throttle.x) > abs(m_joystick_throttle.y)) { ret.y = 0.f; }
+		if (abs(m_joystick_throttle.x) <= abs(m_joystick_throttle.y)) { ret.x = 0.f; }
+	}
+	return ret;
+}
+
+void ControllerMap::set_joystick_throttle(sf::Vector2f throttle) {
+	// constrict throttle based on stick sensitivity
+	m_joystick_throttle.x = ccm::ext::clamp(throttle.x / 100.f, -1.f, 1.f);
+	m_joystick_throttle.y = ccm::ext::clamp(throttle.y / 100.f, -1.f, 1.f);
+	if (ccm::abs(m_joystick_throttle.x) < m_stick_sensitivity) { m_joystick_throttle.x = 0.f; }
+	if (ccm::abs(m_joystick_throttle.y) < m_stick_sensitivity) { m_joystick_throttle.y = 0.f; }
+}
+
+void ControllerMap::set_last_key_pressed(sf::Keyboard::Scancode to_key) { m_last_key_pressed = to_key; }
+
+void config::ControllerMap::set_keyboard_input_detected(bool flag) { m_keyboard_input_detected = flag; }
 
 } // namespace fornani::config
 

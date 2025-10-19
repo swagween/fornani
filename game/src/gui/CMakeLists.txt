@@ -1,7 +1,7 @@
 nani_add_sources(
         ActionContextBar.cpp
         ActionControlIconQuery.cpp
-        Console.cpp
+        BossHealth.cpp
         Dashboard.cpp
         Gizmo.cpp
         HUD.cpp
@@ -9,14 +9,15 @@ nani_add_sources(
         ItemWidget.cpp
         MiniMap.cpp
         MiniMenu.cpp
+        OrbDisplay.cpp
         PauseWindow.cpp
         Portrait.cpp
-        Selector.cpp
+        InventorySelector.cpp
         StatusBar.cpp
-        TextWriter.cpp
         VendorDialog.cpp
         WardrobeWidget.cpp
         Widget.cpp
         WidgetBar.cpp
 )
 add_subdirectory(gizmos)
+add_subdirectory(console)

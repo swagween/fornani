@@ -1,9 +1,9 @@
 #pragma once
 
-#include <vector>
 #include <memory>
-#include "fornani/entities/atmosphere/Firefly.hpp"
+#include <vector>
 #include "fornani/entities/atmosphere/Dragonfly.hpp"
+#include "fornani/entities/atmosphere/Firefly.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -20,14 +20,14 @@ class Player;
 namespace fornani::vfx {
 class Atmosphere {
   public:
-	Atmosphere(automa::ServiceProvider& svc, sf::Vector2<float> span, int type);
+	Atmosphere(automa::ServiceProvider& svc, sf::Vector2f span, int type);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void debug();
 
   private:
 	std::vector<std::unique_ptr<Firefly>> fireflies{};
-	std::vector<Dragonfly> dragonflies{};
+	std::vector<std::unique_ptr<Dragonfly>> dragonflies{};
 
 	// debug
 	struct {
@@ -36,4 +36,4 @@ class Atmosphere {
 		float evade{};
 	} forces{};
 };
-} // namespace fornani::npc
+} // namespace fornani::vfx

@@ -1,8 +1,8 @@
 #include "fornani/entities/enemy/catalog/Eyebot.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
+#include "fornani/world/Map.hpp"
 
 namespace fornani::enemy {
 
@@ -11,14 +11,14 @@ Eyebot::Eyebot(automa::ServiceProvider& svc) : Enemy(svc, "eyebot") {
 	seeker_cooldown.start(2);
 }
 
-void Eyebot::unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void Eyebot::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 
 	if (just_died()) {
 		for (int i{0}; i < 3; ++i) {
-			auto const randx = util::Random::random_range_float(-60.f, 60.f);
-			auto const randy = util::Random::random_range_float(-60.f, 60.f);
+			auto const randx = random::random_range_float(-60.f, 60.f);
+			auto const randy = random::random_range_float(-60.f, 60.f);
 			sf::Vector2 const rand_vec{randx, randy};
-			sf::Vector2<float> const spawn = collider.physics.position + rand_vec;
+			sf::Vector2f const spawn = collider.physics.position + rand_vec;
 			map.spawn_enemy(5, spawn);
 		}
 	}
@@ -32,9 +32,7 @@ void Eyebot::unique_update(automa::ServiceProvider& svc, world::Map& map, player
 	flags.state.set(StateFlags::vulnerable); // eyebot is always vulnerable
 
 	// reset animation states to determine next animation state
-	state = {};
-	if (ent_state.test(entity::State::flip)) { state.set(EyebotState::turn); }
-	direction.lr = (player.collider.physics.position.x < collider.physics.position.x) ? dir::LR::left : dir::LR::right;
+	directions.desired.lnr = (player.collider.physics.position.x < collider.physics.position.x) ? LNR::left : LNR::right;
 
 	state_function = state_function();
 
@@ -69,7 +67,7 @@ fsm::StateFunction Eyebot::update_idle() {
 fsm::StateFunction Eyebot::update_turn() {
 	animation.label = "turn";
 	if (animation.complete()) {
-		visual.sprite.scale({-1.f, 1.f});
+		flip();
 		state = {};
 		state.set(EyebotState::idle);
 		animation.set_params(idle);

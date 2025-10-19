@@ -17,21 +17,22 @@ add_subdirectory(imgui)
 set(IMGUI_SFML_FIND_SFML OFF)
 add_subdirectory(imgui-sfml)
 
+# juke
+FetchContent_Declare(
+        juke
+        GIT_REPOSITORY https://github.com/swagween/jukebox
+        # GIT_TAG v1.0.0
+        GIT_TAG 95c8b702aa02b1c5147e0999d2d49020abeecf9f
+)
+FetchContent_MakeAvailable(juke)
+
 # djson
 FetchContent_Declare(
         djson
         GIT_REPOSITORY https://github.com/karnkaul/djson
-        GIT_TAG v2.1.1
+        GIT_TAG v3.1.1
 )
 FetchContent_MakeAvailable(djson)
-
-# tracy
-FetchContent_Declare(
-        tracy
-        GIT_REPOSITORY https://github.com/wolfpld/tracy
-        GIT_TAG v0.11.1
-)
-FetchContent_MakeAvailable(tracy)
 
 # ccmath
 set(CCMATH_ENABLE_EXTENSIONS ON)
@@ -140,9 +141,8 @@ target_link_libraries(fornani-dependencies INTERFACE
         SFML::System
         SFML::Graphics
         SFML::Window
-        SFML::Audio
+        juke::juke
         steamworks
-        Tracy::TracyClient
 
         cpptrace::cpptrace
         libassert::assert

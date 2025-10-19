@@ -1,31 +1,15 @@
 
 #pragma once
-#include "AbilityManager.hpp"
-#include "Inventory.hpp"
-#include "Wardrobe.hpp"
-
-namespace fornani::automa {
-struct ServiceProvider;
-}
-
-namespace fornani::gui {
-class Console;
-}
+#include "fornani/entities/player/AbilityManager.hpp"
+#include "fornani/entities/player/Inventory.hpp"
+#include "fornani/entities/player/Wardrobe.hpp"
 
 namespace fornani::player {
 
-class Catalog {
-  public:
-	void update(automa::ServiceProvider& svc);
-	void add_item(automa::ServiceProvider& svc, int item_id, int amount);
-	void remove_item(automa::ServiceProvider& svc, int item_id, int amount);
-	void equip_item(automa::ServiceProvider& svc, ApparelType type, int item_id);
-	void unequip_item(ApparelType type);
-	struct {
-		Inventory inventory{};
-		AbilityManager abilities{};
-		Wardrobe wardrobe{};
-	} categories{};
+struct Catalog {
+	Inventory inventory;
+	AbilityManager abilities{};
+	Wardrobe wardrobe{};
 };
 
 } // namespace fornani::player

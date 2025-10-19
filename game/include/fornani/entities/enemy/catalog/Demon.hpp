@@ -8,19 +8,18 @@
 
 namespace fornani::enemy {
 
-enum class DemonState { idle, turn, run, jump, signal, rush, stab, dormant, jumpsquat };
-enum class DemonVariant { warrior, spearman };
+enum class DemonState : std::uint8_t { idle, turn, run, jump, signal, rush, stab, dormant, jumpsquat, uppercut };
+enum class DemonFlags : std::uint8_t { player_behind, parrying };
+enum class DemonVariant : std::uint8_t { warrior, spearman, duelist };
 
 class Demon final : public Enemy {
 
   public:
-	Demon() = delete;
-	~Demon() override {}
-	Demon& operator=(Demon&&) = delete;
-	Demon(automa::ServiceProvider& svc, world::Map& map);
-	void unique_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
-	void unique_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) override;
-	[[nodiscard]] auto is_dormant() const -> bool { return state == DemonState::dormant || cooldowns.awaken.running(); }
+	Demon(automa::ServiceProvider& svc, world::Map& map, int variant);
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
+	[[nodiscard]] auto is_dormant() const -> bool { return is_state(DemonState::dormant) || cooldowns.awaken.running(); }
+	[[nodiscard]] auto is_state(DemonState test) const -> bool { return m_state.actual == test; }
 
 	fsm::StateFunction state_function = std::bind(&Demon::update_dormant, this);
 	fsm::StateFunction update_idle();
@@ -30,12 +29,19 @@ class Demon final : public Enemy {
 	fsm::StateFunction update_signal();
 	fsm::StateFunction update_rush();
 	fsm::StateFunction update_stab();
+	fsm::StateFunction update_uppercut();
 	fsm::StateFunction update_dormant();
 	fsm::StateFunction update_jumpsquat();
 
   private:
-	DemonState state{};
-	DemonVariant variant{};
+	DemonVariant m_variant{};
+
+	util::BitFlags<DemonFlags> m_flags{};
+
+	struct {
+		DemonState actual{};
+		DemonState desired{};
+	} m_state{};
 
 	// packages
 	struct {
@@ -46,7 +52,6 @@ class Demon final : public Enemy {
 
 	struct {
 		entity::Attack stab{};
-		entity::Attack rush{};
 	} attacks{};
 	entity::Caution caution{};
 
@@ -56,24 +61,15 @@ class Demon final : public Enemy {
 		util::Cooldown rush_hit{600};
 		util::Cooldown post_rush{128};
 		util::Cooldown awaken{180};
+		util::Cooldown stab{6};
 	} cooldowns{};
-
-	// lookup, duration, framerate, num_loops
-	anim::Parameters idle{0, 6, 28, -1};
-	anim::Parameters turn{9, 1, 48, 1};
-	anim::Parameters run{6, 4, 28, 4};
-	anim::Parameters jump{9, 1, 48, 0};
-	anim::Parameters signal{10, 1, 58, 2};
-	anim::Parameters rush{11, 1, 22, 3};
-	anim::Parameters stab{11, 1, 32, 0};
-	anim::Parameters jumpsquat{12, 1, 44, 1};
-	anim::Parameters dormant{13, 1, 32, -1};
 
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;
 
 	float rand_jump{};
 
+	void request(DemonState to) { m_state.desired = to; }
 	bool change_state(DemonState next, anim::Parameters params);
 };
 

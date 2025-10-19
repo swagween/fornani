@@ -1,12 +1,14 @@
 
 #pragma once
 
-#include "Background.hpp"
-#include "EntitySet.hpp"
-#include "Map.hpp"
+#include "editor/canvas/Background.hpp"
+#include "editor/canvas/Map.hpp"
 #include "editor/util/BitFlags.hpp"
 #include "editor/util/SelectBox.hpp"
+#include "fornani/entity/EntitySet.hpp"
 #include "fornani/graphics/CameraController.hpp"
+#include "fornani/utils/Constants.hpp"
+#include "fornani/world/Map.hpp"
 
 #include <deque>
 #include <filesystem>
@@ -16,22 +18,20 @@
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 
-namespace fornani::data {
+namespace fornani::automa {
+struct ServiceProvider;
+}
+
+namespace fornani {
 class ResourceFinder;
 }
 
 namespace pi {
 
-enum class StyleType : uint8_t { firstwind, overturned, base, factory, greatwing, END };
+enum class StyleType : std::uint8_t { firstwind, overturned, pioneer, factory, greatwing, kariba, junkyard, END };
 
 enum class CanvasProperties { editable };
 enum class CanvasState { hovered };
-
-struct Theme {
-	std::string music{};
-	std::string ambience{};
-	std::vector<int> atmosphere{};
-};
 
 constexpr inline int chunk_size_v{16};
 constexpr inline int default_num_layers_v{8};
@@ -44,9 +44,11 @@ class Style {
 		switch (type) {
 		case StyleType::firstwind: label = "firstwind"; break;
 		case StyleType::overturned: label = "overturned"; break;
-		case StyleType::base: label = "base"; break;
+		case StyleType::pioneer: label = "pioneer"; break;
 		case StyleType::factory: label = "factory"; break;
 		case StyleType::greatwing: label = "greatwing"; break;
+		case StyleType::kariba: label = "kariba"; break;
+		case StyleType::junkyard: label = "junkyard"; break;
 		default: label = "<none>"; break;
 		}
 		label_c_str = label.c_str();
@@ -68,12 +70,12 @@ class Tool;
 class Canvas {
 
   public:
-	Canvas(fornani::data::ResourceFinder& finder, SelectionType type, StyleType style = StyleType::firstwind, Backdrop backdrop = Backdrop::black, int num_layers = default_num_layers_v);
-	Canvas(fornani::data::ResourceFinder& finder, sf::Vector2<uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers = default_num_layers_v);
+	Canvas(fornani::ResourceFinder& finder, SelectionType type, StyleType style = StyleType::firstwind, Backdrop backdrop = Backdrop::black, int num_layers = default_num_layers_v);
+	Canvas(fornani::ResourceFinder& finder, sf::Vector2<std::uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers = default_num_layers_v);
 	void update(Tool& tool);
 	void render(sf::RenderWindow& win, sf::Sprite& tileset);
-	bool load(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local = false);
-	bool save(fornani::data::ResourceFinder& finder, std::string const& region, std::string const& room_name);
+	bool load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local = false);
+	bool save(fornani::ResourceFinder& finder, std::string const& region, std::string const& room_name);
 	void clear();
 	void save_state(Tool& tool, bool force = false);
 	void undo();
@@ -81,88 +83,91 @@ class Canvas {
 	void clear_redo_states();
 	void hover();
 	void unhover();
-	void move(sf::Vector2<float> distance);
-	void set_position(sf::Vector2<float> to_position);
-	void set_origin(sf::Vector2<float> to_origin);
-	void set_offset_from_center(sf::Vector2<float> offset);
+	void move(sf::Vector2f distance);
+	void set_position(sf::Vector2f to_position);
+	void set_origin(sf::Vector2f to_origin);
+	void set_offset_from_center(sf::Vector2f offset);
 	void set_scale(float to_scale);
 	void resize(sf::Vector2i adjustment);
-	void center(sf::Vector2<float> point);
-	void constrain(sf::Vector2<float> bounds);
+	void center(sf::Vector2f point);
+	void constrain(sf::Vector2f bounds);
 	void zoom(float amount);
 	void set_backdrop_color(sf::Color color);
 	void set_grid_texture();
 	void activate_middleground();
+	void set_music(std::string_view to) { m_attributes.music = to; }
+	void set_ambience(std::string_view to) { m_attributes.ambience = to; }
+
 	Map& get_layers();
+	Layer& get_active_layer();
 	sf::Vector2<int> get_tile_coord(int lookup);
+
+	void set_property(fornani::world::MapProperties to_set) { m_attributes.properties.set(to_set); }
+	void reset_property(fornani::world::MapProperties to_reset) { m_attributes.properties.reset(to_reset); }
+
+	[[nodiscard]] auto test_property(fornani::world::MapProperties to_test) const -> bool { return m_attributes.properties.test(to_test); }
+
 	[[nodiscard]] auto get_selection_type() const -> SelectionType { return type; }
 	[[nodiscard]] auto states_empty() const -> bool { return map_states.empty(); }
 	[[nodiscard]] auto is_palette() const -> bool { return type == SelectionType::palette; }
 	[[nodiscard]] auto hovered() const -> bool { return state.test(CanvasState::hovered); }
 	[[nodiscard]] auto editable() const -> bool { return properties.test(CanvasProperties::editable); }
-	[[nodiscard]] auto chunk_dimensions() const -> sf::Vector2<uint32_t> { return dimensions / u_native_chunk_size(); }
-	[[nodiscard]] auto get_position() const -> sf::Vector2<float> { return position; }
-	[[nodiscard]] auto get_scaled_position() const -> sf::Vector2<float> { return position / scale; }
-	[[nodiscard]] auto get_real_dimensions() const -> sf::Vector2<float> { return real_dimensions * scale; }
-	[[nodiscard]] auto get_center() const -> sf::Vector2<float> { return real_dimensions * 0.5f; }
-	[[nodiscard]] auto get_origin() const -> sf::Vector2<float> { return origin; }
-	[[nodiscard]] auto get_offset_from_center() const -> sf::Vector2<float> { return offset_from_center; }
-	[[nodiscard]] auto get_scaled_center() const -> sf::Vector2<float> { return real_dimensions * 0.5f * scale; }
+	[[nodiscard]] auto chunk_dimensions() const -> sf::Vector2<std::uint32_t> { return dimensions / u_native_chunk_size(); }
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return position; }
+	[[nodiscard]] auto get_scaled_position() const -> sf::Vector2f { return position / scale; }
+	[[nodiscard]] auto get_real_dimensions() const -> sf::Vector2f { return real_dimensions * scale; }
+	[[nodiscard]] auto get_center() const -> sf::Vector2f { return real_dimensions * 0.5f; }
+	[[nodiscard]] auto get_origin() const -> sf::Vector2f { return origin; }
+	[[nodiscard]] auto get_offset_from_center() const -> sf::Vector2f { return offset_from_center; }
+	[[nodiscard]] auto get_scaled_center() const -> sf::Vector2f { return real_dimensions * 0.5f * scale; }
 	[[nodiscard]] auto u_native_chunk_size() const -> std::uint32_t { return static_cast<std::uint32_t>(chunk_size_v); }
 	[[nodiscard]] auto i_native_chunk_size() const -> int { return chunk_size_v; }
 	[[nodiscard]] auto f_native_chunk_size() const -> float { return static_cast<float>(chunk_size_v); }
-	[[nodiscard]] auto u_cell_size() const -> std::uint32_t { return static_cast<uint32_t>(i_cell_size()); }
+	[[nodiscard]] auto u_cell_size() const -> std::uint32_t { return static_cast<std::uint32_t>(i_cell_size()); }
 	[[nodiscard]] auto i_cell_size() const -> int { return static_cast<int>(f_cell_size()); }
 	[[nodiscard]] auto f_cell_size() const -> float { return f_native_cell_size() * scale; }
 	[[nodiscard]] auto f_chunk_size() const -> float { return f_native_chunk_size() * scale; }
 	[[nodiscard]] auto f_native_cell_size() const -> float { return 32.f; }
 	[[nodiscard]] auto get_scale() const -> float { return scale; }
-	[[nodiscard]] auto get_i_style() const -> int { return static_cast<int>(styles.tile.get_type()); }
+	[[nodiscard]] auto get_scale_vec() const -> sf::Vector2f { return fornani::constants::f_scale_vec * scale; }
+	[[nodiscard]] auto get_i_style() const -> int { return static_cast<int>(tile_style.get_type()); }
 	[[nodiscard]] auto within_zoom_limits(float delta) const -> bool { return get_scale() + delta >= min_scale && get_scale() + delta <= max_scale; }
-	[[nodiscard]] auto within_bounds(sf::Vector2<float> const& point) const -> bool { return point.x > position.x && point.x < real_dimensions.x + position.x && point.y > position.y && point.y < real_dimensions.y + position.y; }
+	[[nodiscard]] auto within_bounds(sf::Vector2f const& point) const -> bool { return point.x > position.x && point.x < real_dimensions.x + position.x && point.y > position.y && point.y < real_dimensions.y + position.y; }
 	[[nodiscard]] auto undo_states_size() const -> std::size_t { return map_states.size(); }
 	[[nodiscard]] auto redo_states_size() const -> std::size_t { return redo_states.size(); }
 	[[nodiscard]] auto middleground() const -> int { return map_states.back().get_middleground(); }
 	[[nodiscard]] auto last_layer() const -> int { return static_cast<int>(map_states.back().layers.size() - 1); }
 
-	void replace_tile(uint32_t from, uint32_t to, int layer_index);
+	void replace_tile(std::uint32_t from, std::uint32_t to, int layer_index);
 	void edit_tile_at(int i, int j, int new_val, int layer_index);
 	void erase_at(int i, int j, int layer_index);
 	int tile_val_at(int i, int j, int layer);
 	int tile_val_at_scaled(int i, int j, int layer);
-	sf::Vector2<float> get_tile_position_at(int i, int j, int layer = 0);
+	sf::Vector2f get_tile_position_at(int i, int j, int layer = 0);
 	Tile& get_tile_at(int i, int j, int layer = 0);
 
 	// layers
-	sf::Vector2<uint32_t> dimensions{};
+	sf::Vector2<std::uint32_t> dimensions{};
 	sf::Vector2<int> metagrid_coordinates{};
+	sf::Vector2f m_player_start{};
 
 	struct {
 		bool show_grid{true};
 		bool show_all_layers{true};
 		bool show_current_layer{false};
-		bool show_obscured_layer{true};
-		bool show_reverse_obscured_layer{true};
+		bool show_obscured_layer{false};
+		bool show_reverse_obscured_layer{false};
 		bool show_indicated_layers{true};
 		bool show_entities{true};
 		bool show_background{};
 	} flags{};
 
-	EntitySet entities;
+	float darken_factor{};
 
-	struct {
-		dj::Json meta{};
-	} data{};
+	fornani::EntitySet entities;
+	dj::Json metadata{};
+	Style tile_style;
 
-	struct {
-		float cell_size{32.f};
-	} constants{};
-
-	struct {
-		Style tile;
-	} styles;
-
-	Theme m_theme{};
 	std::unique_ptr<Background> background{};
 
 	struct {
@@ -180,16 +185,18 @@ class Canvas {
 	sf::Vector2u player_start{};
 	int active_layer{};
 
-	uint32_t room_id{};
+	std::uint32_t room_id{};
 
-	bool minimap{};
+	bool m_use_template{};
 
   private:
-	sf::Vector2<float> position{};
+	fornani::world::MapAttributes m_attributes{};
+
+	sf::Vector2f position{};
 	sf::RenderTexture grid_texture{};
-	sf::Vector2<float> origin{};
-	sf::Vector2<float> real_dimensions{};
-	sf::Vector2<float> offset_from_center{};
+	sf::Vector2f origin{};
+	sf::Vector2f real_dimensions{};
+	sf::Vector2f offset_from_center{};
 	std::deque<Map> map_states{};
 	std::deque<Map> redo_states{};
 	util::BitFlags<CanvasState> state{};

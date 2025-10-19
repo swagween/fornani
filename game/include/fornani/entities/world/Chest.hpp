@@ -1,11 +1,13 @@
 
 #pragma once
 
-#include "fornani/particle/Sparkler.hpp"
-#include "fornani/utils/Collider.hpp"
-#include "fornani/entities/Entity.hpp"
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/entities/item/Item.hpp"
+#include "fornani/graphics/Animatable.hpp"
+#include "fornani/particle/Sparkler.hpp"
+#include "fornani/utils/CircleCollider.hpp"
+
+#include <optional>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -25,46 +27,33 @@ class Player;
 
 namespace fornani::entity {
 
-// TODO: Do these really need to be globally accessible?
+enum class ChestState { activated, open };
+enum class ChestType { gun, orbs, item };
 
-static inline anim::Parameters unopened{0, 1, 80, -1};
-static inline anim::Parameters shine{1, 5, 24, 0};
-static inline anim::Parameters opened{6, 1, 8, -1};
-
-enum class ChestState {activated, open};
-enum class ChestType {gun, orbs, item};
-
-class Chest final : public Entity {
+class Chest final : public Animatable {
   public:
-	Chest(automa::ServiceProvider& svc, int id);
-	void update(automa::ServiceProvider& svc, world::Map& map, gui::Console& console, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> campos) override;
-	void set_position(sf::Vector2<float> pos);
-	void set_position_from_scaled(sf::Vector2<float> scaled_pos);
-	void set_id(int new_id);
-	void set_item(int to_id);
-	void set_amount(int to_amount);
-	void set_rarity(float to_rarity);
-	void set_type(ChestType to_type);
-	shape::Shape& get_jumpbox() { return collider.jumpbox; }
-	shape::Collider& get_collider() { return collider; }
+	Chest(automa::ServiceProvider& svc, int id, ChestType type, int modifier);
+	void update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player);
+	void render(sf::RenderWindow& win, sf::Vector2f cam);
+	void set_position(sf::Vector2f pos);
+	void set_position_from_scaled(sf::Vector2f scaled_pos);
+	shape::CircleCollider& get_collider() { return collider; }
 
   private:
-	vfx::Sparkler sparkler{};
-	anim::Animation animation{};
-	shape::Collider collider{};
-	sf::Sprite sprite;
+	shape::CircleCollider collider;
 
 	util::BitFlags<ChestState> state{};
-	ChestType type{};
+	ChestType m_type{};
 
-	int id{};
-	int item_id{};
+	int m_id{};
+	int m_content_modifier{};
+	std::string m_item_label{};
 
 	struct {
-		int amount{};
-		float rarity{};
-	} loot{};
+		anim::Parameters unopened{0, 1, 80, -1};
+		anim::Parameters shine{1, 5, 24, 0};
+		anim::Parameters opened{6, 1, 8, -1};
+	} m_animations{};
 };
 
 } // namespace fornani::entity

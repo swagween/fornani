@@ -4,7 +4,7 @@
 
 namespace fornani::vfx {
 
-Sparkler::Sparkler(automa::ServiceProvider& svc, sf::Vector2<float> dimensions, sf::Color color, std::string_view type) : dimensions(dimensions), color(color), type(type) {
+Sparkler::Sparkler(automa::ServiceProvider& svc, sf::Vector2f dimensions, sf::Color color, std::string_view type) : dimensions(dimensions), color(color), type(type), m_services(&svc) {
 	auto const& in_data = svc.data.sparkler[type];
 	behavior.rate = in_data["rate"].as<float>();
 	drawbox.setFillColor(sf::Color::Transparent);
@@ -14,18 +14,18 @@ Sparkler::Sparkler(automa::ServiceProvider& svc, sf::Vector2<float> dimensions, 
 }
 
 void Sparkler::update(automa::ServiceProvider& svc) {
-	if (util::Random::percent_chance(behavior.rate)) {
-		auto const x = util::Random::random_range_float(0.f, dimensions.x);
-		auto const y = util::Random::random_range_float(0.f, dimensions.y);
-		sf::Vector2 const point{position.x + x, position.y + y};
+	if (random::percent_chance(behavior.rate)) {
+		auto x = random::random_range_float(0.f, dimensions.x);
+		auto y = random::random_range_float(0.f, dimensions.y);
+		sf::Vector2f point{position.x + x, position.y + y};
 		if (active) { sparkles.push_back(Spark(svc, point, color, type)); }
 	}
 	for (auto& spark : sparkles) { spark.update(svc); }
 	std::erase_if(sparkles, [](auto const& s) { return s.done(); });
 }
 
-void Sparkler::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam) {
-	if (svc.greyblock_mode()) {
+void Sparkler::render(sf::RenderWindow& win, sf::Vector2f cam) {
+	if (m_services->greyblock_mode()) {
 		drawbox.setPosition(position - cam);
 		drawbox.setSize(dimensions);
 		win.draw(drawbox);
@@ -34,9 +34,9 @@ void Sparkler::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 	}
 }
 
-void Sparkler::set_position(sf::Vector2<float> pos) { position = pos; }
+void Sparkler::set_position(sf::Vector2f pos) { position = pos; }
 
-void Sparkler::set_dimensions(sf::Vector2<float> dim) { dimensions = dim; }
+void Sparkler::set_dimensions(sf::Vector2f dim) { dimensions = dim; }
 
 void Sparkler::activate() { active = true; }
 

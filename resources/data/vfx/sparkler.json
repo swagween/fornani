@@ -10,15 +10,20 @@
   },
 
   "item": {
-    "rate": 2.0,
-    "volatility": 0.2,
-    "wobble": 0.1,
-    "frequency": 0.01,
-    "speed": 0.4,
-    "lifespan": 220,
-    "lifespan_variance": 80,
-    "fader": true,
-    "color": "standard"
+    "rate": 4.0,
+    "volatility": 0.7,
+    "wobble": 0.03,
+    "frequency": 0.005,
+    "speed": 0.3,
+    "lifespan": 260,
+    "lifespan_variance": 195,
+    "animation": {
+      "label": "sparkle",
+      "variants": 5,
+      "num_frames": 8,
+      "framerate": 18,
+      "dimensions": [9, 9]
+    }
   },
 
   "save_point": {
@@ -46,7 +51,7 @@
   },
 
   "fire": {
-   "rate": 3.0,
+    "rate": 3.0,
     "volatility": 0.7,
     "wobble": 0.03,
     "frequency": 0.005,
@@ -55,6 +60,47 @@
     "lifespan_variance": 195,
     "fader": true,
     "color": "fire"
+  },
+
+  "portrait_sparkle": {
+    "rate": 12.0,
+    "volatility": 0.7,
+    "wobble": 0.03,
+    "frequency": 0.005,
+    "speed": 0.3,
+    "lifespan": 260,
+    "lifespan_variance": 195,
+    "animation": {
+      "label": "sparkle",
+      "variants": 5,
+      "num_frames": 8,
+      "framerate": 18,
+      "dimensions": [9, 9]
+    }
+  },
+
+  "lynx_magic": {
+    "rate": 6.0,
+    "volatility": 0.7,
+    "wobble": 0.03,
+    "frequency": 0.005,
+    "speed": 0.1,
+    "lifespan": 260,
+    "lifespan_variance": 195,
+    "fader": true,
+    "color": "yellow"
+  },
+
+  "guardian_magic": {
+    "rate": 6.0,
+    "volatility": 0.7,
+    "wobble": 0.03,
+    "frequency": 0.005,
+    "speed": 0.1,
+    "lifespan": 260,
+    "lifespan_variance": 195,
+    "fader": true,
+    "color": "guardian"
   },
 
   "light_trail": {

@@ -1,8 +1,4 @@
 
 #include "launcher/LauncherApplication.hpp"
 
-#include "fornani/utils/Tracy.hpp"
-
-namespace launcher {
-
-} // namespace game
+namespace launcher {} // namespace launcher

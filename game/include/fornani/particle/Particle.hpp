@@ -17,18 +17,18 @@ class Map;
 }
 
 namespace fornani::vfx {
-enum class ParticleType : uint8_t { animated, colliding };
+enum class ParticleType : std::uint8_t { animated, colliding };
 class Particle {
   public:
-	Particle(automa::ServiceProvider& svc, sf::Vector2<float> pos, sf::Vector2<float> dim, std::string_view type, sf::Color color, dir::Direction direction);
+	Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f dim, std::string_view type, sf::Color color, Direction direction);
 	void update(automa::ServiceProvider& svc, world::Map& map);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2<float> cam);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	[[nodiscard]] auto done() const -> bool { return lifespan.is_almost_complete(); }
 
   private:
 	sf::RectangleShape box{};
-	sf::Vector2<float> position{};
-	sf::Vector2<float> dimensions{};
+	sf::Vector2f position{};
+	sf::Vector2f dimensions{};
 	sf::Vector2<int> sprite_dimensions{};
 	util::Cooldown lifespan{};
 	shape::CircleCollider collider;
