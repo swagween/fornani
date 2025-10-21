@@ -13,6 +13,7 @@ namespace fornani::player {
 constexpr auto wallslide_threshold_v = -0.16f;
 constexpr auto walljump_force_v = 8.6f;
 constexpr auto light_offset_v = 12.f;
+constexpr auto default_invincibility_time_v = 300;
 
 Player::Player(automa::ServiceProvider& svc)
 	: arsenal(svc), m_services(&svc), controller(svc, *this), animation(*this), sprite{svc.assets.get_texture("nani")}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},
@@ -22,7 +23,7 @@ Player::Player(automa::ServiceProvider& svc)
 
 	anchor_point = collider.physics.position + player_dimensions_v * 0.5f;
 	collider.collision_depths = util::CollisionDepth();
-	health.set_invincibility(300);
+	health.set_invincibility(default_invincibility_time_v);
 	hurtbox.set_dimensions(sf::Vector2f{12.f, 26.f});
 
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
@@ -58,6 +59,9 @@ void Player::update(world::Map& map) {
 	distant_vicinity.set_position(collider.get_center() - distant_vicinity.get_dimensions() * 0.5f);
 	m_piggyback_socket = collider.get_top() + sf::Vector2f{-8.f * m_directions.actual.as_float(), -16.f};
 
+	has_item_equipped(38) ? health.set_invincibility(default_invincibility_time_v * 1.3f) : health.set_invincibility(default_invincibility_time_v);
+	has_item_equipped(35) ? equipped_weapon().set_reload_multiplier(0.5f) : equipped_weapon().set_reload_multiplier(1.f);
+
 	// map effects
 	if (controller.is_wallsliding()) {
 		auto freq = controller.wallslide_slowdown.get_quadratic_normalized() * 80.f;
@@ -70,7 +74,6 @@ void Player::update(world::Map& map) {
 	}
 	animation.is_state(AnimState::turn_slide) && (animation.animation.get_frame_count() > 2 && animation.animation.get_frame_count() < 6) ? m_services->soundboard.flags.player.set(audio::Player::turn_slide)
 																																		  : m_services->soundboard.flags.player.reset(audio::Player::turn_slide);
-
 	// camera stuff
 	auto camx = controller.direction.as_float() * 32.f;
 	auto skew = 180.f;
@@ -439,6 +442,9 @@ void Player::walk() {
 
 void Player::hurt(float amount, bool force) {
 	if (health.is_dead()) { return; }
+	if (controller.is_dashing()) {
+		if (has_item_equipped(37)) { return; }
+	}
 	if (!health.invincible() || force) {
 		m_services->music_player.filter_fade_in(80.f, 40.f, 32);
 		m_services->ambience_player.set_balance(1.f);
@@ -544,6 +550,11 @@ void Player::update_invincibility() {
 	}
 }
 
+void Player::update_wardrobe() {
+	catalog.wardrobe.update(texture_updater);
+	wardrobe_widget.update(*this);
+}
+
 void Player::start_over() {
 	flags.state.reset(State::crushed);
 	health.reset();
@@ -559,7 +570,7 @@ void Player::start_over() {
 	}
 	sync_antennae();
 	catalog.wardrobe.set_palette(m_services->assets.get_texture_modifiable("nani_palette_default"));
-	catalog.wardrobe.update(texture_updater);
+	update_wardrobe();
 }
 
 void Player::give_drop(item::DropType type, float value) {
@@ -617,6 +628,8 @@ void Player::give_item(std::string_view label, int amount, bool from_save) {
 		m_services->soundboard.flags.item.set(audio::Item::health_increase);
 	}
 }
+
+bool Player::equip_item(int id) { return catalog.inventory.equip_item(id); }
 
 void Player::reset_flags() { flags = {}; }
 

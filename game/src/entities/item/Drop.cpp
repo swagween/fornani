@@ -1,12 +1,14 @@
-#include "fornani/entities/item/Drop.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/utils/Random.hpp"
-#include "fornani/world/Map.hpp"
+
+#include <fornani/entities/item/Drop.hpp>
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/utils/Random.hpp>
+#include <fornani/world/Map.hpp>
 
 namespace fornani::item {
 
 Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time, int special_id)
-	: Animatable(svc, key, {svc.data.drop[key]["sprite_dimensions"][0].as<int>(), svc.data.drop[key]["sprite_dimensions"][1].as<int>()}), sparkler(svc, drop_dimensions, colors::ui_white, "drop"), special_id(special_id) {
+	: Animatable(svc, key, {svc.data.drop[key]["sprite_dimensions"][0].as<int>(), svc.data.drop[key]["sprite_dimensions"][1].as<int>()}), sparkler(svc, drop_dimensions, colors::ui_white, "drop"), special_id(special_id), m_label{key} {
 
 	collider.physics.elasticity = 0.5f;
 
@@ -84,10 +86,17 @@ void Drop::set_value() {
 	if (type == DropType::gem) { value = special_id; }
 }
 
-void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
+void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	tick();
 	delay.update();
-	collider.update(svc);
+	auto magnet = player.has_item_equipped(svc.data.item_id_from_label("magnet"));
+	if (magnet) {
+		collider.physics.set_friction_componentwise({0.98f, 0.98f});
+		m_steering.seek(collider.physics, player.collider.get_center(), 0.0003f);
+	} else {
+		collider.physics.set_friction_componentwise({svc.data.drop[m_label]["friction"][0].as<float>(), svc.data.drop[m_label]["friction"][1].as<float>()});
+	}
+	collider.update(svc, magnet);
 	collider.handle_map_collision(map);
 	map.handle_cell_collision(collider);
 	map.handle_breakable_collision(collider);
@@ -118,6 +127,24 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	set_channel(v);
 
 	state_function = state_function();
+
+	if (collides_with(player.collider.bounding_box) && !is_inactive() && !is_completely_gone() && delay_over()) {
+		player.give_drop(get_type(), static_cast<float>(get_value()));
+		if (get_type() == DropType::gem) {
+			svc.soundboard.flags.item.set(audio::Item::gem);
+		} else if (get_type() == DropType::heart) {
+			svc.soundboard.flags.item.set(audio::Item::heal);
+		} else if (get_rarity() == Rarity::common) {
+			svc.soundboard.flags.item.set(audio::Item::orb_low);
+		} else if (get_rarity() == Rarity::uncommon) {
+			svc.soundboard.flags.item.set(audio::Item::orb_medium);
+		} else if (get_rarity() == Rarity::rare) {
+			svc.soundboard.flags.item.set(audio::Item::orb_high);
+		} else if (get_rarity() == Rarity::priceless) {
+			svc.soundboard.flags.item.set(audio::Item::orb_max);
+		}
+		deactivate();
+	}
 }
 
 void Drop::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {

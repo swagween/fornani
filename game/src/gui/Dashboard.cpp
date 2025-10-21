@@ -53,19 +53,20 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {
 	auto& controller = svc.controller_map;
 	m_paths.map.update();
+	m_light_up.update();
 	m_light_shift.update();
 	for (auto& gizmo : m_gizmos) {
 		gizmo->update(svc, player, map, m_physical.physics.position + m_paths.map.get_position());
-		gizmo->neutralize();
 		if (m_current_port == DashboardPort::minimap && gizmo->get_label() == "Clock") { gizmo->select(); }
-		if (m_current_port == gizmo->get_dashboard_port()) { gizmo->hover(); }
+		m_current_port == gizmo->get_dashboard_port() ? gizmo->hover() : gizmo->neutralize();
 	}
 	m_physical.physics.simple_update();
-	if (svc.ticker.every_second()) {
-		for (auto& gizmo : m_gizmos) { gizmo->report(); }
-	}
 
-	if (svc.ticker.every_second()) {
+	/*if (svc.ticker.every_second()) {
+		for (auto& gizmo : m_gizmos) { gizmo->report(); }
+	}*/
+
+	/*if (svc.ticker.every_second()) {
 		NANI_LOG_INFO(m_logger, "	------	");
 		NANI_LOG_INFO(m_logger, "Dashboard State:");
 		switch (m_state) {
@@ -80,7 +81,7 @@ void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pl
 		case DashboardPort::wardrobe: NANI_LOG_INFO(m_logger, "wardrobe"); break;
 		default: NANI_LOG_INFO(m_logger, "some other port"); break;
 		}
-	}
+	}*/
 }
 
 void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, LightShader& shader) {
@@ -109,10 +110,11 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 
 	auto max_dark = 2.f;
 	auto darken_factor = m_light_shift.running() ? 1.f : max_dark;
+	auto lighten_factor = m_light_up.running() ? 0.f : 0.f; // doesn't look good, but leaving it just in case
 
 	// dashboard constituents
 	auto render_position{-m_physical.physics.position + cam};
-	is_home() ? shader.set_darken(0.f) : shader.set_darken(darken_factor);
+	is_home() ? shader.set_darken(lighten_factor) : shader.set_darken(darken_factor);
 	m_constituents.motherboard.render(win, m_sprite, render_position, {}, shader, m_palette);
 	m_constituents.top_left_slot.render(win, m_sprite, render_position - m_paths.map.get_position(), {}, shader, m_palette);
 	m_constituents.top_right_slot.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {}, shader, m_palette);
@@ -121,11 +123,11 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 		shader.set_darken(max_dark);
 		gizmo->render(svc, win, player, shader, m_palette, cam, false);
 	}
-	is_home() ? shader.set_darken(0.f) : shader.set_darken(darken_factor);
-	if (m_state == DashboardState::gizmo && m_current_port == DashboardPort::minimap) { shader.set_darken(0.f); }
+	is_home() ? shader.set_darken(lighten_factor) : shader.set_darken(darken_factor);
+	if (m_state == DashboardState::gizmo && m_current_port == DashboardPort::minimap) { shader.set_darken(lighten_factor); }
 	m_constituents.top_left_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position(), {}, shader, m_palette);
 	m_constituents.top_right_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {}, shader, m_palette);
-	is_home() ? shader.set_darken(0.f) : shader.set_darken(darken_factor);
+	is_home() ? shader.set_darken(lighten_factor) : shader.set_darken(darken_factor);
 	m_constituents.arsenal_frontplate.render(win, m_sprite, render_position, {}, shader, m_palette);
 	for (auto& gizmo : m_gizmos) {
 		shader.set_darken(max_dark);
@@ -162,7 +164,11 @@ void Dashboard::set_selection(sf::Vector2i to_selection) {
 	auto same = m_selected_position == to_selection;
 	m_selected_position = to_selection;
 	auto switched = to_selection.x == 0 && to_selection.y == 0;
-	if (is_home() && !switched && !same) { m_light_shift.start(); }
+	if (is_home() && !switched && !same) {
+		m_light_shift.start();
+	} else if (is_hovering() && switched) {
+		m_light_up.start();
+	}
 	m_state = switched ? DashboardState::home : DashboardState::hovering;
 }
 

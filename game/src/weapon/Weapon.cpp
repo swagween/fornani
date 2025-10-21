@@ -48,6 +48,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 	cooldowns.reload = util::Cooldown{in_data["gameplay"]["attributes"]["reload"].as<int>()};
 	specifications.multishot = in_data["gameplay"]["attributes"]["multishot"].as<int>();
 	specifications.cooldown_time = in_data["gameplay"]["attributes"]["cooldown_time"].as<int>();
+	specifications.reload_time = in_data["gameplay"]["attributes"]["reload"].as<int>();
 	specifications.recoil = in_data["gameplay"]["attributes"]["recoil"].as<float>();
 	if (static_cast<bool>(in_data["gameplay"]["attributes"]["automatic"].as_bool())) { attributes.set(WeaponAttributes::automatic); }
 
@@ -59,6 +60,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 
 void Weapon::update(automa::ServiceProvider& svc, Direction to_direction) {
 	ammo.update();
+	cooldowns.reload.set_native_time(specifications.reload_time * m_modifiers.reload_multiplier);
 	tick();
 	if (cooldowns.reload.is_almost_complete() && projectile.get_team() == Team::nani) { svc.soundboard.flags.arms.set(audio::Arms::reload); }
 	if (cooldowns.reload.is_almost_complete()) { ammo.refill(); }
@@ -108,7 +110,10 @@ void Weapon::lock() { flags.state.reset(WeaponState::unlocked); }
 
 void Weapon::shoot() {
 	cooldowns.cooldown.start(specifications.cooldown_time);
-	if (!cooldowns.reload.running()) { cooldowns.reload.start(); }
+	if (!cooldowns.reload.running()) {
+		cooldowns.reload = util::Cooldown{static_cast<int>(specifications.reload_time * m_modifiers.reload_multiplier)};
+		cooldowns.reload.start();
+	}
 	active_projectiles.update();
 	ammo.use();
 	physical.physics.apply_force(firing_direction.get_vector() * -1.f);

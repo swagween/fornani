@@ -290,6 +290,9 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 
 	if (health.is_dead() && !status.test(MinigusFlags::over_and_out) && !status.test(MinigusFlags::goodbye)) { request(MinigusState::struggle); }
 	if (status.test(MinigusFlags::goodbye)) { status.set(MinigusFlags::over_and_out); }
+	if (status.test(MinigusFlags::over_and_out) && console_complete && m_state.actual == MinigusState::exit) {
+		m_map->active_loot.push_back(item::Loot(svc, player, get_attributes().drop_range, get_attributes().loot_multiplier, Enemy::get_collider().bounding_box.get_position()));
+	}
 
 	Minigus::state_function = Minigus::state_function();
 }
@@ -843,7 +846,6 @@ fsm::StateFunction Minigus::update_exit() {
 	m_state.actual = MinigusState::exit;
 	if (Enemy::animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "exit"); }
 	if (status.test(MinigusFlags::over_and_out) && console_complete) {
-		m_map->active_loot.push_back(item::Loot(*m_services, get_attributes().drop_range, get_attributes().loot_multiplier, Enemy::get_collider().bounding_box.get_position()));
 		request(MinigusState::jumpsquat);
 		Enemy::animation.set_params(jumpsquat);
 		m_services->music_player.load(m_services->finder, "dusken");

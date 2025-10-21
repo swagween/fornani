@@ -94,23 +94,6 @@
           8
         ],
         "source_id": 212
-      },
-      {
-        "activate_on_contact": false,
-        "already_open": false,
-        "destination_id": 247,
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 0,
-        "key_id": 0,
-        "locked": false,
-        "position": [
-          24,
-          8
-        ],
-        "source_id": 212
       }
     ]
   },

@@ -4,6 +4,7 @@ nani_add_headers(
         BossHealth.hpp
         Dashboard.hpp
         Gizmo.hpp
+        HealthBar.hpp
         HUD.hpp
         InventoryWindow.hpp
         ItemWidget.hpp

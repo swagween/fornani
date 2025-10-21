@@ -8,8 +8,8 @@ namespace fornani::shape {
 
 CircleCollider::CircleCollider(float radius) : sensor{radius} { sensor.bounds.setOrigin({radius, radius}); }
 
-void CircleCollider::update(automa::ServiceProvider& svc) {
-	physics.update(svc);
+void CircleCollider::update(automa::ServiceProvider& svc, bool simple) {
+	simple ? physics.simple_update() : physics.update(svc);
 	sensor.set_position(physics.position);
 	boundary.first = physics.position - bound;
 	boundary.second = physics.position + bound;

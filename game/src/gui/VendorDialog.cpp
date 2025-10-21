@@ -88,15 +88,18 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	svc.ambience_player.set_balance(1.f);
 
 	// initialize item list
-	for (auto& row : m_items_list) {
+	for (auto& row : m_vendor_items_list) {
+		for (auto& slot : row) { slot = -1; }
+	}
+	for (auto& row : m_player_items_list) {
 		for (auto& slot : row) { slot = -1; }
 	}
 	auto vendor = my_npc->get_vendor();
 	if (vendor) {
 		for (auto [i, item] : std::views::enumerate(vendor.value()->inventory.items_view())) {
 			auto rarity = static_cast<int>(item->get_rarity());
-			if (rarity >= m_items_list.size()) { continue; }
-			for (auto& slot : m_items_list[rarity]) {
+			if (rarity >= m_vendor_items_list.size()) { continue; }
+			for (auto& slot : m_vendor_items_list[rarity]) {
 				if (slot == -1) {
 					slot = item->get_id();
 					break;
@@ -104,7 +107,18 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 			}
 		}
 	}
-	for (auto [i, row] : std::views::enumerate(m_items_list)) { NANI_LOG_INFO(m_logger, "Row {}: {}", i, row); }
+	for (auto [i, item] : std::views::enumerate(player.catalog.inventory.items_view())) {
+		auto rarity = static_cast<int>(item->get_rarity());
+		if (rarity >= m_player_items_list.size()) { continue; }
+		for (auto& slot : m_player_items_list[rarity]) {
+			if (slot == -1) {
+				slot = item->get_id();
+				break;
+			} // populate next slot with item
+		}
+	}
+	for (auto [i, row] : std::views::enumerate(m_vendor_items_list)) { NANI_LOG_INFO(m_logger, "Row {}: {}", i, row); }
+	for (auto [i, row] : std::views::enumerate(m_player_items_list)) { NANI_LOG_INFO(m_logger, "Row {}: {}", i, row); }
 
 	NANI_LOG_INFO(m_logger, "Vendor NPC: {}", my_npc->get_tag());
 }
@@ -159,39 +173,59 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	text.price_number.setString("---");
 	text.price_number.setFillColor(colors::dark_grey);
 	if (vendor) {
+
+		// determine inventory sources and selectors
+		auto& source_inventory = is_buying() ? vendor.value()->inventory : player.catalog.inventory;
+		auto& destination_inventory = is_buying() ? player.catalog.inventory : vendor.value()->inventory;
+		auto& selector = m_buy_selector;
+		auto& item_list = is_buying() ? m_vendor_items_list : m_player_items_list;
+
 		std::optional<item::Item*> this_item{};
-		for (auto [i, row] : std::views::enumerate(m_items_list)) {
+		for (auto [i, row] : std::views::enumerate(item_list)) {
 			for (auto [j, slot] : std::views::enumerate(row)) {
-				for (auto [k, item] : std::views::enumerate(vendor.value()->inventory.items_view())) {
-					if (slot == item->get_id() && m_buy_selector.matches(j, i)) { this_item = &(*item); }
+				for (auto [k, item] : std::views::enumerate(source_inventory.items_view())) {
+					if (slot == item->get_id() && selector.matches(j, i)) { this_item = &(*item); }
 				}
 			}
 		}
 		if (this_item) {
 			auto f_value = static_cast<float>(this_item.value()->get_value());
-			sale_price = f_value + f_value * vendor.value()->get_upcharge();
+			auto upcharge = is_buying() ? f_value * vendor.value()->get_upcharge() : 0;
+			sale_price = f_value + upcharge;
 			text.price_number.setString(std::format("{}", sale_price));
-			player.wallet.get_balance() < sale_price ? text.price_number.setFillColor(colors::dark_grey) : text.price_number.setFillColor(colors::periwinkle);
+			(player.wallet.get_balance() < sale_price) && is_buying() ? text.price_number.setFillColor(colors::dark_grey) : text.price_number.setFillColor(colors::periwinkle);
 			if (m_item_menu) {
 				if (m_item_menu->was_selected()) {
+
+					// some snazzy local variables
 					auto item_lbl = this_item.value()->get_label();
 					auto item_id = this_item.value()->get_id();
+					auto exchange = is_buying() ? -sale_price : sale_price;
+					auto apparel_type = this_item.value()->get_apparel_type();
+
 					switch (m_item_menu->get_selection()) {
 					case 0:
-						if (player.wallet.get_balance() < sale_price) {
+						if (is_buying() && player.wallet.get_balance() < sale_price) {
 							svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 							m_item_menu = {};
 							break;
 						}
-						player.give_item(item_lbl, 1);
-						player.give_drop(item::DropType::orb, -sale_price);
-						balance -= sale_price;
-						vendor.value()->inventory.remove_item(item_id, 1);
+						destination_inventory.add_item(svc.data.item, item_lbl);
+						player.give_drop(item::DropType::orb, exchange);
+						balance += exchange;
+						source_inventory.remove_item(item_id, 1);
+						NANI_LOG_DEBUG(m_logger, "Removed {} from {} inventory", item_lbl, is_buying() ? "vendor" : "player");
 						svc.soundboard.flags.item.set(audio::Item::vendor_sale);
 						flags.set(VendorDialogStatus::made_sale);
-						NANI_LOG_DEBUG(m_logger, "Purchased!");
 
 						m_item_menu = {};
+
+						// a bit messy, but check if sold item was a wardrobe piece and act accordingly
+						if (apparel_type && is_selling()) {
+							player.catalog.wardrobe.unequip(static_cast<player::ApparelType>(*apparel_type));
+							NANI_LOG_DEBUG(m_logger, "Unequipped {}", item_lbl);
+						}
+						refresh(player, map);
 						break;
 					case 1:
 						m_item_menu = {};
@@ -200,7 +234,8 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 					}
 				}
 			} else if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
-				m_item_menu = MiniMenu(svc, {"buy", "cancel"}, m_buy_selector.get_position(), true);
+				auto exchange_text = is_buying() ? svc.data.gui_text["exchange_menu"]["buy"].as_string() : svc.data.gui_text["exchange_menu"]["sell"].as_string();
+				m_item_menu = MiniMenu(svc, {exchange_text, svc.data.gui_text["exchange_menu"]["cancel"].as_string()}, selector.get_position(), true);
 				svc.soundboard.flags.console.set(audio::Console::menu_open);
 			}
 		}
@@ -251,12 +286,14 @@ void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, p
 	m_orb_display.render(win, m_constituents[static_cast<int>(VendorConstituentType::nani)].get_window_position() + sf::Vector2f{24.f, 238.f});
 	m_buy_selector.render(win, m_selector_sprite.get_sprite(), {}, {});
 
-	if (is_buying()) {
-		auto vendor = my_npc->get_vendor();
-		for (auto [i, row] : std::views::enumerate(m_items_list)) {
+	auto vendor = my_npc->get_vendor();
+	if (vendor) {
+		auto& source_inventory = is_buying() ? vendor.value()->inventory : player.catalog.inventory;
+		auto& item_list = is_buying() ? m_vendor_items_list : m_player_items_list;
+		for (auto [i, row] : std::views::enumerate(item_list)) {
 			for (auto [j, slot] : std::views::enumerate(row)) {
 				if (vendor) {
-					for (auto [k, item] : std::views::enumerate(vendor.value()->inventory.items_view())) {
+					for (auto [k, item] : std::views::enumerate(source_inventory.items_view())) {
 						if (slot == item->get_id()) {
 							auto where = m_constituents[static_cast<int>(VendorConstituentType::wares)].get_window_position() + sf::Vector2f{20.f, 34.f};
 							item->render(win, m_item_sprite.get_sprite(), where + m_buy_selector.get_table_position_from_index(j + i * 8) * constants::f_scale_factor);
@@ -280,7 +317,39 @@ void VendorDialog::close(automa::ServiceProvider& svc) { m_outro.start(); }
 
 void VendorDialog::update_table(player::Player& player, world::Map& map, bool new_dim) {}
 
-void VendorDialog::refresh(player::Player& player, world::Map& map) const {}
+void VendorDialog::refresh(player::Player& player, world::Map& map) { // initialize item list
+	for (auto& row : m_vendor_items_list) {
+		for (auto& slot : row) { slot = -1; }
+	}
+	for (auto& row : m_player_items_list) {
+		for (auto& slot : row) { slot = -1; }
+	}
+	auto vendor = my_npc->get_vendor();
+	if (vendor) {
+		for (auto [i, item] : std::views::enumerate(vendor.value()->inventory.items_view())) {
+			auto rarity = static_cast<int>(item->get_rarity());
+			if (rarity >= m_vendor_items_list.size()) { continue; }
+			for (auto& slot : m_vendor_items_list[rarity]) {
+				if (slot == -1) {
+					slot = item->get_id();
+					break;
+				} // populate next slot with item
+			}
+		}
+	}
+	for (auto [i, item] : std::views::enumerate(player.catalog.inventory.items_view())) {
+		if (!item->is_sellable()) { continue; }
+		auto rarity = static_cast<int>(item->get_rarity());
+		if (rarity >= m_player_items_list.size()) { continue; }
+		for (auto& slot : m_player_items_list[rarity]) {
+			if (slot == -1) {
+				slot = item->get_id();
+				break;
+			} // populate next slot with item
+		}
+	}
+	player.update_wardrobe();
+}
 
 bool VendorDialog::fade_logic(automa::ServiceProvider& svc, world::Map& map) {
 	m_intro.update();

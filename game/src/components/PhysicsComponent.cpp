@@ -55,7 +55,8 @@ void PhysicsComponent::update_dampen(automa::ServiceProvider& svc) {
 	acceleration = {};
 }
 
-void PhysicsComponent::simple_update() {
+void PhysicsComponent::simple_update(bool gravity) {
+	if (gravity) { acceleration.y = gravity; }
 	velocity *= air_friction.x;
 	velocity += acceleration;
 	position += velocity;

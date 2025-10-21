@@ -1,289 +1,232 @@
 {
-	"status": {
-		"new": false
+	"activated_switches": [],
+	"destroyed_blocks": [
+		[ 0, 0 ],
+		[ 225, 0 ]
+	],
+	"destroyed_inspectables": [],
+	"discovered_rooms": [ 100, 102, 103, 212, 247, 230, 211, 203, 202, 225 ],
+	"map_data": {
+		"fallen_enemies": [
+			[ 20094, 55482869, 4, 0, 0 ],
+			[ 202, 3591669, 4, 0, 0 ],
+			[ 202, 2880850, 4, 0, 0 ],
+			[ 203, 2967157, 4, 0, 0 ]
+		],
+		"world_time": {
+			"hours": 18,
+			"minutes": 39
+		}
 	},
+	"marketplace": [ [] ],
+	"npc_locations": [
+		[ 20, 100 ],
+		[ 3, 0 ],
+		[ 24, 0 ],
+		[ 17, 103 ],
+		[ 23, 6001 ],
+		[ 7, 0 ],
+		[ 30, 0 ],
+		[ 22, 6001 ]
+	],
+	"opened_chests": [ 567911, 76304 ],
+	"piggybacker": 24,
 	"player_data": {
-		"max_hp": 3.000000,
-		"hp": 3.000000,
-		"orbs": 495,
-		"position": {
-			"x": 120.256104,
-			"y": 180.000001
-		},
-		"arsenal": [
-			"bryns_gun",
-			"gnat",
-			"wasp",
-			"pulsar"
-		],
-		"equipped_gun": "gnat",
-		"abilities": [
-		],
-		"wardrobe": {
-			"hairstyle": 0,
-			"headgear": 0,
-			"shirt": 0,
-			"pants": 1
-		},
+		"abilities": [],
+		"arsenal": [ "bryns_gun", "gnat", "wasp", "pulsar" ],
+		"equipped_gun": "pulsar",
+		"hotbar": [ "bryns_gun", "gnat", "pulsar" ],
+		"hp": 2,
 		"items": [
 			{
 				"label": "woodshine_totem",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "lantern",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "kariba_talisman",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "sky_pendant",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "imbier_totem",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "pioneer_medal",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "old_ivory_amulet",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "ancient_periapt",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "navy_top",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "green_pants",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "radar_device",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "outfitter_gizmo",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "status_gizmo",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "laboratory_key",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "red_jeans",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "chalcedony_tee",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "skycorps_tee",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "skycorps_shorts",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
 			},
 			{
 				"label": "chalcedony_skirt",
-				"quantity": 1
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "dog_leash",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "gas_mask",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "soda",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "carises_soul",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "hoarders_trinket",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "magnet",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "magnifying_glass",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "clock",
+				"quantity": 1,
+				"revealed": false
 			}
 		],
+		"max_hp": 3,
+		"orbs": 576,
+		"position": {
+			"x": 3012.568359375,
+			"y": 971.001708984375
+		},
 		"stats": {
-			"death_count": 84,
-			"bullets_fired": 2793,
-			"guns_collected": 0,
-			"items_collected": 27,
-			"orbs_collected": 495,
 			"blue_orbs": 1,
+			"bullets_fired": 2879,
+			"death_count": 84,
+			"enemies_killed": 11,
+			"guns_collected": 0,
 			"highest_indicator_amount": 310,
-			"enemies_killed": 8,
-			"rooms_discovered": 25,
-			"seconds_played": 1361.797607,
+			"items_collected": 27,
+			"orbs_collected": 576,
+			"rooms_discovered": 32,
+			"seconds_played": 1703.5560302734375,
 			"time_trials": {
-				"bryns_gun": 0.000000
+				"bryns_gun": 0
 			}
 		},
-		"hotbar": [
-			"bryns_gun",
-			"gnat",
-			"wasp",
-			"pulsar"
-		]
+		"wardrobe": {
+			"hairstyle": 0,
+			"headgear": 0,
+			"pants": 1,
+			"shirt": 0
+		}
 	},
-	"save_point_id": 4200,
-	"unlocked_doors": [
-
-	],
-	"opened_chests": [
-		567911
-	],
-	"activated_switches": [
-	],
-	"destroyed_blocks": [
-		115
-	],
-	"quest_progressions": [
-		[
-			88,
-			1,
-			1,
-			1,
-			0
-		],
-		[
-			3,
-			3,
-			1,
-			1,
-			0
-		],
-		[
-			3,
-			24,
-			1,
-			1,
-			0
-		],
-		[
-			9,
-			1,
-			1,
-			1,
-			0
-		],
-		[
-			70,
-			1,
-			1,
-			1,
-			0
-		],
-		[
-			3,
-			20,
-			1,
-			1,
-			0
-		],
-		[
-			0,
-			0,
-			0,
-			1,
-			0
-		],
-		[
-			5,
-			115,
-			2,
-			1,
-			0
-		],
-		[
-			9,
-			2,
-			1,
-			1,
-			0
-		],
-		[
-			8,
-			6001,
-			6001,
-			1,
-			0
-		]
-	],
 	"quests": [
 		{
-			"tag": "npc_dialogue",
-			"status": [ [ 18, 0 ] ]
+			"status": [ [ 0, 0 ] ],
+			"subquests": [
+				{
+					"id": 247,
+					"status": [ 1 ],
+					"tag": "justin"
+				},
+				{
+					"id": 212,
+					"status": [ 2 ],
+					"tag": "gobe"
+				}
+			],
+			"tag": "npc_dialogue"
+		},
+		{
+			"status": [ [ 0, 1 ] ],
+			"tag": "rescue_justin"
 		}
 	],
-	"destroyed_inspectables": [
-	],
-	"tutorial": {
-		"state": 4,
-		"closed": true,
-		"on": false,
-		"jump": true,
-		"shoot": true,
-		"sprint": true,
-		"map": true,
-		"inventory": true
+	"save_point_id": 225,
+	"status": {
+		"new": false
 	},
-	"discovered_rooms": [
-		100,
-		102,
-		103
-	],
-	"piggybacker": 0,
-	"marketplace": [
-		[
-			27,
-			26,
-			65,
-			24,
-			67
-		]
-	],
-	"npc_locations": [
-		[
-			20,
-			100
-		],
-		[
-			3,
-			227
-		],
-		[
-			24,
-			227
-		],
-		[
-			17,
-			103
-		],
-		[
-			7,
-			0
-		],
-		[
-			23,
-			6001
-		],
-		[
-			22,
-			6001
-		]
-	],
-	"map_data": {
-		"world_time": {
-			"hours": 12,
-			"minutes": 49
-		},
-		"fallen_enemies": [
-			[
-				20094,
-				55482869,
-				4,
-				0
-			]
-		]
-	}
+	"unlocked_doors": []
 }

@@ -18,6 +18,7 @@ class Cooldown {
 	constexpr void cancel() { decrementor = 0; }
 	constexpr void nullify() { decrementor = -1; }
 	constexpr void invert() { decrementor = native_time - decrementor; }
+	constexpr void set_native_time(int const to) { native_time = to; }
 	void randomize() { decrementor = random::random_range(0, native_time); }
 
 	[[nodiscard]] auto started() const -> bool { return decrementor == native_time; }

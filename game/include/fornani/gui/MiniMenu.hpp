@@ -2,11 +2,12 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <fornani/automa/Option.hpp>
+#include <fornani/core/Common.hpp>
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Circuit.hpp>
+#include <fornani/utils/NineSlice.hpp>
 #include <string>
-#include "fornani/automa/Option.hpp"
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Circuit.hpp"
-#include "fornani/utils/NineSlice.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -38,6 +39,7 @@ class MiniMenu {
 	[[nodiscard]] auto was_selected() const -> int { return m_flags.test(MiniMenuFlags::selected); }
 	[[nodiscard]] auto was_closed() const -> int { return m_flags.test(MiniMenuFlags::closed); }
 	[[nodiscard]] auto was_last_option() const -> int { return selection.get() == options.size() - 1; }
+	[[nodiscard]] auto get_option() const -> std::string { return options.size() > selection.get() ? options.at(selection.get()).label.getString() : null_key; }
 
 	sf::Vector2f position{};
 	sf::Vector2f draw_position{};

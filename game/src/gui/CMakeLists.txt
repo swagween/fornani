@@ -4,6 +4,7 @@ nani_add_sources(
         BossHealth.cpp
         Dashboard.cpp
         Gizmo.cpp
+        HealthBar.cpp
         HUD.cpp
         InventoryWindow.cpp
         ItemWidget.cpp

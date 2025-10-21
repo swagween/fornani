@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/core/Common.hpp>
 #include <fornani/entities/animation/AnimatedSprite.hpp>
 #include <fornani/graphics/Animatable.hpp>
@@ -19,6 +20,10 @@ namespace fornani::world {
 class Map;
 }
 
+namespace fornani::player {
+class Player;
+}
+
 namespace fornani::item {
 
 enum class DropType : std::uint8_t { heart, orb, gem };
@@ -32,7 +37,7 @@ class Drop : public Animatable {
 	Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time = 0, int special_id = 0);
 	void seed(float probability);
 	void set_value();
-	void update(automa::ServiceProvider& svc, world::Map& map);
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f pos);
 	void apply_force(sf::Vector2f force);
@@ -68,6 +73,7 @@ class Drop : public Animatable {
 	std::vector<anim::Parameters> m_parameters{};
 	sf::Vector2f m_sprite_dimensions{};
 	util::Cooldown shine_cooldown{600};
+	std::string m_label{};
 
 	int num_sprites{}; // 2 for hearts, 4 for orbs
 
@@ -80,6 +86,8 @@ class Drop : public Animatable {
 	util::Cooldown delay{};
 
 	vfx::Sparkler sparkler;
+
+	components::SteeringBehavior m_steering{};
 
 	util::BitFlags<DropFlags> flags{};
 

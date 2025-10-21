@@ -37,14 +37,14 @@ void TreasureContainer::update(automa::ServiceProvider& svc, sf::Vector2f target
 	}
 }
 
-void TreasureContainer::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
+void TreasureContainer::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, player::Player& player) {
 	if (health.is_dead()) { return; }
 	if (sensor.within_bounds(proj.get_collider())) {
 		if (!proj.destruction_initiated()) {
 			health.inflict(proj.get_damage());
 			svc.soundboard.flags.world.set(audio::World::breakable_hit);
 			if (health.is_dead()) {
-				map.active_loot.push_back(item::Loot(svc, {2, 3}, loot_multiplier, gravitator.position(), 0, rarity == item::Rarity::priceless, 0));
+				map.active_loot.push_back(item::Loot(svc, player, {2, 3}, loot_multiplier, gravitator.position(), 0, rarity == item::Rarity::priceless, 0));
 				svc.soundboard.flags.world.set(audio::World::block_toggle);
 				map.effects.push_back(entity::Effect(svc, "small_explosion", sensor.bounds.getPosition() - sf::Vector2f{8.f, 8.f}));
 			}

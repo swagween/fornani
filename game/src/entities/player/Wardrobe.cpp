@@ -1,7 +1,7 @@
 
 #include "fornani/entities/player/Wardrobe.hpp"
-#include "fornani/graphics/TextureUpdater.hpp"
 #include <fornani/gui/console/Console.hpp>
+#include "fornani/graphics/TextureUpdater.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::player {
@@ -53,7 +53,7 @@ void Wardrobe::equip(ApparelType type, int variant) {
 
 void Wardrobe::unequip(ApparelType type) {
 	if (!m_outfit.contains(type)) { return; }
-	m_outfit.at(type)->set(0);
+	m_outfit.at(type)->set(-1);
 }
 
 int Wardrobe::get_variant(ApparelType type) {

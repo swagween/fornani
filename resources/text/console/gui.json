@@ -1,8 +1,19 @@
 {
-	"vendor": {
-		"buy": "BUY",
-		"sell": "SELL",
-		"price": "PRICE:",
-		"value": "VALUE:"
-	}
+  "vendor": {
+    "buy": "BUY",
+    "sell": "SELL",
+    "price": "PRICE:",
+    "value": "VALUE:"
+  },
+  "item_menu": {
+    "equip": "equip",
+    "unequip": "unequip",
+    "read": "read",
+    "cancel": "cancel"
+  },
+  "exchange_menu": {
+    "buy": "buy",
+    "sell": "sell",
+    "cancel": "cancel"
+  }
 }

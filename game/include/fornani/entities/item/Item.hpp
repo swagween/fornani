@@ -7,6 +7,7 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Polymorphic.hpp>
+#include <optional>
 #include <string_view>
 
 namespace fornani::item {
@@ -21,11 +22,12 @@ struct ItemInformation {
 struct ItemStats {
 	int value{};
 	Rarity rarity{};
+	int apparel_type{};
 };
 
 enum class ItemType : std::uint8_t { ability, key, collectible, gizmo, apparel };
-enum class ItemFlags : std::uint8_t { sellable, vendor_spawnable, readable };
-enum class ItemState : std::uint8_t { revealed };
+enum class ItemFlags : std::uint8_t { sellable, readable, equippable, wearable };
+enum class ItemState : std::uint8_t { revealed, equipped };
 
 class Item : public Polymorphic {
   public:
@@ -34,7 +36,8 @@ class Item : public Polymorphic {
 	virtual void render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f position);
 
 	void reveal();
-	std::vector<std::string> generate_menu_list() const;
+	void set_equipped(bool to);
+	std::vector<std::string> generate_menu_list(dj::Json const& in) const;
 
 	[[nodiscard]] auto get_id() const -> int { return m_id; }
 	[[nodiscard]] auto get_type() const -> ItemType { return m_type; }
@@ -47,9 +50,13 @@ class Item : public Polymorphic {
 	[[nodiscard]] auto get_table_index(int table_width) const -> int { return m_table_origin.x + m_table_origin.y * table_width; }
 	[[nodiscard]] auto get_f_origin() const -> sf::Vector2f { return sf::Vector2f{m_table_origin}; }
 	[[nodiscard]] auto get_table_position() const -> sf::Vector2f { return sf::Vector2f{m_lookup.position} - get_f_origin(); }
+	[[nodiscard]] auto get_apparel_type() const -> std::optional<int> { return m_stats.apparel_type != -1 ? std::optional<int>{m_stats.apparel_type} : std::nullopt; }
 
+	[[nodiscard]] auto is_sellable() const -> bool { return m_flags.test(ItemFlags::sellable); }
 	[[nodiscard]] auto is_revealed() const -> bool { return m_state.test(ItemState::revealed); }
 	[[nodiscard]] auto is_readable() const -> bool { return m_flags.test(ItemFlags::readable); }
+	[[nodiscard]] auto is_equippable() const -> bool { return m_flags.test(ItemFlags::equippable); }
+	[[nodiscard]] auto is_wearable() const -> bool { return m_flags.test(ItemFlags::wearable); }
 
 	[[nodiscard]] auto is_key() const -> bool { return m_type == ItemType::key; }
 	[[nodiscard]] auto is_gizmo() const -> bool { return m_type == ItemType::gizmo; }

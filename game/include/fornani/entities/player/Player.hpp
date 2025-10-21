@@ -143,6 +143,7 @@ class Player {
 	[[nodiscard]] auto pushing() const -> bool { return animation.is_state(AnimState::push) || animation.is_state(AnimState::between_push); }
 	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.inventory.has_item(id); }
 	[[nodiscard]] auto has_item(std::string_view tag) const -> bool { return catalog.inventory.has_item(tag); }
+	[[nodiscard]] auto has_item_equipped(int id) const -> bool { return catalog.inventory.has_item_equipped(id); }
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
 	[[nodiscard]] auto has_map() const -> bool { return catalog.inventory.has_item(16); }
 	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lnr == LNR::left; }
@@ -181,10 +182,12 @@ class Player {
 	bool fire_weapon();
 
 	void update_invincibility();
+	void update_wardrobe();
 	void start_over();
 	void give_drop(item::DropType type, float value);
 	void give_item_by_id(int id, int amount);
 	void give_item(std::string_view label, int amount, bool from_save = false);
+	[[nodiscard]] bool equip_item(int id);
 	void add_to_hotbar(std::string_view tag);
 	void remove_from_hotbar(std::string_view tag);
 	void set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_outfit);

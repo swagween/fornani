@@ -38,7 +38,7 @@ class Vine : public Entity {
 	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
 
-	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) const;
+	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, player::Player& player) const;
 	void add_platform(automa::ServiceProvider& svc, int link_index);
 	void remove_platform(int link_index);
 

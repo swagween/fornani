@@ -59,6 +59,8 @@ class InventoryGizmo : public Gizmo {
 	sf::Sprite m_sprite;
 	sf::Sprite m_item_sprite;
 
+	sf::Vector2f m_equipped_items_position;
+
 	util::BitFlags<InventoryGizmoFlags> m_flags{};
 
 	std::optional<item::Item*> m_current_item{};

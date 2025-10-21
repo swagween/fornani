@@ -469,6 +469,15 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								}
 								ImGui::EndTabItem();
 							}
+
+							if (ImGui::BeginTabItem("Inventory")) {
+								ImGui::Text("Equipped Items:");
+								for (auto const& ei : player.catalog.inventory.equipped_items_view()) {
+									ImGui::Text("[%i]", ei);
+									ImGui::SameLine();
+								}
+								ImGui::EndTabItem();
+							}
 							if (ImGui::BeginTabItem("Animation")) {
 								ImGui::Text("Animation: %s", player.animation.animation.label.data());
 								ImGui::Separator();

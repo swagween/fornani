@@ -12,6 +12,7 @@ static bool gun_removal{};
 static bool item_music_played{};
 static bool b_reveal_item{};
 static bool b_read_item{};
+static bool b_equip_item{};
 static bool b_play_song{};
 static bool b_open_vendor{};
 static int item_modifier{};
@@ -28,6 +29,10 @@ static void trigger_gun(int to) {
 }
 static void trigger_read_item(int to) {
 	b_read_item = true;
+	item_modifier = to;
+}
+static void trigger_equip_item(int to) {
+	b_equip_item = true;
 	item_modifier = to;
 }
 static void trigger_reveal_item(int to) {
@@ -56,6 +61,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	svc.events.register_event(std::make_unique<Event<int, int>>("GivePlayerItem", std::bind(&player::Player::give_item_by_id, &player, std::placeholders::_1, std::placeholders::_2)));
 	svc.events.register_event(std::make_unique<Event<int>>("RevealItem", &trigger_reveal_item));
 	svc.events.register_event(std::make_unique<Event<int>>("ReadItem", &trigger_read_item));
+	svc.events.register_event(std::make_unique<Event<int>>("EquipItem", &trigger_equip_item));
 	svc.events.register_event(std::make_unique<Event<int>>("AcquireItem", &trigger_item));
 	svc.events.register_event(std::make_unique<Event<int>>("AcquireGun", &trigger_gun));
 	svc.events.register_event(std::make_unique<Event<int>>("PlaySong", &trigger_song));
@@ -124,6 +130,10 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		b_play_song = false;
 	}
 	if (b_read_item) { read_item(item_modifier); }
+	if (b_equip_item) {
+		player->equip_item(item_modifier) ? svc.soundboard.flags.item.set(audio::Item::equip) : svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+		b_equip_item = false;
+	}
 	if (b_reveal_item) {
 		player->catalog.inventory.reveal_item(item_modifier);
 		b_reveal_item = false;
@@ -263,7 +273,9 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		auto normalized = sf::Vector2f{(puv.x - 0.5f) * aspect + 0.5f, puv.y};
 		auto ppl = PointLight(svc.data.light["lantern"], puv);
 		ppl.position = normalized;
-		if (player->has_item("lantern")) { m_world_shader->add_point_light(ppl); }
+		if (player->has_item_equipped(svc.data.item_id_from_label("lantern"))) {
+			m_world_shader->add_point_light(ppl);
+		}
 		// m_shader->debug();
 	}
 

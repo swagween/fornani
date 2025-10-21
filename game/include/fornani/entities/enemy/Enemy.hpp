@@ -9,6 +9,7 @@
 #include <fornani/entities/packages/WeaponPackage.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/Indicator.hpp>
+#include <fornani/gui/HealthBar.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Math.hpp>
@@ -54,7 +55,7 @@ enum class GeneralFlags : std::uint8_t {
 	custom_channels,
 	semipermanent
 };
-enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, simple_physics, no_shake, out_of_zone, no_slowdown, intangible };
+enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, simple_physics, no_shake, out_of_zone, no_slowdown, intangible, health_exposed };
 enum class Triggers : std::uint8_t { hostile, alert };
 enum class Variant : std::uint8_t { beast, soldier, elemental, worker, guardian };
 
@@ -186,6 +187,7 @@ class Enemy : public Mobile {
   private:
 	sf::Vector2f m_random_offset{};
 	sf::Vector2f m_native_offset{};
+	gui::HealthBar m_health_bar;
 };
 
 } // namespace fornani::enemy

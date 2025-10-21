@@ -47,7 +47,7 @@ class VendorDialog {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map, LightShader& shader);
 	void close(automa::ServiceProvider& svc);
 	void update_table(player::Player& player, world::Map& map, bool new_dim);
-	void refresh(player::Player& player, world::Map& map) const;
+	void refresh(player::Player& player, world::Map& map);
 
 	[[nodiscard]] auto is_open() const -> bool { return flags.test(VendorDialogStatus::opened); }
 	[[nodiscard]] auto is_buying() const -> bool { return m_state == VendorState::buy; }
@@ -87,7 +87,8 @@ class VendorDialog {
 
 	std::array<VendorConstituent, 7> m_constituents;
 
-	std::array<std::array<int, 8>, 4> m_items_list{};
+	std::array<std::array<int, 8>, 4> m_vendor_items_list{};
+	std::array<std::array<int, 8>, 4> m_player_items_list{};
 	Drawable m_item_sprite;
 
 	struct {

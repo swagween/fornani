@@ -53,6 +53,48 @@
     "unique": true,
     "readable": true
   },
+  "carises_soul": {
+    "id": 37,
+    "category": 1,
+    "lookup": [4, 2],
+    "origin": [6, 3],
+    "actual_title": "Carise's Soul",
+    "naive_description": "When equipped, this makes you intangible while dashing.",
+    "unique": true,
+    "readable": true,
+    "equippable": true
+  },
+  "magnifying_glass": {
+    "id": 28,
+    "category": 1,
+    "lookup": [11, 1],
+    "origin": [6, 1],
+    "actual_title": "Magnifying Glass",
+    "naive_description": "When equipped, this allows you to see enemies' life force.",
+    "unique": true,
+    "equippable": true
+  },
+  "hoarders_trinket": {
+    "id": 38,
+    "category": 1,
+    "lookup": [5, 2],
+    "origin": [3, 3],
+    "actual_title": "Hoarder's Trinket",
+    "naive_description": "When equipped, you will be invincible for longer after taking damage.",
+    "unique": true,
+    "readable": true,
+    "equippable": true
+  },
+  "magnet": {
+    "id": 39,
+    "category": 1,
+    "lookup": [6, 2],
+    "origin": [2, 3],
+    "actual_title": "Magnet",
+    "naive_description": "When equipped, drops will gravitate to you.",
+    "unique": true,
+    "equippable": true
+  },
   "firstwind_hangar_key": {
     "id": 8,
     "category": 1,
@@ -100,6 +142,7 @@
     "actual_title": "Four of Diamonds",
     "naive_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
     "hidden_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
+    "sellable": true,
     "unique": true
   },
   "lantern": {
@@ -112,6 +155,8 @@
     "naive_description": "An oil-fueled lantern that will light up any dark areas.",
     "hidden_description": "An oil-fueled lantern that will light up any dark areas.",
     "unique": true,
+    "equippable": true,
+    "sellable": true,
     "rarity": 2,
     "value": 1800
   },
@@ -173,12 +218,22 @@
   "dog_leash": {
     "id": 20,
     "category": 1,
-    "lookup": [0, 1],
-    "origin": [1, 0],
+    "lookup": [3, 1],
+    "origin": [7, 0],
     "actual_title": "Dog Leash",
     "naive_description": "You can use this to transport dogs.",
     "unique": true,
     "usable": false
+  },
+  "soda": {
+    "id": 35,
+    "category": 1,
+    "lookup": [2, 2],
+    "origin": [1, 1],
+    "actual_title": "Soda",
+    "naive_description": "When equipped, this will reduce reload times by 15%.",
+    "unique": false,
+    "equippable": true
   },
   "ashtown_raspberry_preserves": {
     "id": 22,
@@ -196,6 +251,7 @@
     "naive_description": "A common treasure item.",
     "unique": false,
     "equippable": false,
+    "sellable": true,
     "value": 200
   },
   "silver_bracelet": {
@@ -204,6 +260,7 @@
     "naive_description": "A common treasure item.",
     "unique": false,
     "equippable": false,
+    "sellable": true,
     "value": 300
   },
   "boxing_glove": {
@@ -220,6 +277,7 @@
     "naive_description": "The batteries are dead.",
     "unique": false,
     "equippable": false,
+    "sellable": true,
     "value": 60
   },
   "clamp": {
@@ -229,6 +287,7 @@
     "naive_description": "A painted metal clamp. It could be useful for home improvements.",
     "unique": false,
     "equippable": false,
+    "sellable": true,
     "value": 90
   },
   "heart_keychain": {
@@ -284,8 +343,10 @@
     "actual_title": "Red Jeans",
     "actual_description": "A pair of red jeans. If you wear them, you will appear fashionable.",
     "unique": true,
-    "equippable": true,
-    "apparel_type": 0,
+    "equippable": false,
+    "wearable": true,
+    "sellable": true,
+    "apparel_type": 3,
     "rarity": 2,
     "value": 1220
   },
@@ -298,6 +359,7 @@
     "rarity": 0,
     "unique": false,
     "equippable": false,
+    "sellable": true,
     "value": 400
   },
   "glass_statue": {
@@ -308,6 +370,7 @@
     "rarity": 1,
     "unique": false,
     "equippable": false,
+    "sellable": true,
     "value": 800
   },
   "bronze_statue": {
@@ -318,6 +381,7 @@
     "rarity": 2,
     "unique": false,
     "equippable": false,
+    "sellable": true,
     "value": 1000
   },
   "cinnabar_statue": {
@@ -328,6 +392,7 @@
     "rarity": 2,
     "unique": false,
     "equippable": false,
+    "sellable": true,
     "value": 4000
   },
   "jade_statue": {
@@ -338,6 +403,7 @@
     "rarity": 2,
     "unique": false,
     "equippable": false,
+    "sellable": true,
     "value": 8000
   },
   "alabaster_statue": {
@@ -348,14 +414,18 @@
     "rarity": 3,
     "unique": false,
     "equippable": false,
+    "sellable": true,
     "value": 12000
   },
   "gas_mask": {
-    "id": 178,
-    "category": 4,
+    "id": 36,
+    "category": 1,
+    "lookup": [3, 2],
+    "origin": [2, 1],
     "actual_title": "Gas Mask",
-    "naive_description": "You need this to navigate the Toxic Cavern without dying.",
-    "unique": true
+    "naive_description": "You need to equip this to navigate the Toxic Caverns without dying.",
+    "unique": true,
+    "equippable": true
   },
   "chalcedony_tee": {
     "id": 194,
@@ -365,8 +435,11 @@
     "actual_title": "Chalcedony Tee",
     "naive_description": "An elegant tee with a rhenite pendant.",
     "unique": true,
-    "equippable": true,
-    "apparel_type": 1,
+    "equippable": false,
+    "wearable": true,
+    "sellable": true,
+    "apparel_type": 2,
+    "rarity": 2,
     "value": 3000
   },
   "skycorps_tee": {
@@ -377,7 +450,9 @@
     "actual_title": "Skycorps Tee",
     "naive_description": "A t-shirt that Bryn let you borrow.",
     "unique": true,
-    "equippable": true,
+    "equippable": false,
+    "wearable": true,
+    "sellable": true,
     "apparel_type": 1,
     "value": 1000
   },
@@ -389,7 +464,8 @@
     "actual_title": "Navy Top",
     "naive_description": "A traditional Kariba garment with a gold trim.",
     "unique": true,
-    "equippable": true,
+    "equippable": false,
+    "wearable": true,
     "apparel_type": 1,
     "value": 300
   },
@@ -401,7 +477,8 @@
     "actual_title": "Chalcedony Skirt",
     "naive_description": "An elegant skirt.",
     "unique": true,
-    "equippable": true,
+    "equippable": false,
+    "wearable": true,
     "apparel_type": 0,
     "value": 2000
   },
@@ -413,7 +490,8 @@
     "actual_title": "Skycorps Shorts",
     "naive_description": "A pair of dark green shorts.",
     "unique": true,
-    "equippable": true,
+    "equippable": false,
+    "wearable": true,
     "apparel_type": 0,
     "value": 800
   },
@@ -425,7 +503,8 @@
     "actual_title": "Green Pants",
     "naive_description": "Your favorite pair of pants from back home.",
     "unique": true,
-    "equippable": true,
+    "equippable": false,
+    "wearable": true,
     "apparel_type": 0,
     "value": 2000
   },
@@ -436,7 +515,8 @@
     "actual_title": "Punk Hair Dye",
     "naive_description": "A whacky and rebellious hair color.",
     "unique": true,
-    "equippable": true,
+    "equippable": false,
+    "wearable": true,
     "apparel_type": 2,
     "value": 460
   },
@@ -447,7 +527,8 @@
     "actual_title": "Punk Shirt",
     "naive_description": "A shirt that awakens your rebellious spirit.",
     "unique": true,
-    "equippable": true,
+    "equippable": false,
+    "wearable": true,
     "apparel_type": 0,
     "value": 190
   },
@@ -458,7 +539,8 @@
     "actual_title": "Punk Pants",
     "naive_description": "Black pants with a rebellious chain accessory.",
     "unique": true,
-    "equippable": true,
+    "equippable": false,
+    "wearable": true,
     "apparel_type": 1,
     "value": 100
   },
@@ -469,7 +551,8 @@
     "actual_title": "Hairtie",
     "naive_description": "Wear this to keep your hair from going all over the place all the time.",
     "unique": true,
-    "equippable": true,
+    "equippable": false,
+    "wearable": true,
     "apparel_type": 2,
     "value": 80
   },

@@ -64,6 +64,7 @@ class Dashboard {
 	Palette m_palette;
 	sf::Sprite m_sprite;
 	util::Cooldown m_light_shift{light_shift_time_v};
+	util::Cooldown m_light_up{light_shift_time_v};
 
 	struct {
 		Constituent top_left_frontplate;

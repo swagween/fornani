@@ -13,7 +13,7 @@ namespace fornani::enemy {
 
 Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
 	: Mobile(svc, "enemy_" + std::string{label}, sf::Vector2i{svc.data.enemy[label]["physical"]["sprite_dimensions"][0].as<int>(), svc.data.enemy[label]["physical"]["sprite_dimensions"][1].as<int>()}), metadata{.variant{variant}},
-	  label(label), health_indicator{svc}, hurt_effect{128} {
+	  label(label), health_indicator{svc}, hurt_effect{128}, m_health_bar{svc, colors::mythic_green} {
 
 	if (spawned) { flags.general.set(GeneralFlags::spawned); }
 	directions.actual = Direction{start_direction};
@@ -122,7 +122,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.external_id, attributes.respawn_distance, permadeath(), flags.general.test(GeneralFlags::semipermanent)); }
 	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
-		map.active_loot.push_back(item::Loot(svc, attributes.drop_range, attributes.loot_multiplier, collider.get_center(), 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id));
+		map.active_loot.push_back(item::Loot(svc, player, attributes.drop_range, attributes.loot_multiplier, collider.get_center(), 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id));
 		switch (attributes.size) {
 		case EnemySize::tiny: svc.soundboard.flags.enemy.set(audio::Enemy::high_death); break;
 		case EnemySize::small: svc.soundboard.flags.enemy.set(audio::Enemy::high_death); break;
@@ -145,6 +145,8 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 
 	health.update();
+	m_health_bar.update(health.get_normalized(), collider.get_top() + sf::Vector2f{-24.f, -32.f});
+	player.has_item_equipped(svc.data.item_id_from_label("magnifying_glass")) ? flags.state.set(StateFlags::health_exposed) : flags.state.reset(StateFlags::health_exposed);
 	auto flash_rate = 32;
 	if (!flags.general.test(GeneralFlags::custom_channels)) {
 		set_channel(EnemyChannel::standard);
@@ -250,6 +252,7 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 
 void Enemy::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (flags.state.test(StateFlags::invisible)) { return; }
+	if (flags.state.test(StateFlags::health_exposed) && !health.is_dead()) { m_health_bar.render(win, cam); }
 	health_indicator.render(svc, win, cam);
 }
 

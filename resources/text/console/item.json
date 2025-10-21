@@ -22,6 +22,43 @@
     ],
     "responses": []
   },
+  "pioneer_medal": {
+    "suite": [
+      [
+        {
+          "message": "An old medal you found in Dr. Willett's hideout. It's made of the same material as your inventory gizmo, which seems to be a sturdy metal alloy invented by the old pioneers who first ventured to this island."
+        },
+        {
+          "codes": [[10, 86, 7]],
+          "message": "This medal grants you the ability to slide on the ground by pressing  . It will give you a slight speed boost, and you may slide indefinitely down slopes."
+        }
+      ]
+    ],
+    "responses": []
+  },
+  "carises_soul": {
+    "suite": [
+      [
+        {
+          "message": "When you defeated Carise Peckett's ghost, you captured the benevolent half of her soul in this enchanted jar."
+        },
+        {
+          "message": "From certain angles, you can see the vacant stare of her ghostly eyes."
+        }
+      ]
+    ],
+    "responses": []
+  },
+  "hoarders_trinket": {
+    "suite": [
+      [
+        {
+          "message": "The Hoarder's left behind his most prized possession when you defeated him. This trinket grants you an other-worldy intuition to avoid injury in times of peril."
+        }
+      ]
+    ],
+    "responses": []
+  },
   "woodshine_totem": {
     "suite": [
       [
@@ -34,6 +71,20 @@
         {
           "codes": [[10, 86, 7]],
           "message": "This totem grants you the ability to roll on the ground right as you land by pressing  . It will give you a slight speed boost."
+        }
+      ]
+    ],
+    "responses": []
+  },
+  "kariba_talisman": {
+    "suite": [
+      [
+        {
+          "message": "An old talisman imbued with malicious rhenite energy. Bryn gave this to you when you found her trapped in the Kariba Ruins."
+        },
+        {
+          "codes": [[10, 86, 4]],
+          "message": "This talisman grants you the ability to slide on walls, and jump off them by pressing  . There is no limit to the number of times you can walljump."
         }
       ]
     ],

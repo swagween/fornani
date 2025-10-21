@@ -17,6 +17,31 @@ void Inventory::remove_item(int item_id, int amount) {
 	std::erase_if(m_items, [item_id](auto const& i) { return i->get_id() == item_id; });
 }
 
+bool Inventory::equip_item(int item_id) {
+
+	// get the item in question
+	auto this_item = std::find_if(m_items.begin(), m_items.end(), [item_id](auto const& i) { return i->get_id() == item_id; });
+	if (this_item == m_items.end()) { return false; }
+
+	// check if it's already equipped; if so, unequip it
+	for (auto& item : m_equipped_items) {
+		if (item == item_id) {
+			item = -1;
+			this_item->get()->set_equipped(false);
+			return true;
+		}
+	}
+	// otherwise, equip it
+	for (auto& item : m_equipped_items) {
+		if (item == -1) {
+			item = item_id;
+			this_item->get()->set_equipped(true);
+			return true;
+		}
+	}
+	return false; // no more space
+}
+
 void Inventory::reveal_item(int item_id) {
 	for (auto const& item : m_items) {
 		if (item->get_id() == item_id) { item->reveal(); }
@@ -29,6 +54,11 @@ bool Inventory::has_item(int id) const {
 	}
 	return false;
 }
+
+bool Inventory::has_item_equipped(int id) const {
+	return std::find_if(m_equipped_items.begin(), m_equipped_items.end(), [id](auto const& i) { return i == id; }) != m_equipped_items.end();
+}
+
 bool Inventory::has_item(std::string_view label) const {
 	for (auto& item : m_items) {
 		if (item->get_label() == label) { return true; }

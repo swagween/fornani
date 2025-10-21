@@ -12,9 +12,8 @@ namespace fornani::gui {
 void Gizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) { m_light_shift.update(); }
 
 void Gizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
-	// if (is_foreground() != foreground) { return; }
 	if (is_hovered() || is_selected()) {
-		shader.set_darken(0.f);
+		m_light_shift.running() ? shader.set_darken(0.f) : shader.set_darken(0.f);
 	} else if (m_light_shift.running()) {
 		shader.set_darken(1.f);
 	}

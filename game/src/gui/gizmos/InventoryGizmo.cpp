@@ -13,8 +13,9 @@ InventoryGizmo::InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, sf
 	: Gizmo("Inventory", false), m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "inventory", 128, util::InterpolationType::cubic},
 	  m_lid_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "inventory", 128, util::InterpolationType::cubic}, m_sprite{svc.assets.get_texture("inventory_gizmo")},
 	  m_item_sprite{svc.assets.get_texture("inventory_items")},
-	  m_zones{InventoryZone{{9, 1}, {38.f, 36.f}, {414.f, 18.f}}, InventoryZone{{12, 4}, {36.f, 36.f}, {48.f, 114.f}}, InventoryZone{{7, 2}, {42.f, 62.f}, {164.f, 278.f}}, InventoryZone{{8, 1}, {60.f, 36.f}, {404.f, 430.f}}},
-	  m_selector(std::make_unique<InventorySelector>(m_zones.at(static_cast<int>(InventoryZoneType::key)).table_dimensions, m_zones.at(static_cast<int>(InventoryZoneType::key)).cell_size)), m_orb_display(svc), m_services(&svc) {
+	  m_zones{InventoryZone{{9, 1}, {38.f, 36.f}, {414.f, 18.f}}, InventoryZone{{11, 4}, {36.f, 36.f}, {48.f, 114.f}}, InventoryZone{{7, 2}, {42.f, 62.f}, {164.f, 278.f}}, InventoryZone{{8, 1}, {60.f, 36.f}, {404.f, 430.f}}},
+	  m_selector(std::make_unique<InventorySelector>(m_zones.at(static_cast<int>(InventoryZoneType::key)).table_dimensions, m_zones.at(static_cast<int>(InventoryZoneType::key)).cell_size)), m_orb_display(svc), m_services(&svc),
+	  m_equipped_items_position{472.f, 126.f} {
 	m_dashboard_port = DashboardPort::inventory;
 	m_path.set_section("start");
 	m_lid_path.set_section("start");
@@ -22,7 +23,7 @@ InventoryGizmo::InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, sf
 	m_sprite.setScale(constants::f_scale_vec);
 	m_item_sprite.setScale(constants::f_scale_vec);
 	m_selector->set_lookup({{448, 0}, {18, 18}});
-	m_description = std::make_unique<DescriptionGizmo>(svc, map, m_placement, sf::IntRect{}, sf::FloatRect{{572.f, 194.f}, {200.f, 200.f}}, sf::Vector2f{});
+	m_description = std::make_unique<DescriptionGizmo>(svc, map, m_placement, sf::IntRect{}, sf::FloatRect{{572.f, 194.f}, {220.f, 200.f}}, sf::Vector2f{});
 	m_description->set_text_only(true);
 }
 
@@ -114,6 +115,14 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 			item->render(win, m_item_sprite, where);
 		}
 
+		for (auto [j, ei] : std::views::enumerate(player.catalog.inventory.equipped_items_view())) {
+			auto item = std::find_if(player.catalog.inventory.items_view().begin(), player.catalog.inventory.items_view().end(), [ei](auto const& i) { return i->get_id() == ei; });
+			if (item == player.catalog.inventory.items_view().end()) { continue; }
+			auto spacing = sf::Vector2f{0.f, 44.f};
+			auto where = m_placement + m_path.get_position() - cam + m_equipped_items_position + spacing * static_cast<float>(j);
+			(*item)->render(win, m_item_sprite, where);
+		}
+
 		if (is_selected()) { m_selector->render(win, m_sprite, cam, {}, shader, palette); }
 		if (m_item_menu) { m_item_menu->render(win); }
 	}
@@ -156,7 +165,7 @@ bool InventoryGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_un
 				NANI_LOG_DEBUG(m_logger, "selected");
 				if (is_item_hovered() && m_current_item) {
 					NANI_LOG_DEBUG(m_logger, "created minimenu");
-					auto list = m_current_item.value()->generate_menu_list();
+					auto list = m_current_item.value()->generate_menu_list(m_services->data.gui_text["item_menu"]);
 					if (list.size() > 1) {
 						m_item_menu = MiniMenu(*m_services, list, m_selector->get_menu_position(), true);
 					} else {
@@ -185,15 +194,19 @@ void InventoryGizmo::handle_menu_selection(int selection) {
 	NANI_LOG_DEBUG(m_logger, "menu selected at {}", selection);
 	if (m_item_menu->was_last_option()) {
 		m_item_menu = {};
-		NANI_LOG_DEBUG(m_logger, "menu canceled");
 		return;
 	}
 	if (m_current_item) {
-		NANI_LOG_DEBUG(m_logger, "trying item...");
-		if (m_current_item.value()->is_readable()) {
-			NANI_LOG_DEBUG(m_logger, "reading item...");
-			m_services->events.dispatch_event("ReadItem", m_current_item_id);
-			m_item_menu = {};
+		if (m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["read"].as_string()) {
+			if (m_current_item.value()->is_readable()) {
+				m_services->events.dispatch_event("ReadItem", m_current_item_id);
+				m_item_menu = {};
+			}
+		} else if (m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["equip"].as_string() || m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["unequip"].as_string()) {
+			if (m_current_item.value()->is_equippable()) {
+				m_services->events.dispatch_event("EquipItem", m_current_item_id);
+				m_item_menu = {};
+			}
 		}
 	}
 }

@@ -422,7 +422,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	auto shirt = save["player_data"]["wardrobe"]["shirt"].as<int>();
 	auto pants = save["player_data"]["wardrobe"]["pants"].as<int>();
 	player.set_outfit({hairstyle, headgear, shirt, pants});
-	player.catalog.wardrobe.update(player.texture_updater);
+	player.update_wardrobe();
 
 	// stat tracker
 	auto& s = m_services->stats;

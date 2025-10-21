@@ -22,7 +22,7 @@ enum class CircleColliderFlags : std::uint8_t { collided };
 class CircleCollider {
   public:
 	explicit CircleCollider(float radius);
-	void update(automa::ServiceProvider& svc);
+	void update(automa::ServiceProvider& svc, bool simple = false);
 	void handle_map_collision(world::Map& map);
 	void handle_collision(Shape& shape, bool soft = false);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);

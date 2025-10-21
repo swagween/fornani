@@ -369,7 +369,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		for (auto& destroyer : destructibles) { destroyer.on_hit(svc, *this, proj); }
 		for (auto& block : switch_blocks) { block.on_hit(svc, *this, proj); }
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
-		for (auto vine : get_entities<Vine>()) { vine->on_hit(svc, *this, proj); }
+		for (auto vine : get_entities<Vine>()) { vine->on_hit(svc, *this, proj, *player); }
 		proj.handle_collision(svc, *this);
 		proj.on_player_hit(*player);
 	}
