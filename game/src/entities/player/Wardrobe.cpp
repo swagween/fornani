@@ -53,7 +53,7 @@ void Wardrobe::equip(ApparelType type, int variant) {
 
 void Wardrobe::unequip(ApparelType type) {
 	if (!m_outfit.contains(type)) { return; }
-	m_outfit.at(type)->set(-1);
+	m_outfit.at(type)->set(0);
 }
 
 int Wardrobe::get_variant(ApparelType type) {

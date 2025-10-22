@@ -60,8 +60,7 @@ class VendorDialog {
   private:
 	bool fade_logic(automa::ServiceProvider& svc, world::Map& map);
 	VendorState m_state{};
-	InventorySelector m_buy_selector;
-	InventorySelector m_sell_selector;
+	InventorySelector m_selector;
 	std::optional<MiniMenu> m_item_menu{};
 	util::Cooldown m_intro;
 	util::Cooldown m_fade_in;

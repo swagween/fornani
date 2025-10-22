@@ -48,6 +48,7 @@ class Item : public Polymorphic {
 	[[nodiscard]] auto get_description() const -> std::string { return is_revealed() ? m_info.actual_description : m_info.naive_description; }
 	[[nodiscard]] auto get_lookup() const -> sf::IntRect { return m_lookup; }
 	[[nodiscard]] auto get_table_index(int table_width) const -> int { return m_table_origin.x + m_table_origin.y * table_width; }
+	[[nodiscard]] auto get_origin() const -> sf::Vector2i { return m_table_origin; }
 	[[nodiscard]] auto get_f_origin() const -> sf::Vector2f { return sf::Vector2f{m_table_origin}; }
 	[[nodiscard]] auto get_table_position() const -> sf::Vector2f { return sf::Vector2f{m_lookup.position} - get_f_origin(); }
 	[[nodiscard]] auto get_apparel_type() const -> std::optional<int> { return m_stats.apparel_type != -1 ? std::optional<int>{m_stats.apparel_type} : std::nullopt; }

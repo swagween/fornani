@@ -30,7 +30,7 @@ OutfitterGizmo::OutfitterGizmo(automa::ServiceProvider& svc, world::Map& map, sf
 		++row;
 	}
 	m_selector.set_lookup({{307, 104}, {20, 20}}); // selector lookup on texture atlas
-	m_description = std::make_unique<DescriptionGizmo>(svc, map, m_placement, sf::IntRect{{}, {254, 98}}, sf::FloatRect{{44.f, 30.f}, {312.f, 120.f}}, sf::Vector2f{374.f, 1600.f});
+	m_description = std::make_unique<DescriptionGizmo>(svc, map, m_placement, sf::IntRect{{}, {254, 98}}, sf::FloatRect{{-614.f, 36.f}, {312.f, 120.f}}, sf::Vector2f{374.f, 1600.f});
 }
 
 void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
@@ -50,19 +50,7 @@ void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 		m_exit_trigger = false;
 	}
 
-	if (m_description) {
-		m_description->update(svc, player, map, m_physics.position + m_path.get_dimensions());
-		bool found{};
-		for (auto& piece : player.catalog.inventory.items_view()) {
-			if (piece->get_type() != item::ItemType::apparel) { continue; }
-			if (piece->get_id() == m_current_item_id) {
-				auto const& this_item = piece;
-				m_description->write(svc, this_item->get_title() + ": " + this_item->get_description(), svc.text.fonts.basic);
-				found = true;
-			}
-		}
-		if (!found) { m_description->write(svc, "---", svc.text.fonts.basic); }
-	}
+	if (m_description) { m_description->update(svc, player, map, m_physics.position + m_path.get_dimensions()); }
 
 	// change outfit if player has selected item
 	m_current_item_id = m_selector.get_current_selection(16) + wardrobe_index + 1;
@@ -99,7 +87,6 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	m_sprite.setTextureRect(sf::IntRect{{0, 18}, {304, 116}});
 	m_sprite.setPosition(m_physics.position + m_placement - cam);
 
-	if (m_description) { m_description->render(svc, win, player, shader, palette, cam); }
 	shader.submit(win, palette, m_sprite);
 	if (is_selected()) {
 		auto selection_origin{sf::Vector2f{-3.f, -3.f}};
@@ -108,17 +95,21 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		// draw item sprites
 		auto column{0.f};
 		auto row{0.f};
+		m_description->write(svc, "---", svc.text.fonts.basic);
 		for (auto& item : player.catalog.inventory.items_view()) {
 			if (item->get_type() != item::ItemType::apparel) { continue; }
 			m_apparel_sprite.setTextureRect(item->get_lookup());
 			m_apparel_sprite.setOrigin({-6.f, -6.f}); // center sprite in window
 			item->render(win, m_apparel_sprite, m_physics.position + m_placement + m_grid_offset + item->get_f_origin().componentWiseMul(m_selector.get_spacing()) - cam);
+			if (item->get_id() == m_current_item_id && m_description) { m_description->write(svc, item->get_title() + ": " + item->get_description(), svc.text.fonts.basic); }
 		}
 
 		m_selector.render(win, m_sprite, cam, selection_origin, shader, palette);
 		for (auto& slider : m_sliders) { slider.body.constituent.render(win, m_sprite, cam, {}, shader, palette); }
 	}
 	m_wires.render(svc, win, cam);
+	if (m_description) { m_description->render(svc, win, player, shader, palette, cam); }
+
 	// debug();
 }
 
@@ -145,6 +136,7 @@ bool OutfitterGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_un
 
 void OutfitterGizmo::close() {
 	m_path.set_section("close");
+	m_description = {};
 	m_init = true;
 }
 
