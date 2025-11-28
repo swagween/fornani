@@ -54,12 +54,9 @@ void Collider::sync_components() {
 }
 
 void Collider::handle_map_collision(world::Tile const& tile) {
+
 	if (collision_depths) {
-		if (collision_depths.value().crushed()) {
-			NANI_LOG_DEBUG(m_logger, "Crushed!");
-			collision_depths->print();
-			return;
-		}
+		if (collision_depths.value().crushed()) { return; }
 	}
 
 	flags.collision = {};
@@ -200,7 +197,6 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 }
 
 void Collider::detect_map_collision(world::Map& map) {
-	// flags.external_state.reset(ExternalState::grounded);
 	flags.external_state.reset(ExternalState::on_ramp);
 	flags.external_state.reset(ExternalState::tile_debug_flag);
 	flags.perma_state = {};
@@ -352,6 +348,7 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 	if (wallslider.overlaps(collider)) { wallslider.vertices.at(0).x > collider.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
 
 	if (jumpbox.SAT(collider)) {
+		flags.external_state.set(ExternalState::grounded);
 		flags.state.set(State::grounded);
 		flags.state.set(State::is_any_jump_collision);
 		ret = true;
@@ -370,8 +367,8 @@ void Collider::handle_collider_collision(Collider const& collider, bool soft, bo
 	if (collider.flags.general.test(General::top_only_collision)) {
 		if (jumpbox.get_position().y > collider.physics.position.y + 4.f || physics.acceleration.y < 0.0f) { return; }
 	}
-	if (handle_collider_collision(collider.bounding_box, soft, collider.physics.apparent_velocity() * 8.f)) {
-		if (momentum) { physics.forced_momentum = collider.physics.position - collider.physics.previous_position; }
+	if (handle_collider_collision(collider.bounding_box, soft, collider.physics.apparent_velocity() * 2.f)) {
+		if (momentum) { physics.forced_momentum = collider.physics.actual_velocity(); }
 	}
 	if (jumpbox.overlaps(collider.bounding_box)) { flags.external_state.set(ExternalState::grounded); }
 }
@@ -395,7 +392,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setOutlineColor(sf::Color{255, 0, 0, 220});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
-	// win.draw(box);
+	win.draw(box);
 
 	// draw predictive horizontal
 	box.setSize(predictive_horizontal.get_dimensions());
@@ -403,7 +400,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setOutlineColor(sf::Color{80, 0, 255, 220});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
-	// win.draw(box);
+	win.draw(box);
 
 	// draw predictive combined
 	box.setSize(predictive_combined.get_dimensions());

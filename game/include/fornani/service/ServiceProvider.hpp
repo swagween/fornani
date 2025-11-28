@@ -86,6 +86,7 @@ struct ServiceProvider {
 	void toggle_fullscreen() { fullscreen() ? app_flags.reset(AppFlags::fullscreen) : app_flags.set(AppFlags::fullscreen); }
 	void toggle_tutorial() { tutorial() ? app_flags.reset(AppFlags::tutorial) : app_flags.set(AppFlags::tutorial); }
 	void toggle_debug() { debug_mode() ? debug_flags.reset(DebugFlags::debug_mode) : debug_flags.set(DebugFlags::debug_mode); }
+	void toggle_greyblock_mode() { greyblock_mode() ? debug_flags.reset(automa::DebugFlags::greyblock_mode) : debug_flags.set(automa::DebugFlags::greyblock_mode); }
 	void set_fullscreen(bool flag) { flag ? app_flags.set(AppFlags::fullscreen) : app_flags.reset(AppFlags::fullscreen); }
 	void set_editor(bool flag) { flag ? app_flags.set(AppFlags::editor) : app_flags.reset(AppFlags::editor); }
 	void set_tutorial(bool flag) { flag ? app_flags.set(AppFlags::tutorial) : app_flags.reset(AppFlags::tutorial); }

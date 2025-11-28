@@ -1,8 +1,8 @@
 
-#include "fornani/components/PhysicsComponent.hpp"
 #include <ccmath/ext/clamp.hpp>
+#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 #include <cmath>
-#include "fornani/service/ServiceProvider.hpp"
 
 // TODO: Replace functions in here with ccmath functions instead.
 
@@ -98,6 +98,14 @@ void PhysicsComponent::hitstun() {}
 void PhysicsComponent::set_friction_componentwise(sf::Vector2f fric) {
 	ground_friction = fric;
 	air_friction = fric;
+}
+
+void PhysicsComponent::adopt(PhysicsComponent& other) {
+	velocity = other.velocity;
+	real_velocity = other.real_velocity;
+	acceleration = other.acceleration;
+	forced_acceleration = other.forced_acceleration;
+	forced_momentum = other.forced_momentum;
 }
 
 void PhysicsComponent::set_constant_friction(sf::Vector2f fric) {

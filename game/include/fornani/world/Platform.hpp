@@ -33,6 +33,8 @@ class Platform : public shape::Collider {
 	Direction direction{};
 	util::Counter counter{};
 
+	[[nodiscard]] auto is_sticky() const -> bool { return flags.attributes.test(PlatformAttributes::sticky); }
+
   private:
 	struct {
 		float horizontal{};

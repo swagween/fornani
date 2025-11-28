@@ -24,8 +24,11 @@ class Transition {
 	void start();
 	void end();
 
+	void set(TransitionState const to) { m_state = to; }
+
 	[[nodiscard]] auto has_waited(int time) -> bool { return m_hang_time.get_count() >= time; }
 	[[nodiscard]] auto is(TransitionState test) const -> bool { return m_state == test; }
+	[[nodiscard]] auto is_black() const -> bool { return is(TransitionState::black); }
 	[[nodiscard]] auto get_cooldown() const -> float { return m_cooldown.get_normalized(); }
 	[[nodiscard]] auto as_string() const -> std::string;
 

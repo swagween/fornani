@@ -180,7 +180,6 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		for (auto const& it : map.breakable_iterators[map.get_chunk_id_from_position(collider.physics.position)]) { it->handle_collision(collider); }
 		for (auto& pushable : map.pushables) {
 			pushable.handle_collision(collider);
-			collider.handle_collider_collision(pushable.collider);
 			if (pushable.get_size() == 1) {
 				pushable.collider.handle_collider_collision(collider.bounding_box);
 				if (secondary_collider) { pushable.collider.handle_collider_collision(secondary_collider->bounding_box); }

@@ -153,8 +153,10 @@ class Map {
 	template <typename T>
 	std::vector<T*> get_entities() {
 		std::vector<T*> ret;
-		for (auto const& entity : m_entities.value().variables.entities) {
-			if (auto* portal = dynamic_cast<T*>(entity.get())) { ret.push_back(portal); }
+		if (m_entities) {
+			for (auto const& entity : m_entities.value().variables.entities) {
+				if (auto* portal = dynamic_cast<T*>(entity.get())) { ret.push_back(portal); }
+			}
 		}
 		return ret;
 	}

@@ -16,7 +16,6 @@ class Map;
 namespace fornani::shape {
 
 constexpr auto default_dim = 24.0f;
-constexpr auto wallslide_pad = 5.f;
 
 constexpr auto default_jumpbox_height = 4.0f;
 constexpr auto default_detector_width = 4.f;
@@ -168,6 +167,7 @@ class Collider {
 	float horizontal_detector_buffer{1.0f};
 	float vertical_detector_buffer{1.0f};
 	float depth_buffer{1.0f};
+	float wallslide_pad{5.f};
 
 	float acceleration_multiplier{1.f};
 

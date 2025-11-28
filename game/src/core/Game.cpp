@@ -92,6 +92,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 				services.controller_map.set_keyboard_input_detected(true);
 				services.controller_map.set_last_key_pressed(key_pressed->scancode);
 				if (key_pressed->scancode == sf::Keyboard::Scancode::F12) { continue; }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::G && key_pressed->control) { services.toggle_greyblock_mode(); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_pressed->control) {
 					services.toggle_debug();
 					if (flags.test(GameFlags::playtest)) {

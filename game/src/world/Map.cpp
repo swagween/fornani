@@ -13,10 +13,12 @@
 #include <imgui.h>
 #include <ccmath/ext/clamp.hpp>
 
+static bool b_transition_in{};
+
 namespace fornani::world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player)
-	: player(&player), enemy_catalog(svc), transition(svc.window->f_screen_dimensions(), 96), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(2)}} {}
+	: player(&player), enemy_catalog(svc), transition(svc.window->f_screen_dimensions(), 96), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}} {}
 
 void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number) {
 
@@ -211,10 +213,12 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	}
 
 	generate_layer_textures(svc);
-	player->map_reset();
-	transition.end();
 	cooldowns.fade_obscured.start();
+	player->map_reset();
+	transition.set(graphics::TransitionState::black);
 	cooldowns.loading.start();
+
+	b_transition_in = true;
 }
 
 void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) {
@@ -295,6 +299,11 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console) {
 	auto& layers = svc.data.get_layers(room_id);
 	flags.state.reset(LevelState::camera_shake);
+
+	if (b_transition_in && transition.has_waited(64)) {
+		transition.end();
+		b_transition_in = false;
+	}
 
 	// camera effects
 	if (svc.ticker.every_second() && m_camera_effects.shake_properties.shaking) {
@@ -408,6 +417,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		pushable.register_chunk(get_chunk_id_from_position(pushable.collider.get_center()));
 		pushable.update(svc, *this, *player);
 	}
+	for (auto& pushable : pushables) { pushable.post_update(svc, *this, *player); }
 	for (auto& spike : spikes) { spike.update(svc, *player, *this); }
 	// for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	for (auto& timer_block : timer_blocks) { timer_block.update(svc, *this, *player); }

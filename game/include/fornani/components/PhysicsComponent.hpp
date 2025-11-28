@@ -70,6 +70,8 @@ class PhysicsComponent {
 	void set_global_friction(float fric);
 	void set_friction_componentwise(sf::Vector2f fric);
 
+	void adopt(PhysicsComponent& other);
+
 	[[nodiscard]] auto actual_velocity() const -> sf::Vector2f { return position - previous_position; }
 	[[nodiscard]] auto apparent_velocity() const -> sf::Vector2f { return real_velocity; }
 	[[nodiscard]] auto apparent_acceleration() const -> sf::Vector2f { return real_velocity - previous_velocity; }

@@ -97,10 +97,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	for (auto& breakable : map.breakables) { handle_collider_collision(breakable.get_hurtbox()); }
 	for (auto& pushable : map.pushables) {
 		// platform should reverse direction upon hitting the sides or top of a pushable
-		if (!pushable.collider.jumpbox.overlaps(bounding_box)) {
-			handle_collider_collision(pushable.get_hurtbox());
-			if (wallslider.overlaps(pushable.get_bounding_box())) { pushable.set_moving(); }
-		}
+		if (!pushable.collider.jumpbox.overlaps(bounding_box)) { handle_collider_collision(pushable.get_hurtbox()); }
 	}
 	for (auto& block : map.switch_blocks) {
 		if (block.on()) { handle_collider_collision(block.get_hurtbox()); }
@@ -141,15 +138,12 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			direction.lnr = physics.velocity.x > 0.0f ? LNR::right : LNR::left;
 			direction.und = physics.velocity.y > 0.0f ? UND::down : UND::up;
 
-			if (player.collider.jumpbox.overlaps(bounding_box) && !player.collider.perma_grounded() && flags.attributes.test(PlatformAttributes::sticky) &&
-				!(player.collider.has_left_wallslide_collision() || player.collider.has_right_wallslide_collision())) {
+			// this stuff doesn't really belong here and it's very confusing to read, but it works
+			if (player.collider.jumpbox.overlaps(bounding_box) && !player.collider.perma_grounded() && is_sticky() && !(player.collider.has_left_wallslide_collision() || player.collider.has_right_wallslide_collision())) {
 				if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) { player.collider.physics.forced_momentum = physics.position - old_position; }
 			}
-			for (auto& pushable : map.pushables) {
-				if (pushable.collider.jumpbox.overlaps(bounding_box) && !pushable.collider.perma_grounded() && flags.attributes.test(PlatformAttributes::sticky)) {
-					if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) { pushable.collider.physics.forced_momentum = physics.position - old_position; }
-				}
-			}
+			//
+
 			break;
 		} else {
 			edge_start = edge_end;
