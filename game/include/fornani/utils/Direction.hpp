@@ -9,8 +9,8 @@ namespace fornani {
 enum class LR : std::uint8_t { left, right };
 enum class LNR : std::uint8_t { left, right, neutral };
 enum class UND : std::uint8_t { up, down, neutral };
-// intermediate direction, used for special cases like grappling hook
 enum class Inter : std::uint8_t { north, south, east, west, northeast, northwest, southeast, southwest };
+enum class HV : std::uint8_t { horizontal, vertical };
 
 enum class DirectionFlags : std::uint8_t { locked };
 

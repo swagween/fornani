@@ -35,6 +35,8 @@ class Pushable : public Drawable {
 	void reset(automa::ServiceProvider& svc, world::Map& map);
 	void register_chunk(std::uint8_t chunk) { m_chunk_id = chunk; }
 
+	void set_push(bool const to) { to ? state.set(PushableState::pushed) : state.reset(PushableState::pushed); }
+
 	shape::Shape& get_bounding_box() { return collider.bounding_box; }
 	shape::Shape& get_hurtbox() { return collider.hurtbox; }
 

@@ -69,7 +69,12 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		if (&pushable == this) { continue; }
 		if (!pushable.collider.vicinity.overlaps(collider.vicinity)) { continue; }
 		if (collider.jumpbox.overlaps(pushable.collider.predictive_vertical) && !is_being_pushed()) { collider.physics.adopt(pushable.collider.physics); }
-		if (!is_being_pushed() || collider.get_bottom().y < pushable.collider.get_center().y) { collider.handle_collider_collision(pushable.get_bounding_box()); }
+		if (pushable.collider.wallslider.overlaps(collision_box)) {
+			if (pushable.collider.pushes(collider) && collider.grounded()) {
+				if (pushable.is_being_pushed()) { set_push(true); }
+			}
+		}
+		if (!is_being_pushed() || collider.get_bottom().y < pushable.collider.get_center().y) { collider.handle_collider_collision(pushable.collider.bounding_box); }
 	}
 
 	// pushable should only be moved by a platform if it's on top of one
@@ -120,7 +125,8 @@ void Pushable::post_update(automa::ServiceProvider& svc, Map& map, player::Playe
 	}
 
 	if (collider.flags.state.test(shape::State::just_landed)) {
-		map.effects.push_back(entity::Effect(svc, "dust", collider.get_center()));
+		auto point = size == 1 ? collider.get_top() : collider.get_center();
+		map.effects.push_back(entity::Effect(svc, "dust", point));
 		svc.soundboard.flags.world.set(audio::World::thud);
 	}
 
