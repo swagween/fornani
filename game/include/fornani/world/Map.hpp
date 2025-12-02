@@ -10,6 +10,7 @@
 #include <fornani/entities/world/Chest.hpp>
 #include <fornani/entities/world/Fire.hpp>
 #include <fornani/entities/world/Inspectable.hpp>
+#include <fornani/entities/world/Laser.hpp>
 #include <fornani/entity/EntitySet.hpp>
 #include <fornani/graphics/Background.hpp>
 #include <fornani/graphics/CameraController.hpp>
@@ -177,6 +178,7 @@ class Map {
 	std::array<std::vector<std::unique_ptr<vfx::Scenery>>, 6> scenery_layers{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<entity::Chest> chests{};
+	std::vector<Laser> lasers{};
 	// std::vector<std::unique_ptr<npc::NPC>> npcs{};
 	std::vector<Platform> platforms{};
 

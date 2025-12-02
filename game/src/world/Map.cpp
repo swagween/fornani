@@ -363,6 +363,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	std::erase_if(active_emitters, [](auto const& p) { return p.done(); });
 	std::erase_if(effects, [](auto& e) { return e.done(); });
 	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
+	std::erase_if(lasers, [](auto const& l) { return l.is_complete(); });
 	enemy_catalog.update();
 
 	manage_projectiles(svc);
@@ -393,6 +394,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	if (fire) {
 		for (auto& f : fire.value()) { f.update(svc, *player, *this, console); }
 	}
+	for (auto& laser : lasers) { laser.update(svc, *player, *this); }
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
 	for (auto& chest : chests) { chest.update(svc, *this, console, *player); }
@@ -537,6 +539,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	}
 
 	for (auto& effect : effects) { effect.render(win, cam); }
+	for (auto& laser : lasers) { laser.render(svc, win, cam); }
 
 	player->render_indicators(svc, win, cam);
 

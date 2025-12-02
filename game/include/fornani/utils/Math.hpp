@@ -29,6 +29,8 @@ inline float get_angle_from_direction(sf::Vector2f vec) { return ::std::atan2(ve
 // v = (cos(−θ), sin(−θ))
 inline sf::Vector2f get_direction_from_angle(float angle) { return sf::Vector2f{::std::cos(-angle), ::std::sin(-angle)}; } // TODO: Switch to ccm::cos2f and ccm::sin2f when done.
 inline sf::Vector2f absolute_distance(sf::Vector2f source, sf::Vector2f destination) { return sf::Vector2f{ccm::abs(source.x - destination.x), ccm::abs(source.y - destination.y)}; }
+inline float round_to_nearest(float input, float target) { return target * static_cast<int>(ccm::floor(input / target)); }
+inline float round_to_even(float input) { return 2.f * static_cast<int>(ccm::floor(input / 2.f)); }
 inline sf::Vector2f round_to_even(sf::Vector2f input) {
 	auto ret = input;
 	ret = {ccm::floor(ret.x / 2.f), ccm::floor(ret.y / 2.f)};

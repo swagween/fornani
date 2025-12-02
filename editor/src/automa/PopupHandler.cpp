@@ -492,6 +492,39 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		}
 		ImGui::EndPopup();
 	}
+	if (ImGui::BeginPopupModal("Turret Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
+		static int type{};
+		static int hv{};
+		static char const* types[2] = {"laser", "projectile"};
+		static char const* dirs[2] = {"horizontal", "vertical"};
+
+		if (ImGui::BeginCombo("Type", types[type])) {
+			for (auto [i, t] : std::views::enumerate(types)) {
+				if (ImGui::Selectable(t)) { type = i; }
+			}
+			ImGui::EndCombo();
+		}
+		if (ImGui::BeginCombo("Direction", dirs[hv])) {
+			for (auto [i, t] : std::views::enumerate(dirs)) {
+				if (ImGui::Selectable(t)) { hv = i; }
+			}
+			ImGui::EndCombo();
+		}
+
+		if (ImGui::Button("Create")) {
+			m_is_open = false;
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<fornani::Turret>(svc, 0, static_cast<fornani::TurretType>(type), static_cast<fornani::HV>(hv));
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Close")) {
+			m_is_open = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 	if (ImGui::BeginPopupModal("Light Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
 		static int id{fornani::random::random_range(10000, 99999)};

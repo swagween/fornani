@@ -435,6 +435,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	bool anim{};
 	bool vine{};
 	bool cuts{};
+	bool turr{};
 	bool open_themes{};
 
 	bool new_room{b_new_file};
@@ -735,6 +736,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Bed", NULL, &beds)) {}
 			if (ImGui::MenuItem("Switch Block", NULL, &sblk)) {}
 			if (ImGui::MenuItem("Switch Button", NULL, &sbtn)) {}
+			if (ImGui::MenuItem("Turret", NULL, &turr)) {}
 			if (ImGui::MenuItem("Timer Block", NULL, &timr)) {}
 			if (ImGui::MenuItem("Light", NULL, &lght)) {}
 			if (ImGui::MenuItem("NPC", NULL, &npcs)) {}
@@ -923,7 +925,12 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	}
 	if (cuts) {
 		ImGui::OpenPopup("Cutscene Trigger Specifications");
-		label = "Cutscene Trigger  Specifications";
+		label = "Cutscene Trigger Specifications";
+		popup_open = true;
+	}
+	if (turr) {
+		ImGui::OpenPopup("Turret Specifications");
+		label = "Turret Specifications";
 		popup_open = true;
 	}
 

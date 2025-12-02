@@ -16,5 +16,6 @@ nani_add_sources(
         SwitchBlock.cpp
         SwitchButton.cpp
         TimerBlock.cpp
+        Turret.cpp
         Vine.cpp
 )
