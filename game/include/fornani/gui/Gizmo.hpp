@@ -38,8 +38,8 @@ namespace fornani::gui {
 
 constexpr auto light_shift_time_v = 24;
 
-enum class GizmoState : std::uint8_t { neutral, hovered, selected, closed };
-enum class DashboardPort : std::uint8_t { minimap, wardrobe, arsenal, inventory, invalid };
+enum class GizmoState { neutral, hovered, selected, closed };
+enum class DashboardPort { minimap, wardrobe, arsenal, inventory, invalid };
 
 struct Constituent {
 	sf::IntRect lookup{};

@@ -25,6 +25,12 @@
       "room_id": 90
     },
     {
+      "folder": "config",
+      "label": "turret_test.json",
+      "region": "junkyard",
+      "room_id": 999876
+    },
+    {
       "folder": "firstwind",
       "label": "atrium.json",
       "region": "firstwind",

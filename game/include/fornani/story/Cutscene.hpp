@@ -25,7 +25,7 @@ class Player;
 }
 namespace fornani {
 
-enum class CutsceneFlags : std::uint8_t { complete };
+enum class CutsceneFlags { complete };
 
 class Cutscene : public UniquePolymorphic {
   public:

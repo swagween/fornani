@@ -17,7 +17,7 @@ class Map;
 }
 
 namespace fornani::vfx {
-enum class ParticleType : std::uint8_t { animated, colliding };
+enum class ParticleType { animated, colliding };
 class Particle {
   public:
 	Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f dim, std::string_view type, sf::Color color, Direction direction);

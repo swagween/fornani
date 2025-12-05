@@ -6,13 +6,14 @@
 
 namespace fornani {
 
-enum class LR : std::uint8_t { left, right };
-enum class LNR : std::uint8_t { left, right, neutral };
-enum class UND : std::uint8_t { up, down, neutral };
-enum class Inter : std::uint8_t { north, south, east, west, northeast, northwest, southeast, southwest };
-enum class HV : std::uint8_t { horizontal, vertical };
+enum class LR { left, right };
+enum class LNR { left, right, neutral };
+enum class UND { up, down, neutral };
+enum class UDLR { up, down, left, right };
+enum class Inter { north, south, east, west, northeast, northwest, southeast, southwest };
+enum class HV { horizontal, vertical };
 
-enum class DirectionFlags : std::uint8_t { locked };
+enum class DirectionFlags { locked };
 
 class SimpleDirection {
   public:
@@ -38,6 +39,39 @@ class SimpleDirection {
 
   private:
 	LR lr{};
+};
+
+struct CardinalDirection {
+  public:
+	CardinalDirection() = default;
+	CardinalDirection(int to) : udlr{static_cast<UDLR>(to)} {}
+	CardinalDirection(UDLR to) : udlr{to} {}
+
+	void set(UDLR to) { udlr = to; }
+	void set(LR to) { udlr = to == LR::left ? UDLR::left : UDLR::right; }
+	void set(LNR to) { udlr = to == LNR::left ? UDLR::left : UDLR::right; }
+	void set(UND to) { udlr = to == UND::up ? UDLR::up : UDLR::down; }
+
+	[[nodiscard]] auto get() const -> UDLR { return udlr; }
+	[[nodiscard]] auto up() const -> bool { return udlr == UDLR::up; }
+	[[nodiscard]] auto down() const -> bool { return udlr == UDLR::down; }
+	[[nodiscard]] auto left() const -> bool { return udlr == UDLR::left; }
+	[[nodiscard]] auto right() const -> bool { return udlr == UDLR::right; }
+	[[nodiscard]] auto print() const -> std::string { return left() ? "left" : right() ? "right" : up() ? "up" : "down"; }
+	[[nodiscard]] auto as_hv() const -> HV { return up() || down() ? HV::vertical : HV::horizontal; }
+	[[nodiscard]] auto as_vector() const -> sf::Vector2f { return up() ? sf::Vector2f{0.f, -1.f} : down() ? sf::Vector2f{0.f, 1.f} : left() ? sf::Vector2f{-1.f, 0.f} : sf::Vector2f{1.f, 0.f}; }
+	[[nodiscard]] auto as_degrees() const -> float { return up() ? 0.f : down() ? 180.f : left() ? 270.f : 90.f; }
+
+	bool operator==(CardinalDirection const& other) const { return other.udlr == udlr; }
+	bool operator!=(CardinalDirection const& other) const { return other.udlr != udlr; }
+
+	template <typename T>
+	T as() const {
+		return static_cast<T>(udlr);
+	}
+
+  private:
+	UDLR udlr{};
 };
 
 struct Direction {

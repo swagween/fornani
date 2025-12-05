@@ -495,13 +495,21 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 	if (ImGui::BeginPopupModal("Turret Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
 		static int type{};
+		static int pattern{};
 		static int hv{};
 		static char const* types[2] = {"laser", "projectile"};
-		static char const* dirs[2] = {"horizontal", "vertical"};
+		static char const* patterns[3] = {"constant", "repeater", "triggerable"};
+		static char const* dirs[4] = {"up", "down", "left", "right"};
 
 		if (ImGui::BeginCombo("Type", types[type])) {
 			for (auto [i, t] : std::views::enumerate(types)) {
 				if (ImGui::Selectable(t)) { type = i; }
+			}
+			ImGui::EndCombo();
+		}
+		if (ImGui::BeginCombo("Pattern", patterns[pattern])) {
+			for (auto [i, t] : std::views::enumerate(patterns)) {
+				if (ImGui::Selectable(t)) { pattern = i; }
 			}
 			ImGui::EndCombo();
 		}
@@ -515,7 +523,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<fornani::Turret>(svc, 0, static_cast<fornani::TurretType>(type), static_cast<fornani::HV>(hv));
+			tool->current_entity = std::make_unique<fornani::Turret>(svc, 0, static_cast<fornani::TurretType>(type), static_cast<fornani::TurretPattern>(pattern), fornani::CardinalDirection{hv});
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();

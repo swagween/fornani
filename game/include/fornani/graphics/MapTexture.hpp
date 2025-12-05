@@ -17,8 +17,8 @@ namespace fornani::gui {
 
 constexpr auto num_resolution_levels_v = 3;
 
-enum class MapTextureFlags : std::uint8_t { current };
-enum class Resolution : std::uint8_t { high, medium, low };
+enum class MapTextureFlags { current };
+enum class Resolution { high, medium, low };
 
 struct MapTextureLayer {
 	sf::RenderTexture center_texture{};

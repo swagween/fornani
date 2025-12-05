@@ -6,13 +6,14 @@
 
 namespace fornani {
 
-enum class TurretType : std::uint8_t { laser, projectile };
-enum class TurretAttributes : std::uint8_t { constant, repeater, triggerable };
+enum class TurretType { laser, projectile };
+enum class TurretPattern { constant, repeater, triggerable };
 
 class Turret : public Entity {
   public:
 	Turret(automa::ServiceProvider& svc, dj::Json const& in);
-	Turret(automa::ServiceProvider& svc, int id, TurretType type, HV dir);
+	Turret(automa::ServiceProvider& svc, int id, TurretType type, TurretPattern pattern, CardinalDirection dir);
+	void init();
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;
@@ -22,7 +23,8 @@ class Turret : public Entity {
 
   private:
 	TurretType m_type{};
-	HV m_direction{};
+	TurretPattern m_pattern{};
+	CardinalDirection m_direction{};
 
 	util::Cooldown m_rate{};
 };

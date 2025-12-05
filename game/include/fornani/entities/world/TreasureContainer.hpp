@@ -23,7 +23,7 @@ class Player;
 
 namespace fornani::entity {
 
-enum class TreasureContainerState : std::uint8_t { neutral, shine };
+enum class TreasureContainerState { neutral, shine };
 
 class TreasureContainer : public Animatable {
   public:

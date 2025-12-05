@@ -23,8 +23,8 @@ namespace fornani::world {
 
 class Map;
 
-enum class DestructibleState : std::uint8_t { solid, destroyed };
-enum class DestructibleAttributes : std::uint8_t { inverse, enemy_clear };
+enum class DestructibleState { solid, destroyed };
+enum class DestructibleAttributes { inverse, enemy_clear };
 
 class Destructible : public IWorldPositionable {
   public:

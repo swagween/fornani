@@ -7,7 +7,7 @@
 #include <fornani/utils/Counter.hpp>
 
 namespace fornani::entity {
-enum class HPState : std::uint8_t { hit };
+enum class HPState { hit };
 class Health final : public Entity {
 	float const default_max{8.f};
 	float const critical_threshold{0.34f};

@@ -14,9 +14,9 @@
 
 namespace pi {
 
-enum class EntityType : std::uint8_t { none, portal, inspectable, critter, chest, animator, player_placer, platform, save_point, switch_button, switch_block, interactive_scenery, scenery };
-enum class EntityMode : std::uint8_t { selector, placer, eraser, mover, editor };
-enum class ToolStatus : std::uint8_t { usable, unusable, loaded };
+enum class EntityType { none, portal, inspectable, critter, chest, animator, player_placer, platform, save_point, switch_button, switch_block, interactive_scenery, scenery };
+enum class EntityMode { selector, placer, eraser, mover, editor };
+enum class ToolStatus { usable, unusable, loaded };
 
 class Tool : public fornani::UniquePolymorphic {
   public:

@@ -11,7 +11,7 @@ namespace fornani::player {
 
 class Player;
 
-enum class AnimState : std::uint8_t {
+enum class AnimState {
 	idle,
 	turn,
 	sharp_turn,
@@ -46,7 +46,7 @@ enum class AnimState : std::uint8_t {
 	turn_slide
 };
 
-enum class AnimTriggers : std::uint8_t { flip, end_death };
+enum class AnimTriggers { flip, end_death };
 
 class PlayerAnimation {
   private:

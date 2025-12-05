@@ -21,8 +21,8 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class PushableAttributes : std::uint8_t { bulletproof };
-enum class PushableState : std::uint8_t { moved, pushed };
+enum class PushableAttributes { bulletproof };
+enum class PushableState { moved, pushed };
 
 class Pushable : public Drawable {
   public:

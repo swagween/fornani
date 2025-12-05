@@ -25,7 +25,7 @@ struct Parameters {
 	std::optional<std::string> target{};
 };
 
-enum class State : std::uint8_t { param_switch, keyframe, oneoff_complete };
+enum class State { param_switch, keyframe, oneoff_complete };
 
 struct Animation {
 

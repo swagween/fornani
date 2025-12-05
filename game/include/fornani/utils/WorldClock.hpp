@@ -13,8 +13,8 @@ struct ServiceProvider;
 
 namespace fornani {
 
-enum class TimeOfDay : std::uint8_t { day, twilight, night, END };
-enum class ClockMode : std::uint8_t { standard, military };
+enum class TimeOfDay { day, twilight, night, END };
+enum class ClockMode { standard, military };
 
 [[nodiscard]] constexpr static auto num_cycles() -> int { return static_cast<int>(TimeOfDay::END); }
 

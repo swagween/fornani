@@ -8,9 +8,9 @@
 
 namespace fornani::enemy {
 
-enum class DemonState : std::uint8_t { idle, turn, run, jump, signal, rush, stab, dormant, jumpsquat, uppercut };
-enum class DemonFlags : std::uint8_t { player_behind, parrying };
-enum class DemonVariant : std::uint8_t { warrior, spearman, duelist };
+enum class DemonState { idle, turn, run, jump, signal, rush, stab, dormant, jumpsquat, uppercut };
+enum class DemonFlags { player_behind, parrying };
+enum class DemonVariant { warrior, spearman, duelist };
 
 class Demon final : public Enemy {
 

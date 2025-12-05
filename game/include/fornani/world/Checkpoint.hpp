@@ -18,7 +18,7 @@ namespace fornani::world {
 
 class Map;
 
-enum class CheckpointState : std::uint8_t { reached };
+enum class CheckpointState { reached };
 
 class Checkpoint {
   public:

@@ -12,11 +12,11 @@
 
 namespace fornani::arms {
 
-enum class WeaponState : std::uint8_t { unlocked, equipped, reloading };
-enum class WeaponAttributes : std::uint8_t { automatic };
-enum class InventoryState : std::uint8_t { reserve, hotbar };
-enum class UIFlags : std::uint8_t { selected };
-enum class UIColor : std::uint8_t { white, periwinkle, green, orange, fucshia, purple, mythic };
+enum class WeaponState { unlocked, equipped, reloading };
+enum class WeaponAttributes { automatic };
+enum class InventoryState { reserve, hotbar };
+enum class UIFlags { selected };
+enum class UIColor { white, periwinkle, green, orange, fucshia, purple, mythic };
 
 struct WeaponSpecifications {
 	int cooldown_time{};

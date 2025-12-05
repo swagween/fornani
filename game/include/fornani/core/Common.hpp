@@ -6,7 +6,7 @@ namespace fornani {
 
 namespace gui {
 
-enum class MessageCodeType : std::uint8_t {
+enum class MessageCodeType {
 	none,
 	response,
 	item,
@@ -30,7 +30,7 @@ enum class MessageCodeType : std::uint8_t {
 	open_vendor
 };
 
-enum class CodeSource : std::uint8_t { suite, response };
+enum class CodeSource { suite, response };
 
 constexpr auto null_key = "null";
 
@@ -46,11 +46,11 @@ constexpr int floor_single_ramp = 496;
 } // namespace world
 
 namespace arms {
-enum class Team : std::uint8_t { nani, skycorps, guardian, pioneer, beast };
+enum class Team { nani, skycorps, guardian, pioneer, beast };
 }
 
 namespace item {
-enum class Rarity : std::uint8_t { common, uncommon, rare, priceless };
+enum class Rarity { common, uncommon, rare, priceless };
 }
 
 constexpr auto gem_chance_v = 0.08f;

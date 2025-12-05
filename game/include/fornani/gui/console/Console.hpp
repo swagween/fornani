@@ -23,10 +23,10 @@ class ControllerMap;
 
 namespace fornani::gui {
 
-enum class ConsoleMode : std::uint8_t { writing, responding, off };
-enum class ConsoleFlags : std::uint8_t { no_exit };
-enum class ConsoleTriggers : std::uint8_t { response_created };
-enum class OutputType : std::uint8_t { gradual, instant, no_exit, no_skip };
+enum class ConsoleMode { writing, responding, off };
+enum class ConsoleFlags { no_exit };
+enum class ConsoleTriggers { response_created };
+enum class OutputType { gradual, instant, no_exit, no_skip };
 
 class Console {
   public:

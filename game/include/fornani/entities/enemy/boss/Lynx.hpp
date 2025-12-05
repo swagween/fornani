@@ -14,7 +14,7 @@
 
 namespace fornani::enemy {
 
-enum class LynxState : std::uint8_t {
+enum class LynxState {
 	sit,
 	get_up,
 	idle,
@@ -35,7 +35,7 @@ enum class LynxState : std::uint8_t {
 	laugh,
 	stagger
 };
-enum class LynxFlags : std::uint8_t { conversing, battle_mode, second_phase, just_levitated, player_defeated };
+enum class LynxFlags { conversing, battle_mode, second_phase, just_levitated, player_defeated };
 
 class Lynx final : public Enemy, public NPC {
   public:

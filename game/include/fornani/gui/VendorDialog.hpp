@@ -29,9 +29,9 @@ class Vendor;
 
 namespace fornani::gui {
 
-enum class VendorDialogStatus : std::uint8_t { opened, made_sale, closed, intro_done };
-enum class VendorState : std::uint8_t { buy, sell };
-enum class VendorConstituentType : std::uint8_t { portrait, wares, description, name, core, selection, nani };
+enum class VendorDialogStatus { opened, made_sale, closed, intro_done };
+enum class VendorState { buy, sell };
+enum class VendorConstituentType { portrait, wares, description, name, core, selection, nani };
 
 struct VendorConstituent : public Drawable {
 	VendorConstituent(automa::ServiceProvider& svc, std::string_view label, sf::IntRect lookup, int speed = 128, util::InterpolationType type = util::InterpolationType::quadratic);

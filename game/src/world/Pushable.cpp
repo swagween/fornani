@@ -17,7 +17,7 @@ Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2f position, int styl
 	: Drawable{svc, "pushables"}, style(style), size(size), collider{constants::f_cell_vec * static_cast<float>(size) - sf::Vector2f{1.f, 0.1f}}, collision_box{constants::f_cell_vec * static_cast<float>(size)}, speed{1.f} {
 	collider.physics.position = position;
 	start_position = position;
-	collider.physics.set_friction_componentwise({0.97f, 0.99f});
+	collider.physics.set_friction_componentwise({0.95f, 0.99f});
 	collider.stats.GRAV = 18.0f;
 	mass = static_cast<float>(size);
 	collider.sync_components();
@@ -29,6 +29,7 @@ Pushable::Pushable(automa::ServiceProvider& svc, sf::Vector2f position, int styl
 	collider.vertical_detector_buffer = 0.1f;
 	collider.horizontal_detector_buffer = 0.1f;
 	collider.wallslide_pad = 1.f;
+	collider.vert_threshold = 0.1f;
 }
 
 void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
@@ -74,13 +75,12 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 				if (pushable.is_being_pushed()) { set_push(true); }
 			}
 		}
-		if (!is_being_pushed() || collider.get_bottom().y < pushable.collider.get_center().y) { collider.handle_collider_collision(pushable.collider.bounding_box); }
 	}
 
 	// pushable should only be moved by a platform if it's on top of one
 
 	player.collider.handle_collider_collision(collider.bounding_box);
-	if (size == 1) { collider.handle_collider_collision(player.hurtbox); } // big ones should crush the player
+	if (size == 1 && collider.get_center().y < player.collider.get_center().y) { collider.handle_collider_collision(player.hurtbox); } // big ones should crush the player
 	if (player.collider.jumpbox.overlaps(collider.bounding_box) && collider.grounded() && collider.physics.is_moving_horizontally(constants::tiny_value)) { player.collider.physics.forced_momentum = collider.physics.forced_momentum; }
 
 	player.on_crush(map);
@@ -94,12 +94,22 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	for (auto& block : map.switch_blocks) {
 		if (block.on()) { collider.handle_collider_collision(block.get_bounding_box()); }
 	}
+	collider.detect_map_collision(map);
 }
 
 void Pushable::post_update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 	for (auto& pushable : map.pushables) {
 		if (&pushable == this) { continue; }
 		if (!pushable.collider.vicinity.overlaps(collider.vicinity)) { continue; }
+		auto block = true;
+		if (pushable.collider.wallslider.overlaps(collision_box)) {
+			auto hit_wall = (pushable.collider.get_center().x < collider.get_center().x && collider.has_right_wallslide_collision()) || (pushable.collider.get_center().x > collider.get_center().x && collider.has_left_wallslide_collision());
+			if (pushable.collider.pushes(collider) && player.pushing() && !hit_wall) {
+				collider.physics.acceleration += pushable.collider.physics.acceleration;
+				block = false;
+			}
+		}
+		if (block) { pushable.collider.handle_collider_collision(collision_box); }
 	}
 
 	collider.physics.impart_momentum();
@@ -108,12 +118,8 @@ void Pushable::post_update(automa::ServiceProvider& svc, Map& map, player::Playe
 	for (auto& pushable : map.pushables) {
 		if (&pushable == this) { continue; }
 		if (!pushable.collider.vicinity.overlaps(collider.vicinity)) { continue; }
-		if (pushable.collider.wallslider.overlaps(collision_box)) {
-			if (pushable.collider.pushes(collider) && collider.grounded()) { collider.physics.adopt(pushable.collider.physics); }
-		}
 	}
 
-	collider.detect_map_collision(map);
 	for (auto& platform : map.platforms) {
 		if (platform.bounding_box.overlaps(collider.jumpbox)) { collider.handle_collider_collision(platform.bounding_box); }
 		if (collider.jumpbox.overlaps(platform.bounding_box) && !collider.perma_grounded() && platform.is_sticky()) {

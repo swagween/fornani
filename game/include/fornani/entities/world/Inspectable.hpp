@@ -26,8 +26,8 @@ class Console;
 
 namespace fornani::entity {
 
-enum class InspectableAttributes : std::uint8_t { activate_on_contact, instant };
-enum class InspectableFlags : std::uint8_t { hovered, hovered_trigger, activated, destroy, engaged, can_engage };
+enum class InspectableAttributes { activate_on_contact, instant };
+enum class InspectableFlags { hovered, hovered_trigger, activated, destroy, engaged, can_engage };
 
 class Inspectable : public IWorldPositionable {
   public:

@@ -22,7 +22,7 @@
 
 namespace pi {
 
-enum class GlobalFlags : std::uint8_t { shutdown, palette_mode };
+enum class GlobalFlags { shutdown, palette_mode };
 
 constexpr static std::uint8_t max_layers_v{32};
 

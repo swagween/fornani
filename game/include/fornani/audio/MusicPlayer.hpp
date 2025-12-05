@@ -10,8 +10,8 @@
 
 namespace fornani::audio {
 
-enum class MusicPlayerState : std::uint8_t { on, off };
-enum class MusicPlayerFlags : std::uint8_t { filtering };
+enum class MusicPlayerState { on, off };
+enum class MusicPlayerFlags { filtering };
 constexpr auto lo_pass_v = 100.f;
 constexpr auto hi_pass_v = 500.f;
 constexpr auto default_filter_fade_speed_v = 128;

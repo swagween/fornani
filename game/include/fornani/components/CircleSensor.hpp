@@ -11,7 +11,7 @@ class CircleCollider;
 
 namespace fornani::components {
 
-enum class SensorState : std::uint8_t { active };
+enum class SensorState { active };
 
 class CircleSensor {
   public:

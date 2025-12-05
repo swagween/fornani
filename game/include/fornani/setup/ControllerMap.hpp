@@ -56,17 +56,17 @@ enum class DigitalAction : int {
 	COUNT
 };
 
-enum class AnalogAction : std::uint8_t { platformer_movement, map_movement };
+enum class AnalogAction { platformer_movement, map_movement };
 
-enum class ActionSet : std::uint8_t {
+enum class ActionSet {
 	Platformer,
 	Inventory,
 	Map,
 	Menu,
 };
 
-enum class ControllerType : std::uint8_t { keyboard, gamepad };
-enum class ControllerStatus : std::uint8_t { gamepad_connected };
+enum class ControllerType { keyboard, gamepad };
+enum class ControllerStatus { gamepad_connected };
 
 struct DigitalActionSource {
 	EInputActionOrigin controller_origin{};

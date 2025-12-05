@@ -21,9 +21,9 @@ constexpr auto default_jumpbox_height = 4.0f;
 constexpr auto default_detector_width = 4.f;
 constexpr auto default_detector_height = 18.f;
 
-enum class General : std::uint8_t { ignore_resolution, complex, pushable, soft, top_only_collision, no_move };
-enum class Animation : std::uint8_t { just_landed, sliding };
-enum class State : std::uint8_t {
+enum class General { ignore_resolution, complex, pushable, soft, top_only_collision, no_move };
+enum class Animation { just_landed, sliding };
+enum class State {
 	just_collided,
 	is_any_jump_collision,
 	is_any_collision,
@@ -39,7 +39,7 @@ enum class State : std::uint8_t {
 	on_flat_surface,
 	tickwise_ramp_collision
 };
-enum class ExternalState : std::uint8_t {
+enum class ExternalState {
 	grounded,
 	collider_collision,
 	vert_collider_collision,
@@ -53,11 +53,11 @@ enum class ExternalState : std::uint8_t {
 	tile_debug_flag,
 	ceiling_ramp_hit
 };
-enum class PermaFlags : std::uint8_t { world_grounded, downhill };
+enum class PermaFlags { world_grounded, downhill };
 
-enum class Collision : std::uint8_t { any_collision, has_left_collision, has_right_collision, has_top_collision, has_bottom_collision, ramp_collision };
-enum class Dash : std::uint8_t { dash_cancel_collision };
-enum class Movement : std::uint8_t { dashing, jumping, crouching };
+enum class Collision { any_collision, has_left_collision, has_right_collision, has_top_collision, has_bottom_collision, ramp_collision };
+enum class Dash { dash_cancel_collision };
+enum class Movement { dashing, jumping, crouching };
 
 struct PhysicsStats {
 	float GRAV{0.002f};

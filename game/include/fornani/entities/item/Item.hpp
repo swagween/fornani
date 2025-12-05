@@ -25,9 +25,9 @@ struct ItemStats {
 	int apparel_type{};
 };
 
-enum class ItemType : std::uint8_t { ability, key, collectible, gizmo, apparel };
-enum class ItemFlags : std::uint8_t { sellable, readable, equippable, wearable };
-enum class ItemState : std::uint8_t { revealed, equipped };
+enum class ItemType { ability, key, collectible, gizmo, apparel };
+enum class ItemFlags { sellable, readable, equippable, wearable };
+enum class ItemState { revealed, equipped };
 
 class Item : public Polymorphic {
   public:

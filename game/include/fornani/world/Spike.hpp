@@ -20,7 +20,7 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class SpikeAttributes : std::uint8_t { no_collision, soft_reset, random };
+enum class SpikeAttributes { no_collision, soft_reset, random };
 
 class Spike {
   public:

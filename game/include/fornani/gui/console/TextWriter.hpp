@@ -25,9 +25,9 @@ struct ServiceProvider;
 
 namespace fornani::gui {
 
-enum class Codes : std::uint8_t { prompt, quest, item, voice, emotion, hash };
-enum class WriterMode : std::uint8_t { write, wait, close, stall, respond };
-enum class WriterFlags : std::uint8_t { input_hint };
+enum class Codes { prompt, quest, item, voice, emotion, hash };
+enum class WriterMode { write, wait, close, stall, respond };
+enum class WriterFlags { input_hint };
 static constexpr int default_writing_speed_v{8};
 static constexpr int medium_writing_speed_v{6};
 static constexpr int fast_writing_speed_v{1};

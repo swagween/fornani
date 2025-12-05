@@ -22,12 +22,12 @@ namespace world {
 
 class Map;
 
-enum class LaserType : std::uint8_t { turret, magic };
-enum class LaserAttributes : std::uint8_t { transcendent };
+enum class LaserType { turret, magic };
+enum class LaserAttributes { transcendent, infinite };
 
 class Laser {
   public:
-	Laser(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, LaserType type, HV direction, int active = 128, int cooldown = 128, float size = 1.f);
+	Laser(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, LaserType type, util::BitFlags<LaserAttributes> attributes, CardinalDirection direction, int active = 128, int cooldown = 128, float size = 1.f);
 	void update(automa::ServiceProvider& svc, player::Player& player, Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void fire() { m_active.start(); }
@@ -38,9 +38,13 @@ class Laser {
 
   private:
 	sf::Vector2f calculate_size(Map& map);
+	sf::Vector2f calculate_end_point();
+	void handle_collision(shape::Shape& obstacle, sf::Vector2f size);
+	std::optional<sf::Vector2f> calculate_collision_point(shape::Shape& other);
 
 	LaserType m_type{};
-	HV m_direction{};
+	util::BitFlags<LaserAttributes> m_attributes{};
+	CardinalDirection m_direction{};
 	shape::Shape m_hitbox;
 	sf::RectangleShape m_drawbox{};
 	util::Cooldown m_active;

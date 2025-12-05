@@ -22,8 +22,8 @@ namespace fornani::world {
 
 class Map;
 
-enum class TileType : std::uint8_t { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire, home };
-enum class TileState : std::uint8_t { ramp_adjacent, big_ramp, covered };
+enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire, home };
+enum class TileState { ramp_adjacent, big_ramp, covered };
 
 constexpr static int special_index_v{448};
 

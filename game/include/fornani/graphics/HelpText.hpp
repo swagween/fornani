@@ -15,7 +15,7 @@ enum class DigitalAction;
 
 namespace fornani::graphics {
 
-enum class HelpTextFlags : std::uint8_t { no_blink, time_limit };
+enum class HelpTextFlags { no_blink, time_limit };
 
 class HelpText {
   public:

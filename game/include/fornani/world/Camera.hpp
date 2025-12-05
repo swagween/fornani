@@ -20,7 +20,7 @@ struct CameraShake {
 	graphics::ShakeProperties properties{};
 };
 
-enum class CameraFlags : std::uint8_t { shake };
+enum class CameraFlags { shake };
 
 class Camera {
   public:

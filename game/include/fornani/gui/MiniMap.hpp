@@ -19,8 +19,8 @@ class Portal;
 
 namespace fornani::gui {
 
-enum class MapIconFlags : std::uint8_t { nani, gunsmith, save, chest, bed, door, boss, gobe, vendor };
-enum class ChunkType : std::uint8_t { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
+enum class MapIconFlags { nani, gunsmith, save, chest, bed, door, boss, gobe, vendor };
+enum class ChunkType { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
 
 struct MapIcon {
 	MapIconFlags type{};

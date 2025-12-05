@@ -24,7 +24,7 @@ class Player;
 
 namespace fornani {
 
-enum class VineFlags : std::uint8_t { foreground, reverse };
+enum class VineFlags { foreground, reverse };
 
 class Vine : public Entity {
   public:

@@ -31,9 +31,9 @@ class Projectile;
 
 namespace fornani::enemy {
 
-enum class EnemyChannel : std::uint8_t { standard, hurt_1, hurt_2, invincible, extra_1, extra_2 };
-enum class EnemySize : std::uint8_t { tiny, small, medium, large, giant };
-enum class GeneralFlags : std::uint8_t {
+enum class EnemyChannel { standard, hurt_1, hurt_2, invincible, extra_1, extra_2 };
+enum class EnemySize { tiny, small, medium, large, giant };
+enum class GeneralFlags {
 	mobile,
 	gravity,
 	player_collision,
@@ -55,9 +55,9 @@ enum class GeneralFlags : std::uint8_t {
 	custom_channels,
 	semipermanent
 };
-enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, simple_physics, no_shake, out_of_zone, no_slowdown, intangible, health_exposed };
-enum class Triggers : std::uint8_t { hostile, alert };
-enum class Variant : std::uint8_t { beast, soldier, elemental, worker, guardian };
+enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, simple_physics, no_shake, out_of_zone, no_slowdown, intangible, health_exposed };
+enum class Triggers { hostile, alert };
+enum class Variant { beast, soldier, elemental, worker, guardian };
 
 struct Attributes {
 	float base_hp{};

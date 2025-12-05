@@ -4,8 +4,8 @@
 
 namespace fornani::automa {
 
-enum class SettingsToggles : std::uint8_t { autosprint, tutorial, gamepad, music, sfx, fullscreen, military_time };
-enum class SettingsMenuMode : std::uint8_t { ready, adjust };
+enum class SettingsToggles { autosprint, tutorial, gamepad, music, sfx, fullscreen, military_time };
+enum class SettingsMenuMode { ready, adjust };
 
 class SettingsMenu final : public MenuState {
   public:

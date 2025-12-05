@@ -7,9 +7,9 @@
 
 namespace fornani::enemy {
 
-enum class TankState : std::uint8_t { idle, run, shoot_horizontal, shoot_vertical, jumpsquat, jump, land, turn, type, alert, pocket, sleep, drink };
-enum class TankFlags : std::uint8_t { show_weapon, shorthop };
-enum class TankVariant : std::uint8_t { watchman, typist };
+enum class TankState { idle, run, shoot_horizontal, shoot_vertical, jumpsquat, jump, land, turn, type, alert, pocket, sleep, drink };
+enum class TankFlags { show_weapon, shorthop };
+enum class TankVariant { watchman, typist };
 
 class Tank final : public Enemy {
 

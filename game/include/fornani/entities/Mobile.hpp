@@ -11,7 +11,7 @@ namespace player {
 class Player;
 }
 
-enum class MobileState : std::uint8_t { flip };
+enum class MobileState { flip };
 
 class Mobile : public Animatable {
   public:

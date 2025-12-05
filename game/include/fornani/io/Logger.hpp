@@ -99,7 +99,7 @@ namespace fornani::io::logger {
 /**
  * \brief Log Level.
  */
-enum class Level : std::uint8_t { eError, eWarn, eInfo, eDebug, eCOUNT_ };
+enum class Level { eError, eWarn, eInfo, eDebug, eCOUNT_ };
 
 /**
  * \brief char representation of Level.

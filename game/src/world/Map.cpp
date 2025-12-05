@@ -529,6 +529,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		for (auto v : get_entities<Vine>()) {
 			if (v->is_foreground()) { v->render(win, cam, 1.0); }
 		}
+		for (auto t : get_entities<Turret>()) { t->render(win, cam, 1.0); }
 	}
 
 	// foreground enemies
@@ -538,8 +539,8 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		enemy->gui_render(svc, win, cam);
 	}
 
-	for (auto& effect : effects) { effect.render(win, cam); }
 	for (auto& laser : lasers) { laser.render(svc, win, cam); }
+	for (auto& effect : effects) { effect.render(win, cam); }
 
 	player->render_indicators(svc, win, cam);
 
@@ -655,6 +656,8 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon
 		active_emitters.push_back(vfx::Emitter(svc, weapon.get_barrel_point(), weapon.secondary_emitter.value().dimensions, weapon.secondary_emitter.value().type, weapon.secondary_emitter.value().color, weapon.get_firing_direction()));
 	}
 }
+
+void Map::spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel, int channel) { effects.push_back(entity::Effect(svc, tag.data(), pos, vel, channel)); }
 
 void Map::spawn_enemy(int id, sf::Vector2f pos, int variant) {
 	auto break_out = 0;

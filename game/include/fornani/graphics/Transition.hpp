@@ -13,7 +13,7 @@ class Player;
 
 namespace fornani::graphics {
 
-enum class TransitionState : std::uint8_t { inactive, fading_to_black, black, fading_out };
+enum class TransitionState { inactive, fading_to_black, black, fading_out };
 
 class Transition {
 

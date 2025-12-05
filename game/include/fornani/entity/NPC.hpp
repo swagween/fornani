@@ -15,9 +15,9 @@
 
 namespace fornani {
 
-enum class NPCFlags : std::uint8_t { has_turn_animation, face_player, background, no_animation };
-enum class NPCState : std::uint8_t { engaged, force_interact, introduced, talking, cutscene, piggybacking, hidden, distant_interact, just_engaged };
-enum class NPCAnimationState : std::uint8_t { idle, turn, walk, inspect, fall, land };
+enum class NPCFlags { has_turn_animation, face_player, background, no_animation };
+enum class NPCState { engaged, force_interact, introduced, talking, cutscene, piggybacking, hidden, distant_interact, just_engaged };
+enum class NPCAnimationState { idle, turn, walk, inspect, fall, land };
 
 class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState> {
   public:

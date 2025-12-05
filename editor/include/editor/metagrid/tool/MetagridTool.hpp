@@ -8,7 +8,7 @@
 
 namespace pi {
 
-enum class MetagridToolType : std::uint8_t { cursor, move, END };
+enum class MetagridToolType { cursor, move, END };
 
 class MetagridTool : public fornani::UniquePolymorphic {
   public:

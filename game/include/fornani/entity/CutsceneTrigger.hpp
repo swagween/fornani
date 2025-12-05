@@ -8,7 +8,7 @@
 
 namespace fornani {
 
-enum class CutsceneTriggerFlags : std::uint8_t { activated, pushed };
+enum class CutsceneTriggerFlags { activated, pushed };
 
 class CutsceneTrigger : public Entity {
   public:

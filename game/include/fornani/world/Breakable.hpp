@@ -16,7 +16,7 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class BreakableAttributes : std::uint8_t { bulletproof };
+enum class BreakableAttributes { bulletproof };
 
 class Breakable {
   public:

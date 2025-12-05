@@ -8,7 +8,7 @@
 
 namespace fornani::enemy {
 
-enum class MinionState : std::uint8_t { idle, blink, jump, turn };
+enum class MinionState { idle, blink, jump, turn };
 
 class Minion final : public Enemy {
   public:

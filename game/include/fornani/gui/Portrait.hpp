@@ -13,7 +13,7 @@ struct ServiceProvider;
 
 namespace fornani::gui {
 
-enum class PortraitFlags : std::uint8_t { custom, right };
+enum class PortraitFlags { custom, right };
 
 constexpr float pad_x{20.f};
 constexpr float pad_y{20.f};

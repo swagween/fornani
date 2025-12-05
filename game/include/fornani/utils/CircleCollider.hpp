@@ -17,7 +17,7 @@ class Map;
 
 namespace fornani::shape {
 
-enum class CircleColliderFlags : std::uint8_t { collided };
+enum class CircleColliderFlags { collided };
 
 class CircleCollider {
   public:

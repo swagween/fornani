@@ -60,10 +60,10 @@ class InventoryWindow;
 
 namespace fornani::world {
 
-enum class LevelState : std::uint8_t { game_over, camera_shake, spawn_enemy, transitioning };
-enum class MapState : std::uint8_t { unobscure };
-enum class LayerProperties : std::uint8_t { has_obscuring_layer, has_reverse_obscuring_layer };
-enum class MapProperties : std::uint8_t { minimap, environmental_randomness, day_night_shift, timer, lighting };
+enum class LevelState { game_over, camera_shake, spawn_enemy, transitioning };
+enum class MapState { unobscure };
+enum class LayerProperties { has_obscuring_layer, has_reverse_obscuring_layer };
+enum class MapProperties { minimap, environmental_randomness, day_night_shift, timer, lighting };
 
 struct EnemySpawn {
 	sf::Vector2f pos{};
@@ -102,6 +102,7 @@ class Map {
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	bool handle_entry(player::Player& player, util::Cooldown& enter_room);
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {}, float speed_multiplier = 1.f);
+	void spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0);
 	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0);
 	void reveal_npc(std::string_view label);
 	void manage_projectiles(automa::ServiceProvider& svc);

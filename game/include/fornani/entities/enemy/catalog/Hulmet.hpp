@@ -8,9 +8,9 @@
 
 namespace fornani::enemy {
 
-enum class HulmetState : std::uint8_t { idle, turn, run, jump, alert, sleep, shoot, roll, panic, reload };
-enum class HulmetVariant : std::uint8_t { gunner, bodyguard };
-enum class HulmetFlags : std::uint8_t { out_of_ammo };
+enum class HulmetState { idle, turn, run, jump, alert, sleep, shoot, roll, panic, reload };
+enum class HulmetVariant { gunner, bodyguard };
+enum class HulmetFlags { out_of_ammo };
 
 class Hulmet final : public Enemy, public StateMachine<HulmetState> {
   public:

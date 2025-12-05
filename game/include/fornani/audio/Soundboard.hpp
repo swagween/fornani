@@ -15,12 +15,12 @@ struct ServiceProvider;
 
 namespace fornani::audio {
 
-enum class SoundboardState : std::uint8_t { on, off };
+enum class SoundboardState { on, off };
 
-enum class Menu : std::uint8_t { select, shift, forward_switch, backward_switch, error };
-enum class Pioneer : std::uint8_t { select, click, back, open, close, slot, chain, boot, buzz, fast_click, hard_slot, hum, sync, scan, drag, wires };
-enum class Console : std::uint8_t { next, done, shift, select, speech, menu_open };
-enum class World : std::uint8_t {
+enum class Menu { select, shift, forward_switch, backward_switch, error };
+enum class Pioneer { select, click, back, open, close, slot, chain, boot, buzz, fast_click, hard_slot, hum, sync, scan, drag, wires };
+enum class Console { next, done, shift, select, speech, menu_open };
+enum class World {
 	load,
 	save,
 	chest,
@@ -42,29 +42,29 @@ enum class World : std::uint8_t {
 	gem_hit_1,
 	gem_hit_2
 };
-enum class Item : std::uint8_t { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip, vendor_sale, unequip };
-enum class Player : std::uint8_t { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll, wallslide, super_slide, doublejump, turn_slide };
-enum class Weapon : std::uint8_t { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, plasmer, underdog, peckett_710, pulse, demon_magic };
-enum class Projectile : std::uint8_t { basic, shuriken, pulse };
-enum class Arms : std::uint8_t { reload };
-enum class Transmission : std::uint8_t { statics };
-enum class Step : std::uint8_t { basic, grass };
+enum class Item { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip, vendor_sale, unequip };
+enum class Player { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll, wallslide, super_slide, doublejump, turn_slide };
+enum class Weapon { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, plasmer, underdog, peckett_710, pulse, demon_magic };
+enum class Projectile { basic, shuriken, pulse };
+enum class Arms { reload };
+enum class Transmission { statics };
+enum class Step { basic, grass };
 
 // critters
-enum class Enemy : std::uint8_t { hit_squeak, hit_high, hit_medium, hit_low, standard_death, jump_low, high_death, low_death };
+enum class Enemy { hit_squeak, hit_high, hit_medium, hit_low, standard_death, jump_low, high_death, low_death };
 
-enum class Frdog : std::uint8_t { hurt, death };
-enum class Hulmet : std::uint8_t { hurt, alert, reload };
-enum class Tank : std::uint8_t { alert_1, alert_2, hurt_1, hurt_2, death };
-enum class Thug : std::uint8_t { alert_1, alert_2, hurt_1, hurt_2, death };
-enum class Minigun : std::uint8_t { charge, reload, neutral, firing };
-enum class Demon : std::uint8_t { hurt, alert, death, snort, up_snort };
-enum class Archer : std::uint8_t { hurt, flee, death };
-enum class Beamstalk : std::uint8_t { hurt, death };
-enum class Meatsquash : std::uint8_t { hurt, death, chomp, whip, swallow };
-enum class Summoner : std::uint8_t { hurt_1, hurt_2, death, block_1, block_2, summon, hah };
+enum class Frdog { hurt, death };
+enum class Hulmet { hurt, alert, reload };
+enum class Tank { alert_1, alert_2, hurt_1, hurt_2, death };
+enum class Thug { alert_1, alert_2, hurt_1, hurt_2, death };
+enum class Minigun { charge, reload, neutral, firing };
+enum class Demon { hurt, alert, death, snort, up_snort };
+enum class Archer { hurt, flee, death };
+enum class Beamstalk { hurt, death };
+enum class Meatsquash { hurt, death, chomp, whip, swallow };
+enum class Summoner { hurt_1, hurt_2, death, block_1, block_2, summon, hah };
 
-enum class Minigus : std::uint8_t {
+enum class Minigus {
 	hurt_1,
 	hurt_2,
 	hurt_3,
@@ -97,10 +97,10 @@ enum class Minigus : std::uint8_t {
 	grunt,
 	exhale
 };
-enum class Lynx : std::uint8_t { prepare, shing, ping_1, ping_2, swipe_1, swipe_2, slam, hoah, defeat, hah, heuh, hiyyah, hnnyah, huh, hurt_1, hurt_2, hurt_3, hurt_4, huuyeah, nngyah, yyah, laugh, giggle };
-enum class Miaag : std::uint8_t { growl, hiss, hurt, roar, chomp };
+enum class Lynx { prepare, shing, ping_1, ping_2, swipe_1, swipe_2, slam, hoah, defeat, hah, heuh, hiyyah, hnnyah, huh, hurt_1, hurt_2, hurt_3, hurt_4, huuyeah, nngyah, yyah, laugh, giggle };
+enum class Miaag { growl, hiss, hurt, roar, chomp };
 
-enum class NPC : std::uint8_t { minigus_greatidea, minigus_dontlookatme, minigus_laugh, minigus_getit, minigus_pizza, minigus_grunt };
+enum class NPC { minigus_greatidea, minigus_dontlookatme, minigus_laugh, minigus_getit, minigus_pizza, minigus_grunt };
 
 class Soundboard {
   public:
