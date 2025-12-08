@@ -289,6 +289,7 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 	metadata["tile"]["flags"]["reverse_obscuring"].as_bool() ? m_layer_properties.set(LayerProperties::has_reverse_obscuring_layer) : m_layer_properties.reset(LayerProperties::has_reverse_obscuring_layer);
 
 	breakable_iterators.resize(static_cast<std::size_t>((dimensions.x * dimensions.y) / constants::u32_chunk_size));
+	m_colliders.resize(static_cast<std::size_t>((dimensions.x * dimensions.y) / constants::u32_chunk_size));
 
 	m_attributes.border_color = m_attributes.style_id == 2 ? colors::pioneer_black : colors::ui_black;
 	if (entities.is_object()) { m_entities = EntitySet(svc, svc.finder, entities, m_metadata.room); }
@@ -364,6 +365,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	std::erase_if(effects, [](auto& e) { return e.done(); });
 	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
 	std::erase_if(lasers, [](auto const& l) { return l.is_complete(); });
+	std::erase_if(incinerite_blocks, [](auto const& i) { return i.is_destroyed(); });
 	enemy_catalog.update();
 
 	manage_projectiles(svc);
@@ -379,6 +381,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		for (auto& destroyer : destructibles) { destroyer.on_hit(svc, *this, proj); }
 		for (auto& block : switch_blocks) { block.on_hit(svc, *this, proj); }
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
+		for (auto& incinerite : incinerite_blocks) { incinerite.on_hit(svc, *this, proj); }
 		for (auto vine : get_entities<Vine>()) { vine->on_hit(svc, *this, proj, *player); }
 		proj.handle_collision(svc, *this);
 		proj.on_player_hit(*player);
@@ -415,6 +418,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& checkpoint : checkpoints) { checkpoint.update(svc, *this, *player); }
 	for (auto& bed : beds) { bed.update(svc, *this, console, *player, transition); }
 	for (auto& breakable : breakables) { breakable.update(svc, *player); }
+	for (auto& incinerite : incinerite_blocks) { incinerite.update(svc, *this, *player); }
 	for (auto& pushable : pushables) {
 		pushable.register_chunk(get_chunk_id_from_position(pushable.collider.get_center()));
 		pushable.update(svc, *this, *player);
@@ -505,6 +509,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& emitter : active_emitters) { emitter.render(svc, win, cam); }
 	for (auto& platform : platforms) { platform.render(svc, win, cam); }
 	for (auto& breakable : breakables) { breakable.render(svc, win, cam); }
+	for (auto& incinerite : incinerite_blocks) { incinerite.render(svc, win, cam); }
 	for (auto& pushable : pushables) { pushable.render(svc, win, cam); }
 	for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
 	for (auto& spike : spikes) { spike.render(svc, win, shader, m_palette, cam); }
@@ -734,6 +739,7 @@ void Map::generate_collidable_layer(bool live) {
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position(), 5)); }
 		if (cell.is_target()) { target_points.push_back(cell.get_global_center()); }
 		if (cell.is_home()) { home_points.push_back(cell.get_global_center()); }
+		if (cell.is_incinerite()) { incinerite_blocks.push_back(Incinerite(*m_services, cell.position(), chunk_id)); }
 		if (cell.is_checkpoint()) { checkpoints.push_back(Checkpoint(*m_services, cell.position())); }
 		if (cell.is_fire()) {
 			if (!fire) { fire = std::vector<Fire>{}; }
@@ -745,6 +751,14 @@ void Map::generate_collidable_layer(bool live) {
 void Map::generate_layer_textures(automa::ServiceProvider& svc) const {
 	for (auto& layer : svc.data.get_layers(room_id)) { layer->generate_textures(svc.assets.get_tileset(m_metadata.biome)); }
 }
+
+void Map::register_collider(shape::Collider* collider) { m_colliders.push_back(collider); }
+
+void Map::register_collider(shape::CircleCollider* collider) {}
+
+void Map::unregister_collider(shape::Collider* collider) { m_colliders.erase(std::remove(m_colliders.begin(), m_colliders.end(), collider), m_colliders.end()); }
+
+void Map::unregister_collider(shape::CircleCollider* collider) {}
 
 bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
 	auto& grid = foreground ? get_obscuring_layer()->grid : get_middleground()->grid;

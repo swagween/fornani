@@ -40,7 +40,11 @@ enum class World {
 	clink,
 	vibration,
 	gem_hit_1,
-	gem_hit_2
+	gem_hit_2,
+	laser_charge,
+	laser_hum,
+	laser_cooldown,
+	incinerite_explosion
 };
 enum class Item { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip, vendor_sale, unequip };
 enum class Player { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll, wallslide, super_slide, doublejump, turn_slide };

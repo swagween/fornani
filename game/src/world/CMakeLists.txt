@@ -4,6 +4,7 @@ nani_add_sources(
         Checkpoint.cpp
         Destructible.cpp
         Grid.cpp
+        Incinerite.cpp
         Layer.cpp
         Map.cpp
         Platform.cpp

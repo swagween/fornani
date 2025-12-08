@@ -251,12 +251,11 @@ sf::Vector2f Shape::circle_SAT_MTV(sf::CircleShape const& circle) {
 }
 
 bool Shape::overlaps(Shape const& other) const {
-	bool ret{true};
-	if (vertices.at(0).x > other.vertices.at(1).x) { ret = false; }
-	if (vertices.at(1).x < other.vertices.at(0).x) { ret = false; }
-	if (vertices.at(0).y > other.vertices.at(2).y) { ret = false; }
-	if (vertices.at(2).y < other.vertices.at(0).y) { ret = false; }
-	return ret;
+	if (vertices.at(0).x > other.vertices.at(1).x) { return false; }
+	if (vertices.at(1).x < other.vertices.at(0).x) { return false; }
+	if (vertices.at(0).y > other.vertices.at(2).y) { return false; }
+	if (vertices.at(2).y < other.vertices.at(0).y) { return false; }
+	return true;
 }
 
 bool Shape::overlaps(sf::Vector2f point) const {

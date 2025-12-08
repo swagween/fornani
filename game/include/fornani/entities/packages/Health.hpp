@@ -7,12 +7,16 @@
 #include <fornani/utils/Counter.hpp>
 
 namespace fornani::entity {
-enum class HPState { hit };
-class Health final : public Entity {
-	float const default_max{8.f};
-	float const critical_threshold{0.34f};
 
+enum class HPState { hit };
+
+constexpr auto default_max{8.f};
+constexpr auto critical_threshold{0.34f};
+
+class Health final : public Entity {
   public:
+	Health() = default;
+	Health(float max) : max_hp{max}, hp{max} {}
 	void update();
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	[[nodiscard]] auto get_i_hp() const -> int { return static_cast<int>(hp); }

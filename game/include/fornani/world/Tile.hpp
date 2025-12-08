@@ -22,7 +22,7 @@ namespace fornani::world {
 
 class Map;
 
-enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire, home };
+enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire, home, incinerite };
 enum class TileState { ramp_adjacent, big_ramp, covered };
 
 constexpr static int special_index_v{448};
@@ -36,6 +36,7 @@ constexpr auto get_type_by_value(int const val) -> TileType {
 	if (val == special_index_v + 38) { return TileType::target; }
 	if (val == special_index_v + 39) { return TileType::spawner; }
 	if (val == special_index_v + 40) { return TileType::home; }
+	if (val == special_index_v + 41) { return TileType::incinerite; }
 	if (val == special_index_v + 52) { return TileType::bonfire; }
 	if (val == special_index_v + 53) { return TileType::campfire; }
 	if (val == special_index_v + 54) { return TileType::checkpoint; }
@@ -78,9 +79,10 @@ struct Tile {
 	[[nodiscard]] auto is_spawner() const -> bool { return type == TileType::spawner; }
 	[[nodiscard]] auto is_target() const -> bool { return type == TileType::target; }
 	[[nodiscard]] auto is_home() const -> bool { return type == TileType::home; }
+	[[nodiscard]] auto is_incinerite() const -> bool { return type == TileType::incinerite; }
 	[[nodiscard]] auto is_checkpoint() const -> bool { return type == TileType::checkpoint; }
 	[[nodiscard]] auto is_fire() const -> bool { return type == TileType::bonfire || type == TileType::campfire; }
-	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable() || is_target() || is_checkpoint() || is_fire() || is_spike() || is_big_spike() || is_home(); }
+	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable() || is_incinerite() || is_target() || is_checkpoint() || is_fire() || is_spike() || is_big_spike() || is_home(); }
 	[[nodiscard]] auto ramp_adjacent() const -> bool { return flags.test(TileState::ramp_adjacent); }
 	[[nodiscard]] auto covered() const -> bool { return flags.test(TileState::covered); }
 	[[nodiscard]] auto is_negative_ramp() const -> bool {

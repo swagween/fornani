@@ -16,8 +16,20 @@ void Turret::init() {
 	set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 	repeatable = true;
 	m_rate.start();
-	Animatable::set_parameters({4, 2, 18, -1});
-	Animatable::center();
+
+	push_animation("off", {0, 1, 18, -1});
+	push_animation("charging", {1, 3, 32, 0});
+	push_animation("firing", {4, 2, 18, -1});
+	push_animation("cooling_down", {6, 2, 18, 0});
+
+	m_duration = 256; // for now
+	m_firing = util::Cooldown{m_duration};
+
+	if (m_pattern == TurretPattern::constant) {
+		set_animation("firing");
+	} else {
+		set_animation("off");
+	}
 }
 
 std::unique_ptr<Entity> Turret::clone() const { return std::make_unique<Turret>(*this); }
@@ -51,20 +63,72 @@ void Turret::expose() {
 
 void Turret::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
 	Entity::update(svc, map, console, player);
+	m_firing.update();
+	m_rate.update();
+
 	Animatable::set_rotation(sf::degrees(m_direction.as_degrees()));
 	auto attributes = util::BitFlags<world::LaserAttributes>{};
 	if (m_pattern == TurretPattern::constant) { attributes.set(world::LaserAttributes::infinite); }
-	if (m_rate.just_started()) { map.lasers.push_back(world::Laser{svc, map, get_world_position() + constants::f_cell_vec.componentWiseMul(m_direction.as_vector()), world::LaserType::turret, attributes, m_direction, 256, 64}); }
-	m_rate.update();
-	if (m_rate.is_complete() && m_pattern != TurretPattern::constant) { m_rate.start(); }
+
+	if (m_state.actual == TurretState::firing) { svc.soundboard.flags.world.set(audio::World::laser_hum); }
+
+	state_function = state_function();
+
+	if (m_rate.just_started() && m_firing.is_complete()) {
+		map.lasers.push_back(world::Laser{svc, map, get_world_position() + constants::f_cell_vec.componentWiseMul(m_direction.as_vector()), world::LaserType::turret, attributes, m_direction, m_duration, 64, 0.75f});
+		m_firing.start();
+	}
 }
 
 void Turret::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
 	Animatable::set_position(get_global_center() - cam);
+	Animatable::set_origin({});
 	Entity::render(win, cam, size);
 	if (m_editor) { return; }
+	Animatable::center();
 	win.draw(*this);
+}
+
+fsm::StateFunction Turret::update_off() {
+	m_state.actual = TurretState::off;
+	if (m_rate.is_almost_complete()) { request(TurretState::charging); }
+	if (change_state(TurretState::charging, "charging")) { return TURRET_BIND(update_charging); }
+	if (change_state(TurretState::firing, "firing")) { return TURRET_BIND(update_firing); }
+	return TURRET_BIND(update_off);
+}
+
+fsm::StateFunction Turret::update_charging() {
+	m_state.actual = TurretState::charging;
+	if (animation.is_complete()) {
+		m_rate.start();
+		request(TurretState::firing);
+	}
+	if (change_state(TurretState::firing, "firing")) { return TURRET_BIND(update_firing); }
+	return TURRET_BIND(update_charging);
+}
+
+fsm::StateFunction Turret::update_firing() {
+	m_state.actual = TurretState::firing;
+	if (m_pattern == TurretPattern::constant) { m_firing.start(); }
+	if (m_firing.is_almost_complete()) { request(TurretState::cooling_down); }
+	if (change_state(TurretState::cooling_down, "cooling_down")) { return TURRET_BIND(update_cooling_down); }
+	return TURRET_BIND(update_firing);
+}
+
+fsm::StateFunction Turret::update_cooling_down() {
+	m_state.actual = TurretState::cooling_down;
+	if (animation.is_complete()) { request(TurretState::off); }
+	if (change_state(TurretState::off, "off")) { return TURRET_BIND(update_off); }
+	return TURRET_BIND(update_cooling_down);
+}
+
+bool Turret::change_state(TurretState next, std::string_view tag) {
+	if (m_state.desired == next) {
+		set_animation(tag);
+		return true;
+	}
+	return false;
 }
 
 } // namespace fornani

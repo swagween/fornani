@@ -1,8 +1,8 @@
 {
 	"hit_flash": {
-		"frame_count": 5,
-		"framerate": 12,
-		"dimensions": [ 32, 32 ],
+		"frame_count": 4,
+		"framerate": 16,
+		"dimensions": [ 16, 16 ],
 		"x_reflection": true,
 		"y_reflection": true
 	},
@@ -20,6 +20,13 @@
 		"frame_count": 4,
 		"framerate": 16,
 		"dimensions": [ 16, 16 ]
+	},
+	"laser_hit": {
+		"frame_count": 4,
+		"framerate": 16,
+		"dimensions": [ 16, 16 ],
+		"x_reflection": true,
+		"y_reflection": true
 	},
 	"walljump": {
 		"frame_count": 4,

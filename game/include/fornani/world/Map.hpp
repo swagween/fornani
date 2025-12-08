@@ -33,6 +33,7 @@
 #include <fornani/world/Breakable.hpp>
 #include <fornani/world/Checkpoint.hpp>
 #include <fornani/world/Destructible.hpp>
+#include <fornani/world/Incinerite.hpp>
 #include <fornani/world/Layer.hpp>
 #include <fornani/world/Platform.hpp>
 #include <fornani/world/Pushable.hpp>
@@ -108,6 +109,10 @@ class Map {
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc) const;
+	void register_collider(shape::Collider* collider);
+	void register_collider(shape::CircleCollider* collider);
+	void unregister_collider(shape::Collider* collider);
+	void unregister_collider(shape::CircleCollider* collider);
 	bool check_cell_collision(shape::Collider& collider, bool foreground = false);
 	bool check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	sf::Vector2i get_circle_collision_result(shape::CircleCollider& collider, bool collide_with_platforms = true);
@@ -192,6 +197,7 @@ class Map {
 	std::vector<std::unique_ptr<SwitchButton>> switch_buttons{};
 	std::vector<SwitchBlock> switch_blocks{};
 	std::vector<Destructible> destructibles{};
+	std::vector<Incinerite> incinerite_blocks{};
 	std::vector<Checkpoint> checkpoints{};
 	std::vector<TimerBlock> timer_blocks{};
 	std::vector<EnemySpawn> enemy_spawns{};
@@ -245,6 +251,9 @@ class Map {
 	MapAttributes m_attributes{};
 	util::BitFlags<LayerProperties> m_layer_properties{};
 	std::optional<EntitySet> m_entities{};
+
+	std::vector<shape::Collider*> m_colliders{};
+	std::vector<std::vector<std::list<shape::Collider>::iterator>> m_collider_iterators{};
 
 	std::optional<Palette> m_palette{};
 	int abyss_distance{512};

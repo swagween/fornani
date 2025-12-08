@@ -1,4 +1,4 @@
 {
-  "region": "junkyard",
-  "room": "lot.json"
+  "region": "config",
+  "room": "collision_test.json"
 }

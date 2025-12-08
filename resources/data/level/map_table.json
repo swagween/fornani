@@ -2,6 +2,12 @@
   "rooms": [
     {
       "folder": "config",
+      "label": "collision_test.json",
+      "region": "firstwind",
+      "room_id": 999886
+    },
+    {
+      "folder": "config",
       "label": "new_file.json",
       "region": "firstwind",
       "room_id": 1
@@ -173,6 +179,12 @@
       "label": "bridge.json",
       "region": "greatwing",
       "room_id": 601
+    },
+    {
+      "folder": "junkyard",
+      "label": "hazard.json",
+      "region": "junkyard",
+      "room_id": 702
     },
     {
       "folder": "junkyard",
