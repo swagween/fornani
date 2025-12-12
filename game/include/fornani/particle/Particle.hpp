@@ -4,7 +4,7 @@
 #include <optional>
 #include <string_view>
 #include "fornani/entities/animation/Animation.hpp"
-#include "fornani/utils/CircleCollider.hpp"
+#include "fornani/physics/CircleCollider.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Fader.hpp"
 

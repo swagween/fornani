@@ -10,15 +10,13 @@ namespace fornani::entity {
 
 enum class HPState { hit };
 
-constexpr auto default_max{8.f};
 constexpr auto critical_threshold{0.34f};
 
-class Health final : public Entity {
+class Health final {
   public:
-	Health() = default;
 	Health(float max) : max_hp{max}, hp{max} {}
 	void update();
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
+
 	[[nodiscard]] auto get_i_hp() const -> int { return static_cast<int>(hp); }
 	[[nodiscard]] auto get_hp() const -> float { return hp; }
 	[[nodiscard]] auto get_i_max() const -> float { return static_cast<int>(max_hp); }
@@ -40,6 +38,7 @@ class Health final : public Entity {
 	void inflict(float amount, bool force = false);
 	void increase_max_hp(float amount);
 	void reset();
+	void kill();
 
 	void debug();
 
@@ -51,8 +50,8 @@ class Health final : public Entity {
 
   private:
 	float hp_limit{24.f};
-	float max_hp{default_max};
-	float hp{default_max};
+	float max_hp;
+	float hp;
 	util::Counter taken{};
 	int invincibility_time{};
 };

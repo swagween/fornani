@@ -273,9 +273,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		auto normalized = sf::Vector2f{(puv.x - 0.5f) * aspect + 0.5f, puv.y};
 		auto ppl = PointLight(svc.data.light["lantern"], puv);
 		ppl.position = normalized;
-		if (player->has_item_equipped(svc.data.item_id_from_label("lantern"))) {
-			m_world_shader->add_point_light(ppl);
-		}
+		if (player->has_item_equipped(svc.data.item_id_from_label("lantern"))) { m_world_shader->add_point_light(ppl); }
 		// m_shader->debug();
 	}
 

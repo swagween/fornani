@@ -1,10 +1,7 @@
 nani_add_headers(
         AdjacencyList.hpp
         BitFlags.hpp
-        CircleCollider.hpp
         Circuit.hpp
-        Collider.hpp
-        CollisionDepth.hpp
         Constants.hpp
         Cooldown.hpp
         ColorUtils.hpp
@@ -20,7 +17,6 @@ nani_add_headers(
         QuestCode.hpp
         Random.hpp
         RichText.hpp
-        Shape.hpp
         Shipment.hpp
         StateFlag.hpp
         StateFunction.hpp

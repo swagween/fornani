@@ -3,7 +3,7 @@
 #include <fornani/entities/player/PlayerController.hpp>
 #include <fornani/entities/player/abilities/Walljump.hpp>
 #include <fornani/service/ServiceProvider.hpp>
-#include <fornani/utils/Collider.hpp>
+#include <fornani/physics/Collider.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani::player {

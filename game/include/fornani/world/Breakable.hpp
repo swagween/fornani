@@ -1,6 +1,10 @@
+
 #pragma once
+
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/Collider.hpp"
+#include <fornani/entities/packages/Health.hpp>
+#include <fornani/graphics/Animatable.hpp>
+#include <fornani/physics/RegisteredCollider.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -16,32 +20,34 @@ class Projectile;
 
 namespace fornani::world {
 
+class Map;
+
 enum class BreakableAttributes { bulletproof };
 
-class Breakable {
+class Breakable : public Animatable {
   public:
-	Breakable(automa::ServiceProvider& svc, sf::Vector2f position, int chunk_id, int style = 0, int state = 4);
-	void update(automa::ServiceProvider& svc, player::Player& player);
+	Breakable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position);
+	void update(automa::ServiceProvider& svc, Map& map, player::Player& player);
 	void handle_collision(shape::Collider& other) const;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
-	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, int power = 1);
-	void on_smash(automa::ServiceProvider& svc, world::Map& map, int power = 1);
-	void destroy() { state = 0; }
-	shape::Shape& get_bounding_box() { return collider.bounding_box; }
-	shape::Shape& get_hurtbox() { return collider.hurtbox; }
-	[[nodiscard]] auto destroyed() const -> bool { return state <= 1; }
-	[[nodiscard]] auto get_chunk_id() const -> int { return m_chunk_id; }
-	shape::Collider collider{};
+	void on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile& proj, int power = 1);
+	void on_smash(automa::ServiceProvider& svc, Map& map, int power = 1);
+	void destroy() { m_health.kill(); }
+
+	shape::Shape& get_bounding_box() { return m_collider.get()->bounding_box; }
+	shape::Shape& get_hurtbox() { return m_collider.get()->hurtbox; }
+	shape::Collider& get_collider() { return *m_collider.get(); }
+
+	[[nodiscard]] auto is_destroyed() const -> bool { return m_health.is_dead(); }
 
   private:
+	shape::RegisteredCollider m_collider;
 	util::BitFlags<BreakableAttributes> attributes{};
-	sf::Sprite sprite;
-	int style{};
-	int state{};
-	int m_chunk_id{};
+	entity::Health m_health;
 	float energy{};
 	float dampen{0.1f};
 	float hit_energy{8.f};
 	sf::Vector2f random_offset{};
 };
+
 } // namespace fornani::world

@@ -230,19 +230,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
 				if (ImGui::BeginTabItem("General")) {
-					ImGui::Text("World");
-					if (map) {
-						ImGui::Text("Transition State: %s", map->get().transition.as_string().c_str());
-						ImGui::Text("Transition Cooldown: %.5f", map->get().transition.get_cooldown());
-						ImGui::SeparatorText("Entities");
-						ImGui::Text("Active Loot: %i", map->get().active_loot.size());
-						ImGui::Indent();
-						for (auto& loot : map->get().active_loot) { ImGui::Text("Loot Size: %i", loot.get_size()); }
-						ImGui::Text("Active Projectiles: %i", map->get().active_projectiles.size());
-						ImGui::Text("Active Emitters: %i", map->get().active_emitters.size());
-					}
-					ImGui::Text("Save Point ID: %i", services.state_controller.save_point_id);
-					ImGui::Separator();
 					if (ImGui::Button("Exit to Main Menu")) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player)); }
 					ImGui::Text("In Game? %s", services.in_game() ? "Yes" : "No");
 					ImGui::Text("debug mode: %s", services.debug_mode() ? "Enabled" : "Disabled");
@@ -285,6 +272,30 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Active Projectiles: %i", services.map_debug.active_projectiles);
 					ImGui::Separator();
 
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("World")) {
+					if (map) {
+						ImGui::Text("Transition State: %s", map->get().transition.as_string().c_str());
+						ImGui::Text("Transition Cooldown: %.5f", map->get().transition.get_cooldown());
+						ImGui::SeparatorText("Entities");
+						ImGui::Text("Active Loot: %i", map->get().active_loot.size());
+						ImGui::Indent();
+						for (auto& loot : map->get().active_loot) { ImGui::Text("Loot Size: %i", loot.get_size()); }
+						ImGui::Text("Active Projectiles: %i", map->get().active_projectiles.size());
+						ImGui::Text("Active Emitters: %i", map->get().active_emitters.size());
+						ImGui::Separator();
+						ImGui::Text("Collision calculations: %i", map->get().num_collision_checks);
+					}
+					ImGui::Separator();
+					ImGui::Text("Calculated chunks for player:");
+					for (auto const& chunk : player.collider.print_chunks()) {
+						ImGui::SameLine();
+						ImGui::Text("[%s]", chunk);
+					}
+					ImGui::Separator();
+					ImGui::Text("Save Point ID: %i", services.state_controller.save_point_id);
+					ImGui::Separator();
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Data")) {

@@ -72,7 +72,7 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 
 	if (player.collider.bounding_box.overlaps(m_vertical_range) && has_been_alerted()) { request(TankState::shoot_vertical); }
 	for (auto& breakable : map.breakables) {
-		if (Enemy::collider.jumpbox.overlaps(breakable.get_bounding_box())) { breakable.on_smash(svc, map, 4); }
+		if (Enemy::collider.jumpbox.overlaps(breakable->get_bounding_box())) { breakable->on_smash(svc, map, 4); }
 	}
 	if (player.collider.bounding_box.overlaps(m_shoulders)) {
 		request(TankState::jumpsquat);

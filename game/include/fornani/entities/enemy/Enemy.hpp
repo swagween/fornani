@@ -133,7 +133,7 @@ class Enemy : public Mobile {
 	void shake() { energy = hit_energy; }
 	void stop_shaking() { flags.state.reset(StateFlags::shaking); }
 
-	entity::Health health{};
+	entity::Health health;
 	graphics::Indicator health_indicator;
 
 	void debug();

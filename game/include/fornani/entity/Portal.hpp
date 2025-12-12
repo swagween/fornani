@@ -5,7 +5,7 @@
 #include <fornani/graphics/Transition.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/IWorldPositionable.hpp>
-#include <fornani/utils/Shape.hpp>
+#include <fornani/physics/Shape.hpp>
 
 namespace fornani {
 

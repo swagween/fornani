@@ -1,5 +1,5 @@
 
-#include "fornani/utils/Collider.hpp"
+#include "fornani/physics/Collider.hpp"
 #include <ccmath/math/power/sqrt.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
@@ -7,16 +7,14 @@
 
 namespace fornani::shape {
 
-constexpr auto vicinity_pad_v = 33.f;
-
-Collider::Collider() {
+Collider::Collider() : ICollider{{default_dim, default_dim}} {
 	dimensions = sf::Vector2f{default_dim, default_dim};
 	jumpbox.set_dimensions(sf::Vector2f(dimensions.x, default_jumpbox_height));
 	hurtbox.set_dimensions(sf::Vector2f(dimensions.x - 8.f, dimensions.y - 8.f));
 	sync_components();
 }
 
-Collider::Collider(sf::Vector2f dim, sf::Vector2f hbx_offset) : dimensions(dim), hurtbox_offset(hbx_offset) {
+Collider::Collider(sf::Vector2f dim, sf::Vector2f hbx_offset) : ICollider{dim}, dimensions(dim), hurtbox_offset(hbx_offset) {
 	bounding_box.set_dimensions(dim);
 	jumpbox.set_dimensions(sf::Vector2f(dim.x, default_jumpbox_height));
 	hurtbox.set_dimensions(sf::Vector2f(dim.x - 8.f, dim.y - 8.f + hurtbox_offset.y));
@@ -280,6 +278,10 @@ void Collider::resolve_depths() {
 	physics.position.y += depth_diff.y;
 }
 
+void Collider::handle_collision(ICollider& other) {
+	if (!other.has_attribute(ColliderAttributes::fixed)) { other.handle_collider_collision(*this); }
+}
+
 bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::Vector2f velocity) {
 	auto ret{false};
 	if (soft) {
@@ -364,7 +366,7 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 
 void Collider::handle_collider_collision(Collider const& collider, bool soft, bool momentum) {
 	if (!vicinity.overlaps(collider.bounding_box)) { return; }
-	if (collider.flags.general.test(General::top_only_collision)) {
+	if (collider.has_attribute(ColliderAttributes::top_only)) {
 		if (jumpbox.get_position().y > collider.physics.position.y + 4.f || physics.acceleration.y < 0.0f) { return; }
 	}
 	if (handle_collider_collision(collider.bounding_box, soft, collider.physics.apparent_velocity() * 2.f)) {
@@ -374,10 +376,13 @@ void Collider::handle_collider_collision(Collider const& collider, bool soft, bo
 }
 
 void Collider::update(automa::ServiceProvider& svc, bool simple) {
+	ICollider::update(svc, simple);
 	if (!on_ramp()) { acceleration_multiplier = 1.f; }
 	flags.external_state = {};
 	adjust_acceleration();
-	if (!flags.general.test(General::no_move)) { simple ? physics.simple_update() : physics.update(svc); }
+	if (!has_attribute(ColliderAttributes::fixed)) {
+		if (!flags.general.test(General::no_move)) { simple ? physics.simple_update() : physics.update(svc); }
+	}
 	sync_components();
 	flags.state.reset(State::just_collided);
 	physics.gravity = flags.state.test(State::grounded) ? 0.0f : stats.GRAV;
@@ -385,7 +390,7 @@ void Collider::update(automa::ServiceProvider& svc, bool simple) {
 }
 
 void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
-
+	ICollider::render(win, cam);
 	// draw predictive vertical
 	box.setSize(predictive_vertical.get_dimensions());
 	box.setPosition(predictive_vertical.get_position() - cam);
@@ -478,8 +483,6 @@ void Collider::reset_ground_flags() {
 		flags.state.reset(State::grounded);
 	}
 }
-
-void Collider::set_top_only() { flags.general.set(General::top_only_collision); }
 
 void Collider::adjust_acceleration() {
 	physics.multiply_acceleration(acceleration_multiplier, {1.f, 0.f});

@@ -162,9 +162,9 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		}
 	}
 	for (auto& breakable : map.breakables) {
-		if (Enemy::collider.jumpbox.overlaps(breakable.get_bounding_box())) { breakable.on_smash(svc, map, 4); }
-		if (is(MinigusState::rush) && attacks.rush.hit.within_bounds(breakable.get_bounding_box())) {
-			if (svc.ticker.every_x_ticks(18)) { breakable.on_smash(svc, map, 1); }
+		if (Enemy::collider.jumpbox.overlaps(breakable->get_bounding_box())) { breakable->on_smash(svc, map, 4); }
+		if (is(MinigusState::rush) && attacks.rush.hit.within_bounds(breakable->get_bounding_box())) {
+			if (svc.ticker.every_x_ticks(18)) { breakable->on_smash(svc, map, 1); }
 		}
 	}
 

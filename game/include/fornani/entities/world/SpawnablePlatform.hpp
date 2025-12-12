@@ -4,7 +4,7 @@
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/particle/Gravitator.hpp"
-#include "fornani/utils/Collider.hpp"
+#include "fornani/physics/Collider.hpp"
 #include "fornani/utils/StateFunction.hpp"
 #define SPAWNABLE_PLAT_BIND(f) std::bind(&SpawnablePlatform::f, this)
 
@@ -20,7 +20,7 @@ enum class SpawnablePlatformState { open, opening, fading, closing, dormant };
 class SpawnablePlatform {
   public:
 	SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2f position, int index = 0);
-	SpawnablePlatform(SpawnablePlatform const& other) : sprite(other.sprite), index(other.index) {}
+	SpawnablePlatform(SpawnablePlatform const& other) : sprite(other.sprite), index(other.index), m_health{1.f} {}
 
 	void update(automa::ServiceProvider& svc, player::Player& player, sf::Vector2f target);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
@@ -44,6 +44,6 @@ class SpawnablePlatform {
 	vfx::Gravitator gravitator{};
 	components::CircleSensor sensor{};
 	anim::AnimatedSprite sprite;
-	Health health{};
+	Health m_health;
 };
 } // namespace fornani::entity

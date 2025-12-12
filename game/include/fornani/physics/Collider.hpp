@@ -3,9 +3,10 @@
 
 #include <fornani/components/PhysicsComponent.hpp>
 #include <fornani/io/Logger.hpp>
+#include <fornani/physics/CollisionDepth.hpp>
+#include <fornani/physics/ICollider.hpp>
+#include <fornani/physics/Shape.hpp>
 #include <fornani/utils/BitFlags.hpp>
-#include <fornani/utils/CollisionDepth.hpp>
-#include <fornani/utils/Shape.hpp>
 #include <fornani/world/Tile.hpp>
 #include <optional>
 
@@ -21,7 +22,7 @@ constexpr auto default_jumpbox_height = 4.0f;
 constexpr auto default_detector_width = 4.f;
 constexpr auto default_detector_height = 18.f;
 
-enum class General { ignore_resolution, complex, pushable, soft, top_only_collision, no_move };
+enum class General { ignore_resolution, complex, pushable, soft, no_move };
 enum class Animation { just_landed, sliding };
 enum class State {
 	just_collided,
@@ -63,29 +64,29 @@ struct PhysicsStats {
 	float GRAV{0.002f};
 };
 
-class Collider {
+class Collider : public ICollider {
 
   public:
 	Collider();
 	explicit Collider(sf::Vector2f dim, sf::Vector2f hbx_offset = {});
 
 	void sync_components();
-	void handle_map_collision(world::Tile const& tile);
-	void detect_map_collision(world::Map& map);
+	void handle_map_collision(world::Tile const& tile) override;
+	void detect_map_collision(world::Map& map) override;
 	void correct_x(sf::Vector2f mtv, bool has_velocity = false);
 	void correct_y(sf::Vector2f mtv);
 	void correct_x_y(sf::Vector2f mtv);
 	void correct_corner(sf::Vector2f mtv);
 	void resolve_depths();
-	bool handle_collider_collision(Shape const& collider, bool soft = false, sf::Vector2f velocity = {}); // returns true if grounded on collider
-	void handle_collider_collision(Collider const& collider, bool soft = false, bool momentum = false);
-	void update(automa::ServiceProvider& svc, bool simple = false);
-	void render(sf::RenderWindow& win, sf::Vector2f cam);
+	void handle_collision(ICollider& other);
+	bool handle_collider_collision(Shape const& collider, bool soft = false, sf::Vector2f velocity = {}) override; // returns true if grounded on collider
+	void handle_collider_collision(Collider const& collider, bool soft = false, bool momentum = false) override;
+	void update(automa::ServiceProvider& svc, bool simple = false) override;
+	void render(sf::RenderWindow& win, sf::Vector2f cam) override;
 	void set_position(sf::Vector2f pos);
 	void set_direction(Direction to) { m_direction = to; }
 	void reset();
 	void reset_ground_flags();
-	void set_top_only();
 	void adjust_acceleration();
 	void fix();
 
@@ -137,7 +138,6 @@ class Collider {
 	Shape vertical{};
 
 	PhysicsStats stats{};
-	components::PhysicsComponent physics{};
 
 	std::optional<util::CollisionDepth> collision_depths{};
 

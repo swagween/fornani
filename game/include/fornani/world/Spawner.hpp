@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "fornani/entities/animation/Animation.hpp"
-#include "fornani/utils/Collider.hpp"
+#include "fornani/physics/Collider.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;

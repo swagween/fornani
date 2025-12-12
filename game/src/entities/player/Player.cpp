@@ -17,7 +17,7 @@ constexpr auto default_invincibility_time_v = 300;
 
 Player::Player(automa::ServiceProvider& svc)
 	: arsenal(svc), m_services(&svc), controller(svc, *this), animation(*this), sprite{svc.assets.get_texture("nani")}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},
-	  m_directions{.desired{LR::left}, .actual{LR::right}}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, collider{player_dimensions_v}, m_sprite_shake{40}, m_hurt_cooldown{64} {
+	  m_directions{.desired{LR::left}, .actual{LR::right}}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, collider{player_dimensions_v}, m_sprite_shake{40}, m_hurt_cooldown{64}, health{3.f} {
 	sprite.setScale(constants::f_scale_vec);
 	svc.data.load_player_params(*this);
 
@@ -50,6 +50,7 @@ Player::Player(automa::ServiceProvider& svc)
 }
 
 void Player::update(world::Map& map) {
+	collider.register_chunks(map);
 	caution.avoid_ledges(map, collider, controller.direction, 8);
 	if (collider.collision_depths) { collider.collision_depths.value().reset(); }
 	collider.set_direction(Direction{m_directions.actual});

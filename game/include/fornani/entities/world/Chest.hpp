@@ -5,7 +5,7 @@
 #include "fornani/entities/item/Item.hpp"
 #include "fornani/graphics/Animatable.hpp"
 #include "fornani/particle/Sparkler.hpp"
-#include "fornani/utils/CircleCollider.hpp"
+#include "fornani/physics/CircleCollider.hpp"
 
 #include <optional>
 

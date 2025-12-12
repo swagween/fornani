@@ -3,7 +3,7 @@
 #include <string_view>
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/io/Logger.hpp"
-#include "fornani/utils/Collider.hpp"
+#include "fornani/physics/Collider.hpp"
 #include "fornani/utils/Counter.hpp"
 
 namespace fornani::automa {

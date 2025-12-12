@@ -4,7 +4,7 @@
 #include <fornani/entity/Entity.hpp>
 #include <fornani/story/Quest.hpp>
 #include <fornani/utils/BitFlags.hpp>
-#include <fornani/utils/Shape.hpp>
+#include <fornani/physics/Shape.hpp>
 
 namespace fornani {
 

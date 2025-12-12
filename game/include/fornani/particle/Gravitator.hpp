@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "fornani/utils/Collider.hpp"
+#include "fornani/physics/Collider.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
 
 namespace fornani::automa {

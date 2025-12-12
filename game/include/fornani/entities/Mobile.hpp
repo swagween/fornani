@@ -2,7 +2,7 @@
 #pragma once
 
 #include <fornani/graphics/Animatable.hpp>
-#include <fornani/utils/Collider.hpp>
+#include <fornani/physics/Collider.hpp>
 #include <fornani/utils/Direction.hpp>
 
 namespace fornani {

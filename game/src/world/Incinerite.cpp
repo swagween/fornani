@@ -9,21 +9,22 @@
 
 namespace fornani::world {
 
-Incinerite::Incinerite(automa::ServiceProvider& svc, sf::Vector2f position, int chunk_id) : Animatable(svc, "incinerite", {16, 16}), m_chunk_id{chunk_id}, health{40.f}, hit_energy{2.99f} {
-	collider = shape::Collider({32.f, 32.f});
-	collider.physics.position = position;
+Incinerite::Incinerite(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int chunk_id)
+	: Animatable(svc, "incinerite", {16, 16}), m_chunk_id{chunk_id}, health{40.f}, hit_energy{2.99f}, m_map{&map}, m_collider{map, {32.f, 32.f}} {
+	m_collider.get()->physics.position = position;
 	set_parameters({0, 3, 24, -1});
 	push_animation("default", {0, 1, 24, -1});
 	push_animation("shine", {1, 6, 24, 0});
+	m_collider.get()->set_attribute(shape::ColliderAttributes::fixed);
 }
 
 void Incinerite::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
-	collider.sync_components();
+	m_collider.get()->sync_components();
 	if (is_destroyed()) {
 		svc.ticker.freeze_frame(2);
 		svc.soundboard.flags.world.set(audio::World::incinerite_explosion);
-		map.active_emitters.push_back(vfx::Emitter(svc, collider.physics.position, collider.dimensions, "incinerite", colors::nani_white));
-		map.spawn_effect(svc, "small_explosion", collider.get_center(), {}, 3);
+		map.active_emitters.push_back(vfx::Emitter(svc, m_collider.get()->physics.position, m_collider.get()->dimensions, "incinerite", colors::nani_white));
+		map.spawn_effect(svc, "small_explosion", m_collider.get()->get_center(), {}, 3);
 		return;
 	}
 	tick();
@@ -38,14 +39,14 @@ void Incinerite::update(automa::ServiceProvider& svc, Map& map, player::Player& 
 
 void Incinerite::handle_collision(shape::Collider& other) const {
 	if (is_destroyed()) { return; }
-	other.handle_collider_collision(collider);
+	other.handle_collider_collision(*m_collider.get());
 }
 
 void Incinerite::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (is_destroyed()) { return; }
-	set_position(collider.physics.position - cam + random_offset);
+	set_position(m_collider.get()->physics.position - cam + random_offset);
 	if (svc.greyblock_mode()) {
-		collider.render(win, cam);
+		m_collider.get()->render(win, cam);
 	} else {
 		win.draw(*this);
 	}
@@ -55,10 +56,10 @@ void Incinerite::on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile
 	if (is_destroyed()) { return; }
 	if (proj.transcendent()) { return; }
 	if (proj.reflect()) {
-		proj.get_collider().handle_collision(collider.bounding_box);
+		proj.get_collider().handle_collision(m_collider.get()->bounding_box);
 		return;
 	}
-	if (proj.get_collider().collides_with(collider.bounding_box)) {
+	if (proj.get_collider().collides_with(m_collider.get()->bounding_box)) {
 		if (!proj.destruction_initiated()) {
 			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position()));
 			if (proj.get_direction().lnr == LNR::neutral) { map.effects.back().rotate(); }

@@ -3,7 +3,7 @@
 #include "fornani/entities/Entity.hpp"
 #include "fornani/io/Logger.hpp"
 #include "fornani/particle/Sparkler.hpp"
-#include "fornani/utils/Collider.hpp"
+#include "fornani/physics/Collider.hpp"
 
 #include <optional>
 

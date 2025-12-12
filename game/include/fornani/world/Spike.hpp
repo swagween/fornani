@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <fornani/shader/LightShader.hpp>
 #include <fornani/shader/Palette.hpp>
-#include <fornani/utils/Collider.hpp>
+#include <fornani/physics/Collider.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;

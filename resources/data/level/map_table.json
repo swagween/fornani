@@ -2,6 +2,12 @@
   "rooms": [
     {
       "folder": "config",
+      "label": "chunk_test.json",
+      "region": "firstwind",
+      "room_id": 0
+    },
+    {
+      "folder": "config",
       "label": "collision_test.json",
       "region": "firstwind",
       "room_id": 999886
@@ -33,7 +39,7 @@
     {
       "folder": "config",
       "label": "turret_test.json",
-      "region": "junkyard",
+      "region": "firstwind",
       "room_id": 999876
     },
     {

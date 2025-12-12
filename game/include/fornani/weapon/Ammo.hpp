@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include "fornani/entities/packages/Health.hpp"
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Cooldown.hpp"
+#include <fornani/entities/packages/Health.hpp>
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Cooldown.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -32,7 +32,7 @@ class Ammo {
 
 	util::Cooldown restored{128};
 
-	entity::Health magazine{};
+	entity::Health magazine{1.f};
 
   private:
 	util::BitFlags<AmmoFlags> flags{};

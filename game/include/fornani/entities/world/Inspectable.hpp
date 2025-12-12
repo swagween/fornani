@@ -5,7 +5,7 @@
 #include <fornani/utils/Constants.hpp>
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/utils/IWorldPositionable.hpp"
-#include "fornani/utils/Shape.hpp"
+#include "fornani/physics/Shape.hpp"
 #include <fornani/io/Logger.hpp>
 #include <djson/json.hpp>
 

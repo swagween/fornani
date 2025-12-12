@@ -15,6 +15,7 @@ class Animatable : public Drawable {
 	void set_animation(std::string_view to) { set_parameters(m_animations.at(to.data())); }
 	void set_parameters(anim::Parameters params) { animation.set_params(params); }
 	void set_channel(int to) { m_channel = to; }
+	void set_frame(int to) { animation.set_frame(to); }
 	void set_dimensions(sf::Vector2i const to) { m_dimensions = to; }
 	void tick();
 

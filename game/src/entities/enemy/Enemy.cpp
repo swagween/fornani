@@ -13,7 +13,7 @@ namespace fornani::enemy {
 
 Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
 	: Mobile(svc, "enemy_" + std::string{label}, sf::Vector2i{svc.data.enemy[label]["physical"]["sprite_dimensions"][0].as<int>(), svc.data.enemy[label]["physical"]["sprite_dimensions"][1].as<int>()}), metadata{.variant{variant}},
-	  label(label), health_indicator{svc}, hurt_effect{128}, m_health_bar{svc, colors::mythic_green} {
+	  label(label), health_indicator{svc}, hurt_effect{128}, m_health_bar{svc, colors::mythic_green}, health{svc.data.enemy[label]["attributes"]["base_hp"].as<float>()} {
 
 	if (spawned) { flags.general.set(GeneralFlags::spawned); }
 	directions.actual = Direction{start_direction};
@@ -70,7 +70,6 @@ Enemy::Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned,
 	case 3: sound.hit_flag = audio::Enemy::hit_squeak; break;
 	}
 
-	health.set_max(attributes.base_hp);
 	post_death.start(afterlife);
 
 	if (in_general["mobile"].as_bool()) { flags.general.set(GeneralFlags::mobile); }
@@ -177,12 +176,12 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	health_indicator.update(svc, collider.physics.position);
 
 	if (flags.general.test(GeneralFlags::map_collision)) {
-		for (auto const& it : map.breakable_iterators[map.get_chunk_id_from_position(collider.physics.position)]) { it->handle_collision(collider); }
+		for (auto& breakable : map.breakables) { breakable->handle_collision(collider); }
 		for (auto& pushable : map.pushables) {
-			pushable.handle_collision(collider);
-			if (pushable.get_size() == 1) {
-				pushable.collider.handle_collider_collision(collider.bounding_box);
-				if (secondary_collider) { pushable.collider.handle_collider_collision(secondary_collider->bounding_box); }
+			pushable->handle_collision(collider);
+			if (pushable->get_size() == 1) {
+				pushable->get_collider().handle_collider_collision(collider.bounding_box);
+				if (secondary_collider) { pushable->get_collider().handle_collider_collision(secondary_collider->bounding_box); }
 			}
 		}
 		if (flags.general.test(GeneralFlags::spike_collision)) {

@@ -33,7 +33,7 @@ SwitchButton::SwitchButton(automa::ServiceProvider& svc, sf::Vector2f position, 
 		collider.physics.position.y += 6.f;
 		sprite.set_params("pressed", true);
 		for (auto& block : map.switch_blocks) {
-			if (block.get_id() == id && pressed()) { block.turn_off(); }
+			if (block->get_id() == id && pressed()) { block->turn_off(); }
 		}
 	}
 }
@@ -43,7 +43,7 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 	sprite.update(collider.physics.position, static_cast<int>(type), static_cast<int>(state));
 
 	for (auto& block : map.switch_blocks) {
-		if (block.get_id() == id) { pressed() ? block.turn_off() : block.turn_on(); }
+		if (block->get_id() == id) { pressed() ? block->turn_off() : block->turn_on(); }
 	}
 
 	// type-specific stuff
@@ -58,7 +58,7 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 
 	// assume unpressed, then check everything for a press
 	if (type != SwitchType::permanent) { state = SwitchButtonState::unpressed; }
-	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable.get_bounding_box()); }
+	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable->get_bounding_box()); }
 	for (auto& platform : map.platforms) {
 		if (platform.bounding_box.overlaps(sensor)) { state = SwitchButtonState::pressed; }
 	}
@@ -66,7 +66,7 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 		if (chest.get_collider().collides_with(sensor)) { state = SwitchButtonState::pressed; }
 	}
 	for (auto& pushable : map.pushables) {
-		if (pushable.collider.jumpbox.overlaps(sensor)) { state = SwitchButtonState::pressed; }
+		if (pushable->get_collider().jumpbox.overlaps(sensor)) { state = SwitchButtonState::pressed; }
 	}
 	if (player.collider.jumpbox.overlaps(sensor)) { state = SwitchButtonState::pressed; }
 

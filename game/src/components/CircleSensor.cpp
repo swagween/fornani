@@ -2,7 +2,7 @@
 #include "fornani/utils/Math.hpp"
 
 #include <ccmath/ext/clamp.hpp>
-#include <fornani/utils/CircleCollider.hpp>
+#include <fornani/physics/CircleCollider.hpp>
 
 namespace fornani::components {
 

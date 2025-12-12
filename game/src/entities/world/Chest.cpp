@@ -33,14 +33,14 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 	if (collider.collided() && std::abs(collider.physics.apparent_velocity().y) > 0.05f) { svc.soundboard.flags.world.set(audio::World::clink); }
 	map.handle_cell_collision(collider);
 	map.handle_breakable_collision(collider);
-	for (auto& pushable : map.pushables) { collider.handle_collision(pushable.collider.bounding_box); }
+	for (auto& pushable : map.pushables) { collider.handle_collision(pushable->get_collider().bounding_box); }
 	for (auto& platform : map.platforms) { collider.handle_collision(platform.bounding_box); }
 	for (auto& destructible : map.destructibles) {
 		if (!destructible.ignore_updates()) { collider.handle_collision(destructible.get_bounding_box()); }
 	}
 	for (auto& button : map.switch_buttons) { collider.handle_collision(button->collider.bounding_box); }
 	for (auto& block : map.switch_blocks) {
-		if (block.on()) { collider.handle_collision(block.collider.bounding_box); }
+		if (block->on()) { collider.handle_collision(block->get_bounding_box()); }
 	}
 	collider.physics.acceleration = {};
 	state.reset(ChestState::activated);

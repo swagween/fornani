@@ -94,13 +94,13 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	// map changes
 
 	// platform changes
-	for (auto& breakable : map.breakables) { handle_collider_collision(breakable.get_hurtbox()); }
+	for (auto& breakable : map.breakables) { handle_collider_collision(breakable->get_hurtbox()); }
 	for (auto& pushable : map.pushables) {
 		// platform should reverse direction upon hitting the sides or top of a pushable
-		if (!pushable.collider.jumpbox.overlaps(bounding_box)) { handle_collider_collision(pushable.get_hurtbox()); }
+		if (!pushable->get_collider().jumpbox.overlaps(bounding_box)) { handle_collider_collision(pushable->get_hurtbox()); }
 	}
 	for (auto& block : map.switch_blocks) {
-		if (block.on()) { handle_collider_collision(block.get_hurtbox()); }
+		if (block->on()) { handle_collider_collision(block->get_hurtbox()); }
 	}
 	// handle platform collisions
 	if (!switch_up.running()) {

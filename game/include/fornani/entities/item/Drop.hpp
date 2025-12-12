@@ -7,7 +7,7 @@
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Sparkler.hpp>
-#include <fornani/utils/CircleCollider.hpp>
+#include <fornani/physics/CircleCollider.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/StateFunction.hpp>
 #define DROP_BIND(f) std::bind(&Drop::f, this)

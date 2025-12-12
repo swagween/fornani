@@ -6,7 +6,7 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/IWorldPositionable.hpp>
 #include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Collider.hpp"
+#include "fornani/physics/Collider.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;

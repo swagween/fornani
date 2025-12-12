@@ -18,8 +18,8 @@
 #include "fornani/gui/WardrobeWidget.hpp"
 #include "fornani/io/Logger.hpp"
 #include "fornani/particle/Gravitator.hpp"
+#include "fornani/physics/Collider.hpp"
 #include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Collider.hpp"
 #include "fornani/utils/QuestCode.hpp"
 #include "fornani/weapon/Hotbar.hpp"
 #include "fornani/world/Camera.hpp"
@@ -213,7 +213,7 @@ class Player {
 	shape::Shape hurtbox{};
 	shape::Shape distant_vicinity{};
 	PlayerAnimation animation;
-	entity::Health health{};
+	entity::Health health;
 	Wallet wallet{};
 	graphics::Indicator health_indicator;
 	graphics::Indicator orb_indicator;

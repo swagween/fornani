@@ -1,14 +1,15 @@
 
-#include "fornani/utils/CircleCollider.hpp"
+#include "fornani/physics/CircleCollider.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 #include "fornani/world/Map.hpp"
 
 namespace fornani::shape {
 
-CircleCollider::CircleCollider(float radius) : sensor{radius} { sensor.bounds.setOrigin({radius, radius}); }
+CircleCollider::CircleCollider(float radius) : ICollider{sf::Vector2f{radius * 3.f, radius * 3.f}}, sensor{radius} { sensor.bounds.setOrigin({radius, radius}); }
 
 void CircleCollider::update(automa::ServiceProvider& svc, bool simple) {
+	ICollider::update(svc, simple);
 	simple ? physics.simple_update() : physics.update(svc);
 	sensor.set_position(physics.position);
 	boundary.first = physics.position - bound;
@@ -42,7 +43,10 @@ void CircleCollider::handle_collision(shape::Shape& shape, bool soft) {
 	sensor.set_position(physics.position);
 }
 
-void CircleCollider::render(sf::RenderWindow& win, sf::Vector2f cam) { sensor.render(win, cam); }
+void CircleCollider::render(sf::RenderWindow& win, sf::Vector2f cam) {
+	ICollider::render(win, cam);
+	sensor.render(win, cam);
+}
 
 auto CircleCollider::get_collision_result(Shape& shape) const -> sf::Vector2i {
 	if (!sensor.within_bounds(shape)) { return {}; }

@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <string_view>
 #include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/utils/Collider.hpp"
+#include "fornani/physics/Collider.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/StateFunction.hpp"
 #define SWITCH_BIND(f) std::bind(&SwitchButton::f, this)

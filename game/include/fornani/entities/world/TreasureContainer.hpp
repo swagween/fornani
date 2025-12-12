@@ -32,7 +32,7 @@ class TreasureContainer : public Animatable {
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	std::unique_ptr<TreasureContainer> clone() const { return std::make_unique<TreasureContainer>(*this); }
-	[[nodiscard]] auto destroyed() const -> bool { return health.is_dead(); }
+	[[nodiscard]] auto destroyed() const -> bool { return m_health.is_dead(); }
 	[[nodiscard]] auto get_index() const -> int { return index; }
 
   private:
@@ -42,7 +42,7 @@ class TreasureContainer : public Animatable {
 	float loot_multiplier{};
 	vfx::Gravitator gravitator{};
 	components::CircleSensor sensor{};
-	Health health{};
+	Health m_health;
 	anim::Parameters m_neutral;
 	anim::Parameters m_shine;
 	TreasureContainerState m_state{};

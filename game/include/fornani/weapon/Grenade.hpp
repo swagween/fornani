@@ -4,7 +4,7 @@
 #include "fornani/components/CircleSensor.hpp"
 #include "fornani/entities/Entity.hpp"
 #include "fornani/entities/animation/Animation.hpp"
-#include "fornani/utils/Collider.hpp"
+#include "fornani/physics/Collider.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Direction.hpp"
 

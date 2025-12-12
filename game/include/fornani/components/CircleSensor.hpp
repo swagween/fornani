@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <fornani/utils/BitFlags.hpp>
-#include <fornani/utils/Shape.hpp>
+#include <fornani/physics/Shape.hpp>
 
 namespace fornani::shape {
 class CircleCollider;

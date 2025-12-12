@@ -3,10 +3,10 @@
 
 #include <SFML/Graphics.hpp>
 #include <fornani/io/Logger.hpp>
+#include <fornani/physics/Shape.hpp>
 #include <fornani/utils/Circuit.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/Direction.hpp>
-#include <fornani/utils/Shape.hpp>
 
 namespace fornani {
 

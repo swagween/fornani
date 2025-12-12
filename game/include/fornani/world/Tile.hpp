@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <fornani/core/Common.hpp>
 #include <fornani/utils/BitFlags.hpp>
-#include <fornani/utils/Shape.hpp>
+#include <fornani/physics/Shape.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;

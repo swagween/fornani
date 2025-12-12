@@ -33,18 +33,15 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 	if (m_direction.left()) { m_hitbox.set_position(m_spawn_point - sf::Vector2f{m_hitbox.get_dimensions().x - constants::f_cell_size, constants::f_cell_size * (1.f - m_size) * sign}); }
 	if (m_direction.up()) { m_hitbox.set_position(m_spawn_point - sf::Vector2f{constants::f_cell_size * (1.f - m_size) * sign, m_hitbox.get_dimensions().y - constants::f_cell_size}); }
 
-	auto start_chunk = map.get_chunk_id_from_position(m_spawn_point);
-	auto end_chunk = map.get_chunk_id_from_position(calculate_end_point());
-	for (auto const& it : map.breakable_iterators[start_chunk]) { handle_collision(it->get_bounding_box(), size); }
-	if (end_chunk != start_chunk) {
-		for (auto const& it : map.breakable_iterators[start_chunk]) { handle_collision(it->get_bounding_box(), size); }
-	}
-	for (auto& p : map.pushables) { handle_collision(p.collision_box, size); }
+	for (auto& b : map.breakables) { handle_collision(b->get_bounding_box(), size); }
+	for (auto& p : map.pushables) { handle_collision(p->collision_box, size); }
 	for (auto& p : map.platforms) { handle_collision(p.bounding_box, size); }
-	for (auto& b : map.switch_blocks) { handle_collision(b.collider.bounding_box, size); }
-	for (auto& i : map.incinerite_blocks) { handle_collision(i.get_bounding_box(), size); }
+	for (auto& b : map.switch_blocks) {
+		if (b->on()) { handle_collision(b->get_bounding_box(), size); }
+	}
+	for (auto& i : map.incinerite_blocks) { handle_collision(i->get_bounding_box(), size); }
 	for (auto& i : map.incinerite_blocks) {
-		if (m_hitbox.overlaps(i.get_bounding_box())) { i.hit(); }
+		if (m_hitbox.overlaps(i->get_bounding_box())) { i->hit(); }
 	}
 
 	// calculate laser end and spawn an effect there

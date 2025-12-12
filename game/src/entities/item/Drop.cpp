@@ -100,10 +100,10 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	collider.handle_map_collision(map);
 	map.handle_cell_collision(collider);
 	map.handle_breakable_collision(collider);
-	for (auto& pushable : map.pushables) { collider.handle_collision(pushable.get_bounding_box(), true); }
+	for (auto& pushable : map.pushables) { collider.handle_collision(pushable->get_bounding_box(), true); }
 	for (auto& platform : map.platforms) { collider.handle_collision(platform.bounding_box, true); }
 	for (auto& block : map.switch_blocks) {
-		if (block.on()) { collider.handle_collision(block.get_bounding_box()); }
+		if (block->on()) { collider.handle_collision(block->get_bounding_box()); }
 	}
 	for (auto& destructible : map.destructibles) {
 		if (!destructible.ignore_updates()) { collider.handle_collision(destructible.get_bounding_box()); }

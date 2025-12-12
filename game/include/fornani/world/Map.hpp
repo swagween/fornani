@@ -21,12 +21,12 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Effect.hpp>
 #include <fornani/particle/Emitter.hpp>
+#include <fornani/physics/CircleCollider.hpp>
+#include <fornani/physics/Shape.hpp>
 #include <fornani/shader/LightShader.hpp>
 #include <fornani/shader/Palette.hpp>
 #include <fornani/story/CutsceneCatalog.hpp>
-#include <fornani/utils/CircleCollider.hpp>
 #include <fornani/utils/Constants.hpp>
-#include <fornani/utils/Shape.hpp>
 #include <fornani/utils/Stopwatch.hpp>
 #include <fornani/weapon/Grenade.hpp>
 #include <fornani/weapon/Projectile.hpp>
@@ -109,10 +109,9 @@ class Map {
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc) const;
-	void register_collider(shape::Collider* collider);
-	void register_collider(shape::CircleCollider* collider);
-	void unregister_collider(shape::Collider* collider);
-	void unregister_collider(shape::CircleCollider* collider);
+	void register_collider(std::unique_ptr<shape::ICollider> collider);
+	void unregister_collider(shape::ICollider* collider);
+	void refresh_collider_chunks(Register<int> const& old_chunks, Register<int> const& new_chunks, shape::ICollider* ptr);
 	bool check_cell_collision(shape::Collider& collider, bool foreground = false);
 	bool check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	sf::Vector2i get_circle_collision_result(shape::CircleCollider& collider, bool collide_with_platforms = true);
@@ -188,16 +187,15 @@ class Map {
 	// std::vector<std::unique_ptr<npc::NPC>> npcs{};
 	std::vector<Platform> platforms{};
 
-	std::list<Breakable> breakables{};
-	std::vector<std::vector<std::list<Breakable>::iterator>> breakable_iterators{};
-	std::vector<Pushable> pushables{};
+	std::vector<std::unique_ptr<Breakable>> breakables{};
+	std::vector<std::unique_ptr<Pushable>> pushables{};
 
 	std::vector<Spawner> spawners{};
 	std::vector<Spike> spikes{};
 	std::vector<std::unique_ptr<SwitchButton>> switch_buttons{};
-	std::vector<SwitchBlock> switch_blocks{};
+	std::vector<std::unique_ptr<SwitchBlock>> switch_blocks{};
 	std::vector<Destructible> destructibles{};
-	std::vector<Incinerite> incinerite_blocks{};
+	std::vector<std::unique_ptr<Incinerite>> incinerite_blocks{};
 	std::vector<Checkpoint> checkpoints{};
 	std::vector<TimerBlock> timer_blocks{};
 	std::vector<EnemySpawn> enemy_spawns{};
@@ -247,13 +245,16 @@ class Map {
 	std::vector<PointLight> point_lights{};
 	float darken_factor{};
 
+	// debug
+	int num_collision_checks{};
+
   private:
 	MapAttributes m_attributes{};
 	util::BitFlags<LayerProperties> m_layer_properties{};
 	std::optional<EntitySet> m_entities{};
 
-	std::vector<shape::Collider*> m_colliders{};
-	std::vector<std::vector<std::list<shape::Collider>::iterator>> m_collider_iterators{};
+	std::vector<std::unique_ptr<shape::ICollider>> m_colliders{};
+	std::vector<std::vector<shape::ICollider*>> m_chunks;
 
 	std::optional<Palette> m_palette{};
 	int abyss_distance{512};

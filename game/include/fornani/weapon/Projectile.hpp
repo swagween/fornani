@@ -11,10 +11,10 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Gravitator.hpp>
 #include <fornani/utils/BitFlags.hpp>
-#include <fornani/utils/CircleCollider.hpp>
+#include <fornani/physics/CircleCollider.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/Direction.hpp>
-#include <fornani/utils/Shape.hpp>
+#include <fornani/physics/Shape.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
