@@ -364,10 +364,10 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		collider.register_chunks(*this);
 		collider.update(svc);
 		for (auto chunk : collider.get_chunks()) {
-			for (auto* other_ptr : m_chunks[chunk]) {
-				if (!other_ptr) continue;
-				if (other_ptr == &collider) continue;
-
+			for (auto& other_ptr : m_chunks[chunk]) {
+				if (!other_ptr) { continue; }
+				if (other_ptr == &collider) { continue; }
+				if (collider.is_intangible()) { continue; }
 				collider.handle_collision(*other_ptr);
 				++num_collision_checks;
 			}
@@ -763,6 +763,7 @@ void Map::register_collider(std::unique_ptr<shape::ICollider> collider) {
 
 void Map::unregister_collider(shape::ICollider* collider) {
 	std::erase_if(m_colliders, [&](auto& ptr) { return ptr.get() == collider; });
+	for (auto& chunk : m_chunks) { chunk.erase(std::remove(chunk.begin(), chunk.end(), collider), chunk.end()); }
 }
 
 void Map::refresh_collider_chunks(Register<int> const& old_chunks, Register<int> const& new_chunks, shape::ICollider* ptr) {

@@ -33,7 +33,7 @@ class ICollider : public Polymorphic {
 	virtual void handle_map_collision(world::Tile const& tile);
 	virtual void detect_map_collision(world::Map& map);
 	virtual void handle_collision(Shape& shape, bool soft = false);
-	virtual bool handle_collider_collision(Shape const& collider, bool soft = false, sf::Vector2f velocity = {}); // returns true if grounded on collider
+	virtual bool handle_collider_collision(Shape const& collider, bool soft = false, sf::Vector2f velocity = {}, float force = 0.01f); // returns true if grounded on collider
 	virtual void handle_collider_collision(Collider const& collider, bool soft = false, bool momentum = false);
 	virtual void render(sf::RenderWindow& win, sf::Vector2f cam);
 
@@ -46,6 +46,7 @@ class ICollider : public Polymorphic {
 	std::vector<int> get_chunks() const;
 
 	[[nodiscard]] auto was_changed() const -> bool { return m_flags.test(ColliderFlags::changed); }
+	[[nodiscard]] auto is_intangible() const -> bool { return m_flags.test(ColliderFlags::intangible); }
 	[[nodiscard]] auto has_attribute(ColliderAttributes const test) const -> bool { return m_attributes.test(test); }
 
 	components::PhysicsComponent physics{};

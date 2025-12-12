@@ -92,9 +92,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	}
 
 	auto test_position = is_moving() ? get_collider().get_center() : get_collider().get_bottom();
-	for (auto& block : map.switch_blocks) {
-		if (block->on()) { get_collider().handle_collider_collision(block->get_bounding_box()); }
-	}
+
 	get_collider().detect_map_collision(map);
 	for (auto& pushable : map.pushables) {
 		if (pushable.get() == this) { continue; }

@@ -24,7 +24,7 @@ void ICollider::detect_map_collision(world::Map& map) {}
 
 void ICollider::handle_collision(Shape& shape, bool soft) {}
 
-bool ICollider::handle_collider_collision(Shape const& collider, bool soft, sf::Vector2f velocity) { return false; }
+bool ICollider::handle_collider_collision(Shape const& collider, bool soft, sf::Vector2f velocity, float force) { return false; }
 
 void ICollider::handle_collider_collision(Collider const& collider, bool soft, bool momentum) {}
 

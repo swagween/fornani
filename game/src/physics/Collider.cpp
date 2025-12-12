@@ -282,12 +282,12 @@ void Collider::handle_collision(ICollider& other) {
 	if (!other.has_attribute(ColliderAttributes::fixed)) { other.handle_collider_collision(*this); }
 }
 
-bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::Vector2f velocity) {
+bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::Vector2f velocity, float force) {
 	auto ret{false};
 	if (soft) {
 		if (!vicinity.overlaps(collider)) { return ret; }
 		mtvs.actual = bounding_box.get_MTV(bounding_box, collider);
-		if (bounding_box.SAT(collider)) { physics.position += mtvs.actual * 0.01f; }
+		if (bounding_box.SAT(collider)) { physics.position += mtvs.actual * force; }
 		sync_components();
 		return ret;
 	}

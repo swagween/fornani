@@ -44,6 +44,8 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 		if (m_hitbox.overlaps(i->get_bounding_box())) { i->hit(); }
 	}
 
+	player.collider.handle_collider_collision(m_hitbox, true, {}, 0.1f);
+
 	// calculate laser end and spawn an effect there
 	if (svc.ticker.every_x_ticks(18)) {
 		m_pulse.modulate(1);

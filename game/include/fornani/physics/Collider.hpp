@@ -79,7 +79,7 @@ class Collider : public ICollider {
 	void correct_corner(sf::Vector2f mtv);
 	void resolve_depths();
 	void handle_collision(ICollider& other);
-	bool handle_collider_collision(Shape const& collider, bool soft = false, sf::Vector2f velocity = {}) override; // returns true if grounded on collider
+	bool handle_collider_collision(Shape const& collider, bool soft = false, sf::Vector2f velocity = {}, float force = 0.01f) override; // returns true if grounded on collider
 	void handle_collider_collision(Collider const& collider, bool soft = false, bool momentum = false) override;
 	void update(automa::ServiceProvider& svc, bool simple = false) override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam) override;
