@@ -112,8 +112,8 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		sf::Vector2f pos{};
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();
-		chests.push_back(entity::Chest(svc, entry["id"].as<int>(), static_cast<entity::ChestType>(entry["type"].as<int>()), entry["modifier"].as<int>()));
-		chests.back().set_position_from_scaled(pos);
+		chests.push_back(std::make_unique<entity::Chest>(svc, *this, entry["id"].as<int>(), static_cast<entity::ChestType>(entry["type"].as<int>()), entry["modifier"].as<int>()));
+		chests.back()->set_position_from_scaled(pos);
 	}
 
 	for (auto& entry : entities["animators"].as_array()) {
@@ -288,7 +288,7 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 	metadata["tile"]["flags"]["obscuring"].as_bool() ? m_layer_properties.set(LayerProperties::has_obscuring_layer) : m_layer_properties.reset(LayerProperties::has_obscuring_layer);
 	metadata["tile"]["flags"]["reverse_obscuring"].as_bool() ? m_layer_properties.set(LayerProperties::has_reverse_obscuring_layer) : m_layer_properties.reset(LayerProperties::has_reverse_obscuring_layer);
 
-	m_chunks.resize(static_cast<std::size_t>((dimensions.x * dimensions.y) / constants::u32_chunk_size));
+	m_chunks.resize(static_cast<std::size_t>((dimensions.x / constants::u32_chunk_size) * (dimensions.y / constants::u32_chunk_size)));
 
 	m_attributes.border_color = m_attributes.style_id == 2 ? colors::pioneer_black : colors::ui_black;
 	if (entities.is_object()) { m_entities = EntitySet(svc, svc.finder, entities, m_metadata.room); }
@@ -406,7 +406,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& laser : lasers) { laser.update(svc, *player, *this); }
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& emitter : active_emitters) { emitter.update(svc, *this); }
-	for (auto& chest : chests) { chest.update(svc, *this, console, *player); }
+	for (auto& chest : chests) { chest->update(svc, *this, console, *player); }
 	/*for (auto& npc : npcs) {
 		npc->update(svc, *this, console, *player);
 	}*/
@@ -499,7 +499,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		for (auto& f : fire.value()) { f.render(svc, win, cam); }
 	}
 	for (auto& bed : beds) { bed.render(svc, win, cam); }
-	for (auto& chest : chests) { chest.render(win, cam); }
+	for (auto& chest : chests) { chest->render(win, cam); }
 	/*for (auto& npc : npcs) {
 		if (!npc->background()) { npc->render(svc, win, cam); }
 	}*/
@@ -782,9 +782,9 @@ void Map::refresh_collider_chunks(Register<int> const& old_chunks, Register<int>
 bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
 	auto& grid = foreground ? get_obscuring_layer()->grid : get_middleground()->grid;
 	auto& layers = m_services->data.get_layers(room_id);
-	auto top = get_index_at_position(collider.vicinity.vertices.at(0));
-	auto bottom = get_index_at_position(collider.vicinity.vertices.at(3));
-	auto right = get_index_at_position(collider.vicinity.vertices.at(1)) - top;
+	auto top = get_index_at_position(collider.get_vicinity_rect().position);
+	auto bottom = get_index_at_position(collider.get_vicinity_rect().position + collider.get_vicinity_rect().size);
+	auto right = static_cast<std::size_t>(collider.get_vicinity_rect().size.x / constants::f_cell_size);
 	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
@@ -802,9 +802,9 @@ bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
 bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms) {
 	auto& grid = get_middleground()->grid;
 	auto& layers = m_services->data.get_layers(room_id);
-	auto top = get_index_at_position(collider.boundary.first);
-	auto bottom = get_index_at_position(collider.boundary.second);
-	auto right = static_cast<std::size_t>(collider.boundary_width() / constants::f_cell_size);
+	auto top = get_index_at_position(collider.get_vicinity_rect().position);
+	auto bottom = get_index_at_position(collider.get_vicinity_rect().position + collider.get_vicinity_rect().size);
+	auto right = static_cast<std::size_t>(collider.get_vicinity_rect().size.x / constants::f_cell_size);
 	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
@@ -823,9 +823,9 @@ bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool coll
 sf::Vector2i Map::get_circle_collision_result(shape::CircleCollider& collider, bool collide_with_platforms) {
 	auto& grid = get_middleground()->grid;
 	auto& layers = m_services->data.get_layers(room_id);
-	auto top = get_index_at_position(collider.boundary.first);
-	auto bottom = get_index_at_position(collider.boundary.second);
-	auto right = static_cast<std::size_t>(collider.boundary_width() / constants::f_cell_size);
+	auto top = get_index_at_position(collider.get_vicinity_rect().position);
+	auto bottom = get_index_at_position(collider.get_vicinity_rect().position + collider.get_vicinity_rect().size);
+	auto right = static_cast<std::size_t>(collider.get_vicinity_rect().size.x / constants::f_cell_size);
 	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {
@@ -843,9 +843,9 @@ sf::Vector2i Map::get_circle_collision_result(shape::CircleCollider& collider, b
 
 void Map::handle_cell_collision(shape::CircleCollider& collider) {
 	auto& grid = get_middleground()->grid;
-	auto top = get_index_at_position(collider.boundary.first);
-	auto bottom = get_index_at_position(collider.boundary.second);
-	auto right = static_cast<std::size_t>(collider.boundary_width() / constants::f_cell_size);
+	auto top = get_index_at_position(collider.get_vicinity_rect().position);
+	auto bottom = get_index_at_position(collider.get_vicinity_rect().position + collider.get_vicinity_rect().size);
+	auto right = static_cast<std::size_t>(collider.get_vicinity_rect().size.x / constants::f_cell_size);
 	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};
 		for (auto j{left}; j <= right; ++j) {

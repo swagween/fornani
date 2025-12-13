@@ -10,7 +10,7 @@ void ICollider::handle_collision(ICollider& other) {}
 
 void ICollider::update(automa::ServiceProvider& svc, bool simple) {
 	auto dim = p_vicinity.get_dimensions() - sf::Vector2f{vicinity_pad_v * 2.f, vicinity_pad_v * 2.f};
-	auto center = physics.position + dim * 0.5f;
+	auto center = is(ColliderType::circle) ? physics.position : physics.position + dim * 0.5f;
 	p_vicinity.set_position(center - p_vicinity.get_dimensions() * 0.5f);
 	m_flags.reset(ColliderFlags::changed);
 	if (physics.actual_speed() > constants::tiny_value) { m_flags.set(ColliderFlags::changed); }

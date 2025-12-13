@@ -158,6 +158,7 @@ class Player {
 	[[nodiscard]] auto get_desired_direction() const -> SimpleDirection { return m_directions.desired; }
 	[[nodiscard]] auto get_actual_direction() const -> SimpleDirection { return m_directions.actual; }
 	[[nodiscard]] auto get_piggybacker_id() const -> int { return piggybacker ? piggybacker->get_id() : 0; }
+	[[nodiscard]] bool is_intangible() const;
 
 	void set_desired_direction(SimpleDirection to) { m_directions.desired = to; }
 

@@ -149,6 +149,9 @@ class Map {
 	[[nodiscard]] auto get_player_start() const -> sf::Vector2f { return m_player_start; }
 	[[nodiscard]] auto has_entities() const -> bool { return m_entities.has_value(); }
 	[[nodiscard]] auto enemies_cleared() const -> bool { return enemy_catalog.enemies.empty() && cooldowns.loading.is_complete(); }
+	[[nodiscard]] auto num_colliders() const -> std::size_t { return m_colliders.size(); }
+	[[nodiscard]] auto num_registered_chunks() const -> std::size_t { return m_chunks.size(); }
+	[[nodiscard]] auto num_colliders_in_chunk(std::size_t const which) const -> std::size_t { return m_chunks.at(which).size(); }
 
 	dj::Json const& get_json_data(automa::ServiceProvider& svc) const;
 
@@ -161,7 +164,7 @@ class Map {
 		std::vector<T*> ret;
 		if (m_entities) {
 			for (auto const& entity : m_entities.value().variables.entities) {
-				if (auto* portal = dynamic_cast<T*>(entity.get())) { ret.push_back(portal); }
+				if (auto* e = dynamic_cast<T*>(entity.get())) { ret.push_back(e); }
 			}
 		}
 		return ret;
@@ -182,7 +185,7 @@ class Map {
 	std::vector<entity::Effect> effects{};
 	std::array<std::vector<std::unique_ptr<vfx::Scenery>>, 6> scenery_layers{};
 	std::vector<item::Loot> active_loot{};
-	std::vector<entity::Chest> chests{};
+	std::vector<std::unique_ptr<entity::Chest>> chests{};
 	std::vector<Laser> lasers{};
 	// std::vector<std::unique_ptr<npc::NPC>> npcs{};
 	std::vector<Platform> platforms{};

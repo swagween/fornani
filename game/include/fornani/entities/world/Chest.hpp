@@ -1,13 +1,12 @@
 
 #pragma once
 
+#include <fornani/physics/RegisteredCollider.hpp>
+#include <optional>
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/entities/item/Item.hpp"
 #include "fornani/graphics/Animatable.hpp"
 #include "fornani/particle/Sparkler.hpp"
-#include "fornani/physics/CircleCollider.hpp"
-
-#include <optional>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -32,15 +31,15 @@ enum class ChestType { gun, orbs, item };
 
 class Chest final : public Animatable {
   public:
-	Chest(automa::ServiceProvider& svc, int id, ChestType type, int modifier);
+	Chest(automa::ServiceProvider& svc, world::Map& map, int id, ChestType type, int modifier);
 	void update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f pos);
 	void set_position_from_scaled(sf::Vector2f scaled_pos);
-	shape::CircleCollider& get_collider() { return collider; }
+	shape::CircleCollider& get_collider() { return *m_collider.get_circle(); }
 
   private:
-	shape::CircleCollider collider;
+	shape::RegisteredCollider m_collider;
 
 	util::BitFlags<ChestState> state{};
 	ChestType m_type{};

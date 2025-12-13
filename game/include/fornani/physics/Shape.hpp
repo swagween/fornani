@@ -37,6 +37,7 @@ class Shape {
 	std::vector<Vec> get_normals() const;
 	std::vector<Vec> get_edges() const;
 
+	[[nodiscard]] auto as_rect() const -> sf::FloatRect { return sf::FloatRect{vertices[0], get_dimensions()}; }
 	[[nodiscard]] auto dot_product(Vec const a, Vec const b) const -> float { return a.x * b.x + a.y * b.y; }
 	[[nodiscard]] auto are_overlapping(Vec const a, Vec const b) const -> bool { return a.x <= b.y && a.y >= b.x; }
 	[[nodiscard]] auto get_overlap_length(Vec const a, Vec const b) const -> float { return are_overlapping(a, b) ? std::min(a.y, b.y) - std::max(a.x, b.x) : 0.f; }

@@ -24,7 +24,7 @@ Loot::Loot(automa::ServiceProvider& svc, player::Player& player, sf::Vector2<int
 		}
 		auto xinit = svc.data.drop[key]["initial_velocity"][0].as<float>();
 		auto yinit = svc.data.drop[key]["initial_velocity"][1].as<float>();
-		auto rand_vec = random::random_vector_float({-xinit, -yinit}, {xinit, yinit});
+		auto rand_vec = random::random_vector_float({-xinit, -yinit}, {xinit, 0});
 		drops.push_back(std::make_unique<Drop>(svc, key, probability, delay_time, special_id));
 		drops.back()->set_position(pos);
 		if (player.has_item_equipped(svc.data.item_id_from_label("magnet"))) { rand_vec *= 0.01f; }

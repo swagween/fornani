@@ -1,24 +1,31 @@
 
 #include "fornani/physics/CircleCollider.hpp"
+#include "fornani/physics/Collider.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 #include "fornani/world/Map.hpp"
 
 namespace fornani::shape {
 
-CircleCollider::CircleCollider(float radius) : ICollider{sf::Vector2f{radius * 3.f, radius * 3.f}}, sensor{radius} { sensor.bounds.setOrigin({radius, radius}); }
+CircleCollider::CircleCollider(float radius) : ICollider{sf::Vector2f{radius * 2.f, radius * 2.f}}, sensor{radius} {
+	sensor.bounds.setOrigin({radius, radius});
+	p_type = ColliderType::circle;
+}
 
 void CircleCollider::update(automa::ServiceProvider& svc, bool simple) {
 	ICollider::update(svc, simple);
 	simple ? physics.simple_update() : physics.update(svc);
 	sensor.set_position(physics.position);
-	boundary.first = physics.position - bound;
-	boundary.second = physics.position + bound;
 }
 
 void CircleCollider::handle_map_collision(world::Map& map) {
-	flags.reset(CircleColliderFlags::collided);
+	m_flags.reset(CircleColliderFlags::collided);
 	map.handle_cell_collision(*this);
+}
+
+void CircleCollider::handle_collision(ICollider& other) {
+	if (other.has_exclusion(CollisionExclusions::circle)) { return; }
+	if (auto* coll = dynamic_cast<Collider*>(&other)) { handle_collision(coll->bounding_box); }
 }
 
 void CircleCollider::handle_collision(shape::Shape& shape, bool soft) {
@@ -39,7 +46,7 @@ void CircleCollider::handle_collision(shape::Shape& shape, bool soft) {
 		physics.position.y += circle_below ? abs(mtv.y) * leeway + nudge : abs(mtv.y) * -leeway - nudge;
 	}
 	if (!soft) { vertical ? physics.collide({0, 1}) : physics.collide({1, 0}); }
-	flags.set(CircleColliderFlags::collided);
+	m_flags.set(CircleColliderFlags::collided);
 	sensor.set_position(physics.position);
 }
 

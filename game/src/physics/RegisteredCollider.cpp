@@ -10,6 +10,15 @@ RegisteredCollider::RegisteredCollider(world::Map& map, sf::Vector2f dimensions)
 	m_map->register_collider(std::move(ptr));
 }
 
-RegisteredCollider::~RegisteredCollider() { m_map->unregister_collider(m_collider); }
+RegisteredCollider::RegisteredCollider(world::Map& map, float radius) : m_map(&map) {
+	auto ptr = std::make_unique<CircleCollider>(radius);
+	m_circle_collider = ptr.get();
+	m_map->register_collider(std::move(ptr));
+}
+
+RegisteredCollider::~RegisteredCollider() {
+	if (m_collider) { m_map->unregister_collider(m_collider.value()); }
+	if (m_circle_collider) { m_map->unregister_collider(m_circle_collider.value()); }
+}
 
 } // namespace fornani::shape

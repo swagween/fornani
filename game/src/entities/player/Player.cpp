@@ -29,6 +29,7 @@ Player::Player(automa::ServiceProvider& svc)
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
 	collider.physics.maximum_velocity = physics_stats.maximum_velocity;
 	collider.flags.general.set(shape::General::complex);
+	collider.set_exclusion(shape::CollisionExclusions::circle);
 
 	antennae.push_back(vfx::Gravitator(collider.physics.position, colors::bright_orange, antenna_force));
 	antennae.push_back(vfx::Gravitator(collider.physics.position, colors::bright_orange, antenna_force, {2.f, 4.f}));
@@ -381,6 +382,8 @@ void Player::piggyback(int id) {
 	}
 }
 
+bool Player::is_intangible() const { return controller.is_dashing() && has_item_equipped(37); }
+
 void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	sf::Vector2f offset{};
 	offset.x = centered ? collider.dimensions.x * 0.5f : 0.f;
@@ -443,9 +446,7 @@ void Player::walk() {
 
 void Player::hurt(float amount, bool force) {
 	if (health.is_dead()) { return; }
-	if (controller.is_dashing()) {
-		if (has_item_equipped(37)) { return; }
-	}
+	if (is_intangible()) { return; }
 	if (!health.invincible() || force) {
 		m_services->music_player.filter_fade_in(80.f, 40.f, 32);
 		m_services->ambience_player.set_balance(1.f);

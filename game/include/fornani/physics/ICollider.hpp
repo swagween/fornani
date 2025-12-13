@@ -22,7 +22,9 @@ constexpr auto vicinity_pad_v = 33.f;
 class Collider;
 
 enum class ColliderFlags { changed, intangible };
+enum class ColliderType { rectangle, circle };
 enum class ColliderAttributes { fixed, soft, top_only };
+enum class CollisionExclusions { circle };
 
 class ICollider : public Polymorphic {
   public:
@@ -39,7 +41,8 @@ class ICollider : public Polymorphic {
 
 	void register_chunks(world::Map& map);
 	void set_top_only() { m_attributes.set(ColliderAttributes::top_only); }
-	void set_flag(ColliderFlags const to_set, bool on) { on ? m_flags.set(to_set) : m_flags.reset(to_set); }
+	void set_flag(ColliderFlags const to_set, bool on = true) { on ? m_flags.set(to_set) : m_flags.reset(to_set); }
+	void set_exclusion(CollisionExclusions const to_set, bool on = true) { on ? m_exclusions.set(to_set) : m_exclusions.reset(to_set); }
 	void set_attribute(ColliderAttributes const to_set) { m_attributes.set(to_set); }
 
 	std::vector<int> compute_chunks(world::Map& map);
@@ -48,6 +51,9 @@ class ICollider : public Polymorphic {
 	[[nodiscard]] auto was_changed() const -> bool { return m_flags.test(ColliderFlags::changed); }
 	[[nodiscard]] auto is_intangible() const -> bool { return m_flags.test(ColliderFlags::intangible); }
 	[[nodiscard]] auto has_attribute(ColliderAttributes const test) const -> bool { return m_attributes.test(test); }
+	[[nodiscard]] auto has_exclusion(CollisionExclusions const test) const -> bool { return m_exclusions.test(test); }
+	[[nodiscard]] auto is(ColliderType const test) const -> bool { return p_type == test; }
+	[[nodiscard]] auto get_vicinity_rect() const -> sf::FloatRect { return p_vicinity.as_rect(); }
 
 	components::PhysicsComponent physics{};
 
@@ -56,11 +62,13 @@ class ICollider : public Polymorphic {
 
   protected:
 	shape::Shape p_vicinity;
+	ColliderType p_type{};
 
   private:
 	Register<int> m_chunks;
 	util::BitFlags<ColliderAttributes> m_attributes{};
 	util::BitFlags<ColliderFlags> m_flags{};
+	util::BitFlags<CollisionExclusions> m_exclusions{};
 };
 
 } // namespace fornani::shape

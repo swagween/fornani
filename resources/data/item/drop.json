@@ -1,66 +1,66 @@
 {
-  "hearts": {
-    "sprite_dimensions": [13, 12],
-    "initial_velocity": [40, 40],
-    "type": 0,
-    "friction": [0.99, 1.0],
-    "gravity": 0.7,
-    "animation": {
-      "num_sprites": 2,
-      "params": [
-        {
-          "label": "neutral",
-          "duration": 12,
-          "framerate": 28,
-          "num_loops": -1
-        }
-      ]
-    }
-  },
+	"hearts": {
+		"sprite_dimensions": [ 13, 12 ],
+		"initial_velocity": [ 40, 80 ],
+		"type": 0,
+		"friction": [ 0.99, 1.0 ],
+		"gravity": 0.7,
+		"animation": {
+			"num_sprites": 2,
+			"params": [
+				{
+					"label": "neutral",
+					"duration": 12,
+					"framerate": 28,
+					"num_loops": -1
+				}
+			]
+		}
+	},
 
-  "orbs": {
-    "sprite_dimensions": [12, 12],
-    "initial_velocity": [40, 80],
-    "type": 1,
-    "friction": [0.99, 1.0],
-    "gravity": 6.0,
-    "animation": {
-      "num_sprites": 4,
-      "params": [
-        {
-          "label": "neutral",
-          "duration": 7,
-          "framerate": 12,
-          "num_loops": -1
-        }
-      ]
-    }
-  },
+	"orbs": {
+		"sprite_dimensions": [ 12, 12 ],
+		"initial_velocity": [ 40, 140 ],
+		"type": 1,
+		"friction": [ 0.99, 1.0 ],
+		"gravity": 6.0,
+		"animation": {
+			"num_sprites": 4,
+			"params": [
+				{
+					"label": "neutral",
+					"duration": 7,
+					"framerate": 12,
+					"num_loops": -1
+				}
+			]
+		}
+	},
 
-  "gems": {
-    "sprite_dimensions": [16, 16],
-    "initial_velocity": [40, 180],
-    "type": 2,
-    "friction": [0.99, 1.0],
-    "gravity": 6.9,
-    "animation": {
-      "num_sprites": 2,
-      "params": [
-        {
-          "label": "neutral",
-          "lookup": 0,
-          "duration": 1,
-          "framerate": 128,
-          "num_loops": 4
-        },
-        {
-          "label": "shine",
-          "lookup": 1,
-          "duration": 4,
-          "framerate": 24,
-          "num_loops": 0
-        }
-      ]
-    }
-  }
+	"gems": {
+		"sprite_dimensions": [ 16, 16 ],
+		"initial_velocity": [ 40, 180 ],
+		"type": 2,
+		"friction": [ 0.99, 1.0 ],
+		"gravity": 6.9,
+		"animation": {
+			"num_sprites": 2,
+			"params": [
+				{
+					"label": "neutral",
+					"lookup": 0,
+					"duration": 1,
+					"framerate": 128,
+					"num_loops": 4
+				},
+				{
+					"label": "shine",
+					"lookup": 1,
+					"duration": 4,
+					"framerate": 24,
+					"num_loops": 0
+				}
+			]
+		}
+	}
 }
