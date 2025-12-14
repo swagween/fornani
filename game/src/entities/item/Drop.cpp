@@ -96,7 +96,8 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	} else {
 		collider.physics.set_friction_componentwise({svc.data.drop[m_label]["friction"][0].as<float>(), svc.data.drop[m_label]["friction"][1].as<float>()});
 	}
-	collider.update(svc, magnet);
+	collider.set_flag(shape::ColliderFlags::simple, magnet);
+	collider.update(svc);
 	collider.handle_map_collision(map);
 	map.handle_cell_collision(collider);
 	map.handle_breakable_collision(collider);

@@ -32,8 +32,8 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[m
 	case 0: enemies.push_back(std::make_unique<Hulmet>(svc, map)); break;
 	case 1: enemies.push_back(std::make_unique<Tank>(svc, map, variant)); break;
 	case 3: enemies.push_back(std::make_unique<Thug>(svc, map)); break;
-	case 4: enemies.push_back(std::make_unique<Eyebot>(svc)); break;
-	case 5: enemies.push_back(std::make_unique<Eyebit>(svc, spawned)); break;
+	case 4: enemies.push_back(std::make_unique<Eyebot>(svc, map)); break;
+	case 5: enemies.push_back(std::make_unique<Eyebit>(svc, map, spawned)); break;
 	case 6: enemies.push_back(std::make_unique<Minigus>(svc, map, console)); break;
 	case 7: enemies.push_back(std::make_unique<Demon>(svc, map, variant)); break;
 	case 8: enemies.push_back(std::make_unique<Caster>(svc, map, variant)); break;
@@ -47,7 +47,7 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[m
 	case 16: enemies.push_back(std::make_unique<Summoner>(svc, map, variant)); break;
 	case 17: enemies.push_back(std::make_unique<Minion>(svc, map, variant)); break;
 	case 18: enemies.push_back(std::make_unique<Spitefly>(svc, map, variant)); break;
-	default: enemies.push_back(std::make_unique<Frdog>(svc)); break;
+	default: enemies.push_back(std::make_unique<Frdog>(svc, map)); break;
 	}
 }
 

@@ -25,7 +25,7 @@ enum class CircleColliderFlags { collided };
 class CircleCollider : public ICollider {
   public:
 	explicit CircleCollider(float radius);
-	void update(automa::ServiceProvider& svc, bool simple = false) override;
+	void update(automa::ServiceProvider& svc) override;
 	void handle_map_collision(world::Map& map) override;
 	void handle_collision(ICollider& other) override;
 	void handle_collision(Shape& shape, bool soft = false) override;

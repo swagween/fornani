@@ -1,3 +1,4 @@
+
 #include "fornani/entities/enemy/catalog/Meatsquash.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -5,15 +6,15 @@
 
 namespace fornani::enemy {
 
-Meatsquash::Meatsquash(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "meatsquash"), m_services(&svc), m_map(&map) {
+Meatsquash::Meatsquash(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "meatsquash"), m_services(&svc), m_map(&map) {
 	animation.set_params(idle);
-	collider.physics.maximum_velocity = {8.f, 12.f};
-	collider.physics.air_friction = {0.95f, 0.999f};
-	collider.flags.general.set(shape::General::complex);
+	get_collider().physics.maximum_velocity = {8.f, 12.f};
+	get_collider().physics.air_friction = {0.95f, 0.999f};
+	get_collider().flags.general.set(shape::General::complex);
 	directions.desired.lnr = LNR::right;
 	directions.actual.lnr = LNR::right;
 	directions.movement.lnr = LNR::neutral;
-	collider.set_top_only();
+	get_collider().set_top_only();
 
 	attacks.bite.sensor.bounds.setRadius(90.f);
 	attacks.bite.hit.bounds.setRadius(90.f);
@@ -30,12 +31,12 @@ void Meatsquash::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	Enemy::update(svc, map, player);
 
 	auto bite_offset = sf::Vector2f{0.f, -98.f};
-	attacks.bite.set_position(collider.get_center() + bite_offset);
+	attacks.bite.set_position(get_collider().get_center() + bite_offset);
 	attacks.bite.update();
 	attacks.bite.handle_player(player);
 
 	animation.get_frame() == 12 ? attacks.bite.hit.activate() : attacks.bite.hit.deactivate();
-	if (attacks.bite.sensor.active() && attacks.bite.hit.active() && !(player.collider.get_center().y > collider.physics.position.y)) { player.hurt(24.f); }
+	if (attacks.bite.sensor.active() && attacks.bite.hit.active() && !(player.get_collider().get_center().y > get_collider().physics.position.y)) { player.hurt(24.f); }
 
 	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
 		m_services->soundboard.flags.meatsquash.set(audio::Meatsquash::hurt);

@@ -8,7 +8,7 @@
 namespace fornani::enemy {
 
 Hulmet::Hulmet(automa::ServiceProvider& svc, world::Map& map)
-	: Enemy(svc, "hulmet"), m_services(&svc), m_map(&map), m_parts{.gun{svc.assets.get_texture("hulmet_gun"), 2.0f, 0.85f, {-12.f, 6.f}}}, m_weapon{svc, "skycorps_ar"}, m_jump_force{-48.f} {
+	: Enemy(svc, map, "hulmet"), m_services(&svc), m_map(&map), m_parts{.gun{svc.assets.get_texture("hulmet_gun"), 2.0f, 0.85f, {-12.f, 6.f}}}, m_weapon{svc, "skycorps_ar"}, m_jump_force{-48.f} {
 	animation.set_params(m_animations.idle);
 	m_parts.gun.set_magnitude(2.f);
 	m_weapon.clip_cooldown_time = 360;
@@ -31,10 +31,10 @@ void Hulmet::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	if (directions.actual.lnr != directions.desired.lnr) { request(HulmetState::turn); }
 	auto detected_projectile = m_caution.projectile_detected(map, physical.hostile_range, arms::Team::skycorps);
 	auto towards_me = (detected_projectile.left() && directions.actual.right()) || (detected_projectile.right() && directions.actual.left());
-	if (towards_me && collider.grounded() && !m_cooldowns.post_roll.running()) { request(HulmetState::roll); }
+	if (towards_me && get_collider().grounded() && !m_cooldowns.post_roll.running()) { request(HulmetState::roll); }
 	if (detected_projectile.up_or_down() && !m_cooldowns.post_roll.running()) { request(HulmetState::roll); }
 	if (is_hurt()) { m_cooldowns.post_roll.running() ? request(HulmetState::panic) : request(HulmetState::roll); }
-	if (m_caution.detected_step(map, collider, directions.actual) && (collider.physics.is_moving_horizontally(0.5f) || is_mid_run()) && !m_cooldowns.post_jump.running()) { request(HulmetState::jump); }
+	if (m_caution.detected_step(map, get_collider(), directions.actual) && (get_collider().physics.is_moving_horizontally(0.5f) || is_mid_run()) && !m_cooldowns.post_jump.running()) { request(HulmetState::jump); }
 	if (is_out_of_ammo()) { request(HulmetState::reload); }
 
 	m_cooldowns.post_fire.update();
@@ -42,12 +42,12 @@ void Hulmet::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	m_cooldowns.post_roll.update();
 	m_cooldowns.alerted.update();
 
-	m_parts.gun.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
+	m_parts.gun.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center());
 	m_weapon.update(svc, map, *this);
 	m_weapon.barrel_offset = sf::Vector2f{directions.actual.as_float() * 40.f, 0.f};
 	if (p_state.actual == HulmetState::roll) { cancel_shake(); }
 
-	if (secondary_collider) { secondary_collider->set_position(collider.bounding_box.get_position() + sf::Vector2f{4.f, -8.f}); }
+	if (secondary_collider) { secondary_collider->set_position(get_collider().bounding_box.get_position() + sf::Vector2f{4.f, -8.f}); }
 
 	if (flags.state.test(StateFlags::hurt)) {
 		hurt_effect.start();
@@ -113,9 +113,9 @@ fsm::StateFunction Hulmet::update_run() {
 	p_state.actual = HulmetState::run;
 	flags.state.set(StateFlags::vulnerable);
 	auto sign = directions.actual.left() ? -1.f : 1.f;
-	collider.physics.apply_force({sign * attributes.speed, 0.f});
+	get_collider().physics.apply_force({sign * attributes.speed, 0.f});
 	m_cooldowns.run.update();
-	if (m_caution.detected_step(*m_map, collider, directions.actual)) {
+	if (m_caution.detected_step(*m_map, get_collider(), directions.actual)) {
 		request(HulmetState::jump);
 		m_cooldowns.run.start();
 		if (change_state(HulmetState::jump, m_animations.jump)) {
@@ -179,8 +179,8 @@ fsm::StateFunction Hulmet::update_roll() {
 	p_state.actual = HulmetState::roll;
 	flags.state.reset(StateFlags::vulnerable);
 	auto sign = directions.actual.left() ? -1.f : 1.f;
-	collider.physics.apply_force({sign * attributes.speed * 2.f, 0.f});
-	if (m_caution.detected_step(*m_map, collider, directions.movement)) {
+	get_collider().physics.apply_force({sign * attributes.speed * 2.f, 0.f});
+	if (m_caution.detected_step(*m_map, get_collider(), directions.movement)) {
 		request(HulmetState::jump);
 		if (change_state(HulmetState::jump, m_animations.jump)) {
 			impulse.start(m_jump_time);
@@ -209,9 +209,9 @@ fsm::StateFunction Hulmet::update_jump() {
 	animation.label = "jump";
 	p_state.actual = HulmetState::jump;
 	flags.state.set(StateFlags::vulnerable);
-	if (impulse.running()) { collider.physics.apply_force({0, m_jump_force}); }
+	if (impulse.running()) { get_collider().physics.apply_force({0, m_jump_force}); }
 	auto sign = directions.actual.left() ? -1.f : 1.f;
-	collider.physics.apply_force({sign * attributes.speed, 0.f});
+	get_collider().physics.apply_force({sign * attributes.speed, 0.f});
 	if (animation.complete()) {
 		m_cooldowns.post_jump.start();
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }

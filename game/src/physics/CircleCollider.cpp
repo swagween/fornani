@@ -10,11 +10,12 @@ namespace fornani::shape {
 CircleCollider::CircleCollider(float radius) : ICollider{sf::Vector2f{radius * 2.f, radius * 2.f}}, sensor{radius} {
 	sensor.bounds.setOrigin({radius, radius});
 	p_type = ColliderType::circle;
+	set_exclusion_trait(CollisionExclusions::circle);
 }
 
-void CircleCollider::update(automa::ServiceProvider& svc, bool simple) {
-	ICollider::update(svc, simple);
-	simple ? physics.simple_update() : physics.update(svc);
+void CircleCollider::update(automa::ServiceProvider& svc) {
+	ICollider::update(svc);
+	has_flag_set(ColliderFlags::simple) ? physics.simple_update() : physics.update(svc);
 	sensor.set_position(physics.position);
 }
 
@@ -24,7 +25,7 @@ void CircleCollider::handle_map_collision(world::Map& map) {
 }
 
 void CircleCollider::handle_collision(ICollider& other) {
-	if (other.has_exclusion(CollisionExclusions::circle)) { return; }
+	if (other.should_exclude(*this)) { return; }
 	if (auto* coll = dynamic_cast<Collider*>(&other)) { handle_collision(coll->bounding_box); }
 }
 

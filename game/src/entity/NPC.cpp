@@ -38,6 +38,43 @@ NPC::NPC(automa::ServiceProvider& svc, dj::Json const& in)
 
 	NANI_LOG_DEBUG(Entity::m_logger, "Created NPC with label {}", m_label);
 
+	auto scaled_pos = sf::Vector2f{in["position"][0].as<float>(), in["position"][1].as<float>()};
+	auto new_pos = scaled_pos * constants::f_cell_size;
+	Animatable::set_position(new_pos);
+	auto push = true;
+	auto fail_tag = std::string{};
+	if (in["contingencies"].is_array()) {
+		for (auto const& contingency : in["contingencies"].as_array()) {
+			auto cont = QuestContingency{contingency};
+			if (!svc.quest_table.are_contingencies_met({cont})) {
+				hide();
+				fail_tag = contingency["tag"].as_string();
+				NANI_LOG_DEBUG(Entity::m_logger, "NPC did not meet contingency for quest {}.", fail_tag);
+			}
+		}
+	}
+	auto npc_state = svc.quest_table.get_quest_progression("npc_dialogue", {m_label, in["id"].as<int>()});
+	for (auto const& convo : in["suites"][npc_state].as_array()) {
+		push_conversation(convo.as<int>());
+		NANI_LOG_DEBUG(Entity::m_logger, "Pushed conversation {}", convo.as<int>());
+	}
+}
+
+NPC::NPC(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in)
+	: Entity(svc, in, "npcs"),
+	  Mobile(svc, map, "npc_" + std::string{in["label"].as_string()}, {svc.data.npc[in["label"].as_string()]["sprite_dimensions"][0].as<int>(), svc.data.npc[in["label"].as_string()]["sprite_dimensions"][1].as<int>()}),
+	  m_label(in["label"].as_string()), m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[in["label"].as_string()]["id"].as<int>()}, m_current_conversation{1}, m_services{&svc} {
+	unserialize(in);
+	repeatable = false;
+	copyable = false;
+	Mobile::center();
+	Entity::center();
+	m_indicator.center();
+	get_collider().set_exclusion_target(shape::CollisionExclusions::circle);
+	get_collider().set_exclusion_target(shape::CollisionExclusions::player);
+
+	NANI_LOG_DEBUG(Entity::m_logger, "Created NPC with label {}", m_label);
+
 	init(svc, svc.data.npc[m_label]);
 	set_position_from_scaled(sf::Vector2f{in["position"][0].as<float>(), in["position"][1].as<float>()});
 	auto push = true;
@@ -59,8 +96,8 @@ NPC::NPC(automa::ServiceProvider& svc, dj::Json const& in)
 	}
 }
 
-NPC::NPC(automa::ServiceProvider& svc, std::string_view label)
-	: Entity(svc, "npcs", 0), Mobile(svc, "npc_" + std::string{label}), m_label(label), m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[label]["id"].as<int>()}, m_current_conversation{1}, m_services{&svc} {
+NPC::NPC(automa::ServiceProvider& svc, world::Map& map, std::string_view label)
+	: Entity(svc, "npcs", 0), Mobile(svc, map, "npc_" + std::string{label}), m_label(label), m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[label]["id"].as<int>()}, m_current_conversation{1}, m_services{&svc} {
 	init(svc, svc.data.npc[m_label]);
 }
 
@@ -84,11 +121,11 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 		NANI_LOG_INFO(Entity::m_logger, "This NPC is a vendor: {}", get_tag());
 	}
 
-	collider = shape::Collider({svc.data.npc[m_label]["dimensions"][0].as<float>(), svc.data.npc[m_label]["dimensions"][1].as<float>()});
-	collider.sync_components();
+	get_collider().dimensions = {svc.data.npc[m_label]["dimensions"][0].as<float>(), svc.data.npc[m_label]["dimensions"][1].as<float>()};
+	get_collider().sync_components();
 
-	collider.physics.set_friction_componentwise({0.95f, 0.995f});
-	collider.stats.GRAV = 16.2f;
+	get_collider().physics.set_friction_componentwise({0.95f, 0.995f});
+	get_collider().stats.GRAV = 16.2f;
 
 	for (auto const& in_anim : in_data["animation"].as_array()) {
 		m_params.insert({in_anim["label"].as_string(), {in_anim["parameters"][0].as<int>(), in_anim["parameters"][1].as<int>(), in_anim["parameters"][2].as<int>(), in_anim["parameters"][3].as<int>(), in_anim["parameters"][4].as_bool()}});
@@ -175,16 +212,16 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 		b_pop = false;
 	}
 
-	collider.update(svc);
-	collider.detect_map_collision(map);
+	get_collider().update(svc);
+	get_collider().detect_map_collision(map);
 	for (auto& destructible : map.destructibles) {
-		if (!destructible.ignore_updates()) { collider.handle_collider_collision(destructible.get_bounding_box()); }
+		if (!destructible.ignore_updates()) { get_collider().handle_collider_collision(destructible.get_bounding_box()); }
 	}
-	collider.reset();
-	collider.physics.acceleration = {};
+	get_collider().reset();
+	get_collider().physics.acceleration = {};
 
 	console ? m_state.set(NPCState::talking) : m_state.reset(NPCState::talking);
-	if (player.collider.bounding_box.overlaps(collider.bounding_box) || (m_state.test(NPCState::distant_interact) && m_state.test(NPCState::force_interact))) {
+	if (player.get_collider().bounding_box.overlaps(get_collider().bounding_box) || (m_state.test(NPCState::distant_interact) && m_state.test(NPCState::force_interact))) {
 		if (!m_state.test(NPCState::engaged)) { m_state.set(NPCState::just_engaged); }
 		m_state.set(NPCState::engaged);
 		if ((player.controller.inspecting() || m_state.test(NPCState::force_interact)) && !conversations.empty()) {
@@ -207,7 +244,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 		svc.camera_controller.constrain();
 	}
 
-	if (!collider.grounded()) { request(NPCAnimationState::fall); }
+	if (!get_collider().grounded()) { request(NPCAnimationState::fall); }
 	if (directions.actual.lnr != directions.desired.lnr) { request(NPCAnimationState::turn); }
 
 	if (!m_flags.test(NPCFlags::no_animation)) { state_function = std::move(state_function()); }
@@ -221,11 +258,11 @@ void NPC::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 		Entity::render(win, cam, size);
 	} else {
 		if (is_hidden()) { return; }
-		Mobile::set_position(collider.get_center() + m_offset - cam);
+		Mobile::set_position(get_collider().get_center() + m_offset - cam);
 		auto indicator_offset = sf::Vector2f{0.f, -constants::f_cell_size};
-		m_indicator.set_position(collider.get_top() + indicator_offset - cam);
+		m_indicator.set_position(get_collider().get_top() + indicator_offset - cam);
 		if (m_services->greyblock_mode()) {
-			collider.render(win, cam);
+			get_collider().render(win, cam);
 		} else {
 			if (!m_flags.test(NPCFlags::no_animation)) { win.draw(static_cast<Mobile&>(*this)); }
 		}
@@ -274,11 +311,11 @@ void NPC::disengage() {
 
 void NPC::walk() { request(NPCAnimationState::walk); }
 
-void NPC::set_position(sf::Vector2f pos) { collider.physics.position = pos; }
+void NPC::set_position(sf::Vector2f pos) { get_collider().physics.position = pos; }
 
 void NPC::set_position_from_scaled(sf::Vector2f scaled_pos) {
 	auto new_pos = scaled_pos * constants::f_cell_size;
-	auto round = static_cast<int>(collider.dimensions.y) % 32;
+	auto round = static_cast<int>(get_collider().dimensions.y) % 32;
 	new_pos.y += static_cast<float>(constants::f_cell_size - round);
 	set_position(new_pos);
 }
@@ -287,7 +324,7 @@ fsm::StateFunction NPC::update_idle() {
 	p_state.actual = NPCAnimationState::idle;
 	if (change_state(NPCAnimationState::fall, get_params("fall"))) { return std::move(fsm::StateFunction{NPC_BIND(update_fall)}); }
 	if (change_state(NPCAnimationState::turn, get_params("turn"))) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
-	if (collider.grounded()) {
+	if (get_collider().grounded()) {
 		if (change_state(NPCAnimationState::walk, get_params("walk"))) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
 	}
 	return std::move(fsm::StateFunction{NPC_BIND(update_idle)});
@@ -295,7 +332,7 @@ fsm::StateFunction NPC::update_idle() {
 
 fsm::StateFunction NPC::update_walk() {
 	p_state.actual = NPCAnimationState::walk;
-	collider.physics.acceleration.x = 2.8f;
+	get_collider().physics.acceleration.x = 2.8f;
 	if (change_state(NPCAnimationState::turn, get_params("turn"))) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
 	if (change_state(NPCAnimationState::idle, get_params("idle"))) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
 	return std::move(fsm::StateFunction{NPC_BIND(update_walk)});
@@ -322,7 +359,7 @@ fsm::StateFunction NPC::update_turn() {
 
 fsm::StateFunction NPC::update_fall() {
 	p_state.actual = NPCAnimationState::fall;
-	if (collider.grounded()) {
+	if (get_collider().grounded()) {
 		request(NPCAnimationState::land);
 		if (change_state(NPCAnimationState::land, get_params("land"))) { return std::move(fsm::StateFunction{NPC_BIND(update_land)}); }
 	}

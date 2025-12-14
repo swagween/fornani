@@ -1,5 +1,22 @@
 {
   "entities": {
+    "npcs": [
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "face_player": true,
+        "hidden": false,
+        "id": 999876,
+        "label": "mildreth",
+        "position": [
+          12,
+          6
+        ]
+      }
+    ],
     "turrets": [
       {
         "dimensions": [

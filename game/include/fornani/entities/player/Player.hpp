@@ -202,6 +202,8 @@ class Player {
 	void push_to_loadout(std::string_view tag, bool from_save = false);
 	void pop_from_loadout(std::string_view tag);
 
+	shape::Collider& get_collider() { return collider; }
+
 	// map helpers
 	SimpleDirection entered_from() const;
 

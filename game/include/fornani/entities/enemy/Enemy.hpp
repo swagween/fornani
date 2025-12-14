@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <fornani/audio/Soundboard.hpp>
@@ -79,7 +80,7 @@ struct Flags {
 
 class Enemy : public Mobile {
   public:
-	Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned = false, int variant = 0, sf::Vector2<int> start_direction = {-1, 0});
+	Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view label, bool spawned = false, int variant = 0, sf::Vector2<int> start_direction = {-1, 0});
 
 	void set_external_id(std::pair<int, sf::Vector2<int>> code);
 
@@ -105,7 +106,6 @@ class Enemy : public Mobile {
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
 	[[nodiscard]] auto get_external_id() const -> int { return metadata.external_id; }
-	[[nodiscard]] auto get_collider() -> shape::Collider& { return collider; }
 	[[nodiscard]] auto get_secondary_collider() -> std::optional<shape::Collider>& { return secondary_collider; }
 	[[nodiscard]] auto died() const -> bool { return health.is_dead(); }
 	[[nodiscard]] auto just_died() const -> bool { return health.is_dead() && post_death.get() == afterlife; }
@@ -119,8 +119,8 @@ class Enemy : public Mobile {
 
 	void intangible_start(int time) { intangibility.start(time); }
 	void set_position(sf::Vector2f pos) {
-		collider.physics.position = pos;
-		collider.sync_components();
+		get_collider().physics.position = pos;
+		get_collider().sync_components();
 		health_indicator.set_position(pos);
 	}
 	void cancel_shake() {

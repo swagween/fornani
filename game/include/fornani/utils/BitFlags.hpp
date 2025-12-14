@@ -18,6 +18,7 @@ struct BitFlags {
 		reset(e);
 		return ret;
 	}
+	bool any(BitFlags const& other) const { return (bits & other.bits).any(); }
 
 	bool operator==(BitFlags const&) const = default;
 };

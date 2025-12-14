@@ -29,7 +29,8 @@ Player::Player(automa::ServiceProvider& svc)
 	collider.physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
 	collider.physics.maximum_velocity = physics_stats.maximum_velocity;
 	collider.flags.general.set(shape::General::complex);
-	collider.set_exclusion(shape::CollisionExclusions::circle);
+	collider.set_exclusion_target(shape::CollisionExclusions::circle);
+	collider.set_exclusion_trait(shape::CollisionExclusions::player);
 
 	antennae.push_back(vfx::Gravitator(collider.physics.position, colors::bright_orange, antenna_force));
 	antennae.push_back(vfx::Gravitator(collider.physics.position, colors::bright_orange, antenna_force, {2.f, 4.f}));

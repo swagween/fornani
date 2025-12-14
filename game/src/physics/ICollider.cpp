@@ -8,7 +8,7 @@ ICollider::ICollider(sf::Vector2f dimensions) : p_vicinity{dimensions + sf::Vect
 
 void ICollider::handle_collision(ICollider& other) {}
 
-void ICollider::update(automa::ServiceProvider& svc, bool simple) {
+void ICollider::update(automa::ServiceProvider& svc) {
 	auto dim = p_vicinity.get_dimensions() - sf::Vector2f{vicinity_pad_v * 2.f, vicinity_pad_v * 2.f};
 	auto center = is(ColliderType::circle) ? physics.position : physics.position + dim * 0.5f;
 	p_vicinity.set_position(center - p_vicinity.get_dimensions() * 0.5f);
@@ -26,7 +26,7 @@ void ICollider::handle_collision(Shape& shape, bool soft) {}
 
 bool ICollider::handle_collider_collision(Shape const& collider, bool soft, sf::Vector2f velocity, float force) { return false; }
 
-void ICollider::handle_collider_collision(Collider const& collider, bool soft, bool momentum) {}
+void ICollider::handle_collider_collision(Collider const& collider, bool momentum) {}
 
 void ICollider::render(sf::RenderWindow& win, sf::Vector2f cam) { p_vicinity.render(win, cam, sf::Color{40, 40, 40, 40}); }
 
@@ -39,6 +39,10 @@ void ICollider::register_chunks(world::Map& map) {
 	std::sort(m_chunks.begin(), m_chunks.end());
 	if (old_chunks != m_chunks) { map.refresh_collider_chunks(old_chunks, m_chunks, this); }
 }
+
+bool ICollider::should_exclude(ICollider const& other) const { return m_exclusion_targets.any(other.get_exclusion_traits()); }
+
+bool ICollider::should_softly_collide_with(ICollider const& other) const { return m_soft_targets.any(other.get_soft_traits()); }
 
 std::vector<int> ICollider::compute_chunks(world::Map& map) {
 	m_chunks.clear();

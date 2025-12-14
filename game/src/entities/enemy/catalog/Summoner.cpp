@@ -11,7 +11,7 @@ bool b_summoner_debug{};
 constexpr auto summoner_framerate = 16;
 
 Summoner::Summoner(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, "summoner"), m_variant{static_cast<SummonerVariant>(variant)}, m_map{&map}, m_cooldowns{.post_summon{2400}, .walk{200}, .post_walk{1400}, .post_hurt{20}, .pulse{48}}, m_services{&svc}, m_attacks{.pulse{}},
+	: Enemy(svc, map, "summoner"), m_variant{static_cast<SummonerVariant>(variant)}, m_map{&map}, m_cooldowns{.post_summon{2400}, .walk{200}, .post_walk{1400}, .post_hurt{20}, .pulse{48}}, m_services{&svc}, m_attacks{.pulse{}},
 	  m_pulse(svc, "pulse"), m_magic{svc, {40.f, 96.f}, colors::white, "guardian_magic"} {
 	m_params = {{"idle", {0, 5, summoner_framerate * 2, -1}},
 				{"walk", {5, 4, summoner_framerate * 2, -1}},
@@ -28,7 +28,7 @@ Summoner::Summoner(automa::ServiceProvider& svc, world::Map& map, int variant)
 	m_pulse.get().set_team(arms::Team::guardian);
 	m_magic.deactivate();
 	m_distant_range.set_dimensions({450, 800});
-	collider.physics.set_friction_componentwise({0.95f, 0.99f});
+	get_collider().physics.set_friction_componentwise({0.95f, 0.99f});
 
 	m_home = {std::numeric_limits<float>::max(), 0.f};
 	for (auto& pt : map.home_points) {
@@ -47,17 +47,17 @@ void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	m_cooldowns.pulse.update();
 
 	// positioning
-	m_distant_range.set_position(collider.bounding_box.get_position() - (m_distant_range.get_dimensions() * 0.5f) + (collider.dimensions * 0.5f));
+	m_distant_range.set_position(get_collider().bounding_box.get_position() - (m_distant_range.get_dimensions() * 0.5f) + (get_collider().dimensions * 0.5f));
 
 	Enemy::update(svc, map, player);
 	face_player(player);
 
 	// effects
-	m_magic.set_position(collider.physics.position);
+	m_magic.set_position(get_collider().physics.position);
 	m_magic.update(svc);
 
 	m_pulse.update(svc, map, *this);
-	m_player_position = player.collider.get_center();
+	m_player_position = player.get_collider().get_center();
 
 	// melee
 	for (auto& attack : m_attacks.pulse) {
@@ -70,13 +70,14 @@ void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			if (animation.get_frame_count() > 1 || !m_cooldowns.pulse.running()) { attack.disable(); }
 		}
 		if (attack.hit.active()) {
-			if (attack.hit.within_bounds(player.collider.bounding_box)) {
+			if (attack.hit.within_bounds(player.get_collider().bounding_box)) {
 				if (!player.invincible()) { player.accumulated_forces.push_back({directions.actual.as_float() * 4.f, -2.f}); }
 				player.hurt(damage);
 			}
 			for (auto& proj : map.active_projectiles) {
 				if (proj.get_team() == arms::Team::guardian) { continue; }
 				if (attack.hit.within_bounds(proj.get_collider())) {
+					NANI_LOG_DEBUG(m_logger, ":FKAS:");
 					map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position()));
 					random::percent_chance(50) ? svc.soundboard.flags.summoner.set(audio::Summoner::block_1) : svc.soundboard.flags.summoner.set(audio::Summoner::block_2);
 					proj.destroy(false);
@@ -95,7 +96,7 @@ void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			if (random::percent_chance(20) && !m_cooldowns.post_walk.running()) { request(SummonerState::walk); }
 		}
 	}
-	if (player.collider.bounding_box.overlaps(collider.vicinity) && !m_cooldowns.post_walk.running()) { request(SummonerState::walk); }
+	if (player.get_collider().bounding_box.overlaps(get_collider().vicinity) && !m_cooldowns.post_walk.running()) { request(SummonerState::walk); }
 
 	// caution
 	auto incoming_projectile = m_caution.projectile_detected(map, physical.alert_range, arms::Team::skycorps);
@@ -117,7 +118,7 @@ void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	}
 
 	// gameplay logic
-	if (collider.get_center().x < m_home.x || collider.get_center().x > m_home.y) {
+	if (get_collider().get_center().x < m_home.x || get_collider().get_center().x > m_home.y) {
 		request(SummonerState::walk);
 		flags.state.set(StateFlags::out_of_zone);
 	}
@@ -132,11 +133,11 @@ void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 
 void Summoner::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Enemy::render(svc, win, cam);
-	if (b_summoner_debug) {
-		for (auto& attack : m_attacks.pulse) {
-			if (attack.hit.active()) { attack.render(win, cam); }
-		}
+	for (auto& attack : m_attacks.pulse) {
+		if (attack.hit.active()) {}
+		attack.render(win, cam);
 	}
+
 	m_magic.render(win, cam);
 }
 
@@ -167,7 +168,7 @@ fsm::StateFunction Summoner::update_turn() {
 
 fsm::StateFunction Summoner::update_dodge() {
 	m_state.actual = SummonerState::dodge;
-	collider.physics.acceleration.x = 12.f * directions.actual.as_float();
+	get_collider().physics.acceleration.x = 12.f * directions.actual.as_float();
 	if (animation.complete()) {
 		request_flip();
 		if (change_state(SummonerState::turn, get_params("turn"))) { return SUMMONER_BIND(update_turn); }
@@ -183,9 +184,12 @@ fsm::StateFunction Summoner::update_dodge() {
 
 fsm::StateFunction Summoner::update_walk() {
 	m_state.actual = SummonerState::walk;
-	collider.physics.acceleration.x = directions.actual.as_float() * 1.f;
+	get_collider().physics.acceleration.x = directions.actual.as_float() * 1.f;
 	if (animation.just_started()) { m_cooldowns.walk.start(); }
-	if (change_state(SummonerState::horizontal_pulse, get_params("horizontal_pulse"))) { return SUMMONER_BIND(update_horizontal_pulse); }
+	if (change_state(SummonerState::horizontal_pulse, get_params("horizontal_pulse"))) {
+		NANI_LOG_DEBUG(m_logger, ":dgsfgdsf:");
+		return SUMMONER_BIND(update_horizontal_pulse);
+	}
 	if (change_state(SummonerState::vertical_pulse, get_params("vertical_pulse"))) { return SUMMONER_BIND(update_vertical_pulse); }
 	if (m_cooldowns.walk.is_almost_complete()) {
 		m_cooldowns.post_walk.start();
@@ -201,7 +205,7 @@ fsm::StateFunction Summoner::update_horizontal_pulse() {
 	m_state.actual = SummonerState::horizontal_pulse;
 	if (animation.just_started()) {
 		m_cooldowns.pulse.start();
-		auto bp = collider.get_center();
+		auto bp = get_collider().get_center();
 		bp.x += 52.f * directions.actual.as_float();
 		m_pulse.get().set_barrel_point(bp);
 		m_map->spawn_projectile_at(*m_services, m_pulse.get(), m_pulse.get().get_barrel_point(), m_player_position - m_pulse.get().get_barrel_point());
@@ -209,7 +213,7 @@ fsm::StateFunction Summoner::update_horizontal_pulse() {
 	}
 	for (auto [i, orb] : std::views::enumerate(m_attacks.pulse)) {
 		auto offset = i != 1 ? 4.f : 0.f;
-		orb.set_position(collider.get_center() + sf::Vector2f{directions.actual.as_float() * (48.f - offset), -8.f + (i - 1) * 32.f});
+		orb.set_position(get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * (48.f - offset), -8.f + (i - 1) * 32.f});
 	}
 	if (animation.is_complete()) {
 		if (change_state(SummonerState::dodge, get_params("dodge"))) { return SUMMONER_BIND(update_dodge); }
@@ -225,7 +229,7 @@ fsm::StateFunction Summoner::update_vertical_pulse() {
 	m_state.actual = SummonerState::vertical_pulse;
 	if (animation.just_started()) {
 		m_cooldowns.pulse.start();
-		auto bp = collider.get_center();
+		auto bp = get_collider().get_center();
 		bp.y -= 52.f;
 		m_pulse.get().set_barrel_point(bp);
 		m_map->spawn_projectile_at(*m_services, m_pulse.get(), m_pulse.get().get_barrel_point(), m_player_position - m_pulse.get().get_barrel_point());
@@ -233,7 +237,7 @@ fsm::StateFunction Summoner::update_vertical_pulse() {
 	}
 	for (auto [i, orb] : std::views::enumerate(m_attacks.pulse)) {
 		auto offset = i != 1 ? 4.f : 0.f;
-		orb.set_position(collider.get_center() + sf::Vector2f{(directions.actual.as_float() * 6.f) + (i - 1) * 32.f, -52.f + offset});
+		orb.set_position(get_collider().get_center() + sf::Vector2f{(directions.actual.as_float() * 6.f) + (i - 1) * 32.f, -52.f + offset});
 	}
 	if (animation.is_complete()) {
 		if (change_state(SummonerState::dodge, get_params("dodge"))) { return SUMMONER_BIND(update_dodge); }
@@ -264,7 +268,7 @@ fsm::StateFunction Summoner::update_summon() {
 			auto xoffset = random::random_range_float(0.f, 280.f) * directions.actual.as_float();
 			auto yoffset = random::random_range_float(-220.f, -190.f);
 			auto offset = sf::Vector2f{xoffset, yoffset};
-			m_pulse.get().set_barrel_point(collider.get_center() + offset);
+			m_pulse.get().set_barrel_point(get_collider().get_center() + offset);
 			m_map->spawn_projectile_at(*m_services, m_pulse.get(), m_pulse.get().get_barrel_point(), m_player_position - m_pulse.get().get_barrel_point());
 			m_services->soundboard.flags.weapon.set(audio::Weapon::pulse);
 		}
@@ -275,7 +279,7 @@ fsm::StateFunction Summoner::update_summon() {
 			auto xoffset = random::random_range_float(0.f, 280.f) * directions.actual.as_float();
 			auto yoffset = random::random_range_float(-220.f, -190.f);
 			auto offset = sf::Vector2f{xoffset, yoffset};
-			m_map->spawn_enemy(17, collider.get_center() + offset);
+			m_map->spawn_enemy(17, get_collider().get_center() + offset);
 		}
 	}
 	m_counters.summon.update();

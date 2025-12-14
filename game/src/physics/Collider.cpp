@@ -220,7 +220,7 @@ void Collider::detect_map_collision(world::Map& map) {
 }
 
 void Collider::correct_x(sf::Vector2f mtv, bool has_velocity) {
-	if (flags.general.test(General::ignore_resolution)) { return; }
+	if (has_attribute(ColliderAttributes::no_collision)) { return; }
 	auto xdist = predictive_horizontal.get_position().x + horizontal_detector_buffer - physics.position.x;
 	auto correction = xdist + mtv.x;
 	physics.position.x += correction;
@@ -228,7 +228,7 @@ void Collider::correct_x(sf::Vector2f mtv, bool has_velocity) {
 }
 
 void Collider::correct_y(sf::Vector2f mtv) {
-	if (flags.general.test(General::ignore_resolution)) { return; }
+	if (has_attribute(ColliderAttributes::no_collision)) { return; }
 	// for large mtv values, overcorrect to prevent clipping
 	if (ccm::abs(mtv.x) > 12.f || ccm::abs(mtv.y) > 12.f) {
 		mtv.x = ccm::abs(mtv.y) > 0 ? mtv.y : mtv.x;
@@ -241,7 +241,7 @@ void Collider::correct_y(sf::Vector2f mtv) {
 }
 
 void Collider::correct_x_y(sf::Vector2f mtv) {
-	if (flags.general.test(General::ignore_resolution)) { return; }
+	if (has_attribute(ColliderAttributes::no_collision)) { return; }
 	auto xdist = predictive_combined.get_position().x - physics.position.x;
 	auto correction = xdist + mtv.x;
 	physics.position.x += correction;
@@ -253,7 +253,7 @@ void Collider::correct_x_y(sf::Vector2f mtv) {
 }
 
 void Collider::correct_corner(sf::Vector2f mtv) {
-	if (flags.general.test(General::ignore_resolution)) { return; }
+	if (has_attribute(ColliderAttributes::no_collision)) { return; }
 	if (ccm::abs(mtv.x) >= ccm::abs(mtv.y)) {
 		physics.position.x = predictive_combined.get_position().x + mtv.x;
 		physics.zero_x();
@@ -279,6 +279,7 @@ void Collider::resolve_depths() {
 }
 
 void Collider::handle_collision(ICollider& other) {
+	if (other.should_exclude(*this)) { return; }
 	if (!other.has_attribute(ColliderAttributes::fixed)) { other.handle_collider_collision(*this); }
 }
 
@@ -291,7 +292,7 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 		sync_components();
 		return ret;
 	}
-	if (flags.general.test(General::ignore_resolution)) { return ret; }
+	if (has_attribute(ColliderAttributes::no_collision)) { return ret; }
 	if (!vicinity.overlaps(collider)) { return ret; }
 	if (collision_depths) {
 		if (collision_depths.value().crushed()) { return ret; }
@@ -364,24 +365,26 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 	return ret;
 }
 
-void Collider::handle_collider_collision(Collider const& collider, bool soft, bool momentum) {
+void Collider::handle_collider_collision(Collider const& collider, bool momentum) {
+	if (collider.should_exclude(*this)) { return; }
 	if (!vicinity.overlaps(collider.bounding_box)) { return; }
 	if (collider.has_attribute(ColliderAttributes::top_only)) {
 		if (jumpbox.get_position().y > collider.physics.position.y + 4.f || physics.acceleration.y < 0.0f) { return; }
 	}
-	if (handle_collider_collision(collider.bounding_box, soft, collider.physics.apparent_velocity() * 2.f)) {
+	if (handle_collider_collision(collider.bounding_box, collider.should_softly_collide_with(collider), collider.physics.apparent_velocity() * 2.f)) {
 		if (momentum) { physics.forced_momentum = collider.physics.actual_velocity(); }
 	}
 	if (jumpbox.overlaps(collider.bounding_box)) { flags.external_state.set(ExternalState::grounded); }
 }
 
-void Collider::update(automa::ServiceProvider& svc, bool simple) {
-	ICollider::update(svc, simple);
+void Collider::update(automa::ServiceProvider& svc) {
+	ICollider::update(svc);
+	if (has_flag_set(ColliderFlags::no_physics)) { return; }
 	if (!on_ramp()) { acceleration_multiplier = 1.f; }
 	flags.external_state = {};
 	adjust_acceleration();
 	if (!has_attribute(ColliderAttributes::fixed)) {
-		if (!flags.general.test(General::no_move)) { simple ? physics.simple_update() : physics.update(svc); }
+		if (!flags.general.test(General::no_move)) { has_flag_set(ColliderFlags::simple) ? physics.simple_update() : physics.update(svc); }
 	}
 	sync_components();
 	flags.state.reset(State::just_collided);

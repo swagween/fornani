@@ -19,7 +19,9 @@ class RegisteredCollider {
 	RegisteredCollider(RegisteredCollider&&) = delete;
 
 	Collider* get() const { return m_collider.value(); }
+	Collider& get_reference() const { return *m_collider.value(); }
 	CircleCollider* get_circle() const { return m_circle_collider.value(); }
+	CircleCollider& get_reference_circle() const { return *m_circle_collider.value(); }
 
 	RegisteredCollider(RegisteredCollider const&) = delete;
 	RegisteredCollider& operator=(RegisteredCollider const&) = delete;

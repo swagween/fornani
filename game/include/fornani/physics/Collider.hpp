@@ -22,7 +22,7 @@ constexpr auto default_jumpbox_height = 4.0f;
 constexpr auto default_detector_width = 4.f;
 constexpr auto default_detector_height = 18.f;
 
-enum class General { ignore_resolution, complex, pushable, soft, no_move };
+enum class General { complex, pushable, soft, no_move };
 enum class Animation { just_landed, sliding };
 enum class State {
 	just_collided,
@@ -80,8 +80,8 @@ class Collider : public ICollider {
 	void resolve_depths();
 	void handle_collision(ICollider& other);
 	bool handle_collider_collision(Shape const& collider, bool soft = false, sf::Vector2f velocity = {}, float force = 0.01f) override; // returns true if grounded on collider
-	void handle_collider_collision(Collider const& collider, bool soft = false, bool momentum = false) override;
-	void update(automa::ServiceProvider& svc, bool simple = false) override;
+	void handle_collider_collision(Collider const& collider, bool momentum = false) override;
+	void update(automa::ServiceProvider& svc) override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam) override;
 	void set_position(sf::Vector2f pos);
 	void set_direction(Direction to) { m_direction = to; }

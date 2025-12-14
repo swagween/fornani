@@ -5,12 +5,12 @@
 
 namespace fornani::enemy {
 
-	enum class AnimState { idle, turn, run, hurt, charge, bark, spew, sit, sleep };
+enum class AnimState { idle, turn, run, hurt, charge, bark, spew, sit, sleep };
 
 class Frdog final : public Enemy {
 
   public:
-	explicit Frdog(automa::ServiceProvider& svc);
+	explicit Frdog(automa::ServiceProvider& svc, world::Map& map);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 
 	fsm::StateFunction state_function = std::bind(&Frdog::update_idle, this);
@@ -24,7 +24,7 @@ class Frdog final : public Enemy {
 	fsm::StateFunction update_bark();
 	fsm::StateFunction update_spew();
 
-	private:
+  private:
 	util::BitFlags<AnimState> state{};
 
 	// lookup, duration, framerate, num_loops
@@ -37,7 +37,6 @@ class Frdog final : public Enemy {
 	anim::Parameters spew{7, 2, 20, 0};
 	anim::Parameters run{16, 4, 24, -1};
 	anim::Parameters bark{15, 1, 22, 0};
-
 };
 
-} // namespace enemy
+} // namespace fornani::enemy

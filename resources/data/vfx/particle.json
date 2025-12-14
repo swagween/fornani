@@ -16,10 +16,10 @@
 	},
 
 	"player_crush": {
-		"load": 14,
+		"load": 20,
 		"rate": 120.0,
 		"expulsion": 90.0,
-		"expulsion_variance": 80.0,
+		"expulsion_variance": 88.0,
 		"cone": 0.1,
 		"friction": 0.995,
 		"elasticity": 0.9,
@@ -28,7 +28,9 @@
 		"lifespan_variance": 200,
 		"dimensions": [ 4, 4 ],
 		"animated": false,
-		"colliding": true
+		"colliding": true,
+		"fader": true,
+		"color": "periwinkle"
 	},
 
 	"thick_burst": {

@@ -14,27 +14,6 @@
         ]
       }
     ],
-    "npcs": [
-      {
-        "background": false,
-        "dimensions": [
-          1,
-          1
-        ],
-        "hidden": false,
-        "id": 93301,
-        "label": "wames",
-        "position": [
-          21,
-          23
-        ],
-        "suites": [
-          [
-            1
-          ]
-        ]
-      }
-    ],
     "portals": [
       {
         "activate_on_contact": false,
@@ -89,6 +68,11 @@
     "ambience": "",
     "background": 3,
     "biome": "overturned",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -128,7 +112,9 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 1
+    "special_drop_id": 0,
+    "style": 1,
+    "use_template": false
   },
   "tile": {
     "flags": {

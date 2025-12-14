@@ -22,7 +22,8 @@ enum class NPCAnimationState { idle, turn, walk, inspect, fall, land };
 class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState> {
   public:
 	NPC(automa::ServiceProvider& svc, dj::Json const& in);
-	NPC(automa::ServiceProvider& svc, std::string_view label);
+	NPC(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in);
+	NPC(automa::ServiceProvider& svc, world::Map& map, std::string_view label);
 	NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vector<std::vector<int>> const suites);
 	void init(automa::ServiceProvider& svc, dj::Json const& in_data);
 

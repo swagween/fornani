@@ -5,11 +5,11 @@
 
 namespace fornani::enemy {
 
-Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction) : Enemy(svc, "beamstalk", false, 0, start_direction), m_services(&svc), m_map(&map), beam(svc, "green_beam"), fire_rate{4} {
+Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction) : Enemy(svc, map, "beamstalk", false, 0, start_direction), m_services(&svc), m_map(&map), beam(svc, "green_beam"), fire_rate{4} {
 	animation.set_params(idle);
-	collider.physics.maximum_velocity = {8.f, 12.f};
-	collider.physics.air_friction = {0.95f, 0.999f};
-	// collider.flags.general.set(shape::General::complex);
+	get_collider().physics.maximum_velocity = {8.f, 12.f};
+	get_collider().physics.air_friction = {0.95f, 0.999f};
+	// get_collider().flags.general.set(shape::General::complex);
 	beam.get().set_team(arms::Team::beast);
 	if (start_direction.lengthSquared() == 0) { start_direction.x = -1; } // default to facing left
 	directions.actual = Direction(start_direction);
@@ -25,7 +25,7 @@ void Beamstalk::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 
 	Enemy::update(svc, map, player);
 	beam.update(svc, map, *this);
-	auto bp = collider.get_center();
+	auto bp = get_collider().get_center();
 	bp.x += 84.f * directions.actual.as_float();
 	bp.y -= 16.f;
 	beam.get().set_barrel_point(bp);
@@ -62,7 +62,7 @@ fsm::StateFunction Beamstalk::update_charge() {
 	if (animation.get_frame() > 6) {
 		if (m_services->ticker.every_x_ticks(static_cast<int>(fire_rate))) {
 			m_map->spawn_projectile_at(*m_services, beam.get(), beam.get().get_barrel_point());
-			collider.physics.apply_force({-beam.get().get_recoil(), 0.f});
+			get_collider().physics.apply_force({-beam.get().get_recoil(), 0.f});
 		}
 	}
 	if (animation.complete()) {
@@ -77,7 +77,7 @@ fsm::StateFunction Beamstalk::update_shoot() {
 	animation.label = "shoot";
 	if (m_services->ticker.every_x_ticks(static_cast<int>(fire_rate))) {
 		m_map->spawn_projectile_at(*m_services, beam.get(), beam.get().get_barrel_point());
-		collider.physics.apply_force(beam.get().get_recoil_force());
+		get_collider().physics.apply_force(beam.get().get_recoil_force());
 	}
 	if (animation.complete()) {
 		post_beam.start();

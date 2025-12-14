@@ -7,13 +7,13 @@
 namespace fornani::enemy {
 
 Caster::Caster(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, "caster"), m_services(&svc), m_map(&map), parts{.scepter{svc.assets.get_texture("caster_scepter"), 2.0f, 0.85f, {-16.f, 38.f}}, .wand{svc.assets.get_texture("caster_wand"), 2.0f, 0.85f, {-40.f, 48.f}}},
+	: Enemy(svc, map, "caster"), m_services(&svc), m_map(&map), parts{.scepter{svc.assets.get_texture("caster_scepter"), 2.0f, 0.85f, {-16.f, 38.f}}, .wand{svc.assets.get_texture("caster_wand"), 2.0f, 0.85f, {-40.f, 48.f}}},
 	  energy_ball(svc, "energy_ball"), m_variant{static_cast<CasterVariant>(variant)} {
 	animation.set_params(dormant);
 	if (map.get_style_id() == 5) { cooldowns.awaken = util::Cooldown{4}; }
-	collider.physics.maximum_velocity = {8.f, 12.f};
-	collider.physics.air_friction = {0.9f, 0.9f};
-	collider.flags.general.set(shape::General::complex);
+	get_collider().physics.maximum_velocity = {8.f, 12.f};
+	get_collider().physics.air_friction = {0.9f, 0.9f};
+	get_collider().flags.general.set(shape::General::complex);
 	directions.desired.lnr = LNR::left;
 	directions.actual.lnr = LNR::left;
 	directions.movement.lnr = LNR::neutral;
@@ -42,43 +42,43 @@ void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		auto signal_distance = sf::Vector2f{-300.f, 0.f};
 		auto standard_distance = sf::Vector2f{-60.f, -140.f};
 		if (state == CasterState::idle) {
-			if (player.collider.grounded()) {
+			if (player.get_collider().grounded()) {
 			} else {
 				idle_distance.y = -120.f;
 			}
 			if (directions.actual.lnr == LNR::right) { idle_distance.x *= -1; }
 			if (random::percent_chance(12) && svc.ticker.every_x_ticks(10)) { idle_distance.x *= -1; }
-			target.set_target_position(player.collider.get_center() + idle_distance);
+			target.set_target_position(player.get_collider().get_center() + idle_distance);
 		}
 		if (state == CasterState::signal) {
-			if (player.collider.grounded()) {
+			if (player.get_collider().grounded()) {
 				signal_distance.y = 0.f;
 			} else {
 				signal_distance.y = -80.f;
 			}
 			if (directions.actual.lnr == LNR::right) { signal_distance.x *= -1; }
-			target.set_target_position(player.collider.get_center() + signal_distance);
+			target.set_target_position(player.get_collider().get_center() + signal_distance);
 		} else if (!is_dormant()) {
 			if (directions.actual.lnr == LNR::right) { standard_distance.x *= -1; }
-			target.set_target_position(player.collider.get_center() + standard_distance);
+			target.set_target_position(player.get_collider().get_center() + standard_distance);
 		} else {
-			target.set_position(collider.physics.position);
+			target.set_position(get_collider().physics.position);
 		}
-		if (!is_dormant()) { collider.physics.position = target.position(); }
+		if (!is_dormant()) { get_collider().physics.position = target.position(); }
 	}
 
 	energy_ball.update(svc, map, *this);
-	auto bp = collider.get_center();
+	auto bp = get_collider().get_center();
 	bp.y -= 48.f;
 	energy_ball.get().set_barrel_point(bp);
-	attack_target = player.collider.get_center() - energy_ball.barrel_point();
+	attack_target = player.get_collider().get_center() - energy_ball.barrel_point();
 
 	cooldowns.post_cast.update();
 	if (flags.state.test(StateFlags::invisible)) {
 		cooldowns.invisibility.update();
 		if (cooldowns.invisibility.is_complete()) {
 			flags.state.reset(StateFlags::invisible);
-			m_map->effects.push_back(entity::Effect(*m_services, "small_flash", collider.physics.position));
+			m_map->effects.push_back(entity::Effect(*m_services, "small_flash", get_collider().physics.position));
 		}
 	}
 
@@ -90,12 +90,12 @@ void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 
 	// reset animation states to determine next animation state
 	state = {};
-	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
+	directions.desired.lnr = (player.get_collider().get_center().x < get_collider().get_center().x) ? LNR::left : LNR::right;
 	directions.movement.lnr = target.collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
 	Enemy::update(svc, map, player);
 	if (!is_dormant()) {
-		parts.scepter.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
-		parts.wand.update(svc, map, player, directions.actual, Drawable::get_scale(), collider.get_center());
+		parts.scepter.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center());
+		parts.wand.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center());
 	}
 
 	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
@@ -128,23 +128,23 @@ void Caster::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 }
 
 void Caster::teleport() {
-	auto original = collider.physics.position;
+	auto original = get_collider().physics.position;
 	bool done{};
 	int ctr{};
 	while (!done && ctr < 32) {
 		auto attempt = random::random_vector_float(-300.f, 300.f);
-		collider.physics.position += attempt;
-		collider.sync_components();
-		if (m_map->overlaps_middleground(collider.bounding_box)) {
-			collider.physics.position = original;
-			collider.sync_components();
+		get_collider().physics.position += attempt;
+		get_collider().sync_components();
+		if (m_map->overlaps_middleground(get_collider().bounding_box)) {
+			get_collider().physics.position = original;
+			get_collider().sync_components();
 		} else {
 			done = true;
 			m_map->effects.push_back(entity::Effect(*m_services, "medium_flash", original));
 			m_services->soundboard.flags.world.set(audio::World::block_toggle);
-			target.set_position(collider.physics.position);
-			parts.wand.set_position(collider.get_center());
-			parts.scepter.set_position(collider.get_center());
+			target.set_position(get_collider().physics.position);
+			parts.wand.set_position(get_collider().get_center());
+			parts.scepter.set_position(get_collider().get_center());
 			flags.state.set(StateFlags::invisible);
 			cooldowns.invisibility.start();
 		}
@@ -236,7 +236,7 @@ fsm::StateFunction Caster::update_dormant() {
 	if (cooldowns.awaken.is_complete() || flags.state.test(StateFlags::shot)) {
 		cooldowns.awaken.cancel();
 		flags.state.set(StateFlags::vulnerable);
-		m_map->effects.push_back(entity::Effect(*m_services, "small_explosion", collider.physics.position));
+		m_map->effects.push_back(entity::Effect(*m_services, "small_explosion", get_collider().physics.position));
 		m_services->soundboard.flags.world.set(audio::World::block_toggle);
 		state = CasterState::idle;
 		animation.set_params(idle);

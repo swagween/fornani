@@ -1,24 +1,25 @@
 
-#include "fornani/world/Map.hpp"
-#include <fornani/gui/console/Console.hpp>
-#include <ranges>
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/graphics/Colors.hpp"
-#include "fornani/gui/Portrait.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/setup/EnumLookups.hpp"
-#include "fornani/utils/Math.hpp"
-#include "fornani/utils/Random.hpp"
-
 #include <imgui.h>
 #include <ccmath/ext/clamp.hpp>
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/graphics/Colors.hpp>
+#include <fornani/gui/Portrait.hpp>
+#include <fornani/gui/console/Console.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/setup/EnumLookups.hpp>
+#include <fornani/utils/Math.hpp>
+#include <fornani/utils/Random.hpp>
+#include <fornani/world/Map.hpp>
+#include <ranges>
 
 static bool b_transition_in{};
 
 namespace fornani::world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player)
-	: player(&player), enemy_catalog(svc), transition(svc.window->f_screen_dimensions(), 96), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}} {}
+	: player(&player), enemy_catalog(svc), transition(svc.window->f_screen_dimensions(), 96), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}} {
+	player.collider.clear_chunks();
+}
 
 void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number) {
 
@@ -291,7 +292,7 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 	m_chunks.resize(static_cast<std::size_t>((dimensions.x / constants::u32_chunk_size) * (dimensions.y / constants::u32_chunk_size)));
 
 	m_attributes.border_color = m_attributes.style_id == 2 ? colors::pioneer_black : colors::ui_black;
-	if (entities.is_object()) { m_entities = EntitySet(svc, svc.finder, entities, m_metadata.room); }
+	if (entities.is_object()) { m_entities = EntitySet(svc, *this, svc.finder, entities, m_metadata.room); }
 
 	generate_collidable_layer(live);
 }
@@ -647,7 +648,8 @@ auto Map::get_chunk_id_from_position(sf::Vector2f pos) const -> std::uint8_t {
 	auto clamped = sf::Vector2f{std::clamp(pos.x, 0.f, real_dimensions.x), std::clamp(pos.y, 0.f, real_dimensions.y)};
 	auto clookup = (clamped / constants::f_cell_size) / constants::f_chunk_size;
 	auto ulookup = sf::Vector2u{clookup};
-	return static_cast<std::uint8_t>(ulookup.y * get_chunk_dimensions().x + ulookup.x);
+	auto ret = std::clamp(0u, static_cast<unsigned int>(m_chunks.size() - 1), ulookup.y * get_chunk_dimensions().x + ulookup.x);
+	return static_cast<std::uint8_t>(ret);
 }
 
 void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target, float speed_multiplier) {
@@ -757,7 +759,10 @@ void Map::register_collider(std::unique_ptr<shape::ICollider> collider) {
 	auto chunk_ids = collider->compute_chunks(*this);
 	m_colliders.push_back(std::move(collider));
 	auto collider_ptr = m_colliders.back().get();
-	for (auto id : chunk_ids) { m_chunks[id].push_back(collider_ptr); }
+	for (auto id : chunk_ids) {
+		m_chunks[id].push_back(collider_ptr);
+		NANI_LOG_DEBUG(m_logger, "Registering chunk {}", id);
+	}
 	NANI_LOG_DEBUG(m_logger, "Registered Collider with {} chunks", chunk_ids.size());
 }
 
@@ -768,6 +773,7 @@ void Map::unregister_collider(shape::ICollider* collider) {
 
 void Map::refresh_collider_chunks(Register<int> const& old_chunks, Register<int> const& new_chunks, shape::ICollider* ptr) {
 	for (auto chunk : old_chunks) {
+		NANI_LOG_DEBUG(m_logger, "OLD: [{}]", chunk);
 		if (!new_chunks.contains(chunk)) {
 			auto& bucket = m_chunks[chunk];
 			bucket.erase(std::remove(bucket.begin(), bucket.end(), ptr), bucket.end());
@@ -775,6 +781,7 @@ void Map::refresh_collider_chunks(Register<int> const& old_chunks, Register<int>
 	}
 
 	for (auto chunk : new_chunks) {
+		NANI_LOG_DEBUG(m_logger, "NEW: [{}]", chunk);
 		if (!old_chunks.contains(chunk)) { m_chunks[chunk].push_back(ptr); }
 	}
 }
@@ -871,6 +878,8 @@ void Map::shake_camera() { flags.state.set(LevelState::camera_shake); }
 
 void Map::clear() {
 	dimensions = {};
+	m_chunks.clear();
+	m_colliders.clear();
 	// portals.clear();
 	platforms.clear();
 	breakables.clear();
