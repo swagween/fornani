@@ -126,6 +126,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 		NANI_LOG_WARN(m_logger, "Map json not found!");
 		success = false;
 	}
+
 	// fetch template data
 	auto const& in_template = svc.data.map_templates;
 	auto bstr = metadata["meta"]["biome"].as_string();
@@ -133,7 +134,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 	if (bit == svc.data.map_templates.end() && success) { NANI_LOG_WARN(m_logger, "Tried to fetch template data for a nonexistent biome: {}!", it->biome_label); }
 
 	auto const& meta = metadata["meta"];
-	auto const& t_meta = bit->metadata;
+	auto const& t_meta = bit == svc.data.map_templates.end() ? meta : bit->metadata;
 	assert(!t_meta.is_null());
 	m_use_template = meta["use_template"].as_bool();
 	m_attributes = m_use_template ? fornani::world::MapAttributes{t_meta} : fornani::world::MapAttributes{meta};

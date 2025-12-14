@@ -93,7 +93,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	player.force_camera_center();
 
 	// TODO: refactor player initialization
-	player.collider.physics.zero();
+	player.get_collider().physics.zero();
 
 	bool found_one{};
 	// only search for door entry if room was not loaded from main menu and player didn't die

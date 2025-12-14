@@ -49,10 +49,10 @@ void Inspectable::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_
 	/*auto quest_status = svc.quest.get_progression(quest::QuestType::inspectable, native_id);
 	if (quest_status > 0) { current_alt = quest_status; }*/
 
-	if (bounding_box.overlaps(player.collider.hurtbox)) {
+	if (bounding_box.overlaps(player.get_collider().hurtbox)) {
 		if (!flags.test(InspectableFlags::hovered)) { flags.set(InspectableFlags::hovered_trigger); }
 		flags.set(InspectableFlags::hovered);
-		if (attributes.test(InspectableAttributes::activate_on_contact) && flags.test(InspectableFlags::can_engage) && player.collider.grounded()) {
+		if (attributes.test(InspectableAttributes::activate_on_contact) && flags.test(InspectableFlags::can_engage) && player.get_collider().grounded()) {
 			flags.set(InspectableFlags::activated);
 			flags.reset(InspectableFlags::can_engage);
 		}

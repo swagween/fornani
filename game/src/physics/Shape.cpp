@@ -213,7 +213,7 @@ bool Shape::circle_SAT(sf::CircleShape const& circle) const {
 	return true;
 }
 
-sf::Vector2f Shape::circle_SAT_MTV(sf::CircleShape const& circle) {
+sf::Vector2f Shape::circle_SAT_MTV(sf::CircleShape const& circle) const {
 	auto ret = sf::Vector2f{};
 	auto min_overlap = std::numeric_limits<float>::max();
 	auto normals = get_normals();

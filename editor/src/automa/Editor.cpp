@@ -995,6 +995,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					ImGui::Text("Left Mouse: %s", left_mouse_pressed() ? "Pressed" : "");
 					ImGui::Text("Right Mouse: %s", right_mouse_pressed() ? "Pressed" : "");
 					ImGui::Separator();
+					if (current_tool->current_entity) { ImGui::Text("entity moved: %b", current_tool->current_entity.value()->moved); }
 					static bool current{};
 					ImGui::Checkbox("##current", &current);
 					ImGui::SameLine();

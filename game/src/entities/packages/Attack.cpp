@@ -16,8 +16,8 @@ void Attack::set_position(sf::Vector2f position) {
 }
 
 void Attack::handle_player(player::Player& player) {
-	sensor.within_bounds(player.collider.bounding_box) ? sensor.activate() : sensor.deactivate();
-	hit.within_bounds(player.collider.bounding_box) ? hit.activate() : hit.deactivate();
+	sensor.within_bounds(player.get_collider().bounding_box) ? sensor.activate() : sensor.deactivate();
+	hit.within_bounds(player.get_collider().bounding_box) ? hit.activate() : hit.deactivate();
 }
 
 void Attack::set_constant_radius(float to) {

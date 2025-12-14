@@ -28,7 +28,7 @@ class Shape {
 	Vec get_MTV(Shape const& obb1, Shape const& obb2);
 	bool SAT(Shape const& other);
 	bool circle_SAT(sf::CircleShape const& circle) const;
-	sf::Vector2f circle_SAT_MTV(sf::CircleShape const& circle);
+	sf::Vector2f circle_SAT_MTV(sf::CircleShape const& circle) const;
 	bool overlaps(Shape const& other) const;
 	bool overlaps(sf::Vector2f point) const;
 	bool contains_point(Vec point);

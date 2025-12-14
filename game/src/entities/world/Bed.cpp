@@ -26,7 +26,7 @@ void Bed::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	sparkler.set_position(bounding_box.get_position());
 	if (player.is_busy() || player.is_in_custom_sleep_event()) { return; }
 
-	if (player.collider.bounding_box.overlaps(bounding_box)) {
+	if (player.get_collider().bounding_box.overlaps(bounding_box)) {
 		flags.set(BedFlags::active);
 		sparkler.activate();
 		fadeout.start();

@@ -8,9 +8,11 @@ namespace fornani::enemy {
 Eyebit::Eyebit(automa::ServiceProvider& svc, world::Map& map, bool spawned) : Enemy(svc, map, "eyebit", spawned) {
 	m_params = {{"idle", {0, 4, 28, -1}}, {"turn", {4, 1, 38, 0}}};
 	animation.set_params(get_params("idle"));
-	seeker_cooldown.start(2);
 	flags.general.set(GeneralFlags::transcendent);
 	flags.state.set(StateFlags::vulnerable);
+	flags.general.reset(GeneralFlags::gravity);
+	flags.state.set(StateFlags::simple_physics);
+	get_collider().physics.set_friction_componentwise({0.98f, 0.98f});
 }
 
 void Eyebit::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -18,23 +20,14 @@ void Eyebit::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		Enemy::update(svc, map, player);
 		return;
 	}
-	if (!seeker_cooldown.is_complete()) { seeker.set_position(get_collider().physics.position); }
-	seeker_cooldown.update();
 
 	face_player(player);
 
-	if (player.get_collider().bounding_box.overlaps(physical.hostile_range)) { seeker.set_force(0.002f); }
-	if (player.get_collider().bounding_box.overlaps(physical.alert_range)) {
-		seeker.update(svc);
-		seeker.seek_player(player);
-		get_collider().physics.position = seeker.get_position();
-		get_collider().physics.velocity = seeker.get_velocity();
-		get_collider().sync_components();
-	}
+	auto force = is_hostile() ? 0.0002f : 0.0001f;
+	m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center(), force);
 
 	if (directions.actual.lnr != directions.desired.lnr) { request(EyebitState::turn); }
 	Enemy::update(svc, map, player);
-	seeker.set_position(get_collider().physics.position);
 	state_function = state_function();
 }
 

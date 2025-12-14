@@ -82,7 +82,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 
 	if (boomerang()) {
 		physical.collider.physics.set_global_friction(0.95f);
-		physical.steering.seek(physical.collider.physics, player.collider.get_center(), 0.001f);
+		physical.steering.seek(physical.collider.physics, player.get_collider().get_center(), 0.001f);
 		physical.collider.physics.simple_update();
 	} else if (wander()) {
 		physical.collider.physics.set_global_friction(0.9f);

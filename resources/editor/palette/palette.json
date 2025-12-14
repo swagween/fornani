@@ -1,24 +1,24 @@
 {
-  "meta": {
-    "room_id": 0,
-    "metagrid": [
-      0,
-      0
-    ],
-    "dimensions": [
-      16,
-      32
-    ],
-    "style": 0,
-    "background": 0,
-    "music": "",
-    "cutscene_on_entry": {
-      "flag": false,
-      "type": 0,
-      "id": 0,
-      "source": 0
-    }
-  },
+	"meta": {
+		"room_id": 0,
+		"metagrid": [
+			0,
+			0
+		],
+		"dimensions": [
+			16,
+			32
+		],
+		"style": 0,
+		"background": 0,
+		"music": "",
+		"cutscene_on_entry": {
+			"flag": false,
+			"type": 0,
+			"id": 0,
+			"source": 0
+		}
+	},
 	"entities": null,
 	"tile": {
 		"middleground": 0,
@@ -537,6 +537,8 @@
 				510,
 				511
 			]
-		]
+		],
+		"parallax": [ 0 ],
+		"ignore_lighting": [ true ]
 	}
 }

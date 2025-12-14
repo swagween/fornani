@@ -81,14 +81,8 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (m_file_select_menu) { m_file_select_menu->update(svc, minimenu_dim, minimenu_pos); }
 
 	player->animation.request(player::AnimState::run);
-	player->collider.physics.zero();
-	player->collider.reset();
 	player->controller.autonomous_walk();
-	player->collider.flags.external_state.set(shape::ExternalState::grounded);
-	player->collider.flags.state.set(shape::State::grounded);
-
-	player->set_position({svc.window->i_screen_dimensions().x * 0.5f + 80, 360});
-	player->update(map);
+	player->set_draw_position({svc.window->i_screen_dimensions().x * 0.5f + 80, 360});
 
 	hud.update(svc, *player);
 

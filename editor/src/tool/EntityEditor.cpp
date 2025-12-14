@@ -79,7 +79,7 @@ void EntityEditor::update(Canvas& canvas) {
 			if (active) { canvas.entities.variables.player_start = scaled_position(); }
 		} else if (current_entity && active) {
 			if (!canvas.entities.overlaps(*current_entity.value())) {
-				auto repeat = current_entity.value()->repeatable;
+				auto repeat = current_entity.value()->repeatable && !current_entity.value()->moved;
 				auto clone = current_entity.value()->clone();
 				canvas.entities.variables.entities.push_back(std::move(current_entity.value()));
 				if (repeat) {
@@ -101,7 +101,10 @@ void EntityEditor::update(Canvas& canvas) {
 
 	if (mover_mode()) {
 		for (auto& ent : canvas.entities.variables.entities) {
-			if (ent->highlighted) { current_entity = ent->clone(); }
+			if (ent->highlighted) {
+				current_entity = ent->clone();
+				current_entity.value()->moved = true;
+			}
 		}
 		std::erase_if(canvas.entities.variables.entities, [this](auto& e) { return e->highlighted; });
 		entity_mode = EntityMode::placer;

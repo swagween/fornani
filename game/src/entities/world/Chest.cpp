@@ -45,7 +45,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 	get_collider().physics.acceleration = {};
 	state.reset(ChestState::activated);
 
-	if (get_collider().collides_with(player.collider.bounding_box)) {
+	if (get_collider().collides_with(player.get_collider().bounding_box)) {
 		if (player.controller.inspecting()) {
 			state.set(ChestState::activated);
 			if (!state.test(ChestState::open)) {

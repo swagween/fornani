@@ -94,6 +94,7 @@ class Map {
 
   public:
 	Map(automa::ServiceProvider& svc, player::Player& player);
+	~Map();
 
 	// methods
 	void load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number);

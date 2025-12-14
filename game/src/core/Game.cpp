@@ -253,7 +253,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Ticks Per Frame: %.2f", services.ticker.ticks_per_frame);
 					ImGui::Text("Frames Per Second: %.2f", services.ticker.fps);
 					ImGui::Separator();
-					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.dt_scalar, 0.0f, 2.f, "%.3f")) { services.ticker.scale_dt(); };
+					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.dt_scalar, 0.0f, 8.f, "%.3f")) { services.ticker.scale_dt(); };
 					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }
 					ImGui::Separator();
 					ImGui::Text("World Time: %s", services.world_clock.get_string().c_str());
@@ -296,7 +296,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					}
 					ImGui::Separator();
 					ImGui::Text("Calculated chunks for player:");
-					for (auto const& chunk : player.collider.print_chunks()) {
+					for (auto const& chunk : player.get_collider().print_chunks()) {
 						ImGui::SameLine();
 						ImGui::Text("[%s]", chunk);
 					}
@@ -428,14 +428,14 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Last Requested Direction: %s", player.controller.last_requested_direction().print().c_str());
 								ImGui::Text("Desired Direction: %s", player.get_desired_direction().print().c_str());
 								ImGui::Text("Actual Direction: %s", player.get_actual_direction().print().c_str());
-								ImGui::Text("Collider Direction: %s", player.collider.get_direction().print().c_str());
+								ImGui::Text("Collider Direction: %s", player.get_collider().get_direction().print().c_str());
 								ImGui::Text("Ability Direction: %s", player.controller.get_ability_direction().print().c_str());
 								ImGui::Separator();
 								ImGui::Text("Grounded? %s", player.grounded() ? "Yes" : "No");
-								ImGui::Text("World Grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");
+								ImGui::Text("World Grounded? %s", player.get_collider().perma_grounded() ? "Yes" : "No");
 								ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
 								ImGui::Text("Push Time: %i", player.cooldowns.push.get());
-								ImGui::Text("Acceleration Multiplier: %f", player.collider.acceleration_multiplier);
+								ImGui::Text("Acceleration Multiplier: %f", player.get_collider().acceleration_multiplier);
 								ImGui::Separator();
 								ImGui::Text("Ability");
 								ImGui::Text("Current: ");
@@ -463,22 +463,22 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Crouching? %s", player.controller.is_crouching() ? "Yes" : "No");
 								ImGui::Text("Inspecting? %s", player.controller.inspecting() ? "Yes" : "No");
 								ImGui::Separator();
-								ImGui::Text("Jumping? %s", player.collider.jumping() ? "Yes" : "No");
+								ImGui::Text("Jumping? %s", player.get_collider().jumping() ? "Yes" : "No");
 								ImGui::Text("Can Jump? %s", player.can_jump() ? "Yes" : "No");
-								ImGui::Text("Downhill? %s", player.collider.downhill() ? "Yes" : "No");
+								ImGui::Text("Downhill? %s", player.get_collider().downhill() ? "Yes" : "No");
 								ImGui::Text("Wallsliding? %s", player.controller.is_wallsliding() ? "Yes" : "No");
 								ImGui::Text("Walljumping? %s", player.controller.is_walljumping() ? "Yes" : "No");
-								ImGui::Text("On Ramp? %s", player.collider.on_ramp() ? "Yes" : "No");
+								ImGui::Text("On Ramp? %s", player.get_collider().on_ramp() ? "Yes" : "No");
 								ImGui::Separator();
-								ImGui::Text("X Position: %.2f", player.collider.physics.position.x / constants::f_cell_size);
-								ImGui::Text("Y Position: %.2f", player.collider.physics.position.y / constants::f_cell_size);
-								ImGui::Text("X Velocity: %.2f", player.collider.physics.velocity.x);
-								ImGui::Text("Y Velocity: %.2f", player.collider.physics.velocity.y);
-								ImGui::Text("Apparent X Velocity: %.2f", player.collider.physics.apparent_velocity().x);
-								ImGui::Text("Apparent Y Velocity: %.2f", player.collider.physics.apparent_velocity().y);
-								ImGui::Text("Actual X Velocity: %.2f", player.collider.physics.actual_velocity().x);
-								ImGui::Text("Actual Y Velocity: %.2f", player.collider.physics.actual_velocity().y);
-								ImGui::Text("Actual Speed: %.2f", player.collider.physics.actual_speed());
+								ImGui::Text("X Position: %.2f", player.get_collider().physics.position.x / constants::f_cell_size);
+								ImGui::Text("Y Position: %.2f", player.get_collider().physics.position.y / constants::f_cell_size);
+								ImGui::Text("X Velocity: %.2f", player.get_collider().physics.velocity.x);
+								ImGui::Text("Y Velocity: %.2f", player.get_collider().physics.velocity.y);
+								ImGui::Text("Apparent X Velocity: %.2f", player.get_collider().physics.apparent_velocity().x);
+								ImGui::Text("Apparent Y Velocity: %.2f", player.get_collider().physics.apparent_velocity().y);
+								ImGui::Text("Actual X Velocity: %.2f", player.get_collider().physics.actual_velocity().x);
+								ImGui::Text("Actual Y Velocity: %.2f", player.get_collider().physics.actual_velocity().y);
+								ImGui::Text("Actual Speed: %.2f", player.get_collider().physics.actual_speed());
 								ImGui::Separator();
 								ImGui::Text("Inventory Size: %i", static_cast<int>(player.catalog.inventory.items_view().size()));
 								ImGui::Text("Visit History: ");

@@ -28,6 +28,8 @@ bool ICollider::handle_collider_collision(Shape const& collider, bool soft, sf::
 
 void ICollider::handle_collider_collision(Collider const& collider, bool momentum) {}
 
+void ICollider::handle_collider_collision(CircleCollider& collider) {}
+
 void ICollider::render(sf::RenderWindow& win, sf::Vector2f cam) { p_vicinity.render(win, cam, sf::Color{40, 40, 40, 40}); }
 
 void ICollider::register_chunks(world::Map& map) {

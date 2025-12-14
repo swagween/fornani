@@ -70,8 +70,6 @@ NPC::NPC(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in)
 	Mobile::center();
 	Entity::center();
 	m_indicator.center();
-	get_collider().set_exclusion_target(shape::CollisionExclusions::circle);
-	get_collider().set_exclusion_target(shape::CollisionExclusions::player);
 
 	NANI_LOG_DEBUG(Entity::m_logger, "Created NPC with label {}", m_label);
 
@@ -123,9 +121,12 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 
 	get_collider().dimensions = {svc.data.npc[m_label]["dimensions"][0].as<float>(), svc.data.npc[m_label]["dimensions"][1].as<float>()};
 	get_collider().sync_components();
-
 	get_collider().physics.set_friction_componentwise({0.95f, 0.995f});
 	get_collider().stats.GRAV = 16.2f;
+	get_collider().set_exclusion_target(shape::CollisionExclusions::circle);
+	get_collider().set_exclusion_target(shape::CollisionExclusions::enemy);
+	get_collider().set_exclusion_target(shape::CollisionExclusions::player);
+	get_collider().set_exclusion_trait(shape::CollisionExclusions::npc);
 
 	for (auto const& in_anim : in_data["animation"].as_array()) {
 		m_params.insert({in_anim["label"].as_string(), {in_anim["parameters"][0].as<int>(), in_anim["parameters"][1].as<int>(), in_anim["parameters"][2].as<int>(), in_anim["parameters"][3].as<int>(), in_anim["parameters"][4].as_bool()}});

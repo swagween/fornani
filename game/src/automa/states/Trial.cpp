@@ -26,7 +26,7 @@ Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scen
 	player.set_camera_bounds(map.real_dimensions);
 	player.force_camera_center();
 
-	player.collider.physics.zero();
+	player.get_collider().physics.zero();
 	player.set_position(map.get_player_start());
 
 	// save was loaded from a json, or player died, so we successfully skipped door search
@@ -102,7 +102,7 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		player->health.refill();
 		svc.state_controller.actions.set(Actions::restart);
 		m_reset.start();
-		player->collider.physics.zero();
+		player->get_collider().physics.zero();
 		player->controller.prevent_movement();
 		player->map_reset();
 		player->accumulated_forces.clear();

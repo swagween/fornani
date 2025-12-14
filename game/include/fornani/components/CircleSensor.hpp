@@ -2,8 +2,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <fornani/utils/BitFlags.hpp>
 #include <fornani/physics/Shape.hpp>
+#include <fornani/utils/BitFlags.hpp>
 
 namespace fornani::shape {
 class CircleCollider;
@@ -23,7 +23,7 @@ class CircleSensor {
 	sf::CircleShape drawable{};
 	bool within_bounds(shape::Shape const& shape) const;
 	bool within_bounds(shape::CircleCollider const& shape) const;
-	sf::Vector2f get_MTV(shape::Shape& shape);
+	sf::Vector2f get_MTV(shape::Shape const& shape) const;
 
 	auto activate() -> void { state.set(SensorState::active); }
 	auto deactivate() -> void { state.reset(SensorState::active); }

@@ -210,8 +210,8 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["player_data"]["max_hp"] = player.health.get_max();
 	save["player_data"]["hp"] = player.health.get_hp();
 	save["player_data"]["orbs"] = player.wallet.get_balance();
-	save["player_data"]["position"]["x"] = player.collider.physics.position.x;
-	save["player_data"]["position"]["y"] = player.collider.physics.position.y;
+	save["player_data"]["position"]["x"] = player.get_position().x;
+	save["player_data"]["position"]["y"] = player.get_position().y;
 
 	// write marketplace status
 	save["marketplace"] = dj::Json::empty_array();

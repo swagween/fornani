@@ -45,7 +45,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	// reset position if it's far away, and if the player isn't overlapping the start position
 	if (hit_count.get_count() > 2 || map.off_the_bottom(get_collider().physics.position)) {
 		bool can_respawn = true;
-		if (player.collider.bounding_box.overlaps(start_box)) { can_respawn = false; }
+		if (player.get_collider().bounding_box.overlaps(start_box)) { can_respawn = false; }
 		for (auto& pushable : map.pushables) {
 			if (pushable->get_bounding_box().overlaps(start_box) && pushable.get() != this) { can_respawn = false; }
 		}
@@ -58,9 +58,9 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 
 	// player pushes block
 	state.reset(PushableState::pushed);
-	if (player.collider.wallslider.overlaps(collision_box) && player.pushing() && player.is_in_animation(player::AnimState::push) && get_collider().physics.actual_velocity().y < 1.0f) {
-		if (player.controller.moving_left() && player.collider.physics.position.x > get_collider().physics.position.x) { get_collider().physics.acceleration.x = -speed / mass; }
-		if (player.controller.moving_right() && player.collider.physics.position.x < get_collider().physics.position.x) { get_collider().physics.acceleration.x = speed / mass; }
+	if (player.get_collider().wallslider.overlaps(collision_box) && player.pushing() && player.is_in_animation(player::AnimState::push) && get_collider().physics.actual_velocity().y < 1.0f) {
+		if (player.controller.moving_left() && player.get_collider().physics.position.x > get_collider().physics.position.x) { get_collider().physics.acceleration.x = -speed / mass; }
+		if (player.controller.moving_right() && player.get_collider().physics.position.x < get_collider().physics.position.x) { get_collider().physics.acceleration.x = speed / mass; }
 		if (ccm::abs(get_collider().physics.actual_velocity().x) > constants::small_value) { svc.soundboard.flags.world.set(audio::World::pushable_move); }
 		state.set(PushableState::moved);
 		state.set(PushableState::pushed);
@@ -79,10 +79,10 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 
 	// pushable should only be moved by a platform if it's on top of one
 
-	player.collider.handle_collider_collision(get_collider().bounding_box);
-	if (size == 1 && get_collider().get_center().y < player.collider.get_center().y) { get_collider().handle_collider_collision(player.hurtbox); } // big ones should crush the player
-	if (player.collider.jumpbox.overlaps(get_collider().bounding_box) && get_collider().grounded() && get_collider().physics.is_moving_horizontally(constants::tiny_value)) {
-		player.collider.physics.forced_momentum = get_collider().physics.forced_momentum;
+	player.get_collider().handle_collider_collision(get_collider().bounding_box);
+	if (size == 1 && get_collider().get_center().y < player.get_collider().get_center().y) { get_collider().handle_collider_collision(player.hurtbox); } // big ones should crush the player
+	if (player.get_collider().jumpbox.overlaps(get_collider().bounding_box) && get_collider().grounded() && get_collider().physics.is_moving_horizontally(constants::tiny_value)) {
+		player.get_collider().physics.forced_momentum = get_collider().physics.forced_momentum;
 	}
 
 	player.on_crush(map);
@@ -123,8 +123,8 @@ void Pushable::post_update(automa::ServiceProvider& svc, Map& map, player::Playe
 		if (platform.bounding_box.overlaps(get_collider().jumpbox)) { get_collider().handle_collider_collision(platform.bounding_box); }
 		if (get_collider().jumpbox.overlaps(platform.bounding_box) && !get_collider().perma_grounded() && platform.is_sticky()) {
 			get_collider().physics.forced_momentum = platform.physics.apparent_velocity();
-			if (player.collider.jumpbox.overlaps(collision_box) && !player.collider.perma_grounded() && !(player.collider.has_left_wallslide_collision() || player.collider.has_right_wallslide_collision())) {
-				player.collider.physics.forced_momentum = get_collider().physics.forced_momentum;
+			if (player.get_collider().jumpbox.overlaps(collision_box) && !player.get_collider().perma_grounded() && !(player.get_collider().has_left_wallslide_collision() || player.get_collider().has_right_wallslide_collision())) {
+				player.get_collider().physics.forced_momentum = get_collider().physics.forced_momentum;
 			}
 		}
 	}

@@ -37,9 +37,9 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		if (!link.is_locked()) {
 			if (link.cousin) { link.set_anchor(link.cousin.value()->get_bob()); }
 		}
-		if (link.sensor.within_bounds(player.collider.bounding_box)) {
+		if (link.sensor.within_bounds(player.get_collider().bounding_box)) {
 			link.sensor.activate();
-			external_force = {player.collider.physics.velocity.x * m_external_dampen * dampen, player.collider.physics.velocity.y * m_external_dampen * y_dampen_v * dampen};
+			external_force = {player.get_collider().physics.velocity.x * m_external_dampen * dampen, player.get_collider().physics.velocity.y * m_external_dampen * y_dampen_v * dampen};
 		} else {
 			link.sensor.deactivate();
 		}

@@ -33,7 +33,7 @@ void Incinerite::update(automa::ServiceProvider& svc, Map& map, player::Player& 
 	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
 	if (svc.ticker.every_x_ticks(20)) { random_offset = random::random_vector_float(-energy, energy); }
-	handle_collision(player.collider);
+	handle_collision(player.get_collider());
 	set_channel(3 - static_cast<int>(health.get_normalized() * 3.f));
 }
 

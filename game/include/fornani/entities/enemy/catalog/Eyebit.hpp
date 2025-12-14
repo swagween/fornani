@@ -1,8 +1,8 @@
 
 #pragma once
 
+#include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/entities/enemy/Enemy.hpp>
-#include <fornani/entities/packages/Seeker.hpp>
 #define EYEBIT_BIND(f) std::bind(&Eyebit::f, this)
 
 namespace fornani::enemy {
@@ -22,9 +22,7 @@ class Eyebit final : public Enemy, public StateMachine<EyebitState> {
   private:
 	bool change_state(EyebitState next, anim::Parameters params);
 
-	// packages
-	entity::Seeker seeker{0.001f, 0.99f};
-	util::Cooldown seeker_cooldown{};
+	components::SteeringBehavior m_steering{};
 };
 
 } // namespace fornani::enemy

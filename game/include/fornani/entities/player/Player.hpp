@@ -1,28 +1,28 @@
 
 #pragma once
 
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/components/SteeringBehavior.hpp"
-#include "fornani/entities/item/Drop.hpp"
-#include "fornani/entities/packages/Caution.hpp"
-#include "fornani/entities/packages/Health.hpp"
-#include "fornani/entities/player/Catalog.hpp"
-#include "fornani/entities/player/Piggybacker.hpp"
-#include "fornani/entities/player/PlayerAnimation.hpp"
-#include "fornani/entities/player/PlayerController.hpp"
-#include "fornani/entities/player/VisitHistory.hpp"
-#include "fornani/entities/player/Wallet.hpp"
-#include "fornani/graphics/Indicator.hpp"
-#include "fornani/graphics/SpriteHistory.hpp"
-#include "fornani/graphics/TextureUpdater.hpp"
-#include "fornani/gui/WardrobeWidget.hpp"
-#include "fornani/io/Logger.hpp"
-#include "fornani/particle/Gravitator.hpp"
-#include "fornani/physics/Collider.hpp"
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/QuestCode.hpp"
-#include "fornani/weapon/Hotbar.hpp"
-#include "fornani/world/Camera.hpp"
+#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/components/SteeringBehavior.hpp>
+#include <fornani/entities/item/Drop.hpp>
+#include <fornani/entities/packages/Caution.hpp>
+#include <fornani/entities/packages/Health.hpp>
+#include <fornani/entities/player/Catalog.hpp>
+#include <fornani/entities/player/Piggybacker.hpp>
+#include <fornani/entities/player/PlayerAnimation.hpp>
+#include <fornani/entities/player/PlayerController.hpp>
+#include <fornani/entities/player/VisitHistory.hpp>
+#include <fornani/entities/player/Wallet.hpp>
+#include <fornani/graphics/Indicator.hpp>
+#include <fornani/graphics/SpriteHistory.hpp>
+#include <fornani/graphics/TextureUpdater.hpp>
+#include <fornani/gui/WardrobeWidget.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/particle/Gravitator.hpp>
+#include <fornani/physics/RegisteredCollider.hpp>
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/QuestCode.hpp>
+#include <fornani/weapon/Hotbar.hpp>
+#include <fornani/world/Camera.hpp>
 
 namespace fornani {
 class Game;
@@ -106,6 +106,8 @@ struct AbilityUsage {
 class Player {
   public:
 	Player(automa::ServiceProvider& svc);
+	void register_with_map(world::Map& map);
+	void unregister_with_map();
 
 	friend class PlayerController;
 	friend class PlayerAnimation;
@@ -136,8 +138,10 @@ class Player {
 	[[nodiscard]] auto is_in_custom_sleep_event() const -> bool { return animation.is_sleep_timer_running(); }
 	[[nodiscard]] auto death_animation_over() -> bool { return animation.death_over(); }
 	[[nodiscard]] auto just_died() const -> bool { return flags.state.test(State::killed); }
-	[[nodiscard]] auto height() const -> float { return collider.dimensions.y; }
-	[[nodiscard]] auto width() const -> float { return collider.dimensions.x; }
+	[[nodiscard]] auto height() const -> float { return collider.value().get().get_reference().dimensions.y; }
+	[[nodiscard]] auto width() const -> float { return collider.value().get().get_reference().dimensions.x; }
+	[[nodiscard]] auto get_center() const -> sf::Vector2f { return collider.has_value() ? get_collider().get_center() : sprite_position; }
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return collider.has_value() ? get_collider().physics.position : sprite_position; }
 	[[nodiscard]] auto arsenal_size() const -> std::size_t { return arsenal ? arsenal.value().size() : 0; }
 	[[nodiscard]] auto quick_direction_switch() const -> bool { return flags.state.test(State::dir_switch); }
 	[[nodiscard]] auto pushing() const -> bool { return animation.is_state(AnimState::push) || animation.is_state(AnimState::between_push); }
@@ -152,7 +156,7 @@ class Player {
 	[[nodiscard]] auto get_piggyback_socket() const -> sf::Vector2f { return m_piggyback_socket; }
 	[[nodiscard]] auto get_camera_position() const -> sf::Vector2f { return m_camera.camera.get_position(); }
 	[[nodiscard]] auto get_lantern_position() const -> sf::Vector2f { return m_lighting.physics.position; }
-	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2f { return collider.get_center() + m_camera.target_point; }
+	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2f { return collider.value().get().get_reference().get_center() + m_camera.target_point; }
 	[[nodiscard]] auto get_facing_scale() const -> sf::Vector2f { return controller.facing_left() ? sf::Vector2f{-1.f, 1.f} : sf::Vector2f{1.f, 1.f}; }
 	[[nodiscard]] auto is_in_animation(AnimState check) const -> bool { return animation.get_state() == check; }
 	[[nodiscard]] auto get_desired_direction() const -> SimpleDirection { return m_directions.desired; }
@@ -166,6 +170,7 @@ class Player {
 	void force_camera_center() { m_camera.camera.force_center(get_camera_focus_point()); }
 
 	void set_position(sf::Vector2f new_pos, bool centered = false);
+	void set_draw_position(sf::Vector2f const to);
 	void freeze_position();
 	void shake_sprite();
 	void update_direction();
@@ -202,7 +207,7 @@ class Player {
 	void push_to_loadout(std::string_view tag, bool from_save = false);
 	void pop_from_loadout(std::string_view tag);
 
-	shape::Collider& get_collider() { return collider; }
+	shape::Collider& get_collider() const { return collider.value().get().get_reference(); }
 
 	// map helpers
 	SimpleDirection entered_from() const;
@@ -212,7 +217,6 @@ class Player {
 
 	// components
 	PlayerController controller;
-	shape::Collider collider{};
 	shape::Shape hurtbox{};
 	shape::Shape distant_vicinity{};
 	PlayerAnimation animation;
@@ -284,6 +288,9 @@ class Player {
 		components::SteeringBehavior steering{};
 		components::PhysicsComponent physics{};
 	} m_lighting{};
+
+	std::optional<shape::RegisteredCollider> owned_collider;
+	std::optional<std::reference_wrapper<shape::RegisteredCollider>> collider;
 
 	struct {
 		float stop{5.8f};

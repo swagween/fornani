@@ -17,9 +17,9 @@ static bool b_transition_in{};
 namespace fornani::world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player)
-	: player(&player), enemy_catalog(svc), transition(svc.window->f_screen_dimensions(), 96), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}} {
-	player.collider.clear_chunks();
-}
+	: player(&player), enemy_catalog(svc), transition(svc.window->f_screen_dimensions(), 96), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}} {}
+
+Map::~Map() { player->unregister_with_map(); }
 
 void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number) {
 
@@ -220,6 +220,8 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	cooldowns.loading.start();
 
 	b_transition_in = true;
+
+	player->register_with_map(*this);
 }
 
 void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) {
@@ -323,22 +325,22 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 			enemy_catalog.enemies.back()->intangible_start(64);
 			enemy_catalog.enemies.back()->set_position(spawn.pos);
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
-			effects.push_back(entity::Effect(*m_services, "small_flash", spawn.pos + enemy_catalog.enemies.back()->get_collider().dimensions * 0.5f, {}, 0));
+			spawn_effect(svc, "small_flash", enemy_catalog.enemies.back()->get_collider().get_center());
 		}
 		enemy_spawns.clear();
 		flags.state.reset(LevelState::spawn_enemy);
 	}
 
-	player->collider.reset();
+	player->get_collider().reset();
 	for (auto& a : player->antennae) { a.collider.reset(); }
-	if (off_the_bottom(player->collider.physics.position) && cooldowns.loading.is_complete()) {
+	if (off_the_bottom(player->get_collider().physics.position) && cooldowns.loading.is_complete()) {
 		player->hurt(64.f);
 		player->freeze_position();
 	}
 
 	// hidden areas
 	flags.map_state.test(MapState::unobscure) ? cooldowns.fade_obscured.update() : cooldowns.fade_obscured.reverse();
-	if (check_cell_collision(player->collider, true)) {
+	if (check_cell_collision(player->get_collider(), true)) {
 		if (!flags.map_state.test(MapState::unobscure)) { cooldowns.fade_obscured.start(); }
 		if (cooldowns.loading.running()) { cooldowns.fade_obscured.cancel(); }
 		flags.map_state.set(MapState::unobscure);
@@ -434,11 +436,11 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& pl : point_lights) { pl.update(); }
 	player->handle_map_collision(*this);
 	if (cooldowns.loading.is_complete()) { transition.update(*player); }
-	if (player->collider.collision_depths) { player->collider.collision_depths.value().update(); }
+	if (player->get_collider().collision_depths) { player->get_collider().collision_depths.value().update(); }
 	// if (save_point) { save_point->update(svc, *player, console); }
 	if (rain) { rain.value().update(svc, *this); }
 
-	player->collider.reset_ground_flags();
+	player->get_collider().reset_ground_flags();
 
 	// check if player died
 	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && cooldowns.loading.is_complete()) {
@@ -635,8 +637,8 @@ bool Map::handle_entry(player::Player& player, util::Cooldown& enter_room) {
 					player.set_idle();
 				}
 				if (portal->is_bottom()) {
-					player.collider.physics.acceleration.y = -player.physics_stats.jump_velocity;
-					player.collider.physics.acceleration.x = player.controller.facing_left() ? -player.physics_stats.x_acc : player.physics_stats.x_acc;
+					player.get_collider().physics.acceleration.y = -player.physics_stats.jump_velocity;
+					player.get_collider().physics.acceleration.x = player.controller.facing_left() ? -player.physics_stats.x_acc : player.physics_stats.x_acc;
 				}
 			}
 		}
@@ -648,7 +650,7 @@ auto Map::get_chunk_id_from_position(sf::Vector2f pos) const -> std::uint8_t {
 	auto clamped = sf::Vector2f{std::clamp(pos.x, 0.f, real_dimensions.x), std::clamp(pos.y, 0.f, real_dimensions.y)};
 	auto clookup = (clamped / constants::f_cell_size) / constants::f_chunk_size;
 	auto ulookup = sf::Vector2u{clookup};
-	auto ret = std::clamp(0u, static_cast<unsigned int>(m_chunks.size() - 1), ulookup.y * get_chunk_dimensions().x + ulookup.x);
+	auto ret = std::clamp(ulookup.y * get_chunk_dimensions().x + ulookup.x, 0u, static_cast<unsigned int>(m_chunks.size() - 1));
 	return static_cast<std::uint8_t>(ret);
 }
 
@@ -673,7 +675,7 @@ void Map::spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::V
 void Map::spawn_enemy(int id, sf::Vector2f pos, int variant) {
 	auto break_out = 0;
 	while (player->distant_vicinity.contains_point(pos) && break_out < 32) {
-		auto distance = player->collider.get_center() - pos;
+		auto distance = player->get_collider().get_center() - pos;
 		pos -= distance;
 		++break_out;
 	}

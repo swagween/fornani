@@ -46,6 +46,7 @@ class Entity : public Animatable, public IWorldPositionable {
 	bool highlighted{};
 	bool copyable{true};
 	bool selected{};
+	bool moved{};
 
 	// helpers
 	sf::RectangleShape drawbox{};

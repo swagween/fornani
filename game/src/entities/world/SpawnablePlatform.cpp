@@ -29,7 +29,7 @@ void SpawnablePlatform::update(automa::ServiceProvider& svc, player::Player& pla
 	gravitator.update(svc);
 	collider.update(svc);
 	collider.set_position(gravitator.position());
-	if (collidable()) { player.collider.handle_collider_collision(collider, true); }
+	if (collidable()) { player.get_collider().handle_collider_collision(collider, true); }
 	collider.physics.previous_position = gravitator.position();
 	sensor.set_position(gravitator.position() + collider.dimensions * 0.5f - sf::Vector2f{0.f, 16.f});
 	m_health.update();

@@ -26,7 +26,7 @@ Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2f start) : sprite(
 
 void Dragonfly::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (!svc.in_window(sprite.get_sprite_position(), sprite.get_dimensions())) { return; }
-	steering.evade(physics, player.collider.get_center(), forces.evade, 0.05f);
+	steering.evade(physics, player.get_collider().get_center(), forces.evade, 0.05f);
 	steering.seek(physics, map.get_nearest_target_point(physics.position), forces.seek);
 	steering.smooth_random_walk(physics, forces.walk);
 	physics.simple_update();

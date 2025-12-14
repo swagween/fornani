@@ -7,12 +7,14 @@ namespace fornani::shape {
 RegisteredCollider::RegisteredCollider(world::Map& map, sf::Vector2f dimensions) : m_map(&map) {
 	auto ptr = std::make_unique<Collider>(dimensions);
 	m_collider = ptr.get();
+	ptr.get()->set_flag(ColliderFlags::registered);
 	m_map->register_collider(std::move(ptr));
 }
 
 RegisteredCollider::RegisteredCollider(world::Map& map, float radius) : m_map(&map) {
 	auto ptr = std::make_unique<CircleCollider>(radius);
 	m_circle_collider = ptr.get();
+	ptr.get()->set_flag(ColliderFlags::registered);
 	m_map->register_collider(std::move(ptr));
 }
 

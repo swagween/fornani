@@ -20,12 +20,13 @@ namespace fornani::shape {
 constexpr auto vicinity_pad_v = 33.f;
 
 class Collider;
+class CircleCollider;
 
-enum class ColliderFlags { changed, intangible, simple, no_physics };
+enum class ColliderFlags { changed, intangible, simple, no_physics, registered };
 enum class ColliderType { rectangle, circle };
 enum class ColliderAttributes { fixed, soft, top_only, no_collision, sturdy };
 enum class SoftCollision { enemy };
-enum class CollisionExclusions { circle, player, enemy };
+enum class CollisionExclusions { circle, player, enemy, npc };
 
 class ICollider : public Polymorphic {
   public:
@@ -38,6 +39,7 @@ class ICollider : public Polymorphic {
 	virtual void handle_collision(Shape& shape, bool soft = false);
 	virtual bool handle_collider_collision(Shape const& collider, bool soft = false, sf::Vector2f velocity = {}, float force = 0.01f); // returns true if grounded on collider
 	virtual void handle_collider_collision(Collider const& collider, bool momentum = false);
+	virtual void handle_collider_collision(CircleCollider& collider);
 	virtual void render(sf::RenderWindow& win, sf::Vector2f cam);
 
 	void register_chunks(world::Map& map);

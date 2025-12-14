@@ -195,6 +195,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 }
 
 void Collider::detect_map_collision(world::Map& map) {
+	if (has_attribute(ColliderAttributes::no_collision)) { return; }
 	flags.external_state.reset(ExternalState::on_ramp);
 	flags.external_state.reset(ExternalState::tile_debug_flag);
 	flags.perma_state = {};
@@ -283,6 +284,8 @@ void Collider::handle_collision(ICollider& other) {
 	if (!other.has_attribute(ColliderAttributes::fixed)) { other.handle_collider_collision(*this); }
 }
 
+void Collider::handle_collider_collision(CircleCollider& collider) { collider.handle_collider_collision(bounding_box); }
+
 bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::Vector2f velocity, float force) {
 	auto ret{false};
 	if (soft) {
@@ -366,12 +369,11 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 }
 
 void Collider::handle_collider_collision(Collider const& collider, bool momentum) {
-	if (collider.should_exclude(*this)) { return; }
 	if (!vicinity.overlaps(collider.bounding_box)) { return; }
 	if (collider.has_attribute(ColliderAttributes::top_only)) {
 		if (jumpbox.get_position().y > collider.physics.position.y + 4.f || physics.acceleration.y < 0.0f) { return; }
 	}
-	if (handle_collider_collision(collider.bounding_box, collider.should_softly_collide_with(collider), collider.physics.apparent_velocity() * 2.f)) {
+	if (handle_collider_collision(collider.bounding_box, should_softly_collide_with(collider), collider.physics.apparent_velocity() * 2.f)) {
 		if (momentum) { physics.forced_momentum = collider.physics.actual_velocity(); }
 	}
 	if (jumpbox.overlaps(collider.bounding_box)) { flags.external_state.set(ExternalState::grounded); }
@@ -400,7 +402,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setOutlineColor(sf::Color{255, 0, 0, 220});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
-	win.draw(box);
+	// win.draw(box);
 
 	// draw predictive horizontal
 	box.setSize(predictive_horizontal.get_dimensions());
@@ -408,7 +410,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setOutlineColor(sf::Color{80, 0, 255, 220});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
-	win.draw(box);
+	// win.draw(box);
 
 	// draw predictive combined
 	box.setSize(predictive_combined.get_dimensions());
@@ -422,8 +424,8 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setSize(dimensions);
 	box.setPosition(bounding_box.get_position() - cam);
 	box.setFillColor(colors.local);
-	flags.state.test(State::on_flat_surface) ? box.setOutlineColor(sf::Color{0, 255, 0, 190}) : box.setOutlineColor(sf::Color{255, 0, 0, 190});
-	box.setOutlineThickness(-1);
+	has_flag_set(ColliderFlags::registered) ? box.setOutlineColor(sf::Color{0, 255, 0, 190}) : box.setOutlineColor(sf::Color{255, 0, 0, 190});
+	box.setOutlineThickness(-2);
 	win.draw(box);
 
 	// draw jump box

@@ -37,6 +37,6 @@ bool CircleSensor::within_bounds(shape::Shape const& shape) const {
 
 bool CircleSensor::within_bounds(shape::CircleCollider const& shape) const { return (bounds.getGlobalBounds().getCenter() - shape.get_global_center()).length() < bounds.getRadius() + shape.get_radius(); }
 
-sf::Vector2f CircleSensor::get_MTV(shape::Shape& shape) { return shape.circle_SAT_MTV(bounds); }
+sf::Vector2f CircleSensor::get_MTV(shape::Shape const& shape) const { return shape.circle_SAT_MTV(bounds); }
 
 } // namespace fornani::components

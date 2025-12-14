@@ -20,7 +20,7 @@
 
 	"orbs": {
 		"sprite_dimensions": [ 12, 12 ],
-		"initial_velocity": [ 40, 140 ],
+		"initial_velocity": [ 80, 100 ],
 		"type": 1,
 		"friction": [ 0.99, 1.0 ],
 		"gravity": 6.0,

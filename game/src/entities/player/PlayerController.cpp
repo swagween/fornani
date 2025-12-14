@@ -96,20 +96,20 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered) {
 		auto const dj_guard = (dash_and_jump_combined && any_direction_held) || !dash_and_jump_combined;
 		if (player.can_dash() && !is_wallsliding() && dj_guard) {
-			m_ability = std::make_unique<Dash>(svc, map, player.collider, m_dash_direction, player.can_omnidirectional_dash());
+			m_ability = std::make_unique<Dash>(svc, map, player.get_collider(), m_dash_direction, player.can_omnidirectional_dash());
 			player.m_ability_usage.dash.update();
 		}
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).triggered) {
-		if (player.can_jump()) { m_ability = std::make_unique<Jump>(svc, map, player.collider); }
+		if (player.can_jump()) { m_ability = std::make_unique<Jump>(svc, map, player.get_collider()); }
 		// guard for when player has jump and dash bound to the same key
 		auto const dash_exhausted = !player.can_dash() && !is_dashing();
-		auto can_walljump = (player.collider.has_right_wallslide_collision() || player.collider.has_left_wallslide_collision()) && !player.collider.grounded() && player.can_walljump();
-		auto jump_direction = player.collider.has_right_wallslide_collision() ? Direction{LR::right} : player.collider.has_left_wallslide_collision() ? Direction{LR::left} : Direction{};
+		auto can_walljump = (player.get_collider().has_right_wallslide_collision() || player.get_collider().has_left_wallslide_collision()) && !player.get_collider().grounded() && player.can_walljump();
+		auto jump_direction = player.get_collider().has_right_wallslide_collision() ? Direction{LR::right} : player.get_collider().has_left_wallslide_collision() ? Direction{LR::left} : Direction{};
 		if (can_walljump) {
-			m_ability = std::make_unique<Walljump>(svc, map, player.collider, jump_direction);
+			m_ability = std::make_unique<Walljump>(svc, map, player.get_collider(), jump_direction);
 		} else if ((player.can_doublejump() && !dash_and_jump_combined) || (player.can_doublejump() && dash_and_jump_combined && (!any_direction_held || dash_exhausted))) {
-			m_ability = std::make_unique<Doublejump>(svc, map, player.collider);
+			m_ability = std::make_unique<Doublejump>(svc, map, player.get_collider());
 			player.m_ability_usage.doublejump.update();
 		}
 	}
@@ -119,11 +119,11 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	flags.reset(MovementState::crouch);
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).held) {
 		if (!grounded()) { input_flags.set(InputState::slide_in_air); }
-		if (!m_ability && player.can_slide() && sprint && !post_slide.running() && moving()) { m_ability = std::make_unique<Slide>(svc, map, player.collider, player.get_actual_direction()); }
+		if (!m_ability && player.can_slide() && sprint && !post_slide.running() && moving()) { m_ability = std::make_unique<Slide>(svc, map, player.get_collider(), player.get_actual_direction()); }
 		if (!sprint) { flags.set(MovementState::crouch); }
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).triggered) {
-		if (!m_ability && player.can_roll() && sprint) { m_ability = std::make_unique<Roll>(svc, map, player.collider, player.get_actual_direction()); }
+		if (!m_ability && player.can_roll() && sprint) { m_ability = std::make_unique<Roll>(svc, map, player.get_collider(), player.get_actual_direction()); }
 	}
 	if (m_ability) {
 		if (m_ability.value()->is(AbilityType::roll)) { input_flags.reset(InputState::slide_in_air); }
@@ -131,25 +131,25 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).released) { input_flags.reset(InputState::slide_in_air); }
 
 	// wallslide
-	if ((left && player.collider.has_left_wallslide_collision()) || (right && player.collider.has_right_wallslide_collision())) {
+	if ((left && player.get_collider().has_left_wallslide_collision()) || (right && player.get_collider().has_right_wallslide_collision())) {
 		if (player.can_wallslide() && !post_wallslide.running()) {
 			if (!is(AbilityType::walljump)) {
 				if (!is(AbilityType::wallslide)) { wallslide_slowdown.start(); }
-				m_ability = std::make_unique<Wallslide>(svc, map, player.collider, player.get_actual_direction());
+				m_ability = std::make_unique<Wallslide>(svc, map, player.get_collider(), player.get_actual_direction());
 			}
 		}
 	}
-	if (!is(AbilityType::wallslide)) { player.collider.physics.maximum_velocity.y = player.physics_stats.maximum_velocity.y; }
+	if (!is(AbilityType::wallslide)) { player.get_collider().physics.maximum_velocity.y = player.physics_stats.maximum_velocity.y; }
 	wallslide_slowdown.update();
 
 	if (m_ability) {
-		m_ability.value()->update(player.collider, *this);
+		m_ability.value()->update(player.get_collider(), *this);
 
 		// stop rising if player releases jump control
 		if (is(AbilityType::jump) || is(AbilityType::doublejump) || is(AbilityType::walljump)) {
 			if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).released) { m_ability.value()->cancel(); }
-			if (m_ability.value()->cancelled() && player.collider.physics.apparent_velocity().y < 0.0f) {
-				player.collider.physics.acceleration.y *= player.physics_stats.jump_release_multiplier;
+			if (m_ability.value()->cancelled() && player.get_collider().physics.apparent_velocity().y < 0.0f) {
+				player.get_collider().physics.acceleration.y *= player.physics_stats.jump_release_multiplier;
 				m_ability.value()->fail();
 			}
 		}

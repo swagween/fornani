@@ -629,18 +629,18 @@ fsm::StateFunction PlayerAnimation::update_die() {
 		triggers.reset(AnimTriggers::end_death);
 		m_player->m_services->state_controller.actions.set(automa::Actions::death_mode); // set here, reset on map load
 	}
-	if (animation.get_frame() > 2 && !m_player->collider.grounded()) { animation.set_frame(2); }
+	if (animation.get_frame() > 2 && !m_player->get_collider().grounded()) { animation.set_frame(2); }
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();
-	m_player->collider.collision_depths = {};
+	m_player->get_collider().collision_depths = {};
 	post_death.update();
 	if (!m_player->m_services->death_mode()) {
-		m_player->collider.collision_depths = util::CollisionDepth();
+		m_player->get_collider().collision_depths = util::CollisionDepth();
 		animation.set_params(get_params("idle"));
 		return PA_BIND(update_idle);
 	}
 	if (post_death.is_complete()) {
-		m_player->collider.collision_depths = util::CollisionDepth();
+		m_player->get_collider().collision_depths = util::CollisionDepth();
 		if (change_state(AnimState::idle, get_params("idle"), true)) { return PA_BIND(update_idle); }
 		if (change_state(AnimState::run, get_params("run"), true)) { return PA_BIND(update_run); }
 		if (change_state(AnimState::sprint, get_params("sprint"), true)) { return PA_BIND(update_sprint); }
@@ -726,7 +726,7 @@ fsm::StateFunction PlayerAnimation::update_roll() {
 	controller.reset_vertical_movement();
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::inspect, get_params("inspect"))) {
-		m_player->collider.physics.stop_x();
+		m_player->get_collider().physics.stop_x();
 		return PA_BIND(update_inspect);
 	}
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
@@ -756,7 +756,7 @@ fsm::StateFunction PlayerAnimation::update_turn_slide() {
 	controller.reset_vertical_movement();
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::inspect, get_params("inspect"))) {
-		m_player->collider.physics.stop_x();
+		m_player->get_collider().physics.stop_x();
 		return PA_BIND(update_inspect);
 	}
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }

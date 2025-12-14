@@ -32,7 +32,7 @@ void Destructible::update(automa::ServiceProvider& svc, Map& map, player::Player
 	}
 	if (map.enemies_cleared() && is_enemy_clear() && m_state == 0) { svc.data.switch_destructible_state(quest_id); }
 	if (ignore_updates()) { return; }
-	player.collider.handle_collider_collision(collider);
+	player.get_collider().handle_collider_collision(collider);
 	for (auto& e : map.enemy_catalog.enemies) { e->get_collider().handle_collider_collision(collider); }
 }
 

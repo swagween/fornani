@@ -16,6 +16,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	  label(label), health_indicator{svc}, hurt_effect{128}, m_health_bar{svc, colors::mythic_green}, health{svc.data.enemy[label]["attributes"]["base_hp"].as<float>()} {
 
 	get_collider().set_exclusion_trait(shape::CollisionExclusions::enemy);
+	get_collider().set_soft_trait(shape::SoftCollision::enemy);
 	if (spawned) { flags.general.set(GeneralFlags::spawned); }
 	directions.actual = Direction{start_direction};
 	directions.desired = Direction{start_direction};
@@ -96,10 +97,11 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	if (!flags.general.test(GeneralFlags::player_collision)) { get_collider().set_exclusion_target(shape::CollisionExclusions::player); }
 	if (!flags.general.test(GeneralFlags::map_collision)) { get_collider().set_attribute(shape::ColliderAttributes::no_collision); }
 	get_collider().set_exclusion_target(shape::CollisionExclusions::circle);
+	get_collider().set_exclusion_target(shape::CollisionExclusions::npc);
+	get_collider().set_soft_target(shape::SoftCollision::enemy);
 	if (!flags.general.test(GeneralFlags::sturdy)) {
-		// get_collider().set_soft_target(shape::SoftCollision::enemy);
 	} else {
-		get_collider().set_exclusion_target(shape::CollisionExclusions::enemy);
+		// get_collider().set_exclusion_target(shape::CollisionExclusions::enemy);
 	}
 
 	center();

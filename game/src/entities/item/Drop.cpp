@@ -92,7 +92,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	auto magnet = player.has_item_equipped(svc.data.item_id_from_label("magnet"));
 	if (magnet) {
 		collider.physics.set_friction_componentwise({0.98f, 0.98f});
-		m_steering.seek(collider.physics, player.collider.get_center(), 0.0003f);
+		m_steering.seek(collider.physics, player.get_collider().get_center(), 0.0003f);
 	} else {
 		collider.physics.set_friction_componentwise({svc.data.drop[m_label]["friction"][0].as<float>(), svc.data.drop[m_label]["friction"][1].as<float>()});
 	}
@@ -129,7 +129,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 
 	state_function = state_function();
 
-	if (collides_with(player.collider.bounding_box) && !is_inactive() && !is_completely_gone() && delay_over()) {
+	if (collides_with(player.get_collider().bounding_box) && !is_inactive() && !is_completely_gone() && delay_over()) {
 		player.give_drop(get_type(), static_cast<float>(get_value()));
 		if (get_type() == DropType::gem) {
 			svc.soundboard.flags.item.set(audio::Item::gem);

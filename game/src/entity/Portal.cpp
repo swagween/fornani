@@ -92,7 +92,7 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 	auto lookup = sf::IntRect({static_cast<int>(m_render_state) * constants::i_cell_resolution, map.get_style_id() * constants::i_cell_resolution * 2}, {constants::i_cell_resolution, constants::i_cell_resolution * 2});
 	set_texture_rect(lookup);
 	if (!map.transition.is(graphics::TransitionState::inactive)) { m_state.reset(PortalState::ready); }
-	if (bounding_box.overlaps(player.collider.bounding_box)) {
+	if (bounding_box.overlaps(player.get_collider().bounding_box)) {
 		if (m_attributes.test(PortalAttributes::activate_on_contact)) {
 			if (!m_state.test(PortalState::transitioning) && m_state.test(PortalState::ready)) { m_state.set(PortalState::activated); }
 			if (is_left_or_right()) {

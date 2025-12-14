@@ -26,7 +26,7 @@ void CircleCollider::handle_map_collision(world::Map& map) {
 
 void CircleCollider::handle_collision(ICollider& other) {
 	if (other.should_exclude(*this)) { return; }
-	if (auto* coll = dynamic_cast<Collider*>(&other)) { handle_collision(coll->bounding_box); }
+	other.handle_collider_collision(*this);
 }
 
 void CircleCollider::handle_collision(shape::Shape& shape, bool soft) {
@@ -53,6 +53,7 @@ void CircleCollider::handle_collision(shape::Shape& shape, bool soft) {
 
 void CircleCollider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	ICollider::render(win, cam);
+	has_flag_set(ColliderFlags::registered) ? sensor.bounds.setOutlineColor(colors::green) : sensor.bounds.setOutlineColor(colors::fucshia);
 	sensor.render(win, cam);
 }
 

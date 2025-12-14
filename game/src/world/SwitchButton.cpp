@@ -48,9 +48,9 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 
 	// type-specific stuff
 	if (type == SwitchType::movable) {
-		if (player.collider.predictive_horizontal.overlaps(collider.bounding_box)) { collider.physics.velocity.x = player.collider.physics.acceleration.x * 0.5f; }
+		if (player.get_collider().predictive_horizontal.overlaps(collider.bounding_box)) { collider.physics.velocity.x = player.get_collider().physics.acceleration.x * 0.5f; }
 		collider.update(svc);
-		collider.handle_collider_collision(player.collider.bounding_box);
+		collider.handle_collider_collision(player.get_collider().bounding_box);
 	}
 
 	// press permanent switches forever
@@ -68,10 +68,10 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 	for (auto& pushable : map.pushables) {
 		if (pushable->get_collider().jumpbox.overlaps(sensor)) { state = SwitchButtonState::pressed; }
 	}
-	if (player.collider.jumpbox.overlaps(sensor)) { state = SwitchButtonState::pressed; }
+	if (player.get_collider().jumpbox.overlaps(sensor)) { state = SwitchButtonState::pressed; }
 
 	collider.detect_map_collision(map);
-	handle_collision(player.collider);
+	handle_collision(player.get_collider());
 	collider.reset();
 	collider.reset_ground_flags();
 	collider.physics.acceleration = {};

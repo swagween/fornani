@@ -73,7 +73,7 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 	if (sprite) { sprite->setScale(scale); }
 	if (hitbox) {
-		if (player.collider.hurtbox.overlaps(hitbox.value())) { player.hurt(); }
+		if (player.get_collider().hurtbox.overlaps(hitbox.value())) { player.hurt(); }
 	}
 	if (shieldbox) {
 		for (auto& proj : map.active_projectiles) {
