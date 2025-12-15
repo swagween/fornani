@@ -12,6 +12,7 @@
 #include <fornani/entities/player/PlayerController.hpp>
 #include <fornani/entities/player/VisitHistory.hpp>
 #include <fornani/entities/player/Wallet.hpp>
+#include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/Indicator.hpp>
 #include <fornani/graphics/SpriteHistory.hpp>
 #include <fornani/graphics/TextureUpdater.hpp>
@@ -103,7 +104,7 @@ struct AbilityUsage {
 	util::Counter doublejump{};
 };
 
-class Player {
+class Player final : public Animatable {
   public:
 	Player(automa::ServiceProvider& svc);
 	void register_with_map(world::Map& map);
@@ -115,17 +116,25 @@ class Player {
 
 	// member functions
 	void update(world::Map& map);
+	void simple_update(); // collider-free update
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f forced_position);
 	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void assign_texture(sf::Texture& tex);
 	void start_tick();
 	void end_tick();
+
+	// animation machine
+	void request_animation(AnimState const to) { m_animation_machine.request(to); }
+	void force_animation(AnimState const to, std::string_view tag) { m_animation_machine.force(to, tag); }
+	void set_animation_flag(AnimTriggers const flag, bool on = true) { on ? m_animation_machine.triggers.set(flag) : m_animation_machine.triggers.reset(flag); }
+	void set_sleep_timer() { m_animation_machine.set_sleep_timer(); }
+	[[nodiscard]] auto get_elapsed_animation_ticks() const -> int { return animation.get_elapsed_ticks(); }
+
 	void update_animation();
 	void update_sprite();
 	void handle_turning();
 	void flash_sprite();
-	void calculate_sprite_offset();
 	void set_idle();
 	void set_sleeping();
 	void set_direction(Direction to);
@@ -135,21 +144,22 @@ class Player {
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
 	[[nodiscard]] auto is_dead() const -> bool { return health.is_dead(); }
 	[[nodiscard]] auto is_busy() const -> bool { return flags.state.test(State::busy); }
-	[[nodiscard]] auto is_in_custom_sleep_event() const -> bool { return animation.is_sleep_timer_running(); }
-	[[nodiscard]] auto death_animation_over() -> bool { return animation.death_over(); }
+	[[nodiscard]] auto is_in_custom_sleep_event() const -> bool { return m_animation_machine.is_sleep_timer_running(); }
+	[[nodiscard]] auto death_animation_over() -> bool { return m_animation_machine.death_over(); }
 	[[nodiscard]] auto just_died() const -> bool { return flags.state.test(State::killed); }
 	[[nodiscard]] auto height() const -> float { return collider.value().get().get_reference().dimensions.y; }
 	[[nodiscard]] auto width() const -> float { return collider.value().get().get_reference().dimensions.x; }
-	[[nodiscard]] auto get_center() const -> sf::Vector2f { return collider.has_value() ? get_collider().get_center() : sprite_position; }
-	[[nodiscard]] auto get_position() const -> sf::Vector2f { return collider.has_value() ? get_collider().physics.position : sprite_position; }
+	[[nodiscard]] auto get_center() const -> sf::Vector2f { return collider.has_value() ? get_collider().get_center() : m_sprite_position; }
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return collider.has_value() ? get_collider().physics.position : m_sprite_position; }
 	[[nodiscard]] auto arsenal_size() const -> std::size_t { return arsenal ? arsenal.value().size() : 0; }
 	[[nodiscard]] auto quick_direction_switch() const -> bool { return flags.state.test(State::dir_switch); }
-	[[nodiscard]] auto pushing() const -> bool { return animation.is_state(AnimState::push) || animation.is_state(AnimState::between_push); }
+	[[nodiscard]] auto pushing() const -> bool { return m_animation_machine.is_state(AnimState::push) || m_animation_machine.is_state(AnimState::between_push); }
 	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.inventory.has_item(id); }
 	[[nodiscard]] auto has_item(std::string_view tag) const -> bool { return catalog.inventory.has_item(tag); }
 	[[nodiscard]] auto has_item_equipped(int id) const -> bool { return catalog.inventory.has_item_equipped(id); }
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
 	[[nodiscard]] auto has_map() const -> bool { return catalog.inventory.has_item(16); }
+	[[nodiscard]] auto has_collider() const -> bool { return collider.has_value(); }
 	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lnr == LNR::left; }
 	[[nodiscard]] auto switched_weapon() const -> bool { return hotbar->switched(); }
 	[[nodiscard]] auto firing_weapon() -> bool { return controller.shot(); }
@@ -158,7 +168,7 @@ class Player {
 	[[nodiscard]] auto get_lantern_position() const -> sf::Vector2f { return m_lighting.physics.position; }
 	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2f { return collider.value().get().get_reference().get_center() + m_camera.target_point; }
 	[[nodiscard]] auto get_facing_scale() const -> sf::Vector2f { return controller.facing_left() ? sf::Vector2f{-1.f, 1.f} : sf::Vector2f{1.f, 1.f}; }
-	[[nodiscard]] auto is_in_animation(AnimState check) const -> bool { return animation.get_state() == check; }
+	[[nodiscard]] auto is_in_animation(AnimState check) const -> bool { return m_animation_machine.get_state() == check; }
 	[[nodiscard]] auto get_desired_direction() const -> SimpleDirection { return m_directions.desired; }
 	[[nodiscard]] auto get_actual_direction() const -> SimpleDirection { return m_directions.actual; }
 	[[nodiscard]] auto get_piggybacker_id() const -> int { return piggybacker ? piggybacker->get_id() : 0; }
@@ -219,7 +229,6 @@ class Player {
 	PlayerController controller;
 	shape::Shape hurtbox{};
 	shape::Shape distant_vicinity{};
-	PlayerAnimation animation;
 	entity::Health health;
 	Wallet wallet{};
 	graphics::Indicator health_indicator;
@@ -231,8 +240,6 @@ class Player {
 
 	sf::Vector2f anchor_point{};
 	sf::Vector2f sprite_offset{10.f, -3.f};
-	sf::Vector2i m_sprite_dimensions;
-	sf::Vector2f sprite_position{};
 
 	std::vector<vfx::Gravitator> antennae{};
 	sf::Vector2f antenna_offset{6.f, -17.f};
@@ -255,18 +262,10 @@ class Player {
 	automa::ServiceProvider* m_services;
 
 	// sprites
-	sf::Sprite sprite;
 	graphics::SpriteHistory dash_effect;
 
 	// texture updater
 	graphics::TextureUpdater texture_updater{};
-
-	bool grav = true;
-
-	bool start_cooldown{};
-	bool sprite_flip{};
-
-	int ledge_height{}; // temp for testing
 
 	Catalog catalog{};
 	gui::WardrobeWidget wardrobe_widget;
@@ -274,6 +273,8 @@ class Player {
 
   private:
 	void set_facing_direction(SimpleDirection to_direction) { m_directions.desired = to_direction; }
+
+	PlayerAnimation m_animation_machine;
 
 	[[nodiscard]] auto can_dash() const -> bool;
 	[[nodiscard]] auto can_omnidirectional_dash() const -> bool;
@@ -317,6 +318,7 @@ class Player {
 		sf::Vector2f target_point{};
 	} m_camera{};
 
+	sf::Vector2f m_sprite_position{};
 	sf::Vector2f m_weapon_socket{};
 	sf::Vector2f m_piggyback_socket{};
 	util::Cooldown m_sprite_shake;

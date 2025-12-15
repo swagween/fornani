@@ -84,6 +84,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 		svc.data.load_data(room_name.data());
 	} else {
 		map.load(svc, m_console, room_number);
+		NANI_LOG_INFO(m_logger, "Map loaded.");
 	}
 
 	hud.orient(svc, player); // reset hud position to corner

@@ -21,7 +21,6 @@ class FileMenu final : public MenuState {
 
   private:
 	util::Cooldown loading{};
-	world::Map map;
 	std::optional<gui::MiniMenu> m_file_select_menu{};
 };
 

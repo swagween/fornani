@@ -16,19 +16,23 @@ constexpr auto light_offset_v = 12.f;
 constexpr auto default_invincibility_time_v = 300;
 
 Player::Player(automa::ServiceProvider& svc)
-	: arsenal(svc), m_services(&svc), controller(svc, *this), animation(*this), sprite{svc.assets.get_texture("nani")}, wardrobe_widget(svc), m_sprite_dimensions{24, 24}, dash_effect{16},
-	  m_directions{.desired{LR::left}, .actual{LR::right}}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, m_sprite_shake{40}, m_hurt_cooldown{64}, health{3.f} {
+	: Animatable(svc, "nani", {24, 24}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, m_directions{.desired{LR::left}, .actual{LR::left}}, health_indicator{svc},
+	  orb_indicator{svc, graphics::IndicatorType::orb}, m_sprite_shake{40}, m_hurt_cooldown{64}, health{3.f} {
 
-	sprite.setScale(constants::f_scale_vec);
+	center();
 	svc.data.load_player_params(*this);
+	set_animation_flag(AnimTriggers::flip); // for file menu
 
 	health.set_invincibility(default_invincibility_time_v);
 	hurtbox.set_dimensions(sf::Vector2f{12.f, 26.f});
 
-	// antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2f{physics_stats.antenna_friction, physics_stats.antenna_friction}, 1.0f);
-	// antennae[0].collider.physics.maximum_velocity = sf::Vector2f(antenna_speed, antenna_speed);
-	// antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2f{physics_stats.antenna_friction, physics_stats.antenna_friction}, 1.0f);
-	// antennae[1].collider.physics.maximum_velocity = sf::Vector2f(antenna_speed, antenna_speed);
+	antennae.push_back(vfx::Gravitator(get_position(), colors::bright_orange, antenna_force));
+	antennae.push_back(vfx::Gravitator(get_position(), colors::bright_orange, antenna_force, {2.f, 4.f}));
+
+	antennae[0].collider.physics = components::PhysicsComponent(sf::Vector2f{physics_stats.antenna_friction, physics_stats.antenna_friction}, 1.0f);
+	antennae[0].collider.physics.maximum_velocity = sf::Vector2f(antenna_speed, antenna_speed);
+	antennae[1].collider.physics = components::PhysicsComponent(sf::Vector2f{physics_stats.antenna_friction, physics_stats.antenna_friction}, 1.0f);
+	antennae[1].collider.physics.maximum_velocity = sf::Vector2f(antenna_speed, antenna_speed);
 
 	texture_updater.load_base_texture(svc.assets.get_texture_modifiable("nani"));
 	texture_updater.load_pixel_map(svc.assets.get_texture_modifiable("nani_palette_default"));
@@ -40,7 +44,7 @@ Player::Player(automa::ServiceProvider& svc)
 void Player::register_with_map(world::Map& map) {
 	owned_collider.emplace(map, sf::Vector2f{player_dimensions_v});
 	collider = *owned_collider;
-
+	if (has_collider()) { NANI_LOG_INFO(m_logger, "Player has a collider."); }
 	anchor_point = get_collider().physics.position + player_dimensions_v * 0.5f;
 	get_collider().collision_depths = util::CollisionDepth();
 	get_collider().physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
@@ -49,9 +53,6 @@ void Player::register_with_map(world::Map& map) {
 	get_collider().set_exclusion_target(shape::CollisionExclusions::circle);
 	get_collider().set_exclusion_trait(shape::CollisionExclusions::player);
 	get_collider().set_exclusion_target(shape::CollisionExclusions::enemy);
-
-	antennae.push_back(vfx::Gravitator(get_collider().physics.position, colors::bright_orange, antenna_force));
-	antennae.push_back(vfx::Gravitator(get_collider().physics.position, colors::bright_orange, antenna_force, {2.f, 4.f}));
 
 	m_lighting.physics.velocity = random::random_vector_float(-1.f, 1.f);
 	m_lighting.physics.set_global_friction(0.95f);
@@ -62,9 +63,13 @@ void Player::register_with_map(world::Map& map) {
 void Player::unregister_with_map() {
 	owned_collider.reset();
 	collider.reset();
+	NANI_LOG_INFO(m_logger, "Player was unregistered with map.");
 }
 
 void Player::update(world::Map& map) {
+	tick();
+	set_channel(m_animation_machine.get_frame() / 10); // doing this just to keep nani's spritesheet how i like it
+	if (!collider.has_value()) { return; }
 	caution.avoid_ledges(map, get_collider(), controller.direction, 8);
 	if (get_collider().collision_depths) { get_collider().collision_depths.value().reset(); }
 	get_collider().set_direction(Direction{m_directions.actual});
@@ -84,11 +89,11 @@ void Player::update(world::Map& map) {
 			map.effects.push_back(entity::Effect(*m_services, "wallslide", get_collider().get_center() + sf::Vector2f{12.f * controller.direction.as_float(), -8.f}, get_collider().physics.apparent_velocity() * 0.3f));
 		}
 	}
-	if (controller.is_rolling() || animation.is_state(AnimState::turn_slide)) {
+	if (controller.is_rolling() || m_animation_machine.is_state(AnimState::turn_slide)) {
 		if (m_services->ticker.every_x_ticks(24)) { map.effects.push_back(entity::Effect(*m_services, "roll", get_collider().get_center(), sf::Vector2f{get_collider().physics.apparent_velocity().x * 0.1f, 0.f})); }
 	}
-	animation.is_state(AnimState::turn_slide) && (animation.animation.get_frame_count() > 2 && animation.animation.get_frame_count() < 6) ? m_services->soundboard.flags.player.set(audio::Player::turn_slide)
-																																		  : m_services->soundboard.flags.player.reset(audio::Player::turn_slide);
+	m_animation_machine.is_state(AnimState::turn_slide) && (animation.get_frame_count() > 2 && animation.get_frame_count() < 6) ? m_services->soundboard.flags.player.set(audio::Player::turn_slide)
+																																: m_services->soundboard.flags.player.reset(audio::Player::turn_slide);
 	// camera stuff
 	auto camx = controller.direction.as_float() * 32.f;
 	auto skew = 180.f;
@@ -148,14 +153,14 @@ void Player::update(world::Map& map) {
 
 	// weapon
 	if (controller.is(AbilityType::walljump) && controller.is_ability_active()) { accumulated_forces.push_back({walljump_force_v * controller.get_ability_direction().as_float(), 0.f}); }
-	if (controller.shot() || controller.arms_switch()) { animation.idle_timer.start(); }
+	if (controller.shot() || controller.arms_switch()) { m_animation_machine.idle_timer.start(); }
 	if (flags.state.test(State::impart_recoil) && arsenal) {
 		if (controller.direction.und == UND::down) { accumulated_forces.push_back({0.f, -equipped_weapon().get_recoil()}); }
 		if (controller.direction.und == UND::up) { accumulated_forces.push_back({0.f, equipped_weapon().get_recoil()}); }
 		flags.state.reset(State::impart_recoil);
 	}
 	auto crouch_offset = sf::Vector2f{controller.direction.as_float() * 12.f, 10.f};
-	m_weapon_socket = animation.is_state(AnimState::crawl) || animation.is_state(AnimState::crouch) ? get_collider().get_center() + crouch_offset : get_collider().get_center();
+	m_weapon_socket = m_animation_machine.is_state(AnimState::crawl) || m_animation_machine.is_state(AnimState::crouch) ? get_collider().get_center() + crouch_offset : get_collider().get_center();
 
 	force_cooldown.update();
 	for (auto& force : accumulated_forces) { get_collider().physics.apply_force(force); }
@@ -191,40 +196,28 @@ void Player::update(world::Map& map) {
 
 	// step sounds
 	if (m_services->in_game()) {
-		if (animation.stepped() && abs(get_collider().physics.velocity.x) > 2.5f) { m_services->soundboard.play_step(map.get_tile_value_at_position(get_collider().get_below_point()), map.get_style_id()); }
+		if (m_animation_machine.stepped() && abs(get_collider().physics.velocity.x) > 2.5f) { m_services->soundboard.play_step(map.get_tile_value_at_position(get_collider().get_below_point()), map.get_style_id()); }
 	}
 }
 
-void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	calculate_sprite_offset();
-	if (flags.state.test(State::crushed)) { return; }
-	// debug
-	// get_collider().colors.local = can_jump() ? colors::green : colors::green;
+void Player::simple_update() {
+	tick();
+	m_animation_machine.update();
+}
 
-	// piggybacker
+void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+
+	m_sprite_position = collider.has_value() ? get_collider().get_average_tick_position() + sprite_offset : sf::Vector2f{};
+	m_sprite_position.x += controller.facing_left() ? -1.f : 1.f;
+	Animatable::set_position(m_sprite_position - cam);
+
+	if (flags.state.test(State::crushed)) { return; }
 	if (piggybacker) { piggybacker->render(svc, win, cam); }
 
-	sprite.setPosition(sprite_position);
-
-	// get UV coords
-	static auto shake_offset = sf::Vector2f{};
-	if (m_sprite_shake.running()) {
-		auto shake_me = m_sprite_shake.get() % 4 == 0;
-		shake_offset = shake_me ? random::random_vector_float(-4.f, 4.f) : shake_offset;
-	} else {
-		shake_offset = {};
-	}
-	auto frames_per_col = 10;
-	auto u = (animation.get_frame() / frames_per_col) * m_sprite_dimensions.x;
-	auto v = (animation.get_frame() % frames_per_col) * m_sprite_dimensions.y;
-	sprite.setTextureRect(sf::IntRect({u, v}, m_sprite_dimensions));
-	sprite.setOrigin(sprite.getLocalBounds().getCenter());
-	sprite.setPosition(sprite_position - cam + shake_offset);
-
-	if (arsenal && hotbar) { get_collider().flags.general.set(shape::General::complex); }
+	if (arsenal && hotbar && collider.has_value()) { get_collider().flags.general.set(shape::General::complex); }
 
 	if (svc.greyblock_mode()) {
-		win.draw(sprite);
+		win.draw(*this);
 		sf::RectangleShape box{};
 		box.setFillColor(sf::Color::Transparent);
 		box.setOutlineColor(colors::green);
@@ -239,19 +232,21 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		box.setSize(distant_vicinity.get_dimensions());
 		win.draw(box);
 		// camera control debug
-		sf::RectangleShape camera_target{};
-		camera_target.setFillColor(colors::pioneer_red);
-		camera_target.setSize({4.f, 4.f});
-		camera_target.setOrigin({2.f, 2.f});
-		camera_target.setPosition(m_camera.target_point + get_collider().get_center() - cam);
-		win.draw(camera_target);
-		camera_target.setFillColor(colors::green);
-		camera_target.setPosition(svc.window->f_center_screen());
-		win.draw(camera_target);
-		get_collider().render(win, cam);
+		if (collider.has_value()) {
+			sf::RectangleShape camera_target{};
+			camera_target.setFillColor(colors::pioneer_red);
+			camera_target.setSize({4.f, 4.f});
+			camera_target.setOrigin({2.f, 2.f});
+			camera_target.setPosition(m_camera.target_point + get_collider().get_center() - cam);
+			win.draw(camera_target);
+			camera_target.setFillColor(colors::green);
+			camera_target.setPosition(svc.window->f_center_screen());
+			win.draw(camera_target);
+			get_collider().render(win, cam);
+		}
 	} else {
 		antennae[1].render(svc, win, cam, 1);
-		win.draw(sprite);
+		win.draw(*this);
 		antennae[0].render(svc, win, cam, 1);
 	}
 
@@ -268,13 +263,8 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f forced_position) {
-	auto frames_per_col = 10;
-	auto u = (animation.get_frame() / frames_per_col) * m_sprite_dimensions.x;
-	auto v = (animation.get_frame() % frames_per_col) * m_sprite_dimensions.y;
-	sprite.setTextureRect(sf::IntRect({u, v}, m_sprite_dimensions));
-	sprite.setOrigin(sprite.getLocalBounds().getCenter());
-	sprite.setPosition(forced_position - cam);
-	win.draw(sprite);
+	Animatable::set_position(forced_position - cam);
+	win.draw(*this);
 }
 
 void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -282,10 +272,10 @@ void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& w
 	orb_indicator.render(svc, win, cam);
 }
 
-void Player::assign_texture(sf::Texture& tex) { sprite.setTexture(tex); }
+void Player::assign_texture(sf::Texture& tex) { Animatable::set_texture(tex); }
 
 void Player::start_tick() {
-	get_collider().flags.external_state.reset(shape::ExternalState::grounded);
+	if (collider.has_value()) { get_collider().flags.external_state.reset(shape::ExternalState::grounded); }
 	controller.stop_walking_autonomously();
 }
 
@@ -295,100 +285,94 @@ void Player::end_tick() {
 }
 
 void Player::update_animation() {
-
+	if (!collider.has_value()) { return; }
 	m_sprite_shake.update();
 	flags.state.set(State::show_weapon);
 
 	if (grounded()) {
-		if (controller.inspecting()) { animation.request(AnimState::inspect); }
-		if (!(animation.is_state(AnimState::land) || animation.is_state(AnimState::rise))) {
-			if (controller.nothing_pressed() && !controller.is_dashing() && !(animation.is_state(AnimState::inspect)) && !(animation.is_state(AnimState::sit))) { animation.request(AnimState::idle); }
-			if (controller.moving() && !controller.is_dashing() && !controller.sprinting()) { animation.request(AnimState::run); }
-			if (controller.moving() && controller.sprinting() && !controller.is_dashing()) { animation.request(AnimState::sprint); }
-			if (abs(get_collider().physics.velocity.x) > thresholds.stop && !controller.moving()) { animation.request(AnimState::stop); }
+		if (controller.inspecting()) { m_animation_machine.request(AnimState::inspect); }
+		if (!(m_animation_machine.is_state(AnimState::land) || m_animation_machine.is_state(AnimState::rise))) {
+			if (controller.nothing_pressed() && !controller.is_dashing() && !(m_animation_machine.is_state(AnimState::inspect)) && !(m_animation_machine.is_state(AnimState::sit))) { m_animation_machine.request(AnimState::idle); }
+			if (controller.moving() && !controller.is_dashing() && !controller.sprinting()) { m_animation_machine.request(AnimState::run); }
+			if (controller.moving() && controller.sprinting() && !controller.is_dashing()) { m_animation_machine.request(AnimState::sprint); }
+			if (abs(get_collider().physics.velocity.x) > thresholds.stop && !controller.moving()) { m_animation_machine.request(AnimState::stop); }
 			if (hotbar && arsenal) {
-				if (controller.shot() && equipped_weapon().can_shoot()) { animation.request(AnimState::shoot); }
+				if (controller.shot() && equipped_weapon().can_shoot()) { m_animation_machine.request(AnimState::shoot); }
 			}
 			handle_turning();
 		}
 	} else {
 		if (get_collider().physics.apparent_velocity().y > -thresholds.suspend && get_collider().physics.apparent_velocity().y < thresholds.suspend && !controller.is_wallsliding() && !controller.is_walljumping()) {
-			animation.request(AnimState::suspend);
+			m_animation_machine.request(AnimState::suspend);
 		}
 	}
 
-	if (get_collider().physics.apparent_velocity().y > thresholds.suspend && !grounded()) { animation.request(AnimState::fall); }
+	if (get_collider().physics.apparent_velocity().y > thresholds.suspend && !grounded()) { m_animation_machine.request(AnimState::fall); }
 
-	if (controller.get_ability_animation() && controller.is_ability_active() && controller.is_animation_request()) { animation.request(*controller.get_ability_animation()); }
+	if (controller.get_ability_animation() && controller.is_ability_active() && controller.is_animation_request()) { m_animation_machine.request(*controller.get_ability_animation()); }
 
-	if (animation.is_state(AnimState::sit)) { flags.state.reset(State::show_weapon); }
-	if (controller.inspecting()) { animation.request(AnimState::inspect); }
-	if (controller.is_crouching() && grounded()) { controller.moving() ? animation.request(AnimState::crawl) : animation.request(AnimState::crouch); }
+	if (m_animation_machine.is_state(AnimState::sit)) { flags.state.reset(State::show_weapon); }
+	if (controller.inspecting()) { m_animation_machine.request(AnimState::inspect); }
+	if (controller.is_crouching() && grounded()) { controller.moving() ? m_animation_machine.request(AnimState::crawl) : m_animation_machine.request(AnimState::crouch); }
 	if (controller.moving() && grounded()) {
 		if (get_collider().has_left_wallslide_collision() && controller.horizontal_movement() < 0.f) { cooldowns.push.update(); }
 		if (get_collider().has_right_wallslide_collision() && controller.horizontal_movement() > 0.f) { cooldowns.push.update(); }
-		if (cooldowns.push.is_complete() && (get_collider().has_right_wallslide_collision() || get_collider().has_left_wallslide_collision())) { animation.request(AnimState::push); }
+		if (cooldowns.push.is_complete() && (get_collider().has_right_wallslide_collision() || get_collider().has_left_wallslide_collision())) { m_animation_machine.request(AnimState::push); }
 	}
-	if (hurt_cooldown.running()) { animation.request(AnimState::hurt); }
+	if (hurt_cooldown.running()) { m_animation_machine.request(AnimState::hurt); }
 	if (is_dead()) {
-		animation.request(AnimState::die);
+		m_animation_machine.request(AnimState::die);
 		flags.state.reset(State::show_weapon);
 	}
 
-	if (flags.state.consume(State::sleep)) { animation.request(player::AnimState::sleep); }
+	if (flags.state.consume(State::sleep)) { m_animation_machine.request(player::AnimState::sleep); }
 	if (flags.state.consume(State::wake_up)) {
 		NANI_LOG_DEBUG(m_logger, "Wake up flag was true");
-		animation.request(player::AnimState::wake_up);
+		m_animation_machine.request(player::AnimState::wake_up);
 	}
 
-	animation.update();
+	m_animation_machine.update();
 }
 
 void Player::update_sprite() {
 
 	if (!grounded() || controller.is_dashing()) {
-		if (m_directions.desired != m_directions.actual) { animation.triggers.set(AnimTriggers::flip); }
+		if (m_directions.desired != m_directions.actual) { m_animation_machine.triggers.set(AnimTriggers::flip); }
 	}
-	if (animation.triggers.consume(AnimTriggers::flip)) {
-		sprite.scale({-1.f, 1.f});
+	if (m_animation_machine.triggers.consume(AnimTriggers::flip)) {
+		Animatable::scale({-1.f, 1.f});
 		m_directions.actual.flip();
 	}
 
 	flags.state.reset(State::dir_switch);
 
-	sprite.setTexture(texture_updater.get_dynamic_texture());
+	Animatable::set_texture(texture_updater.get_dynamic_texture());
 }
 
 void Player::handle_turning() {
-	if (m_directions.desired != m_directions.actual) { ccm::abs(get_collider().physics.velocity.x) > thresholds.quick_turn ? animation.request(AnimState::sharp_turn) : animation.request(AnimState::turn); }
+	if (m_directions.desired != m_directions.actual) { ccm::abs(get_collider().physics.velocity.x) > thresholds.quick_turn ? m_animation_machine.request(AnimState::sharp_turn) : m_animation_machine.request(AnimState::turn); }
 }
 
 void Player::flash_sprite() {
 	auto flash_rate = 30;
-	(health.invincibility.get() / flash_rate) % 2 == 0 ? sprite.setColor(colors::red) : sprite.setColor(colors::blue);
-}
-
-void Player::calculate_sprite_offset() {
-	sprite_position = {get_collider().get_average_tick_position() + sprite_offset};
-	sprite_position.x += controller.facing_left() ? -1.f : 1.f;
+	(health.invincibility.get() / flash_rate) % 2 == 0 ? Animatable::set_color(colors::red) : Animatable::set_color(colors::blue);
 }
 
 void Player::set_idle() {
-	animation.force(AnimState::idle, "idle");
-	animation.state_function = std::bind(&PlayerAnimation::update_idle, &animation);
+	m_animation_machine.force(AnimState::idle, "idle");
+	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_idle, &m_animation_machine);
 }
 
 void Player::set_sleeping() {
-	animation.force(AnimState::idle, "sleep");
-	animation.state_function = std::bind(&PlayerAnimation::update_sleep, &animation);
-	animation.animation.set_frame(3);
+	m_animation_machine.force(AnimState::idle, "sleep");
+	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_sleep, &m_animation_machine);
+	animation.set_frame(3);
 }
 
 void Player::set_direction(Direction to) {
 	m_directions.actual.set(to.lnr);
 	m_directions.desired.set(to.lnr);
 	controller.set_direction(to);
-	sprite.setScale({constants::f_scale_vec.x * to.as_float(), constants::f_scale_vec.y});
 }
 
 void Player::piggyback(int id) {
@@ -417,7 +401,7 @@ void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	}
 }
 
-void Player::set_draw_position(sf::Vector2f const to) { sprite_position = to; }
+void Player::set_draw_position(sf::Vector2f const to) { m_sprite_position = to; }
 
 void Player::freeze_position() {
 	set_position(get_collider().physics.previous_position);
@@ -452,9 +436,9 @@ void Player::update_weapon() {
 }
 
 void Player::walk() {
-	if (animation.is_state(AnimState::slide)) { return; }
-	if (animation.is_state(AnimState::dash)) { return; }
-	if (animation.is_state(AnimState::sharp_turn)) { get_collider().physics.acceleration.x *= 0.1f; }
+	if (m_animation_machine.is_state(AnimState::slide)) { return; }
+	if (m_animation_machine.is_state(AnimState::dash)) { return; }
+	if (m_animation_machine.is_state(AnimState::sharp_turn)) { get_collider().physics.acceleration.x *= 0.1f; }
 	if (controller.moving_right() && !get_collider().has_right_collision()) {
 		get_collider().physics.acceleration.x = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
 	}
@@ -502,22 +486,22 @@ void Player::handle_map_collision(world::Map& map) { get_collider().detect_map_c
 void Player::update_antennae() {
 	int ctr{0};
 	for (auto& a : antennae) {
-		if (animation.get_frame() == 44 || animation.get_frame() == 46) {
+		if (m_animation_machine.get_frame() == 44 || m_animation_machine.get_frame() == 46) {
 			antenna_offset.y = -19.f;
 		} else if (controller.sprinting()) {
 			antenna_offset.y = -13.f;
-		} else if (animation.get_frame() == 52) {
+		} else if (m_animation_machine.get_frame() == 52) {
 			antenna_offset.y = -14.f;
-		} else if (animation.get_frame() == 53) {
+		} else if (m_animation_machine.get_frame() == 53) {
 			antenna_offset.y = -11.f;
-		} else if (animation.get_frame() == 79) {
+		} else if (m_animation_machine.get_frame() == 79) {
 			antenna_offset.y = 2.f;
 		} else if (controller.is_crouching()) {
 			antenna_offset.y = 2.f;
 		} else {
 			antenna_offset.y = -17.f;
 		}
-		if (animation.get_frame() == 57) { antenna_offset.y = -8.f; }
+		if (m_animation_machine.get_frame() == 57) { antenna_offset.y = -8.f; }
 		if (!is_dead()) {
 			a.set_target_position(get_collider().physics.position + antenna_offset);
 		} else {
@@ -530,7 +514,7 @@ void Player::update_antennae() {
 		} else {
 			antenna_offset.x = ctr % 2 == 0 ? 2.f : 13.f;
 		}
-		if (animation.get_frame() == 82) { antenna_offset.x += controller.facing_right() ? 6.f : -6.f; }
+		if (m_animation_machine.get_frame() == 82) { antenna_offset.x += controller.facing_right() ? 6.f : -6.f; }
 		++ctr;
 	}
 }
@@ -567,7 +551,7 @@ void Player::update_invincibility() {
 	if (health.invincible()) {
 		flash_sprite();
 	} else {
-		sprite.setColor(sf::Color::White);
+		set_color(sf::Color::White);
 	}
 }
 
@@ -582,8 +566,8 @@ void Player::start_over() {
 	controller.unrestrict();
 	health.invincibility.start(8);
 	flags.state.reset(State::killed);
-	animation.triggers.reset(AnimTriggers::end_death);
-	animation.post_death.cancel();
+	m_animation_machine.triggers.reset(AnimTriggers::end_death);
+	m_animation_machine.post_death.cancel();
 	get_collider().collision_depths = util::CollisionDepth();
 	for (auto& a : antennae) {
 		a.collider.physics.set_global_friction(physics_stats.antenna_friction);
@@ -743,7 +727,7 @@ bool Player::can_slide() const {
 bool Player::can_jump() const {
 	if (health.is_dead()) { return false; }
 	if (controller.is_wallsliding()) { return false; }
-	if (animation.is_state(AnimState::sleep)) { return false; }
+	if (m_animation_machine.is_state(AnimState::sleep)) { return false; }
 	if (!grounded()) { return false; }
 	return true;
 }

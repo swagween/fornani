@@ -19,7 +19,10 @@ namespace fornani::world {
 Map::Map(automa::ServiceProvider& svc, player::Player& player)
 	: player(&player), enemy_catalog(svc), transition(svc.window->f_screen_dimensions(), 96), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}} {}
 
-Map::~Map() { player->unregister_with_map(); }
+Map::~Map() {
+	player->unregister_with_map();
+	NANI_LOG_INFO(m_logger, "Map destroyed: {}", m_metadata.room);
+}
 
 void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number) {
 
@@ -222,6 +225,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	b_transition_in = true;
 
 	player->register_with_map(*this);
+	NANI_LOG_INFO(m_logger, "Player registered with map.");
 }
 
 void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) {
@@ -300,6 +304,7 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 }
 
 void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console) {
+	if (!player->has_collider()) { return; }
 	auto& layers = svc.data.get_layers(room_id);
 	flags.state.reset(LevelState::camera_shake);
 
@@ -775,7 +780,6 @@ void Map::unregister_collider(shape::ICollider* collider) {
 
 void Map::refresh_collider_chunks(Register<int> const& old_chunks, Register<int> const& new_chunks, shape::ICollider* ptr) {
 	for (auto chunk : old_chunks) {
-		NANI_LOG_DEBUG(m_logger, "OLD: [{}]", chunk);
 		if (!new_chunks.contains(chunk)) {
 			auto& bucket = m_chunks[chunk];
 			bucket.erase(std::remove(bucket.begin(), bucket.end(), ptr), bucket.end());
@@ -783,7 +787,6 @@ void Map::refresh_collider_chunks(Register<int> const& old_chunks, Register<int>
 	}
 
 	for (auto chunk : new_chunks) {
-		NANI_LOG_DEBUG(m_logger, "NEW: [{}]", chunk);
 		if (!old_chunks.contains(chunk)) { m_chunks[chunk].push_back(ptr); }
 	}
 }

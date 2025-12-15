@@ -56,7 +56,6 @@ class PlayerAnimation {
 	friend class Player;
 	PlayerAnimation(player::Player& plr);
 
-	anim::Animation animation{};
 	util::BitFlags<AnimTriggers> triggers{};
 	util::Counter idle_timer{};
 	util::Cooldown post_death{400};
@@ -65,7 +64,7 @@ class PlayerAnimation {
 	void start();
 	[[nodiscard]] auto death_over() -> bool { return triggers.consume(AnimTriggers::end_death); }
 	[[nodiscard]] auto not_jumping() const -> bool { return m_actual != AnimState::rise; }
-	[[nodiscard]] auto get_frame() const -> int { return animation.get_frame(); }
+	[[nodiscard]] auto get_frame() const -> int;
 	[[nodiscard]] auto was_requested(AnimState check) const -> bool { return m_requested.test(check); }
 	[[nodiscard]] auto was_requested_externally(AnimState check) const -> bool { return m_requested_external.test(check); }
 	[[nodiscard]] auto get_state() const -> AnimState { return m_actual; }

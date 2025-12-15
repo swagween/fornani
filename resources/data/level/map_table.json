@@ -14,6 +14,12 @@
     },
     {
       "folder": "config",
+      "label": "collt.json",
+      "region": "firstwind",
+      "room_id": 11111
+    },
+    {
+      "folder": "config",
       "label": "new_file.json",
       "region": "firstwind",
       "room_id": 1

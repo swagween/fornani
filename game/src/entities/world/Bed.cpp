@@ -31,7 +31,7 @@ void Bed::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 		sparkler.activate();
 		fadeout.start();
 		if (!flags.test(BedFlags::engaged) && !flags.test(BedFlags::slept_in) && player.controller.inspecting() && !player.is_busy()) { player.flags.state.set(player::State::sleep); }
-		if (player.is_in_animation(player::AnimState::sleep) && !console && player.animation.animation.get_elapsed_ticks() >= sleep_timer_v && !flags.test(BedFlags::slept_in)) {
+		if (player.is_in_animation(player::AnimState::sleep) && !console && player.get_elapsed_animation_ticks() >= sleep_timer_v && !flags.test(BedFlags::slept_in)) {
 			if (!flags.test(BedFlags::engaged)) { transition.start(); }
 			flags.set(BedFlags::engaged);
 		}

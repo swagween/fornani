@@ -30,7 +30,7 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		svc.ticker.in_game_seconds_passed = {};
 		svc.app_flags.set(automa::AppFlags::custom_map_start);
 		player->set_sleeping();
-		player->animation.set_sleep_timer();
+		player->set_sleep_timer();
 		player->set_direction(Direction{{1, 0}});
 	}
 

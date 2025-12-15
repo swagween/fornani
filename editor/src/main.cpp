@@ -31,66 +31,6 @@ static constexpr char const* logFile{"pioneer.log"};
 #include <imgui.h>
 #include <imgui-SFML.h>
 
-// int main() {
-//	sf::RenderWindow window(sf::VideoMode({800, 600}), "SFML 3.0 + ImGui-SFML Modal Test");
-//	window.setFramerateLimit(60);
-//
-//	// Important: set the OpenGL context as active before initializing ImGui
-//	if (!window.setActive(true)) { return 0; }
-//	if (!ImGui::SFML::Init(window)) { return 0; }
-//
-//	sf::Clock deltaClock;
-//	bool show_modal = false;
-//
-//	while (window.isOpen()) {
-//		while (std::optional const event = window.pollEvent()) {
-//			ImGui::SFML::ProcessEvent(window, *event);
-//			if (event->is<sf::Event::Closed>()) { return 0; }
-//
-//			// Toggle modal on M key press
-//			if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
-//				if (key_pressed->scancode == sf::Keyboard::Scancode::M) { show_modal = true; }
-//			}
-//		}
-//
-//		// Ensure OpenGL context is active
-//		if (!window.setActive(true)) { return 0; }
-//
-//		ImGui::SFML::Update(window, deltaClock.restart());
-//
-//		static bool modal_open = false;
-//		if (modal_open) {
-//			ImGui::Text("Popup is open (according to IsPopupOpen)");
-//		} else {
-//			ImGui::Text("Popup is NOT open (according to IsPopupOpen)");
-//		}
-//		if (show_modal) {
-//			ImGui::OpenPopup("Test Modal");
-//			modal_open = true;
-//			show_modal = false;
-//		}
-//
-//		if (ImGui::BeginPopupModal("Test Modal")) {
-//			modal_open = true;
-//			// Modal content
-//			if (ImGui::Button("Close")) {
-//				ImGui::CloseCurrentPopup();
-//				modal_open = false;
-//			}
-//			ImGui::EndPopup();
-//		} else {
-//			modal_open = false;
-//		}
-//
-//		window.clear(sf::Color(30, 30, 30));
-//		ImGui::SFML::Render(window);
-//		window.display();
-//	}
-//
-//	ImGui::SFML::Shutdown();
-//	return 0;
-// }
-
 int main(int argc, char** argv) {
 	assert(argc > 0);
 

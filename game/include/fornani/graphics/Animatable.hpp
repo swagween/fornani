@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include "fornani/entities/animation/Animation.hpp"
-#include "fornani/graphics/Drawable.hpp"
-#include "fornani/io/Logger.hpp"
-#include "fornani/utils/Constants.hpp"
+#include <fornani/entities/animation/Animation.hpp>
+#include <fornani/graphics/Drawable.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/Constants.hpp>
 
 namespace fornani {
 class Animatable : public Drawable {
@@ -41,4 +41,5 @@ class Animatable : public Drawable {
 
 	std::unordered_map<std::string, anim::Parameters> m_animations{};
 };
+
 } // namespace fornani

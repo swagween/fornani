@@ -15,6 +15,8 @@
 
 namespace fornani {
 
+static double average_frame_time{};
+
 Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& audio_engine) : services(argv, version, window, audio_engine), player(services), game_state(services, player, automa::MenuType::main) {
 
 	/* Set up ImGui Context */
@@ -62,8 +64,6 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 	NANI_LOG_INFO(m_logger, "Success");
 	services.stopwatch.stop();
 	services.stopwatch.print_time("game started");
-
-	sf::Clock delta_clock{};
 
 	while (services.window->get().isOpen()) {
 
@@ -168,8 +168,9 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		io.LogFilename = NULL;
 		io.MouseDrawCursor = flags.test(GameFlags::draw_cursor);
 		services.window->get().setMouseCursorVisible(io.MouseDrawCursor);
-		ImGui::SFML::Update(services.window->get(), delta_clock.getElapsedTime());
-		delta_clock.restart();
+		ImGui::SFML::Update(services.window->get(), m_frame_tracker.get_elapsed_time());
+		m_frame_tracker.update();
+		if (services.ticker.every_x_frames(60)) { average_frame_time = m_frame_tracker.get_average_frame_time(); }
 
 #if not defined(FORNANI_PRODUCTION)
 		if (flags.test(GameFlags::playtest)) { playtester_portal(services.window->get()); }
@@ -207,6 +208,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 	auto const& map = game_state.get_current_state().get_map();
 
 	bool* b_debug{};
+	static bool limit_framerate{true};
+	static int frame_limit{60};
 	float const PAD = 10.0f;
 	static int corner = 1;
 	ImGuiIO& io = ImGui::GetIO();
@@ -230,6 +233,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
 				if (ImGui::BeginTabItem("General")) {
+					ImGui::Checkbox("Limit Framerate", &limit_framerate);
+					ImGui::InputInt("Frame Limit", &frame_limit);
+					limit_framerate ? services.window->get().setFramerateLimit(frame_limit) : services.window->get().setFramerateLimit(0);
 					if (ImGui::Button("Exit to Main Menu")) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player)); }
 					ImGui::Text("In Game? %s", services.in_game() ? "Yes" : "No");
 					ImGui::Text("debug mode: %s", services.debug_mode() ? "Enabled" : "Disabled");
@@ -252,6 +258,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Milliseconds Passed: %.0f", services.ticker.total_milliseconds_passed.count());
 					ImGui::Text("Ticks Per Frame: %.2f", services.ticker.ticks_per_frame);
 					ImGui::Text("Frames Per Second: %.2f", services.ticker.fps);
+					ImGui::Text("Average Frame Time: %.4fms", average_frame_time);
 					ImGui::Separator();
 					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.dt_scalar, 0.0f, 8.f, "%.3f")) { services.ticker.scale_dt(); };
 					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }
@@ -498,40 +505,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::EndTabItem();
 							}
 							if (ImGui::BeginTabItem("Animation")) {
-								ImGui::Text("Animation: %s", player.animation.animation.label.data());
-								ImGui::Separator();
-								ImGui::Text("Elapsed Ticks: %i", player.animation.animation.get_elapsed_ticks());
-								ImGui::Text("Current Frame: %i", player.animation.animation.frame.get_count());
-								ImGui::Text("Loop: %i", player.animation.animation.loop.get_count());
-								ImGui::Text("Frame Timer: %i", player.animation.animation.frame_timer.get());
-								ImGui::Text("Complete? %s", player.animation.animation.complete() ? "Yes" : "No");
-								ImGui::Text("One Off? %s", player.animation.animation.params.num_loops > -1 ? "Yes" : "No");
-								ImGui::Text("Repeat Last Frame? %s", player.animation.animation.params.repeat_last_frame ? "Yes" : "No");
-								ImGui::Text("Idle Timer: %i", player.animation.idle_timer.get_count());
-								ImGui::Separator();
-								ImGui::Text("idle...: %s", player.animation.was_requested(player::AnimState::idle) ? "flag set" : "");
-								ImGui::Text("run....: %s", player.animation.was_requested(player::AnimState::run) ? "flag set" : "");
-								ImGui::Text("stop...: %s", player.animation.was_requested(player::AnimState::stop) ? "flag set" : "");
-								ImGui::Text("turn...: %s", player.animation.was_requested(player::AnimState::turn) ? "flag set" : "");
-								ImGui::Text("hurt...: %s", player.animation.was_requested(player::AnimState::hurt) ? "flag set" : "");
-								ImGui::Text("shpturn: %s", player.animation.was_requested(player::AnimState::sharp_turn) ? "flag set" : "");
-								ImGui::Text("rise...: %s", player.animation.was_requested(player::AnimState::rise) ? "flag set" : "");
-								ImGui::Text("suspend: %s", player.animation.was_requested(player::AnimState::suspend) ? "flag set" : "");
-								ImGui::Text("fall...: %s", player.animation.was_requested(player::AnimState::fall) ? "flag set" : "");
-								ImGui::Separator();
-								ImGui::Text("land...: %s", player.animation.was_requested(player::AnimState::land) ? "flag set" : "");
-								ImGui::Text("roll...: %s", player.animation.was_requested(player::AnimState::roll) ? "flag set" : "");
-								ImGui::Text("slide..: %s", player.animation.was_requested(player::AnimState::slide) ? "flag set" : "");
-								ImGui::Text("getup..: %s", player.animation.was_requested(player::AnimState::get_up) ? "flag set" : "");
-								ImGui::Separator();
-								ImGui::Text("dash...: %s", player.animation.was_requested(player::AnimState::dash) ? "flag set" : "");
-								ImGui::Text("sprint.: %s", player.animation.was_requested(player::AnimState::sprint) ? "flag set" : "");
-								ImGui::Text("wlslide: %s", player.animation.was_requested(player::AnimState::wallslide) ? "flag set" : "");
-								ImGui::Text("wljump.: %s", player.animation.was_requested(player::AnimState::walljump) ? "flag set" : "");
-								ImGui::Text("inspect: %s", player.animation.was_requested(player::AnimState::inspect) ? "flag set" : "");
-								ImGui::Text("die....: %s", player.animation.was_requested(player::AnimState::die) ? "flag set" : "");
-								ImGui::Text("sleep..: %s", player.animation.was_requested(player::AnimState::sleep) ? "flag set" : "");
-								ImGui::Text("wakeup.: %s", player.animation.was_requested(player::AnimState::wake_up) ? "flag set" : "");
+								ImGui::Text("Under construction...");
 								ImGui::EndTabItem();
 							}
 							if (ImGui::BeginTabItem("Weapon")) {

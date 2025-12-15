@@ -53,7 +53,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 				svc.state_controller.next_state = svc.state_controller.demo_level;
 				svc.state_controller.actions.reset(Actions::retry);
 				player.set_idle();
-				player.animation.triggers.reset(player::AnimTriggers::end_death);
+				player.set_animation_flag(player::AnimTriggers::end_death, false);
 			} else {
 				return_to_main_menu(svc, player);
 				return;
@@ -64,7 +64,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 				svc.data.load_progress(player, svc.data.current_save, false, false);
 				svc.state_controller.actions.reset(Actions::retry);
 				player.set_idle();
-				player.animation.triggers.reset(player::AnimTriggers::end_death);
+				player.set_animation_flag(player::AnimTriggers::end_death, false);
 				svc.data.write_death_count(player);
 			} else {
 				return_to_main_menu(svc, player);
@@ -104,7 +104,7 @@ void StateManager::return_to_main_menu(ServiceProvider& svc, player::Player& pla
 	svc.state_controller.actions.reset(Actions::trigger);
 	svc.state_controller.actions.reset(Actions::retry);
 	player.start_over();
-	player.animation.request(player::AnimState::run);
+	player.request_animation(player::AnimState::run);
 }
 
 void StateManager::print_stats(ServiceProvider& svc, player::Player& player) {

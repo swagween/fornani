@@ -191,7 +191,6 @@ class Map {
 	// std::vector<std::unique_ptr<npc::NPC>> npcs{};
 	std::vector<Platform> platforms{};
 
-	std::vector<std::unique_ptr<Breakable>> breakables{};
 	std::vector<std::unique_ptr<Pushable>> pushables{};
 
 	std::vector<Spawner> spawners{};
@@ -286,6 +285,9 @@ class Map {
 	int m_middleground{};
 
 	io::Logger m_logger{"Map"};
+
+  public:
+	std::vector<std::unique_ptr<Breakable>> breakables{};
 };
 
 } // namespace fornani::world

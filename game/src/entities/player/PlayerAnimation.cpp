@@ -47,13 +47,15 @@ PlayerAnimation::PlayerAnimation(Player& plr)
 	  },
 	  state_function{std::bind(&PlayerAnimation::update_idle, this)}, m_buffer{16}, m_sleep_timer{512} {
 	state_function = state_function();
-	animation.set_params(get_params("idle"));
-	animation.start();
+	m_player->animation.set_params(get_params("idle"));
+	m_player->animation.start();
 	request(AnimState::idle);
 }
 
+int PlayerAnimation::get_frame() const { return m_player->animation.get_frame(); }
+
 void PlayerAnimation::update() {
-	animation.update();
+	m_player->animation.update();
 	state_function = state_function();
 	if (m_player->is_dead()) { request(AnimState::die); }
 	if (m_buffer.is_complete()) { m_requested = {}; }
@@ -61,17 +63,20 @@ void PlayerAnimation::update() {
 	m_sleep_timer.update();
 }
 
-void PlayerAnimation::start() { animation.start(); }
+void PlayerAnimation::start() { m_player->animation.start(); }
 
-bool PlayerAnimation::stepped() const { return (animation.get_frame() == 44 || animation.get_frame() == 46 || animation.get_frame() == 10 || animation.get_frame() == 13 || animation.get_frame() == 16) && animation.keyframe_started(); }
+bool PlayerAnimation::stepped() const {
+	return (m_player->animation.get_frame() == 44 || m_player->animation.get_frame() == 46 || m_player->animation.get_frame() == 10 || m_player->animation.get_frame() == 13 || m_player->animation.get_frame() == 16) &&
+		   m_player->animation.keyframe_started();
+}
 
 void PlayerAnimation::set_sleep_timer() { m_sleep_timer.start(); }
 
 fsm::StateFunction PlayerAnimation::update_idle() {
-	animation.label = "idle";
+	m_player->animation.label = "idle";
 	m_actual = AnimState::idle;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
-	if (animation.just_started()) {
+	if (m_player->animation.just_started()) {
 		idle_timer.start();
 		m_player->cooldowns.push.start();
 	}
@@ -105,7 +110,7 @@ fsm::StateFunction PlayerAnimation::update_idle() {
 }
 
 fsm::StateFunction PlayerAnimation::update_sprint() {
-	animation.label = "sprint";
+	m_player->animation.label = "sprint";
 	m_actual = AnimState::sprint;
 	m_player->controller.reset_vertical_movement();
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
@@ -136,7 +141,7 @@ fsm::StateFunction PlayerAnimation::update_sprint() {
 }
 
 fsm::StateFunction PlayerAnimation::update_shield() {
-	animation.label = "shield";
+	m_player->animation.label = "shield";
 	m_actual = AnimState::shield;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
@@ -152,7 +157,7 @@ fsm::StateFunction PlayerAnimation::update_shield() {
 }
 
 fsm::StateFunction PlayerAnimation::update_between_push() {
-	animation.label = "between push";
+	m_player->animation.label = "between push";
 	m_actual = AnimState::between_push;
 	m_player->flags.state.reset(State::show_weapon);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
@@ -163,7 +168,7 @@ fsm::StateFunction PlayerAnimation::update_between_push() {
 	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 	if (change_state(AnimState::crouch, get_params("crouch"))) { return PA_BIND(update_crouch); }
 	if (change_state(AnimState::crawl, get_params("crouch"), true)) { return PA_BIND(update_crouch); }
-	if (animation.complete()) {
+	if (m_player->animation.complete()) {
 		if (change_state(AnimState::push, get_params("push"))) { return PA_BIND(update_push); }
 		if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 		if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
@@ -178,7 +183,7 @@ fsm::StateFunction PlayerAnimation::update_between_push() {
 }
 
 fsm::StateFunction PlayerAnimation::update_push() {
-	animation.label = "push";
+	m_player->animation.label = "push";
 	m_actual = AnimState::push;
 	m_player->flags.state.reset(State::show_weapon);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
@@ -187,7 +192,7 @@ fsm::StateFunction PlayerAnimation::update_push() {
 	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 	if (!was_requested(AnimState::push)) {
-		animation.set_params(get_params("between_push"));
+		m_player->animation.set_params(get_params("between_push"));
 		return PA_BIND(update_between_push);
 	}
 
@@ -195,7 +200,7 @@ fsm::StateFunction PlayerAnimation::update_push() {
 }
 
 fsm::StateFunction PlayerAnimation::update_run() {
-	animation.label = "run";
+	m_player->animation.label = "run";
 	m_actual = AnimState::run;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
@@ -224,7 +229,7 @@ fsm::StateFunction PlayerAnimation::update_run() {
 }
 
 fsm::StateFunction PlayerAnimation::update_turn() {
-	animation.label = "turn";
+	m_player->animation.label = "turn";
 	m_actual = AnimState::turn;
 	if (change_state(AnimState::die, get_params("die"), true)) {
 		triggers.set(AnimTriggers::flip);
@@ -235,7 +240,7 @@ fsm::StateFunction PlayerAnimation::update_turn() {
 		return PA_BIND(update_rise);
 	}
 	if (change_state(AnimState::slide, get_params("slide"), true)) { return PA_BIND(update_slide); }
-	if (animation.complete()) {
+	if (m_player->animation.complete()) {
 		triggers.set(AnimTriggers::flip);
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 		if (change_state(AnimState::crouch, get_params("crouch"))) { return PA_BIND(update_crouch); }
@@ -249,7 +254,7 @@ fsm::StateFunction PlayerAnimation::update_turn() {
 		if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 
-		animation.set_params(get_params("idle"));
+		m_player->animation.set_params(get_params("idle"));
 		return PA_BIND(update_idle);
 	}
 
@@ -257,7 +262,7 @@ fsm::StateFunction PlayerAnimation::update_turn() {
 }
 
 fsm::StateFunction PlayerAnimation::update_sharp_turn() {
-	animation.label = "sharp_turn";
+	m_player->animation.label = "sharp_turn";
 	m_actual = AnimState::sharp_turn;
 	if (change_state(AnimState::die, get_params("die"), true)) {
 		triggers.set(AnimTriggers::flip);
@@ -268,7 +273,7 @@ fsm::StateFunction PlayerAnimation::update_sharp_turn() {
 		return PA_BIND(update_rise);
 	}
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
-	if (animation.complete()) {
+	if (m_player->animation.complete()) {
 		triggers.set(AnimTriggers::flip);
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
@@ -279,7 +284,7 @@ fsm::StateFunction PlayerAnimation::update_sharp_turn() {
 		if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 
-		animation.set_params(get_params("idle"));
+		m_player->animation.set_params(get_params("idle"));
 		return PA_BIND(update_idle);
 	}
 
@@ -287,7 +292,7 @@ fsm::StateFunction PlayerAnimation::update_sharp_turn() {
 }
 
 fsm::StateFunction PlayerAnimation::update_rise() {
-	animation.label = "rise";
+	m_player->animation.label = "rise";
 	m_actual = AnimState::rise;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
@@ -299,12 +304,12 @@ fsm::StateFunction PlayerAnimation::update_rise() {
 	if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }
 	if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
-	if (animation.complete()) {
+	if (m_player->animation.complete()) {
 		if (m_player->grounded()) {
-			animation.set_params(get_params("idle"));
+			m_player->animation.set_params(get_params("idle"));
 			return PA_BIND(update_idle);
 		}
-		animation.set_params(get_params("suspend"));
+		m_player->animation.set_params(get_params("suspend"));
 		return PA_BIND(update_suspend);
 	}
 
@@ -312,7 +317,7 @@ fsm::StateFunction PlayerAnimation::update_rise() {
 }
 
 fsm::StateFunction PlayerAnimation::update_suspend() {
-	animation.label = "suspend";
+	m_player->animation.label = "suspend";
 	m_actual = AnimState::suspend;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
@@ -337,7 +342,7 @@ fsm::StateFunction PlayerAnimation::update_suspend() {
 }
 
 fsm::StateFunction PlayerAnimation::update_fall() {
-	animation.label = "fall";
+	m_player->animation.label = "fall";
 	m_actual = AnimState::fall;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
@@ -355,7 +360,7 @@ fsm::StateFunction PlayerAnimation::update_fall() {
 	if (change_state(AnimState::dash_up, get_params("dash_up"))) { return PA_BIND(update_dash_up); }
 	if (change_state(AnimState::dash_down, get_params("dash_down"))) { return PA_BIND(update_dash_down); }
 	if (m_player->grounded()) {
-		animation.set_params(get_params("land"));
+		m_player->animation.set_params(get_params("land"));
 		return PA_BIND(update_land);
 	}
 
@@ -363,15 +368,15 @@ fsm::StateFunction PlayerAnimation::update_fall() {
 }
 
 fsm::StateFunction PlayerAnimation::update_stop() {
-	animation.label = "stop";
+	m_player->animation.label = "stop";
 	m_actual = AnimState::stop;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
 
-	if (animation.complete()) {
-		animation.set_params(get_params("idle"));
+	if (m_player->animation.complete()) {
+		m_player->animation.set_params(get_params("idle"));
 		return PA_BIND(update_idle);
 	}
 	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
@@ -390,7 +395,7 @@ fsm::StateFunction PlayerAnimation::update_stop() {
 }
 
 fsm::StateFunction PlayerAnimation::update_inspect() {
-	animation.label = "inspect";
+	m_player->animation.label = "inspect";
 	m_actual = AnimState::inspect;
 	m_player->controller.reset_vertical_movement();
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
@@ -398,7 +403,7 @@ fsm::StateFunction PlayerAnimation::update_inspect() {
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
-	if (animation.complete()) {
+	if (m_player->animation.complete()) {
 		if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }
 		if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
@@ -412,7 +417,7 @@ fsm::StateFunction PlayerAnimation::update_inspect() {
 }
 
 fsm::StateFunction PlayerAnimation::update_sit() {
-	animation.label = "sit";
+	m_player->animation.label = "sit";
 	m_actual = AnimState::sit;
 	m_player->flags.state.reset(State::show_weapon);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
@@ -423,12 +428,12 @@ fsm::StateFunction PlayerAnimation::update_sit() {
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 	if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }
 	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
-	if (animation.complete()) {
+	if (m_player->animation.complete()) {
 		if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 	}
 	if (m_player->arsenal && m_player->hotbar) {
 		if (m_player->equipped_weapon().cooling_down()) {
-			animation.set_params(get_params("idle"));
+			m_player->animation.set_params(get_params("idle"));
 			return PA_BIND(update_idle);
 		}
 	}
@@ -436,7 +441,7 @@ fsm::StateFunction PlayerAnimation::update_sit() {
 }
 
 fsm::StateFunction PlayerAnimation::update_land() {
-	animation.label = "land";
+	m_player->animation.label = "land";
 	m_actual = AnimState::land;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
@@ -444,7 +449,7 @@ fsm::StateFunction PlayerAnimation::update_land() {
 	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
 	if (change_state(AnimState::turn_slide, get_params("turn_slide"))) { return PA_BIND(update_turn_slide); }
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
-	if (animation.complete()) {
+	if (m_player->animation.complete()) {
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 		if (change_state(AnimState::crouch, get_params("crouch"))) { return PA_BIND(update_crouch); }
 		if (change_state(AnimState::crawl, get_params("crouch"), true)) { return PA_BIND(update_crouch); }
@@ -454,14 +459,14 @@ fsm::StateFunction PlayerAnimation::update_land() {
 		if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 		if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 
-		animation.set_params(get_params("idle"));
+		m_player->animation.set_params(get_params("idle"));
 		return PA_BIND(update_idle);
 	}
 	return PA_BIND(update_land);
 }
 
 fsm::StateFunction PlayerAnimation::update_hurt() {
-	animation.label = "hurt";
+	m_player->animation.label = "hurt";
 	m_actual = AnimState::hurt;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
@@ -472,7 +477,7 @@ fsm::StateFunction PlayerAnimation::update_hurt() {
 	if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 	if (change_state(AnimState::land, get_params("land"))) { return PA_BIND(update_land); }
-	if (animation.complete()) {
+	if (m_player->animation.complete()) {
 		if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 		if (change_state(AnimState::crouch, get_params("crouch"))) { return PA_BIND(update_crouch); }
@@ -486,7 +491,7 @@ fsm::StateFunction PlayerAnimation::update_hurt() {
 		if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 
-		animation.set_params(get_params("idle"));
+		m_player->animation.set_params(get_params("idle"));
 		return PA_BIND(update_idle);
 	}
 
@@ -494,7 +499,7 @@ fsm::StateFunction PlayerAnimation::update_hurt() {
 }
 
 fsm::StateFunction PlayerAnimation::update_dash() {
-	animation.label = "dash";
+	m_player->animation.label = "dash";
 	m_actual = AnimState::dash;
 	m_player->flags.state.reset(State::show_weapon);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
@@ -504,7 +509,7 @@ fsm::StateFunction PlayerAnimation::update_dash() {
 	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
 	if (change_state(AnimState::dash_up, get_params("dash_up"))) { return PA_BIND(update_dash_up); }
 	if (change_state(AnimState::dash_down, get_params("dash_down"))) { return PA_BIND(update_dash_down); }
-	if (animation.complete()) {
+	if (m_player->animation.complete()) {
 		m_player->flags.state.set(State::show_weapon);
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 		if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
@@ -519,20 +524,20 @@ fsm::StateFunction PlayerAnimation::update_dash() {
 		if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 
-		animation.set_params(get_params("idle"));
+		m_player->animation.set_params(get_params("idle"));
 		return PA_BIND(update_idle);
 	}
 	return PA_BIND(update_dash);
 }
 
 fsm::StateFunction PlayerAnimation::update_dash_up() {
-	animation.label = "dash up";
+	m_player->animation.label = "dash up";
 	m_actual = AnimState::dash_up;
 	m_player->flags.state.reset(State::show_weapon);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"), true)) { return PA_BIND(update_wallslide); }
-	if (animation.complete()) {
+	if (m_player->animation.complete()) {
 		m_player->flags.state.set(State::show_weapon);
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 		if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
@@ -546,20 +551,20 @@ fsm::StateFunction PlayerAnimation::update_dash_up() {
 		if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 
-		animation.set_params(get_params("idle"));
+		m_player->animation.set_params(get_params("idle"));
 		return PA_BIND(update_idle);
 	}
 	return PA_BIND(update_dash_up);
 }
 
 fsm::StateFunction PlayerAnimation::update_dash_down() {
-	animation.label = "dash down";
+	m_player->animation.label = "dash down";
 	m_actual = AnimState::dash_down;
 	m_player->flags.state.reset(State::show_weapon);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"), true)) { return PA_BIND(update_wallslide); }
-	if (animation.complete()) {
+	if (m_player->animation.complete()) {
 		m_player->flags.state.set(State::show_weapon);
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 		if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
@@ -573,14 +578,14 @@ fsm::StateFunction PlayerAnimation::update_dash_down() {
 		if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 
-		animation.set_params(get_params("idle"));
+		m_player->animation.set_params(get_params("idle"));
 		return PA_BIND(update_idle);
 	}
 	return PA_BIND(update_dash_down);
 }
 
 fsm::StateFunction PlayerAnimation::update_wallslide() {
-	animation.label = "wallslide";
+	m_player->animation.label = "wallslide";
 	m_actual = AnimState::wallslide;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::walljump, get_params("walljump"), true)) { return PA_BIND(update_walljump); }
@@ -602,7 +607,7 @@ fsm::StateFunction PlayerAnimation::update_wallslide() {
 }
 
 fsm::StateFunction PlayerAnimation::update_walljump() {
-	animation.label = "walljump";
+	m_player->animation.label = "walljump";
 	m_actual = AnimState::walljump;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
@@ -613,30 +618,30 @@ fsm::StateFunction PlayerAnimation::update_walljump() {
 	if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }
 	if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
-	if (animation.complete()) {
-		animation.set_params(get_params("suspend"));
+	if (m_player->animation.complete()) {
+		m_player->animation.set_params(get_params("suspend"));
 		return PA_BIND(update_suspend);
 	}
 	return PA_BIND(update_walljump);
 }
 
 fsm::StateFunction PlayerAnimation::update_die() {
-	animation.label = "die";
+	m_player->animation.label = "die";
 	m_actual = AnimState::die;
-	if (animation.just_started()) {
+	if (m_player->animation.just_started()) {
 		m_player->m_services->music_player.stop();
 		post_death.start();
 		triggers.reset(AnimTriggers::end_death);
 		m_player->m_services->state_controller.actions.set(automa::Actions::death_mode); // set here, reset on map load
 	}
-	if (animation.get_frame() > 2 && !m_player->get_collider().grounded()) { animation.set_frame(2); }
+	if (m_player->animation.get_frame() > 2 && !m_player->get_collider().grounded()) { m_player->animation.set_frame(2); }
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();
 	m_player->get_collider().collision_depths = {};
 	post_death.update();
 	if (!m_player->m_services->death_mode()) {
 		m_player->get_collider().collision_depths = util::CollisionDepth();
-		animation.set_params(get_params("idle"));
+		m_player->animation.set_params(get_params("idle"));
 		return PA_BIND(update_idle);
 	}
 	if (post_death.is_complete()) {
@@ -652,7 +657,7 @@ fsm::StateFunction PlayerAnimation::update_die() {
 }
 
 fsm::StateFunction PlayerAnimation::update_backflip() {
-	animation.label = "backflip";
+	m_player->animation.label = "backflip";
 	m_actual = AnimState::backflip;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
@@ -665,15 +670,15 @@ fsm::StateFunction PlayerAnimation::update_backflip() {
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
-	if (animation.complete()) {
-		animation.set_params(get_params("suspend"));
+	if (m_player->animation.complete()) {
+		m_player->animation.set_params(get_params("suspend"));
 		return PA_BIND(update_suspend);
 	}
 	return PA_BIND(update_backflip);
 }
 
 fsm::StateFunction PlayerAnimation::update_slide() {
-	animation.label = "slide";
+	m_player->animation.label = "slide";
 	m_actual = AnimState::slide;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
@@ -694,14 +699,14 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 }
 
 fsm::StateFunction PlayerAnimation::update_get_up() {
-	animation.label = "get_up";
+	m_player->animation.label = "get_up";
 	m_actual = AnimState::get_up;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 
-	if (animation.complete()) {
-		animation.set_params(get_params("idle"));
+	if (m_player->animation.complete()) {
+		m_player->animation.set_params(get_params("idle"));
 		return PA_BIND(update_idle);
 	}
 	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
@@ -720,7 +725,7 @@ fsm::StateFunction PlayerAnimation::update_get_up() {
 }
 
 fsm::StateFunction PlayerAnimation::update_roll() {
-	animation.label = "roll";
+	m_player->animation.label = "roll";
 	m_actual = AnimState::roll;
 	auto& controller = m_player->controller;
 	controller.reset_vertical_movement();
@@ -733,16 +738,16 @@ fsm::StateFunction PlayerAnimation::update_roll() {
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::suspend, get_params("suspend"))) { return PA_BIND(update_suspend); }
 
-	if (animation.complete()) {
+	if (m_player->animation.complete()) {
 		if (controller.is_sliding() && !m_player->firing_weapon()) {
-			animation.set_params(get_params("slide"));
+			m_player->animation.set_params(get_params("slide"));
 			return PA_BIND(update_slide);
 		} else {
 			if (controller.sprinting()) {
-				animation.set_params(get_params("sprint"));
+				m_player->animation.set_params(get_params("sprint"));
 				return PA_BIND(update_sprint);
 			}
-			animation.set_params(get_params("idle"));
+			m_player->animation.set_params(get_params("idle"));
 			return PA_BIND(update_idle);
 		}
 	}
@@ -750,7 +755,7 @@ fsm::StateFunction PlayerAnimation::update_roll() {
 }
 
 fsm::StateFunction PlayerAnimation::update_turn_slide() {
-	animation.label = "turn_slide";
+	m_player->animation.label = "turn_slide";
 	m_actual = AnimState::turn_slide;
 	auto& controller = m_player->controller;
 	controller.reset_vertical_movement();
@@ -763,16 +768,16 @@ fsm::StateFunction PlayerAnimation::update_turn_slide() {
 	if (change_state(AnimState::rise, get_params("backflip"))) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::suspend, get_params("suspend"))) { return PA_BIND(update_suspend); }
 
-	if (animation.complete()) {
+	if (m_player->animation.complete()) {
 		if (controller.is_sliding() && !m_player->firing_weapon()) {
-			animation.set_params(get_params("slide"));
+			m_player->animation.set_params(get_params("slide"));
 			return PA_BIND(update_slide);
 		} else {
 			if (controller.sprinting()) {
-				animation.set_params(get_params("sprint"));
+				m_player->animation.set_params(get_params("sprint"));
 				return PA_BIND(update_sprint);
 			}
-			animation.set_params(get_params("idle"));
+			m_player->animation.set_params(get_params("idle"));
 			return PA_BIND(update_idle);
 		}
 	}
@@ -780,7 +785,7 @@ fsm::StateFunction PlayerAnimation::update_turn_slide() {
 }
 
 fsm::StateFunction PlayerAnimation::update_shoot() {
-	animation.label = "shoot";
+	m_player->animation.label = "shoot";
 	m_actual = AnimState::shoot;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
@@ -801,15 +806,15 @@ fsm::StateFunction PlayerAnimation::update_shoot() {
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
-	if (animation.complete()) {
-		animation.set_params(get_params("idle"));
+	if (m_player->animation.complete()) {
+		m_player->animation.set_params(get_params("idle"));
 		return PA_BIND(update_idle);
 	}
 	return PA_BIND(update_shoot);
 }
 
 fsm::StateFunction player::PlayerAnimation::update_sleep() {
-	animation.label = "sleep";
+	m_player->animation.label = "sleep";
 	m_actual = AnimState::sleep;
 	m_player->flags.state.reset(State::show_weapon);
 	m_player->controller.restrict_movement();
@@ -823,22 +828,22 @@ fsm::StateFunction player::PlayerAnimation::update_sleep() {
 }
 
 fsm::StateFunction player::PlayerAnimation::update_wake_up() {
-	animation.label = "wake_up";
+	m_player->animation.label = "wake_up";
 	m_actual = AnimState::wake_up;
 	m_player->flags.state.reset(State::show_weapon);
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();
-	if (animation.complete()) {
+	if (m_player->animation.complete()) {
 		m_player->flags.state.set(State::show_weapon);
 		m_player->controller.unrestrict();
-		animation.set_params(get_params("idle"));
+		m_player->animation.set_params(get_params("idle"));
 		return PA_BIND(update_idle);
 	}
 	return PA_BIND(update_wake_up);
 }
 
 fsm::StateFunction player::PlayerAnimation::update_crouch() {
-	animation.label = "crouch";
+	m_player->animation.label = "crouch";
 	m_actual = AnimState::crouch;
 	m_player->flags.state.reset(State::show_weapon);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
@@ -847,7 +852,7 @@ fsm::StateFunction player::PlayerAnimation::update_crouch() {
 	if (change_state(AnimState::suspend, get_params("suspend"))) { return PA_BIND(update_suspend); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"))) { return PA_BIND(update_wallslide); }
 	if (change_state(AnimState::push, get_params("between_push"))) { return PA_BIND(update_between_push); }
-	if (animation.complete()) {
+	if (m_player->animation.complete()) {
 		if (change_state(AnimState::crawl, get_params("crawl"), true)) { return PA_BIND(update_crawl); }
 	}
 	if (!m_player->controller.is_crouching()) {
@@ -858,7 +863,7 @@ fsm::StateFunction player::PlayerAnimation::update_crouch() {
 }
 
 fsm::StateFunction player::PlayerAnimation::update_crawl() {
-	animation.label = "crawl";
+	m_player->animation.label = "crawl";
 	m_actual = AnimState::crawl;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
@@ -867,7 +872,7 @@ fsm::StateFunction player::PlayerAnimation::update_crawl() {
 	if (change_state(AnimState::wallslide, get_params("wallslide"))) { return PA_BIND(update_wallslide); }
 	if (change_state(AnimState::push, get_params("between_push"))) { return PA_BIND(update_between_push); }
 	if (change_state(AnimState::crouch, get_params("crouch"), true)) {
-		animation.set_frame(4);
+		m_player->animation.set_frame(4);
 		return PA_BIND(update_crouch);
 	}
 	if (!m_player->controller.is_crouching()) {
@@ -879,7 +884,7 @@ fsm::StateFunction player::PlayerAnimation::update_crawl() {
 
 bool PlayerAnimation::change_state(AnimState next, anim::Parameters params, bool hard) {
 	if (m_requested.test(next)) {
-		animation.set_params(params, hard);
+		m_player->animation.set_params(params, hard);
 		return true;
 	}
 	return false;

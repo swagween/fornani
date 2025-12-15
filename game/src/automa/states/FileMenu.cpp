@@ -5,20 +5,20 @@
 
 namespace fornani::automa {
 
-FileMenu::FileMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "file"), map(svc, player) {
+FileMenu::FileMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "file") {
 	m_parent_menu = MenuType::play;
 	current_selection = util::Circuit(num_files);
 	svc.data.load_blank_save(player);
 	hud.orient(svc, player, true); // display hud preview for each file in the center of the screen
 	svc.state_controller.next_state = svc.data.load_progress(player, current_selection.get());
-	player.set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
+	player.set_draw_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
 	player.antennae.at(0).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
 	player.antennae.at(1).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
 	player.hurt_cooldown.cancel();
 
 	loading.start(4);
 	refresh(svc);
-	player.animation.force(player::AnimState::run, "run");
+	player.force_animation(player::AnimState::run, "run");
 }
 
 void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
@@ -80,9 +80,10 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	auto minimenu_pos{opt.position + sf::Vector2f{opt.label.getLocalBounds().getCenter().x + minimenu_dim.x * 0.5f + 2.f * spacing, 0.f}};
 	if (m_file_select_menu) { m_file_select_menu->update(svc, minimenu_dim, minimenu_pos); }
 
-	player->animation.request(player::AnimState::run);
+	player->request_animation(player::AnimState::run);
 	player->controller.autonomous_walk();
 	player->set_draw_position({svc.window->i_screen_dimensions().x * 0.5f + 80, 360});
+	player->simple_update();
 
 	hud.update(svc, *player);
 
