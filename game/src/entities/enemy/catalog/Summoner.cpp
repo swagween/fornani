@@ -96,7 +96,7 @@ void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			if (random::percent_chance(20) && !m_cooldowns.post_walk.running()) { request(SummonerState::walk); }
 		}
 	}
-	if (player.get_collider().bounding_box.overlaps(get_collider().vicinity) && !m_cooldowns.post_walk.running()) { request(SummonerState::walk); }
+	if (player.get_collider().bounding_box.overlaps(get_collider().get_vicinity_rect()) && !m_cooldowns.post_walk.running()) { request(SummonerState::walk); }
 
 	// caution
 	auto incoming_projectile = m_caution.projectile_detected(map, physical.alert_range, arms::Team::skycorps);

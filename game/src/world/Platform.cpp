@@ -93,6 +93,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	// map changes
 
 	// platform changes
+	handle_collider_collision(player.get_collider());
 	for (auto& breakable : map.breakables) { handle_collider_collision(breakable->get_hurtbox()); }
 	for (auto& pushable : map.pushables) {
 		// platform should reverse direction upon hitting the sides or top of a pushable
@@ -138,7 +139,8 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			direction.und = physics.velocity.y > 0.0f ? UND::down : UND::up;
 
 			// this stuff doesn't really belong here and it's very confusing to read, but it works
-			if (player.get_collider().jumpbox.overlaps(bounding_box) && !player.get_collider().perma_grounded() && is_sticky() && !(player.get_collider().has_left_wallslide_collision() || player.get_collider().has_right_wallslide_collision())) {
+			if (player.get_collider().jumpbox.overlaps(bounding_box) && !player.get_collider().perma_grounded() && is_sticky() &&
+				!(player.get_collider().has_left_wallslide_collision() || player.get_collider().has_right_wallslide_collision())) {
 				if (!(abs(physics.velocity.x) > skip_value || abs(physics.velocity.y) > skip_value)) { player.get_collider().physics.forced_momentum = physics.position - old_position; }
 			}
 			//

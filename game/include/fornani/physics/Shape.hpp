@@ -30,6 +30,7 @@ class Shape {
 	bool circle_SAT(sf::CircleShape const& circle) const;
 	sf::Vector2f circle_SAT_MTV(sf::CircleShape const& circle) const;
 	bool overlaps(Shape const& other) const;
+	bool overlaps(sf::FloatRect const& other) const;
 	bool overlaps(sf::Vector2f point) const;
 	bool contains_point(Vec point);
 	void draw(sf::RenderTexture& tex);

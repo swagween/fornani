@@ -121,6 +121,8 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	NANI_LOG_INFO(m_logger, "New Dojo instance created.");
 }
 
+Dojo::~Dojo() { /*player->unregister_with_map();*/ }
+
 void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	// handle events
 	if (item_acquisition) { acquire_item(svc, *player, item_modifier); }

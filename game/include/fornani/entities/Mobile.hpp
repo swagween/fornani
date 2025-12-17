@@ -16,7 +16,7 @@ enum class MobileState { flip };
 
 class Mobile : public Animatable {
   public:
-	Mobile(automa::ServiceProvider& svc, world::Map& map, std::string_view label, sf::Vector2i dimensions = constants::i_cell_vec);
+	Mobile(automa::ServiceProvider& svc, world::Map& map, std::string_view label, sf::Vector2i dimensions = constants::i_cell_vec, bool include_collider = true);
 	Mobile(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions = constants::i_cell_vec);
 	virtual void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void face_player(player::Player& player);

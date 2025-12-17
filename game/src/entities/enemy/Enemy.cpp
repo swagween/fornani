@@ -32,9 +32,10 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 
 	auto dimensions = sf::Vector2f{in_physical["dimensions"][0].as<float>(), in_physical["dimensions"][1].as<float>()};
 
-	get_collider().dimensions = dimensions;
-	get_collider().sync_components();
+	get_collider().set_dimensions(dimensions);
 	get_collider().physics.set_global_friction(in_physical["friction"].as<float>());
+	get_collider().flags.general.set(shape::General::complex);
+	get_collider().clear_chunks();
 	attributes.gravity = in_physical["gravity"].as<float>();
 
 	m_native_offset = sf::Vector2f{in_physical["offset"][0].as<float>(), in_physical["offset"][1].as<float>()};
@@ -186,7 +187,6 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 
 	// stuff that slows down from hitstun
-	get_collider().set_flag(shape::ColliderFlags::simple, flags.state.test(StateFlags::simple_physics));
 	if (secondary_collider) { secondary_collider->update(svc); }
 	health_indicator.update(svc, get_collider().physics.position);
 
@@ -194,18 +194,21 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		if (flags.general.test(GeneralFlags::spike_collision)) {
 			for (auto& spike : map.spikes) { spike.handle_collision(get_collider()); }
 		}
-		get_collider().detect_map_collision(map); // This causes significant lag
 		if (secondary_collider) { secondary_collider->detect_map_collision(map); }
 	}
 
-	get_collider().reset();
 	if (get_collider().collision_depths) { get_collider().collision_depths.value().update(); }
-	get_collider().reset_ground_flags();
 	get_collider().physics.acceleration = {};
 	if (secondary_collider) {
 		secondary_collider->reset();
 		secondary_collider->reset_ground_flags();
 		secondary_collider->physics.acceleration = {};
+	}
+
+	if (player.get_collider().wallslider.overlaps(get_collider().bounding_box) && player.controller.is_dashing() && !player.controller.is(player::AbilityType::dash_kick)) {
+		player.set_flag(player::State::dash_kick);
+		svc.ticker.freeze_frame(4);
+		get_collider().physics.acceleration.y = -280.f;
 	}
 
 	// update ranges
@@ -229,6 +232,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	handle_player_collision(player);
 	Mobile::post_update(svc, map, player);
+	if (collider.has_value()) { get_collider().flags.external_state.reset(shape::ExternalState::grounded); }
 }
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {

@@ -13,7 +13,7 @@ static void start_battle(int battle) { b_start = true; }
 
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console)
 	: Enemy(svc, map, "minigus"), gun(svc, "minigun"), soda(svc, "soda_gun"), m_services(&svc), NPC(svc, map, std::string_view{"minigus"}), m_map(&map), health_bar(svc, "minigus"),
-	  sparkler(svc, Enemy::get_collider().vicinity.get_dimensions(), colors::ui_white, "minigus"), m_console{&console}, m_mode{MinigusMode::neutral}, m_minigun{svc},
+	  sparkler(svc, Enemy::get_collider().get_vicinity_rect().size, colors::ui_white, "minigus"), m_console{&console}, m_mode{MinigusMode::neutral}, m_minigun{svc},
 	  attacks{.left_shockwave{{50, 600, 3, {-0.6f, 0.f}}}, .right_shockwave{{50, 600, 3, {0.6f, 0.f}}}} {
 
 	svc.events.register_event(std::make_unique<Event<int>>("StartBattle", &start_battle));
@@ -61,7 +61,7 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 
 	push_conversation(1);
 
-	sparkler.set_dimensions(Enemy::get_collider().vicinity.get_dimensions());
+	sparkler.set_dimensions(Enemy::get_collider().get_vicinity_rect().size);
 }
 
 void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -70,7 +70,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		init = false;
 	}
 	sparkler.update(svc);
-	sparkler.set_position(Enemy::get_collider().vicinity.get_position());
+	sparkler.set_position(Enemy::get_collider().get_vicinity_rect().position);
 	health_bar.update(health.get_normalized());
 
 	if (map.off_the_bottom(Enemy::get_collider().physics.position)) {
@@ -224,7 +224,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		}
 	}
 
-	if (player.get_collider().bounding_box.overlaps(Enemy::get_collider().vicinity)) {
+	if (player.get_collider().bounding_box.overlaps(Enemy::get_collider().get_vicinity_rect())) {
 		if (random::percent_chance(30)) {
 			request(MinigusState::run);
 		} else {

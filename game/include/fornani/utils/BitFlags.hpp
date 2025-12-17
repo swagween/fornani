@@ -5,7 +5,7 @@
 
 namespace fornani::util {
 
-template <typename Enum, std::size_t Size = 32u>
+template <typename Enum, std::size_t Size = 64u>
 struct BitFlags {
 	std::bitset<Size> bits{};
 

@@ -19,10 +19,7 @@ namespace fornani::world {
 Map::Map(automa::ServiceProvider& svc, player::Player& player)
 	: player(&player), enemy_catalog(svc), transition(svc.window->f_screen_dimensions(), 96), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}} {}
 
-Map::~Map() {
-	player->unregister_with_map();
-	NANI_LOG_INFO(m_logger, "Map destroyed: {}", m_metadata.room);
-}
+Map::~Map() {}
 
 void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number) {
 
@@ -336,8 +333,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		flags.state.reset(LevelState::spawn_enemy);
 	}
 
-	player->get_collider().reset();
-	for (auto& a : player->antennae) { a.collider.reset(); }
 	if (off_the_bottom(player->get_collider().physics.position) && cooldowns.loading.is_complete()) {
 		player->hurt(64.f);
 		player->freeze_position();
@@ -360,29 +355,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	std::erase_if(lasers, [](auto const& l) { return l.is_complete(); });
 	std::erase_if(incinerite_blocks, [](auto const& i) { return i->is_destroyed(); });
 	std::erase_if(breakables, [](auto const& b) { return b->is_destroyed(); });
-
 	enemy_catalog.update();
-
-	for (auto& pushable : pushables) { pushable->update(svc, *this, *player); }
-
-	num_collision_checks = 0;
-	for (auto& colliderPtr : m_colliders) {
-		if (!colliderPtr) { continue; }
-		auto& collider = *colliderPtr;
-		collider.register_chunks(*this);
-		collider.update(svc);
-		for (auto chunk : collider.get_chunks()) {
-			for (auto& other_ptr : m_chunks[chunk]) {
-				if (!other_ptr) { continue; }
-				if (other_ptr == &collider) { continue; }
-				if (collider.is_intangible()) { continue; }
-				collider.handle_collision(*other_ptr);
-				++num_collision_checks;
-			}
-		}
-	}
-	// NANI_LOG_DEBUG(m_logger, "pushable size: {}", pushables.size());
-	// NANI_LOG_DEBUG(m_logger, "collider size: {}", m_colliders.size());
 
 	manage_projectiles(svc);
 	svc.map_debug.active_projectiles = active_projectiles.size();
@@ -400,10 +373,29 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		proj.handle_collision(svc, *this);
 		proj.on_player_hit(*player);
 	}
-	for (auto& enemy : enemy_catalog.enemies) {
-		enemy->update(svc, *this, *player);
-		enemy->post_update(svc, *this, *player);
+
+	for (auto& enemy : enemy_catalog.enemies) { enemy->update(svc, *this, *player); }
+	for (auto& enemy : enemy_catalog.enemies) { enemy->post_update(svc, *this, *player); }
+
+	num_collision_checks = 0;
+	for (auto& colliderPtr : m_colliders) {
+		if (!colliderPtr) { continue; }
+		auto& collider = *colliderPtr;
+		collider.register_chunks(*this);
+		collider.update(svc);
+		for (auto chunk : collider.get_chunks()) {
+			for (auto& other_ptr : m_chunks[chunk]) {
+				if (!other_ptr) { continue; }
+				if (other_ptr == &collider) { continue; }
+				if (collider.is_intangible()) { continue; }
+				collider.handle_collision(*other_ptr);
+				++num_collision_checks;
+			}
+		}
+		collider.detect_map_collision(*this);
 	}
+
+	for (auto& pushable : pushables) { pushable->update(svc, *this, *player); }
 
 	if (m_entities) {
 		for (auto& entity : m_entities.value().variables.entities) { entity->update(svc, *this, console, *player); }
@@ -439,7 +431,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	// for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	for (auto& timer_block : timer_blocks) { timer_block.update(svc, *this, *player); }
 	for (auto& pl : point_lights) { pl.update(); }
-	player->handle_map_collision(*this);
 	if (cooldowns.loading.is_complete()) { transition.update(*player); }
 	if (player->get_collider().collision_depths) { player->get_collider().collision_depths.value().update(); }
 	// if (save_point) { save_point->update(svc, *player, console); }
@@ -641,10 +632,7 @@ bool Map::handle_entry(player::Player& player, util::Cooldown& enter_room) {
 					if (!portal->is_already_open()) { portal->close(); }
 					player.set_idle();
 				}
-				if (portal->is_bottom()) {
-					player.get_collider().physics.acceleration.y = -player.physics_stats.jump_velocity;
-					player.get_collider().physics.acceleration.x = player.controller.facing_left() ? -player.physics_stats.x_acc : player.physics_stats.x_acc;
-				}
+				if (portal->is_bottom()) { player.get_collider().physics.acceleration.y = -player.physics_stats.jump_velocity; }
 			}
 		}
 	}

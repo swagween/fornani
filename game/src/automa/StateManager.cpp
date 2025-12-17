@@ -95,6 +95,9 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 }
 
 void StateManager::return_to_main_menu(ServiceProvider& svc, player::Player& player) {
+	player.start_over();
+	player.request_animation(player::AnimState::run);
+	player.unregister_with_map();
 	if (svc.demo_mode()) {
 		svc.state_controller.actions.set(Actions::shutdown);
 	} else {
@@ -103,8 +106,6 @@ void StateManager::return_to_main_menu(ServiceProvider& svc, player::Player& pla
 	svc.state_controller.actions.reset(Actions::player_death);
 	svc.state_controller.actions.reset(Actions::trigger);
 	svc.state_controller.actions.reset(Actions::retry);
-	player.start_over();
-	player.request_animation(player::AnimState::run);
 }
 
 void StateManager::print_stats(ServiceProvider& svc, player::Player& player) {

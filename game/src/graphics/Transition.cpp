@@ -8,7 +8,7 @@ namespace fornani::graphics {
 Transition::Transition(sf::Vector2f screen_dim, int duration, sf::Color color) : m_cooldown{duration}, m_color{color}, m_box{screen_dim}, m_alpha{255} {}
 
 void Transition::update(player::Player& player) {
-	if ((is(TransitionState::black) || is(TransitionState::fading_to_black) || is(TransitionState::fading_out)) && !player.controller.walking_autonomously()) {
+	if ((is(TransitionState::black) || is(TransitionState::fading_to_black) || is(TransitionState::fading_out)) && !player.controller.walking_autonomously() && player.grounded()) {
 		player.controller.restrict_movement();
 	} else {
 		player.controller.unrestrict();

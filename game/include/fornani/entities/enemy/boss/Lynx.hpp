@@ -14,30 +14,10 @@
 
 namespace fornani::enemy {
 
-enum class LynxState {
-	sit,
-	get_up,
-	idle,
-	jump,
-	forward_slash,
-	levitate,
-	run,
-	downward_slam,
-	prepare_shuriken,
-	toss_shuriken,
-	upward_slash,
-	triple_slash,
-	turn,
-	aerial_slash,
-	prepare_slash,
-	defeat,
-	second_phase,
-	laugh,
-	stagger
-};
+enum class LynxState { sit, get_up, idle, jump, forward_slash, levitate, run, downward_slam, prepare_shuriken, toss_shuriken, upward_slash, triple_slash, turn, aerial_slash, prepare_slash, defeat, second_phase, laugh, stagger };
 enum class LynxFlags { conversing, battle_mode, second_phase, just_levitated, player_defeated };
 
-class Lynx final : public Enemy, public NPC {
+class Lynx final : public NPC, public Enemy {
   public:
 	Lynx(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;

@@ -16,7 +16,7 @@ Spitefly::Spitefly(automa::ServiceProvider& svc, world::Map& map, int variant) :
 	flags.general.set(GeneralFlags::hurt_on_contact);
 
 	flags.general.reset(GeneralFlags::gravity);
-	flags.state.set(StateFlags::simple_physics);
+	Enemy::get_collider().set_flag(shape::ColliderFlags::simple);
 
 	m_variant = static_cast<SpiteflyVariant>(variant);
 	if (is_bomb()) {

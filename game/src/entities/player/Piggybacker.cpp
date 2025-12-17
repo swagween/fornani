@@ -18,7 +18,6 @@ Piggybacker::Piggybacker(automa::ServiceProvider& svc, std::string_view label, s
 
 void Piggybacker::update(automa::ServiceProvider& svc, Player& player) {
 	m_steering.physics.position = player.get_piggyback_socket();
-	/*m_steering.seek(player.get_piggyback_socket(), 0.02f);*/
 	set_scale(player.get_actual_direction().right() ? constants::f_scale_vec : constants::f_inverse_scale_vec);
 	tick();
 }

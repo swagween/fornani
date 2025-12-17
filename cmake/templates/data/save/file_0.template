@@ -69,6 +69,11 @@
 				"revealed": false
 			},
 			{
+				"label": "forest_token",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
 				"label": "old_ivory_amulet",
 				"quantity": 1,
 				"revealed": false

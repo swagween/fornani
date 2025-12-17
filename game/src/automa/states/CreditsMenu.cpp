@@ -6,9 +6,15 @@ namespace fornani::automa {
 
 CreditsMenu::CreditsMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "credits"), m_loading{8} {
 	m_parent_menu = MenuType::options;
-	m_data = *dj::Json::from_file((svc.finder.resource_path() + "/data/extras/credits.json").c_str());
-	assert(!m_data.is_null());
 	m_loading.start();
+
+	auto data_result = dj::Json::from_file((svc.finder.resource_path() + "/data/extras/credits.json").c_str());
+	if (!data_result) {
+		NANI_LOG_ERROR(m_logger, "Failed to load room data for path {}.", svc.finder.resource_path() + "/data/extras/credits.json");
+		return;
+	}
+	m_data = std::move(*data_result);
+	assert(!m_data.is_null());
 }
 
 void CreditsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {

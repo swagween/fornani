@@ -1,7 +1,10 @@
+
 #pragma once
+
 #include <SFML/Graphics.hpp>
 #include <ccmath/ccmath.hpp>
 #include <fornani/entities/player/abilities/Dash.hpp>
+#include <fornani/entities/player/abilities/Dashkick.hpp>
 #include <fornani/entities/player/abilities/Doublejump.hpp>
 #include <fornani/entities/player/abilities/Jump.hpp>
 #include <fornani/entities/player/abilities/Roll.hpp>
@@ -129,4 +132,5 @@ class PlayerController {
 
 	io::Logger m_logger{"Controller"};
 };
+
 } // namespace fornani::player

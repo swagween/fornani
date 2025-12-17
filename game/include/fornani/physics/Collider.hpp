@@ -84,7 +84,8 @@ class Collider : public ICollider {
 	void handle_collider_collision(Collider const& collider, bool momentum = false) override;
 	void update(automa::ServiceProvider& svc) override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam) override;
-	void set_position(sf::Vector2f pos);
+	void set_position(sf::Vector2f const pos);
+	void set_dimensions(sf::Vector2f const to);
 	void set_direction(Direction to) { m_direction = to; }
 	void reset();
 	void reset_ground_flags();
@@ -131,7 +132,6 @@ class Collider : public ICollider {
 	Shape predictive_vertical{};
 	Shape predictive_horizontal{};
 	Shape predictive_combined{};
-	Shape vicinity{};
 	Shape wallslider{};
 	Shape jumpbox{};
 	Shape hurtbox{};

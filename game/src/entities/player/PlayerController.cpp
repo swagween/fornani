@@ -1,7 +1,7 @@
 
-#include "fornani/entities/player/PlayerController.hpp"
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/service/ServiceProvider.hpp"
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/entities/player/PlayerController.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 
 namespace fornani::player {
 
@@ -141,6 +141,11 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	}
 	if (!is(AbilityType::wallslide)) { player.get_collider().physics.maximum_velocity.y = player.physics_stats.maximum_velocity.y; }
 	wallslide_slowdown.update();
+
+	if (player.can_dash_kick()) {
+		m_ability = std::make_unique<DashKick>(svc, map, player.get_collider(), player.get_actual_direction());
+		player.set_flag(State::dash_kick, false);
+	}
 
 	if (m_ability) {
 		m_ability.value()->update(player.get_collider(), *this);

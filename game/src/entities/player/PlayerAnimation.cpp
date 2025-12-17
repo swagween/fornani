@@ -27,6 +27,7 @@ PlayerAnimation::PlayerAnimation(Player& plr)
 		  {"stop", {74, 2, 4 * rate, 0}},
 		  {"land", {56, 2, 4 * rate, 0}},
 		  {"inspect", {37, 2, 7 * rate, -1, true}},
+		  {"dash_kick", {107, 3, 6 * rate, 0}},
 		  {"sit", {50, 4, 6 * rate, -1, true}},
 		  {"hurt", {76, 2, 7 * rate, 0}},
 		  {"dash", {0, 4, 4 * rate, 0}},
@@ -55,7 +56,6 @@ PlayerAnimation::PlayerAnimation(Player& plr)
 int PlayerAnimation::get_frame() const { return m_player->animation.get_frame(); }
 
 void PlayerAnimation::update() {
-	m_player->animation.update();
 	state_function = state_function();
 	if (m_player->is_dead()) { request(AnimState::die); }
 	if (m_buffer.is_complete()) { m_requested = {}; }
@@ -503,6 +503,7 @@ fsm::StateFunction PlayerAnimation::update_dash() {
 	m_actual = AnimState::dash;
 	m_player->flags.state.reset(State::show_weapon);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
+	if (change_state(AnimState::dash_kick, get_params("dash_kick"))) { return PA_BIND(update_dash_kick); }
 	if (change_state(AnimState::turn_slide, get_params("turn_slide"))) { return PA_BIND(update_turn_slide); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"), true)) { return PA_BIND(update_wallslide); }
@@ -535,6 +536,7 @@ fsm::StateFunction PlayerAnimation::update_dash_up() {
 	m_actual = AnimState::dash_up;
 	m_player->flags.state.reset(State::show_weapon);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
+	if (change_state(AnimState::dash_kick, get_params("dash_kick"))) { return PA_BIND(update_dash_kick); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"), true)) { return PA_BIND(update_wallslide); }
 	if (m_player->animation.complete()) {
@@ -562,6 +564,7 @@ fsm::StateFunction PlayerAnimation::update_dash_down() {
 	m_actual = AnimState::dash_down;
 	m_player->flags.state.reset(State::show_weapon);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
+	if (change_state(AnimState::dash_kick, get_params("dash_kick"))) { return PA_BIND(update_dash_kick); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"), true)) { return PA_BIND(update_wallslide); }
 	if (m_player->animation.complete()) {
@@ -880,6 +883,26 @@ fsm::StateFunction player::PlayerAnimation::update_crawl() {
 		if (change_state(AnimState::get_up, get_params("get_up"), true)) { return PA_BIND(update_get_up); }
 	}
 	return PA_BIND(update_crawl);
+}
+
+fsm::StateFunction player::PlayerAnimation::update_dash_kick() {
+	m_player->animation.label = "dash_kick";
+	m_actual = AnimState::dash_kick;
+	m_player->flags.state.reset(State::show_weapon);
+	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
+	if (m_player->animation.complete()) {
+		if (change_state(AnimState::land, get_params("land"), true)) { return PA_BIND(update_land); }
+		if (change_state(AnimState::suspend, get_params("suspend"), true)) { return PA_BIND(update_suspend); }
+		if (change_state(AnimState::wallslide, get_params("wallslide"))) { return PA_BIND(update_wallslide); }
+		if (change_state(AnimState::shoot, get_params("shoot"))) { return PA_BIND(update_shoot); }
+		if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
+		if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
+		if (change_state(AnimState::dash_up, get_params("dash_up"))) { return PA_BIND(update_dash_up); }
+		if (change_state(AnimState::dash_down, get_params("dash_down"))) { return PA_BIND(update_dash_down); }
+		m_player->animation.set_params(get_params("idle"));
+		return PA_BIND(update_idle);
+	}
+	return PA_BIND(update_dash_kick);
 }
 
 bool PlayerAnimation::change_state(AnimState next, anim::Parameters params, bool hard) {

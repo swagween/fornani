@@ -33,6 +33,11 @@ Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position
 }
 
 void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
+
+	get_collider().reset();
+	get_collider().reset_ground_flags();
+	get_collider().physics.acceleration = {};
+
 	collision_box.set_position(get_collider().physics.position - sf::Vector2f{0.f, 1.f});
 	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
@@ -58,6 +63,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 
 	// player pushes block
 	state.reset(PushableState::pushed);
+	handle_collision(player.get_collider());
 	if (player.get_collider().wallslider.overlaps(collision_box) && player.pushing() && player.is_in_animation(player::AnimState::push) && get_collider().physics.actual_velocity().y < 1.0f) {
 		if (player.controller.moving_left() && player.get_collider().physics.position.x > get_collider().physics.position.x) { get_collider().physics.acceleration.x = -speed / mass; }
 		if (player.controller.moving_right() && player.get_collider().physics.position.x < get_collider().physics.position.x) { get_collider().physics.acceleration.x = speed / mass; }
@@ -68,7 +74,6 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 
 	for (auto& pushable : map.pushables) {
 		if (pushable.get() == this) { continue; }
-		if (!pushable->get_collider().vicinity.overlaps(get_collider().vicinity)) { continue; }
 		if (get_collider().jumpbox.overlaps(pushable->get_collider().predictive_vertical) && !is_being_pushed()) { get_collider().physics.adopt(pushable->get_collider().physics); }
 		if (pushable->get_collider().wallslider.overlaps(collision_box)) {
 			if (pushable->get_collider().pushes(*m_collider.get()) && get_collider().grounded()) {
@@ -79,7 +84,6 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 
 	// pushable should only be moved by a platform if it's on top of one
 
-	player.get_collider().handle_collider_collision(get_collider().bounding_box);
 	if (size == 1 && get_collider().get_center().y < player.get_collider().get_center().y) { get_collider().handle_collider_collision(player.hurtbox); } // big ones should crush the player
 	if (player.get_collider().jumpbox.overlaps(get_collider().bounding_box) && get_collider().grounded() && get_collider().physics.is_moving_horizontally(constants::tiny_value)) {
 		player.get_collider().physics.forced_momentum = get_collider().physics.forced_momentum;
@@ -96,7 +100,6 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	get_collider().detect_map_collision(map);
 	for (auto& pushable : map.pushables) {
 		if (pushable.get() == this) { continue; }
-		if (!pushable->get_collider().vicinity.overlaps(get_collider().vicinity)) { continue; }
 		auto block = true;
 		if (pushable->get_collider().wallslider.overlaps(collision_box)) {
 			auto hit_wall = (pushable->get_collider().get_center().x < get_collider().get_center().x && get_collider().has_right_wallslide_collision()) ||
@@ -114,11 +117,6 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 
 void Pushable::post_update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 
-	for (auto& pushable : map.pushables) {
-		if (pushable.get() == this) { continue; }
-		if (!pushable->get_collider().vicinity.overlaps(get_collider().vicinity)) { continue; }
-	}
-
 	for (auto& platform : map.platforms) {
 		if (platform.bounding_box.overlaps(get_collider().jumpbox)) { get_collider().handle_collider_collision(platform.bounding_box); }
 		if (get_collider().jumpbox.overlaps(platform.bounding_box) && !get_collider().perma_grounded() && platform.is_sticky()) {
@@ -134,10 +132,6 @@ void Pushable::post_update(automa::ServiceProvider& svc, Map& map, player::Playe
 		map.effects.push_back(entity::Effect(svc, "dust", point));
 		svc.soundboard.flags.world.set(audio::World::thud);
 	}
-
-	get_collider().reset();
-	get_collider().reset_ground_flags();
-	get_collider().physics.acceleration = {};
 
 	if (!get_collider().has_jump_collision()) { get_collider().physics.forced_momentum = {}; }
 	if (get_collider().has_left_wallslide_collision() || get_collider().has_right_wallslide_collision() || get_collider().flags.external_state.test(shape::ExternalState::vert_world_collision) || get_collider().world_grounded()) {
@@ -188,6 +182,7 @@ void Pushable::reset(automa::ServiceProvider& svc, world::Map& map) {
 	map.effects.push_back(entity::Effect(svc, label, get_collider().get_center()));
 	get_collider().physics.position = start_position;
 	map.effects.push_back(entity::Effect(svc, label, get_collider().get_center()));
+	energy = 0.f;
 }
 
 } // namespace fornani::world

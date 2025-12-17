@@ -25,7 +25,7 @@ Miaag::Miaag(automa::ServiceProvider& svc, world::Map& map)
 	m_magic.set_team(arms::Team::guardian);
 	flags.general.set(GeneralFlags::custom_channels);
 	flags.general.set(GeneralFlags::post_death_render);
-	flags.state.set(StateFlags::simple_physics);
+	Enemy::get_collider().set_flag(shape::ColliderFlags::simple);
 	auto home = random::random_range(0, map.home_points.size() - 1);
 	m_target_point = map.home_points.at(home);
 	m_spine_sprite.setScale(constants::f_scale_vec);

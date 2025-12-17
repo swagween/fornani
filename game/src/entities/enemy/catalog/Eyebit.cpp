@@ -11,7 +11,7 @@ Eyebit::Eyebit(automa::ServiceProvider& svc, world::Map& map, bool spawned) : En
 	flags.general.set(GeneralFlags::transcendent);
 	flags.state.set(StateFlags::vulnerable);
 	flags.general.reset(GeneralFlags::gravity);
-	flags.state.set(StateFlags::simple_physics);
+	Enemy::get_collider().set_flag(shape::ColliderFlags::simple);
 	get_collider().physics.set_friction_componentwise({0.98f, 0.98f});
 }
 

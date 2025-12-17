@@ -258,6 +258,14 @@ bool Shape::overlaps(Shape const& other) const {
 	return true;
 }
 
+bool Shape::overlaps(sf::FloatRect const& other) const {
+	if (vertices.at(0).x > other.position.x + other.size.x) { return false; }
+	if (vertices.at(1).x < other.position.x) { return false; }
+	if (vertices.at(0).y > other.position.y + other.size.y) { return false; }
+	if (vertices.at(2).y < other.position.y) { return false; }
+	return true;
+}
+
 bool Shape::overlaps(sf::Vector2f point) const {
 	if (vertices.at(0).x > point.x) { return false; }
 	if (vertices.at(1).x < point.x) { return false; }

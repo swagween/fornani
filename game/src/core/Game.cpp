@@ -444,6 +444,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Push Time: %i", player.cooldowns.push.get());
 								ImGui::Text("Acceleration Multiplier: %f", player.get_collider().acceleration_multiplier);
 								ImGui::Separator();
+								ImGui::SliderFloat("Antenna Force", &player.physics_stats.antenna_force, 0.1f, 3.f);
+								ImGui::SliderFloat("Antenna Friction", &player.physics_stats.antenna_friction, 0.8f, 1.f);
+								ImGui::Separator();
 								ImGui::Text("Ability");
 								ImGui::Text("Current: ");
 								auto ability_type = player.controller.get_ability_type();
@@ -457,6 +460,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 									case player::AbilityType::roll: ImGui::Text("roll"); break;
 									case player::AbilityType::walljump: ImGui::Text("walljump"); break;
 									case player::AbilityType::wallslide: ImGui::Text("wallslide"); break;
+									case player::AbilityType::dash_kick: ImGui::Text("dash_kick"); break;
 									}
 								}
 								ImGui::Separator();

@@ -59,9 +59,6 @@ constexpr int INVINCIBILITY_TIME = 200;
 constexpr int ANCHOR_BUFFER = 50;
 constexpr int num_sprites{220};
 
-constexpr inline float antenna_force{0.18f};
-constexpr inline float antenna_speed{336.f};
-
 struct PlayerStats {
 	float shield_dampen{0.01f};
 };
@@ -82,7 +79,8 @@ struct PhysicsStats {
 	float dash_speed{};
 	float dash_dampen{};
 	float wallslide_speed{};
-	float antenna_friction{0.93f};
+	float antenna_friction{0.955f};
+	float antenna_force{0.58f};
 	float roll_speed{};
 	float slide_speed{};
 };
@@ -91,7 +89,7 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class State { killed, dir_switch, show_weapon, impart_recoil, crushed, sleep, wake_up, busy };
+enum class State { killed, dir_switch, show_weapon, impart_recoil, crushed, sleep, wake_up, busy, dash_kick };
 enum class Triggers { hurt };
 
 struct PlayerFlags {
@@ -193,6 +191,8 @@ class Player final : public Animatable {
 	void sync_antennae();
 
 	void set_busy(bool flag) { flag ? flags.state.set(State::busy) : flags.state.reset(State::busy); }
+	void set_flag(State const to_set, bool on = true) { on ? flags.state.set(to_set) : flags.state.reset(to_set); }
+	void set_trigger(Triggers const to_set, bool on = true) { on ? flags.triggers.set(to_set) : flags.triggers.reset(to_set); }
 
 	bool grounded() const;
 	bool fire_weapon();
@@ -242,7 +242,6 @@ class Player final : public Animatable {
 	sf::Vector2f sprite_offset{10.f, -3.f};
 
 	std::vector<vfx::Gravitator> antennae{};
-	sf::Vector2f antenna_offset{6.f, -17.f};
 
 	PlayerStats player_stats{0.06f};
 	PhysicsStats physics_stats{};
@@ -270,6 +269,8 @@ class Player final : public Animatable {
 	Catalog catalog{};
 	gui::WardrobeWidget wardrobe_widget;
 	VisitHistory visit_history{};
+
+	[[nodiscard]] auto can_dash_kick() const -> bool;
 
   private:
 	void set_facing_direction(SimpleDirection to_direction) { m_directions.desired = to_direction; }
@@ -321,6 +322,7 @@ class Player final : public Animatable {
 	sf::Vector2f m_sprite_position{};
 	sf::Vector2f m_weapon_socket{};
 	sf::Vector2f m_piggyback_socket{};
+	std::pair<sf::Vector2f, sf::Vector2f> m_antenna_sockets{};
 	util::Cooldown m_sprite_shake;
 	util::Cooldown m_hurt_cooldown;
 

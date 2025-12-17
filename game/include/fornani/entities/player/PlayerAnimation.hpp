@@ -43,7 +43,8 @@ enum class AnimState {
 	crawl,
 	dash_up,
 	dash_down,
-	turn_slide
+	turn_slide,
+	dash_kick
 };
 
 enum class AnimTriggers { flip, end_death };
@@ -107,6 +108,7 @@ class PlayerAnimation {
 	fsm::StateFunction update_wake_up();
 	fsm::StateFunction update_crouch();
 	fsm::StateFunction update_crawl();
+	fsm::StateFunction update_dash_kick();
 
 	bool change_state(AnimState next, anim::Parameters params, bool hard = false);
 	void request(AnimState to_state);
