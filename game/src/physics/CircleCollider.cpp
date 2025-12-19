@@ -1,35 +1,44 @@
 
-#include "fornani/physics/CircleCollider.hpp"
-#include "fornani/physics/Collider.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/utils/Math.hpp"
-#include "fornani/world/Map.hpp"
+#include <fornani/physics/CircleCollider.hpp>
+#include <fornani/physics/Collider.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/utils/Math.hpp>
+#include <fornani/world/Map.hpp>
 
 namespace fornani::shape {
 
 CircleCollider::CircleCollider(float radius) : ICollider{sf::Vector2f{radius * 2.f, radius * 2.f}}, sensor{radius} {
 	sensor.bounds.setOrigin({radius, radius});
 	p_type = ColliderType::circle;
-	set_exclusion_trait(CollisionExclusions::circle);
+	set_trait(ColliderTrait::circle);
 }
 
 void CircleCollider::update(automa::ServiceProvider& svc) {
 	ICollider::update(svc);
 	has_flag_set(ColliderFlags::simple) ? physics.simple_update() : physics.update(svc);
 	sensor.set_position(physics.position);
+	if (has_trait(ColliderTrait::particle)) { physics.acceleration = {}; }
 }
 
 void CircleCollider::handle_map_collision(world::Map& map) {
 	m_flags.reset(CircleColliderFlags::collided);
+	if (has_attribute(ColliderAttributes::no_collision)) { return; }
 	map.handle_cell_collision(*this);
 }
 
 void CircleCollider::handle_collision(ICollider& other) {
 	if (other.should_exclude(*this)) { return; }
-	other.handle_collider_collision(*this);
+	if (other.has_attribute(ColliderAttributes::sturdy)) {
+		if (other.should_exclude_resolution_with(*this)) { return; }
+	}
+	if (!other.has_attribute(ColliderAttributes::fixed)) { other.handle_collider_collision(*this); }
 }
 
-void CircleCollider::handle_collision(shape::Shape& shape, bool soft) {
+void CircleCollider::handle_collider_collision(Collider const& collider, bool momentum) { handle_collision(collider.bounding_box); }
+
+void CircleCollider::detect_map_collision(world::Map& map) { handle_map_collision(map); }
+
+void CircleCollider::handle_collision(shape::Shape const& shape, bool soft) {
 	if (!sensor.within_bounds(shape)) { return; }
 	auto distance = util::magnitude(sensor.bounds.getPosition() - shape.get_center());
 	auto circle_left_of = sensor.bounds.getPosition().x < shape.get_center().x;
@@ -53,7 +62,7 @@ void CircleCollider::handle_collision(shape::Shape& shape, bool soft) {
 
 void CircleCollider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	ICollider::render(win, cam);
-	has_flag_set(ColliderFlags::registered) ? sensor.bounds.setOutlineColor(colors::green) : sensor.bounds.setOutlineColor(colors::fucshia);
+	has_flag_set(ColliderFlags::registered) ? sensor.bounds.setOutlineColor(colors::green) : sensor.bounds.setOutlineColor(colors::red);
 	sensor.render(win, cam);
 }
 

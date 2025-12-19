@@ -27,7 +27,7 @@ PlayerAnimation::PlayerAnimation(Player& plr)
 		  {"stop", {74, 2, 4 * rate, 0}},
 		  {"land", {56, 2, 4 * rate, 0}},
 		  {"inspect", {37, 2, 7 * rate, -1, true}},
-		  {"dash_kick", {107, 3, 6 * rate, 0}},
+		  {"dash_kick", {108, 2, 6 * rate, 0}},
 		  {"sit", {50, 4, 6 * rate, -1, true}},
 		  {"hurt", {76, 2, 7 * rate, 0}},
 		  {"dash", {0, 4, 4 * rate, 0}},

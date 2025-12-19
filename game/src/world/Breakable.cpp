@@ -13,6 +13,7 @@ Breakable::Breakable(automa::ServiceProvider& svc, Map& map, sf::Vector2f positi
 	get_collider().physics.position = position;
 	get_collider().sync_components();
 	m_collider.get()->set_attribute(shape::ColliderAttributes::fixed);
+	m_collider.get()->set_trait(shape::ColliderTrait::block);
 }
 
 void Breakable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {

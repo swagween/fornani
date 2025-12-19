@@ -280,22 +280,24 @@ void Collider::resolve_depths() {
 
 void Collider::handle_collision(ICollider& other) {
 	if (other.should_exclude(*this)) { return; }
+	if (other.has_attribute(ColliderAttributes::sturdy)) {
+		if (other.should_exclude_resolution_with(*this)) { return; }
+	}
 	if (!other.has_attribute(ColliderAttributes::fixed)) { other.handle_collider_collision(*this); }
 }
 
-void Collider::handle_collider_collision(CircleCollider& collider) { collider.handle_collider_collision(bounding_box); }
+void Collider::handle_collider_collision(CircleCollider& collider) { collider.handle_collider_collision(*this); }
 
-bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::Vector2f velocity, float force) {
+bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::Vector2f velocity, float force, bool crusher) {
 	auto ret{false};
+	if (has_attribute(ColliderAttributes::no_collision)) { return ret; }
+	if (!p_vicinity.overlaps(collider)) { return ret; }
 	if (soft) {
-		if (!p_vicinity.overlaps(collider)) { return ret; }
 		mtvs.actual = bounding_box.get_MTV(bounding_box, collider);
 		if (bounding_box.SAT(collider)) { physics.position += mtvs.actual * force; }
 		sync_components();
 		return ret;
 	}
-	if (has_attribute(ColliderAttributes::no_collision)) { return ret; }
-	if (!p_vicinity.overlaps(collider)) { return ret; }
 	if (collision_depths) {
 		if (collision_depths.value().crushed()) { return ret; }
 	}
@@ -310,7 +312,7 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 	if (!util::same_sign(velocity.y, mtvs.vertical.y)) { velocity.y = 0.f; }
 	if (!util::same_sign(velocity.x, mtvs.horizontal.x)) { velocity.x = 0.f; }
 
-	if (collision_depths) { collision_depths.value().calculate(*this, collider); }
+	if (collision_depths && crusher) { collision_depths.value().calculate(*this, collider); }
 
 	bool corner_collision{true};
 	if (predictive_vertical.SAT(collider)) {
@@ -329,7 +331,7 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 			if (flags.collision.test(Collision::has_top_collision)) {
 				flags.external_state.set(ExternalState::jumped_into);
 				correct_y(mtvs.vertical + velocity);
-			} else {
+			} else if (!flags.movement.test(Movement::jumping)) {
 				correct_y(mtvs.vertical + velocity);
 			}
 		}
@@ -352,7 +354,7 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 	}
 	if (wallslider.overlaps(collider)) { wallslider.vertices.at(0).x > collider.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
 
-	if (jumpbox.SAT(collider)) {
+	if (jumpbox.SAT(collider) && !flags.movement.test(Movement::jumping)) {
 		flags.external_state.set(ExternalState::grounded);
 		flags.state.set(State::grounded);
 		flags.state.set(State::is_any_jump_collision);
@@ -372,7 +374,7 @@ void Collider::handle_collider_collision(Collider const& collider, bool momentum
 	if (collider.has_attribute(ColliderAttributes::top_only)) {
 		if (jumpbox.get_position().y > collider.physics.position.y + 4.f || physics.acceleration.y < 0.0f) { return; }
 	}
-	if (handle_collider_collision(collider.bounding_box, should_softly_collide_with(collider), collider.physics.apparent_velocity() * 2.f)) {
+	if (handle_collider_collision(collider.bounding_box, should_softly_collide_with(collider), collider.physics.apparent_velocity() * 2.f, 0.01f, collider.has_attribute(ColliderAttributes::crusher))) {
 		if (momentum) { physics.forced_momentum = collider.physics.actual_velocity(); }
 	}
 	if (jumpbox.overlaps(collider.bounding_box)) { flags.external_state.set(ExternalState::grounded); }
@@ -417,17 +419,22 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setOutlineColor(sf::Color{255, 255, 80, 180});
 	box.setOutlineThickness(-1);
 	box.setFillColor(sf::Color::Transparent);
-	win.draw(box);
+	// win.draw(box);
 
 	// draw bounding box
 	box.setSize(dimensions);
 	box.setPosition(bounding_box.get_position() - cam);
 	grounded() ? box.setFillColor(sf::Color{0, 255, 60, 180}) : box.setFillColor(sf::Color{80, 255, 60, 20});
-	if (!has_flag_set(ColliderFlags::registered)) { box.setFillColor(sf::Color::Transparent); }
-	if (has_attribute(ColliderAttributes::no_collision)) { box.setFillColor(sf::Color{190, 190, 0, 190}); }
-	has_flag_set(ColliderFlags::registered) ? box.setOutlineColor(sf::Color{0, 255, 60, 190}) : box.setOutlineColor(sf::Color{255, 0, 60, 190});
-	// if (has_attribute(ColliderAttributes::no_collision)) { box.setOutlineColor(sf::Color::Transparent); }
-	if (has_flag_set(ColliderFlags::simple)) { box.setOutlineColor(sf::Color::Magenta); }
+	auto scalar = grounded() ? 2 : 1;
+	auto red = colors::red;
+	auto green = colors::green;
+	red.a = 90 * scalar;
+	green.a = 90 * scalar;
+	has_flag_set(ColliderFlags::registered) ? box.setOutlineColor(green) : box.setOutlineColor(red);
+	red.a = 40 * scalar;
+	green.a = 40 * scalar;
+	has_flag_set(ColliderFlags::registered) ? box.setFillColor(green) : box.setFillColor(red);
+
 	box.setOutlineThickness(-2);
 	win.draw(box);
 
@@ -437,14 +444,14 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setFillColor(sf::Color::Blue);
 	box.setOutlineColor(sf::Color::Transparent);
 	flags.external_state.test(ExternalState::grounded) ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Yellow);
-	win.draw(box);
+	// win.draw(box);
 
 	// draw hurtbox
 	draw_hurtbox.setSize(sf::Vector2f{hurtbox.get_dimensions()});
 	draw_hurtbox.setPosition(hurtbox.get_position() - cam);
 	draw_hurtbox.setOutlineColor(colors::ui_white);
 	draw_hurtbox.setOutlineThickness(-1.f);
-	win.draw(draw_hurtbox);
+	// win.draw(draw_hurtbox);
 
 	// draw vicinity
 	box.setSize(sf::Vector2f{p_vicinity.get_dimensions()});
@@ -452,7 +459,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setFillColor(sf::Color::Transparent);
 	box.setOutlineColor(sf::Color{120, 60, 80, 180});
 	box.setOutlineThickness(-1);
-	win.draw(box);
+	// win.draw(box);
 
 	// draw wallslider
 	box.setSize(sf::Vector2f{wallslider.get_dimensions()});
@@ -460,7 +467,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	has_left_wallslide_collision() || has_right_wallslide_collision() ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Transparent);
 	box.setOutlineColor(sf::Color{60, 60, 180, 100});
 	box.setOutlineThickness(-1);
-	win.draw(box);
+	// win.draw(box);
 
 	// draw physics position
 	if (collision_depths) {

@@ -33,7 +33,7 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	flags.general.set(GeneralFlags::post_death_render);
 	flags.general.set(GeneralFlags::has_invincible_channel);
 
-	secondary_collider = shape::Collider({48.f, 36.f});
+	get_secondary_collider().set_dimensions({48.f, 36.f});
 	m_minigun.center();
 	m_minigun.set_parameters(m_minigun.neutral);
 	flags.state.set(StateFlags::vulnerable);
@@ -180,11 +180,11 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	Enemy::update(svc, map, player);
 
 	if (secondary_collider) {
-		secondary_collider->physics.position = Enemy::get_collider().physics.position;
-		secondary_collider->physics.position.y -= secondary_collider->dimensions.y;
-		secondary_collider->physics.position.x += Enemy::directions.actual.lnr == LNR::left ? 0 : Enemy::get_collider().dimensions.x - secondary_collider->dimensions.x;
-		secondary_collider->sync_components();
-		if (status.test(MinigusFlags::battle_mode) && player_collision()) { player.get_collider().handle_collider_collision(*secondary_collider); }
+		get_secondary_collider().physics.position = Enemy::get_collider().physics.position;
+		get_secondary_collider().physics.position.y -= get_secondary_collider().dimensions.y;
+		get_secondary_collider().physics.position.x += Enemy::directions.actual.lnr == LNR::left ? 0 : Enemy::get_collider().dimensions.x - get_secondary_collider().dimensions.x;
+		get_secondary_collider().sync_components();
+		if (status.test(MinigusFlags::battle_mode) && player_collision()) { player.get_collider().handle_collider_collision(get_secondary_collider()); }
 	}
 	distant_range.set_position(Enemy::get_collider().bounding_box.get_position() - (distant_range.get_dimensions() * 0.5f) + (Enemy::get_collider().dimensions * 0.5f));
 	player.get_collider().bounding_box.overlaps(distant_range) ? status.set(MinigusFlags::distant_range_activated) : status.reset(MinigusFlags::distant_range_activated);
@@ -253,7 +253,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (!status.test(MinigusFlags::second_phase) && half_health()) { request(MinigusState::struggle); }
 
 	if (half_health() && secondary_collider) {
-		auto pos = secondary_collider->physics.position + random::random_vector_float(10.f, 40.f);
+		auto pos = get_secondary_collider().physics.position + random::random_vector_float(10.f, 40.f);
 		if (svc.ticker.every_x_ticks(10) && random::percent_chance(5)) { map.effects.push_back(entity::Effect(svc, "puff", pos, {0.f, -0.01f}, 3)); }
 	}
 
@@ -291,7 +291,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (health.is_dead() && !status.test(MinigusFlags::over_and_out) && !status.test(MinigusFlags::goodbye)) { request(MinigusState::struggle); }
 	if (status.test(MinigusFlags::goodbye)) { status.set(MinigusFlags::over_and_out); }
 	if (status.test(MinigusFlags::over_and_out) && console_complete && m_state.actual == MinigusState::exit) {
-		m_map->active_loot.push_back(item::Loot(svc, player, get_attributes().drop_range, get_attributes().loot_multiplier, Enemy::get_collider().bounding_box.get_position()));
+		m_map->active_loot.push_back(item::Loot(svc, map, player, get_attributes().drop_range, get_attributes().loot_multiplier, Enemy::get_collider().bounding_box.get_position()));
 	}
 
 	Minigus::state_function = Minigus::state_function();
@@ -780,7 +780,7 @@ fsm::StateFunction Minigus::update_struggle() {
 	m_minigun.state = MinigunState::neutral;
 	// always do
 	if (secondary_collider) {
-		sf::Vector2f pos = secondary_collider->physics.position + random::random_vector_float(0.f, 50.f);
+		sf::Vector2f pos = get_secondary_collider().physics.position + random::random_vector_float(0.f, 50.f);
 		if (m_services->ticker.every_x_ticks(80)) { m_map->effects.push_back(entity::Effect(*m_services, "puff", pos, {}, 3)); }
 	}
 	Enemy::shake();

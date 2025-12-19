@@ -13,7 +13,7 @@ Hulmet::Hulmet(automa::ServiceProvider& svc, world::Map& map)
 	m_parts.gun.set_magnitude(2.f);
 	m_weapon.clip_cooldown_time = 360;
 	m_weapon.get().set_team(arms::Team::skycorps);
-	secondary_collider = shape::Collider({24.f, 24.f});
+	get_secondary_collider().set_dimensions({24.f, 24.f});
 	flags.general.set(GeneralFlags::invincible_secondary);
 	m_cooldowns.run.start();
 }
@@ -47,7 +47,7 @@ void Hulmet::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	m_weapon.barrel_offset = sf::Vector2f{directions.actual.as_float() * 40.f, 0.f};
 	if (p_state.actual == HulmetState::roll) { cancel_shake(); }
 
-	if (secondary_collider) { secondary_collider->set_position(get_collider().bounding_box.get_position() + sf::Vector2f{4.f, -8.f}); }
+	if (secondary_collider) { get_secondary_collider().set_position(get_collider().bounding_box.get_position() + sf::Vector2f{4.f, -8.f}); }
 
 	if (flags.state.test(StateFlags::hurt)) {
 		hurt_effect.start();

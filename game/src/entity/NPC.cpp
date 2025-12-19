@@ -125,10 +125,10 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 		get_collider().sync_components();
 		get_collider().physics.set_friction_componentwise({0.95f, 0.995f});
 		get_collider().stats.GRAV = 16.2f;
-		get_collider().set_exclusion_target(shape::CollisionExclusions::circle);
-		get_collider().set_exclusion_target(shape::CollisionExclusions::enemy);
-		get_collider().set_exclusion_target(shape::CollisionExclusions::player);
-		get_collider().set_exclusion_trait(shape::CollisionExclusions::npc);
+		get_collider().set_trait(shape::ColliderTrait::npc);
+		get_collider().set_exclusion_target(shape::ColliderTrait::circle);
+		get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
+		get_collider().set_exclusion_target(shape::ColliderTrait::player);
 	}
 
 	for (auto const& in_anim : in_data["animation"].as_array()) {

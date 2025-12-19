@@ -28,7 +28,9 @@ class CircleCollider : public ICollider {
 	void update(automa::ServiceProvider& svc) override;
 	void handle_map_collision(world::Map& map) override;
 	void handle_collision(ICollider& other) override;
-	void handle_collision(Shape& shape, bool soft = false) override;
+	void handle_collision(Shape const& shape, bool soft = false) override;
+	void handle_collider_collision(Collider const& collider, bool momentum = false) override;
+	void detect_map_collision(world::Map& map) override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam) override;
 	void set_position(sf::Vector2f pos) { physics.position = pos; }
 

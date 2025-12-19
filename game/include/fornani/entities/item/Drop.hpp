@@ -7,7 +7,7 @@
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Sparkler.hpp>
-#include <fornani/physics/CircleCollider.hpp>
+#include <fornani/physics/RegisteredCollider.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/StateFunction.hpp>
 #define DROP_BIND(f) std::bind(&Drop::f, this)
@@ -34,7 +34,7 @@ enum class DropFlags { neutral, shining };
 class Drop : public Animatable {
 
   public:
-	Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time = 0, int special_id = 0);
+	Drop(automa::ServiceProvider& svc, world::Map& map, std::string_view key, float probability, int delay_time = 0, int special_id = 0);
 	void seed(float probability);
 	void set_value();
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
@@ -47,7 +47,7 @@ class Drop : public Animatable {
 
 	bool is_completely_gone() const;
 	bool is_inactive() const;
-	[[nodiscard]] auto collides_with(shape::Shape& shape) const -> bool { return collider.collides_with(shape); }
+	[[nodiscard]] auto collides_with(shape::Shape& shape) const -> bool { return get_collider().collides_with(shape); }
 	[[nodiscard]] auto get_rarity() const -> Rarity { return rarity; }
 	[[nodiscard]] auto delay_over() const -> bool { return delay.is_complete(); }
 
@@ -58,8 +58,11 @@ class Drop : public Animatable {
 	fsm::StateFunction state_function = std::bind(&Drop::update_neutral, this);
 	fsm::StateFunction update_neutral();
 	fsm::StateFunction update_shining();
+	shape::CircleCollider& get_collider() const { return *m_collider.get_circle(); }
 
   private:
+	shape::RegisteredCollider m_collider;
+
 	struct {
 		DropState actual{};
 		DropState desired{};
@@ -69,7 +72,6 @@ class Drop : public Animatable {
 
 	DropType type{};
 	sf::Vector2f drop_dimensions{20.f, 20.f};
-	shape::CircleCollider collider{16.f};
 	std::vector<anim::Parameters> m_parameters{};
 	sf::Vector2f m_sprite_dimensions{};
 	util::Cooldown shine_cooldown{600};

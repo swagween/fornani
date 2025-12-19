@@ -10,7 +10,7 @@ Thug::Thug(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "thu
 	animation.set_params(idle);
 	get_collider().physics.maximum_velocity = {8.f, 12.f};
 	get_collider().physics.air_friction = {0.95f, 0.999f};
-	secondary_collider = shape::Collider({28.f, 28.f});
+	get_secondary_collider().set_dimensions({28.f, 28.f});
 	directions.desired.lnr = LNR::left;
 	directions.actual.lnr = LNR::left;
 	directions.movement.lnr = LNR::neutral;

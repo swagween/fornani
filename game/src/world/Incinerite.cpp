@@ -16,6 +16,7 @@ Incinerite::Incinerite(automa::ServiceProvider& svc, Map& map, sf::Vector2f posi
 	push_animation("default", {0, 1, 24, -1});
 	push_animation("shine", {1, 6, 24, 0});
 	m_collider.get()->set_attribute(shape::ColliderAttributes::fixed);
+	m_collider.get()->set_trait(shape::ColliderTrait::block);
 }
 
 void Incinerite::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
@@ -23,7 +24,7 @@ void Incinerite::update(automa::ServiceProvider& svc, Map& map, player::Player& 
 	if (is_destroyed()) {
 		svc.ticker.freeze_frame(2);
 		svc.soundboard.flags.world.set(audio::World::incinerite_explosion);
-		map.active_emitters.push_back(vfx::Emitter(svc, m_collider.get()->physics.position, m_collider.get()->dimensions, "incinerite", colors::nani_white));
+		map.spawn_emitter(svc, "incinerite", m_collider.get()->physics.position, Direction{UND::up}, m_collider.get()->dimensions);
 		map.spawn_effect(svc, "small_explosion", m_collider.get()->get_center(), {}, 3);
 		return;
 	}

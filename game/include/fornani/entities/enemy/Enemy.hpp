@@ -52,7 +52,6 @@ enum class GeneralFlags {
 	has_invincible_channel,
 	invincible_secondary,
 	spike_collision,
-	sturdy,
 	custom_channels,
 	semipermanent
 };
@@ -106,7 +105,8 @@ class Enemy : public Mobile {
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
 	[[nodiscard]] auto get_external_id() const -> int { return metadata.external_id; }
-	[[nodiscard]] auto get_secondary_collider() -> std::optional<shape::Collider>& { return secondary_collider; }
+	[[nodiscard]] auto has_secondary_collider() const -> bool { return secondary_collider.has_value(); }
+	[[nodiscard]] auto get_secondary_collider() const -> shape::Collider& { return secondary_collider.value().get().get_reference(); }
 	[[nodiscard]] auto died() const -> bool { return health.is_dead(); }
 	[[nodiscard]] auto just_died() const -> bool { return health.is_dead() && post_death.get() == afterlife; }
 	[[nodiscard]] auto gone() const -> bool { return post_death.is_complete(); }
@@ -129,7 +129,7 @@ class Enemy : public Mobile {
 	}
 
 	void set_position_from_scaled(sf::Vector2f pos);
-	void hurt() { flags.state.set(StateFlags::hurt); }
+	void hurt(float amount = 1.f);
 	void shake() { energy = hit_energy; }
 	void stop_shaking() { flags.state.reset(StateFlags::shaking); }
 
@@ -140,7 +140,8 @@ class Enemy : public Mobile {
 
   protected:
 	std::string label{};
-	std::optional<shape::Collider> secondary_collider{};
+	std::optional<shape::RegisteredCollider> secondary_owned_collider;
+	std::optional<std::reference_wrapper<shape::RegisteredCollider>> secondary_collider;
 	Flags flags{};
 	Attributes attributes{};
 	util::Cooldown post_death{};

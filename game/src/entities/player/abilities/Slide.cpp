@@ -1,8 +1,8 @@
 
 #include <fornani/entities/player/PlayerController.hpp>
 #include <fornani/entities/player/abilities/Slide.hpp>
-#include <fornani/service/ServiceProvider.hpp>
 #include <fornani/physics/Collider.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani::player {
@@ -36,7 +36,7 @@ void Slide::update(shape::Collider& collider, PlayerController& controller) {
 	}
 	if (m_services->ticker.every_x_ticks(12)) {
 		auto tag = super ? "super_slide" : "slide";
-		m_map->active_emitters.push_back(vfx::Emitter(*m_services, collider.jumpbox.get_position(), collider.jumpbox.get_dimensions(), tag, colors::ui_white, Direction(UND::up)));
+		m_map->spawn_emitter(*m_services, tag, collider.jumpbox.get_position(), Direction(UND::up), collider.jumpbox.get_dimensions());
 	}
 }
 

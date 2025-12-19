@@ -15,7 +15,7 @@ Tank::Tank(automa::ServiceProvider& svc, world::Map& map, int variant)
 	m_weapon.get().set_team(arms::Team::skycorps);
 	get_collider().physics.maximum_velocity = {3.f, 12.f};
 	get_collider().physics.air_friction = {0.95f, 0.999f};
-	secondary_collider = shape::Collider({28.f, 28.f});
+	get_secondary_collider().set_dimensions({28.f, 28.f});
 	directions.desired.lnr = LNR::left;
 	directions.actual.lnr = LNR::left;
 	directions.movement.lnr = LNR::neutral;
@@ -27,10 +27,7 @@ Tank::Tank(automa::ServiceProvider& svc, world::Map& map, int variant)
 
 void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	Enemy::update(svc, map, player);
-	if (died()) {
-		Enemy::update(svc, map, player);
-		return;
-	}
+	if (died()) { return; }
 
 	flags.state.set(StateFlags::vulnerable); // tank is always vulnerable
 	m_weapon.update(svc, map, *this);
@@ -39,10 +36,7 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 
 	// reset animation states to determine next animation state
 	directions.movement.lnr = get_collider().physics.velocity.x > 0.f ? LNR::right : LNR::left;
-	if (secondary_collider) {
-		secondary_collider->physics.position = get_collider().physics.position - sf::Vector2f{-26.f, 14.f};
-		secondary_collider->sync_components();
-	}
+	if (secondary_collider) { get_secondary_collider().set_position(get_collider().physics.position - sf::Vector2f{-26.f, 14.f}); }
 
 	m_vertical_range.set_position(get_collider().bounding_box.get_position() -
 								  sf::Vector2f{(m_vertical_range.get_dimensions().x * 0.5f) - (get_collider().dimensions.x * 0.5f), (m_vertical_range.get_dimensions().y) - (get_collider().dimensions.y * 0.5f)});
@@ -52,7 +46,6 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	auto has_clearance = !m_caution.detected_ceiling(map, get_collider(), sf::Vector2f{0.f, 32.f});
 	if (m_caution.detected_step(map, get_collider(), directions.actual, sf::Vector2f{-16.f, 32.f}) && (get_collider().physics.is_moving_horizontally(0.01f) || is_mid_run()) && has_clearance) { request(TankState::jumpsquat); }
 
-	if (secondary_collider) { player.get_collider().handle_collider_collision(*secondary_collider); }
 	if (svc.ticker.every_x_ticks(20)) {
 		if (random::percent_chance(8) && !m_caution.danger()) { request(TankState::run); }
 	}
@@ -64,8 +57,6 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		flags.state.reset(StateFlags::hurt);
 		sound.hurt_sound_cooldown.start();
 	}
-
-	player.on_crush(map);
 
 	if (is_alert() && has_clearance) { request(TankState::jumpsquat); }
 	if (is_hostile() && has_been_alerted()) { request(TankState::shoot_horizontal); }

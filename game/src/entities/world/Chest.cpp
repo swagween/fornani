@@ -11,6 +11,7 @@ Chest::Chest(automa::ServiceProvider& svc, world::Map& map, int id, ChestType ty
 	get_collider().physics.elasticity = 0.4f;
 	get_collider().physics.set_global_friction(0.998f);
 	get_collider().physics.gravity = 10.f;
+	get_collider().set_exclusion_target(shape::ColliderTrait::player);
 
 	Animatable::set_parameters(m_animations.unopened);
 
@@ -29,7 +30,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 	}
 
 	// get_collider().update(svc);
-	get_collider().handle_map_collision(map);
+	/*get_collider().handle_map_collision(map);*/
 	if (get_collider().collided() && std::abs(get_collider().physics.apparent_velocity().y) > 0.05f) { svc.soundboard.flags.world.set(audio::World::clink); }
 	map.handle_cell_collision(get_collider());
 	// map.handle_breakable_collision(get_collider());
@@ -56,7 +57,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 				auto fmodifier = static_cast<float>(m_content_modifier);
 				auto range_modifier = std::max(6, static_cast<int>(m_content_modifier / 8.f));
 				if (m_type == ChestType::gun) { svc.events.dispatch_event("AcquireGun", m_content_modifier); }
-				if (m_type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, player, {range_modifier, range_modifier * 2}, fmodifier, get_collider().get_global_center(), 100, true, map.get_special_drop_id())); }
+				if (m_type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, map, player, {range_modifier, range_modifier * 2}, fmodifier, get_collider().get_global_center(), 100, true, map.get_special_drop_id())); }
 				if (m_type == ChestType::item) { svc.events.dispatch_event("AcquireItem", m_content_modifier); }
 			} else {
 				console = std::make_unique<gui::Console>(svc, svc.text.basic, "open_chest", gui::OutputType::instant);

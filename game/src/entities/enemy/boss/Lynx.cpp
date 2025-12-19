@@ -418,7 +418,7 @@ fsm::StateFunction Lynx::update_downward_slam() {
 		m_services->soundboard.flags.lynx.set(audio::Lynx::slam);
 		m_services->soundboard.flags.world.set(audio::World::thud);
 		m_services->soundboard.flags.world.set(audio::World::vibration);
-		m_map->active_emitters.push_back(vfx::Emitter(*m_services, Enemy::get_collider().get_center(), {16.f, 16.f}, "fireworks"));
+		m_map->spawn_emitter(*m_services, "fireworks", Enemy::get_collider().get_center(), Direction{UND::up}, {16.f, 16.f});
 	}
 	Enemy::animation.get_frame_count() < 8 ? flags.general.reset(GeneralFlags::gravity) : flags.general.set(GeneralFlags::gravity);
 	auto sign = Enemy::directions.actual.as_float();

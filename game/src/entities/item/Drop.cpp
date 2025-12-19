@@ -7,20 +7,25 @@
 
 namespace fornani::item {
 
-Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time, int special_id)
-	: Animatable(svc, key, {svc.data.drop[key]["sprite_dimensions"][0].as<int>(), svc.data.drop[key]["sprite_dimensions"][1].as<int>()}), sparkler(svc, drop_dimensions, colors::ui_white, "drop"), special_id(special_id), m_label{key} {
+Drop::Drop(automa::ServiceProvider& svc, world::Map& map, std::string_view key, float probability, int delay_time, int special_id)
+	: Animatable(svc, key, {svc.data.drop[key]["sprite_dimensions"][0].as<int>(), svc.data.drop[key]["sprite_dimensions"][1].as<int>()}), sparkler(svc, drop_dimensions, colors::ui_white, "drop"), special_id(special_id), m_label{key},
+	  m_collider{map, 16.f} {
 
-	collider.physics.elasticity = 0.5f;
+	get_collider().physics.elasticity = 0.5f;
 
 	m_sprite_dimensions.x = svc.data.drop[key]["sprite_dimensions"][0].as<float>();
 	m_sprite_dimensions.y = svc.data.drop[key]["sprite_dimensions"][1].as<float>();
 	center();
 
 	type = static_cast<DropType>(svc.data.drop[key]["type"].as<int>());
-	if (type == DropType::gem) { collider.physics.elasticity = 0.85f; }
+	if (type == DropType::gem) { get_collider().physics.elasticity = 0.85f; }
 
-	collider.physics.set_friction_componentwise({svc.data.drop[key]["friction"][0].as<float>(), svc.data.drop[key]["friction"][1].as<float>()});
-	collider.physics.gravity = svc.data.drop[key]["gravity"].as<float>();
+	get_collider().physics.set_friction_componentwise({svc.data.drop[key]["friction"][0].as<float>(), svc.data.drop[key]["friction"][1].as<float>()});
+	get_collider().physics.gravity = svc.data.drop[key]["gravity"].as<float>();
+	get_collider().set_exclusion_target(shape::ColliderTrait::circle);
+	get_collider().set_exclusion_target(shape::ColliderTrait::player);
+	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
+	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
 
 	auto& in_anim = svc.data.drop[key]["animation"];
 	num_sprites = in_anim["num_sprites"].as<int>();
@@ -91,35 +96,23 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	delay.update();
 	auto magnet = player.has_item_equipped(svc.data.item_id_from_label("magnet"));
 	if (magnet) {
-		collider.physics.set_friction_componentwise({0.98f, 0.98f});
-		m_steering.seek(collider.physics, player.get_collider().get_center(), 0.0003f);
+		get_collider().physics.set_friction_componentwise({0.98f, 0.98f});
+		m_steering.seek(get_collider().physics, player.get_collider().get_center(), 0.0003f);
 	} else {
-		collider.physics.set_friction_componentwise({svc.data.drop[m_label]["friction"][0].as<float>(), svc.data.drop[m_label]["friction"][1].as<float>()});
+		get_collider().physics.set_friction_componentwise({svc.data.drop[m_label]["friction"][0].as<float>(), svc.data.drop[m_label]["friction"][1].as<float>()});
 	}
-	collider.set_flag(shape::ColliderFlags::simple, magnet);
-	collider.update(svc);
-	collider.handle_map_collision(map);
-	map.handle_cell_collision(collider);
-	map.handle_breakable_collision(collider);
-	for (auto& pushable : map.pushables) { collider.handle_collision(pushable->get_bounding_box(), true); }
-	for (auto& platform : map.platforms) { collider.handle_collision(platform.bounding_box, true); }
-	for (auto& block : map.switch_blocks) {
-		if (block->on()) { collider.handle_collision(block->get_bounding_box()); }
-	}
-	for (auto& destructible : map.destructibles) {
-		if (!destructible.ignore_updates()) { collider.handle_collision(destructible.get_bounding_box()); }
-	}
-	for (auto& spike : map.spikes) { collider.handle_collision(spike.get_bounding_box()); }
-	if (collider.collided() && type == DropType::gem && !is_inactive() && std::abs(collider.physics.velocity.y) > 1.f) {
+	get_collider().set_flag(shape::ColliderFlags::simple, magnet);
+	for (auto& spike : map.spikes) { get_collider().handle_collision(spike.get_bounding_box()); }
+	if (get_collider().collided() && type == DropType::gem && !is_inactive() && std::abs(get_collider().physics.velocity.y) > 1.f) {
 		random::percent_chance(50) ? svc.soundboard.flags.world.set(audio::World::gem_hit_1) : svc.soundboard.flags.world.set(audio::World::gem_hit_2);
 	}
 
-	collider.physics.acceleration = {};
+	get_collider().physics.acceleration = {};
 	lifespan.update();
 	afterlife.update();
 
 	sparkler.update(svc);
-	sparkler.set_position(collider.position() - sparkler.get_dimensions() * 0.5f);
+	sparkler.set_position(get_collider().position() - sparkler.get_dimensions() * 0.5f);
 
 	int v{};
 	if (type == DropType::heart) { v = rarity == Rarity::priceless || rarity == Rarity::rare ? 1 : 0; }
@@ -149,19 +142,19 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 }
 
 void Drop::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	auto offset = sf::Vector2f{0.f, collider.get_radius() - Animatable::get_f_dimensions().y};
-	Animatable::set_position(collider.get_global_center() + offset - cam);
+	auto offset = sf::Vector2f{0.f, get_collider().get_radius() - Animatable::get_f_dimensions().y};
+	Animatable::set_position(get_collider().get_global_center() + offset - cam);
 	if (!is_inactive() && !is_completely_gone() && (lifespan.get() > 500 || (lifespan.get() / 20) % 2 == 0)) { win.draw(*this); }
 	sparkler.render(win, cam);
-	if (svc.greyblock_mode()) { collider.render(win, cam); }
+	if (svc.greyblock_mode()) { get_collider().render(win, cam); }
 }
 
 void Drop::set_position(sf::Vector2f pos) {
-	collider.physics.position = pos;
+	get_collider().physics.position = pos;
 	sparkler.set_position(pos);
 }
 
-void Drop::apply_force(sf::Vector2f force) { collider.physics.apply_force(force); }
+void Drop::apply_force(sf::Vector2f force) { get_collider().physics.apply_force(force); }
 
 void Drop::destroy_completely() {
 	lifespan.cancel();

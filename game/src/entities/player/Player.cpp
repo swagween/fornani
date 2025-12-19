@@ -44,10 +44,10 @@ void Player::register_with_map(world::Map& map) {
 	get_collider().physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
 	get_collider().physics.maximum_velocity = physics_stats.maximum_velocity;
 	get_collider().flags.general.set(shape::General::complex);
-	get_collider().set_exclusion_target(shape::CollisionExclusions::circle);
-	get_collider().set_exclusion_target(shape::CollisionExclusions::enemy);
-	get_collider().set_exclusion_target(shape::CollisionExclusions::npc);
-	get_collider().set_exclusion_trait(shape::CollisionExclusions::player);
+	get_collider().set_trait(shape::ColliderTrait::player);
+	get_collider().set_exclusion_target(shape::ColliderTrait::circle);
+	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
+	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 
 	m_lighting.physics.velocity = random::random_vector_float(-1.f, 1.f);
 	m_lighting.physics.set_global_friction(0.95f);
@@ -176,9 +176,7 @@ void Player::update(world::Map& map) {
 	if (orb_indicator.active()) { health_indicator.shift(); }
 	update_invincibility();
 	update_weapon();
-	if (controller.is_dashing() && m_services->ticker.every_x_ticks(8)) {
-		map.active_emitters.push_back(vfx::Emitter(*m_services, get_collider().get_center() - sf::Vector2f{0.f, 4.f}, sf::Vector2f{8.f, 8.f}, "dash", colors::ui_white, get_actual_direction()));
-	}
+	if (controller.is_dashing() && m_services->ticker.every_x_ticks(8)) { map.spawn_emitter(*m_services, "dash", get_collider().get_center() - sf::Vector2f{0.f, 4.f}, get_actual_direction(), sf::Vector2f{8.f, 8.f}); }
 
 	update_antennae();
 
@@ -492,8 +490,8 @@ void Player::on_crush(world::Map& map) {
 		directions.left_squish.lnr = get_collider().vertical_squish() ? LNR::left : LNR::neutral;
 		directions.right_squish.und = get_collider().horizontal_squish() ? UND::down : UND::neutral;
 		directions.right_squish.lnr = get_collider().vertical_squish() ? LNR::right : LNR::neutral;
-		map.active_emitters.push_back(vfx::Emitter(*m_services, get_collider().physics.position, get_collider().dimensions, "player_crush", colors::nani_white, directions.left_squish));
-		map.active_emitters.push_back(vfx::Emitter(*m_services, get_collider().physics.position, get_collider().dimensions, "player_crush", colors::nani_white, directions.right_squish));
+		map.spawn_emitter(*m_services, "player_crush", get_collider().physics.position, directions.left_squish, get_collider().dimensions);
+		map.spawn_emitter(*m_services, "player_crush", get_collider().physics.position, directions.right_squish, get_collider().dimensions);
 		get_collider().collision_depths = {};
 		flags.state.set(State::crushed);
 	}
@@ -727,7 +725,6 @@ bool Player::can_doublejump() const {
 	if (health.is_dead()) { return false; }
 	if (controller.is_wallsliding()) { return false; }
 	if (grounded()) { return false; }
-	if ((get_collider().has_left_wallslide_collision() || get_collider().has_right_wallslide_collision()) && can_wallslide()) { return false; }
 	if (m_ability_usage.doublejump.get_count() > 0) { return false; }
 	if (!catalog.inventory.has_item("sky_pendant")) { return false; }
 	return true;

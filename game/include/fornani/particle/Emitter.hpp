@@ -9,7 +9,7 @@ namespace fornani::vfx {
 class Emitter {
   public:
 	Emitter() = default;
-	Emitter(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color = sf::Color::Transparent, Direction direction = {});
+	Emitter(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color = sf::Color::Transparent, Direction direction = {});
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f pos);
@@ -17,7 +17,7 @@ class Emitter {
 	[[nodiscard]] auto done() const -> bool { return particles.empty(); }
 
   private:
-	std::vector<Particle> particles{};
+	std::vector<std::unique_ptr<Particle>> particles{};
 	sf::Vector2f dimensions{};
 	sf::Vector2f particle_dimensions{3.f, 3.f}; // customize later
 	sf::Vector2f position{};

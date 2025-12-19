@@ -30,8 +30,8 @@ void Archer::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	}
 
 	if (secondary_collider) {
-		secondary_collider->physics.position = get_collider().physics.position - sf::Vector2f{0.f, 24.f};
-		secondary_collider->sync_components();
+		get_secondary_collider().physics.position = get_collider().physics.position - sf::Vector2f{0.f, 24.f};
+		get_secondary_collider().sync_components();
 	}
 
 	auto distance = (player.get_collider().get_center() - get_collider().get_center()).length();

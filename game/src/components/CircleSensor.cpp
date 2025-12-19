@@ -11,7 +11,7 @@ CircleSensor::CircleSensor() : CircleSensor(32.f) {}
 CircleSensor::CircleSensor(float radius) {
 	bounds.setRadius(radius);
 	bounds.setOutlineColor(sf::Color::White);
-	bounds.setOutlineThickness(-1);
+	bounds.setOutlineThickness(-2);
 	bounds.setFillColor(sf::Color::Transparent);
 	bounds.setOrigin({radius, radius});
 	drawable = bounds;

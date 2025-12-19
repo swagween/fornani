@@ -62,6 +62,12 @@
 		"framerate": 16,
 		"dimensions": [ 18, 18 ]
 	},
+	"lens_flare": {
+		"frame_count": 5,
+		"framerate": 16,
+		"dimensions": [ 100, 100 ],
+		"x_reflection": true
+	},
 	"large_explosion": {
 		"frame_count": 8,
 		"framerate": 16,

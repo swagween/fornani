@@ -105,6 +105,7 @@ class Map {
 	bool handle_entry(player::Player& player, util::Cooldown& enter_room);
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {}, float speed_multiplier = 1.f);
 	void spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0);
+	void spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, Direction dir, sf::Vector2f dim = {16.f, 16.f}, sf::Color color = colors::nani_white);
 	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0);
 	void reveal_npc(std::string_view label);
 	void manage_projectiles(automa::ServiceProvider& svc);
@@ -153,6 +154,7 @@ class Map {
 	[[nodiscard]] auto num_colliders() const -> std::size_t { return m_colliders.size(); }
 	[[nodiscard]] auto num_registered_chunks() const -> std::size_t { return m_chunks.size(); }
 	[[nodiscard]] auto num_colliders_in_chunk(std::size_t const which) const -> std::size_t { return m_chunks.at(which).size(); }
+	[[nodiscard]] auto get_active_emitters_size() const -> std::size_t { return active_emitters.size(); }
 
 	dj::Json const& get_json_data(automa::ServiceProvider& svc) const;
 
@@ -178,7 +180,6 @@ class Map {
 
 	// entities
 	std::vector<arms::Projectile> active_projectiles{};
-	std::vector<vfx::Emitter> active_emitters{};
 	// std::vector<entity::Portal> portals{};
 	std::vector<entity::Inspectable> inspectables{};
 	std::vector<entity::Bed> beds{};
@@ -255,6 +256,7 @@ class Map {
 	MapAttributes m_attributes{};
 	util::BitFlags<LayerProperties> m_layer_properties{};
 	std::optional<EntitySet> m_entities{};
+	std::vector<std::unique_ptr<vfx::Emitter>> active_emitters{};
 
 	std::vector<std::unique_ptr<shape::ICollider>> m_colliders{};
 	std::vector<std::vector<shape::ICollider*>> m_chunks;

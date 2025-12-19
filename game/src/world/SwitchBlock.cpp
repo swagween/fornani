@@ -15,6 +15,7 @@ SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, Map& map, sf::Vector2f po
 	if (svc.data.switch_is_activated(button_id)) { m_state = SwitchBlockState::empty; }
 	set_channel(static_cast<int>(m_type));
 	m_collider.get()->set_attribute(shape::ColliderAttributes::fixed);
+	m_collider.get()->set_trait(shape::ColliderTrait::block);
 }
 
 void SwitchBlock::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {

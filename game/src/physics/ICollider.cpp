@@ -22,15 +22,15 @@ void ICollider::handle_map_collision(world::Tile const& tile) {}
 
 void ICollider::detect_map_collision(world::Map& map) {}
 
-void ICollider::handle_collision(Shape& shape, bool soft) {}
+void ICollider::handle_collision(Shape const& shape, bool soft) {}
 
-bool ICollider::handle_collider_collision(Shape const& collider, bool soft, sf::Vector2f velocity, float force) { return false; }
+bool ICollider::handle_collider_collision(Shape const& collider, bool soft, sf::Vector2f velocity, float force, bool crusher) { return false; }
 
 void ICollider::handle_collider_collision(Collider const& collider, bool momentum) {}
 
 void ICollider::handle_collider_collision(CircleCollider& collider) {}
 
-void ICollider::render(sf::RenderWindow& win, sf::Vector2f cam) { p_vicinity.render(win, cam, sf::Color{80, 80, 10, 60}); }
+void ICollider::render(sf::RenderWindow& win, sf::Vector2f cam) { p_vicinity.render(win, cam, sf::Color{80, 80, 10, 10}); }
 
 void ICollider::register_chunks(world::Map& map) {
 	if (!was_changed()) { return; }
@@ -42,9 +42,11 @@ void ICollider::register_chunks(world::Map& map) {
 	if (old_chunks != m_chunks) { map.refresh_collider_chunks(old_chunks, m_chunks, this); }
 }
 
-bool ICollider::should_exclude(ICollider const& other) const { return m_exclusion_targets.any(other.get_exclusion_traits()); }
+bool ICollider::should_exclude(ICollider const& other) const { return m_exclusion_targets.any(other.get_traits()); }
 
-bool ICollider::should_softly_collide_with(ICollider const& other) const { return m_soft_targets.any(other.get_soft_traits()); }
+bool ICollider::should_exclude_resolution_with(ICollider const& other) const { return m_resolution_exclusion_targets.any(other.get_traits()); }
+
+bool ICollider::should_softly_collide_with(ICollider const& other) const { return m_soft_targets.any(other.get_traits()); }
 
 std::vector<int> ICollider::compute_chunks(world::Map& map) {
 	m_chunks.clear();

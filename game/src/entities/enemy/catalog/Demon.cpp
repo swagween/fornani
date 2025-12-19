@@ -21,7 +21,7 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map, int variant)
 	get_collider().physics.air_friction = {0.95f, 0.999f};
 	get_collider().physics.ground_friction = {0.97f, 0.97f};
 	get_collider().physics.maximum_velocity.x = 36.f;
-	secondary_collider = shape::Collider({39.f, 39.f});
+	get_secondary_collider().set_dimensions({39.f, 39.f});
 	directions.desired.lnr = LNR::left;
 	directions.actual.lnr = LNR::left;
 	directions.movement.lnr = LNR::neutral;
@@ -92,10 +92,10 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 
 	if (secondary_collider) {
-		secondary_collider->physics.position = get_collider().physics.position - sf::Vector2f{0.f, 20.f};
-		secondary_collider->physics.position.x += 1.f;
-		secondary_collider->sync_components();
-		if (player.get_collider().hurtbox.overlaps(secondary_collider->bounding_box) && !is_dormant()) { player.hurt(); }
+		get_secondary_collider().physics.position = get_collider().physics.position - sf::Vector2f{0.f, 20.f};
+		get_secondary_collider().physics.position.x += 1.f;
+		get_secondary_collider().sync_components();
+		if (player.get_collider().hurtbox.overlaps(get_secondary_collider().bounding_box) && !is_dormant()) { player.hurt(); }
 	}
 
 	if (svc.ticker.every_x_ticks(200)) {

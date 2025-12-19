@@ -290,7 +290,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						ImGui::Indent();
 						for (auto& loot : map->get().active_loot) { ImGui::Text("Loot Size: %i", loot.get_size()); }
 						ImGui::Text("Active Projectiles: %i", map->get().active_projectiles.size());
-						ImGui::Text("Active Emitters: %i", map->get().active_emitters.size());
+						ImGui::Text("Active Emitters: %i", map->get().get_active_emitters_size());
 						ImGui::Separator();
 						ImGui::Text("Registered Colliders: %i", map->get().num_colliders());
 						ImGui::Text("Registered Chunks: %i", map->get().num_registered_chunks());
@@ -298,7 +298,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							for (auto i = 0; i < map->get().num_registered_chunks(); ++i) { ImGui::Text("Colliders in chunk %i: %i", i, map->get().num_colliders_in_chunk(i)); }
 							ImGui::TreePop();
 						}
-						ImGui::Text("Registered Colliders: %i", map->get().active_emitters.size());
 						ImGui::Text("Collision calculations: %i", map->get().num_collision_checks);
 					}
 					ImGui::Separator();

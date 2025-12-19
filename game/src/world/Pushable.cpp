@@ -30,6 +30,12 @@ Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position
 	get_collider().horizontal_detector_buffer = 0.1f;
 	get_collider().wallslide_pad = 1.f;
 	get_collider().vert_threshold = 0.1f;
+	get_collider().set_attribute(shape::ColliderAttributes::sturdy);
+	get_collider().set_trait(shape::ColliderTrait::block);
+	get_collider().set_exclusion_target(shape::ColliderTrait::particle);
+	get_collider().set_resolution_exclusion_target(shape::ColliderTrait::player);
+	get_collider().set_resolution_exclusion_target(shape::ColliderTrait::enemy);
+	if (size > 1) { get_collider().set_attribute(shape::ColliderAttributes::crusher); }
 }
 
 void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
@@ -44,8 +50,6 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	if (svc.ticker.every_x_ticks(20)) { random_offset = random::random_vector_float(-energy, energy); }
 	weakened.update();
 	if (weakened.is_complete()) { hit_count.start(); }
-	player.on_crush(map);
-	for (auto& enemy : map.enemy_catalog.enemies) { enemy->on_crush(map); }
 
 	// reset position if it's far away, and if the player isn't overlapping the start position
 	if (hit_count.get_count() > 2 || map.off_the_bottom(get_collider().physics.position)) {
@@ -64,7 +68,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	// player pushes block
 	state.reset(PushableState::pushed);
 	handle_collision(player.get_collider());
-	if (player.get_collider().wallslider.overlaps(collision_box) && player.pushing() && player.is_in_animation(player::AnimState::push) && get_collider().physics.actual_velocity().y < 1.0f) {
+	if (player.get_collider().wallslider.overlaps(collision_box) && player.pushing() && player.is_in_animation(player::AnimState::push) && get_collider().physics.actual_velocity().y < 0.01f) {
 		if (player.controller.moving_left() && player.get_collider().physics.position.x > get_collider().physics.position.x) { get_collider().physics.acceleration.x = -speed / mass; }
 		if (player.controller.moving_right() && player.get_collider().physics.position.x < get_collider().physics.position.x) { get_collider().physics.acceleration.x = speed / mass; }
 		if (ccm::abs(get_collider().physics.actual_velocity().x) > constants::small_value) { svc.soundboard.flags.world.set(audio::World::pushable_move); }
@@ -97,7 +101,6 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 
 	auto test_position = is_moving() ? get_collider().get_center() : get_collider().get_bottom();
 
-	get_collider().detect_map_collision(map);
 	for (auto& pushable : map.pushables) {
 		if (pushable.get() == this) { continue; }
 		auto block = true;
