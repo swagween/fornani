@@ -39,7 +39,7 @@
   },
   "meta": {
     "ambience": "overturned",
-    "background": 3,
+    "background": "woods",
     "biome": "overturned",
     "camera_effects": {
       "shake": {

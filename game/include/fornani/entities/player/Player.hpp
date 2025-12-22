@@ -203,7 +203,7 @@ class Player final : public Animatable {
 	void give_drop(item::DropType type, float value);
 	void give_item_by_id(int id, int amount);
 	void give_item(std::string_view label, int amount, bool from_save = false);
-	[[nodiscard]] bool equip_item(int id);
+	[[nodiscard]] EquipmentStatus equip_item(int id);
 	void add_to_hotbar(std::string_view tag);
 	void remove_from_hotbar(std::string_view tag);
 	void set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_outfit);

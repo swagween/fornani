@@ -1,37 +1,25 @@
 
-#include "fornani/particle/Gravitator.hpp"
-#include "fornani/service/ServiceProvider.hpp"
+#include <fornani/particle/Gravitator.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 
 namespace fornani::vfx {
 
-Gravitator::Gravitator(Vec pos, sf::Color col, float agf, Vec size) : scaled_position(pos), dimensions(size), color(col), attraction_force(agf) {
-	collider = shape::Collider(sf::Vector2f{4.f, 4.f}, sf::Vector2f{pos.x, pos.x});
-	collider.bounding_box.set_dimensions({4.f, 4.f});
-	collider.physics.position = static_cast<Vec>(pos) * constants::f_cell_size;
-	collider.bounding_box = shape::Shape(collider.bounding_box.get_dimensions());
-	collider.bounding_box.set_position(static_cast<Vec>(pos));
+Gravitator::Gravitator(sf::Vector2f pos, sf::Color col, float agf, sf::Vector2f size) : dimensions(size), color(col), attraction_force(agf) {
+	collider.physics.position = pos * constants::f_cell_size;
+	collider.set_position(pos);
 	box.setSize(dimensions);
-	box.setPosition(collider.bounding_box.get_position());
+	box.setPosition(collider.get_global_center());
 	box.setFillColor(color);
+	box.setOrigin(box.getLocalBounds().size * 0.5f);
 }
 
-void Gravitator::update(automa::ServiceProvider& svc) {
-	collider.reset();
-	collider.physics.update_dampen(svc);
-	collider.sync_components();
-}
+void Gravitator::update(automa::ServiceProvider& svc) { collider.physics.update_dampen(svc); }
 
 void Gravitator::add_force(sf::Vector2f force) { collider.physics.apply_force(force); }
 
-void Gravitator::set_position(Vec new_position) {
-	collider.physics.position = new_position;
-	collider.sync_components();
-}
+void Gravitator::set_position(sf::Vector2f new_position) { collider.set_position(new_position); }
 
-void Gravitator::set_target_position(Vec new_position) {
-	steering.target(collider.physics, new_position, attraction_force);
-	collider.sync_components();
-}
+void Gravitator::set_target_position(sf::Vector2f new_position) { steering.target(collider.physics, new_position, attraction_force); }
 
 void Gravitator::demagnetize(automa::ServiceProvider& svc) {
 	collider.physics.set_global_friction(0.99f);
@@ -39,7 +27,7 @@ void Gravitator::demagnetize(automa::ServiceProvider& svc) {
 	collider.physics.elasticity = 1.f;
 }
 
-void Gravitator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos, int history) {
+void Gravitator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos, int history) {
 	// just for antennae, can be improved a lot
 	auto prev_color = box.getFillColor();
 	if (history > 0) {
@@ -48,7 +36,7 @@ void Gravitator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec
 	}
 
 	box.setFillColor(prev_color);
-	box.setPosition(collider.bounding_box.get_position() - campos);
+	box.setPosition(collider.get_global_center() - campos);
 
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
 		win.draw(box);

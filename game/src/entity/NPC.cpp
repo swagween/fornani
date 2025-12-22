@@ -221,9 +221,6 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	if (collider.has_value()) {
 		get_collider().update(svc);
 		get_collider().detect_map_collision(map);
-		for (auto& destructible : map.destructibles) {
-			if (!destructible.ignore_updates()) { get_collider().handle_collider_collision(destructible.get_bounding_box()); }
-		}
 		get_collider().reset();
 		get_collider().physics.acceleration = {};
 	}

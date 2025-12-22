@@ -1,6 +1,5 @@
 {
   "entities": {
-    "inspectables": [],
     "portals": [
       {
         "activate_on_contact": true,
@@ -40,8 +39,13 @@
   },
   "meta": {
     "ambience": "",
-    "background": 3,
+    "background": "dense_woods",
     "biome": "overturned",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -81,7 +85,8 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 1
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
     "flags": {
@@ -89,14 +94,14 @@
       "reverse_obscuring": false
     },
     "ignore_lighting": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ],
     "layers": [
       [

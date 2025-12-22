@@ -18,7 +18,7 @@ class Seeker {
 	void set_force(float const force) const { gravitator->attraction_force = force; }
 	void bounce_vert() const { gravitator->collider.physics.velocity.y *= -1.f; }
 	void bounce_horiz() const { gravitator->collider.physics.velocity.x *= -1.f; }
-	[[nodiscard]] auto get_position() const -> sf::Vector2f { return gravitator->collider.bounding_box.get_position(); }
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return gravitator->collider.get_global_center(); }
 	[[nodiscard]] auto get_velocity() const -> sf::Vector2f { return gravitator->collider.physics.velocity; }
 
   private:

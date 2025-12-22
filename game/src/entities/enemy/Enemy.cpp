@@ -104,6 +104,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 		get_secondary_collider().physics.set_global_friction(in_physical["friction"].as<float>());
 		get_secondary_collider().stats.GRAV = in_physical["gravity"].as<float>();
 		get_secondary_collider().set_trait(shape::ColliderTrait::secondary);
+		get_secondary_collider().set_trait(shape::ColliderTrait::enemy);
 		if (!flags.general.test(GeneralFlags::player_collision)) { get_secondary_collider().set_exclusion_target(shape::ColliderTrait::player); }
 		if (!flags.general.test(GeneralFlags::map_collision)) { get_secondary_collider().set_attribute(shape::ColliderAttributes::no_collision); }
 		get_secondary_collider().set_exclusion_target(shape::ColliderTrait::circle);

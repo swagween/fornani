@@ -1,5 +1,4 @@
 nani_add_headers(
-        Background.hpp
         Canvas.hpp
         Clipboard.hpp
         Grid.hpp

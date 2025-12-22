@@ -340,7 +340,7 @@
   },
   "meta": {
     "ambience": "firstwind",
-    "background": 1,
+    "background": "night",
     "biome": "firstwind",
     "camera_effects": {
       "shake": {

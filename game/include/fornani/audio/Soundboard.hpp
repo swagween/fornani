@@ -19,7 +19,7 @@ enum class SoundboardState { on, off };
 
 enum class Menu { select, shift, forward_switch, backward_switch, error };
 enum class Pioneer { select, click, back, open, close, slot, chain, boot, buzz, fast_click, hard_slot, hum, sync, scan, drag, wires };
-enum class Console { next, done, shift, select, speech, menu_open };
+enum class Console { next, done, shift, select, speech, menu_open, notification };
 enum class World {
 	load,
 	save,

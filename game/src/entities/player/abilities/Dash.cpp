@@ -1,8 +1,8 @@
 
 #include <fornani/entities/player/PlayerController.hpp>
 #include <fornani/entities/player/abilities/Dash.hpp>
-#include <fornani/service/ServiceProvider.hpp>
 #include <fornani/physics/Collider.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani::player {
@@ -25,8 +25,9 @@ void Dash::update(shape::Collider& collider, PlayerController& controller) {
 	}
 	Ability::update(collider, controller);
 	collider.flags.state.reset(shape::State::just_landed);
-	auto const& vert = collider.acceleration_multiplier * m_vertical_multiplier;
-	auto const& horiz = collider.acceleration_multiplier * m_horizontal_multiplier;
+	auto vert = collider.acceleration_multiplier * m_vertical_multiplier;
+	auto horiz = collider.acceleration_multiplier * m_horizontal_multiplier;
+	collider.flags.movement.reset(shape::Movement::jumping);
 	auto terminal_vel = 100.f;
 	if (collider.hit_ceiling_ramp()) {
 		m_horizontal_multiplier *= 0.9f;

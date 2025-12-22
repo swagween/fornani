@@ -229,7 +229,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 1,
+    "background": "night",
     "biome": "firstwind",
     "border_color": [
       0,

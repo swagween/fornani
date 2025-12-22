@@ -35,7 +35,6 @@ Particle::Particle(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f p
 	m_collider.get_circle()->set_exclusion_target(shape::ColliderTrait::circle);
 	m_collider.get_circle()->set_exclusion_target(shape::ColliderTrait::npc);
 	m_collider.get_circle()->set_exclusion_target(shape::ColliderTrait::enemy);
-	m_collider.get_circle()->set_exclusion_target(shape::ColliderTrait::block);
 	m_collider.get_circle()->set_exclusion_target(shape::ColliderTrait::particle);
 
 	auto angle = random::random_range_float(-angle_range, angle_range);

@@ -3840,7 +3840,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 5,
+    "background": "overcast",
     "biome": "firstwind",
     "camera_effects": {
       "shake": {

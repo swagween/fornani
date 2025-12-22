@@ -9,6 +9,8 @@ namespace fornani::player {
 
 constexpr auto num_equippable_items_v = 3;
 
+enum class EquipmentStatus { equipped, unequipped, failure };
+
 class Inventory {
   public:
 	/// @brief Adds item to inventory.
@@ -16,7 +18,7 @@ class Inventory {
 	int add_item(dj::Json& source, std::string_view label);
 	void remove_item(int item_id, int amount);
 	void reveal_item(int item_id);
-	[[nodiscard]] bool equip_item(int item_id);
+	[[nodiscard]] EquipmentStatus equip_item(int item_id);
 	[[nodiscard]] bool has_item(int id) const;
 	[[nodiscard]] bool has_item_equipped(int id) const;
 	[[nodiscard]] bool has_item(std::string_view label) const;

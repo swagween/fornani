@@ -21,9 +21,10 @@ SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, Map& map, sf::Vector2f po
 void SwitchBlock::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 	tick();
 	m_collider.get()->set_flag(shape::ColliderFlags::intangible, off());
+	m_collider.get()->set_attribute(shape::ColliderAttributes::no_collision, off());
 	set_parameters({static_cast<int>(m_state), 1, 1, -1});
 	for (auto& enemy : map.enemy_catalog.enemies) { handle_collision(enemy->get_collider()); }
-	handle_collision(player.get_collider());
+	if (on()) { handle_collision(player.get_collider()); }
 	if (switched()) {
 		map.effects.push_back(entity::Effect(svc, "small_explosion", get_collider().get_center()));
 		svc.soundboard.flags.world.set(audio::World::block_toggle);

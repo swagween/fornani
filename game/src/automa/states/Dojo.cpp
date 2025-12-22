@@ -121,8 +121,6 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	NANI_LOG_INFO(m_logger, "New Dojo instance created.");
 }
 
-Dojo::~Dojo() { /*player->unregister_with_map();*/ }
-
 void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	// handle events
 	if (item_acquisition) { acquire_item(svc, *player, item_modifier); }
@@ -134,7 +132,14 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 	if (b_read_item) { read_item(item_modifier); }
 	if (b_equip_item) {
-		player->equip_item(item_modifier) ? svc.soundboard.flags.item.set(audio::Item::equip) : svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+		auto equipped = player->equip_item(item_modifier);
+		equipped == player::EquipmentStatus::equipped	  ? svc.soundboard.flags.item.set(audio::Item::equip)
+		: equipped == player::EquipmentStatus::unequipped ? svc.soundboard.flags.menu.set(audio::Menu::backward_switch)
+														  : svc.soundboard.flags.menu.set(audio::Menu::error);
+		auto tag = equipped == player::EquipmentStatus::equipped ? "equipped" : "unequipped";
+		auto qualifier = svc.data.gui_text["notifications"][tag].as_string();
+		auto message = equipped != player::EquipmentStatus::failure ? qualifier + std::string{svc.data.item_label_from_id(item_modifier)} + "." : svc.data.gui_text["notifications"]["slots_full"].as_string();
+		svc.notifications.push_notification(svc, message);
 		b_equip_item = false;
 	}
 	if (b_reveal_item) {
@@ -294,6 +299,8 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		m_console.value()->write(win);
 	}
 	if (svc.debug_mode()) { map.debug(); }
+
+	svc.notifications.render(win);
 }
 
 void Dojo::acquire_item(ServiceProvider& svc, player::Player& player, int modifier) {
@@ -329,12 +336,14 @@ void Dojo::remove_gun(ServiceProvider& svc, player::Player& player, int modifier
 	auto tag = svc.data.get_gun_tag_from_id(modifier);
 	if (!tag) { return; }
 	NANI_LOG_DEBUG(m_logger, "Gun Tag: {}", tag->data());
-	player.pop_from_loadout(tag.value());
+	auto label = player.arsenal.value().get_weapon_at(tag.value()).get_label();
+	svc.notifications.push_notification(svc, "Removed " + std::string{label} + ".");
 	if (!m_console) {
 		m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "removed", gui::OutputType::no_skip);
 		m_console.value()->append(player.arsenal.value().get_weapon_at(tag.value()).get_label());
 		m_console.value()->append(".");
 	}
+	player.pop_from_loadout(tag.value());
 	svc.soundboard.flags.item.set(audio::Item::unequip);
 	m_console.value()->display_gun(modifier);
 	gun_removal = false;

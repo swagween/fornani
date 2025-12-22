@@ -175,7 +175,7 @@
   },
   "meta": {
     "ambience": "firstwind",
-    "background": 5,
+    "background": "overcast",
     "biome": "junkyard",
     "border_color": [0, 0, 0],
     "camera_effects": {

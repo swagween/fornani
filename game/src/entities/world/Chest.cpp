@@ -29,20 +29,9 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 		Animatable::set_parameters(m_animations.opened);
 	}
 
-	// get_collider().update(svc);
-	/*get_collider().handle_map_collision(map);*/
 	if (get_collider().collided() && std::abs(get_collider().physics.apparent_velocity().y) > 0.05f) { svc.soundboard.flags.world.set(audio::World::clink); }
 	map.handle_cell_collision(get_collider());
-	// map.handle_breakable_collision(get_collider());
-	// for (auto& pushable : map.pushables) { get_collider().handle_collision(pushable->get_collider().bounding_box); }
-	for (auto& platform : map.platforms) { get_collider().handle_collision(platform.bounding_box); }
-	for (auto& destructible : map.destructibles) {
-		if (!destructible.ignore_updates()) { get_collider().handle_collision(destructible.get_bounding_box()); }
-	}
 	for (auto& button : map.switch_buttons) { get_collider().handle_collision(button->collider.bounding_box); }
-	// for (auto& block : map.switch_blocks) {
-	// if (block->on()) { get_collider().handle_collision(block->get_bounding_box()); }
-	//}
 	get_collider().physics.acceleration = {};
 	state.reset(ChestState::activated);
 

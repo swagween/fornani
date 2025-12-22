@@ -3,8 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <fornani/core/Common.hpp>
-#include <fornani/utils/BitFlags.hpp>
 #include <fornani/physics/Shape.hpp>
+#include <fornani/utils/BitFlags.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -23,7 +23,7 @@ namespace fornani::world {
 class Map;
 
 enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire, home, incinerite };
-enum class TileState { ramp_adjacent, big_ramp, covered };
+enum class TileState { ramp_adjacent, big_ramp, covered, border };
 
 constexpr static int special_index_v{448};
 
@@ -56,7 +56,7 @@ struct Tile {
 		if ((val >= special_index_v + 32 && val <= special_index_v + 35) || (val >= special_index_v + 48 && val <= special_index_v + 51)) { ret = 3; }
 		return ret;
 	}
-	Tile(sf::Vector2<std::uint32_t> i, sf::Vector2f p, std::uint32_t val, std::uint32_t odi, float spacing, std::uint8_t chunk_id);
+	Tile(sf::Vector2<std::uint32_t> i, sf::Vector2f p, std::uint32_t val, std::uint32_t odi, float spacing, std::uint8_t chunk_id, sf::Vector2<std::uint32_t> dim);
 
 	void on_hit(automa::ServiceProvider& svc, player::Player& player, world::Map& map, arms::Projectile& proj);
 	void render(sf::RenderWindow& win, sf::RectangleShape& draw, sf::Vector2f cam);
@@ -91,6 +91,7 @@ struct Tile {
 	}
 	[[nodiscard]] auto is_positive_ramp() const -> bool { return is_ground_ramp() && !is_negative_ramp(); }
 	[[nodiscard]] auto is_minimap_drawable() const -> bool { return is_checkpoint() || is_home() || is_fire() || is_target() || is_breakable(); }
+	[[nodiscard]] auto is_border() const -> bool { return flags.test(TileState::border); }
 
 	[[nodiscard]] auto scaled_position() const -> sf::Vector2i { return sf::Vector2i{bounding_box.get_position()}; }
 	[[nodiscard]] auto f_scaled_position() const -> sf::Vector2f { return bounding_box.get_position() / m_spacing; }

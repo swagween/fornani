@@ -147,7 +147,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 0,
+    "background": "dusk",
     "biome": "firstwind",
     "border_color": [
       0,

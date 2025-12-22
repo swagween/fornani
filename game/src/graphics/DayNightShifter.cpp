@@ -35,4 +35,4 @@ void DayNightShifter::render(automa::ServiceProvider& svc, sf::RenderWindow& win
 	sprite.setColor(sf::Color::White);
 }
 
-} // namespace graphics
+} // namespace fornani::graphics

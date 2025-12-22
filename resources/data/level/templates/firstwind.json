@@ -1,7 +1,7 @@
 {
   "ambience": "firstwind",
   "atmosphere": [],
-  "background": 1,
+  "background": "night",
   "minimap": true,
   "music": "dusken",
   "player_start": [0, 0],

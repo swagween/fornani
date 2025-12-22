@@ -124,7 +124,7 @@
     "atmosphere": [
       1
     ],
-    "background": 3,
+    "background": "woods",
     "biome": "overturned",
     "camera_effects": {
       "shake": {

@@ -121,9 +121,9 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 void Pushable::post_update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 
 	for (auto& platform : map.platforms) {
-		if (platform.bounding_box.overlaps(get_collider().jumpbox)) { get_collider().handle_collider_collision(platform.bounding_box); }
-		if (get_collider().jumpbox.overlaps(platform.bounding_box) && !get_collider().perma_grounded() && platform.is_sticky()) {
-			get_collider().physics.forced_momentum = platform.physics.apparent_velocity();
+		if (platform->get_collider().bounding_box.overlaps(get_collider().jumpbox)) { get_collider().handle_collider_collision(platform->get_collider().bounding_box); }
+		if (get_collider().jumpbox.overlaps(platform->get_collider().bounding_box) && !get_collider().perma_grounded() && platform->is_sticky()) {
+			get_collider().physics.forced_momentum = platform->get_collider().physics.apparent_velocity();
 			if (player.get_collider().jumpbox.overlaps(collision_box) && !player.get_collider().perma_grounded() && !(player.get_collider().has_left_wallslide_collision() || player.get_collider().has_right_wallslide_collision())) {
 				player.get_collider().physics.forced_momentum = get_collider().physics.forced_momentum;
 			}

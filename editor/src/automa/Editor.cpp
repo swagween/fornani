@@ -35,8 +35,8 @@ static void new_file(int id) {
 }
 
 Editor::Editor(fornani::automa::ServiceProvider& svc)
-	: EditorState(svc), map(svc.finder, SelectionType::canvas), palette(svc.finder, SelectionType::palette), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()), grid_refresh(16), active_layer{0},
-	  m_tool_sprite{svc.assets.get_texture("editor_tools")}, m_services(&svc) {
+	: EditorState(svc), map(svc, SelectionType::canvas, fornani::Biome{}), palette(svc, SelectionType::palette, fornani::Biome{}), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()), grid_refresh(16),
+	  active_layer{0}, m_tool_sprite{svc.assets.get_texture("editor_tools")}, m_services(&svc) {
 
 	p_target_state = EditorStateType::editor;
 
@@ -46,17 +46,6 @@ Editor::Editor(fornani::automa::ServiceProvider& svc)
 	svc.events.register_event(std::make_unique<fornani::Event<int>>("NewFile", &new_file));
 
 	svc.set_editor(true);
-
-	for (int i = 0; i < static_cast<int>(StyleType::END); ++i) {
-		m_themes.styles.push_back(Style{static_cast<StyleType>(i)});
-		m_labels.style_str[i] = m_themes.styles.back().get_label();
-		m_labels.styles[i] = m_labels.style_str[i].c_str();
-	}
-	for (int i = 0; i < static_cast<int>(Backdrop::END); ++i) {
-		m_themes.backdrops.push_back(BackgroundType{static_cast<Backdrop>(i)});
-		m_labels.bg_str[i] = m_themes.backdrops.back().get_label();
-		m_labels.backdrops[i] = m_labels.bg_str[i].c_str();
-	}
 
 	console.add_log("Welcome to Pioneer!");
 	std::string msg = "Loading room: <" + p_services->finder.region_and_room().string() + ">";
@@ -74,10 +63,9 @@ Editor::Editor(fornani::automa::ServiceProvider& svc)
 	center_map();
 
 	// load the tilesets!
-	for (int i = 0; i < static_cast<int>(StyleType::END); ++i) {
+	for (auto const& biome : svc.data.biomes.as_array()) {
 		tileset_textures.push_back(sf::Texture());
-		std::string style = Style{static_cast<StyleType>(i)}.get_label();
-		std::string filename = style + "_tiles.png";
+		std::string filename = biome.as_string() + "_tiles.png";
 		if (!tileset_textures.back().loadFromFile((p_services->finder.paths.resources / "image" / "tile" / filename).string())) { console.add_log(std::string{"Failed to load " + filename}.c_str()); }
 	}
 
@@ -490,11 +478,10 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		ImGui::SameLine();
 		if (ImGui::Button("Create")) {
 
-			static int style_current = static_cast<int>(map.tile_style.get_type());
-			static int bg_current = static_cast<int>(map.background->type.get_type());
+			static std::string style_current = std::string{map.biome.get_label()};
+			static std::string bg_current = map.background->get_label();
 
-			map = Canvas(p_services->finder, {static_cast<std::uint32_t>(width * chunk_size_v), static_cast<std::uint32_t>(height * chunk_size_v)}, SelectionType::canvas, static_cast<StyleType>(style_current),
-						 static_cast<Backdrop>(bg_current));
+			map = Canvas(*p_services, {static_cast<std::uint32_t>(width * chunk_size_v), static_cast<std::uint32_t>(height * chunk_size_v)}, SelectionType::canvas, m_services->data.construct_biome(style_current), bg_current);
 			map.metagrid_coordinates = {metagrid_x, metagrid_y};
 			p_services->finder.paths.region = regbuffer;
 			p_services->finder.paths.room_name = std::string{roombuffer} + ".json";
@@ -630,11 +617,10 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::SameLine();
 			if (ImGui::Button("Create")) {
 
-				static int style_current = static_cast<int>(map.tile_style.get_type());
-				static int bg_current = static_cast<int>(map.background->type.get_type());
+				static std::string style_current = std::string{map.biome.get_label()};
+				static std::string bg_current = map.background->get_label();
 
-				map = Canvas(p_services->finder, {static_cast<std::uint32_t>(width * chunk_size_v), static_cast<std::uint32_t>(height * chunk_size_v)}, SelectionType::canvas, static_cast<StyleType>(style_current),
-							 static_cast<Backdrop>(bg_current));
+				map = Canvas(*p_services, {static_cast<std::uint32_t>(width * chunk_size_v), static_cast<std::uint32_t>(height * chunk_size_v)}, SelectionType::canvas, m_services->data.construct_biome(style_current), bg_current);
 				map.metagrid_coordinates = {metagrid_x, metagrid_y};
 				p_services->finder.paths.region = regbuffer;
 				p_services->finder.paths.room_name = std::string{roombuffer} + ".json";
@@ -706,16 +692,15 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::Separator();
 			if (ImGui::BeginMenu("Style")) {
 				auto i{0};
-				for (auto& choice : m_labels.styles) {
-					if (ImGui::MenuItem(choice)) { map.tile_style = Style{static_cast<StyleType>(i)}; }
-					++i;
+				for (auto const& choice : m_services->data.biomes.as_array()) {
+					if (ImGui::MenuItem(std::string{choice.as_string()}.c_str())) { map.biome = m_services->data.construct_biome(choice.as_string()); }
 				}
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Background")) {
 				auto i{0};
-				for (auto& choice : m_labels.backdrops) {
-					if (ImGui::MenuItem(choice)) { map.background = std::make_unique<Background>(p_services->finder, static_cast<Backdrop>(i)); }
+				for (auto const& [key, entry] : m_services->data.background.as_object()) {
+					if (ImGui::MenuItem(key.c_str())) { map.background = std::make_unique<fornani::graphics::Background>(*m_services, key); }
 					++i;
 				}
 				ImGui::EndMenu();
@@ -988,7 +973,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 						ImGui::Text("Tile Value at Mouse Pos: <invalid>");
 					}
 					ImGui::Separator();
-					ImGui::Text("Current Style: %s", map.tile_style.get_label().c_str());
+					ImGui::Text("Current Style: %s", map.biome.get_label());
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Tool")) {
@@ -1246,7 +1231,7 @@ void Editor::export_layer_texture() {
 			if (cell.value > 0) {
 				auto x_coord = (cell.value % 16) * 32;
 				auto y_coord = std::floor(cell.value / 16) * 32;
-				auto tile_sprite = sf::Sprite{tileset_textures.at(static_cast<int>(map.tile_style.get_type()))};
+				auto tile_sprite = sf::Sprite{tileset_textures.at(map.biome.get_id())};
 				tile_sprite.setTextureRect(sf::IntRect({static_cast<int>(x_coord), static_cast<int>(y_coord)}, {32, 32}));
 				tile_sprite.setPosition(cell.scaled_position());
 				screencap.draw(tile_sprite);

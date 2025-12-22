@@ -16,8 +16,8 @@ constexpr auto light_offset_v = 12.f;
 constexpr auto default_invincibility_time_v = 300;
 
 Player::Player(automa::ServiceProvider& svc)
-	: Animatable(svc, "nani", {24, 24}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, m_directions{.desired{LR::left}, .actual{LR::right}}, health_indicator{svc},
-	  orb_indicator{svc, graphics::IndicatorType::orb}, m_sprite_shake{40}, m_hurt_cooldown{64}, health{3.f} {
+	: Animatable(svc, "nani", {24, 24}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, m_directions{.desired{LR::right}, .actual{LR::right}},
+	  health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, m_sprite_shake{40}, m_hurt_cooldown{64}, health{3.f} {
 
 	center();
 	svc.data.load_player_params(*this);
@@ -48,6 +48,8 @@ void Player::register_with_map(world::Map& map) {
 	get_collider().set_exclusion_target(shape::ColliderTrait::circle);
 	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
 	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
+	get_collider().set_resolution_exclusion_target(shape::ColliderTrait::platform);
+	get_collider().set_resolution_exclusion_target(shape::ColliderTrait::enemy);
 
 	m_lighting.physics.velocity = random::random_vector_float(-1.f, 1.f);
 	m_lighting.physics.set_global_friction(0.95f);
@@ -531,7 +533,6 @@ void Player::update_antennae() {
 			a.demagnetize(*m_services);
 		}
 		a.update(*m_services);
-		a.collider.sync_components();
 	}
 }
 
@@ -541,7 +542,6 @@ void Player::sync_antennae() {
 		auto& socket = i == 0 ? m_antenna_sockets.first : m_antenna_sockets.second;
 		a.set_position(position + socket);
 		a.update(*m_services);
-		a.collider.sync_components();
 		if (controller.facing_right()) {
 			socket.x = i == 0 ? 18.0f : 7.f;
 		} else {
@@ -650,7 +650,7 @@ void Player::give_item(std::string_view label, int amount, bool from_save) {
 	}
 }
 
-bool Player::equip_item(int id) { return catalog.inventory.equip_item(id); }
+EquipmentStatus Player::equip_item(int id) { return catalog.inventory.equip_item(id); }
 
 void Player::reset_flags() { flags = {}; }
 

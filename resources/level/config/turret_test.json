@@ -78,7 +78,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 3,
+    "background": "woods",
     "biome": "firstwind",
     "border_color": [
       0,

@@ -19,6 +19,7 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc
 	loading.start(4);
 	refresh(svc);
 	player.force_animation(player::AnimState::run, "run");
+	player.set_direction(Direction{UND::neutral, LNR::left});
 }
 
 void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {

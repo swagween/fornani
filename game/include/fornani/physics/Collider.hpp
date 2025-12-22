@@ -111,6 +111,7 @@ class Collider : public ICollider {
 	[[nodiscard]] auto external_world_grounded() const -> bool { return flags.external_state.test(ExternalState::world_grounded); }
 	[[nodiscard]] auto jumped_into() -> bool { return flags.external_state.consume(ExternalState::jumped_into); }
 	[[nodiscard]] auto perma_grounded() const -> bool { return flags.perma_state.test(PermaFlags::world_grounded); }
+	[[nodiscard]] auto dash_was_canceled() const -> bool { return flags.dash.test(Dash::dash_cancel_collision); }
 	[[nodiscard]] auto crushed() const -> bool { return collision_depths ? collision_depths.value().crushed() : false; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return physics.position + dimensions * 0.5f; }
 	[[nodiscard]] auto get_top() const -> sf::Vector2f { return sf::Vector2f{physics.position.x + dimensions.x * 0.5f, physics.position.y}; }

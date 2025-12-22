@@ -15,8 +15,8 @@ Incinerite::Incinerite(automa::ServiceProvider& svc, Map& map, sf::Vector2f posi
 	set_parameters({0, 3, 24, -1});
 	push_animation("default", {0, 1, 24, -1});
 	push_animation("shine", {1, 6, 24, 0});
-	m_collider.get()->set_attribute(shape::ColliderAttributes::fixed);
 	m_collider.get()->set_trait(shape::ColliderTrait::block);
+	m_collider.get()->set_attribute(shape::ColliderAttributes::fixed);
 }
 
 void Incinerite::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {

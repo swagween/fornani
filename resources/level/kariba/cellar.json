@@ -73,7 +73,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 3,
+    "background": "woods",
     "biome": "kariba",
     "camera_effects": {
       "shake": {

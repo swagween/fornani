@@ -85,7 +85,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 19,
+    "background": "pale_garden",
     "biome": "kariba",
     "border_color": [
       0,

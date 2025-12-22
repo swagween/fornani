@@ -476,7 +476,7 @@
   },
   "meta": {
     "ambience": "overturned",
-    "background": 3,
+    "background": "woods",
     "biome": "overturned",
     "border_color": [
       0,

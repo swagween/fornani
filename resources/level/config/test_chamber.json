@@ -50,7 +50,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 4,
+    "background": "canopy",
     "biome": "pioneer",
     "border_color": [
       0,

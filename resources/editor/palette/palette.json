@@ -10,7 +10,7 @@
 			32
 		],
 		"style": 0,
-		"background": 0,
+		"background": "dusk",
 		"music": "",
 		"cutscene_on_entry": {
 			"flag": false,

@@ -67,7 +67,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 0,
+    "background": "dusk",
     "biome": "greatwing",
     "camera_effects": {
       "shake": {

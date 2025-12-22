@@ -26,19 +26,12 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 	offsets.render.barrel = {in_data["visual"]["offsets"]["barrel"][0].as<float>(), in_data["visual"]["offsets"]["barrel"][1].as<float>()};
 	visual.color = static_cast<UIColor>(in_data["visual"]["ui"]["color"].as<int>());
 	emitter.dimensions = {in_data["visual"]["spray"]["dimensions"][0].as<float>(), in_data["visual"]["spray"]["dimensions"][1].as<float>()};
-	try {
-		emitter.color = svc.styles.spray_colors.at(metadata.label);
-	} catch (std::out_of_range) { emitter.color = colors::white; }
-
 	emitter.type = in_data["visual"]["spray"]["type"].as_string().data(); // secondary emitter
 
 	if (in_data["visual"]["secondary_spray"]) {
 		secondary_emitter = EmitterAttributes();
 		secondary_emitter.value().dimensions.x = in_data["visual"]["secondary_spray"]["dimensions"][0].as<float>();
 		secondary_emitter.value().dimensions.y = in_data["visual"]["secondary_spray"]["dimensions"][1].as<float>();
-		try {
-			secondary_emitter.value().color = svc.styles.spray_colors.at(metadata.label);
-		} catch (std::out_of_range) { secondary_emitter.value().color = colors::white; }
 		secondary_emitter.value().type = in_data["visual"]["secondary_spray"]["type"].as_string();
 	}
 	set_origin(offsets.render.global);

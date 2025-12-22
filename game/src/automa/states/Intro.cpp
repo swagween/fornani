@@ -12,7 +12,6 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 	float ppx = svc.data.get_save()["player_data"]["position"]["x"].as<float>();
 	float ppy = svc.data.get_save()["player_data"]["position"]["y"].as<float>();
 	sf::Vector2f player_pos = {ppx, ppy};
-	player.set_position({300, 260});
 	m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "intro", gui::OutputType::gradual);
 }
 

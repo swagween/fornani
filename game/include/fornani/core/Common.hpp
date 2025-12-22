@@ -57,4 +57,9 @@ constexpr auto gem_chance_v = 0.08f;
 constexpr auto heart_chance_v = 8.f;
 constexpr auto enemy_limit_v = 64;
 
+enum class TimeOfDay { day, twilight, night, END };
+enum class ClockMode { standard, military };
+
+[[nodiscard]] constexpr static auto num_cycles() -> int { return static_cast<int>(TimeOfDay::END); }
+
 } // namespace fornani

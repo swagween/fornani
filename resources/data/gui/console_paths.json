@@ -52,5 +52,32 @@
 				}
 			]
 		}
+	],
+	"notification": [
+		{
+			"label": "in",
+			"path": [
+				{
+					"position": [ 12, -64 ]
+				},
+				{
+					"position": [ 12, 16 ]
+				},
+				{
+					"position": [ 12, 12 ]
+				}
+			]
+		},
+		{
+			"label": "out",
+			"path": [
+				{
+					"position": [ 12, 12 ]
+				},
+				{
+					"position": [ -240, 12 ]
+				}
+			]
+		}
 	]
 }

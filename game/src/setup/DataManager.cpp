@@ -156,8 +156,10 @@ void DataManager::load_data(std::string in_room) {
 	assert(!platform.is_null());
 	cutscene = *dj::Json::from_file((finder.resource_path() + "/data/story/cutscenes.json").c_str());
 	assert(!cutscene.is_null());
-	map_styles = *dj::Json::from_file((finder.resource_path() + "/data/level/map_styles.json").c_str());
-	assert(!map_styles.is_null());
+	biomes = *dj::Json::from_file((finder.resource_path() + "/data/level/biomes.json").c_str());
+	assert(!biomes.is_null());
+	for (auto const& b : biomes.as_array()) { m_biomes.push_back(b.as_string()); }
+
 	action_names = *dj::Json::from_file((finder.resource_path() + "/data/gui/action_names.json").c_str());
 	assert(!action_names.is_null());
 	light = *dj::Json::from_file((finder.resource_path() + "/data/vfx/light.json").c_str());

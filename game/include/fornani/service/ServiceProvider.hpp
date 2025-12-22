@@ -1,33 +1,32 @@
 
 #pragma once
 
+#include <fornani/audio/Ambience.hpp>
+#include <fornani/audio/MusicPlayer.hpp>
+#include <fornani/audio/Soundboard.hpp>
+#include <fornani/automa/MenuController.hpp>
+#include <fornani/automa/StateController.hpp>
+#include <fornani/core/AssetManager.hpp>
+#include <fornani/core/SoundManager.hpp>
+#include <fornani/graphics/CameraController.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/setup/AccessibilityService.hpp>
+#include <fornani/setup/ControllerMap.hpp>
+#include <fornani/setup/DataManager.hpp>
+#include <fornani/setup/TextManager.hpp>
+#include <fornani/setup/Version.hpp>
+#include <fornani/setup/WindowManager.hpp>
 #include <fornani/story/Quest.hpp>
-#include "fornani/audio/Ambience.hpp"
-#include "fornani/audio/MusicPlayer.hpp"
-#include "fornani/audio/Soundboard.hpp"
-#include "fornani/automa/MenuController.hpp"
-#include "fornani/automa/StateController.hpp"
-#include "fornani/core/AssetManager.hpp"
-#include "fornani/core/SoundManager.hpp"
-#include "fornani/graphics/CameraController.hpp"
-#include "fornani/graphics/Style.hpp"
-#include "fornani/io/Logger.hpp"
-#include "fornani/setup/AccessibilityService.hpp"
-#include "fornani/setup/ControllerMap.hpp"
-#include "fornani/setup/DataManager.hpp"
-#include "fornani/setup/TextManager.hpp"
-#include "fornani/setup/Version.hpp"
-#include "fornani/setup/WindowManager.hpp"
-#include "fornani/story/QuestTracker.hpp"
-#include "fornani/story/StatTracker.hpp"
-#include "fornani/systems/EventDispatcher.hpp"
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Constants.hpp"
-#include "fornani/utils/Stopwatch.hpp"
-#include "fornani/utils/Ticker.hpp"
-#include "fornani/utils/WorldClock.hpp"
-#include "fornani/utils/WorldTimer.hpp"
-
+#include <fornani/story/QuestTracker.hpp>
+#include <fornani/story/StatTracker.hpp>
+#include <fornani/systems/EventDispatcher.hpp>
+#include <fornani/systems/NotificationManager.hpp>
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Constants.hpp>
+#include <fornani/utils/Stopwatch.hpp>
+#include <fornani/utils/Ticker.hpp>
+#include <fornani/utils/WorldClock.hpp>
+#include <fornani/utils/WorldTimer.hpp>
 #include <ranges>
 
 namespace fornani::automa {
@@ -38,6 +37,7 @@ enum class StateFlags { hide_hud, no_menu, cutscene };
 struct MapDebug {
 	int active_projectiles{};
 };
+
 struct EditorSettings {
 	int save_file{};
 };
@@ -46,29 +46,29 @@ struct ServiceProvider {
 	ServiceProvider(char** argv, Version& version, WindowManager& window, capo::IEngine& audio_engine)
 		: finder(argv), text{finder}, data(*this), version(&version), window(&window), assets{finder}, sounds{finder}, music_player{audio_engine}, ambience_player{audio_engine}, quest_registry{finder}, quest_table{quest_registry} {};
 
-	util::Stopwatch stopwatch{}; // TODO: Remove. Make Free-Standing.
+	util::Stopwatch stopwatch{};
 	ResourceFinder finder;
 	data::TextManager text;
 	data::DataManager data;
-	Version* version;	   // TODO: Remove. Make Free-Standing.
-	WindowManager* window; // TODO: Move this into the Application class and make it into a MonoInstance
+	Version* version;
+	WindowManager* window;
 	core::SoundManager sounds;
 	core::AssetManager assets;
 	config::ControllerMap controller_map{*this};
 	EventDispatcher events;
-	style::Style styles{};
 	util::BitFlags<DebugFlags> debug_flags{};
 	util::BitFlags<AppFlags> app_flags{};
 	util::BitFlags<StateFlags> state_flags{};
-	util::Ticker ticker{}; // TODO: Remove. Make Free-Standing. This one is gonna be hard to remove as the underlying logic needs to change for many functions.
+	util::Ticker ticker{};
 	WorldClock world_clock{};
 	WorldTimer world_timer{*this};
 	StateController state_controller{};
 	MenuController menu_controller{};
-	audio::Soundboard soundboard{*this}; // TODO: Remove. Make Free-Standing. Maybe?
+	audio::Soundboard soundboard{*this};
 	audio::MusicPlayer music_player;
 	audio::Ambience ambience_player;
 	quest::QuestTracker quest{};
+	NotificationManager notifications{};
 	QuestRegistry quest_registry;
 	QuestTable quest_table;
 	StatTracker stats{};
@@ -77,12 +77,11 @@ struct ServiceProvider {
 	config::AccessibilityService a11y{};
 	graphics::CameraController camera_controller{};
 	EditorSettings editor_settings{};
-	int current_room{}; // TODO: Find a better way to deliver this info to the MiniMap.
+	int current_room{};
 
 	// debug stuff
 	int out_value{};
 
-	// TODO: Much of this honestly should be handled by different areas of the project instead of by the ServiceProvider.
 	void toggle_fullscreen() { fullscreen() ? app_flags.reset(AppFlags::fullscreen) : app_flags.set(AppFlags::fullscreen); }
 	void toggle_tutorial() { tutorial() ? app_flags.reset(AppFlags::tutorial) : app_flags.set(AppFlags::tutorial); }
 	void toggle_debug() { debug_mode() ? debug_flags.reset(DebugFlags::debug_mode) : debug_flags.set(DebugFlags::debug_mode); }

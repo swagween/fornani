@@ -8,10 +8,9 @@
 
 namespace pi {
 
-Canvas::Canvas(fornani::ResourceFinder& finder, SelectionType type, StyleType style, Backdrop backdrop, int num_layers) : Canvas(finder, {}, type, style, backdrop, num_layers) {}
+Canvas::Canvas(fornani::automa::ServiceProvider& svc, SelectionType type, fornani::Biome biome, std::string_view backdrop, int num_layers) : Canvas(svc, {}, type, biome, backdrop, num_layers) {}
 
-Canvas::Canvas(fornani::ResourceFinder& finder, sf::Vector2<std::uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers)
-	: type(type), tile_style{style}, background{std::make_unique<Background>(finder, backdrop)} {
+Canvas::Canvas(fornani::automa::ServiceProvider& svc, sf::Vector2<std::uint32_t> dim, SelectionType type, fornani::Biome biome, std::string_view backdrop, int num_layers) : m_services{&svc}, type(type), biome{biome}, background{} {
 	type == SelectionType::canvas ? properties.set(CanvasProperties::editable) : properties.reset(CanvasProperties::editable);
 	dimensions = dim;
 	real_dimensions = {static_cast<float>(dim.x) * f_cell_size(), static_cast<float>(dim.y) * f_cell_size()};
@@ -42,14 +41,13 @@ void Canvas::update(Tool& tool) {
 	} else {
 		within_bounds(tool.get_window_position()) ? state.set(CanvasState::hovered) : state.reset(CanvasState::hovered);
 	}
-	background->update();
 
 	// update grid
 	for (auto& layer : get_layers().layers) { layer.set_position({}, f_native_cell_size()); }
 }
 
 void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
-	if (flags.show_background) { background->render(*this, win, position); }
+	if (flags.show_background) { background->render(*m_services, win, position); }
 	border.setPosition(get_position());
 	hovered() ? border.setOutlineColor({240, 230, 255, 80}) : border.setOutlineColor({240, 230, 255, 40});
 	border.setSize(get_real_dimensions());
@@ -146,7 +144,8 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 	m_player_start.x = meta["player_start"][0].as<float>();
 	m_player_start.y = meta["player_start"][1].as<float>();
 	real_dimensions = {static_cast<float>(dimensions.x) * fornani::constants::f_cell_size, static_cast<float>(dimensions.y) * fornani::constants::f_cell_size};
-	tile_style = Style(static_cast<StyleType>(m_attributes.style_id));
+	biome = svc.data.construct_biome(meta["biome"].as_string());
+
 	if (meta["camera_effects"]) {
 		m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
 		m_camera_effects.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
@@ -160,7 +159,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 		cutscene.id = meta["cutscene_on_entry"]["id"].as<int>();
 		cutscene.source = meta["cutscene_on_entry"]["source"].as<int>();
 	}
-	background = std::make_unique<Background>(finder, static_cast<Backdrop>(m_attributes.background_id));
+	background = std::make_unique<fornani::graphics::Background>(svc, meta["background"].as_string());
 
 	darken_factor = meta["shader"]["darken_factor"].as<float>();
 
@@ -204,7 +203,10 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 	metadata["meta"]["dimensions"][1] = dimensions.y;
 	metadata["meta"]["player_start"][0] = m_player_start.x;
 	metadata["meta"]["player_start"][1] = m_player_start.y;
-	metadata["meta"]["biome"] = tile_style.get_label();
+	metadata["meta"]["biome"] = biome.get_label();
+	if (background) {
+		metadata["meta"]["background"] = background->get_label();
+	}
 	metadata["meta"]["use_template"] = m_use_template;
 	metadata["meta"]["minimap"] = m_attributes.properties.test(fornani::world::MapProperties::minimap);
 	metadata["meta"]["camera_effects"]["shake"]["frequency"] = m_camera_effects.shake_properties.frequency;

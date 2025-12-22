@@ -33,8 +33,8 @@ class FloatingPart {
 	void apply_force(sf::Vector2f force) { gravitator->add_force(force); }
 	void set_team(arms::Team to) { m_team = to; }
 
-	[[nodiscard]] auto get_position() const -> sf::Vector2f { return gravitator->collider.bounding_box.get_position(); }
-	[[nodiscard]] auto get_center() const -> sf::Vector2f { return gravitator->collider.get_center(); }
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return gravitator->collider.get_global_center(); }
+	[[nodiscard]] auto get_center() const -> sf::Vector2f { return gravitator->collider.get_global_center(); }
 	[[nodiscard]] auto get_velocity() const -> sf::Vector2f { return gravitator->collider.physics.velocity; }
 	[[nodiscard]] auto get_id() const -> int { return m_id; }
 

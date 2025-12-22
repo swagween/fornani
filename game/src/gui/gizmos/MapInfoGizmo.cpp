@@ -21,7 +21,7 @@ MapInfoGizmo::MapInfoGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Ve
 	m_sprites.panel.setTextureRect(sf::IntRect{{0, 110}, {219, 41}});
 	m_text.biome.setFillColor(colors::pioneer_red);
 	m_text.biome.setCharacterSize(16);
-	m_text.biome.setString(map.get_biome_string());
+	m_text.biome.setString(std::string{map.get_biome_string()});
 	m_text.room.setFillColor(colors::pioneer_red);
 	m_text.room.setCharacterSize(16);
 	m_text.room.setString(map.get_room_string());

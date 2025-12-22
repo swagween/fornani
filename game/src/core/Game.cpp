@@ -35,7 +35,7 @@ Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& 
 	services.data.load_controls(services.controller_map);
 	services.data.load_settings();
 
-	m_background = std::make_unique<graphics::Background>(services, -1);
+	m_background = std::make_unique<graphics::Background>(services, "black");
 }
 
 void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2f player_position) {
@@ -260,7 +260,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Frames Per Second: %.2f", services.ticker.fps);
 					ImGui::Text("Average Frame Time: %.4fms", average_frame_time);
 					ImGui::Separator();
-					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.dt_scalar, 0.0f, 8.f, "%.3f")) { services.ticker.scale_dt(); };
+					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.dt_scalar, 0.0f, 2.f, "%.3f")) { services.ticker.scale_dt(); };
 					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }
 					ImGui::Separator();
 					ImGui::Text("World Time: %s", services.world_clock.get_string().c_str());
@@ -273,6 +273,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					if (ImGui::Button("Morning")) { services.world_clock.set_time(6, 59); }
 					if (ImGui::Button("Twilight")) { services.world_clock.set_time(17, 59); }
 					if (ImGui::Button("Night")) { services.world_clock.set_time(18, 59); }
+					ImGui::Text("World clock transitioning? %s", services.world_clock.is_transitioning() ? "yes" : "no");
 					ImGui::SliderInt("Clock Speed", &clock_speed, 4, 196);
 					services.world_clock.set_speed(clock_speed);
 					ImGui::Separator();
@@ -317,7 +318,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Tests")) {
-
+					if (ImGui::Button("Test Notification")) { services.notifications.push_notification(services, "This is a test notification."); }
 					ImGui::Text("Angle");
 					ImGui::Text("{-1.f, 1.f} ; down-left: %.2f", util::get_angle_from_direction({-1.f, 1.f}));
 					ImGui::Text("{1.f, -1.f} ; top-right: %.2f", util::get_angle_from_direction({1.f, -1.f}));

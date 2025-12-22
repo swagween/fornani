@@ -524,7 +524,7 @@
   },
   "meta": {
     "ambience": "none",
-    "background": 1,
+    "background": "night",
     "biome": "firstwind",
     "border_color": [
       0,
@@ -571,7 +571,6 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "style": 0,
     "use_template": false
   },
   "tile": {

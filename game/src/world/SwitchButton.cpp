@@ -60,7 +60,7 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 	if (type != SwitchType::permanent) { state = SwitchButtonState::unpressed; }
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable->get_bounding_box()); }
 	for (auto& platform : map.platforms) {
-		if (platform.bounding_box.overlaps(sensor)) { state = SwitchButtonState::pressed; }
+		if (platform->get_collider().bounding_box.overlaps(sensor)) { state = SwitchButtonState::pressed; }
 	}
 	for (auto& chest : map.chests) {
 		if (chest->get_collider().collides_with(sensor)) { state = SwitchButtonState::pressed; }

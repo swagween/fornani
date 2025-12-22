@@ -1,7 +1,7 @@
 {
   "ambience": "overturned",
   "atmosphere": [1],
-  "background": 3,
+  "background": "woods",
   "minimap": true,
   "music": "whispering_island",
   "player_start": [0, 0],

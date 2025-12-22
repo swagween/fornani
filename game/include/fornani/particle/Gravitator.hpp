@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "fornani/physics/Collider.hpp"
-#include "fornani/components/SteeringBehavior.hpp"
+#include <fornani/components/SteeringBehavior.hpp>
+#include <fornani/physics/CircleCollider.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -13,22 +13,18 @@ namespace fornani::vfx {
 class Gravitator {
 
   public:
-	using Vec = sf::Vector2f;
-	using Vecu16 = sf::Vector2<std::uint32_t>;
-
 	Gravitator() = default;
-	Gravitator(Vec pos, sf::Color col, float agf, Vec size = {4.f, 4.f});
+	Gravitator(sf::Vector2f pos, sf::Color col, float agf, sf::Vector2f size = {4.f, 4.f});
 	void update(automa::ServiceProvider& svc);
 	void add_force(sf::Vector2f force);
-	void set_position(Vec new_position);
-	void set_target_position(Vec new_position);
+	void set_position(sf::Vector2f new_position);
+	void set_target_position(sf::Vector2f new_position);
 	void demagnetize(automa::ServiceProvider& svc);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, Vec campos, int history = 0);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos, int history = 0);
 	[[nodiscard]] auto position() const -> sf::Vector2f { return collider.physics.position; }
 
-	shape::Collider collider{};
-	Vecu16 scaled_position{};
-	Vec dimensions{};
+	shape::CircleCollider collider{4.f};
+	sf::Vector2f dimensions{};
 
 	sf::Color color{};
 	sf::RectangleShape box{};
@@ -38,4 +34,4 @@ class Gravitator {
 	components::SteeringBehavior steering{};
 };
 
-} // namespace vfx
+} // namespace fornani::vfx

@@ -95,15 +95,7 @@ class Editor final : public EditorState {
 	float zoom_factor{0.05f};
 	fornani::util::Cooldown grid_refresh{};
 	struct {
-		std::vector<Style> styles{};
-		std::vector<BackgroundType> backdrops{};
-	} m_themes{};
-	struct {
-		std::string style_str[static_cast<std::size_t>(StyleType::END)];
-		std::string bg_str[static_cast<std::size_t>(StyleType::END)];
 		std::string layer_str[max_layers_v];
-		char const* styles[static_cast<std::size_t>(StyleType::END)];
-		char const* backdrops[static_cast<std::size_t>(Backdrop::END)];
 		char const* layers[max_layers_v];
 	} m_labels{};
 	struct {

@@ -35,7 +35,7 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 
 	for (auto& b : map.breakables) { handle_collision(b->get_bounding_box(), size); }
 	for (auto& p : map.pushables) { handle_collision(p->collision_box, size); }
-	for (auto& p : map.platforms) { handle_collision(p.bounding_box, size); }
+	for (auto& p : map.platforms) { handle_collision(p->get_collider().bounding_box, size); }
 	for (auto& b : map.switch_blocks) {
 		if (b->on()) { handle_collision(b->get_bounding_box(), size); }
 	}

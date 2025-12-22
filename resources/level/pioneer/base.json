@@ -249,7 +249,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 3,
+    "background": "woods",
     "biome": "pioneer",
     "border_color": [
       0,

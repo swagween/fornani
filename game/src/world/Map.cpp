@@ -38,7 +38,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	svc.ambience_player.load(svc.finder, m_attributes.ambience);
 	svc.ambience_player.play();
 	for (auto const& atmo : m_attributes.atmosphere) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, atmo)); }
-	background = std::make_unique<graphics::Background>(svc, m_attributes.background_id);
+	background = std::make_unique<graphics::Background>(svc, meta["background"].as_string());
 
 	svc.current_room = room_number;
 	if (meta["cutscene_on_entry"]["flag"].as_bool()) {
@@ -70,45 +70,6 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
 	if (meta["weather"]["leaves"]) { rain = vfx::Rain(meta["weather"]["leaves"]["intensity"].as<int>(), meta["weather"]["leaves"]["fall_speed"].as<float>(), meta["weather"]["leaves"]["slant"].as<float>(), true, true); }
 
-	styles.breakables = meta["styles"]["breakables"].as<int>();
-	styles.pushables = meta["styles"]["pushables"].as<int>();
-
-	/*for (auto const& entry : entities["npcs"].as_array()) {
-		sf::Vector2f pos{};
-		pos.x = entry["position"][0].as<float>();
-		pos.y = entry["position"][1].as<float>();
-		auto npc_label = entry["label"].as_string();
-		auto npc_id = svc.data.npc[npc_label]["id"].as<int>();
-		NANI_LOG_DEBUG(m_logger, "NPC Label: {}", npc_label);
-		NANI_LOG_DEBUG(m_logger, "NPC ID: {}", npc_id);
-		auto push = true;
-		auto fail_tag = std::string{};
-		if (entry["contingencies"].is_array()) {
-			for (auto const& contingency : entry["contingencies"].as_array()) {
-				auto cont = QuestContingency{contingency};
-				if (!svc.quest_table.are_contingencies_met({cont})) {
-					push = false;
-					fail_tag = contingency["tag"].as_string();
-				}
-			}
-		}
-		if (push) {
-			npcs.push_back(std::make_unique<npc::NPC>(svc, npc_label));
-			auto npc_state = svc.quest_table.get_quest_progression("npc_dialogue", {npc_label, room_id});
-			NANI_LOG_DEBUG(m_logger, "NPC State: {}", npc_state);
-			for (auto const& convo : entry["suites"][npc_state].as_array()) {
-				npcs.back()->push_conversation(convo.as<int>());
-				NANI_LOG_DEBUG(m_logger, "Pushed conversation {}", convo.as<int>());
-			}
-			npcs.back()->set_position_from_scaled(pos);
-			if (entry["background"].as_bool()) { npcs.back()->push_to_background(); }
-			if (entry["hidden"].as_bool()) { npcs.back()->hide(); }
-			npcs.back()->set_current_location(room_id);
-		} else {
-			NANI_LOG_DEBUG(m_logger, "NPC did not meet contingency for quest {}.", fail_tag);
-		}
-	}*/
-
 	for (auto& entry : entities["chests"].as_array()) {
 		sf::Vector2f pos{};
 		pos.x = entry["position"][0].as<float>();
@@ -128,7 +89,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
 		pos.y = entry["position"][1].as<float>() * constants::f_cell_size;
 		auto flipped = static_cast<bool>(entry["flipped"].as_bool());
-		beds.push_back(entity::Bed(svc, pos, m_attributes.style_id, flipped));
+		beds.push_back(entity::Bed(svc, pos, m_biome.get_id(), flipped));
 	}
 	for (auto& entry : entities["scenery"]["basic"].as_array()) {
 		sf::Vector2f pos{};
@@ -137,7 +98,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		auto var = entry["variant"].as<int>();
 		auto lyr = entry["layer"].as<int>();
 		auto parallax = entry["parallax"].as<float>();
-		scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, m_attributes.style_id, lyr, var, parallax));
+		scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, m_biome.get_id(), lyr, var, parallax));
 	}
 	for (auto [i, entry] : std::views::enumerate(entities["inspectables"].as_array())) {
 		auto push = true;
@@ -155,7 +116,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
 	}
 
-	for (auto& entry : entities["destructibles"].as_array()) { destructibles.push_back(Destructible(svc, entry, m_attributes.style_id)); }
+	for (auto& entry : entities["destructibles"].as_array()) { destructibles.push_back(std::make_unique<Destructible>(svc, *this, entry, m_biome.get_id())); }
 
 	for (auto& entry : entities["enemies"].as_array()) {
 		int id{};
@@ -185,7 +146,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		auto start = entry["start"].as<float>();
 		start = ccm::ext::clamp(start, 0.f, 1.f);
 		auto type = entry["type"].as_string();
-		platforms.push_back(Platform(svc, pos, dim, entry["extent"].as<float>(), type, start, entry["style"].as<int>()));
+		platforms.push_back(std::make_unique<Platform>(svc, *this, pos, dim, entry["extent"].as<float>(), type, start, entry["style"].as<int>()));
 	}
 	for (auto& entry : entities["switch_blocks"].as_array()) {
 		sf::Vector2f pos{};
@@ -262,7 +223,7 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 	svc.world_timer.set_tag("nani");
 	svc.world_timer.set_course(room_number);
 
-	m_metadata.biome = it->biome_label;
+	m_biome = svc.data.construct_biome(it->biome_label);
 	m_metadata.room = it->room_label;
 
 	// check for enemy respawns
@@ -278,7 +239,7 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 	real_dimensions = {static_cast<float>(dimensions.x) * constants::f_cell_size, static_cast<float>(dimensions.y) * constants::f_cell_size};
 
 	if (m_attributes.properties.test(MapProperties::lighting)) {
-		m_palette = Palette{m_metadata.biome, svc.finder};
+		m_palette = Palette{get_biome_string(), svc.finder};
 		darken_factor = meta["shader"]["darken_factor"].as<float>();
 		NANI_LOG_DEBUG(m_logger, "Map darken factor: {}", darken_factor);
 		if (m_palette->get_size() == 0) {
@@ -294,7 +255,7 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 
 	m_chunks.resize(static_cast<std::size_t>((dimensions.x / constants::u32_chunk_size) * (dimensions.y / constants::u32_chunk_size)));
 
-	m_attributes.border_color = m_attributes.style_id == 2 ? colors::pioneer_black : colors::ui_black;
+	m_attributes.border_color = m_biome.get_id() == 2 ? colors::pioneer_black : colors::ui_black;
 	if (entities.is_object()) { m_entities = EntitySet(svc, *this, svc.finder, entities, m_metadata.room); }
 
 	generate_collidable_layer(live);
@@ -362,10 +323,10 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& proj : active_projectiles) {
 		if (proj.destruction_initiated()) { continue; }
 		proj.register_chunk(get_chunk_id_from_position(proj.get_position()));
-		for (auto& platform : platforms) { platform.on_hit(svc, *this, proj); }
+		for (auto& platform : platforms) { platform->on_hit(svc, *this, proj); }
 		for (auto& breakable : breakables) { breakable->on_hit(svc, *this, proj); }
 		for (auto& pushable : pushables) { pushable->on_hit(svc, *this, proj); }
-		for (auto& destroyer : destructibles) { destroyer.on_hit(svc, *this, proj); }
+		for (auto& destructible : destructibles) { destructible->on_hit(svc, *this, proj); }
 		for (auto& block : switch_blocks) { block->on_hit(svc, *this, proj); }
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
 		for (auto& incinerite : incinerite_blocks) { incinerite->on_hit(svc, *this, proj); }
@@ -376,6 +337,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 
 	for (auto& enemy : enemy_catalog.enemies) { enemy->update(svc, *this, *player); }
 	for (auto& emitter : active_emitters) { emitter->update(svc, *this); }
+	for (auto& platform : platforms) { platform->update(svc, *this, *player); }
 
 	num_collision_checks = 0;
 	for (auto& colliderPtr : m_colliders) {
@@ -397,6 +359,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 
 	for (auto& enemy : enemy_catalog.enemies) { enemy->post_update(svc, *this, *player); }
 	for (auto& pushable : pushables) { pushable->update(svc, *this, *player); }
+	for (auto& platform : platforms) { platform->post_update(svc, *this, *player); }
 
 	player->on_crush(*this);
 	for (auto& enemy : enemy_catalog.enemies) { enemy->on_crush(*this); }
@@ -419,11 +382,10 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& animator : animators) { animator.update(); }
 	for (auto& effect : effects) { effect.update(); }
 	for (auto& atm : atmosphere) { atm.update(svc, *this, *player); }
-	for (auto& platform : platforms) { platform.update(svc, *this, *player); }
 	for (auto& spawner : spawners) { spawner.update(svc, *this); }
 	for (auto& switch_block : switch_blocks) { switch_block->update(svc, *this, *player); }
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
-	for (auto& destroyer : destructibles) { destroyer.update(svc, *this, *player); }
+	for (auto& destructible : destructibles) { destructible->update(svc, *this, *player); }
 	for (auto& checkpoint : checkpoints) { checkpoint.update(svc, *this, *player); }
 	for (auto& bed : beds) { bed.update(svc, *this, console, *player, transition); }
 	for (auto& breakable : breakables) { breakable->update(svc, *this, *player); }
@@ -512,7 +474,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
 	for (auto& emitter : active_emitters) { emitter->render(svc, win, cam); }
-	for (auto& platform : platforms) { platform.render(svc, win, cam); }
+	for (auto& platform : platforms) { platform->render(svc, win, cam); }
 	for (auto& breakable : breakables) { breakable->render(svc, win, cam); }
 	for (auto& incinerite : incinerite_blocks) { incinerite->render(svc, win, cam); }
 	for (auto& pushable : pushables) { pushable->render(svc, win, cam); }
@@ -533,7 +495,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		}
 	}
 
-	for (auto& destroyer : destructibles) { destroyer.render(svc, win, cam); }
+	for (auto& destructible : destructibles) { destructible->render(svc, win, cam); }
 
 	if (m_entities) {
 		for (auto v : get_entities<Vine>()) {
@@ -727,13 +689,13 @@ void Map::generate_collidable_layer(bool live) {
 		get_middleground()->grid.check_neighbors(cell.one_d_index);
 		if (live) { continue; }
 		if (cell.is_breakable()) { breakables.push_back(std::make_unique<Breakable>(*m_services, *this, cell.position())); }
-		if (cell.is_pushable()) { pushables.push_back(std::make_unique<Pushable>(*m_services, *this, cell.position() + pushable_offset, styles.pushables, cell.value - 483)); }
+		if (cell.is_pushable()) { pushables.push_back(std::make_unique<Pushable>(*m_services, *this, cell.position() + pushable_offset, get_style_id(), cell.value - 483)); }
 		if (cell.is_big_spike()) {
-			spikes.push_back(Spike(*m_services, m_services->assets.get_texture("big_spike"), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {6.f, 4.f}, m_attributes.style_id,
+			spikes.push_back(Spike(*m_services, m_services->assets.get_texture("big_spike"), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {6.f, 4.f}, m_biome.get_id(),
 								   m_attributes.properties.test(MapProperties::environmental_randomness)));
 		}
 		if (cell.is_spike()) {
-			spikes.push_back(Spike(*m_services, m_services->assets.get_tileset(m_metadata.biome), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {1.f, 1.f}, m_attributes.style_id,
+			spikes.push_back(Spike(*m_services, m_services->assets.get_tileset(std::string{get_biome_string()}), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {1.f, 1.f}, m_biome.get_id(),
 								   m_attributes.properties.test(MapProperties::environmental_randomness)));
 		}
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position(), 5)); }
@@ -749,18 +711,14 @@ void Map::generate_collidable_layer(bool live) {
 }
 
 void Map::generate_layer_textures(automa::ServiceProvider& svc) const {
-	for (auto& layer : svc.data.get_layers(room_id)) { layer->generate_textures(svc.assets.get_tileset(m_metadata.biome)); }
+	for (auto& layer : svc.data.get_layers(room_id)) { layer->generate_textures(svc.assets.get_tileset(std::string{get_biome_string()})); }
 }
 
 void Map::register_collider(std::unique_ptr<shape::ICollider> collider) {
 	auto chunk_ids = collider->compute_chunks(*this);
 	m_colliders.push_back(std::move(collider));
 	auto collider_ptr = m_colliders.back().get();
-	for (auto id : chunk_ids) {
-		m_chunks[id].push_back(collider_ptr);
-		NANI_LOG_DEBUG(m_logger, "Registering chunk {}", id);
-	}
-	NANI_LOG_DEBUG(m_logger, "Registered Collider with {} chunks", chunk_ids.size());
+	for (auto id : chunk_ids) { m_chunks[id].push_back(collider_ptr); }
 }
 
 void Map::unregister_collider(shape::ICollider* collider) {
@@ -967,9 +925,7 @@ MapAttributes::MapAttributes(dj::Json const& in) {
 	ambience = in["ambience"].as_string();
 	for (auto& entry : in["atmosphere"].as_array()) { atmosphere.push_back(entry.as<int>()); }
 
-	style_id = in["style"].as<int>();
 	special_drop_id = in["special_drop_id"].as<int>();
-	background_id = in["background"].as<int>();
 	border_color = sf::Color{in["border_color"][0].as<std::uint8_t>(), in["border_color"][1].as<std::uint8_t>(), in["border_color"][2].as<std::uint8_t>()};
 }
 
@@ -984,9 +940,7 @@ void MapAttributes::serialize(dj::Json& out) {
 	out["ambience"] = ambience;
 	for (auto& atmo : atmosphere) { out["atmosphere"].push_back(atmo); }
 
-	out["style"] = style_id;
 	out["special_drop_id"] = special_drop_id;
-	out["background"] = background_id;
 	out["border_color"].push_back(border_color.r);
 	out["border_color"].push_back(border_color.g);
 	out["border_color"].push_back(border_color.b);

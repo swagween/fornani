@@ -157,7 +157,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 4,
+    "background": "canopy",
     "biome": "firstwind",
     "camera_effects": {
       "shake": {

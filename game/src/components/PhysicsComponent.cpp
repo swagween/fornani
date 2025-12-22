@@ -66,6 +66,7 @@ void PhysicsComponent::simple_update(bool gravity) {
 void PhysicsComponent::impart_momentum() {
 	position += forced_momentum;
 	velocity += forced_acceleration;
+	if (!flags.test(State::grounded)) { forced_momentum = forced_momentum.componentWiseMul(air_friction); }
 }
 
 void PhysicsComponent::hard_stop_x() {

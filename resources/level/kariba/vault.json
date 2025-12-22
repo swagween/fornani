@@ -636,7 +636,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 3,
+    "background": "woods",
     "biome": "kariba",
     "border_color": [
       0,

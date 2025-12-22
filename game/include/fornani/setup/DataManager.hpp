@@ -56,6 +56,8 @@ class DataManager final {
 	dj::Json& get_player_items() { return files.at(current_save).save_data["player_data"]["items"]; }
 	io::File& get_file() { return files.at(current_save); }
 
+	Biome construct_biome(std::string_view label) const { return Biome{label, static_cast<std::size_t>(std::distance(m_biomes.begin(), std::find(m_biomes.begin(), m_biomes.end(), label)))}; }
+
 	// tweaking
 	void load_player_params(player::Player& player);
 	void save_player_params(player::Player& player);
@@ -117,7 +119,7 @@ class DataManager final {
 	dj::Json particle{};
 	dj::Json effect{};
 	dj::Json sparkler{};
-	dj::Json map_styles{};
+	dj::Json biomes{};
 	dj::Json npc{};
 	dj::Json item{};
 	dj::Json platform{};
@@ -169,6 +171,7 @@ class DataManager final {
 	std::vector<std::pair<int, int>> destructible_states{};
 	std::vector<int> destroyed_inspectables{};
 	std::vector<util::QuestKey> quest_progressions{};
+	std::vector<std::string> m_biomes{};
 
 	std::unordered_map<int, std::string> m_item_labels{};
 	std::unordered_map<int, std::string> m_map_labels{};

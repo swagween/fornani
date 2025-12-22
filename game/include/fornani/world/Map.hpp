@@ -13,6 +13,7 @@
 #include <fornani/entities/world/Laser.hpp>
 #include <fornani/entity/EntitySet.hpp>
 #include <fornani/graphics/Background.hpp>
+#include <fornani/graphics/Biome.hpp>
 #include <fornani/graphics/CameraController.hpp>
 #include <fornani/graphics/DayNightShifter.hpp>
 #include <fornani/graphics/Rain.hpp>
@@ -79,9 +80,7 @@ struct MapAttributes {
 	std::string ambience{};
 	std::string music{};
 	std::vector<int> atmosphere{};
-	int style_id{};
 	int special_drop_id{};
-	int background_id{};
 	sf::Color border_color{};
 
 	void serialize(dj::Json& out);
@@ -135,7 +134,7 @@ class Map {
 	bool within_bounds(sf::Vector2f test) const;
 	bool overlaps_middleground(shape::Shape& test);
 
-	[[nodiscard]] auto get_style_id() const -> int { return m_attributes.style_id; }
+	[[nodiscard]] auto get_style_id() const -> int { return m_biome.get_id(); }
 	[[nodiscard]] auto get_special_drop_id() const -> int { return m_attributes.special_drop_id; }
 	[[nodiscard]] auto get_chunk_id_from_position(sf::Vector2f pos) const -> std::uint8_t;
 	[[nodiscard]] auto get_chunk_dimensions() const -> sf::Vector2u { return dimensions / constants::u32_chunk_size; };
@@ -146,7 +145,7 @@ class Map {
 	[[nodiscard]] auto is_minimap() const -> bool { return m_attributes.properties.test(MapProperties::minimap); }
 	[[nodiscard]] auto has_obscuring_layer() const -> bool { return m_layer_properties.test(LayerProperties::has_obscuring_layer); }
 	[[nodiscard]] auto has_reverse_obscuring_layer() const -> bool { return m_layer_properties.test(LayerProperties::has_reverse_obscuring_layer); }
-	[[nodiscard]] auto get_biome_string() const -> std::string { return m_metadata.biome; }
+	[[nodiscard]] auto get_biome_string() const -> std::string_view { return m_biome.get_label(); }
 	[[nodiscard]] auto get_room_string() const -> std::string { return m_metadata.room; }
 	[[nodiscard]] auto get_player_start() const -> sf::Vector2f { return m_player_start; }
 	[[nodiscard]] auto has_entities() const -> bool { return m_entities.has_value(); }
@@ -190,7 +189,7 @@ class Map {
 	std::vector<std::unique_ptr<entity::Chest>> chests{};
 	std::vector<Laser> lasers{};
 	// std::vector<std::unique_ptr<npc::NPC>> npcs{};
-	std::vector<Platform> platforms{};
+	std::vector<std::unique_ptr<Platform>> platforms{};
 
 	std::vector<std::unique_ptr<Pushable>> pushables{};
 
@@ -198,7 +197,7 @@ class Map {
 	std::vector<Spike> spikes{};
 	std::vector<std::unique_ptr<SwitchButton>> switch_buttons{};
 	std::vector<std::unique_ptr<SwitchBlock>> switch_blocks{};
-	std::vector<Destructible> destructibles{};
+	std::vector<std::unique_ptr<Destructible>> destructibles{};
 	std::vector<std::unique_ptr<Incinerite>> incinerite_blocks{};
 	std::vector<Checkpoint> checkpoints{};
 	std::vector<TimerBlock> timer_blocks{};
@@ -218,13 +217,6 @@ class Map {
 	CutsceneCatalog cutscene_catalog;
 
 	sf::RectangleShape center_box{};
-
-	std::string style_label{};
-
-	struct {
-		int breakables{};
-		int pushables{};
-	} styles{};
 
 	float collision_barrier{2.5f};
 
@@ -265,8 +257,8 @@ class Map {
 	int abyss_distance{512};
 	sf::Vector2f m_player_start{};
 
+	Biome m_biome{};
 	struct {
-		std::string biome{};
 		std::string room{};
 	} m_metadata{};
 

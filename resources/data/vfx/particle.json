@@ -85,7 +85,7 @@
 		"animation": {
 			"lookup": 1,
 			"duration": 5,
-			"framerate": 68,
+			"framerate": 34,
 			"loop": 0
 		}
 	},
@@ -151,9 +151,9 @@
 	"peckett": {
 		"load": 8,
 		"rate": 4.0,
-		"expulsion": 8.0,
-		"expulsion_variance": 4.0,
-		"cone": 0.08,
+		"expulsion": 14.0,
+		"expulsion_variance": 12.0,
+		"cone": 0.18,
 		"friction": 0.98,
 		"elasticity": 0.95,
 		"gravity": -0.1,
@@ -165,7 +165,7 @@
 		"animation": {
 			"lookup": 1,
 			"duration": 5,
-			"framerate": 68,
+			"framerate": 34,
 			"loop": 0
 		}
 	},

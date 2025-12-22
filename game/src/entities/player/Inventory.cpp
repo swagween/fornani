@@ -17,18 +17,17 @@ void Inventory::remove_item(int item_id, int amount) {
 	std::erase_if(m_items, [item_id](auto const& i) { return i->get_id() == item_id; });
 }
 
-bool Inventory::equip_item(int item_id) {
-
+EquipmentStatus Inventory::equip_item(int item_id) {
 	// get the item in question
 	auto this_item = std::find_if(m_items.begin(), m_items.end(), [item_id](auto const& i) { return i->get_id() == item_id; });
-	if (this_item == m_items.end()) { return false; }
+	if (this_item == m_items.end()) { return EquipmentStatus::failure; }
 
 	// check if it's already equipped; if so, unequip it
 	for (auto& item : m_equipped_items) {
 		if (item == item_id) {
 			item = -1;
 			this_item->get()->set_equipped(false);
-			return true;
+			return EquipmentStatus::unequipped;
 		}
 	}
 	// otherwise, equip it
@@ -36,10 +35,11 @@ bool Inventory::equip_item(int item_id) {
 		if (item == -1) {
 			item = item_id;
 			this_item->get()->set_equipped(true);
-			return true;
+			return EquipmentStatus::equipped;
 		}
 	}
-	return false; // no more space
+
+	return EquipmentStatus::failure; // no more space
 }
 
 void Inventory::reveal_item(int item_id) {

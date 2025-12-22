@@ -1,22 +1,21 @@
 
 #pragma once
 
-#include "editor/canvas/Background.hpp"
-#include "editor/canvas/Map.hpp"
-#include "editor/util/BitFlags.hpp"
-#include "editor/util/SelectBox.hpp"
-#include "fornani/entity/EntitySet.hpp"
-#include "fornani/graphics/CameraController.hpp"
-#include "fornani/utils/Constants.hpp"
-#include "fornani/world/Map.hpp"
-
+#include <SFML/Graphics.hpp>
+#include <djson/json.hpp>
+#include <editor/canvas/Map.hpp>
+#include <editor/util/BitFlags.hpp>
+#include <editor/util/SelectBox.hpp>
+#include <fornani/entity/EntitySet.hpp>
+#include <fornani/graphics/Background.hpp>
+#include <fornani/graphics/Biome.hpp>
+#include <fornani/graphics/CameraController.hpp>
+#include <fornani/utils/Constants.hpp>
+#include <fornani/world/Map.hpp>
 #include <deque>
 #include <filesystem>
 #include <string>
 #include <vector>
-
-#include <SFML/Graphics.hpp>
-#include <djson/json.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -28,8 +27,6 @@ class ResourceFinder;
 
 namespace pi {
 
-enum class StyleType { firstwind, overturned, pioneer, factory, greatwing, kariba, junkyard, END };
-
 enum class CanvasProperties { editable };
 enum class CanvasState { hovered };
 
@@ -38,40 +35,13 @@ constexpr inline int default_num_layers_v{8};
 constexpr inline int default_middleground_v{4};
 constexpr inline std::size_t max_undo_states_v{64};
 
-class Style {
-  public:
-	Style(StyleType type) : type(type) {
-		switch (type) {
-		case StyleType::firstwind: label = "firstwind"; break;
-		case StyleType::overturned: label = "overturned"; break;
-		case StyleType::pioneer: label = "pioneer"; break;
-		case StyleType::factory: label = "factory"; break;
-		case StyleType::greatwing: label = "greatwing"; break;
-		case StyleType::kariba: label = "kariba"; break;
-		case StyleType::junkyard: label = "junkyard"; break;
-		default: label = "<none>"; break;
-		}
-		label_c_str = label.c_str();
-	}
-
-	[[nodiscard]] auto get_label_char() -> char const*& { return label_c_str; };
-	[[nodiscard]] auto get_label() const -> std::string { return label; };
-	[[nodiscard]] auto get_type() const -> StyleType { return type; };
-	[[nodiscard]] auto get_i_type() const -> int { return static_cast<int>(type); };
-
-  private:
-	StyleType type{};
-	std::string label{};
-	char const* label_c_str{};
-};
-
 class Tool;
 
 class Canvas {
 
   public:
-	Canvas(fornani::ResourceFinder& finder, SelectionType type, StyleType style = StyleType::firstwind, Backdrop backdrop = Backdrop::black, int num_layers = default_num_layers_v);
-	Canvas(fornani::ResourceFinder& finder, sf::Vector2<std::uint32_t> dim, SelectionType type, StyleType style, Backdrop backdrop, int num_layers = default_num_layers_v);
+	Canvas(fornani::automa::ServiceProvider& svc, SelectionType type, fornani::Biome biome, std::string_view backdrop = "black", int num_layers = default_num_layers_v);
+	Canvas(fornani::automa::ServiceProvider& svc, sf::Vector2<std::uint32_t> dim, SelectionType type, fornani::Biome biome, std::string_view backdrop, int num_layers = default_num_layers_v);
 	void update(Tool& tool);
 	void render(sf::RenderWindow& win, sf::Sprite& tileset);
 	bool load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local = false);
@@ -130,7 +100,7 @@ class Canvas {
 	[[nodiscard]] auto f_native_cell_size() const -> float { return 32.f; }
 	[[nodiscard]] auto get_scale() const -> float { return scale; }
 	[[nodiscard]] auto get_scale_vec() const -> sf::Vector2f { return fornani::constants::f_scale_vec * scale; }
-	[[nodiscard]] auto get_i_style() const -> int { return static_cast<int>(tile_style.get_type()); }
+	[[nodiscard]] auto get_i_style() const -> int { return biome.get_id(); }
 	[[nodiscard]] auto within_zoom_limits(float delta) const -> bool { return get_scale() + delta >= min_scale && get_scale() + delta <= max_scale; }
 	[[nodiscard]] auto within_bounds(sf::Vector2f const& point) const -> bool { return point.x > position.x && point.x < real_dimensions.x + position.x && point.y > position.y && point.y < real_dimensions.y + position.y; }
 	[[nodiscard]] auto undo_states_size() const -> std::size_t { return map_states.size(); }
@@ -166,9 +136,9 @@ class Canvas {
 
 	fornani::EntitySet entities;
 	dj::Json metadata{};
-	Style tile_style;
 
-	std::unique_ptr<Background> background{};
+	std::unique_ptr<fornani::graphics::Background> background{};
+	fornani::Biome biome{};
 
 	struct {
 		bool flag{};
@@ -207,6 +177,8 @@ class Canvas {
 	sf::RectangleShape border{};
 
 	SelectionType type{};
+
+	fornani::automa::ServiceProvider* m_services;
 
 	float scale{1.f};
 	float min_scale{0.1f};

@@ -1,5 +1,6 @@
 
 #include "fornani/world/Layer.hpp"
+#include <fornani/service/ServiceProvider.hpp>
 #include <fornani/shader/LightShader.hpp>
 #include <fornani/shader/Palette.hpp>
 #include "fornani/graphics/DayNightShifter.hpp"
@@ -37,7 +38,7 @@ void Layer::generate_textures(sf::Texture const& tex) {
 			tile.setPosition(cell.position() / constants::f_scale_factor);
 			if (cell.is_occupied() && !cell.is_special()) {
 				texture.draw(tile);
-				if (barrier) { m_barrier->draw(tile); }
+				if (barrier && cell.is_border()) { m_barrier->draw(tile); }
 			}
 		}
 		texture.display();
@@ -67,6 +68,7 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics
 		if (obscuring()) { shifter.render(svc, win, sprite, ctr, alpha); }
 		if (reverse_obscuring()) { shifter.render(svc, win, sprite, ctr, revalpha); }
 		if (not_obscuring()) { shifter.render(svc, win, sprite, ctr); }
+		auto cycle = static_cast<int>(svc.world_clock.get_time_of_day());
 		++ctr;
 	}
 }

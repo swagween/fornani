@@ -18,15 +18,15 @@ struct ServiceProvider;
 
 namespace fornani::shape {
 
-constexpr auto vicinity_pad_v = 33.f;
+constexpr auto vicinity_pad_v = 31.f;
 
 class Collider;
 class CircleCollider;
 
 enum class ColliderFlags { changed, intangible, simple, no_physics, registered };
 enum class ColliderType { rectangle, circle };
-enum class ColliderAttributes { fixed, soft, top_only, no_collision, sturdy, crusher };
-enum class ColliderTrait { circle, player, enemy, npc, secondary, block, particle };
+enum class ColliderAttributes { fixed, soft, top_only, no_collision, no_map_collision, sturdy, crusher, custom_resolution };
+enum class ColliderTrait { circle, player, enemy, npc, secondary, block, particle, platform };
 
 class ICollider : public Polymorphic {
   public:
@@ -47,7 +47,7 @@ class ICollider : public Polymorphic {
 	void clear_chunks() { m_chunks.clear(); }
 	void set_top_only() { m_attributes.set(ColliderAttributes::top_only); }
 	void set_flag(ColliderFlags const to_set, bool on = true) { on ? m_flags.set(to_set) : m_flags.reset(to_set); }
-	void set_attribute(ColliderAttributes const to_set) { m_attributes.set(to_set); }
+	void set_attribute(ColliderAttributes const to_set, bool on = true) { on ? m_attributes.set(to_set) : m_attributes.reset(to_set); }
 
 	void set_trait(ColliderTrait const to_set, bool on = true) { on ? m_traits.set(to_set) : m_traits.reset(to_set); }
 	void set_exclusion_target(ColliderTrait const to_set, bool on = true) { on ? m_exclusion_targets.set(to_set) : m_exclusion_targets.reset(to_set); }

@@ -2,6 +2,12 @@
   "rooms": [
     {
       "folder": "config",
+      "label": "bg_test.json",
+      "region": "overturned",
+      "room_id": 77123
+    },
+    {
+      "folder": "config",
       "label": "chunk_test.json",
       "region": "firstwind",
       "room_id": 0
@@ -17,6 +23,12 @@
       "label": "collt.json",
       "region": "firstwind",
       "room_id": 11111
+    },
+    {
+      "folder": "config",
+      "label": "dns_test.json",
+      "region": "toxic",
+      "room_id": 666666
     },
     {
       "folder": "config",
@@ -707,6 +719,12 @@
       "label": "shop.json",
       "region": "base",
       "room_id": 4201
+    },
+    {
+      "folder": "toxic",
+      "label": "test_area.json",
+      "region": "toxic",
+      "room_id": 900
     },
     {
       "folder": "trials",
