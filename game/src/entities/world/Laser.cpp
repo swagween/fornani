@@ -7,8 +7,8 @@
 
 namespace fornani::world {
 
-Laser::Laser(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, LaserType type, util::BitFlags<LaserAttributes> attributes, CardinalDirection direction, int active, int cooldown, float size)
-	: m_type{type}, m_attributes{attributes}, m_direction{direction}, m_active{active}, m_cooldown{cooldown}, m_size{size}, m_breadth{constants::f_cell_size}, m_spawn_point{position} {
+Laser::Laser(automa::ServiceProvider& svc, Map& map, Turret& parent, sf::Vector2f position, LaserType type, util::BitFlags<LaserAttributes> attributes, CardinalDirection direction, int active, int cooldown, float size)
+	: m_type{type}, m_attributes{attributes}, m_direction{direction}, m_active{active}, m_cooldown{cooldown}, m_size{size}, m_breadth{constants::f_cell_size}, m_spawn_point{position}, m_parent{&parent} {
 	m_drawbox.setFillColor(colors::ui_white);
 	m_hitbox.set_position(position);
 	fire();
@@ -17,6 +17,8 @@ Laser::Laser(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, Lase
 void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& map) {
 	m_cooldown.update();
 	m_active.update();
+	auto offset = m_parent->has_flag_set(TurretFlags::platform) ? m_direction.as_vector() * constants::small_value : sf::Vector2f{};
+	m_spawn_point = m_parent->Turret::get_position() + offset;
 	if (m_attributes.test(LaserAttributes::infinite)) { fire(); }
 	if (m_active.is_almost_complete()) { m_cooldown.start(); }
 	auto size = calculate_size(map);

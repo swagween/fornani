@@ -2,13 +2,19 @@
 
 #include <SFML/Graphics.hpp>
 #include <random>
+#include <vector>
 
 namespace fornani::random {
+
+static std::mt19937& engine() {
+	static std::mt19937 gen{std::random_device{}()};
+	return gen;
+}
 
 int random_range(int lo, int hi);
 
 // Generates a random integer in the range [lo, hi] using a provided seed
-int random_range(int lo, int hi, int seed);
+int random_range(int lo, int hi, std::uint32_t seed);
 
 // Generates a random float in the range [lo, hi]
 float random_range_float(float lo, float hi);
@@ -42,5 +48,16 @@ void set_test_seed();
 
 // Sets a new vendor seed
 void set_vendor_seed();
+
+template <typename T, typename WeightFn>
+static T const& weightedChoice(std::vector<T> const& items, WeightFn weightFn) {
+	std::vector<double> weights;
+	weights.reserve(items.size());
+
+	for (auto const& item : items) weights.push_back(weightFn(item));
+
+	std::discrete_distribution<> dist(weights.begin(), weights.end());
+	return items[dist(engine())];
+}
 
 } // namespace fornani::random

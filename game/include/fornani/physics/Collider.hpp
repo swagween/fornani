@@ -74,7 +74,7 @@ class Collider : public ICollider {
 	void handle_map_collision(world::Tile const& tile) override;
 	void detect_map_collision(world::Map& map) override;
 	void correct_x(sf::Vector2f mtv, bool has_velocity = false);
-	void correct_y(sf::Vector2f mtv);
+	void correct_y(sf::Vector2f mtv, bool ricochet = false);
 	void correct_x_y(sf::Vector2f mtv);
 	void correct_corner(sf::Vector2f mtv);
 	void resolve_depths();

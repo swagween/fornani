@@ -10,26 +10,27 @@ Turret::Turret(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, i
 	init();
 }
 
-Turret::Turret(automa::ServiceProvider& svc, int id, TurretType type, TurretPattern pattern, CardinalDirection dir) : Entity(svc, "turrets", id), m_type{type}, m_pattern{pattern}, m_direction{dir}, m_rate{560} { init(); }
+Turret::Turret(automa::ServiceProvider& svc, int id, TurretType type, TurretPattern pattern, CardinalDirection dir, TurretSettings settings)
+	: Entity(svc, "turrets", id), m_type{type}, m_pattern{pattern}, m_direction{dir}, m_settings{settings}, m_rate{560} {
+	init();
+}
 
 void Turret::init() {
 	set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 	repeatable = true;
-	m_rate.start();
+	auto start_time = m_pattern == TurretPattern::constant ? m_rate.get_native_time() : m_rate.get_native_time() * (1.f - m_settings.delay);
+	m_rate.start(start_time);
 
 	push_animation("off", {0, 1, 18, -1});
 	push_animation("charging", {1, 3, 32, 0});
 	push_animation("firing", {4, 2, 18, -1});
 	push_animation("cooling_down", {6, 2, 18, 0});
 
-	m_duration = 256; // for now
-	m_firing = util::Cooldown{m_duration};
+	m_firing = util::Cooldown{m_settings.duration};
 
-	if (m_pattern == TurretPattern::constant) {
-		set_animation("firing");
-	} else {
-		set_animation("off");
-	}
+	m_pattern == TurretPattern::constant ? set_animation("firing") : set_animation("off");
+
+	m_position = get_world_position();
 }
 
 std::unique_ptr<Entity> Turret::clone() const { return std::make_unique<Turret>(*this); }
@@ -39,6 +40,8 @@ void Turret::serialize(dj::Json& out) {
 	out["type"] = static_cast<int>(m_type);
 	out["pattern"] = static_cast<int>(m_pattern);
 	out["direction"] = m_direction.as<int>();
+	out["settings"]["delay"] = m_settings.delay;
+	out["settings"]["duration"] = m_settings.duration;
 }
 
 void Turret::unserialize(dj::Json const& in) {
@@ -46,6 +49,8 @@ void Turret::unserialize(dj::Json const& in) {
 	m_type = static_cast<TurretType>(in["type"].as<int>());
 	m_pattern = static_cast<TurretPattern>(in["pattern"].as<int>());
 	m_direction = CardinalDirection{in["direction"].as<int>()};
+	m_settings.delay = in["settings"]["delay"].as<float>();
+	m_settings.duration = in["settings"]["duration"].as<int>();
 }
 
 void Turret::expose() {
@@ -56,6 +61,8 @@ void Turret::expose() {
 	ImGui::SliderInt("Type", &type, 0, 1);
 	ImGui::SliderInt("Pattern", &patt, 0, 2);
 	ImGui::SliderInt("Direction", &dir, 0, 1);
+	ImGui::SliderFloat("Delay", &m_settings.delay, 0.0, 1.0, "%.1f");
+	ImGui::SliderInt("Duration", &m_settings.duration, 8, 480);
 	m_type = static_cast<TurretType>(type);
 	m_pattern = static_cast<TurretPattern>(patt);
 	m_direction = CardinalDirection{dir};
@@ -75,14 +82,14 @@ void Turret::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 	state_function = state_function();
 
 	if (m_rate.just_started() && m_firing.is_complete()) {
-		map.lasers.push_back(world::Laser{svc, map, get_world_position() + constants::f_cell_vec.componentWiseMul(m_direction.as_vector()), world::LaserType::turret, attributes, m_direction, m_duration, 64, 0.75f});
+		map.lasers.push_back(world::Laser{svc, map, *this, m_position + constants::f_cell_vec.componentWiseMul(m_direction.as_vector()), world::LaserType::turret, attributes, m_direction, m_settings.duration, 64, 0.75f});
 		m_firing.start();
 	}
 }
 
 void Turret::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
-	Animatable::set_position(get_global_center() - cam);
+	Animatable::set_position(m_position + get_local_center() - cam);
 	Animatable::set_origin({});
 	Entity::render(win, cam, size);
 	if (m_editor) { return; }

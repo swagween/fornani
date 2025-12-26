@@ -67,6 +67,7 @@ class Lynx final : public NPC, public Enemy {
 		util::Cooldown post_levitate;
 		util::Cooldown start_levitate;
 		util::Cooldown throw_shuriken;
+		util::Cooldown post_defeat;
 	} m_cooldowns{};
 
 	struct {
@@ -78,6 +79,8 @@ class Lynx final : public NPC, public Enemy {
 		entity::Shockwave left_shockwave;
 		entity::Shockwave right_shockwave;
 	} m_attacks{};
+
+	sf::Vector2f m_seek_friction;
 
 	util::BitFlags<LynxFlags> m_flags{};
 	void request(LynxState to) { m_state.desired = to; }

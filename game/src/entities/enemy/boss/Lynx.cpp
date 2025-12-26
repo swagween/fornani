@@ -14,10 +14,9 @@ constexpr auto lynx_framerate = 8;
 constexpr auto run_threshold_v = 0.002f;
 
 Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console)
-	: NPC(svc, map, std::string_view{"lynx"}, false), Enemy(svc, map, "lynx"), m_health_bar(svc, "lynx"),
-
-	  m_console{&console}, m_map{&map}, m_cooldowns{.run{240}, .post_hurt{64}, .post_shuriken_toss{1200}, .post_levitate{1000}, .start_levitate{150}, .throw_shuriken{60}}, m_services{&svc},
-	  m_attacks{.left_shockwave{{30, 400, 2, {-1.5f, 0.f}}}, .right_shockwave{{30, 400, 2, {1.5f, 0.f}}}}, m_shuriken(svc, "shuriken"), m_magic{svc, {40.f, 40.f}, colors::white, "lynx_magic"} {
+	: NPC(svc, map, std::string_view{"lynx"}, false), Enemy(svc, map, "lynx"), m_health_bar(svc, "lynx"), m_console{&console}, m_map{&map},
+	  m_cooldowns{.run{240}, .post_hurt{64}, .post_shuriken_toss{1200}, .post_levitate{1000}, .start_levitate{150}, .throw_shuriken{60}, .post_defeat{800}}, m_services{&svc},
+	  m_attacks{.left_shockwave{{30, 400, 2, {-1.5f, 0.f}}}, .right_shockwave{{30, 400, 2, {1.5f, 0.f}}}}, m_shuriken(svc, "shuriken"), m_magic{svc, {40.f, 40.f}, colors::white, "lynx_magic"}, m_seek_friction{0.9f, 0.9f} {
 	Enemy::m_params = {
 		{"sit", {0, 1, lynx_framerate, -1}},
 		{"get_up", {1, 2, lynx_framerate * 4, 0}},
@@ -68,8 +67,9 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	m_cooldowns.post_shuriken_toss.update();
 	m_cooldowns.post_levitate.update();
 	m_cooldowns.throw_shuriken.update();
+	if (!m_console->has_value()) { m_cooldowns.post_defeat.update(); }
 
-	Enemy::get_collider().has_flag_set(shape::ColliderFlags::simple) ? Enemy::get_collider().physics.set_friction_componentwise({0.9f, 0.9f}) : Enemy::get_collider().physics.set_friction_componentwise({0.97f, 0.99f});
+	Enemy::get_collider().has_flag_set(shape::ColliderFlags::simple) ? Enemy::get_collider().physics.set_friction_componentwise(m_seek_friction) : Enemy::get_collider().physics.set_friction_componentwise({0.97f, 0.99f});
 
 	Enemy::update(svc, map, player);
 	Enemy::face_player(player);
@@ -410,6 +410,7 @@ fsm::StateFunction Lynx::update_downward_slam() {
 	if (Enemy::animation.just_started()) { m_counters.slam.update(); }
 	if (Enemy::animation.get_frame_count() == 7) { Enemy::get_collider().physics.acceleration.y = 200.f; }
 	if (Enemy::animation.get_frame_count() >= 7 && !Enemy::get_collider().grounded()) { Enemy::animation.set_frame(7); }
+	if (Enemy::animation.get_frame_count() == 6 && Enemy::animation.keyframe_started()) { m_map->spawn_effect(*m_services, "lens_flare", Enemy::get_collider().get_center() - sf::Vector2f{0.f, 64.f}); }
 	if (Enemy::animation.get_frame_count() == 3 && Enemy::animation.keyframe_started()) {
 		m_services->soundboard.flags.lynx.set(audio::Lynx::shing);
 		m_services->soundboard.flags.lynx.set(audio::Lynx::hiyyah);
@@ -587,7 +588,10 @@ fsm::StateFunction Lynx::update_prepare_slash() {
 	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
 	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 	if (Enemy::animation.just_started()) { m_services->soundboard.flags.lynx.set(audio::Lynx::hnnyah); }
-	if (Enemy::animation.get_frame_count() == 1 && Enemy::animation.keyframe_started()) { m_services->soundboard.flags.lynx.set(audio::Lynx::prepare); }
+	if (Enemy::animation.get_frame_count() == 1 && Enemy::animation.keyframe_started()) {
+		m_services->soundboard.flags.lynx.set(audio::Lynx::prepare);
+		m_map->spawn_effect(*m_services, "lens_flare", Enemy::get_collider().get_center());
+	}
 	if (Enemy::animation.complete()) {
 		request(LynxState::aerial_slash);
 		if (change_state(LynxState::aerial_slash, Enemy::get_params("aerial_slash"))) { return LYNX_BIND(update_aerial_slash); }
@@ -600,6 +604,7 @@ fsm::StateFunction Lynx::update_defeat() {
 	flags.general.set(GeneralFlags::gravity);
 	Enemy::get_collider().set_flag(shape::ColliderFlags::simple, false);
 	if (Enemy::animation.just_started()) {
+		m_cooldowns.post_defeat.start();
 		m_flags.reset(LynxFlags::battle_mode);
 		set_distant_interact(true);
 		set_force_interact(true);
@@ -609,9 +614,12 @@ fsm::StateFunction Lynx::update_defeat() {
 		m_services->music_player.pause();
 		m_services->soundboard.flags.lynx.set(audio::Lynx::defeat);
 	}
-	if (Enemy::animation.complete()) {
-		request(LynxState::jump);
-		if (change_state(LynxState::jump, Enemy::get_params("jump"))) { return LYNX_BIND(update_jump); }
+	if (m_cooldowns.post_defeat.is_almost_complete()) {
+		m_map->spawn_emitter(*m_services, "white_fireworks", Enemy::get_collider().get_center(), Direction{UND::up});
+		m_map->spawn_effect(*m_services, "small_explosion", Enemy::get_collider().get_center());
+		flags.general.reset(GeneralFlags::post_death_render);
+		m_services->soundboard.flags.enemy.set(audio::Enemy::disappear);
+		post_death.cancel();
 	}
 	return LYNX_BIND(update_defeat);
 }
@@ -621,9 +629,13 @@ fsm::StateFunction Lynx::update_second_phase() {
 	m_flags.set(LynxFlags::second_phase);
 	flags.state.reset(StateFlags::vulnerable);
 	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
-	if (Enemy::animation.just_started()) { m_services->soundboard.flags.lynx.set(audio::Lynx::laugh); }
+	if (Enemy::animation.just_started()) {
+		m_services->soundboard.flags.lynx.set(audio::Lynx::laugh);
+		Enemy::get_collider().physics.zero();
+	}
 	flags.general.reset(GeneralFlags::gravity);
 	Enemy::get_collider().set_flag(shape::ColliderFlags::simple);
+	Enemy::get_collider().physics.set_friction_componentwise(m_seek_friction);
 	if (!m_console->has_value()) {
 		m_services->music_player.filter_fade_out();
 		m_services->music_player.load(m_services->finder, "tumultuous_spirit");

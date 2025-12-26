@@ -171,6 +171,7 @@ class Player final : public Animatable {
 	[[nodiscard]] auto get_actual_direction() const -> SimpleDirection { return m_directions.actual; }
 	[[nodiscard]] auto get_piggybacker_id() const -> int { return piggybacker ? piggybacker->get_id() : 0; }
 	[[nodiscard]] bool is_intangible() const;
+	[[nodiscard]] auto has_flag_set(State const test) const -> bool { return flags.state.test(test); }
 
 	void set_desired_direction(SimpleDirection to) { m_directions.desired = to; }
 

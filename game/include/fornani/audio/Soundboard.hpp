@@ -55,7 +55,7 @@ enum class Transmission { statics };
 enum class Step { basic, grass };
 
 // critters
-enum class Enemy { hit_squeak, hit_high, hit_medium, hit_low, standard_death, jump_low, high_death, low_death };
+enum class Enemy { hit_squeak, hit_high, hit_medium, hit_low, standard_death, jump_low, high_death, low_death, disappear };
 
 enum class Frdog { hurt, death };
 enum class Hulmet { hurt, alert, reload };

@@ -9,7 +9,7 @@
     {
       "folder": "config",
       "label": "chunk_test.json",
-      "region": "firstwind",
+      "region": "overturned",
       "room_id": 0
     },
     {
@@ -203,6 +203,18 @@
       "label": "bridge.json",
       "region": "greatwing",
       "room_id": 601
+    },
+    {
+      "folder": "junkyard",
+      "label": "dump.json",
+      "region": "junkyard",
+      "room_id": 703
+    },
+    {
+      "folder": "junkyard",
+      "label": "facility.json",
+      "region": "junkyard",
+      "room_id": 704
     },
     {
       "folder": "junkyard",

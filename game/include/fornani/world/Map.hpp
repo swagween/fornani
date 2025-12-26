@@ -106,6 +106,7 @@ class Map {
 	void spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0);
 	void spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, Direction dir, sf::Vector2f dim = {16.f, 16.f}, sf::Color color = colors::nani_white);
 	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0);
+	void spawn_chest(automa::ServiceProvider& svc, enemy::Treasure const& treasure, sf::Vector2f pos, sf::Vector2f vel = {});
 	void reveal_npc(std::string_view label);
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
@@ -189,7 +190,6 @@ class Map {
 	std::vector<std::unique_ptr<entity::Chest>> chests{};
 	std::vector<Laser> lasers{};
 	// std::vector<std::unique_ptr<npc::NPC>> npcs{};
-	std::vector<std::unique_ptr<Platform>> platforms{};
 
 	std::vector<std::unique_ptr<Pushable>> pushables{};
 
@@ -282,6 +282,7 @@ class Map {
 
   public:
 	std::vector<std::unique_ptr<Breakable>> breakables{};
+	std::vector<std::unique_ptr<Platform>> platforms{};
 };
 
 } // namespace fornani::world

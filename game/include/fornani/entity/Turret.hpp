@@ -3,6 +3,7 @@
 
 #include <fornani/entity/Entity.hpp>
 #include <fornani/utils/Direction.hpp>
+#include <fornani/utils/Flaggable.hpp>
 #include <fornani/utils/StateFunction.hpp>
 #define TURRET_BIND(f) std::bind(&Turret::f, this)
 
@@ -11,14 +12,20 @@ namespace fornani {
 enum class TurretType { laser, projectile };
 enum class TurretPattern { constant, repeater, triggerable };
 enum class TurretState { off, charging, firing, cooling_down };
+enum class TurretFlags { platform };
 
-class Turret : public Entity {
+struct TurretSettings {
+	float delay{};
+	int duration{};
+};
+
+class Turret : public Entity, public Flaggable<TurretFlags> {
   public:
 	Turret(automa::ServiceProvider& svc, dj::Json const& in);
-	Turret(automa::ServiceProvider& svc, int id, TurretType type, TurretPattern pattern, CardinalDirection dir);
+	Turret(automa::ServiceProvider& svc, int id, TurretType type, TurretPattern pattern, CardinalDirection dir, TurretSettings settings);
 
 	// Copy constructor
-	Turret(Turret const& other) : Entity(other), m_type(other.m_type), m_pattern(other.m_pattern), m_direction(other.m_direction) {}
+	Turret(Turret const& other) : Entity(other), m_type(other.m_type), m_pattern(other.m_pattern), m_direction(other.m_direction), m_settings(other.m_settings) {}
 
 	// Copy assignment
 	Turret& operator=(Turret const& other) {
@@ -27,6 +34,7 @@ class Turret : public Entity {
 			m_type = other.m_type;
 			m_pattern = other.m_pattern;
 			m_direction = other.m_direction;
+			m_settings = other.m_settings;
 		}
 		return *this;
 	}
@@ -38,6 +46,10 @@ class Turret : public Entity {
 	void expose() override;
 	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
+
+	void set_position(sf::Vector2f const to) { m_position = to; }
+
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_position + constants::f_cell_vec.componentWiseMul(m_direction.as_vector()); }
 
   private:
 	/* animation methods */
@@ -56,11 +68,12 @@ class Turret : public Entity {
 	TurretType m_type{};
 	TurretPattern m_pattern{};
 	CardinalDirection m_direction{};
+	TurretSettings m_settings{};
+
+	sf::Vector2f m_position{};
 
 	util::Cooldown m_rate{};
 	util::Cooldown m_firing{};
-
-	int m_duration{};
 };
 
 } // namespace fornani

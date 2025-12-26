@@ -7,7 +7,7 @@ namespace fornani::player {
 
 constexpr static float crawl_speed_v{0.32f};
 
-PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect = util::Cooldown(64)}, post_slide{80}, post_wallslide{16}, wallslide_slowdown{64} {
+PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect{64}, .dash_kick{40}}, post_slide{80}, post_wallslide{16}, wallslide_slowdown{64} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
@@ -82,6 +82,8 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	cooldowns.inspect.update();
 	if (it) { cooldowns.inspect.start(); }
 
+	cooldowns.dash_kick.update();
+
 	auto const& dash_left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered && !grounded() && left;
 	auto const& dash_right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered && !grounded() && right;
 
@@ -144,12 +146,13 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (!is(AbilityType::wallslide)) { player.get_collider().physics.maximum_velocity.y = player.physics_stats.maximum_velocity.y; }
 	wallslide_slowdown.update();
 
-	if (player.can_dash_kick()) {
+	if (player.can_dash_kick() && !cooldowns.dash_kick.running()) {
 		m_ability = std::make_unique<DashKick>(svc, map, player.get_collider(), player.get_actual_direction());
 		svc.ticker.freeze_frame(8);
 		player.health.invincibility.start(16);
 		player.m_ability_usage.dash.update(-1);
 		player.set_flag(State::dash_kick, false);
+		cooldowns.dash_kick.start();
 	}
 
 	if (m_ability) {

@@ -1,12 +1,12 @@
 
 #pragma once
 
+#include <fornani/entities/animation/Animation.hpp>
+#include <fornani/entities/item/Item.hpp>
+#include <fornani/graphics/Animatable.hpp>
+#include <fornani/particle/Sparkler.hpp>
 #include <fornani/physics/RegisteredCollider.hpp>
 #include <optional>
-#include "fornani/entities/animation/Animation.hpp"
-#include "fornani/entities/item/Item.hpp"
-#include "fornani/graphics/Animatable.hpp"
-#include "fornani/particle/Sparkler.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -28,6 +28,7 @@ namespace fornani::entity {
 
 enum class ChestState { activated, open };
 enum class ChestType { gun, orbs, item };
+enum class ChestAttributes { mythic };
 
 class Chest final : public Animatable {
   public:
@@ -37,12 +38,16 @@ class Chest final : public Animatable {
 	void set_position(sf::Vector2f pos);
 	void set_position_from_scaled(sf::Vector2f scaled_pos);
 	shape::CircleCollider& get_collider() { return *m_collider.get_circle(); }
+	void set_attribute(ChestAttributes const to_set, bool on = true) { on ? m_attributes.set(to_set) : m_attributes.reset(to_set); }
 
   private:
 	shape::RegisteredCollider m_collider;
 
 	util::BitFlags<ChestState> state{};
+	util::BitFlags<ChestAttributes> m_attributes{};
 	ChestType m_type{};
+
+	std::optional<vfx::Sparkler> m_sparkler{};
 
 	int m_id{};
 	int m_content_modifier{};

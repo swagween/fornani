@@ -500,6 +500,8 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		static char const* types[2] = {"laser", "projectile"};
 		static char const* patterns[3] = {"constant", "repeater", "triggerable"};
 		static char const* dirs[4] = {"up", "down", "left", "right"};
+		static float delay{1.f};
+		static int duration{256};
 
 		if (ImGui::BeginCombo("Type", types[type])) {
 			for (auto [i, t] : std::views::enumerate(types)) {
@@ -519,11 +521,13 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			}
 			ImGui::EndCombo();
 		}
+		ImGui::SliderFloat("Delay", &delay, 0.0, 1.0, "%.1f");
+		ImGui::InputInt("Duration", &duration);
 
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<fornani::Turret>(svc, 0, static_cast<fornani::TurretType>(type), static_cast<fornani::TurretPattern>(pattern), fornani::CardinalDirection{hv});
+			tool->current_entity = std::make_unique<fornani::Turret>(svc, 0, static_cast<fornani::TurretType>(type), static_cast<fornani::TurretPattern>(pattern), fornani::CardinalDirection{hv}, fornani::TurretSettings{delay, duration});
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();

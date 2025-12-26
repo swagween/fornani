@@ -199,6 +199,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.enemy.test(Enemy::high_death)) { play(engine, svc, svc.sounds.get_buffer("high_death")); }
 	if (flags.enemy.test(Enemy::low_death)) { play(engine, svc, svc.sounds.get_buffer("low_death")); }
 	if (flags.enemy.test(Enemy::jump_low)) { play(engine, svc, svc.sounds.get_buffer("jump_low")); }
+	if (flags.enemy.test(Enemy::disappear)) { play(engine, svc, svc.sounds.get_buffer("disappear")); }
 
 	// item
 	if (flags.item.test(Item::heal)) { play(engine, svc, svc.sounds.get_buffer("heal"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }

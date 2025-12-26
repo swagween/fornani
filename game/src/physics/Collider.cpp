@@ -194,7 +194,6 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 
 void Collider::detect_map_collision(world::Map& map) {
 	if (has_attribute(ColliderAttributes::no_map_collision)) { return; }
-	if (has_attribute(ColliderAttributes::no_collision)) { return; }
 	flags.external_state.reset(ExternalState::on_ramp);
 	flags.external_state.reset(ExternalState::tile_debug_flag);
 	flags.perma_state = {};
@@ -221,7 +220,6 @@ void Collider::detect_map_collision(world::Map& map) {
 }
 
 void Collider::correct_x(sf::Vector2f mtv, bool has_velocity) {
-	if (has_attribute(ColliderAttributes::no_collision)) { return; }
 	if (has_attribute(ColliderAttributes::custom_resolution)) { return; }
 	auto xdist = predictive_horizontal.get_position().x + horizontal_detector_buffer - physics.position.x;
 	auto correction = xdist + mtv.x;
@@ -229,8 +227,7 @@ void Collider::correct_x(sf::Vector2f mtv, bool has_velocity) {
 	if (!has_velocity) { physics.zero_x(); }
 }
 
-void Collider::correct_y(sf::Vector2f mtv) {
-	if (has_attribute(ColliderAttributes::no_collision)) { return; }
+void Collider::correct_y(sf::Vector2f mtv, bool ricochet) {
 	if (has_attribute(ColliderAttributes::custom_resolution)) { return; }
 	// for large mtv values, overcorrect to prevent clipping
 	if (ccm::abs(mtv.x) > 12.f || ccm::abs(mtv.y) > 12.f) {
@@ -240,11 +237,10 @@ void Collider::correct_y(sf::Vector2f mtv) {
 	auto ydist = predictive_vertical.get_position().y + vertical_detector_buffer - physics.position.y;
 	auto correction = ydist + mtv.y;
 	physics.position.y += correction;
-	physics.zero_y();
+	ricochet ? physics.ricochet_vertically() : physics.zero_y();
 }
 
 void Collider::correct_x_y(sf::Vector2f mtv) {
-	if (has_attribute(ColliderAttributes::no_collision)) { return; }
 	if (has_attribute(ColliderAttributes::custom_resolution)) { return; }
 	auto xdist = predictive_combined.get_position().x - physics.position.x;
 	auto correction = xdist + mtv.x;
@@ -257,7 +253,6 @@ void Collider::correct_x_y(sf::Vector2f mtv) {
 }
 
 void Collider::correct_corner(sf::Vector2f mtv) {
-	if (has_attribute(ColliderAttributes::no_collision)) { return; }
 	if (has_attribute(ColliderAttributes::custom_resolution)) { return; }
 	if (ccm::abs(mtv.x) >= ccm::abs(mtv.y)) {
 		physics.position.x = predictive_combined.get_position().x + mtv.x;
@@ -284,6 +279,7 @@ void Collider::resolve_depths() {
 }
 
 void Collider::handle_collision(ICollider& other) {
+	if (has_attribute(ColliderAttributes::no_collision)) { return; }
 	if (other.should_exclude(*this)) { return; }
 	if (other.has_attribute(ColliderAttributes::sturdy) && should_exclude_resolution_with(other)) { return; }
 	if (other.has_attribute(ColliderAttributes::fixed)) { return; }
@@ -308,39 +304,6 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 
 	flags.collision = {};
 
-	// store all four mtvs
-	/*mtvs.combined = predictive_combined.get_MTV(predictive_combined, collider);
-	mtvs.vertical = predictive_vertical.get_MTV(predictive_vertical, collider);
-	mtvs.horizontal = predictive_horizontal.get_MTV(predictive_horizontal, collider);
-	mtvs.actual = bounding_box.get_MTV(bounding_box, collider);
-	if (!util::same_sign(velocity.y, mtvs.vertical.y)) { velocity.y = 0.f; }
-	if (!util::same_sign(velocity.x, mtvs.horizontal.x)) { velocity.x = 0.f; }
-
-	if (collision_depths && crusher) { collision_depths.value().calculate(*this, collider); }
-
-	bool corner_collision{true};
-	if (predictive_vertical.SAT(collider)) {
-		mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
-		if (flags.collision.test(Collision::has_bottom_collision) && physics.apparent_velocity().y > vert_threshold) {
-			flags.state.set(State::just_landed);
-			flags.animation.set(Animation::just_landed);
-		}
-		corner_collision = false;
-		flags.external_state.set(ExternalState::collider_collision);
-		flags.external_state.set(ExternalState::vert_collider_collision);
-
-		if (flags.general.test(General::soft)) {
-			correct_y(mtvs.vertical + velocity);
-		} else {
-			if (flags.collision.test(Collision::has_top_collision)) {
-				flags.external_state.set(ExternalState::jumped_into);
-				correct_y(mtvs.vertical + velocity);
-			} else if (!flags.movement.test(Movement::jumping)) {
-				correct_y(mtvs.vertical + velocity);
-			}
-		}
-	}*/
-
 	mtvs.combined = predictive_combined.get_MTV(predictive_combined, collider);
 	mtvs.vertical = predictive_vertical.get_MTV(predictive_vertical, collider);
 	mtvs.horizontal = predictive_horizontal.get_MTV(predictive_horizontal, collider);
@@ -361,7 +324,8 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 		flags.external_state.set(ExternalState::vert_collider_collision);
 		if (physics.apparent_velocity().y < 0.f && predictive_vertical.top() < collider.top()) {
 		} else if (!flags.movement.test(Movement::jumping)) {
-			correct_y(mtvs.vertical + velocity);
+			auto ricochet = predictive_vertical.top() > collider.top() && velocity.y > 0.f;
+			correct_y(mtvs.vertical + velocity, ricochet);
 		}
 		vert = true;
 	}
@@ -379,22 +343,6 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 		correct_corner(mtvs.combined);
 	}
 
-	/*if (predictive_horizontal.SAT(collider)) {
-		mtvs.horizontal.x > 0.f ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision);
-		corner_collision = false;
-		flags.dash.set(Dash::dash_cancel_collision);
-		flags.external_state.set(ExternalState::collider_collision);
-		flags.external_state.set(ExternalState::horiz_collider_collision);
-		flags.external_state.reset(ExternalState::vert_collider_collision);
-		auto has_velocity = velocity.length() > constants::tiny_value;
-		correct_x(mtvs.horizontal + velocity, has_velocity);
-	}
-	if (predictive_combined.overlaps(collider) && corner_collision) {
-		flags.collision.set(Collision::any_collision);
-		flags.dash.set(Dash::dash_cancel_collision);
-		flags.external_state.set(ExternalState::collider_collision);
-		correct_corner(mtvs.combined + velocity);
-	}*/
 	if (wallslider.overlaps(collider)) { wallslider.vertices.at(0).x > collider.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
 
 	if (jumpbox.SAT(collider) && !flags.movement.test(Movement::jumping)) {

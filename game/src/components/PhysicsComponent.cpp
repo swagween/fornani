@@ -94,6 +94,12 @@ void PhysicsComponent::zero_y() {
 	real_velocity.y *= -elasticity;
 }
 
+void PhysicsComponent::ricochet_vertically() {
+	acceleration.y = 0.0f;
+	velocity.y = maximum_velocity.y;
+	real_velocity.y = maximum_velocity.y;
+}
+
 void PhysicsComponent::hitstun() {}
 
 void PhysicsComponent::set_friction_componentwise(sf::Vector2f fric) {

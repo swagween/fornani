@@ -69,6 +69,13 @@ struct Attributes {
 	int respawn_distance{};
 	float gravity{};
 	EnemySize size{EnemySize::medium};
+	float treasure_chance{};
+};
+
+struct Treasure {
+	float drop_chance{};
+	std::string tag{};
+	bool mythic{};
 };
 
 struct Flags {
@@ -93,6 +100,7 @@ class Enemy : public Mobile {
 	void handle_player_collision(player::Player& player) const;
 	void handle_collision(shape::Collider& other);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
+	void spawn_treasure(automa::ServiceProvider& svc, world::Map& map);
 	void on_crush(world::Map& map);
 	bool seek_home(world::Map& map);
 	void set_channel(EnemyChannel to) { Animatable::set_channel(static_cast<int>(to)); }
@@ -189,6 +197,8 @@ class Enemy : public Mobile {
 	sf::Vector2f m_random_offset{};
 	sf::Vector2f m_native_offset{};
 	gui::HealthBar m_health_bar;
+
+	std::optional<std::vector<Treasure>> m_treasure{};
 };
 
 } // namespace fornani::enemy

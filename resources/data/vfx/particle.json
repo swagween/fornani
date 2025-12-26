@@ -35,15 +35,15 @@
 	},
 
 	"dash_kick": {
-		"load": 10,
+		"load": 6,
 		"rate": 120.0,
 		"expulsion": 40.0,
 		"expulsion_variance": 38.0,
 		"cone": 0.3,
-		"friction": 0.995,
+		"friction": 0.998,
 		"elasticity": 0.9,
 		"gravity": 0.0,
-		"lifespan": 800,
+		"lifespan": 400,
 		"lifespan_variance": 200,
 		"dimensions": [ 4, 4 ],
 		"animated": false,
@@ -294,6 +294,24 @@
 		"colliding": true,
 		"fader": true,
 		"color": "fire"
+	},
+
+	"white_fireworks": {
+		"load": 50,
+		"rate": 100.0,
+		"expulsion": 130.0,
+		"expulsion_variance": 70.0,
+		"cone": 6.28,
+		"friction": 0.99,
+		"elasticity": 0.9,
+		"gravity": 0.0,
+		"lifespan": 800,
+		"lifespan_variance": 400,
+		"dimensions": [ 4, 4 ],
+		"animated": false,
+		"colliding": true,
+		"fader": true,
+		"color": "periwinkle"
 	},
 
 	"incinerite": {

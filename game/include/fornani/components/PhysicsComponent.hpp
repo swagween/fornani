@@ -64,6 +64,7 @@ class PhysicsComponent {
 	void zero();
 	void zero_x();
 	void zero_y();
+	void ricochet_vertically();
 	void collide(sf::Vector2i direction);
 	void hitstun();
 	void set_constant_friction(sf::Vector2f fric);

@@ -83,6 +83,13 @@ Platform::Platform(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f p
 	get_collider().set_attribute(shape::ColliderAttributes::custom_resolution);
 	get_collider().set_exclusion_target(shape::ColliderTrait::particle);
 	get_collider().set_attribute(shape::ColliderAttributes::crusher);
+
+	for (auto const& t : map.get_entities<Turret>()) {
+		if (t->get_world_position() == position) {
+			m_turret = t;
+			t->set_flag(TurretFlags::platform);
+		}
+	}
 }
 
 void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -90,18 +97,23 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	switch_up.update();
 
 	m_old_position != get_collider().physics.position ? flags.state.set(PlatformState::moving) : flags.state.reset(PlatformState::moving);
+	if (m_turret) { m_turret.value()->Turret::set_position(get_collider().physics.position); }
 
-	// map changes
-
-	// platform changes
-	// handle platform collisions
-	/*if (!switch_up.running()) {
-		for (auto& platform : map.platforms) {
-			if (platform.get() != this && native_direction.lnr != platform->native_direction.lnr) { get_collider().handle_collider_collision(platform->get_collider().hurtbox, true); }
-		}
-	}*/
 	// init direction to oppose player
 	direction.lnr = player.controller.direction.lnr == LNR::left ? LNR::right : LNR::left;
+	if (flags.attributes.test(PlatformAttributes::player_activated)) {
+		if (player.get_collider().jumpbox.overlaps(get_collider().bounding_box)) {
+			path_position += metrics.speed;
+			state = 7;
+		} else {
+			state = 8;
+		}
+	} else {
+		state = flags.attributes.test(PlatformAttributes::sticky) ? 0 : 1;
+		path_position += metrics.speed;
+	}
+	if (path_position > 1.0f) { path_position = 0.0f; }
+	if (path_position < 0.0f) { path_position = 0.0f; }
 
 	for (std::size_t x = 0; x < track.size() - 1; ++x) {
 		auto const start = track[x];
@@ -124,6 +136,10 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			break;
 		} else {
 			edge_start = edge_end;
+			if (flags.attributes.test(PlatformAttributes::repeating)) {
+				path_position = 0.f;
+				edge_start = 0.f;
+			}
 		}
 	}
 	if (player.controller.direction.lnr != direction.lnr && flags.attributes.test(PlatformAttributes::player_controlled) && player.get_collider().jumpbox.overlaps(get_collider().bounding_box)) { switch_directions(); }
@@ -138,19 +154,6 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			}
 		}
 	}
-	if (flags.attributes.test(PlatformAttributes::player_activated)) {
-		if (player.get_collider().jumpbox.overlaps(get_collider().bounding_box)) {
-			path_position += metrics.speed;
-			state = 7;
-		} else {
-			state = 8;
-		}
-	} else {
-		state = flags.attributes.test(PlatformAttributes::sticky) ? 0 : 1;
-		path_position += metrics.speed;
-	}
-	if (path_position > 1.0f) { path_position = 0.0f; }
-	if (path_position < 0.0f) { path_position = 0.0f; }
 
 	counter.update();
 	animation.update();
@@ -159,6 +162,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 void Platform::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	constexpr auto skip_value{16.f};
 	player.get_collider().handle_collider_collision(get_collider());
+	// if (player.get_collider().flags.state.test(shape::State::ceiling_collision)) { player.get_collider().physics.acceleration.y = player.physics_stats.maximum_velocity.y; }
 	if (player.get_collider().jumpbox.overlaps(get_collider().bounding_box) && !player.get_collider().perma_grounded() && is_sticky()) {
 		auto stuck_left = player.get_collider().has_left_wallslide_collision() && get_collider().physics.velocity.x < 0.f;
 		auto stuck_right = player.get_collider().has_right_wallslide_collision() && get_collider().physics.velocity.x > 0.f;

@@ -46,6 +46,7 @@ void Platform::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 
 void Platform::init(fornani::automa::ServiceProvider& svc) {
 	repeatable = true;
+	stackable = true;
 	auto offset = sf::Vector2i{};
 	if (get_grid_dimensions().x == 1) { offset = {0, 0}; }
 	if (get_grid_dimensions().x == 2) { offset = {16, 0}; }

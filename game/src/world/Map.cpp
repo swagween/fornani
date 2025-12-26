@@ -362,7 +362,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& platform : platforms) { platform->post_update(svc, *this, *player); }
 
 	player->on_crush(*this);
-	for (auto& enemy : enemy_catalog.enemies) { enemy->on_crush(*this); }
 
 	if (m_entities) {
 		for (auto& entity : m_entities.value().variables.entities) { entity->update(svc, *this, console, *player); }
@@ -640,6 +639,13 @@ void Map::spawn_enemy(int id, sf::Vector2f pos, int variant) {
 	enemy_spawns.push_back({pos, id, variant});
 	spawn_counter.update();
 	flags.state.set(LevelState::spawn_enemy);
+}
+
+void Map::spawn_chest(automa::ServiceProvider& svc, enemy::Treasure const& treasure, sf::Vector2f pos, sf::Vector2f vel) {
+	chests.push_back(std::make_unique<entity::Chest>(svc, *this, -1, entity::ChestType::item, svc.data.item_id_from_label(treasure.tag)));
+	chests.back()->set_position(pos);
+	chests.back()->get_collider().physics.velocity = vel;
+	chests.back()->set_attribute(entity::ChestAttributes::mythic, treasure.mythic);
 }
 
 void Map::reveal_npc(std::string_view label) {

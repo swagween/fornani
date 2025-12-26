@@ -126,6 +126,7 @@ class PlayerController {
 
 	struct {
 		util::Cooldown inspect{};
+		util::Cooldown dash_kick{};
 	} cooldowns{};
 
 	Player* m_player;

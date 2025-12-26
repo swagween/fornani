@@ -1,26 +1,27 @@
-#include "fornani/utils/Random.hpp"
+
+#include <fornani/utils/Random.hpp>
 
 namespace fornani::random {
 
 namespace {
-std::default_random_engine engine{std::random_device{}()};
-std::default_random_engine seeded_engine{std::random_device{}()};
+
 struct {
 	int vendor;
 	int test;
 } seeds = {1997, 2007};
+
 } // namespace
 
-int random_range(int lo, int hi) { return std::uniform_int_distribution<int>{lo, hi}(engine); }
-
 // Generates a random integer in the range [lo, hi] using a provided seed
-int random_range(int lo, int hi, int seed) {
-	seeded_engine.seed(seed);
-	return std::uniform_int_distribution<int>{lo, hi}(seeded_engine);
+int random_range(int lo, int hi) { return std::uniform_int_distribution<int>{lo, hi}(engine()); }
+
+int random_range(int lo, int hi, std::uint32_t seed) {
+	std::mt19937 gen(seed);
+	return std::uniform_int_distribution<int>{lo, hi}(gen);
 }
 
 // Generates a random float in the range [lo, hi]
-float random_range_float(float lo, float hi) { return std::uniform_real_distribution<float>{lo, hi}(engine); }
+float random_range_float(float lo, float hi) { return std::uniform_real_distribution<float>{lo, hi}(engine()); }
 
 // Generates a random 2D vector of floats with both components in the range [lo, hi]
 sf::Vector2f random_vector_float(float lo, float hi) {
@@ -36,37 +37,28 @@ sf::Vector2f random_vector_float(sf::Vector2f lo, sf::Vector2f hi) {
 	return {randx, randy};
 }
 
-// Returns 0 or 1 based on a coin flip using an unsigned logic
-int unsigned_coin_flip() {
-	auto const result = std::uniform_real_distribution<float>{-1.0f, 1.0f}(engine);
-	return (result > 0.0f) ? 0 : 1;
-}
+int unsigned_coin_flip() { return std::bernoulli_distribution(0.5)(engine()) ? 1 : 0; }
 
-// Returns -1 or 1 based on a coin flip using a signed logic
-int signed_coin_flip() {
-	auto const result = std::uniform_real_distribution<float>{-1.0f, 1.0f}(engine);
-	return (result > 0.0f) ? -1 : 1;
-}
+int signed_coin_flip() { return std::bernoulli_distribution(0.5)(engine()) ? 1 : -1; }
 
 // Generates a random float following a normal distribution with the given mean and standard deviation
-float random_range_normal(float mean, float std_dev) { return std::normal_distribution<float>{mean, std_dev}(engine); }
+float random_range_normal(float mean, float std_dev) { return std::normal_distribution<float>{mean, std_dev}(engine()); }
 
 // Returns true with a probability corresponding to the provided percent chance
-bool percent_chance(float percent) {
-	auto const result = std::uniform_real_distribution<float>{0.0f, 100.0f}(engine);
-	return result < percent;
+bool percent_chance(float percent) { return std::uniform_real_distribution<float>{0.0f, 100.0f}(engine()) < percent; }
+
+int get_vendor_seed() { return static_cast<int>(seeds.vendor); }
+
+int get_test_seed() { return static_cast<int>(seeds.test); }
+
+void set_vendor_seed() {
+	seeds.vendor = static_cast<uint32_t>(random_range(0, 100000));
+	engine().seed(seeds.vendor);
 }
 
-// Accessor for the vendor seed
-int get_vendor_seed() { return seeds.vendor; }
-
-// Accessor for the test seed
-int get_test_seed() { return seeds.test; }
-
-// Sets a new test seed
-void set_test_seed() { seeds.test = random_range(0, 100000); }
-
-// Sets a new vendor seed
-void set_vendor_seed() { seeds.vendor = random_range(0, 100000); }
+void set_test_seed() {
+	seeds.test = static_cast<uint32_t>(random_range(0, 100000));
+	engine().seed(seeds.test);
+}
 
 } // namespace fornani::random

@@ -93,11 +93,11 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		player.get_collider().physics.forced_momentum = get_collider().physics.forced_momentum;
 	}
 
-	player.on_crush(map);
+	/*player.on_crush(map);
 	for (auto& enemy : map.enemy_catalog.enemies) {
 		if (enemy->has_map_collision()) { enemy->get_collider().handle_collider_collision(*m_collider.get()); }
 		enemy->on_crush(map);
-	}
+	}*/
 
 	auto test_position = is_moving() ? get_collider().get_center() : get_collider().get_bottom();
 

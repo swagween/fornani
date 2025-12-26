@@ -2,6 +2,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <fornani/entity/Turret.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/physics/RegisteredCollider.hpp>
@@ -42,6 +43,8 @@ class Platform : public Animatable {
 
   private:
 	shape::RegisteredCollider m_collider;
+	std::optional<Turret*> m_turret{};
+
 	struct {
 		float horizontal{};
 		float vertical{};

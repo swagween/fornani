@@ -98,6 +98,7 @@ bool EntitySet::has_entity_at(sf::Vector2<std::uint32_t> pos, bool highlighted_o
 }
 
 bool EntitySet::overlaps(Entity& other) const {
+	if (other.stackable) { return false; }
 	for (auto i{0u}; i < other.get_grid_dimensions().x; ++i) {
 		for (auto j{0u}; j < other.get_grid_dimensions().y; ++j) {
 			if (has_entity_at(other.get_grid_position() + sf::Vector2u{i, j})) { return true; }

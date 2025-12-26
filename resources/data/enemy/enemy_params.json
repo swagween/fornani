@@ -717,6 +717,26 @@
 			"rare_drops": true,
 			"sturdy": true,
 			"semipermanent": true
+		},
+		"treasure": {
+			"chance": 0.1,
+			"items": [
+				{
+					"tag": "silver_bracelet",
+					"chance": 0.8,
+					"mythic": false
+				},
+				{
+					"tag": "alabaster_statue",
+					"chance": 0.19,
+					"mythic": false
+				},
+				{
+					"tag": "mythic_rhenite",
+					"chance": 0.01,
+					"mythic": true
+				}
+			]
 		}
 	},
 	"minion": {

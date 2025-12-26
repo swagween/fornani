@@ -28,6 +28,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	auto const& in_audio = in_data["audio"];
 	auto const& in_animation = in_data["animation"];
 	auto const& in_general = in_data["general"];
+	auto const& in_treasure = in_data["treasure"];
 
 	auto dimensions = sf::Vector2f{in_physical["dimensions"][0].as<float>(), in_physical["dimensions"][1].as<float>()};
 
@@ -90,7 +91,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	if (!flags.general.test(GeneralFlags::uncrushable)) { get_collider().collision_depths = util::CollisionDepth(); }
 
 	if (!flags.general.test(GeneralFlags::player_collision)) { get_collider().set_exclusion_target(shape::ColliderTrait::player); }
-	if (!flags.general.test(GeneralFlags::map_collision)) { get_collider().set_attribute(shape::ColliderAttributes::no_collision); }
+	if (!flags.general.test(GeneralFlags::map_collision)) { get_collider().set_attribute(shape::ColliderAttributes::no_map_collision); }
 	get_collider().set_exclusion_target(shape::ColliderTrait::circle);
 	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 	get_collider().set_exclusion_target(shape::ColliderTrait::secondary);
@@ -106,7 +107,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 		get_secondary_collider().set_trait(shape::ColliderTrait::secondary);
 		get_secondary_collider().set_trait(shape::ColliderTrait::enemy);
 		if (!flags.general.test(GeneralFlags::player_collision)) { get_secondary_collider().set_exclusion_target(shape::ColliderTrait::player); }
-		if (!flags.general.test(GeneralFlags::map_collision)) { get_secondary_collider().set_attribute(shape::ColliderAttributes::no_collision); }
+		if (!flags.general.test(GeneralFlags::map_collision)) { get_secondary_collider().set_attribute(shape::ColliderAttributes::no_map_collision); }
 		get_secondary_collider().set_exclusion_target(shape::ColliderTrait::circle);
 		get_secondary_collider().set_exclusion_target(shape::ColliderTrait::npc);
 		get_secondary_collider().set_resolution_exclusion_target(shape::ColliderTrait::player);
@@ -116,6 +117,12 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 			get_secondary_collider().set_attribute(shape::ColliderAttributes::sturdy);
 		}
 		if (get_collider().has_attribute(shape::ColliderAttributes::crusher)) { get_secondary_collider().set_attribute(shape::ColliderAttributes::crusher); }
+	}
+
+	if (in_treasure.is_object()) {
+		m_treasure = std::vector<Treasure>{};
+		attributes.treasure_chance = in_treasure["chance"].as<float>();
+		for (auto const& entry : in_treasure["items"].as_array()) { m_treasure->push_back(Treasure{entry["chance"].as<float>(), entry["tag"].as_string(), entry["mythic"].as_bool()}); }
 	}
 
 	center();
@@ -152,6 +159,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
 		map.active_loot.push_back(item::Loot(svc, map, player, attributes.drop_range, attributes.loot_multiplier, get_collider().get_center(), 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id));
+		if (random::percent_chance(attributes.treasure_chance * 100.f)) { spawn_treasure(svc, map); }
 		switch (attributes.size) {
 		case EnemySize::tiny: svc.soundboard.flags.enemy.set(audio::Enemy::high_death); break;
 		case EnemySize::small: svc.soundboard.flags.enemy.set(audio::Enemy::high_death); break;
@@ -161,6 +169,8 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		default: svc.soundboard.flags.enemy.set(audio::Enemy::standard_death); break;
 		}
 		map.spawn_counter.update(-1);
+		get_collider().set_flag(shape::ColliderFlags::intangible);
+		get_collider().set_attribute(shape::ColliderAttributes::no_collision);
 	}
 	flags.triggers = {};
 	if (map.off_the_bottom(get_collider().physics.position)) {
@@ -170,7 +180,6 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		map.effects.push_back(entity::Effect(svc, "large_explosion", get_collider().get_center(), get_collider().physics.apparent_velocity() * 0.5f, visual.effect_type));
 	}
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) {
-		get_collider().set_flag(shape::ColliderFlags::no_physics);
 		health_indicator.update(svc, get_collider().physics.position);
 		post_death.update();
 		return;
@@ -219,9 +228,11 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 	get_collider().physics.acceleration = {};
 
+	on_crush(map);
+
 	if (player.get_collider().wallslider.overlaps(get_collider().bounding_box) && player.controller.is_dashing() && !player.controller.is(player::AbilityType::dash_kick) && !get_collider().has_attribute(shape::ColliderAttributes::sturdy)) {
+		if (!player.has_flag_set(player::State::dash_kick)) { hurt(4.f); }
 		player.set_flag(player::State::dash_kick);
-		hurt(4.f);
 		get_collider().physics.acceleration.y = -280.f;
 	}
 
@@ -311,6 +322,13 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 		svc.soundboard.flags.world.set(audio::World::projectile_hit);
 	}
 	if (!proj.persistent() && (!died() || just_died())) { proj.destroy(false); }
+}
+
+void Enemy::spawn_treasure(automa::ServiceProvider& svc, world::Map& map) {
+	if (!m_treasure) { return; }
+	if (m_treasure->empty()) { return; }
+	Treasure const& chosen = random::weightedChoice(*m_treasure, [](Treasure const& t) { return t.drop_chance; });
+	map.spawn_chest(svc, chosen, get_collider().get_center(), random::random_vector_float({-1.f, 1.f}, {-12.f, -20.f}));
 }
 
 void Enemy::hurt(float amount) {

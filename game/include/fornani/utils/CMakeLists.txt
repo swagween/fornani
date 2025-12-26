@@ -10,6 +10,7 @@ nani_add_headers(
         Decoder.hpp
         Direction.hpp
         Fader.hpp
+        Flaggable.hpp
         ID.hpp
         IWorldPositionable.hpp
         Math.hpp

@@ -154,5 +154,17 @@
 			[ 0, 0 ],
 			[ 0, 32 ]
 		]
+	},
+	"standard_down_up_repeater": {
+		"sticky": true,
+		"loop": true,
+		"repeating": true,
+		"player_activated": false,
+		"player_controlled": false,
+		"speed": 0.0005,
+		"track": [
+			[ 0, 32 ],
+			[ 0, 0 ]
+		]
 	}
 }
