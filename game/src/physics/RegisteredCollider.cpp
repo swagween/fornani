@@ -19,8 +19,8 @@ RegisteredCollider::RegisteredCollider(world::Map& map, float radius) : m_map(&m
 }
 
 RegisteredCollider::~RegisteredCollider() {
-	if (m_collider) { m_map->unregister_collider(m_collider.value()); }
-	if (m_circle_collider) { m_map->unregister_collider(m_circle_collider.value()); }
+	if (m_collider.has_value()) { m_map->unregister_collider(m_collider.value()); }
+	if (m_circle_collider.has_value()) { m_map->unregister_collider(m_circle_collider.value()); }
 }
 
 } // namespace fornani::shape

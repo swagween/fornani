@@ -15,9 +15,12 @@ enum class HV { horizontal, vertical };
 
 enum class DirectionFlags { locked };
 
+class Direction;
+
 class SimpleDirection {
   public:
 	SimpleDirection() = default;
+	SimpleDirection(Direction const to);
 	SimpleDirection(LR to) : lr{to} {}
 
 	void set(LR to) { lr = to; }
@@ -80,9 +83,11 @@ struct Direction {
 	Direction(sf::Vector2i preset) : lnr{preset.x == 0 ? LNR::neutral : preset.x == 1 ? LNR::right : LNR::left}, und{preset.y == 0 ? UND::neutral : preset.y == 1 ? UND::up : UND::down} {}
 	Direction(sf::Vector2i preset, bool world_orientation) : lnr{preset.x == 0 ? LNR::neutral : preset.x == 1 ? LNR::right : LNR::left}, und{preset.y == 0 ? UND::neutral : preset.y == -1 ? UND::up : UND::down} {}
 
+	bool operator==(Direction const& other) const { return other.lnr == lnr && other.und == und; }
+	bool operator!=(Direction const& other) const { return other.lnr != lnr || other.und != und; }
+
 	LNR lnr{LNR::neutral};
 	UND und{UND::neutral};
-	Inter inter{Inter::north};
 
 	[[nodiscard]] auto up() const -> bool { return und == UND::up; }
 	[[nodiscard]] auto down() const -> bool { return und == UND::down; }
@@ -98,23 +103,24 @@ struct Direction {
 	void lock() { m_flags.set(DirectionFlags::locked); }
 	void unlock() { m_flags.reset(DirectionFlags::locked); }
 
-	constexpr void set_intermediate(bool const left, bool const right, bool const up, bool const down) {
+	[[nodiscard]] Inter get_intermediate(bool const left, bool const right, bool const up, bool const down) const {
 
 		// no inputs
-		inter = lnr == LNR::left ? Inter::west : Inter::east;
+		auto ret = lnr == LNR::left ? Inter::west : Inter::east;
 
-		if (up) { inter = Inter::north; }
-		if (down) { inter = Inter::south; }
+		if (up) { ret = Inter::north; }
+		if (down) { ret = Inter::south; }
 		if (left) {
-			inter = Inter::west;
-			if (up) { inter = Inter::northwest; }
-			if (down) { inter = Inter::southwest; }
+			ret = Inter::west;
+			if (up) { ret = Inter::northwest; }
+			if (down) { ret = Inter::southwest; }
 		}
 		if (right) {
-			inter = Inter::east;
-			if (up) { inter = Inter::northeast; }
-			if (down) { inter = Inter::southeast; }
+			ret = Inter::east;
+			if (up) { ret = Inter::northeast; }
+			if (down) { ret = Inter::southeast; }
 		}
+		return ret;
 	}
 
 	void neutralize_und() { und = UND::neutral; }
@@ -130,20 +136,6 @@ struct Direction {
 	std::string print() const { return print_und() + ", " + print_lnr(); }
 	std::string print_und() const { return und == UND::up ? "up" : (und == UND::neutral ? "neutral" : "down"); }
 	std::string print_lnr() const { return lnr == LNR::left ? "left" : (lnr == LNR::neutral ? "neutral" : "right"); }
-	std::string print_intermediate() const {
-		switch (inter) {
-		default:
-		case Inter::north: return "north"; break;
-		case Inter::south: return "south"; break;
-		case Inter::east: return "east"; break;
-		case Inter::west: return "west"; break;
-		case Inter::northwest: return "northwest"; break;
-		case Inter::northeast: return "northeast"; break;
-		case Inter::southwest: return "southwest"; break;
-		case Inter::southeast: return "southeast"; break;
-		}
-		return "null";
-	}
 
   private:
 	util::BitFlags<DirectionFlags> m_flags{};

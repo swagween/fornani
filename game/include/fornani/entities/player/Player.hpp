@@ -3,6 +3,7 @@
 
 #include <fornani/components/PhysicsComponent.hpp>
 #include <fornani/components/SteeringBehavior.hpp>
+#include <fornani/entities/Mobile.hpp>
 #include <fornani/entities/item/Drop.hpp>
 #include <fornani/entities/packages/Caution.hpp>
 #include <fornani/entities/packages/Health.hpp>
@@ -102,7 +103,7 @@ struct AbilityUsage {
 	util::Counter doublejump{};
 };
 
-class Player final : public Animatable {
+class Player final : public Mobile {
   public:
 	Player(automa::ServiceProvider& svc);
 	void register_with_map(world::Map& map);
@@ -145,8 +146,8 @@ class Player final : public Animatable {
 	[[nodiscard]] auto is_in_custom_sleep_event() const -> bool { return m_animation_machine.is_sleep_timer_running(); }
 	[[nodiscard]] auto death_animation_over() -> bool { return m_animation_machine.death_over(); }
 	[[nodiscard]] auto just_died() const -> bool { return flags.state.test(State::killed); }
-	[[nodiscard]] auto height() const -> float { return collider.value().get().get_reference().dimensions.y; }
-	[[nodiscard]] auto width() const -> float { return collider.value().get().get_reference().dimensions.x; }
+	[[nodiscard]] auto height() const -> float { return get_collider().dimensions.y; }
+	[[nodiscard]] auto width() const -> float { return get_collider().dimensions.x; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return collider.has_value() ? get_collider().get_center() : m_sprite_position; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return collider.has_value() ? get_collider().physics.position : m_sprite_position; }
 	[[nodiscard]] auto arsenal_size() const -> std::size_t { return arsenal ? arsenal.value().size() : 0; }
@@ -167,13 +168,13 @@ class Player final : public Animatable {
 	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2f { return collider.value().get().get_reference().get_center() + m_camera.target_point; }
 	[[nodiscard]] auto get_facing_scale() const -> sf::Vector2f { return controller.facing_left() ? sf::Vector2f{-1.f, 1.f} : sf::Vector2f{1.f, 1.f}; }
 	[[nodiscard]] auto is_in_animation(AnimState check) const -> bool { return m_animation_machine.get_state() == check; }
-	[[nodiscard]] auto get_desired_direction() const -> SimpleDirection { return m_directions.desired; }
-	[[nodiscard]] auto get_actual_direction() const -> SimpleDirection { return m_directions.actual; }
+	[[nodiscard]] auto get_desired_direction() const -> SimpleDirection { return SimpleDirection{directions.desired}; }
+	[[nodiscard]] auto get_actual_direction() const -> SimpleDirection { return SimpleDirection{directions.actual}; }
 	[[nodiscard]] auto get_piggybacker_id() const -> int { return piggybacker ? piggybacker->get_id() : 0; }
 	[[nodiscard]] bool is_intangible() const;
 	[[nodiscard]] auto has_flag_set(State const test) const -> bool { return flags.state.test(test); }
 
-	void set_desired_direction(SimpleDirection to) { m_directions.desired = to; }
+	void set_desired_direction(SimpleDirection to) { directions.desired = Direction{to}; }
 
 	void set_camera_bounds(sf::Vector2f to_bounds) { m_camera.camera.set_bounds(to_bounds); }
 	void force_camera_center() { m_camera.camera.force_center(get_camera_focus_point()); }
@@ -217,8 +218,6 @@ class Player final : public Animatable {
 	arms::Weapon& equipped_weapon();
 	void push_to_loadout(std::string_view tag, bool from_save = false);
 	void pop_from_loadout(std::string_view tag);
-
-	shape::Collider& get_collider() const { return collider.value().get().get_reference(); }
 
 	// map helpers
 	SimpleDirection entered_from() const;
@@ -274,7 +273,7 @@ class Player final : public Animatable {
 	[[nodiscard]] auto can_dash_kick() const -> bool;
 
   private:
-	void set_facing_direction(SimpleDirection to_direction) { m_directions.desired = to_direction; }
+	void set_facing_direction(SimpleDirection to_direction) { directions.desired = to_direction; }
 
 	PlayerAnimation m_animation_machine;
 
@@ -292,9 +291,6 @@ class Player final : public Animatable {
 		components::PhysicsComponent physics{};
 	} m_lighting{};
 
-	std::optional<shape::RegisteredCollider> owned_collider;
-	std::optional<std::reference_wrapper<shape::RegisteredCollider>> collider;
-
 	struct {
 		float stop{5.8f};
 		float wallslide{-1.5f};
@@ -304,16 +300,8 @@ class Player final : public Animatable {
 		float quick_turn{0.9f};
 	} thresholds{};
 
-	struct {
-		Direction left_squish{};
-		Direction right_squish{};
-		Direction movement{};
-	} directions{};
-
-	struct {
-		SimpleDirection desired{};
-		SimpleDirection actual{};
-	} m_directions{};
+	Direction left_squish{};
+	Direction right_squish{};
 
 	struct {
 		Camera camera{};

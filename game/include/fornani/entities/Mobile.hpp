@@ -19,6 +19,7 @@ class Mobile : public Animatable {
 	Mobile(automa::ServiceProvider& svc, world::Map& map, std::string_view label, sf::Vector2i dimensions = constants::i_cell_vec, bool include_collider = true);
 	Mobile(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions = constants::i_cell_vec);
 	virtual void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
+	void register_collider(world::Map& map, sf::Vector2f dimensions);
 	void face_player(player::Player& player);
 	[[nodiscard]] bool player_behind(player::Player& player) const;
 	[[nodiscard]] auto get_actual_direction() const -> Direction { return directions.actual; }

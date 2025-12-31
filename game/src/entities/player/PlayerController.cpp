@@ -194,8 +194,6 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x];
 	}
 
-	direction.set_intermediate(left, right, up, down);
-
 	// sprint
 	if (sprint_release) { sprint_flags.set(Sprint::released); }
 	if (grounded()) { sprint_flags = {}; }

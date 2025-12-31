@@ -1,4 +1,7 @@
+
 #include "fornani/core/Game.hpp"
+#include <steam/steam_api.h>
+#include <ctime>
 #include "fornani/automa/states/Dojo.hpp"
 #include "fornani/automa/states/MainMenu.hpp"
 #include "fornani/automa/states/SettingsMenu.hpp"
@@ -7,10 +10,6 @@
 #include "fornani/gui/ActionContextBar.hpp"
 #include "fornani/setup/WindowManager.hpp"
 #include "fornani/utils/Math.hpp"
-
-#include <steam/steam_api.h>
-#include <ctime>
-
 #include "fornani/utils/Random.hpp"
 
 namespace fornani {

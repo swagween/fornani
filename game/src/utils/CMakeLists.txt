@@ -1,5 +1,6 @@
 nani_add_sources(
         Decoder.cpp
+        Direction.cpp
         Fader.cpp
         IWorldPositionable.cpp
         NineSlice.cpp

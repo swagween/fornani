@@ -16,8 +16,8 @@ constexpr auto light_offset_v = 12.f;
 constexpr auto default_invincibility_time_v = 300;
 
 Player::Player(automa::ServiceProvider& svc)
-	: Animatable(svc, "nani", {24, 24}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, m_directions{.desired{LR::right}, .actual{LR::right}},
-	  health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, m_sprite_shake{40}, m_hurt_cooldown{64}, health{3.f} {
+	: Mobile(svc, "nani", {24, 24}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb},
+	  m_sprite_shake{40}, m_hurt_cooldown{64}, health{3.f} {
 
 	center();
 	svc.data.load_player_params(*this);
@@ -36,8 +36,7 @@ Player::Player(automa::ServiceProvider& svc)
 }
 
 void Player::register_with_map(world::Map& map) {
-	owned_collider.emplace(map, player_dimensions_v);
-	collider = *owned_collider;
+	Mobile::register_collider(map, player_dimensions_v);
 	if (has_collider()) { NANI_LOG_INFO(m_logger, "Player has a collider."); }
 	anchor_point = get_collider().physics.position + player_dimensions_v * 0.5f;
 	get_collider().collision_depths = util::CollisionDepth();
@@ -64,16 +63,15 @@ void Player::unregister_with_map() {
 }
 
 void Player::update(world::Map& map) {
-	tick();
 	if (!collider.has_value()) { return; }
 	caution.avoid_ledges(map, get_collider(), controller.direction, 8);
 	if (get_collider().collision_depths) { get_collider().collision_depths.value().reset(); }
-	get_collider().set_direction(Direction{m_directions.actual});
+	get_collider().set_direction(directions.actual);
 	cooldowns.tutorial.update();
 	if (m_hurt_cooldown.is_almost_complete()) { m_services->music_player.filter_fade_out(); }
 	m_hurt_cooldown.update();
 	distant_vicinity.set_position(get_collider().get_center() - distant_vicinity.get_dimensions() * 0.5f);
-	m_piggyback_socket = get_collider().get_top() + sf::Vector2f{-8.f * m_directions.actual.as_float(), -16.f};
+	m_piggyback_socket = get_collider().get_top() + sf::Vector2f{-8.f * directions.actual.as_float(), -16.f};
 
 	has_item_equipped(38) ? health.set_invincibility(default_invincibility_time_v * 1.3f) : health.set_invincibility(default_invincibility_time_v);
 	if (arsenal && hotbar) { has_item_equipped(35) ? equipped_weapon().set_reload_multiplier(0.5f) : equipped_weapon().set_reload_multiplier(1.f); }
@@ -138,8 +136,8 @@ void Player::update(world::Map& map) {
 	m_lighting.physics.simple_update();
 
 	// check direction switch
-	m_directions.desired = controller.last_requested_direction();
-	controller.direction.lnr = m_directions.desired.as<LNR>();
+	directions.desired = controller.last_requested_direction();
+	controller.direction.lnr = directions.desired.lnr;
 
 	if (hotbar) { hotbar.value().switch_weapon(*m_services, static_cast<int>(controller.arms_switch())); }
 	update_animation();
@@ -192,6 +190,7 @@ void Player::update(world::Map& map) {
 	if (m_services->in_game()) {
 		if (m_animation_machine.stepped() && abs(get_collider().physics.velocity.x) > 2.5f) { m_services->soundboard.play_step(map.get_tile_value_at_position(get_collider().get_below_point()), map.get_style_id()); }
 	}
+	Mobile::post_update(*m_services, map, *this);
 }
 
 void Player::simple_update() {
@@ -200,7 +199,7 @@ void Player::simple_update() {
 	m_animation_machine.update();
 	update_sprite();
 	update_antennae();
-	m_piggyback_socket = m_sprite_position + sf::Vector2f{-8.f * m_directions.actual.as_float(), -16.f};
+	m_piggyback_socket = m_sprite_position + sf::Vector2f{-8.f * directions.actual.as_float(), -16.f};
 	if (piggybacker) { piggybacker->update(*m_services, *this); }
 }
 
@@ -212,6 +211,8 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 	if (flags.state.test(State::crushed)) { return; }
 	if (piggybacker) { piggybacker->render(svc, win, cam); }
+
+	if (flags.state.consume(State::dir_switch)) { Animatable::scale({-1.f, 1.f}); }
 
 	if (arsenal && hotbar && collider.has_value()) { get_collider().flags.general.set(shape::General::complex); }
 
@@ -338,21 +339,17 @@ void Player::update_sprite() {
 
 	if (has_collider()) {
 		if (!grounded() || controller.is_dashing()) {
-			if (m_directions.desired != m_directions.actual) { m_animation_machine.triggers.set(AnimTriggers::flip); }
+			if (directions.desired != directions.actual) { request_flip(); }
 		}
+	} else {
+		if (directions.desired != directions.actual) { request_flip(); }
 	}
-	if (m_animation_machine.triggers.consume(AnimTriggers::flip)) {
-		Animatable::scale({-1.f, 1.f});
-		m_directions.actual.flip();
-	}
-
-	flags.state.reset(State::dir_switch);
 
 	Animatable::set_texture(texture_updater.get_dynamic_texture());
 }
 
 void Player::handle_turning() {
-	if (m_directions.desired != m_directions.actual) {
+	if (directions.desired != directions.actual) {
 		if (has_collider()) {
 			ccm::abs(get_collider().physics.velocity.x) > thresholds.quick_turn ? m_animation_machine.request(AnimState::sharp_turn) : m_animation_machine.request(AnimState::turn);
 		} else {
@@ -378,9 +375,10 @@ void Player::set_sleeping() {
 }
 
 void Player::set_direction(Direction to) {
-	m_directions.actual.set(to.lnr);
-	m_directions.desired.set(to.lnr);
+	directions.actual.set(to.lnr);
+	directions.desired.set(to.lnr);
 	controller.set_direction(to);
+	Animatable::set_scale(constants::f_scale_vec.componentWiseMul({to.as_float(), 1.f}));
 }
 
 void Player::piggyback(int id) {
@@ -488,12 +486,12 @@ void Player::on_crush(world::Map& map) {
 	if (!get_collider().collision_depths) { return; }
 	if (get_collider().crushed() && alive()) {
 		hurt(1024.f, true);
-		directions.left_squish.und = get_collider().horizontal_squish() ? UND::up : UND::neutral;
-		directions.left_squish.lnr = get_collider().vertical_squish() ? LNR::left : LNR::neutral;
-		directions.right_squish.und = get_collider().horizontal_squish() ? UND::down : UND::neutral;
-		directions.right_squish.lnr = get_collider().vertical_squish() ? LNR::right : LNR::neutral;
-		map.spawn_emitter(*m_services, "player_crush", get_collider().physics.position, directions.left_squish, get_collider().dimensions);
-		map.spawn_emitter(*m_services, "player_crush", get_collider().physics.position, directions.right_squish, get_collider().dimensions);
+		left_squish.und = get_collider().horizontal_squish() ? UND::up : UND::neutral;
+		left_squish.lnr = get_collider().vertical_squish() ? LNR::left : LNR::neutral;
+		right_squish.und = get_collider().horizontal_squish() ? UND::down : UND::neutral;
+		right_squish.lnr = get_collider().vertical_squish() ? LNR::right : LNR::neutral;
+		map.spawn_emitter(*m_services, "player_crush", get_collider().physics.position, left_squish, get_collider().dimensions);
+		map.spawn_emitter(*m_services, "player_crush", get_collider().physics.position, right_squish, get_collider().dimensions);
 		get_collider().collision_depths = {};
 		flags.state.set(State::crushed);
 	}
@@ -523,7 +521,7 @@ void Player::update_antennae() {
 			socket.y = -17.f;
 		}
 		if (m_animation_machine.get_frame() == 57) { socket.y = -8.f; }
-		auto sign = m_directions.desired.as_float();
+		auto sign = directions.desired.as_float();
 		socket.x = i == 0 ? 10.0f * sign : -3.f * sign;
 
 		if (m_animation_machine.get_frame() == 82) { socket.x += controller.facing_right() ? 6.f : -6.f; }

@@ -6,10 +6,6 @@
 namespace fornani {
 
 Mobile::Mobile(automa::ServiceProvider& svc, world::Map& map, std::string_view label, sf::Vector2i dimensions, bool include_collider) : Animatable(svc, label, dimensions) {
-	if (!include_collider) {
-		NANI_LOG_DEBUG(m_logger, "Collider not included with NPC.");
-		return;
-	}
 	owned_collider.emplace(map, sf::Vector2f{dimensions});
 	collider = *owned_collider;
 }
@@ -17,6 +13,11 @@ Mobile::Mobile(automa::ServiceProvider& svc, world::Map& map, std::string_view l
 Mobile::Mobile(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions) : Animatable(svc, label, dimensions) {
 	owned_collider.reset();
 	collider.reset();
+}
+
+void Mobile::register_collider(world::Map& map, sf::Vector2f dimensions) {
+	owned_collider.emplace(map, dimensions);
+	collider = *owned_collider;
 }
 
 void Mobile::face_player(player::Player& player) { directions.desired.set((player.get_collider().get_center().x < get_collider().get_center().x) ? LNR::left : LNR::right); }

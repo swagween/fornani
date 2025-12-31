@@ -196,9 +196,6 @@ class Map {
 	std::vector<Spawner> spawners{};
 	std::vector<Spike> spikes{};
 	std::vector<std::unique_ptr<SwitchButton>> switch_buttons{};
-	std::vector<std::unique_ptr<SwitchBlock>> switch_blocks{};
-	std::vector<std::unique_ptr<Destructible>> destructibles{};
-	std::vector<std::unique_ptr<Incinerite>> incinerite_blocks{};
 	std::vector<Checkpoint> checkpoints{};
 	std::vector<TimerBlock> timer_blocks{};
 	std::vector<EnemySpawn> enemy_spawns{};
@@ -283,6 +280,9 @@ class Map {
   public:
 	std::vector<std::unique_ptr<Breakable>> breakables{};
 	std::vector<std::unique_ptr<Platform>> platforms{};
+	std::vector<std::unique_ptr<SwitchBlock>> switch_blocks{};
+	std::vector<std::unique_ptr<Destructible>> destructibles{};
+	std::vector<std::unique_ptr<Incinerite>> incinerite_blocks{};
 };
 
 } // namespace fornani::world
