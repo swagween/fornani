@@ -13,6 +13,7 @@ Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scen
 	svc.data.load_trial_save(player);
 
 	player.reset_flags();
+	player.set_flag(player::State::trial);
 	svc.soundboard.turn_on();
 	if (!svc.data.exists(room_number)) {
 		svc.data.rooms.push_back(room_number);
@@ -33,7 +34,6 @@ Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scen
 	if (!player.is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
 
 	player.controller.prevent_movement();
-	svc.app_flags.reset(AppFlags::in_game);
 	svc.world_timer.restart();
 }
 

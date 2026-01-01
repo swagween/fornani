@@ -54,6 +54,8 @@ void Player::register_with_map(world::Map& map) {
 	m_lighting.physics.set_global_friction(0.95f);
 	m_lighting.physics.position = get_collider().get_center();
 	get_collider().clear_chunks();
+
+	collider.value().get().set_tag("Nani");
 }
 
 void Player::unregister_with_map() {
@@ -201,6 +203,7 @@ void Player::simple_update() {
 	update_antennae();
 	m_piggyback_socket = m_sprite_position + sf::Vector2f{-8.f * directions.actual.as_float(), -16.f};
 	if (piggybacker) { piggybacker->update(*m_services, *this); }
+	update_weapon();
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -327,10 +330,7 @@ void Player::update_animation() {
 	}
 
 	if (flags.state.consume(State::sleep)) { m_animation_machine.request(player::AnimState::sleep); }
-	if (flags.state.consume(State::wake_up)) {
-		NANI_LOG_DEBUG(m_logger, "Wake up flag was true");
-		m_animation_machine.request(player::AnimState::wake_up);
-	}
+	if (flags.state.consume(State::wake_up)) { m_animation_machine.request(player::AnimState::wake_up); }
 
 	m_animation_machine.update();
 }

@@ -299,12 +299,15 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							ImGui::TreePop();
 						}
 						ImGui::Text("Collision calculations: %i", map->get().num_collision_checks);
-					}
-					ImGui::Separator();
-					ImGui::Text("Calculated chunks for player:");
-					for (auto const& chunk : player.get_collider().print_chunks()) {
-						ImGui::SameLine();
-						ImGui::Text("[%s]", chunk);
+
+						ImGui::Separator();
+						ImGui::Text("Calculated chunks for player:");
+						if (player.has_collider()) {
+							for (auto const& chunk : player.get_collider().print_chunks()) {
+								ImGui::SameLine();
+								ImGui::Text("[%s]", chunk);
+							}
+						}
 					}
 					ImGui::Separator();
 					ImGui::Text("Save Point ID: %i", services.state_controller.save_point_id);
@@ -423,7 +426,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Enemies killed: %i", services.stats.enemy.enemies_killed.get_count());
 					ImGui::EndTabItem();
 				}
-				if (flags.test(GameFlags::in_game)) {
+				if (services.in_game()) {
 					static float player_hp{};
 					if (ImGui::BeginTabItem("Player")) {
 						player.health.debug();
@@ -463,6 +466,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 									}
 								}
 								ImGui::Separator();
+								ImGui::Text("Trial Mode? %s", player.has_flag_set(player::State::trial) ? "Yes" : "No");
 								ImGui::Text("Can Move? %s", player.controller.can_move() ? "Yes" : "No");
 								ImGui::Text("Walking Autonomously? %s", player.controller.walking_autonomously() ? "Yes" : "No");
 								ImGui::Separator();

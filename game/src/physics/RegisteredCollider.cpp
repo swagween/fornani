@@ -19,6 +19,7 @@ RegisteredCollider::RegisteredCollider(world::Map& map, float radius) : m_map(&m
 }
 
 RegisteredCollider::~RegisteredCollider() {
+	if (m_tag) { NANI_LOG_DEBUG(m_logger, "Deleting Collider with tag {}", m_tag.value()); }
 	if (m_collider.has_value()) { m_map->unregister_collider(m_collider.value()); }
 	if (m_circle_collider.has_value()) { m_map->unregister_collider(m_circle_collider.value()); }
 }

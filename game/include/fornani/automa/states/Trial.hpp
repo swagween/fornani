@@ -12,6 +12,7 @@ class Trial final : public GameState {
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
+	std::optional<std::reference_wrapper<world::Map>> get_map() override { return map; }
 
   private:
 	util::Cooldown m_reset;

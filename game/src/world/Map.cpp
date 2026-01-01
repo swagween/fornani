@@ -19,8 +19,6 @@ namespace fornani::world {
 Map::Map(automa::ServiceProvider& svc, player::Player& player)
 	: player(&player), enemy_catalog(svc), transition(svc.window->f_screen_dimensions(), 96), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}} {}
 
-Map::~Map() {}
-
 void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number) {
 
 	unserialize(svc, room_number);
@@ -837,8 +835,6 @@ void Map::shake_camera() { flags.state.set(LevelState::camera_shake); }
 
 void Map::clear() {
 	dimensions = {};
-	m_chunks.clear();
-	m_colliders.clear();
 	// portals.clear();
 	platforms.clear();
 	breakables.clear();

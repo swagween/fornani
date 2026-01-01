@@ -90,10 +90,12 @@ struct MapAttributes {
 };
 
 class Map {
+  private:
+	std::vector<std::unique_ptr<shape::ICollider>> m_colliders{};
+	std::vector<std::vector<shape::ICollider*>> m_chunks;
 
   public:
 	Map(automa::ServiceProvider& svc, player::Player& player);
-	~Map();
 
 	// methods
 	void load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number);
@@ -187,11 +189,7 @@ class Map {
 	std::vector<entity::Effect> effects{};
 	std::array<std::vector<std::unique_ptr<vfx::Scenery>>, 6> scenery_layers{};
 	std::vector<item::Loot> active_loot{};
-	std::vector<std::unique_ptr<entity::Chest>> chests{};
 	std::vector<Laser> lasers{};
-	// std::vector<std::unique_ptr<npc::NPC>> npcs{};
-
-	std::vector<std::unique_ptr<Pushable>> pushables{};
 
 	std::vector<Spawner> spawners{};
 	std::vector<Spike> spikes{};
@@ -244,11 +242,9 @@ class Map {
   private:
 	MapAttributes m_attributes{};
 	util::BitFlags<LayerProperties> m_layer_properties{};
+
 	std::optional<EntitySet> m_entities{};
 	std::vector<std::unique_ptr<vfx::Emitter>> active_emitters{};
-
-	std::vector<std::unique_ptr<shape::ICollider>> m_colliders{};
-	std::vector<std::vector<shape::ICollider*>> m_chunks;
 
 	std::optional<Palette> m_palette{};
 	int abyss_distance{512};
@@ -283,6 +279,8 @@ class Map {
 	std::vector<std::unique_ptr<SwitchBlock>> switch_blocks{};
 	std::vector<std::unique_ptr<Destructible>> destructibles{};
 	std::vector<std::unique_ptr<Incinerite>> incinerite_blocks{};
+	std::vector<std::unique_ptr<entity::Chest>> chests{};
+	std::vector<std::unique_ptr<Pushable>> pushables{};
 };
 
 } // namespace fornani::world
