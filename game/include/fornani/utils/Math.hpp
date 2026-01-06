@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <SFML/Graphics.hpp>
@@ -6,7 +7,6 @@
 #include <ccmath/math/basic/fabs.hpp>
 #include <ccmath/math/misc/lerp.hpp>
 #include <ccmath/math/nearest/floor.hpp>
-// #include <ccmath/math/power/pow.hpp> // This is having issues
 #include <ccmath/math/power/sqrt.hpp>
 
 #include <cmath>
@@ -56,5 +56,20 @@ inline float smoothstep(float const x, float const y, float const progress) { re
 inline bool same_parity(float const a, float const b) { return ((static_cast<int>(a) ^ static_cast<int>(b)) & 1) == 0; }
 inline bool same_sign(float const a, float const b) { return a * b >= 0.f; }
 inline std::uint8_t get_uint8_from_normal(float normal) { return static_cast<std::uint8_t>(ccm::lerp(0, 255, normal)); } // NOLINT
+inline sf::Vector2f vector_lerp(sf::Vector2f const& a, sf::Vector2f const& b, float alpha) {
+	auto t = std::clamp(alpha, 0.f, 1.f);
+	return a + (b - a) * t;
+}
+inline sf::Vector2f arc_lerp_midpoint(sf::Vector2f const a, sf::Vector2f const b, float alpha, float direction = 1.f, sf::Vector2f const center_offset = {}) // +1 or -1
+{
+	float t = std::clamp(alpha, 0.f, 1.f);
+
+	sf::Vector2f center = (a + b) * 0.5f + center_offset;
+	sf::Vector2f v = a - center;
+	float r = std::sqrt(v.x * v.x + v.y * v.y);
+	float angleA = std::atan2(v.y, v.x);
+	float angle = angleA + direction * f_pi * t;
+	return center + sf::Vector2f(std::cos(angle) * r, std::sin(angle) * r);
+}
 
 } // namespace fornani::util

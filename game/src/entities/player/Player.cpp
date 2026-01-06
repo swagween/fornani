@@ -484,7 +484,7 @@ void Player::hurt(float amount, bool force) {
 
 void Player::on_crush(world::Map& map) {
 	if (!get_collider().collision_depths) { return; }
-	if (get_collider().crushed() && alive()) {
+	if (get_collider().has_flag_set(shape::ColliderFlags::crushed) && alive()) {
 		hurt(1024.f, true);
 		left_squish.und = get_collider().horizontal_squish() ? UND::up : UND::neutral;
 		left_squish.lnr = get_collider().vertical_squish() ? LNR::left : LNR::neutral;

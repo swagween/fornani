@@ -53,7 +53,8 @@ enum class GeneralFlags {
 	invincible_secondary,
 	spike_collision,
 	custom_channels,
-	semipermanent
+	semipermanent,
+	no_tick
 };
 enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, no_shake, out_of_zone, no_slowdown, intangible, health_exposed };
 enum class Triggers { hostile, alert };
@@ -93,7 +94,7 @@ class Enemy : public Mobile {
 	virtual void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	virtual void gui_render([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win, [[maybe_unused]] sf::Vector2f cam) {};
-	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, bool tick = true) override;
 
 	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 

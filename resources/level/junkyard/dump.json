@@ -1,5 +1,247 @@
 {
   "entities": {
+    "enemies": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 19,
+        "position": [
+          101,
+          20
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 19,
+        "position": [
+          38,
+          20
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 19,
+        "position": [
+          20,
+          22
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 19,
+        "position": [
+          65,
+          11
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 19,
+        "position": [
+          92,
+          25
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 19,
+        "position": [
+          90,
+          13
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 20,
+        "position": [
+          74,
+          33
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 20,
+        "position": [
+          104,
+          33
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 20,
+        "position": [
+          115,
+          33
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 20,
+        "position": [
+          122,
+          33
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 20,
+        "position": [
+          61,
+          31
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 20,
+        "position": [
+          47,
+          32
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 20,
+        "position": [
+          27,
+          40
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 20,
+        "position": [
+          17,
+          46
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 21,
+        "position": [
+          82,
+          29
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": true,
@@ -41355,7 +41597,7 @@
         0,
         497,
         11,
-        0,
+        496,
         0,
         0,
         0,
@@ -41499,7 +41741,7 @@
         0,
         10,
         10,
-        496,
+        11,
         0,
         0,
         0,
@@ -43390,6 +43632,7 @@
         10,
         10,
         10,
+        488,
         10,
         10,
         10,
@@ -43412,8 +43655,7 @@
         10,
         10,
         10,
-        10,
-        10,
+        488,
         10,
         10,
         10,
@@ -50717,7 +50959,7 @@
         198,
         0,
         0,
-        0,
+        196,
         0,
         0,
         0,
@@ -52608,6 +52850,7 @@
         0,
         0,
         0,
+        10,
         0,
         0,
         0,
@@ -52630,8 +52873,7 @@
         0,
         0,
         0,
-        0,
-        0,
+        10,
         0,
         0,
         0,

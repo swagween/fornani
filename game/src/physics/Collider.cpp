@@ -78,7 +78,10 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	// let's first settle all actual block collisions
 	auto is_on_ramp = jumpbox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.apparent_velocity().y > -0.001f && bottom() >= cell.top() - 1.f && tile.is_ground_ramp();
 	if (!is_ramp) {
-		if (collision_depths) { collision_depths.value().calculate(*this, cell); }
+		if (collision_depths) {
+			collision_depths.value().calculate(*this, cell);
+			if (collision_depths->crushed()) { set_flag(ColliderFlags::crushed); }
+		}
 		bool vert{};
 		if (predictive_vertical.SAT(cell)) {
 			mtvs.vertical.y < 0.f ? flags.collision.set(Collision::has_bottom_collision) : flags.collision.set(Collision::has_top_collision);
@@ -299,7 +302,10 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 		return ret;
 	}
 	if (collision_depths) {
-		if (collision_depths.value().crushed()) { return ret; }
+		if (collision_depths.value().crushed()) {
+			set_flag(ColliderFlags::crushed);
+			return ret;
+		}
 	}
 
 	flags.collision = {};

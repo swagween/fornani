@@ -73,6 +73,11 @@
 		"framerate": 16,
 		"dimensions": [ 27, 27 ]
 	},
+	"explosion": {
+		"frame_count": 8,
+		"framerate": 16,
+		"dimensions": [ 48, 48 ]
+	},
 	"huge_explosion": {
 		"frame_count": 10,
 		"framerate": 16,
@@ -89,6 +94,12 @@
 		"dimensions": [ 8, 16 ]
 	},
 	"puff": {
+		"frame_count": 4,
+		"framerate": 32,
+		"dimensions": [ 16, 16 ],
+		"x_reflection": true
+	},
+	"mud": {
 		"frame_count": 4,
 		"framerate": 32,
 		"dimensions": [ 16, 16 ],

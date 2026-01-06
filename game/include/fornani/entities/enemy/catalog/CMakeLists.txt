@@ -3,10 +3,13 @@ nani_add_headers(
         Beamstalk.hpp
         Caster.hpp
         Demon.hpp
+        DumpsterDiver.hpp
         Eyebit.hpp
         Eyebot.hpp
         Frdog.hpp
         Imp.hpp
+        Junker.hpp
+        Junkfly.hpp
         Meatsquash.hpp
         Minion.hpp
         Tank.hpp

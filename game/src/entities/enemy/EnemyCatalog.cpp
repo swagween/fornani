@@ -7,11 +7,14 @@
 #include <fornani/entities/enemy/catalog/Beamstalk.hpp>
 #include <fornani/entities/enemy/catalog/Caster.hpp>
 #include <fornani/entities/enemy/catalog/Demon.hpp>
+#include <fornani/entities/enemy/catalog/DumpsterDiver.hpp>
 #include <fornani/entities/enemy/catalog/Eyebit.hpp>
 #include <fornani/entities/enemy/catalog/Eyebot.hpp>
 #include <fornani/entities/enemy/catalog/Frdog.hpp>
 #include <fornani/entities/enemy/catalog/Hulmet.hpp>
 #include <fornani/entities/enemy/catalog/Imp.hpp>
+#include <fornani/entities/enemy/catalog/Junker.hpp>
+#include <fornani/entities/enemy/catalog/Junkfly.hpp>
 #include <fornani/entities/enemy/catalog/Meatsquash.hpp>
 #include <fornani/entities/enemy/catalog/Minion.hpp>
 #include <fornani/entities/enemy/catalog/Spitefly.hpp>
@@ -47,6 +50,9 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[m
 	case 16: enemies.push_back(std::make_unique<Summoner>(svc, map, variant)); break;
 	case 17: enemies.push_back(std::make_unique<Minion>(svc, map, variant)); break;
 	case 18: enemies.push_back(std::make_unique<Spitefly>(svc, map, variant)); break;
+	case 19: enemies.push_back(std::make_unique<Junkfly>(svc, map, variant)); break;
+	case 20: enemies.push_back(std::make_unique<Junker>(svc, map, variant)); break;
+	case 21: enemies.push_back(std::make_unique<DumpsterDiver>(svc, map, variant)); break;
 	default: enemies.push_back(std::make_unique<Frdog>(svc, map)); break;
 	}
 }

@@ -296,10 +296,28 @@
 		"color": "fire"
 	},
 
+	"explosion": {
+		"load": 40,
+		"rate": 100.0,
+		"expulsion": 40.0,
+		"expulsion_variance": 30.0,
+		"cone": 6.28,
+		"friction": 0.999,
+		"elasticity": 0.9,
+		"gravity": 0.8,
+		"lifespan": 200,
+		"lifespan_variance": 100,
+		"dimensions": [ 4, 4 ],
+		"animated": false,
+		"colliding": true,
+		"fader": true,
+		"color": "junk"
+	},
+
 	"white_fireworks": {
 		"load": 50,
 		"rate": 100.0,
-		"expulsion": 130.0,
+		"expulsion": 90.0,
 		"expulsion_variance": 70.0,
 		"cone": 6.28,
 		"friction": 0.99,
@@ -441,6 +459,28 @@
 			"lookup": 0,
 			"duration": 5,
 			"framerate": 180,
+			"loop": 0
+		}
+	},
+
+	"mud": {
+		"load": 2,
+		"rate": 4.0,
+		"expulsion": 10.0,
+		"expulsion_variance": 0.2,
+		"cone": 0.08,
+		"friction": 0.999,
+		"elasticity": 0.95,
+		"gravity": -1.0,
+		"lifespan": 72,
+		"lifespan_variance": 0,
+		"dimensions": [ 16, 16 ],
+		"animated": true,
+		"colliding": false,
+		"animation": {
+			"lookup": 0,
+			"duration": 4,
+			"framerate": 18,
 			"loop": 0
 		}
 	},

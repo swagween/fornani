@@ -32,6 +32,7 @@ class Shape {
 	bool overlaps(Shape const& other) const;
 	bool overlaps(sf::FloatRect const& other) const;
 	bool overlaps(sf::Vector2f point) const;
+	bool overlaps_circle(sf::Vector2f center, float radius) const;
 	bool contains_point(Vec point);
 	void draw(sf::RenderTexture& tex);
 	void render(sf::RenderWindow& win, sf::Vector2f cam, sf::Color color = sf::Color{0, 255, 255, 48});

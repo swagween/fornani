@@ -146,6 +146,8 @@ void DataManager::load_data(std::string in_room) {
 	assert(!particle.is_null());
 	effect = *dj::Json::from_file((finder.resource_path() + "/data/vfx/effect.json").c_str());
 	assert(!effect.is_null());
+	fader = *dj::Json::from_file((finder.resource_path() + "/data/vfx/fader.json").c_str());
+	assert(!fader.is_null());
 	sparkler = *dj::Json::from_file((finder.resource_path() + "/data/vfx/sparkler.json").c_str());
 	assert(!sparkler.is_null());
 	npc = *dj::Json::from_file((finder.resource_path() + "/data/npc/npc_data.json").c_str());

@@ -21,6 +21,7 @@ class CircleSensor {
 	void set_position(sf::Vector2f position);
 	sf::CircleShape bounds{};
 	sf::CircleShape drawable{};
+	bool within_bounds(sf::Vector2f const point) const;
 	bool within_bounds(shape::Shape const& shape) const;
 	bool within_bounds(shape::CircleCollider const& shape) const;
 	sf::Vector2f get_MTV(shape::Shape const& shape) const;

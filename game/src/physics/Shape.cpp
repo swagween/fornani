@@ -1,8 +1,8 @@
 
-#include "fornani/physics/Shape.hpp"
 #include <ccmath/math/power/sqrt.hpp>
 #include <fornani/graphics/Colors.hpp>
-#include "fornani/utils/Math.hpp"
+#include <fornani/physics/Shape.hpp>
+#include <fornani/utils/Math.hpp>
 
 namespace fornani::shape {
 
@@ -264,6 +264,24 @@ bool Shape::overlaps(sf::FloatRect const& other) const {
 	if (vertices.at(0).y > other.position.y + other.size.y) { return false; }
 	if (vertices.at(2).y < other.position.y) { return false; }
 	return true;
+}
+
+bool Shape::overlaps_circle(sf::Vector2f center, float radius) const {
+
+	sf::Vector2f pos = vertices[0];
+	sf::Vector2f size = get_dimensions();
+
+	float left = pos.x;
+	float right = pos.x + size.x;
+	float top = pos.y;
+	float bottom = pos.y + size.y;
+
+	auto closest = sf::Vector2f{std::clamp(center.x, left, right), std::clamp(center.y, top, bottom)};
+
+	float dx = center.x - closest.x;
+	float dy = center.y - closest.y;
+
+	return (dx * dx + dy * dy) <= (radius * radius);
 }
 
 bool Shape::overlaps(sf::Vector2f point) const {

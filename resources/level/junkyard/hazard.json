@@ -1,5 +1,87 @@
 {
   "entities": {
+    "enemies": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 19,
+        "position": [
+          33,
+          24
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 20,
+        "position": [
+          35,
+          40
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 20,
+        "position": [
+          41,
+          43
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 20,
+        "position": [
+          23,
+          41
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 20,
+        "position": [
+          13,
+          34
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      }
+    ],
     "platforms": [
       {
         "dimensions": [

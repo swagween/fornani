@@ -26,13 +26,13 @@ bool Mobile::player_behind(player::Player& player) const {
 	return player.get_collider().physics.position.x + player.get_collider().bounding_box.get_dimensions().x * 0.5f < get_collider().physics.position.x + get_collider().dimensions.x * 0.5f;
 }
 
-void Mobile::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void Mobile::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, bool tick) {
 	if (p_flags.consume(MobileState::flip)) {
 		if (directions.desired.lnr != directions.actual.lnr) { flip(); }
 		directions.desired.unlock();
 		directions.actual = directions.desired;
 	}
-	Animatable::tick();
+	if (tick) { Animatable::tick(); }
 }
 
 anim::Parameters const& Mobile::get_params(std::string const& key) { return m_params.contains(key) ? m_params.at(key) : m_params.at("idle"); }

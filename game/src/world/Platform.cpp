@@ -77,7 +77,6 @@ Platform::Platform(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f p
 	}
 	get_collider().set_trait(shape::ColliderTrait::block);
 	get_collider().set_trait(shape::ColliderTrait::platform);
-	// get_collider().set_attribute(shape::ColliderAttributes::fixed);
 	get_collider().set_attribute(shape::ColliderAttributes::sturdy);
 	get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
 	get_collider().set_attribute(shape::ColliderAttributes::custom_resolution);

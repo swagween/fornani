@@ -3,10 +3,13 @@ nani_add_sources(
         Beamstalk.cpp
         Caster.cpp
         Demon.cpp
+        DumpsterDiver.cpp
         Eyebit.cpp
         Eyebot.cpp
         Frdog.cpp
         Imp.cpp
+        Junker.cpp
+        Junkfly.cpp
         Meatsquash.cpp
         Minion.cpp
         Tank.cpp

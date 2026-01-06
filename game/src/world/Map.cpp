@@ -314,6 +314,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	std::erase_if(lasers, [](auto const& l) { return l.is_complete(); });
 	std::erase_if(incinerite_blocks, [](auto const& i) { return i->is_destroyed(); });
 	std::erase_if(breakables, [](auto const& b) { return b->is_destroyed(); });
+	std::erase_if(m_explosions, [](auto const& e) { return e.is_done(); });
 	enemy_catalog.update();
 
 	manage_projectiles(svc);
@@ -330,7 +331,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		for (auto& incinerite : incinerite_blocks) { incinerite->on_hit(svc, *this, proj); }
 		for (auto vine : get_entities<Vine>()) { vine->on_hit(svc, *this, proj, *player); }
 		proj.handle_collision(svc, *this);
-		proj.on_player_hit(*player);
+		proj.on_player_hit(svc, *this, *player);
 	}
 
 	for (auto& enemy : enemy_catalog.enemies) { enemy->update(svc, *this, *player); }
@@ -343,7 +344,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		auto& collider = *colliderPtr;
 		collider.register_chunks(*this);
 		collider.update(svc);
-		collider.detect_map_collision(*this);
 		for (auto chunk : collider.get_chunks()) {
 			for (auto& other_ptr : m_chunks[chunk]) {
 				if (!other_ptr) { continue; }
@@ -353,6 +353,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 				++num_collision_checks;
 			}
 		}
+		collider.detect_map_collision(*this);
 	}
 
 	for (auto& enemy : enemy_catalog.enemies) { enemy->post_update(svc, *this, *player); }
@@ -368,6 +369,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		for (auto& f : fire.value()) { f.update(svc, *player, *this, console); }
 	}
 	for (auto& laser : lasers) { laser.update(svc, *player, *this); }
+	for (auto& exp : m_explosions) { exp.update(svc, *player, *this); }
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& chest : chests) { chest->update(svc, *this, console, *player); }
 	/*for (auto& npc : npcs) {
@@ -480,6 +482,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& switch_block : switch_blocks) { switch_block->render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
 	for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
+	for (auto& exp : m_explosions) { exp.render(svc, win, cam); }
 
 	if (!svc.greyblock_mode()) {
 		for (auto& layer : get_layers()) {
@@ -625,6 +628,12 @@ void Map::spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::V
 
 void Map::spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, Direction dir, sf::Vector2f dim, sf::Color color) {
 	active_emitters.push_back(std::make_unique<vfx::Emitter>(svc, *this, pos, dim, tag, color, dir));
+}
+
+void Map::spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, float radius, int channel) {
+	m_explosions.push_back(Explosion{svc, pos, radius});
+	spawn_effect(svc, "explosion", pos, {}, channel);
+	spawn_emitter(svc, "explosion", pos, Direction{});
 }
 
 void Map::spawn_enemy(int id, sf::Vector2f pos, int variant) {

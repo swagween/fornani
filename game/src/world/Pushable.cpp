@@ -30,11 +30,13 @@ Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position
 	get_collider().horizontal_detector_buffer = 0.1f;
 	get_collider().wallslide_pad = 1.f;
 	get_collider().vert_threshold = 0.1f;
+
 	get_collider().set_attribute(shape::ColliderAttributes::sturdy);
+	// get_collider().set_attribute(shape::ColliderAttributes::custom_resolution);
 	get_collider().set_trait(shape::ColliderTrait::block);
 	get_collider().set_exclusion_target(shape::ColliderTrait::particle);
-	get_collider().set_resolution_exclusion_target(shape::ColliderTrait::player);
-	get_collider().set_resolution_exclusion_target(shape::ColliderTrait::enemy);
+	get_collider().set_exclusion_target(shape::ColliderTrait::player);
+	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
 	if (size > 1) { get_collider().set_attribute(shape::ColliderAttributes::crusher); }
 }
 
@@ -92,12 +94,6 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	if (player.get_collider().jumpbox.overlaps(get_collider().bounding_box) && get_collider().grounded() && get_collider().physics.is_moving_horizontally(constants::tiny_value)) {
 		player.get_collider().physics.forced_momentum = get_collider().physics.forced_momentum;
 	}
-
-	/*player.on_crush(map);
-	for (auto& enemy : map.enemy_catalog.enemies) {
-		if (enemy->has_map_collision()) { enemy->get_collider().handle_collider_collision(*m_collider.get()); }
-		enemy->on_crush(map);
-	}*/
 
 	auto test_position = is_moving() ? get_collider().get_center() : get_collider().get_bottom();
 

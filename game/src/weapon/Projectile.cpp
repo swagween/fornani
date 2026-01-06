@@ -33,12 +33,15 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	metadata.specifications.dampen_variance = in_data["attributes"]["dampen_variance"].as<float>();
 	metadata.specifications.gravity = in_data["attributes"]["gravity"].as<float>();
 	metadata.specifications.elasticty = in_data["attributes"]["elasticity"].as<float>();
+	metadata.specifications.spin = in_data["attributes"]["spin"].as<float>();
+	metadata.specifications.spin_dampen = in_data["attributes"]["spin_dampen"].as<float>();
 
 	if (in_data["attributes"]["persistent"].as_bool()) { metadata.attributes.set(ProjectileAttributes::persistent); }
 	if (in_data["attributes"]["transcendent"].as_bool()) { metadata.attributes.set(ProjectileAttributes::transcendent); }
 	if (in_data["attributes"]["constrained"].as_bool()) { metadata.attributes.set(ProjectileAttributes::constrained); }
 	if (in_data["attributes"]["omnidirectional"].as_bool()) { metadata.attributes.set(ProjectileAttributes::omnidirectional); }
 	if (in_data["attributes"]["boomerang"].as_bool()) { metadata.attributes.set(ProjectileAttributes::boomerang); }
+	if (in_data["attributes"]["explode_on_impact"].as_bool()) { metadata.attributes.set(ProjectileAttributes::explode_on_impact); }
 	if (in_data["attributes"]["wander"].as_bool()) { metadata.attributes.set(ProjectileAttributes::wander); }
 	if (in_data["attributes"]["reflect"].as_bool()) { metadata.attributes.set(ProjectileAttributes::reflect); }
 	if (in_data["attributes"]["sprite_flip"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sprite_flip); }
@@ -91,7 +94,12 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	}
 
 	// animation
-	if (visual.num_angles > 0 && !sprite_flip() && !is_stuck()) { visual.rotator.handle_rotation(get_sprite(), physical.collider.physics.velocity, visual.num_angles); }
+	static auto rotation = metadata.specifications.spin;
+	static auto dampened = metadata.specifications.spin;
+	rotation += metadata.specifications.spin;
+	dampened *= metadata.specifications.spin_dampen;
+	auto rotation_angle = metadata.specifications.spin > 0.f ? physical.collider.physics.velocity.rotatedBy(sf::radians(rotation + dampened)) : physical.collider.physics.velocity;
+	if (visual.num_angles > 0 && !sprite_flip() && !is_stuck()) { visual.rotator.handle_rotation(get_sprite(), rotation_angle, visual.num_angles); }
 	set_channel(visual.rotator.get_sprite_angle_index());
 	if (physical.sensor) { physical.sensor->set_position(physical.collider.get_global_center()); }
 
@@ -111,6 +119,10 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 		if (physical.collider.collided() && !m_reflected.running()) {
 			svc.soundboard.flags.projectile.set(audio.hit);
 			m_reflected.start();
+			if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) {
+				map.spawn_explosion(svc, "explosion", physical.collider.get_global_center(), 46.f, 3);
+				destroy(false);
+			}
 		}
 		physical.collider.physics.acceleration = {};
 		return;
@@ -135,15 +147,26 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 	}
 }
 
-void Projectile::on_player_hit(player::Player& player) {
+void Projectile::on_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (metadata.team == arms::Team::nani || is_stuck()) { return; }
 	if (player.is_dead()) { return; }
 	if (physical.sensor) {
-		if (physical.sensor.value().within_bounds(player.hurtbox)) { player.hurt(metadata.specifications.base_damage); }
+		if (physical.sensor.value().within_bounds(player.hurtbox)) {
+			if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) {
+				map.spawn_explosion(svc, "explosion", physical.collider.get_global_center(), 46.f, 3);
+				destroy(false);
+			} else {
+				player.hurt(metadata.specifications.base_damage);
+			}
+		}
 		return;
 	}
 	if (physical.collider.collides_with(player.hurtbox)) {
-		player.hurt(metadata.specifications.base_damage);
+		if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) {
+			map.spawn_explosion(svc, "explosion", physical.collider.get_global_center(), 46.f, 3);
+		} else {
+			player.hurt(metadata.specifications.base_damage);
+		}
 		destroy(false);
 	}
 }

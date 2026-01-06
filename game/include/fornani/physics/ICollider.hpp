@@ -23,7 +23,7 @@ constexpr auto vicinity_pad_v = 31.f;
 class Collider;
 class CircleCollider;
 
-enum class ColliderFlags { changed, intangible, simple, no_physics, registered };
+enum class ColliderFlags { changed, intangible, simple, no_physics, registered, crushed };
 enum class ColliderType { rectangle, circle };
 enum class ColliderAttributes { fixed, soft, top_only, no_collision, no_map_collision, sturdy, crusher, custom_resolution };
 enum class ColliderTrait { circle, player, enemy, npc, secondary, block, particle, platform };

@@ -1,10 +1,11 @@
+
 #include "fornani/physics/CollisionDepth.hpp"
 #include "fornani/physics/Collider.hpp"
 #include "fornani/physics/Shape.hpp"
 
 namespace fornani::util {
 
-constexpr auto crush_threshold_v = sf::Vector2f{8.f, 16.f};
+constexpr auto crush_threshold_v = sf::Vector2f{8.f, 30.f};
 
 void CollisionDepth::calculate(shape::Collider const& native, shape::Shape const& other) {
 	if (iterations.get_count() == 0) { collision_direction = CollisionDirection::none; }

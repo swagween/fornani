@@ -126,6 +126,7 @@ class DataManager final {
 	dj::Json cutscene{};
 	dj::Json action_names{};
 	dj::Json light{};
+	dj::Json fader{};
 
 	// enemy
 	dj::Json enemy{};

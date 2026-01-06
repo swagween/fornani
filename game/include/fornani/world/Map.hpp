@@ -8,6 +8,7 @@
 #include <fornani/entities/world/Animator.hpp>
 #include <fornani/entities/world/Bed.hpp>
 #include <fornani/entities/world/Chest.hpp>
+#include <fornani/entities/world/Explosion.hpp>
 #include <fornani/entities/world/Fire.hpp>
 #include <fornani/entities/world/Inspectable.hpp>
 #include <fornani/entities/world/Laser.hpp>
@@ -107,6 +108,7 @@ class Map {
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {}, float speed_multiplier = 1.f);
 	void spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0);
 	void spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, Direction dir, sf::Vector2f dim = {16.f, 16.f}, sf::Color color = colors::nani_white);
+	void spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, float radius, int channel);
 	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0);
 	void spawn_chest(automa::ServiceProvider& svc, enemy::Treasure const& treasure, sf::Vector2f pos, sf::Vector2f vel = {});
 	void reveal_npc(std::string_view label);
@@ -245,6 +247,7 @@ class Map {
 
 	std::optional<EntitySet> m_entities{};
 	std::vector<std::unique_ptr<vfx::Emitter>> active_emitters{};
+	std::vector<Explosion> m_explosions{};
 
 	std::optional<Palette> m_palette{};
 	int abyss_distance{512};

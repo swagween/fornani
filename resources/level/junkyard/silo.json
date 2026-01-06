@@ -3,7 +3,7 @@
     "portals": [
       {
         "activate_on_contact": false,
-        "already_open": true,
+        "already_open": false,
         "destination_id": 217,
         "dimensions": [
           1,
@@ -20,7 +20,7 @@
       },
       {
         "activate_on_contact": false,
-        "already_open": true,
+        "already_open": false,
         "destination_id": 701,
         "dimensions": [
           1,
@@ -86,7 +86,6 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "style": 6,
     "use_template": false
   },
   "tile": {

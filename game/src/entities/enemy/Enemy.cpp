@@ -87,6 +87,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	if (in_general["sturdy"].as_bool()) { get_collider().set_attribute(shape::ColliderAttributes::sturdy); }
 	if (in_general["crusher"].as_bool()) { get_collider().set_attribute(shape::ColliderAttributes::crusher); }
 	if (in_general["semipermanent"].as_bool()) { flags.general.set(GeneralFlags::semipermanent); }
+	if (in_general["no_tick"].as_bool()) { flags.general.set(GeneralFlags::no_tick); }
 	if (!flags.general.test(GeneralFlags::gravity)) { get_collider().stats.GRAV = 0.f; }
 	if (!flags.general.test(GeneralFlags::uncrushable)) { get_collider().collision_depths = util::CollisionDepth(); }
 
@@ -254,8 +255,8 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 }
 
-void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	Mobile::post_update(svc, map, player);
+void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, bool tick) {
+	Mobile::post_update(svc, map, player, !flags.general.test(GeneralFlags::no_tick));
 	handle_player_collision(player);
 }
 

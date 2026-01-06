@@ -1,5 +1,6 @@
 
 #pragma once
+
 #include <fornani/entities/enemy/Enemy.hpp>
 
 namespace fornani::gui {

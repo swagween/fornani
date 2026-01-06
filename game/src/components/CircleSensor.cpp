@@ -27,6 +27,8 @@ void CircleSensor::render(sf::RenderWindow& win, sf::Vector2f cam) {
 
 void CircleSensor::set_position(sf::Vector2f position) { bounds.setPosition(position); }
 
+bool CircleSensor::within_bounds(sf::Vector2f const point) const { return (point - bounds.getPosition()).length() < bounds.getRadius(); }
+
 bool CircleSensor::within_bounds(shape::Shape const& shape) const {
 	if (shape.non_square()) { return shape.circle_SAT(bounds); }
 	auto const x = ccm::ext::clamp(bounds.getPosition().x, shape.get_position().x, shape.get_position().x + shape.get_dimensions().x);

@@ -10,11 +10,11 @@
 #include <fornani/graphics/SpriteHistory.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Gravitator.hpp>
-#include <fornani/utils/BitFlags.hpp>
 #include <fornani/physics/CircleCollider.hpp>
+#include <fornani/physics/Shape.hpp>
+#include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/Direction.hpp>
-#include <fornani/physics/Shape.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -34,7 +34,7 @@ class Weapon;
 enum class ProjectileType { bullet, missile, melee };
 enum class RenderType { animated, single_sprite, multi_sprite };
 
-enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky };
+enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky, explode_on_impact };
 struct ProjectileSpecifications {
 	float base_damage{};
 	int power{};
@@ -50,6 +50,8 @@ struct ProjectileSpecifications {
 	float dampen_variance{};
 	float gravity{};
 	float elasticty{};
+	float spin{};
+	float spin_dampen{};
 };
 
 enum class ProjectileState { initialized, destruction_initiated, destroyed, whiffed, poof, contact, stuck };
@@ -59,7 +61,7 @@ class Projectile : public Animatable {
 	Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon, bool enemy);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void handle_collision(automa::ServiceProvider& svc, world::Map& map);
-	void on_player_hit(player::Player& player);
+	void on_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f cam);
 	void destroy(bool completely, bool whiffed = false);
 	void seed(automa::ServiceProvider& svc, sf::Vector2f target = {}, float speed_multiplier = 1.f);
