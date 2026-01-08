@@ -15,6 +15,7 @@
 #include <fornani/entities/enemy/catalog/Imp.hpp>
 #include <fornani/entities/enemy/catalog/Junker.hpp>
 #include <fornani/entities/enemy/catalog/Junkfly.hpp>
+#include <fornani/entities/enemy/catalog/Mastiff.hpp>
 #include <fornani/entities/enemy/catalog/Meatsquash.hpp>
 #include <fornani/entities/enemy/catalog/Minion.hpp>
 #include <fornani/entities/enemy/catalog/Spitefly.hpp>
@@ -53,6 +54,7 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[m
 	case 19: enemies.push_back(std::make_unique<Junkfly>(svc, map, variant)); break;
 	case 20: enemies.push_back(std::make_unique<Junker>(svc, map, variant)); break;
 	case 21: enemies.push_back(std::make_unique<DumpsterDiver>(svc, map, variant)); break;
+	case 22: enemies.push_back(std::make_unique<Mastiff>(svc, map, variant)); break;
 	default: enemies.push_back(std::make_unique<Frdog>(svc, map)); break;
 	}
 }

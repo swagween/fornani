@@ -12,6 +12,7 @@ Chest::Chest(automa::ServiceProvider& svc, world::Map& map, int id, ChestType ty
 	get_collider().physics.set_friction_componentwise({0.99f, 0.998f});
 	get_collider().physics.gravity = 10.f;
 	get_collider().set_exclusion_target(shape::ColliderTrait::player);
+	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 
 	Animatable::set_parameters(m_animations.unopened);
 

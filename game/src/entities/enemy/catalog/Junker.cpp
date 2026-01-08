@@ -24,7 +24,6 @@ Junker::Junker(automa::ServiceProvider& svc, world::Map& map, int variant) : Ene
 }
 
 void Junker::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-
 	Enemy::update(svc, map, player);
 	face_player(player);
 	is_state(JunkerState::hide) ? flags.state.reset(StateFlags::vulnerable) : flags.state.set(StateFlags::vulnerable);

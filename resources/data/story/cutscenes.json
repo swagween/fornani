@@ -1,6 +1,9 @@
 {
-  "lady_nimbus_intro": {
-    "no_player": true,
-    "target_state_on_end": 200
-  }
+	"lady_nimbus_intro": {
+		"no_player": true,
+		"target_state_on_end": 200
+	},
+	"pioneer_base_debrief": {
+		"target_state_on_end": 200
+	}
 }

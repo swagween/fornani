@@ -14,6 +14,52 @@
         ]
       }
     ],
+    "npcs": [
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "face_player": true,
+        "hidden": false,
+        "id": 407,
+        "label": "wames",
+        "position": [
+          19,
+          23
+        ],
+        "suites": [
+          [
+            1
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "face_player": true,
+        "hidden": false,
+        "id": 407,
+        "label": "jimmy",
+        "position": [
+          23,
+          23
+        ],
+        "suites": [
+          [
+            1,
+            2
+          ],
+          [
+            2
+          ]
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,
@@ -113,7 +159,6 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "style": 1,
     "use_template": false
   },
   "tile": {
@@ -4755,7 +4800,7 @@
         221,
         0,
         0,
-        0,
+        6,
         0,
         0,
         0,
@@ -4850,7 +4895,7 @@
         96,
         221,
         0,
-        0,
+        6,
         0,
         0,
         0,
@@ -4945,7 +4990,7 @@
         96,
         96,
         221,
-        0,
+        6,
         0,
         0,
         0,
@@ -5073,7 +5118,7 @@
         32,
         33,
         34,
-        0,
+        6,
         0,
         0,
         0,
@@ -6805,6 +6850,8 @@
         0,
         0,
         0,
+        88,
+        88,
         0,
         0,
         0,
@@ -6899,9 +6946,7 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        88,
         0,
         0,
         0,

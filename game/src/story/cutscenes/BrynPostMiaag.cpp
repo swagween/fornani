@@ -18,6 +18,7 @@ void BrynPostMiaag::update(automa::ServiceProvider& svc, std::optional<std::uniq
 		svc.state_flags.reset(automa::StateFlags::cutscene);
 		svc.camera_controller.set_owner(graphics::CameraOwner::player);
 		svc.quest_table.progress_quest("defeat_miaag", 1, 50901);
+		flags.set(CutsceneFlags::delete_me);
 		return;
 	}
 

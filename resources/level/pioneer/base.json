@@ -115,7 +115,7 @@
         ],
         "face_player": true,
         "hidden": false,
-        "id": 87398,
+        "id": 300,
         "label": "dr_willett",
         "position": [
           11,
@@ -231,6 +231,23 @@
           12
         ],
         "source_id": 300
+      },
+      {
+        "activate_on_contact": false,
+        "already_open": false,
+        "destination_id": 509,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "key_id": 0,
+        "locked": false,
+        "position": [
+          16,
+          18
+        ],
+        "source_id": 300
       }
     ],
     "save_point": [
@@ -296,7 +313,6 @@
       "darken_factor": 2
     },
     "special_drop_id": 0,
-    "style": 2,
     "use_template": false
   },
   "tile": {

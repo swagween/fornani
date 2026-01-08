@@ -11,6 +11,7 @@ Meatsquash::Meatsquash(automa::ServiceProvider& svc, world::Map& map) : Enemy(sv
 	get_collider().physics.maximum_velocity = {8.f, 12.f};
 	get_collider().physics.air_friction = {0.95f, 0.999f};
 	get_collider().flags.general.set(shape::General::complex);
+
 	directions.desired.lnr = LNR::right;
 	directions.actual.lnr = LNR::right;
 	directions.movement.lnr = LNR::neutral;

@@ -56,7 +56,9 @@ Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, std::optional<std::uni
 	}
 	flags.state.set(StateFlags::no_slowdown);
 
-	push_conversation(1);
+	auto prog = svc.quest_table.get_quest_progression("lynx_dialogue");
+	auto which = prog == 0 ? 1 : 4;
+	push_conversation(which);
 }
 
 void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -225,6 +227,8 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 			svc.music_player.play_looped();
 			flags.general.set(GeneralFlags::has_invincible_channel);
 			flags.state.set(StateFlags::vulnerable);
+			svc.quest_table.progress_quest("lynx_dialogue", 1, 1);
+			svc.data.save_quests();
 		}
 		// second phase starts
 		if (half_health() && !m_flags.test(LynxFlags::second_phase)) {

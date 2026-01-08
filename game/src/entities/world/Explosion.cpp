@@ -9,6 +9,7 @@ namespace fornani::world {
 Explosion::Explosion(automa::ServiceProvider& svc, sf::Vector2f position, float radius) : m_sensor{radius}, m_lifetime{8} {
 	m_lifetime.start();
 	m_sensor.set_position(position);
+	svc.soundboard.flags.arms.set(audio::Arms::frag_grenade);
 }
 
 void Explosion::update(automa::ServiceProvider& svc, player::Player& player, Map& map) {

@@ -59,7 +59,9 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	sprite_direction.lnr = LNR::left;
 	Enemy::directions.actual.lnr = LNR::left;
 
-	push_conversation(1);
+	auto prog = svc.quest_table.get_quest_progression("minigus_dialogue");
+	auto which = prog == 0 ? 1 : 4;
+	push_conversation(which);
 
 	sparkler.set_dimensions(Enemy::get_collider().get_vicinity_rect().size);
 }
@@ -274,6 +276,8 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (b_start) {
 		m_mode = MinigusMode::battle_one;
 		status.set(MinigusFlags::battle_mode);
+		svc.quest_table.progress_quest("minigus_dialogue", 1, 1);
+		svc.data.save_quests();
 		set_distant_interact(false);
 		set_force_interact(false);
 		svc.music_player.load(svc.finder, "scuffle");

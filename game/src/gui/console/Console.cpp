@@ -69,6 +69,10 @@ void Console::update(automa::ServiceProvider& svc) {
 				auto lookup = m_services->controller_map.get_icon_lookup_by_action(static_cast<config::DigitalAction>(action_id));
 				m_writer->insert_icon_at(code.value, lookup);
 			}
+			if (code.is(MessageCodeType::launch_cutscene) && m_process_code_before) {
+				svc.events.dispatch_event("LaunchCutscene", code.value);
+				processed = true;
+			}
 			if (code.is_quest() && m_process_code_before) {
 				if (code.extras) {
 					if (code.extras->size() > 1) { svc.quest_table.progress_quest(svc.quest_registry.get_quest_metadata(code.value).get_tag(), code.extras->at(0), code.extras->at(1)); }

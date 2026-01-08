@@ -111,7 +111,6 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "bridge_status0": [],
         "dimensions": [
           1,
           1
@@ -128,7 +127,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "** FLT DATA - WX ALERT CRITICAL **"
                 }
               ]
@@ -139,7 +137,6 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "bridge_msg0": [],
         "dimensions": [
           1,
           1
@@ -156,7 +153,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "MSG     : STORM ACTIVITY AHEAD          DEVIATE HDG 290DEG --- ATC NO_RESPONSE"
                 }
               ]
@@ -167,7 +163,6 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "bridge_weaher0": [],
         "dimensions": [
           1,
           1
@@ -184,7 +179,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "ALERT: SEVERE WX IN PATH. AUTOPILOT: LNAV"
                 }
               ]
@@ -195,7 +189,6 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "bridge_desk0": [],
         "dimensions": [
           1,
           1
@@ -212,7 +205,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "You find a flight log and half a bagel. It's not even stale."
                 }
               ]
@@ -223,7 +215,6 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "captains_log0": [],
         "dimensions": [
           1,
           1
@@ -240,7 +231,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "Captain's log: Nov. 12 entry: \"We are headed straight for severe storm. Half the crew made a mad dash for the escape pods. Boss threw a fit and kicked the first mate overboard, pioneer style. This is my last entry... I'm sorry to the crew who were left behind.\""
                 }
               ]
@@ -251,7 +241,6 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "captains_log10": [],
         "dimensions": [
           1,
           1
@@ -268,7 +257,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "Captain's log: Nov. 8 entry: \"Boss says we've got almost everything we needed from this place. I wonder what he plans to do after that; he doesn't tell me much. As a POW I'm used to that, but it still makes me uneasy...\""
                 }
               ]
@@ -279,7 +267,6 @@
       {
         "activate_on_contact": false,
         "alternates": 0,
-        "captains_log20": [],
         "dimensions": [
           1,
           1
@@ -296,7 +283,6 @@
             "suite": [
               [
                 {
-                  "codes": [],
                   "message": "Captain's log: Oct. 29 entry: \"55 KT (headwind), ALT 6600. Looks to be smooth sailing. Whoever used to pilot this thing ran a tight ship. Not sure why there's a step-stool at the cockpit. I'm an Ooplo and even I don't need one of those...\""
                 }
               ]
@@ -342,6 +328,11 @@
     "ambience": "firstwind",
     "background": "night",
     "biome": "firstwind",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -381,7 +372,8 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 0
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
     "flags": {

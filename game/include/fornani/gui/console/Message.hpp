@@ -39,6 +39,7 @@ struct MessageCode {
 	[[nodiscard]] auto is_destroy_inspectable() const -> bool { return type == MessageCodeType::destroy_inspectable; }
 	[[nodiscard]] auto is_piggyback() const -> bool { return type == MessageCodeType::piggyback; }
 	[[nodiscard]] auto is_open_vendor() const -> bool { return type == MessageCodeType::open_vendor; }
+	[[nodiscard]] auto is(MessageCodeType const test) const -> bool { return type == test; }
 
 	// editor helpers
 	void mark_for_deletion() { delete_me = true; }

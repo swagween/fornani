@@ -50,7 +50,7 @@ enum class Item { heal, orb_low, orb_medium, orb_high, orb_max, health_increase,
 enum class Player { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll, wallslide, super_slide, doublejump, turn_slide, dash_kick };
 enum class Weapon { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, plasmer, underdog, peckett_710, pulse, demon_magic };
 enum class Projectile { basic, shuriken, pulse };
-enum class Arms { reload };
+enum class Arms { reload, frag_grenade, whistle };
 enum class Transmission { statics };
 enum class Step { basic, grass };
 
@@ -67,6 +67,7 @@ enum class Archer { hurt, flee, death };
 enum class Beamstalk { hurt, death };
 enum class Meatsquash { hurt, death, chomp, whip, swallow };
 enum class Summoner { hurt_1, hurt_2, death, block_1, block_2, summon, hah };
+enum class Mastiff { bite, growl };
 
 enum class Minigus {
 	hurt_1,
@@ -147,6 +148,7 @@ class Soundboard {
 		util::BitFlags<Meatsquash> meatsquash{};
 		util::BitFlags<Lynx> lynx{};
 		util::BitFlags<Miaag> miaag{};
+		util::BitFlags<Mastiff> mastiff{};
 		util::BitFlags<NPC> npc{};
 	} flags{};
 

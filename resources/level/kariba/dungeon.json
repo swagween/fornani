@@ -78,6 +78,23 @@
           10
         ],
         "source_id": 420
+      },
+      {
+        "activate_on_contact": false,
+        "already_open": false,
+        "destination_id": 509,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "key_id": 0,
+        "locked": false,
+        "position": [
+          9,
+          4
+        ],
+        "source_id": 420
       }
     ],
     "save_point": [
@@ -96,7 +113,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 2,
+    "background": "",
     "biome": "kariba",
     "border_color": [
       0,
@@ -143,7 +160,6 @@
       "darken_factor": 3
     },
     "special_drop_id": 0,
-    "style": 5,
     "use_template": false
   },
   "tile": {

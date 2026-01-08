@@ -27,7 +27,8 @@ enum class MessageCodeType {
 	remove_item,
 	destroy_inspectable,
 	piggyback,
-	open_vendor
+	open_vendor,
+	launch_cutscene
 };
 
 enum class CodeSource { suite, response };

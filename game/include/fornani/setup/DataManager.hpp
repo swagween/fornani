@@ -45,6 +45,7 @@ class DataManager final {
 	// game save
 	void load_data(std::string in_room = "");
 	void save_progress(player::Player& player, int save_point_id);
+	void save_quests();
 	void save_settings();
 	int load_progress(player::Player& player, int file, bool state_switch = false, bool from_menu = true);
 	void load_settings();

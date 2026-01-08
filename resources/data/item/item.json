@@ -335,6 +335,16 @@
 		"hidden_description": "The key to exit the Kariba Ruins.",
 		"unique": true
 	},
+	"permission_slip": {
+		"id": 40,
+		"category": 1,
+		"lookup": [ 7, 2 ],
+		"origin": [ 10, 1 ],
+		"actual_title": "Permission Slip",
+		"naive_description": "This written permission from your father will grant you passage to Pioneer Trail.",
+		"hidden_description": "This written permission from your father will grant you passage to Pioneer Trail.",
+		"unique": true
+	},
 	"red_jeans": {
 		"id": 209,
 		"category": 4,

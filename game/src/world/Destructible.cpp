@@ -9,7 +9,7 @@ namespace fornani::world {
 
 Destructible::Destructible(automa::ServiceProvider& svc, Map& map, dj::Json const& in, int style_id)
 	: IWorldPositionable({in["position"][0].as<std::uint32_t>(), in["position"][1].as<std::uint32_t>()}), quest_id(in["id"].as<int>()), sprite{svc.assets.get_texture("destructibles")}, m_collider{map, constants::f_cell_vec} {
-	m_collider.get()->physics.position = get_world_position();
+	m_collider.get()->set_position(get_world_position());
 	sprite.setScale(constants::f_scale_vec);
 	sprite.setTextureRect(sf::IntRect{{style_id * constants::i_cell_resolution, 0}, constants::i_resolution_vec});
 	in["inverse"].as_bool() ? m_attributes.set(DestructibleAttributes::inverse) : m_attributes.reset(DestructibleAttributes::inverse);

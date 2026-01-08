@@ -47,6 +47,22 @@
           0
         ],
         "variant": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 22,
+        "position": [
+          30,
+          17
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
       }
     ],
     "portals": [

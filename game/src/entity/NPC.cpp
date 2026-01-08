@@ -7,6 +7,8 @@
 
 namespace fornani {
 
+constexpr float default_walk_speed_v = 0.8f;
+
 static int s_voice_cue{};
 static bool b_cue{};
 static bool b_pop{};
@@ -73,7 +75,7 @@ NPC::NPC(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in)
 
 	NANI_LOG_DEBUG(Entity::m_logger, "Created NPC with label {}", m_label);
 
-	init(svc, svc.data.npc[m_label]);
+	init(svc, svc.data.npc[in["label"].as_string()]);
 	set_position_from_scaled(sf::Vector2f{in["position"][0].as<float>(), in["position"][1].as<float>()});
 	auto push = true;
 	auto fail_tag = std::string{};
@@ -97,12 +99,12 @@ NPC::NPC(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in)
 NPC::NPC(automa::ServiceProvider& svc, world::Map& map, std::string_view label, bool include_collider)
 	: Entity(svc, "npcs", 0), Mobile(svc, map, "npc_" + std::string{label}, {svc.data.npc[label]["sprite_dimensions"][0].as<int>(), svc.data.npc[label]["sprite_dimensions"][1].as<int>()}, include_collider), m_label(label),
 	  m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[label]["id"].as<int>()}, m_current_conversation{1}, m_services{&svc} {
-	init(svc, svc.data.npc[m_label]);
+	init(svc, svc.data.npc[label]);
 }
 
 NPC::NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vector<std::vector<int>> const suites)
 	: Entity(svc, "npcs", id, {1, 1}), Mobile(svc, "npc_" + std::string{label}, {svc.data.npc[label]["sprite_dimensions"][0].as<int>(), svc.data.npc[label]["sprite_dimensions"][1].as<int>()}), m_label(label),
-	  m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[label]["id"].as<int>()}, m_current_conversation{1}, m_suites{suites}, m_services{&svc} {
+	  m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[label]["id"].as<int>()}, m_current_conversation{1}, m_suites{suites}, m_services{&svc}, m_walk_speed{default_walk_speed_v} {
 	repeatable = false;
 	copyable = false;
 	m_flags.set(NPCFlags::face_player); // default to face player
@@ -114,14 +116,17 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 	svc.events.register_event(std::make_unique<Event<int>>("PopConversation", &pop_convo));
 	svc.events.register_event(std::make_unique<Event<int>>("PiggybackNPC", &piggyback_me));
 
-	m_offset = sf::Vector2f{svc.data.npc[m_label]["sprite_offset"][0].as<float>(), svc.data.npc[m_label]["sprite_offset"][1].as<float>()};
+	m_offset = sf::Vector2f{in_data["sprite_offset"][0].as<float>(), in_data["sprite_offset"][1].as<float>()};
 	if (in_data["vendor"] && svc.data.marketplace.contains(get_specifier())) {
 		vendor = &svc.data.marketplace.at(get_specifier());
 		NANI_LOG_INFO(Entity::m_logger, "This NPC is a vendor: {}", get_tag());
 	}
 
+	if (in_data["random_walk"].as_bool()) { m_flags.set(NPCFlags::random_walk); }
+	m_walk_speed = in_data["walk_speed"] ? in_data["walk_speed"].as<float>() : default_walk_speed_v;
+
 	if (collider.has_value()) {
-		get_collider().dimensions = {svc.data.npc[m_label]["dimensions"][0].as<float>(), svc.data.npc[m_label]["dimensions"][1].as<float>()};
+		get_collider().dimensions = {in_data["dimensions"][0].as<float>(), in_data["dimensions"][1].as<float>()};
 		get_collider().sync_components();
 		get_collider().physics.set_friction_componentwise({0.95f, 0.995f});
 		get_collider().stats.GRAV = 16.2f;
@@ -129,6 +134,7 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 		get_collider().set_exclusion_target(shape::ColliderTrait::circle);
 		get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
 		get_collider().set_exclusion_target(shape::ColliderTrait::player);
+		get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 	}
 
 	for (auto const& in_anim : in_data["animation"].as_array()) {
@@ -164,7 +170,7 @@ void NPC::unserialize(dj::Json const& in) {
 	if (in["face_player"].is_object()) {
 		in["face_player"].as_bool() ? m_flags.set(NPCFlags::face_player) : m_flags.reset(NPCFlags::face_player);
 	} else {
-		m_flags.set(NPCFlags::face_player); // defautlt to facing player
+		m_flags.set(NPCFlags::face_player); // default to facing player
 	}
 	m_label = in["label"].as_string();
 	m_hidden = in["hidden"].as_bool();
@@ -203,16 +209,14 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 
 	m_indicator.tick();
 
-	if (b_pop && b_index == m_id.get()) {
-		m_current_conversation.modulate(1);
-		NANI_LOG_DEBUG(Entity::m_logger, "Current conversation N: {}", m_current_conversation.get());
-		NANI_LOG_DEBUG(Entity::m_logger, "Current order N: {}", m_current_conversation.get_order());
-		b_pop = false;
-	}
-	if (b_pop) {
+	if (b_pop && b_index != m_id.get()) {
 		NANI_LOG_DEBUG(Entity::m_logger, "Conversation Pop Mismatch!");
 		NANI_LOG_DEBUG(Entity::m_logger, "ID from text was {}", b_index);
 		NANI_LOG_DEBUG(Entity::m_logger, "ID from NPC was {}", m_id.get());
+	} else if (b_pop && b_index == m_id.get()) {
+		m_current_conversation.modulate(1);
+		NANI_LOG_DEBUG(Entity::m_logger, "Current conversation N: {}", m_current_conversation.get());
+		NANI_LOG_DEBUG(Entity::m_logger, "Current order N: {}", m_current_conversation.get_order());
 		b_pop = false;
 	}
 
@@ -248,6 +252,14 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 		svc.camera_controller.constrain();
 	}
 
+	if (m_flags.test(NPCFlags::random_walk)) {
+		if (svc.ticker.every_second()) {
+			if (random::percent_chance(20)) {
+				request(NPCAnimationState::walk);
+				m_state.set(NPCState::random_walk);
+			}
+		}
+	}
 	if (collider.has_value()) {
 		if (!get_collider().grounded()) { request(NPCAnimationState::fall); }
 	}
@@ -342,8 +354,15 @@ fsm::StateFunction NPC::update_idle() {
 
 fsm::StateFunction NPC::update_walk() {
 	p_state.actual = NPCAnimationState::walk;
-	if (collider.has_value()) { get_collider().physics.acceleration.x = 2.8f; }
-	if (change_state(NPCAnimationState::turn, get_params("turn"))) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
+	if (collider.has_value()) { get_collider().physics.acceleration.x = m_walk_speed * directions.actual.as_float(); }
+	if (!m_state.test(NPCState::random_walk)) {
+		if (change_state(NPCAnimationState::turn, get_params("turn"))) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
+	} else {
+		if (Mobile::animation.is_complete()) {
+			request(NPCAnimationState::idle);
+			m_state.reset(NPCState::random_walk);
+		}
+	}
 	if (change_state(NPCAnimationState::idle, get_params("idle"))) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
 	return std::move(fsm::StateFunction{NPC_BIND(update_walk)});
 }

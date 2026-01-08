@@ -77,7 +77,10 @@ fsm::StateFunction Junkfly::update_idle() {
 
 fsm::StateFunction Junkfly::update_toss() {
 	p_state.actual = JunkflyState::toss;
-	if (animation.get_frame_count() == 2 && animation.keyframe_started()) { set_flag(JunkflyFlags::toss); }
+	if (animation.get_frame_count() == 2 && animation.keyframe_started()) {
+		set_flag(JunkflyFlags::toss);
+		m_services->soundboard.flags.arms.set(audio::Arms::whistle);
+	}
 	if (animation.is_complete()) {
 		request(JunkflyState::idle);
 		if (change_state(JunkflyState::idle, get_params("idle"))) { return JUNKFLY_BIND(update_idle); }

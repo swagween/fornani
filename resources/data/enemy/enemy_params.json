@@ -540,6 +540,7 @@
 		},
 		"general": {
 			"mobile": false,
+			"fixed": true,
 			"gravity": false,
 			"map_collision": false,
 			"player_collision": true,
@@ -942,9 +943,72 @@
 			"gravity": false,
 			"map_collision": false,
 			"player_collision": false,
-			"foreground": false,
+			"sturdy": true,
 			"rare_drops": true,
 			"no_tick": true
+		},
+		"treasure": {
+			"chance": 0.2,
+			"items": [
+				{
+					"tag": "clamp",
+					"chance": 0.48,
+					"mythic": false
+				},
+				{
+					"tag": "boxing_glove",
+					"chance": 0.48,
+					"mythic": false
+				},
+				{
+					"tag": "magnet",
+					"chance": 0.04,
+					"mythic": false
+				}
+			]
+		}
+	},
+	"mastiff": {
+		"metadata": {
+			"id": 22,
+			"variant": "guardian"
+		},
+		"physical": {
+			"dimensions": [ 40, 40 ],
+			"sprite_dimensions": [ 64, 64 ],
+			"offset": [ 0, -30 ],
+			"num_colliders": 1,
+			"num_hurtboxes": 1,
+			"alert_range": [ 380.0, 64.0 ],
+			"hostile_range": [ 90.0, 32.0 ],
+			"friction": 0.99,
+			"gravity": 20.0
+		},
+		"visual": {
+			"effect_type": 0,
+			"effect_size": 1
+		},
+		"audio": {
+			"hit": -1
+		},
+		"attributes": {
+			"base_hp": 50,
+			"base_damage": 1.0,
+			"speed": 2.5,
+			"loot_multiplier": 1.0,
+			"drop_range": [ 6, 8 ],
+			"rare_drop_id": 0,
+			"respawn_distance": 8,
+			"permadeath": false,
+			"size": 1
+		},
+		"general": {
+			"mobile": true,
+			"gravity": true,
+			"map_collision": true,
+			"player_collision": false,
+			"foreground": true,
+			"rare_drops": false
 		}
 	}
 }

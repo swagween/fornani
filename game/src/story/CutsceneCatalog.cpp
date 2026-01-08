@@ -2,6 +2,7 @@
 #include "fornani/story/CutsceneCatalog.hpp"
 #include <fornani/story/cutscene/BrynPostMiaag.hpp>
 #include <fornani/story/cutscene/LadyNimbusIntro.hpp>
+#include <fornani/story/cutscene/PioneerBaseDebrief.hpp>
 
 namespace fornani {
 
@@ -15,6 +16,7 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	switch (id) {
 	case 6001: cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc)); break;
 	case 509: cutscenes.push_back(std::make_unique<BrynPostMiaag>(svc)); break;
+	case 300: cutscenes.push_back(std::make_unique<PioneerBaseDebrief>(svc)); break;
 	default: cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc)); break;
 	}
 }

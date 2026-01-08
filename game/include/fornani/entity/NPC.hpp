@@ -8,6 +8,7 @@
 #include <fornani/entity/Entity.hpp>
 #include <fornani/story/Quest.hpp>
 #include <fornani/utils/Circuit.hpp>
+#include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/ID.hpp>
 #include <fornani/utils/StateFunction.hpp>
 #include <memory>
@@ -15,8 +16,8 @@
 
 namespace fornani {
 
-enum class NPCFlags { has_turn_animation, face_player, background, no_animation };
-enum class NPCState { engaged, force_interact, introduced, talking, cutscene, piggybacking, hidden, distant_interact, just_engaged };
+enum class NPCFlags { has_turn_animation, face_player, background, no_animation, random_walk };
+enum class NPCState { engaged, force_interact, introduced, talking, cutscene, piggybacking, hidden, distant_interact, just_engaged, random_walk };
 enum class NPCAnimationState { idle, turn, walk, inspect, fall, land };
 
 class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState> {
@@ -86,6 +87,8 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	int current_location{};
 	int vendor_id{};
 	automa::ServiceProvider* m_services;
+
+	float m_walk_speed;
 
 	/* data-driven members */
 	ID m_id;

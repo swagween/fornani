@@ -100,6 +100,10 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.tank.test(Tank::hurt_2)) { play(engine, svc, svc.sounds.get_buffer("tank_hurt_2"), 0.f, 50.f); }
 	if (flags.tank.test(Tank::death)) { play(engine, svc, svc.sounds.get_buffer("tank_death")); }
 
+	// mastiff
+	if (flags.mastiff.test(Mastiff::bite)) { play(engine, svc, svc.sounds.get_buffer("mastiff_bite"), 0.f, 50.f); }
+	if (flags.mastiff.test(Mastiff::growl)) { play(engine, svc, svc.sounds.get_buffer("mastiff_growl"), 0.2f, 50.f); }
+
 	// minigus
 	if (flags.minigus.test(Minigus::invincible)) { play(engine, svc, svc.sounds.get_buffer("minigus_invincible")); }
 	if (flags.minigus.test(Minigus::build)) { play(engine, svc, svc.sounds.get_buffer("minigus_build")); }
@@ -236,6 +240,8 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	// arms
 	if (flags.player.test(Player::arms_switch)) { play(engine, svc, svc.sounds.get_buffer("arms_switch"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.arms.test(Arms::reload)) { play(engine, svc, svc.sounds.get_buffer("arms_reload"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.arms.test(Arms::frag_grenade)) { play(engine, svc, svc.sounds.get_buffer("frag_grenade"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.arms.test(Arms::whistle)) { play(engine, svc, svc.sounds.get_buffer("missile_whistle"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 
 	if (flags.weapon.test(Weapon::bryns_gun)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_bg"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::gnat)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_gnat"), 0.1f, 100.f, 2, 1.f, {}, echo_count, echo_rate); }

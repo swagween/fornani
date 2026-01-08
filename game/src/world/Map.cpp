@@ -315,6 +315,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	std::erase_if(incinerite_blocks, [](auto const& i) { return i->is_destroyed(); });
 	std::erase_if(breakables, [](auto const& b) { return b->is_destroyed(); });
 	std::erase_if(m_explosions, [](auto const& e) { return e.is_done(); });
+	std::erase_if(cutscene_catalog.cutscenes, [](auto const& c) { return c->delete_me(); });
 	enemy_catalog.update();
 
 	manage_projectiles(svc);

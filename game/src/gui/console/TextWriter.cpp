@@ -160,12 +160,14 @@ void TextWriter::load_message(dj::Json& source) {
 				for (auto const& code : msg["codes"].as_array()) { codes.push_back(MessageCode{code}); }
 			}
 			this_set.push_back({sf::Text(*m_font), codes});
-			this_set.back().data.setString(msg["message"].as_string().data());
-			NANI_LOG_DEBUG(m_logger, "Loaded message: {}", msg["message"].as_string());
+			if (msg["message"]) { this_set.back().data.setString(msg["message"].as_string().data()); }
+			if (msg["messages"].is_array()) {
+				auto which = random::random_range(0, msg["messages"].as_array().size() - 1);
+				this_set.back().data.setString(msg["messages"][which].as_string().data());
+			}
 			stylize(this_set.back().data);
 		}
 		suite.push_back(this_set);
-		NANI_LOG_DEBUG(m_logger, "Pushed a set.");
 	}
 	working_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
 	working_message.setString("");
@@ -183,7 +185,11 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 				for (auto const& code : msg["codes"].as_array()) { codes.push_back(MessageCode{code}); }
 			}
 			this_set.push_back({sf::Text(*m_font), codes});
-			this_set.back().data.setString(msg["message"].as_string().data());
+			if (msg["message"]) { this_set.back().data.setString(msg["message"].as_string().data()); }
+			if (msg["messages"].is_array()) {
+				auto which = random::random_range(0, msg["messages"].as_array().size() - 1);
+				this_set.back().data.setString(msg["messages"][which].as_string().data());
+			}
 			stylize(this_set.back().data);
 		}
 		suite.push_back(this_set);

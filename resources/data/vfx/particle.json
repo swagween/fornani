@@ -474,7 +474,7 @@
 		"gravity": -1.0,
 		"lifespan": 72,
 		"lifespan_variance": 0,
-		"dimensions": [ 16, 16 ],
+		"dimensions": [ 32, 32 ],
 		"animated": true,
 		"colliding": false,
 		"animation": {

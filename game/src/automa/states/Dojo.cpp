@@ -15,9 +15,11 @@ static bool b_read_item{};
 static bool b_equip_item{};
 static bool b_play_song{};
 static bool b_open_vendor{};
+static bool b_launch_cutscene{};
 static int item_modifier{};
 static int vendor_id{};
 static int song_id{};
+static int cutscene_id{};
 
 static void trigger_item(int to) {
 	item_acquisition = true;
@@ -51,6 +53,10 @@ static void open_vendor(int which) {
 	b_open_vendor = true;
 	vendor_id = which;
 }
+static void launch_cutscene(int which) {
+	b_launch_cutscene = true;
+	cutscene_id = which;
+}
 
 Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name)
 	: GameState(svc, player, scene, room_number), map(svc, player), m_services(&svc), m_enter_room{100}, m_loading{4} {
@@ -68,6 +74,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	svc.events.register_event(std::make_unique<Event<int>>("PlaySong", &trigger_song));
 	svc.events.register_event(std::make_unique<Event<int>>("RemovePlayerWeapon", &trigger_remove_gun));
 	svc.events.register_event(std::make_unique<Event<int>>("OpenVendor", &open_vendor));
+	svc.events.register_event(std::make_unique<Event<int>>("LaunchCutscene", &launch_cutscene));
 
 	// create shaders
 	m_world_shader = LightShader(svc.finder);
@@ -132,6 +139,10 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		b_play_song = false;
 	}
 	if (b_read_item) { read_item(item_modifier); }
+	if (b_launch_cutscene) {
+		map.cutscene_catalog.push_cutscene(svc, map, cutscene_id);
+		b_launch_cutscene = false;
+	}
 	if (b_equip_item) {
 		auto equipped = player->equip_item(item_modifier);
 		equipped == player::EquipmentStatus::equipped	  ? svc.soundboard.flags.item.set(audio::Item::equip)

@@ -10,6 +10,7 @@ nani_add_headers(
         Imp.hpp
         Junker.hpp
         Junkfly.hpp
+        Mastiff.hpp
         Meatsquash.hpp
         Minion.hpp
         Tank.hpp

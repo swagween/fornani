@@ -207,6 +207,12 @@ void DataManager::load_data(std::string in_room) {
 	m_services->stopwatch.start();
 }
 
+void DataManager::save_quests() {
+	auto& save = files.at(current_save).save_data;
+	files.at(current_save).write();
+	m_services->quest_table.serialize(save);
+}
+
 void DataManager::save_progress(player::Player& player, int save_point_id) {
 	auto& save = files.at(current_save).save_data;
 	files.at(current_save).write();

@@ -1,5 +1,39 @@
 {
   "entities": {
+    "enemies": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 22,
+        "position": [
+          37,
+          47
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 22,
+        "position": [
+          31,
+          67
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      }
+    ],
     "inspectables": [
       {
         "activate_on_contact": false,
@@ -223,7 +257,6 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "style": 1,
     "use_template": false
   },
   "tile": {

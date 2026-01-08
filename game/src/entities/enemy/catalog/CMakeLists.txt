@@ -10,6 +10,7 @@ nani_add_sources(
         Imp.cpp
         Junker.cpp
         Junkfly.cpp
+        Mastiff.cpp
         Meatsquash.cpp
         Minion.cpp
         Tank.cpp

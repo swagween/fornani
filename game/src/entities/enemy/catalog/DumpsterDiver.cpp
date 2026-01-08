@@ -81,7 +81,9 @@ void DumpsterDiver::update(automa::ServiceProvider& svc, world::Map& map, player
 
 	if (svc.ticker.every_x_ticks(48)) {
 		for (auto const& pt : m_surface_tiles) {
-			if ((which_side == pt.side && m_wait_time.running()) || m_attack.hit.within_bounds(pt.point)) { map.spawn_emitter(svc, "mud", pt.point - sf::Vector2f{16.f, 16.f}, Direction{UND::up}, {32.f, 32.f}); }
+			if ((which_side == pt.side && m_wait_time.running()) || m_attack.hit.within_bounds(pt.point) || get_collider().bounding_box.overlaps(pt.point)) {
+				map.spawn_emitter(svc, "mud", pt.point - sf::Vector2f{16.f, 16.f}, Direction{UND::up}, {32.f, 32.f});
+			}
 		}
 	}
 

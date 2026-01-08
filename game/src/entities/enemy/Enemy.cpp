@@ -86,6 +86,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	if (in_general["spike_collision"].as_bool()) { flags.general.set(GeneralFlags::spike_collision); }
 	if (in_general["sturdy"].as_bool()) { get_collider().set_attribute(shape::ColliderAttributes::sturdy); }
 	if (in_general["crusher"].as_bool()) { get_collider().set_attribute(shape::ColliderAttributes::crusher); }
+	if (in_general["fixed"].as_bool()) { get_collider().set_attribute(shape::ColliderAttributes::fixed); }
 	if (in_general["semipermanent"].as_bool()) { flags.general.set(GeneralFlags::semipermanent); }
 	if (in_general["no_tick"].as_bool()) { flags.general.set(GeneralFlags::no_tick); }
 	if (!flags.general.test(GeneralFlags::gravity)) { get_collider().stats.GRAV = 0.f; }
