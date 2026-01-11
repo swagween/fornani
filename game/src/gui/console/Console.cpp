@@ -73,6 +73,10 @@ void Console::update(automa::ServiceProvider& svc) {
 				svc.events.dispatch_event("LaunchCutscene", code.value);
 				processed = true;
 			}
+			if (code.is(MessageCodeType::add_map_marker) && m_process_code_before && code.extras) {
+				svc.events.dispatch_event("AddMapMarker", code.value, code.extras->at(0)); // TODO: gotta fix this later. "main" should be somehow read from the code.extras
+				processed = true;
+			}
 			if (code.is_quest() && m_process_code_before) {
 				if (code.extras) {
 					if (code.extras->size() > 1) { svc.quest_table.progress_quest(svc.quest_registry.get_quest_metadata(code.value).get_tag(), code.extras->at(0), code.extras->at(1)); }
@@ -102,18 +106,12 @@ void Console::update(automa::ServiceProvider& svc) {
 				m_npc_portrait->set_emotion(code.value);
 				if (code.extras) {
 					if (!code.extras->empty()) {
-						if (code.extras->at(0) == 1) {
-							m_npc_portrait->add_sparkler("portrait_sparkle");
-							NANI_LOG_DEBUG(m_logger, "Added a sparkler.");
-						}
-					} else {
-						NANI_LOG_DEBUG(m_logger, "Uh oh... code.extras was empty!");
+						if (code.extras->at(0) == 1) { m_npc_portrait->add_sparkler("portrait_sparkle"); }
 					}
 				} else {
 					m_npc_portrait->remove_sparkler();
-					NANI_LOG_DEBUG(m_logger, "Removed the sparkler.");
 				}
-				NANI_LOG_DEBUG(m_logger, "Emotion!");
+				NANI_LOG_DEBUG(m_logger, "Emotion: {}", code.value);
 				processed = true;
 			}
 		}
@@ -172,9 +170,15 @@ void Console::load_and_launch(std::string_view key, OutputType type) {
 
 void Console::load_single_message(std::string_view message) { m_writer = std::make_unique<TextWriter>(*m_services, message); }
 
-void Console::display_item(int item_id) { m_item_widget = ItemWidget(*m_services, ItemWidgetType::item, item_id); }
+void Console::display_item(int item_id, bool sparkle) {
+	m_item_widget = ItemWidget(*m_services, ItemWidgetType::item, item_id);
+	if (!sparkle) { m_item_widget->remove_sparkler(); }
+}
 
-void Console::display_gun(int gun_id) { m_item_widget = ItemWidget(*m_services, ItemWidgetType::gun, gun_id); }
+void Console::display_gun(int gun_id, bool sparkle) {
+	m_item_widget = ItemWidget(*m_services, ItemWidgetType::gun, gun_id);
+	if (!sparkle) { m_item_widget->remove_sparkler(); }
+}
 
 void Console::write(sf::RenderWindow& win, bool instant) {
 	if (!is_active()) { return; }
@@ -272,7 +276,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 			for (auto& code : codes.value()) {
 				if (code.is_response()) {
 					// create a response dialog, feed it inputs, and await its closure before resuming m_writer
-					m_response = ResponseDialog(m_services->text, text_suite, native_key, code.value, m_position + m_response_offset);
+					m_response = ResponseDialog(m_services->text, text_suite, m_services->quest_table, native_key, code.value, m_position + m_response_offset);
 					m_mode = ConsoleMode::responding;
 					m_writer->wait();
 					m_services->soundboard.flags.console.set(audio::Console::next);
@@ -314,7 +318,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 
 		// go to next message or exit
 		finished = m_writer->request_next();
-		m_process_code_before = finished;
+		m_process_code_before = true;
 		m_process_code_after = true;
 		just_started = finished;
 		can_skip = false;

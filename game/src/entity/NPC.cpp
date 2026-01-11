@@ -107,7 +107,7 @@ NPC::NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vect
 	  m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[label]["id"].as<int>()}, m_current_conversation{1}, m_suites{suites}, m_services{&svc}, m_walk_speed{default_walk_speed_v} {
 	repeatable = false;
 	copyable = false;
-	m_flags.set(NPCFlags::face_player); // default to face player
+	set_flag(NPCFlags::face_player); // default to face player
 }
 
 void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
@@ -122,7 +122,7 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 		NANI_LOG_INFO(Entity::m_logger, "This NPC is a vendor: {}", get_tag());
 	}
 
-	if (in_data["random_walk"].as_bool()) { m_flags.set(NPCFlags::random_walk); }
+	if (in_data["random_walk"].as_bool()) { set_flag(NPCFlags::random_walk); }
 	m_walk_speed = in_data["walk_speed"] ? in_data["walk_speed"].as<float>() : default_walk_speed_v;
 
 	if (collider.has_value()) {
@@ -139,15 +139,15 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 
 	for (auto const& in_anim : in_data["animation"].as_array()) {
 		m_params.insert({in_anim["label"].as_string(), {in_anim["parameters"][0].as<int>(), in_anim["parameters"][1].as<int>(), in_anim["parameters"][2].as<int>(), in_anim["parameters"][3].as<int>(), in_anim["parameters"][4].as_bool()}});
-		if (in_anim["label"].as_string() == "turn") { m_flags.set(NPCFlags::has_turn_animation); }
+		if (in_anim["label"].as_string() == "turn") { set_flag(NPCFlags::has_turn_animation); }
 	}
 	if (m_params.contains("idle")) { Mobile::set_parameters(m_params.at("idle")); }
 	request(NPCAnimationState::idle);
 	directions.actual.lnr = LNR::left;
-	if (in_data["no_animation"].as_bool()) { m_flags.set(NPCFlags::no_animation); }
+	if (in_data["no_animation"].as_bool()) { set_flag(NPCFlags::no_animation); }
 
 	if (m_hidden) { m_state.set(NPCState::hidden); }
-	if (m_background) { m_flags.set(NPCFlags::background); }
+	if (m_background) { set_flag(NPCFlags::background); }
 }
 
 void NPC::serialize(dj::Json& out) {
@@ -155,7 +155,7 @@ void NPC::serialize(dj::Json& out) {
 	out["background"] = m_background;
 	out["label"] = m_label;
 	out["hidden"] = m_hidden;
-	out["face_player"] = m_flags.test(NPCFlags::face_player);
+	out["face_player"] = has_flag_set(NPCFlags::face_player);
 	for (auto& suite : m_suites) {
 		auto entry = dj::Json::empty_array();
 		for (auto& set : suite) { entry.push_back(set); }
@@ -168,9 +168,9 @@ void NPC::unserialize(dj::Json const& in) {
 	Entity::unserialize(in);
 	m_background = in["background"].as_bool();
 	if (in["face_player"].is_object()) {
-		in["face_player"].as_bool() ? m_flags.set(NPCFlags::face_player) : m_flags.reset(NPCFlags::face_player);
+		in["face_player"].as_bool() ? set_flag(NPCFlags::face_player) : set_flag(NPCFlags::face_player, false);
 	} else {
-		m_flags.set(NPCFlags::face_player); // default to facing player
+		set_flag(NPCFlags::face_player); // default to facing player
 	}
 	m_label = in["label"].as_string();
 	m_hidden = in["hidden"].as_bool();
@@ -193,7 +193,8 @@ void NPC::expose() {
 }
 
 void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
-	if (m_flags.test(NPCFlags::face_player)) { face_player(player); }
+
+	if (has_flag_set(NPCFlags::face_player) && !has_flag_set(NPCFlags::cutscene)) { face_player(player); }
 	svc.data.set_npc_location(m_id.get(), current_location);
 
 	if (b_piggy && b_piggy_id == m_id.get()) {
@@ -209,11 +210,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 
 	m_indicator.tick();
 
-	if (b_pop && b_index != m_id.get()) {
-		NANI_LOG_DEBUG(Entity::m_logger, "Conversation Pop Mismatch!");
-		NANI_LOG_DEBUG(Entity::m_logger, "ID from text was {}", b_index);
-		NANI_LOG_DEBUG(Entity::m_logger, "ID from NPC was {}", m_id.get());
-	} else if (b_pop && b_index == m_id.get()) {
+	if (b_pop && b_index == m_id.get()) {
 		m_current_conversation.modulate(1);
 		NANI_LOG_DEBUG(Entity::m_logger, "Current conversation N: {}", m_current_conversation.get());
 		NANI_LOG_DEBUG(Entity::m_logger, "Current order N: {}", m_current_conversation.get_order());
@@ -252,7 +249,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 		svc.camera_controller.constrain();
 	}
 
-	if (m_flags.test(NPCFlags::random_walk)) {
+	if (has_flag_set(NPCFlags::random_walk)) {
 		if (svc.ticker.every_second()) {
 			if (random::percent_chance(20)) {
 				request(NPCAnimationState::walk);
@@ -265,7 +262,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	}
 	if (directions.actual.lnr != directions.desired.lnr) { request(NPCAnimationState::turn); }
 
-	if (!m_flags.test(NPCFlags::no_animation)) { state_function = std::move(state_function()); }
+	if (!has_flag_set(NPCFlags::no_animation)) { state_function = std::move(state_function()); }
 	if (is_hidden()) { return; }
 	Mobile::post_update(svc, map, player);
 }
@@ -284,9 +281,9 @@ void NPC::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 		if (m_services->greyblock_mode()) {
 			if (collider.has_value()) { get_collider().render(win, cam); }
 		} else {
-			if (!m_flags.test(NPCFlags::no_animation)) { win.draw(static_cast<Mobile&>(*this)); }
+			if (!has_flag_set(NPCFlags::no_animation)) { win.draw(static_cast<Mobile&>(*this)); }
 		}
-		if (!m_flags.test(NPCFlags::no_animation)) { win.draw(m_indicator); }
+		if (!has_flag_set(NPCFlags::no_animation)) { win.draw(m_indicator); }
 	}
 }
 
@@ -342,6 +339,7 @@ void NPC::set_position_from_scaled(sf::Vector2f scaled_pos) {
 
 fsm::StateFunction NPC::update_idle() {
 	p_state.actual = NPCAnimationState::idle;
+	if (change_state(NPCAnimationState::inspect, get_params("inspect"))) { return std::move(fsm::StateFunction{NPC_BIND(update_inspect)}); }
 	if (change_state(NPCAnimationState::fall, get_params("fall"))) { return std::move(fsm::StateFunction{NPC_BIND(update_fall)}); }
 	if (change_state(NPCAnimationState::turn, get_params("turn"))) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
 	if (collider.has_value()) {
@@ -369,6 +367,7 @@ fsm::StateFunction NPC::update_walk() {
 
 fsm::StateFunction NPC::update_inspect() {
 	p_state.actual = NPCAnimationState::inspect;
+	if (change_state(NPCAnimationState::idle, get_params("idle"))) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
 	if (change_state(NPCAnimationState::turn, get_params("turn"))) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
 	if (change_state(NPCAnimationState::walk, get_params("walk"))) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
 	return std::move(fsm::StateFunction{NPC_BIND(update_inspect)});

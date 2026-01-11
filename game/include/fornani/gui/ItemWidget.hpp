@@ -20,6 +20,7 @@ class ItemWidget {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win);
 	void bring_in();
 	void send_out();
+	void remove_sparkler();
 
   private:
 	int m_id;
@@ -29,7 +30,7 @@ class ItemWidget {
 		sf::Sprite item;
 	} m_sprites;
 	util::RectPath m_path;
-	vfx::Sparkler sparkler;
+	std::optional<vfx::Sparkler> m_sparkler;
 };
 
 } // namespace fornani::gui

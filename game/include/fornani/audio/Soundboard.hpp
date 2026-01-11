@@ -5,6 +5,7 @@
 #include <capo/engine.hpp>
 #include <ccmath/ext/clamp.hpp>
 #include <fornani/audio/Sound.hpp>
+#include <functional>
 #include <unordered_map>
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
@@ -14,6 +15,11 @@ struct ServiceProvider;
 }
 
 namespace fornani::audio {
+
+template <typename Enum>
+std::function<void(int)> make_int_setter(util::BitFlags<Enum>& flags) {
+	return [&flags](int which) { flags.set(static_cast<Enum>(which)); };
+}
 
 enum class SoundboardState { on, off };
 
@@ -68,6 +74,9 @@ enum class Beamstalk { hurt, death };
 enum class Meatsquash { hurt, death, chomp, whip, swallow };
 enum class Summoner { hurt_1, hurt_2, death, block_1, block_2, summon, hah };
 enum class Mastiff { bite, growl };
+
+enum class NPCBryn { hey, ah };
+enum class NPCGobe { oh, orewa };
 
 enum class Minigus {
 	hurt_1,
@@ -151,6 +160,13 @@ class Soundboard {
 		util::BitFlags<Mastiff> mastiff{};
 		util::BitFlags<NPC> npc{};
 	} flags{};
+
+	struct {
+		util::BitFlags<NPCBryn> bryn{};
+		util::BitFlags<NPCGobe> gobe{};
+	} npc_flags{};
+
+	std::unordered_map<std::string, std::function<void(int)>> npc_map;
 
 	void play(capo::IEngine& engine, automa::ServiceProvider& svc, capo::Buffer const& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2f distance = {}, int echo_count = 0,
 			  int echo_rate = 64);

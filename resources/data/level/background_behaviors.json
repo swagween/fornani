@@ -74,6 +74,42 @@
 			}
 		]
 	},
+	"cloud_sea": {
+		"dimensions": [ 960, 256 ],
+		"lock": {
+			"vertical": true
+		},
+		"layers": [
+			{
+				"scroll_speed": 0.0,
+				"parallax": 0.0
+			},
+			{
+				"scroll_speed": -0.78,
+				"parallax": 0.067
+			},
+			{
+				"scroll_speed": -1.4,
+				"parallax": 0.108
+			},
+			{
+				"scroll_speed": -3.0,
+				"parallax": 0.18
+			}
+		]
+	},
+	"cloud": {
+		"dimensions": [ 960, 256 ],
+		"lock": {
+			"vertical": true
+		},
+		"layers": [
+			{
+				"scroll_speed": -3.9,
+				"parallax": 0.22
+			}
+		]
+	},
 	"overcast": {
 		"dimensions": [ 960, 270 ],
 		"lock": {

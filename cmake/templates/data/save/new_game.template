@@ -55,6 +55,14 @@
 		"hotbar": [
 		]
 	},
+	"map_data": {
+		"fallen_enemies": [
+		],
+		"world_time": {
+			"hours": 9,
+			"minutes": 30
+		}
+	},
 	"save_point_id": 100,
 	"unlocked_doors": [
 	],

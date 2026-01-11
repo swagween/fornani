@@ -343,6 +343,28 @@
 		"actual_title": "Permission Slip",
 		"naive_description": "This written permission from your father will grant you passage to Pioneer Trail.",
 		"hidden_description": "This written permission from your father will grant you passage to Pioneer Trail.",
+		"unique": true,
+		"readable": true
+	},
+	"ibos_journal": {
+		"id": 41,
+		"category": 1,
+		"lookup": [ 8, 2 ],
+		"origin": [ 4, 1 ],
+		"actual_title": "Ibo's Journal",
+		"naive_description": "A journal written by one of the first pioneers to adventure to this island.",
+		"hidden_description": "A journal written by one of the first pioneers to adventure to this island.",
+		"unique": true,
+		"readable": true
+	},
+	"field_telephone": {
+		"id": 42,
+		"category": 1,
+		"lookup": [ 9, 2 ],
+		"origin": [ 5, 1 ],
+		"actual_title": "Field Telephone",
+		"naive_description": "An old phone that Bryn and Dr. Willett can use to call you. It's really heavy...",
+		"hidden_description": "An old phone that Bryn and Dr. Willett can use to call you. It's really heavy...",
 		"unique": true
 	},
 	"red_jeans": {

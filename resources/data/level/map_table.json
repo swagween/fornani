@@ -128,6 +128,12 @@
     },
     {
       "folder": "firstwind",
+      "label": "gallery.json",
+      "region": "firstwind",
+      "room_id": 138
+    },
+    {
+      "folder": "firstwind",
       "label": "hangar.json",
       "region": "firstwind",
       "room_id": 116
@@ -197,6 +203,12 @@
       "label": "wing.json",
       "region": "firstwind",
       "room_id": 117
+    },
+    {
+      "folder": "forgetville",
+      "label": "forgetville_station.json",
+      "region": "junkyard",
+      "room_id": 810
     },
     {
       "folder": "greatwing",

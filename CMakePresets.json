@@ -185,6 +185,12 @@
 			"configuration": "Debug"
 		},
 		{
+			"name": "MSVC RelWithDebInfo",
+			"configurePreset": "ninja-msvc",
+			"configuration": "RelWithDebInfo",
+			"inheritConfigureEnvironment": true
+		},
+		{
 			"name": "MSVC Release",
 			"configurePreset": "ninja-msvc",
 			"configuration": "Release"

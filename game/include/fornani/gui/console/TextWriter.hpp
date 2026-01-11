@@ -66,13 +66,14 @@ class TextWriter {
 	[[nodiscard]] auto get_current_suite_set() const -> int { return m_iterators.current_suite_set; }
 	[[nodiscard]] auto get_index() const -> int { return m_iterators.index; }
 
+	void write_instant_message(sf::RenderWindow& win);
+	void write_gradual_message(sf::RenderWindow& win);
+
   private:
 	explicit TextWriter(automa::ServiceProvider& svc);
 	void load_single_message(std::string_view message);
 	void load_message(dj::Json& source, std::string_view key);
 	void load_message(dj::Json& source);
-	void write_instant_message(sf::RenderWindow& win);
-	void write_gradual_message(sf::RenderWindow& win);
 	void insert_input_hint(sf::RenderWindow& win, sf::Text& message);
 	void stylize(sf::Text& msg) const;
 	void set_suite(int to_suite);

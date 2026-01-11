@@ -69,7 +69,7 @@ void CutsceneTrigger::update([[maybe_unused]] automa::ServiceProvider& svc, [[ma
 	if (!svc.quest_table.are_contingencies_met(m_contingencies)) { return; }
 	if (player.get_collider().bounding_box.overlaps(m_bounding_box) && !is_pushed()) { m_flags.set(CutsceneTriggerFlags::activated); }
 	if (is_activated()) {
-		map.cutscene_catalog.push_cutscene(svc, map, get_id());
+		if (get_id() != 0) { map.cutscene_catalog.push_cutscene(svc, map, player, get_id()); }
 		m_flags.reset(CutsceneTriggerFlags::activated);
 		m_flags.set(CutsceneTriggerFlags::pushed);
 	}

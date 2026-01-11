@@ -113,5 +113,28 @@
 		"target": 4,
 		"objectives": [ "Infiltrate the Greatwing and take down Skycorps before they awaken the Mother Worm." ],
 		"displayed": true
+	},
+	{
+		"title": "Obtain Wasp",
+		"tag": "obtain_wasp",
+		"target": 1,
+		"objectives": [ "Obtain Wasp" ],
+		"displayed": false
+	},
+	{
+		"title": "Map Markers",
+		"tag": "map_markers",
+		"displayed": false,
+		"subquests": [
+			{
+				"tag": "main",
+				"id": 810
+			}
+		]
+	},
+	{
+		"title": "Main",
+		"tag": "main",
+		"displayed": false
 	}
 ]

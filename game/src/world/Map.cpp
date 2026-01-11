@@ -45,7 +45,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		auto csource = meta["cutscene_on_entry"]["source"].as<int>();
 		auto cutscene = util::QuestKey{ctype, cid, csource};
 		svc.quest.process(svc, cutscene);
-		cutscene_catalog.push_cutscene(svc, *this, cid);
+		cutscene_catalog.push_cutscene(svc, *this, *player, cid);
 	}
 	for (auto& pl : entities["lights"].as_array()) {
 		point_lights.push_back(PointLight(svc.data.light[pl["label"].as_string()], sf::Vector2f{pl["position"][0].as<float>() + 0.5f, pl["position"][1].as<float>() + 0.5f} * constants::f_cell_size));

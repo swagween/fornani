@@ -19,6 +19,23 @@
 	"notifications": {
 		"equipped": "Equipped ",
 		"unequipped": "Unequipped ",
-		"slots_full": "Equipment slots full!"
+		"removed": "Removed ",
+		"slots_full": "Equipment slots full!",
+		"map_marker": "Map marker added to minimap."
+	},
+	"locations": {
+		"firstwind": "- Firstwind Airship - "
+	},
+	"file_menu": {
+		"play": "play",
+		"stats": "stats",
+		"delete": "delete"
+	},
+	"pause_menu": {
+		"resume": "resume",
+		"controls": "controls",
+		"settings": "settings",
+		"quit": "quit",
+		"restart": "restart"
 	}
 }

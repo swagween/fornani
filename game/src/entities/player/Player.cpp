@@ -368,6 +368,11 @@ void Player::set_idle() {
 	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_idle, &m_animation_machine);
 }
 
+void Player::set_slow_walk() {
+	m_animation_machine.force(AnimState::slow_walk, "slow_walk");
+	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_slow_walk, &m_animation_machine);
+}
+
 void Player::set_sleeping() {
 	m_animation_machine.force(AnimState::idle, "sleep");
 	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_sleep, &m_animation_machine);
@@ -375,10 +380,8 @@ void Player::set_sleeping() {
 }
 
 void Player::set_direction(Direction to) {
-	directions.actual.set(to.lnr);
-	directions.desired.set(to.lnr);
+	Mobile::set_direction(to);
 	controller.set_direction(to);
-	Animatable::set_scale(constants::f_scale_vec.componentWiseMul({to.as_float(), 1.f}));
 }
 
 void Player::piggyback(int id) {
@@ -578,11 +581,12 @@ void Player::start_over() {
 	flags.state.reset(State::crushed);
 	health.reset();
 	controller.unrestrict();
+	m_services->camera_controller.set_owner(graphics::CameraOwner::player);
 	health.invincibility.start(8);
 	flags.state.reset(State::killed);
 	m_animation_machine.triggers.reset(AnimTriggers::end_death);
 	m_animation_machine.post_death.cancel();
-	get_collider().collision_depths = util::CollisionDepth();
+	if (has_collider()) { get_collider().collision_depths = util::CollisionDepth(); }
 	for (auto& a : antennae) {
 		a.collider.physics.set_global_friction(physics_stats.antenna_friction);
 		a.collider.physics.gravity = 0.f;

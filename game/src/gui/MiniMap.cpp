@@ -1,10 +1,9 @@
 
+#include <ccmath/ext/clamp.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/gui/MiniMap.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
-
-#include <ccmath/ext/clamp.hpp>
 
 namespace fornani::gui {
 
@@ -35,6 +34,13 @@ void MiniMap::set_markers(world::Map& map, player::Player& player) {
 	} else {
 		m_markers.push_back({MapIconFlags::nani, m_player_position, map.room_id});
 	}
+}
+
+void MiniMap::add_quest_marker(QuestMarkerType type, int room_id) {
+	auto it = std::find_if(m_atlas.begin(), m_atlas.end(), [room_id](auto const& e) { return e->get_id() == room_id; });
+	if (it == m_atlas.end()) { return; }
+	auto room_pos = (*it)->get_center();
+	m_markers.push_back(MapIcon{MapIconFlags::quest, room_pos, room_id});
 }
 
 void MiniMap::bake(automa::ServiceProvider& svc, dj::Json const& in) {
@@ -131,7 +137,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 	auto icon_lookup{136};
 	auto icon_dim{6};
 	for (auto& element : m_markers) {
-		if (!svc.data.room_discovered(element.room_id)) { continue; }
+		if (!svc.data.room_discovered(element.room_id) && element.type != MapIconFlags::quest) { continue; }
 		icon_sprite.setTextureRect(sf::IntRect{{icon_lookup + icon_dim * flash_frame.get(), static_cast<int>(element.type) * icon_dim}, {icon_dim, icon_dim}});
 		icon_sprite.setPosition((element.position * get_ratio() + m_physics.position).componentWiseDiv(port.size));
 		if (element.type == MapIconFlags::nani) { icon_sprite.setScale(icon_sprite.getScale().componentWiseMul(player.get_facing_scale())); }

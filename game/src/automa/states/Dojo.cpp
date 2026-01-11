@@ -16,10 +16,13 @@ static bool b_equip_item{};
 static bool b_play_song{};
 static bool b_open_vendor{};
 static bool b_launch_cutscene{};
+static bool b_add_map_marker{};
 static int item_modifier{};
 static int vendor_id{};
 static int song_id{};
 static int cutscene_id{};
+static int map_marker_room_id{};
+static int map_marker_type{};
 
 static void trigger_item(int to) {
 	item_acquisition = true;
@@ -57,6 +60,11 @@ static void launch_cutscene(int which) {
 	b_launch_cutscene = true;
 	cutscene_id = which;
 }
+static void add_map_marker(int room_id, int type) {
+	b_add_map_marker = true;
+	map_marker_room_id = room_id;
+	map_marker_type = type;
+}
 
 Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name)
 	: GameState(svc, player, scene, room_number), map(svc, player), m_services(&svc), m_enter_room{100}, m_loading{4} {
@@ -75,6 +83,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	svc.events.register_event(std::make_unique<Event<int>>("RemovePlayerWeapon", &trigger_remove_gun));
 	svc.events.register_event(std::make_unique<Event<int>>("OpenVendor", &open_vendor));
 	svc.events.register_event(std::make_unique<Event<int>>("LaunchCutscene", &launch_cutscene));
+	svc.events.register_event(std::make_unique<Event<int, int>>("AddMapMarker", &add_map_marker));
 
 	// create shaders
 	m_world_shader = LightShader(svc.finder);
@@ -139,8 +148,8 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		b_play_song = false;
 	}
 	if (b_read_item) { read_item(item_modifier); }
-	if (b_launch_cutscene) {
-		map.cutscene_catalog.push_cutscene(svc, map, cutscene_id);
+	if (b_launch_cutscene && !m_console) {
+		map.cutscene_catalog.push_cutscene(svc, map, *player, cutscene_id);
 		b_launch_cutscene = false;
 	}
 	if (b_equip_item) {
@@ -158,13 +167,18 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		player->catalog.inventory.reveal_item(item_modifier);
 		b_reveal_item = false;
 	}
+	if (b_add_map_marker) {
+		svc.quest_table.set_quest_progression("map_markers", Subquest{"main", map_marker_room_id}, 1, {});
+		svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["map_marker"].as_string());
+		b_add_map_marker = false;
+	}
 	if (!m_console && item_music_played) {
 		svc.music_player.resume();
 		item_music_played = false;
 	}
 
 	// gamepad disconnected
-	if (svc.controller_map.process_gamepad_disconnection()) { pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{"resume", "settings", "controls", "quit"}); }
+	if (svc.controller_map.process_gamepad_disconnection()) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
 
 	svc.a11y.set_action_ctx_bar_enabled(false);
 
@@ -251,7 +265,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	// in-game menus
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc, map, *player); }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{"resume", "settings", "controls", "quit"}); }
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
 
 	m_enter_room.update();
 	if (!m_console && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
@@ -349,7 +363,7 @@ void Dojo::remove_gun(ServiceProvider& svc, player::Player& player, int modifier
 	if (!tag) { return; }
 	NANI_LOG_DEBUG(m_logger, "Gun Tag: {}", tag->data());
 	auto label = player.arsenal.value().get_weapon_at(tag.value()).get_label();
-	svc.notifications.push_notification(svc, "Removed " + std::string{label} + ".");
+	svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["removed"].as_string() + std::string{label} + ".");
 	if (!m_console) {
 		m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "removed", gui::OutputType::no_skip);
 		m_console.value()->append(player.arsenal.value().get_weapon_at(tag.value()).get_label());
@@ -357,7 +371,7 @@ void Dojo::remove_gun(ServiceProvider& svc, player::Player& player, int modifier
 	}
 	player.pop_from_loadout(tag.value());
 	svc.soundboard.flags.item.set(audio::Item::unequip);
-	m_console.value()->display_gun(modifier);
+	m_console.value()->display_gun(modifier, false);
 	gun_removal = false;
 }
 

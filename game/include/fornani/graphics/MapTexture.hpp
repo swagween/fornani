@@ -38,9 +38,10 @@ class MapTexture {
 	[[nodiscard]] auto to_ignore() const -> bool { return m_ignore; }
 	[[nodiscard]] auto get_id() const -> int { return m_room_id; }
 	[[nodiscard]] auto get_scale() const -> float { return m_scale; }
+	[[nodiscard]] auto get_center() const -> sf::Vector2f { return get_position() + get_dimensions() * 0.5f; }
 
 	sf::RenderTexture& get(bool border = false);
-	sf::Vector2f get_position();
+	sf::Vector2f get_position() const;
 	sf::Vector2f get_dimensions() const;
 
   private:

@@ -2,12 +2,12 @@
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
-#include <fornani/story/cutscene/PioneerBaseDebrief.hpp>
+#include <fornani/story/cutscene/MainIntro.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani {
 
-PioneerBaseDebrief::PioneerBaseDebrief(automa::ServiceProvider& svc, world::Map& map, player::Player& player) : Cutscene(svc, 300, "pioneer_base_debrief") {
+MainIntro::MainIntro(automa::ServiceProvider& svc, world::Map& map, player::Player& player) : Cutscene(svc, 300, "main_intro") {
 	cooldowns.beginning.start();
 	auto npcs = map.get_entities<NPC>();
 	auto bit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 0; });
@@ -15,13 +15,19 @@ PioneerBaseDebrief::PioneerBaseDebrief(automa::ServiceProvider& svc, world::Map&
 	auto wit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 2; });
 	auto& willett = *wit;
 
-	svc.camera_controller.set_position(willett->Mobile::get_global_center());
-	map.transition.start();
+	bryn->set_flag(NPCFlags::cutscene);
+	bryn->request(NPCAnimationState::inspect);
+	bryn->set_direction(SimpleDirection{LR::right});
+	willett->set_flag(NPCFlags::cutscene);
 
-	svc.music_player.load(svc.finder, "glitchified");
+	svc.camera_controller.set_position(willett->Mobile::get_global_center());
+
+	svc.music_player.load(svc.finder, "aether");
+	svc.state_flags.set(automa::StateFlags::cutscene);
+	player.set_idle();
 }
 
-void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
+void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
 
 	static auto progress = util::Counter{};
 	static auto ended = false;
@@ -34,8 +40,6 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 		svc.camera_controller.set_owner(graphics::CameraOwner::player);
 		map.transition.end();
 		flags.set(CutsceneFlags::delete_me);
-		svc.quest_table.progress_quest("defeat_skycorps", 1, 50901);
-		svc.music_player.load(svc.finder, "bryns_turn");
 		svc.music_player.play_looped();
 		return;
 	}
@@ -48,14 +52,10 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 	svc.state_flags.set(automa::StateFlags::cutscene);
 	cooldowns.pause.update();
 	cooldowns.long_pause.update();
+	cooldowns.beginning.update();
 
-	if (map.transition.is(graphics::TransitionState::black)) {
-		cooldowns.beginning.update();
-		cooldowns.end.update();
-	}
+	if (map.transition.is(graphics::TransitionState::black)) { cooldowns.end.update(); }
 	if (ended) { return; }
-
-	player.controller.restrict_movement();
 
 	if (console) { console.value()->set_no_exit(true); }
 
@@ -65,26 +65,32 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 	auto wit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 2; });
 	auto& willett = *wit;
 
-	if (map.transition.is(graphics::TransitionState::black) && cooldowns.beginning.is_complete()) {
-		map.transition.end();
-		svc.music_player.play_looped();
-		bryn->set_position_from_scaled({10.f, 16.f});
-		willett->set_position_from_scaled({12.f, 16.f});
-		player.set_position(sf::Vector2f{11.f, 16.f} * constants::f_cell_size);
-		player.set_idle();
-		bryn->request(NPCAnimationState::inspect);
-	}
-
 	if (console.has_value()) { bryn->disengage(); }
 	if (console.has_value()) { willett->disengage(); }
 
 	if (!flags.test(CutsceneFlags::started)) {
 		bryn->flush_conversations();
 		willett->flush_conversations();
-		bryn->push_conversation(10);
-		willett->push_conversation(10);
+		bryn->push_conversation(20);
+		willett->push_conversation(20);
+		svc.music_player.play_looped();
+		player.set_slow_walk();
 		flags.set(CutsceneFlags::started);
+		willett->set_direction(LR::right);
 	}
+
+	static auto hit_stop = false;
+	if (willett->get_collider().get_center().x / constants::f_cell_size < 26.5f) {
+		willett->walk();
+	} else {
+		willett->request(NPCAnimationState::idle);
+	}
+	if (player.get_position().x / constants::f_cell_size > 25.f && !hit_stop) {
+		player.set_idle();
+		hit_stop = true;
+	}
+
+	player.set_direction(Direction{LR::right});
 
 	auto total_suites{0};
 	for (auto& npc : npcs) { total_suites += npc->get_number_of_suites(); }
@@ -94,18 +100,23 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 		map.transition.end();
 		return;
 	}
+
 	if (npcs.empty()) { return; }
-	if (cooldowns.beginning.running()) {
-		player.controller.prevent_movement();
-		player.controller.set_direction(Direction{UND::neutral, LNR::left});
-		return;
-	}
+
+	player.controller.restrict_movement();
 
 	// get npcs
 	if (cooldowns.end.running()) { bryn->disengage(); }
-	if (bryn->get_collider().bounding_box.overlaps(player.get_collider().get_vicinity_rect())) {}
 
 	svc.camera_controller.set_owner(graphics::CameraOwner::system);
+	// svc.camera_controller.set_position(willett->Mobile::get_global_center());
+
+	if (has_flag_set(MainIntroFlags::rumble)) {
+		// svc.camera_controller.shake();
+		// map.shake_camera();
+		svc.camera_controller.shake(10, 0.3f, 200, 20);
+		set_flag(MainIntroFlags::rumble, false);
+	}
 
 	if (!map.transition.is(graphics::TransitionState::inactive)) { return; }
 
@@ -117,17 +128,20 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 	case 1:
 		if (!console) {
 			willett->flush_conversations();
-			willett->push_conversation(11);
-			bryn->force_engage();
+			willett->push_conversation(21);
+			cooldowns.long_pause.start();
 			svc.camera_controller.set_position(bryn->Mobile::get_global_center());
 			progress.update();
+			bryn->request(NPCAnimationState::turn);
 			return;
 		}
 		break;
 	case 2:
-		if (!console) {
+		if (cooldowns.long_pause.is_almost_complete()) { bryn->force_engage(); }
+		cooldowns.long_pause.running() ? bryn->walk() : bryn->request(NPCAnimationState::idle);
+		if (!console && !cooldowns.long_pause.running()) {
 			bryn->flush_conversations();
-			bryn->push_conversation(11);
+			bryn->push_conversation(21);
 			willett->force_engage();
 			svc.camera_controller.set_position(willett->Mobile::get_global_center());
 			progress.update();
@@ -137,7 +151,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 	case 3:
 		if (!console) {
 			willett->flush_conversations();
-			willett->push_conversation(12);
+			willett->push_conversation(22);
 			bryn->force_engage();
 			svc.camera_controller.set_position(bryn->Mobile::get_global_center());
 			progress.update();
@@ -147,20 +161,62 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 	case 4:
 		if (!console) {
 			bryn->pop_conversation();
+			bryn->push_conversation(23);
 			willett->force_engage();
 			svc.camera_controller.set_position(willett->Mobile::get_global_center());
+			set_flag(MainIntroFlags::rumble);
 			progress.update();
 			return;
 		}
 		break;
 	case 5:
+		if (!console) {
+			willett->flush_conversations();
+			willett->push_conversation(24);
+			bryn->force_engage();
+			svc.camera_controller.set_position(bryn->Mobile::get_global_center());
+			progress.update();
+			return;
+		}
+		break;
+	case 6:
+		if (!console) {
+			bryn->pop_conversation();
+			bryn->push_conversation(24);
+			willett->force_engage();
+			svc.camera_controller.set_position(willett->Mobile::get_global_center());
+			set_flag(MainIntroFlags::rumble);
+			progress.update();
+			return;
+		}
+		break;
+	case 7:
+		if (!console) {
+			willett->flush_conversations();
+			willett->push_conversation(26);
+			set_flag(MainIntroFlags::rumble);
+			progress.update();
+			bryn->force_engage();
+			return;
+		}
+		break;
+	case 8:
+		if (!console) {
+			bryn->pop_conversation();
+			willett->force_engage();
+			svc.camera_controller.set_position(willett->Mobile::get_global_center());
+			set_flag(MainIntroFlags::rumble);
+			progress.update();
+			return;
+		}
+		break;
+	case 9:
 		if (!console && !ended) {
 			cooldowns.end.start();
 			cooldowns.pause.start();
 			bryn->flush_conversations();
 			willett->flush_conversations();
-			bryn->push_conversation(6);
-			willett->push_conversation(13);
+			willett->push_conversation(23);
 			ended = true;
 			return;
 		}

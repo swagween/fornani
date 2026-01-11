@@ -9,6 +9,7 @@
 #include <fornani/story/Quest.hpp>
 #include <fornani/utils/Circuit.hpp>
 #include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/Flaggable.hpp>
 #include <fornani/utils/ID.hpp>
 #include <fornani/utils/StateFunction.hpp>
 #include <memory>
@@ -16,11 +17,11 @@
 
 namespace fornani {
 
-enum class NPCFlags { has_turn_animation, face_player, background, no_animation, random_walk };
+enum class NPCFlags { has_turn_animation, face_player, background, no_animation, random_walk, cutscene };
 enum class NPCState { engaged, force_interact, introduced, talking, cutscene, piggybacking, hidden, distant_interact, just_engaged, random_walk };
 enum class NPCAnimationState { idle, turn, walk, inspect, fall, land };
 
-class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState> {
+class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>, public Flaggable<NPCFlags> {
   public:
 	NPC(automa::ServiceProvider& svc, dj::Json const& in);
 	NPC(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in);
@@ -59,7 +60,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	void set_position_from_scaled(sf::Vector2f scaled_pos);
 
 	[[nodiscard]] auto is_hidden() const -> bool { return m_state.test(NPCState::hidden); }
-	[[nodiscard]] auto is_background() const -> bool { return m_flags.test(NPCFlags::background); }
+	[[nodiscard]] auto is_background() const -> bool { return has_flag_set(NPCFlags::background); }
 	[[nodiscard]] auto was_introduced() const -> bool { return m_state.test(NPCState::introduced); }
 	[[nodiscard]] auto is_force_interact() const -> bool { return m_state.test(NPCState::force_interact); }
 	[[nodiscard]] auto get_number_of_suites() const -> int { return static_cast<int>(conversations.size()); }
@@ -78,7 +79,6 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 
 	/* gameplay members */
 	util::BitFlags<NPCState> m_state{};
-	util::BitFlags<NPCFlags> m_flags{};
 	util::Circuit m_current_conversation;
 	std::deque<int> conversations{};
 	Animatable m_indicator;

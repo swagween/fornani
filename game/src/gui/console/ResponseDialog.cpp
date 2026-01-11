@@ -1,5 +1,6 @@
 
 #include <fornani/gui/console/ResponseDialog.hpp>
+#include <fornani/story/Quest.hpp>
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/graphics/Colors.hpp"
 #include "fornani/setup/ControllerMap.hpp"
@@ -7,9 +8,16 @@
 
 namespace fornani::gui {
 
-ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, std::string_view key, int index, sf::Vector2f start_position) : m_text_size{16}, m_selection{1}, m_index{index} {
+ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, QuestTable& quest_table, std::string_view key, int index, sf::Vector2f start_position) : m_text_size{16}, m_selection{1}, m_index{index} {
 	auto& set = key == null_key ? source["responses"][index] : source[key]["responses"][index];
 	for (auto& msg : set.as_array()) {
+		auto contingencies_met = true;
+		if (msg["contingencies"]) {
+			auto contingencies = std::vector<QuestContingency>{};
+			for (auto const& cont : msg["contingencies"].as_array()) { contingencies.push_back(QuestContingency{cont}); }
+			if (!quest_table.are_contingencies_met(contingencies)) { contingencies_met = false; }
+		}
+		if (!contingencies_met) { continue; }
 		responses.push_back(Message{sf::Text(text.fonts.basic)});
 		responses.back().data.setString(msg["message"].as_string().data());
 		stylize(responses.back().data);

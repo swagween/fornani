@@ -28,7 +28,8 @@ enum class MessageCodeType {
 	destroy_inspectable,
 	piggyback,
 	open_vendor,
-	launch_cutscene
+	launch_cutscene,
+	add_map_marker
 };
 
 enum class CodeSource { suite, response };

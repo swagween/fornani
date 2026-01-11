@@ -86,7 +86,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 			return;
 		}
 		if (svc.data.get_file().is_new() && !svc.state_controller.actions.test(Actions::intro_done)) {
-			set_current_state(std::make_unique<Intro>(svc, player, "intro"));
+			set_current_state(std::make_unique<Intro>(svc, player, "intro", 138));
 		} else {
 			game.flags.set(fornani::GameFlags::in_game);
 			set_current_state(std::make_unique<Dojo>(svc, player, "dojo", svc.state_controller.next_state));
@@ -103,9 +103,8 @@ void StateManager::return_to_main_menu(ServiceProvider& svc, player::Player& pla
 	} else {
 		set_current_state(std::make_unique<MainMenu>(svc, player));
 	}
-	svc.state_controller.actions.reset(Actions::player_death);
-	svc.state_controller.actions.reset(Actions::trigger);
-	svc.state_controller.actions.reset(Actions::retry);
+	svc.state_controller.actions = {};
+	svc.state_flags = {};
 }
 
 void StateManager::print_stats(ServiceProvider& svc, player::Player& player) {

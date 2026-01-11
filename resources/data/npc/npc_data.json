@@ -19,7 +19,7 @@
 			},
 			{
 				"label": "inspect",
-				"parameters": [ 14, 2, 32, -1, false ]
+				"parameters": [ 14, 2, 32, -1, true ]
 			},
 			{
 				"label": "fall",
@@ -36,6 +36,7 @@
 		"dimensions": [ 24, 24 ],
 		"sprite_dimensions": [ 24, 24 ],
 		"sprite_offset": [ 0, -11 ],
+		"walk_speed": 0.5,
 		"animation": [
 			{
 				"label": "idle",
@@ -43,7 +44,7 @@
 			},
 			{
 				"label": "walk",
-				"parameters": [ 8, 4, 24, -1, false ]
+				"parameters": [ 7, 4, 40, -1, false ]
 			},
 			{
 				"label": "turn",
@@ -167,6 +168,22 @@
 			{
 				"label": "idle",
 				"parameters": [ 0, 1, 40, -1, false ]
+			}
+		]
+	},
+	"gaia": {
+		"id": 10,
+		"dimensions": [ 24, 24 ],
+		"sprite_dimensions": [ 24, 24 ],
+		"sprite_offset": [ 0, -11 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 6, 36, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 3, 32, 0, false ]
 			}
 		]
 	},

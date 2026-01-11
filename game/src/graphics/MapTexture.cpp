@@ -104,7 +104,7 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 
 sf::RenderTexture& MapTexture::get(bool border) { return border ? current_layer().border_texture : current_layer().center_texture; }
 
-sf::Vector2f MapTexture::get_position() { return sf::Vector2f(static_cast<float>(m_global_offset.x), static_cast<float>(m_global_offset.y)); }
+sf::Vector2f MapTexture::get_position() const { return sf::Vector2f(static_cast<float>(m_global_offset.x), static_cast<float>(m_global_offset.y)); }
 
 sf::Vector2f MapTexture::get_dimensions() const { return m_map_dimensions; }
 

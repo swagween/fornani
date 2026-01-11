@@ -38,6 +38,7 @@ void TextWriter::start() {
 
 	m_mode = WriterMode::write;
 	m_delay.start();
+	update();
 }
 
 void TextWriter::update() {
@@ -155,6 +156,19 @@ void TextWriter::load_message(dj::Json& source) {
 	for (auto const& set : source["suite"].as_array()) {
 		auto this_set = std::deque<Message>{};
 		for (auto const& msg : set.as_array()) {
+			auto contingencies_met = true;
+			auto contingencies = std::vector<QuestContingency>{};
+			for (auto const& cont : msg["contingencies"].as_array()) {
+				contingencies.push_back(QuestContingency{cont});
+				NANI_LOG_DEBUG(m_logger, "Pushed a contingency!!!!");
+			}
+			if (!m_services->quest_table.are_contingencies_met(contingencies)) { contingencies_met = false; }
+
+			if (!contingencies_met) {
+				NANI_LOG_DEBUG(m_logger, "Contingency not met!");
+				continue;
+			}
+
 			auto codes = std::vector<MessageCode>{};
 			if (msg["codes"].is_array()) {
 				for (auto const& code : msg["codes"].as_array()) { codes.push_back(MessageCode{code}); }
@@ -180,6 +194,17 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 	for (auto const& set : source[key]["suite"].as_array()) {
 		auto this_set = std::deque<Message>{};
 		for (auto const& msg : set.as_array()) {
+			auto contingencies_met = true;
+			if (msg["contingencies"]) {
+				auto contingencies = std::vector<QuestContingency>{};
+				for (auto const& cont : msg["contingencies"].as_array()) { contingencies.push_back(QuestContingency{cont}); }
+				if (!m_services->quest_table.are_contingencies_met(contingencies)) { contingencies_met = false; }
+			}
+			if (!contingencies_met) {
+				NANI_LOG_DEBUG(m_logger, "Contingency not met!");
+				continue;
+			}
+
 			auto codes = std::vector<MessageCode>{};
 			if (msg["codes"].is_array()) {
 				for (auto const& code : msg["codes"].as_array()) { codes.push_back(MessageCode{code}); }

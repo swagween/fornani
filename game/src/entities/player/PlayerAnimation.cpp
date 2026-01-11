@@ -10,41 +10,40 @@ constexpr auto rate{4};
 // { lookup, duration, framerate, num_loops (-1 for infinite), repeat_last_frame, interruptible }
 
 PlayerAnimation::PlayerAnimation(Player& plr) : m_player(&plr), state_function{std::bind(&PlayerAnimation::update_idle, this)}, m_buffer{16}, m_sleep_timer{512} {
-	plr.m_params = {
-		{"idle", {20, 8, 7 * rate, -1, false, true}},
-		{"turn", {33, 3, 4 * rate, 0}},
-		{"sharp_turn", {16, 2, 5 * rate, 0}},
-		{"run", {44, 4, 6 * rate, -1}},
-		{"sprint", {10, 6, 4 * rate, -1}},
-		{"shield", {80, 3, 4 * rate, -1, true}},
-		{"between_push", {85, 1, 2 * rate, 0}},
-		{"push", {86, 4, 5 * rate, -1}},
-		{"rise", {40, 4, 6 * rate, 0}},
-		{"walljump", {90, 6, 6 * rate, 0}},
-		{"suspend", {30, 3, 7 * rate, -1}},
-		{"fall", {62, 4, 5 * rate, -1}},
-		{"stop", {74, 2, 4 * rate, 0}},
-		{"land", {56, 2, 4 * rate, 0}},
-		{"inspect", {37, 2, 7 * rate, -1, true}},
-		{"dash_kick", {108, 2, 6 * rate, 0}},
-		{"sit", {50, 4, 6 * rate, -1, true}},
-		{"hurt", {76, 2, 7 * rate, 0}},
-		{"dash", {0, 4, 4 * rate, 0}},
-		{"dash_up", {120, 4, 4 * rate, 0}},
-		{"dash_down", {124, 4, 4 * rate, 0}},
-		{"wallslide", {66, 4, 7 * rate, -1}},
-		{"die", {76, 4, 8 * rate, -1, true}},
-		{"backflip", {90, 6, 7 * rate, 0}},
-		{"slide", {96, 4, 4 * rate, -1}},
-		{"get_up", {57, 1, 5 * rate, 0}},
-		{"roll", {100, 4, 5 * rate, 0}},
-		{"shoot", {104, 3, 8 * rate, 0}},
-		{"sleep", {4, 4, 8 * rate, -1, true}},
-		{"wake_up", {8, 2, 8 * rate, 0}},
-		{"crouch", {110, 5, 4 * rate, -1, true}},
-		{"crawl", {114, 4, 6 * rate, -1}},
-		{"turn_slide", {130, 7, 4 * rate, 0}},
-	};
+	plr.m_params = {{"idle", {20, 8, 7 * rate, -1, false, true}},
+					{"turn", {33, 3, 4 * rate, 0}},
+					{"sharp_turn", {16, 2, 5 * rate, 0}},
+					{"run", {44, 4, 6 * rate, -1}},
+					{"sprint", {10, 6, 4 * rate, -1}},
+					{"shield", {80, 3, 4 * rate, -1, true}},
+					{"between_push", {85, 1, 2 * rate, 0}},
+					{"push", {86, 4, 5 * rate, -1}},
+					{"rise", {40, 4, 6 * rate, 0}},
+					{"walljump", {90, 6, 6 * rate, 0}},
+					{"suspend", {30, 3, 7 * rate, -1}},
+					{"fall", {62, 4, 5 * rate, -1}},
+					{"stop", {74, 2, 4 * rate, 0}},
+					{"land", {56, 2, 4 * rate, 0}},
+					{"inspect", {37, 2, 7 * rate, -1, true}},
+					{"dash_kick", {108, 2, 6 * rate, 0}},
+					{"sit", {50, 4, 6 * rate, -1, true}},
+					{"hurt", {76, 2, 7 * rate, 0}},
+					{"dash", {0, 4, 4 * rate, 0}},
+					{"dash_up", {120, 4, 4 * rate, 0}},
+					{"dash_down", {124, 4, 4 * rate, 0}},
+					{"wallslide", {66, 4, 7 * rate, -1}},
+					{"die", {76, 4, 8 * rate, -1, true}},
+					{"backflip", {90, 6, 7 * rate, 0}},
+					{"slide", {96, 4, 4 * rate, -1}},
+					{"get_up", {57, 1, 5 * rate, 0}},
+					{"roll", {100, 4, 5 * rate, 0}},
+					{"shoot", {104, 3, 8 * rate, 0}},
+					{"sleep", {4, 4, 8 * rate, -1, true}},
+					{"wake_up", {8, 2, 8 * rate, 0}},
+					{"crouch", {110, 5, 4 * rate, -1, true}},
+					{"crawl", {114, 4, 6 * rate, -1}},
+					{"turn_slide", {130, 7, 4 * rate, 0}},
+					{"slow_walk", {44, 4, 8 * rate, -1}}};
 
 	state_function = state_function();
 	m_player->animation.set_params(get_params("idle"));
@@ -638,10 +637,12 @@ fsm::StateFunction PlayerAnimation::update_die() {
 		triggers.reset(AnimTriggers::end_death);
 		m_player->m_services->state_controller.actions.set(automa::Actions::death_mode); // set here, reset on map load
 	}
-	if (m_player->animation.get_frame() > 2 && !m_player->get_collider().grounded()) { m_player->animation.set_frame(2); }
+	if (m_player->has_collider()) {
+		if (m_player->animation.get_frame() > 2 && !m_player->get_collider().grounded()) { m_player->animation.set_frame(2); }
+		m_player->get_collider().collision_depths = {};
+	}
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();
-	m_player->get_collider().collision_depths = {};
 	post_death.update();
 	if (!m_player->m_services->death_mode()) {
 		m_player->get_collider().collision_depths = util::CollisionDepth();
@@ -649,7 +650,7 @@ fsm::StateFunction PlayerAnimation::update_die() {
 		return PA_BIND(update_idle);
 	}
 	if (post_death.is_complete()) {
-		m_player->get_collider().collision_depths = util::CollisionDepth();
+		if (m_player->has_collider()) { m_player->get_collider().collision_depths = util::CollisionDepth(); }
 		if (change_state(AnimState::idle, get_params("idle"), true)) { return PA_BIND(update_idle); }
 		if (change_state(AnimState::run, get_params("run"), true)) { return PA_BIND(update_run); }
 		if (change_state(AnimState::sprint, get_params("sprint"), true)) { return PA_BIND(update_sprint); }
@@ -904,6 +905,14 @@ fsm::StateFunction player::PlayerAnimation::update_dash_kick() {
 		return PA_BIND(update_idle);
 	}
 	return PA_BIND(update_dash_kick);
+}
+
+fsm::StateFunction player::PlayerAnimation::update_slow_walk() {
+	m_player->animation.label = "slow_walk";
+	p_state.actual = AnimState::slow_walk;
+	if (m_player->has_collider()) { m_player->get_collider().physics.forced_acceleration.x = m_player->get_actual_direction().as_float() * 0.15f; }
+	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
+	return PA_BIND(update_slow_walk);
 }
 
 bool PlayerAnimation::change_state(AnimState next, anim::Parameters params, bool hard) {

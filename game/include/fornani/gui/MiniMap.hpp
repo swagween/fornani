@@ -19,8 +19,9 @@ class Portal;
 
 namespace fornani::gui {
 
-enum class MapIconFlags { nani, gunsmith, save, chest, bed, door, boss, gobe, vendor };
+enum class MapIconFlags { nani, gunsmith, save, chest, bed, door, boss, gobe, vendor, quest };
 enum class ChunkType { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
+enum class QuestMarkerType { main };
 
 struct MapIcon {
 	MapIconFlags type{};
@@ -33,6 +34,7 @@ class MiniMap {
 	explicit MiniMap(automa::ServiceProvider& svc);
 	void set_textures(automa::ServiceProvider& svc);
 	void set_markers(world::Map& map, player::Player& player);
+	void add_quest_marker(QuestMarkerType type, int room_id);
 	void bake(automa::ServiceProvider& svc, dj::Json const& in);
 	void bake(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int room, bool current = false, bool undiscovered = false);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, sf::Sprite& icon_sprite);

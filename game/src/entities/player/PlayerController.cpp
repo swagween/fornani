@@ -20,8 +20,6 @@ PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player)
 
 void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Player& player) {
 
-	if (svc.state_flags.test(automa::StateFlags::cutscene)) { return; }
-
 	auto sprint = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).held;
 	auto sprint_release = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).released;
 	auto sprint_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).triggered;
@@ -40,6 +38,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		return;
 	}
 	if (walking_autonomously()) { return; }
+	if (svc.state_flags.test(automa::StateFlags::cutscene)) { return; }
 
 	auto dash_and_jump_combined = svc.controller_map.is_bound_to_same_input(config::DigitalAction::platformer_dash, config::DigitalAction::platformer_jump);
 

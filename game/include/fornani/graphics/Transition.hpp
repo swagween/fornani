@@ -25,6 +25,7 @@ class Transition {
 	void end();
 
 	void set(TransitionState const to) { m_state = to; }
+	void set_duration(int const duration) { m_cooldown.set_native_time(duration); }
 
 	[[nodiscard]] auto has_waited(int time) -> bool { return m_hang_time.get_count() >= time; }
 	[[nodiscard]] auto is(TransitionState test) const -> bool { return m_state == test; }

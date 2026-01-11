@@ -5,7 +5,10 @@
 
 namespace fornani::audio {
 
-Soundboard::Soundboard(automa::ServiceProvider& /*svc*/) {}
+Soundboard::Soundboard(automa::ServiceProvider& /*svc*/) {
+	npc_map["bryn"] = make_int_setter<NPCBryn>(npc_flags.bryn);
+	npc_map["bryn"] = make_int_setter<NPCGobe>(npc_flags.gobe);
+}
 
 void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc, int echo_count, int echo_rate) {
 

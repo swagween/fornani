@@ -1,16 +1,20 @@
 
 #pragma once
 
+#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/gui/console/TextWriter.hpp>
 #include <fornani/io/Logger.hpp>
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/components/SteeringBehavior.hpp"
-#include "fornani/utils/Circuit.hpp"
+#include <fornani/utils/Circuit.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 
 #include <string_view>
+
+namespace fornani {
+class QuestTable;
+}
 
 namespace fornani::audio {
 class Soundboard;
@@ -36,7 +40,7 @@ struct ResponseIndicator {
 
 class ResponseDialog {
   public:
-	ResponseDialog(data::TextManager& text, dj::Json& source, std::string_view key, int index = 0, sf::Vector2f start_position = {});
+	ResponseDialog(data::TextManager& text, dj::Json& source, QuestTable& quest_table, std::string_view key, int index = 0, sf::Vector2f start_position = {});
 
 	/// @return true if dialog is still processing inputs, false when exit is requested
 	bool handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard);

@@ -135,6 +135,7 @@ class Player final : public Mobile {
 	void handle_turning();
 	void flash_sprite();
 	void set_idle();
+	void set_slow_walk();
 	void set_sleeping();
 	void set_direction(Direction to);
 	void piggyback(int id);

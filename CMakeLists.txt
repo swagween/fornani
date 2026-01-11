@@ -77,3 +77,11 @@ configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/config/defaults.templat
 configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/config/settings.template" "${FORNANI_ROOT_DIR}/resources/data/config/settings.json" COPYONLY)
 configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/config/version.template" "${FORNANI_ROOT_DIR}/resources/data/config/version.json" COPYONLY)
 
+if (WIN32)
+    target_link_options(fornani PRIVATE
+        $<$<CXX_COMPILER_ID:MSVC>:/HEAP:536870912>
+        $<$<CXX_COMPILER_ID:Clang>:/HEAP:536870912>
+        $<$<CXX_COMPILER_ID:GNU>:-Wl,--heap,536870912>
+    )
+endif()
+

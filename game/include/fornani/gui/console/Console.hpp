@@ -61,8 +61,8 @@ class Console {
 	void set_nani_sprite(sf::Sprite const& sprite);
 	void set_no_exit(bool flag) { flag ? m_flags.set(ConsoleFlags::no_exit) : m_flags.reset(ConsoleFlags::no_exit); }
 	void handle_actions(int value);
-	void display_item(int item_id);
-	void display_gun(int gun_id);
+	void display_item(int item_id, bool sparkle = true);
+	void display_gun(int gun_id, bool sparkle = true);
 	void write(sf::RenderWindow& win, bool instant);
 	void write(sf::RenderWindow& win);
 	void append(std::string_view key);

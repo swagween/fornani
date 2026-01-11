@@ -20,6 +20,7 @@ enum class PauseWindowState { active, settings, controls, exit, quit };
 
 class PauseWindow {
   public:
+	PauseWindow(automa::ServiceProvider& svc);
 	PauseWindow(automa::ServiceProvider& svc, std::vector<std::string> options);
 	void update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<Console>>& console);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win);

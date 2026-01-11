@@ -63,7 +63,8 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 				}
 			} else {
 				// TODO: pull option strings from a .json to make localization easier in the future
-				m_file_select_menu = gui::MiniMenu(svc, {"play", "stats", "delete"}, options.at(current_selection.get()).position);
+				m_file_select_menu = gui::MiniMenu(svc, {svc.data.gui_text["file_menu"]["play"].as_string(), svc.data.gui_text["file_menu"]["stats"].as_string(), svc.data.gui_text["file_menu"]["delete"].as_string()},
+												   options.at(current_selection.get()).position);
 			}
 		}
 	}
