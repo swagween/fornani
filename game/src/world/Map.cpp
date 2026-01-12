@@ -446,9 +446,6 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		// for (auto& entity : m_entities.value().variables.entities) { entity->render(win, cam, 1.0); }
 		for (auto p : get_entities<Portal>()) { p->render(win, cam, 1.0); }
 		for (auto s : get_entities<SavePoint>()) { s->render(win, cam, 1.0); }
-		for (auto n : get_entities<NPC>()) {
-			if (!n->is_background()) { n->render(win, cam); }
-		}
 		if (svc.greyblock_mode()) {
 			for (auto c : get_entities<CutsceneTrigger>()) { c->render(win, cam, c->get_f_grid_dimensions().x); }
 		}
@@ -464,9 +461,13 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	}
 	for (auto& bed : beds) { bed.render(svc, win, cam); }
 	for (auto& chest : chests) { chest->render(win, cam); }
-	/*for (auto& npc : npcs) {
-		if (!npc->background()) { npc->render(svc, win, cam); }
-	}*/
+
+	if (m_entities) {
+		for (auto n : get_entities<NPC>()) {
+			if (!n->is_background()) { n->render(win, cam); }
+		}
+	}
+
 	player->render(svc, win, cam);
 	for (auto& enemy : enemy_catalog.enemies) {
 		if (!enemy->is_foreground()) { enemy->render(svc, win, cam); }

@@ -132,4 +132,24 @@ class TextWriter {
 	io::Logger m_logger{"gui"};
 };
 
+static inline void word_wrap(sf::Text& current_message, float const width) {
+	int last_space_index{};
+	for (auto i{0}; i < current_message.getString().getSize() - 1; ++i) {
+		char const current_char = static_cast<char>(current_message.getString().getData()[i]);
+		if (current_char == ' ') {
+			last_space_index = i;
+			if (last_space_index >= current_message.getString().getSize()) { return; }
+			std::string left = current_message.getString().substring(0, static_cast<std::size_t>(last_space_index + 1));
+			std::string right = current_message.getString().substring(static_cast<std::size_t>(last_space_index + 1));
+			auto next_space{std::distance(right.begin(), std::find_if(right.begin(), right.end(), [](auto const& c) { return c == ' '; }))};
+			auto next_word = current_message.findCharacterPos(static_cast<std::size_t>(i + next_space));
+			if (next_word.x > width) {
+				// splice!
+				left += '\n';
+				current_message.setString(left + right);
+			}
+		}
+	}
+}
+
 } // namespace fornani::gui

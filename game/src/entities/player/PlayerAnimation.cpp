@@ -305,9 +305,11 @@ fsm::StateFunction PlayerAnimation::update_rise() {
 	if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 	if (m_player->animation.complete()) {
-		if (m_player->grounded()) {
-			m_player->animation.set_params(get_params("idle"));
-			return PA_BIND(update_idle);
+		if (m_player->has_collider()) {
+			if (m_player->grounded()) {
+				m_player->animation.set_params(get_params("idle"));
+				return PA_BIND(update_idle);
+			}
 		}
 		m_player->animation.set_params(get_params("suspend"));
 		return PA_BIND(update_suspend);
@@ -359,9 +361,11 @@ fsm::StateFunction PlayerAnimation::update_fall() {
 	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
 	if (change_state(AnimState::dash_up, get_params("dash_up"))) { return PA_BIND(update_dash_up); }
 	if (change_state(AnimState::dash_down, get_params("dash_down"))) { return PA_BIND(update_dash_down); }
-	if (m_player->grounded()) {
-		m_player->animation.set_params(get_params("land"));
-		return PA_BIND(update_land);
+	if (m_player->has_collider()) {
+		if (m_player->grounded()) {
+			m_player->animation.set_params(get_params("land"));
+			return PA_BIND(update_land);
+		}
 	}
 
 	return std::move(state_function);
@@ -428,6 +432,7 @@ fsm::StateFunction PlayerAnimation::update_sit() {
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 	if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }
 	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
+	if (change_state(AnimState::land, get_params("land"))) { return PA_BIND(update_land); }
 	if (m_player->animation.complete()) {
 		if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 	}

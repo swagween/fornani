@@ -1,8 +1,7 @@
 
 #pragma once
 
-#include "Cutscene.hpp"
-
+#include <fornani/story/Cutscene.hpp>
 #include <memory>
 #include <vector>
 

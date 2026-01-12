@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/automa/GameState.hpp>
+#include <fornani/components/SteeringComponent.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/Background.hpp>
 #include <fornani/shader/LightShader.hpp>
@@ -10,7 +11,13 @@
 
 namespace fornani::automa {
 
-enum class IntroFlags { complete, established };
+enum class IntroFlags { complete, established, cutscene_started, cutscene_over, console_message };
+
+struct Nighthawk final : public Animatable {
+	Nighthawk(ServiceProvider& svc) : Animatable(svc, "scenery_distant_nighthawk", {11, 11}) {}
+	components::SteeringComponent steering;
+	float z{};
+};
 
 class Intro final : public GameState, public Flaggable<IntroFlags> {
   public:
@@ -28,8 +35,11 @@ class Intro final : public GameState, public Flaggable<IntroFlags> {
 	graphics::Background m_cloud_sea;
 	graphics::Background m_cloud;
 	Animatable m_airship;
+	std::vector<Nighthawk> m_nighthawks;
 	util::Cooldown m_intro_shot;
 	util::Cooldown m_wait;
+	util::Cooldown m_end_wait;
+	util::Cooldown m_attack_fadeout;
 	std::optional<LightShader> m_world_shader{};
 };
 

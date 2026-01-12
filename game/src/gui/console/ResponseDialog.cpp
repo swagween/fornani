@@ -1,4 +1,5 @@
 
+#include <fornani/core/Common.hpp>
 #include <fornani/gui/console/ResponseDialog.hpp>
 #include <fornani/story/Quest.hpp>
 #include "fornani/audio/Soundboard.hpp"
@@ -25,6 +26,7 @@ ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, QuestT
 			responses.back().codes = std::vector<MessageCode>{};
 			for (auto const& code : msg["codes"].as_array()) { responses.back().codes->push_back(MessageCode{code}); }
 		}
+		if (responses.size() == 1) { word_wrap(responses.back().data, 500.f); }
 	}
 	m_selection = util::Circuit{static_cast<int>(responses.size())};
 	m_indicator.shape.setSize({4.f, 4.f});

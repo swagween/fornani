@@ -25,6 +25,7 @@
 #include <fornani/utils/QuestCode.hpp>
 #include <fornani/weapon/Hotbar.hpp>
 #include <fornani/world/Camera.hpp>
+#include <utility>
 
 namespace fornani {
 class Game;
@@ -125,7 +126,12 @@ class Player final : public Mobile {
 
 	// animation machine
 	void request_animation(AnimState const to) { m_animation_machine.request(to); }
-	void force_animation(AnimState const to, std::string_view tag) { m_animation_machine.force(to, tag); }
+	// void force_animation(AnimState const to, std::string_view tag, std::function<fsm::StateFunction()> fn);
+	template <typename Factory>
+	void force_animation(AnimState to, std::string_view tag, Factory&& factory) {
+		m_animation_machine.force(to, tag);
+		m_animation_machine.state_function = std::forward<Factory>(factory)(get_animation());
+	}
 	void set_animation_flag(AnimTriggers const flag, bool on = true) { on ? m_animation_machine.triggers.set(flag) : m_animation_machine.triggers.reset(flag); }
 	void set_sleep_timer() { m_animation_machine.set_sleep_timer(); }
 	[[nodiscard]] auto get_elapsed_animation_ticks() const -> int { return animation.get_elapsed_ticks(); }
@@ -211,6 +217,7 @@ class Player final : public Mobile {
 	void remove_from_hotbar(std::string_view tag);
 	void set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_outfit);
 	[[nodiscard]] auto get_outfit() -> std::array<int, static_cast<int>(ApparelType::END)> { return catalog.wardrobe.get(); }
+	[[nodiscard]] auto get_animation() -> PlayerAnimation& { return m_animation_machine; }
 
 	void reset_flags();
 	void total_reset();

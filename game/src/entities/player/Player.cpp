@@ -287,6 +287,11 @@ void Player::end_tick() {
 	flags.triggers = {};
 }
 
+// void Player::force_animation(AnimState const to, std::string_view tag, std::function<fsm::StateFunction()> fn) {
+//	m_animation_machine.force(to, tag);
+//	m_animation_machine.state_function = std::move(fn);
+// }
+
 void Player::update_animation() {
 	if (!collider.has_value()) { return; }
 	m_sprite_shake.update();

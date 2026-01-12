@@ -1145,11 +1145,14 @@
 		},
 		"21": {
 			"responses": [
+				[]
 			],
 			"suite": [
 				[
 					{
-						"codes": [ [ 8, 0 ] ],
+						"codes": [
+							[ 8, 0 ]
+						],
 						"message": "..."
 					}
 				]
@@ -1176,29 +1179,28 @@
 		"23": {
 			"responses": [
 				[
-					{
-						"codes": [ [ 1, 1 ] ],
-						"message": "Blindsided by what?"
-					}
 				]
 			],
 			"suite": [
 				[
 					{
-						"codes": [ [ 1, 0 ] ],
-						"message": "We don't really know. We were just as blindsided as you are."
-					}
-				],
-				[
+						"codes": [
+							[ 14, 0 ]
+						],
+						"message": "Nani..."
+					},
 					{
-						"codes": [ [ 8, 0 ] ],
-						"message": "Nani, your brother is missing..."
+						"codes": [
+							[ 8, 0 ]
+						],
+						"message": "Your brother is missing."
 					}
 				]
 			]
 		},
 		"24": {
 			"responses": [
+				[]
 			],
 			"suite": [
 				[
@@ -1670,7 +1672,9 @@
 					{
 						"codes": [ [ 1, 1 ] ],
 						"message": "I guess he kinda looks like my grandpa?"
-					},
+					}
+				],
+				[
 					{
 						"codes": [ [ 1, 2 ] ],
 						"message": "Yeah... You know, my brother and I used to explore that place when I was a kid."
@@ -1718,10 +1722,6 @@
 			"responses": [
 				[
 					{
-						"codes": [ [ 1, 1 ] ],
-						"message": "...My brother?"
-					},
-					{
 						"codes": [ [ 8, 0 ] ],
 						"message": "What are you talking about? My brother is with you..."
 					}
@@ -1739,24 +1739,22 @@
 						"codes": [ [ 1, 0 ] ],
 						"message": "As I was saying before... I wonder if your brother has shared any of his findings with you...?"
 					}
-				],
-				[
-					{
-						"codes": [ [ 1, 1 ] ],
-						"message": "Yes... I imagine you've seen him in recent days, no?"
-					}
 				]
 			]
 		},
 		"22": {
 			"output": 2,
 			"responses": [
+				[]
 			],
 			"suite": [
 				[
 					{
+						"message": "...Mh...Yes, indeed he is!"
+					},
+					{
 						"codes": [ [ 8, 0 ] ],
-						"message": "...Mh...Yes, indeed. He is! Or, he was..."
+						"message": "Or, he was..."
 					}
 				]
 			]
@@ -1764,10 +1762,12 @@
 		"23": {
 			"output": 2,
 			"responses": [
-				{
-					"codes": [ [ 8, 0 ] ],
-					"message": "What is going on?"
-				}
+				[
+					{
+						"codes": [ [ 8, 0 ] ],
+						"message": "What is going on?"
+					}
+				]
 			],
 			"suite": [
 				[
@@ -1778,9 +1778,10 @@
 				]
 			]
 		},
-		"25": {
+		"24": {
 			"output": 2,
 			"responses": [
+				[]
 			],
 			"suite": [
 				[
@@ -1788,15 +1789,16 @@
 						"message": "Not to worry, of course! I am sure he fares well and will be coming back any day now."
 					},
 					{
-						"codes": [ [ 1, 0 ] ],
+						"codes": [ [ 8, 0 ] ],
 						"message": "So? Have you any idea where he might have gone?"
 					}
 				]
 			]
 		},
-		"26": {
+		"25": {
 			"output": 2,
 			"responses": [
+				[]
 			],
 			"suite": [
 				[

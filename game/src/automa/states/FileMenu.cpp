@@ -18,7 +18,7 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc
 
 	loading.start(4);
 	refresh(svc);
-	player.force_animation(player::AnimState::run, "run");
+	player.force_animation(player::AnimState::run, "run", [](player::PlayerAnimation& anim) { return anim.update_run(); });
 	player.set_direction(Direction{UND::neutral, LNR::left});
 }
 

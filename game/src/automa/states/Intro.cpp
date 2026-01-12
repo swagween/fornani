@@ -4,9 +4,20 @@
 
 namespace fornani::automa {
 
+static bool b_play_intro_song{};
+static int intro_song_id{};
+
+static void intro_trigger_song(int to) {
+	b_play_intro_song = true;
+	intro_song_id = to;
+}
+
 Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number)
-	: GameState(svc, player, scene, room_number), map(svc, player), m_airship{svc, "scenery_firstwind_airship", {480, 256}}, m_cloud_sea{svc, "cloud_sea"}, m_cloud{svc, "cloud"}, m_intro_shot{1600}, m_wait{800},
-	  m_location_text{svc, svc.data.gui_text["locations"]["firstwind"].as_string_view()} {
+	: GameState(svc, player, scene, room_number), map(svc, player), m_airship{svc, "scenery_firstwind_airship", {480, 256}}, m_cloud_sea{svc, "cloud_sea"}, m_cloud{svc, "cloud"}, m_intro_shot{1600}, m_wait{800}, m_end_wait{800},
+	  m_attack_fadeout{2600}, m_location_text{svc, svc.data.gui_text["locations"]["firstwind"].as_string_view()} {
+
+	svc.events.register_event(std::make_unique<Event<int>>("PlaySong", &intro_trigger_song));
+
 	svc.music_player.load(svc.finder, "wind");
 	svc.ambience_player.load(svc.finder, "firstwind");
 	svc.ambience_player.play();
@@ -29,16 +40,38 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 	m_world_shader->set_darken(map.darken_factor);
 	m_world_shader->set_texture_size(map.real_dimensions / constants::f_scale_factor);
 
-	m_airship.push_animation("main", {0, 4, 64, -1});
+	m_airship.push_animation("main", {0, 4, 40, -1});
 	m_airship.set_animation("main");
 	m_intro_shot.start();
 	m_location_text.set_bounds(sf::FloatRect({20.f, 480.f}, {600.f, 100.f}));
+
+	for (auto i{0}; i < 4; ++i) {
+		m_nighthawks.push_back(Nighthawk{svc});
+		auto randx = random::random_range_float(600.f, 2000.f);
+		auto randy = random::random_range_float(0.f, 400.f);
+		m_nighthawks.back().steering.physics.position = {randx, randy};
+		auto c = random::random_range(0, 2);
+		auto f = random::random_range(0, 2);
+		m_nighthawks.back().set_channel(0);
+		m_nighthawks.back().set_frame(f);
+		m_nighthawks.back().z = (3.f - static_cast<float>(c)) * 0.00002f;
+	}
 }
 
 void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
+	if (b_play_intro_song) {
+		svc.music_player.play_song_by_id(svc.finder, intro_song_id);
+		b_play_intro_song = false;
+	}
+
 	m_wait.update();
 	if (m_wait.running()) { return; }
+
+	for (auto& n : m_nighthawks) {
+		n.steering.seek({-800.f, 400.f}, n.z);
+		n.set_position(n.steering.physics.position);
+	}
 
 	m_location_text.update();
 	if (m_location_text.is_writing()) { svc.soundboard.flags.console.set(audio::Console::speech); }
@@ -47,6 +80,8 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	m_airship.tick();
 	m_airship.set_position(sf::Vector2f{0.f, 4.f * sin(m_intro_shot.get_normalized() * 10.f)});
 	m_intro_shot.update();
+	m_end_wait.update();
+	m_attack_fadeout.update();
 
 	player->controller.restrict_movement();
 
@@ -54,10 +89,27 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (m_intro_shot.get() == 1000) { m_location_text.start(); }
 	if (m_intro_shot.is_almost_complete()) { map.transition.start(); }
 	if (map.transition.is_black() && m_intro_shot.is_complete()) { set_flag(IntroFlags::established); }
-	if (map.transition.is_black() && has_flag_set(IntroFlags::established)) {
+	if (map.transition.is_black() && has_flag_set(IntroFlags::established) && !has_flag_set(IntroFlags::cutscene_started)) {
 		svc.app_flags.set(AppFlags::in_game);
 		map.cutscene_catalog.push_cutscene(svc, map, *player, 1);
 		map.transition.end();
+		set_flag(IntroFlags::cutscene_started);
+	}
+	if (has_flag_set(IntroFlags::cutscene_started) && map.cutscene_catalog.cutscenes.empty()) {
+		if (!has_flag_set(IntroFlags::cutscene_over)) { m_end_wait.start(); }
+		set_flag(IntroFlags::cutscene_over);
+	}
+	if (has_flag_set(IntroFlags::cutscene_over)) {
+		if (m_end_wait.is_almost_complete()) {
+			m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "intro", gui::OutputType::no_skip);
+			svc.music_player.load(svc.finder, "brown");
+			svc.music_player.play_looped();
+			set_flag(IntroFlags::console_message);
+			m_attack_fadeout.start();
+		}
+		svc.ambience_player.set_balance(0.f);
+		if (m_attack_fadeout.running()) { svc.ambience_player.set_volume(m_attack_fadeout.get_quadratic_normalized()); }
+		if (!m_console && has_flag_set(IntroFlags::console_message)) { set_flag(IntroFlags::complete); }
 	}
 
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered || svc.controller_map.process_gamepad_disconnection()) {
@@ -137,6 +189,8 @@ void Intro::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!has_flag_set(IntroFlags::established)) {
 		m_cloud_sea.render(svc, win, {});
 		win.draw(m_airship);
+		// not sure about the nighthawks
+		// for (auto& n : m_nighthawks) { win.draw(n); }
 		m_cloud.render(svc, win, {});
 		m_location_text.write_gradual_message(win);
 	}

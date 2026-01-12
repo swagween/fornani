@@ -245,7 +245,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 
 	if (m_state.test(NPCState::talking)) {
 		svc.camera_controller.free();
-	} else {
+	} else if (!has_flag_set(NPCFlags::cutscene)) {
 		svc.camera_controller.constrain();
 	}
 

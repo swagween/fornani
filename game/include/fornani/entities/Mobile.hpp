@@ -22,6 +22,7 @@ class Mobile : public Animatable {
 	void register_collider(world::Map& map, sf::Vector2f dimensions);
 	void face_player(player::Player& player);
 	void set_direction(SimpleDirection to);
+	void set_desired_direction(SimpleDirection to);
 	[[nodiscard]] bool player_behind(player::Player& player) const;
 	[[nodiscard]] auto get_actual_direction() const -> Direction { return directions.actual; }
 	[[nodiscard]] auto get_global_center() const -> sf::Vector2f { return collider.value().get().get_reference().get_center(); }

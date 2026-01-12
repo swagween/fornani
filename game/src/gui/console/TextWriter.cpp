@@ -109,23 +109,7 @@ void TextWriter::wrap() {
 	if (m_iterators.current_suite_set >= suite.size()) { return; }
 	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
 	auto& current_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
-	int last_space_index{};
-	for (auto i{0}; i < current_message.getString().getSize() - 1; ++i) {
-		char const current_char = static_cast<char>(current_message.getString().getData()[i]);
-		if (current_char == ' ') {
-			last_space_index = i;
-			if (last_space_index >= current_message.getString().getSize()) { return; }
-			std::string left = current_message.getString().substring(0, static_cast<std::size_t>(last_space_index + 1));
-			std::string right = current_message.getString().substring(static_cast<std::size_t>(last_space_index + 1));
-			auto next_space{std::distance(right.begin(), std::find_if(right.begin(), right.end(), [](auto const& c) { return c == ' '; }))};
-			auto next_word = current_message.findCharacterPos(static_cast<std::size_t>(i + next_space));
-			if (next_word.x > m_bounds.position.x + m_bounds.size.x) {
-				// splice!
-				left += '\n';
-				current_message.setString(left + right);
-			}
-		}
-	}
+	word_wrap(current_message, m_bounds.position.x + m_bounds.size.x);
 }
 
 void TextWriter::constrain() {

@@ -69,6 +69,9 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.world.test(World::projectile_hit)) { play(engine, svc, svc.sounds.get_buffer("projectile_hit"), 0.2f); }
 	if (flags.world.test(World::clink)) { play(engine, svc, svc.sounds.get_buffer("clink"), 0.2f); }
 	if (flags.world.test(World::vibration)) { play(engine, svc, svc.sounds.get_buffer("vibration")); }
+	if (flags.world.test(World::big_crash)) { play(engine, svc, svc.sounds.get_buffer("big_crash")); }
+	if (flags.world.test(World::heavy_land)) { play(engine, svc, svc.sounds.get_buffer("heavy_land")); }
+	if (flags.world.test(World::delay_crash)) { play(engine, svc, svc.sounds.get_buffer("delay_crash"), 0.f, 50.f); }
 	flags.world.test(World::laser_hum) ? simple_repeat(engine, svc.sounds.get_buffer("laser_hum"), "laser_hum") : stop("laser_hum");
 	if (flags.world.test(World::incinerite_explosion)) { play(engine, svc, svc.sounds.get_buffer("incinerite_explosion"), 0.2f); }
 

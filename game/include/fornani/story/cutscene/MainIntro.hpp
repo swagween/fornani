@@ -6,7 +6,7 @@
 
 namespace fornani {
 
-enum class MainIntroFlags { rumble };
+enum class MainIntroFlags { rumble, takeover, start_takeover };
 
 class MainIntro final : public Cutscene, public Flaggable<MainIntroFlags> {
   public:
@@ -14,6 +14,7 @@ class MainIntro final : public Cutscene, public Flaggable<MainIntroFlags> {
 	void update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) override;
 
   private:
+	util::Cooldown m_outro;
 };
 
 } // namespace fornani

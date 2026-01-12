@@ -4,7 +4,7 @@
 
 namespace fornani::audio {
 
-Ambience::Ambience(capo::IEngine& audio_engine) : tracks{.open{audio_engine}, .closed{audio_engine}}, m_volume_multiplier{0.2f} {}
+Ambience::Ambience(capo::IEngine& audio_engine) : tracks{.open{audio_engine}, .closed{audio_engine}}, m_volume_multiplier{0.3f}, m_in_game_multiplier{1.f} {}
 
 void Ambience::load(ResourceFinder& finder, std::string_view source) {
 	if (source.empty()) { source = "none"; }
@@ -25,8 +25,8 @@ void Ambience::play() {
 void Ambience::set_balance(float balance) {
 	tracks.open.update();
 	tracks.closed.update();
-	auto actual = balance * m_volume_multiplier;
-	auto inverse = (1.f - balance) * m_volume_multiplier;
+	auto actual = balance * m_volume_multiplier * m_in_game_multiplier;
+	auto inverse = (1.f - balance) * m_volume_multiplier * m_in_game_multiplier;
 	tracks.open.set_volume(actual);
 	tracks.closed.set_volume(inverse);
 }
