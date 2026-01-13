@@ -514,7 +514,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	}
 
 	for (auto& laser : lasers) { laser.render(svc, win, cam); }
-	for (auto& effect : effects) { effect.render(win, cam); }
+	if (!svc.greyblock_mode()) {
+		for (auto& effect : effects) { effect.render(win, cam); }
+	}
 
 	player->render_indicators(svc, win, cam);
 

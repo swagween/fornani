@@ -1,7 +1,6 @@
 
-#include "fornani/world/Pushable.hpp"
-
 #include <ccmath/ext/clamp.hpp>
+#include <fornani/world/Pushable.hpp>
 #include <cmath>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"
@@ -13,7 +12,7 @@
 namespace fornani::world {
 
 Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int style, int size)
-	: Drawable{svc, "pushables"}, m_map{&map}, style(style), size(size), m_collider{map, constants::f_cell_vec * static_cast<float>(size) - sf::Vector2f{1.f, 0.1f}}, collision_box{constants::f_cell_vec * static_cast<float>(size)},
+	: Drawable{svc, "pushables"}, m_map{&map}, style(style), size(size), m_collider{map, constants::f_cell_vec * static_cast<float>(size) - sf::Vector2f{2.f, 2.f}}, collision_box{constants::f_cell_vec * static_cast<float>(size)},
 	  speed{1.f / (static_cast<float>(size) * 0.75f)} {
 	get_collider().physics.position = position;
 	start_position = position;
@@ -123,6 +122,10 @@ void Pushable::post_update(automa::ServiceProvider& svc, Map& map, player::Playe
 			if (player.get_collider().jumpbox.overlaps(collision_box) && !player.get_collider().perma_grounded() && !(player.get_collider().has_left_wallslide_collision() || player.get_collider().has_right_wallslide_collision())) {
 				player.get_collider().physics.forced_momentum = get_collider().physics.forced_momentum;
 			}
+		}
+		if (platform->get_collider().bounding_box.overlaps(get_collider().bounding_box) && !platform->get_collider().bounding_box.overlaps(get_collider().jumpbox)) {
+			platform->switch_directions();
+			svc.soundboard.flags.world.set(audio::World::hard_hit);
 		}
 	}
 

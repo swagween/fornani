@@ -26,7 +26,7 @@ Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, std::optional<std::uni
 		{"run", {14, 4, lynx_framerate * 2, -1}},
 		{"levitate", {18, 4, lynx_framerate * 4, 2}},
 		{"downward_slam", {22, 14, lynx_framerate * 3, 0}},
-		{"prepare_shuriken", {36, 3, lynx_framerate * 5, 0}},
+		{"prepare_shuriken", {36, 3, lynx_framerate * 6, 0}},
 		{"toss_shuriken", {39, 6, lynx_framerate * 3, 1}},
 		{"triple_slash", {45, 18, lynx_framerate * 2, 0}},
 		{"upward_slash", {52, 5, lynx_framerate * 3, 0}},

@@ -192,6 +192,7 @@ void Projectile::on_player_hit(automa::ServiceProvider& svc, world::Map& map, pl
 
 void Projectile::on_explode(automa::ServiceProvider& svc, world::Map& map) {
 	if (!metadata.explosion) { return; }
+	if (!has_attribute(arms::ProjectileAttributes::explode_on_impact)) { return; }
 	map.spawn_explosion(svc, metadata.explosion->tag, get_team(), get_position(), metadata.explosion->radius, metadata.explosion->channel);
 	destroy(false);
 }
