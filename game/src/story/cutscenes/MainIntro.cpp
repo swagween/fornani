@@ -15,10 +15,11 @@ MainIntro::MainIntro(automa::ServiceProvider& svc, world::Map& map, player::Play
 	auto wit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 2; });
 	auto& willett = *wit;
 
-	bryn->request(NPCAnimationState::inspect);
 	bryn->set_direction(SimpleDirection{LR::right});
 	bryn->set_flag(NPCFlags::cutscene);
 	willett->set_flag(NPCFlags::cutscene);
+	bryn->request(NPCAnimationState::busy);
+	player.set_flag(player::PlayerFlags::cutscene);
 
 	svc.music_player.load(svc.finder, "aether");
 	svc.state_flags.set(automa::StateFlags::cutscene);
@@ -36,6 +37,7 @@ void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_p
 		svc.state_flags.reset(automa::StateFlags::cutscene);
 		svc.camera_controller.set_owner(graphics::CameraOwner::player);
 		flags.set(CutsceneFlags::delete_me);
+		player.set_flag(player::PlayerFlags::cutscene, false);
 		return;
 	}
 
@@ -71,16 +73,15 @@ void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_p
 		willett->set_direction(LR::right);
 	}
 
-	static auto hit_stop = false;
 	if (willett->get_collider().get_center().x / constants::f_cell_size < 27.25f) {
 		willett->walk();
 	} else {
 		willett->face_player(player);
 		willett->request(NPCAnimationState::idle);
 	}
-	if (player.get_position().x / constants::f_cell_size > 25.4f && !hit_stop) {
+	if (player.get_position().x / constants::f_cell_size > 25.4f && !has_flag_set(MainIntroFlags::player_stopped)) {
 		player.set_idle();
-		hit_stop = true;
+		set_flag(MainIntroFlags::player_stopped);
 	}
 
 	player.set_direction(Direction{LR::right});
@@ -96,12 +97,14 @@ void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_p
 	svc.camera_controller.set_owner(graphics::CameraOwner::system);
 	svc.camera_controller.free();
 	if (has_flag_set(MainIntroFlags::rumble)) {
-		svc.camera_controller.shake(10, 1.2f, 700, 50);
+		svc.camera_controller.shake(10, 0.5f, 700, 50);
 		svc.soundboard.flags.world.set(audio::World::delay_crash);
 		svc.soundboard.flags.world.set(audio::World::vibration);
-		player.force_animation(player::AnimState::hurt, "hurt", [](player::PlayerAnimation& anim) { return anim.update_hurt(); });
+		player.set_hurt();
 		set_flag(MainIntroFlags::rumble, false);
+		bryn->request(NPCAnimationState::stagger);
 		svc.music_player.stop();
+		svc.ticker.freeze_frame(10);
 	}
 	if (has_flag_set(MainIntroFlags::takeover)) {
 		if (has_flag_set(MainIntroFlags::start_takeover)) {

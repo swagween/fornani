@@ -699,6 +699,11 @@
 					"num_frames": 7,
 					"framerate": 14,
 					"angles": 4
+				},
+				"explosion": {
+					"tag": "explosion",
+					"radius": 46.0,
+					"channel": 3
 				}
 			}
 		}

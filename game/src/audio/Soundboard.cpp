@@ -252,15 +252,20 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.weapon.test(Weapon::bryns_gun)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_bg"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::gnat)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_gnat"), 0.1f, 100.f, 2, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::wasp)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_wasp"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.weapon.test(Weapon::tomahawk)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_tomahawk"), 0.1f, 100.f, 2, 1.f, {}, echo_count, echo_rate); }
+	if (flags.weapon.test(Weapon::tomahawk_catch)) { play(engine, svc, svc.sounds.get_buffer("arms_catch_tomahawk"), 0.1f, 100.f, 2, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::skycorps_ar)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_skycorps_ar"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::pulse)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_pulse"), 0.2f, 20.f); }
 	if (flags.weapon.test(Weapon::demon_magic)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_demon_magic"), 0.1f, 40.f); }
+	if (flags.weapon.test(Weapon::nova)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_nova"), 0.1f); }
 
 	if (flags.weapon.test(Weapon::energy_ball)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_energy_ball"), 0.1f); }
 
 	if (flags.projectile.test(Projectile::basic)) { play(engine, svc, svc.sounds.get_buffer("wall_hit"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.projectile.test(Projectile::shuriken)) { play(engine, svc, svc.sounds.get_buffer("clink"), 0.2f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.projectile.test(Projectile::pulse)) { play(engine, svc, svc.sounds.get_buffer("projectile_pulse"), 0.2f, 10.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.projectile.test(Projectile::hard_hit)) { play(engine, svc, svc.sounds.get_buffer("hard_hit"), 0.2f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.projectile.test(Projectile::critical_hit)) { play(engine, svc, svc.sounds.get_buffer("critical_hit"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 
 	// reset flags
 	flags = {};

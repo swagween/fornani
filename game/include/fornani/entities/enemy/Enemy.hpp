@@ -13,6 +13,7 @@
 #include <fornani/gui/HealthBar.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Flaggable.hpp>
 #include <fornani/utils/Math.hpp>
 #include <fornani/utils/Polymorphic.hpp>
 #include <fornani/utils/StateFunction.hpp>
@@ -71,6 +72,7 @@ struct Attributes {
 	float gravity{};
 	EnemySize size{EnemySize::medium};
 	float treasure_chance{};
+	arms::Team team{arms::Team::skycorps};
 };
 
 struct Treasure {
@@ -114,6 +116,7 @@ class Enemy : public Mobile {
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
 	[[nodiscard]] auto get_external_id() const -> int { return metadata.external_id; }
+	[[nodiscard]] auto get_team() const -> arms::Team { return attributes.team; }
 	[[nodiscard]] auto has_secondary_collider() const -> bool { return secondary_collider.has_value(); }
 	[[nodiscard]] auto get_secondary_collider() const -> shape::Collider& { return secondary_collider.value().get().get_reference(); }
 	[[nodiscard]] auto died() const -> bool { return health.is_dead(); }

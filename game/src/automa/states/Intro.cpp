@@ -102,7 +102,7 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (has_flag_set(IntroFlags::cutscene_over)) {
 		if (m_end_wait.is_almost_complete()) {
 			m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "intro", gui::OutputType::no_skip);
-			svc.music_player.load(svc.finder, "brown");
+			svc.music_player.load(svc.finder, "none");
 			svc.music_player.play_looped();
 			set_flag(IntroFlags::console_message);
 			m_attack_fadeout.start();
@@ -173,7 +173,7 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	map.debug_mode = debug_mode;
 
 	player->end_tick();
-	if (!m_console) { player->flags.state.reset(player::State::busy); }
+	if (!m_console) { player->set_busy(false); }
 
 	map.background->update(svc);
 	hud.update(svc, *player);

@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include "fornani/entities/enemy/Enemy.hpp"
-#include "fornani/entities/packages/Attack.hpp"
-#include "fornani/entities/packages/Caution.hpp"
+#include <fornani/entities/enemy/Enemy.hpp>
+#include <fornani/entities/packages/Attack.hpp>
+#include <fornani/entities/packages/Caution.hpp>
 #define HULMET_BIND(f) std::bind(&Hulmet::f, this)
 
 namespace fornani::enemy {
@@ -12,7 +12,7 @@ enum class HulmetState { idle, turn, run, jump, alert, sleep, shoot, roll, panic
 enum class HulmetVariant { gunner, bodyguard };
 enum class HulmetFlags { out_of_ammo };
 
-class Hulmet final : public Enemy, public StateMachine<HulmetState> {
+class Hulmet final : public Enemy, public StateMachine<HulmetState>, public Flaggable<HulmetFlags> {
   public:
 	Hulmet(automa::ServiceProvider& svc, world::Map& map);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
@@ -32,7 +32,7 @@ class Hulmet final : public Enemy, public StateMachine<HulmetState> {
 
 	[[nodiscard]] auto is_mid_run() { return m_cooldowns.run.is_almost_complete(); }
 	[[nodiscard]] auto was_alerted() { return m_cooldowns.alerted.running(); }
-	[[nodiscard]] auto is_out_of_ammo() { return m_flags.test(HulmetFlags::out_of_ammo); }
+	[[nodiscard]] auto is_out_of_ammo() { return has_flag_set(HulmetFlags::out_of_ammo); }
 
   private:
 	HulmetVariant m_variant{};
@@ -66,8 +66,6 @@ class Hulmet final : public Enemy, public StateMachine<HulmetState> {
 		anim::Parameters panic{31, 7, 24, 0};
 		anim::Parameters reload{38, 5, 64, 0};
 	} m_animations{};
-
-	util::BitFlags<HulmetFlags> m_flags{};
 
 	float m_jump_force;
 	int m_jump_time{4};

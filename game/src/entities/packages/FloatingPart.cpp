@@ -1,13 +1,11 @@
 
-#include "fornani/entities/packages/FloatingPart.hpp"
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/utils/Random.hpp"
-#include "fornani/world/Map.hpp"
-
+#include <fornani/entities/packages/FloatingPart.hpp>
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/utils/Random.hpp>
+#include <fornani/world/Map.hpp>
 #include <numbers>
-
-#include "fornani/utils/Random.hpp"
+#include <ranges>
 
 namespace fornani::entity {
 
@@ -24,9 +22,9 @@ FloatingPart::FloatingPart(sf::Texture const& tex, float force, float friction, 
 	debugbox.setOutlineThickness(-1);
 }
 
-FloatingPart::FloatingPart(sf::Texture const& tex, sf::Vector2i dimensions, std::vector<anim::Parameters> params, std::vector<std::string_view> labels, float force, float friction, sf::Vector2f offset, int id)
+FloatingPart::FloatingPart(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions, std::vector<anim::Parameters> params, std::vector<std::string_view> labels, float force, float friction, sf::Vector2f offset, int id)
 	: textured{true}, init{true}, m_id{id} {
-	animated_sprite = anim::AnimatedSprite(tex, dimensions);
+	animated_sprite = Animatable(svc, label, dimensions);
 	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2f{}, sf::Color::Yellow, force);
 	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2f{friction, friction}, 1.0f);
 	gravitator->collider.physics.maximum_velocity = sf::Vector2f(20.f, 20.f);
@@ -35,11 +33,11 @@ FloatingPart::FloatingPart(sf::Texture const& tex, sf::Vector2i dimensions, std:
 	right.x *= -1.f;
 	if (labels.size() < params.size()) { return; }
 	if (!animated_sprite) { return; }
-	auto ctr{0};
-	for (auto& param : params) {
-		animated_sprite->push_params(labels.at(ctr), param);
-		++ctr;
+	for (auto [i, param] : std::views::enumerate(params)) {
+		animated_sprite->push_animation(labels.at(i), param);
+		if (i == 0) { animated_sprite->set_animation(labels.at(i)); } // default to first animation
 	}
+	animated_sprite->center();
 }
 
 FloatingPart::FloatingPart(sf::Color color, sf::Vector2f dimensions, float force, float friction, sf::Vector2f offset, int id) : textured{false}, init{true}, m_id{id} {
@@ -68,7 +66,7 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 	gravitator->set_target_position(actual);
 	gravitator->update(svc);
 	if (animated_sprite) {
-		animated_sprite->update(gravitator->position());
+		animated_sprite->tick();
 		animated_sprite->set_scale(scale);
 	}
 	if (sprite) { sprite->setScale(scale); }
@@ -93,7 +91,10 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 void FloatingPart::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (sprite) { sprite->setPosition(gravitator->position() - cam); }
 	if (sprite) { win.draw(*sprite); }
-	if (animated_sprite) { animated_sprite->render(svc, win, cam); }
+	if (animated_sprite) {
+		animated_sprite->set_position(gravitator->position() - cam);
+		win.draw(*animated_sprite);
+	}
 	if (drawbox) { drawbox->setPosition(gravitator->position() - cam); }
 	if (drawbox) { win.draw(*drawbox); }
 	if (svc.greyblock_mode()) {

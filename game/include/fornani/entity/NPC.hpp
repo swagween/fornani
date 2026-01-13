@@ -19,7 +19,7 @@ namespace fornani {
 
 enum class NPCFlags { has_turn_animation, face_player, background, no_animation, random_walk, cutscene };
 enum class NPCState { engaged, force_interact, introduced, talking, cutscene, piggybacking, hidden, distant_interact, just_engaged, random_walk };
-enum class NPCAnimationState { idle, turn, walk, inspect, fall, land };
+enum class NPCAnimationState { idle, turn, walk, inspect, fall, land, busy, stagger };
 
 class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>, public Flaggable<NPCFlags> {
   public:
@@ -51,6 +51,8 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	fsm::StateFunction update_inspect();
 	fsm::StateFunction update_fall();
 	fsm::StateFunction update_land();
+	fsm::StateFunction update_busy();
+	fsm::StateFunction update_stagger();
 
 	/* gameplay helpers */
 	void walk();

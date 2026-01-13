@@ -8,7 +8,7 @@
 namespace fornani::enemy {
 
 Hulmet::Hulmet(automa::ServiceProvider& svc, world::Map& map)
-	: Enemy(svc, map, "hulmet"), m_services(&svc), m_map(&map), m_parts{.gun{svc.assets.get_texture("hulmet_gun"), 2.0f, 0.85f, {-12.f, 6.f}}}, m_weapon{svc, "skycorps_ar"}, m_jump_force{-48.f} {
+	: Enemy(svc, map, "hulmet"), m_services(&svc), m_map(&map), m_parts{.gun{svc, "hulmet_gun", {24, 10}, {{0, 4, 24, -1}}, {"main"}, 2.0f, 0.85f, {-12.f, 6.f}}}, m_weapon{svc, "skycorps_ar"}, m_jump_force{-48.f} {
 	animation.set_params(m_animations.idle);
 	m_parts.gun.set_magnitude(2.f);
 	m_weapon.clip_cooldown_time = 360;
@@ -62,7 +62,12 @@ void Hulmet::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 void Hulmet::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Enemy::render(svc, win, cam);
 	if (died()) { return; }
-	if (p_state.actual != HulmetState::roll && p_state.actual != HulmetState::sleep) { m_parts.gun.render(svc, win, cam); }
+	if (p_state.actual != HulmetState::roll && p_state.actual != HulmetState::sleep) {
+		if (m_parts.gun.animated_sprite) {
+			m_parts.gun.animated_sprite->set_channel(has_flag_set(HulmetFlags::out_of_ammo) ? 0 : 1);
+			m_parts.gun.render(svc, win, cam);
+		}
+	}
 
 	if (svc.greyblock_mode()) {}
 }
@@ -234,7 +239,7 @@ fsm::StateFunction Hulmet::update_shoot() {
 		m_services->soundboard.flags.weapon.set(audio::Weapon::skycorps_ar);
 	}
 	if (animation.complete()) {
-		m_flags.set(HulmetFlags::out_of_ammo);
+		set_flag(HulmetFlags::out_of_ammo);
 		m_cooldowns.post_fire.start();
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
 		if (change_state(HulmetState::run, m_animations.run)) { return HULMET_BIND(update_run); }
@@ -277,9 +282,12 @@ fsm::StateFunction Hulmet::update_reload() {
 	animation.label = "reload";
 	p_state.actual = HulmetState::reload;
 	flags.state.set(StateFlags::vulnerable);
-	if (animation.get_frame_count() == 3 && animation.keyframe_started()) { m_services->soundboard.flags.hulmet.set(audio::Hulmet::reload); }
+	if (animation.get_frame_count() == 3 && animation.keyframe_started()) {
+		m_services->soundboard.flags.hulmet.set(audio::Hulmet::reload);
+		set_flag(HulmetFlags::out_of_ammo, false);
+		if (m_parts.gun.animated_sprite) { m_parts.gun.animated_sprite->animation.start(); }
+	}
 	if (animation.complete()) {
-		m_flags.reset(HulmetFlags::out_of_ammo);
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
 		is_hostile() ? request(HulmetState::shoot) : request(HulmetState::idle);
 		if (change_state(HulmetState::shoot, m_animations.shoot)) { return HULMET_BIND(update_shoot); }

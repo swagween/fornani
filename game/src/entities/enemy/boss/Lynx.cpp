@@ -10,7 +10,7 @@ namespace fornani::enemy {
 static bool b_lynx_start{};
 static bool b_lynx_debug{};
 static void lynx_start_battle(int battle) { b_lynx_start = true; }
-constexpr auto lynx_framerate = 8;
+constexpr auto lynx_framerate = 7;
 constexpr auto run_threshold_v = 0.002f;
 
 Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console)
@@ -29,13 +29,13 @@ Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, std::optional<std::uni
 		{"prepare_shuriken", {36, 3, lynx_framerate * 5, 0}},
 		{"toss_shuriken", {39, 6, lynx_framerate * 3, 1}},
 		{"triple_slash", {45, 18, lynx_framerate * 2, 0}},
-		{"upward_slash", {52, 5, lynx_framerate * 2, 0}},
+		{"upward_slash", {52, 5, lynx_framerate * 3, 0}},
 		{"turn", {55, 8, lynx_framerate * 2, 0}},
 		{"aerial_slash", {63, 4, lynx_framerate * 2, 0}},
 		{"prepare_slash", {45, 4, lynx_framerate * 5, 0}},
-		{"defeat", {67, 6, lynx_framerate * 5, -1}},
+		{"defeat", {67, 6, lynx_framerate * 6, -1}},
 		{"second_phase", {18, 4, lynx_framerate * 4, -1}},
-		{"laugh", {73, 4, lynx_framerate * 2, 4}},
+		{"laugh", {73, 4, lynx_framerate * 3, 4}},
 		{"stagger", {77, 1, lynx_framerate * 4, -1}},
 	};
 	Enemy::animation.set_params(Enemy::get_params("sit"));

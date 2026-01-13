@@ -28,6 +28,14 @@
 			{
 				"label": "land",
 				"parameters": [ 1, 1, 24, 0, false ]
+			},
+			{
+				"label": "busy",
+				"parameters": [ 16, 2, 180, -1, false ]
+			},
+			{
+				"label": "stagger",
+				"parameters": [ 18, 2, 64, 0, false ]
 			}
 		]
 	},

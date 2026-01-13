@@ -150,7 +150,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		svc.ticker.freeze_frame(8);
 		player.health.invincibility.start(16);
 		player.m_ability_usage.dash.update(-1);
-		player.set_flag(State::dash_kick, false);
+		player.set_flag(PlayerFlags::dash_kick, false);
 		cooldowns.dash_kick.start();
 	}
 

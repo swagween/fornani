@@ -13,7 +13,7 @@
 namespace fornani::arms {
 
 enum class WeaponState { unlocked, equipped, reloading };
-enum class WeaponAttributes { automatic };
+enum class WeaponAttributes { automatic, no_reload };
 enum class InventoryState { reserve, hotbar };
 enum class UIFlags { selected };
 enum class UIColor { white, periwinkle, green, orange, fucshia, purple, mythic };

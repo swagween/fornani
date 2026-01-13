@@ -10,7 +10,8 @@ constexpr static int imp_framerate{16};
 
 Imp::Imp(automa::ServiceProvider& svc, world::Map& map, int variant)
 	: Enemy(svc, map, "imp"), m_services(&svc), m_map(&map),
-	  parts{.weapon = random::percent_chance(50) ? entity::FloatingPart{svc.assets.get_texture("imp_knife"),
+	  parts{.weapon = random::percent_chance(50) ? entity::FloatingPart{svc,
+																		"imp_knife",
 																		{36, 20},
 																		{{0, 1, imp_framerate, -1}, {1, 1, imp_framerate, 0}, {2, 1, imp_framerate, -1}, {3, 3, imp_framerate, 0}, {5, 1, imp_framerate, 0}, {6, 1, imp_framerate, 0}},
 																		{"idle", "lift", "run", "attack", "dormant", "swoosh"},
@@ -18,7 +19,8 @@ Imp::Imp(automa::ServiceProvider& svc, world::Map& map, int variant)
 																		0.85f,
 																		{0.f, -30.f},
 																		1}
-												 : entity::FloatingPart{svc.assets.get_texture("imp_fork"),
+												 : entity::FloatingPart{svc,
+																		"imp_fork",
 																		{41, 17},
 																		{{0, 1, imp_framerate, -1}, {1, 1, imp_framerate, 0}, {2, 1, imp_framerate, -1}, {3, 3, imp_framerate, 9}, {0, 1, imp_framerate, -1}, {6, 1, imp_framerate, 0}},
 																		{"idle", "lift", "run", "attack", "dormant", "swoosh"},
@@ -43,7 +45,7 @@ Imp::Imp(automa::ServiceProvider& svc, world::Map& map, int variant)
 	attacks.stab.origin = {-10.f, -26.f};
 
 	// if (variant == ImpVariant::knife) { visual.sprite.setTexture(svc.assets.get_texture("enemy_knife_imp")); }
-	parts.weapon.animated_sprite->set_params("idle");
+	parts.weapon.animated_sprite->set_animation("idle");
 
 	cooldowns.awaken.start();
 }
@@ -121,7 +123,7 @@ void Imp::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 
 fsm::StateFunction Imp::update_idle() {
 	animation.label = "idle";
-	parts.weapon.animated_sprite->set_params("idle");
+	parts.weapon.animated_sprite->set_animation("idle");
 	attacks.stab.disable();
 	if (animation.just_started()) { flags.state.reset(StateFlags::hostile); }
 	if (change_state(ImpState::turn, turn)) { return IMP_BIND(update_turn); }
@@ -151,8 +153,8 @@ fsm::StateFunction Imp::update_turn() {
 
 fsm::StateFunction Imp::update_run() {
 	animation.label = "run";
-	if (animation.just_started()) { parts.weapon.animated_sprite->set_params("lift"); }
-	if (parts.weapon.animated_sprite->complete()) { parts.weapon.animated_sprite->set_params("run"); }
+	if (animation.just_started()) { parts.weapon.animated_sprite->set_animation("lift"); }
+	if (parts.weapon.animated_sprite->is_complete()) { parts.weapon.animated_sprite->set_animation("run"); }
 	attacks.stab.disable();
 	auto facing = directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	get_collider().physics.apply_force({attributes.speed * facing, 0.f});
@@ -207,8 +209,8 @@ fsm::StateFunction Imp::update_fall() {
 fsm::StateFunction Imp::update_attack() {
 	animation.label = "attack";
 	attacks.stab.enable();
-	if (animation.just_started()) { parts.weapon.animated_sprite->set_params("attack"); }
-	if (parts.weapon.animated_sprite->complete()) { parts.weapon.animated_sprite->set_params("swoosh"); }
+	if (animation.just_started()) { parts.weapon.animated_sprite->set_animation("attack"); }
+	if (parts.weapon.animated_sprite->is_complete()) { parts.weapon.animated_sprite->set_animation("swoosh"); }
 	auto force{3.f};
 	force *= directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	get_collider().physics.apply_force({force, 0.f});
@@ -225,7 +227,7 @@ fsm::StateFunction Imp::update_attack() {
 
 fsm::StateFunction Imp::update_dormant() {
 	animation.label = "dormant";
-	parts.weapon.animated_sprite->set_params("dormant");
+	parts.weapon.animated_sprite->set_animation("dormant");
 	is_hostile() ? cooldowns.awaken.update() : cooldowns.awaken.reverse();
 	if (cooldowns.awaken.halfway()) {
 		shake();

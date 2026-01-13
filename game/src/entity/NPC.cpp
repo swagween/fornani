@@ -339,6 +339,8 @@ void NPC::set_position_from_scaled(sf::Vector2f scaled_pos) {
 
 fsm::StateFunction NPC::update_idle() {
 	p_state.actual = NPCAnimationState::idle;
+	if (change_state(NPCAnimationState::stagger, get_params("stagger"))) { return std::move(fsm::StateFunction{NPC_BIND(update_stagger)}); }
+	if (change_state(NPCAnimationState::busy, get_params("busy"))) { return std::move(fsm::StateFunction{NPC_BIND(update_busy)}); }
 	if (change_state(NPCAnimationState::inspect, get_params("inspect"))) { return std::move(fsm::StateFunction{NPC_BIND(update_inspect)}); }
 	if (change_state(NPCAnimationState::fall, get_params("fall"))) { return std::move(fsm::StateFunction{NPC_BIND(update_fall)}); }
 	if (change_state(NPCAnimationState::turn, get_params("turn"))) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
@@ -353,6 +355,8 @@ fsm::StateFunction NPC::update_idle() {
 fsm::StateFunction NPC::update_walk() {
 	p_state.actual = NPCAnimationState::walk;
 	if (collider.has_value()) { get_collider().physics.acceleration.x = m_walk_speed * directions.actual.as_float(); }
+	if (change_state(NPCAnimationState::stagger, get_params("stagger"))) { return std::move(fsm::StateFunction{NPC_BIND(update_stagger)}); }
+	if (change_state(NPCAnimationState::busy, get_params("busy"))) { return std::move(fsm::StateFunction{NPC_BIND(update_busy)}); }
 	if (!m_state.test(NPCState::random_walk)) {
 		if (change_state(NPCAnimationState::turn, get_params("turn"))) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
 	} else {
@@ -367,6 +371,7 @@ fsm::StateFunction NPC::update_walk() {
 
 fsm::StateFunction NPC::update_inspect() {
 	p_state.actual = NPCAnimationState::inspect;
+	if (change_state(NPCAnimationState::stagger, get_params("stagger"))) { return std::move(fsm::StateFunction{NPC_BIND(update_stagger)}); }
 	if (change_state(NPCAnimationState::idle, get_params("idle"))) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
 	if (change_state(NPCAnimationState::turn, get_params("turn"))) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
 	if (change_state(NPCAnimationState::walk, get_params("walk"))) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
@@ -378,6 +383,7 @@ fsm::StateFunction NPC::update_turn() {
 	directions.desired.lock();
 	if (Mobile::animation.is_complete()) {
 		request_flip();
+		if (change_state(NPCAnimationState::stagger, get_params("stagger"))) { return std::move(fsm::StateFunction{NPC_BIND(update_stagger)}); }
 		if (change_state(NPCAnimationState::walk, get_params("walk"))) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
 		request(NPCAnimationState::idle);
 		if (change_state(NPCAnimationState::idle, get_params("idle"))) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
@@ -400,10 +406,31 @@ fsm::StateFunction NPC::update_land() {
 	p_state.actual = NPCAnimationState::land;
 	if (Mobile::animation.is_complete()) {
 		if (change_state(NPCAnimationState::turn, get_params("turn"))) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
-		if (change_state(NPCAnimationState::idle, get_params("idle"))) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
 		if (change_state(NPCAnimationState::walk, get_params("walk"))) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
+		request(NPCAnimationState::idle);
+		if (change_state(NPCAnimationState::idle, get_params("idle"))) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
 	}
 	return std::move(fsm::StateFunction{NPC_BIND(update_land)});
+}
+
+fsm::StateFunction NPC::update_busy() {
+	p_state.actual = NPCAnimationState::busy;
+	if (change_state(NPCAnimationState::stagger, get_params("stagger"))) { return std::move(fsm::StateFunction{NPC_BIND(update_stagger)}); }
+	if (change_state(NPCAnimationState::turn, get_params("turn"))) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
+	if (change_state(NPCAnimationState::idle, get_params("idle"))) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
+	if (change_state(NPCAnimationState::walk, get_params("walk"))) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
+	return std::move(fsm::StateFunction{NPC_BIND(update_busy)});
+}
+
+fsm::StateFunction NPC::update_stagger() {
+	p_state.actual = NPCAnimationState::stagger;
+	if (Mobile::animation.is_complete()) {
+		if (change_state(NPCAnimationState::turn, get_params("turn"))) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
+		if (change_state(NPCAnimationState::walk, get_params("walk"))) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
+		request(NPCAnimationState::idle);
+		if (change_state(NPCAnimationState::idle, get_params("idle"))) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
+	}
+	return std::move(fsm::StateFunction{NPC_BIND(update_stagger)});
 }
 
 bool NPC::change_state(NPCAnimationState next, anim::Parameters params) {

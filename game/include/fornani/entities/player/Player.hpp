@@ -22,6 +22,7 @@
 #include <fornani/particle/Gravitator.hpp>
 #include <fornani/physics/RegisteredCollider.hpp>
 #include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Flaggable.hpp>
 #include <fornani/utils/QuestCode.hpp>
 #include <fornani/weapon/Hotbar.hpp>
 #include <fornani/world/Camera.hpp>
@@ -91,11 +92,10 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class State { killed, dir_switch, show_weapon, impart_recoil, crushed, sleep, wake_up, busy, dash_kick, trial };
+enum class PlayerFlags { killed, dir_switch, show_weapon, impart_recoil, crushed, sleep, wake_up, busy, dash_kick, trial, cutscene };
 enum class Triggers { hurt };
 
-struct PlayerFlags {
-	util::BitFlags<State> state{};
+struct Flags {
 	util::BitFlags<Triggers> triggers{};
 };
 
@@ -104,7 +104,7 @@ struct AbilityUsage {
 	util::Counter doublejump{};
 };
 
-class Player final : public Mobile {
+class Player final : public Mobile, public Flaggable<PlayerFlags> {
   public:
 	Player(automa::ServiceProvider& svc);
 	void register_with_map(world::Map& map);
@@ -126,7 +126,6 @@ class Player final : public Mobile {
 
 	// animation machine
 	void request_animation(AnimState const to) { m_animation_machine.request(to); }
-	// void force_animation(AnimState const to, std::string_view tag, std::function<fsm::StateFunction()> fn);
 	template <typename Factory>
 	void force_animation(AnimState to, std::string_view tag, Factory&& factory) {
 		m_animation_machine.force(to, tag);
@@ -143,22 +142,23 @@ class Player final : public Mobile {
 	void set_idle();
 	void set_slow_walk();
 	void set_sleeping();
+	void set_hurt();
 	void set_direction(Direction to);
 	void piggyback(int id);
 
 	// state
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
 	[[nodiscard]] auto is_dead() const -> bool { return health.is_dead(); }
-	[[nodiscard]] auto is_busy() const -> bool { return flags.state.test(State::busy); }
+	[[nodiscard]] auto is_busy() const -> bool { return has_flag_set(PlayerFlags::busy); }
 	[[nodiscard]] auto is_in_custom_sleep_event() const -> bool { return m_animation_machine.is_sleep_timer_running(); }
 	[[nodiscard]] auto death_animation_over() -> bool { return m_animation_machine.death_over(); }
-	[[nodiscard]] auto just_died() const -> bool { return flags.state.test(State::killed); }
+	[[nodiscard]] auto just_died() const -> bool { return has_flag_set(PlayerFlags::killed); }
 	[[nodiscard]] auto height() const -> float { return get_collider().dimensions.y; }
 	[[nodiscard]] auto width() const -> float { return get_collider().dimensions.x; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return collider.has_value() ? get_collider().get_center() : m_sprite_position; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return collider.has_value() ? get_collider().physics.position : m_sprite_position; }
 	[[nodiscard]] auto arsenal_size() const -> std::size_t { return arsenal ? arsenal.value().size() : 0; }
-	[[nodiscard]] auto quick_direction_switch() const -> bool { return flags.state.test(State::dir_switch); }
+	[[nodiscard]] auto quick_direction_switch() const -> bool { return has_flag_set(PlayerFlags::dir_switch); }
 	[[nodiscard]] auto pushing() const -> bool { return m_animation_machine.is_state(AnimState::push) || m_animation_machine.is_state(AnimState::between_push); }
 	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.inventory.has_item(id); }
 	[[nodiscard]] auto has_item(std::string_view tag) const -> bool { return catalog.inventory.has_item(tag); }
@@ -179,7 +179,6 @@ class Player final : public Mobile {
 	[[nodiscard]] auto get_actual_direction() const -> SimpleDirection { return SimpleDirection{directions.actual}; }
 	[[nodiscard]] auto get_piggybacker_id() const -> int { return piggybacker ? piggybacker->get_id() : 0; }
 	[[nodiscard]] bool is_intangible() const;
-	[[nodiscard]] auto has_flag_set(State const test) const -> bool { return flags.state.test(test); }
 
 	void set_desired_direction(SimpleDirection to) { directions.desired = Direction{to}; }
 
@@ -199,8 +198,7 @@ class Player final : public Mobile {
 	void update_antennae();
 	void sync_antennae();
 
-	void set_busy(bool flag) { flag ? flags.state.set(State::busy) : flags.state.reset(State::busy); }
-	void set_flag(State const to_set, bool on = true) { on ? flags.state.set(to_set) : flags.state.reset(to_set); }
+	void set_busy(bool flag) { set_flag(PlayerFlags::busy, flag); }
 	void set_trigger(Triggers const to_set, bool on = true) { on ? flags.triggers.set(to_set) : flags.triggers.reset(to_set); }
 
 	bool grounded() const;
@@ -253,7 +251,7 @@ class Player final : public Mobile {
 
 	PlayerStats player_stats{0.06f};
 	PhysicsStats physics_stats{};
-	PlayerFlags flags{};
+	Flags flags{};
 	util::Cooldown hurt_cooldown{};	 // for animation
 	util::Cooldown force_cooldown{}; // for player hurt forces
 	struct {

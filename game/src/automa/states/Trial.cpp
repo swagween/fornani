@@ -13,7 +13,7 @@ Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scen
 	svc.data.load_trial_save(player);
 
 	player.reset_flags();
-	player.set_flag(player::State::trial);
+	player.set_flag(player::PlayerFlags::trial);
 	svc.soundboard.turn_on();
 	if (!svc.data.exists(room_number)) {
 		svc.data.rooms.push_back(room_number);
@@ -99,7 +99,7 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	map.debug_mode = debug_mode;
 
 	player->end_tick();
-	if (!m_console) { player->flags.state.reset(player::State::busy); }
+	if (!m_console) { player->set_busy(false); }
 
 	if (player->is_dead()) {
 		map.transition.start();

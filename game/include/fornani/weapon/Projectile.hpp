@@ -54,6 +54,12 @@ struct ProjectileSpecifications {
 	float spin_dampen{};
 };
 
+struct ExplosionAttributes {
+	std::string tag{};
+	float radius{};
+	int channel{};
+};
+
 enum class ProjectileState { initialized, destruction_initiated, destroyed, whiffed, poof, contact, stuck };
 
 class Projectile : public Animatable {
@@ -62,6 +68,7 @@ class Projectile : public Animatable {
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void handle_collision(automa::ServiceProvider& svc, world::Map& map);
 	void on_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
+	void on_explode(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f cam);
 	void destroy(bool completely, bool whiffed = false);
 	void seed(automa::ServiceProvider& svc, sf::Vector2f target = {}, float speed_multiplier = 1.f);
@@ -91,9 +98,11 @@ class Projectile : public Animatable {
 	[[nodiscard]] auto get_direction() const -> Direction { return physical.direction; }
 	[[nodiscard]] auto get_collider() -> shape::CircleCollider& { return physical.collider; }
 	[[nodiscard]] auto can_damage() const -> bool { return damage_timer.is_almost_complete() || !persistent(); }
+	[[nodiscard]] auto has_critical_damage() const -> bool { return variables.damage_multiplier > 1.f; }
 
 	[[nodiscard]] auto get_chunk_id() const -> std::uint8_t { return m_chunk_id; }
 
+	[[nodiscard]] auto has_attribute(ProjectileAttributes test) const -> bool { return metadata.attributes.test(test); }
 	[[nodiscard]] auto omnidirectional() const -> bool { return metadata.attributes.test(ProjectileAttributes::omnidirectional); }
 	[[nodiscard]] auto transcendent() const -> bool { return metadata.attributes.test(ProjectileAttributes::transcendent); }
 	[[nodiscard]] auto constrained() const -> bool { return metadata.attributes.test(ProjectileAttributes::constrained); }
@@ -112,6 +121,7 @@ class Projectile : public Animatable {
 		std::string_view label{};
 		ProjectileSpecifications specifications{};
 		util::BitFlags<ProjectileAttributes> attributes{};
+		std::optional<ExplosionAttributes> explosion{};
 	} metadata{};
 
 	struct {

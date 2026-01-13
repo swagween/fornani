@@ -6,7 +6,7 @@
 
 namespace fornani {
 
-enum class MainIntroFlags { rumble, takeover, start_takeover };
+enum class MainIntroFlags { player_stopped, rumble, takeover, start_takeover };
 
 class MainIntro final : public Cutscene, public Flaggable<MainIntroFlags> {
   public:

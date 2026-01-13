@@ -56,6 +56,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		NANI_LOG_INFO(m_logger, "Launching demo in room {} from folder {} ", room_id, levelpath.filename().string());
 		services.state_controller.player_position = player_position;
 		player.set_position(player_position);
+		player.set_direction(Direction{LR::left});
 	}
 
 	gui::ActionContextBar ctx_bar(services);
@@ -466,7 +467,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 									}
 								}
 								ImGui::Separator();
-								ImGui::Text("Trial Mode? %s", player.has_flag_set(player::State::trial) ? "Yes" : "No");
+								ImGui::Text("Trial Mode? %s", player.has_flag_set(player::PlayerFlags::trial) ? "Yes" : "No");
+								ImGui::Text("Cutscene? %s", player.has_flag_set(player::PlayerFlags::cutscene) ? "Yes" : "No");
 								ImGui::Text("Can Move? %s", player.controller.can_move() ? "Yes" : "No");
 								ImGui::Text("Walking Autonomously? %s", player.controller.walking_autonomously() ? "Yes" : "No");
 								ImGui::Separator();

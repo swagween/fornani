@@ -24,6 +24,12 @@ void WorldClock::update(automa::ServiceProvider& svc) {
 void WorldClock::set_time(int hour, int minute) {
 	increments.hours.set(hour);
 	increments.minutes.set(minute);
+	auto change = is_twilight();
+	auto offset = transition.get_native_time() - minute * rate;
+	previous_time_of_day = get_time_of_day();
+	if (is_twilight()) { transition.start(offset); }
+	if (is_daytime() && change) { transition.start(offset); }
+	if (is_nighttime() && change) { transition.start(offset); }
 }
 
 void WorldClock::set_speed(int to_rate, int to_transition) {

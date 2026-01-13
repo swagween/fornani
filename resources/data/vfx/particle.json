@@ -90,6 +90,27 @@
 		}
 	},
 
+	"wraith": {
+		"load": 30,
+		"rate": 4.0,
+		"expulsion": 30.0,
+		"expulsion_variance": 24.0,
+		"cone": 0.08,
+		"friction": 0.999,
+		"elasticity": 0.95,
+		"gravity": 0.0,
+		"lifespan": 560,
+		"lifespan_variance": 0,
+		"dimensions": [ 16, 16 ],
+		"animated": true,
+		"colliding": false,
+		"animation": {
+			"lookup": 0,
+			"duration": 5,
+			"framerate": 48,
+			"loop": 0
+		}
+	},
 	"wasp": {
 		"load": 30,
 		"rate": 4.0,
@@ -110,6 +131,24 @@
 			"framerate": 68,
 			"loop": 0
 		}
+	},
+
+	"wraith_2": {
+		"load": 8,
+		"rate": 100.0,
+		"expulsion": 50.0,
+		"expulsion_variance": 50.0,
+		"cone": 0.08,
+		"friction": 0.99,
+		"elasticity": 0.95,
+		"gravity": 0.0,
+		"lifespan": 260,
+		"lifespan_variance": 85,
+		"dimensions": [ 3, 3 ],
+		"animated": false,
+		"colliding": true,
+		"fader": true,
+		"color": "guardian"
 	},
 
 	"wasp_2": {
@@ -221,7 +260,7 @@
 	},
 
 	"twinkle": {
-		"load": 3,
+		"load": 1,
 		"rate": 100.0,
 		"expulsion": 50.0,
 		"expulsion_variance": 0.0,
@@ -314,6 +353,24 @@
 		"color": "junk"
 	},
 
+	"large_explosion": {
+		"load": 30,
+		"rate": 100.0,
+		"expulsion": 32.0,
+		"expulsion_variance": 30.0,
+		"cone": 6.28,
+		"friction": 0.999,
+		"elasticity": 0.9,
+		"gravity": 0.8,
+		"lifespan": 200,
+		"lifespan_variance": 100,
+		"dimensions": [ 4, 4 ],
+		"animated": false,
+		"colliding": true,
+		"fader": true,
+		"color": "guardian"
+	},
+
 	"white_fireworks": {
 		"load": 50,
 		"rate": 100.0,
@@ -330,6 +387,24 @@
 		"colliding": true,
 		"fader": true,
 		"color": "periwinkle"
+	},
+
+	"critical_hit": {
+		"load": 20,
+		"rate": 100.0,
+		"expulsion": 50.0,
+		"expulsion_variance": 40.0,
+		"cone": 6.28,
+		"friction": 0.995,
+		"elasticity": 0.9,
+		"gravity": 0.0,
+		"lifespan": 200,
+		"lifespan_variance": 180,
+		"dimensions": [ 4, 4 ],
+		"animated": false,
+		"colliding": true,
+		"fader": true,
+		"color": "yellow"
 	},
 
 	"incinerite": {

@@ -1,13 +1,12 @@
 
 #include "fornani/entities/enemy/Enemy.hpp"
+#include <imgui.h>
+#include <ccmath/ext/clamp.hpp>
+#include <fornani/world/Map.hpp>
+#include <numbers>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
-#include "fornani/world/Map.hpp"
-
-#include <imgui.h>
-#include <ccmath/ext/clamp.hpp>
-#include <numbers>
 
 namespace fornani::enemy {
 
@@ -54,6 +53,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	attributes.drop_range.y = in_attributes["drop_range"][1].as<int>();
 	attributes.rare_drop_id = in_attributes["rare_drop_id"].as<int>();
 	attributes.respawn_distance = in_attributes["respawn_distance"].as<int>();
+	attributes.team = static_cast<arms::Team>(in_attributes["team"].as<int>());
 	if (in_attributes["permadeath"].as_bool()) { flags.general.set(GeneralFlags::permadeath); };
 	if (in_attributes["size"]) { attributes.size = static_cast<EnemySize>(in_attributes["size"].as<int>()); }
 
@@ -233,8 +233,8 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	on_crush(map);
 
 	if (player.get_collider().wallslider.overlaps(get_collider().bounding_box) && player.controller.is_dashing() && !player.controller.is(player::AbilityType::dash_kick) && !get_collider().has_attribute(shape::ColliderAttributes::sturdy)) {
-		if (!player.has_flag_set(player::State::dash_kick)) { hurt(4.f); }
-		player.set_flag(player::State::dash_kick);
+		if (!player.has_flag_set(player::PlayerFlags::dash_kick)) { hurt(4.f); }
+		player.set_flag(player::PlayerFlags::dash_kick);
 		get_collider().physics.acceleration.y = -280.f;
 	}
 
@@ -316,8 +316,14 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 	} else if (flags.state.test(enemy::StateFlags::vulnerable) && !died()) {
 		if (proj.persistent()) { proj.damage_over_time(); }
 		if (proj.can_damage()) {
+			if (proj.has_attribute(arms::ProjectileAttributes::explode_on_impact)) { proj.on_explode(svc, map); }
 			hurt(proj.get_damage());
 			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
+			if (proj.has_critical_damage()) {
+				svc.soundboard.flags.projectile.set(audio::Projectile::critical_hit);
+				svc.ticker.freeze_frame(8);
+				map.spawn_emitter(svc, "critical_hit", proj.get_position(), Direction{});
+			}
 			map.effects.push_back(entity::Effect(svc, "hit_flash", proj.get_position()));
 			hitstun.start(32);
 		}
@@ -362,6 +368,8 @@ bool Enemy::seek_home(world::Map& map) {
 	if (my_point.length() > 0.1f) {
 		flags.state.set(StateFlags::advance);
 		directions.desired.set((my_point.x < get_collider().get_center().x) ? LNR::left : LNR::right);
+	} else {
+		directions.desired = directions.actual;
 	}
 	if (physical.home_detector.overlaps(my_point)) {
 		flags.state.reset(StateFlags::advance);

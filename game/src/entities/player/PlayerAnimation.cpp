@@ -22,7 +22,7 @@ PlayerAnimation::PlayerAnimation(Player& plr) : m_player(&plr), state_function{s
 					{"walljump", {90, 6, 6 * rate, 0}},
 					{"suspend", {30, 3, 7 * rate, -1}},
 					{"fall", {62, 4, 5 * rate, -1}},
-					{"stop", {74, 2, 4 * rate, 0}},
+					{"stop", {74, 2, 6 * rate, 0}},
 					{"land", {56, 2, 4 * rate, 0}},
 					{"inspect", {37, 2, 7 * rate, -1, true}},
 					{"dash_kick", {108, 2, 6 * rate, 0}},
@@ -156,7 +156,7 @@ fsm::StateFunction PlayerAnimation::update_shield() {
 fsm::StateFunction PlayerAnimation::update_between_push() {
 	m_player->animation.label = "between push";
 	p_state.actual = AnimState::between_push;
-	m_player->flags.state.reset(State::show_weapon);
+	m_player->set_flag(PlayerFlags::show_weapon, false);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
@@ -182,7 +182,7 @@ fsm::StateFunction PlayerAnimation::update_between_push() {
 fsm::StateFunction PlayerAnimation::update_push() {
 	m_player->animation.label = "push";
 	p_state.actual = AnimState::push;
-	m_player->flags.state.reset(State::show_weapon);
+	m_player->set_flag(PlayerFlags::show_weapon, false);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
@@ -423,7 +423,7 @@ fsm::StateFunction PlayerAnimation::update_inspect() {
 fsm::StateFunction PlayerAnimation::update_sit() {
 	m_player->animation.label = "sit";
 	p_state.actual = AnimState::sit;
-	m_player->flags.state.reset(State::show_weapon);
+	m_player->set_flag(PlayerFlags::show_weapon, false);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
@@ -495,18 +495,17 @@ fsm::StateFunction PlayerAnimation::update_hurt() {
 		if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
 		if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
-
-		m_player->animation.set_params(get_params("idle"));
-		return PA_BIND(update_idle);
+		request(AnimState::idle);
+		if (change_state(AnimState::idle, get_params("idle"))) { return PA_BIND(update_idle); }
 	}
 
-	return std::move(state_function);
+	return PA_BIND(update_hurt);
 }
 
 fsm::StateFunction PlayerAnimation::update_dash() {
 	m_player->animation.label = "dash";
 	p_state.actual = AnimState::dash;
-	m_player->flags.state.reset(State::show_weapon);
+	m_player->set_flag(PlayerFlags::show_weapon, false);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::dash_kick, get_params("dash_kick"))) { return PA_BIND(update_dash_kick); }
 	if (change_state(AnimState::turn_slide, get_params("turn_slide"))) { return PA_BIND(update_turn_slide); }
@@ -516,7 +515,7 @@ fsm::StateFunction PlayerAnimation::update_dash() {
 	if (change_state(AnimState::dash_up, get_params("dash_up"))) { return PA_BIND(update_dash_up); }
 	if (change_state(AnimState::dash_down, get_params("dash_down"))) { return PA_BIND(update_dash_down); }
 	if (m_player->animation.complete()) {
-		m_player->flags.state.set(State::show_weapon);
+		m_player->set_flag(PlayerFlags::show_weapon);
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 		if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 		if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
@@ -539,13 +538,13 @@ fsm::StateFunction PlayerAnimation::update_dash() {
 fsm::StateFunction PlayerAnimation::update_dash_up() {
 	m_player->animation.label = "dash up";
 	p_state.actual = AnimState::dash_up;
-	m_player->flags.state.reset(State::show_weapon);
+	m_player->set_flag(PlayerFlags::show_weapon, false);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::dash_kick, get_params("dash_kick"))) { return PA_BIND(update_dash_kick); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"), true)) { return PA_BIND(update_wallslide); }
 	if (m_player->animation.complete()) {
-		m_player->flags.state.set(State::show_weapon);
+		m_player->set_flag(PlayerFlags::show_weapon);
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 		if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
@@ -567,13 +566,13 @@ fsm::StateFunction PlayerAnimation::update_dash_up() {
 fsm::StateFunction PlayerAnimation::update_dash_down() {
 	m_player->animation.label = "dash down";
 	p_state.actual = AnimState::dash_down;
-	m_player->flags.state.reset(State::show_weapon);
+	m_player->set_flag(PlayerFlags::show_weapon, false);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::dash_kick, get_params("dash_kick"))) { return PA_BIND(update_dash_kick); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"), true)) { return PA_BIND(update_wallslide); }
 	if (m_player->animation.complete()) {
-		m_player->flags.state.set(State::show_weapon);
+		m_player->set_flag(PlayerFlags::show_weapon);
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 		if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
@@ -826,7 +825,7 @@ fsm::StateFunction PlayerAnimation::update_shoot() {
 fsm::StateFunction player::PlayerAnimation::update_sleep() {
 	m_player->animation.label = "sleep";
 	p_state.actual = AnimState::sleep;
-	m_player->flags.state.reset(State::show_weapon);
+	m_player->set_flag(PlayerFlags::show_weapon, false);
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();
 	if (m_sleep_timer.is_almost_complete()) { request(AnimState::wake_up); }
@@ -840,11 +839,11 @@ fsm::StateFunction player::PlayerAnimation::update_sleep() {
 fsm::StateFunction player::PlayerAnimation::update_wake_up() {
 	m_player->animation.label = "wake_up";
 	p_state.actual = AnimState::wake_up;
-	m_player->flags.state.reset(State::show_weapon);
+	m_player->set_flag(PlayerFlags::show_weapon, false);
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();
 	if (m_player->animation.complete()) {
-		m_player->flags.state.set(State::show_weapon);
+		m_player->set_flag(PlayerFlags::show_weapon);
 		m_player->controller.unrestrict();
 		m_player->animation.set_params(get_params("idle"));
 		return PA_BIND(update_idle);
@@ -855,7 +854,7 @@ fsm::StateFunction player::PlayerAnimation::update_wake_up() {
 fsm::StateFunction player::PlayerAnimation::update_crouch() {
 	m_player->animation.label = "crouch";
 	p_state.actual = AnimState::crouch;
-	m_player->flags.state.reset(State::show_weapon);
+	m_player->set_flag(PlayerFlags::show_weapon, false);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
@@ -895,7 +894,7 @@ fsm::StateFunction player::PlayerAnimation::update_crawl() {
 fsm::StateFunction player::PlayerAnimation::update_dash_kick() {
 	m_player->animation.label = "dash_kick";
 	p_state.actual = AnimState::dash_kick;
-	m_player->flags.state.reset(State::show_weapon);
+	m_player->set_flag(PlayerFlags::show_weapon, false);
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (m_player->animation.complete()) {
 		if (change_state(AnimState::land, get_params("land"), true)) { return PA_BIND(update_land); }

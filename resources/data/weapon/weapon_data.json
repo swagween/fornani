@@ -257,5 +257,142 @@
 				}
 			}
 		}
+	},
+	"wraith": {
+		"metadata": {
+			"id": 14,
+			"label": "Wraith",
+			"description": "A rhenite-powered gun that Delilah made by fusing rhenite crystals with Bryn's gun."
+		},
+		"visual": {
+			"texture_lookup": 14,
+			"dimensions": [ 16, 7 ],
+			"offsets": {
+				"global": [ -0.5, 3.5 ],
+				"barrel": [ 13.0, 1.5 ],
+				"stock": [ 0, 0 ]
+			},
+			"ui": { "color": 2 },
+			"spray": {
+				"dimensions": [ 4.0, 4.0 ],
+				"type": "wraith_2",
+				"color": "white"
+			},
+			"secondary_spray": {
+				"dimensions": [ 4.0, 4.0 ],
+				"type": "wraith",
+				"color": "white"
+			}
+		},
+		"gameplay": {
+			"attributes": {
+				"automatic": false,
+				"ammo": 6,
+				"reload": 500,
+				"cooldown_time": 3,
+				"recoil": 0.45
+			}
+		},
+		"audio": { "shoot": 6 },
+		"class_package": {
+			"projectile": {
+				"type": 0,
+				"dimensions": [ 11.0, 11.0 ],
+				"radius": 11.0,
+				"audio": { "hit": 2 },
+				"attributes": {
+					"base_damage": 8,
+					"lifespan": 140,
+					"lifespan_variance": 0,
+					"speed": 35.0,
+					"variance": 0.0,
+					"stun_time": 0.0,
+					"knockback": 0.0,
+					"transcendent": false,
+					"omnidirectional": false,
+					"explode_on_impact": true,
+					"reflect": true,
+					"range_variance": 0.0,
+					"acceleration_factor": 2.0,
+					"dampen_factor": 0.99,
+					"gravity": 0.0,
+					"elasticity": 0.98
+				},
+				"animation": {
+					"num_sprites": 1,
+					"num_frames": 4,
+					"framerate": 14
+				},
+				"explosion": {
+					"tag": "large_explosion",
+					"radius": 16.0,
+					"channel": 4
+				}
+			}
+		}
+	},
+	"tomahawk": {
+		"metadata": {
+			"id": 3,
+			"label": "Tomahawk",
+			"description": "A ceremonial weapon of your tribe. You earned this by defeating the demon at Woodshine's burial ground."
+		},
+		"visual": {
+			"texture_lookup": 3,
+			"dimensions": [ 16, 7 ],
+			"offsets": {
+				"global": [ -0.5, 3.5 ],
+				"barrel": [ 13.0, 1.5 ],
+				"stock": [ 0, 0 ]
+			},
+			"ui": { "color": 2 },
+			"spray": {
+				"dimensions": [ 4.0, 4.0 ],
+				"type": "twinkle",
+				"color": "white"
+			}
+		},
+		"gameplay": {
+			"attributes": {
+				"automatic": false,
+				"no_reload": true,
+				"ammo": 1,
+				"reload": 32,
+				"cooldown_time": 64,
+				"recoil": 0.0
+			}
+		},
+		"audio": { "shoot": 3 },
+		"class_package": {
+			"projectile": {
+				"type": 0,
+				"dimensions": [ 8.0, 8.0 ],
+				"radius": 6.0,
+				"audio": { "hit": 3 },
+				"attributes": {
+					"base_damage": 10,
+					"lifespan": 1080,
+					"lifespan_variance": 0,
+					"speed": 6.0,
+					"variance": 0.0,
+					"stun_time": 0.0,
+					"knockback": 0.0,
+					"transcendent": false,
+					"omnidirectional": false,
+					"reflect": true,
+					"boomerang": true,
+					"range_variance": 0.0,
+					"acceleration_factor": 0.0,
+					"dampen_factor": 1.0,
+					"gravity": 0.0,
+					"elasticity": 0.98
+				},
+				"animation": {
+					"num_sprites": 1,
+					"num_frames": 4,
+					"framerate": 14
+				}
+			}
+		}
 	}
 }

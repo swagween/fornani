@@ -104,7 +104,7 @@ void Player::update(world::Map& map) {
 	m_camera.camera.update(*m_services);
 
 	invincible() ? get_collider().draw_hurtbox.setFillColor(colors::red) : get_collider().draw_hurtbox.setFillColor(colors::blue);
-	if (flags.state.test(State::crushed)) { get_collider().physics.gravity = 0.f; }
+	if (has_flag_set(PlayerFlags::crushed)) { get_collider().physics.gravity = 0.f; }
 
 	get_collider().physics.set_constant_friction({physics_stats.ground_fric, physics_stats.air_fric});
 	get_collider().physics.gravity = physics_stats.grav;
@@ -150,10 +150,10 @@ void Player::update(world::Map& map) {
 	// weapon
 	if (controller.is(AbilityType::walljump) && controller.is_ability_active()) { accumulated_forces.push_back({walljump_force_v * controller.get_ability_direction().as_float(), 0.f}); }
 	if (controller.shot() || controller.arms_switch()) { m_animation_machine.idle_timer.start(); }
-	if (flags.state.test(State::impart_recoil) && arsenal) {
+	if (has_flag_set(PlayerFlags::impart_recoil) && arsenal) {
 		if (controller.direction.und == UND::down) { accumulated_forces.push_back({0.f, -equipped_weapon().get_recoil()}); }
 		if (controller.direction.und == UND::up) { accumulated_forces.push_back({0.f, equipped_weapon().get_recoil()}); }
-		flags.state.reset(State::impart_recoil);
+		set_flag(PlayerFlags::impart_recoil, false);
 	}
 	auto crouch_offset = sf::Vector2f{controller.direction.as_float() * 12.f, 10.f};
 	m_weapon_socket = m_animation_machine.is_state(AnimState::crawl) || m_animation_machine.is_state(AnimState::crouch) ? get_collider().get_center() + crouch_offset : get_collider().get_center();
@@ -212,10 +212,10 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	m_sprite_position.x += controller.facing_left() ? -1.f : 1.f;
 	Animatable::set_position(m_sprite_position - cam);
 
-	if (flags.state.test(State::crushed)) { return; }
+	if (has_flag_set(PlayerFlags::crushed)) { return; }
 	if (piggybacker) { piggybacker->render(svc, win, cam); }
 
-	if (flags.state.consume(State::dir_switch)) { Animatable::scale({-1.f, 1.f}); }
+	if (consume_flag(PlayerFlags::dir_switch)) { Animatable::scale({-1.f, 1.f}); }
 
 	if (arsenal && hotbar && collider.has_value()) { get_collider().flags.general.set(shape::General::complex); }
 
@@ -254,7 +254,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	}
 
 	if (arsenal && hotbar) {
-		if (flags.state.test(State::show_weapon)) { equipped_weapon().render(svc, win, cam); }
+		if (has_flag_set(PlayerFlags::show_weapon)) { equipped_weapon().render(svc, win, cam); }
 	}
 
 	// light debug
@@ -287,15 +287,14 @@ void Player::end_tick() {
 	flags.triggers = {};
 }
 
-// void Player::force_animation(AnimState const to, std::string_view tag, std::function<fsm::StateFunction()> fn) {
-//	m_animation_machine.force(to, tag);
-//	m_animation_machine.state_function = std::move(fn);
-// }
-
 void Player::update_animation() {
 	if (!collider.has_value()) { return; }
+	if (has_flag_set(PlayerFlags::cutscene)) {
+		m_animation_machine.update();
+		return;
+	}
 	m_sprite_shake.update();
-	flags.state.set(State::show_weapon);
+	set_flag(PlayerFlags::show_weapon);
 
 	if (grounded()) {
 		if (controller.inspecting()) { m_animation_machine.request(AnimState::inspect); }
@@ -319,7 +318,7 @@ void Player::update_animation() {
 
 	if (controller.get_ability_animation() && controller.is_ability_active() && controller.is_animation_request()) { m_animation_machine.request(*controller.get_ability_animation()); }
 
-	if (m_animation_machine.is_state(AnimState::sit)) { flags.state.reset(State::show_weapon); }
+	if (m_animation_machine.is_state(AnimState::sit)) { set_flag(PlayerFlags::show_weapon, false); }
 	if (controller.inspecting()) { m_animation_machine.request(AnimState::inspect); }
 	if (controller.is_crouching() && grounded()) { controller.moving() ? m_animation_machine.request(AnimState::crawl) : m_animation_machine.request(AnimState::crouch); }
 	if (controller.moving() && grounded()) {
@@ -331,11 +330,11 @@ void Player::update_animation() {
 	if (hurt_cooldown.running()) { m_animation_machine.request(AnimState::hurt); }
 	if (is_dead()) {
 		m_animation_machine.request(AnimState::die);
-		flags.state.reset(State::show_weapon);
+		set_flag(PlayerFlags::show_weapon, false);
 	}
 
-	if (flags.state.consume(State::sleep)) { m_animation_machine.request(player::AnimState::sleep); }
-	if (flags.state.consume(State::wake_up)) { m_animation_machine.request(player::AnimState::wake_up); }
+	if (consume_flag(PlayerFlags::sleep)) { m_animation_machine.request(player::AnimState::sleep); }
+	if (consume_flag(PlayerFlags::wake_up)) { m_animation_machine.request(player::AnimState::wake_up); }
 
 	m_animation_machine.update();
 }
@@ -382,6 +381,11 @@ void Player::set_sleeping() {
 	m_animation_machine.force(AnimState::idle, "sleep");
 	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_sleep, &m_animation_machine);
 	animation.set_frame(3);
+}
+
+void Player::set_hurt() {
+	m_animation_machine.force(AnimState::hurt, "hurt");
+	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_hurt, &m_animation_machine);
 }
 
 void Player::set_direction(Direction to) {
@@ -501,7 +505,7 @@ void Player::on_crush(world::Map& map) {
 		map.spawn_emitter(*m_services, "player_crush", get_collider().physics.position, left_squish, get_collider().dimensions);
 		map.spawn_emitter(*m_services, "player_crush", get_collider().physics.position, right_squish, get_collider().dimensions);
 		get_collider().collision_depths = {};
-		flags.state.set(State::crushed);
+		set_flag(PlayerFlags::crushed);
 	}
 }
 
@@ -562,7 +566,7 @@ bool Player::fire_weapon() {
 	if (!arsenal || !hotbar) { return false; }
 	if (controller.shot() && equipped_weapon().can_shoot()) {
 		m_services->soundboard.flags.weapon.set(static_cast<audio::Weapon>(equipped_weapon().get_sound_id()));
-		flags.state.set(State::impart_recoil);
+		set_flag(PlayerFlags::impart_recoil);
 		return true;
 	}
 	return false;
@@ -583,12 +587,13 @@ void Player::update_wardrobe() {
 }
 
 void Player::start_over() {
-	flags.state.reset(State::crushed);
+	set_flag(PlayerFlags::crushed, false);
 	health.reset();
 	controller.unrestrict();
 	m_services->camera_controller.set_owner(graphics::CameraOwner::player);
 	health.invincibility.start(8);
-	flags.state.reset(State::killed);
+	set_flag(PlayerFlags::killed, false);
+	set_flag(PlayerFlags::cutscene, false);
 	m_animation_machine.triggers.reset(AnimTriggers::end_death);
 	m_animation_machine.post_death.cancel();
 	if (has_collider()) { get_collider().collision_depths = util::CollisionDepth(); }
@@ -659,7 +664,10 @@ void Player::give_item(std::string_view label, int amount, bool from_save) {
 
 EquipmentStatus Player::equip_item(int id) { return catalog.inventory.equip_item(id); }
 
-void Player::reset_flags() { flags = {}; }
+void Player::reset_flags() {
+	flags = {};
+	reset_all();
+}
 
 void Player::total_reset() {
 	start_over();
@@ -667,13 +675,15 @@ void Player::total_reset() {
 	reset_flags();
 	arsenal = {};
 	update_antennae();
-	flags.state.reset(State::killed);
+	set_flag(PlayerFlags::killed, false);
+	set_flag(PlayerFlags::cutscene, false);
 	set_idle();
 }
 
 void Player::map_reset() {
 	if (!m_services->app_flags.test(automa::AppFlags::custom_map_start)) { set_idle(); }
-	flags.state.reset(State::killed);
+	set_flag(PlayerFlags::killed, false);
+	set_flag(PlayerFlags::cutscene, false);
 	if (arsenal) { arsenal.value().reset(); }
 	health.invincibility.cancel();
 	controller.flush_ability();
@@ -711,7 +721,7 @@ SimpleDirection Player::entered_from() const { return (get_collider().physics.po
 auto Player::can_dash_kick() const -> bool {
 	if (health.is_dead()) { return false; }
 	if (!catalog.inventory.has_item("forest_token")) { return false; }
-	if (!flags.state.test(State::dash_kick)) { return false; }
+	if (!has_flag_set(PlayerFlags::dash_kick)) { return false; }
 	return true;
 }
 

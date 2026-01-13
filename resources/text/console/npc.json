@@ -154,10 +154,13 @@
 				],
 				[
 					{
-						"message": "I know just as much as you do. Your brother was doing some digging around the ancient Kariba burial grounds with his human girlfriend and that old Grand island professor, until one day he stole the Island Key and disappeared."
+						"message": "I know just as much as you do. Your brother was doing some digging around the ancient Kariba burial grounds with his human girlfriend and that old Grand island professor, until one day he just disappeared."
 					},
 					{
-						"message": "An artifact of such great power belongs in the hands of no mortal, I can assure you. I fear your brother is heading down a very dangerous path, and if you don't find him soon he may be a lost cause."
+						"message": "I can only blame the humans so much... Loth is strong-willed and I suspect he left of his own accord."
+					},
+					{
+						"message": "I do fear he is heading down a very dangerous path, and if you don't find him soon he may be a lost cause."
 					},
 					{
 						"codes": [ [ 1, 0 ] ],
@@ -194,18 +197,6 @@
 				[
 					{
 						"message": "Hnnngh..."
-					}
-				]
-			]
-		}
-	},
-	"nani": {
-		"1": {
-			"responses": [],
-			"suite": [
-				[
-					{
-						"message": "So, what does any of this have to do with me?"
 					}
 				]
 			]
@@ -279,6 +270,9 @@
 						"message": "..."
 					},
 					{
+						"codes": [
+							[ 13, 20, 102 ]
+						],
 						"message": "Psst... Hey!"
 					},
 					{
@@ -314,7 +308,18 @@
 			"responses": [
 				[
 					{
+						"codes": [ [ 1, 1 ] ],
 						"message": "Where are we?"
+					},
+					{
+						"codes": [ [ 1, 2 ] ],
+						"message": "How long have I been asleep...?"
+					}
+				],
+				[
+					{
+						"codes": [ [ 1, 3 ] ],
+						"message": "I was with some researchers in the gallery, and then the ship was attacked..."
 					}
 				]
 			],
@@ -324,7 +329,67 @@
 						"message": "Listen, I don't wanna rush you, but..."
 					},
 					{
+						"codes": [ [ 1, 0 ] ],
 						"message": "I'm starting to get pretty hungry, and I haven't seen the jailer in a few days..."
+					}
+				],
+				[
+					{
+						"message": "I'm not gonna sugarcoat it. We're in prison."
+					},
+					{
+						"message": "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!"
+					},
+					{
+						"message": "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below."
+					},
+					{
+						"codes": [ [ 1, 0 ] ],
+						"message": "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here."
+					}
+				],
+				[
+					{
+						"codes": [ [ 1, 1 ] ],
+						"message": "Asleep? Wait a minute... What's the last thing you remember?"
+					}
+				],
+				[
+					{
+						"message": "Oh... That... That was a very long time ago. You must have some amnesia from Skycorps's, er, knowledge retrieval tactics, we'll call them."
+					},
+					{
+						"codes": [ [ 1, 0 ] ],
+						"message": "Best of luck to you..."
+					}
+				]
+			]
+		},
+		"3": {
+			"responses": [
+				{
+					"message": "Where are we?"
+				},
+				{
+					"codes": [ [ 1, 2 ] ],
+					"message": "How long have I been asleep...?"
+				},
+				{
+					"codes": [ [ 1, 4 ] ],
+					"message": "Who are you?"
+				},
+				[
+					{
+						"codes": [ [ 1, 3 ] ],
+						"message": "I was with some researchers in the gallery, and then the ship was attacked..."
+					}
+				]
+			],
+			"suite": [
+				[
+					{
+						"codes": [ [ 1, 0 ] ],
+						"messages": [ "Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya.", "I've started marking the days on the wall next to my bed.", "I haven't eaten in a really long time..." ]
 					}
 				],
 				[
@@ -340,15 +405,35 @@
 					{
 						"message": "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here."
 					}
-				]
-			]
-		},
-		"3": {
-			"responses": [],
-			"suite": [
+				],
 				[
 					{
-						"message": "Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya."
+						"codes": [ [ 1, 1 ] ],
+						"message": "Asleep? Wait a minute... What's the last thing you remember?"
+					}
+				],
+				[
+					{
+						"message": "Oh... That... That was a very long time ago. You must have some amnesia from Skycorps's, er, knowledge retrieval tactics, we'll call them."
+					},
+					{
+						"codes": [ [ 1, 0 ] ],
+						"message": "Best of luck to you..."
+					}
+				],
+				[
+					{
+						"message": "My name's Bit. I worked in the engine room before the Skycorps takeover, and they tossed me in this cell because I tried to escape in one of the nighthawks on the deck."
+					},
+					{
+						"message": "Gosh, it's probably been months..."
+					},
+					{
+						"message": "I'm sure some of the old crew are still around. You know, this was originally a Grand Island research vessel before the raid."
+					},
+					{
+						"codes": [ [ 1, 0 ] ],
+						"message": "This is what I get for leaving my tribe and trying to make a better life working for humans..."
 					}
 				]
 			]
@@ -464,7 +549,7 @@
 					},
 					{
 						"codes": [ [ 1, 5 ] ],
-						"message": "I'm looking for my brother."
+						"message": "And... about my brother?"
 					},
 					{
 						"codes": [ [ 1, 6 ] ],
@@ -474,17 +559,25 @@
 			],
 			"suite": [
 				[
+
 					{
-						"codes": [ [ 5, 1 ] ],
+						"message": "...Nani?"
+					},
+					{
+						"message": "Could that really be you?"
+					},
+					{
 						"message": "Well, I'll be honest, you're about the last person I was expecting to see down here."
 					},
 					{
+						"message": "I was beginning to think I'd never see anyone again..."
+					},
+					{
 						"codes": [
-							[ 1, 0 ],
-							[ 5, 0 ],
+							[ 5, 2 ],
 							[ 1, 0 ]
 						],
-						"message": "I was beginning to think I'd never see anyone again."
+						"message": "But nonetheless I'm overjoyed to see that you're okay!"
 					}
 				],
 				[
@@ -514,7 +607,7 @@
 					},
 					{
 						"codes": [ [ 9, 20001, 1 ] ],
-						"message": "I can't believe you made it off Firstwind alive!"
+						"message": "I still can't believe you made it off Firstwind alive!"
 					},
 					{
 						"codes": [
@@ -551,20 +644,20 @@
 						"message": "Another long story, but that one I at least owe it to tell you..."
 					},
 					{
-						"message": "Willett and I were taking her over from Grand Island to do some research in places just like these."
+						"message": "That day when we were talking in the Firstwind gallery, we were invaded by Skycorps."
 					},
 					{
-						"message": "Then, one night, we and our crew were raided by pirates - or, what we thought were pirates."
-					},
-					{
-						"message": "Turns out, it was Skycorps. Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us."
+						"message": "Turns out, Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us."
 					},
 					{
 						"codes": [ [ 5, 1 ] ],
-						"message": "Luckily Doc had an escape plan, but unfortunately that plan didn't include you or anyone else on the crew."
+						"message": "You got split up from us as we tried to flee through the hold because some Skycorps thugs pulled you aside."
 					},
 					{
-						"message": "Skycorps had already tossed most of us in holding cells, but Doc and I were wanted by higher-ups, so they kept us in the bridge."
+						"message": "Doc and I were captured shortly thereafter, but we were taken to different areas because we never saw you again after that."
+					},
+					{
+						"message": "Skycorps tossed most of our crew in holding cells, but Doc and I were wanted by higher-ups, so they kept us in the bridge."
 					},
 					{
 						"message": "I didn't really know what to do... I was too scared to stay behind, but I couldn't just abandon you either."
@@ -599,7 +692,7 @@
 					},
 					{
 						"codes": [ [ 5, 2 ] ],
-						"message": "Don't worry about me--you've taken care of all the threats, and I know the way home!"
+						"message": "Don't worry about me - you've taken care of all the threats, and I know the way home!"
 					}
 				]
 			]
@@ -630,22 +723,24 @@
 				],
 				[
 					{
+						"codes": [ [ 5, 0 ] ],
 						"message": "Another long story, but that one I at least owe it to tell you..."
 					},
 					{
-						"message": "Willett and I were taking her over from Grand Island to do some research in places just like these."
+						"message": "That day when we were talking in the Firstwind gallery, we were invaded by Skycorps."
 					},
 					{
-						"message": "Then, one night, we and our crew were raided by pirates--or, what we thought were pirates."
+						"message": "Turns out, Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us."
 					},
 					{
-						"message": "Turns out, it was Skycorps. Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us."
+						"codes": [ [ 5, 1 ] ],
+						"message": "You got split up from us as we tried to flee through the hold because some Skycorps thugs pulled you aside."
 					},
 					{
-						"message": "Luckily Doc had an escape plan, but unfortunately that plan didn't include you or anyone else on the crew."
+						"message": "Doc and I were captured shortly thereafter, but we were taken to different areas because we never saw you again after that."
 					},
 					{
-						"message": "Skycorps had already tossed most of us in holding cells, but Doc and I were wanted by higher-ups, so they kept us in the bridge."
+						"message": "Skycorps tossed most of our crew in holding cells, but Doc and I were wanted by higher-ups, so they kept us in the bridge."
 					},
 					{
 						"message": "I didn't really know what to do... I was too scared to stay behind, but I couldn't just abandon you either."
@@ -663,7 +758,10 @@
 						"message": "Well, no one knows where he went or what his plans are."
 					},
 					{
-						"message": "He had stolen an artifact from Doc--not sure which one, but that hardly matters--and ran away."
+						"message": "He and Doc were doing some research in a temple - not sure which one, but that hardly matters - and at some point Loth just ran away."
+					},
+					{
+						"message": "Supposedly he had nabbed some valuable artifact, too, but I don't know."
 					},
 					{
 						"message": "He gave us no warning, and I struggle to piece together what his motive could have been..."
@@ -1128,7 +1226,10 @@
 						"message": "Well, that's good to hear!"
 					},
 					{
-						"codes": [ [ 1, 1 ] ],
+						"codes": [
+							[ 5, 2 ],
+							[ 1, 1 ]
+						],
 						"message": "Anyway, it's great to see you again! What's it been...? Two years?"
 					}
 				],
@@ -1137,7 +1238,10 @@
 						"message": "Hard to blame you, really."
 					},
 					{
-						"codes": [ [ 1, 1 ] ],
+						"codes": [
+							[ 5, 2 ],
+							[ 1, 1 ]
+						],
 						"message": "Anyway, it's great to see you again! What's it been...? Two years?"
 					}
 				]
@@ -1170,7 +1274,10 @@
 			"suite": [
 				[
 					{
-						"codes": [ [ 1, 0 ] ],
+						"codes": [
+							[ 5, 1 ],
+							[ 1, 0 ]
+						],
 						"message": "It's as I feared, then."
 					}
 				]
@@ -1191,6 +1298,7 @@
 					},
 					{
 						"codes": [
+							[ 5, 1 ],
 							[ 8, 0 ]
 						],
 						"message": "Your brother is missing."
@@ -1205,7 +1313,10 @@
 			"suite": [
 				[
 					{
-						"codes": [ [ 8, 0 ] ],
+						"codes": [
+							[ 5, 3 ],
+							[ 8, 0 ]
+						],
 						"message": "Doc?! What is that?"
 					}
 				]
@@ -1426,8 +1537,11 @@
 				],
 				[
 					{
+						"message": "What a miracle that you survived! And what's more, you've escaped Skycorps's grip!"
+					},
+					{
 						"codes": [ [ 1, 1 ] ],
-						"message": "Well, I can't say I understand just how you got yourself off that ship, but I am impressed nonetheless."
+						"message": "I can't say I understand just how you got yourself off that ship, but I am impressed nonetheless."
 					}
 				],
 				[
@@ -1512,7 +1626,7 @@
 				[
 					{
 						"codes": [ [ 1, 4 ] ],
-						"message": "Do you know where my brother is?"
+						"message": "How long have I been gone?"
 					},
 					{
 						"codes": [ [ 1, 5 ] ],
@@ -1570,7 +1684,7 @@
 					},
 					{
 						"codes": [ [ 1, 0 ] ],
-						"message": "We've been here for some months, now, ever on the run from Skycorps."
+						"message": "We've been here for some time, now, ever on the run from Skycorps."
 					}
 				],
 				[
@@ -1581,22 +1695,22 @@
 				],
 				[
 					{
-						"message": "Well, that's a sore topic, to say the very least."
+						"message": "By my calculations... at least two months."
 					},
 					{
-						"message": "He stole a priceless artifact and ran off with it."
+						"message": "If it's all been a blur to you, it probably means Skycorps have been trying to get information out of you."
+					},
+					{
+						"message": "It's a terrible thing, really, that you were imprisoned like that."
 					},
 					{
 						"codes": [ [ 1, 1 ] ],
-						"message": "If you ever do find him, could you let him know that I'd like it back?"
+						"message": "But it warms my heart to see that you've made it out alive."
 					}
 				],
 				[
 					{
 						"message": "Bryn is the brightest and hardest-working student I've ever met, apart perhaps from your brother."
-					},
-					{
-						"message": "But forgive me if I hesitate to laud him after the incident."
 					},
 					{
 						"message": "Anyway, Bryn was in my 'Anthropology of Ancient Peoples' seminar over on Grand Island some years back, and she's been joining me here on post-graduate expeditions to study the Ancient Kariba."

@@ -3,9 +3,13 @@
 
 #include <SFML/Graphics.hpp>
 #include <fornani/core/Common.hpp>
-#include <fornani/entities/animation/AnimatedSprite.hpp>
+#include <fornani/graphics/Animatable.hpp>
 #include <fornani/particle/Gravitator.hpp>
 #include <vector>
+
+namespace fornani::automa {
+struct ServiceProvider;
+}
 
 namespace fornani::player {
 class Player;
@@ -20,7 +24,7 @@ namespace fornani::entity {
 class FloatingPart {
   public:
 	FloatingPart(sf::Texture const& tex, float force, float friction, sf::Vector2f offset = {}, int id = 0);
-	FloatingPart(sf::Texture const& tex, sf::Vector2i dimensions, std::vector<anim::Parameters> params, std::vector<std::string_view> labels, float force, float friction, sf::Vector2f offset = {}, int id = 0);
+	FloatingPart(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions, std::vector<anim::Parameters> params, std::vector<std::string_view> labels, float force, float friction, sf::Vector2f offset = {}, int id = 0);
 	FloatingPart(sf::Color color, sf::Vector2f dimensions, float force, float friction, sf::Vector2f offset = {}, int id = 0);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, Direction direction, sf::Vector2f scale, sf::Vector2f position);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
@@ -39,7 +43,7 @@ class FloatingPart {
 	[[nodiscard]] auto get_id() const -> int { return m_id; }
 
 	std::optional<sf::Sprite> sprite{};
-	std::optional<anim::AnimatedSprite> animated_sprite{};
+	std::optional<Animatable> animated_sprite{};
 
   private:
 	int m_id{};

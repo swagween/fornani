@@ -68,7 +68,8 @@
 			"loot_multiplier": 4.0,
 			"drop_range": [ 5, 8 ],
 			"respawn_distance": 6,
-			"permadeath": false
+			"permadeath": false,
+			"team": 1
 		},
 		"animation": {
 			"duration": 2,
@@ -116,7 +117,8 @@
 			"loot_multiplier": 4.0,
 			"drop_range": [ 5, 8 ],
 			"respawn_distance": 6,
-			"permadeath": false
+			"permadeath": false,
+			"team": 1
 		},
 		"animation": {
 			"duration": 2,
@@ -162,7 +164,8 @@
 			"loot_multiplier": 0.0,
 			"drop_range": [ 0, 0 ],
 			"respawn_distance": 4,
-			"permadeath": false
+			"permadeath": false,
+			"team": 1
 		},
 		"animation": {
 			"duration": 2,
@@ -208,7 +211,8 @@
 			"loot_multiplier": 0.1,
 			"drop_range": [ 1, 2 ],
 			"respawn_distance": 1,
-			"permadeath": false
+			"permadeath": false,
+			"team": 1
 		},
 		"animation": {
 			"duration": 2,
@@ -256,7 +260,8 @@
 			"loot_multiplier": 25.0,
 			"drop_range": [ 25, 30 ],
 			"respawn_distance": 0,
-			"permadeath": true
+			"permadeath": true,
+			"team": 1
 		},
 		"animation": {
 			"duration": 2,
@@ -303,7 +308,8 @@
 			"loot_multiplier": 5.0,
 			"drop_range": [ 6, 11 ],
 			"respawn_distance": 4,
-			"permadeath": false
+			"permadeath": false,
+			"team": 2
 		},
 		"animation": {
 			"duration": 2,
@@ -351,7 +357,8 @@
 			"drop_range": [ 6, 11 ],
 			"rare_drop_id": 0,
 			"respawn_distance": 4,
-			"permadeath": false
+			"permadeath": false,
+			"team": 2
 		},
 		"animation": {
 			"duration": 2,
@@ -397,7 +404,8 @@
 			"drop_range": [ 4, 7 ],
 			"rare_drop_id": 0,
 			"respawn_distance": 4,
-			"permadeath": false
+			"permadeath": false,
+			"team": 2
 		},
 		"animation": {
 			"duration": 2,
@@ -444,7 +452,8 @@
 			"drop_range": [ 1, 2 ],
 			"rare_drop_id": 0,
 			"respawn_distance": 2,
-			"permadeath": false
+			"permadeath": false,
+			"team": 2
 		},
 		"animation": {
 			"duration": 2,
@@ -490,7 +499,8 @@
 			"drop_range": [ 8, 12 ],
 			"rare_drop_id": 0,
 			"respawn_distance": 4,
-			"permadeath": false
+			"permadeath": false,
+			"team": 2
 		},
 		"animation": {
 			"duration": 2,
@@ -536,7 +546,8 @@
 			"drop_range": [ 8, 12 ],
 			"rare_drop_id": 0,
 			"respawn_distance": 4,
-			"permadeath": false
+			"permadeath": false,
+			"team": 2
 		},
 		"general": {
 			"mobile": false,
@@ -579,7 +590,8 @@
 			"drop_range": [ 3, 4 ],
 			"rare_drop_id": 0,
 			"respawn_distance": 4,
-			"permadeath": false
+			"permadeath": false,
+			"team": 1
 		},
 		"general": {
 			"mobile": true,
@@ -622,7 +634,8 @@
 			"drop_range": [ 30, 35 ],
 			"rare_drop_id": 0,
 			"respawn_distance": 4,
-			"permadeath": true
+			"permadeath": true,
+			"team": 2
 		},
 		"general": {
 			"mobile": true,
@@ -664,7 +677,8 @@
 			"drop_range": [ 30, 35 ],
 			"rare_drop_id": 0,
 			"respawn_distance": 4,
-			"permadeath": true
+			"permadeath": true,
+			"team": 1
 		},
 		"general": {
 			"mobile": true,
@@ -707,7 +721,8 @@
 			"rare_drop_id": 0,
 			"respawn_distance": 8,
 			"permadeath": false,
-			"secondary_collider": false
+			"secondary_collider": false,
+			"team": 2
 		},
 		"general": {
 			"mobile": true,
@@ -772,7 +787,8 @@
 			"rare_drop_id": 0,
 			"respawn_distance": 8,
 			"permadeath": false,
-			"size": 1
+			"size": 1,
+			"team": 2
 		},
 		"general": {
 			"mobile": true,
@@ -813,7 +829,8 @@
 			"rare_drop_id": 0,
 			"respawn_distance": 2,
 			"permadeath": false,
-			"size": 1
+			"size": 1,
+			"team": 2
 		},
 		"general": {
 			"mobile": true,
@@ -854,7 +871,8 @@
 			"rare_drop_id": 0,
 			"respawn_distance": 2,
 			"permadeath": false,
-			"size": 1
+			"size": 1,
+			"team": 1
 		},
 		"general": {
 			"mobile": true,
@@ -895,7 +913,8 @@
 			"rare_drop_id": 0,
 			"respawn_distance": 2,
 			"permadeath": false,
-			"size": 1
+			"size": 1,
+			"team": 1
 		},
 		"general": {
 			"mobile": true,
@@ -936,7 +955,8 @@
 			"rare_drop_id": 0,
 			"respawn_distance": 2,
 			"permadeath": false,
-			"size": 1
+			"size": 1,
+			"team": 1
 		},
 		"general": {
 			"mobile": true,
@@ -1000,7 +1020,8 @@
 			"rare_drop_id": 0,
 			"respawn_distance": 8,
 			"permadeath": false,
-			"size": 1
+			"size": 1,
+			"team": 2
 		},
 		"general": {
 			"mobile": true,
