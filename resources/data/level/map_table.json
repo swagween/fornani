@@ -247,6 +247,12 @@
       "room_id": 700
     },
     {
+      "folder": "junkyard",
+      "label": "wastes.json",
+      "region": "junkyard",
+      "room_id": 705
+    },
+    {
       "folder": "kariba",
       "label": "abilities.json",
       "region": "kariba",

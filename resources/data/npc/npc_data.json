@@ -197,6 +197,7 @@
 	},
 	"otto": {
 		"id": 1,
+		"vendor_id": 2,
 		"dimensions": [ 32, 32 ],
 		"sprite_dimensions": [ 32, 32 ],
 		"sprite_offset": [ 0, -16 ],
@@ -205,7 +206,14 @@
 				"label": "idle",
 				"parameters": [ 0, 4, 80, -1, false ]
 			}
-		]
+		],
+		"vendor": {
+			"upcharge": 0.25,
+			"common_items": [ "clay_statue", "boxing_glove" ],
+			"uncommon_items": [ "soda", "silver_bracelet", "outfitter_gizmo" ],
+			"rare_items": [ "sapphire", "ceremonial_garb", "ceremonial_skirt" ],
+			"guaranteed_finite_items": [ "lantern" ]
+		}
 	},
 	"krub": {
 		"id": 26,

@@ -103,7 +103,6 @@ void StateManager::return_to_main_menu(ServiceProvider& svc, player::Player& pla
 	} else {
 		set_current_state(std::make_unique<MainMenu>(svc, player));
 	}
-	svc.state_controller.actions = {};
 	svc.state_flags = {};
 }
 

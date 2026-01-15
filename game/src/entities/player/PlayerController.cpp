@@ -1,6 +1,7 @@
 
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entities/player/PlayerController.hpp>
+#include <fornani/entities/player/abilities/Dive.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 
 namespace fornani::player {
@@ -115,6 +116,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 			m_ability = std::make_unique<Doublejump>(svc, map, player.get_collider());
 			player.m_ability_usage.doublejump.update();
 		}
+		if (player.can_dive()) { m_ability = std::make_unique<Dive>(svc, map, player.get_collider()); }
 	}
 	if (!is_wallsliding()) { svc.soundboard.flags.player.reset(audio::Player::wallslide); }
 

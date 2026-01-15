@@ -40,6 +40,7 @@ class Platform : public Animatable {
 	util::Counter counter{};
 
 	[[nodiscard]] auto is_sticky() const -> bool { return flags.attributes.test(PlatformAttributes::sticky); }
+	[[nodiscard]] auto get_velocity() -> sf::Vector2f { return get_collider().physics.position - m_old_position; }
 
   private:
 	shape::RegisteredCollider m_collider;

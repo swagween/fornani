@@ -18,4 +18,5 @@ nani_add_headers(
         TimerBlock.hpp
         Turret.hpp
         Vine.hpp
+        Water.hpp
 )

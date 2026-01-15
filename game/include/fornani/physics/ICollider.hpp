@@ -5,6 +5,7 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/physics/Shape.hpp>
 #include <fornani/systems/Register.hpp>
+#include <fornani/utils/Flaggable.hpp>
 #include <fornani/utils/Polymorphic.hpp>
 
 namespace fornani::world {
@@ -23,12 +24,12 @@ constexpr auto vicinity_pad_v = 31.f;
 class Collider;
 class CircleCollider;
 
-enum class ColliderFlags { changed, intangible, simple, no_physics, registered, crushed };
+enum class ColliderFlags { changed, intangible, simple, no_physics, registered, crushed, landed };
 enum class ColliderType { rectangle, circle };
 enum class ColliderAttributes { fixed, soft, top_only, no_collision, no_map_collision, sturdy, crusher, custom_resolution };
 enum class ColliderTrait { circle, player, enemy, npc, secondary, block, particle, platform };
 
-class ICollider : public Polymorphic {
+class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {
   public:
 	ICollider(sf::Vector2f dimensions);
 
@@ -46,7 +47,6 @@ class ICollider : public Polymorphic {
 	void register_chunks(world::Map& map);
 	void clear_chunks() { m_chunks.clear(); }
 	void set_top_only() { m_attributes.set(ColliderAttributes::top_only); }
-	void set_flag(ColliderFlags const to_set, bool on = true) { on ? m_flags.set(to_set) : m_flags.reset(to_set); }
 	void set_attribute(ColliderAttributes const to_set, bool on = true) { on ? m_attributes.set(to_set) : m_attributes.reset(to_set); }
 
 	void set_trait(ColliderTrait const to_set, bool on = true) { on ? m_traits.set(to_set) : m_traits.reset(to_set); }
@@ -62,9 +62,8 @@ class ICollider : public Polymorphic {
 	std::vector<int> compute_chunks(world::Map& map);
 	std::vector<int> get_chunks() const;
 
-	[[nodiscard]] auto was_changed() const -> bool { return m_flags.test(ColliderFlags::changed); }
-	[[nodiscard]] auto is_intangible() const -> bool { return m_flags.test(ColliderFlags::intangible); }
-	[[nodiscard]] auto has_flag_set(ColliderFlags const test) const -> bool { return m_flags.test(test); }
+	[[nodiscard]] auto was_changed() const -> bool { return has_flag_set(ColliderFlags::changed); }
+	[[nodiscard]] auto is_intangible() const -> bool { return has_flag_set(ColliderFlags::intangible); }
 	[[nodiscard]] auto has_attribute(ColliderAttributes const test) const -> bool { return m_attributes.test(test); }
 	[[nodiscard]] auto has_exclusion_target(ColliderTrait const test) const -> bool { return m_exclusion_targets.test(test); }
 	[[nodiscard]] auto has_soft_target(ColliderTrait const test) const -> bool { return m_soft_targets.test(test); }
@@ -87,7 +86,6 @@ class ICollider : public Polymorphic {
   private:
 	Register<int> m_chunks;
 	util::BitFlags<ColliderAttributes> m_attributes{};
-	util::BitFlags<ColliderFlags> m_flags{};
 
 	util::BitFlags<ColliderTrait> m_traits{};
 	util::BitFlags<ColliderTrait> m_exclusion_targets{};

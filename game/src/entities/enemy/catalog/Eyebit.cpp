@@ -16,10 +16,8 @@ Eyebit::Eyebit(automa::ServiceProvider& svc, world::Map& map, bool spawned) : En
 }
 
 void Eyebit::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	if (died()) {
-		Enemy::update(svc, map, player);
-		return;
-	}
+	Enemy::update(svc, map, player);
+	if (died()) { return; }
 
 	face_player(player);
 
@@ -27,7 +25,6 @@ void Eyebit::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center(), force);
 
 	if (directions.actual.lnr != directions.desired.lnr) { request(EyebitState::turn); }
-	Enemy::update(svc, map, player);
 	state_function = state_function();
 }
 

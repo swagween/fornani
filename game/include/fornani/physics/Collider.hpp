@@ -170,6 +170,7 @@ class Collider : public ICollider {
 	float vertical_detector_buffer{1.0f};
 	float depth_buffer{1.0f};
 	float wallslide_pad{5.f};
+	float wallslide_buffer{0.6f};
 
 	float acceleration_multiplier{1.f};
 

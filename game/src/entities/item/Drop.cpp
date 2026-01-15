@@ -96,8 +96,8 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	delay.update();
 	auto magnet = player.has_item_equipped(svc.data.item_id_from_label("magnet"));
 	if (magnet) {
-		get_collider().physics.set_friction_componentwise({0.98f, 0.98f});
-		m_steering.seek(get_collider().physics, player.get_collider().get_center(), 0.0003f);
+		get_collider().physics.set_friction_componentwise({0.995f, 0.995f});
+		m_steering.seek(get_collider().physics, player.get_collider().get_center(), 0.0001f);
 	} else {
 		get_collider().physics.set_friction_componentwise({svc.data.drop[m_label]["friction"][0].as<float>(), svc.data.drop[m_label]["friction"][1].as<float>()});
 	}
@@ -107,7 +107,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		random::percent_chance(50) ? svc.soundboard.flags.world.set(audio::World::gem_hit_1) : svc.soundboard.flags.world.set(audio::World::gem_hit_2);
 	}
 
-	get_collider().physics.acceleration = {};
+	if (!magnet) { get_collider().physics.acceleration = {}; }
 	lifespan.update();
 	afterlife.update();
 

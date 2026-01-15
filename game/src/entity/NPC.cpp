@@ -129,7 +129,7 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 		get_collider().dimensions = {in_data["dimensions"][0].as<float>(), in_data["dimensions"][1].as<float>()};
 		get_collider().sync_components();
 		get_collider().physics.set_friction_componentwise({0.95f, 0.995f});
-		get_collider().stats.GRAV = 16.2f;
+		get_collider().stats.GRAV = 4.2f;
 		get_collider().set_trait(shape::ColliderTrait::npc);
 		get_collider().set_exclusion_target(shape::ColliderTrait::circle);
 		get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
@@ -239,7 +239,8 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	if (m_state.test(NPCState::engaged) && m_state.consume(NPCState::just_engaged)) { m_indicator.set_parameters(anim::Parameters{0, 15, 16, 0, true}); }
 
 	if (b_cue) {
-		svc.soundboard.flags.npc.set(static_cast<audio::NPC>(s_voice_cue));
+		if (svc.soundboard.npc_map.contains(m_label)) { svc.soundboard.npc_map.at(m_label)(s_voice_cue); }
+		// svc.soundboard.npc_map.at(m_label);
 		b_cue = false;
 	}
 

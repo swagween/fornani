@@ -99,11 +99,17 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 	if (svc.ticker.every_x_frames(10)) { flash_frame.modulate(1); }
 	m_view = svc.window->get_view();
 	auto port = svc.window->get_viewport();
-	port.size.x = m_port_dimensions.x / m_view.getSize().x;
-	port.size.y = m_port_dimensions.y / m_view.getSize().y;
+	auto letterbox = svc.window->get_letterbox();
+	auto divisor = m_view.getSize();
+	auto scaled_port = svc.window->get_viewport();
 
-	port.position.x = m_port_position.x / m_view.getSize().x - cam.x / m_view.getSize().x;
-	port.position.y = m_port_position.y / m_view.getSize().y - cam.y / m_view.getSize().y;
+	scaled_port.size = m_port_dimensions.componentWiseDiv(divisor);
+	port.size.x = m_port_dimensions.x / divisor.x;
+	port.size.y = (m_port_dimensions.y / divisor.y) - (1.f - letterbox.y);
+
+	scaled_port.position = m_port_position.componentWiseDiv(divisor);
+	port.position.x = m_port_position.x / divisor.x - cam.x / divisor.x;
+	port.position.y = (m_port_position.y / divisor.y - cam.y / divisor.y) + (1.f - letterbox.y) * 0.5f;
 
 	m_view.setScissor(svc.window->get_viewport());
 
@@ -117,17 +123,17 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 		room->set_resolution(m_resolution);
 		m_map_sprite = sf::Sprite{room->get().getTexture()};
 		m_map_sprite->setTextureRect(sf::IntRect({}, static_cast<sf::Vector2<int>>(room->get().getSize())));
-		m_map_sprite->setScale(get_ratio_vec2().componentWiseDiv(port.size));
-		m_map_sprite->setPosition((room->get_position() * get_ratio() + m_physics.position).componentWiseDiv(port.size));
+		m_map_sprite->setScale(get_ratio_vec2().componentWiseDiv(scaled_port.size));
+		m_map_sprite->setPosition((room->get_position() * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size));
 		auto outline{sf::Sprite{room->get(true).getTexture()}};
-		outline.setScale(get_ratio_vec2().componentWiseDiv(port.size));
+		outline.setScale(get_ratio_vec2().componentWiseDiv(scaled_port.size));
 		for (auto i{-1}; i < 2; ++i) {
 			for (auto j{-1}; j < 2; ++j) {
 				if ((std::abs(i) % 2 == 0 && std::abs(j) % 2 == 0) || (std::abs(i) % 2 == 1 && std::abs(j) % 2 == 1)) { continue; }
 				auto skew{sf::Vector2f{static_cast<float>(i), static_cast<float>(j)}};
 				auto skew_factor = m_resolution == Resolution::high ? 2.f : m_resolution == Resolution::medium ? 2.f : 2.f;
-				auto adjustment = (skew * skew_factor).componentWiseDiv(port.size);
-				outline.setPosition((room->get_position() * get_ratio() + m_physics.position).componentWiseDiv(port.size) + adjustment);
+				auto adjustment = (skew * skew_factor).componentWiseDiv(scaled_port.size);
+				outline.setPosition((room->get_position() * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size) + adjustment);
 				win.draw(outline);
 			}
 		}
@@ -139,12 +145,12 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 	for (auto& element : m_markers) {
 		if (!svc.data.room_discovered(element.room_id) && element.type != MapIconFlags::quest) { continue; }
 		icon_sprite.setTextureRect(sf::IntRect{{icon_lookup + icon_dim * flash_frame.get(), static_cast<int>(element.type) * icon_dim}, {icon_dim, icon_dim}});
-		icon_sprite.setPosition((element.position * get_ratio() + m_physics.position).componentWiseDiv(port.size));
+		icon_sprite.setPosition((element.position * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size));
 		if (element.type == MapIconFlags::nani) { icon_sprite.setScale(icon_sprite.getScale().componentWiseMul(player.get_facing_scale())); }
 		win.draw(icon_sprite);
 	}
 	if (m_cursor) {
-		m_cursor->setScale(constants::f_scale_vec.componentWiseDiv(port.size));
+		m_cursor->setScale(constants::f_scale_vec.componentWiseDiv(scaled_port.size));
 		m_cursor->setPosition(svc.window->f_center_screen());
 		// win.draw(*m_cursor);
 	}

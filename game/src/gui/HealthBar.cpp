@@ -7,7 +7,7 @@ namespace fornani::gui {
 
 HealthBar::HealthBar(automa::ServiceProvider& svc, sf::Color color) : p_bar_size{48.f, 6.f} {
 	p_current.setFillColor(color);
-	p_taken.setFillColor(colors::navy_blue);
+	p_taken.setFillColor(colors::dark_grey);
 	p_backdrop.setFillColor(colors::ui_black);
 
 	p_current.setSize(p_bar_size);

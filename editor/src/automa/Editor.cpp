@@ -145,6 +145,7 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 			if (key_pressed->scancode == sf::Keyboard::Scancode::L) {
 				save();
 				m_demo.trigger_demo = true;
+				if (key_pressed->alt) { m_demo.fullscreen = true; }
 			}
 			if (key_pressed->scancode == sf::Keyboard::Scancode::S) { save() ? console.add_log("File saved successfully.") : console.add_log("Encountered an error saving file!"); }
 			if (key_pressed->shift) {
@@ -153,6 +154,7 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 					save();
 					m_demo.trigger_demo = true;
 					m_demo.custom_position = true;
+					if (key_pressed->alt) { m_demo.fullscreen = true; }
 				}
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Left) { map.resize({-1, 0}); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Right) { map.resize({1, 0}); }
@@ -424,6 +426,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	bool vine{};
 	bool cuts{};
 	bool turr{};
+	bool watr{};
 	bool open_themes{};
 
 	bool new_room{b_new_file};
@@ -727,6 +730,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("NPC", NULL, &npcs)) {}
 			if (ImGui::MenuItem("Animator", NULL, &anim)) {}
 			if (ImGui::MenuItem("Vine", NULL, &vine)) {}
+			if (ImGui::MenuItem("Water", NULL, &watr)) {}
 			if (ImGui::MenuItem("Cutscene Trigger", NULL, &cuts)) {}
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
@@ -916,6 +920,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	if (turr) {
 		ImGui::OpenPopup("Turret Specifications");
 		label = "Turret Specifications";
+		popup_open = true;
+	}
+	if (watr) {
+		ImGui::OpenPopup("Water Specifications");
+		label = "Water Specifications";
 		popup_open = true;
 	}
 

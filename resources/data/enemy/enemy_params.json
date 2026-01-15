@@ -256,7 +256,7 @@
 		"attributes": {
 			"base_hp": 800,
 			"base_damage": 1.0,
-			"speed": 0.5,
+			"speed": 1.5,
 			"loot_multiplier": 25.0,
 			"drop_range": [ 25, 30 ],
 			"respawn_distance": 0,
@@ -476,11 +476,11 @@
 		"physical": {
 			"dimensions": [ 80, 80 ],
 			"sprite_dimensions": [ 100, 100 ],
-			"offset": [ 32, -32 ],
+			"offset": [ 0, -16 ],
 			"num_colliders": 1,
 			"num_hurtboxes": 1,
 			"alert_range": [ 1600.0, 1600.0 ],
-			"hostile_range": [ 280.0, 280.0 ],
+			"hostile_range": [ 680.0, 280.0 ],
 			"friction": 0.98,
 			"gravity": 0.0
 		},
@@ -492,10 +492,10 @@
 			"hit": -1
 		},
 		"attributes": {
-			"base_hp": 88,
+			"base_hp": 108,
 			"base_damage": 0.0,
 			"speed": 0.9,
-			"loot_multiplier": 18.0,
+			"loot_multiplier": 10.0,
 			"drop_range": [ 8, 12 ],
 			"rare_drop_id": 0,
 			"respawn_distance": 4,
@@ -1014,7 +1014,7 @@
 		"attributes": {
 			"base_hp": 50,
 			"base_damage": 1.0,
-			"speed": 2.5,
+			"speed": 3.5,
 			"loot_multiplier": 1.0,
 			"drop_range": [ 6, 8 ],
 			"rare_drop_id": 0,

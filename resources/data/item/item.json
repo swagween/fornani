@@ -265,11 +265,16 @@
 	},
 	"boxing_glove": {
 		"id": 25,
+		"category": 1,
+		"lookup": [ 8, 1 ],
+		"origin": [ 4, 3 ],
 		"actual_title": "Boxing Glove",
 		"naive_description": "Seems like it could be useful to someone who is not you.",
+		"actual_description": "When equipped, reload times are reduced by 10% when a projectile successfully hits a foe.",
 		"unique": false,
-		"equippable": false,
-		"value": 80
+		"equippable": true,
+		"sellable": true,
+		"value": 280
 	},
 	"walkie_talkie": {
 		"id": 26,
@@ -283,6 +288,7 @@
 	"clamp": {
 		"id": 27,
 		"lookup": [ 6, 1 ],
+		"origin": [ 8, 1 ],
 		"actual_title": "Clamp",
 		"naive_description": "A painted metal clamp. It could be useful for home improvements.",
 		"unique": false,
@@ -366,6 +372,106 @@
 		"naive_description": "An old phone that Bryn and Dr. Willett can use to call you. It's really heavy...",
 		"hidden_description": "An old phone that Bryn and Dr. Willett can use to call you. It's really heavy...",
 		"unique": true
+	},
+	"mastiff_totem": {
+		"id": 43,
+		"category": 1,
+		"lookup": [ 10, 2 ],
+		"origin": [ 1, 2 ],
+		"actual_title": "Mastiff Totem",
+		"naive_description": "You're not really sure what this does.",
+		"hidden_description": "This totem summoned the Great Mastiff in Woodshine's sacred grounds.",
+		"unique": true
+	},
+	"ceremonial_garb": {
+		"id": 197,
+		"category": 4,
+		"lookup": [ 4, 12 ],
+		"origin": [ 4, 2 ],
+		"actual_title": "Ceremonial Garb",
+		"actual_description": "A dress worn by Kariba women during Wormsong rituals.",
+		"unique": true,
+		"equippable": false,
+		"wearable": true,
+		"sellable": true,
+		"apparel_type": 2,
+		"rarity": 2,
+		"value": 1800
+	},
+	"demon_cuirass": {
+		"id": 198,
+		"category": 4,
+		"lookup": [ 5, 12 ],
+		"origin": [ 5, 2 ],
+		"actual_title": "Demon Cuirass",
+		"actual_description": "Ancient rhenite armor worn by Kariba warriors.",
+		"unique": true,
+		"equippable": false,
+		"wearable": true,
+		"sellable": true,
+		"apparel_type": 2,
+		"rarity": 2,
+		"value": 2800
+	},
+	"demon_greaves": {
+		"id": 214,
+		"category": 4,
+		"lookup": [ 5, 12 ],
+		"origin": [ 5, 2 ],
+		"actual_title": "Demon Greaves",
+		"actual_description": "Ancient rhenite greaves worn by Kariba warriors.",
+		"unique": true,
+		"equippable": false,
+		"wearable": true,
+		"sellable": true,
+		"apparel_type": 2,
+		"rarity": 2,
+		"value": 2800
+	},
+	"ceremonial_skirt": {
+		"id": 213,
+		"category": 4,
+		"lookup": [ 4, 13 ],
+		"origin": [ 4, 3 ],
+		"actual_title": "Ceremonial Skirt",
+		"actual_description": "A skirt worn by Kariba women during Wormsong rituals.",
+		"unique": true,
+		"equippable": false,
+		"wearable": true,
+		"sellable": true,
+		"apparel_type": 3,
+		"rarity": 2,
+		"value": 1400
+	},
+	"pioneer_armor": {
+		"id": 196,
+		"category": 4,
+		"lookup": [ 3, 12 ],
+		"origin": [ 3, 2 ],
+		"actual_title": "Pioneer Armor",
+		"actual_description": "Heavy protective armor made by the pioneers.",
+		"unique": true,
+		"equippable": false,
+		"wearable": true,
+		"sellable": true,
+		"apparel_type": 2,
+		"rarity": 2,
+		"value": 1800
+	},
+	"pioneer_tights": {
+		"id": 212,
+		"category": 4,
+		"lookup": [ 3, 13 ],
+		"origin": [ 3, 3 ],
+		"actual_title": "Pioneer Tights",
+		"actual_description": "Nylon pants made by the pioneers.",
+		"unique": true,
+		"equippable": false,
+		"wearable": true,
+		"sellable": true,
+		"apparel_type": 3,
+		"rarity": 2,
+		"value": 1400
 	},
 	"red_jeans": {
 		"id": 209,
@@ -475,10 +581,10 @@
 		"value": 3000
 	},
 	"skycorps_tee": {
-		"id": 195,
+		"id": 193,
 		"category": 4,
-		"lookup": [ 3, 12 ],
-		"origin": [ 3, 2 ],
+		"lookup": [ 0, 12 ],
+		"origin": [ 0, 2 ],
 		"actual_title": "Skycorps Tee",
 		"naive_description": "A t-shirt that Bryn let you borrow.",
 		"unique": true,
@@ -514,19 +620,6 @@
 		"apparel_type": 0,
 		"value": 2000
 	},
-	"skycorps_shorts": {
-		"id": 211,
-		"category": 4,
-		"lookup": [ 3, 13 ],
-		"origin": [ 3, 3 ],
-		"actual_title": "Skycorps Shorts",
-		"naive_description": "A pair of dark green shorts.",
-		"unique": true,
-		"equippable": false,
-		"wearable": true,
-		"apparel_type": 0,
-		"value": 800
-	},
 	"green_pants": {
 		"id": 218,
 		"category": 4,
@@ -553,28 +646,30 @@
 		"value": 460
 	},
 	"punk_shirt": {
-		"id": 85,
+		"id": 195,
 		"category": 4,
-		"start_index": 160,
+		"lookup": [ 2, 12 ],
+		"origin": [ 2, 2 ],
 		"actual_title": "Punk Shirt",
 		"naive_description": "A shirt that awakens your rebellious spirit.",
 		"unique": true,
 		"equippable": false,
 		"wearable": true,
 		"apparel_type": 0,
-		"value": 190
+		"value": 790
 	},
 	"punk_pants": {
-		"id": 86,
+		"id": 211,
+		"lookup": [ 2, 13 ],
+		"origin": [ 2, 3 ],
 		"category": 4,
-		"start_index": 160,
 		"actual_title": "Punk Pants",
 		"naive_description": "Black pants with a rebellious chain accessory.",
 		"unique": true,
 		"equippable": false,
 		"wearable": true,
 		"apparel_type": 1,
-		"value": 100
+		"value": 400
 	},
 	"hairtie": {
 		"id": 87,
@@ -594,6 +689,7 @@
 		"actual_title": "Rhenite",
 		"naive_description": "A rare red gem.",
 		"unique": false,
+		"sellable": true,
 		"rarity": 2,
 		"value": 8100
 	},
@@ -603,6 +699,7 @@
 		"actual_title": "Sapphire",
 		"naive_description": "A rare blue gem.",
 		"unique": false,
+		"sellable": true,
 		"rarity": 2,
 		"value": 11000
 	},
@@ -625,6 +722,7 @@
 		"actual_title": "Mythic Rhenite",
 		"naive_description": "A legendary multicolored gem of pure energy formed in the heart of the Mother Worm.",
 		"unique": false,
+		"sellable": true,
 		"rarity": 3,
 		"value": 34000
 	},

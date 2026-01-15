@@ -39,6 +39,7 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player
 	m_placement = {380.f, -22.f};
 
 	if (svc.quest_table.get_quest_progression("map_markers", Subquest{"main", 810}) == 1) { m_minimap->add_quest_marker(QuestMarkerType::main, 810); }
+	if (svc.quest_table.get_quest_progression("map_markers", Subquest{"woodshine", 400}) == 1) { m_minimap->add_quest_marker(QuestMarkerType::main, 400); }
 }
 
 void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {

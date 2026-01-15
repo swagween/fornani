@@ -34,6 +34,8 @@ class Dojo final : public GameState {
 	std::optional<LightShader> m_gui_shader{};
 	ServiceProvider* m_services;
 
+	std::unordered_map<int, std::string> m_map_markers{};
+
 	util::Cooldown m_enter_room;
 	util::Cooldown m_loading;
 };

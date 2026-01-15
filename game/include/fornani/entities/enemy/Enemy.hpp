@@ -102,7 +102,7 @@ class Enemy : public Mobile {
 
 	void handle_player_collision(player::Player& player) const;
 	void handle_collision(shape::Collider& other);
-	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
+	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, player::Player& player);
 	void spawn_treasure(automa::ServiceProvider& svc, world::Map& map);
 	void on_crush(world::Map& map);
 	bool seek_home(world::Map& map);

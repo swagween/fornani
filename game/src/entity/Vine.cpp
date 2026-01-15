@@ -56,7 +56,6 @@ void Vine::init() {
 		++ctr;
 	}
 	repeatable = false;
-	// m_chain.set_position(get_world_position());
 	NANI_LOG_DEBUG(m_logger, "simulating vines...");
 	m_chain.simulate(*m_services, 128);
 }

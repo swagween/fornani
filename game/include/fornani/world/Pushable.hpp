@@ -29,8 +29,6 @@ enum class PushableState { moved, pushed };
 class Pushable : public Drawable {
   public:
 	Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int style = 0, int size = 1);
-	Pushable(Pushable&&) = delete;
-	Pushable& operator=(Pushable&&) = delete;
 	void update(automa::ServiceProvider& svc, Map& map, player::Player& player);
 	void post_update(automa::ServiceProvider& svc, Map& map, player::Player& player);
 	void handle_collision(shape::Collider& other) const;

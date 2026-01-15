@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 #include <fornani/core/Common.hpp>
+#include <fornani/story/Quest.hpp>
 #include <optional>
 #include <vector>
 
@@ -50,12 +51,14 @@ struct MessageCode {
 struct Message {
 	sf::Text data;
 	std::optional<std::vector<MessageCode>> codes{};
+	std::optional<std::vector<QuestContingency>> contingencies{};
 };
 
 // for creation of Inspectables
 struct BasicMessage {
 	std::string data{};
 	std::optional<std::vector<MessageCode>> codes{};
+	std::optional<std::vector<QuestContingency>> contingencies{};
 };
 
 } // namespace fornani::gui

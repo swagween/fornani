@@ -270,9 +270,9 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	if (svc.greyblock_mode()) {
 		get_collider().render(win, cam);
 		if (secondary_collider) { get_secondary_collider().render(win, cam); }
-		// physical.alert_range.render(win, cam);
-		// physical.hostile_range.render(win, cam);
-		// physical.home_detector.render(win, cam, colors::blue);
+		physical.alert_range.render(win, cam);
+		physical.hostile_range.render(win, cam);
+		physical.home_detector.render(win, cam, colors::blue);
 	}
 	// debug();
 
@@ -298,7 +298,7 @@ void Enemy::handle_player_collision(player::Player& player) const {
 
 void Enemy::handle_collision(shape::Collider& other) { get_collider().handle_collider_collision(other, true); }
 
-void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
+void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, player::Player& player) {
 	if (proj.get_team() == arms::Team::skycorps) { return; }
 	if (proj.get_team() == arms::Team::guardian) { return; }
 	if (proj.get_team() == arms::Team::beast) { return; }
@@ -317,6 +317,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 		if (proj.persistent()) { proj.damage_over_time(); }
 		if (proj.can_damage()) {
 			if (proj.has_attribute(arms::ProjectileAttributes::explode_on_impact)) { proj.on_explode(svc, map); }
+			player.set_flag(player::PlayerFlags::hit_target);
 			hurt(proj.get_damage());
 			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
 			if (proj.has_critical_damage()) {

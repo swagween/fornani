@@ -9,7 +9,7 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc
 	m_parent_menu = MenuType::play;
 	current_selection = util::Circuit(num_files);
 	svc.data.load_blank_save(player);
-	hud.orient(svc, player, true); // display hud preview for each file in the center of the screen
+	hud.set_position({(svc.window->f_screen_dimensions().x / 2.f) - 140.f, -60.f}); // display hud preview for each file in the center of the screen
 	svc.state_controller.next_state = svc.data.load_progress(player, current_selection.get());
 	player.set_draw_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
 	player.antennae.at(0).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});

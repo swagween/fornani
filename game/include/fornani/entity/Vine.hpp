@@ -80,6 +80,8 @@ class Vine : public Entity {
 
 	[[nodiscard]] auto is_foreground() const -> bool { return m_flags.test(VineFlags::foreground); }
 
+	vfx::Chain& get_chain() { return m_chain; }
+
   private:
 	void init();
 	std::optional<std::vector<std::unique_ptr<entity::TreasureContainer>>> m_treasure_balls{};

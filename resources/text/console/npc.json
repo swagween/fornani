@@ -561,6 +561,10 @@
 				[
 
 					{
+						"codes": [
+							[ 4, 5 ],
+							[ 5, 1 ]
+						],
 						"message": "...Nani?"
 					},
 					{
@@ -574,6 +578,7 @@
 					},
 					{
 						"codes": [
+							[ 4, 14 ],
 							[ 5, 2 ],
 							[ 1, 0 ]
 						],
@@ -582,6 +587,10 @@
 				],
 				[
 					{
+						"codes": [
+							[ 4, 8 ],
+							[ 5, 1 ]
+						],
 						"message": "It's... a long story. But I signed up for it, really."
 					},
 					{
@@ -591,6 +600,7 @@
 				],
 				[
 					{
+						"codes": [ [ 5, 0 ] ],
 						"message": "Well, that's what Doc Willett and I think it might be."
 					},
 					{
@@ -612,6 +622,7 @@
 					{
 						"codes": [
 							[ 5, 1 ],
+							[ 4, 6 ],
 							[ 1, 2 ]
 						],
 						"message": "Wait... is that my gun?!"
@@ -640,7 +651,10 @@
 				],
 				[
 					{
-						"codes": [ [ 5, 0 ] ],
+						"codes": [
+							[ 5, 0 ],
+							[ 4, 21 ]
+						],
 						"message": "Another long story, but that one I at least owe it to tell you..."
 					},
 					{
@@ -675,15 +689,21 @@
 				],
 				[
 					{
-						"codes": [ [ 5, 0 ] ],
-						"message": "Aren't we all?"
+						"codes": [
+							[ 5, 0 ],
+							[ 4, 8 ]
+						],
+						"message": "..."
 					},
 					{
-						"message": "...sigh..."
+						"message": "God, I miss him, despite everything he did."
+					},
+					{
+						"message": "Please, Nani, promise me you'll do whatever you can to bring him back to us."
 					},
 					{
 						"codes": [ [ 1, 3 ] ],
-						"message": "God, I miss him, despite everything he did. I just want to know if he's still alive..."
+						"message": "I just want to know if he's still alive..."
 					}
 				],
 				[
@@ -717,7 +737,10 @@
 			"suite": [
 				[
 					{
-						"codes": [ [ 1, 0 ] ],
+						"codes": [
+							[ 1, 0 ],
+							[ 4, 15 ]
+						],
 						"messages": [ "Yeah?", "What's up?", "It's been awful lonely down here..." ]
 					}
 				],
@@ -1217,7 +1240,10 @@
 			"suite": [
 				[
 					{
-						"codes": [ [ 1, 0 ] ],
+						"codes": [
+							[ 4, 16 ],
+							[ 1, 0 ]
+						],
 						"message": "Nani! I'm glad you made it up here okay. Those old nighthawks can be pretty terrifying if you're not used to them."
 					}
 				],
@@ -1276,6 +1302,7 @@
 					{
 						"codes": [
 							[ 5, 1 ],
+							[ 4, 21 ],
 							[ 1, 0 ]
 						],
 						"message": "It's as I feared, then."
@@ -1315,6 +1342,7 @@
 					{
 						"codes": [
 							[ 5, 3 ],
+							[ 4, 0 ],
 							[ 8, 0 ]
 						],
 						"message": "Doc?! What is that?"
@@ -1665,8 +1693,15 @@
 						"message": "I don't have one myself to give you, but you ought to be able to buy one in Woodshine Village. So head there first if you haven't already."
 					},
 					{
+						"message": "You should have no trouble finding Woodshine if you head east and a bit north from here."
+					},
+					{
+						"codes": [ [ 22, 400, 1, 2 ] ],
+						"message": "Here, let me mark it on your map, just in case..."
+					},
+					{
 						"codes": [ [ 1, 0 ] ],
-						"message": "You should have no trouble finding Woodshine if you head east and a bit north from here. Though I imagine you might know the way, considering you've lived there your whole life."
+						"message": "Though I imagine you might know the way, considering you've lived there your whole life."
 					}
 				],
 				[
@@ -2023,7 +2058,7 @@
 						"message": "There is a train station on the outskirts of Forgetville that should have service to Ashtown. That ought to be the quickest way."
 					},
 					{
-						"codes": [ [ 22, 810, 1 ] ],
+						"codes": [ [ 22, 810, 1, 1 ] ],
 						"message": "Here, I'll mark the station on your map."
 					},
 					{
@@ -3018,7 +3053,8 @@
 				],
 				[
 					{
-						"message": "Take a gander!"
+						"codes": [ [ 20, 1 ] ],
+						"messages": [ "Take a gander!", "Always a pleasure to do business!", "Here's what's come in recently..." ]
 					}
 				],
 				[

@@ -12,8 +12,8 @@ void ICollider::update(automa::ServiceProvider& svc) {
 	auto dim = p_vicinity.get_dimensions() - sf::Vector2f{vicinity_pad_v * 2.f, vicinity_pad_v * 2.f};
 	auto center = is(ColliderType::circle) ? physics.position : physics.position + dim * 0.5f;
 	p_vicinity.set_position(center - p_vicinity.get_dimensions() * 0.5f);
-	m_flags.reset(ColliderFlags::changed);
-	if (physics.actual_speed() > constants::tiny_value) { m_flags.set(ColliderFlags::changed); }
+	set_flag(ColliderFlags::changed, false);
+	if (physics.actual_speed() > constants::tiny_value) { set_flag(ColliderFlags::changed); }
 }
 
 void ICollider::handle_map_collision(world::Map& map) {}

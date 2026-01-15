@@ -9,7 +9,7 @@
 namespace fornani::world {
 
 Platform::Platform(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f position, sf::Vector2f dimensions, float extent, std::string_view specifications, float start_point, int style)
-	: Animatable(svc, "platform_" + std::string{map.get_biome_string()}), m_collider{map, dimensions}, path_position(start_point), switch_up{3} {
+	: Animatable(svc, "platform_" + std::string{map.get_biome_string()}), m_collider{map, dimensions}, path_position(start_point), switch_up{12} {
 
 	auto const& in_data = svc.data.platform[specifications];
 	if (in_data["sticky"].as_bool()) { flags.attributes.set(PlatformAttributes::sticky); }

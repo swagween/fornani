@@ -53,10 +53,11 @@ enum class World {
 	laser_charge,
 	laser_hum,
 	laser_cooldown,
-	incinerite_explosion
+	incinerite_explosion,
+	splash
 };
 enum class Item { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip, vendor_sale, unequip };
-enum class Player { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll, wallslide, super_slide, doublejump, turn_slide, dash_kick };
+enum class Player { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll, wallslide, super_slide, doublejump, turn_slide, dash_kick, gulp, dive };
 enum class Weapon { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, plasmer, underdog, peckett_710, pulse, demon_magic };
 enum class Projectile { basic, shuriken, pulse, hard_hit, critical_hit };
 enum class Arms { reload, frag_grenade, whistle };
@@ -66,6 +67,8 @@ enum class Step { basic, grass };
 // critters
 enum class Enemy { hit_squeak, hit_high, hit_medium, hit_low, standard_death, jump_low, high_death, low_death, disappear };
 
+enum class Beast { growl, hurt, gulp, snort, roar };
+
 enum class Frdog { hurt, death };
 enum class Hulmet { hurt, alert, reload };
 enum class Tank { alert_1, alert_2, hurt_1, hurt_2, death };
@@ -74,12 +77,13 @@ enum class Minigun { charge, reload, neutral, firing };
 enum class Demon { hurt, alert, death, snort, up_snort };
 enum class Archer { hurt, flee, death };
 enum class Beamstalk { hurt, death };
-enum class Meatsquash { hurt, death, chomp, whip, swallow };
+enum class Meatsquash { hurt, death, chomp, whip, swallow, open };
 enum class Summoner { hurt_1, hurt_2, death, block_1, block_2, summon, hah };
 enum class Mastiff { bite, growl };
 
-enum class NPCBryn { hey, ah };
+enum class NPCBryn { agh, ah_1, ah_2, chuckle, nani_1, nani_2, oh, ohh, sigh, whatsup, yah, yeah, yeahh, eagh, haha, hello, hey_1, hey_2, heyyy, hi, hmm, hmph, laugh_1, laugh_2, mm, oeugh };
 enum class NPCGobe { oh, orewa };
+enum class NPCMinigus { greatidea, dontlookatme, laugh, getit, pizza, grunt };
 
 enum class Minigus {
 	hurt_1,
@@ -117,8 +121,6 @@ enum class Minigus {
 enum class Lynx { prepare, shing, ping_1, ping_2, swipe_1, swipe_2, slam, hoah, defeat, hah, heuh, hiyyah, hnnyah, huh, hurt_1, hurt_2, hurt_3, hurt_4, huuyeah, nngyah, yyah, laugh, giggle };
 enum class Miaag { growl, hiss, hurt, roar, chomp };
 
-enum class NPC { minigus_greatidea, minigus_dontlookatme, minigus_laugh, minigus_getit, minigus_pizza, minigus_grunt };
-
 class Soundboard {
   public:
 	Soundboard(automa::ServiceProvider& svc);
@@ -147,6 +149,7 @@ class Soundboard {
 		util::BitFlags<Step> land{};
 
 		util::BitFlags<Enemy> enemy{};
+		util::BitFlags<Beast> beast{};
 		util::BitFlags<Frdog> frdog{};
 		util::BitFlags<Hulmet> hulmet{};
 		util::BitFlags<Tank> tank{};
@@ -161,12 +164,12 @@ class Soundboard {
 		util::BitFlags<Lynx> lynx{};
 		util::BitFlags<Miaag> miaag{};
 		util::BitFlags<Mastiff> mastiff{};
-		util::BitFlags<NPC> npc{};
 	} flags{};
 
 	struct {
 		util::BitFlags<NPCBryn> bryn{};
 		util::BitFlags<NPCGobe> gobe{};
+		util::BitFlags<NPCMinigus> minigus{};
 	} npc_flags{};
 
 	std::unordered_map<std::string, std::function<void(int)>> npc_map;

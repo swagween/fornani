@@ -58,6 +58,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	if (in_data["explosion"]) {
 		metadata.explosion = ExplosionAttributes{};
 		metadata.explosion->tag = in_data["explosion"]["tag"].as_string();
+		metadata.explosion->emitter = in_data["explosion"]["emitter"] ? in_data["explosion"]["emitter"].as_string() : metadata.explosion->tag;
 		metadata.explosion->radius = in_data["explosion"]["radius"].as<float>();
 		metadata.explosion->channel = in_data["explosion"]["channel"].as<int>();
 	}
@@ -193,7 +194,7 @@ void Projectile::on_player_hit(automa::ServiceProvider& svc, world::Map& map, pl
 void Projectile::on_explode(automa::ServiceProvider& svc, world::Map& map) {
 	if (!metadata.explosion) { return; }
 	if (!has_attribute(arms::ProjectileAttributes::explode_on_impact)) { return; }
-	map.spawn_explosion(svc, metadata.explosion->tag, get_team(), get_position(), metadata.explosion->radius, metadata.explosion->channel);
+	map.spawn_explosion(svc, metadata.explosion->tag, metadata.explosion->emitter, get_team(), get_position(), metadata.explosion->radius, metadata.explosion->channel);
 	destroy(false);
 }
 

@@ -5,7 +5,6 @@ nani_add_sources(
         Dashboard.cpp
         Gizmo.cpp
         HealthBar.cpp
-        HUD.cpp
         InventoryWindow.cpp
         ItemWidget.cpp
         MiniMap.cpp
@@ -22,3 +21,4 @@ nani_add_sources(
 )
 add_subdirectory(gizmos)
 add_subdirectory(console)
+add_subdirectory(hud)

@@ -538,6 +538,23 @@
           89
         ],
         "source_id": 704
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "destination_id": 705,
+        "dimensions": [
+          1,
+          3
+        ],
+        "id": 0,
+        "key_id": 0,
+        "locked": false,
+        "position": [
+          0,
+          102
+        ],
+        "source_id": 704
       }
     ],
     "save_point": [
@@ -1190,7 +1207,7 @@
     ],
     "metagrid": [
       16,
-      33
+      34
     ],
     "minimap": true,
     "music": "bronze_statue",

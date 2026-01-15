@@ -3,6 +3,7 @@ nani_add_sources(
         Jump.cpp
         Dash.cpp
         DashKick.cpp
+        Dive.cpp
         Doublejump.cpp
         Roll.cpp
         Slide.cpp

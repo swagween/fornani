@@ -371,6 +371,24 @@
 		"color": "guardian"
 	},
 
+	"green_blast": {
+		"load": 30,
+		"rate": 100.0,
+		"expulsion": 32.0,
+		"expulsion_variance": 30.0,
+		"cone": 6.28,
+		"friction": 0.999,
+		"elasticity": 0.9,
+		"gravity": 0.8,
+		"lifespan": 200,
+		"lifespan_variance": 100,
+		"dimensions": [ 6, 6 ],
+		"animated": false,
+		"colliding": true,
+		"fader": true,
+		"color": "green"
+	},
+
 	"white_fireworks": {
 		"load": 50,
 		"rate": 100.0,

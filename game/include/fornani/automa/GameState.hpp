@@ -1,18 +1,16 @@
 
 #pragma once
 
-#include <fornani/automa/Option.hpp>
-#include <fornani/gui/console/Console.hpp>
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/graphics/Background.hpp"
-#include "fornani/gui/HUD.hpp"
-#include "fornani/gui/InventoryWindow.hpp"
-#include "fornani/gui/PauseWindow.hpp"
-#include "fornani/utils/Polymorphic.hpp"
-#include "fornani/world/Map.hpp"
-
 #include <SFML/Graphics.hpp>
-
+#include <fornani/automa/Option.hpp>
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/graphics/Background.hpp>
+#include <fornani/gui/InventoryWindow.hpp>
+#include <fornani/gui/PauseWindow.hpp>
+#include <fornani/gui/console/Console.hpp>
+#include <fornani/gui/hud/HUD.hpp>
+#include <fornani/utils/Polymorphic.hpp>
+#include <fornani/world/Map.hpp>
 #include <filesystem>
 
 namespace fornani::player {

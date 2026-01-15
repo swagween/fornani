@@ -14,7 +14,7 @@ Mastiff::Mastiff(automa::ServiceProvider& svc, world::Map& map, int variant) : E
 	animation.set_params(get_params("idle"));
 	m_bite.hit.bounds.setRadius(40.f);
 
-	get_collider().physics.set_friction_componentwise({0.96f, 0.99f});
+	get_collider().physics.set_friction_componentwise({0.92f, 0.99f});
 }
 
 void Mastiff::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -78,7 +78,7 @@ fsm::StateFunction Mastiff::update_run() {
 fsm::StateFunction Mastiff::update_bite() {
 	p_state.actual = MastiffState::bite;
 	if (animation.just_started()) { m_services->soundboard.flags.mastiff.set(audio::Mastiff::growl); }
-	get_collider().physics.acceleration.x = directions.actual.as_float() * 2.f;
+	get_collider().physics.acceleration.x = directions.actual.as_float() * 5.f;
 	if (animation.get_frame_count() == 4) {
 		m_bite.hit.activate();
 		if (animation.keyframe_started()) { m_services->soundboard.flags.mastiff.set(audio::Mastiff::bite); }

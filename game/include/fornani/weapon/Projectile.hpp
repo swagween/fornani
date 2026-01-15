@@ -56,6 +56,7 @@ struct ProjectileSpecifications {
 
 struct ExplosionAttributes {
 	std::string tag{};
+	std::string emitter{};
 	float radius{};
 	int channel{};
 };

@@ -108,7 +108,7 @@ class Map {
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {}, float speed_multiplier = 1.f);
 	void spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0);
 	void spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, Direction dir, sf::Vector2f dim = {16.f, 16.f}, sf::Color color = colors::nani_white);
-	void spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, arms::Team team, sf::Vector2f pos, float radius, int channel);
+	void spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel);
 	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0);
 	void spawn_chest(automa::ServiceProvider& svc, enemy::Treasure const& treasure, sf::Vector2f pos, sf::Vector2f vel = {});
 	void reveal_npc(std::string_view label);
@@ -210,7 +210,6 @@ class Map {
 	std::unique_ptr<graphics::Background> background{};
 	graphics::Transition transition;
 
-	enemy::EnemyCatalog enemy_catalog;
 	CutsceneCatalog cutscene_catalog;
 
 	sf::RectangleShape center_box{};
@@ -277,6 +276,7 @@ class Map {
 	io::Logger m_logger{"Map"};
 
   public:
+	enemy::EnemyCatalog enemy_catalog;
 	std::vector<std::unique_ptr<Breakable>> breakables{};
 	std::vector<std::unique_ptr<Platform>> platforms{};
 	std::vector<std::unique_ptr<SwitchBlock>> switch_blocks{};

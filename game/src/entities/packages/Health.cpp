@@ -12,6 +12,11 @@ void Health::set_max(float amount, bool memory) {
 
 void Health::set_hp(float amount) { hp = amount; }
 
+void Health::add_bonus(float amount) {
+	hp += amount;
+	bonus = amount;
+}
+
 void Health::set_invincibility(float amount) { invincibility_time = static_cast<int>(amount); }
 
 void Health::update() {
@@ -30,7 +35,7 @@ void Health::heal(float amount) {
 }
 
 void Health::refill() {
-	hp = max_hp;
+	hp = get_max();
 	restored.start();
 }
 
@@ -46,13 +51,14 @@ void Health::inflict(float amount, bool force) {
 
 void Health::increase_max_hp(float amount) { set_max(max_hp + amount, true); }
 
-void Health::reset() { hp = max_hp; }
+void Health::reset() { hp = get_max(); }
 
 void Health::kill() { hp = 0.f; }
 
 void Health::debug() {
 	ImGui::SliderFloat("hp", &hp, 1.f, max_hp);
 	ImGui::SliderFloat("max", &max_hp, 3.f, 20.f);
+	ImGui::SliderFloat("bonus", &bonus, 1.f, 3.f);
 }
 
 } // namespace fornani::entity

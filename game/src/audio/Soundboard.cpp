@@ -7,11 +7,11 @@ namespace fornani::audio {
 
 Soundboard::Soundboard(automa::ServiceProvider& /*svc*/) {
 	npc_map["bryn"] = make_int_setter<NPCBryn>(npc_flags.bryn);
-	npc_map["bryn"] = make_int_setter<NPCGobe>(npc_flags.gobe);
+	npc_map["gobe"] = make_int_setter<NPCGobe>(npc_flags.gobe);
+	npc_map["minigus"] = make_int_setter<NPCMinigus>(npc_flags.minigus);
 }
 
 void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc, int echo_count, int echo_rate) {
-
 	std::erase_if(sound_pool, [](auto& s) { return !s.is_running(); });
 	for (auto& s : sound_pool) { s.update(svc); }
 
@@ -74,6 +74,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.world.test(World::delay_crash)) { play(engine, svc, svc.sounds.get_buffer("delay_crash"), 0.f, 50.f); }
 	flags.world.test(World::laser_hum) ? simple_repeat(engine, svc.sounds.get_buffer("laser_hum"), "laser_hum") : stop("laser_hum");
 	if (flags.world.test(World::incinerite_explosion)) { play(engine, svc, svc.sounds.get_buffer("incinerite_explosion"), 0.2f); }
+	if (flags.world.test(World::splash)) { play(engine, svc, svc.sounds.get_buffer("splash")); }
 
 	// vendor
 	if (flags.item.test(Item::vendor_sale)) { play(engine, svc, svc.sounds.get_buffer("vendor_sale")); }
@@ -109,6 +110,13 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	// mastiff
 	if (flags.mastiff.test(Mastiff::bite)) { play(engine, svc, svc.sounds.get_buffer("mastiff_bite"), 0.f, 50.f); }
 	if (flags.mastiff.test(Mastiff::growl)) { play(engine, svc, svc.sounds.get_buffer("mastiff_growl"), 0.2f, 50.f); }
+
+	// meatsquash
+	if (flags.meatsquash.test(Meatsquash::chomp)) { play(engine, svc, svc.sounds.get_buffer("beast_charge_up")); }
+	if (flags.meatsquash.test(Meatsquash::whip)) { play(engine, svc, svc.sounds.get_buffer("beast_whip")); }
+	if (flags.meatsquash.test(Meatsquash::swallow)) { play(engine, svc, svc.sounds.get_buffer("beast_swallow")); }
+	if (flags.meatsquash.test(Meatsquash::open)) { play(engine, svc, svc.sounds.get_buffer("beast_chew")); }
+	if (flags.meatsquash.test(Meatsquash::death)) { play(engine, svc, svc.sounds.get_buffer("beast_death")); }
 
 	// minigus
 	if (flags.minigus.test(Minigus::invincible)) { play(engine, svc, svc.sounds.get_buffer("minigus_invincible")); }
@@ -172,12 +180,41 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.miaag.test(Miaag::chomp)) { play(engine, svc, svc.sounds.get_buffer("miaag_chomp")); }
 
 	// npc
-	if (flags.npc.test(NPC::minigus_getit)) { play(engine, svc, svc.sounds.get_buffer("minigus_getit")); }
-	if (flags.npc.test(NPC::minigus_laugh)) { play(engine, svc, svc.sounds.get_buffer("minigus_laugh_1")); }
-	if (flags.npc.test(NPC::minigus_pizza)) { play(engine, svc, svc.sounds.get_buffer("minigus_pizza")); }
-	if (flags.npc.test(NPC::minigus_greatidea)) { play(engine, svc, svc.sounds.get_buffer("minigus_greatidea")); }
-	if (flags.npc.test(NPC::minigus_dontlookatme)) { play(engine, svc, svc.sounds.get_buffer("minigus_dontlookatme")); }
-	if (flags.npc.test(NPC::minigus_grunt)) { play(engine, svc, svc.sounds.get_buffer("minigus_grunt")); }
+	if (npc_flags.minigus.test(NPCMinigus::getit)) { play(engine, svc, svc.sounds.get_buffer("minigus_getit")); }
+	if (npc_flags.minigus.test(NPCMinigus::laugh)) { play(engine, svc, svc.sounds.get_buffer("minigus_laugh_1")); }
+	if (npc_flags.minigus.test(NPCMinigus::pizza)) { play(engine, svc, svc.sounds.get_buffer("minigus_pizza")); }
+	if (npc_flags.minigus.test(NPCMinigus::greatidea)) { play(engine, svc, svc.sounds.get_buffer("minigus_greatidea")); }
+	if (npc_flags.minigus.test(NPCMinigus::dontlookatme)) { play(engine, svc, svc.sounds.get_buffer("minigus_dontlookatme")); }
+	if (npc_flags.minigus.test(NPCMinigus::grunt)) { play(engine, svc, svc.sounds.get_buffer("minigus_grunt")); }
+
+	// bryn
+	auto bryn_volume = 75.f;
+	if (npc_flags.bryn.test(NPCBryn::agh)) { play(engine, svc, svc.sounds.get_buffer("bryn_agh"), 0.f, 30.f); }
+	if (npc_flags.bryn.test(NPCBryn::ah_1)) { play(engine, svc, svc.sounds.get_buffer("bryn_ah_1"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::ah_2)) { play(engine, svc, svc.sounds.get_buffer("bryn_ah_2"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::chuckle)) { play(engine, svc, svc.sounds.get_buffer("bryn_chuckle"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::nani_1)) { play(engine, svc, svc.sounds.get_buffer("bryn_nani_1"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::nani_2)) { play(engine, svc, svc.sounds.get_buffer("bryn_nani_2"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::oh)) { play(engine, svc, svc.sounds.get_buffer("bryn_oh"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::ohh)) { play(engine, svc, svc.sounds.get_buffer("bryn_ohh"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::sigh)) { play(engine, svc, svc.sounds.get_buffer("bryn_sigh"), 0.f); }
+	if (npc_flags.bryn.test(NPCBryn::whatsup)) { play(engine, svc, svc.sounds.get_buffer("bryn_whatsup"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::yah)) { play(engine, svc, svc.sounds.get_buffer("bryn_yah"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::yeah)) { play(engine, svc, svc.sounds.get_buffer("bryn_yeah"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::yeahh)) { play(engine, svc, svc.sounds.get_buffer("bryn_yeahh"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::eagh)) { play(engine, svc, svc.sounds.get_buffer("bryn_eagh"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::haha)) { play(engine, svc, svc.sounds.get_buffer("bryn_haha"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::hello)) { play(engine, svc, svc.sounds.get_buffer("bryn_hello"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::hey_1)) { play(engine, svc, svc.sounds.get_buffer("bryn_hey_1"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::hey_2)) { play(engine, svc, svc.sounds.get_buffer("bryn_hey_2"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::heyyy)) { play(engine, svc, svc.sounds.get_buffer("bryn_heyyy"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::hi)) { play(engine, svc, svc.sounds.get_buffer("bryn_hi"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::hmm)) { play(engine, svc, svc.sounds.get_buffer("bryn_hmm"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::hmph)) { play(engine, svc, svc.sounds.get_buffer("bryn_hmph"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::laugh_1)) { play(engine, svc, svc.sounds.get_buffer("bryn_laugh_1"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::laugh_2)) { play(engine, svc, svc.sounds.get_buffer("bryn_laugh_2"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::mm)) { play(engine, svc, svc.sounds.get_buffer("bryn_mm"), 0.f, bryn_volume); }
+	if (npc_flags.bryn.test(NPCBryn::oeugh)) { play(engine, svc, svc.sounds.get_buffer("bryn_oeugh"), 0.f, bryn_volume); }
 
 	// thug
 	if (flags.thug.test(Thug::alert_1)) { play(engine, svc, svc.sounds.get_buffer("tank_alert_1")); }
@@ -211,6 +248,10 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.enemy.test(Enemy::jump_low)) { play(engine, svc, svc.sounds.get_buffer("jump_low")); }
 	if (flags.enemy.test(Enemy::disappear)) { play(engine, svc, svc.sounds.get_buffer("disappear")); }
 
+	// general beast
+	if (flags.beast.test(Beast::growl)) { play(engine, svc, svc.sounds.get_buffer("beast_growl"), 0.f, 70.f); }
+	if (flags.beast.test(Beast::hurt)) { play(engine, svc, svc.sounds.get_buffer("beast_hurt"), 0.2f, 50.f); }
+
 	// item
 	if (flags.item.test(Item::heal)) { play(engine, svc, svc.sounds.get_buffer("heal"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.item.test(Item::orb_low)) { play(engine, svc, svc.sounds.get_buffer("orb_get_1"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
@@ -226,6 +267,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	// player
 	if (flags.player.test(Player::jump)) { play(engine, svc, svc.sounds.get_buffer("nani_jump"), 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.player.test(Player::hurt)) { play(engine, svc, svc.sounds.get_buffer("nani_hurt"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.player.test(Player::gulp)) { play(engine, svc, svc.sounds.get_buffer("nani_gulp"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.player.test(Player::dash)) { play(engine, svc, svc.sounds.get_buffer("nani_dash"), 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.player.test(Player::death)) { play(engine, svc, svc.sounds.get_buffer("nani_death")); }
 	if (flags.player.test(Player::slide)) { play(engine, svc, svc.sounds.get_buffer("nani_slide"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
@@ -252,8 +294,8 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.weapon.test(Weapon::bryns_gun)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_bg"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::gnat)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_gnat"), 0.1f, 100.f, 2, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::wasp)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_wasp"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
-	if (flags.weapon.test(Weapon::tomahawk)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_tomahawk"), 0.1f, 100.f, 2, 1.f, {}, echo_count, echo_rate); }
-	if (flags.weapon.test(Weapon::tomahawk_catch)) { play(engine, svc, svc.sounds.get_buffer("arms_catch_tomahawk"), 0.1f, 100.f, 2, 1.f, {}, echo_count, echo_rate); }
+	if (flags.weapon.test(Weapon::tomahawk)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_tomahawk"), 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.weapon.test(Weapon::tomahawk_catch)) { play(engine, svc, svc.sounds.get_buffer("arms_catch_tomahawk"), 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::skycorps_ar)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_skycorps_ar"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::pulse)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_pulse"), 0.2f, 20.f); }
 	if (flags.weapon.test(Weapon::demon_magic)) { play(engine, svc, svc.sounds.get_buffer("arms_shot_demon_magic"), 0.1f, 40.f); }
@@ -269,6 +311,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 
 	// reset flags
 	flags = {};
+	npc_flags = {};
 
 	// reset proximities
 	proximities = {};

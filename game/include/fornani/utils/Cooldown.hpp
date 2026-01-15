@@ -13,8 +13,8 @@ class Cooldown {
 	explicit Cooldown(int const time) : native_time(time) {}
 	constexpr void start() { decrementor = native_time; }
 	constexpr void start(int const time) { decrementor = time; }
-	constexpr void update() { decrementor = ccm::ext::clamp(decrementor - 1, 0, std::numeric_limits<int>::max()); }
-	constexpr void reverse() { decrementor = ccm::ext::clamp(decrementor + 1, 0, native_time); }
+	constexpr void update(int const amount = 1) { decrementor = ccm::ext::clamp(decrementor - amount, 0, std::numeric_limits<int>::max()); }
+	constexpr void reverse(int const amount = 1) { decrementor = ccm::ext::clamp(decrementor + amount, 0, native_time); }
 	constexpr void cancel() { decrementor = 0; }
 	constexpr void nullify() { decrementor = -1; }
 	constexpr void invert() { decrementor = native_time - decrementor; }

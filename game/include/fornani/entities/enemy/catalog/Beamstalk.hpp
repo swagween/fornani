@@ -1,13 +1,15 @@
 #pragma once
 
-#include "fornani/entities/enemy/Enemy.hpp"
+#include <fornani/entities/enemy/Enemy.hpp>
+#include <fornani/utils/Flaggable.hpp>
 #define BEAMSTALK_BIND(f) std::bind(&Beamstalk::f, this)
 
 namespace fornani::enemy {
 
 enum class BeamstalkState { idle, charge, shoot, relax };
+enum class BeamstalkFlags { spit };
 
-class Beamstalk final : public Enemy {
+class Beamstalk final : public Enemy, public Flaggable<BeamstalkFlags>, public StateMachine<BeamstalkState> {
 
   public:
 	Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction);
@@ -21,23 +23,21 @@ class Beamstalk final : public Enemy {
 	fsm::StateFunction update_relax();
 
   private:
-	BeamstalkState state{};
+	void set_root(world::Map& map);
 
 	// packages
 	entity::WeaponPackage beam;
 
-	// lookup, duration, framerate, num_loops
-	anim::Parameters idle{14, 14, 36, -1};
-	anim::Parameters charge{0, 9, 36, 0};
-	anim::Parameters shoot{9, 3, 36, 4};
-	anim::Parameters relax{12, 2, 36, 0};
-
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;
 
-	util::Cooldown post_beam{128};
+	sf::Vector2f* m_root{};
+	components::SteeringBehavior m_steering{};
 
-	float fire_rate{};
+	util::Cooldown post_beam{128};
+	util::Cooldown init{80};
+
+	float fire_rate;
 
 	bool change_state(BeamstalkState next, anim::Parameters params);
 };

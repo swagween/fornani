@@ -463,6 +463,32 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		}
 		ImGui::EndPopup();
 	}
+	if (ImGui::BeginPopupModal("Water Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
+		static int id{};
+		static bool toxic{};
+		static int width{0};
+		static int height{0};
+
+		ImGui::InputInt("ID", &id);
+		ImGui::Checkbox("Toxic", &toxic);
+
+		ImGui::InputInt("Width", &width);
+		ImGui::InputInt("Height", &height);
+
+		if (ImGui::Button("Create")) {
+			m_is_open = false;
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<fornani::Water>(svc, sf::Vector2u{static_cast<unsigned int>(width), static_cast<unsigned int>(height)}, id, toxic);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Close")) {
+			m_is_open = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 	if (ImGui::BeginPopupModal("Timer Block Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
 		static int id{};

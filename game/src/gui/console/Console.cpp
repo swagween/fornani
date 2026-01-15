@@ -74,8 +74,10 @@ void Console::update(automa::ServiceProvider& svc) {
 				processed = true;
 			}
 			if (code.is(MessageCodeType::add_map_marker) && m_process_code_before && code.extras) {
-				svc.events.dispatch_event("AddMapMarker", code.value, code.extras->at(0)); // TODO: gotta fix this later. "main" should be somehow read from the code.extras
-				processed = true;
+				if (code.extras->size() > 1) {
+					svc.events.dispatch_event("AddMapMarker", code.value, code.extras->at(0), code.extras->at(1));
+					processed = true;
+				}
 			}
 			if (code.is_quest() && m_process_code_before) {
 				if (code.extras) {
@@ -99,7 +101,7 @@ void Console::update(automa::ServiceProvider& svc) {
 			}
 			if (code.is_voice_cue() && m_process_code_before) {
 				svc.events.dispatch_event("VoiceCue", code.value);
-				NANI_LOG_DEBUG(m_logger, "Voice!");
+				NANI_LOG_DEBUG(m_logger, "Voice Cue: {}", code.value);
 				processed = true;
 			}
 			if (code.is_emotion() && m_process_code_before && m_npc_portrait) {
@@ -158,7 +160,7 @@ void Console::load_and_launch(OutputType type) {
 	m_process_code_before = true;
 	m_output_type = type;
 	native_key = null_key;
-	update(*m_services);
+	// update(*m_services);
 }
 
 void Console::load_and_launch(std::string_view key, OutputType type) {
@@ -303,6 +305,8 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 				if (code.is_item() && m_process_code_after) { m_services->events.dispatch_event("GivePlayerItem", code.value, 1); }
 				if (code.is_weapon() && m_process_code_after) { m_services->events.dispatch_event("AcquireGun", code.value); }
 				if (code.is_remove_weapon() && m_process_code_after) { m_services->events.dispatch_event("RemovePlayerWeapon", code.value); }
+				// if (code.is_voice_cue() && m_process_code_after) { m_services->events.dispatch_event("VoiceCue", code.value); }
+				if (code.is_emotion() && m_process_code_after && m_npc_portrait && responded) { m_npc_portrait->set_emotion(code.value); }
 				if (code.is_destroy_inspectable()) {
 					m_services->data.destroy_inspectable(code.value);
 					m_services->events.dispatch_event("DestroyInspectable", code.value);

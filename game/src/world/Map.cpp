@@ -328,7 +328,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		for (auto& pushable : pushables) { pushable->on_hit(svc, *this, proj); }
 		for (auto& destructible : destructibles) { destructible->on_hit(svc, *this, proj); }
 		for (auto& block : switch_blocks) { block->on_hit(svc, *this, proj); }
-		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj); }
+		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj, *player); }
 		for (auto& incinerite : incinerite_blocks) { incinerite->on_hit(svc, *this, proj); }
 		for (auto vine : get_entities<Vine>()) { vine->on_hit(svc, *this, proj, *player); }
 		proj.handle_collision(svc, *this);
@@ -486,6 +486,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
 	for (auto& exp : m_explosions) { exp.render(svc, win, cam); }
 
+	if (m_entities) {
+		for (auto w : get_entities<Water>()) { w->render(win, cam, 1.0); }
+	}
 	if (!svc.greyblock_mode()) {
 		for (auto& layer : get_layers()) {
 			if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
@@ -634,10 +637,10 @@ void Map::spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::
 	active_emitters.push_back(std::make_unique<vfx::Emitter>(svc, *this, pos, dim, tag, color, dir));
 }
 
-void Map::spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, arms::Team team, sf::Vector2f pos, float radius, int channel) {
+void Map::spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel) {
 	m_explosions.push_back(Explosion{svc, team, pos, radius});
 	spawn_effect(svc, tag, pos, {}, channel);
-	spawn_emitter(svc, tag, pos, Direction{});
+	spawn_emitter(svc, emitter, pos, Direction{});
 }
 
 void Map::spawn_enemy(int id, sf::Vector2f pos, int variant) {

@@ -13,7 +13,6 @@
 				"barrel": [ 9.0, 1.0 ],
 				"stock": [ 0, 0 ]
 			},
-			"ui": { "color": 1 },
 			"spray": {
 				"dimensions": [ 2.0, 2.0 ],
 				"type": "bryns_gun",
@@ -84,7 +83,6 @@
 				"barrel": [ 10.0, 1.5 ],
 				"stock": [ 0, 0 ]
 			},
-			"ui": { "color": 3 },
 			"spray": {
 				"dimensions": [ 4.0, 4.0 ],
 				"type": "wasp_2",
@@ -149,7 +147,6 @@
 				"barrel": [ 13.0, 1.5 ],
 				"stock": [ 0, 0 ]
 			},
-			"ui": { "color": 6 },
 			"spray": {
 				"dimensions": [ 3.0, 3.0 ],
 				"type": "spritz",
@@ -210,7 +207,6 @@
 				"barrel": [ 13.0, 1.5 ],
 				"stock": [ 0, 0 ]
 			},
-			"ui": { "color": 2 },
 			"spray": {
 				"dimensions": [ 3.0, 3.0 ],
 				"type": "guardian",
@@ -272,7 +268,6 @@
 				"barrel": [ 13.0, 1.5 ],
 				"stock": [ 0, 0 ]
 			},
-			"ui": { "color": 2 },
 			"spray": {
 				"dimensions": [ 4.0, 4.0 ],
 				"type": "wraith_2",
@@ -345,7 +340,6 @@
 				"barrel": [ 13.0, 1.5 ],
 				"stock": [ 0, 0 ]
 			},
-			"ui": { "color": 2 },
 			"spray": {
 				"dimensions": [ 4.0, 4.0 ],
 				"type": "twinkle",

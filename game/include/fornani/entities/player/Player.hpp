@@ -17,6 +17,7 @@
 #include <fornani/graphics/Indicator.hpp>
 #include <fornani/graphics/SpriteHistory.hpp>
 #include <fornani/graphics/TextureUpdater.hpp>
+#include <fornani/gui/HealthBar.hpp>
 #include <fornani/gui/WardrobeWidget.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Gravitator.hpp>
@@ -92,7 +93,7 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class PlayerFlags { killed, dir_switch, show_weapon, impart_recoil, crushed, sleep, wake_up, busy, dash_kick, trial, cutscene };
+enum class PlayerFlags { killed, dir_switch, show_weapon, impart_recoil, crushed, sleep, wake_up, busy, dash_kick, trial, cutscene, swallowed, hit_target, in_water, submerged, drowned };
 enum class Triggers { hurt };
 
 struct Flags {
@@ -149,6 +150,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	// state
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
 	[[nodiscard]] auto is_dead() const -> bool { return health.is_dead(); }
+	[[nodiscard]] auto had_special_death() const -> bool { return has_flag_set(PlayerFlags::crushed) || has_flag_set(PlayerFlags::swallowed) || has_flag_set(PlayerFlags::drowned); }
 	[[nodiscard]] auto is_busy() const -> bool { return has_flag_set(PlayerFlags::busy); }
 	[[nodiscard]] auto is_in_custom_sleep_event() const -> bool { return m_animation_machine.is_sleep_timer_running(); }
 	[[nodiscard]] auto death_animation_over() -> bool { return m_animation_machine.death_over(); }
@@ -291,6 +293,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto can_jump() const -> bool;
 	[[nodiscard]] auto can_wallslide() const -> bool;
 	[[nodiscard]] auto can_walljump() const -> bool;
+	[[nodiscard]] auto can_dive() const -> bool;
 
 	struct {
 		components::SteeringBehavior steering{};
@@ -322,6 +325,9 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	util::Cooldown m_hurt_cooldown;
 
 	AbilityUsage m_ability_usage{};
+
+	entity::Health m_air_supply;
+	gui::HealthBar m_air_supply_bar;
 
 	io::Logger m_logger{"player"};
 };

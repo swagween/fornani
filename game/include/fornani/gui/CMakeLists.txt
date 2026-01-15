@@ -5,7 +5,6 @@ nani_add_headers(
         Dashboard.hpp
         Gizmo.hpp
         HealthBar.hpp
-        HUD.hpp
         InventoryWindow.hpp
         ItemWidget.hpp
         OrbDisplay.hpp
@@ -22,3 +21,4 @@ nani_add_headers(
 )
 add_subdirectory(console)
 add_subdirectory(gizmos)
+add_subdirectory(hud)

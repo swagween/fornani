@@ -24,7 +24,7 @@ Collider::Collider(sf::Vector2f dim, sf::Vector2f hbx_offset) : ICollider{dim}, 
 void Collider::sync_components() {
 	bounding_box.set_position(physics.position);
 	bounding_box.set_dimensions(dimensions);
-	wallslider.set_dimensions({dimensions.x + 2.f * wallslide_pad, dimensions.y * 0.6f});
+	wallslider.set_dimensions({dimensions.x + 2.f * wallslide_pad, dimensions.y * wallslide_buffer});
 
 	vertical.set_dimensions({1.f, dimensions.y - 2.f * depth_buffer});
 	horizontal.set_dimensions({dimensions.x - 2.f * depth_buffer, 1.f});
@@ -88,6 +88,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			if (flags.collision.test(Collision::has_bottom_collision) && physics.apparent_velocity().y > vert_threshold) {
 				flags.state.set(State::just_landed);
 				flags.animation.set(Animation::just_landed);
+				set_flag(shape::ColliderFlags::landed);
 			}
 			flags.external_state.set(ExternalState::world_collision);
 			flags.external_state.set(ExternalState::vert_world_collision);
@@ -131,6 +132,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 					if (physics.apparent_velocity().y > vert_threshold) {
 						flags.state.set(State::just_landed);
 						flags.animation.set(Animation::just_landed);
+						set_flag(shape::ColliderFlags::landed);
 					}
 					physics.zero_y();
 				}
@@ -324,6 +326,7 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 		if (flags.collision.test(Collision::has_bottom_collision) && physics.apparent_velocity().y > vert_threshold) {
 			flags.state.set(State::just_landed);
 			flags.animation.set(Animation::just_landed);
+			set_flag(shape::ColliderFlags::landed);
 		}
 		flags.dash.set(Dash::dash_cancel_collision);
 		flags.external_state.set(ExternalState::collider_collision);
@@ -460,10 +463,10 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	// draw wallslider
 	box.setSize(sf::Vector2f{wallslider.get_dimensions()});
 	box.setPosition(wallslider.get_position() - cam);
-	has_left_wallslide_collision() || has_right_wallslide_collision() ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Transparent);
+	has_left_wallslide_collision() || has_right_wallslide_collision() ? box.setFillColor(sf::Color{255, 255, 0, 50}) : box.setFillColor(sf::Color::Transparent);
 	box.setOutlineColor(sf::Color{60, 60, 180, 100});
-	box.setOutlineThickness(-1);
-	// win.draw(box);
+	box.setOutlineThickness(-1.f);
+	win.draw(box);
 
 	// draw physics position
 	if (collision_depths) {

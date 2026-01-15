@@ -12,8 +12,8 @@
 namespace fornani::world {
 
 Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int style, int size)
-	: Drawable{svc, "pushables"}, m_map{&map}, style(style), size(size), m_collider{map, constants::f_cell_vec * static_cast<float>(size) - sf::Vector2f{2.f, 2.f}}, collision_box{constants::f_cell_vec * static_cast<float>(size)},
-	  speed{1.f / (static_cast<float>(size) * 0.75f)} {
+	: Drawable{svc, "pushables"}, m_map{&map}, style(style), size(size), m_collider{map, constants::f_cell_vec * static_cast<float>(size) - sf::Vector2f{1.f, 1.f}}, collision_box{constants::f_cell_vec * static_cast<float>(size)},
+	  speed{size == 1 ? 1.5f : 1.3f} {
 	get_collider().physics.position = position;
 	start_position = position;
 	get_collider().physics.set_friction_componentwise({0.95f, 0.99f});
@@ -36,13 +36,13 @@ Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position
 	get_collider().set_exclusion_target(shape::ColliderTrait::particle);
 	get_collider().set_exclusion_target(shape::ColliderTrait::player);
 	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
+	get_collider().set_resolution_exclusion_target(shape::ColliderTrait::platform);
 	if (size > 1) { get_collider().set_attribute(shape::ColliderAttributes::crusher); }
+	get_collider().wallslide_buffer = 0.9f;
 }
 
 void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 
-	get_collider().reset();
-	get_collider().reset_ground_flags();
 	get_collider().physics.acceleration = {};
 
 	collision_box.set_position(get_collider().physics.position - sf::Vector2f{0.f, 1.f});
@@ -69,12 +69,13 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	// player pushes block
 	state.reset(PushableState::pushed);
 	handle_collision(player.get_collider());
-	if (player.get_collider().wallslider.overlaps(collision_box) && player.pushing() && player.is_in_animation(player::AnimState::push) && get_collider().physics.actual_velocity().y < 0.01f) {
+	if (player.get_collider().wallslider.overlaps(collision_box) && player.pushing() && player.is_in_animation(player::AnimState::push) && get_collider().physics.actual_velocity().y < 0.3f) {
 		if (player.controller.moving_left() && player.get_collider().physics.position.x > get_collider().physics.position.x) { get_collider().physics.acceleration.x = -speed / mass; }
 		if (player.controller.moving_right() && player.get_collider().physics.position.x < get_collider().physics.position.x) { get_collider().physics.acceleration.x = speed / mass; }
 		if (ccm::abs(get_collider().physics.actual_velocity().x) > constants::small_value) { svc.soundboard.flags.world.set(audio::World::pushable_move); }
 		state.set(PushableState::moved);
 		state.set(PushableState::pushed);
+		set_push(true);
 	}
 
 	for (auto& pushable : map.pushables) {
@@ -102,23 +103,24 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		if (pushable->get_collider().wallslider.overlaps(collision_box)) {
 			auto hit_wall = (pushable->get_collider().get_center().x < get_collider().get_center().x && get_collider().has_right_wallslide_collision()) ||
 							(pushable->get_collider().get_center().x > get_collider().get_center().x && get_collider().has_left_wallslide_collision());
-			if (pushable->get_collider().pushes(*m_collider.get()) && player.pushing() && !hit_wall) {
-				get_collider().physics.acceleration += pushable->get_collider().physics.acceleration;
+			if (pushable->get_collider().pushes(*m_collider.get()) && is_being_pushed() && !hit_wall) {
+				get_collider().physics.acceleration.x += pushable->get_collider().physics.acceleration.x;
 				block = false;
 			}
 		}
+		if (pushable->get_collider().jumpbox.overlaps(collision_box)) { block = true; }
+		if (get_collider().jumpbox.overlaps(pushable->collision_box)) { block = true; }
 		if (block) { pushable->get_collider().handle_collider_collision(collision_box); }
 	}
 
-	get_collider().physics.impart_momentum();
-}
-
-void Pushable::post_update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
-
+	auto touching_plat = false;
 	for (auto& platform : map.platforms) {
-		if (platform->get_collider().bounding_box.overlaps(get_collider().jumpbox)) { get_collider().handle_collider_collision(platform->get_collider().bounding_box); }
-		if (get_collider().jumpbox.overlaps(platform->get_collider().bounding_box) && !get_collider().perma_grounded() && platform->is_sticky()) {
-			get_collider().physics.forced_momentum = platform->get_collider().physics.apparent_velocity();
+		if (get_collider().wallslider.overlaps(platform->get_collider().bounding_box)) { touching_plat = true; }
+	}
+	for (auto& platform : map.platforms) {
+		// if (platform->get_collider().bounding_box.overlaps(get_collider().jumpbox)) { get_collider().handle_collider_collision(platform->get_collider().bounding_box); }
+		if (get_collider().jumpbox.overlaps(platform->get_collider().bounding_box) && !get_collider().perma_grounded() && platform->is_sticky() && !touching_plat) {
+			get_collider().physics.forced_momentum = platform->get_velocity();
 			if (player.get_collider().jumpbox.overlaps(collision_box) && !player.get_collider().perma_grounded() && !(player.get_collider().has_left_wallslide_collision() || player.get_collider().has_right_wallslide_collision())) {
 				player.get_collider().physics.forced_momentum = get_collider().physics.forced_momentum;
 			}
@@ -129,10 +131,16 @@ void Pushable::post_update(automa::ServiceProvider& svc, Map& map, player::Playe
 		}
 	}
 
-	if (get_collider().flags.state.test(shape::State::just_landed)) {
+	get_collider().physics.impart_momentum();
+}
+
+void Pushable::post_update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
+
+	if (get_collider().has_flag_set(shape::ColliderFlags::landed)) {
 		auto point = size == 1 ? get_collider().get_top() : get_collider().get_center();
 		map.effects.push_back(entity::Effect(svc, "dust", point));
 		svc.soundboard.flags.world.set(audio::World::thud);
+		get_collider().set_flag(shape::ColliderFlags::landed, false);
 	}
 
 	if (!get_collider().has_jump_collision()) { get_collider().physics.forced_momentum = {}; }

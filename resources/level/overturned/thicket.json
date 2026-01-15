@@ -209,7 +209,7 @@
     ]
   },
   "meta": {
-    "ambience": "",
+    "ambience": "overturned",
     "background": "woods",
     "biome": "overturned",
     "border_color": [
@@ -241,7 +241,7 @@
       14
     ],
     "minimap": true,
-    "music": "",
+    "music": "whispering_island",
     "player_start": [
       0,
       0

@@ -19,19 +19,23 @@ class Health final {
 
 	[[nodiscard]] auto get_i_hp() const -> int { return static_cast<int>(hp); }
 	[[nodiscard]] auto get_hp() const -> float { return hp; }
-	[[nodiscard]] auto get_i_max() const -> float { return static_cast<int>(max_hp); }
-	[[nodiscard]] auto get_max() const -> float { return max_hp; }
+	[[nodiscard]] auto get_i_bonus() const -> float { return static_cast<int>(bonus); }
+	[[nodiscard]] auto get_bonus() const -> float { return bonus; }
+	[[nodiscard]] auto get_i_max() const -> float { return static_cast<int>(get_max()); }
+	[[nodiscard]] auto get_max() const -> float { return max_hp + bonus; }
 	[[nodiscard]] auto get_limit() const -> float { return hp_limit; }
 	[[nodiscard]] auto get_taken_point() const -> float { return static_cast<float>(taken_point); }
 	[[nodiscard]] auto is_dead() const -> bool { return hp <= 0.f; }
 	[[nodiscard]] auto is_critical() const -> float { return get_normalized() < 0.34f; }
 	[[nodiscard]] auto invincible() const -> bool { return !invincibility.is_complete(); }
-	[[nodiscard]] auto full() const -> bool { return hp == max_hp; }
+	[[nodiscard]] auto full() const -> bool { return hp >= max_hp; }
 	[[nodiscard]] auto empty() const -> bool { return is_dead(); }
-	[[nodiscard]] auto get_normalized() const -> float { return hp / max_hp; }
+	[[nodiscard]] auto has_bonus() const -> bool { return bonus > 0.f; }
+	[[nodiscard]] auto get_normalized() const -> float { return hp / get_max(); }
 
 	void set_max(float amount, bool memory = false);
 	void set_hp(float amount);
+	void add_bonus(float amount = 1.f);
 	void set_invincibility(float amount);
 	void heal(float amount);
 	void refill();
@@ -52,6 +56,7 @@ class Health final {
 	float hp_limit{24.f};
 	float max_hp;
 	float hp;
+	float bonus{};
 	util::Counter taken{};
 	int invincibility_time{};
 };

@@ -15,8 +15,8 @@ class TextureUpdater;
 namespace fornani::player {
 
 enum class ApparelType { hairstyle, headgear, shirt, pants, END };
-enum class ApparelPants { standard, red_jeans, chalcedony_skirt, punk_pants };
-enum class ApparelShirt { standard, skycorps_tee, chalcedony_shirt, punk_shirt };
+enum class ApparelPants { standard, red_jeans, chalcedony_skirt, punk_pants, ceremonial_skirt };
+enum class ApparelShirt { standard, skycorps_tee, chalcedony_shirt, punk_shirt, ceremonial_garb };
 enum class ApparelHeadgear { standard, head_lamp, gas_mask, sporty_cap };
 enum class ApparelHairstyle { standard, bob_cut, ponytail, punk_hair };
 

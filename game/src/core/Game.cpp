@@ -398,6 +398,25 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Soundboard Volume %f", services.soundboard.get_volume());
 					ImGui::Text("Sound pool size: %i", static_cast<int>(services.soundboard.number_of_playng_sounds()));
 					ImGui::Separator();
+					if (ImGui::BeginTabBar("NPCs", tab_bar_flags)) {
+						if (ImGui::BeginTabItem("Bryn")) {
+							for (auto i = 0; i <= static_cast<int>(audio::NPCBryn::oeugh); ++i) {
+								ImGui::PushID(i);
+								if (ImGui::Button("OOO##i")) { services.soundboard.npc_map.at("bryn")(i); }
+								ImGui::PopID();
+							}
+							ImGui::EndTabItem();
+						}
+						if (ImGui::BeginTabItem("Minigus")) {
+							for (auto i = 0; i <= static_cast<int>(audio::NPCMinigus::grunt); ++i) {
+								ImGui::PushID(i);
+								if (ImGui::Button("OOO##i")) { services.soundboard.npc_map.at("minigus")(i); }
+								ImGui::PopID();
+							}
+							ImGui::EndTabItem();
+						}
+						ImGui::EndTabBar();
+					}
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Story")) {
@@ -485,6 +504,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Wallsliding? %s", player.controller.is_wallsliding() ? "Yes" : "No");
 								ImGui::Text("Walljumping? %s", player.controller.is_walljumping() ? "Yes" : "No");
 								ImGui::Text("On Ramp? %s", player.get_collider().on_ramp() ? "Yes" : "No");
+								ImGui::Text("Submerged? %s", player.has_flag_set(player::PlayerFlags::submerged) ? "Yes" : "No");
 								ImGui::Separator();
 								ImGui::Text("X Position: %.2f", player.get_collider().physics.position.x / constants::f_cell_size);
 								ImGui::Text("Y Position: %.2f", player.get_collider().physics.position.y / constants::f_cell_size);

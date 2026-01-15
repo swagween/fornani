@@ -14,9 +14,6 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 
 	auto const& in_data = enemy ? svc.data.enemy_weapon[tag] : svc.data.weapon[tag];
 
-	NANI_LOG_DEBUG(m_logger, "Tag: {}", tag.data());
-	NANI_LOG_DEBUG(m_logger, "Label: {}", in_data["metadata"]["label"].as_string().data());
-
 	// metadata
 	metadata.description = in_data["metadata"]["description"].as_string();
 
@@ -24,7 +21,6 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 	visual.dimensions = {in_data["visual"]["dimensions"][0].as<int>(), in_data["visual"]["dimensions"][1].as<int>()};
 	offsets.render.global = {in_data["visual"]["offsets"]["global"][0].as<float>(), in_data["visual"]["offsets"]["global"][1].as<float>()};
 	offsets.render.barrel = {in_data["visual"]["offsets"]["barrel"][0].as<float>(), in_data["visual"]["offsets"]["barrel"][1].as<float>()};
-	visual.color = static_cast<UIColor>(in_data["visual"]["ui"]["color"].as<int>());
 	emitter.dimensions = {in_data["visual"]["spray"]["dimensions"][0].as<float>(), in_data["visual"]["spray"]["dimensions"][1].as<float>()};
 	emitter.type = in_data["visual"]["spray"]["type"].as_string().data(); // secondary emitter
 
@@ -181,6 +177,12 @@ void Weapon::set_orientation(Direction to_direction) {
 void Weapon::set_team(Team team) { projectile.set_team(team); }
 
 void Weapon::set_firing_direction(Direction to_direction) { firing_direction = to_direction; }
+
+void Weapon::reduce_reload_time(float percentage) {
+	auto amount = static_cast<int>(static_cast<float>(cooldowns.reload.get_native_time()) * percentage);
+	amount = std::clamp(amount, 0, cooldowns.reload.get() - 1);
+	cooldowns.reload.update(amount);
+}
 
 void Weapon::reset() { active_projectiles.start(); }
 

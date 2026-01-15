@@ -25,6 +25,7 @@
 #include <fornani/entity/TimerBlock.hpp>
 #include <fornani/entity/Turret.hpp>
 #include <fornani/entity/Vine.hpp>
+#include <fornani/entity/Water.hpp>
 #include <filesystem>
 #include <memory>
 #include <string_view>

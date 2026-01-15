@@ -16,7 +16,6 @@ enum class WeaponState { unlocked, equipped, reloading };
 enum class WeaponAttributes { automatic, no_reload };
 enum class InventoryState { reserve, hotbar };
 enum class UIFlags { selected };
-enum class UIColor { white, periwinkle, green, orange, fucshia, purple, mythic };
 
 struct WeaponSpecifications {
 	int cooldown_time{};
@@ -79,6 +78,7 @@ class Weapon : public Animatable {
 	void select() { flags.ui.set(UIFlags::selected); }
 	void deselect() { flags.ui.reset(UIFlags::selected); }
 	void set_reload_multiplier(float const to) { m_modifiers.reload_multiplier = to; }
+	void reduce_reload_time(float percentage);
 
 	[[nodiscard]] auto selected() const -> bool { return flags.ui.test(UIFlags::selected); }
 	[[nodiscard]] auto shot() const -> bool { return cooldowns.cooldown.just_started(); }
@@ -99,7 +99,6 @@ class Weapon : public Animatable {
 	[[nodiscard]] auto get_tag() const -> std::string_view { return metadata.tag; }
 	[[nodiscard]] auto get_label() const -> std::string_view { return metadata.label; }
 	[[nodiscard]] auto get_type() const -> ProjectileType { return projectile.get_type(); }
-	[[nodiscard]] auto get_ui_color() const -> int { return static_cast<int>(visual.color); }
 	[[nodiscard]] auto get_recoil_force() const -> sf::Vector2f { return sf::Vector2f{-specifications.recoil, 0.f}; }
 	[[nodiscard]] auto get_reload() const -> util::Cooldown { return cooldowns.reload; }
 	[[nodiscard]] auto get_reload_time() const -> float { return cooldowns.reload.get_native_time() * m_modifiers.reload_multiplier; }
@@ -135,7 +134,6 @@ class Weapon : public Animatable {
 		sf::Vector2f position{};
 		sf::Vector2<int> dimensions{};
 		std::vector<sf::Vector2f> anchor_points{};
-		UIColor color{};
 		int texture_lookup{};
 	} visual;
 

@@ -23,6 +23,7 @@ static int song_id{};
 static int cutscene_id{};
 static int map_marker_room_id{};
 static int map_marker_type{};
+static int map_marker_questline{};
 
 static void trigger_item(int to) {
 	item_acquisition = true;
@@ -60,10 +61,11 @@ static void launch_cutscene(int which) {
 	b_launch_cutscene = true;
 	cutscene_id = which;
 }
-static void add_map_marker(int room_id, int type) {
+static void add_map_marker(int room_id, int type, int questline) {
 	b_add_map_marker = true;
 	map_marker_room_id = room_id;
 	map_marker_type = type;
+	map_marker_questline = questline;
 }
 
 Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name)
@@ -83,7 +85,10 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	svc.events.register_event(std::make_unique<Event<int>>("RemovePlayerWeapon", &trigger_remove_gun));
 	svc.events.register_event(std::make_unique<Event<int>>("OpenVendor", &open_vendor));
 	svc.events.register_event(std::make_unique<Event<int>>("LaunchCutscene", &launch_cutscene));
-	svc.events.register_event(std::make_unique<Event<int, int>>("AddMapMarker", &add_map_marker));
+	svc.events.register_event(std::make_unique<Event<int, int, int>>("AddMapMarker", &add_map_marker));
+
+	m_map_markers.insert({1, "main"});
+	m_map_markers.insert({2, "woodshine"});
 
 	// create shaders
 	m_world_shader = LightShader(svc.finder);
@@ -104,7 +109,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 		NANI_LOG_INFO(m_logger, "Map loaded.");
 	}
 
-	hud.orient(svc, player); // reset hud position to corner
+	hud.reset_position(); // reset hud position to corner
 	svc.soundboard.turn_on();
 
 	player.set_camera_bounds(map.real_dimensions);
@@ -168,8 +173,10 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		b_reveal_item = false;
 	}
 	if (b_add_map_marker) {
-		svc.quest_table.set_quest_progression("map_markers", Subquest{"main", map_marker_room_id}, 1, {});
-		svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["map_marker"].as_string());
+		if (m_map_markers.contains(map_marker_questline)) {
+			svc.quest_table.set_quest_progression("map_markers", Subquest{m_map_markers.at(map_marker_questline), map_marker_room_id}, 1, {});
+			svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["map_marker"].as_string());
+		}
 		b_add_map_marker = false;
 	}
 	if (!m_console && item_music_played) {

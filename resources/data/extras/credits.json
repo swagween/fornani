@@ -106,6 +106,10 @@
 			"description": "lead songwriter/sound designer"
 		},
 		{
+			"name": "vickypon",
+			"description": "bryn voice"
+		},
+		{
 			"name": "tck",
 			"description": "minigus theme\nnpc and enemy sfx",
 			"line_breaks": 1
