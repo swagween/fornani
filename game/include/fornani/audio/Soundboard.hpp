@@ -77,12 +77,18 @@ enum class Minigun { charge, reload, neutral, firing };
 enum class Demon { hurt, alert, death, snort, up_snort };
 enum class Archer { hurt, flee, death };
 enum class Beamstalk { hurt, death };
+enum class Beamsprout { hurt, death, shoot, charge };
 enum class Meatsquash { hurt, death, chomp, whip, swallow, open };
 enum class Summoner { hurt_1, hurt_2, death, block_1, block_2, summon, hah };
 enum class Mastiff { bite, growl };
 
 enum class NPCBryn { agh, ah_1, ah_2, chuckle, nani_1, nani_2, oh, ohh, sigh, whatsup, yah, yeah, yeahh, eagh, haha, hello, hey_1, hey_2, heyyy, hi, hmm, hmph, laugh_1, laugh_2, mm, oeugh };
 enum class NPCGobe { oh, orewa };
+enum class NPCLynx { hmph, hmm };
+enum class NPCMirin { ah, oh, haha };
+enum class NPCCarl { hah, eh };
+enum class NPCGo { oh, mm };
+enum class NPCBit { hey, hehe };
 enum class NPCMinigus { greatidea, dontlookatme, laugh, getit, pizza, grunt };
 
 enum class Minigus {
@@ -164,11 +170,17 @@ class Soundboard {
 		util::BitFlags<Lynx> lynx{};
 		util::BitFlags<Miaag> miaag{};
 		util::BitFlags<Mastiff> mastiff{};
+		util::BitFlags<Beamsprout> beamsprout{};
 	} flags{};
 
 	struct {
 		util::BitFlags<NPCBryn> bryn{};
 		util::BitFlags<NPCGobe> gobe{};
+		util::BitFlags<NPCLynx> lynx{};
+		util::BitFlags<NPCMirin> mirin{};
+		util::BitFlags<NPCGo> go{};
+		util::BitFlags<NPCCarl> carl{};
+		util::BitFlags<NPCBit> bit{};
 		util::BitFlags<NPCMinigus> minigus{};
 	} npc_flags{};
 

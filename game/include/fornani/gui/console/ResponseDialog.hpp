@@ -1,15 +1,14 @@
 
 #pragma once
 
+#include <SFML/Graphics.hpp>
+#include <djson/json.hpp>
 #include <fornani/components/PhysicsComponent.hpp>
 #include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/gui/console/TextWriter.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/Circuit.hpp>
-
-#include <SFML/Graphics.hpp>
-#include <djson/json.hpp>
-
+#include <fornani/utils/Flaggable.hpp>
 #include <string_view>
 
 namespace fornani {
@@ -30,6 +29,8 @@ class TextManager;
 
 namespace fornani::gui {
 
+enum class ResponseDialogFlags { hide_portrait };
+
 struct ResponseIndicator {
 	sf::Vector2f position{};
 	components::PhysicsComponent physics{};
@@ -38,7 +39,7 @@ struct ResponseIndicator {
 	void update();
 };
 
-class ResponseDialog {
+class ResponseDialog final : public Flaggable<ResponseDialogFlags> {
   public:
 	ResponseDialog(data::TextManager& text, dj::Json& source, QuestTable& quest_table, std::string_view key, int index = 0, sf::Vector2f start_position = {});
 

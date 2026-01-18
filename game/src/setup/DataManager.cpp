@@ -217,8 +217,8 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	auto& save = files.at(current_save).save_data;
 	files.at(current_save).write();
 	// set file data based on player state
-	save["player_data"]["max_hp"] = player.health.get_max();
-	save["player_data"]["hp"] = player.health.get_hp();
+	save["player_data"]["max_hp"] = player.health.get_capacity();
+	save["player_data"]["hp"] = player.health.get_quantity();
 	save["player_data"]["orbs"] = player.wallet.get_balance();
 	save["player_data"]["position"]["x"] = player.get_position().x;
 	save["player_data"]["position"]["y"] = player.get_position().y;
@@ -399,8 +399,8 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	m_services->state_controller.save_point_id = save_pt_id;
 
 	// set player data based on save file
-	player.health.set_max(save["player_data"]["max_hp"].as<float>());
-	player.health.set_hp(save["player_data"]["hp"].as<float>());
+	player.health.set_capacity(save["player_data"]["max_hp"].as<float>());
+	player.health.set_quantity(save["player_data"]["hp"].as<float>());
 	player.wallet.set_balance(save["player_data"]["orbs"].as<int>());
 
 	// load player's arsenal
@@ -489,8 +489,8 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 	assert(!save.is_null());
 
 	// set player data based on save file
-	player.health.set_max(save["player_data"]["max_hp"].as<float>());
-	player.health.set_hp(save["player_data"]["hp"].as<float>());
+	player.health.set_capacity(save["player_data"]["max_hp"].as<float>());
+	player.health.set_quantity(save["player_data"]["hp"].as<float>());
 	player.wallet.set_balance(save["player_data"]["orbs"].as<int>());
 
 	// load player's arsenal
@@ -505,8 +505,8 @@ void DataManager::load_trial_save(player::Player& player) const {
 	assert(!save.is_null());
 
 	// set player data based on save file
-	player.health.set_max(save["player_data"]["max_hp"].as<float>());
-	player.health.set_hp(save["player_data"]["hp"].as<float>());
+	player.health.set_capacity(save["player_data"]["max_hp"].as<float>());
+	player.health.set_quantity(save["player_data"]["hp"].as<float>());
 	for (auto& item : save["player_data"]["items"].as_array()) {
 		player.give_item(item["label"].as_string(), item["quantity"].as<int>());
 		if (item["revealed"].as_bool()) { player.catalog.inventory.reveal_item(item_id_from_label(item["label"].as_string())); }

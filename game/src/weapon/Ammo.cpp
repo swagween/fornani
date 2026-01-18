@@ -11,14 +11,13 @@ void Ammo::update() {
 }
 
 void Ammo::set_max(int amount) {
-	magazine.taken_time = 8;
 	if (amount == -1) {
 		flags.set(AmmoFlags::infinite);
-		magazine.set_max(1.f);
+		magazine.set_capacity(1.f);
 		refill();
 		return;
 	}
-	magazine.set_max(static_cast<float>(amount));
+	magazine.set_capacity(static_cast<float>(amount));
 }
 
 void Ammo::refill() { magazine.refill(); }
@@ -27,4 +26,4 @@ void Ammo::use(int amount) {
 	if (!infinite()) { magazine.inflict(static_cast<float>(amount), true); }
 }
 
-} // namespace arms
+} // namespace fornani::arms

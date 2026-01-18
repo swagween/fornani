@@ -13,9 +13,6 @@
 		"arsenal": [
 		],
 		"equipped_gun": 0,
-		"abilities": [
-
-		],
 		"wardrobe": {
 			"hairstyle": 0,
 			"shirt": 0,
@@ -72,7 +69,7 @@
 	],
 	"destroyed_blocks": [
 	],
-	"quest_progressions": [
+	"quests": [
 	],
 	"destroyed_inspectables": [
 	],

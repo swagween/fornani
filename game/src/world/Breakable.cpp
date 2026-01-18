@@ -24,7 +24,7 @@ void Breakable::update(automa::ServiceProvider& svc, Map& map, player::Player& p
 	if (svc.ticker.every_x_ticks(20)) { random_offset = random::random_vector_float(-energy, energy); }
 	handle_collision(player.get_collider());
 	set_channel(map.get_style_id());
-	set_frame(m_health.get_i_hp() - 1);
+	set_frame(m_health.get_i_quantity() - 1);
 }
 
 void Breakable::handle_collision(shape::Collider& other) const {

@@ -194,7 +194,6 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	}
 	distant_range.set_position(Enemy::get_collider().bounding_box.get_position() - (distant_range.get_dimensions() * 0.5f) + (Enemy::get_collider().dimensions * 0.5f));
 	player.get_collider().bounding_box.overlaps(distant_range) ? status.set(MinigusFlags::distant_range_activated) : status.reset(MinigusFlags::distant_range_activated);
-	player.on_crush(map);
 
 	// state management
 
@@ -266,7 +265,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (player.is_dead()) { request(MinigusState::laugh); }
 
 	// NPC stuff
-	if (player.get_collider().bounding_box.overlaps(distant_range) && !was_introduced() && is_force_interact()) { set_distant_interact(true); }
+	if (player.get_collider().bounding_box.overlaps(distant_range) && is_force_interact()) { set_distant_interact(true); }
 
 	NPC::update(svc, map, *m_console, player);
 	if (m_console) {
@@ -323,6 +322,7 @@ void Minigus::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		attacks.rush.render(win, cam);
 		attacks.left_shockwave.render(win, cam);
 		attacks.right_shockwave.render(win, cam);
+		distant_range.render(win, cam);
 	}
 }
 
@@ -436,7 +436,10 @@ fsm::StateFunction Minigus::update_jump() {
 	if (status.test(MinigusFlags::over_and_out)) { sign = 0; }
 	if (cooldowns.jump.running()) { Enemy::get_collider().physics.apply_force({sign * 36.f, -8.f}); }
 	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
-	if (cooldowns.jump.is_complete() && status.test(MinigusFlags::over_and_out)) { flags.general.reset(GeneralFlags::map_collision); }
+	if (cooldowns.jump.is_complete() && status.test(MinigusFlags::over_and_out)) {
+		flags.general.reset(GeneralFlags::map_collision);
+		Enemy::get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
+	}
 	if (Enemy::get_collider().grounded() && cooldowns.jump.is_complete()) {
 		m_services->soundboard.flags.minigus.set(audio::Minigus::crash);
 		m_services->soundboard.flags.minigus.set(audio::Minigus::land);

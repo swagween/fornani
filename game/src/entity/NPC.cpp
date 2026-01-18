@@ -240,7 +240,6 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 
 	if (b_cue) {
 		if (svc.soundboard.npc_map.contains(m_label)) { svc.soundboard.npc_map.at(m_label)(s_voice_cue); }
-		// svc.soundboard.npc_map.at(m_label);
 		b_cue = false;
 	}
 

@@ -737,9 +737,19 @@
 			"suite": [
 				[
 					{
-						"codes": [
-							[ 1, 0 ],
-							[ 4, 15 ]
+						"code_list": [
+							[
+								[ 1, 0 ],
+								[ 4, 10 ]
+							],
+							[
+								[ 1, 0 ],
+								[ 4, 9 ]
+							],
+							[
+								[ 1, 0 ],
+								[ 4, 8 ]
+							]
 						],
 						"messages": [ "Yeah?", "What's up?", "It's been awful lonely down here..." ]
 					}
@@ -756,7 +766,10 @@
 						"message": "Turns out, Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us."
 					},
 					{
-						"codes": [ [ 5, 1 ] ],
+						"codes": [
+							[ 5, 1 ],
+							[ 4, 20 ]
+						],
 						"message": "You got split up from us as we tried to flee through the hold because some Skycorps thugs pulled you aside."
 					},
 					{
@@ -772,7 +785,11 @@
 						"message": "I decided the least I could do was try to pass along a message so that you might have some chance to escape, and so I had someone from our crew hide a note in your food."
 					},
 					{
-						"codes": [ [ 1, 0 ] ],
+						"codes": [
+							[ 1, 0 ],
+							[ 5, 2 ],
+							[ 4, 23 ]
+						],
 						"message": "I presume you got the message, otherwise we wouldn't be having this conversation."
 					}
 				],
@@ -1040,12 +1057,27 @@
 			"suite": [
 				[
 					{
-						"codes": [
-							[ 1, 0 ],
-							[ 5, 2 ],
-							[ 3, 9, 1, 301 ]
+						"code_list": [
+							[
+								[ 1, 0 ],
+								[ 5, 2 ],
+								[ 3, 9, 1, 301 ],
+								[ 4, 4 ]
+							],
+							[
+								[ 1, 0 ],
+								[ 5, 1 ],
+								[ 3, 9, 1, 301 ],
+								[ 4, 9 ]
+							],
+							[
+								[ 1, 0 ],
+								[ 5, 2 ],
+								[ 3, 9, 1, 301 ],
+								[ 4, 19 ]
+							]
 						],
-						"messages": [ "It's good to see you again!", "What's up?" ]
+						"messages": [ "Nani! It's good to see you again.", "What's up?", "Hi Nani!" ]
 					}
 
 				],
@@ -1241,7 +1273,7 @@
 				[
 					{
 						"codes": [
-							[ 4, 16 ],
+							[ 4, 15 ],
 							[ 1, 0 ]
 						],
 						"message": "Nani! I'm glad you made it up here okay. Those old nighthawks can be pretty terrifying if you're not used to them."
@@ -1833,6 +1865,7 @@
 			"suite": [
 				[
 					{
+						"codes": [ [ 3, 11, 1, 138 ] ],
 						"message": "...And here we have a marble bust of the great King Miaag."
 					},
 					{
@@ -2902,7 +2935,8 @@
 				[
 					{
 						"codes": [
-							[ 12, 0 ]
+							[ 12, 0 ],
+							[ 9, 11701, 1 ]
 						],
 						"messages": [ "Back for more?", "Had enough yet?", "You don't know when to quit, do you?" ]
 					}

@@ -13,6 +13,7 @@ class HUDOrbs final : public HUDWidget {
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f offset = {}) override;
 
   private:
+	Drawable m_orb_text;
 	std::string m_digits{};
 	float m_label_width;
 };

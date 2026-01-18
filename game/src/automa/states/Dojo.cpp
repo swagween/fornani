@@ -111,7 +111,6 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 
 	hud.reset_position(); // reset hud position to corner
 	svc.soundboard.turn_on();
-
 	player.set_camera_bounds(map.real_dimensions);
 	player.force_camera_center();
 
@@ -186,6 +185,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	// gamepad disconnected
 	if (svc.controller_map.process_gamepad_disconnection()) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
 
 	svc.a11y.set_action_ctx_bar_enabled(false);
 
@@ -227,13 +227,18 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	svc.world_clock.update(svc);
 
-	if (inventory_window && !m_console) {
-		inventory_window.value()->update(svc, *player, map);
-		if (inventory_window.value()->exit_requested()) { inventory_window = {}; }
-		svc.ambience_player.set_balance(svc.music_player.get_fade().get_normalized());
-		return;
-	} else {
-		svc.ambience_player.set_balance(map.cooldowns.fade_obscured.get_normalized());
+	svc.ambience_player.set_balance(map.get_ambience_balance());
+	svc.music_player.set_balance(1.f - map.get_music_balance());
+
+	if (inventory_window) {
+		map.set_target_balance(0.f, audio::BalanceTarget::music);
+		map.set_target_balance(0.f, audio::BalanceTarget::ambience);
+		map.update_balance(svc);
+		if (!m_console) {
+			inventory_window.value()->update(svc, *player, map);
+			if (inventory_window.value()->exit_requested()) { inventory_window = {}; }
+			return;
+		}
 	}
 
 	// TODO: move this somehwere else
@@ -245,6 +250,9 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			vendor_dialog = {};
 			if (m_gui_shader) { m_gui_shader->set_darken(0.f); }
 		}
+		map.set_target_balance(0.f, audio::BalanceTarget::music);
+		map.set_target_balance(0.f, audio::BalanceTarget::ambience);
+		map.update_balance(svc);
 		return;
 	}
 
@@ -272,7 +280,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	// in-game menus
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc, map, *player); }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
 
 	m_enter_room.update();
 	if (!m_console && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
@@ -360,7 +367,7 @@ void Dojo::acquire_gun(ServiceProvider& svc, player::Player& player, int modifie
 		m_console.value()->append("!");
 	}
 	m_console.value()->display_gun(modifier);
-	svc.music_player.quick_play(svc.finder, "discovery");
+	svc.music_player.quick_play(svc.finder, "revelation");
 	gun_acquisition = false;
 	item_music_played = true;
 }

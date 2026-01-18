@@ -9,24 +9,15 @@ namespace fornani::player {
 
 Dive::Dive(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider) : Ability(svc, map, collider), m_request{24}, m_post_dive{8}, m_multiplier{10.f}, m_soundboard{&svc.soundboard}, m_map{&map}, m_services{&svc} {
 	m_type = AbilityType::dive;
-	m_state = AnimState::dash_down;
+	m_state = AnimState::dive;
 	m_duration.start(256);
 	m_request.start();
+	collider.physics.acceleration.y = m_multiplier;
+	m_soundboard->flags.player.set(audio::Player::dive);
 }
 
 void Dive::update(shape::Collider& collider, PlayerController& controller) {
 	m_post_dive.update();
-	if (m_request.running()) {
-		m_request.update();
-		if (controller.grounded()) {
-			m_soundboard->flags.player.set(audio::Player::dive);
-			m_request.cancel();
-		} else {
-			if (m_request.is_complete()) { m_flags.set(AbilityFlags::failed); }
-			if (m_request.is_complete() && !failed()) { m_soundboard->flags.player.set(audio::Player::dive); }
-			return;
-		}
-	}
 	if (!m_flags.test(AbilityFlags::active)) {
 		collider.physics.acceleration.y = m_multiplier;
 		collider.physics.velocity.y = 0.f;

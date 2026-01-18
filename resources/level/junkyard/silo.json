@@ -35,6 +35,19 @@
         ],
         "source_id": 700
       }
+    ],
+    "save_point": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 700,
+        "position": [
+          6,
+          35
+        ]
+      }
     ]
   },
   "meta": {

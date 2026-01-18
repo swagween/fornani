@@ -35,7 +35,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	svc.music_player.play_looped();
 	svc.ambience_player.load(svc.finder, m_attributes.ambience);
 	svc.ambience_player.play();
-	for (auto const& atmo : m_attributes.atmosphere) { atmosphere.push_back(vfx::Atmosphere(svc, real_dimensions, atmo)); }
+	for (auto const& atmo : m_attributes.atmosphere) { atmosphere.push_back(vfx::Atmosphere(svc, *this, atmo)); }
 	background = std::make_unique<graphics::Background>(svc, meta["background"].as_string());
 
 	svc.current_room = room_number;
@@ -264,6 +264,8 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	auto& layers = svc.data.get_layers(room_id);
 	flags.state.reset(LevelState::camera_shake);
 
+	update_balance(svc);
+
 	if (b_transition_in && transition.has_waited(64)) {
 		transition.end();
 		b_transition_in = false;
@@ -362,6 +364,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& platform : platforms) { platform->post_update(svc, *this, *player); }
 
 	player->on_crush(*this);
+	player->reset_water_flags();
 
 	if (m_entities) {
 		for (auto& entity : m_entities.value().variables.entities) { entity->update(svc, *this, console, *player); }
@@ -718,7 +721,7 @@ void Map::generate_collidable_layer(bool live) {
 			spikes.push_back(Spike(*m_services, m_services->assets.get_tileset(std::string{get_biome_string()}), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {1.f, 1.f}, m_biome.get_id(),
 								   m_attributes.properties.test(MapProperties::environmental_randomness)));
 		}
-		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.position(), 5)); }
+		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.get_global_center(), 5)); }
 		if (cell.is_target()) { target_points.push_back(cell.get_global_center()); }
 		if (cell.is_home()) { home_points.push_back(cell.get_global_center()); }
 		if (cell.is_incinerite()) { incinerite_blocks.push_back(std::make_unique<Incinerite>(*m_services, *this, cell.position(), chunk_id)); }
@@ -871,6 +874,14 @@ void Map::wrap(sf::Vector2f& position) const {
 	if (position.y > real_dimensions.y) { position.y = 0.f; }
 }
 
+void Map::set_target_balance(float const to, audio::BalanceTarget const target) {
+	switch (target) {
+	case audio::BalanceTarget::music: music_balance.set_target(to); break;
+	case audio::BalanceTarget::ambience: ambience_balance.set_target(to); break;
+	default: break;
+	}
+}
+
 std::vector<std::unique_ptr<world::Layer>>& Map::get_layers() { return m_services->data.get_layers(room_id); }
 
 std::unique_ptr<world::Layer>& Map::get_middleground() { return m_services->data.get_layers(room_id).at(m_middleground); }
@@ -898,11 +909,12 @@ sf::Vector2f Map::last_checkpoint() {
 }
 
 void Map::debug() {
-	for (auto& enemy : enemy_catalog.enemies) { enemy->debug(); }
-#if defined(FORNANI_PRODUCTION)
-	background->debug();
-	// for (auto& atm : atmosphere) { atm.debug(); }
-#endif
+	static float m = 1.f;
+	static float a = 1.f;
+	ImGui::SliderFloat("Music Balance", &m, 0.f, 1.f);
+	ImGui::SliderFloat("Ambience Balance", &a, 0.f, 1.f);
+	music_balance.set_target(m);
+	ambience_balance.set_target(a);
 }
 
 bool Map::nearby(shape::Shape& first, shape::Shape& second) const {
@@ -918,6 +930,10 @@ bool Map::overlaps_middleground(shape::Shape& test) {
 	}
 	return false;
 }
+
+auto Map::get_music_balance() const -> float { return music_balance.get(); }
+
+auto Map::get_ambience_balance() const -> float { return ambience_balance.get(); }
 
 dj::Json const& Map::get_json_data(automa::ServiceProvider& svc) const {
 	auto rid = room_id;
@@ -962,6 +978,12 @@ void MapAttributes::serialize(dj::Json& out) {
 	out["border_color"].push_back(border_color.r);
 	out["border_color"].push_back(border_color.g);
 	out["border_color"].push_back(border_color.b);
+}
+
+void Map::update_balance(automa::ServiceProvider& svc) {
+	music_balance.update(svc.ticker.dt.count());
+	ambience_balance.update(svc.ticker.dt.count());
+	set_target_balance(cooldowns.fade_obscured.get_normalized(), audio::BalanceTarget::ambience);
 }
 
 } // namespace fornani::world

@@ -13,6 +13,7 @@ ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, QuestT
 	auto& set = key == null_key ? source["responses"][index] : source[key]["responses"][index];
 	for (auto& msg : set.as_array()) {
 		auto contingencies_met = true;
+		if (msg["hide_portrait"].as_bool()) { set_flag(ResponseDialogFlags::hide_portrait); }
 		if (msg["contingencies"]) {
 			auto contingencies = std::vector<QuestContingency>{};
 			for (auto const& cont : msg["contingencies"].as_array()) { contingencies.push_back(QuestContingency{cont}); }

@@ -127,6 +127,8 @@ class Map {
 	void shake_camera();
 	void clear();
 	void wrap(sf::Vector2f& position) const;
+	void set_target_balance(float const to, audio::BalanceTarget const target);
+	void update_balance(automa::ServiceProvider& svc);
 	std::vector<std::unique_ptr<world::Layer>>& get_layers();
 	std::unique_ptr<world::Layer>& get_middleground();
 	std::unique_ptr<world::Layer>& get_obscuring_layer();
@@ -159,6 +161,8 @@ class Map {
 	[[nodiscard]] auto num_registered_chunks() const -> std::size_t { return m_chunks.size(); }
 	[[nodiscard]] auto num_colliders_in_chunk(std::size_t const which) const -> std::size_t { return m_chunks.at(which).size(); }
 	[[nodiscard]] auto get_active_emitters_size() const -> std::size_t { return active_emitters.size(); }
+	[[nodiscard]] auto get_ambience_balance() const -> float;
+	[[nodiscard]] auto get_music_balance() const -> float;
 
 	dj::Json const& get_json_data(automa::ServiceProvider& svc) const;
 
@@ -240,6 +244,9 @@ class Map {
 	// debug
 	int num_collision_checks{};
 
+	audio::SoundBalance music_balance{};
+	audio::SoundBalance ambience_balance{};
+
   private:
 	MapAttributes m_attributes{};
 	util::BitFlags<LayerProperties> m_layer_properties{};
@@ -267,6 +274,7 @@ class Map {
 		int echo_rate{};
 		int echo_count{};
 	} sound{};
+
 	struct {
 		util::BitFlags<LevelState> state{};
 		util::BitFlags<MapState> map_state{};

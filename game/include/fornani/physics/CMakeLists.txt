@@ -3,6 +3,7 @@ nani_add_headers(
         Collider.hpp
         CollisionDepth.hpp
         ICollider.hpp
+        PhysicsProperties.hpp
         Shape.hpp
         RegisteredCollider.hpp
 )

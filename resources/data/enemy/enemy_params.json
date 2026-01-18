@@ -1031,5 +1031,52 @@
 			"foreground": true,
 			"rare_drops": false
 		}
+	},
+	"beamsprout": {
+		"metadata": {
+			"id": 23,
+			"variant": "beast"
+		},
+		"physical": {
+			"dimensions": [ 48, 48 ],
+			"sprite_dimensions": [ 64, 64 ],
+			"offset": [ -16, -12 ],
+			"num_colliders": 1,
+			"num_hurtboxes": 1,
+			"alert_range": [ 1600.0, 1600.0 ],
+			"hostile_range": [ 680.0, 280.0 ],
+			"friction": 0.98,
+			"gravity": 0.0
+		},
+		"visual": {
+			"effect_type": 0,
+			"effect_size": 1
+		},
+		"audio": {
+			"hit": -1
+		},
+		"attributes": {
+			"base_hp": 60,
+			"base_damage": 0.0,
+			"speed": 0.9,
+			"loot_multiplier": 5.0,
+			"drop_range": [ 4, 6 ],
+			"rare_drop_id": 0,
+			"respawn_distance": 2,
+			"permadeath": false,
+			"team": 2
+		},
+		"animation": {
+			"duration": 2,
+			"framerate": 20
+		},
+		"general": {
+			"mobile": false,
+			"gravity": false,
+			"map_collision": false,
+			"player_collision": false,
+			"foreground": true,
+			"rare_drops": false
+		}
 	}
 }

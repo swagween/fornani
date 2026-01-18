@@ -3,6 +3,7 @@
 
 #include <fornani/components/PhysicsComponent.hpp>
 #include <fornani/io/Logger.hpp>
+#include <fornani/physics/PhysicsProperties.hpp>
 #include <fornani/physics/Shape.hpp>
 #include <fornani/systems/Register.hpp>
 #include <fornani/utils/Flaggable.hpp>
@@ -24,10 +25,10 @@ constexpr auto vicinity_pad_v = 31.f;
 class Collider;
 class CircleCollider;
 
-enum class ColliderFlags { changed, intangible, simple, no_physics, registered, crushed, landed };
+enum class ColliderFlags { custom_properties, changed, intangible, simple, no_physics, registered, crushed, landed, in_water, submerged, sinking };
 enum class ColliderType { rectangle, circle };
 enum class ColliderAttributes { fixed, soft, top_only, no_collision, no_map_collision, sturdy, crusher, custom_resolution };
-enum class ColliderTrait { circle, player, enemy, npc, secondary, block, particle, platform };
+enum class ColliderTrait { circle, player, enemy, npc, secondary, block, particle, platform, pushable };
 
 class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {
   public:
@@ -43,6 +44,8 @@ class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {
 	virtual void handle_collider_collision(Collider const& collider, bool momentum = false);
 	virtual void handle_collider_collision(CircleCollider& collider);
 	virtual void render(sf::RenderWindow& win, sf::Vector2f cam);
+
+	void load_properties(dj::Json const& in);
 
 	void register_chunks(world::Map& map);
 	void clear_chunks() { m_chunks.clear(); }
@@ -80,6 +83,7 @@ class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {
   protected:
 	shape::Shape p_vicinity;
 	ColliderType p_type{};
+	PhysicsProperties p_physics_properties{};
 
 	io::Logger p_logger{"Collider"};
 

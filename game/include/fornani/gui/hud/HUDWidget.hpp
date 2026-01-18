@@ -4,6 +4,7 @@
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/gui/StatusBar.hpp>
 #include <fornani/gui/WidgetBar.hpp>
+#include <fornani/io/Logger.hpp>
 #include <fornani/utils/Flaggable.hpp>
 #include <fornani/utils/Polymorphic.hpp>
 #include <optional>
@@ -28,7 +29,7 @@ class HUDWidget : public UniquePolymorphic, public Flaggable<HUDWidgetFlags> {
 
 	virtual void update(automa::ServiceProvider& svc, player::Player& player);
 	virtual void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f offset = {});
-	[[nodiscard]] virtual auto get_offset() const -> sf::Vector2f;
+	[[nodiscard]] virtual auto get_offset(bool scaled = true) const -> sf::Vector2f;
 
 	[[nodiscard]] auto get_root() const -> sf::Vector2f { return p_root; }
 
@@ -36,6 +37,8 @@ class HUDWidget : public UniquePolymorphic, public Flaggable<HUDWidgetFlags> {
 	std::optional<Animatable> p_animatable{};
 	std::optional<sf::FloatRect> p_rect{};
 	sf::Vector2f p_root{};
+
+	io::Logger p_logger{"HUD"};
 };
 
 } // namespace fornani::gui

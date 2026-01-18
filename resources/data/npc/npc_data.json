@@ -67,7 +67,7 @@
 
 	"gobe": {
 		"id": 3,
-		"vendor_id": 1,
+		"vendor_id": 3,
 		"dimensions": [ 24, 24 ],
 		"sprite_dimensions": [ 51, 32 ],
 		"sprite_offset": [ 0, -19 ],
@@ -100,6 +100,7 @@
 	"minigus": {
 		"id": 7,
 		"dimensions": [ 24, 24 ],
+		"no_animation": true,
 		"animation": [
 			{
 				"label": "idle",
@@ -197,7 +198,7 @@
 	},
 	"otto": {
 		"id": 1,
-		"vendor_id": 2,
+		"vendor_id": 1,
 		"dimensions": [ 32, 32 ],
 		"sprite_dimensions": [ 32, 32 ],
 		"sprite_offset": [ 0, -16 ],

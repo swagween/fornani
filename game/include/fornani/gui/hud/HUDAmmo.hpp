@@ -13,7 +13,7 @@ class HUDAmmo final : public HUDWidget, public Flaggable<HUDAmmoFlags> {
 
 	void update(automa::ServiceProvider& svc, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f offset = {}) override;
-	[[nodiscard]] virtual auto get_offset() const -> sf::Vector2f override;
+	[[nodiscard]] auto get_offset(bool scaled = true) const -> sf::Vector2f override;
 
   private:
 	StatusBar m_reload_bar;

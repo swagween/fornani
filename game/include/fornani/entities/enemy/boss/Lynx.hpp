@@ -27,8 +27,8 @@ class Lynx final : public NPC, public Enemy {
 	void debug();
 
 	[[nodiscard]] auto invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable); }
-	[[nodiscard]] auto half_health() const -> bool { return health.get_hp() < health.get_max() * 0.5f; }
-	[[nodiscard]] auto quarter_health() const -> bool { return health.get_hp() < health.get_max() * 0.25f; }
+	[[nodiscard]] auto half_health() const -> bool { return health.get_quantity() < health.get_capacity() * 0.5f; }
+	[[nodiscard]] auto quarter_health() const -> bool { return health.get_quantity() < health.get_capacity() * 0.25f; }
 	[[nodiscard]] auto is_state(LynxState test) const -> bool { return m_state.actual == test; }
 	[[nodiscard]] auto is_levitating() const -> bool { return is_state(LynxState::levitate) || is_state(LynxState::second_phase); }
 	[[nodiscard]] auto slam_follow() const -> bool { return is_state(LynxState::downward_slam) && half_health() && Enemy::animation.get_frame_count() < 6; }

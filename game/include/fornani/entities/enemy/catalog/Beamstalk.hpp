@@ -1,6 +1,8 @@
+
 #pragma once
 
 #include <fornani/entities/enemy/Enemy.hpp>
+#include <fornani/particle/Spring.hpp>
 #include <fornani/utils/Flaggable.hpp>
 #define BEAMSTALK_BIND(f) std::bind(&Beamstalk::f, this)
 
@@ -31,10 +33,10 @@ class Beamstalk final : public Enemy, public Flaggable<BeamstalkFlags>, public S
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;
 
-	sf::Vector2f* m_root{};
+	vfx::Spring* m_root{};
 	components::SteeringBehavior m_steering{};
 
-	util::Cooldown post_beam{128};
+	util::Cooldown post_beam;
 	util::Cooldown init{80};
 
 	float fire_rate;

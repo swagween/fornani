@@ -51,6 +51,12 @@
 		"dimensions": [ 16, 16 ],
 		"x_reflection": true
 	},
+	"splash": {
+		"frame_count": 4,
+		"framerate": 24,
+		"dimensions": [ 64, 64 ],
+		"x_reflection": true
+	},
 	"dust": {
 		"frame_count": 5,
 		"framerate": 32,
@@ -67,6 +73,11 @@
 		"framerate": 16,
 		"dimensions": [ 100, 100 ],
 		"x_reflection": true
+	},
+	"bright_flare": {
+		"frame_count": 8,
+		"framerate": 12,
+		"dimensions": [ 64, 64 ]
 	},
 	"large_explosion": {
 		"frame_count": 8,

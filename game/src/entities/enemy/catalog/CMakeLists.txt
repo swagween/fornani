@@ -1,5 +1,6 @@
 nani_add_sources(
         Archer.cpp
+        Beamsprout.cpp
         Beamstalk.cpp
         Caster.cpp
         Demon.cpp

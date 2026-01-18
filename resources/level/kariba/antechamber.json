@@ -1,20 +1,5 @@
 {
   "entities": {
-    "chests": [
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 33146,
-        "modifier": 14,
-        "position": [
-          2,
-          10
-        ],
-        "type": 2
-      }
-    ],
     "inspectables": [
       {
         "activate_on_contact": false,
@@ -142,7 +127,6 @@
       "darken_factor": 2
     },
     "special_drop_id": 0,
-    "style": 5,
     "use_template": false
   },
   "tile": {

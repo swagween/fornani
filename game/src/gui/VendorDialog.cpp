@@ -13,13 +13,14 @@
 namespace fornani::gui {
 
 VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id)
-	: vendor_id(vendor_id), m_selector{{8, 4}, {18.f, 18.f}}, orb{.sprite{anim::AnimatedSprite(svc.assets.get_texture("orbs"), {24, 24})}}, m_artwork{svc, "vendor_background"}, text{.vendor_name{svc.text.fonts.title},
-																																													  .buy_tab{svc.text.fonts.title},
-																																													  .sell_tab{svc.text.fonts.title},
-																																													  .orb_count{svc.text.fonts.title},
-																																													  .price{svc.text.fonts.title},
-																																													  .price_number{svc.text.fonts.title},
-																																													  .item_label{svc.text.fonts.basic}},
+	: vendor_id(vendor_id), m_selector{{8, 4}, {18.f, 18.f}}, orb{.sprite{anim::AnimatedSprite(svc.assets.get_texture("orbs"), {24, 24})}}, m_artwork{svc, "vendor_" + std::string{*svc.data.get_npc_label_from_id(vendor_id)}},
+	  text{.vendor_name{svc.text.fonts.title},
+		   .buy_tab{svc.text.fonts.title},
+		   .sell_tab{svc.text.fonts.title},
+		   .orb_count{svc.text.fonts.title},
+		   .price{svc.text.fonts.title},
+		   .price_number{svc.text.fonts.title},
+		   .item_label{svc.text.fonts.basic}},
 	  m_constituents{
 		  VendorConstituent{svc, "portrait", {{}, {96, 144}}},			VendorConstituent{svc, "wares", {{0, 335}, {200, 118}}, 200, util::InterpolationType::cubic},
 		  VendorConstituent{svc, "description", {{96, 0}, {256, 137}}}, VendorConstituent{svc, "name", {{0, 144}, {103, 58}}, 80},
@@ -82,9 +83,6 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 
 	m_description = std::make_unique<DescriptionGizmo>(svc, map, sf::Vector2f{}, sf::IntRect{}, sf::FloatRect{{108.f, 108.f}, {350.f, 120.f}}, sf::Vector2f{});
 	m_description->set_text_only(true);
-
-	svc.music_player.filter_fade_in(80.f, 40.f);
-	svc.ambience_player.set_balance(1.f);
 
 	// initialize item list
 	for (auto& row : m_vendor_items_list) {
@@ -379,7 +377,6 @@ bool VendorDialog::fade_logic(automa::ServiceProvider& svc, world::Map& map) {
 	if (m_outro.is_almost_complete()) {
 		map.transition.start();
 		flags.set(VendorDialogStatus::closed);
-		svc.music_player.filter_fade_out();
 	}
 	if (map.transition.is(graphics::TransitionState::black) && flags.test(VendorDialogStatus::closed)) {
 		flags.reset(VendorDialogStatus::opened);

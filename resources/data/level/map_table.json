@@ -446,6 +446,12 @@
     },
     {
       "folder": "overturned",
+      "label": "grave_house.json",
+      "region": "overturned",
+      "room_id": 413
+    },
+    {
+      "folder": "overturned",
       "label": "grove.json",
       "region": "overturned",
       "room_id": 215

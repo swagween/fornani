@@ -25,8 +25,6 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map, 
 	m_background.setSize(svc.window->f_screen_dimensions());
 	m_dashboard->set_position(sf::Vector2f{250.f, 32.f}, true);
 	svc.soundboard.flags.console.set(audio::Console::menu_open);
-	svc.music_player.filter_fade_in(80.f, 40.f);
-	svc.ambience_player.set_balance(1.f);
 	util::ColorUtils::reset();
 }
 
@@ -88,7 +86,6 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	if (controller.digital_action_status(config::DigitalAction::inventory_close).triggered) { m_view = InventoryView::exit; }
 	if (m_view == InventoryView::exit && !m_exit.running()) {
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-		svc.music_player.filter_fade_out();
 		m_exit.start();
 		m_dashboard->close();
 		util::ColorUtils::reset();

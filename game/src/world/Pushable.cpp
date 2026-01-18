@@ -33,6 +33,7 @@ Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position
 	get_collider().set_attribute(shape::ColliderAttributes::sturdy);
 	// get_collider().set_attribute(shape::ColliderAttributes::custom_resolution);
 	get_collider().set_trait(shape::ColliderTrait::block);
+	get_collider().set_trait(shape::ColliderTrait::pushable);
 	get_collider().set_exclusion_target(shape::ColliderTrait::particle);
 	get_collider().set_exclusion_target(shape::ColliderTrait::player);
 	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
@@ -88,8 +89,6 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		}
 	}
 
-	// pushable should only be moved by a platform if it's on top of one
-
 	if (size == 1 && get_collider().get_center().y < player.get_collider().get_center().y) { get_collider().handle_collider_collision(player.hurtbox); } // big ones should crush the player
 	if (player.get_collider().jumpbox.overlaps(get_collider().bounding_box) && get_collider().grounded() && get_collider().physics.is_moving_horizontally(constants::tiny_value)) {
 		player.get_collider().physics.forced_momentum = get_collider().physics.forced_momentum;
@@ -116,9 +115,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	auto touching_plat = false;
 	for (auto& platform : map.platforms) {
 		if (get_collider().wallslider.overlaps(platform->get_collider().bounding_box)) { touching_plat = true; }
-	}
-	for (auto& platform : map.platforms) {
-		// if (platform->get_collider().bounding_box.overlaps(get_collider().jumpbox)) { get_collider().handle_collider_collision(platform->get_collider().bounding_box); }
+		if (platform->get_collider().bounding_box.overlaps(get_collider().jumpbox)) { get_collider().handle_collider_collision(platform->get_collider().bounding_box); }
 		if (get_collider().jumpbox.overlaps(platform->get_collider().bounding_box) && !get_collider().perma_grounded() && platform->is_sticky() && !touching_plat) {
 			get_collider().physics.forced_momentum = platform->get_velocity();
 			if (player.get_collider().jumpbox.overlaps(collision_box) && !player.get_collider().perma_grounded() && !(player.get_collider().has_left_wallslide_collision() || player.get_collider().has_right_wallslide_collision())) {

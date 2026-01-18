@@ -1,5 +1,6 @@
 nani_add_headers(
         Archer.hpp
+        Beamsprout.hpp
         Beamstalk.hpp
         Caster.hpp
         Demon.hpp

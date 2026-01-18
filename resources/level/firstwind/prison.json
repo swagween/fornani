@@ -3824,6 +3824,23 @@
           8
         ],
         "source_id": 100
+      },
+      {
+        "activate_on_contact": false,
+        "already_open": false,
+        "destination_id": 116,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "key_id": 0,
+        "locked": false,
+        "position": [
+          7,
+          12
+        ],
+        "source_id": 100
       }
     ],
     "save_point": [

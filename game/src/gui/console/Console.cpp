@@ -140,7 +140,12 @@ void Console::render(sf::RenderWindow& win) {
 
 void Console::set_source(dj::Json const& json) { text_suite = json; }
 
-void Console::set_nani_sprite(sf::Sprite const& sprite) { m_nani_portrait = Portrait(*m_services, sprite.getTexture(), 5, false); }
+void Console::set_nani_sprite(sf::Sprite const& sprite) {
+	if (m_response) {
+		if (m_response->has_flag_set(ResponseDialogFlags::hide_portrait)) { return; }
+	}
+	m_nani_portrait = Portrait(*m_services, sprite.getTexture(), 5, false);
+}
 
 void Console::handle_actions(int value) {
 	switch (value) {

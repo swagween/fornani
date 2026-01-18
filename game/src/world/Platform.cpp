@@ -81,6 +81,7 @@ Platform::Platform(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f p
 	get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
 	get_collider().set_attribute(shape::ColliderAttributes::custom_resolution);
 	get_collider().set_exclusion_target(shape::ColliderTrait::particle);
+	get_collider().set_resolution_exclusion_target(shape::ColliderTrait::pushable);
 	get_collider().set_attribute(shape::ColliderAttributes::crusher);
 
 	for (auto const& t : map.get_entities<Turret>()) {

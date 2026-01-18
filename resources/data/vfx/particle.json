@@ -111,6 +111,7 @@
 			"loop": 0
 		}
 	},
+
 	"wasp": {
 		"load": 30,
 		"rate": 4.0,
@@ -532,6 +533,28 @@
 		"colliding": false,
 		"fader": true,
 		"color": "save"
+	},
+
+	"bubble": {
+		"load": 3,
+		"rate": 1.0,
+		"expulsion": 3.0,
+		"expulsion_variance": 2.0,
+		"cone": 0.08,
+		"friction": 0.99,
+		"elasticity": 0.95,
+		"gravity": -0.5,
+		"lifespan": 144,
+		"lifespan_variance": 0,
+		"dimensions": [ 16, 16 ],
+		"animated": true,
+		"colliding": true,
+		"animation": {
+			"lookup": 0,
+			"duration": 6,
+			"framerate": 16,
+			"loop": 0
+		}
 	},
 
 	"smoke": {

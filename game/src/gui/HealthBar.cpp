@@ -15,7 +15,7 @@ HealthBar::HealthBar(automa::ServiceProvider& svc, sf::Color color) : p_bar_size
 	p_backdrop.setSize(p_bar_size);
 }
 
-void HealthBar::update(float const percentage, sf::Vector2f position) {
+void HealthBar::update(float const percentage, sf::Vector2f position, bool centered) {
 	static float previous_percentage{};
 	auto rounded = std::floor(percentage * p_bar_size.x / constants::f_scale_factor) * constants::f_scale_factor / p_bar_size.x;
 	p_current.setScale(sf::Vector2f{rounded, 1.f});
@@ -24,7 +24,7 @@ void HealthBar::update(float const percentage, sf::Vector2f position) {
 	taken_target.x = std::floor(taken_target.x * p_bar_size.x / constants::f_scale_factor) * constants::f_scale_factor / p_bar_size.x; // pixel accuracy
 	p_taken.setScale(taken_target);
 	previous_percentage = percentage;
-	m_world_position = position;
+	m_world_position = centered ? position - p_bar_size * 0.5f : position;
 }
 
 void HealthBar::render(sf::RenderWindow& win, sf::Vector2f cam, bool window_fixed) {
@@ -36,6 +36,12 @@ void HealthBar::render(sf::RenderWindow& win, sf::Vector2f cam, bool window_fixe
 	win.draw(p_backdrop);
 	win.draw(p_taken);
 	win.draw(p_current);
+}
+
+void HealthBar::center() {
+	p_backdrop.setOrigin(p_backdrop.getLocalBounds().size * 0.5f);
+	p_taken.setOrigin(p_taken.getLocalBounds().size * 0.5f);
+	p_current.setOrigin(p_current.getLocalBounds().size * 0.5f);
 }
 
 } // namespace fornani::gui

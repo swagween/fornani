@@ -1,4 +1,12 @@
 {
+	"properties": {
+		"gravity": 1.053610,
+		"friction": [ 0.938, 0.929 ],
+		"water_gravity_multiplier": -0.5,
+		"water_friction_multiplier": 0.9,
+		"water_surface_multiplier": 0.995,
+		"water_sinking_multiplier": 0.9
+	},
 	"physics": {
 		"grav": 1.053610,
 		"ground_fric": 0.938000,

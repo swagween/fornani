@@ -14,8 +14,6 @@ constexpr auto wallslide_threshold_v = -0.16f;
 constexpr auto walljump_force_v = 8.6f;
 constexpr auto light_offset_v = 12.f;
 constexpr auto default_invincibility_time_v = 300;
-constexpr auto water_gravity_multiplier_v = -0.1f;
-constexpr auto water_friction_multiplier_v = 0.8f;
 constexpr auto max_damage_v = 1024.f;
 
 Player::Player(automa::ServiceProvider& svc)
@@ -40,10 +38,17 @@ Player::Player(automa::ServiceProvider& svc)
 
 void Player::register_with_map(world::Map& map) {
 	Mobile::register_collider(map, player_dimensions_v);
+
+	auto result = dj::Json::from_file((m_services->finder.resource_path() + "/data/player/physics_params.json").c_str());
+	if (!result) { NANI_LOG_ERROR(m_logger, "Failed to load player physics params!"); }
+	auto in = std::move(*result);
+	get_collider().load_properties(in["properties"]);
+
 	if (has_collider()) { NANI_LOG_INFO(m_logger, "Player has a collider."); }
 	anchor_point = get_collider().physics.position + player_dimensions_v * 0.5f;
 	get_collider().collision_depths = util::CollisionDepth();
 	get_collider().physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
+	get_collider().physics.set_constant_friction({physics_stats.ground_fric, physics_stats.air_fric});
 	get_collider().physics.maximum_velocity = physics_stats.maximum_velocity;
 	get_collider().flags.general.set(shape::General::complex);
 	get_collider().set_trait(shape::ColliderTrait::player);
@@ -73,21 +78,21 @@ void Player::update(world::Map& map) {
 	if (get_collider().collision_depths) { get_collider().collision_depths.value().reset(); }
 	get_collider().set_direction(directions.actual);
 	cooldowns.tutorial.update();
-	if (m_hurt_cooldown.is_almost_complete()) { m_services->music_player.filter_fade_out(); }
 	m_hurt_cooldown.update();
 	distant_vicinity.set_position(get_collider().get_center() - distant_vicinity.get_dimensions() * 0.5f);
 	m_piggyback_socket = get_collider().get_top() + sf::Vector2f{-8.f * directions.actual.as_float(), -16.f};
 
-	if (has_flag_set(PlayerFlags::submerged)) {
+	if (get_collider().has_flag_set(shape::ColliderFlags::submerged)) {
 		if (m_services->ticker.every_x_ticks(32)) { m_air_supply.inflict(1.f); }
 	} else {
 		if (m_services->ticker.every_x_ticks(8)) { m_air_supply.heal(1.f); }
 	}
+
 	if (m_air_supply.is_dead()) {
 		set_flag(PlayerFlags::drowned);
 		hurt(max_damage_v, true);
 	}
-	m_air_supply_bar.update(m_air_supply.get_normalized(), get_collider().get_top() + sf::Vector2f{0.f, -24.f});
+	m_air_supply_bar.update(m_air_supply.get_normalized(), get_collider().get_top() + sf::Vector2f{0.f, -32.f}, true);
 
 	if (has_item_equipped(25)) {
 		if (arsenal && hotbar) {
@@ -125,12 +130,15 @@ void Player::update(world::Map& map) {
 	invincible() ? get_collider().draw_hurtbox.setFillColor(colors::red) : get_collider().draw_hurtbox.setFillColor(colors::blue);
 	if (has_flag_set(PlayerFlags::crushed)) { get_collider().physics.gravity = 0.f; }
 
-	get_collider().physics.set_constant_friction({physics_stats.ground_fric, physics_stats.air_fric});
-	get_collider().physics.gravity = physics_stats.grav;
-	if (has_flag_set(PlayerFlags::in_water)) {
-		auto multiplier = has_flag_set(PlayerFlags::submerged) ? water_gravity_multiplier_v : 0.9f;
-		get_collider().physics.set_constant_friction({physics_stats.ground_fric * water_friction_multiplier_v, physics_stats.air_fric * water_friction_multiplier_v});
-		get_collider().physics.gravity = physics_stats.grav * multiplier;
+	get_collider().set_flag(shape::ColliderFlags::sinking, has_flag_set(PlayerFlags::drowned));
+
+	if (get_collider().has_flag_set(shape::ColliderFlags::submerged)) {
+		map.set_target_balance(0.f, audio::BalanceTarget::music);
+		map.set_target_balance(0.f, audio::BalanceTarget::ambience);
+	}
+	if (hurt_cooldown.running()) {
+		map.set_target_balance(0.f, audio::BalanceTarget::music);
+		map.set_target_balance(0.f, audio::BalanceTarget::ambience);
 	}
 
 	update_direction();
@@ -203,6 +211,9 @@ void Player::update(world::Map& map) {
 	update_invincibility();
 	update_weapon();
 	if (controller.is_dashing() && m_services->ticker.every_x_ticks(8)) { map.spawn_emitter(*m_services, "dash", get_collider().get_center() - sf::Vector2f{0.f, 4.f}, get_actual_direction(), sf::Vector2f{8.f, 8.f}); }
+	if (controller.is(AbilityType::dive) && m_services->ticker.every_x_ticks(64) && get_collider().has_flag_set(shape::ColliderFlags::submerged)) {
+		map.spawn_emitter(*m_services, "bubble", get_collider().get_center(), Direction{UND::up}, sf::Vector2f{8.f, 8.f});
+	}
 
 	update_antennae();
 
@@ -299,7 +310,7 @@ void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& w
 	if (had_special_death()) { return; }
 	health_indicator.render(svc, win, cam);
 	orb_indicator.render(svc, win, cam);
-	if (has_flag_set(PlayerFlags::submerged) || !m_air_supply.full()) { m_air_supply_bar.render(win, cam); }
+	if (get_collider().has_flag_set(shape::ColliderFlags::submerged) || !m_air_supply.full()) { m_air_supply_bar.render(win, cam); }
 }
 
 void Player::assign_texture(sf::Texture& tex) { Animatable::set_texture(tex); }
@@ -337,7 +348,7 @@ void Player::update_animation() {
 		}
 	} else {
 		if (get_collider().physics.apparent_velocity().y > -thresholds.suspend && get_collider().physics.apparent_velocity().y < thresholds.suspend && !controller.is_wallsliding() && !controller.is_walljumping()) {
-			m_animation_machine.request(AnimState::suspend);
+			get_collider().has_flag_set(shape::ColliderFlags::in_water) ? m_animation_machine.request(AnimState::swim) : m_animation_machine.request(AnimState::suspend);
 		}
 	}
 
@@ -360,7 +371,7 @@ void Player::update_animation() {
 	if (consume_flag(PlayerFlags::wake_up)) { m_animation_machine.request(AnimState::wake_up); }
 
 	if (is_dead()) {
-		m_animation_machine.request(AnimState::die);
+		has_flag_set(PlayerFlags::drowned) ? m_animation_machine.request(AnimState::drown) : m_animation_machine.request(AnimState::die);
 		set_flag(PlayerFlags::show_weapon, false);
 	}
 
@@ -507,8 +518,6 @@ void Player::hurt(float amount, bool force) {
 	if (health.is_dead()) { return; }
 	if (is_intangible()) { return; }
 	if (!health.invincible() || force) {
-		m_services->music_player.filter_fade_in(80.f, 40.f, 32);
-		m_services->ambience_player.set_balance(1.f);
 		m_services->ticker.freeze_frame(12 * std::min(static_cast<int>(amount), 3));
 		m_sprite_shake.start();
 		m_hurt_cooldown.start();
@@ -687,7 +696,7 @@ void Player::give_item(std::string_view label, int amount, bool from_save) {
 	auto id{0};
 	for (auto i{0}; i < amount; ++i) { id = catalog.inventory.add_item(m_services->data.item, label); }
 	if (id == 29 && !from_save) {
-		health.increase_max_hp(1.f);
+		health.increase_capacity(1.f);
 		m_services->soundboard.flags.item.set(audio::Item::health_increase);
 	}
 }
@@ -697,6 +706,12 @@ EquipmentStatus Player::equip_item(int id) { return catalog.inventory.equip_item
 void Player::reset_flags() {
 	flags = {};
 	reset_all();
+}
+
+void Player::reset_water_flags() {
+	if (!has_collider()) { return; }
+	get_collider().set_flag(shape::ColliderFlags::in_water, false);
+	get_collider().set_flag(shape::ColliderFlags::submerged, false);
 }
 
 void Player::total_reset() {
@@ -816,7 +831,7 @@ bool Player::can_walljump() const {
 
 bool Player::can_dive() const {
 	if (health.is_dead()) { return false; }
-	if (!has_flag_set(PlayerFlags::in_water)) { return false; }
+	if (!get_collider().has_flag_set(shape::ColliderFlags::in_water)) { return false; }
 	return true;
 }
 

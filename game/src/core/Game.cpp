@@ -284,6 +284,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 				}
 				if (ImGui::BeginTabItem("World")) {
 					if (map) {
+						map->get().debug();
 						ImGui::Text("Transition State: %s", map->get().transition.as_string().c_str());
 						ImGui::Text("Transition Cooldown: %.5f", map->get().transition.get_cooldown());
 						ImGui::SeparatorText("Entities");
@@ -415,6 +416,22 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							}
 							ImGui::EndTabItem();
 						}
+						if (ImGui::BeginTabItem("Gobe")) {
+							for (auto i = 0; i <= static_cast<int>(audio::NPCGobe::orewa); ++i) {
+								ImGui::PushID(i);
+								if (ImGui::Button("OOO##i")) { services.soundboard.npc_map.at("gobe")(i); }
+								ImGui::PopID();
+							}
+							ImGui::EndTabItem();
+						}
+						if (ImGui::BeginTabItem("Mirin")) {
+							for (auto i = 0; i <= static_cast<int>(audio::NPCMirin::haha); ++i) {
+								ImGui::PushID(i);
+								if (ImGui::Button("OOO##i")) { services.soundboard.npc_map.at("mirin")(i); }
+								ImGui::PopID();
+							}
+							ImGui::EndTabItem();
+						}
 						ImGui::EndTabBar();
 					}
 					ImGui::EndTabItem();
@@ -504,7 +521,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Wallsliding? %s", player.controller.is_wallsliding() ? "Yes" : "No");
 								ImGui::Text("Walljumping? %s", player.controller.is_walljumping() ? "Yes" : "No");
 								ImGui::Text("On Ramp? %s", player.get_collider().on_ramp() ? "Yes" : "No");
-								ImGui::Text("Submerged? %s", player.has_flag_set(player::PlayerFlags::submerged) ? "Yes" : "No");
+								ImGui::Text("Submerged? %s", player.get_collider().has_flag_set(shape::ColliderFlags::submerged) ? "Yes" : "No");
+								ImGui::Text("In Water? %s", player.get_collider().has_flag_set(shape::ColliderFlags::in_water) ? "Yes" : "No");
 								ImGui::Separator();
 								ImGui::Text("X Position: %.2f", player.get_collider().physics.position.x / constants::f_cell_size);
 								ImGui::Text("Y Position: %.2f", player.get_collider().physics.position.y / constants::f_cell_size);

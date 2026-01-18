@@ -14,6 +14,25 @@ void ICollider::update(automa::ServiceProvider& svc) {
 	p_vicinity.set_position(center - p_vicinity.get_dimensions() * 0.5f);
 	set_flag(ColliderFlags::changed, false);
 	if (physics.actual_speed() > constants::tiny_value) { set_flag(ColliderFlags::changed); }
+
+	// some colliders may have custom physics properties (like the player) that must be unserialized
+	// colliders will not have water physics by default (for now). TODO: change that
+	if (!has_flag_set(ColliderFlags::custom_properties)) { return; }
+
+	auto v = std::abs(physics.velocity.y);
+	auto v_min = 0.f;
+	auto v_max = 100.f;
+	auto result = std::lerp(p_physics_properties.water_surface_multiplier, 0.5f, std::clamp((v - v_min) / (v_max - v_min), 0.0f, 1.0f));
+	if (has_flag_set(ColliderFlags::in_water) && !has_flag_set(ColliderFlags::submerged)) { physics.acceleration.y *= result; }
+
+	physics.set_constant_friction(p_physics_properties.friction);
+	physics.gravity = p_physics_properties.gravity;
+	if (has_flag_set(ColliderFlags::in_water)) {
+		auto multiplier = has_flag_set(ColliderFlags::submerged) ? p_physics_properties.water_gravity_multiplier : 0.9f;
+		if (has_flag_set(ColliderFlags::sinking)) { multiplier = 0.005f; }
+		physics.set_constant_friction(p_physics_properties.friction * p_physics_properties.water_friction_multiplier);
+		physics.gravity = p_physics_properties.gravity * multiplier;
+	}
 }
 
 void ICollider::handle_map_collision(world::Map& map) {}
@@ -31,6 +50,11 @@ void ICollider::handle_collider_collision(Collider const& collider, bool momentu
 void ICollider::handle_collider_collision(CircleCollider& collider) {}
 
 void ICollider::render(sf::RenderWindow& win, sf::Vector2f cam) { p_vicinity.render(win, cam, sf::Color{80, 80, 10, 10}); }
+
+void ICollider::load_properties(dj::Json const& in) {
+	p_physics_properties.unserialize(in);
+	set_flag(ColliderFlags::custom_properties);
+}
 
 void ICollider::register_chunks(world::Map& map) {
 	if (!was_changed()) { return; }

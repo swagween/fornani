@@ -65,6 +65,11 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		b_play_intro_song = false;
 	}
 
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered || svc.controller_map.process_gamepad_disconnection()) {
+		pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{svc.data.gui_text["pause_menu"]["resume"].as_string(), svc.data.gui_text["pause_menu"]["settings"].as_string(),
+																						svc.data.gui_text["pause_menu"]["controls"].as_string(), svc.data.gui_text["pause_menu"]["quit"].as_string()});
+	}
+
 	m_wait.update();
 	if (m_wait.running()) { return; }
 
@@ -110,11 +115,6 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		svc.ambience_player.set_balance(0.f);
 		if (m_attack_fadeout.running()) { svc.ambience_player.set_volume(m_attack_fadeout.get_quadratic_normalized()); }
 		if (!m_console && has_flag_set(IntroFlags::console_message)) { set_flag(IntroFlags::complete); }
-	}
-
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered || svc.controller_map.process_gamepad_disconnection()) {
-		pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{svc.data.gui_text["pause_menu"]["resume"].as_string(), svc.data.gui_text["pause_menu"]["settings"].as_string(),
-																						svc.data.gui_text["pause_menu"]["controls"].as_string(), svc.data.gui_text["pause_menu"]["quit"].as_string()});
 	}
 
 	if (has_flag_set(IntroFlags::complete) && map.cutscene_catalog.cutscenes.empty()) {

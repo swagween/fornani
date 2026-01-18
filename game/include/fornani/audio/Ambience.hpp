@@ -2,7 +2,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "MusicPlayer.hpp"
+#include <fornani/audio/Balance.hpp>
+#include <fornani/audio/MusicPlayer.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;

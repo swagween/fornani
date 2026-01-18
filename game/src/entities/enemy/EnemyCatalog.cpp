@@ -4,6 +4,7 @@
 #include <fornani/entities/enemy/boss/Miaag.hpp>
 #include <fornani/entities/enemy/boss/Minigus.hpp>
 #include <fornani/entities/enemy/catalog/Archer.hpp>
+#include <fornani/entities/enemy/catalog/Beamsprout.hpp>
 #include <fornani/entities/enemy/catalog/Beamstalk.hpp>
 #include <fornani/entities/enemy/catalog/Caster.hpp>
 #include <fornani/entities/enemy/catalog/Demon.hpp>
@@ -55,6 +56,7 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[m
 	case 20: enemies.push_back(std::make_unique<Junker>(svc, map, variant)); break;
 	case 21: enemies.push_back(std::make_unique<DumpsterDiver>(svc, map, variant)); break;
 	case 22: enemies.push_back(std::make_unique<Mastiff>(svc, map, variant)); break;
+	case 23: enemies.push_back(std::make_unique<Beamsprout>(svc, map, start_direction)); break;
 	default: enemies.push_back(std::make_unique<Frdog>(svc, map)); break;
 	}
 }

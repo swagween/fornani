@@ -112,11 +112,11 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		auto jump_direction = player.get_collider().has_right_wallslide_collision() ? Direction{LR::right} : player.get_collider().has_left_wallslide_collision() ? Direction{LR::left} : Direction{};
 		if (can_walljump) {
 			m_ability = std::make_unique<Walljump>(svc, map, player.get_collider(), jump_direction);
-		} else if (can_doublejump) {
+		} else if (can_doublejump && !player.can_dive()) {
 			m_ability = std::make_unique<Doublejump>(svc, map, player.get_collider());
 			player.m_ability_usage.doublejump.update();
 		}
-		if (player.can_dive()) { m_ability = std::make_unique<Dive>(svc, map, player.get_collider()); }
+		if (player.can_dive() && !can_walljump) { m_ability = std::make_unique<Dive>(svc, map, player.get_collider()); }
 	}
 	if (!is_wallsliding()) { svc.soundboard.flags.player.reset(audio::Player::wallslide); }
 

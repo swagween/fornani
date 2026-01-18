@@ -135,7 +135,7 @@ void Summoner::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 	Enemy::render(svc, win, cam);
 	for (auto& attack : m_attacks.pulse) {
 		if (attack.hit.active()) {}
-		attack.render(win, cam);
+		// attack.render(win, cam);
 	}
 
 	m_magic.render(win, cam);

@@ -48,7 +48,7 @@ class Minigus : public Enemy, public NPC, public StateMachine<MinigusState> {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	[[nodiscard]] auto invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable); }
-	[[nodiscard]] auto half_health() const -> bool { return health.get_hp() < health.get_max() * 0.5f; }
+	[[nodiscard]] auto half_health() const -> bool { return health.get_quantity() < health.get_capacity() * 0.5f; }
 
 	void request(MinigusState const state) { StateMachine<MinigusState>::request(state); }
 	void set_state(MinigusState const to) { StateMachine<MinigusState>::p_state.actual = to; }

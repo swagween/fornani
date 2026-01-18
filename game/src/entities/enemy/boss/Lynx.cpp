@@ -233,7 +233,6 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		// second phase starts
 		if (half_health() && !m_flags.test(LynxFlags::second_phase)) {
 			request(LynxState::second_phase);
-			svc.music_player.filter_fade_in(80.f, 40.f);
 			set_distant_interact(true);
 			set_force_interact(true);
 			flush_conversations();
@@ -414,7 +413,9 @@ fsm::StateFunction Lynx::update_downward_slam() {
 	if (Enemy::animation.just_started()) { m_counters.slam.update(); }
 	if (Enemy::animation.get_frame_count() == 7) { Enemy::get_collider().physics.acceleration.y = 200.f; }
 	if (Enemy::animation.get_frame_count() >= 7 && !Enemy::get_collider().grounded()) { Enemy::animation.set_frame(7); }
-	if (Enemy::animation.get_frame_count() == 6 && Enemy::animation.keyframe_started()) { m_map->spawn_effect(*m_services, "lens_flare", Enemy::get_collider().get_center() - sf::Vector2f{0.f, 64.f}); }
+	if (Enemy::animation.get_frame_count() == 4 && Enemy::animation.keyframe_started()) {
+		m_map->spawn_effect(*m_services, "bright_flare", Enemy::get_collider().get_center() - sf::Vector2f{-Enemy::directions.actual.as_float(), 64.f}, {}, 1);
+	}
 	if (Enemy::animation.get_frame_count() == 3 && Enemy::animation.keyframe_started()) {
 		m_services->soundboard.flags.lynx.set(audio::Lynx::shing);
 		m_services->soundboard.flags.lynx.set(audio::Lynx::hiyyah);
@@ -640,8 +641,9 @@ fsm::StateFunction Lynx::update_second_phase() {
 	flags.general.reset(GeneralFlags::gravity);
 	Enemy::get_collider().set_flag(shape::ColliderFlags::simple);
 	Enemy::get_collider().physics.set_friction_componentwise(m_seek_friction);
+	m_map->set_target_balance(0.f, audio::BalanceTarget::music);
+	m_map->set_target_balance(0.f, audio::BalanceTarget::ambience);
 	if (!m_console->has_value()) {
-		m_services->music_player.filter_fade_out();
 		m_services->music_player.load(m_services->finder, "tumultuous_spirit");
 		m_services->music_player.play_looped();
 		flags.general.set(GeneralFlags::gravity);

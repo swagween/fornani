@@ -14,8 +14,9 @@ namespace fornani::gui {
 class HealthBar {
   public:
 	HealthBar(automa::ServiceProvider& svc, sf::Color color);
-	virtual void update(float const percentage, sf::Vector2f position);
+	virtual void update(float const percentage, sf::Vector2f position, bool centered = false);
 	virtual void render(sf::RenderWindow& win, sf::Vector2f cam, bool window_fixed = false);
+	void center();
 
   protected:
 	sf::RectangleShape p_backdrop{};

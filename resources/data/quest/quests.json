@@ -143,6 +143,7 @@
 	{
 		"title": "Main",
 		"tag": "main",
+		"target": 1,
 		"displayed": false
 	}
 ]

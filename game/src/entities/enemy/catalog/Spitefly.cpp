@@ -34,13 +34,14 @@ Spitefly::Spitefly(automa::ServiceProvider& svc, world::Map& map, int variant) :
 		p_state.actual = SpiteflyState::awaken;
 		state_function = std::bind(&Spitefly::update_awaken, this);
 		attributes.base_hp = 8;
-		health.set_max(8);
+		health.set_capacity(8.f);
 	}
 }
 
 void Spitefly::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-
 	Enemy::update(svc, map, player);
+	if (health.is_dead()) { return; }
+
 	face_player(player);
 	flags.state.set(StateFlags::vulnerable);
 

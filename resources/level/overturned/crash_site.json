@@ -90,23 +90,6 @@
     ],
     "portals": [
       {
-        "activate_on_contact": true,
-        "already_open": false,
-        "destination_id": 202,
-        "dimensions": [
-          1,
-          3
-        ],
-        "id": 0,
-        "key_id": 0,
-        "locked": false,
-        "position": [
-          63,
-          6
-        ],
-        "source_id": 204
-      },
-      {
         "activate_on_contact": false,
         "already_open": false,
         "destination_id": 300,
@@ -188,6 +171,23 @@
         "position": [
           4,
           0
+        ],
+        "source_id": 204
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "destination_id": 202,
+        "dimensions": [
+          1,
+          3
+        ],
+        "id": 0,
+        "key_id": 0,
+        "locked": false,
+        "position": [
+          63,
+          7
         ],
         "source_id": 204
       }
@@ -29399,11 +29399,11 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        96,
+        96,
+        96,
+        96,
+        96,
         96,
         96,
         96,
@@ -29592,10 +29592,10 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
-        96,
+        0,
+        0,
+        0,
+        0,
         96,
         96,
         96,

@@ -35,6 +35,7 @@
 		"responses": [
 			[
 				{
+					"hide_portrait": true,
 					"message": "Yes",
 					"codes": [ [ 7, 2 ] ]
 				},
@@ -57,6 +58,7 @@
 		"responses": [
 			[
 				{
+					"hide_portrait": true,
 					"message": "Yes",
 					"codes": [ [ 7, 1 ] ]
 				},
@@ -93,6 +95,7 @@
 		"responses": [
 			[
 				{
+					"hide_portrait": true,
 					"codes": [ [ 7, 3 ] ],
 					"message": "Yes"
 				},

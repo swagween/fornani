@@ -53,7 +53,7 @@ void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 		for (auto [tod, tex] : std::views::enumerate(layer.textures)) {
 			auto sprite = sf::Sprite{tex.getTexture()};
 			sprite.setScale(constants::f_scale_vec);
-			sprite.setTextureRect(sf::IntRect{{}, svc.window->i_screen_dimensions() * 2});
+			sprite.setTextureRect(sf::IntRect{{}, svc.window->i_screen_dimensions() * 4});
 			sprite.setPosition(layer.final_position);
 			shifter.render(svc, win, sprite, tod);
 		}

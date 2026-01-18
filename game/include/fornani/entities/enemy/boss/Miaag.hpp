@@ -24,7 +24,7 @@ class Miaag : public Enemy, public StateMachine<MiaagState> {
 	[[nodiscard]] auto invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable); }
 	[[nodiscard]] auto battle_mode() const -> bool { return m_flags.test(MiaagFlags::battle_mode); }
 	[[nodiscard]] auto second_phase() const -> bool { return m_flags.test(MiaagFlags::second_phase); }
-	[[nodiscard]] auto half_health() const -> bool { return health.get_hp() < health.get_max() * 0.5f; }
+	[[nodiscard]] auto half_health() const -> bool { return health.get_quantity() < health.get_capacity() * 0.5f; }
 
 	fsm::StateFunction state_function = std::bind(&Miaag::update_dormant, this);
 	fsm::StateFunction update_dormant();

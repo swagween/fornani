@@ -93,7 +93,7 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class PlayerFlags { killed, dir_switch, show_weapon, impart_recoil, crushed, sleep, wake_up, busy, dash_kick, trial, cutscene, swallowed, hit_target, in_water, submerged, drowned };
+enum class PlayerFlags { killed, dir_switch, show_weapon, impart_recoil, crushed, sleep, wake_up, busy, dash_kick, trial, cutscene, swallowed, hit_target, drowned };
 enum class Triggers { hurt };
 
 struct Flags {
@@ -220,6 +220,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto get_animation() -> PlayerAnimation& { return m_animation_machine; }
 
 	void reset_flags();
+	void reset_water_flags();
 	void total_reset();
 	void map_reset();
 

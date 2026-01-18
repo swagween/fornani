@@ -5,7 +5,8 @@
 
 namespace fornani::enemy {
 
-Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction) : Enemy(svc, map, "beamstalk", false, 0, start_direction), m_services(&svc), m_map(&map), beam(svc, "green_beam"), fire_rate{24} {
+Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction)
+	: Enemy(svc, map, "beamstalk", false, 0, start_direction), m_services(&svc), m_map(&map), beam(svc, "green_beam"), fire_rate{24}, post_beam{680} {
 
 	m_params = {{"idle", {14, 14, 36, -1}}, {"charge", {0, 9, 24, 0}}, {"shoot", {9, 3, 24, 2}}, {"relax", {12, 2, 36, 0}}};
 
@@ -35,8 +36,8 @@ void Beamstalk::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 	flags.state.set(StateFlags::vulnerable); // always vulnerable
 
 	Enemy::update(svc, map, player);
-	auto offset = get_collider().dimensions * 0.5f + sf::Vector2f{-40.f * directions.actual.as_float(), 0.f};
-	m_steering.seek(get_collider().physics, *m_root - offset, 0.001f);
+	auto offset = get_collider().dimensions * 0.5f + sf::Vector2f{-40.f * directions.actual.as_float(), -128.f};
+	m_steering.seek(get_collider().physics, m_root->get_bob() - offset, 0.001f);
 
 	beam.update(svc, map, *this);
 	auto bp = get_collider().get_center();
@@ -97,7 +98,8 @@ fsm::StateFunction Beamstalk::update_shoot() {
 	p_state.actual = BeamstalkState::shoot;
 	if (m_services->ticker.every_x_ticks(static_cast<int>(fire_rate))) {
 		m_map->spawn_projectile_at(*m_services, beam.get(), beam.get().get_barrel_point());
-		get_collider().physics.apply_force(beam.get().get_recoil_force());
+		get_collider().physics.apply_force(directions.actual.as_float() * -beam.get().get_recoil_force());
+		m_root->variables.bob_physics.velocity.x = directions.actual.as_float() * beam.get().get_recoil_force().x * -1.f;
 	}
 	if (animation.complete()) {
 		post_beam.start();
@@ -129,9 +131,9 @@ void Beamstalk::set_root(world::Map& map) {
 	auto closest = std::numeric_limits<float>::max();
 	for (auto& vine : map.get_entities<Vine>()) {
 		for (auto& link : vine->get_chain().links) {
-			auto distance = (get_collider().get_center() - link.get_anchor()).length();
+			auto distance = (get_collider().get_center() - link.get_bob()).length();
 			if (distance < closest) {
-				m_root = &link.get_anchor();
+				m_root = &link;
 				closest = distance;
 			}
 		}

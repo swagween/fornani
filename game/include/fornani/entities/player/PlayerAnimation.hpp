@@ -33,6 +33,7 @@ enum class AnimState {
 	wallslide,
 	walljump,
 	die,
+	drown,
 	backflip,
 	slide,
 	get_up,
@@ -46,7 +47,9 @@ enum class AnimState {
 	dash_down,
 	turn_slide,
 	dash_kick,
-	slow_walk
+	slow_walk,
+	swim,
+	dive
 };
 
 enum class AnimTriggers { end_death };
@@ -96,6 +99,7 @@ class PlayerAnimation : public StateMachine<AnimState> {
 	fsm::StateFunction update_wallslide();
 	fsm::StateFunction update_walljump();
 	fsm::StateFunction update_die();
+	fsm::StateFunction update_drown();
 	fsm::StateFunction update_backflip();
 	fsm::StateFunction update_slide();
 	fsm::StateFunction update_get_up();
@@ -108,6 +112,8 @@ class PlayerAnimation : public StateMachine<AnimState> {
 	fsm::StateFunction update_crawl();
 	fsm::StateFunction update_dash_kick();
 	fsm::StateFunction update_slow_walk();
+	fsm::StateFunction update_swim();
+	fsm::StateFunction update_dive();
 
 	bool change_state(AnimState next, anim::Parameters params, bool hard = false);
 	void force(AnimState to_state, std::string_view key);
