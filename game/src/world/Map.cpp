@@ -655,7 +655,12 @@ void Map::spawn_enemy(int id, sf::Vector2f pos, int variant) {
 }
 
 void Map::spawn_chest(automa::ServiceProvider& svc, enemy::Treasure const& treasure, sf::Vector2f pos, sf::Vector2f vel) {
-	chests.push_back(std::make_unique<entity::Chest>(svc, *this, -1, entity::ChestType::item, svc.data.item_id_from_label(treasure.tag)));
+	switch (treasure.type) {
+	case entity::ChestType::item: chests.push_back(std::make_unique<entity::Chest>(svc, *this, -1, entity::ChestType::item, svc.data.item_id_from_label(treasure.tag))); break;
+	case entity::ChestType::gun: chests.push_back(std::make_unique<entity::Chest>(svc, *this, -1, entity::ChestType::gun, svc.data.get_gun_id_from_tag(treasure.tag))); break;
+	case entity::ChestType::orbs: chests.push_back(std::make_unique<entity::Chest>(svc, *this, -1, entity::ChestType::orbs, 0)); break;
+	default: break;
+	}
 	chests.back()->set_position(pos);
 	chests.back()->get_collider().physics.velocity = vel;
 	chests.back()->set_attribute(entity::ChestAttributes::mythic, treasure.mythic);

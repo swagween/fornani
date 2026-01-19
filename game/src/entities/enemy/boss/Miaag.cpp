@@ -15,7 +15,7 @@ auto constexpr miaag_outer_destructibles = 50902;
 auto constexpr miaag_exit_destructibles = 509;
 
 Miaag::Miaag(automa::ServiceProvider& svc, world::Map& map)
-	: Enemy(svc, map, "miaag"), m_health_bar(svc, "miaag"), m_magic{svc, "demon_magic"}, m_services{&svc}, m_map{&map}, m_cooldowns{.fire{48}, .charge{320}, .limit{960}, .post_magic{800}, .interlude{1000}, .chomped{800}, .post_death{1600}},
+	: Boss(svc, map, "miaag"), m_magic{svc, "demon_magic"}, m_services{&svc}, m_map{&map}, m_cooldowns{.fire{48}, .charge{320}, .limit{960}, .post_magic{800}, .interlude{1000}, .chomped{800}, .post_death{1600}},
 	  m_spine_sprite{svc.assets.get_texture("miaag_spines")}, m_spine{std::make_unique<vfx::Chain>(svc, vfx::SpringParameters{0.99f, 0.08f, 1.f, 4.f}, anchor_position_v * constants::f_cell_size, 8, false)} {
 	m_params = {{"idle", {0, 7, 40, -1}}, {"chomp", {7, 9, 20, 0}},	   {"spellcast", {7, 5, 80, 0, true}}, {"hurt", {9, 1, 1000, 0}},
 				{"turn", {16, 1, 40, 0}}, {"closed", {15, 1, 40, -1}}, {"awaken", {17, 4, 40, 0}},		   {"dormant", {17, 1, 40, -1}}};
@@ -55,13 +55,13 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	m_magic.update(svc, map, *this);
 	m_player_target = player.get_collider().get_center() + sf::Vector2f{0.f, -80.f};
-	m_health_bar.update(health.get_normalized());
+	p_health_bar.update(health.get_normalized());
 	m_spine->set_end_position(get_collider().get_center());
 	m_spine->update(svc, map, player);
 
 	if (half_health()) {
 		if (!second_phase()) {
-			m_flags.set(MiaagFlags::second_phase);
+			set_flag(BossFlags::second_phase);
 			m_cooldowns.interlude.start();
 			svc.soundboard.flags.world.set(audio::World::vibration);
 			svc.soundboard.flags.miaag.set(audio::Miaag::growl);
@@ -115,7 +115,7 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 			m_services->music_player.load(m_services->finder, "ritual");
 			m_services->data.switch_destructible_state(miaag_floor_destructibles);
 			m_services->data.switch_destructible_state(miaag_outer_destructibles);
-			m_flags.reset(MiaagFlags::battle_mode);
+			set_flag(BossFlags::battle_mode, false);
 		}
 	}
 	if (health.is_dead()) {
@@ -133,7 +133,7 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (hurt_effect.running()) { set_channel((hurt_effect.get() / flash_rate) % 2 == 0 ? EnemyChannel::hurt_1 : EnemyChannel::hurt_2); }
 
 	if (b_miaag_start) {
-		m_flags.set(MiaagFlags::battle_mode);
+		set_flag(BossFlags::battle_mode);
 		svc.data.switch_destructible_state(miaag_outer_destructibles);
 		request(MiaagState::awaken);
 		b_miaag_start = false;
@@ -157,9 +157,7 @@ void Miaag::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	if (svc.greyblock_mode()) { m_spine->render(svc, win, cam); }
 }
 
-void Miaag::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (m_flags.test(MiaagFlags::battle_mode)) { m_health_bar.render(win); }
-}
+void Miaag::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) { Boss::gui_render(svc, win, cam); }
 
 fsm::StateFunction Miaag::update_dormant() {
 	p_state.actual = MiaagState::dormant;

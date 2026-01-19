@@ -145,5 +145,11 @@
 		"tag": "main",
 		"target": 1,
 		"displayed": false
+	},
+	{
+		"title": "Pioneer Trail",
+		"tag": "pioneer_trail",
+		"target": 1,
+		"displayed": false
 	}
 ]

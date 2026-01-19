@@ -30,8 +30,11 @@ void Roll::update(shape::Collider& collider, PlayerController& controller) {
 		return;
 	}
 	Ability::update(collider, controller);
+	if (m_duration.is_complete()) {
+		collider.physics.acceleration.x = {};
+		return;
+	}
 	auto mult = m_direction.as_float() * m_multiplier * collider.acceleration_multiplier;
-
 	if (!collider.flags.external_state.consume(shape::ExternalState::roll_collision)) {
 		collider.physics.acceleration.x = mult;
 		collider.physics.velocity.x = mult;

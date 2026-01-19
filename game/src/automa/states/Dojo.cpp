@@ -228,7 +228,13 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		svc.controller_map.set_action_set(config::ActionSet::Platformer);
 	}
 
+	svc.ambience_player.set_balance(map.get_ambience_balance());
+	svc.music_player.set_balance(1.f - map.get_music_balance());
+
 	if (pause_window) {
+		map.set_target_balance(0.f, audio::BalanceTarget::music);
+		map.set_target_balance(0.f, audio::BalanceTarget::ambience);
+		map.update_balance(svc);
 		pause_window.value()->update(svc, m_console);
 		if (pause_window.value()->settings_requested()) {
 			flags.set(GameStateFlags::settings_request);
@@ -252,9 +258,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	svc.world_clock.update(svc);
-
-	svc.ambience_player.set_balance(map.get_ambience_balance());
-	svc.music_player.set_balance(1.f - map.get_music_balance());
 
 	if (inventory_window) {
 		map.set_target_balance(0.f, audio::BalanceTarget::music);

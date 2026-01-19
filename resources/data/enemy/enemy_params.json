@@ -1078,5 +1078,58 @@
 			"foreground": true,
 			"rare_drops": false
 		}
+	},
+	"grand_mastiff": {
+		"metadata": {
+			"id": 24,
+			"variant": "guardian"
+		},
+		"physical": {
+			"dimensions": [ 80, 80 ],
+			"sprite_dimensions": [ 297, 256 ],
+			"offset": [ 0, -126 ],
+			"num_colliders": 1,
+			"num_hurtboxes": 1,
+			"alert_range": [ 380.0, 64.0 ],
+			"hostile_range": [ 90.0, 32.0 ],
+			"friction": 0.99,
+			"gravity": 20.0
+		},
+		"visual": {
+			"effect_type": 0,
+			"effect_size": 1
+		},
+		"audio": {
+			"hit": -1
+		},
+		"attributes": {
+			"base_hp": 780,
+			"base_damage": 1.0,
+			"speed": 15.5,
+			"loot_multiplier": 100.0,
+			"drop_range": [ 30, 36 ],
+			"rare_drop_id": 0,
+			"respawn_distance": 8,
+			"permadeath": true,
+			"size": 1,
+			"team": 2
+		},
+		"general": {
+			"mobile": true,
+			"gravity": true,
+			"map_collision": true,
+			"player_collision": false,
+			"rare_drops": true,
+			"foreground": false
+		},
+		"treasure": {
+			"chance": 1.0,
+			"guns": [
+				{
+					"tag": "tomahawk",
+					"chance": 1.0
+				}
+			]
+		}
 	}
 }

@@ -681,7 +681,7 @@ fsm::StateFunction PlayerAnimation::update_die() {
 		m_player->m_services->state_controller.actions.set(automa::Actions::death_mode); // set here, reset on map load
 	}
 	if (m_player->has_collider()) {
-		if (m_player->animation.get_frame_count() > 1 && !m_player->get_collider().grounded()) { m_player->animation.set_frame(2); }
+		m_player->animation.linger_on_frame(1, !m_player->get_collider().grounded());
 		m_player->get_collider().collision_depths = {};
 	}
 	m_player->controller.restrict_movement();

@@ -31,6 +31,8 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc
 	svc.ambience_player.load(svc.finder, "none");
 	svc.ambience_player.play();
 	loading.start();
+	svc.ambience_player.set_balance(1.f);
+	svc.music_player.set_balance(0.f);
 }
 
 void MainMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {

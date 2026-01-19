@@ -131,6 +131,13 @@
 						"message": "Where might Loth be?"
 					},
 					{
+						"contingencies": [
+							{
+								"requirement": 0,
+								"strict": true,
+								"tag": "pioneer_trail"
+							}
+						],
 						"codes": [ [ 1, 3 ] ],
 						"message": "Can you allow me passage to Pioneer Trail?"
 					}
@@ -176,7 +183,8 @@
 					},
 					{
 						"codes": [
-							[ 2, 40 ]
+							[ 2, 40 ],
+							[ 3, 12, 1, 415 ]
 						],
 						"message": "Here, take this."
 					},
@@ -3141,6 +3149,18 @@
 					{
 						"codes": [ [ 1, 1 ] ],
 						"message": "Why is the trail blocked?"
+					},
+					{
+						"contingencies": [
+							{
+								"requirement": 1,
+								"strict": true,
+								"tag": "pioneer_trail"
+							}
+						],
+						"codes": [ [ 1, 3 ] ],
+						"message": "I have permission to pass."
+
 					}
 				],
 				[
@@ -3153,7 +3173,15 @@
 			"suite": [
 				[
 					{
-						"codes": [ [ 1, 0 ] ],
+						"code_list": [
+							[
+								[ 1, 0 ]
+							],
+							[
+								[ 1, 0 ]
+							],
+							[ [ 1, 0 ] ]
+						],
 						"messages": [ "Take a rest here, if you'd like. It's a cruel world.", "These woods are too windy for an old man like me.", "Someday soon I hope to go back home and sleep in my bed." ]
 					}
 				],
@@ -3174,8 +3202,20 @@
 						"message": "If you want me to grant you passage, I'll need written permission from him."
 					},
 					{
-						"codes": [ [ 9, 225, 1 ] ],
 						"message": "Shouldn't be too hard to get, eh? After all, he is your dad."
+					}
+				],
+				[
+					{
+						"message": "Let me see here..."
+					},
+					{
+						"codes": [ [ 9, 22501 ] ],
+						"message": "Well, looks like you do indeed."
+					},
+					{
+						"codes": [ [ 3, 12, 1, 225 ] ],
+						"message": "Go on ahead. But be careful out there. The path is blocked for a good reason!"
 					}
 				]
 			]

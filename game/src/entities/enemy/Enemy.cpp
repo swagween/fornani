@@ -124,7 +124,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	if (in_treasure.is_object()) {
 		m_treasure = std::vector<Treasure>{};
 		attributes.treasure_chance = in_treasure["chance"].as<float>();
-		for (auto const& entry : in_treasure["items"].as_array()) { m_treasure->push_back(Treasure{entry["chance"].as<float>(), entry["tag"].as_string(), entry["mythic"].as_bool()}); }
+		for (auto const& entry : in_treasure["items"].as_array()) { m_treasure->push_back(Treasure{entity::ChestType::item, entry["chance"].as<float>(), entry["tag"].as_string(), entry["mythic"].as_bool()}); }
+		for (auto const& entry : in_treasure["guns"].as_array()) { m_treasure->push_back(Treasure{entity::ChestType::gun, entry["chance"].as<float>(), entry["tag"].as_string(), entry["mythic"].as_bool()}); }
 	}
 
 	center();

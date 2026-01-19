@@ -12,7 +12,7 @@ static bool b_start{};
 static void start_battle(int battle) { b_start = true; }
 
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console)
-	: Enemy(svc, map, "minigus"), gun(svc, "minigun"), soda(svc, "soda_gun"), m_services(&svc), NPC(svc, map, std::string_view{"minigus"}), m_map(&map), health_bar(svc, "minigus"),
+	: Boss(svc, map, "minigus"), gun(svc, "minigun"), soda(svc, "soda_gun"), m_services(&svc), NPC(svc, map, std::string_view{"minigus"}), m_map(&map),
 	  sparkler(svc, Enemy::get_collider().get_vicinity_rect().size, colors::ui_white, "minigus"), m_console{&console}, m_mode{MinigusMode::neutral}, m_minigun{svc},
 	  attacks{.left_shockwave{{50, 600, 3, {-0.6f, 0.f}}}, .right_shockwave{{50, 600, 3, {0.6f, 0.f}}}} {
 
@@ -77,7 +77,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	}
 	sparkler.update(svc);
 	sparkler.set_position(Enemy::get_collider().get_vicinity_rect().position);
-	health_bar.update(health.get_normalized());
+	p_health_bar.update(health.get_normalized());
 
 	if (map.off_the_bottom(Enemy::get_collider().physics.position)) {
 		post_death.cancel();
@@ -265,10 +265,10 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (player.is_dead()) { request(MinigusState::laugh); }
 
 	// NPC stuff
-	if (player.get_collider().bounding_box.overlaps(distant_range) && is_force_interact()) { set_distant_interact(true); }
+	if (player.get_collider().bounding_box.overlaps(distant_range) && !was_introduced() && is_force_interact()) { set_distant_interact(true); }
 
 	NPC::update(svc, map, *m_console, player);
-	if (m_console) {
+	if (m_console && was_introduced()) {
 		if (m_console->has_value()) {
 			m_console->value()->set_no_exit(true);
 			set_force_interact(false);
@@ -327,7 +327,7 @@ void Minigus::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 }
 
 void Minigus::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (status.test(MinigusFlags::battle_mode)) { health_bar.render(win); }
+	if (status.test(MinigusFlags::battle_mode)) { p_health_bar.render(win); }
 }
 
 fsm::StateFunction Minigus::update_idle() {

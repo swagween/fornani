@@ -1,5 +1,5 @@
 
-#include "fornani/entities/animation/Animation.hpp"
+#include <fornani/entities/animation/Animation.hpp>
 
 namespace fornani::anim {
 
@@ -49,7 +49,7 @@ void Animation::update() {
 
 			// for animations with multiple loops, increment the loop counter and start over
 			if (params.num_loops > 0) {
-				if(params.num_loops == loop.get_count()) { // final loop ended
+				if (params.num_loops == loop.get_count()) { // final loop ended
 					frame.cancel();
 				}
 				loop.update();
@@ -57,9 +57,7 @@ void Animation::update() {
 
 			// for animations where we repeat the last frame, fix it to the last frame
 			// we do this at the end to overwrite the state of `frame`
-			if (params.repeat_last_frame) {
-				frame.set(params.duration - 1);
-			}
+			if (params.repeat_last_frame) { frame.set(params.duration - 1); }
 		}
 	}
 }
@@ -80,8 +78,14 @@ void Animation::switch_params() {
 	refresh();
 }
 
+void Animation::linger_on_frame(int which, bool condition) {
+	if (!condition || frame.get_count() < which) { return; }
+	frame.set(which);
+	frame_timer.start();
+}
+
 void anim::Animation::log_info() const { NANI_LOG_INFO(m_logger, "\n\nCurrent Frame: [{}]\nFrame Timer: [{}]\n\n", frame.get_count(), frame_timer.get()); }
 
 int Animation::get_frame() const { return frame.canceled() ? params.lookup : params.lookup + frame.get_count(); }
 
-} // namespace anim
+} // namespace fornani::anim

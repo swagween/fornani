@@ -2,7 +2,7 @@
 #pragma once
 
 #include <fornani/components/SteeringBehavior.hpp>
-#include <fornani/entities/enemy/Enemy.hpp>
+#include <fornani/entities/enemy/Boss.hpp>
 #include <fornani/entities/packages/Attack.hpp>
 #include <fornani/entities/packages/Caution.hpp>
 #include <fornani/entities/packages/Shockwave.hpp>
@@ -15,9 +15,9 @@
 namespace fornani::enemy {
 
 enum class LynxState { sit, get_up, idle, jump, forward_slash, levitate, run, downward_slam, prepare_shuriken, toss_shuriken, upward_slash, triple_slash, turn, aerial_slash, prepare_slash, defeat, second_phase, laugh, stagger };
-enum class LynxFlags { conversing, battle_mode, second_phase, just_levitated, player_defeated };
+enum class LynxFlags { conversing, just_levitated, player_defeated };
 
-class Lynx final : public NPC, public Enemy {
+class Lynx final : public NPC, public Boss {
   public:
 	Lynx(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
@@ -27,7 +27,6 @@ class Lynx final : public NPC, public Enemy {
 	void debug();
 
 	[[nodiscard]] auto invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable); }
-	[[nodiscard]] auto half_health() const -> bool { return health.get_quantity() < health.get_capacity() * 0.5f; }
 	[[nodiscard]] auto quarter_health() const -> bool { return health.get_quantity() < health.get_capacity() * 0.25f; }
 	[[nodiscard]] auto is_state(LynxState test) const -> bool { return m_state.actual == test; }
 	[[nodiscard]] auto is_levitating() const -> bool { return is_state(LynxState::levitate) || is_state(LynxState::second_phase); }
@@ -85,7 +84,6 @@ class Lynx final : public NPC, public Enemy {
 	util::BitFlags<LynxFlags> m_flags{};
 	void request(LynxState to) { m_state.desired = to; }
 	bool change_state(LynxState next, anim::Parameters params);
-	gui::BossHealth m_health_bar;
 	vfx::Sparkler m_magic;
 	shape::Shape m_distant_range{};
 

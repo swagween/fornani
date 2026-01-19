@@ -41,6 +41,24 @@
         ]
       }
     ],
+    "enemies": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 24,
+        "position": [
+          36,
+          15
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      }
+    ],
     "inspectables": [
       {
         "activate_on_contact": false,

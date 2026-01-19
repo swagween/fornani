@@ -100,7 +100,7 @@ void Player::update(world::Map& map) {
 		}
 	}
 	has_item_equipped(38) ? health.set_invincibility(default_invincibility_time_v * 1.3f) : health.set_invincibility(default_invincibility_time_v);
-	if (arsenal && hotbar) { has_item_equipped(35) ? equipped_weapon().set_reload_multiplier(0.5f) : equipped_weapon().set_reload_multiplier(1.f); }
+	if (arsenal && hotbar) { has_item_equipped(35) ? equipped_weapon().set_reload_multiplier(0.85f) : equipped_weapon().set_reload_multiplier(1.f); }
 
 	// map effects
 	if (controller.is_wallsliding()) {
