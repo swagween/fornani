@@ -98,8 +98,8 @@ fsm::StateFunction Beamstalk::update_shoot() {
 	p_state.actual = BeamstalkState::shoot;
 	if (m_services->ticker.every_x_ticks(static_cast<int>(fire_rate))) {
 		m_map->spawn_projectile_at(*m_services, beam.get(), beam.get().get_barrel_point());
-		get_collider().physics.apply_force(directions.actual.as_float() * -beam.get().get_recoil_force());
-		m_root->variables.bob_physics.velocity.x = directions.actual.as_float() * beam.get().get_recoil_force().x * -1.f;
+		get_collider().physics.apply_force(directions.actual.as_float() * beam.get().get_recoil_force());
+		m_root->variables.bob_physics.velocity.x = directions.actual.as_float() * beam.get().get_recoil_force().x;
 	}
 	if (animation.complete()) {
 		post_beam.start();

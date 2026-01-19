@@ -195,6 +195,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	}
 	flags.movement.reset(Movement::dashing);
 	sync_components();
+	if (flags.state.test(State::right_wallslide_collision) || flags.state.test(State::left_wallslide_collision)) { flags.external_state.set(ExternalState::roll_collision); }
 }
 
 void Collider::detect_map_collision(world::Map& map) {

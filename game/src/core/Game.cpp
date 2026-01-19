@@ -284,6 +284,11 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 				}
 				if (ImGui::BeginTabItem("World")) {
 					if (map) {
+						ImGui::Separator();
+						if (ImGui::Button("Reveal World in MiniMap")) {
+							for (auto const& entry : services.data.map_table["rooms"].as_array()) { services.data.reveal_room(entry["room_id"].as<int>()); }
+						}
+						ImGui::Separator();
 						map->get().debug();
 						ImGui::Text("Transition State: %s", map->get().transition.as_string().c_str());
 						ImGui::Text("Transition Cooldown: %.5f", map->get().transition.get_cooldown());

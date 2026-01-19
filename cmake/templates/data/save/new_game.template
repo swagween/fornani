@@ -1,6 +1,7 @@
 {
 	"status": {
-		"new": true
+		"new": true,
+		"inspect_hint": true
 	},
 	"player_data": {
 		"max_hp": 3,

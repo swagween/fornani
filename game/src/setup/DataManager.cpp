@@ -125,6 +125,7 @@ void DataManager::load_data(std::string in_room) {
 		file.label = "file_" + std::to_string(ctr);
 		file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/file_" + std::to_string(ctr) + ".json").c_str());
 		if (file.save_data["status"]["new"].as_bool()) { file.flags.set(fornani::io::FileFlags::new_file); }
+		if (file.save_data["status"]["inspect_hint"].as_bool()) { file.flags.set(fornani::io::FileFlags::inspect_hint); }
 		++ctr;
 	}
 	blank_file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/new_game.json").c_str());
@@ -216,6 +217,7 @@ void DataManager::save_quests() {
 void DataManager::save_progress(player::Player& player, int save_point_id) {
 	auto& save = files.at(current_save).save_data;
 	files.at(current_save).write();
+	save["status"]["inspect_hint"] = get_file().flags.test(io::FileFlags::inspect_hint);
 	// set file data based on player state
 	save["player_data"]["max_hp"] = player.health.get_capacity();
 	save["player_data"]["hp"] = player.health.get_quantity();
@@ -372,7 +374,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	m_services->quest_table.unserialize(save);
 
 	m_services->world_clock.set_time(save["map_data"]["world_time"]["hours"].as<int>(), save["map_data"]["world_time"]["minutes"].as<int>());
-	for (auto& room : save["discovered_rooms"].as_array()) { discovered_rooms.push_back(room.as<int>()); }
+	for (auto& room : save["discovered_rooms"].as_array()) { discovered_rooms.add(room.as<int>()); }
 	for (auto& door : save["unlocked_doors"].as_array()) { unlocked_doors.push_back(door.as<int>()); }
 	for (auto& chest : save["opened_chests"].as_array()) { opened_chests.push_back(chest.as<int>()); }
 	for (auto& s : save["activated_switches"].as_array()) { activated_switches.push_back(s.as<int>()); }
@@ -451,7 +453,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	s.world.rooms_discovered.set(in_stat["rooms_discovered"].as<int>());
 	s.time_trials.bryns_gun = in_stat["time_trials"]["bryns_gun"].as<float>();
 	m_services->ticker.set_time(m_services->stats.float_to_seconds(in_stat["seconds_played"].as<float>()));
-	if (files.at(file).flags.test(fornani::io::FileFlags::new_file)) { s.player.death_count.set(0); }
+	if (files.at(file).is_new()) { s.player.death_count.set(0); }
 
 	return room_id;
 }
@@ -574,6 +576,8 @@ void DataManager::save_player_params(player::Player& player) {
 
 void DataManager::open_chest(int id) { opened_chests.push_back(id); }
 
+void DataManager::reveal_room(int id) { discovered_rooms.add(id); }
+
 void DataManager::unlock_door(int id) { unlocked_doors.push_back(id); }
 
 void DataManager::activate_switch(int id) {
@@ -661,12 +665,7 @@ bool DataManager::inspectable_is_destroyed(int id) const {
 	return false;
 }
 
-bool DataManager::room_discovered(int id) const {
-	for (auto& room : discovered_rooms) {
-		if (id == room) { return true; }
-	}
-	return false;
-}
+bool DataManager::is_room_discovered(int id) const { return discovered_rooms.contains(id); }
 
 bool DataManager::enemy_is_fallen(int room_id, int id) const {
 	for (auto& enemy : fallen_enemies) {
@@ -715,6 +714,13 @@ auto DataManager::get_gun_tag_from_id(int id) const -> std::optional<std::string
 }
 
 auto DataManager::get_gun_id_from_tag(std::string_view tag) const -> int { return weapon[tag]["metadata"]["id"].as<int>(); }
+
+auto DataManager::get_map_json_from_id(int id) const& -> std::optional<dj::Json> {
+	for (auto const& map : map_jsons) {
+		if (map.metadata["meta"]["room_id"].as<int>() == id) { return map.metadata; }
+	}
+	return std::nullopt;
+}
 
 auto DataManager::get_room_data_from_id(int id) const& -> std::optional<dj::Json> {
 	for (auto const& room : map_table["rooms"].as_array()) {

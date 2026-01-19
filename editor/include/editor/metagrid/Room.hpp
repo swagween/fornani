@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 #include <fornani/graphics/Colors.hpp>
+#include <fornani/io/Logger.hpp>
 #include <fornani/setup/MapData.hpp>
 #include <fornani/utils/ID.hpp>
 
@@ -48,6 +49,8 @@ class Room {
 	sf::Text m_biome;
 	bool m_highlighted{};
 	bool m_include_in_minimap{};
+
+	fornani::io::Logger m_logger{"Room"};
 
 	fornani::data::MapData* m_data;
 };

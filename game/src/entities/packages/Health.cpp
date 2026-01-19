@@ -27,11 +27,6 @@ void Health::update() {
 	restored.update();
 	if (m_taken.running()) {
 		if (m_taken.is_almost_complete()) { --taken_point; }
-		if (taken_point > m_quantity) {
-			m_taken.start();
-		} else {
-			taken_point = m_quantity;
-		}
 	}
 }
 
@@ -47,8 +42,8 @@ void Health::refill() {
 
 void Health::inflict(float amount, bool force) {
 	if (invincibility.is_complete() || force) {
-		m_quantity = std::clamp(m_quantity - amount, 0.f, get_capacity());
 		taken_point = m_quantity;
+		m_quantity = std::clamp(m_quantity - amount, 0.f, get_capacity());
 		m_taken.start();
 		invincibility.start(invincibility_time);
 		flags.set(HPState::hit);

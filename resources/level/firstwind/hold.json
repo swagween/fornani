@@ -364,20 +364,6 @@
       },
       {
         "dimensions": [
-          2,
-          1
-        ],
-        "extent": 22,
-        "id": 0,
-        "position": [
-          27,
-          25
-        ],
-        "start": 0,
-        "type": "slow_up_down"
-      },
-      {
-        "dimensions": [
           3,
           3
         ],
@@ -386,6 +372,20 @@
         "position": [
           7,
           67
+        ],
+        "start": 0,
+        "type": "standard_up_down"
+      },
+      {
+        "dimensions": [
+          2,
+          1
+        ],
+        "extent": 22,
+        "id": 0,
+        "position": [
+          27,
+          25
         ],
         "start": 0,
         "type": "standard_up_down"

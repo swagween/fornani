@@ -77,7 +77,7 @@
                       7
                     ]
                   ],
-                  "message": "It's a training manual. It reads, \"the soldier who crouches on the ground by pressing  may better view enemies and terrain below.\""
+                  "message": "It's a training manual. It reads: the soldier who crouches on the ground by pressing  may better view enemies and terrain below."
                 },
                 {
                   "message": "The soldier must not be sprinting to enable this skill."
@@ -106,7 +106,7 @@
             "suite": [
               [
                 {
-                  "message": "\"...to activate, apply a force of any kind to the top. Switches like these will open paths previously obscured.\""
+                  "message": "...to activate, apply a force of any kind to the top. Switches like these will open paths previously obscured."
                 }
               ]
             ]
@@ -269,7 +269,7 @@
     ],
     "metagrid": [
       2,
-      0
+      -1
     ],
     "minimap": true,
     "music": "",

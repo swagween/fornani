@@ -20,7 +20,7 @@
             "suite": [
               [
                 {
-                  "message": "Here is a regular quote, \"Hello World!\" followed by a tough test: \\\"Manually escaping!\\\""
+                  "message": "Here is a regular quote, "Hello World!" followed by a tough test: \"Manually escaping!\""
                 }
               ]
             ]
@@ -77,8 +77,8 @@
       48
     ],
     "metagrid": [
-      -3,
-      0
+      -10,
+      7
     ],
     "minimap": false,
     "music": "",

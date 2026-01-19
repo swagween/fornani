@@ -3154,7 +3154,7 @@
 				[
 					{
 						"codes": [ [ 1, 0 ] ],
-						"message": "Take a rest here, if you'd like. It's a cruel world."
+						"messages": [ "Take a rest here, if you'd like. It's a cruel world.", "These woods are too windy for an old man like me.", "Someday soon I hope to go back home and sleep in my bed." ]
 					}
 				],
 				[

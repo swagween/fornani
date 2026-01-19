@@ -21,7 +21,9 @@
 		"unequipped": "Unequipped ",
 		"removed": "Removed ",
 		"slots_full": "Equipment slots full!",
-		"map_marker": "Map marker added to minimap."
+		"map_marker": "Map marker added to minimap.",
+		"inspect_hint": "Press      to inspect.",
+		"shoot_hint": "Press      to shoot."
 	},
 	"locations": {
 		"firstwind": "- Firstwind Airship - "

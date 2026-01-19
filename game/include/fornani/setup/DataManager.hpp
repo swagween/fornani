@@ -9,6 +9,7 @@
 #include <fornani/io/File.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/setup/MapData.hpp>
+#include <fornani/systems/Register.hpp>
 #include <fornani/systems/TimeTrialRegistry.hpp>
 #include <fornani/utils/QuestCode.hpp>
 #include <fornani/world/Layer.hpp>
@@ -65,6 +66,7 @@ class DataManager final {
 
 	// map-related save data helpers
 	void open_chest(int id);
+	void reveal_room(int id);
 	void unlock_door(int id);
 	void activate_switch(int id);
 	void switch_destructible_state(int id, bool inverse = false);
@@ -81,7 +83,7 @@ class DataManager final {
 	bool chest_is_open(int id) const;
 	bool switch_is_activated(int id) const;
 	bool inspectable_is_destroyed(int id) const;
-	bool room_discovered(int id) const;
+	bool is_room_discovered(int id) const;
 	bool enemy_is_fallen(int room_id, int id) const;
 
 	int get_destructible_state(int id) const;
@@ -102,6 +104,7 @@ class DataManager final {
 	[[nodiscard]] auto item_id_from_label(std::string_view label) const -> int;
 	[[nodiscard]] auto get_gun_tag_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] auto get_gun_id_from_tag(std::string_view tag) const -> int;
+	[[nodiscard]] auto get_map_json_from_id(int id) const& -> std::optional<dj::Json>;
 	[[nodiscard]] auto get_room_data_from_id(int id) const& -> std::optional<dj::Json>;
 	[[nodiscard]] auto get_npc_label_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] auto get_enemy_label_from_id(int id) const -> std::optional<std::string_view>;
@@ -156,7 +159,7 @@ class DataManager final {
 	std::vector<std::vector<std::unique_ptr<world::Layer>>> map_layers{};
 	int num_layers{8};
 	std::vector<int> rooms{};
-	std::vector<int> discovered_rooms{};
+	Register<int> discovered_rooms{};
 
 	automa::ServiceProvider* m_services;
 	std::unordered_map<int, npc::Vendor> marketplace{};

@@ -13,9 +13,13 @@ namespace fornani::world {
 
 Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int style, int size)
 	: Drawable{svc, "pushables"}, m_map{&map}, style(style), size(size), m_collider{map, constants::f_cell_vec * static_cast<float>(size) - sf::Vector2f{1.f, 1.f}}, collision_box{constants::f_cell_vec * static_cast<float>(size)},
-	  speed{size == 1 ? 1.5f : 1.3f} {
+	  speed{size == 1 ? 1.5f : 1.3f}, m_blink{120}, m_intro{64} {
 	get_collider().physics.position = position;
+	get_collider().vert_threshold = 0.01f;
 	start_position = position;
+	m_return_indicator.setSize(get_collider().dimensions);
+	m_return_indicator.setOutlineThickness(-4.f);
+	m_return_indicator.setFillColor(colors::transparent);
 	get_collider().physics.set_friction_componentwise({0.95f, 0.99f});
 	get_collider().stats.GRAV = 18.0f;
 	mass = static_cast<float>(size);
@@ -38,12 +42,17 @@ Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position
 	get_collider().set_exclusion_target(shape::ColliderTrait::player);
 	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
 	get_collider().set_resolution_exclusion_target(shape::ColliderTrait::platform);
+	get_collider().set_resolution_exclusion_target(shape::ColliderTrait::npc);
+	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 	if (size > 1) { get_collider().set_attribute(shape::ColliderAttributes::crusher); }
 	get_collider().wallslide_buffer = 0.9f;
+	m_intro.start();
 }
 
 void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 
+	m_intro.update();
+	m_blink.update();
 	get_collider().physics.acceleration = {};
 
 	collision_box.set_position(get_collider().physics.position - sf::Vector2f{0.f, 1.f});
@@ -64,28 +73,30 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 			reset(svc, map);
 			svc.soundboard.flags.world.set(audio::World::small_crash);
 		}
+		if (!has_flag_set(PushableFlags::trying_to_respawn)) { m_blink.reset(); }
 		hit_count.start();
+		set_flag(PushableFlags::trying_to_respawn, !can_respawn);
+	} else {
+		set_flag(PushableFlags::trying_to_respawn, false);
 	}
 
 	// player pushes block
-	state.reset(PushableState::pushed);
+	set_flag(PushableFlags::pushed, false);
 	handle_collision(player.get_collider());
 	if (player.get_collider().wallslider.overlaps(collision_box) && player.pushing() && player.is_in_animation(player::AnimState::push) && get_collider().physics.actual_velocity().y < 0.3f) {
 		if (player.controller.moving_left() && player.get_collider().physics.position.x > get_collider().physics.position.x) { get_collider().physics.acceleration.x = -speed / mass; }
 		if (player.controller.moving_right() && player.get_collider().physics.position.x < get_collider().physics.position.x) { get_collider().physics.acceleration.x = speed / mass; }
 		if (ccm::abs(get_collider().physics.actual_velocity().x) > constants::small_value) { svc.soundboard.flags.world.set(audio::World::pushable_move); }
-		state.set(PushableState::moved);
-		state.set(PushableState::pushed);
-		set_push(true);
+
+		set_flag(PushableFlags::moved);
+		set_flag(PushableFlags::pushed);
 	}
 
 	for (auto& pushable : map.pushables) {
 		if (pushable.get() == this) { continue; }
-		if (get_collider().jumpbox.overlaps(pushable->get_collider().predictive_vertical) && !is_being_pushed()) { get_collider().physics.adopt(pushable->get_collider().physics); }
+		if (get_collider().jumpbox.overlaps(pushable->get_collider().predictive_vertical) && !has_flag_set(PushableFlags::pushed)) { get_collider().physics.adopt(pushable->get_collider().physics); }
 		if (pushable->get_collider().wallslider.overlaps(collision_box)) {
-			if (pushable->get_collider().pushes(*m_collider.get()) && get_collider().grounded()) {
-				if (pushable->is_being_pushed()) { set_push(true); }
-			}
+			if (pushable->get_collider().pushes(*m_collider.get()) && get_collider().grounded()) { set_flag(PushableFlags::pushed); }
 		}
 	}
 
@@ -102,7 +113,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		if (pushable->get_collider().wallslider.overlaps(collision_box)) {
 			auto hit_wall = (pushable->get_collider().get_center().x < get_collider().get_center().x && get_collider().has_right_wallslide_collision()) ||
 							(pushable->get_collider().get_center().x > get_collider().get_center().x && get_collider().has_left_wallslide_collision());
-			if (pushable->get_collider().pushes(*m_collider.get()) && is_being_pushed() && !hit_wall) {
+			if (pushable->get_collider().pushes(*m_collider.get()) && has_flag_set(PushableFlags::pushed) && !hit_wall) {
 				get_collider().physics.acceleration.x += pushable->get_collider().physics.acceleration.x;
 				block = false;
 			}
@@ -135,8 +146,10 @@ void Pushable::post_update(automa::ServiceProvider& svc, Map& map, player::Playe
 
 	if (get_collider().has_flag_set(shape::ColliderFlags::landed)) {
 		auto point = size == 1 ? get_collider().get_top() : get_collider().get_center();
-		map.effects.push_back(entity::Effect(svc, "dust", point));
-		svc.soundboard.flags.world.set(audio::World::thud);
+		if (!m_intro.running()) {
+			map.effects.push_back(entity::Effect(svc, "dust", point));
+			svc.soundboard.flags.world.set(audio::World::thud);
+		}
 		get_collider().set_flag(shape::ColliderFlags::landed, false);
 	}
 
@@ -163,10 +176,17 @@ void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 		coll.setSize(collision_box.get_dimensions());
 		coll.setFillColor(sf::Color::Transparent);
 		coll.setOutlineThickness(-2.f);
-		is_being_pushed() ? coll.setOutlineColor(colors::mythic_green) : is_moving() ? coll.setOutlineColor(colors::goldenrod) : coll.setOutlineColor(colors::dark_goldenrod);
+		has_flag_set(PushableFlags::pushed) ? coll.setOutlineColor(colors::mythic_green) : is_moving() ? coll.setOutlineColor(colors::goldenrod) : coll.setOutlineColor(colors::dark_goldenrod);
 		coll.setPosition(collision_box.get_position() - cam);
 		win.draw(coll);
 	} else {
+		m_blink.get_normalized() < 0.25f  ? m_return_indicator.setOutlineColor(colors::red)
+		: m_blink.get_normalized() < 0.5f ? m_return_indicator.setOutlineColor(colors::dark_fucshia)
+										  : m_return_indicator.setOutlineColor(colors::transparent);
+		m_blink.get_normalized() < 0.25f ? m_return_indicator.setOutlineThickness(-4.f) : m_blink.get_normalized() < 0.5f ? m_return_indicator.setOutlineThickness(-2.f) : m_return_indicator.setOutlineThickness(-4.f);
+
+		m_return_indicator.setPosition(start_position - cam);
+		if (has_flag_set(PushableFlags::trying_to_respawn)) { win.draw(m_return_indicator); }
 		win.draw(*this);
 	}
 }

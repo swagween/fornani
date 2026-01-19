@@ -95,8 +95,8 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	m_gui_shader = LightShader(svc.finder);
 
 	svc.menu_controller.reset_vendor_dialog();
-	if (!svc.data.room_discovered(room_number)) {
-		svc.data.discovered_rooms.push_back(room_number);
+	if (!svc.data.is_room_discovered(room_number)) {
+		svc.data.discovered_rooms.add(room_number);
 		svc.stats.world.rooms_discovered.update();
 	}
 	player.reset_flags();
@@ -138,6 +138,11 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	m_world_shader->set_texture_size(map.real_dimensions / constants::f_scale_factor);
 	m_gui_shader->set_texture_size(svc.window->f_screen_dimensions() * 3.f); // 3 is the number of screen-sized "cells" in the inventory window
 	svc.app_flags.reset(automa::AppFlags::custom_map_start);
+
+	if (svc.data.get_file().flags.test(io::FileFlags::inspect_hint)) {
+		m_inspect_hint = util::Cooldown{2000};
+		m_inspect_hint->start();
+	}
 
 	NANI_LOG_INFO(m_logger, "New Dojo instance created.");
 }
@@ -191,6 +196,27 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	m_loading.is_complete() && !vendor_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
 	m_loading.update();
+	if (m_inspect_hint) {
+		m_inspect_hint->update();
+		if (m_inspect_hint->is_almost_complete()) {
+			svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["inspect_hint"].as_string());
+			svc.notifications.get_latest().insert_input_hint(svc, 9, 7);
+			m_inspect_hint->start();
+		}
+	}
+	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).triggered) {
+		svc.data.get_file().flags.reset(io::FileFlags::inspect_hint);
+		m_inspect_hint.reset();
+	}
+
+	if (m_shoot_hint) {
+		m_shoot_hint->update();
+		if (m_shoot_hint->is_almost_complete()) {
+			m_shoot_hint.reset();
+			svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["shoot_hint"].as_string());
+			svc.notifications.get_latest().insert_input_hint(svc, 5, 7);
+		}
+	}
 
 	// set action set
 	if (pause_window || m_console) {
@@ -359,6 +385,10 @@ void Dojo::acquire_item(ServiceProvider& svc, player::Player& player, int modifi
 void Dojo::acquire_gun(ServiceProvider& svc, player::Player& player, int modifier) {
 	auto tag = svc.data.get_gun_tag_from_id(modifier);
 	if (!tag) { return; }
+	if (tag == "bryns_gun") {
+		m_shoot_hint = util::Cooldown{500};
+		m_shoot_hint->start();
+	}
 	NANI_LOG_DEBUG(m_logger, "Gun Tag: {}", tag->data());
 	player.push_to_loadout(tag.value());
 	if (!m_console) {

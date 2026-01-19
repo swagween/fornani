@@ -38,6 +38,8 @@ class Dojo final : public GameState {
 
 	util::Cooldown m_enter_room;
 	util::Cooldown m_loading;
+	std::optional<util::Cooldown> m_inspect_hint{};
+	std::optional<util::Cooldown> m_shoot_hint{};
 };
 
 } // namespace fornani::automa

@@ -60,7 +60,22 @@ void MiniMap::bake(automa::ServiceProvider& svc, dj::Json const& in) {
 	auto room_pos = (*it)->get_position();
 	for (auto const& bed : in["entities"]["beds"].as_array()) { m_markers.push_back({MapIconFlags::bed, sf::Vector2f{bed["position"][0].as<float>(), bed["position"][1].as<float>()} * m_texture_scale + room_pos, room_id}); }
 	for (auto const& portal : in["entities"]["portals"].as_array()) {
-		if (!portal["activate_on_contact"].as_bool()) { m_markers.push_back({MapIconFlags::door, sf::Vector2f{portal["position"][0].as<float>(), portal["position"][1].as<float>()} * m_texture_scale + room_pos, room_id}); }
+		if (!portal["activate_on_contact"].as_bool()) {
+			auto pos = sf::Vector2f{portal["position"][0].as<float>(), portal["position"][1].as<float>()} * m_texture_scale + room_pos;
+			m_markers.push_back({MapIconFlags::door, pos, room_id});
+			auto dest_room_id = portal["destination_id"].as<int>();
+			auto dest_it = std::find_if(m_atlas.begin(), m_atlas.end(), [dest_room_id](auto const& e) { return e->get_id() == dest_room_id; });
+			if (dest_it == m_atlas.end()) { continue; }
+			auto dest_room_pos = (*dest_it)->get_position();
+			auto dest_room = svc.data.get_map_json_from_id(dest_room_id);
+			if (!dest_room) { continue; }
+			auto in_dest = dest_room.value()["entities"]["portals"];
+			for (auto const& dest_port : in_dest.as_array()) {
+				if (dest_port["destination_id"].as<int>() != room_id) { continue; }
+				auto dest_pos = sf::Vector2f{dest_port["position"][0].as<float>(), dest_port["position"][1].as<float>()} * m_texture_scale + dest_room_pos;
+				m_dotted_lines.push_back(DoorConnection{room_id, dest_room_id, DottedLine{std::make_pair(pos, dest_pos), 12.f, {colors::pioneer_dark_red, 4.f}}});
+			}
+		}
 	}
 	for (auto const& save : in["entities"]["save_point"].as_array()) { m_markers.push_back({MapIconFlags::save, sf::Vector2f{save["position"][0].as<float>(), save["position"][1].as<float>()} * m_texture_scale + room_pos, room_id}); }
 }
@@ -118,8 +133,13 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 
 	if (port.size.x == 0.f || port.size.y == 0.f) { return; }
 
+	for (auto& line : m_dotted_lines) {
+		if (!svc.data.is_room_discovered(line.source) || !svc.data.is_room_discovered(line.destination)) { continue; }
+		line.line.render(win, get_ratio(), m_physics.position, scaled_port.size);
+	}
+
 	for (auto& room : m_atlas) {
-		if (!svc.data.room_discovered(room->get_id())) { continue; }
+		if (!svc.data.is_room_discovered(room->get_id())) { continue; }
 		room->set_resolution(m_resolution);
 		m_map_sprite = sf::Sprite{room->get().getTexture()};
 		m_map_sprite->setTextureRect(sf::IntRect({}, static_cast<sf::Vector2<int>>(room->get().getSize())));
@@ -143,7 +163,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 	auto icon_lookup{136};
 	auto icon_dim{6};
 	for (auto& element : m_markers) {
-		if (!svc.data.room_discovered(element.room_id) && element.type != MapIconFlags::quest) { continue; }
+		if (!svc.data.is_room_discovered(element.room_id) && element.type != MapIconFlags::quest) { continue; }
 		icon_sprite.setTextureRect(sf::IntRect{{icon_lookup + icon_dim * flash_frame.get(), static_cast<int>(element.type) * icon_dim}, {icon_dim, icon_dim}});
 		icon_sprite.setPosition((element.position * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size));
 		if (element.type == MapIconFlags::nani) { icon_sprite.setScale(icon_sprite.getScale().componentWiseMul(player.get_facing_scale())); }

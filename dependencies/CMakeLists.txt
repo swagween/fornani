@@ -30,7 +30,7 @@ FetchContent_MakeAvailable(juke)
 FetchContent_Declare(
         djson
         GIT_REPOSITORY https://github.com/karnkaul/djson
-        GIT_TAG v3.1.1
+        GIT_TAG v3.1.5
 )
 FetchContent_MakeAvailable(djson)
 

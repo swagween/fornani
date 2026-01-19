@@ -146,6 +146,7 @@ void Player::update(world::Map& map) {
 	controller.update(*m_services, map, *this);
 	if (get_collider().hit_ceiling_ramp()) { controller.flush_ability(); }
 	controller.is_crouching() ? get_collider().flags.movement.set(shape::Movement::crouching) : get_collider().flags.movement.reset(shape::Movement::crouching);
+	if (!controller.is(AbilityType::jump)) { get_collider().flags.movement.reset(shape::Movement::jumping); }
 
 	// do this elsehwere later
 	if (get_collider().flags.state.test(shape::State::just_landed)) {
@@ -505,6 +506,7 @@ void Player::update_weapon() {
 void Player::walk() {
 	if (m_animation_machine.is_state(AnimState::slide)) { return; }
 	if (m_animation_machine.is_state(AnimState::dash)) { return; }
+	if (m_animation_machine.is_state(AnimState::roll)) { return; }
 	if (m_animation_machine.is_state(AnimState::sharp_turn)) { get_collider().physics.acceleration.x *= 0.1f; }
 	if (controller.moving_right() && !get_collider().has_right_collision()) {
 		get_collider().physics.acceleration.x = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();

@@ -631,40 +631,6 @@
           8
         ],
         "source_id": 509
-      },
-      {
-        "activate_on_contact": false,
-        "already_open": false,
-        "destination_id": 420,
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 0,
-        "key_id": 0,
-        "locked": false,
-        "position": [
-          41,
-          30
-        ],
-        "source_id": 509
-      },
-      {
-        "activate_on_contact": false,
-        "already_open": false,
-        "destination_id": 300,
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 0,
-        "key_id": 0,
-        "locked": false,
-        "position": [
-          46,
-          41
-        ],
-        "source_id": 509
       }
     ]
   },

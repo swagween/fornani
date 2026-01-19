@@ -6,7 +6,7 @@
 
 namespace fornani::io {
 
-enum class FileFlags { new_file };
+enum class FileFlags { new_file, inspect_hint };
 
 class File {
   public:

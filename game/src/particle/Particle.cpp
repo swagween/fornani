@@ -30,6 +30,8 @@ Particle::Particle(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f p
 		m_animatable->set_parameters({lookup, duration, framerate, loop});
 	}
 	if (!in_data["colliding"].as_bool()) { m_collider.get_circle()->set_attribute(shape::ColliderAttributes::no_collision); }
+	if (in_data["physics"]) { m_collider.get_circle()->load_properties(in_data["physics"]); }
+
 	m_collider.get_circle()->set_trait(shape::ColliderTrait::particle);
 	m_collider.get_circle()->set_exclusion_target(shape::ColliderTrait::player);
 	m_collider.get_circle()->set_exclusion_target(shape::ColliderTrait::circle);

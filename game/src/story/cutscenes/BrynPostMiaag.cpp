@@ -10,7 +10,7 @@ namespace fornani {
 BrynPostMiaag::BrynPostMiaag(automa::ServiceProvider& svc) : Cutscene(svc, 509, "bryn_post_miaag") { cooldowns.beginning.start(); }
 
 void BrynPostMiaag::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
-
+	static auto failsafe = util::Counter();
 	if (complete()) {
 		player.controller.unrestrict();
 		svc.state_flags.reset(automa::StateFlags::hide_hud);
@@ -66,6 +66,11 @@ void BrynPostMiaag::update(automa::ServiceProvider& svc, std::optional<std::uniq
 		}
 	} else {
 		bryn->walk();
+		failsafe.update();
+		if (failsafe.get_count() > 4000) {
+			bryn->set_position(player.get_collider().physics.position - sf::Vector2f{16.f, 0.f});
+			failsafe.cancel();
+		}
 	}
 	svc.camera_controller.set_owner(graphics::CameraOwner::system);
 	svc.camera_controller.set_position(bryn->Mobile::get_global_center());

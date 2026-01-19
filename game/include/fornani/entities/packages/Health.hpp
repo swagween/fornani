@@ -27,7 +27,7 @@ class Health final {
 	[[nodiscard]] auto get_taken_point() const -> float { return static_cast<float>(taken_point); }
 	[[nodiscard]] auto is_taken() const -> bool { return m_taken.running(); }
 	[[nodiscard]] auto is_dead() const -> bool { return m_quantity <= 0.f; }
-	[[nodiscard]] auto is_critical() const -> float { return get_normalized() < 0.34f; }
+	[[nodiscard]] auto is_critical() const -> float { return get_normalized() < critical_threshold; }
 	[[nodiscard]] auto invincible() const -> bool { return !invincibility.is_complete(); }
 	[[nodiscard]] auto full() const -> bool { return m_quantity >= m_capacity; }
 	[[nodiscard]] auto empty() const -> bool { return is_dead(); }

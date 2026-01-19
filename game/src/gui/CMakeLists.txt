@@ -3,6 +3,7 @@ nani_add_sources(
         ActionControlIconQuery.cpp
         BossHealth.cpp
         Dashboard.cpp
+        DottedLine.cpp
         Gizmo.cpp
         HealthBar.cpp
         InventoryWindow.cpp

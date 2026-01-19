@@ -1,5 +1,7 @@
 {
-  "entities": null,
+  "entities": {
+    "inspectables": null
+  },
   "meta": {
     "ambience": "",
     "background": "dense_woods",

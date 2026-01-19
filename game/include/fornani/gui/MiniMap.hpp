@@ -1,13 +1,15 @@
 
 #pragma once
+
 #include <SFML/Graphics.hpp>
+#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/components/SteeringBehavior.hpp>
+#include <fornani/graphics/MapTexture.hpp>
+#include <fornani/gui/DottedLine.hpp>
 #include <fornani/gui/console/Console.hpp>
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/components/SteeringBehavior.hpp"
-#include "fornani/graphics/MapTexture.hpp"
-#include "fornani/io/Logger.hpp"
-#include "fornani/utils/Circuit.hpp"
-#include "fornani/world/Map.hpp"
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/Circuit.hpp>
+#include <fornani/world/Map.hpp>
 
 namespace fornani::player {
 class Player;
@@ -27,6 +29,12 @@ struct MapIcon {
 	MapIconFlags type{};
 	sf::Vector2f position{};
 	int room_id{};
+};
+
+struct DoorConnection {
+	int source{};
+	int destination{};
+	DottedLine line;
 };
 
 class MiniMap {
@@ -76,6 +84,7 @@ class MiniMap {
 	std::optional<sf::Sprite> m_map_sprite;
 	sf::RectangleShape m_border{};
 	std::vector<MapIcon> m_markers{};
+	std::vector<DoorConnection> m_dotted_lines{};
 	std::vector<std::unique_ptr<MapTexture>> m_atlas{};
 
 	io::Logger m_logger{"MiniMap"};

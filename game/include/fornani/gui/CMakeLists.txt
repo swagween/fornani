@@ -3,6 +3,7 @@ nani_add_headers(
         ActionControlIconQuery.hpp
         BossHealth.hpp
         Dashboard.hpp
+        DottedLine.hpp
         Gizmo.hpp
         HealthBar.hpp
         InventoryWindow.hpp

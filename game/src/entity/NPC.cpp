@@ -135,6 +135,7 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 		get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
 		get_collider().set_exclusion_target(shape::ColliderTrait::player);
 		get_collider().set_exclusion_target(shape::ColliderTrait::npc);
+		get_collider().set_exclusion_target(shape::ColliderTrait::pushable);
 	}
 
 	for (auto const& in_anim : in_data["animation"].as_array()) {

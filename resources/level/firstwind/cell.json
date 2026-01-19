@@ -75,7 +75,7 @@
     ],
     "metagrid": [
       1,
-      0
+      -1
     ],
     "minimap": true,
     "music": "",

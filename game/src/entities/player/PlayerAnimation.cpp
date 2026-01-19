@@ -901,6 +901,7 @@ fsm::StateFunction player::PlayerAnimation::update_sleep() {
 	m_player->set_flag(PlayerFlags::show_weapon, false);
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();
+	if (m_player->has_collider()) { m_player->get_collider().physics.zero_x(); }
 	if (m_sleep_timer.is_almost_complete()) { request(AnimState::wake_up); }
 	if (change_state(AnimState::wake_up, get_params("wake_up"), true)) {
 		NANI_LOG_DEBUG(m_logger, "Woke up!");

@@ -52,7 +52,8 @@ enum class ExternalState {
 	jumped_into,
 	on_ramp,
 	tile_debug_flag,
-	ceiling_ramp_hit
+	ceiling_ramp_hit,
+	roll_collision
 };
 enum class PermaFlags { world_grounded, downhill };
 
