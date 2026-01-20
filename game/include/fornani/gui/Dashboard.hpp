@@ -91,6 +91,8 @@ class Dashboard {
 		std::vector<GizmoButton> buttons{};
 	} m_debug{};
 
+	automa::ServiceProvider* m_services;
+
 	io::Logger m_logger{"GUI"};
 };
 

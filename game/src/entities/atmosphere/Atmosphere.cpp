@@ -20,7 +20,7 @@ Atmosphere::Atmosphere(automa::ServiceProvider& svc, world::Map& map, int type) 
 	}
 	for (auto const& target : map.target_points) {
 		if (type == 1) {
-			density = 16;
+			density = 24;
 			for (auto i{0}; i < density; ++i) {
 				auto vicinity = sf::Vector2f{128.f, 128.f};
 				dragonflies.push_back(std::make_unique<Dragonfly>(svc, map, random::random_vector_float(target - vicinity, target + vicinity)));

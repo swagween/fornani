@@ -15,6 +15,7 @@ struct ShakeProperties {
 	float energy{};
 	int start_time{};
 	int dampen_factor{};
+	float chance{};
 };
 
 class CameraController {

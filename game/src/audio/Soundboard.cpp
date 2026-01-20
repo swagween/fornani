@@ -42,6 +42,8 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.pioneer.test(Pioneer::chain)) { play(engine, svc, svc.sounds.get_buffer("pioneer_chain")); }
 	if (flags.pioneer.test(Pioneer::drag)) { play(engine, svc, svc.sounds.get_buffer("pioneer_drag")); }
 	if (flags.pioneer.test(Pioneer::wires)) { play(engine, svc, svc.sounds.get_buffer("pioneer_wires")); }
+	if (flags.pioneer.test(Pioneer::forward)) { play(engine, svc, svc.sounds.get_buffer("pioneer_forward")); }
+	if (flags.pioneer.test(Pioneer::unhover)) { play(engine, svc, svc.sounds.get_buffer("pioneer_unhover")); }
 	flags.pioneer.test(Pioneer::buzz) ? simple_repeat(engine, svc.sounds.get_buffer("pioneer_buzz"), "pioneer_buzz") : stop("pioneer_buzz");
 	flags.pioneer.test(Pioneer::hum) ? simple_repeat(engine, svc.sounds.get_buffer("pioneer_hum"), "pioneer_hum") : stop("pioneer_hum");
 	flags.pioneer.test(Pioneer::scan) ? simple_repeat(engine, svc.sounds.get_buffer("pioneer_scan"), "pioneer_scan") : stop("pioneer_scan");

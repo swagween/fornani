@@ -20,7 +20,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 																												 .top_right_slot{{{370, 0}, {64, 127}}, {290.f, 0.f}},
 																												 .arsenal_slot{{{253, 127}, {184, 137}}, {52, 218}},
 																												 .motherboard{{{434, 0}, {222, 212}}, {14.f, 68.f}}},
-	  m_paths{.map{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_minimap", 32, util::InterpolationType::quadratic}}, m_palette{"pioneer", svc.finder} {
+	  m_paths{.map{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_minimap", 32, util::InterpolationType::quadratic}}, m_palette{"pioneer", svc.finder}, m_services{&svc} {
 	m_debug.box.setFillColor(sf::Color{180, 150, 20, 50});
 	m_debug.box.setOutlineThickness(-2.f);
 	m_debug.box.setOutlineColor(sf::Color{220, 180, 10, 180});
@@ -61,27 +61,6 @@ void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pl
 		m_current_port == gizmo->get_dashboard_port() ? gizmo->hover() : gizmo->neutralize();
 	}
 	m_physical.physics.simple_update();
-
-	/*if (svc.ticker.every_second()) {
-		for (auto& gizmo : m_gizmos) { gizmo->report(); }
-	}*/
-
-	/*if (svc.ticker.every_second()) {
-		NANI_LOG_INFO(m_logger, "	------	");
-		NANI_LOG_INFO(m_logger, "Dashboard State:");
-		switch (m_state) {
-		case DashboardState::home: NANI_LOG_INFO(m_logger, "home"); break;
-		case DashboardState::hovering: NANI_LOG_INFO(m_logger, "hovering"); break;
-		case DashboardState::gizmo: NANI_LOG_INFO(m_logger, "gizmo"); break;
-		}
-		NANI_LOG_INFO(m_logger, "Dashboard Port:");
-		switch (m_current_port) {
-		case DashboardPort::invalid: NANI_LOG_INFO(m_logger, "invalid"); break;
-		case DashboardPort::minimap: NANI_LOG_INFO(m_logger, "minimap"); break;
-		case DashboardPort::wardrobe: NANI_LOG_INFO(m_logger, "wardrobe"); break;
-		default: NANI_LOG_INFO(m_logger, "some other port"); break;
-		}
-	}*/
 }
 
 void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, LightShader& shader) {
@@ -170,6 +149,7 @@ void Dashboard::set_selection(sf::Vector2i to_selection) {
 		m_light_up.start();
 	}
 	m_state = switched ? DashboardState::home : DashboardState::hovering;
+	switched ? m_services->soundboard.flags.pioneer.set(audio::Pioneer::unhover) : m_services->soundboard.flags.pioneer.set(audio::Pioneer::forward);
 }
 
 bool Dashboard::select_gizmo() {

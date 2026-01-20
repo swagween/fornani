@@ -52,13 +52,13 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	}
 
 	if (meta["camera_effects"]) {
-		m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
-		m_camera_effects.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
-		m_camera_effects.shake_properties.start_time = meta["camera_effects"]["shake"]["start_time"].as<float>();
-		m_camera_effects.shake_properties.dampen_factor = meta["camera_effects"]["shake"]["dampen_factor"].as<int>();
-		m_camera_effects.cooldown = util::Cooldown{meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>()};
-		m_camera_effects.shake_properties.shaking = m_camera_effects.shake_properties.frequency > 0;
-		m_camera_effects.cooldown.start();
+		m_attributes.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
+		m_attributes.shake_properties.energy = meta["camera_effects"]["shake"]["energy"].as<float>();
+		m_attributes.shake_properties.start_time = meta["camera_effects"]["shake"]["start_time"].as<float>();
+		m_attributes.shake_properties.dampen_factor = meta["camera_effects"]["shake"]["dampen_factor"].as<int>();
+		m_attributes.shake_cooldown = util::Cooldown{meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>()};
+		m_attributes.shake_properties.shaking = m_attributes.shake_properties.frequency > 0;
+		m_attributes.shake_cooldown.start();
 	}
 
 	sound.echo_count = meta["sound"]["echo_count"].as<int>();
@@ -272,13 +272,15 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	}
 
 	// camera effects
-	if (svc.ticker.every_second() && m_camera_effects.shake_properties.shaking) {
-		m_camera_effects.cooldown.update();
-		if (m_camera_effects.cooldown.is_complete()) {
-			svc.camera_controller.shake(m_camera_effects.shake_properties);
-			auto shake_time = m_camera_effects.cooldown.get_native_time();
-			auto diff = random::random_range(-shake_time / 2, shake_time / 2);
-			m_camera_effects.cooldown.start(shake_time + diff);
+	if (svc.ticker.every_second() && m_attributes.shake_properties.shaking) {
+		if (random::percent_chance(m_attributes.shake_properties.chance * 100.f)) {
+			m_attributes.shake_cooldown.update();
+			if (m_attributes.shake_cooldown.is_complete()) {
+				svc.camera_controller.shake(m_attributes.shake_properties);
+				auto shake_time = m_attributes.shake_cooldown.get_native_time();
+				auto diff = random::random_range(-shake_time / 2, shake_time / 2);
+				m_attributes.shake_cooldown.start(shake_time + diff);
+			}
 		}
 	}
 
@@ -955,6 +957,17 @@ MapAttributes::MapAttributes(dj::Json const& in) {
 	if (in["properties"]["timer"].as_bool()) { properties.set(MapProperties::timer); }
 	if (in["properties"]["lighting"].as_bool()) { properties.set(MapProperties::lighting); }
 	if (in["minimap"].as_bool()) { properties.set(MapProperties::minimap); }
+
+	if (in["camera_effects"]) {
+		shake_properties.frequency = in["camera_effects"]["shake"]["frequency"].as<int>();
+		shake_properties.energy = in["camera_effects"]["shake"]["energy"].as<float>();
+		shake_properties.start_time = in["camera_effects"]["shake"]["start_time"].as<float>();
+		shake_properties.dampen_factor = in["camera_effects"]["shake"]["dampen_factor"].as<int>();
+		shake_cooldown = util::Cooldown{in["camera_effects"]["shake"]["frequency_in_seconds"].as<int>()};
+		shake_properties.shaking = shake_properties.frequency > 0;
+		shake_properties.chance = in["camera_effects"]["shake"]["chance"].as<float>();
+		shake_cooldown.start();
+	}
 
 	music = in["music"].as_string();
 	ambience = in["ambience"].as_string();

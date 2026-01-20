@@ -24,7 +24,7 @@ std::function<void(int)> make_int_setter(util::BitFlags<Enum>& flags) {
 enum class SoundboardState { on, off };
 
 enum class Menu { select, shift, forward_switch, backward_switch, error };
-enum class Pioneer { select, click, back, open, close, slot, chain, boot, buzz, fast_click, hard_slot, hum, sync, scan, drag, wires };
+enum class Pioneer { select, click, back, open, close, slot, chain, boot, buzz, fast_click, hard_slot, hum, sync, scan, drag, wires, forward, unhover };
 enum class Console { next, done, shift, select, speech, menu_open, notification };
 enum class World {
 	load,

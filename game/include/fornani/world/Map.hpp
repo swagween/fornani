@@ -78,6 +78,8 @@ struct MapAttributes {
 	MapAttributes() = default;
 	MapAttributes(dj::Json const& in);
 	util::BitFlags<MapProperties> properties{};
+	graphics::ShakeProperties shake_properties{};
+	util::Cooldown shake_cooldown{};
 	std::string ambience{};
 	std::string music{};
 	std::vector<int> atmosphere{};
@@ -265,8 +267,6 @@ class Map {
 	} m_metadata{};
 
 	struct {
-		graphics::ShakeProperties shake_properties{};
-		util::Cooldown cooldown{};
 		graphics::DayNightShifter shifter{};
 	} m_camera_effects{};
 
