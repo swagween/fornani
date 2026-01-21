@@ -8,9 +8,6 @@
 
 namespace fornani::enemy {
 
-static bool b_start{};
-static void start_battle(int battle) { b_start = true; }
-
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console)
 	: Boss(svc, map, "minigus"), gun(svc, "minigun"), soda(svc, "soda_gun"), m_services(&svc), NPC(svc, map, std::string_view{"minigus"}), m_map(&map),
 	  sparkler(svc, Enemy::get_collider().get_vicinity_rect().size, colors::ui_white, "minigus"), m_console{&console}, m_mode{MinigusMode::neutral}, m_minigun{svc},
@@ -19,8 +16,6 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	Enemy::m_params = {{"idle", {0, 6, 48, -1}}, {"shoot", {10, 1, 38, -1}}, {"jumpsquat", {18, 1, 58, 0}}, {"hurt", {21, 4, 24, 2}},	  {"jump", {14, 1, 22, -1}},	 {"jump_shoot", {32, 1, 42, -1}},		  {"reload", {7, 7, 18, 0}},
 					   {"turn", {18, 2, 32, 0}}, {"run", {14, 4, 32, 3}},	 {"punch", {28, 4, 32, 0}},		{"uppercut", {35, 4, 32, 0}}, {"struggle", {35, 1, 24, -1}}, {"build_invincibility", {33, 2, 22, 4}}, {"laugh", {25, 3, 24, 4}},
 					   {"snap", {39, 3, 42, 0}}, {"rush", {66, 4, 22, -1}},	 {"drink", {42, 16, 20, 0}},	{"throw_can", {58, 8, 22, 0}}};
-
-	svc.events.register_event(std::make_unique<Event<int>>("StartBattle", &start_battle));
 
 	Enemy::animation.set_params(Enemy::get_params("idle"));
 	gun.clip_cooldown_time = 360;
@@ -77,7 +72,6 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	}
 	sparkler.update(svc);
 	sparkler.set_position(Enemy::get_collider().get_vicinity_rect().position);
-	p_health_bar.update(health.get_normalized());
 
 	if (map.off_the_bottom(Enemy::get_collider().physics.position)) {
 		post_death.cancel();
@@ -183,7 +177,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	soda.get().set_barrel_point(gun_point);
 
 	Enemy::directions.desired.lnr = Enemy::player_behind(player) ? LNR::left : LNR::right;
-	Enemy::update(svc, map, player);
+	Boss::update(svc, map, player);
 
 	if (secondary_collider) {
 		get_secondary_collider().physics.position = Enemy::get_collider().physics.position;
@@ -276,7 +270,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	}
 	console_complete = static_cast<bool>(m_console);
 
-	if (b_start) {
+	if (Boss::consume_flag(BossFlags::start_battle)) {
 		m_mode = MinigusMode::battle_one;
 		status.set(MinigusFlags::battle_mode);
 		svc.quest_table.progress_quest("minigus_dialogue", 1, 1);
@@ -286,7 +280,6 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		svc.music_player.load(svc.finder, "scuffle");
 		svc.music_player.play_looped();
 		cooldowns.vulnerability.start();
-		b_start = false;
 	}
 
 	if (was_introduced() && !status.test(MinigusFlags::theme_song)) {

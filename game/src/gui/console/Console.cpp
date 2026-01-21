@@ -10,7 +10,7 @@ namespace fornani::gui {
 Console::Console(automa::ServiceProvider& svc)
 	: m_services(&svc), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard", 64}, m_styling{.corner_factor{28}, .edge_factor{1}, .padding_scale{1.1f}},
 	  m_nineslice(svc, svc.assets.get_texture("blue_console"), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}), m_mode{ConsoleMode::writing}, m_response_offset{-192.f, 16.f},
-	  m_exit_stall{650} {
+	  m_exit_stall{650}, m_item_display_timer{1200} {
 	text_suite = svc.text.console;
 	m_path.set_section("open");
 	m_began = true;
@@ -34,6 +34,8 @@ Console::Console(automa::ServiceProvider& svc, dj::Json const& source, std::stri
 
 void Console::update(automa::ServiceProvider& svc) {
 	m_exit_stall.update();
+	m_item_display_timer.update();
+	if (m_item_display_timer.is_almost_complete()) { m_item_widget->send_out(); }
 	if (!is_active()) { return; }
 	if (!m_writer) { return; }
 	m_began = false;
@@ -64,6 +66,10 @@ void Console::update(automa::ServiceProvider& svc) {
 	if (auto codes = get_message_codes()) {
 		for (auto& code : codes.value()) {
 			if (code.is_response() && m_writer->is_available()) { m_writer->respond(); }
+			if (code.is_reveal_item() && m_process_code_before) {
+				m_services->events.dispatch_event("RevealItem", code.value);
+				processed = true;
+			}
 			if (code.is_input_hint()) {
 				auto action_id = code.extras ? code.extras->at(0) : 0;
 				auto lookup = m_services->controller_map.get_icon_lookup_by_action(static_cast<config::DigitalAction>(action_id));
@@ -179,6 +185,7 @@ void Console::load_single_message(std::string_view message) { m_writer = std::ma
 
 void Console::display_item(int item_id, bool sparkle) {
 	m_item_widget = ItemWidget(*m_services, ItemWidgetType::item, item_id);
+	m_item_display_timer.start();
 	if (!sparkle) { m_item_widget->remove_sparkler(); }
 }
 
@@ -244,6 +251,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 			if (auto response_codes = get_response_codes(m_response->get_selection())) {
 				for (auto const& cde : response_codes.value()) {
 					if (cde.is_response()) { m_writer->set_suite(cde.value); }
+					if (cde.is_start_battle()) { m_services->events.dispatch_event("StartBattle"); }
 					if (cde.is_pop_conversation()) {
 						m_services->events.dispatch_event("PopConversation", cde.value);
 						auto label = m_services->data.get_npc_label_from_id(cde.value);
@@ -305,7 +313,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 					m_writer->set_suite(code.value);
 					if (code.extras) { m_writer->set_index(code.extras.value()[0]); }
 				}
-				if (code.is_start_battle()) { m_services->events.dispatch_event("StartBattle", code.value); }
+				if (code.is_start_battle()) { m_services->events.dispatch_event("StartBattle"); }
 				if (code.is_reveal_item() && m_process_codes) { m_services->events.dispatch_event("RevealItem", code.value); }
 				if (code.is_item() && m_process_code_after) { m_services->events.dispatch_event("GivePlayerItem", code.value, 1); }
 				if (code.is_weapon() && m_process_code_after) { m_services->events.dispatch_event("AcquireGun", code.value); }

@@ -3,6 +3,7 @@ nani_add_sources(
         Beamsprout.cpp
         Beamstalk.cpp
         Caster.cpp
+        Crow.cpp
         Demon.cpp
         DumpsterDiver.cpp
         Eyebit.cpp

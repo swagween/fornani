@@ -7,9 +7,7 @@
 
 namespace fornani::enemy {
 
-static bool b_lynx_start{};
-static bool b_lynx_debug{};
-static void lynx_start_battle(int battle) { b_lynx_start = true; }
+constexpr auto b_lynx_debug{false};
 constexpr auto lynx_framerate = 7;
 constexpr auto run_threshold_v = 0.002f;
 
@@ -39,7 +37,6 @@ Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, std::optional<std::uni
 		{"stagger", {77, 1, lynx_framerate * 4, -1}},
 	};
 	Enemy::animation.set_params(Enemy::get_params("sit"));
-	svc.events.register_event(std::make_unique<Event<int>>("StartBattle", &lynx_start_battle));
 	flags.state.set(StateFlags::no_shake);
 	flags.general.set(GeneralFlags::post_death_render);
 	set_force_interact(true);
@@ -73,7 +70,7 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 
 	Enemy::get_collider().has_flag_set(shape::ColliderFlags::simple) ? Enemy::get_collider().physics.set_friction_componentwise(m_seek_friction) : Enemy::get_collider().physics.set_friction_componentwise({0.97f, 0.99f});
 
-	Enemy::update(svc, map, player);
+	Boss::update(svc, map, player);
 	Enemy::face_player(player);
 
 	// positioning
@@ -195,9 +192,6 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	m_attacks.left_shockwave.handle_player(player);
 	m_attacks.right_shockwave.handle_player(player);
 
-	// gameplay logic
-	p_health_bar.update(health.get_normalized());
-
 	if (ccm::abs(Enemy::get_collider().physics.acceleration.x) > run_threshold_v) { request(LynxState::run); }
 	if (Enemy::get_collider().get_center().x < m_home.x || Enemy::get_collider().get_center().x > m_home.y) {
 		request(LynxState::jump);
@@ -219,10 +213,10 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 
 	if (!health.is_dead()) {
 		// first phase starts
-		if (b_lynx_start && !m_console->has_value()) {
+		if (Boss::has_flag_set(BossFlags::start_battle) && !m_console->has_value()) {
 			Boss::set_flag(BossFlags::battle_mode);
 			request(LynxState::get_up);
-			b_lynx_start = false;
+			Boss::set_flag(BossFlags::start_battle, false);
 			svc.music_player.load(svc.finder, "tumult");
 			svc.music_player.play_looped();
 			flags.general.set(GeneralFlags::has_invincible_channel);

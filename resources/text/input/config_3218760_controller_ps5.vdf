@@ -666,7 +666,7 @@
 	"group"
 	{
 		"id"		"24"
-		"mode"		"joystick_mouse"
+		"mode"		"joystick"
 		"name"		""
 		"description"		""
 		"inputs"

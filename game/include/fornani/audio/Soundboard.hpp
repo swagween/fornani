@@ -56,7 +56,7 @@ enum class World {
 	incinerite_explosion,
 	splash
 };
-enum class Item { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip, vendor_sale, unequip };
+enum class Item { heal, orb_low, orb_medium, orb_high, orb_max, health_increase, gem, get, equip, vendor_sale, unequip, drop_spawn, orb_collide, heart_collide };
 enum class Player { jump, land, arms_switch, shoot, hurt, dash, death, shield_drop, slide, walljump, roll, wallslide, super_slide, doublejump, turn_slide, dash_kick, gulp, dive };
 enum class Weapon { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clover, nova, hook_probe, staple, indie, gnat, energy_ball, plasmer, underdog, peckett_710, pulse, demon_magic };
 enum class Projectile { basic, shuriken, pulse, hard_hit, critical_hit };

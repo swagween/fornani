@@ -280,6 +280,9 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.item.test(Item::get)) { play(engine, svc, svc.sounds.get_buffer("item_get")); }
 	if (flags.item.test(Item::equip)) { play(engine, svc, svc.sounds.get_buffer("item_equip")); }
 	if (flags.item.test(Item::unequip)) { play(engine, svc, svc.sounds.get_buffer("item_unequip")); }
+	if (flags.item.test(Item::drop_spawn)) { play(engine, svc, svc.sounds.get_buffer("drop_spawn"), 0.2f); }
+	if (flags.item.test(Item::orb_collide)) { play(engine, svc, svc.sounds.get_buffer("orb_collide"), 0.2f); }
+	if (flags.item.test(Item::heart_collide)) { play(engine, svc, svc.sounds.get_buffer("heart_collide"), 0.2f); }
 
 	// player
 	if (flags.player.test(Player::jump)) { play(engine, svc, svc.sounds.get_buffer("nani_jump"), 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }

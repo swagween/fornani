@@ -555,6 +555,40 @@
           102
         ],
         "source_id": 704
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "destination_id": 706,
+        "dimensions": [
+          5,
+          1
+        ],
+        "id": 0,
+        "key_id": 0,
+        "locked": false,
+        "position": [
+          21,
+          127
+        ],
+        "source_id": 704
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "destination_id": 707,
+        "dimensions": [
+          1,
+          4
+        ],
+        "id": 0,
+        "key_id": 0,
+        "locked": false,
+        "position": [
+          0,
+          37
+        ],
+        "source_id": 704
       }
     ],
     "save_point": [

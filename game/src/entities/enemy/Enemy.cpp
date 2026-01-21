@@ -161,7 +161,9 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.external_id, attributes.respawn_distance, permadeath(), flags.general.test(GeneralFlags::semipermanent)); }
 	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
-		map.active_loot.push_back(item::Loot(svc, map, player, attributes.drop_range, attributes.loot_multiplier, get_collider().get_center(), 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id));
+		auto individual_delay = flags.general.test(GeneralFlags::boss) ? 16 : 0;
+		map.active_loot.push_back(
+			item::Loot(svc, map, player, attributes.drop_range, attributes.loot_multiplier * player.get_luck(), get_collider().get_center(), 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id, individual_delay));
 		if (random::percent_chance(attributes.treasure_chance * 100.f)) { spawn_treasure(svc, map); }
 		switch (attributes.size) {
 		case EnemySize::tiny: svc.soundboard.flags.enemy.set(audio::Enemy::high_death); break;
@@ -190,7 +192,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	health.update();
 	m_health_bar.update(health.get_normalized(), get_collider().get_top() + sf::Vector2f{-24.f, -32.f});
-	player.has_item_equipped(svc.data.item_id_from_label("magnifying_glass")) ? flags.state.set(StateFlags::health_exposed) : flags.state.reset(StateFlags::health_exposed);
+	player.has_item_equipped(svc.data.item_id_from_label("magnifying_glass")) && !flags.general.test(GeneralFlags::boss) ? flags.state.set(StateFlags::health_exposed) : flags.state.reset(StateFlags::health_exposed);
 	auto flash_rate = 32;
 	if (!flags.general.test(GeneralFlags::custom_channels)) {
 		set_channel(EnemyChannel::standard);
@@ -233,10 +235,10 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	on_crush(map);
 
-	if (player.get_collider().wallslider.overlaps(get_collider().bounding_box) && player.controller.is_dashing() && !player.controller.is(player::AbilityType::dash_kick) && !get_collider().has_attribute(shape::ColliderAttributes::sturdy)) {
+	if (player.get_collider().wallslider.overlaps(get_collider().bounding_box) && player.controller.is_dashing() && !player.controller.is(player::AbilityType::dash_kick)) {
 		if (!player.has_flag_set(player::PlayerFlags::dash_kick)) { hurt(4.f); }
 		player.set_flag(player::PlayerFlags::dash_kick);
-		get_collider().physics.acceleration.y = -280.f;
+		if (!get_collider().has_attribute(shape::ColliderAttributes::sturdy)) { get_collider().physics.acceleration.y = -280.f; }
 	}
 
 	// update ranges

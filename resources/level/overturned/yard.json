@@ -16,6 +16,38 @@
           0
         ],
         "variant": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 25,
+        "position": [
+          12,
+          24
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 25,
+        "position": [
+          21,
+          87
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
       }
     ],
     "inspectables": [
@@ -13276,7 +13308,7 @@
         0,
         0,
         0,
-        0,
+        488,
         0,
         0,
         478,
@@ -15302,7 +15334,7 @@
         0,
         0,
         0,
-        0,
+        488,
         0,
         0,
         0,

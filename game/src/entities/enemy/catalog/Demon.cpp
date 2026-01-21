@@ -241,7 +241,6 @@ fsm::StateFunction Demon::update_signal() {
 
 fsm::StateFunction Demon::update_rush() {
 	m_state.actual = DemonState::rush;
-	NANI_LOG_DEBUG(m_logger, "RUSHING!");
 	if (caution.danger()) {
 		request(DemonState::idle);
 		if (change_state(DemonState::idle, get_params("idle"))) { return DEMON_BIND(update_idle); }

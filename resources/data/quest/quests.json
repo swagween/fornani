@@ -144,11 +144,18 @@
 		"title": "Main",
 		"tag": "main",
 		"target": 1,
-		"displayed": false
+		"displayed": false,
+		"id": 11
 	},
 	{
 		"title": "Pioneer Trail",
 		"tag": "pioneer_trail",
+		"target": 1,
+		"displayed": false
+	},
+	{
+		"title": "Grand Mastiff Mystery",
+		"tag": "grand_mastiff_mystery",
 		"target": 1,
 		"displayed": false
 	}

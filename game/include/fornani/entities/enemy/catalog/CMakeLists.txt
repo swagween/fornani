@@ -3,6 +3,7 @@ nani_add_headers(
         Beamsprout.hpp
         Beamstalk.hpp
         Caster.hpp
+        Crow.hpp
         Demon.hpp
         DumpsterDiver.hpp
         Eyebit.hpp

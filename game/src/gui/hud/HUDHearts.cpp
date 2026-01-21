@@ -6,7 +6,7 @@
 namespace fornani::gui {
 
 HUDHearts::HUDHearts(automa::ServiceProvider& svc, player::Player& player, sf::Vector2f root, sf::Vector2f dimensions)
-	: HUDWidget{svc, player, root, dimensions}, m_health_bar{svc, static_cast<int>(player.health.get_capacity()), sf::Vector2i{dimensions}, "hud_hearts", root, -2.f} {}
+	: HUDWidget{svc, player, root, dimensions}, m_health_bar{svc, static_cast<int>(player.health.get_capacity()), sf::Vector2i{dimensions}, "heads_up_display_hearts", root, -2.f} {}
 
 void HUDHearts::update(automa::ServiceProvider& svc, player::Player& player) {
 	HUDWidget::update(svc, player);

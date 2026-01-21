@@ -8,6 +8,7 @@
 #include <fornani/entities/enemy/catalog/Beamsprout.hpp>
 #include <fornani/entities/enemy/catalog/Beamstalk.hpp>
 #include <fornani/entities/enemy/catalog/Caster.hpp>
+#include <fornani/entities/enemy/catalog/Crow.hpp>
 #include <fornani/entities/enemy/catalog/Demon.hpp>
 #include <fornani/entities/enemy/catalog/DumpsterDiver.hpp>
 #include <fornani/entities/enemy/catalog/Eyebit.hpp>
@@ -33,7 +34,8 @@ void EnemyCatalog::update() {
 	std::erase_if(enemies, [this](auto const& e) { return e->gone(); });
 }
 
-void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int id, bool spawned, int variant, sf::Vector2<int> start_direction) {
+void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int id, bool spawned, int variant, sf::Vector2<int> start_direction,
+							  Multispawn multispawn) {
 	switch (id) {
 	case 0: enemies.push_back(std::make_unique<Hulmet>(svc, map)); break;
 	case 1: enemies.push_back(std::make_unique<Tank>(svc, map, variant)); break;
@@ -59,6 +61,7 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[m
 	case 22: enemies.push_back(std::make_unique<Mastiff>(svc, map, variant)); break;
 	case 23: enemies.push_back(std::make_unique<Beamsprout>(svc, map, start_direction)); break;
 	case 24: enemies.push_back(std::make_unique<GrandMastiff>(svc, map)); break;
+	case 25: enemies.push_back(std::make_unique<Crow>(svc, map, multispawn.spread)); break;
 	default: enemies.push_back(std::make_unique<Frdog>(svc, map)); break;
 	}
 }

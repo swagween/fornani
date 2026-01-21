@@ -92,6 +92,7 @@ void Drop::set_value() {
 }
 
 void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (!check_delay(svc)) { return; }
 	tick();
 	delay.update();
 	auto magnet = player.has_item_equipped(svc.data.item_id_from_label("magnet"));
@@ -103,8 +104,15 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	}
 	get_collider().set_flag(shape::ColliderFlags::simple, magnet);
 	for (auto& spike : map.spikes) { get_collider().handle_collision(spike.get_bounding_box()); }
-	if (get_collider().collided() && type == DropType::gem && !is_inactive() && std::abs(get_collider().physics.velocity.y) > 1.f) {
-		random::percent_chance(50) ? svc.soundboard.flags.world.set(audio::World::gem_hit_1) : svc.soundboard.flags.world.set(audio::World::gem_hit_2);
+
+	if (get_collider().collided()) {
+		if (!is_inactive() && std::abs(get_collider().physics.velocity.y) > 1.f) {
+			switch (type) {
+			case DropType::gem: random::percent_chance(50) ? svc.soundboard.flags.world.set(audio::World::gem_hit_1) : svc.soundboard.flags.world.set(audio::World::gem_hit_2); break;
+			case DropType::heart: svc.soundboard.flags.item.set(audio::Item::heart_collide); break;
+			case DropType::orb: svc.soundboard.flags.item.set(audio::Item::orb_collide); break;
+			}
+		}
 	}
 
 	if (!magnet) { get_collider().physics.acceleration = {}; }
@@ -142,6 +150,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 }
 
 void Drop::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	if (m_start_delay) { return; }
 	auto offset = sf::Vector2f{0.f, get_collider().get_radius() - Animatable::get_f_dimensions().y};
 	Animatable::set_position(get_collider().get_global_center() + offset - cam);
 	if (!is_inactive() && !is_completely_gone() && (lifespan.get() > 500 || (lifespan.get() / 20) % 2 == 0)) { win.draw(*this); }
@@ -154,7 +163,18 @@ void Drop::set_position(sf::Vector2f pos) {
 	sparkler.set_position(pos);
 }
 
-void Drop::apply_force(sf::Vector2f force) { get_collider().physics.apply_force(force); }
+void Drop::apply_force(sf::Vector2f force, bool delayed) {
+	if (delayed) {
+		m_start_force = force;
+	} else {
+		get_collider().physics.apply_force(force);
+	}
+}
+
+void Drop::set_delay(int time) {
+	m_start_delay = util::Cooldown{time};
+	m_start_delay->start();
+}
 
 void Drop::destroy_completely() {
 	lifespan.cancel();
@@ -203,5 +223,21 @@ bool Drop::change_state(DropState next, anim::Parameters params) {
 bool Drop::is_completely_gone() const { return afterlife.is_complete() && lifespan.is_complete(); }
 
 bool Drop::is_inactive() const { return lifespan.is_complete() && !afterlife.is_complete(); }
+
+bool Drop::check_delay(automa::ServiceProvider& svc) {
+	if (m_start_delay) {
+		get_collider().set_flag(shape::ColliderFlags::no_update);
+		if (m_start_delay->running()) {
+			m_start_delay->update();
+		} else {
+			get_collider().set_flag(shape::ColliderFlags::no_update, false);
+			m_start_delay.reset();
+			get_collider().physics.apply_force(m_start_force);
+			svc.soundboard.flags.item.set(audio::Item::drop_spawn);
+		}
+		return false;
+	}
+	return true;
+}
 
 } // namespace fornani::item

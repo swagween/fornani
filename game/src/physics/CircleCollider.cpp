@@ -14,6 +14,7 @@ CircleCollider::CircleCollider(float radius) : ICollider{sf::Vector2f{radius * 2
 }
 
 void CircleCollider::update(automa::ServiceProvider& svc) {
+	if (has_flag_set(ColliderFlags::no_update)) { return; }
 	ICollider::update(svc);
 	has_flag_set(ColliderFlags::simple) ? physics.simple_update() : physics.update(svc);
 	sensor.set_position(physics.position);
@@ -62,7 +63,7 @@ void CircleCollider::handle_collision(shape::Shape const& shape, bool soft) {
 
 void CircleCollider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	ICollider::render(win, cam);
-	has_flag_set(ColliderFlags::registered) ? sensor.bounds.setOutlineColor(colors::green) : sensor.bounds.setOutlineColor(colors::red);
+	has_flag_set(ColliderFlags::registered) ? sensor.bounds.setOutlineColor(colors::green) : has_flag_set(ColliderFlags::no_update) ? sensor.bounds.setOutlineColor(colors::goldenrod) : sensor.bounds.setOutlineColor(colors::red);
 	sensor.render(win, cam);
 }
 

@@ -8,7 +8,7 @@ namespace fornani::player {
 
 constexpr static float crawl_speed_v{0.32f};
 
-PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect{64}, .dash_kick{40}}, post_slide{80}, post_wallslide{16}, wallslide_slowdown{64} {
+PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect{64}, .dash_kick{96}}, post_slide{80}, post_wallslide{16}, wallslide_slowdown{64} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
@@ -188,6 +188,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	key_map[ControllerInput::sprint] = 0.f;
 	if (moving() && sprint && !sprint_released()) {
 		if (svc.controller_map.is_gamepad()) {
+			key_map[ControllerInput::move_x] = svc.controller_map.get_joystick_throttle().x;
 		} else {
 			if (left) { key_map[ControllerInput::move_x] = -sprint_speed_v; }
 			if (right) { key_map[ControllerInput::move_x] = sprint_speed_v; }

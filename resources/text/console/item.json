@@ -1,119 +1,146 @@
 {
-	"<invalid>": {
-		"suite": [ [ { "message": "Failed to get item label from ID!" } ] ],
-		"responses": []
-	},
-	"bryns_note": {
-		"suite": [
-			[
-				{ "message": "Dear Nani..." },
-				{
-					"message": "I'm sorry that it was impossible for me to help any more than this, but I was pressed for time and Skycorps have eyes on me 24/7."
-				},
-				{
-					"message": "There is a console in your room that's hooked into the Firstwind's mainframe. If you enter the clearance code, you should be able to open the hatch at the top of your cell. After that, you'll just need to get out alive..."
-				},
-				{ "message": "The clearance code is 25070." },
-				{
-					"codes": [ [ 11, 7 ] ],
-					"message": "- Bryn"
-				}
-			]
-		],
-		"responses": []
-	},
-	"pioneer_medal": {
-		"suite": [
-			[
-				{
-					"message": "An old medal you found in Dr. Willett's hideout. It's made of the same material as your inventory gizmo, which seems to be a sturdy metal alloy invented by the old pioneers who first ventured to this island."
-				},
-				{
-					"codes": [ [ 10, 86, 7 ] ],
-					"message": "This medal grants you the ability to slide on the ground by pressing  . It will give you a slight speed boost, and you may slide indefinitely down slopes."
-				}
-			]
-		],
-		"responses": []
-	},
-	"carises_soul": {
-		"suite": [
-			[
-				{
-					"message": "When you defeated Carise Peckett's ghost, you captured the benevolent half of her soul in this enchanted jar."
-				},
-				{
-					"message": "From certain angles, you can see the vacant stare of her ghostly eyes."
-				}
-			]
-		],
-		"responses": []
-	},
-	"hoarders_trinket": {
-		"suite": [
-			[
-				{
-					"message": "The Hoarder's left behind his most prized possession when you defeated him. This trinket grants you an other-worldy intuition to avoid injury in times of peril."
-				}
-			]
-		],
-		"responses": []
-	},
-	"woodshine_totem": {
-		"suite": [
-			[
-				{
-					"message": "You've kept this treasure close ever since your mother gave it to you. It is a symbol of your Kariba origins, and it represents your faithfulness to the tribe."
-				},
-				{
-					"message": "You are grateful that Doctor Willett had given you this pocket gizmo in which to store it, otherwise it might have been confiscated by Skycorps."
-				},
-				{
-					"codes": [ [ 10, 86, 7 ] ],
-					"message": "This totem grants you the ability to roll on the ground right as you land by pressing  . It will give you a slight speed boost."
-				}
-			]
-		],
-		"responses": []
-	},
-	"kariba_talisman": {
-		"suite": [
-			[
-				{
-					"message": "An old talisman imbued with malicious rhenite energy. Bryn gave this to you when you found her trapped in the Kariba Ruins."
-				},
-				{
-					"codes": [ [ 10, 86, 4 ] ],
-					"message": "This talisman grants you the ability to slide on walls, and jump off them by pressing  . There is no limit to the number of times you can walljump."
-				}
-			]
-		],
-		"responses": []
-	},
-	"ibos_journal": {
-		"suite": [
-			[
-				{ "message": "We were met with inexorable hostility from the native Kariba since day one. Even in the wild areas there are armed guardians that seem to be possessed by rhenite energy." },
-				{
-					"message": "The Kariba are masters of rhenite, and evidently live in profound symbiosis with the great worm that has rooted itself in the island."
-				},
-				{
-					"message": "As such, they are not to be underestimated. We have constructed this hideout to avoid further conflict, and we've just been passing the days here while we wait for reinforcements from Grand Island."
-				},
-				{ "message": "We are explorers, not warriors. If the Kariba don't want us here, we should leave and never return." },
-				{ "message": "But these thoughts are merely my own... When you fly the Grand Island banner, you must sacrifice your autonomy." },
-				{ "message": "And I knew what I was signing up for. But... this is a wild place. I feel deeply that we were never meant to come." }
-			]
-		],
-		"responses": []
-	},
-	"permission_slip": {
-		"suite": [
-			[
-				{ "message": "I hereby grant by the authority of the Woodshine Board of Elders the bearer of this document to pass via the Pioneer Trail into the lands beyond the Overturned Forest." },
-				{ "message": "Signed: Chieftain Borm \"Jimmy\" Ba." }
-			]
-		],
-		"responses": []
-	}
+  "<invalid>": {
+    "suite": [[{ "message": "Failed to get item label from ID!" }]],
+    "responses": []
+  },
+  "bryns_note": {
+    "suite": [
+      [
+        { "message": "Dear Nani..." },
+        {
+          "message": "I'm sorry that it was impossible for me to help any more than this, but I was pressed for time and Skycorps have eyes on me 24/7."
+        },
+        {
+          "message": "There is a console in your room that's hooked into the Firstwind's mainframe. If you enter the clearance code, you should be able to open the hatch at the top of your cell. After that, you'll just need to get out alive..."
+        },
+        { "message": "The clearance code is 25070." },
+        {
+          "codes": [[11, 7]],
+          "message": "- Bryn"
+        }
+      ]
+    ],
+    "responses": []
+  },
+  "pioneer_medal": {
+    "suite": [
+      [
+        {
+          "message": "An old medal you found in Dr. Willett's hideout. It's made of the same material as your inventory gizmo, which seems to be a sturdy metal alloy invented by the old pioneers who first ventured to this island."
+        },
+        {
+          "codes": [[10, 86, 7]],
+          "message": "This medal grants you the ability to slide on the ground by pressing  . It will give you a slight speed boost, and you may slide indefinitely down slopes."
+        }
+      ]
+    ],
+    "responses": []
+  },
+  "carises_soul": {
+    "suite": [
+      [
+        {
+          "message": "When you defeated Carise Peckett's ghost, you captured the benevolent half of her soul in this enchanted jar."
+        },
+        {
+          "message": "From certain angles, you can see the vacant stare of her ghostly eyes."
+        }
+      ]
+    ],
+    "responses": []
+  },
+  "hoarders_trinket": {
+    "suite": [
+      [
+        {
+          "message": "The Hoarder's left behind his most prized possession when you defeated him. This trinket grants you an other-worldy intuition to avoid injury in times of peril."
+        }
+      ]
+    ],
+    "responses": []
+  },
+  "woodshine_totem": {
+    "suite": [
+      [
+        {
+          "message": "You've kept this treasure close ever since your mother gave it to you. It is a symbol of your Kariba origins, and it represents your faithfulness to the tribe."
+        },
+        {
+          "message": "You are grateful that Doctor Willett had given you this pocket gizmo in which to store it, otherwise it might have been confiscated by Skycorps."
+        },
+        {
+          "codes": [[10, 86, 7]],
+          "message": "This totem grants you the ability to roll on the ground right as you land by pressing  . It will give you a slight speed boost."
+        }
+      ]
+    ],
+    "responses": []
+  },
+  "kariba_talisman": {
+    "suite": [
+      [
+        {
+          "message": "An old talisman imbued with malicious rhenite energy. Bryn gave this to you when you found her trapped in the Kariba Ruins."
+        },
+        {
+          "codes": [[10, 86, 4]],
+          "message": "This talisman grants you the ability to slide on walls, and jump off them by pressing  . There is no limit to the number of times you can walljump."
+        }
+      ]
+    ],
+    "responses": []
+  },
+  "ibos_journal": {
+    "suite": [
+      [
+        {
+          "message": "We were met with inexorable hostility from the native Kariba since day one. Even in the wild areas there are armed guardians that seem to be possessed by rhenite energy."
+        },
+        {
+          "message": "The Kariba are masters of rhenite, and evidently live in profound symbiosis with the great worm that has rooted itself in the island."
+        },
+        {
+          "message": "As such, they are not to be underestimated. We have constructed this hideout to avoid further conflict, and we've just been passing the days here while we wait for reinforcements from Grand Island."
+        },
+        {
+          "message": "We are explorers, not warriors. If the Kariba don't want us here, we should leave and never return."
+        },
+        {
+          "message": "But these thoughts are merely my own... When you fly the Grand Island banner, you must sacrifice your autonomy."
+        },
+        {
+          "message": "And I knew what I was signing up for. But... this is a wild place. I feel deeply that we were never meant to come."
+        }
+      ]
+    ],
+    "responses": []
+  },
+  "permission_slip": {
+    "suite": [
+      [
+        {
+          "message": "I hereby grant by the authority of the Woodshine Board of Elders the bearer of this document to pass via the Pioneer Trail into the lands beyond the Overturned Forest."
+        },
+        { "message": "Signed: Chieftain Borm \"Jimmy\" Ba." }
+      ]
+    ],
+    "responses": []
+  },
+  "mastiff_totem": {
+    "suite": [
+      [
+        {
+          "message": "It appears to contain a living energy that slowly breathes within its cracks."
+        },
+        {
+          "codes": [
+            [3, 13, 1, 1],
+            [11, 43]
+          ],
+          "message": "Upon closer inspection, you notice that it contains a uniquely-shaped insert, as if it could fit snugly onto a pedestal."
+        }
+      ]
+    ],
+    "responses": []
+  }
 }

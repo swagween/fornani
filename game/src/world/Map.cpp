@@ -125,11 +125,22 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		start.x = entry["start_direction"][0].as<int>();
 		start.y = entry["start_direction"][1].as<int>();
 		auto variant = entry["variant"].as<int>();
-		enemy_catalog.push_enemy(svc, *this, console, entry["id"].as<int>(), false, variant, start);
-		enemy_catalog.enemies.back()->set_position_from_scaled({pos * constants::f_cell_size});
-		enemy_catalog.enemies.back()->get_collider().physics.zero();
-		enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
-		if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
+		auto spawn_amount = 1;
+		auto spawn_range = sf::Vector2f{};
+		if (auto id = svc.data.get_enemy_label_from_id(entry["id"].as<int>())) {
+			if (svc.data.enemy[*id]["multispawn"]) {
+				auto& in = svc.data.enemy[*id]["multispawn"];
+				spawn_amount = random::random_range_float(in["quantity"][0].as<int>(), in["quantity"][1].as<int>());
+				spawn_range = random::random_vector_float({-in["spread"][0].as<float>(), in["spread"][0].as<float>()}, {-in["spread"][1].as<float>(), in["spread"][1].as<float>()});
+			}
+		}
+		for (auto i = 0; i < spawn_amount; ++i) {
+			enemy_catalog.push_enemy(svc, *this, console, entry["id"].as<int>(), false, variant, start, enemy::Multispawn{spawn_range});
+			enemy_catalog.enemies.back()->set_position_from_scaled({pos * constants::f_cell_size});
+			enemy_catalog.enemies.back()->get_collider().physics.zero();
+			enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
+			if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
+		}
 	}
 
 	for (auto& entry : entities["platforms"].as_array()) {
@@ -935,6 +946,19 @@ bool Map::overlaps_middleground(shape::Shape& test) {
 }
 
 auto Map::get_music_balance() const -> float { return music_balance.get(); }
+
+auto Map::get_closest_home_point(sf::Vector2f const check) const -> sf::Vector2f {
+	auto ret = sf::Vector2f{};
+	auto closest = std::numeric_limits<float>::max();
+	for (auto& pt : home_points) {
+		auto distance = (check - pt).length();
+		if (distance < closest) {
+			ret = pt;
+			closest = distance;
+		}
+	}
+	return ret;
+}
 
 auto Map::get_ambience_balance() const -> float { return ambience_balance.get(); }
 

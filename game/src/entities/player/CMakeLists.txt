@@ -5,6 +5,7 @@ nani_add_sources(
         Piggybacker.cpp
         Player.cpp
         PlayerAnimation.cpp
+        PlayerAttributes.cpp
         PlayerController.cpp
         Wallet.cpp
         Wardrobe.cpp

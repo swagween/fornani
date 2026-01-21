@@ -7,7 +7,7 @@
 
 namespace fornani::item {
 
-Loot::Loot(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2<int> drop_range, float probability, sf::Vector2f pos, int delay_time, bool special, int special_id) {
+Loot::Loot(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2<int> drop_range, float probability, sf::Vector2f pos, int delay_time, bool special, int special_id, int individual_delay) {
 
 	auto const drop_rate = random::random_range(drop_range.x, drop_range.y);
 	position = pos;
@@ -28,7 +28,9 @@ Loot::Loot(automa::ServiceProvider& svc, world::Map& map, player::Player& player
 		drops.push_back(std::make_unique<Drop>(svc, map, key, probability, delay_time, special_id));
 		drops.back()->set_position(pos);
 		if (player.has_item_equipped(svc.data.item_id_from_label("magnet"))) { rand_vec *= 0.01f; }
-		drops.back()->apply_force(rand_vec);
+		auto delayed = individual_delay > 0;
+		drops.back()->apply_force(rand_vec, delayed);
+		if (delayed) { drops.back()->set_delay(individual_delay * i); }
 	}
 }
 

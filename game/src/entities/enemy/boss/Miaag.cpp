@@ -7,9 +7,7 @@
 
 namespace fornani::enemy {
 
-static bool b_miaag_start{};
 constexpr sf::Vector2f anchor_position_v{23.f, 22.f}; // where on the level the chain is connected
-static void miaag_start_battle(int battle) { b_miaag_start = true; }
 auto constexpr miaag_floor_destructibles = 50901;
 auto constexpr miaag_outer_destructibles = 50902;
 auto constexpr miaag_exit_destructibles = 509;
@@ -21,7 +19,6 @@ Miaag::Miaag(automa::ServiceProvider& svc, world::Map& map)
 				{"turn", {16, 1, 40, 0}}, {"closed", {15, 1, 40, -1}}, {"awaken", {17, 4, 40, 0}},		   {"dormant", {17, 1, 40, -1}}};
 
 	Enemy::animation.set_params(get_params("dormant"));
-	svc.events.register_event(std::make_unique<Event<int>>("StartBattle", &miaag_start_battle));
 	m_magic.set_team(arms::Team::guardian);
 	flags.general.set(GeneralFlags::custom_channels);
 	flags.general.set(GeneralFlags::post_death_render);
@@ -42,7 +39,7 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		svc.quest_table.set_quest_progression("npc_dialogue", {"dr_willett", 300}, 2, {300, 509}, 2);
 	}
 
-	Enemy::update(svc, map, player);
+	Boss::update(svc, map, player);
 	face_player(player);
 
 	m_cooldowns.fire.update();
@@ -55,7 +52,6 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	m_magic.update(svc, map, *this);
 	m_player_target = player.get_collider().get_center() + sf::Vector2f{0.f, -80.f};
-	p_health_bar.update(health.get_normalized());
 	m_spine->set_end_position(get_collider().get_center());
 	m_spine->update(svc, map, player);
 
@@ -132,11 +128,10 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (!is_state(MiaagState::spellcast)) { set_channel(EnemyChannel::standard); }
 	if (hurt_effect.running()) { set_channel((hurt_effect.get() / flash_rate) % 2 == 0 ? EnemyChannel::hurt_1 : EnemyChannel::hurt_2); }
 
-	if (b_miaag_start) {
+	if (consume_flag(BossFlags::start_battle)) {
 		set_flag(BossFlags::battle_mode);
 		svc.data.switch_destructible_state(miaag_outer_destructibles);
 		request(MiaagState::awaken);
-		b_miaag_start = false;
 		svc.music_player.load(svc.finder, "scuffle");
 		svc.music_player.play_looped();
 		svc.soundboard.flags.miaag.set(audio::Miaag::hiss);

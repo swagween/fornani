@@ -130,6 +130,14 @@
 		{
 			"name": "lavacoal123",
 			"description": "gui sfx"
+		},
+		{
+			"name": "JOHNJOHNFM LLC",
+			"description": "bell sound effect for drop collisions"
+		},
+		{
+			"name": "InspectorJ",
+			"description": "bell sound effect for orb collisions"
 		}
 	],
 	"playtesters": [

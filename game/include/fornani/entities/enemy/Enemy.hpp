@@ -56,7 +56,8 @@ enum class GeneralFlags {
 	spike_collision,
 	custom_channels,
 	semipermanent,
-	no_tick
+	no_tick,
+	boss
 };
 enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, no_shake, out_of_zone, no_slowdown, intangible, health_exposed };
 enum class Triggers { hostile, alert };

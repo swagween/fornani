@@ -1,7 +1,7 @@
 
-#include "fornani/entities/packages/Caution.hpp"
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
+#include <fornani/entities/packages/Caution.hpp>
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/world/Map.hpp>
 
 namespace fornani::entity {
 

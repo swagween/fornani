@@ -7,7 +7,7 @@
 namespace fornani::gui {
 
 HUDOrbs::HUDOrbs(automa::ServiceProvider& svc, player::Player& player, std::string_view tag, sf::Vector2f root, sf::Vector2i dimensions)
-	: HUDWidget{svc, player, tag, root, dimensions}, m_label_width{44.f}, m_orb_text{svc, "hud_orb_font"} {}
+	: HUDWidget{svc, player, tag, root, dimensions}, m_label_width{44.f}, m_orb_text{svc, "heads_up_display_orb_font"} {}
 
 void HUDOrbs::update(automa::ServiceProvider& svc, player::Player& player) { HUDWidget::update(svc, player); }
 

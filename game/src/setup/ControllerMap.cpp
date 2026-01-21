@@ -242,7 +242,7 @@ void ControllerMap::update() {
 		}
 	}
 
-	if (last_controller_type_used() != ControllerType::gamepad) { m_joystick_throttle = {}; }
+	// if (last_controller_type_used() != ControllerType::gamepad) { m_joystick_throttle = {}; }
 }
 
 void ControllerMap::set_action_set(ActionSet set) {

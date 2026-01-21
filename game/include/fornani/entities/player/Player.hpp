@@ -10,6 +10,7 @@
 #include <fornani/entities/player/Catalog.hpp>
 #include <fornani/entities/player/Piggybacker.hpp>
 #include <fornani/entities/player/PlayerAnimation.hpp>
+#include <fornani/entities/player/PlayerAttributes.hpp>
 #include <fornani/entities/player/PlayerController.hpp>
 #include <fornani/entities/player/VisitHistory.hpp>
 #include <fornani/entities/player/Wallet.hpp>
@@ -180,6 +181,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto get_desired_direction() const -> SimpleDirection { return SimpleDirection{directions.desired}; }
 	[[nodiscard]] auto get_actual_direction() const -> SimpleDirection { return SimpleDirection{directions.actual}; }
 	[[nodiscard]] auto get_piggybacker_id() const -> int { return piggybacker ? piggybacker->get_id() : 0; }
+	[[nodiscard]] auto get_luck() const -> float { return m_attributes.luck; }
 	[[nodiscard]] bool is_intangible() const;
 
 	void set_desired_direction(SimpleDirection to) { directions.desired = Direction{to}; }
@@ -285,6 +287,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void set_facing_direction(SimpleDirection to_direction) { directions.desired = to_direction; }
 
 	PlayerAnimation m_animation_machine;
+	PlayerAttributes m_attributes;
 
 	[[nodiscard]] auto can_dash() const -> bool;
 	[[nodiscard]] auto can_omnidirectional_dash() const -> bool;

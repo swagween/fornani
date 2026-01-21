@@ -165,6 +165,7 @@ class Map {
 	[[nodiscard]] auto get_active_emitters_size() const -> std::size_t { return active_emitters.size(); }
 	[[nodiscard]] auto get_ambience_balance() const -> float;
 	[[nodiscard]] auto get_music_balance() const -> float;
+	[[nodiscard]] auto get_closest_home_point(sf::Vector2f const check) const -> sf::Vector2f;
 
 	dj::Json const& get_json_data(automa::ServiceProvider& svc) const;
 

@@ -13,7 +13,7 @@ void HUDAmmo::update(automa::ServiceProvider& svc, player::Player& player) {
 	if (!p_animatable) { return; }
 	if (player.arsenal && player.hotbar) {
 		if (player.switched_weapon() || Flaggable<HUDAmmoFlags>::consume_flag(HUDAmmoFlags::switched) || !m_ammo_bar) {
-			m_ammo_bar = WidgetBar(svc, player.equipped_weapon().ammo.get_capacity(), p_animatable->get_dimensions(), "hud_ammo", get_root(), 2.f, true);
+			m_ammo_bar = WidgetBar(svc, player.equipped_weapon().ammo.get_capacity(), p_animatable->get_dimensions(), "heads_up_display_ammo", get_root(), 2.f, true);
 		}
 		player.hotbar->sync();
 		auto& player_ammo = player.equipped_weapon().ammo;

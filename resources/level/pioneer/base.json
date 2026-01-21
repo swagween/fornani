@@ -234,23 +234,6 @@
           12
         ],
         "source_id": 300
-      },
-      {
-        "activate_on_contact": false,
-        "already_open": false,
-        "destination_id": 509,
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 0,
-        "key_id": 0,
-        "locked": false,
-        "position": [
-          16,
-          18
-        ],
-        "source_id": 300
       }
     ],
     "save_point": [

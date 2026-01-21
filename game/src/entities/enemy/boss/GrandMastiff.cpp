@@ -7,10 +7,10 @@
 
 namespace fornani::enemy {
 
-constexpr auto grand_mastiff_framerate = 14;
+constexpr auto grand_mastiff_framerate = 12;
 
 GrandMastiff::GrandMastiff(automa::ServiceProvider& svc, world::Map& map) : Boss{svc, map, "grand_mastiff"}, m_post_slash{400}, m_post_bite{600} {
-	m_params = {{"idle", {0, 4, grand_mastiff_framerate * 3, -1}}, {"run", {4, 6, grand_mastiff_framerate, 2}}, {"growl", {15, 4, grand_mastiff_framerate * 2, 0}}, {"turn", {10, 5, grand_mastiff_framerate * 2, 0}}};
+	m_params = {{"idle", {0, 4, grand_mastiff_framerate * 3, -1}}, {"run", {4, 6, grand_mastiff_framerate, 2}}, {"growl", {15, 4, grand_mastiff_framerate * 2, 0}}, {"turn", {10, 4, grand_mastiff_framerate * 2, 0}}};
 
 	animation.set_params(get_params("idle"));
 	m_bite.hit.bounds.setRadius(40.f);
@@ -19,7 +19,16 @@ GrandMastiff::GrandMastiff(automa::ServiceProvider& svc, world::Map& map) : Boss
 }
 
 void GrandMastiff::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	Enemy::update(svc, map, player);
+	has_flag_set(BossFlags::battle_mode) ? flags.state.reset(StateFlags::intangible) : flags.state.set(StateFlags::intangible);
+	if (consume_flag(BossFlags::start_battle)) {
+		set_flag(BossFlags::battle_mode);
+		svc.data.switch_destructible_state(4013, true);
+		svc.music_player.load(svc.finder, "scuffle");
+		svc.music_player.play_looped();
+	}
+	if (!has_flag_set(BossFlags::battle_mode)) { return; }
+
+	Boss::update(svc, map, player);
 	face_player(player);
 	flags.state.set(StateFlags::vulnerable);
 
@@ -51,6 +60,7 @@ void GrandMastiff::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& wi
 }
 
 void GrandMastiff::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	if (!has_flag_set(BossFlags::battle_mode)) { return; }
 	Enemy::render(svc, win, cam);
 	if (svc.greyblock_mode()) { m_bite.render(win, cam); }
 }

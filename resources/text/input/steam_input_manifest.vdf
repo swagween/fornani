@@ -2,6 +2,20 @@
 {
 	"configurations"
 	{
+		"controller_xboxone"
+		{
+			"0"
+			{
+				"path" "config_480_controller_xboxone.vdf"
+			}
+		}
+		"controller_xps5"
+		{
+			"0"
+			{
+				"path" "config_3218760_controller_ps5.vdf"
+			}
+		}
 	}
 	"actions"
 	{
