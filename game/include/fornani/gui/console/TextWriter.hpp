@@ -37,7 +37,7 @@ class TextWriter {
 	friend class Console;
 	friend class DescriptionGizmo;
 	explicit TextWriter(automa::ServiceProvider& svc, dj::Json& source);
-	explicit TextWriter(automa::ServiceProvider& svc, dj::Json& source, std::string_view key);
+	explicit TextWriter(automa::ServiceProvider& svc, dj::Json& source, std::string_view key, int target_index = -1);
 	explicit TextWriter(automa::ServiceProvider& svc, std::string_view message);
 	explicit TextWriter(automa::ServiceProvider& svc, std::string_view message, sf::FloatRect bounds);
 	void start();
@@ -72,7 +72,7 @@ class TextWriter {
   private:
 	explicit TextWriter(automa::ServiceProvider& svc);
 	void load_single_message(std::string_view message);
-	void load_message(dj::Json& source, std::string_view key);
+	void load_message(dj::Json& source, std::string_view key, int target_index = -1);
 	void load_message(dj::Json& source);
 	void insert_input_hint(sf::RenderWindow& win, sf::Text& message);
 	void stylize(sf::Text& msg) const;

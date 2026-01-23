@@ -106,7 +106,8 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	for (auto& spike : map.spikes) { get_collider().handle_collision(spike.get_bounding_box()); }
 
 	if (get_collider().collided()) {
-		if (!is_inactive() && std::abs(get_collider().physics.velocity.y) > 1.f) {
+		auto threshold = type == DropType::heart ? 0.1f : 1.f;
+		if (!is_inactive() && std::abs(get_collider().physics.velocity.y) > threshold) {
 			switch (type) {
 			case DropType::gem: random::percent_chance(50) ? svc.soundboard.flags.world.set(audio::World::gem_hit_1) : svc.soundboard.flags.world.set(audio::World::gem_hit_2); break;
 			case DropType::heart: svc.soundboard.flags.item.set(audio::Item::heart_collide); break;

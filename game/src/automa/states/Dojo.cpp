@@ -263,6 +263,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		map.set_target_balance(0.f, audio::BalanceTarget::music);
 		map.set_target_balance(0.f, audio::BalanceTarget::ambience);
 		map.update_balance(svc);
+		map.transition.update(*player);
 		if (!m_console) {
 			inventory_window.value()->update(svc, *player, map);
 			if (inventory_window.value()->exit_requested()) { inventory_window = {}; }
@@ -318,6 +319,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	player->update(map);
 	player->start_tick();
 	map.update(svc, m_console);
+	handle_player_death(svc, *player);
 
 	map.debug_mode = debug_mode;
 
@@ -425,6 +427,30 @@ void Dojo::remove_gun(ServiceProvider& svc, player::Player& player, int modifier
 void Dojo::read_item(int id) {
 	m_console = std::make_unique<gui::Console>(*m_services, m_services->text.item, m_services->data.item_label_from_id(id), gui::OutputType::gradual);
 	b_read_item = false;
+}
+
+void Dojo::handle_player_death(ServiceProvider& svc, player::Player& player) {
+	// check if player died
+	if (!m_flags.test(GameplayFlags::game_over) && player.death_animation_over() && svc.death_mode()) {
+		svc.app_flags.reset(automa::AppFlags::in_game);
+		m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "death", gui::OutputType::gradual, static_cast<int>(player.get_i_death_type()));
+		m_flags.set(GameplayFlags::game_over);
+		svc.music_player.load(svc.finder, "mortem");
+		svc.music_player.play_looped();
+		svc.soundboard.turn_off();
+		svc.stats.player.death_count.update();
+	}
+
+	if (svc.state_controller.actions.test(automa::Actions::retry)) { m_flags.set(GameplayFlags::game_over); }
+	if (!m_console && m_flags.test(GameplayFlags::game_over)) {
+		if (!m_flags.test(GameplayFlags::transitioning)) { map.transition.start(); }
+		m_flags.set(GameplayFlags::transitioning);
+		if (map.transition.is(graphics::TransitionState::black)) {
+			player.start_over();
+			svc.state_controller.actions.set(automa::Actions::player_death);
+			svc.state_controller.actions.set(automa::Actions::trigger);
+		}
+	}
 }
 
 } // namespace fornani::automa

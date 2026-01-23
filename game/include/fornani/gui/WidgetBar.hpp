@@ -23,6 +23,7 @@ class WidgetBar {
 	void render(sf::RenderWindow& win);
 	void set_origin(sf::Vector2f const to);
 	void set_position(sf::Vector2f const to) { m_position = to; }
+	void set_quantity(int const to) { m_quantity = to; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_position; }
 
   private:

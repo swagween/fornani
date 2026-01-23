@@ -245,7 +245,7 @@ fsm::StateFunction Demon::update_rush() {
 		request(DemonState::idle);
 		if (change_state(DemonState::idle, get_params("idle"))) { return DEMON_BIND(update_idle); }
 	}
-	auto force = 40.f * directions.actual.as_float();
+	auto force = 34.f * directions.actual.as_float();
 	if (animation.just_started()) { get_collider().physics.apply_force({force, 0.f}); }
 	parts.spear.move({directions.actual.as_float() * 70.f, 0.f});
 	if (animation.complete()) {
@@ -263,7 +263,7 @@ fsm::StateFunction Demon::update_stab() {
 		cooldowns.stab.start();
 	}
 	if (cooldowns.stab.running()) {
-		auto force = 40.f * directions.actual.as_float();
+		auto force = 34.f * directions.actual.as_float();
 		get_collider().physics.acceleration.x = force;
 	}
 	attacks.stab.set_position(get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 52.f, 4.f});
@@ -286,10 +286,6 @@ fsm::StateFunction Demon::update_uppercut() {
 	if (animation.just_started()) {
 		random::percent_chance(50) ? m_services->soundboard.flags.lynx.set(audio::Lynx::swipe_1) : m_services->soundboard.flags.lynx.set(audio::Lynx::swipe_2);
 		cooldowns.stab.start();
-	}
-	if (!m_flags.test(DemonFlags::parrying) && cooldowns.stab.running()) {
-		auto force = 32.f * directions.actual.as_float();
-		get_collider().physics.acceleration.x = force;
 	}
 	attacks.stab.set_position(get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 22.f, -28.f});
 	attacks.stab.set_constant_radius(48.f);

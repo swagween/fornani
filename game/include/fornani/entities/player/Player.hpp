@@ -94,7 +94,8 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class PlayerFlags { killed, dir_switch, show_weapon, impart_recoil, crushed, sleep, wake_up, busy, dash_kick, trial, cutscene, swallowed, hit_target, drowned };
+enum class PlayerDeathType { normal, crushed, drowned, swallowed, fallen };
+enum class PlayerFlags { killed, dir_switch, show_weapon, impart_recoil, sleep, wake_up, busy, dash_kick, trial, cutscene, hit_target };
 enum class Triggers { hurt };
 
 struct Flags {
@@ -109,6 +110,10 @@ struct AbilityUsage {
 class Player final : public Mobile, public Flaggable<PlayerFlags> {
   public:
 	Player(automa::ServiceProvider& svc);
+
+	void serialize(dj::Json& out) const;
+	void unserialize(dj::Json const& in);
+
 	void register_with_map(world::Map& map);
 	void unregister_with_map();
 
@@ -135,6 +140,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	}
 	void set_animation_flag(AnimTriggers const flag, bool on = true) { on ? m_animation_machine.triggers.set(flag) : m_animation_machine.triggers.reset(flag); }
 	void set_sleep_timer() { m_animation_machine.set_sleep_timer(); }
+	void set_death_type(PlayerDeathType const to) { m_death_type = to; }
 	[[nodiscard]] auto get_elapsed_animation_ticks() const -> int { return animation.get_elapsed_ticks(); }
 
 	void update_animation();
@@ -151,7 +157,9 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	// state
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
 	[[nodiscard]] auto is_dead() const -> bool { return health.is_dead(); }
-	[[nodiscard]] auto had_special_death() const -> bool { return has_flag_set(PlayerFlags::crushed) || has_flag_set(PlayerFlags::swallowed) || has_flag_set(PlayerFlags::drowned); }
+	[[nodiscard]] auto had_special_death() const -> bool { return m_death_type ? m_death_type.value() != PlayerDeathType::normal : false; }
+	[[nodiscard]] auto has_death_type(PlayerDeathType const test) const -> bool { return m_death_type ? m_death_type.value() == test : false; }
+	[[nodiscard]] auto get_i_death_type() const -> int { return m_death_type ? static_cast<int>(m_death_type.value()) : -1; }
 	[[nodiscard]] auto is_busy() const -> bool { return has_flag_set(PlayerFlags::busy); }
 	[[nodiscard]] auto is_in_custom_sleep_event() const -> bool { return m_animation_machine.is_sleep_timer_running(); }
 	[[nodiscard]] auto death_animation_over() -> bool { return m_animation_machine.death_over(); }
@@ -288,6 +296,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 
 	PlayerAnimation m_animation_machine;
 	PlayerAttributes m_attributes;
+
+	std::optional<PlayerDeathType> m_death_type{};
 
 	[[nodiscard]] auto can_dash() const -> bool;
 	[[nodiscard]] auto can_omnidirectional_dash() const -> bool;

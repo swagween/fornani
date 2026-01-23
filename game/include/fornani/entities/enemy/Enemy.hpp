@@ -59,7 +59,7 @@ enum class GeneralFlags {
 	no_tick,
 	boss
 };
-enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, no_shake, out_of_zone, no_slowdown, intangible, health_exposed };
+enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, no_shake, out_of_zone, no_slowdown, intangible, health_exposed, despawn };
 enum class Triggers { hostile, alert };
 enum class Variant { beast, soldier, elemental, worker, guardian };
 
@@ -74,6 +74,7 @@ struct Attributes {
 	float gravity{};
 	EnemySize size{EnemySize::medium};
 	float treasure_chance{};
+	float gem_multiplier = 1.f;
 	arms::Team team{arms::Team::skycorps};
 };
 
@@ -110,10 +111,12 @@ class Enemy : public Mobile {
 	void on_crush(world::Map& map);
 	bool seek_home(world::Map& map);
 	void set_channel(EnemyChannel to) { Animatable::set_channel(static_cast<int>(to)); }
+	void despawn() { flags.state.set(StateFlags::despawn); }
 
 	[[nodiscard]] auto is_hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto is_alert() const -> bool { return flags.state.test(StateFlags::alert); }
 	[[nodiscard]] auto is_hurt() const -> bool { return hurt_effect.running(); }
+	[[nodiscard]] auto despawn_requested() const -> bool { return flags.state.test(StateFlags::despawn); }
 	[[nodiscard]] auto hostility_triggered() const -> bool { return flags.triggers.test(Triggers::hostile); }
 	[[nodiscard]] auto alertness_triggered() const -> bool { return flags.triggers.test(Triggers::alert); }
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
@@ -132,6 +135,8 @@ class Enemy : public Mobile {
 	[[nodiscard]] auto is_foreground() const -> bool { return flags.general.test(GeneralFlags::foreground); }
 	[[nodiscard]] auto is_transcendent() const -> bool { return flags.general.test(GeneralFlags::transcendent); }
 	[[nodiscard]] auto permadeath() const -> bool { return flags.general.test(GeneralFlags::permadeath); }
+
+	shape::Shape const& get_alert_range() const { return physical.alert_range; }
 
 	void intangible_start(int time) { intangibility.start(time); }
 	void set_position(sf::Vector2f pos) {
@@ -170,6 +175,8 @@ class Enemy : public Mobile {
 
 	EnemyChannel m_custom_channel{};
 
+	std::optional<std::vector<Treasure>> m_treasure{};
+
 	struct {
 		int id{};
 		int variant{};
@@ -205,8 +212,6 @@ class Enemy : public Mobile {
 	sf::Vector2f m_random_offset{};
 	sf::Vector2f m_native_offset{};
 	gui::HealthBar m_health_bar;
-
-	std::optional<std::vector<Treasure>> m_treasure{};
 };
 
 } // namespace fornani::enemy

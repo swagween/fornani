@@ -58,7 +58,7 @@ void Wardrobe::unequip(ApparelType type) {
 	m_outfit.at(type)->set(0);
 }
 
-int Wardrobe::get_variant(ApparelType type) {
+int Wardrobe::get_variant(ApparelType type) const {
 	if (!m_outfit.contains(type)) { return 0; }
 	return m_outfit.at(type)->get_variant();
 }

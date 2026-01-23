@@ -291,7 +291,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (health.is_dead() && !status.test(MinigusFlags::over_and_out) && !status.test(MinigusFlags::goodbye)) { request(MinigusState::struggle); }
 	if (status.test(MinigusFlags::goodbye)) { status.set(MinigusFlags::over_and_out); }
 	if (status.test(MinigusFlags::over_and_out) && console_complete && is(MinigusState::exit)) {
-		m_map->active_loot.push_back(item::Loot(svc, map, player, get_attributes().drop_range, get_attributes().loot_multiplier, Enemy::get_collider().bounding_box.get_position()));
+		m_map->active_loot.push_back(item::Loot(svc, map, player, Enemy::get_collider().bounding_box.get_position(), {get_attributes().drop_range, get_attributes().loot_multiplier}));
 	}
 
 	Minigus::state_function = Minigus::state_function();

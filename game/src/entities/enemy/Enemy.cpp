@@ -162,8 +162,8 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
 		auto individual_delay = flags.general.test(GeneralFlags::boss) ? 16 : 0;
-		map.active_loot.push_back(
-			item::Loot(svc, map, player, attributes.drop_range, attributes.loot_multiplier * player.get_luck(), get_collider().get_center(), 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id, individual_delay));
+		map.active_loot.push_back(item::Loot(svc, map, player, get_collider().get_center(),
+											 {attributes.drop_range, attributes.loot_multiplier * player.get_luck(), 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id, individual_delay, attributes.gem_multiplier}));
 		if (random::percent_chance(attributes.treasure_chance * 100.f)) { spawn_treasure(svc, map); }
 		switch (attributes.size) {
 		case EnemySize::tiny: svc.soundboard.flags.enemy.set(audio::Enemy::high_death); break;

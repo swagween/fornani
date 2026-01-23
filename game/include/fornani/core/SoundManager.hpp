@@ -1,11 +1,9 @@
 
 #pragma once
 
-#include "fornani/io/Logger.hpp"
-#include "fornani/setup/EnumLookups.hpp"
-#include "fornani/setup/ResourceFinder.hpp"
-
 #include <capo/engine.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/setup/ResourceFinder.hpp>
 
 namespace fornani::core {
 
@@ -17,7 +15,7 @@ class SoundManager {
   private:
 	std::unordered_map<std::string, capo::Buffer> m_buffers{};
 	capo::Buffer m_null_buffer;
-	fornani::io::Logger m_logger{"core"};
+	fornani::io::Logger m_logger{"Core"};
 };
 
 } // namespace fornani::core

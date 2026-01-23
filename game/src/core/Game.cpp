@@ -264,14 +264,12 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }
 					ImGui::Separator();
 					ImGui::Text("World Time: %s", services.world_clock.get_string().c_str());
-					ImGui::Text("Time of Day: %s", services.world_clock.get_time_of_day() == fornani::TimeOfDay::day ? "Day" : services.world_clock.get_time_of_day() == fornani::TimeOfDay::twilight ? "Twilight" : "Night");
-					ImGui::Text("Previous Time of Day: %s", services.world_clock.get_previous_time_of_day() == fornani::TimeOfDay::day		  ? "Day"
-															: services.world_clock.get_previous_time_of_day() == fornani::TimeOfDay::twilight ? "Twilight"
-																																			  : "Night");
+					ImGui::Text("Time of Day: %s", services.world_clock.tod_as_string(services.world_clock.get_time_of_day()));
+					ImGui::Text("Previous Time of Day: %s", services.world_clock.tod_as_string(services.world_clock.get_previous_time_of_day()));
 					static int clock_speed{services.world_clock.get_rate()};
 					if (ImGui::Button("Dawn")) { services.world_clock.set_time(5, 59); }
 					if (ImGui::Button("Morning")) { services.world_clock.set_time(6, 59); }
-					if (ImGui::Button("Twilight")) { services.world_clock.set_time(17, 59); }
+					if (ImGui::Button("Dusk")) { services.world_clock.set_time(17, 59); }
 					if (ImGui::Button("Night")) { services.world_clock.set_time(18, 59); }
 					ImGui::Text("World clock transitioning? %s", services.world_clock.is_transitioning() ? "yes" : "no");
 					ImGui::SliderInt("Clock Speed", &clock_speed, 4, 196);

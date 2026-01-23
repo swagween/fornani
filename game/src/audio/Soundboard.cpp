@@ -269,6 +269,10 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.beamsprout.test(Beamsprout::charge)) { play(engine, svc, svc.sounds.get_buffer("small_beast_charge"), 0.f, 20.f); }
 	if (flags.beamsprout.test(Beamsprout::shoot)) { play(engine, svc, svc.sounds.get_buffer("beast_spit"), 0.2f, 50.f); }
 
+	// crow
+	if (flags.crow.test(Crow::fly)) { play(engine, svc, svc.sounds.get_buffer("crow_fly"), 0.2f, 20.f); }
+	if (flags.crow.test(Crow::flap)) { play(engine, svc, svc.sounds.get_buffer("crow_flap"), 0.2f, 20.f); }
+
 	// item
 	if (flags.item.test(Item::heal)) { play(engine, svc, svc.sounds.get_buffer("heal"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.item.test(Item::orb_low)) { play(engine, svc, svc.sounds.get_buffer("orb_get_1"), 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }

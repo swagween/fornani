@@ -17,9 +17,10 @@ void Layer::generate_textures(sf::Texture const& tex) {
 	for (auto cycle{0}; cycle < static_cast<int>(fornani::TimeOfDay::END); ++cycle) {
 		auto time = static_cast<fornani::TimeOfDay>(cycle);
 		auto const is_day = time == fornani::TimeOfDay::day;
-		auto const is_twilight = time == fornani::TimeOfDay::twilight;
+		auto const is_twilight = time == fornani::TimeOfDay::dawn || time == fornani::TimeOfDay::dusk;
 		auto const is_night = time == fornani::TimeOfDay::night;
 		auto barrier = m_barrier && cycle == 0;
+		auto lookup = is_day ? 0 : is_twilight ? 1 : 2;
 
 		auto& texture = is_day ? m_texture.day : (is_twilight ? m_texture.twilight : m_texture.night);
 		sf::Vector2u size = grid.dimensions * constants::ui_cell_resolution;
@@ -32,7 +33,7 @@ void Layer::generate_textures(sf::Texture const& tex) {
 		}
 		sf::Sprite tile{tex};
 		for (auto& cell : grid.cells) {
-			auto x_coord = static_cast<int>((cell.value % constants::tileset_dimensions.x + cycle * constants::tileset_dimensions.x) * constants::i_cell_resolution);
+			auto x_coord = static_cast<int>((cell.value % constants::tileset_dimensions.x + lookup * constants::tileset_dimensions.x) * constants::i_cell_resolution);
 			auto y_coord = static_cast<int>(ccm::floor(cell.value / constants::tileset_dimensions.x) * constants::i_cell_resolution);
 			tile.setTextureRect(sf::IntRect({x_coord, y_coord}, constants::i_resolution_vec));
 			tile.setPosition(cell.position() / constants::f_scale_factor);
@@ -68,7 +69,6 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics
 		if (obscuring()) { shifter.render(svc, win, sprite, ctr, alpha); }
 		if (reverse_obscuring()) { shifter.render(svc, win, sprite, ctr, revalpha); }
 		if (not_obscuring()) { shifter.render(svc, win, sprite, ctr); }
-		auto cycle = static_cast<int>(svc.world_clock.get_time_of_day());
 		++ctr;
 	}
 }

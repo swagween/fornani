@@ -1,5 +1,23 @@
 {
   "entities": {
+    "enemies": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 25,
+        "position": [
+          26,
+          9
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": true,

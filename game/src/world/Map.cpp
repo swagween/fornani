@@ -6,7 +6,6 @@
 #include <fornani/gui/Portrait.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
-#include <fornani/setup/EnumLookups.hpp>
 #include <fornani/utils/Math.hpp>
 #include <fornani/utils/Random.hpp>
 #include <fornani/world/Map.hpp>
@@ -127,16 +126,16 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		auto variant = entry["variant"].as<int>();
 		auto spawn_amount = 1;
 		auto spawn_range = sf::Vector2f{};
-		if (auto id = svc.data.get_enemy_label_from_id(entry["id"].as<int>())) {
-			if (svc.data.enemy[*id]["multispawn"]) {
-				auto& in = svc.data.enemy[*id]["multispawn"];
-				spawn_amount = random::random_range_float(in["quantity"][0].as<int>(), in["quantity"][1].as<int>());
-				spawn_range = random::random_vector_float({-in["spread"][0].as<float>(), in["spread"][0].as<float>()}, {-in["spread"][1].as<float>(), in["spread"][1].as<float>()});
-			}
-		}
 		for (auto i = 0; i < spawn_amount; ++i) {
+			if (auto id = svc.data.get_enemy_label_from_id(entry["id"].as<int>())) {
+				if (svc.data.enemy[*id]["multispawn"]) {
+					auto& in = svc.data.enemy[*id]["multispawn"];
+					spawn_amount = random::random_range_float(in["quantity"][0].as<int>(), in["quantity"][1].as<int>());
+					spawn_range = random::random_vector_float({-in["spread"][0].as<float>(), -in["spread"][1].as<float>()}, {in["spread"][0].as<float>(), in["spread"][1].as<float>()});
+				}
+			}
 			enemy_catalog.push_enemy(svc, *this, console, entry["id"].as<int>(), false, variant, start, enemy::Multispawn{spawn_range});
-			enemy_catalog.enemies.back()->set_position_from_scaled({pos * constants::f_cell_size});
+			enemy_catalog.enemies.back()->set_position_from_scaled(sf::Vector2f{pos * constants::f_cell_size});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 			enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
 			if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
@@ -223,7 +222,6 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 	if (meta["minimap"].as_bool()) { m_attributes.properties.set(MapProperties::minimap); }
 
 	center_box.setSize(svc.window->f_screen_dimensions() * 0.5f);
-	flags.state.reset(LevelState::game_over);
 	if (!player->is_dead()) { svc.state_controller.actions.reset(automa::Actions::death_mode); }
 	spawn_counter.start();
 
@@ -305,11 +303,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		}
 		enemy_spawns.clear();
 		flags.state.reset(LevelState::spawn_enemy);
-	}
-
-	if (off_the_bottom(player->get_collider().physics.position) && cooldowns.loading.is_complete()) {
-		player->hurt(64.f);
-		player->freeze_position();
 	}
 
 	// hidden areas
@@ -401,6 +394,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& checkpoint : checkpoints) { checkpoint.update(svc, *this, *player); }
 	for (auto& bed : beds) { bed.update(svc, *this, console, *player, transition); }
 	for (auto& breakable : breakables) { breakable->update(svc, *this, *player); }
+	for (auto& waterfall : waterfalls) { waterfall->update(svc, *this, *player); }
 	for (auto& incinerite : incinerite_blocks) { incinerite->update(svc, *this, *player); }
 
 	for (auto& pushable : pushables) { pushable->post_update(svc, *this, *player); }
@@ -415,34 +409,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 
 	player->get_collider().reset_ground_flags();
 
-	// check if player died
-	if (!flags.state.test(LevelState::game_over) && player->death_animation_over() && svc.death_mode() && cooldowns.loading.is_complete()) {
-		svc.app_flags.reset(automa::AppFlags::in_game);
-		console = std::make_unique<gui::Console>(svc, svc.text.basic, "death", gui::OutputType::gradual);
-		flags.state.set(LevelState::game_over);
-		svc.music_player.load(svc.finder, "mortem");
-		svc.music_player.play_looped();
-		svc.soundboard.turn_off();
-		svc.stats.player.death_count.update();
-	}
-
-	// demo only
-	if (svc.state_controller.actions.consume(automa::Actions::end_demo)) { end_demo.start(); }
-	end_demo.update();
-	if (end_demo.get() == 1) { console = std::make_unique<gui::Console>(svc, svc.text.basic, "end_demo", gui::OutputType::gradual); }
-	if (svc.state_controller.actions.test(automa::Actions::print_stats) && !console) { svc.state_controller.actions.set(automa::Actions::trigger); }
-	// demo only
-
-	if (svc.state_controller.actions.test(automa::Actions::retry)) { flags.state.set(LevelState::game_over); }
-	if (!console && flags.state.test(LevelState::game_over)) {
-		if (!flags.state.test(LevelState::transitioning)) { transition.start(); }
-		flags.state.set(LevelState::transitioning);
-		if (transition.is(graphics::TransitionState::black)) {
-			player->start_over();
-			svc.state_controller.actions.set(automa::Actions::player_death);
-			svc.state_controller.actions.set(automa::Actions::trigger);
-		}
-	}
 	cooldowns.loading.update();
 }
 
@@ -590,14 +556,11 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		box.setSize(svc.window->f_screen_dimensions());
 		win.draw(box);
 	}
-
-	/*for (auto& vine : vines) {
-		if (!vine->foreground()) { vine->render(svc, win, cam); }
-	}*/
 	for (auto& animator : animators) {
 		if (!animator.is_foreground()) { animator.render(win, cam); }
 	}
 	for (auto& timer_block : timer_blocks) { timer_block.render(svc, win, cam); }
+	for (auto& waterfall : waterfalls) { waterfall->render(svc, win, cam); }
 }
 
 bool Map::handle_entry(player::Player& player, util::Cooldown& enter_room) {
@@ -725,6 +688,7 @@ void Map::generate_collidable_layer(bool live) {
 		auto chunk_id = cell.get_chunk_id();
 		get_middleground()->grid.check_neighbors(cell.one_d_index);
 		if (live) { continue; }
+		if (cell.is_waterfall()) { waterfalls.push_back(std::make_unique<Waterfall>(*m_services, *this, sf::Vector2u{cell.f_scaled_position()})); }
 		if (cell.is_breakable()) { breakables.push_back(std::make_unique<Breakable>(*m_services, *this, cell.position())); }
 		if (cell.is_pushable()) { pushables.push_back(std::make_unique<Pushable>(*m_services, *this, cell.position() + pushable_offset, get_style_id(), cell.value - 483)); }
 		if (cell.is_big_spike()) {

@@ -9,36 +9,59 @@ namespace fornani::enemy {
 
 constexpr auto crow_framerate = 6;
 
-Crow::Crow(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f spread) : Enemy(svc, map, "crow"), m_services{&svc}, m_evade_force{3.8f}, m_home_force{0.0001f}, m_friction{0.98f, 0.98f} {
-	m_params = {{"idle", {0, 1, crow_framerate * 2, -1}}, {"peck", {4, 1, crow_framerate * 2, 0}}, {"turn", {1, 1, crow_framerate * 2, 0}}, {"fly", {2, 2, crow_framerate * 2, -1}}};
+Crow::Crow(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f spread) : Enemy(svc, map, "crow"), m_services{&svc}, m_evade_force{15.f}, m_home_force{0.01f}, m_start{spread}, m_fear{80}, m_init{4} {
+	m_params = {{"idle", {0, 1, crow_framerate * 2, -1}}, {"peck", {4, 1, crow_framerate * 4, 0}}, {"hop", {5, 1, crow_framerate * 8, 0}}, {"turn", {1, 1, crow_framerate * 2, 0}}, {"fly", {2, 2, crow_framerate * 2, -1}}};
 	animation.set_params(get_params("idle"));
-	flags.state.set(StateFlags::no_shake);
-
-	get_collider().physics.set_friction_componentwise({0.99f, 0.99f});
-	set_position(get_collider().physics.position + random::random_vector_float({-spread.x, spread.x}, {}));
+	m_init.start();
+	if (random::percent_chance(0.1f)) {
+		m_variant = CrowVariant::mythic;
+		attributes.loot_multiplier = 300.f;
+		attributes.rare_drop_id = 0;
+		attributes.gem_multiplier = 20.f;
+		attributes.drop_range = {8, 10};
+		flags.general.set(GeneralFlags::rare_drops);
+		flags.general.set(GeneralFlags::custom_channels);
+		m_custom_channel = EnemyChannel::invincible;
+	}
 }
 
 void Crow::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-
+	m_init.update();
+	if (m_init.is_almost_complete()) { get_collider().physics.position += m_start; }
+	if (m_init.running()) { return; }
 	Enemy::update(svc, map, player);
 	flags.state.set(StateFlags::vulnerable);
+	m_fear.update();
 
-	m_home = map.get_closest_home_point(get_collider().physics.position);
+	if (!map.within_bounds(get_collider().get_center())) { despawn(); }
+
 	get_collider().set_flag(shape::ColliderFlags::simple, is_state(CrowState::fly));
 	get_collider().set_attribute(shape::ColliderAttributes::no_map_collision, is_state(CrowState::fly));
 	get_collider().set_attribute(shape::ColliderAttributes::no_collision, is_state(CrowState::fly));
-	get_collider().physics.gravity = is_state(CrowState::fly) ? -40.f : 4.f;
-	is_state(CrowState::fly) ? get_collider().physics.set_friction_componentwise(m_friction) : get_collider().physics.set_friction_componentwise(m_friction * 0.9f);
-	// if ((get_collider().physics.position - m_home).length() < 30.f) { request(CrowState::idle); }
+	is_state(CrowState::fly) ? get_collider().physics.set_friction_componentwise({0.999f, 0.999f}) : get_collider().physics.set_friction_componentwise({0.95f, 0.999f});
+
+	m_evade_force = m_flee_direction.as_float() * m_random_x;
 
 	// caution
-	m_steering.evade(get_collider().physics, player.get_collider().get_center(), m_evade_force);
-	m_steering.target(get_collider().physics, m_home, m_home_force);
-
-	if (!get_collider().grounded() || is_alert()) {
-		request(CrowState::fly);
+	if (is_state(CrowState::fly)) {
+		get_collider().physics.velocity.x = m_evade_force;
+		m_steering.evade(get_collider().physics, player.get_collider().get_center(), m_evade_force);
 	} else {
+		m_flee_direction = player.get_actual_direction();
 	}
+
+	if (svc.ticker.every_second()) {
+		if (random::percent_chance(20)) { random::percent_chance(50) ? request(CrowState::hop) : request(CrowState::peck); }
+	}
+	if (is_alert() && !is_hostile()) { request(CrowState::turn); }
+	if (is_hostile()) { m_fear.randomize(); }
+
+	// check nearby crows
+	for (auto const& other : map.enemy_catalog.get_enemies<Crow>()) {
+		if (other->get_alert_range().overlaps(get_collider().bounding_box) && other->is_state(CrowState::fly) && !m_fear.running()) { m_fear.randomize(); }
+	}
+
+	if (m_fear.is_almost_complete()) { request(CrowState::fly); }
 
 	// hurt
 	if (flags.state.test(StateFlags::hurt)) {
@@ -51,13 +74,14 @@ void Crow::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 
 void Crow::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) { Enemy::render(svc, win, cam); }
 
-void Crow::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) { debug(); }
+void Crow::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) { /*debug();*/ }
 
 fsm::StateFunction Crow::update_idle() {
 	p_state.actual = CrowState::idle;
 	if (change_state(CrowState::turn, get_params("turn"))) { return CROW_BIND(update_turn); }
 	if (change_state(CrowState::peck, get_params("peck"))) { return CROW_BIND(update_peck); }
-	if (change_state(CrowState::fly, get_params("fly")) && get_collider().grounded()) { return CROW_BIND(update_fly); }
+	if (change_state(CrowState::hop, get_params("hop"))) { return CROW_BIND(update_hop); }
+	if (change_state(CrowState::fly, get_params("fly"))) { return CROW_BIND(update_fly); }
 	return CROW_BIND(update_idle);
 }
 
@@ -72,21 +96,37 @@ fsm::StateFunction Crow::update_peck() {
 	return CROW_BIND(update_peck);
 }
 
+fsm::StateFunction Crow::update_hop() {
+	p_state.actual = CrowState::hop;
+	if (animation.just_started()) {
+		set_direction(random::percent_chance(50) ? SimpleDirection{LR::left} : SimpleDirection{LR::right});
+		get_collider().physics.apply_force(sf::Vector2f{directions.actual.as_float() * 4.f, -2.f} * 20.f);
+	}
+	if (animation.is_complete()) {
+		if (change_state(CrowState::fly, get_params("fly")) && get_collider().grounded()) { return CROW_BIND(update_fly); }
+		if (change_state(CrowState::turn, get_params("turn"))) { return CROW_BIND(update_turn); }
+		request(CrowState::idle);
+		if (change_state(CrowState::idle, get_params("idle"))) { return CROW_BIND(update_idle); }
+	}
+	return CROW_BIND(update_hop);
+}
+
 fsm::StateFunction Crow::update_fly() {
 	p_state.actual = CrowState::fly;
-	/*if (animation.is_complete()) {
-		if (change_state(CrowState::idle, get_params("idle"))) { return CROW_BIND(update_idle); }
-	}*/
+	set_direction(m_flee_direction);
+	if (animation.just_started()) {
+		m_random_x = random::random_range_float(0.2f, 0.3f);
+		random::percent_chance(50) ? m_services->soundboard.flags.crow.set(audio::Crow::fly) : m_services->soundboard.flags.crow.set(audio::Crow::flap);
+	}
+	get_collider().physics.apply_force({0.f, -m_home_force});
 	return CROW_BIND(update_fly);
 }
 
 fsm::StateFunction Crow::update_turn() {
 	p_state.actual = CrowState::turn;
-	if (animation.complete()) {
-		if (change_state(CrowState::fly, get_params("fly")) && get_collider().grounded()) { return CROW_BIND(update_fly); }
-		request(CrowState::idle);
-		if (change_state(CrowState::idle, get_params("idle"))) { return CROW_BIND(update_idle); }
-	}
+	set_direction(m_flee_direction);
+	if (change_state(CrowState::fly, get_params("fly"))) { return CROW_BIND(update_fly); }
+	if (change_state(CrowState::idle, get_params("idle"))) { return CROW_BIND(update_idle); }
 	return CROW_BIND(update_turn);
 }
 
@@ -103,10 +143,8 @@ void Crow::debug() {
 	ImGui::SetNextWindowSize(sz);
 	if (ImGui::Begin("Crow Debug")) {
 		ImGui::SeparatorText("Parameters");
-		ImGui::SliderFloat("X Friction", &m_friction.x, 0.98f, 0.999f);
-		ImGui::SliderFloat("Y Friction", &m_friction.y, 0.98f, 0.999f);
-		ImGui::SliderFloat("Home Force", &m_home_force, 0.0f, 0.001f, "%.5f");
-		ImGui::SliderFloat("Evade Force", &m_evade_force, 0.5f, 4.0f);
+		ImGui::SliderFloat("Home Force", &m_home_force, 0.1f, 4.0f, "%.2f");
+		ImGui::SliderFloat("Evade Force", &m_evade_force, 0.5f, 20.0f);
 		ImGui::SeparatorText("Info");
 		ImGui::SeparatorText("Controls");
 		ImGui::End();

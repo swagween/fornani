@@ -107,6 +107,8 @@ void DataManager::load_data(std::string in_room) {
 			map_table["rooms"].push_back(entry);
 		}
 	}
+	NANI_LOG_INFO(m_logger, "Number of maps loaded: {}", map_jsons.size());
+	NANI_LOG_INFO(m_logger, "Number of maps added to table: {}", map_table["rooms"].as_array().size());
 	if (!map_table.to_file((finder.resource_path() + "/data/level/map_table.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save map table!"); }
 	map_table = *dj::Json::from_file((finder.resource_path() + "/data/level/map_table.json").c_str());
 	assert(!map_table.is_null());
@@ -219,11 +221,8 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	files.at(current_save).write();
 	save["status"]["inspect_hint"] = get_file().flags.test(io::FileFlags::inspect_hint);
 	// set file data based on player state
-	save["player_data"]["max_hp"] = player.health.get_capacity();
-	save["player_data"]["hp"] = player.health.get_quantity();
-	save["player_data"]["orbs"] = player.wallet.get_balance();
-	save["player_data"]["position"]["x"] = player.get_position().x;
-	save["player_data"]["position"]["y"] = player.get_position().y;
+
+	save["save_point_id"] = save_point_id;
 
 	// write marketplace status
 	save["marketplace"] = dj::Json::empty_array();
@@ -286,37 +285,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	}
 
 	// save arsenal
-	save["player_data"]["arsenal"] = dj::Json::empty_array();
-	save["player_data"]["hotbar"] = dj::Json::empty_array();
-	// push player arsenal
-	if (player.arsenal) {
-		for (auto& gun : player.arsenal.value().get_loadout()) { save["player_data"]["arsenal"].push_back(gun->get_tag()); }
-		if (player.hotbar) {
-			for (auto& id : player.hotbar.value().get_tags()) { save["player_data"]["hotbar"].push_back(id); }
-			save["player_data"]["equipped_gun"] = player.hotbar.value().get_tag();
-		}
-	}
-
-	// wardrobe
-	save["player_data"]["wardrobe"]["hairstyle"] = static_cast<int>(player.catalog.wardrobe.get_variant(player::ApparelType::hairstyle));
-	save["player_data"]["wardrobe"]["shirt"] = static_cast<int>(player.catalog.wardrobe.get_variant(player::ApparelType::shirt));
-	save["player_data"]["wardrobe"]["pants"] = static_cast<int>(player.catalog.wardrobe.get_variant(player::ApparelType::pants));
-
-	// items and abilities
-	save["player_data"]["abilities"] = dj::Json::empty_array();
-	save["player_data"]["items"] = dj::Json::empty_array();
-	if (player.catalog.abilities.has_ability(player::AbilityType::dash)) { save["player_data"]["abilities"].push_back(1); }
-	if (player.catalog.abilities.has_ability(player::AbilityType::wallslide)) { save["player_data"]["abilities"].push_back(0); }
-	if (player.catalog.abilities.has_ability(player::AbilityType::doublejump)) { save["player_data"]["abilities"].push_back(2); }
-	for (auto& item : player.catalog.inventory.items_view()) {
-		dj::Json this_item{};
-		this_item["label"] = item->get_label();
-		this_item["quantity"] = 1;
-		this_item["revealed"] = item->is_revealed();
-		save["player_data"]["items"].push_back(this_item);
-	}
-
-	save["save_point_id"] = save_point_id;
+	player.serialize(save["player_data"]);
 
 	// stat tracker
 	auto& out_stat = save["player_data"]["stats"];
@@ -401,40 +370,8 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	m_services->state_controller.save_point_id = save_pt_id;
 
 	// set player data based on save file
-	player.health.set_capacity(save["player_data"]["max_hp"].as<float>());
-	player.health.set_quantity(save["player_data"]["hp"].as<float>());
-	player.wallet.set_balance(save["player_data"]["orbs"].as<int>());
-
-	// load player's arsenal
-	player.arsenal = {};
-	player.hotbar = {};
-	for (auto& gun_tag : save["player_data"]["arsenal"].as_array()) { player.push_to_loadout(gun_tag.as_string(), true); }
-	if (!save["player_data"]["hotbar"].as_array().empty()) {
-		if (!player.hotbar) { player.hotbar = arms::Hotbar(1); }
-		if (player.hotbar) {
-			for (auto& gun_tag : save["player_data"]["hotbar"].as_array()) { player.hotbar.value().add(gun_tag.as_string()); }
-			auto equipped_gun = save["player_data"]["equipped_gun"].as_string();
-			player.hotbar.value().set_selection(equipped_gun);
-		}
-	}
-
-	// load items and abilities
-	player.catalog.abilities.clear();
-	player.catalog.inventory = {};
-	for (auto& ability : save["player_data"]["abilities"].as_array()) { player.catalog.abilities.give_ability(ability.as<int>()); }
-	for (auto& item : save["player_data"]["items"].as_array()) {
-		player.give_item(item["label"].as_string(), item["quantity"].as<int>(), true);
-		if (item["revealed"].as_bool()) { player.catalog.inventory.reveal_item(item_id_from_label(item["label"].as_string())); }
-	}
-
-	// wardrobe
-	auto& wardrobe = player.catalog.wardrobe;
-	auto hairstyle = save["player_data"]["wardrobe"]["hairstyle"].as<int>();
-	auto headgear = save["player_data"]["wardrobe"]["headgear"].as<int>();
-	auto shirt = save["player_data"]["wardrobe"]["shirt"].as<int>();
-	auto pants = save["player_data"]["wardrobe"]["pants"].as<int>();
-	player.set_outfit({hairstyle, headgear, shirt, pants});
-	player.update_wardrobe();
+	// in the future, all player data will be unserialized from this function
+	player.unserialize(save["player_data"]);
 
 	// stat tracker
 	auto& s = m_services->stats;

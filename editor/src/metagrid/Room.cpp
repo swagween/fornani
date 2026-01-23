@@ -36,10 +36,6 @@ bool Room::serialize(fornani::automa::ServiceProvider& svc) {
 	m_data->metadata["meta"]["metagrid"][0] = m_position.x;
 	m_data->metadata["meta"]["metagrid"][1] = m_position.y;
 	auto msg = std::string{};
-	for (auto const& entry : m_data->metadata["entities"]["inspectables"].as_array()) {
-		msg = entry["series"][0]["suite"][0][0]["message"].as_string();
-		NANI_LOG_INFO(m_logger, "Message before write: {}", msg);
-	}
 	return m_data->metadata.to_file((svc.finder.paths.levels / std::filesystem::path{m_data->region_label} / std::filesystem::path{m_data->room_label + ".json"}).string());
 }
 

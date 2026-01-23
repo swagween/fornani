@@ -8,4 +8,5 @@ nani_add_headers(
         SpawnablePlatform.hpp
         TreasureContainer.hpp
         Laser.hpp
+        Waterfall.hpp
 )

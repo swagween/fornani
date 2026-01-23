@@ -15,7 +15,7 @@ class Arsenal {
 	void reset();
 	constexpr void clear() { loadout.clear(); }
 	Weapon& get_weapon_at(std::string_view tag);
-	constexpr std::vector<std::unique_ptr<Weapon>>& get_loadout() { return loadout; }
+	std::vector<std::unique_ptr<Weapon>> const& get_loadout() const { return loadout; }
 	[[nodiscard]] auto size() const -> std::size_t { return loadout.size(); }
 	[[nodiscard]] auto empty() const -> bool { return loadout.empty(); }
 	bool has(std::string_view tag);

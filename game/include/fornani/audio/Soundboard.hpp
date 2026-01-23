@@ -70,6 +70,7 @@ enum class Enemy { hit_squeak, hit_high, hit_medium, hit_low, standard_death, ju
 enum class Beast { growl, hurt, gulp, snort, roar };
 
 enum class Frdog { hurt, death };
+enum class Crow { fly, flap, caw, death };
 enum class Hulmet { hurt, alert, reload };
 enum class Tank { alert_1, alert_2, hurt_1, hurt_2, death };
 enum class Thug { alert_1, alert_2, hurt_1, hurt_2, death };
@@ -171,6 +172,7 @@ class Soundboard {
 		util::BitFlags<Miaag> miaag{};
 		util::BitFlags<Mastiff> mastiff{};
 		util::BitFlags<Beamsprout> beamsprout{};
+		util::BitFlags<Crow> crow{};
 	} flags{};
 
 	struct {

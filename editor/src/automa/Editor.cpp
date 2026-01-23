@@ -298,7 +298,17 @@ void Editor::load() {
 	b_reloaded = true;
 }
 
-bool Editor::save() { return map.save(p_services->finder, p_services->finder.paths.region, p_services->finder.paths.room_name); }
+bool Editor::save() {
+	auto ret = map.save(p_services->finder, p_services->finder.paths.region, p_services->finder.paths.room_name);
+	auto room_data_result = dj::Json::from_file(p_services->finder.paths.room_name);
+	if (!room_data_result) {
+		NANI_LOG_ERROR(p_logger, "Failed to reload saved JSON data after serialization. PATH: {}.", p_services->finder.paths.room_name);
+		return false;
+	}
+	auto room_data = std::move(*room_data_result);
+	p_services->data.get_map_json_from_id(map.room_id) = room_data;
+	return ret;
+}
 
 void Editor::render(sf::RenderWindow& win) {
 	auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};

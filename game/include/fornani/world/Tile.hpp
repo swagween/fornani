@@ -22,7 +22,7 @@ namespace fornani::world {
 
 class Map;
 
-enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire, home, incinerite };
+enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire, home, incinerite, waterfall };
 enum class TileState { ramp_adjacent, big_ramp, covered, border };
 
 constexpr static int special_index_v{448};
@@ -41,6 +41,7 @@ constexpr auto get_type_by_value(int const val) -> TileType {
 	if (val == special_index_v + 53) { return TileType::campfire; }
 	if (val == special_index_v + 54) { return TileType::checkpoint; }
 	if (val == special_index_v + 55) { return TileType::breakable; }
+	if (val == special_index_v + 56) { return TileType::waterfall; }
 	if (val == special_index_v + 62) { return TileType::big_spike; }
 	if (val == special_index_v + 63) { return TileType::spike; }
 	return TileType::empty;
@@ -75,6 +76,7 @@ struct Tile {
 	[[nodiscard]] auto is_spike() const -> bool { return type == TileType::spike; }
 	[[nodiscard]] auto is_big_spike() const -> bool { return type == TileType::big_spike; }
 	[[nodiscard]] auto is_breakable() const -> bool { return type == TileType::breakable; }
+	[[nodiscard]] auto is_waterfall() const -> bool { return type == TileType::waterfall; }
 	[[nodiscard]] auto is_pushable() const -> bool { return type == TileType::pushable; }
 	[[nodiscard]] auto is_spawner() const -> bool { return type == TileType::spawner; }
 	[[nodiscard]] auto is_target() const -> bool { return type == TileType::target; }
@@ -82,7 +84,7 @@ struct Tile {
 	[[nodiscard]] auto is_incinerite() const -> bool { return type == TileType::incinerite; }
 	[[nodiscard]] auto is_checkpoint() const -> bool { return type == TileType::checkpoint; }
 	[[nodiscard]] auto is_fire() const -> bool { return type == TileType::bonfire || type == TileType::campfire; }
-	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable() || is_incinerite() || is_target() || is_checkpoint() || is_fire() || is_spike() || is_big_spike() || is_home(); }
+	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable() || is_incinerite() || is_target() || is_checkpoint() || is_fire() || is_spike() || is_big_spike() || is_home() || is_waterfall(); }
 	[[nodiscard]] auto ramp_adjacent() const -> bool { return flags.test(TileState::ramp_adjacent); }
 	[[nodiscard]] auto covered() const -> bool { return flags.test(TileState::covered); }
 	[[nodiscard]] auto is_negative_ramp() const -> bool {

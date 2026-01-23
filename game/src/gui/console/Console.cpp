@@ -1,6 +1,5 @@
 
 #include <fornani/gui/console/Console.hpp>
-
 #include <fornani/systems/Event.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/ControllerMap.hpp"
@@ -26,10 +25,10 @@ Console::Console(automa::ServiceProvider& svc, dj::Json const& source, OutputTyp
 	load_and_launch(type);
 }
 
-Console::Console(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type) : Console(svc) {
+Console::Console(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type, int target_index) : Console(svc) {
 	if (type == OutputType::no_skip) { m_exit_stall.start(); }
 	set_source(source);
-	load_and_launch(key, type);
+	load_and_launch(key, type, target_index);
 }
 
 void Console::update(automa::ServiceProvider& svc) {
@@ -166,19 +165,19 @@ void Console::handle_actions(int value) {
 	}
 }
 
+void Console::load_and_launch(std::string_view key, OutputType type, int target_index) {
+	m_writer = std::make_unique<TextWriter>(*m_services, text_suite, key, target_index);
+	m_process_code_before = true;
+	m_output_type = type;
+	native_key = key;
+}
+
 void Console::load_and_launch(OutputType type) {
 	m_writer = std::make_unique<TextWriter>(*m_services, text_suite);
 	m_process_code_before = true;
 	m_output_type = type;
 	native_key = null_key;
 	// update(*m_services);
-}
-
-void Console::load_and_launch(std::string_view key, OutputType type) {
-	m_writer = std::make_unique<TextWriter>(*m_services, text_suite, key);
-	m_process_code_before = true;
-	m_output_type = type;
-	native_key = key;
 }
 
 void Console::load_single_message(std::string_view message) { m_writer = std::make_unique<TextWriter>(*m_services, message); }

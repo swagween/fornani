@@ -20,6 +20,8 @@ class Water : public Entity, public Flaggable<WaterFlags> {
 	void expose() override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
 
+	shape::Shape const& get_bounding_box() const { return m_bounding_box; }
+
   private:
 	sf::RenderTexture m_texture{};
 	sf::RenderTexture m_surface_texture{};

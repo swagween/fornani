@@ -70,7 +70,7 @@ class Wardrobe {
 	void update(graphics::TextureUpdater& updater);
 	void equip(ApparelType type, int variant);
 	void unequip(ApparelType type);
-	int get_variant(ApparelType type);
+	int get_variant(ApparelType type) const;
 	std::array<int, static_cast<int>(ApparelType::END)> get();
 
   private:

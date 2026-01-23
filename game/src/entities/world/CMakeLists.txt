@@ -8,4 +8,5 @@ nani_add_sources(
         Laser.cpp
         SpawnablePlatform.cpp
         TreasureContainer.cpp
+        Waterfall.cpp
 )

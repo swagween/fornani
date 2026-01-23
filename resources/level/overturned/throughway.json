@@ -1,5 +1,23 @@
 {
   "entities": {
+    "enemies": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 25,
+        "position": [
+          15,
+          40
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      }
+    ],
     "inspectables": [
       {
         "activate_on_contact": false,
@@ -139,6 +157,52 @@
           38
         ],
         "source_id": 211
+      }
+    ],
+    "vines": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "length": 5,
+        "platform": {
+          "link_indeces": [
+            3
+          ]
+        },
+        "position": [
+          22,
+          15
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": true,
+        "id": 0,
+        "length": 5,
+        "position": [
+          26,
+          17
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "length": 5,
+        "position": [
+          28,
+          19
+        ]
       }
     ]
   },
@@ -11216,9 +11280,9 @@
         0,
         0,
         0,
-        478,
-        466,
-        467,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -11248,9 +11312,9 @@
         0,
         0,
         0,
-        96,
-        96,
-        96,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -11280,9 +11344,9 @@
         0,
         0,
         0,
-        96,
-        96,
-        96,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -11312,9 +11376,9 @@
         0,
         0,
         0,
-        452,
-        453,
-        461,
+        0,
+        0,
+        0,
         0,
         0,
         0,

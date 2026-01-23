@@ -1,11 +1,9 @@
 
 #pragma once
 
-#include "fornani/io/Logger.hpp"
-#include "fornani/setup/EnumLookups.hpp"
-#include "fornani/setup/ResourceFinder.hpp"
-
 #include <SFML/Graphics.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/setup/ResourceFinder.hpp>
 
 namespace fornani::core {
 
@@ -21,7 +19,7 @@ class AssetManager {
   private:
 	sf::Texture m_null_texture{};
 	std::unordered_map<std::string, sf::Texture> m_textures{};
-	fornani::io::Logger m_logger{"core"};
+	fornani::io::Logger m_logger{"Core"};
 };
 
 } // namespace fornani::core

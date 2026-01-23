@@ -1136,22 +1136,22 @@
   "crow": {
     "metadata": {
       "id": 25,
-      "variant": "guardian"
+      "variant": "beast"
     },
     "multispawn": {
-      "quantity": [1, 1],
-      "spread": [32.0, 0.0]
+      "quantity": [3, 5],
+      "spread": [20.0, 0.0]
     },
     "physical": {
       "dimensions": [8, 8],
       "sprite_dimensions": [16, 16],
-      "offset": [0, -12],
+      "offset": [0, -7],
       "num_colliders": 1,
       "num_hurtboxes": 1,
-      "alert_range": [200.0, 200.0],
-      "hostile_range": [32.0, 32.0],
+      "alert_range": [400.0, 200.0],
+      "hostile_range": [300.0, 100.0],
       "friction": 0.99,
-      "gravity": 4.0
+      "gravity": 8.0
     },
     "visual": {
       "effect_type": 0,

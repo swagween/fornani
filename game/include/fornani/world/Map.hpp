@@ -12,6 +12,7 @@
 #include <fornani/entities/world/Fire.hpp>
 #include <fornani/entities/world/Inspectable.hpp>
 #include <fornani/entities/world/Laser.hpp>
+#include <fornani/entities/world/Waterfall.hpp>
 #include <fornani/entity/EntitySet.hpp>
 #include <fornani/graphics/Background.hpp>
 #include <fornani/graphics/Biome.hpp>
@@ -63,7 +64,7 @@ class InventoryWindow;
 
 namespace fornani::world {
 
-enum class LevelState { game_over, camera_shake, spawn_enemy, transitioning };
+enum class LevelState { camera_shake, spawn_enemy };
 enum class MapState { unobscure };
 enum class LayerProperties { has_obscuring_layer, has_reverse_obscuring_layer };
 enum class MapProperties { minimap, environmental_randomness, day_night_shift, timer, lighting };
@@ -209,6 +210,7 @@ class Map {
 	std::vector<vfx::Atmosphere> atmosphere{};
 	std::vector<sf::Vector2f> target_points{};
 	std::vector<sf::Vector2f> home_points{};
+	std::vector<std::unique_ptr<Waterfall>> waterfalls{};
 
 	// vfx
 	std::optional<vfx::Rain> rain{};

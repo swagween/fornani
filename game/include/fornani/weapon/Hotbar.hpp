@@ -23,7 +23,7 @@ class Hotbar {
 	[[nodiscard]] auto switched() const -> bool { return selection.get() != previous; }
 
 	// for debug
-	[[nodiscard]] auto get_tags() -> std::vector<std::string>& { return m_tags; }
+	[[nodiscard]] auto get_tags() const -> std::vector<std::string> const& { return m_tags; }
 
   private:
 	util::Circuit selection{1};

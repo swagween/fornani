@@ -2,7 +2,6 @@ nani_add_headers(
         AccessibilityService.hpp
         ControllerMap.hpp
         DataManager.hpp
-        EnumLookups.hpp
         MapData.hpp
         ResourceFinder.hpp
         Tables.hpp

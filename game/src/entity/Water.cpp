@@ -8,7 +8,6 @@ namespace fornani {
 
 Water::Water(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "water"), m_bounding_box{get_world_dimensions()}, m_surface{svc, "water_surface"} {
 	unserialize(in);
-	m_bounding_box.set_position(get_world_position());
 	set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec * 4});
 	repeatable = false;
 	copyable = false;

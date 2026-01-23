@@ -19,7 +19,7 @@ TextWriter::TextWriter(automa::ServiceProvider& svc)
 
 TextWriter::TextWriter(automa::ServiceProvider& svc, dj::Json& source) : TextWriter(svc) { load_message(source); }
 
-TextWriter::TextWriter(automa::ServiceProvider& svc, dj::Json& source, std::string_view key) : TextWriter(svc) { load_message(source, key); }
+TextWriter::TextWriter(automa::ServiceProvider& svc, dj::Json& source, std::string_view key, int target_index) : TextWriter(svc) { load_message(source, key, target_index); }
 
 TextWriter::TextWriter(automa::ServiceProvider& svc, std::string_view message) : TextWriter(svc) { load_single_message(message); }
 
@@ -165,7 +165,7 @@ void TextWriter::load_message(dj::Json& source) {
 	m_is_first = true;
 }
 
-void TextWriter::load_message(dj::Json& source, std::string_view key) {
+void TextWriter::load_message(dj::Json& source, std::string_view key, int target_index) {
 	flush();
 	for (auto const& set : source[key]["suite"].as_array()) {
 		auto this_set = std::deque<Message>{};
@@ -177,7 +177,8 @@ void TextWriter::load_message(dj::Json& source, std::string_view key) {
 			}
 
 			auto codes = std::vector<MessageCode>{};
-			auto which = random::random_range(0, msg["messages"].as_array().size() - 1);
+			auto which = target_index == -1 ? random::random_range(0, msg["messages"].as_array().size() - 1) : target_index;
+			NANI_LOG_DEBUG(m_logger, "Target Index: {}", target_index);
 			if (msg["codes"].is_array()) {
 				for (auto const& code : msg["codes"].as_array()) { codes.push_back(MessageCode{code}); }
 			}

@@ -11,6 +11,7 @@ HUDHearts::HUDHearts(automa::ServiceProvider& svc, player::Player& player, sf::V
 void HUDHearts::update(automa::ServiceProvider& svc, player::Player& player) {
 	HUDWidget::update(svc, player);
 	auto& hp = player.health;
+	m_health_bar.set_quantity(hp.get_i_capacity());
 	m_health_bar.update(svc, hp, hp.flags.test(entity::HPState::hit));
 	if (p_rect) { m_health_bar.set_origin({0.f, p_rect->size.y}); }
 	player.health.flags.reset(entity::HPState::hit);

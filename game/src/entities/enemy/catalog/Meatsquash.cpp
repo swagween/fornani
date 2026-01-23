@@ -43,7 +43,7 @@ void Meatsquash::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	has_no_collision ? flags.general.reset(GeneralFlags::player_collision) : flags.general.set(GeneralFlags::player_collision);
 	animation.get_frame() == 12 ? attacks.bite.hit.activate() : attacks.bite.hit.deactivate();
 	if (attacks.bite.sensor.active() && attacks.bite.hit.active() && !(player.get_collider().get_center().y > get_collider().physics.position.y)) {
-		player.set_flag(player::PlayerFlags::swallowed);
+		player.set_death_type(player::PlayerDeathType::swallowed);
 		set_flag(MeatsquashFlags::swallowed_player);
 		player.hurt(24.f);
 	}

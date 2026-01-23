@@ -3,7 +3,6 @@
 #include <ccmath/ext/clamp.hpp>
 #include <fornani/graphics/Background.hpp>
 #include <fornani/service/ServiceProvider.hpp>
-#include <fornani/setup/EnumLookups.hpp>
 #include <fornani/utils/Math.hpp>
 
 namespace fornani::graphics {

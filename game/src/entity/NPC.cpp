@@ -204,6 +204,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 		NANI_LOG_DEBUG(Entity::m_logger, "ID from NPC was {}", m_id.get());
 		is_hidden() ? unhide() : hide();
 		player.piggyback(m_id.get());
+		svc.camera_controller.constrain();
 		b_piggy = false;
 	}
 

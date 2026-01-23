@@ -11,6 +11,8 @@
 
 namespace fornani::automa {
 
+enum class GameplayFlags { game_over, transitioning };
+
 class Dojo final : public GameState {
   public:
 	Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0, std::string_view room_name = "");
@@ -22,6 +24,7 @@ class Dojo final : public GameState {
 	void acquire_gun(ServiceProvider& svc, player::Player& player, int modifier);
 	void remove_gun(ServiceProvider& svc, player::Player& player, int modifier);
 	void read_item(int id);
+	void handle_player_death(ServiceProvider& svc, player::Player& player);
 
 	world::Map map;
 	bool show_colliders{false};
@@ -30,6 +33,7 @@ class Dojo final : public GameState {
 	std::optional<std::unique_ptr<gui::InventoryWindow>> inventory_window{};
 
   private:
+	util::BitFlags<GameplayFlags> m_flags{};
 	std::optional<LightShader> m_world_shader{};
 	std::optional<LightShader> m_gui_shader{};
 	ServiceProvider* m_services;

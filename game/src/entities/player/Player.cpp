@@ -36,6 +36,81 @@ Player::Player(automa::ServiceProvider& svc)
 	distant_vicinity.set_dimensions({256.f, 256.f});
 }
 
+void Player::serialize(dj::Json& out) const {
+	out["max_hp"] = health.get_capacity();
+	out["hp"] = health.get_quantity();
+	out["orbs"] = wallet.get_balance();
+	out["position"]["x"] = get_position().x;
+	out["position"]["y"] = get_position().y;
+	out["arsenal"] = dj::Json::empty_array();
+	out["hotbar"] = dj::Json::empty_array();
+	// push player arsenal
+	if (arsenal) {
+		for (auto const& gun : arsenal.value().get_loadout()) { out["arsenal"].push_back(gun->get_tag()); }
+		if (hotbar) {
+			for (auto const& id : hotbar.value().get_tags()) { out["hotbar"].push_back(id); }
+			out["equipped_gun"] = hotbar.value().get_tag();
+		}
+	}
+
+	// wardrobe
+	out["wardrobe"]["hairstyle"] = static_cast<int>(catalog.wardrobe.get_variant(player::ApparelType::hairstyle));
+	out["wardrobe"]["shirt"] = static_cast<int>(catalog.wardrobe.get_variant(player::ApparelType::shirt));
+	out["wardrobe"]["pants"] = static_cast<int>(catalog.wardrobe.get_variant(player::ApparelType::pants));
+
+	// items and abilities
+	out["items"] = dj::Json::empty_array();
+	for (auto& item : catalog.inventory.items_view()) {
+		dj::Json this_item{};
+		this_item["label"] = item->get_label();
+		this_item["quantity"] = 1;
+		this_item["revealed"] = item->is_revealed();
+		out["items"].push_back(this_item);
+	}
+
+	// equipped items
+	out["equipped_items"] = dj::Json::empty_array();
+	for (auto const& item : catalog.inventory.equipped_items_view()) { out["equipped_items"].push_back(item); }
+}
+
+void Player::unserialize(dj::Json const& in) {
+	health.set_capacity(in["max_hp"].as<float>());
+	health.set_quantity(in["hp"].as<float>());
+	wallet.set_balance(in["orbs"].as<int>());
+
+	// load player's arsenal
+	arsenal = {};
+	hotbar = {};
+	for (auto& gun_tag : in["arsenal"].as_array()) { push_to_loadout(gun_tag.as_string(), true); }
+	if (!in["hotbar"].as_array().empty()) {
+		if (!hotbar) { hotbar = arms::Hotbar(1); }
+		if (hotbar) {
+			for (auto& gun_tag : in["hotbar"].as_array()) { hotbar.value().add(gun_tag.as_string()); }
+			auto equipped_gun = in["equipped_gun"].as_string();
+			hotbar.value().set_selection(equipped_gun);
+		}
+	}
+
+	// load items and abilities
+	catalog.inventory = {};
+	for (auto& item : in["items"].as_array()) {
+		give_item(item["label"].as_string(), item["quantity"].as<int>(), true);
+		if (item["revealed"].as_bool()) { catalog.inventory.reveal_item(m_services->data.item_id_from_label(item["label"].as_string())); }
+	}
+
+	// wardrobe
+	auto& wardrobe = catalog.wardrobe;
+	auto hairstyle = in["wardrobe"]["hairstyle"].as<int>();
+	auto headgear = in["wardrobe"]["headgear"].as<int>();
+	auto shirt = in["wardrobe"]["shirt"].as<int>();
+	auto pants = in["wardrobe"]["pants"].as<int>();
+	set_outfit({hairstyle, headgear, shirt, pants});
+	update_wardrobe();
+
+	// equipped items
+	for (auto const& item : in["equipped_items"].as_array()) { equip_item(item.as<int>()); }
+}
+
 void Player::register_with_map(world::Map& map) {
 	Mobile::register_collider(map, player_dimensions_v);
 
@@ -88,11 +163,19 @@ void Player::update(world::Map& map) {
 		if (m_services->ticker.every_x_ticks(8)) { m_air_supply.heal(1.f); }
 	}
 
+	// check for drown
 	if (m_air_supply.is_dead()) {
-		set_flag(PlayerFlags::drowned);
+		m_death_type = PlayerDeathType::drowned;
 		hurt(max_damage_v, true);
 	}
 	m_air_supply_bar.update(m_air_supply.get_normalized(), get_collider().get_top() + sf::Vector2f{0.f, -32.f}, true);
+
+	// check for fall
+	if (map.off_the_bottom(get_collider().physics.position)) {
+		m_death_type = PlayerDeathType::fallen;
+		hurt(64.f);
+		freeze_position();
+	}
 
 	if (has_item_equipped(25)) {
 		if (arsenal && hotbar) {
@@ -128,9 +211,9 @@ void Player::update(world::Map& map) {
 	m_camera.camera.update(*m_services);
 
 	invincible() ? get_collider().draw_hurtbox.setFillColor(colors::red) : get_collider().draw_hurtbox.setFillColor(colors::blue);
-	if (has_flag_set(PlayerFlags::crushed)) { get_collider().physics.gravity = 0.f; }
+	if (has_death_type(PlayerDeathType::crushed)) { get_collider().physics.gravity = 0.f; }
 
-	get_collider().set_flag(shape::ColliderFlags::sinking, has_flag_set(PlayerFlags::drowned));
+	get_collider().set_flag(shape::ColliderFlags::sinking, has_death_type(PlayerDeathType::drowned));
 
 	if (get_collider().has_flag_set(shape::ColliderFlags::submerged)) {
 		map.set_target_balance(0.f, audio::BalanceTarget::music);
@@ -248,8 +331,8 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	m_sprite_position.x += controller.facing_left() ? -1.f : 1.f;
 	Animatable::set_position(m_sprite_position - cam);
 
-	if (has_flag_set(PlayerFlags::crushed) || has_flag_set(PlayerFlags::swallowed)) { return; }
-	if (has_flag_set(PlayerFlags::drowned)) { set_color(colors::blue); }
+	if (has_death_type(PlayerDeathType::crushed) || has_death_type(PlayerDeathType::swallowed)) { return; }
+	if (has_death_type(PlayerDeathType::drowned)) { set_color(colors::blue); }
 	if (piggybacker) { piggybacker->render(svc, win, cam); }
 
 	if (consume_flag(PlayerFlags::dir_switch)) { Animatable::scale({-1.f, 1.f}); }
@@ -372,7 +455,7 @@ void Player::update_animation() {
 	if (consume_flag(PlayerFlags::wake_up)) { m_animation_machine.request(AnimState::wake_up); }
 
 	if (is_dead()) {
-		has_flag_set(PlayerFlags::drowned) ? m_animation_machine.request(AnimState::drown) : m_animation_machine.request(AnimState::die);
+		has_death_type(PlayerDeathType::drowned) ? m_animation_machine.request(AnimState::drown) : m_animation_machine.request(AnimState::die);
 		set_flag(PlayerFlags::show_weapon, false);
 	}
 
@@ -528,7 +611,7 @@ void Player::hurt(float amount, bool force) {
 		get_collider().physics.velocity.y = 0.0f;
 		get_collider().physics.acceleration.y += -physics_stats.hurt_acc;
 		force_cooldown.start(60);
-		has_flag_set(PlayerFlags::swallowed) || has_flag_set(PlayerFlags::drowned) ? m_services->soundboard.flags.player.set(audio::Player::gulp) : m_services->soundboard.flags.player.set(audio::Player::hurt);
+		has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? m_services->soundboard.flags.player.set(audio::Player::gulp) : m_services->soundboard.flags.player.set(audio::Player::hurt);
 		hurt_cooldown.start(2);
 	}
 }
@@ -544,7 +627,7 @@ void Player::on_crush(world::Map& map) {
 		map.spawn_emitter(*m_services, "player_crush", get_collider().physics.position, left_squish, get_collider().dimensions);
 		map.spawn_emitter(*m_services, "player_crush", get_collider().physics.position, right_squish, get_collider().dimensions);
 		get_collider().collision_depths = {};
-		set_flag(PlayerFlags::crushed);
+		m_death_type = PlayerDeathType::crushed;
 	}
 }
 
@@ -626,9 +709,7 @@ void Player::update_wardrobe() {
 }
 
 void Player::start_over() {
-	set_flag(PlayerFlags::swallowed, false);
-	set_flag(PlayerFlags::crushed, false);
-	set_flag(PlayerFlags::drowned, false);
+	m_death_type.reset();
 	health.reset();
 	controller.unrestrict();
 	m_services->camera_controller.set_owner(graphics::CameraOwner::player);
@@ -700,6 +781,7 @@ void Player::give_item(std::string_view label, int amount, bool from_save) {
 	if (id == 29 && !from_save) {
 		health.increase_capacity(1.f);
 		m_services->soundboard.flags.item.set(audio::Item::health_increase);
+		health.refill();
 	}
 }
 

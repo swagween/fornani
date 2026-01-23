@@ -31,7 +31,7 @@ namespace fornani::enemy {
 EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {}
 
 void EnemyCatalog::update() {
-	std::erase_if(enemies, [this](auto const& e) { return e->gone(); });
+	std::erase_if(enemies, [this](auto const& e) { return e->gone() || e->despawn_requested(); });
 }
 
 void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int id, bool spawned, int variant, sf::Vector2<int> start_direction,

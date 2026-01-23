@@ -21,8 +21,8 @@ Emitter::Emitter(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f pos
 	drawbox.setOutlineColor(sf::Color::Red);
 	drawbox.setSize(dimensions);
 
-	auto x = random::random_range_float(0.f, dimensions.x);
-	auto y = random::random_range_float(0.f, dimensions.y);
+	auto x = random::random_range_float(-dimensions.x * 0.5f, dimensions.x * 0.5f);
+	auto y = random::random_range_float(-dimensions.y * 0.5f, dimensions.y * 0.5f);
 	sf::Vector2f point{position.x + x, position.y + y};
 	particles.push_back(std::make_unique<Particle>(svc, map, point, particle_dimensions, type, color, direction));
 }
@@ -41,7 +41,7 @@ void Emitter::update(automa::ServiceProvider& svc, world::Map& map) {
 
 void Emitter::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (svc.greyblock_mode()) {
-		drawbox.setPosition(position - cam);
+		drawbox.setPosition(position - cam - drawbox.getLocalBounds().size * 0.5f);
 		win.draw(drawbox);
 	}
 	for (auto& particle : particles) { particle->render(svc, win, cam); }

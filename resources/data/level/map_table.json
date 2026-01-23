@@ -703,6 +703,12 @@
       "room_id": 219
     },
     {
+      "folder": "overturned",
+      "label": "yaris_hut.json",
+      "region": "overturned",
+      "room_id": 248
+    },
+    {
       "folder": "pioneer",
       "label": "base.json",
       "region": "pioneer",

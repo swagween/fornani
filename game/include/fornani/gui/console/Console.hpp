@@ -38,7 +38,7 @@ class Console {
 	/// <param name="svc"></param>
 	/// <param name="key"></param>
 	/// <param name="type"></param>
-	explicit Console(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type);
+	explicit Console(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type, int target_index = -1);
 
 	/// <summary>
 	/// @brief for standard loading and launching, data-driven text with pre-supplied key
@@ -88,7 +88,7 @@ class Console {
 	std::string native_key{};
 
   protected:
-	void load_and_launch(std::string_view key, OutputType type = OutputType::gradual);
+	void load_and_launch(std::string_view key, OutputType type = OutputType::gradual, int target_index = -1);
 	void load_and_launch(OutputType type = OutputType::gradual);
 	void load_single_message(std::string_view message);
 	void handle_inputs(config::ControllerMap& controller);

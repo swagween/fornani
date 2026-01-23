@@ -21,9 +21,19 @@ namespace fornani::item {
 
 enum class LootState { heart_dropped };
 
+struct LootProperties {
+	sf::Vector2<int> drop_range;
+	float probability = 1.f;
+	int delay_time = 0;
+	bool special = false;
+	int special_id = 0;
+	int individual_delay = 0;
+	float gem_multiplier = 1.f;
+};
+
 class Loot {
   public:
-	Loot(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2<int> drop_range, float probability, sf::Vector2f pos, int delay_time = 0, bool special = false, int special_id = 0, int individual_delay = 0);
+	Loot(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f pos, LootProperties properties);
 
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos);
