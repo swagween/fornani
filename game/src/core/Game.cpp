@@ -55,7 +55,8 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		services.state_controller.demo_level = room_id;
 		NANI_LOG_INFO(m_logger, "Launching demo in room {} from folder {} ", room_id, levelpath.filename().string());
 		services.state_controller.player_position = player_position;
-		player.set_position(player_position);
+		player.set_demo_position(player_position);
+		player.place_at_demo_position();
 		player.set_direction(Direction{LR::left});
 	}
 

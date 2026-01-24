@@ -1,4 +1,4 @@
 {
-  "region": "overturned",
-  "room": "kariba_fields.json"
+  "region": "config",
+  "room": "dns_test.json"
 }

@@ -613,6 +613,7 @@ void Player::hurt(float amount, bool force) {
 		force_cooldown.start(60);
 		has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? m_services->soundboard.flags.player.set(audio::Player::gulp) : m_services->soundboard.flags.player.set(audio::Player::hurt);
 		hurt_cooldown.start(2);
+		if (is_dead()) { m_death_type = PlayerDeathType::normal; }
 	}
 }
 

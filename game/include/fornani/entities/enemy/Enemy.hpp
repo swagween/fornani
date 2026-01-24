@@ -170,6 +170,7 @@ class Enemy : public Mobile {
 	util::Cooldown impulse{};
 	util::Cooldown intangibility{};
 	int afterlife{200};
+	sf::Vector2f m_death_position{};
 
 	util::Cooldown hurt_effect{};
 

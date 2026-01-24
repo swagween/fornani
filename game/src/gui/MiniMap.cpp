@@ -69,7 +69,7 @@ void MiniMap::bake(automa::ServiceProvider& svc, dj::Json const& in) {
 			auto dest_room_pos = (*dest_it)->get_position();
 			auto dest_room = svc.data.get_map_json_from_id(dest_room_id);
 			if (!dest_room) { continue; }
-			auto in_dest = dest_room.value()["entities"]["portals"];
+			auto in_dest = dest_room->get()["entities"]["portals"];
 			for (auto const& dest_port : in_dest.as_array()) {
 				if (dest_port["destination_id"].as<int>() != room_id) { continue; }
 				auto dest_pos = sf::Vector2f{dest_port["position"][0].as<float>(), dest_port["position"][1].as<float>()} * m_texture_scale + dest_room_pos;

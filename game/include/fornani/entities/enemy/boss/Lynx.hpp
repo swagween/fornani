@@ -7,7 +7,6 @@
 #include <fornani/entities/packages/Caution.hpp>
 #include <fornani/entities/packages/Shockwave.hpp>
 #include <fornani/entity/NPC.hpp>
-#include <fornani/gui/BossHealth.hpp>
 #include <fornani/particle/Sparkler.hpp>
 
 #define LYNX_BIND(f) std::bind(&Lynx::f, this)

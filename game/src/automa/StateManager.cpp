@@ -52,6 +52,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 			if (svc.state_controller.actions.test(Actions::retry)) {
 				svc.state_controller.next_state = svc.state_controller.demo_level;
 				svc.state_controller.actions.reset(Actions::retry);
+				player.place_at_demo_position();
 				player.set_idle();
 				player.set_animation_flag(player::AnimTriggers::end_death, false);
 			} else {

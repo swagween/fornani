@@ -124,7 +124,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 		float ppx = svc.data.get_save()["player_data"]["position"]["x"].as<float>();
 		float ppy = svc.data.get_save()["player_data"]["position"]["y"].as<float>();
 		sf::Vector2f player_pos = {ppx, ppy};
-		player.set_position(player_pos);
+		svc.demo_mode() ? player.place_at_demo_position() : player.set_position(player_pos);
 	}
 
 	// save was loaded from a json, or player died, so we successfully skipped door search

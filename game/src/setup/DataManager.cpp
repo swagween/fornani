@@ -652,14 +652,20 @@ auto DataManager::get_gun_tag_from_id(int id) const -> std::optional<std::string
 
 auto DataManager::get_gun_id_from_tag(std::string_view tag) const -> int { return weapon[tag]["metadata"]["id"].as<int>(); }
 
-auto DataManager::get_map_json_from_id(int id) const& -> std::optional<dj::Json> {
+auto DataManager::get_map_json_from_id(int id) const -> std::optional<std::reference_wrapper<dj::Json const>> {
 	for (auto const& map : map_jsons) {
 		if (map.metadata["meta"]["room_id"].as<int>() == id) { return map.metadata; }
 	}
 	return std::nullopt;
 }
 
-auto DataManager::get_room_data_from_id(int id) const& -> std::optional<dj::Json> {
+auto DataManager::get_map_json_from_id(int id) -> std::optional<std::reference_wrapper<dj::Json>> {
+	auto const_result = static_cast<DataManager const*>(this)->get_map_json_from_id(id);
+	if (!const_result) return std::nullopt;
+	return std::ref(const_cast<dj::Json&>(const_result->get()));
+}
+
+auto DataManager::get_room_data_from_id(int id) const -> std::optional<dj::Json> {
 	for (auto const& room : map_table["rooms"].as_array()) {
 		if (room["room_id"].as<int>() == id) { return room; }
 	}

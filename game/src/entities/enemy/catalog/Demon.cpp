@@ -301,6 +301,7 @@ fsm::StateFunction Demon::update_uppercut() {
 fsm::StateFunction Demon::update_dormant() {
 	m_state.actual = DemonState::dormant;
 	flags.state.reset(StateFlags::vulnerable);
+	if (!m_services->world_clock.is_nighttime()) { return DEMON_BIND(update_dormant); }
 	is_hostile() ? cooldowns.awaken.update() : cooldowns.awaken.reverse();
 	if (cooldowns.awaken.halfway()) {
 		shake();

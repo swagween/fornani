@@ -72,7 +72,7 @@ enum class Beast { growl, hurt, gulp, snort, roar };
 enum class Frdog { hurt, death };
 enum class Crow { fly, flap, caw, death };
 enum class Hulmet { hurt, alert, reload };
-enum class Tank { alert_1, alert_2, hurt_1, hurt_2, death };
+enum class Tank { alert_1, alert_2, hurt_1, hurt_2, death, step };
 enum class Thug { alert_1, alert_2, hurt_1, hurt_2, death };
 enum class Minigun { charge, reload, neutral, firing };
 enum class Demon { hurt, alert, death, snort, up_snort };
@@ -188,7 +188,7 @@ class Soundboard {
 
 	std::unordered_map<std::string, std::function<void(int)>> npc_map;
 
-	void play(capo::IEngine& engine, automa::ServiceProvider& svc, capo::Buffer const& buffer, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2f distance = {}, int echo_count = 0,
+	void play(capo::IEngine& engine, automa::ServiceProvider& svc, std::string const& label, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2f distance = {}, int echo_count = 0,
 			  int echo_rate = 64);
 
   private:

@@ -7,8 +7,9 @@
 namespace fornani::enemy {
 
 Meatsquash::Meatsquash(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "meatsquash"), m_services(&svc), m_map(&map) {
-	m_params = {{"idle", {0, 6, 36, -1}}, {"chomp", {6, 12, 36, 0}}, {"open", {19, 4, 24, 0}}, {"swallow", {23, 13, 24, 0}}};
+	m_params = {{"idle", {0, 6, 32, -1}}, {"chomp", {6, 12, 36, 0}}, {"open", {19, 4, 24, 0}}, {"swallow", {23, 13, 24, 0}}};
 	animation.set_params(get_params("idle"));
+	random_start();
 	get_collider().physics.maximum_velocity = {8.f, 12.f};
 	get_collider().physics.air_friction = {0.95f, 0.999f};
 	get_collider().flags.general.set(shape::General::complex);
@@ -18,8 +19,8 @@ Meatsquash::Meatsquash(automa::ServiceProvider& svc, world::Map& map) : Enemy(sv
 	directions.movement.lnr = LNR::neutral;
 	get_collider().set_top_only();
 
-	attacks.bite.sensor.bounds.setRadius(90.f);
-	attacks.bite.hit.bounds.setRadius(90.f);
+	attacks.bite.sensor.bounds.setRadius(96.f);
+	attacks.bite.hit.bounds.setRadius(86.f);
 	attacks.bite.origin = {0.f, 0.f};
 
 	flags.state.reset(StateFlags::vulnerable);
@@ -37,12 +38,12 @@ void Meatsquash::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	attacks.bite.update();
 	attacks.bite.handle_player(player);
 
-	if (is_hostile() && !hostility_triggered() && !player.is_dead()) { request(MeatsquashState::chomp); }
+	if (attacks.bite.sensor.within_bounds(player.get_collider().bounding_box) && !player.is_dead()) { request(MeatsquashState::chomp); }
 
 	auto has_no_collision = is_state(MeatsquashState::open) || (is_state(MeatsquashState::chomp) && animation.get_frame_count() > 5);
 	has_no_collision ? flags.general.reset(GeneralFlags::player_collision) : flags.general.set(GeneralFlags::player_collision);
-	animation.get_frame() == 12 ? attacks.bite.hit.activate() : attacks.bite.hit.deactivate();
-	if (attacks.bite.sensor.active() && attacks.bite.hit.active() && !(player.get_collider().get_center().y > get_collider().physics.position.y)) {
+	auto active = animation.get_frame() == 12;
+	if (attacks.bite.hit.active() && active && !(player.get_collider().get_center().y > get_collider().physics.position.y)) {
 		player.set_death_type(player::PlayerDeathType::swallowed);
 		set_flag(MeatsquashFlags::swallowed_player);
 		player.hurt(24.f);

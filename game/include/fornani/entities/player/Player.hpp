@@ -153,6 +153,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void set_hurt();
 	void set_direction(Direction to);
 	void piggyback(int id);
+	void set_demo_position(sf::Vector2f const to) { m_demo_position = to; }
+	void place_at_demo_position() { set_position(m_demo_position); }
 
 	// state
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
@@ -222,7 +224,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void give_drop(item::DropType type, float value);
 	void give_item_by_id(int id, int amount);
 	void give_item(std::string_view label, int amount, bool from_save = false);
-	[[nodiscard]] EquipmentStatus equip_item(int id);
+	EquipmentStatus equip_item(int id);
 	void add_to_hotbar(std::string_view tag);
 	void remove_from_hotbar(std::string_view tag);
 	void set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_outfit);
@@ -334,6 +336,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	sf::Vector2f m_sprite_position{};
 	sf::Vector2f m_weapon_socket{};
 	sf::Vector2f m_piggyback_socket{};
+	sf::Vector2f m_demo_position{};
 	std::pair<sf::Vector2f, sf::Vector2f> m_antenna_sockets{};
 	util::Cooldown m_sprite_shake;
 	util::Cooldown m_hurt_cooldown;

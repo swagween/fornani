@@ -185,7 +185,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		map.effects.push_back(entity::Effect(svc, "large_explosion", get_collider().get_center(), get_collider().physics.apparent_velocity() * 0.5f, visual.effect_type));
 	}
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) {
-		health_indicator.update(svc, get_collider().physics.position);
+		health_indicator.update(svc, m_death_position);
 		post_death.update();
 		return;
 	}
@@ -347,6 +347,7 @@ void Enemy::hurt(float amount) {
 	flags.state.set(StateFlags::hurt);
 	health.inflict(amount);
 	health_indicator.add(-amount);
+	if (health.is_dead()) { m_death_position = get_collider().get_center(); }
 }
 
 void Enemy::on_crush(world::Map& map) {

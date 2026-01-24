@@ -4,6 +4,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <fornani/components/SteeringComponent.hpp>
+#include <fornani/utils/Polymorphic.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -11,7 +12,7 @@ struct ServiceProvider;
 
 namespace fornani::gui {
 
-class HealthBar {
+class HealthBar : public Polymorphic {
   public:
 	HealthBar(automa::ServiceProvider& svc, sf::Color color);
 	virtual void update(float const percentage, sf::Vector2f position, bool centered = false);

@@ -104,8 +104,9 @@ class DataManager final {
 	[[nodiscard]] auto item_id_from_label(std::string_view label) const -> int;
 	[[nodiscard]] auto get_gun_tag_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] auto get_gun_id_from_tag(std::string_view tag) const -> int;
-	[[nodiscard]] auto get_map_json_from_id(int id) const& -> std::optional<dj::Json>;
-	[[nodiscard]] auto get_room_data_from_id(int id) const& -> std::optional<dj::Json>;
+	[[nodiscard]] auto get_map_json_from_id(int id) const -> std::optional<std::reference_wrapper<dj::Json const>>;
+	[[nodiscard]] auto get_map_json_from_id(int id) -> std::optional<std::reference_wrapper<dj::Json>>;
+	[[nodiscard]] auto get_room_data_from_id(int id) const -> std::optional<dj::Json>;
 	[[nodiscard]] auto get_npc_label_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] auto get_enemy_label_from_id(int id) const -> std::optional<std::string_view>;
 

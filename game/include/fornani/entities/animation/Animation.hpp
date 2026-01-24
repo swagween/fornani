@@ -31,7 +31,7 @@ struct Animation {
 
 	Parameters params{};
 	Parameters next_params{};
-	std::string_view label{};
+	std::string label{};
 
 	void refresh();
 	void start();

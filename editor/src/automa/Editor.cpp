@@ -300,13 +300,17 @@ void Editor::load() {
 
 bool Editor::save() {
 	auto ret = map.save(p_services->finder, p_services->finder.paths.region, p_services->finder.paths.room_name);
-	auto room_data_result = dj::Json::from_file(p_services->finder.paths.room_name);
+	auto path = p_services->finder.paths.levels / p_services->finder.paths.region / p_services->finder.paths.room_name;
+	auto room_data_result = dj::Json::from_file(path.string());
 	if (!room_data_result) {
-		NANI_LOG_ERROR(p_logger, "Failed to reload saved JSON data after serialization. PATH: {}.", p_services->finder.paths.room_name);
+		NANI_LOG_ERROR(p_logger, "Failed to reload saved JSON data after serialization. PATH: {}.", path.string());
 		return false;
 	}
-	auto room_data = std::move(*room_data_result);
-	p_services->data.get_map_json_from_id(map.room_id) = room_data;
+	if (auto existing_data = p_services->data.get_map_json_from_id(map.room_id)) {
+		existing_data->get() = std::move(*room_data_result);
+		NANI_LOG_INFO(p_logger, "Re-serialized existing room. PATH: {}.", path.string());
+	}
+
 	return ret;
 }
 

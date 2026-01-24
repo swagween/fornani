@@ -48,8 +48,8 @@
       "dimensions": [80, 80],
       "sprite_dimensions": [64, 64],
       "offset": [0, -23],
-      "alert_range": [200.0, 300.0],
-      "hostile_range": [600.0, 120.0],
+      "alert_range": [600.0, 200.0],
+      "hostile_range": [200.0, 100.0],
       "home_detector": [24.0, 80.0],
       "friction": 0.98,
       "gravity": 6.5
@@ -573,7 +573,7 @@
       "alert_range": [380.0, 64.0],
       "hostile_range": [90.0, 32.0],
       "friction": 0.98,
-      "gravity": 16.0
+      "gravity": 36.0
     },
     "visual": {
       "effect_type": 0,
