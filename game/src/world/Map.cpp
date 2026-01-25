@@ -327,7 +327,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	enemy_catalog.update();
 
 	manage_projectiles(svc);
-	svc.map_debug.active_projectiles = active_projectiles.size();
 	for (auto& proj : active_projectiles) {
 		if (proj.destruction_initiated()) { continue; }
 		proj.register_chunk(get_chunk_id_from_position(proj.get_position()));

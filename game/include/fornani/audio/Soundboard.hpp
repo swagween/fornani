@@ -21,6 +21,10 @@ std::function<void(int)> make_int_setter(util::BitFlags<Enum>& flags) {
 	return [&flags](int which) { flags.set(static_cast<Enum>(which)); };
 }
 
+struct SoundListener {
+	sf::Vector2f position{};
+};
+
 enum class SoundboardState { on, off };
 
 enum class Menu { select, shift, forward_switch, backward_switch, error };
@@ -72,7 +76,7 @@ enum class Beast { growl, hurt, gulp, snort, roar };
 enum class Frdog { hurt, death };
 enum class Crow { fly, flap, caw, death };
 enum class Hulmet { hurt, alert, reload };
-enum class Tank { alert_1, alert_2, hurt_1, hurt_2, death, step };
+enum class Tank { alert_1, alert_2, hurt_1, hurt_2, death, step, sip, soda, burp };
 enum class Thug { alert_1, alert_2, hurt_1, hurt_2, death };
 enum class Minigun { charge, reload, neutral, firing };
 enum class Demon { hurt, alert, death, snort, up_snort };
@@ -130,13 +134,14 @@ enum class Miaag { growl, hiss, hurt, roar, chomp };
 
 class Soundboard {
   public:
-	Soundboard(automa::ServiceProvider& svc);
+	Soundboard(automa::ServiceProvider& svc, capo::IEngine& engine);
 	void play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc, int echo_count = 0, int echo_rate = 1);
 	void turn_on() { status = SoundboardState::on; }
 	void turn_off() { status = SoundboardState::off; }
 	void play_step(int tile_value, int style_id, bool land = false);
 	void set_volume(float to) { m_volume_multiplier = ccm::ext::clamp(to, 0.f, 1.f); }
 	void adjust_volume(float amount) { set_volume(m_volume_multiplier + amount); }
+	void set_listener_position(sf::Vector2f const to) { m_listener.position = to; }
 
 	[[nodiscard]] auto get_volume() const -> float { return m_volume_multiplier; }
 	[[nodiscard]] auto sound_pool_size() const -> std::size_t { return sound_pool.size(); }
@@ -188,7 +193,10 @@ class Soundboard {
 
 	std::unordered_map<std::string, std::function<void(int)>> npc_map;
 
-	void play(capo::IEngine& engine, automa::ServiceProvider& svc, std::string const& label, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 0, float attenuation = 1.f, sf::Vector2f distance = {}, int echo_count = 0,
+	void play_sound(std::string_view label, sf::Vector2f position);
+
+	void play(capo::IEngine& engine, automa::ServiceProvider& svc, std::string const& label, SoundProperties properties, int frequency = 0, float attenuation = 1.f);
+	void play(capo::IEngine& engine, automa::ServiceProvider& svc, std::string const& label, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 1, float attenuation = 1.f, sf::Vector2f distance = {}, int echo_count = 0,
 			  int echo_rate = 64);
 
   private:
@@ -199,9 +207,15 @@ class Soundboard {
 	void fade_out(std::string_view label);
 
 	std::vector<Sound> sound_pool{};
+	std::unordered_map<std::string, SoundProperties> m_property_map{};
 	float m_volume_multiplier{0.5f};
 
 	SoundboardState status{SoundboardState::on};
+
+	SoundListener m_listener{};
+
+	capo::IEngine* m_engine;
+	automa::ServiceProvider* m_services;
 
 	struct {
 		float save{};

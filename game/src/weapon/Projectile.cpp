@@ -29,7 +29,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	Animatable::set_parameters(anim::Parameters{0, in_data["animation"]["num_frames"].as<int>(), in_data["animation"]["framerate"].as<int>(), -1});
 
 	metadata.specifications.base_damage = in_data["attributes"]["base_damage"].as<float>();
-	metadata.specifications.power = in_data["attributes"]["power"] ? in_data["attributes"]["power"].as<int>() : 1;
+	metadata.specifications.power = in_data["attributes"]["power"] ? in_data["attributes"]["power"].as<float>() : 1.f;
 	metadata.specifications.speed = in_data["attributes"]["speed"].as<float>();
 	metadata.specifications.speed_variance = in_data["attributes"]["speed_variance"].as<float>();
 	metadata.specifications.speed += random::random_range_float(-metadata.specifications.speed_variance, metadata.specifications.speed_variance);

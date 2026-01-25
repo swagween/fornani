@@ -276,8 +276,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::SliderInt("Clock Speed", &clock_speed, 4, 196);
 					services.world_clock.set_speed(clock_speed);
 					ImGui::Separator();
-					ImGui::Text("Active Projectiles: %i", services.map_debug.active_projectiles);
-					ImGui::Separator();
 
 					ImGui::EndTabItem();
 				}

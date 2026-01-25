@@ -173,6 +173,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto arsenal_size() const -> std::size_t { return arsenal ? arsenal.value().size() : 0; }
 	[[nodiscard]] auto quick_direction_switch() const -> bool { return has_flag_set(PlayerFlags::dir_switch); }
 	[[nodiscard]] auto pushing() const -> bool { return m_animation_machine.is_state(AnimState::push) || m_animation_machine.is_state(AnimState::between_push); }
+	[[nodiscard]] auto is_sneaking() const -> bool { return is_in_animation(player::AnimState::crouch) || is_in_animation(player::AnimState::crawl); }
 	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.inventory.has_item(id); }
 	[[nodiscard]] auto has_item(std::string_view tag) const -> bool { return catalog.inventory.has_item(tag); }
 	[[nodiscard]] auto has_item_equipped(int id) const -> bool { return catalog.inventory.has_item_equipped(id); }

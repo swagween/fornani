@@ -1,17 +1,25 @@
 
-#include "fornani/audio/Soundboard.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/utils/Random.hpp"
+#include <fornani/audio/Soundboard.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/utils/Random.hpp>
 
 namespace fornani::audio {
 
 constexpr auto minimum_wait_time_v = 16;
 
-Soundboard::Soundboard(automa::ServiceProvider& /*svc*/) {
+Soundboard::Soundboard(automa::ServiceProvider& svc, capo::IEngine& engine) : m_services(&svc), m_engine(&engine) {
 	npc_map["bryn"] = make_int_setter<NPCBryn>(npc_flags.bryn);
 	npc_map["gobe"] = make_int_setter<NPCGobe>(npc_flags.gobe);
 	npc_map["minigus"] = make_int_setter<NPCMinigus>(npc_flags.minigus);
 	npc_map["mirin"] = make_int_setter<NPCMirin>(npc_flags.mirin);
+
+	m_property_map.insert({"error_sound", {SoundType::gameplay, 1.f}});
+	m_property_map.insert({"default_gui", {SoundType::gui, 1.f}});
+	m_property_map.insert({"default_gameplay", {SoundType::gameplay, 1.f}});
+	m_property_map.insert({"tank_sip", {SoundType::gameplay, 1.f}});
+	m_property_map.insert({"jump_low", {SoundType::gameplay, 1.f}});
+	m_property_map.insert({"thud", {SoundType::gameplay, 1.f}});
+	m_property_map.insert({"tank_step", {SoundType::gameplay, 1.f}});
 }
 
 void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc, int echo_count, int echo_rate) {
@@ -111,7 +119,8 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.tank.test(Tank::hurt_1)) { play(engine, svc, "tank_hurt_1"); }
 	if (flags.tank.test(Tank::hurt_2)) { play(engine, svc, "tank_hurt_2", 0.f, 50.f); }
 	if (flags.tank.test(Tank::death)) { play(engine, svc, "tank_death"); }
-	if (flags.tank.test(Tank::step)) { play(engine, svc, "tank_step"); }
+	// if (flags.tank.test(Tank::step)) { play(engine, svc, "tank_step"); }
+	// if (flags.tank.test(Tank::sip)) { play(engine, svc, "tank_sip"); }
 
 	// mastiff
 	if (flags.mastiff.test(Mastiff::bite)) { play(engine, svc, "mastiff_bite", 0.f, 50.f); }
@@ -340,9 +349,12 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	// reset flags
 	flags = {};
 	npc_flags = {};
+}
 
-	// reset proximities
-	proximities = {};
+void Soundboard::play_sound(std::string_view label, sf::Vector2f position) {
+	auto lookup = m_property_map.contains(label.data()) ? label.data() : "error_sound";
+	sound_pool.push_back(Sound(*m_engine, m_services->sounds.get_buffer(lookup), lookup, m_property_map.at(lookup), position - m_listener.position));
+	sound_pool.back().play();
 }
 
 void Soundboard::play(capo::IEngine& engine, automa::ServiceProvider& svc, std::string const& label, float random_pitch_offset, float vol, int frequency, float attenuation, sf::Vector2f distance, int echo_count, int echo_rate) {
@@ -350,8 +362,19 @@ void Soundboard::play(capo::IEngine& engine, automa::ServiceProvider& svc, std::
 	auto tick = svc.ticker.ticks;
 	if (tick - minimum_wait_time_v < svc.sounds.get_tick_for_buffer(label) && frequency == 0) { return; }
 	svc.sounds.set_tick_for_buffer(label, tick);
-	sound_pool.push_back(Sound(engine, svc.sounds.get_buffer(label), "standard", echo_count, echo_rate, m_volume_multiplier * (vol / 100.f)));
+	sound_pool.push_back(Sound(engine, svc.sounds.get_buffer(label), label, {SoundType::gameplay, m_volume_multiplier * (vol / 100.f)}, distance));
 	frequency != 0 ? repeat(svc, sound_pool.back(), frequency, random_pitch_offset, attenuation, distance) : randomize(svc, sound_pool.back(), random_pitch_offset, vol, attenuation, distance);
+}
+
+void Soundboard::play(capo::IEngine& engine, automa::ServiceProvider& svc, std::string const& label, SoundProperties properties, int frequency, float attenuation) {
+	properties.volume *= m_volume_multiplier;
+	if (properties.volume < constants::tiny_value) { return; }
+	auto tick = svc.ticker.ticks;
+	if (tick - minimum_wait_time_v < svc.sounds.get_tick_for_buffer(label) && frequency == 0) { return; }
+	svc.sounds.set_tick_for_buffer(label, tick);
+
+	sound_pool.push_back(Sound(engine, svc.sounds.get_buffer(label), label, properties, {}));
+	// frequency != 0 ? repeat(svc, sound_pool.back(), frequency, random_pitch_offset, attenuation, distance) : randomize(svc, sound_pool.back(), random_pitch_offset, vol, attenuation, distance);
 }
 
 void Soundboard::simple_repeat(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label, int fade) {
@@ -360,7 +383,7 @@ void Soundboard::simple_repeat(capo::IEngine& engine, capo::Buffer const& buffer
 		if (sd.get_label() == label) { already_playing = true; }
 	}
 	if (!already_playing) {
-		sound_pool.push_back(Sound(engine, buffer, label, 0, 16, m_volume_multiplier, fade));
+		sound_pool.push_back(Sound(engine, buffer, label, {SoundType::gameplay, m_volume_multiplier}, {}));
 		sound_pool.back().set_fading(true);
 		sound_pool.back().play(true);
 	}

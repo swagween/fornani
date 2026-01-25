@@ -42,31 +42,26 @@ void Breakable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 	}
 }
 
-void Breakable::on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile& proj, int power) {
+void Breakable::on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile& proj) {
 	if (proj.transcendent()) { return; }
 	if (is_destroyed()) { return; }
 	if (proj.get_collider().collides_with(get_collider().bounding_box)) {
 		if (!proj.destruction_initiated()) {
-			m_health.inflict(power == 1 ? static_cast<int>(proj.get_power()) : power);
-			energy = hit_energy;
-			svc.soundboard.flags.world.set(audio::World::breakable_hit);
+			on_smash(svc, map, proj.get_power());
+			proj.on_explode(svc, map);
 		}
-		if (is_destroyed()) {
-			map.effects.push_back(entity::Effect(svc, "small_explosion", get_collider().get_center()));
-			svc.soundboard.flags.world.set(audio::World::breakable_shatter);
-		}
-		proj.on_explode(svc, map);
 		proj.destroy(false);
 	}
 }
 
-void Breakable::on_smash(automa::ServiceProvider& svc, world::Map& map, int power) {
+void Breakable::on_smash(automa::ServiceProvider& svc, world::Map& map, float power) {
 	if (is_destroyed()) { return; }
 	m_health.inflict(power);
 	energy = hit_energy;
 	svc.soundboard.flags.world.set(audio::World::breakable_hit);
 	if (is_destroyed()) {
-		map.effects.push_back(entity::Effect(svc, "small_explosion", get_collider().physics.position));
+		map.spawn_effect(svc, "small_explosion", get_collider().get_center());
+		map.spawn_emitter(svc, "breakable", get_collider().get_position(), Direction{}, {32.f, 32.f});
 		svc.soundboard.flags.world.set(audio::World::breakable_shatter);
 	}
 }

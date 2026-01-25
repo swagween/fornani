@@ -34,17 +34,14 @@ enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_m
 enum class AppFlags { fullscreen, tutorial, in_game, editor, custom_map_start };
 enum class StateFlags { hide_hud, no_menu, cutscene };
 
-struct MapDebug {
-	int active_projectiles{};
-};
-
 struct EditorSettings {
 	int save_file{};
 };
 
 struct ServiceProvider {
 	ServiceProvider(char** argv, Version& version, WindowManager& window, capo::IEngine& audio_engine)
-		: finder(argv), text{finder}, data(*this), version(&version), window(&window), assets{finder}, sounds{finder}, music_player{audio_engine}, ambience_player{audio_engine}, quest_registry{finder}, quest_table{quest_registry} {};
+		: finder(argv), text{finder}, data(*this), version(&version), window(&window), assets{finder}, sounds{finder}, music_player{audio_engine}, ambience_player{audio_engine}, quest_registry{finder}, quest_table{quest_registry},
+		  soundboard{*this, audio_engine} {};
 
 	util::Stopwatch stopwatch{};
 	ResourceFinder finder;
@@ -64,7 +61,7 @@ struct ServiceProvider {
 	WorldTimer world_timer{*this};
 	StateController state_controller{};
 	MenuController menu_controller{};
-	audio::Soundboard soundboard{*this};
+	audio::Soundboard soundboard;
 	audio::MusicPlayer music_player;
 	audio::Ambience ambience_player;
 	quest::QuestTracker quest{};
@@ -72,7 +69,6 @@ struct ServiceProvider {
 	QuestRegistry quest_registry;
 	QuestTable quest_table;
 	StatTracker stats{};
-	MapDebug map_debug{};
 	util::Logger logger{};
 	config::AccessibilityService a11y{};
 	graphics::CameraController camera_controller{};

@@ -68,7 +68,8 @@
     "dimensions": [4, 4],
     "animated": false,
     "colliding": true,
-    "color": "white"
+    "fader": true,
+    "color": "periwinkle"
   },
 
   "bryns_gun_smoke": {
@@ -196,10 +197,10 @@
     "rate": 4.0,
     "expulsion": 14.0,
     "expulsion_variance": 12.0,
-    "cone": 0.18,
-    "friction": 0.98,
+    "cone": 1.28,
+    "friction": 0.995,
     "elasticity": 0.95,
-    "gravity": -0.1,
+    "gravity": 0.0,
     "lifespan": 560,
     "lifespan_variance": 0,
     "dimensions": [16, 16],
@@ -236,7 +237,7 @@
     "expulsion": 130.0,
     "expulsion_variance": 80.0,
     "cone": 0.2,
-    "friction": 0.97,
+    "friction": 0.98,
     "elasticity": 0.8,
     "gravity": 2.0,
     "lifespan": 120,
@@ -244,7 +245,8 @@
     "dimensions": [3, 3],
     "animated": false,
     "colliding": true,
-    "color": "fire"
+    "fader": true,
+    "color": "yellow"
   },
 
   "bryns_gun": {
@@ -422,6 +424,24 @@
     "friction": 0.995,
     "elasticity": 0.9,
     "gravity": 0.0,
+    "lifespan": 200,
+    "lifespan_variance": 180,
+    "dimensions": [4, 4],
+    "animated": false,
+    "colliding": true,
+    "fader": true,
+    "color": "yellow"
+  },
+
+  "breakable": {
+    "load": 20,
+    "rate": 100.0,
+    "expulsion": 50.0,
+    "expulsion_variance": 40.0,
+    "cone": 6.28,
+    "friction": 0.995,
+    "elasticity": 0.99,
+    "gravity": 4.0,
     "lifespan": 200,
     "lifespan_variance": 180,
     "dimensions": [4, 4],

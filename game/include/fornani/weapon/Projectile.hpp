@@ -37,7 +37,7 @@ enum class RenderType { animated, single_sprite, multi_sprite };
 enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky, explode_on_impact };
 struct ProjectileSpecifications {
 	float base_damage{};
-	int power{};
+	float power{};
 	int lifespan{};
 	int lifespan_variance{};
 	float speed{};
@@ -87,7 +87,7 @@ class Projectile : public Animatable {
 	[[nodiscard]] auto destruction_initiated() const -> bool { return variables.state.test(ProjectileState::destruction_initiated); }
 	[[nodiscard]] auto destroyed() const -> bool { return variables.state.test(ProjectileState::destroyed); }
 	[[nodiscard]] auto get_damage() const -> float { return metadata.specifications.base_damage * variables.damage_multiplier; }
-	[[nodiscard]] auto get_power() const -> float { return static_cast<float>(metadata.specifications.power); }
+	[[nodiscard]] auto get_power() const -> float { return metadata.specifications.power; }
 	[[nodiscard]] auto whiffed() const -> bool { return variables.state.test(ProjectileState::whiffed); }
 	[[nodiscard]] auto poofed() const -> bool { return variables.state.test(ProjectileState::poof); }
 	[[nodiscard]] auto is_stuck() const -> bool { return variables.state.test(ProjectileState::stuck); }

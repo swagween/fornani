@@ -115,6 +115,7 @@ class Collider : public ICollider {
 	[[nodiscard]] auto dash_was_canceled() const -> bool { return flags.dash.test(Dash::dash_cancel_collision); }
 	[[nodiscard]] auto crushed() const -> bool { return collision_depths ? collision_depths.value().crushed() : false; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return physics.position + dimensions * 0.5f; }
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return physics.position; }
 	[[nodiscard]] auto get_top() const -> sf::Vector2f { return sf::Vector2f{physics.position.x + dimensions.x * 0.5f, physics.position.y}; }
 	[[nodiscard]] auto get_bottom() const -> sf::Vector2f { return sf::Vector2f{physics.position.x + dimensions.x * 0.5f, physics.position.y + dimensions.y}; }
 	[[nodiscard]] auto get_average_tick_position() const -> sf::Vector2f { return physics.previous_position; }

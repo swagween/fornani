@@ -49,9 +49,9 @@ class Tank final : public Enemy, public StateMachine<TankState>, public Flaggabl
 
 	struct {
 		util::Cooldown alerted{2000};
-		util::Cooldown post_jump{200};
+		util::Cooldown post_jump{400};
 		util::Cooldown run{80};
-		util::Cooldown post_shoot{180};
+		util::Cooldown post_shoot{280};
 	} m_cooldowns{};
 
 	float fire_chance{50.f};

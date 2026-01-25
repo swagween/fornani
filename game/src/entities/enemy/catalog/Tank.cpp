@@ -33,12 +33,12 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	if (died()) { return; }
 
 	for (auto& breakable : map.breakables) {
-		if (physical.hostile_range.overlaps(breakable->get_bounding_box())) { breakable->on_smash(svc, map, 4); }
+		if (get_collider().jumpbox.overlaps(breakable->get_bounding_box())) { breakable->on_smash(svc, map, 4); }
 	}
 
 	flags.state.set(StateFlags::vulnerable); // tank is always vulnerable
 	m_weapon.update(svc, map, *this);
-	m_weapon.barrel_offset = sf::Vector2f{directions.actual.as_float() * 60.f, 8.f};
+	m_weapon.barrel_offset = sf::Vector2f{directions.actual.as_float() * 60.f, 14.f};
 	m_caution.avoid_ledges(map, get_collider(), directions.actual, 4);
 
 	auto gun_offset = p_state.actual == TankState::pocket ? sf::Vector2f{directions.actual.as_float() * -30.f, 12.f} : sf::Vector2f{0.f, 4.f};
@@ -46,7 +46,7 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 
 	hurt_effect.update();
 	m_cooldowns.post_jump.update();
-	is_alert() ? m_cooldowns.alerted.reverse() : m_cooldowns.alerted.update();
+	is_alert() ? m_cooldowns.alerted.reverse() : m_cooldowns.alerted.update(player.is_sneaking() ? 2 : 1);
 	m_cooldowns.post_shoot.update();
 
 	if (m_cooldowns.alerted.is_complete()) { m_mode = TankMode::neutral; }
@@ -72,54 +72,55 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		if (random::percent_chance(8) && !m_caution.danger()) { request(TankState::run); }
 	}
 
+	// handle ledges
+	bool retreating{};
 	auto has_clearance = !m_caution.detected_ceiling(map, get_collider(), sf::Vector2f{0.f, 32.f});
-	if (is_alert()) {
-		if (has_clearance) {
-			random::percent_chance(50.f) && !m_cooldowns.post_shoot.running() ? request(TankState::shoot_horizontal) : request(TankState::jumpsquat);
-		} else if (!m_cooldowns.post_shoot.running()) {
-			request(TankState::shoot_horizontal);
-		}
-		if (m_mode == TankMode::neutral) { request(TankState::alert); }
-	}
 	if (get_collider().grounded()) {
 		if (m_caution.detected_step(map, get_collider(), directions.actual, sf::Vector2f{-16.f, 32.f}) && (get_collider().physics.is_moving_horizontally(0.01f) || is_mid_run()) && has_clearance) { request(TankState::jumpsquat); }
-		if (m_caution.retreat.lengthSquared() != 0.f) {
+		if (m_caution.retreat.lengthSquared() > 0.f) {
 			set_flag(TankFlags::shorthop);
 			request(TankState::jumpsquat);
+			retreating = true;
 		}
 	} else {
 		request(TankState::jump);
 	}
-	if (m_mode == TankMode::neutral && has_flag_set(TankFlags::show_weapon)) { request(TankState::pocket); }
 
-	if (directions.actual.lnr != directions.desired.lnr) { request(TankState::turn); }
-	// if (alertness_triggered() || is_hurt()) { request(TankState::alert); }
-	// if (m_cooldowns.alerted.is_almost_complete()) { request(TankState::pocket); }
+	if (!retreating) {
+		if (is_alert() && !player.is_sneaking()) {
+			auto shoot_type = player.get_collider().bounding_box.overlaps(m_vertical_range) ? TankState::shoot_vertical : TankState::shoot_horizontal;
+			if (has_clearance) {
+				random::percent_chance(50.f) && !m_cooldowns.post_shoot.running() ? request(shoot_type) : !m_cooldowns.post_jump.running() ? request(TankState::jumpsquat) : request(TankState::run);
+			} else if (!m_cooldowns.post_shoot.running()) {
+				request(shoot_type);
+			}
+			// player is close
+			if (player.get_collider().bounding_box.overlaps(m_shoulders) && random::percent_chance(20.f)) {
+				request(TankState::jumpsquat);
+				set_flag(TankFlags::shorthop);
+			}
+			if (player.get_collider().bounding_box.overlaps(m_lower_range) && random::percent_chance(40.f) && !m_cooldowns.post_jump.running()) { request(TankState::jumpsquat); }
 
-	if (m_debug) {
-		state_function = state_function();
-		return;
+			// just alerted
+			if (m_mode == TankMode::neutral) { request(TankState::alert); }
+		}
+
+		auto projectile_detected = m_caution.projectile_detected(map, physical.hostile_range, arms::Team::skycorps);
+		if (projectile_detected.lnr != LNR::neutral && m_mode == TankMode::neutral) {
+			// incoming bullet
+			request(TankState::alert);
+		} else if (m_mode == TankMode::neutral && !is_alert()) {
+			// try to go find a seat
+			if (seek_home(map)) { m_variant == TankVariant::typist ? request(TankState::type) : request(TankState::sleep); }
+			if (flags.state.test(StateFlags::advance)) { request(TankState::run); }
+			if (has_flag_set(TankFlags::show_weapon)) { request(TankState::pocket); }
+		} else {
+			// face_player(player);
+		}
+		if (directions.actual.lnr != directions.desired.lnr && !is_state(TankState::type)) { request(TankState::turn); }
 	}
-	if (is_hostile() && has_been_alerted()) { request(TankState::shoot_horizontal); }
-	if ((is_hostile() || is_alert()) && !has_been_alerted()) { request(TankState::alert); }
 
-	if (player.get_collider().bounding_box.overlaps(m_vertical_range) && has_been_alerted() && !m_cooldowns.post_shoot.running()) { request(TankState::shoot_vertical); }
-	if (player.get_collider().bounding_box.overlaps(m_shoulders)) {
-		request(TankState::jumpsquat);
-		set_flag(TankFlags::shorthop);
-	}
-	if (player.get_collider().bounding_box.overlaps(m_lower_range) && has_been_alerted()) { request(TankState::jumpsquat); }
-
-	if (just_died()) { m_services->soundboard.flags.tank.set(audio::Tank::death); }
-
-	// try to go find a seat
-	if (!has_been_alerted()) {
-		request(TankState::pocket);
-		if (seek_home(map)) { m_variant == TankVariant::typist ? request(TankState::type) : request(TankState::sleep); }
-		if (flags.state.test(StateFlags::advance)) { request(TankState::run); }
-	} else {
-		face_player(player);
-	}
+	if (just_died()) { m_services->soundboard.play_sound("death", get_collider().get_center()); }
 
 	state_function = state_function();
 }
@@ -190,7 +191,7 @@ fsm::StateFunction Tank::update_type() {
 fsm::StateFunction Tank::update_run() {
 	animation.label = "run";
 	p_state.actual = TankState::run;
-	if ((animation.get_frame_count() == 1 || animation.get_frame_count() == 3) && animation.keyframe_started()) { m_services->soundboard.flags.tank.set(audio::Tank::step); }
+	if ((animation.get_frame_count() == 1 || animation.get_frame_count() == 3) && animation.keyframe_started()) { m_services->soundboard.play_sound("tank_step", get_collider().get_center()); }
 	get_collider().physics.apply_force({attributes.speed * directions.actual.as_float(), 0.f});
 	m_cooldowns.run.update();
 	if (change_state(TankState::pocket, get_params("pocket"))) {
@@ -252,6 +253,7 @@ fsm::StateFunction Tank::update_shoot_horizontal() {
 		m_gun.set_position(m_gun.get_position() + directions.actual.get_vector() * -18.f);
 	}
 	if (animation.complete() && animation.keyframe_over()) {
+		m_cooldowns.post_shoot.start();
 		m_weapon.clip_cooldown.start(m_weapon.clip_cooldown_time);
 		request(TankState::idle);
 		if (change_state(TankState::idle, get_params("idle"))) { return TANK_BIND(update_idle); }
@@ -267,7 +269,7 @@ fsm::StateFunction Tank::update_jumpsquat() {
 		request(TankState::jump);
 		if (change_state(TankState::jump, get_params("jump"))) {
 			impulse.start(3);
-			m_services->soundboard.flags.enemy.set(audio::Enemy::jump_low);
+			m_services->soundboard.play_sound("jump_low", get_collider().get_center());
 			return TANK_BIND(update_jump);
 		}
 	}
@@ -280,6 +282,10 @@ fsm::StateFunction Tank::update_jump() {
 	if (has_flag_set(TankFlags::shorthop)) {
 		get_collider().physics.apply_force({-attributes.speed * directions.actual.as_float(), 0.f});
 		if (impulse.running()) { get_collider().physics.apply_force({0, -40.f}); }
+		if (!m_weapon.get().cooling_down()) {
+			m_weapon.shoot(*m_services, *m_map);
+			m_gun.set_position(m_gun.get_position() + directions.actual.get_vector() * -18.f);
+		}
 	} else {
 		get_collider().physics.apply_force({attributes.speed * directions.actual.as_float(), 0.f});
 		if (impulse.running()) { get_collider().physics.apply_force({0, -100.f}); }
@@ -287,9 +293,8 @@ fsm::StateFunction Tank::update_jump() {
 	if (animation.complete() && get_collider().grounded()) {
 		set_flag(TankFlags::shorthop, false);
 		request(TankState::land);
-		m_services->soundboard.flags.world.set(audio::World::thud);
+		m_services->soundboard.play_sound("thud", get_collider().get_center());
 		m_services->camera_controller.shake(10, 0.3f, 200, 20);
-		m_cooldowns.post_jump.start();
 		if (change_state(TankState::land, get_params("land"))) { return TANK_BIND(update_land); }
 	}
 	return TANK_BIND(update_jump);
@@ -299,6 +304,7 @@ fsm::StateFunction Tank::update_land() {
 	animation.label = "land";
 	p_state.actual = TankState::land;
 	if (animation.complete()) {
+		m_cooldowns.post_jump.start();
 		if (change_state(TankState::pocket, get_params("pocket"))) { return TANK_BIND(update_pocket); }
 		if (change_state(TankState::shoot_horizontal, get_params("shoot_horizontal"))) { return TANK_BIND(update_shoot_horizontal); }
 		if (change_state(TankState::shoot_vertical, get_params("shoot_vertical"))) { return TANK_BIND(update_shoot_vertical); }
@@ -343,9 +349,9 @@ fsm::StateFunction Tank::update_alert() {
 	if (animation.just_started()) {
 		m_cooldowns.alerted.start();
 		if (random::percent_chance(50)) {
-			m_services->soundboard.flags.tank.set(audio::Tank::alert_1);
+			m_services->soundboard.play_sound("alert_1", get_collider().get_center());
 		} else {
-			m_services->soundboard.flags.tank.set(audio::Tank::alert_2);
+			m_services->soundboard.play_sound("alert_2", get_collider().get_center());
 		}
 	}
 	if (animation.complete()) {
@@ -384,11 +390,11 @@ fsm::StateFunction Tank::update_sleep() {
 fsm::StateFunction Tank::update_drink() {
 	animation.label = "drink";
 	p_state.actual = TankState::drink;
+	if (animation.just_started()) { m_services->soundboard.play_sound("tank_sip", get_collider().get_center()); }
+	if (change_state(TankState::alert, get_params("alert"))) { return TANK_BIND(update_alert); }
 	if (animation.complete()) {
 		request(TankState::type);
-		if (is_hurt()) { request(TankState::alert); }
 		if (change_state(TankState::type, get_params("type"))) { return TANK_BIND(update_type); }
-		if (change_state(TankState::alert, get_params("alert"))) { return TANK_BIND(update_alert); }
 	}
 	return TANK_BIND(update_drink);
 }
@@ -410,7 +416,13 @@ void Tank::debug() {
 		ImGui::Text("Retreat: %.4f", m_caution.retreat.lengthSquared());
 		ImGui::ProgressBar(m_cooldowns.alerted.get_normalized());
 		ImGui::Text("Alerted: %i", m_cooldowns.alerted.get());
+		ImGui::Separator();
 		ImGui::Text("Post Shoot: %i", m_cooldowns.post_shoot.get());
+		ImGui::SameLine();
+		ImGui::ProgressBar(m_cooldowns.post_shoot.get_normalized(), ImVec2{80.f, 16.f});
+		ImGui::Text("Post Jump: %i", m_cooldowns.post_jump.get());
+		ImGui::SameLine();
+		ImGui::ProgressBar(m_cooldowns.post_jump.get_normalized(), ImVec2{90.f, 16.f});
 		ImGui::SeparatorText("Controls");
 		if (ImGui::Button("pocket")) { request(TankState::pocket); }
 		if (ImGui::Button("jump")) { request(TankState::jumpsquat); }

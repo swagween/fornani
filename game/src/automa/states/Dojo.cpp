@@ -218,6 +218,8 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		}
 	}
 
+	svc.soundboard.set_listener_position(player->get_camera_focus_point());
+
 	// set action set
 	if (pause_window || m_console) {
 		svc.controller_map.set_action_set(config::ActionSet::Menu);
