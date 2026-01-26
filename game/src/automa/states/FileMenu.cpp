@@ -14,8 +14,8 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc
 	hud.set_position({(svc.window->f_screen_dimensions().x / 2.f) - 140.f, 420.f}); // display hud preview for each file in the center of the screen
 	svc.state_controller.next_state = svc.data.load_progress(player, current_selection.get());
 	player.set_draw_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
-	player.antennae.at(0).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
-	player.antennae.at(1).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
+	/*player.antennae.at(0).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
+	player.antennae.at(1).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});*/
 	player.hurt_cooldown.cancel();
 
 	loading.start(4);

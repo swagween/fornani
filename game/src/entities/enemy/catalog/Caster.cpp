@@ -1,3 +1,4 @@
+
 #include "fornani/entities/enemy/catalog/Caster.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -19,10 +20,6 @@ Caster::Caster(automa::ServiceProvider& svc, world::Map& map, int variant)
 	directions.movement.lnr = LNR::neutral;
 	energy_ball.get().set_team(arms::Team::guardian);
 
-	target = vfx::Gravitator(sf::Vector2f{}, sf::Color::Transparent, 0.013f);
-	target.collider.physics = components::PhysicsComponent(sf::Vector2f{0.96f, 0.98f}, 1.0f);
-	target.collider.physics.maximum_velocity = sf::Vector2f(20.f, 20.f);
-
 	if (m_variant == CasterVariant::apprentice) { flags.general.reset(GeneralFlags::rare_drops); }
 
 	cooldowns.awaken.start();
@@ -36,7 +33,6 @@ void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		return;
 	}
 	if (!flags.state.test(StateFlags::invisible)) {
-		target.update(svc);
 		// set target based on player position
 		auto idle_distance = sf::Vector2f{100.f, -160.f};
 		auto signal_distance = sf::Vector2f{-300.f, 0.f};
@@ -48,7 +44,7 @@ void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 			}
 			if (directions.actual.lnr == LNR::right) { idle_distance.x *= -1; }
 			if (random::percent_chance(12) && svc.ticker.every_x_ticks(10)) { idle_distance.x *= -1; }
-			target.set_target_position(player.get_collider().get_center() + idle_distance);
+			m_steering.seek(get_collider().physics, player.get_collider().get_center() + idle_distance, 0.013f);
 		}
 		if (state == CasterState::signal) {
 			if (player.get_collider().grounded()) {
@@ -57,14 +53,11 @@ void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 				signal_distance.y = -80.f;
 			}
 			if (directions.actual.lnr == LNR::right) { signal_distance.x *= -1; }
-			target.set_target_position(player.get_collider().get_center() + signal_distance);
+			m_steering.seek(get_collider().physics, player.get_collider().get_center() + signal_distance, 0.013f);
 		} else if (!is_dormant()) {
 			if (directions.actual.lnr == LNR::right) { standard_distance.x *= -1; }
-			target.set_target_position(player.get_collider().get_center() + standard_distance);
-		} else {
-			target.set_position(get_collider().physics.position);
+			m_steering.seek(get_collider().physics, player.get_collider().get_center() + standard_distance, 0.013f);
 		}
-		if (!is_dormant()) { get_collider().physics.position = target.position(); }
 	}
 
 	energy_ball.update(svc, map, *this);
@@ -91,7 +84,7 @@ void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	// reset animation states to determine next animation state
 	state = {};
 	directions.desired.lnr = (player.get_collider().get_center().x < get_collider().get_center().x) ? LNR::left : LNR::right;
-	directions.movement.lnr = target.collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
+	directions.movement.lnr = get_collider().physics.velocity.x > 0.f ? LNR::right : LNR::left;
 	Enemy::update(svc, map, player);
 	if (!is_dormant()) {
 		parts.scepter.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center());
@@ -142,7 +135,6 @@ void Caster::teleport() {
 			done = true;
 			m_map->effects.push_back(entity::Effect(*m_services, "medium_flash", original));
 			m_services->soundboard.flags.world.set(audio::World::block_toggle);
-			target.set_position(get_collider().physics.position);
 			parts.wand.set_position(get_collider().get_center());
 			parts.scepter.set_position(get_collider().get_center());
 			flags.state.set(StateFlags::invisible);

@@ -53,6 +53,15 @@ void Crow::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	if (svc.ticker.every_second()) {
 		if (random::percent_chance(20)) { random::percent_chance(50) ? request(CrowState::hop) : request(CrowState::peck); }
 	}
+
+	if (svc.ticker.every_x_ticks(20)) {
+		auto caw_chance = is_state(CrowState::fly) ? 1.f : 0.08f;
+		if (random::percent_chance(caw_chance)) {
+			auto which = random::percent_chance(20.f) ? "crow_caw_2" : "crow_caw_1";
+			svc.soundboard.play_sound(which, get_collider().get_center());
+		}
+	}
+
 	if (is_alert() && !is_hostile()) { request(CrowState::turn); }
 	if (is_hostile()) { m_fear.randomize(); }
 

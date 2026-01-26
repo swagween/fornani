@@ -120,7 +120,7 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		if (directions.actual.lnr != directions.desired.lnr && !is_state(TankState::type)) { request(TankState::turn); }
 	}
 
-	if (just_died()) { m_services->soundboard.play_sound("death", get_collider().get_center()); }
+	if (just_died()) { m_services->soundboard.play_sound("tank_death", get_collider().get_center()); }
 
 	state_function = state_function();
 }
@@ -349,9 +349,9 @@ fsm::StateFunction Tank::update_alert() {
 	if (animation.just_started()) {
 		m_cooldowns.alerted.start();
 		if (random::percent_chance(50)) {
-			m_services->soundboard.play_sound("alert_1", get_collider().get_center());
+			m_services->soundboard.play_sound("tank_alert_1", get_collider().get_center());
 		} else {
-			m_services->soundboard.play_sound("alert_2", get_collider().get_center());
+			m_services->soundboard.play_sound("tank_alert_2", get_collider().get_center());
 		}
 	}
 	if (animation.complete()) {

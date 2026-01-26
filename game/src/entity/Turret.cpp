@@ -77,7 +77,10 @@ void Turret::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 	auto attributes = util::BitFlags<world::LaserAttributes>{};
 	if (m_pattern == TurretPattern::constant) { attributes.set(world::LaserAttributes::infinite); }
 
-	if (m_state.actual == TurretState::firing) { svc.soundboard.flags.world.set(audio::World::laser_hum); }
+	if (m_firing.running() || m_pattern == TurretPattern::constant) {
+		svc.soundboard.repeat_sound("laser_hum", get_handle(), get_global_center());
+		svc.soundboard.repeat_sound("deep_laser_hum", get_handle(), get_global_center());
+	}
 
 	state_function = state_function();
 

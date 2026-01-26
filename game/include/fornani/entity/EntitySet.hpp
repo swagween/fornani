@@ -71,6 +71,7 @@ class EntitySet {
 	} variables{};
 
   private:
+	EntityHandle next_handle{};
 	sf::RectangleShape player_box{};
 	std::unordered_map<std::string, CreateEntitySignature> create_map;
 	std::unordered_map<std::string, CreateRegisteredEntitySignature> registered_map;

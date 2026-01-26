@@ -1,9 +1,10 @@
+
 #pragma once
 
 #include <fornani/components/CircleSensor.hpp>
+#include <fornani/components/SteeringComponent.hpp>
 #include <fornani/entities/item/Drop.hpp>
 #include <fornani/entities/packages/Health.hpp>
-#include <fornani/particle/Gravitator.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -40,7 +41,7 @@ class TreasureContainer : public Animatable {
 	sf::Vector2f root{};
 	item::Rarity rarity{};
 	float loot_multiplier{};
-	vfx::Gravitator gravitator{};
+	components::SteeringComponent m_steering{};
 	components::CircleSensor sensor{};
 	Health m_health;
 	anim::Parameters m_neutral;

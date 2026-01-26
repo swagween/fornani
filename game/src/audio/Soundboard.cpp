@@ -13,18 +13,33 @@ Soundboard::Soundboard(automa::ServiceProvider& svc, capo::IEngine& engine) : m_
 	npc_map["minigus"] = make_int_setter<NPCMinigus>(npc_flags.minigus);
 	npc_map["mirin"] = make_int_setter<NPCMirin>(npc_flags.mirin);
 
-	m_property_map.insert({"error_sound", {SoundType::gameplay, 1.f}});
-	m_property_map.insert({"default_gui", {SoundType::gui, 1.f}});
-	m_property_map.insert({"default_gameplay", {SoundType::gameplay, 1.f}});
-	m_property_map.insert({"tank_sip", {SoundType::gameplay, 1.f}});
-	m_property_map.insert({"jump_low", {SoundType::gameplay, 1.f}});
-	m_property_map.insert({"thud", {SoundType::gameplay, 1.f}});
-	m_property_map.insert({"tank_step", {SoundType::gameplay, 1.f}});
+	auto filename = svc.finder.resource_path() + "/data/audio/sfx.json";
+	auto sfx_data_result = dj::Json::from_file(filename);
+	if (!sfx_data_result) {
+		NANI_LOG_ERROR(m_logger, "Failed to load sfx data from path {}.", filename);
+		return;
+	}
+	auto sfx_data = std::move(*sfx_data_result);
+	for (auto const& entry : sfx_data.as_array()) { m_property_map.insert({entry["label"].as_string(), SoundProperties::from_json(entry)}); }
 }
 
 void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc, int echo_count, int echo_rate) {
-	std::erase_if(sound_pool, [](auto& s) { return !s.is_running(); });
-	for (auto& s : sound_pool) { s.update(svc); }
+
+	// update active sounds
+	for (size_t i = 0; i < sound_pool.size();) {
+		auto& s = sound_pool[i];
+		s.sound.update(svc, s.position - m_listener.position);
+
+		if (s.looping && !s.touched_this_tick) { s.sound.fade_out(); }
+		s.touched_this_tick = false;
+
+		if (!s.sound.is_running()) {
+			std::swap(s, sound_pool.back());
+			sound_pool.pop_back();
+		} else {
+			++i;
+		}
+	}
 
 	// menu
 	if (flags.menu.test(Menu::forward_switch)) { play(engine, svc, "menu_next"); }
@@ -54,9 +69,6 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.pioneer.test(Pioneer::wires)) { play(engine, svc, "pioneer_wires"); }
 	if (flags.pioneer.test(Pioneer::forward)) { play(engine, svc, "pioneer_forward"); }
 	if (flags.pioneer.test(Pioneer::unhover)) { play(engine, svc, "pioneer_unhover"); }
-	flags.pioneer.test(Pioneer::buzz) ? simple_repeat(engine, svc.sounds.get_buffer("pioneer_buzz"), "pioneer_buzz") : stop("pioneer_buzz");
-	flags.pioneer.test(Pioneer::hum) ? simple_repeat(engine, svc.sounds.get_buffer("pioneer_hum"), "pioneer_hum") : stop("pioneer_hum");
-	flags.pioneer.test(Pioneer::scan) ? simple_repeat(engine, svc.sounds.get_buffer("pioneer_scan"), "pioneer_scan") : stop("pioneer_scan");
 	if (flags.pioneer.test(Pioneer::hard_slot)) { play(engine, svc, "pioneer_hard_slot"); }
 	if (flags.pioneer.test(Pioneer::fast_click)) { play(engine, svc, "pioneer_fast_click"); }
 	if (flags.pioneer.test(Pioneer::sync)) { play(engine, svc, "pioneer_sync", 0.1f); }
@@ -85,7 +97,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.world.test(World::big_crash)) { play(engine, svc, "big_crash"); }
 	if (flags.world.test(World::heavy_land)) { play(engine, svc, "heavy_land"); }
 	if (flags.world.test(World::delay_crash)) { play(engine, svc, "delay_crash", 0.f, 50.f); }
-	flags.world.test(World::laser_hum) ? simple_repeat(engine, svc.sounds.get_buffer("laser_hum"), "laser_hum") : stop("laser_hum");
+	// flags.world.test(World::laser_hum) ? simple_repeat(engine, svc.sounds.get_buffer("laser_hum"), "laser_hum") : stop("laser_hum");
 	if (flags.world.test(World::incinerite_explosion)) { play(engine, svc, "incinerite_explosion", 0.2f); }
 	if (flags.world.test(World::splash)) { play(engine, svc, "splash", 0.3f, 60.f); }
 
@@ -94,7 +106,6 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 
 	if (!svc.in_game()) {
 		flags = {};
-		proximities = {};
 		return;
 	} // exit early if not in-game
 
@@ -106,7 +117,6 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.world.test(World::door_unlock)) { play(engine, svc, "door_unlock"); }
 	if (flags.world.test(World::gem_hit_1)) { play(engine, svc, "gem_hit_1", 0.2f, 50.f); }
 	if (flags.world.test(World::gem_hit_2)) { play(engine, svc, "gem_hit_2", 0.2f, 50.f); }
-	flags.world.test(World::pushable_move) ? simple_repeat(engine, svc.sounds.get_buffer("pushable_move"), "pushable_move") : stop("pushable_move");
 
 	// hulmet
 	if (flags.hulmet.test(Hulmet::hurt)) { play(engine, svc, "hulmet_hurt", 0.1f); }
@@ -114,11 +124,11 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.hulmet.test(Hulmet::reload)) { play(engine, svc, "hulmet_reload"); }
 
 	// tank
-	if (flags.tank.test(Tank::alert_1)) { play(engine, svc, "tank_alert_1"); }
-	if (flags.tank.test(Tank::alert_2)) { play(engine, svc, "tank_alert_2"); }
+	// if (flags.tank.test(Tank::alert_1)) { play(engine, svc, "tank_alert_1"); }
+	// if (flags.tank.test(Tank::alert_2)) { play(engine, svc, "tank_alert_2"); }
 	if (flags.tank.test(Tank::hurt_1)) { play(engine, svc, "tank_hurt_1"); }
 	if (flags.tank.test(Tank::hurt_2)) { play(engine, svc, "tank_hurt_2", 0.f, 50.f); }
-	if (flags.tank.test(Tank::death)) { play(engine, svc, "tank_death"); }
+	// if (flags.tank.test(Tank::death)) { play(engine, svc, "tank_death"); }
 	// if (flags.tank.test(Tank::step)) { play(engine, svc, "tank_step"); }
 	// if (flags.tank.test(Tank::sip)) { play(engine, svc, "tank_sip"); }
 
@@ -297,8 +307,8 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.item.test(Item::equip)) { play(engine, svc, "item_equip"); }
 	if (flags.item.test(Item::unequip)) { play(engine, svc, "item_unequip"); }
 	if (flags.item.test(Item::drop_spawn)) { play(engine, svc, "drop_spawn", 0.2f); }
-	if (flags.item.test(Item::orb_collide)) { play(engine, svc, "orb_collide", 0.2f); }
-	if (flags.item.test(Item::heart_collide)) { play(engine, svc, "heart_collide", 0.2f); }
+	// if (flags.item.test(Item::orb_collide)) { play(engine, svc, "orb_collide", 0.2f); }
+	// if (flags.item.test(Item::heart_collide)) { play(engine, svc, "heart_collide", 0.2f); }
 
 	// player
 	if (flags.player.test(Player::jump)) { play(engine, svc, "nani_jump", 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
@@ -311,8 +321,8 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.player.test(Player::walljump)) { play(engine, svc, "nani_walljump", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.player.test(Player::doublejump)) { play(engine, svc, "nani_doublejump", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.player.test(Player::roll)) { play(engine, svc, "nani_roll", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
-	flags.player.test(Player::wallslide) ? simple_repeat(engine, svc.sounds.get_buffer("nani_wallslide"), "nani_wallslide", 32) : fade_out("nani_wallslide");
-	flags.player.test(Player::turn_slide) ? simple_repeat(engine, svc.sounds.get_buffer("nani_turn_slide"), "nani_turn_slide", 8) : fade_out("nani_turn_slide");
+	/*flags.player.test(Player::wallslide) ? simple_repeat(engine, svc.sounds.get_buffer("nani_wallslide"), "nani_wallslide", 32) : fade_out("nani_wallslide");
+	flags.player.test(Player::turn_slide) ? simple_repeat(engine, svc.sounds.get_buffer("nani_turn_slide"), "nani_turn_slide", 8) : fade_out("nani_turn_slide");*/
 	if (flags.player.test(Player::dash_kick)) { play(engine, svc, "nani_dash_kick", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.player.test(Player::dive)) { play(engine, svc, "nani_dive", 0.3f, 50.f, 0, 1.f, {}, echo_count, echo_rate); }
 
@@ -352,51 +362,87 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 }
 
 void Soundboard::play_sound(std::string_view label, sf::Vector2f position) {
-	auto lookup = m_property_map.contains(label.data()) ? label.data() : "error_sound";
-	sound_pool.push_back(Sound(*m_engine, m_services->sounds.get_buffer(lookup), lookup, m_property_map.at(lookup), position - m_listener.position));
-	sound_pool.back().play();
+	auto it = m_property_map.find(label);
+	if (it == m_property_map.end()) { it = m_property_map.find("error_sound"); }
+
+	std::string_view lookup = it->first;
+	auto props = it->second;
+	props.volume *= m_volume_multiplier;
+
+	auto& entry = sound_pool.emplace_back(ActiveSound{.sound = Sound(*m_engine, m_services->sounds.get_buffer(lookup), lookup, props), .label = lookup, .id = 0, .position = position, .looping = false, .touched_this_tick = true});
+
+	entry.sound.play();
+}
+
+void Soundboard::repeat_sound(std::string_view label, SoundProducerID id, sf::Vector2f position) {
+	auto it = m_property_map.find(label);
+	auto not_found = it == m_property_map.end();
+	if (not_found) { it = m_property_map.find("error_sound"); }
+
+	std::string_view lookup = not_found ? label : it->first;
+	auto const& props = it->second;
+
+	auto existing = std::find_if(sound_pool.begin(), sound_pool.end(), [&](ActiveSound& s) { return s.looping && s.label == lookup && s.id == id; });
+
+	if (id == 0) { position = m_listener.position; }
+
+	if (existing != sound_pool.end()) {
+		existing->position = position;
+		existing->touched_this_tick = true;
+		return;
+	}
+
+	auto& entry = sound_pool.emplace_back(ActiveSound{.sound = Sound(*m_engine, m_services->sounds.get_buffer(lookup), lookup, props), .label = lookup, .id = id, .position = position, .looping = true, .touched_this_tick = true});
+
+	entry.sound.play(true);
 }
 
 void Soundboard::play(capo::IEngine& engine, automa::ServiceProvider& svc, std::string const& label, float random_pitch_offset, float vol, int frequency, float attenuation, sf::Vector2f distance, int echo_count, int echo_rate) {
-	if (vol == 0.f) { return; }
+	if (vol == 0.f) return;
+	auto it = m_property_map.find(label);
+	if (it == m_property_map.end()) { it = m_property_map.find("error_sound"); }
+
+	std::string_view lookup = it->first;
+	auto props = it->second;
+
 	auto tick = svc.ticker.ticks;
-	if (tick - minimum_wait_time_v < svc.sounds.get_tick_for_buffer(label) && frequency == 0) { return; }
-	svc.sounds.set_tick_for_buffer(label, tick);
-	sound_pool.push_back(Sound(engine, svc.sounds.get_buffer(label), label, {SoundType::gameplay, m_volume_multiplier * (vol / 100.f)}, distance));
-	frequency != 0 ? repeat(svc, sound_pool.back(), frequency, random_pitch_offset, attenuation, distance) : randomize(svc, sound_pool.back(), random_pitch_offset, vol, attenuation, distance);
+
+	if (frequency == 0 && tick - minimum_wait_time_v < svc.sounds.get_tick_for_buffer(lookup)) { return; }
+
+	props.volume *= (vol / 100.f) * m_volume_multiplier;
+
+	svc.sounds.set_tick_for_buffer(lookup, tick);
+	auto& entry = sound_pool.emplace_back(ActiveSound{.sound = Sound(engine, svc.sounds.get_buffer(label), lookup, props), .label = label, .position = m_listener.position, .looping = frequency != 0, .touched_this_tick = true});
+	if (frequency != 0) {
+		repeat(svc, entry.sound, frequency, random_pitch_offset, attenuation, distance);
+	} else {
+		randomize(svc, entry.sound, random_pitch_offset, vol, attenuation, distance);
+	}
 }
 
 void Soundboard::play(capo::IEngine& engine, automa::ServiceProvider& svc, std::string const& label, SoundProperties properties, int frequency, float attenuation) {
-	properties.volume *= m_volume_multiplier;
-	if (properties.volume < constants::tiny_value) { return; }
+	auto it = m_property_map.find(label);
+	if (it == m_property_map.end()) it = m_property_map.find("error_sound");
+
+	std::string_view lookup = it->first;
+	auto props = it->second;
+
+	props.volume *= m_volume_multiplier;
+	if (props.volume < constants::tiny_value) { return; }
+
 	auto tick = svc.ticker.ticks;
-	if (tick - minimum_wait_time_v < svc.sounds.get_tick_for_buffer(label) && frequency == 0) { return; }
-	svc.sounds.set_tick_for_buffer(label, tick);
-
-	sound_pool.push_back(Sound(engine, svc.sounds.get_buffer(label), label, properties, {}));
-	// frequency != 0 ? repeat(svc, sound_pool.back(), frequency, random_pitch_offset, attenuation, distance) : randomize(svc, sound_pool.back(), random_pitch_offset, vol, attenuation, distance);
-}
-
-void Soundboard::simple_repeat(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label, int fade) {
-	bool already_playing{};
-	for (auto& sd : sound_pool) {
-		if (sd.get_label() == label) { already_playing = true; }
-	}
-	if (!already_playing) {
-		sound_pool.push_back(Sound(engine, buffer, label, {SoundType::gameplay, m_volume_multiplier}, {}));
-		sound_pool.back().set_fading(true);
-		sound_pool.back().play(true);
-	}
-}
-
-void Soundboard::fade_out(std::string_view label) {
-	for (auto& s : sound_pool) {
-		if (s.get_label() == label) { s.fade_out(); }
+	if (frequency == 0 && tick - minimum_wait_time_v < svc.sounds.get_tick_for_buffer(lookup)) { return; }
+	svc.sounds.set_tick_for_buffer(lookup, tick);
+	auto& entry = sound_pool.emplace_back(ActiveSound{.sound = Sound(engine, svc.sounds.get_buffer(label), lookup, props), .label = lookup, .position = m_listener.position, .looping = frequency != 0, .touched_this_tick = true});
+	if (frequency != 0) {
+		repeat(svc, entry.sound, frequency, props.pitch_offset, attenuation, {});
+	} else {
+		entry.sound.play();
 	}
 }
 
 void Soundboard::stop(std::string_view label) {
-	std::erase_if(sound_pool, [label](auto const& s) { return s.get_label() == label; });
+	std::erase_if(sound_pool, [label](auto const& s) { return s.label == label; });
 }
 
 void Soundboard::repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset, float attenuation, sf::Vector2f distance) {

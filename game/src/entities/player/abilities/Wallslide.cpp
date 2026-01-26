@@ -1,8 +1,8 @@
 
 #include <fornani/entities/player/PlayerController.hpp>
 #include <fornani/entities/player/abilities/Wallslide.hpp>
-#include <fornani/service/ServiceProvider.hpp>
 #include <fornani/physics/Collider.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani::player {
@@ -11,7 +11,7 @@ Wallslide::Wallslide(automa::ServiceProvider& svc, world::Map& map, shape::Colli
 	m_type = AbilityType::wallslide;
 	m_state = AnimState::wallslide;
 	m_duration.start();
-	svc.soundboard.flags.player.set(audio::Player::wallslide);
+	svc.soundboard.repeat_sound("nani_wallslide");
 }
 
 void Wallslide::update(shape::Collider& collider, PlayerController& controller) {

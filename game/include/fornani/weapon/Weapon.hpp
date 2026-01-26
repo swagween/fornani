@@ -97,6 +97,7 @@ class Weapon : public Animatable {
 	[[nodiscard]] auto get_recoil() const -> float { return specifications.recoil; }
 	[[nodiscard]] auto get_multishot() const -> int { return specifications.multishot; }
 	[[nodiscard]] auto get_tag() const -> std::string_view { return metadata.tag; }
+	[[nodiscard]] auto get_audio_tag() const -> std::string_view { return metadata.audio_tag; }
 	[[nodiscard]] auto get_label() const -> std::string_view { return metadata.label; }
 	[[nodiscard]] auto get_type() const -> ProjectileType { return projectile.get_type(); }
 	[[nodiscard]] auto get_recoil_force() const -> sf::Vector2f { return sf::Vector2f{-specifications.recoil, 0.f}; }
@@ -114,6 +115,7 @@ class Weapon : public Animatable {
 	struct {
 		int id{};
 		std::string tag{};
+		std::string audio_tag{};
 		std::string label{};
 		std::string description{};
 	} metadata{};

@@ -10,22 +10,20 @@ Indicator::Indicator(automa::ServiceProvider& svc, IndicatorType type) : m_label
 	if (type == IndicatorType::health) { color_fade = vfx::ColorFade({colors::ui_white, colors::red, colors::dark_fucshia}, 16, addition_time); }
 	if (type == IndicatorType::orb) { color_fade = vfx::ColorFade({colors::ui_white, colors::goldenrod, colors::dark_orange}, 16, addition_time); }
 	float fric{0.85f};
-	gravitator = vfx::Gravitator(position, sf::Color::Transparent, 1.f);
-	gravitator.collider.physics = components::PhysicsComponent(sf::Vector2f{fric, fric}, 2.0f);
+	m_steering.physics.set_friction_componentwise({fric, fric});
 }
 
 void Indicator::shift() { position += {0.f, -20.f}; }
 
 void Indicator::update(automa::ServiceProvider& svc, sf::Vector2f pos) {
-	gravitator.update(svc);
-	gravitator.set_target_position(pos);
+	m_steering.seek(pos);
 	if (addition_limit.get() == fadeout_time) { fadeout.start(fadeout_time); }
-	if (fadeout.running()) { gravitator.set_target_position(pos + sf::Vector2f{60.f, 0.f}); }
+	if (fadeout.running()) { m_steering.seek(pos + sf::Vector2f{60.f, 0.f}); }
 	addition_limit.update();
 	fadeout.update();
 	color_fade.update();
 	if (addition_limit.is_complete()) { variables.amount = 0; }
-	position = gravitator.collider.physics.position + offset;
+	position = m_steering.physics.position + offset;
 	if (m_type == IndicatorType::orb) {
 		if (variables.amount < 0.f) {
 			color_fade.change_colors({colors::ui_white, colors::periwinkle, colors::navy_blue});
@@ -59,7 +57,7 @@ void Indicator::add(float amount) {
 
 void Indicator::set_position(sf::Vector2f pos) {
 	position = pos;
-	gravitator.set_position(pos);
+	m_steering.physics.position = pos;
 }
 
 } // namespace fornani::graphics

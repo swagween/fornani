@@ -54,6 +54,8 @@ Drop::Drop(automa::ServiceProvider& svc, world::Map& map, std::string_view key, 
 	set_value();
 
 	sparkler.set_dimensions(drop_dimensions);
+
+	m_handle = 12000 + random::random_range(0, 1000);
 }
 
 void Drop::seed(float probability) {
@@ -110,8 +112,8 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		if (!is_inactive() && std::abs(get_collider().physics.velocity.y) > threshold) {
 			switch (type) {
 			case DropType::gem: random::percent_chance(50) ? svc.soundboard.flags.world.set(audio::World::gem_hit_1) : svc.soundboard.flags.world.set(audio::World::gem_hit_2); break;
-			case DropType::heart: svc.soundboard.flags.item.set(audio::Item::heart_collide); break;
-			case DropType::orb: svc.soundboard.flags.item.set(audio::Item::orb_collide); break;
+			case DropType::heart: svc.soundboard.play_sound("heart_collide", get_collider().get_global_center()); break;
+			case DropType::orb: svc.soundboard.play_sound("orb_collide", get_collider().get_global_center()); break;
 			}
 		}
 	}

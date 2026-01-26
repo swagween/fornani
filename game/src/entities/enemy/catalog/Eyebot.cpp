@@ -28,7 +28,6 @@ void Eyebot::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		update(svc, map, player);
 		return;
 	}
-	if (!seeker_cooldown.is_complete()) { seeker.set_position(get_collider().physics.position); }
 	seeker_cooldown.update();
 	flags.state.set(StateFlags::vulnerable); // eyebot is always vulnerable
 
@@ -37,20 +36,9 @@ void Eyebot::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 
 	state_function = state_function();
 
-	if (get_collider().has_horizontal_collision()) { seeker.bounce_horiz(); }
-	if (get_collider().has_vertical_collision()) { seeker.bounce_vert(); }
-
-	if (player.get_collider().bounding_box.overlaps(physical.hostile_range)) { seeker.set_force(0.002f); }
-	if (player.get_collider().bounding_box.overlaps(physical.alert_range)) {
-		seeker.update(svc);
-		seeker.seek_player(player);
-		get_collider().physics.position = seeker.get_position();
-		get_collider().physics.velocity = seeker.get_velocity();
-		get_collider().sync_components();
-	}
+	if (player.get_collider().bounding_box.overlaps(physical.alert_range)) { get_collider().sync_components(); }
 
 	Enemy::update(svc, map, player);
-	seeker.set_position(get_collider().physics.position);
 }
 
 fsm::StateFunction Eyebot::update_idle() {

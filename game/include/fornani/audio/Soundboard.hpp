@@ -5,10 +5,12 @@
 #include <capo/engine.hpp>
 #include <ccmath/ext/clamp.hpp>
 #include <fornani/audio/Sound.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/TransparentStringHash.hpp>
 #include <functional>
 #include <unordered_map>
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Cooldown.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -21,8 +23,19 @@ std::function<void(int)> make_int_setter(util::BitFlags<Enum>& flags) {
 	return [&flags](int which) { flags.set(static_cast<Enum>(which)); };
 }
 
+using SoundProducerID = std::uint64_t;
+
 struct SoundListener {
 	sf::Vector2f position{};
+};
+
+struct ActiveSound {
+	Sound sound;
+	std::string_view label;
+	SoundProducerID id;
+	sf::Vector2f position;
+	bool looping;
+	bool touched_this_tick;
 };
 
 enum class SoundboardState { on, off };
@@ -194,6 +207,7 @@ class Soundboard {
 	std::unordered_map<std::string, std::function<void(int)>> npc_map;
 
 	void play_sound(std::string_view label, sf::Vector2f position);
+	void repeat_sound(std::string_view label, SoundProducerID id = 0, sf::Vector2f position = {});
 
 	void play(capo::IEngine& engine, automa::ServiceProvider& svc, std::string const& label, SoundProperties properties, int frequency = 0, float attenuation = 1.f);
 	void play(capo::IEngine& engine, automa::ServiceProvider& svc, std::string const& label, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 1, float attenuation = 1.f, sf::Vector2f distance = {}, int echo_count = 0,
@@ -202,12 +216,10 @@ class Soundboard {
   private:
 	void repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset = 0.f, float attenuation = 1.f, sf::Vector2f distance = {});
 	void randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol = 100.f, float attenuation = 1.f, sf::Vector2f distance = {}, bool wait_until_over = false);
-	void simple_repeat(capo::IEngine& engine, capo::Buffer const& buffer, std::string const& label, int fade = 16);
 	void stop(std::string_view label);
-	void fade_out(std::string_view label);
 
-	std::vector<Sound> sound_pool{};
-	std::unordered_map<std::string, SoundProperties> m_property_map{};
+	std::vector<ActiveSound> sound_pool{};
+	std::unordered_map<std::string, SoundProperties, TransparentHash, TransparentEqual> m_property_map{};
 	float m_volume_multiplier{0.5f};
 
 	SoundboardState status{SoundboardState::on};
@@ -237,6 +249,8 @@ class Soundboard {
 																			{479, Step::grass},
 																			{496, Step::grass},
 																			{497, Step::grass}}}};
+
+	io::Logger m_logger{"Audio"};
 };
 
 } // namespace fornani::audio

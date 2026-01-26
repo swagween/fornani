@@ -58,7 +58,10 @@ void EntitySet::render(sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f ori
 void EntitySet::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 	for (auto const& [key, entry] : metadata.as_object()) {
 		for (auto const& element : entry.as_array()) {
-			if (create_map.contains(std::string{key})) { variables.entities.push_back(create_map[key](svc, element)); }
+			if (create_map.contains(std::string{key})) {
+				variables.entities.push_back(create_map[key](svc, element));
+				variables.entities.back()->set_handle(++next_handle);
+			}
 		}
 	}
 }
@@ -66,7 +69,10 @@ void EntitySet::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFin
 void EntitySet::load_and_register(fornani::automa::ServiceProvider& svc, world::Map& map, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 	for (auto const& [key, entry] : metadata.as_object()) {
 		for (auto const& element : entry.as_array()) {
-			if (registered_map.contains(std::string{key})) { variables.entities.push_back(registered_map[key](svc, map, element)); }
+			if (registered_map.contains(std::string{key})) {
+				variables.entities.push_back(registered_map[key](svc, map, element));
+				variables.entities.back()->set_handle(++next_handle);
+			}
 		}
 	}
 }

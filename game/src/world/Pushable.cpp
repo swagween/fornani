@@ -86,7 +86,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	if (player.get_collider().wallslider.overlaps(collision_box) && player.pushing() && player.is_in_animation(player::AnimState::push) && get_collider().physics.actual_velocity().y < 0.3f) {
 		if (player.controller.moving_left() && player.get_collider().physics.position.x > get_collider().physics.position.x) { get_collider().physics.acceleration.x = -speed / mass; }
 		if (player.controller.moving_right() && player.get_collider().physics.position.x < get_collider().physics.position.x) { get_collider().physics.acceleration.x = speed / mass; }
-		if (ccm::abs(get_collider().physics.actual_velocity().x) > constants::small_value) { svc.soundboard.flags.world.set(audio::World::pushable_move); }
+		if (ccm::abs(get_collider().physics.actual_velocity().x) > constants::small_value) { svc.soundboard.repeat_sound("pushable_move"); }
 
 		set_flag(PushableFlags::moved);
 		set_flag(PushableFlags::pushed);

@@ -11,9 +11,8 @@ namespace fornani::entity {
 
 FloatingPart::FloatingPart(sf::Texture const& tex, float force, float friction, sf::Vector2f offset, int id) : sprite{tex}, textured{true}, init{true}, m_id{id} {
 	sprite->setOrigin(sprite->getLocalBounds().getCenter());
-	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2f{}, sf::Color::Yellow, force);
-	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2f{friction, friction}, 1.0f);
-	gravitator->collider.physics.maximum_velocity = sf::Vector2f(20.f, 20.f);
+	m_steering.physics.set_friction_componentwise({friction, friction});
+	m_steering.physics.maximum_velocity = sf::Vector2f(20.f, 20.f);
 	left = offset;
 	right = offset;
 	right.x *= -1.f;
@@ -25,9 +24,8 @@ FloatingPart::FloatingPart(sf::Texture const& tex, float force, float friction, 
 FloatingPart::FloatingPart(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions, std::vector<anim::Parameters> params, std::vector<std::string_view> labels, float force, float friction, sf::Vector2f offset, int id)
 	: textured{true}, init{true}, m_id{id} {
 	animated_sprite = Animatable(svc, label, dimensions);
-	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2f{}, sf::Color::Yellow, force);
-	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2f{friction, friction}, 1.0f);
-	gravitator->collider.physics.maximum_velocity = sf::Vector2f(20.f, 20.f);
+	m_steering.physics.set_friction_componentwise({friction, friction});
+	m_steering.physics.maximum_velocity = sf::Vector2f(20.f, 20.f);
 	left = offset;
 	right = offset;
 	right.x *= -1.f;
@@ -44,9 +42,8 @@ FloatingPart::FloatingPart(sf::Color color, sf::Vector2f dimensions, float force
 	drawbox = sf::RectangleShape();
 	drawbox->setSize(dimensions);
 	drawbox->setFillColor(color);
-	gravitator = std::make_unique<vfx::Gravitator>(sf::Vector2f{}, sf::Color::Yellow, force);
-	gravitator->collider.physics = components::PhysicsComponent(sf::Vector2f{friction, friction}, 1.0f);
-	gravitator->collider.physics.maximum_velocity = sf::Vector2f(20.f, 20.f);
+	m_steering.physics.set_friction_componentwise({friction, friction});
+	m_steering.physics.maximum_velocity = sf::Vector2f(20.f, 20.f);
 	left = offset;
 	right = offset;
 	right.x *= -1.f;
@@ -54,7 +51,7 @@ FloatingPart::FloatingPart(sf::Color color, sf::Vector2f dimensions, float force
 
 void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, Direction direction, sf::Vector2f scale, sf::Vector2f position) {
 	if (init) {
-		gravitator->set_position(position + actual);
+		m_steering.physics.position = position + actual;
 		m_movement.time = random::random_range_float(0.f, 2.f * static_cast<float>(std::numbers::pi));
 		init = false;
 	}
@@ -63,8 +60,7 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 	auto const tweak = m_movement.magnitude * std::sin(m_movement.time);
 	if (tweak == 0.f) { m_movement.time = 0.f; }
 	actual.y += tweak;
-	gravitator->set_target_position(actual);
-	gravitator->update(svc);
+	m_steering.seek(actual, m_attraction_force);
 	if (animated_sprite) {
 		animated_sprite->tick();
 		animated_sprite->set_scale(scale);
@@ -89,16 +85,15 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 }
 
 void FloatingPart::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (sprite) { sprite->setPosition(gravitator->position() - cam); }
+	if (sprite) { sprite->setPosition(m_steering.physics.position - cam); }
 	if (sprite) { win.draw(*sprite); }
 	if (animated_sprite) {
-		animated_sprite->set_position(gravitator->position() - cam);
+		animated_sprite->set_position(m_steering.physics.position - cam);
 		win.draw(*animated_sprite);
 	}
-	if (drawbox) { drawbox->setPosition(gravitator->position() - cam); }
+	if (drawbox) { drawbox->setPosition(m_steering.physics.position - cam); }
 	if (drawbox) { win.draw(*drawbox); }
 	if (svc.greyblock_mode()) {
-		gravitator->render(svc, win, cam);
 		if (hitbox) {
 			debugbox.setSize(hitbox.value().get_dimensions());
 			debugbox.setPosition(hitbox.value().get_position());
@@ -115,19 +110,19 @@ void FloatingPart::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 void FloatingPart::set_shield(sf::Vector2f dim, sf::Vector2f pos) {
 	if ((dim.x == 0.f || dim.y == 0.f) && sprite) { dim = sprite->getLocalBounds().size; }
 	if (!shieldbox) { shieldbox = shape::Shape(dim); }
-	if (pos.x == 0.f && pos.y == 0.f && sprite) { pos = gravitator->position() - sprite->getLocalBounds().getCenter(); }
+	if (pos.x == 0.f && pos.y == 0.f && sprite) { pos = m_steering.physics.position - sprite->getLocalBounds().getCenter(); }
 	shieldbox.value().set_position(pos);
 }
 
 void FloatingPart::set_hitbox(sf::Vector2f dim, sf::Vector2f pos) {
 	if ((dim.x == 0.f || dim.y == 0.f) && sprite) { dim = sprite->getLocalBounds().size; }
 	if (!hitbox) { hitbox = shape::Shape(dim); }
-	if (pos.x == 0.f && pos.y == 0.f && sprite) { pos = gravitator->position() - sprite->getLocalBounds().getCenter(); }
+	if (pos.x == 0.f && pos.y == 0.f && sprite) { pos = m_steering.physics.position - sprite->getLocalBounds().getCenter(); }
 	hitbox.value().set_position(pos);
 }
 
 void FloatingPart::set_magnitude(float magnitude) { m_movement.magnitude = magnitude; }
 
-void FloatingPart::move(sf::Vector2f distance) const { gravitator->set_target_position(gravitator->position() + distance); }
+void FloatingPart::move(sf::Vector2f distance) { m_steering.seek(m_steering.physics.position + distance); }
 
 } // namespace fornani::entity

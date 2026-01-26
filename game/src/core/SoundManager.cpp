@@ -29,12 +29,22 @@ SoundManager::SoundManager(ResourceFinder const& finder) {
 	}
 }
 
-capo::Buffer const& SoundManager::get_buffer(std::string const& label) { return m_buffers.contains(label) ? m_buffers.at(label) : m_null_buffer; }
-
-void SoundManager::set_tick_for_buffer(std::string const& label, int const to) {
-	if (m_ticks.contains(label)) { m_ticks.at(label) = to; }
+capo::Buffer const& SoundManager::get_buffer(std::string_view label) {
+	auto it = m_buffers.find(label);
+	if (it == m_buffers.end()) { return m_null_buffer; }
+	return it->second;
 }
 
-int SoundManager::get_tick_for_buffer(std::string const& label) { return m_ticks.contains(label) ? m_ticks.at(label) : -1; }
+void SoundManager::set_tick_for_buffer(std::string_view label, int const to) {
+	auto it = m_ticks.find(label);
+	if (it == m_ticks.end()) { return; }
+	it->second = to;
+}
+
+int SoundManager::get_tick_for_buffer(std::string_view label) {
+	auto it = m_ticks.find(label);
+	if (it == m_ticks.end()) { return -1; }
+	return it->second;
+}
 
 } // namespace fornani::core

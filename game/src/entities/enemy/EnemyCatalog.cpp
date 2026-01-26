@@ -64,6 +64,8 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[m
 	case 25: enemies.push_back(std::make_unique<Crow>(svc, map, multispawn.spread)); break;
 	default: enemies.push_back(std::make_unique<Frdog>(svc, map)); break;
 	}
+
+	enemies.back()->set_handle(++m_next_handle);
 }
 
 } // namespace fornani::enemy

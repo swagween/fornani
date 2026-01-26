@@ -26,14 +26,13 @@ Player::Player(automa::ServiceProvider& svc)
 	health.set_invincibility(default_invincibility_time_v);
 	hurtbox.set_dimensions(sf::Vector2f{12.f, 26.f});
 
-	antennae.push_back(vfx::Gravitator(get_position(), colors::bright_orange, 0.62f, {2.f, 4.f}));
-	antennae.push_back(vfx::Gravitator(get_position(), colors::bright_orange, 0.62f));
-
 	texture_updater.load_base_texture(svc.assets.get_texture_modifiable("nani"));
 	texture_updater.load_pixel_map(svc.assets.get_texture_modifiable("nani_palette_default"));
 	catalog.wardrobe.set_palette(svc.assets.get_texture_modifiable("nani_palette_default"));
 
 	distant_vicinity.set_dimensions({256.f, 256.f});
+
+	m_ear.physics.set_global_friction(0.8f);
 }
 
 void Player::serialize(dj::Json& out) const {
@@ -139,11 +138,18 @@ void Player::register_with_map(world::Map& map) {
 	get_collider().clear_chunks();
 
 	collider.value().get().set_tag("Nani");
+
+	/*antennae = std::vector<std::unique_ptr<vfx::Gravitator>>{std::make_unique<vfx::Gravitator>(map, get_position(), colors::bright_orange, 0.62f, sf::Vector2f{2.f, 4.f}),
+															 std::make_unique<vfx::Gravitator>(map, get_position(), colors::bright_orange, 0.62f, sf::Vector2f{4.f, 4.f})};*/
+	if (antennae) {
+		for (auto& a : *antennae) { a->get_collider().set_attribute(shape::ColliderAttributes::no_map_collision); }
+	}
 }
 
 void Player::unregister_with_map() {
 	owned_collider.reset();
 	collider.reset();
+	antennae.reset();
 	NANI_LOG_INFO(m_logger, "Player was unregistered with map.");
 }
 
@@ -156,6 +162,8 @@ void Player::update(world::Map& map) {
 	m_hurt_cooldown.update();
 	distant_vicinity.set_position(get_collider().get_center() - distant_vicinity.get_dimensions() * 0.5f);
 	m_piggyback_socket = get_collider().get_top() + sf::Vector2f{-8.f * directions.actual.as_float(), -16.f};
+
+	m_ear.seek(get_camera_focus_point(), 0.006f);
 
 	if (get_collider().has_flag_set(shape::ColliderFlags::submerged)) {
 		if (m_services->ticker.every_x_ticks(32)) { m_air_supply.inflict(1.f); }
@@ -195,8 +203,8 @@ void Player::update(world::Map& map) {
 	if (controller.is_rolling() || m_animation_machine.is_state(AnimState::turn_slide)) {
 		if (m_services->ticker.every_x_ticks(24)) { map.effects.push_back(entity::Effect(*m_services, "roll", get_collider().get_center(), sf::Vector2f{get_collider().physics.apparent_velocity().x * 0.1f, 0.f})); }
 	}
-	m_animation_machine.is_state(AnimState::turn_slide) && (animation.get_frame_count() > 2 && animation.get_frame_count() < 6) ? m_services->soundboard.flags.player.set(audio::Player::turn_slide)
-																																: m_services->soundboard.flags.player.reset(audio::Player::turn_slide);
+	if (m_animation_machine.is_state(AnimState::turn_slide) && (animation.get_frame_count() > 2 && animation.get_frame_count() < 6)) { m_services->soundboard.repeat_sound("nani_turn_slide"); }
+
 	// camera stuff
 	auto camx = controller.direction.as_float() * 32.f;
 	auto skew = 180.f;
@@ -303,8 +311,8 @@ void Player::update(world::Map& map) {
 
 	if (piggybacker) { piggybacker->update(*m_services, *this); }
 
-	if (is_dead()) {
-		for (auto& a : antennae) { a.collider.detect_map_collision(map); }
+	if (is_dead() && antennae) {
+		for (auto& a : *antennae) { a->get_collider().set_attribute(shape::ColliderAttributes::no_map_collision, false); }
 	}
 
 	// step sounds
@@ -365,12 +373,15 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 			camera_target.setFillColor(colors::green);
 			camera_target.setPosition(svc.window->f_center_screen());
 			win.draw(camera_target);
+			camera_target.setFillColor(colors::blue);
+			camera_target.setPosition(m_ear.physics.position - cam);
+			win.draw(camera_target);
 			get_collider().render(win, cam);
 		}
 	} else {
-		antennae[1].render(svc, win, cam, 1);
+		if (antennae) { antennae.value()[1]->render(svc, win, cam, 1); }
 		win.draw(*this);
-		antennae[0].render(svc, win, cam, 1);
+		if (antennae) { antennae.value()[0]->render(svc, win, cam, 1); }
 	}
 
 	if (arsenal && hotbar) {
@@ -635,10 +646,11 @@ void Player::on_crush(world::Map& map) {
 void Player::handle_map_collision(world::Map& map) { get_collider().detect_map_collision(map); }
 
 void Player::update_antennae() {
+	if (!antennae) { return; }
 	auto position = m_sprite_position;
-	for (auto [i, a] : std::views::enumerate(antennae)) {
-		a.attraction_force = physics_stats.antenna_force;
-		a.collider.physics.set_friction_componentwise({physics_stats.antenna_friction, physics_stats.antenna_friction});
+	for (auto [i, a] : std::views::enumerate(*antennae)) {
+		a->attraction_force = physics_stats.antenna_force;
+		a->get_collider().physics.set_friction_componentwise({physics_stats.antenna_friction, physics_stats.antenna_friction});
 		auto& socket = i == 0 ? m_antenna_sockets.first : m_antenna_sockets.second;
 		if (m_animation_machine.get_frame() == 44 || m_animation_machine.get_frame() == 46) {
 			socket.y = -19.f;
@@ -661,20 +673,21 @@ void Player::update_antennae() {
 
 		if (m_animation_machine.get_frame() == 82) { socket.x += controller.facing_right() ? 6.f : -6.f; }
 		if (!is_dead()) {
-			a.set_target_position(position + socket);
+			a->set_target_position(position + socket);
 		} else {
-			a.demagnetize(*m_services);
+			a->demagnetize(*m_services);
 		}
-		a.update(*m_services);
+		a->update(*m_services);
 	}
 }
 
 void Player::sync_antennae() {
+	if (!antennae) { return; }
 	auto position = m_sprite_position;
-	for (auto [i, a] : std::views::enumerate(antennae)) {
+	for (auto [i, a] : std::views::enumerate(*antennae)) {
 		auto& socket = i == 0 ? m_antenna_sockets.first : m_antenna_sockets.second;
-		a.set_position(position + socket);
-		a.update(*m_services);
+		a->set_position(position + socket);
+		a->update(*m_services);
 		if (controller.facing_right()) {
 			socket.x = i == 0 ? 18.0f : 7.f;
 		} else {
@@ -720,9 +733,11 @@ void Player::start_over() {
 	m_animation_machine.triggers.reset(AnimTriggers::end_death);
 	m_animation_machine.post_death.cancel();
 	if (has_collider()) { get_collider().collision_depths = util::CollisionDepth(); }
-	for (auto& a : antennae) {
-		a.collider.physics.set_global_friction(physics_stats.antenna_friction);
-		a.collider.physics.gravity = 0.f;
+	if (antennae) {
+		for (auto& a : *antennae) {
+			a->get_collider().physics.set_global_friction(physics_stats.antenna_friction);
+			a->get_collider().physics.gravity = 0.f;
+		}
 	}
 	sync_antennae();
 	catalog.wardrobe.set_palette(m_services->assets.get_texture_modifiable("nani_palette_default"));

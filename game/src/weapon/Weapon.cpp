@@ -44,6 +44,8 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 
 	// audio
 	m_audio.shoot = static_cast<audio::Weapon>(in_data["audio"]["shoot"].as<int>());
+	metadata.audio_tag = "arms_shot_" + std::string{tag};
+	NANI_LOG_DEBUG(m_logger, "Weapon audio tag: {}", metadata.audio_tag);
 
 	set_parameters({in_data["visual"]["texture_lookup"].as<int>(), 1, 32, -1});
 }
@@ -113,7 +115,7 @@ void Weapon::shoot() {
 void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f target) {
 	shoot();
 	map.spawn_projectile_at(svc, *this, get_barrel_point(), target);
-	svc.soundboard.flags.weapon.set(m_audio.shoot);
+	svc.soundboard.play_sound(get_audio_tag(), get_barrel_point());
 }
 
 void Weapon::decrement_projectiles() { active_projectiles.update(-1); }

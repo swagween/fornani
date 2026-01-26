@@ -169,6 +169,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto height() const -> float { return get_collider().dimensions.y; }
 	[[nodiscard]] auto width() const -> float { return get_collider().dimensions.x; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return collider.has_value() ? get_collider().get_center() : m_sprite_position; }
+	[[nodiscard]] auto get_ear_position() const -> sf::Vector2f { return m_ear.physics.position; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return collider.has_value() ? get_collider().physics.position : m_sprite_position; }
 	[[nodiscard]] auto arsenal_size() const -> std::size_t { return arsenal ? arsenal.value().size() : 0; }
 	[[nodiscard]] auto quick_direction_switch() const -> bool { return has_flag_set(PlayerFlags::dir_switch); }
@@ -263,7 +264,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	sf::Vector2f anchor_point{};
 	sf::Vector2f sprite_offset{10.f, -3.f};
 
-	std::vector<vfx::Gravitator> antennae{};
+	std::optional<std::vector<std::unique_ptr<vfx::Gravitator>>> antennae{};
 
 	PlayerStats player_stats{0.06f};
 	PhysicsStats physics_stats{};
@@ -338,6 +339,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	sf::Vector2f m_weapon_socket{};
 	sf::Vector2f m_piggyback_socket{};
 	sf::Vector2f m_demo_position{};
+	components::SteeringComponent m_ear{};
 	std::pair<sf::Vector2f, sf::Vector2f> m_antenna_sockets{};
 	util::Cooldown m_sprite_shake;
 	util::Cooldown m_hurt_cooldown;

@@ -34,6 +34,8 @@ class Projectile;
 
 namespace fornani::enemy {
 
+using EntityHandle = std::uint64_t;
+
 enum class EnemyChannel { standard, hurt_1, hurt_2, invincible, extra_1, extra_2 };
 enum class EnemySize { tiny, small, medium, large, giant };
 enum class GeneralFlags {
@@ -112,6 +114,7 @@ class Enemy : public Mobile {
 	bool seek_home(world::Map& map);
 	void set_channel(EnemyChannel to) { Animatable::set_channel(static_cast<int>(to)); }
 	void despawn() { flags.state.set(StateFlags::despawn); }
+	void set_handle(EntityHandle to) { metadata.handle = to; }
 
 	[[nodiscard]] auto is_hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto is_alert() const -> bool { return flags.state.test(StateFlags::alert); }
@@ -122,6 +125,7 @@ class Enemy : public Mobile {
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
 	[[nodiscard]] auto get_external_id() const -> int { return metadata.external_id; }
+	[[nodiscard]] auto get_handle() const -> int { return metadata.handle; }
 	[[nodiscard]] auto get_team() const -> arms::Team { return attributes.team; }
 	[[nodiscard]] auto has_secondary_collider() const -> bool { return secondary_collider.has_value(); }
 	[[nodiscard]] auto get_secondary_collider() const -> shape::Collider& { return secondary_collider.value().get().get_reference(); }
@@ -169,6 +173,7 @@ class Enemy : public Mobile {
 	util::Cooldown hitstun{};
 	util::Cooldown impulse{};
 	util::Cooldown intangibility{};
+	util::Cooldown m_weakness;
 	int afterlife{200};
 	sf::Vector2f m_death_position{};
 
@@ -182,6 +187,7 @@ class Enemy : public Mobile {
 		int id{};
 		int variant{};
 		int external_id{};
+		EntityHandle handle{};
 	} metadata{};
 
 	struct {

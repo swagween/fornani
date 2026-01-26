@@ -1,11 +1,12 @@
+
 #pragma once
 
-#include "fornani/components/CircleSensor.hpp"
-#include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/entities/packages/Health.hpp"
-#include "fornani/particle/Gravitator.hpp"
-#include "fornani/physics/Collider.hpp"
-#include "fornani/utils/StateFunction.hpp"
+#include <fornani/components/CircleSensor.hpp>
+#include <fornani/components/SteeringComponent.hpp>
+#include <fornani/entities/animation/AnimatedSprite.hpp>
+#include <fornani/entities/packages/Health.hpp>
+#include <fornani/physics/Collider.hpp>
+#include <fornani/utils/StateFunction.hpp>
 #define SPAWNABLE_PLAT_BIND(f) std::bind(&SpawnablePlatform::f, this)
 
 namespace fornani::automa {
@@ -16,7 +17,9 @@ class Player;
 }
 
 namespace fornani::entity {
+
 enum class SpawnablePlatformState { open, opening, fading, closing, dormant };
+
 class SpawnablePlatform {
   public:
 	SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2f position, int index = 0);
@@ -41,7 +44,7 @@ class SpawnablePlatform {
 	SpawnablePlatformState state{};
 	shape::Collider collider{};
 	int index{};
-	vfx::Gravitator gravitator{};
+	components::SteeringComponent m_steering{};
 	components::CircleSensor sensor{};
 	anim::AnimatedSprite sprite;
 	Health m_health;

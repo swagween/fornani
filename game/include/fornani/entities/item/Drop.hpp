@@ -26,6 +26,8 @@ class Player;
 
 namespace fornani::item {
 
+using EntityHandle = std::uint64_t;
+
 enum class DropType { heart, orb, gem };
 enum class DropState { neutral, shining };
 enum class GemType { rhenite, sapphire };
@@ -64,6 +66,8 @@ class Drop : public Animatable {
 
   private:
 	shape::RegisteredCollider m_collider;
+
+	EntityHandle m_handle{};
 
 	struct {
 		DropState actual{};

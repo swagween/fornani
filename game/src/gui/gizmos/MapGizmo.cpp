@@ -158,26 +158,26 @@ bool MapGizmo::handle_inputs(config::ControllerMap& controller, audio::Soundboar
 	if (controller.gamepad_connected()) { m_minimap->move(controller.get_joystick_throttle()); }
 	if (controller.digital_action_status(config::DigitalAction::menu_up).held) {
 		m_minimap->move({0.f, -1.f});
-		if (!m_minimap->hit_vert_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
+		if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_down).held) {
 		m_minimap->move({0.f, 1.f});
-		if (!m_minimap->hit_vert_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
+		if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_left).held) {
 		m_minimap->move({-1.f, 0.f});
-		if (!m_minimap->hit_horiz_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
+		if (!m_minimap->hit_horiz_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_right).held) {
 		m_minimap->move({1.f, 0.f});
-		if (!m_minimap->hit_horiz_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
+		if (!m_minimap->hit_horiz_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_tab_left).held) {
 		m_minimap->zoom(zoom_factor);
-		if (!m_minimap->hit_zoom_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::buzz); }
+		if (!m_minimap->hit_zoom_limit()) { soundboard.repeat_sound("pioneer_buzz"); }
 	} else if (controller.digital_action_status(config::DigitalAction::menu_tab_right).held) {
 		m_minimap->zoom(-zoom_factor);
-		if (!m_minimap->hit_zoom_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::buzz); }
+		if (!m_minimap->hit_zoom_limit()) { soundboard.repeat_sound("pioneer_buzz"); }
 	}
 	if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		m_minimap->center();

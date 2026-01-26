@@ -29,6 +29,9 @@ class EnemyCatalog {
 	}
 
 	std::vector<std::unique_ptr<Enemy>> enemies{};
+
+  private:
+	EntityHandle m_next_handle{10000};
 };
 
 } // namespace fornani::enemy

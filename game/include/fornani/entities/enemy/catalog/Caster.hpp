@@ -1,7 +1,9 @@
+
 #pragma once
 
-#include "fornani/entities/enemy/Enemy.hpp"
-#include "fornani/entities/packages/FloatingPart.hpp"
+#include <fornani/components/SteeringComponent.hpp>
+#include <fornani/entities/enemy/Enemy.hpp>
+#include <fornani/entities/packages/FloatingPart.hpp>
 #define CASTER_BIND(f) std::bind(&Caster::f, this)
 
 namespace fornani::enemy {
@@ -29,7 +31,7 @@ class Caster final : public Enemy {
 	CasterState state{};
 	CasterVariant m_variant{};
 
-	vfx::Gravitator target{};
+	components::SteeringBehavior m_steering{};
 	entity::WeaponPackage energy_ball;
 	sf::Vector2f attack_target{};
 

@@ -22,7 +22,6 @@ class Eyebot final : public Enemy {
 	util::BitFlags<EyebotState> state{};
 
 	// packages
-	entity::Seeker seeker{0.0005f, 0.99f};
 	util::Cooldown seeker_cooldown{};
 
 	// lookup, duration, framerate, num_loops

@@ -79,7 +79,7 @@ fsm::StateFunction Junkfly::update_toss() {
 	p_state.actual = JunkflyState::toss;
 	if (animation.get_frame_count() == 2 && animation.keyframe_started()) {
 		set_flag(JunkflyFlags::toss);
-		m_services->soundboard.flags.arms.set(audio::Arms::whistle);
+		m_services->soundboard.play_sound("missile_whistle", get_collider().get_center());
 	}
 	if (animation.is_complete()) {
 		request(JunkflyState::idle);
