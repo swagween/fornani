@@ -76,7 +76,12 @@
   },
   "bright_flare": {
     "frame_count": 8,
-    "framerate": 12,
+    "framerate": 8,
+    "dimensions": [64, 64]
+  },
+  "flare": {
+    "frame_count": 6,
+    "framerate": 4,
     "dimensions": [64, 64]
   },
   "large_explosion": {

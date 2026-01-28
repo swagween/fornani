@@ -94,7 +94,43 @@
     "pitch_offset": 0.0
   },
   {
+    "label": "minigus_hurt_1",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "minigus_hurt_2",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "minigus_hurt_3",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
     "label": "tank_step",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "spitefly_death",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "spitefly_flap",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "spitefly_screech",
     "bus": "gameplay",
     "volume": 1.0,
     "pitch_offset": 0.0
@@ -108,8 +144,20 @@
   {
     "label": "arms_shot_skycorps_smg",
     "bus": "gameplay",
-    "volume": 0.2,
-    "pitch_offset": 0.4
+    "volume": 0.7,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "arms_shot_skycorps_ar",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "arms_shot_minigun",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
   },
   {
     "label": "nani_wallslide",
@@ -134,5 +182,47 @@
     "pitch_offset": 0.0,
     "fade_in": 8,
     "fade_out": 32
+  },
+  {
+    "label": "console_speech",
+    "bus": "gui",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 16,
+    "fade_out": 16
+  },
+  {
+    "label": "caster_scream",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "caster_hurt",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "summoner_death",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "hit_squeak",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "platform_industrial",
+    "bus": "gameplay",
+    "volume": 0.3,
+    "pitch_offset": 0.0,
+    "fade_in": 8,
+    "fade_out": 32,
+    "min_distance": 128.0,
+    "max_distance": 512.0
   }
 ]

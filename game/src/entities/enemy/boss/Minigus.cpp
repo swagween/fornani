@@ -103,6 +103,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	cooldowns.post_charge.update();
 	cooldowns.post_punch.update();
 	cooldowns.hurt.update();
+	cooldowns.hurt_sound.update();
 	cooldowns.player_punch.update();
 	if (status.test(MinigusFlags::exit_scene)) { cooldowns.exit.update(); }
 	if (was_introduced()) { cooldowns.vulnerability.update(); }
@@ -197,12 +198,15 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 
 	if (flags.state.test(StateFlags::hurt)) {
 		cooldowns.hurt.start();
-		if (random::percent_chance(40)) {
-			m_services->soundboard.flags.minigus.set(audio::Minigus::hurt_1);
-		} else if (random::percent_chance(40)) {
-			m_services->soundboard.flags.minigus.set(audio::Minigus::hurt_2);
-		} else {
-			m_services->soundboard.flags.minigus.set(audio::Minigus::hurt_3);
+		if (!cooldowns.hurt_sound.running()) {
+			if (random::percent_chance(40)) {
+				m_services->soundboard.play_sound("minigus_hurt_1", Enemy::get_collider().get_center());
+			} else if (random::percent_chance(40)) {
+				m_services->soundboard.play_sound("minigus_hurt_2", Enemy::get_collider().get_center());
+			} else {
+				m_services->soundboard.play_sound("minigus_hurt_3", Enemy::get_collider().get_center());
+			}
+			cooldowns.hurt_sound.start();
 		}
 		flags.state.reset(StateFlags::hurt);
 	}
@@ -359,7 +363,6 @@ fsm::StateFunction Minigus::update_shoot() {
 		gun.shoot(*m_services, *m_map);
 		m_map->spawn_projectile_at(*m_services, gun.get(), gun.get().get_barrel_point());
 		m_map->shake_camera();
-		m_services->soundboard.flags.weapon.set(audio::Weapon::skycorps_ar);
 	}
 	if (m_minigun.flags.test(MinigunFlags::charging)) {
 		if (m_minigun.animation.complete()) {
@@ -470,7 +473,6 @@ fsm::StateFunction Minigus::update_jump_shoot() {
 		gun.barrel_offset = gun.cycle.get_alternator() % 2 == 0 ? sf::Vector2f{0.f, 10.f} : (gun.cycle.get_alternator() % 2 == 1 ? sf::Vector2f{0.f, 20.f} : sf::Vector2f{0.f, 15.f});
 		gun.shoot(*m_services, *m_map);
 		m_map->shake_camera();
-		m_services->soundboard.flags.weapon.set(audio::Weapon::skycorps_ar);
 	}
 	if (m_minigun.animation.complete() && m_minigun.flags.test(MinigunFlags::charging)) {
 		m_minigun.flags.reset(MinigunFlags::charging);

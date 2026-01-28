@@ -64,7 +64,7 @@ class Hulmet final : public Enemy, public StateMachine<HulmetState>, public Flag
 		anim::Parameters alert{20, 6, 24, 0};
 		anim::Parameters shoot{28, 3, 24, 1};
 		anim::Parameters panic{31, 7, 24, 0};
-		anim::Parameters reload{38, 5, 64, 0};
+		anim::Parameters reload{38, 5, 48, 0};
 	} m_animations{};
 
 	float m_jump_force;

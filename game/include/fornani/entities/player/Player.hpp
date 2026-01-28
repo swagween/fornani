@@ -21,7 +21,7 @@
 #include <fornani/gui/HealthBar.hpp>
 #include <fornani/gui/WardrobeWidget.hpp>
 #include <fornani/io/Logger.hpp>
-#include <fornani/particle/Gravitator.hpp>
+#include <fornani/particle/Antenna.hpp>
 #include <fornani/physics/RegisteredCollider.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Flaggable.hpp>
@@ -29,6 +29,7 @@
 #include <fornani/weapon/Hotbar.hpp>
 #include <fornani/world/Camera.hpp>
 #include <utility>
+#include "Inventory.hpp"
 
 namespace fornani {
 class Game;
@@ -264,7 +265,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	sf::Vector2f anchor_point{};
 	sf::Vector2f sprite_offset{10.f, -3.f};
 
-	std::optional<std::vector<std::unique_ptr<vfx::Gravitator>>> antennae{};
+	std::vector<std::unique_ptr<vfx::Antenna>> antennae{};
 
 	PlayerStats player_stats{0.06f};
 	PhysicsStats physics_stats{};

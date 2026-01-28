@@ -19,6 +19,7 @@ Mastiff::Mastiff(automa::ServiceProvider& svc, world::Map& map, int variant) : E
 
 void Mastiff::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	Enemy::update(svc, map, player);
+	if (died()) { return; }
 	face_player(player);
 	flags.state.set(StateFlags::vulnerable);
 

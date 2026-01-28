@@ -157,6 +157,12 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 
 	counter.update();
 	animation.update();
+	if (get_velocity().lengthSquared() > constants::tiny_value) {
+		auto max_vel = 8.f;
+		auto t = std::clamp(get_velocity().lengthSquared() / max_vel, 0.f, 1.f);
+		auto pitch = std::lerp(1.f, 2.0f, get_velocity().lengthSquared());
+		svc.soundboard.repeat_sound("platform_industrial", m_handle, get_collider().get_center(), pitch);
+	}
 }
 
 void Platform::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {

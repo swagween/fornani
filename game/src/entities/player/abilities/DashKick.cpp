@@ -12,7 +12,7 @@ DashKick::DashKick(automa::ServiceProvider& svc, world::Map& map, shape::Collide
 	m_state = AnimState::dash_kick;
 	m_duration.start(64);
 	auto pos = direction.left() ? collider.wallslider.get_position() : collider.wallslider.get_position() + sf::Vector2f{collider.wallslider.get_dimensions().x, 0.f};
-	map.spawn_effect(svc, "lens_flare", pos);
+	map.spawn_effect(svc, "bright_flare", pos);
 	map.spawn_emitter(svc, "dash_kick", pos, Direction{UND::up});
 	map.spawn_emitter(svc, "dash_kick", pos, Direction{UND::down});
 	svc.soundboard.flags.player.set(audio::Player::dash_kick);

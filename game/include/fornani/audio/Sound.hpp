@@ -17,12 +17,15 @@ namespace fornani::audio {
 
 enum class SoundType { gui, gameplay };
 
+constexpr auto default_min_distance_v = 512.f;
+constexpr auto default_max_distance_v = 2048.f;
+
 struct SoundProperties {
 	SoundType type{};
 	float volume{1.f};
 	float pitch_offset{};
-	float min_distance{128.f};
-	float max_distance{1024.f};
+	float min_distance{default_min_distance_v};
+	float max_distance{default_max_distance_v};
 	int fade_in{0};
 	int fade_out{0};
 	static SoundProperties from_json(dj::Json const& in);

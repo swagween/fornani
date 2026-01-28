@@ -340,6 +340,7 @@ fsm::StateFunction PlayerAnimation::update_suspend() {
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::dive, get_params("dive"))) { return PA_BIND(update_dive); }
 	if (change_state(AnimState::swim, get_params("swim"))) { return PA_BIND(update_swim); }
+	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
 	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
@@ -544,6 +545,7 @@ fsm::StateFunction PlayerAnimation::update_dash() {
 	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
 	if (change_state(AnimState::dash_up, get_params("dash_up"))) { return PA_BIND(update_dash_up); }
 	if (change_state(AnimState::dash_down, get_params("dash_down"))) { return PA_BIND(update_dash_down); }
+	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
 	if (m_player->animation.complete()) {
 		m_player->set_flag(PlayerFlags::show_weapon);
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
@@ -607,6 +609,7 @@ fsm::StateFunction PlayerAnimation::update_dash_down() {
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"), true)) { return PA_BIND(update_wallslide); }
+	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
 	if (m_player->animation.complete()) {
 		m_player->set_flag(PlayerFlags::show_weapon);
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
@@ -1043,7 +1046,7 @@ fsm::StateFunction player::PlayerAnimation::update_dive() {
 
 bool PlayerAnimation::change_state(AnimState next, anim::Parameters params, bool hard) {
 	if (was_requested(next)) {
-		m_player->animation.set_params(params, hard);
+		m_player->animation.set_params(params, true);
 		return true;
 	}
 	return false;

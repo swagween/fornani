@@ -121,7 +121,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 	auto it = std::find_if(svc.data.map_jsons.begin(), svc.data.map_jsons.end(), [name](auto const& r) { return r.room_label == name; });
 	NANI_LOG_DEBUG(m_logger, "Room from canvas: {}", name);
 	if (it == svc.data.map_jsons.end()) {
-		NANI_LOG_WARN(m_logger, "Map json not found!");
+		NANI_LOG_WARN(m_logger, "Map json not found: {}", name);
 		success = false;
 	}
 
@@ -144,7 +144,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 	m_player_start.x = meta["player_start"][0].as<float>();
 	m_player_start.y = meta["player_start"][1].as<float>();
 	real_dimensions = {static_cast<float>(dimensions.x) * fornani::constants::f_cell_size, static_cast<float>(dimensions.y) * fornani::constants::f_cell_size};
-	biome = svc.data.construct_biome(meta["biome"].as_string());
+	biome = svc.data.construct_biome(bstr);
 
 	if (meta["camera_effects"]) {
 		m_camera_effects.shake_properties.frequency = meta["camera_effects"]["shake"]["frequency"].as<int>();
@@ -204,9 +204,7 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 	metadata["meta"]["player_start"][0] = m_player_start.x;
 	metadata["meta"]["player_start"][1] = m_player_start.y;
 	metadata["meta"]["biome"] = biome.get_label();
-	if (background) {
-		metadata["meta"]["background"] = background->get_label();
-	}
+	if (background) { metadata["meta"]["background"] = background->get_label(); }
 	metadata["meta"]["use_template"] = m_use_template;
 	metadata["meta"]["minimap"] = m_attributes.properties.test(fornani::world::MapProperties::minimap);
 	metadata["meta"]["camera_effects"]["shake"]["frequency"] = m_camera_effects.shake_properties.frequency;

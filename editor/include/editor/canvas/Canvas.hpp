@@ -67,6 +67,8 @@ class Canvas {
 	void activate_middleground();
 	void set_music(std::string_view to) { m_attributes.music = to; }
 	void set_ambience(std::string_view to) { m_attributes.ambience = to; }
+	void add_atmosphere(std::string_view to) { m_attributes.atmosphere.add(to.data()); }
+	void remove_atmosphere(std::string_view to) { m_attributes.atmosphere.remove(to.data()); }
 
 	Map& get_layers();
 	Layer& get_active_layer();

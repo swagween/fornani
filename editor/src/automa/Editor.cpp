@@ -63,7 +63,7 @@ Editor::Editor(fornani::automa::ServiceProvider& svc)
 	center_map();
 
 	// load the tilesets!
-	for (auto const& biome : svc.data.biomes.as_array()) {
+	for (auto const& biome : svc.data.biomes["biomes"].as_array()) {
 		tileset_textures.push_back(sf::Texture());
 		std::string filename = biome.as_string() + "_tiles.png";
 		if (!tileset_textures.back().loadFromFile((p_services->finder.paths.resources / "image" / "tile" / filename).string())) { console.add_log(std::string{"Failed to load " + filename}.c_str()); }
@@ -709,7 +709,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::Separator();
 			if (ImGui::BeginMenu("Style")) {
 				auto i{0};
-				for (auto const& choice : m_services->data.biomes.as_array()) {
+				for (auto const& choice : m_services->data.biomes["biomes"].as_array()) {
 					if (ImGui::MenuItem(std::string{choice.as_string()}.c_str())) { map.biome = m_services->data.construct_biome(choice.as_string()); }
 				}
 				ImGui::EndMenu();
@@ -816,8 +816,10 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	if (ImGui::BeginPopupModal("Level Themes", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		static int music_selected{};
 		static int ambience_selected{};
+		static int atmosphere_selected{};
 		static std::string music_str{};
 		static std::string ambience_str{};
+		static std::vector<std::string> atmosphere_list{};
 		ImGui::Text("Music:");
 		auto i = 0;
 		for (auto [i, entry] : std::views::enumerate(m_services->data.audio_library["music"].as_array())) {
@@ -841,6 +843,15 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				ambience_selected = i;
 			}
 		}
+		ImGui::Text("Atmosphere");
+		for (auto [i, entry] : std::views::enumerate(m_services->data.biomes["atmosphere"].as_array())) {
+			if (ImGui::Selectable(entry.as_string().c_str(), ImGuiSelectableFlags_DontClosePopups)) {
+				map.add_atmosphere(entry.as_string());
+			} else {
+				map.remove_atmosphere(entry.as_string());
+			}
+		}
+
 		if (ImGui::Button("Close")) {
 			m_services->music_player.pause();
 			ImGui::CloseCurrentPopup();
@@ -1261,10 +1272,10 @@ void Editor::export_layer_texture() {
 			}
 		}
 	}
-	std::time_t time = std::time({});
-	char time_string[std::size("yyyy-mm-ddThh:mm:ssZ")];
-	std::strftime(std::data(time_string), std::size(time_string), "%FT%TZ", std::gmtime(&time));
-	std::string time_str{time_string};
+	std::time_t time = std::time(nullptr);
+	std::string time_str(21, '\0');
+	std::strftime(time_str.data(), time_str.size(), "%FT%TZ", std::gmtime(&time));
+	time_str.resize(std::strlen(time_str.c_str()));
 
 	std::erase_if(time_str, [](auto const& c) { return c == ':' || isspace(c); });
 	std::string filename = "screenshot_" + time_str + ".png";

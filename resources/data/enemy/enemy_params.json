@@ -339,7 +339,7 @@
       "num_hurtboxes": 1,
       "alert_range": [600.0, 600.0],
       "hostile_range": [180.0, 180.0],
-      "friction": 0.98,
+      "friction": 0.999,
       "gravity": 0.0
     },
     "visual": {

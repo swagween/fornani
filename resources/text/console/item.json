@@ -126,6 +126,16 @@
     ],
     "responses": []
   },
+  "outfitter_gizmo": {
+    "suite": [
+      [
+        {
+          "message": "This device allows you to view and change into any aparrel items you've collected. However, it is unusable without a Status Gizmo's dashboard adapter."
+        }
+      ]
+    ],
+    "responses": []
+  },
   "mastiff_totem": {
     "suite": [
       [

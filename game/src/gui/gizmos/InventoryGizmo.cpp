@@ -9,13 +9,13 @@
 
 namespace fornani::gui {
 
-InventoryGizmo::InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement)
+InventoryGizmo::InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f placement)
 	: Gizmo("Inventory", false), m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "inventory", 128, util::InterpolationType::cubic},
 	  m_lid_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "inventory", 128, util::InterpolationType::cubic}, m_sprite{svc.assets.get_texture("inventory_gizmo")},
 	  m_item_sprite{svc.assets.get_texture("inventory_items")},
-	  m_zones{InventoryZone{{9, 1}, {38.f, 36.f}, {414.f, 18.f}}, InventoryZone{{11, 4}, {36.f, 36.f}, {48.f, 114.f}}, InventoryZone{{7, 2}, {42.f, 62.f}, {164.f, 278.f}}, InventoryZone{{8, 1}, {60.f, 36.f}, {404.f, 430.f}}},
+	  m_zones{InventoryZone{{9, 1}, {38.f, 36.f}, {414.f, 18.f}}, InventoryZone{{11, 4}, {36.f, 36.f}, {48.f, 114.f}}, InventoryZone{{8, 2}, {42.f, 62.f}, {124.f, 279.f}}, InventoryZone{{8, 1}, {60.f, 36.f}, {404.f, 430.f}}},
 	  m_selector(std::make_unique<InventorySelector>(m_zones.at(static_cast<int>(InventoryZoneType::key)).table_dimensions, m_zones.at(static_cast<int>(InventoryZoneType::key)).cell_size)), m_orb_display(svc), m_services(&svc),
-	  m_equipped_items_position{472.f, 126.f} {
+	  m_equipped_items_position{472.f, 106.f} {
 	m_dashboard_port = DashboardPort::inventory;
 	m_path.set_section("start");
 	m_lid_path.set_section("start");
@@ -25,6 +25,10 @@ InventoryGizmo::InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, sf
 	m_selector->set_lookup({{448, 0}, {18, 18}});
 	m_description = std::make_unique<DescriptionGizmo>(svc, map, m_placement, sf::IntRect{}, sf::FloatRect{{572.f, 194.f}, {220.f, 200.f}}, sf::Vector2f{});
 	m_description->set_text_only(true);
+	for (auto& piece : player.catalog.inventory.items_view()) {
+		if (piece.item->is_invisible()) { continue; }
+		if (!piece.item->is_unique()) { m_number_displays.push_back(NumberDisplay(svc, player.catalog.inventory.get_quantity(piece.item->get_label()), piece.item->get_id())); }
+	}
 }
 
 void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
@@ -50,10 +54,11 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 
 	bool found{};
 	for (auto& piece : player.catalog.inventory.items_view()) {
-		if (piece->get_table_index(current_zone.table_dimensions.x) == m_current_item_lookup) {
-			if (zone_match(piece->get_type())) {
-				m_current_item = piece.get();
-				m_current_item_id = piece->get_id();
+		if (piece.item->is_invisible()) { continue; }
+		if (piece.item->get_table_index(current_zone.table_dimensions.x) == m_current_item_lookup) {
+			if (zone_match(piece.item->get_type())) {
+				m_current_item = piece.item.get();
+				m_current_item_id = piece.item->get_id();
 				m_flags.set(InventoryGizmoFlags::is_item_hovered);
 				found = true;
 			}
@@ -66,7 +71,7 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 	m_lid_path.update();
 	auto selector_offset = sf::Vector2f{};
 	if (get_zone_type() == InventoryZoneType::key) { selector_offset = sf::Vector2f{2.f, 2.f}; }
-	if (get_zone_type() == InventoryZoneType::collectible) { selector_offset = sf::Vector2f{}; }
+	if (get_zone_type() == InventoryZoneType::collectible) { selector_offset = sf::Vector2f{2.f, 2.f}; }
 	if (get_zone_type() == InventoryZoneType::gizmo) { selector_offset = sf::Vector2f{6.f, 6.f}; }
 	if (get_zone_type() == InventoryZoneType::ability) { selector_offset = sf::Vector2f{4.f, 4.f}; }
 	m_selector->set_position(m_physics.position + m_path.get_position() + m_placement + current_zone.render_offset - selector_offset);
@@ -95,9 +100,20 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 
 		if (m_description) {
 			for (auto& piece : player.catalog.inventory.items_view()) {
-				if (zone_match(piece->get_type())) { write_description(*piece, win, player, shader, palette, cam); }
+				if (piece.item->is_invisible()) { continue; }
+				if (zone_match(piece.item->get_type())) { write_description(*piece.item, win, player, shader, palette, cam); }
 			}
 		}
+
+		// draw equipment slots
+		auto num_equip_slots = player.catalog.inventory.find_item_stack("equip_slot") == nullptr ? 0 : player.catalog.inventory.find_item_stack("equip_slot")->quantity;
+		auto equip_slot_offset = sf::Vector2f{466.f, 100.f};
+		for (auto i = 0; i < num_equip_slots + 1; ++i) {
+			m_sprite.setTextureRect(sf::IntRect{{448, 63}, {22, 22}});
+			m_sprite.setPosition(m_placement + m_path.get_position() - cam + equip_slot_offset + sf::Vector2f{0.f, static_cast<float>(i) * 44.f});
+			shader.submit(win, palette, m_sprite);
+		}
+
 		if (!is_item_hovered()) {
 			m_description->adjust_bounds(cam);
 			m_description->write(svc, "---", m_services->text.fonts.basic);
@@ -105,22 +121,28 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		}
 
 		auto orb_offset = sf::Vector2f{208.f, 419.f};
+		auto count_offset = sf::Vector2f{32.f, 39.f};
 		m_orb_display.render(win, m_placement + m_path.get_position() - cam + orb_offset);
 
 		for (auto& item : player.catalog.inventory.items_view()) {
-			auto iterator = static_cast<std::size_t>(item->get_type());
+			if (item.item->is_invisible()) { continue; }
+			auto iterator = static_cast<std::size_t>(item.item->get_type());
 			if (iterator >= m_zones.size()) { continue; }
 			auto const& zone = m_zones.at(iterator);
-			auto where = m_placement + m_path.get_position() - cam + zone.render_offset + item->get_f_origin().componentWiseMul(zone.cell_size);
-			item->render(win, m_item_sprite, where);
+			auto where = m_placement + m_path.get_position() - cam + zone.render_offset + item.item->get_f_origin().componentWiseMul(zone.cell_size);
+			item.item->render(win, m_item_sprite, where);
+			for (auto& display : m_number_displays) {
+				if (display.matches(item.item->get_id())) { display.render(win, where + count_offset); }
+			}
 		}
 
 		for (auto [j, ei] : std::views::enumerate(player.catalog.inventory.equipped_items_view())) {
-			auto item = std::find_if(player.catalog.inventory.items_view().begin(), player.catalog.inventory.items_view().end(), [ei](auto const& i) { return i->get_id() == ei; });
-			if (item == player.catalog.inventory.items_view().end()) { continue; }
+			auto item = player.catalog.inventory.find_item(ei);
+			if (item == nullptr) { continue; }
+			if (item->is_invisible()) { continue; }
 			auto spacing = sf::Vector2f{0.f, 44.f};
 			auto where = m_placement + m_path.get_position() - cam + m_equipped_items_position + spacing * static_cast<float>(j);
-			(*item)->render(win, m_item_sprite, where);
+			item->render(win, m_item_sprite, where);
 		}
 
 		if (is_selected()) { m_selector->render(win, m_sprite, cam, {}, shader, palette); }

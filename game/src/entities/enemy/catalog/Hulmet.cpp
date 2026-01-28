@@ -234,10 +234,7 @@ fsm::StateFunction Hulmet::update_shoot() {
 	animation.label = "shoot";
 	p_state.actual = HulmetState::shoot;
 	flags.state.set(StateFlags::vulnerable);
-	if (!m_weapon.get().cooling_down()) {
-		m_weapon.shoot(*m_services, *m_map);
-		m_services->soundboard.flags.weapon.set(audio::Weapon::skycorps_ar);
-	}
+	if (!m_weapon.get().cooling_down()) { m_weapon.shoot(*m_services, *m_map); }
 	if (animation.complete()) {
 		set_flag(HulmetFlags::out_of_ammo);
 		m_cooldowns.post_fire.start();

@@ -17,8 +17,6 @@ class Mastiff final : public Enemy, public StateMachine<MastiffState> {
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 
-	void debug();
-
 	fsm::StateFunction state_function = std::bind(&Mastiff::update_idle, this);
 	fsm::StateFunction update_idle();
 	fsm::StateFunction update_run();

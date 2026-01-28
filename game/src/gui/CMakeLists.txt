@@ -10,6 +10,7 @@ nani_add_sources(
         ItemWidget.cpp
         MiniMap.cpp
         MiniMenu.cpp
+        NumberDisplay.cpp
         OrbDisplay.cpp
         PauseWindow.cpp
         Portrait.cpp

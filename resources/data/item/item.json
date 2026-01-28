@@ -213,7 +213,10 @@
     "actual_title": "Outfitter Gizmo",
     "naive_description": "A gizmo that attaches to your status gizmo and enables you to change your outfit.",
     "actual_description": "A gizmo that attaches to your status gizmo and enables you to change your outfit.",
-    "unique": true
+    "unique": true,
+    "readable": true,
+    "rarity": 1,
+    "value": 560
   },
   "dog_leash": {
     "id": 20,
@@ -234,6 +237,15 @@
     "naive_description": "When equipped, this will reduce reload times by 15%.",
     "unique": false,
     "equippable": true
+  },
+  "equip_slot": {
+    "id": 64,
+    "category": 1,
+    "lookup": [15, 3],
+    "actual_title": "Equip Slot",
+    "naive_description": "Item equip slot.",
+    "invisible": true,
+    "stack_limit": 3
   },
   "ashtown_raspberry_preserves": {
     "id": 22,
@@ -499,7 +511,7 @@
     "unique": false,
     "equippable": false,
     "sellable": true,
-    "value": 400
+    "value": 100
   },
   "glass_statue": {
     "id": 66,
@@ -510,7 +522,7 @@
     "unique": false,
     "equippable": false,
     "sellable": true,
-    "value": 800
+    "value": 200
   },
   "bronze_statue": {
     "id": 67,
@@ -521,7 +533,7 @@
     "unique": false,
     "equippable": false,
     "sellable": true,
-    "value": 1000
+    "value": 100
   },
   "cinnabar_statue": {
     "id": 68,
@@ -532,7 +544,7 @@
     "unique": false,
     "equippable": false,
     "sellable": true,
-    "value": 4000
+    "value": 400
   },
   "jade_statue": {
     "id": 69,
@@ -543,7 +555,7 @@
     "unique": false,
     "equippable": false,
     "sellable": true,
-    "value": 8000
+    "value": 800
   },
   "alabaster_statue": {
     "id": 70,
@@ -554,7 +566,7 @@
     "unique": false,
     "equippable": false,
     "sellable": true,
-    "value": 12000
+    "value": 1200
   },
   "gas_mask": {
     "id": 36,
@@ -687,35 +699,51 @@
   "rhenite": {
     "id": 97,
     "category": 2,
+    "lookup": [0, 6],
+    "origin": [0, 0],
     "actual_title": "Rhenite",
-    "naive_description": "A rare red gem.",
+    "naive_description": "A rare red gem of concentrated material produced by the Mother Worm.",
     "unique": false,
     "sellable": true,
     "rarity": 2,
-    "value": 8100
+    "value": 1300
   },
   "sapphire": {
     "id": 98,
     "category": 2,
+    "lookup": [1, 6],
+    "origin": [1, 0],
     "actual_title": "Sapphire",
     "naive_description": "A rare blue gem.",
     "unique": false,
     "sellable": true,
     "rarity": 2,
-    "value": 11000
+    "value": 1100
+  },
+  "priorite": {
+    "id": 99,
+    "category": 2,
+    "lookup": [2, 6],
+    "origin": [3, 0],
+    "actual_title": "Priorite",
+    "naive_description": "A rare amber gemstone from Grand Island.",
+    "unique": false,
+    "sellable": true,
+    "rarity": 2,
+    "value": 800
   },
   "vermite": {
     "id": 104,
     "category": 2,
     "lookup": [7, 6],
-    "origin": [0, 6],
+    "origin": [2, 0],
     "naive_title": "Vermite",
     "actual_title": "Vermite",
     "naive_description": "A legendary iridescent gem formed in the gizzard of the Mother Worm.",
     "actual_description": "A legendary iridescent gem formed in the gizzard of the Mother Worm.",
     "unique": false,
     "rarity": 3,
-    "value": 29000
+    "value": 2900
   },
   "mythic_rhenite": {
     "id": 105,
@@ -725,7 +753,7 @@
     "unique": false,
     "sellable": true,
     "rarity": 3,
-    "value": 34000
+    "value": 3400
   },
   "pioneer_medal": {
     "id": 113,

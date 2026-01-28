@@ -452,6 +452,12 @@
     },
     {
       "folder": "overturned",
+      "label": "grotto.json",
+      "region": "overturned",
+      "room_id": 249
+    },
+    {
+      "folder": "overturned",
       "label": "grove.json",
       "region": "overturned",
       "room_id": 215

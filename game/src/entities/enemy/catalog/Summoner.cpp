@@ -39,6 +39,7 @@ Summoner::Summoner(automa::ServiceProvider& svc, world::Map& map, int variant)
 }
 
 void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (just_died()) { m_services->soundboard.play_sound("summoner_death", get_collider().get_center()); }
 
 	m_cooldowns.post_summon.update();
 	m_cooldowns.post_hurt.update();

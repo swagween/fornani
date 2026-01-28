@@ -61,9 +61,9 @@ void Player::serialize(dj::Json& out) const {
 	out["items"] = dj::Json::empty_array();
 	for (auto& item : catalog.inventory.items_view()) {
 		dj::Json this_item{};
-		this_item["label"] = item->get_label();
+		this_item["label"] = item.item->get_label();
 		this_item["quantity"] = 1;
-		this_item["revealed"] = item->is_revealed();
+		this_item["revealed"] = item.item->is_revealed();
 		out["items"].push_back(this_item);
 	}
 
@@ -138,18 +138,16 @@ void Player::register_with_map(world::Map& map) {
 	get_collider().clear_chunks();
 
 	collider.value().get().set_tag("Nani");
-
-	/*antennae = std::vector<std::unique_ptr<vfx::Gravitator>>{std::make_unique<vfx::Gravitator>(map, get_position(), colors::bright_orange, 0.62f, sf::Vector2f{2.f, 4.f}),
-															 std::make_unique<vfx::Gravitator>(map, get_position(), colors::bright_orange, 0.62f, sf::Vector2f{4.f, 4.f})};*/
-	if (antennae) {
-		for (auto& a : *antennae) { a->get_collider().set_attribute(shape::ColliderAttributes::no_map_collision); }
-	}
+	antennae.clear();
+	antennae.emplace_back(std::make_unique<vfx::Antenna>(map, get_position(), colors::bright_orange, 0.62f, sf::Vector2f{2.f, 4.f}));
+	antennae.emplace_back(std::make_unique<vfx::Antenna>(map, get_position(), colors::bright_orange, 0.62f, sf::Vector2f{4.f, 4.f}));
+	for (auto& a : antennae) { a->get_collider().set_attribute(shape::ColliderAttributes::no_map_collision); }
 }
 
 void Player::unregister_with_map() {
 	owned_collider.reset();
 	collider.reset();
-	antennae.reset();
+	antennae.clear();
 	NANI_LOG_INFO(m_logger, "Player was unregistered with map.");
 }
 
@@ -311,8 +309,8 @@ void Player::update(world::Map& map) {
 
 	if (piggybacker) { piggybacker->update(*m_services, *this); }
 
-	if (is_dead() && antennae) {
-		for (auto& a : *antennae) { a->get_collider().set_attribute(shape::ColliderAttributes::no_map_collision, false); }
+	if (is_dead()) {
+		for (auto& a : antennae) { a->get_collider().set_attribute(shape::ColliderAttributes::no_map_collision, false); }
 	}
 
 	// step sounds
@@ -379,9 +377,9 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 			get_collider().render(win, cam);
 		}
 	} else {
-		if (antennae) { antennae.value()[1]->render(svc, win, cam, 1); }
+		if (antennae.size() > 1) { antennae[1]->render(svc, win, cam, 1); }
 		win.draw(*this);
-		if (antennae) { antennae.value()[0]->render(svc, win, cam, 1); }
+		if (antennae.size() > 1) { antennae[0]->render(svc, win, cam, 1); }
 	}
 
 	if (arsenal && hotbar) {
@@ -591,7 +589,7 @@ void Player::update_weapon() {
 	for (auto& weapon : arsenal.value().get_loadout()) {
 		hotbar->has(weapon->get_tag()) ? weapon->set_hotbar() : weapon->set_reserved();
 		weapon->set_firing_direction(controller.direction);
-		if (controller.is_wallsliding()) { weapon->get_firing_direction().flip(); }
+		if (controller.is_wallsliding() && !controller.direction.up_or_down()) { weapon->get_firing_direction().flip(); }
 		weapon->update(*m_services, controller.direction);
 		weapon->set_position(m_weapon_socket);
 	}
@@ -646,9 +644,8 @@ void Player::on_crush(world::Map& map) {
 void Player::handle_map_collision(world::Map& map) { get_collider().detect_map_collision(map); }
 
 void Player::update_antennae() {
-	if (!antennae) { return; }
 	auto position = m_sprite_position;
-	for (auto [i, a] : std::views::enumerate(*antennae)) {
+	for (auto [i, a] : std::views::enumerate(antennae)) {
 		a->attraction_force = physics_stats.antenna_force;
 		a->get_collider().physics.set_friction_componentwise({physics_stats.antenna_friction, physics_stats.antenna_friction});
 		auto& socket = i == 0 ? m_antenna_sockets.first : m_antenna_sockets.second;
@@ -682,9 +679,8 @@ void Player::update_antennae() {
 }
 
 void Player::sync_antennae() {
-	if (!antennae) { return; }
 	auto position = m_sprite_position;
-	for (auto [i, a] : std::views::enumerate(*antennae)) {
+	for (auto [i, a] : std::views::enumerate(antennae)) {
 		auto& socket = i == 0 ? m_antenna_sockets.first : m_antenna_sockets.second;
 		a->set_position(position + socket);
 		a->update(*m_services);
@@ -733,11 +729,9 @@ void Player::start_over() {
 	m_animation_machine.triggers.reset(AnimTriggers::end_death);
 	m_animation_machine.post_death.cancel();
 	if (has_collider()) { get_collider().collision_depths = util::CollisionDepth(); }
-	if (antennae) {
-		for (auto& a : *antennae) {
-			a->get_collider().physics.set_global_friction(physics_stats.antenna_friction);
-			a->get_collider().physics.gravity = 0.f;
-		}
+	for (auto& a : antennae) {
+		a->get_collider().physics.set_global_friction(physics_stats.antenna_friction);
+		a->get_collider().physics.gravity = 0.f;
 	}
 	sync_antennae();
 	catalog.wardrobe.set_palette(m_services->assets.get_texture_modifiable("nani_palette_default"));
@@ -895,7 +889,7 @@ bool Player::can_doublejump() const {
 bool Player::can_roll() const {
 	if (health.is_dead()) { return false; }
 	if (controller.is_wallsliding()) { return false; }
-	if (grounded()) { return false; }
+	if (grounded() && !controller.is(AbilityType::dash)) { return false; }
 	if (!catalog.inventory.has_item("woodshine_totem")) { return false; }
 	return true;
 }
@@ -918,6 +912,7 @@ bool Player::can_jump() const {
 
 bool Player::can_wallslide() const {
 	if (health.is_dead()) { return false; }
+	if (get_collider().grounded()) { return false; }
 	if (get_collider().physics.apparent_velocity().y < wallslide_threshold_v) { return false; }
 	if (!catalog.inventory.has_item("kariba_talisman")) { return false; }
 	return true;

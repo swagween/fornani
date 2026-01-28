@@ -380,7 +380,7 @@ void Dojo::acquire_item(ServiceProvider& svc, player::Player& player, int modifi
 	player.give_item_by_id(modifier, 1);
 	if (!m_console) {
 		m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
-		m_console.value()->append(player.catalog.inventory.item_view(modifier).get_title());
+		m_console.value()->append(player.catalog.inventory.find_item(modifier)->get_title());
 		m_console.value()->append("!");
 	}
 	m_console.value()->display_item(modifier);

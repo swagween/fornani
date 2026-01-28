@@ -37,13 +37,19 @@ capo::Buffer const& SoundManager::get_buffer(std::string_view label) {
 
 void SoundManager::set_tick_for_buffer(std::string_view label, int const to) {
 	auto it = m_ticks.find(label);
-	if (it == m_ticks.end()) { return; }
+	if (it == m_ticks.end()) {
+		NANI_LOG_ERROR(m_logger, "Failed to find tick for buffer {}", label);
+		return;
+	}
 	it->second = to;
 }
 
 int SoundManager::get_tick_for_buffer(std::string_view label) {
 	auto it = m_ticks.find(label);
-	if (it == m_ticks.end()) { return -1; }
+	if (it == m_ticks.end()) {
+		NANI_LOG_ERROR(m_logger, "Failed to find tick for buffer {}", label);
+		return -1;
+	}
 	return it->second;
 }
 

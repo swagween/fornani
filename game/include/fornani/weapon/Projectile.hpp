@@ -9,7 +9,7 @@
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/SpriteHistory.hpp>
 #include <fornani/io/Logger.hpp>
-#include <fornani/particle/Gravitator.hpp>
+#include <fornani/particle/Antenna.hpp>
 #include <fornani/physics/CircleCollider.hpp>
 #include <fornani/physics/Shape.hpp>
 #include <fornani/utils/BitFlags.hpp>

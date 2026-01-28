@@ -7,7 +7,7 @@
           1
         ],
         "id": 26056,
-        "modifier": 69,
+        "modifier": 99,
         "position": [
           93,
           29
@@ -185,14 +185,8 @@
     ]
   },
   "meta": {
-    "ambience": "",
     "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -217,23 +211,15 @@
       19
     ],
     "minimap": true,
-    "music": "",
     "player_start": [
       0,
       0
     ],
-    "properties": {
-      "day_night_shift": true,
-      "environmental_randomness": true,
-      "lighting": false,
-      "timer": false
-    },
     "room_id": 206,
     "shader": {
       "darken_factor": 0
     },
-    "special_drop_id": 0,
-    "use_template": false
+    "use_template": true
   },
   "tile": {
     "flags": {

@@ -97,11 +97,11 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		auto row{0.f};
 		m_description->write(svc, "---", svc.text.fonts.basic);
 		for (auto& item : player.catalog.inventory.items_view()) {
-			if (item->get_type() != item::ItemType::apparel) { continue; }
-			m_apparel_sprite.setTextureRect(item->get_lookup());
+			if (item.item->get_type() != item::ItemType::apparel) { continue; }
+			m_apparel_sprite.setTextureRect(item.item->get_lookup());
 			m_apparel_sprite.setOrigin({-6.f, -6.f}); // center sprite in window
-			item->render(win, m_apparel_sprite, m_physics.position + m_placement + m_grid_offset + item->get_f_origin().componentWiseMul(m_selector.get_spacing()) - cam);
-			if (item->get_id() == m_current_item_id && m_description) { m_description->write(svc, item->get_title() + ": " + item->get_description(), svc.text.fonts.basic); }
+			item.item->render(win, m_apparel_sprite, m_physics.position + m_placement + m_grid_offset + item.item->get_f_origin().componentWiseMul(m_selector.get_spacing()) - cam);
+			if (item.item->get_id() == m_current_item_id && m_description) { m_description->write(svc, item.item->get_title() + ": " + item.item->get_description(), svc.text.fonts.basic); }
 		}
 
 		m_selector.render(win, m_sprite, cam, selection_origin, shader, palette);

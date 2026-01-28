@@ -11,6 +11,7 @@ nani_add_headers(
         OrbDisplay.hpp
         MiniMap.hpp
         MiniMenu.hpp
+        NumberDisplay.hpp
         PauseWindow.hpp
         Portrait.hpp
         InventorySelector.hpp

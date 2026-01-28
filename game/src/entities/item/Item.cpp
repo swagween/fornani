@@ -19,6 +19,9 @@ Item::Item(dj::Json& source, std::string_view label) : m_label{label} {
 	if (in_data["readable"].as_bool()) { m_flags.set(ItemFlags::readable); }
 	if (in_data["equippable"].as_bool()) { m_flags.set(ItemFlags::equippable); }
 	if (in_data["wearable"].as_bool()) { m_flags.set(ItemFlags::wearable); }
+	if (in_data["invisible"].as_bool()) { m_flags.set(ItemFlags::invisible); }
+	m_stats.stack_limit = in_data["stack_limit"] ? in_data["stack_limit"].as<int>() : 1;
+	if (m_type == ItemType::collectible) { m_stats.stack_limit = 99; }
 
 	m_info.actual_title = in_data["actual_title"].as_string().data();
 	m_info.actual_description = in_data["actual_description"].as_string().data();

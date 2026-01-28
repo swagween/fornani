@@ -34,6 +34,7 @@ class Platform : public Animatable {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	void switch_directions();
+	void set_handle(EntityHandle to) { m_handle = to; }
 	shape::Collider& get_collider() { return *m_collider.get(); }
 
 	Direction direction{};
@@ -71,6 +72,8 @@ class Platform : public Animatable {
 	int style{};
 	int state{};
 	sf::Vector2<int> offset{};
+
+	EntityHandle m_handle{};
 
 	io::Logger m_logger{"world"};
 };

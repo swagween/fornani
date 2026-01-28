@@ -1,7 +1,7 @@
+
 #pragma once
 
-#include "fornani/entities/enemy/Enemy.hpp"
-#include "fornani/entities/packages/Seeker.hpp"
+#include <fornani/entities/enemy/Enemy.hpp>
 #define EYEBOT_BIND(f) std::bind(&Eyebot::f, this)
 
 namespace fornani::enemy {

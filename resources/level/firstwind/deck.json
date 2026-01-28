@@ -41,7 +41,7 @@
           24,
           19
         ],
-        "start": 0,
+        "start": 0.10400000214576721,
         "type": "standard_side_to_side"
       },
       {
@@ -55,7 +55,7 @@
           34,
           19
         ],
-        "start": 0.5,
+        "start": 0.6039999723434448,
         "type": "standard_side_to_side"
       }
     ],

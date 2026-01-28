@@ -142,6 +142,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		}
 	}
 
+	auto plat_handle = EntityHandle{3000};
 	for (auto& entry : entities["platforms"].as_array()) {
 		sf::Vector2f dim{};
 		sf::Vector2f pos{};
@@ -155,6 +156,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		start = ccm::ext::clamp(start, 0.f, 1.f);
 		auto type = entry["type"].as_string();
 		platforms.push_back(std::make_unique<Platform>(svc, *this, pos, dim, entry["extent"].as<float>(), type, start, entry["style"].as<int>()));
+		platforms.back()->set_handle(++plat_handle);
 	}
 	for (auto& entry : entities["switch_blocks"].as_array()) {
 		sf::Vector2f pos{};
@@ -958,7 +960,7 @@ MapAttributes::MapAttributes(dj::Json const& in) {
 
 	music = in["music"].as_string();
 	ambience = in["ambience"].as_string();
-	for (auto& entry : in["atmosphere"].as_array()) { atmosphere.push_back(entry.as<int>()); }
+	for (auto& entry : in["atmosphere"].as_array()) { atmosphere.add(entry.as_string()); }
 
 	special_drop_id = in["special_drop_id"].as<int>();
 	border_color = sf::Color{in["border_color"][0].as<std::uint8_t>(), in["border_color"][1].as<std::uint8_t>(), in["border_color"][2].as<std::uint8_t>()};

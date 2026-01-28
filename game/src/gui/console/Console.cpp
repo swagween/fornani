@@ -44,7 +44,7 @@ void Console::update(automa::ServiceProvider& svc) {
 		if (m_writer->is_stalling()) { m_writer->start(); }
 	}
 	if (!m_writer) { return; }
-	if (m_writer->is_writing()) { svc.soundboard.flags.console.set(audio::Console::speech); }
+	if (m_writer->is_writing()) { svc.soundboard.repeat_sound("console_speech", 0, {}, m_writer->is_sped_up() ? 1.6f : 1.f); }
 	m_position = m_path.get_position();
 	m_dimensions = m_path.get_dimensions();
 	m_nineslice.set_offset(-m_path.get_local_center());

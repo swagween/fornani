@@ -42,7 +42,7 @@ enum class SoundboardState { on, off };
 
 enum class Menu { select, shift, forward_switch, backward_switch, error };
 enum class Pioneer { select, click, back, open, close, slot, chain, boot, buzz, fast_click, hard_slot, hum, sync, scan, drag, wires, forward, unhover };
-enum class Console { next, done, shift, select, speech, menu_open, notification };
+enum class Console { next, done, shift, select, menu_open, notification };
 enum class World {
 	load,
 	save,
@@ -206,8 +206,8 @@ class Soundboard {
 
 	std::unordered_map<std::string, std::function<void(int)>> npc_map;
 
-	void play_sound(std::string_view label, sf::Vector2f position);
-	void repeat_sound(std::string_view label, SoundProducerID id = 0, sf::Vector2f position = {});
+	void play_sound(std::string_view label, sf::Vector2f position = {});
+	void repeat_sound(std::string_view label, SoundProducerID id = 0, sf::Vector2f position = {}, float pitch = 1.f);
 
 	void play(capo::IEngine& engine, automa::ServiceProvider& svc, std::string const& label, SoundProperties properties, int frequency = 0, float attenuation = 1.f);
 	void play(capo::IEngine& engine, automa::ServiceProvider& svc, std::string const& label, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 1, float attenuation = 1.f, sf::Vector2f distance = {}, int echo_count = 0,

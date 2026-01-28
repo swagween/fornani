@@ -54,7 +54,6 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.console.test(Console::next)) { play(engine, svc, "menu_next"); }
 	if (flags.console.test(Console::shift)) { play(engine, svc, "menu_shift"); }
 	if (flags.console.test(Console::menu_open)) { play(engine, svc, "menu_open"); }
-	if (flags.console.test(Console::speech)) { play(engine, svc, "menu_shift", 0.15f, 100.f, 16); }
 	if (flags.console.test(Console::notification)) { play(engine, svc, "notification"); }
 
 	// pioneer
@@ -146,9 +145,9 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	// minigus
 	if (flags.minigus.test(Minigus::invincible)) { play(engine, svc, "minigus_invincible"); }
 	if (flags.minigus.test(Minigus::build)) { play(engine, svc, "minigus_build"); }
-	if (flags.minigus.test(Minigus::hurt_1)) { play(engine, svc, "minigus_hurt_1"); }
+	/*if (flags.minigus.test(Minigus::hurt_1)) { play(engine, svc, "minigus_hurt_1"); }
 	if (flags.minigus.test(Minigus::hurt_2)) { play(engine, svc, "minigus_hurt_2"); }
-	if (flags.minigus.test(Minigus::hurt_3)) { play(engine, svc, "minigus_hurt_3"); }
+	if (flags.minigus.test(Minigus::hurt_3)) { play(engine, svc, "minigus_hurt_3"); }*/
 	if (flags.minigus.test(Minigus::laugh_1)) { play(engine, svc, "minigus_laugh_1"); }
 	if (flags.minigus.test(Minigus::laugh_2)) { play(engine, svc, "minigus_laugh_2"); }
 	if (flags.minigus.test(Minigus::snap)) { play(engine, svc, "minigus_snap"); }
@@ -288,8 +287,8 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 
 	// beamsprout
 	if (flags.beamsprout.test(Beamsprout::hurt)) { play(engine, svc, "hit_high", 0.2f, 50.f); }
-	if (flags.beamsprout.test(Beamsprout::charge)) { play(engine, svc, "small_beast_charge", 0.f, 20.f); }
-	if (flags.beamsprout.test(Beamsprout::shoot)) { play(engine, svc, "beast_spit", 0.2f, 50.f); }
+	if (flags.beamsprout.test(Beamsprout::charge)) { play(engine, svc, "small_beast_charge", 0.f, 40.f); }
+	if (flags.beamsprout.test(Beamsprout::shoot)) { play(engine, svc, "beast_spit", 0.2f, 80.f); }
 
 	// crow
 	if (flags.crow.test(Crow::fly)) { play(engine, svc, "crow_fly", 0.2f, 20.f); }
@@ -366,6 +365,11 @@ void Soundboard::play_sound(std::string_view label, sf::Vector2f position) {
 	if (it == m_property_map.end()) { it = m_property_map.find("error_sound"); }
 
 	std::string_view lookup = it->first;
+
+	auto tick = m_services->ticker.ticks;
+	if (tick - minimum_wait_time_v < m_services->sounds.get_tick_for_buffer(lookup)) { return; }
+	m_services->sounds.set_tick_for_buffer(lookup, tick);
+
 	auto props = it->second;
 	props.volume *= m_volume_multiplier;
 
@@ -374,7 +378,7 @@ void Soundboard::play_sound(std::string_view label, sf::Vector2f position) {
 	entry.sound.play();
 }
 
-void Soundboard::repeat_sound(std::string_view label, SoundProducerID id, sf::Vector2f position) {
+void Soundboard::repeat_sound(std::string_view label, SoundProducerID id, sf::Vector2f position, float pitch) {
 	auto it = m_property_map.find(label);
 	auto not_found = it == m_property_map.end();
 	if (not_found) { it = m_property_map.find("error_sound"); }
@@ -388,6 +392,7 @@ void Soundboard::repeat_sound(std::string_view label, SoundProducerID id, sf::Ve
 
 	if (existing != sound_pool.end()) {
 		existing->position = position;
+		existing->sound.set_pitch(pitch);
 		existing->touched_this_tick = true;
 		return;
 	}
@@ -406,12 +411,11 @@ void Soundboard::play(capo::IEngine& engine, automa::ServiceProvider& svc, std::
 	auto props = it->second;
 
 	auto tick = svc.ticker.ticks;
-
-	if (frequency == 0 && tick - minimum_wait_time_v < svc.sounds.get_tick_for_buffer(lookup)) { return; }
+	if (frequency == 0 && tick - minimum_wait_time_v < svc.sounds.get_tick_for_buffer(label)) { return; }
 
 	props.volume *= (vol / 100.f) * m_volume_multiplier;
 
-	svc.sounds.set_tick_for_buffer(lookup, tick);
+	svc.sounds.set_tick_for_buffer(label, tick);
 	auto& entry = sound_pool.emplace_back(ActiveSound{.sound = Sound(engine, svc.sounds.get_buffer(label), lookup, props), .label = label, .position = m_listener.position, .looping = frequency != 0, .touched_this_tick = true});
 	if (frequency != 0) {
 		repeat(svc, entry.sound, frequency, random_pitch_offset, attenuation, distance);

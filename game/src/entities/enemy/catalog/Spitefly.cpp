@@ -39,6 +39,7 @@ Spitefly::Spitefly(automa::ServiceProvider& svc, world::Map& map, int variant) :
 }
 
 void Spitefly::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (just_died()) { m_services->soundboard.play_sound("spitefly_death", get_collider().get_center()); }
 	Enemy::update(svc, map, player);
 	if (health.is_dead()) { return; }
 
@@ -100,6 +101,7 @@ fsm::StateFunction Spitefly::update_sleep() {
 fsm::StateFunction Spitefly::update_awaken() {
 	p_state.actual = SpiteflyState::awaken;
 	if (animation.is_complete()) {
+		m_services->soundboard.play_sound("spitefly_screech", get_collider().get_center());
 		flags.general.set(GeneralFlags::gravity);
 		request(SpiteflyState::idle);
 		if (change_state(SpiteflyState::idle, get_params("idle"))) { return SPITEFLY_BIND(update_idle); }

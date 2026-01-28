@@ -4,7 +4,7 @@
 
 namespace fornani::automa {
 
-enum class SettingsToggles { autosprint, tutorial, gamepad, music, sfx, fullscreen, military_time };
+enum class SettingsToggles { autosprint, tutorial, gamepad, music, ambience, sfx, fullscreen, military_time };
 enum class SettingsMenuMode { ready, adjust };
 
 class SettingsMenu final : public MenuState {
@@ -35,10 +35,12 @@ class SettingsMenu final : public MenuState {
 
 	struct {
 		sf::Text music_volume;
+		sf::Text ambience_volume;
 		sf::Text sfx_volume;
 	} sliders;
 
 	sf::Text music_label;
+	sf::Text ambience_label;
 	sf::Text sfx_label;
 };
 

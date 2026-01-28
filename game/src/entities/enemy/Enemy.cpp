@@ -12,7 +12,7 @@ namespace fornani::enemy {
 
 Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
 	: Mobile(svc, map, "enemy_" + std::string{label}, sf::Vector2i{svc.data.enemy[label]["physical"]["sprite_dimensions"][0].as<int>(), svc.data.enemy[label]["physical"]["sprite_dimensions"][1].as<int>()}), metadata{.variant{variant}},
-	  label(label), health_indicator{svc}, hurt_effect{128}, m_health_bar{svc, colors::mythic_green}, health{svc.data.enemy[label]["attributes"]["base_hp"].as<float>()}, m_weakness{180} {
+	  label(label), health_indicator{svc}, hurt_effect{128}, m_health_bar{svc, colors::mythic_green}, health{svc.data.enemy[label]["attributes"]["base_hp"].as<float>()}, m_weakness{160} {
 
 	get_collider().set_trait(shape::ColliderTrait::enemy);
 	if (spawned) { flags.general.set(GeneralFlags::spawned); }
@@ -236,11 +236,21 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	on_crush(map);
 
-	if (player.get_collider().wallslider.overlaps(get_collider().bounding_box) && player.controller.is_dashing() && !player.controller.is(player::AbilityType::dash_kick)) {
-		if (!player.has_flag_set(player::PlayerFlags::dash_kick)) { hurt(4.f); }
+	auto dash_kick_overlap = player.get_collider().wallslider.overlaps(get_collider().bounding_box);
+	if (has_secondary_collider()) {
+		if (player.get_collider().wallslider.overlaps(get_secondary_collider().bounding_box)) { dash_kick_overlap = true; }
+	}
+	if (dash_kick_overlap && player.controller.is_dashing() && !player.controller.is(player::AbilityType::dash_kick) && flags.state.test(StateFlags::vulnerable)) {
+		if (!player.has_flag_set(player::PlayerFlags::dash_kick)) {
+			hurt(4.f);
+			if (!get_collider().has_attribute(shape::ColliderAttributes::sturdy)) {
+				get_collider().has_flag_set(shape::ColliderFlags::simple) ? get_collider().physics.acceleration.y = -2.f : get_collider().physics.acceleration.y = -280.f;
+				get_collider().has_flag_set(shape::ColliderFlags::simple) ? get_collider().physics.acceleration.x = -0.2f * player.get_actual_direction().as_float()
+																		  : get_collider().physics.acceleration.x = -4.f * player.get_actual_direction().as_float();
+			}
+			m_weakness.start();
+		}
 		player.set_flag(player::PlayerFlags::dash_kick);
-		if (!get_collider().has_attribute(shape::ColliderAttributes::sturdy)) { get_collider().physics.acceleration.y = -280.f; }
-		m_weakness.start();
 	}
 
 	// update ranges
@@ -268,6 +278,7 @@ void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::P
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
+	if (flags.state.test(StateFlags::invisible)) { return; }
 	auto horizontal_offset = sf::Vector2f{directions.actual.as_float(), 1.f};
 	auto sprite_position = get_collider().get_center() - cam + m_random_offset + m_native_offset.componentWiseMul(horizontal_offset);
 	Drawable::set_position(sprite_position);
@@ -322,7 +333,10 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 		if (proj.persistent()) { proj.damage_over_time(); }
 		if (proj.can_damage()) {
 			if (proj.has_attribute(arms::ProjectileAttributes::explode_on_impact)) { proj.on_explode(svc, map); }
-			if (m_weakness.running()) { proj.multiply(2.f); }
+			if (m_weakness.running()) {
+				proj.multiply(2.f);
+				m_weakness.cancel();
+			}
 			player.set_flag(player::PlayerFlags::hit_target);
 			hurt(proj.get_damage());
 			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
@@ -330,8 +344,10 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 				svc.soundboard.flags.projectile.set(audio::Projectile::critical_hit);
 				svc.ticker.freeze_frame(8);
 				map.spawn_emitter(svc, "critical_hit", proj.get_position(), Direction{});
+				map.spawn_effect(svc, "flare", proj.get_position());
+			} else {
+				map.spawn_effect(svc, "hit_flash", proj.get_position());
 			}
-			map.effects.push_back(entity::Effect(svc, "hit_flash", proj.get_position()));
 			hitstun.start(32);
 		}
 		svc.soundboard.flags.world.set(audio::World::projectile_hit);

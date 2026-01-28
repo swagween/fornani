@@ -7,8 +7,8 @@ namespace fornani::audio {
 SoundProperties SoundProperties::from_json(dj::Json const& in) {
 	SoundProperties p{};
 	p.volume = in["volume"].as<float>();
-	p.max_distance = in["max_distance"] ? in["max_distance"].as<float>() : 1024.f;
-	p.min_distance = in["min_distance"] ? in["min_distance"].as<float>() : 128.f;
+	p.max_distance = in["max_distance"] ? in["max_distance"].as<float>() : default_max_distance_v;
+	p.min_distance = in["min_distance"] ? in["min_distance"].as<float>() : default_min_distance_v;
 	p.pitch_offset = in["pitch_offset"].as<float>();
 	p.fade_in = in["fade_in"].as<int>();
 	p.fade_out = in["fade_out"].as<int>();

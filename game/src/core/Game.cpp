@@ -587,7 +587,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Separator();
 								ImGui::Text("Inventory");
 								for (auto& item : player.catalog.inventory.items_view()) {
-									ImGui::Text("%s", item->get_label().data());
+									ImGui::Text("%s", item.item->get_label().data());
 									ImGui::SameLine();
 								}
 								ImGui::Separator();
@@ -636,12 +636,10 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 
 void Game::take_screenshot(sf::Texture& screencap) {
 	services.window->screencap.update(services.window->get());
-	std::time_t const now = std::time(nullptr);
-
-	std::time_t const time = std::time({});
-	char time_string[std::size("yyyy-mm-ddThh:mm:ssZ")];
-	std::strftime(std::data(time_string), std::size(time_string), "%FT%TZ", std::gmtime(&time));
-	auto time_str = std::string{time_string};
+	std::time_t now = std::time(nullptr);
+	std::string time_str(21, '\0');
+	std::strftime(time_str.data(), time_str.size(), "%FT%TZ", std::gmtime(&now));
+	time_str.resize(std::strlen(time_str.c_str()));
 
 	std::erase_if(time_str, [](auto const& c) { return c == ':' || isspace(c); });
 	auto destination = std::filesystem::path{services.finder.paths.screenshots.string()};

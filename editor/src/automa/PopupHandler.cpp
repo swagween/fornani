@@ -363,6 +363,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 
 		if (type == 0 || type == 2) {
 			if (ImGui::BeginCombo("Contents", label, ImGuiComboFlags_HeightLargest)) {
+				auto labels = std::vector<std::pair<std::string, int>>{};
 				switch (type) {
 				case 0:
 					for (auto const& gun : svc.data.weapon.as_object()) {
@@ -374,11 +375,13 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 					}
 					break;
 				case 2:
-					for (auto const& item : svc.data.item.as_object()) {
-						if (ImGui::Selectable(item.first.c_str())) {
-							modifier = item.second["id"].as<int>();
-							label = item.first.c_str();
-							ImGui::SetItemDefaultFocus();
+
+					for (auto const& item : svc.data.item.as_object()) { labels.push_back({item.first, item.second["id"].as<int>()}); }
+					std::ranges::sort(labels, {}, &std::pair<std::string, int>::first);
+					for (auto const& lbl : labels) {
+						if (ImGui::Selectable(lbl.first.c_str())) {
+							modifier = lbl.second;
+							label = lbl.first.c_str();
 						}
 					}
 					break;

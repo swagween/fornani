@@ -117,6 +117,7 @@ class Minigus : public Boss, public NPC, public StateMachine<MinigusState> {
 		util::Cooldown post_charge{600};
 		util::Cooldown post_punch{400};
 		util::Cooldown hurt{320};
+		util::Cooldown hurt_sound{32};
 		util::Cooldown player_punch{80};
 		util::Cooldown pre_jump{380};
 		util::Cooldown vulnerability{2000};

@@ -14,9 +14,10 @@ class Map;
 
 namespace fornani::vfx {
 
-class Gravitator {
+class Antenna {
   public:
-	Gravitator(world::Map& map, sf::Vector2f pos, sf::Color col, float agf, sf::Vector2f size = {4.f, 4.f});
+	Antenna(world::Map& map, sf::Vector2f pos, sf::Color col, float agf, sf::Vector2f size = {4.f, 4.f});
+
 	void update(automa::ServiceProvider& svc);
 	void add_force(sf::Vector2f force);
 	void set_position(sf::Vector2f new_position);
@@ -24,7 +25,7 @@ class Gravitator {
 	void demagnetize(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos, int history = 0);
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return get_collider().physics.position; }
-	shape::CircleCollider& get_collider() const { return *m_collider.get_circle(); }
+	[[nodiscard]] auto get_collider() const -> shape::CircleCollider& { return m_collider.get_reference_circle(); }
 
 	sf::Vector2f dimensions{};
 
@@ -32,7 +33,7 @@ class Gravitator {
 	sf::RectangleShape box{};
 	float attraction_force{};
 
-  private:
+  protected:
 	shape::RegisteredCollider m_collider;
 	components::SteeringBehavior steering{};
 };

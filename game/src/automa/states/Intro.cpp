@@ -79,7 +79,7 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	m_location_text.update();
-	if (m_location_text.is_writing()) { svc.soundboard.flags.console.set(audio::Console::speech); }
+	if (m_location_text.is_writing()) { svc.soundboard.repeat_sound("console_speech"); }
 	m_cloud_sea.update(svc);
 	m_cloud.update(svc);
 	m_airship.tick();

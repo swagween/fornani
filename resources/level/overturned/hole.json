@@ -72,14 +72,8 @@
     ]
   },
   "meta": {
-    "ambience": "",
     "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -104,23 +98,15 @@
       24
     ],
     "minimap": true,
-    "music": "",
     "player_start": [
       0,
       0
     ],
-    "properties": {
-      "day_night_shift": false,
-      "environmental_randomness": false,
-      "lighting": false,
-      "timer": false
-    },
     "room_id": 242,
     "shader": {
       "darken_factor": 0
     },
-    "special_drop_id": 0,
-    "use_template": false
+    "use_template": true
   },
   "tile": {
     "flags": {

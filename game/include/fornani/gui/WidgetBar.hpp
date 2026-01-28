@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Widget.hpp"
-#include "fornani/particle/Gravitator.hpp"
+#include "fornani/particle/Antenna.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;

@@ -60,6 +60,7 @@ class TextWriter {
 	[[nodiscard]] auto is_ready() const -> bool { return is_waiting() && m_delay.is_complete(); }
 	[[nodiscard]] auto is_available() const -> bool { return !is_writing() && !is_stalling(); }
 	[[nodiscard]] auto is_first_message() const -> bool { return m_is_first; }
+	[[nodiscard]] auto is_sped_up() const -> bool { return m_writing_speed < medium_writing_speed_v; }
 
 	Message& current_message(); // for debug
 

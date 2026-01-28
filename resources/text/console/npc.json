@@ -460,6 +460,7 @@
       "suite": [
         [
           {
+            "codes": [[13, 20, 101]],
             "message": "I can't believe it... You actually did it!"
           },
           {
@@ -476,6 +477,7 @@
       "suite": [
         [
           {
+            "codes": [[13, 20, 101]],
             "message": "..."
           },
           {
@@ -489,6 +491,7 @@
       "suite": [
         [
           {
+            "codes": [[13, 20, 101]],
             "message": "Listen, I don't exactly have much to give you right now."
           },
           {
@@ -505,33 +508,10 @@
       "suite": [
         [
           {
-            "message": "Heh... See ya around!"
-          }
-        ]
-      ]
-    },
-    "8": {
-      "responses": [],
-      "suite": [
-        [
-          {
-            "message": "Thanks again for helping me. Stay safe out there!"
-          }
-        ]
-      ]
-    },
-    "9": {
-      "responses": [],
-      "suite": [
-        [
-          {
-            "message": "I can't believe it... You actually did it!"
-          },
-          {
-            "message": "I really can't thank you enough, stranger!"
-          },
-          {
-            "message": "Heh, I guess I owe you big time!"
+            "messages": [
+              "Thanks again for helping me. Stay safe out there!",
+              "Heh... See ya around!"
+            ]
           }
         ]
       ]

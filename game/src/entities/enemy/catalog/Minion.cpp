@@ -22,6 +22,7 @@ Minion::Minion(automa::ServiceProvider& svc, world::Map& map, int variant) : Ene
 
 void Minion::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 
+	if (just_died()) { m_services->soundboard.play_sound("hit_squeak", get_collider().get_center()); }
 	Enemy::update(svc, map, player);
 	face_player(player);
 	flags.state.set(StateFlags::vulnerable);

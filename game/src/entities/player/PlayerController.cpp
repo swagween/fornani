@@ -8,7 +8,7 @@ namespace fornani::player {
 
 constexpr static float crawl_speed_v{0.32f};
 
-PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect{64}, .dash_kick{96}}, post_slide{80}, post_wallslide{16}, wallslide_slowdown{64} {
+PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect{64}, .dash_kick{134}}, post_slide{80}, post_wallslide{16}, wallslide_slowdown{64} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
@@ -128,7 +128,9 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		if (!sprint) { flags.set(MovementState::crouch); }
 	}
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).triggered) {
-		if (!m_ability && player.can_roll() && sprint) { m_ability = std::make_unique<Roll>(svc, map, player.get_collider(), player.get_actual_direction()); }
+		auto can_roll = !m_ability;
+		if (is(AbilityType::dash) && player.get_collider().grounded()) { can_roll = true; }
+		if (can_roll && player.can_roll() && sprint) { m_ability = std::make_unique<Roll>(svc, map, player.get_collider(), player.get_actual_direction()); }
 	}
 	if (m_ability) {
 		if (m_ability.value()->is(AbilityType::roll)) { input_flags.reset(InputState::slide_in_air); }

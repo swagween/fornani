@@ -2,12 +2,13 @@
 #pragma once
 
 #include <fornani/entities/item/Item.hpp>
+#include <fornani/gui/Gizmo.hpp>
+#include <fornani/gui/InventorySelector.hpp>
 #include <fornani/gui/MiniMenu.hpp>
+#include <fornani/gui/NumberDisplay.hpp>
 #include <fornani/gui/OrbDisplay.hpp>
+#include <fornani/gui/gizmos/DescriptionGizmo.hpp>
 #include <optional>
-#include "fornani/gui/Gizmo.hpp"
-#include "fornani/gui/InventorySelector.hpp"
-#include "fornani/gui/gizmos/DescriptionGizmo.hpp"
 
 namespace fornani::gui {
 
@@ -22,7 +23,7 @@ struct InventoryZone {
 
 class InventoryGizmo : public Gizmo {
   public:
-	InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement);
+	InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f placement);
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground = false) override;
 	bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
@@ -54,6 +55,7 @@ class InventoryGizmo : public Gizmo {
 	std::unique_ptr<InventorySelector> m_selector;
 	std::unique_ptr<DescriptionGizmo> m_description;
 	OrbDisplay m_orb_display;
+	std::vector<NumberDisplay> m_number_displays{};
 	std::optional<MiniMenu> m_item_menu{};
 
 	sf::Sprite m_sprite;

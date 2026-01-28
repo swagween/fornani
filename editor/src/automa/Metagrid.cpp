@@ -155,7 +155,7 @@ void Metagrid::render(sf::RenderWindow& win) {
 	auto ctr = 0;
 	for (auto& r : m_rooms) {
 		r.no_border = hide_room_borders;
-		if (!r.is_minimap() && ignore_test_levels) {
+		if (!r.has_flag_set(RoomFlags::include_in_minimap) && ignore_test_levels) {
 			++ctr;
 			continue;
 		}
@@ -239,10 +239,17 @@ void Metagrid::render(sf::RenderWindow& win) {
 	}
 	if (ImGui::BeginPopupContextWindow("Room Options")) {
 		menu_open = true;
+		auto ut = m_highlighted_room ? m_highlighted_room.value()->has_flag_set(RoomFlags::use_template) : false;
 		if (ImGui::BeginMenu("Edit")) {
 			if (ImGui::MenuItem("Toggle Minimap")) {
 				if (m_highlighted_room) {
-					m_highlighted_room.value()->toggle_minimap();
+					m_highlighted_room.value()->toggle_flag(RoomFlags::include_in_minimap);
+					serialize = true;
+				}
+			}
+			if (ImGui::Checkbox("Use Template", &ut)) {
+				if (m_highlighted_room) {
+					m_highlighted_room.value()->toggle_flag(RoomFlags::use_template);
 					serialize = true;
 				}
 			}

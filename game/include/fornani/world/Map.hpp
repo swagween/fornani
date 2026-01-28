@@ -29,6 +29,7 @@
 #include <fornani/shader/LightShader.hpp>
 #include <fornani/shader/Palette.hpp>
 #include <fornani/story/CutsceneCatalog.hpp>
+#include <fornani/systems/Register.hpp>
 #include <fornani/utils/Constants.hpp>
 #include <fornani/utils/Stopwatch.hpp>
 #include <fornani/weapon/Grenade.hpp>
@@ -83,7 +84,7 @@ struct MapAttributes {
 	util::Cooldown shake_cooldown{};
 	std::string ambience{};
 	std::string music{};
-	std::vector<int> atmosphere{};
+	Register<std::string> atmosphere{};
 	int special_drop_id{};
 	sf::Color border_color{};
 

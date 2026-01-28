@@ -126,7 +126,7 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 				m_state.set(PortalState::unlocked);
 				svc.soundboard.flags.world.set(audio::World::door_unlock);
 				console = std::make_unique<gui::Console>(svc, svc.text.basic, "unlocked_door", gui::OutputType::gradual);
-				console.value()->append(player.catalog.inventory.item_view(key_id).get_title());
+				console.value()->append(player.catalog.inventory.find_item(key_id)->get_title());
 				console.value()->display_item(key_id);
 				svc.data.unlock_door(key_id);
 				svc.soundboard.flags.world.set(audio::World::door_unlock);

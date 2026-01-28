@@ -17,15 +17,18 @@ class Ambience {
 	void load(ResourceFinder& finder, std::string_view source);
 	void play();
 	void set_balance(float balance);
-	void set_volume(float const vol) { m_in_game_multiplier = vol; }
+	void set_volume(float const vol) { m_volume_multiplier = vol; }
+	void adjust_volume(float delta) { set_volume(get_volume() + delta); };
 	struct {
 		MusicPlayer open;
 		MusicPlayer closed;
 	} tracks;
 
+	[[nodiscard]] auto get_volume() const -> float { return m_volume_multiplier; }
+
   private:
+	std::string current_track{};
 	float m_volume_multiplier;
-	float m_in_game_multiplier;
 };
 
 } // namespace fornani::audio

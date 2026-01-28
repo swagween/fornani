@@ -8,7 +8,7 @@
 namespace fornani::enemy {
 
 Tank::Tank(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, map, "tank"), m_variant{static_cast<TankVariant>(variant)}, m_weapon(svc, "skycorps_smg"), m_services(&svc), m_map(&map), m_gun{svc.assets.get_texture("tank_gun"), 2.0f, 0.65f, {-12.f, 6.f}}, m_debug{true} {
+	: Enemy(svc, map, "tank"), m_variant{static_cast<TankVariant>(variant)}, m_weapon(svc, "skycorps_smg"), m_services(&svc), m_map(&map), m_gun{svc.assets.get_texture("tank_gun"), 2.0f, 0.65f, {-12.f, 6.f}}, m_debug{false} {
 	m_params = {{"idle", {0, 6, 28, -1}}, {"run", {6, 4, 38, 2}},	{"shoot_horizontal", {10, 4, 22, 0}}, {"shoot_vertical", {14, 4, 22, 0}}, {"jumpsquat", {18, 5, 12, 0, true}}, {"jump", {23, 4, 22, 0, true}},
 				{"land", {27, 3, 22, 0}}, {"turn", {30, 2, 32, 0}}, {"type", {32, 2, 128, -1}},			  {"alert", {34, 7, 32, 0}},		  {"pocket", {41, 6, 32, 0}},		   {"sleep", {47, 2, 256, -1}},
 				{"drink", {49, 6, 32, 0}}};
@@ -29,6 +29,7 @@ Tank::Tank(automa::ServiceProvider& svc, world::Map& map, int variant)
 }
 
 void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (just_died()) { m_services->soundboard.play_sound("tank_death", get_collider().get_center()); }
 	Enemy::update(svc, map, player);
 	if (died()) { return; }
 
@@ -135,15 +136,17 @@ void Tank::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 		m_caution.debug_render(win, cam);
 		m_shoulders.render(win, cam, sf::Color{230, 0, 20, 80});
 		m_lower_range.render(win, cam, sf::Color{130, 0, 230, 80});
+		auto box = sf::RectangleShape{};
+		box.setPosition(get_collider().physics.position - cam);
+		m_mode == TankMode::hostile ? box.setFillColor(colors::red) : box.setFillColor(colors::green);
+		box.setSize({10.f, 10.f});
+		win.draw(box);
 	}
-	auto box = sf::RectangleShape{};
-	box.setPosition(get_collider().physics.position - cam);
-	m_mode == TankMode::hostile ? box.setFillColor(colors::red) : box.setFillColor(colors::green);
-	box.setSize({10.f, 10.f});
-	win.draw(box);
 }
 
-void Tank::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) { debug(); }
+void Tank::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	if (m_debug) { debug(); }
+}
 
 fsm::StateFunction Tank::update_idle() {
 	animation.label = "idle";

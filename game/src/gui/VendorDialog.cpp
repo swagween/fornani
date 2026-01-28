@@ -94,22 +94,22 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	auto vendor = my_npc->get_vendor();
 	if (vendor) {
 		for (auto [i, item] : std::views::enumerate(vendor.value()->inventory.items_view())) {
-			auto rarity = static_cast<int>(item->get_rarity());
+			auto rarity = static_cast<int>(item.item->get_rarity());
 			if (rarity >= m_vendor_items_list.size()) { continue; }
 			for (auto& slot : m_vendor_items_list[rarity]) {
 				if (slot == -1) {
-					slot = item->get_id();
+					slot = item.item->get_id();
 					break;
 				} // populate next slot with item
 			}
 		}
 	}
 	for (auto [i, item] : std::views::enumerate(player.catalog.inventory.items_view())) {
-		auto rarity = static_cast<int>(item->get_rarity());
+		auto rarity = static_cast<int>(item.item->get_rarity());
 		if (rarity >= m_player_items_list.size()) { continue; }
 		for (auto& slot : m_player_items_list[rarity]) {
 			if (slot == -1) {
-				slot = item->get_id();
+				slot = item.item->get_id();
 				break;
 			} // populate next slot with item
 		}
@@ -182,8 +182,8 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 		for (auto [i, row] : std::views::enumerate(item_list)) {
 			for (auto [j, slot] : std::views::enumerate(row)) {
 				for (auto [k, item] : std::views::enumerate(source_inventory.items_view())) {
-					if (is_selling() && !item->is_sellable()) { continue; }
-					if (slot == item->get_id() && m_selector.matches(j, i)) { this_item = &(*item); }
+					if (is_selling() && !item.item->is_sellable()) { continue; }
+					if (slot == item.item->get_id() && m_selector.matches(j, i)) { this_item = &(*item.item); }
 				}
 			}
 		}
@@ -299,11 +299,11 @@ void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, p
 			for (auto [j, slot] : std::views::enumerate(row)) {
 				if (vendor) {
 					for (auto [k, item] : std::views::enumerate(source_inventory.items_view())) {
-						if (slot == item->get_id()) {
-							if (is_selling() && !item->is_sellable()) { continue; }
-							if (m_selector.matches(j, i) && m_description) { m_description->write(svc, item->get_description(), svc.text.fonts.basic); }
+						if (slot == item.item->get_id()) {
+							if (is_selling() && !item.item->is_sellable()) { continue; }
+							if (m_selector.matches(j, i) && m_description) { m_description->write(svc, item.item->get_description(), svc.text.fonts.basic); }
 							auto where = m_constituents[static_cast<int>(VendorConstituentType::wares)].get_window_position() + sf::Vector2f{20.f, 34.f};
-							item->render(win, m_item_sprite.get_sprite(), where + m_selector.get_table_position_from_index(j + i * 8) * constants::f_scale_factor);
+							item.item->render(win, m_item_sprite.get_sprite(), where + m_selector.get_table_position_from_index(j + i * 8) * constants::f_scale_factor);
 						}
 					}
 				}
@@ -337,23 +337,23 @@ void VendorDialog::refresh(player::Player& player, world::Map& map) { // initial
 	auto vendor = my_npc->get_vendor();
 	if (vendor) {
 		for (auto [i, item] : std::views::enumerate(vendor.value()->inventory.items_view())) {
-			auto rarity = static_cast<int>(item->get_rarity());
+			auto rarity = static_cast<int>(item.item->get_rarity());
 			if (rarity >= m_vendor_items_list.size()) { continue; }
 			for (auto& slot : m_vendor_items_list[rarity]) {
 				if (slot == -1) {
-					slot = item->get_id();
+					slot = item.item->get_id();
 					break;
 				} // populate next slot with item
 			}
 		}
 	}
 	for (auto [i, item] : std::views::enumerate(player.catalog.inventory.items_view())) {
-		if (!item->is_sellable()) { continue; }
-		auto rarity = static_cast<int>(item->get_rarity());
+		if (!item.item->is_sellable()) { continue; }
+		auto rarity = static_cast<int>(item.item->get_rarity());
 		if (rarity >= m_player_items_list.size()) { continue; }
 		for (auto& slot : m_player_items_list[rarity]) {
 			if (slot == -1) {
-				slot = item->get_id();
+				slot = item.item->get_id();
 				break;
 			} // populate next slot with item
 		}

@@ -9,7 +9,7 @@
 
 namespace fornani::vfx {
 
-Atmosphere::Atmosphere(automa::ServiceProvider& svc, world::Map& map, int type) {
+Atmosphere::Atmosphere(automa::ServiceProvider& svc, world::Map& map, std::string_view type) {
 	auto density{32};
 	auto span = map.real_dimensions;
 	auto const chunks = (span.x / (constants::f_cell_size * 16.f)) * (span.y / (constants::f_cell_size * 16.f));
@@ -19,7 +19,7 @@ Atmosphere::Atmosphere(automa::ServiceProvider& svc, world::Map& map, int type) 
 		fireflies.push_back(std::make_unique<Firefly>(svc, sf::Vector2f{startx, starty}));
 	}
 	for (auto const& target : map.target_points) {
-		if (type == 1) {
+		if (type == "dragonflies") {
 			density = 24;
 			for (auto i{0}; i < density; ++i) {
 				auto vicinity = sf::Vector2f{128.f, 128.f};
