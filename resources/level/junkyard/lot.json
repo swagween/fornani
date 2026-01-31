@@ -1,5 +1,20 @@
 {
   "entities": {
+    "chests": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 94874,
+        "modifier": 47,
+        "position": [
+          42,
+          4
+        ],
+        "type": 1
+      }
+    ],
     "enemies": [
       {
         "dimensions": [
@@ -164,7 +179,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           125,
@@ -181,7 +195,6 @@
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,

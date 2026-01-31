@@ -34,7 +34,7 @@ class InventoryGizmo : public Gizmo {
 	void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 	void on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 
-	void handle_menu_selection(int selection);
+	void handle_menu_selection(player::Player& player, int selection);
 	void switch_zones(int modulation);
 	void write_description(item::Item& piece, sf::RenderWindow& win, player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam);
 
@@ -45,7 +45,6 @@ class InventoryGizmo : public Gizmo {
 	util::Circuit m_zone_iterator{static_cast<int>(InventoryZoneType::COUNT), static_cast<int>(InventoryZoneType::key)};
 
 	int m_current_item_lookup{};
-	int m_current_item_id{};
 
 	bool m_just_switched{};
 
@@ -63,9 +62,11 @@ class InventoryGizmo : public Gizmo {
 
 	sf::Vector2f m_equipped_items_position;
 
+	player::Player* m_player;
+
 	util::BitFlags<InventoryGizmoFlags> m_flags{};
 
-	std::optional<item::Item*> m_current_item{};
+	std::optional<int> m_current_item{};
 	automa::ServiceProvider* m_services;
 };
 

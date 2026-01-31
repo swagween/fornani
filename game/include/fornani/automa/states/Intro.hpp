@@ -31,7 +31,6 @@ class Intro final : public GameState, public Flaggable<IntroFlags> {
 
   private:
 	gui::TextWriter m_location_text;
-	world::Map map;
 	graphics::Background m_cloud_sea;
 	graphics::Background m_cloud;
 	Animatable m_airship;

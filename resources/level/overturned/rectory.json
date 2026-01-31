@@ -26,6 +26,7 @@
           10,
           6
         ],
+        "tag": "woodshine_warehouse_key",
         "type": 2
       }
     ],
@@ -39,7 +40,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           3,

@@ -32,7 +32,7 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			m_file_select_menu->handle_inputs(svc.controller_map, svc.soundboard);
 		} else {
 			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered || svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
-				svc.data.load_blank_save(*player);
+				// svc.data.load_blank_save(*player);
 				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
 			}
 		}

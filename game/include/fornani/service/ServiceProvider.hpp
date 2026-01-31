@@ -19,7 +19,7 @@
 #include <fornani/story/Quest.hpp>
 #include <fornani/story/QuestTracker.hpp>
 #include <fornani/story/StatTracker.hpp>
-#include <fornani/systems/EventDispatcher.hpp>
+#include <fornani/systems/EventRegistry.hpp>
 #include <fornani/systems/NotificationManager.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Constants.hpp>
@@ -52,7 +52,7 @@ struct ServiceProvider {
 	core::SoundManager sounds;
 	core::AssetManager assets;
 	config::ControllerMap controller_map{*this};
-	EventDispatcher events;
+	EventRegistry events;
 	util::BitFlags<DebugFlags> debug_flags{};
 	util::BitFlags<AppFlags> app_flags{};
 	util::BitFlags<StateFlags> state_flags{};

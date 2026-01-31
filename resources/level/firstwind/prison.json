@@ -1,8026 +1,2169 @@
 {
-	"entities": {
-		"animators": [
-			{
-				"dimensions": [
-					1,
-					1
-				],
-				"foreground": false,
-				"id": 8,
-				"label": "small",
-				"position": [
-					9,
-					11
-				]
-			}
-		],
-		"beds": [
-			{
-				"dimensions": [
-					1,
-					1
-				],
-				"flipped": false,
-				"id": 0,
-				"position": [
-					4,
-					12
-				]
-			}
-		],
-		"destructibles": [
-			{
-				"dimensions": [
-					1,
-					1
-				],
-				"enemy_clear": false,
-				"id": 90,
-				"inverse": false,
-				"position": [
-					12,
-					7
-				]
-			}
-		],
-		"inspectables": [
-			{
-				"activate_on_contact": false,
-				"alternates": 0,
-				"dimensions": [
-					1,
-					1
-				],
-				"id": 11,
-				"instant": false,
-				"key": "prison_guide",
-				"position": [
-					3,
-					12
-				],
-				"series": [
-					{
-						"responses": [
-							[
-								{
-									"codes": [
-										[
-											2,
-											7,
-											11
-										]
-									],
-									"message": "Yes"
-								},
-								{
-									"codes": [
-										[
-											0,
-											0
-										]
-									],
-									"message": "No"
-								}
-							]
-						],
-						"suite": [
-							[
-								{
-									"codes": [
-										[
-											1,
-											0
-										]
-									],
-									"message": "You find a note with your name written on it. Would you like to take it?"
-								}
-							]
-						]
-					}
-				]
-			},
-			{
-				"activate_on_contact": false,
-				"alternates": 0,
-				"dimensions": [
-					1,
-					1
-				],
-				"id": 0,
-				"instant": false,
-				"key": "manual",
-				"position": [
-					10,
-					12
-				],
-				"series": [
-					{
-						"suite": [
-							[
-								{
-									"codes": [
-										[
-											10,
-											73,
-											12
-										]
-									],
-									"message": "You find a small instruction manual. On the first page, it says, \"Press  to open your inventory.\""
-								}
-							]
-						]
-					}
-				]
-			},
-			{
-				"activate_on_contact": false,
-				"alternates": 0,
-				"dimensions": [
-					1,
-					1
-				],
-				"id": 0,
-				"instant": false,
-				"key": "terminal",
-				"position": [
-					9,
-					12
-				],
-				"series": [
-					{
-						"responses": [
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											9,
-											90
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											9,
-											90
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											9,
-											90
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											9,
-											90
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											9,
-											90
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											9,
-											90
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											9,
-											90
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											9,
-											90
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											9,
-											90
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											9,
-											90
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "3"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "4"
-								},
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "5"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "2"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "6"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "7"
-								},
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "8"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "0"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "1"
-								},
-								{
-									"codes": [
-										[
-											1,
-											9
-										]
-									],
-									"message": "2"
-								}
-							]
-						],
-						"suite": [
-							[
-								{
-									"codes": [
-										[
-											1,
-											0
-										]
-									],
-									"message": "Enter first digit of 5-digit clearance code:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"message": "Access denied."
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											0
-										]
-									],
-									"message": "Enter first digit of 5-digit clearance code:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"message": "Access denied."
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											0
-										]
-									],
-									"message": "Enter first digit of 5-digit clearance code:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"message": "Access denied."
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											0
-										]
-									],
-									"message": "Enter first digit of 5-digit clearance code:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"message": "Access denied."
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											0
-										]
-									],
-									"message": "Enter first digit of 5-digit clearance code:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"message": "Access denied."
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											0
-										]
-									],
-									"message": "Enter first digit of 5-digit clearance code:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"message": "Access denied."
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											0
-										]
-									],
-									"message": "Enter first digit of 5-digit clearance code:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"message": "Access denied."
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											0
-										]
-									],
-									"message": "Enter first digit of 5-digit clearance code:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"message": "Access denied."
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											0
-										]
-									],
-									"message": "Enter first digit of 5-digit clearance code:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"message": "Access denied."
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											0
-										]
-									],
-									"message": "Enter first digit of 5-digit clearance code:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											1
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											2
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											3
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											4
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											5
-										]
-									],
-									"message": "Second digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											6
-										]
-									],
-									"message": "Third digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											7
-										]
-									],
-									"message": "Fourth digit:"
-								}
-							],
-							[
-								{
-									"codes": [
-										[
-											1,
-											8
-										]
-									],
-									"message": "Fifth digit:"
-								}
-							],
-							[
-								{
-									"message": "Access denied."
-								}
-							]
-						]
-					}
-				]
-			}
-		],
-		"portals": [
-			{
-				"activate_on_contact": false,
-				"already_open": false,
-				"destination_id": 102,
-				"dimensions": [
-					1,
-					1
-				],
-				"id": 0,
-				"key_id": 0,
-				"locked": false,
-				"position": [
-					27,
-					8
-				],
-				"source_id": 100
-			}
-		],
-		"save_point": [
-			{
-				"dimensions": [
-					1,
-					1
-				],
-				"id": 100,
-				"position": [
-					18,
-					7
-				]
-			}
-		]
-	},
-	"meta": {
-		"ambience": "",
-		"background": "overcast",
-		"biome": "firstwind",
-		"border_color": [
-			0,
-			0,
-			0
-		],
-		"cutscene_on_entry": {
-			"flag": false,
-			"id": 0,
-			"source": 0,
-			"type": 0
-		},
-		"dimensions": [
-			32,
-			16
-		],
-		"metagrid": [
-			0,
-			0
-		],
-		"minimap": true,
-		"music": "dusken",
-		"player_start": [
-			0,
-			0
-		],
-		"properties": {
-			"day_night_shift": true,
-			"environmental_randomness": false,
-			"lighting": false,
-			"timer": false
-		},
-		"room_id": 100,
-		"shader": {
-			"darken_factor": 0
-		},
-		"special_drop_id": 0,
-		"use_template": true
-	},
-	"tile": {
-		"flags": {
-			"obscuring": false,
-			"reverse_obscuring": false
-		},
-		"ignore_lighting": [
-			false,
-			false,
-			false,
-			false,
-			false,
-			false,
-			false,
-			false
-		],
-		"layers": [
-			[
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				64,
-				65,
-				65,
-				66,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				80,
-				81,
-				81,
-				82,
-				84,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				160,
-				161,
-				161,
-				161,
-				161,
-				162,
-				1,
-				64,
-				66,
-				0,
-				0,
-				80,
-				81,
-				81,
-				82,
-				64,
-				65,
-				65,
-				65,
-				66,
-				64,
-				65,
-				66,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				176,
-				177,
-				177,
-				177,
-				177,
-				178,
-				1,
-				80,
-				82,
-				0,
-				0,
-				80,
-				81,
-				81,
-				82,
-				80,
-				81,
-				81,
-				81,
-				82,
-				80,
-				81,
-				82,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				176,
-				177,
-				177,
-				177,
-				177,
-				178,
-				202,
-				80,
-				82,
-				0,
-				0,
-				96,
-				97,
-				97,
-				98,
-				80,
-				81,
-				81,
-				81,
-				82,
-				96,
-				97,
-				98,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				196,
-				176,
-				177,
-				177,
-				177,
-				177,
-				178,
-				1,
-				80,
-				82,
-				84,
-				0,
-				0,
-				0,
-				0,
-				0,
-				96,
-				97,
-				97,
-				97,
-				98,
-				100,
-				100,
-				100,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				160,
-				161,
-				162,
-				176,
-				177,
-				177,
-				177,
-				177,
-				178,
-				1,
-				80,
-				82,
-				64,
-				66,
-				64,
-				65,
-				66,
-				64,
-				65,
-				66,
-				64,
-				65,
-				66,
-				84,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				176,
-				177,
-				178,
-				192,
-				193,
-				193,
-				193,
-				193,
-				194,
-				1,
-				96,
-				98,
-				80,
-				82,
-				80,
-				81,
-				82,
-				80,
-				81,
-				82,
-				80,
-				81,
-				82,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				192,
-				193,
-				194,
-				160,
-				161,
-				161,
-				161,
-				162,
-				196,
-				1,
-				67,
-				67,
-				80,
-				82,
-				96,
-				97,
-				98,
-				80,
-				81,
-				82,
-				96,
-				97,
-				98,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				196,
-				196,
-				196,
-				192,
-				193,
-				193,
-				193,
-				194,
-				0,
-				1,
-				99,
-				99,
-				96,
-				98,
-				100,
-				100,
-				100,
-				96,
-				97,
-				98,
-				100,
-				100,
-				100,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0
-			],
-			[
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				326,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				337,
-				309,
-				0,
-				0,
-				0,
-				0,
-				306,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				338,
-				0,
-				0,
-				0,
-				0,
-				305,
-				322,
-				336,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0
-			],
-			[
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				313,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0
-			],
-			[
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0
-			],
-			[
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				0,
-				0,
-				0,
-				0,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				0,
-				0,
-				0,
-				0,
-				39,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				20,
-				0,
-				0,
-				1,
-				1,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				36,
-				0,
-				0,
-				1,
-				1,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				1,
-				1,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				40,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				20,
-				0,
-				0,
-				39,
-				1,
-				1,
-				1,
-				1,
-				1,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				27,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				23,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				27,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				27,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				2,
-				36,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1,
-				1
-			],
-			[
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				25,
-				4,
-				5,
-				5,
-				6,
-				26,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				12,
-				0,
-				0,
-				0,
-				0,
-				11,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				25,
-				2,
-				4,
-				5,
-				6,
-				7,
-				4,
-				5,
-				6,
-				2,
-				26,
-				12,
-				0,
-				0,
-				0,
-				0,
-				0,
-				4,
-				5,
-				6,
-				7,
-				4,
-				5,
-				6,
-				26,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				12,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				11,
-				12,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				11,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				12,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				11,
-				12,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				11,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				12,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				11,
-				12,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				11,
-				0,
-				0,
-				0,
-				0,
-				25,
-				4,
-				6,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				2,
-				4,
-				5,
-				6,
-				2,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				11,
-				0,
-				0,
-				0,
-				0,
-				12,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				4,
-				6,
-				42,
-				0,
-				0,
-				0,
-				0,
-				12,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				11,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				12,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				11,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				12,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				11,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				41,
-				4,
-				5,
-				6,
-				7,
-				4,
-				5,
-				5,
-				5,
-				6,
-				7,
-				4,
-				5,
-				5,
-				5,
-				5,
-				5,
-				5,
-				5,
-				5,
-				6,
-				4,
-				5,
-				6,
-				42,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0
-			],
-			[
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				44,
-				44,
-				44,
-				44,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				28,
-				0,
-				0,
-				0,
-				0,
-				29,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				0,
-				0,
-				28,
-				0,
-				0,
-				0,
-				0,
-				0,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				28,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				29,
-				28,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				29,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				28,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				29,
-				28,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				29,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				28,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				29,
-				28,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				29,
-				0,
-				0,
-				0,
-				0,
-				0,
-				44,
-				44,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				44,
-				44,
-				44,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				29,
-				0,
-				0,
-				0,
-				0,
-				28,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				44,
-				44,
-				0,
-				0,
-				0,
-				0,
-				0,
-				28,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				29,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				28,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				29,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				28,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				29,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				44,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0
-			],
-			[
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0
-			]
-		],
-		"middleground": 4,
-		"parallax": [
-			1,
-			1,
-			1,
-			1,
-			1,
-			1,
-			1,
-			1
-		]
-	}
+  "entities": {
+    "animators": [
+      {
+        "dimensions": [1, 1],
+        "foreground": false,
+        "id": 8,
+        "label": "small",
+        "position": [9, 11]
+      }
+    ],
+    "beds": [
+      {
+        "dimensions": [1, 1],
+        "flipped": false,
+        "id": 0,
+        "position": [4, 12]
+      }
+    ],
+    "destructibles": [
+      {
+        "dimensions": [1, 1],
+        "enemy_clear": false,
+        "id": 90,
+        "inverse": false,
+        "position": [12, 7]
+      }
+    ],
+    "inspectables": [
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [1, 1],
+        "id": 11,
+        "instant": false,
+        "key": "prison_guide",
+        "position": [3, 12],
+        "series": [
+          {
+            "responses": [
+              [
+                {
+                  "codes": [[2, 6, 11]],
+                  "message": "Yes"
+                },
+                {
+                  "codes": [[0, 0]],
+                  "message": "No"
+                }
+              ]
+            ],
+            "suite": [
+              [
+                {
+                  "codes": [[1, 0]],
+                  "message": "You find a note with your name written on it. Would you like to take it?"
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [1, 1],
+        "id": 0,
+        "instant": false,
+        "key": "manual",
+        "position": [10, 12],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "codes": [[10, 73, 12]],
+                  "message": "You find a small instruction manual. On the first page, it says, \"Press  to open your inventory.\""
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [1, 1],
+        "id": 0,
+        "instant": false,
+        "key": "terminal",
+        "position": [9, 12],
+        "series": [
+          {
+            "responses": [
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 5]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 1]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 2]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 4]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[9, 90]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 9]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 5]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 1]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 2]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 4]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[9, 90]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 9]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 5]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 1]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 2]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 4]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[9, 90]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 9]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 5]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 1]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 2]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 4]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[9, 90]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 9]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 5]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 1]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 2]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 4]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[9, 90]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 9]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 5]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 1]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 2]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 4]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[9, 90]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 9]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 5]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 1]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 2]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 4]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[9, 90]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 9]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 5]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 1]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 2]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 4]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[9, 90]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 9]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 5]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 1]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 2]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 4]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[9, 90]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 9]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 5]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 1]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 2]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 4]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[9, 90]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "3"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "4"
+                },
+                {
+                  "codes": [[1, 6]],
+                  "message": "5"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 7]],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "6"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "7"
+                },
+                {
+                  "codes": [[1, 8]],
+                  "message": "8"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 9]],
+                  "message": "0"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "1"
+                },
+                {
+                  "codes": [[1, 9]],
+                  "message": "2"
+                }
+              ]
+            ],
+            "suite": [
+              [
+                {
+                  "codes": [[1, 0]],
+                  "message": "Enter first digit of 5-digit clearance code:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 1]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 2]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 4]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "message": "Access denied."
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 0]],
+                  "message": "Enter first digit of 5-digit clearance code:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 1]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 2]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 4]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "message": "Access denied."
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 0]],
+                  "message": "Enter first digit of 5-digit clearance code:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 1]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 2]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 4]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "message": "Access denied."
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 0]],
+                  "message": "Enter first digit of 5-digit clearance code:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 1]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 2]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 4]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "message": "Access denied."
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 0]],
+                  "message": "Enter first digit of 5-digit clearance code:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 1]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 2]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 4]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "message": "Access denied."
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 0]],
+                  "message": "Enter first digit of 5-digit clearance code:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 1]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 2]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 4]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "message": "Access denied."
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 0]],
+                  "message": "Enter first digit of 5-digit clearance code:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 1]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 2]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 4]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "message": "Access denied."
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 0]],
+                  "message": "Enter first digit of 5-digit clearance code:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 1]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 2]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 4]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "message": "Access denied."
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 0]],
+                  "message": "Enter first digit of 5-digit clearance code:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 1]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 2]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 4]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "message": "Access denied."
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 0]],
+                  "message": "Enter first digit of 5-digit clearance code:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 1]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 2]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 3]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 4]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 5]],
+                  "message": "Second digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 6]],
+                  "message": "Third digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 7]],
+                  "message": "Fourth digit:"
+                }
+              ],
+              [
+                {
+                  "codes": [[1, 8]],
+                  "message": "Fifth digit:"
+                }
+              ],
+              [
+                {
+                  "message": "Access denied."
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "activate_on_contact": false,
+        "already_open": false,
+        "destination_id": 102,
+        "dimensions": [1, 1],
+        "id": 0,
+        "key_id": 0,
+        "locked": false,
+        "position": [27, 8],
+        "source_id": 100
+      }
+    ],
+    "save_point": [
+      {
+        "dimensions": [1, 1],
+        "id": 100,
+        "position": [18, 7]
+      }
+    ]
+  },
+  "meta": {
+    "ambience": "",
+    "background": "overcast",
+    "biome": "firstwind",
+    "border_color": [0, 0, 0],
+    "cutscene_on_entry": {
+      "flag": false,
+      "id": 0,
+      "source": 0,
+      "type": 0
+    },
+    "dimensions": [32, 16],
+    "metagrid": [0, 0],
+    "minimap": true,
+    "music": "dusken",
+    "player_start": [0, 0],
+    "properties": {
+      "day_night_shift": true,
+      "environmental_randomness": false,
+      "lighting": false,
+      "timer": false
+    },
+    "room_id": 100,
+    "shader": {
+      "darken_factor": 0
+    },
+    "special_drop_id": 0,
+    "use_template": true
+  },
+  "tile": {
+    "flags": {
+      "obscuring": false,
+      "reverse_obscuring": false
+    },
+    "ignore_lighting": [false, false, false, false, false, false, false, false],
+    "layers": [
+      [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 65, 65, 66, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 81, 81, 82, 84, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 161, 161, 161, 161, 162, 1, 64, 66, 0, 0,
+        80, 81, 81, 82, 64, 65, 65, 65, 66, 64, 65, 66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 176, 177, 177,
+        177, 177, 178, 1, 80, 82, 0, 0, 80, 81, 81, 82, 80, 81, 81, 81, 82, 80, 81, 82, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 176, 177, 177, 177, 177, 178, 202, 80, 82, 0, 0, 96, 97, 97, 98, 80, 81, 81,
+        81, 82, 96, 97, 98, 0, 0, 0, 0, 0, 0, 0, 0, 196, 176, 177, 177, 177, 177, 178, 1, 80, 82,
+        84, 0, 0, 0, 0, 0, 96, 97, 97, 97, 98, 100, 100, 100, 0, 0, 0, 0, 0, 0, 160, 161, 162, 176,
+        177, 177, 177, 177, 178, 1, 80, 82, 64, 66, 64, 65, 66, 64, 65, 66, 64, 65, 66, 84, 0, 0, 0,
+        0, 0, 0, 0, 0, 176, 177, 178, 192, 193, 193, 193, 193, 194, 1, 96, 98, 80, 82, 80, 81, 82,
+        80, 81, 82, 80, 81, 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 192, 193, 194, 160, 161, 161, 161, 162,
+        196, 1, 67, 67, 80, 82, 96, 97, 98, 80, 81, 82, 96, 97, 98, 0, 0, 0, 0, 0, 0, 0, 0, 0, 196,
+        196, 196, 192, 193, 193, 193, 194, 0, 1, 99, 99, 96, 98, 100, 100, 100, 96, 97, 98, 100,
+        100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 326, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 337, 309, 0, 0, 0, 0, 306, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 338, 0, 0, 0, 0, 305, 322, 336, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 313, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 39, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 20, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 36, 0, 0, 1, 1, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 40, 0, 0, 0, 0, 0, 0, 20, 0, 0, 39, 1, 1, 1,
+        1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2,
+        36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+      ],
+      [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 4, 5, 5, 6, 26, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 11, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 2, 4, 5, 6, 7, 4, 5, 6, 2, 26, 12, 0, 0, 0, 0, 0, 4, 5,
+        6, 7, 4, 5, 6, 26, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 12, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 12, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11,
+        12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 25, 4, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 2, 4, 5, 6, 2, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 6, 42, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 41, 4,
+        5, 6, 7, 4, 5, 5, 5, 6, 7, 4, 5, 5, 5, 5, 5, 5, 5, 5, 6, 4, 5, 6, 42, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 29, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, 44, 44, 44, 44, 44, 44, 0, 0, 28, 0, 0, 0, 0,
+        0, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29,
+        28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 29, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 29, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 0, 0, 0, 0, 44, 44, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 0, 0, 0, 28, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, 44, 0, 0, 0, 0, 0, 28,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 0, 0, 0, 0, 0,
+        0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 0, 0, 0,
+        0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 0,
+        0, 0, 0, 0, 0, 0, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44,
+        44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ]
+    ],
+    "middleground": 4,
+    "parallax": [1, 1, 1, 1, 1, 1, 1, 1]
+  }
 }

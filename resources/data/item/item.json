@@ -1,6 +1,6 @@
-{
-  "bryns_notebook": {
-    "id": 1,
+[
+  {
+    "tag": "bryns_notebook",
     "category": 1,
     "lookup": [0, 0],
     "origin": [2, 0],
@@ -9,40 +9,40 @@
     "actual_description": "Bryn's personal notebook. It's sealed shut with a tiny padlock... Not that you were going to read it anyway.",
     "unique": true
   },
-  "factory_access_permit": {
-    "id": 2,
+  {
+    "tag": "factory_access_permit",
     "actual_title": "Factory Access Permit",
     "naive_description": "A permit that grants you access to the Nimbus III Maintenance Facility.",
     "unique": true
   },
-  "bipolar_junction_transistor": {
-    "id": 3,
+  {
+    "tag": "bipolar_junction_transistor",
     "actual_title": "Bipolar Junction Transistor",
     "naive_description": "It looks like a mechanical part of sorts.",
     "actual_description": "Beeker says this is required to build a special kind of gun. You should hold on to it.",
     "unique": true
   },
-  "willets_floppy_disc": {
-    "id": 4,
+  {
+    "tag": "willets_floppy_disc",
     "actual_title": "Willet's Floppy Disc",
     "naive_description": "Contains schematics for the Greatwing, which we will need in order to stop Skycorps from taking over the island. Dr. Willet told me to bring it to someone named Spencer in Ashtown.",
     "actual_description": "Contains schematics for the Greatwing. Spencer needs a track zero sensor and a fresh head motor to access its contents.",
     "unique": true
   },
-  "track_zero_sensor": {
-    "id": 5,
+  {
+    "tag": "track_zero_sensor",
     "actual_title": "Track Zero Sensor",
     "naive_description": "A small sensor that Spencer needs to repair his floppy disc drive. Without it, he can't access the Greatwing schematics.",
     "unique": true
   },
-  "head_motor": {
-    "id": 6,
+  {
+    "tag": "head_motor",
     "actual_title": "Head Motor",
     "naive_description": "A tiny motor that Spencer needs to access Doc Willet's floppy disc.",
     "unique": true
   },
-  "bryns_note": {
-    "id": 7,
+  {
+    "tag": "bryns_note",
     "category": 1,
     "lookup": [6, 0],
     "origin": [0, 0],
@@ -53,8 +53,8 @@
     "unique": true,
     "readable": true
   },
-  "carises_soul": {
-    "id": 37,
+  {
+    "tag": "carises_soul",
     "category": 1,
     "lookup": [4, 2],
     "origin": [6, 3],
@@ -64,8 +64,8 @@
     "readable": true,
     "equippable": true
   },
-  "magnifying_glass": {
-    "id": 28,
+  {
+    "tag": "magnifying_glass",
     "category": 1,
     "lookup": [11, 1],
     "origin": [6, 1],
@@ -74,8 +74,8 @@
     "unique": true,
     "equippable": true
   },
-  "hoarders_trinket": {
-    "id": 38,
+  {
+    "tag": "hoarders_trinket",
     "category": 1,
     "lookup": [5, 2],
     "origin": [3, 3],
@@ -85,8 +85,8 @@
     "readable": true,
     "equippable": true
   },
-  "magnet": {
-    "id": 39,
+  {
+    "tag": "magnet",
     "category": 1,
     "lookup": [6, 2],
     "origin": [2, 3],
@@ -95,39 +95,43 @@
     "unique": true,
     "equippable": true
   },
-  "firstwind_hangar_key": {
-    "id": 8,
+  {
+    "tag": "firstwind_hangar_key",
     "category": 1,
     "lookup": [7, 0],
     "origin": [3, 0],
     "actual_title": "Firstwind Hangar Key",
     "naive_description": "A small iron key that grants you access to the Firstwind's hangar shafts.",
     "actual_description": "A small iron key that grants you access to the Firstwind's hangar shafts.",
-    "unique": true
+    "unique": true,
+    "is_key": true
   },
-  "woodshine_warehouse_key": {
-    "id": 9,
+  {
+    "tag": "woodshine_warehouse_key",
     "actual_title": "Woodshine Warehouse Key",
     "naive_description": "Allows you to enter Woodshine's warehouse.",
-    "unique": true
+    "unique": true,
+    "is_key": true
   },
-  "nimbus_iii_boiler_room_key": {
-    "id": 10,
+  {
+    "tag": "nimbus_iii_boiler_room_key",
     "actual_title": "Nimbus III Boiler Room Key",
     "naive_description": "Allows you to enter Nimbus III's boiler room.",
-    "unique": true
+    "unique": true,
+    "is_key": true
   },
-  "laboratory_key": {
-    "id": 11,
+  {
+    "tag": "laboratory_key",
     "category": 1,
     "lookup": [10, 0],
     "origin": [1, 0],
     "actual_title": "Laboratory Key",
     "naive_description": "Grants access to Firstwind's research lab.",
-    "unique": true
+    "unique": true,
+    "is_key": true
   },
-  "bit_cell_key": {
-    "id": 12,
+  {
+    "tag": "bit_cell_key",
     "category": 1,
     "lookup": [11, 0],
     "origin": [4, 0],
@@ -135,18 +139,19 @@
     "actual_title": "Bit's Cell Key",
     "naive_description": "Looks like just an ordinary key. There's no reason not to hold on to it.",
     "actual_description": "The key to Bit's prison cell. He said he owes you big time for freeing him...",
-    "unique": true
+    "unique": true,
+    "is_key": true
   },
-  "four_of_diamonds": {
-    "id": 13,
+  {
+    "tag": "four_of_diamonds",
     "actual_title": "Four of Diamonds",
     "naive_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
     "actual_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
     "sellable": true,
     "unique": true
   },
-  "lantern": {
-    "id": 14,
+  {
+    "tag": "lantern",
     "category": 1,
     "lookup": [13, 0],
     "origin": [6, 0],
@@ -160,8 +165,8 @@
     "rarity": 2,
     "value": 1800
   },
-  "boiler_key": {
-    "id": 15,
+  {
+    "tag": "boiler_key",
     "category": 1,
     "lookup": [14, 0],
     "origin": [5, 0],
@@ -169,10 +174,11 @@
     "actual_title": "Boiler Key",
     "naive_description": "A key of unknown use. Might as well keep it.",
     "actual_description": "The key to Firstwind's boiler room.",
-    "unique": true
+    "unique": true,
+    "is_key": true
   },
-  "radar_device": {
-    "id": 16,
+  {
+    "tag": "radar_device",
     "category": 3,
     "lookup": [15, 0],
     "origin": [0, 0],
@@ -182,8 +188,8 @@
     "actual_description": "A map system. It fits perfectly in the top slot of your pocket gizmo.",
     "unique": true
   },
-  "clock": {
-    "id": 17,
+  {
+    "tag": "clock",
     "category": 3,
     "lookup": [0, 1],
     "origin": [1, 0],
@@ -193,8 +199,8 @@
     "actual_description": "A clock that reads the current time of day. It was designed to fit snugly into your pocket gizmo.",
     "unique": true
   },
-  "status_gizmo": {
-    "id": 18,
+  {
+    "tag": "status_gizmo",
     "category": 3,
     "lookup": [1, 1],
     "origin": [2, 0],
@@ -204,8 +210,8 @@
     "actual_description": "A gizmo that attaches to your inventory dashboard and displays your current outfit and lifeforce.",
     "unique": true
   },
-  "outfitter_gizmo": {
-    "id": 19,
+  {
+    "tag": "outfitter_gizmo",
     "category": 3,
     "lookup": [2, 1],
     "origin": [3, 0],
@@ -218,8 +224,8 @@
     "rarity": 1,
     "value": 560
   },
-  "dog_leash": {
-    "id": 20,
+  {
+    "tag": "dog_leash",
     "category": 1,
     "lookup": [3, 1],
     "origin": [7, 0],
@@ -228,8 +234,8 @@
     "unique": true,
     "usable": false
   },
-  "soda": {
-    "id": 35,
+  {
+    "tag": "soda",
     "category": 1,
     "lookup": [2, 2],
     "origin": [1, 1],
@@ -238,8 +244,8 @@
     "unique": false,
     "equippable": true
   },
-  "equip_slot": {
-    "id": 64,
+  {
+    "tag": "equip_slot",
     "category": 1,
     "lookup": [15, 3],
     "actual_title": "Equip Slot",
@@ -247,8 +253,8 @@
     "invisible": true,
     "stack_limit": 3
   },
-  "ashtown_raspberry_preserves": {
-    "id": 22,
+  {
+    "tag": "ashtown_raspberry_preserves",
     "actual_title": "Ashtown Preserves",
     "naive_description": "A delicious raspberry treat. It would taste better on some toast, but it will still restore your health if you eat it.",
     "unique": false,
@@ -256,8 +262,8 @@
     "rarity": 1,
     "value": 660
   },
-  "bronze_bracelet": {
-    "id": 23,
+  {
+    "tag": "bronze_bracelet",
     "lookup": [10, 1],
     "actual_title": "Bronze Bracelet",
     "naive_description": "A common treasure item.",
@@ -266,8 +272,8 @@
     "sellable": true,
     "value": 200
   },
-  "silver_bracelet": {
-    "id": 24,
+  {
+    "tag": "silver_bracelet",
     "actual_title": "Silver Bracelet",
     "naive_description": "A common treasure item.",
     "unique": false,
@@ -275,8 +281,8 @@
     "sellable": true,
     "value": 300
   },
-  "boxing_glove": {
-    "id": 25,
+  {
+    "tag": "boxing_glove",
     "category": 1,
     "lookup": [8, 1],
     "origin": [4, 3],
@@ -288,8 +294,8 @@
     "sellable": true,
     "value": 280
   },
-  "walkie_talkie": {
-    "id": 26,
+  {
+    "tag": "walkie_talkie",
     "actual_title": "Walkie-Talkie",
     "naive_description": "The batteries are dead.",
     "unique": false,
@@ -297,8 +303,8 @@
     "sellable": true,
     "value": 60
   },
-  "clamp": {
-    "id": 27,
+  {
+    "tag": "clamp",
     "lookup": [6, 1],
     "origin": [8, 1],
     "actual_title": "Clamp",
@@ -308,23 +314,23 @@
     "sellable": true,
     "value": 90
   },
-  "heart_keychain": {
-    "id": 29,
+  {
+    "tag": "heart_keychain",
     "category": 5,
     "actual_title": "Heart Keychain",
     "naive_description": "A heart keychain. You attach it to your belt and it gives you extra life.",
     "unique": false,
     "rarity": 1
   },
-  "stationary_rat": {
-    "id": 30,
+  {
+    "tag": "stationary_rat",
     "actual_title": "Stationary Rat",
     "naive_description": "You discovered this rat inside a chest. It obviously didn't want to be found.",
     "actual_description": "A very good boy who cannot spin.",
     "unique": true
   },
-  "loops_mixtape": {
-    "id": 31,
+  {
+    "tag": "loops_mixtape",
     "category": 1,
     "lookup": [14, 1],
     "origin": [10, 0],
@@ -333,28 +339,30 @@
     "actual_description": "A mixtape that Loop hid in the woods when you were younger. You can play it on a jukebox.",
     "unique": true
   },
-  "dome_key": {
-    "id": 32,
+  {
+    "tag": "dome_key",
     "category": 1,
     "lookup": [15, 1],
     "origin": [0, 3],
     "actual_title": "Dome Key",
     "naive_description": "A key that radiates malice.",
     "actual_description": "A key that radiates malice.",
-    "unique": true
+    "unique": true,
+    "is_key": true
   },
-  "ruins_key": {
-    "id": 33,
+  {
+    "tag": "ruins_key",
     "category": 1,
     "lookup": [0, 2],
     "origin": [2, 1],
     "actual_title": "Ruins Key",
     "naive_description": "The key to exit the Kariba Ruins.",
     "actual_description": "The key to exit the Kariba Ruins.",
-    "unique": true
+    "unique": true,
+    "is_key": true
   },
-  "permission_slip": {
-    "id": 40,
+  {
+    "tag": "permission_slip",
     "category": 1,
     "lookup": [7, 2],
     "origin": [10, 1],
@@ -364,8 +372,8 @@
     "unique": true,
     "readable": true
   },
-  "ibos_journal": {
-    "id": 41,
+  {
+    "tag": "ibos_journal",
     "category": 1,
     "lookup": [8, 2],
     "origin": [4, 1],
@@ -375,8 +383,8 @@
     "unique": true,
     "readable": true
   },
-  "field_telephone": {
-    "id": 42,
+  {
+    "tag": "field_telephone",
     "category": 1,
     "lookup": [9, 2],
     "origin": [5, 1],
@@ -385,8 +393,8 @@
     "actual_description": "An old phone that Bryn and Dr. Willett can use to call you. It's really heavy...",
     "unique": true
   },
-  "mastiff_totem": {
-    "id": 43,
+  {
+    "tag": "mastiff_totem",
     "category": 1,
     "lookup": [10, 2],
     "origin": [1, 2],
@@ -396,8 +404,8 @@
     "unique": true,
     "readable": true
   },
-  "ceremonial_garb": {
-    "id": 197,
+  {
+    "tag": "ceremonial_garb",
     "category": 4,
     "lookup": [4, 12],
     "origin": [4, 2],
@@ -411,8 +419,8 @@
     "rarity": 2,
     "value": 1800
   },
-  "demon_cuirass": {
-    "id": 198,
+  {
+    "tag": "demon_cuirass",
     "category": 4,
     "lookup": [5, 12],
     "origin": [5, 2],
@@ -426,8 +434,8 @@
     "rarity": 2,
     "value": 2800
   },
-  "demon_greaves": {
-    "id": 214,
+  {
+    "tag": "demon_greaves",
     "category": 4,
     "lookup": [5, 12],
     "origin": [5, 2],
@@ -441,8 +449,8 @@
     "rarity": 2,
     "value": 2800
   },
-  "ceremonial_skirt": {
-    "id": 213,
+  {
+    "tag": "ceremonial_skirt",
     "category": 4,
     "lookup": [4, 13],
     "origin": [4, 3],
@@ -456,8 +464,8 @@
     "rarity": 2,
     "value": 1400
   },
-  "pioneer_armor": {
-    "id": 196,
+  {
+    "tag": "pioneer_armor",
     "category": 4,
     "lookup": [3, 12],
     "origin": [3, 2],
@@ -471,8 +479,8 @@
     "rarity": 2,
     "value": 1800
   },
-  "pioneer_tights": {
-    "id": 212,
+  {
+    "tag": "pioneer_tights",
     "category": 4,
     "lookup": [3, 13],
     "origin": [3, 3],
@@ -486,8 +494,8 @@
     "rarity": 2,
     "value": 1400
   },
-  "red_jeans": {
-    "id": 209,
+  {
+    "tag": "red_jeans",
     "category": 4,
     "lookup": [0, 13],
     "origin": [0, 3],
@@ -501,8 +509,8 @@
     "rarity": 2,
     "value": 1220
   },
-  "clay_statue": {
-    "id": 65,
+  {
+    "tag": "clay_statue",
     "lookup": [0, 4],
     "category": 2,
     "actual_title": "Clay Statue",
@@ -513,8 +521,8 @@
     "sellable": true,
     "value": 100
   },
-  "glass_statue": {
-    "id": 66,
+  {
+    "tag": "glass_statue",
     "category": 2,
     "actual_title": "Glass Statue",
     "naive_description": "An uncommon artifact of the ancient peoples.",
@@ -524,8 +532,8 @@
     "sellable": true,
     "value": 200
   },
-  "bronze_statue": {
-    "id": 67,
+  {
+    "tag": "bronze_statue",
     "category": 2,
     "actual_title": "Bronze Statue",
     "naive_description": "A rare artifact of the ancient peoples.",
@@ -535,8 +543,8 @@
     "sellable": true,
     "value": 100
   },
-  "cinnabar_statue": {
-    "id": 68,
+  {
+    "tag": "cinnabar_statue",
     "category": 2,
     "actual_title": "Cinnabar Statue",
     "naive_description": "A very rare artifact of the ancient peoples.",
@@ -546,8 +554,8 @@
     "sellable": true,
     "value": 400
   },
-  "jade_statue": {
-    "id": 69,
+  {
+    "tag": "jade_statue",
     "category": 2,
     "actual_title": "Jade Statue",
     "naive_description": "An incredibly rare artifact of the ancient peoples.",
@@ -557,8 +565,8 @@
     "sellable": true,
     "value": 800
   },
-  "alabaster_statue": {
-    "id": 70,
+  {
+    "tag": "alabaster_statue",
     "category": 2,
     "actual_title": "Alabaster Statue",
     "naive_description": "A legendary artifact of the ancient peoples.",
@@ -568,8 +576,8 @@
     "sellable": true,
     "value": 1200
   },
-  "gas_mask": {
-    "id": 36,
+  {
+    "tag": "gas_mask",
     "category": 1,
     "lookup": [3, 2],
     "origin": [2, 2],
@@ -578,8 +586,8 @@
     "unique": true,
     "equippable": true
   },
-  "chalcedony_tee": {
-    "id": 194,
+  {
+    "tag": "chalcedony_tee",
     "category": 4,
     "lookup": [1, 12],
     "origin": [1, 2],
@@ -593,8 +601,8 @@
     "rarity": 2,
     "value": 3000
   },
-  "skycorps_tee": {
-    "id": 193,
+  {
+    "tag": "skycorps_tee",
     "category": 4,
     "lookup": [0, 12],
     "origin": [0, 2],
@@ -607,8 +615,8 @@
     "apparel_type": 1,
     "value": 1000
   },
-  "navy_top": {
-    "id": 202,
+  {
+    "tag": "navy_top",
     "category": 4,
     "lookup": [9, 12],
     "origin": [9, 2],
@@ -620,8 +628,8 @@
     "apparel_type": 1,
     "value": 300
   },
-  "chalcedony_skirt": {
-    "id": 210,
+  {
+    "tag": "chalcedony_skirt",
     "category": 4,
     "lookup": [1, 13],
     "origin": [1, 3],
@@ -633,8 +641,8 @@
     "apparel_type": 0,
     "value": 2000
   },
-  "green_pants": {
-    "id": 218,
+  {
+    "tag": "green_pants",
     "category": 4,
     "lookup": [9, 13],
     "origin": [9, 3],
@@ -646,8 +654,8 @@
     "apparel_type": 0,
     "value": 2000
   },
-  "punk_hair_dye": {
-    "id": 84,
+  {
+    "tag": "punk_hair_dye",
     "category": 4,
     "start_index": 160,
     "actual_title": "Punk Hair Dye",
@@ -658,8 +666,8 @@
     "apparel_type": 2,
     "value": 460
   },
-  "punk_shirt": {
-    "id": 195,
+  {
+    "tag": "punk_shirt",
     "category": 4,
     "lookup": [2, 12],
     "origin": [2, 2],
@@ -671,8 +679,8 @@
     "apparel_type": 0,
     "value": 790
   },
-  "punk_pants": {
-    "id": 211,
+  {
+    "tag": "punk_pants",
     "lookup": [2, 13],
     "origin": [2, 3],
     "category": 4,
@@ -684,8 +692,8 @@
     "apparel_type": 1,
     "value": 400
   },
-  "hairtie": {
-    "id": 87,
+  {
+    "tag": "hairtie",
     "category": 4,
     "start_index": 160,
     "actual_title": "Hairtie",
@@ -696,8 +704,8 @@
     "apparel_type": 2,
     "value": 80
   },
-  "rhenite": {
-    "id": 97,
+  {
+    "tag": "rhenite",
     "category": 2,
     "lookup": [0, 6],
     "origin": [0, 0],
@@ -708,8 +716,8 @@
     "rarity": 2,
     "value": 1300
   },
-  "sapphire": {
-    "id": 98,
+  {
+    "tag": "sapphire",
     "category": 2,
     "lookup": [1, 6],
     "origin": [1, 0],
@@ -720,8 +728,8 @@
     "rarity": 2,
     "value": 1100
   },
-  "priorite": {
-    "id": 99,
+  {
+    "tag": "priorite",
     "category": 2,
     "lookup": [2, 6],
     "origin": [3, 0],
@@ -732,8 +740,8 @@
     "rarity": 2,
     "value": 800
   },
-  "vermite": {
-    "id": 104,
+  {
+    "tag": "vermite",
     "category": 2,
     "lookup": [7, 6],
     "origin": [2, 0],
@@ -745,8 +753,8 @@
     "rarity": 3,
     "value": 2900
   },
-  "mythic_rhenite": {
-    "id": 105,
+  {
+    "tag": "mythic_rhenite",
     "category": 2,
     "actual_title": "Mythic Rhenite",
     "naive_description": "A legendary multicolored gem of pure energy formed in the heart of the Mother Worm.",
@@ -755,8 +763,8 @@
     "rarity": 3,
     "value": 3400
   },
-  "pioneer_medal": {
-    "id": 113,
+  {
+    "tag": "pioneer_medal",
     "category": 0,
     "lookup": [0, 7],
     "origin": [0, 0],
@@ -767,8 +775,8 @@
     "unique": true,
     "readable": true
   },
-  "woodshine_totem": {
-    "id": 114,
+  {
+    "tag": "woodshine_totem",
     "category": 0,
     "lookup": [1, 7],
     "origin": [1, 0],
@@ -779,8 +787,8 @@
     "unique": true,
     "readable": true
   },
-  "kariba_talisman": {
-    "id": 115,
+  {
+    "tag": "kariba_talisman",
     "category": 0,
     "lookup": [2, 7],
     "origin": [2, 0],
@@ -791,8 +799,8 @@
     "unique": true,
     "readable": true
   },
-  "pirag_charm": {
-    "id": 116,
+  {
+    "tag": "pirag_charm",
     "category": 0,
     "lookup": [3, 7],
     "origin": [3, 0],
@@ -803,8 +811,8 @@
     "unique": true,
     "readable": true
   },
-  "old_ivory_amulet": {
-    "id": 117,
+  {
+    "tag": "old_ivory_amulet",
     "category": 0,
     "lookup": [4, 7],
     "origin": [4, 0],
@@ -815,8 +823,8 @@
     "unique": true,
     "readable": true
   },
-  "sky_pendant": {
-    "id": 118,
+  {
+    "tag": "sky_pendant",
     "category": 0,
     "lookup": [5, 7],
     "origin": [5, 0],
@@ -827,8 +835,8 @@
     "unique": true,
     "readable": true
   },
-  "forest_token": {
-    "id": 119,
+  {
+    "tag": "forest_token",
     "category": 0,
     "lookup": [6, 7],
     "origin": [6, 0],
@@ -839,8 +847,8 @@
     "unique": true,
     "readable": true
   },
-  "imbier_totem": {
-    "id": 120,
+  {
+    "tag": "imbier_totem",
     "category": 0,
     "lookup": [7, 7],
     "origin": [7, 0],
@@ -851,8 +859,8 @@
     "unique": true,
     "readable": true
   },
-  "ancient_periapt": {
-    "id": 121,
+  {
+    "tag": "ancient_periapt",
     "category": 0,
     "lookup": [8, 7],
     "origin": [8, 0],
@@ -863,4 +871,4 @@
     "unique": true,
     "readable": true
   }
-}
+]

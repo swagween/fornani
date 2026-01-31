@@ -3,9 +3,9 @@
 
 #include <fornani/entity/Entity.hpp>
 #include <fornani/graphics/Transition.hpp>
+#include <fornani/physics/Shape.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/IWorldPositionable.hpp>
-#include <fornani/physics/Shape.hpp>
 
 namespace fornani {
 
@@ -17,7 +17,8 @@ enum class PortalOrientation { top, bottom, left, right, central };
 class Portal : public Entity {
   public:
 	Portal(automa::ServiceProvider& svc, dj::Json const& in);
-	Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_map_id, int destination_map_id, bool locked, int key_id);
+	Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_map_id, int destination_map_id);
+	Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_map_id, int destination_map_id, std::string_view key_tag);
 
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
@@ -46,7 +47,7 @@ class Portal : public Entity {
 
 	int source_id{};
 	int destination_id{};
-	int key_id{};
+	std::optional<std::string> key_tag{};
 
 	PortalOrientation m_orientation{};
 	PortalRenderState m_render_state{};

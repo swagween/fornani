@@ -7,11 +7,12 @@
           1
         ],
         "id": 92091,
-        "modifier": 195,
+        "modifier": 16,
         "position": [
           53,
           6
         ],
+        "tag": "vermite",
         "type": 2
       }
     ],
@@ -531,7 +532,6 @@
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           95,
@@ -548,7 +548,6 @@
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,
@@ -565,7 +564,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           21,
@@ -582,7 +580,6 @@
           4
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,

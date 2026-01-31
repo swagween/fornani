@@ -69,7 +69,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           46,
@@ -86,7 +85,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           51,
@@ -103,7 +101,7 @@
           1
         ],
         "id": 0,
-        "key_id": 11,
+        "key_tag": "laboratory_key",
         "locked": true,
         "position": [
           7,
@@ -120,7 +118,6 @@
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,

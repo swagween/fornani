@@ -32,7 +32,7 @@ enum class ItemState { revealed, equipped };
 
 class Item : public Polymorphic {
   public:
-	Item(dj::Json& source, std::string_view label);
+	Item(dj::Json const& source, std::string_view label);
 
 	virtual void render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f position);
 

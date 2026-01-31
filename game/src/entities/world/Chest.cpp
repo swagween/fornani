@@ -1,6 +1,7 @@
 
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entities/world/Chest.hpp>
+#include <fornani/events/InventoryEvent.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
@@ -17,8 +18,9 @@ Chest::Chest(automa::ServiceProvider& svc, world::Map& map, int id, ChestType ty
 	Animatable::set_parameters(m_animations.unopened);
 
 	if (svc.data.chest_is_open(id) && id != -1) { state.set(ChestState::open); }
-	if (type == ChestType::item) { m_item_label = svc.data.item_label_from_id(modifier); }
 }
+
+Chest::Chest(automa::ServiceProvider& svc, world::Map& map, int id, ChestType type, std::string tag, int modifier) : Chest(svc, map, id, type, modifier) { m_tag = tag; }
 
 void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player) {
 
@@ -60,9 +62,9 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 				if (m_id != -1) { svc.data.open_chest(m_id); }
 				auto fmodifier = static_cast<float>(m_content_modifier);
 				auto range_modifier = std::max(6, static_cast<int>(m_content_modifier / 8.f));
-				if (m_type == ChestType::gun) { svc.events.dispatch_event("AcquireGun", m_content_modifier); }
+				if (m_type == ChestType::gun && m_tag.has_value()) { svc.events.get_or_add<AcquireWeaponEvent>().dispatch(svc, std::string_view{*m_tag}); }
+				if (m_type == ChestType::item && m_tag.has_value()) { svc.events.get_or_add<AcquireItemEvent>().dispatch(svc, std::string_view{*m_tag}); }
 				if (m_type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, map, player, get_collider().get_global_center(), {{range_modifier, range_modifier * 2}, fmodifier, 100, true, map.get_special_drop_id()})); }
-				if (m_type == ChestType::item) { svc.events.dispatch_event("AcquireItem", m_content_modifier); }
 			} else {
 				console = std::make_unique<gui::Console>(svc, svc.text.basic, "open_chest", gui::OutputType::instant);
 			}

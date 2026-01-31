@@ -71,7 +71,11 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		sf::Vector2f pos{};
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();
-		chests.push_back(std::make_unique<entity::Chest>(svc, *this, entry["id"].as<int>(), static_cast<entity::ChestType>(entry["type"].as<int>()), entry["modifier"].as<int>()));
+		if (entry["tag"]) {
+			chests.push_back(std::make_unique<entity::Chest>(svc, *this, entry["id"].as<int>(), static_cast<entity::ChestType>(entry["type"].as<int>()), entry["tag"].as_string(), entry["modifier"].as<int>()));
+		} else {
+			chests.push_back(std::make_unique<entity::Chest>(svc, *this, entry["id"].as<int>(), static_cast<entity::ChestType>(entry["type"].as<int>()), entry["modifier"].as<int>()));
+		}
 		chests.back()->set_position_from_scaled(pos);
 	}
 
@@ -320,7 +324,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 
 	std::erase_if(active_emitters, [](auto const& p) { return p->done(); });
 	std::erase_if(effects, [](auto& e) { return e.done(); });
-	std::erase_if(inspectables, [](auto const& i) { return i.destroyed(); });
 	std::erase_if(lasers, [](auto const& l) { return l.is_complete(); });
 	std::erase_if(incinerite_blocks, [](auto const& i) { return i->is_destroyed(); });
 	std::erase_if(breakables, [](auto const& b) { return b->is_destroyed(); });
@@ -633,8 +636,8 @@ void Map::spawn_enemy(int id, sf::Vector2f pos, int variant) {
 
 void Map::spawn_chest(automa::ServiceProvider& svc, enemy::Treasure const& treasure, sf::Vector2f pos, sf::Vector2f vel) {
 	switch (treasure.type) {
-	case entity::ChestType::item: chests.push_back(std::make_unique<entity::Chest>(svc, *this, -1, entity::ChestType::item, svc.data.item_id_from_label(treasure.tag))); break;
-	case entity::ChestType::gun: chests.push_back(std::make_unique<entity::Chest>(svc, *this, -1, entity::ChestType::gun, svc.data.get_gun_id_from_tag(treasure.tag))); break;
+	case entity::ChestType::item: chests.push_back(std::make_unique<entity::Chest>(svc, *this, -1, entity::ChestType::item, treasure.tag, svc.data.item_id_from_label(treasure.tag))); break;
+	case entity::ChestType::gun: chests.push_back(std::make_unique<entity::Chest>(svc, *this, -1, entity::ChestType::gun, treasure.tag, svc.data.get_gun_id_from_tag(treasure.tag))); break;
 	case entity::ChestType::orbs: chests.push_back(std::make_unique<entity::Chest>(svc, *this, -1, entity::ChestType::orbs, 0)); break;
 	default: break;
 	}
@@ -832,18 +835,39 @@ void Map::clear_projectiles() {
 void Map::shake_camera() { flags.state.set(LevelState::camera_shake); }
 
 void Map::clear() {
-	dimensions = {};
-	// portals.clear();
+	m_entities.reset();
 	platforms.clear();
 	breakables.clear();
 	pushables.clear();
-	spikes.clear();
 	destructibles.clear();
 	switch_blocks.clear();
 	switch_buttons.clear();
+	incinerite_blocks.clear();
 	chests.clear();
-	// npcs.clear();
 	checkpoints.clear();
+	atmosphere.clear();
+	enemy_catalog.enemies.clear();
+	active_emitters.clear();
+	beds.clear();
+	background.reset();
+	active_projectiles.clear();
+	inspectables.clear();
+	animators.clear();
+	effects.clear();
+	for (auto& scenery : scenery_layers) { scenery.clear(); }
+	lasers.clear();
+	spawners.clear();
+	spikes.clear();
+	timer_blocks.clear();
+	enemy_spawns.clear();
+	target_points.clear();
+	home_points.clear();
+	waterfalls.clear();
+	cutscene_catalog.cutscenes.clear();
+	m_explosions.clear();
+	rain.reset();
+	fire.reset();
+	active_loot.clear();
 }
 
 void Map::wrap(sf::Vector2f& position) const {

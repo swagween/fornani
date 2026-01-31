@@ -54,6 +54,7 @@
           22,
           20
         ],
+        "tag": "firstwind_hangar_key",
         "type": 2
       }
     ],
@@ -126,6 +127,7 @@
           1,
           1
         ],
+        "face_player": true,
         "hidden": false,
         "id": 53338,
         "label": "carl",
@@ -170,7 +172,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           24,
@@ -197,6 +198,11 @@
     "ambience": "",
     "background": "night",
     "biome": "firstwind",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -236,7 +242,8 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 0
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
     "flags": {

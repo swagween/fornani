@@ -1,6 +1,7 @@
 
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entity/NPC.hpp>
+#include <fornani/events/ConsoleEvent.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
@@ -8,25 +9,6 @@
 namespace fornani {
 
 constexpr float default_walk_speed_v = 0.8f;
-
-static int s_voice_cue{};
-static bool b_cue{};
-static bool b_pop{};
-static bool b_piggy{};
-static int b_index{};
-static int b_piggy_id{};
-static void voice_cue(int index) {
-	b_cue = true;
-	s_voice_cue = index;
-}
-static void pop_convo(int index) {
-	b_index = index;
-	b_pop = true;
-}
-static void piggyback_me(int index) {
-	b_piggy_id = index;
-	b_piggy = true;
-}
 
 NPC::NPC(automa::ServiceProvider& svc, dj::Json const& in)
 	: Entity(svc, in, "npcs"), Mobile(svc, "npc_" + std::string{in["label"].as_string()}, {svc.data.npc[in["label"].as_string()]["sprite_dimensions"][0].as<int>(), svc.data.npc[in["label"].as_string()]["sprite_dimensions"][1].as<int>()}),
@@ -112,9 +94,9 @@ NPC::NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vect
 
 void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 
-	svc.events.register_event(std::make_unique<Event<int>>("VoiceCue", &voice_cue));
-	svc.events.register_event(std::make_unique<Event<int>>("PopConversation", &pop_convo));
-	svc.events.register_event(std::make_unique<Event<int>>("PiggybackNPC", &piggyback_me));
+	svc.events.get_or_add<NPCPopConversationEvent>().subscribe([this]() { this->pop_conversation(); });
+	svc.events.get_or_add<NPCVoiceCueEvent>().subscribe([this](automa::ServiceProvider& svc, int which) { this->play_voice_cue(svc, which); });
+	svc.events.get_or_add<NPCPiggybackEvent>().subscribe([this](automa::ServiceProvider& svc, int id) { this->piggyback_me(svc, id); });
 
 	m_offset = sf::Vector2f{in_data["sprite_offset"][0].as<float>(), in_data["sprite_offset"][1].as<float>()};
 	if (in_data["vendor"] && svc.data.marketplace.contains(get_specifier())) {
@@ -198,26 +180,10 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	if (has_flag_set(NPCFlags::face_player) && !has_flag_set(NPCFlags::cutscene)) { face_player(player); }
 	svc.data.set_npc_location(m_id.get(), current_location);
 
-	if (b_piggy && b_piggy_id == m_id.get()) {
-		NANI_LOG_DEBUG(Entity::m_logger, "Started piggybacking NPC {}", b_piggy_id);
-		NANI_LOG_DEBUG(Entity::m_logger, "ID from text was {}", b_piggy_id);
-		NANI_LOG_DEBUG(Entity::m_logger, "ID from NPC was {}", m_id.get());
-		is_hidden() ? unhide() : hide();
-		player.piggyback(m_id.get());
-		svc.camera_controller.constrain();
-		b_piggy = false;
-	}
-
+	if (consume_flag(NPCFlags::piggyback)) { player.piggyback(m_id.get()); }
 	if (is_hidden()) { return; }
 
 	m_indicator.tick();
-
-	if (b_pop && b_index == m_id.get()) {
-		m_current_conversation.modulate(1);
-		NANI_LOG_DEBUG(Entity::m_logger, "Current conversation N: {}", m_current_conversation.get());
-		NANI_LOG_DEBUG(Entity::m_logger, "Current order N: {}", m_current_conversation.get_order());
-		b_pop = false;
-	}
 
 	console ? m_state.set(NPCState::talking) : m_state.reset(NPCState::talking);
 
@@ -239,11 +205,6 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 		m_state.reset(NPCState::engaged);
 	}
 	if (m_state.test(NPCState::engaged) && m_state.consume(NPCState::just_engaged)) { m_indicator.set_parameters(anim::Parameters{0, 15, 16, 0, true}); }
-
-	if (b_cue) {
-		if (svc.soundboard.npc_map.contains(m_label)) { svc.soundboard.npc_map.at(m_label)(s_voice_cue); }
-		b_cue = false;
-	}
 
 	if (m_state.test(NPCState::talking)) {
 		svc.camera_controller.free();
@@ -310,6 +271,20 @@ void NPC::push_conversation(int convo) {
 void NPC::pop_conversation() {
 	if (conversations.size() > 1) { conversations.pop_front(); }
 	m_state.reset(NPCState::cutscene); // this function should only be called for cutscenes
+}
+
+void NPC::play_voice_cue(automa::ServiceProvider& svc, int which) const {
+	if (svc.soundboard.npc_map.contains(m_label)) { svc.soundboard.npc_map.at(m_label)(which); }
+}
+
+void NPC::piggyback_me(automa::ServiceProvider& svc, int id) {
+	if (id != m_id.get()) { return; }
+	is_hidden() ? unhide() : hide();
+	set_flag(NPCFlags::piggyback);
+	svc.camera_controller.constrain();
+	NANI_LOG_DEBUG(Entity::m_logger, "Started piggybacking NPC {}", id);
+	NANI_LOG_DEBUG(Entity::m_logger, "ID from text was {}", id);
+	NANI_LOG_DEBUG(Entity::m_logger, "ID from NPC was {}", m_id.get());
 }
 
 void NPC::flush_conversations() { conversations.clear(); }

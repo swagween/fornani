@@ -44,7 +44,7 @@ class DataManager final {
 	friend class Game;
 	explicit DataManager(automa::ServiceProvider& svc);
 	// game save
-	void load_data(std::string in_room = "");
+	void load_data();
 	void save_progress(player::Player& player, int save_point_id);
 	void save_quests();
 	void save_settings();
@@ -67,7 +67,7 @@ class DataManager final {
 	// map-related save data helpers
 	void open_chest(int id);
 	void reveal_room(int id);
-	void unlock_door(int id);
+	void unlock_door(std::string_view tag);
 	void activate_switch(int id);
 	void switch_destructible_state(int id, bool inverse = false);
 	void destroy_inspectable(int id);
@@ -79,7 +79,7 @@ class DataManager final {
 	void respawn_all();
 
 	bool is_duplicate_room(int id) const;
-	bool door_is_unlocked(int id) const;
+	bool is_door_unlocked(std::string_view tag) const;
 	bool chest_is_open(int id) const;
 	bool switch_is_activated(int id) const;
 	bool inspectable_is_destroyed(int id) const;
@@ -99,13 +99,13 @@ class DataManager final {
 		}
 		return false;
 	}
-	[[nodiscard]] auto item_label_from_id(int key) const -> std::string { return m_item_labels.contains(key) ? m_item_labels.at(key) : "<invalid>"; }
-	[[nodiscard]] auto item_label_view_from_id(int key) const -> std::string_view { return m_item_labels.contains(key) ? m_item_labels.at(key) : "<invalid>"; }
+	[[nodiscard]] auto item_label_from_id(int key) const -> std::string { return item[key]["tag"].as_string(); }
 	[[nodiscard]] auto item_id_from_label(std::string_view label) const -> int;
 	[[nodiscard]] auto get_gun_tag_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] auto get_gun_id_from_tag(std::string_view tag) const -> int;
 	[[nodiscard]] auto get_map_json_from_id(int id) const -> std::optional<std::reference_wrapper<dj::Json const>>;
 	[[nodiscard]] auto get_map_json_from_id(int id) -> std::optional<std::reference_wrapper<dj::Json>>;
+	[[nodiscard]] auto get_item_json_from_tag(std::string_view tag) const -> dj::Json const&;
 	[[nodiscard]] auto get_room_data_from_id(int id) const -> std::optional<dj::Json>;
 	[[nodiscard]] auto get_npc_label_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] auto get_enemy_label_from_id(int id) const -> std::optional<std::string_view>;
@@ -170,16 +170,14 @@ class DataManager final {
 	TimeTrialRegistry time_trial_registry{};
 
   private:
-	[[nodiscard]] auto get_destroyed_inspectables() const -> std::vector<int> { return destroyed_inspectables; }
+	[[nodiscard]] auto get_destroyed_inspectables() const -> Register<int> { return destroyed_inspectables; }
 	std::vector<int> opened_chests{};
-	std::vector<int> unlocked_doors{};
+	Register<std::string> unlocked_doors{};
 	std::vector<int> activated_switches{};
 	std::vector<std::pair<int, int>> destructible_states{};
-	std::vector<int> destroyed_inspectables{};
+	Register<int> destroyed_inspectables{};
 	std::vector<util::QuestKey> quest_progressions{};
 	std::vector<std::string> m_biomes{};
-
-	std::unordered_map<int, std::string> m_item_labels{};
 	std::unordered_map<int, std::string> m_map_labels{};
 
 	io::Logger m_logger{"data"};

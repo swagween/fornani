@@ -1,6 +1,7 @@
 
 #include "editor/automa/Editor.hpp"
 #include <editor/util/Constants.hpp>
+#include <fornani/events/SystemEvent.hpp>
 #include "editor/gui/Console.hpp"
 #include "fornani/core/Application.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
@@ -16,23 +17,9 @@
 
 namespace pi {
 
-static bool b_load_file{};
 static bool b_new_file{};
 static bool b_close_entity_popup{};
 static bool b_reloaded{};
-static int b_new_id{};
-
-static std::string to_region{};
-static std::string to_room{};
-static void load_file(std::string const& toregion, std::string const& toroom) {
-	b_load_file = true;
-	to_region = toregion;
-	to_room = toroom;
-}
-static void new_file(int id) {
-	b_new_file = true;
-	b_new_id = id;
-}
 
 Editor::Editor(fornani::automa::ServiceProvider& svc)
 	: EditorState(svc), map(svc, SelectionType::canvas, fornani::Biome{}), palette(svc, SelectionType::palette, fornani::Biome{}), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()), grid_refresh(16),
@@ -42,8 +29,10 @@ Editor::Editor(fornani::automa::ServiceProvider& svc)
 
 	svc.music_player.set_volume(0.2f);
 
-	svc.events.register_event(std::make_unique<fornani::Event<std::string, std::string>>("LoadFile", &load_file));
-	svc.events.register_event(std::make_unique<fornani::Event<int>>("NewFile", &new_file));
+	svc.events.get_or_add<fornani::LoadFileEvent>().subscribe([this](std::string_view to_region, std::string_view to_room) { this->load_file(to_region, to_room); });
+	svc.events.get_or_add<fornani::NewFileEvent>().subscribe([this](int id) { this->new_file(id); });
+	// svc.events.register_event<std::string_view, std::string_view>("LoadFile", [this](std::string const& to_region, std::string const& to_room) { this->load_file(to_region, to_room); });
+	// svc.events.register_event<int>("NewFile", &new_file);
 
 	svc.set_editor(true);
 
@@ -215,15 +204,6 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 
 void Editor::logic() {
 
-	if (b_load_file) {
-		save();
-		p_services->finder.paths.region = to_region;
-		p_services->finder.paths.room_name = to_room;
-		load();
-		b_load_file = false;
-		b_close_entity_popup = true;
-	}
-
 	auto& target = palette_mode() ? palette : map;
 	auto& tool = right_mouse_pressed() ? secondary_tool : current_tool;
 	map.constrain(p_services->window->f_screen_dimensions());
@@ -296,6 +276,20 @@ void Editor::load() {
 	palette.set_origin({});
 	reset_layers();
 	b_reloaded = true;
+}
+
+void Editor::load_file(std::string_view to_region, std::string_view to_room) {
+	save();
+	p_services->finder.paths.region = to_region;
+	p_services->finder.paths.room_name = to_room;
+	load();
+	b_close_entity_popup = true;
+	NANI_LOG_INFO(p_logger, "Loaded file: {}.", to_room);
+}
+
+void Editor::new_file(int id) {
+	b_new_file = true;
+	m_new_id = id;
 }
 
 bool Editor::save() {
@@ -502,18 +496,18 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			map.metagrid_coordinates = {metagrid_x, metagrid_y};
 			p_services->finder.paths.region = regbuffer;
 			p_services->finder.paths.room_name = std::string{roombuffer} + ".json";
-			map.room_id = b_new_id;
+			map.room_id = m_new_id;
 			save();
 			load();
 			reset_layers();
 			map.center(p_services->window->f_center_screen());
 			dj::Json this_room{};
-			this_room["room_id"] = b_new_id;
+			this_room["room_id"] = m_new_id;
 			this_room["region"] = p_services->finder.paths.region;
 			this_room["label"] = p_services->finder.paths.room_name;
 			p_services->data.map_table["rooms"].push_back(this_room);
 			console.add_log(std::string{"In folder " + p_services->finder.paths.region}.c_str());
-			console.add_log(std::string{"Created new room with id " + std::to_string(b_new_id) + " and name " + p_services->finder.paths.room_name}.c_str());
+			console.add_log(std::string{"Created new room with id " + std::to_string(m_new_id) + " and name " + p_services->finder.paths.room_name}.c_str());
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();

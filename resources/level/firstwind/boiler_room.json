@@ -12,10 +12,10 @@
           9,
           5
         ],
+        "tag": "gnat",
         "type": 0
       }
     ],
-    "inspectables": [],
     "portals": [
       {
         "activate_on_contact": false,
@@ -26,7 +26,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           9,
@@ -40,6 +39,11 @@
     "ambience": "",
     "background": "night",
     "biome": "firstwind",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -79,7 +83,8 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 0
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
     "flags": {
@@ -87,14 +92,14 @@
       "reverse_obscuring": false
     },
     "ignore_lighting": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ],
     "layers": [
       [

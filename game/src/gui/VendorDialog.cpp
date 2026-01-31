@@ -216,7 +216,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 						destination_inventory.add_item(svc.data.item, item_lbl);
 						player.give_drop(item::DropType::orb, exchange);
 						balance += exchange;
-						source_inventory.remove_item(item_id, 1);
+						source_inventory.remove_item(item_lbl, 1);
 						NANI_LOG_DEBUG(m_logger, "Removed {} from {} inventory", item_lbl, is_buying() ? "vendor" : "player");
 						svc.soundboard.flags.item.set(audio::Item::vendor_sale);
 						flags.set(VendorDialogStatus::made_sale);

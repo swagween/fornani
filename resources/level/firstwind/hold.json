@@ -66,6 +66,7 @@
           27,
           88
         ],
+        "tag": "radar_device",
         "type": 2
       }
     ],
@@ -401,7 +402,6 @@
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,
@@ -418,7 +418,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           4,
@@ -434,8 +433,8 @@
           1,
           1
         ],
-        "id": 0,
-        "key_id": 8,
+        "id": 1,
+        "key_tag": "firstwind_hangar_key",
         "locked": true,
         "position": [
           27,
@@ -452,7 +451,6 @@
           1
         ],
         "id": 0,
-        "key_id": 8,
         "locked": false,
         "position": [
           3,
@@ -469,7 +467,6 @@
           1
         ],
         "id": 0,
-        "key_id": 8,
         "locked": false,
         "position": [
           28,
@@ -486,7 +483,6 @@
           3
         ],
         "id": 0,
-        "key_id": 8,
         "locked": false,
         "position": [
           0,

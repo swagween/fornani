@@ -1,12 +1,13 @@
 
 #include <fornani/automa/states/Trial.hpp>
 #include <fornani/service/ServiceProvider.hpp>
-#include <fornani/systems/Event.hpp>
 #include <fornani/utils/Random.hpp>
 
 namespace fornani::automa {
 
-Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameState(svc, player, scene, room_number), map(svc, player), m_services(&svc), m_reset{64} {
+Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameState(svc, player, scene, room_number), m_services(&svc), m_reset{64} {
+
+	m_map = world::Map{svc, player};
 
 	m_type = StateType::game;
 
@@ -17,18 +18,18 @@ Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scen
 	svc.soundboard.turn_on();
 	if (!svc.data.exists(room_number)) {
 		svc.data.rooms.push_back(room_number);
-		svc.data.load_data(room_name.data());
+		svc.data.load_data();
 	} else {
-		map.load(svc, m_console, room_number);
+		m_map->load(svc, m_console, room_number);
 	}
 
-	svc.state_controller.player_position = map.get_player_start();
+	svc.state_controller.player_position = m_map->get_player_start();
 
-	player.set_camera_bounds(map.real_dimensions);
+	player.set_camera_bounds(m_map->real_dimensions);
 	player.force_camera_center();
 
 	player.get_collider().physics.zero();
-	player.set_position(map.get_player_start());
+	player.set_position(m_map->get_player_start());
 
 	// save was loaded from a json, or player died, so we successfully skipped door search
 	if (!player.is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
@@ -90,19 +91,21 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	if (!m_console && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
 
+	if (!m_map) { return; }
+
 	if (!m_reset.running()) {
-		player->update(map);
+		player->update(*m_map);
 		player->start_tick();
 	}
-	map.update(svc, m_console);
+	m_map->update(svc, m_console);
 
-	map.debug_mode = debug_mode;
+	m_map->debug_mode = debug_mode;
 
 	player->end_tick();
 	if (!m_console) { player->set_busy(false); }
 
 	if (player->is_dead()) {
-		map.transition.start();
+		m_map->transition.start();
 		player->health.refill();
 		svc.state_controller.actions.set(Actions::restart);
 		m_reset.start();
@@ -112,21 +115,22 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		player->accumulated_forces.clear();
 	}
 
-	map.background->update(svc);
+	m_map->background->update(svc);
 }
 
 void Trial::frame_update(ServiceProvider& svc) {}
 
 void Trial::render(ServiceProvider& svc, sf::RenderWindow& win) {
-	map.render_background(svc, win, m_shader, player->get_camera_position());
-	map.render(svc, win, m_shader, player->get_camera_position());
+	if (!m_map) { return; }
+	m_map->render_background(svc, win, m_shader, player->get_camera_position());
+	m_map->render(svc, win, m_shader, player->get_camera_position());
 
 	if (pause_window) { pause_window.value()->render(svc, win); }
 	if (m_console) {
 		m_console.value()->render(win);
 		m_console.value()->write(win);
 	}
-	if (svc.debug_mode()) { map.debug(); }
+	if (svc.debug_mode()) { m_map->debug(); }
 }
 
 } // namespace fornani::automa

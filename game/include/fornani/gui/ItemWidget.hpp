@@ -15,7 +15,7 @@ enum class ItemWidgetType { gun, item };
 
 class ItemWidget {
   public:
-	explicit ItemWidget(automa::ServiceProvider& svc, ItemWidgetType type, int id);
+	explicit ItemWidget(automa::ServiceProvider& svc, ItemWidgetType type, std::string_view tag);
 	void update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win);
 	void bring_in();
@@ -23,7 +23,7 @@ class ItemWidget {
 	void remove_sparkler();
 
   private:
-	int m_id;
+	sf::Vector2i m_lookup{};
 	ItemWidgetType m_type;
 	struct {
 		sf::Sprite sticker;

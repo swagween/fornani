@@ -24,7 +24,7 @@ class ControllerMap;
 namespace fornani::gui {
 
 enum class ConsoleMode { writing, responding, off };
-enum class ConsoleFlags { no_exit };
+enum class ConsoleFlags { no_exit, close_after_process };
 enum class ConsoleTriggers { response_created };
 enum class OutputType { gradual, instant, no_exit, no_skip };
 
@@ -57,12 +57,13 @@ class Console {
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win);
 
+	void relaunch(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type, int target_index = -1);
 	void set_source(dj::Json const& json);
 	void set_nani_sprite(sf::Sprite const& sprite);
 	void set_no_exit(bool flag) { flag ? m_flags.set(ConsoleFlags::no_exit) : m_flags.reset(ConsoleFlags::no_exit); }
 	void handle_actions(int value);
-	void display_item(int item_id, bool sparkle = true);
-	void display_gun(int gun_id, bool sparkle = true);
+	void display_item(std::string_view tag, bool sparkle = true);
+	void display_gun(std::string_view tag, bool sparkle = true);
 	void write(sf::RenderWindow& win, bool instant);
 	void write(sf::RenderWindow& win);
 	void append(std::string_view key);
@@ -73,6 +74,7 @@ class Console {
 
 	[[nodiscard]] auto is_active() const -> bool { return m_mode == ConsoleMode::writing || m_mode == ConsoleMode::responding; }
 	[[nodiscard]] auto is_complete() const -> bool { return !is_active(); }
+	[[nodiscard]] auto close_after_process() const -> bool { return m_flags.test(ConsoleFlags::close_after_process); }
 	[[nodiscard]] auto exit_requested() const -> bool { return m_mode == ConsoleMode::off; }
 	[[nodiscard]] auto just_began() const -> bool { return m_began; }
 	[[nodiscard]] auto get_message_codes() const -> std::optional<std::vector<MessageCode>>;

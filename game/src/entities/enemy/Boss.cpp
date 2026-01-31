@@ -1,11 +1,12 @@
 
 #include <fornani/entities/enemy/Boss.hpp>
+#include <fornani/events/GameplayEvent.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 
 namespace fornani::enemy {
 
 Boss::Boss(automa::ServiceProvider& svc, world::Map& map, std::string_view label) : Enemy{svc, map, label}, p_health_bar{svc, label}, p_services{&svc} {
-	svc.events.register_event(std::make_unique<Event<>>("StartBattle", [this]() { this->start_battle(); }));
+	svc.events.get_or_add<StartBattleEvent>().subscribe([this]() { this->start_battle(); });
 	flags.general.set(GeneralFlags::boss);
 }
 

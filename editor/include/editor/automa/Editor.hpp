@@ -35,6 +35,8 @@ class Editor final : public EditorState {
 	void render(sf::RenderWindow& win) override;
 	void gui_render(sf::RenderWindow& win);
 	void load();
+	void load_file(std::string_view to_region, std::string_view to_room);
+	void new_file(int id);
 	bool save();
 	void help_marker(char const* desc);
 	void export_layer_texture();
@@ -109,6 +111,8 @@ class Editor final : public EditorState {
 		bool custom_position{};
 	} m_demo{};
 	int m_middleground{};
+
+	int m_new_id{};
 
 	fornani::automa::ServiceProvider* m_services;
 };

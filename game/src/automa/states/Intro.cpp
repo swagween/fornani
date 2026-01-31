@@ -1,22 +1,15 @@
 
 #include <fornani/automa/states/Intro.hpp>
+#include <fornani/events/GameplayEvent.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 
 namespace fornani::automa {
 
-static bool b_play_intro_song{};
-static int intro_song_id{};
-
-static void intro_trigger_song(int to) {
-	b_play_intro_song = true;
-	intro_song_id = to;
-}
-
 Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number)
-	: GameState(svc, player, scene, room_number), map(svc, player), m_airship{svc, "scenery_firstwind_airship", {480, 256}}, m_cloud_sea{svc, "cloud_sea"}, m_cloud{svc, "cloud"}, m_intro_shot{1600}, m_wait{800}, m_end_wait{800},
-	  m_attack_fadeout{2600}, m_location_text{svc, svc.data.gui_text["locations"]["firstwind"].as_string_view()} {
-
-	svc.events.register_event(std::make_unique<Event<int>>("PlaySong", &intro_trigger_song));
+	: GameState(svc, player, scene, room_number), m_airship{svc, "scenery_firstwind_airship", {480, 256}}, m_cloud_sea{svc, "cloud_sea"}, m_cloud{svc, "cloud"}, m_intro_shot{1600}, m_wait{800}, m_end_wait{800}, m_attack_fadeout{2600},
+	  m_location_text{svc, svc.data.gui_text["locations"]["firstwind"].as_string_view()} {
+	m_map = world::Map{svc, player};
+	svc.events.get_or_add<PlaySongEvent>().subscribe([&svc](ServiceProvider& svc, int id) { svc.music_player.play_song_by_id(svc.finder, id); });
 
 	svc.music_player.load(svc.finder, "wind");
 	svc.ambience_player.load(svc.finder, "firstwind");
@@ -24,12 +17,12 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 	m_wait.start();
 
 	player.reset_flags();
-	map.load(svc, m_console, room_number);
-	map.transition.set_duration(400);
+	m_map->load(svc, m_console, room_number);
+	m_map->transition.set_duration(400);
 
 	svc.soundboard.turn_on();
 
-	player.set_camera_bounds(map.real_dimensions);
+	player.set_camera_bounds(m_map->real_dimensions);
 	player.force_camera_center();
 
 	player.set_position(sf::Vector2f{14.5f, 10.f} * constants::f_cell_size);
@@ -37,8 +30,8 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 	m_world_shader = LightShader(svc.finder);
 	svc.a11y.set_action_ctx_bar_enabled(false);
 	player.controller.prevent_movement();
-	m_world_shader->set_darken(map.darken_factor);
-	m_world_shader->set_texture_size(map.real_dimensions / constants::f_scale_factor);
+	m_world_shader->set_darken(m_map->darken_factor);
+	m_world_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
 
 	m_airship.push_animation("main", {0, 4, 40, -1});
 	m_airship.set_animation("main");
@@ -59,11 +52,6 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 }
 
 void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-
-	if (b_play_intro_song) {
-		svc.music_player.play_song_by_id(svc.finder, intro_song_id);
-		b_play_intro_song = false;
-	}
 
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered || svc.controller_map.process_gamepad_disconnection()) {
 		pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{svc.data.gui_text["pause_menu"]["resume"].as_string(), svc.data.gui_text["pause_menu"]["settings"].as_string(),
@@ -90,17 +78,19 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	player->controller.restrict_movement();
 
+	if (!m_map) { return; }
+
 	// cutscene logic
 	if (m_intro_shot.get() == 1000) { m_location_text.start(); }
-	if (m_intro_shot.is_almost_complete()) { map.transition.start(); }
-	if (map.transition.is_black() && m_intro_shot.is_complete()) { set_flag(IntroFlags::established); }
-	if (map.transition.is_black() && has_flag_set(IntroFlags::established) && !has_flag_set(IntroFlags::cutscene_started)) {
+	if (m_intro_shot.is_almost_complete()) { m_map->transition.start(); }
+	if (m_map->transition.is_black() && m_intro_shot.is_complete()) { set_flag(IntroFlags::established); }
+	if (m_map->transition.is_black() && has_flag_set(IntroFlags::established) && !has_flag_set(IntroFlags::cutscene_started)) {
 		svc.app_flags.set(AppFlags::in_game);
-		map.cutscene_catalog.push_cutscene(svc, map, *player, 1);
-		map.transition.end();
+		m_map->cutscene_catalog.push_cutscene(svc, *m_map, *player, 1);
+		m_map->transition.end();
 		set_flag(IntroFlags::cutscene_started);
 	}
-	if (has_flag_set(IntroFlags::cutscene_started) && map.cutscene_catalog.cutscenes.empty()) {
+	if (has_flag_set(IntroFlags::cutscene_started) && m_map->cutscene_catalog.cutscenes.empty()) {
 		if (!has_flag_set(IntroFlags::cutscene_over)) { m_end_wait.start(); }
 		set_flag(IntroFlags::cutscene_over);
 	}
@@ -117,7 +107,7 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		if (!m_console && has_flag_set(IntroFlags::console_message)) { set_flag(IntroFlags::complete); }
 	}
 
-	if (has_flag_set(IntroFlags::complete) && map.cutscene_catalog.cutscenes.empty()) {
+	if (has_flag_set(IntroFlags::complete) && m_map->cutscene_catalog.cutscenes.empty()) {
 		svc.state_controller.actions.set(automa::Actions::intro_done);
 		svc.state_controller.actions.set(automa::Actions::trigger);
 		player->cooldowns.tutorial.start();
@@ -166,25 +156,26 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (!m_console && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
 
 	// physical tick
-	player->update(map);
+	player->update(*m_map);
 	player->start_tick();
-	map.update(svc, m_console);
+	m_map->update(svc, m_console);
 
-	map.debug_mode = debug_mode;
+	m_map->debug_mode = debug_mode;
 
 	player->end_tick();
 	if (!m_console) { player->set_busy(false); }
 
-	map.background->update(svc);
+	m_map->background->update(svc);
 	hud.update(svc, *player);
 }
 
 void Intro::frame_update(ServiceProvider& svc) {}
 
 void Intro::render(ServiceProvider& svc, sf::RenderWindow& win) {
+	if (!m_map) { return; }
 	if (m_world_shader) {
-		map.render_background(svc, win, m_world_shader, player->get_camera_position());
-		map.render(svc, win, m_world_shader, player->get_camera_position());
+		m_map->render_background(svc, win, m_world_shader, player->get_camera_position());
+		m_map->render(svc, win, m_world_shader, player->get_camera_position());
 	}
 	if (!has_flag_set(IntroFlags::established)) {
 		m_cloud_sea.render(svc, win, {});
@@ -194,7 +185,7 @@ void Intro::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		m_cloud.render(svc, win, {});
 		m_location_text.write_gradual_message(win);
 	}
-	map.transition.render(win);
+	m_map->transition.render(win);
 	if (pause_window) { pause_window.value()->render(svc, win); }
 	if (m_console) {
 		m_console.value()->render(win);

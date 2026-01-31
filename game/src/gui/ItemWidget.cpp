@@ -4,8 +4,8 @@
 
 namespace fornani::gui {
 
-ItemWidget::ItemWidget(automa::ServiceProvider& svc, ItemWidgetType type, int id)
-	: m_id{id}, m_type{type}, m_sprites{.sticker{svc.assets.get_texture("item_sticker")}, .item = type == ItemWidgetType::item ? sf::Sprite{svc.assets.get_texture("inventory_items")} : sf::Sprite{svc.assets.get_texture("inventory_guns")}},
+ItemWidget::ItemWidget(automa::ServiceProvider& svc, ItemWidgetType type, std::string_view tag)
+	: m_type{type}, m_sprites{.sticker{svc.assets.get_texture("item_sticker")}, .item = type == ItemWidgetType::item ? sf::Sprite{svc.assets.get_texture("inventory_items")} : sf::Sprite{svc.assets.get_texture("inventory_guns")}},
 	  m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "sticker", 128, util::InterpolationType::quadratic}, m_sparkler{vfx::Sparkler{svc, sf::Vector2f{64.f, 64.f}, colors::ui_white, "item"}} {
 	bring_in();
 	auto dim = type == ItemWidgetType::item ? sf::Vector2f{16.f, 16.f} : sf::Vector2f{24.f, 24.f};
@@ -13,6 +13,7 @@ ItemWidget::ItemWidget(automa::ServiceProvider& svc, ItemWidgetType type, int id
 	m_sprites.sticker.setScale(constants::f_scale_vec);
 	m_sprites.sticker.setOrigin(m_sprites.sticker.getLocalBounds().getCenter());
 	m_sprites.item.setOrigin(dim / 2.f);
+	if (type == ItemWidgetType::item) { m_lookup = {svc.data.get_item_json_from_tag(tag)["lookup"][0].as<int>(), svc.data.get_item_json_from_tag(tag)["lookup"][1].as<int>()}; }
 }
 
 void ItemWidget::update(automa::ServiceProvider& svc) {
@@ -26,10 +27,7 @@ void ItemWidget::update(automa::ServiceProvider& svc) {
 void ItemWidget::render(automa::ServiceProvider& svc, sf::RenderWindow& win) {
 	auto dim = m_type == ItemWidgetType::item ? sf::Vector2i{16, 16} : sf::Vector2i{24, 24};
 	win.draw(m_sprites.sticker);
-	auto idx = m_type == ItemWidgetType::item ? m_id - 1 : m_id;
-	auto u = (idx % 16) * dim.x;
-	auto v = static_cast<int>(std::floor((idx / 16)) * dim.y);
-	m_sprites.item.setTextureRect(sf::IntRect({u, v}, dim));
+	m_sprites.item.setTextureRect(sf::IntRect(m_lookup * dim.x, dim));
 	win.draw(m_sprites.item);
 	if (m_sparkler) { m_sparkler->render(win, {}); }
 }

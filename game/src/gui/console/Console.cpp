@@ -1,6 +1,9 @@
 
+#include <fornani/events/ConsoleEvent.hpp>
+#include <fornani/events/GameplayEvent.hpp>
+#include <fornani/events/InventoryEvent.hpp>
+#include <fornani/events/SystemEvent.hpp>
 #include <fornani/gui/console/Console.hpp>
-#include <fornani/systems/Event.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/setup/ControllerMap.hpp"
 
@@ -26,6 +29,14 @@ Console::Console(automa::ServiceProvider& svc, dj::Json const& source, OutputTyp
 }
 
 Console::Console(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type, int target_index) : Console(svc) {
+	if (type == OutputType::no_skip) { m_exit_stall.start(); }
+	set_source(source);
+	load_and_launch(key, type, target_index);
+}
+
+void Console::relaunch(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type, int target_index) {
+	m_mode = ConsoleMode::writing;
+	NANI_LOG_DEBUG(m_logger, "Relaunched console.");
 	if (type == OutputType::no_skip) { m_exit_stall.start(); }
 	set_source(source);
 	load_and_launch(key, type, target_index);
@@ -66,7 +77,7 @@ void Console::update(automa::ServiceProvider& svc) {
 		for (auto& code : codes.value()) {
 			if (code.is_response() && m_writer->is_available()) { m_writer->respond(); }
 			if (code.is_reveal_item() && m_process_code_before) {
-				m_services->events.dispatch_event("RevealItem", code.value);
+				m_services->events.get_or_add<RevealItemByIDEvent>().dispatch(code.value);
 				processed = true;
 			}
 			if (code.is_input_hint()) {
@@ -75,12 +86,12 @@ void Console::update(automa::ServiceProvider& svc) {
 				m_writer->insert_icon_at(code.value, lookup);
 			}
 			if (code.is(MessageCodeType::launch_cutscene) && m_process_code_before) {
-				svc.events.dispatch_event("LaunchCutscene", code.value);
+				m_services->events.get_or_add<LaunchCutsceneEvent>().dispatch(*m_services, code.value);
 				processed = true;
 			}
 			if (code.is(MessageCodeType::add_map_marker) && m_process_code_before && code.extras) {
 				if (code.extras->size() > 1) {
-					svc.events.dispatch_event("AddMapMarker", code.value, code.extras->at(0), code.extras->at(1));
+					m_services->events.get_or_add<AddMapMarkerEvent>().dispatch(*m_services, code.value, code.extras->at(0), code.extras->at(1));
 					processed = true;
 				}
 			}
@@ -91,7 +102,7 @@ void Console::update(automa::ServiceProvider& svc) {
 				processed = true;
 			}
 			if (code.is_pop_conversation() && m_process_code_before) {
-				svc.events.dispatch_event("PopConversation", code.value);
+				m_services->events.get_or_add<NPCPopConversationEvent>().dispatch();
 				auto label = svc.data.get_npc_label_from_id(code.value);
 				if (label && code.extras) {
 					svc.quest_table.progress_quest("npc_dialogue", {label.value().data(), code.extras->at(0)}, 1, -1, code.value);
@@ -99,13 +110,12 @@ void Console::update(automa::ServiceProvider& svc) {
 				}
 				processed = true;
 			}
-			if (code.is_open_vendor()) { m_services->events.dispatch_event("OpenVendor", code.value); }
 			if (code.is_play_song() && m_process_code_before) {
-				svc.events.dispatch_event("PlaySong", code.value);
+				m_services->events.get_or_add<PlaySongEvent>().dispatch(*m_services, code.value);
 				processed = true;
 			}
 			if (code.is_voice_cue() && m_process_code_before) {
-				svc.events.dispatch_event("VoiceCue", code.value);
+				m_services->events.get_or_add<NPCVoiceCueEvent>().dispatch(*m_services, code.value);
 				NANI_LOG_DEBUG(m_logger, "Voice Cue: {}", code.value);
 				processed = true;
 			}
@@ -155,11 +165,15 @@ void Console::set_nani_sprite(sf::Sprite const& sprite) {
 void Console::handle_actions(int value) {
 	switch (value) {
 	case 1: // return to main menu
-		m_services->state_controller.actions.set(automa::Actions::main_menu);
-		m_services->state_controller.actions.set(automa::Actions::trigger);
+		m_services->events.get_or_add<ReturnToMainMenuEvent>().dispatch();
+		NANI_LOG_DEBUG(m_logger, "Fired event from console: ReturnToMainMenuEvent");
+		// m_services->state_controller.actions.set(automa::Actions::main_menu);
+		// m_services->state_controller.actions.set(automa::Actions::trigger);
 		break;
 	case 2: // restart save
-		m_services->state_controller.actions.set(automa::Actions::retry);
+		m_services->events.get_or_add<ReloadSaveEvent>().dispatch(*m_services, value);
+		// m_services->state_controller.actions.set(automa::Actions::retry);
+		// m_services->state_controller.actions.set(automa::Actions::trigger);
 		break;
 	case 3: m_services->state_controller.actions.set(automa::Actions::delete_file); break;
 	}
@@ -182,14 +196,14 @@ void Console::load_and_launch(OutputType type) {
 
 void Console::load_single_message(std::string_view message) { m_writer = std::make_unique<TextWriter>(*m_services, message); }
 
-void Console::display_item(int item_id, bool sparkle) {
-	m_item_widget = ItemWidget(*m_services, ItemWidgetType::item, item_id);
+void Console::display_item(std::string_view tag, bool sparkle) {
+	m_item_widget = ItemWidget(*m_services, ItemWidgetType::item, tag);
 	m_item_display_timer.start();
 	if (!sparkle) { m_item_widget->remove_sparkler(); }
 }
 
-void Console::display_gun(int gun_id, bool sparkle) {
-	m_item_widget = ItemWidget(*m_services, ItemWidgetType::gun, gun_id);
+void Console::display_gun(std::string_view tag, bool sparkle) {
+	m_item_widget = ItemWidget(*m_services, ItemWidgetType::gun, tag);
 	if (!sparkle) { m_item_widget->remove_sparkler(); }
 }
 
@@ -204,6 +218,7 @@ void Console::write(sf::RenderWindow& win) { write(win, m_output_type == OutputT
 void Console::append(std::string_view key) { m_writer->append(key); }
 
 void Console::end() {
+	NANI_LOG_DEBUG(m_logger, "Ended console.");
 	m_services->soundboard.flags.console.set(audio::Console::done);
 	m_mode = ConsoleMode::off; // handle exit codes
 	m_writer = {};
@@ -250,9 +265,9 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 			if (auto response_codes = get_response_codes(m_response->get_selection())) {
 				for (auto const& cde : response_codes.value()) {
 					if (cde.is_response()) { m_writer->set_suite(cde.value); }
-					if (cde.is_start_battle()) { m_services->events.dispatch_event("StartBattle"); }
+					if (cde.is_start_battle()) { m_services->events.get_or_add<StartBattleEvent>().dispatch(); }
 					if (cde.is_pop_conversation()) {
-						m_services->events.dispatch_event("PopConversation", cde.value);
+						m_services->events.get_or_add<NPCPopConversationEvent>().dispatch();
 						auto label = m_services->data.get_npc_label_from_id(cde.value);
 						if (label && cde.extras) {
 							m_services->quest_table.progress_quest("npc_dialogue", {label.value().data(), cde.extras->at(0)}, 1, -1, cde.value);
@@ -265,11 +280,12 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 							if (cde.extras->size() > 1) { m_services->quest_table.progress_quest(m_services->quest_registry.get_quest_metadata(cde.value).get_tag(), cde.extras->at(0), cde.extras->at(1)); }
 						}
 					}
-					if (cde.is_piggyback()) { m_services->events.dispatch_event("PiggybackNPC", cde.value); }
-					if (cde.is_open_vendor()) { m_services->events.dispatch_event("OpenVendor", cde.value); }
+					if (cde.is_piggyback()) { m_services->events.get_or_add<NPCPiggybackEvent>().dispatch(*m_services, cde.value); }
+					if (cde.is_open_vendor()) { m_services->events.get_or_add<OpenVendorEvent>().dispatch(*m_services, cde.value); }
 					if (cde.is_item()) {
-						m_services->events.dispatch_event("GivePlayerItem", cde.value, 1);
-						if (cde.extras) { m_services->events.dispatch_event("DestroyInspectable", cde.extras->at(0)); }
+						m_services->events.get_or_add<AcquireItemFromConsoleEvent>().dispatch(*m_services, cde.value);
+						if (cde.extras) { m_services->data.destroy_inspectable(cde.extras->at(0)); }
+						m_flags.set(ConsoleFlags::close_after_process);
 					}
 					if (cde.is_destructible()) { m_services->data.switch_destructible_state(cde.value); }
 					if (cde.is_exit()) {
@@ -312,18 +328,15 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 					m_writer->set_suite(code.value);
 					if (code.extras) { m_writer->set_index(code.extras.value()[0]); }
 				}
-				if (code.is_start_battle()) { m_services->events.dispatch_event("StartBattle"); }
-				if (code.is_reveal_item() && m_process_codes) { m_services->events.dispatch_event("RevealItem", code.value); }
-				if (code.is_item() && m_process_code_after) { m_services->events.dispatch_event("GivePlayerItem", code.value, 1); }
-				if (code.is_weapon() && m_process_code_after) { m_services->events.dispatch_event("AcquireGun", code.value); }
-				if (code.is_remove_weapon() && m_process_code_after) { m_services->events.dispatch_event("RemovePlayerWeapon", code.value); }
+				if (code.is_start_battle()) { m_services->events.get_or_add<StartBattleEvent>().dispatch(); }
+				if (code.is_reveal_item() && m_process_codes) { m_services->events.get_or_add<RevealItemByIDEvent>().dispatch(code.value); }
+				if (code.is_item() && m_process_code_after) { m_services->events.get_or_add<AcquireItemFromConsoleEvent>().dispatch(*m_services, code.value); }
+				if (code.is_weapon() && m_process_code_after) { m_services->events.get_or_add<AcquireWeaponFromConsoleEvent>().dispatch(*m_services, code.value); }
+				if (code.is_remove_weapon() && m_process_code_after) { m_services->events.get_or_add<RemoveWeaponByIDEvent>().dispatch(*m_services, code.value); }
+				if (code.is_open_vendor() && m_process_code_after) { m_services->events.get_or_add<OpenVendorEvent>().dispatch(*m_services, code.value); }
 				// if (code.is_voice_cue() && m_process_code_after) { m_services->events.dispatch_event("VoiceCue", code.value); }
 				if (code.is_emotion() && m_process_code_after && m_npc_portrait && responded) { m_npc_portrait->set_emotion(code.value); }
-				if (code.is_destroy_inspectable()) {
-					m_services->data.destroy_inspectable(code.value);
-					m_services->events.dispatch_event("DestroyInspectable", code.value);
-					NANI_LOG_DEBUG(m_logger, "Destroyed Inspectable with ID {}", code.value);
-				}
+				if (code.is_destroy_inspectable()) { m_services->data.destroy_inspectable(code.value); }
 				if (code.is_destructible() && m_process_code_after) {
 					auto inverse = code.extras ? code.extras->at(0) : 0;
 					m_services->data.switch_destructible_state(code.value, static_cast<bool>(inverse));

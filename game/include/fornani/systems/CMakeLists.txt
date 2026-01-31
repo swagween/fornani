@@ -1,6 +1,5 @@
 nani_add_headers(
-        EventDispatcher.hpp
-        Event.hpp
+        EventRegistry.hpp
         Notification.hpp
         NotificationManager.hpp
         Register.hpp

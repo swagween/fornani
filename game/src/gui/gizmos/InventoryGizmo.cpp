@@ -1,5 +1,6 @@
 
 #include "fornani/gui/gizmos/InventoryGizmo.hpp"
+#include <fornani/events/InventoryEvent.hpp>
 #include <numbers>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -15,7 +16,7 @@ InventoryGizmo::InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, pl
 	  m_item_sprite{svc.assets.get_texture("inventory_items")},
 	  m_zones{InventoryZone{{9, 1}, {38.f, 36.f}, {414.f, 18.f}}, InventoryZone{{11, 4}, {36.f, 36.f}, {48.f, 114.f}}, InventoryZone{{8, 2}, {42.f, 62.f}, {124.f, 279.f}}, InventoryZone{{8, 1}, {60.f, 36.f}, {404.f, 430.f}}},
 	  m_selector(std::make_unique<InventorySelector>(m_zones.at(static_cast<int>(InventoryZoneType::key)).table_dimensions, m_zones.at(static_cast<int>(InventoryZoneType::key)).cell_size)), m_orb_display(svc), m_services(&svc),
-	  m_equipped_items_position{472.f, 106.f} {
+	  m_equipped_items_position{472.f, 106.f}, m_player{&player} {
 	m_dashboard_port = DashboardPort::inventory;
 	m_path.set_section("start");
 	m_lid_path.set_section("start");
@@ -57,8 +58,7 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 		if (piece.item->is_invisible()) { continue; }
 		if (piece.item->get_table_index(current_zone.table_dimensions.x) == m_current_item_lookup) {
 			if (zone_match(piece.item->get_type())) {
-				m_current_item = piece.item.get();
-				m_current_item_id = piece.item->get_id();
+				m_current_item = piece.item->get_id();
 				m_flags.set(InventoryGizmoFlags::is_item_hovered);
 				found = true;
 			}
@@ -99,9 +99,14 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		shader.submit(win, palette, m_sprite);
 
 		if (m_description) {
-			for (auto& piece : player.catalog.inventory.items_view()) {
-				if (piece.item->is_invisible()) { continue; }
-				if (zone_match(piece.item->get_type())) { write_description(*piece.item, win, player, shader, palette, cam); }
+			if (m_current_item) {
+				if (auto* item = m_player->catalog.inventory.find_item(*m_current_item)) {
+					assert(item != nullptr); // already handled
+					assert(m_player->catalog.inventory.items_view().size() > 0);
+					if (zone_match(item->get_type()) && !item->is_invisible()) { write_description(*item, win, player, shader, palette, cam); }
+				} else {
+					m_current_item.reset();
+				}
 			}
 		}
 
@@ -154,7 +159,7 @@ bool InventoryGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_un
 	if (is_selected()) {
 		if (m_item_menu) {
 			m_item_menu->handle_inputs(controller, soundboard);
-			if (m_item_menu->was_selected()) { handle_menu_selection(m_item_menu->get_selection()); }
+			if (m_item_menu->was_selected()) { handle_menu_selection(*m_player, m_item_menu->get_selection()); }
 			if (m_item_menu) { // need to wrap again because it might have been closed
 				if (m_item_menu->was_closed()) {
 					m_item_menu = {};
@@ -187,11 +192,17 @@ bool InventoryGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_un
 				NANI_LOG_DEBUG(m_logger, "selected");
 				if (is_item_hovered() && m_current_item) {
 					NANI_LOG_DEBUG(m_logger, "created minimenu");
-					auto list = m_current_item.value()->generate_menu_list(m_services->data.gui_text["item_menu"]);
-					if (list.size() > 1) {
-						m_item_menu = MiniMenu(*m_services, list, m_selector->get_menu_position(), true);
-					} else {
-						soundboard.flags.menu.set(audio::Menu::select);
+					if (m_current_item) {
+						if (auto* item = m_player->catalog.inventory.find_item(*m_current_item)) {
+							auto list = item->generate_menu_list(m_services->data.gui_text["item_menu"]);
+							if (list.size() > 1) {
+								m_item_menu = MiniMenu(*m_services, list, m_selector->get_menu_position(), true);
+							} else {
+								soundboard.flags.menu.set(audio::Menu::select);
+							}
+						} else {
+							m_current_item.reset();
+						}
 					}
 				}
 			}
@@ -211,7 +222,7 @@ void InventoryGizmo::on_close(automa::ServiceProvider& svc, [[maybe_unused]] pla
 	m_lid_path.set_section("close");
 }
 
-void InventoryGizmo::handle_menu_selection(int selection) {
+void InventoryGizmo::handle_menu_selection(player::Player& player, int selection) {
 	if (!m_item_menu) { return; }
 	NANI_LOG_DEBUG(m_logger, "menu selected at {}", selection);
 	if (m_item_menu->was_last_option()) {
@@ -219,16 +230,21 @@ void InventoryGizmo::handle_menu_selection(int selection) {
 		return;
 	}
 	if (m_current_item) {
-		if (m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["read"].as_string()) {
-			if (m_current_item.value()->is_readable()) {
-				m_services->events.dispatch_event("ReadItem", m_current_item_id);
-				m_item_menu = {};
+		if (auto* item = m_player->catalog.inventory.find_item(*m_current_item)) {
+			if (m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["read"].as_string()) {
+				if (item->is_readable()) {
+					m_services->events.get_or_add<ReadItemByIDEvent>().dispatch(*m_current_item);
+					m_item_menu = {};
+				}
+			} else if (m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["equip"].as_string() || m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["unequip"].as_string()) {
+				if (item->is_equippable()) {
+					NANI_LOG_DEBUG(m_logger, "Equipping Item {}", *m_current_item);
+					m_services->events.get_or_add<EquipItemByIDEvent>().dispatch(*m_services, *m_current_item);
+					m_item_menu = {};
+				}
 			}
-		} else if (m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["equip"].as_string() || m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["unequip"].as_string()) {
-			if (m_current_item.value()->is_equippable()) {
-				m_services->events.dispatch_event("EquipItem", m_current_item_id);
-				m_item_menu = {};
-			}
+		} else {
+			m_current_item.reset();
 		}
 	}
 }

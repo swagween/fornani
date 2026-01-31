@@ -33,6 +33,7 @@ enum class ChestAttributes { mythic };
 class Chest final : public Animatable {
   public:
 	Chest(automa::ServiceProvider& svc, world::Map& map, int id, ChestType type, int modifier);
+	Chest(automa::ServiceProvider& svc, world::Map& map, int id, ChestType type, std::string tag, int modifier);
 	void update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f pos);
@@ -51,7 +52,7 @@ class Chest final : public Animatable {
 
 	int m_id{};
 	int m_content_modifier{};
-	std::string m_item_label{};
+	std::optional<std::string> m_tag{};
 
 	struct {
 		anim::Parameters unopened{0, 1, 80, -1};

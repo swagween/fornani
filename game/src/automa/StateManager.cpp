@@ -1,6 +1,6 @@
 
 #include "fornani/automa/StateManager.hpp"
-
+#include <fornani/events/SystemEvent.hpp>
 #include "fornani/automa/states/ControlsMenu.hpp"
 #include "fornani/automa/states/CreditsMenu.hpp"
 #include "fornani/automa/states/Dojo.hpp"
@@ -17,7 +17,11 @@
 
 namespace fornani::automa {
 
-StateManager::StateManager(ServiceProvider& svc, player::Player& player, MenuType type) {
+StateManager::StateManager(ServiceProvider& svc, player::Player& player, MenuType type) : m_player{&player} {
+
+	m_subscriptions.add(svc.events.get_or_add<ReloadSaveEvent>().subscribe([this](ServiceProvider& svc, int id) { this->reload_save(svc, id); }));
+	m_subscriptions.add(svc.events.get_or_add<ReturnToMainMenuEvent>().subscribe([this]() { this->return_to_main_menu(); }));
+
 	switch (type) {
 	case MenuType::main: g_current_state = std::make_unique<MainMenu>(svc, player); break;
 	case MenuType::settings: g_current_state = std::make_unique<SettingsMenu>(svc, player); break;
@@ -43,7 +47,10 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 		switch (svc.state_controller.submenu) {
 		case MenuType::options: set_current_state(std::make_unique<OptionsMenu>(svc, player)); break;
 		case MenuType::play: set_current_state(std::make_unique<PlayMenu>(svc, player)); break;
-		default: set_current_state(std::make_unique<MainMenu>(svc, player)); break;
+		default:
+			NANI_LOG_DEBUG(m_logger, "Called at 0");
+			set_current_state(std::make_unique<MainMenu>(svc, player));
+			break;
 		}
 		svc.state_controller.actions.reset(Actions::exit_submenu);
 	}
@@ -55,21 +62,27 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 				player.place_at_demo_position();
 				player.set_idle();
 				player.set_animation_flag(player::AnimTriggers::end_death, false);
+				svc.state_controller.actions.reset(Actions::player_death);
 			} else {
-				return_to_main_menu(svc, player);
+				NANI_LOG_DEBUG(m_logger, "Called at 1");
+				return_to_main_menu();
+				svc.state_controller.actions.reset(Actions::player_death);
 				return;
 			}
 		} else {
 			if (svc.state_controller.actions.test(Actions::retry)) {
 				svc.state_controller.next_state = svc.state_controller.save_point_id;
 				svc.data.load_progress(player, svc.data.current_save, false, false);
-				svc.state_controller.actions.reset(Actions::retry);
 				player.set_idle();
 				player.set_animation_flag(player::AnimTriggers::end_death, false);
 				svc.data.write_death_count(player);
+				svc.state_controller.actions.reset(Actions::retry);
+				svc.state_controller.actions.reset(Actions::player_death);
 			} else {
-				return_to_main_menu(svc, player);
+				NANI_LOG_DEBUG(m_logger, "Called at 2");
+				return_to_main_menu();
 				svc.data.write_death_count(player);
+				svc.state_controller.actions.reset(Actions::player_death);
 				return;
 			}
 			svc.music_player.stop();
@@ -82,7 +95,8 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 			return;
 		}
 		if (svc.state_controller.actions.test(Actions::main_menu)) {
-			return_to_main_menu(svc, player);
+			NANI_LOG_DEBUG(m_logger, "Called at 3");
+			return_to_main_menu();
 			svc.state_controller.actions.reset(Actions::main_menu);
 			return;
 		}
@@ -90,21 +104,29 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 			set_current_state(std::make_unique<Intro>(svc, player, "intro", 138));
 		} else {
 			game.flags.set(fornani::GameFlags::in_game);
-			set_current_state(std::make_unique<Dojo>(svc, player, "dojo", svc.state_controller.next_state));
+			if (get_current_state().is(StateType::dojo)) {
+				get_current_state().reload(svc, svc.state_controller.next_state);
+			} else {
+				set_current_state(std::make_unique<Dojo>(svc, player, "dojo", svc.state_controller.next_state));
+			}
 		}
+	}
+	if (m_flags.consume(StateManagerFlags::return_to_main_menu)) {
+		m_player->start_over();
+		m_player->request_animation(player::AnimState::run);
+		m_player->unregister_with_map();
+		if (svc.demo_mode()) {
+			svc.state_controller.actions.set(Actions::shutdown);
+		} else {
+			set_current_state(std::make_unique<MainMenu>(svc, *m_player));
+		}
+		svc.state_flags = {};
 	}
 }
 
-void StateManager::return_to_main_menu(ServiceProvider& svc, player::Player& player) {
-	player.start_over();
-	player.request_animation(player::AnimState::run);
-	player.unregister_with_map();
-	if (svc.demo_mode()) {
-		svc.state_controller.actions.set(Actions::shutdown);
-	} else {
-		set_current_state(std::make_unique<MainMenu>(svc, player));
-	}
-	svc.state_flags = {};
+void StateManager::return_to_main_menu() {
+	NANI_LOG_INFO(m_logger, "Returned to Main Menu.");
+	m_flags.set(StateManagerFlags::return_to_main_menu);
 }
 
 void StateManager::print_stats(ServiceProvider& svc, player::Player& player) {
@@ -112,6 +134,8 @@ void StateManager::print_stats(ServiceProvider& svc, player::Player& player) {
 	svc.state_controller.actions.reset(Actions::print_stats);
 	svc.state_controller.actions.reset(Actions::trigger);
 }
+
+void StateManager::reload_save(ServiceProvider& svc, int id) {}
 
 auto StateManager::get_current_state() const -> GameState& {
 	assert(g_current_state);

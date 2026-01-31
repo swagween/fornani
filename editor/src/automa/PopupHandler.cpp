@@ -115,7 +115,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		static bool activate_on_contact{};
 		static bool already_open{};
 		static bool locked{};
-		static int key_id{};
+		static std::string key_tag{};
 
 		ImGui::InputInt("Width", &width);
 		ImGui::Separator();
@@ -144,16 +144,28 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		ImGui::NewLine();
 
 		ImGui::Checkbox("Locked?", &locked);
-		ImGui::SameLine();
-		ImGui::InputInt("Key ID", &key_id);
-		ImGui::Separator();
-		ImGui::NewLine();
+		if (locked) {
+			std::vector<std::string> labels{};
+			for (auto const& item : svc.data.item.as_array()) {
+				if (item["is_key"].as_bool()) { labels.push_back(item["tag"].as_string()); }
+			}
+			std::ranges::sort(labels, {});
+			for (auto const& lbl : labels) {
+				if (ImGui::Selectable(lbl.c_str())) { key_tag = lbl.c_str(); }
+			}
+			ImGui::Separator();
+			ImGui::NewLine();
+		}
 
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			// switch to entity tool, and store the specified portal for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<fornani::Portal>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, activate_on_contact, already_open, room_id, destination, locked, key_id);
+			if (locked) {
+				tool->current_entity = std::make_unique<fornani::Portal>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, activate_on_contact, already_open, room_id, destination, key_tag);
+			} else {
+				tool->current_entity = std::make_unique<fornani::Portal>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, activate_on_contact, already_open, room_id, destination);
+			}
 			console.add_log(std::string{"Room ID: " + std::to_string(room_id)}.c_str());
 			ImGui::CloseCurrentPopup();
 		}
@@ -363,7 +375,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 
 		if (type == 0 || type == 2) {
 			if (ImGui::BeginCombo("Contents", label, ImGuiComboFlags_HeightLargest)) {
-				auto labels = std::vector<std::pair<std::string, int>>{};
+				auto labels = std::vector<std::string>{};
 				switch (type) {
 				case 0:
 					for (auto const& gun : svc.data.weapon.as_object()) {
@@ -375,14 +387,10 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 					}
 					break;
 				case 2:
-
-					for (auto const& item : svc.data.item.as_object()) { labels.push_back({item.first, item.second["id"].as<int>()}); }
-					std::ranges::sort(labels, {}, &std::pair<std::string, int>::first);
+					for (auto const& item : svc.data.item.as_array()) { labels.push_back(item["tag"].as_string()); }
+					std::ranges::sort(labels, {});
 					for (auto const& lbl : labels) {
-						if (ImGui::Selectable(lbl.first.c_str())) {
-							modifier = lbl.second;
-							label = lbl.first.c_str();
-						}
+						if (ImGui::Selectable(lbl.c_str())) { label = lbl.c_str(); }
 					}
 					break;
 				default: break;
@@ -398,7 +406,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<fornani::Chest>(svc, type, modifier, id);
+			tool->current_entity = type == 1 ? std::make_unique<fornani::Chest>(svc, type, modifier, id) : std::make_unique<fornani::Chest>(svc, type, label, modifier, id);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();

@@ -19,7 +19,7 @@ class Player;
 
 namespace fornani::automa {
 
-enum class StateType { menu, game };
+enum class StateType { menu, game, dojo };
 enum class GameStateFlags { playtest, settings_request, controls_request, ready };
 enum class MenuSelection { play, options, quit, controls, tutorial, credits, settings };
 
@@ -36,9 +36,11 @@ class GameState : public UniquePolymorphic {
 	virtual void tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine);
 	virtual void frame_update([[maybe_unused]] ServiceProvider& svc) {}
 	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win) {}
+	virtual void reload(ServiceProvider& svc, int target_state) {};
 	virtual std::optional<std::reference_wrapper<world::Map>> get_map() { return std::nullopt; }
 
 	[[nodiscard]] auto is_ready() const -> bool { return flags.test(GameStateFlags::ready); }
+	[[nodiscard]] auto is(StateType test) const -> bool { return m_type == test; }
 	[[nodiscard]] auto get_type() const -> StateType { return m_type; }
 
 	bool debug_mode{false};
@@ -52,6 +54,7 @@ class GameState : public UniquePolymorphic {
 
   protected:
 	std::optional<std::unique_ptr<gui::Console>> m_console;
+	std::optional<world::Map> m_map;
 	StateType m_type{};
 	io::Logger m_logger{"GameState"};
 };

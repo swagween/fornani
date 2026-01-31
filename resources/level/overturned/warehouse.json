@@ -7,11 +7,12 @@
           1
         ],
         "id": 36630,
-        "modifier": 43,
+        "modifier": 9,
         "position": [
           10,
           4
         ],
+        "tag": "mastiff_totem",
         "type": 2
       }
     ],
@@ -74,7 +75,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           25,

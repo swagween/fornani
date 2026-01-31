@@ -8,7 +8,7 @@ namespace fornani::data {
 
 DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc), minimap{svc} { load_data(); }
 
-void DataManager::load_data(std::string in_room) {
+void DataManager::load_data() {
 	m_services->stopwatch.start();
 	NANI_LOG_INFO(m_logger, "Data loading started.");
 	auto const& finder = m_services->finder;
@@ -157,6 +157,8 @@ void DataManager::load_data(std::string in_room) {
 	assert(!npc.is_null());
 	item = *dj::Json::from_file((finder.resource_path() + "/data/item/item.json").c_str());
 	assert(!item.is_null());
+	NANI_LOG_DEBUG(m_logger, "Item json size: {}", item.as_array().size());
+
 	platform = *dj::Json::from_file((finder.resource_path() + "/data/level/platform.json").c_str());
 	assert(!platform.is_null());
 	cutscene = *dj::Json::from_file((finder.resource_path() + "/data/story/cutscenes.json").c_str());
@@ -194,12 +196,6 @@ void DataManager::load_data(std::string in_room) {
 		for (auto& item : entry.second["vendor"]["rare_items"].as_array()) { vendor.rare_items.push_back(item.as_string().data()); }
 		for (auto& item : entry.second["vendor"]["guaranteed_finite_items"].as_array()) { vendor.guaranteed_finite_items.push_back(item.as_string().data()); }
 		NANI_LOG_INFO(m_logger, "Created Vendor in marketplace with ID {}", entry.second["id"].as<int>());
-	}
-
-	// load item labels
-	for (auto const& [key, entry] : item.as_object()) {
-		if (m_item_labels.contains(entry["id"].as<int>())) { continue; }
-		m_item_labels.insert({entry["id"].as<int>(), key});
 	}
 
 	gui_text = *dj::Json::from_file((finder.resource_path() + "/text/console/gui.json").c_str());
@@ -322,12 +318,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	assert(!save.is_null());
 
 	// marketplace
-	for (auto& vendor : marketplace) {
-		vendor.second.inventory = {};
-		for (auto& v : save["marketplace"].as_array()) {
-			for (auto& id : v.as_array()) { vendor.second.inventory.add_item(item, item["label"].as_string()); }
-		}
-	}
+	for (auto& vendor : marketplace) {}
 
 	m_services->quest = {};
 	discovered_rooms.clear();
@@ -344,11 +335,11 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 
 	m_services->world_clock.set_time(save["map_data"]["world_time"]["hours"].as<int>(), save["map_data"]["world_time"]["minutes"].as<int>());
 	for (auto& room : save["discovered_rooms"].as_array()) { discovered_rooms.add(room.as<int>()); }
-	for (auto& door : save["unlocked_doors"].as_array()) { unlocked_doors.push_back(door.as<int>()); }
+	for (auto& door : save["unlocked_doors"].as_array()) { unlocked_doors.add(door.as_string()); }
 	for (auto& chest : save["opened_chests"].as_array()) { opened_chests.push_back(chest.as<int>()); }
 	for (auto& s : save["activated_switches"].as_array()) { activated_switches.push_back(s.as<int>()); }
 	for (auto& block : save["destroyed_blocks"].as_array()) { destructible_states.push_back(std::make_pair(block[0].as<int>(), block[1].as<int>())); }
-	for (auto& inspectable : save["destroyed_inspectables"].as_array()) { destroyed_inspectables.push_back(inspectable.as<int>()); }
+	for (auto& inspectable : save["destroyed_inspectables"].as_array()) { destroyed_inspectables.add(inspectable.as<int>()); }
 	for (auto& q : save["quest_progressions"].as_array()) {
 		auto type = q[0].as<int>();
 		auto id = q[1].as<int>();
@@ -424,6 +415,7 @@ void DataManager::write_death_count(player::Player& player) {
 
 std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) const {
 
+	NANI_LOG_DEBUG(m_logger, "3Item json size: {}", item.as_array().size());
 	auto const& save = blank_file.save_data;
 	assert(!save.is_null());
 
@@ -446,10 +438,7 @@ void DataManager::load_trial_save(player::Player& player) const {
 	// set player data based on save file
 	player.health.set_capacity(save["player_data"]["max_hp"].as<float>());
 	player.health.set_quantity(save["player_data"]["hp"].as<float>());
-	for (auto& item : save["player_data"]["items"].as_array()) {
-		player.give_item(item["label"].as_string(), item["quantity"].as<int>());
-		if (item["revealed"].as_bool()) { player.catalog.inventory.reveal_item(item_id_from_label(item["label"].as_string())); }
-	}
+	for (auto& item : save["player_data"]["items"].as_array()) { player.give_item(item["label"].as_string(), item["quantity"].as<int>()); }
 
 	// load player's arsenal
 	player.arsenal = {};
@@ -515,7 +504,7 @@ void DataManager::open_chest(int id) { opened_chests.push_back(id); }
 
 void DataManager::reveal_room(int id) { discovered_rooms.add(id); }
 
-void DataManager::unlock_door(int id) { unlocked_doors.push_back(id); }
+void DataManager::unlock_door(std::string_view tag) { unlocked_doors.add(tag.data()); }
 
 void DataManager::activate_switch(int id) {
 	if (!switch_is_activated(id)) { activated_switches.push_back(id); }
@@ -533,7 +522,7 @@ void DataManager::switch_destructible_state(int id, bool inverse) {
 	destructible_states.push_back({id, state});
 }
 
-void DataManager::destroy_inspectable(int id) { destroyed_inspectables.push_back(id); }
+void DataManager::destroy_inspectable(int id) { destroyed_inspectables.add(id); }
 
 void DataManager::push_quest(util::QuestKey key) {
 	for (auto& entry : quest_progressions) {
@@ -574,12 +563,7 @@ bool data::DataManager::is_duplicate_room(int id) const {
 	return false;
 }
 
-bool DataManager::door_is_unlocked(int id) const {
-	for (auto& door : unlocked_doors) {
-		if (door == id) { return true; }
-	}
-	return false;
-}
+bool DataManager::is_door_unlocked(std::string_view tag) const { return unlocked_doors.contains(tag.data()); }
 
 bool DataManager::chest_is_open(int id) const {
 	for (auto& chest : opened_chests) {
@@ -595,12 +579,7 @@ bool DataManager::switch_is_activated(int id) const {
 	return false;
 }
 
-bool DataManager::inspectable_is_destroyed(int id) const {
-	for (auto& i : destroyed_inspectables) {
-		if (i == id) { return true; }
-	}
-	return false;
-}
+bool DataManager::inspectable_is_destroyed(int id) const { return destroyed_inspectables.contains(id); }
 
 bool DataManager::is_room_discovered(int id) const { return discovered_rooms.contains(id); }
 
@@ -637,10 +616,15 @@ void DataManager::save_controls(config::ControllerMap& controller) {
 void DataManager::reset_controls() { controls = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/defaults.json").c_str()); }
 
 auto DataManager::item_id_from_label(std::string_view label) const -> int {
-	for (auto const& l : m_item_labels) {
-		if (l.second == label) { return l.first; }
+	auto const& arr = item.as_array();
+	auto it = std::find_if(arr.begin(), arr.end(), [&](auto const& v) { return v["tag"].as_string_view() == label; });
+
+	if (it == arr.end()) {
+		// NANI_LOG_ERROR(m_logger, "Failed to find item with label {} in item.json!", label);
+		// NANI_LOG_ERROR(m_logger, "Item json size: {}", arr.size());
+		return -1;
 	}
-	return 0;
+	return static_cast<int>(std::distance(arr.begin(), it));
 }
 
 auto DataManager::get_gun_tag_from_id(int id) const -> std::optional<std::string_view> {
@@ -664,6 +648,8 @@ auto DataManager::get_map_json_from_id(int id) -> std::optional<std::reference_w
 	if (!const_result) return std::nullopt;
 	return std::ref(const_cast<dj::Json&>(const_result->get()));
 }
+
+auto DataManager::get_item_json_from_tag(std::string_view tag) const -> dj::Json const& { return item[item_id_from_label(tag)]; }
 
 auto DataManager::get_room_data_from_id(int id) const -> std::optional<dj::Json> {
 	for (auto const& room : map_table["rooms"].as_array()) {

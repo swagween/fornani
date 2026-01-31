@@ -1,6 +1,7 @@
 
 #include <fornani/entities/item/Drop.hpp>
 #include <fornani/entities/player/Player.hpp>
+#include <fornani/events/InventoryEvent.hpp>
 #include <fornani/gui/InventoryWindow.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -760,10 +761,7 @@ void Player::give_drop(item::DropType type, float value) {
 	}
 }
 
-void Player::give_item_by_id(int id, int amount) {
-	give_item(m_services->data.item_label_from_id(id), amount);
-	m_services->events.dispatch_event("AcquireItem", id);
-}
+void Player::give_item_by_id(int id, int amount) { give_item(m_services->data.item_label_from_id(id), amount); }
 
 void Player::add_to_hotbar(std::string_view tag) {
 	if (hotbar) {
@@ -786,9 +784,8 @@ void Player::set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_o
 }
 
 void Player::give_item(std::string_view label, int amount, bool from_save) {
-	auto id{0};
-	for (auto i{0}; i < amount; ++i) { id = catalog.inventory.add_item(m_services->data.item, label); }
-	if (id == 29 && !from_save) {
+	for (auto i{0}; i < amount; ++i) { catalog.inventory.add_item(m_services->data.item, label); }
+	if (label == "heart_keychain" && !from_save) {
 		health.increase_capacity(1.f);
 		m_services->soundboard.flags.item.set(audio::Item::health_increase);
 		health.refill();

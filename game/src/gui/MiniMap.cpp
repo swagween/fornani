@@ -106,7 +106,6 @@ void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, player::Player
 		m_player_position = player.get_collider().get_center() * m_texture_scale / constants::f_cell_size + room_pos;
 		m_markers.push_back({MapIconFlags::nani, m_player_position, room});
 	}
-	map.clear();
 }
 
 void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, sf::Sprite& icon_sprite) {

@@ -12,13 +12,12 @@ class Trial final : public GameState {
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
-	std::optional<std::reference_wrapper<world::Map>> get_map() override { return map; }
+	std::optional<std::reference_wrapper<world::Map>> get_map() override { return *m_map; }
 
   private:
 	util::Cooldown m_reset;
 	std::optional<LightShader> m_shader{};
 	ServiceProvider* m_services;
-	world::Map map;
 	std::optional<std::unique_ptr<gui::PauseWindow>> pause_window{};
 };
 

@@ -17,7 +17,7 @@
 
 namespace fornani {
 
-enum class NPCFlags { has_turn_animation, face_player, background, no_animation, random_walk, cutscene };
+enum class NPCFlags { has_turn_animation, face_player, background, no_animation, random_walk, cutscene, piggyback };
 enum class NPCState { engaged, force_interact, introduced, talking, cutscene, piggybacking, hidden, distant_interact, just_engaged, random_walk };
 enum class NPCAnimationState { idle, turn, walk, inspect, fall, land, busy, stagger };
 
@@ -39,6 +39,8 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	void start_conversation(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console);
 	void push_conversation(int convo);
 	void pop_conversation();
+	void play_voice_cue(automa::ServiceProvider& svc, int which) const;
+	void piggyback_me(automa::ServiceProvider& svc, int id);
 	void flush_conversations();
 	void force_engage();
 	void disengage();

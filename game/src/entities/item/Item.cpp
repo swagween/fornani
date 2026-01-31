@@ -4,9 +4,19 @@
 
 namespace fornani::item {
 
-Item::Item(dj::Json& source, std::string_view label) : m_label{label} {
-	auto const& in_data = source[label];
-	m_id = in_data["id"].as<int>();
+Item::Item(dj::Json const& source, std::string_view label) : m_label{label}, m_type{ItemType::key} {
+
+	auto const& arr = source.as_array();
+	auto it = std::find_if(arr.begin(), arr.end(), [&](auto const& v) { return v["tag"].as_string() == label; });
+
+	if (it == arr.end()) {
+		NANI_LOG_ERROR(m_logger, "Failed to find item with label {} in item.json!", label);
+		return;
+	}
+	std::size_t id = std::distance(arr.begin(), it);
+	auto const& in_data = *it;
+
+	m_id = id;
 	m_type = static_cast<ItemType>(in_data["category"].as<int>());
 	m_lookup.position.x = in_data["lookup"][0].as<int>();
 	m_lookup.position.y = in_data["lookup"][1].as<int>();
@@ -31,7 +41,6 @@ Item::Item(dj::Json& source, std::string_view label) : m_label{label} {
 	m_stats.value = in_data["value"].as<int>();
 	m_stats.rarity = static_cast<Rarity>(in_data["rarity"].as<int>());
 	m_stats.apparel_type = in_data["apparel_type"].is_number() ? in_data["apparel_type"].as<int>() : -1;
-	NANI_LOG_DEBUG(m_logger, "Apparel Type: {}", m_stats.apparel_type);
 }
 
 void Item::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f position) {

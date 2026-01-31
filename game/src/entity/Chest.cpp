@@ -14,18 +14,25 @@ Chest::Chest(automa::ServiceProvider& svc, int type, int modifier, int id) : Ent
 	Drawable::set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 }
 
+Chest::Chest(automa::ServiceProvider& svc, int type, std::string tag, int modifier, int id) : Chest(svc, type, modifier, id) {
+	m_tag = tag;
+	NANI_LOG_INFO(m_logger, "Created a chest with tag [{}]", tag);
+}
+
 std::unique_ptr<Entity> Chest::clone() const { return std::make_unique<Chest>(*this); }
 
 void Chest::serialize(dj::Json& out) {
 	Entity::serialize(out);
 	out["type"] = m_type;
 	out["modifier"] = m_content_modifier;
+	if (m_tag) { out["tag"] = m_tag.value(); }
 }
 
 void Chest::unserialize(dj::Json const& in) {
 	Entity::unserialize(in);
 	m_type = in["type"].as<int>();
 	m_content_modifier = in["modifier"].as<int>();
+	if (in["tag"]) { m_tag = in["tag"].as_string(); }
 }
 
 void Chest::expose() {
@@ -34,6 +41,8 @@ void Chest::expose() {
 	static int type{m_type};
 	static char const* label{"item_label"};
 	static char const* types[3] = {"gun", "orb", "item"};
+
+	if (m_tag.has_value()) { label = m_tag->c_str(); }
 
 	auto ctr{0};
 	if (ImGui::BeginCombo("Type", types[type])) {
@@ -46,23 +55,24 @@ void Chest::expose() {
 
 	if (type == 0 || type == 2) {
 		if (ImGui::BeginCombo("Contents", label, ImGuiComboFlags_HeightLargest)) {
-			auto labels = std::vector<std::pair<std::string, int>>{};
+			auto labels = std::vector<std::string>{};
 			switch (type) {
 			case 0:
 				for (auto const& gun : m_services->data.weapon.as_object()) {
 					if (ImGui::Selectable(gun.first.c_str())) {
 						modifier = gun.second["metadata"]["id"].as<int>();
 						label = gun.first.c_str();
+						m_tag = std::string{label};
 					}
 				}
 				break;
 			case 2:
-				for (auto const& item : m_services->data.item.as_object()) { labels.push_back({item.first, item.second["id"].as<int>()}); }
-				std::ranges::sort(labels, {}, &std::pair<std::string, int>::first);
+				for (auto const& item : m_services->data.item.as_array()) { labels.push_back(item["tag"].as_string()); }
+				std::ranges::sort(labels, {});
 				for (auto const& lbl : labels) {
-					if (ImGui::Selectable(lbl.first.c_str())) {
-						modifier = lbl.second;
-						label = lbl.first.c_str();
+					if (ImGui::Selectable(lbl.c_str())) {
+						label = lbl.c_str();
+						m_tag = std::string{label};
 					}
 				}
 				break;
