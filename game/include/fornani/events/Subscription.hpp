@@ -9,6 +9,8 @@
 
 namespace fornani {
 
+struct Slot {};
+
 struct Subscription {
 	std::function<void()> unsubscribe;
 

@@ -86,10 +86,10 @@ void Portal::expose() {
 			auto const& regionstr = roomdata.value()["region"].as_string();
 			NANI_LOG_DEBUG(m_logger, "Region: {}", regionstr);
 			NANI_LOG_DEBUG(m_logger, "Room: {}", roomstr);
-			m_services->events.get_or_add<LoadFileEvent>().dispatch(regionstr, roomstr);
+			m_services->events.load_file_event.dispatch(regionstr, roomstr);
 		}
 	} else {
-		if (ImGui::Button("Create Destination Room")) { m_services->events.get_or_add<NewFileEvent>().dispatch(destination_id); }
+		if (ImGui::Button("Create Destination Room")) { m_services->events.new_file_event.dispatch(destination_id); }
 	}
 	if (locked) {
 		ImGui::SeparatorText("Key to unlock");

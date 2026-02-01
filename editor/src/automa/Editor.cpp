@@ -29,10 +29,8 @@ Editor::Editor(fornani::automa::ServiceProvider& svc)
 
 	svc.music_player.set_volume(0.2f);
 
-	svc.events.get_or_add<fornani::LoadFileEvent>().subscribe([this](std::string_view to_region, std::string_view to_room) { this->load_file(to_region, to_room); });
-	svc.events.get_or_add<fornani::NewFileEvent>().subscribe([this](int id) { this->new_file(id); });
-	// svc.events.register_event<std::string_view, std::string_view>("LoadFile", [this](std::string const& to_region, std::string const& to_room) { this->load_file(to_region, to_room); });
-	// svc.events.register_event<int>("NewFile", &new_file);
+	svc.events.new_file_event.attach_to(p_slot, &Editor::new_file, this);
+	svc.events.load_file_event.attach_to(p_slot, &Editor::load_file, this);
 
 	svc.set_editor(true);
 

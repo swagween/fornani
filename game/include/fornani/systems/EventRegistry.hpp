@@ -1,9 +1,14 @@
 
 #pragma once
 
+#include <fornani/events/ConsoleEvent.hpp>
 #include <fornani/events/EventBase.hpp>
+#include <fornani/events/GameplayEvent.hpp>
+#include <fornani/events/InventoryEvent.hpp>
+#include <fornani/events/SystemEvent.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/io/Logger.hpp>
+#include <ksignal/ksignal.hpp>
 #include <concepts>
 #include <map>
 #include <memory>
@@ -13,41 +18,31 @@
 namespace fornani {
 
 struct EventRegistry {
-	EventRegistry() = default;
-	~EventRegistry() = default;
 
-	EventRegistry(EventRegistry const&) = delete;
-	EventRegistry& operator=(EventRegistry const&) = delete;
+	NPCVoiceCueEvent npc_voice_cue_event{};
+	NPCPopConversationEvent npc_pop_conversation_event{};
+	NPCPiggybackEvent npc_piggyback_event{};
 
-	EventRegistry(EventRegistry&&) noexcept = default;
-	EventRegistry& operator=(EventRegistry&&) noexcept = default;
+	LaunchCutsceneEvent launch_cutscene_event{};
+	OpenVendorEvent open_vendor_event{};
+	AddMapMarkerEvent add_map_marker_event{};
+	PlaySongEvent play_song_event{};
+	StartBattleEvent start_battle_event{};
 
-	template <std::derived_from<IEvent> EventType>
-	void add(std::unique_ptr<EventType> event) {
-		m_events[typeid(EventType)] = std::move(event);
-	}
+	AcquireItemFromConsoleEvent acquire_item_from_console_event{};
+	AcquireItemEvent acquire_item_event{};
+	ReadItemByIDEvent read_item_by_id_event{};
+	EquipItemByIDEvent equip_item_by_id_event{};
+	RevealItemByIDEvent reveal_item_by_id_event{};
+	AcquireWeaponEvent acquire_weapon_event{};
+	AcquireWeaponFromConsoleEvent acquire_weapon_from_console_event{};
+	RemoveItemEvent remove_item_event{};
+	RemoveWeaponByIDEvent remove_weapon_by_id_event{};
 
-	template <std::derived_from<IEvent> EventType>
-	EventType* get_event() const {
-		auto it = m_events.find(typeid(EventType));
-		if (it == m_events.end()) return nullptr;
-		return static_cast<EventType*>(it->second.get());
-	}
-
-	template <std::derived_from<IEvent> EventType>
-	EventType& get_or_add() {
-		auto it = m_events.find(typeid(EventType));
-		if (it != m_events.end()) { return *static_cast<EventType*>(it->second.get()); }
-
-		auto event = std::make_unique<EventType>();
-		EventType& ref = *event;
-		m_events[typeid(EventType)] = std::move(event);
-		return ref;
-	}
-
-  private:
-	std::unordered_map<std::type_index, std::unique_ptr<IEvent>> m_events;
-	io::Logger m_logger{"System"};
+	LoadFileEvent load_file_event{};
+	NewFileEvent new_file_event{};
+	ReloadSaveEvent reload_save_event{};
+	ReturnToMainMenuEvent return_to_main_menu_event{};
 };
 
 } // namespace fornani

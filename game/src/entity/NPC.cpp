@@ -93,10 +93,9 @@ NPC::NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vect
 }
 
 void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
-
-	svc.events.get_or_add<NPCPopConversationEvent>().subscribe([this]() { this->pop_conversation(); });
-	svc.events.get_or_add<NPCVoiceCueEvent>().subscribe([this](automa::ServiceProvider& svc, int which) { this->play_voice_cue(svc, which); });
-	svc.events.get_or_add<NPCPiggybackEvent>().subscribe([this](automa::ServiceProvider& svc, int id) { this->piggyback_me(svc, id); });
+	svc.events.npc_voice_cue_event.attach_to(slot, &NPC::play_voice_cue, this);
+	svc.events.npc_pop_conversation_event.attach_to(slot, &NPC::pop_conversation, this);
+	svc.events.npc_piggyback_event.attach_to(slot, &NPC::piggyback_me, this);
 
 	m_offset = sf::Vector2f{in_data["sprite_offset"][0].as<float>(), in_data["sprite_offset"][1].as<float>()};
 	if (in_data["vendor"] && svc.data.marketplace.contains(get_specifier())) {

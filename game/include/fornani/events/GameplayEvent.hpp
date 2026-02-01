@@ -9,10 +9,10 @@ namespace automa {
 struct ServiceProvider;
 }
 
-struct LaunchCutsceneEvent : EventBase<automa::ServiceProvider&, int> {};
-struct OpenVendorEvent : EventBase<automa::ServiceProvider&, int> {};
-struct AddMapMarkerEvent : EventBase<automa::ServiceProvider&, int, int, int> {};
-struct PlaySongEvent : EventBase<automa::ServiceProvider&, int> {};
-struct StartBattleEvent : EventBase<> {};
+struct LaunchCutsceneEvent : Event<automa::ServiceProvider&, int> {};
+struct OpenVendorEvent : Event<automa::ServiceProvider&, int> {};
+struct AddMapMarkerEvent : Event<automa::ServiceProvider&, int, int, int> {};
+struct PlaySongEvent : Event<int> {};
+struct StartBattleEvent : Event<> {};
 
 } // namespace fornani

@@ -7,30 +7,43 @@
 
 namespace fornani::automa {
 
-static bool item_music_played{};
-
-Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameState(svc, player, scene, room_number), m_services(&svc), m_enter_room{100}, m_loading{4} {
+Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameplayState(svc, player, scene, room_number), m_enter_room{100}, m_loading{4} {
 
 	m_map = world::Map{svc, player};
 
 	m_type = StateType::dojo;
 	player.set_flag(player::PlayerFlags::trial, false);
 
+	// inventory events// inventory events
+	svc.events.acquire_item_from_console_event.attach_to(p_slot, &Dojo::acquire_item_from_console, this);
+	svc.events.acquire_item_event.attach_to(p_slot, &Dojo::acquire_item, this);
 	// inventory events
-	m_subscriptions.add(svc.events.get_or_add<ReadItemByIDEvent>().subscribe([this](int id) { read_item(id); }));
-	m_subscriptions.add(svc.events.get_or_add<EquipItemByIDEvent>().subscribe([this](ServiceProvider& svc, int id) { this->equip_item(svc, id); }));
-	m_subscriptions.add(svc.events.get_or_add<RevealItemByIDEvent>().subscribe([&player](int id) { player.catalog.inventory.reveal_item(id); }));
-	m_subscriptions.add(svc.events.get_or_add<AcquireItemEvent>().subscribe([this](ServiceProvider& svc, std::string_view tag) { this->acquire_item(svc, tag); }));
-	m_subscriptions.add(svc.events.get_or_add<AcquireItemFromConsoleEvent>().subscribe([this](ServiceProvider& svc, int id) { this->acquire_item_from_console(svc, id); }));
-	m_subscriptions.add(svc.events.get_or_add<AcquireWeaponEvent>().subscribe([this](ServiceProvider& svc, std::string_view tag) { this->acquire_gun(svc, tag); }));
-	m_subscriptions.add(svc.events.get_or_add<AcquireWeaponFromConsoleEvent>().subscribe([this](ServiceProvider& svc, int id) { this->acquire_gun_from_console(svc, id); }));
-	m_subscriptions.add(svc.events.get_or_add<RemoveWeaponByIDEvent>().subscribe([this](ServiceProvider& svc, int id) { this->remove_gun(svc, id); }));
+	svc.events.acquire_item_from_console_event.attach_to(p_slot, &Dojo::acquire_item_from_console, this);
+	svc.events.read_item_by_id_event.attach_to(p_slot, &Dojo::read_item, this);
+	svc.events.equip_item_by_id_event.attach_to(p_slot, &Dojo::equip_item, this);
+	svc.events.acquire_item_event.attach_to(p_slot, &Dojo::acquire_item, this);
+	svc.events.acquire_weapon_event.attach_to(p_slot, &Dojo::acquire_gun, this);
+	svc.events.acquire_weapon_from_console_event.attach_to(p_slot, &Dojo::acquire_gun_from_console, this);
+	svc.events.remove_weapon_by_id_event.attach_to(p_slot, &Dojo::remove_gun_by_id, this);
 
 	// gameplay events
-	m_subscriptions.add(svc.events.get_or_add<PlaySongEvent>().subscribe([&svc](ServiceProvider& svc, int id) { svc.music_player.play_song_by_id(svc.finder, id); }));
-	m_subscriptions.add(svc.events.get_or_add<OpenVendorEvent>().subscribe([this](ServiceProvider& svc, int id) { this->open_vendor(svc, id); }));
-	m_subscriptions.add(svc.events.get_or_add<LaunchCutsceneEvent>().subscribe([this](ServiceProvider& svc, int id) { this->launch_cutscene(svc, id); }));
-	m_subscriptions.add(svc.events.get_or_add<AddMapMarkerEvent>().subscribe([this](ServiceProvider& svc, int room_id, int type, int questline) { this->add_map_marker(svc, room_id, type, questline); }));
+	/*svc.events.play_song_event.attach_to(p_slot, &Dojo::play_song, this);
+	svc.events.open_vendor_event.attach_to(p_slot, &Dojo::open_vendor, this);
+	svc.events.launch_cutscene_event.attach_to(p_slot, &Dojo::launch_cutscene, this);
+	svc.events.add_map_marker_event.attach_to(p_slot, &Dojo::add_map_marker, this);*/
+
+	// m_subscriptions.add(svc.events.get_or_add<ReadItemByIDEvent>().subscribe([this](int id) { read_item(id); }));
+	// m_subscriptions.add(svc.events.get_or_add<EquipItemByIDEvent>().subscribe([this](ServiceProvider& svc, int id) { this->equip_item(svc, id); }));
+	// m_subscriptions.add(svc.events.get_or_add<RevealItemByIDEvent>().subscribe([&player](int id) { player.catalog.inventory.reveal_item(id); }));
+	//// m_subscriptions.add(svc.events.get_or_add<AcquireItemEvent>().subscribe([this](ServiceProvider& svc, std::string_view tag) { this->acquire_item(svc, tag); }));
+	// m_subscriptions.add(svc.events.get_or_add<AcquireWeaponEvent>().subscribe([this](ServiceProvider& svc, std::string_view tag) { this->acquire_gun(svc, tag); }));
+	// m_subscriptions.add(svc.events.get_or_add<AcquireWeaponFromConsoleEvent>().subscribe([this](ServiceProvider& svc, int id) { this->acquire_gun_from_console(svc, id); }));
+	// m_subscriptions.add(svc.events.get_or_add<RemoveWeaponByIDEvent>().subscribe([this](ServiceProvider& svc, int id) { this->remove_gun(svc, id); }));
+
+	// gameplay events
+	svc.events.open_vendor_event.attach_to(p_slot, &Dojo::open_vendor, this);
+	svc.events.launch_cutscene_event.attach_to(p_slot, &Dojo::launch_cutscene, this);
+	svc.events.add_map_marker_event.attach_to(p_slot, &Dojo::add_map_marker, this);
 
 	m_map_markers.insert({1, "main"});
 	m_map_markers.insert({2, "woodshine"});
@@ -47,9 +60,9 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	// handle events
 
-	if (!m_console && item_music_played) {
+	if (svc.music_player.is_finished_playing() && m_flags.test(GameplayFlags::item_music_played)) {
 		svc.music_player.resume();
-		item_music_played = false;
+		m_flags.reset(GameplayFlags::item_music_played);
 	}
 
 	// gamepad disconnected
@@ -88,14 +101,10 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
 			m_console.value()->append(player->catalog.inventory.find_item(m_item_tag)->get_title());
 			m_console.value()->append("!");
-		} else {
-			m_console.value()->relaunch(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
-			m_console.value()->append(player->catalog.inventory.find_item(m_item_tag)->get_title());
-			m_console.value()->append("!");
 		}
 		m_console.value()->display_item(m_item_tag);
 		svc.music_player.quick_play(svc.finder, "discovery");
-		item_music_played = true;
+		m_flags.set(GameplayFlags::item_music_played);
 	}
 
 	svc.soundboard.set_listener_position(player->get_ear_position());
@@ -311,10 +320,11 @@ void Dojo::acquire_gun(ServiceProvider& svc, std::string_view tag) {
 	}
 	m_console.value()->display_gun(tag);
 	svc.music_player.quick_play(svc.finder, "revelation");
-	item_music_played = true;
+
+	m_flags.set(GameplayFlags::item_music_played);
 }
 
-void Dojo::remove_gun(ServiceProvider& svc, int id) {
+void Dojo::remove_gun_by_id(ServiceProvider& svc, int id) {
 	if (auto tag = svc.data.get_gun_tag_from_id(id)) { remove_gun(svc, *tag); }
 }
 
@@ -392,7 +402,7 @@ void Dojo::remove_gun(ServiceProvider& svc, std::string_view tag) {
 	m_console.value()->display_gun(tag, false);
 }
 
-void Dojo::read_item(int id) { m_console = std::make_unique<gui::Console>(*m_services, m_services->text.item, m_services->data.item_label_from_id(id), gui::OutputType::gradual); }
+void Dojo::read_item(int id) { m_console = std::make_unique<gui::Console>(*p_services, p_services->text.item, p_services->data.item_label_from_id(id), gui::OutputType::gradual); }
 
 void Dojo::handle_player_death(ServiceProvider& svc, player::Player& player) {
 	if (!m_map) { return; }

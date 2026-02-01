@@ -34,6 +34,8 @@ Player::Player(automa::ServiceProvider& svc)
 	distant_vicinity.set_dimensions({256.f, 256.f});
 
 	m_ear.physics.set_global_friction(0.8f);
+
+	svc.events.reveal_item_by_id_event.attach_to(slot, &Player::reveal_item, this);
 }
 
 void Player::serialize(dj::Json& out) const {

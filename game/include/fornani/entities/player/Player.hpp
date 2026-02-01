@@ -14,6 +14,7 @@
 #include <fornani/entities/player/PlayerController.hpp>
 #include <fornani/entities/player/VisitHistory.hpp>
 #include <fornani/entities/player/Wallet.hpp>
+#include <fornani/events/Subscription.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/Indicator.hpp>
 #include <fornani/graphics/SpriteHistory.hpp>
@@ -156,6 +157,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void piggyback(int id);
 	void set_demo_position(sf::Vector2f const to) { m_demo_position = to; }
 	void place_at_demo_position() { set_position(m_demo_position); }
+	void reveal_item(int id) { catalog.inventory.reveal_item(id); }
 
 	// state
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
@@ -349,6 +351,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 
 	entity::Health m_air_supply;
 	gui::HealthBar m_air_supply_bar;
+
+	std::shared_ptr<Slot const> slot{std::make_shared<Slot const>()};
 
 	io::Logger m_logger{"player"};
 };

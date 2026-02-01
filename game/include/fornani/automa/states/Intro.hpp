@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <fornani/automa/GameState.hpp>
+#include <fornani/automa/GameplayState.hpp>
 #include <fornani/components/SteeringComponent.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/Background.hpp>
@@ -19,7 +19,7 @@ struct Nighthawk final : public Animatable {
 	float z{};
 };
 
-class Intro final : public GameState, public Flaggable<IntroFlags> {
+class Intro final : public GameplayState, public Flaggable<IntroFlags> {
   public:
 	Intro(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;

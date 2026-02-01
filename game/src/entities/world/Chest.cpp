@@ -62,8 +62,8 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 				if (m_id != -1) { svc.data.open_chest(m_id); }
 				auto fmodifier = static_cast<float>(m_content_modifier);
 				auto range_modifier = std::max(6, static_cast<int>(m_content_modifier / 8.f));
-				if (m_type == ChestType::gun && m_tag.has_value()) { svc.events.get_or_add<AcquireWeaponEvent>().dispatch(svc, std::string_view{*m_tag}); }
-				if (m_type == ChestType::item && m_tag.has_value()) { svc.events.get_or_add<AcquireItemEvent>().dispatch(svc, std::string_view{*m_tag}); }
+				if (m_type == ChestType::gun && m_tag.has_value()) { svc.events.acquire_weapon_event.dispatch(svc, std::string_view{*m_tag}); }
+				if (m_type == ChestType::item && m_tag.has_value()) { svc.events.acquire_item_event.dispatch(svc, std::string_view{*m_tag}); }
 				if (m_type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, map, player, get_collider().get_global_center(), {{range_modifier, range_modifier * 2}, fmodifier, 100, true, map.get_special_drop_id()})); }
 			} else {
 				console = std::make_unique<gui::Console>(svc, svc.text.basic, "open_chest", gui::OutputType::instant);

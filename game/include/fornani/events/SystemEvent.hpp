@@ -10,9 +10,9 @@ namespace automa {
 struct ServiceProvider;
 }
 
-struct LoadFileEvent : EventBase<std::string_view, std::string_view> {};
-struct NewFileEvent : EventBase<int> {};
-struct ReloadSaveEvent : EventBase<automa::ServiceProvider&, int> {};
-struct ReturnToMainMenuEvent : EventBase<> {};
+struct LoadFileEvent : Event<std::string_view, std::string_view> {};
+struct NewFileEvent : Event<int> {};
+struct ReloadSaveEvent : Event<automa::ServiceProvider&, int> {};
+struct ReturnToMainMenuEvent : Event<> {};
 
 } // namespace fornani

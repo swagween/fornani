@@ -19,8 +19,8 @@ namespace fornani::automa {
 
 StateManager::StateManager(ServiceProvider& svc, player::Player& player, MenuType type) : m_player{&player} {
 
-	m_subscriptions.add(svc.events.get_or_add<ReloadSaveEvent>().subscribe([this](ServiceProvider& svc, int id) { this->reload_save(svc, id); }));
-	m_subscriptions.add(svc.events.get_or_add<ReturnToMainMenuEvent>().subscribe([this]() { this->return_to_main_menu(); }));
+	svc.events.return_to_main_menu_event.attach_to(m_slot, &StateManager::return_to_main_menu, this);
+	svc.events.reload_save_event.attach_to(m_slot, &StateManager::reload_save, this);
 
 	switch (type) {
 	case MenuType::main: g_current_state = std::make_unique<MainMenu>(svc, player); break;
@@ -47,10 +47,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 		switch (svc.state_controller.submenu) {
 		case MenuType::options: set_current_state(std::make_unique<OptionsMenu>(svc, player)); break;
 		case MenuType::play: set_current_state(std::make_unique<PlayMenu>(svc, player)); break;
-		default:
-			NANI_LOG_DEBUG(m_logger, "Called at 0");
-			set_current_state(std::make_unique<MainMenu>(svc, player));
-			break;
+		default: set_current_state(std::make_unique<MainMenu>(svc, player)); break;
 		}
 		svc.state_controller.actions.reset(Actions::exit_submenu);
 	}
@@ -64,7 +61,6 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 				player.set_animation_flag(player::AnimTriggers::end_death, false);
 				svc.state_controller.actions.reset(Actions::player_death);
 			} else {
-				NANI_LOG_DEBUG(m_logger, "Called at 1");
 				return_to_main_menu();
 				svc.state_controller.actions.reset(Actions::player_death);
 				return;
@@ -79,7 +75,6 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 				svc.state_controller.actions.reset(Actions::retry);
 				svc.state_controller.actions.reset(Actions::player_death);
 			} else {
-				NANI_LOG_DEBUG(m_logger, "Called at 2");
 				return_to_main_menu();
 				svc.data.write_death_count(player);
 				svc.state_controller.actions.reset(Actions::player_death);
@@ -95,7 +90,6 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 			return;
 		}
 		if (svc.state_controller.actions.test(Actions::main_menu)) {
-			NANI_LOG_DEBUG(m_logger, "Called at 3");
 			return_to_main_menu();
 			svc.state_controller.actions.reset(Actions::main_menu);
 			return;

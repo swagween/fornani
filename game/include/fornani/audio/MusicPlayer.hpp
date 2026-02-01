@@ -40,6 +40,7 @@ class MusicPlayer {
 	[[nodiscard]] auto get_volume() const -> float { return m_jukebox.get_gain(); }
 	[[nodiscard]] auto is_on() const -> bool { return m_state == MusicPlayerState::on; }
 	[[nodiscard]] auto is_off() const -> bool { return m_state == MusicPlayerState::off; }
+	[[nodiscard]] auto is_finished_playing() const -> bool { return !m_ringtone.is_playing(); }
 
 	[[nodiscard]] auto is_playing() const -> bool { return m_jukebox.is_playing(); }
 	[[nodiscard]] auto is_stopped() const -> bool { return m_jukebox.is_stopped(); }

@@ -177,7 +177,9 @@ void TextWriter::load_message(dj::Json& source, std::string_view key, int target
 			}
 
 			auto codes = std::vector<MessageCode>{};
-			auto which = target_index == -1 ? random::random_range(0, msg["messages"].as_array().size() - 1) : target_index;
+			auto sz = msg["messages"].as_array().size() - 1;
+			if (sz < 0) { sz = 0; }
+			auto which = target_index == -1 ? random::random_range(0, sz) : target_index;
 			NANI_LOG_DEBUG(m_logger, "Target Index: {}", target_index);
 			if (msg["codes"].is_array()) {
 				for (auto const& code : msg["codes"].as_array()) { codes.push_back(MessageCode{code}); }

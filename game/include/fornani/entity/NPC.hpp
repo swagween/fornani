@@ -6,6 +6,7 @@
 #include <fornani/entities/Mobile.hpp>
 #include <fornani/entities/npc/Vendor.hpp>
 #include <fornani/entity/Entity.hpp>
+#include <fornani/events/Subscription.hpp>
 #include <fornani/story/Quest.hpp>
 #include <fornani/utils/Circuit.hpp>
 #include <fornani/utils/Cooldown.hpp>
@@ -77,6 +78,8 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
   protected:
 	void set_force_interact(bool to) { to ? m_state.set(NPCState::force_interact) : m_state.reset(NPCState::force_interact); }
 	void set_distant_interact(bool to) { to ? m_state.set(NPCState::distant_interact) : m_state.reset(NPCState::distant_interact); }
+
+	std::shared_ptr<Slot const> slot{std::make_shared<Slot const>()};
 
   private:
 	bool change_state(NPCAnimationState next, anim::Parameters params);

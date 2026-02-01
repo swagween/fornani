@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/events/Subscription.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/BitFlags.hpp>
@@ -22,6 +23,7 @@ class EditorState {
 	fornani::util::BitFlags<PressedKeys> pressed_keys{};
 	fornani::automa::ServiceProvider* p_services;
 	sf::Clock p_delta_clock{};
+	std::shared_ptr<fornani::Slot const> p_slot{std::make_shared<fornani::Slot const>()};
 
 	EditorStateType p_target_state{};
 

@@ -3,6 +3,7 @@
 
 #include <fornani/automa/GameState.hpp>
 #include <fornani/automa/StateController.hpp>
+#include <fornani/events/Subscription.hpp>
 #include <fornani/io/Logger.hpp>
 
 namespace fornani {
@@ -35,6 +36,7 @@ class StateManager {
 	std::unique_ptr<GameState> g_current_state{};
 
   private:
+	std::shared_ptr<Slot const> m_slot{std::make_shared<Slot const>()};
 	player::Player* m_player;
 	SubscriptionGroup m_subscriptions{};
 	util::BitFlags<StateManagerFlags> m_flags{};

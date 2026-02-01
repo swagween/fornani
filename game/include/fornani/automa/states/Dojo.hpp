@@ -3,7 +3,7 @@
 
 #include <fornani/events/Subscription.hpp>
 #include <fornani/shader/LightShader.hpp>
-#include "fornani/automa/GameState.hpp"
+#include "fornani/automa/GameplayState.hpp"
 #include "fornani/gui/VendorDialog.hpp"
 #include "fornani/world/Camera.hpp"
 
@@ -12,9 +12,9 @@
 
 namespace fornani::automa {
 
-enum class GameplayFlags { game_over, transitioning, open_vendor, give_item };
+enum class GameplayFlags { game_over, transitioning, open_vendor, give_item, item_music_played };
 
-class Dojo final : public GameState {
+class Dojo final : public GameplayState {
   public:
 	Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0, std::string_view room_name = "");
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
@@ -28,7 +28,7 @@ class Dojo final : public GameState {
 	void remove_gun(ServiceProvider& svc, std::string_view tag);
 	void acquire_item_from_console(ServiceProvider& svc, int id);
 	void acquire_gun_from_console(ServiceProvider& svc, int id);
-	void remove_gun(ServiceProvider& svc, int id);
+	void remove_gun_by_id(ServiceProvider& svc, int id);
 	void equip_item(ServiceProvider& svc, int id);
 	void open_vendor(ServiceProvider& svc, int id);
 	void launch_cutscene(ServiceProvider& svc, int id);
@@ -46,7 +46,6 @@ class Dojo final : public GameState {
 	util::BitFlags<GameplayFlags> m_flags{};
 	std::optional<LightShader> m_world_shader{};
 	std::optional<LightShader> m_gui_shader{};
-	ServiceProvider* m_services;
 
 	int m_vendor_id{};
 	std::string m_item_tag{};

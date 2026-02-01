@@ -233,13 +233,13 @@ void InventoryGizmo::handle_menu_selection(player::Player& player, int selection
 		if (auto* item = m_player->catalog.inventory.find_item(*m_current_item)) {
 			if (m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["read"].as_string()) {
 				if (item->is_readable()) {
-					m_services->events.get_or_add<ReadItemByIDEvent>().dispatch(*m_current_item);
+					m_services->events.read_item_by_id_event.dispatch(*m_current_item);
 					m_item_menu = {};
 				}
 			} else if (m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["equip"].as_string() || m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["unequip"].as_string()) {
 				if (item->is_equippable()) {
 					NANI_LOG_DEBUG(m_logger, "Equipping Item {}", *m_current_item);
-					m_services->events.get_or_add<EquipItemByIDEvent>().dispatch(*m_services, *m_current_item);
+					m_services->events.equip_item_by_id_event.dispatch(*m_services, *m_current_item);
 					m_item_menu = {};
 				}
 			}

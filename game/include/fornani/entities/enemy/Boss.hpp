@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/entities/enemy/Enemy.hpp>
+#include <fornani/events/Subscription.hpp>
 #include <fornani/gui/BossHealth.hpp>
 
 namespace fornani::enemy {
@@ -16,6 +17,7 @@ class Boss : public Enemy, public Flaggable<BossFlags> {
 	void start_battle() { set_flag(BossFlags::start_battle); }
 
   protected:
+	std::shared_ptr<Slot const> slot{std::make_shared<Slot const>()};
 	automa::ServiceProvider* p_services;
 	gui::BossHealth p_health_bar;
 };
