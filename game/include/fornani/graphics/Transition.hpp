@@ -23,6 +23,7 @@ class Transition {
 	void render(sf::RenderWindow& win);
 	void start();
 	void end();
+	void hang();
 
 	void set(TransitionState const to) { m_state = to; }
 	void set_duration(int const duration) { m_cooldown.set_native_time(duration); }

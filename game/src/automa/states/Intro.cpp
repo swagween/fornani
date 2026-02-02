@@ -152,8 +152,6 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	svc.world_clock.update(svc);
 
-	if (!m_console && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
-
 	// physical tick
 	player->update(*m_map);
 	player->start_tick();

@@ -29,7 +29,7 @@
           "message": "An old medal you found in Dr. Willett's hideout. It's made of the same material as your inventory gizmo, which seems to be a sturdy metal alloy invented by the old pioneers who first ventured to this island."
         },
         {
-          "codes": [[10, 86, 7]],
+          "codes": [[10, 69, 7]],
           "message": "This medal grants you the ability to slide on the ground by pressing  . It will give you a slight speed boost, and you may slide indefinitely down slopes."
         }
       ]

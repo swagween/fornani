@@ -162,7 +162,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		m_ability.value()->update(player.get_collider(), *this);
 
 		// stop rising if player releases jump control
-		if (is(AbilityType::jump) || is(AbilityType::doublejump) || is(AbilityType::walljump)) {
+		if (is(AbilityType::jump) || is(AbilityType::doublejump) || is(AbilityType::walljump) || is(AbilityType::dive)) {
 			if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).released) { m_ability.value()->cancel(); }
 			if (m_ability.value()->cancelled() && player.get_collider().physics.apparent_velocity().y < 0.0f) {
 				player.get_collider().physics.acceleration.y *= player.physics_stats.jump_release_multiplier;

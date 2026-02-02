@@ -32,6 +32,17 @@ static constexpr int default_writing_speed_v{8};
 static constexpr int medium_writing_speed_v{6};
 static constexpr int fast_writing_speed_v{1};
 
+struct DialogueSuite {
+	DialogueSuite(std::deque<Message> container) { suite.push_back(container); }
+	DialogueSuite(dj::Json const& in, sf::Font& font, automa::ServiceProvider& svc, int target_index);
+	DialogueSuite(dj::Json const& in, sf::Font& font, automa::ServiceProvider& svc, std::string_view key, int target_index);
+	[[nodiscard]] auto get_message(std::size_t i, std::size_t j) -> sf::Text& { return suite.at(i).at(j).data; }
+	std::deque<std::deque<Message>> suite{};
+
+  private:
+	io::Logger m_logger{"DialogueSuite"};
+};
+
 class TextWriter {
   public:
 	friend class Console;
@@ -93,7 +104,7 @@ class TextWriter {
 	WriterMode m_mode{};
 	util::Cooldown m_delay;
 
-	std::deque<std::deque<Message>> suite{};
+	std::optional<DialogueSuite> suite{};
 
 	util::BitFlags<WriterFlags> m_flags{};
 

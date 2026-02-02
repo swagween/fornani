@@ -53,9 +53,8 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 	}
 	if (svc.state_controller.actions.test(Actions::player_death)) {
 		if (svc.demo_mode()) {
-			if (svc.state_controller.actions.test(Actions::retry)) {
+			if (m_flags.consume(StateManagerFlags::retry)) {
 				svc.state_controller.next_state = svc.state_controller.demo_level;
-				svc.state_controller.actions.reset(Actions::retry);
 				player.place_at_demo_position();
 				player.set_idle();
 				player.set_animation_flag(player::AnimTriggers::end_death, false);
@@ -66,32 +65,26 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 				return;
 			}
 		} else {
-			if (svc.state_controller.actions.test(Actions::retry)) {
-				svc.state_controller.next_state = svc.state_controller.save_point_id;
-				svc.data.load_progress(player, svc.data.current_save, false, false);
-				player.set_idle();
-				player.set_animation_flag(player::AnimTriggers::end_death, false);
+			if (m_flags.consume(StateManagerFlags::retry)) {
+				NANI_LOG_INFO(m_logger, "Reloading save...");
+				player.start_over();
+				svc.data.reload_progress(player);
+				get_current_state().reload(svc, svc.state_controller.save_point_id);
 				svc.data.write_death_count(player);
-				svc.state_controller.actions.reset(Actions::retry);
 				svc.state_controller.actions.reset(Actions::player_death);
+				svc.state_controller.actions.reset(Actions::trigger);
 			} else {
 				return_to_main_menu();
 				svc.data.write_death_count(player);
 				svc.state_controller.actions.reset(Actions::player_death);
 				return;
 			}
-			svc.music_player.stop();
 		}
 	}
 	if (svc.state_controller.actions.consume(Actions::trials)) { set_current_state(std::make_unique<Trial>(svc, player, "trial", svc.state_controller.next_state)); }
 	if (svc.state_controller.actions.consume(Actions::trigger)) {
 		if (svc.state_controller.actions.test(Actions::print_stats)) {
 			print_stats(svc, player);
-			return;
-		}
-		if (svc.state_controller.actions.test(Actions::main_menu)) {
-			return_to_main_menu();
-			svc.state_controller.actions.reset(Actions::main_menu);
 			return;
 		}
 		if (svc.data.get_file().is_new() && !svc.state_controller.actions.test(Actions::intro_done)) {
@@ -129,7 +122,10 @@ void StateManager::print_stats(ServiceProvider& svc, player::Player& player) {
 	svc.state_controller.actions.reset(Actions::trigger);
 }
 
-void StateManager::reload_save(ServiceProvider& svc, int id) {}
+void StateManager::reload_save(ServiceProvider& svc, int id) {
+	NANI_LOG_INFO(m_logger, "Reloaded save file {}.", id);
+	m_flags.set(StateManagerFlags::retry);
+}
 
 auto StateManager::get_current_state() const -> GameState& {
 	assert(g_current_state);

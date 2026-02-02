@@ -7,7 +7,7 @@
 
 namespace fornani::player {
 
-Dive::Dive(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider) : Ability(svc, map, collider), m_request{24}, m_post_dive{8}, m_multiplier{10.f}, m_soundboard{&svc.soundboard}, m_map{&map}, m_services{&svc} {
+Dive::Dive(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider) : Ability(svc, map, collider), m_request{24}, m_post_dive{8}, m_multiplier{12.f}, m_soundboard{&svc.soundboard}, m_map{&map}, m_services{&svc} {
 	m_type = AbilityType::dive;
 	m_state = AnimState::dive;
 	m_duration.start(256);
@@ -21,7 +21,6 @@ void Dive::update(shape::Collider& collider, PlayerController& controller) {
 	if (!m_flags.test(AbilityFlags::active)) {
 		collider.physics.acceleration.y = m_multiplier;
 		collider.physics.velocity.y = 0.f;
-		// m_map->effects.push_back(entity::Effect(*m_services, "dive", collider.get_center(), {collider.physics.apparent_velocity().x * 0.1f, 0.f}));
 		m_post_dive.start();
 		m_request.cancel();
 	}

@@ -7,6 +7,7 @@ namespace fornani::automa {
 constexpr auto dot_buffer_v = 16.f;
 
 MenuState::MenuState(ServiceProvider& svc, player::Player& player, std::string_view scene) : GameState(svc, player, scene) {
+	svc.controller_map.set_action_set(config::ActionSet::Menu);
 	auto const& in_data = svc.data.menu["options"];
 	for (auto& entry : in_data[scene].as_array()) { options.push_back(Option(svc, entry.as_string())); }
 	if (!options.empty()) { current_selection = util::Circuit(static_cast<int>(options.size())); }
@@ -39,7 +40,6 @@ MenuState::MenuState(ServiceProvider& svc, player::Player& player, std::string_v
 
 void MenuState::tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
-	svc.controller_map.set_action_set(config::ActionSet::Menu);
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered && m_input_authorized) {
 		current_selection.modulate(1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);

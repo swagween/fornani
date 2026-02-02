@@ -49,6 +49,7 @@ class DataManager final {
 	void save_quests();
 	void save_settings();
 	int load_progress(player::Player& player, int file, bool state_switch = false, bool from_menu = true);
+	int reload_progress(player::Player& player);
 	void load_settings();
 	void delete_file(int index);
 	void write_death_count(player::Player& player);

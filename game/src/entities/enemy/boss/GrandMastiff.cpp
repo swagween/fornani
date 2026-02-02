@@ -16,6 +16,7 @@ GrandMastiff::GrandMastiff(automa::ServiceProvider& svc, world::Map& map) : Boss
 	m_bite.hit.bounds.setRadius(40.f);
 
 	get_collider().physics.set_friction_componentwise({0.9f, 0.99f});
+	flags.state.set(StateFlags::no_shake);
 }
 
 void GrandMastiff::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {

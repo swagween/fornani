@@ -33,7 +33,7 @@ void StatSheet::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
 		if (current_selection.get() == 1) {
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-			svc.state_controller.actions.set(Actions::main_menu);
+			svc.events.return_to_main_menu_event.dispatch();
 			svc.state_controller.actions.set(Actions::trigger);
 		}
 		if (current_selection.get() == 0) { svc.state_controller.actions.set(Actions::screenshot); }

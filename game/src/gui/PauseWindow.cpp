@@ -14,6 +14,7 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc, std::vector<std::string> 
 	color.a = 220;
 	m_background.setFillColor(color);
 	svc.soundboard.flags.console.set(audio::Console::menu_open);
+	svc.controller_map.set_action_set(config::ActionSet::Menu);
 }
 
 void PauseWindow::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<Console>>& console) {

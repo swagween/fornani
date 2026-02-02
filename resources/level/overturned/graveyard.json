@@ -10,7 +10,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           4,
@@ -79,7 +78,7 @@
       18
     ],
     "minimap": true,
-    "music": "solitude",
+    "music": "dandelions",
     "player_start": [
       0,
       0

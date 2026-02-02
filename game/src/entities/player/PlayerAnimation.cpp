@@ -681,7 +681,6 @@ fsm::StateFunction PlayerAnimation::update_die() {
 		m_player->m_services->music_player.stop();
 		post_death.start();
 		triggers.reset(AnimTriggers::end_death);
-		m_player->m_services->state_controller.actions.set(automa::Actions::death_mode); // set here, reset on map load
 	}
 	if (m_player->has_collider()) {
 		m_player->animation.linger_on_frame(1, !m_player->get_collider().grounded());
@@ -690,11 +689,6 @@ fsm::StateFunction PlayerAnimation::update_die() {
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();
 	post_death.update();
-	if (!m_player->m_services->death_mode()) {
-		m_player->get_collider().collision_depths = util::CollisionDepth();
-		m_player->animation.set_params(get_params("idle"));
-		return PA_BIND(update_idle);
-	}
 	if (post_death.is_complete()) {
 		if (m_player->has_collider()) { m_player->get_collider().collision_depths = util::CollisionDepth(); }
 		if (change_state(AnimState::idle, get_params("idle"), true)) { return PA_BIND(update_idle); }
@@ -714,15 +708,10 @@ fsm::StateFunction PlayerAnimation::update_drown() {
 		m_player->m_services->music_player.stop();
 		post_death.start();
 		triggers.reset(AnimTriggers::end_death);
-		m_player->m_services->state_controller.actions.set(automa::Actions::death_mode); // set here, reset on map load
 	}
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();
 	post_death.update();
-	if (!m_player->m_services->death_mode()) {
-		request(AnimState::idle);
-		if (change_state(AnimState::idle, get_params("idle"), true)) { return PA_BIND(update_idle); }
-	}
 	if (post_death.is_complete()) {
 		if (m_player->has_collider()) { m_player->get_collider().collision_depths = util::CollisionDepth(); }
 		if (change_state(AnimState::idle, get_params("idle"), true)) { return PA_BIND(update_idle); }

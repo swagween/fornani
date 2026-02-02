@@ -78,7 +78,6 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			NANI_LOG_INFO(m_logger, "Shutdown");
 			break;
 		}
-		if (services.death_mode()) { flags.reset(GameFlags::in_game); }
 
 		services.ticker.start_frame();
 
@@ -123,6 +122,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			}
 
 			services.controller_map.handle_event(*event);
+			services.input_system.handle_event(*event);
 			ImGui::SFML::ProcessEvent(services.window->get(), *event);
 		}
 
@@ -131,6 +131,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		bool has_focus = services.window->get().hasFocus();
 		services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services, &audio_engine = audio_engine] {
 			services.controller_map.update();
+			services.input_system.update();
 			services.music_player.update();
 			if (services.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && m_game_menu) {
 				if (m_game_menu.value()->get_current_state().is_ready()) {
@@ -341,7 +342,11 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Input")) {
-					ImGui::Text("Current Input Device: %s", services.controller_map.last_controller_type_used() == config::ControllerType::gamepad ? "Gamepad" : "Keyboard");
+					auto d = services.input_system.last_device_used();
+					ImGui::Text("Current Input Device: %s", d == input::InputDevice::gamepad ? "Gamepad" : d == input::InputDevice::keyboard ? "Keyboard" : "None");
+					ImGui::Text("Jump: %s", services.input_system.digital(input::DigitalAction::platformer_jump).held ? "held" : "");
+					ImGui::SeparatorText("OLD");
+					ImGui::Text("Current Input Device: %s", services.controller_map.last_controller_type_used() == config::InputDevice::gamepad ? "Gamepad" : "Keyboard");
 					ImGui::Text("Gamepad Status: %s", services.controller_map.gamepad_connected() ? "Connected" : "Disconnected");
 					ImGui::Text("Gamepad Enabled? %s", services.controller_map.is_gamepad_input_enabled() ? "Yes" : "No");
 					ImGui::Text("Action Set: %i", services.controller_map.get_action_set());
@@ -398,6 +403,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					static float sfxvol{services.soundboard.get_volume()};
 					ImGui::SliderFloat("##sfxvol", &sfxvol, 0.f, 1.f);
 					services.soundboard.set_volume(sfxvol);
+					ImGui::Text("Music Volume %f", services.music_player.get_volume());
+					ImGui::Text("Music Volume Multiplier %f", services.music_player.get_volume_multiplier());
 					ImGui::Text("Soundboard Volume %f", services.soundboard.get_volume());
 					ImGui::Text("Sound pool size: %i", static_cast<int>(services.soundboard.number_of_playng_sounds()));
 					ImGui::Separator();
@@ -542,6 +549,12 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 									ImGui::Text("%i, ", room);
 									ImGui::SameLine();
 								}
+								ImGui::EndTabItem();
+							}
+							if (ImGui::BeginTabItem("Death")) {
+								ImGui::Text("Is player dead? %s", player.is_dead() ? "Yes" : "No");
+								ImGui::Text("Death type: %i", player.get_i_death_type());
+								if (map) { ImGui::Text("Map transition: %s", map->get().transition.as_string()); }
 								ImGui::EndTabItem();
 							}
 

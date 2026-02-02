@@ -12,6 +12,7 @@ namespace fornani::gui {
 
 InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map, player::Player& player)
 	: m_cell_dimensions{svc.window->f_screen_dimensions()}, m_dashboard{std::make_unique<Dashboard>(svc, map, player, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}}, m_exit{64} {
+	svc.controller_map.set_action_set(config::ActionSet::Inventory);
 	m_debug.border.setFillColor(sf::Color{12, 12, 20});
 	m_debug.border.setSize(svc.window->f_screen_dimensions());
 	m_debug.border.setOutlineColor(colors::green);

@@ -161,7 +161,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 
 	// state
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
-	[[nodiscard]] auto is_dead() const -> bool { return health.is_dead(); }
+	[[nodiscard]] auto is_dead() const -> bool { return m_death_type.has_value(); }
+	[[nodiscard]] auto is_death_complete() const -> bool { return m_death_cooldown.is_almost_complete(); }
 	[[nodiscard]] auto had_special_death() const -> bool { return m_death_type ? m_death_type.value() != PlayerDeathType::normal : false; }
 	[[nodiscard]] auto has_death_type(PlayerDeathType const test) const -> bool { return m_death_type ? m_death_type.value() == test : false; }
 	[[nodiscard]] auto get_i_death_type() const -> int { return m_death_type ? static_cast<int>(m_death_type.value()) : -1; }
@@ -346,6 +347,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	std::pair<sf::Vector2f, sf::Vector2f> m_antenna_sockets{};
 	util::Cooldown m_sprite_shake;
 	util::Cooldown m_hurt_cooldown;
+	util::Cooldown m_death_cooldown;
 
 	AbilityUsage m_ability_usage{};
 

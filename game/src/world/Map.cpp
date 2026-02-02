@@ -228,7 +228,6 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 	if (meta["minimap"].as_bool()) { m_attributes.properties.set(MapProperties::minimap); }
 
 	center_box.setSize(svc.window->f_screen_dimensions() * 0.5f);
-	if (!player->is_dead()) { svc.state_controller.actions.reset(automa::Actions::death_mode); }
 	spawn_counter.start();
 
 	svc.state_flags.reset(automa::StateFlags::hide_hud);

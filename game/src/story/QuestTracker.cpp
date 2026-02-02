@@ -65,8 +65,6 @@ void QuestTracker::reset(QuestType type, int id) {
 }
 
 void QuestTracker::process(automa::ServiceProvider& svc, util::QuestKey key) {
-	if (key.type == 27) { svc.state_controller.actions.set(automa::Actions::retry); }
-	if (key.type == 89) { svc.state_controller.actions.set(automa::Actions::main_menu); }
 	if (key.type == 69) { svc.state_controller.actions.set(automa::Actions::print_stats); }
 	if (key.type == 70) { svc.menu_controller.open_vendor_dialog(key.id); }
 	if (key.type == 97) { svc.state_controller.actions.set(automa::Actions::delete_file); }

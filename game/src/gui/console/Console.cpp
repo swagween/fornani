@@ -13,6 +13,8 @@ Console::Console(automa::ServiceProvider& svc)
 	: m_services(&svc), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard", 64}, m_styling{.corner_factor{28}, .edge_factor{1}, .padding_scale{1.1f}},
 	  m_nineslice(svc, svc.assets.get_texture("blue_console"), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}), m_mode{ConsoleMode::writing}, m_response_offset{-192.f, 16.f},
 	  m_exit_stall{650}, m_item_display_timer{1200} {
+	NANI_LOG_DEBUG(m_logger, "Console ctor @{}", static_cast<void const*>(this));
+	svc.controller_map.set_action_set(config::ActionSet::Menu);
 	text_suite = svc.text.console;
 	m_path.set_section("open");
 	m_began = true;
@@ -77,7 +79,7 @@ void Console::update(automa::ServiceProvider& svc) {
 		for (auto& code : codes.value()) {
 			if (code.is_response() && m_writer->is_available()) { m_writer->respond(); }
 			if (code.is_reveal_item() && m_process_code_before) {
-				m_services->events.read_item_by_id_event.dispatch(code.value);
+				m_services->events.reveal_item_by_id_event.dispatch(code.value);
 				processed = true;
 			}
 			if (code.is_input_hint()) {
@@ -166,10 +168,11 @@ void Console::set_nani_sprite(sf::Sprite const& sprite) {
 void Console::handle_actions(int value) {
 	switch (value) {
 	case 1: // return to main menu
+		NANI_LOG_DEBUG(m_logger, "Firing event from console: ReturnToMainMenuEvent");
 		m_services->events.return_to_main_menu_event.dispatch();
-		NANI_LOG_DEBUG(m_logger, "Fired event from console: ReturnToMainMenuEvent");
 		break;
 	case 2: // restart save
+		NANI_LOG_DEBUG(m_logger, "Firing event from console: ReloadSaveEvent");
 		m_services->events.reload_save_event.dispatch(*m_services, value);
 		break;
 	case 3: m_services->state_controller.actions.set(automa::Actions::delete_file); break;
@@ -325,7 +328,7 @@ void Console::handle_inputs(config::ControllerMap& controller) {
 					if (code.extras) { m_writer->set_index(code.extras.value()[0]); }
 				}
 				if (code.is_start_battle()) { m_services->events.start_battle_event.dispatch(); }
-				if (code.is_reveal_item() && m_process_codes) { m_services->events.read_item_by_id_event.dispatch(code.value); }
+				if (code.is_reveal_item() && m_process_codes) { m_services->events.reveal_item_by_id_event.dispatch(code.value); }
 				if (code.is_item() && m_process_code_after) { m_services->events.acquire_item_from_console_event.dispatch(*m_services, code.value); }
 				if (code.is_weapon() && m_process_code_after) { m_services->events.acquire_weapon_from_console_event.dispatch(*m_services, code.value); }
 				if (code.is_remove_weapon() && m_process_code_after) { m_services->events.remove_weapon_by_id_event.dispatch(*m_services, code.value); }

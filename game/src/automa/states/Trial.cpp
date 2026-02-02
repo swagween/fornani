@@ -89,8 +89,6 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		svc.world_timer.pause();
 	}
 
-	if (!m_console && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
-
 	if (!m_map) { return; }
 
 	if (!m_reset.running()) {

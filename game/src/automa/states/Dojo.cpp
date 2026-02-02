@@ -27,20 +27,6 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	svc.events.remove_weapon_by_id_event.attach_to(p_slot, &Dojo::remove_gun_by_id, this);
 
 	// gameplay events
-	/*svc.events.play_song_event.attach_to(p_slot, &Dojo::play_song, this);
-	svc.events.open_vendor_event.attach_to(p_slot, &Dojo::open_vendor, this);
-	svc.events.launch_cutscene_event.attach_to(p_slot, &Dojo::launch_cutscene, this);
-	svc.events.add_map_marker_event.attach_to(p_slot, &Dojo::add_map_marker, this);*/
-
-	// m_subscriptions.add(svc.events.get_or_add<ReadItemByIDEvent>().subscribe([this](int id) { read_item(id); }));
-	// m_subscriptions.add(svc.events.get_or_add<EquipItemByIDEvent>().subscribe([this](ServiceProvider& svc, int id) { this->equip_item(svc, id); }));
-	// m_subscriptions.add(svc.events.get_or_add<RevealItemByIDEvent>().subscribe([&player](int id) { player.catalog.inventory.reveal_item(id); }));
-	//// m_subscriptions.add(svc.events.get_or_add<AcquireItemEvent>().subscribe([this](ServiceProvider& svc, std::string_view tag) { this->acquire_item(svc, tag); }));
-	// m_subscriptions.add(svc.events.get_or_add<AcquireWeaponEvent>().subscribe([this](ServiceProvider& svc, std::string_view tag) { this->acquire_gun(svc, tag); }));
-	// m_subscriptions.add(svc.events.get_or_add<AcquireWeaponFromConsoleEvent>().subscribe([this](ServiceProvider& svc, int id) { this->acquire_gun_from_console(svc, id); }));
-	// m_subscriptions.add(svc.events.get_or_add<RemoveWeaponByIDEvent>().subscribe([this](ServiceProvider& svc, int id) { this->remove_gun(svc, id); }));
-
-	// gameplay events
 	svc.events.open_vendor_event.attach_to(p_slot, &Dojo::open_vendor, this);
 	svc.events.launch_cutscene_event.attach_to(p_slot, &Dojo::launch_cutscene, this);
 	svc.events.add_map_marker_event.attach_to(p_slot, &Dojo::add_map_marker, this);
@@ -58,10 +44,12 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 }
 
 void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-	// handle events
 
+	// handle events
 	if (svc.music_player.is_finished_playing() && m_flags.test(GameplayFlags::item_music_played)) {
+		NANI_LOG_DEBUG(m_logger, "set fade in!");
 		svc.music_player.resume();
+		svc.music_player.fade_in(util::Sec{1.f});
 		m_flags.reset(GameplayFlags::item_music_played);
 	}
 
@@ -111,12 +99,8 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	// set action set
 	if (pause_window || m_console) {
-		svc.controller_map.set_action_set(config::ActionSet::Menu);
-		svc.controller_map.set_joystick_throttle({});
 	} else if (inventory_window || vendor_dialog) {
-		svc.controller_map.set_action_set(config::ActionSet::Inventory);
 	} else {
-		svc.controller_map.set_action_set(config::ActionSet::Platformer);
 	}
 
 	if (!m_map) { return; }
@@ -137,7 +121,10 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			flags.set(GameStateFlags::controls_request);
 			pause_window.value()->reset();
 		}
-		if (pause_window.value()->exit_requested()) { pause_window = {}; }
+		if (pause_window.value()->exit_requested()) {
+			pause_window = {};
+			svc.controller_map.set_action_set(config::ActionSet::Platformer);
+		}
 		GameState::tick_update(svc, engine);
 		return;
 	}
@@ -159,7 +146,10 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		m_map->transition.update(*player);
 		if (!m_console) {
 			inventory_window.value()->update(svc, *player, *m_map);
-			if (inventory_window.value()->exit_requested()) { inventory_window = {}; }
+			if (inventory_window.value()->exit_requested()) {
+				inventory_window = {};
+				svc.controller_map.set_action_set(config::ActionSet::Platformer);
+			}
 			return;
 		}
 	}
@@ -177,7 +167,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc, *m_map, *player); }
 
 	m_enter_room.update();
-	if (!m_console && svc.state_controller.actions.test(Actions::main_menu)) { svc.state_controller.actions.set(Actions::trigger); }
 	if (m_enter_room.running()) { player->controller.autonomous_walk(); }
 
 	// physical tick
@@ -243,6 +232,9 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 void Dojo::reload(ServiceProvider& svc, int target_state) {
 	m_map->clear();
+	m_flags.reset(GameplayFlags::transitioning);
+	m_map->transition.set(graphics::TransitionState::black);
+	m_map->transition.hang();
 	svc.menu_controller.reset_vendor_dialog();
 	if (!svc.data.is_room_discovered(target_state)) {
 		svc.data.discovered_rooms.add(target_state);
@@ -293,6 +285,8 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 		m_inspect_hint = util::Cooldown{2000};
 		m_inspect_hint->start();
 	}
+
+	m_flags.reset(GameplayFlags::death_console_launched);
 }
 
 void Dojo::acquire_item_from_console(ServiceProvider& svc, int id) { acquire_item(svc, svc.data.item_label_from_id(id)); }
@@ -379,6 +373,7 @@ bool Dojo::check_for_vendor(ServiceProvider& svc) {
 		if (!vendor_dialog.value()->is_open()) {
 			if (vendor_dialog.value()->made_profit()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
 			vendor_dialog = {};
+			svc.controller_map.set_action_set(config::ActionSet::Platformer);
 			if (m_gui_shader) { m_gui_shader->set_darken(0.f); }
 		}
 		m_map->set_target_balance(0.f, audio::BalanceTarget::music);
@@ -406,8 +401,11 @@ void Dojo::read_item(int id) { m_console = std::make_unique<gui::Console>(*p_ser
 
 void Dojo::handle_player_death(ServiceProvider& svc, player::Player& player) {
 	if (!m_map) { return; }
+	if (!player.is_dead()) { return; }
+
 	// check if player died
-	if (!m_flags.test(GameplayFlags::game_over) && player.death_animation_over() && svc.death_mode()) {
+	if (!m_flags.test(GameplayFlags::game_over) && player.is_death_complete()) {
+		m_flags.set(GameplayFlags::death_console_launched);
 		svc.app_flags.reset(automa::AppFlags::in_game);
 		m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "death", gui::OutputType::gradual, static_cast<int>(player.get_i_death_type()));
 		m_flags.set(GameplayFlags::game_over);
@@ -417,14 +415,12 @@ void Dojo::handle_player_death(ServiceProvider& svc, player::Player& player) {
 		svc.stats.player.death_count.update();
 	}
 
-	if (svc.state_controller.actions.test(automa::Actions::retry)) { m_flags.set(GameplayFlags::game_over); }
 	if (!m_console && m_flags.test(GameplayFlags::game_over)) {
 		if (!m_flags.test(GameplayFlags::transitioning)) { m_map->transition.start(); }
 		m_flags.set(GameplayFlags::transitioning);
-		if (m_map->transition.is(graphics::TransitionState::black)) {
-			player.start_over();
+		if (m_map->transition.is(graphics::TransitionState::black) && !svc.state_controller.actions.test(automa::Actions::player_death)) {
 			svc.state_controller.actions.set(automa::Actions::player_death);
-			svc.state_controller.actions.set(automa::Actions::trigger);
+			m_flags.reset(GameplayFlags::game_over);
 		}
 	}
 }

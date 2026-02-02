@@ -155,7 +155,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           7,
@@ -172,7 +171,7 @@
           1
         ],
         "id": 0,
-        "key_id": 12,
+        "key_tag": "bit_cell_key",
         "locked": true,
         "position": [
           5,
@@ -189,7 +188,6 @@
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           63,

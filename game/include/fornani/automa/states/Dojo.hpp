@@ -12,7 +12,7 @@
 
 namespace fornani::automa {
 
-enum class GameplayFlags { game_over, transitioning, open_vendor, give_item, item_music_played };
+enum class GameplayFlags { game_over, transitioning, open_vendor, give_item, item_music_played, death_console_launched };
 
 class Dojo final : public GameplayState {
   public:

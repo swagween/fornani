@@ -1177,7 +1177,8 @@
       "map_collision": true,
       "player_collision": false,
       "foreground": false,
-      "hurt_on_contact": false
+      "hurt_on_contact": false,
+      "kick_immune": true
     }
   }
 }

@@ -57,4 +57,6 @@ void Transition::end() {
 	NANI_LOG_DEBUG(m_logger, "Ended");
 }
 
+void Transition::hang() { m_hang_time.start(); }
+
 } // namespace fornani::graphics

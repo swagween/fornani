@@ -30,6 +30,7 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	  m_intro{300}, m_fade_in{120}, m_outro{100}, m_vendor_portrait{svc, "character_portraits"}, m_orb_display{svc}, m_selector_sprite{svc, "vendor_gizmo"},
 	  my_npc{*std::find_if(map.get_entities<NPC>().begin(), map.get_entities<NPC>().end(), [vendor_id](auto const& n) { return n->get_vendor_id() == vendor_id; })}, npc_id{vendor_id}, m_item_sprite{svc, "inventory_items"},
 	  m_palette{"pioneer", svc.finder} {
+	svc.controller_map.set_action_set(config::ActionSet::Inventory);
 	flags.set(VendorDialogStatus::opened);
 	m_artwork.center();
 	m_artwork.set_position(svc.window->f_center_screen());

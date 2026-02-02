@@ -216,8 +216,8 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	auto& save = files.at(current_save).save_data;
 	files.at(current_save).write();
 	save["status"]["inspect_hint"] = get_file().flags.test(io::FileFlags::inspect_hint);
-	// set file data based on player state
 
+	// set file data based on player state
 	save["save_point_id"] = save_point_id;
 
 	// write marketplace status
@@ -310,6 +310,8 @@ void DataManager::save_settings() {
 	settings["fullscreen"] = m_services->fullscreen();
 	if (!settings.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save user settings!"); }
 }
+
+int DataManager::reload_progress(player::Player& player) { return load_progress(player, current_save, false, false); }
 
 int DataManager::load_progress(player::Player& player, int const file, bool state_switch, bool from_menu) {
 
@@ -415,7 +417,6 @@ void DataManager::write_death_count(player::Player& player) {
 
 std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) const {
 
-	NANI_LOG_DEBUG(m_logger, "3Item json size: {}", item.as_array().size());
 	auto const& save = blank_file.save_data;
 	assert(!save.is_null());
 

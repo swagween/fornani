@@ -29,8 +29,8 @@ void Ambience::set_balance(float balance) {
 	tracks.closed.update();
 	auto actual = balance * m_volume_multiplier;
 	auto inverse = (1.f - balance) * m_volume_multiplier;
-	tracks.open.set_volume(actual);
-	tracks.closed.set_volume(inverse);
+	tracks.open.set_gain(actual);
+	tracks.closed.set_gain(inverse);
 }
 
 } // namespace fornani::audio

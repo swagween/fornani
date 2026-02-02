@@ -65,7 +65,6 @@ enum class ActionSet {
 	Menu,
 };
 
-enum class ControllerType { keyboard, gamepad };
 enum class ControllerStatus { gamepad_connected };
 
 struct DigitalActionSource {
@@ -87,6 +86,20 @@ struct AnalogActionStatus {
 
 	float x{};
 	float y{};
+};
+
+enum class InputDevice { none, keyboard, gamepad };
+
+struct RawDigitalInput {
+	bool pressed = false; // this frame
+	bool held = false;	  // down
+	bool active = false;  // bound / valid
+};
+
+struct ResolvedActionState {
+	bool triggered = false;
+	bool held = false;
+	bool released = false;
 };
 
 class ControllerMap {
@@ -139,9 +152,9 @@ class ControllerMap {
 	[[nodiscard]] auto key_to_string(sf::Keyboard::Scancode) const -> std::string_view;
 	[[nodiscard]] auto string_to_key(std::string_view) const -> sf::Keyboard::Scancode;
 
-	[[nodiscard]] auto last_controller_type_used() const -> ControllerType { return last_controller_ty_used; }
-	[[nodiscard]] auto is_gamepad() const -> bool { return last_controller_ty_used == ControllerType::gamepad; }
-	[[nodiscard]] auto is_keyboard() const -> bool { return last_controller_ty_used == ControllerType::keyboard; }
+	[[nodiscard]] auto last_controller_type_used() const -> InputDevice { return last_controller_ty_used; }
+	[[nodiscard]] auto is_gamepad() const -> bool { return last_controller_ty_used == InputDevice::gamepad; }
+	[[nodiscard]] auto is_keyboard() const -> bool { return last_controller_ty_used == InputDevice::keyboard; }
 
 	/// @return Returns true if keyboard control bindings have a duplicate.
 	[[nodiscard]] auto has_forbidden_duplicate_binding() const -> bool;
@@ -192,7 +205,7 @@ class ControllerMap {
 
 	std::unordered_set<DigitalAction> m_actions_queried_this_update;
 
-	ControllerType last_controller_ty_used{ControllerType::keyboard};
+	InputDevice last_controller_ty_used{InputDevice::keyboard};
 
 	ActionSet active_action_set{};
 
@@ -213,6 +226,11 @@ class ControllerMap {
 	/// @brief Sets up the values of `digital_actions` and `analog_actions` via the Steam Input API.
 	/// @details Since the Steam Input API returns invalid handles if no gamepad is connected (bug?), this needs to be recalled every time a controller is connected.
 	void setup_action_handles();
+
+	using RawInputMap = std::unordered_map<DigitalAction, RawDigitalInput>;
+	using ResolvedActionMap = std::unordered_map<DigitalAction, ResolvedActionState>;
+
+	RawInputMap raw_inputs;
 
 	io::Logger m_logger{"config"};
 

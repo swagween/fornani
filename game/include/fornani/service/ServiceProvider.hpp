@@ -20,6 +20,7 @@
 #include <fornani/story/QuestTracker.hpp>
 #include <fornani/story/StatTracker.hpp>
 #include <fornani/systems/EventRegistry.hpp>
+#include <fornani/systems/InputSystem.hpp>
 #include <fornani/systems/NotificationManager.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Constants.hpp>
@@ -52,6 +53,7 @@ struct ServiceProvider {
 	core::SoundManager sounds;
 	core::AssetManager assets;
 	config::ControllerMap controller_map{*this};
+	input::InputSystem input_system{finder};
 	EventRegistry events;
 	util::BitFlags<DebugFlags> debug_flags{};
 	util::BitFlags<AppFlags> app_flags{};
@@ -95,7 +97,6 @@ struct ServiceProvider {
 	[[nodiscard]] auto demo_mode() const -> bool { return debug_flags.test(DebugFlags::demo_mode); }
 	[[nodiscard]] auto greyblock_mode() const -> bool { return debug_flags.test(DebugFlags::greyblock_mode); }
 	[[nodiscard]] auto debug_mode() const -> bool { return debug_flags.test(DebugFlags::debug_mode); }
-	[[nodiscard]] auto death_mode() const -> bool { return state_controller.actions.test(Actions::death_mode); }
 	[[nodiscard]] auto in_window(sf::Vector2f point, sf::Vector2f dimensions) const -> bool { return window->in_window(point, dimensions); }
 };
 } // namespace fornani::automa

@@ -59,7 +59,8 @@ enum class GeneralFlags {
 	custom_channels,
 	semipermanent,
 	no_tick,
-	boss
+	boss,
+	kick_immune
 };
 enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, no_shake, out_of_zone, no_slowdown, intangible, health_exposed, despawn };
 enum class Triggers { hostile, alert };

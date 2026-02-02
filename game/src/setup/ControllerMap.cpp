@@ -139,8 +139,8 @@ void ControllerMap::setup_action_handles() {
 
 void ControllerMap::handle_event(std::optional<sf::Event> const event) {
 	if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
-		if (last_controller_ty_used != ControllerType::keyboard) { reset_digital_action_states(); }
-		last_controller_ty_used = ControllerType::keyboard;
+		if (last_controller_ty_used != InputDevice::keyboard) { reset_digital_action_states(); }
+		last_controller_ty_used = InputDevice::keyboard;
 		if (key_pressed->scancode != sf::Keyboard::Scancode::Unknown) { keys_pressed.insert(key_pressed->scancode); }
 	} else if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
 		keys_pressed.erase(key_released->scancode);
@@ -175,17 +175,18 @@ void ControllerMap::update() {
 		auto pressed_on_keyboard = keys_pressed.contains(primary_key) || keys_pressed.contains(secondary_key);
 
 		if (pressed_on_gamepad) {
-			if (last_controller_ty_used != ControllerType::gamepad) { reset_digital_action_states(); }
-			last_controller_ty_used = ControllerType::gamepad;
+			if (last_controller_ty_used != InputDevice::gamepad) { reset_digital_action_states(); }
+			last_controller_ty_used = InputDevice::gamepad;
+			NANI_LOG_DEBUG(m_logger, "Pressed on gamepad.");
 		}
 		if (pressed_on_keyboard) {
-			if (last_controller_ty_used != ControllerType::keyboard) { reset_digital_action_states(); }
-			last_controller_ty_used = ControllerType::keyboard;
+			if (last_controller_ty_used != InputDevice::keyboard) { reset_digital_action_states(); }
+			last_controller_ty_used = InputDevice::keyboard;
 		}
 
 		// Determine if this action is active (bound on the current action set).
 		bool active{};
-		if (last_controller_ty_used == ControllerType::gamepad) {
+		if (last_controller_ty_used == InputDevice::gamepad) {
 			// If we are using a gamepad, use steam's bActive member, otherwise it freaks out (causes multiple inputs, sometimes fails to input, etc)
 			auto const data = SteamInput()->GetDigitalActionData(controller_handle, steam_handle);
 			active = data.bActive;
@@ -206,7 +207,7 @@ void ControllerMap::update() {
 			// Avoid actions being immediately triggered when switching action sets
 			if (!action_status.held && was_active_last_tick) {
 				auto data = SteamInput()->GetDigitalActionData(controller_handle, steam_handle);
-				// NANI_LOG_DEBUG(m_logger, "Pressed {}", SteamInput()->GetStringForDigitalActionName(steam_handle));
+				NANI_LOG_DEBUG(m_logger, "Pressed {}", SteamInput()->GetStringForDigitalActionName(steam_handle));
 				action_status.triggered = true;
 			} else {
 				action_status.triggered = false;
@@ -215,7 +216,7 @@ void ControllerMap::update() {
 		} else {
 			action_status.triggered = false;
 			if (action_status.held) {
-				// NANI_LOG_DEBUG(m_logger, "Released {}", SteamInput()->GetStringForDigitalActionName(steam_handle));
+				NANI_LOG_DEBUG(m_logger, "Released {}", SteamInput()->GetStringForDigitalActionName(steam_handle));
 				action_status.released = true;
 			} else {
 				action_status.released = false;
@@ -242,10 +243,11 @@ void ControllerMap::update() {
 		}
 	}
 
-	// if (last_controller_type_used() != ControllerType::gamepad) { m_joystick_throttle = {}; }
+	// if (last_controller_type_used() != InputDevice::gamepad) { m_joystick_throttle = {}; }
 }
 
 void ControllerMap::set_action_set(ActionSet set) {
+	NANI_LOG_DEBUG(m_logger, "Trying to set ActionSet...");
 	if (controller_handle && set != active_action_set) {
 		NANI_LOG_DEBUG(m_logger, "Set action set to {}", static_cast<int>(set));
 		SteamInput()->DeactivateAllActionSetLayers(controller_handle);
@@ -325,7 +327,7 @@ void ControllerMap::set_action_set(ActionSet set) {
 void ControllerMap::handle_gamepad_connection(SteamInputDeviceConnected_t* data) {
 	NANI_LOG_INFO(m_logger, "Connected controller with handle [{}]", data->m_ulConnectedDeviceHandle);
 	controller_handle = data->m_ulConnectedDeviceHandle;
-	last_controller_ty_used = ControllerType::gamepad; // Quickly switch to gamepad input
+	last_controller_ty_used = InputDevice::gamepad; // Quickly switch to gamepad input
 	setup_action_handles();
 	set_action_set(active_action_set);
 }
@@ -334,7 +336,7 @@ void ControllerMap::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t*
 	NANI_LOG_INFO(m_logger, "Disconnected controller with handle [{}] ", data->m_ulDisconnectedDeviceHandle);
 	if (controller_handle != 0) { out.gamepad_disconnected = true; }
 	controller_handle = 0;
-	last_controller_ty_used = ControllerType::keyboard; // Quickly switch to keyboard input
+	last_controller_ty_used = InputDevice::keyboard; // Quickly switch to keyboard input
 }
 
 void ControllerMap::open_bindings_overlay() const {

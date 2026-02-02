@@ -1,5 +1,7 @@
 nani_add_headers(
         EventRegistry.hpp
+        InputActionMap.hpp
+        InputSystem.hpp
         Notification.hpp
         NotificationManager.hpp
         Register.hpp

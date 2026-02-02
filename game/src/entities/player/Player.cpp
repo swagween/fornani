@@ -19,7 +19,7 @@ constexpr auto max_damage_v = 1024.f;
 
 Player::Player(automa::ServiceProvider& svc)
 	: Mobile(svc, "nani", {24, 24}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb},
-	  m_sprite_shake{40}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle} {
+	  m_sprite_shake{40}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450} {
 
 	center();
 	svc.data.load_player_params(*this);
@@ -155,6 +155,8 @@ void Player::unregister_with_map() {
 }
 
 void Player::update(world::Map& map) {
+	if (is_dead() && !m_death_cooldown.running()) { m_death_cooldown.start(); }
+	m_death_cooldown.update();
 	if (!collider.has_value()) { return; }
 	caution.avoid_ledges(map, get_collider(), controller.direction, 8);
 	if (get_collider().collision_depths) { get_collider().collision_depths.value().reset(); }
@@ -625,7 +627,7 @@ void Player::hurt(float amount, bool force) {
 		force_cooldown.start(60);
 		has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? m_services->soundboard.flags.player.set(audio::Player::gulp) : m_services->soundboard.flags.player.set(audio::Player::hurt);
 		hurt_cooldown.start(2);
-		if (is_dead()) { m_death_type = PlayerDeathType::normal; }
+		if (health.is_dead()) { m_death_type = PlayerDeathType::normal; }
 	}
 }
 
@@ -723,13 +725,16 @@ void Player::update_wardrobe() {
 
 void Player::start_over() {
 	m_death_type.reset();
+	m_air_supply.refill();
 	health.reset();
 	controller.unrestrict();
 	m_services->camera_controller.set_owner(graphics::CameraOwner::player);
 	health.invincibility.start(8);
+	hurt_cooldown.cancel();
 	set_flag(PlayerFlags::killed, false);
 	set_flag(PlayerFlags::cutscene, false);
 	m_animation_machine.triggers.reset(AnimTriggers::end_death);
+	set_animation_flag(player::AnimTriggers::end_death, false);
 	m_animation_machine.post_death.cancel();
 	if (has_collider()) { get_collider().collision_depths = util::CollisionDepth(); }
 	for (auto& a : antennae) {
@@ -739,6 +744,7 @@ void Player::start_over() {
 	sync_antennae();
 	catalog.wardrobe.set_palette(m_services->assets.get_texture_modifiable("nani_palette_default"));
 	update_wardrobe();
+	set_idle();
 }
 
 void Player::give_drop(item::DropType type, float value) {
