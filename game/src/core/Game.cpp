@@ -119,6 +119,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 				auto jx = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::X);
 				auto jy = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::Y);
 				services.controller_map.set_joystick_throttle(sf::Vector2f{jx, jy});
+				services.input_system.set_joystick_throttle(sf::Vector2f{jx, jy});
 			}
 
 			services.controller_map.handle_event(*event);
@@ -345,6 +346,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					auto d = services.input_system.last_device_used();
 					ImGui::Text("Current Input Device: %s", d == input::InputDevice::gamepad ? "Gamepad" : d == input::InputDevice::keyboard ? "Keyboard" : "None");
 					ImGui::Text("Jump: %s", services.input_system.digital(input::DigitalAction::platformer_jump).held ? "held" : "");
+					ImGui::Text("Joystick Throttle: %.3f", services.input_system.get_joystick_throttle().x);
 					ImGui::SeparatorText("OLD");
 					ImGui::Text("Current Input Device: %s", services.controller_map.last_controller_type_used() == config::InputDevice::gamepad ? "Gamepad" : "Keyboard");
 					ImGui::Text("Gamepad Status: %s", services.controller_map.gamepad_connected() ? "Connected" : "Disconnected");

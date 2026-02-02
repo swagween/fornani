@@ -4,7 +4,9 @@
 
 namespace fornani::input {
 
-InputSystem::InputSystem(ResourceFinder& finder) {
+constexpr auto default_joystick_sensitivity_v = 0.2f;
+
+InputSystem::InputSystem(ResourceFinder& finder) : m_stick_sensitivity{default_joystick_sensitivity_v} {
 	NANI_LOG_INFO(m_logger, "Initializing Steam Input");
 	if (!SteamInput()->Init(true)) {
 		NANI_LOG_WARN(m_logger, "Could not initialize Steam Input!");
@@ -270,5 +272,54 @@ void InputSystem::set_secondary_keyboard_binding(DigitalAction action, sf::Keybo
 auto InputSystem::get_primary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Scancode { return m_digital_actions.at(action).primary_binding; }
 
 auto InputSystem::get_secondary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Scancode { return m_digital_actions.at(action).secondary_binding; }
+
+auto InputSystem::get_joystick_throttle() const -> sf::Vector2f {
+	if (last_device_used() != InputDevice::gamepad) { return {}; }
+	return m_joystick_throttle;
+}
+
+auto InputSystem::get_i_joystick_throttle(bool exclusive) const -> sf::Vector2i {
+	if (last_device_used() != InputDevice::gamepad) { return {}; }
+	auto ret = sf::Vector2i{static_cast<int>(std::ceil(m_joystick_throttle.x)), static_cast<int>(std::ceil(m_joystick_throttle.y))};
+	if (exclusive) {
+		if (abs(m_joystick_throttle.x) > abs(m_joystick_throttle.y)) { ret.y = 0.f; }
+		if (abs(m_joystick_throttle.x) <= abs(m_joystick_throttle.y)) { ret.x = 0.f; }
+	}
+	return ret;
+}
+
+void InputSystem::set_joystick_throttle(sf::Vector2f throttle) {
+	// constrict throttle based on stick sensitivity
+	m_joystick_throttle.x = std::clamp(throttle.x / 100.f, -1.f, 1.f);
+	m_joystick_throttle.y = std::clamp(throttle.y / 100.f, -1.f, 1.f);
+	if (std::abs(m_joystick_throttle.x) < m_stick_sensitivity) { m_joystick_throttle.x = 0.f; }
+	if (std::abs(m_joystick_throttle.y) < m_stick_sensitivity) { m_joystick_throttle.y = 0.f; }
+}
+
+void InputSystem::handle_gamepad_connection(SteamInputDeviceConnected_t* data) {
+	NANI_LOG_INFO(m_logger, "Connected controller with handle [{}]", data->m_ulConnectedDeviceHandle);
+	controller_handle = data->m_ulConnectedDeviceHandle;
+	last_controller_ty_used = InputDevice::gamepad; // Quickly switch to gamepad input
+	setup_action_handles();
+	set_action_set(active_action_set);
+}
+
+void InputSystem::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t* data) {
+	NANI_LOG_INFO(m_logger, "Disconnected controller with handle [{}] ", data->m_ulDisconnectedDeviceHandle);
+	if (is_gamepad_connected()) { set_flag(InputSystemFlags::gamepad_disconnected); }
+	m_controller_handle = 0;
+	m_last_device_used = InputDevice::keyboard; // Quickly switch to keyboard input
+}
+
+void InputSystem::open_bindings_overlay() const {
+	if (!is_gamepad_connected()) { return; }
+	SteamInput()->ShowBindingPanel(m_controller_handle);
+}
+
+bool InputSystem::process_gamepad_disconnection() {
+	auto ret = has_flag_set(InputSystemFlags::gamepad_disconnected);
+	set_flag(InputSystemFlags::gamepad_disconnected, false);
+	return ret;
+}
 
 } // namespace fornani::input

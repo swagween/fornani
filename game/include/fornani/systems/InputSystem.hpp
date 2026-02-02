@@ -67,6 +67,11 @@ class InputSystem final {
 
 	[[nodiscard]] auto last_device_used() const -> InputDevice { return m_last_device_used; }
 
+	// --- Joystic queries ---
+	[[nodiscard]] auto get_joystick_throttle() const -> sf::Vector2f;
+	[[nodiscard]] auto get_i_joystick_throttle(bool exclusive) const -> sf::Vector2i;
+	void set_joystick_throttle(sf::Vector2f throttle);
+
   private:
 	// ---- Phase 1 ----
 	void gather_raw_input();
@@ -97,6 +102,10 @@ class InputSystem final {
 	// --- SteamInput ---
 	InputHandle_t m_controller_handle{0};
 	std::array<InputActionSetHandle_t, static_cast<size_t>(ActionSet::END)> m_steam_action_sets{};
+
+	// --- Joystick Input ---
+	sf::Vector2f m_joystick_throttle{};
+	float m_stick_sensitivity;
 
 	// --- Raw (per-frame scratch) ---
 	std::array<RawDigitalState, static_cast<size_t>(DigitalAction::END)> m_raw_digital;
