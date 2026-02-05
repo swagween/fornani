@@ -45,7 +45,7 @@ class Dashboard {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, LightShader& shader);
 	bool handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard);
 	void set_position(sf::Vector2f to_position, bool force = false);
-	void set_selection(sf::Vector2i to_selection);
+	void set_selection(sf::Vector2i to_selection, bool gamepad = false);
 	void close();
 	///@returns false if gizmo does not exist
 	bool select_gizmo();

@@ -6,6 +6,7 @@
 #include <fornani/entity/NPC.hpp>
 #include <fornani/gui/InventorySelector.hpp>
 #include <fornani/gui/MiniMenu.hpp>
+#include <fornani/gui/NumberDisplay.hpp>
 #include <fornani/gui/OrbDisplay.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/gui/gizmos/DescriptionGizmo.hpp>
@@ -33,6 +34,11 @@ enum class VendorDialogStatus { opened, made_sale, closed, intro_done };
 enum class VendorState { buy, sell };
 enum class VendorConstituentType { portrait, wares, description, name, core, selection, nani };
 
+struct VendorItem {
+	int id{};
+	std::optional<NumberDisplay> price_display{};
+};
+
 struct VendorConstituent : public Drawable {
 	VendorConstituent(automa::ServiceProvider& svc, std::string_view label, sf::IntRect lookup, int speed = 128, util::InterpolationType type = util::InterpolationType::quadratic);
 	util::RectPath path;
@@ -45,9 +51,9 @@ class VendorDialog {
 	VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map, LightShader& shader);
-	void close(automa::ServiceProvider& svc);
+	void close();
 	void update_table(player::Player& player, world::Map& map, bool new_dim);
-	void refresh(player::Player& player, world::Map& map);
+	void refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 
 	[[nodiscard]] auto is_open() const -> bool { return flags.test(VendorDialogStatus::opened); }
 	[[nodiscard]] auto is_buying() const -> bool { return m_state == VendorState::buy; }
@@ -60,7 +66,8 @@ class VendorDialog {
   private:
 	bool fade_logic(automa::ServiceProvider& svc, world::Map& map);
 	VendorState m_state{};
-	InventorySelector m_selector;
+	InventorySelector m_buy_selector;
+	InventorySelector m_sell_selector;
 	std::optional<MiniMenu> m_item_menu{};
 	util::Cooldown m_intro;
 	util::Cooldown m_fade_in;
@@ -81,13 +88,14 @@ class VendorDialog {
 
 	float sale_price{};
 	float balance{};
+	float m_upcharge{};
 	sf::Vector2f portrait_position{44.f, 18.f};
 	sf::Vector2f bring_in{};
 
 	std::array<VendorConstituent, 7> m_constituents;
 
-	std::array<std::array<int, 8>, 4> m_vendor_items_list{};
-	std::array<std::array<int, 8>, 4> m_player_items_list{};
+	std::array<VendorItem, 8> m_vendor_items_list{};
+	std::array<int, 24> m_player_items_list{};
 	Drawable m_item_sprite;
 
 	struct {
@@ -99,13 +107,14 @@ class VendorDialog {
 		sf::Text price_number;
 		sf::Text item_label;
 	} text;
+
 	struct {
 		sf::Vector2f item_label_position{232.f, 320.f};
 		sf::Vector2f price_position{232.f, 345.f};
 		sf::Vector2f rarity_pad{32.f, 32.f};
 		float buffer{40.f};
-		int items_per_row{12};
 	} ui_constants{};
+
 	struct {
 		anim::AnimatedSprite sprite;
 	} orb;

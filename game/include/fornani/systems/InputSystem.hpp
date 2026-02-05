@@ -27,8 +27,9 @@ class DataManager;
 namespace fornani::input {
 
 enum class ActionSet { Platformer, Menu, END };
+enum class DigitalActionQueryType { held, triggered, released };
 enum class InputDevice { none, keyboard, gamepad };
-enum class InputSystemFlags { gamepad_disconnected, gamepad_input_enabled, auto_sprint, keyboard_input_detected };
+enum class InputSystemFlags { gamepad_disconnected, gamepad_input_enabled, auto_sprint, keyboard_input_detected, changed_action_sets };
 
 // raw input
 struct RawDigitalState {
@@ -152,7 +153,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 
 	// ---- SteamInput helpers ----
 	void update_steam_controllers();
-	void activate_action_set_if_needed();
+	void set_steam_action_set(InputActionSetHandle_t to_set);
 	void init_steam_action_sets();
 	void setup_action_handles();
 	void set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Scancode key);
@@ -160,6 +161,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	bool is_action_allowed(DigitalAction action) const;
 	bool is_action_allowed(AnalogAction action) const;
 	float analog_axis_value(ResolvedAnalogState const& a, MoveDirection dir, bool previous = false) const;
+	bool query_digital_axis(MoveDirection dir, DigitalActionQueryType type) const;
 
 	[[nodiscard]] auto steam_handle_for(DigitalAction action) const -> InputHandle_t { return m_digital_actions.at(action).steam_handle; }
 	[[nodiscard]] auto steam_handle_for(AnalogAction action) const -> InputHandle_t { return m_analog_actions.at(action).steam_handle; }
@@ -174,8 +176,6 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	std::unordered_map<DigitalAction, DigitalActionData> m_digital_actions{};
 	std::unordered_map<AnalogAction, AnalogActionData> m_analog_actions{};
 	sf::Keyboard::Scancode m_last_key_pressed{};
-	InputActionSetHandle_t platformer_action_set{};
-	InputActionSetHandle_t menu_action_set{};
 
 	// --- SteamInput ---
 	InputHandle_t m_controller_handle{0};

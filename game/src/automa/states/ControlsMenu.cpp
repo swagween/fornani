@@ -114,7 +114,7 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 	std::size_t ctr{0};
 	for (auto& option : options) {
 		option.update(svc, current_selection.get());
-		if (ctr > 0 && ctr < options.size() - 2) {
+		if (ctr > 0 && ctr < options.size() - 3) {
 			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), m_scene));
 			auto id = std::string(tab_id_prefixes.at(current_tab)) + static_cast<std::string>(option.label.getString());
 			auto action = input::action_from_string(id.data());

@@ -22,6 +22,10 @@
 
             "Button"
             {
+                "up" "#platformer_up"
+                "down" "#platformer_down"
+                "left" "#platformer_left"
+                "right" "#platformer_right"
                 "jump" "#platformer_jump"
                 "shoot" "#platformer_shoot"
                 "sprint" "#platformer_sprint"
@@ -67,6 +71,12 @@
 	{
 		"english"
 		{
+			"platformer_title	"Platformer Controls"
+			"menu_title			"Menu Controls"
+			"platformer_up"		"Up (Keyboard)"
+			"platformer_down"		"Down (Keyboard)"
+			"platformer_left"		"Left (Keyboard)"
+			"platformer_right"		"Right (Keyboard)"
 			"platformer_jump"		"Jump"
 			"platformer_shoot"		"Use Weapon"
 			"platformer_sprint"		"Sprint"

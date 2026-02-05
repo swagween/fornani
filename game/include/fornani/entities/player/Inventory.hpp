@@ -39,6 +39,7 @@ class Inventory {
 	std::array<int, num_equippable_items_v> const& equipped_items_view() const { return m_equipped_items; }
 	item::Item* find_item(int id) const;
 	item::Item* find_item(std::string_view label) const;
+	ItemStack* find_item_stack(int id);
 	ItemStack* find_item_stack(std::string_view label);
 
   private:

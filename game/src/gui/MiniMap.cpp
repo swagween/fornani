@@ -11,6 +11,7 @@ MiniMap::MiniMap(automa::ServiceProvider& svc) : m_texture(svc), m_speed{64.f} {
 	m_border.setOutlineColor(colors::pioneer_dark_red);
 	m_border.setOutlineThickness(-4.f);
 	m_border.setFillColor(sf::Color::Transparent);
+	m_physics.set_global_friction(0.9f);
 }
 
 void MiniMap::set_textures(automa::ServiceProvider& svc) {
@@ -185,6 +186,11 @@ void MiniMap::update() {
 	m_pan_limit_x = m_physics.position.x == bounds.position.x || m_physics.position.x == bounds.size.x;
 	m_pan_limit_y = m_physics.position.y == bounds.position.y || m_physics.position.y == bounds.size.y;
 	m_resolution = m_scale < 32.f ? Resolution::high : m_scale < 128.f ? Resolution::medium : Resolution::low;
+	if ((m_target_position - m_physics.position).length() > constants::small_value) {
+		m_steering.target(m_physics, m_target_position, 0.003f);
+	} else {
+		m_target_position = m_physics.position;
+	}
 }
 
 void MiniMap::clear_atlas() { m_atlas.clear(); }
@@ -193,6 +199,7 @@ void MiniMap::move(sf::Vector2f direction) {
 	auto speed = m_speed;
 	if (ccm::abs(direction.x) + ccm::abs(direction.y) > 1.f) { speed /= ccm::sqrt(2.f); }
 	m_steering.target(m_physics, m_physics.position - direction * speed, 0.002f);
+	m_target_position = m_physics.position;
 }
 
 void MiniMap::zoom(float amount) {
@@ -204,11 +211,12 @@ void MiniMap::zoom(float amount) {
 	auto sz{m_port_dimensions.componentWiseDiv(m_view.getSize())};
 	m_center_position = (m_physics.position - m_view.getCenter().componentWiseMul(sz)) / prev_ratio;
 	if (ccm::abs(r_delta) > 0.f) { m_physics.position += m_center_position * r_delta; }
+	m_target_position = m_physics.position;
 }
 
 void MiniMap::center() {
 	auto sz{m_port_dimensions.componentWiseDiv(m_view.getSize())};
-	m_physics.position = -m_player_position * get_ratio() + m_view.getCenter().componentWiseMul(sz);
+	m_target_position = -m_player_position * get_ratio() + m_view.getCenter().componentWiseMul(sz);
 }
 
 void MiniMap::set_port_position(sf::Vector2f to_position) { m_port_position = to_position; }

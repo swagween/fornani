@@ -1,6 +1,5 @@
 nani_add_headers(
         AccessibilityService.hpp
-        ControllerMap.hpp
         DataManager.hpp
         MapData.hpp
         ResourceFinder.hpp

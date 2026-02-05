@@ -87,6 +87,19 @@ item::Item* Inventory::find_item(std::string_view label) const {
 	return nullptr;
 }
 
+ItemStack* Inventory::find_item_stack(int id) {
+	for (auto& stack : m_items) {
+		if (!stack.item) { continue; }
+		auto* ptr = stack.item.get();
+		assert(ptr != nullptr); // catch early corruption
+		try {
+			[[maybe_unused]] auto l = ptr->get_label(); // access to detect crash
+		} catch (...) { assert(false && "Corrupted Item detected"); }
+		if (ptr->get_id() == id) { return &stack; }
+	}
+	return nullptr;
+}
+
 ItemStack* Inventory::find_item_stack(std::string_view label) {
 	for (auto& stack : m_items) {
 		if (!stack.item) { continue; }

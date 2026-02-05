@@ -65,8 +65,6 @@ InputSystem::InputSystem(ResourceFinder& finder) : m_stick_sensitivity{default_j
 	SteamInput()->EnableDeviceCallbacks();
 	init_steam_action_sets();
 	setup_action_handles();
-	platformer_action_set = SteamInput()->GetActionSetHandle("Platformer");
-	assert(platformer_action_set != 0);
 
 	// load keyboard bindings
 	auto controls = dj::Json::from_file((finder.resource_path() + "/data/config/control_map.json").c_str());
@@ -96,6 +94,10 @@ void InputSystem::setup_action_handles() {
 #define DEFINE_ACTION(action_name) m_digital_actions.insert({DigitalAction::action_name, {SteamInput()->GetDigitalActionHandle(XSTR(action_name)), sf::Keyboard::Scancode::Unknown, sf::Keyboard::Scancode::Unknown}});
 
 	// Platformer controls
+	DEFINE_ACTION(up);
+	DEFINE_ACTION(down);
+	DEFINE_ACTION(left);
+	DEFINE_ACTION(right);
 	DEFINE_ACTION(jump);
 	DEFINE_ACTION(shoot);
 	DEFINE_ACTION(sprint);
@@ -144,9 +146,9 @@ void InputSystem::handle_event(std::optional<sf::Event> const event) {
 void InputSystem::update() {
 	if (!SteamInput()) { NANI_LOG_ERROR(m_logger, "SteamInput not initialized!"); }
 	SteamInput()->RunFrame();
-	update_steam_controllers();
 	gather_raw_input();
 	resolve_input();
+	update_steam_controllers();
 }
 
 void InputSystem::flush_inputs() {
@@ -177,7 +179,6 @@ bool InputSystem::is_action_allowed(DigitalAction action) const { return get_act
 bool InputSystem::is_action_allowed(AnalogAction action) const { return get_action_set_from_action(action) == m_active_action_set; }
 
 void InputSystem::gather_raw_input() {
-
 	// -----------------------------
 	// 1) Clear per-frame scratch
 	// -----------------------------
@@ -261,7 +262,13 @@ void InputSystem::resolve_input() {
 
 		// Update held
 		state.held = pressed;
+		if (!is_action_allowed(action)) { state = {}; }
+		if (has_flag_set(InputSystemFlags::changed_action_sets)) {
+			state.triggered = false;
+			state.held = false;
+		}
 	}
+	set_flag(InputSystemFlags::changed_action_sets, false);
 
 	// -----------------------------
 	// 2) Analog actions
@@ -298,7 +305,7 @@ void InputSystem::update_steam_controllers() {
 			active_controller = controllers[0];
 			NANI_LOG_INFO(m_logger, "Activated Controller {}.", active_controller);
 			// IMPORTANT: re-activate action set
-			SteamInput()->ActivateActionSet(active_controller, platformer_action_set);
+			SteamInput()->ActivateActionSet(active_controller, m_steam_action_sets[static_cast<size_t>(ActionSet::Platformer)]);
 		}
 	}
 
@@ -308,33 +315,17 @@ void InputSystem::update_steam_controllers() {
 		return;
 	}
 
-	// Prefer existing controller if still connected
-	if (m_controller_handle != 0) {
-		for (int i = 0; i < count; ++i) {
-			if (controllers[i] == m_controller_handle) {
-				// Still valid — nothing to do
-				// return;
-			}
-		}
-		switch (m_active_action_set) {
-		case ActionSet::Platformer: SteamInput()->ActivateActionSet(m_controller_handle, platformer_action_set); break;
-		case ActionSet::Menu: SteamInput()->ActivateActionSet(m_controller_handle, menu_action_set); break;
-		}
-	}
-
 	// Otherwise, pick the first connected controller
 	m_controller_handle = controllers[0];
-
-	// Activate current action set on the new controller
-	activate_action_set_if_needed();
+	auto set = SteamInput()->GetCurrentActionSet(m_controller_handle);
+	if (set == m_steam_action_sets[static_cast<size_t>(ActionSet::Platformer)] && m_active_action_set == ActionSet::Menu) { set_steam_action_set(m_steam_action_sets[static_cast<size_t>(ActionSet::Menu)]); }
+	if (set == m_steam_action_sets[static_cast<size_t>(ActionSet::Menu)] && m_active_action_set == ActionSet::Platformer) { set_steam_action_set(m_steam_action_sets[static_cast<size_t>(ActionSet::Platformer)]); }
 }
 
 void InputSystem::set_action_set(ActionSet new_set) {
 	if (m_active_action_set == new_set) { return; }
 	m_active_action_set = new_set;
-
-	// If a controller is connected, activate the corresponding SteamInput action set
-	// activate_action_set_if_needed();
+	set_flag(InputSystemFlags::changed_action_sets);
 }
 
 float InputSystem::analog_axis_value(ResolvedAnalogState const& a, MoveDirection dir, bool previous) const {
@@ -349,23 +340,43 @@ float InputSystem::analog_axis_value(ResolvedAnalogState const& a, MoveDirection
 	return 0.f;
 }
 
-auto InputSystem::direction_triggered(AnalogAction action, MoveDirection dir) const -> bool {
-	auto const& a = analog(action);
-	return a.active && analog_axis_value(a, dir, true) <= analog_press_threshold_v && analog_axis_value(a, dir) > analog_press_threshold_v;
+bool InputSystem::query_digital_axis(MoveDirection dir, DigitalActionQueryType type) const {
+	auto iaction = static_cast<int>(DigitalAction::up) + static_cast<int>(dir);
+	auto action = digital(static_cast<DigitalAction>(iaction));
+	switch (type) {
+	case DigitalActionQueryType::held: return action.held;
+	case DigitalActionQueryType::triggered: return action.triggered;
+	case DigitalActionQueryType::released: return action.triggered;
+	}
+	return false;
 }
 
-auto InputSystem::direction_held(AnalogAction action, MoveDirection dir) const -> bool { return analog_axis_value(analog(action), dir) > analog_press_threshold_v; }
+auto InputSystem::direction_triggered(AnalogAction action, MoveDirection dir) const -> bool {
+	if (is_gamepad()) {
+		auto const& a = analog(action);
+		return a.active && analog_axis_value(a, dir, true) <= analog_press_threshold_v && analog_axis_value(a, dir) > analog_press_threshold_v;
+	}
+	return query_digital_axis(dir, DigitalActionQueryType::triggered);
+}
+
+auto InputSystem::direction_held(AnalogAction action, MoveDirection dir) const -> bool {
+	if (is_gamepad()) { return analog_axis_value(analog(action), dir) > analog_press_threshold_v; }
+	return query_digital_axis(dir, DigitalActionQueryType::held);
+}
 
 auto InputSystem::direction_released(AnalogAction action, MoveDirection dir) const -> bool {
-	auto const& a = analog(action);
-	return a.active && analog_axis_value(a, dir, true) >= analog_release_threshold_v && analog_axis_value(a, dir) < analog_release_threshold_v;
+	if (is_gamepad()) {
+		auto const& a = analog(action);
+		return a.active && analog_axis_value(a, dir, true) >= analog_release_threshold_v && analog_axis_value(a, dir) < analog_release_threshold_v;
+	}
+	return query_digital_axis(dir, DigitalActionQueryType::released);
 }
 
-void InputSystem::activate_action_set_if_needed() {
+void InputSystem::set_steam_action_set(InputActionSetHandle_t to_set) {
 	if (!m_controller_handle) { return; }
-	auto const steam_set = m_steam_action_sets[static_cast<size_t>(m_active_action_set)];
-	if (!steam_set) { return; }
-	SteamInput()->ActivateActionSet(m_controller_handle, steam_set);
+	NANI_LOG_INFO(m_logger, "Setting controller action set...");
+	set_flag(InputSystemFlags::changed_action_sets);
+	SteamInput()->ActivateActionSet(m_controller_handle, to_set);
 }
 
 void InputSystem::set_primary_keyboard_binding(DigitalAction action, sf::Keyboard::Scancode key) {
@@ -451,8 +462,8 @@ void InputSystem::set_last_key_pressed(sf::Keyboard::Scancode to_key) { m_last_k
 		auto action_set = get_action_set_from_action(action);
 		InputActionSetHandle_t handle{};
 		switch (action_set) {
-		case ActionSet::Menu: handle = menu_action_set; break;
-		case ActionSet::Platformer: handle = platformer_action_set; break;
+		case ActionSet::Menu: handle = m_steam_action_sets[static_cast<size_t>(ActionSet::Menu)]; break;
+		case ActionSet::Platformer: handle = m_steam_action_sets[static_cast<size_t>(ActionSet::Platformer)]; break;
 		}
 
 		EInputActionOrigin origins[STEAM_INPUT_MAX_ORIGINS];
@@ -472,8 +483,8 @@ void InputSystem::set_last_key_pressed(sf::Keyboard::Scancode to_key) { m_last_k
 		auto action_set = get_action_set_from_action(action);
 		InputActionSetHandle_t handle{};
 		switch (action_set) {
-		case ActionSet::Menu: handle = menu_action_set; break;
-		case ActionSet::Platformer: handle = platformer_action_set; break;
+		case ActionSet::Menu: handle = m_steam_action_sets[static_cast<size_t>(ActionSet::Menu)]; break;
+		case ActionSet::Platformer: handle = m_steam_action_sets[static_cast<size_t>(ActionSet::Platformer)]; break;
 		}
 
 		EInputActionOrigin origins[STEAM_INPUT_MAX_ORIGINS];

@@ -34,6 +34,10 @@ class InventorySelector {
 	bool matches(T x, T y) const {
 		return get_index().x == static_cast<int>(x) && get_index().y == static_cast<int>(y);
 	}
+	template <typename T>
+	bool matches(T i) const {
+		return get_current_selection() == static_cast<int>(i);
+	}
 
   private:
 	void set_lookup(sf::IntRect to_lookup) { m_body.constituent.lookup = to_lookup; }

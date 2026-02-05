@@ -1,5 +1,17 @@
 {
 	"controls": {
+		"up": {
+			"primary_key": "Up"
+		},
+		"down": {
+			"primary_key": "Down"
+		},
+		"left": {
+			"primary_key": "Left"
+		},
+		"right": {
+			"primary_key": "Right"
+		},
 		"jump": {
 			"primary_key": "Z"
 		},

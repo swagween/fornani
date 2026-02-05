@@ -76,6 +76,7 @@ class MiniMap {
 	sf::Vector2f m_port_dimensions{};
 	sf::Vector2f m_center_position{};
 	sf::Vector2f m_player_position{};
+	sf::Vector2f m_target_position{};
 	sf::View m_view{};
 	components::PhysicsComponent m_physics{};
 	components::SteeringBehavior m_steering{};

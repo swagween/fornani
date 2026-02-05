@@ -7,9 +7,18 @@ namespace fornani::input {
 
 enum class AnalogAction : int { move, pan, map_pan, END };
 
-enum class MoveDirection { left, right, up, down };
+enum class MoveDirection {
+	up,
+	down,
+	left,
+	right,
+};
 
 enum class DigitalAction : int {
+	up,
+	down,
+	left,
+	right,
 	jump,
 	shoot,
 	sprint,
@@ -33,7 +42,11 @@ enum class DigitalAction : int {
 	END
 };
 
-inline std::unordered_map<std::string_view, DigitalAction> const string_to_action{{"jump", DigitalAction::jump},
+inline std::unordered_map<std::string_view, DigitalAction> const string_to_action{{"up", DigitalAction::up},
+																				  {"down", DigitalAction::down},
+																				  {"left", DigitalAction::left},
+																				  {"right", DigitalAction::right},
+																				  {"jump", DigitalAction::jump},
 																				  {"shoot", DigitalAction::shoot},
 																				  {"sprint", DigitalAction::sprint},
 																				  {"slide", DigitalAction::slide},

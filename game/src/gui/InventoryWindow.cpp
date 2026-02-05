@@ -43,25 +43,27 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	m_view == InventoryView::exit ? m_background.setFillColor(util::ColorUtils::fade_out(colors::pioneer_black)) : m_background.setFillColor(util::ColorUtils::fade_in(colors::pioneer_black));
 
 	if (m_view == InventoryView::dashboard) {
-		auto const& up = controller.digital(input::DigitalAction::menu_up).held;
-		auto const& down = controller.digital(input::DigitalAction::menu_down).held;
-		auto const& left = controller.digital(input::DigitalAction::menu_left).held;
-		auto const& right = controller.digital(input::DigitalAction::menu_right).held;
-		auto const& up_released = controller.digital(input::DigitalAction::menu_up).released;
-		auto const& down_released = controller.digital(input::DigitalAction::menu_down).released;
-		auto const& left_released = controller.digital(input::DigitalAction::menu_left).released;
-		auto const& right_released = controller.digital(input::DigitalAction::menu_right).released;
 		auto const& selected = controller.digital(input::DigitalAction::menu_select).triggered;
-		if (up && m_dashboard->is_home()) { m_dashboard->set_selection({0, -1}); }
-		if (down && m_dashboard->is_home()) { m_dashboard->set_selection({0, 1}); }
-		if (left && m_dashboard->is_home()) { m_dashboard->set_selection({-1, 0}); }
-		if (right && m_dashboard->is_home()) { m_dashboard->set_selection({1, 0}); }
-		if (up_released && m_dashboard->get_selected_position() == sf::Vector2i{0, -1}) { m_dashboard->set_selection({0, 0}); }
-		if (down_released && m_dashboard->get_selected_position() == sf::Vector2i{0, 1}) { m_dashboard->set_selection({0, 0}); }
-		if (left_released && m_dashboard->get_selected_position() == sf::Vector2i{-1, 0}) { m_dashboard->set_selection({0, 0}); }
-		if (right_released && m_dashboard->get_selected_position() == sf::Vector2i{1, 0}) { m_dashboard->set_selection({0, 0}); }
-
-		if (controller.is_gamepad_connected()) { m_dashboard->set_selection(controller.get_i_joystick_throttle(true)); }
+		if (controller.is_gamepad()) {
+			m_dashboard->set_selection(controller.get_i_joystick_throttle(true), true);
+		} else {
+			auto const& up = controller.digital(input::DigitalAction::menu_up).held;
+			auto const& down = controller.digital(input::DigitalAction::menu_down).held;
+			auto const& left = controller.digital(input::DigitalAction::menu_left).held;
+			auto const& right = controller.digital(input::DigitalAction::menu_right).held;
+			auto const& up_released = controller.digital(input::DigitalAction::menu_up).released;
+			auto const& down_released = controller.digital(input::DigitalAction::menu_down).released;
+			auto const& left_released = controller.digital(input::DigitalAction::menu_left).released;
+			auto const& right_released = controller.digital(input::DigitalAction::menu_right).released;
+			if (up && m_dashboard->is_home()) { m_dashboard->set_selection({0, -1}); }
+			if (down && m_dashboard->is_home()) { m_dashboard->set_selection({0, 1}); }
+			if (left && m_dashboard->is_home()) { m_dashboard->set_selection({-1, 0}); }
+			if (right && m_dashboard->is_home()) { m_dashboard->set_selection({1, 0}); }
+			if (up_released && m_dashboard->get_selected_position() == sf::Vector2i{0, -1}) { m_dashboard->set_selection({0, 0}); }
+			if (down_released && m_dashboard->get_selected_position() == sf::Vector2i{0, 1}) { m_dashboard->set_selection({0, 0}); }
+			if (left_released && m_dashboard->get_selected_position() == sf::Vector2i{-1, 0}) { m_dashboard->set_selection({0, 0}); }
+			if (right_released && m_dashboard->get_selected_position() == sf::Vector2i{1, 0}) { m_dashboard->set_selection({0, 0}); }
+		}
 		if (selected && m_dashboard->is_hovering()) {
 			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = ccm::ext::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
 			if (m_dashboard->get_selected_position().y == 0) { m_grid_position.x = ccm::ext::clamp(m_grid_position.x + m_dashboard->get_selected_position().x, -1.f, 1.f); }
@@ -84,7 +86,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	m_dashboard->update(svc, player, map);
 
 	if (controller.digital(input::DigitalAction::menu_back).triggered) { m_view = m_view == InventoryView::focused ? InventoryView::dashboard : InventoryView::exit; }
-	if (controller.digital(input::DigitalAction::inventory).triggered) { m_view = InventoryView::exit; }
+	if (controller.digital(input::DigitalAction::inventory).triggered || controller.digital(input::DigitalAction::menu_close).triggered) { m_view = InventoryView::exit; }
 	if (m_view == InventoryView::exit && !m_exit.running()) {
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 		m_exit.start();

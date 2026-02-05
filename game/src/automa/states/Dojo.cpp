@@ -127,10 +127,14 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
 
 	if (m_console) {
+		m_flags.set(GameplayFlags::console_running);
 		if (m_console.value()->was_response_created() && !m_console.value()->has_nani_portrait()) {
 			player->wardrobe_widget.update(*player);
 			m_console.value()->set_nani_sprite(player->wardrobe_widget.get_sprite());
 		}
+	} else if (m_flags.consume(GameplayFlags::console_running)) {
+		auto to_set = inventory_window || vendor_dialog ? input::ActionSet::Menu : input::ActionSet::Platformer;
+		svc.input_system.set_action_set(to_set);
 	}
 
 	svc.world_clock.update(svc);

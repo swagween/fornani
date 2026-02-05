@@ -139,7 +139,7 @@ void Dashboard::set_position(sf::Vector2f to_position, bool force) {
 	}
 }
 
-void Dashboard::set_selection(sf::Vector2i to_selection) {
+void Dashboard::set_selection(sf::Vector2i to_selection, bool gamepad) {
 	auto same = m_selected_position == to_selection;
 	m_selected_position = to_selection;
 	auto switched = to_selection.x == 0 && to_selection.y == 0;
@@ -148,6 +148,7 @@ void Dashboard::set_selection(sf::Vector2i to_selection) {
 	} else if (is_hovering() && switched) {
 		m_light_up.start();
 	}
+	if (same && gamepad) { return; }
 	m_state = switched ? DashboardState::home : DashboardState::hovering;
 	switched ? m_services->soundboard.flags.pioneer.set(audio::Pioneer::unhover) : m_services->soundboard.flags.pioneer.set(audio::Pioneer::forward);
 }
