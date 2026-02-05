@@ -39,20 +39,20 @@ void MiniMenu::render(sf::RenderWindow& win, bool bg) {
 	for (auto& option : options) { win.draw(option.label); }
 }
 
-void MiniMenu::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
-	if (controller.digital_action_status(config::DigitalAction::menu_up).triggered) {
+void MiniMenu::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
+	if (controller.digital(input::DigitalAction::menu_up).triggered) {
 		selection.modulate(-1);
 		soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_down).triggered) {
+	if (controller.digital(input::DigitalAction::menu_down).triggered) {
 		selection.modulate(1);
 		soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
+	if (controller.digital(input::DigitalAction::menu_select).triggered) {
 		m_flags.set(MiniMenuFlags::selected);
 		soundboard.flags.menu.set(audio::Menu::forward_switch);
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
+	if (controller.digital(input::DigitalAction::menu_back).triggered) {
 		m_flags.set(MiniMenuFlags::closed);
 		soundboard.flags.menu.set(audio::Menu::backward_switch);
 	}

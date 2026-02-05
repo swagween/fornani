@@ -172,7 +172,7 @@ class ControllerMap {
 	[[nodiscard]] auto is_autosprint_enabled() const -> bool { return autosprint_enabled; }
 
 	/// @brief Obtains a `DigitalAction` variant by its name in the enum.
-	auto get_action_by_identifier(std::string_view id) -> config::DigitalAction;
+	auto get_action_by_identifier(std::string_view id) -> DigitalAction;
 	[[nodiscard]] auto get_joystick_throttle() const -> sf::Vector2f;
 	[[nodiscard]] auto get_i_joystick_throttle(bool exclusive) const -> sf::Vector2i;
 

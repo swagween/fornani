@@ -26,8 +26,8 @@ namespace fornani::world {
 class Map;
 }
 
-namespace fornani::config {
-class ControllerMap;
+namespace fornani::input {
+class InputSystem;
 }
 
 namespace fornani::audio {
@@ -61,7 +61,7 @@ class Gizmo : public UniquePolymorphic {
 	explicit Gizmo(std::string const& label, bool foreground) : m_label(label), m_foreground(foreground) {}
 	virtual void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground = false);
-	virtual bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard);
+	virtual bool handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard);
 
 	void close();
 	void select();

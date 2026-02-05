@@ -9,6 +9,7 @@
 #include <fornani/io/File.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/setup/MapData.hpp>
+#include <fornani/systems/InputSystem.hpp>
 #include <fornani/systems/Register.hpp>
 #include <fornani/systems/TimeTrialRegistry.hpp>
 #include <fornani/utils/QuestCode.hpp>
@@ -22,7 +23,7 @@ struct ServiceProvider;
 }
 
 namespace fornani::config {
-class ControllerMap;
+class InputSystem;
 }
 
 namespace fornani::player {
@@ -90,8 +91,8 @@ class DataManager final {
 	int get_destructible_state(int id) const;
 
 	// support user-defined control mapping
-	void load_controls(config::ControllerMap& controller);
-	void save_controls(config::ControllerMap& controller);
+	void load_controls(input::InputSystem& controller);
+	void save_controls(input::InputSystem& controller);
 	void reset_controls();
 
 	[[nodiscard]] auto exists(int candidate) const -> bool {

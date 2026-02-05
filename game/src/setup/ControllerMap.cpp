@@ -13,38 +13,6 @@
 namespace fornani::config {
 
 auto get_action_set_from_action(DigitalAction action) -> ActionSet {
-	switch (action) {
-	case DigitalAction::platformer_left:
-	case DigitalAction::platformer_right:
-	case DigitalAction::platformer_up:
-	case DigitalAction::platformer_down:
-	case DigitalAction::platformer_jump:
-	case DigitalAction::platformer_shoot:
-	case DigitalAction::platformer_sprint:
-	case DigitalAction::platformer_slide:
-	case DigitalAction::platformer_dash:
-	case DigitalAction::platformer_inspect:
-	case DigitalAction::platformer_arms_switch_left:
-	case DigitalAction::platformer_arms_switch_right:
-	case DigitalAction::platformer_open_inventory:
-	case DigitalAction::platformer_toggle_pause: return ActionSet::Platformer;
-
-	case DigitalAction::inventory_close: return ActionSet::Inventory;
-
-	case DigitalAction::menu_left:
-	case DigitalAction::menu_right:
-	case DigitalAction::menu_up:
-	case DigitalAction::menu_down:
-	case DigitalAction::menu_select:
-	case DigitalAction::menu_tab_right:
-	case DigitalAction::menu_tab_left:
-	case DigitalAction::menu_cancel:
-	case DigitalAction::menu_confirm: return ActionSet::Menu;
-
-	case DigitalAction::COUNT:
-	default: assert(false && "Invalid action set in get_action_set_from_action");
-	}
-	assert(false && "Invalid action set in get_action_set_from_action");
 	return ActionSet::Platformer; // This will never be hit
 }
 
@@ -53,11 +21,6 @@ auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 bool parent_action_set(ActionSet set, ActionSet* parent) {
 	switch (set) {
 	case ActionSet::Platformer: return false;
-
-	case ActionSet::Inventory:
-	case ActionSet::Map: *parent = ActionSet::Menu; return true;
-
-	case ActionSet::Menu: return false;
 	}
 	return false;
 }
@@ -192,13 +155,8 @@ void ControllerMap::update() {
 			active = data.bActive;
 		} else {
 			// Otherwise we just check the current action set manually.
-			config::ActionSet action_set = get_action_set_from_action(action);
-			config::ActionSet parent_of_active_set{};
-			if (parent_action_set(active_action_set, &parent_of_active_set)) {
-				active = active_action_set == action_set || action_set == parent_of_active_set;
-			} else {
-				active = active_action_set == action_set;
-			}
+			// input::ActionSet action_set = get_action_set_from_action(action);
+			input::ActionSet parent_of_active_set{};
 		}
 		auto triggered = pressed_on_gamepad || pressed_on_keyboard;
 
@@ -246,26 +204,7 @@ void ControllerMap::update() {
 	// if (last_controller_type_used() != InputDevice::gamepad) { m_joystick_throttle = {}; }
 }
 
-void ControllerMap::set_action_set(ActionSet set) {
-	NANI_LOG_DEBUG(m_logger, "Trying to set ActionSet...");
-	if (controller_handle && set != active_action_set) {
-		NANI_LOG_DEBUG(m_logger, "Set action set to {}", static_cast<int>(set));
-		SteamInput()->DeactivateAllActionSetLayers(controller_handle);
-		switch (set) {
-		case ActionSet::Inventory:
-			SteamInput()->ActivateActionSet(controller_handle, menu_action_set);
-			SteamInput()->ActivateActionSetLayer(controller_handle, inventory_action_layer);
-			break;
-		case ActionSet::Map:
-			SteamInput()->ActivateActionSet(controller_handle, menu_action_set);
-			SteamInput()->ActivateActionSetLayer(controller_handle, map_action_layer);
-			break;
-		case ActionSet::Menu: SteamInput()->ActivateActionSet(controller_handle, menu_action_set); break;
-		case ActionSet::Platformer: SteamInput()->ActivateActionSet(controller_handle, platformer_action_set); break;
-		}
-	}
-	active_action_set = set;
-}
+void ControllerMap::set_action_set(ActionSet set) {}
 
 [[nodiscard]] auto ControllerMap::digital_action_status(DigitalAction action) -> DigitalActionStatus {
 	m_actions_queried_this_update.insert(action);
@@ -288,9 +227,7 @@ void ControllerMap::set_action_set(ActionSet set) {
 		auto action_set = get_action_set_from_action(action);
 		InputActionSetHandle_t handle{};
 		switch (action_set) {
-		case ActionSet::Inventory: handle = inventory_action_layer; break;
-		case ActionSet::Map: handle = map_action_layer; break;
-		case ActionSet::Menu: handle = menu_action_set; break;
+		case ActionSet::Menu: handle = inventory_action_layer; break;
 		case ActionSet::Platformer: handle = platformer_action_set; break;
 		}
 
@@ -307,9 +244,7 @@ void ControllerMap::set_action_set(ActionSet set) {
 		auto action_set = get_action_set_from_action(action);
 		InputActionSetHandle_t handle{};
 		switch (action_set) {
-		case ActionSet::Inventory: handle = inventory_action_layer; break;
-		case ActionSet::Map: handle = map_action_layer; break;
-		case ActionSet::Menu: handle = menu_action_set; break;
+		case ActionSet::Menu: handle = inventory_action_layer; break;
 		case ActionSet::Platformer: handle = platformer_action_set; break;
 		}
 
@@ -434,35 +369,6 @@ void ControllerMap::reset_digital_action_states() {
 		state.status = DigitalActionStatus(action);
 		state.was_active_last_tick = false;
 	}
-}
-
-auto ControllerMap::get_action_by_identifier(std::string_view id) -> config::DigitalAction {
-	static std::unordered_map<std::string_view, config::DigitalAction> const map = {{"platformer_left", config::DigitalAction::platformer_left},
-																					{"platformer_right", config::DigitalAction::platformer_right},
-																					{"platformer_up", config::DigitalAction::platformer_up},
-																					{"platformer_down", config::DigitalAction::platformer_down},
-																					{"platformer_jump", config::DigitalAction::platformer_jump},
-																					{"platformer_shoot", config::DigitalAction::platformer_shoot},
-																					{"platformer_sprint", config::DigitalAction::platformer_sprint},
-																					{"platformer_slide", config::DigitalAction::platformer_slide},
-																					{"platformer_dash", config::DigitalAction::platformer_dash},
-																					{"platformer_inspect", config::DigitalAction::platformer_inspect},
-																					{"platformer_arms_switch_left", config::DigitalAction::platformer_arms_switch_left},
-																					{"platformer_arms_switch_right", config::DigitalAction::platformer_arms_switch_right},
-																					{"platformer_open_inventory", config::DigitalAction::platformer_open_inventory},
-																					{"platformer_toggle_pause", config::DigitalAction::platformer_toggle_pause},
-																					{"inventory_close", config::DigitalAction::inventory_close},
-																					{"menu_left", config::DigitalAction::menu_left},
-																					{"menu_right", config::DigitalAction::menu_right},
-																					{"menu_up", config::DigitalAction::menu_up},
-																					{"menu_down", config::DigitalAction::menu_down},
-																					{"menu_select", config::DigitalAction::menu_select},
-																					{"menu_cancel", config::DigitalAction::menu_cancel},
-																					{"menu_tab_left", config::DigitalAction::menu_tab_left},
-																					{"menu_tab_right", config::DigitalAction::menu_tab_right},
-																					{"menu_confirm", config::DigitalAction::menu_confirm}};
-
-	return map.contains(id) ? map.at(id) : config::DigitalAction::COUNT;
 }
 
 auto config::ControllerMap::get_joystick_throttle() const -> sf::Vector2f {

@@ -113,24 +113,24 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	// debug();
 }
 
-bool OutfitterGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
-	if (controller.digital_action_status(config::DigitalAction::menu_up).triggered) {
+bool OutfitterGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
+	if (controller.digital(input::DigitalAction::menu_up).triggered) {
 		m_selector.move({0, -1});
 		soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_down).triggered) {
+	if (controller.digital(input::DigitalAction::menu_down).triggered) {
 		m_selector.move({0, 1});
 		soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_left).triggered) {
+	if (controller.digital(input::DigitalAction::menu_left).triggered) {
 		m_selector.move({-1, 0});
 		soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_right).triggered) {
+	if (controller.digital(input::DigitalAction::menu_right).triggered) {
 		m_selector.move({1, 0});
 		soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) { m_change_outfit = true; }
+	if (controller.digital(input::DigitalAction::menu_select).triggered) { m_change_outfit = true; }
 	return Gizmo::handle_inputs(controller, soundboard);
 }
 

@@ -69,8 +69,8 @@ void Sound::fade_out() {
 }
 
 float Sound::compute_attenuation(float distance, float min_distance, float max_distance) {
-	if (distance <= min_distance) return 1.f;
-	if (distance >= max_distance) return 0.f;
+	if (distance <= min_distance) { return 1.f; }
+	if (distance >= max_distance) { return 0.f; }
 	float t = (distance - min_distance) / (max_distance - min_distance);
 	return 1.f - t;
 }

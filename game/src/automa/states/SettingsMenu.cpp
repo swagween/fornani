@@ -16,9 +16,9 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player)
 	toggle_options.enabled.setString("enabled");
 	toggle_options.disabled.setString("disabled");
 
-	options.at(static_cast<int>(SettingsToggles::autosprint)).label.setString(toggleables.autosprint.getString() + (svc.controller_map.is_autosprint_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+	options.at(static_cast<int>(SettingsToggles::autosprint)).label.setString(toggleables.autosprint.getString() + (svc.input_system.is_autosprint_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 	options.at(static_cast<int>(SettingsToggles::tutorial)).label.setString(toggleables.tutorial.getString() + (svc.tutorial() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
-	options.at(static_cast<int>(SettingsToggles::gamepad)).label.setString(toggleables.gamepad.getString() + (svc.controller_map.is_gamepad_input_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+	options.at(static_cast<int>(SettingsToggles::gamepad)).label.setString(toggleables.gamepad.getString() + (svc.input_system.is_gamepad_input_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 	options.at(static_cast<int>(SettingsToggles::music)).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music_player.get_volume() * 100.f)) + "%");
 	options.at(static_cast<int>(SettingsToggles::ambience)).label.setString(ambience_label.getString() + std::to_string(static_cast<int>(svc.ambience_player.get_volume() * 100.f)) + "%");
 	options.at(static_cast<int>(SettingsToggles::sfx)).label.setString(sfx_label.getString() + std::to_string(static_cast<int>(svc.soundboard.get_volume() * 100.f)) + "%");
@@ -30,15 +30,15 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	m_input_authorized = !adjust_mode() && !m_console;
 	adjust_mode() ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
 	if (!m_console) {
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) {
+		if (svc.input_system.digital(input::DigitalAction::menu_down).triggered) {
 			if (adjust_mode()) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
 			m_mode = SettingsMenuMode::ready;
 		}
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
+		if (svc.input_system.digital(input::DigitalAction::menu_up).triggered) {
 			if (adjust_mode()) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
 			m_mode = SettingsMenuMode::ready;
 		}
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
+		if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {
 			if (adjust_mode()) {
 				m_mode = SettingsMenuMode::ready;
 				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
@@ -46,12 +46,12 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 				svc.data.save_settings();
 			}
 		}
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered && !adjust_mode()) {
+		if (svc.input_system.digital(input::DigitalAction::menu_select).triggered && !adjust_mode()) {
 			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 			switch (current_selection.get()) {
-			case static_cast<int>(SettingsToggles::autosprint): svc.controller_map.enable_autosprint(!svc.controller_map.is_autosprint_enabled()); break;
+			case static_cast<int>(SettingsToggles::autosprint): svc.input_system.set_flag(input::InputSystemFlags::auto_sprint, !svc.input_system.is_autosprint_enabled()); break;
 			case static_cast<int>(SettingsToggles::tutorial): svc.toggle_tutorial(); break;
-			case static_cast<int>(SettingsToggles::gamepad): svc.controller_map.enable_gamepad_input(!svc.controller_map.is_gamepad_input_enabled()); break;
+			case static_cast<int>(SettingsToggles::gamepad): svc.input_system.set_flag(input::InputSystemFlags::gamepad_input_enabled, !svc.input_system.is_gamepad_input_enabled()); break;
 			case static_cast<int>(SettingsToggles::music): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
 			case static_cast<int>(SettingsToggles::ambience): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
 			case static_cast<int>(SettingsToggles::sfx): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
@@ -62,13 +62,12 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			case static_cast<int>(SettingsToggles::military_time): svc.world_clock.toggle_military_time(); break;
 			}
 			options.at(static_cast<int>(SettingsToggles::autosprint))
-				.label.setString(toggleables.autosprint.getString() + (svc.controller_map.is_autosprint_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+				.label.setString(toggleables.autosprint.getString() + (svc.input_system.is_autosprint_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 			options.at(static_cast<int>(SettingsToggles::tutorial)).label.setString(toggleables.tutorial.getString() + (svc.tutorial() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
-			options.at(static_cast<int>(SettingsToggles::gamepad))
-				.label.setString(toggleables.gamepad.getString() + (svc.controller_map.is_gamepad_input_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+			options.at(static_cast<int>(SettingsToggles::gamepad)).label.setString(toggleables.gamepad.getString() + (svc.input_system.is_gamepad_input_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 			options.at(static_cast<int>(SettingsToggles::fullscreen)).label.setString(toggleables.fullscreen.getString() + (svc.fullscreen() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 			options.at(static_cast<int>(SettingsToggles::military_time)).label.setString(toggleables.military_time.getString() + (svc.world_clock.is_military() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
-		} else if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered && adjust_mode()) {
+		} else if (svc.input_system.digital(input::DigitalAction::menu_select).triggered && adjust_mode()) {
 			m_mode = SettingsMenuMode::ready;
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 		}
@@ -82,16 +81,16 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		auto const update_volume = svc.ticker.every_x_ticks(16);
 		auto delta = 0.01f;
 		if (is(SettingsToggles::music)) {
-			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_left).held && update_volume) { svc.music_player.adjust_volume(-delta); }
-			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).held && update_volume) { svc.music_player.adjust_volume(delta); }
+			if (svc.input_system.digital(input::DigitalAction::menu_left).held && update_volume) { svc.music_player.adjust_volume(-delta); }
+			if (svc.input_system.digital(input::DigitalAction::menu_right).held && update_volume) { svc.music_player.adjust_volume(delta); }
 		}
 		if (is(SettingsToggles::ambience)) {
-			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_left).held && update_volume) { svc.ambience_player.adjust_volume(-delta); }
-			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).held && update_volume) { svc.ambience_player.adjust_volume(delta); }
+			if (svc.input_system.digital(input::DigitalAction::menu_left).held && update_volume) { svc.ambience_player.adjust_volume(-delta); }
+			if (svc.input_system.digital(input::DigitalAction::menu_right).held && update_volume) { svc.ambience_player.adjust_volume(delta); }
 		}
 		if (is(SettingsToggles::sfx)) {
-			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_left).held && update_volume) { svc.soundboard.adjust_volume(-delta); }
-			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_right).held && update_volume) { svc.soundboard.adjust_volume(delta); }
+			if (svc.input_system.digital(input::DigitalAction::menu_left).held && update_volume) { svc.soundboard.adjust_volume(-delta); }
+			if (svc.input_system.digital(input::DigitalAction::menu_right).held && update_volume) { svc.soundboard.adjust_volume(delta); }
 		}
 	}
 }

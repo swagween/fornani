@@ -1,0 +1,53 @@
+"In Game Actions" {
+"actions"
+{
+    "Platformer"
+    {
+        "title"      "#set_platformer"
+        "legacy_set" "0"
+
+        "Button"
+        {
+            "jump"      "#action_jump"
+            "shoot"     "#action_shoot"
+            "sprint"    "#action_sprint"
+            "slide"     "#action_slide"
+            "dash"      "#action_dash"
+            "inspect"   "#action_inspect"
+            "pause"     "#action_pause"
+            "inventory" "#action_inventory"
+        }
+
+        "StickPadGyro"
+        {
+            "move" "#action_move"
+            "pan"  "#action_pan"
+        }
+    }
+
+    "Menu"
+    {
+        "title"      "#set_menu"
+        "legacy_set" "0"
+
+        "Button"
+        {
+            "menu_up"        "#action_menu_up"
+            "menu_down"      "#action_menu_down"
+            "menu_left"      "#action_menu_left"
+            "menu_right"     "#action_menu_right"
+            "menu_tab_left"  "#action_menu_tab_left"
+            "menu_tab_right" "#action_menu_tab_right"
+            "menu_select"    "#action_menu_select"
+            "menu_confirm"   "#action_menu_confirm"
+            "menu_back"      "#action_menu_back"
+            "menu_close"     "#action_menu_close"
+        }
+
+        "Analog"
+        {
+            "map_pan" "#action_map_pan"
+        }
+    }
+}
+}

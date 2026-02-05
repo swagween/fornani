@@ -133,7 +133,7 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	}
 }
 
-bool WardrobeGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
+bool WardrobeGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
 	if (is_selected()) {
 		if (m_outfitter) { m_outfitter->handle_inputs(controller, soundboard); }
 	}

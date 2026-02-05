@@ -5,64 +5,54 @@
 
 namespace fornani::input {
 
+enum class AnalogAction : int { move, pan, map_pan, END };
+
+enum class MoveDirection { left, right, up, down };
+
 enum class DigitalAction : int {
-	// Platformer
-	platformer_left,
-	platformer_right,
-	platformer_up,
-	platformer_down,
-	platformer_jump,
-	platformer_shoot,
-	platformer_sprint,
-	platformer_slide,
-	platformer_dash,
-	platformer_inspect,
-	platformer_arms_switch_left,
-	platformer_arms_switch_right,
-	platformer_open_inventory,
-	platformer_toggle_pause,
-
-	// Inventory
-	inventory_close,
-
-	// Menu
-	menu_left,
-	menu_right,
+	jump,
+	shoot,
+	sprint,
+	slide,
+	dash,
+	inspect,
+	tab_left,
+	tab_right,
+	pause,
+	inventory,
 	menu_up,
 	menu_down,
-	menu_select,
-	menu_cancel,
+	menu_left,
+	menu_right,
 	menu_tab_left,
 	menu_tab_right,
+	menu_select,
+	menu_back,
 	menu_confirm,
-
+	menu_close,
 	END
 };
 
-inline std::unordered_map<std::string_view, DigitalAction> const string_to_action{{"platformer_left", DigitalAction::platformer_left},
-																				  {"platformer_right", DigitalAction::platformer_right},
-																				  {"platformer_up", DigitalAction::platformer_up},
-																				  {"platformer_down", DigitalAction::platformer_down},
-																				  {"platformer_jump", DigitalAction::platformer_jump},
-																				  {"platformer_shoot", DigitalAction::platformer_shoot},
-																				  {"platformer_sprint", DigitalAction::platformer_sprint},
-																				  {"platformer_slide", DigitalAction::platformer_slide},
-																				  {"platformer_dash", DigitalAction::platformer_dash},
-																				  {"platformer_inspect", DigitalAction::platformer_inspect},
-																				  {"platformer_arms_switch_left", DigitalAction::platformer_arms_switch_left},
-																				  {"platformer_arms_switch_right", DigitalAction::platformer_arms_switch_right},
-																				  {"platformer_open_inventory", DigitalAction::platformer_open_inventory},
-																				  {"platformer_toggle_pause", DigitalAction::platformer_toggle_pause},
-																				  {"inventory_close", DigitalAction::inventory_close},
+inline std::unordered_map<std::string_view, DigitalAction> const string_to_action{{"jump", DigitalAction::jump},
+																				  {"shoot", DigitalAction::shoot},
+																				  {"sprint", DigitalAction::sprint},
+																				  {"slide", DigitalAction::slide},
+																				  {"dash", DigitalAction::dash},
+																				  {"inspect", DigitalAction::inspect},
+																				  {"tab_left", DigitalAction::tab_left},
+																				  {"tab_right", DigitalAction::tab_right},
+																				  {"inventory", DigitalAction::inventory},
+																				  {"pause", DigitalAction::pause},
 																				  {"menu_left", DigitalAction::menu_left},
 																				  {"menu_right", DigitalAction::menu_right},
 																				  {"menu_up", DigitalAction::menu_up},
 																				  {"menu_down", DigitalAction::menu_down},
 																				  {"menu_select", DigitalAction::menu_select},
-																				  {"menu_cancel", DigitalAction::menu_cancel},
+																				  {"menu_back", DigitalAction::menu_back},
 																				  {"menu_tab_left", DigitalAction::menu_tab_left},
 																				  {"menu_tab_right", DigitalAction::menu_tab_right},
-																				  {"menu_confirm", DigitalAction::menu_confirm}};
+																				  {"menu_confirm", DigitalAction::menu_confirm},
+																				  {"menu_close", DigitalAction::menu_close}};
 
 inline std::unordered_map<std::string_view, sf::Keyboard::Scancode> const string_to_scancode{{"A", sf::Keyboard::Scancode::A},			 {"B", sf::Keyboard::Scancode::B},
 																							 {"C", sf::Keyboard::Scancode::C},			 {"D", sf::Keyboard::Scancode::D},
@@ -85,6 +75,12 @@ inline std::unordered_map<std::string_view, sf::Keyboard::Scancode> const string
 																							 {"Space", sf::Keyboard::Scancode::Space},	 {"LControl", sf::Keyboard::Scancode::LControl},
 																							 {"Esc", sf::Keyboard::Scancode::Escape},	 {"Enter", sf::Keyboard::Scancode::Enter}};
 
+inline std::unordered_map<sf::Keyboard::Scancode, std::string_view> const scancode_to_string = [] {
+	std::unordered_map<sf::Keyboard::Scancode, std::string_view> map;
+	for (auto const& [str, code] : string_to_scancode) { map.emplace(code, str); }
+	return map;
+}();
+
 // --- helpers ---
 inline DigitalAction action_from_string(std::string_view str) {
 	auto it = string_to_action.find(str);
@@ -96,6 +92,13 @@ inline sf::Keyboard::Scancode scancode_from_string(std::string_view str) {
 	auto it = string_to_scancode.find(str);
 	if (it != string_to_scancode.end()) return it->second;
 	return sf::Keyboard::Scancode::Unknown;
+}
+
+inline std::string_view string_from_scancode(sf::Keyboard::Scancode scancode) {
+	auto it = scancode_to_string.find(scancode);
+	if (it != scancode_to_string.end()) return it->second;
+
+	return "Unknown";
 }
 
 } // namespace fornani::input

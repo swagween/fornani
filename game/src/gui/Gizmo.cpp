@@ -4,7 +4,7 @@
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/setup/ControllerMap.hpp"
+#include "fornani/systems/InputSystem.hpp"
 #include "fornani/world/Map.hpp"
 
 namespace fornani::gui {
@@ -19,8 +19,8 @@ void Gizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_
 	}
 }
 
-bool Gizmo::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
-	if (controller.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
+bool Gizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
+	if (controller.digital(input::DigitalAction::menu_back).triggered) {
 		deselect();
 		return false;
 	}

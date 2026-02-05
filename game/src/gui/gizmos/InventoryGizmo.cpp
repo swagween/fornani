@@ -155,7 +155,7 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	}
 }
 
-bool InventoryGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
+bool InventoryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
 	if (is_selected()) {
 		if (m_item_menu) {
 			m_item_menu->handle_inputs(controller, soundboard);
@@ -168,27 +168,27 @@ bool InventoryGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_un
 			}
 		} else {
 			m_remembered_locations.at(m_zone_iterator.get()) = m_selector->get_index();
-			if (controller.digital_action_status(config::DigitalAction::menu_up).triggered) {
+			if (controller.digital(input::DigitalAction::menu_up).triggered) {
 				m_description->flush();
 				if (m_selector->move_direction({0, -1}).up()) { switch_zones(-1); }
 				soundboard.flags.menu.set(audio::Menu::shift);
 			}
-			if (controller.digital_action_status(config::DigitalAction::menu_down).triggered) {
+			if (controller.digital(input::DigitalAction::menu_down).triggered) {
 				m_description->flush();
 				if (m_selector->move_direction({0, 1}).down()) { switch_zones(1); }
 				soundboard.flags.menu.set(audio::Menu::shift);
 			}
-			if (controller.digital_action_status(config::DigitalAction::menu_left).triggered) {
+			if (controller.digital(input::DigitalAction::menu_left).triggered) {
 				m_description->flush();
 				if (m_selector->move_direction({-1, 0}).left()) {}
 				soundboard.flags.menu.set(audio::Menu::shift);
 			}
-			if (controller.digital_action_status(config::DigitalAction::menu_right).triggered) {
+			if (controller.digital(input::DigitalAction::menu_right).triggered) {
 				m_description->flush();
 				if (m_selector->move_direction({1, 0}).right()) {}
 				soundboard.flags.menu.set(audio::Menu::shift);
 			}
-			if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
+			if (controller.digital(input::DigitalAction::menu_select).triggered) {
 				NANI_LOG_DEBUG(m_logger, "selected");
 				if (is_item_hovered() && m_current_item) {
 					NANI_LOG_DEBUG(m_logger, "created minimenu");

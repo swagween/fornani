@@ -7,7 +7,7 @@ namespace fornani::automa {
 constexpr auto dot_buffer_v = 16.f;
 
 MenuState::MenuState(ServiceProvider& svc, player::Player& player, std::string_view scene) : GameState(svc, player, scene) {
-	svc.controller_map.set_action_set(config::ActionSet::Menu);
+	svc.input_system.set_action_set(input::ActionSet::Menu);
 	auto const& in_data = svc.data.menu["options"];
 	for (auto& entry : in_data[scene].as_array()) { options.push_back(Option(svc, entry.as_string())); }
 	if (!options.empty()) { current_selection = util::Circuit(static_cast<int>(options.size())); }
@@ -40,15 +40,15 @@ MenuState::MenuState(ServiceProvider& svc, player::Player& player, std::string_v
 
 void MenuState::tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered && m_input_authorized) {
+	if (svc.input_system.digital(input::DigitalAction::menu_down).triggered && m_input_authorized) {
 		current_selection.modulate(1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered && m_input_authorized) {
+	if (svc.input_system.digital(input::DigitalAction::menu_up).triggered && m_input_authorized) {
 		current_selection.modulate(-1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && m_input_authorized) {
+	if (svc.input_system.digital(input::DigitalAction::menu_back).triggered && m_input_authorized) {
 		svc.state_controller.submenu = m_parent_menu;
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);

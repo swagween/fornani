@@ -9,7 +9,7 @@ OptionsMenu::OptionsMenu(ServiceProvider& svc, player::Player& player) : MenuSta
 void OptionsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	MenuState::tick_update(svc, engine);
 
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
+	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
 		if (current_selection.get() == menu_selection_id.at(MenuSelection::credits)) {
 			svc.state_controller.submenu = MenuType::credits;
 			svc.state_controller.actions.set(Actions::trigger_submenu);

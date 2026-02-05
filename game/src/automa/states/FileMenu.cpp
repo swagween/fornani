@@ -29,20 +29,20 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	MenuState::tick_update(svc, engine);
 	if (!m_console) {
 		if (m_file_select_menu) {
-			m_file_select_menu->handle_inputs(svc.controller_map, svc.soundboard);
+			m_file_select_menu->handle_inputs(svc.input_system, svc.soundboard);
 		} else {
-			if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered || svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) {
+			if (svc.input_system.digital(input::DigitalAction::menu_down).triggered || svc.input_system.digital(input::DigitalAction::menu_up).triggered) {
 				// svc.data.load_blank_save(*player);
 				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
 			}
 		}
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
+		if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {
 			if (m_file_select_menu) {
 				m_file_select_menu = {};
 				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 			}
 		}
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
+		if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
 			if (m_file_select_menu) {
 				switch (m_file_select_menu->get_selection()) {
 				case 0:

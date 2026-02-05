@@ -47,6 +47,6 @@ void ClockGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[m
 	win.draw(m_text.readout);
 }
 
-bool ClockGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) { return Gizmo::handle_inputs(controller, soundboard); }
+bool ClockGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) { return Gizmo::handle_inputs(controller, soundboard); }
 
 } // namespace fornani::gui

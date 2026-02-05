@@ -37,7 +37,7 @@ void DescriptionGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& wi
 	if (m_text) { m_text->write_instant_message(win); }
 }
 
-bool DescriptionGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) { return Gizmo::handle_inputs(controller, soundboard); }
+bool DescriptionGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) { return Gizmo::handle_inputs(controller, soundboard); }
 
 void DescriptionGizmo::set_offset(sf::Vector2f const offset) { m_additional_offset = offset; }
 

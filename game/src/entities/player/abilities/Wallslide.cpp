@@ -20,10 +20,10 @@ void Wallslide::update(shape::Collider& collider, PlayerController& controller) 
 		collider.physics.acceleration.y = m_base_grav;
 		collider.physics.maximum_velocity.y = m_speed_multiplier;
 	}
-	auto const& left_released = m_services->controller_map.digital_action_status(config::DigitalAction::platformer_left).released;
-	auto const& right_released = m_services->controller_map.digital_action_status(config::DigitalAction::platformer_right).released;
-	auto const& left_pressed = m_services->controller_map.digital_action_status(config::DigitalAction::platformer_left).triggered;
-	auto const& right_pressed = m_services->controller_map.digital_action_status(config::DigitalAction::platformer_right).triggered;
+	auto const left_released = m_services->input_system.direction_released(input::AnalogAction::move, input::MoveDirection::left);
+	auto const right_released = m_services->input_system.direction_released(input::AnalogAction::move, input::MoveDirection::right);
+	auto const left_pressed = m_services->input_system.direction_released(input::AnalogAction::move, input::MoveDirection::left);
+	auto const right_pressed = m_services->input_system.direction_released(input::AnalogAction::move, input::MoveDirection::right);
 	if (((left_released || right_pressed) && m_direction.left()) || ((right_released || left_pressed) && m_direction.right())) { fail(); }
 	if (!collider.has_left_wallslide_collision() && m_direction.left()) { fail(); }
 	if (!collider.has_right_wallslide_collision() && m_direction.right()) { fail(); }

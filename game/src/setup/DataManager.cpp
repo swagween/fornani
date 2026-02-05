@@ -2,7 +2,7 @@
 #include "fornani/setup/DataManager.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/setup/ControllerMap.hpp"
+#include "fornani/systems/InputSystem.hpp"
 
 namespace fornani::data {
 
@@ -302,9 +302,9 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 }
 
 void DataManager::save_settings() {
-	settings["auto_sprint"] = m_services->controller_map.is_autosprint_enabled();
+	settings["auto_sprint"] = m_services->input_system.is_autosprint_enabled();
 	settings["tutorial"] = m_services->tutorial();
-	settings["gamepad"] = m_services->controller_map.is_gamepad_input_enabled();
+	settings["gamepad"] = m_services->input_system.is_gamepad_input_enabled();
 	settings["music_volume"] = m_services->music_player.get_volume();
 	settings["sfx_volume"] = m_services->soundboard.get_volume();
 	settings["fullscreen"] = m_services->fullscreen();
@@ -391,9 +391,9 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 void DataManager::load_settings() {
 	settings = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str());
 	assert(!settings.is_null());
-	m_services->controller_map.enable_autosprint(settings["auto_sprint"].as_bool());
+	m_services->input_system.set_flag(input::InputSystemFlags::auto_sprint, settings["auto_sprint"].as_bool());
 	m_services->set_tutorial(settings["tutorial"].as_bool());
-	m_services->controller_map.enable_gamepad_input(settings["gamepad"].as_bool());
+	m_services->input_system.set_flag(input::InputSystemFlags::gamepad_input_enabled, settings["gamepad"].as_bool());
 	m_services->music_player.set_volume(settings["music_volume"].as<float>());
 	m_services->soundboard.set_volume(settings["sfx_volume"].as<float>());
 	m_services->set_fullscreen(settings["fullscreen"].as_bool());
@@ -598,7 +598,7 @@ int DataManager::get_destructible_state(int id) const {
 	return -1;
 }
 
-void DataManager::load_controls(config::ControllerMap& controller) {
+void DataManager::load_controls(input::InputSystem& controller) {
 	// XXX change controls json when keybinds get modified
 	controls = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/control_map.json").c_str());
 	assert(!controls.is_null());
@@ -606,11 +606,11 @@ void DataManager::load_controls(config::ControllerMap& controller) {
 
 	for (auto const& [key, item] : controls["controls"].as_object()) {
 		assert(item.is_object());
-		if (item.as_object().contains("primary_key")) { controller.set_primary_keyboard_binding(controller.get_action_by_identifier(key), controller.string_to_key(item["primary_key"].as_string())); }
+		if (item.as_object().contains("primary_key")) { controller.set_primary_keyboard_binding(input::action_from_string(key), input::scancode_from_string(item["primary_key"].as_string())); }
 	}
 }
 
-void DataManager::save_controls(config::ControllerMap& controller) {
+void DataManager::save_controls(input::InputSystem& controller) {
 	if (!controls.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/control_map.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save controls layout!"); }
 }
 

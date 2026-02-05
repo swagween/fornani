@@ -23,8 +23,8 @@ namespace fornani::player {
 class Player;
 }
 
-namespace fornani::config {
-class ControllerMap;
+namespace fornani::input {
+class InputSystem;
 }
 
 namespace fornani::gui {
@@ -43,7 +43,7 @@ class Dashboard {
 	Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f dimensions);
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, LightShader& shader);
-	bool handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard);
+	bool handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard);
 	void set_position(sf::Vector2f to_position, bool force = false);
 	void set_selection(sf::Vector2i to_selection);
 	void close();

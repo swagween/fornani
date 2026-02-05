@@ -6,7 +6,7 @@
 #include "fornani/gui/gizmos/MapGizmo.hpp"
 #include "fornani/gui/gizmos/WardrobeGizmo.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/setup/ControllerMap.hpp"
+#include "fornani/systems/InputSystem.hpp"
 
 #include <ccmath/ext/clamp.hpp>
 
@@ -51,7 +51,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 }
 
 void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {
-	auto& controller = svc.controller_map;
+	auto& controller = svc.input_system;
 	m_paths.map.update();
 	m_light_up.update();
 	m_light_shift.update();
@@ -116,7 +116,7 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 	// for (auto& button : m_debug.buttons) { win.draw(button.box); }
 }
 
-bool Dashboard::handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard) {
+bool Dashboard::handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard) {
 	for (auto& gizmo : m_gizmos) {
 		if (m_current_port == gizmo->get_dashboard_port()) {
 			if (!gizmo->handle_inputs(controller, soundboard)) {

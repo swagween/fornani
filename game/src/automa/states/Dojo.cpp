@@ -54,8 +54,9 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	// gamepad disconnected
-	if (svc.controller_map.process_gamepad_disconnection()) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
+	if (svc.input_system.process_gamepad_disconnection()) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
+	if (svc.input_system.digital(input::DigitalAction::pause).triggered) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
+	if (svc.input_system.digital(input::DigitalAction::pause).triggered) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
 
 	svc.a11y.set_action_ctx_bar_enabled(false);
 
@@ -69,7 +70,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			m_inspect_hint->start();
 		}
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).triggered) {
+	if (svc.input_system.digital(input::DigitalAction::inspect).triggered) {
 		svc.data.get_file().flags.reset(io::FileFlags::inspect_hint);
 		m_inspect_hint.reset();
 	}
@@ -97,12 +98,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	svc.soundboard.set_listener_position(player->get_ear_position());
 
-	// set action set
-	if (pause_window || m_console) {
-	} else if (inventory_window || vendor_dialog) {
-	} else {
-	}
-
 	if (!m_map) { return; }
 
 	svc.ambience_player.set_balance(m_map->get_ambience_balance());
@@ -123,7 +118,8 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		}
 		if (pause_window.value()->exit_requested()) {
 			pause_window = {};
-			svc.controller_map.set_action_set(config::ActionSet::Platformer);
+			auto to_set = inventory_window || vendor_dialog ? input::ActionSet::Menu : input::ActionSet::Platformer;
+			svc.input_system.set_action_set(to_set);
 		}
 		GameState::tick_update(svc, engine);
 		return;
@@ -148,7 +144,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			inventory_window.value()->update(svc, *player, *m_map);
 			if (inventory_window.value()->exit_requested()) {
 				inventory_window = {};
-				svc.controller_map.set_action_set(config::ActionSet::Platformer);
+				svc.input_system.set_action_set(input::ActionSet::Platformer);
 			}
 			return;
 		}
@@ -164,7 +160,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	// in-game menus
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_open_inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc, *m_map, *player); }
+	if (svc.input_system.digital(input::DigitalAction::inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc, *m_map, *player); }
 
 	m_enter_room.update();
 	if (m_enter_room.running()) { player->controller.autonomous_walk(); }
@@ -225,7 +221,8 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		m_console.value()->render(win);
 		m_console.value()->write(win);
 	}
-	if (svc.debug_mode()) { m_map->debug(); }
+	if (svc.debug_mode()) { /*m_map->debug();*/
+	}
 
 	svc.notifications.render(win);
 }
@@ -362,7 +359,7 @@ bool Dojo::check_for_vendor(ServiceProvider& svc) {
 			m_map->transition.end();
 			NANI_LOG_DEBUG(m_logger, "Vendor Opened");
 			vendor_dialog = std::make_unique<gui::VendorDialog>(svc, *m_map, *player, m_vendor_id);
-			svc.controller_map.set_action_set(config::ActionSet::Menu);
+			svc.input_system.set_action_set(input::ActionSet::Menu);
 			svc.soundboard.flags.console.set(audio::Console::menu_open);
 			m_flags.reset(GameplayFlags::open_vendor);
 		}
@@ -373,7 +370,7 @@ bool Dojo::check_for_vendor(ServiceProvider& svc) {
 		if (!vendor_dialog.value()->is_open()) {
 			if (vendor_dialog.value()->made_profit()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
 			vendor_dialog = {};
-			svc.controller_map.set_action_set(config::ActionSet::Platformer);
+			svc.input_system.set_action_set(input::ActionSet::Platformer);
 			if (m_gui_shader) { m_gui_shader->set_darken(0.f); }
 		}
 		m_map->set_target_balance(0.f, audio::BalanceTarget::music);

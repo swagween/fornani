@@ -13,8 +13,8 @@ namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace fornani::config {
-class ControllerMap;
+namespace fornani::input {
+class InputSystem;
 }
 
 namespace fornani::audio {
@@ -30,7 +30,7 @@ class MiniMenu {
 	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string> opt, sf::Vector2f start_position, bool white = false);
 	void update(automa::ServiceProvider& svc, sf::Vector2f dim, sf::Vector2f at_position);
 	void render(sf::RenderWindow& win, bool bg = true);
-	void handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard);
+	void handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard);
 	void set_dimensions(sf::Vector2f to) { m_nineslice.set_dimensions(to); }
 
 	sf::Vector2f get_dimensions() const;

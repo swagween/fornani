@@ -2,9 +2,9 @@
 #include <fornani/core/Common.hpp>
 #include <fornani/gui/console/ResponseDialog.hpp>
 #include <fornani/story/Quest.hpp>
+#include <fornani/systems/InputSystem.hpp>
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/graphics/Colors.hpp"
-#include "fornani/setup/ControllerMap.hpp"
 #include "fornani/setup/TextManager.hpp"
 
 namespace fornani::gui {
@@ -51,10 +51,10 @@ void ResponseDialog::stylize(sf::Text& message) const {
 	message.setLineSpacing(1.5f);
 }
 
-bool ResponseDialog::handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard) {
-	auto const& up = controller.digital_action_status(config::DigitalAction::menu_up).triggered;
-	auto const& down = controller.digital_action_status(config::DigitalAction::menu_down).triggered;
-	auto const& select = controller.digital_action_status(config::DigitalAction::menu_select).triggered;
+bool ResponseDialog::handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard) {
+	auto const& up = controller.digital(input::DigitalAction::menu_up).triggered;
+	auto const& down = controller.digital(input::DigitalAction::menu_down).triggered;
+	auto const& select = controller.digital(input::DigitalAction::menu_select).triggered;
 
 	if (select && m_ready) {
 		soundboard.flags.console.set(audio::Console::next);

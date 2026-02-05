@@ -26,7 +26,7 @@ class InventoryGizmo : public Gizmo {
 	InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f placement);
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground = false) override;
-	bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
+	bool handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
 	[[nodiscard]] auto is_item_hovered() const -> int { return m_flags.test(InventoryGizmoFlags::is_item_hovered); }
 	[[nodiscard]] auto get_zone_type() const -> InventoryZoneType { return static_cast<InventoryZoneType>(m_zone_iterator.get()); }
 

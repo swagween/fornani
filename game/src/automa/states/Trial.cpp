@@ -42,7 +42,7 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
 	m_reset.update();
 	// gamepad disconnected
-	if (svc.controller_map.process_gamepad_disconnection()) {
+	if (svc.input_system.process_gamepad_disconnection()) {
 		pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{svc.data.gui_text["pause_menu"]["resume"].as_string(), svc.data.gui_text["pause_menu"]["settings"].as_string(),
 																						svc.data.gui_text["pause_menu"]["controls"].as_string(), svc.data.gui_text["pause_menu"]["quit"].as_string(),
 																						svc.data.gui_text["pause_menu"]["restart"].as_string()});
@@ -55,10 +55,10 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	// set action set
 	if (pause_window || m_console) {
-		svc.controller_map.set_action_set(config::ActionSet::Menu);
-		svc.controller_map.set_joystick_throttle({});
+		svc.input_system.set_action_set(input::ActionSet::Menu);
+		svc.input_system.set_joystick_throttle({});
 	} else {
-		svc.controller_map.set_action_set(config::ActionSet::Platformer);
+		svc.input_system.set_action_set(input::ActionSet::Platformer);
 	}
 
 	if (pause_window) {
@@ -82,7 +82,7 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	svc.world_clock.update(svc);
 
 	// in-game menus
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_toggle_pause).triggered) {
+	if (svc.input_system.digital(input::DigitalAction::pause).triggered) {
 		pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{svc.data.gui_text["pause_menu"]["resume"].as_string(), svc.data.gui_text["pause_menu"]["settings"].as_string(),
 																						svc.data.gui_text["pause_menu"]["controls"].as_string(), svc.data.gui_text["pause_menu"]["quit"].as_string(),
 																						svc.data.gui_text["pause_menu"]["restart"].as_string()});

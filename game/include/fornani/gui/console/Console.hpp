@@ -17,7 +17,7 @@
 #include <memory>
 #include <string>
 
-namespace fornani::config {
+namespace fornani::input {
 class ControllerMap;
 }
 
@@ -93,7 +93,7 @@ class Console {
 	void load_and_launch(std::string_view key, OutputType type = OutputType::gradual, int target_index = -1);
 	void load_and_launch(OutputType type = OutputType::gradual);
 	void load_single_message(std::string_view message);
-	void handle_inputs(config::ControllerMap& controller);
+	void handle_inputs(input::InputSystem& controller);
 	void debug();
 
 	std::unique_ptr<TextWriter> m_writer;

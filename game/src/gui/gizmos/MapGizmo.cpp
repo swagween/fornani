@@ -152,34 +152,34 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 	m_constituents.gizmo.bottom_right.render(win, m_sprite, render_position, sf::Vector2f{1.f, 1.f}, shader, palette);
 }
 
-bool MapGizmo::handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard) {
+bool MapGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard) {
 	auto zoom_factor{0.005f};
 	zoom_factor *= m_minimap->get_scale();
-	if (controller.gamepad_connected()) { m_minimap->move(controller.get_joystick_throttle()); }
-	if (controller.digital_action_status(config::DigitalAction::menu_up).held) {
+	if (controller.is_gamepad_connected()) { m_minimap->move(controller.get_joystick_throttle()); }
+	if (controller.digital(input::DigitalAction::menu_up).held) {
 		m_minimap->move({0.f, -1.f});
 		if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_down).held) {
+	if (controller.digital(input::DigitalAction::menu_down).held) {
 		m_minimap->move({0.f, 1.f});
 		if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_left).held) {
+	if (controller.digital(input::DigitalAction::menu_left).held) {
 		m_minimap->move({-1.f, 0.f});
 		if (!m_minimap->hit_horiz_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_right).held) {
+	if (controller.digital(input::DigitalAction::menu_right).held) {
 		m_minimap->move({1.f, 0.f});
 		if (!m_minimap->hit_horiz_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_tab_left).held) {
+	if (controller.digital(input::DigitalAction::menu_tab_left).held) {
 		m_minimap->zoom(zoom_factor);
 		if (!m_minimap->hit_zoom_limit()) { soundboard.repeat_sound("pioneer_buzz"); }
-	} else if (controller.digital_action_status(config::DigitalAction::menu_tab_right).held) {
+	} else if (controller.digital(input::DigitalAction::menu_tab_right).held) {
 		m_minimap->zoom(-zoom_factor);
 		if (!m_minimap->hit_zoom_limit()) { soundboard.repeat_sound("pioneer_buzz"); }
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
+	if (controller.digital(input::DigitalAction::menu_select).triggered) {
 		m_minimap->center();
 		soundboard.flags.pioneer.set(audio::Pioneer::click);
 	}

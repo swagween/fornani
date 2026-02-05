@@ -11,7 +11,6 @@
 #include <fornani/graphics/CameraController.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/setup/AccessibilityService.hpp>
-#include <fornani/setup/ControllerMap.hpp>
 #include <fornani/setup/DataManager.hpp>
 #include <fornani/setup/TextManager.hpp>
 #include <fornani/setup/Version.hpp>
@@ -52,7 +51,6 @@ struct ServiceProvider {
 	WindowManager* window;
 	core::SoundManager sounds;
 	core::AssetManager assets;
-	config::ControllerMap controller_map{*this};
 	input::InputSystem input_system{finder};
 	EventRegistry events;
 	util::BitFlags<DebugFlags> debug_flags{};

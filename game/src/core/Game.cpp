@@ -31,7 +31,7 @@ Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& 
 	}
 
 	// controls
-	services.data.load_controls(services.controller_map);
+	// services.data.load_controls(services.controller_map);
 	services.data.load_settings();
 
 	m_background = std::make_unique<graphics::Background>(services, "black");
@@ -81,7 +81,6 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 
 		services.ticker.start_frame();
 
-		services.controller_map.set_keyboard_input_detected(false);
 		while (std::optional const event = services.window->get().pollEvent()) {
 			if (event->is<sf::Event::Closed>()) {
 				shutdown();
@@ -89,8 +88,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			}
 
 			if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
-				services.controller_map.set_keyboard_input_detected(true);
-				services.controller_map.set_last_key_pressed(key_pressed->scancode);
+				services.input_system.set_last_key_pressed(key_pressed->scancode);
 				if (key_pressed->scancode == sf::Keyboard::Scancode::F12) { continue; }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::G && key_pressed->control) { services.toggle_greyblock_mode(); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_pressed->control) {
@@ -115,14 +113,11 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			}
 
 			if (auto const* joystick_moved = event->getIf<sf::Event::JoystickMoved>()) {
-				services.controller_map.set_keyboard_input_detected(false);
 				auto jx = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::X);
 				auto jy = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::Y);
-				services.controller_map.set_joystick_throttle(sf::Vector2f{jx, jy});
 				services.input_system.set_joystick_throttle(sf::Vector2f{jx, jy});
 			}
 
-			services.controller_map.handle_event(*event);
 			services.input_system.handle_event(*event);
 			ImGui::SFML::ProcessEvent(services.window->get(), *event);
 		}
@@ -131,10 +126,9 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 
 		bool has_focus = services.window->get().hasFocus();
 		services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services, &audio_engine = audio_engine] {
-			services.controller_map.update();
 			services.input_system.update();
 			services.music_player.update();
-			if (services.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && m_game_menu) {
+			if (services.input_system.digital(input::DigitalAction::menu_back).triggered && m_game_menu) {
 				if (m_game_menu.value()->get_current_state().is_ready()) {
 					m_game_menu = {};
 					services.soundboard.flags.menu.set(audio::Menu::backward_switch);
@@ -343,16 +337,34 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Input")) {
+					static util::Cooldown left_triggered{128};
+					if (services.input_system.direction_triggered(input::AnalogAction::move, input::MoveDirection::left)) { left_triggered.start(); }
 					auto d = services.input_system.last_device_used();
 					ImGui::Text("Current Input Device: %s", d == input::InputDevice::gamepad ? "Gamepad" : d == input::InputDevice::keyboard ? "Keyboard" : "None");
-					ImGui::Text("Jump: %s", services.input_system.digital(input::DigitalAction::platformer_jump).held ? "held" : "");
-					ImGui::Text("Joystick Throttle: %.3f", services.input_system.get_joystick_throttle().x);
-					ImGui::SeparatorText("OLD");
-					ImGui::Text("Current Input Device: %s", services.controller_map.last_controller_type_used() == config::InputDevice::gamepad ? "Gamepad" : "Keyboard");
-					ImGui::Text("Gamepad Status: %s", services.controller_map.gamepad_connected() ? "Connected" : "Disconnected");
-					ImGui::Text("Gamepad Enabled? %s", services.controller_map.is_gamepad_input_enabled() ? "Yes" : "No");
-					ImGui::Text("Action Set: %i", services.controller_map.get_action_set());
-					ImGui::Text("Joystick Throttle: %.3f", services.controller_map.get_joystick_throttle().x);
+					ImGui::SeparatorText("Input Queries");
+					ImGui::Text("Jump............: %s", services.input_system.digital(input::DigitalAction::jump).held ? "held" : "");
+					ImGui::Text("Shoot...........: %s", services.input_system.digital(input::DigitalAction::shoot).held ? "held" : "");
+					ImGui::Text("Open Inventory..: %s", services.input_system.digital(input::DigitalAction::inventory).held ? "held" : "");
+					ImGui::Text("Close Inventory.: %s", services.input_system.digital(input::DigitalAction::menu_close).held ? "held" : "");
+					ImGui::Text("Slide...........: %s", services.input_system.digital(input::DigitalAction::slide).held ? "held" : "");
+					ImGui::Text("Left............: %s", services.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::left) ? "held" : "");
+					ImGui::Text("Right...........: %s", services.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::right) ? "held" : "");
+					ImGui::Text("Up..............: %s", services.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::up) ? "held" : "");
+					ImGui::Text("Down............: %s", services.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::down) ? "held" : "");
+					ImGui::Text("Left Triggered..: %i", left_triggered.get());
+					ImGui::SeparatorText("Gamepad and Joystick");
+					ImGui::Text("Move Input: %.3f", services.input_system.analog(input::AnalogAction::move).x);
+					ImGui::Text("Pan Input: %.3f", services.input_system.analog(input::AnalogAction::pan).y);
+					ImGui::Text("Gamepad Status: %s", services.input_system.is_gamepad_connected() ? "Connected" : "Disconnected");
+					ImGui::Text("Controller Handle: %i", static_cast<std::uint64_t>(services.input_system.get_controller_handle()));
+					ImGui::Text("Current Action Set:");
+					ImGui::SameLine();
+					switch (services.input_system.get_active_action_set()) {
+					case input::ActionSet::END: ImGui::Text("<invalid>"); break;
+					case input::ActionSet::Platformer: ImGui::Text("Platformer"); break;
+					case input::ActionSet::Menu: ImGui::Text("Menu"); break;
+					}
+					left_triggered.update();
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Time Trials")) {

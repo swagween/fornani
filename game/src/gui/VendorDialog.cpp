@@ -30,7 +30,7 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	  m_intro{300}, m_fade_in{120}, m_outro{100}, m_vendor_portrait{svc, "character_portraits"}, m_orb_display{svc}, m_selector_sprite{svc, "vendor_gizmo"},
 	  my_npc{*std::find_if(map.get_entities<NPC>().begin(), map.get_entities<NPC>().end(), [vendor_id](auto const& n) { return n->get_vendor_id() == vendor_id; })}, npc_id{vendor_id}, m_item_sprite{svc, "inventory_items"},
 	  m_palette{"pioneer", svc.finder} {
-	svc.controller_map.set_action_set(config::ActionSet::Inventory);
+	svc.input_system.set_action_set(input::ActionSet::Menu);
 	flags.set(VendorDialogStatus::opened);
 	m_artwork.center();
 	m_artwork.set_position(svc.window->f_center_screen());
@@ -125,39 +125,39 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 
 	if (fade_logic(svc, map)) { return; }
 
-	auto& controller = svc.controller_map;
+	auto& controller = svc.input_system;
 	if (m_item_menu) {
 		m_item_menu->handle_inputs(controller, svc.soundboard);
 	} else {
-		if (controller.digital_action_status(config::DigitalAction::menu_up).triggered) {
+		if (controller.digital(input::DigitalAction::menu_up).triggered) {
 			m_description->flush();
 			if (m_selector.move_direction({0, -1}).up()) {}
 			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
-		if (controller.digital_action_status(config::DigitalAction::menu_down).triggered) {
+		if (controller.digital(input::DigitalAction::menu_down).triggered) {
 			m_description->flush();
 			if (m_selector.move_direction({0, 1}).down()) {}
 			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
-		if (controller.digital_action_status(config::DigitalAction::menu_left).triggered) {
+		if (controller.digital(input::DigitalAction::menu_left).triggered) {
 			m_description->flush();
 			if (m_selector.move_direction({-1, 0}).left()) {}
 			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
-		if (controller.digital_action_status(config::DigitalAction::menu_right).triggered) {
+		if (controller.digital(input::DigitalAction::menu_right).triggered) {
 			m_description->flush();
 			if (m_selector.move_direction({1, 0}).right()) {}
 			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_tab_left).triggered) {
+		if (svc.input_system.digital(input::DigitalAction::menu_tab_left).triggered) {
 			m_state = is_buying() ? VendorState::sell : VendorState::buy;
 			svc.soundboard.flags.menu.set(audio::Menu::select);
 		}
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_tab_right).triggered) {
+		if (svc.input_system.digital(input::DigitalAction::menu_tab_right).triggered) {
 			m_state = is_buying() ? VendorState::sell : VendorState::buy;
 			svc.soundboard.flags.menu.set(audio::Menu::select);
 		}
-		if (svc.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered) {
+		if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {
 			close(svc);
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 		}
@@ -237,7 +237,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 						break;
 					}
 				}
-			} else if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
+			} else if (controller.digital(input::DigitalAction::menu_select).triggered) {
 				auto exchange_text = is_buying() ? svc.data.gui_text["exchange_menu"]["buy"].as_string() : svc.data.gui_text["exchange_menu"]["sell"].as_string();
 				m_item_menu = MiniMenu(svc, {exchange_text, svc.data.gui_text["exchange_menu"]["cancel"].as_string()}, m_selector.get_position(), true);
 				svc.soundboard.flags.console.set(audio::Console::menu_open);

@@ -5,7 +5,7 @@
 #include <fornani/events/SystemEvent.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/setup/ControllerMap.hpp"
+#include "fornani/systems/InputSystem.hpp"
 
 namespace fornani::gui {
 
@@ -14,7 +14,7 @@ Console::Console(automa::ServiceProvider& svc)
 	  m_nineslice(svc, svc.assets.get_texture("blue_console"), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}), m_mode{ConsoleMode::writing}, m_response_offset{-192.f, 16.f},
 	  m_exit_stall{650}, m_item_display_timer{1200} {
 	NANI_LOG_DEBUG(m_logger, "Console ctor @{}", static_cast<void const*>(this));
-	svc.controller_map.set_action_set(config::ActionSet::Menu);
+	svc.input_system.set_action_set(input::ActionSet::Menu);
 	text_suite = svc.text.console;
 	m_path.set_section("open");
 	m_began = true;
@@ -51,7 +51,7 @@ void Console::update(automa::ServiceProvider& svc) {
 	if (!is_active()) { return; }
 	if (!m_writer) { return; }
 	m_began = false;
-	handle_inputs(svc.controller_map);
+	handle_inputs(svc.input_system);
 	if (is_active()) { m_path.update(); }
 	if (m_path.finished() && m_writer) {
 		if (m_writer->is_stalling()) { m_writer->start(); }
@@ -84,7 +84,7 @@ void Console::update(automa::ServiceProvider& svc) {
 			}
 			if (code.is_input_hint()) {
 				auto action_id = code.extras ? code.extras->at(0) : 0;
-				auto lookup = m_services->controller_map.get_icon_lookup_by_action(static_cast<config::DigitalAction>(action_id));
+				auto lookup = m_services->input_system.get_icon_lookup_by_action(static_cast<input::DigitalAction>(action_id));
 				m_writer->insert_icon_at(code.value, lookup);
 			}
 			if (code.is(MessageCodeType::launch_cutscene) && m_process_code_before) {
@@ -227,16 +227,16 @@ void Console::include_portrait(int id) { m_npc_portrait = Portrait{*m_services, 
 
 std::string Console::get_key() const { return native_key; }
 
-void Console::handle_inputs(config::ControllerMap& controller) {
+void Console::handle_inputs(input::InputSystem& controller) {
 	m_triggers = {};
 	m_process_code_after = false;
 	if (m_exit_stall.running()) { return; }
-	auto const& up = controller.digital_action_status(config::DigitalAction::menu_up).triggered;
-	auto const& down = controller.digital_action_status(config::DigitalAction::menu_down).triggered;
-	auto const& next = controller.digital_action_status(config::DigitalAction::menu_select).triggered;
-	auto const& exit = controller.digital_action_status(config::DigitalAction::menu_cancel).triggered && !m_flags.test(ConsoleFlags::no_exit);
-	auto const& skip = controller.digital_action_status(config::DigitalAction::menu_select).held;
-	auto const& released = controller.digital_action_status(config::DigitalAction::menu_select).released;
+	auto const& up = controller.digital(input::DigitalAction::menu_up).triggered;
+	auto const& down = controller.digital(input::DigitalAction::menu_down).triggered;
+	auto const& next = controller.digital(input::DigitalAction::menu_select).triggered;
+	auto const& exit = controller.digital(input::DigitalAction::menu_back).triggered && !m_flags.test(ConsoleFlags::no_exit);
+	auto const& skip = controller.digital(input::DigitalAction::menu_select).held;
+	auto const& released = controller.digital(input::DigitalAction::menu_select).released;
 	static bool finished{};
 	static bool can_skip{};
 	static bool just_started{};

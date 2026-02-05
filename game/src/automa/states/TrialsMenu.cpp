@@ -39,9 +39,9 @@ void TrialsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		option.update(svc, current_selection.get());
 		option.label.setOrigin({});
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) { switch_selections(svc); }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) { switch_selections(svc); }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
+	if (svc.input_system.digital(input::DigitalAction::menu_up).triggered) { switch_selections(svc); }
+	if (svc.input_system.digital(input::DigitalAction::menu_down).triggered) { switch_selections(svc); }
+	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
 		svc.state_controller.next_state = m_courses.at(current_selection.get()).id;
 		svc.state_controller.actions.set(Actions::trials);
 	}
