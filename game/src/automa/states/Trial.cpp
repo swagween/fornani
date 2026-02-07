@@ -5,7 +5,7 @@
 
 namespace fornani::automa {
 
-Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameState(svc, player, scene, room_number), m_services(&svc), m_reset{64} {
+Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameplayState(svc, player, scene, room_number), m_reset{64} {
 
 	m_map = world::Map{svc, player};
 
@@ -41,53 +41,42 @@ Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scen
 void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
 	m_reset.update();
+
 	// gamepad disconnected
-	if (svc.input_system.process_gamepad_disconnection()) {
-		pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{svc.data.gui_text["pause_menu"]["resume"].as_string(), svc.data.gui_text["pause_menu"]["settings"].as_string(),
-																						svc.data.gui_text["pause_menu"]["controls"].as_string(), svc.data.gui_text["pause_menu"]["quit"].as_string(),
-																						svc.data.gui_text["pause_menu"]["restart"].as_string()});
-		svc.world_timer.pause();
-	}
+	if (svc.input_system.process_gamepad_disconnection()) { pause(svc); }
+	if (svc.input_system.digital(input::DigitalAction::pause).triggered) { pause(svc); }
 
 	svc.a11y.set_action_ctx_bar_enabled(false);
 
 	svc.app_flags.set(AppFlags::in_game);
 
 	// set action set
-	if (pause_window || m_console) {
+	if (p_pause_window || m_console) {
 		svc.input_system.set_action_set(input::ActionSet::Menu);
 		svc.input_system.set_joystick_throttle({});
 	} else {
 		svc.input_system.set_action_set(input::ActionSet::Platformer);
 	}
 
-	if (pause_window) {
+	if (p_pause_window) {
 		if (m_console) { m_console.value()->update(svc); }
-		pause_window.value()->update(svc, m_console);
-		if (pause_window.value()->settings_requested()) {
+		p_pause_window.value()->update(svc, m_console);
+		if (p_pause_window.value()->settings_requested()) {
 			flags.set(GameStateFlags::settings_request);
-			pause_window.value()->reset();
+			p_pause_window.value()->reset();
 		}
-		if (pause_window.value()->controls_requested()) {
+		if (p_pause_window.value()->controls_requested()) {
 			flags.set(GameStateFlags::controls_request);
-			pause_window.value()->reset();
+			p_pause_window.value()->reset();
 		}
-		if (pause_window.value()->exit_requested()) {
-			pause_window = {};
+		if (p_pause_window.value()->exit_requested()) {
+			p_pause_window.reset();
 			svc.world_timer.resume();
 		}
 		return;
 	}
 
 	svc.world_clock.update(svc);
-
-	// in-game menus
-	if (svc.input_system.digital(input::DigitalAction::pause).triggered) {
-		pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{svc.data.gui_text["pause_menu"]["resume"].as_string(), svc.data.gui_text["pause_menu"]["settings"].as_string(),
-																						svc.data.gui_text["pause_menu"]["controls"].as_string(), svc.data.gui_text["pause_menu"]["quit"].as_string(),
-																						svc.data.gui_text["pause_menu"]["restart"].as_string()});
-		svc.world_timer.pause();
-	}
 
 	if (!m_map) { return; }
 
@@ -120,15 +109,16 @@ void Trial::frame_update(ServiceProvider& svc) {}
 
 void Trial::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!m_map) { return; }
-	m_map->render_background(svc, win, m_shader, player->get_camera_position());
-	m_map->render(svc, win, m_shader, player->get_camera_position());
+	m_map->render_background(svc, win, p_world_shader, player->get_camera_position());
+	m_map->render(svc, win, p_world_shader, player->get_camera_position());
+	GameplayState::render(svc, win);
+}
 
-	if (pause_window) { pause_window.value()->render(svc, win); }
-	if (m_console) {
-		m_console.value()->render(win);
-		m_console.value()->write(win);
-	}
-	if (svc.debug_mode()) { m_map->debug(); }
+void Trial::pause(ServiceProvider& svc) {
+	p_pause_window =
+		std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{svc.data.gui_text["pause_menu"]["resume"].as_string(), svc.data.gui_text["pause_menu"]["settings"].as_string(),
+																		 svc.data.gui_text["pause_menu"]["controls"].as_string(), svc.data.gui_text["pause_menu"]["quit"].as_string(), svc.data.gui_text["pause_menu"]["restart"].as_string()});
+	svc.world_timer.pause();
 }
 
 } // namespace fornani::automa

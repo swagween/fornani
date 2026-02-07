@@ -19,17 +19,15 @@ struct Nighthawk final : public Animatable {
 	float z{};
 };
 
-class Intro final : public GameplayState, public Flaggable<IntroFlags> {
+class Intro final : public GameplayState {
   public:
 	Intro(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
-	void toggle_pause_menu(ServiceProvider& svc);
-
-	std::optional<std::unique_ptr<gui::PauseWindow>> pause_window{};
 
   private:
+	util::BitFlags<IntroFlags> m_flags{};
 	gui::TextWriter m_location_text;
 	graphics::Background m_cloud_sea;
 	graphics::Background m_cloud;
@@ -39,7 +37,6 @@ class Intro final : public GameplayState, public Flaggable<IntroFlags> {
 	util::Cooldown m_wait;
 	util::Cooldown m_end_wait;
 	util::Cooldown m_attack_fadeout;
-	std::optional<LightShader> m_world_shader{};
 };
 
 } // namespace fornani::automa

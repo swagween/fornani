@@ -35,8 +35,8 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	m_map_markers.insert({2, "woodshine"});
 
 	// create shaders
-	m_world_shader = LightShader(svc.finder);
-	m_gui_shader = LightShader(svc.finder);
+	p_world_shader = LightShader(svc.finder);
+	p_gui_shader = LightShader(svc.finder);
 
 	reload(svc, room_number);
 
@@ -53,20 +53,15 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		m_flags.reset(GameplayFlags::item_music_played);
 	}
 
-	// gamepad disconnected
-	if (svc.input_system.process_gamepad_disconnection()) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
-	if (svc.input_system.digital(input::DigitalAction::pause).triggered) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
-	if (svc.input_system.digital(input::DigitalAction::pause).triggered) { pause_window = std::make_unique<gui::PauseWindow>(svc); }
+	svc.a11y.set_action_ctx_bar_enabled(svc.data.settings["tutorial"].as_bool());
 
-	svc.a11y.set_action_ctx_bar_enabled(false);
-
-	m_loading.is_complete() && !vendor_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
+	m_loading.is_complete() && !p_vendor_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
 	m_loading.update();
 	if (m_inspect_hint) {
 		m_inspect_hint->update();
 		if (m_inspect_hint->is_almost_complete()) {
 			svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["inspect_hint"].as_string());
-			svc.notifications.get_latest().insert_input_hint(svc, 9, 7);
+			svc.notifications.get_latest().insert_input_hint(svc, 10, 7);
 			m_inspect_hint->start();
 		}
 	}
@@ -98,33 +93,9 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	svc.soundboard.set_listener_position(player->get_ear_position());
 
-	if (!m_map) { return; }
-
-	svc.ambience_player.set_balance(m_map->get_ambience_balance());
-	svc.music_player.set_balance(1.f - m_map->get_music_balance());
-
-	if (pause_window) {
-		m_map->set_target_balance(0.f, audio::BalanceTarget::music);
-		m_map->set_target_balance(0.f, audio::BalanceTarget::ambience);
-		m_map->update_balance(svc);
-		pause_window.value()->update(svc, m_console);
-		if (pause_window.value()->settings_requested()) {
-			flags.set(GameStateFlags::settings_request);
-			pause_window.value()->reset();
-		}
-		if (pause_window.value()->controls_requested()) {
-			flags.set(GameStateFlags::controls_request);
-			pause_window.value()->reset();
-		}
-		if (pause_window.value()->exit_requested()) {
-			pause_window = {};
-			auto to_set = inventory_window || vendor_dialog ? input::ActionSet::Menu : input::ActionSet::Platformer;
-			svc.input_system.set_action_set(to_set);
-		}
-		GameState::tick_update(svc, engine);
-		return;
-	}
-	GameState::tick_update(svc, engine);
+	set_flag(GameplayStateFlags::early_tick_return, false);
+	GameplayState::tick_update(svc, engine);
+	if (has_flag_set(GameplayStateFlags::early_tick_return)) { return; }
 
 	if (m_console) {
 		m_flags.set(GameplayFlags::console_running);
@@ -133,21 +104,21 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			m_console.value()->set_nani_sprite(player->wardrobe_widget.get_sprite());
 		}
 	} else if (m_flags.consume(GameplayFlags::console_running)) {
-		auto to_set = inventory_window || vendor_dialog ? input::ActionSet::Menu : input::ActionSet::Platformer;
+		auto to_set = p_inventory_window || p_vendor_dialog ? input::ActionSet::Menu : input::ActionSet::Platformer;
 		svc.input_system.set_action_set(to_set);
 	}
 
 	svc.world_clock.update(svc);
 
-	if (inventory_window) {
+	if (p_inventory_window) {
 		m_map->set_target_balance(0.f, audio::BalanceTarget::music);
 		m_map->set_target_balance(0.f, audio::BalanceTarget::ambience);
 		m_map->update_balance(svc);
 		m_map->transition.update(*player);
 		if (!m_console) {
-			inventory_window.value()->update(svc, *player, *m_map);
-			if (inventory_window.value()->exit_requested()) {
-				inventory_window = {};
+			p_inventory_window.value()->update(svc, *player, *m_map);
+			if (p_inventory_window.value()->exit_requested()) {
+				p_inventory_window = {};
 				svc.input_system.set_action_set(input::ActionSet::Platformer);
 			}
 			return;
@@ -164,7 +135,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	// in-game menus
-	if (svc.input_system.digital(input::DigitalAction::inventory).triggered) { inventory_window = std::make_unique<gui::InventoryWindow>(svc, *m_map, *player); }
+	if (svc.input_system.digital(input::DigitalAction::inventory).triggered) { p_inventory_window = std::make_unique<gui::InventoryWindow>(svc, *m_map, *player); }
 
 	m_enter_room.update();
 	if (m_enter_room.running()) { player->controller.autonomous_walk(); }
@@ -191,44 +162,28 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!m_map) { return; }
 
 	// TODO: do this somewhere else
-	if (m_world_shader) {
-		m_map->render_background(svc, win, m_world_shader, player->get_camera_position());
-		m_map->render(svc, win, m_world_shader, player->get_camera_position());
-		m_world_shader->clear_point_lights();
+	if (p_world_shader) {
+		m_map->render_background(svc, win, p_world_shader, player->get_camera_position());
+		m_map->render(svc, win, p_world_shader, player->get_camera_position());
+		p_world_shader->clear_point_lights();
 
 		float aspect = m_map->real_dimensions.x / m_map->real_dimensions.y;
 		for (auto& pl : m_map->point_lights) {
 			auto uv = pl.get_position().componentWiseDiv(m_map->real_dimensions);
 			auto normalized = sf::Vector2f{(uv.x - 0.5f) * aspect + 0.5f, uv.y};
 			pl.position = normalized;
-			m_world_shader->add_point_light(pl);
+			p_world_shader->add_point_light(pl);
 		}
 
 		auto puv = player->get_lantern_position().componentWiseDiv(m_map->real_dimensions);
 		auto normalized = sf::Vector2f{(puv.x - 0.5f) * aspect + 0.5f, puv.y};
 		auto ppl = PointLight(svc.data.light["lantern"], puv);
 		ppl.position = normalized;
-		if (player->has_item_equipped(svc.data.item_id_from_label("lantern"))) { m_world_shader->add_point_light(ppl); }
+		if (player->has_item_equipped(svc.data.item_id_from_label("lantern"))) { p_world_shader->add_point_light(ppl); }
 		// m_shader->debug();
 	}
 
-	m_console || svc.state_flags.test(automa::StateFlags::cutscene) ? svc.state_flags.set(automa::StateFlags::hide_hud) : svc.state_flags.reset(automa::StateFlags::hide_hud);
-
-	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(svc, *player, win); }
-
-	if (vendor_dialog && m_gui_shader) { vendor_dialog.value()->render(svc, win, *player, *m_map, *m_gui_shader); }
-	if (inventory_window && m_gui_shader) { inventory_window.value()->render(svc, win, *player, *m_gui_shader); }
-
-	m_map->transition.render(win);
-	if (pause_window) { pause_window.value()->render(svc, win); }
-	if (m_console) {
-		m_console.value()->render(win);
-		m_console.value()->write(win);
-	}
-	if (svc.debug_mode()) { /*m_map->debug();*/
-	}
-
-	svc.notifications.render(win);
+	GameplayState::render(svc, win);
 }
 
 void Dojo::reload(ServiceProvider& svc, int target_state) {
@@ -277,9 +232,9 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 
 	player->controller.prevent_movement();
 	m_loading.start();
-	m_world_shader->set_darken(m_map->darken_factor);
-	m_world_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
-	m_gui_shader->set_texture_size(svc.window->f_screen_dimensions() * 3.f); // 3 is the number of screen-sized "cells" in the inventory window
+	p_world_shader->set_darken(m_map->darken_factor);
+	p_world_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
+	p_gui_shader->set_texture_size(svc.window->f_screen_dimensions() * 3.f); // 3 is the number of screen-sized "cells" in the inventory window
 	svc.app_flags.reset(automa::AppFlags::custom_map_start);
 
 	if (svc.data.get_file().flags.test(io::FileFlags::inspect_hint)) {
@@ -362,20 +317,20 @@ bool Dojo::check_for_vendor(ServiceProvider& svc) {
 		if (m_map->transition.is(graphics::TransitionState::black)) {
 			m_map->transition.end();
 			NANI_LOG_DEBUG(m_logger, "Vendor Opened");
-			vendor_dialog = std::make_unique<gui::VendorDialog>(svc, *m_map, *player, m_vendor_id);
+			p_vendor_dialog = std::make_unique<gui::VendorDialog>(svc, *m_map, *player, m_vendor_id);
 			svc.input_system.set_action_set(input::ActionSet::Menu);
 			svc.soundboard.flags.console.set(audio::Console::menu_open);
 			m_flags.reset(GameplayFlags::open_vendor);
 		}
 	}
-	if (vendor_dialog) {
+	if (p_vendor_dialog) {
 		m_map->transition.update(*player);
-		vendor_dialog.value()->update(svc, *m_map, *player);
-		if (!vendor_dialog.value()->is_open()) {
-			if (vendor_dialog.value()->made_profit()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
-			vendor_dialog = {};
+		p_vendor_dialog.value()->update(svc, *m_map, *player);
+		if (!p_vendor_dialog.value()->is_open()) {
+			if (p_vendor_dialog.value()->made_profit()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
+			p_vendor_dialog = {};
 			svc.input_system.set_action_set(input::ActionSet::Platformer);
-			if (m_gui_shader) { m_gui_shader->set_darken(0.f); }
+			if (p_gui_shader) { p_gui_shader->set_darken(0.f); }
 		}
 		m_map->set_target_balance(0.f, audio::BalanceTarget::music);
 		m_map->set_target_balance(0.f, audio::BalanceTarget::ambience);

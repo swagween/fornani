@@ -111,22 +111,22 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	if (m_item_menu) {
 		m_item_menu->handle_inputs(controller, svc.soundboard);
 	} else {
-		if (controller.digital(input::DigitalAction::menu_up).triggered) {
+		if (controller.menu_move(input::MoveDirection::up)) {
 			m_description->flush();
 			if (selector.move_direction({0, -1}).up()) {}
 			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
-		if (controller.digital(input::DigitalAction::menu_down).triggered) {
+		if (controller.menu_move(input::MoveDirection::down)) {
 			m_description->flush();
 			if (selector.move_direction({0, 1}).down()) {}
 			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
-		if (controller.digital(input::DigitalAction::menu_left).triggered) {
+		if (controller.menu_move(input::MoveDirection::left)) {
 			m_description->flush();
 			if (selector.move_direction({-1, 0}).left()) {}
 			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
-		if (controller.digital(input::DigitalAction::menu_right).triggered) {
+		if (controller.menu_move(input::MoveDirection::right)) {
 			m_description->flush();
 			if (selector.move_direction({1, 0}).right()) {}
 			svc.soundboard.flags.menu.set(audio::Menu::shift);
@@ -225,7 +225,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 				}
 			} else if (controller.digital(input::DigitalAction::menu_select).triggered) {
 				auto exchange_text = is_buying() ? svc.data.gui_text["exchange_menu"]["buy"].as_string() : svc.data.gui_text["exchange_menu"]["sell"].as_string();
-				m_item_menu = MiniMenu(svc, {exchange_text, svc.data.gui_text["exchange_menu"]["cancel"].as_string()}, selector.get_position(), true);
+				m_item_menu = MiniMenu(svc, {exchange_text, svc.data.gui_text["exchange_menu"]["cancel"].as_string()}, selector.get_position(), "mini_white");
 				svc.soundboard.flags.console.set(audio::Console::menu_open);
 			}
 		}

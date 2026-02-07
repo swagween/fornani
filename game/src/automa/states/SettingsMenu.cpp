@@ -30,11 +30,11 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	m_input_authorized = !adjust_mode() && !m_console;
 	adjust_mode() ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
 	if (!m_console) {
-		if (svc.input_system.digital(input::DigitalAction::menu_down).triggered) {
+		if (svc.input_system.menu_move(input::MoveDirection::down)) {
 			if (adjust_mode()) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
 			m_mode = SettingsMenuMode::ready;
 		}
-		if (svc.input_system.digital(input::DigitalAction::menu_up).triggered) {
+		if (svc.input_system.menu_move(input::MoveDirection::up)) {
 			if (adjust_mode()) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
 			m_mode = SettingsMenuMode::ready;
 		}
@@ -80,17 +80,19 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (adjust_mode()) {
 		auto const update_volume = svc.ticker.every_x_ticks(16);
 		auto delta = 0.01f;
+		auto left = svc.input_system.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::held);
+		auto right = svc.input_system.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::held);
 		if (is(SettingsToggles::music)) {
-			if (svc.input_system.digital(input::DigitalAction::menu_left).held && update_volume) { svc.music_player.adjust_volume(-delta); }
-			if (svc.input_system.digital(input::DigitalAction::menu_right).held && update_volume) { svc.music_player.adjust_volume(delta); }
+			if (left && update_volume) { svc.music_player.adjust_volume(-delta); }
+			if (right && update_volume) { svc.music_player.adjust_volume(delta); }
 		}
 		if (is(SettingsToggles::ambience)) {
-			if (svc.input_system.digital(input::DigitalAction::menu_left).held && update_volume) { svc.ambience_player.adjust_volume(-delta); }
-			if (svc.input_system.digital(input::DigitalAction::menu_right).held && update_volume) { svc.ambience_player.adjust_volume(delta); }
+			if (left && update_volume) { svc.ambience_player.adjust_volume(-delta); }
+			if (right && update_volume) { svc.ambience_player.adjust_volume(delta); }
 		}
 		if (is(SettingsToggles::sfx)) {
-			if (svc.input_system.digital(input::DigitalAction::menu_left).held && update_volume) { svc.soundboard.adjust_volume(-delta); }
-			if (svc.input_system.digital(input::DigitalAction::menu_right).held && update_volume) { svc.soundboard.adjust_volume(delta); }
+			if (left && update_volume) { svc.soundboard.adjust_volume(-delta); }
+			if (right && update_volume) { svc.soundboard.adjust_volume(delta); }
 		}
 	}
 }
@@ -100,7 +102,7 @@ void SettingsMenu::frame_update(ServiceProvider& svc) {}
 void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	auto index = is(SettingsToggles::music) ? static_cast<int>(SettingsToggles::music) : is(SettingsToggles::ambience) ? static_cast<int>(SettingsToggles::ambience) : static_cast<int>(SettingsToggles::sfx);
 
-	adjust_mode() ? options.at(index).label.setFillColor(colors::red) : options.at(index).label.setFillColor(options.at(index).label.getFillColor());
+	adjust_mode() ? options.at(index).label.setFillColor(p_theme.activated_text_color) : options.at(index).label.setFillColor(options.at(index).label.getFillColor());
 	MenuState::render(svc, win);
 	if (is(SettingsToggles::music)) { options.at(index).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music_player.get_volume() * 100.f)) + "%"); }
 	if (is(SettingsToggles::ambience)) { options.at(index).label.setString(ambience_label.getString() + std::to_string(static_cast<int>(svc.ambience_player.get_volume() * 100.f)) + "%"); }

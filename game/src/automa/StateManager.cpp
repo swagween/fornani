@@ -1,19 +1,20 @@
 
-#include "fornani/automa/StateManager.hpp"
+#include <fornani/automa/StateManager.hpp>
+#include <fornani/automa/states/ControlsMenu.hpp>
+#include <fornani/automa/states/CreditsMenu.hpp>
+#include <fornani/automa/states/Dojo.hpp>
+#include <fornani/automa/states/FileMenu.hpp>
+#include <fornani/automa/states/Intro.hpp>
+#include <fornani/automa/states/MainMenu.hpp>
+#include <fornani/automa/states/OptionsMenu.hpp>
+#include <fornani/automa/states/PlayMenu.hpp>
+#include <fornani/automa/states/SettingsMenu.hpp>
+#include <fornani/automa/states/StatSheet.hpp>
+#include <fornani/automa/states/ThemesMenu.hpp>
+#include <fornani/automa/states/Trial.hpp>
+#include <fornani/automa/states/TrialsMenu.hpp>
+#include <fornani/core/Game.hpp>
 #include <fornani/events/SystemEvent.hpp>
-#include "fornani/automa/states/ControlsMenu.hpp"
-#include "fornani/automa/states/CreditsMenu.hpp"
-#include "fornani/automa/states/Dojo.hpp"
-#include "fornani/automa/states/FileMenu.hpp"
-#include "fornani/automa/states/Intro.hpp"
-#include "fornani/automa/states/MainMenu.hpp"
-#include "fornani/automa/states/OptionsMenu.hpp"
-#include "fornani/automa/states/PlayMenu.hpp"
-#include "fornani/automa/states/SettingsMenu.hpp"
-#include "fornani/automa/states/StatSheet.hpp"
-#include "fornani/automa/states/Trial.hpp"
-#include "fornani/automa/states/TrialsMenu.hpp"
-#include "fornani/core/Game.hpp"
 
 namespace fornani::automa {
 
@@ -39,6 +40,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 		case MenuType::controls: set_current_state(std::make_unique<ControlsMenu>(svc, player)); break;
 		case MenuType::credits: set_current_state(std::make_unique<CreditsMenu>(svc, player)); break;
 		case MenuType::trials: set_current_state(std::make_unique<TrialsMenu>(svc, player)); break;
+		case MenuType::themes: set_current_state(std::make_unique<ThemesMenu>(svc, player)); break;
 		default: break;
 		}
 		svc.state_controller.actions.reset(Actions::trigger_submenu);

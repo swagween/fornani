@@ -4,6 +4,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
+#include <fornani/automa/Option.hpp>
 #include <fornani/entities/npc/Vendor.hpp>
 #include <fornani/gui/MiniMap.hpp>
 #include <fornani/io/File.hpp>
@@ -49,6 +50,7 @@ class DataManager final {
 	void save_progress(player::Player& player, int save_point_id);
 	void save_quests();
 	void save_settings();
+	void set_theme(automa::MenuTheme to);
 	int load_progress(player::Player& player, int file, bool state_switch = false, bool from_menu = true);
 	int reload_progress(player::Player& player);
 	void load_settings();
@@ -119,6 +121,7 @@ class DataManager final {
 	// gui
 	dj::Json m_console_paths{};
 	dj::Json gui_text{};
+	dj::Json menu_themes{};
 
 	dj::Json weapon{};
 	dj::Json enemy_weapon{};
@@ -155,6 +158,8 @@ class DataManager final {
 	dj::Json map_table{};
 	dj::Json background{};
 	dj::Json audio_library{};
+
+	automa::MenuTheme theme{};
 
 	std::vector<MapData> map_jsons{};
 	std::vector<MapTemplate> map_templates{};

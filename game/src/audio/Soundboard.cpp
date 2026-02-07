@@ -384,7 +384,8 @@ void Soundboard::repeat_sound(std::string_view label, SoundProducerID id, sf::Ve
 	if (not_found) { it = m_property_map.find("error_sound"); }
 
 	std::string_view lookup = not_found ? label : it->first;
-	auto const& props = it->second;
+	auto props = it->second;
+	props.volume *= m_volume_multiplier;
 
 	auto existing = std::find_if(sound_pool.begin(), sound_pool.end(), [&](ActiveSound& s) { return s.looping && s.label == lookup && s.id == id; });
 

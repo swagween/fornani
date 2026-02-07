@@ -30,10 +30,6 @@ Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& 
 		return;
 	}
 
-	// controls
-	// services.data.load_controls(services.controller_map);
-	services.data.load_settings();
-
 	m_background = std::make_unique<graphics::Background>(services, "black");
 }
 
@@ -355,6 +351,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::SeparatorText("Gamepad and Joystick");
 					ImGui::Text("Move Input: %.3f", services.input_system.analog(input::AnalogAction::move).x);
 					ImGui::Text("Pan Input: %.3f", services.input_system.analog(input::AnalogAction::pan).y);
+					ImGui::Text("Menu Pan Input: %.3f", services.input_system.analog(input::AnalogAction::map_pan).y);
+					ImGui::Text("Prev Menu Pan Input: %.3f", services.input_system.analog(input::AnalogAction::map_pan).prev_y);
 					ImGui::Text("Gamepad Status: %s", services.input_system.is_gamepad_connected() ? "Connected" : "Disconnected");
 					ImGui::Text("Controller Handle: %i", static_cast<std::uint64_t>(services.input_system.get_controller_handle()));
 					ImGui::Text("Current Action Set:");

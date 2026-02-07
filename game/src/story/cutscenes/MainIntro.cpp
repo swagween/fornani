@@ -22,6 +22,7 @@ MainIntro::MainIntro(automa::ServiceProvider& svc, world::Map& map, player::Play
 	player.set_flag(player::PlayerFlags::cutscene);
 
 	svc.music_player.load(svc.finder, "aether");
+	svc.ambience_player.tracks.open.fade_in(util::Sec{2.f});
 	svc.state_flags.set(automa::StateFlags::cutscene);
 	player.set_idle();
 }

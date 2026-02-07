@@ -20,9 +20,14 @@ static auto get_action_set_from_action(AnalogAction action) -> ActionSet {
 
 static auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 	switch (action) {
+	case DigitalAction::up:
+	case DigitalAction::down:
+	case DigitalAction::left:
+	case DigitalAction::right:
 	case DigitalAction::jump:
 	case DigitalAction::shoot:
 	case DigitalAction::sprint:
+	case DigitalAction::crouch:
 	case DigitalAction::slide:
 	case DigitalAction::dash:
 	case DigitalAction::inspect:
@@ -101,6 +106,7 @@ void InputSystem::setup_action_handles() {
 	DEFINE_ACTION(jump);
 	DEFINE_ACTION(shoot);
 	DEFINE_ACTION(sprint);
+	DEFINE_ACTION(crouch);
 	DEFINE_ACTION(slide);
 	DEFINE_ACTION(dash);
 	DEFINE_ACTION(inspect);
@@ -278,6 +284,9 @@ void InputSystem::resolve_input() {
 		auto& raw = m_raw_analog[i];
 		auto& state = m_resolved_analog[i];
 
+		state.prev_x = state.x;
+		state.prev_y = state.y;
+
 		if (raw.active) {
 			state.x = raw.x;
 			state.y = raw.y;
@@ -340,13 +349,14 @@ float InputSystem::analog_axis_value(ResolvedAnalogState const& a, MoveDirection
 	return 0.f;
 }
 
-bool InputSystem::query_digital_axis(MoveDirection dir, DigitalActionQueryType type) const {
-	auto iaction = static_cast<int>(DigitalAction::up) + static_cast<int>(dir);
+bool InputSystem::query_digital_axis(MoveDirection dir, DigitalActionQueryType type, ActionSet set) const {
+	auto start = set == ActionSet::Menu ? DigitalAction::menu_up : DigitalAction::up;
+	auto iaction = static_cast<int>(start) + static_cast<int>(dir);
 	auto action = digital(static_cast<DigitalAction>(iaction));
 	switch (type) {
 	case DigitalActionQueryType::held: return action.held;
 	case DigitalActionQueryType::triggered: return action.triggered;
-	case DigitalActionQueryType::released: return action.triggered;
+	case DigitalActionQueryType::released: return action.released;
 	}
 	return false;
 }
@@ -354,7 +364,7 @@ bool InputSystem::query_digital_axis(MoveDirection dir, DigitalActionQueryType t
 auto InputSystem::direction_triggered(AnalogAction action, MoveDirection dir) const -> bool {
 	if (is_gamepad()) {
 		auto const& a = analog(action);
-		return a.active && analog_axis_value(a, dir, true) <= analog_press_threshold_v && analog_axis_value(a, dir) > analog_press_threshold_v;
+		return analog_axis_value(a, dir, true) <= analog_press_threshold_v && analog_axis_value(a, dir) > analog_press_threshold_v;
 	}
 	return query_digital_axis(dir, DigitalActionQueryType::triggered);
 }
@@ -367,9 +377,25 @@ auto InputSystem::direction_held(AnalogAction action, MoveDirection dir) const -
 auto InputSystem::direction_released(AnalogAction action, MoveDirection dir) const -> bool {
 	if (is_gamepad()) {
 		auto const& a = analog(action);
-		return a.active && analog_axis_value(a, dir, true) >= analog_release_threshold_v && analog_axis_value(a, dir) < analog_release_threshold_v;
+		return analog_axis_value(a, dir, true) >= analog_release_threshold_v && analog_axis_value(a, dir) < analog_release_threshold_v;
 	}
 	return query_digital_axis(dir, DigitalActionQueryType::released);
+}
+
+auto InputSystem::query_direction(AnalogAction action, MoveDirection dir, DigitalActionQueryType type) const -> bool {
+	switch (type) {
+	case DigitalActionQueryType::held: return direction_held(input::AnalogAction::map_pan, dir);
+	case DigitalActionQueryType::triggered: return direction_triggered(input::AnalogAction::map_pan, dir);
+	case DigitalActionQueryType::released: return direction_released(input::AnalogAction::map_pan, dir);
+	}
+	return false;
+}
+
+auto InputSystem::menu_move(MoveDirection dir, DigitalActionQueryType type) const -> bool { return query_digital_axis(dir, type, ActionSet::Menu) || query_direction(AnalogAction::map_pan, dir, type); }
+
+auto InputSystem::is_any_direction_held(AnalogAction action) const -> bool {
+	return query_direction(action, MoveDirection::up, DigitalActionQueryType::held) || query_direction(action, MoveDirection::down, DigitalActionQueryType::held) ||
+		   query_direction(action, MoveDirection::left, DigitalActionQueryType::held) || query_direction(action, MoveDirection::right, DigitalActionQueryType::held);
 }
 
 void InputSystem::set_steam_action_set(InputActionSetHandle_t to_set) {
@@ -390,7 +416,7 @@ auto InputSystem::get_primary_keyboard_binding(DigitalAction action) const -> sf
 
 auto InputSystem::get_secondary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Scancode { return m_digital_actions.at(action).secondary_binding; }
 
-auto InputSystem::get_joystick_throttle() const -> sf::Vector2f { return {analog(AnalogAction::move).x, analog(AnalogAction::move).y}; }
+auto InputSystem::get_joystick_throttle(AnalogAction action) const -> sf::Vector2f { return {analog(action).x, analog(action).y}; }
 
 auto InputSystem::get_i_joystick_throttle(bool exclusive) const -> sf::Vector2i {
 	if (last_device_used() != InputDevice::gamepad) { return {}; }

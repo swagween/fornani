@@ -14,18 +14,22 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc
 	svc.app_flags.reset(AppFlags::in_game);
 	svc.state_controller.actions.reset(Actions::intro_done);
 
+	title.setTextureRect(sf::IntRect{{0, 10 * p_theme.title_index}, {47, 10}});
+	title.setPosition({362.f, 161.f});
+	title.setScale({5.f, 5.f});
+
 	if (flags.test(GameStateFlags::playtest)) { subtitle.setString(svc.version->version_title()); }
 	subtitle.setLineSpacing(1.5f);
 	subtitle.setLetterSpacing(1.2f);
 	subtitle.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
 	subtitle.setPosition({svc.window->f_center_screen().x - subtitle.getLocalBounds().getCenter().x, svc.window->i_screen_dimensions().y - 300.f});
-	subtitle.setFillColor(colors::red);
+	subtitle.setFillColor(p_theme.activated_text_color);
 	if (flags.test(GameStateFlags::playtest)) { instruction.setString("press [P] to open playtester portal"); }
 	instruction.setLineSpacing(1.5f);
 	instruction.setLetterSpacing(1.2f);
 	instruction.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
 	instruction.setPosition({svc.window->i_screen_dimensions().x * 0.5f - instruction.getLocalBounds().getCenter().x, svc.window->i_screen_dimensions().y - 36.f});
-	instruction.setFillColor(colors::dark_grey);
+	instruction.setFillColor(p_theme.deactivated_text_color);
 
 	svc.data.load_blank_save(player);
 	svc.ambience_player.load(svc.finder, "none");
@@ -58,8 +62,6 @@ void MainMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		}
 		if (current_selection.get() == menu_selection_id.at(MenuSelection::quit)) { svc.state_controller.actions.set(Actions::shutdown); }
 	}
-
-	for (auto& option : options) { option.update(svc, current_selection.get()); }
 }
 
 void MainMenu::frame_update(ServiceProvider& svc) {}

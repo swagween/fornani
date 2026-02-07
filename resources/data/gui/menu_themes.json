@@ -1,0 +1,32 @@
+{
+  "classic": {
+    "label": "classic",
+    "index": 0,
+    "backdrop": [12, 12, 20],
+    "primary": [254, 252, 216],
+    "secondary": [70, 67, 97],
+    "activated": [255, 7, 100],
+    "deactivated": [24, 34, 67],
+    "dot": [255, 131, 28]
+  },
+  "night": {
+    "label": "night",
+    "index": 1,
+    "backdrop": [19, 18, 16],
+    "primary": [254, 252, 216],
+    "secondary": [49, 49, 44],
+    "activated": [106, 33, 47],
+    "deactivated": [36, 35, 39],
+    "dot": [255, 7, 100]
+  },
+  "mini_classic": {
+    "primary": [254, 252, 216],
+    "secondary": [70, 67, 97],
+    "activated": [255, 7, 100],
+    "deactivated": [24, 34, 67]
+  },
+  "mini_white": {
+    "primary": [255, 7, 100],
+    "secondary": [195, 185, 136]
+  }
+}

@@ -52,19 +52,19 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	auto this_selection = current_selection.get();
-	if (svc.input_system.digital(input::DigitalAction::menu_up).triggered && !binding_mode) {
+	if (svc.input_system.menu_move(input::MoveDirection::up) && !binding_mode) {
 		while (!options.at(current_selection.get()).selectable && current_selection.get() != this_selection) { current_selection.modulate(-1); }
 		option_is_selected = false;
 	}
-	if (svc.input_system.digital(input::DigitalAction::menu_down).triggered && !binding_mode) {
+	if (svc.input_system.menu_move(input::MoveDirection::down) && !binding_mode) {
 		while (!options.at(current_selection.get()).selectable && current_selection.get() != this_selection) { current_selection.modulate(1); }
 		option_is_selected = false;
 	}
-	if (svc.input_system.digital(input::DigitalAction::menu_left).triggered && option_is_selected && current_selection.get() == 0) {
+	if (svc.input_system.menu_move(input::MoveDirection::left) && option_is_selected && current_selection.get() == 0) {
 		m_current_tab.modulate(-1);
 		change_scene(svc, tabs[m_current_tab.get()]);
 	}
-	if (svc.input_system.digital(input::DigitalAction::menu_right).triggered && option_is_selected && current_selection.get() == 0) {
+	if (svc.input_system.menu_move(input::MoveDirection::right) && option_is_selected && current_selection.get() == 0) {
 		m_current_tab.modulate(1);
 		change_scene(svc, tabs[m_current_tab.get()]);
 	}
@@ -116,7 +116,7 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 		option.update(svc, current_selection.get());
 		if (ctr > 0 && ctr < options.size() - 3) {
 			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), m_scene));
-			auto id = std::string(tab_id_prefixes.at(current_tab)) + static_cast<std::string>(option.label.getString());
+			auto id = current_tab > 0 ? std::string{tab_id_prefixes.at(current_tab)} + std::string{option.label.getString()} : std::string{option.label.getString()};
 			auto action = input::action_from_string(id.data());
 
 			auto& control = control_list.at(ctr);
@@ -145,7 +145,7 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 	options.clear();
 	control_list.clear();
 	auto const& in_data = svc.data.menu["options"];
-	for (auto& entry : in_data[to_change_to].as_array()) { options.push_back(Option(svc, entry.as_string())); }
+	for (auto& entry : in_data[to_change_to].as_array()) { options.push_back(Option(svc, p_theme, entry.as_string())); }
 	if (!options.empty()) { current_selection = util::Circuit(static_cast<int>(options.size())); }
 	top_buffer = svc.data.menu["config"][to_change_to]["top_buffer"].as<float>();
 	int ctr{};

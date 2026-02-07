@@ -5,11 +5,11 @@
 
 namespace fornani::gui {
 
-MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string> opt, sf::Vector2f start_position, bool white)
-	: m_nineslice{svc, (white ? svc.assets.get_texture("cream_console") : svc.assets.get_texture("blue_console")), {28, 28}, {1, 1}} {
+MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string> opt, sf::Vector2f start_position, std::string_view theme)
+	: m_nineslice{svc, (theme == "mini_white" ? svc.assets.get_texture("cream_console") : svc.assets.get_texture("blue_console")), {28, 28}, {1, 1}}, m_theme{svc.data.menu_themes[theme]} {
 	auto ctr{0};
 	for (auto& o : opt) {
-		options.push_back(automa::Option(svc, o, white));
+		options.push_back(automa::Option(svc, m_theme, o));
 		options.back().index = ctr;
 		options.back().update(svc, selection.get());
 		++ctr;
@@ -40,11 +40,11 @@ void MiniMenu::render(sf::RenderWindow& win, bool bg) {
 }
 
 void MiniMenu::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
-	if (controller.digital(input::DigitalAction::menu_up).triggered) {
+	if (controller.menu_move(input::MoveDirection::up)) {
 		selection.modulate(-1);
 		soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (controller.digital(input::DigitalAction::menu_down).triggered) {
+	if (controller.menu_move(input::MoveDirection::down)) {
 		selection.modulate(1);
 		soundboard.flags.menu.set(audio::Menu::shift);
 	}

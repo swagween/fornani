@@ -231,8 +231,8 @@ void Console::handle_inputs(input::InputSystem& controller) {
 	m_triggers = {};
 	m_process_code_after = false;
 	if (m_exit_stall.running()) { return; }
-	auto const& up = controller.digital(input::DigitalAction::menu_up).triggered;
-	auto const& down = controller.digital(input::DigitalAction::menu_down).triggered;
+	auto const& up = controller.menu_move(input::MoveDirection::up);
+	auto const& down = controller.menu_move(input::MoveDirection::down);
 	auto const& next = controller.digital(input::DigitalAction::menu_select).triggered;
 	auto const& exit = controller.digital(input::DigitalAction::menu_back).triggered && !m_flags.test(ConsoleFlags::no_exit);
 	auto const& skip = controller.digital(input::DigitalAction::menu_select).held;

@@ -209,8 +209,8 @@ void Player::update(world::Map& map) {
 	if (m_animation_machine.is_state(AnimState::turn_slide) && (animation.get_frame_count() > 2 && animation.get_frame_count() < 6)) { m_services->soundboard.repeat_sound("nani_turn_slide"); }
 
 	// camera stuff
-	auto camx = controller.direction.as_float() * 32.f;
-	auto skew = 180.f;
+	auto skew = 120.f;
+	auto camx = controller.direction.as_float() * 32.f + skew * m_services->input_system.analog(input::AnalogAction::pan).x;
 	auto vert = m_services->input_system.is_gamepad() ? m_services->input_system.analog(input::AnalogAction::pan).y : controller.vertical_movement();
 	m_camera.target_point = sf::Vector2f{camx, skew * vert};
 	auto force_multiplier = 1.f;

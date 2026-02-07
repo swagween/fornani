@@ -31,10 +31,7 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		if (m_file_select_menu) {
 			m_file_select_menu->handle_inputs(svc.input_system, svc.soundboard);
 		} else {
-			if (svc.input_system.digital(input::DigitalAction::menu_down).triggered || svc.input_system.digital(input::DigitalAction::menu_up).triggered) {
-				// svc.data.load_blank_save(*player);
-				svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
-			}
+			if (svc.input_system.menu_move(input::MoveDirection::down) || svc.input_system.menu_move(input::MoveDirection::up)) { svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get()); }
 		}
 		if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {
 			if (m_file_select_menu) {
@@ -64,13 +61,11 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 					break;
 				}
 			} else {
-				// TODO: pull option strings from a .json to make localization easier in the future
 				m_file_select_menu = gui::MiniMenu(svc, {svc.data.gui_text["file_menu"]["play"].as_string(), svc.data.gui_text["file_menu"]["stats"].as_string(), svc.data.gui_text["file_menu"]["delete"].as_string()},
-												   options.at(current_selection.get()).position);
+												   options.at(current_selection.get()).position, "classic");
 			}
 		}
 	}
-	for (auto& option : options) { option.update(svc, current_selection.get()); }
 
 	// file deletion requested
 	if (svc.state_controller.actions.consume(Actions::delete_file)) {

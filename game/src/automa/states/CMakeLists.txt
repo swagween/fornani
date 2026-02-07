@@ -9,6 +9,7 @@ nani_add_sources(
         PlayMenu.cpp
         SettingsMenu.cpp
         StatSheet.cpp
+        ThemesMenu.cpp
         TrialsMenu.cpp
         Trial.cpp
 )

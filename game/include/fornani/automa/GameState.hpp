@@ -21,15 +21,15 @@ namespace fornani::automa {
 
 enum class StateType { menu, game, dojo };
 enum class GameStateFlags { playtest, settings_request, controls_request, ready };
-enum class MenuSelection { play, options, quit, controls, tutorial, credits, settings };
+enum class MenuSelection { play, options, quit, controls, tutorial, credits, settings, themes };
 
 struct ServiceProvider;
 
 class GameState : public UniquePolymorphic {
 
   public:
-	std::unordered_map<MenuSelection, int> menu_selection_id{{MenuSelection::play, 0},	   {MenuSelection::options, 1}, {MenuSelection::quit, 2},	 {MenuSelection::controls, 0},
-															 {MenuSelection::tutorial, 3}, {MenuSelection::credits, 2}, {MenuSelection::settings, 1}};
+	std::unordered_map<MenuSelection, int> menu_selection_id{{MenuSelection::play, 0},	 {MenuSelection::options, 1}, {MenuSelection::quit, 2},		{MenuSelection::controls, 0},
+															 {MenuSelection::themes, 3}, {MenuSelection::credits, 2}, {MenuSelection::settings, 1}, {MenuSelection::tutorial, 4}};
 
 	GameState(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
 

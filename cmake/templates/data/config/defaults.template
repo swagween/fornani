@@ -21,6 +21,9 @@
 		"sprint": {
 			"primary_key": "LShift"
 		},
+		"crouch": {
+			"primary_key": "Down"
+		},
 		"slide": {
 			"primary_key": "Down"
 		},

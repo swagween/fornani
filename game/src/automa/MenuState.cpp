@@ -6,11 +6,12 @@ namespace fornani::automa {
 
 constexpr auto dot_buffer_v = 16.f;
 
-MenuState::MenuState(ServiceProvider& svc, player::Player& player, std::string_view scene) : GameState(svc, player, scene) {
+MenuState::MenuState(ServiceProvider& svc, player::Player& player, std::string_view scene) : GameState(svc, player, scene), p_theme{svc.data.theme} {
 	svc.input_system.set_action_set(input::ActionSet::Menu);
 	auto const& in_data = svc.data.menu["options"];
-	for (auto& entry : in_data[scene].as_array()) { options.push_back(Option(svc, entry.as_string())); }
+	for (auto& entry : in_data[scene].as_array()) { options.push_back(Option(svc, p_theme, entry.as_string())); }
 	if (!options.empty()) { current_selection = util::Circuit(static_cast<int>(options.size())); }
+	p_backdrop.setSize(svc.window->get_f_display_dimensions());
 
 	top_buffer = svc.data.menu["config"][scene]["top_buffer"].as<float>();
 	int ctr{};
@@ -31,7 +32,6 @@ MenuState::MenuState(ServiceProvider& svc, player::Player& player, std::string_v
 		dot.physics.position = target;
 		dot.physics.set_global_friction(0.85f);
 		dot.rect.setPosition(dot.physics.position);
-		dot.rect.setFillColor(colors::bright_orange);
 		dot.rect.setSize({dot_size, dot_size});
 		dot.rect.setOrigin(dot.rect.getSize() * 0.5f);
 		++which;
@@ -40,11 +40,12 @@ MenuState::MenuState(ServiceProvider& svc, player::Player& player, std::string_v
 
 void MenuState::tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
-	if (svc.input_system.digital(input::DigitalAction::menu_down).triggered && m_input_authorized) {
+	for (auto& option : options) { option.update(svc, current_selection.get()); }
+	if (svc.input_system.menu_move(input::MoveDirection::down) && m_input_authorized) {
 		current_selection.modulate(1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
-	if (svc.input_system.digital(input::DigitalAction::menu_up).triggered && m_input_authorized) {
+	if (svc.input_system.menu_move(input::MoveDirection::up) && m_input_authorized) {
 		current_selection.modulate(-1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);
 	}
@@ -61,14 +62,22 @@ void MenuState::tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine
 		auto target = which == 0 ? center - offset : center + offset;
 		m_steering.seek(dot.physics, target);
 		dot.physics.simple_update();
+		dot.rect.setFillColor(p_theme.dot_color);
 		dot.rect.setPosition(dot.physics.position);
 		++which;
 	}
 }
 
 void MenuState::render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win) {
+	p_backdrop.setFillColor(p_theme.backdrop);
+	win.draw(p_backdrop);
 	for (auto& dot : m_dot_indicators) { win.draw(dot.rect); }
 	for (auto& option : options) { win.draw(option.label); }
+}
+
+void MenuState::set_theme(ServiceProvider& svc, std::string_view theme) {
+	p_theme = MenuTheme{svc.data.menu_themes[theme]};
+	svc.data.set_theme(p_theme);
 }
 
 } // namespace fornani::automa

@@ -106,6 +106,9 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	[[nodiscard]] auto direction_triggered(AnalogAction action, MoveDirection dir) const -> bool;
 	[[nodiscard]] auto direction_held(AnalogAction action, MoveDirection dir) const -> bool;
 	[[nodiscard]] auto direction_released(AnalogAction action, MoveDirection dir) const -> bool;
+	[[nodiscard]] auto query_direction(AnalogAction action, MoveDirection dir, DigitalActionQueryType type) const -> bool;
+	[[nodiscard]] auto menu_move(MoveDirection dir, DigitalActionQueryType type = DigitalActionQueryType::triggered) const -> bool;
+	[[nodiscard]] auto is_any_direction_held(AnalogAction action) const -> bool;
 
 	// --- Settings ---
 	void set_joystick_sensitivity(float to) { m_stick_sensitivity = std::clamp(to, 0.f, 1.f); }
@@ -115,7 +118,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	[[nodiscard]] auto is_autosprint_enabled() const -> bool { return has_flag_set(InputSystemFlags::auto_sprint); }
 
 	// --- Joystick queries ---
-	[[nodiscard]] auto get_joystick_throttle() const -> sf::Vector2f;
+	[[nodiscard]] auto get_joystick_throttle(AnalogAction action = AnalogAction::move) const -> sf::Vector2f;
 	[[nodiscard]] auto get_i_joystick_throttle(bool exclusive) const -> sf::Vector2i;
 	void set_joystick_throttle(sf::Vector2f throttle);
 
@@ -161,7 +164,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	bool is_action_allowed(DigitalAction action) const;
 	bool is_action_allowed(AnalogAction action) const;
 	float analog_axis_value(ResolvedAnalogState const& a, MoveDirection dir, bool previous = false) const;
-	bool query_digital_axis(MoveDirection dir, DigitalActionQueryType type) const;
+	bool query_digital_axis(MoveDirection dir, DigitalActionQueryType type, ActionSet set = ActionSet::Platformer) const;
 
 	[[nodiscard]] auto steam_handle_for(DigitalAction action) const -> InputHandle_t { return m_digital_actions.at(action).steam_handle; }
 	[[nodiscard]] auto steam_handle_for(AnalogAction action) const -> InputHandle_t { return m_analog_actions.at(action).steam_handle; }

@@ -6,7 +6,10 @@
 
 namespace fornani::data {
 
-DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc), minimap{svc} { load_data(); }
+DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc), minimap{svc} {
+	load_settings();
+	load_data();
+}
 
 void DataManager::load_data() {
 	m_services->stopwatch.start();
@@ -200,6 +203,12 @@ void DataManager::load_data() {
 
 	gui_text = *dj::Json::from_file((finder.resource_path() + "/text/console/gui.json").c_str());
 	assert(!gui_text.is_null());
+	menu_themes = *dj::Json::from_file((finder.resource_path() + "/data/gui/menu_themes.json").c_str());
+	assert(!menu_themes.is_null());
+
+	auto themestr = settings["theme"] ? settings["theme"].as_string() : "classic";
+	theme = automa::MenuTheme{menu_themes[themestr]};
+	NANI_LOG_INFO(m_logger, "Loaded theme {}", themestr);
 
 	m_services->stopwatch.stop();
 	m_services->stopwatch.print_time("data loaded");
@@ -309,6 +318,12 @@ void DataManager::save_settings() {
 	settings["sfx_volume"] = m_services->soundboard.get_volume();
 	settings["fullscreen"] = m_services->fullscreen();
 	if (!settings.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save user settings!"); }
+}
+
+void DataManager::set_theme(automa::MenuTheme to) {
+	settings["theme"] = to.label;
+	theme = to;
+	save_settings();
 }
 
 int DataManager::reload_progress(player::Player& player) { return load_progress(player, current_save, false, false); }

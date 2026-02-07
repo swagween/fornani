@@ -1,12 +1,10 @@
 
 #pragma once
 
+#include <fornani/automa/GameplayState.hpp>
 #include <fornani/events/Subscription.hpp>
 #include <fornani/shader/LightShader.hpp>
-#include "fornani/automa/GameplayState.hpp"
-#include "fornani/gui/VendorDialog.hpp"
-#include "fornani/world/Camera.hpp"
-
+#include <fornani/world/Camera.hpp>
 #include <memory>
 #include <optional>
 
@@ -21,7 +19,6 @@ class Dojo final : public GameplayState {
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
 	void reload(ServiceProvider& svc, int target_state) override;
-	std::optional<std::reference_wrapper<world::Map>> get_map() override { return m_map.value(); }
 
 	void acquire_item(ServiceProvider& svc, std::string_view tag);
 	void acquire_gun(ServiceProvider& svc, std::string_view tag);
@@ -38,14 +35,9 @@ class Dojo final : public GameplayState {
 	void handle_player_death(ServiceProvider& svc, player::Player& player);
 
 	bool show_colliders{false};
-	std::optional<std::unique_ptr<gui::VendorDialog>> vendor_dialog{};
-	std::optional<std::unique_ptr<gui::PauseWindow>> pause_window{};
-	std::optional<std::unique_ptr<gui::InventoryWindow>> inventory_window{};
 
   private:
 	util::BitFlags<GameplayFlags> m_flags{};
-	std::optional<LightShader> m_world_shader{};
-	std::optional<LightShader> m_gui_shader{};
 
 	int m_vendor_id{};
 	std::string m_item_tag{};
@@ -56,8 +48,6 @@ class Dojo final : public GameplayState {
 	util::Cooldown m_loading;
 	std::optional<util::Cooldown> m_inspect_hint{};
 	std::optional<util::Cooldown> m_shoot_hint{};
-
-	SubscriptionGroup m_subscriptions{};
 };
 
 } // namespace fornani::automa

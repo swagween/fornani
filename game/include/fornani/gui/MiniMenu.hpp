@@ -27,7 +27,7 @@ enum class MiniMenuFlags { selected, closed };
 
 class MiniMenu {
   public:
-	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string> opt, sf::Vector2f start_position, bool white = false);
+	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string> opt, sf::Vector2f start_position, std::string_view theme);
 	void update(automa::ServiceProvider& svc, sf::Vector2f dim, sf::Vector2f at_position);
 	void render(sf::RenderWindow& win, bool bg = true);
 	void handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard);
@@ -45,6 +45,7 @@ class MiniMenu {
 	sf::Vector2f draw_position{};
 
   private:
+	automa::MenuTheme m_theme;
 	util::BitFlags<MiniMenuFlags> m_flags{};
 	sf::Vector2f dimensions{};
 	int maximum{};

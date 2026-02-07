@@ -22,6 +22,7 @@ PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player)
 void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Player& player) {
 
 	auto sprint = svc.input_system.digital(input::DigitalAction::sprint).held;
+	if (svc.input_system.is_gamepad()) { sprint = std::abs(svc.input_system.get_joystick_throttle().x) > walk_speed_v; }
 	auto sprint_release = svc.input_system.digital(input::DigitalAction::sprint).released;
 	auto sprint_pressed = svc.input_system.digital(input::DigitalAction::sprint).triggered;
 	if (svc.input_system.is_autosprint_enabled() && !svc.input_system.is_gamepad()) {
@@ -49,15 +50,15 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	auto const down = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::down);
 	auto const any_direction_held = left || right || up || down;
 
-	auto const& jump_started = svc.input_system.digital(input::DigitalAction::jump).triggered;
-	auto const& jump_held = svc.input_system.digital(input::DigitalAction::jump).held;
-	auto const& jump_released = svc.input_system.digital(input::DigitalAction::jump).released;
+	auto const jump_started = svc.input_system.digital(input::DigitalAction::jump).triggered;
+	auto const jump_held = svc.input_system.digital(input::DigitalAction::jump).held;
+	auto const jump_released = svc.input_system.digital(input::DigitalAction::jump).released;
 
-	auto const& shoot_pressed = svc.input_system.digital(input::DigitalAction::shoot).triggered;
-	auto const& shoot_released = svc.input_system.digital(input::DigitalAction::shoot).released;
+	auto const shoot_pressed = svc.input_system.digital(input::DigitalAction::shoot).triggered;
+	auto const shoot_released = svc.input_system.digital(input::DigitalAction::shoot).released;
 
-	auto const& arms_switch_left = svc.input_system.digital(input::DigitalAction::tab_left).triggered;
-	auto const& arms_switch_right = svc.input_system.digital(input::DigitalAction::tab_right).triggered;
+	auto const arms_switch_left = svc.input_system.digital(input::DigitalAction::tab_left).triggered;
+	auto const arms_switch_right = svc.input_system.digital(input::DigitalAction::tab_right).triggered;
 
 	auto const left_released = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::left);
 	auto const right_released = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::right);
@@ -121,11 +122,13 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (!is_wallsliding()) { svc.soundboard.flags.player.reset(audio::Player::wallslide); }
 
 	// crouching, rolling, and sliding
-	flags.reset(MovementState::crouch);
 	if (svc.input_system.digital(input::DigitalAction::slide).held) {
 		if (!grounded()) { input_flags.set(InputState::slide_in_air); }
 		if (!m_ability && player.can_slide() && sprint && !post_slide.running() && moving()) { m_ability = std::make_unique<Slide>(svc, map, player.get_collider(), player.get_actual_direction()); }
-		if (!sprint) { flags.set(MovementState::crouch); }
+	}
+	flags.reset(MovementState::crouch);
+	if (svc.input_system.digital(input::DigitalAction::crouch).held) {
+		if (!sprint || svc.input_system.is_gamepad()) { flags.set(MovementState::crouch); }
 	}
 	if (svc.input_system.digital(input::DigitalAction::slide).triggered) {
 		auto can_roll = !m_ability;
@@ -190,7 +193,6 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	key_map[ControllerInput::sprint] = 0.f;
 	if (moving() && sprint && !sprint_released()) {
 		if (svc.input_system.is_gamepad()) {
-			key_map[ControllerInput::move_x] = svc.input_system.get_joystick_throttle().x;
 		} else {
 			if (left) { key_map[ControllerInput::move_x] = -sprint_speed_v; }
 			if (right) { key_map[ControllerInput::move_x] = sprint_speed_v; }

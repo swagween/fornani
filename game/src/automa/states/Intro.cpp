@@ -20,17 +20,18 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 	m_map->transition.set_duration(400);
 
 	svc.soundboard.turn_on();
+	svc.state_flags.set(automa::StateFlags::cutscene);
 
 	player.set_camera_bounds(m_map->real_dimensions);
 	player.force_camera_center();
 
 	player.set_position(sf::Vector2f{14.5f, 10.f} * constants::f_cell_size);
 
-	m_world_shader = LightShader(svc.finder);
+	p_world_shader = LightShader(svc.finder);
 	svc.a11y.set_action_ctx_bar_enabled(false);
 	player.controller.prevent_movement();
-	m_world_shader->set_darken(m_map->darken_factor);
-	m_world_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
+	p_world_shader->set_darken(m_map->darken_factor);
+	p_world_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
 
 	m_airship.push_animation("main", {0, 4, 40, -1});
 	m_airship.set_animation("main");
@@ -52,10 +53,9 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 
 void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
-	if (svc.input_system.digital(input::DigitalAction::pause).triggered || svc.input_system.process_gamepad_disconnection()) {
-		pause_window = std::make_unique<gui::PauseWindow>(svc, std::vector<std::string>{svc.data.gui_text["pause_menu"]["resume"].as_string(), svc.data.gui_text["pause_menu"]["settings"].as_string(),
-																						svc.data.gui_text["pause_menu"]["controls"].as_string(), svc.data.gui_text["pause_menu"]["quit"].as_string()});
-	}
+	set_flag(GameplayStateFlags::early_tick_return, false);
+	GameplayState::tick_update(svc, engine);
+	if (has_flag_set(GameplayStateFlags::early_tick_return)) { return; }
 
 	m_wait.update();
 	if (m_wait.running()) { return; }
@@ -82,31 +82,31 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	// cutscene logic
 	if (m_intro_shot.get() == 1000) { m_location_text.start(); }
 	if (m_intro_shot.is_almost_complete()) { m_map->transition.start(); }
-	if (m_map->transition.is_black() && m_intro_shot.is_complete()) { set_flag(IntroFlags::established); }
-	if (m_map->transition.is_black() && has_flag_set(IntroFlags::established) && !has_flag_set(IntroFlags::cutscene_started)) {
+	if (m_map->transition.is_black() && m_intro_shot.is_complete()) { m_flags.set(IntroFlags::established); }
+	if (m_map->transition.is_black() && m_flags.test(IntroFlags::established) && !m_flags.test(IntroFlags::cutscene_started)) {
 		svc.app_flags.set(AppFlags::in_game);
 		m_map->cutscene_catalog.push_cutscene(svc, *m_map, *player, 1);
 		m_map->transition.end();
-		set_flag(IntroFlags::cutscene_started);
+		m_flags.set(IntroFlags::cutscene_started);
 	}
-	if (has_flag_set(IntroFlags::cutscene_started) && m_map->cutscene_catalog.cutscenes.empty()) {
-		if (!has_flag_set(IntroFlags::cutscene_over)) { m_end_wait.start(); }
-		set_flag(IntroFlags::cutscene_over);
+	if (m_flags.test(IntroFlags::cutscene_started) && m_map->cutscene_catalog.cutscenes.empty()) {
+		if (!m_flags.test(IntroFlags::cutscene_over)) { m_end_wait.start(); }
+		m_flags.set(IntroFlags::cutscene_over);
 	}
-	if (has_flag_set(IntroFlags::cutscene_over)) {
+	if (m_flags.test(IntroFlags::cutscene_over)) {
 		if (m_end_wait.is_almost_complete()) {
 			m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "intro", gui::OutputType::no_skip);
 			svc.music_player.load(svc.finder, "none");
 			svc.music_player.play_looped();
-			set_flag(IntroFlags::console_message);
+			m_flags.set(IntroFlags::console_message);
 			m_attack_fadeout.start();
 		}
 		svc.ambience_player.set_balance(0.f);
 		if (m_attack_fadeout.running()) { svc.ambience_player.set_volume(m_attack_fadeout.get_quadratic_normalized()); }
-		if (!m_console && has_flag_set(IntroFlags::console_message)) { set_flag(IntroFlags::complete); }
+		if (!m_console && m_flags.test(IntroFlags::console_message)) { m_flags.set(IntroFlags::complete); }
 	}
 
-	if (has_flag_set(IntroFlags::complete) && m_map->cutscene_catalog.cutscenes.empty()) {
+	if (m_flags.test(IntroFlags::complete) && m_map->cutscene_catalog.cutscenes.empty()) {
 		svc.state_controller.actions.set(automa::Actions::intro_done);
 		svc.state_controller.actions.set(automa::Actions::trigger);
 		player->cooldowns.tutorial.start();
@@ -118,30 +118,6 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	svc.a11y.set_action_ctx_bar_enabled(false);
-
-	// set action set
-	if (pause_window || m_console) {
-		svc.input_system.set_action_set(input::ActionSet::Menu);
-		svc.input_system.set_joystick_throttle({});
-	} else {
-		svc.input_system.set_action_set(input::ActionSet::Platformer);
-	}
-
-	if (pause_window) {
-		pause_window.value()->update(svc, m_console);
-		if (pause_window.value()->settings_requested()) {
-			flags.set(GameStateFlags::settings_request);
-			pause_window.value()->reset();
-		}
-		if (pause_window.value()->controls_requested()) {
-			flags.set(GameStateFlags::controls_request);
-			pause_window.value()->reset();
-		}
-		if (pause_window.value()->exit_requested()) { pause_window = {}; }
-		GameState::tick_update(svc, engine);
-		return;
-	}
-	GameState::tick_update(svc, engine);
 
 	if (m_console) {
 		if (m_console.value()->was_response_created() && !m_console.value()->has_nani_portrait()) {
@@ -170,11 +146,11 @@ void Intro::frame_update(ServiceProvider& svc) {}
 
 void Intro::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!m_map) { return; }
-	if (m_world_shader) {
-		m_map->render_background(svc, win, m_world_shader, player->get_camera_position());
-		m_map->render(svc, win, m_world_shader, player->get_camera_position());
+	if (p_world_shader) {
+		m_map->render_background(svc, win, p_world_shader, player->get_camera_position());
+		m_map->render(svc, win, p_world_shader, player->get_camera_position());
 	}
-	if (!has_flag_set(IntroFlags::established)) {
+	if (!m_flags.test(IntroFlags::established)) {
 		m_cloud_sea.render(svc, win, {});
 		win.draw(m_airship);
 		// not sure about the nighthawks
@@ -182,14 +158,7 @@ void Intro::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		m_cloud.render(svc, win, {});
 		m_location_text.write_gradual_message(win);
 	}
-	m_map->transition.render(win);
-	if (pause_window) { pause_window.value()->render(svc, win); }
-	if (m_console) {
-		m_console.value()->render(win);
-		m_console.value()->write(win);
-	}
+	GameplayState::render(svc, win);
 }
-
-void Intro::toggle_pause_menu(ServiceProvider& svc) { svc.ticker.paused() ? svc.ticker.unpause() : svc.ticker.pause(); }
 
 } // namespace fornani::automa

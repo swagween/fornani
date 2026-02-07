@@ -73,8 +73,8 @@
             "suite": [
               [
                 {
-                  "codes": [[10, 73, 12]],
-                  "message": "You find a small instruction manual. On the first page, it says, \"Press  to open your inventory.\""
+                  "codes": [[10, 72, 14]],
+                  "message": "You find a small instruction manual. On the first page, it says, \"Press   to open your inventory.\""
                 }
               ]
             ]

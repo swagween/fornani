@@ -155,22 +155,26 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 bool MapGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard) {
 	auto zoom_factor{0.005f};
 	zoom_factor *= m_minimap->get_scale();
-	if (controller.is_gamepad_connected()) { m_minimap->move(controller.get_joystick_throttle()); }
-	if (controller.digital(input::DigitalAction::menu_up).held) {
-		m_minimap->move({0.f, -1.f});
+	if (controller.is_gamepad() && controller.is_any_direction_held(input::AnalogAction::map_pan)) {
+		m_minimap->move(controller.get_joystick_throttle(input::AnalogAction::map_pan) * 2.f); // idk why I have to multiply this by 2
 		if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
-	}
-	if (controller.digital(input::DigitalAction::menu_down).held) {
-		m_minimap->move({0.f, 1.f});
-		if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
-	}
-	if (controller.digital(input::DigitalAction::menu_left).held) {
-		m_minimap->move({-1.f, 0.f});
-		if (!m_minimap->hit_horiz_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
-	}
-	if (controller.digital(input::DigitalAction::menu_right).held) {
-		m_minimap->move({1.f, 0.f});
-		if (!m_minimap->hit_horiz_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+	} else {
+		if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::held)) {
+			m_minimap->move({0.f, -1.f});
+			if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+		}
+		if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::held)) {
+			m_minimap->move({0.f, 1.f});
+			if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+		}
+		if (controller.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::held)) {
+			m_minimap->move({-1.f, 0.f});
+			if (!m_minimap->hit_horiz_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+		}
+		if (controller.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::held)) {
+			m_minimap->move({1.f, 0.f});
+			if (!m_minimap->hit_horiz_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+		}
 	}
 	if (controller.digital(input::DigitalAction::menu_tab_left).held) {
 		m_minimap->zoom(zoom_factor);

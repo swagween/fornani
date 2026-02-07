@@ -168,22 +168,22 @@ bool InventoryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unuse
 			}
 		} else {
 			m_remembered_locations.at(m_zone_iterator.get()) = m_selector->get_index();
-			if (controller.digital(input::DigitalAction::menu_up).triggered) {
+			if (controller.menu_move(input::MoveDirection::up)) {
 				m_description->flush();
 				if (m_selector->move_direction({0, -1}).up()) { switch_zones(-1); }
 				soundboard.flags.menu.set(audio::Menu::shift);
 			}
-			if (controller.digital(input::DigitalAction::menu_down).triggered) {
+			if (controller.menu_move(input::MoveDirection::down)) {
 				m_description->flush();
 				if (m_selector->move_direction({0, 1}).down()) { switch_zones(1); }
 				soundboard.flags.menu.set(audio::Menu::shift);
 			}
-			if (controller.digital(input::DigitalAction::menu_left).triggered) {
+			if (controller.menu_move(input::MoveDirection::left)) {
 				m_description->flush();
 				if (m_selector->move_direction({-1, 0}).left()) {}
 				soundboard.flags.menu.set(audio::Menu::shift);
 			}
-			if (controller.digital(input::DigitalAction::menu_right).triggered) {
+			if (controller.menu_move(input::MoveDirection::right)) {
 				m_description->flush();
 				if (m_selector->move_direction({1, 0}).right()) {}
 				soundboard.flags.menu.set(audio::Menu::shift);
@@ -196,7 +196,7 @@ bool InventoryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unuse
 						if (auto* item = m_player->catalog.inventory.find_item(*m_current_item)) {
 							auto list = item->generate_menu_list(m_services->data.gui_text["item_menu"]);
 							if (list.size() > 1) {
-								m_item_menu = MiniMenu(*m_services, list, m_selector->get_menu_position(), true);
+								m_item_menu = MiniMenu(*m_services, list, m_selector->get_menu_position(), "mini_white");
 							} else {
 								soundboard.flags.menu.set(audio::Menu::select);
 							}

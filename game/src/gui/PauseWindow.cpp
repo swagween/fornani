@@ -8,7 +8,7 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc)
 	: PauseWindow{svc, std::vector<std::string>{svc.data.gui_text["pause_menu"]["resume"].as_string(), svc.data.gui_text["pause_menu"]["settings"].as_string(), svc.data.gui_text["pause_menu"]["controls"].as_string(),
 												svc.data.gui_text["pause_menu"]["quit"].as_string()}} {}
 
-PauseWindow::PauseWindow(automa::ServiceProvider& svc, std::vector<std::string> options) : m_menu(svc, options, svc.window->f_center_screen() + sf::Vector2f{0.f, 0.f}), m_dimensions{} {
+PauseWindow::PauseWindow(automa::ServiceProvider& svc, std::vector<std::string> options) : m_menu(svc, options, svc.window->f_center_screen() + sf::Vector2f{0.f, 0.f}, "mini_classic"), m_dimensions{} {
 	m_background.setSize(svc.window->f_screen_dimensions());
 	auto color = colors::ui_black;
 	color.a = 220;

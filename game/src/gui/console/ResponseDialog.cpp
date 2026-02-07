@@ -52,8 +52,8 @@ void ResponseDialog::stylize(sf::Text& message) const {
 }
 
 bool ResponseDialog::handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard) {
-	auto const& up = controller.digital(input::DigitalAction::menu_up).triggered;
-	auto const& down = controller.digital(input::DigitalAction::menu_down).triggered;
+	auto const& up = controller.menu_move(input::MoveDirection::up);
+	auto const& down = controller.menu_move(input::MoveDirection::down);
 	auto const& select = controller.digital(input::DigitalAction::menu_select).triggered;
 
 	if (select && m_ready) {
