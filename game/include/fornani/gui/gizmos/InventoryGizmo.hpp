@@ -61,6 +61,7 @@ class InventoryGizmo : public Gizmo {
 	sf::Sprite m_item_sprite;
 
 	sf::Vector2f m_equipped_items_position;
+	sf::Vector2f m_menu_offset;
 
 	player::Player* m_player;
 

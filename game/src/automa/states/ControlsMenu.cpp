@@ -91,7 +91,7 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	for (auto& option : options) {
 		option.flagged = current_selection.get() == option.index && option_is_selected;
-		option.update(svc, current_selection.get());
+		option.update(current_selection.get());
 	}
 
 	refresh_controls(svc);
@@ -113,7 +113,7 @@ void ControlsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 	std::size_t ctr{0};
 	for (auto& option : options) {
-		option.update(svc, current_selection.get());
+		option.update(current_selection.get());
 		if (ctr > 0 && ctr < options.size() - 3) {
 			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), m_scene));
 			auto id = current_tab > 0 ? std::string{tab_id_prefixes.at(current_tab)} + std::string{option.label.getString()} : std::string{option.label.getString()};
@@ -160,7 +160,7 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 		// 	     To make up for it we don't add the getLocalBounds().height factor here, but keep it in mind when it is fixed!
 		option.position.y = top_buffer + ctr * (spacing);
 		option.index = ctr;
-		option.update(svc, current_selection.get());
+		option.update(current_selection.get());
 
 		control_list.push_back(sf::Text(svc.text.fonts.title));
 		++ctr;

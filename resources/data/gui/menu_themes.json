@@ -26,6 +26,7 @@
     "deactivated": [24, 34, 67]
   },
   "mini_white": {
+    "label": "mini_white",
     "primary": [255, 7, 100],
     "secondary": [195, 185, 136]
   }

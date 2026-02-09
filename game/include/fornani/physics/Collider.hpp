@@ -59,7 +59,7 @@ enum class PermaFlags { world_grounded, downhill };
 
 enum class Collision { any_collision, has_left_collision, has_right_collision, has_top_collision, has_bottom_collision, ramp_collision };
 enum class Dash { dash_cancel_collision };
-enum class Movement { dashing, jumping, crouching };
+enum class Movement { dashing, jumping, crouching, walljumping };
 
 struct PhysicsStats {
 	float GRAV{0.002f};

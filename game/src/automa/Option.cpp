@@ -7,7 +7,7 @@
 namespace fornani::automa {
 
 Option::Option(ServiceProvider& svc, MenuTheme& theme, std::string_view lbl) : label(svc.text.fonts.title), selectable{true}, m_theme{&theme} {
-	label.setString(lbl.data());
+	label.setString(std::string{lbl});
 	label.setCharacterSize(16);
 	label.setLetterSpacing(1.f);
 	label.setFillColor(theme.primary_text_color);
@@ -16,7 +16,7 @@ Option::Option(ServiceProvider& svc, MenuTheme& theme, std::string_view lbl) : l
 
 void Option::set_string(std::string_view str) { label.setString(str.data()); }
 
-void Option::update(ServiceProvider& svc, int selection) {
+void Option::update(int selection) {
 	label.setPosition(position);
 	left_offset = position - sf::Vector2f{label.getLocalBounds().getCenter().x + dot_offset.x - 2, -dot_offset.y};
 	right_offset = position + sf::Vector2f{label.getLocalBounds().getCenter().x + dot_offset.x, dot_offset.y};

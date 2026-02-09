@@ -12,7 +12,7 @@ namespace fornani::gui {
 Console::Console(automa::ServiceProvider& svc)
 	: m_services(&svc), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard", 64}, m_styling{.corner_factor{28}, .edge_factor{1}, .padding_scale{1.1f}},
 	  m_nineslice(svc, svc.assets.get_texture("blue_console"), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}), m_mode{ConsoleMode::writing}, m_response_offset{-192.f, 16.f},
-	  m_exit_stall{650}, m_item_display_timer{1200} {
+	  m_exit_stall{650}, m_item_display_timer{1200}, m_launch{8} {
 	NANI_LOG_DEBUG(m_logger, "Console ctor @{}", static_cast<void const*>(this));
 	svc.input_system.set_action_set(input::ActionSet::Menu);
 	text_suite = svc.text.console;
@@ -20,6 +20,7 @@ Console::Console(automa::ServiceProvider& svc)
 	m_began = true;
 	m_path.update();
 	m_position = m_path.get_position();
+	m_launch.start();
 }
 
 Console::Console(automa::ServiceProvider& svc, std::string_view message) : Console(svc) { load_single_message(message); }
@@ -46,6 +47,7 @@ void Console::relaunch(automa::ServiceProvider& svc, dj::Json const& source, std
 
 void Console::update(automa::ServiceProvider& svc) {
 	m_exit_stall.update();
+	m_launch.update();
 	m_item_display_timer.update();
 	if (m_item_display_timer.is_almost_complete()) { m_item_widget->send_out(); }
 	if (!is_active()) { return; }
@@ -143,6 +145,7 @@ void Console::update(automa::ServiceProvider& svc) {
 }
 
 void Console::render(sf::RenderWindow& win) {
+	if (m_launch.running()) { return; }
 	// debug();
 	if (!m_writer || !is_active()) { return; }
 	m_nineslice.render(win);

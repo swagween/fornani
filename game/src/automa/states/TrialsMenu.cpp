@@ -22,7 +22,7 @@ TrialsMenu::TrialsMenu(ServiceProvider& svc, player::Player& player) : MenuState
 	for (auto& option : options) {
 		option.position = {64.f, top_buffer + ctr * spacing};
 		option.index = ctr;
-		option.update(svc, current_selection.get());
+		option.update(current_selection.get());
 		++ctr;
 	}
 
@@ -36,7 +36,7 @@ void TrialsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	MenuState::tick_update(svc, engine);
 	m_loading.update();
 	for (auto& option : options) {
-		option.update(svc, current_selection.get());
+		option.update(current_selection.get());
 		option.label.setOrigin({});
 	}
 	if (svc.input_system.menu_move(input::MoveDirection::up)) { switch_selections(svc); }

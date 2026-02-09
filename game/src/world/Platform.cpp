@@ -127,11 +127,12 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 				get_collider().physics.position.x = std::lerp(start.x, end.x, (path_position - edge_start) / (edge_end - edge_start));
 				get_collider().physics.position.y = std::lerp(start.y, end.y, (path_position - edge_start) / (edge_end - edge_start));
 			}
-			get_collider().physics.velocity = get_collider().physics.position - m_old_position;
-			get_collider().physics.real_velocity = get_collider().physics.velocity;
 			// set direction
 			direction.lnr = get_collider().physics.velocity.x > 0.0f ? LNR::right : LNR::left;
 			direction.und = get_collider().physics.velocity.y > 0.0f ? UND::down : UND::up;
+
+			get_collider().physics.velocity = get_collider().physics.position - m_old_position;
+			get_collider().physics.real_velocity = get_collider().physics.velocity;
 
 			break;
 		} else {
@@ -168,7 +169,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 void Platform::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	constexpr auto skip_value{16.f};
 	player.get_collider().handle_collider_collision(get_collider());
-	// if (player.get_collider().flags.state.test(shape::State::ceiling_collision)) { player.get_collider().physics.acceleration.y = player.physics_stats.maximum_velocity.y; }
+	//  if (player.get_collider().flags.state.test(shape::State::ceiling_collision)) { player.get_collider().physics.acceleration.y = player.physics_stats.maximum_velocity.y; }
 	if (player.get_collider().jumpbox.overlaps(get_collider().bounding_box) && !player.get_collider().perma_grounded() && is_sticky()) {
 		auto stuck_left = player.get_collider().has_left_wallslide_collision() && get_collider().physics.velocity.x < 0.f;
 		auto stuck_right = player.get_collider().has_right_wallslide_collision() && get_collider().physics.velocity.x > 0.f;

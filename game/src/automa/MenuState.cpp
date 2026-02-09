@@ -18,7 +18,7 @@ MenuState::MenuState(ServiceProvider& svc, player::Player& player, std::string_v
 	for (auto& option : options) {
 		option.position = {svc.window->i_screen_dimensions().x * 0.5f, top_buffer + ctr * spacing};
 		option.index = ctr;
-		option.update(svc, current_selection.get());
+		option.update(current_selection.get());
 		++ctr;
 	}
 
@@ -40,7 +40,7 @@ MenuState::MenuState(ServiceProvider& svc, player::Player& player, std::string_v
 
 void MenuState::tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
-	for (auto& option : options) { option.update(svc, current_selection.get()); }
+	for (auto& option : options) { option.update(current_selection.get()); }
 	if (svc.input_system.menu_move(input::MoveDirection::down) && m_input_authorized) {
 		current_selection.modulate(1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);

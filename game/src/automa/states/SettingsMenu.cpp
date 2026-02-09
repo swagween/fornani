@@ -74,7 +74,7 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 	MenuState::tick_update(svc, engine);
 	for (auto& option : options) {
-		option.update(svc, current_selection.get());
+		option.update(current_selection.get());
 		option.label.setLetterSpacing(1.2f);
 	}
 	if (adjust_mode()) {

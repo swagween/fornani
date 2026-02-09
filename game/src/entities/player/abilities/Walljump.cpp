@@ -2,8 +2,8 @@
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entities/player/PlayerController.hpp>
 #include <fornani/entities/player/abilities/Walljump.hpp>
-#include <fornani/service/ServiceProvider.hpp>
 #include <fornani/physics/Collider.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani::player {
@@ -21,10 +21,14 @@ Walljump::Walljump(automa::ServiceProvider& svc, world::Map& map, shape::Collide
 void Walljump::update(shape::Collider& collider, PlayerController& controller) {
 	if (m_beginning.just_started()) { collider.physics.acceleration.y = m_vertical_multiplier; }
 	m_beginning.update();
+	collider.flags.movement.set(shape::Movement::walljumping);
 	if (m_beginning.is_complete()) { m_direction = controller.direction; }
 	Ability::update(collider, controller);
 	if (m_beginning.is_complete()) { m_flags.reset(AbilityFlags::active); }
-	if (is_done()) { fail(); }
+	if (is_done()) {
+		fail();
+		collider.flags.movement.reset(shape::Movement::walljumping);
+	}
 }
 
 } // namespace fornani::player

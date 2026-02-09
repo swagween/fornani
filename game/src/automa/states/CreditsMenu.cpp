@@ -26,7 +26,7 @@ void CreditsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	m_loading.update();
 	for (auto& option : options) {
 		option.position.x = 64.f;
-		option.update(svc, current_selection.get());
+		option.update(current_selection.get());
 		option.label.setOrigin({});
 	}
 	if (current_selection.get() != prev_selection) { refresh(svc); }

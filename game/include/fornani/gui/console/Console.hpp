@@ -104,6 +104,7 @@ class Console {
 
 	util::BitFlags<ConsoleFlags> m_flags{};
 	util::BitFlags<ConsoleTriggers> m_triggers{};
+	util::Cooldown m_launch;
 	util::Cooldown m_exit_stall;
 	util::Cooldown m_item_display_timer;
 

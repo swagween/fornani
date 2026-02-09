@@ -16,6 +16,7 @@ Antenna::Antenna(world::Map& map, sf::Vector2f pos, sf::Color col, float agf, sf
 	get_collider().set_trait(shape::ColliderTrait::particle);
 	get_collider().set_exclusion_target(shape::ColliderTrait::player);
 	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
+	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 	get_collider().set_exclusion_target(shape::ColliderTrait::block);
 	get_collider().set_attribute(shape::ColliderAttributes::no_collision);
 	get_collider().set_attribute(shape::ColliderAttributes::custom_resolution);

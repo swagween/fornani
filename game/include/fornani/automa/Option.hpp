@@ -34,7 +34,7 @@ struct Option {
 	bool selected{};
 	bool flagged{};
 	bool selectable;
-	void update(ServiceProvider& svc, int selection);
+	void update(int selection);
 
   private:
 	MenuTheme* m_theme;

@@ -10,7 +10,7 @@ StatSheet::StatSheet(ServiceProvider& svc, player::Player& player) : MenuState(s
 	current_selection = util::Circuit(static_cast<int>(options.size()));
 	auto ctr{1};
 	for (auto& option : options) {
-		option.update(svc, current_selection.get());
+		option.update(current_selection.get());
 		option.label.setLetterSpacing(1.4f);
 		option.position = {svc.window->f_center_screen().x, svc.window->f_screen_dimensions().y - 60.f - ctr * 28.f};
 		++ctr;
@@ -43,7 +43,7 @@ void StatSheet::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	loading.update();
 	auto ctr{1};
 	for (auto& option : options) {
-		option.update(svc, current_selection.get());
+		option.update(current_selection.get());
 		option.label.setLetterSpacing(1.4f);
 		option.position = {svc.window->f_center_screen().x, svc.window->f_screen_dimensions().y - 60.f - ctr * 28.f};
 		++ctr;

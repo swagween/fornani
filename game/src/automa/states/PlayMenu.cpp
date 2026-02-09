@@ -20,7 +20,6 @@ void PlayMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		}
 	}
-	for (auto& option : options) { option.update(svc, current_selection.get()); }
 }
 
 void PlayMenu::frame_update(ServiceProvider& svc) {}

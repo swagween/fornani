@@ -35,7 +35,7 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		}
 		if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {
 			if (m_file_select_menu) {
-				m_file_select_menu = {};
+				m_file_select_menu.reset();
 				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 			}
 		}
@@ -57,12 +57,13 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 					break;
 				case 2:
 					m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "delete_file", gui::OutputType::gradual);
-					m_file_select_menu = {};
+					m_file_select_menu.reset();
 					break;
 				}
 			} else {
-				m_file_select_menu = gui::MiniMenu(svc, {svc.data.gui_text["file_menu"]["play"].as_string(), svc.data.gui_text["file_menu"]["stats"].as_string(), svc.data.gui_text["file_menu"]["delete"].as_string()},
-												   options.at(current_selection.get()).position, "classic");
+				auto& opt = options.at(current_selection.get());
+				auto menu_pos = opt.position + sf::Vector2f{opt.label.getLocalBounds().getCenter().x + 2.f * spacing, 0.f};
+				m_file_select_menu = gui::MiniMenu(svc, {svc.data.gui_text["file_menu"]["play"].as_string(), svc.data.gui_text["file_menu"]["stats"].as_string(), svc.data.gui_text["file_menu"]["delete"].as_string()}, menu_pos, p_theme);
 			}
 		}
 	}
@@ -76,7 +77,7 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	auto& opt = options.at(current_selection.get());
 	auto minimenu_dim{sf::Vector2f{8.f, 8.f}}; // defines the width of the nineslice, which does not include corner and edge dimensions. 8.f is enough to comfortably hold all the file options.
-	auto minimenu_pos{opt.position + sf::Vector2f{opt.label.getLocalBounds().getCenter().x + minimenu_dim.x * 0.5f + 2.f * spacing, 0.f}};
+	auto minimenu_pos{opt.position + sf::Vector2f{opt.label.getLocalBounds().getCenter().x + minimenu_dim.x * 0.5f + 3.f * spacing, 0.f}};
 	if (m_file_select_menu) { m_file_select_menu->update(svc, minimenu_dim, minimenu_pos); }
 
 	player->request_animation(player::AnimState::run);
@@ -115,7 +116,7 @@ void FileMenu::refresh(ServiceProvider& svc) {
 		if (save.is_new() && options.at(ctr).label.getString().getSize() < 8) { options.at(ctr).label.setString(options.at(ctr).label.getString() + " (new)"); }
 		++ctr;
 	}
-	for (auto& option : options) { option.update(svc, current_selection.get()); }
+	for (auto& option : options) { option.update(current_selection.get()); }
 }
 
 } // namespace fornani::automa

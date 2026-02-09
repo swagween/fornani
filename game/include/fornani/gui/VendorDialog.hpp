@@ -2,6 +2,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <fornani/automa/Option.hpp>
 #include <fornani/entities/animation/AnimatedSprite.hpp>
 #include <fornani/entity/NPC.hpp>
 #include <fornani/gui/InventorySelector.hpp>
@@ -80,6 +81,7 @@ class VendorDialog {
 	OrbDisplay m_orb_display;
 	sf::RectangleShape m_background{};
 	Palette m_palette;
+	automa::MenuTheme m_theme;
 
 	NPC* my_npc;
 

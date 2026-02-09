@@ -344,7 +344,8 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 		flags.dash.set(Dash::dash_cancel_collision);
 		flags.external_state.set(ExternalState::collider_collision);
 		flags.external_state.set(ExternalState::horiz_collider_collision);
-		correct_x(mtvs.horizontal);
+		correct_x(mtvs.horizontal, std::abs(velocity.x) > 0.f && (external_world_grounded() || flags.movement.test(Movement::walljumping) || flags.movement.test(Movement::dashing)));
+		flags.movement.reset(shape::Movement::walljumping);
 	}
 	if (predictive_combined.SAT(collider) && !flags.movement.test(Movement::jumping)) {
 		flags.collision.set(Collision::any_collision);
