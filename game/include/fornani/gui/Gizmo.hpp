@@ -2,9 +2,9 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <fornani/automa/Option.hpp>
 #include <fornani/components/PhysicsComponent.hpp>
 #include <fornani/components/SteeringBehavior.hpp>
+#include <fornani/graphics/MenuTheme.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/Polymorphic.hpp>
 #include <fornani/utils/RectPath.hpp>
@@ -90,7 +90,7 @@ class Gizmo : public UniquePolymorphic {
 	util::Cooldown m_light_shift{light_shift_time_v};
 	std::string m_label{};
 	GizmoState m_state{};
-	std::optional<automa::MenuTheme> p_theme{};
+	std::optional<MenuTheme> p_theme{};
 	std::optional<DashboardPort> m_dashboard_port{}; // determines the index in the dashboard's gizmo vector
 	// the actual position of the gizmo, will generally target m_placement
 	components::PhysicsComponent m_physics{};

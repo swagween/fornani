@@ -10,6 +10,7 @@ enum class SettingsMenuMode { ready, adjust };
 class SettingsMenu final : public MenuState {
   public:
 	SettingsMenu(ServiceProvider& svc, player::Player& player);
+	void on_exit() override;
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;

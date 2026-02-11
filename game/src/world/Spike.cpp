@@ -53,14 +53,12 @@ void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::
 			map.transition.end();
 			soft_reset = false;
 		}
-		if (player.hurtbox.overlaps(hitbox) && map.transition.is(graphics::TransitionState::inactive) && !player.invincible()) {
+		if (player.hurtbox.overlaps(hitbox) && map.transition.is(graphics::TransitionState::inactive) && !player.invincible() && !player.is_dead()) {
 			player.hurt();
 			player.freeze_position();
 			player.shake_sprite();
-			if (!player.is_dead()) {
-				soft_reset = true;
-				map.transition.start();
-			}
+			soft_reset = true;
+			map.transition.start();
 		}
 	} else {
 		if (player.hurtbox.overlaps(hitbox)) { player.hurt(); }

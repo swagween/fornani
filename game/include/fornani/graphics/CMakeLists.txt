@@ -3,6 +3,7 @@ nani_add_headers(
         Background.hpp
         Biome.hpp
         CameraController.hpp
+        Color.hpp
         ColorFade.hpp
         Colors.hpp
         DayNightShifter.hpp
@@ -11,6 +12,7 @@ nani_add_headers(
         HelpText.hpp
         Indicator.hpp
         MapTexture.hpp
+        MenuTheme.hpp
         Rain.hpp
         Scenery.hpp
         SpriteHistory.hpp

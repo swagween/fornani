@@ -141,11 +141,10 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 	for (auto& room : m_atlas) {
 		if (!svc.data.is_room_discovered(room->get_id())) { continue; }
 		room->set_resolution(m_resolution);
-		m_map_sprite = sf::Sprite{room->get().getTexture()};
-		m_map_sprite->setTextureRect(sf::IntRect({}, static_cast<sf::Vector2<int>>(room->get().getSize())));
+		m_map_sprite = sf::Sprite{room->get(false, room->get_id() == get_currently_hovered_room()).getTexture()};
 		m_map_sprite->setScale(get_ratio_vec2().componentWiseDiv(scaled_port.size));
 		m_map_sprite->setPosition((room->get_position() * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size));
-		auto outline{sf::Sprite{room->get(true).getTexture()}};
+		auto outline{sf::Sprite{room->get(true, room->get_id() == get_currently_hovered_room()).getTexture()}};
 		outline.setScale(get_ratio_vec2().componentWiseDiv(scaled_port.size));
 		for (auto i{-1}; i < 2; ++i) {
 			for (auto j{-1}; j < 2; ++j) {
@@ -156,6 +155,11 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 				outline.setPosition((room->get_position() * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size) + adjustment);
 				win.draw(outline);
 			}
+		}
+		if (m_map_sprite->getGlobalBounds().contains(svc.window->f_center_screen())) {
+			m_currently_hovered_room = room->get_id();
+			if (m_currently_hovered_room != m_previously_hovered_room) { svc.soundboard.flags.menu.set(audio::Menu::shift); }
+			m_previously_hovered_room = m_currently_hovered_room;
 		}
 		if (m_map_sprite) { win.draw(*m_map_sprite); }
 	}
@@ -172,7 +176,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 	if (m_cursor) {
 		m_cursor->setScale(constants::f_scale_vec.componentWiseDiv(scaled_port.size));
 		m_cursor->setPosition(svc.window->f_center_screen());
-		// win.draw(*m_cursor);
+		win.draw(*m_cursor);
 	}
 	svc.window->restore_view();
 }

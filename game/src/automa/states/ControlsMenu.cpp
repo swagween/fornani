@@ -8,7 +8,7 @@
 namespace fornani::automa {
 
 constexpr std::array<std::string_view, 2> tabs = {"controls_platformer", "controls_menu"};
-constexpr std::array<std::string_view, 2> tab_id_prefixes = {"platformer_", "menu_"};
+constexpr std::array<std::string_view, 2> tab_id_prefixes = {"", "menu_"};
 
 ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "controls_platformer"), instruction(svc.text.fonts.title), m_current_tab{tabs.size()}, m_scene{"controls_platformer"} {
 	m_parent_menu = MenuType::options;
@@ -24,6 +24,7 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player) : MenuS
 	debug.setSize({2.f, svc.window->f_screen_dimensions().y});
 	debug.setOutlineColor(colors::blue);
 	debug.setOutlineThickness(-1);
+	refresh_controls(svc);
 }
 
 void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
@@ -32,10 +33,25 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	binding_mode ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
 
 	// reset gamepad settings color
-	options.at(options.size() - 2).selectable = svc.input_system.is_gamepad_connected();
+	options.at(options.size() - 2).selectable = svc.input_system.is_gamepad();
 
-	static bool entered{};
+	for (auto& option : options) {
+		option.flagged = current_selection.get() == option.index && option_is_selected;
+		option.update(current_selection.get());
+	}
+
+	static auto action_to_bind = std::optional<input::DigitalAction>{};
+	static auto last_key_pressed = std::optional<sf::Keyboard::Scancode>{};
+
 	if (binding_mode) {
+		if (!svc.input_system.consume_flag(input::InputSystemFlags::key_was_pressed)) { return; }
+		if (svc.input_system.digital(input::DigitalAction::menu_select).held && !svc.input_system.digital(input::DigitalAction::menu_select).triggered) { return; }
+		if (svc.input_system.digital(input::DigitalAction::menu_select).released) {
+			last_key_pressed.reset();
+			return;
+		}
+		if (svc.input_system.keys_pressed.empty()) { return; }
+		last_key_pressed = svc.input_system.get_last_key_pressed();
 		if (svc.input_system.digital(input::DigitalAction::menu_confirm).triggered) {
 			if (svc.input_system.has_forbidden_duplicate_binding()) {
 				svc.soundboard.flags.menu.set(audio::Menu::error);
@@ -43,20 +59,29 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 				binding_mode = false;
 				option_is_selected = false;
 				svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
+				refresh_controls(svc);
 			}
 		}
-		auto id = std::string(tab_id_prefixes.at(m_current_tab.get())) + std::string(options.at(current_selection.get()).label.getString());
-		auto action = input::action_from_string(id.data());
-		if (binding_mode && svc.input_system.was_keyboard_input_detected() && entered) { svc.input_system.set_primary_keyboard_binding(action, svc.input_system.get_last_key_pressed()); }
-		entered = true;
+		if (svc.input_system.get_last_key_pressed() == sf::Keyboard::Scancode::Escape) {
+			binding_mode = false;
+			option_is_selected = false;
+			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+			refresh_controls(svc);
+		}
+		svc.soundboard.flags.menu.set(audio::Menu::select);
+		if (binding_mode && svc.input_system.was_keyboard_input_detected() && action_to_bind && last_key_pressed) { svc.input_system.set_primary_keyboard_binding(action_to_bind.value(), svc.input_system.get_last_key_pressed()); }
+
+		refresh_controls(svc);
+
+		return;
 	}
 
 	auto this_selection = current_selection.get();
-	if (svc.input_system.menu_move(input::MoveDirection::up) && !binding_mode) {
+	if (svc.input_system.menu_move(input::MoveDirection::up)) {
 		while (!options.at(current_selection.get()).selectable && current_selection.get() != this_selection) { current_selection.modulate(-1); }
 		option_is_selected = false;
 	}
-	if (svc.input_system.menu_move(input::MoveDirection::down) && !binding_mode) {
+	if (svc.input_system.menu_move(input::MoveDirection::down)) {
 		while (!options.at(current_selection.get()).selectable && current_selection.get() != this_selection) { current_selection.modulate(1); }
 		option_is_selected = false;
 	}
@@ -79,22 +104,19 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		// Reset to default should be last option
 		else if (current_selection.get() == options.size() - 1) {
 			restore_defaults(svc);
-		} else if (!binding_mode) {
+			refresh_controls(svc);
+		} else {
 			option_is_selected = !option_is_selected;
 			binding_mode = true;
-			entered = false;
+			refresh_controls(svc);
+			action_to_bind.reset();
 			auto& control = control_list.at(current_selection.get());
 			control.setString("Press a key (Enter to confirm)");
+			auto id = std::string(tab_id_prefixes.at(m_current_tab.get())) + std::string(options.at(current_selection.get()).label.getString());
+			action_to_bind = input::action_from_string(id);
 			control.setOrigin({control.getLocalBounds().size.x, control.getLocalBounds().getCenter().y});
 		}
 	}
-
-	for (auto& option : options) {
-		option.flagged = current_selection.get() == option.index && option_is_selected;
-		option.update(current_selection.get());
-	}
-
-	refresh_controls(svc);
 
 	loading.update();
 }
@@ -114,10 +136,10 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 	std::size_t ctr{0};
 	for (auto& option : options) {
 		option.update(current_selection.get());
-		if (ctr > 0 && ctr < options.size() - 3) {
+		if (ctr > 0 && ctr < options.size() - 2) {
 			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), m_scene));
 			auto id = current_tab > 0 ? std::string{tab_id_prefixes.at(current_tab)} + std::string{option.label.getString()} : std::string{option.label.getString()};
-			auto action = input::action_from_string(id.data());
+			auto action = input::action_from_string(id);
 
 			auto& control = control_list.at(ctr);
 			control.setString(std::string(input::string_from_scancode(svc.input_system.get_primary_keyboard_binding(action))));
@@ -127,7 +149,7 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 			control.setLetterSpacing(1.f);
 			control.setFillColor(option.label.getFillColor());
 			control.setOrigin(control.getLocalBounds().getCenter());
-			option.selectable = !svc.input_system.is_gamepad_connected() && svc.input_system.is_gamepad_input_enabled();
+			option.selectable = !svc.input_system.is_gamepad();
 		}
 		++ctr;
 	}

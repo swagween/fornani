@@ -3,15 +3,16 @@
     "chests": [
       {
         "dimensions": [
-          1,
+          2,
           1
         ],
         "id": 44193,
-        "modifier": 31,
+        "modifier": 70,
         "position": [
           79,
           22
         ],
+        "tag": "loops_mixtape",
         "type": 2
       }
     ],

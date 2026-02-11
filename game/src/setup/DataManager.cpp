@@ -1,5 +1,6 @@
 
 #include "fornani/setup/DataManager.hpp"
+#include <fornani/graphics/MenuTheme.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/systems/InputSystem.hpp"
@@ -207,7 +208,7 @@ void DataManager::load_data() {
 	assert(!menu_themes.is_null());
 
 	auto themestr = settings["theme"] ? settings["theme"].as_string() : "classic";
-	theme = automa::MenuTheme{menu_themes[themestr]};
+	theme = MenuTheme{menu_themes[themestr]};
 	NANI_LOG_INFO(m_logger, "Loaded theme {}", themestr);
 
 	m_services->stopwatch.stop();
@@ -317,10 +318,15 @@ void DataManager::save_settings() {
 	settings["music_volume"] = m_services->music_player.get_volume();
 	settings["sfx_volume"] = m_services->soundboard.get_volume();
 	settings["fullscreen"] = m_services->fullscreen();
-	if (!settings.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save user settings!"); }
+	if (!settings.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str())) {
+		NANI_LOG_ERROR(m_logger, "Failed to save user settings!");
+	} else {
+
+		NANI_LOG_INFO(m_logger, "Saved settings.");
+	}
 }
 
-void DataManager::set_theme(automa::MenuTheme to) {
+void DataManager::set_theme(MenuTheme to) {
 	settings["theme"] = to.label;
 	theme = to;
 	save_settings();
@@ -406,10 +412,11 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 void DataManager::load_settings() {
 	settings = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str());
 	assert(!settings.is_null());
-	m_services->input_system.set_flag(input::InputSystemFlags::auto_sprint, settings["auto_sprint"].as_bool());
+	m_services->input_system.set_setting(input::InputSystemSettings::auto_sprint, settings["auto_sprint"].as_bool());
 	m_services->set_tutorial(settings["tutorial"].as_bool());
-	m_services->input_system.set_flag(input::InputSystemFlags::gamepad_input_enabled, settings["gamepad"].as_bool());
+	m_services->input_system.set_setting(input::InputSystemSettings::gamepad_input_enabled, settings["gamepad"].as_bool());
 	m_services->music_player.set_volume(settings["music_volume"].as<float>());
+	m_services->ambience_player.set_volume(settings["ambience_volume"].as<float>());
 	m_services->soundboard.set_volume(settings["sfx_volume"].as<float>());
 	m_services->set_fullscreen(settings["fullscreen"].as_bool());
 	NANI_LOG_INFO(m_logger, "Enabled user settings.");
@@ -623,6 +630,7 @@ void DataManager::load_controls(input::InputSystem& controller) {
 		assert(item.is_object());
 		if (item.as_object().contains("primary_key")) { controller.set_primary_keyboard_binding(input::action_from_string(key), input::scancode_from_string(item["primary_key"].as_string())); }
 	}
+	controller.load_keyboard_controls(m_services->finder);
 }
 
 void DataManager::save_controls(input::InputSystem& controller) {
@@ -651,6 +659,13 @@ auto DataManager::get_gun_tag_from_id(int id) const -> std::optional<std::string
 }
 
 auto DataManager::get_gun_id_from_tag(std::string_view tag) const -> int { return weapon[tag]["metadata"]["id"].as<int>(); }
+
+auto DataManager::get_map_data_from_id(int id) const -> std::optional<std::reference_wrapper<MapData const>> {
+	for (auto const& map : map_jsons) {
+		if (map.metadata["meta"]["room_id"].as<int>() == id) { return map; }
+	}
+	return std::nullopt;
+}
 
 auto DataManager::get_map_json_from_id(int id) const -> std::optional<std::reference_wrapper<dj::Json const>> {
 	for (auto const& map : map_jsons) {

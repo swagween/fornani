@@ -1,5 +1,6 @@
 
 #include "fornani/automa/Option.hpp"
+#include <fornani/graphics/MenuTheme.hpp>
 #include "fornani/automa/GameState.hpp"
 #include "fornani/graphics/Colors.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -24,20 +25,6 @@ void Option::update(int selection) {
 	if (flagged) { label.setFillColor(m_theme->activated_text_color); }
 	if (!selectable) { label.setFillColor(m_theme->deactivated_text_color); }
 	label.setOrigin(label.getLocalBounds().getCenter());
-}
-
-MenuTheme::MenuTheme(dj::Json const& in) {
-	// metadata
-	label = in["label"].as_string();
-	title_index = in["index"].as<int>();
-
-	// colors
-	backdrop = sf::Color{in["backdrop"][0].as<std::uint8_t>(), in["backdrop"][1].as<std::uint8_t>(), in["backdrop"][2].as<std::uint8_t>()};
-	primary_text_color = sf::Color{in["primary"][0].as<std::uint8_t>(), in["primary"][1].as<std::uint8_t>(), in["primary"][2].as<std::uint8_t>()};
-	secondary_text_color = sf::Color{in["secondary"][0].as<std::uint8_t>(), in["secondary"][1].as<std::uint8_t>(), in["secondary"][2].as<std::uint8_t>()};
-	activated_text_color = sf::Color{in["activated"][0].as<std::uint8_t>(), in["activated"][1].as<std::uint8_t>(), in["activated"][2].as<std::uint8_t>()};
-	deactivated_text_color = sf::Color{in["deactivated"][0].as<std::uint8_t>(), in["deactivated"][1].as<std::uint8_t>(), in["deactivated"][2].as<std::uint8_t>()};
-	dot_color = sf::Color{in["dot"][0].as<std::uint8_t>(), in["dot"][1].as<std::uint8_t>(), in["dot"][2].as<std::uint8_t>()};
 }
 
 } // namespace fornani::automa

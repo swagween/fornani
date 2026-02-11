@@ -62,11 +62,14 @@ class MiniMap {
 	[[nodiscard]] auto get_scale() const -> float { return m_scale; }
 	[[nodiscard]] auto get_ratio() const -> float { return 32.f / m_scale; }
 	[[nodiscard]] auto get_ratio_vec2() const -> sf::Vector2f { return sf::Vector2f{get_ratio(), get_ratio()}; }
+	[[nodiscard]] auto get_currently_hovered_room() const -> int { return m_currently_hovered_room; }
 
   private:
 	bool m_zoom_limit{};
 	bool m_pan_limit_x{};
 	bool m_pan_limit_y{};
+	int m_currently_hovered_room{};
+	int m_previously_hovered_room{};
 	float m_scale{8.f};
 	float m_speed{};
 	float m_texture_scale{};

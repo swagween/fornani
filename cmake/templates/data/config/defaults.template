@@ -61,10 +61,12 @@
 			"primary_key": "Z"
 		},
 		"menu_back": {
-			"primary_key": "X"
+			"primary_key": "X",
+			"secondary_key": "Esc"
 		},
 		"menu_close": {
-			"primary_key": "E"
+			"primary_key": "E",
+			"secondary_key": "Esc"
 		},
 		"menu_tab_left": {
 			"primary_key": "A"

@@ -26,6 +26,8 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player)
 	options.at(static_cast<int>(SettingsToggles::military_time)).label.setString(toggleables.military_time.getString() + (svc.world_clock.is_military() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 }
 
+void SettingsMenu::on_exit() { p_services->data.save_settings(); }
+
 void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	m_input_authorized = !adjust_mode() && !m_console;
 	adjust_mode() ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
@@ -42,16 +44,14 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			if (adjust_mode()) {
 				m_mode = SettingsMenuMode::ready;
 				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-			} else {
-				svc.data.save_settings();
 			}
 		}
 		if (svc.input_system.digital(input::DigitalAction::menu_select).triggered && !adjust_mode()) {
 			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 			switch (current_selection.get()) {
-			case static_cast<int>(SettingsToggles::autosprint): svc.input_system.set_flag(input::InputSystemFlags::auto_sprint, !svc.input_system.is_autosprint_enabled()); break;
+			case static_cast<int>(SettingsToggles::autosprint): svc.input_system.set_setting(input::InputSystemSettings::auto_sprint, !svc.input_system.is_autosprint_enabled()); break;
 			case static_cast<int>(SettingsToggles::tutorial): svc.toggle_tutorial(); break;
-			case static_cast<int>(SettingsToggles::gamepad): svc.input_system.set_flag(input::InputSystemFlags::gamepad_input_enabled, !svc.input_system.is_gamepad_input_enabled()); break;
+			case static_cast<int>(SettingsToggles::gamepad): svc.input_system.set_setting(input::InputSystemSettings::gamepad_input_enabled, !svc.input_system.is_gamepad_input_enabled()); break;
 			case static_cast<int>(SettingsToggles::music): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
 			case static_cast<int>(SettingsToggles::ambience): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
 			case static_cast<int>(SettingsToggles::sfx): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;

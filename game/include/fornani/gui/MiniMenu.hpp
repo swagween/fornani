@@ -29,7 +29,7 @@ enum class MiniMenuFlags { selected, closed };
 
 class MiniMenu {
   public:
-	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string> opt, sf::Vector2f start_position, automa::MenuTheme& theme);
+	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string> opt, sf::Vector2f start_position, MenuTheme& theme);
 	void update(automa::ServiceProvider& svc, sf::Vector2f dim, sf::Vector2f at_position);
 	void render(sf::RenderWindow& win, bool bg = true);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
@@ -49,7 +49,7 @@ class MiniMenu {
 	sf::Vector2f draw_position{};
 
   private:
-	automa::MenuTheme* m_theme;
+	MenuTheme* m_theme;
 	util::BitFlags<MiniMenuAttributes> m_attributes{};
 	util::BitFlags<MiniMenuFlags> m_flags{};
 	sf::Vector2f dimensions{};

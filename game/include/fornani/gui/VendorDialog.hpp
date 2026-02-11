@@ -81,7 +81,7 @@ class VendorDialog {
 	OrbDisplay m_orb_display;
 	sf::RectangleShape m_background{};
 	Palette m_palette;
-	automa::MenuTheme m_theme;
+	MenuTheme m_theme;
 
 	NPC* my_npc;
 

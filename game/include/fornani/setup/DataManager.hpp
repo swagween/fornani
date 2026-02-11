@@ -1,11 +1,10 @@
 
-
 #pragma once
 
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
-#include <fornani/automa/Option.hpp>
 #include <fornani/entities/npc/Vendor.hpp>
+#include <fornani/graphics/MenuTheme.hpp>
 #include <fornani/gui/MiniMap.hpp>
 #include <fornani/io/File.hpp>
 #include <fornani/io/Logger.hpp>
@@ -15,7 +14,6 @@
 #include <fornani/systems/TimeTrialRegistry.hpp>
 #include <fornani/utils/QuestCode.hpp>
 #include <fornani/world/Layer.hpp>
-
 #include <array>
 #include <string>
 
@@ -50,7 +48,7 @@ class DataManager final {
 	void save_progress(player::Player& player, int save_point_id);
 	void save_quests();
 	void save_settings();
-	void set_theme(automa::MenuTheme to);
+	void set_theme(MenuTheme to);
 	int load_progress(player::Player& player, int file, bool state_switch = false, bool from_menu = true);
 	int reload_progress(player::Player& player);
 	void load_settings();
@@ -107,6 +105,7 @@ class DataManager final {
 	[[nodiscard]] auto item_id_from_label(std::string_view label) const -> int;
 	[[nodiscard]] auto get_gun_tag_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] auto get_gun_id_from_tag(std::string_view tag) const -> int;
+	[[nodiscard]] auto get_map_data_from_id(int id) const -> std::optional<std::reference_wrapper<MapData const>>;
 	[[nodiscard]] auto get_map_json_from_id(int id) const -> std::optional<std::reference_wrapper<dj::Json const>>;
 	[[nodiscard]] auto get_map_json_from_id(int id) -> std::optional<std::reference_wrapper<dj::Json>>;
 	[[nodiscard]] auto get_item_json_from_tag(std::string_view tag) const -> dj::Json const&;
@@ -159,7 +158,7 @@ class DataManager final {
 	dj::Json background{};
 	dj::Json audio_library{};
 
-	automa::MenuTheme theme{};
+	MenuTheme theme{};
 
 	std::vector<MapData> map_jsons{};
 	std::vector<MapTemplate> map_templates{};

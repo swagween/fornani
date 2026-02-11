@@ -1,8 +1,7 @@
 
 #include "fornani/gui/gizmos/MapGizmo.hpp"
-#include "fornani/gui/gizmos/MapInfoGizmo.hpp"
-
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/gui/gizmos/MapInfoGizmo.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
 #include "fornani/world/Map.hpp"
@@ -127,6 +126,8 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	m_map_screen.set_dimensions(m_path.get_dimensions());
 	m_map_shadow.set_position(m_path.get_position() + m_placement);
 	m_map_shadow.set_dimensions(m_path.get_dimensions());
+
+	if (m_info) { m_info->current_room = m_minimap->get_currently_hovered_room(); }
 }
 
 void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
@@ -195,7 +196,7 @@ void MapGizmo::on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Pl
 	m_path.set_section("open");
 
 	// TODO: gate plugins based on player's inventory
-	m_info = std::make_unique<MapInfoGizmo>(svc, map, sf::Vector2f{374.f, -90}); // make conditional when info bar is an item
+	m_info = std::make_unique<MapInfoGizmo>(svc, map.room_id, sf::Vector2f{374.f, -90}); // make conditional when info bar is an item
 	m_plugins.push_back(MapPlugin(svc.finder, "plugin_nani", sf::IntRect{m_lookups.plugin + sf::Vector2i{0, 49}, {63, 29}}, audio::Pioneer::slot));
 	m_flags.icon.set(MapIconFlags::nani);
 	m_plugins.push_back(MapPlugin(svc.finder, "plugin_save", sf::IntRect{m_lookups.plugin + sf::Vector2i{27, 0}, {23, 22}}, audio::Pioneer::sync));

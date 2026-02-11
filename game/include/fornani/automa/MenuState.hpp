@@ -5,6 +5,7 @@
 #include <fornani/automa/StateController.hpp>
 #include <fornani/components/PhysicsComponent.hpp>
 #include <fornani/components/SteeringBehavior.hpp>
+#include <fornani/graphics/MenuTheme.hpp>
 
 namespace fornani::automa {
 
@@ -29,6 +30,7 @@ class MenuState : public GameState {
 	bool m_input_authorized{true};
 	MenuTheme p_theme;
 	sf::RectangleShape p_backdrop{};
+	ServiceProvider* p_services;
 
   private:
 	std::array<DotInticator, 2> m_dot_indicators{};

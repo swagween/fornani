@@ -18,7 +18,8 @@ class Game;
 
 namespace fornani::automa {
 class ControlsMenu;
-}
+class SettingsMenu;
+} // namespace fornani::automa
 
 namespace fornani::data {
 class DataManager;
@@ -29,7 +30,8 @@ namespace fornani::input {
 enum class ActionSet { Platformer, Menu, END };
 enum class DigitalActionQueryType { held, triggered, released };
 enum class InputDevice { none, keyboard, gamepad };
-enum class InputSystemFlags { gamepad_disconnected, gamepad_input_enabled, auto_sprint, keyboard_input_detected, changed_action_sets };
+enum class InputSystemSettings { gamepad_input_enabled, auto_sprint };
+enum class InputSystemFlags { gamepad_disconnected, keyboard_input_detected, changed_action_sets, key_was_pressed };
 
 // raw input
 struct RawDigitalState {
@@ -89,6 +91,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
   public:
 	friend class Game;
 	friend class automa::ControlsMenu;
+	friend class automa::SettingsMenu;
 	friend class data::DataManager;
 
 	InputSystem(ResourceFinder& finder);
@@ -114,8 +117,8 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	void set_joystick_sensitivity(float to) { m_stick_sensitivity = std::clamp(to, 0.f, 1.f); }
 	[[nodiscard]] auto last_device_used() const -> InputDevice { return m_last_device_used; }
 	[[nodiscard]] auto is_gamepad_connected() const -> bool { return m_controller_handle != 0; }
-	[[nodiscard]] auto is_gamepad_input_enabled() const -> bool { return has_flag_set(InputSystemFlags::gamepad_input_enabled); }
-	[[nodiscard]] auto is_autosprint_enabled() const -> bool { return has_flag_set(InputSystemFlags::auto_sprint); }
+	[[nodiscard]] auto is_gamepad_input_enabled() const -> bool { return m_settings.test(InputSystemSettings::gamepad_input_enabled); }
+	[[nodiscard]] auto is_autosprint_enabled() const -> bool { return m_settings.test(InputSystemSettings::auto_sprint); }
 
 	// --- Joystick queries ---
 	[[nodiscard]] auto get_joystick_throttle(AnalogAction action = AnalogAction::move) const -> sf::Vector2f;
@@ -148,6 +151,9 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	bool process_gamepad_disconnection();
 
   private:
+	// --- General ---
+	void set_setting(InputSystemSettings setting, bool on = true) { on ? m_settings.set(setting) : m_settings.reset(setting); }
+
 	// ---- Phase 1 ----
 	void gather_raw_input();
 
@@ -171,8 +177,12 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 
 	// --- Keyboard helpers ---
 	void set_last_key_pressed(sf::Keyboard::Scancode to_key);
+	void load_keyboard_controls(ResourceFinder& finder);
 
   private:
+	// --- Settings ---
+	util::BitFlags<InputSystemSettings> m_settings{};
+
 	// --- State ---
 	ActionSet m_active_action_set{ActionSet::Platformer};
 	InputDevice m_last_device_used{InputDevice::none};

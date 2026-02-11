@@ -84,7 +84,6 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			}
 
 			if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
-				services.input_system.set_last_key_pressed(key_pressed->scancode);
 				if (key_pressed->scancode == sf::Keyboard::Scancode::F12) { continue; }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::G && key_pressed->control) { services.toggle_greyblock_mode(); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_pressed->control) {
@@ -126,7 +125,8 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			services.music_player.update();
 			if (services.input_system.digital(input::DigitalAction::menu_back).triggered && m_game_menu) {
 				if (m_game_menu.value()->get_current_state().is_ready()) {
-					m_game_menu = {};
+					m_game_menu.value()->get_current_state().on_exit();
+					m_game_menu.reset();
 					services.soundboard.flags.menu.set(audio::Menu::backward_switch);
 				}
 			}

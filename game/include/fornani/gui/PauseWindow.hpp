@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <fornani/automa/Option.hpp>
+#include <fornani/graphics/MenuTheme.hpp>
 #include <fornani/gui/MiniMenu.hpp>
 #include <optional>
 
@@ -31,7 +31,7 @@ class PauseWindow {
 	[[nodiscard]] auto exit_requested() const -> bool { return m_state == PauseWindowState::exit; }
 
   private:
-	automa::MenuTheme m_theme;
+	MenuTheme m_theme;
 	MiniMenu m_menu;
 	sf::Vector2f m_dimensions{};
 	sf::RectangleShape m_background{};

@@ -37,6 +37,7 @@ class GameState : public UniquePolymorphic {
 	virtual void frame_update([[maybe_unused]] ServiceProvider& svc) {}
 	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win) {}
 	virtual void reload(ServiceProvider& svc, int target_state) {};
+	virtual void on_exit() {};
 	virtual std::optional<std::reference_wrapper<world::Map>> get_map() { return std::nullopt; }
 
 	[[nodiscard]] auto is_ready() const -> bool { return flags.test(GameStateFlags::ready); }

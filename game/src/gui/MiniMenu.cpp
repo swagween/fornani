@@ -5,7 +5,7 @@
 
 namespace fornani::gui {
 
-MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string> opt, sf::Vector2f start_position, automa::MenuTheme& theme)
+MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string> opt, sf::Vector2f start_position, MenuTheme& theme)
 	: m_nineslice{svc, (theme.label == "mini_white" ? svc.assets.get_texture("cream_console") : svc.assets.get_texture("blue_console")), {28, 28}, {1, 1}}, m_theme{&theme} {
 	m_nineslice.set_position(start_position + random::random_vector_float({-16.f, -8.f}, {-8.f, 8.f}));
 	options.reserve(opt.size());

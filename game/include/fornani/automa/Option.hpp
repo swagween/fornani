@@ -5,20 +5,11 @@
 #include <djson/json.hpp>
 #include <string_view>
 
-namespace fornani::automa {
+namespace fornani {
+class MenuTheme;
+}
 
-struct MenuTheme {
-	MenuTheme() = default;
-	MenuTheme(dj::Json const& in);
-	std::string label{};
-	sf::Color backdrop{};
-	sf::Color primary_text_color{};
-	sf::Color secondary_text_color{};
-	sf::Color activated_text_color{};
-	sf::Color deactivated_text_color{};
-	sf::Color dot_color{};
-	int title_index{};
-};
+namespace fornani::automa {
 
 struct ServiceProvider;
 struct Option {
@@ -39,4 +30,5 @@ struct Option {
   private:
 	MenuTheme* m_theme;
 };
+
 } // namespace fornani::automa

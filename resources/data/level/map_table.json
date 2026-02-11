@@ -218,6 +218,12 @@
     },
     {
       "folder": "junkyard",
+      "label": "assembly_line.json",
+      "region": "junkyard",
+      "room_id": 707
+    },
+    {
+      "folder": "junkyard",
       "label": "dump.json",
       "region": "junkyard",
       "room_id": 703

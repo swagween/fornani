@@ -70,8 +70,18 @@ InputSystem::InputSystem(ResourceFinder& finder) : m_stick_sensitivity{default_j
 	SteamInput()->EnableDeviceCallbacks();
 	init_steam_action_sets();
 	setup_action_handles();
+	load_keyboard_controls(finder);
+	InputHandle_t handles[STEAM_INPUT_MAX_COUNT];
+	int count = SteamInput()->GetConnectedControllers(handles);
+	NANI_LOG_INFO(m_logger, "Available Steam Input Controllers: {}", count);
+}
 
-	// load keyboard bindings
+void InputSystem::init_steam_action_sets() {
+	m_steam_action_sets[static_cast<size_t>(ActionSet::Platformer)] = SteamInput()->GetActionSetHandle("Platformer");
+	m_steam_action_sets[static_cast<size_t>(ActionSet::Menu)] = SteamInput()->GetActionSetHandle("Menu");
+}
+
+void InputSystem::load_keyboard_controls(ResourceFinder& finder) { // load keyboard bindings
 	auto controls = dj::Json::from_file((finder.resource_path() + "/data/config/control_map.json").c_str());
 	if (!controls) {
 		NANI_LOG_ERROR(m_logger, "Failed to load input data for InputSystem.");
@@ -82,15 +92,8 @@ InputSystem::InputSystem(ResourceFinder& finder) : m_stick_sensitivity{default_j
 	for (auto const& [key, item] : controls_result["controls"].as_object()) {
 		assert(item.is_object());
 		if (item.as_object().contains("primary_key")) { set_primary_keyboard_binding(action_from_string(key), scancode_from_string(item["primary_key"].as_string())); }
+		if (item.as_object().contains("secondary_key")) { set_secondary_keyboard_binding(action_from_string(key), scancode_from_string(item["secondary_key"].as_string())); }
 	}
-	InputHandle_t handles[STEAM_INPUT_MAX_COUNT];
-	int count = SteamInput()->GetConnectedControllers(handles);
-	NANI_LOG_INFO(m_logger, "Available Steam Input Controllers: {}", count);
-}
-
-void InputSystem::init_steam_action_sets() {
-	m_steam_action_sets[static_cast<size_t>(ActionSet::Platformer)] = SteamInput()->GetActionSetHandle("Platformer");
-	m_steam_action_sets[static_cast<size_t>(ActionSet::Menu)] = SteamInput()->GetActionSetHandle("Menu");
 }
 
 void InputSystem::setup_action_handles() {
@@ -143,7 +146,10 @@ void InputSystem::setup_action_handles() {
 void InputSystem::handle_event(std::optional<sf::Event> const event) {
 	if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
 		m_last_device_used = InputDevice::keyboard;
+		m_last_key_pressed = key_pressed->scancode;
+		set_flag(InputSystemFlags::key_was_pressed);
 		if (key_pressed->scancode != sf::Keyboard::Scancode::Unknown) { keys_pressed.insert(key_pressed->scancode); }
+		set_flag(InputSystemFlags::keyboard_input_detected);
 	} else if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
 		keys_pressed.erase(key_released->scancode);
 	}

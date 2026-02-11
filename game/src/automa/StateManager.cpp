@@ -135,6 +135,7 @@ auto StateManager::get_current_state() const -> GameState& {
 }
 
 auto StateManager::set_current_state(std::unique_ptr<GameState> gameState) -> GameState& {
+	g_current_state->on_exit();
 	g_current_state = std::move(gameState);
 	return get_current_state();
 }

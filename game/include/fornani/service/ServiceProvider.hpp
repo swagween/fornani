@@ -45,13 +45,13 @@ struct ServiceProvider {
 
 	util::Stopwatch stopwatch{};
 	ResourceFinder finder;
+	input::InputSystem input_system{finder};
 	data::TextManager text;
 	data::DataManager data;
 	Version* version;
 	WindowManager* window;
 	core::SoundManager sounds;
 	core::AssetManager assets;
-	input::InputSystem input_system{finder};
 	EventRegistry events;
 	util::BitFlags<DebugFlags> debug_flags{};
 	util::BitFlags<AppFlags> app_flags{};

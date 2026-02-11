@@ -3,6 +3,7 @@
 
 #include "fornani/gui/Gizmo.hpp"
 #include "fornani/gui/MiniMap.hpp"
+#include "fornani/gui/gizmos/MapInfoGizmo.hpp"
 #include "fornani/particle/Chain.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/NineSlice.hpp"
@@ -33,7 +34,7 @@ class MapGizmo : public Gizmo {
 	void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 	void on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 	std::vector<MapPlugin> m_plugins;
-	std::unique_ptr<Gizmo> m_info{};
+	std::unique_ptr<MapInfoGizmo> m_info{};
 	MiniMap* m_minimap;
 	std::vector<std::unique_ptr<vfx::Chain>> m_chains{};
 	util::NineSlice m_map_screen;

@@ -9,6 +9,7 @@ nani_add_sources(
         HelpText.cpp
         Indicator.cpp
         MapTexture.cpp
+        MenuTheme.cpp
         Rain.cpp
         Scenery.cpp
         SpriteHistory.cpp

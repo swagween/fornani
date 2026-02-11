@@ -1,95 +1,96 @@
 {
-  "options": {
-    "main": ["play", "options", "quit"],
-    "file": ["file 1", "file 2", "file 3"],
-    "play": ["story", "trials"],
-    "stat": ["save screenshot", "exit to menu"],
-    "options": ["controls", "settings", "credits", "themes", "tutorial"],
-    "trials": ["<none>"],
-    "controls_platformer": [
-      "< platformer >",
-      "up",
-      "down",
-      "left",
-      "right",
-      "jump",
-      "shoot",
-      "sprint",
-      "slide",
-      "dash",
-      "inspect",
-      "tab_left",
-      "tab_right",
-      "inventory",
-      "gamepad settings",
-      "reset to default"
-    ],
-    "controls_menu": [
-      "< menu >",
-      "left",
-      "right",
-      "up",
-      "down",
-      "select",
-      "cancel",
-      "tab_left",
-      "tab_right",
-      "confirm",
-      "gamepad settings",
-      "reset to default"
-    ],
-    "settings": [
-      "auto-sprint: ",
-      "tutorial: ",
-      "gamepad input: ",
-      "music volume: ",
-      "ambience volume: ",
-      "sfx volume: ",
-      "fullscreen: ",
-      "military time: "
-    ],
-    "credits": ["creator", "dev", "lib", "design", "visuals", "sound", "playtesters", "thanks"],
-    "themes": ["classic", "night"]
-  },
-  "config": {
-    "main": {
-      "top_buffer": 296
-    },
-    "file": {
-      "top_buffer": 186
-    },
-    "trials": {
-      "top_buffer": 60
-    },
-    "options": {
-      "top_buffer": 186
-    },
-    "play": {
-      "top_buffer": 186
-    },
-    "controls_platformer": {
-      "top_buffer": 30
-    },
-    "controls_inventory": {
-      "top_buffer": 30
-    },
-    "controls_map": {
-      "top_buffer": 30
-    },
-    "controls_menu": {
-      "top_buffer": 30
-    },
-    "settings": {
-      "top_buffer": 60
-    },
-    "credits": {
-      "top_buffer": 60
-    },
-    "stat": {
-      "top_buffer": 450
-    },
-    "themes": {
-      "top_buffer": 186
-    }
-  }
+	"options": {
+		"main": [ "play", "options", "quit" ],
+		"file": [ "file 1", "file 2", "file 3" ],
+		"play": [ "story", "trials" ],
+		"stat": [ "save screenshot", "exit to menu" ],
+		"options": [ "controls", "settings", "credits", "themes", "tutorial" ],
+		"trials": [ "<none>" ],
+		"controls_platformer": [
+			"< platformer >",
+			"up",
+			"down",
+			"left",
+			"right",
+			"jump",
+			"shoot",
+			"sprint",
+			"crouch",
+			"slide",
+			"dash",
+			"inspect",
+			"tab_left",
+			"tab_right",
+			"inventory",
+			"gamepad settings",
+			"reset to default"
+		],
+		"controls_menu": [
+			"< menu >",
+			"left",
+			"right",
+			"up",
+			"down",
+			"select",
+			"back",
+			"tab_left",
+			"tab_right",
+			"close",
+			"gamepad settings",
+			"reset to default"
+		],
+		"settings": [
+			"auto-sprint: ",
+			"tutorial: ",
+			"gamepad input: ",
+			"music volume: ",
+			"ambience volume: ",
+			"sfx volume: ",
+			"fullscreen: ",
+			"military time: "
+		],
+		"credits": [ "creator", "dev", "lib", "design", "visuals", "sound", "playtesters", "thanks" ],
+		"themes": [ "classic", "night" ]
+	},
+	"config": {
+		"main": {
+			"top_buffer": 296
+		},
+		"file": {
+			"top_buffer": 186
+		},
+		"trials": {
+			"top_buffer": 60
+		},
+		"options": {
+			"top_buffer": 186
+		},
+		"play": {
+			"top_buffer": 186
+		},
+		"controls_platformer": {
+			"top_buffer": 30
+		},
+		"controls_inventory": {
+			"top_buffer": 30
+		},
+		"controls_map": {
+			"top_buffer": 30
+		},
+		"controls_menu": {
+			"top_buffer": 30
+		},
+		"settings": {
+			"top_buffer": 60
+		},
+		"credits": {
+			"top_buffer": 60
+		},
+		"stat": {
+			"top_buffer": 450
+		},
+		"themes": {
+			"top_buffer": 186
+		}
+	}
 }

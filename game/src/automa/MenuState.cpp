@@ -6,7 +6,7 @@ namespace fornani::automa {
 
 constexpr auto dot_buffer_v = 16.f;
 
-MenuState::MenuState(ServiceProvider& svc, player::Player& player, std::string_view scene) : GameState(svc, player, scene), p_theme{svc.data.theme} {
+MenuState::MenuState(ServiceProvider& svc, player::Player& player, std::string_view scene) : GameState(svc, player, scene), p_services{&svc}, p_theme{svc.data.theme} {
 	svc.input_system.set_action_set(input::ActionSet::Menu);
 	auto const& in_data = svc.data.menu["options"];
 	for (auto& entry : in_data[scene].as_array()) { options.push_back(Option(svc, p_theme, entry.as_string())); }

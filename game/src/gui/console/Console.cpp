@@ -12,7 +12,7 @@ namespace fornani::gui {
 Console::Console(automa::ServiceProvider& svc)
 	: m_services(&svc), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard", 64}, m_styling{.corner_factor{28}, .edge_factor{1}, .padding_scale{1.1f}},
 	  m_nineslice(svc, svc.assets.get_texture("blue_console"), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}), m_mode{ConsoleMode::writing}, m_response_offset{-192.f, 16.f},
-	  m_exit_stall{650}, m_item_display_timer{1200}, m_launch{8} {
+	  m_exit_stall{450}, m_item_display_timer{1200}, m_launch{8} {
 	NANI_LOG_DEBUG(m_logger, "Console ctor @{}", static_cast<void const*>(this));
 	svc.input_system.set_action_set(input::ActionSet::Menu);
 	text_suite = svc.text.console;
