@@ -7,6 +7,7 @@ nani_add_headers(
         ColorUtils.hpp
         Counter.hpp
         Cycle.hpp
+        CyclicLerp.hpp
         Decoder.hpp
         Direction.hpp
         Fader.hpp
@@ -15,6 +16,7 @@ nani_add_headers(
         IWorldPositionable.hpp
         Math.hpp
         NineSlice.hpp
+        Oscillator.hpp
         QuestCode.hpp
         Random.hpp
         RichText.hpp

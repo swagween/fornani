@@ -3,6 +3,9 @@
 
 #include <fornani/automa/GameState.hpp>
 #include <fornani/events/Subscription.hpp>
+#include <fornani/graphics/Background.hpp>
+#include <fornani/gui/InventoryWindow.hpp>
+#include <fornani/gui/PauseWindow.hpp>
 #include <fornani/gui/VendorDialog.hpp>
 #include <fornani/utils/Flaggable.hpp>
 

@@ -5,5 +5,6 @@ nani_add_sources(
   MapGizmo.cpp
   MapInfoGizmo.cpp
   OutfitterGizmo.cpp
+  RotaryGizmo.cpp
   WardrobeGizmo.cpp
 )

@@ -4,6 +4,7 @@ nani_add_sources(
         Fader.cpp
         IWorldPositionable.cpp
         NineSlice.cpp
+        Oscillator.cpp
         Random.cpp
         RectPath.cpp
         Stopwatch.cpp

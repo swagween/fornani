@@ -6,9 +6,7 @@
 #include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/graphics/MapTexture.hpp>
 #include <fornani/gui/DottedLine.hpp>
-#include <fornani/gui/console/Console.hpp>
 #include <fornani/io/Logger.hpp>
-#include <fornani/utils/Circuit.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani::player {
@@ -21,6 +19,7 @@ class Portal;
 
 namespace fornani::gui {
 
+enum class MiniMapFlags { open };
 enum class MapIconFlags { nani, gunsmith, save, chest, bed, door, boss, gobe, vendor, quest };
 enum class ChunkType { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
 enum class QuestMarkerType { main };
@@ -37,7 +36,7 @@ struct DoorConnection {
 	DottedLine line;
 };
 
-class MiniMap {
+class MiniMap final : public Flaggable<MiniMapFlags> {
   public:
 	explicit MiniMap(automa::ServiceProvider& svc);
 	void set_textures(automa::ServiceProvider& svc);

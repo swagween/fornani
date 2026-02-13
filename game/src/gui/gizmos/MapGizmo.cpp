@@ -205,6 +205,8 @@ void MapGizmo::on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Pl
 	m_flags.icon.set(MapIconFlags::bed);
 	//
 
+	m_minimap->set_flag(MiniMapFlags::open);
+
 	m_motherboard_path.set_section("open");
 }
 
@@ -212,7 +214,8 @@ void MapGizmo::on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::P
 	Gizmo::on_close(svc, player, map);
 	m_path.set_section("close");
 	m_plugins.clear();
-	m_info = {};
+	m_info.reset();
+	m_minimap->set_flag(MiniMapFlags::open, false);
 	m_motherboard_path.set_section("start");
 }
 

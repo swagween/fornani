@@ -1,6 +1,5 @@
 
 #include "fornani/core/Game.hpp"
-#include <steam/steam_api.h>
 #include <ctime>
 #include "fornani/automa/states/Dojo.hpp"
 #include "fornani/automa/states/MainMenu.hpp"
@@ -318,6 +317,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 				if (ImGui::BeginTabItem("Tests")) {
 					if (ImGui::Button("Test Notification")) { services.notifications.push_notification(services, "This is a test notification."); }
 					ImGui::Text("Angle");
+					if (ImGui::Button("Test")) { NANI_LOG_DEBUG(m_logger, "Pressed"); }
 					ImGui::Text("{-1.f, 1.f} ; down-left: %.2f", util::get_angle_from_direction({-1.f, 1.f}));
 					ImGui::Text("{1.f, -1.f} ; top-right: %.2f", util::get_angle_from_direction({1.f, -1.f}));
 					ImGui::Text("{1.f, 0.f} ; horiz-right: %.2f", util::get_angle_from_direction({1.f, 0.f}));

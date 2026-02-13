@@ -1,14 +1,14 @@
 
 #include "fornani/gui/Dashboard.hpp"
+#include <ccmath/ext/clamp.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/gui/gizmos/ClockGizmo.hpp"
 #include "fornani/gui/gizmos/InventoryGizmo.hpp"
 #include "fornani/gui/gizmos/MapGizmo.hpp"
+#include "fornani/gui/gizmos/RotaryGizmo.hpp"
 #include "fornani/gui/gizmos/WardrobeGizmo.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/systems/InputSystem.hpp"
-
-#include <ccmath/ext/clamp.hpp>
 
 namespace fornani::gui {
 
@@ -40,12 +40,14 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 	auto clock_placement{sf::Vector2f{84.f, 142.f}};
 	auto wardrobe_placement{sf::Vector2f{svc.window->f_screen_dimensions().x + 26.f, 0.f}};
 	auto inventory_placement{sf::Vector2f{-svc.window->f_screen_dimensions().x + 366.f, 32.f}};
+	auto rotary_placement{sf::Vector2f{356.f, 326.f}};
 
 	// push gizmos in clockwise order so selection setting will work
 	if (player.catalog.inventory.has_item("radar_device")) { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player)); }
 	if (player.catalog.inventory.has_item("status_gizmo")) { m_gizmos.push_back(std::make_unique<WardrobeGizmo>(svc, map, wardrobe_placement)); }
 	if (player.catalog.inventory.has_item("clock")) { m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map, clock_placement)); }
 	m_gizmos.push_back(std::make_unique<InventoryGizmo>(svc, map, player, inventory_placement));
+	if (player.arsenal) { m_gizmos.push_back(std::make_unique<RotaryGizmo>(svc, map, player, rotary_placement)); }
 
 	m_sprite.setScale(constants::f_scale_vec);
 }

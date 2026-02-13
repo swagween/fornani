@@ -192,6 +192,12 @@
     "fade_out": 16
   },
   {
+    "label": "pioneer_rotary",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
     "label": "caster_scream",
     "bus": "gameplay",
     "volume": 1.0,

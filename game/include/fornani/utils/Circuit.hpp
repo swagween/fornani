@@ -1,9 +1,8 @@
 
 #pragma once
 
-#include <ccmath/math/basic.hpp>
+#include <ccmath/math/basic/min.hpp>
 #include <fornani/io/Logger.hpp>
-#include <fornani/utils/Direction.hpp>
 #include <cassert>
 
 namespace fornani::util {
@@ -29,6 +28,7 @@ class Circuit {
 		if (debug) { NANI_LOG_DEBUG(m_logger, "Order after setting: {}", m_order); }
 	}
 	[[nodiscard]] auto get_order() const -> int { return m_order; }
+	[[nodiscard]] auto get_normalized() const -> float { return static_cast<float>(m_selection) / static_cast<float>(m_order); }
 	[[nodiscard]] auto get() const -> int { return m_selection; }
 	[[nodiscard]] auto cycled() const -> bool { return m_selection == 0; }
 	template <typename T>

@@ -276,6 +276,36 @@
       ]
     }
   ],
+  "rotary": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [0, 256],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [0, -8],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [0, 0],
+          "dimensions": [0, 0]
+        }
+      ]
+    },
+    {
+      "label": "end",
+      "path": [
+        {
+          "position": [0, 0]
+        },
+        {
+          "position": [0, 256]
+        }
+      ]
+    }
+  ],
   "wardrobe_outfitter": [
     {
       "label": "start",

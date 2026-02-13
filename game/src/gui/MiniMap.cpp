@@ -158,7 +158,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 		}
 		if (m_map_sprite->getGlobalBounds().contains(svc.window->f_center_screen())) {
 			m_currently_hovered_room = room->get_id();
-			if (m_currently_hovered_room != m_previously_hovered_room) { svc.soundboard.flags.menu.set(audio::Menu::shift); }
+			if (m_currently_hovered_room != m_previously_hovered_room && has_flag_set(MiniMapFlags::open)) { svc.soundboard.flags.menu.set(audio::Menu::shift); }
 			m_previously_hovered_room = m_currently_hovered_room;
 		}
 		if (m_map_sprite) { win.draw(*m_map_sprite); }

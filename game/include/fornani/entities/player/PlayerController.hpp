@@ -3,15 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <ccmath/ccmath.hpp>
-#include <fornani/entities/player/abilities/Dash.hpp>
-#include <fornani/entities/player/abilities/Dashkick.hpp>
-#include <fornani/entities/player/abilities/Doublejump.hpp>
-#include <fornani/entities/player/abilities/Jump.hpp>
-#include <fornani/entities/player/abilities/Roll.hpp>
-#include <fornani/entities/player/abilities/Slide.hpp>
-#include <fornani/entities/player/abilities/Walljump.hpp>
-#include <fornani/entities/player/abilities/Wallslide.hpp>
-#include <deque>
+#include <fornani/entities/player/abilities/Ability.hpp>
 #include <optional>
 #include <unordered_map>
 #include "fornani/utils/BitFlags.hpp"

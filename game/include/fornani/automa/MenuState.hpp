@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/automa/GameState.hpp>
+#include <fornani/automa/Option.hpp>
 #include <fornani/automa/StateController.hpp>
 #include <fornani/components/PhysicsComponent.hpp>
 #include <fornani/components/SteeringBehavior.hpp>
