@@ -1,8 +1,8 @@
 
 #include <fornani/entities/player/PlayerController.hpp>
 #include <fornani/entities/player/abilities/Wallslide.hpp>
+#include <fornani/physics/Collider.hpp>
 #include <fornani/service/ServiceProvider.hpp>
-#include <fornani/utils/Collider.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani::player {
@@ -11,7 +11,7 @@ Wallslide::Wallslide(automa::ServiceProvider& svc, world::Map& map, shape::Colli
 	m_type = AbilityType::wallslide;
 	m_state = AnimState::wallslide;
 	m_duration.start();
-	svc.soundboard.flags.player.set(audio::Player::wallslide);
+	svc.soundboard.repeat_sound("nani_wallslide");
 }
 
 void Wallslide::update(shape::Collider& collider, PlayerController& controller) {
@@ -20,10 +20,10 @@ void Wallslide::update(shape::Collider& collider, PlayerController& controller) 
 		collider.physics.acceleration.y = m_base_grav;
 		collider.physics.maximum_velocity.y = m_speed_multiplier;
 	}
-	auto const& left_released = m_services->controller_map.digital_action_status(config::DigitalAction::platformer_left).released;
-	auto const& right_released = m_services->controller_map.digital_action_status(config::DigitalAction::platformer_right).released;
-	auto const& left_pressed = m_services->controller_map.digital_action_status(config::DigitalAction::platformer_left).triggered;
-	auto const& right_pressed = m_services->controller_map.digital_action_status(config::DigitalAction::platformer_right).triggered;
+	auto const left_released = m_services->input_system.direction_released(input::AnalogAction::move, input::MoveDirection::left);
+	auto const right_released = m_services->input_system.direction_released(input::AnalogAction::move, input::MoveDirection::right);
+	auto const left_pressed = m_services->input_system.direction_released(input::AnalogAction::move, input::MoveDirection::left);
+	auto const right_pressed = m_services->input_system.direction_released(input::AnalogAction::move, input::MoveDirection::right);
 	if (((left_released || right_pressed) && m_direction.left()) || ((right_released || left_pressed) && m_direction.right())) { fail(); }
 	if (!collider.has_left_wallslide_collision() && m_direction.left()) { fail(); }
 	if (!collider.has_right_wallslide_collision() && m_direction.right()) { fail(); }

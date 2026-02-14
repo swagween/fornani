@@ -1,7 +1,7 @@
 
-#include "fornani/entities/packages/Caution.hpp"
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
+#include <fornani/entities/packages/Caution.hpp>
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/world/Map.hpp>
 
 namespace fornani::entity {
 
@@ -15,8 +15,8 @@ void Caution::avoid_ledges(world::Map& map, shape::Collider& collider, Direction
 	retreat = {};
 	if (height < 1 || map.dimensions.x < 1 || map.dimensions.y < 1) { return; }
 	auto buffer = sf::Vector2f{0.f, 8.f};
-	testers.left = collider.vicinity.vertices.at(3) - buffer;
-	testers.right = collider.vicinity.vertices.at(2) - buffer;
+	testers.left = collider.get_vicinity_rect().position + sf::Vector2f{0.f, collider.get_vicinity_rect().size.y} - buffer;
+	testers.right = collider.get_vicinity_rect().position + collider.get_vicinity_rect().size - buffer;
 
 	// only test cells later in the grid to save time
 	auto& probe = direction.left() ? testers.left : testers.right;

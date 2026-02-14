@@ -30,9 +30,17 @@ FetchContent_MakeAvailable(juke)
 FetchContent_Declare(
         djson
         GIT_REPOSITORY https://github.com/karnkaul/djson
-        GIT_TAG v3.1.1
+        GIT_TAG v3.1.5
 )
 FetchContent_MakeAvailable(djson)
+
+# ksignal
+FetchContent_Declare(
+        ksignal
+        GIT_REPOSITORY https://github.com/karnkaul/ksignal
+        GIT_TAG v0.1.1
+)
+FetchContent_MakeAvailable(ksignal)
 
 # ccmath
 set(CCMATH_ENABLE_EXTENSIONS ON)
@@ -136,6 +144,7 @@ add_library(fornani::deps ALIAS fornani-dependencies)
 
 target_link_libraries(fornani-dependencies INTERFACE
         djson::djson
+        ksignal::ksignal
         ccmath::ccmath
         ImGui-SFML::ImGui-SFML
         SFML::System

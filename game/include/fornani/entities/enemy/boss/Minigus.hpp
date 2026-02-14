@@ -1,8 +1,9 @@
+
 #pragma once
 
 #include <capo/engine.hpp>
+#include <fornani/entities/enemy/Boss.hpp>
 #include <fornani/entity/NPC.hpp>
-#include "fornani/entities/enemy/Enemy.hpp"
 #include "fornani/entities/packages/Attack.hpp"
 #include "fornani/entities/packages/Caution.hpp"
 #include "fornani/entities/packages/Shockwave.hpp"
@@ -40,7 +41,7 @@ class Minigun : public Animatable {
 	components::SteeringBehavior m_steering{};
 };
 
-class Minigus : public Enemy, public NPC {
+class Minigus : public Boss, public NPC, public StateMachine<MinigusState> {
 
   public:
 	Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console);
@@ -48,7 +49,9 @@ class Minigus : public Enemy, public NPC {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	[[nodiscard]] auto invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable); }
-	[[nodiscard]] auto half_health() const -> bool { return health.get_hp() < health.get_max() * 0.5f; }
+
+	void request(MinigusState const state) { StateMachine<MinigusState>::request(state); }
+	void set_state(MinigusState const to) { StateMachine<MinigusState>::p_state.actual = to; }
 
 	fsm::StateFunction state_function = std::bind(&Minigus::update_idle, this);
 	fsm::StateFunction update_idle();
@@ -72,21 +75,14 @@ class Minigus : public Enemy, public NPC {
 	fsm::StateFunction update_throw_can();
 
   private:
-	void request(MinigusState to) { m_state.desired = to; }
-	[[nodiscard]] auto is(MinigusState const test) const -> bool { return m_state.actual == test; }
+	[[nodiscard]] auto is(MinigusState const test) const -> bool { return StateMachine<MinigusState>::is_state(test); }
 	[[nodiscard]] auto is_battle_mode() const -> bool { return (m_mode == MinigusMode::battle_one || m_mode == MinigusMode::battle_two) && !m_console->has_value(); }
-
-	struct {
-		MinigusState actual{};
-		MinigusState desired{};
-	} m_state{};
 
 	bool anim_debug{};
 	bool console_complete{};
 	bool init{true};
 	MinigusMode m_mode{};
 	util::BitFlags<MinigusFlags> status{};
-	gui::BossHealth health_bar;
 	graphics::SpriteHistory sprite_history{8};
 
 	Direction sprite_direction{};
@@ -121,6 +117,7 @@ class Minigus : public Enemy, public NPC {
 		util::Cooldown post_charge{600};
 		util::Cooldown post_punch{400};
 		util::Cooldown hurt{320};
+		util::Cooldown hurt_sound{32};
 		util::Cooldown player_punch{80};
 		util::Cooldown pre_jump{380};
 		util::Cooldown vulnerability{2000};
@@ -136,27 +133,6 @@ class Minigus : public Enemy, public NPC {
 	} counters{};
 
 	util::Cycle hurt_color{2};
-
-	// lookup, duration, framerate, num_loops
-	anim::Parameters idle{0, 6, 48, -1};
-	anim::Parameters shoot{10, 1, 38, -1};
-	anim::Parameters jumpsquat{18, 1, 58, 0};
-	anim::Parameters hurt{21, 4, 24, 2};
-	anim::Parameters jump{14, 1, 22, -1};
-	anim::Parameters jump_shoot{32, 1, 42, -1};
-	anim::Parameters reload{7, 7, 18, 0};
-	anim::Parameters turn{18, 2, 42, 0};
-	anim::Parameters run{14, 4, 42, 2};
-	anim::Parameters punch{28, 4, 32, 0};
-	anim::Parameters uppercut{35, 4, 32, 0};
-	anim::Parameters struggle{35, 1, 24, -1};
-	anim::Parameters build_invincibility{33, 2, 22, 4};
-	anim::Parameters laugh{25, 3, 24, 4};
-	anim::Parameters snap{39, 3, 42, 0};
-	anim::Parameters rush{66, 4, 22, -1};
-
-	anim::Parameters drink{42, 16, 20, 0};
-	anim::Parameters throw_can{58, 8, 22, 0};
 
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;

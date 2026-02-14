@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <capo/engine.hpp>
@@ -22,6 +23,7 @@ class Application : public UniquePolymorphic {
 	ResourceFinder m_finder;
 	dj::Json m_game_info{};
 	dj::Json m_app_settings{};
+	sf::Color m_backdrop_color{};
 	Version m_metadata;
 	WindowManager m_window{};
 	std::unique_ptr<capo::IEngine> m_engine{capo::create_engine()};

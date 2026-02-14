@@ -1,15 +1,25 @@
 
+#include <fornani/core/Common.hpp>
 #include <fornani/gui/console/ResponseDialog.hpp>
+#include <fornani/story/Quest.hpp>
+#include <fornani/systems/InputSystem.hpp>
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/graphics/Colors.hpp"
-#include "fornani/setup/ControllerMap.hpp"
 #include "fornani/setup/TextManager.hpp"
 
 namespace fornani::gui {
 
-ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, std::string_view key, int index, sf::Vector2f start_position) : m_text_size{16}, m_selection{1}, m_index{index} {
+ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, QuestTable& quest_table, std::string_view key, int index, sf::Vector2f start_position) : m_text_size{16}, m_selection{1}, m_index{index} {
 	auto& set = key == null_key ? source["responses"][index] : source[key]["responses"][index];
 	for (auto& msg : set.as_array()) {
+		auto contingencies_met = true;
+		if (msg["hide_portrait"].as_bool()) { set_flag(ResponseDialogFlags::hide_portrait); }
+		if (msg["contingencies"]) {
+			auto contingencies = std::vector<QuestContingency>{};
+			for (auto const& cont : msg["contingencies"].as_array()) { contingencies.push_back(QuestContingency{cont}); }
+			if (!quest_table.are_contingencies_met(contingencies)) { contingencies_met = false; }
+		}
+		if (!contingencies_met) { continue; }
 		responses.push_back(Message{sf::Text(text.fonts.basic)});
 		responses.back().data.setString(msg["message"].as_string().data());
 		stylize(responses.back().data);
@@ -17,6 +27,7 @@ ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, std::s
 			responses.back().codes = std::vector<MessageCode>{};
 			for (auto const& code : msg["codes"].as_array()) { responses.back().codes->push_back(MessageCode{code}); }
 		}
+		if (responses.size() == 1) { word_wrap(responses.back().data, 500.f); }
 	}
 	m_selection = util::Circuit{static_cast<int>(responses.size())};
 	m_indicator.shape.setSize({4.f, 4.f});
@@ -40,10 +51,10 @@ void ResponseDialog::stylize(sf::Text& message) const {
 	message.setLineSpacing(1.5f);
 }
 
-bool ResponseDialog::handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard) {
-	auto const& up = controller.digital_action_status(config::DigitalAction::menu_up).triggered;
-	auto const& down = controller.digital_action_status(config::DigitalAction::menu_down).triggered;
-	auto const& select = controller.digital_action_status(config::DigitalAction::menu_select).triggered;
+bool ResponseDialog::handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard) {
+	auto const& up = controller.menu_move(input::MoveDirection::up);
+	auto const& down = controller.menu_move(input::MoveDirection::down);
+	auto const& select = controller.digital(input::DigitalAction::menu_select).triggered;
 
 	if (select && m_ready) {
 		soundboard.flags.console.set(audio::Console::next);

@@ -2,7 +2,7 @@
 #pragma once
 
 #include <fornani/components/SteeringBehavior.hpp>
-#include <fornani/entities/enemy/Enemy.hpp>
+#include <fornani/entities/enemy/Boss.hpp>
 #include <fornani/gui/BossHealth.hpp>
 #include <fornani/particle/Chain.hpp>
 #include <fornani/particle/Sparkler.hpp>
@@ -11,10 +11,10 @@
 
 namespace fornani::enemy {
 
-enum class MiaagState : std::uint8_t { idle, hurt, closed, dying, blinking, dormant, chomp, turn, awaken, spellcast };
-enum class MiaagFlags : std::uint8_t { battle_mode, second_phase, gone };
+enum class MiaagState { idle, hurt, closed, dying, blinking, dormant, chomp, turn, awaken, spellcast };
+enum class MiaagFlags { gone };
 
-class Miaag : public Enemy, public StateMachine<MiaagState> {
+class Miaag : public Boss, public StateMachine<MiaagState> {
   public:
 	Miaag(automa::ServiceProvider& svc, world::Map& map);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
@@ -22,9 +22,8 @@ class Miaag : public Enemy, public StateMachine<MiaagState> {
 	void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 
 	[[nodiscard]] auto invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable); }
-	[[nodiscard]] auto battle_mode() const -> bool { return m_flags.test(MiaagFlags::battle_mode); }
-	[[nodiscard]] auto second_phase() const -> bool { return m_flags.test(MiaagFlags::second_phase); }
-	[[nodiscard]] auto half_health() const -> bool { return health.get_hp() < health.get_max() * 0.5f; }
+	[[nodiscard]] auto battle_mode() const -> bool { return has_flag_set(BossFlags::battle_mode); }
+	[[nodiscard]] auto second_phase() const -> bool { return has_flag_set(BossFlags::second_phase); }
 
 	fsm::StateFunction state_function = std::bind(&Miaag::update_dormant, this);
 	fsm::StateFunction update_dormant();
@@ -39,7 +38,6 @@ class Miaag : public Enemy, public StateMachine<MiaagState> {
   private:
 	util::BitFlags<MiaagFlags> m_flags{};
 	bool change_state(MiaagState next, anim::Parameters params);
-	gui::BossHealth m_health_bar;
 	std::unique_ptr<vfx::Chain> m_spine{};
 	std::vector<int> m_spine_lookups{};
 	sf::Sprite m_spine_sprite;

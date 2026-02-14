@@ -2,42 +2,21 @@
 #pragma once
 
 #include <fornani/components/SteeringBehavior.hpp>
-#include <fornani/entities/enemy/Enemy.hpp>
+#include <fornani/entities/enemy/Boss.hpp>
 #include <fornani/entities/packages/Attack.hpp>
 #include <fornani/entities/packages/Caution.hpp>
 #include <fornani/entities/packages/Shockwave.hpp>
 #include <fornani/entity/NPC.hpp>
-#include <fornani/gui/BossHealth.hpp>
 #include <fornani/particle/Sparkler.hpp>
 
 #define LYNX_BIND(f) std::bind(&Lynx::f, this)
 
 namespace fornani::enemy {
 
-enum class LynxState : std::uint8_t {
-	sit,
-	get_up,
-	idle,
-	jump,
-	forward_slash,
-	levitate,
-	run,
-	downward_slam,
-	prepare_shuriken,
-	toss_shuriken,
-	upward_slash,
-	triple_slash,
-	turn,
-	aerial_slash,
-	prepare_slash,
-	defeat,
-	second_phase,
-	laugh,
-	stagger
-};
-enum class LynxFlags : std::uint8_t { conversing, battle_mode, second_phase, just_levitated, player_defeated };
+enum class LynxState { sit, get_up, idle, jump, forward_slash, levitate, run, downward_slam, prepare_shuriken, toss_shuriken, upward_slash, triple_slash, turn, aerial_slash, prepare_slash, defeat, second_phase, laugh, stagger };
+enum class LynxFlags { conversing, just_levitated, player_defeated };
 
-class Lynx final : public Enemy, public NPC {
+class Lynx final : public NPC, public Boss {
   public:
 	Lynx(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
@@ -47,8 +26,7 @@ class Lynx final : public Enemy, public NPC {
 	void debug();
 
 	[[nodiscard]] auto invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable); }
-	[[nodiscard]] auto half_health() const -> bool { return health.get_hp() < health.get_max() * 0.5f; }
-	[[nodiscard]] auto quarter_health() const -> bool { return health.get_hp() < health.get_max() * 0.25f; }
+	[[nodiscard]] auto quarter_health() const -> bool { return health.get_quantity() < health.get_capacity() * 0.25f; }
 	[[nodiscard]] auto is_state(LynxState test) const -> bool { return m_state.actual == test; }
 	[[nodiscard]] auto is_levitating() const -> bool { return is_state(LynxState::levitate) || is_state(LynxState::second_phase); }
 	[[nodiscard]] auto slam_follow() const -> bool { return is_state(LynxState::downward_slam) && half_health() && Enemy::animation.get_frame_count() < 6; }
@@ -87,6 +65,7 @@ class Lynx final : public Enemy, public NPC {
 		util::Cooldown post_levitate;
 		util::Cooldown start_levitate;
 		util::Cooldown throw_shuriken;
+		util::Cooldown post_defeat;
 	} m_cooldowns{};
 
 	struct {
@@ -99,10 +78,11 @@ class Lynx final : public Enemy, public NPC {
 		entity::Shockwave right_shockwave;
 	} m_attacks{};
 
+	sf::Vector2f m_seek_friction;
+
 	util::BitFlags<LynxFlags> m_flags{};
 	void request(LynxState to) { m_state.desired = to; }
 	bool change_state(LynxState next, anim::Parameters params);
-	gui::BossHealth m_health_bar;
 	vfx::Sparkler m_magic;
 	shape::Shape m_distant_range{};
 

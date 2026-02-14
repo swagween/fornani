@@ -27,6 +27,8 @@ class Player;
 
 namespace fornani {
 
+using EntityHandle = std::uint64_t;
+
 class Entity : public Animatable, public IWorldPositionable {
   public:
 	explicit Entity(automa::ServiceProvider& svc, dj::Json const& in, std::string_view label, sf::Vector2i dim = constants::i_cell_vec);
@@ -38,6 +40,7 @@ class Entity : public Animatable, public IWorldPositionable {
 	virtual void expose();
 	virtual void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player);
 	virtual void render(sf::RenderWindow& win, sf::Vector2f cam, float size);
+	void set_handle(EntityHandle to) { m_handle = to; }
 	void set_position(sf::Vector2u to_position);
 	bool repeatable{};
 	bool overwrite{};
@@ -46,9 +49,12 @@ class Entity : public Animatable, public IWorldPositionable {
 	bool highlighted{};
 	bool copyable{true};
 	bool selected{};
+	bool moved{};
+	bool stackable{};
 
 	// helpers
 	sf::RectangleShape drawbox{};
+	[[nodiscard]] auto get_handle() const -> EntityHandle { return m_handle; }
 	[[nodiscard]] auto get_id() const -> int { return m_id; }
 	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
 	[[nodiscard]] auto contains_point(sf::Vector2u test) const -> bool;
@@ -61,6 +67,7 @@ class Entity : public Animatable, public IWorldPositionable {
   private:
 	int m_id{};
 	std::string m_label{};
+	EntityHandle m_handle{};
 };
 
 } // namespace fornani

@@ -3,7 +3,6 @@ nani_add_headers(
         Caution.hpp
         FloatingPart.hpp
         Health.hpp
-        Seeker.hpp
         Shockwave.hpp
         WeaponPackage.hpp
 )

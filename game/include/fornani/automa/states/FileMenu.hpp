@@ -1,17 +1,14 @@
 
 #pragma once
 
-#include "fornani/automa/MenuState.hpp"
-#include "fornani/gui/MiniMenu.hpp"
+#include <fornani/automa/MenuState.hpp>
+#include <fornani/gui/MiniMenu.hpp>
 
 #include <optional>
 
 namespace fornani::automa {
 
 class FileMenu final : public MenuState {
-
-	static constexpr int num_files{3};
-
   public:
 	FileMenu(ServiceProvider& svc, player::Player& player);
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
@@ -21,7 +18,6 @@ class FileMenu final : public MenuState {
 
   private:
 	util::Cooldown loading{};
-	world::Map map;
 	std::optional<gui::MiniMenu> m_file_select_menu{};
 };
 

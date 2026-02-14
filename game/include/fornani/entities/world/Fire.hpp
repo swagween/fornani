@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <fornani/particle/Sparkler.hpp>
-#include <fornani/utils/Shape.hpp>
+#include <fornani/physics/Shape.hpp>
 #include <memory>
 #include <optional>
 

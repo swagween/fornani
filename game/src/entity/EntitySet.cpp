@@ -1,19 +1,27 @@
 
 #include <fornani/entity/EntitySet.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
+#include <fornani/world/Map.hpp>
 
 #include <cassert>
 
 namespace fornani {
 
-EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
+EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name, bool delegated) {
+
+	player_box.setFillColor(sf::Color{100, 200, 100, 30});
+	player_box.setOutlineColor(sf::Color{100, 200, 100, 120});
+	player_box.setOutlineThickness(-2);
+
+	if (!delegated) { create_map.emplace("npcs", &create_entity<NPC>); }
 
 	create_map.emplace("beds", &create_entity<Bed>);
-	create_map.emplace("npcs", &create_entity<NPC>);
 	create_map.emplace("vines", &create_entity<Vine>);
+	create_map.emplace("water", &create_entity<Water>);
 	create_map.emplace("chests", &create_entity<Chest>);
 	create_map.emplace("lights", &create_entity<Light>);
 	create_map.emplace("enemies", &create_entity<Enemy>);
+	create_map.emplace("turrets", &create_entity<Turret>);
 	create_map.emplace("portals", &create_entity<Portal>);
 	create_map.emplace("platforms", &create_entity<Platform>);
 	create_map.emplace("animators", &create_entity<Animator>);
@@ -26,10 +34,13 @@ EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFin
 	create_map.emplace("cutscene_triggers", &create_entity<CutsceneTrigger>);
 
 	load(svc, finder, metadata, room_name);
+}
 
-	player_box.setFillColor(sf::Color{100, 200, 100, 30});
-	player_box.setOutlineColor(sf::Color{100, 200, 100, 120});
-	player_box.setOutlineThickness(-2);
+EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, world::Map& map, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) : EntitySet(svc, finder, metadata, room_name, true) {
+
+	registered_map.emplace("npcs", &create_registered_entity<NPC>);
+
+	load_and_register(svc, map, finder, metadata, room_name);
 }
 
 void EntitySet::render(sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f origin, float cell_size) {
@@ -47,7 +58,21 @@ void EntitySet::render(sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f ori
 void EntitySet::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
 	for (auto const& [key, entry] : metadata.as_object()) {
 		for (auto const& element : entry.as_array()) {
-			if (create_map.contains(std::string{key})) { variables.entities.push_back(create_map[key](svc, element)); }
+			if (create_map.contains(std::string{key})) {
+				variables.entities.push_back(create_map[key](svc, element));
+				variables.entities.back()->set_handle(++next_handle);
+			}
+		}
+	}
+}
+
+void EntitySet::load_and_register(fornani::automa::ServiceProvider& svc, world::Map& map, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {
+	for (auto const& [key, entry] : metadata.as_object()) {
+		for (auto const& element : entry.as_array()) {
+			if (registered_map.contains(std::string{key})) {
+				variables.entities.push_back(registered_map[key](svc, map, element));
+				variables.entities.back()->set_handle(++next_handle);
+			}
 		}
 	}
 }
@@ -80,6 +105,7 @@ bool EntitySet::has_entity_at(sf::Vector2<std::uint32_t> pos, bool highlighted_o
 }
 
 bool EntitySet::overlaps(Entity& other) const {
+	if (other.stackable) { return false; }
 	for (auto i{0u}; i < other.get_grid_dimensions().x; ++i) {
 		for (auto j{0u}; j < other.get_grid_dimensions().y; ++j) {
 			if (has_entity_at(other.get_grid_position() + sf::Vector2u{i, j})) { return true; }

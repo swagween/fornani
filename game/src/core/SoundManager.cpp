@@ -24,10 +24,33 @@ SoundManager::SoundManager(ResourceFinder const& finder) {
 			if (!in_buffer.decode_file(pathstr.c_str(), capo::Encoding::Wav)) { NANI_LOG_ERROR(m_logger, "Failed to decode file [{}]", pathstr); }
 			auto filename = sfx_str.substr(0, sfx_str.find('.'));
 			m_buffers.insert({filename, in_buffer});
+			m_ticks.insert({filename, 0});
 		}
 	}
 }
 
-capo::Buffer const& SoundManager::get_buffer(std::string const& label) { return m_buffers.contains(label) ? m_buffers.at(label) : m_null_buffer; }
+capo::Buffer const& SoundManager::get_buffer(std::string_view label) {
+	auto it = m_buffers.find(label);
+	if (it == m_buffers.end()) { return m_null_buffer; }
+	return it->second;
+}
+
+void SoundManager::set_tick_for_buffer(std::string_view label, int const to) {
+	auto it = m_ticks.find(label);
+	if (it == m_ticks.end()) {
+		NANI_LOG_ERROR(m_logger, "Failed to find tick for buffer {}", label);
+		return;
+	}
+	it->second = to;
+}
+
+int SoundManager::get_tick_for_buffer(std::string_view label) {
+	auto it = m_ticks.find(label);
+	if (it == m_ticks.end()) {
+		NANI_LOG_ERROR(m_logger, "Failed to find tick for buffer {}", label);
+		return -1;
+	}
+	return it->second;
+}
 
 } // namespace fornani::core

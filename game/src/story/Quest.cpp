@@ -136,8 +136,12 @@ void QuestTable::set_quest_progression(std::string_view tag, QuestIdentifier con
 }
 
 void QuestTable::set_quest_progression(std::string_view tag, Subquest const subquest, int const amount, std::vector<int> const sources, QuestIdentifier const identifier) {
-	if (!m_quests.contains(tag.data())) { start_quest(tag, {{identifier, 0}}); }
+	if (!m_quests.contains(tag.data())) { start_quest(tag, {{identifier, amount}}); }
 	m_quests.at(tag.data()).set_progression(subquest, amount, sources);
+	for (auto const& src : sources) {
+		NANI_LOG_DEBUG(m_logger, "Set progression of quest {} to {} from source {}", tag, amount, src);
+		NANI_LOG_DEBUG(m_logger, " - Subquest info: tag: {}, id: {}", subquest.tag, subquest.id);
+	}
 }
 
 auto QuestTable::print_progressions(std::string_view tag, std::string_view identifier) const -> std::string {

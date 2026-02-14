@@ -8,8 +8,8 @@
 
 namespace fornani::enemy {
 
-enum class SpiteflyState : std::uint8_t { idle, turn, sleep, awaken };
-enum class SpiteflyVariant : std::uint8_t { bat, bomb, albino };
+enum class SpiteflyState { idle, turn, sleep, awaken };
+enum class SpiteflyVariant { bat, bomb, albino };
 
 class Spitefly final : public Enemy, public StateMachine<SpiteflyState> {
   public:

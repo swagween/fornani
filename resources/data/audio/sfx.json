@@ -1,0 +1,252 @@
+[
+  {
+    "label": "error_sound",
+    "bus": "system",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "default_gui",
+    "bus": "gui",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "default_gameplay",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "tank_sip",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "laser_hum",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "min_distance": 128.0,
+    "max_distance": 512.0
+  },
+  {
+    "label": "deep_laser_hum",
+    "bus": "gameplay",
+    "volume": 0.06,
+    "pitch_offset": 0.0,
+    "min_distance": 32.0,
+    "max_distance": 256.0
+  },
+  {
+    "label": "missile_whistle",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "orb_collide",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "heart_collide",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "crow_caw_1",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "crow_caw_2",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "tank_alert_1",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "tank_alert_2",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "jump_low",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "thud",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "minigus_hurt_1",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "minigus_hurt_2",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "minigus_hurt_3",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "tank_step",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "spitefly_death",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "spitefly_flap",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "spitefly_screech",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "tank_death",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "arms_shot_skycorps_smg",
+    "bus": "gameplay",
+    "volume": 0.7,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "arms_shot_skycorps_ar",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "arms_shot_minigun",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "nani_wallslide",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 32,
+    "fade_out": 32
+  },
+  {
+    "label": "pioneer_buzz",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 8,
+    "fade_out": 16
+  },
+  {
+    "label": "pioneer_scan",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 8,
+    "fade_out": 32
+  },
+  {
+    "label": "pioneer_tech",
+    "bus": "gui",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "pioneer_drawer",
+    "bus": "gui",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "console_speech",
+    "bus": "gui",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 16,
+    "fade_out": 16
+  },
+  {
+    "label": "pioneer_rotary",
+    "bus": "gui",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "pioneer_tick",
+    "bus": "gui",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "caster_scream",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "caster_hurt",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "summoner_death",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "hit_squeak",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "platform_industrial",
+    "bus": "gameplay",
+    "volume": 0.3,
+    "pitch_offset": 0.0,
+    "fade_in": 8,
+    "fade_out": 32,
+    "min_distance": 128.0,
+    "max_distance": 512.0
+  }
+]

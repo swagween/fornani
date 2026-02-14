@@ -5,6 +5,7 @@ nani_add_headers(
         Piggybacker.hpp
         Player.hpp
         PlayerAnimation.hpp
+        PlayerAttributes.hpp
         PlayerController.hpp
         VisitHistory.hpp
         Wallet.hpp

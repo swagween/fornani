@@ -1,19 +1,12 @@
 
 #include "fornani/entities/world/Inspectable.hpp"
+#include <fornani/events/ConsoleEvent.hpp>
 #include <fornani/gui/console/Console.hpp>
-#include <fornani/systems/EventDispatcher.hpp>
 #include <fornani/world/Map.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::entity {
-
-static bool b_destroy{};
-static int b_id{};
-static void destroy_me(int id) {
-	b_destroy = true;
-	b_id = id;
-}
 
 Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int room, int index)
 	: IWorldPositionable({in["position"][0].as<std::uint32_t>(), in["position"][1].as<std::uint32_t>()}, {in["dimensions"][0].as<std::uint32_t>(), in["dimensions"][1].as<std::uint32_t>()}),
@@ -29,7 +22,6 @@ Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int r
 	bounding_box = shape::Shape(get_world_dimensions());
 	bounding_box.set_position(get_world_position());
 	animation.end();
-	svc.events.register_event(std::make_unique<Event<int>>("DestroyInspectable", &destroy_me));
 }
 
 void Inspectable::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
@@ -38,21 +30,17 @@ void Inspectable::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_
 	flags.reset(InspectableFlags::activated);
 	animation.update();
 	if (m_indicator_cooldown.is_almost_complete()) { flags.reset(InspectableFlags::hovered); }
-	if (b_destroy) {
-		NANI_LOG_DEBUG(m_logger, "destroy_me() successfully called!", native_id);
-		destroy_by_id(b_id);
-		b_destroy = false;
-	}
 	if (svc.data.inspectable_is_destroyed(native_id)) { flags.set(InspectableFlags::destroy); }
+	if (destroyed()) { return; }
 
 	// check for quest-based alternates
 	/*auto quest_status = svc.quest.get_progression(quest::QuestType::inspectable, native_id);
 	if (quest_status > 0) { current_alt = quest_status; }*/
 
-	if (bounding_box.overlaps(player.collider.hurtbox)) {
+	if (bounding_box.overlaps(player.get_collider().hurtbox)) {
 		if (!flags.test(InspectableFlags::hovered)) { flags.set(InspectableFlags::hovered_trigger); }
 		flags.set(InspectableFlags::hovered);
-		if (attributes.test(InspectableAttributes::activate_on_contact) && flags.test(InspectableFlags::can_engage) && player.collider.grounded()) {
+		if (attributes.test(InspectableAttributes::activate_on_contact) && flags.test(InspectableFlags::can_engage) && player.get_collider().grounded()) {
 			flags.set(InspectableFlags::activated);
 			flags.reset(InspectableFlags::can_engage);
 		}
@@ -79,6 +67,7 @@ void Inspectable::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_
 }
 
 void Inspectable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos) {
+	if (destroyed()) { return; }
 	sf::RectangleShape box{};
 	auto u = 0;
 	auto v = animation.get_frame() * 32;

@@ -2,11 +2,11 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <djson\json.hpp>
+#include <djson/json.hpp>
 #include <fornani/io/Logger.hpp>
+#include <fornani/physics/RegisteredCollider.hpp>
+#include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/IWorldPositionable.hpp>
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Collider.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -23,12 +23,12 @@ namespace fornani::world {
 
 class Map;
 
-enum class DestructibleState : std::uint8_t { solid, destroyed };
-enum class DestructibleAttributes : std::uint8_t { inverse, enemy_clear };
+enum class DestructibleState { solid, destroyed };
+enum class DestructibleAttributes { inverse, enemy_clear };
 
 class Destructible : public IWorldPositionable {
   public:
-	Destructible(automa::ServiceProvider& svc, dj::Json const& in, int style_id = 0);
+	Destructible(automa::ServiceProvider& svc, Map& map, dj::Json const& in, int style_id = 0);
 	void update(automa::ServiceProvider& svc, Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile& proj);
@@ -43,7 +43,7 @@ class Destructible : public IWorldPositionable {
 
   private:
 	int quest_id{};
-	shape::Collider collider{};
+	shape::RegisteredCollider m_collider;
 	int m_state{};
 	util::BitFlags<DestructibleAttributes> m_attributes{};
 	sf::Sprite sprite;

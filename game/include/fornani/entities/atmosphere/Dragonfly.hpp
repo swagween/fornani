@@ -23,11 +23,12 @@ namespace fornani::vfx {
 
 class Dragonfly {
   public:
-	Dragonfly(automa::ServiceProvider& svc, sf::Vector2f start);
+	Dragonfly(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f start);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void set_forces(float seek, float walk, float evade);
 	void debug();
+
   private:
 	components::PhysicsComponent physics{};
 	components::SteeringBehavior steering{};

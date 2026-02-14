@@ -3,12 +3,14 @@ nani_add_sources(
         ActionControlIconQuery.cpp
         BossHealth.cpp
         Dashboard.cpp
+        DottedLine.cpp
         Gizmo.cpp
-        HUD.cpp
+        HealthBar.cpp
         InventoryWindow.cpp
         ItemWidget.cpp
         MiniMap.cpp
         MiniMenu.cpp
+        NumberDisplay.cpp
         OrbDisplay.cpp
         PauseWindow.cpp
         Portrait.cpp
@@ -21,3 +23,4 @@ nani_add_sources(
 )
 add_subdirectory(gizmos)
 add_subdirectory(console)
+add_subdirectory(hud)

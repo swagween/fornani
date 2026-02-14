@@ -9,12 +9,12 @@
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/SpriteHistory.hpp>
 #include <fornani/io/Logger.hpp>
-#include <fornani/particle/Gravitator.hpp>
+#include <fornani/particle/Antenna.hpp>
+#include <fornani/physics/CircleCollider.hpp>
+#include <fornani/physics/Shape.hpp>
 #include <fornani/utils/BitFlags.hpp>
-#include <fornani/utils/CircleCollider.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/Direction.hpp>
-#include <fornani/utils/Shape.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -31,13 +31,13 @@ class Player;
 namespace fornani::arms {
 
 class Weapon;
-enum class ProjectileType : std::uint8_t { bullet, missile, melee };
-enum class RenderType : std::uint8_t { animated, single_sprite, multi_sprite };
+enum class ProjectileType { bullet, missile, melee };
+enum class RenderType { animated, single_sprite, multi_sprite };
 
-enum class ProjectileAttributes : std::uint8_t { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky };
+enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky, explode_on_impact };
 struct ProjectileSpecifications {
 	float base_damage{};
-	int power{};
+	float power{};
 	int lifespan{};
 	int lifespan_variance{};
 	float speed{};
@@ -50,16 +50,26 @@ struct ProjectileSpecifications {
 	float dampen_variance{};
 	float gravity{};
 	float elasticty{};
+	float spin{};
+	float spin_dampen{};
 };
 
-enum class ProjectileState : std::uint8_t { initialized, destruction_initiated, destroyed, whiffed, poof, contact, stuck };
+struct ExplosionAttributes {
+	std::string tag{};
+	std::string emitter{};
+	float radius{};
+	int channel{};
+};
+
+enum class ProjectileState { initialized, destruction_initiated, destroyed, whiffed, poof, contact, stuck };
 
 class Projectile : public Animatable {
   public:
 	Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon, bool enemy);
 	void update(automa::ServiceProvider& svc, player::Player& player);
 	void handle_collision(automa::ServiceProvider& svc, world::Map& map);
-	void on_player_hit(player::Player& player);
+	void on_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
+	void on_explode(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f cam);
 	void destroy(bool completely, bool whiffed = false);
 	void seed(automa::ServiceProvider& svc, sf::Vector2f target = {}, float speed_multiplier = 1.f);
@@ -77,7 +87,7 @@ class Projectile : public Animatable {
 	[[nodiscard]] auto destruction_initiated() const -> bool { return variables.state.test(ProjectileState::destruction_initiated); }
 	[[nodiscard]] auto destroyed() const -> bool { return variables.state.test(ProjectileState::destroyed); }
 	[[nodiscard]] auto get_damage() const -> float { return metadata.specifications.base_damage * variables.damage_multiplier; }
-	[[nodiscard]] auto get_power() const -> float { return static_cast<float>(metadata.specifications.power); }
+	[[nodiscard]] auto get_power() const -> float { return metadata.specifications.power; }
 	[[nodiscard]] auto whiffed() const -> bool { return variables.state.test(ProjectileState::whiffed); }
 	[[nodiscard]] auto poofed() const -> bool { return variables.state.test(ProjectileState::poof); }
 	[[nodiscard]] auto is_stuck() const -> bool { return variables.state.test(ProjectileState::stuck); }
@@ -89,9 +99,11 @@ class Projectile : public Animatable {
 	[[nodiscard]] auto get_direction() const -> Direction { return physical.direction; }
 	[[nodiscard]] auto get_collider() -> shape::CircleCollider& { return physical.collider; }
 	[[nodiscard]] auto can_damage() const -> bool { return damage_timer.is_almost_complete() || !persistent(); }
+	[[nodiscard]] auto has_critical_damage() const -> bool { return variables.damage_multiplier > 1.f; }
 
 	[[nodiscard]] auto get_chunk_id() const -> std::uint8_t { return m_chunk_id; }
 
+	[[nodiscard]] auto has_attribute(ProjectileAttributes test) const -> bool { return metadata.attributes.test(test); }
 	[[nodiscard]] auto omnidirectional() const -> bool { return metadata.attributes.test(ProjectileAttributes::omnidirectional); }
 	[[nodiscard]] auto transcendent() const -> bool { return metadata.attributes.test(ProjectileAttributes::transcendent); }
 	[[nodiscard]] auto constrained() const -> bool { return metadata.attributes.test(ProjectileAttributes::constrained); }
@@ -110,6 +122,7 @@ class Projectile : public Animatable {
 		std::string_view label{};
 		ProjectileSpecifications specifications{};
 		util::BitFlags<ProjectileAttributes> attributes{};
+		std::optional<ExplosionAttributes> explosion{};
 	} metadata{};
 
 	struct {

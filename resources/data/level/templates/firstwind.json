@@ -1,16 +1,24 @@
 {
-  "ambience": "firstwind",
-  "atmosphere": [],
-  "background": 1,
-  "minimap": true,
-  "music": "dusken",
-  "player_start": [0, 0],
-  "properties": {
-    "day_night_shift": false,
-    "environmental_randomness": false,
-    "lighting": false,
-    "timer": false
-  },
-  "style": 0,
-  "special_drop_id": 1
+	"atmosphere": [],
+	"background": "night",
+	"minimap": true,
+	"music": "dusken",
+	"properties": {
+		"day_night_shift": false,
+		"environmental_randomness": false,
+		"lighting": false,
+		"timer": false
+	},
+	"camera_effects": {
+		"shake": {
+			"dampen_factor": 100,
+			"energy": 0.08,
+			"frequency": 20,
+			"frequency_in_seconds": 30,
+			"start_time": 900,
+			"chance": 0.6
+		}
+	},
+	"style": 0,
+	"special_drop_id": 1
 }

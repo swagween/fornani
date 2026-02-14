@@ -21,16 +21,41 @@
           1,
           1
         ],
+        "face_player": true,
         "hidden": false,
-        "id": 93301,
+        "id": 407,
         "label": "wames",
         "position": [
-          21,
+          19,
           23
         ],
         "suites": [
           [
             1
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "face_player": true,
+        "hidden": false,
+        "id": 407,
+        "label": "jimmy",
+        "position": [
+          23,
+          23
+        ],
+        "suites": [
+          [
+            1,
+            2
+          ],
+          [
+            2
           ]
         ]
       }
@@ -45,7 +70,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           6,
@@ -62,7 +86,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           27,
@@ -87,8 +110,13 @@
   },
   "meta": {
     "ambience": "",
-    "background": 3,
+    "background": "woods",
     "biome": "overturned",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -128,7 +156,8 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 1
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
     "flags": {
@@ -4769,7 +4798,7 @@
         221,
         0,
         0,
-        0,
+        6,
         0,
         0,
         0,
@@ -4864,7 +4893,7 @@
         96,
         221,
         0,
-        0,
+        6,
         0,
         0,
         0,
@@ -4959,7 +4988,7 @@
         96,
         96,
         221,
-        0,
+        6,
         0,
         0,
         0,
@@ -5087,7 +5116,7 @@
         32,
         33,
         34,
-        0,
+        6,
         0,
         0,
         0,
@@ -6819,6 +6848,8 @@
         0,
         0,
         0,
+        88,
+        88,
         0,
         0,
         0,
@@ -6913,9 +6944,7 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        88,
         0,
         0,
         0,

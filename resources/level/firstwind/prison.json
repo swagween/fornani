@@ -35,7 +35,9 @@
           1,
           1
         ],
+        "enemy_clear": false,
         "id": 90,
+        "inverse": false,
         "position": [
           12,
           7
@@ -65,7 +67,7 @@
                   "codes": [
                     [
                       2,
-                      7,
+                      6,
                       11
                     ]
                   ],
@@ -120,11 +122,11 @@
                   "codes": [
                     [
                       10,
-                      73,
-                      12
+                      72,
+                      14
                     ]
                   ],
-                  "message": "You find a small instruction manual. On the first page, it says, \"Press  to open your inventory.\""
+                  "message": "You find a small instruction manual. On the first page, it says, \"Press   to open your inventory.\""
                 }
               ]
             ]
@@ -3815,7 +3817,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           27,
@@ -3839,8 +3840,7 @@
     ]
   },
   "meta": {
-    "ambience": "",
-    "background": 5,
+    "background": "overcast",
     "biome": "firstwind",
     "camera_effects": {
       "shake": {
@@ -3863,25 +3863,18 @@
     ],
     "metagrid": [
       0,
-      1
+      0
     ],
     "minimap": true,
-    "music": "dusken",
     "player_start": [
       0,
       0
     ],
-    "properties": {
-      "day_night_shift": true,
-      "environmental_randomness": false,
-      "lighting": false,
-      "timer": false
-    },
     "room_id": 100,
     "shader": {
       "darken_factor": 0
     },
-    "style": 0
+    "use_template": true
   },
   "tile": {
     "flags": {

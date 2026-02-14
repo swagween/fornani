@@ -33,6 +33,9 @@ void Inspectable::serialize(dj::Json& out) {
 				auto out_set = dj::Json{};
 				for (auto const& message : suite) {
 					auto msg = dj::Json{};
+					if (message.contingencies) {
+						for (auto const& cont : message.contingencies.value()) { cont.serialize(msg["contingencies"]); }
+					}
 					if (message.codes) {
 						for (auto const& code : message.codes.value()) { code.serialize(msg["codes"]); }
 					}
@@ -65,11 +68,16 @@ void Inspectable::unserialize(dj::Json const& in) {
 				auto s = std::vector<gui::BasicMessage>{};
 				for (auto const& message : in_suite.as_array()) {
 					auto codes = std::vector<gui::MessageCode>{};
+					auto contingencies = std::vector<QuestContingency>{};
 					for (auto const& c : message["codes"].as_array()) {
 						auto this_code = gui::MessageCode{c};
 						codes.push_back(this_code);
 					}
-					s.push_back(gui::BasicMessage{message["message"].as_string(), codes});
+					for (auto const& c : message["contingencies"].as_array()) {
+						auto this_cont = QuestContingency{c};
+						contingencies.push_back(this_cont);
+					}
+					s.push_back(gui::BasicMessage{message["message"].as_string(), codes, contingencies});
 				}
 				to_set.push_back(s);
 			}

@@ -19,6 +19,7 @@ class CreditsMenu final : public MenuState {
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
+	void refresh(ServiceProvider& svc);
 
   private:
 	dj::Json m_data{};

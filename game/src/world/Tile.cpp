@@ -1,3 +1,4 @@
+
 #include "fornani/world/Tile.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -6,10 +7,12 @@
 
 namespace fornani::world {
 
-Tile::Tile(sf::Vector2<std::uint32_t> i, sf::Vector2f p, std::uint32_t val, std::uint32_t odi, float spacing, std::uint8_t chunk_id)
+Tile::Tile(sf::Vector2<std::uint32_t> i, sf::Vector2f p, std::uint32_t val, std::uint32_t odi, float spacing, std::uint8_t chunk_id, sf::Vector2<std::uint32_t> dim)
 	: index(i), value(val), one_d_index(odi), bounding_box({32.f, 32.f}, evaluate(val)), m_spacing(spacing), m_chunk_id{chunk_id} {
 	set_type();
 	bounding_box.set_position(p);
+
+	if (index.x == 0 || index.y == 0 || index.x == dim.x - 1 || index.y == dim.y - 1) { flags.set(TileState::border); }
 }
 
 void Tile::on_hit(automa::ServiceProvider& svc, player::Player& player, world::Map& map, arms::Projectile& proj) {

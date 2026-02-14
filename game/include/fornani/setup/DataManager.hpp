@@ -1,18 +1,19 @@
 
-
 #pragma once
 
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 #include <fornani/entities/npc/Vendor.hpp>
+#include <fornani/graphics/MenuTheme.hpp>
 #include <fornani/gui/MiniMap.hpp>
 #include <fornani/io/File.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/setup/MapData.hpp>
+#include <fornani/systems/InputSystem.hpp>
+#include <fornani/systems/Register.hpp>
 #include <fornani/systems/TimeTrialRegistry.hpp>
 #include <fornani/utils/QuestCode.hpp>
 #include <fornani/world/Layer.hpp>
-
 #include <array>
 #include <string>
 
@@ -21,7 +22,7 @@ struct ServiceProvider;
 }
 
 namespace fornani::config {
-class ControllerMap;
+class InputSystem;
 }
 
 namespace fornani::player {
@@ -43,10 +44,13 @@ class DataManager final {
 	friend class Game;
 	explicit DataManager(automa::ServiceProvider& svc);
 	// game save
-	void load_data(std::string in_room = "");
+	void load_data();
 	void save_progress(player::Player& player, int save_point_id);
+	void save_quests();
 	void save_settings();
+	void set_theme(MenuTheme to);
 	int load_progress(player::Player& player, int file, bool state_switch = false, bool from_menu = true);
+	int reload_progress(player::Player& player);
 	void load_settings();
 	void delete_file(int index);
 	void write_death_count(player::Player& player);
@@ -56,13 +60,16 @@ class DataManager final {
 	dj::Json& get_player_items() { return files.at(current_save).save_data["player_data"]["items"]; }
 	io::File& get_file() { return files.at(current_save); }
 
+	Biome construct_biome(std::string_view label) const { return Biome{label, static_cast<std::size_t>(std::distance(m_biomes.begin(), std::find(m_biomes.begin(), m_biomes.end(), label)))}; }
+
 	// tweaking
 	void load_player_params(player::Player& player);
 	void save_player_params(player::Player& player);
 
 	// map-related save data helpers
 	void open_chest(int id);
-	void unlock_door(int id);
+	void reveal_room(int id);
+	void unlock_door(std::string_view tag);
 	void activate_switch(int id);
 	void switch_destructible_state(int id, bool inverse = false);
 	void destroy_inspectable(int id);
@@ -74,18 +81,18 @@ class DataManager final {
 	void respawn_all();
 
 	bool is_duplicate_room(int id) const;
-	bool door_is_unlocked(int id) const;
+	bool is_door_unlocked(std::string_view tag) const;
 	bool chest_is_open(int id) const;
 	bool switch_is_activated(int id) const;
 	bool inspectable_is_destroyed(int id) const;
-	bool room_discovered(int id) const;
+	bool is_room_discovered(int id) const;
 	bool enemy_is_fallen(int room_id, int id) const;
 
 	int get_destructible_state(int id) const;
 
 	// support user-defined control mapping
-	void load_controls(config::ControllerMap& controller);
-	void save_controls(config::ControllerMap& controller);
+	void load_controls(input::InputSystem& controller);
+	void save_controls(input::InputSystem& controller);
 	void reset_controls();
 
 	[[nodiscard]] auto exists(int candidate) const -> bool {
@@ -94,12 +101,15 @@ class DataManager final {
 		}
 		return false;
 	}
-	[[nodiscard]] auto item_label_from_id(int key) const -> std::string { return m_item_labels.contains(key) ? m_item_labels.at(key) : "<invalid>"; }
-	[[nodiscard]] auto item_label_view_from_id(int key) const -> std::string_view { return m_item_labels.contains(key) ? m_item_labels.at(key) : "<invalid>"; }
+	[[nodiscard]] auto item_label_from_id(int key) const -> std::string { return item[key]["tag"].as_string(); }
 	[[nodiscard]] auto item_id_from_label(std::string_view label) const -> int;
 	[[nodiscard]] auto get_gun_tag_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] auto get_gun_id_from_tag(std::string_view tag) const -> int;
-	[[nodiscard]] auto get_room_data_from_id(int id) const& -> std::optional<dj::Json>;
+	[[nodiscard]] auto get_map_data_from_id(int id) const -> std::optional<std::reference_wrapper<MapData const>>;
+	[[nodiscard]] auto get_map_json_from_id(int id) const -> std::optional<std::reference_wrapper<dj::Json const>>;
+	[[nodiscard]] auto get_map_json_from_id(int id) -> std::optional<std::reference_wrapper<dj::Json>>;
+	[[nodiscard]] auto get_item_json_from_tag(std::string_view tag) const -> dj::Json const&;
+	[[nodiscard]] auto get_room_data_from_id(int id) const -> std::optional<dj::Json>;
 	[[nodiscard]] auto get_npc_label_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] auto get_enemy_label_from_id(int id) const -> std::optional<std::string_view>;
 
@@ -110,6 +120,7 @@ class DataManager final {
 	// gui
 	dj::Json m_console_paths{};
 	dj::Json gui_text{};
+	dj::Json menu_themes{};
 
 	dj::Json weapon{};
 	dj::Json enemy_weapon{};
@@ -117,13 +128,14 @@ class DataManager final {
 	dj::Json particle{};
 	dj::Json effect{};
 	dj::Json sparkler{};
-	dj::Json map_styles{};
+	dj::Json biomes{};
 	dj::Json npc{};
 	dj::Json item{};
 	dj::Json platform{};
 	dj::Json cutscene{};
 	dj::Json action_names{};
 	dj::Json light{};
+	dj::Json fader{};
 
 	// enemy
 	dj::Json enemy{};
@@ -146,13 +158,15 @@ class DataManager final {
 	dj::Json background{};
 	dj::Json audio_library{};
 
+	MenuTheme theme{};
+
 	std::vector<MapData> map_jsons{};
 	std::vector<MapTemplate> map_templates{};
 	gui::MiniMap minimap;
 	std::vector<std::vector<std::unique_ptr<world::Layer>>> map_layers{};
 	int num_layers{8};
 	std::vector<int> rooms{};
-	std::vector<int> discovered_rooms{};
+	Register<int> discovered_rooms{};
 
 	automa::ServiceProvider* m_services;
 	std::unordered_map<int, npc::Vendor> marketplace{};
@@ -162,15 +176,14 @@ class DataManager final {
 	TimeTrialRegistry time_trial_registry{};
 
   private:
-	[[nodiscard]] auto get_destroyed_inspectables() const -> std::vector<int> { return destroyed_inspectables; }
+	[[nodiscard]] auto get_destroyed_inspectables() const -> Register<int> { return destroyed_inspectables; }
 	std::vector<int> opened_chests{};
-	std::vector<int> unlocked_doors{};
+	Register<std::string> unlocked_doors{};
 	std::vector<int> activated_switches{};
 	std::vector<std::pair<int, int>> destructible_states{};
-	std::vector<int> destroyed_inspectables{};
+	Register<int> destroyed_inspectables{};
 	std::vector<util::QuestKey> quest_progressions{};
-
-	std::unordered_map<int, std::string> m_item_labels{};
+	std::vector<std::string> m_biomes{};
 	std::unordered_map<int, std::string> m_map_labels{};
 
 	io::Logger m_logger{"data"};

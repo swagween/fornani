@@ -1,0 +1,62 @@
+{
+	"periwinkle": {
+		"lookup": 0,
+		"order": 4
+	},
+	"green": {
+		"lookup": 1,
+		"order": 4
+	},
+	"fucshia": {
+		"lookup": 2,
+		"order": 4
+	},
+	"yellow": {
+		"lookup": 3,
+		"order": 4
+	},
+	"night": {
+		"lookup": 4,
+		"order": 4
+	},
+	"standard": {
+		"lookup": 5,
+		"order": 4
+	},
+	"save": {
+		"lookup": 6,
+		"order": 5
+	},
+	"mythic": {
+		"lookup": 7,
+		"order": 4
+	},
+	"fire": {
+		"lookup": 8,
+		"order": 5
+	},
+	"blue": {
+		"lookup": 9,
+		"order": 4
+	},
+	"smoke": {
+		"lookup": 10,
+		"order": 3
+	},
+	"topaz": {
+		"lookup": 11,
+		"order": 8
+	},
+	"dark": {
+		"lookup": 12,
+		"order": 4
+	},
+	"guardian": {
+		"lookup": 13,
+		"order": 4
+	},
+	"junk": {
+		"lookup": 14,
+		"order": 5
+	}
+}

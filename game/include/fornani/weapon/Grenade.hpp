@@ -4,7 +4,7 @@
 #include "fornani/components/CircleSensor.hpp"
 #include "fornani/entities/Entity.hpp"
 #include "fornani/entities/animation/Animation.hpp"
-#include "fornani/utils/Collider.hpp"
+#include "fornani/physics/Collider.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Direction.hpp"
 
@@ -21,6 +21,6 @@ class Map;
 }
 
 namespace fornani::arms {
-enum class GrenadeFlags : std::uint8_t { detonated };
+enum class GrenadeFlags { detonated };
 // TODO: re-implement grenade to fit into new weapons system
 } // namespace fornani::arms

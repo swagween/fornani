@@ -1,24 +1,40 @@
 
-#include "fornani/entities/world/Chest.hpp"
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/entities/world/Chest.hpp>
+#include <fornani/events/InventoryEvent.hpp>
 #include <fornani/gui/console/Console.hpp>
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/world/Map.hpp"
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/world/Map.hpp>
 
 namespace fornani::entity {
 
-Chest::Chest(automa::ServiceProvider& svc, int id, ChestType type, int modifier) : Animatable(svc, "chests", {16, 16}), m_id(id), m_type{type}, m_content_modifier{modifier}, collider{14.f} {
-	collider.physics.elasticity = 0.4f;
-	collider.physics.set_global_friction(0.998f);
-	collider.physics.gravity = 10.f;
+Chest::Chest(automa::ServiceProvider& svc, world::Map& map, int id, ChestType type, int modifier) : Animatable(svc, "chests", {16, 16}), m_id(id), m_type{type}, m_content_modifier{modifier}, m_collider{map, 14.f} {
+	get_collider().physics.elasticity = 0.4f;
+	get_collider().physics.set_friction_componentwise({0.99f, 0.998f});
+	get_collider().physics.gravity = 10.f;
+	get_collider().set_exclusion_target(shape::ColliderTrait::player);
+	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 
 	Animatable::set_parameters(m_animations.unopened);
 
-	if (svc.data.chest_is_open(id)) { state.set(ChestState::open); }
-	if (type == ChestType::item) { m_item_label = svc.data.item_label_from_id(modifier); }
+	if (svc.data.chest_is_open(id) && id != -1) { state.set(ChestState::open); }
 }
 
+Chest::Chest(automa::ServiceProvider& svc, world::Map& map, int id, ChestType type, std::string tag, int modifier) : Chest(svc, map, id, type, modifier) { m_tag = tag; }
+
 void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player) {
+
+	if (m_attributes.test(ChestAttributes::mythic)) {
+		set_channel(1);
+		if (!m_sparkler) {
+			m_sparkler = vfx::Sparkler(svc, get_f_dimensions() * 2.f, colors::ui_white, "chest");
+			m_sparkler->activate();
+		}
+	}
+	if (m_sparkler) {
+		m_sparkler->set_position(get_collider().physics.position - get_f_dimensions());
+		m_sparkler->update(svc);
+	}
 
 	Animatable::tick();
 	if (!state.test(ChestState::open)) {
@@ -28,36 +44,27 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 		Animatable::set_parameters(m_animations.opened);
 	}
 
-	collider.update(svc);
-	collider.handle_map_collision(map);
-	if (collider.collided() && std::abs(collider.physics.apparent_velocity().y) > 0.05f) { svc.soundboard.flags.world.set(audio::World::clink); }
-	map.handle_cell_collision(collider);
-	map.handle_breakable_collision(collider);
-	for (auto& pushable : map.pushables) { collider.handle_collision(pushable.collider.bounding_box); }
-	for (auto& platform : map.platforms) { collider.handle_collision(platform.bounding_box); }
-	for (auto& destructible : map.destructibles) {
-		if (!destructible.ignore_updates()) { collider.handle_collision(destructible.get_bounding_box()); }
-	}
-	for (auto& button : map.switch_buttons) { collider.handle_collision(button->collider.bounding_box); }
-	for (auto& block : map.switch_blocks) {
-		if (block.on()) { collider.handle_collision(block.collider.bounding_box); }
-	}
-	collider.physics.acceleration = {};
+	if (get_collider().collided() && std::abs(get_collider().physics.apparent_velocity().y) > 0.05f) { svc.soundboard.flags.world.set(audio::World::clink); }
+	map.handle_cell_collision(get_collider());
+	for (auto& button : map.switch_buttons) { get_collider().handle_collision(button->collider.bounding_box); }
+	get_collider().physics.acceleration = {};
 	state.reset(ChestState::activated);
 
-	if (collider.collides_with(player.collider.bounding_box)) {
+	if (get_collider().collides_with(player.get_collider().bounding_box) && !player.is_busy()) {
 		if (player.controller.inspecting()) {
+			player.set_busy(true);
 			state.set(ChestState::activated);
 			if (!state.test(ChestState::open)) {
+				if (m_sparkler) { m_sparkler->deactivate(); }
 				svc.soundboard.flags.world.set(audio::World::chest);
 				state.set(ChestState::open);
 				Animatable::set_parameters(m_animations.opened);
-				svc.data.open_chest(m_id);
+				if (m_id != -1) { svc.data.open_chest(m_id); }
 				auto fmodifier = static_cast<float>(m_content_modifier);
 				auto range_modifier = std::max(6, static_cast<int>(m_content_modifier / 8.f));
-				if (m_type == ChestType::gun) { svc.events.dispatch_event("AcquireGun", m_content_modifier); }
-				if (m_type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, {range_modifier, range_modifier * 2}, fmodifier, collider.get_global_center(), 100, true, map.get_special_drop_id())); }
-				if (m_type == ChestType::item) { svc.events.dispatch_event("AcquireItem", m_content_modifier); }
+				if (m_type == ChestType::gun && m_tag.has_value()) { svc.events.acquire_weapon_event.dispatch(svc, std::string_view{*m_tag}); }
+				if (m_type == ChestType::item && m_tag.has_value()) { svc.events.acquire_item_event.dispatch(svc, std::string_view{*m_tag}); }
+				if (m_type == ChestType::orbs) { map.active_loot.push_back(item::Loot(svc, map, player, get_collider().get_global_center(), {{range_modifier, range_modifier * 2}, fmodifier, 100, true, map.get_special_drop_id()})); }
 			} else {
 				console = std::make_unique<gui::Console>(svc, svc.text.basic, "open_chest", gui::OutputType::instant);
 			}
@@ -71,13 +78,14 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 }
 
 void Chest::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	auto sprite_position = collider.physics.position - cam + sf::Vector2f{-2.f, -4.f} - collider.get_local_center();
+	auto sprite_position = get_collider().physics.position - cam + sf::Vector2f{-2.f, -4.f} - get_collider().get_local_center();
 	Drawable::set_position(sprite_position);
+	if (m_sparkler) { m_sparkler->render(win, cam); }
 	win.draw(*this);
 }
 
-void Chest::set_position(sf::Vector2f pos) { collider.set_position(pos); }
+void Chest::set_position(sf::Vector2f pos) { get_collider().set_position(pos); }
 
-void Chest::set_position_from_scaled(sf::Vector2f scaled_pos) { collider.set_position(scaled_pos * constants::f_cell_size + sf::Vector2f{0.f, 18.f}); }
+void Chest::set_position_from_scaled(sf::Vector2f scaled_pos) { get_collider().set_position(scaled_pos * constants::f_cell_size + sf::Vector2f{16.f, 18.f}); }
 
 } // namespace fornani::entity

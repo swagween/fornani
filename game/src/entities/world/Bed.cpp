@@ -26,12 +26,12 @@ void Bed::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	sparkler.set_position(bounding_box.get_position());
 	if (player.is_busy() || player.is_in_custom_sleep_event()) { return; }
 
-	if (player.collider.bounding_box.overlaps(bounding_box)) {
+	if (player.get_collider().bounding_box.overlaps(bounding_box)) {
 		flags.set(BedFlags::active);
 		sparkler.activate();
 		fadeout.start();
-		if (!flags.test(BedFlags::engaged) && !flags.test(BedFlags::slept_in) && player.controller.inspecting() && !player.is_busy()) { player.flags.state.set(player::State::sleep); }
-		if (player.is_in_animation(player::AnimState::sleep) && !console && player.animation.animation.get_elapsed_ticks() >= sleep_timer_v && !flags.test(BedFlags::slept_in)) {
+		if (!flags.test(BedFlags::engaged) && !flags.test(BedFlags::slept_in) && player.controller.inspecting() && !player.is_busy()) { player.set_flag(player::PlayerFlags::sleep); }
+		if (player.is_in_animation(player::AnimState::sleep) && !console && player.get_elapsed_animation_ticks() >= sleep_timer_v && !flags.test(BedFlags::slept_in)) {
 			if (!flags.test(BedFlags::engaged)) { transition.start(); }
 			flags.set(BedFlags::engaged);
 		}
@@ -53,7 +53,7 @@ void Bed::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 		}
 	}
 	if (!console && flags.test(BedFlags::slept_in)) {
-		player.flags.state.set(player::State::wake_up);
+		player.set_flag(player::PlayerFlags::wake_up);
 		flags.reset(BedFlags::slept_in);
 	}
 }

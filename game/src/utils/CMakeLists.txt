@@ -1,14 +1,12 @@
 nani_add_sources(
-        CircleCollider.cpp
-        Collider.cpp
-        CollisionDepth.cpp
         Decoder.cpp
+        Direction.cpp
         Fader.cpp
         IWorldPositionable.cpp
         NineSlice.cpp
+        Oscillator.cpp
         Random.cpp
         RectPath.cpp
-        Shape.cpp
         Stopwatch.cpp
         Ticker.cpp
         WorldClock.cpp

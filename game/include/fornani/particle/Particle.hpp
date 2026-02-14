@@ -1,12 +1,12 @@
 
 #pragma once
-#include <SFML/Graphics.hpp>
+
+#include <fornani/graphics/Animatable.hpp>
+#include <fornani/physics/RegisteredCollider.hpp>
+#include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/Fader.hpp>
 #include <optional>
 #include <string_view>
-#include "fornani/entities/animation/Animation.hpp"
-#include "fornani/utils/CircleCollider.hpp"
-#include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/Fader.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -17,10 +17,10 @@ class Map;
 }
 
 namespace fornani::vfx {
-enum class ParticleType : std::uint8_t { animated, colliding };
+
 class Particle {
   public:
-	Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f dim, std::string_view type, sf::Color color, Direction direction);
+	Particle(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f pos, sf::Vector2f dim, std::string_view type, sf::Color color, Direction direction);
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	[[nodiscard]] auto done() const -> bool { return lifespan.is_almost_complete(); }
@@ -29,14 +29,12 @@ class Particle {
 	sf::RectangleShape box{};
 	sf::Vector2f position{};
 	sf::Vector2f dimensions{};
-	sf::Vector2<int> sprite_dimensions{};
+
 	util::Cooldown lifespan{};
-	shape::CircleCollider collider;
+	shape::RegisteredCollider m_collider;
+	std::optional<Animatable> m_animatable;
+	std::optional<util::Fader> m_fader{};
 	int frame{};
-	sf::Sprite sprite;
-	std::optional<util::Fader> fader{};
-	anim::Animation animation{};
-	util::BitFlags<ParticleType> flags{};
 };
 
 } // namespace fornani::vfx

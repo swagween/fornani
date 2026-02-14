@@ -211,8 +211,13 @@
   },
   "meta": {
     "ambience": "",
-    "background": 1,
+    "background": "night",
     "biome": "firstwind",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -252,7 +257,8 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 0
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
     "flags": {

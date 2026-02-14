@@ -76,11 +76,72 @@
           1,
           1
         ],
+        "face_player": true,
         "hidden": false,
         "id": 38552,
         "label": "amber",
         "position": [
           10,
+          12
+        ],
+        "suites": [
+          [
+            1
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "face_player": true,
+        "hidden": false,
+        "id": 409,
+        "label": "lyle",
+        "position": [
+          9,
+          4
+        ],
+        "suites": [
+          [
+            1
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "face_player": true,
+        "hidden": false,
+        "id": 409,
+        "label": "lucie",
+        "position": [
+          11,
+          4
+        ],
+        "suites": [
+          [
+            1
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "face_player": true,
+        "hidden": false,
+        "id": 409,
+        "label": "dale",
+        "position": [
+          7,
           12
         ],
         "suites": [
@@ -100,7 +161,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           3,
@@ -125,7 +185,7 @@
   },
   "meta": {
     "ambience": "none",
-    "background": 3,
+    "background": "woods",
     "biome": "overturned",
     "border_color": [
       0,
@@ -172,7 +232,6 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "style": 1,
     "use_template": false
   },
   "tile": {

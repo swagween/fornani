@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <fornani/shader/LightShader.hpp>
 #include <fornani/shader/Palette.hpp>
-#include <fornani/utils/Collider.hpp>
+#include <fornani/physics/Collider.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -20,7 +20,7 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class SpikeAttributes : std::uint8_t { no_collision, soft_reset, random };
+enum class SpikeAttributes { no_collision, soft_reset, random };
 
 class Spike {
   public:

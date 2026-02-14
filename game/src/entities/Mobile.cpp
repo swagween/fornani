@@ -5,19 +5,43 @@
 
 namespace fornani {
 
-Mobile::Mobile(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions) : Animatable(svc, label, dimensions) {}
+Mobile::Mobile(automa::ServiceProvider& svc, world::Map& map, std::string_view label, sf::Vector2i dimensions, bool include_collider) : Animatable(svc, label, dimensions) {
+	owned_collider.emplace(map, sf::Vector2f{dimensions});
+	collider = *owned_collider;
+}
 
-void Mobile::face_player(player::Player& player) { directions.desired.set((player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right); }
+Mobile::Mobile(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions) : Animatable(svc, label, dimensions) {
+	owned_collider.reset();
+	collider.reset();
+}
 
-bool Mobile::player_behind(player::Player& player) const { return player.collider.physics.position.x + player.collider.bounding_box.get_dimensions().x * 0.5f < collider.physics.position.x + collider.dimensions.x * 0.5f; }
+void Mobile::register_collider(world::Map& map, sf::Vector2f dimensions) {
+	owned_collider.emplace(map, dimensions);
+	collider = *owned_collider;
+}
 
-void Mobile::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void Mobile::face_player(player::Player& player) { directions.desired.set((player.get_collider().get_center().x < get_collider().get_center().x) ? LNR::left : LNR::right); }
+
+void Mobile::set_direction(SimpleDirection to) {
+	directions.desired = Direction{to};
+	directions.actual = Direction{to};
+	directions.movement = Direction{to};
+	Animatable::set_scale(constants::f_scale_vec.componentWiseMul({-to.as_float(), 1.f}));
+}
+
+void Mobile::set_desired_direction(SimpleDirection to) { directions.desired = Direction{to}; }
+
+bool Mobile::player_behind(player::Player& player) const {
+	return player.get_collider().physics.position.x + player.get_collider().bounding_box.get_dimensions().x * 0.5f < get_collider().physics.position.x + get_collider().dimensions.x * 0.5f;
+}
+
+void Mobile::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, bool tick) {
 	if (p_flags.consume(MobileState::flip)) {
 		if (directions.desired.lnr != directions.actual.lnr) { flip(); }
 		directions.desired.unlock();
 		directions.actual = directions.desired;
 	}
-	Animatable::tick();
+	if (tick) { Animatable::tick(); }
 }
 
 anim::Parameters const& Mobile::get_params(std::string const& key) { return m_params.contains(key) ? m_params.at(key) : m_params.at("idle"); }

@@ -28,6 +28,8 @@ void Entity::serialize(dj::Json& out) {
 void Entity::unserialize(dj::Json const& in) { m_id = in["id"].as<int>(); }
 
 void Entity::expose() {
+	static int w = IWorldPositionable::m_dimensions.x;
+	static int h = IWorldPositionable::m_dimensions.y;
 	ImGui::Text("Category: %s", m_label.c_str());
 	ImGui::Separator();
 	ImGui::InputInt("Entity ID", &m_id);
@@ -35,6 +37,9 @@ void Entity::expose() {
 	ImGui::SameLine();
 	ImGui::Text(", %i)", get_grid_position().y);
 	ImGui::Separator();
+	ImGui::InputInt("Width", &w);
+	ImGui::InputInt("Height", &h);
+	set_grid_dimensions(sf::Vector2i{w, h});
 }
 
 void Entity::set_position(sf::Vector2u to_position) { set_grid_position(to_position); }

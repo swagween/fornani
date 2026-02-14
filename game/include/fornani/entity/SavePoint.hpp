@@ -6,7 +6,7 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Sparkler.hpp>
 #include <fornani/utils/IWorldPositionable.hpp>
-#include <fornani/utils/Shape.hpp>
+#include <fornani/physics/Shape.hpp>
 #include <optional>
 
 namespace fornani {

@@ -24,38 +24,72 @@
   "death": {
     "output": 2,
     "suite": [
-      [{ "message": "You died." }, { "message": "Would you like to retry?", "codes": [[1, 0]] }]
+      [
+        {
+          "messages": [
+            "You died.",
+            "You got crushed.",
+            "You drowned.",
+            "You got eaten.",
+            "You fell into the gas giant."
+          ]
+        },
+        {
+          "message": "Would you like to retry?",
+          "codes": [[1, 0]]
+        }
+      ]
     ],
     "responses": [
       [
-        { "message": "Yes", "codes": [[7, 2]] },
-        { "message": "No", "codes": [[7, 1]] }
+        {
+          "hide_portrait": true,
+          "message": "Yes",
+          "codes": [[7, 2]]
+        },
+        {
+          "message": "No",
+          "codes": [[8, 0]]
+        }
       ]
     ]
   },
   "menu_return": {
     "suite": [
-      [{ "message": "You will lose any unsaved progress. Are you sure?", "codes": [[1, 0]] }]
+      [
+        {
+          "message": "You will lose any unsaved progress. Are you sure?",
+          "codes": [[1, 0]]
+        }
+      ]
     ],
     "responses": [
       [
-        { "message": "Yes", "codes": [[7, 1]] },
-        { "message": "No", "codes": [[0, 0]] }
+        {
+          "hide_portrait": true,
+          "message": "Yes",
+          "codes": [[7, 1]]
+        },
+        {
+          "message": "No",
+          "codes": [[0, 0]]
+        }
       ]
     ]
   },
   "intro": {
     "suite": [
       [
-        { "message": "You are lost and you are cold." },
+        { "message": "You are weary and cold." },
         {
           "message": "There is not much you remember from the last days, but you know well that they were filled with anguish."
         },
         {
-          "message": "You awaken now after a slumber of unknown length. The world shakes around you."
+          "message": "You awaken now after a slumber of unknown length."
         },
-        { "message": "..." },
-        { "message": "You are looking for your brother." }
+        {
+          "message": "The world shakes around you..."
+        }
       ]
     ]
   },
@@ -68,8 +102,15 @@
     ],
     "responses": [
       [
-        { "codes": [[7, 3]], "message": "Yes" },
-        { "codes": [[8, 0]], "message": "No" }
+        {
+          "hide_portrait": true,
+          "codes": [[7, 3]],
+          "message": "Yes"
+        },
+        {
+          "codes": [[8, 0]],
+          "message": "No"
+        }
       ]
     ]
   },

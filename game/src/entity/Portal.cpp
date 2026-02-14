@@ -1,19 +1,25 @@
 
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entity/Portal.hpp>
+#include <fornani/events/SystemEvent.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani {
 
-Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_id, int destination_id, bool locked, int key_id)
-	: Entity(svc, "portals", 0, dimensions), source_id(source_id), destination_id(destination_id), key_id(key_id), m_services(&svc) {
+Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_id, int destination_id)
+	: Entity(svc, "portals", 0, dimensions), source_id(source_id), destination_id(destination_id), key_tag(key_tag), m_services(&svc) {
 	set_texture_rect(sf::IntRect{{16 * already_open, 0}, {16, 32}});
 	set_origin({0.f, 16.f});
 	if (activate_on_contact || dimensions.x * dimensions.y > 1) { m_textured = false; }
 	if (activate_on_contact) { m_attributes.set(PortalAttributes::activate_on_contact); }
 	if (already_open) { m_attributes.set(PortalAttributes::already_open); }
+}
+
+Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_id, int destination_id, std::string_view key_tag)
+	: Portal(svc, dimensions, activate_on_contact, already_open, source_id, destination_id) {
+	key_tag = std::string{key_tag};
 }
 
 Portal::Portal(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals"), m_services(&svc) {
@@ -31,7 +37,9 @@ Portal::Portal(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, i
 		m_render_state = PortalRenderState::open;
 		m_attributes.set(PortalAttributes::already_open);
 	}
-	if (svc.data.door_is_unlocked(key_id)) { m_state.reset(PortalState::locked); }
+	if (key_tag) {
+		if (svc.data.is_door_unlocked(key_tag.value())) { m_state.reset(PortalState::locked); }
+	}
 }
 
 std::unique_ptr<Entity> Portal::clone() const { return std::make_unique<Portal>(*this); }
@@ -43,7 +51,7 @@ void Portal::serialize(dj::Json& out) {
 	out["source_id"] = source_id;
 	out["destination_id"] = destination_id;
 	out["locked"] = is_locked();
-	out["key_id"] = key_id;
+	if (key_tag) { out["key_tag"] = key_tag.value(); }
 }
 
 void Portal::unserialize(dj::Json const& in) {
@@ -53,7 +61,7 @@ void Portal::unserialize(dj::Json const& in) {
 	source_id = in["source_id"].as<int>();
 	destination_id = in["destination_id"].as<int>();
 	in["locked"].as_bool() ? m_state.set(PortalState::locked) : m_state.reset(PortalState::locked);
-	key_id = in["key_id"].as<int>();
+	if (in["key_tag"]) { key_tag = in["key_tag"].as_string(); }
 }
 
 void Portal::expose() {
@@ -68,7 +76,6 @@ void Portal::expose() {
 	ImGui::Checkbox("Already Open", &already_open);
 	ImGui::Separator();
 	ImGui::Checkbox("Locked", &locked);
-	ImGui::InputInt("Key ID", &key_id);
 	ImGui::Separator();
 	activate_on_contact ? m_attributes.set(PortalAttributes::activate_on_contact) : m_attributes.reset(PortalAttributes::activate_on_contact);
 	already_open ? m_attributes.set(PortalAttributes::already_open) : m_attributes.reset(PortalAttributes::already_open);
@@ -79,10 +86,21 @@ void Portal::expose() {
 			auto const& regionstr = roomdata.value()["region"].as_string();
 			NANI_LOG_DEBUG(m_logger, "Region: {}", regionstr);
 			NANI_LOG_DEBUG(m_logger, "Room: {}", roomstr);
-			m_services->events.dispatch_event("LoadFile", regionstr, roomstr);
+			m_services->events.load_file_event.dispatch(regionstr, roomstr);
 		}
 	} else {
-		if (ImGui::Button("Create Destination Room")) { m_services->events.dispatch_event("NewFile", destination_id); }
+		if (ImGui::Button("Create Destination Room")) { m_services->events.new_file_event.dispatch(destination_id); }
+	}
+	if (locked) {
+		ImGui::SeparatorText("Key to unlock");
+		std::vector<std::string> labels{};
+		for (auto const& item : m_services->data.item.as_array()) {
+			if (item["is_key"].as_bool()) { labels.push_back(item["tag"].as_string()); }
+		}
+		std::ranges::sort(labels, {});
+		for (auto const& lbl : labels) {
+			if (ImGui::Selectable(lbl.c_str())) { key_tag = lbl.c_str(); }
+		}
 	}
 }
 
@@ -92,7 +110,8 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 	auto lookup = sf::IntRect({static_cast<int>(m_render_state) * constants::i_cell_resolution, map.get_style_id() * constants::i_cell_resolution * 2}, {constants::i_cell_resolution, constants::i_cell_resolution * 2});
 	set_texture_rect(lookup);
 	if (!map.transition.is(graphics::TransitionState::inactive)) { m_state.reset(PortalState::ready); }
-	if (bounding_box.overlaps(player.collider.bounding_box)) {
+	if (bounding_box.overlaps(player.get_collider().bounding_box)) {
+		player.set_flag(player::PlayerFlags::in_front_of_door);
 		if (m_attributes.test(PortalAttributes::activate_on_contact)) {
 			if (!m_state.test(PortalState::transitioning) && m_state.test(PortalState::ready)) { m_state.set(PortalState::activated); }
 			if (is_left_or_right()) {
@@ -120,15 +139,15 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 				m_state.reset(PortalState::unlocked);
 			}
 		}
-		if (m_state.test(PortalState::locked)) {
-			if (player.has_item(key_id)) {
+		if (m_state.test(PortalState::locked) && key_tag) {
+			if (player.has_item(key_tag.value())) {
 				m_state.reset(PortalState::locked);
 				m_state.set(PortalState::unlocked);
 				svc.soundboard.flags.world.set(audio::World::door_unlock);
 				console = std::make_unique<gui::Console>(svc, svc.text.basic, "unlocked_door", gui::OutputType::gradual);
-				console.value()->append(player.catalog.inventory.item_view(key_id).get_title());
-				console.value()->display_item(key_id);
-				svc.data.unlock_door(key_id);
+				console.value()->append(player.catalog.inventory.find_item(key_tag.value())->get_title());
+				console.value()->display_item(key_tag.value());
+				svc.data.unlock_door(key_tag.value());
 				svc.soundboard.flags.world.set(audio::World::door_unlock);
 			} else {
 				console = std::make_unique<gui::Console>(svc, svc.text.basic, "locked_door", gui::OutputType::gradual);

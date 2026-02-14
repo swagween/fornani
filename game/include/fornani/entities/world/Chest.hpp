@@ -1,12 +1,11 @@
 
 #pragma once
 
-#include "fornani/entities/animation/Animation.hpp"
-#include "fornani/entities/item/Item.hpp"
-#include "fornani/graphics/Animatable.hpp"
-#include "fornani/particle/Sparkler.hpp"
-#include "fornani/utils/CircleCollider.hpp"
-
+#include <fornani/entities/animation/Animation.hpp>
+#include <fornani/entities/item/Item.hpp>
+#include <fornani/graphics/Animatable.hpp>
+#include <fornani/particle/Sparkler.hpp>
+#include <fornani/physics/RegisteredCollider.hpp>
 #include <optional>
 
 namespace fornani::automa {
@@ -29,25 +28,31 @@ namespace fornani::entity {
 
 enum class ChestState { activated, open };
 enum class ChestType { gun, orbs, item };
+enum class ChestAttributes { mythic };
 
 class Chest final : public Animatable {
   public:
-	Chest(automa::ServiceProvider& svc, int id, ChestType type, int modifier);
+	Chest(automa::ServiceProvider& svc, world::Map& map, int id, ChestType type, int modifier);
+	Chest(automa::ServiceProvider& svc, world::Map& map, int id, ChestType type, std::string tag, int modifier);
 	void update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f pos);
 	void set_position_from_scaled(sf::Vector2f scaled_pos);
-	shape::CircleCollider& get_collider() { return collider; }
+	shape::CircleCollider& get_collider() { return *m_collider.get_circle(); }
+	void set_attribute(ChestAttributes const to_set, bool on = true) { on ? m_attributes.set(to_set) : m_attributes.reset(to_set); }
 
   private:
-	shape::CircleCollider collider;
+	shape::RegisteredCollider m_collider;
 
 	util::BitFlags<ChestState> state{};
+	util::BitFlags<ChestAttributes> m_attributes{};
 	ChestType m_type{};
+
+	std::optional<vfx::Sparkler> m_sparkler{};
 
 	int m_id{};
 	int m_content_modifier{};
-	std::string m_item_label{};
+	std::optional<std::string> m_tag{};
 
 	struct {
 		anim::Parameters unopened{0, 1, 80, -1};

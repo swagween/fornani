@@ -15,6 +15,10 @@ class Counter {
 	[[nodiscard]] auto running() const -> bool { return incrementor != 0; }
 	[[nodiscard]] auto canceled() const -> bool { return incrementor == -1; }
 	[[nodiscard]] auto get_count() const -> int { return incrementor; }
+	template <typename T>
+	T as() const {
+		return static_cast<T>(incrementor);
+	}
 
   private:
 	int incrementor{};
@@ -31,7 +35,11 @@ class FloatCounter {
 	constexpr void cancel() { m_value = -1.f; }
 	[[nodiscard]] auto running() const -> bool { return m_value != 0.f; }
 	[[nodiscard]] auto canceled() const -> bool { return m_value == -1.f; }
-	[[nodiscard]] auto get() const -> int { return m_value; }
+	[[nodiscard]] auto get() const -> float { return m_value; }
+	template <typename T>
+	T as() const {
+		return static_cast<T>(get());
+	}
 
   private:
 	float m_value{};

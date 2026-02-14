@@ -6,7 +6,7 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/IWorldPositionable.hpp>
-#include <fornani/utils/Shape.hpp>
+#include <fornani/physics/Shape.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -20,8 +20,8 @@ namespace fornani::world {
 
 class Map;
 
-enum class TimerBlockType : std::uint8_t { start, finish };
-enum class TimerBlockFlags : std::uint8_t { reached, triggered };
+enum class TimerBlockType { start, finish };
+enum class TimerBlockFlags { reached, triggered };
 
 class TimerBlock : public Drawable, public IWorldPositionable {
   public:

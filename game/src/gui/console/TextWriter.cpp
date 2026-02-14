@@ -9,7 +9,8 @@ namespace fornani::gui {
 
 TextWriter::TextWriter(automa::ServiceProvider& svc)
 	: m_services(&svc), working_message{svc.text.fonts.basic}, zero_option{.data{svc.text.fonts.basic}}, m_font{&svc.text.fonts.basic}, m_mode{WriterMode::stall}, m_delay{util::Cooldown{32}}, m_writing_speed{default_writing_speed_v},
-	  m_delta_threshold{8.f}, m_text_size{16}, m_input_code{"    "} {
+	  m_delta_threshold{8.f}, m_text_size{16}, m_input_code{"   "} {
+	NANI_LOG_DEBUG(m_logger, "TextWriter ctor @{}", static_cast<void const*>(this));
 	bounds_box.setFillColor(sf::Color(200, 200, 10, 10));
 	bounds_box.setOutlineColor(sf::Color(255, 80, 80, 180));
 	bounds_box.setOutlineThickness(-2.f);
@@ -19,7 +20,7 @@ TextWriter::TextWriter(automa::ServiceProvider& svc)
 
 TextWriter::TextWriter(automa::ServiceProvider& svc, dj::Json& source) : TextWriter(svc) { load_message(source); }
 
-TextWriter::TextWriter(automa::ServiceProvider& svc, dj::Json& source, std::string_view key) : TextWriter(svc) { load_message(source, key); }
+TextWriter::TextWriter(automa::ServiceProvider& svc, dj::Json& source, std::string_view key, int target_index) : TextWriter(svc) { load_message(source, key, target_index); }
 
 TextWriter::TextWriter(automa::ServiceProvider& svc, std::string_view message) : TextWriter(svc) { load_single_message(message); }
 
@@ -30,14 +31,16 @@ TextWriter::TextWriter(automa::ServiceProvider& svc, std::string_view message, s
 
 void TextWriter::start() {
 
-	if (m_iterators.current_suite_set >= suite.size()) { return; }
-	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
+	if (!suite) { return; }
+	if (m_iterators.current_suite_set >= suite->suite.size()) { return; }
+	if (suite->suite.at(m_iterators.current_suite_set).empty()) { return; }
 
-	working_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
+	working_message = suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
 	constrain();
 
 	m_mode = WriterMode::write;
 	m_delay.start();
+	update();
 }
 
 void TextWriter::update() {
@@ -50,10 +53,11 @@ void TextWriter::update() {
 	if (is_writing() && !m_delay.running()) { m_delay.start(); }
 
 	// escape if bounds are invalid
-	if (m_iterators.current_suite_set >= suite.size()) { return; }
-	if (suite.at(m_iterators.current_suite_set).empty()) { shutdown(); }
+	if (!suite) { return; }
+	if (m_iterators.current_suite_set >= suite->suite.size()) { return; }
+	if (suite->suite.at(m_iterators.current_suite_set).empty()) { shutdown(); }
 	if (is_responding()) {
-		working_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
+		working_message = suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
 		return;
 	}
 	if (!is_writing()) { return; }
@@ -61,18 +65,18 @@ void TextWriter::update() {
 	// append next character to working string
 	if (m_services->ticker.every_x_ticks(16)) { constrain(); }
 	if (m_counters.tick.get_count() % m_writing_speed == 0) {
-		char const next_char = static_cast<char>(suite.at(m_iterators.current_suite_set).at(m_iterators.index).data.getString().getData()[m_counters.glyph.get_count()]);
+		char const next_char = static_cast<char>(suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index).data.getString().getData()[m_counters.glyph.get_count()]);
 		working_str += next_char;
 		working_message.setString(working_str);
 		m_counters.glyph.update();
 		m_counters.tick.start();
 	}
-	if (m_counters.glyph.get_count() >= suite.at(m_iterators.current_suite_set).at(m_iterators.index).data.getString().getSize()) { m_mode = WriterMode::wait; }
+	if (m_counters.glyph.get_count() >= suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index).data.getString().getSize()) { m_mode = WriterMode::wait; }
 	m_counters.tick.update();
 }
 
 void TextWriter::flush() {
-	suite.clear();
+	suite.reset();
 	working_message.setString("");
 	working_str = {};
 }
@@ -105,33 +109,19 @@ void TextWriter::set_bounds(sf::FloatRect to_bounds, bool wrap) {
 }
 
 void TextWriter::wrap() {
-	if (m_iterators.current_suite_set >= suite.size()) { return; }
-	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
-	auto& current_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
-	int last_space_index{};
-	for (auto i{0}; i < current_message.getString().getSize() - 1; ++i) {
-		char const current_char = static_cast<char>(current_message.getString().getData()[i]);
-		if (current_char == ' ') {
-			last_space_index = i;
-			if (last_space_index >= current_message.getString().getSize()) { return; }
-			std::string left = current_message.getString().substring(0, static_cast<std::size_t>(last_space_index + 1));
-			std::string right = current_message.getString().substring(static_cast<std::size_t>(last_space_index + 1));
-			auto next_space{std::distance(right.begin(), std::find_if(right.begin(), right.end(), [](auto const& c) { return c == ' '; }))};
-			auto next_word = current_message.findCharacterPos(static_cast<std::size_t>(i + next_space));
-			if (next_word.x > m_bounds.position.x + m_bounds.size.x) {
-				// splice!
-				left += '\n';
-				current_message.setString(left + right);
-			}
-		}
-	}
+	if (!suite) { return; }
+	if (m_iterators.current_suite_set >= suite->suite.size()) { return; }
+	if (suite->suite.at(m_iterators.current_suite_set).empty()) { return; }
+	auto& current_message = suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
+	word_wrap(current_message, m_bounds.position.x + m_bounds.size.x);
 }
 
 void TextWriter::constrain() {
-	if (m_iterators.current_suite_set >= suite.size()) { return; }
-	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
+	if (!suite) { return; }
+	if (m_iterators.current_suite_set >= suite->suite.size()) { return; }
+	if (suite->suite.at(m_iterators.current_suite_set).empty()) { return; }
 	if (m_bounds.size.x < 64.f) { return; }
-	auto& current_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
+	auto& current_message = suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
 
 	// strip out new line characters
 	auto new_str{std::string{current_message.getString()}};
@@ -146,59 +136,40 @@ void TextWriter::load_single_message(std::string_view message) {
 	message_container.push_back({sf::Text(*m_font)});
 	message_container.back().data.setString(message.data());
 	stylize(message_container.back().data);
-	suite.push_back(message_container);
+	suite = DialogueSuite{message_container};
 	constrain();
 }
 
 void TextWriter::load_message(dj::Json& source) {
 	flush();
-	for (auto const& set : source["suite"].as_array()) {
-		auto this_set = std::deque<Message>{};
-		for (auto const& msg : set.as_array()) {
-			auto codes = std::vector<MessageCode>{};
-			if (msg["codes"].is_array()) {
-				for (auto const& code : msg["codes"].as_array()) { codes.push_back(MessageCode{code}); }
-			}
-			this_set.push_back({sf::Text(*m_font), codes});
-			this_set.back().data.setString(msg["message"].as_string().data());
-			NANI_LOG_DEBUG(m_logger, "Loaded message: {}", msg["message"].as_string());
-			stylize(this_set.back().data);
-		}
-		suite.push_back(this_set);
-		NANI_LOG_DEBUG(m_logger, "Pushed a set.");
+	suite = DialogueSuite{source, *m_font, *m_services, -1};
+	for (auto& msg : suite->suite) {
+		for (auto& m : msg) { stylize(m.data); }
 	}
-	working_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
+	working_message = suite->get_message(m_iterators.current_suite_set, m_iterators.index);
 	working_message.setString("");
 	working_str = {};
 	m_is_first = true;
 }
 
-void TextWriter::load_message(dj::Json& source, std::string_view key) {
+void TextWriter::load_message(dj::Json& source, std::string_view key, int target_index) {
 	flush();
-	for (auto const& set : source[key]["suite"].as_array()) {
-		auto this_set = std::deque<Message>{};
-		for (auto const& msg : set.as_array()) {
-			auto codes = std::vector<MessageCode>{};
-			if (msg["codes"].is_array()) {
-				for (auto const& code : msg["codes"].as_array()) { codes.push_back(MessageCode{code}); }
-			}
-			this_set.push_back({sf::Text(*m_font), codes});
-			this_set.back().data.setString(msg["message"].as_string().data());
-			stylize(this_set.back().data);
-		}
-		suite.push_back(this_set);
+	suite = DialogueSuite{source, *m_font, *m_services, key, target_index};
+	for (auto& msg : suite->suite) {
+		for (auto& m : msg) { stylize(m.data); }
 	}
-	working_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
+	working_message = suite->get_message(m_iterators.current_suite_set, m_iterators.index);
 	working_message.setString("");
 	working_str = {};
 	m_is_first = true;
 }
 
 void TextWriter::append(std::string_view content) {
-	if (suite.empty()) { return; }
-	if (suite.back().empty()) { return; }
-	auto msg = suite.back().back().data.getString();
-	suite.back().back().data.setString(msg + content.data());
+	if (!suite) { return; }
+	if (suite->suite.empty()) { return; }
+	if (suite->suite.back().empty()) { return; }
+	auto msg = suite->suite.back().back().data.getString();
+	suite->suite.back().back().data.setString(msg + content.data());
 }
 
 void TextWriter::stylize(sf::Text& msg) const {
@@ -210,23 +181,24 @@ void TextWriter::stylize(sf::Text& msg) const {
 }
 
 void TextWriter::set_suite(int to_suite) {
-	m_iterators.current_suite_set = ccm::ext::clamp(to_suite, 0, static_cast<int>(suite.size() - 1));
+	m_iterators.current_suite_set = ccm::ext::clamp(to_suite, 0, static_cast<int>(suite->suite.size() - 1));
 	m_iterators.index = 0;
 	reset();
 }
 
-void TextWriter::set_index(int to_index) { m_iterators.index = ccm::ext::clamp(to_index, 0, static_cast<int>(suite.at(m_iterators.current_suite_set).size() - 1)); }
+void TextWriter::set_index(int to_index) { m_iterators.index = ccm::ext::clamp(to_index, 0, static_cast<int>(suite->suite.at(m_iterators.current_suite_set).size() - 1)); }
 
 void TextWriter::write_instant_message(sf::RenderWindow& win) {
 	// win.draw(bounds_box);
-	if (m_iterators.current_suite_set >= suite.size()) { return; }
-	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
+	if (!suite) { return; }
+	if (m_iterators.current_suite_set >= suite->suite.size()) { return; }
+	if (suite->suite.at(m_iterators.current_suite_set).empty()) { return; }
 	bounds_box.setOutlineColor(sf::Color{0, 255, 80});
-	bounds_box.setSize(suite.at(m_iterators.current_suite_set).at(m_iterators.index).data.getLocalBounds().size);
+	bounds_box.setSize(suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index).data.getLocalBounds().size);
 	// win.draw(bounds_box);
 	bounds_box.setOutlineColor(sf::Color(255, 80, 80, 180));
 	m_mode = WriterMode::wait;
-	auto& current_message{suite.at(m_iterators.current_suite_set).at(m_iterators.index).data};
+	auto& current_message{suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index).data};
 	working_message = current_message;
 	m_hide_cursor = true;
 	write_gradual_message(win);
@@ -234,13 +206,14 @@ void TextWriter::write_instant_message(sf::RenderWindow& win) {
 
 void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	// win.draw(bounds_box);
+	if (!suite) { return; }
 	if (m_mode == WriterMode::stall) { return; }
 	static bool show_cursor;
 	static auto blink_rate{24};
 	auto cursor_offset{sf::Vector2f{8.f, 0.f}};
-	if (m_iterators.current_suite_set >= suite.size()) { return; }
-	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
-	auto& current_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
+	if (m_iterators.current_suite_set >= suite->suite.size()) { return; }
+	if (suite->suite.at(m_iterators.current_suite_set).empty()) { return; }
+	auto& current_message = suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
 	current_message.setPosition(m_bounds.position);
 	if (!is_writing()) {
 		win.draw(current_message);
@@ -271,8 +244,9 @@ void TextWriter::insert_input_hint(sf::RenderWindow& win, sf::Text& message) {
 }
 
 void TextWriter::set_font_color(sf::Color to_color) {
-	if (suite.empty()) { return; }
-	for (auto& msg : suite.back()) { msg.data.setFillColor(to_color); }
+	if (!suite) { return; }
+	if (suite->suite.empty()) { return; }
+	for (auto& msg : suite->suite.back()) { msg.data.setFillColor(to_color); }
 	cursor.setFillColor(to_color);
 }
 
@@ -290,9 +264,10 @@ void TextWriter::speed_up() { m_writing_speed = fast_writing_speed_v; }
 void TextWriter::slow_down() { m_writing_speed = default_writing_speed_v; }
 
 void TextWriter::insert_icon_at(int index, sf::Vector2i icon_lookup) {
-	if (m_iterators.current_suite_set >= suite.size()) { return; }
-	if (suite.at(m_iterators.current_suite_set).empty()) { return; }
-	auto& current_message = suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
+	if (!suite) { return; }
+	if (m_iterators.current_suite_set >= suite->suite.size()) { return; }
+	if (suite->suite.at(m_iterators.current_suite_set).empty()) { return; }
+	auto& current_message = suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
 	if (m_input_icon) { return; } // don't do this if we've already done it last tick
 	m_input_icon = sf::Sprite{m_services->assets.get_texture("controller_button_icons")};
 	m_input_icon->setTextureRect(sf::IntRect{icon_lookup * 18, {18, 18}});
@@ -311,16 +286,60 @@ bool TextWriter::request_next() {
 	++m_iterators.index;
 	m_is_first = false;
 	reset();
-	if (m_iterators.index >= suite.at(m_iterators.current_suite_set).size()) { shutdown(); }
+	if (!suite) { return false; }
+	if (m_iterators.index >= suite->suite.at(m_iterators.current_suite_set).size()) { shutdown(); }
 	return true;
 }
 
 void TextWriter::shutdown() { m_mode = WriterMode::close; }
 
 Message& TextWriter::current_message() {
-	if (m_iterators.current_suite_set >= suite.size()) { return zero_option; }
-	if (suite.at(m_iterators.current_suite_set).empty()) { return zero_option; }
-	return suite.at(m_iterators.current_suite_set).at(m_iterators.index);
+	if (!suite) { return zero_option; }
+	if (m_iterators.current_suite_set >= suite->suite.size()) { return zero_option; }
+	if (suite->suite.at(m_iterators.current_suite_set).empty()) { return zero_option; }
+	return suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index);
 }
+
+DialogueSuite::DialogueSuite(dj::Json const& in, sf::Font& font, automa::ServiceProvider& svc, int target_index) {
+	NANI_LOG_DEBUG(m_logger, "DialogueSuite ctor @{} suite size={}", static_cast<void const*>(this), in["suite"].is_array() ? in["suite"].as_array().size() : -1);
+	for (auto const& set : in["suite"].as_array()) {
+		auto this_set = std::deque<Message>{};
+		for (auto const& msg : set.as_array()) {
+			if (msg["contingencies"]) {
+				auto contingencies = std::vector<QuestContingency>{};
+				for (auto const& cont : msg["contingencies"].as_array()) { contingencies.push_back(QuestContingency{cont}); }
+				NANI_LOG_DEBUG(m_logger, "Quest Contingency detected.");
+				if (!svc.quest_table.are_contingencies_met(contingencies)) { continue; }
+			}
+
+			auto codes = std::vector<MessageCode>{};
+			auto which = 0;
+			if (msg["messages"].is_array()) { which = target_index == -1 ? random::random_range(0, msg["messages"].as_array().size() - 1) : target_index; }
+			if (msg["codes"].is_array()) {
+				for (auto const& code : msg["codes"].as_array()) {
+					codes.push_back(MessageCode{code});
+					NANI_LOG_DEBUG(m_logger, "Code pushed to this set: {}", codes.back().value);
+				}
+			}
+			if (msg["code_list"].is_array()) {
+				for (auto const& code : msg["code_list"][which].as_array()) {
+					codes.push_back(MessageCode{code});
+					NANI_LOG_DEBUG(m_logger, "Code pushed to this set: {}", codes.back().value);
+				}
+			}
+			this_set.push_back({sf::Text(font), codes});
+			if (msg["message"]) {
+				this_set.back().data.setString(msg["message"].as_string().data());
+				NANI_LOG_DEBUG(m_logger, "Message pushed to this set: {}", std::string{msg["message"].as_string()});
+			}
+			if (msg["messages"].is_array()) { this_set.back().data.setString(msg["messages"][which].as_string().data()); }
+		}
+		NANI_LOG_DEBUG(m_logger, "Finished set: {} messages kept", this_set.size());
+		if (!this_set.empty()) { suite.push_back(std::move(this_set)); }
+	}
+	if (suite.empty()) { NANI_LOG_DEBUG(m_logger, "Invalid suite!"); }
+}
+
+DialogueSuite::DialogueSuite(dj::Json const& in, sf::Font& font, automa::ServiceProvider& svc, std::string_view key, int target_index) : DialogueSuite(in[key], font, svc, target_index) {}
 
 } // namespace fornani::gui

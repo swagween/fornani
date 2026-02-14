@@ -3,6 +3,7 @@
 
 #include <capo/engine.hpp>
 #include <fornani/automa/StateManager.hpp>
+#include <fornani/core/FrameTracker.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/graphics/Background.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -47,6 +48,8 @@ class Game {
 	automa::StateManager game_state;
 	std::optional<std::unique_ptr<automa::StateManager>> m_game_menu;
 	std::unique_ptr<graphics::Background> m_background{};
+
+	FrameTracker m_frame_tracker{};
 
 	io::Logger m_logger{"core"};
 };

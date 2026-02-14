@@ -1,7 +1,7 @@
 {
   "ambience": "overturned",
-  "atmosphere": [1],
-  "background": 3,
+  "atmosphere": ["dragonflies"],
+  "background": "woods",
   "minimap": true,
   "music": "whispering_island",
   "properties": {

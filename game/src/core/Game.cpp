@@ -1,4 +1,6 @@
+
 #include "fornani/core/Game.hpp"
+#include <ctime>
 #include "fornani/automa/states/Dojo.hpp"
 #include "fornani/automa/states/MainMenu.hpp"
 #include "fornani/automa/states/SettingsMenu.hpp"
@@ -7,13 +9,11 @@
 #include "fornani/gui/ActionContextBar.hpp"
 #include "fornani/setup/WindowManager.hpp"
 #include "fornani/utils/Math.hpp"
-
-#include <steam/steam_api.h>
-#include <ctime>
-
 #include "fornani/utils/Random.hpp"
 
 namespace fornani {
+
+static double average_frame_time{};
 
 Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& audio_engine) : services(argv, version, window, audio_engine), player(services), game_state(services, player, automa::MenuType::main) {
 
@@ -29,11 +29,7 @@ Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& 
 		return;
 	}
 
-	// controls
-	services.data.load_controls(services.controller_map);
-	services.data.load_settings();
-
-	m_background = std::make_unique<graphics::Background>(services, -1);
+	m_background = std::make_unique<graphics::Background>(services, "black");
 }
 
 void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2f player_position) {
@@ -54,7 +50,9 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		services.state_controller.demo_level = room_id;
 		NANI_LOG_INFO(m_logger, "Launching demo in room {} from folder {} ", room_id, levelpath.filename().string());
 		services.state_controller.player_position = player_position;
-		player.set_position(player_position);
+		player.set_demo_position(player_position);
+		player.place_at_demo_position();
+		player.set_direction(Direction{LR::left});
 	}
 
 	gui::ActionContextBar ctx_bar(services);
@@ -62,8 +60,6 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 	NANI_LOG_INFO(m_logger, "Success");
 	services.stopwatch.stop();
 	services.stopwatch.print_time("game started");
-
-	sf::Clock delta_clock{};
 
 	while (services.window->get().isOpen()) {
 
@@ -77,11 +73,9 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			NANI_LOG_INFO(m_logger, "Shutdown");
 			break;
 		}
-		if (services.death_mode()) { flags.reset(GameFlags::in_game); }
 
 		services.ticker.start_frame();
 
-		services.controller_map.set_keyboard_input_detected(false);
 		while (std::optional const event = services.window->get().pollEvent()) {
 			if (event->is<sf::Event::Closed>()) {
 				shutdown();
@@ -89,9 +83,8 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			}
 
 			if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
-				services.controller_map.set_keyboard_input_detected(true);
-				services.controller_map.set_last_key_pressed(key_pressed->scancode);
 				if (key_pressed->scancode == sf::Keyboard::Scancode::F12) { continue; }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::G && key_pressed->control) { services.toggle_greyblock_mode(); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_pressed->control) {
 					services.toggle_debug();
 					if (flags.test(GameFlags::playtest)) {
@@ -114,13 +107,12 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			}
 
 			if (auto const* joystick_moved = event->getIf<sf::Event::JoystickMoved>()) {
-				services.controller_map.set_keyboard_input_detected(false);
 				auto jx = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::X);
 				auto jy = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::Y);
-				services.controller_map.set_joystick_throttle(sf::Vector2f{jx, jy});
+				services.input_system.set_joystick_throttle(sf::Vector2f{jx, jy});
 			}
 
-			services.controller_map.handle_event(*event);
+			services.input_system.handle_event(*event);
 			ImGui::SFML::ProcessEvent(services.window->get(), *event);
 		}
 
@@ -128,11 +120,12 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 
 		bool has_focus = services.window->get().hasFocus();
 		services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services, &audio_engine = audio_engine] {
-			services.controller_map.update();
+			services.input_system.update();
 			services.music_player.update();
-			if (services.controller_map.digital_action_status(config::DigitalAction::menu_cancel).triggered && m_game_menu) {
+			if (services.input_system.digital(input::DigitalAction::menu_back).triggered && m_game_menu) {
 				if (m_game_menu.value()->get_current_state().is_ready()) {
-					m_game_menu = {};
+					m_game_menu.value()->get_current_state().on_exit();
+					m_game_menu.reset();
 					services.soundboard.flags.menu.set(audio::Menu::backward_switch);
 				}
 			}
@@ -167,8 +160,9 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		io.LogFilename = NULL;
 		io.MouseDrawCursor = flags.test(GameFlags::draw_cursor);
 		services.window->get().setMouseCursorVisible(io.MouseDrawCursor);
-		ImGui::SFML::Update(services.window->get(), delta_clock.getElapsedTime());
-		delta_clock.restart();
+		ImGui::SFML::Update(services.window->get(), m_frame_tracker.get_elapsed_time());
+		m_frame_tracker.update();
+		if (services.ticker.every_x_frames(60)) { average_frame_time = m_frame_tracker.get_average_frame_time(); }
 
 #if not defined(FORNANI_PRODUCTION)
 		if (flags.test(GameFlags::playtest)) { playtester_portal(services.window->get()); }
@@ -206,6 +200,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 	auto const& map = game_state.get_current_state().get_map();
 
 	bool* b_debug{};
+	static bool limit_framerate{true};
+	static int frame_limit{60};
 	float const PAD = 10.0f;
 	static int corner = 1;
 	ImGuiIO& io = ImGui::GetIO();
@@ -229,19 +225,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
 				if (ImGui::BeginTabItem("General")) {
-					ImGui::Text("World");
-					if (map) {
-						ImGui::Text("Transition State: %s", map->get().transition.as_string().c_str());
-						ImGui::Text("Transition Cooldown: %.5f", map->get().transition.get_cooldown());
-						ImGui::SeparatorText("Entities");
-						ImGui::Text("Active Loot: %i", map->get().active_loot.size());
-						ImGui::Indent();
-						for (auto& loot : map->get().active_loot) { ImGui::Text("Loot Size: %i", loot.get_size()); }
-						ImGui::Text("Active Projectiles: %i", map->get().active_projectiles.size());
-						ImGui::Text("Active Emitters: %i", map->get().active_emitters.size());
-					}
-					ImGui::Text("Save Point ID: %i", services.state_controller.save_point_id);
-					ImGui::Separator();
+					ImGui::Checkbox("Limit Framerate", &limit_framerate);
+					ImGui::InputInt("Frame Limit", &frame_limit);
+					limit_framerate ? services.window->get().setFramerateLimit(frame_limit) : services.window->get().setFramerateLimit(0);
 					if (ImGui::Button("Exit to Main Menu")) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player)); }
 					ImGui::Text("In Game? %s", services.in_game() ? "Yes" : "No");
 					ImGui::Text("debug mode: %s", services.debug_mode() ? "Enabled" : "Disabled");
@@ -264,26 +250,63 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Milliseconds Passed: %.0f", services.ticker.total_milliseconds_passed.count());
 					ImGui::Text("Ticks Per Frame: %.2f", services.ticker.ticks_per_frame);
 					ImGui::Text("Frames Per Second: %.2f", services.ticker.fps);
+					ImGui::Text("Average Frame Time: %.4fms", average_frame_time);
 					ImGui::Separator();
 					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.dt_scalar, 0.0f, 2.f, "%.3f")) { services.ticker.scale_dt(); };
 					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }
 					ImGui::Separator();
 					ImGui::Text("World Time: %s", services.world_clock.get_string().c_str());
-					ImGui::Text("Time of Day: %s", services.world_clock.get_time_of_day() == fornani::TimeOfDay::day ? "Day" : services.world_clock.get_time_of_day() == fornani::TimeOfDay::twilight ? "Twilight" : "Night");
-					ImGui::Text("Previous Time of Day: %s", services.world_clock.get_previous_time_of_day() == fornani::TimeOfDay::day		  ? "Day"
-															: services.world_clock.get_previous_time_of_day() == fornani::TimeOfDay::twilight ? "Twilight"
-																																			  : "Night");
+					ImGui::Text("Time of Day: %s", services.world_clock.tod_as_string(services.world_clock.get_time_of_day()));
+					ImGui::Text("Previous Time of Day: %s", services.world_clock.tod_as_string(services.world_clock.get_previous_time_of_day()));
 					static int clock_speed{services.world_clock.get_rate()};
 					if (ImGui::Button("Dawn")) { services.world_clock.set_time(5, 59); }
 					if (ImGui::Button("Morning")) { services.world_clock.set_time(6, 59); }
-					if (ImGui::Button("Twilight")) { services.world_clock.set_time(17, 59); }
+					if (ImGui::Button("Dusk")) { services.world_clock.set_time(17, 59); }
 					if (ImGui::Button("Night")) { services.world_clock.set_time(18, 59); }
+					ImGui::Text("World clock transitioning? %s", services.world_clock.is_transitioning() ? "yes" : "no");
 					ImGui::SliderInt("Clock Speed", &clock_speed, 4, 196);
 					services.world_clock.set_speed(clock_speed);
 					ImGui::Separator();
-					ImGui::Text("Active Projectiles: %i", services.map_debug.active_projectiles);
-					ImGui::Separator();
 
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("World")) {
+					if (map) {
+						ImGui::Separator();
+						if (ImGui::Button("Reveal World in MiniMap")) {
+							for (auto const& entry : services.data.map_table["rooms"].as_array()) { services.data.reveal_room(entry["room_id"].as<int>()); }
+						}
+						ImGui::Separator();
+						map->get().debug();
+						ImGui::Text("Transition State: %s", map->get().transition.as_string().c_str());
+						ImGui::Text("Transition Cooldown: %.5f", map->get().transition.get_cooldown());
+						ImGui::SeparatorText("Entities");
+						ImGui::Text("Active Loot: %i", map->get().active_loot.size());
+						ImGui::Indent();
+						for (auto& loot : map->get().active_loot) { ImGui::Text("Loot Size: %i", loot.get_size()); }
+						ImGui::Text("Active Projectiles: %i", map->get().active_projectiles.size());
+						ImGui::Text("Active Emitters: %i", map->get().get_active_emitters_size());
+						ImGui::Separator();
+						ImGui::Text("Registered Colliders: %i", map->get().num_colliders());
+						ImGui::Text("Registered Chunks: %i", map->get().num_registered_chunks());
+						if (ImGui::TreeNode("Chunk Collisions")) {
+							for (auto i = 0; i < map->get().num_registered_chunks(); ++i) { ImGui::Text("Colliders in chunk %i: %i", i, map->get().num_colliders_in_chunk(i)); }
+							ImGui::TreePop();
+						}
+						ImGui::Text("Collision calculations: %i", map->get().num_collision_checks);
+
+						ImGui::Separator();
+						ImGui::Text("Calculated chunks for player:");
+						if (player.has_collider()) {
+							for (auto const& chunk : player.get_collider().print_chunks()) {
+								ImGui::SameLine();
+								ImGui::Text("[%s]", chunk);
+							}
+						}
+					}
+					ImGui::Separator();
+					ImGui::Text("Save Point ID: %i", services.state_controller.save_point_id);
+					ImGui::Separator();
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Data")) {
@@ -292,8 +315,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Tests")) {
-
+					if (ImGui::Button("Test Notification")) { services.notifications.push_notification(services, "This is a test notification."); }
 					ImGui::Text("Angle");
+					if (ImGui::Button("Test")) { NANI_LOG_DEBUG(m_logger, "Pressed"); }
 					ImGui::Text("{-1.f, 1.f} ; down-left: %.2f", util::get_angle_from_direction({-1.f, 1.f}));
 					ImGui::Text("{1.f, -1.f} ; top-right: %.2f", util::get_angle_from_direction({1.f, -1.f}));
 					ImGui::Text("{1.f, 0.f} ; horiz-right: %.2f", util::get_angle_from_direction({1.f, 0.f}));
@@ -309,11 +333,36 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Input")) {
-					ImGui::Text("Current Input Device: %s", services.controller_map.last_controller_type_used() == config::ControllerType::gamepad ? "Gamepad" : "Keyboard");
-					ImGui::Text("Gamepad Status: %s", services.controller_map.gamepad_connected() ? "Connected" : "Disconnected");
-					ImGui::Text("Gamepad Enabled? %s", services.controller_map.is_gamepad_input_enabled() ? "Yes" : "No");
-					ImGui::Text("Action Set: %i", services.controller_map.get_action_set());
-					ImGui::Text("Joystick Throttle: %.3f", services.controller_map.get_joystick_throttle().x);
+					static util::Cooldown left_triggered{128};
+					if (services.input_system.direction_triggered(input::AnalogAction::move, input::MoveDirection::left)) { left_triggered.start(); }
+					auto d = services.input_system.last_device_used();
+					ImGui::Text("Current Input Device: %s", d == input::InputDevice::gamepad ? "Gamepad" : d == input::InputDevice::keyboard ? "Keyboard" : "None");
+					ImGui::SeparatorText("Input Queries");
+					ImGui::Text("Jump............: %s", services.input_system.digital(input::DigitalAction::jump).held ? "held" : "");
+					ImGui::Text("Shoot...........: %s", services.input_system.digital(input::DigitalAction::shoot).held ? "held" : "");
+					ImGui::Text("Open Inventory..: %s", services.input_system.digital(input::DigitalAction::inventory).held ? "held" : "");
+					ImGui::Text("Close Inventory.: %s", services.input_system.digital(input::DigitalAction::menu_close).held ? "held" : "");
+					ImGui::Text("Slide...........: %s", services.input_system.digital(input::DigitalAction::slide).held ? "held" : "");
+					ImGui::Text("Left............: %s", services.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::left) ? "held" : "");
+					ImGui::Text("Right...........: %s", services.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::right) ? "held" : "");
+					ImGui::Text("Up..............: %s", services.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::up) ? "held" : "");
+					ImGui::Text("Down............: %s", services.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::down) ? "held" : "");
+					ImGui::Text("Left Triggered..: %i", left_triggered.get());
+					ImGui::SeparatorText("Gamepad and Joystick");
+					ImGui::Text("Move Input: %.3f", services.input_system.analog(input::AnalogAction::move).x);
+					ImGui::Text("Pan Input: %.3f", services.input_system.analog(input::AnalogAction::pan).y);
+					ImGui::Text("Menu Pan Input: %.3f", services.input_system.analog(input::AnalogAction::map_pan).y);
+					ImGui::Text("Prev Menu Pan Input: %.3f", services.input_system.analog(input::AnalogAction::map_pan).prev_y);
+					ImGui::Text("Gamepad Status: %s", services.input_system.is_gamepad_connected() ? "Connected" : "Disconnected");
+					ImGui::Text("Controller Handle: %i", static_cast<std::uint64_t>(services.input_system.get_controller_handle()));
+					ImGui::Text("Current Action Set:");
+					ImGui::SameLine();
+					switch (services.input_system.get_active_action_set()) {
+					case input::ActionSet::END: ImGui::Text("<invalid>"); break;
+					case input::ActionSet::Platformer: ImGui::Text("Platformer"); break;
+					case input::ActionSet::Menu: ImGui::Text("Menu"); break;
+					}
+					left_triggered.update();
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Time Trials")) {
@@ -366,9 +415,46 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					static float sfxvol{services.soundboard.get_volume()};
 					ImGui::SliderFloat("##sfxvol", &sfxvol, 0.f, 1.f);
 					services.soundboard.set_volume(sfxvol);
+					ImGui::Text("Music Volume %f", services.music_player.get_volume());
+					ImGui::Text("Music Volume Multiplier %f", services.music_player.get_volume_multiplier());
 					ImGui::Text("Soundboard Volume %f", services.soundboard.get_volume());
 					ImGui::Text("Sound pool size: %i", static_cast<int>(services.soundboard.number_of_playng_sounds()));
 					ImGui::Separator();
+					if (ImGui::BeginTabBar("NPCs", tab_bar_flags)) {
+						if (ImGui::BeginTabItem("Bryn")) {
+							for (auto i = 0; i <= static_cast<int>(audio::NPCBryn::oeugh); ++i) {
+								ImGui::PushID(i);
+								if (ImGui::Button("OOO##i")) { services.soundboard.npc_map.at("bryn")(i); }
+								ImGui::PopID();
+							}
+							ImGui::EndTabItem();
+						}
+						if (ImGui::BeginTabItem("Minigus")) {
+							for (auto i = 0; i <= static_cast<int>(audio::NPCMinigus::grunt); ++i) {
+								ImGui::PushID(i);
+								if (ImGui::Button("OOO##i")) { services.soundboard.npc_map.at("minigus")(i); }
+								ImGui::PopID();
+							}
+							ImGui::EndTabItem();
+						}
+						if (ImGui::BeginTabItem("Gobe")) {
+							for (auto i = 0; i <= static_cast<int>(audio::NPCGobe::orewa); ++i) {
+								ImGui::PushID(i);
+								if (ImGui::Button("OOO##i")) { services.soundboard.npc_map.at("gobe")(i); }
+								ImGui::PopID();
+							}
+							ImGui::EndTabItem();
+						}
+						if (ImGui::BeginTabItem("Mirin")) {
+							for (auto i = 0; i <= static_cast<int>(audio::NPCMirin::haha); ++i) {
+								ImGui::PushID(i);
+								if (ImGui::Button("OOO##i")) { services.soundboard.npc_map.at("mirin")(i); }
+								ImGui::PopID();
+							}
+							ImGui::EndTabItem();
+						}
+						ImGui::EndTabBar();
+					}
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Story")) {
@@ -398,7 +484,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Enemies killed: %i", services.stats.enemy.enemies_killed.get_count());
 					ImGui::EndTabItem();
 				}
-				if (flags.test(GameFlags::in_game)) {
+				if (services.in_game()) {
 					static float player_hp{};
 					if (ImGui::BeginTabItem("Player")) {
 						player.health.debug();
@@ -409,14 +495,17 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Last Requested Direction: %s", player.controller.last_requested_direction().print().c_str());
 								ImGui::Text("Desired Direction: %s", player.get_desired_direction().print().c_str());
 								ImGui::Text("Actual Direction: %s", player.get_actual_direction().print().c_str());
-								ImGui::Text("Collider Direction: %s", player.collider.get_direction().print().c_str());
+								ImGui::Text("Collider Direction: %s", player.get_collider().get_direction().print().c_str());
 								ImGui::Text("Ability Direction: %s", player.controller.get_ability_direction().print().c_str());
 								ImGui::Separator();
 								ImGui::Text("Grounded? %s", player.grounded() ? "Yes" : "No");
-								ImGui::Text("World Grounded? %s", player.collider.perma_grounded() ? "Yes" : "No");
+								ImGui::Text("World Grounded? %s", player.get_collider().perma_grounded() ? "Yes" : "No");
 								ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
 								ImGui::Text("Push Time: %i", player.cooldowns.push.get());
-								ImGui::Text("Acceleration Multiplier: %f", player.collider.acceleration_multiplier);
+								ImGui::Text("Acceleration Multiplier: %f", player.get_collider().acceleration_multiplier);
+								ImGui::Separator();
+								ImGui::SliderFloat("Antenna Force", &player.physics_stats.antenna_force, 0.1f, 3.f);
+								ImGui::SliderFloat("Antenna Friction", &player.physics_stats.antenna_friction, 0.8f, 1.f);
 								ImGui::Separator();
 								ImGui::Text("Ability");
 								ImGui::Text("Current: ");
@@ -431,9 +520,12 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 									case player::AbilityType::roll: ImGui::Text("roll"); break;
 									case player::AbilityType::walljump: ImGui::Text("walljump"); break;
 									case player::AbilityType::wallslide: ImGui::Text("wallslide"); break;
+									case player::AbilityType::dash_kick: ImGui::Text("dash_kick"); break;
 									}
 								}
 								ImGui::Separator();
+								ImGui::Text("Trial Mode? %s", player.has_flag_set(player::PlayerFlags::trial) ? "Yes" : "No");
+								ImGui::Text("Cutscene? %s", player.has_flag_set(player::PlayerFlags::cutscene) ? "Yes" : "No");
 								ImGui::Text("Can Move? %s", player.controller.can_move() ? "Yes" : "No");
 								ImGui::Text("Walking Autonomously? %s", player.controller.walking_autonomously() ? "Yes" : "No");
 								ImGui::Separator();
@@ -443,23 +535,26 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Separator();
 								ImGui::Text("Crouching? %s", player.controller.is_crouching() ? "Yes" : "No");
 								ImGui::Text("Inspecting? %s", player.controller.inspecting() ? "Yes" : "No");
+								ImGui::Text("In Front of Door? %s", player.has_flag_set(player::PlayerFlags::in_front_of_door) ? "Yes" : "No");
 								ImGui::Separator();
-								ImGui::Text("Jumping? %s", player.collider.jumping() ? "Yes" : "No");
+								ImGui::Text("Jumping? %s", player.get_collider().jumping() ? "Yes" : "No");
 								ImGui::Text("Can Jump? %s", player.can_jump() ? "Yes" : "No");
-								ImGui::Text("Downhill? %s", player.collider.downhill() ? "Yes" : "No");
+								ImGui::Text("Downhill? %s", player.get_collider().downhill() ? "Yes" : "No");
 								ImGui::Text("Wallsliding? %s", player.controller.is_wallsliding() ? "Yes" : "No");
 								ImGui::Text("Walljumping? %s", player.controller.is_walljumping() ? "Yes" : "No");
-								ImGui::Text("On Ramp? %s", player.collider.on_ramp() ? "Yes" : "No");
+								ImGui::Text("On Ramp? %s", player.get_collider().on_ramp() ? "Yes" : "No");
+								ImGui::Text("Submerged? %s", player.get_collider().has_flag_set(shape::ColliderFlags::submerged) ? "Yes" : "No");
+								ImGui::Text("In Water? %s", player.get_collider().has_flag_set(shape::ColliderFlags::in_water) ? "Yes" : "No");
 								ImGui::Separator();
-								ImGui::Text("X Position: %.2f", player.collider.physics.position.x / constants::f_cell_size);
-								ImGui::Text("Y Position: %.2f", player.collider.physics.position.y / constants::f_cell_size);
-								ImGui::Text("X Velocity: %.2f", player.collider.physics.velocity.x);
-								ImGui::Text("Y Velocity: %.2f", player.collider.physics.velocity.y);
-								ImGui::Text("Apparent X Velocity: %.2f", player.collider.physics.apparent_velocity().x);
-								ImGui::Text("Apparent Y Velocity: %.2f", player.collider.physics.apparent_velocity().y);
-								ImGui::Text("Actual X Velocity: %.2f", player.collider.physics.actual_velocity().x);
-								ImGui::Text("Actual Y Velocity: %.2f", player.collider.physics.actual_velocity().y);
-								ImGui::Text("Actual Speed: %.2f", player.collider.physics.actual_speed());
+								ImGui::Text("X Position: %.2f", player.get_collider().physics.position.x / constants::f_cell_size);
+								ImGui::Text("Y Position: %.2f", player.get_collider().physics.position.y / constants::f_cell_size);
+								ImGui::Text("X Velocity: %.2f", player.get_collider().physics.velocity.x);
+								ImGui::Text("Y Velocity: %.2f", player.get_collider().physics.velocity.y);
+								ImGui::Text("Apparent X Velocity: %.2f", player.get_collider().physics.apparent_velocity().x);
+								ImGui::Text("Apparent Y Velocity: %.2f", player.get_collider().physics.apparent_velocity().y);
+								ImGui::Text("Actual X Velocity: %.2f", player.get_collider().physics.actual_velocity().x);
+								ImGui::Text("Actual Y Velocity: %.2f", player.get_collider().physics.actual_velocity().y);
+								ImGui::Text("Actual Speed: %.2f", player.get_collider().physics.actual_speed());
 								ImGui::Separator();
 								ImGui::Text("Inventory Size: %i", static_cast<int>(player.catalog.inventory.items_view().size()));
 								ImGui::Text("Visit History: ");
@@ -469,41 +564,23 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								}
 								ImGui::EndTabItem();
 							}
+							if (ImGui::BeginTabItem("Death")) {
+								ImGui::Text("Is player dead? %s", player.is_dead() ? "Yes" : "No");
+								ImGui::Text("Death type: %i", player.get_i_death_type());
+								if (map) { ImGui::Text("Map transition: %s", map->get().transition.as_string()); }
+								ImGui::EndTabItem();
+							}
+
+							if (ImGui::BeginTabItem("Inventory")) {
+								ImGui::Text("Equipped Items:");
+								for (auto const& ei : player.catalog.inventory.equipped_items_view()) {
+									ImGui::Text("[%i]", ei);
+									ImGui::SameLine();
+								}
+								ImGui::EndTabItem();
+							}
 							if (ImGui::BeginTabItem("Animation")) {
-								ImGui::Text("Animation: %s", player.animation.animation.label.data());
-								ImGui::Separator();
-								ImGui::Text("Elapsed Ticks: %i", player.animation.animation.get_elapsed_ticks());
-								ImGui::Text("Current Frame: %i", player.animation.animation.frame.get_count());
-								ImGui::Text("Loop: %i", player.animation.animation.loop.get_count());
-								ImGui::Text("Frame Timer: %i", player.animation.animation.frame_timer.get());
-								ImGui::Text("Complete? %s", player.animation.animation.complete() ? "Yes" : "No");
-								ImGui::Text("One Off? %s", player.animation.animation.params.num_loops > -1 ? "Yes" : "No");
-								ImGui::Text("Repeat Last Frame? %s", player.animation.animation.params.repeat_last_frame ? "Yes" : "No");
-								ImGui::Text("Idle Timer: %i", player.animation.idle_timer.get_count());
-								ImGui::Separator();
-								ImGui::Text("idle...: %s", player.animation.was_requested(player::AnimState::idle) ? "flag set" : "");
-								ImGui::Text("run....: %s", player.animation.was_requested(player::AnimState::run) ? "flag set" : "");
-								ImGui::Text("stop...: %s", player.animation.was_requested(player::AnimState::stop) ? "flag set" : "");
-								ImGui::Text("turn...: %s", player.animation.was_requested(player::AnimState::turn) ? "flag set" : "");
-								ImGui::Text("hurt...: %s", player.animation.was_requested(player::AnimState::hurt) ? "flag set" : "");
-								ImGui::Text("shpturn: %s", player.animation.was_requested(player::AnimState::sharp_turn) ? "flag set" : "");
-								ImGui::Text("rise...: %s", player.animation.was_requested(player::AnimState::rise) ? "flag set" : "");
-								ImGui::Text("suspend: %s", player.animation.was_requested(player::AnimState::suspend) ? "flag set" : "");
-								ImGui::Text("fall...: %s", player.animation.was_requested(player::AnimState::fall) ? "flag set" : "");
-								ImGui::Separator();
-								ImGui::Text("land...: %s", player.animation.was_requested(player::AnimState::land) ? "flag set" : "");
-								ImGui::Text("roll...: %s", player.animation.was_requested(player::AnimState::roll) ? "flag set" : "");
-								ImGui::Text("slide..: %s", player.animation.was_requested(player::AnimState::slide) ? "flag set" : "");
-								ImGui::Text("getup..: %s", player.animation.was_requested(player::AnimState::get_up) ? "flag set" : "");
-								ImGui::Separator();
-								ImGui::Text("dash...: %s", player.animation.was_requested(player::AnimState::dash) ? "flag set" : "");
-								ImGui::Text("sprint.: %s", player.animation.was_requested(player::AnimState::sprint) ? "flag set" : "");
-								ImGui::Text("wlslide: %s", player.animation.was_requested(player::AnimState::wallslide) ? "flag set" : "");
-								ImGui::Text("wljump.: %s", player.animation.was_requested(player::AnimState::walljump) ? "flag set" : "");
-								ImGui::Text("inspect: %s", player.animation.was_requested(player::AnimState::inspect) ? "flag set" : "");
-								ImGui::Text("die....: %s", player.animation.was_requested(player::AnimState::die) ? "flag set" : "");
-								ImGui::Text("sleep..: %s", player.animation.was_requested(player::AnimState::sleep) ? "flag set" : "");
-								ImGui::Text("wakeup.: %s", player.animation.was_requested(player::AnimState::wake_up) ? "flag set" : "");
+								ImGui::Text("Under construction...");
 								ImGui::EndTabItem();
 							}
 							if (ImGui::BeginTabItem("Weapon")) {
@@ -536,7 +613,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Separator();
 								ImGui::Text("Inventory");
 								for (auto& item : player.catalog.inventory.items_view()) {
-									ImGui::Text("%s", item->get_label().data());
+									ImGui::Text("%s", item.item->get_label().data());
 									ImGui::SameLine();
 								}
 								ImGui::Separator();
@@ -585,12 +662,10 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 
 void Game::take_screenshot(sf::Texture& screencap) {
 	services.window->screencap.update(services.window->get());
-	std::time_t const now = std::time(nullptr);
-
-	std::time_t const time = std::time({});
-	char time_string[std::size("yyyy-mm-ddThh:mm:ssZ")];
-	std::strftime(std::data(time_string), std::size(time_string), "%FT%TZ", std::gmtime(&time));
-	auto time_str = std::string{time_string};
+	std::time_t now = std::time(nullptr);
+	std::string time_str(21, '\0');
+	std::strftime(time_str.data(), time_str.size(), "%FT%TZ", std::gmtime(&now));
+	time_str.resize(std::strlen(time_str.c_str()));
 
 	std::erase_if(time_str, [](auto const& c) { return c == ':' || isspace(c); });
 	auto destination = std::filesystem::path{services.finder.paths.screenshots.string()};

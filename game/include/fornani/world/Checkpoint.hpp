@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Shape.hpp"
+#include "fornani/physics/Shape.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -18,7 +18,7 @@ namespace fornani::world {
 
 class Map;
 
-enum class CheckpointState : std::uint8_t { reached };
+enum class CheckpointState { reached };
 
 class Checkpoint {
   public:

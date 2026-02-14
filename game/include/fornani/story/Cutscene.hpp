@@ -25,7 +25,7 @@ class Player;
 }
 namespace fornani {
 
-enum class CutsceneFlags : std::uint8_t { complete };
+enum class CutsceneFlags { complete, started, delete_me };
 
 class Cutscene : public UniquePolymorphic {
   public:
@@ -33,6 +33,7 @@ class Cutscene : public UniquePolymorphic {
 
 	virtual void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] world::Map& map, [[maybe_unused]] player::Player& player) {};
 	[[nodiscard]] auto complete() const -> bool { return flags.test(CutsceneFlags::complete); }
+	[[nodiscard]] auto delete_me() const -> bool { return flags.test(CutsceneFlags::delete_me); }
 
   protected:
 	util::BitFlags<CutsceneFlags> flags{};

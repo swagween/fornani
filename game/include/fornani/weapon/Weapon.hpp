@@ -12,14 +12,14 @@
 
 namespace fornani::arms {
 
-enum class WeaponState : std::uint8_t { unlocked, equipped, reloading };
-enum class WeaponAttributes : std::uint8_t { automatic };
-enum class InventoryState : std::uint8_t { reserve, hotbar };
-enum class UIFlags : std::uint8_t { selected };
-enum class UIColor : std::uint8_t { white, periwinkle, green, orange, fucshia, purple, mythic };
+enum class WeaponState { unlocked, equipped, reloading };
+enum class WeaponAttributes { automatic, no_reload };
+enum class InventoryState { reserve, hotbar };
+enum class UIFlags { selected };
 
 struct WeaponSpecifications {
 	int cooldown_time{};
+	int reload_time{};
 	int multishot{};
 	float recoil{};
 };
@@ -32,6 +32,10 @@ struct Offsets {
 	struct {
 		sf::Vector2f barrel{};
 	} gameplay{};
+};
+
+struct WeaponModifiers {
+	float reload_multiplier{1.f};
 };
 
 struct EmitterAttributes {
@@ -73,6 +77,8 @@ class Weapon : public Animatable {
 	void set_reserved() { inventory_state = InventoryState::reserve; }
 	void select() { flags.ui.set(UIFlags::selected); }
 	void deselect() { flags.ui.reset(UIFlags::selected); }
+	void set_reload_multiplier(float const to) { m_modifiers.reload_multiplier = to; }
+	void reduce_reload_time(float percentage);
 
 	[[nodiscard]] auto selected() const -> bool { return flags.ui.test(UIFlags::selected); }
 	[[nodiscard]] auto shot() const -> bool { return cooldowns.cooldown.just_started(); }
@@ -91,11 +97,14 @@ class Weapon : public Animatable {
 	[[nodiscard]] auto get_recoil() const -> float { return specifications.recoil; }
 	[[nodiscard]] auto get_multishot() const -> int { return specifications.multishot; }
 	[[nodiscard]] auto get_tag() const -> std::string_view { return metadata.tag; }
+	[[nodiscard]] auto get_audio_tag() const -> std::string_view { return metadata.audio_tag; }
 	[[nodiscard]] auto get_label() const -> std::string_view { return metadata.label; }
 	[[nodiscard]] auto get_type() const -> ProjectileType { return projectile.get_type(); }
-	[[nodiscard]] auto get_ui_color() const -> int { return static_cast<int>(visual.color); }
 	[[nodiscard]] auto get_recoil_force() const -> sf::Vector2f { return sf::Vector2f{-specifications.recoil, 0.f}; }
 	[[nodiscard]] auto get_reload() const -> util::Cooldown { return cooldowns.reload; }
+	[[nodiscard]] auto get_reload_time() const -> float { return cooldowns.reload.get_native_time() * m_modifiers.reload_multiplier; }
+	[[nodiscard]] auto get_reload_multiplier() const -> float { return m_modifiers.reload_multiplier; }
+	[[nodiscard]] auto get_reload_time_inverse_normalized() const -> float { return cooldowns.reload.get_inverse_normalized() * m_modifiers.reload_multiplier; }
 
 	Projectile projectile;
 	Ammo ammo{};
@@ -106,6 +115,7 @@ class Weapon : public Animatable {
 	struct {
 		int id{};
 		std::string tag{};
+		std::string audio_tag{};
 		std::string label{};
 		std::string description{};
 	} metadata{};
@@ -126,7 +136,6 @@ class Weapon : public Animatable {
 		sf::Vector2f position{};
 		sf::Vector2<int> dimensions{};
 		std::vector<sf::Vector2f> anchor_points{};
-		UIColor color{};
 		int texture_lookup{};
 	} visual;
 
@@ -147,6 +156,8 @@ class Weapon : public Animatable {
 		util::Cooldown reload{};
 		util::Cooldown shoot_effect{};
 	} cooldowns{};
+
+	WeaponModifiers m_modifiers{};
 
 	io::Logger m_logger{"Arms"};
 };

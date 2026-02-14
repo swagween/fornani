@@ -24,7 +24,7 @@ Grid::Grid(sf::Vector2u d, dj::Json& source, float s) : dimensions(d), m_spacing
 		auto yidx = static_cast<std::uint32_t>(std::floor(i / dimensions.x));
 		auto lookup = sf::Vector2<std::uint32_t>{xidx, yidx};
 		auto chunk_id = calculate_chunk_id(d, lookup);
-		cells.push_back(Tile(lookup, {xidx * m_spacing, yidx * m_spacing}, value, i, m_spacing, chunk_id));
+		cells.push_back(Tile(lookup, {xidx * m_spacing, yidx * m_spacing}, value, i, m_spacing, chunk_id, dimensions));
 		seed_vertex(i);
 	}
 }

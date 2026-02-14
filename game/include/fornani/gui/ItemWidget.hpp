@@ -11,25 +11,26 @@ struct ServiceProvider;
 
 namespace fornani::gui {
 
-enum class ItemWidgetType : std::uint8_t { gun, item };
+enum class ItemWidgetType { gun, item };
 
 class ItemWidget {
   public:
-	explicit ItemWidget(automa::ServiceProvider& svc, ItemWidgetType type, int id);
+	explicit ItemWidget(automa::ServiceProvider& svc, ItemWidgetType type, std::string_view tag);
 	void update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win);
 	void bring_in();
 	void send_out();
+	void remove_sparkler();
 
   private:
-	int m_id;
+	sf::Vector2i m_lookup{};
 	ItemWidgetType m_type;
 	struct {
 		sf::Sprite sticker;
 		sf::Sprite item;
 	} m_sprites;
 	util::RectPath m_path;
-	vfx::Sparkler sparkler;
+	std::optional<vfx::Sparkler> m_sparkler;
 };
 
 } // namespace fornani::gui

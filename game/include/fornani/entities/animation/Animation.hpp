@@ -25,13 +25,13 @@ struct Parameters {
 	std::optional<std::string> target{};
 };
 
-enum class State : std::uint8_t { param_switch, keyframe, oneoff_complete };
+enum class State { param_switch, keyframe, oneoff_complete };
 
 struct Animation {
 
 	Parameters params{};
 	Parameters next_params{};
-	std::string_view label{};
+	std::string label{};
 
 	void refresh();
 	void start();
@@ -39,6 +39,7 @@ struct Animation {
 	void set_params(Parameters new_params, bool hard = true);
 	void switch_params();
 	void set_frame(int to) { frame.set(to); }
+	void linger_on_frame(int which, bool condition);
 	void end() { frame.cancel(); }
 	void log_info() const;
 	int get_frame() const;

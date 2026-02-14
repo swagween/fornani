@@ -6,7 +6,7 @@
 
 namespace fornani::gui {
 
-MapTexture::MapTexture(automa::ServiceProvider& svc) : m_border_color{colors::pioneer_red}, m_tile_color{colors::pioneer_dark_red}, m_scale{4.f} {
+MapTexture::MapTexture(automa::ServiceProvider& svc) : m_border_color{201, 9, 42}, m_tile_color{colors::pioneer_dark_red}, m_hovered_border_color{colors::pioneer_red}, m_hovered_center_color{136, 19, 43}, m_scale{4.f} {
 	m_tile_box.setFillColor(m_tile_color);
 	m_tile_box.setSize({m_scale, m_scale});
 }
@@ -14,7 +14,8 @@ MapTexture::MapTexture(automa::ServiceProvider& svc) : m_border_color{colors::pi
 void MapTexture::bake(dj::Json const& in) {
 	auto const& in_meta = in["meta"];
 	auto const& in_tile = in["tile"];
-	m_room_id = in_meta["room_id"].as<int>();
+	m_data.id = in_meta["room_id"].as<int>();
+	m_data.biome_label = in_meta["biome"].as<int>();
 
 	m_global_offset = sf::Vector2i{in_meta["metagrid"][0].as<int>(), in_meta["metagrid"][1].as<int>()} * constants::i_chunk_size * static_cast<int>(m_scale);
 	auto map_dim = sf::Vector2f{in_meta["dimensions"][0].as<float>(), in_meta["dimensions"][1].as<float>()};
@@ -34,6 +35,10 @@ void MapTexture::bake(dj::Json const& in) {
 		layer.center_texture.clear(sf::Color::Transparent);
 		if (!layer.border_texture.resize(u_dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
 		layer.border_texture.clear(sf::Color::Transparent);
+		if (!layer.hovered_center_texture.resize(u_dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
+		layer.hovered_center_texture.clear(sf::Color::Transparent);
+		if (!layer.hovered_border_texture.resize(u_dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
+		layer.hovered_border_texture.clear(sf::Color::Transparent);
 
 		for (auto [j, tile] : std::views::enumerate(in["tile"]["layers"][in["tile"]["middleground"].as<int>()].as_array())) {
 			if (lores) {
@@ -55,17 +60,23 @@ void MapTexture::bake(dj::Json const& in) {
 				draw_plat ? m_tile_box.setScale({res_scale, res_scale * 0.75f}) : m_tile_box.setScale({res_scale, res_scale});
 				draw_plat ? m_tile_box.setOrigin({0.0f, -0.25f * res_scale * m_scale}) : m_tile_box.setOrigin({});
 				layer.center_texture.draw(m_tile_box);
+				m_tile_box.setFillColor(m_hovered_center_color);
+				layer.hovered_center_texture.draw(m_tile_box);
 				m_tile_box.setFillColor(m_border_color);
 				layer.border_texture.draw(m_tile_box);
+				m_tile_box.setFillColor(m_hovered_border_color);
+				layer.hovered_border_texture.draw(m_tile_box);
 			}
 		}
 		layer.border_texture.display();
 		layer.center_texture.display();
+		layer.hovered_border_texture.display();
+		layer.hovered_center_texture.display();
 	}
 }
 
 void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, float scale, bool current, bool undiscovered) {
-	m_room_id = room;
+	m_data.id = room;
 	map.unserialize(svc, room, true);
 	if (!map.is_minimap()) {
 		m_ignore = true;
@@ -102,9 +113,18 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 	}
 }
 
-sf::RenderTexture& MapTexture::get(bool border) { return border ? current_layer().border_texture : current_layer().center_texture; }
+auto MapTexture::contains(sf::Vector2f point) const -> bool {
+	auto pt = point - sf::Vector2f{m_global_offset};
+	if (pt.x < 0.f || pt.x > m_map_dimensions.x) { return false; }
+	if (pt.y < 0.f || pt.y > m_map_dimensions.y) { return false; }
+	return true;
+}
 
-sf::Vector2f MapTexture::get_position() { return sf::Vector2f(static_cast<float>(m_global_offset.x), static_cast<float>(m_global_offset.y)); }
+sf::RenderTexture& MapTexture::get(bool border, bool hovered) {
+	return border ? (hovered ? current_layer().hovered_border_texture : current_layer().border_texture) : (hovered ? current_layer().hovered_center_texture : current_layer().center_texture);
+}
+
+sf::Vector2f MapTexture::get_position() const { return sf::Vector2f(static_cast<float>(m_global_offset.x), static_cast<float>(m_global_offset.y)); }
 
 sf::Vector2f MapTexture::get_dimensions() const { return m_map_dimensions; }
 

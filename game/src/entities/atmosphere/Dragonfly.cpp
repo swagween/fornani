@@ -1,3 +1,4 @@
+
 #include "fornani/entities/atmosphere/Dragonfly.hpp"
 #include <numbers>
 #include "fornani/entities/player/Player.hpp"
@@ -9,7 +10,7 @@
 
 namespace fornani::vfx {
 
-Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2f start) : sprite(svc.assets.get_texture("dragonfly"), {8, 8}) {
+Dragonfly::Dragonfly(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f start) : sprite(svc.assets.get_texture("dragonfly"), {8, 8}) {
 	physics.set_global_friction(0.97f);
 	physics.position = start;
 	physics.velocity = random::random_vector_float(-1.f, 1.f);
@@ -26,7 +27,7 @@ Dragonfly::Dragonfly(automa::ServiceProvider& svc, sf::Vector2f start) : sprite(
 
 void Dragonfly::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (!svc.in_window(sprite.get_sprite_position(), sprite.get_dimensions())) { return; }
-	steering.evade(physics, player.collider.get_center(), forces.evade, 0.05f);
+	steering.evade(physics, player.get_collider().get_center(), forces.evade, 0.05f);
 	steering.seek(physics, map.get_nearest_target_point(physics.position), forces.seek);
 	steering.smooth_random_walk(physics, forces.walk);
 	physics.simple_update();

@@ -1,11 +1,197 @@
 {
   "amber": {
     "1": {
-      "responses": [],
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "Who are you?"
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "Tell me about the village."
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "Tell me about the Mother Worm."
+          }
+        ]
+      ],
       "suite": [
         [
           {
-            "message": "The Mother Worm lives in us all."
+            "codes": [[1, 0]],
+            "messages": [
+              "The Mother Worm lives in us all.",
+              "It's a great day for singing, don't you think?",
+              "Don't mind the children, they're in their own little world."
+            ]
+          }
+        ],
+        [
+          {
+            "message": "I am Amber. I've lived here in Woodshine all my life, and I don't intend to leave."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Ever since my husband passed, I've made it my mission to give my children as peaceful a life as I can."
+          }
+        ],
+        [
+          {
+            "message": "This is the ancestral home of the Kariba. For thousands of years, our tribe have lived and gathered here in peaceful symbiosis with the Mother Worm."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Lately it's been declining. We've suffered numerous attacks and kidnappings from Skycorps dogs, and our men have been disappearing or dying trying to fight back."
+          }
+        ],
+        [
+          {
+            "message": "She is the one true constant in our lives."
+          },
+          {
+            "message": "The Mother is our guardian and our warmth, and it is our duty as a tribe to protect her and sing to her. Every day that Skycorps uses her to harvest precious minerals brings us closer to the end."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "There is not much I can do but sing and pray. I think it comforts her to hear our voices, however quiet."
+          }
+        ]
+      ]
+    }
+  },
+  "jimmy": {
+    "1": {
+      "output": 2,
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "I was held hostage my Skycorps."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "None at all..."
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "message": "Nani!"
+          },
+          {
+            "message": "Could it be...?"
+          },
+          {
+            "message": "Oh, how I feared I would never see you again..."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Where have you been all this time?"
+          }
+        ],
+        [
+          {
+            "message": "And here I was hoping you'd get caught up in less mischief than your brother..."
+          },
+          {
+            "message": "If only your mother could have lived to help me raise you two."
+          },
+          {
+            "codes": [[13, 8, 407]],
+            "message": "Anyway, it is good to have you home again, despite the circumstances."
+          },
+          {
+            "codes": [[1, 1]],
+            "message": "Have you any word of your brother?"
+          }
+        ],
+        [
+          {
+            "message": "Alas, then, it is as I feared."
+          },
+          {
+            "message": "Please, do what you can to bring him home, will you?"
+          }
+        ]
+      ]
+    },
+    "2": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "What are we doing about Skycorps?"
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "Where might Loth be?"
+          },
+          {
+            "contingencies": [
+              {
+                "requirement": 0,
+                "strict": true,
+                "tag": "pioneer_trail"
+              }
+            ],
+            "codes": [[1, 3]],
+            "message": "Can you allow me passage to Pioneer Trail?"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [[1, 0]],
+            "messages": ["Oh, Nani!", "How is my daughter doing?", "Welcome home, my child."]
+          }
+        ],
+        [
+          {
+            "message": "As much as we can. They are a force to be reckoned with, but luckily Woodshine is still small potatoes to them."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Regrettably, though, it seems they will stop at nothing to find Loth. Your brother has done a very grave thing, Nani..."
+          }
+        ],
+        [
+          {
+            "message": "I know just as much as you do. Your brother was doing some digging around the ancient Kariba burial grounds with his human girlfriend and that old Grand island professor, until one day he just disappeared."
+          },
+          {
+            "message": "I can only blame the humans so much... Loth is strong-willed and I suspect he left of his own accord."
+          },
+          {
+            "message": "I do fear he is heading down a very dangerous path, and if you don't find him soon he may be a lost cause."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Maybe he's headed for the Mother Worm herself. After all, he has been a vehement worshipper for as long as he could talk."
+          }
+        ],
+        [
+          {
+            "message": "Oh, is old Ward giving you a hard time?"
+          },
+          {
+            "message": "If you're ever to find your brother and bring him to his senses, I'll be the last to stand in your way."
+          },
+          {
+            "codes": [
+              [2, 37],
+              [3, 12, 1, 415]
+            ],
+            "message": "Here, take this."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "That ought to convince him to open the gates for you."
           }
         ]
       ]
@@ -18,6 +204,62 @@
         [
           {
             "message": "Hnnngh..."
+          }
+        ]
+      ]
+    }
+  },
+  "lyle": {
+    "1": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "messages": ["Who're you, mister?", "Wanna play Hide n' Peek?", "Is that a real gun?"]
+          }
+        ]
+      ]
+    }
+  },
+  "dale": {
+    "1": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "messages": ["Wanna play?", "You're tall.", "Bet you can't catch me!"]
+          }
+        ]
+      ]
+    }
+  },
+  "lucie": {
+    "1": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "messages": [
+              "Mom hasn't been herself lately...",
+              "Are you going to stay around for a while?",
+              "There are no other girls around for me to play with."
+            ]
+          }
+        ]
+      ]
+    }
+  },
+  "gaia": {
+    "1": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "messages": [
+              "I don't suppose you've seen my husband?",
+              "Nani... it's been a while, huh?",
+              "My cats are going crazy again..."
+            ]
           }
         ]
       ]
@@ -43,6 +285,7 @@
             "message": "..."
           },
           {
+            "codes": [[13, 20, 102]],
             "message": "Psst... Hey!"
           },
           {
@@ -78,7 +321,18 @@
       "responses": [
         [
           {
+            "codes": [[1, 1]],
             "message": "Where are we?"
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "How long have I been asleep...?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 3]],
+            "message": "I was with some researchers in the gallery, and then the ship was attacked..."
           }
         ]
       ],
@@ -88,7 +342,71 @@
             "message": "Listen, I don't wanna rush you, but..."
           },
           {
+            "codes": [[1, 0]],
             "message": "I'm starting to get pretty hungry, and I haven't seen the jailer in a few days..."
+          }
+        ],
+        [
+          {
+            "message": "I'm not gonna sugarcoat it. We're in prison."
+          },
+          {
+            "message": "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!"
+          },
+          {
+            "message": "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "Asleep? Wait a minute... What's the last thing you remember?"
+          }
+        ],
+        [
+          {
+            "message": "Oh... That... That was a very long time ago. You must have some amnesia from Skycorps's, er, knowledge retrieval tactics, we'll call them."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Best of luck to you..."
+          }
+        ]
+      ]
+    },
+    "3": {
+      "responses": [
+        {
+          "message": "Where are we?"
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "How long have I been asleep...?"
+        },
+        {
+          "codes": [[1, 4]],
+          "message": "Who are you?"
+        },
+        [
+          {
+            "codes": [[1, 3]],
+            "message": "I was with some researchers in the gallery, and then the ship was attacked..."
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [[1, 0]],
+            "messages": [
+              "Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya.",
+              "I've started marking the days on the wall next to my bed.",
+              "I haven't eaten in a really long time..."
+            ]
           }
         ],
         [
@@ -104,15 +422,35 @@
           {
             "message": "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here."
           }
-        ]
-      ]
-    },
-    "3": {
-      "responses": [],
-      "suite": [
+        ],
         [
           {
-            "message": "Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya."
+            "codes": [[1, 1]],
+            "message": "Asleep? Wait a minute... What's the last thing you remember?"
+          }
+        ],
+        [
+          {
+            "message": "Oh... That... That was a very long time ago. You must have some amnesia from Skycorps's, er, knowledge retrieval tactics, we'll call them."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Best of luck to you..."
+          }
+        ],
+        [
+          {
+            "message": "My name's Bit. I worked in the engine room before the Skycorps takeover, and they tossed me in this cell because I tried to escape in one of the nighthawks on the deck."
+          },
+          {
+            "message": "Gosh, it's probably been months..."
+          },
+          {
+            "message": "I'm sure some of the old crew are still around. You know, this was originally a Grand Island research vessel before the raid."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "This is what I get for leaving my tribe and trying to make a better life working for humans..."
           }
         ]
       ]
@@ -122,6 +460,7 @@
       "suite": [
         [
           {
+            "codes": [[13, 20, 101]],
             "message": "I can't believe it... You actually did it!"
           },
           {
@@ -138,6 +477,7 @@
       "suite": [
         [
           {
+            "codes": [[13, 20, 101]],
             "message": "..."
           },
           {
@@ -151,6 +491,7 @@
       "suite": [
         [
           {
+            "codes": [[13, 20, 101]],
             "message": "Listen, I don't exactly have much to give you right now."
           },
           {
@@ -167,33 +508,10 @@
       "suite": [
         [
           {
-            "message": "Heh... See ya around!"
-          }
-        ]
-      ]
-    },
-    "8": {
-      "responses": [],
-      "suite": [
-        [
-          {
-            "message": "Thanks again for helping me. Stay safe out there!"
-          }
-        ]
-      ]
-    },
-    "9": {
-      "responses": [],
-      "suite": [
-        [
-          {
-            "message": "I can't believe it... You actually did it!"
-          },
-          {
-            "message": "I really can't thank you enough, stranger!"
-          },
-          {
-            "message": "Heh, I guess I owe you big time!"
+            "messages": [
+              "Thanks again for helping me. Stay safe out there!",
+              "Heh... See ya around!"
+            ]
           }
         ]
       ]
@@ -228,7 +546,7 @@
           },
           {
             "codes": [[1, 5]],
-            "message": "I'm looking for my brother."
+            "message": "And... about my brother?"
           },
           {
             "codes": [[1, 6]],
@@ -239,20 +557,36 @@
       "suite": [
         [
           {
-            "codes": [[5, 1]],
+            "codes": [
+              [4, 5],
+              [5, 1]
+            ],
+            "message": "...Nani?"
+          },
+          {
+            "message": "Could that really be you?"
+          },
+          {
             "message": "Well, I'll be honest, you're about the last person I was expecting to see down here."
           },
           {
+            "message": "I was beginning to think I'd never see anyone again..."
+          },
+          {
             "codes": [
-              [1, 0],
-              [5, 0],
+              [4, 14],
+              [5, 2],
               [1, 0]
             ],
-            "message": "I was beginning to think I'd never see anyone again."
+            "message": "But nonetheless I'm overjoyed to see that you're okay!"
           }
         ],
         [
           {
+            "codes": [
+              [4, 8],
+              [5, 1]
+            ],
             "message": "It's... a long story. But I signed up for it, really."
           },
           {
@@ -262,6 +596,7 @@
         ],
         [
           {
+            "codes": [[5, 0]],
             "message": "Well, that's what Doc Willett and I think it might be."
           },
           {
@@ -278,11 +613,12 @@
           },
           {
             "codes": [[9, 20001, 1]],
-            "message": "I can't believe you made it off Firstwind alive!"
+            "message": "I still can't believe you made it off Firstwind alive!"
           },
           {
             "codes": [
               [5, 1],
+              [4, 6],
               [1, 2]
             ],
             "message": "Wait... is that my gun?!"
@@ -311,24 +647,27 @@
         ],
         [
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [5, 0],
+              [4, 21]
+            ],
             "message": "Another long story, but that one I at least owe it to tell you..."
           },
           {
-            "message": "Willett and I were taking her over from Grand Island to do some research in places just like these."
+            "message": "That day when we were talking in the Firstwind gallery, we were invaded by Skycorps."
           },
           {
-            "message": "Then, one night, we and our crew were raided by pirates - or, what we thought were pirates."
-          },
-          {
-            "message": "Turns out, it was Skycorps. Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us."
+            "message": "Turns out, Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us."
           },
           {
             "codes": [[5, 1]],
-            "message": "Luckily Doc had an escape plan, but unfortunately that plan didn't include you or anyone else on the crew."
+            "message": "You got split up from us as we tried to flee through the hold because some Skycorps thugs pulled you aside."
           },
           {
-            "message": "Skycorps had already tossed most of us in holding cells, but Doc and I were wanted by higher-ups, so they kept us in the bridge."
+            "message": "Doc and I were captured shortly thereafter, but we were taken to different areas because we never saw you again after that."
+          },
+          {
+            "message": "Skycorps tossed most of our crew in holding cells, but Doc and I were wanted by higher-ups, so they kept us in the bridge."
           },
           {
             "message": "I didn't really know what to do... I was too scared to stay behind, but I couldn't just abandon you either."
@@ -346,15 +685,21 @@
         ],
         [
           {
-            "codes": [[5, 0]],
-            "message": "Aren't we all?"
+            "codes": [
+              [5, 0],
+              [4, 8]
+            ],
+            "message": "..."
           },
           {
-            "message": "...sigh..."
+            "message": "God, I miss him, despite everything he did."
+          },
+          {
+            "message": "Please, Nani, promise me you'll do whatever you can to bring him back to us."
           },
           {
             "codes": [[1, 3]],
-            "message": "God, I miss him, despite everything he did. I just want to know if he's still alive..."
+            "message": "I just want to know if he's still alive..."
           }
         ],
         [
@@ -363,7 +708,7 @@
           },
           {
             "codes": [[5, 2]],
-            "message": "Don't worry about me--you've taken care of all the threats, and I know the way home!"
+            "message": "Don't worry about me - you've taken care of all the threats, and I know the way home!"
           }
         ]
       ]
@@ -388,28 +733,46 @@
       "suite": [
         [
           {
-            "codes": [[1, 0]],
-            "message": "Yeah?"
+            "code_list": [
+              [
+                [1, 0],
+                [4, 10]
+              ],
+              [
+                [1, 0],
+                [4, 9]
+              ],
+              [
+                [1, 0],
+                [4, 8]
+              ]
+            ],
+            "messages": ["Yeah?", "What's up?", "It's been awful lonely down here..."]
           }
         ],
         [
           {
+            "codes": [[5, 0]],
             "message": "Another long story, but that one I at least owe it to tell you..."
           },
           {
-            "message": "Willett and I were taking her over from Grand Island to do some research in places just like these."
+            "message": "That day when we were talking in the Firstwind gallery, we were invaded by Skycorps."
           },
           {
-            "message": "Then, one night, we and our crew were raided by pirates--or, what we thought were pirates."
+            "message": "Turns out, Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us."
           },
           {
-            "message": "Turns out, it was Skycorps. Lady Nimbus and Doc still have some bad blood or whatever, so she sent her goons to come kill us."
+            "codes": [
+              [5, 1],
+              [4, 20]
+            ],
+            "message": "You got split up from us as we tried to flee through the hold because some Skycorps thugs pulled you aside."
           },
           {
-            "message": "Luckily Doc had an escape plan, but unfortunately that plan didn't include you or anyone else on the crew."
+            "message": "Doc and I were captured shortly thereafter, but we were taken to different areas because we never saw you again after that."
           },
           {
-            "message": "Skycorps had already tossed most of us in holding cells, but Doc and I were wanted by higher-ups, so they kept us in the bridge."
+            "message": "Skycorps tossed most of our crew in holding cells, but Doc and I were wanted by higher-ups, so they kept us in the bridge."
           },
           {
             "message": "I didn't really know what to do... I was too scared to stay behind, but I couldn't just abandon you either."
@@ -418,7 +781,11 @@
             "message": "I decided the least I could do was try to pass along a message so that you might have some chance to escape, and so I had someone from our crew hide a note in your food."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [1, 0],
+              [5, 2],
+              [4, 23]
+            ],
             "message": "I presume you got the message, otherwise we wouldn't be having this conversation."
           }
         ],
@@ -427,7 +794,10 @@
             "message": "Well, no one knows where he went or what his plans are."
           },
           {
-            "message": "He had stolen an artifact from Doc--not sure which one, but that hardly matters--and ran away."
+            "message": "He and Doc were doing some research in a temple - not sure which one, but that hardly matters - and at some point Loth just ran away."
+          },
+          {
+            "message": "Supposedly he had nabbed some valuable artifact, too, but I don't know."
           },
           {
             "message": "He gave us no warning, and I struggle to piece together what his motive could have been..."
@@ -583,17 +953,18 @@
       "suite": [
         [
           {
-            "codes": [[5, 2]],
+            "codes": [
+              [5, 2],
+              [3, 9, 1, 301]
+            ],
             "message": "Welcome back!"
           },
           {
+            "codes": [[13, 0, 300]],
             "message": "Listen, I can't thank you enough for getting me out of those ruins."
           },
           {
-            "codes": [
-              [13, 0, 300],
-              [5, 1]
-            ],
+            "codes": [[5, 1]],
             "message": "If you ever need help with anything, or want to learn more about the Ancient Kariba, I'll be here!"
           },
           {
@@ -619,7 +990,8 @@
           {
             "codes": [
               [5, 1],
-              [15, 1]
+              [15, 1],
+              [3, 9, 1, 300]
             ],
             "message": "Here, as promised..."
           }
@@ -637,11 +1009,356 @@
       ]
     },
     "6": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 4]],
+            "message": "Aren't you tired of hiding?"
+          },
+          {
+            "codes": [[1, 5]],
+            "message": "Tell me about the Ancient Kariba."
+          },
+          {
+            "contingencies": [
+              {
+                "requirement": 1,
+                "strict": true,
+                "tag": "obtain_wasp"
+              }
+            ],
+            "codes": [[1, 1]],
+            "message": "I'd like to give you back your gun."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "Yes."
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "On second thought..."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 6]],
+            "message": "What are Skycorps doing, exactly?"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "code_list": [
+              [
+                [1, 0],
+                [5, 2],
+                [3, 9, 1, 301],
+                [4, 4]
+              ],
+              [
+                [1, 0],
+                [5, 1],
+                [3, 9, 1, 301],
+                [4, 9]
+              ],
+              [
+                [1, 0],
+                [5, 2],
+                [3, 9, 1, 301],
+                [4, 19]
+              ]
+            ],
+            "messages": ["Nani! It's good to see you again.", "What's up?", "Hi Nani!"]
+          }
+        ],
+        [
+          {
+            "codes": [
+              [1, 1],
+              [5, 2]
+            ],
+            "message": "Oh, awesome! Are you sure?"
+          }
+        ],
+        [
+          {
+            "codes": [
+              [5, 2],
+              [16, 0]
+            ],
+            "message": "That means a lot, really!"
+          },
+          {
+            "codes": [
+              [5, 1],
+              [15, 1],
+              [3, 9, 1, 300]
+            ],
+            "message": "Here, as promised..."
+          }
+        ],
+        [
+          {
+            "codes": [[5, 0]],
+            "message": "It's hard to blame you, really. That old pistol is one-of-a-kind, and I imagine you've grown just as attached to it as I had."
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "Well, if you ever decide to change your mind, I'm here."
+          }
+        ],
+        [
+          {
+            "codes": [[5, 0]],
+            "message": "Of course... It's easy to get bored around here."
+          },
+          {
+            "codes": [[5, 2]],
+            "message": "I mean, why do you think I throw myself into dangerous ruins?"
+          },
+          {
+            "codes": [
+              [5, 1],
+              [1, 0]
+            ],
+            "message": "Living with Doc is great and all, but it gets old. And I really wish he'd stop leaving his dentures next to my makeup..."
+          }
+        ],
+        [
+          {
+            "codes": [[5, 0]],
+            "message": "Well, they're your ancestors. And much like you and your tribe, they've called the Overturned Forest their home since as far back as written records go."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "They worshipped the Mother Worm and performed rituals to maintain her deep hibernation."
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "I'm not sure if they were afraid of what the Mother would do if she woke up, or if they merely did it out of reverence for the creature."
+          },
+          {
+            "message": "All I know is, I am personally very afraid of what might happen if the worm wakes up, and I'm equally afraid of what would happen if she died."
+          },
+          {
+            "message": "I suppose that's all to say that I support the Ancient Kariba mentality, to live in harmony with the worm. Maybe I'm biased because of all the research I've done."
+          },
+          {
+            "codes": [
+              [5, 1],
+              [1, 2]
+            ],
+            "message": "They would all surely be rolling in their graves to know what Skycorps have been doing..."
+          }
+        ],
+        [
+          {
+            "codes": [[5, 1]],
+            "message": "They've been riling up the worm, basically. The closer she is to waking up, the more rhenite she produces."
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "Skycorps are playing with fire. They know next to nothing about the worm and her physiology, and I imagine that even if they did, they wouldn't slow rhenite production one bit."
+          },
+          {
+            "message": "I'm not really sure I understand them, to be honest. Why can't they just plug along with the Nightside Projects and leave the Kariba and the Mother Worm alone?"
+          },
+          {
+            "codes": [
+              [5, 1],
+              [1, 0]
+            ],
+            "message": "I should stop worrying so much... but it's easy to get lost in your thoughts when you stay cooped up in an old fort all day..."
+          }
+        ]
+      ]
+    },
+    "10": {
       "responses": [],
       "suite": [
         [
           {
-            "message": "What's up?"
+            "message": "Yeah... It's as bad as it sounds."
+          },
+          {
+            "message": "Lady Nimbus has amassed a force of thousands of soldiers, and she plans to revive the failed Nightside Projects."
+          },
+          {
+            "message": "Originally we assumed their return to this island was a routine one. You know, maintenance and construction for whatever stuff has yet to be abandoned."
+          },
+          {
+            "codes": [[8, 0]],
+            "message": "But Doc has some deeper intel."
+          }
+        ]
+      ]
+    },
+    "11": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "How will I know what to do?"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "message": "It's an old mining town, and one of the few remaining human colonies on this island."
+          },
+          {
+            "message": "There, you'll meet with an old classmate of mine named Spencer."
+          },
+          {
+            "message": "He might be the only person on this whole island who can recover the Greatwing blueprints from that disc."
+          },
+          {
+            "message": "I know it's a bit of a far-fetched task, and Doc and I don't have any expectations of you. I mean, I already owe you my life."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "But this is the best we could come up with. A last-ditch effort to stop Skycorps before it's too late..."
+          }
+        ],
+        [
+          {
+            "message": "We'll radio to you every step of the way, as long as we can reach you. Some areas have better reception than others, so you'll be on your own quite a lot."
+          },
+          {
+            "codes": [[2, 42]],
+            "message": "Here."
+          },
+          {
+            "message": "This is a field telephone that the pioneers used to use. I know it's a little old-fashioned, but it's all we had lying around."
+          },
+          {
+            "codes": [[8, 0]],
+            "message": "With this, Doc and I can call you if we think you need help."
+          }
+        ]
+      ]
+    },
+    "20": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "It wasn't too bad!"
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "My life flashed before my eyes..."
+          }
+        ],
+        [
+          {
+            "codes": [[8, 0]],
+            "message": "Something like that."
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [
+              [4, 15],
+              [1, 0]
+            ],
+            "message": "Nani! I'm glad you made it up here okay. Those old nighthawks can be pretty terrifying if you're not used to them."
+          }
+        ],
+        [
+          {
+            "message": "Well, that's good to hear!"
+          },
+          {
+            "codes": [
+              [5, 2],
+              [1, 1]
+            ],
+            "message": "Anyway, it's great to see you again! What's it been...? Two years?"
+          }
+        ],
+        [
+          {
+            "message": "Hard to blame you, really."
+          },
+          {
+            "codes": [
+              [5, 2],
+              [1, 1]
+            ],
+            "message": "Anyway, it's great to see you again! What's it been...? Two years?"
+          }
+        ]
+      ]
+    },
+    "21": {
+      "responses": [[]],
+      "suite": [
+        [
+          {
+            "codes": [[8, 0]],
+            "message": "..."
+          }
+        ]
+      ]
+    },
+    "22": {
+      "responses": [
+        [
+          {
+            "codes": [[8, 0]],
+            "message": "Where is my brother?"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [
+              [5, 1],
+              [4, 21],
+              [1, 0]
+            ],
+            "message": "It's as I feared, then."
+          }
+        ]
+      ]
+    },
+    "23": {
+      "responses": [[]],
+      "suite": [
+        [
+          {
+            "codes": [[14, 0]],
+            "message": "Nani..."
+          },
+          {
+            "codes": [
+              [5, 1],
+              [8, 0]
+            ],
+            "message": "Your brother is missing."
+          }
+        ]
+      ]
+    },
+    "24": {
+      "responses": [[]],
+      "suite": [
+        [
+          {
+            "codes": [
+              [5, 3],
+              [4, 0],
+              [8, 0]
+            ],
+            "message": "Doc?! What is that?"
           }
         ]
       ]
@@ -772,7 +1489,7 @@
         [
           {
             "codes": [[1, 0]],
-            "message": "How can I help you?"
+            "messages": ["Yes?", "How can I help you?"]
           }
         ],
         [
@@ -861,8 +1578,11 @@
         ],
         [
           {
+            "message": "What a miracle that you survived! And what's more, you've escaped Skycorps's grip!"
+          },
+          {
             "codes": [[1, 1]],
-            "message": "Well, I can't say I understand just how you got yourself off that ship, but I am impressed nonetheless."
+            "message": "I can't say I understand just how you got yourself off that ship, but I am impressed nonetheless."
           }
         ],
         [
@@ -947,7 +1667,7 @@
         [
           {
             "codes": [[1, 4]],
-            "message": "Do you know where my brother is?"
+            "message": "How long have I been gone?"
           },
           {
             "codes": [[1, 5]],
@@ -969,7 +1689,7 @@
         [
           {
             "codes": [[1, 0]],
-            "message": "So... Any luck finding Bryn?"
+            "messages": ["So... Any luck finding Bryn?", "What's on your mind?"]
           }
         ],
         [
@@ -986,8 +1706,15 @@
             "message": "I don't have one myself to give you, but you ought to be able to buy one in Woodshine Village. So head there first if you haven't already."
           },
           {
+            "message": "You should have no trouble finding Woodshine if you head east and a bit north from here."
+          },
+          {
+            "codes": [[22, 400, 1, 2]],
+            "message": "Here, let me mark it on your map, just in case..."
+          },
+          {
             "codes": [[1, 0]],
-            "message": "You should have no trouble finding Woodshine if you head east and a bit north from here. Though I imagine you might know the way, considering you've lived there your whole life."
+            "message": "Though I imagine you might know the way, considering you've lived there your whole life."
           }
         ],
         [
@@ -1005,7 +1732,7 @@
           },
           {
             "codes": [[1, 0]],
-            "message": "We've been here for some months, now, ever on the run from Skycorps."
+            "message": "We've been here for some time, now, ever on the run from Skycorps."
           }
         ],
         [
@@ -1016,22 +1743,22 @@
         ],
         [
           {
-            "message": "Well, that's a sore topic, to say the very least."
+            "message": "By my calculations... at least two months."
           },
           {
-            "message": "He stole a priceless artifact and ran off with it."
+            "message": "If it's all been a blur to you, it probably means Skycorps have been trying to get information out of you."
+          },
+          {
+            "message": "It's a terrible thing, really, that you were imprisoned like that."
           },
           {
             "codes": [[1, 1]],
-            "message": "If you ever do find him, could you let him know that I'd like it back?"
+            "message": "But it warms my heart to see that you've made it out alive."
           }
         ],
         [
           {
             "message": "Bryn is the brightest and hardest-working student I've ever met, apart perhaps from your brother."
-          },
-          {
-            "message": "But forgive me if I hesitate to laud him after the incident."
           },
           {
             "message": "Anyway, Bryn was in my 'Anthropology of Ancient Peoples' seminar over on Grand Island some years back, and she's been joining me here on post-graduate expeditions to study the Ancient Kariba."
@@ -1083,11 +1810,342 @@
       ]
     },
     "3": {
+      "output": 2,
       "responses": [],
       "suite": [
         [
           {
-            "message": "I suppose I owe you some gratitude for rescuing my student."
+            "message": "I owe you my deepest gratitude for rescuing my student."
+          },
+          {
+            "message": "And Bryn filled me in on all the details, about the corrupted King Miaag that you defeated. Well done."
+          },
+          {
+            "codes": [[21, 300]],
+            "message": "Anyway, you've arrived at just the right time, as we've got pressing matters to discuss with you. Let's waste no more time."
+          }
+        ]
+      ]
+    },
+    "20": {
+      "output": 2,
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "I guess he kinda looks like my grandpa?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "Yeah... You know, my brother and I used to explore that place when I was a kid."
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [[3, 11, 1, 138]],
+            "message": "...And here we have a marble bust of the great King Miaag."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Hmm... I think I see a slight resemblance...?"
+          }
+        ],
+        [
+          {
+            "message": "Hah! I kid, of course."
+          },
+          {
+            "message": "We excavated this one from the Kariba burial grounds in the deep forest, and we took great care not to disturb any of the neighboring graves."
+          },
+          {
+            "message": "Wouldn't want any Ancient Kariba spirits on our bad side, now would we?"
+          },
+          {
+            "codes": [[1, 1]],
+            "message": "So, as you can see, ours is a more noble pursuit than that of Skycorps. We aim to study and appreciate your people, not evict them."
+          }
+        ],
+        [
+          {
+            "message": "Ah, delightful! Yes, your brother... he truly has been such a valuable asset to our research team."
+          },
+          {
+            "codes": [[8, 0]],
+            "message": "I do wonder - has he shared much with you about his recent ventures?"
+          }
+        ]
+      ]
+    },
+    "21": {
+      "output": 2,
+      "responses": [
+        [
+          {
+            "codes": [[8, 0]],
+            "message": "What are you talking about? My brother is with you..."
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "message": "The time does seem to race by when you're doing hands-on research, hm?"
+          },
+          {
+            "message": "..."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "As I was saying before... I wonder if your brother has shared any of his findings with you...?"
+          }
+        ]
+      ]
+    },
+    "22": {
+      "output": 2,
+      "responses": [[]],
+      "suite": [
+        [
+          {
+            "message": "...Mh...Yes, indeed he is!"
+          },
+          {
+            "codes": [[8, 0]],
+            "message": "Or, he was..."
+          }
+        ]
+      ]
+    },
+    "23": {
+      "output": 2,
+      "responses": [
+        [
+          {
+            "codes": [[8, 0]],
+            "message": "What is going on?"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [[1, 0]],
+            "message": "Well, that is essentially why we invited you here today. We were hoping that you'd be able to tell us where he is."
+          }
+        ]
+      ]
+    },
+    "24": {
+      "output": 2,
+      "responses": [[]],
+      "suite": [
+        [
+          {
+            "message": "Not to worry, of course! I am sure he fares well and will be coming back any day now."
+          },
+          {
+            "codes": [[8, 0]],
+            "message": "So? Have you any idea where he might have gone?"
+          }
+        ]
+      ]
+    },
+    "25": {
+      "output": 2,
+      "responses": [[]],
+      "suite": [
+        [
+          {
+            "message": "Oh, my..."
+          },
+          {
+            "codes": [[8, 0]],
+            "message": "I think we need to get out of here!"
+          }
+        ]
+      ]
+    },
+    "10": {
+      "output": 2,
+      "responses": [
+        [
+          {
+            "codes": [[8, 0]],
+            "message": "Wait... a hostile takeover?"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "message": "So, as you may or may not be aware, Skycorps are headed toward this island as we speak."
+          },
+          {
+            "message": "To call it a hostile takeover might be an understatement."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "As such, we have limited time to spare, and we must stop at nothing to foil their plans."
+          }
+        ]
+      ]
+    },
+    "11": {
+      "output": 2,
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "How can we stop them?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "Why are you giving it to me?"
+          }
+        ],
+        [
+          {
+            "codes": [[8, 0]],
+            "message": "Ashtown?"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "message": "Precisely. Despite living in hiding, I still have secret remote access to some of Skycorps's servers."
+          },
+          {
+            "message": "There are plans to vastly increase the production of rhenite on this island. That means disrupting the delicate balance between the hibernating Mother Worm and all life on this island."
+          },
+          {
+            "message": "Nani, for thousands of years your tribe have lived in harmony with the Mother Worm, and Skycorps are mere weeks away from destroying it."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Who knows the chaos that could ensue were they to succeed..."
+          }
+        ],
+        [
+          {
+            "message": "Well... I'll show you."
+          },
+          {
+            "codes": [[2, 4]],
+            "message": "..."
+          },
+          {
+            "codes": [[1, 1]],
+            "message": "This unremarkable little floppy disc contains highly confidential blueprints to the Greatwing, which is Skycorps' mother ship."
+          }
+        ],
+        [
+          {
+            "message": "It is an enormous responsibility, I know..."
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "But if we wish to have any hope of stopping Skycorps from bringing this island to ruin, you must take these blueprints to Ashtown."
+          }
+        ]
+      ]
+    },
+    "12": {
+      "output": 2,
+      "responses": [],
+      "suite": [
+        [
+          {
+            "message": "There is a train station on the outskirts of Forgetville that should have service to Ashtown. That ought to be the quickest way."
+          },
+          {
+            "codes": [[22, 810, 1, 1]],
+            "message": "Here, I'll mark the station on your map."
+          },
+          {
+            "message": "Best of luck to you, Nani."
+          },
+          {
+            "codes": [[8, 0]],
+            "message": "The fate of this island lies in your hands..."
+          }
+        ]
+      ]
+    },
+    "13": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "Where is Ashtown?"
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "How did you get the Greatwing blueprints?"
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "Who is Spencer?"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [[1, 0]],
+            "messages": [
+              "Bring that floppy disc to Spencer in Ashtown. It's our best shot at stopping Skycorps.",
+              "People like you give me hope in this island.",
+              "What do you need?"
+            ]
+          }
+        ],
+        [
+          {
+            "message": "It's quite a ways east. I'm hoping the train station near Forgetville will still have service to it."
+          },
+          {
+            "message": "You'll have to navigate the Skycorps junkyards to get there, but that should be doable if you were able to make it out of the Kariba ruins in one piece."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Just give us a ring if you need help."
+          }
+        ],
+        [
+          {
+            "message": "Well, I was Skycorps's co-founder. I was careful to put safeguards in place should I need access to any confidential files."
+          },
+          {
+            "message": "And I was especially diligent when I saw the writing on the wall that Caroline and I would be going our separate ways."
+          },
+          {
+            "message": "I downloaded the blueprints onto that disc before leaving the company. Unfortunately, the disc was damaged during our escape from Firstwind, so that really threw a monkey wrench into our plans."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Spencer should be able to fix it right up."
+          }
+        ],
+        [
+          {
+            "message": "He was another of my star pupils, and he's got a knack for computer stuff."
+          },
+          {
+            "message": "He moved to Ashtown as a means to escape the Grand Island authorities. Apparently, he hacked into some top-secret security system..."
+          },
+          {
+            "message": "Anyway, he is as much an enemy of Skycorps as we are, since they've got the Grand Island police wrapped around their finger."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "We can trust him. And even if we can't, we don't really have a choice anymore..."
           }
         ]
       ]
@@ -1212,7 +2270,10 @@
             "codes": [[20, 3]],
             "message": "Sure, let's trade!"
           },
-          { "codes": [[1, 2]], "message": "Maybe later." }
+          {
+            "codes": [[1, 2]],
+            "message": "Maybe later."
+          }
         ]
       ],
       "suite": [
@@ -1269,7 +2330,12 @@
         [
           {
             "codes": [[1, 0]],
-            "message": "Yes?"
+            "messages": [
+              "Yes?",
+              "Good to see you again!",
+              "Lost in the woods?",
+              "Sometimes this place gives me the creeps..."
+            ]
           }
         ],
         [
@@ -1500,7 +2566,7 @@
       "suite": [
         [
           {
-            "message": "What can I do for ya?"
+            "messages": ["What can I do for ya?", "Everything alright?"]
           }
         ],
         [
@@ -1689,6 +2755,27 @@
           }
         ]
       ]
+    },
+    "4": {
+      "output": 2,
+      "responses": [],
+      "suite": [
+        [
+          {
+            "codes": [[9, 25702, 1]],
+            "messages": ["Hmph...", "..."]
+          },
+          {
+            "codes": [[12, 0]],
+            "messages": [
+              "Still determined to defeat me?",
+              "You're not going to win...",
+              "You again?",
+              "Will you ever give up?"
+            ]
+          }
+        ]
+      ]
     }
   },
   "mildreth": {
@@ -1697,7 +2784,10 @@
       "suite": [
         [
           {
-            "message": "My granddaughter doesn't know what she's thinking, marrying a human."
+            "messages": [
+              "My granddaughter doesn't know what she's thinking, marrying a human.",
+              "This town isn't half of what it used to be ever since Skycorps started terrorizing us."
+            ]
           }
         ]
       ]
@@ -1826,6 +2916,24 @@
               [4, 5]
             ],
             "message": "This isn't over!"
+          }
+        ]
+      ]
+    },
+    "4": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "codes": [
+              [12, 0],
+              [9, 11701, 1]
+            ],
+            "messages": [
+              "Back for more?",
+              "Had enough yet?",
+              "You don't know when to quit, do you?"
+            ]
           }
         ]
       ]
@@ -1969,12 +3077,17 @@
         [
           {
             "codes": [[1, 0]],
-            "message": "How can I help you?"
+            "messages": ["How can I help you?", "Welcome to Otto's Emporium!"]
           }
         ],
         [
           {
-            "message": "Take a gander!"
+            "codes": [[20, 1]],
+            "messages": [
+              "Take a gander!",
+              "Always a pleasure to do business!",
+              "Here's what's come in recently..."
+            ]
           }
         ],
         [
@@ -2027,6 +3140,17 @@
           {
             "codes": [[1, 1]],
             "message": "Why is the trail blocked?"
+          },
+          {
+            "contingencies": [
+              {
+                "requirement": 1,
+                "strict": true,
+                "tag": "pioneer_trail"
+              }
+            ],
+            "codes": [[1, 3]],
+            "message": "I have permission to pass."
           }
         ],
         [
@@ -2039,8 +3163,12 @@
       "suite": [
         [
           {
-            "codes": [[1, 0]],
-            "message": "Take a rest here, if you'd like. It's a cruel world."
+            "code_list": [[[1, 0]], [[1, 0]], [[1, 0]]],
+            "messages": [
+              "Take a rest here, if you'd like. It's a cruel world.",
+              "These woods are too windy for an old man like me.",
+              "Someday soon I hope to go back home and sleep in my bed."
+            ]
           }
         ],
         [
@@ -2060,8 +3188,20 @@
             "message": "If you want me to grant you passage, I'll need written permission from him."
           },
           {
-            "codes": [[9, 225, 1]],
             "message": "Shouldn't be too hard to get, eh? After all, he is your dad."
+          }
+        ],
+        [
+          {
+            "message": "Let me see here..."
+          },
+          {
+            "codes": [[9, 22501]],
+            "message": "Well, looks like you do indeed."
+          },
+          {
+            "codes": [[3, 12, 1, 225]],
+            "message": "Go on ahead. But be careful out there. The path is blocked for a good reason!"
           }
         ]
       ]

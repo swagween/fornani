@@ -14,7 +14,7 @@ TimerBlock::TimerBlock(automa::ServiceProvider& svc, sf::Vector2<std::uint32_t> 
 }
 
 void TimerBlock::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
-	if (player.collider.hurtbox.overlaps(m_bounds)) { m_flags.set(TimerBlockFlags::reached); }
+	if (player.get_collider().hurtbox.overlaps(m_bounds)) { m_flags.set(TimerBlockFlags::reached); }
 	if (m_flags.test(TimerBlockFlags::reached)) {
 		switch (m_type) {
 		case TimerBlockType::start:

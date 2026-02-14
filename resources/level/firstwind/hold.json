@@ -10,19 +10,6 @@
         "id": 4,
         "label": "small",
         "position": [
-          6,
-          23
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "foreground": false,
-        "id": 4,
-        "label": "small",
-        "position": [
           16,
           51
         ]
@@ -52,6 +39,19 @@
           2,
           31
         ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 4,
+        "label": "small",
+        "position": [
+          8,
+          23
+        ]
       }
     ],
     "chests": [
@@ -66,26 +66,11 @@
           27,
           88
         ],
+        "tag": "radar_device",
         "type": 2
       }
     ],
     "enemies": [
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 1,
-        "position": [
-          8,
-          22
-        ],
-        "start_direction": [
-          0,
-          0
-        ],
-        "variant": 1
-      },
       {
         "dimensions": [
           1,
@@ -107,16 +92,16 @@
           1,
           1
         ],
-        "id": 13,
+        "id": 1,
         "position": [
           9,
-          5
+          22
         ],
         "start_direction": [
           0,
           0
         ],
-        "variant": 0
+        "variant": 1
       }
     ],
     "inspectables": [
@@ -257,34 +242,6 @@
           2,
           1
         ],
-        "extent": 16,
-        "id": 0,
-        "position": [
-          23,
-          56
-        ],
-        "start": 0,
-        "type": "slow_up_down"
-      },
-      {
-        "dimensions": [
-          2,
-          1
-        ],
-        "extent": 16,
-        "id": 0,
-        "position": [
-          20,
-          56
-        ],
-        "start": 0.5,
-        "type": "slow_up_down"
-      },
-      {
-        "dimensions": [
-          2,
-          1
-        ],
         "extent": 12,
         "id": 0,
         "position": [
@@ -380,6 +337,20 @@
       },
       {
         "dimensions": [
+          3,
+          3
+        ],
+        "extent": 12,
+        "id": 0,
+        "position": [
+          7,
+          67
+        ],
+        "start": 0,
+        "type": "standard_up_down"
+      },
+      {
+        "dimensions": [
           2,
           1
         ],
@@ -390,18 +361,32 @@
           25
         ],
         "start": 0,
-        "type": "slow_up_down"
+        "type": "standard_up_down"
       },
       {
         "dimensions": [
-          3,
-          3
+          2,
+          1
         ],
-        "extent": 12,
+        "extent": 16,
         "id": 0,
         "position": [
-          7,
-          67
+          20,
+          56
+        ],
+        "start": 0.5,
+        "type": "standard_up_down"
+      },
+      {
+        "dimensions": [
+          2,
+          1
+        ],
+        "extent": 16,
+        "id": 0,
+        "position": [
+          23,
+          56
         ],
         "start": 0,
         "type": "standard_up_down"
@@ -417,7 +402,6 @@
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,
@@ -434,7 +418,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           4,
@@ -450,29 +433,12 @@
           1,
           1
         ],
-        "id": 0,
-        "key_id": 8,
+        "id": 1,
+        "key_tag": "firstwind_hangar_key",
         "locked": true,
         "position": [
           27,
           55
-        ],
-        "source_id": 107
-      },
-      {
-        "activate_on_contact": false,
-        "already_open": false,
-        "destination_id": 108,
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 0,
-        "key_id": 8,
-        "locked": false,
-        "position": [
-          3,
-          24
         ],
         "source_id": 107
       },
@@ -485,7 +451,6 @@
           1
         ],
         "id": 0,
-        "key_id": 8,
         "locked": false,
         "position": [
           28,
@@ -502,11 +467,26 @@
           3
         ],
         "id": 0,
-        "key_id": 8,
         "locked": false,
         "position": [
           0,
           3
+        ],
+        "source_id": 107
+      },
+      {
+        "activate_on_contact": false,
+        "already_open": false,
+        "destination_id": 108,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          3,
+          25
         ],
         "source_id": 107
       }
@@ -566,8 +546,13 @@
   },
   "meta": {
     "ambience": "none",
-    "background": 1,
+    "background": "night",
     "biome": "firstwind",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -607,7 +592,8 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 0
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
     "flags": {
@@ -1274,12 +1260,12 @@
         69,
         69,
         69,
-        0,
+        69,
         80,
         81,
         81,
         82,
-        0,
+        69,
         64,
         65,
         65,
@@ -1396,9 +1382,9 @@
         0,
         0,
         0,
-        96,
-        97,
-        98,
+        80,
+        81,
+        82,
         70,
         70,
         70,
@@ -1428,12 +1414,12 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        96,
+        97,
+        98,
+        70,
+        70,
+        70,
         0,
         0,
         0,
@@ -4442,6 +4428,8 @@
         0,
         0,
         0,
+        0,
+        0,
         306,
         0,
         0,
@@ -4475,8 +4463,6 @@
         0,
         0,
         322,
-        0,
-        0,
         0,
         0,
         0,
@@ -13538,12 +13524,12 @@
         53,
         53,
         54,
-        35,
+        51,
         0,
         0,
         0,
         0,
-        35,
+        51,
         48,
         50,
         0,
@@ -13569,13 +13555,13 @@
         0,
         0,
         0,
-        481,
-        51,
-        493,
-        494,
-        494,
-        495,
-        51,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -13692,6 +13678,8 @@
         1,
         1,
         51,
+        0,
+        0,
         0,
         0,
         0,
@@ -13703,8 +13691,6 @@
         0,
         0,
         0,
-        0,
-        0,
         37,
         38,
         0,
@@ -13723,13 +13709,13 @@
         1,
         1,
         1,
-        1,
-        52,
-        53,
-        53,
-        53,
-        53,
-        54,
+        51,
+        0,
+        0,
+        0,
+        0,
+        478,
+        479,
         52,
         53,
         53,
@@ -13756,12 +13742,12 @@
         1,
         1,
         1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
+        52,
+        53,
+        53,
+        53,
+        53,
+        54,
         1,
         1,
         1,
@@ -14244,8 +14230,8 @@
         14,
         0,
         16,
-        17,
         18,
+        0,
         0,
         14,
         14,
@@ -14276,8 +14262,8 @@
         0,
         0,
         48,
-        49,
         50,
+        0,
         0,
         0,
         0,
@@ -16771,7 +16757,39 @@
         0,
         0,
         0,
+        0,
+        0,
         304,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -16804,39 +16822,7 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        42,
         0,
         0,
         0,
@@ -22977,14 +22963,14 @@
         0,
         0,
         0,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         1,
         1,
         1,

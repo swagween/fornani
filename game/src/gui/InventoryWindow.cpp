@@ -12,6 +12,7 @@ namespace fornani::gui {
 
 InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map, player::Player& player)
 	: m_cell_dimensions{svc.window->f_screen_dimensions()}, m_dashboard{std::make_unique<Dashboard>(svc, map, player, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}}, m_exit{64} {
+	svc.input_system.set_action_set(input::ActionSet::Menu);
 	m_debug.border.setFillColor(sf::Color{12, 12, 20});
 	m_debug.border.setSize(svc.window->f_screen_dimensions());
 	m_debug.border.setOutlineColor(colors::green);
@@ -25,44 +26,33 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map, 
 	m_background.setSize(svc.window->f_screen_dimensions());
 	m_dashboard->set_position(sf::Vector2f{250.f, 32.f}, true);
 	svc.soundboard.flags.console.set(audio::Console::menu_open);
-	svc.music_player.filter_fade_in(80.f, 40.f);
-	svc.ambience_player.set_balance(1.f);
 	util::ColorUtils::reset();
 }
 
 void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
 
-	auto& controller = svc.controller_map;
+	auto& controller = svc.input_system;
 
 	m_exit.update();
 	if (m_view == InventoryView::focused) {
 		if (!m_dashboard->handle_inputs(controller, svc.soundboard)) { m_grid_position = {}; }
 	}
 
-	svc.soundboard.flags.pioneer.set(audio::Pioneer::hum);
+	svc.soundboard.repeat_sound("pioneer_hum");
 
 	m_view == InventoryView::exit ? m_background.setFillColor(util::ColorUtils::fade_out(colors::pioneer_black)) : m_background.setFillColor(util::ColorUtils::fade_in(colors::pioneer_black));
 
 	if (m_view == InventoryView::dashboard) {
-		auto const& up = controller.digital_action_status(config::DigitalAction::menu_up).held;
-		auto const& down = controller.digital_action_status(config::DigitalAction::menu_down).held;
-		auto const& left = controller.digital_action_status(config::DigitalAction::menu_left).held;
-		auto const& right = controller.digital_action_status(config::DigitalAction::menu_right).held;
-		auto const& up_released = controller.digital_action_status(config::DigitalAction::menu_up).released;
-		auto const& down_released = controller.digital_action_status(config::DigitalAction::menu_down).released;
-		auto const& left_released = controller.digital_action_status(config::DigitalAction::menu_left).released;
-		auto const& right_released = controller.digital_action_status(config::DigitalAction::menu_right).released;
-		auto const& selected = controller.digital_action_status(config::DigitalAction::menu_select).triggered;
-		if (up && m_dashboard->is_home()) { m_dashboard->set_selection({0, -1}); }
-		if (down && m_dashboard->is_home()) { m_dashboard->set_selection({0, 1}); }
-		if (left && m_dashboard->is_home()) { m_dashboard->set_selection({-1, 0}); }
-		if (right && m_dashboard->is_home()) { m_dashboard->set_selection({1, 0}); }
-		if (up_released && m_dashboard->get_selected_position() == sf::Vector2i{0, -1}) { m_dashboard->set_selection({0, 0}); }
-		if (down_released && m_dashboard->get_selected_position() == sf::Vector2i{0, 1}) { m_dashboard->set_selection({0, 0}); }
-		if (left_released && m_dashboard->get_selected_position() == sf::Vector2i{-1, 0}) { m_dashboard->set_selection({0, 0}); }
-		if (right_released && m_dashboard->get_selected_position() == sf::Vector2i{1, 0}) { m_dashboard->set_selection({0, 0}); }
+		auto const& selected = controller.digital(input::DigitalAction::menu_select).triggered;
+		if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::held) && m_dashboard->is_home()) { m_dashboard->set_selection({0, -1}); }
+		if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::held) && m_dashboard->is_home()) { m_dashboard->set_selection({0, 1}); }
+		if (controller.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::held) && m_dashboard->is_home()) { m_dashboard->set_selection({-1, 0}); }
+		if (controller.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::held) && m_dashboard->is_home()) { m_dashboard->set_selection({1, 0}); }
+		if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::released) && m_dashboard->get_selected_position() == sf::Vector2i{0, -1}) { m_dashboard->set_selection({0, 0}); }
+		if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::released) && m_dashboard->get_selected_position() == sf::Vector2i{0, 1}) { m_dashboard->set_selection({0, 0}); }
+		if (controller.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::released) && m_dashboard->get_selected_position() == sf::Vector2i{-1, 0}) { m_dashboard->set_selection({0, 0}); }
+		if (controller.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::released) && m_dashboard->get_selected_position() == sf::Vector2i{1, 0}) { m_dashboard->set_selection({0, 0}); }
 
-		if (controller.gamepad_connected()) { m_dashboard->set_selection(controller.get_i_joystick_throttle(true)); }
 		if (selected && m_dashboard->is_hovering()) {
 			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = ccm::ext::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
 			if (m_dashboard->get_selected_position().y == 0) { m_grid_position.x = ccm::ext::clamp(m_grid_position.x + m_dashboard->get_selected_position().x, -1.f, 1.f); }
@@ -79,16 +69,16 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	auto horizontal_dampen{0.7f}; // we want to display the gizmo's connection to the dashboard for wardrobe and inventory gizmos
 	auto target{sf::Vector2f{m_cell_dimensions.x * m_grid_position.x * horizontal_dampen, m_cell_dimensions.y * m_grid_position.y} + offset};
 	if (m_dashboard->get_selected_position().x == -1) { target += sf::Vector2f{48.f, 24.f}; } // inventory is slightly lower than other gizmos
+	if (m_dashboard->get_selected_position().y == 1) { target += sf::Vector2f{-24.f, 0.f}; }  // rotary is slightly shifted left
 	m_camera.steering.seek(m_camera.physics, target, 0.0035f);
 	m_camera.physics.simple_update();
 	m_view == InventoryView::exit ? m_dashboard->set_position({250.f, 800.f}) : m_dashboard->set_position({250.f, 0.f});
 	m_dashboard->update(svc, player, map);
 
-	if (controller.digital_action_status(config::DigitalAction::menu_cancel).triggered) { m_view = m_view == InventoryView::focused ? InventoryView::dashboard : InventoryView::exit; }
-	if (controller.digital_action_status(config::DigitalAction::inventory_close).triggered) { m_view = InventoryView::exit; }
+	if (controller.digital(input::DigitalAction::menu_back).triggered) { m_view = m_view == InventoryView::focused ? InventoryView::dashboard : InventoryView::exit; }
+	if (controller.digital(input::DigitalAction::inventory).triggered || controller.digital(input::DigitalAction::menu_close).triggered) { m_view = InventoryView::exit; }
 	if (m_view == InventoryView::exit && !m_exit.running()) {
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-		svc.music_player.filter_fade_out();
 		m_exit.start();
 		m_dashboard->close();
 		util::ColorUtils::reset();

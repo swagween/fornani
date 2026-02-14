@@ -23,10 +23,8 @@ StatusBar::StatusBar(automa::ServiceProvider& svc, sf::Vector2f dim, std::vector
 void StatusBar::update(automa::ServiceProvider& svc, sf::Vector2f position, entity::Health& status, bool ease) { update(svc, position, status.get_normalized(), status.get_taken_point()); }
 
 void StatusBar::update(automa::ServiceProvider& svc, sf::Vector2f position, float fraction, float taken, bool ease) {
-	m_rects.gone.setPosition(position);
-	m_rects.taken.setPosition(position);
-	m_rects.filled.setPosition(position);
 
+	set_position(position);
 	if (ease) {
 		m_steering.seek(m_physics, position);
 	} else {
@@ -43,6 +41,18 @@ void StatusBar::render(sf::RenderWindow& win) {
 	win.draw(m_rects.gone);
 	win.draw(m_rects.taken);
 	win.draw(m_rects.filled);
+}
+
+void StatusBar::set_origin(sf::Vector2f origin) {
+	m_rects.gone.setOrigin(origin);
+	m_rects.taken.setOrigin(origin);
+	m_rects.filled.setOrigin(origin);
+}
+
+void StatusBar::set_position(sf::Vector2f position) {
+	m_rects.gone.setPosition(position);
+	m_rects.taken.setPosition(position);
+	m_rects.filled.setPosition(position);
 }
 
 } // namespace fornani::gui

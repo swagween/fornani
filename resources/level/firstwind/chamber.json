@@ -68,7 +68,7 @@
           12,
           9
         ],
-        "start": 0.9739999771118164,
+        "start": 0.9950000047683716,
         "type": "standard_side_to_side"
       }
     ],
@@ -82,7 +82,6 @@
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           95,
@@ -99,7 +98,6 @@
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,
@@ -116,7 +114,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           41,
@@ -133,7 +130,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           86,
@@ -145,8 +141,13 @@
   },
   "meta": {
     "ambience": "",
-    "background": 1,
+    "background": "night",
     "biome": "firstwind",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -186,7 +187,8 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 0
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
     "flags": {
@@ -7355,8 +7357,6 @@
         53,
         53,
         54,
-        476,
-        477,
         0,
         0,
         0,
@@ -7364,8 +7364,10 @@
         0,
         0,
         0,
-        478,
-        479,
+        0,
+        0,
+        0,
+        0,
         52,
         53,
         53,

@@ -1,261 +1,393 @@
 {
-	"bryns_gun": {
-		"metadata": {
-			"id": 0,
-			"label": "Bryn's Gun",
-			"description": "A single-action revolver that you found in Firstwind Lab."
-		},
-		"visual": {
-			"texture_lookup": 0,
-			"dimensions": [ 9, 4 ],
-			"offsets": {
-				"global": [ -1.5, 2.5 ],
-				"barrel": [ 9.0, 1.0 ],
-				"stock": [ 0, 0 ]
-			},
-			"ui": { "color": 1 },
-			"spray": {
-				"dimensions": [ 2.0, 2.0 ],
-				"type": "bryns_gun",
-				"color": "periwinkle"
-			},
-			"secondary_spray": {
-				"dimensions": [ 4.0, 4.0 ],
-				"type": "bryns_gun_smoke",
-				"color": "white"
-			}
-		},
-		"gameplay": {
-			"attributes": {
-				"automatic": false,
-				"ammo": 4,
-				"reload": 260,
-				"cooldown_time": 1,
-				"recoil": 0.0
-			}
-		},
-		"audio": { "shoot": 0 },
-		"class_package": {
-			"projectile": {
-				"type": 0,
-				"dimensions": [ 10, 10 ],
-				"radius": 8.0,
-				"attributes": {
-					"base_damage": 8,
-					"lifespan": 85,
-					"lifespan_variance": 0,
-					"speed": 30.5,
-					"variance": 0.1,
-					"stun_time": 0.0,
-					"knockback": 0.0,
-					"transcendent": false,
-					"persistent": false,
-					"constrained": false,
-					"boomerang": false,
-					"wander": false,
-					"reflect": false,
-					"range_variance": 0.0,
-					"acceleration_factor": 0.0,
-					"dampen_factor": 0.995,
-					"damage_rate": 8,
-					"gravity": 0.0,
-					"elasticity": 1.0
-				},
-				"animation": {
-					"num_sprites": 1,
-					"num_frames": 1,
-					"framerate": 8,
-					"angles": 2
-				}
-			}
-		}
-	},
-	"wasp": {
-		"metadata": {
-			"id": 1,
-			"label": "Wasp",
-			"description": "A powerful pistol that Bryn gave to you in exchange for her gun that you found in Firstwind's laboratory."
-		},
-		"visual": {
-			"texture_lookup": 1,
-			"dimensions": [ 10, 6 ],
-			"offsets": {
-				"global": [ -1.5, 2.5 ],
-				"barrel": [ 10.0, 1.5 ],
-				"stock": [ 0, 0 ]
-			},
-			"ui": { "color": 3 },
-			"spray": {
-				"dimensions": [ 4.0, 4.0 ],
-				"type": "wasp_2",
-				"color": "white"
-			},
-			"secondary_spray": {
-				"dimensions": [ 4.0, 4.0 ],
-				"type": "wasp",
-				"color": "white"
-			}
-		},
-		"gameplay": {
-			"attributes": {
-				"automatic": false,
-				"ammo": 3,
-				"reload": 180,
-				"cooldown_time": 8,
-				"recoil": 0.8
-			}
-		},
-		"audio": { "shoot": 1 },
-		"class_package": {
-			"projectile": {
-				"type": 0,
-				"dimensions": [ 12, 12 ],
-				"radius": 10.0,
-				"attributes": {
-					"base_damage": 10,
-					"power": 3,
-					"lifespan": 70,
-					"lifespan_variance": 0,
-					"speed": 70.0,
-					"variance": 0.1,
-					"stun_time": 0.0,
-					"knockback": 0.0,
-					"transcendent": false,
-					"persistent": false,
-					"constrained": false,
-					"range_variance": 0.0,
-					"acceleration_factor": 0.0,
-					"dampen_factor": 0.97
-				},
-				"animation": {
-					"num_sprites": 1,
-					"num_frames": 2,
-					"framerate": 8
-				}
-			}
-		}
-	},
-	"gnat": {
-		"metadata": {
-			"id": 2,
-			"label": "Gnat",
-			"description": "A high-rate machine gun. If you shoot downwards or upwards, its recoil will affect your fall speed."
-		},
-		"visual": {
-			"texture_lookup": 2,
-			"dimensions": [ 13, 5 ],
-			"offsets": {
-				"global": [ 0.5, 1.5 ],
-				"barrel": [ 13.0, 1.5 ],
-				"stock": [ 0, 0 ]
-			},
-			"ui": { "color": 6 },
-			"spray": {
-				"dimensions": [ 3.0, 3.0 ],
-				"type": "spritz",
-				"color": "mythic_green"
-			}
-		},
-		"gameplay": {
-			"attributes": {
-				"automatic": true,
-				"ammo": -1,
-				"reload": 1000,
-				"cooldown_time": 7,
-				"recoil": 0.15
-			}
-		},
-		"audio": { "shoot": 10 },
-		"class_package": {
-			"projectile": {
-				"type": 0,
-				"dimensions": [ 6.0, 4.0 ],
-				"radius": 2.0,
-				"attributes": {
-					"base_damage": 1,
-					"power": 1,
-					"lifespan": 100,
-					"lifespan_variance": 0,
-					"speed": 18.5,
-					"variance": 0.2,
-					"stun_time": 0.0,
-					"knockback": 0.0,
-					"transcendent": false,
-					"persistent": false,
-					"constrained": false,
-					"range_variance": 8.0,
-					"acceleration_factor": 0.0,
-					"dampen_factor": 0.999
-				},
-				"animation": {
-					"num_sprites": 5,
-					"num_frames": 1,
-					"framerate": 8,
-					"angles": 4
-				}
-			}
-		}
-	},
-	"pulsar": {
-		"metadata": {
-			"id": 13,
-			"label": "Pulsar",
-			"description": "An energy-powered gun that Dr. Willett built for you. It uses an ancient energy drawn from rhenite and vermite crystals."
-		},
-		"visual": {
-			"texture_lookup": 13,
-			"dimensions": [ 12, 6 ],
-			"offsets": {
-				"global": [ -0.5, 3.5 ],
-				"barrel": [ 13.0, 1.5 ],
-				"stock": [ 0, 0 ]
-			},
-			"ui": { "color": 2 },
-			"spray": {
-				"dimensions": [ 3.0, 3.0 ],
-				"type": "guardian",
-				"color": "white"
-			}
-		},
-		"gameplay": {
-			"attributes": {
-				"automatic": false,
-				"ammo": 3,
-				"reload": 100,
-				"cooldown_time": 3,
-				"recoil": 0.45
-			}
-		},
-		"audio": { "shoot": 2 },
-		"class_package": {
-			"projectile": {
-				"type": 0,
-				"dimensions": [ 12.0, 12.0 ],
-				"radius": 12.0,
-				"audio": { "hit": 2 },
-				"attributes": {
-					"base_damage": 100,
-					"lifespan": 400,
-					"lifespan_variance": 0,
-					"speed": 15.0,
-					"variance": 0.0,
-					"stun_time": 0.0,
-					"knockback": 0.0,
-					"transcendent": false,
-					"omnidirectional": false,
-					"reflect": true,
-					"range_variance": 0.0,
-					"acceleration_factor": 2.0,
-					"dampen_factor": 0.998,
-					"gravity": 0.8,
-					"elasticity": 0.98
-				},
-				"animation": {
-					"num_sprites": 1,
-					"num_frames": 5,
-					"framerate": 14
-				}
-			}
-		}
-	}
+  "bryns_gun": {
+    "metadata": {
+      "id": 0,
+      "label": "Bryn's Gun",
+      "description": "A single-action revolver that you found in Firstwind Lab."
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [9, 4],
+      "offsets": {
+        "global": [-1.5, 2.5],
+        "barrel": [9.0, 1.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [2.0, 2.0],
+        "type": "bryns_gun",
+        "color": "periwinkle"
+      },
+      "secondary_spray": {
+        "dimensions": [4.0, 4.0],
+        "type": "bryns_gun_smoke",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 4,
+        "reload": 260,
+        "cooldown_time": 1,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 0 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [10, 10],
+        "radius": 8.0,
+        "attributes": {
+          "base_damage": 8,
+          "power": 1.0,
+          "lifespan": 85,
+          "lifespan_variance": 0,
+          "speed": 30.5,
+          "variance": 0.1,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "persistent": false,
+          "constrained": false,
+          "boomerang": false,
+          "wander": false,
+          "reflect": false,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.995,
+          "damage_rate": 8,
+          "gravity": 0.0,
+          "elasticity": 1.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 1,
+          "framerate": 8,
+          "angles": 2
+        }
+      }
+    }
+  },
+  "wasp": {
+    "metadata": {
+      "id": 1,
+      "label": "Wasp",
+      "description": "A powerful pistol that Bryn gave to you in exchange for her gun that you found in Firstwind's laboratory."
+    },
+    "visual": {
+      "texture_lookup": 1,
+      "dimensions": [10, 6],
+      "offsets": {
+        "global": [-1.5, 2.5],
+        "barrel": [10.0, 1.5],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [4.0, 4.0],
+        "type": "wasp_2",
+        "color": "white"
+      },
+      "secondary_spray": {
+        "dimensions": [4.0, 4.0],
+        "type": "wasp",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 3,
+        "reload": 180,
+        "cooldown_time": 8,
+        "recoil": 0.8
+      }
+    },
+    "audio": { "shoot": 1 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [12, 12],
+        "radius": 10.0,
+        "attributes": {
+          "base_damage": 10,
+          "power": 4,
+          "lifespan": 70,
+          "lifespan_variance": 0,
+          "speed": 70.0,
+          "variance": 0.1,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "persistent": false,
+          "constrained": false,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.975
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 2,
+          "framerate": 8
+        }
+      }
+    }
+  },
+  "gnat": {
+    "metadata": {
+      "id": 2,
+      "label": "Gnat",
+      "description": "A high-rate machine gun. If you shoot downwards or upwards, its recoil will affect your fall speed."
+    },
+    "visual": {
+      "texture_lookup": 2,
+      "dimensions": [13, 5],
+      "offsets": {
+        "global": [0.5, 1.5],
+        "barrel": [13.0, 1.5],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [3.0, 3.0],
+        "type": "spritz",
+        "color": "mythic_green"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": true,
+        "ammo": -1,
+        "reload": 1000,
+        "cooldown_time": 7,
+        "recoil": 0.15
+      }
+    },
+    "audio": { "shoot": 10 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [6.0, 4.0],
+        "radius": 2.0,
+        "attributes": {
+          "base_damage": 1,
+          "power": 1,
+          "lifespan": 100,
+          "lifespan_variance": 0,
+          "speed": 18.5,
+          "variance": 0.2,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "persistent": false,
+          "constrained": false,
+          "range_variance": 8.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.999
+        },
+        "animation": {
+          "num_sprites": 5,
+          "num_frames": 1,
+          "framerate": 8,
+          "angles": 4
+        }
+      }
+    }
+  },
+  "pulsar": {
+    "metadata": {
+      "id": 13,
+      "label": "Pulsar",
+      "description": "An energy-powered gun that Dr. Willett built for you. It uses an ancient energy drawn from rhenite and vermite crystals."
+    },
+    "visual": {
+      "texture_lookup": 13,
+      "dimensions": [12, 6],
+      "offsets": {
+        "global": [-0.5, 3.5],
+        "barrel": [13.0, 1.5],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [3.0, 3.0],
+        "type": "guardian",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 3,
+        "reload": 100,
+        "cooldown_time": 3,
+        "recoil": 0.45
+      }
+    },
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [12.0, 12.0],
+        "radius": 12.0,
+        "audio": { "hit": 2 },
+        "attributes": {
+          "base_damage": 100,
+          "lifespan": 400,
+          "lifespan_variance": 0,
+          "speed": 15.0,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "omnidirectional": false,
+          "reflect": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 2.0,
+          "dampen_factor": 0.998,
+          "gravity": 0.8,
+          "elasticity": 0.98
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 5,
+          "framerate": 14
+        }
+      }
+    }
+  },
+  "wraith": {
+    "metadata": {
+      "id": 14,
+      "label": "Wraith",
+      "description": "A rhenite-powered gun that Delilah made by fusing rhenite crystals with Bryn's gun."
+    },
+    "visual": {
+      "texture_lookup": 14,
+      "dimensions": [16, 7],
+      "offsets": {
+        "global": [-0.5, 3.5],
+        "barrel": [13.0, 1.5],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [4.0, 4.0],
+        "type": "wraith_2",
+        "color": "white"
+      },
+      "secondary_spray": {
+        "dimensions": [4.0, 4.0],
+        "type": "wraith",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 6,
+        "reload": 500,
+        "cooldown_time": 3,
+        "recoil": 0.45
+      }
+    },
+    "audio": { "shoot": 6 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [11.0, 11.0],
+        "radius": 11.0,
+        "audio": { "hit": 2 },
+        "attributes": {
+          "base_damage": 8,
+          "lifespan": 140,
+          "lifespan_variance": 0,
+          "speed": 35.0,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "omnidirectional": false,
+          "explode_on_impact": true,
+          "reflect": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 2.0,
+          "dampen_factor": 0.99,
+          "gravity": 0.0,
+          "elasticity": 0.98
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 14
+        },
+        "explosion": {
+          "tag": "large_explosion",
+          "radius": 28.0,
+          "channel": 4
+        }
+      }
+    }
+  },
+  "tomahawk": {
+    "metadata": {
+      "id": 3,
+      "label": "Tomahawk",
+      "description": "A ceremonial weapon of your tribe. You earned this by defeating the demon at Woodshine's burial ground."
+    },
+    "visual": {
+      "texture_lookup": 3,
+      "dimensions": [16, 7],
+      "offsets": {
+        "global": [-0.5, 3.5],
+        "barrel": [13.0, 1.5],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [4.0, 4.0],
+        "type": "twinkle",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "no_reload": true,
+        "ammo": 1,
+        "reload": 32,
+        "cooldown_time": 64,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 3 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [8.0, 8.0],
+        "radius": 6.0,
+        "audio": { "hit": 3 },
+        "attributes": {
+          "base_damage": 10,
+          "lifespan": 1080,
+          "lifespan_variance": 0,
+          "speed": 6.0,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "omnidirectional": false,
+          "reflect": true,
+          "boomerang": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 1.0,
+          "gravity": 0.0,
+          "elasticity": 0.98
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 14
+        }
+      }
+    }
+  }
 }

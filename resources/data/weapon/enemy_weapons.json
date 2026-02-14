@@ -77,7 +77,12 @@
       },
       "spray": {
         "dimensions": [2.0, 2.0],
-        "type": "twinkle",
+        "type": "fast_burst",
+        "color": "goldenrod"
+      },
+      "secondary_spray": {
+        "dimensions": [4.0, 4.0],
+        "type": "peckett",
         "color": "white"
       }
     },
@@ -307,7 +312,7 @@
         "ammo": 4,
         "reload": 160,
         "cooldown_time": 50,
-        "recoil": 0.0
+        "recoil": 2.0
       }
     },
     "audio": { "shoot": 2 },
@@ -320,19 +325,28 @@
           "base_damage": 1,
           "lifespan": 600,
           "lifespan_variance": 0,
-          "speed": 34.5,
-          "variance": 0.5,
+          "speed": 24.5,
+          "variance": 10.5,
           "stun_time": 0.0,
           "knockback": 0.0,
           "acceleration_factor": 0.0,
           "dampen_factor": 0.993,
           "dampen_variance": 0.002,
-          "sprite_flip": true
+          "sprite_flip": true,
+          "reflect": true,
+          "explode_on_impact": true,
+          "gravity": 3.0
         },
         "animation": {
           "num_sprites": 1,
           "num_frames": 1,
           "framerate": 18
+        },
+        "explosion": {
+          "tag": "large_explosion",
+          "emitter": "green_blast",
+          "radius": 28.0,
+          "channel": 6
         }
       }
     }
@@ -635,6 +649,138 @@
           "num_sprites": 1,
           "num_frames": 4,
           "framerate": 14
+        }
+      }
+    }
+  },
+  "frag_grenade": {
+    "metadata": {
+      "id": 11,
+      "label": "Frag Grenade"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [13, 13],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "spritz",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": true,
+        "ammo": 3,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [13.0, 13.0],
+        "radius": 12.0,
+        "audio": { "hit": 2 },
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 800,
+          "lifespan_variance": 0,
+          "speed": 8.0,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "omnidirectional": false,
+          "reflect": true,
+          "explode_on_impact": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.998,
+          "gravity": 6.9,
+          "elasticity": 0.98,
+          "spin": 0.01,
+          "spin_dampen": 0.999
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 7,
+          "framerate": 14,
+          "angles": 4
+        },
+        "explosion": {
+          "tag": "explosion",
+          "radius": 46.0,
+          "channel": 3
+        }
+      }
+    }
+  },
+  "poison_ball": {
+    "metadata": {
+      "id": 12,
+      "label": "Poison Ball"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [0, 0],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "green_beam",
+        "color": "green"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 4,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 2.0
+      }
+    },
+    "audio": { "shoot": 5 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [16.0, 16.0],
+        "radius": 6.0,
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 600,
+          "lifespan_variance": 0,
+          "speed": 12.0,
+          "variance": 4.5,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.995,
+          "dampen_variance": 0.002,
+          "reflect": true,
+          "explode_on_impact": true,
+          "gravity": 5.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 18
+        },
+        "explosion": {
+          "tag": "large_explosion",
+          "emitter": "green_blast",
+          "radius": 28.0,
+          "channel": 6
         }
       }
     }

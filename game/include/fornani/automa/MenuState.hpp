@@ -2,9 +2,11 @@
 #pragma once
 
 #include <fornani/automa/GameState.hpp>
+#include <fornani/automa/Option.hpp>
 #include <fornani/automa/StateController.hpp>
 #include <fornani/components/PhysicsComponent.hpp>
 #include <fornani/components/SteeringBehavior.hpp>
+#include <fornani/graphics/MenuTheme.hpp>
 
 namespace fornani::automa {
 
@@ -20,11 +22,16 @@ class MenuState : public GameState {
 	virtual void tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine);
 	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win);
 
+	void set_theme(ServiceProvider& svc, std::string_view theme);
+
   protected:
 	std::vector<Option> options{};
 	util::Circuit current_selection{1};
 	MenuType m_parent_menu{};
 	bool m_input_authorized{true};
+	MenuTheme p_theme;
+	sf::RectangleShape p_backdrop{};
+	ServiceProvider* p_services;
 
   private:
 	std::array<DotInticator, 2> m_dot_indicators{};

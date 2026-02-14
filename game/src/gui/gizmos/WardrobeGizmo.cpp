@@ -1,13 +1,11 @@
 
 #include "fornani/gui/gizmos/WardrobeGizmo.hpp"
-
+#include <imgui.h>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Circuit.hpp"
 #include "fornani/utils/Math.hpp"
 #include "fornani/world/Map.hpp"
-
-#include <numbers>
 
 namespace fornani::gui {
 
@@ -68,8 +66,8 @@ void WardrobeGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player
 	m_light.update(m_placement + m_path.get_position() + m_light_offset);
 
 	// health display
-	m_health_display.socket_state = player.health.get_i_max() - 3;
-	m_health_display.hearts.setTextureRect(sf::IntRect{{0, (player.health.get_i_hp() - 1) * 43}, {80, 43}});
+	m_health_display.socket_state = player.health.get_i_capacity() - 3;
+	m_health_display.hearts.setTextureRect(sf::IntRect{{0, (player.health.get_i_quantity() - 1) * 43}, {80, 43}});
 	m_health_display.sockets.setTextureRect(sf::IntRect{{0, m_health_display.socket_state * 47}, {89, 47}});
 
 	// gate wardrobe updates because they're expensive
@@ -133,7 +131,7 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	}
 }
 
-bool WardrobeGizmo::handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
+bool WardrobeGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
 	if (is_selected()) {
 		if (m_outfitter) { m_outfitter->handle_inputs(controller, soundboard); }
 	}

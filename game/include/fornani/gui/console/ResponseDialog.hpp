@@ -1,23 +1,26 @@
 
 #pragma once
 
-#include <fornani/gui/console/TextWriter.hpp>
-#include <fornani/io/Logger.hpp>
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/components/SteeringBehavior.hpp"
-#include "fornani/utils/Circuit.hpp"
-
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
-
+#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/components/SteeringBehavior.hpp>
+#include <fornani/gui/console/TextWriter.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/Circuit.hpp>
+#include <fornani/utils/Flaggable.hpp>
 #include <string_view>
+
+namespace fornani {
+class QuestTable;
+}
 
 namespace fornani::audio {
 class Soundboard;
 }
 
-namespace fornani::config {
-class ControllerMap;
+namespace fornani::input {
+class InputSystem;
 }
 
 namespace fornani::data {
@@ -25,6 +28,8 @@ class TextManager;
 }
 
 namespace fornani::gui {
+
+enum class ResponseDialogFlags { hide_portrait };
 
 struct ResponseIndicator {
 	sf::Vector2f position{};
@@ -34,12 +39,12 @@ struct ResponseIndicator {
 	void update();
 };
 
-class ResponseDialog {
+class ResponseDialog final : public Flaggable<ResponseDialogFlags> {
   public:
-	ResponseDialog(data::TextManager& text, dj::Json& source, std::string_view key, int index = 0, sf::Vector2f start_position = {});
+	ResponseDialog(data::TextManager& text, dj::Json& source, QuestTable& quest_table, std::string_view key, int index = 0, sf::Vector2f start_position = {});
 
 	/// @return true if dialog is still processing inputs, false when exit is requested
-	bool handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard);
+	bool handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard);
 	void render(sf::RenderWindow& win);
 	void update();
 	void set_position(sf::Vector2f to_position);

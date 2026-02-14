@@ -1,46 +1,27 @@
 {
 	"options": {
-		"main": [
-			"play",
-			"options",
-			"quit"
-		],
-		"file": [
-			"file 1",
-			"file 2",
-			"file 3"
-		],
-		"play": [
-			"story",
-			"trials"
-		],
-		"stat": [
-			"save screenshot",
-			"exit to menu"
-		],
-		"options": [
-			"controls",
-			"settings",
-			"credits"
-		],
-		"trials": [
-			"<none>"
-		],
+		"main": [ "play", "options", "quit" ],
+		"file": [ "file 1", "file 2", "file 3" ],
+		"play": [ "story", "trials" ],
+		"stat": [ "save screenshot", "exit to menu" ],
+		"options": [ "controls", "settings", "credits", "themes", "tutorial" ],
+		"trials": [ "<none>" ],
 		"controls_platformer": [
 			"< platformer >",
-			"left",
-			"right",
 			"up",
 			"down",
+			"left",
+			"right",
 			"jump",
 			"shoot",
 			"sprint",
+			"crouch",
 			"slide",
 			"dash",
 			"inspect",
-			"arms_switch_left",
-			"arms_switch_right",
-			"open_inventory",
+			"tab_left",
+			"tab_right",
+			"inventory",
 			"gamepad settings",
 			"reset to default"
 		],
@@ -51,10 +32,10 @@
 			"up",
 			"down",
 			"select",
-			"cancel",
+			"back",
 			"tab_left",
 			"tab_right",
-			"confirm",
+			"close",
 			"gamepad settings",
 			"reset to default"
 		],
@@ -63,20 +44,13 @@
 			"tutorial: ",
 			"gamepad input: ",
 			"music volume: ",
+			"ambience volume: ",
 			"sfx volume: ",
 			"fullscreen: ",
 			"military time: "
 		],
-		"credits": [
-			"creator",
-			"dev",
-			"lib",
-			"design",
-			"visuals",
-			"sound",
-			"playtesters",
-			"special_thanks"
-		]
+		"credits": [ "creator", "dev", "lib", "design", "visuals", "sound", "playtesters", "thanks" ],
+		"themes": [ "classic", "night" ]
 	},
 	"config": {
 		"main": {
@@ -114,6 +88,9 @@
 		},
 		"stat": {
 			"top_buffer": 450
+		},
+		"themes": {
+			"top_buffer": 186
 		}
 	}
 }

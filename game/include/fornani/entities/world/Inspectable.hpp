@@ -1,13 +1,14 @@
 
 #pragma once
 
+#include <djson/json.hpp>
 #include <fornani/entity/Entity.hpp>
+#include <fornani/events/Subscription.hpp>
+#include <fornani/io/Logger.hpp>
 #include <fornani/utils/Constants.hpp>
 #include "fornani/entities/animation/Animation.hpp"
+#include "fornani/physics/Shape.hpp"
 #include "fornani/utils/IWorldPositionable.hpp"
-#include "fornani/utils/Shape.hpp"
-#include <fornani/io/Logger.hpp>
-#include <djson/json.hpp>
 
 #include <optional>
 #include <string>
@@ -26,8 +27,8 @@ class Console;
 
 namespace fornani::entity {
 
-enum class InspectableAttributes : std::uint8_t { activate_on_contact, instant };
-enum class InspectableFlags : std::uint8_t { hovered, hovered_trigger, activated, destroy, engaged, can_engage };
+enum class InspectableAttributes { activate_on_contact, instant };
+enum class InspectableFlags { hovered, hovered_trigger, activated, destroy, engaged, can_engage };
 
 class Inspectable : public IWorldPositionable {
   public:
@@ -35,9 +36,7 @@ class Inspectable : public IWorldPositionable {
 	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player);
 	void destroy() { flags.set(InspectableFlags::destroy); }
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos);
-	void destroy_by_id(int id) {
-		if (id == native_id) { flags.set(InspectableFlags::destroy); }
-	}
+	void destroy_by_id(int id);
 	[[nodiscard]] auto destroyed() const -> bool { return flags.test(InspectableFlags::destroy); }
 	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
 	[[nodiscard]] auto get_id() const -> int { return native_id; }

@@ -13,8 +13,8 @@
 
 namespace fornani::enemy {
 
-enum class SummonerState : std::uint8_t { idle, walk, summon, horizontal_pulse, vertical_pulse, turn, begin_summon, dodge };
-enum class SummonerVariant : std::uint8_t { mage, mother };
+enum class SummonerState { idle, walk, summon, horizontal_pulse, vertical_pulse, turn, begin_summon, dodge };
+enum class SummonerVariant { mage, mother };
 
 class Summoner final : public Enemy {
   public:
@@ -25,8 +25,8 @@ class Summoner final : public Enemy {
 	void debug();
 
 	[[nodiscard]] auto invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable); }
-	[[nodiscard]] auto half_health() const -> bool { return health.get_hp() < health.get_max() * 0.5f; }
-	[[nodiscard]] auto quarter_health() const -> bool { return health.get_hp() < health.get_max() * 0.25f; }
+	[[nodiscard]] auto half_health() const -> bool { return health.get_quantity() < health.get_capacity() * 0.5f; }
+	[[nodiscard]] auto quarter_health() const -> bool { return health.get_quantity() < health.get_capacity() * 0.25f; }
 	[[nodiscard]] auto is_state(SummonerState test) const -> bool { return m_state.actual == test; }
 	[[nodiscard]] auto is_pulsing() const -> bool { return is_state(SummonerState::horizontal_pulse) || is_state(SummonerState::vertical_pulse); }
 	[[nodiscard]] auto is_summoning() const -> bool { return is_state(SummonerState::begin_summon) || is_state(SummonerState::summon); }

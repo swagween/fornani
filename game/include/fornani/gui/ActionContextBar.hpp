@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fornani/setup/ControllerMap.hpp"
+#include "fornani/systems/InputSystem.hpp"
 #include "fornani/utils/RichText.hpp"
 
 #include <SFML/Graphics.hpp>

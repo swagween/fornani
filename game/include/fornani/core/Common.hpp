@@ -6,7 +6,7 @@ namespace fornani {
 
 namespace gui {
 
-enum class MessageCodeType : std::uint8_t {
+enum class MessageCodeType {
 	none,
 	response,
 	item,
@@ -27,10 +27,12 @@ enum class MessageCodeType : std::uint8_t {
 	remove_item,
 	destroy_inspectable,
 	piggyback,
-	open_vendor
+	open_vendor,
+	launch_cutscene,
+	add_map_marker
 };
 
-enum class CodeSource : std::uint8_t { suite, response };
+enum class CodeSource { suite, response };
 
 constexpr auto null_key = "null";
 
@@ -46,15 +48,20 @@ constexpr int floor_single_ramp = 496;
 } // namespace world
 
 namespace arms {
-enum class Team : std::uint8_t { nani, skycorps, guardian, pioneer, beast };
+enum class Team { nani, skycorps, guardian, pioneer, beast };
 }
 
 namespace item {
-enum class Rarity : std::uint8_t { common, uncommon, rare, priceless };
+enum class Rarity { common, uncommon, rare, priceless };
 }
 
 constexpr auto gem_chance_v = 0.08f;
 constexpr auto heart_chance_v = 8.f;
 constexpr auto enemy_limit_v = 64;
+
+enum class TimeOfDay { dawn, day, dusk, night, END };
+enum class ClockMode { standard, military };
+
+[[nodiscard]] constexpr static auto num_cycles() -> int { return static_cast<int>(TimeOfDay::END); }
 
 } // namespace fornani

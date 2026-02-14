@@ -23,11 +23,17 @@
 #include <fornani/entity/SwitchBlock.hpp>
 #include <fornani/entity/SwitchButton.hpp>
 #include <fornani/entity/TimerBlock.hpp>
+#include <fornani/entity/Turret.hpp>
 #include <fornani/entity/Vine.hpp>
+#include <fornani/entity/Water.hpp>
 #include <filesystem>
 #include <memory>
 #include <string_view>
 #include <unordered_map>
+
+namespace fornani::world {
+class Map;
+}
 
 namespace fornani {
 class ResourceFinder;
@@ -37,14 +43,22 @@ std::unique_ptr<Entity> create_entity(automa::ServiceProvider& svc, dj::Json con
 	return std::make_unique<T>(svc, in);
 }
 
+template <typename T>
+std::unique_ptr<Entity> create_registered_entity(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in) {
+	return std::make_unique<T>(svc, map, in);
+}
+
 using CreateEntitySignature = decltype(&create_entity<Entity>);
+using CreateRegisteredEntitySignature = decltype(&create_registered_entity<Entity>);
 
 class EntitySet {
   public:
 	EntitySet() = default;
-	EntitySet(automa::ServiceProvider& svc, ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
+	EntitySet(automa::ServiceProvider& svc, ResourceFinder& finder, dj::Json& metadata, std::string const& room_name, bool delegated = false);
+	EntitySet(automa::ServiceProvider& svc, world::Map& map, ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
 	void render(sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f origin, float cell_size);
 	void load(automa::ServiceProvider& svc, ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
+	void load_and_register(automa::ServiceProvider& svc, world::Map& map, ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
 	bool save(ResourceFinder& finder, dj::Json& metadata, std::string const& room_name);
 	void clear();
 	bool has_entity_at(sf::Vector2<std::uint32_t> pos, bool highlighted_only = false) const;
@@ -57,8 +71,10 @@ class EntitySet {
 	} variables{};
 
   private:
+	EntityHandle next_handle{};
 	sf::RectangleShape player_box{};
 	std::unordered_map<std::string, CreateEntitySignature> create_map;
+	std::unordered_map<std::string, CreateRegisteredEntitySignature> registered_map;
 	io::Logger m_logger{"Pioneer"};
 };
 

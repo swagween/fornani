@@ -2,7 +2,7 @@
 #include "fornani/utils/Math.hpp"
 
 #include <ccmath/ext/clamp.hpp>
-#include <fornani/utils/CircleCollider.hpp>
+#include <fornani/physics/CircleCollider.hpp>
 
 namespace fornani::components {
 
@@ -11,7 +11,7 @@ CircleSensor::CircleSensor() : CircleSensor(32.f) {}
 CircleSensor::CircleSensor(float radius) {
 	bounds.setRadius(radius);
 	bounds.setOutlineColor(sf::Color::White);
-	bounds.setOutlineThickness(-1);
+	bounds.setOutlineThickness(-2);
 	bounds.setFillColor(sf::Color::Transparent);
 	bounds.setOrigin({radius, radius});
 	drawable = bounds;
@@ -27,6 +27,8 @@ void CircleSensor::render(sf::RenderWindow& win, sf::Vector2f cam) {
 
 void CircleSensor::set_position(sf::Vector2f position) { bounds.setPosition(position); }
 
+bool CircleSensor::within_bounds(sf::Vector2f const point) const { return (point - bounds.getPosition()).length() < bounds.getRadius(); }
+
 bool CircleSensor::within_bounds(shape::Shape const& shape) const {
 	if (shape.non_square()) { return shape.circle_SAT(bounds); }
 	auto const x = ccm::ext::clamp(bounds.getPosition().x, shape.get_position().x, shape.get_position().x + shape.get_dimensions().x);
@@ -37,6 +39,6 @@ bool CircleSensor::within_bounds(shape::Shape const& shape) const {
 
 bool CircleSensor::within_bounds(shape::CircleCollider const& shape) const { return (bounds.getGlobalBounds().getCenter() - shape.get_global_center()).length() < bounds.getRadius() + shape.get_radius(); }
 
-sf::Vector2f CircleSensor::get_MTV(shape::Shape& shape) { return shape.circle_SAT_MTV(bounds); }
+sf::Vector2f CircleSensor::get_MTV(shape::Shape const& shape) const { return shape.circle_SAT_MTV(bounds); }
 
 } // namespace fornani::components

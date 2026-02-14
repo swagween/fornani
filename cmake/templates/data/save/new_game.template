@@ -1,6 +1,7 @@
 {
 	"status": {
-		"new": true
+		"new": true,
+		"inspect_hint": true
 	},
 	"player_data": {
 		"max_hp": 3,
@@ -13,9 +14,6 @@
 		"arsenal": [
 		],
 		"equipped_gun": 0,
-		"abilities": [
-
-		],
 		"wardrobe": {
 			"hairstyle": 0,
 			"shirt": 0,
@@ -55,6 +53,14 @@
 		"hotbar": [
 		]
 	},
+	"map_data": {
+		"fallen_enemies": [
+		],
+		"world_time": {
+			"hours": 9,
+			"minutes": 30
+		}
+	},
 	"save_point_id": 100,
 	"unlocked_doors": [
 	],
@@ -64,7 +70,7 @@
 	],
 	"destroyed_blocks": [
 	],
-	"quest_progressions": [
+	"quests": [
 	],
 	"destroyed_inspectables": [
 	],

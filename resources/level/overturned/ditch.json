@@ -131,29 +131,12 @@
           7
         ],
         "source_id": 247
-      },
-      {
-        "activate_on_contact": false,
-        "already_open": false,
-        "destination_id": 212,
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 0,
-        "key_id": 0,
-        "locked": false,
-        "position": [
-          9,
-          11
-        ],
-        "source_id": 247
       }
     ]
   },
   "meta": {
     "ambience": "",
-    "background": 3,
+    "background": "woods",
     "biome": "overturned",
     "border_color": [
       0,

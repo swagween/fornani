@@ -209,6 +209,7 @@
           4,
           5
         ],
+        "tag": "bit_cell_key",
         "type": 2
       }
     ],
@@ -252,7 +253,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           27,
@@ -264,8 +264,13 @@
   },
   "meta": {
     "ambience": "",
-    "background": 1,
+    "background": "night",
     "biome": "firstwind",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -305,7 +310,8 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 0
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
     "flags": {

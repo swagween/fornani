@@ -42,6 +42,68 @@
         ]
       }
     ],
+    "inspectables": [
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": false,
+        "key": "ibos_journal",
+        "position": [
+          10,
+          6
+        ],
+        "series": [
+          {
+            "responses": [
+              [
+                {
+                  "codes": [
+                    [
+                      2,
+                      38,
+                      301
+                    ]
+                  ],
+                  "message": "Yes"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      1
+                    ]
+                  ],
+                  "message": "No"
+                }
+              ]
+            ],
+            "suite": [
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      0
+                    ]
+                  ],
+                  "message": "You find a dusty old journal. Would you like to take it?"
+                }
+              ],
+              [
+                {
+                  "message": "That's probably the polite thing to do..."
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ],
     "lights": [
       {
         "dimensions": [
@@ -90,8 +152,13 @@
   },
   "meta": {
     "ambience": "",
-    "background": 3,
+    "background": "woods",
     "biome": "pioneer",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -131,7 +198,8 @@
     "shader": {
       "darken_factor": 3
     },
-    "style": 2
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
     "flags": {
@@ -256,7 +324,7 @@
         2,
         2,
         2,
-        2,
+        106,
         2,
         2,
         2,
@@ -481,9 +549,9 @@
         0,
         103,
         75,
-        75,
-        67,
-        69,
+        153,
+        157,
+        155,
         75,
         75,
         0,
@@ -498,8 +566,8 @@
         0,
         194,
         196,
-        80,
-        82,
+        110,
+        111,
         213,
         193,
         0,
@@ -514,8 +582,8 @@
         0,
         210,
         211,
-        99,
-        101,
+        105,
+        108,
         208,
         209,
         0,
@@ -739,9 +807,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        268,
+        269,
+        270,
         0,
         0,
         0,

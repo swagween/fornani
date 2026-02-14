@@ -1,14 +1,15 @@
 
 #pragma once
 
+#include <fornani/events/Subscription.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/BitFlags.hpp>
 
 namespace pi {
 
-enum class EditorStateType : std::uint8_t { editor, metagrid, dialogue_editor };
-enum class PressedKeys : std::uint8_t { control, shift, mouse_left, mouse_middle, mouse_right, space };
+enum class EditorStateType { editor, metagrid, dialogue_editor };
+enum class PressedKeys { control, shift, mouse_left, mouse_middle, mouse_right, space };
 
 class EditorState {
   public:
@@ -22,6 +23,7 @@ class EditorState {
 	fornani::util::BitFlags<PressedKeys> pressed_keys{};
 	fornani::automa::ServiceProvider* p_services;
 	sf::Clock p_delta_clock{};
+	std::shared_ptr<fornani::Slot const> p_slot{std::make_shared<fornani::Slot const>()};
 
 	EditorStateType p_target_state{};
 

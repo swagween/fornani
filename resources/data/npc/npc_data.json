@@ -1,343 +1,451 @@
 {
-  "bryn": {
-    "id": 0,
-    "dimensions": [24, 24],
-    "sprite_dimensions": [24, 24],
-    "sprite_offset": [0, -11],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 8, 30, -1, false]
-      },
-      {
-        "label": "walk",
-        "parameters": [8, 4, 24, -1, false]
-      },
-      {
-        "label": "turn",
-        "parameters": [12, 2, 32, 0, false]
-      },
-      {
-        "label": "inspect",
-        "parameters": [14, 2, 32, -1, false]
-      },
-      {
-        "label": "fall",
-        "parameters": [0, 1, 24, 0, false]
-      },
-      {
-        "label": "land",
-        "parameters": [1, 1, 24, 0, false]
-      }
-    ]
-  },
-  "dr_willett": {
-    "id": 2,
-    "dimensions": [24, 24],
-    "sprite_dimensions": [24, 24],
-    "sprite_offset": [0, -11],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 8, 30, -1, false]
-      },
-      {
-        "label": "walk",
-        "parameters": [8, 4, 24, -1, false]
-      },
-      {
-        "label": "turn",
-        "parameters": [0, 1, 32, 0, false]
-      },
-      {
-        "label": "inspect",
-        "parameters": [14, 2, 32, -1, false]
-      }
-    ]
-  },
+	"bryn": {
+		"id": 0,
+		"dimensions": [ 24, 24 ],
+		"sprite_dimensions": [ 24, 24 ],
+		"sprite_offset": [ 0, -11 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 8, 30, -1, false ]
+			},
+			{
+				"label": "walk",
+				"parameters": [ 8, 4, 24, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 12, 2, 32, 0, false ]
+			},
+			{
+				"label": "inspect",
+				"parameters": [ 14, 2, 32, -1, true ]
+			},
+			{
+				"label": "fall",
+				"parameters": [ 0, 1, 24, 0, false ]
+			},
+			{
+				"label": "land",
+				"parameters": [ 1, 1, 24, 0, false ]
+			},
+			{
+				"label": "busy",
+				"parameters": [ 16, 2, 180, -1, false ]
+			},
+			{
+				"label": "stagger",
+				"parameters": [ 18, 2, 64, 0, false ]
+			}
+		]
+	},
+	"dr_willett": {
+		"id": 2,
+		"dimensions": [ 24, 24 ],
+		"sprite_dimensions": [ 24, 24 ],
+		"sprite_offset": [ 0, -11 ],
+		"walk_speed": 0.5,
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 8, 30, -1, false ]
+			},
+			{
+				"label": "walk",
+				"parameters": [ 7, 4, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 0, 1, 32, 0, false ]
+			},
+			{
+				"label": "inspect",
+				"parameters": [ 14, 2, 32, -1, false ]
+			}
+		]
+	},
 
-  "gobe": {
-    "id": 3,
-    "vendor_id": 1,
-    "dimensions": [24, 24],
-    "sprite_dimensions": [51, 32],
-    "sprite_offset": [0, -19],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 8, 40, -1, false]
-      },
-      {
-        "label": "walk",
-        "parameters": [8, 4, 24, -1, false]
-      },
-      {
-        "label": "turn",
-        "parameters": [12, 2, 40, 0, false]
-      },
-      {
-        "label": "inspect",
-        "parameters": [14, 2, 32, -1, true]
-      }
-    ],
-    "vendor": {
-      "upcharge": 0.2,
-      "common_items": ["clay_statue", "bronze_bracelet", "clamp"],
-      "uncommon_items": ["red_jeans"],
-      "rare_items": ["sapphire"],
-      "guaranteed_finite_items": ["lantern"]
-    }
-  },
-  "minigus": {
-    "id": 7,
-    "dimensions": [24, 24],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 8, 30, -1, false]
-      }
-    ]
-  },
-  "lynx": {
-    "id": 21,
-    "dimensions": [24, 24],
-    "no_animation": true,
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 8, 30, -1, false]
-      }
-    ]
-  },
+	"gobe": {
+		"id": 3,
+		"vendor_id": 3,
+		"dimensions": [ 24, 24 ],
+		"sprite_dimensions": [ 51, 32 ],
+		"sprite_offset": [ 0, -19 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 8, 40, -1, false ]
+			},
+			{
+				"label": "walk",
+				"parameters": [ 8, 4, 24, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 12, 2, 40, 0, false ]
+			},
+			{
+				"label": "inspect",
+				"parameters": [ 14, 2, 32, -1, true ]
+			}
+		],
+		"vendor": {
+			"upcharge": 0.2,
+			"common_items": [ "clay_statue", "bronze_bracelet", "clamp" ],
+			"uncommon_items": [ "red_jeans" ],
+			"rare_items": [ "sapphire" ],
+			"guaranteed_finite_items": [ "lantern" ]
+		}
+	},
+	"minigus": {
+		"id": 7,
+		"dimensions": [ 24, 24 ],
+		"no_animation": true,
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 8, 30, -1, false ]
+			}
+		]
+	},
+	"lynx": {
+		"id": 21,
+		"dimensions": [ 24, 24 ],
+		"no_animation": true,
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 8, 30, -1, false ]
+			}
+		]
+	},
 
-  "dr_go": {
-    "id": 16,
-    "dimensions": [24, 24],
-    "sprite_dimensions": [20, 20],
-    "sprite_offset": [0, -7],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 6, 40, -1, false]
-      },
-      {
-        "label": "turn",
-        "parameters": [6, 2, 40, 0, false]
-      }
-    ]
-  },
-  "mirin": {
-    "id": 18,
-    "dimensions": [24, 24],
-    "sprite_dimensions": [20, 20],
-    "sprite_offset": [0, -7],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 6, 40, -1, false]
-      },
-      {
-        "label": "turn",
-        "parameters": [6, 2, 40, 0, false]
-      }
-    ]
-  },
-  "carl": {
-    "id": 17,
-    "dimensions": [24, 24],
-    "sprite_dimensions": [20, 20],
-    "sprite_offset": [0, -7],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 6, 40, -1, false]
-      },
-      {
-        "label": "turn",
-        "parameters": [6, 2, 40, 0, false]
-      }
-    ]
-  },
-  "billy": {
-    "id": 25,
-    "dimensions": [24, 24],
-    "sprite_dimensions": [23, 11],
-    "sprite_offset": [-11, 2],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 1, 40, -1, false]
-      }
-    ]
-  },
-  "otto": {
-    "id": 1,
-    "dimensions": [32, 32],
-    "sprite_dimensions": [32, 32],
-    "sprite_offset": [0, -16],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 4, 80, -1, false]
-      }
-    ]
-  },
-  "krub": {
-    "id": 26,
-    "dimensions": [60, 60],
-    "sprite_dimensions": [40, 40],
-    "sprite_offset": [0, -9],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 10, 60, -1, false]
-      },
-      {
-        "label": "pull_pants",
-        "parameters": [10, 6, 60, 0, false]
-      },
-      {
-        "label": "turn",
-        "parameters": [16, 3, 40, 0, false]
-      }
-    ]
-  },
-  "ward": {
-    "id": 30,
-    "dimensions": [60, 60],
-    "sprite_dimensions": [64, 64],
-    "sprite_offset": [0, -33],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 8, 60, -1, false]
-      },
-      {
-        "label": "sit",
-        "parameters": [8, 8, 60, 0, false]
-      },
-      {
-        "label": "get_up",
-        "parameters": [16, 1, 40, 0, false]
-      },
-      {
-        "label": "turn",
-        "parameters": [17, 3, 40, 0, false]
-      }
-    ]
-  },
-  "wames": {
-    "id": 27,
-    "dimensions": [32, 32],
-    "sprite_dimensions": [32, 32],
-    "sprite_offset": [0, -15],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 8, 60, -1, false]
-      }
-    ]
-  },
-  "amber": {
-    "id": 28,
-    "dimensions": [32, 32],
-    "sprite_dimensions": [26, 26],
-    "sprite_offset": [0, -9],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 6, 40, -1, false]
-      },
-      {
-        "label": "turn",
-        "parameters": [6, 3, 30, 0, false]
-      }
-    ]
-  },
-  "mildreth": {
-    "id": 29,
-    "dimensions": [32, 32],
-    "sprite_dimensions": [22, 22],
-    "sprite_offset": [0, -5],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 6, 60, -1, false]
-      },
-      {
-        "label": "turn",
-        "parameters": [6, 3, 40, 0, false]
-      }
-    ]
-  },
-  "bit": {
-    "id": 20,
-    "dimensions": [24, 24],
-    "sprite_dimensions": [20, 20],
-    "sprite_offset": [0, -7],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 6, 40, -1, false]
-      },
-      {
-        "label": "turn",
-        "parameters": [6, 2, 40, 0, false]
-      }
-    ]
-  },
-  "justin": {
-    "id": 24,
-    "dimensions": [18, 18],
-    "sprite_dimensions": [18, 18],
-    "sprite_offset": [0, -8],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 4, 40, -1, false]
-      },
-      {
-        "label": "piggyback",
-        "parameters": [0, 4, 40, -1, false]
-      },
-      {
-        "label": "walk",
-        "parameters": [4, 4, 24, -1, false]
-      },
-      {
-        "label": "turn",
-        "parameters": [7, 1, 40, 0, false]
-      }
-    ]
-  },
-  "lady_nimbus": {
-    "id": 22,
-    "dimensions": [24, 48],
-    "sprite_dimensions": [23, 32],
-    "sprite_offset": [8.0, -14.0],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 1, 40, -1, false]
-      },
-      {
-        "label": "turn",
-        "parameters": [1, 1, 40, -1, false]
-      },
-      {
-        "label": "shift",
-        "parameters": [1, 4, 40, 0, false]
-      }
-    ]
-  },
-  "hologus": {
-    "id": 23,
-    "dimensions": [24, 24],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 8, 30, -1, false]
-      }
-    ]
-  }
+	"dr_go": {
+		"id": 16,
+		"dimensions": [ 24, 24 ],
+		"sprite_dimensions": [ 20, 20 ],
+		"sprite_offset": [ 0, -7 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 6, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 2, 40, 0, false ]
+			}
+		]
+	},
+	"mirin": {
+		"id": 18,
+		"dimensions": [ 24, 24 ],
+		"sprite_dimensions": [ 20, 20 ],
+		"sprite_offset": [ 0, -7 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 6, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 2, 40, 0, false ]
+			}
+		]
+	},
+	"carl": {
+		"id": 17,
+		"dimensions": [ 24, 24 ],
+		"sprite_dimensions": [ 20, 20 ],
+		"sprite_offset": [ 0, -7 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 6, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 2, 40, 0, false ]
+			}
+		]
+	},
+	"billy": {
+		"id": 25,
+		"dimensions": [ 24, 24 ],
+		"sprite_dimensions": [ 23, 11 ],
+		"sprite_offset": [ -11, 2 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 1, 40, -1, false ]
+			}
+		]
+	},
+	"gaia": {
+		"id": 10,
+		"dimensions": [ 24, 24 ],
+		"sprite_dimensions": [ 24, 24 ],
+		"sprite_offset": [ 0, -11 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 6, 36, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 3, 32, 0, false ]
+			}
+		]
+	},
+	"otto": {
+		"id": 1,
+		"vendor_id": 1,
+		"dimensions": [ 32, 32 ],
+		"sprite_dimensions": [ 32, 32 ],
+		"sprite_offset": [ 0, -16 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 4, 80, -1, false ]
+			}
+		],
+		"vendor": {
+			"upcharge": 0.25,
+			"common_items": [ "clay_statue", "boxing_glove" ],
+			"uncommon_items": [ "soda", "silver_bracelet", "outfitter_gizmo" ],
+			"rare_items": [ "sapphire", "ceremonial_garb", "ceremonial_skirt" ],
+			"guaranteed_finite_items": [ "lantern" ]
+		}
+	},
+	"krub": {
+		"id": 26,
+		"dimensions": [ 60, 60 ],
+		"sprite_dimensions": [ 40, 40 ],
+		"sprite_offset": [ 0, -9 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 10, 60, -1, false ]
+			},
+			{
+				"label": "pull_pants",
+				"parameters": [ 10, 6, 60, 0, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 16, 3, 40, 0, false ]
+			}
+		]
+	},
+	"ward": {
+		"id": 30,
+		"dimensions": [ 60, 60 ],
+		"sprite_dimensions": [ 64, 64 ],
+		"sprite_offset": [ 0, -33 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 8, 60, -1, false ]
+			},
+			{
+				"label": "sit",
+				"parameters": [ 8, 8, 60, 0, false ]
+			},
+			{
+				"label": "get_up",
+				"parameters": [ 16, 1, 40, 0, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 17, 3, 40, 0, false ]
+			}
+		]
+	},
+	"wames": {
+		"id": 27,
+		"dimensions": [ 32, 32 ],
+		"sprite_dimensions": [ 32, 32 ],
+		"sprite_offset": [ 0, -15 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 8, 60, -1, false ]
+			}
+		]
+	},
+	"amber": {
+		"id": 28,
+		"dimensions": [ 32, 32 ],
+		"sprite_dimensions": [ 26, 26 ],
+		"sprite_offset": [ 0, -9 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 6, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 3, 30, 0, false ]
+			}
+		]
+	},
+	"lyle": {
+		"id": 31,
+		"dimensions": [ 10, 10 ],
+		"sprite_dimensions": [ 16, 16 ],
+		"sprite_offset": [ 0, -10 ],
+		"random_walk": true,
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 4, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 1, 30, 0, false ]
+			},
+			{
+				"label": "walk",
+				"parameters": [ 4, 4, 20, 3, false ]
+			}
+		]
+	},
+	"dale": {
+		"id": 32,
+		"dimensions": [ 10, 10 ],
+		"sprite_dimensions": [ 16, 16 ],
+		"sprite_offset": [ 0, -10 ],
+		"random_walk": true,
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 4, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 1, 30, 0, false ]
+			},
+			{
+				"label": "walk",
+				"parameters": [ 4, 4, 20, 3, false ]
+			}
+		]
+	},
+	"lucie": {
+		"id": 33,
+		"dimensions": [ 10, 10 ],
+		"sprite_dimensions": [ 16, 16 ],
+		"sprite_offset": [ 0, -10 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 6, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 1, 30, 0, false ]
+			}
+		]
+	},
+	"jimmy": {
+		"id": 8,
+		"dimensions": [ 20, 20 ],
+		"sprite_dimensions": [ 24, 24 ],
+		"sprite_offset": [ 0, -13 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 6, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 1, 30, 0, false ]
+			}
+		]
+	},
+	"mildreth": {
+		"id": 29,
+		"dimensions": [ 32, 32 ],
+		"sprite_dimensions": [ 22, 22 ],
+		"sprite_offset": [ 0, -5 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 6, 60, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 3, 40, 0, false ]
+			}
+		]
+	},
+	"bit": {
+		"id": 20,
+		"dimensions": [ 24, 24 ],
+		"sprite_dimensions": [ 20, 20 ],
+		"sprite_offset": [ 0, -7 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 6, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 6, 2, 40, 0, false ]
+			}
+		]
+	},
+	"justin": {
+		"id": 24,
+		"dimensions": [ 18, 18 ],
+		"sprite_dimensions": [ 18, 18 ],
+		"sprite_offset": [ 0, -8 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 4, 40, -1, false ]
+			},
+			{
+				"label": "piggyback",
+				"parameters": [ 0, 4, 40, -1, false ]
+			},
+			{
+				"label": "walk",
+				"parameters": [ 4, 4, 24, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 7, 1, 40, 0, false ]
+			}
+		]
+	},
+	"lady_nimbus": {
+		"id": 22,
+		"dimensions": [ 24, 48 ],
+		"sprite_dimensions": [ 23, 32 ],
+		"sprite_offset": [ 8.0, -14.0 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 1, 40, -1, false ]
+			},
+			{
+				"label": "turn",
+				"parameters": [ 1, 1, 40, -1, false ]
+			},
+			{
+				"label": "shift",
+				"parameters": [ 1, 4, 40, 0, false ]
+			}
+		]
+	},
+	"hologus": {
+		"id": 23,
+		"dimensions": [ 24, 24 ],
+		"animation": [
+			{
+				"label": "idle",
+				"parameters": [ 0, 8, 30, -1, false ]
+			}
+		]
+	}
 }

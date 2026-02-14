@@ -1,6 +1,7 @@
 
 #include "editor/automa/Editor.hpp"
 #include <editor/util/Constants.hpp>
+#include <fornani/events/SystemEvent.hpp>
 #include "editor/gui/Console.hpp"
 #include "fornani/core/Application.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
@@ -16,47 +17,20 @@
 
 namespace pi {
 
-static bool b_load_file{};
 static bool b_new_file{};
 static bool b_close_entity_popup{};
 static bool b_reloaded{};
-static int b_new_id{};
-
-static std::string to_region{};
-static std::string to_room{};
-static void load_file(std::string const& toregion, std::string const& toroom) {
-	b_load_file = true;
-	to_region = toregion;
-	to_room = toroom;
-}
-static void new_file(int id) {
-	b_new_file = true;
-	b_new_id = id;
-}
 
 Editor::Editor(fornani::automa::ServiceProvider& svc)
-	: EditorState(svc), map(svc.finder, SelectionType::canvas), palette(svc.finder, SelectionType::palette), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()), grid_refresh(16), active_layer{0},
-	  m_tool_sprite{svc.assets.get_texture("editor_tools")}, m_services(&svc) {
+	: EditorState(svc), map(svc, SelectionType::canvas, fornani::Biome{}), palette(svc, SelectionType::palette, fornani::Biome{}), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()), grid_refresh(16),
+	  active_layer{0}, m_tool_sprite{svc.assets.get_texture("editor_tools")}, m_services(&svc) {
 
 	p_target_state = EditorStateType::editor;
 
-	svc.music_player.set_volume(0.2f);
-
-	svc.events.register_event(std::make_unique<fornani::Event<std::string, std::string>>("LoadFile", &load_file));
-	svc.events.register_event(std::make_unique<fornani::Event<int>>("NewFile", &new_file));
+	svc.events.new_file_event.attach_to(p_slot, &Editor::new_file, this);
+	svc.events.load_file_event.attach_to(p_slot, &Editor::load_file, this);
 
 	svc.set_editor(true);
-
-	for (int i = 0; i < static_cast<int>(StyleType::END); ++i) {
-		m_themes.styles.push_back(Style{static_cast<StyleType>(i)});
-		m_labels.style_str[i] = m_themes.styles.back().get_label();
-		m_labels.styles[i] = m_labels.style_str[i].c_str();
-	}
-	for (int i = 0; i < static_cast<int>(Backdrop::END); ++i) {
-		m_themes.backdrops.push_back(BackgroundType{static_cast<Backdrop>(i)});
-		m_labels.bg_str[i] = m_themes.backdrops.back().get_label();
-		m_labels.backdrops[i] = m_labels.bg_str[i].c_str();
-	}
 
 	console.add_log("Welcome to Pioneer!");
 	std::string msg = "Loading room: <" + p_services->finder.region_and_room().string() + ">";
@@ -74,10 +48,9 @@ Editor::Editor(fornani::automa::ServiceProvider& svc)
 	center_map();
 
 	// load the tilesets!
-	for (int i = 0; i < static_cast<int>(StyleType::END); ++i) {
+	for (auto const& biome : svc.data.biomes["biomes"].as_array()) {
 		tileset_textures.push_back(sf::Texture());
-		std::string style = Style{static_cast<StyleType>(i)}.get_label();
-		std::string filename = style + "_tiles.png";
+		std::string filename = biome.as_string() + "_tiles.png";
 		if (!tileset_textures.back().loadFromFile((p_services->finder.paths.resources / "image" / "tile" / filename).string())) { console.add_log(std::string{"Failed to load " + filename}.c_str()); }
 	}
 
@@ -157,6 +130,7 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 			if (key_pressed->scancode == sf::Keyboard::Scancode::L) {
 				save();
 				m_demo.trigger_demo = true;
+				if (key_pressed->alt) { m_demo.fullscreen = true; }
 			}
 			if (key_pressed->scancode == sf::Keyboard::Scancode::S) { save() ? console.add_log("File saved successfully.") : console.add_log("Encountered an error saving file!"); }
 			if (key_pressed->shift) {
@@ -165,6 +139,7 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 					save();
 					m_demo.trigger_demo = true;
 					m_demo.custom_position = true;
+					if (key_pressed->alt) { m_demo.fullscreen = true; }
 				}
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Left) { map.resize({-1, 0}); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Right) { map.resize({1, 0}); }
@@ -224,15 +199,6 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 }
 
 void Editor::logic() {
-
-	if (b_load_file) {
-		save();
-		p_services->finder.paths.region = to_region;
-		p_services->finder.paths.room_name = to_room;
-		load();
-		b_load_file = false;
-		b_close_entity_popup = true;
-	}
 
 	auto& target = palette_mode() ? palette : map;
 	auto& tool = right_mouse_pressed() ? secondary_tool : current_tool;
@@ -308,7 +274,35 @@ void Editor::load() {
 	b_reloaded = true;
 }
 
-bool Editor::save() { return map.save(p_services->finder, p_services->finder.paths.region, p_services->finder.paths.room_name); }
+void Editor::load_file(std::string_view to_region, std::string_view to_room) {
+	save();
+	p_services->finder.paths.region = to_region;
+	p_services->finder.paths.room_name = to_room;
+	load();
+	b_close_entity_popup = true;
+	NANI_LOG_INFO(p_logger, "Loaded file: {}.", to_room);
+}
+
+void Editor::new_file(int id) {
+	b_new_file = true;
+	m_new_id = id;
+}
+
+bool Editor::save() {
+	auto ret = map.save(p_services->finder, p_services->finder.paths.region, p_services->finder.paths.room_name);
+	auto path = p_services->finder.paths.levels / p_services->finder.paths.region / p_services->finder.paths.room_name;
+	auto room_data_result = dj::Json::from_file(path.string());
+	if (!room_data_result) {
+		NANI_LOG_ERROR(p_logger, "Failed to reload saved JSON data after serialization. PATH: {}.", path.string());
+		return false;
+	}
+	if (auto existing_data = p_services->data.get_map_json_from_id(map.room_id)) {
+		existing_data->get() = std::move(*room_data_result);
+		NANI_LOG_INFO(p_logger, "Re-serialized existing room. PATH: {}.", path.string());
+	}
+
+	return ret;
+}
 
 void Editor::render(sf::RenderWindow& win) {
 	auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
@@ -435,6 +429,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	bool anim{};
 	bool vine{};
 	bool cuts{};
+	bool turr{};
+	bool watr{};
 	bool open_themes{};
 
 	bool new_room{b_new_file};
@@ -489,26 +485,25 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		ImGui::SameLine();
 		if (ImGui::Button("Create")) {
 
-			static int style_current = static_cast<int>(map.tile_style.get_type());
-			static int bg_current = static_cast<int>(map.background->type.get_type());
+			static std::string style_current = std::string{map.biome.get_label()};
+			static std::string bg_current = map.background->get_label();
 
-			map = Canvas(p_services->finder, {static_cast<std::uint32_t>(width * chunk_size_v), static_cast<std::uint32_t>(height * chunk_size_v)}, SelectionType::canvas, static_cast<StyleType>(style_current),
-						 static_cast<Backdrop>(bg_current));
+			map = Canvas(*p_services, {static_cast<std::uint32_t>(width * chunk_size_v), static_cast<std::uint32_t>(height * chunk_size_v)}, SelectionType::canvas, m_services->data.construct_biome(style_current), bg_current);
 			map.metagrid_coordinates = {metagrid_x, metagrid_y};
 			p_services->finder.paths.region = regbuffer;
 			p_services->finder.paths.room_name = std::string{roombuffer} + ".json";
-			map.room_id = b_new_id;
+			map.room_id = m_new_id;
 			save();
 			load();
 			reset_layers();
 			map.center(p_services->window->f_center_screen());
 			dj::Json this_room{};
-			this_room["room_id"] = b_new_id;
+			this_room["room_id"] = m_new_id;
 			this_room["region"] = p_services->finder.paths.region;
 			this_room["label"] = p_services->finder.paths.room_name;
 			p_services->data.map_table["rooms"].push_back(this_room);
 			console.add_log(std::string{"In folder " + p_services->finder.paths.region}.c_str());
-			console.add_log(std::string{"Created new room with id " + std::to_string(b_new_id) + " and name " + p_services->finder.paths.room_name}.c_str());
+			console.add_log(std::string{"Created new room with id " + std::to_string(m_new_id) + " and name " + p_services->finder.paths.room_name}.c_str());
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
@@ -629,11 +624,10 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::SameLine();
 			if (ImGui::Button("Create")) {
 
-				static int style_current = static_cast<int>(map.tile_style.get_type());
-				static int bg_current = static_cast<int>(map.background->type.get_type());
+				static std::string style_current = std::string{map.biome.get_label()};
+				static std::string bg_current = map.background->get_label();
 
-				map = Canvas(p_services->finder, {static_cast<std::uint32_t>(width * chunk_size_v), static_cast<std::uint32_t>(height * chunk_size_v)}, SelectionType::canvas, static_cast<StyleType>(style_current),
-							 static_cast<Backdrop>(bg_current));
+				map = Canvas(*p_services, {static_cast<std::uint32_t>(width * chunk_size_v), static_cast<std::uint32_t>(height * chunk_size_v)}, SelectionType::canvas, m_services->data.construct_biome(style_current), bg_current);
 				map.metagrid_coordinates = {metagrid_x, metagrid_y};
 				p_services->finder.paths.region = regbuffer;
 				p_services->finder.paths.room_name = std::string{roombuffer} + ".json";
@@ -705,16 +699,15 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::Separator();
 			if (ImGui::BeginMenu("Style")) {
 				auto i{0};
-				for (auto& choice : m_labels.styles) {
-					if (ImGui::MenuItem(choice)) { map.tile_style = Style{static_cast<StyleType>(i)}; }
-					++i;
+				for (auto const& choice : m_services->data.biomes["biomes"].as_array()) {
+					if (ImGui::MenuItem(std::string{choice.as_string()}.c_str())) { map.biome = m_services->data.construct_biome(choice.as_string()); }
 				}
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Background")) {
 				auto i{0};
-				for (auto& choice : m_labels.backdrops) {
-					if (ImGui::MenuItem(choice)) { map.background = std::make_unique<Background>(p_services->finder, static_cast<Backdrop>(i)); }
+				for (auto const& [key, entry] : m_services->data.background.as_object()) {
+					if (ImGui::MenuItem(key.c_str())) { map.background = std::make_unique<fornani::graphics::Background>(*m_services, key); }
 					++i;
 				}
 				ImGui::EndMenu();
@@ -735,11 +728,13 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Bed", NULL, &beds)) {}
 			if (ImGui::MenuItem("Switch Block", NULL, &sblk)) {}
 			if (ImGui::MenuItem("Switch Button", NULL, &sbtn)) {}
+			if (ImGui::MenuItem("Turret", NULL, &turr)) {}
 			if (ImGui::MenuItem("Timer Block", NULL, &timr)) {}
 			if (ImGui::MenuItem("Light", NULL, &lght)) {}
 			if (ImGui::MenuItem("NPC", NULL, &npcs)) {}
 			if (ImGui::MenuItem("Animator", NULL, &anim)) {}
 			if (ImGui::MenuItem("Vine", NULL, &vine)) {}
+			if (ImGui::MenuItem("Water", NULL, &watr)) {}
 			if (ImGui::MenuItem("Cutscene Trigger", NULL, &cuts)) {}
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
@@ -811,8 +806,10 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	if (ImGui::BeginPopupModal("Level Themes", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		static int music_selected{};
 		static int ambience_selected{};
+		static int atmosphere_selected{};
 		static std::string music_str{};
 		static std::string ambience_str{};
+		static std::vector<std::string> atmosphere_list{};
 		ImGui::Text("Music:");
 		auto i = 0;
 		for (auto [i, entry] : std::views::enumerate(m_services->data.audio_library["music"].as_array())) {
@@ -836,6 +833,15 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				ambience_selected = i;
 			}
 		}
+		ImGui::Text("Atmosphere");
+		for (auto [i, entry] : std::views::enumerate(m_services->data.biomes["atmosphere"].as_array())) {
+			if (ImGui::Selectable(entry.as_string().c_str(), ImGuiSelectableFlags_DontClosePopups)) {
+				map.add_atmosphere(entry.as_string());
+			} else {
+				map.remove_atmosphere(entry.as_string());
+			}
+		}
+
 		if (ImGui::Button("Close")) {
 			m_services->music_player.pause();
 			ImGui::CloseCurrentPopup();
@@ -923,7 +929,17 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	}
 	if (cuts) {
 		ImGui::OpenPopup("Cutscene Trigger Specifications");
-		label = "Cutscene Trigger  Specifications";
+		label = "Cutscene Trigger Specifications";
+		popup_open = true;
+	}
+	if (turr) {
+		ImGui::OpenPopup("Turret Specifications");
+		label = "Turret Specifications";
+		popup_open = true;
+	}
+	if (watr) {
+		ImGui::OpenPopup("Water Specifications");
+		label = "Water Specifications";
 		popup_open = true;
 	}
 
@@ -981,13 +997,14 @@ void Editor::gui_render(sf::RenderWindow& win) {
 						ImGui::Text("Tile Value at Mouse Pos: <invalid>");
 					}
 					ImGui::Separator();
-					ImGui::Text("Current Style: %s", map.tile_style.get_label().c_str());
+					ImGui::Text("Current Style: %s", map.biome.get_label());
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Tool")) {
 					ImGui::Text("Left Mouse: %s", left_mouse_pressed() ? "Pressed" : "");
 					ImGui::Text("Right Mouse: %s", right_mouse_pressed() ? "Pressed" : "");
 					ImGui::Separator();
+					if (current_tool->current_entity) { ImGui::Text("entity moved: %b", current_tool->current_entity.value()->moved); }
 					static bool current{};
 					ImGui::Checkbox("##current", &current);
 					ImGui::SameLine();
@@ -1238,17 +1255,17 @@ void Editor::export_layer_texture() {
 			if (cell.value > 0) {
 				auto x_coord = (cell.value % 16) * 32;
 				auto y_coord = std::floor(cell.value / 16) * 32;
-				auto tile_sprite = sf::Sprite{tileset_textures.at(static_cast<int>(map.tile_style.get_type()))};
+				auto tile_sprite = sf::Sprite{tileset_textures.at(map.biome.get_id())};
 				tile_sprite.setTextureRect(sf::IntRect({static_cast<int>(x_coord), static_cast<int>(y_coord)}, {32, 32}));
 				tile_sprite.setPosition(cell.scaled_position());
 				screencap.draw(tile_sprite);
 			}
 		}
 	}
-	std::time_t time = std::time({});
-	char time_string[std::size("yyyy-mm-ddThh:mm:ssZ")];
-	std::strftime(std::data(time_string), std::size(time_string), "%FT%TZ", std::gmtime(&time));
-	std::string time_str{time_string};
+	std::time_t time = std::time(nullptr);
+	std::string time_str(21, '\0');
+	std::strftime(time_str.data(), time_str.size(), "%FT%TZ", std::gmtime(&time));
+	time_str.resize(std::strlen(time_str.c_str()));
 
 	std::erase_if(time_str, [](auto const& c) { return c == ':' || isspace(c); });
 	std::string filename = "screenshot_" + time_str + ".png";

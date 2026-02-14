@@ -13,7 +13,7 @@ class Player;
 
 namespace fornani::graphics {
 
-enum class TransitionState : std::uint8_t { inactive, fading_to_black, black, fading_out };
+enum class TransitionState { inactive, fading_to_black, black, fading_out };
 
 class Transition {
 
@@ -23,9 +23,14 @@ class Transition {
 	void render(sf::RenderWindow& win);
 	void start();
 	void end();
+	void hang();
+
+	void set(TransitionState const to) { m_state = to; }
+	void set_duration(int const duration) { m_cooldown.set_native_time(duration); }
 
 	[[nodiscard]] auto has_waited(int time) -> bool { return m_hang_time.get_count() >= time; }
 	[[nodiscard]] auto is(TransitionState test) const -> bool { return m_state == test; }
+	[[nodiscard]] auto is_black() const -> bool { return is(TransitionState::black); }
 	[[nodiscard]] auto get_cooldown() const -> float { return m_cooldown.get_normalized(); }
 	[[nodiscard]] auto as_string() const -> std::string;
 

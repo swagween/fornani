@@ -1,15 +1,15 @@
+
 #include "fornani/utils/Fader.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::util {
 
 Fader::Fader(automa::ServiceProvider& svc, int time, std::string_view color) : time(time), sprite{svc.assets.get_texture("fader")} {
-	if (color_codes.contains(color)) {
-		lookup = color_codes.at(color)[0];
-		order = color_codes.at(color)[1];
-	}
+	lookup = svc.data.fader[color]["lookup"].as<int>();
+	order = svc.data.fader[color]["order"].as<int>();
 	timer.start(time);
 	interval = static_cast<int>(time / 2);
+	sprite.setTextureRect(sf::IntRect{{lookup, progress.get_count()}, {1, 1}});
 }
 
 void Fader::update() {

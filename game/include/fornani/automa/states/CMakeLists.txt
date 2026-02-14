@@ -9,6 +9,7 @@ nani_add_headers(
         PlayMenu.hpp
         SettingsMenu.hpp
         StatSheet.hpp
+        ThemesMenu.hpp
         TrialsMenu.hpp
         Trial.hpp
 )

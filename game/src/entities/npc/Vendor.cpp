@@ -9,6 +9,7 @@ void Vendor::generate_inventory(automa::ServiceProvider& svc) {
 	inventory = {};
 	if (rare_items.empty() || common_items.empty() || uncommon_items.empty()) { return; }
 	auto const inventory_seed = random::random_range(0, 10000, random::get_vendor_seed());
+	for (auto const& gfi : guaranteed_finite_items) { inventory.add_item(svc.data.item, gfi); }
 	for (auto i{0}; i < stock_size; ++i) {
 		auto const rand = random::random_range(0, 1000);
 		auto const selection = random::random_range(0, 1000, inventory_seed + i);
@@ -24,7 +25,6 @@ void Vendor::generate_inventory(automa::ServiceProvider& svc) {
 			inventory.add_item(svc.data.item, common_items.at(choice));
 		}
 	}
-	for (auto const& gfi : guaranteed_finite_items) { inventory.add_item(svc.data.item, gfi); }
 }
 
 } // namespace fornani::npc

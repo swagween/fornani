@@ -1,8 +1,7 @@
 
 #include "fornani/gui/gizmos/MapGizmo.hpp"
-#include "fornani/gui/gizmos/MapInfoGizmo.hpp"
-
 #include "fornani/entities/player/Player.hpp"
+#include "fornani/gui/gizmos/MapInfoGizmo.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
 #include "fornani/world/Map.hpp"
@@ -37,6 +36,9 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player
 	m_path.set_section("close");
 	m_motherboard_path.set_section("start");
 	m_placement = {380.f, -22.f};
+
+	if (svc.quest_table.get_quest_progression("map_markers", Subquest{"main", 810}) == 1) { m_minimap->add_quest_marker(QuestMarkerType::main, 810); }
+	if (svc.quest_table.get_quest_progression("map_markers", Subquest{"woodshine", 400}) == 1) { m_minimap->add_quest_marker(QuestMarkerType::main, 400); }
 }
 
 void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
@@ -124,6 +126,8 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	m_map_screen.set_dimensions(m_path.get_dimensions());
 	m_map_shadow.set_position(m_path.get_position() + m_placement);
 	m_map_shadow.set_dimensions(m_path.get_dimensions());
+
+	if (m_info) { m_info->current_room = m_minimap->get_currently_hovered_room(); }
 }
 
 void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
@@ -149,34 +153,38 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 	m_constituents.gizmo.bottom_right.render(win, m_sprite, render_position, sf::Vector2f{1.f, 1.f}, shader, palette);
 }
 
-bool MapGizmo::handle_inputs(config::ControllerMap& controller, audio::Soundboard& soundboard) {
+bool MapGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard) {
 	auto zoom_factor{0.005f};
 	zoom_factor *= m_minimap->get_scale();
-	if (controller.gamepad_connected()) { m_minimap->move(controller.get_joystick_throttle()); }
-	if (controller.digital_action_status(config::DigitalAction::menu_up).held) {
-		m_minimap->move({0.f, -1.f});
-		if (!m_minimap->hit_vert_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
+	if (controller.is_gamepad() && controller.is_any_direction_held(input::AnalogAction::map_pan)) {
+		m_minimap->move(controller.get_joystick_throttle(input::AnalogAction::map_pan) * 2.f); // idk why I have to multiply this by 2
+		if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+	} else {
+		if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::held)) {
+			m_minimap->move({0.f, -1.f});
+			if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+		}
+		if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::held)) {
+			m_minimap->move({0.f, 1.f});
+			if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+		}
+		if (controller.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::held)) {
+			m_minimap->move({-1.f, 0.f});
+			if (!m_minimap->hit_horiz_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+		}
+		if (controller.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::held)) {
+			m_minimap->move({1.f, 0.f});
+			if (!m_minimap->hit_horiz_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+		}
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_down).held) {
-		m_minimap->move({0.f, 1.f});
-		if (!m_minimap->hit_vert_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
-	}
-	if (controller.digital_action_status(config::DigitalAction::menu_left).held) {
-		m_minimap->move({-1.f, 0.f});
-		if (!m_minimap->hit_horiz_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
-	}
-	if (controller.digital_action_status(config::DigitalAction::menu_right).held) {
-		m_minimap->move({1.f, 0.f});
-		if (!m_minimap->hit_horiz_pan_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::scan); }
-	}
-	if (controller.digital_action_status(config::DigitalAction::menu_tab_left).held) {
+	if (controller.digital(input::DigitalAction::menu_tab_left).held) {
 		m_minimap->zoom(zoom_factor);
-		if (!m_minimap->hit_zoom_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::buzz); }
-	} else if (controller.digital_action_status(config::DigitalAction::menu_tab_right).held) {
+		if (!m_minimap->hit_zoom_limit()) { soundboard.repeat_sound("pioneer_buzz"); }
+	} else if (controller.digital(input::DigitalAction::menu_tab_right).held) {
 		m_minimap->zoom(-zoom_factor);
-		if (!m_minimap->hit_zoom_limit()) { soundboard.flags.pioneer.set(audio::Pioneer::buzz); }
+		if (!m_minimap->hit_zoom_limit()) { soundboard.repeat_sound("pioneer_buzz"); }
 	}
-	if (controller.digital_action_status(config::DigitalAction::menu_select).triggered) {
+	if (controller.digital(input::DigitalAction::menu_select).triggered) {
 		m_minimap->center();
 		soundboard.flags.pioneer.set(audio::Pioneer::click);
 	}
@@ -188,7 +196,7 @@ void MapGizmo::on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Pl
 	m_path.set_section("open");
 
 	// TODO: gate plugins based on player's inventory
-	m_info = std::make_unique<MapInfoGizmo>(svc, map, sf::Vector2f{374.f, -90}); // make conditional when info bar is an item
+	m_info = std::make_unique<MapInfoGizmo>(svc, map.room_id, sf::Vector2f{374.f, -90}); // make conditional when info bar is an item
 	m_plugins.push_back(MapPlugin(svc.finder, "plugin_nani", sf::IntRect{m_lookups.plugin + sf::Vector2i{0, 49}, {63, 29}}, audio::Pioneer::slot));
 	m_flags.icon.set(MapIconFlags::nani);
 	m_plugins.push_back(MapPlugin(svc.finder, "plugin_save", sf::IntRect{m_lookups.plugin + sf::Vector2i{27, 0}, {23, 22}}, audio::Pioneer::sync));
@@ -197,6 +205,8 @@ void MapGizmo::on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Pl
 	m_flags.icon.set(MapIconFlags::bed);
 	//
 
+	m_minimap->set_flag(MiniMapFlags::open);
+
 	m_motherboard_path.set_section("open");
 }
 
@@ -204,7 +214,8 @@ void MapGizmo::on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::P
 	Gizmo::on_close(svc, player, map);
 	m_path.set_section("close");
 	m_plugins.clear();
-	m_info = {};
+	m_info.reset();
+	m_minimap->set_flag(MiniMapFlags::open, false);
 	m_motherboard_path.set_section("start");
 }
 

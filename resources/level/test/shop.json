@@ -37,7 +37,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 4,
+    "background": "canopy",
     "biome": "base",
     "camera_effects": {
       "shake": {
@@ -59,8 +59,8 @@
       16
     ],
     "metagrid": [
-      -9,
-      0
+      -8,
+      2
     ],
     "minimap": false,
     "music": "",

@@ -6,17 +6,21 @@
 
 namespace fornani {
 
-enum class LR : std::uint8_t { left, right };
-enum class LNR : std::uint8_t { left, right, neutral };
-enum class UND : std::uint8_t { up, down, neutral };
-// intermediate direction, used for special cases like grappling hook
-enum class Inter : std::uint8_t { north, south, east, west, northeast, northwest, southeast, southwest };
+enum class LR { left, right };
+enum class LNR { left, right, neutral };
+enum class UND { up, down, neutral };
+enum class UDLR { up, down, left, right };
+enum class Inter { north, south, east, west, northeast, northwest, southeast, southwest };
+enum class HV { horizontal, vertical };
 
-enum class DirectionFlags : std::uint8_t { locked };
+enum class DirectionFlags { locked };
+
+class Direction;
 
 class SimpleDirection {
   public:
 	SimpleDirection() = default;
+	SimpleDirection(Direction const to);
 	SimpleDirection(LR to) : lr{to} {}
 
 	void set(LR to) { lr = to; }
@@ -40,15 +44,50 @@ class SimpleDirection {
 	LR lr{};
 };
 
+struct CardinalDirection {
+  public:
+	CardinalDirection() = default;
+	CardinalDirection(int to) : udlr{static_cast<UDLR>(to)} {}
+	CardinalDirection(UDLR to) : udlr{to} {}
+
+	void set(UDLR to) { udlr = to; }
+	void set(LR to) { udlr = to == LR::left ? UDLR::left : UDLR::right; }
+	void set(LNR to) { udlr = to == LNR::left ? UDLR::left : UDLR::right; }
+	void set(UND to) { udlr = to == UND::up ? UDLR::up : UDLR::down; }
+
+	[[nodiscard]] auto get() const -> UDLR { return udlr; }
+	[[nodiscard]] auto up() const -> bool { return udlr == UDLR::up; }
+	[[nodiscard]] auto down() const -> bool { return udlr == UDLR::down; }
+	[[nodiscard]] auto left() const -> bool { return udlr == UDLR::left; }
+	[[nodiscard]] auto right() const -> bool { return udlr == UDLR::right; }
+	[[nodiscard]] auto print() const -> std::string { return left() ? "left" : right() ? "right" : up() ? "up" : "down"; }
+	[[nodiscard]] auto as_hv() const -> HV { return up() || down() ? HV::vertical : HV::horizontal; }
+	[[nodiscard]] auto as_vector() const -> sf::Vector2f { return up() ? sf::Vector2f{0.f, -1.f} : down() ? sf::Vector2f{0.f, 1.f} : left() ? sf::Vector2f{-1.f, 0.f} : sf::Vector2f{1.f, 0.f}; }
+	[[nodiscard]] auto as_degrees() const -> float { return up() ? 0.f : down() ? 180.f : left() ? 270.f : 90.f; }
+
+	bool operator==(CardinalDirection const& other) const { return other.udlr == udlr; }
+	bool operator!=(CardinalDirection const& other) const { return other.udlr != udlr; }
+
+	template <typename T>
+	T as() const {
+		return static_cast<T>(udlr);
+	}
+
+  private:
+	UDLR udlr{};
+};
+
 struct Direction {
 	Direction(SimpleDirection dir) : Direction(UND::neutral, dir.as<LNR>()) {}
 	Direction(UND und_preset = UND::neutral, LNR lnr_preset = LNR::neutral) : und(und_preset), lnr(lnr_preset) {}
 	Direction(sf::Vector2i preset) : lnr{preset.x == 0 ? LNR::neutral : preset.x == 1 ? LNR::right : LNR::left}, und{preset.y == 0 ? UND::neutral : preset.y == 1 ? UND::up : UND::down} {}
 	Direction(sf::Vector2i preset, bool world_orientation) : lnr{preset.x == 0 ? LNR::neutral : preset.x == 1 ? LNR::right : LNR::left}, und{preset.y == 0 ? UND::neutral : preset.y == -1 ? UND::up : UND::down} {}
 
+	bool operator==(Direction const& other) const { return other.lnr == lnr && other.und == und; }
+	bool operator!=(Direction const& other) const { return other.lnr != lnr || other.und != und; }
+
 	LNR lnr{LNR::neutral};
 	UND und{UND::neutral};
-	Inter inter{Inter::north};
 
 	[[nodiscard]] auto up() const -> bool { return und == UND::up; }
 	[[nodiscard]] auto down() const -> bool { return und == UND::down; }
@@ -64,23 +103,24 @@ struct Direction {
 	void lock() { m_flags.set(DirectionFlags::locked); }
 	void unlock() { m_flags.reset(DirectionFlags::locked); }
 
-	constexpr void set_intermediate(bool const left, bool const right, bool const up, bool const down) {
+	[[nodiscard]] Inter get_intermediate(bool const left, bool const right, bool const up, bool const down) const {
 
 		// no inputs
-		inter = lnr == LNR::left ? Inter::west : Inter::east;
+		auto ret = lnr == LNR::left ? Inter::west : Inter::east;
 
-		if (up) { inter = Inter::north; }
-		if (down) { inter = Inter::south; }
+		if (up) { ret = Inter::north; }
+		if (down) { ret = Inter::south; }
 		if (left) {
-			inter = Inter::west;
-			if (up) { inter = Inter::northwest; }
-			if (down) { inter = Inter::southwest; }
+			ret = Inter::west;
+			if (up) { ret = Inter::northwest; }
+			if (down) { ret = Inter::southwest; }
 		}
 		if (right) {
-			inter = Inter::east;
-			if (up) { inter = Inter::northeast; }
-			if (down) { inter = Inter::southeast; }
+			ret = Inter::east;
+			if (up) { ret = Inter::northeast; }
+			if (down) { ret = Inter::southeast; }
 		}
+		return ret;
 	}
 
 	void neutralize_und() { und = UND::neutral; }
@@ -96,20 +136,6 @@ struct Direction {
 	std::string print() const { return print_und() + ", " + print_lnr(); }
 	std::string print_und() const { return und == UND::up ? "up" : (und == UND::neutral ? "neutral" : "down"); }
 	std::string print_lnr() const { return lnr == LNR::left ? "left" : (lnr == LNR::neutral ? "neutral" : "right"); }
-	std::string print_intermediate() const {
-		switch (inter) {
-		default:
-		case Inter::north: return "north"; break;
-		case Inter::south: return "south"; break;
-		case Inter::east: return "east"; break;
-		case Inter::west: return "west"; break;
-		case Inter::northwest: return "northwest"; break;
-		case Inter::northeast: return "northeast"; break;
-		case Inter::southwest: return "southwest"; break;
-		case Inter::southeast: return "southeast"; break;
-		}
-		return "null";
-	}
 
   private:
 	util::BitFlags<DirectionFlags> m_flags{};

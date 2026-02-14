@@ -11,6 +11,8 @@ void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
 	m_app_settings = *dj::Json::from_file((m_finder.resource_path() + "/data/config/settings.json").c_str());
 	assert(!m_app_settings.is_null());
 
+	m_backdrop_color = sf::Color{m_app_settings["backdrop"][0].as<uint8_t>(), m_app_settings["backdrop"][1].as<uint8_t>(), m_app_settings["backdrop"][2].as<uint8_t>()};
+
 	// create window
 	auto fullscreen = demo_fullscreen.first ? demo_fullscreen.second : static_cast<bool>(m_app_settings["fullscreen"].as_bool());
 	m_window.create(m_metadata.long_title(), fullscreen, {960, 512});
@@ -18,7 +20,7 @@ void Application::init(char** argv, std::pair<bool, bool> demo_fullscreen) {
 
 	auto entire_window = sf::View(sf::FloatRect{{}, sf::Vector2f{sf::VideoMode::getDesktopMode().size}});
 	auto background = sf::RectangleShape{sf::Vector2f{sf::VideoMode::getDesktopMode().size}};
-	background.setFillColor(colors::ui_black);
+	background.setFillColor(m_backdrop_color);
 
 	m_window.get().clear();
 	if (m_window.is_fullscreen()) { m_window.get().setView(entire_window); }

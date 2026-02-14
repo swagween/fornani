@@ -42,25 +42,23 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vecto
 
 void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
 	collider.update(svc);
-	if (!player.is_dead()) { handle_collision(player.collider); }
+	if (!player.is_dead()) { handle_collision(player.get_collider()); }
 	if (attributes.test(SpikeAttributes::soft_reset)) {
 		if (map.transition.is(graphics::TransitionState::black)) { player.controller.unrestrict(); }
 		if (soft_reset && map.transition.is(graphics::TransitionState::black)) {
 			player.set_position(map.last_checkpoint());
-			player.collider.physics.zero();
+			player.get_collider().physics.zero();
 			player.controller.prevent_movement();
 			player.controller.restrict_movement();
 			map.transition.end();
 			soft_reset = false;
 		}
-		if (player.hurtbox.overlaps(hitbox) && map.transition.is(graphics::TransitionState::inactive) && !player.invincible()) {
+		if (player.hurtbox.overlaps(hitbox) && map.transition.is(graphics::TransitionState::inactive) && !player.invincible() && !player.is_dead()) {
 			player.hurt();
 			player.freeze_position();
 			player.shake_sprite();
-			if (!player.is_dead()) {
-				soft_reset = true;
-				map.transition.start();
-			}
+			soft_reset = true;
+			map.transition.start();
 		}
 	} else {
 		if (player.hurtbox.overlaps(hitbox)) { player.hurt(); }

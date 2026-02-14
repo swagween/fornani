@@ -17,7 +17,10 @@ class StatusBar {
 	void update(automa::ServiceProvider& svc, sf::Vector2f position, entity::Health& status, bool ease = false);
 	void update(automa::ServiceProvider& svc, sf::Vector2f position, float fraction, float taken = 0.f, bool ease = false);
 	void render(sf::RenderWindow& win);
+	void set_origin(sf::Vector2f origin);
+	void set_position(sf::Vector2f position);
 	void set_dimensions(sf::Vector2f dim) { m_dimensions = dim; }
+	[[nodiscard]] auto get_dimensions() const -> sf::Vector2f { return m_dimensions; }
 
   private:
 	components::PhysicsComponent m_physics{};

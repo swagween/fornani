@@ -11,8 +11,8 @@ struct ServiceProvider;
 
 namespace fornani::text {
 
-enum class TutorialHelpers : std::uint8_t { trigger, render, closed };
-enum class TutorialFlags : std::uint8_t { jump, sprint, inventory, shoot, map };
+enum class TutorialHelpers { trigger, render, closed };
+enum class TutorialFlags { jump, sprint, inventory, shoot, map };
 
 class Tutorial {
   public:

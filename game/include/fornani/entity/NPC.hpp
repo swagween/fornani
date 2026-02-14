@@ -6,8 +6,11 @@
 #include <fornani/entities/Mobile.hpp>
 #include <fornani/entities/npc/Vendor.hpp>
 #include <fornani/entity/Entity.hpp>
+#include <fornani/events/Subscription.hpp>
 #include <fornani/story/Quest.hpp>
 #include <fornani/utils/Circuit.hpp>
+#include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/Flaggable.hpp>
 #include <fornani/utils/ID.hpp>
 #include <fornani/utils/StateFunction.hpp>
 #include <memory>
@@ -15,14 +18,15 @@
 
 namespace fornani {
 
-enum class NPCFlags : std::uint8_t { has_turn_animation, face_player, background, no_animation };
-enum class NPCState : std::uint8_t { engaged, force_interact, introduced, talking, cutscene, piggybacking, hidden, distant_interact, just_engaged };
-enum class NPCAnimationState : std::uint8_t { idle, turn, walk, inspect, fall, land };
+enum class NPCFlags { has_turn_animation, face_player, background, no_animation, random_walk, cutscene, piggyback };
+enum class NPCState { engaged, force_interact, introduced, talking, cutscene, piggybacking, hidden, distant_interact, just_engaged, random_walk };
+enum class NPCAnimationState { idle, turn, walk, inspect, fall, land, busy, stagger };
 
-class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState> {
+class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>, public Flaggable<NPCFlags> {
   public:
 	NPC(automa::ServiceProvider& svc, dj::Json const& in);
-	NPC(automa::ServiceProvider& svc, std::string_view label);
+	NPC(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in);
+	NPC(automa::ServiceProvider& svc, world::Map& map, std::string_view label, bool include_collider = true);
 	NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vector<std::vector<int>> const suites);
 	void init(automa::ServiceProvider& svc, dj::Json const& in_data);
 
@@ -36,6 +40,8 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	void start_conversation(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console);
 	void push_conversation(int convo);
 	void pop_conversation();
+	void play_voice_cue(automa::ServiceProvider& svc, int which) const;
+	void piggyback_me(automa::ServiceProvider& svc, int id);
 	void flush_conversations();
 	void force_engage();
 	void disengage();
@@ -48,6 +54,8 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	fsm::StateFunction update_inspect();
 	fsm::StateFunction update_fall();
 	fsm::StateFunction update_land();
+	fsm::StateFunction update_busy();
+	fsm::StateFunction update_stagger();
 
 	/* gameplay helpers */
 	void walk();
@@ -57,7 +65,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	void set_position_from_scaled(sf::Vector2f scaled_pos);
 
 	[[nodiscard]] auto is_hidden() const -> bool { return m_state.test(NPCState::hidden); }
-	[[nodiscard]] auto is_background() const -> bool { return m_flags.test(NPCFlags::background); }
+	[[nodiscard]] auto is_background() const -> bool { return has_flag_set(NPCFlags::background); }
 	[[nodiscard]] auto was_introduced() const -> bool { return m_state.test(NPCState::introduced); }
 	[[nodiscard]] auto is_force_interact() const -> bool { return m_state.test(NPCState::force_interact); }
 	[[nodiscard]] auto get_number_of_suites() const -> int { return static_cast<int>(conversations.size()); }
@@ -71,12 +79,13 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	void set_force_interact(bool to) { to ? m_state.set(NPCState::force_interact) : m_state.reset(NPCState::force_interact); }
 	void set_distant_interact(bool to) { to ? m_state.set(NPCState::distant_interact) : m_state.reset(NPCState::distant_interact); }
 
+	std::shared_ptr<Slot const> slot{std::make_shared<Slot const>()};
+
   private:
 	bool change_state(NPCAnimationState next, anim::Parameters params);
 
 	/* gameplay members */
 	util::BitFlags<NPCState> m_state{};
-	util::BitFlags<NPCFlags> m_flags{};
 	util::Circuit m_current_conversation;
 	std::deque<int> conversations{};
 	Animatable m_indicator;
@@ -85,6 +94,8 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	int current_location{};
 	int vendor_id{};
 	automa::ServiceProvider* m_services;
+
+	float m_walk_speed;
 
 	/* data-driven members */
 	ID m_id;

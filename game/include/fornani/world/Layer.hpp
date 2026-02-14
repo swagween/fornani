@@ -24,8 +24,8 @@ class DayNightShifter;
 
 namespace fornani::world {
 
-enum class LayerType : std::uint8_t { background, middleground, foreground, reverse_obscuring, obscuring };
-enum class LayerFlags : std::uint8_t { ignore_lighting };
+enum class LayerType { background, middleground, foreground, reverse_obscuring, obscuring };
+enum class LayerFlags { ignore_lighting };
 
 struct LayerTexture {
 	sf::RenderTexture day{};

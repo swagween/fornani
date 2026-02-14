@@ -9,18 +9,18 @@ namespace fornani::automa {
 struct ServiceProvider;
 }
 
-namespace fornani::config {
+namespace fornani::input {
 enum class DigitalAction;
 }
 
 namespace fornani::graphics {
 
-enum class HelpTextFlags : std::uint8_t { no_blink, time_limit };
+enum class HelpTextFlags { no_blink, time_limit };
 
 class HelpText {
   public:
 	explicit HelpText(automa::ServiceProvider& svc);
-	HelpText(automa::ServiceProvider& svc, std::string start, config::DigitalAction const& code, std::string end = "", int delay_time = 195, bool include_background = false, bool no_blink = false);
+	HelpText(automa::ServiceProvider& svc, std::string start, input::DigitalAction const& code, std::string end = "", int delay_time = 195, bool include_background = false, bool no_blink = false);
 	void render(sf::RenderWindow& win);
 	void set_color(sf::Color color);
 	void set_string(std::string string);
@@ -46,4 +46,4 @@ class HelpText {
 	sf::Vector2f bg_offset{2.f, 2.f};
 };
 
-} // namespace fornani::text
+} // namespace fornani::graphics

@@ -15,4 +15,5 @@ class Dash : public Ability {
 	int m_rate;
 	bool m_omni;
 };
+
 } // namespace fornani::player

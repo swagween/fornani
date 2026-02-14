@@ -1,11 +1,12 @@
+
 #pragma once
 
-#include "fornani/components/CircleSensor.hpp"
-#include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/entities/packages/Health.hpp"
-#include "fornani/particle/Gravitator.hpp"
-#include "fornani/utils/Collider.hpp"
-#include "fornani/utils/StateFunction.hpp"
+#include <fornani/components/CircleSensor.hpp>
+#include <fornani/components/SteeringComponent.hpp>
+#include <fornani/entities/animation/AnimatedSprite.hpp>
+#include <fornani/entities/packages/Health.hpp>
+#include <fornani/physics/Collider.hpp>
+#include <fornani/utils/StateFunction.hpp>
 #define SPAWNABLE_PLAT_BIND(f) std::bind(&SpawnablePlatform::f, this)
 
 namespace fornani::automa {
@@ -16,11 +17,13 @@ class Player;
 }
 
 namespace fornani::entity {
-enum class SpawnablePlatformState : std::uint8_t { open, opening, fading, closing, dormant };
+
+enum class SpawnablePlatformState { open, opening, fading, closing, dormant };
+
 class SpawnablePlatform {
   public:
 	SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2f position, int index = 0);
-	SpawnablePlatform(SpawnablePlatform const& other) : sprite(other.sprite), index(other.index) {}
+	SpawnablePlatform(SpawnablePlatform const& other) : sprite(other.sprite), index(other.index), m_health{1.f} {}
 
 	void update(automa::ServiceProvider& svc, player::Player& player, sf::Vector2f target);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
@@ -41,9 +44,9 @@ class SpawnablePlatform {
 	SpawnablePlatformState state{};
 	shape::Collider collider{};
 	int index{};
-	vfx::Gravitator gravitator{};
+	components::SteeringComponent m_steering{};
 	components::CircleSensor sensor{};
 	anim::AnimatedSprite sprite;
-	Health health{};
+	Health m_health;
 };
 } // namespace fornani::entity

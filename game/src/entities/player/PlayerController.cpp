@@ -1,13 +1,22 @@
 
-#include "fornani/entities/player/PlayerController.hpp"
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/service/ServiceProvider.hpp"
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/entities/player/PlayerController.hpp>
+#include <fornani/entities/player/abilities/Dash.hpp>
+#include <fornani/entities/player/abilities/Dashkick.hpp>
+#include <fornani/entities/player/abilities/Dive.hpp>
+#include <fornani/entities/player/abilities/Doublejump.hpp>
+#include <fornani/entities/player/abilities/Jump.hpp>
+#include <fornani/entities/player/abilities/Roll.hpp>
+#include <fornani/entities/player/abilities/Slide.hpp>
+#include <fornani/entities/player/abilities/Walljump.hpp>
+#include <fornani/entities/player/abilities/Wallslide.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 
 namespace fornani::player {
 
 constexpr static float crawl_speed_v{0.32f};
 
-PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect = util::Cooldown(64)}, post_slide{80}, post_wallslide{16}, wallslide_slowdown{64} {
+PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect{64}, .dash_kick{134}}, post_slide{80}, post_wallslide{16}, wallslide_slowdown{64} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
@@ -20,12 +29,11 @@ PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player)
 
 void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Player& player) {
 
-	if (svc.state_flags.test(automa::StateFlags::cutscene)) { return; }
-
-	auto sprint = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).held;
-	auto sprint_release = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).released;
-	auto sprint_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_sprint).triggered;
-	if (svc.controller_map.is_autosprint_enabled() && !svc.controller_map.is_gamepad()) {
+	auto sprint = svc.input_system.digital(input::DigitalAction::sprint).held;
+	if (svc.input_system.is_gamepad()) { sprint = std::abs(svc.input_system.get_joystick_throttle().x) > walk_speed_v; }
+	auto sprint_release = svc.input_system.digital(input::DigitalAction::sprint).released;
+	auto sprint_pressed = svc.input_system.digital(input::DigitalAction::sprint).triggered;
+	if (svc.input_system.is_autosprint_enabled() && !svc.input_system.is_gamepad()) {
 		sprint = !sprint;
 		sprint_release = sprint_pressed;
 	}
@@ -40,36 +48,37 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		return;
 	}
 	if (walking_autonomously()) { return; }
+	if (svc.state_flags.test(automa::StateFlags::cutscene)) { return; }
 
-	auto dash_and_jump_combined = svc.controller_map.is_bound_to_same_input(config::DigitalAction::platformer_dash, config::DigitalAction::platformer_jump);
+	auto dash_and_jump_combined = svc.input_system.is_bound_to_same_input(input::DigitalAction::dash, input::DigitalAction::jump);
 
-	auto const& left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_left).held;
-	auto const& right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_right).held;
-	auto const& up = svc.controller_map.digital_action_status(config::DigitalAction::platformer_up).held;
-	auto const& down = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).held;
+	auto const left = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::left);
+	auto const right = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::right);
+	auto const up = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::up);
+	auto const down = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::down);
 	auto const any_direction_held = left || right || up || down;
 
-	auto const& jump_started = svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).triggered;
-	auto const& jump_held = svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).held;
-	auto const& jump_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).released;
+	auto const jump_started = svc.input_system.digital(input::DigitalAction::jump).triggered;
+	auto const jump_held = svc.input_system.digital(input::DigitalAction::jump).held;
+	auto const jump_released = svc.input_system.digital(input::DigitalAction::jump).released;
 
-	auto const& shoot_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_shoot).triggered;
-	auto const& shoot_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_shoot).released;
+	auto const shoot_pressed = svc.input_system.digital(input::DigitalAction::shoot).triggered;
+	auto const shoot_released = svc.input_system.digital(input::DigitalAction::shoot).released;
 
-	auto const& arms_switch_left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_arms_switch_left).triggered;
-	auto const& arms_switch_right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_arms_switch_right).triggered;
+	auto const arms_switch_left = svc.input_system.digital(input::DigitalAction::tab_left).triggered;
+	auto const arms_switch_right = svc.input_system.digital(input::DigitalAction::tab_right).triggered;
 
-	auto const& left_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_left).released;
-	auto const& right_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_right).released;
-	auto const& down_released = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).released;
-	auto const& down_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_down).triggered;
+	auto const left_released = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::left);
+	auto const right_released = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::right);
+	auto const down_released = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::down);
+	auto const down_pressed = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::down);
 
-	auto it{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).triggered};
-	auto ir{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).released};
-	auto ih{svc.controller_map.digital_action_status(config::DigitalAction::platformer_inspect).held && cooldowns.inspect.is_almost_complete()};
+	auto it{svc.input_system.digital(input::DigitalAction::inspect).triggered};
+	auto ir{svc.input_system.digital(input::DigitalAction::inspect).released};
+	auto ih{svc.input_system.digital(input::DigitalAction::inspect).held && cooldowns.inspect.is_almost_complete()};
 
-	auto const& left_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_left).triggered;
-	auto const& right_pressed = svc.controller_map.digital_action_status(config::DigitalAction::platformer_right).triggered;
+	auto const left_pressed = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::left);
+	auto const right_pressed = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::right);
 
 	// set dash direction
 	if (up) { m_dash_direction = Direction{{0, 1}}; }
@@ -82,8 +91,10 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	cooldowns.inspect.update();
 	if (it) { cooldowns.inspect.start(); }
 
-	auto const& dash_left = svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered && !grounded() && left;
-	auto const& dash_right = svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered && !grounded() && right;
+	cooldowns.dash_kick.update();
+
+	auto const& dash_left = svc.input_system.digital(input::DigitalAction::dash).triggered && !grounded() && left;
+	auto const& dash_right = svc.input_system.digital(input::DigitalAction::dash).triggered && !grounded() && right;
 
 	key_map[ControllerInput::move_y] = 0.f;
 	if (up) { key_map[ControllerInput::move_y] -= 1.f; }
@@ -93,67 +104,83 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	post_slide.update();
 	post_wallslide.update();
 	if (player.grounded()) { player.m_ability_usage = {}; }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_dash).triggered) {
+	if (svc.input_system.digital(input::DigitalAction::dash).triggered) {
 		auto const dj_guard = (dash_and_jump_combined && any_direction_held) || !dash_and_jump_combined;
 		if (player.can_dash() && !is_wallsliding() && dj_guard) {
-			m_ability = std::make_unique<Dash>(svc, map, player.collider, m_dash_direction, player.can_omnidirectional_dash());
+			m_ability = std::make_unique<Dash>(svc, map, player.get_collider(), m_dash_direction, player.can_omnidirectional_dash());
 			player.m_ability_usage.dash.update();
 		}
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).triggered) {
-		if (player.can_jump()) { m_ability = std::make_unique<Jump>(svc, map, player.collider); }
+	if (svc.input_system.digital(input::DigitalAction::jump).triggered) {
+		if (player.can_jump()) { m_ability = std::make_unique<Jump>(svc, map, player.get_collider()); }
 		// guard for when player has jump and dash bound to the same key
 		auto const dash_exhausted = !player.can_dash() && !is_dashing();
-		auto can_walljump = (player.collider.has_right_wallslide_collision() || player.collider.has_left_wallslide_collision()) && !player.collider.grounded() && player.can_walljump();
-		auto jump_direction = player.collider.has_right_wallslide_collision() ? Direction{LR::right} : player.collider.has_left_wallslide_collision() ? Direction{LR::left} : Direction{};
+		auto direction_held = left || right;
+		auto can_walljump = (player.get_collider().has_right_wallslide_collision() || player.get_collider().has_left_wallslide_collision()) && !player.get_collider().grounded() && player.can_walljump() && direction_held;
+		auto can_doublejump = (player.can_doublejump() && !dash_and_jump_combined) || (player.can_doublejump() && dash_and_jump_combined && (!any_direction_held || dash_exhausted));
+		auto jump_direction = player.get_collider().has_right_wallslide_collision() ? Direction{LR::right} : player.get_collider().has_left_wallslide_collision() ? Direction{LR::left} : Direction{};
 		if (can_walljump) {
-			m_ability = std::make_unique<Walljump>(svc, map, player.collider, jump_direction);
-		} else if ((player.can_doublejump() && !dash_and_jump_combined) || (player.can_doublejump() && dash_and_jump_combined && (!any_direction_held || dash_exhausted))) {
-			m_ability = std::make_unique<Doublejump>(svc, map, player.collider);
+			m_ability = std::make_unique<Walljump>(svc, map, player.get_collider(), jump_direction);
+		} else if (can_doublejump && !player.can_dive()) {
+			m_ability = std::make_unique<Doublejump>(svc, map, player.get_collider());
 			player.m_ability_usage.doublejump.update();
 		}
+		if (player.can_dive() && !can_walljump) { m_ability = std::make_unique<Dive>(svc, map, player.get_collider()); }
 	}
 	if (!is_wallsliding()) { svc.soundboard.flags.player.reset(audio::Player::wallslide); }
 
 	// crouching, rolling, and sliding
-	flags.reset(MovementState::crouch);
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).held) {
+	if (svc.input_system.digital(input::DigitalAction::slide).held) {
 		if (!grounded()) { input_flags.set(InputState::slide_in_air); }
-		if (!m_ability && player.can_slide() && sprint && !post_slide.running() && moving()) { m_ability = std::make_unique<Slide>(svc, map, player.collider, player.get_actual_direction()); }
-		if (!sprint) { flags.set(MovementState::crouch); }
+		if (!m_ability && player.can_slide() && sprint && !post_slide.running() && moving()) { m_ability = std::make_unique<Slide>(svc, map, player.get_collider(), player.get_actual_direction()); }
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).triggered) {
-		if (!m_ability && player.can_roll() && sprint) { m_ability = std::make_unique<Roll>(svc, map, player.collider, player.get_actual_direction()); }
+	flags.reset(MovementState::crouch);
+	if (svc.input_system.digital(input::DigitalAction::crouch).held) {
+		if (!sprint || svc.input_system.is_gamepad()) { flags.set(MovementState::crouch); }
+	}
+	if (svc.input_system.digital(input::DigitalAction::slide).triggered) {
+		auto can_roll = !m_ability;
+		if (is(AbilityType::dash) && player.get_collider().grounded()) { can_roll = true; }
+		if (can_roll && player.can_roll() && sprint) { m_ability = std::make_unique<Roll>(svc, map, player.get_collider(), player.get_actual_direction()); }
 	}
 	if (m_ability) {
 		if (m_ability.value()->is(AbilityType::roll)) { input_flags.reset(InputState::slide_in_air); }
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).released) { input_flags.reset(InputState::slide_in_air); }
+	if (svc.input_system.digital(input::DigitalAction::slide).released) { input_flags.reset(InputState::slide_in_air); }
 
 	// wallslide
-	if ((left && player.collider.has_left_wallslide_collision()) || (right && player.collider.has_right_wallslide_collision())) {
+	if ((left && player.get_collider().has_left_wallslide_collision()) || (right && player.get_collider().has_right_wallslide_collision())) {
 		if (player.can_wallslide() && !post_wallslide.running()) {
 			if (!is(AbilityType::walljump)) {
 				if (!is(AbilityType::wallslide)) { wallslide_slowdown.start(); }
-				m_ability = std::make_unique<Wallslide>(svc, map, player.collider, player.get_actual_direction());
+				m_ability = std::make_unique<Wallslide>(svc, map, player.get_collider(), player.get_actual_direction());
 			}
 		}
 	}
-	if (!is(AbilityType::wallslide)) { player.collider.physics.maximum_velocity.y = player.physics_stats.maximum_velocity.y; }
+	if (!is(AbilityType::wallslide)) { player.get_collider().physics.maximum_velocity.y = player.physics_stats.maximum_velocity.y; }
 	wallslide_slowdown.update();
 
+	if (player.can_dash_kick() && !cooldowns.dash_kick.running()) {
+		m_ability = std::make_unique<DashKick>(svc, map, player.get_collider(), player.get_actual_direction());
+		svc.ticker.freeze_frame(8);
+		player.health.invincibility.start(16);
+		player.m_ability_usage.dash.update(-1);
+		player.set_flag(PlayerFlags::dash_kick, false);
+		cooldowns.dash_kick.start();
+	}
+
 	if (m_ability) {
-		m_ability.value()->update(player.collider, *this);
+		m_ability.value()->update(player.get_collider(), *this);
 
 		// stop rising if player releases jump control
-		if (is(AbilityType::jump) || is(AbilityType::doublejump) || is(AbilityType::walljump)) {
-			if (svc.controller_map.digital_action_status(config::DigitalAction::platformer_jump).released) { m_ability.value()->cancel(); }
-			if (m_ability.value()->cancelled() && player.collider.physics.apparent_velocity().y < 0.0f) {
-				player.collider.physics.acceleration.y *= player.physics_stats.jump_release_multiplier;
+		if (is(AbilityType::jump) || is(AbilityType::doublejump) || is(AbilityType::walljump) || is(AbilityType::dive)) {
+			if (svc.input_system.digital(input::DigitalAction::jump).released) { m_ability.value()->cancel(); }
+			if (m_ability.value()->cancelled() && player.get_collider().physics.apparent_velocity().y < 0.0f) {
+				player.get_collider().physics.acceleration.y *= player.physics_stats.jump_release_multiplier;
 				m_ability.value()->fail();
 			}
 		}
-		if (m_ability.value()->is(AbilityType::slide) && svc.controller_map.digital_action_status(config::DigitalAction::platformer_slide).released) {
+		if (m_ability.value()->is(AbilityType::slide) && svc.input_system.digital(input::DigitalAction::slide).released) {
 			m_ability.value()->fail();
 			post_slide.start();
 		}
@@ -163,8 +190,8 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 
 	// horizontal movement
 	key_map[ControllerInput::move_x] = 0.f;
-	if (svc.controller_map.is_gamepad()) {
-		key_map[ControllerInput::move_x] = is_crouching() && grounded() ? crawl_speed_v * svc.controller_map.get_joystick_throttle().x : svc.controller_map.get_joystick_throttle().x;
+	if (svc.input_system.is_gamepad()) {
+		key_map[ControllerInput::move_x] = is_crouching() && grounded() ? crawl_speed_v * svc.input_system.get_joystick_throttle().x : svc.input_system.get_joystick_throttle().x;
 	} else {
 		if (left) { key_map[ControllerInput::move_x] -= is_crouching() && grounded() ? crawl_speed_v : walk_speed_v; }
 		if (right) { key_map[ControllerInput::move_x] += is_crouching() && grounded() ? crawl_speed_v : walk_speed_v; }
@@ -173,15 +200,13 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	// sprint
 	key_map[ControllerInput::sprint] = 0.f;
 	if (moving() && sprint && !sprint_released()) {
-		if (svc.controller_map.is_gamepad()) {
+		if (svc.input_system.is_gamepad()) {
 		} else {
 			if (left) { key_map[ControllerInput::move_x] = -sprint_speed_v; }
 			if (right) { key_map[ControllerInput::move_x] = sprint_speed_v; }
 		}
 		key_map[ControllerInput::sprint] = key_map[ControllerInput::move_x];
 	}
-
-	direction.set_intermediate(left, right, up, down);
 
 	// sprint
 	if (sprint_release) { sprint_flags.set(Sprint::released); }

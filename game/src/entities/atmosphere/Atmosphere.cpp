@@ -1,6 +1,7 @@
 
 #include "fornani/entities/atmosphere/Atmosphere.hpp"
 #include <imgui.h>
+#include <fornani/world/Map.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
@@ -8,20 +9,22 @@
 
 namespace fornani::vfx {
 
-Atmosphere::Atmosphere(automa::ServiceProvider& svc, sf::Vector2f span, int type) {
+Atmosphere::Atmosphere(automa::ServiceProvider& svc, world::Map& map, std::string_view type) {
 	auto density{32};
+	auto span = map.real_dimensions;
 	auto const chunks = (span.x / (constants::f_cell_size * 16.f)) * (span.y / (constants::f_cell_size * 16.f));
 	for (auto i{0}; i < density * chunks; ++i) {
 		auto const startx = random::random_range_float(0.f, span.x);
 		auto const starty = random::random_range_float(0.f, span.y);
 		fireflies.push_back(std::make_unique<Firefly>(svc, sf::Vector2f{startx, starty}));
 	}
-	if (type == 1) {
-		density = 4;
-		for (auto i{0}; i < density * chunks; ++i) {
-			auto startx = random::random_range_float(0.f, span.x);
-			auto starty = random::random_range_float(0.f, span.y);
-			dragonflies.push_back(std::make_unique<Dragonfly>(svc, sf::Vector2f{startx, starty}));
+	for (auto const& target : map.target_points) {
+		if (type == "dragonflies") {
+			density = 24;
+			for (auto i{0}; i < density; ++i) {
+				auto vicinity = sf::Vector2f{128.f, 128.f};
+				dragonflies.push_back(std::make_unique<Dragonfly>(svc, map, random::random_vector_float(target - vicinity, target + vicinity)));
+			}
 		}
 	}
 }

@@ -63,7 +63,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 4,
+    "background": "canopy",
     "biome": "base",
     "camera_effects": {
       "shake": {

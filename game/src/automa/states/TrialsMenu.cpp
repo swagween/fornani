@@ -17,12 +17,12 @@ TrialsMenu::TrialsMenu(ServiceProvider& svc, player::Player& player) : MenuState
 
 	// maually set options based on contents of trials folder
 	options.clear();
-	for (auto const& course : m_courses) { options.push_back(Option(svc, course.label)); }
+	for (auto const& course : m_courses) { options.push_back(Option(svc, p_theme, course.label)); }
 	auto ctr = 0;
 	for (auto& option : options) {
 		option.position = {64.f, top_buffer + ctr * spacing};
 		option.index = ctr;
-		option.update(svc, current_selection.get());
+		option.update(current_selection.get());
 		++ctr;
 	}
 
@@ -36,12 +36,12 @@ void TrialsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	MenuState::tick_update(svc, engine);
 	m_loading.update();
 	for (auto& option : options) {
-		option.update(svc, current_selection.get());
+		option.update(current_selection.get());
 		option.label.setOrigin({});
 	}
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_up).triggered) { switch_selections(svc); }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_down).triggered) { switch_selections(svc); }
-	if (svc.controller_map.digital_action_status(config::DigitalAction::menu_select).triggered) {
+	if (svc.input_system.menu_move(input::MoveDirection::up)) { switch_selections(svc); }
+	if (svc.input_system.menu_move(input::MoveDirection::down)) { switch_selections(svc); }
+	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
 		svc.state_controller.next_state = m_courses.at(current_selection.get()).id;
 		svc.state_controller.actions.set(Actions::trials);
 	}

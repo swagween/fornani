@@ -636,7 +636,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 3,
+    "background": "woods",
     "biome": "kariba",
     "border_color": [
       0,
@@ -673,17 +673,16 @@
       0
     ],
     "properties": {
-      "day_night_shift": true,
+      "day_night_shift": false,
       "environmental_randomness": true,
       "lighting": true,
       "timer": false
     },
     "room_id": 509,
     "shader": {
-      "darken_factor": 1
+      "darken_factor": 2
     },
     "special_drop_id": 0,
-    "style": 5,
     "use_template": false
   },
   "tile": {
@@ -12045,8 +12044,8 @@
         40,
         3,
         0,
-        0,
-        0,
+        468,
+        467,
         0,
         0,
         0,

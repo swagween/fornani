@@ -7,25 +7,22 @@
 
 namespace fornani::enemy {
 
-static bool b_miaag_start{};
 constexpr sf::Vector2f anchor_position_v{23.f, 22.f}; // where on the level the chain is connected
-static void miaag_start_battle(int battle) { b_miaag_start = true; }
 auto constexpr miaag_floor_destructibles = 50901;
 auto constexpr miaag_outer_destructibles = 50902;
 auto constexpr miaag_exit_destructibles = 509;
 
 Miaag::Miaag(automa::ServiceProvider& svc, world::Map& map)
-	: Enemy(svc, "miaag"), m_health_bar(svc, "miaag"), m_magic{svc, "demon_magic"}, m_services{&svc}, m_map{&map}, m_cooldowns{.fire{48}, .charge{320}, .limit{960}, .post_magic{800}, .interlude{1000}, .chomped{800}, .post_death{1600}},
+	: Boss(svc, map, "miaag"), m_magic{svc, "demon_magic"}, m_services{&svc}, m_map{&map}, m_cooldowns{.fire{48}, .charge{320}, .limit{960}, .post_magic{800}, .interlude{1000}, .chomped{800}, .post_death{1600}},
 	  m_spine_sprite{svc.assets.get_texture("miaag_spines")}, m_spine{std::make_unique<vfx::Chain>(svc, vfx::SpringParameters{0.99f, 0.08f, 1.f, 4.f}, anchor_position_v * constants::f_cell_size, 8, false)} {
 	m_params = {{"idle", {0, 7, 40, -1}}, {"chomp", {7, 9, 20, 0}},	   {"spellcast", {7, 5, 80, 0, true}}, {"hurt", {9, 1, 1000, 0}},
 				{"turn", {16, 1, 40, 0}}, {"closed", {15, 1, 40, -1}}, {"awaken", {17, 4, 40, 0}},		   {"dormant", {17, 1, 40, -1}}};
 
 	Enemy::animation.set_params(get_params("dormant"));
-	svc.events.register_event(std::make_unique<Event<int>>("StartBattle", &miaag_start_battle));
 	m_magic.set_team(arms::Team::guardian);
 	flags.general.set(GeneralFlags::custom_channels);
 	flags.general.set(GeneralFlags::post_death_render);
-	flags.state.set(StateFlags::simple_physics);
+	Enemy::get_collider().set_flag(shape::ColliderFlags::simple);
 	auto home = random::random_range(0, map.home_points.size() - 1);
 	m_target_point = map.home_points.at(home);
 	m_spine_sprite.setScale(constants::f_scale_vec);
@@ -42,7 +39,7 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		svc.quest_table.set_quest_progression("npc_dialogue", {"dr_willett", 300}, 2, {300, 509}, 2);
 	}
 
-	Enemy::update(svc, map, player);
+	Boss::update(svc, map, player);
 	face_player(player);
 
 	m_cooldowns.fire.update();
@@ -54,14 +51,13 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	m_cooldowns.post_death.update();
 
 	m_magic.update(svc, map, *this);
-	m_player_target = player.collider.get_center() + sf::Vector2f{0.f, -80.f};
-	m_health_bar.update(health.get_normalized());
-	m_spine->set_end_position(collider.get_center());
+	m_player_target = player.get_collider().get_center() + sf::Vector2f{0.f, -80.f};
+	m_spine->set_end_position(get_collider().get_center());
 	m_spine->update(svc, map, player);
 
 	if (half_health()) {
 		if (!second_phase()) {
-			m_flags.set(MiaagFlags::second_phase);
+			set_flag(BossFlags::second_phase);
 			m_cooldowns.interlude.start();
 			svc.soundboard.flags.world.set(audio::World::vibration);
 			svc.soundboard.flags.miaag.set(audio::Miaag::growl);
@@ -78,7 +74,7 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	// movement
 	auto movement_force = m_cooldowns.charge.running() ? 0.00005f : 0.0001f;
-	if (battle_mode()) { m_steering.seek(Enemy::collider.physics, m_target_point + random::random_vector_float(-64.f, 64.f), movement_force); }
+	if (battle_mode()) { m_steering.seek(Enemy::get_collider().physics, m_target_point + random::random_vector_float(-64.f, 64.f), movement_force); }
 
 	if (directions.actual.lnr != directions.desired.lnr) { request(MiaagState::turn); }
 	// attacks and animations
@@ -97,8 +93,8 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (m_cooldowns.interlude.running()) {
 		if (m_cooldowns.interlude.get() % 32 == 0) {
 			for (auto& destructible : map.destructibles) {
-				if (destructible.get_id() == miaag_floor_destructibles) {
-					map.effects.push_back(entity::Effect(*m_services, "puff", destructible.get_global_center(), {0.f, -0.2f}, 2));
+				if (destructible->get_id() == miaag_floor_destructibles) {
+					map.effects.push_back(entity::Effect(*m_services, "puff", destructible->get_global_center(), {0.f, -0.2f}, 2));
 					map.effects.back().random_start();
 				}
 			}
@@ -115,7 +111,7 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 			m_services->music_player.load(m_services->finder, "ritual");
 			m_services->data.switch_destructible_state(miaag_floor_destructibles);
 			m_services->data.switch_destructible_state(miaag_outer_destructibles);
-			m_flags.reset(MiaagFlags::battle_mode);
+			set_flag(BossFlags::battle_mode, false);
 		}
 	}
 	if (health.is_dead()) {
@@ -132,11 +128,10 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (!is_state(MiaagState::spellcast)) { set_channel(EnemyChannel::standard); }
 	if (hurt_effect.running()) { set_channel((hurt_effect.get() / flash_rate) % 2 == 0 ? EnemyChannel::hurt_1 : EnemyChannel::hurt_2); }
 
-	if (b_miaag_start) {
-		m_flags.set(MiaagFlags::battle_mode);
+	if (consume_flag(BossFlags::start_battle)) {
+		set_flag(BossFlags::battle_mode);
 		svc.data.switch_destructible_state(miaag_outer_destructibles);
 		request(MiaagState::awaken);
-		b_miaag_start = false;
 		svc.music_player.load(svc.finder, "scuffle");
 		svc.music_player.play_looped();
 		svc.soundboard.flags.miaag.set(audio::Miaag::hiss);
@@ -157,9 +152,7 @@ void Miaag::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	if (svc.greyblock_mode()) { m_spine->render(svc, win, cam); }
 }
 
-void Miaag::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (m_flags.test(MiaagFlags::battle_mode)) { m_health_bar.render(win); }
-}
+void Miaag::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) { Boss::gui_render(svc, win, cam); }
 
 fsm::StateFunction Miaag::update_dormant() {
 	p_state.actual = MiaagState::dormant;
@@ -189,7 +182,7 @@ fsm::StateFunction Miaag::update_idle() {
 fsm::StateFunction Miaag::update_hurt() {
 	p_state.actual = MiaagState::hurt;
 	if (!m_flags.test(MiaagFlags::gone)) {
-		if (m_services->ticker.every_x_ticks(32)) { m_map->effects.push_back(entity::Effect(*m_services, "large_explosion", collider.get_center() + random::random_vector_float(-80.f, 80.f), {}, 2)); }
+		if (m_services->ticker.every_x_ticks(32)) { m_map->effects.push_back(entity::Effect(*m_services, "large_explosion", get_collider().get_center() + random::random_vector_float(-80.f, 80.f), {}, 2)); }
 		shake();
 	}
 	if (animation.complete()) {
@@ -228,13 +221,13 @@ fsm::StateFunction Miaag::update_spellcast() {
 			set_channel(EnemyChannel::standard);
 		}
 		if (m_cooldowns.fire.is_complete()) {
-			m_magic.get().set_barrel_point(collider.get_center());
-			m_magic.shoot(*m_services, *m_map, m_player_target - collider.get_center());
+			m_magic.get().set_barrel_point(get_collider().get_center());
+			m_magic.shoot(*m_services, *m_map, m_player_target - get_collider().get_center());
 			m_services->soundboard.flags.weapon.set(audio::Weapon::demon_magic);
 			m_cooldowns.fire.start();
 		}
 	}
-	if (m_services->ticker.every_x_ticks(32)) { m_map->effects.push_back(entity::Effect(*m_services, "demon_breath", collider.get_center() + random::random_vector_float(-40.f, 40.f), {0.f, -0.2f})); }
+	if (m_services->ticker.every_x_ticks(32)) { m_map->effects.push_back(entity::Effect(*m_services, "demon_breath", get_collider().get_center() + random::random_vector_float(-40.f, 40.f), {0.f, -0.2f})); }
 	if (m_cooldowns.limit.is_almost_complete()) {
 		request(MiaagState::idle);
 		set_channel(EnemyChannel::standard);
@@ -248,7 +241,7 @@ fsm::StateFunction Miaag::update_chomp() {
 	p_state.actual = MiaagState::chomp;
 	if (change_state(MiaagState::hurt, get_params("hurt"))) { return MIAAG_BIND(update_hurt); }
 	if (animation.get_frame_count() == 5 && !m_cooldowns.chomped.running()) {
-		for (auto i{0}; i < 4; ++i) { m_map->spawn_enemy(18, collider.get_center() + random::random_vector_float(-180.f, 180.f), 2); }
+		for (auto i{0}; i < 4; ++i) { m_map->spawn_enemy(18, get_collider().get_center() + random::random_vector_float(-180.f, 180.f), 2); }
 		m_services->soundboard.flags.miaag.set(audio::Miaag::chomp);
 		m_cooldowns.chomped.start();
 	}

@@ -1,5 +1,70 @@
 {
   "entities": {
+    "chests": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 36630,
+        "modifier": 9,
+        "position": [
+          10,
+          4
+        ],
+        "tag": "mastiff_totem",
+        "type": 2
+      }
+    ],
+    "destructibles": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": true,
+        "id": 4031,
+        "inverse": false,
+        "position": [
+          10,
+          5
+        ]
+      }
+    ],
+    "enemies": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 22,
+        "position": [
+          11,
+          11
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 22,
+        "position": [
+          16,
+          11
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,
@@ -10,7 +75,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           25,
@@ -22,8 +86,13 @@
   },
   "meta": {
     "ambience": "overturned",
-    "background": 3,
+    "background": "woods",
     "biome": "overturned",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -63,7 +132,8 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 1
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
     "flags": {
@@ -2273,13 +2343,13 @@
         456,
         457,
         0,
+        458,
+        459,
+        56,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        56,
+        456,
+        457,
         0,
         0,
         0,
@@ -2307,9 +2377,9 @@
         0,
         0,
         0,
+        52,
         0,
-        0,
-        0,
+        52,
         0,
         0,
         0,

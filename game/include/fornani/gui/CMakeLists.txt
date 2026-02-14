@@ -3,13 +3,15 @@ nani_add_headers(
         ActionControlIconQuery.hpp
         BossHealth.hpp
         Dashboard.hpp
+        DottedLine.hpp
         Gizmo.hpp
-        HUD.hpp
+        HealthBar.hpp
         InventoryWindow.hpp
         ItemWidget.hpp
         OrbDisplay.hpp
         MiniMap.hpp
         MiniMenu.hpp
+        NumberDisplay.hpp
         PauseWindow.hpp
         Portrait.hpp
         InventorySelector.hpp
@@ -21,3 +23,4 @@ nani_add_headers(
 )
 add_subdirectory(console)
 add_subdirectory(gizmos)
+add_subdirectory(hud)

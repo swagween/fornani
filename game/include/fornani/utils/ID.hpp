@@ -5,7 +5,7 @@
 
 namespace fornani {
 
-enum class IDFamily : std::uint8_t { none, entity, utility, scene };
+enum class IDFamily { none, entity, utility, scene };
 
 class ID {
   public:

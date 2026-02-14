@@ -2,6 +2,36 @@
   "rooms": [
     {
       "folder": "config",
+      "label": "bg_test.json",
+      "region": "overturned",
+      "room_id": 77123
+    },
+    {
+      "folder": "config",
+      "label": "chunk_test.json",
+      "region": "junkyard",
+      "room_id": 0
+    },
+    {
+      "folder": "config",
+      "label": "collision_test.json",
+      "region": "firstwind",
+      "room_id": 999886
+    },
+    {
+      "folder": "config",
+      "label": "collt.json",
+      "region": "firstwind",
+      "room_id": 11111
+    },
+    {
+      "folder": "config",
+      "label": "dns_test.json",
+      "region": "junkyard",
+      "room_id": 666666
+    },
+    {
+      "folder": "config",
       "label": "new_file.json",
       "region": "firstwind",
       "room_id": 1
@@ -14,9 +44,15 @@
     },
     {
       "folder": "config",
-      "label": "test_chamber.json",
-      "region": "pioneer",
-      "room_id": 90
+      "label": "pushable_test.json",
+      "region": "firstwind",
+      "room_id": 999888
+    },
+    {
+      "folder": "config",
+      "label": "turret_test.json",
+      "region": "firstwind",
+      "room_id": 999876
     },
     {
       "folder": "firstwind",
@@ -86,6 +122,12 @@
     },
     {
       "folder": "firstwind",
+      "label": "gallery.json",
+      "region": "firstwind",
+      "room_id": 138
+    },
+    {
+      "folder": "firstwind",
       "label": "hangar.json",
       "region": "firstwind",
       "room_id": 116
@@ -101,6 +143,12 @@
       "label": "infirmary.json",
       "region": "firstwind",
       "room_id": 114
+    },
+    {
+      "folder": "firstwind",
+      "label": "json_city.json",
+      "region": "overturned",
+      "room_id": 213321321
     },
     {
       "folder": "firstwind",
@@ -157,10 +205,40 @@
       "room_id": 117
     },
     {
+      "folder": "forgetville",
+      "label": "forgetville_station.json",
+      "region": "junkyard",
+      "room_id": 810
+    },
+    {
       "folder": "greatwing",
       "label": "bridge.json",
       "region": "greatwing",
       "room_id": 601
+    },
+    {
+      "folder": "junkyard",
+      "label": "assembly_line.json",
+      "region": "junkyard",
+      "room_id": 707
+    },
+    {
+      "folder": "junkyard",
+      "label": "dump.json",
+      "region": "junkyard",
+      "room_id": 703
+    },
+    {
+      "folder": "junkyard",
+      "label": "facility.json",
+      "region": "junkyard",
+      "room_id": 704
+    },
+    {
+      "folder": "junkyard",
+      "label": "hazard.json",
+      "region": "junkyard",
+      "room_id": 702
     },
     {
       "folder": "junkyard",
@@ -173,6 +251,12 @@
       "label": "silo.json",
       "region": "junkyard",
       "room_id": 700
+    },
+    {
+      "folder": "junkyard",
+      "label": "wastes.json",
+      "region": "junkyard",
+      "room_id": 705
     },
     {
       "folder": "kariba",
@@ -365,6 +449,18 @@
       "label": "graveyard.json",
       "region": "overturned",
       "room_id": 402
+    },
+    {
+      "folder": "overturned",
+      "label": "grave_house.json",
+      "region": "overturned",
+      "room_id": 413
+    },
+    {
+      "folder": "overturned",
+      "label": "grotto.json",
+      "region": "overturned",
+      "room_id": 249
     },
     {
       "folder": "overturned",
@@ -619,6 +715,12 @@
       "room_id": 219
     },
     {
+      "folder": "overturned",
+      "label": "yaris_hut.json",
+      "region": "overturned",
+      "room_id": 248
+    },
+    {
       "folder": "pioneer",
       "label": "base.json",
       "region": "pioneer",
@@ -671,6 +773,12 @@
       "label": "shop.json",
       "region": "base",
       "room_id": 4201
+    },
+    {
+      "folder": "toxic",
+      "label": "test_area.json",
+      "region": "toxic",
+      "room_id": 900
     },
     {
       "folder": "trials",

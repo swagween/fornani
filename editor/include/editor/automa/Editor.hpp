@@ -22,7 +22,7 @@
 
 namespace pi {
 
-enum class GlobalFlags : std::uint8_t { shutdown, palette_mode };
+enum class GlobalFlags { shutdown, palette_mode };
 
 constexpr static std::uint8_t max_layers_v{32};
 
@@ -35,6 +35,8 @@ class Editor final : public EditorState {
 	void render(sf::RenderWindow& win) override;
 	void gui_render(sf::RenderWindow& win);
 	void load();
+	void load_file(std::string_view to_region, std::string_view to_room);
+	void new_file(int id);
 	bool save();
 	void help_marker(char const* desc);
 	void export_layer_texture();
@@ -95,15 +97,7 @@ class Editor final : public EditorState {
 	float zoom_factor{0.05f};
 	fornani::util::Cooldown grid_refresh{};
 	struct {
-		std::vector<Style> styles{};
-		std::vector<BackgroundType> backdrops{};
-	} m_themes{};
-	struct {
-		std::string style_str[static_cast<std::size_t>(StyleType::END)];
-		std::string bg_str[static_cast<std::size_t>(StyleType::END)];
 		std::string layer_str[max_layers_v];
-		char const* styles[static_cast<std::size_t>(StyleType::END)];
-		char const* backdrops[static_cast<std::size_t>(Backdrop::END)];
 		char const* layers[max_layers_v];
 	} m_labels{};
 	struct {
@@ -117,6 +111,8 @@ class Editor final : public EditorState {
 		bool custom_position{};
 	} m_demo{};
 	int m_middleground{};
+
+	int m_new_id{};
 
 	fornani::automa::ServiceProvider* m_services;
 };

@@ -1,24 +1,31 @@
-#include "fornani/entities/item/Drop.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/utils/Random.hpp"
-#include "fornani/world/Map.hpp"
+
+#include <fornani/entities/item/Drop.hpp>
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/utils/Random.hpp>
+#include <fornani/world/Map.hpp>
 
 namespace fornani::item {
 
-Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability, int delay_time, int special_id)
-	: Animatable(svc, key, {svc.data.drop[key]["sprite_dimensions"][0].as<int>(), svc.data.drop[key]["sprite_dimensions"][1].as<int>()}), sparkler(svc, drop_dimensions, colors::ui_white, "drop"), special_id(special_id) {
+Drop::Drop(automa::ServiceProvider& svc, world::Map& map, std::string_view key, float probability, int delay_time, int special_id)
+	: Animatable(svc, key, {svc.data.drop[key]["sprite_dimensions"][0].as<int>(), svc.data.drop[key]["sprite_dimensions"][1].as<int>()}), sparkler(svc, drop_dimensions, colors::ui_white, "drop"), special_id(special_id), m_label{key},
+	  m_collider{map, 16.f} {
 
-	collider.physics.elasticity = 0.5f;
+	get_collider().physics.elasticity = 0.5f;
 
 	m_sprite_dimensions.x = svc.data.drop[key]["sprite_dimensions"][0].as<float>();
 	m_sprite_dimensions.y = svc.data.drop[key]["sprite_dimensions"][1].as<float>();
 	center();
 
 	type = static_cast<DropType>(svc.data.drop[key]["type"].as<int>());
-	if (type == DropType::gem) { collider.physics.elasticity = 0.85f; }
+	if (type == DropType::gem) { get_collider().physics.elasticity = 0.85f; }
 
-	collider.physics.set_friction_componentwise({svc.data.drop[key]["friction"][0].as<float>(), svc.data.drop[key]["friction"][1].as<float>()});
-	collider.physics.gravity = svc.data.drop[key]["gravity"].as<float>();
+	get_collider().physics.set_friction_componentwise({svc.data.drop[key]["friction"][0].as<float>(), svc.data.drop[key]["friction"][1].as<float>()});
+	get_collider().physics.gravity = svc.data.drop[key]["gravity"].as<float>();
+	get_collider().set_exclusion_target(shape::ColliderTrait::circle);
+	get_collider().set_exclusion_target(shape::ColliderTrait::player);
+	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
+	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
 
 	auto& in_anim = svc.data.drop[key]["animation"];
 	num_sprites = in_anim["num_sprites"].as<int>();
@@ -47,6 +54,8 @@ Drop::Drop(automa::ServiceProvider& svc, std::string_view key, float probability
 	set_value();
 
 	sparkler.set_dimensions(drop_dimensions);
+
+	m_handle = 12000 + random::random_range(0, 1000);
 }
 
 void Drop::seed(float probability) {
@@ -84,32 +93,37 @@ void Drop::set_value() {
 	if (type == DropType::gem) { value = special_id; }
 }
 
-void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
+void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (!check_delay(svc)) { return; }
 	tick();
 	delay.update();
-	collider.update(svc);
-	collider.handle_map_collision(map);
-	map.handle_cell_collision(collider);
-	map.handle_breakable_collision(collider);
-	for (auto& pushable : map.pushables) { collider.handle_collision(pushable.get_bounding_box(), true); }
-	for (auto& platform : map.platforms) { collider.handle_collision(platform.bounding_box); }
-	for (auto& block : map.switch_blocks) {
-		if (block.on()) { collider.handle_collision(block.get_bounding_box()); }
+	auto magnet = player.has_item_equipped(svc.data.item_id_from_label("magnet"));
+	if (magnet) {
+		get_collider().physics.set_friction_componentwise({0.995f, 0.995f});
+		m_steering.seek(get_collider().physics, player.get_collider().get_center(), 0.0001f);
+	} else {
+		get_collider().physics.set_friction_componentwise({svc.data.drop[m_label]["friction"][0].as<float>(), svc.data.drop[m_label]["friction"][1].as<float>()});
 	}
-	for (auto& destructible : map.destructibles) {
-		if (!destructible.ignore_updates()) { collider.handle_collision(destructible.get_bounding_box()); }
-	}
-	for (auto& spike : map.spikes) { collider.handle_collision(spike.get_bounding_box()); }
-	if (collider.collided() && type == DropType::gem && !is_inactive() && std::abs(collider.physics.velocity.y) > 1.f) {
-		random::percent_chance(50) ? svc.soundboard.flags.world.set(audio::World::gem_hit_1) : svc.soundboard.flags.world.set(audio::World::gem_hit_2);
+	get_collider().set_flag(shape::ColliderFlags::simple, magnet);
+	for (auto& spike : map.spikes) { get_collider().handle_collision(spike.get_bounding_box()); }
+
+	if (get_collider().collided()) {
+		auto threshold = type == DropType::heart ? 0.1f : 1.f;
+		if (!is_inactive() && std::abs(get_collider().physics.velocity.y) > threshold) {
+			switch (type) {
+			case DropType::gem: random::percent_chance(50) ? svc.soundboard.flags.world.set(audio::World::gem_hit_1) : svc.soundboard.flags.world.set(audio::World::gem_hit_2); break;
+			case DropType::heart: svc.soundboard.play_sound("heart_collide", get_collider().get_global_center()); break;
+			case DropType::orb: svc.soundboard.play_sound("orb_collide", get_collider().get_global_center()); break;
+			}
+		}
 	}
 
-	collider.physics.acceleration = {};
+	if (!magnet) { get_collider().physics.acceleration = {}; }
 	lifespan.update();
 	afterlife.update();
 
 	sparkler.update(svc);
-	sparkler.set_position(collider.position() - sparkler.get_dimensions() * 0.5f);
+	sparkler.set_position(get_collider().position() - sparkler.get_dimensions() * 0.5f);
 
 	int v{};
 	if (type == DropType::heart) { v = rarity == Rarity::priceless || rarity == Rarity::rare ? 1 : 0; }
@@ -118,22 +132,52 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map) {
 	set_channel(v);
 
 	state_function = state_function();
+
+	if (collides_with(player.get_collider().bounding_box) && !is_inactive() && !is_completely_gone() && delay_over()) {
+		player.give_drop(get_type(), static_cast<float>(get_value()));
+		if (get_type() == DropType::gem) {
+			svc.soundboard.flags.item.set(audio::Item::gem);
+		} else if (get_type() == DropType::heart) {
+			svc.soundboard.flags.item.set(audio::Item::heal);
+		} else if (get_rarity() == Rarity::common) {
+			svc.soundboard.flags.item.set(audio::Item::orb_low);
+		} else if (get_rarity() == Rarity::uncommon) {
+			svc.soundboard.flags.item.set(audio::Item::orb_medium);
+		} else if (get_rarity() == Rarity::rare) {
+			svc.soundboard.flags.item.set(audio::Item::orb_high);
+		} else if (get_rarity() == Rarity::priceless) {
+			svc.soundboard.flags.item.set(audio::Item::orb_max);
+		}
+		deactivate();
+	}
 }
 
 void Drop::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	auto offset = sf::Vector2f{0.f, collider.get_radius() - Animatable::get_f_dimensions().y};
-	Animatable::set_position(collider.get_global_center() + offset - cam);
+	if (m_start_delay) { return; }
+	auto offset = sf::Vector2f{0.f, get_collider().get_radius() - Animatable::get_f_dimensions().y};
+	Animatable::set_position(get_collider().get_global_center() + offset - cam);
 	if (!is_inactive() && !is_completely_gone() && (lifespan.get() > 500 || (lifespan.get() / 20) % 2 == 0)) { win.draw(*this); }
 	sparkler.render(win, cam);
-	if (svc.greyblock_mode()) { collider.render(win, cam); }
+	if (svc.greyblock_mode()) { get_collider().render(win, cam); }
 }
 
 void Drop::set_position(sf::Vector2f pos) {
-	collider.physics.position = pos;
+	get_collider().physics.position = pos;
 	sparkler.set_position(pos);
 }
 
-void Drop::apply_force(sf::Vector2f force) { collider.physics.apply_force(force); }
+void Drop::apply_force(sf::Vector2f force, bool delayed) {
+	if (delayed) {
+		m_start_force = force;
+	} else {
+		get_collider().physics.apply_force(force);
+	}
+}
+
+void Drop::set_delay(int time) {
+	m_start_delay = util::Cooldown{time};
+	m_start_delay->start();
+}
 
 void Drop::destroy_completely() {
 	lifespan.cancel();
@@ -182,5 +226,21 @@ bool Drop::change_state(DropState next, anim::Parameters params) {
 bool Drop::is_completely_gone() const { return afterlife.is_complete() && lifespan.is_complete(); }
 
 bool Drop::is_inactive() const { return lifespan.is_complete() && !afterlife.is_complete(); }
+
+bool Drop::check_delay(automa::ServiceProvider& svc) {
+	if (m_start_delay) {
+		get_collider().set_flag(shape::ColliderFlags::no_update);
+		if (m_start_delay->running()) {
+			m_start_delay->update();
+		} else {
+			get_collider().set_flag(shape::ColliderFlags::no_update, false);
+			m_start_delay.reset();
+			get_collider().physics.apply_force(m_start_force);
+			svc.soundboard.flags.item.set(audio::Item::drop_spawn);
+		}
+		return false;
+	}
+	return true;
+}
 
 } // namespace fornani::item

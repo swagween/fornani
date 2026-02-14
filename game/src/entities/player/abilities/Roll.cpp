@@ -1,8 +1,8 @@
 
 #include <fornani/entities/player/PlayerController.hpp>
 #include <fornani/entities/player/abilities/Roll.hpp>
+#include <fornani/physics/Collider.hpp>
 #include <fornani/service/ServiceProvider.hpp>
-#include <fornani/utils/Collider.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani::player {
@@ -30,9 +30,17 @@ void Roll::update(shape::Collider& collider, PlayerController& controller) {
 		return;
 	}
 	Ability::update(collider, controller);
+	if (m_duration.is_complete()) {
+		collider.physics.acceleration.x = {};
+		return;
+	}
 	auto mult = m_direction.as_float() * m_multiplier * collider.acceleration_multiplier;
-	collider.physics.acceleration.x = mult;
-	if (!collider.has_horizontal_collision()) { collider.physics.velocity.x = mult; }
+	if (!collider.flags.external_state.consume(shape::ExternalState::roll_collision)) {
+		collider.physics.acceleration.x = mult;
+		collider.physics.velocity.x = mult;
+	} else {
+		collider.physics.zero_x();
+	}
 }
 
 } // namespace fornani::player

@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <string_view>
 #include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/utils/Collider.hpp"
+#include "fornani/physics/Collider.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/StateFunction.hpp"
 #define SWITCH_BIND(f) std::bind(&SwitchButton::f, this)
@@ -21,8 +21,8 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class SwitchType : std::uint8_t { toggler, permanent, movable, alternator };
-enum class SwitchButtonState : std::uint8_t { unpressed, pressed };
+enum class SwitchType { toggler, permanent, movable, alternator };
+enum class SwitchButtonState { unpressed, pressed };
 
 class SwitchButton {
   public:

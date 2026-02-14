@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 #include <fornani/core/Common.hpp>
+#include <fornani/story/Quest.hpp>
 #include <optional>
 #include <vector>
 
@@ -39,6 +40,7 @@ struct MessageCode {
 	[[nodiscard]] auto is_destroy_inspectable() const -> bool { return type == MessageCodeType::destroy_inspectable; }
 	[[nodiscard]] auto is_piggyback() const -> bool { return type == MessageCodeType::piggyback; }
 	[[nodiscard]] auto is_open_vendor() const -> bool { return type == MessageCodeType::open_vendor; }
+	[[nodiscard]] auto is(MessageCodeType const test) const -> bool { return type == test; }
 
 	// editor helpers
 	void mark_for_deletion() { delete_me = true; }
@@ -49,12 +51,14 @@ struct MessageCode {
 struct Message {
 	sf::Text data;
 	std::optional<std::vector<MessageCode>> codes{};
+	std::optional<std::vector<QuestContingency>> contingencies{};
 };
 
 // for creation of Inspectables
 struct BasicMessage {
 	std::string data{};
 	std::optional<std::vector<MessageCode>> codes{};
+	std::optional<std::vector<QuestContingency>> contingencies{};
 };
 
 } // namespace fornani::gui

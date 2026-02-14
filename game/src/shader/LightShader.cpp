@@ -137,14 +137,15 @@ void LightShader::submit(sf::RenderWindow& win, Palette& palette, sf::Sprite con
 }
 
 void LightShader::clear_point_lights() {
-	current_point_light = 0;
-	pointlight_position.clear();
+	current_point_light = -1;
+	pointlight_position = {};
 	pointlight_luminosity.clear();
 	pointlight_radius.clear();
 	pointlight_attenuation_constant.clear();
 	pointlight_attenuation_linear.clear();
 	pointlight_attenuation_quadratic.clear();
 	pointlight_distance_scaling.clear();
+	pointlight_distance_flat.clear();
 }
 
 void LightShader::clear_spotlights() {

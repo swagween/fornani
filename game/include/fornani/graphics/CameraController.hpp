@@ -6,8 +6,8 @@
 
 namespace fornani::graphics {
 
-enum class CameraState : std::uint8_t { constrained, free };
-enum class CameraOwner : std::uint8_t { player, system };
+enum class CameraState { constrained, free };
+enum class CameraOwner { player, system };
 
 struct ShakeProperties {
 	bool shaking{};
@@ -15,6 +15,7 @@ struct ShakeProperties {
 	float energy{};
 	int start_time{};
 	int dampen_factor{};
+	float chance{};
 };
 
 class CameraController {

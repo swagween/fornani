@@ -1,33 +1,29 @@
 
 #include "fornani/automa/Option.hpp"
+#include <fornani/graphics/MenuTheme.hpp>
 #include "fornani/automa/GameState.hpp"
 #include "fornani/graphics/Colors.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::automa {
 
-Option::Option(ServiceProvider& svc, std::string_view lbl, bool red) : red(red), label(svc.text.fonts.title), selectable{true} {
-	label.setString(lbl.data());
+Option::Option(ServiceProvider& svc, MenuTheme& theme, std::string_view lbl) : label(svc.text.fonts.title), selectable{true}, m_theme{&theme} {
+	label.setString(std::string{lbl});
 	label.setCharacterSize(16);
 	label.setLetterSpacing(1.f);
-	red ? label.setFillColor(colors::red) : label.setFillColor(colors::ui_white);
+	label.setFillColor(theme.primary_text_color);
 	label.setOrigin(label.getLocalBounds().getCenter());
-	native_color = colors::dark_grey;
 }
 
 void Option::set_string(std::string_view str) { label.setString(str.data()); }
 
-void Option::update(ServiceProvider& svc, int selection) {
+void Option::update(int selection) {
 	label.setPosition(position);
 	left_offset = position - sf::Vector2f{label.getLocalBounds().getCenter().x + dot_offset.x - 2, -dot_offset.y};
 	right_offset = position + sf::Vector2f{label.getLocalBounds().getCenter().x + dot_offset.x, dot_offset.y};
-	if (red) {
-		selection == index ? label.setFillColor(colors::red) : label.setFillColor(colors::beige);
-	} else {
-		selection == index ? label.setFillColor(colors::ui_white) : label.setFillColor(native_color);
-	}
-	if (flagged) { label.setFillColor(colors::red); }
-	if (!selectable) { label.setFillColor(colors::console_blue); }
+	selection == index ? label.setFillColor(m_theme->primary_text_color) : label.setFillColor(m_theme->secondary_text_color);
+	if (flagged) { label.setFillColor(m_theme->activated_text_color); }
+	if (!selectable) { label.setFillColor(m_theme->deactivated_text_color); }
 	label.setOrigin(label.getLocalBounds().getCenter());
 }
 

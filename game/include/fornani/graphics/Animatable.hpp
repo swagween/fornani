@@ -1,18 +1,21 @@
 
 #pragma once
 
-#include "fornani/entities/animation/Animation.hpp"
-#include "fornani/graphics/Drawable.hpp"
-#include "fornani/io/Logger.hpp"
-#include "fornani/utils/Constants.hpp"
+#include <fornani/entities/animation/Animation.hpp>
+#include <fornani/graphics/Drawable.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/Constants.hpp>
 
 namespace fornani {
 class Animatable : public Drawable {
   public:
 	Animatable(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions = constants::i_cell_vec);
 
+	void push_animation(std::string_view label, anim::Parameters params) { m_animations.insert({label.data(), params}); }
+	void set_animation(std::string_view to) { set_parameters(m_animations.at(to.data())); }
 	void set_parameters(anim::Parameters params) { animation.set_params(params); }
 	void set_channel(int to) { m_channel = to; }
+	void set_frame(int to);
 	void set_dimensions(sf::Vector2i const to) { m_dimensions = to; }
 	void tick();
 
@@ -35,5 +38,8 @@ class Animatable : public Drawable {
   private:
 	sf::Vector2i m_dimensions;
 	int m_channel{};
+
+	std::unordered_map<std::string, anim::Parameters> m_animations{};
 };
+
 } // namespace fornani

@@ -1,8 +1,8 @@
 
 #pragma once
 
+#include <fornani/particle/Spark.hpp>
 #include <vector>
-#include "Spark.hpp"
 
 namespace fornani::vfx {
 

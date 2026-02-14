@@ -24,6 +24,7 @@
             2
           ],
           [
+            2,
             3,
             4
           ],
@@ -94,35 +95,12 @@
           8
         ],
         "source_id": 212
-      },
-      {
-        "activate_on_contact": false,
-        "already_open": false,
-        "destination_id": 247,
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 0,
-        "key_id": 0,
-        "locked": false,
-        "position": [
-          24,
-          8
-        ],
-        "source_id": 212
       }
     ]
   },
   "meta": {
-    "ambience": "overturned",
-    "background": 3,
+    "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -147,24 +125,15 @@
       12
     ],
     "minimap": true,
-    "music": "whispering_island",
     "player_start": [
       0,
       0
     ],
-    "properties": {
-      "day_night_shift": true,
-      "environmental_randomness": true,
-      "lighting": false,
-      "timer": false
-    },
     "room_id": 212,
     "shader": {
       "darken_factor": 0
     },
-    "special_drop_id": 0,
-    "style": 1,
-    "use_template": false
+    "use_template": true
   },
   "tile": {
     "flags": {
@@ -2528,8 +2497,8 @@
         96,
         96,
         0,
-        468,
-        467,
+        0,
+        0,
         0,
         0,
         0,
@@ -2559,9 +2528,9 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
+        109,
+        110,
+        111,
         464,
         465,
         477,
@@ -3041,9 +3010,9 @@
         0,
         0,
         0,
-        164,
-        0,
-        0,
+        122,
+        123,
+        124,
         0,
         0,
         0,

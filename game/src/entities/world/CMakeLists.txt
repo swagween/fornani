@@ -2,8 +2,11 @@ nani_add_sources(
         Animator.cpp
         Bed.cpp
         Chest.cpp
+        Explosion.cpp
         Fire.cpp
         Inspectable.cpp
+        Laser.cpp
         SpawnablePlatform.cpp
         TreasureContainer.cpp
+        Waterfall.cpp
 )

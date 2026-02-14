@@ -5,7 +5,7 @@
 
 namespace fornani::util {
 
-template <typename Enum, std::size_t Size = 32u>
+template <typename Enum, std::size_t Size = 64u>
 struct BitFlags {
 	std::bitset<Size> bits{};
 
@@ -18,6 +18,7 @@ struct BitFlags {
 		reset(e);
 		return ret;
 	}
+	bool any(BitFlags const& other) const { return (bits & other.bits).any(); }
 
 	bool operator==(BitFlags const&) const = default;
 };

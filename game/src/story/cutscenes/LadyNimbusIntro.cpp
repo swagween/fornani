@@ -32,7 +32,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 	if (metadata.no_player) {
 		player.set_position({3200.f, -64.f});
 		player.controller.restrict_movement();
-		player.collider.physics.zero_y();
+		player.get_collider().physics.zero_y();
 	}
 
 	// TODO: put camera controls here

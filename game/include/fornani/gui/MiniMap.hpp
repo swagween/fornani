@@ -1,13 +1,13 @@
 
 #pragma once
+
 #include <SFML/Graphics.hpp>
-#include <fornani/gui/console/Console.hpp>
-#include "fornani/components/PhysicsComponent.hpp"
-#include "fornani/components/SteeringBehavior.hpp"
-#include "fornani/graphics/MapTexture.hpp"
-#include "fornani/io/Logger.hpp"
-#include "fornani/utils/Circuit.hpp"
-#include "fornani/world/Map.hpp"
+#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/components/SteeringBehavior.hpp>
+#include <fornani/graphics/MapTexture.hpp>
+#include <fornani/gui/DottedLine.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/world/Map.hpp>
 
 namespace fornani::player {
 class Player;
@@ -19,8 +19,10 @@ class Portal;
 
 namespace fornani::gui {
 
-enum class MapIconFlags : std::uint8_t { nani, gunsmith, save, chest, bed, door, boss, gobe, vendor };
-enum class ChunkType : std::uint8_t { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
+enum class MiniMapFlags { open };
+enum class MapIconFlags { nani, gunsmith, save, chest, bed, door, boss, gobe, vendor, quest };
+enum class ChunkType { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
+enum class QuestMarkerType { main };
 
 struct MapIcon {
 	MapIconFlags type{};
@@ -28,11 +30,18 @@ struct MapIcon {
 	int room_id{};
 };
 
-class MiniMap {
+struct DoorConnection {
+	int source{};
+	int destination{};
+	DottedLine line;
+};
+
+class MiniMap final : public Flaggable<MiniMapFlags> {
   public:
 	explicit MiniMap(automa::ServiceProvider& svc);
 	void set_textures(automa::ServiceProvider& svc);
 	void set_markers(world::Map& map, player::Player& player);
+	void add_quest_marker(QuestMarkerType type, int room_id);
 	void bake(automa::ServiceProvider& svc, dj::Json const& in);
 	void bake(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int room, bool current = false, bool undiscovered = false);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, sf::Sprite& icon_sprite);
@@ -52,11 +61,14 @@ class MiniMap {
 	[[nodiscard]] auto get_scale() const -> float { return m_scale; }
 	[[nodiscard]] auto get_ratio() const -> float { return 32.f / m_scale; }
 	[[nodiscard]] auto get_ratio_vec2() const -> sf::Vector2f { return sf::Vector2f{get_ratio(), get_ratio()}; }
+	[[nodiscard]] auto get_currently_hovered_room() const -> int { return m_currently_hovered_room; }
 
   private:
 	bool m_zoom_limit{};
 	bool m_pan_limit_x{};
 	bool m_pan_limit_y{};
+	int m_currently_hovered_room{};
+	int m_previously_hovered_room{};
 	float m_scale{8.f};
 	float m_speed{};
 	float m_texture_scale{};
@@ -66,6 +78,7 @@ class MiniMap {
 	sf::Vector2f m_port_dimensions{};
 	sf::Vector2f m_center_position{};
 	sf::Vector2f m_player_position{};
+	sf::Vector2f m_target_position{};
 	sf::View m_view{};
 	components::PhysicsComponent m_physics{};
 	components::SteeringBehavior m_steering{};
@@ -74,6 +87,7 @@ class MiniMap {
 	std::optional<sf::Sprite> m_map_sprite;
 	sf::RectangleShape m_border{};
 	std::vector<MapIcon> m_markers{};
+	std::vector<DoorConnection> m_dotted_lines{};
 	std::vector<std::unique_ptr<MapTexture>> m_atlas{};
 
 	io::Logger m_logger{"MiniMap"};

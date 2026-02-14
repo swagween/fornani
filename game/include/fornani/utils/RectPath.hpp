@@ -26,6 +26,9 @@ class RectPath {
 	void update();
 	void set_section(std::string_view to_section);
 	void reset();
+
+	void set_dimensions(sf::Vector2f to) { m_current_dimensions = to; }
+
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_current_position; }
 	[[nodiscard]] auto get_dimensions() const -> sf::Vector2f { return m_current_dimensions; }
 	[[nodiscard]] auto get_local_center() const -> sf::Vector2f { return m_current_dimensions * 0.5f; }

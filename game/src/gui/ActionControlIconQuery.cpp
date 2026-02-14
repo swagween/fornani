@@ -40,8 +40,8 @@ sf::Vector2i get_controller_button_coordinates(EInputActionOrigin btn) {
 	return {buttoni % atlas_width, controller_section + buttoni / atlas_width};
 }
 
-auto get_action_control_icon(automa::ServiceProvider& svc, config::DigitalAction action) -> sf::Sprite {
-	auto source = svc.controller_map.digital_action_source(action);
+auto get_action_control_icon(automa::ServiceProvider& svc, input::DigitalAction action) -> sf::Sprite {
+	auto source = svc.input_system.get_digital_action_source(action);
 
 	sf::Vector2i lookup{};
 	if (source.controller_origin == k_EInputActionOrigin_None) {

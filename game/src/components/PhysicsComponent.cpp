@@ -1,8 +1,8 @@
 
-#include "fornani/components/PhysicsComponent.hpp"
 #include <ccmath/ext/clamp.hpp>
+#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 #include <cmath>
-#include "fornani/service/ServiceProvider.hpp"
 
 // TODO: Replace functions in here with ccmath functions instead.
 
@@ -55,7 +55,8 @@ void PhysicsComponent::update_dampen(automa::ServiceProvider& svc) {
 	acceleration = {};
 }
 
-void PhysicsComponent::simple_update() {
+void PhysicsComponent::simple_update(bool gravity) {
+	if (gravity) { acceleration.y = gravity; }
 	velocity *= air_friction.x;
 	velocity += acceleration;
 	position += velocity;
@@ -65,6 +66,7 @@ void PhysicsComponent::simple_update() {
 void PhysicsComponent::impart_momentum() {
 	position += forced_momentum;
 	velocity += forced_acceleration;
+	if (!flags.test(State::grounded)) { forced_momentum = forced_momentum.componentWiseMul(air_friction); }
 }
 
 void PhysicsComponent::hard_stop_x() {
@@ -92,11 +94,25 @@ void PhysicsComponent::zero_y() {
 	real_velocity.y *= -elasticity;
 }
 
+void PhysicsComponent::ricochet_vertically() {
+	acceleration.y = 0.0f;
+	velocity.y = maximum_velocity.y;
+	real_velocity.y = maximum_velocity.y;
+}
+
 void PhysicsComponent::hitstun() {}
 
 void PhysicsComponent::set_friction_componentwise(sf::Vector2f fric) {
 	ground_friction = fric;
 	air_friction = fric;
+}
+
+void PhysicsComponent::adopt(PhysicsComponent& other) {
+	velocity = other.velocity;
+	real_velocity = other.real_velocity;
+	acceleration = other.acceleration;
+	forced_acceleration = other.forced_acceleration;
+	forced_momentum = other.forced_momentum;
 }
 
 void PhysicsComponent::set_constant_friction(sf::Vector2f fric) {

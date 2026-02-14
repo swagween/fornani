@@ -7,6 +7,14 @@
 #include "fornani/weapon/Weapon.hpp"
 #include "fornani/world/Map.hpp"
 
+static bool is_heading_toward(sf::Vector2f const& position, sf::Vector2f const& velocity, sf::Vector2f const& target) {
+	sf::Vector2f to_target = target - position;
+
+	float dot = velocity.x * to_target.x + velocity.y * to_target.y;
+
+	return dot > 0.f;
+}
+
 namespace fornani::arms {
 
 Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon, bool enemy)
@@ -21,7 +29,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	Animatable::set_parameters(anim::Parameters{0, in_data["animation"]["num_frames"].as<int>(), in_data["animation"]["framerate"].as<int>(), -1});
 
 	metadata.specifications.base_damage = in_data["attributes"]["base_damage"].as<float>();
-	metadata.specifications.power = in_data["attributes"]["power"] ? in_data["attributes"]["power"].as<int>() : 1;
+	metadata.specifications.power = in_data["attributes"]["power"] ? in_data["attributes"]["power"].as<float>() : 1.f;
 	metadata.specifications.speed = in_data["attributes"]["speed"].as<float>();
 	metadata.specifications.speed_variance = in_data["attributes"]["speed_variance"].as<float>();
 	metadata.specifications.speed += random::random_range_float(-metadata.specifications.speed_variance, metadata.specifications.speed_variance);
@@ -33,16 +41,27 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	metadata.specifications.dampen_variance = in_data["attributes"]["dampen_variance"].as<float>();
 	metadata.specifications.gravity = in_data["attributes"]["gravity"].as<float>();
 	metadata.specifications.elasticty = in_data["attributes"]["elasticity"].as<float>();
+	metadata.specifications.spin = in_data["attributes"]["spin"].as<float>();
+	metadata.specifications.spin_dampen = in_data["attributes"]["spin_dampen"].as<float>();
 
 	if (in_data["attributes"]["persistent"].as_bool()) { metadata.attributes.set(ProjectileAttributes::persistent); }
 	if (in_data["attributes"]["transcendent"].as_bool()) { metadata.attributes.set(ProjectileAttributes::transcendent); }
 	if (in_data["attributes"]["constrained"].as_bool()) { metadata.attributes.set(ProjectileAttributes::constrained); }
 	if (in_data["attributes"]["omnidirectional"].as_bool()) { metadata.attributes.set(ProjectileAttributes::omnidirectional); }
 	if (in_data["attributes"]["boomerang"].as_bool()) { metadata.attributes.set(ProjectileAttributes::boomerang); }
+	if (in_data["attributes"]["explode_on_impact"].as_bool()) { metadata.attributes.set(ProjectileAttributes::explode_on_impact); }
 	if (in_data["attributes"]["wander"].as_bool()) { metadata.attributes.set(ProjectileAttributes::wander); }
 	if (in_data["attributes"]["reflect"].as_bool()) { metadata.attributes.set(ProjectileAttributes::reflect); }
 	if (in_data["attributes"]["sprite_flip"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sprite_flip); }
 	if (in_data["attributes"]["sticky"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sticky); }
+
+	if (in_data["explosion"]) {
+		metadata.explosion = ExplosionAttributes{};
+		metadata.explosion->tag = in_data["explosion"]["tag"].as_string();
+		metadata.explosion->emitter = in_data["explosion"]["emitter"] ? in_data["explosion"]["emitter"].as_string() : metadata.explosion->tag;
+		metadata.explosion->radius = in_data["explosion"]["radius"].as<float>();
+		metadata.explosion->channel = in_data["explosion"]["channel"].as<int>();
+	}
 
 	visual.num_angles = in_data["animation"]["angles"].as<int>();
 	visual.effect_type = in_data["visual"]["effect_type"].as<int>();
@@ -81,9 +100,10 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	if (variables.state.test(ProjectileState::destruction_initiated) && !metadata.attributes.test(ProjectileAttributes::constrained)) { destroy(true); }
 
 	if (boomerang()) {
-		physical.collider.physics.set_global_friction(0.95f);
-		physical.steering.seek(physical.collider.physics, player.collider.get_center(), 0.001f);
+		physical.collider.physics.set_global_friction(0.993f);
+		physical.steering.target(physical.collider.physics, player.get_collider().get_center(), 0.0003f);
 		physical.collider.physics.simple_update();
+		variables.damage_multiplier = is_heading_toward(physical.collider.physics.position, physical.collider.physics.velocity, player.get_collider().get_center()) ? 3.f : 1.f;
 	} else if (wander()) {
 		physical.collider.physics.set_global_friction(0.9f);
 		physical.steering.smooth_random_walk(physical.collider.physics, 0.01f);
@@ -91,7 +111,12 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	}
 
 	// animation
-	if (visual.num_angles > 0 && !sprite_flip() && !is_stuck()) { visual.rotator.handle_rotation(get_sprite(), physical.collider.physics.velocity, visual.num_angles); }
+	static auto rotation = metadata.specifications.spin;
+	static auto dampened = metadata.specifications.spin;
+	rotation += metadata.specifications.spin;
+	dampened *= metadata.specifications.spin_dampen;
+	auto rotation_angle = metadata.specifications.spin > 0.f ? physical.collider.physics.velocity.rotatedBy(sf::radians(rotation + dampened)) : physical.collider.physics.velocity;
+	if (visual.num_angles > 0 && !sprite_flip() && !is_stuck()) { visual.rotator.handle_rotation(get_sprite(), rotation_angle, visual.num_angles); }
 	set_channel(visual.rotator.get_sprite_angle_index());
 	if (physical.sensor) { physical.sensor->set_position(physical.collider.get_global_center()); }
 
@@ -111,6 +136,7 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 		if (physical.collider.collided() && !m_reflected.running()) {
 			svc.soundboard.flags.projectile.set(audio.hit);
 			m_reflected.start();
+			if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) { on_explode(svc, map); }
 		}
 		physical.collider.physics.acceleration = {};
 		return;
@@ -135,17 +161,41 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 	}
 }
 
-void Projectile::on_player_hit(player::Player& player) {
+void Projectile::on_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (boomerang() && metadata.team == arms::Team::nani) {
+		if (physical.collider.collides_with(player.get_collider().bounding_box) && cooldown.is_complete()) {
+			destroy(false);
+			svc.soundboard.flags.weapon.set(audio::Weapon::tomahawk_catch);
+			return;
+		}
+	}
 	if (metadata.team == arms::Team::nani || is_stuck()) { return; }
 	if (player.is_dead()) { return; }
 	if (physical.sensor) {
-		if (physical.sensor.value().within_bounds(player.hurtbox)) { player.hurt(metadata.specifications.base_damage); }
+		if (physical.sensor.value().within_bounds(player.hurtbox)) {
+			if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) {
+				on_explode(svc, map);
+			} else {
+				player.hurt(metadata.specifications.base_damage);
+			}
+		}
 		return;
 	}
 	if (physical.collider.collides_with(player.hurtbox)) {
-		player.hurt(metadata.specifications.base_damage);
+		if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) {
+			on_explode(svc, map);
+		} else {
+			player.hurt(metadata.specifications.base_damage);
+		}
 		destroy(false);
 	}
+}
+
+void Projectile::on_explode(automa::ServiceProvider& svc, world::Map& map) {
+	if (!metadata.explosion) { return; }
+	if (!has_attribute(arms::ProjectileAttributes::explode_on_impact)) { return; }
+	map.spawn_explosion(svc, metadata.explosion->tag, metadata.explosion->emitter, get_team(), get_position(), metadata.explosion->radius, metadata.explosion->channel);
+	destroy(false);
 }
 
 void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f cam) {

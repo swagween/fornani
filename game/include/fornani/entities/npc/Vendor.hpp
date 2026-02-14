@@ -9,7 +9,7 @@ struct ServiceProvider;
 }
 
 namespace fornani::npc {
-enum class VendorType : std::uint8_t { surveyor, gunsmith, engineer, fortuneteller, seamstress };
+enum class VendorType { surveyor, gunsmith, engineer, fortuneteller, seamstress };
 /* NPCs will optionally have this package */
 class Vendor {
   public:

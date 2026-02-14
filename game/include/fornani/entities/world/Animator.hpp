@@ -11,7 +11,7 @@ struct ServiceProvider;
 
 namespace fornani::entity {
 
-enum class AnimatorFlags : std::uint8_t { foreground };
+enum class AnimatorFlags { foreground };
 
 class Animator : public Animatable, IWorldPositionable {
   public:

@@ -1,12 +1,18 @@
 nani_add_sources(
         Archer.cpp
+        Beamsprout.cpp
         Beamstalk.cpp
         Caster.cpp
+        Crow.cpp
         Demon.cpp
+        DumpsterDiver.cpp
         Eyebit.cpp
         Eyebot.cpp
         Frdog.cpp
         Imp.cpp
+        Junker.cpp
+        Junkfly.cpp
+        Mastiff.cpp
         Meatsquash.cpp
         Minion.cpp
         Tank.cpp

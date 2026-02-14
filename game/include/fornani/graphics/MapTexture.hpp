@@ -1,8 +1,10 @@
+
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <djson\json.hpp>
+#include <djson/json.hpp>
 #include <fornani/io/Logger.hpp>
+#include <fornani/setup/MapData.hpp>
 #include <fornani/utils/BitFlags.hpp>
 
 namespace fornani::automa {
@@ -17,12 +19,14 @@ namespace fornani::gui {
 
 constexpr auto num_resolution_levels_v = 3;
 
-enum class MapTextureFlags : std::uint8_t { current };
-enum class Resolution : std::uint8_t { high, medium, low };
+enum class MapTextureFlags { current };
+enum class Resolution { high, medium, low };
 
 struct MapTextureLayer {
 	sf::RenderTexture center_texture{};
 	sf::RenderTexture border_texture{};
+	sf::RenderTexture hovered_center_texture{};
+	sf::RenderTexture hovered_border_texture{};
 };
 
 class MapTexture {
@@ -36,24 +40,30 @@ class MapTexture {
 
 	[[nodiscard]] auto is_current() const -> bool { return m_flags.test(MapTextureFlags::current); }
 	[[nodiscard]] auto to_ignore() const -> bool { return m_ignore; }
-	[[nodiscard]] auto get_id() const -> int { return m_room_id; }
+	[[nodiscard]] auto get_id() const -> int { return m_data.id; }
 	[[nodiscard]] auto get_scale() const -> float { return m_scale; }
+	[[nodiscard]] auto get_center() const -> sf::Vector2f { return get_position() + get_dimensions() * 0.5f; }
+	[[nodiscard]] auto contains(sf::Vector2f point) const -> bool;
 
-	sf::RenderTexture& get(bool border = false);
-	sf::Vector2f get_position();
+	sf::RenderTexture& get(bool border = false, bool hovered = false);
+	sf::Vector2f get_position() const;
 	sf::Vector2f get_dimensions() const;
 
   private:
 	MapTextureLayer& current_layer() { return static_cast<int>(m_current_resolution) < num_resolution_levels_v ? m_layers[static_cast<std::size_t>(m_current_resolution)] : m_layers[0]; }
+
+  private:
 	std::array<MapTextureLayer, num_resolution_levels_v> m_layers{};
 	sf::RectangleShape m_tile_box{};
 	sf::Color m_tile_color{};
 	sf::Color m_border_color{};
+	sf::Color m_hovered_center_color{};
+	sf::Color m_hovered_border_color{};
 	sf::Vector2<int> m_global_offset{};
 	sf::Vector2f m_map_dimensions{};
 	util::BitFlags<MapTextureFlags> m_flags{};
 	bool m_ignore{};
-	int m_room_id{};
+	data::MapData m_data{};
 	float m_scale{};
 	Resolution m_current_resolution{};
 

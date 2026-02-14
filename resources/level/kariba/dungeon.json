@@ -44,7 +44,7 @@
         ],
         "face_player": true,
         "hidden": false,
-        "id": 75113,
+        "id": 420,
         "label": "bryn",
         "position": [
           9,
@@ -96,7 +96,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 2,
+    "background": "",
     "biome": "kariba",
     "border_color": [
       0,
@@ -143,7 +143,6 @@
       "darken_factor": 3
     },
     "special_drop_id": 0,
-    "style": 5,
     "use_template": false
   },
   "tile": {

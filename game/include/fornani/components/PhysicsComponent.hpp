@@ -57,18 +57,21 @@ class PhysicsComponent {
 	void integrate(automa::ServiceProvider& svc);
 	void update(automa::ServiceProvider& svc);
 	void update_dampen(automa::ServiceProvider& svc);
-	void simple_update();
+	void simple_update(bool gravity = false);
 	void impart_momentum();
 	void hard_stop_x();
 	void stop_x();
 	void zero();
 	void zero_x();
 	void zero_y();
+	void ricochet_vertically();
 	void collide(sf::Vector2i direction);
 	void hitstun();
 	void set_constant_friction(sf::Vector2f fric);
 	void set_global_friction(float fric);
 	void set_friction_componentwise(sf::Vector2f fric);
+
+	void adopt(PhysicsComponent& other);
 
 	[[nodiscard]] auto actual_velocity() const -> sf::Vector2f { return position - previous_position; }
 	[[nodiscard]] auto apparent_velocity() const -> sf::Vector2f { return real_velocity; }

@@ -1,9 +1,10 @@
 
 #pragma once
+
 #include <SFML/Graphics.hpp>
-#include "fornani/graphics/ColorFade.hpp"
-#include "fornani/particle/Gravitator.hpp"
-#include "fornani/utils/Cooldown.hpp"
+#include <fornani/components/SteeringComponent.hpp>
+#include <fornani/graphics/ColorFade.hpp>
+#include <fornani/utils/Cooldown.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -15,7 +16,7 @@ class Player;
 
 namespace fornani::graphics {
 
-enum class IndicatorType : std::uint8_t { health, orb };
+enum class IndicatorType { health, orb };
 
 class Indicator {
   public:
@@ -43,6 +44,6 @@ class Indicator {
 	sf::Vector2f shadow{2.f, 0.f};
 	sf::Vector2f offset{-8.f, -40.f};
 	vfx::ColorFade color_fade{};
-	vfx::Gravitator gravitator{};
+	components::SteeringComponent m_steering{};
 };
 } // namespace fornani::graphics

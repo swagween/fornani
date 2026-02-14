@@ -1,7 +1,7 @@
 #pragma once
 
-#include "fornani/utils/CircleCollider.hpp"
-#include "fornani/utils/Collider.hpp"
+#include "fornani/physics/CircleCollider.hpp"
+#include "fornani/physics/Collider.hpp"
 #include "fornani/utils/Cooldown.hpp"
 
 namespace fornani::automa {

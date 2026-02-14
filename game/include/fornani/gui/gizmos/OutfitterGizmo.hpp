@@ -19,7 +19,7 @@ class OutfitterGizmo : public Gizmo {
 	OutfitterGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement);
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground = false) override;
-	bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
+	bool handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
 	[[nodiscard]] auto get_outfit() const -> std::array<int, static_cast<int>(player::ApparelType::END)> { return m_outfit; }
 	[[nodiscard]] auto has_changed() const -> bool { return m_change_outfit; }
 
@@ -32,7 +32,7 @@ class OutfitterGizmo : public Gizmo {
 	void debug();
 	int m_max_slots;
 	int wardrobe_index;
-	int m_current_item_id{};
+	std::string m_current_item_tag{};
 	sf::Sprite m_sprite;
 	sf::Sprite m_apparel_sprite;
 	std::array<Slider, static_cast<int>(player::ApparelType::END)> m_sliders;

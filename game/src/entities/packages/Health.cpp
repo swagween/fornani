@@ -1,67 +1,65 @@
 
-#include "fornani/entities/packages/Health.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-
-#include <ccmath/ext/clamp.hpp>
+#include <imgui.h>
+#include <fornani/entities/packages/Health.hpp>
+#include <algorithm>
 
 namespace fornani::entity {
 
-void Health::set_max(float amount, bool memory) {
-	max_hp = amount;
-	if (!memory) { hp = amount; }
+Health::Health(float max) : m_capacity{max}, m_quantity{max}, m_taken{128} {}
+
+void Health::set_capacity(float amount, bool memory) {
+	m_capacity = amount;
+	if (!memory) { m_quantity = amount; }
 }
 
-void Health::set_hp(float amount) { hp = amount; }
+void Health::set_quantity(float amount) { m_quantity = amount; }
+
+void Health::add_bonus(float amount) {
+	m_quantity += amount;
+	bonus = amount;
+}
 
 void Health::set_invincibility(float amount) { invincibility_time = static_cast<int>(amount); }
 
 void Health::update() {
-	hp = ccm::ext::clamp(hp, 0.f, max_hp);
 	invincibility.update();
-	taken.update();
+	m_taken.update();
 	restored.update();
-	if (taken.running()) {
-		if (taken_point > hp && taken.get_count() > taken_time && taken.get_count() % 32 == 0) { --taken_point; }
-		if (taken_point == hp) { taken.cancel(); }
+	if (m_taken.running()) {
+		if (m_taken.is_almost_complete()) { --taken_point; }
 	}
 }
 
-void Health::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	drawbox.setFillColor(colors::dark_orange);
-	drawbox.setSize({max_hp, 4});
-	win.draw(drawbox);
-	drawbox.setFillColor(colors::green);
-	drawbox.setSize({hp, 4});
-	win.draw(drawbox);
-};
-
 void Health::heal(float amount) {
-	hp = ccm::ext::clamp(hp + amount, 0.f, max_hp);
+	m_quantity = std::clamp(m_quantity + amount, 0.f, get_capacity());
 	restored.start();
 }
 
 void Health::refill() {
-	hp = max_hp;
+	m_quantity = get_capacity();
 	restored.start();
 }
 
 void Health::inflict(float amount, bool force) {
 	if (invincibility.is_complete() || force) {
-		taken_point = hp;
-		taken.start();
-		hp -= amount;
+		taken_point = m_quantity;
+		m_quantity = std::clamp(m_quantity - amount, 0.f, get_capacity());
+		m_taken.start();
 		invincibility.start(invincibility_time);
 		flags.set(HPState::hit);
 	}
 }
 
-void Health::increase_max_hp(float amount) { set_max(max_hp + amount, true); }
+void Health::increase_capacity(float amount) { set_capacity(m_capacity + amount, true); }
 
-void Health::reset() { hp = max_hp; }
+void Health::reset() { m_quantity = get_capacity(); }
+
+void Health::kill() { m_quantity = 0.f; }
 
 void Health::debug() {
-	ImGui::SliderFloat("hp", &hp, 1.f, max_hp);
-	ImGui::SliderFloat("max", &max_hp, 3.f, 20.f);
+	ImGui::SliderFloat("m_quantityf", &m_quantity, 1.f, get_capacity(), "%1.f");
+	ImGui::SliderFloat("max", &m_capacity, 3.f, 20.f, "%1.f");
+	ImGui::SliderFloat("bonusf", &bonus, 1.f, 3.f, "%1.f");
 }
 
 } // namespace fornani::entity

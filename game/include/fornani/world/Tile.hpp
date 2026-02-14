@@ -3,8 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <fornani/core/Common.hpp>
+#include <fornani/physics/Shape.hpp>
 #include <fornani/utils/BitFlags.hpp>
-#include <fornani/utils/Shape.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -22,8 +22,8 @@ namespace fornani::world {
 
 class Map;
 
-enum class TileType : std::uint8_t { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire, home };
-enum class TileState : std::uint8_t { ramp_adjacent, big_ramp, covered };
+enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire, home, incinerite, waterfall };
+enum class TileState { ramp_adjacent, big_ramp, covered, border };
 
 constexpr static int special_index_v{448};
 
@@ -36,10 +36,12 @@ constexpr auto get_type_by_value(int const val) -> TileType {
 	if (val == special_index_v + 38) { return TileType::target; }
 	if (val == special_index_v + 39) { return TileType::spawner; }
 	if (val == special_index_v + 40) { return TileType::home; }
+	if (val == special_index_v + 41) { return TileType::incinerite; }
 	if (val == special_index_v + 52) { return TileType::bonfire; }
 	if (val == special_index_v + 53) { return TileType::campfire; }
 	if (val == special_index_v + 54) { return TileType::checkpoint; }
 	if (val == special_index_v + 55) { return TileType::breakable; }
+	if (val == special_index_v + 56) { return TileType::waterfall; }
 	if (val == special_index_v + 62) { return TileType::big_spike; }
 	if (val == special_index_v + 63) { return TileType::spike; }
 	return TileType::empty;
@@ -55,7 +57,7 @@ struct Tile {
 		if ((val >= special_index_v + 32 && val <= special_index_v + 35) || (val >= special_index_v + 48 && val <= special_index_v + 51)) { ret = 3; }
 		return ret;
 	}
-	Tile(sf::Vector2<std::uint32_t> i, sf::Vector2f p, std::uint32_t val, std::uint32_t odi, float spacing, std::uint8_t chunk_id);
+	Tile(sf::Vector2<std::uint32_t> i, sf::Vector2f p, std::uint32_t val, std::uint32_t odi, float spacing, std::uint8_t chunk_id, sf::Vector2<std::uint32_t> dim);
 
 	void on_hit(automa::ServiceProvider& svc, player::Player& player, world::Map& map, arms::Projectile& proj);
 	void render(sf::RenderWindow& win, sf::RectangleShape& draw, sf::Vector2f cam);
@@ -74,13 +76,15 @@ struct Tile {
 	[[nodiscard]] auto is_spike() const -> bool { return type == TileType::spike; }
 	[[nodiscard]] auto is_big_spike() const -> bool { return type == TileType::big_spike; }
 	[[nodiscard]] auto is_breakable() const -> bool { return type == TileType::breakable; }
+	[[nodiscard]] auto is_waterfall() const -> bool { return type == TileType::waterfall; }
 	[[nodiscard]] auto is_pushable() const -> bool { return type == TileType::pushable; }
 	[[nodiscard]] auto is_spawner() const -> bool { return type == TileType::spawner; }
 	[[nodiscard]] auto is_target() const -> bool { return type == TileType::target; }
 	[[nodiscard]] auto is_home() const -> bool { return type == TileType::home; }
+	[[nodiscard]] auto is_incinerite() const -> bool { return type == TileType::incinerite; }
 	[[nodiscard]] auto is_checkpoint() const -> bool { return type == TileType::checkpoint; }
 	[[nodiscard]] auto is_fire() const -> bool { return type == TileType::bonfire || type == TileType::campfire; }
-	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable() || is_target() || is_checkpoint() || is_fire() || is_spike() || is_big_spike() || is_home(); }
+	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable() || is_incinerite() || is_target() || is_checkpoint() || is_fire() || is_spike() || is_big_spike() || is_home() || is_waterfall(); }
 	[[nodiscard]] auto ramp_adjacent() const -> bool { return flags.test(TileState::ramp_adjacent); }
 	[[nodiscard]] auto covered() const -> bool { return flags.test(TileState::covered); }
 	[[nodiscard]] auto is_negative_ramp() const -> bool {
@@ -89,6 +93,7 @@ struct Tile {
 	}
 	[[nodiscard]] auto is_positive_ramp() const -> bool { return is_ground_ramp() && !is_negative_ramp(); }
 	[[nodiscard]] auto is_minimap_drawable() const -> bool { return is_checkpoint() || is_home() || is_fire() || is_target() || is_breakable(); }
+	[[nodiscard]] auto is_border() const -> bool { return flags.test(TileState::border); }
 
 	[[nodiscard]] auto scaled_position() const -> sf::Vector2i { return sf::Vector2i{bounding_box.get_position()}; }
 	[[nodiscard]] auto f_scaled_position() const -> sf::Vector2f { return bounding_box.get_position() / m_spacing; }

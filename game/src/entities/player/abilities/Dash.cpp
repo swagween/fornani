@@ -1,8 +1,8 @@
 
 #include <fornani/entities/player/PlayerController.hpp>
 #include <fornani/entities/player/abilities/Dash.hpp>
+#include <fornani/physics/Collider.hpp>
 #include <fornani/service/ServiceProvider.hpp>
-#include <fornani/utils/Collider.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani::player {
@@ -18,6 +18,7 @@ Dash::Dash(automa::ServiceProvider& svc, world::Map& map, shape::Collider& colli
 }
 
 void Dash::update(shape::Collider& collider, PlayerController& controller) {
+	auto water_multiplier = collider.has_flag_set(shape::ColliderFlags::in_water) ? 0.8f : 1.f;
 	if (m_direction.lnr != controller.last_requested_direction().as<LNR>() && collider.grounded()) {
 		m_state = AnimState::turn_slide;
 		m_horizontal_multiplier *= 0.99f;
@@ -25,9 +26,10 @@ void Dash::update(shape::Collider& collider, PlayerController& controller) {
 	}
 	Ability::update(collider, controller);
 	collider.flags.state.reset(shape::State::just_landed);
-	auto const& vert = collider.acceleration_multiplier * m_vertical_multiplier;
-	auto const& horiz = collider.acceleration_multiplier * m_horizontal_multiplier;
-	auto terminal_vel = 100.f;
+	auto vert = collider.acceleration_multiplier * m_vertical_multiplier * water_multiplier;
+	auto horiz = collider.acceleration_multiplier * m_horizontal_multiplier * water_multiplier;
+	collider.flags.movement.reset(shape::Movement::jumping);
+	auto terminal_vel = collider.has_flag_set(shape::ColliderFlags::in_water) ? 1.f : 100.f;
 	if (collider.hit_ceiling_ramp()) {
 		m_horizontal_multiplier *= 0.9f;
 		m_vertical_multiplier *= 0.0f;

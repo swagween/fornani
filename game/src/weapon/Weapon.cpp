@@ -14,9 +14,6 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 
 	auto const& in_data = enemy ? svc.data.enemy_weapon[tag] : svc.data.weapon[tag];
 
-	NANI_LOG_DEBUG(m_logger, "Tag: {}", tag.data());
-	NANI_LOG_DEBUG(m_logger, "Label: {}", in_data["metadata"]["label"].as_string().data());
-
 	// metadata
 	metadata.description = in_data["metadata"]["description"].as_string();
 
@@ -24,21 +21,13 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 	visual.dimensions = {in_data["visual"]["dimensions"][0].as<int>(), in_data["visual"]["dimensions"][1].as<int>()};
 	offsets.render.global = {in_data["visual"]["offsets"]["global"][0].as<float>(), in_data["visual"]["offsets"]["global"][1].as<float>()};
 	offsets.render.barrel = {in_data["visual"]["offsets"]["barrel"][0].as<float>(), in_data["visual"]["offsets"]["barrel"][1].as<float>()};
-	visual.color = static_cast<UIColor>(in_data["visual"]["ui"]["color"].as<int>());
 	emitter.dimensions = {in_data["visual"]["spray"]["dimensions"][0].as<float>(), in_data["visual"]["spray"]["dimensions"][1].as<float>()};
-	try {
-		emitter.color = svc.styles.spray_colors.at(metadata.label);
-	} catch (std::out_of_range) { emitter.color = colors::white; }
-
 	emitter.type = in_data["visual"]["spray"]["type"].as_string().data(); // secondary emitter
 
 	if (in_data["visual"]["secondary_spray"]) {
 		secondary_emitter = EmitterAttributes();
 		secondary_emitter.value().dimensions.x = in_data["visual"]["secondary_spray"]["dimensions"][0].as<float>();
 		secondary_emitter.value().dimensions.y = in_data["visual"]["secondary_spray"]["dimensions"][1].as<float>();
-		try {
-			secondary_emitter.value().color = svc.styles.spray_colors.at(metadata.label);
-		} catch (std::out_of_range) { secondary_emitter.value().color = colors::white; }
 		secondary_emitter.value().type = in_data["visual"]["secondary_spray"]["type"].as_string();
 	}
 	set_origin(offsets.render.global);
@@ -48,19 +37,24 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 	cooldowns.reload = util::Cooldown{in_data["gameplay"]["attributes"]["reload"].as<int>()};
 	specifications.multishot = in_data["gameplay"]["attributes"]["multishot"].as<int>();
 	specifications.cooldown_time = in_data["gameplay"]["attributes"]["cooldown_time"].as<int>();
+	specifications.reload_time = in_data["gameplay"]["attributes"]["reload"].as<int>();
 	specifications.recoil = in_data["gameplay"]["attributes"]["recoil"].as<float>();
 	if (static_cast<bool>(in_data["gameplay"]["attributes"]["automatic"].as_bool())) { attributes.set(WeaponAttributes::automatic); }
+	if (static_cast<bool>(in_data["gameplay"]["attributes"]["no_reload"].as_bool())) { attributes.set(WeaponAttributes::no_reload); }
 
 	// audio
 	m_audio.shoot = static_cast<audio::Weapon>(in_data["audio"]["shoot"].as<int>());
+	metadata.audio_tag = "arms_shot_" + std::string{tag};
+	NANI_LOG_DEBUG(m_logger, "Weapon audio tag: {}", metadata.audio_tag);
 
 	set_parameters({in_data["visual"]["texture_lookup"].as<int>(), 1, 32, -1});
 }
 
 void Weapon::update(automa::ServiceProvider& svc, Direction to_direction) {
 	ammo.update();
+	cooldowns.reload.set_native_time(specifications.reload_time * m_modifiers.reload_multiplier);
 	tick();
-	if (cooldowns.reload.is_almost_complete() && projectile.get_team() == Team::nani) { svc.soundboard.flags.arms.set(audio::Arms::reload); }
+	if (cooldowns.reload.is_almost_complete() && projectile.get_team() == Team::nani && !attributes.test(WeaponAttributes::no_reload)) { svc.soundboard.flags.arms.set(audio::Arms::reload); }
 	if (cooldowns.reload.is_almost_complete()) { ammo.refill(); }
 	cooldowns.reload.update();
 	cooldowns.shoot_effect.update();
@@ -108,7 +102,10 @@ void Weapon::lock() { flags.state.reset(WeaponState::unlocked); }
 
 void Weapon::shoot() {
 	cooldowns.cooldown.start(specifications.cooldown_time);
-	if (!cooldowns.reload.running()) { cooldowns.reload.start(); }
+	if (!cooldowns.reload.running()) {
+		cooldowns.reload = util::Cooldown{static_cast<int>(specifications.reload_time * m_modifiers.reload_multiplier)};
+		cooldowns.reload.start();
+	}
 	active_projectiles.update();
 	ammo.use();
 	physical.physics.apply_force(firing_direction.get_vector() * -1.f);
@@ -118,7 +115,7 @@ void Weapon::shoot() {
 void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f target) {
 	shoot();
 	map.spawn_projectile_at(svc, *this, get_barrel_point(), target);
-	svc.soundboard.flags.weapon.set(m_audio.shoot);
+	svc.soundboard.play_sound(get_audio_tag(), get_barrel_point());
 }
 
 void Weapon::decrement_projectiles() { active_projectiles.update(-1); }
@@ -182,6 +179,12 @@ void Weapon::set_orientation(Direction to_direction) {
 void Weapon::set_team(Team team) { projectile.set_team(team); }
 
 void Weapon::set_firing_direction(Direction to_direction) { firing_direction = to_direction; }
+
+void Weapon::reduce_reload_time(float percentage) {
+	auto amount = static_cast<int>(static_cast<float>(cooldowns.reload.get_native_time()) * percentage);
+	amount = std::clamp(amount, 0, cooldowns.reload.get() - 1);
+	cooldowns.reload.update(amount);
+}
 
 void Weapon::reset() { active_projectiles.start(); }
 

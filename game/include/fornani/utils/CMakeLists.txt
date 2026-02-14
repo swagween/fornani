@@ -1,26 +1,25 @@
 nani_add_headers(
         AdjacencyList.hpp
         BitFlags.hpp
-        CircleCollider.hpp
         Circuit.hpp
-        Collider.hpp
-        CollisionDepth.hpp
         Constants.hpp
         Cooldown.hpp
         ColorUtils.hpp
         Counter.hpp
         Cycle.hpp
+        CyclicLerp.hpp
         Decoder.hpp
         Direction.hpp
         Fader.hpp
+        Flaggable.hpp
         ID.hpp
         IWorldPositionable.hpp
         Math.hpp
         NineSlice.hpp
+        Oscillator.hpp
         QuestCode.hpp
         Random.hpp
         RichText.hpp
-        Shape.hpp
         Shipment.hpp
         StateFlag.hpp
         StateFunction.hpp
@@ -29,5 +28,6 @@ nani_add_headers(
         Ticker.hpp
         WorldClock.hpp
         RectPath.hpp
+        TransparentStringHash.hpp
         WorldTimer.hpp
 )

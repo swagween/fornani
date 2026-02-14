@@ -1,9 +1,11 @@
 nani_add_sources(
   ClockGizmo.cpp
   DescriptionGizmo.cpp
+  HotbarGizmo.cpp
   InventoryGizmo.cpp
   MapGizmo.cpp
   MapInfoGizmo.cpp
   OutfitterGizmo.cpp
+  RotaryGizmo.cpp
   WardrobeGizmo.cpp
 )

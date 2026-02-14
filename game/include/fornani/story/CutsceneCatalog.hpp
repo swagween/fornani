@@ -1,8 +1,7 @@
 
 #pragma once
 
-#include "Cutscene.hpp"
-
+#include <fornani/story/Cutscene.hpp>
 #include <memory>
 #include <vector>
 
@@ -25,7 +24,7 @@ class CutsceneCatalog {
 	CutsceneCatalog() = default;
 	explicit CutsceneCatalog(automa::ServiceProvider& svc);
 	void update();
-	void push_cutscene(automa::ServiceProvider& svc, world::Map& map, int id);
+	void push_cutscene(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int id);
 
 	std::vector<std::unique_ptr<Cutscene>> cutscenes{};
 };

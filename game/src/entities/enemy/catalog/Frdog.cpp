@@ -1,10 +1,11 @@
+
 #include "fornani/entities/enemy/catalog/Frdog.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::enemy {
 
-Frdog::Frdog(automa::ServiceProvider& svc) : Enemy(svc, "frdog") { animation.set_params(idle); }
+Frdog::Frdog(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "frdog") { animation.set_params(idle); }
 
 void Frdog::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (died()) {

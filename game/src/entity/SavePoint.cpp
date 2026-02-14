@@ -49,8 +49,8 @@ void SavePoint::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_un
 	proximity_box.set_position(get_world_position() - proximity_offset);
 	activated = false;
 
-	if (player.collider.bounding_box.overlaps(proximity_box)) {
-		if (player.collider.bounding_box.overlaps(bounding_box)) {
+	if (player.get_collider().bounding_box.overlaps(proximity_box)) {
+		if (player.get_collider().bounding_box.overlaps(bounding_box)) {
 			intensity = 3;
 			if (animation.keyframe_over()) { animation.params.framerate = 4; }
 			if (player.controller.inspecting()) {

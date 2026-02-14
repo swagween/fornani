@@ -6,11 +6,11 @@
 
 namespace fornani::enemy {
 
-Thug::Thug(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, "thug"), m_services(&svc), m_map(&map) {
+Thug::Thug(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "thug"), m_services(&svc), m_map(&map) {
 	animation.set_params(idle);
-	collider.physics.maximum_velocity = {8.f, 12.f};
-	collider.physics.air_friction = {0.95f, 0.999f};
-	secondary_collider = shape::Collider({28.f, 28.f});
+	get_collider().physics.maximum_velocity = {8.f, 12.f};
+	get_collider().physics.air_friction = {0.95f, 0.999f};
+	get_secondary_collider().set_dimensions({28.f, 28.f});
 	directions.desired.lnr = LNR::left;
 	directions.actual.lnr = LNR::left;
 	directions.movement.lnr = LNR::neutral;
@@ -31,15 +31,15 @@ void Thug::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		return;
 	}
 	if (directions.actual.lnr == LNR::left) {
-		attacks.punch.set_position(Enemy::collider.physics.position);
-		attacks.rush.set_position(Enemy::collider.physics.position);
+		attacks.punch.set_position(Enemy::get_collider().physics.position);
+		attacks.rush.set_position(Enemy::get_collider().physics.position);
 		attacks.punch.origin.x = -10.f;
 		attacks.rush.origin.x = 20.f;
 		attacks.rush.hit_offset.x = 0.f;
 	} else {
-		sf::Vector2f dir_offset{Enemy::collider.bounding_box.get_dimensions().x, 0.f};
-		attacks.punch.set_position(Enemy::collider.physics.position + dir_offset);
-		attacks.rush.set_position(Enemy::collider.physics.position + dir_offset);
+		sf::Vector2f dir_offset{Enemy::get_collider().bounding_box.get_dimensions().x, 0.f};
+		attacks.punch.set_position(Enemy::get_collider().physics.position + dir_offset);
+		attacks.rush.set_position(Enemy::get_collider().physics.position + dir_offset);
 		attacks.punch.origin.x = 10.f;
 		attacks.rush.origin.x = -20.f;
 		attacks.rush.hit_offset.x = 0.f;
@@ -62,12 +62,12 @@ void Thug::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	}
 
 	flags.state.set(StateFlags::vulnerable); // thug is always vulnerable
-	caution.avoid_ledges(map, collider, directions.actual, 1);
+	caution.avoid_ledges(map, get_collider(), directions.actual, 1);
 
 	// reset animation states to determine next animation state
 	state = {};
-	directions.desired.lnr = (player.collider.get_center().x < collider.get_center().x) ? LNR::left : LNR::right;
-	directions.movement.lnr = collider.physics.velocity.x > 0.f ? LNR::right : LNR::left;
+	directions.desired.lnr = (player.get_collider().get_center().x < get_collider().get_center().x) ? LNR::left : LNR::right;
+	directions.movement.lnr = get_collider().physics.velocity.x > 0.f ? LNR::right : LNR::left;
 	Enemy::update(svc, map, player);
 
 	if (svc.ticker.every_x_ticks(200)) {
@@ -129,7 +129,7 @@ fsm::StateFunction Thug::update_turn() {
 fsm::StateFunction Thug::update_run() {
 	animation.label = "run";
 	auto facing = directions.actual.lnr == LNR::left ? -1.f : 1.f;
-	collider.physics.apply_force({attributes.speed * facing, 0.f});
+	get_collider().physics.apply_force({attributes.speed * facing, 0.f});
 	if (caution.danger() || animation.complete()) {
 		state = ThugState::idle;
 		animation.set_params(idle);
@@ -145,7 +145,7 @@ fsm::StateFunction Thug::update_jump() {
 	if (change_state(ThugState::turn, turn)) { return THUG_BIND(update_turn); }
 	if (animation.just_started()) { cooldowns.jump.start(); }
 	cooldowns.jump.update();
-	if (cooldowns.jump.running()) { collider.physics.apply_force({-2.f, -8.f}); }
+	if (cooldowns.jump.running()) { get_collider().physics.apply_force({-2.f, -8.f}); }
 	if (animation.complete()) {
 		state = ThugState::idle;
 		animation.set_params(idle);
@@ -187,7 +187,7 @@ fsm::StateFunction Thug::update_rush() {
 	}
 	auto force{16.f};
 	force *= directions.actual.lnr == LNR::left ? -1.f : 1.f;
-	collider.physics.apply_force({force, 0.f});
+	get_collider().physics.apply_force({force, 0.f});
 	if (animation.complete()) {
 		state = ThugState::idle;
 		animation.set_params(idle);

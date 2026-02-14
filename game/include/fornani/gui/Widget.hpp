@@ -1,7 +1,11 @@
+
 #pragma once
+
 #include <SFML/Graphics.hpp>
-#include "fornani/particle/Gravitator.hpp"
-#include "fornani/utils/Cooldown.hpp"
+#include <fornani/components/SteeringComponent.hpp>
+#include <fornani/entities/animation/StateMachine.hpp>
+#include <fornani/graphics/Animatable.hpp>
+#include <fornani/utils/Cooldown.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -12,28 +16,30 @@ class Player;
 }
 
 namespace fornani::gui {
-enum class WidgetState : std::uint8_t { added, neutral, taken, gone };
-class Widget {
+
+enum class WidgetState { added, neutral, taken, gone };
+enum class WidgetType { basic, secondary };
+
+class Widget : public Animatable, public StateMachine<WidgetState> {
   public:
-	Widget(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vector2<int> dim, int index);
+	Widget(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2i dim, int index, sf::Vector2f root);
 	void update(automa::ServiceProvider& svc, int max);
 	void render(sf::RenderWindow& win);
-	void shake() { shaking.start(); }
-
-	[[nodiscard]] auto get_position() const -> sf::Vector2f { return origin + position; }
-
-	WidgetState current_state{};
-	vfx::Gravitator gravitator{};
-	sf::Vector2f position{};
-	sf::Vector2f draw_position{};
-	sf::Vector2f origin{};
+	void shake() { m_shaking.start(); }
+	void set_physics_offset(sf::Vector2f const offset) { m_steering.physics.position += offset; }
+	void set_state(WidgetState const to) { set(to); }
+	void set_root(sf::Vector2f const to) { m_root = to; }
+	void set_offset(sf::Vector2f const to) { m_offset = to; }
+	void set_type(WidgetType const to) { m_type = to; }
 
   private:
-	sf::Sprite sprite;
-	sf::Vector2<int> dimensions{};
+	WidgetType m_type{};
+	components::SteeringComponent m_steering{};
+	sf::Vector2f m_root{};
+	sf::Vector2f m_offset{};
 	int maximum{};
 	int index{};
-	util::Cooldown shaking{100};
+	util::Cooldown m_shaking;
 };
 
 } // namespace fornani::gui

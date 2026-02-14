@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <fornani/components/PhysicsComponent.hpp>
 #include <fornani/components/SteeringBehavior.hpp>
+#include <fornani/graphics/MenuTheme.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/Polymorphic.hpp>
 #include <fornani/utils/RectPath.hpp>
@@ -26,8 +27,8 @@ namespace fornani::world {
 class Map;
 }
 
-namespace fornani::config {
-class ControllerMap;
+namespace fornani::input {
+class InputSystem;
 }
 
 namespace fornani::audio {
@@ -36,10 +37,10 @@ class Soundboard;
 
 namespace fornani::gui {
 
-constexpr auto light_shift_time_v = 20;
+constexpr auto light_shift_time_v = 24;
 
-enum class GizmoState : std::uint8_t { neutral, hovered, selected, closed };
-enum class DashboardPort : std::uint8_t { minimap, wardrobe, arsenal, inventory, invalid };
+enum class GizmoState { neutral, hovered, selected, closed };
+enum class DashboardPort { minimap, wardrobe, arsenal, inventory, invalid };
 
 struct Constituent {
 	sf::IntRect lookup{};
@@ -61,7 +62,7 @@ class Gizmo : public UniquePolymorphic {
 	explicit Gizmo(std::string const& label, bool foreground) : m_label(label), m_foreground(foreground) {}
 	virtual void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground = false);
-	virtual bool handle_inputs(config::ControllerMap& controller, [[maybe_unused]] audio::Soundboard& soundboard);
+	virtual bool handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard);
 
 	void close();
 	void select();
@@ -89,6 +90,7 @@ class Gizmo : public UniquePolymorphic {
 	util::Cooldown m_light_shift{light_shift_time_v};
 	std::string m_label{};
 	GizmoState m_state{};
+	std::optional<MenuTheme> p_theme{};
 	std::optional<DashboardPort> m_dashboard_port{}; // determines the index in the dashboard's gizmo vector
 	// the actual position of the gizmo, will generally target m_placement
 	components::PhysicsComponent m_physics{};

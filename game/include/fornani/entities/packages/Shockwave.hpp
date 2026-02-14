@@ -1,7 +1,9 @@
+
 #pragma once
+
 #include <SFML/Graphics.hpp>
-#include "fornani/components/CircleSensor.hpp"
-#include "fornani/utils/Cooldown.hpp"
+#include <fornani/components/CircleSensor.hpp>
+#include <fornani/utils/Cooldown.hpp>
 
 namespace fornani::world {
 class Map;

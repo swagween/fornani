@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <fornani/audio/Soundboard.hpp>
@@ -7,10 +8,13 @@
 #include <fornani/entities/packages/FloatingPart.hpp>
 #include <fornani/entities/packages/Health.hpp>
 #include <fornani/entities/packages/WeaponPackage.hpp>
+#include <fornani/entities/world/Chest.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/Indicator.hpp>
+#include <fornani/gui/HealthBar.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Flaggable.hpp>
 #include <fornani/utils/Math.hpp>
 #include <fornani/utils/Polymorphic.hpp>
 #include <fornani/utils/StateFunction.hpp>
@@ -30,9 +34,11 @@ class Projectile;
 
 namespace fornani::enemy {
 
-enum class EnemyChannel : std::uint8_t { standard, hurt_1, hurt_2, invincible, extra_1, extra_2 };
-enum class EnemySize : std::uint8_t { tiny, small, medium, large, giant };
-enum class GeneralFlags : std::uint8_t {
+using EntityHandle = std::uint64_t;
+
+enum class EnemyChannel { standard, hurt_1, hurt_2, invincible, extra_1, extra_2 };
+enum class EnemySize { tiny, small, medium, large, giant };
+enum class GeneralFlags {
 	mobile,
 	gravity,
 	player_collision,
@@ -50,13 +56,15 @@ enum class GeneralFlags : std::uint8_t {
 	has_invincible_channel,
 	invincible_secondary,
 	spike_collision,
-	sturdy,
 	custom_channels,
-	semipermanent
+	semipermanent,
+	no_tick,
+	boss,
+	kick_immune
 };
-enum class StateFlags : std::uint8_t { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, simple_physics, no_shake, out_of_zone, no_slowdown, intangible };
-enum class Triggers : std::uint8_t { hostile, alert };
-enum class Variant : std::uint8_t { beast, soldier, elemental, worker, guardian };
+enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, no_shake, out_of_zone, no_slowdown, intangible, health_exposed, despawn };
+enum class Triggers { hostile, alert };
+enum class Variant { beast, soldier, elemental, worker, guardian };
 
 struct Attributes {
 	float base_hp{};
@@ -68,6 +76,16 @@ struct Attributes {
 	int respawn_distance{};
 	float gravity{};
 	EnemySize size{EnemySize::medium};
+	float treasure_chance{};
+	float gem_multiplier = 1.f;
+	arms::Team team{arms::Team::skycorps};
+};
+
+struct Treasure {
+	entity::ChestType type{};
+	float drop_chance{};
+	std::string tag{};
+	bool mythic{};
 };
 
 struct Flags {
@@ -78,37 +96,44 @@ struct Flags {
 
 class Enemy : public Mobile {
   public:
-	Enemy(automa::ServiceProvider& svc, std::string_view label, bool spawned = false, int variant = 0, sf::Vector2<int> start_direction = {-1, 0});
+	Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view label, bool spawned = false, int variant = 0, sf::Vector2<int> start_direction = {-1, 0});
 
 	void set_external_id(std::pair<int, sf::Vector2<int>> code);
 
 	virtual void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	virtual void gui_render([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win, [[maybe_unused]] sf::Vector2f cam) {};
-	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, bool tick = true) override;
 
 	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 
 	void handle_player_collision(player::Player& player) const;
 	void handle_collision(shape::Collider& other);
-	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
+	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, player::Player& player);
+	void spawn_treasure(automa::ServiceProvider& svc, world::Map& map);
 	void on_crush(world::Map& map);
 	bool seek_home(world::Map& map);
 	void set_channel(EnemyChannel to) { Animatable::set_channel(static_cast<int>(to)); }
+	void despawn() { flags.state.set(StateFlags::despawn); }
+	void set_handle(EntityHandle to) { metadata.handle = to; }
 
 	[[nodiscard]] auto is_hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto is_alert() const -> bool { return flags.state.test(StateFlags::alert); }
 	[[nodiscard]] auto is_hurt() const -> bool { return hurt_effect.running(); }
+	[[nodiscard]] auto despawn_requested() const -> bool { return flags.state.test(StateFlags::despawn); }
 	[[nodiscard]] auto hostility_triggered() const -> bool { return flags.triggers.test(Triggers::hostile); }
 	[[nodiscard]] auto alertness_triggered() const -> bool { return flags.triggers.test(Triggers::alert); }
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
 	[[nodiscard]] auto get_external_id() const -> int { return metadata.external_id; }
-	[[nodiscard]] auto get_collider() -> shape::Collider& { return collider; }
-	[[nodiscard]] auto get_secondary_collider() -> std::optional<shape::Collider>& { return secondary_collider; }
+	[[nodiscard]] auto get_handle() const -> int { return metadata.handle; }
+	[[nodiscard]] auto get_team() const -> arms::Team { return attributes.team; }
+	[[nodiscard]] auto has_secondary_collider() const -> bool { return secondary_collider.has_value(); }
+	[[nodiscard]] auto get_secondary_collider() const -> shape::Collider& { return secondary_collider.value().get().get_reference(); }
 	[[nodiscard]] auto died() const -> bool { return health.is_dead(); }
 	[[nodiscard]] auto just_died() const -> bool { return health.is_dead() && post_death.get() == afterlife; }
 	[[nodiscard]] auto gone() const -> bool { return post_death.is_complete(); }
+	[[nodiscard]] auto half_health() const -> bool { return health.get_normalized() < 0.5f; }
 	[[nodiscard]] auto player_collision() const -> bool { return flags.general.test(GeneralFlags::player_collision); }
 	[[nodiscard]] auto has_map_collision() const -> bool { return flags.general.test(GeneralFlags::map_collision); }
 	[[nodiscard]] auto spawn_loot() const -> bool { return !flags.general.test(GeneralFlags::no_loot); }
@@ -116,10 +141,12 @@ class Enemy : public Mobile {
 	[[nodiscard]] auto is_transcendent() const -> bool { return flags.general.test(GeneralFlags::transcendent); }
 	[[nodiscard]] auto permadeath() const -> bool { return flags.general.test(GeneralFlags::permadeath); }
 
+	shape::Shape const& get_alert_range() const { return physical.alert_range; }
+
 	void intangible_start(int time) { intangibility.start(time); }
 	void set_position(sf::Vector2f pos) {
-		collider.physics.position = pos;
-		collider.sync_components();
+		get_collider().physics.position = pos;
+		get_collider().sync_components();
 		health_indicator.set_position(pos);
 	}
 	void cancel_shake() {
@@ -128,34 +155,40 @@ class Enemy : public Mobile {
 	}
 
 	void set_position_from_scaled(sf::Vector2f pos);
-	void hurt() { flags.state.set(StateFlags::hurt); }
+	void hurt(float amount = 1.f);
 	void shake() { energy = hit_energy; }
 	void stop_shaking() { flags.state.reset(StateFlags::shaking); }
 
-	entity::Health health{};
+	entity::Health health;
 	graphics::Indicator health_indicator;
 
 	void debug();
 
   protected:
 	std::string label{};
-	std::optional<shape::Collider> secondary_collider{};
+	std::optional<shape::RegisteredCollider> secondary_owned_collider;
+	std::optional<std::reference_wrapper<shape::RegisteredCollider>> secondary_collider;
 	Flags flags{};
 	Attributes attributes{};
 	util::Cooldown post_death{};
 	util::Cooldown hitstun{};
 	util::Cooldown impulse{};
 	util::Cooldown intangibility{};
+	util::Cooldown m_weakness;
 	int afterlife{200};
+	sf::Vector2f m_death_position{};
 
 	util::Cooldown hurt_effect{};
 
 	EnemyChannel m_custom_channel{};
 
+	std::optional<std::vector<Treasure>> m_treasure{};
+
 	struct {
 		int id{};
 		int variant{};
 		int external_id{};
+		EntityHandle handle{};
 	} metadata{};
 
 	struct {
@@ -186,6 +219,7 @@ class Enemy : public Mobile {
   private:
 	sf::Vector2f m_random_offset{};
 	sf::Vector2f m_native_offset{};
+	gui::HealthBar m_health_bar;
 };
 
 } // namespace fornani::enemy

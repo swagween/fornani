@@ -69,6 +69,24 @@
         ]
       }
     ],
+    "enemies": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 25,
+        "position": [
+          20,
+          58
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": true,
@@ -122,10 +140,15 @@
   "meta": {
     "ambience": "overturned",
     "atmosphere": [
-      1
+      "dragonflies"
     ],
-    "background": 3,
+    "background": "woods",
     "biome": "overturned",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -165,7 +188,8 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 1
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
     "flags": {

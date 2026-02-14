@@ -1,14 +1,9 @@
+
 #pragma once
+
 #include <SFML/Graphics.hpp>
 #include <ccmath/ccmath.hpp>
-#include <fornani/entities/player/abilities/Dash.hpp>
-#include <fornani/entities/player/abilities/Doublejump.hpp>
-#include <fornani/entities/player/abilities/Jump.hpp>
-#include <fornani/entities/player/abilities/Roll.hpp>
-#include <fornani/entities/player/abilities/Slide.hpp>
-#include <fornani/entities/player/abilities/Walljump.hpp>
-#include <fornani/entities/player/abilities/Wallslide.hpp>
-#include <deque>
+#include <fornani/entities/player/abilities/Ability.hpp>
 #include <optional>
 #include <unordered_map>
 #include "fornani/utils/BitFlags.hpp"
@@ -29,12 +24,12 @@ constexpr static float walk_speed_v{0.62f};
 constexpr static float sprint_speed_v{1.0f};
 constexpr static float sprint_threshold_v{0.01f};
 
-enum class ControllerInput : std::uint8_t { move_x, sprint, shoot, arms_switch, inspect, move_y, slide };
-enum class MovementState : std::uint8_t { restricted, walljumping, crouch };
-enum class HardState : std::uint8_t { no_move, has_arsenal, walking_autonomously };
-enum class InputState : std::uint8_t { slide_in_air, sprint };
+enum class ControllerInput { move_x, sprint, shoot, arms_switch, inspect, move_y, slide };
+enum class MovementState { restricted, walljumping, crouch };
+enum class HardState { no_move, has_arsenal, walking_autonomously };
+enum class InputState { slide_in_air, sprint };
 
-enum class Sprint : std::uint8_t { released };
+enum class Sprint { released };
 
 class PlayerController {
 
@@ -123,10 +118,12 @@ class PlayerController {
 
 	struct {
 		util::Cooldown inspect{};
+		util::Cooldown dash_kick{};
 	} cooldowns{};
 
 	Player* m_player;
 
 	io::Logger m_logger{"Controller"};
 };
+
 } // namespace fornani::player

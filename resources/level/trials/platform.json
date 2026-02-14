@@ -78,7 +78,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": 1,
+    "background": "night",
     "biome": "firstwind",
     "camera_effects": {
       "shake": {
@@ -100,8 +100,8 @@
       32
     ],
     "metagrid": [
-      -6,
-      -2
+      -9,
+      5
     ],
     "minimap": false,
     "music": "",

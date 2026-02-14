@@ -56,7 +56,6 @@ void Vine::init() {
 		++ctr;
 	}
 	repeatable = false;
-	// m_chain.set_position(get_world_position());
 	NANI_LOG_DEBUG(m_logger, "simulating vines...");
 	m_chain.simulate(*m_services, 128);
 }
@@ -123,9 +122,9 @@ void Vine::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]
 	}
 }
 
-void Vine::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) const {
+void Vine::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, player::Player& player) const {
 	if (m_treasure_balls) {
-		for (auto& ball : m_treasure_balls.value()) { ball->on_hit(svc, map, proj); }
+		for (auto& ball : m_treasure_balls.value()) { ball->on_hit(svc, map, proj, player); }
 	}
 	if (m_spawnable_platforms) {
 		for (auto& plat : m_spawnable_platforms.value()) { plat->on_hit(svc, map, proj); }
