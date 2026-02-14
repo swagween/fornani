@@ -42,7 +42,7 @@ void HotbarGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[
 
 	// draw guns
 	if (player.hotbar) {
-		auto gun_offset = m_outline_offset + sf::Vector2f{-10.f, 6.f};
+		auto gun_offset = m_outline_offset + sf::Vector2f{-12.f, 6.f};
 		auto gun_dim = sf::Vector2f{0.f, 30.f};
 		for (auto [i, gun] : std::views::enumerate(player.hotbar->get_tags())) {
 			auto yoff = gun_dim * static_cast<float>(i);

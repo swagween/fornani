@@ -10,7 +10,7 @@ namespace fornani::gui {
 
 RotaryGizmo::RotaryGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f placement)
 	: Gizmo("Rotary", false), m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "rotary", 120, util::InterpolationType::quadratic}, m_selection{static_cast<int>(player.arsenal_size())},
-	  m_sprite{svc, "rotary_gizmo", {124, 94}}, m_frame_lerp{6.f}, m_gun_display{svc, "heads_up_display_gun", {44, 9}}, m_dashboard_rail{svc, "pioneer_dashboard"},
+	  m_sprite{svc, "rotary_gizmo", {124, 94}}, m_gun_selector{svc, "gun_selector", {64, 31}}, m_frame_lerp{6.f}, m_gun_display{svc, "heads_up_display_gun", {44, 9}}, m_dashboard_rail{svc, "pioneer_dashboard"},
 	  m_rail_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_rail", 256, util::InterpolationType::quadratic} {
 	m_dashboard_port = DashboardPort::arsenal;
 	m_placement = placement;
@@ -18,6 +18,8 @@ RotaryGizmo::RotaryGizmo(automa::ServiceProvider& svc, world::Map& map, player::
 	m_previous_position = m_frame_lerp.raw();
 	m_dashboard_rail.set_texture_rect({{657, 0}, {175, 174}});
 	m_gun_display.set_origin({0.f, 4.5f});
+	m_gun_selector.push_and_set_animation("standard", {0, 10, 24, -1});
+	m_gun_selector.center();
 }
 
 void RotaryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
@@ -33,6 +35,7 @@ void RotaryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::
 		m_exit_trigger = false;
 	}
 	m_sprite.tick();
+	m_gun_selector.tick();
 	m_frame_lerp.update(svc.ticker.dt.count());
 	m_path.update();
 	m_rail_path.update();
@@ -98,7 +101,7 @@ void RotaryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[
 		for (auto i = -1; i <= 1; ++i) {
 			auto selection = m_selection.get(i);
 			auto gun_id = player.arsenal->get_loadout().at(selection)->get_id();
-			auto gun_offset = sf::Vector2f{32.f, 96.f};
+			auto gun_offset = sf::Vector2f{48.f, 96.f};
 			if (auto tag = svc.data.get_gun_tag_from_id(gun_id)) {
 				m_gun_display.set_channel(3);
 				if (player.hotbar) {
@@ -110,6 +113,9 @@ void RotaryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[
 				win.draw(m_gun_display);
 			}
 		}
+		auto selector_offset = sf::Vector2f{100.f, 96.f};
+		m_gun_selector.set_position(m_placement + m_path.get_position() + selector_offset - cam);
+		if (is_selected()) { win.draw(m_gun_selector); }
 	}
 
 	m_sprite.set_channel(0);

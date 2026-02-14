@@ -12,6 +12,7 @@ class Animatable : public Drawable {
 	Animatable(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions = constants::i_cell_vec);
 
 	void push_animation(std::string_view label, anim::Parameters params) { m_animations.insert({label.data(), params}); }
+	void push_and_set_animation(std::string_view label, anim::Parameters params);
 	void set_animation(std::string_view to) { set_parameters(m_animations.at(to.data())); }
 	void set_parameters(anim::Parameters params) { animation.set_params(params); }
 	void set_channel(int to) { m_channel = to; }
