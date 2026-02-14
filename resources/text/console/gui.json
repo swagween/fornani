@@ -1,43 +1,47 @@
 {
-	"vendor": {
-		"buy": "BUY",
-		"sell": "SELL",
-		"price": "PRICE:",
-		"value": "VALUE:"
-	},
-	"item_menu": {
-		"equip": "equip",
-		"unequip": "unequip",
-		"read": "read",
-		"cancel": "cancel"
-	},
-	"exchange_menu": {
-		"buy": "buy",
-		"sell": "sell",
-		"cancel": "cancel"
-	},
-	"notifications": {
-		"equipped": "Equipped ",
-		"unequipped": "Unequipped ",
-		"removed": "Removed ",
-		"slots_full": "Equipment slots full!",
-		"map_marker": "Map marker added to minimap.",
-		"inspect_hint": "Press      to inspect.",
-		"shoot_hint": "Press      to shoot."
-	},
-	"locations": {
-		"firstwind": "- Firstwind Airship - "
-	},
-	"file_menu": {
-		"play": "play",
-		"stats": "stats",
-		"delete": "delete"
-	},
-	"pause_menu": {
-		"resume": "resume",
-		"controls": "controls",
-		"settings": "settings",
-		"quit": "quit",
-		"restart": "restart"
-	}
+  "vendor": {
+    "buy": "BUY",
+    "sell": "SELL",
+    "price": "PRICE:",
+    "value": "VALUE:"
+  },
+  "item_menu": {
+    "equip": "equip",
+    "unequip": "unequip",
+    "read": "read",
+    "cancel": "cancel"
+  },
+  "exchange_menu": {
+    "buy": "buy",
+    "sell": "sell",
+    "cancel": "cancel"
+  },
+  "notifications": {
+    "equipped": "Equipped ",
+    "unequipped": "Unequipped ",
+    "popped_from_loadout": "Removed from loadout: ",
+    "pushed_to_loadout": "Added to loadout: ",
+    "popped_from_hotbar": "Removed from hotbar: ",
+    "pushed_to_hotbar": "Added to hotbar: ",
+    "removed": "Removed ",
+    "slots_full": "Equipment slots full!",
+    "map_marker": "Map marker added to minimap.",
+    "inspect_hint": "Press      to inspect.",
+    "shoot_hint": "Press      to shoot."
+  },
+  "locations": {
+    "firstwind": "- Firstwind Airship - "
+  },
+  "file_menu": {
+    "play": "play",
+    "stats": "stats",
+    "delete": "delete"
+  },
+  "pause_menu": {
+    "resume": "resume",
+    "controls": "controls",
+    "settings": "settings",
+    "quit": "quit",
+    "restart": "restart"
+  }
 }

@@ -225,6 +225,20 @@
     "value": 560
   },
   {
+    "tag": "rotary_gizmo",
+    "category": 3,
+    "lookup": [11, 2],
+    "origin": [4, 0],
+    "naive_title": "Rotary Gizmo",
+    "actual_title": "Rotary Gizmo",
+    "naive_description": "A gizmo that attaches to your inventory dashboard and enables you to select which weapons will appear on your hotbar.",
+    "actual_description": "A gizmo that attaches to your inventory dashboard and enables you to select which weapons will appear on your hotbar.",
+    "unique": true,
+    "readable": true,
+    "rarity": 1,
+    "value": 900
+  },
+  {
     "tag": "dog_leash",
     "category": 1,
     "lookup": [3, 1],

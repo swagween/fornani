@@ -196,7 +196,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	if (overlap || (m_state.test(NPCState::distant_interact) && m_state.test(NPCState::force_interact))) {
 		if (!m_state.test(NPCState::engaged)) { m_state.set(NPCState::just_engaged); }
 		m_state.set(NPCState::engaged);
-		if ((player.controller.inspecting() || m_state.test(NPCState::force_interact)) && !conversations.empty()) {
+		if ((player.controller.inspecting() || m_state.test(NPCState::force_interact)) && !conversations.empty() && !player.has_flag_set(player::PlayerFlags::in_front_of_door)) {
 			start_conversation(svc, console);
 			player.set_busy(true);
 		}

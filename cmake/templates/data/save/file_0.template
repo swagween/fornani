@@ -33,10 +33,10 @@
 	"piggybacker": 24,
 	"player_data": {
 		"abilities": [],
-		"arsenal": [ "bryns_gun", "gnat", "wasp", "pulsar" ],
+		"arsenal": [ "bryns_gun", "gnat", "wasp", "pulsar", "wraith", "tomahawk" ],
 		"equipped_gun": "pulsar",
 		"hotbar": [ "bryns_gun", "gnat", "pulsar" ],
-		"hp": 2,
+		"hp": 3,
 		"items": [
 			{
 				"label": "woodshine_totem",
@@ -170,6 +170,11 @@
 			},
 			{
 				"label": "clock",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "rotary_gizmo",
 				"quantity": 1,
 				"revealed": false
 			}

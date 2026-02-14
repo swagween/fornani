@@ -41,6 +41,7 @@
           2,
           12
         ],
+        "tag": "pioneer_medal",
         "type": 2
       }
     ],
@@ -68,7 +69,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           12,
@@ -127,7 +127,6 @@
       "darken_factor": 2
     },
     "special_drop_id": 0,
-    "style": 2,
     "use_template": false
   },
   "tile": {

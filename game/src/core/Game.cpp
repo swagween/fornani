@@ -535,6 +535,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Separator();
 								ImGui::Text("Crouching? %s", player.controller.is_crouching() ? "Yes" : "No");
 								ImGui::Text("Inspecting? %s", player.controller.inspecting() ? "Yes" : "No");
+								ImGui::Text("In Front of Door? %s", player.has_flag_set(player::PlayerFlags::in_front_of_door) ? "Yes" : "No");
 								ImGui::Separator();
 								ImGui::Text("Jumping? %s", player.get_collider().jumping() ? "Yes" : "No");
 								ImGui::Text("Can Jump? %s", player.can_jump() ? "Yes" : "No");

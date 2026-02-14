@@ -20,7 +20,9 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 																												 .top_right_slot{{{370, 0}, {64, 127}}, {290.f, 0.f}},
 																												 .arsenal_slot{{{253, 127}, {184, 137}}, {52, 218}},
 																												 .motherboard{{{434, 0}, {222, 212}}, {14.f, 68.f}}},
-	  m_paths{.map{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_minimap", 32, util::InterpolationType::quadratic}}, m_palette{"pioneer", svc.finder}, m_services{&svc} {
+	  m_paths{.map{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_minimap", 32, util::InterpolationType::quadratic},
+			  .rotary{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_rotary", 180, util::InterpolationType::quadratic}},
+	  m_palette{"pioneer", svc.finder}, m_services{&svc} {
 	m_debug.box.setFillColor(sf::Color{180, 150, 20, 50});
 	m_debug.box.setOutlineThickness(-2.f);
 	m_debug.box.setOutlineColor(sf::Color{220, 180, 10, 180});
@@ -34,6 +36,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 		m_debug.buttons.back().box.setOrigin({32.f, 32.f});
 	}
 	m_paths.map.set_section("start");
+	m_paths.rotary.set_section("start");
 
 	// populate dashboard depending on the player's inventory
 
@@ -47,7 +50,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (player.catalog.inventory.has_item("status_gizmo")) { m_gizmos.push_back(std::make_unique<WardrobeGizmo>(svc, map, wardrobe_placement)); }
 	if (player.catalog.inventory.has_item("clock")) { m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map, clock_placement)); }
 	m_gizmos.push_back(std::make_unique<InventoryGizmo>(svc, map, player, inventory_placement));
-	if (player.arsenal) { m_gizmos.push_back(std::make_unique<RotaryGizmo>(svc, map, player, rotary_placement)); }
+	if (player.arsenal && player.catalog.inventory.has_item("rotary_gizmo")) { m_gizmos.push_back(std::make_unique<RotaryGizmo>(svc, map, player, rotary_placement)); }
 
 	m_sprite.setScale(constants::f_scale_vec);
 }
@@ -55,6 +58,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {
 	auto& controller = svc.input_system;
 	m_paths.map.update();
+	m_paths.rotary.update();
 	m_light_up.update();
 	m_light_shift.update();
 	for (auto& gizmo : m_gizmos) {
@@ -99,17 +103,18 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 	m_constituents.motherboard.render(win, m_sprite, render_position, {}, shader, m_palette);
 	m_constituents.top_left_slot.render(win, m_sprite, render_position - m_paths.map.get_position(), {}, shader, m_palette);
 	m_constituents.top_right_slot.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {}, shader, m_palette);
-	m_constituents.arsenal_slot.render(win, m_sprite, render_position, {}, shader, m_palette);
+	m_constituents.arsenal_slot.render(win, m_sprite, render_position - m_paths.rotary.get_position() - m_paths.rotary.get_dimensions(), {}, shader, m_palette);
 	for (auto& gizmo : m_gizmos) {
 		shader.set_darken(max_dark);
 		gizmo->render(svc, win, player, shader, m_palette, cam, false);
 	}
 	is_home() ? shader.set_darken(lighten_factor) : shader.set_darken(darken_factor);
 	if (m_state == DashboardState::gizmo && m_current_port == DashboardPort::minimap) { shader.set_darken(lighten_factor); }
+	if (m_state == DashboardState::gizmo && m_current_port == DashboardPort::arsenal) { shader.set_darken(lighten_factor); }
 	m_constituents.top_left_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position(), {}, shader, m_palette);
 	m_constituents.top_right_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {}, shader, m_palette);
+	m_constituents.arsenal_frontplate.render(win, m_sprite, render_position - m_paths.rotary.get_position() - m_paths.rotary.get_dimensions(), {}, shader, m_palette);
 	is_home() ? shader.set_darken(lighten_factor) : shader.set_darken(darken_factor);
-	m_constituents.arsenal_frontplate.render(win, m_sprite, render_position, {}, shader, m_palette);
 	for (auto& gizmo : m_gizmos) {
 		shader.set_darken(max_dark);
 		gizmo->render(svc, win, player, shader, m_palette, cam, true);
@@ -122,7 +127,8 @@ bool Dashboard::handle_inputs(input::InputSystem& controller, audio::Soundboard&
 	for (auto& gizmo : m_gizmos) {
 		if (m_current_port == gizmo->get_dashboard_port()) {
 			if (!gizmo->handle_inputs(controller, soundboard)) {
-				if (gizmo->get_dashboard_port() == DashboardPort::minimap) { m_paths.map.set_section("close"); } // only adjust dashboard art for map gizmo
+				if (gizmo->get_dashboard_port() == DashboardPort::minimap) { m_paths.map.set_section("close"); }	// adjust dashboard art for map gizmo
+				if (gizmo->get_dashboard_port() == DashboardPort::arsenal) { m_paths.rotary.set_section("close"); } // adjust dashboard art for rotary gizmo
 				m_state = DashboardState::home;
 				m_current_port = DashboardPort::invalid;
 				m_selected_position = {};
@@ -160,7 +166,8 @@ bool Dashboard::select_gizmo() {
 		if (m_current_port == gizmo->get_dashboard_port()) {
 			gizmo->select();
 			m_state = DashboardState::gizmo;
-			if (gizmo->get_label() == "Minimap") { m_paths.map.set_section("open"); } // uniquely, the minimap affects the Dashboard's constituents
+			if (gizmo->get_label() == "Minimap") { m_paths.map.set_section("open"); }	// the minimap affects the Dashboard's constituents
+			if (gizmo->get_label() == "Rotary") { m_paths.rotary.set_section("open"); } // the rotary affects the Dashboard's constituents
 			return true;
 		}
 	}

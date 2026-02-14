@@ -12,6 +12,7 @@
           70,
           17
         ],
+        "tag": "ceremonial_skirt",
         "type": 2
       }
     ],
@@ -193,7 +194,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           6,
@@ -210,7 +210,6 @@
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,
@@ -227,7 +226,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           71,
@@ -244,7 +242,6 @@
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           79,
@@ -261,7 +258,6 @@
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           79,
@@ -278,7 +274,6 @@
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,
@@ -295,7 +290,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           43,

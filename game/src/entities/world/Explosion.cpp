@@ -22,7 +22,7 @@ void Explosion::update(automa::ServiceProvider& svc, player::Player& player, Map
 			exhausted = true;
 		}
 	}
-	for (auto& breakable : map.get_entities<Breakable>()) {
+	for (auto& breakable : map.breakables) {
 		if (m_sensor.within_bounds(breakable->get_collider().bounding_box) && !has_flag_set(ExplosionFlags::exhausted)) {
 			breakable->on_smash(svc, map, 2);
 			exhausted = true;

@@ -270,8 +270,8 @@
   "twinkle": {
     "load": 1,
     "rate": 100.0,
-    "expulsion": 50.0,
-    "expulsion_variance": 0.0,
+    "expulsion": 5.0,
+    "expulsion_variance": 3.0,
     "cone": 0.0,
     "friction": 0.99,
     "elasticity": 0.0,

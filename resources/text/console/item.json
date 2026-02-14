@@ -136,6 +136,16 @@
     ],
     "responses": []
   },
+  "rotary_gizmo": {
+    "suite": [
+      [
+        {
+          "message": "This device allows you to select which of your owned weapons will appear in your hotbar."
+        }
+      ]
+    ],
+    "responses": []
+  },
   "mastiff_totem": {
     "suite": [
       [

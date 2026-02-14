@@ -101,6 +101,84 @@
       ]
     }
   ],
+  "dashboard_rail": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [0, 0],
+          "dimensions": [-23, -100]
+        }
+      ]
+    },
+    {
+      "label": "open",
+      "path": [
+        {
+          "position": [0, 0],
+          "dimensions": [-23, -100]
+        },
+        {
+          "position": [0, 120],
+          "dimensions": [-23, -60]
+        }
+      ]
+    },
+    {
+      "label": "close",
+      "path": [
+        {
+          "position": [0, 120],
+          "dimensions": [-23, -60]
+        },
+        {
+          "position": [0, 0],
+          "dimensions": [-23, -100]
+        }
+      ]
+    }
+  ],
+  "dashboard_rotary": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [0, 0],
+          "dimensions": [0, 0]
+        }
+      ]
+    },
+    {
+      "label": "open",
+      "path": [
+        {
+          "position": [0, 0],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [0, 186],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [0, 180],
+          "dimensions": [0, 0]
+        }
+      ]
+    },
+    {
+      "label": "close",
+      "path": [
+        {
+          "position": [0, 180],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [0, 0],
+          "dimensions": [0, 0]
+        }
+      ]
+    }
+  ],
   "minimap_info": [
     {
       "label": "start",
@@ -129,6 +207,30 @@
         {
           "position": [-107, 22],
           "dimensions": [333, 0]
+        }
+      ]
+    }
+  ],
+  "hotbar": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [0, 8]
+        },
+        {
+          "position": [60, 8]
+        }
+      ]
+    },
+    {
+      "label": "end",
+      "path": [
+        {
+          "position": [60, 0]
+        },
+        {
+          "position": [0, 8]
         }
       ]
     }
@@ -285,7 +387,7 @@
           "dimensions": [0, 0]
         },
         {
-          "position": [0, -8],
+          "position": [0, -4],
           "dimensions": [0, 0]
         },
         {
@@ -302,6 +404,34 @@
         },
         {
           "position": [0, 256]
+        }
+      ]
+    },
+    {
+      "label": "open",
+      "path": [
+        {
+          "position": [0, 0]
+        },
+        {
+          "position": [0, 184]
+        },
+        {
+          "position": [0, 180]
+        }
+      ]
+    },
+    {
+      "label": "close",
+      "path": [
+        {
+          "position": [0, 180]
+        },
+        {
+          "position": [0, -4]
+        },
+        {
+          "position": [0, 0]
         }
       ]
     }

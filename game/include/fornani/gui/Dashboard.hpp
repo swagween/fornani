@@ -78,6 +78,7 @@ class Dashboard {
 
 	struct {
 		util::RectPath map;
+		util::RectPath rotary;
 	} m_paths;
 
 	struct {

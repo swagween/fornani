@@ -156,6 +156,7 @@ void Player::unregister_with_map() {
 
 void Player::update(world::Map& map) {
 	if (is_dead() && !m_death_cooldown.running()) { m_death_cooldown.start(); }
+	set_flag(PlayerFlags::in_front_of_door, false);
 	m_death_cooldown.update();
 	if (!collider.has_value()) { return; }
 	caution.avoid_ledges(map, get_collider(), controller.direction, 8);

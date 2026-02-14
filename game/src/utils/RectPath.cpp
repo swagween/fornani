@@ -1,11 +1,9 @@
 
-#include "fornani/utils/RectPath.hpp"
-#include "fornani/setup/ResourceFinder.hpp"
-
 #include <ccmath/ext/clamp.hpp>
 #include <ccmath/math/misc/lerp.hpp>
 #include <djson/json.hpp>
-#include <libassert/assert.hpp>
+#include <fornani/setup/ResourceFinder.hpp>
+#include <fornani/utils/RectPath.hpp>
 
 namespace fornani::util {
 

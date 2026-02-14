@@ -184,6 +184,18 @@
     "fade_out": 32
   },
   {
+    "label": "pioneer_tech",
+    "bus": "gui",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "pioneer_drawer",
+    "bus": "gui",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
     "label": "console_speech",
     "bus": "gui",
     "volume": 1.0,
@@ -193,7 +205,13 @@
   },
   {
     "label": "pioneer_rotary",
-    "bus": "gameplay",
+    "bus": "gui",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "pioneer_tick",
+    "bus": "gui",
     "volume": 1.0,
     "pitch_offset": 0.0
   },

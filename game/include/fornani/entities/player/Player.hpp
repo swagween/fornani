@@ -27,10 +27,10 @@
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Flaggable.hpp>
 #include <fornani/utils/QuestCode.hpp>
+#include <fornani/weapon/Arsenal.hpp>
 #include <fornani/weapon/Hotbar.hpp>
 #include <fornani/world/Camera.hpp>
 #include <utility>
-#include "Inventory.hpp"
 
 namespace fornani {
 class Game;
@@ -97,7 +97,7 @@ struct Counters {
 };
 
 enum class PlayerDeathType { normal, crushed, drowned, swallowed, fallen };
-enum class PlayerFlags { killed, dir_switch, show_weapon, impart_recoil, sleep, wake_up, busy, dash_kick, trial, cutscene, hit_target };
+enum class PlayerFlags { killed, dir_switch, show_weapon, impart_recoil, sleep, wake_up, busy, dash_kick, trial, cutscene, hit_target, in_front_of_door };
 enum class Triggers { hurt };
 
 struct Flags {
