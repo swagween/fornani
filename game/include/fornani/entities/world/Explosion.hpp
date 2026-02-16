@@ -20,6 +20,17 @@ class Map;
 
 enum class ExplosionFlags { exhausted };
 
+struct ExplosionSpecifications {
+	std::string tag{};
+	std::string emitter{};
+	arms::Team team{};
+	sf::Vector2f position{};
+	float radius{};
+	int channel{};
+	int volatility{};
+	util::Cooldown delay{24};
+};
+
 class Explosion : public Flaggable<ExplosionFlags> {
   public:
 	Explosion(automa::ServiceProvider& svc, arms::Team team, sf::Vector2f position, float radius);

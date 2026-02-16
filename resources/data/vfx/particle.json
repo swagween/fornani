@@ -116,6 +116,28 @@
     }
   },
 
+  "rpg": {
+    "load": 20,
+    "rate": 4.0,
+    "expulsion": 30.0,
+    "expulsion_variance": 24.0,
+    "cone": 0.08,
+    "friction": 0.999,
+    "elasticity": 0.95,
+    "gravity": -1.0,
+    "lifespan": 360,
+    "lifespan_variance": 0,
+    "dimensions": [16, 16],
+    "animated": true,
+    "colliding": false,
+    "animation": {
+      "lookup": 0,
+      "duration": 4,
+      "framerate": 48,
+      "loop": 0
+    }
+  },
+
   "wasp": {
     "load": 30,
     "rate": 4.0,
@@ -154,6 +176,24 @@
     "colliding": true,
     "fader": true,
     "color": "guardian"
+  },
+
+  "rpg_2": {
+    "load": 8,
+    "rate": 100.0,
+    "expulsion": 50.0,
+    "expulsion_variance": 50.0,
+    "cone": 0.08,
+    "friction": 0.99,
+    "elasticity": 0.95,
+    "gravity": 0.0,
+    "lifespan": 260,
+    "lifespan_variance": 85,
+    "dimensions": [2, 2],
+    "animated": false,
+    "colliding": true,
+    "fader": true,
+    "color": "fire"
   },
 
   "wasp_2": {

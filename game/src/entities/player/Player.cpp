@@ -280,7 +280,13 @@ void Player::update(world::Map& map) {
 	if (controller.is(AbilityType::walljump) && controller.is_ability_active()) { accumulated_forces.push_back({walljump_force_v * controller.get_ability_direction().as_float(), 0.f}); }
 	if (controller.shot() || controller.arms_switch()) { m_animation_machine.idle_timer.start(); }
 	if (has_flag_set(PlayerFlags::impart_recoil) && arsenal) {
-		if (controller.direction.und == UND::down) { accumulated_forces.push_back({0.f, -equipped_weapon().get_recoil()}); }
+		if (controller.direction.und == UND::down) {
+			accumulated_forces.push_back({0.f, -equipped_weapon().get_recoil()});
+			if (get_collider().physics.actual_velocity().y > 0.f) {
+				get_collider().physics.acceleration.y *= 0.8f;
+				get_collider().physics.velocity.y *= 0.8f;
+			}
+		}
 		if (controller.direction.und == UND::up) { accumulated_forces.push_back({0.f, equipped_weapon().get_recoil()}); }
 		set_flag(PlayerFlags::impart_recoil, false);
 	}
@@ -600,6 +606,7 @@ void Player::update_weapon() {
 		weapon->update(*m_services, controller.direction);
 		weapon->set_position(m_weapon_socket);
 	}
+	equipped_weapon().set_flag(arms::WeaponFlags::firing, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
 }
 
 void Player::walk() {

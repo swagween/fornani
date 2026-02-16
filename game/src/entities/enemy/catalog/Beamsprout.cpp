@@ -82,10 +82,9 @@ fsm::StateFunction Beamsprout::update_charge() {
 	if (animation.just_started()) { m_services->soundboard.flags.beamsprout.set(audio::Beamsprout::charge); }
 	if (animation.get_frame_count() > 7) {
 		if (!has_flag_set(BeamsproutFlags::spit)) {
-			m_map->spawn_projectile_at(*m_services, beam.get(), beam.get().get_barrel_point());
+			beam.shoot(*m_services, *m_map);
 			get_collider().physics.apply_force(directions.actual.as_float() * beam.get().get_recoil_force());
 			m_root->variables.bob_physics.velocity.x = directions.actual.as_float() * beam.get().get_recoil_force().x * 2.f;
-			m_services->soundboard.flags.beamsprout.set(audio::Beamsprout::shoot);
 			set_flag(BeamsproutFlags::spit);
 		}
 	}
@@ -102,7 +101,7 @@ fsm::StateFunction Beamsprout::update_shoot() {
 	animation.label = "shoot";
 	p_state.actual = BeamsproutState::shoot;
 	if (m_services->ticker.every_x_ticks(static_cast<int>(fire_rate))) {
-		m_map->spawn_projectile_at(*m_services, beam.get(), beam.get().get_barrel_point());
+		beam.shoot(*m_services, *m_map);
 		get_collider().physics.apply_force(directions.actual.as_float() * beam.get().get_recoil_force());
 	}
 	if (animation.complete()) {

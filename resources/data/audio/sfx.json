@@ -142,24 +142,6 @@
     "pitch_offset": 0.0
   },
   {
-    "label": "arms_shot_skycorps_smg",
-    "bus": "gameplay",
-    "volume": 0.7,
-    "pitch_offset": 0.2
-  },
-  {
-    "label": "arms_shot_skycorps_ar",
-    "bus": "gameplay",
-    "volume": 1.0,
-    "pitch_offset": 0.1
-  },
-  {
-    "label": "arms_shot_minigun",
-    "bus": "gameplay",
-    "volume": 1.0,
-    "pitch_offset": 0.1
-  },
-  {
     "label": "nani_wallslide",
     "bus": "gameplay",
     "volume": 1.0,
@@ -186,6 +168,116 @@
   {
     "label": "pioneer_tech",
     "bus": "gui",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "shot_gnat",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2,
+    "fade_in": 8,
+    "fade_out": 8
+  },
+  {
+    "label": "shot_nova",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "shot_bryns_gun",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "shot_wasp",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_minigun",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_skycorps_ar",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_energy_ball",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "shot_demon_bow",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "shot_skycorps_smg",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "shot_demon_magic",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_poison_ball",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_green_beam",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_shuriken",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_pulse",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_rpg",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.05
+  },
+  {
+    "label": "shot_pulsar",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_wraith",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_tomahawk",
+    "bus": "gameplay",
     "volume": 1.0,
     "pitch_offset": 0.0
   },

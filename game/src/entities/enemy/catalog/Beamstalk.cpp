@@ -77,7 +77,7 @@ fsm::StateFunction Beamstalk::update_charge() {
 	p_state.actual = BeamstalkState::charge;
 	if (animation.get_frame() > 6) {
 		if (m_services->ticker.every_x_ticks(static_cast<int>(fire_rate))) {
-			m_map->spawn_projectile_at(*m_services, beam.get(), beam.get().get_barrel_point());
+			beam.shoot(*m_services, *m_map);
 			get_collider().physics.apply_force({-beam.get().get_recoil(), 0.f});
 			if (!has_flag_set(BeamstalkFlags::spit)) {
 				m_services->soundboard.flags.beast.set(audio::Beast::growl);
@@ -97,7 +97,7 @@ fsm::StateFunction Beamstalk::update_shoot() {
 	animation.label = "shoot";
 	p_state.actual = BeamstalkState::shoot;
 	if (m_services->ticker.every_x_ticks(static_cast<int>(fire_rate))) {
-		m_map->spawn_projectile_at(*m_services, beam.get(), beam.get().get_barrel_point());
+		beam.shoot(*m_services, *m_map);
 		get_collider().physics.apply_force(directions.actual.as_float() * beam.get().get_recoil_force());
 		m_root->variables.bob_physics.velocity.x = directions.actual.as_float() * beam.get().get_recoil_force().x;
 	}

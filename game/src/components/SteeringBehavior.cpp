@@ -1,9 +1,8 @@
-#include "fornani/components/SteeringBehavior.hpp"
 
+#include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
-
 #include "fornani/utils/Random.hpp"
 
 namespace fornani::components {

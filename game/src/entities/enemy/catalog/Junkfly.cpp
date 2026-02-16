@@ -47,7 +47,7 @@ void Junkfly::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (has_flag_set(JunkflyFlags::toss) && !health.is_dead()) {
 		auto bp = sf::Vector2f{0.f, 32.f};
 		m_bomb->get().set_barrel_point(get_collider().get_center() + bp);
-		map.spawn_projectile_at(svc, m_bomb->get(), get_collider().get_center() + bp, player.get_collider().get_center() - get_collider().get_center() + bp);
+		m_bomb->get().shoot(svc, map, player.get_collider().get_center() - get_collider().get_center() + bp);
 		m_toss_time.start();
 		set_flag(JunkflyFlags::toss, false);
 	}

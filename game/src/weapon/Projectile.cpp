@@ -18,7 +18,7 @@ static bool is_heading_toward(sf::Vector2f const& position, sf::Vector2f const& 
 namespace fornani::arms {
 
 Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon, bool enemy)
-	: Animatable(svc, "projectile_" + std::string{label}), metadata{.id = id, .label = label}, m_weapon(&weapon),
+	: Animatable(svc, "projectile_" + std::string{label}), metadata{.id = id, .label = label.data()}, m_weapon(&weapon),
 	  physical{.collider{enemy ? svc.data.enemy_weapon[label]["class_package"]["projectile"]["radius"].as<float>() : svc.data.weapon[label]["class_package"]["projectile"]["radius"].as<float>()}}, m_reflected{48} {
 
 	auto const& in_data = enemy ? svc.data.enemy_weapon[label]["class_package"]["projectile"] : svc.data.weapon[label]["class_package"]["projectile"];
@@ -54,6 +54,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	if (in_data["attributes"]["reflect"].as_bool()) { metadata.attributes.set(ProjectileAttributes::reflect); }
 	if (in_data["attributes"]["sprite_flip"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sprite_flip); }
 	if (in_data["attributes"]["sticky"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sticky); }
+	if (in_data["attributes"]["repeat_sound"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sticky); }
 
 	if (in_data["explosion"]) {
 		metadata.explosion = ExplosionAttributes{};
@@ -61,6 +62,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 		metadata.explosion->emitter = in_data["explosion"]["emitter"] ? in_data["explosion"]["emitter"].as_string() : metadata.explosion->tag;
 		metadata.explosion->radius = in_data["explosion"]["radius"].as<float>();
 		metadata.explosion->channel = in_data["explosion"]["channel"].as<int>();
+		metadata.explosion->volatility = in_data["explosion"]["volatility"].as<int>();
 	}
 
 	visual.num_angles = in_data["animation"]["angles"].as<int>();
@@ -97,6 +99,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	lifetime.update();
 	m_reflected.update();
 	damage_timer.update();
+
 	if (variables.state.test(ProjectileState::destruction_initiated) && !metadata.attributes.test(ProjectileAttributes::constrained)) { destroy(true); }
 
 	if (boomerang()) {
@@ -105,8 +108,8 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 		physical.collider.physics.simple_update();
 		variables.damage_multiplier = is_heading_toward(physical.collider.physics.position, physical.collider.physics.velocity, player.get_collider().get_center()) ? 3.f : 1.f;
 	} else if (wander()) {
-		physical.collider.physics.set_global_friction(0.9f);
-		physical.steering.smooth_random_walk(physical.collider.physics, 0.01f);
+		physical.collider.physics.set_global_friction(0.99f);
+		physical.steering.smooth_random_walk(physical.collider.physics, 0.004f, 128.f);
 		physical.collider.physics.simple_update();
 	}
 
@@ -194,7 +197,7 @@ void Projectile::on_player_hit(automa::ServiceProvider& svc, world::Map& map, pl
 void Projectile::on_explode(automa::ServiceProvider& svc, world::Map& map) {
 	if (!metadata.explosion) { return; }
 	if (!has_attribute(arms::ProjectileAttributes::explode_on_impact)) { return; }
-	map.spawn_explosion(svc, metadata.explosion->tag, metadata.explosion->emitter, get_team(), get_position(), metadata.explosion->radius, metadata.explosion->channel);
+	map.spawn_explosion(svc, metadata.explosion->tag, metadata.explosion->emitter, get_team(), get_position(), metadata.explosion->radius, metadata.explosion->channel, metadata.explosion->volatility);
 	destroy(false);
 }
 

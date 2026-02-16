@@ -310,6 +310,16 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		flags.state.reset(LevelState::spawn_enemy);
 	}
 
+	// chain explosions
+	std::erase_if(m_chain_explosions, [](auto const& e) { return e.volatility == 0; });
+	for (auto& explosion : m_chain_explosions) {
+		if (explosion.delay.is_almost_complete()) {
+			explosion.volatility = 0;
+			spawn_explosion(svc, explosion.tag, explosion.emitter, explosion.team, explosion.position + random::random_vector_float(-80.f, 80.f), explosion.radius, explosion.channel);
+		}
+		explosion.delay.update();
+	}
+
 	// hidden areas
 	flags.map_state.test(MapState::unobscure) ? cooldowns.fade_obscured.update() : cooldowns.fade_obscured.reverse();
 	if (check_cell_collision(player->get_collider(), true)) {
@@ -618,10 +628,16 @@ void Map::spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::
 	active_emitters.push_back(std::make_unique<vfx::Emitter>(svc, *this, pos, dim, tag, color, dir));
 }
 
-void Map::spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel) {
+void Map::spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel, int volatility) {
 	m_explosions.push_back(Explosion{svc, team, pos, radius});
 	spawn_effect(svc, tag, pos, {}, channel);
 	spawn_emitter(svc, emitter, pos, Direction{});
+	if (volatility > 0) {
+		for (auto i = 0; i < volatility; ++i) {
+			m_chain_explosions.push_back(ExplosionSpecifications{tag.data(), emitter.data(), team, pos, radius, channel, 1});
+			m_chain_explosions.back().delay.start(i * random::random_range(24, 48));
+		}
+	}
 }
 
 void Map::spawn_enemy(int id, sf::Vector2f pos, int variant) {

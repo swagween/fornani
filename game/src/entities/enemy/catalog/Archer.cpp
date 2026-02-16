@@ -141,7 +141,7 @@ fsm::StateFunction Archer::update_shoot() {
 		bp.x += 24.f * directions.actual.as_float();
 		bp.y -= 48.f;
 		m_bow.get().set_barrel_point(bp);
-		m_map->spawn_projectile_at(*m_services, m_bow.get(), m_bow.get().get_barrel_point(), m_player_target - m_bow.get().get_barrel_point());
+		m_bow.shoot(*m_services, *m_map, m_player_target - m_bow.get().get_barrel_point());
 		parts.bow.sprite->setTextureRect(sf::IntRect{{0, 0}, bow_dimensions});
 		cooldowns.post_shoot.start();
 		request(ArcherState::idle);

@@ -33,7 +33,7 @@
 	"piggybacker": 24,
 	"player_data": {
 		"abilities": [],
-		"arsenal": [ "bryns_gun", "gnat", "wasp", "pulsar", "wraith", "tomahawk" ],
+		"arsenal": [ "bryns_gun", "gnat", "wasp", "pulsar", "wraith", "tomahawk", "rpg" ],
 		"equipped_gun": "pulsar",
 		"hotbar": [ "bryns_gun", "gnat", "pulsar" ],
 		"hp": 3,
@@ -175,6 +175,16 @@
 			},
 			{
 				"label": "rotary_gizmo",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "demon_cuirass",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "demon_greaves",
 				"quantity": 1,
 				"revealed": false
 			}

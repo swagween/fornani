@@ -142,6 +142,10 @@
     {
       "name": "urbanmatter",
       "description": "platform sfx"
+    },
+    {
+      "name": "CGEffex",
+      "description": "arrow sfx"
     }
   ],
   "playtesters": [

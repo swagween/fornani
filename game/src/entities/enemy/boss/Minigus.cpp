@@ -361,7 +361,6 @@ fsm::StateFunction Minigus::update_shoot() {
 		gun.cycle.update();
 		gun.barrel_offset = gun.cycle.get_alternator() % 2 == 0 ? sf::Vector2f{0.f, 10.f} : (gun.cycle.get_alternator() % 2 == 1 ? sf::Vector2f{0.f, 20.f} : sf::Vector2f{0.f, 15.f});
 		gun.shoot(*m_services, *m_map);
-		m_map->spawn_projectile_at(*m_services, gun.get(), gun.get().get_barrel_point());
 		m_map->shake_camera();
 	}
 	if (m_minigun.flags.test(MinigunFlags::charging)) {
@@ -854,7 +853,7 @@ fsm::StateFunction Minigus::update_throw_can() {
 	if (Enemy::animation.just_started()) { m_services->soundboard.flags.minigus.set(audio::Minigus::pizza); }
 	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
 	if (Enemy::animation.get_frame() == 62 && !status.test(MinigusFlags::threw_can)) {
-		m_map->spawn_projectile_at(*m_services, soda.get(), soda.get().get_barrel_point());
+		soda.shoot(*m_services, *m_map);
 		status.set(MinigusFlags::threw_can);
 	}
 	if (Enemy::animation.complete()) {

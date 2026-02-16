@@ -45,7 +45,6 @@
 #include <fornani/world/Spike.hpp>
 #include <fornani/world/SwitchBlock.hpp>
 #include <fornani/world/TimerBlock.hpp>
-#include <list>
 #include <optional>
 #include <vector>
 
@@ -62,6 +61,14 @@ class Console;
 class Portrait;
 class InventoryWindow;
 } // namespace fornani::gui
+
+namespace arms {
+class Weapon;
+}
+
+namespace entity {
+class WeaponPackage;
+}
 
 namespace fornani::world {
 
@@ -95,6 +102,9 @@ struct MapAttributes {
 };
 
 class Map {
+	friend class arms::Weapon;
+	friend class entity::WeaponPackage;
+
   private:
 	std::vector<std::unique_ptr<shape::ICollider>> m_colliders{};
 	std::vector<std::vector<shape::ICollider*>> m_chunks;
@@ -109,10 +119,9 @@ class Map {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	bool handle_entry(player::Player& player, util::Cooldown& enter_room);
-	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {}, float speed_multiplier = 1.f);
 	void spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0);
 	void spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, Direction dir, sf::Vector2f dim = {16.f, 16.f}, sf::Color color = colors::nani_white);
-	void spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel);
+	void spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel, int volatility = 0);
 	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0);
 	void spawn_chest(automa::ServiceProvider& svc, enemy::Treasure const& treasure, sf::Vector2f pos, sf::Vector2f vel = {});
 	void reveal_npc(std::string_view label);
@@ -254,12 +263,16 @@ class Map {
 	audio::SoundBalance ambience_balance{};
 
   private:
+	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {}, float speed_multiplier = 1.f);
+
+  private:
 	MapAttributes m_attributes{};
 	util::BitFlags<LayerProperties> m_layer_properties{};
 
 	std::optional<EntitySet> m_entities{};
 	std::vector<std::unique_ptr<vfx::Emitter>> active_emitters{};
 	std::vector<Explosion> m_explosions{};
+	std::vector<ExplosionSpecifications> m_chain_explosions{};
 
 	std::optional<Palette> m_palette{};
 	int abyss_distance{512};

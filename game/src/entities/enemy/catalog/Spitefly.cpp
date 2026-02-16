@@ -58,7 +58,7 @@ void Spitefly::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 				if (svc.ticker.every_x_ticks(1000)) {
 					auto bp = sf::Vector2f{0.f, 32.f};
 					m_bomb->get().set_barrel_point(get_collider().get_center() + bp);
-					map.spawn_projectile_at(svc, m_bomb->get(), get_collider().get_center() + bp, player.get_collider().get_center() - get_collider().get_center() + bp);
+					m_bomb->shoot(svc, map, player.get_collider().get_center() - get_collider().get_center() + bp);
 				}
 			}
 		}

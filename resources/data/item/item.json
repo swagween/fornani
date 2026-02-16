@@ -108,6 +108,8 @@
   },
   {
     "tag": "woodshine_warehouse_key",
+    "lookup": [8, 0],
+    "origin": [4, 4],
     "actual_title": "Woodshine Warehouse Key",
     "naive_description": "Allows you to enter Woodshine's warehouse.",
     "unique": true,
@@ -278,7 +280,8 @@
   },
   {
     "tag": "bronze_bracelet",
-    "lookup": [10, 1],
+    "lookup": [6, 1],
+    "origin": [5, 3],
     "actual_title": "Bronze Bracelet",
     "naive_description": "A common treasure item.",
     "unique": false,
@@ -288,6 +291,8 @@
   },
   {
     "tag": "silver_bracelet",
+    "lookup": [7, 1],
+    "origin": [6, 3],
     "actual_title": "Silver Bracelet",
     "naive_description": "A common treasure item.",
     "unique": false,
@@ -451,17 +456,17 @@
   {
     "tag": "demon_greaves",
     "category": 4,
-    "lookup": [5, 12],
-    "origin": [5, 2],
+    "lookup": [5, 13],
+    "origin": [5, 3],
     "actual_title": "Demon Greaves",
     "actual_description": "Ancient rhenite greaves worn by Kariba warriors.",
     "unique": true,
     "equippable": false,
     "wearable": true,
     "sellable": true,
-    "apparel_type": 2,
+    "apparel_type": 3,
     "rarity": 2,
-    "value": 2800
+    "value": 2000
   },
   {
     "tag": "ceremonial_skirt",
@@ -526,6 +531,7 @@
   {
     "tag": "clay_statue",
     "lookup": [0, 4],
+    "origin": [0, 4],
     "category": 2,
     "actual_title": "Clay Statue",
     "naive_description": "A common artifact of the ancient peoples.",

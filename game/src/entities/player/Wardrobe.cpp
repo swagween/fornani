@@ -1,8 +1,6 @@
 
-#include "fornani/entities/player/Wardrobe.hpp"
-#include <fornani/gui/console/Console.hpp>
-#include "fornani/graphics/TextureUpdater.hpp"
-#include "fornani/service/ServiceProvider.hpp"
+#include <fornani/entities/player/Wardrobe.hpp>
+#include <fornani/graphics/TextureUpdater.hpp>
 
 namespace fornani::player {
 
@@ -28,6 +26,8 @@ void Wardrobe::update(graphics::TextureUpdater& updater) {
 	case 2: change_outfit({{{2, 0}, sf::Color{229, 234, 160}}, {{3, 0}, sf::Color{196, 213, 119}}}); break;
 	case 3: change_outfit({{{2, 0}, sf::Color{33, 34, 30}}, {{3, 0}, sf::Color{20, 19, 16}}}); break;
 	case 4: change_outfit({{{2, 0}, sf::Color{33, 34, 30}}, {{3, 0}, sf::Color{20, 19, 16}}}); break;
+	case 5: change_outfit({{{2, 0}, sf::Color{33, 34, 30}}, {{3, 0}, sf::Color{20, 19, 16}}}); break;
+	case 6: change_outfit({{{2, 0}, sf::Color{160, 22, 85}}, {{3, 0}, sf::Color{115, 119, 109}}}); break;
 	default: break;
 	}
 	switch (get_variant(ApparelType::hairstyle)) {
@@ -40,6 +40,8 @@ void Wardrobe::update(graphics::TextureUpdater& updater) {
 	case 2: change_outfit({{{3, 2}, sf::Color{132, 113, 250}}}); break;
 	case 3: change_outfit({{{3, 2}, sf::Color{194, 217, 211}}}); break;
 	case 4: change_outfit({{{3, 2}, sf::Color{33, 34, 30}}, {{3, 0}, sf::Color{20, 19, 16}}}); break;
+	case 5: change_outfit({{{3, 2}, sf::Color{33, 34, 30}}, {{3, 0}, sf::Color{20, 19, 16}}}); break;
+	case 6: change_outfit({{{3, 2}, sf::Color{12, 12, 20}}, {{3, 1}, sf::Color{234, 227, 255}}, {{0, 2}, sf::Color{234, 227, 255}}, {{1, 2}, sf::Color{234, 227, 255}}}); break;
 	default: break;
 	}
 	updater.switch_to_palette(m_palette);

@@ -370,10 +370,7 @@ fsm::StateFunction Lynx::update_levitate() {
 		m_services->soundboard.flags.lynx.set(audio::Lynx::yyah);
 	}
 	if (m_cooldowns.start_levitate.is_complete() && !m_cooldowns.throw_shuriken.running()) { m_cooldowns.throw_shuriken.start(); }
-	if (m_cooldowns.throw_shuriken.is_almost_complete() && !m_cooldowns.start_levitate.running()) {
-		m_map->spawn_projectile_at(*m_services, m_shuriken.get(), m_shuriken.get().get_barrel_point(), m_attack_target);
-		m_services->soundboard.flags.lynx.set(audio::Lynx::shing);
-	}
+	if (m_cooldowns.throw_shuriken.is_almost_complete() && !m_cooldowns.start_levitate.running()) { m_shuriken.shoot(*m_services, *m_map, m_attack_target); }
 	flags.general.reset(GeneralFlags::gravity);
 	Enemy::get_collider().set_flag(shape::ColliderFlags::simple);
 	if (Enemy::animation.complete()) {
@@ -481,10 +478,7 @@ fsm::StateFunction Lynx::update_prepare_shuriken() {
 fsm::StateFunction Lynx::update_toss_shuriken() {
 	m_state.actual = LynxState::toss_shuriken;
 	m_cooldowns.post_shuriken_toss.start();
-	if (Enemy::animation.just_started() || ((Enemy::animation.get_frame_count() == 0 || Enemy::animation.get_frame_count() == 3) && Enemy::animation.keyframe_started())) {
-		m_map->spawn_projectile_at(*m_services, m_shuriken.get(), m_shuriken.get().get_barrel_point(), m_attack_target);
-		m_services->soundboard.flags.lynx.set(audio::Lynx::shing);
-	}
+	if (Enemy::animation.just_started() || ((Enemy::animation.get_frame_count() == 0 || Enemy::animation.get_frame_count() == 3) && Enemy::animation.keyframe_started())) { m_shuriken.shoot(*m_services, *m_map, m_attack_target); }
 	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
 	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 	if (Enemy::animation.complete()) {

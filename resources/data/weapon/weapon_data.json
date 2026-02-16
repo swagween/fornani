@@ -10,7 +10,7 @@
       "dimensions": [9, 4],
       "offsets": {
         "global": [-1.5, 2.5],
-        "barrel": [9.0, 1.0],
+        "barrel": [18.0, 1.0],
         "stock": [0, 0]
       },
       "spray": {
@@ -157,7 +157,7 @@
     "gameplay": {
       "attributes": {
         "automatic": true,
-        "ammo": -1,
+        "ammo": 80,
         "reload": 1000,
         "cooldown_time": 7,
         "recoil": 0.15
@@ -181,6 +181,7 @@
           "transcendent": false,
           "persistent": false,
           "constrained": false,
+          "repeat_sound": true,
           "range_variance": 8.0,
           "acceleration_factor": 0.0,
           "dampen_factor": 0.999
@@ -323,6 +324,77 @@
           "tag": "large_explosion",
           "radius": 28.0,
           "channel": 4
+        }
+      }
+    }
+  },
+  "rpg": {
+    "metadata": {
+      "id": 6,
+      "label": "RPG",
+      "description": "A powerful shoulder-mounted missile launcher."
+    },
+    "visual": {
+      "texture_lookup": 6,
+      "dimensions": [31, 7],
+      "offsets": {
+        "global": [12.5, 3.5],
+        "barrel": [64.0, 1.5],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "type": "rpg_2"
+      },
+      "secondary_spray": {
+        "type": "rpg"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 2,
+        "reload": 500,
+        "cooldown_time": 3,
+        "recoil": 4.8
+      }
+    },
+    "audio": { "shoot": 6 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [12.0, 12.0],
+        "radius": 11.0,
+        "audio": { "hit": 2 },
+        "attributes": {
+          "base_damage": 36,
+          "lifespan": 640,
+          "lifespan_variance": 0,
+          "speed": 4.5,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "omnidirectional": false,
+          "explode_on_impact": true,
+          "reflect": true,
+          "wander": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.0,
+          "gravity": 0.0,
+          "elasticity": 0.98
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 14,
+          "angles": 2
+        },
+        "explosion": {
+          "tag": "explosion",
+          "radius": 46.0,
+          "channel": 3,
+          "volatility": 4
         }
       }
     }

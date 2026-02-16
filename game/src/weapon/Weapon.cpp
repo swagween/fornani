@@ -6,11 +6,11 @@
 namespace fornani::arms {
 
 Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
-	: Animatable(svc, "guns", {24, 8}), metadata{.id = enemy ? svc.data.enemy_weapon[tag]["metadata"]["id"].as<int>() : svc.data.weapon[tag]["metadata"]["id"].as<int>(),
+	: Animatable(svc, "guns", {32, 8}), metadata{.id = enemy ? svc.data.enemy_weapon[tag]["metadata"]["id"].as<int>() : svc.data.weapon[tag]["metadata"]["id"].as<int>(),
 												 .tag = tag.data(),
 												 .label = enemy ? svc.data.enemy_weapon[tag]["metadata"]["label"].as_string() : svc.data.weapon[tag]["metadata"]["label"].as_string()},
 	  projectile(svc, tag, enemy ? svc.data.enemy_weapon[tag]["metadata"]["id"].as<int>() : svc.data.weapon[tag]["metadata"]["id"].as<int>(), *this, enemy), visual{.ui{sf::Sprite{svc.assets.get_texture("inventory_guns")}}},
-	  cooldowns{.shoot_effect{64}} {
+	  cooldowns{.shoot_effect{64}}, m_services{&svc} {
 
 	auto const& in_data = enemy ? svc.data.enemy_weapon[tag] : svc.data.weapon[tag];
 
@@ -44,7 +44,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 
 	// audio
 	m_audio.shoot = static_cast<audio::Weapon>(in_data["audio"]["shoot"].as<int>());
-	metadata.audio_tag = "arms_shot_" + std::string{tag};
+	metadata.audio_tag = "shot_" + std::string{tag};
 	NANI_LOG_DEBUG(m_logger, "Weapon audio tag: {}", metadata.audio_tag);
 
 	set_parameters({in_data["visual"]["texture_lookup"].as<int>(), 1, 32, -1});
@@ -52,6 +52,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 
 void Weapon::update(automa::ServiceProvider& svc, Direction to_direction) {
 	ammo.update();
+	if (attributes.test(WeaponAttributes::automatic) && has_flag_set(WeaponFlags::firing) && !ammo.empty()) { svc.soundboard.repeat_sound(get_audio_tag(), 1, get_barrel_point()); }
 	cooldowns.reload.set_native_time(specifications.reload_time * m_modifiers.reload_multiplier);
 	tick();
 	if (cooldowns.reload.is_almost_complete() && projectile.get_team() == Team::nani && !attributes.test(WeaponAttributes::no_reload)) { svc.soundboard.flags.arms.set(audio::Arms::reload); }
@@ -110,12 +111,12 @@ void Weapon::shoot() {
 	ammo.use();
 	physical.physics.apply_force(firing_direction.get_vector() * -1.f);
 	cooldowns.shoot_effect.start();
+	if (!attributes.test(WeaponAttributes::automatic)) { m_services->soundboard.play_sound(get_audio_tag(), get_barrel_point()); }
 }
 
 void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f target) {
 	shoot();
 	map.spawn_projectile_at(svc, *this, get_barrel_point(), target);
-	svc.soundboard.play_sound(get_audio_tag(), get_barrel_point());
 }
 
 void Weapon::decrement_projectiles() { active_projectiles.update(-1); }

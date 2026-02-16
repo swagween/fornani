@@ -12,6 +12,7 @@
           3,
           4
         ],
+        "tag": "ceremonial_garb",
         "type": 2
       }
     ],
@@ -25,7 +26,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           10,

@@ -4,10 +4,10 @@
 #include <SFML/Graphics.hpp>
 #include <ccmath/ccmath.hpp>
 #include <fornani/entities/player/abilities/Ability.hpp>
+#include <fornani/utils/Direction.hpp>
+#include <fornani/utils/Flaggable.hpp>
 #include <optional>
 #include <unordered_map>
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Direction.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -24,6 +24,7 @@ constexpr static float walk_speed_v{0.62f};
 constexpr static float sprint_speed_v{1.0f};
 constexpr static float sprint_threshold_v{0.01f};
 
+enum class PlayerControllerFlags { firing_weapon };
 enum class ControllerInput { move_x, sprint, shoot, arms_switch, inspect, move_y, slide };
 enum class MovementState { restricted, walljumping, crouch };
 enum class HardState { no_move, has_arsenal, walking_autonomously };
@@ -31,7 +32,7 @@ enum class InputState { slide_in_air, sprint };
 
 enum class Sprint { released };
 
-class PlayerController {
+class PlayerController final : public Flaggable<PlayerControllerFlags> {
 
   public:
 	friend class Player;

@@ -11,7 +11,6 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Antenna.hpp>
 #include <fornani/physics/CircleCollider.hpp>
-#include <fornani/physics/Shape.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/Direction.hpp>
@@ -59,6 +58,7 @@ struct ExplosionAttributes {
 	std::string emitter{};
 	float radius{};
 	int channel{};
+	int volatility{};
 };
 
 enum class ProjectileState { initialized, destruction_initiated, destroyed, whiffed, poof, contact, stuck };
@@ -119,7 +119,7 @@ class Projectile : public Animatable {
 		int id{};
 		Team team{};
 		ProjectileType type{};
-		std::string_view label{};
+		std::string label{};
 		ProjectileSpecifications specifications{};
 		util::BitFlags<ProjectileAttributes> attributes{};
 		std::optional<ExplosionAttributes> explosion{};

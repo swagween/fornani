@@ -337,15 +337,16 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.arms.test(Arms::frag_grenade)) { play(engine, svc, "frag_grenade", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.arms.test(Arms::whistle)) { play(engine, svc, "missile_whistle", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 
-	if (flags.weapon.test(Weapon::bryns_gun)) { play(engine, svc, "arms_shot_bg", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	/*if (flags.weapon.test(Weapon::bryns_gun)) { play(engine, svc, "arms_shot_bg", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::gnat)) { play(engine, svc, "arms_shot_gnat", 0.1f, 100.f, 2, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::wasp)) { play(engine, svc, "arms_shot_wasp", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::tomahawk)) { play(engine, svc, "arms_shot_tomahawk", 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
-	if (flags.weapon.test(Weapon::tomahawk_catch)) { play(engine, svc, "arms_catch_tomahawk", 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::skycorps_ar)) { play(engine, svc, "arms_shot_skycorps_ar", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
-	if (flags.weapon.test(Weapon::pulse)) { play(engine, svc, "arms_shot_pulse", 0.2f, 20.f); }
 	if (flags.weapon.test(Weapon::demon_magic)) { play(engine, svc, "arms_shot_demon_magic", 0.1f, 40.f); }
-	if (flags.weapon.test(Weapon::nova)) { play(engine, svc, "arms_shot_nova", 0.1f); }
+	if (flags.weapon.test(Weapon::nova)) { play(engine, svc, "arms_shot_nova", 0.1f); }*/
+
+	if (flags.weapon.test(Weapon::tomahawk_catch)) { play(engine, svc, "arms_catch_tomahawk", 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.weapon.test(Weapon::pulse)) { play(engine, svc, "magic_pulse", 0.2f, 20.f); }
 
 	if (flags.weapon.test(Weapon::energy_ball)) { play(engine, svc, "arms_shot_energy_ball", 0.1f); }
 

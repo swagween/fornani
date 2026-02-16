@@ -209,8 +209,7 @@ fsm::StateFunction Summoner::update_horizontal_pulse() {
 		auto bp = get_collider().get_center();
 		bp.x += 52.f * directions.actual.as_float();
 		m_pulse.get().set_barrel_point(bp);
-		m_map->spawn_projectile_at(*m_services, m_pulse.get(), m_pulse.get().get_barrel_point(), m_player_position - m_pulse.get().get_barrel_point());
-		m_services->soundboard.flags.weapon.set(audio::Weapon::pulse);
+		m_pulse.shoot(*m_services, *m_map, m_player_position - m_pulse.get().get_barrel_point());
 	}
 	for (auto [i, orb] : std::views::enumerate(m_attacks.pulse)) {
 		auto offset = i != 1 ? 4.f : 0.f;
@@ -233,8 +232,7 @@ fsm::StateFunction Summoner::update_vertical_pulse() {
 		auto bp = get_collider().get_center();
 		bp.y -= 52.f;
 		m_pulse.get().set_barrel_point(bp);
-		m_map->spawn_projectile_at(*m_services, m_pulse.get(), m_pulse.get().get_barrel_point(), m_player_position - m_pulse.get().get_barrel_point());
-		m_services->soundboard.flags.weapon.set(audio::Weapon::pulse);
+		m_pulse.shoot(*m_services, *m_map, m_player_position - m_pulse.get().get_barrel_point());
 	}
 	for (auto [i, orb] : std::views::enumerate(m_attacks.pulse)) {
 		auto offset = i != 1 ? 4.f : 0.f;
@@ -270,7 +268,7 @@ fsm::StateFunction Summoner::update_summon() {
 			auto yoffset = random::random_range_float(-220.f, -190.f);
 			auto offset = sf::Vector2f{xoffset, yoffset};
 			m_pulse.get().set_barrel_point(get_collider().get_center() + offset);
-			m_map->spawn_projectile_at(*m_services, m_pulse.get(), m_pulse.get().get_barrel_point(), m_player_position - m_pulse.get().get_barrel_point());
+			m_pulse.shoot(*m_services, *m_map, m_player_position - m_pulse.get().get_barrel_point());
 			m_services->soundboard.flags.weapon.set(audio::Weapon::pulse);
 		}
 	}

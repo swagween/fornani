@@ -5,13 +5,13 @@
 #include <optional>
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
-#include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Flaggable.hpp"
 #include "fornani/weapon/Ammo.hpp"
 #include "fornani/weapon/Projectile.hpp"
 
 namespace fornani::arms {
 
+enum class WeaponFlags { firing };
 enum class WeaponState { unlocked, equipped, reloading };
 enum class WeaponAttributes { automatic, no_reload };
 enum class InventoryState { reserve, hotbar };
@@ -44,7 +44,7 @@ struct EmitterAttributes {
 	sf::Color color{};
 };
 
-class Weapon : public Animatable {
+class Weapon : public Animatable, public Flaggable<WeaponFlags> {
   public:
 	explicit Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy = false);
 
@@ -158,6 +158,8 @@ class Weapon : public Animatable {
 	} cooldowns{};
 
 	WeaponModifiers m_modifiers{};
+
+	automa::ServiceProvider* m_services;
 
 	io::Logger m_logger{"Arms"};
 };

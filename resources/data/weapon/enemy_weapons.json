@@ -88,7 +88,7 @@
     },
     "gameplay": {
       "attributes": {
-        "automatic": true,
+        "automatic": false,
         "ammo": 32,
         "reload": 1,
         "cooldown_time": 20,
@@ -191,7 +191,7 @@
     },
     "gameplay": {
       "attributes": {
-        "automatic": true,
+        "automatic": false,
         "ammo": 3,
         "reload": 160,
         "cooldown_time": 50,
@@ -247,7 +247,7 @@
     },
     "gameplay": {
       "attributes": {
-        "automatic": true,
+        "automatic": false,
         "ammo": 3,
         "reload": 160,
         "cooldown_time": 50,
@@ -434,7 +434,7 @@
     },
     "gameplay": {
       "attributes": {
-        "automatic": true,
+        "automatic": false,
         "ammo": 3,
         "reload": 160,
         "cooldown_time": 50,
@@ -494,7 +494,7 @@
     },
     "gameplay": {
       "attributes": {
-        "automatic": true,
+        "automatic": false,
         "ammo": 3,
         "reload": 160,
         "cooldown_time": 50,
@@ -554,7 +554,7 @@
     },
     "gameplay": {
       "attributes": {
-        "automatic": true,
+        "automatic": false,
         "ammo": 3,
         "reload": 160,
         "cooldown_time": 50,
@@ -614,7 +614,7 @@
     },
     "gameplay": {
       "attributes": {
-        "automatic": true,
+        "automatic": false,
         "ammo": 3,
         "reload": 160,
         "cooldown_time": 50,
@@ -674,7 +674,7 @@
     },
     "gameplay": {
       "attributes": {
-        "automatic": true,
+        "automatic": false,
         "ammo": 3,
         "reload": 160,
         "cooldown_time": 50,
