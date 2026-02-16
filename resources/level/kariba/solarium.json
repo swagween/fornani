@@ -7,11 +7,12 @@
           1
         ],
         "id": 44603,
-        "modifier": 33,
+        "modifier": 17,
         "position": [
           44,
           16
         ],
+        "tag": "ruins_key",
         "type": 2
       }
     ],
@@ -25,7 +26,6 @@
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,

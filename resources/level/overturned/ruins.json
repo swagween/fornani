@@ -12,6 +12,7 @@
           32,
           15
         ],
+        "tag": "demon_cuirass",
         "type": 2
       }
     ],
@@ -59,7 +60,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           6,
@@ -76,7 +76,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           23,
@@ -93,7 +92,6 @@
           4
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           22,
@@ -110,7 +108,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           34,

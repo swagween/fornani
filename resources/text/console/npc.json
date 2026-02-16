@@ -184,7 +184,7 @@
           },
           {
             "codes": [
-              [2, 37],
+              [2, 38],
               [3, 12, 1, 415]
             ],
             "message": "Here, take this."
@@ -637,7 +637,7 @@
             "message": "I presume you've already stumbled into Dr. Willett if you decided to come poking around these ruins."
           },
           {
-            "codes": [[2, 115]],
+            "codes": [[2, 72]],
             "message": "Oh, and by the way, take this relic I found."
           },
           {
@@ -1229,7 +1229,7 @@
             "message": "We'll radio to you every step of the way, as long as we can reach you. Some areas have better reception than others, so you'll be on your own quite a lot."
           },
           {
-            "codes": [[2, 42]],
+            "codes": [[2, 40]],
             "message": "Here."
           },
           {
@@ -1635,7 +1635,7 @@
             "message": "Oh, before you go..."
           },
           {
-            "codes": [[2, 18]],
+            "codes": [[2, 21]],
             "message": "Have a look at this. It seems like it connects perfectly with that gizmo you've got at your hip!"
           },
           {
@@ -2037,7 +2037,7 @@
             "message": "Well... I'll show you."
           },
           {
-            "codes": [[2, 4]],
+            "codes": [[2, 3]],
             "message": "..."
           },
           {
@@ -2219,7 +2219,7 @@
         ],
         [
           {
-            "codes": [[2, 20]],
+            "codes": [[2, 24]],
             "message": "Now, that's awful kind. Here, take this. You'll need it if you want to properly wrangle him up."
           },
           {

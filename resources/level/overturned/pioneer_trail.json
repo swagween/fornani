@@ -208,6 +208,97 @@
           89,
           13
         ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 25703,
+        "inverse": true,
+        "position": [
+          63,
+          13
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 25703,
+        "inverse": true,
+        "position": [
+          62,
+          13
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 25703,
+        "inverse": true,
+        "position": [
+          61,
+          13
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 25703,
+        "inverse": true,
+        "position": [
+          60,
+          13
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 25703,
+        "inverse": true,
+        "position": [
+          59,
+          13
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 25703,
+        "inverse": true,
+        "position": [
+          58,
+          13
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 25703,
+        "inverse": true,
+        "position": [
+          57,
+          13
+        ]
       }
     ],
     "enemies": [
@@ -283,7 +374,6 @@
           8
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,

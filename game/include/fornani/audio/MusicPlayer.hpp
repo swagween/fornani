@@ -38,7 +38,7 @@ class MusicPlayer {
 	void set_balance(float const to) { m_balance = to; }
 	void adjust_volume(float delta);
 
-	[[nodiscard]] auto get_volume() const -> float { return m_jukebox.get_gain(); }
+	[[nodiscard]] auto get_volume() const -> float;
 	[[nodiscard]] auto get_volume_multiplier() const -> float { return m_volume_multiplier; }
 	[[nodiscard]] auto is_on() const -> bool { return m_state == MusicPlayerState::on; }
 	[[nodiscard]] auto is_off() const -> bool { return m_state == MusicPlayerState::off; }

@@ -11,7 +11,7 @@ class Animatable : public Drawable {
   public:
 	Animatable(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions = constants::i_cell_vec);
 
-	void push_animation(std::string_view label, anim::Parameters params) { m_animations.insert({label.data(), params}); }
+	void push_animation(std::string_view label, anim::Parameters params);
 	void push_and_set_animation(std::string_view label, anim::Parameters params);
 	void set_animation(std::string_view to) { set_parameters(m_animations.at(to.data())); }
 	void set_parameters(anim::Parameters params) { animation.set_params(params); }
@@ -19,6 +19,7 @@ class Animatable : public Drawable {
 	void set_frame(int to);
 	void set_dimensions(sf::Vector2i const to) { m_dimensions = to; }
 	void tick();
+	void check_for_switch();
 
 	/// <summary>
 	/// @brief starts the animation at a random frame.
@@ -37,6 +38,7 @@ class Animatable : public Drawable {
 	anim::Animation animation;
 
   private:
+	std::string m_root_animation{};
 	sf::Vector2i m_dimensions;
 	int m_channel{};
 

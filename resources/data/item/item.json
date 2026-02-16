@@ -671,6 +671,7 @@
   {
     "tag": "punk_hair_dye",
     "category": 4,
+    "origin": [2, 0],
     "start_index": 160,
     "actual_title": "Punk Hair Dye",
     "naive_description": "A whacky and rebellious hair color.",

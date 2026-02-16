@@ -44,7 +44,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           4,
@@ -61,7 +60,6 @@
           4
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,
@@ -78,7 +76,6 @@
           4
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           31,
@@ -95,7 +92,7 @@
           1
         ],
         "id": 0,
-        "key_id": 33,
+        "key_tag": "ruins_key",
         "locked": true,
         "position": [
           19,

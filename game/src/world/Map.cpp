@@ -313,7 +313,10 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	// hidden areas
 	flags.map_state.test(MapState::unobscure) ? cooldowns.fade_obscured.update() : cooldowns.fade_obscured.reverse();
 	if (check_cell_collision(player->get_collider(), true)) {
-		if (!flags.map_state.test(MapState::unobscure)) { cooldowns.fade_obscured.start(); }
+		if (!flags.map_state.test(MapState::unobscure)) {
+			cooldowns.fade_obscured.start();
+			svc.soundboard.play_sound("reveal_" + std::string{m_biome.get_label()});
+		}
 		if (cooldowns.loading.running()) { cooldowns.fade_obscured.cancel(); }
 		flags.map_state.set(MapState::unobscure);
 	} else {
@@ -911,6 +914,7 @@ sf::Vector2f Map::last_checkpoint() {
 }
 
 void Map::debug() {
+	ImGui::Text("Biome: %s", std::string{m_biome.get_label()}.c_str());
 	static float m = 1.f;
 	static float a = 1.f;
 	ImGui::SliderFloat("Music Balance", &m, 0.f, 1.f);

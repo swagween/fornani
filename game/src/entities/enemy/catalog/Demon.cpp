@@ -15,7 +15,10 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map, int variant)
 				{"rush", {11, 1, demon_framerate * 2, 0}}, {"stab", {11, 3, demon_framerate, 0}}, {"uppercut", {14, 3, demon_framerate, 0}}, {"jumpsquat", {11, 1, demon_framerate * 3, 0}}, {"dormant", {18, 1, demon_framerate * 5, -1}}};
 
 	animation.set_params(get_params("dormant"));
-	if (map.get_style_id() == 5) { animation.set_params(get_params("idle")); }
+	if (map.get_style_id() == 5) {
+		state_function = std::bind(&Demon::update_idle, this);
+		animation.set_params(get_params("idle"));
+	}
 	get_collider().physics.maximum_velocity = {8.f, 12.f};
 	get_collider().flags.general.set(shape::General::complex);
 	get_collider().physics.air_friction = {0.95f, 0.999f};

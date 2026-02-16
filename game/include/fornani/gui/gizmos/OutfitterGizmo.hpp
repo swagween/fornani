@@ -32,7 +32,7 @@ class OutfitterGizmo : public Gizmo {
 	void debug();
 	int m_max_slots;
 	int wardrobe_index;
-	std::string m_current_item_tag{};
+	std::optional<std::string> m_current_item_tag{};
 	sf::Sprite m_sprite;
 	sf::Sprite m_apparel_sprite;
 	std::array<Slider, static_cast<int>(player::ApparelType::END)> m_sliders;

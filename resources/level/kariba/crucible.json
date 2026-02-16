@@ -10,7 +10,6 @@
           4
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,
@@ -27,7 +26,6 @@
           4
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           31,
@@ -44,7 +42,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           15,
@@ -61,7 +58,6 @@
           2
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           15,
@@ -78,7 +74,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           14,
@@ -204,6 +199,11 @@
     "ambience": "",
     "background": "woods",
     "biome": "kariba",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -243,7 +243,8 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 5
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
     "flags": {

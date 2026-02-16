@@ -8,6 +8,11 @@ namespace fornani {
 
 Animatable::Animatable(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions) : Drawable(svc, label), m_dimensions{dimensions} { set_texture_rect(sf::IntRect{{}, m_dimensions}); }
 
+void Animatable::push_animation(std::string_view label, anim::Parameters params) {
+	if (m_animations.empty()) { m_root_animation = label.data(); }
+	m_animations.insert({label.data(), params});
+}
+
 void Animatable::push_and_set_animation(std::string_view label, anim::Parameters params) {
 	push_animation(label, params);
 	set_animation(label);
@@ -25,6 +30,10 @@ void Animatable::tick() {
 	auto u = m_channel * m_dimensions.x;
 	auto v = animation.get_frame() * m_dimensions.y;
 	set_texture_rect(sf::IntRect{{u, v}, m_dimensions});
+}
+
+void Animatable::check_for_switch() {
+	if (animation.is_complete()) { set_animation(m_root_animation); }
 }
 
 void Animatable::random_start() {

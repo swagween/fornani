@@ -7,11 +7,12 @@
           1
         ],
         "id": 83172,
-        "modifier": 29,
+        "modifier": 17,
         "position": [
           23,
           16
         ],
+        "tag": "heart_keychain",
         "type": 2
       }
     ],
@@ -607,7 +608,6 @@
           2
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           6,
@@ -624,7 +624,6 @@
           1
         ],
         "id": 0,
-        "key_id": 33,
         "locked": false,
         "position": [
           26,

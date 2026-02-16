@@ -12,6 +12,7 @@
           26,
           20
         ],
+        "tag": "cinnabar_statue",
         "type": 2
       }
     ],
@@ -25,7 +26,6 @@
           4
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,
@@ -42,7 +42,6 @@
           4
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           95,

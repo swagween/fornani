@@ -196,6 +196,12 @@
     "pitch_offset": 0.1
   },
   {
+    "label": "reveal_overturned",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
     "label": "console_speech",
     "bus": "gui",
     "volume": 1.0,

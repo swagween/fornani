@@ -202,6 +202,8 @@ void DataManager::load_data() {
 		NANI_LOG_INFO(m_logger, "Created Vendor in marketplace with ID {}", entry.second["id"].as<int>());
 	}
 
+	for (auto [i, item] : std::views::enumerate(item.as_array())) { NANI_LOG_INFO(m_logger, "{} : {}", item["tag"].as_string(), i); }
+
 	gui_text = *dj::Json::from_file((finder.resource_path() + "/text/console/gui.json").c_str());
 	assert(!gui_text.is_null());
 	menu_themes = *dj::Json::from_file((finder.resource_path() + "/data/gui/menu_themes.json").c_str());

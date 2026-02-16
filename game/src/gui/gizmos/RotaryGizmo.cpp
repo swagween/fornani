@@ -19,6 +19,7 @@ RotaryGizmo::RotaryGizmo(automa::ServiceProvider& svc, world::Map& map, player::
 	m_dashboard_rail.set_texture_rect({{657, 0}, {175, 174}});
 	m_gun_display.set_origin({0.f, 4.5f});
 	m_gun_selector.push_and_set_animation("standard", {0, 10, 24, -1});
+	m_gun_selector.push_animation("click", {10, 3, 12, 0});
 	m_gun_selector.center();
 }
 
@@ -36,6 +37,7 @@ void RotaryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::
 	}
 	m_sprite.tick();
 	m_gun_selector.tick();
+	m_gun_selector.check_for_switch();
 	m_frame_lerp.update(svc.ticker.dt.count());
 	m_path.update();
 	m_rail_path.update();
@@ -125,7 +127,10 @@ void RotaryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[
 }
 
 bool RotaryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
-	if (controller.digital(input::DigitalAction::menu_select).triggered) { set_flag(RotaryGizmoFlags::push_to_hotbar); }
+	if (controller.digital(input::DigitalAction::menu_select).triggered) {
+		set_flag(RotaryGizmoFlags::push_to_hotbar);
+		m_gun_selector.set_animation("click");
+	}
 	if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::triggered)) {
 		m_frame_lerp.trigger(1, false, 2.0f);
 		m_selection.modulate(-1);
