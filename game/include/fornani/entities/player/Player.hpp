@@ -210,7 +210,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void freeze_position();
 	void shake_sprite();
 	void update_direction();
-	void update_weapon();
+	void update_weapon(world::Map& map);
 	void walk();
 	void hurt(float amount = 1.f, bool force = false);
 	void on_crush(world::Map& map);

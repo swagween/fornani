@@ -11,9 +11,9 @@
 
 namespace fornani::arms {
 
-enum class WeaponFlags { firing };
+enum class WeaponFlags { firing, charging, released };
 enum class WeaponState { unlocked, equipped, reloading };
-enum class WeaponAttributes { automatic, no_reload };
+enum class WeaponAttributes { automatic, no_reload, charge };
 enum class InventoryState { reserve, hotbar };
 enum class UIFlags { selected };
 
@@ -48,7 +48,7 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
   public:
 	explicit Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy = false);
 
-	void update(automa::ServiceProvider& svc, Direction to_direction);
+	void update(automa::ServiceProvider& svc, world::Map& map, Direction to_direction);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void render_ui(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f position);
 
@@ -57,6 +57,7 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
 	void unlock();
 	void lock();
 	void shoot();
+	void shoot(automa::ServiceProvider& svc, world::Map& map);
 	void shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f target);
 	void decrement_projectiles();
 

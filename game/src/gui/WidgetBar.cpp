@@ -37,10 +37,10 @@ void WidgetBar::render(sf::RenderWindow& win) {
 	if (m_quantity > 16 && m_compress) {
 		auto& widget = m_widgets.at(0);
 		widget.render(win);
-		m_text.setPosition(m_position + sf::Vector2f{16.f, 0.f});
+		m_text.setPosition(m_position + sf::Vector2f{16.f, -24.f});
 		m_text.setFillColor(colors::navy_blue);
 		win.draw(m_text);
-		m_text.setPosition(m_position + sf::Vector2f{14.f, -2.f});
+		m_text.setPosition(m_position + sf::Vector2f{14.f, -26.f});
 		widget.is_state(WidgetState::neutral) ? m_text.setFillColor(colors::ui_white) : widget.is_state(WidgetState::taken) ? m_text.setFillColor(colors::dark_goldenrod) : m_text.setFillColor(colors::blue);
 		if (!widget.is_state(WidgetState::gone)) { win.draw(m_text); }
 	} else {

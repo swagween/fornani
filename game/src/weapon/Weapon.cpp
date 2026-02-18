@@ -41,6 +41,10 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 	specifications.recoil = in_data["gameplay"]["attributes"]["recoil"].as<float>();
 	if (static_cast<bool>(in_data["gameplay"]["attributes"]["automatic"].as_bool())) { attributes.set(WeaponAttributes::automatic); }
 	if (static_cast<bool>(in_data["gameplay"]["attributes"]["no_reload"].as_bool())) { attributes.set(WeaponAttributes::no_reload); }
+	if (static_cast<bool>(in_data["gameplay"]["attributes"]["charge"].as_bool())) {
+		attributes.set(WeaponAttributes::charge);
+		attributes.set(WeaponAttributes::no_reload);
+	}
 
 	// audio
 	m_audio.shoot = static_cast<audio::Weapon>(in_data["audio"]["shoot"].as<int>());
@@ -50,14 +54,21 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 	set_parameters({in_data["visual"]["texture_lookup"].as<int>(), 1, 32, -1});
 }
 
-void Weapon::update(automa::ServiceProvider& svc, Direction to_direction) {
+void Weapon::update(automa::ServiceProvider& svc, world::Map& map, Direction to_direction) {
 	ammo.update();
 	if (attributes.test(WeaponAttributes::automatic) && has_flag_set(WeaponFlags::firing) && cooldowns.cooldown.running() && !ammo.empty()) { svc.soundboard.repeat_sound(get_audio_tag(), 1, get_barrel_point()); }
+	if (attributes.test(WeaponAttributes::charge) && has_flag_set(WeaponFlags::charging) && cooldowns.reload.running()) { svc.soundboard.repeat_sound("charge_" + metadata.tag, 1, get_barrel_point()); }
+	if (attributes.test(WeaponAttributes::charge) && has_flag_set(WeaponFlags::released)) {
+		cooldowns.reload.is_complete() ? svc.soundboard.play_sound("release_" + metadata.tag, get_barrel_point()) : svc.soundboard.play_sound(get_audio_tag(), get_barrel_point());
+		cooldowns.reload.start();
+		shoot(svc, map, get_barrel_point());
+	}
 	cooldowns.reload.set_native_time(specifications.reload_time * m_modifiers.reload_multiplier);
 	tick();
 	if (cooldowns.reload.is_almost_complete() && projectile.get_team() == Team::nani && !attributes.test(WeaponAttributes::no_reload)) { svc.soundboard.flags.arms.set(audio::Arms::reload); }
 	if (cooldowns.reload.is_almost_complete()) { ammo.refill(); }
-	cooldowns.reload.update();
+	if (!attributes.test(WeaponAttributes::charge)) { cooldowns.reload.update(); }
+	if (attributes.test(WeaponAttributes::charge) && has_flag_set(WeaponFlags::charging)) { cooldowns.reload.update(); }
 	cooldowns.shoot_effect.update();
 
 	set_orientation(to_direction);
@@ -103,15 +114,24 @@ void Weapon::lock() { flags.state.reset(WeaponState::unlocked); }
 
 void Weapon::shoot() {
 	cooldowns.cooldown.start(specifications.cooldown_time);
-	if (!cooldowns.reload.running()) {
+	if (attributes.test(WeaponAttributes::charge)) {
+		cooldowns.reload = util::Cooldown{static_cast<int>(specifications.reload_time * m_modifiers.reload_multiplier)};
+		cooldowns.reload.start();
+	} else if (!cooldowns.reload.running()) {
 		cooldowns.reload = util::Cooldown{static_cast<int>(specifications.reload_time * m_modifiers.reload_multiplier)};
 		cooldowns.reload.start();
 	}
+
 	active_projectiles.update();
 	ammo.use();
 	physical.physics.apply_force(firing_direction.get_vector() * -1.f);
 	cooldowns.shoot_effect.start();
-	if (!attributes.test(WeaponAttributes::automatic)) { m_services->soundboard.play_sound(get_audio_tag(), get_barrel_point()); }
+	if (!attributes.test(WeaponAttributes::automatic) && !attributes.test(WeaponAttributes::charge)) { m_services->soundboard.play_sound(get_audio_tag(), get_barrel_point()); }
+}
+
+void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map) {
+	if (attributes.test(WeaponAttributes::charge)) { return; }
+	shoot(svc, map, get_barrel_point());
 }
 
 void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f target) {

@@ -312,7 +312,7 @@ void Player::update(world::Map& map) {
 	orb_indicator.update(*m_services, get_collider().physics.position);
 	if (orb_indicator.active()) { health_indicator.shift(); }
 	update_invincibility();
-	update_weapon();
+	update_weapon(map);
 	if (controller.is_dashing() && m_services->ticker.every_x_ticks(8)) { map.spawn_emitter(*m_services, "dash", get_collider().get_center() - sf::Vector2f{0.f, 4.f}, get_actual_direction(), sf::Vector2f{8.f, 8.f}); }
 	if (controller.is(AbilityType::dive) && m_services->ticker.every_x_ticks(64) && get_collider().has_flag_set(shape::ColliderFlags::submerged)) {
 		map.spawn_emitter(*m_services, "bubble", get_collider().get_center(), Direction{UND::up}, sf::Vector2f{8.f, 8.f});
@@ -341,7 +341,6 @@ void Player::simple_update() {
 	update_antennae();
 	m_piggyback_socket = m_sprite_position + sf::Vector2f{-8.f * directions.actual.as_float(), -16.f};
 	if (piggybacker) { piggybacker->update(*m_services, *this); }
-	update_weapon();
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -559,10 +558,7 @@ void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	health_indicator.set_position(new_pos);
 	orb_indicator.set_position(new_pos);
 	m_lighting.physics.position = get_collider().get_center() + sf::Vector2f{controller.direction.as_float() * light_offset_v, 0.f};
-	if (arsenal && hotbar) {
-		equipped_weapon().update(*m_services, controller.direction);
-		equipped_weapon().force_position(m_weapon_socket);
-	}
+	if (arsenal && hotbar) { equipped_weapon().force_position(m_weapon_socket); }
 }
 
 void Player::set_draw_position(sf::Vector2f const to) {
@@ -570,10 +566,7 @@ void Player::set_draw_position(sf::Vector2f const to) {
 	sync_antennae();
 	health_indicator.set_position(to);
 	orb_indicator.set_position(to);
-	if (arsenal && hotbar) {
-		equipped_weapon().update(*m_services, controller.direction);
-		equipped_weapon().force_position(m_weapon_socket);
-	}
+	if (arsenal && hotbar) { equipped_weapon().force_position(m_weapon_socket); }
 }
 
 void Player::freeze_position() {
@@ -594,7 +587,7 @@ void Player::update_direction() {
 	}
 }
 
-void Player::update_weapon() {
+void Player::update_weapon(world::Map& map) {
 	controller.set_arsenal(static_cast<bool>(hotbar));
 	if (!arsenal) { return; }
 	if (!hotbar) { return; }
@@ -603,10 +596,12 @@ void Player::update_weapon() {
 		hotbar->has(weapon->get_tag()) ? weapon->set_hotbar() : weapon->set_reserved();
 		weapon->set_firing_direction(controller.direction);
 		if (controller.is_wallsliding() && !controller.direction.up_or_down()) { weapon->get_firing_direction().flip(); }
-		weapon->update(*m_services, controller.direction);
+		weapon->update(*m_services, map, controller.direction);
 		weapon->set_position(m_weapon_socket);
 	}
 	equipped_weapon().set_flag(arms::WeaponFlags::firing, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
+	equipped_weapon().set_flag(arms::WeaponFlags::charging, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
+	equipped_weapon().set_flag(arms::WeaponFlags::released, controller.has_flag_set(PlayerControllerFlags::released_weapon));
 }
 
 void Player::walk() {

@@ -383,6 +383,24 @@
     "color": "fire"
   },
 
+  "laser_gun": {
+    "load": 10,
+    "rate": 100.0,
+    "expulsion": 30.0,
+    "expulsion_variance": 20.0,
+    "cone": 2.2,
+    "friction": 0.998,
+    "elasticity": 0.9,
+    "gravity": 0.0,
+    "lifespan": 800,
+    "lifespan_variance": 400,
+    "dimensions": [4, 4],
+    "animated": false,
+    "colliding": true,
+    "fader": true,
+    "color": "fire"
+  },
+
   "explosion": {
     "load": 40,
     "rate": 100.0,
@@ -453,6 +471,24 @@
     "colliding": true,
     "fader": true,
     "color": "periwinkle"
+  },
+
+  "scorpion": {
+    "load": 6,
+    "rate": 100.0,
+    "expulsion": 50.0,
+    "expulsion_variance": 40.0,
+    "cone": 1.28,
+    "friction": 0.995,
+    "elasticity": 0.9,
+    "gravity": 0.0,
+    "lifespan": 100,
+    "lifespan_variance": 80,
+    "dimensions": [3, 3],
+    "animated": false,
+    "colliding": true,
+    "fader": true,
+    "color": "yellow"
   },
 
   "critical_hit": {

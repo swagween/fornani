@@ -30,7 +30,7 @@ class Player;
 namespace fornani::arms {
 
 class Weapon;
-enum class ProjectileType { bullet, missile, melee };
+enum class ProjectileType { bullet, missile, melee, laser };
 enum class RenderType { animated, single_sprite, multi_sprite };
 
 enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky, explode_on_impact };

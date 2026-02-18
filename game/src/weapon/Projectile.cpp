@@ -107,8 +107,8 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 		physical.collider.physics.simple_update();
 		variables.damage_multiplier = is_heading_toward(physical.collider.physics.position, physical.collider.physics.velocity, player.get_collider().get_center()) ? 3.f : 1.f;
 	} else if (wander()) {
-		physical.collider.physics.set_global_friction(0.999f);
-		physical.steering.smooth_random_walk(physical.collider.physics, get_inverse_hv_from_vector(physical.collider.physics.velocity), 0.008f, 28.f);
+		physical.collider.physics.set_global_friction(0.998f);
+		physical.steering.smooth_random_walk(physical.collider.physics, get_inverse_hv_from_vector(physical.collider.physics.velocity), 0.002f, 24.f);
 		physical.collider.physics.simple_update();
 	}
 

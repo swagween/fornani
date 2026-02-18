@@ -697,9 +697,8 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 		if (player->equipped_weapon().multishot()) {
 			for (int i = 0; i < player->equipped_weapon().get_multishot(); ++i) { spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point()); }
 		} else {
-			spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point());
+			player->equipped_weapon().shoot(svc, *this);
 		}
-		player->equipped_weapon().shoot();
 		if (!player->equipped_weapon().automatic()) { player->controller.set_shot(false); }
 	}
 }

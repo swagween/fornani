@@ -7,7 +7,7 @@ namespace fornani::entity {
 WeaponPackage::WeaponPackage(automa::ServiceProvider& svc, std::string_view tag) { weapon = std::make_unique<arms::Weapon>(svc, tag, true); }
 
 void WeaponPackage::update(automa::ServiceProvider& svc, world::Map& map, enemy::Enemy& enemy) {
-	weapon->update(svc, direction);
+	weapon->update(svc, map, direction);
 	clip_cooldown.update();
 	weapon.get()->set_barrel_point(enemy.get_collider().get_center() + barrel_offset);
 	weapon.get()->set_firing_direction(enemy.get_actual_direction());

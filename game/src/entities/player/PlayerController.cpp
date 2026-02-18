@@ -216,6 +216,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 
 	if (shoot_pressed) { key_map[ControllerInput::shoot] = 1.f; }
 	if (shoot_released) { key_map[ControllerInput::shoot] = 0.f; }
+	set_flag(PlayerControllerFlags::released_weapon, shoot_released);
 
 	bool firing_automatic = false;
 	if (!restricted() && (!shot() || !has_arsenal())) {

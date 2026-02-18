@@ -252,6 +252,26 @@
     "pitch_offset": 0.2
   },
   {
+    "label": "shot_laser_gun",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "release_laser_gun",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "shot_scorpion",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1,
+    "fade_in": 0,
+    "fade_out": 18
+  },
+  {
     "label": "hit_demon_bow",
     "bus": "gameplay",
     "volume": 1.0,
@@ -265,6 +285,12 @@
   },
   {
     "label": "hit_demon_bomb",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "hit_shuriken",
     "bus": "gameplay",
     "volume": 0.1,
     "pitch_offset": 0.2
