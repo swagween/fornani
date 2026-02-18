@@ -61,7 +61,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	// tile flags
 	bool const is_ground_ramp = tile.is_ground_ramp();
 	bool const is_ceiling_ramp = tile.is_ceiling_ramp();
-	bool const is_plat = tile.is_platform() && (jumpbox.get_position().y > cell.get_position().y + 4 || physics.acceleration.y < 0.0f);
+	bool const is_plat = tile.is_platform() && (world::is_above_platform(tile, jumpbox.get_position().y) || physics.acceleration.y < 0.0f);
 	bool const is_spike = tile.is_spike();
 	bool const is_ramp = tile.is_ramp();
 

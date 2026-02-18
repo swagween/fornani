@@ -27,7 +27,7 @@ void Wardrobe::update(graphics::TextureUpdater& updater) {
 	case 3: change_outfit({{{2, 0}, sf::Color{33, 34, 30}}, {{3, 0}, sf::Color{20, 19, 16}}}); break;
 	case 4: change_outfit({{{2, 0}, sf::Color{33, 34, 30}}, {{3, 0}, sf::Color{20, 19, 16}}}); break;
 	case 5: change_outfit({{{2, 0}, sf::Color{33, 34, 30}}, {{3, 0}, sf::Color{20, 19, 16}}}); break;
-	case 6: change_outfit({{{2, 0}, sf::Color{160, 22, 85}}, {{3, 0}, sf::Color{115, 119, 109}}}); break;
+	case 6: change_outfit({{{2, 0}, sf::Color{160, 22, 85}}, {{3, 0}, sf::Color{115, 19, 109}}}); break;
 	default: break;
 	}
 	switch (get_variant(ApparelType::hairstyle)) {

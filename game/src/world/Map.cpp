@@ -325,7 +325,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	if (check_cell_collision(player->get_collider(), true)) {
 		if (!flags.map_state.test(MapState::unobscure)) {
 			cooldowns.fade_obscured.start();
-			svc.soundboard.play_sound("reveal_" + std::string{m_biome.get_label()});
+			if (has_obscuring_layer()) { svc.soundboard.play_sound("reveal_" + std::string{m_biome.get_label()}); }
 		}
 		if (cooldowns.loading.running()) { cooldowns.fade_obscured.cancel(); }
 		flags.map_state.set(MapState::unobscure);
@@ -836,6 +836,7 @@ void Map::handle_cell_collision(shape::CircleCollider& collider) {
 			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
 			auto& cell = grid.get_cell(static_cast<int>(index));
 			if (!cell.is_collidable() || cell.is_ceiling_ramp()) { continue; }
+			if (cell.is_platform() && (world::is_above_platform(cell, collider.get_radius() + collider.get_global_center().y) || collider.physics.actual_velocity().y < 0.f)) { continue; }
 			cell.collision_check = true;
 			collider.handle_collision(cell.bounding_box);
 		}

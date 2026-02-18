@@ -52,7 +52,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 
 void Weapon::update(automa::ServiceProvider& svc, Direction to_direction) {
 	ammo.update();
-	if (attributes.test(WeaponAttributes::automatic) && has_flag_set(WeaponFlags::firing) && !ammo.empty()) { svc.soundboard.repeat_sound(get_audio_tag(), 1, get_barrel_point()); }
+	if (attributes.test(WeaponAttributes::automatic) && has_flag_set(WeaponFlags::firing) && cooldowns.cooldown.running() && !ammo.empty()) { svc.soundboard.repeat_sound(get_audio_tag(), 1, get_barrel_point()); }
 	cooldowns.reload.set_native_time(specifications.reload_time * m_modifiers.reload_multiplier);
 	tick();
 	if (cooldowns.reload.is_almost_complete() && projectile.get_team() == Team::nani && !attributes.test(WeaponAttributes::no_reload)) { svc.soundboard.flags.arms.set(audio::Arms::reload); }

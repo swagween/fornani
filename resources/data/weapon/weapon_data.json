@@ -163,7 +163,6 @@
         "recoil": 0.15
       }
     },
-    "audio": { "shoot": 10 },
     "class_package": {
       "projectile": {
         "type": 0,
@@ -181,7 +180,6 @@
           "transcendent": false,
           "persistent": false,
           "constrained": false,
-          "repeat_sound": true,
           "range_variance": 8.0,
           "acceleration_factor": 0.0,
           "dampen_factor": 0.999
@@ -290,7 +288,6 @@
         "recoil": 0.45
       }
     },
-    "audio": { "shoot": 6 },
     "class_package": {
       "projectile": {
         "type": 0,
@@ -339,7 +336,7 @@
       "dimensions": [31, 7],
       "offsets": {
         "global": [12.5, 3.5],
-        "barrel": [64.0, 1.5],
+        "barrel": [56.0, 1.5],
         "stock": [0, 0]
       },
       "spray": {
@@ -353,23 +350,21 @@
       "attributes": {
         "automatic": false,
         "ammo": 2,
-        "reload": 500,
+        "reload": 550,
         "cooldown_time": 3,
         "recoil": 4.8
       }
     },
-    "audio": { "shoot": 6 },
     "class_package": {
       "projectile": {
         "type": 0,
         "dimensions": [12.0, 12.0],
         "radius": 11.0,
-        "audio": { "hit": 2 },
         "attributes": {
-          "base_damage": 36,
+          "base_damage": 18,
           "lifespan": 640,
           "lifespan_variance": 0,
-          "speed": 4.5,
+          "speed": 2.0,
           "variance": 0.0,
           "stun_time": 0.0,
           "knockback": 0.0,
@@ -429,13 +424,11 @@
         "recoil": 0.0
       }
     },
-    "audio": { "shoot": 3 },
     "class_package": {
       "projectile": {
         "type": 0,
         "dimensions": [8.0, 8.0],
         "radius": 6.0,
-        "audio": { "hit": 3 },
         "attributes": {
           "base_damage": 10,
           "lifespan": 1080,

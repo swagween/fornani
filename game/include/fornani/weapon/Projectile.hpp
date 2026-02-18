@@ -137,7 +137,7 @@ class Projectile : public Animatable {
 	} visual;
 
 	struct {
-		audio::Projectile hit{};
+		std::string hit_tag{};
 	} audio;
 
 	struct {

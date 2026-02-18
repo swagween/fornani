@@ -7,16 +7,16 @@
 
 namespace fornani::components {
 
-void SteeringBehavior::smooth_random_walk(PhysicsComponent& physics, float dampen, float radius) {
-	wander = physics.position + util::unit(physics.velocity) * (radius + radius / 3.f);
-	wander_radius = radius;
-	wander_displacement += random::random_range_float(-0.08f, 0.08f);
-	float const theta = wander_displacement + ::std::atan2(physics.velocity.y, physics.velocity.x);
-	float const x = radius * ::std::cos(theta);
-	float const y = radius * ::std::sin(theta);
-	auto const target = wander + sf::Vector2f{x, y};
-	auto const steering = util::unit(target - physics.position) * dampen;
-	physics.apply_force(steering);
+void SteeringBehavior::smooth_random_walk(PhysicsComponent& physics, float dampen, float radius) { physics.apply_force(calculate_random_walk(physics, dampen, radius)); }
+
+void SteeringBehavior::smooth_random_walk(PhysicsComponent& physics, HV axis, float dampen, float radius) {
+	auto force = calculate_random_walk(physics, dampen, radius);
+	switch (axis) {
+	case HV::horizontal: force.y = 0.f; break;
+	case HV::vertical: force.x = 0.f; break;
+	default: break;
+	}
+	physics.apply_force(force);
 }
 
 void SteeringBehavior::target(components::PhysicsComponent& physics, sf::Vector2f point, float strength) {
@@ -58,6 +58,18 @@ void SteeringBehavior::render(automa::ServiceProvider& svc, sf::RenderWindow& wi
 	wander_circle.setOutlineThickness(-1);
 	wander_circle.setPointCount(32);
 	win.draw(wander_circle);
+}
+
+sf::Vector2f SteeringBehavior::calculate_random_walk(PhysicsComponent& physics, float dampen, float radius) {
+	wander = physics.position + util::unit(physics.velocity) * (radius + radius / 3.f);
+	wander_radius = radius;
+	wander_displacement += random::random_range_float(-0.08f, 0.08f);
+	float const theta = wander_displacement + ::std::atan2(physics.velocity.y, physics.velocity.x);
+	float const x = radius * ::std::cos(theta);
+	float const y = radius * ::std::sin(theta);
+	auto const target = wander + sf::Vector2f{x, y};
+	auto const steering = util::unit(target - physics.position) * dampen;
+	return steering;
 }
 
 } // namespace fornani::components

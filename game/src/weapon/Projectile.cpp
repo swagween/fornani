@@ -54,7 +54,6 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	if (in_data["attributes"]["reflect"].as_bool()) { metadata.attributes.set(ProjectileAttributes::reflect); }
 	if (in_data["attributes"]["sprite_flip"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sprite_flip); }
 	if (in_data["attributes"]["sticky"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sticky); }
-	if (in_data["attributes"]["repeat_sound"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sticky); }
 
 	if (in_data["explosion"]) {
 		metadata.explosion = ExplosionAttributes{};
@@ -68,7 +67,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	visual.num_angles = in_data["animation"]["angles"].as<int>();
 	visual.effect_type = in_data["visual"]["effect_type"].as<int>();
 
-	audio.hit = static_cast<audio::Projectile>(in_data["audio"]["hit"].as<int>());
+	audio.hit_tag = "hit_" + std::string{label};
 
 	metadata.specifications.lifespan = in_data["attributes"]["lifespan"].as<int>();
 	metadata.specifications.lifespan_variance = in_data["attributes"]["lifespan_variance"].as<int>();
@@ -108,8 +107,8 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 		physical.collider.physics.simple_update();
 		variables.damage_multiplier = is_heading_toward(physical.collider.physics.position, physical.collider.physics.velocity, player.get_collider().get_center()) ? 3.f : 1.f;
 	} else if (wander()) {
-		physical.collider.physics.set_global_friction(0.99f);
-		physical.steering.smooth_random_walk(physical.collider.physics, 0.004f, 128.f);
+		physical.collider.physics.set_global_friction(0.999f);
+		physical.steering.smooth_random_walk(physical.collider.physics, get_inverse_hv_from_vector(physical.collider.physics.velocity), 0.008f, 28.f);
 		physical.collider.physics.simple_update();
 	}
 
@@ -137,9 +136,12 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 	if (reflect()) {
 		physical.collider.handle_map_collision(map);
 		if (physical.collider.collided() && !m_reflected.running()) {
-			svc.soundboard.flags.projectile.set(audio.hit);
 			m_reflected.start();
-			if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) { on_explode(svc, map); }
+			if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) {
+				on_explode(svc, map);
+			} else {
+				svc.soundboard.play_sound(audio.hit_tag, physical.collider.get_global_center());
+			}
 		}
 		physical.collider.physics.acceleration = {};
 		return;
@@ -147,7 +149,7 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 	if (sticky()) {
 		physical.collider.handle_map_collision(map);
 		if (physical.collider.collided() && !is_stuck()) {
-			svc.soundboard.flags.projectile.set(audio.hit);
+			svc.soundboard.play_sound(audio.hit_tag, physical.collider.get_global_center());
 			variables.state.set(ProjectileState::stuck);
 		}
 		return;
@@ -156,9 +158,6 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 		if (!destruction_initiated()) {
 			map.effects.push_back(entity::Effect(svc, "bullet_hit", physical.collider.get_global_center(), {}, effect_type()));
 			if (physical.direction.lnr == LNR::neutral) { map.effects.back().rotate(); }
-			// auto listener_position = sf::Vector2f{sf::Listener::getPosition().x, sf::Listener::getPosition().z};
-			// TODO: use capo engine here
-			// svc.soundboard.play(svc, svc.sounds.get_buffer("wall_hit"), 0.1f, 100.f, 0, 10.f, listener_position - physical.bounding_box.get_center());
 		}
 		destroy(false);
 	}

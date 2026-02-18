@@ -141,4 +141,8 @@ struct Direction {
 	util::BitFlags<DirectionFlags> m_flags{};
 };
 
+constexpr static auto get_hv_from_vector(sf::Vector2f const from) -> HV { return std::abs(from.x) >= std::abs(from.y) ? HV::horizontal : HV::vertical; }
+
+constexpr static auto get_inverse_hv_from_vector(sf::Vector2f const from) -> HV { return std::abs(from.x) < std::abs(from.y) ? HV::horizontal : HV::vertical; }
+
 } // namespace fornani

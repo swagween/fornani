@@ -25,7 +25,8 @@ class Map;
 enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire, home, incinerite, waterfall };
 enum class TileState { ramp_adjacent, big_ramp, covered, border };
 
-constexpr static int special_index_v{448};
+constexpr auto special_index_v = 448;
+constexpr auto platform_buffer_v = 4;
 
 constexpr auto get_type_by_value(int const val) -> TileType {
 	if (val < special_index_v && val > 0) { return TileType::solid; }
@@ -119,5 +120,7 @@ struct Tile {
 	float m_spacing;
 	std::uint8_t m_chunk_id{};
 };
+
+static auto is_above_platform(Tile const& tile, float y) -> bool { return tile.is_platform() && (y > tile.bounding_box.get_position().y + platform_buffer_v); }
 
 } // namespace fornani::world

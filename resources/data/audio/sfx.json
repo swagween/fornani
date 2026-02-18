@@ -228,6 +228,12 @@
     "pitch_offset": 0.1
   },
   {
+    "label": "shot_demon_bomb",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
     "label": "shot_demon_magic",
     "bus": "gameplay",
     "volume": 1.0,
@@ -246,15 +252,45 @@
     "pitch_offset": 0.2
   },
   {
-    "label": "shot_shuriken",
+    "label": "hit_demon_bow",
     "bus": "gameplay",
     "volume": 1.0,
     "pitch_offset": 0.2
   },
   {
-    "label": "shot_pulse",
+    "label": "hit_pulse",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "hit_demon_bomb",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "hit_demon_magic",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "hit_pulsar",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_shuriken",
     "bus": "gameplay",
     "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "shot_pulse",
+    "bus": "gameplay",
+    "volume": 0.5,
     "pitch_offset": 0.2
   },
   {
@@ -273,7 +309,7 @@
     "label": "shot_wraith",
     "bus": "gameplay",
     "volume": 1.0,
-    "pitch_offset": 0.2
+    "pitch_offset": 0.05
   },
   {
     "label": "shot_tomahawk",
