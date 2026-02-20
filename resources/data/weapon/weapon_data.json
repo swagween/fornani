@@ -466,7 +466,7 @@
       "dimensions": [28, 8],
       "offsets": {
         "global": [10.5, 3.5],
-        "barrel": [60.0, 1.5],
+        "barrel": [43.0, -0.0],
         "stock": [0, 0]
       },
       "spray": {
@@ -478,14 +478,17 @@
         "automatic": false,
         "charge": true,
         "ammo": 1,
-        "reload": 600,
+        "reload": 220,
         "cooldown_time": 64,
         "recoil": 0.0
       }
     },
     "class_package": {
       "laser": {
-        "uptime": 64
+        "type": 0,
+        "active": 128,
+        "cooldown": 128,
+        "size": 0.3
       },
       "projectile": {
         "type": 3,

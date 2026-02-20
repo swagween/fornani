@@ -35,6 +35,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 	// gameplay
 	ammo.set_max(in_data["gameplay"]["attributes"]["ammo"].as<int>());
 	cooldowns.reload = util::Cooldown{in_data["gameplay"]["attributes"]["reload"].as<int>()};
+	if (attributes.test(WeaponAttributes::charge)) { cooldowns.reload.cancel(); }
 	specifications.multishot = in_data["gameplay"]["attributes"]["multishot"].as<int>();
 	specifications.cooldown_time = in_data["gameplay"]["attributes"]["cooldown_time"].as<int>();
 	specifications.reload_time = in_data["gameplay"]["attributes"]["reload"].as<int>();
@@ -44,6 +45,12 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 	if (static_cast<bool>(in_data["gameplay"]["attributes"]["charge"].as_bool())) {
 		attributes.set(WeaponAttributes::charge);
 		attributes.set(WeaponAttributes::no_reload);
+	}
+	auto laser = in_data["class_package"]["laser"];
+	if (laser) {
+		auto att = util::BitFlags<world::LaserAttributes>{};
+		if (!enemy) { att.set(world::LaserAttributes::player); }
+		m_laser = LaserSpecifications{static_cast<world::LaserType>(laser["type"].as<int>()), laser["active"].as<int>(), laser["cooldown"].as<int>(), laser["size"].as<float>(), att};
 	}
 
 	// audio
@@ -57,11 +64,19 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 void Weapon::update(automa::ServiceProvider& svc, world::Map& map, Direction to_direction) {
 	ammo.update();
 	if (attributes.test(WeaponAttributes::automatic) && has_flag_set(WeaponFlags::firing) && cooldowns.cooldown.running() && !ammo.empty()) { svc.soundboard.repeat_sound(get_audio_tag(), 1, get_barrel_point()); }
-	if (attributes.test(WeaponAttributes::charge) && has_flag_set(WeaponFlags::charging) && cooldowns.reload.running()) { svc.soundboard.repeat_sound("charge_" + metadata.tag, 1, get_barrel_point()); }
+	if (attributes.test(WeaponAttributes::charge) && has_flag_set(WeaponFlags::charging) && cooldowns.reload.just_started()) { svc.soundboard.play_sound("charge_" + metadata.tag, get_barrel_point()); }
 	if (attributes.test(WeaponAttributes::charge) && has_flag_set(WeaponFlags::released)) {
-		cooldowns.reload.is_complete() ? svc.soundboard.play_sound("release_" + metadata.tag, get_barrel_point()) : svc.soundboard.play_sound(get_audio_tag(), get_barrel_point());
+		if (cooldowns.reload.is_complete()) {
+			if (m_laser) {
+				map.spawn_laser(svc, get_barrel_point(), m_laser->type, m_laser->attributes, CardinalDirection{to_direction}, m_laser->active, m_laser->cooldown, m_laser->size);
+				svc.ticker.freeze_frame(6);
+			}
+			svc.soundboard.play_sound("release_" + metadata.tag, get_barrel_point());
+		} else {
+			shoot(svc, map, get_barrel_point());
+			svc.soundboard.play_sound(get_audio_tag(), get_barrel_point());
+		}
 		cooldowns.reload.start();
-		shoot(svc, map, get_barrel_point());
 	}
 	cooldowns.reload.set_native_time(specifications.reload_time * m_modifiers.reload_multiplier);
 	tick();
@@ -80,13 +95,18 @@ void Weapon::update(automa::ServiceProvider& svc, world::Map& map, Direction to_
 
 void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Animatable::set_position(physical.final_position - cam);
-	set_channel(cooldowns.shoot_effect.is_complete() ? 0 : cooldowns.shoot_effect.halfway() ? 2 : 1);
+	if (attributes.test(WeaponAttributes::charge)) {
+		auto progress = static_cast<int>(std::round(cooldowns.reload.get_inverse_normalized() * 3.f));
+		set_channel(progress);
+	} else {
+		set_channel(cooldowns.shoot_effect.is_complete() ? 0 : cooldowns.shoot_effect.halfway() ? 2 : 1);
+	}
 	win.draw(*this);
 	if (svc.greyblock_mode()) {
 		sf::RectangleShape box{};
 		box.setSize({2.f, 2.f});
 		box.setOrigin({1.f, 1.f});
-		box.setPosition(offsets.gameplay.barrel - cam);
+		box.setPosition(get_barrel_point() - cam);
 		box.setFillColor(colors::fucshia);
 		win.draw(box);
 		box.setPosition(visual.position - cam);

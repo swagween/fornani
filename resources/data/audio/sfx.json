@@ -258,6 +258,12 @@
     "pitch_offset": 0.0
   },
   {
+    "label": "charge_laser_gun",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
     "label": "release_laser_gun",
     "bus": "gameplay",
     "volume": 1.0,

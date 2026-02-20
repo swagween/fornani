@@ -602,6 +602,14 @@ bool Map::handle_entry(player::Player& player, util::Cooldown& enter_room) {
 	return ret;
 }
 
+void Map::spawn_laser(automa::ServiceProvider& svc, Turret& parent, sf::Vector2f position, LaserType type, util::BitFlags<LaserAttributes> attributes, CardinalDirection direction, int active, int cooldown, float size) {
+	lasers.push_back(Laser(svc, *this, parent, position, type, attributes, direction, active, cooldown, size));
+}
+
+void Map::spawn_laser(automa::ServiceProvider& svc, sf::Vector2f position, LaserType type, util::BitFlags<LaserAttributes> attributes, CardinalDirection direction, int active, int cooldown, float size) {
+	lasers.push_back(Laser(svc, *this, position, type, attributes, direction, active, cooldown, size));
+}
+
 auto Map::get_chunk_id_from_position(sf::Vector2f pos) const -> std::uint8_t {
 	auto clamped = sf::Vector2f{std::clamp(pos.x, 0.f, real_dimensions.x), std::clamp(pos.y, 0.f, real_dimensions.y)};
 	auto clookup = (clamped / constants::f_cell_size) / constants::f_chunk_size;

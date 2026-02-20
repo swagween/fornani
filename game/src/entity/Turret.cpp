@@ -85,7 +85,8 @@ void Turret::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 	state_function = state_function();
 
 	if (m_rate.just_started() && m_firing.is_complete()) {
-		map.lasers.push_back(world::Laser{svc, map, *this, m_position + constants::f_cell_vec.componentWiseMul(m_direction.as_vector()), world::LaserType::turret, attributes, m_direction, m_settings.duration, 64, 0.75f});
+		map.spawn_laser(svc, *this, m_position + constants::f_cell_vec.componentWiseMul(m_direction.as_vector()), world::LaserType::turret, attributes, m_direction, m_settings.duration, 64, 0.75f);
+		// map.lasers.push_back(world::Laser{svc, map, *this, m_position + constants::f_cell_vec.componentWiseMul(m_direction.as_vector()), world::LaserType::turret, attributes, m_direction, m_settings.duration, 64, 0.75f});
 		m_firing.start();
 	}
 }

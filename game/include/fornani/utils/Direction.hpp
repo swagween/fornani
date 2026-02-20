@@ -44,39 +44,6 @@ class SimpleDirection {
 	LR lr{};
 };
 
-struct CardinalDirection {
-  public:
-	CardinalDirection() = default;
-	CardinalDirection(int to) : udlr{static_cast<UDLR>(to)} {}
-	CardinalDirection(UDLR to) : udlr{to} {}
-
-	void set(UDLR to) { udlr = to; }
-	void set(LR to) { udlr = to == LR::left ? UDLR::left : UDLR::right; }
-	void set(LNR to) { udlr = to == LNR::left ? UDLR::left : UDLR::right; }
-	void set(UND to) { udlr = to == UND::up ? UDLR::up : UDLR::down; }
-
-	[[nodiscard]] auto get() const -> UDLR { return udlr; }
-	[[nodiscard]] auto up() const -> bool { return udlr == UDLR::up; }
-	[[nodiscard]] auto down() const -> bool { return udlr == UDLR::down; }
-	[[nodiscard]] auto left() const -> bool { return udlr == UDLR::left; }
-	[[nodiscard]] auto right() const -> bool { return udlr == UDLR::right; }
-	[[nodiscard]] auto print() const -> std::string { return left() ? "left" : right() ? "right" : up() ? "up" : "down"; }
-	[[nodiscard]] auto as_hv() const -> HV { return up() || down() ? HV::vertical : HV::horizontal; }
-	[[nodiscard]] auto as_vector() const -> sf::Vector2f { return up() ? sf::Vector2f{0.f, -1.f} : down() ? sf::Vector2f{0.f, 1.f} : left() ? sf::Vector2f{-1.f, 0.f} : sf::Vector2f{1.f, 0.f}; }
-	[[nodiscard]] auto as_degrees() const -> float { return up() ? 0.f : down() ? 180.f : left() ? 270.f : 90.f; }
-
-	bool operator==(CardinalDirection const& other) const { return other.udlr == udlr; }
-	bool operator!=(CardinalDirection const& other) const { return other.udlr != udlr; }
-
-	template <typename T>
-	T as() const {
-		return static_cast<T>(udlr);
-	}
-
-  private:
-	UDLR udlr{};
-};
-
 struct Direction {
 	Direction(SimpleDirection dir) : Direction(UND::neutral, dir.as<LNR>()) {}
 	Direction(UND und_preset = UND::neutral, LNR lnr_preset = LNR::neutral) : und(und_preset), lnr(lnr_preset) {}
@@ -139,6 +106,51 @@ struct Direction {
 
   private:
 	util::BitFlags<DirectionFlags> m_flags{};
+};
+
+struct CardinalDirection {
+  public:
+	CardinalDirection() = default;
+	CardinalDirection(int to) : udlr{static_cast<UDLR>(to)} {}
+	CardinalDirection(UDLR to) : udlr{to} {}
+	CardinalDirection(Direction from) : udlr{from.left() ? UDLR::left : from.right() ? UDLR::right : from.up() ? UDLR::up : UDLR::down} {
+		switch (from.lnr) {
+		case LNR::left: udlr = UDLR::left; break;
+		case LNR::right: udlr = UDLR::right; break;
+		default: break;
+		}
+		switch (from.und) {
+		case UND::up: udlr = UDLR::up; break;
+		case UND::down: udlr = UDLR::down; break;
+		default: break;
+		}
+	}
+
+	void set(UDLR to) { udlr = to; }
+	void set(LR to) { udlr = to == LR::left ? UDLR::left : UDLR::right; }
+	void set(LNR to) { udlr = to == LNR::left ? UDLR::left : UDLR::right; }
+	void set(UND to) { udlr = to == UND::up ? UDLR::up : UDLR::down; }
+
+	[[nodiscard]] auto get() const -> UDLR { return udlr; }
+	[[nodiscard]] auto up() const -> bool { return udlr == UDLR::up; }
+	[[nodiscard]] auto down() const -> bool { return udlr == UDLR::down; }
+	[[nodiscard]] auto left() const -> bool { return udlr == UDLR::left; }
+	[[nodiscard]] auto right() const -> bool { return udlr == UDLR::right; }
+	[[nodiscard]] auto print() const -> std::string { return left() ? "left" : right() ? "right" : up() ? "up" : "down"; }
+	[[nodiscard]] auto as_hv() const -> HV { return up() || down() ? HV::vertical : HV::horizontal; }
+	[[nodiscard]] auto as_vector() const -> sf::Vector2f { return up() ? sf::Vector2f{0.f, -1.f} : down() ? sf::Vector2f{0.f, 1.f} : left() ? sf::Vector2f{-1.f, 0.f} : sf::Vector2f{1.f, 0.f}; }
+	[[nodiscard]] auto as_degrees() const -> float { return up() ? 0.f : down() ? 180.f : left() ? 270.f : 90.f; }
+
+	bool operator==(CardinalDirection const& other) const { return other.udlr == udlr; }
+	bool operator!=(CardinalDirection const& other) const { return other.udlr != udlr; }
+
+	template <typename T>
+	T as() const {
+		return static_cast<T>(udlr);
+	}
+
+  private:
+	UDLR udlr{};
 };
 
 constexpr static auto get_hv_from_vector(sf::Vector2f const from) -> HV { return std::abs(from.x) >= std::abs(from.y) ? HV::horizontal : HV::vertical; }

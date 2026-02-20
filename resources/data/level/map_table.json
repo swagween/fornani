@@ -248,6 +248,12 @@
     },
     {
       "folder": "junkyard",
+      "label": "shooting_range.json",
+      "region": "junkyard",
+      "room_id": 720
+    },
+    {
+      "folder": "junkyard",
       "label": "silo.json",
       "region": "junkyard",
       "room_id": 700

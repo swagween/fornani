@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/entities/world/Laser.hpp>
 #include <fornani/io/Logger.hpp>
 #include <optional>
 #include "fornani/audio/Soundboard.hpp"
@@ -22,6 +23,14 @@ struct WeaponSpecifications {
 	int reload_time{};
 	int multishot{};
 	float recoil{};
+};
+
+struct LaserSpecifications {
+	world::LaserType type{};
+	int active{};
+	int cooldown{};
+	float size{};
+	util::BitFlags<world::LaserAttributes> attributes{};
 };
 
 struct Offsets {
@@ -159,6 +168,7 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
 	} cooldowns{};
 
 	WeaponModifiers m_modifiers{};
+	std::optional<LaserSpecifications> m_laser{};
 
 	automa::ServiceProvider* m_services;
 

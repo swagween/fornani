@@ -64,7 +64,7 @@
       23,
       5
     ],
-    "minimap": true,
+    "minimap": false,
     "music": "none",
     "player_start": [
       0,
@@ -80,7 +80,8 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 0
+    "style": 0,
+    "use_template": false
   },
   "tile": {
     "flags": {
