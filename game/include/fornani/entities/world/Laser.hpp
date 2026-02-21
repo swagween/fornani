@@ -34,6 +34,7 @@ class Laser {
 	void update(automa::ServiceProvider& svc, player::Player& player, Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void fire() { m_active.start(); }
+	void set_damage(float const to) { m_damage = to; }
 
 	[[nodiscard]] auto is(LaserType const test) const -> bool { return m_type == test; }
 	[[nodiscard]] auto is_active() const -> bool { return m_active.running(); }
@@ -58,6 +59,7 @@ class Laser {
 	sf::Vector2f m_spawn_point{};
 	float m_size{};
 	float m_breadth{};
+	float m_damage{0.1f};
 
 	io::Logger m_logger{"World"};
 };

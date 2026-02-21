@@ -85,8 +85,7 @@ void Turret::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 	state_function = state_function();
 
 	if (m_rate.just_started() && m_firing.is_complete()) {
-		map.spawn_laser(svc, *this, m_position + constants::f_cell_vec.componentWiseMul(m_direction.as_vector()), world::LaserType::turret, attributes, m_direction, m_settings.duration, 64, 0.75f);
-		// map.lasers.push_back(world::Laser{svc, map, *this, m_position + constants::f_cell_vec.componentWiseMul(m_direction.as_vector()), world::LaserType::turret, attributes, m_direction, m_settings.duration, 64, 0.75f});
+		map.spawn_laser(svc, *this, get_position(), world::LaserType::turret, attributes, m_direction, m_settings.duration, 64, 0.75f);
 		m_firing.start();
 	}
 }
@@ -99,6 +98,20 @@ void Turret::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	if (m_editor) { return; }
 	Animatable::center();
 	win.draw(*this);
+}
+
+auto Turret::get_position() const -> sf::Vector2f { return m_position + get_local_center() + get_offset(); }
+
+auto Turret::get_offset() const -> sf::Vector2f {
+	auto offset = sf::Vector2f{};
+	switch (m_direction.get()) {
+	case UDLR::up: offset = {0.f, -0.5f * constants::f_cell_vec.y - constants::small_value}; break;
+	case UDLR::down: offset = {0.f, 0.5f * constants ::f_cell_vec.y + constants::small_value}; break;
+	case UDLR::left: offset = {-constants::f_cell_vec.x * 0.5f - constants::small_value, 0.f}; break;
+	case UDLR::right: offset = {constants::f_cell_vec.x * 0.5f + constants::small_value, 0.f}; break;
+	default: break;
+	}
+	return offset;
 }
 
 fsm::StateFunction Turret::update_off() {

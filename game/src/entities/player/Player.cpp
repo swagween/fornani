@@ -238,11 +238,12 @@ void Player::update(world::Map& map) {
 	}
 
 	update_direction();
-
 	controller.update(*m_services, map, *this);
 	if (get_collider().hit_ceiling_ramp()) { controller.flush_ability(); }
 	controller.is_crouching() ? get_collider().flags.movement.set(shape::Movement::crouching) : get_collider().flags.movement.reset(shape::Movement::crouching);
 	if (!controller.is(AbilityType::jump)) { get_collider().flags.movement.reset(shape::Movement::jumping); }
+
+	update_weapon(map);
 
 	// do this elsehwere later
 	if (get_collider().flags.state.test(shape::State::just_landed)) {
@@ -312,7 +313,6 @@ void Player::update(world::Map& map) {
 	orb_indicator.update(*m_services, get_collider().physics.position);
 	if (orb_indicator.active()) { health_indicator.shift(); }
 	update_invincibility();
-	update_weapon(map);
 	if (controller.is_dashing() && m_services->ticker.every_x_ticks(8)) { map.spawn_emitter(*m_services, "dash", get_collider().get_center() - sf::Vector2f{0.f, 4.f}, get_actual_direction(), sf::Vector2f{8.f, 8.f}); }
 	if (controller.is(AbilityType::dive) && m_services->ticker.every_x_ticks(64) && get_collider().has_flag_set(shape::ColliderFlags::submerged)) {
 		map.spawn_emitter(*m_services, "bubble", get_collider().get_center(), Direction{UND::up}, sf::Vector2f{8.f, 8.f});
@@ -447,7 +447,7 @@ void Player::update_animation() {
 			if (controller.moving() && controller.sprinting() && !controller.is_dashing()) { m_animation_machine.request(AnimState::sprint); }
 			if (abs(get_collider().physics.velocity.x) > thresholds.stop && !controller.moving()) { m_animation_machine.request(AnimState::stop); }
 			if (hotbar && arsenal) {
-				if (controller.shot() && equipped_weapon().can_shoot()) { m_animation_machine.request(AnimState::shoot); }
+				if (controller.has_flag_set(PlayerControllerFlags::shot_weapon) && equipped_weapon().can_shoot()) { m_animation_machine.request(AnimState::shoot); }
 			}
 			handle_turning();
 		}
@@ -594,10 +594,10 @@ void Player::update_weapon(world::Map& map) {
 	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching
 	for (auto& weapon : arsenal.value().get_loadout()) {
 		hotbar->has(weapon->get_tag()) ? weapon->set_hotbar() : weapon->set_reserved();
-		weapon->set_firing_direction(controller.direction);
 		if (controller.is_wallsliding() && !controller.direction.up_or_down()) { weapon->get_firing_direction().flip(); }
 		weapon->update(*m_services, map, controller.direction);
 		weapon->set_position(m_weapon_socket);
+		weapon->set_firing_direction(controller.direction);
 	}
 	equipped_weapon().set_flag(arms::WeaponFlags::firing, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
 	equipped_weapon().set_flag(arms::WeaponFlags::charging, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
@@ -707,7 +707,7 @@ bool Player::fire_weapon() {
 	if (!arsenal || !hotbar) { return false; }
 	if (controller.shot() && equipped_weapon().can_shoot()) {
 		m_services->soundboard.flags.weapon.set(static_cast<audio::Weapon>(equipped_weapon().get_sound_id()));
-		set_flag(PlayerFlags::impart_recoil);
+		if (!equipped_weapon().is_chargeable()) { set_flag(PlayerFlags::impart_recoil); }
 		return true;
 	}
 	return false;

@@ -12,7 +12,7 @@
 
 namespace fornani::arms {
 
-enum class WeaponFlags { firing, charging, released };
+enum class WeaponFlags { firing, charging, released, overdrive };
 enum class WeaponState { unlocked, equipped, reloading };
 enum class WeaponAttributes { automatic, no_reload, charge };
 enum class InventoryState { reserve, hotbar };
@@ -23,6 +23,8 @@ struct WeaponSpecifications {
 	int reload_time{};
 	int multishot{};
 	float recoil{};
+	float charge_multiplier{1.f};
+	float speed_multiplier{1.f};
 };
 
 struct LaserSpecifications {
@@ -30,6 +32,7 @@ struct LaserSpecifications {
 	int active{};
 	int cooldown{};
 	float size{};
+	float damage{};
 	util::BitFlags<world::LaserAttributes> attributes{};
 };
 
@@ -44,6 +47,8 @@ struct Offsets {
 };
 
 struct WeaponModifiers {
+	float speed_multiplier{1.f};
+	float damage_multiplier{1.f};
 	float reload_multiplier{1.f};
 };
 
@@ -93,6 +98,7 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
 	[[nodiscard]] auto selected() const -> bool { return flags.ui.test(UIFlags::selected); }
 	[[nodiscard]] auto shot() const -> bool { return cooldowns.cooldown.just_started(); }
 	[[nodiscard]] auto automatic() const -> bool { return attributes.test(WeaponAttributes::automatic); }
+	[[nodiscard]] auto is_chargeable() const -> bool { return attributes.test(WeaponAttributes::charge); }
 	[[nodiscard]] auto get_id() const -> int { return metadata.id; }
 	[[nodiscard]] auto get_sound_id() const -> int { return static_cast<int>(m_audio.shoot); }
 	[[nodiscard]] auto get_active_projectiles() const -> int { return active_projectiles.get_count(); }

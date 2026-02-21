@@ -1,15 +1,13 @@
 
 #pragma once
 
-#include <fornani/audio/Soundboard.hpp>
 #include <fornani/components/CircleSensor.hpp>
-#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/core/Common.hpp>
 #include <fornani/entities/animation/AnimatedSprite.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/SpriteHistory.hpp>
 #include <fornani/io/Logger.hpp>
-#include <fornani/particle/Antenna.hpp>
 #include <fornani/physics/CircleCollider.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Cooldown.hpp>
@@ -72,7 +70,7 @@ class Projectile : public Animatable {
 	void on_explode(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f cam);
 	void destroy(bool completely, bool whiffed = false);
-	void seed(automa::ServiceProvider& svc, sf::Vector2f target = {}, float speed_multiplier = 1.f);
+	void seed(automa::ServiceProvider& svc, sf::Vector2f target = {}, float speed_multiplier = 1.f, float damage_multiplier = 1.f);
 	void register_chunk(std::uint8_t chunk) { m_chunk_id = chunk; }
 	void set_position(sf::Vector2f pos);
 	void set_team(Team to_team);
@@ -99,7 +97,7 @@ class Projectile : public Animatable {
 	[[nodiscard]] auto get_direction() const -> Direction { return physical.direction; }
 	[[nodiscard]] auto get_collider() -> shape::CircleCollider& { return physical.collider; }
 	[[nodiscard]] auto can_damage() const -> bool { return damage_timer.is_almost_complete() || !persistent(); }
-	[[nodiscard]] auto has_critical_damage() const -> bool { return variables.damage_multiplier > 1.f; }
+	[[nodiscard]] auto has_critical_damage() const -> bool { return variables.damage_multiplier > 2.f; }
 
 	[[nodiscard]] auto get_chunk_id() const -> std::uint8_t { return m_chunk_id; }
 

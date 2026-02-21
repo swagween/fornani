@@ -5,6 +5,9 @@
 
 namespace fornani::arms {
 
+constexpr auto minimum_speed_multiplier_v = 0.2f;
+constexpr auto minimum_damage_multiplier_v = 0.5f;
+
 Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 	: Animatable(svc, "guns", {32, 8}), metadata{.id = enemy ? svc.data.enemy_weapon[tag]["metadata"]["id"].as<int>() : svc.data.weapon[tag]["metadata"]["id"].as<int>(),
 												 .tag = tag.data(),
@@ -35,7 +38,6 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 	// gameplay
 	ammo.set_max(in_data["gameplay"]["attributes"]["ammo"].as<int>());
 	cooldowns.reload = util::Cooldown{in_data["gameplay"]["attributes"]["reload"].as<int>()};
-	if (attributes.test(WeaponAttributes::charge)) { cooldowns.reload.cancel(); }
 	specifications.multishot = in_data["gameplay"]["attributes"]["multishot"].as<int>();
 	specifications.cooldown_time = in_data["gameplay"]["attributes"]["cooldown_time"].as<int>();
 	specifications.reload_time = in_data["gameplay"]["attributes"]["reload"].as<int>();
@@ -45,13 +47,19 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 	if (static_cast<bool>(in_data["gameplay"]["attributes"]["charge"].as_bool())) {
 		attributes.set(WeaponAttributes::charge);
 		attributes.set(WeaponAttributes::no_reload);
+		specifications.charge_multiplier = in_data["gameplay"]["attributes"]["charge_multiplier"].as<float>();
 	}
 	auto laser = in_data["class_package"]["laser"];
 	if (laser) {
 		auto att = util::BitFlags<world::LaserAttributes>{};
 		if (!enemy) { att.set(world::LaserAttributes::player); }
-		m_laser = LaserSpecifications{static_cast<world::LaserType>(laser["type"].as<int>()), laser["active"].as<int>(), laser["cooldown"].as<int>(), laser["size"].as<float>(), att};
+		m_laser = LaserSpecifications{
+			static_cast<world::LaserType>(laser["type"].as<int>()), laser["active"].as<int>(), laser["cooldown"].as<int>(), laser["size"].as<float>(), laser["damage"].as<float>(), att,
+		};
 	}
+
+	// chargeable weapons start with no juice
+	if (attributes.test(WeaponAttributes::charge)) { cooldowns.reload.start(); }
 
 	// audio
 	m_audio.shoot = static_cast<audio::Weapon>(in_data["audio"]["shoot"].as<int>());
@@ -64,15 +72,27 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 void Weapon::update(automa::ServiceProvider& svc, world::Map& map, Direction to_direction) {
 	ammo.update();
 	if (attributes.test(WeaponAttributes::automatic) && has_flag_set(WeaponFlags::firing) && cooldowns.cooldown.running() && !ammo.empty()) { svc.soundboard.repeat_sound(get_audio_tag(), 1, get_barrel_point()); }
-	if (attributes.test(WeaponAttributes::charge) && has_flag_set(WeaponFlags::charging) && cooldowns.reload.just_started()) { svc.soundboard.play_sound("charge_" + metadata.tag, get_barrel_point()); }
+	if (attributes.test(WeaponAttributes::charge) && has_flag_set(WeaponFlags::charging) && !cooldowns.reload.is_complete()) { svc.soundboard.repeat_sound("charge_" + metadata.tag, 1, get_barrel_point()); }
+	if (attributes.test(WeaponAttributes::charge) && has_flag_set(WeaponFlags::charging) && cooldowns.reload.is_almost_complete()) {
+		svc.soundboard.play_sound("charge_complete_" + metadata.tag, get_barrel_point());
+		set_flag(WeaponFlags::overdrive);
+	}
+	if (has_flag_set(WeaponFlags::overdrive)) { svc.soundboard.repeat_sound("overdrive_" + metadata.tag, 1, get_barrel_point()); }
+	m_modifiers.speed_multiplier = 1.f;
+	m_modifiers.damage_multiplier = 1.f;
 	if (attributes.test(WeaponAttributes::charge) && has_flag_set(WeaponFlags::released)) {
+		set_flag(WeaponFlags::overdrive, false);
+		m_modifiers.speed_multiplier = std::max(minimum_speed_multiplier_v, cooldowns.reload.get_inverse_normalized() * specifications.speed_multiplier);
+		m_modifiers.damage_multiplier = std::max(minimum_damage_multiplier_v, cooldowns.reload.get_inverse_normalized() * specifications.charge_multiplier);
 		if (cooldowns.reload.is_complete()) {
 			if (m_laser) {
-				map.spawn_laser(svc, get_barrel_point(), m_laser->type, m_laser->attributes, CardinalDirection{to_direction}, m_laser->active, m_laser->cooldown, m_laser->size);
+				map.spawn_laser(svc, get_barrel_point(), CardinalDirection{firing_direction}, *m_laser);
 				svc.ticker.freeze_frame(6);
+			} else {
+				shoot(svc, map, get_barrel_point());
 			}
 			svc.soundboard.play_sound("release_" + metadata.tag, get_barrel_point());
-		} else {
+		} else if (!cooldowns.cooldown.running()) {
 			shoot(svc, map, get_barrel_point());
 			svc.soundboard.play_sound(get_audio_tag(), get_barrel_point());
 		}
@@ -156,7 +176,7 @@ void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map) {
 
 void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f target) {
 	shoot();
-	map.spawn_projectile_at(svc, *this, get_barrel_point(), target);
+	map.spawn_projectile_at(svc, *this, get_barrel_point(), target, m_modifiers.speed_multiplier, m_modifiers.damage_multiplier);
 }
 
 void Weapon::decrement_projectiles() { active_projectiles.update(-1); }

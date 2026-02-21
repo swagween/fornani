@@ -606,8 +606,9 @@ void Map::spawn_laser(automa::ServiceProvider& svc, Turret& parent, sf::Vector2f
 	lasers.push_back(Laser(svc, *this, parent, position, type, attributes, direction, active, cooldown, size));
 }
 
-void Map::spawn_laser(automa::ServiceProvider& svc, sf::Vector2f position, LaserType type, util::BitFlags<LaserAttributes> attributes, CardinalDirection direction, int active, int cooldown, float size) {
-	lasers.push_back(Laser(svc, *this, position, type, attributes, direction, active, cooldown, size));
+void Map::spawn_laser(automa::ServiceProvider& svc, sf::Vector2f position, CardinalDirection direction, arms::LaserSpecifications specs) {
+	lasers.push_back(Laser(svc, *this, position, specs.type, specs.attributes, direction, specs.active, specs.cooldown, specs.size));
+	lasers.back().set_damage(specs.damage);
 }
 
 auto Map::get_chunk_id_from_position(sf::Vector2f pos) const -> std::uint8_t {
@@ -618,10 +619,10 @@ auto Map::get_chunk_id_from_position(sf::Vector2f pos) const -> std::uint8_t {
 	return static_cast<std::uint8_t>(ret);
 }
 
-void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target, float speed_multiplier) {
+void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target, float speed_multiplier, float damage_multiplier) {
 	active_projectiles.push_back(weapon.projectile);
 	active_projectiles.back().set_position(pos);
-	active_projectiles.back().seed(svc, target, speed_multiplier);
+	active_projectiles.back().seed(svc, target, speed_multiplier, damage_multiplier);
 	active_projectiles.back().update(svc, *player);
 	active_projectiles.back().register_chunk(get_chunk_id_from_position(pos));
 
@@ -707,7 +708,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 		} else {
 			player->equipped_weapon().shoot(svc, *this);
 		}
-		if (!player->equipped_weapon().automatic()) { player->controller.set_shot(false); }
+		if (!player->equipped_weapon().automatic() && !player->equipped_weapon().is_chargeable()) { player->controller.set_shot(false); }
 	}
 }
 

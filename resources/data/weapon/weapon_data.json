@@ -10,7 +10,7 @@
       "dimensions": [9, 4],
       "offsets": {
         "global": [-1.5, 2.5],
-        "barrel": [18.0, 1.0],
+        "barrel": [28.0, 1.0],
         "stock": [0, 0]
       },
       "spray": {
@@ -81,7 +81,7 @@
       "dimensions": [10, 6],
       "offsets": {
         "global": [-1.5, 2.5],
-        "barrel": [10.0, 1.5],
+        "barrel": [30.0, 1.5],
         "stock": [0, 0]
       },
       "spray": {
@@ -466,7 +466,7 @@
       "dimensions": [28, 8],
       "offsets": {
         "global": [10.5, 3.5],
-        "barrel": [43.0, -0.0],
+        "barrel": [44.0, 0.5],
         "stock": [0, 0]
       },
       "spray": {
@@ -477,6 +477,8 @@
       "attributes": {
         "automatic": false,
         "charge": true,
+        "speed_multiplier": 1.4,
+        "charge_multiplier": 1.1,
         "ammo": 1,
         "reload": 220,
         "cooldown_time": 64,
@@ -488,7 +490,8 @@
         "type": 0,
         "active": 128,
         "cooldown": 128,
-        "size": 0.3
+        "size": 0.3,
+        "damage": 0.2
       },
       "projectile": {
         "type": 3,
@@ -496,9 +499,9 @@
         "radius": 12.0,
         "attributes": {
           "base_damage": 10,
-          "lifespan": 80,
+          "lifespan": 120,
           "lifespan_variance": 0,
-          "speed": 6.0,
+          "speed": 40.0,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
           "dampen_factor": 1.0,
@@ -508,7 +511,63 @@
         "animation": {
           "num_sprites": 1,
           "num_frames": 4,
-          "framerate": 14
+          "framerate": 14,
+          "angles": 2
+        }
+      }
+    }
+  },
+  "slingshot": {
+    "metadata": {
+      "id": 16,
+      "label": "Slingshot",
+      "description": "A traditional Kariba weapon."
+    },
+    "visual": {
+      "texture_lookup": 16,
+      "dimensions": [28, 8],
+      "offsets": {
+        "global": [10.5, 3.5],
+        "barrel": [34.0, 0.5],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "type": "twinkle"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "charge": true,
+        "speed_multiplier": 3.5,
+        "charge_multiplier": 5.0,
+        "ammo": 1,
+        "reload": 100,
+        "cooldown_time": 64,
+        "recoil": 0.0
+      }
+    },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [8.0, 8.0],
+        "radius": 3.0,
+        "attributes": {
+          "base_damage": 5,
+          "lifespan": 420,
+          "lifespan_variance": 0,
+          "speed": 24.0,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 1.0,
+          "reflect": true,
+          "gravity": 0.1,
+          "elasticity": 0.99
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 12
         }
       }
     }
@@ -535,7 +594,7 @@
       "attributes": {
         "automatic": true,
         "ammo": 28,
-        "reload": 800,
+        "reload": 600,
         "cooldown_time": 16,
         "recoil": 0.35
       }
@@ -546,7 +605,7 @@
         "dimensions": [14.0, 14.0],
         "radius": 9.0,
         "attributes": {
-          "base_damage": 4,
+          "base_damage": 1,
           "power": 2,
           "lifespan": 100,
           "lifespan_variance": 0,
@@ -565,6 +624,62 @@
           "num_sprites": 1,
           "num_frames": 4,
           "framerate": 8
+        }
+      }
+    }
+  },
+  "manta": {
+    "metadata": {
+      "id": 18,
+      "label": "Manta",
+      "description": "A behemoth of a weapon forged from concentrated rhenite and patented Skycorps steel."
+    },
+    "visual": {
+      "texture_lookup": 18,
+      "dimensions": [25, 8],
+      "offsets": {
+        "global": [6.5, 3.5],
+        "barrel": [32.0, 1.5],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "type": "manta"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 8,
+        "reload": 300,
+        "cooldown_time": 32,
+        "recoil": 0.85
+      }
+    },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [11.0, 11.0],
+        "radius": 4.0,
+        "attributes": {
+          "base_damage": 8,
+          "damage_rate": 24,
+          "power": 4,
+          "lifespan": 200,
+          "lifespan_variance": 0,
+          "speed": 26.0,
+          "variance": 0.5,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "persistent": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.999
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 2,
+          "framerate": 8,
+          "angles": 2
         }
       }
     }

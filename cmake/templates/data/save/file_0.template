@@ -33,9 +33,9 @@
 	"piggybacker": 24,
 	"player_data": {
 		"abilities": [],
-		"arsenal": [ "bryns_gun", "gnat", "wasp", "pulsar", "wraith", "tomahawk", "rpg", "scorpion", "laser_gun" ],
+		"arsenal": [ "bryns_gun", "gnat", "wasp", "pulsar", "wraith", "tomahawk", "rpg", "scorpion", "laser_gun", "manta", "slingshot" ],
 		"equipped_gun": "scorpion",
-		"hotbar": [ "bryns_gun", "gnat", "wasp", "pulsar", "wraith", "tomahawk", "rpg", "scorpion", "laser_gun" ],
+		"hotbar": [ "bryns_gun", "gnat", "wasp", "pulsar", "wraith", "tomahawk", "rpg", "scorpion", "laser_gun", "manta", "slingshot" ],
 		"hp": 3,
 		"items": [
 			{

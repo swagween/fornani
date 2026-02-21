@@ -156,6 +156,7 @@ class Enemy : public Mobile {
 
 	void set_position_from_scaled(sf::Vector2f pos);
 	void hurt(float amount = 1.f);
+	void hurt(automa::ServiceProvider& svc, float amount = 1.f);
 	void shake() { energy = hit_energy; }
 	void stop_shaking() { flags.state.reset(StateFlags::shaking); }
 

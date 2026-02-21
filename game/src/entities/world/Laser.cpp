@@ -43,7 +43,10 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 	if (m_direction.left()) { m_hitbox.set_position(m_spawn_point - sf::Vector2f{m_hitbox.get_dimensions().x, 0.f} - offset); }
 	if (m_direction.up()) { m_hitbox.set_position(m_spawn_point - sf::Vector2f{0.f, m_hitbox.get_dimensions().y} - offset); }
 
-	for (auto& b : map.breakables) { handle_collision(b->get_bounding_box(), size); }
+	for (auto& b : map.breakables) {
+		handle_collision(b->get_bounding_box(), size);
+		if (m_hitbox.overlaps(b->get_bounding_box())) { b->on_smash(svc, map); }
+	}
 	for (auto& p : map.pushables) { handle_collision(p->collision_box, size); }
 	for (auto& p : map.platforms) { handle_collision(p->get_collider().bounding_box, size); }
 	for (auto& b : map.switch_blocks) {
@@ -54,7 +57,7 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 		if (m_hitbox.overlaps(i->get_bounding_box())) { i->hit(); }
 	}
 	for (auto& e : map.enemy_catalog.enemies) {
-		if (m_hitbox.overlaps(e->get_collider().bounding_box)) { e->hurt(0.1f); }
+		if (m_hitbox.overlaps(e->get_collider().bounding_box)) { e->hurt(svc, m_damage); }
 	}
 
 	if (!player.is_intangible() && m_team != arms::Team::nani) { player.get_collider().handle_collider_collision(m_hitbox, true, {}, 0.1f); }

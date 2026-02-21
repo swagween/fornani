@@ -222,9 +222,10 @@ void Projectile::destroy(bool completely, bool whiffed) {
 	variables.state.set(ProjectileState::destroyed);
 }
 
-void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2f target, float speed_multiplier) {
+void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2f target, float speed_multiplier, float damage_multiplier) {
 	float var = random::random_range_float(-metadata.specifications.variance, metadata.specifications.variance);
 	metadata.specifications.speed *= speed_multiplier;
+	variables.damage_multiplier *= damage_multiplier;
 	if (omnidirectional()) {
 		physical.collider.physics.velocity = util::unit(target) * metadata.specifications.speed;
 		return;

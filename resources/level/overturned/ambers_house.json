@@ -38,35 +38,8 @@
           12,
           9
         ],
+        "tag": "mythic_rhenite",
         "type": 2
-      }
-    ],
-    "destructibles": [
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "enemy_clear": false,
-        "id": 40901,
-        "inverse": false,
-        "position": [
-          11,
-          8
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "enemy_clear": false,
-        "id": 40901,
-        "inverse": false,
-        "position": [
-          11,
-          9
-        ]
       }
     ],
     "npcs": [
@@ -1422,7 +1395,7 @@
         0,
         0,
         0,
-        0,
+        489,
         0,
         221,
         96,
@@ -1438,7 +1411,7 @@
         0,
         0,
         0,
-        0,
+        489,
         0,
         221,
         96,

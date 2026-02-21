@@ -204,6 +204,12 @@
     "pitch_offset": 0.2
   },
   {
+    "label": "shot_manta",
+    "bus": "gameplay",
+    "volume": 0.5,
+    "pitch_offset": 0.1
+  },
+  {
     "label": "shot_skycorps_ar",
     "bus": "gameplay",
     "volume": 1.0,
@@ -252,6 +258,52 @@
     "pitch_offset": 0.2
   },
   {
+    "label": "shot_slingshot",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "shot_slingshot",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "charge_slingshot",
+    "bus": "gameplay",
+    "volume": 0.5,
+    "pitch_offset": 0.0,
+    "fade_in": 0,
+    "fade_out": 18
+  },
+  {
+    "label": "charge_complete_slingshot",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "overdrive_slingshot",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 0,
+    "fade_out": 18
+  },
+  {
+    "label": "release_slingshot",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "hit_slingshot",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
     "label": "shot_laser_gun",
     "bus": "gameplay",
     "volume": 1.0,
@@ -261,7 +313,23 @@
     "label": "charge_laser_gun",
     "bus": "gameplay",
     "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 0,
+    "fade_out": 18
+  },
+  {
+    "label": "charge_complete_laser_gun",
+    "bus": "gameplay",
+    "volume": 1.0,
     "pitch_offset": 0.0
+  },
+  {
+    "label": "overdrive_laser_gun",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 0,
+    "fade_out": 18
   },
   {
     "label": "release_laser_gun",
@@ -297,6 +365,12 @@
   },
   {
     "label": "hit_shuriken",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "hit_tomahawk",
     "bus": "gameplay",
     "volume": 0.1,
     "pitch_offset": 0.2
@@ -368,6 +442,12 @@
     "pitch_offset": 0.0,
     "fade_in": 16,
     "fade_out": 16
+  },
+  {
+    "label": "enemy_hit",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
   },
   {
     "label": "pioneer_rotary",

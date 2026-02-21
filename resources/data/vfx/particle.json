@@ -491,6 +491,24 @@
     "color": "yellow"
   },
 
+  "manta": {
+    "load": 6,
+    "rate": 100.0,
+    "expulsion": 50.0,
+    "expulsion_variance": 40.0,
+    "cone": 0.6,
+    "friction": 0.995,
+    "elasticity": 0.99,
+    "gravity": 2.0,
+    "lifespan": 100,
+    "lifespan_variance": 80,
+    "dimensions": [3, 3],
+    "animated": false,
+    "colliding": true,
+    "fader": true,
+    "color": "green"
+  },
+
   "critical_hit": {
     "load": 20,
     "rate": 100.0,

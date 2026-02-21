@@ -214,12 +214,8 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (sprint_release) { sprint_flags.set(Sprint::released); }
 	if (grounded()) { sprint_flags = {}; }
 
-	if (shoot_pressed) { key_map[ControllerInput::shoot] = 1.f; }
-	if (shoot_released) { key_map[ControllerInput::shoot] = 0.f; }
-	set_flag(PlayerControllerFlags::released_weapon, shoot_released);
-
 	bool firing_automatic = false;
-	if (!restricted() && (!shot() || !has_arsenal())) {
+	if (!restricted() && (!shot() || !has_arsenal()) && !shoot_released) {
 		direction.lnr = moving_left() ? LNR::left : direction.lnr;
 		direction.lnr = moving_right() ? LNR::right : direction.lnr;
 		direction.und = UND::neutral;
@@ -231,6 +227,10 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	} else if (((moving_left() && direction.lnr == LNR::right) || (moving_right() && direction.lnr == LNR::left))) {
 		key_map[ControllerInput::slide] = 0.f;
 	}
+	if (shoot_pressed) { key_map[ControllerInput::shoot] = 1.f; }
+	if (shoot_released) { key_map[ControllerInput::shoot] = 0.f; }
+	set_flag(PlayerControllerFlags::released_weapon, shoot_released);
+	set_flag(PlayerControllerFlags::shot_weapon, shoot_pressed);
 
 	if ((left_pressed || left) && !firing_automatic && !is_crouching()) { m_last_requested_direction.set(LR::left); }
 	if ((right_pressed || right) && !firing_automatic && !is_crouching()) { m_last_requested_direction.set(LR::right); }

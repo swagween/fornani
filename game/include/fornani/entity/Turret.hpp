@@ -49,7 +49,8 @@ class Turret : public Entity, public Flaggable<TurretFlags> {
 
 	void set_position(sf::Vector2f const to) { m_position = to; }
 
-	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_position + constants::f_cell_vec.componentWiseMul(m_direction.as_vector()); }
+	[[nodiscard]] auto get_position() const -> sf::Vector2f;
+	[[nodiscard]] auto get_offset() const -> sf::Vector2f;
 
   private:
 	/* animation methods */

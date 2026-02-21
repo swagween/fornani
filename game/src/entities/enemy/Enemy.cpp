@@ -339,7 +339,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 				m_weakness.cancel();
 			}
 			player.set_flag(player::PlayerFlags::hit_target);
-			hurt(proj.get_damage());
+			hurt(svc, proj.get_damage());
 			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
 			if (proj.has_critical_damage()) {
 				svc.soundboard.flags.projectile.set(audio::Projectile::critical_hit);
@@ -351,7 +351,6 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 			}
 			hitstun.start(32);
 		}
-		svc.soundboard.flags.world.set(audio::World::projectile_hit);
 	}
 	if (!proj.persistent() && (!died() || just_died())) { proj.destroy(false); }
 }
@@ -364,10 +363,17 @@ void Enemy::spawn_treasure(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Enemy::hurt(float amount) {
+	if (health.is_dead()) { return; }
 	flags.state.set(StateFlags::hurt);
 	health.inflict(amount);
 	health_indicator.add(-amount);
 	if (health.is_dead()) { m_death_position = get_collider().get_center(); }
+}
+
+void Enemy::hurt(automa::ServiceProvider& svc, float amount) {
+	if (health.is_dead()) { return; }
+	svc.soundboard.play_sound("enemy_hit", get_collider().get_center());
+	hurt(amount);
 }
 
 void Enemy::on_crush(world::Map& map) {
