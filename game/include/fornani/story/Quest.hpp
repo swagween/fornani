@@ -33,6 +33,8 @@ struct hash<fornani::Subquest> {
 
 namespace fornani {
 
+enum class QuestRequirementType { strict, loose };
+
 using ProgressionState = int;
 using QuestIdentifier = int;
 
@@ -40,8 +42,8 @@ struct QuestProgression {
 	QuestProgression(std::vector<std::pair<QuestIdentifier, ProgressionState>> status);
 	void progress(QuestIdentifier const identifier, int const amount, int const source);
 	void progress(Subquest const identifier, int const amount, int const source);
-	void set_progression(QuestIdentifier const identifier, int const amount, std::vector<int> const sources);
-	void set_progression(Subquest const identifier, int const amount, std::vector<int> const sources);
+	void set_progression(QuestIdentifier const identifier, int const amount, std::vector<int> const sources, QuestRequirementType type = QuestRequirementType::strict);
+	void set_progression(Subquest const identifier, int const amount, std::vector<int> const sources, QuestRequirementType type = QuestRequirementType::strict);
 
 	[[nodiscard]] auto get_progression(QuestIdentifier const identifier = 0) const -> ProgressionState { return progressions.contains(identifier) ? progressions.at(identifier) : 0; }
 	[[nodiscard]] auto get_progression(Subquest const identifier) const -> ProgressionState { return subquest_progressions.contains(identifier) ? subquest_progressions.at(identifier) : 0; }
@@ -110,7 +112,8 @@ class QuestTable {
 
 	void progress_quest(std::string_view tag, int const amount, int const source, QuestIdentifier const identifier = 0);
 	void progress_quest(std::string_view tag, Subquest const subquest, int const amount, int const source, QuestIdentifier const identifier = 0);
-	void set_quest_progression(std::string_view tag, QuestIdentifier const identifier, int const amount, std::vector<int> sources);
+	void set_quest_progression(std::string_view tag, int const amount, QuestRequirementType type = QuestRequirementType::strict);
+	void set_quest_progression(std::string_view tag, QuestIdentifier const identifier, int const amount, std::vector<int> sources, QuestRequirementType type = QuestRequirementType::strict);
 	void set_quest_progression(std::string_view tag, Subquest const subquest, int const amount, std::vector<int> const sources, QuestIdentifier const identifier = 0);
 
 	[[nodiscard]] auto get_quest_progression(std::string_view tag, QuestIdentifier const identifier = 0) const -> ProgressionState { return m_quests.contains(tag.data()) ? m_quests.at(tag.data()).get_progression(identifier) : 0; }

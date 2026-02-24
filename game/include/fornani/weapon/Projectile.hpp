@@ -49,6 +49,7 @@ struct ProjectileSpecifications {
 	float elasticty{};
 	float spin{};
 	float spin_dampen{};
+	int max_hits{1};
 };
 
 struct ExplosionAttributes {
@@ -79,6 +80,7 @@ class Projectile : public Animatable {
 	void poof();
 	void damage_over_time();
 	void bounce_off_surface(sf::Vector2i direction);
+	void increment_hits(int amount = 1) { variables.hits.update(amount); }
 
 	[[nodiscard]] auto effect_type() const -> int { return visual.effect_type; }
 	[[nodiscard]] auto get_type() const -> ProjectileType { return metadata.type; }
@@ -151,6 +153,7 @@ class Projectile : public Animatable {
 		sf::Vector2f fired_point{};
 		sf::Vector2f destruction_point{};
 		util::BitFlags<ProjectileState> state{};
+		util::Counter hits{};
 	} variables{};
 
 	std::uint8_t m_chunk_id{};

@@ -1119,6 +1119,7 @@
       "gravity": true,
       "map_collision": true,
       "player_collision": false,
+      "secondary_collider": true,
       "rare_drops": true,
       "foreground": false,
       "sturdy": true

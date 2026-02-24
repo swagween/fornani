@@ -133,6 +133,7 @@ fsm::StateFunction PlayerAnimation::update_sprint() {
 		if (change_state(AnimState::push, get_params("between_push"))) { return PA_BIND(update_between_push); }
 	}
 	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
+	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 	if (change_state(AnimState::stop, get_params("stop"))) { return PA_BIND(update_stop); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"))) { return PA_BIND(update_wallslide); }
 	if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }

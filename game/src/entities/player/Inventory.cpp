@@ -66,8 +66,10 @@ bool Inventory::has_item(int id) const {
 	return false;
 }
 
-bool Inventory::has_item_equipped(int id) const {
-	return std::find_if(m_equipped_items.begin(), m_equipped_items.end(), [id](auto const& i) { return i == id; }) != m_equipped_items.end();
+bool Inventory::has_item_equipped(std::string_view id) const {
+	auto item_ptr = find_item(id);
+	if (item_ptr == nullptr) { return false; }
+	return std::find_if(m_equipped_items.begin(), m_equipped_items.end(), [item_ptr](auto const& i) { return i == item_ptr->get_id(); }) != m_equipped_items.end();
 }
 
 bool Inventory::has_item(std::string_view label) const {

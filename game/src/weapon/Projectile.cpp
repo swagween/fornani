@@ -32,6 +32,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	metadata.specifications.power = in_data["attributes"]["power"] ? in_data["attributes"]["power"].as<float>() : 1.f;
 	metadata.specifications.speed = in_data["attributes"]["speed"].as<float>();
 	metadata.specifications.speed_variance = in_data["attributes"]["speed_variance"].as<float>();
+	metadata.specifications.max_hits = in_data["attributes"]["max_hits"].as<int>();
 	metadata.specifications.speed += random::random_range_float(-metadata.specifications.speed_variance, metadata.specifications.speed_variance);
 	metadata.specifications.variance = in_data["attributes"]["variance"].as<float>();
 	metadata.specifications.stun_time = in_data["attributes"]["stun_time"].as<float>();
@@ -110,6 +111,9 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 		physical.collider.physics.set_global_friction(0.998f);
 		physical.steering.smooth_random_walk(physical.collider.physics, get_inverse_hv_from_vector(physical.collider.physics.velocity), 0.002f, 24.f);
 		physical.collider.physics.simple_update();
+	}
+	if (persistent()) {
+		if (variables.hits.get_count() > metadata.specifications.max_hits) { destroy(false); }
 	}
 
 	// animation

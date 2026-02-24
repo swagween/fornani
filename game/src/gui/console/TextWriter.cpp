@@ -318,23 +318,23 @@ DialogueSuite::DialogueSuite(dj::Json const& in, sf::Font& font, automa::Service
 			if (msg["codes"].is_array()) {
 				for (auto const& code : msg["codes"].as_array()) {
 					codes.push_back(MessageCode{code});
-					NANI_LOG_DEBUG(m_logger, "Code pushed to this set: {}", codes.back().value);
+					// NANI_LOG_DEBUG(m_logger, "Code pushed to this set: {}", codes.back().value);
 				}
 			}
 			if (msg["code_list"].is_array()) {
 				for (auto const& code : msg["code_list"][which].as_array()) {
 					codes.push_back(MessageCode{code});
-					NANI_LOG_DEBUG(m_logger, "Code pushed to this set: {}", codes.back().value);
+					// NANI_LOG_DEBUG(m_logger, "Code pushed to this set: {}", codes.back().value);
 				}
 			}
 			this_set.push_back({sf::Text(font), codes});
 			if (msg["message"]) {
 				this_set.back().data.setString(msg["message"].as_string().data());
-				NANI_LOG_DEBUG(m_logger, "Message pushed to this set: {}", std::string{msg["message"].as_string()});
+				// NANI_LOG_DEBUG(m_logger, "Message pushed to this set: {}", std::string{msg["message"].as_string()});
 			}
 			if (msg["messages"].is_array()) { this_set.back().data.setString(msg["messages"][which].as_string().data()); }
 		}
-		NANI_LOG_DEBUG(m_logger, "Finished set: {} messages kept", this_set.size());
+		// NANI_LOG_DEBUG(m_logger, "Finished set: {} messages kept", this_set.size());
 		if (!this_set.empty()) { suite.push_back(std::move(this_set)); }
 	}
 	if (suite.empty()) { NANI_LOG_DEBUG(m_logger, "Invalid suite!"); }

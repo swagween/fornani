@@ -189,13 +189,14 @@ void Player::update(world::Map& map) {
 		freeze_position();
 	}
 
-	if (has_item_equipped(25)) {
+	if (has_item_equipped("boxing_glove")) {
 		if (arsenal && hotbar) {
 			if (consume_flag(PlayerFlags::hit_target)) { equipped_weapon().reduce_reload_time(0.1f); }
 		}
 	}
-	has_item_equipped(38) ? health.set_invincibility(default_invincibility_time_v * 1.3f) : health.set_invincibility(default_invincibility_time_v);
-	if (arsenal && hotbar) { has_item_equipped(35) ? equipped_weapon().set_reload_multiplier(0.85f) : equipped_weapon().set_reload_multiplier(1.f); }
+	has_item_equipped("hoarders_trinket") ? health.set_invincibility(default_invincibility_time_v * 1.3f) : health.set_invincibility(default_invincibility_time_v);
+	if (arsenal && hotbar) { has_item_equipped("soda") ? equipped_weapon().set_reload_multiplier(0.85f) : equipped_weapon().set_reload_multiplier(1.f); }
+	if (has_item("soda")) { m_services->quest_table.set_quest_progression("carl_soda", 1, QuestRequirementType::loose); }
 
 	// map effects
 	if (controller.is_wallsliding()) {
@@ -545,7 +546,7 @@ void Player::piggyback(int id) {
 	}
 }
 
-bool Player::is_intangible() const { return controller.is_dashing() && has_item_equipped(37); }
+bool Player::is_intangible() const { return controller.is_dashing() && has_item_equipped("carises_soul"); }
 
 void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	sf::Vector2f offset{};

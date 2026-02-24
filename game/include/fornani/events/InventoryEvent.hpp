@@ -19,5 +19,6 @@ struct AcquireWeaponEvent : Event<automa::ServiceProvider&, std::string_view> {}
 struct AcquireWeaponFromConsoleEvent : Event<automa::ServiceProvider&, int> {};
 struct RemoveItemEvent : Event<automa::ServiceProvider&, std::string_view> {};
 struct RemoveWeaponByIDEvent : Event<automa::ServiceProvider&, int> {};
+struct RemoveItemByIDEvent : Event<automa::ServiceProvider&, int> {};
 
 } // namespace fornani

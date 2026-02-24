@@ -18,7 +18,7 @@ namespace fornani::enemy {
 
 enum class MinigusMode { neutral, battle_one, battle_two, last_words, exit };
 enum class MinigusState { idle, turn, run, shoot, jump_shoot, hurt, jump, jumpsquat, reload, punch, uppercut, build_invincibility, laugh, snap, rush, struggle, exit, drink, throw_can };
-enum class MinigusFlags { recently_hurt, distant_range_activated, battle_mode, theme_song, exit_scene, over_and_out, goodbye, threw_can, punched, soda_pop, second_phase };
+enum class MinigusFlags { recently_hurt, distant_range_activated, theme_song, exit_scene, over_and_out, goodbye, threw_can, punched, soda_pop, second_phase };
 enum class MinigunState { deactivated, neutral, charging, firing };
 enum class MinigunFlags { exhausted, charging };
 

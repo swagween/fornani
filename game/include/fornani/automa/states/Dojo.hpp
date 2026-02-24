@@ -10,7 +10,7 @@
 
 namespace fornani::automa {
 
-enum class GameplayFlags { game_over, transitioning, open_vendor, give_item, item_music_played, death_console_launched, console_running };
+enum class GameplayFlags { game_over, transitioning, open_vendor, give_item, item_music_played, death_console_launched, console_running, remove_item };
 
 class Dojo final : public GameplayState {
   public:
@@ -21,11 +21,13 @@ class Dojo final : public GameplayState {
 	void reload(ServiceProvider& svc, int target_state) override;
 
 	void acquire_item(ServiceProvider& svc, std::string_view tag);
+	void remove_item(ServiceProvider& svc, std::string_view tag);
 	void acquire_gun(ServiceProvider& svc, std::string_view tag);
 	void remove_gun(ServiceProvider& svc, std::string_view tag);
 	void acquire_item_from_console(ServiceProvider& svc, int id);
 	void acquire_gun_from_console(ServiceProvider& svc, int id);
 	void remove_gun_by_id(ServiceProvider& svc, int id);
+	void remove_item_by_id(ServiceProvider& svc, int id);
 	void equip_item(ServiceProvider& svc, int id);
 	void open_vendor(ServiceProvider& svc, int id);
 	void launch_cutscene(ServiceProvider& svc, int id);

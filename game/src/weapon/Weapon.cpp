@@ -132,8 +132,6 @@ void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		box.setPosition(visual.position - cam);
 		box.setFillColor(colors::goldenrod);
 		win.draw(box);
-	} else {
-		// visual.sprite.render(svc, win, cam);
 	}
 }
 

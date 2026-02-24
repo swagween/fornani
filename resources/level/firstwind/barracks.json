@@ -95,6 +95,13 @@
         "id": 102,
         "label": "bit",
         "position": [13, 14],
+        "contingencies": [
+          {
+            "requirement": 0,
+            "strict": true,
+            "tag": "free_bit"
+          }
+        ],
         "suites": [[1, 2, 3], [2, 3], [3]]
       }
     ],

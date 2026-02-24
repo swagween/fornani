@@ -1,162 +1,176 @@
 [
-	{
-		"title": "Free Bit",
-		"tag": "free_bit",
-		"target": 2,
-		"objectives": [ "Find the key to Bit's cell.", "Free Bit from his cell." ],
-		"displayed": true
-	},
+  {
+    "title": "Free Bit",
+    "tag": "free_bit",
+    "target": 2,
+    "objectives": ["Find the key to Bit's cell.", "Free Bit from his cell."],
+    "displayed": true
+  },
 
-	{
-		"title": "Discover the mystery of the Firstwind Laboratory terminal",
-		"tag": "firstwind_mystery",
-		"target": 5,
-		"objectives": [
-			"Enter the username.",
-			"Enter the authorization key.",
-			"Open the chest.",
-			"Find the Boiler Room.",
-			"Open the chest."
-		],
-		"displayed": true
-	},
+  {
+    "title": "Discover the mystery of the Firstwind Laboratory terminal",
+    "tag": "firstwind_mystery",
+    "target": 5,
+    "objectives": [
+      "Enter the username.",
+      "Enter the authorization key.",
+      "Open the chest.",
+      "Find the Boiler Room.",
+      "Open the chest."
+    ],
+    "displayed": true
+  },
 
-	{
-		"title": "NPC Dialogue",
-		"tag": "npc_dialogue",
-		"displayed": false,
-		"subquests": [
-			{
-				"tag": "mirin",
-				"id": 114
-			},
-			{
-				"tag": "bryn",
-				"id": 420
-			},
-			{
-				"tag": "bit",
-				"id": 102
-			},
-			{
-				"tag": "bryn",
-				"id": 509
-			},
-			{
-				"tag": "bryn",
-				"id": 300
-			},
-			{
-				"tag": "dr_willett",
-				"id": 300
-			},
-			{
-				"tag": "krub",
-				"id": 406
-			},
-			{
-				"tag": "gobe",
-				"id": 212
-			},
-			{
-				"tag": "justin",
-				"id": 247
-			},
-			{
-				"tag": "jimmy",
-				"id": 407
-			}
-		]
-	},
+  {
+    "title": "NPC Dialogue",
+    "tag": "npc_dialogue",
+    "displayed": false,
+    "subquests": [
+      {
+        "tag": "mirin",
+        "id": 114
+      },
+      {
+        "tag": "bryn",
+        "id": 420
+      },
+      {
+        "tag": "bit",
+        "id": 102
+      },
+      {
+        "tag": "bit",
+        "id": 101
+      },
+      {
+        "tag": "carl",
+        "id": 104
+      },
+      {
+        "tag": "bryn",
+        "id": 509
+      },
+      {
+        "tag": "bryn",
+        "id": 300
+      },
+      {
+        "tag": "dr_willett",
+        "id": 300
+      },
+      {
+        "tag": "krub",
+        "id": 406
+      },
+      {
+        "tag": "gobe",
+        "id": 212
+      },
+      {
+        "tag": "justin",
+        "id": 247
+      },
+      {
+        "tag": "jimmy",
+        "id": 407
+      }
+    ]
+  },
 
-	{
-		"title": "Collect vermite shards",
-		"tag": "collect_vermite",
-		"target": 24,
-		"objectives": [ "Collect all the vermite shards." ],
-		"displayed": true
-	},
+  {
+    "title": "Collect vermite shards",
+    "tag": "collect_vermite",
+    "target": 24,
+    "objectives": ["Collect all the vermite shards."],
+    "displayed": true
+  },
 
-	{
-		"title": "Defeat Miaag",
-		"tag": "defeat_miaag",
-		"target": 1,
-		"objectives": [ "Defeat the corrupted King Miaag and escape the Kariba Ruins." ],
-		"displayed": true
-	},
+  {
+    "title": "Defeat Miaag",
+    "tag": "defeat_miaag",
+    "target": 1,
+    "objectives": ["Defeat the corrupted King Miaag and escape the Kariba Ruins."],
+    "displayed": true
+  },
 
-	{
-		"title": "Rescue Justin",
-		"tag": "rescue_justin",
-		"target": 2,
-		"objectives": [
-			"Find Gobe's dog. He is somewhere near Old Mimic's Farm.",
-			"Return Justin to Gobe at Old Mimic's Farm."
-		],
-		"displayed": true
-	},
-	{
-		"title": "Lynx Dialogue",
-		"tag": "lynx_dialogue",
-		"target": 1,
-		"objectives": [
-		],
-		"displayed": false
-	},
-	{
-		"title": "Minigus Dialogue",
-		"tag": "minigus_dialogue",
-		"target": 1,
-		"objectives": [
-		],
-		"displayed": false
-	},
-	{
-		"title": "Defeat Skycorps",
-		"tag": "defeat_skycorps",
-		"target": 4,
-		"objectives": [ "Infiltrate the Greatwing and take down Skycorps before they awaken the Mother Worm." ],
-		"displayed": true
-	},
-	{
-		"title": "Obtain Wasp",
-		"tag": "obtain_wasp",
-		"target": 1,
-		"objectives": [ "Obtain Wasp" ],
-		"displayed": false
-	},
-	{
-		"title": "Map Markers",
-		"tag": "map_markers",
-		"displayed": false,
-		"subquests": [
-			{
-				"tag": "main",
-				"id": 810
-			},
-			{
-				"tag": "woodshine",
-				"id": 400
-			}
-		]
-	},
-	{
-		"title": "Main",
-		"tag": "main",
-		"target": 1,
-		"displayed": false,
-		"id": 11
-	},
-	{
-		"title": "Pioneer Trail",
-		"tag": "pioneer_trail",
-		"target": 1,
-		"displayed": false
-	},
-	{
-		"title": "Grand Mastiff Mystery",
-		"tag": "grand_mastiff_mystery",
-		"target": 1,
-		"displayed": false
-	}
+  {
+    "title": "Rescue Justin",
+    "tag": "rescue_justin",
+    "target": 2,
+    "objectives": [
+      "Find Gobe's dog. He is somewhere near Old Mimic's Farm.",
+      "Return Justin to Gobe at Old Mimic's Farm."
+    ],
+    "displayed": true
+  },
+  {
+    "title": "Lynx Dialogue",
+    "tag": "lynx_dialogue",
+    "target": 1,
+    "objectives": [],
+    "displayed": false
+  },
+  {
+    "title": "Minigus Dialogue",
+    "tag": "minigus_dialogue",
+    "target": 1,
+    "objectives": [],
+    "displayed": false
+  },
+  {
+    "title": "Defeat Skycorps",
+    "tag": "defeat_skycorps",
+    "target": 4,
+    "objectives": [
+      "Infiltrate the Greatwing and take down Skycorps before they awaken the Mother Worm."
+    ],
+    "displayed": true
+  },
+  {
+    "title": "Obtain Wasp",
+    "tag": "obtain_wasp",
+    "target": 1,
+    "objectives": ["Obtain Wasp"],
+    "displayed": false
+  },
+  {
+    "title": "Map Markers",
+    "tag": "map_markers",
+    "displayed": false,
+    "subquests": [
+      {
+        "tag": "main",
+        "id": 810
+      },
+      {
+        "tag": "woodshine",
+        "id": 400
+      }
+    ]
+  },
+  {
+    "title": "Main",
+    "tag": "main",
+    "target": 1,
+    "displayed": false,
+    "id": 11
+  },
+  {
+    "title": "Pioneer Trail",
+    "tag": "pioneer_trail",
+    "target": 1,
+    "displayed": false
+  },
+  {
+    "title": "Grand Mastiff Mystery",
+    "tag": "grand_mastiff_mystery",
+    "target": 1,
+    "displayed": false
+  },
+  {
+    "title": "Carl Soda",
+    "tag": "carl_soda",
+    "target": 2,
+    "displayed": false
+  }
 ]

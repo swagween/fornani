@@ -214,7 +214,6 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	if (!health.is_dead()) {
 		// first phase starts
 		if (Boss::has_flag_set(BossFlags::start_battle) && !m_console->has_value()) {
-			Boss::set_flag(BossFlags::battle_mode);
 			request(LynxState::get_up);
 			Boss::set_flag(BossFlags::start_battle, false);
 			svc.music_player.load(svc.finder, "tumult");
@@ -263,7 +262,6 @@ void Lynx::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 
 void Lynx::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Boss::gui_render(svc, win, cam);
-	if (Boss::has_flag_set(BossFlags::battle_mode)) { p_health_bar.render(win); }
 	if (b_lynx_debug) { debug(); }
 }
 

@@ -335,6 +335,10 @@ void Console::handle_inputs(input::InputSystem& controller) {
 				if (code.is_item() && m_process_code_after) { m_services->events.acquire_item_from_console_event.dispatch(*m_services, code.value); }
 				if (code.is_weapon() && m_process_code_after) { m_services->events.acquire_weapon_from_console_event.dispatch(*m_services, code.value); }
 				if (code.is_remove_weapon() && m_process_code_after) { m_services->events.remove_weapon_by_id_event.dispatch(*m_services, code.value); }
+				if (code.is_remove_item() && m_process_code_after) {
+					m_services->events.remove_item_by_id_event.dispatch(*m_services, code.value);
+					NANI_LOG_DEBUG(m_logger, "Removed item from console {}", code.value);
+				}
 				if (code.is_open_vendor() && m_process_code_after) { m_services->events.open_vendor_event.dispatch(*m_services, code.value); }
 				if (code.is_emotion() && m_process_code_after && m_npc_portrait && responded) { m_npc_portrait->set_emotion(code.value); }
 				if (code.is_destroy_inspectable()) { m_services->data.destroy_inspectable(code.value); }

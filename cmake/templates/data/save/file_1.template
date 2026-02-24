@@ -1,119 +1,230 @@
 {
-	"status": {
-		"new": false,
-		"inspect_hint": true
-	},
-	"player_data": {
-		"max_hp": 3.000000,
-		"hp": 3.000000,
-		"orbs": 0,
-		"position": {
-			"x": 147.84,
-			"y": 394.88
-		},
-		"arsenal": [
-		],
-		"equipped_gun": 0,
-		"abilities": [
-
-		],
-		"wardrobe": {
-			"hairstyle": 0,
-			"shirt": 0,
-			"pants": 0
-		},
-		"items": [
-			{
-				"label": "woodshine_totem",
-				"quantity": 1
-			},
-			{
-				"label": "navy_top",
-				"type": 1,
-				"quantity": 1
-			},
-			{
-				"label": "green_pants",
-				"type": 1,
-				"quantity": 1
-			}
-		],
-		"stats": {
-			"death_count": 0,
-			"bullets_fired": 0,
-			"guns_collected": 0,
-			"items_collected": 0,
-			"orbs_collected": 0,
-			"blue_orbs": 0,
-			"highest_indicator_amount": 0,
-			"enemies_killed": 0,
-			"rooms_discovered": 0,
-			"seconds_played": 0.0,
-			"time_trials": {
-				"bryns_gun": 0.000000
-			}
-		},
-		"hotbar": [
-		]
-	},
-	"save_point_id": 100,
-	"unlocked_doors": [
-	],
-	"opened_chests": [
-	],
 	"activated_switches": [
+		10101,
+		10622,
+		10601,
+		103
 	],
 	"destroyed_blocks": [
-	],
-	"quest_progressions": [
+		[
+			90,
+			1
+		],
+		[
+			1101,
+			1
+		]
 	],
 	"destroyed_inspectables": [
+		11,
+		1101
 	],
 	"discovered_rooms": [
+		100,
+		102,
+		103,
+		138,
+		120,
+		105,
+		107,
+		108,
+		106,
+		109,
+		110,
+		111,
+		119,
+		112,
+		104
 	],
-	"piggybacker": 0,
+	"map_data": {
+		"fallen_enemies": [],
+		"world_time": {
+			"hours": 20,
+			"minutes": 48
+		}
+	},
 	"marketplace": [
-		[
-		]
+		[],
+		[]
 	],
 	"npc_locations": [
 		[
-			20,
-			100
-		],
-		[
-			3,
-			227
-		],
-		[
-			24,
-			227
-		],
-		[
-			17,
-			103
-		],
-		[
-			7,
+			0,
 			0
 		],
 		[
-			23,
-			6001
+			2,
+			0
 		],
 		[
-			22,
-			6001
+			20,
+			0
+		],
+		[
+			17,
+			0
 		]
 	],
-	"map_data": {
-		"world_time": {
-			"hours": 8,
-			"minutes": 30
+	"opened_chests": [
+		82548,
+		70796,
+		82549,
+		94587,
+		60264
+	],
+	"piggybacker": 0,
+	"player_data": {
+		"arsenal": [
+			"bryns_gun"
+		],
+		"equipped_gun": "bryns_gun",
+		"equipped_items": [
+			-1,
+			-1,
+			-1,
+			-1
+		],
+		"hotbar": [
+			"bryns_gun"
+		],
+		"hp": 3,
+		"items": [
+			{
+				"label": "woodshine_totem",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "navy_top",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "green_pants",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "bryns_note",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "laboratory_key",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "bryns_notebook",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "radar_device",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "bit_cell_key",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "firstwind_hangar_key",
+				"quantity": 1,
+				"revealed": false
+			}
+		],
+		"max_hp": 3,
+		"orbs": 53,
+		"position": {
+			"x": 581.4542846679688,
+			"y": 235
 		},
-		"fallen_enemies": [
-			[
-			]
+		"stats": {
+			"blue_orbs": 0,
+			"bullets_fired": 83,
+			"death_count": 0,
+			"enemies_killed": 5,
+			"guns_collected": 1,
+			"highest_indicator_amount": 35,
+			"items_collected": 0,
+			"orbs_collected": 53,
+			"rooms_discovered": 15,
+			"seconds_played": 596.1998901367188,
+			"time_trials": {
+				"bryns_gun": 281.05706787109375
+			}
+		},
+		"wardrobe": {
+			"hairstyle": 0,
+			"pants": 0,
+			"shirt": 0
+		}
+	},
+	"quest_progressions": [
+		[
+			1,
+			111,
+			1,
+			1,
+			0
 		]
-	}
+	],
+	"quests": [
+		{
+			"status": [
+				[
+					0,
+					1
+				]
+			],
+			"tag": "main"
+		},
+		{
+			"status": [
+				[
+					20,
+					0
+				]
+			],
+			"subquests": [
+				{
+					"id": 102,
+					"status": [
+						1
+					],
+					"tag": "bit"
+				}
+			],
+			"tag": "npc_dialogue"
+		},
+		{
+			"status": [
+				[
+					0,
+					1
+				]
+			],
+			"tag": "firstwind_mystery"
+		}
+	],
+	"save_point_id": 104,
+	"status": {
+		"inspect_hint": false,
+		"new": false
+	},
+	"tutorial": {
+		"closed": true,
+		"inventory": true,
+		"jump": true,
+		"map": false,
+		"on": false,
+		"shoot": true,
+		"sprint": true,
+		"state": 0
+	},
+	"unlocked_doors": [
+		"laboratory_key"
+	]
 }

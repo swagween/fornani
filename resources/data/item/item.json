@@ -146,11 +146,15 @@
   },
   {
     "tag": "four_of_diamonds",
+    "category": 1,
+    "lookup": [12, 0],
+    "origin": [4, 3],
     "actual_title": "Four of Diamonds",
-    "naive_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
-    "actual_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
+    "naive_description": "An old playing card that Carl gave you in exchange for a soda. You suspect it might be completely worthless.",
+    "actual_description": "An old playing card that Carl gave you in exchange for a soda. You suspect it might be completely worthless.",
     "sellable": true,
-    "unique": true
+    "unique": true,
+    "value": 20
   },
   {
     "tag": "lantern",

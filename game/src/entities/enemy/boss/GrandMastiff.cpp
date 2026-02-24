@@ -17,19 +17,28 @@ GrandMastiff::GrandMastiff(automa::ServiceProvider& svc, world::Map& map) : Boss
 
 	get_collider().physics.set_friction_componentwise({0.9f, 0.99f});
 	flags.state.set(StateFlags::no_shake);
+	if (secondary_collider) { get_secondary_collider().set_dimensions({160.f, 100.f}); }
 }
 
 void GrandMastiff::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	Boss::update(svc, map, player);
 	has_flag_set(BossFlags::battle_mode) ? flags.state.reset(StateFlags::intangible) : flags.state.set(StateFlags::intangible);
 	if (consume_flag(BossFlags::start_battle)) {
-		set_flag(BossFlags::battle_mode);
 		svc.data.switch_destructible_state(4013, true);
 		svc.music_player.load(svc.finder, "scuffle");
 		svc.music_player.play_looped();
 	}
+	if (consume_flag(BossFlags::end_battle)) {
+		svc.data.switch_destructible_state(4013, true);
+		svc.music_player.pause();
+	}
 	if (!has_flag_set(BossFlags::battle_mode)) { return; }
 
-	Boss::update(svc, map, player);
+	if (secondary_collider) {
+		get_secondary_collider().physics.position = get_collider().get_top() - get_secondary_collider().dimensions * 0.5f;
+		get_secondary_collider().sync_components();
+	}
+
 	face_player(player);
 	flags.state.set(StateFlags::vulnerable);
 
@@ -168,6 +177,7 @@ void GrandMastiff::debug() {
 	static auto sz = ImVec2{180.f, 250.f};
 	ImGui::SetNextWindowSize(sz);
 	if (ImGui::Begin("Grand Mastiff Debug")) {
+		if (ImGui::Button("Start Battle")) { start_battle(); }
 		ImGui::SeparatorText("Info");
 		ImGui::Text("Post Slash: %i", m_post_slash.get());
 		ImGui::Text("Post Bite: %i", m_post_bite.get());

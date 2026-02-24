@@ -361,11 +361,13 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	npc_flags = {};
 }
 
+void Soundboard::play_sound(std::string_view label) { play_sound(label, m_listener.position); }
+
 void Soundboard::play_sound(std::string_view label, sf::Vector2f position) {
 	auto it = m_property_map.find(label);
 	if (it == m_property_map.end()) { it = m_property_map.find("error_sound"); }
 
-	std::string_view lookup = it->first;
+	std::string_view lookup = label;
 
 	auto tick = m_services->ticker.ticks;
 	if (tick - minimum_wait_time_v < m_services->sounds.get_tick_for_buffer(lookup)) { return; }

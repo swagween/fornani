@@ -1,5 +1,6 @@
 
 #include "fornani/gui/PauseWindow.hpp"
+#include "fornani/gui/console/Console.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::gui {

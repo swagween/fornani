@@ -194,14 +194,16 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	health.update();
 	m_health_bar.update(health.get_normalized(), get_collider().get_top() + sf::Vector2f{-24.f, -32.f});
-	player.has_item_equipped(svc.data.item_id_from_label("magnifying_glass")) && !flags.general.test(GeneralFlags::boss) ? flags.state.set(StateFlags::health_exposed) : flags.state.reset(StateFlags::health_exposed);
+	player.has_item_equipped("magnifying_glass") && !flags.general.test(GeneralFlags::boss) ? flags.state.set(StateFlags::health_exposed) : flags.state.reset(StateFlags::health_exposed);
 	auto flash_rate = 32;
 	if (!flags.general.test(GeneralFlags::custom_channels)) {
 		set_channel(EnemyChannel::standard);
 	} else {
 		set_channel(m_custom_channel);
 	}
-	if (flags.general.test(GeneralFlags::has_invincible_channel)) { flags.state.test(StateFlags::vulnerable) ? set_channel(EnemyChannel::standard) : set_channel(EnemyChannel::invincible); }
+	if (flags.general.test(GeneralFlags::has_invincible_channel)) {
+		flags.state.test(StateFlags::vulnerable) || flags.state.test(StateFlags::pre_battle_invincibility) ? set_channel(EnemyChannel::standard) : set_channel(EnemyChannel::invincible);
+	}
 	if (hurt_effect.running()) { set_channel((hurt_effect.get() / flash_rate) % 2 == 0 ? EnemyChannel::hurt_1 : EnemyChannel::hurt_2); }
 
 	if (hurt_effect.running() && !flags.state.test(StateFlags::no_shake)) { shake(); }
@@ -241,7 +243,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (has_secondary_collider()) {
 		if (player.get_collider().wallslider.overlaps(get_secondary_collider().bounding_box)) { dash_kick_overlap = true; }
 	}
-	if (dash_kick_overlap && player.controller.is_dashing() && !player.controller.is(player::AbilityType::dash_kick) && flags.state.test(StateFlags::vulnerable) && !flags.general.test(GeneralFlags::kick_immune)) {
+	if (dash_kick_overlap && player.controller.is_dashing() && !player.controller.is(player::AbilityType::dash_kick) && !is_invincible() && !flags.general.test(GeneralFlags::kick_immune)) {
 		if (!player.has_flag_set(player::PlayerFlags::dash_kick)) {
 			hurt(4.f);
 			if (!get_collider().has_attribute(shape::ColliderAttributes::sturdy)) {
@@ -250,8 +252,8 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 																		  : get_collider().physics.acceleration.x = -4.f * player.get_actual_direction().as_float();
 			}
 			m_weakness.start();
+			player.set_flag(player::PlayerFlags::dash_kick);
 		}
-		player.set_flag(player::PlayerFlags::dash_kick);
 	}
 
 	// update ranges
@@ -327,11 +329,14 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 	if (!(hit_main || hit_second)) { return; }
 	flags.state.set(enemy::StateFlags::shot);
 	auto secondary_collision = hit_second && !hit_main;
-	if (((secondary_collision && flags.general.test(GeneralFlags::invincible_secondary)) || !flags.state.test(enemy::StateFlags::vulnerable)) && !died()) {
+	if (((secondary_collision && flags.general.test(GeneralFlags::invincible_secondary)) || is_invincible()) && !died()) {
 		map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position()));
 		svc.soundboard.flags.world.set(audio::World::hard_hit);
-	} else if (flags.state.test(enemy::StateFlags::vulnerable) && !died()) {
-		if (proj.persistent()) { proj.damage_over_time(); }
+	} else if (!is_invincible() && !died()) {
+		if (proj.persistent()) {
+			proj.damage_over_time();
+			proj.increment_hits();
+		}
 		if (proj.can_damage()) {
 			if (proj.has_attribute(arms::ProjectileAttributes::explode_on_impact)) { proj.on_explode(svc, map); }
 			if (m_weakness.running()) {
@@ -364,6 +369,7 @@ void Enemy::spawn_treasure(automa::ServiceProvider& svc, world::Map& map) {
 
 void Enemy::hurt(float amount) {
 	if (health.is_dead()) { return; }
+	if (is_invincible()) { return; }
 	flags.state.set(StateFlags::hurt);
 	health.inflict(amount);
 	health_indicator.add(-amount);
@@ -372,6 +378,7 @@ void Enemy::hurt(float amount) {
 
 void Enemy::hurt(automa::ServiceProvider& svc, float amount) {
 	if (health.is_dead()) { return; }
+	if (is_invincible()) { return; }
 	svc.soundboard.play_sound("enemy_hit", get_collider().get_center());
 	hurt(amount);
 }

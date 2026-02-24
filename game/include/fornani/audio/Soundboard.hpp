@@ -206,7 +206,8 @@ class Soundboard {
 
 	std::unordered_map<std::string, std::function<void(int)>> npc_map;
 
-	void play_sound(std::string_view label, sf::Vector2f position = {});
+	void play_sound(std::string_view label);
+	void play_sound(std::string_view label, sf::Vector2f position);
 	void repeat_sound(std::string_view label, SoundProducerID id = 0, sf::Vector2f position = {}, float pitch = 1.f);
 
 	void play(capo::IEngine& engine, automa::ServiceProvider& svc, std::string const& label, SoundProperties properties, int frequency = 0, float attenuation = 1.f);

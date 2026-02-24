@@ -32,7 +32,7 @@ class Inventory {
 	void add_equip_slot(int amount = 1) { m_open_equip_slots = std::clamp(m_open_equip_slots + amount, 0, num_equippable_items_v); }
 	[[nodiscard]] EquipmentStatus equip_item(int item_id);
 	[[nodiscard]] bool has_item(int id) const;
-	[[nodiscard]] bool has_item_equipped(int id) const;
+	[[nodiscard]] bool has_item_equipped(std::string_view id) const;
 	[[nodiscard]] bool has_item(std::string_view label) const;
 	[[nodiscard]] int get_quantity(std::string_view label);
 	Register<ItemStack> const& items_view() const { return m_items; }

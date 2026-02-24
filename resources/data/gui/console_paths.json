@@ -1,83 +1,115 @@
 {
-	"standard": [
-		{
-			"label": "open",
-			"path": [
-				{
-					"position": [ 240, 257 ],
-					"dimensions": [ 64, 24 ]
-				},
-				{
-					"position": [ 240, 190 ],
-					"dimensions": [ 256, 40 ]
-				}
-			]
-		},
-		{
-			"label": "close",
-			"path": [
-				{
-					"position": [ 240, 190 ],
-					"dimensions": [ 256, 40 ]
-				}
-			]
-		}
-	],
-	"sticker": [
-		{
-			"label": "in",
-			"path": [
-				{
-					"position": [ 240, -128 ]
-				},
-				{
-					"position": [ 240, 110 ]
-				},
-				{
-					"position": [ 240, 100 ]
-				}
-			]
-		},
-		{
-			"label": "out",
-			"path": [
-				{
-					"position": [ 240, 100 ]
-				},
-				{
-					"position": [ 240, 110 ]
-				},
-				{
-					"position": [ 240, -128 ]
-				}
-			]
-		}
-	],
-	"notification": [
-		{
-			"label": "in",
-			"path": [
-				{
-					"position": [ 12, -64 ]
-				},
-				{
-					"position": [ 12, 16 ]
-				},
-				{
-					"position": [ 12, 12 ]
-				}
-			]
-		},
-		{
-			"label": "out",
-			"path": [
-				{
-					"position": [ 12, 12 ]
-				},
-				{
-					"position": [ -240, 12 ]
-				}
-			]
-		}
-	]
+  "standard": [
+    {
+      "label": "open",
+      "path": [
+        {
+          "position": [240, 257],
+          "dimensions": [64, 24]
+        },
+        {
+          "position": [240, 190],
+          "dimensions": [256, 40]
+        }
+      ]
+    },
+    {
+      "label": "close",
+      "path": [
+        {
+          "position": [240, 190],
+          "dimensions": [256, 40]
+        }
+      ]
+    }
+  ],
+  "sticker": [
+    {
+      "label": "in",
+      "path": [
+        {
+          "position": [240, -128]
+        },
+        {
+          "position": [240, 110]
+        },
+        {
+          "position": [240, 100]
+        }
+      ]
+    },
+    {
+      "label": "out",
+      "path": [
+        {
+          "position": [240, 100]
+        },
+        {
+          "position": [240, 110]
+        },
+        {
+          "position": [240, -128]
+        }
+      ]
+    }
+  ],
+  "notification": [
+    {
+      "label": "in",
+      "path": [
+        {
+          "position": [12, -64]
+        },
+        {
+          "position": [12, 16]
+        },
+        {
+          "position": [12, 12]
+        }
+      ]
+    },
+    {
+      "label": "out",
+      "path": [
+        {
+          "position": [12, 12]
+        },
+        {
+          "position": [-240, 12]
+        }
+      ]
+    }
+  ],
+  "boss_health": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [0, -64]
+        }
+      ]
+    },
+    {
+      "label": "in",
+      "path": [
+        {
+          "position": [0, -64]
+        },
+        {
+          "position": [0, 0]
+        }
+      ]
+    },
+    {
+      "label": "out",
+      "path": [
+        {
+          "position": [0, 0]
+        },
+        {
+          "position": [0, -64]
+        }
+      ]
+    }
+  ]
 }

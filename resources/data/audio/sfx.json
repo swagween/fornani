@@ -436,6 +436,12 @@
     "pitch_offset": 0.0
   },
   {
+    "label": "reveal_junkyard",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
     "label": "console_speech",
     "bus": "gui",
     "volume": 1.0,
@@ -486,9 +492,15 @@
     "pitch_offset": 0.1
   },
   {
+    "label": "boss_defeat",
+    "bus": "gameplay",
+    "volume": 0.6,
+    "pitch_offset": 0.0
+  },
+  {
     "label": "platform_industrial",
     "bus": "gameplay",
-    "volume": 0.3,
+    "volume": 0.6,
     "pitch_offset": 0.0,
     "fade_in": 8,
     "fade_out": 32,

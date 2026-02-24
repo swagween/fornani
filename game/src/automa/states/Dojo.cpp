@@ -25,6 +25,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	svc.events.acquire_weapon_event.attach_to(p_slot, &Dojo::acquire_gun, this);
 	svc.events.acquire_weapon_from_console_event.attach_to(p_slot, &Dojo::acquire_gun_from_console, this);
 	svc.events.remove_weapon_by_id_event.attach_to(p_slot, &Dojo::remove_gun_by_id, this);
+	svc.events.remove_item_by_id_event.attach_to(p_slot, &Dojo::remove_item_by_id, this);
 
 	// gameplay events
 	svc.events.open_vendor_event.attach_to(p_slot, &Dojo::open_vendor, this);
@@ -89,6 +90,14 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		m_console.value()->display_item(m_item_tag);
 		svc.music_player.quick_play(svc.finder, "discovery");
 		m_flags.set(GameplayFlags::item_music_played);
+	}
+
+	if (m_flags.consume(GameplayFlags::remove_item)) {
+		auto label = player->catalog.inventory.find_item(m_item_tag)->get_title();
+		NANI_LOG_DEBUG(m_logger, "removed item {}", label);
+		m_console.value()->display_item(m_item_tag, false);
+		svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["removed"].as_string() + std::string{label} + ".");
+		player->catalog.inventory.remove_item(m_item_tag, 1);
 	}
 
 	svc.soundboard.set_listener_position(player->get_ear_position());
@@ -179,7 +188,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		auto normalized = sf::Vector2f{(puv.x - 0.5f) * aspect + 0.5f, puv.y};
 		auto ppl = PointLight(svc.data.light["lantern"], puv);
 		ppl.position = normalized;
-		if (player->has_item_equipped(svc.data.item_id_from_label("lantern"))) { p_world_shader->add_point_light(ppl); }
+		if (player->has_item_equipped("lantern")) { p_world_shader->add_point_light(ppl); }
 		// m_shader->debug();
 	}
 
@@ -252,6 +261,11 @@ void Dojo::acquire_item(ServiceProvider& svc, std::string_view tag) {
 	m_flags.set(GameplayFlags::give_item);
 }
 
+void Dojo::remove_item(ServiceProvider& svc, std::string_view tag) {
+	m_item_tag = tag.data();
+	m_flags.set(GameplayFlags::remove_item);
+}
+
 void Dojo::acquire_gun_from_console(ServiceProvider& svc, int id) {
 	if (auto tag = svc.data.get_gun_tag_from_id(id)) { acquire_gun(svc, *tag); }
 }
@@ -277,6 +291,8 @@ void Dojo::acquire_gun(ServiceProvider& svc, std::string_view tag) {
 void Dojo::remove_gun_by_id(ServiceProvider& svc, int id) {
 	if (auto tag = svc.data.get_gun_tag_from_id(id)) { remove_gun(svc, *tag); }
 }
+
+void Dojo::remove_item_by_id(ServiceProvider& svc, int id) { remove_item(svc, svc.data.item_label_from_id(id)); }
 
 void Dojo::equip_item(ServiceProvider& svc, int id) {
 	auto equipped = player->equip_item(id);

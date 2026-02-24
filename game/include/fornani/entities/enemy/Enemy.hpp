@@ -62,7 +62,7 @@ enum class GeneralFlags {
 	boss,
 	kick_immune
 };
-enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, no_shake, out_of_zone, no_slowdown, intangible, health_exposed, despawn };
+enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, no_shake, out_of_zone, no_slowdown, intangible, health_exposed, despawn, pre_battle_invincibility };
 enum class Triggers { hostile, alert };
 enum class Variant { beast, soldier, elemental, worker, guardian };
 
@@ -120,6 +120,7 @@ class Enemy : public Mobile {
 	[[nodiscard]] auto is_hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto is_alert() const -> bool { return flags.state.test(StateFlags::alert); }
 	[[nodiscard]] auto is_hurt() const -> bool { return hurt_effect.running(); }
+	[[nodiscard]] auto is_invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable) || flags.state.test(StateFlags::pre_battle_invincibility); }
 	[[nodiscard]] auto despawn_requested() const -> bool { return flags.state.test(StateFlags::despawn); }
 	[[nodiscard]] auto hostility_triggered() const -> bool { return flags.triggers.test(Triggers::hostile); }
 	[[nodiscard]] auto alertness_triggered() const -> bool { return flags.triggers.test(Triggers::alert); }

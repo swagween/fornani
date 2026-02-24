@@ -181,7 +181,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto is_sneaking() const -> bool { return is_in_animation(player::AnimState::crouch) || is_in_animation(player::AnimState::crawl); }
 	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.inventory.has_item(id); }
 	[[nodiscard]] auto has_item(std::string_view tag) const -> bool { return catalog.inventory.has_item(tag); }
-	[[nodiscard]] auto has_item_equipped(int id) const -> bool { return catalog.inventory.has_item_equipped(id); }
+	[[nodiscard]] auto has_item_equipped(std::string_view id) const -> bool { return catalog.inventory.has_item_equipped(id); }
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
 	[[nodiscard]] auto has_map() const -> bool { return catalog.inventory.has_item(16); }
 	[[nodiscard]] auto has_collider() const -> bool { return collider.has_value(); }

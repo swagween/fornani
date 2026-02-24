@@ -7,7 +7,7 @@
 namespace fornani::audio {
 
 using namespace std::chrono_literals;
-constexpr auto global_volume_damp_v = 0.6f; // music is just too loud in general
+constexpr auto global_volume_damp_v = 0.45f; // music is just too loud in general
 
 MusicPlayer::MusicPlayer(capo::IEngine& audio_engine) : m_jukebox{audio_engine}, m_ringtone{audio_engine}, m_volume_multiplier{0.5f} {
 	m_name_from_id.insert({0, "none"});

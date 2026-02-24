@@ -106,7 +106,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	cooldowns.hurt_sound.update();
 	cooldowns.player_punch.update();
 	if (status.test(MinigusFlags::exit_scene)) { cooldowns.exit.update(); }
-	if (was_introduced()) { cooldowns.vulnerability.update(); }
+	if (battle_mode()) { cooldowns.vulnerability.update(); }
 
 	if (svc.ticker.every_x_ticks(32)) { hurt_color.update(); }
 
@@ -125,7 +125,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	attacks.left_shockwave.handle_player(player);
 	attacks.right_shockwave.handle_player(player);
 
-	if (status.test(MinigusFlags::battle_mode)) {
+	if (battle_mode()) {
 		if (attacks.left_shockwave.hit.active() && !cooldowns.player_punch.running()) {
 			player.hurt(1);
 			if (!player.invincible()) { player.accumulated_forces.push_back({-40.f, -4.f}); }
@@ -185,7 +185,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		get_secondary_collider().physics.position.y -= get_secondary_collider().dimensions.y;
 		get_secondary_collider().physics.position.x += Enemy::directions.actual.lnr == LNR::left ? 0 : Enemy::get_collider().dimensions.x - get_secondary_collider().dimensions.x;
 		get_secondary_collider().sync_components();
-		if (status.test(MinigusFlags::battle_mode) && player_collision()) { player.get_collider().handle_collider_collision(get_secondary_collider()); }
+		if (battle_mode() && player_collision()) { player.get_collider().handle_collider_collision(get_secondary_collider()); }
 	}
 	distant_range.set_position(Enemy::get_collider().bounding_box.get_position() - (distant_range.get_dimensions() * 0.5f) + (Enemy::get_collider().dimensions * 0.5f));
 	player.get_collider().bounding_box.overlaps(distant_range) ? status.set(MinigusFlags::distant_range_activated) : status.reset(MinigusFlags::distant_range_activated);
@@ -251,7 +251,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (Enemy::directions.actual.lnr != Enemy::directions.desired.lnr) { request(MinigusState::turn); }
 	movement_direction.lnr = Enemy::get_collider().physics.velocity.x > 0.f ? LNR::right : LNR::left;
 
-	if (!status.test(MinigusFlags::battle_mode)) { request(MinigusState::idle); }
+	if (!battle_mode()) { request(MinigusState::idle); }
 
 	if (!status.test(MinigusFlags::second_phase) && half_health()) { request(MinigusState::struggle); }
 
@@ -276,7 +276,6 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 
 	if (Boss::consume_flag(BossFlags::start_battle)) {
 		m_mode = MinigusMode::battle_one;
-		status.set(MinigusFlags::battle_mode);
 		svc.quest_table.progress_quest("minigus_dialogue", 1, 1);
 		svc.data.save_quests();
 		set_distant_interact(false);
@@ -323,9 +322,7 @@ void Minigus::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	}
 }
 
-void Minigus::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (status.test(MinigusFlags::battle_mode)) { p_health_bar.render(win); }
-}
+void Minigus::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) { Boss::gui_render(svc, win, cam); }
 
 fsm::StateFunction Minigus::update_idle() {
 	set_state(MinigusState::idle);
@@ -779,7 +776,6 @@ fsm::StateFunction Minigus::update_struggle() {
 	// after health is empty
 	if (health.is_dead()) {
 		if (Enemy::animation.just_started()) {
-			status.reset(MinigusFlags::battle_mode);
 			set_distant_interact(true);
 			set_force_interact(true);
 			flush_conversations();

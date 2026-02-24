@@ -562,7 +562,7 @@
           "dampen_factor": 1.0,
           "reflect": true,
           "gravity": 0.1,
-          "elasticity": 0.99
+          "elasticity": 0.95
         },
         "animation": {
           "num_sprites": 1,
@@ -605,7 +605,7 @@
         "dimensions": [14.0, 14.0],
         "radius": 9.0,
         "attributes": {
-          "base_damage": 1,
+          "base_damage": 4,
           "power": 2,
           "lifespan": 100,
           "lifespan_variance": 0,
@@ -661,8 +661,9 @@
         "dimensions": [11.0, 11.0],
         "radius": 4.0,
         "attributes": {
-          "base_damage": 8,
-          "damage_rate": 24,
+          "base_damage": 1,
+          "damage_rate": 1,
+          "max_hits": 16,
           "power": 4,
           "lifespan": 200,
           "lifespan_variance": 0,

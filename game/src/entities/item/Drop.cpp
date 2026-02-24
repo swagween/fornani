@@ -97,7 +97,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	if (!check_delay(svc)) { return; }
 	tick();
 	delay.update();
-	auto magnet = player.has_item_equipped(svc.data.item_id_from_label("magnet"));
+	auto magnet = player.has_item_equipped("magnet");
 	if (magnet) {
 		get_collider().physics.set_friction_componentwise({0.995f, 0.995f});
 		m_steering.seek(get_collider().physics, player.get_collider().get_center(), 0.0001f);
