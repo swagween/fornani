@@ -31,6 +31,9 @@ int unsigned_coin_flip();
 // Returns -1 or 1 based on a coin flip using a signed logic
 int signed_coin_flip();
 
+// Returns -1 or 1 based on a coin flip using a signed logic
+bool coin_flip();
+
 // Generates a random float following a normal distribution with the given mean and standard deviation
 float random_range_normal(float mean, float std_dev);
 
@@ -50,7 +53,7 @@ void set_test_seed();
 void set_vendor_seed();
 
 template <typename T, typename WeightFn>
-static T const& weightedChoice(std::vector<T> const& items, WeightFn weightFn) {
+static T const& weighted_choice(std::vector<T> const& items, WeightFn weightFn) {
 	std::vector<double> weights;
 	weights.reserve(items.size());
 

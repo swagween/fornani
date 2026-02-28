@@ -4,6 +4,8 @@ nani_add_sources(
         Chest.cpp
         Explosion.cpp
         Fire.cpp
+        Hazard.cpp
+        HazardTile.cpp
         Inspectable.cpp
         Laser.cpp
         SpawnablePlatform.cpp

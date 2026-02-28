@@ -1181,5 +1181,102 @@
       "hurt_on_contact": false,
       "kick_immune": true
     }
+  },
+  "mizzle": {
+    "metadata": {
+      "id": 26,
+      "variant": "beast"
+    },
+    "physical": {
+      "dimensions": [24, 24],
+      "sprite_dimensions": [32, 32],
+      "offset": [0, 0],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [900.0, 900.0],
+      "hostile_range": [400.0, 400.0],
+      "friction": 0.99,
+      "gravity": 0.0
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 0
+    },
+    "audio": {
+      "hit": 3
+    },
+    "attributes": {
+      "base_hp": 1,
+      "base_damage": 1.0,
+      "speed": 6.0,
+      "loot_multiplier": 0.1,
+      "drop_range": [0, 1],
+      "respawn_distance": 1,
+      "permadeath": false,
+      "team": 1
+    },
+    "animation": {
+      "duration": 2,
+      "framerate": 20
+    },
+    "general": {
+      "mobile": true,
+      "gravity": false,
+      "map_collision": true,
+      "player_collision": false,
+      "hurt_on_contact": true,
+      "uncrushable": false,
+      "foreground": true,
+      "rare_drops": false
+    }
+  },
+  "mizzle_egg": {
+    "metadata": {
+      "id": 27,
+      "variant": "beast"
+    },
+    "physical": {
+      "dimensions": [24, 24],
+      "sprite_dimensions": [36, 36],
+      "offset": [0, -12],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [300.0, 800.0],
+      "hostile_range": [300.0, 300.0],
+      "friction": 0.95,
+      "gravity": 16.0
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 0
+    },
+    "audio": {
+      "hit": 3
+    },
+    "attributes": {
+      "base_hp": 100,
+      "base_damage": 1.0,
+      "speed": 6.0,
+      "loot_multiplier": 1.0,
+      "drop_range": [4, 5],
+      "respawn_distance": 1,
+      "permadeath": false,
+      "team": 1
+    },
+    "animation": {
+      "duration": 2,
+      "framerate": 20
+    },
+    "general": {
+      "mobile": false,
+      "gravity": true,
+      "sturdy": true,
+      "map_collision": true,
+      "player_collision": false,
+      "hurt_on_contact": true,
+      "uncrushable": false,
+      "foreground": false,
+      "rare_drops": false
+    }
   }
 }

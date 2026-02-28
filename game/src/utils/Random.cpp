@@ -41,6 +41,8 @@ int unsigned_coin_flip() { return std::bernoulli_distribution(0.5)(engine()) ? 1
 
 int signed_coin_flip() { return std::bernoulli_distribution(0.5)(engine()) ? 1 : -1; }
 
+bool coin_flip() { return static_cast<bool>(unsigned_coin_flip()); }
+
 // Generates a random float following a normal distribution with the given mean and standard deviation
 float random_range_normal(float mean, float std_dev) { return std::normal_distribution<float>{mean, std_dev}(engine()); }
 

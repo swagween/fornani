@@ -4,8 +4,6 @@
 #include <fornani/service/ServiceProvider.hpp>
 #include <cmath>
 
-// TODO: Replace functions in here with ccmath functions instead.
-
 namespace fornani::components {
 
 void PhysicsComponent::apply_force(sf::Vector2f force) { sf::operator+=(acceleration, force); }
@@ -40,8 +38,7 @@ void PhysicsComponent::integrate(automa::ServiceProvider& svc) {
 
 	acceleration.y += gravity * dt;
 	sf::Vector2f friction = flags.test(State::grounded) ? ground_friction : air_friction;
-	velocity.x = (velocity.x + (acceleration.x / mass) * dt) * friction.x;
-	velocity.y = (velocity.y + (acceleration.y / mass) * dt) * friction.y;
+	velocity = (velocity + (acceleration / mass) * dt).componentWiseMul(friction);
 	velocity.x = ccm::ext::clamp(velocity.x, -maximum_velocity.x, maximum_velocity.x);
 	velocity.y = ccm::ext::clamp(velocity.y, -maximum_velocity.y, maximum_velocity.y);
 	position = position + velocity * dt;

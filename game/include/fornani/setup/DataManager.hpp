@@ -129,6 +129,7 @@ class DataManager final {
 	dj::Json effect{};
 	dj::Json sparkler{};
 	dj::Json biomes{};
+	dj::Json hazards{};
 	dj::Json npc{};
 	dj::Json item{};
 	dj::Json platform{};

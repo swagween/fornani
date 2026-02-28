@@ -172,10 +172,14 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 	// zoom controls
 	if (available()) {
 		if (auto const* scrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
-			auto delta = scrolled->delta * zoom_factor * map.get_scale();
-			if (map.within_zoom_limits(delta)) { map.move(current_tool->f_position() * -delta); }
-			map.zoom(delta);
-			grid_refresh.start();
+			if (pressed_keys.test(PressedKeys::shift)) {
+				current_tool->direction.rotate(scrolled->delta > 0 ? fornani::RotationType::counterclockwise : fornani::RotationType::clockwise);
+			} else {
+				auto delta = scrolled->delta * zoom_factor * map.get_scale();
+				if (map.within_zoom_limits(delta)) { map.move(current_tool->f_position() * -delta); }
+				map.zoom(delta);
+				grid_refresh.start();
+			}
 		}
 	}
 

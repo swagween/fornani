@@ -650,6 +650,12 @@
     },
     {
       "folder": "overturned",
+      "label": "thorn_bush.json",
+      "region": "overturned",
+      "room_id": 252
+    },
+    {
+      "folder": "overturned",
       "label": "throughway.json",
       "region": "overturned",
       "room_id": 211

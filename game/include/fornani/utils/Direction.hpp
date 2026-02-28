@@ -12,6 +12,7 @@ enum class UND { up, down, neutral };
 enum class UDLR { up, down, left, right };
 enum class Inter { north, south, east, west, northeast, northwest, southeast, southwest };
 enum class HV { horizontal, vertical };
+enum class RotationType { clockwise, counterclockwise };
 
 enum class DirectionFlags { locked };
 
@@ -130,16 +131,39 @@ struct CardinalDirection {
 	void set(LR to) { udlr = to == LR::left ? UDLR::left : UDLR::right; }
 	void set(LNR to) { udlr = to == LNR::left ? UDLR::left : UDLR::right; }
 	void set(UND to) { udlr = to == UND::up ? UDLR::up : UDLR::down; }
+	void rotate(RotationType type = RotationType::clockwise) {
+		switch (type) {
+		case RotationType::clockwise:
+			switch (udlr) {
+			case UDLR::up: udlr = UDLR::right; break;
+			case UDLR::down: udlr = UDLR::left; break;
+			case UDLR::left: udlr = UDLR::up; break;
+			case UDLR::right: udlr = UDLR::down; break;
+			}
+			break;
+		case RotationType::counterclockwise:
+			switch (udlr) {
+			case UDLR::up: udlr = UDLR::left; break;
+			case UDLR::down: udlr = UDLR::right; break;
+			case UDLR::left: udlr = UDLR::down; break;
+			case UDLR::right: udlr = UDLR::up; break;
+			}
+			break;
+		}
+	}
 
 	[[nodiscard]] auto get() const -> UDLR { return udlr; }
 	[[nodiscard]] auto up() const -> bool { return udlr == UDLR::up; }
 	[[nodiscard]] auto down() const -> bool { return udlr == UDLR::down; }
 	[[nodiscard]] auto left() const -> bool { return udlr == UDLR::left; }
 	[[nodiscard]] auto right() const -> bool { return udlr == UDLR::right; }
+	[[nodiscard]] auto up_or_down() const -> bool { return up() || down(); }
+	[[nodiscard]] auto left_or_right() const -> bool { return left() || right(); }
 	[[nodiscard]] auto print() const -> std::string { return left() ? "left" : right() ? "right" : up() ? "up" : "down"; }
 	[[nodiscard]] auto as_hv() const -> HV { return up() || down() ? HV::vertical : HV::horizontal; }
 	[[nodiscard]] auto as_vector() const -> sf::Vector2f { return up() ? sf::Vector2f{0.f, -1.f} : down() ? sf::Vector2f{0.f, 1.f} : left() ? sf::Vector2f{-1.f, 0.f} : sf::Vector2f{1.f, 0.f}; }
 	[[nodiscard]] auto as_degrees() const -> float { return up() ? 0.f : down() ? 180.f : left() ? 270.f : 90.f; }
+	[[nodiscard]] auto as_angle() const -> sf::Angle { return sf::degrees(as_degrees()); }
 
 	bool operator==(CardinalDirection const& other) const { return other.udlr == udlr; }
 	bool operator!=(CardinalDirection const& other) const { return other.udlr != udlr; }

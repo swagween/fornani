@@ -3,6 +3,7 @@ nani_add_headers(
         Camera.hpp
         Destructible.hpp
         Grid.hpp
+        HazardMap.hpp
         Incinerite.hpp
         Layer.hpp
         Map.hpp

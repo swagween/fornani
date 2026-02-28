@@ -211,6 +211,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 		ImGuiViewport const* viewport = ImGui::GetMainViewport();
 		ImVec2 work_pos = viewport->WorkPos; // Use work area to avoid menu-bar/task-bar, if any!
 		ImVec2 work_size = viewport->WorkSize;
+
 		ImVec2 window_pos, window_pos_pivot;
 		window_pos.x = (corner & 1) ? (work_pos.x + work_size.x - PAD) : (work_pos.x + PAD);
 		window_pos.y = (corner & 2) ? (work_pos.y + work_size.y - PAD) : (work_pos.y + PAD);
@@ -492,6 +493,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							if (ImGui::BeginTabItem("General")) {
 								ImGui::Text("Player");
 								ImGui::Separator();
+								ImGui::Text("Distant Vicinity: %i", player.distant_vicinity.vertices.size());
 								ImGui::Text("Last Requested Direction: %s", player.controller.last_requested_direction().print().c_str());
 								ImGui::Text("Desired Direction: %s", player.get_desired_direction().print().c_str());
 								ImGui::Text("Actual Direction: %s", player.get_actual_direction().print().c_str());

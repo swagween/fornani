@@ -32,6 +32,8 @@ Canvas::Canvas(fornani::automa::ServiceProvider& svc, sf::Vector2<std::uint32_t>
 
 	border.setFillColor(sf::Color::Transparent);
 	border.setOutlineThickness(4.f);
+
+	m_hazard_tag = "thorns"; // obviously placeholder
 }
 
 void Canvas::update(Tool& tool) {
@@ -54,6 +56,9 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 	win.draw(border);
 	if (!states_empty()) {
 		for (auto& layer : get_layers().layers) {
+			if (layer.collidable) {
+				if (m_hazards) { m_hazards->render(win, position, sf::Vector2f{scale, scale}, get_origin()); }
+			}
 			box.setFillColor(sf::Color{40, 240, 80, 20});
 			for (auto& cell : layer.grid.cells) {
 				cell.set_scale(scale);
@@ -183,6 +188,11 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 	entities.variables.player_start = map_states.back().layers.at(middleground()).grid.first_available_ground();
 	map_states.back().set_labels();
 	set_grid_texture();
+
+	// hazards
+	auto& hazards = metadata["hazards"];
+	if (hazards) { m_hazards.emplace(svc, hazards, sf::Vector2u{real_dimensions}); }
+
 	return success;
 }
 
@@ -236,6 +246,8 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 		metadata["tile"]["ignore_lighting"].push_back(layer.ignore_lighting);
 		++current_layer;
 	}
+
+	if (m_hazards) { m_hazards->serialize(metadata["hazards"]); }
 
 	auto success{true};
 	auto to_file = std::filesystem::path{region} / std::filesystem::path{room_name};
@@ -381,6 +393,11 @@ void Canvas::edit_tile_at(int i, int j, int new_val, int layer_index) {
 	if (layer_index >= map_states.back().layers.size()) { return; }
 	if ((i + j * dimensions.x) >= map_states.back().layers.at(layer_index).grid.cells.size()) { return; };
 	map_states.back().layers.at(layer_index).grid.cells.at(i + j * dimensions.x).value = new_val;
+}
+
+void Canvas::add_hazard_at(sf::Vector2i position, int value, fornani::CardinalDirection direction) {
+	if (!m_hazards) { m_hazards = fornani::world::HazardMap{}; }
+	if (m_hazards) { m_hazards->add_tile(*m_services, m_hazard_tag, position, value, direction); }
 }
 
 void Canvas::erase_at(int i, int j, int layer_index) { edit_tile_at(i, j, 0, layer_index); }

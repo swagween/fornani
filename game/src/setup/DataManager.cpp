@@ -170,6 +170,8 @@ void DataManager::load_data() {
 	biomes = *dj::Json::from_file((finder.resource_path() + "/data/level/biomes.json").c_str());
 	assert(!biomes.is_null());
 	for (auto const& b : biomes["biomes"].as_array()) { m_biomes.push_back(b.as_string()); }
+	hazards = *dj::Json::from_file((finder.resource_path() + "/data/level/tables/hazards.json").c_str());
+	assert(!hazards.is_null());
 
 	action_names = *dj::Json::from_file((finder.resource_path() + "/data/gui/action_names.json").c_str());
 	assert(!action_names.is_null());

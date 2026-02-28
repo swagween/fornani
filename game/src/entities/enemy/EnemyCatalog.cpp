@@ -21,6 +21,8 @@
 #include <fornani/entities/enemy/catalog/Mastiff.hpp>
 #include <fornani/entities/enemy/catalog/Meatsquash.hpp>
 #include <fornani/entities/enemy/catalog/Minion.hpp>
+#include <fornani/entities/enemy/catalog/Mizzle.hpp>
+#include <fornani/entities/enemy/catalog/MizzleEgg.hpp>
 #include <fornani/entities/enemy/catalog/Spitefly.hpp>
 #include <fornani/entities/enemy/catalog/Summoner.hpp>
 #include <fornani/entities/enemy/catalog/Tank.hpp>
@@ -62,6 +64,8 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[m
 	case 23: enemies.push_back(std::make_unique<Beamsprout>(svc, map, start_direction)); break;
 	case 24: enemies.push_back(std::make_unique<GrandMastiff>(svc, map)); break;
 	case 25: enemies.push_back(std::make_unique<Crow>(svc, map, multispawn.spread)); break;
+	case 26: enemies.push_back(std::make_unique<Mizzle>(svc, map)); break;
+	case 27: enemies.push_back(std::make_unique<MizzleEgg>(svc, map)); break;
 	default: enemies.push_back(std::make_unique<Frdog>(svc, map)); break;
 	}
 

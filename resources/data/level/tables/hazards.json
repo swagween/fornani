@@ -1,0 +1,15 @@
+{
+  "thorns": {
+    "dimensions": [64, 64],
+    "table_dimensions": [8, 6],
+    "sensors": [
+      [],
+      [
+        { "radius": 40.0, "position": [20, 66] },
+        { "radius": 40.0, "position": [40, 56] },
+        { "radius": 24.0, "position": [57, 42] }
+      ],
+      []
+    ]
+  }
+}

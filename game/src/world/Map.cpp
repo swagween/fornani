@@ -28,6 +28,9 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	auto& metadata = it->metadata;
 	auto const& meta = metadata["meta"];
 	auto& entities = metadata["entities"];
+	auto& hazards = metadata["hazards"];
+
+	if (hazards) { m_hazards.emplace(svc, hazards, sf::Vector2u{real_dimensions}); }
 
 	// process properties
 	svc.music_player.load(svc.finder, m_attributes.music);
@@ -334,6 +337,9 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 		flags.map_state.reset(MapState::unobscure);
 	}
 
+	// hazards
+	if (m_hazards) { m_hazards->update(*player, *this); }
+
 	std::erase_if(active_emitters, [](auto const& p) { return p->done(); });
 	std::erase_if(effects, [](auto& e) { return e.done(); });
 	std::erase_if(lasers, [](auto const& l) { return l.is_complete(); });
@@ -577,6 +583,8 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	}
 	for (auto& timer_block : timer_blocks) { timer_block.render(svc, win, cam); }
 	for (auto& waterfall : waterfalls) { waterfall->render(svc, win, cam); }
+
+	if (m_hazards) { m_hazards->render(win, cam); }
 }
 
 bool Map::handle_entry(player::Player& player, util::Cooldown& enter_room) {
@@ -649,12 +657,14 @@ void Map::spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, st
 	}
 }
 
-void Map::spawn_enemy(int id, sf::Vector2f pos, int variant) {
-	auto break_out = 0;
-	while (player->distant_vicinity.contains_point(pos) && break_out < 32) {
-		auto distance = player->get_collider().get_center() - pos;
-		pos -= distance;
-		++break_out;
+void Map::spawn_enemy(int id, sf::Vector2f pos, int variant, bool allow_proximity_to_player) {
+	if (!allow_proximity_to_player) {
+		auto break_out = 0;
+		while (player->distant_vicinity.contains_point(pos) && break_out < 32) {
+			auto distance = player->get_collider().get_center() - pos;
+			pos -= distance;
+			++break_out;
+		}
 	}
 	enemy_spawns.push_back({pos, id, variant});
 	spawn_counter.update();

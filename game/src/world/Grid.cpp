@@ -63,8 +63,8 @@ void Grid::check_neighbors(int i) {
 	cells.at(i).exposed = exposed;
 }
 
-sf::Vector2<int> Grid::get_solid_neighbors(int index) {
-	auto ret = sf::Vector2<int>{};
+NeighborSet Grid::get_solid_neighbors(int index) {
+	auto ret = NeighborSet{};
 	auto right = static_cast<std::size_t>(index + 1);
 	auto left = static_cast<std::size_t>(index - 1);
 	auto up = static_cast<std::size_t>(index - dimensions.x);
@@ -72,19 +72,19 @@ sf::Vector2<int> Grid::get_solid_neighbors(int index) {
 	auto ui = static_cast<std::uint32_t>(index);
 	// left neighbor
 	if (index != 0 && index % dimensions.x != 0) {
-		if (cells.at(left).is_solid()) { ret.x = -1; }
+		if (cells.at(left).is_solid()) { ret.neighbors.set(UDLR::left); }
 	}
 	// right neighbor
 	if (index != cells.size() - 1 && index % dimensions.x != dimensions.x - 1) {
-		if (cells.at(right).is_solid()) { ret.x = 1; }
+		if (cells.at(right).is_solid()) { ret.neighbors.set(UDLR::right); }
 	}
 	// top neighbor
 	if (!(ui < dimensions.x)) {
-		if (cells.at(up).is_solid()) { ret.y = -1; }
+		if (cells.at(up).is_solid()) { ret.neighbors.set(UDLR::up); }
 	}
 	// bottom neighbor
 	if (!(ui > cells.size() - dimensions.x - 1)) {
-		if (cells.at(down).is_solid()) { ret.y = 1; }
+		if (cells.at(down).is_solid()) { ret.neighbors.set(UDLR::down); }
 	}
 	return ret;
 }

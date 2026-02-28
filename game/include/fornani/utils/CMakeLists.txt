@@ -15,6 +15,7 @@ nani_add_headers(
         ID.hpp
         IWorldPositionable.hpp
         Math.hpp
+        NeighborSet.hpp
         NineSlice.hpp
         Oscillator.hpp
         QuestCode.hpp

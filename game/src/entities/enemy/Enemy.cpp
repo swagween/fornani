@@ -363,7 +363,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 void Enemy::spawn_treasure(automa::ServiceProvider& svc, world::Map& map) {
 	if (!m_treasure) { return; }
 	if (m_treasure->empty()) { return; }
-	Treasure const& chosen = random::weightedChoice(*m_treasure, [](Treasure const& t) { return t.drop_chance; });
+	Treasure const& chosen = random::weighted_choice(*m_treasure, [](Treasure const& t) { return t.drop_chance; });
 	map.spawn_chest(svc, chosen, get_collider().get_center(), random::random_vector_float({-1.f, 1.f}, {-12.f, -20.f}));
 }
 

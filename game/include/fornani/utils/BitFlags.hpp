@@ -19,6 +19,7 @@ struct BitFlags {
 		return ret;
 	}
 	bool any(BitFlags const& other) const { return (bits & other.bits).any(); }
+	std::size_t count() const noexcept { return bits.count(); }
 
 	bool operator==(BitFlags const&) const = default;
 };

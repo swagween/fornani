@@ -15,6 +15,8 @@ nani_add_sources(
         Mastiff.cpp
         Meatsquash.cpp
         Minion.cpp
+        Mizzle.cpp
+        MizzleEgg.cpp
         Tank.cpp
         Thug.cpp
         Hulmet.cpp

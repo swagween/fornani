@@ -15,6 +15,8 @@ nani_add_headers(
         Mastiff.hpp
         Meatsquash.hpp
         Minion.hpp
+        Mizzle.hpp
+        MizzleEgg.hpp
         Tank.hpp
         Thug.hpp
         Hulmet.hpp
