@@ -52,6 +52,7 @@ class Editor final : public EditorState {
 	[[nodiscard]] auto space_pressed() const -> bool { return pressed_keys.test(PressedKeys::space); }
 	[[nodiscard]] auto palette_mode() const -> bool { return flags.test(GlobalFlags::palette_mode); }
 	[[nodiscard]] auto available() const -> bool { return !window_hovered && !menu_hovered && !popup_open; }
+	[[nodiscard]] auto hazard_mode() const -> bool { return current_tool->is_mode(BrushMode::hazard); }
 
 	Canvas map;
 	Canvas palette;
@@ -76,6 +77,7 @@ class Editor final : public EditorState {
 	bool window_hovered{};
 	bool menu_hovered{};
 	bool popup_open{};
+	bool hazard_hovered{};
 	int active_layer{};
 	std::uint32_t selected_block{};
 

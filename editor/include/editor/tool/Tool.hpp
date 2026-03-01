@@ -1,16 +1,14 @@
 
 #pragma once
 
-#include <cmath>
-
 #include <editor/util/Constants.hpp>
+#include <fornani/utils/Polymorphic.hpp>
+#include <cmath>
+#include <optional>
+#include <string_view>
 #include "editor/canvas/Canvas.hpp"
 #include "editor/canvas/Clipboard.hpp"
 #include "editor/util/SelectBox.hpp"
-#include "fornani/utils/Polymorphic.hpp"
-
-#include <optional>
-#include <string_view>
 
 namespace pi {
 
@@ -39,6 +37,7 @@ class Tool : public fornani::UniquePolymorphic {
 	void click();
 	void release();
 	void change_size(int amount);
+	void set_mode(BrushMode to) { m_mode = to; }
 
 	[[nodiscard]] auto get_label() const -> std::string { return label; };
 	[[nodiscard]] auto get_tooltip() const -> std::string { return tooltip; }
@@ -58,6 +57,7 @@ class Tool : public fornani::UniquePolymorphic {
 	[[nodiscard]] auto is_usable() const -> bool { return status == ToolStatus::usable; }
 	[[nodiscard]] auto highlight_canvas() const -> bool { return (is_paintable() || type == ToolType::erase) && !disable_highlight; }
 	[[nodiscard]] auto is_paintable() const -> bool { return type == ToolType::brush || type == ToolType::fill; };
+	[[nodiscard]] auto is_mode(BrushMode mode) const -> bool { return m_mode == mode; };
 
 	bool in_bounds(sf::Vector2<std::uint32_t>& bounds) const;
 

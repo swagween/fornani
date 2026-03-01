@@ -9,7 +9,103 @@
         { "radius": 40.0, "position": [40, 56] },
         { "radius": 24.0, "position": [57, 42] }
       ],
-      []
+      [
+        { "radius": 40.0, "position": [22, 43] },
+        { "radius": 24.0, "position": [50, 35] },
+        { "radius": 24.0, "position": [54, 52] }
+      ],
+      [
+        { "radius": 40.0, "position": [24, 65] },
+        { "radius": 24.0, "position": [40, 44] },
+        { "radius": 24.0, "position": [54, 49] }
+      ],
+      [
+        { "radius": 40.0, "position": [24, 64] },
+        { "radius": 40.0, "position": [54, 57] }
+      ],
+      [
+        { "radius": 40.0, "position": [10, 61] },
+        { "radius": 24.0, "position": [32, 61] },
+        { "radius": 24.0, "position": [49, 61] }
+      ],
+      [
+        { "radius": 24.0, "position": [8, 51] },
+        { "radius": 24.0, "position": [30, 58] },
+        { "radius": 24.0, "position": [49, 56] }
+      ],
+      [
+        { "radius": 40.0, "position": [0, 47] },
+        { "radius": 24.0, "position": [30, 41] },
+        { "radius": 24.0, "position": [50, 57] }
+      ],
+      [
+        { "radius": 24.0, "position": [7, 39] },
+        { "radius": 40.0, "position": [38, 60] }
+      ],
+      [
+        { "radius": 40.0, "position": [20, 8] },
+        { "radius": 24.0, "position": [41, 1] }
+      ],
+      [
+        { "radius": 40.0, "position": [23, 63] },
+        { "radius": 40.0, "position": [57, 47] }
+      ],
+      [
+        { "radius": 40.0, "position": [15, 34] },
+        { "radius": 40.0, "position": [48, 24] },
+        { "radius": 24.0, "position": [44, 43] }
+      ],
+      [
+        { "radius": 40.0, "position": [12, 8] },
+        { "radius": 40.0, "position": [35, 5] },
+        { "radius": 40.0, "position": [60, 11] }
+      ],
+      [
+        { "radius": 40.0, "position": [-4, 11] },
+        { "radius": 24.0, "position": [36, 6] },
+        { "radius": 24.0, "position": [56, 15] }
+      ],
+      [
+        { "radius": 40.0, "position": [18, 26] },
+        { "radius": 40.0, "position": [48, 36] }
+      ],
+      [],
+      [
+        { "radius": 24.0, "position": [11, -7] },
+        { "radius": 40.0, "position": [45, 13] }
+      ],
+      [
+        { "radius": 40.0, "position": [49, 21] },
+        { "radius": 24.0, "position": [6, 14] },
+        { "radius": 24.0, "position": [27, 14] },
+        { "radius": 24.0, "position": [25, 21] }
+      ],
+      [
+        { "radius": 24.0, "position": [10, 18] },
+        { "radius": 24.0, "position": [36, 1] }
+      ],
+      [
+        { "radius": 40.0, "position": [15, 35] },
+        { "radius": 40.0, "position": [39, 27] },
+        { "radius": 40.0, "position": [42, 37] }
+      ],
+      [
+        { "radius": 40.0, "position": [10, 21] },
+        { "radius": 40.0, "position": [34, 24] },
+        { "radius": 40.0, "position": [56, 21] },
+        { "radius": 24.0, "position": [57, 36] }
+      ],
+      [
+        { "radius": 40.0, "position": [1, 22] },
+        { "radius": 40.0, "position": [22, 36] },
+        { "radius": 40.0, "position": [32, 23] },
+        { "radius": 40.0, "position": [53, 21] }
+      ],
+      [
+        { "radius": 40.0, "position": [21, 27] },
+        { "radius": 40.0, "position": [22, 37] },
+        { "radius": 40.0, "position": [50, 37] }
+      ]
     ]
   }
 }

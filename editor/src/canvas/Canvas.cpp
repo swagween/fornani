@@ -33,7 +33,10 @@ Canvas::Canvas(fornani::automa::ServiceProvider& svc, sf::Vector2<std::uint32_t>
 	border.setFillColor(sf::Color::Transparent);
 	border.setOutlineThickness(4.f);
 
-	m_hazard_tag = "thorns"; // obviously placeholder
+	m_hazard_properties.tag = "thorns"; // obviously placeholder
+	auto const& config = svc.data.hazards[m_hazard_properties.tag];
+	m_hazard_properties.dimensions = sf::Vector2i{config["dimensions"][0].as<int>(), config["dimensions"][1].as<int>()};
+	m_hazard_properties.table_dimensions = sf::Vector2i{config["table_dimensions"][0].as<int>(), config["table_dimensions"][1].as<int>()};
 }
 
 void Canvas::update(Tool& tool) {
@@ -149,6 +152,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 	m_player_start.x = meta["player_start"][0].as<float>();
 	m_player_start.y = meta["player_start"][1].as<float>();
 	real_dimensions = {static_cast<float>(dimensions.x) * fornani::constants::f_cell_size, static_cast<float>(dimensions.y) * fornani::constants::f_cell_size};
+	m_hazard_properties.texture_dimensions = sf::Vector2u{real_dimensions};
 	biome = svc.data.construct_biome(bstr);
 
 	if (meta["camera_effects"]) {
@@ -396,8 +400,12 @@ void Canvas::edit_tile_at(int i, int j, int new_val, int layer_index) {
 }
 
 void Canvas::add_hazard_at(sf::Vector2i position, int value, fornani::CardinalDirection direction) {
-	if (!m_hazards) { m_hazards = fornani::world::HazardMap{}; }
-	if (m_hazards) { m_hazards->add_tile(*m_services, m_hazard_tag, position, value, direction); }
+	if (!m_hazards) { m_hazards.emplace(*m_services, m_hazard_properties.texture_dimensions, m_hazard_properties.tag); }
+	if (m_hazards) { m_hazards->add_tile(*m_services, m_hazard_properties.tag, position, value, direction); }
+}
+
+void Canvas::erase_hazard_at(sf::Vector2u position) {
+	if (m_hazards) { m_hazards->remove_tile(position); }
 }
 
 void Canvas::erase_at(int i, int j, int layer_index) { edit_tile_at(i, j, 0, layer_index); }

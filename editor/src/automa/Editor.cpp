@@ -94,7 +94,11 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 			if (key_pressed->scancode == sf::Keyboard::Scancode::A) { current_tool->change_size(-1); }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::D) { current_tool->change_size(1); }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::R) { center_map(); }
-			if (key_pressed->scancode == sf::Keyboard::Scancode::H) { current_tool = std::move(std::make_unique<Hand>()); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::T) {
+				current_tool->set_mode(BrushMode::tile);
+				m_options.palette = true;
+			}
+			if (key_pressed->scancode == sf::Keyboard::Scancode::H) { current_tool->set_mode(BrushMode::hazard); }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::B) { current_tool = std::move(std::make_unique<Brush>()); }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::G) { current_tool = std::move(std::make_unique<Fill>()); }
 			if (key_pressed->scancode == sf::Keyboard::Scancode::E) { current_tool = std::move(std::make_unique<Erase>()); }
@@ -172,7 +176,7 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 	// zoom controls
 	if (available()) {
 		if (auto const* scrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
-			if (pressed_keys.test(PressedKeys::shift)) {
+			if (pressed_keys.test(PressedKeys::control)) {
 				current_tool->direction.rotate(scrolled->delta > 0 ? fornani::RotationType::counterclockwise : fornani::RotationType::clockwise);
 			} else {
 				auto delta = scrolled->delta * zoom_factor * map.get_scale();
@@ -216,12 +220,13 @@ void Editor::logic() {
 
 	// tool logic
 	if (available() && !palette_mode()) { map.save_state(*tool); }
-
-	left_mouse_pressed() && current_tool->is_ready() && available() ? current_tool->activate() : current_tool->deactivate();
-	right_mouse_pressed() && secondary_tool->is_ready() && available() ? secondary_tool->activate() : secondary_tool->deactivate();
+	if (!hazard_hovered) {
+		left_mouse_pressed() && current_tool->is_ready() && available() ? current_tool->activate() : current_tool->deactivate();
+		right_mouse_pressed() && secondary_tool->is_ready() && available() ? secondary_tool->activate() : secondary_tool->deactivate();
+	}
 	tool->update(target);
 
-	if ((any_mouse_pressed()) && !menu_hovered && !window_hovered) {
+	if ((any_mouse_pressed()) && !menu_hovered && !window_hovered && !hazard_hovered) {
 		if (tool->type == ToolType::eyedropper) { selected_block = current_tool->tile; }
 		if (palette_mode() && current_tool->type != ToolType::marquee) {
 			auto pos = current_tool->get_window_position() - palette.get_position();
@@ -234,6 +239,8 @@ void Editor::logic() {
 			}
 		}
 	}
+
+	if (hazard_mode()) { m_options.palette = false; }
 
 	palette.active_layer = 0;
 	map.active_layer = active_layer;
@@ -250,7 +257,7 @@ void Editor::logic() {
 		palette.unhover();
 	}
 	palette.set_position({12.f, 32.f});
-	if (palette.hovered()) { map.unhover(); }
+	if (palette.hovered() && m_options.palette) { map.unhover(); }
 
 	map.set_offset_from_center(map.get_position() + map.get_scaled_center() - p_services->window->f_center_screen());
 	m_options.palette&& available() && palette.hovered() && (!current_tool -> is_active() || current_tool->type == ToolType::marquee) ? flags.set(GlobalFlags::palette_mode) : flags.reset(GlobalFlags::palette_mode);
@@ -312,20 +319,64 @@ void Editor::render(sf::RenderWindow& win) {
 	auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
 	map.render(win, tileset);
 
+	auto& io = ImGui::GetIO();
+	auto mouse_position = sf::Vector2f{io.MousePos.x, io.MousePos.y};
+
 	auto soft_palette_mode = m_options.palette && available() && palette.hovered();
 	if (current_tool->in_bounds(map.dimensions) && !menu_hovered && !palette_mode() && current_tool->highlight_canvas() && !soft_palette_mode) {
-		auto tileset = sf::Sprite{tileset_textures.at(map.get_i_style())};
-		tileset.setTextureRect(sf::IntRect({palette.get_tile_coord(selected_block), fornani::constants::i_resolution_vec}));
+		auto tileset = current_tool->is_mode(BrushMode::tile) ? sf::Sprite{tileset_textures.at(map.get_i_style())} : sf::Sprite{m_services->assets.get_texture("hazard_" + std::string{map.get_hazard_properties().tag})};
+		auto dim = current_tool->is_mode(BrushMode::tile) ? fornani::constants::i_resolution_vec : map.get_hazard_properties().dimensions;
+		auto lookup = current_tool->is_mode(BrushMode::tile) ? palette.get_tile_coord(selected_block) : map.get_hazard_properties().get_lookup(selected_block);
+		tileset.setTextureRect(sf::IntRect({lookup, dim}));
 		for (int i = 0; i < current_tool->size; i++) {
 			for (int j = 0; j < current_tool->size; j++) {
 				target_shape.setPosition({(current_tool->f_scaled_position().x - i) * map.f_cell_size() + map.get_position().x, (current_tool->f_scaled_position().y - j) * map.f_cell_size() + map.get_position().y});
 				target_shape.setSize({map.f_cell_size(), map.f_cell_size()});
 				tileset.setPosition(target_shape.getPosition());
 				tileset.setScale(map.get_scale_vec());
+				if (current_tool->is_mode(BrushMode::hazard)) {
+					tileset.setOrigin(sf::Vector2f{map.get_hazard_properties().dimensions} / 2.f);
+					tileset.setRotation(current_tool->direction.as_angle());
+					tileset.setPosition(target_shape.getPosition() + sf::Vector2f{map.get_hazard_properties().dimensions / 32} * map.f_cell_size());
+				}
 				if (current_tool->is_paintable()) { win.draw(tileset); }
 				win.draw(target_shape);
 			}
 		}
+	}
+
+	if (hazard_mode()) {
+		auto hpos = sf::Vector2f{8.f, 28.f};
+		auto hazard_map = sf::Sprite{m_services->assets.get_texture("hazard_" + std::string{map.get_hazard_properties().tag})};
+		auto hbox = sf::RectangleShape{};
+		hbox.setSize(hazard_map.getLocalBounds().size);
+		hbox.setPosition(hpos);
+		hazard_hovered = hbox.getGlobalBounds().contains(mouse_position);
+		hazard_hovered ? hbox.setOutlineThickness(4.f) : hbox.setOutlineThickness(2.f);
+		hazard_hovered ? hbox.setOutlineColor(fornani::colors::white) : hbox.setOutlineColor(fornani::colors::blue);
+		hazard_hovered ? hbox.setFillColor(sf::Color{127, 127, 127, 200}) : hbox.setFillColor(sf::Color{127, 127, 127, 40});
+		hazard_map.setPosition(hpos);
+		win.draw(hbox);
+		win.draw(hazard_map);
+
+		auto hazard_mouse_pos = mouse_position - hazard_map.getPosition();
+		auto htile = sf::Vector2i{hazard_mouse_pos.componentWiseDiv(sf::Vector2f{map.get_hazard_properties().dimensions})};
+		if (left_mouse_pressed() && current_tool->type == ToolType::brush) {
+			selected_block = htile.y * map.get_hazard_properties().table_dimensions.x + htile.x;
+			current_tool->store_tile(selected_block);
+		}
+
+		if (hazard_hovered) {
+			auto tbox = sf::RectangleShape{};
+			tbox.setFillColor(sf::Color::Transparent);
+			tbox.setSize(sf::Vector2f{map.get_hazard_properties().dimensions});
+			tbox.setPosition(hpos + sf::Vector2f{htile.componentWiseMul(map.get_hazard_properties().dimensions)});
+			tbox.setOutlineThickness(-2.f);
+			tbox.setOutlineColor(fornani::colors::mythic_green);
+			win.draw(tbox);
+		}
+	} else {
+		hazard_hovered = false;
 	}
 
 	if (m_clipboard && (control_pressed() || current_tool->type == ToolType::marquee) && !current_tool->is_active()) { m_clipboard.value().render(map, *current_tool, win, map.get_position()); }

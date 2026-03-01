@@ -114,11 +114,13 @@ class Canvas {
 	void replace_tile(std::uint32_t from, std::uint32_t to, int layer_index);
 	void edit_tile_at(int i, int j, int new_val, int layer_index);
 	void add_hazard_at(sf::Vector2i position, int value, fornani::CardinalDirection direction);
+	void erase_hazard_at(sf::Vector2u position);
 	void erase_at(int i, int j, int layer_index);
 	int tile_val_at(int i, int j, int layer);
 	int tile_val_at_scaled(int i, int j, int layer);
 	sf::Vector2f get_tile_position_at(int i, int j, int layer = 0);
 	Tile& get_tile_at(int i, int j, int layer = 0);
+	[[nodiscard]] auto get_hazard_properties() -> fornani::world::HazardMapProperties& { return m_hazard_properties; }
 
 	// layers
 	sf::Vector2<std::uint32_t> dimensions{};
@@ -166,7 +168,7 @@ class Canvas {
   private:
 	fornani::world::MapAttributes m_attributes{};
 	std::optional<fornani::world::HazardMap> m_hazards{};
-	std::string m_hazard_tag{};
+	fornani::world::HazardMapProperties m_hazard_properties{};
 
 	sf::Vector2f position{};
 	sf::RenderTexture grid_texture{};
