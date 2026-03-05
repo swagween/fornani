@@ -16,15 +16,20 @@ Mizzle::Mizzle(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, 
 	flags.general.reset(GeneralFlags::gravity);
 	Enemy::get_collider().set_flag(shape::ColliderFlags::simple);
 
-	get_collider().physics.set_friction_componentwise({0.995f, 0.99f});
+	get_collider().physics.set_friction_componentwise({0.98f, 0.9f});
 }
 
 void Mizzle::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	Enemy::update(svc, map, player);
-	face_player(player);
 	flags.state.set(StateFlags::vulnerable);
 
-	if (is_alert()) { m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center() + sf::Vector2f{0.f, -8.f}, 0.00006f); }
+	if (is_alert()) {
+		face_player(player);
+		m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center() + sf::Vector2f{0.f, -8.f}, 0.00006f);
+	} else {
+		face_movement();
+		m_steering.smooth_random_walk(Enemy::get_collider().physics, 0.005f, 64.f);
+	}
 
 	// hurt
 	if (flags.state.test(StateFlags::hurt)) {

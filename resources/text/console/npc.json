@@ -836,12 +836,12 @@
         ],
         [
           {
-            "codes": [[1, 2]],
-            "message": "What is rhenite, exactly?"
-          },
-          {
             "codes": [[1, 3]],
             "message": "We should probably get out of here..."
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "What is rhenite, exactly?"
           }
         ]
       ],

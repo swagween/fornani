@@ -15,8 +15,7 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Flaggable.hpp>
-#include <fornani/utils/Math.hpp>
-#include <fornani/utils/Polymorphic.hpp>
+#include <fornani/utils/ID.hpp>
 #include <fornani/utils/StateFunction.hpp>
 #include <string_view>
 
@@ -98,7 +97,7 @@ class Enemy : public Mobile {
   public:
 	Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view label, bool spawned = false, int variant = 0, sf::Vector2<int> start_direction = {-1, 0});
 
-	void set_external_id(std::pair<int, sf::Vector2<int>> code);
+	void set_stable_id(std::pair<int, sf::Vector2<int>> code);
 
 	virtual void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
@@ -116,6 +115,7 @@ class Enemy : public Mobile {
 	void set_channel(EnemyChannel to) { Animatable::set_channel(static_cast<int>(to)); }
 	void despawn() { flags.state.set(StateFlags::despawn); }
 	void set_handle(EntityHandle to) { metadata.handle = to; }
+	void center_at_position();
 
 	[[nodiscard]] auto is_hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto is_alert() const -> bool { return flags.state.test(StateFlags::alert); }
@@ -126,7 +126,7 @@ class Enemy : public Mobile {
 	[[nodiscard]] auto alertness_triggered() const -> bool { return flags.triggers.test(Triggers::alert); }
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
-	[[nodiscard]] auto get_external_id() const -> int { return metadata.external_id; }
+	[[nodiscard]] auto get_stable_id() const -> int { return static_cast<int>(metadata.stable_id.get()); }
 	[[nodiscard]] auto get_handle() const -> int { return metadata.handle; }
 	[[nodiscard]] auto get_team() const -> arms::Team { return attributes.team; }
 	[[nodiscard]] auto has_secondary_collider() const -> bool { return secondary_collider.has_value(); }
@@ -189,7 +189,7 @@ class Enemy : public Mobile {
 	struct {
 		int id{};
 		int variant{};
-		int external_id{};
+		StableID stable_id{};
 		EntityHandle handle{};
 	} metadata{};
 

@@ -506,5 +506,13 @@
     "fade_out": 32,
     "min_distance": 128.0,
     "max_distance": 512.0
+  },
+  {
+    "label": "mizzle_egg_shake",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 8,
+    "fade_out": 32
   }
 ]

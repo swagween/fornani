@@ -577,6 +577,7 @@ void DataManager::respawn_enemy(int room_id, int id) {
 
 void DataManager::respawn_enemies(int room_id, int distance) {
 	std::erase_if(fallen_enemies, [room_id, distance](auto const& i) { return i.code.first == room_id && i.respawn_distance < distance && !i.permanent; });
+	NANI_LOG_DEBUG(m_logger, "Tried to respawn enemies for room: {} from distance {}", room_id, distance);
 }
 
 void DataManager::respawn_all() {

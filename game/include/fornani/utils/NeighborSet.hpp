@@ -44,9 +44,9 @@ struct NeighborSet {
 		}
 		if (get_count() == 2) {
 			if (neighbors.test(UDLR::down) && neighbors.test(UDLR::left)) { ret = CardinalDirection(UDLR::up); }
-			if (neighbors.test(UDLR::up) && neighbors.test(UDLR::left)) { ret = CardinalDirection(UDLR::right); }
+			if (neighbors.test(UDLR::up) && neighbors.test(UDLR::left)) { ret = CardinalDirection(UDLR::down); }
 			if (neighbors.test(UDLR::up) && neighbors.test(UDLR::right)) { ret = CardinalDirection(UDLR::down); }
-			if (neighbors.test(UDLR::down) && neighbors.test(UDLR::right)) { ret = CardinalDirection(UDLR::left); }
+			if (neighbors.test(UDLR::down) && neighbors.test(UDLR::right)) { ret = CardinalDirection(UDLR::up); }
 		}
 		if (get_count() == 3) {
 			if (!neighbors.test(UDLR::up)) { ret = CardinalDirection(UDLR::up); }

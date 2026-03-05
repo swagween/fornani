@@ -290,6 +290,12 @@
     },
     {
       "folder": "kariba",
+      "label": "cistern.json",
+      "region": "kariba",
+      "room_id": 514
+    },
+    {
+      "folder": "kariba",
       "label": "crucible.json",
       "region": "kariba",
       "room_id": 503
@@ -377,6 +383,12 @@
       "label": "attic.json",
       "region": "overturned",
       "room_id": 408
+    },
+    {
+      "folder": "overturned",
+      "label": "bramble.json",
+      "region": "overturned",
+      "room_id": 254
     },
     {
       "folder": "overturned",

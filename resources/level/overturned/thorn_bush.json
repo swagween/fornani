@@ -2222,10 +2222,10 @@
       32
     ],
     "metagrid": [
-      0,
-      60
+      52,
+      19
     ],
-    "minimap": false,
+    "minimap": true,
     "music": "whispering_island",
     "player_start": [
       0,

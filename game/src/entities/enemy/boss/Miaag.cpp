@@ -39,6 +39,24 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		svc.quest_table.set_quest_progression("npc_dialogue", {"dr_willett", 300}, 2, {300, 509}, 2);
 	}
 
+	if (health.is_dead() && !m_flags.test(MiaagFlags::gone)) {
+		request(MiaagState::hurt);
+		if (battle_mode()) {
+			m_services->camera_controller.shake(10, 0.8f, 200, 20);
+			m_services->soundboard.flags.world.set(audio::World::vibration);
+			m_services->soundboard.flags.miaag.set(audio::Miaag::growl);
+			m_services->music_player.stop();
+			m_services->music_player.load(m_services->finder, "ritual");
+			m_services->data.switch_destructible_state(miaag_floor_destructibles);
+			m_services->data.switch_destructible_state(miaag_outer_destructibles);
+			set_flag(BossFlags::battle_mode, false);
+		}
+	}
+	if (health.is_dead()) {
+		post_death.start(afterlife);
+		flags.state.set(StateFlags::special_death_mode);
+	}
+
 	Boss::update(svc, map, player);
 	face_player(player);
 
@@ -100,23 +118,6 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 			}
 		}
 		request(MiaagState::hurt);
-	}
-	if (health.is_dead() && !m_flags.test(MiaagFlags::gone)) {
-		request(MiaagState::hurt);
-		if (battle_mode()) {
-			m_services->camera_controller.shake(10, 0.8f, 200, 20);
-			m_services->soundboard.flags.world.set(audio::World::vibration);
-			m_services->soundboard.flags.miaag.set(audio::Miaag::growl);
-			m_services->music_player.stop();
-			m_services->music_player.load(m_services->finder, "ritual");
-			m_services->data.switch_destructible_state(miaag_floor_destructibles);
-			m_services->data.switch_destructible_state(miaag_outer_destructibles);
-			set_flag(BossFlags::battle_mode, false);
-		}
-	}
-	if (health.is_dead()) {
-		post_death.start(afterlife);
-		flags.state.set(StateFlags::special_death_mode);
 	}
 
 	if (flags.state.test(StateFlags::hurt)) {

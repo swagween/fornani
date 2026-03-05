@@ -1,8 +1,8 @@
-#include "fornani/components/CircleSensor.hpp"
-#include "fornani/utils/Math.hpp"
 
 #include <ccmath/ext/clamp.hpp>
+#include <fornani/components/CircleSensor.hpp>
 #include <fornani/physics/CircleCollider.hpp>
+#include <fornani/utils/Math.hpp>
 
 namespace fornani::components {
 
@@ -10,8 +10,8 @@ CircleSensor::CircleSensor() : CircleSensor(32.f) {}
 
 CircleSensor::CircleSensor(float radius) {
 	bounds.setRadius(radius);
-	bounds.setOutlineColor(sf::Color::White);
-	bounds.setOutlineThickness(-2);
+	bounds.setOutlineColor(sf::Color{255, 255, 255, 60});
+	bounds.setOutlineThickness(-1.f);
 	bounds.setFillColor(sf::Color::Transparent);
 	bounds.setOrigin({radius, radius});
 	drawable = bounds;

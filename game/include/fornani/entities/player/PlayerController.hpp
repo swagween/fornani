@@ -57,6 +57,7 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 	std::optional<float> get_controller_state(ControllerInput key) const;
 	std::optional<AnimState> get_ability_animation() const;
 	[[nodiscard]] auto last_requested_direction() -> SimpleDirection const& { return m_last_requested_direction; }
+	[[nodiscard]] auto is_dash_kick_cooling_down() const -> bool { return cooldowns.dash_kick.running(); }
 	[[nodiscard]] auto can_move() const -> bool { return !hard_state.test(HardState::no_move); }
 	[[nodiscard]] auto is(AbilityType type) const -> bool { return m_ability ? m_ability.value()->is(type) : false; }
 	[[nodiscard]] auto is_dashing() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::dash) : false; }

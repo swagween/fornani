@@ -1,12 +1,12 @@
 
 #pragma once
 
-#include <imgui.h>
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/Constants.hpp>
+#include <fornani/utils/ID.hpp>
 #include <fornani/utils/IWorldPositionable.hpp>
 
 namespace fornani::automa {
@@ -42,6 +42,7 @@ class Entity : public Animatable, public IWorldPositionable {
 	virtual void render(sf::RenderWindow& win, sf::Vector2f cam, float size);
 	void set_handle(EntityHandle to) { m_handle = to; }
 	void set_position(sf::Vector2u to_position);
+	void set_stable_id(int room_id) { p_stable_id = StableID::from(room_id, get_grid_position().x, get_grid_position().y); }
 	bool repeatable{};
 	bool overwrite{};
 	bool unique{};
@@ -63,6 +64,7 @@ class Entity : public Animatable, public IWorldPositionable {
 	bool m_editor{};
 	bool m_textured{true};
 	io::Logger m_logger{"Pioneer"};
+	StableID p_stable_id{};
 
   private:
 	int m_id{};

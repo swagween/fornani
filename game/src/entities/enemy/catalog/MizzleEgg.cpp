@@ -19,12 +19,14 @@ MizzleEgg::MizzleEgg(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc,
 	flags.state.set(StateFlags::vulnerable);
 	init.start();
 	m_hatch_timer.start();
-	if (random::coin_flip()) { request_flip(); }
 }
 
 void MizzleEgg::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	init.update();
-	if (init.is_almost_complete()) { set_root(map); }
+	if (init.is_almost_complete()) {
+		set_root(map);
+		if (random::coin_flip()) { request_flip(); }
+	}
 	if (init.running()) { return; }
 	if (died()) {
 		Enemy::update(svc, map, player);
@@ -35,14 +37,20 @@ void MizzleEgg::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 
 	if (!m_flags.test(MizzleEggFlags::detached)) {
 		m_steering.seek(get_collider().physics, m_root->get_bob(), 0.001f);
-		get_collider().physics.set_global_friction(0.999f);
-		if (m_hatch_timer.halfway()) { shake(); }
+		get_collider().physics.set_global_friction(0.99f);
+		if (m_hatch_timer.halfway()) {
+			shake();
+			m_services->soundboard.repeat_sound("mizzle_egg_shake", get_stable_id(), get_collider().get_center());
+		}
 	}
 
-	if (m_hatch_timer.is_almost_complete()) {
+	if ((is_hurt() || m_hatch_timer.is_almost_complete()) && !m_flags.test(MizzleEggFlags::detached)) {
 		flags.general.set(GeneralFlags::gravity);
 		Enemy::get_collider().set_flag(shape::ColliderFlags::simple, false);
 		m_flags.set(MizzleEggFlags::detached);
+		get_collider().physics.set_global_friction(0.992f);
+		m_services->soundboard.play_sound("mizzle_egg_detach", get_collider().get_center());
+		m_hatch_timer.cancel();
 	}
 
 	is_alert() ? request(MizzleEggState::open) : request(MizzleEggState::closed);
@@ -51,6 +59,7 @@ void MizzleEgg::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 		request(MizzleEggState::hatch);
 		spawn_mizzle();
 		m_flags.set(MizzleEggFlags::hatched);
+		m_services->soundboard.play_sound("mizzle_egg_hatch", get_collider().get_center());
 	}
 
 	// hurt
@@ -76,8 +85,14 @@ fsm::StateFunction MizzleEgg::update_in_between() {
 	p_state.actual = MizzleEggState::in_between;
 	if (change_state(MizzleEggState::hatch, get_params("hatch"))) { return MIZZLE_EGG_BIND(update_hatch); }
 	if (animation.is_complete()) {
-		if (change_state(MizzleEggState::closed, get_params("closed"))) { return MIZZLE_EGG_BIND(update_closed); }
-		if (change_state(MizzleEggState::open, get_params("open"))) { return MIZZLE_EGG_BIND(update_open); }
+		if (change_state(MizzleEggState::closed, get_params("closed"))) {
+			m_services->soundboard.play_sound("mizzle_egg_close", get_collider().get_center());
+			return MIZZLE_EGG_BIND(update_closed);
+		}
+		if (change_state(MizzleEggState::open, get_params("open"))) {
+			m_services->soundboard.play_sound("mizzle_egg_open", get_collider().get_center());
+			return MIZZLE_EGG_BIND(update_open);
+		}
 	}
 	return MIZZLE_EGG_BIND(update_in_between);
 }
@@ -111,7 +126,7 @@ void MizzleEgg::set_root(world::Map& map) {
 }
 
 void MizzleEgg::spawn_mizzle() {
-	m_map->spawn_enemy(26, get_collider().get_center(), 0, true);
+	m_map->spawn_enemy(26, get_collider().get_center() + sf::Vector2f{random::random_range_float(-4.f, 4.f), -20.f}, 0, true);
 	m_mizzle_spawn.start();
 	m_map->spawn_effect(*m_services, "demon_breath", get_collider().get_center());
 }

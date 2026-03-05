@@ -31,7 +31,7 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vecto
 	collider.sync_components();
 	collider.fix();
 	set_shape(neighbors);
-	is_small() ? set_texture_rect(sf::IntRect{{240, 496}, constants::i_resolution_vec}) : set_texture_rect(sf::IntRect{{96 * static_cast<int>(m_shape), 96 * style}, {96, 96}});
+	is_small() ? set_texture_rect(sf::IntRect{{0, style * constants::i_cell_resolution}, constants::i_resolution_vec}) : set_texture_rect(sf::IntRect{{96 * static_cast<int>(m_shape), 96 * style}, {96, 96}});
 	push_and_set_animation("basic", {style, 1, 24, -1});
 }
 

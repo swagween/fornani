@@ -75,9 +75,9 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();
 		if (entry["tag"]) {
-			chests.push_back(std::make_unique<entity::Chest>(svc, *this, entry["id"].as<int>(), static_cast<entity::ChestType>(entry["type"].as<int>()), entry["tag"].as_string(), entry["modifier"].as<int>()));
+			chests.push_back(std::make_unique<entity::Chest>(svc, *this, StableID::from(room_id, pos.x, pos.y), static_cast<entity::ChestType>(entry["type"].as<int>()), entry["tag"].as_string(), entry["modifier"].as<int>()));
 		} else {
-			chests.push_back(std::make_unique<entity::Chest>(svc, *this, entry["id"].as<int>(), static_cast<entity::ChestType>(entry["type"].as<int>()), entry["modifier"].as<int>()));
+			chests.push_back(std::make_unique<entity::Chest>(svc, *this, StableID::from(room_id, pos.x, pos.y), static_cast<entity::ChestType>(entry["type"].as<int>()), entry["modifier"].as<int>()));
 		}
 		chests.back()->set_position_from_scaled(pos);
 	}
@@ -144,8 +144,8 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 			enemy_catalog.push_enemy(svc, *this, console, entry["id"].as<int>(), false, variant, start, enemy::Multispawn{spawn_range});
 			enemy_catalog.enemies.back()->set_position_from_scaled(sf::Vector2f{pos * constants::f_cell_size});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
-			enemy_catalog.enemies.back()->set_external_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
-			if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_external_id())) { enemy_catalog.enemies.pop_back(); }
+			enemy_catalog.enemies.back()->set_stable_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
+			if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_stable_id())) { enemy_catalog.enemies.pop_back(); }
 		}
 	}
 
@@ -241,9 +241,6 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 	m_biome = svc.data.construct_biome(it->biome_label);
 	m_metadata.room = it->room_label;
 
-	// check for enemy respawns
-	svc.data.respawn_enemies(room_id, player->visit_history.distance_traveled_from(room_id));
-
 	room_id = meta["room_id"].as<int>();
 	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
@@ -263,6 +260,9 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 			NANI_LOG_WARN(m_logger, "Map Properties > Lighting is TRUE but there exists no palette for the style!");
 		}
 	}
+
+	// check for enemy respawns
+	svc.data.respawn_enemies(room_id, player->visit_history.distance_traveled_from(room_id));
 
 	m_middleground = metadata["tile"]["middleground"].as<int>();
 	metadata["tile"]["flags"]["obscuring"].as_bool() ? m_layer_properties.set(LayerProperties::has_obscuring_layer) : m_layer_properties.reset(LayerProperties::has_obscuring_layer);
@@ -673,9 +673,9 @@ void Map::spawn_enemy(int id, sf::Vector2f pos, int variant, bool allow_proximit
 
 void Map::spawn_chest(automa::ServiceProvider& svc, enemy::Treasure const& treasure, sf::Vector2f pos, sf::Vector2f vel) {
 	switch (treasure.type) {
-	case entity::ChestType::item: chests.push_back(std::make_unique<entity::Chest>(svc, *this, -1, entity::ChestType::item, treasure.tag, svc.data.item_id_from_label(treasure.tag))); break;
-	case entity::ChestType::gun: chests.push_back(std::make_unique<entity::Chest>(svc, *this, -1, entity::ChestType::gun, treasure.tag, svc.data.get_gun_id_from_tag(treasure.tag))); break;
-	case entity::ChestType::orbs: chests.push_back(std::make_unique<entity::Chest>(svc, *this, -1, entity::ChestType::orbs, 0)); break;
+	case entity::ChestType::item: chests.push_back(std::make_unique<entity::Chest>(svc, *this, StableID{}, entity::ChestType::item, treasure.tag, svc.data.item_id_from_label(treasure.tag))); break;
+	case entity::ChestType::gun: chests.push_back(std::make_unique<entity::Chest>(svc, *this, StableID{}, entity::ChestType::gun, treasure.tag, svc.data.get_gun_id_from_tag(treasure.tag))); break;
+	case entity::ChestType::orbs: chests.push_back(std::make_unique<entity::Chest>(svc, *this, StableID{}, entity::ChestType::orbs, 0)); break;
 	default: break;
 	}
 	chests.back()->set_position(pos);
@@ -905,6 +905,8 @@ void Map::clear() {
 	rain.reset();
 	fire.reset();
 	active_loot.clear();
+	m_hazards.reset();
+	point_lights.clear();
 }
 
 void Map::wrap(sf::Vector2f& position) const {

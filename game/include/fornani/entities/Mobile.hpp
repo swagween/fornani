@@ -21,6 +21,7 @@ class Mobile : public Animatable {
 	virtual void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, bool tick = true);
 	void register_collider(world::Map& map, sf::Vector2f dimensions);
 	void face_player(player::Player& player);
+	void face_movement() { directions.desired.set(directions.movement.lnr); }
 	void set_direction(SimpleDirection to);
 	void set_desired_direction(SimpleDirection to);
 	[[nodiscard]] bool player_behind(player::Player& player) const;

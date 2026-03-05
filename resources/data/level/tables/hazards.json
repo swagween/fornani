@@ -3,7 +3,10 @@
     "dimensions": [64, 64],
     "table_dimensions": [8, 6],
     "sensors": [
-      [],
+      [
+        { "radius": 24.0, "position": [17, 48] },
+        { "radius": 24.0, "position": [48, 55] }
+      ],
       [
         { "radius": 40.0, "position": [20, 66] },
         { "radius": 40.0, "position": [40, 56] },
@@ -69,7 +72,10 @@
         { "radius": 40.0, "position": [18, 26] },
         { "radius": 40.0, "position": [48, 36] }
       ],
-      [],
+      [
+        { "radius": 24.0, "position": [1, 47] },
+        { "radius": 24.0, "position": [13, 60] }
+      ],
       [
         { "radius": 24.0, "position": [11, -7] },
         { "radius": 40.0, "position": [45, 13] }
@@ -105,6 +111,44 @@
         { "radius": 40.0, "position": [21, 27] },
         { "radius": 40.0, "position": [22, 37] },
         { "radius": 40.0, "position": [50, 37] }
+      ],
+      [
+        { "radius": 40.0, "position": [3, 56] },
+        { "radius": 40.0, "position": [19, 71] }
+      ],
+      [
+        { "radius": 40.0, "position": [20, 75] },
+        { "radius": 40.0, "position": [39, 69] }
+      ],
+      [
+        { "radius": 24.0, "position": [9, 15] },
+        { "radius": 40.0, "position": [40, 22] }
+      ],
+      [
+        { "radius": 24.0, "position": [47, 49] },
+        { "radius": 40.0, "position": [21, 68] }
+      ],
+      [
+        { "radius": 24.0, "position": [14, 71] },
+        { "radius": 24.0, "position": [65, 41] },
+        { "radius": 40.0, "position": [31, 69] },
+        { "radius": 40.0, "position": [50, 61] }
+      ],
+      [
+        { "radius": 24.0, "position": [23, 34] },
+        { "radius": 40.0, "position": [10, 21] },
+        { "radius": 40.0, "position": [60, 23] },
+        { "radius": 40.0, "position": [56, 28] }
+      ],
+      [
+        { "radius": 24.0, "position": [4, 16] },
+        { "radius": 40.0, "position": [20, 35] },
+        { "radius": 40.0, "position": [48, 21] }
+      ],
+      [{ "radius": 24.0, "position": [61, 17] }],
+      [
+        { "radius": 40.0, "position": [27, 18] },
+        { "radius": 40.0, "position": [21, 28] }
       ]
     ]
   }

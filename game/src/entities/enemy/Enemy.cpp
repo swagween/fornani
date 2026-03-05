@@ -132,12 +132,13 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	center();
 }
 
-void Enemy::set_external_id(std::pair<int, sf::Vector2<int>> code) {
-	// TODO: find a better way to generate unique external IDs
-	metadata.external_id = code.first * 2719 + code.second.x * 13219 + code.second.y * 49037;
+void Enemy::set_stable_id(std::pair<int, sf::Vector2<int>> code) {
+	metadata.stable_id = StableID::from(code.first, code.second.x, code.second.y);
+	NANI_LOG_DEBUG(m_logger, "Enemy StableID set to: {}", metadata.stable_id.get());
 }
 
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+
 	directions.desired.lnr = (player.get_collider().get_center().x < get_collider().get_center().x) ? LNR::left : LNR::right;
 	directions.movement.lnr = get_collider().physics.velocity.x > 0.f ? LNR::right : LNR::left;
 
@@ -160,7 +161,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		if (get_secondary_collider().collision_depths) { get_secondary_collider().collision_depths.value().reset(); }
 	}
 
-	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.external_id, attributes.respawn_distance, permadeath(), flags.general.test(GeneralFlags::semipermanent)); }
+	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.stable_id.get(), attributes.respawn_distance, permadeath(), flags.general.test(GeneralFlags::semipermanent)); }
 	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
 		auto individual_delay = flags.general.test(GeneralFlags::boss) ? 16 : 0;
@@ -244,7 +245,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		if (player.get_collider().wallslider.overlaps(get_secondary_collider().bounding_box)) { dash_kick_overlap = true; }
 	}
 	if (dash_kick_overlap && player.controller.is_dashing() && !player.controller.is(player::AbilityType::dash_kick) && !is_invincible() && !flags.general.test(GeneralFlags::kick_immune)) {
-		if (!player.has_flag_set(player::PlayerFlags::dash_kick)) {
+		if (!player.has_flag_set(player::PlayerFlags::dash_kick) && !player.controller.is_dash_kick_cooling_down()) {
 			hurt(4.f);
 			if (!get_collider().has_attribute(shape::ColliderAttributes::sturdy)) {
 				get_collider().has_flag_set(shape::ColliderFlags::simple) ? get_collider().physics.acceleration.y = -2.f : get_collider().physics.acceleration.y = -280.f;
@@ -254,6 +255,8 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 			m_weakness.start();
 			player.set_flag(player::PlayerFlags::dash_kick);
 		}
+	} else {
+		// player.set_flag(player::PlayerFlags::dash_kick, false);
 	}
 
 	// update ranges
@@ -415,6 +418,8 @@ bool Enemy::seek_home(world::Map& map) {
 	}
 	return false;
 }
+
+void Enemy::center_at_position() { set_position(get_collider().get_position() - get_collider().get_local_center()); }
 
 void Enemy::set_position_from_scaled(sf::Vector2f pos) {
 	auto new_pos = pos;

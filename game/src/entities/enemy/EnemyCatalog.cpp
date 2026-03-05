@@ -70,6 +70,7 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[m
 	}
 
 	enemies.back()->set_handle(++m_next_handle);
+	if (spawned) { enemies.back()->center_at_position(); }
 }
 
 } // namespace fornani::enemy
