@@ -262,7 +262,8 @@
     "actual_title": "Soda",
     "naive_description": "When equipped, this will reduce reload times by 15%.",
     "unique": false,
-    "equippable": true
+    "equippable": true,
+    "value": 380
   },
   {
     "tag": "equip_slot",
@@ -346,6 +347,17 @@
     "naive_description": "A heart keychain. You attach it to your belt and it gives you extra life.",
     "unique": false,
     "rarity": 1
+  },
+  {
+    "tag": "cridium_shard",
+    "category": 2,
+    "lookup": [6, 6],
+    "origin": [1, 0],
+    "actual_title": "Cridium Shard",
+    "naive_description": "A shard of a rare rhenite-based compound. From its spectacular facets radiates a warm energy.",
+    "actual_description": "A shard of a rare rhenite-based compound. From its spectacular facets radiates a warm energy.",
+    "unique": false,
+    "readable": true
   },
   {
     "tag": "stationary_rat",

@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/events/Subscription.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/gui/StatusBar.hpp>
 #include <fornani/gui/WidgetBar.hpp>
@@ -37,6 +38,7 @@ class HUDWidget : public UniquePolymorphic, public Flaggable<HUDWidgetFlags> {
 	std::optional<Animatable> p_animatable{};
 	std::optional<sf::FloatRect> p_rect{};
 	sf::Vector2f p_root{};
+	std::shared_ptr<Slot const> p_slot{std::make_shared<Slot const>()};
 
 	io::Logger p_logger{"HUD"};
 };

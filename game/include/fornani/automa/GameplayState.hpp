@@ -3,7 +3,7 @@
 
 #include <fornani/automa/GameState.hpp>
 #include <fornani/events/Subscription.hpp>
-#include <fornani/graphics/Background.hpp>
+#include <fornani/graphics/rewards/IRewardSequence.hpp>
 #include <fornani/gui/InventoryWindow.hpp>
 #include <fornani/gui/PauseWindow.hpp>
 #include <fornani/gui/VendorDialog.hpp>
@@ -31,6 +31,7 @@ class GameplayState : public GameState, public Flaggable<GameplayStateFlags> {
 	std::optional<std::unique_ptr<gui::PauseWindow>> p_pause_window{};
 	std::optional<std::unique_ptr<gui::VendorDialog>> p_vendor_dialog{};
 	std::optional<std::unique_ptr<gui::InventoryWindow>> p_inventory_window{};
+	std::optional<std::unique_ptr<graphics::IRewardSequence>> p_reward_sequence{};
 	std::shared_ptr<Slot const> p_slot{std::make_shared<Slot const>()};
 	ServiceProvider* p_services;
 };

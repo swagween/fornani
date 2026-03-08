@@ -10,7 +10,7 @@
 
 namespace fornani::automa {
 
-enum class GameplayFlags { game_over, transitioning, open_vendor, give_item, item_music_played, death_console_launched, console_running, remove_item };
+enum class GameplayFlags { game_over, transitioning, open_vendor, give_item, item_music_played, death_console_launched, console_running, remove_item, health_increase_exit };
 
 class Dojo final : public GameplayState {
   public:
@@ -35,6 +35,8 @@ class Dojo final : public GameplayState {
 	bool check_for_vendor(ServiceProvider& svc);
 	void read_item(int id);
 	void handle_player_death(ServiceProvider& svc, player::Player& player);
+	void handle_health_increase(ServiceProvider& svc, player::Player& player);
+	void handle_ability_acquisition(ServiceProvider& svc, player::Player& player, std::string_view label);
 
 	bool show_colliders{false};
 

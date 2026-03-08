@@ -11,9 +11,13 @@ class HUDHearts final : public HUDWidget {
 
 	void update(automa::ServiceProvider& svc, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f offset = {}) override;
+	void refresh(automa::ServiceProvider& svc, player::Player& player);
+
+	[[nodiscard]] auto get_endpoint() const -> sf::Vector2f { return m_health_bar ? m_health_bar->get_endpoint() : sf::Vector2f{}; }
 
   private:
-	WidgetBar m_health_bar;
+	std::optional<WidgetBar> m_health_bar{};
+	sf::Vector2f m_dimensions;
 };
 
 } // namespace fornani::gui

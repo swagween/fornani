@@ -18,18 +18,24 @@ void Animatable::push_and_set_animation(std::string_view label, anim::Parameters
 	set_animation(label);
 }
 
+void Animatable::set_animation(std::string_view to) {
+	set_parameters(m_animations.at(to.data()));
+	m_current = to.data();
+}
+
+void Animatable::set_channel(int to) {
+	m_channel = to;
+	set_rect();
+}
+
 void Animatable::set_frame(int to) {
 	animation.set_frame(to);
-	auto u = m_channel * m_dimensions.x;
-	auto v = animation.get_frame() * m_dimensions.y;
-	set_texture_rect(sf::IntRect{{u, v}, m_dimensions});
+	set_rect();
 }
 
 void Animatable::tick() {
 	animation.update();
-	auto u = m_channel * m_dimensions.x;
-	auto v = animation.get_frame() * m_dimensions.y;
-	set_texture_rect(sf::IntRect{{u, v}, m_dimensions});
+	set_rect();
 }
 
 void Animatable::check_for_switch() {
@@ -41,5 +47,11 @@ void Animatable::random_start() {
 }
 
 void Animatable::random_frame_start() { animation.frame_timer.randomize(); }
+
+void Animatable::set_rect() {
+	auto u = m_channel * m_dimensions.x;
+	auto v = animation.get_frame() * m_dimensions.y;
+	set_texture_rect(sf::IntRect{{u, v}, m_dimensions});
+}
 
 } // namespace fornani

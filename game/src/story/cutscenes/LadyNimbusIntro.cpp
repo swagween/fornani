@@ -16,8 +16,13 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 		return;
 	} else if (complete() && map.transition.is(graphics::TransitionState::black)) {
 		svc.state_controller.switch_rooms(199, metadata.target_state_on_end, map.transition);
+		svc.state_controller.player_position = sf::Vector2f{13, 60} * constants::f_cell_size;
+		svc.state_controller.actions.set(automa::Actions::custom_player_position);
 		svc.state_flags.reset(automa::StateFlags::no_menu);
 		svc.state_flags.reset(automa::StateFlags::cutscene);
+		player.set_sleeping();
+		player.set_sleep_timer();
+		svc.app_flags.set(automa::AppFlags::custom_map_start);
 		return;
 	}
 

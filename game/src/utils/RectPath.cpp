@@ -40,6 +40,7 @@ void RectPath::update() {
 	case util::InterpolationType::linear: interpolation = m_interpolation.get_inverse_normalized(); break;
 	case util::InterpolationType::quadratic: interpolation = m_interpolation.get_inverse_quadratic_normalized(); break;
 	case util::InterpolationType::cubic: interpolation = m_interpolation.get_inverse_cubic_normalized(); break;
+	case util::InterpolationType::ease: interpolation = util::smootherstep(m_interpolation.get_inverse_normalized()); break;
 	}
 
 	m_current_position.x = ccm::lerp(previous_position.x, target_position.x, interpolation);

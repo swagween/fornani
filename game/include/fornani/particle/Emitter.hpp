@@ -1,17 +1,24 @@
 
 #pragma once
 
+#include <fornani/particle/Particle.hpp>
+#include <fornani/utils/Flaggable.hpp>
 #include <vector>
-#include "Particle.hpp"
 
 namespace fornani::vfx {
 
-class Emitter {
+enum class EmitterFlags { map };
+
+class Emitter : public Flaggable<EmitterFlags> {
   public:
 	Emitter() = default;
+	Emitter(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color = sf::Color::Transparent, Direction direction = {});
 	Emitter(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color = sf::Color::Transparent, Direction direction = {});
+	void init(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color = sf::Color::Transparent, Direction direction = {});
+
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f pos);
 	void set_dimensions(sf::Vector2f dim);
 	[[nodiscard]] auto done() const -> bool { return particles.empty(); }

@@ -21,3 +21,4 @@ nani_add_headers(
         Transition.hpp
         Tutorial.hpp
 )
+add_subdirectory(rewards)

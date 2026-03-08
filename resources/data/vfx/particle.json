@@ -383,6 +383,24 @@
     "color": "fire"
   },
 
+  "radiance": {
+    "load": 30,
+    "rate": 100.0,
+    "expulsion": 30.0,
+    "expulsion_variance": 10.0,
+    "cone": 6.28,
+    "friction": 0.998,
+    "elasticity": 0.9,
+    "gravity": 0.0,
+    "lifespan": 500,
+    "lifespan_variance": 300,
+    "dimensions": [3, 3],
+    "animated": false,
+    "colliding": false,
+    "fader": true,
+    "color": "yellow"
+  },
+
   "laser_gun": {
     "load": 10,
     "rate": 100.0,

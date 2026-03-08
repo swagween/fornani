@@ -27,13 +27,21 @@ class Cooldown {
 	[[nodiscard]] auto is_complete() const -> bool { return decrementor == 0; }
 	[[nodiscard]] auto running() const -> bool { return decrementor != 0; }
 	[[nodiscard]] auto halfway() const -> bool { return decrementor <= native_time / 2; }
+
 	[[nodiscard]] auto get() const -> int { return decrementor; }
+	[[nodiscard]] auto get_inverse() const -> int { return native_time - decrementor; }
+
 	[[nodiscard]] auto get_normalized() const -> float { return static_cast<float>(decrementor) / static_cast<float>(native_time); }
 	[[nodiscard]] auto get_quadratic_normalized() const -> float { return static_cast<float>(decrementor * decrementor) / static_cast<float>(native_time * native_time); }
 	[[nodiscard]] auto get_cubic_normalized() const -> float { return static_cast<float>(decrementor * decrementor * decrementor) / static_cast<float>(native_time * native_time * native_time); }
+
+	[[nodiscard]] auto get_quadratic_normalized_inverse() const -> float { return static_cast<float>(get_inverse() * get_inverse()) / static_cast<float>(native_time * native_time); }
+	[[nodiscard]] auto get_cubic_normalized_inverse() const -> float { return static_cast<float>(get_inverse() * get_inverse() * get_inverse()) / static_cast<float>(native_time * native_time * native_time); }
+
 	[[nodiscard]] auto get_inverse_normalized() const -> float { return 1.f - get_normalized(); }
 	[[nodiscard]] auto get_inverse_quadratic_normalized() const -> float { return 1.f - get_quadratic_normalized(); }
 	[[nodiscard]] auto get_inverse_cubic_normalized() const -> float { return 1.f - get_cubic_normalized(); }
+
 	[[nodiscard]] auto get_native_time() const -> int { return native_time; }
 	[[nodiscard]] auto null() const -> bool { return decrementor == -1; }
 

@@ -5,6 +5,7 @@ nani_add_headers(
         AssetManager.hpp
         Common.hpp
         FrameTracker.hpp
+        Fwd.hpp
         Game.hpp
         CrashHandler.hpp
         SoundManager.hpp

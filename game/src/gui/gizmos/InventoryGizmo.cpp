@@ -151,6 +151,14 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 			item->render(win, m_item_sprite, where);
 		}
 
+		// heart shards
+		auto cridium_count = player.get_item_count("cridium_shard") % 4;
+		if (cridium_count != 0) {
+			m_sprite.setTextureRect(sf::IntRect{{451, 85 + 19 * (cridium_count - 1)}, {19, 19}});
+			m_sprite.setPosition(m_placement + m_path.get_position() - cam + sf::Vector2f{66.f, 302.f});
+			win.draw(m_sprite);
+		}
+
 		if (is_selected()) { m_selector->render(win, m_sprite, cam, {}, shader, palette); }
 		if (m_item_menu) { m_item_menu->render(win, cam); }
 	}

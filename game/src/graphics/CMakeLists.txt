@@ -18,3 +18,4 @@ nani_add_sources(
         Transition.cpp
         Tutorial.cpp
 )
+add_subdirectory(rewards)

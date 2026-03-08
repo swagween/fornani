@@ -13,9 +13,10 @@ class Animatable : public Drawable {
 
 	void push_animation(std::string_view label, anim::Parameters params);
 	void push_and_set_animation(std::string_view label, anim::Parameters params);
-	void set_animation(std::string_view to) { set_parameters(m_animations.at(to.data())); }
+	void set_animation(std::string_view to);
 	void set_parameters(anim::Parameters params) { animation.set_params(params); }
-	void set_channel(int to) { m_channel = to; }
+	void set_framerate(int to) { animation.params.framerate = to; }
+	void set_channel(int to);
 	void set_frame(int to);
 	void set_dimensions(sf::Vector2i const to) { m_dimensions = to; }
 	void tick();
@@ -31,6 +32,7 @@ class Animatable : public Drawable {
 	/// </summary>
 	void random_frame_start();
 
+	[[nodiscard]] auto is_animation(std::string_view check) -> bool { return check == m_current; }
 	[[nodiscard]] auto is_complete() -> bool { return animation.complete(); }
 	[[nodiscard]] auto get_dimensions() const -> sf::Vector2i { return m_dimensions; }
 	[[nodiscard]] auto get_f_dimensions() const -> sf::Vector2f { return sf::Vector2f{m_dimensions}; }
@@ -38,6 +40,10 @@ class Animatable : public Drawable {
 	anim::Animation animation;
 
   private:
+	void set_rect();
+
+  private:
+	std::string m_current{};
 	std::string m_root_animation{};
 	sf::Vector2i m_dimensions;
 	int m_channel{};

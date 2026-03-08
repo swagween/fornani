@@ -7,11 +7,12 @@
           1
         ],
         "id": 26056,
-        "modifier": 99,
+        "modifier": 0,
         "position": [
           93,
           29
         ],
+        "tag": "ceremonial_garb",
         "type": 2
       }
     ],

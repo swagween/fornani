@@ -514,5 +514,13 @@
     "pitch_offset": 0.0,
     "fade_in": 8,
     "fade_out": 32
+  },
+  {
+    "label": "heart_spin",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 8,
+    "fade_out": 32
   }
 ]

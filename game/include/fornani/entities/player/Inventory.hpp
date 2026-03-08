@@ -5,7 +5,7 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/systems/Register.hpp>
 #include <memory>
-#include <vector>
+#include <optional>
 
 namespace fornani::player {
 
@@ -35,6 +35,7 @@ class Inventory {
 	[[nodiscard]] bool has_item_equipped(std::string_view id) const;
 	[[nodiscard]] bool has_item(std::string_view label) const;
 	[[nodiscard]] int get_quantity(std::string_view label);
+	[[nodiscard]] auto get_latest_item() const -> std::optional<std::string_view> { return m_latest_item; };
 	Register<ItemStack> const& items_view() const { return m_items; }
 	std::array<int, num_equippable_items_v> const& equipped_items_view() const { return m_equipped_items; }
 	item::Item* find_item(int id) const;
@@ -45,6 +46,7 @@ class Inventory {
   private:
 	Register<ItemStack> m_items{};
 	std::array<int, num_equippable_items_v> m_equipped_items{-1, -1, -1, -1};
+	std::optional<std::string> m_latest_item{};
 	int m_open_equip_slots{1};
 
 	io::Logger m_logger{"Inventory"};

@@ -25,6 +25,8 @@ class HUD final {
 	void set_position(sf::Vector2f const to) { m_position = to; };
 	void reset_position() { m_position = m_origin; };
 
+	[[nodiscard]] auto get_hearts_endpoint() const -> sf::Vector2f { return m_position + hearts.get_endpoint(); }
+
   private:
 	sf::Vector2f m_origin{};
 	sf::Vector2f m_position{};

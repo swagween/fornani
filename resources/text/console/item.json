@@ -162,5 +162,15 @@
       ]
     ],
     "responses": []
+  },
+  "cridium_shard": {
+    "suite": [
+      [
+        {
+          "message": "Cridium is a rare rhenite-based substance that breathes life energy into its carrier. The Ancient Pixiotes believed it to be responsible for all life in the universe."
+        }
+      ]
+    ],
+    "responses": []
   }
 }

@@ -10,7 +10,7 @@ class Transition;
 namespace fornani::automa {
 
 enum class MenuType { main, file_select, options, settings, credits, controls, play, trials, themes };
-enum class Actions { trigger_submenu, save_loaded, exit_submenu, trigger, trials, shutdown, player_death, intro_done, print_stats, screenshot, end_demo, delete_file, restart };
+enum class Actions { trigger_submenu, save_loaded, exit_submenu, trigger, trials, shutdown, player_death, intro_done, print_stats, screenshot, end_demo, delete_file, restart, custom_player_position };
 enum class Status { out_of_bounds };
 
 class StateController {

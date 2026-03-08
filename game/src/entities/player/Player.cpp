@@ -65,7 +65,7 @@ void Player::serialize(dj::Json& out) const {
 	for (auto& item : catalog.inventory.items_view()) {
 		dj::Json this_item{};
 		this_item["label"] = item.item->get_label();
-		this_item["quantity"] = 1;
+		this_item["quantity"] = item.quantity;
 		this_item["revealed"] = item.item->is_revealed();
 		out["items"].push_back(this_item);
 	}
@@ -166,6 +166,20 @@ void Player::update(world::Map& map) {
 	m_hurt_cooldown.update();
 	distant_vicinity.set_position(get_collider().get_center() - distant_vicinity.get_dimensions() * 0.5f);
 	m_piggyback_socket = get_collider().get_top() + sf::Vector2f{-8.f * directions.actual.as_float(), -16.f};
+
+	// reward sequences
+	if (!has_flag_set(PlayerFlags::console_open)) {
+		if (consume_flag(PlayerFlags::health_increase)) {
+			if (get_item_count("cridium_shard") % 4 == 0) {
+				health.increase_capacity(1.f);
+				health.refill();
+			}
+			m_services->events.health_increase_event.dispatch(*m_services, *this);
+		}
+		if (consume_flag(PlayerFlags::ability_acquisition)) {
+			if (auto label = catalog.inventory.get_latest_item()) { m_services->events.ability_acquisition_event.dispatch(*m_services, *this, *label); }
+		}
+	}
 
 	m_ear.seek(get_camera_focus_point(), 0.006f);
 
@@ -352,7 +366,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 	if (has_death_type(PlayerDeathType::crushed) || has_death_type(PlayerDeathType::swallowed)) { return; }
 	if (has_death_type(PlayerDeathType::drowned)) { set_color(colors::blue); }
-	if (piggybacker) { piggybacker->render(svc, win, cam); }
+	if (piggybacker && !has_flag_set(PlayerFlags::in_reward_sequence)) { piggybacker->render(svc, win, cam); }
 
 	if (consume_flag(PlayerFlags::dir_switch)) { Animatable::scale({-1.f, 1.f}); }
 
@@ -396,7 +410,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	}
 
 	if (arsenal && hotbar) {
-		if (has_flag_set(PlayerFlags::show_weapon)) { equipped_weapon().render(svc, win, cam); }
+		if (has_flag_set(PlayerFlags::show_weapon) && !has_flag_set(PlayerFlags::in_reward_sequence)) { equipped_weapon().render(svc, win, cam); }
 	}
 
 	// light debug
@@ -481,6 +495,8 @@ void Player::update_animation() {
 		set_flag(PlayerFlags::show_weapon, false);
 	}
 
+	if (has_flag_set(PlayerFlags::in_reward_sequence)) { m_animation_machine.request(AnimState::hover); }
+
 	m_animation_machine.update();
 }
 
@@ -544,6 +560,11 @@ void Player::piggyback(int id) {
 	} else {
 		piggybacker = {};
 	}
+}
+
+auto Player::get_item_count(std::string_view tag) -> int {
+	if (auto item = catalog.inventory.find_item_stack(tag)) { return item->quantity; }
+	return 0;
 }
 
 bool Player::is_intangible() const { return controller.is_dashing() && has_item_equipped("carises_soul"); }
@@ -798,11 +819,8 @@ void Player::set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_o
 
 void Player::give_item(std::string_view label, int amount, bool from_save) {
 	for (auto i{0}; i < amount; ++i) { catalog.inventory.add_item(m_services->data.item, label); }
-	if (label == "heart_keychain" && !from_save) {
-		health.increase_capacity(1.f);
-		m_services->soundboard.flags.item.set(audio::Item::health_increase);
-		health.refill();
-	}
+	if (label == "cridium_shard" && !from_save) { set_flag(PlayerFlags::health_increase); }
+	if (m_services->data.get_item_json_from_tag(label)["category"].as<int>() == 0 && !from_save) { set_flag(PlayerFlags::ability_acquisition); }
 }
 
 EquipmentStatus Player::equip_item(int id) { return catalog.inventory.equip_item(id); }

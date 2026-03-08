@@ -97,7 +97,7 @@ struct Counters {
 };
 
 enum class PlayerDeathType { normal, crushed, drowned, swallowed, fallen };
-enum class PlayerFlags { killed, dir_switch, show_weapon, impart_recoil, sleep, wake_up, busy, dash_kick, trial, cutscene, hit_target, in_front_of_door };
+enum class PlayerFlags { killed, dir_switch, show_weapon, impart_recoil, sleep, wake_up, busy, dash_kick, trial, cutscene, hit_target, in_front_of_door, health_increase, console_open, ability_acquisition, in_reward_sequence };
 enum class Triggers { hurt };
 
 struct Flags {
@@ -198,6 +198,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto get_actual_direction() const -> SimpleDirection { return SimpleDirection{directions.actual}; }
 	[[nodiscard]] auto get_piggybacker_id() const -> int { return piggybacker ? piggybacker->get_id() : 0; }
 	[[nodiscard]] auto get_luck() const -> float { return m_attributes.luck; }
+	[[nodiscard]] auto get_item_count(std::string_view tag) -> int;
 	[[nodiscard]] bool is_intangible() const;
 
 	void set_desired_direction(SimpleDirection to) { directions.desired = Direction{to}; }

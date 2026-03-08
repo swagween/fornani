@@ -11,6 +11,7 @@ void Inventory::add_item(dj::Json const& source, std::string_view label) {
 	} else {
 		++find_item_stack(label)->quantity;
 	}
+	m_latest_item = label.data();
 }
 
 void Inventory::remove_item(std::string_view tag, int amount) {

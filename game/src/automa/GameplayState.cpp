@@ -56,6 +56,9 @@ void GameplayState::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (p_inventory_window && p_gui_shader) { p_inventory_window.value()->render(svc, win, *player, *p_gui_shader); }
 
 	m_map->transition.render(win);
+
+	if (p_reward_sequence) { p_reward_sequence.value()->render(win); }
+
 	if (p_pause_window) { p_pause_window.value()->render(svc, win); }
 	if (m_console) {
 		m_console.value()->render(win);

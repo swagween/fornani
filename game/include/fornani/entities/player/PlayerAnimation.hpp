@@ -49,7 +49,8 @@ enum class AnimState {
 	dash_kick,
 	slow_walk,
 	swim,
-	dive
+	dive,
+	hover
 };
 
 enum class AnimTriggers { end_death };
@@ -114,6 +115,7 @@ class PlayerAnimation : public StateMachine<AnimState> {
 	fsm::StateFunction update_slow_walk();
 	fsm::StateFunction update_swim();
 	fsm::StateFunction update_dive();
+	fsm::StateFunction update_hover();
 
 	bool change_state(AnimState next, anim::Parameters params, bool hard = false);
 	void force(AnimState to_state, std::string_view key);

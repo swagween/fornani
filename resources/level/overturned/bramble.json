@@ -1000,10 +1000,10 @@
       48
     ],
     "metagrid": [
-      90,
-      0
+      48,
+      12
     ],
-    "minimap": false,
+    "minimap": true,
     "music": "whispering_island",
     "player_start": [
       0,

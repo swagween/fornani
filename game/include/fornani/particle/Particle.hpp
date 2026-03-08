@@ -20,9 +20,12 @@ namespace fornani::vfx {
 
 class Particle {
   public:
+	Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f dim, std::string_view type, sf::Color color, Direction direction);
 	Particle(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f pos, sf::Vector2f dim, std::string_view type, sf::Color color, Direction direction);
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void render(sf::RenderWindow& win, sf::Vector2f cam);
+
 	[[nodiscard]] auto done() const -> bool { return lifespan.is_almost_complete(); }
 
   private:
@@ -31,8 +34,9 @@ class Particle {
 	sf::Vector2f dimensions{};
 
 	util::Cooldown lifespan{};
-	shape::RegisteredCollider m_collider;
-	std::optional<Animatable> m_animatable;
+	std::optional<components::PhysicsComponent> m_physics{};
+	std::optional<shape::RegisteredCollider> m_collider{};
+	std::optional<Animatable> m_animatable{};
 	std::optional<util::Fader> m_fader{};
 	int frame{};
 };

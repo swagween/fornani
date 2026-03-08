@@ -1,7 +1,8 @@
+
 #pragma once
+
 #include <SFML/Graphics.hpp>
-#include "Widget.hpp"
-#include "fornani/particle/Antenna.hpp"
+#include <fornani/gui/Widget.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -24,13 +25,18 @@ class WidgetBar {
 	void set_origin(sf::Vector2f const to);
 	void set_position(sf::Vector2f const to) { m_position = to; }
 	void set_quantity(int const to) { m_quantity = to; }
+
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_position; }
+	[[nodiscard]] auto get_endpoint() const -> sf::Vector2f { return m_position + sf::Vector2f{m_widgets.size() * constants::f_scale_factor * m_dimensions.x + (m_widgets.size() * m_pad) - m_dimensions.x, -m_dimensions.y}; }
 
   private:
 	int m_quantity{};
+	float m_pad;
 	bool m_compress{};
 	std::vector<Widget> m_widgets{};
 	sf::Text m_text;
 	sf::Vector2f m_position{};
+	sf::Vector2f m_dimensions{};
 };
+
 } // namespace fornani::gui

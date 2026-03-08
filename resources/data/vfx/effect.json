@@ -74,6 +74,16 @@
     "dimensions": [100, 100],
     "x_reflection": true
   },
+  "slow_flare": {
+    "frame_count": 8,
+    "framerate": 16,
+    "dimensions": [64, 64]
+  },
+  "giga_flare": {
+    "frame_count": 9,
+    "framerate": 16,
+    "dimensions": [128, 128]
+  },
   "bright_flare": {
     "frame_count": 8,
     "framerate": 8,
@@ -135,9 +145,9 @@
     "y_reflection": true
   },
   "small_flash": {
-    "frame_count": 4,
-    "framerate": 16,
-    "dimensions": [16, 16]
+    "frame_count": 6,
+    "framerate": 14,
+    "dimensions": [20, 20]
   },
   "medium_flash": {
     "frame_count": 5,

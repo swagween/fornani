@@ -45,7 +45,8 @@ PlayerAnimation::PlayerAnimation(Player& plr) : m_player(&plr), state_function{s
 					{"turn_slide", {130, 7, 4 * rate, 0}},
 					{"dive", {138, 6, 6 * rate, 0}},
 					{"swim", {145, 4, 7 * rate, -1}},
-					{"slow_walk", {44, 4, 8 * rate, -1}}};
+					{"slow_walk", {44, 4, 8 * rate, -1}},
+					{"hover", {145, 3, 8 * rate, -1}}};
 
 	state_function = state_function();
 	m_player->animation.set_params(get_params("idle"));
@@ -427,6 +428,8 @@ fsm::StateFunction PlayerAnimation::update_inspect() {
 	p_state.actual = AnimState::inspect;
 	m_player->controller.reset_vertical_movement();
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
+	if (change_state(AnimState::hover, get_params("hover"))) { return PA_BIND(update_hover); }
+	if (change_state(AnimState::swim, get_params("swim"))) { return PA_BIND(update_swim); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::sleep, get_params("sleep"))) { return PA_BIND(update_sleep); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
@@ -996,6 +999,7 @@ fsm::StateFunction player::PlayerAnimation::update_swim() {
 	p_state.actual = AnimState::swim;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
+	if (change_state(AnimState::land, get_params("land"))) { return PA_BIND(update_land); }
 	if (change_state(AnimState::dive, get_params("dive"))) { return PA_BIND(update_dive); }
 	if (change_state(AnimState::suspend, get_params("suspend"), true)) { return PA_BIND(update_suspend); }
 	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
@@ -1032,6 +1036,15 @@ fsm::StateFunction player::PlayerAnimation::update_dive() {
 		if (change_state(AnimState::suspend, get_params("suspend"), true)) { return PA_BIND(update_suspend); }
 	}
 	return PA_BIND(update_dive);
+}
+
+fsm::StateFunction PlayerAnimation::update_hover() {
+	m_player->animation.label = "hover";
+	p_state.actual = AnimState::hover;
+	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
+	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
+	if (change_state(AnimState::land, get_params("land"))) { return PA_BIND(update_land); }
+	return PA_BIND(update_hover);
 }
 
 bool PlayerAnimation::change_state(AnimState next, anim::Parameters params, bool hard) {

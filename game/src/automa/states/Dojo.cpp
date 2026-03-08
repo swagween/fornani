@@ -2,6 +2,8 @@
 #include <fornani/automa/states/Dojo.hpp>
 #include <fornani/events/GameplayEvent.hpp>
 #include <fornani/events/InventoryEvent.hpp>
+#include <fornani/graphics/rewards/AbilityRewardSequence.hpp>
+#include <fornani/graphics/rewards/HealthRewardSequence.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Random.hpp>
 
@@ -9,7 +11,7 @@ namespace fornani::automa {
 
 Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameplayState(svc, player, scene, room_number), m_enter_room{100}, m_loading{4} {
 
-	m_map = world::Map{svc, player};
+	m_map.emplace(svc, player);
 
 	m_type = StateType::dojo;
 	player.set_flag(player::PlayerFlags::trial, false);
@@ -31,6 +33,8 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	svc.events.open_vendor_event.attach_to(p_slot, &Dojo::open_vendor, this);
 	svc.events.launch_cutscene_event.attach_to(p_slot, &Dojo::launch_cutscene, this);
 	svc.events.add_map_marker_event.attach_to(p_slot, &Dojo::add_map_marker, this);
+	svc.events.health_increase_event.attach_to(p_slot, &Dojo::handle_health_increase, this);
+	svc.events.ability_acquisition_event.attach_to(p_slot, &Dojo::handle_ability_acquisition, this);
 
 	m_map_markers.insert({1, "main"});
 	m_map_markers.insert({2, "woodshine"});
@@ -106,6 +110,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	GameplayState::tick_update(svc, engine);
 	if (has_flag_set(GameplayStateFlags::early_tick_return)) { return; }
 
+	player->set_flag(player::PlayerFlags::console_open, m_console.has_value());
 	if (m_console) {
 		m_flags.set(GameplayFlags::console_running);
 		if (m_console.value()->was_response_created() && !m_console.value()->has_nani_portrait()) {
@@ -115,6 +120,22 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	} else if (m_flags.consume(GameplayFlags::console_running)) {
 		auto to_set = p_inventory_window || p_vendor_dialog ? input::ActionSet::Menu : input::ActionSet::Platformer;
 		svc.input_system.set_action_set(to_set);
+	}
+
+	if (p_reward_sequence) {
+		p_reward_sequence.value()->update(svc, *player, *m_map);
+		m_map->transition.update(*player);
+		if (p_reward_sequence.value()->is_done()) {
+			m_map->transition.end();
+			m_flags.set(GameplayFlags::health_increase_exit);
+		}
+		if (m_map->transition.is(graphics::TransitionState::inactive) && m_flags.consume(GameplayFlags::health_increase_exit)) {
+			if (p_reward_sequence.value()->flags.test(graphics::RewardSequenceFlags::console_after_exit)) {
+				if (auto rs_label = p_reward_sequence.value()->get_label()) { m_console.emplace(std::make_unique<gui::Console>(svc, svc.text.item, *rs_label, gui::OutputType::no_skip)); }
+			}
+			p_reward_sequence.reset();
+		}
+		return;
 	}
 
 	svc.world_clock.update(svc);
@@ -193,6 +214,10 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	}
 
 	GameplayState::render(svc, win);
+
+	if (p_reward_sequence) {
+		if (p_reward_sequence.value()->flags.test(graphics::RewardSequenceFlags::show_player)) { player->render(svc, win, player->get_camera_position()); }
+	}
 }
 
 void Dojo::reload(ServiceProvider& svc, int target_state) {
@@ -227,11 +252,14 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 	bool found_one{};
 	// only search for door entry if room was not loaded from main menu and player didn't die
 	if (!svc.state_controller.actions.test(Actions::save_loaded) && !svc.state_controller.actions.test(Actions::player_death)) { found_one = m_map->handle_entry(*player, m_enter_room); }
-	if (!found_one) {
+	if (!found_one && !svc.state_controller.actions.test(Actions::custom_player_position)) {
 		float ppx = svc.data.get_save()["player_data"]["position"]["x"].as<float>();
 		float ppy = svc.data.get_save()["player_data"]["position"]["y"].as<float>();
 		sf::Vector2f player_pos = {ppx, ppy};
 		svc.demo_mode() ? player->place_at_demo_position() : player->set_position(player_pos);
+	} else if (svc.state_controller.actions.test(Actions::custom_player_position)) {
+		player->set_position(svc.state_controller.player_position);
+		svc.state_controller.actions.reset(automa::Actions::custom_player_position);
 	}
 
 	// save was loaded from a json, or player died, so we successfully skipped door search
@@ -394,6 +422,18 @@ void Dojo::handle_player_death(ServiceProvider& svc, player::Player& player) {
 			svc.state_controller.actions.set(automa::Actions::player_death);
 			m_flags.reset(GameplayFlags::game_over);
 		}
+	}
+}
+
+void Dojo::handle_health_increase(ServiceProvider& svc, player::Player& player) {
+	if (!p_reward_sequence) { p_reward_sequence.emplace(std::make_unique<graphics::HealthRewardSequence>(svc, player, *m_map, hud.get_hearts_endpoint())); }
+}
+
+void Dojo::handle_ability_acquisition(ServiceProvider& svc, player::Player& player, std::string_view label) {
+	if (!p_reward_sequence) {
+		p_reward_sequence.emplace(std::make_unique<graphics::AbilityRewardSequence>(svc, player, *m_map));
+		p_reward_sequence.value()->flags.set(graphics::RewardSequenceFlags::show_player);
+		p_reward_sequence.value()->set_label(label);
 	}
 }
 

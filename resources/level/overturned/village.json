@@ -7,11 +7,12 @@
           1
         ],
         "id": 40487,
-        "modifier": 104,
+        "modifier": 0,
         "position": [
           60,
           8
         ],
+        "tag": "cridium_shard",
         "type": 2
       }
     ],

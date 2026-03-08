@@ -8,7 +8,7 @@
 namespace fornani::gui {
 
 WidgetBar::WidgetBar(automa::ServiceProvider& svc, int amount, sf::Vector2i dimensions, std::string_view tag, sf::Vector2f origin, float pad, bool compress)
-	: m_text{svc.text.fonts.title}, m_quantity{amount}, m_compress{compress}, m_position{origin} {
+	: m_text{svc.text.fonts.title}, m_quantity{amount}, m_compress{compress}, m_position{origin}, m_dimensions{dimensions}, m_pad{pad} {
 	m_text.setCharacterSize(16);
 	for (auto i{0}; i < amount; ++i) { m_widgets.push_back(Widget(svc, tag, dimensions, i, origin + sf::Vector2f{i * dimensions.x * constants::f_scale_factor + i * pad, 0.f})); }
 }

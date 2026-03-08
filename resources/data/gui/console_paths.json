@@ -111,5 +111,56 @@
         }
       ]
     }
+  ],
+  "health_increase_case": [
+    {
+      "label": "in",
+      "path": [
+        {
+          "position": [0, -256]
+        },
+        {
+          "position": [0, 0]
+        }
+      ]
+    },
+    {
+      "label": "out",
+      "path": [
+        {
+          "position": [0, 0]
+        },
+        {
+          "position": [0, -256]
+        }
+      ]
+    }
+  ],
+  "health_increase_shard": [
+    {
+      "label": "in",
+      "path": [
+        {
+          "position": [0, -256]
+        },
+        {
+          "position": [0, -255]
+        },
+        {
+          "position": [0, 0]
+        }
+      ]
+    },
+    {
+      "label": "out",
+      "path": [
+        {
+          "position": [0, 0]
+        },
+        {
+          "position": [0, -256]
+        }
+      ]
+    }
   ]
 }
