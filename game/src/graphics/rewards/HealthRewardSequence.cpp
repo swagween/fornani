@@ -47,13 +47,13 @@ void HealthRewardSequence::update(automa::ServiceProvider& svc, player::Player& 
 	m_sparkler.update(svc);
 
 	if (m_case.is_animation("spin")) {
-		if (m_cinematic.get() == 760) { svc.soundboard.play_sound("heart_spin"); }
+		if (m_cinematic.get_normalized() == 0.975f) { svc.soundboard.play_sound("heart_spin"); }
 		m_case.set_framerate(16 - static_cast<int>(15.f * m_cinematic.get_inverse_quadratic_normalized()));
 		if (m_cinematic.is_almost_complete()) {
 			set_flag(HealthRewardSequenceFlags::show_heart);
 			m_effect.emplace(svc, "giga_flare", m_case.get_window_position());
-			svc.soundboard.play_sound("health_increase");
-			svc.soundboard.play_sound("heart_sparkle");
+			svc.soundboard.play_sound("reward_get");
+			svc.soundboard.play_sound("reward_sparkle");
 			p_linger.start();
 			m_heart_path.start();
 			m_emitter.emplace(std::make_unique<vfx::Emitter>(svc, m_render_point - sf::Vector2f{2.f, 2.f}, sf::Vector2f{4.f, 4.f}, "radiance"));

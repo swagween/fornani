@@ -172,5 +172,29 @@
       ]
     ],
     "responses": []
+  },
+  "abilities": {
+    "pioneer_medal": {
+      "suite": [
+        [
+          {
+            "codes": [[10, 69, 7]],
+            "message": "This medal grants you the ability to slide on the ground by pressing  . It will give you a slight speed boost, and you may slide indefinitely down slopes."
+          }
+        ]
+      ],
+      "responses": []
+    },
+    "kariba_talisman": {
+      "suite": [
+        [
+          {
+            "codes": [[10, 86, 4]],
+            "message": "This talisman grants you the ability to slide on walls, and jump off them by pressing  . There is no limit to the number of times you can walljump."
+          }
+        ]
+      ],
+      "responses": []
+    }
   }
 }

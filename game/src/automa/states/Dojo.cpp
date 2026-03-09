@@ -131,7 +131,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		}
 		if (m_map->transition.is(graphics::TransitionState::inactive) && m_flags.consume(GameplayFlags::health_increase_exit)) {
 			if (p_reward_sequence.value()->flags.test(graphics::RewardSequenceFlags::console_after_exit)) {
-				if (auto rs_label = p_reward_sequence.value()->get_label()) { m_console.emplace(std::make_unique<gui::Console>(svc, svc.text.item, *rs_label, gui::OutputType::no_skip)); }
+				if (auto rs_label = p_reward_sequence.value()->get_label()) { m_console.emplace(std::make_unique<gui::Console>(svc, svc.text.item["abilities"], *rs_label, gui::OutputType::no_skip)); }
 			}
 			p_reward_sequence.reset();
 		}

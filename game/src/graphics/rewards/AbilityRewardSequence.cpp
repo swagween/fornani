@@ -31,8 +31,12 @@ void AbilityRewardSequence::update(automa::ServiceProvider& svc, player::Player&
 	}
 
 	if (p_start.is_almost_complete()) { m_cinematic.start(); }
-	if (m_cinematic.get_normalized() == 0.8f) { m_emitter.emplace(std::make_unique<vfx::Emitter>(svc, center - sf::Vector2f{2.f, 2.f}, sf::Vector2f{4.f, 4.f}, "radiance")); }
-	if (m_cinematic.get_normalized() == 0.75f) { m_effect.emplace(svc, "giga_flare", center); }
+	if (m_cinematic.get_normalized() == 0.8f) {
+		m_emitter.emplace(std::make_unique<vfx::Emitter>(svc, center - sf::Vector2f{2.f, 2.f}, sf::Vector2f{4.f, 4.f}, "radiance"));
+		svc.soundboard.play_sound("reward_sparkle");
+		svc.soundboard.play_sound("reward_get");
+	}
+	if (m_cinematic.get_normalized() == 0.82f) { m_effect.emplace(svc, "giga_flare", center); }
 	if (m_cinematic.is_almost_complete()) { p_end.start(); }
 	if (p_end.is_almost_complete()) {
 		player.request_animation(player::AnimState::land);
