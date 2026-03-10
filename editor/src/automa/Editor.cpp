@@ -1,12 +1,11 @@
 
 #include "editor/automa/Editor.hpp"
+#include <ccmath/ext/clamp.hpp>
 #include <editor/util/Constants.hpp>
 #include <fornani/events/SystemEvent.hpp>
 #include "editor/gui/Console.hpp"
 #include "fornani/core/Application.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
-
-#include <ccmath/ext/clamp.hpp>
 
 #ifdef _WIN32
 // TODO: debloat include

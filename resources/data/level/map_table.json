@@ -242,6 +242,12 @@
     },
     {
       "folder": "junkyard",
+      "label": "lobby.json",
+      "region": "junkyard",
+      "room_id": 708
+    },
+    {
+      "folder": "junkyard",
       "label": "lot.json",
       "region": "junkyard",
       "room_id": 701
@@ -365,6 +371,18 @@
       "label": "west_wing.json",
       "region": "kariba",
       "room_id": 504
+    },
+    {
+      "folder": "nightside",
+      "label": "station.json",
+      "region": "nightside",
+      "room_id": 901
+    },
+    {
+      "folder": "nightside",
+      "label": "station_house.json",
+      "region": "nightside",
+      "room_id": 902
     },
     {
       "folder": "overturned",
