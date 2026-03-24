@@ -3,4 +3,6 @@ nani_add_sources(
         LadyNimbusIntro.cpp
         PioneerBaseDebrief.cpp
         MainIntro.cpp
+        NightsideStation.cpp
+        NightsideWall.cpp
 )

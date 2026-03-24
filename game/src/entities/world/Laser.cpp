@@ -2,6 +2,7 @@
 #include <ccmath/math/basic/fmod.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entities/world/Laser.hpp>
+#include <fornani/entity/Turret.hpp>
 #include <fornani/graphics/Colors.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>

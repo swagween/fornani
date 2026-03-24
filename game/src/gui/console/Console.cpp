@@ -84,6 +84,10 @@ void Console::update(automa::ServiceProvider& svc) {
 				m_services->events.reveal_item_by_id_event.dispatch(code.value);
 				processed = true;
 			}
+			if (code.is(MessageCodeType::set_cutscene_progression)) {
+				m_services->events.set_cutscene_progression_event.dispatch(code.value);
+				processed = true;
+			}
 			if (code.is_input_hint()) {
 				auto action_id = code.extras ? code.extras->at(0) : 0;
 				auto lookup = m_services->input_system.get_icon_lookup_by_action(static_cast<input::DigitalAction>(action_id));

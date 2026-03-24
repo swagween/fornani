@@ -97,7 +97,7 @@ struct Counters {
 };
 
 enum class PlayerDeathType { normal, crushed, drowned, swallowed, fallen };
-enum class PlayerFlags { killed, dir_switch, show_weapon, impart_recoil, sleep, wake_up, busy, dash_kick, trial, cutscene, hit_target, in_front_of_door, health_increase, console_open, ability_acquisition, in_reward_sequence };
+enum class PlayerFlags { killed, dir_switch, show_weapon, impart_recoil, sleep, wake_up, busy, dash_kick, trial, cutscene, hit_target, in_front_of_door, health_increase, console_open, ability_acquisition, in_reward_sequence, stunned };
 enum class Triggers { hurt };
 
 struct Flags {
@@ -163,6 +163,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
 	[[nodiscard]] auto is_dead() const -> bool { return m_death_type.has_value(); }
 	[[nodiscard]] auto is_death_complete() const -> bool { return m_death_cooldown.is_almost_complete(); }
+	[[nodiscard]] auto is_stunned() const -> bool { return has_flag_set(PlayerFlags::stunned); }
 	[[nodiscard]] auto had_special_death() const -> bool { return m_death_type ? m_death_type.value() != PlayerDeathType::normal : false; }
 	[[nodiscard]] auto has_death_type(PlayerDeathType const test) const -> bool { return m_death_type ? m_death_type.value() == test : false; }
 	[[nodiscard]] auto get_i_death_type() const -> int { return m_death_type ? static_cast<int>(m_death_type.value()) : -1; }
@@ -220,6 +221,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void sync_antennae();
 
 	void set_busy(bool flag) { set_flag(PlayerFlags::busy, flag); }
+	void stun(float multiplier = 1.f);
+	void hurt_and_stun(float multiplier = 1.f);
 	void set_trigger(Triggers const to_set, bool on = true) { on ? flags.triggers.set(to_set) : flags.triggers.reset(to_set); }
 
 	bool grounded() const;
@@ -280,6 +283,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 		util::Cooldown tutorial{400};
 		util::Cooldown sprint_tutorial{800};
 		util::Cooldown push{32};
+		util::Cooldown stun{128};
 	} cooldowns{};
 	Counters counters{};
 	std::vector<sf::Vector2f> accumulated_forces{};

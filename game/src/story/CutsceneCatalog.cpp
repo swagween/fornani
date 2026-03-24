@@ -3,6 +3,8 @@
 #include <fornani/story/cutscene/BrynPostMiaag.hpp>
 #include <fornani/story/cutscene/LadyNimbusIntro.hpp>
 #include <fornani/story/cutscene/MainIntro.hpp>
+#include <fornani/story/cutscene/NightsideStation.hpp>
+#include <fornani/story/cutscene/NightsideWall.hpp>
 #include <fornani/story/cutscene/PioneerBaseDebrief.hpp>
 
 namespace fornani {
@@ -19,6 +21,8 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	case 6001: cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc)); break;
 	case 509: cutscenes.push_back(std::make_unique<BrynPostMiaag>(svc)); break;
 	case 300: cutscenes.push_back(std::make_unique<PioneerBaseDebrief>(svc, map, player)); break;
+	case 901: cutscenes.push_back(std::make_unique<NightsideStation>(svc)); break;
+	case 903: cutscenes.push_back(std::make_unique<NightsideWall>(svc)); break;
 	default: cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc)); break;
 	}
 }

@@ -35,7 +35,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	metadata.specifications.max_hits = in_data["attributes"]["max_hits"].as<int>();
 	metadata.specifications.speed += random::random_range_float(-metadata.specifications.speed_variance, metadata.specifications.speed_variance);
 	metadata.specifications.variance = in_data["attributes"]["variance"].as<float>();
-	metadata.specifications.stun_time = in_data["attributes"]["stun_time"].as<float>();
+	metadata.specifications.stun_multiplier = in_data["attributes"]["stun_multiplier"].as<float>();
 	metadata.specifications.knockback = in_data["attributes"]["knockback"].as<float>();
 	metadata.specifications.acceleration_factor = in_data["attributes"]["acceleration_factor"].as<float>();
 	metadata.specifications.dampen_factor = in_data["attributes"]["dampen_factor"].as<float>();
@@ -178,21 +178,11 @@ void Projectile::on_player_hit(automa::ServiceProvider& svc, world::Map& map, pl
 	if (metadata.team == arms::Team::nani || is_stuck()) { return; }
 	if (player.is_dead()) { return; }
 	if (physical.sensor) {
-		if (physical.sensor.value().within_bounds(player.hurtbox)) {
-			if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) {
-				on_explode(svc, map);
-			} else {
-				player.hurt(metadata.specifications.base_damage);
-			}
-		}
+		if (physical.sensor.value().within_bounds(player.hurtbox)) { handle_player_hit(svc, map, player); }
 		return;
 	}
 	if (physical.collider.collides_with(player.hurtbox)) {
-		if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) {
-			on_explode(svc, map);
-		} else {
-			player.hurt(metadata.specifications.base_damage);
-		}
+		handle_player_hit(svc, map, player);
 		destroy(false);
 	}
 }
@@ -276,6 +266,16 @@ void Projectile::bounce_off_surface(sf::Vector2i direction) {
 	if (std::abs(direction.y) > 0) {
 		physical.collider.physics.acceleration.y *= -1.f * metadata.specifications.elasticty;
 		physical.collider.physics.velocity.y *= -1.f * metadata.specifications.elasticty;
+	}
+}
+
+void Projectile::handle_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) {
+		on_explode(svc, map);
+	} else if (metadata.specifications.stun_multiplier > constants::small_value) {
+		player.hurt_and_stun(metadata.specifications.stun_multiplier);
+	} else {
+		player.hurt(metadata.specifications.base_damage);
 	}
 }
 

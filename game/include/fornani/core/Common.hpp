@@ -29,7 +29,8 @@ enum class MessageCodeType {
 	piggyback,
 	open_vendor,
 	launch_cutscene,
-	add_map_marker
+	add_map_marker,
+	set_cutscene_progression
 };
 
 enum class CodeSource { suite, response };

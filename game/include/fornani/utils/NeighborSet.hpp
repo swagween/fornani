@@ -2,60 +2,20 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Direction.hpp>
+#include <array>
+#include <cstdint>
 
 namespace fornani {
 
 struct NeighborSet {
-	util::BitFlags<UDLR> neighbors{};
+	void set(UDLR dir, std::uint32_t value) { m_cardinal_neighbors.at(static_cast<std::size_t>(dir)) = value; }
+	[[nodiscard]] auto get(UDLR dir) const -> std::uint32_t { return m_cardinal_neighbors.at(static_cast<std::size_t>(dir)); }
+	[[nodiscard]] auto get_rotation_via(std::uint32_t check) const -> sf::Angle;
+	[[nodiscard]] auto get_direction_via(std::uint32_t check) const -> CardinalDirection;
 
-	[[nodiscard]] auto get_rotation() const -> sf::Angle {
-		auto ret = sf::Angle{};
-		if (get_count() == 1) {
-			if (neighbors.test(UDLR::down)) { ret = sf::degrees(0); }
-			if (neighbors.test(UDLR::left)) { ret = sf::degrees(90); }
-			if (neighbors.test(UDLR::up)) { ret = sf::degrees(180); }
-			if (neighbors.test(UDLR::right)) { ret = sf::degrees(270); }
-		}
-		if (get_count() == 2) {
-			if (as_direction().up()) { ret = sf::degrees(0); }
-			if (as_direction().right()) { ret = sf::degrees(90); }
-			if (as_direction().down()) { ret = sf::degrees(180); }
-			if (as_direction().left()) { ret = sf::degrees(270); }
-		}
-		if (get_count() == 3) {
-			if (neighbors.test(UDLR::down) && neighbors.test(UDLR::left) && neighbors.test(UDLR::right)) { ret = sf::degrees(0); }
-			if (neighbors.test(UDLR::up) && neighbors.test(UDLR::left) && neighbors.test(UDLR::down)) { ret = sf::degrees(90); }
-			if (neighbors.test(UDLR::up) && neighbors.test(UDLR::right) && neighbors.test(UDLR::left)) { ret = sf::degrees(180); }
-			if (neighbors.test(UDLR::down) && neighbors.test(UDLR::right) && neighbors.test(UDLR::up)) { ret = sf::degrees(270); }
-		}
-		return ret;
-	}
-
-	[[nodiscard]] auto get_count() const -> int { return neighbors.count(); }
-	[[nodiscard]] auto as_direction() const -> CardinalDirection {
-		auto ret = CardinalDirection(UDLR::up);
-		if (get_count() == 1) {
-			if (neighbors.test(UDLR::up)) { ret = CardinalDirection(UDLR::down); }
-			if (neighbors.test(UDLR::down)) { ret = CardinalDirection(UDLR::up); }
-			if (neighbors.test(UDLR::left)) { ret = CardinalDirection(UDLR::right); }
-			if (neighbors.test(UDLR::right)) { ret = CardinalDirection(UDLR::left); }
-		}
-		if (get_count() == 2) {
-			if (neighbors.test(UDLR::down) && neighbors.test(UDLR::left)) { ret = CardinalDirection(UDLR::up); }
-			if (neighbors.test(UDLR::up) && neighbors.test(UDLR::left)) { ret = CardinalDirection(UDLR::down); }
-			if (neighbors.test(UDLR::up) && neighbors.test(UDLR::right)) { ret = CardinalDirection(UDLR::down); }
-			if (neighbors.test(UDLR::down) && neighbors.test(UDLR::right)) { ret = CardinalDirection(UDLR::up); }
-		}
-		if (get_count() == 3) {
-			if (!neighbors.test(UDLR::up)) { ret = CardinalDirection(UDLR::up); }
-			if (!neighbors.test(UDLR::down)) { ret = CardinalDirection(UDLR::down); }
-			if (!neighbors.test(UDLR::left)) { ret = CardinalDirection(UDLR::left); }
-			if (!neighbors.test(UDLR::right)) { ret = CardinalDirection(UDLR::right); }
-		}
-		return ret;
-	}
+  private:
+	std::array<std::uint32_t, 4> m_cardinal_neighbors{};
 };
 
 } // namespace fornani

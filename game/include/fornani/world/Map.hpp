@@ -45,6 +45,7 @@
 #include <fornani/world/Spike.hpp>
 #include <fornani/world/SwitchBlock.hpp>
 #include <fornani/world/TimerBlock.hpp>
+#include <fornani/world/Train.hpp>
 #include <optional>
 #include <vector>
 
@@ -102,8 +103,6 @@ struct MapAttributes {
 };
 
 class Map {
-	friend class arms::Weapon;
-	friend class entity::WeaponPackage;
 
   private:
 	std::vector<std::unique_ptr<shape::ICollider>> m_colliders{};
@@ -119,6 +118,9 @@ class Map {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	bool handle_entry(player::Player& player, util::Cooldown& enter_room);
+
+	// spawns
+	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {}, float speed_multiplier = 1.f, float damage_multiplier = 1.f);
 	void spawn_laser(automa::ServiceProvider& svc, Turret& parent, sf::Vector2f position, LaserType type, util::BitFlags<LaserAttributes> attributes, CardinalDirection direction, int active = 128, int cooldown = 128, float size = 1.f);
 	void spawn_laser(automa::ServiceProvider& svc, sf::Vector2f position, CardinalDirection direction, arms::LaserSpecifications specs);
 	void spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0);
@@ -126,6 +128,7 @@ class Map {
 	void spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel, int volatility = 0);
 	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0, bool allow_proximity_to_player = false);
 	void spawn_chest(automa::ServiceProvider& svc, enemy::Treasure const& treasure, sf::Vector2f pos, sf::Vector2f vel = {});
+
 	void reveal_npc(std::string_view label);
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
@@ -265,14 +268,12 @@ class Map {
 	audio::SoundBalance ambience_balance{};
 
   private:
-	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {}, float speed_multiplier = 1.f, float damage_multiplier = 1.f);
-
-  private:
 	MapAttributes m_attributes{};
 	util::BitFlags<LayerProperties> m_layer_properties{};
 
 	std::optional<EntitySet> m_entities{};
 	std::optional<HazardMap> m_hazards{};
+	std::optional<std::unique_ptr<Train>> m_train{};
 	std::vector<std::unique_ptr<vfx::Emitter>> active_emitters{};
 	std::vector<Explosion> m_explosions{};
 	std::vector<ExplosionSpecifications> m_chain_explosions{};

@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <fornani/particle/Spring.hpp>
-#include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/BitFlags.hpp>
 #include <vector>
 
 namespace fornani::automa {
@@ -19,6 +19,9 @@ class Player;
 }
 
 namespace fornani::vfx {
+
+enum class ChainFlags { ignore_player_collision };
+
 class Chain {
   public:
 	Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2f position, int num_links, bool reversed = false, float spacing = 0.f);
@@ -36,6 +39,8 @@ class Chain {
 	std::vector<Spring> links{};
 	std::vector<components::PhysicsComponent> joints{};
 	[[nodiscard]] bool moving() const;
+
+	util::BitFlags<ChainFlags> flags{};
 
   private:
 	sf::Vector2f m_root{};

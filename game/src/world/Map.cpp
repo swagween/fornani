@@ -339,6 +339,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 
 	// hazards
 	if (m_hazards) { m_hazards->update(*player, *this); }
+	if (m_train) { m_train.value()->update(svc, *this, *player); }
 
 	std::erase_if(active_emitters, [](auto const& p) { return p->done(); });
 	std::erase_if(effects, [](auto& e) { return e.done(); });
@@ -557,6 +558,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		if (!svc.greyblock_mode()) {
 			for (auto [i, layer] : std::views::enumerate(get_layers())) {
 				if (i == 1) {
+					if (m_train) { m_train.value()->render(win, cam); }
 					if (m_entities) {
 						for (auto n : get_entities<NPC>()) {
 							if (n->is_background()) { n->render(win, cam); }
@@ -723,20 +725,18 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 }
 
 void Map::generate_collidable_layer(bool live) {
+	auto train_style = get_style_id() == 1 ? 1 : 0;
 	auto pushable_offset = sf::Vector2f{1.f, 0.f};
 	for (auto& cell : get_middleground()->grid.cells) {
 		auto chunk_id = cell.get_chunk_id();
 		get_middleground()->grid.check_neighbors(cell.one_d_index);
 		if (live) { continue; }
 		if (cell.is_waterfall()) { waterfalls.push_back(std::make_unique<Waterfall>(*m_services, *this, sf::Vector2u{cell.f_scaled_position()})); }
+		if (cell.is_train()) { m_train.emplace(std::make_unique<Train>(*m_services, sf::Vector2i{cell.f_scaled_position()}, train_style)); }
 		if (cell.is_breakable()) { breakables.push_back(std::make_unique<Breakable>(*m_services, *this, cell.position())); }
 		if (cell.is_pushable()) { pushables.push_back(std::make_unique<Pushable>(*m_services, *this, cell.position() + pushable_offset, get_style_id(), cell.value - 483)); }
-		if (cell.is_big_spike()) {
-			spikes.push_back(Spike(*m_services, m_services->assets.get_texture("big_spike"), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {6.f, 4.f}, m_biome.get_id(),
-								   m_attributes.properties.test(MapProperties::environmental_randomness)));
-		}
 		if (cell.is_spike()) {
-			spikes.push_back(Spike(*m_services, m_services->assets.get_tileset(std::string{get_biome_string()}), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), {1.f, 1.f}, m_biome.get_id(),
+			spikes.push_back(Spike(*m_services, m_services->assets.get_tileset(std::string{get_biome_string()}), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), m_biome.get_id(),
 								   m_attributes.properties.test(MapProperties::environmental_randomness)));
 		}
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.get_global_center(), 5)); }
@@ -906,6 +906,7 @@ void Map::clear() {
 	fire.reset();
 	active_loot.clear();
 	m_hazards.reset();
+	m_train.reset();
 	point_lights.clear();
 }
 

@@ -56,7 +56,6 @@ void BrynPostMiaag::update(automa::ServiceProvider& svc, std::optional<std::uniq
 		return;
 	}
 
-	// get npcs
 	if (cooldowns.end.running()) { bryn->disengage(); }
 	if (bryn->get_collider().bounding_box.overlaps(player.get_collider().get_vicinity_rect())) {
 		if (!console) {

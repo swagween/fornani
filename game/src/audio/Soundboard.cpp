@@ -9,6 +9,7 @@ constexpr auto minimum_wait_time_v = 16;
 
 Soundboard::Soundboard(automa::ServiceProvider& svc, capo::IEngine& engine) : m_services(&svc), m_engine(&engine) {
 	npc_map["bryn"] = make_int_setter<NPCBryn>(npc_flags.bryn);
+	npc_map["aviator_bryn"] = make_int_setter<NPCBryn>(npc_flags.bryn);
 	npc_map["gobe"] = make_int_setter<NPCGobe>(npc_flags.gobe);
 	npc_map["minigus"] = make_int_setter<NPCMinigus>(npc_flags.minigus);
 	npc_map["mirin"] = make_int_setter<NPCMirin>(npc_flags.mirin);

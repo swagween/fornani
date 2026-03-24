@@ -36,6 +36,8 @@ Player::Player(automa::ServiceProvider& svc)
 	m_ear.physics.set_global_friction(0.8f);
 
 	svc.events.reveal_item_by_id_event.attach_to(slot, &Player::reveal_item, this);
+
+	m_attributes.stun_time = 512;
 }
 
 void Player::serialize(dj::Json& out) const {
@@ -159,6 +161,21 @@ void Player::update(world::Map& map) {
 	set_flag(PlayerFlags::in_front_of_door, false);
 	m_death_cooldown.update();
 	if (!collider.has_value()) { return; }
+
+	// stun logic
+	if (cooldowns.stun.just_started()) { map.spawn_effect(*m_services, "stun", get_collider().get_center()); }
+	if (is_stunned()) {
+		controller.restrict_movement();
+		get_collider().set_flag(shape::ColliderFlags::no_physics);
+		m_sprite_shake.start();
+	}
+	if (cooldowns.stun.is_almost_complete()) {
+		get_collider().set_flag(shape::ColliderFlags::no_physics, false);
+		set_flag(PlayerFlags::stunned, false);
+		controller.unrestrict();
+	}
+	cooldowns.stun.update();
+
 	caution.avoid_ledges(map, get_collider(), controller.direction, 8);
 	if (get_collider().collision_depths) { get_collider().collision_depths.value().reset(); }
 	get_collider().set_direction(directions.actual);
@@ -486,6 +503,7 @@ void Player::update_animation() {
 	}
 
 	if (hurt_cooldown.running()) { m_animation_machine.request(AnimState::hurt); }
+	if (is_stunned()) { m_animation_machine.request(AnimState::stun); }
 
 	if (consume_flag(PlayerFlags::sleep)) { m_animation_machine.request(AnimState::sleep); }
 	if (consume_flag(PlayerFlags::wake_up)) { m_animation_machine.request(AnimState::wake_up); }
@@ -646,14 +664,16 @@ void Player::hurt(float amount, bool force) {
 		m_services->ticker.freeze_frame(12 * std::min(static_cast<int>(amount), 3));
 		m_sprite_shake.start();
 		m_hurt_cooldown.start();
-		health.inflict(amount, force);
+		health.inflict(amount, force, !is_stunned());
 		health_indicator.add(-amount);
 		get_collider().physics.velocity.y = 0.0f;
 		get_collider().physics.acceleration.y += -physics_stats.hurt_acc;
 		force_cooldown.start(60);
-		has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? m_services->soundboard.flags.player.set(audio::Player::gulp) : m_services->soundboard.flags.player.set(audio::Player::hurt);
+		auto tag = has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? "nani_gulp" : cooldowns.stun.started() ? "nani_stun" : "nani_hurt";
+		m_services->soundboard.play_sound(tag);
 		hurt_cooldown.start(2);
 		if (health.is_dead()) { m_death_type = PlayerDeathType::normal; }
+		if (is_stunned() && cooldowns.stun.get_normalized() < 0.9f) { cooldowns.stun.start(4); }
 	}
 }
 
@@ -721,6 +741,18 @@ void Player::sync_antennae() {
 			socket.x = i == 0 ? 2.f : 13.f;
 		}
 	}
+}
+
+void Player::stun(float multiplier) {
+	set_flag(PlayerFlags::stunned);
+	cooldowns.stun.set_and_start(std::round(static_cast<float>(m_attributes.stun_time) * multiplier));
+	m_services->soundboard.play_sound("stun");
+}
+
+void Player::hurt_and_stun(float multiplier) {
+	if (is_stunned()) { return; }
+	stun(multiplier);
+	hurt(1.f, true);
 }
 
 bool Player::grounded() const { return get_collider().flags.external_state.test(shape::ExternalState::grounded); }

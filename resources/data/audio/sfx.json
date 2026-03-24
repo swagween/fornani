@@ -522,5 +522,35 @@
     "pitch_offset": 0.0,
     "fade_in": 8,
     "fade_out": 32
+  },
+  {
+    "label": "train_horn_1",
+    "bus": "gameplay",
+    "volume": 0.7,
+    "pitch_offset": 0.0,
+    "fade_in": 8,
+    "fade_out": 32,
+    "min_distance": 512.0,
+    "max_distance": 2048.0
+  },
+  {
+    "label": "train_horn_2",
+    "bus": "gameplay",
+    "volume": 0.7,
+    "pitch_offset": 0.0,
+    "fade_in": 8,
+    "fade_out": 32,
+    "min_distance": 512.0,
+    "max_distance": 2048.0
+  },
+  {
+    "label": "train_moving",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 8,
+    "fade_out": 32,
+    "min_distance": 512.0,
+    "max_distance": 1024.0
   }
 ]

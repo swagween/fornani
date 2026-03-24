@@ -26,6 +26,8 @@ HealthRewardSequence::HealthRewardSequence(automa::ServiceProvider& svc, player:
 
 	m_ui_heart.push_and_set_animation("standard", {0, 1, 32, 0});
 	m_ui_heart.set_channel(1);
+
+	// svc.music_player.quick_play(svc.finder, "cridium");
 }
 
 void HealthRewardSequence::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {

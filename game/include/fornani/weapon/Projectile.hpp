@@ -40,7 +40,7 @@ struct ProjectileSpecifications {
 	float speed{};
 	float speed_variance{};
 	float variance{};
-	float stun_time{};
+	float stun_multiplier{};
 	float knockback{};
 	float acceleration_factor{};
 	float dampen_factor{};
@@ -113,6 +113,9 @@ class Projectile : public Animatable {
 	[[nodiscard]] auto reflect() const -> bool { return metadata.attributes.test(ProjectileAttributes::reflect); }
 	[[nodiscard]] auto sticky() const -> bool { return metadata.attributes.test(ProjectileAttributes::sticky); }
 	[[nodiscard]] auto wander() const -> bool { return metadata.attributes.test(ProjectileAttributes::wander); }
+
+  private:
+	void handle_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 
   private:
 	struct {

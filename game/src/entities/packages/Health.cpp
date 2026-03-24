@@ -40,12 +40,12 @@ void Health::refill() {
 	restored.start();
 }
 
-void Health::inflict(float amount, bool force) {
+void Health::inflict(float amount, bool force, bool inv) {
 	if (invincibility.is_complete() || force) {
 		taken_point = m_quantity;
 		m_quantity = std::clamp(m_quantity - amount, 0.f, get_capacity());
 		m_taken.start();
-		invincibility.start(invincibility_time);
+		if (inv) { invincibility.start(invincibility_time); }
 		flags.set(HPState::hit);
 	}
 }

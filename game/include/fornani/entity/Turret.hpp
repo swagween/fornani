@@ -2,16 +2,18 @@
 #pragma once
 
 #include <fornani/entity/Entity.hpp>
+#include <fornani/graphics/SpriteRotator.hpp>
 #include <fornani/utils/Direction.hpp>
 #include <fornani/utils/Flaggable.hpp>
 #include <fornani/utils/StateFunction.hpp>
+#include <fornani/weapon/Weapon.hpp>
 #define TURRET_BIND(f) std::bind(&Turret::f, this)
 
 namespace fornani {
 
-enum class TurretType { laser, projectile };
-enum class TurretPattern { constant, repeater, triggerable };
-enum class TurretState { off, charging, firing, cooling_down };
+enum class TurretType { laser, projectile, stun };
+enum class TurretPattern { constant, repeater, triggerable, opportunistic };
+enum class TurretState { off, charging, firing, cooling_down, quick_fire };
 enum class TurretFlags { platform };
 
 struct TurretSettings {
@@ -39,7 +41,7 @@ class Turret : public Entity, public Flaggable<TurretFlags> {
 		return *this;
 	}
 
-	void init();
+	void init(automa::ServiceProvider& svc);
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;
@@ -59,6 +61,7 @@ class Turret : public Entity, public Flaggable<TurretFlags> {
 	fsm::StateFunction update_charging();
 	fsm::StateFunction update_firing();
 	fsm::StateFunction update_cooling_down();
+	fsm::StateFunction update_quick_fire();
 	bool change_state(TurretState next, std::string_view tag);
 	void request(TurretState to) { m_state.desired = to; }
 	struct {
@@ -71,10 +74,14 @@ class Turret : public Entity, public Flaggable<TurretFlags> {
 	CardinalDirection m_direction{};
 	TurretSettings m_settings{};
 
+	std::optional<std::unique_ptr<arms::Weapon>> m_weapon{};
+	vfx::SpriteRotator m_rotator{};
+
 	sf::Vector2f m_position{};
 
 	util::Cooldown m_rate{};
 	util::Cooldown m_firing{};
+	util::Cooldown m_shoot{};
 };
 
 } // namespace fornani

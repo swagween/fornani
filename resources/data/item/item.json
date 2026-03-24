@@ -108,17 +108,19 @@
   },
   {
     "tag": "woodshine_warehouse_key",
-    "lookup": [8, 0],
-    "origin": [4, 4],
+    "lookup": [9, 0],
+    "origin": [5, 4],
     "actual_title": "Woodshine Warehouse Key",
     "naive_description": "Allows you to enter Woodshine's warehouse.",
     "unique": true,
     "is_key": true
   },
   {
-    "tag": "nimbus_iii_boiler_room_key",
-    "actual_title": "Nimbus III Boiler Room Key",
-    "naive_description": "Allows you to enter Nimbus III's boiler room.",
+    "tag": "pioneer_station_key",
+    "lookup": [8, 0],
+    "origin": [4, 4],
+    "actual_title": "Pioneer Station Key",
+    "naive_description": "Grants you access to Pioneer Station from Woodshine Village.",
     "unique": true,
     "is_key": true
   },

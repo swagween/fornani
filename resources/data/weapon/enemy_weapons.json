@@ -45,7 +45,7 @@
           "lifespan_variance": 0,
           "speed": 10.5,
           "variance": 0.1,
-          "stun_time": 0.0,
+          "stun_multiplier": 0.0,
           "knockback": 0.0,
           "transcendent": false,
           "persistent": false,
@@ -156,7 +156,7 @@
           "lifespan_variance": 0,
           "speed": 24.5,
           "variance": 0.4,
-          "stun_time": 0.0,
+          "stun_multiplier": 0.0,
           "knockback": 0.0,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
@@ -210,7 +210,7 @@
           "lifespan_variance": 0,
           "speed": 10.5,
           "variance": 0.2,
-          "stun_time": 0.0,
+          "stun_multiplier": 0.0,
           "knockback": 0.0,
           "transcendent": true,
           "omnidirectional": true,
@@ -267,7 +267,7 @@
           "lifespan_variance": 0,
           "speed": 19.5,
           "variance": 0.0,
-          "stun_time": 0.0,
+          "stun_multiplier": 0.0,
           "knockback": 0.0,
           "transcendent": false,
           "omnidirectional": true,
@@ -327,7 +327,7 @@
           "lifespan_variance": 0,
           "speed": 24.5,
           "variance": 10.5,
-          "stun_time": 0.0,
+          "stun_multiplier": 0.0,
           "knockback": 0.0,
           "acceleration_factor": 0.0,
           "dampen_factor": 0.993,
@@ -396,7 +396,7 @@
           "lifespan_variance": 80,
           "speed": 14.5,
           "variance": 0.4,
-          "stun_time": 0.0,
+          "stun_multiplier": 0.0,
           "knockback": 0.0,
           "transcendent": false,
           "persistent": false,
@@ -454,7 +454,7 @@
           "lifespan_variance": 0,
           "speed": 11.5,
           "variance": 0.0,
-          "stun_time": 0.0,
+          "stun_multiplier": 0.0,
           "knockback": 0.0,
           "transcendent": false,
           "omnidirectional": true,
@@ -514,7 +514,7 @@
           "lifespan_variance": 0,
           "speed": 10.0,
           "variance": 0.0,
-          "stun_time": 0.0,
+          "stun_multiplier": 0.0,
           "knockback": 0.0,
           "transcendent": false,
           "omnidirectional": true,
@@ -574,7 +574,7 @@
           "lifespan_variance": 0,
           "speed": 0.2,
           "variance": 0.0,
-          "stun_time": 0.0,
+          "stun_multiplier": 0.0,
           "knockback": 0.0,
           "transcendent": false,
           "omnidirectional": true,
@@ -634,7 +634,7 @@
           "lifespan_variance": 0,
           "speed": 13.2,
           "variance": 0.0,
-          "stun_time": 0.0,
+          "stun_multiplier": 0.0,
           "knockback": 0.0,
           "transcendent": false,
           "omnidirectional": true,
@@ -694,7 +694,7 @@
           "lifespan_variance": 0,
           "speed": 8.0,
           "variance": 0.0,
-          "stun_time": 0.0,
+          "stun_multiplier": 0.0,
           "knockback": 0.0,
           "transcendent": false,
           "omnidirectional": false,
@@ -762,7 +762,7 @@
           "lifespan_variance": 0,
           "speed": 12.0,
           "variance": 4.5,
-          "stun_time": 0.0,
+          "stun_multiplier": 0.0,
           "knockback": 0.0,
           "acceleration_factor": 0.0,
           "dampen_factor": 0.995,
@@ -781,6 +781,122 @@
           "emitter": "green_blast",
           "radius": 28.0,
           "channel": 6
+        }
+      }
+    }
+  },
+  "stungun": {
+    "metadata": {
+      "id": 13,
+      "label": "Stungun"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [8, 8],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "guardian",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 3,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [16.0, 16.0],
+        "radius": 12.0,
+        "audio": { "hit": 2 },
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 400,
+          "lifespan_variance": 0,
+          "speed": 16.0,
+          "variance": 0.0,
+          "stun_multiplier": 0.5,
+          "knockback": 0.0,
+          "omnidirectional": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 2.0,
+          "dampen_factor": 0.998,
+          "gravity": 0.0,
+          "elasticity": 0.98
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 2,
+          "framerate": 12
+        }
+      }
+    }
+  },
+  "turret": {
+    "metadata": {
+      "id": 14,
+      "label": "Turret"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [8, 8],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "guardian",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 3,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [14.0, 14.0],
+        "radius": 10.0,
+        "audio": { "hit": 2 },
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 400,
+          "lifespan_variance": 0,
+          "speed": 20.0,
+          "variance": 0.0,
+          "stun_multiplier": 0.0,
+          "knockback": 0.0,
+          "omnidirectional": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 2.0,
+          "dampen_factor": 0.998,
+          "gravity": 0.0,
+          "elasticity": 0.98
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 2,
+          "framerate": 12
         }
       }
     }

@@ -3,7 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <fornani/core/Common.hpp>
-#include <fornani/entity/Turret.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/physics/Shape.hpp>
 #include <fornani/utils/Circuit.hpp>
@@ -11,6 +10,8 @@
 #include <fornani/utils/Direction.hpp>
 
 namespace fornani {
+
+class Turret;
 
 namespace automa {
 struct ServiceProvider;

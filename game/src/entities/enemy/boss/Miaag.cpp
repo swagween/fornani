@@ -53,6 +53,7 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		}
 	}
 	if (health.is_dead()) {
+		if (m_cooldowns.post_death.just_started()) { m_map->active_loot.push_back(item::Loot(svc, map, player, Enemy::get_collider().get_center(), {get_attributes().drop_range, get_attributes().loot_multiplier, 0, false, 0, 16})); }
 		post_death.start(afterlife);
 		flags.state.set(StateFlags::special_death_mode);
 	}

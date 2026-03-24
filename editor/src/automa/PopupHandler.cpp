@@ -534,8 +534,8 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		static int type{};
 		static int pattern{};
 		static int hv{};
-		static char const* types[2] = {"laser", "projectile"};
-		static char const* patterns[3] = {"constant", "repeater", "triggerable"};
+		static char const* types[3] = {"laser", "projectile", "stun"};
+		static char const* patterns[4] = {"constant", "repeater", "triggerable", "opportunistic"};
 		static char const* dirs[4] = {"up", "down", "left", "right"};
 		static float delay{1.f};
 		static int duration{256};
@@ -608,6 +608,9 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		static int width{0};
 		static int height{0};
 		static int id{0};
+		static bool callbox{};
+
+		ImGui::Checkbox("Callbox?", &callbox);
 
 		ImGui::InputInt("Width", &width);
 		ImGui::Separator();
@@ -623,9 +626,11 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
+			auto attributes = fornani::util::BitFlags<fornani::CutsceneTriggerAttributes>{};
+			if (callbox) { attributes.set(fornani::CutsceneTriggerAttributes::callbox); }
 			// switch to entity tool, and store the specified portal for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<fornani::CutsceneTrigger>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, id);
+			tool->current_entity = std::make_unique<fornani::CutsceneTrigger>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, id, attributes);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();

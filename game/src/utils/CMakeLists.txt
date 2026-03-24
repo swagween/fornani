@@ -3,6 +3,7 @@ nani_add_sources(
         Direction.cpp
         Fader.cpp
         IWorldPositionable.cpp
+        NeighborSet.cpp
         NineSlice.cpp
         Oscillator.cpp
         Random.cpp

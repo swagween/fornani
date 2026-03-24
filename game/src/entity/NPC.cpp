@@ -234,7 +234,7 @@ void NPC::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 		highlighted ? drawbox.setFillColor(sf::Color{250, 80, 250, 60}) : drawbox.setFillColor(sf::Color::Transparent);
 		Entity::render(win, cam, size);
 	} else {
-		if (is_hidden()) { return; }
+		if (is_hidden() || m_state.test(NPCState::invisible)) { return; }
 		if (collider.has_value()) {
 			Mobile::set_position(get_collider().get_center() + m_offset - cam);
 			auto indicator_offset = sf::Vector2f{0.f, -constants::f_cell_size};

@@ -2,18 +2,19 @@
 #pragma once
 
 #include <fornani/entity/Entity.hpp>
+#include <fornani/physics/Shape.hpp>
 #include <fornani/story/Quest.hpp>
 #include <fornani/utils/BitFlags.hpp>
-#include <fornani/physics/Shape.hpp>
 
 namespace fornani {
 
 enum class CutsceneTriggerFlags { activated, pushed };
+enum class CutsceneTriggerAttributes { callbox };
 
 class CutsceneTrigger : public Entity {
   public:
 	CutsceneTrigger(automa::ServiceProvider& svc, dj::Json const& in);
-	CutsceneTrigger(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id);
+	CutsceneTrigger(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, util::BitFlags<CutsceneTriggerAttributes> attributes = {});
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;
@@ -30,6 +31,7 @@ class CutsceneTrigger : public Entity {
 	// in-game use
 	shape::Shape m_bounding_box{};
 	util::BitFlags<CutsceneTriggerFlags> m_flags{};
+	util::BitFlags<CutsceneTriggerAttributes> m_attributes{};
 };
 
 } // namespace fornani

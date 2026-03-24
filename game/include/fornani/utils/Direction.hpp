@@ -164,6 +164,15 @@ struct CardinalDirection {
 	[[nodiscard]] auto as_vector() const -> sf::Vector2f { return up() ? sf::Vector2f{0.f, -1.f} : down() ? sf::Vector2f{0.f, 1.f} : left() ? sf::Vector2f{-1.f, 0.f} : sf::Vector2f{1.f, 0.f}; }
 	[[nodiscard]] auto as_degrees() const -> float { return up() ? 0.f : down() ? 180.f : left() ? 270.f : 90.f; }
 	[[nodiscard]] auto as_angle() const -> sf::Angle { return sf::degrees(as_degrees()); }
+	[[nodiscard]] auto opposite() const -> CardinalDirection {
+		switch (udlr) {
+		case UDLR::up: return CardinalDirection(UDLR::down); break;
+		case UDLR::down: return CardinalDirection(UDLR::up); break;
+		case UDLR::left: return CardinalDirection(UDLR::right); break;
+		case UDLR::right: return CardinalDirection(UDLR::left); break;
+		}
+		return CardinalDirection(UDLR::left);
+	}
 
 	bool operator==(CardinalDirection const& other) const { return other.udlr == udlr; }
 	bool operator!=(CardinalDirection const& other) const { return other.udlr != udlr; }

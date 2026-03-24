@@ -70,22 +70,12 @@ NeighborSet Grid::get_solid_neighbors(int index) {
 	auto up = static_cast<std::size_t>(index - dimensions.x);
 	auto down = static_cast<std::size_t>(index + dimensions.x);
 	auto ui = static_cast<std::uint32_t>(index);
-	// left neighbor
-	if (index != 0 && index % dimensions.x != 0) {
-		if (cells.at(left).is_solid()) { ret.neighbors.set(UDLR::left); }
-	}
-	// right neighbor
-	if (index != cells.size() - 1 && index % dimensions.x != dimensions.x - 1) {
-		if (cells.at(right).is_solid()) { ret.neighbors.set(UDLR::right); }
-	}
-	// top neighbor
-	if (!(ui < dimensions.x)) {
-		if (cells.at(up).is_solid()) { ret.neighbors.set(UDLR::up); }
-	}
-	// bottom neighbor
-	if (!(ui > cells.size() - dimensions.x - 1)) {
-		if (cells.at(down).is_solid()) { ret.neighbors.set(UDLR::down); }
-	}
+
+	if (index != 0 && index % dimensions.x != 0) { ret.set(UDLR::left, cells.at(left).value); }
+	if (index != cells.size() - 1 && index % dimensions.x != dimensions.x - 1) { ret.set(UDLR::right, cells.at(right).value); }
+	if (!(ui < dimensions.x)) { ret.set(UDLR::up, cells.at(up).value); }
+	if (!(ui > cells.size() - dimensions.x - 1)) { ret.set(UDLR::down, cells.at(down).value); }
+
 	return ret;
 }
 

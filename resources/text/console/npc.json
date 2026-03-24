@@ -3327,5 +3327,216 @@
         ]
       ]
     }
+  },
+  "aviator_bryn": {
+    "1": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "The way up is closed off."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "Yes! But only one of them..."
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [[4, 5]],
+            "message": "...Nani?"
+          },
+          {
+            "message": "Do you come in, Nani?"
+          },
+          {
+            "message": "It's me, Bryn."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "I was finally able to detect your field telephone, but even now the connection is barely stable."
+          },
+          {
+            "codes": [
+              [1, 0],
+              [5, 0],
+              [23, 1]
+            ],
+            "message": "What do you see?"
+          }
+        ],
+        [
+          {
+            "codes": [
+              [4, 20],
+              [5, 1]
+            ],
+            "message": "Alright, looks like Nightside's old security systems are still in place."
+          },
+          {
+            "codes": [[13, 34, 903]],
+            "message": "Let me try something here..."
+          },
+          {
+            "codes": [
+              [23, 2],
+              [5, 0]
+            ],
+            "message": "...There!"
+          },
+          {
+            "codes": [[1, 1]],
+            "message": "Okay, did that open up any paths?"
+          }
+        ],
+        [
+          {
+            "codes": [[3, 15, 1, 903]],
+            "message": "Dang, alright..."
+          },
+          {
+            "codes": [
+              [5, 1],
+              [23, 4]
+            ],
+            "message": "See if you can head up to that terminal and tell me if it displays any transmission code or something like that."
+          },
+          {
+            "codes": [],
+            "message": "I might be able to intercept its signal and override the block."
+          },
+          {
+            "codes": [
+              [23, 5],
+              [5, 0]
+            ],
+            "message": "I'll be waiting for your call. Good luck!"
+          }
+        ]
+      ]
+    },
+    "2": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "The tracks are blocked off."
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [[4, 5]],
+            "message": "Hello?"
+          },
+          {
+            "message": "It's me again."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "I can barely see Nightside Station from here, but I'm guessing you've made it there since I'm getting a strong radar reading from your field telephone's signature."
+          },
+          {
+            "codes": [
+              [1, 0],
+              [5, 0]
+            ],
+            "message": "Are you able to take the train? I see some construction on the tracks."
+          }
+        ],
+        [
+          {
+            "codes": [[4, 20]],
+            "message": "Hmph."
+          },
+          {
+            "message": "I was kinda worried that might be the case."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "Proceed at your own risk, Nani. Something seems fishy. I see skycorps security vehicles everywhere."
+          }
+        ]
+      ]
+    },
+    "3": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "Yeah. (give the code)"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "Looks like it worked!"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [
+              [1, 0],
+              [4, 16]
+            ],
+            "message": "Hey Nani, me again. You got the code?"
+          }
+        ],
+        [
+          {
+            "codes": [
+              [4, 20],
+              [23, 8],
+              [5, 1]
+            ],
+            "message": "Awesome. Let me just..."
+          },
+          {
+            "codes": [],
+            "message": "...This might take a moment. The signal is really weak from up here."
+          },
+          {
+            "codes": [
+              [1, 1],
+              [5, 0],
+              [23, 9]
+            ],
+            "message": "Boom! Any luck?"
+          }
+        ],
+        [
+          {
+            "codes": [
+              [5, 0],
+              [4, 22],
+              [23, 11]
+            ],
+            "message": "Great! That should clear the way for you to get to Nightside Station."
+          },
+          {
+            "codes": [
+              [5, 1],
+              [4, 8]
+            ],
+            "message": "But please... Be careful. I see some Skycorps security vehicles near where you are, so I hope they haven't somehow tracked you down..."
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "There should be another callbox at the station. Give me a ring when you get there."
+          },
+          {
+            "codes": [[23, 12]],
+            "message": "Over and out!"
+          }
+        ]
+      ]
+    }
   }
 }

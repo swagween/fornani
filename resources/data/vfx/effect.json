@@ -144,6 +144,13 @@
     "x_reflection": true,
     "y_reflection": true
   },
+  "stun": {
+    "frame_count": 5,
+    "framerate": 16,
+    "dimensions": [48, 48],
+    "x_reflection": true,
+    "y_reflection": true
+  },
   "small_flash": {
     "frame_count": 6,
     "framerate": 14,

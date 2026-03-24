@@ -17,7 +17,7 @@ MiniMap::MiniMap(automa::ServiceProvider& svc) : m_texture(svc), m_speed{64.f} {
 void MiniMap::set_textures(automa::ServiceProvider& svc) {
 	m_cursor = sf::Sprite{svc.assets.get_texture("map_cursor")};
 	m_cursor->setScale(constants::f_scale_vec);
-	m_cursor->setOrigin({7.f, 7.f});
+	m_cursor->setOrigin({5.5f, 5.5f});
 	m_border.setSize(svc.window->f_screen_dimensions());
 }
 

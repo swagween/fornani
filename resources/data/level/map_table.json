@@ -385,6 +385,12 @@
       "room_id": 902
     },
     {
+      "folder": "nightside",
+      "label": "upper_wall.json",
+      "region": "nightside",
+      "room_id": 903
+    },
+    {
       "folder": "overturned",
       "label": "alcove.json",
       "region": "overturned",
@@ -419,6 +425,12 @@
       "label": "causeway.json",
       "region": "overturned",
       "room_id": 240
+    },
+    {
+      "folder": "overturned",
+      "label": "concourse.json",
+      "region": "overturned",
+      "room_id": 255
     },
     {
       "folder": "overturned",
@@ -617,6 +629,12 @@
       "label": "peegles_house.json",
       "region": "overturned",
       "room_id": 411
+    },
+    {
+      "folder": "overturned",
+      "label": "pioneer_station.json",
+      "region": "overturned",
+      "room_id": 257
     },
     {
       "folder": "overturned",

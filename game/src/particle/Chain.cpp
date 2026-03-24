@@ -40,6 +40,7 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		if (link.sensor.within_bounds(player.get_collider().bounding_box)) {
 			link.sensor.activate();
 			external_force = {player.get_collider().physics.velocity.x * m_external_dampen * dampen, player.get_collider().physics.velocity.y * m_external_dampen * y_dampen_v * dampen};
+			if (flags.test(ChainFlags::ignore_player_collision)) { external_force = {}; }
 		} else {
 			link.sensor.deactivate();
 		}

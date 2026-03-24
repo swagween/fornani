@@ -65,7 +65,7 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics
 		std::uint8_t alpha = ccm::lerp(0, 255, fade);
 		std::uint8_t revalpha = ccm::lerp(0, 255, 1.f - fade);
 		sprite.setScale(constants::f_scale_vec);
-		sprite.setPosition(-cam * m_parallax);
+		sprite.setPosition({-cam.x * m_parallax, -cam.y});
 		if (obscuring()) { shifter.render(svc, win, sprite, ctr, alpha); }
 		if (reverse_obscuring()) { shifter.render(svc, win, sprite, ctr, revalpha); }
 		if (not_obscuring()) { shifter.render(svc, win, sprite, ctr); }
@@ -89,7 +89,7 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, LightSha
 	auto ctr{0};
 	for (auto& sprite : sprites) {
 		sprite.setScale(constants::f_scale_vec);
-		sprite.setPosition(-cam * m_parallax);
+		sprite.setPosition({-cam.x * m_parallax, -cam.y});
 		shader.submit(win, palette, sprite);
 		++ctr;
 	}

@@ -15,6 +15,7 @@ struct EventRegistry {
 	NPCPiggybackEvent npc_piggyback_event{};
 
 	LaunchCutsceneEvent launch_cutscene_event{};
+	SetCutsceneProgressionEvent set_cutscene_progression_event{};
 	OpenVendorEvent open_vendor_event{};
 	AddMapMarkerEvent add_map_marker_event{};
 	PlaySongEvent play_song_event{};

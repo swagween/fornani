@@ -15,4 +15,5 @@ nani_add_headers(
         SwitchButton.hpp
         Tile.hpp
         TimerBlock.hpp
+        Train.hpp
 )

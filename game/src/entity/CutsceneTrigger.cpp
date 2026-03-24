@@ -13,7 +13,7 @@ CutsceneTrigger::CutsceneTrigger(automa::ServiceProvider& svc, dj::Json const& i
 	repeatable = false;
 }
 
-CutsceneTrigger::CutsceneTrigger(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id) : Entity(svc, "cutscene_triggers", id, dimensions) {
+CutsceneTrigger::CutsceneTrigger(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, util::BitFlags<CutsceneTriggerAttributes> attributes) : Entity(svc, "cutscene_triggers", id, dimensions), m_attributes{attributes} {
 	set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 	repeatable = false;
 }
@@ -23,11 +23,13 @@ std::unique_ptr<Entity> CutsceneTrigger::clone() const { return std::make_unique
 void CutsceneTrigger::serialize(dj::Json& out) {
 	Entity::serialize(out);
 	for (auto const& contingency : m_contingencies) { contingency.serialize(out["contingencies"]); }
+	if (m_attributes.test(CutsceneTriggerAttributes::callbox)) { out["attributes"]["callbox"] = true; }
 }
 
 void CutsceneTrigger::unserialize(dj::Json const& in) {
 	Entity::unserialize(in);
 	for (auto const& contingency : in["contingencies"].as_array()) { m_contingencies.push_back(QuestContingency{contingency}); }
+	if (in["attributes"]["callbox"].as_bool()) { m_attributes.set(CutsceneTriggerAttributes::callbox); }
 }
 
 void CutsceneTrigger::expose() {
@@ -67,7 +69,13 @@ void CutsceneTrigger::render(sf::RenderWindow& win, sf::Vector2f cam, float size
 
 void CutsceneTrigger::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
 	if (!svc.quest_table.are_contingencies_met(m_contingencies)) { return; }
-	if (player.get_collider().bounding_box.overlaps(m_bounding_box) && !is_pushed()) { m_flags.set(CutsceneTriggerFlags::activated); }
+	if (player.get_collider().bounding_box.overlaps(m_bounding_box) && !is_pushed()) {
+		if (m_attributes.test(CutsceneTriggerAttributes::callbox)) {
+			if (player.controller.inspecting()) { m_flags.set(CutsceneTriggerFlags::activated); }
+		} else {
+			m_flags.set(CutsceneTriggerFlags::activated);
+		}
+	}
 	if (is_activated()) {
 		if (get_id() != 0) { map.cutscene_catalog.push_cutscene(svc, map, player, get_id()); }
 		m_flags.reset(CutsceneTriggerFlags::activated);
