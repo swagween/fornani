@@ -7,12 +7,10 @@
 
 namespace fornani {
 
-NightsideStation::NightsideStation(automa::ServiceProvider& svc) : Cutscene(svc, 901, "nightside_station"), m_intro{1200} {
+NightsideStation::NightsideStation(automa::ServiceProvider& svc) : Cutscene(svc, 901, "nightside_station"), m_intro{400} {
 	m_intro.start();
 	svc.music_player.stop();
 	svc.music_player.load(svc.finder, "glitchified");
-	svc.soundboard.play_sound("phone_ring_outgoing");
-	NANI_LOG_DEBUG(p_logger, "Pushed cutscene");
 }
 
 void NightsideStation::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
@@ -22,7 +20,9 @@ void NightsideStation::update(automa::ServiceProvider& svc, std::optional<std::u
 		svc.state_flags.reset(automa::StateFlags::no_menu);
 		svc.state_flags.reset(automa::StateFlags::cutscene);
 		svc.camera_controller.set_owner(graphics::CameraOwner::player);
-		// svc.quest_table.progress_quest("defeat_miaag", 1, 50901);
+		svc.music_player.stop();
+		svc.music_player.load(svc.finder, "wind");
+		svc.music_player.play_looped();
 		flags.set(CutsceneFlags::delete_me);
 		return;
 	}
@@ -38,7 +38,7 @@ void NightsideStation::update(automa::ServiceProvider& svc, std::optional<std::u
 	m_intro.update();
 	if (m_intro.is_almost_complete()) { cooldowns.beginning.start(); }
 	if (m_intro.running()) {
-		if (m_intro.get() == 400) { svc.soundboard.play_sound("phone_dial"); }
+		if (m_intro.just_started()) { svc.soundboard.play_sound("phone_dial"); }
 		return;
 	}
 
@@ -68,8 +68,28 @@ void NightsideStation::update(automa::ServiceProvider& svc, std::optional<std::u
 	}
 	if (console) { bryn->disengage(); }
 
+	auto camera_focus = player.get_camera_focus_point();
+
+	switch (progress) {
+	case 1: camera_focus = sf::Vector2f{34.f, 14.f} * constants::f_cell_size; break;
+	case 2:
+		camera_focus = sf::Vector2f{34.f, 14.f} * constants::f_cell_size;
+		svc.data.switch_destructible_state(90101);
+		++progress;
+		break;
+	case 3: camera_focus = sf::Vector2f{34.f, 14.f} * constants::f_cell_size; break;
+	case 4:
+		camera_focus = player.get_camera_focus_point();
+		if (!console.has_value()) {
+			cooldowns.end.start();
+			++progress;
+		}
+		break;
+	case 5: camera_focus = player.get_camera_focus_point(); break;
+	}
+
 	svc.camera_controller.set_owner(graphics::CameraOwner::system);
-	svc.camera_controller.set_position(player.get_camera_focus_point());
+	svc.camera_controller.set_position(camera_focus);
 }
 
 } // namespace fornani

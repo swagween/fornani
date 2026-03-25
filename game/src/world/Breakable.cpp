@@ -14,14 +14,19 @@ Breakable::Breakable(automa::ServiceProvider& svc, Map& map, sf::Vector2f positi
 	get_collider().sync_components();
 	m_collider.get()->set_attribute(shape::ColliderAttributes::fixed);
 	m_collider.get()->set_trait(shape::ColliderTrait::block);
+	NANI_LOG_DEBUG(m_logger, "Breakable Position: {:.3f}, {:.3f}", get_collider().physics.position.x / 32.f, get_collider().physics.position.y / 32.f);
 }
 
 void Breakable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 	if (is_destroyed()) { return; }
 	tick();
 	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
-	if (energy < 0.2f) { energy = 0.f; }
-	if (svc.ticker.every_x_ticks(20)) { random_offset = random::random_vector_float(-energy, energy); }
+	if (energy < 0.2f) {
+		energy = 0.f;
+		random_offset = {};
+	} else {
+		if (svc.ticker.every_x_ticks(20)) { random_offset = random::random_vector_float(-energy, energy); }
+	}
 	handle_collision(player.get_collider());
 	set_channel(map.get_style_id());
 	set_frame(m_health.get_i_quantity() - 1);
@@ -34,7 +39,8 @@ void Breakable::handle_collision(shape::Collider& other) const {
 
 void Breakable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (is_destroyed()) { return; }
-	Animatable::set_position(get_collider().physics.position - cam + random_offset);
+	auto render_position = util::round_to(get_collider().physics.position, constants::f_cell_size);
+	Animatable::set_position(render_position - cam + random_offset);
 	if (svc.greyblock_mode()) {
 		get_collider().render(win, cam);
 	} else {

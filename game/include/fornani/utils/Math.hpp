@@ -8,7 +8,6 @@
 #include <ccmath/math/misc/lerp.hpp>
 #include <ccmath/math/nearest/floor.hpp>
 #include <ccmath/math/power/sqrt.hpp>
-
 #include <cmath>
 #include <numbers>
 
@@ -31,12 +30,10 @@ inline sf::Vector2f get_direction_from_angle(float angle) { return sf::Vector2f{
 inline sf::Vector2f absolute_distance(sf::Vector2f source, sf::Vector2f destination) { return sf::Vector2f{ccm::abs(source.x - destination.x), ccm::abs(source.y - destination.y)}; }
 inline float round_to_nearest(float input, float target) { return target * static_cast<int>(ccm::floor(input / target)); }
 inline float round_to_even(float input) { return 2.f * static_cast<int>(ccm::floor(input / 2.f)); }
-inline sf::Vector2f round_to_even(sf::Vector2f input) {
-	auto ret = input;
-	ret = {ccm::floor(ret.x / 2.f), ccm::floor(ret.y / 2.f)};
-	auto const intpos = static_cast<sf::Vector2<int>>(ret);
-	ret = 2.f * static_cast<sf::Vector2f>(intpos);
-	return ret;
+inline sf::Vector2f round_to_even(sf::Vector2f input) { return 2.f * sf::Vector2f{std::round(input.x / 2.f), std::round(input.y / 2.f)}; }
+inline sf::Vector2f round_to(sf::Vector2f input, float factor) {
+	if (factor == 0.f) { return sf::Vector2f{}; }
+	return factor * sf::Vector2f{std::round(input.x / factor), std::round(input.y / factor)};
 }
 inline sf::Vector2f round_up_to_even(sf::Vector2f input) {
 	auto ret = input;

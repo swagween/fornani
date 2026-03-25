@@ -3426,6 +3426,12 @@
             "codes": [[1, 1]],
             "message": "The tracks are blocked off."
           }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "Go ahead and unblock the way. I'll investigate."
+          }
         ]
       ],
       "suite": [
@@ -3444,7 +3450,8 @@
           {
             "codes": [
               [1, 0],
-              [5, 0]
+              [5, 0],
+              [23, 1]
             ],
             "message": "Are you able to take the train? I see some construction on the tracks."
           }
@@ -3455,11 +3462,41 @@
             "message": "Hmph."
           },
           {
-            "message": "I was kinda worried that might be the case."
+            "message": "I was kinda worried that might be the case. I can override the block from here, but..."
           },
           {
-            "codes": [[5, 1]],
-            "message": "Proceed at your own risk, Nani. Something seems fishy. I see skycorps security vehicles everywhere."
+            "message": "I don't know. I fear that your chances of taking any trains to Ashtown might be very low."
+          },
+          {
+            "message": "There's lots of lights and Skycorps security vehicles all over the place down there, so they might be repairing the tracks or something."
+          },
+          {
+            "codes": [
+              [5, 1],
+              [1, 1]
+            ],
+            "message": "You made it this far. I guess it can't hurt to try."
+          }
+        ],
+        [
+          {
+            "codes": [[5, 0]],
+            "message": "Roger that."
+          },
+          {
+            "message": "Just a second..."
+          },
+          {
+            "codes": [[23, 2]],
+            "message": "There. Should be good to go."
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "Proceed at your own risk, Nani. I get the sense that something fishy might be going on."
+          },
+          {
+            "codes": [[23, 4]],
+            "message": "Good luck!"
           }
         ]
       ]

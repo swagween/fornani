@@ -40,7 +40,8 @@ void Destructible::update(automa::ServiceProvider& svc, Map& map, player::Player
 
 void Destructible::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (ignore_updates()) { return; }
-	sprite.setPosition(m_collider.get()->physics.position - cam);
+	auto render_position = util::round_to(m_collider.get()->physics.position, constants::f_cell_size);
+	sprite.setPosition(render_position - cam);
 	if (svc.greyblock_mode()) {
 		m_collider.get()->render(win, cam);
 	} else {
