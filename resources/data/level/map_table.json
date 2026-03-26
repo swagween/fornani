@@ -374,6 +374,18 @@
     },
     {
       "folder": "nightside",
+      "label": "obstacle_course.json",
+      "region": "nightside",
+      "room_id": 904
+    },
+    {
+      "folder": "nightside",
+      "label": "pit_stop.json",
+      "region": "nightside",
+      "room_id": 905
+    },
+    {
+      "folder": "nightside",
       "label": "station.json",
       "region": "nightside",
       "room_id": 901

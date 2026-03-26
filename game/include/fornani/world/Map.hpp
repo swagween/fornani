@@ -45,7 +45,6 @@
 #include <fornani/world/Spike.hpp>
 #include <fornani/world/SwitchBlock.hpp>
 #include <fornani/world/TimerBlock.hpp>
-#include <fornani/world/Train.hpp>
 #include <optional>
 #include <vector>
 
@@ -273,7 +272,6 @@ class Map {
 
 	std::optional<EntitySet> m_entities{};
 	std::optional<HazardMap> m_hazards{};
-	std::optional<std::unique_ptr<Train>> m_train{};
 	std::vector<std::unique_ptr<vfx::Emitter>> active_emitters{};
 	std::vector<Explosion> m_explosions{};
 	std::vector<ExplosionSpecifications> m_chain_explosions{};

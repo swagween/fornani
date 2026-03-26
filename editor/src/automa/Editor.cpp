@@ -468,24 +468,10 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		ImGui::EndPopup();
 	}
 
-	bool insp{};
-	bool plat{};
-	bool port{};
-	bool enem{};
-	bool chest{};
-	bool dest{};
-	bool beds{};
-	bool sbtn{};
-	bool sblk{};
-	bool timr{};
-	bool lght{};
-	bool npcs{};
-	bool anim{};
-	bool vine{};
-	bool cuts{};
-	bool turr{};
-	bool watr{};
 	bool open_themes{};
+
+	bool entity_popup{};
+	std::string popup_label{};
 
 	bool new_room{b_new_file};
 
@@ -773,23 +759,24 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		bool flag{};
 		if (ImGui::BeginMenu("Insert")) {
 			menu_hovered = true;
-			if (ImGui::MenuItem("Portal", NULL, &port)) {}
-			if (ImGui::MenuItem("Inspectable", NULL, &insp)) {}
-			if (ImGui::MenuItem("Platform", NULL, &plat)) {}
-			if (ImGui::MenuItem("Enemy", NULL, &enem)) {}
-			if (ImGui::MenuItem("Chest", NULL, &chest)) {}
-			if (ImGui::MenuItem("Destructible", NULL, &dest)) {}
-			if (ImGui::MenuItem("Bed", NULL, &beds)) {}
-			if (ImGui::MenuItem("Switch Block", NULL, &sblk)) {}
-			if (ImGui::MenuItem("Switch Button", NULL, &sbtn)) {}
-			if (ImGui::MenuItem("Turret", NULL, &turr)) {}
-			if (ImGui::MenuItem("Timer Block", NULL, &timr)) {}
-			if (ImGui::MenuItem("Light", NULL, &lght)) {}
-			if (ImGui::MenuItem("NPC", NULL, &npcs)) {}
-			if (ImGui::MenuItem("Animator", NULL, &anim)) {}
-			if (ImGui::MenuItem("Vine", NULL, &vine)) {}
-			if (ImGui::MenuItem("Water", NULL, &watr)) {}
-			if (ImGui::MenuItem("Cutscene Trigger", NULL, &cuts)) {}
+			if (ImGui::MenuItem("Portal", NULL, &entity_popup)) { popup_label = "Portal"; }
+			if (ImGui::MenuItem("Inspectable", NULL, &entity_popup)) { popup_label = "Inspectable"; }
+			if (ImGui::MenuItem("Platform", NULL, &entity_popup)) { popup_label = "Platform"; }
+			if (ImGui::MenuItem("Enemy", NULL, &entity_popup)) { popup_label = "Enemy"; }
+			if (ImGui::MenuItem("Chest", NULL, &entity_popup)) { popup_label = "Chest"; }
+			if (ImGui::MenuItem("Destructible", NULL, &entity_popup)) { popup_label = "Destructible"; }
+			if (ImGui::MenuItem("Bed", NULL, &entity_popup)) { popup_label = "Bed"; }
+			if (ImGui::MenuItem("Switch Block", NULL, &entity_popup)) { popup_label = "Switch Block"; }
+			if (ImGui::MenuItem("Switch Button", NULL, &entity_popup)) { popup_label = "Switch Button"; }
+			if (ImGui::MenuItem("Turret", NULL, &entity_popup)) { popup_label = "Turret"; }
+			if (ImGui::MenuItem("Timer Block", NULL, &entity_popup)) { popup_label = "Timer Block"; }
+			if (ImGui::MenuItem("Light", NULL, &entity_popup)) { popup_label = "Light"; }
+			if (ImGui::MenuItem("NPC", NULL, &entity_popup)) { popup_label = "NPC"; }
+			if (ImGui::MenuItem("Animator", NULL, &entity_popup)) { popup_label = "Animator"; }
+			if (ImGui::MenuItem("Vine", NULL, &entity_popup)) { popup_label = "Vine"; }
+			if (ImGui::MenuItem("Water", NULL, &entity_popup)) { popup_label = "Water"; }
+			if (ImGui::MenuItem("Train", NULL, &entity_popup)) { popup_label = "Train"; }
+			if (ImGui::MenuItem("Cutscene Trigger", NULL, &entity_popup)) { popup_label = "Cutscene Trigger"; }
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 				current_tool->current_entity = std::make_unique<fornani::SavePoint>(*p_services, map.room_id);
@@ -910,90 +897,9 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		ImGui::EndPopup();
 	}
 
-	std::string label{};
-	if (insp) {
-		ImGui::OpenPopup("Inspectable Message");
-		label = "Inspectable Message";
-		popup_open = true;
-	}
-	if (plat) {
-		ImGui::OpenPopup("Platform Specifications");
-		label = "Platform Specifications";
-		popup_open = true;
-	}
-	if (port) {
-		ImGui::OpenPopup("Portal Specifications");
-		label = "Portal Specifications";
-		popup_open = true;
-	}
-	if (enem) {
-		ImGui::OpenPopup("Enemy Specifications");
-		label = "Enemy Specifications";
-		popup_open = true;
-	}
-	if (chest) {
-		ImGui::OpenPopup("Chest Specifications");
-		label = "Chest Specifications";
-		popup_open = true;
-	}
-	if (dest) {
-		ImGui::OpenPopup("Destructible Specifications");
-		label = "Destructible Specifications";
-		popup_open = true;
-	}
-	if (beds) {
-		ImGui::OpenPopup("Bed Specifications");
-		label = "Bed Specifications";
-		popup_open = true;
-	}
-	if (sbtn) {
-		ImGui::OpenPopup("Switch Button Specifications");
-		label = "Switch Button Specifications";
-		popup_open = true;
-	}
-	if (sblk) {
-		ImGui::OpenPopup("Switch Block Specifications");
-		label = "Switch Block Specifications";
-		popup_open = true;
-	}
-	if (timr) {
-		ImGui::OpenPopup("Timer Block Specifications");
-		label = "Timer Block Specifications";
-		popup_open = true;
-	}
-	if (lght) {
-		ImGui::OpenPopup("Light Specifications");
-		label = "Light Specifications";
-		popup_open = true;
-	}
-	if (npcs) {
-		ImGui::OpenPopup("NPC Specifications");
-		label = "NPC Specifications";
-		popup_open = true;
-	}
-	if (anim) {
-		ImGui::OpenPopup("Animator Specifications");
-		label = "Animator Specifications";
-		popup_open = true;
-	}
-	if (vine) {
-		ImGui::OpenPopup("Vine Specifications");
-		label = "Vine Specifications";
-		popup_open = true;
-	}
-	if (cuts) {
-		ImGui::OpenPopup("Cutscene Trigger Specifications");
-		label = "Cutscene Trigger Specifications";
-		popup_open = true;
-	}
-	if (turr) {
-		ImGui::OpenPopup("Turret Specifications");
-		label = "Turret Specifications";
-		popup_open = true;
-	}
-	if (watr) {
-		ImGui::OpenPopup("Water Specifications");
-		label = "Water Specifications";
+	std::string label = popup_label + " Specifications";
+	if (entity_popup) {
+		ImGui::OpenPopup(label.c_str());
 		popup_open = true;
 	}
 

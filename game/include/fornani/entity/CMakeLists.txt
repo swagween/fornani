@@ -17,6 +17,7 @@ nani_add_headers(
         SwitchButton.hpp
         TimerBlock.hpp
         Turret.hpp
+        Train.hpp
         Vine.hpp
         Water.hpp
 )

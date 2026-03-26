@@ -69,6 +69,12 @@ struct QuestContingency {
 	bool delete_me{};
 };
 
+struct QuestContingencySet {
+	QuestContingencySet(dj::Json const& in);
+	void serialize(dj::Json& out) const;
+	std::vector<QuestContingency> m_contingencies{};
+};
+
 class Quest {
   public:
 	Quest() {}

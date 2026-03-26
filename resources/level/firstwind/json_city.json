@@ -1,5 +1,19 @@
 {
   "entities": {
+    "beds": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "flipped": true,
+        "id": 0,
+        "position": [
+          12,
+          9
+        ]
+      }
+    ],
     "inspectables": [
       {
         "activate_on_contact": false,
@@ -26,6 +40,70 @@
             ]
           }
         ]
+      },
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": true,
+        "key": "gdf",
+        "position": [
+          9,
+          9
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "message": "gdf"
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "activate_on_contact": false,
+        "already_open": false,
+        "destination_id": 1,
+        "dimensions": [
+          2,
+          2
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          14,
+          8
+        ],
+        "source_id": 213321321
+      }
+    ],
+    "turrets": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": 0,
+        "id": 0,
+        "pattern": 0,
+        "position": [
+          1,
+          1
+        ],
+        "settings": {
+          "delay": 1,
+          "duration": 256
+        },
+        "type": 0
       }
     ]
   },

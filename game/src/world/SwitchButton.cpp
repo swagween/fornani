@@ -44,6 +44,9 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 
 	for (auto& block : map.switch_blocks) {
 		if (block->get_id() == id) { pressed() ? block->turn_off() : block->turn_on(); }
+		if (block->get_type() == SwitchType::alternator && type == SwitchType::alternator) {
+			if (block->get_id() == id + 1) { pressed() ? block->turn_on() : block->turn_off(); }
+		}
 	}
 
 	// type-specific stuff

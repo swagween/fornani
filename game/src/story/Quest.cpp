@@ -188,4 +188,12 @@ void QuestContingency::serialize(dj::Json& out) const {
 	out.push_back(entry);
 }
 
+QuestContingencySet::QuestContingencySet(dj::Json const& in) {
+	for (auto const& contingency : in.as_array()) { m_contingencies.push_back(QuestContingency(contingency)); }
+}
+
+void QuestContingencySet::serialize(dj::Json& out) const {
+	for (auto& contingency : m_contingencies) { contingency.serialize(out); }
+}
+
 } // namespace fornani

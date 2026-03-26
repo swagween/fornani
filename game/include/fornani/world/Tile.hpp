@@ -22,7 +22,7 @@ namespace fornani::world {
 
 class Map;
 
-enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, spike_orienter, breakable, pushable, target, spawner, checkpoint, bonfire, campfire, home, incinerite, waterfall, train };
+enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, spike_orienter, breakable, pushable, target, spawner, checkpoint, bonfire, campfire, home, incinerite, waterfall };
 enum class TileState { ramp_adjacent, big_ramp, covered, border };
 
 constexpr auto special_index_v = 448;
@@ -43,7 +43,6 @@ constexpr auto get_type_by_value(int const val) -> TileType {
 	if (val == special_index_v + 54) { return TileType::checkpoint; }
 	if (val == special_index_v + 55) { return TileType::breakable; }
 	if (val == special_index_v + 56) { return TileType::waterfall; }
-	if (val == special_index_v + 57) { return TileType::train; }
 	if (val == special_index_v + 62) { return TileType::spike_orienter; }
 	if (val == special_index_v + 63) { return TileType::spike; }
 	return TileType::empty;
@@ -66,6 +65,7 @@ struct Tile {
 	void draw(sf::RenderTexture& tex);
 	void set_type();
 
+	[[nodiscard]] auto is(TileType const check) const -> bool { return type == check; }
 	[[nodiscard]] auto is_occupied() const -> bool { return value > 0; }
 	[[nodiscard]] auto is_collidable() const -> bool { return type == TileType::solid || is_ramp() || is_spawner() || is_platform(); }
 	[[nodiscard]] auto is_solid() const -> bool { return type == TileType::solid; }
@@ -82,14 +82,11 @@ struct Tile {
 	[[nodiscard]] auto is_pushable() const -> bool { return type == TileType::pushable; }
 	[[nodiscard]] auto is_spawner() const -> bool { return type == TileType::spawner; }
 	[[nodiscard]] auto is_target() const -> bool { return type == TileType::target; }
-	[[nodiscard]] auto is_train() const -> bool { return type == TileType::train; }
 	[[nodiscard]] auto is_home() const -> bool { return type == TileType::home; }
 	[[nodiscard]] auto is_incinerite() const -> bool { return type == TileType::incinerite; }
 	[[nodiscard]] auto is_checkpoint() const -> bool { return type == TileType::checkpoint; }
 	[[nodiscard]] auto is_fire() const -> bool { return type == TileType::bonfire || type == TileType::campfire; }
-	[[nodiscard]] auto is_special() const -> bool {
-		return is_pushable() || is_breakable() || is_incinerite() || is_target() || is_checkpoint() || is_fire() || is_spike() || is_spike_orienter() || is_home() || is_waterfall() || is_train();
-	}
+	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable() || is_incinerite() || is_target() || is_checkpoint() || is_fire() || is_spike() || is_spike_orienter() || is_home() || is_waterfall(); }
 	[[nodiscard]] auto ramp_adjacent() const -> bool { return flags.test(TileState::ramp_adjacent); }
 	[[nodiscard]] auto covered() const -> bool { return flags.test(TileState::covered); }
 	[[nodiscard]] auto is_negative_ramp() const -> bool {

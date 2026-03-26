@@ -11,9 +11,18 @@
 
 namespace pi {
 
+void PopupHandler::close_popup() {
+	ImGui::SameLine();
+	if (ImGui::Button("Close")) {
+		m_is_open = false;
+		ImGui::CloseCurrentPopup();
+	}
+	ImGui::EndPopup();
+}
+
 void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, Console& console, char const* label, std::unique_ptr<Tool>& tool, int room_id) {
 
-	if (ImGui::BeginPopupModal("Inspectable Message", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+	if (ImGui::BeginPopupModal("Inspectable Specifications", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
 		static bool activate_on_contact{};
 		static bool instant{};
@@ -39,12 +48,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 																		  std::vector<std::vector<fornani::gui::BasicMessage>>{}, activate_on_contact, std::string{keybuffer}, 0, instant);
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Platform Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -99,12 +103,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			console.add_log(std::string{"Initialized platform with type " + type}.c_str());
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Portal Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -169,12 +168,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			console.add_log(std::string{"Room ID: " + std::to_string(room_id)}.c_str());
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Enemy Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -192,12 +186,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			tool->current_entity = std::make_unique<fornani::Enemy>(svc, selected, variant);
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("NPC Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -247,12 +236,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			tool->current_entity = std::make_unique<fornani::NPC>(svc, id, label, suites);
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Destructible Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -264,12 +248,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			tool->current_entity = std::make_unique<fornani::Destructible>(svc, id);
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Animator Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -290,12 +269,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			tool->current_entity = std::make_unique<fornani::Animator>(svc, id, label);
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Bed Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -309,12 +283,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			tool->current_entity = std::make_unique<fornani::Bed>(svc, 0, flipped);
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Vine Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -338,12 +307,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			tool->current_entity = std::make_unique<fornani::Vine>(svc, length, 2, foreground, reversed, std::vector<int>{link_index});
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Chest Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -409,12 +373,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			tool->current_entity = type == 1 ? std::make_unique<fornani::Chest>(svc, type, modifier, id) : std::make_unique<fornani::Chest>(svc, type, label, modifier, id);
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Switch Button Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -438,12 +397,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			tool->current_entity = std::make_unique<fornani::SwitchButton>(svc, id, type);
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Switch Block Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -467,12 +421,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			tool->current_entity = std::make_unique<fornani::SwitchBlock>(svc, id, type);
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Water Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -493,12 +442,21 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			tool->current_entity = std::make_unique<fornani::Water>(svc, sf::Vector2u{static_cast<unsigned int>(width), static_cast<unsigned int>(height)}, id, toxic);
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
+		close_popup();
+	}
+	if (ImGui::BeginPopupModal("Train Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
+		static int style{};
+
+		ImGui::InputInt("Style", &style);
+
+		if (ImGui::Button("Create")) {
 			m_is_open = false;
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<fornani::Train>(svc, style);
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Timer Block Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -522,12 +480,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			tool->current_entity = std::make_unique<fornani::TimerBlock>(svc, id, type);
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Turret Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -567,12 +520,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			tool->current_entity = std::make_unique<fornani::Turret>(svc, 0, static_cast<fornani::TurretType>(type), static_cast<fornani::TurretPattern>(pattern), fornani::CardinalDirection{hv}, fornani::TurretSettings{delay, duration});
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Light Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -595,12 +543,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			tool->current_entity = std::make_unique<fornani::Light>(svc, id, types[type]);
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Cutscene Trigger Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
@@ -633,12 +576,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			tool->current_entity = std::make_unique<fornani::CutsceneTrigger>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, id, attributes);
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			m_is_open = false;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
+		close_popup();
 	}
 }
 

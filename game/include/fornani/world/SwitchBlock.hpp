@@ -42,6 +42,7 @@ class SwitchBlock : public Animatable {
 	[[nodiscard]] auto switched() const -> bool { return m_state != m_previous_state; }
 	[[nodiscard]] auto on() const -> bool { return m_state != SwitchBlockState::empty; }
 	[[nodiscard]] auto off() const -> bool { return m_state == SwitchBlockState::empty; }
+	[[nodiscard]] auto get_type() const -> SwitchType { return m_type; }
 
   private:
 	shape::RegisteredCollider m_collider;
