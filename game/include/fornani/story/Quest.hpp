@@ -72,7 +72,7 @@ struct QuestContingency {
 struct QuestContingencySet {
 	QuestContingencySet(dj::Json const& in);
 	void serialize(dj::Json& out) const;
-	std::vector<QuestContingency> m_contingencies{};
+	std::vector<QuestContingency> contingencies{};
 };
 
 class Quest {
@@ -125,6 +125,7 @@ class QuestTable {
 	[[nodiscard]] auto get_quest_progression(std::string_view tag, QuestIdentifier const identifier = 0) const -> ProgressionState { return m_quests.contains(tag.data()) ? m_quests.at(tag.data()).get_progression(identifier) : 0; }
 	[[nodiscard]] auto get_quest_progression(std::string_view tag, Subquest const identifier) const -> ProgressionState { return m_quests.contains(tag.data()) ? m_quests.at(tag.data()).get_progression(identifier) : 0; }
 	[[nodiscard]] auto print_progressions(std::string_view tag, std::string_view identifier = "") const -> std::string;
+	[[nodiscard]] auto are_contingencies_met(QuestContingencySet const& set) const -> bool;
 	[[nodiscard]] auto are_contingencies_met(std::vector<QuestContingency> const& set) const -> bool;
 
   private:

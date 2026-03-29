@@ -60,6 +60,11 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	svc.a11y.set_action_ctx_bar_enabled(svc.data.settings["tutorial"].as_bool());
 
+	if (!m_console && !m_cutscenes.is_empty()) {
+		for (auto const& cutscene : m_cutscenes) { m_map->cutscene_catalog.push_cutscene(svc, *m_map, *player, cutscene); }
+		m_cutscenes.clear();
+	}
+
 	m_loading.is_complete() && !p_vendor_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
 	m_loading.update();
 	if (m_inspect_hint) {
@@ -338,10 +343,7 @@ void Dojo::open_vendor(ServiceProvider& svc, int id) {
 	m_vendor_id = id;
 }
 
-void Dojo::launch_cutscene(ServiceProvider& svc, int id) {
-	if (m_console) { return; }
-	m_map->cutscene_catalog.push_cutscene(svc, *m_map, *player, id);
-}
+void Dojo::launch_cutscene(ServiceProvider& svc, int id) { m_cutscenes.add(id); }
 
 void Dojo::add_map_marker(ServiceProvider& svc, int room_id, int type, int questline) {
 	if (!m_map) { return; }

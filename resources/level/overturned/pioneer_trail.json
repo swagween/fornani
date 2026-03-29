@@ -396,6 +396,22 @@
           0
         ],
         "source_id": 227
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "destination_id": 258,
+        "dimensions": [
+          1,
+          5
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          191,
+          5
+        ],
+        "source_id": 227
       }
     ],
     "save_point": [

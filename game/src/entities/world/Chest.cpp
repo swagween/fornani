@@ -14,10 +14,12 @@ Chest::Chest(automa::ServiceProvider& svc, world::Map& map, StableID id, ChestTy
 	get_collider().physics.gravity = 10.f;
 	get_collider().set_exclusion_target(shape::ColliderTrait::player);
 	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
+	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
 
 	Animatable::set_parameters(m_animations.unopened);
 
 	if (svc.data.chest_is_open(id.get()) && id.get() != 0) { state.set(ChestState::open); }
+	NANI_LOG_DEBUG(m_logger, "Created Chest with StableID: {}", id.get());
 }
 
 Chest::Chest(automa::ServiceProvider& svc, world::Map& map, StableID id, ChestType type, std::string tag, int modifier) : Chest(svc, map, id, type, modifier) { m_tag = tag; }

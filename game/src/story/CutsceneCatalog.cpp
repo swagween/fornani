@@ -16,6 +16,7 @@ void CutsceneCatalog::update() {
 }
 
 void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int id) {
+	if (m_register.contains(id)) { return; }
 	switch (id) {
 	case 1: cutscenes.push_back(std::make_unique<MainIntro>(svc, map, player)); break;
 	case 6001: cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc)); break;
@@ -25,6 +26,8 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	case 903: cutscenes.push_back(std::make_unique<NightsideWall>(svc)); break;
 	default: cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc)); break;
 	}
+	m_register.add(id);
+	NANI_LOG_INFO(m_logger, "Pushed Cutscene: {}", id);
 }
 
 } // namespace fornani

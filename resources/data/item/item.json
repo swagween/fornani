@@ -24,6 +24,9 @@
   },
   {
     "tag": "willets_floppy_disc",
+    "category": 1,
+    "lookup": [3, 0],
+    "origin": [5, 2],
     "actual_title": "Willet's Floppy Disc",
     "naive_description": "Contains schematics for the Greatwing, which we will need in order to stop Skycorps from taking over the island. Dr. Willet told me to bring it to someone named Spencer in Ashtown.",
     "actual_description": "Contains schematics for the Greatwing. Spencer needs a track zero sensor and a fresh head motor to access its contents.",
@@ -108,7 +111,8 @@
   },
   {
     "tag": "woodshine_warehouse_key",
-    "lookup": [9, 0],
+    "category": 1,
+    "lookup": [8, 0],
     "origin": [5, 4],
     "actual_title": "Woodshine Warehouse Key",
     "naive_description": "Allows you to enter Woodshine's warehouse.",
@@ -117,6 +121,7 @@
   },
   {
     "tag": "pioneer_station_key",
+    "category": 1,
     "lookup": [8, 0],
     "origin": [4, 4],
     "actual_title": "Pioneer Station Key",
@@ -287,6 +292,7 @@
   },
   {
     "tag": "bronze_bracelet",
+    "category": 2,
     "lookup": [6, 1],
     "origin": [5, 3],
     "actual_title": "Bronze Bracelet",
@@ -298,6 +304,7 @@
   },
   {
     "tag": "silver_bracelet",
+    "category": 2,
     "lookup": [7, 1],
     "origin": [6, 3],
     "actual_title": "Silver Bracelet",
@@ -322,6 +329,7 @@
   },
   {
     "tag": "walkie_talkie",
+    "category": 1,
     "actual_title": "Walkie-Talkie",
     "naive_description": "The batteries are dead.",
     "unique": false,
@@ -331,6 +339,7 @@
   },
   {
     "tag": "clamp",
+    "category": 1,
     "lookup": [6, 1],
     "origin": [8, 1],
     "actual_title": "Clamp",
@@ -363,6 +372,7 @@
   },
   {
     "tag": "stationary_rat",
+    "category": 1,
     "actual_title": "Stationary Rat",
     "naive_description": "You discovered this rat inside a chest. It obviously didn't want to be found.",
     "actual_description": "A very good boy who cannot spin.",

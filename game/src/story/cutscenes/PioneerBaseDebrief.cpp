@@ -23,7 +23,6 @@ PioneerBaseDebrief::PioneerBaseDebrief(automa::ServiceProvider& svc, world::Map&
 
 void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
 
-	static auto progress = util::Counter{};
 	static auto ended = false;
 
 	if (complete()) {
@@ -70,7 +69,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 		svc.music_player.play_looped();
 		bryn->set_position_from_scaled({10.f, 16.f});
 		willett->set_position_from_scaled({12.f, 16.f});
-		player.set_position(sf::Vector2f{11.f, 16.f} * constants::f_cell_size);
+		player.set_position_on_grid({11, 16});
 		player.set_idle();
 		bryn->request(NPCAnimationState::inspect);
 	}
@@ -109,10 +108,10 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 
 	if (!map.transition.is(graphics::TransitionState::inactive)) { return; }
 
-	switch (progress.get_count()) {
+	switch (progress) {
 	case 0:
 		if (!console) { willett->force_engage(); }
-		progress.update();
+		++progress;
 		return;
 	case 1:
 		if (!console) {
@@ -120,7 +119,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 			willett->push_conversation(11);
 			bryn->force_engage();
 			svc.camera_controller.set_position(bryn->Mobile::get_global_center());
-			progress.update();
+			++progress;
 			return;
 		}
 		break;
@@ -130,7 +129,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 			bryn->push_conversation(11);
 			willett->force_engage();
 			svc.camera_controller.set_position(willett->Mobile::get_global_center());
-			progress.update();
+			++progress;
 			return;
 		}
 		break;
@@ -140,20 +139,40 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 			willett->push_conversation(12);
 			bryn->force_engage();
 			svc.camera_controller.set_position(bryn->Mobile::get_global_center());
-			progress.update();
+			++progress;
 			return;
 		}
 		break;
 	case 4:
 		if (!console) {
-			bryn->pop_conversation();
+			bryn->flush_conversations();
+			bryn->push_conversation(12);
 			willett->force_engage();
 			svc.camera_controller.set_position(willett->Mobile::get_global_center());
-			progress.update();
+			++progress;
 			return;
 		}
 		break;
 	case 5:
+		if (!console) {
+			willett->flush_conversations();
+			willett->push_conversation(14);
+			bryn->force_engage();
+			svc.camera_controller.set_position(bryn->Mobile::get_global_center());
+			++progress;
+			return;
+		}
+		break;
+	case 6:
+		if (!console) {
+			bryn->pop_conversation();
+			willett->force_engage();
+			svc.camera_controller.set_position(willett->Mobile::get_global_center());
+			++progress;
+			return;
+		}
+		break;
+	case 7:
 		if (!console && !ended) {
 			cooldowns.end.start();
 			cooldowns.pause.start();

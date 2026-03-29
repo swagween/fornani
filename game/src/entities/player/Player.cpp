@@ -18,8 +18,8 @@ constexpr auto default_invincibility_time_v = 300;
 constexpr auto max_damage_v = 1024.f;
 
 Player::Player(automa::ServiceProvider& svc)
-	: Mobile(svc, "nani", {24, 24}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb},
-	  m_sprite_shake{40}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450} {
+	: Mobile(svc, "nani", {26, 26}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb},
+	  m_sprite_shake{40}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{10.f, -3.f} {
 
 	center();
 	svc.data.load_player_params(*this);
@@ -556,10 +556,15 @@ void Player::set_slow_walk() {
 	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_slow_walk, &m_animation_machine);
 }
 
-void Player::set_sleeping() {
-	m_animation_machine.force(AnimState::idle, "sleep");
-	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_sleep, &m_animation_machine);
-	animation.set_frame(3);
+void Player::set_sleeping(bool on_floor) {
+	if (!on_floor) {
+		m_animation_machine.force(AnimState::sleep, "sleep");
+		m_animation_machine.state_function = std::bind(&PlayerAnimation::update_sleep, &m_animation_machine);
+		animation.set_frame(3);
+	} else {
+		m_animation_machine.force(AnimState::unconscious, "unconscious");
+		m_animation_machine.state_function = std::bind(&PlayerAnimation::update_unconscious, &m_animation_machine);
+	}
 }
 
 void Player::set_hurt() {
@@ -600,6 +605,8 @@ void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	m_lighting.physics.position = get_collider().get_center() + sf::Vector2f{controller.direction.as_float() * light_offset_v, 0.f};
 	if (arsenal && hotbar) { equipped_weapon().force_position(m_weapon_socket); }
 }
+
+void Player::set_position_on_grid(sf::Vector2i grid_pos) { set_position(sf::Vector2f{grid_pos} * constants::f_cell_size + sf::Vector2f{0.f, constants::f_cell_vec.y - get_collider().dimensions.y}); }
 
 void Player::set_draw_position(sf::Vector2f const to) {
 	m_sprite_position = to;

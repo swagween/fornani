@@ -141,7 +141,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 		m_animation_machine.state_function = std::forward<Factory>(factory)(get_animation());
 	}
 	void set_animation_flag(AnimTriggers const flag, bool on = true) { on ? m_animation_machine.triggers.set(flag) : m_animation_machine.triggers.reset(flag); }
-	void set_sleep_timer() { m_animation_machine.set_sleep_timer(); }
+	void set_sleep_timer(int time = 0) { m_animation_machine.set_sleep_timer(time); }
 	void set_death_type(PlayerDeathType const to) { m_death_type = to; }
 	[[nodiscard]] auto get_elapsed_animation_ticks() const -> int { return animation.get_elapsed_ticks(); }
 
@@ -151,7 +151,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void flash_sprite();
 	void set_idle();
 	void set_slow_walk();
-	void set_sleeping();
+	void set_sleeping(bool on_floor = false);
 	void set_hurt();
 	void set_direction(Direction to);
 	void piggyback(int id);
@@ -208,6 +208,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void force_camera_center() { m_camera.camera.force_center(get_camera_focus_point()); }
 
 	void set_position(sf::Vector2f new_pos, bool centered = false);
+	void set_position_on_grid(sf::Vector2i grid_pos);
 	void set_draw_position(sf::Vector2f const to);
 	void freeze_position();
 	void shake_sprite();
@@ -270,7 +271,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	std::optional<arms::Hotbar> hotbar{};
 
 	sf::Vector2f anchor_point{};
-	sf::Vector2f sprite_offset{10.f, -3.f};
+	sf::Vector2f sprite_offset;
 
 	std::vector<std::unique_ptr<vfx::Antenna>> antennae{};
 

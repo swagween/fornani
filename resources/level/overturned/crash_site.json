@@ -232,6 +232,22 @@
           7
         ],
         "source_id": 204
+      },
+      {
+        "activate_on_contact": false,
+        "already_open": false,
+        "destination_id": 509,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          40,
+          104
+        ],
+        "source_id": 204
       }
     ],
     "vines": [

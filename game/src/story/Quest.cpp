@@ -163,6 +163,17 @@ auto QuestTable::print_progressions(std::string_view tag, std::string_view ident
 	return ret;
 }
 
+auto QuestTable::are_contingencies_met(QuestContingencySet const& set) const -> bool {
+	for (auto const& contingency : set.contingencies) {
+		if (contingency.strict) {
+			if (get_quest_progression(contingency.tag) != contingency.requirement) { return false; }
+		} else {
+			if (get_quest_progression(contingency.tag) < contingency.requirement) { return false; }
+		}
+	}
+	return true;
+}
+
 auto QuestTable::are_contingencies_met(std::vector<QuestContingency> const& set) const -> bool {
 	for (auto const& contingency : set) {
 		if (contingency.strict) {
@@ -189,11 +200,11 @@ void QuestContingency::serialize(dj::Json& out) const {
 }
 
 QuestContingencySet::QuestContingencySet(dj::Json const& in) {
-	for (auto const& contingency : in.as_array()) { m_contingencies.push_back(QuestContingency(contingency)); }
+	for (auto const& contingency : in.as_array()) { contingencies.push_back(QuestContingency(contingency)); }
 }
 
 void QuestContingencySet::serialize(dj::Json& out) const {
-	for (auto& contingency : m_contingencies) { contingency.serialize(out); }
+	for (auto& contingency : contingencies) { contingency.serialize(out); }
 }
 
 } // namespace fornani

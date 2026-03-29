@@ -182,5 +182,17 @@
     "tag": "nightside_wall",
     "target": 2,
     "displayed": false
+  },
+  {
+    "title": "Open Nightside Station",
+    "tag": "open_nightside_station",
+    "target": 1,
+    "displayed": false
+  },
+  {
+    "title": "Open Pioneer Station",
+    "tag": "open_pioneer_station",
+    "target": 1,
+    "displayed": false
   }
 ]

@@ -28,9 +28,10 @@ void GrandMastiff::update(automa::ServiceProvider& svc, world::Map& map, player:
 		svc.music_player.load(svc.finder, "scuffle");
 		svc.music_player.play_looped();
 	}
-	if (consume_flag(BossFlags::end_battle)) {
+	if (has_flag_set(BossFlags::end_battle) && !has_flag_set(BossFlags::post_death)) {
 		svc.data.switch_destructible_state(4013, true);
 		svc.music_player.pause();
+		set_flag(BossFlags::post_death);
 	}
 	if (!has_flag_set(BossFlags::battle_mode)) { return; }
 

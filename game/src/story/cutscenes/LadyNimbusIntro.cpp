@@ -7,7 +7,10 @@
 
 namespace fornani {
 
-LadyNimbusIntro::LadyNimbusIntro(automa::ServiceProvider& svc) : Cutscene(svc, 601, "lady_nimbus_intro") { cooldowns.beginning.start(); }
+LadyNimbusIntro::LadyNimbusIntro(automa::ServiceProvider& svc) : Cutscene(svc, 601, "lady_nimbus_intro") {
+	cooldowns.beginning.start();
+	svc.world_clock.set_time(9, 30);
+}
 
 void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
 
@@ -20,9 +23,10 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::un
 		svc.state_controller.actions.set(automa::Actions::custom_player_position);
 		svc.state_flags.reset(automa::StateFlags::no_menu);
 		svc.state_flags.reset(automa::StateFlags::cutscene);
-		player.set_sleeping();
-		player.set_sleep_timer();
+		player.set_sleeping(true);
+		player.set_sleep_timer(1024);
 		svc.app_flags.set(automa::AppFlags::custom_map_start);
+		svc.world_clock.set_time(9, 30);
 		return;
 	}
 

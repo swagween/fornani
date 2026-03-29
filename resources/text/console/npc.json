@@ -556,36 +556,41 @@
       "suite": [
         [
           {
-            "message": "It's an old mining town, and one of the few remaining human colonies on this island."
+            "message": "Doc..."
           },
           {
-            "message": "There, you'll meet with an old classmate of mine named Spencer."
+            "message": "I don't mean to speak out of turn, but... I think we can trust her."
           },
           {
-            "message": "He might be the only person on this whole island who can recover the Greatwing blueprints from that disc."
+            "message": "Besides, what other options do we have?"
+          }
+        ]
+      ]
+    },
+    "12": {
+      "responses": [
+        [
+          {
+            "codes": [[8, 0]],
+            "message": "So, how am I getting to Ashtown?"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "message": "I do indeed."
           },
           {
-            "message": "I know it's a bit of a far-fetched task, and Doc and I don't have any expectations of you. I mean, I already owe you my life."
+            "codes": [[2, 41]],
+            "message": "Here you go, Nani."
+          },
+          {
+            "message": "This is a field telephone that the pioneers used to use. I know it's a little old-fashioned, but it's all we've got."
           },
           {
             "codes": [[1, 0]],
-            "message": "But this is the best we could come up with. A last-ditch effort to stop Skycorps before it's too late..."
-          }
-        ],
-        [
-          {
-            "message": "We'll radio to you every step of the way, as long as we can reach you. Some areas have better reception than others, so you'll be on your own quite a lot."
-          },
-          {
-            "codes": [[2, 40]],
-            "message": "Here."
-          },
-          {
-            "message": "This is a field telephone that the pioneers used to use. I know it's a little old-fashioned, but it's all we had lying around."
-          },
-          {
-            "codes": [[8, 0]],
-            "message": "With this, Doc and I can call you if we think you need help."
+            "message": "With this, we'll radio to you every step of the way, as long as we can reach you. Some areas have better reception than others, so you'll be on your own quite a lot."
           }
         ]
       ]
@@ -681,7 +686,7 @@
           },
           {
             "codes": [[1, 0]],
-            "message": "Ugh, I don't know. He's really protective of Kariba stuff, and understandably so, but I just can't wrap my mind around that kind of betrayal."
+            "message": "Ugh, I don't know. He's really protective of Kariba stuff, and understandably so, but I just can't really come to terms with that kind of betrayal."
           }
         ],
         [
@@ -1576,19 +1581,13 @@
         [
           {
             "codes": [[1, 1]],
-            "message": "How can we stop them?"
+            "message": "Well, the Mother Worm might wake up."
           }
         ],
         [
           {
             "codes": [[1, 2]],
-            "message": "Why are you giving it to me?"
-          }
-        ],
-        [
-          {
-            "codes": [[8, 0]],
-            "message": "Ashtown?"
+            "message": "You got any ideas how I can stop them?"
           }
         ]
       ],
@@ -1598,7 +1597,7 @@
             "message": "Precisely. Despite living in hiding, I still have secret remote access to some of Skycorps's servers."
           },
           {
-            "message": "There are plans to vastly increase the production of rhenite on this island. That means disrupting the delicate balance between the hibernating Mother Worm and all life on this island."
+            "message": "There are plans to vastly increase the production of rhenite. That means disrupting the delicate balance between the hibernating Mother Worm and all life on this island."
           },
           {
             "message": "Nani, for thousands of years your tribe have lived in harmony with the Mother Worm, and Skycorps are mere weeks away from destroying it."
@@ -1610,35 +1609,100 @@
         ],
         [
           {
-            "message": "Well... I'll show you."
-          },
-          {
-            "codes": [[2, 3]],
-            "message": "..."
-          },
-          {
             "codes": [[1, 1]],
-            "message": "This unremarkable little floppy disc contains highly confidential blueprints to the Greatwing, which is Skycorps' mother ship."
+            "message": "...It is not a future I wish to see."
           }
         ],
         [
           {
-            "message": "It is an enormous responsibility, I know..."
+            "message": "Oho, my, you really do have your brother's stong spirit."
           },
           {
-            "codes": [[1, 2]],
-            "message": "But if we wish to have any hope of stopping Skycorps from bringing this island to ruin, you must take these blueprints to Ashtown."
+            "message": "..."
+          },
+          {
+            "message": "This is not a task for you, Nani, I regret to say."
           }
         ]
       ]
     },
     "12": {
       "output": 2,
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "I'm not my brother, you know."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "Tell me what I need to do."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 3]],
+            "message": "Instructions from whom?"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "message": "..."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Whatever have we done to end up in such a dire circumstance?"
+          }
+        ],
+        [
+          {
+            "message": "That may be the case, Nani, but Kariba blood runs strong. Especially in your family."
+          },
+          {
+            "message": "But to dwell on grievances is indeed a waste of time."
+          },
+          {
+            "message": "...sigh..."
+          },
+          {
+            "codes": [[1, 1]],
+            "message": "Bryn is right. What better choice do we have?"
+          }
+        ],
+        [
+          {
+            "message": "Here."
+          },
+          { "codes": [[2, 3]], "message": "..." },
+          {
+            "message": "This unremarkable little floppy disc contains highly confidential blueprints to the Greatwing, which is Skycorps' mother ship."
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "All you need to do is take it to Ashtown. Once you arrive there, you will await further instruction."
+          }
+        ],
+        [
+          {
+            "message": "From us."
+          },
+          {
+            "message": "Bryn? Have you still got that old field telephone lying around?"
+          }
+        ]
+      ]
+    },
+    "14": {
+      "output": 2,
       "responses": [],
       "suite": [
         [
           {
-            "message": "There is a train station on the outskirts of Forgetville that should have service to Ashtown. That ought to be the quickest way."
+            "message": "There is a train station in the Nightside complex that should have service to Ashtown. That ought to be the quickest way."
           },
           {
             "codes": [[22, 810, 1, 1]],
@@ -1667,7 +1731,7 @@
           },
           {
             "codes": [[1, 3]],
-            "message": "Who is Spencer?"
+            "message": "What did my brother do?"
           }
         ]
       ],
@@ -1676,22 +1740,19 @@
           {
             "codes": [[1, 0]],
             "messages": [
-              "Bring that floppy disc to Spencer in Ashtown. It's our best shot at stopping Skycorps.",
-              "People like you give me hope in this island.",
+              "Bring that floppy disc to Ashtown. It's our best shot at stopping Skycorps.",
+              "We've placed enormous trust in you, Nani. Break your family's mold.",
               "What do you need?"
             ]
           }
         ],
         [
           {
-            "message": "It's quite a ways east. I'm hoping the train station near Forgetville will still have service to it."
-          },
-          {
-            "message": "You'll have to navigate the Skycorps junkyards to get there, but that should be doable if you were able to make it out of the Kariba ruins in one piece."
+            "message": "It's quite a ways east. I'm hoping the train station at Nightside will still have service to it."
           },
           {
             "codes": [[1, 0]],
-            "message": "Just give us a ring if you need help."
+            "message": "You'll have to navigate the Skycorps junkyards to get there, but that should be doable if you were able to make it out of the Kariba ruins in one piece."
           }
         ],
         [
@@ -1711,17 +1772,17 @@
         ],
         [
           {
-            "message": "He was another of my star pupils, and he's got a knack for computer stuff."
+            "message": "Loth was a great boon to our little research team."
           },
           {
-            "message": "He moved to Ashtown as a means to escape the Grand Island authorities. Apparently, he hacked into some top-secret security system..."
+            "message": "He was almost as much family to us as he is to you."
           },
           {
-            "message": "Anyway, he is as much an enemy of Skycorps as we are, since they've got the Grand Island police wrapped around their finger."
+            "message": "And suddenly, out of nowhere, he stole an artifact of interest that we'd discovered together, and he ran away with it."
           },
           {
             "codes": [[1, 0]],
-            "message": "We can trust him. And even if we can't, we don't really have a choice anymore..."
+            "message": "We've heard nothing about him ever since, and I am beginning to suspect we will never see him again."
           }
         ]
       ]
@@ -2042,7 +2103,7 @@
           },
           {
             "codes": [[21, 300]],
-            "message": "Anyway, you've arrived at just the right time, as we've got pressing matters to discuss with you. Let's waste no more time."
+            "message": "Anyway, you've arrived at just the right time, as we've got pressing matters to discuss with you."
           }
         ]
       ]
@@ -2475,7 +2536,7 @@
           },
           {
             "codes": [
-              [2, 38],
+              [2, 39],
               [3, 12, 1, 415]
             ],
             "message": "Here, take this."
@@ -2588,7 +2649,7 @@
               [1, 1],
               [13, 26, 406]
             ],
-            "message": "Say, if you haven't payed your dad a visit yet, I'm sure he'd be thrilled to see you."
+            "message": "Say, if you haven't paid your dad a visit yet, I'm sure he'd be thrilled to see you."
           }
         ],
         [
@@ -2701,6 +2762,9 @@
           {
             "codes": [[5, 2]],
             "message": "I'm sending Lynx after her, and that'll be the end of it."
+          },
+          {
+            "message": "Over and out."
           }
         ]
       ]
@@ -3496,7 +3560,7 @@
           },
           {
             "codes": [[23, 4]],
-            "message": "Good luck!"
+            "message": "Good luck, Nani. Over and out!"
           }
         ]
       ]
@@ -3571,6 +3635,95 @@
           {
             "codes": [[23, 12]],
             "message": "Over and out!"
+          }
+        ]
+      ]
+    }
+  },
+  "loth": {
+    "1": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "...Loth?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "Where were you?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 3]],
+            "message": "For me? What do you mean?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 4]],
+            "message": "I don't understand..."
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [[1, 0]],
+            "message": "Nani."
+          }
+        ],
+        [
+          {
+            "message": "I knew you'd be arriving soon. I felt your energy through the Mother."
+          },
+          {
+            "codes": [[1, 1]],
+            "message": "You know, she is ever in conversation with our spirits. We need only listen."
+          }
+        ],
+        [
+          {
+            "message": "There is much you should know, sis. And perhaps I should have told you sooner, but it's too late for that now."
+          },
+          {
+            "message": "I am not the thief that Dr. Willett would have you believe, nor the traitor that Bryn surely thinks I am."
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "Everything I've done and will do, Nani, is for you."
+          }
+        ],
+        [
+          {
+            "message": "We are a dying people. Skycorps relentlessly raid our last holdfast, all the while hammering away at the island, oblivious to the consequences."
+          },
+          {
+            "message": "If we do not protect our home and our tribe, we will all die."
+          },
+          {
+            "message": "And I don't mean just those who live on this island. I mean everyone on the planet."
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "You see, Nani... you are the future of our people."
+          }
+        ],
+        [
+          {
+            "message": "Nor would I expect you to. At least, not now."
+          },
+          {
+            "message": "But for now, you should know that Dr. Willett is not who you think he is."
+          },
+          {
+            "message": "Or, at least, he isn't who he "
+          },
+          {
+            "codes": [[1, 4]],
+            "message": "Nor would I expect you to. At least, not now."
           }
         ]
       ]

@@ -26,6 +26,8 @@ PlayerAnimation::PlayerAnimation(Player& plr) : m_player(&plr), state_function{s
 					{"inspect", {37, 2, 7 * rate, -1, true}},
 					{"dash_kick", {108, 2, 6 * rate, 0}},
 					{"sit", {50, 4, 6 * rate, -1, true}},
+					{"unconscious", {107, 1, 6 * rate, -1}},
+					{"recover", {108, 2, 6 * rate, 0}},
 					{"hurt", {76, 2, 7 * rate, 0}},
 					{"dash", {0, 4, 4 * rate, 0}},
 					{"dash_up", {120, 4, 4 * rate, 0}},
@@ -71,7 +73,7 @@ bool PlayerAnimation::stepped() const {
 		   m_player->animation.keyframe_started();
 }
 
-void PlayerAnimation::set_sleep_timer() { m_sleep_timer.start(); }
+void PlayerAnimation::set_sleep_timer(int time) { time == 0 ? m_sleep_timer.start() : m_sleep_timer.start(time); }
 
 fsm::StateFunction PlayerAnimation::update_idle() {
 	m_player->animation.label = "idle";
@@ -925,11 +927,20 @@ fsm::StateFunction player::PlayerAnimation::update_sleep() {
 	m_player->controller.prevent_movement();
 	if (m_player->has_collider()) { m_player->get_collider().physics.zero_x(); }
 	if (m_sleep_timer.is_almost_complete()) { request(AnimState::wake_up); }
-	if (change_state(AnimState::wake_up, get_params("wake_up"), true)) {
-		NANI_LOG_DEBUG(m_logger, "Woke up!");
-		return PA_BIND(update_wake_up);
-	}
+	if (change_state(AnimState::wake_up, get_params("wake_up"), true)) { return PA_BIND(update_wake_up); }
 	return PA_BIND(update_sleep);
+}
+
+fsm::StateFunction PlayerAnimation::update_unconscious() {
+	m_player->animation.label = "unconscious";
+	p_state.actual = AnimState::unconscious;
+	m_player->set_flag(PlayerFlags::show_weapon, false);
+	m_player->controller.restrict_movement();
+	m_player->controller.prevent_movement();
+	if (m_player->has_collider()) { m_player->get_collider().physics.zero_x(); }
+	if (m_sleep_timer.is_almost_complete()) { request(AnimState::recover); }
+	if (change_state(AnimState::recover, get_params("recover"), true)) { return PA_BIND(update_recover); }
+	return PA_BIND(update_unconscious);
 }
 
 fsm::StateFunction player::PlayerAnimation::update_wake_up() {
@@ -945,6 +956,21 @@ fsm::StateFunction player::PlayerAnimation::update_wake_up() {
 		return PA_BIND(update_idle);
 	}
 	return PA_BIND(update_wake_up);
+}
+
+fsm::StateFunction PlayerAnimation::update_recover() {
+	m_player->animation.label = "recover";
+	p_state.actual = AnimState::recover;
+	m_player->set_flag(PlayerFlags::show_weapon, false);
+	m_player->controller.restrict_movement();
+	m_player->controller.prevent_movement();
+	if (m_player->animation.complete()) {
+		m_player->set_flag(PlayerFlags::show_weapon);
+		m_player->controller.unrestrict();
+		m_player->animation.set_params(get_params("idle"));
+		return PA_BIND(update_idle);
+	}
+	return PA_BIND(update_recover);
 }
 
 fsm::StateFunction player::PlayerAnimation::update_crouch() {

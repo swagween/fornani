@@ -34,6 +34,27 @@
         ],
         "source_id": 257
       }
+    ],
+    "train": [
+      {
+        "contingencies": [
+          {
+            "requirement": 1,
+            "strict": true,
+            "tag": "open_pioneer_station"
+          }
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          33,
+          19
+        ],
+        "style": 1
+      }
     ]
   },
   "meta": {
@@ -7204,7 +7225,7 @@
         0,
         0,
         0,
-        505,
+        0,
         0,
         0,
         0,

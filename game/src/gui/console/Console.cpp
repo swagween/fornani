@@ -95,6 +95,7 @@ void Console::update(automa::ServiceProvider& svc) {
 			}
 			if (code.is(MessageCodeType::launch_cutscene) && m_process_code_before) {
 				m_services->events.launch_cutscene_event.dispatch(*m_services, code.value);
+				NANI_LOG_DEBUG(m_logger, "Launching cutscene: {}", code.value);
 				processed = true;
 			}
 			if (code.is(MessageCodeType::add_map_marker) && m_process_code_before && code.extras) {

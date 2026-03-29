@@ -3,6 +3,7 @@
 
 #include <fornani/entities/animation/Animation.hpp>
 #include <fornani/graphics/Animatable.hpp>
+#include <fornani/io/Logger.hpp>
 #include <fornani/particle/Sparkler.hpp>
 #include <fornani/physics/RegisteredCollider.hpp>
 #include <fornani/utils/ID.hpp>
@@ -61,6 +62,8 @@ class Chest final : public Animatable {
 		anim::Parameters shine{1, 5, 24, 0};
 		anim::Parameters opened{6, 1, 8, -1};
 	} m_animations{};
+
+	io::Logger m_logger{"Chest"};
 };
 
 } // namespace fornani::entity

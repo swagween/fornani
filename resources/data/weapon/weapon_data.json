@@ -490,7 +490,7 @@
         "type": 0,
         "active": 128,
         "cooldown": 128,
-        "size": 0.3,
+        "size": 0.6,
         "damage": 0.2
       },
       "projectile": {

@@ -561,7 +561,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 						for (auto n : get_entities<NPC>()) {
 							if (n->is_background()) { n->render(win, cam); }
 						}
-						for (auto t : get_entities<Train>()) { t->render(win, cam); }
+						for (auto t : get_entities<Train>()) { t->render(win, cam, 1.f); }
 					}
 				}
 				if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {

@@ -6,7 +6,7 @@
 
 namespace fornani {
 
-Train::Train(automa::ServiceProvider& svc, dj::Json const& in) : Entity{svc, "train", 0}, m_wheels{svc, "train_wheels", {303, 39}} {
+Train::Train(automa::ServiceProvider& svc, dj::Json const& in) : Entity{svc, in, "train"}, m_wheels{svc, "train_wheels", {303, 39}} {
 	unserialize(in);
 	init(svc);
 }
@@ -98,13 +98,14 @@ void Train::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 	m_chain->update(svc, map, player, 0.99f);
 	tick();
 	m_chain->snap_to_axis(false);
+	auto running = m_contingencies ? svc.quest_table.are_contingencies_met(*m_contingencies) : true;
 	auto arrive = svc.world_clock.get_hours() % 2 == 1;
 	auto leave = svc.world_clock.get_hours() % 2 == 0;
-	if (arrive && has_flag_set(TrainFlags::away)) {
+	if (arrive && has_flag_set(TrainFlags::away) && running) {
 		set_flag(TrainFlags::approaching);
 		set_flag(TrainFlags::away, false);
 	}
-	if (leave && has_flag_set(TrainFlags::stopped)) {
+	if (leave && has_flag_set(TrainFlags::stopped) && running) {
 		m_prepare_leave.start();
 		svc.soundboard.play_sound("train_steam", closest_car);
 		set_flag(TrainFlags::stopped, false);
@@ -117,9 +118,11 @@ void Train::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 
 void Train::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
-	Entity::render(win, cam, 1.f);
+	Entity::render(win, cam, size);
+	if (m_editor) { return; }
 	if (!m_chain) { return; }
-	bool debug_draw = false;
+	bool debug_draw = true;
+	Animatable::center();
 	set_channel(m_style);
 	m_wheels.set_channel(m_style);
 	if (has_flag_set(TrainFlags::away)) { return; }
@@ -147,10 +150,11 @@ void Train::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 }
 
 void Train::init(automa::ServiceProvider& svc) {
-	m_textured = false;
+	// m_textured = false;
+	repeatable = false;
 	Animatable::set_dimensions({401, 128});
 	m_chain.emplace(vfx::Chain(svc, vfx::SpringParameters{0.96f, 0.4f, 0.f, 0.f}, {}, 8));
-	center();
+	Animatable::center();
 	m_wheels.center();
 	if (m_chain) {
 		for (auto [i, link] : std::views::enumerate(m_chain->links)) {

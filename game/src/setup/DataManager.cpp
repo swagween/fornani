@@ -527,7 +527,7 @@ void DataManager::save_player_params(player::Player& player) {
 	if (!player_params.dj::Json::to_file((finder.resource_path() + "/data/player/physics_params.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save physics params!"); }
 }
 
-void DataManager::open_chest(int id) { opened_chests.push_back(id); }
+void DataManager::open_chest(std::uint64_t id) { opened_chests.push_back(id); }
 
 void DataManager::reveal_room(int id) { discovered_rooms.add(id); }
 
@@ -593,7 +593,7 @@ bool data::DataManager::is_duplicate_room(int id) const {
 
 bool DataManager::is_door_unlocked(std::string_view tag) const { return unlocked_doors.contains(tag.data()); }
 
-bool DataManager::chest_is_open(int id) const {
+bool DataManager::chest_is_open(std::uint64_t id) const {
 	for (auto& chest : opened_chests) {
 		if (chest == id) { return true; }
 	}

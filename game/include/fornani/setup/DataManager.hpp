@@ -67,7 +67,7 @@ class DataManager final {
 	void save_player_params(player::Player& player);
 
 	// map-related save data helpers
-	void open_chest(int id);
+	void open_chest(std::uint64_t id);
 	void reveal_room(int id);
 	void unlock_door(std::string_view tag);
 	void activate_switch(int id);
@@ -82,7 +82,7 @@ class DataManager final {
 
 	bool is_duplicate_room(int id) const;
 	bool is_door_unlocked(std::string_view tag) const;
-	bool chest_is_open(int id) const;
+	bool chest_is_open(std::uint64_t id) const;
 	bool switch_is_activated(int id) const;
 	bool inspectable_is_destroyed(int id) const;
 	bool is_room_discovered(int id) const;
@@ -178,7 +178,7 @@ class DataManager final {
 
   private:
 	[[nodiscard]] auto get_destroyed_inspectables() const -> Register<int> { return destroyed_inspectables; }
-	std::vector<int> opened_chests{};
+	std::vector<std::uint64_t> opened_chests{};
 	Register<std::string> unlocked_doors{};
 	std::vector<int> activated_switches{};
 	std::vector<std::pair<int, int>> destructible_states{};

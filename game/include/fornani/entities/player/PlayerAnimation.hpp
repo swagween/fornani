@@ -51,7 +51,9 @@ enum class AnimState {
 	swim,
 	dive,
 	hover,
-	stun
+	stun,
+	unconscious,
+	recover
 };
 
 enum class AnimTriggers { end_death };
@@ -75,7 +77,7 @@ class PlayerAnimation : public StateMachine<AnimState> {
 	[[nodiscard]] auto is_sleep_timer_running() const -> bool { return m_sleep_timer.running(); }
 
 	bool stepped() const;
-	void set_sleep_timer();
+	void set_sleep_timer(int time = 0);
 
 	fsm::StateFunction state_function;
 
@@ -109,7 +111,9 @@ class PlayerAnimation : public StateMachine<AnimState> {
 	fsm::StateFunction update_turn_slide();
 	fsm::StateFunction update_shoot();
 	fsm::StateFunction update_sleep();
+	fsm::StateFunction update_unconscious();
 	fsm::StateFunction update_wake_up();
+	fsm::StateFunction update_recover();
 	fsm::StateFunction update_crouch();
 	fsm::StateFunction update_crawl();
 	fsm::StateFunction update_dash_kick();

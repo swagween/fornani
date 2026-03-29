@@ -782,6 +782,12 @@
     },
     {
       "folder": "overturned",
+      "label": "worm_access.json",
+      "region": "overturned",
+      "room_id": 258
+    },
+    {
+      "folder": "overturned",
       "label": "yard.json",
       "region": "overturned",
       "room_id": 219

@@ -4,6 +4,7 @@
 #include <fornani/automa/GameplayState.hpp>
 #include <fornani/events/Subscription.hpp>
 #include <fornani/shader/LightShader.hpp>
+#include <fornani/systems/Register.hpp>
 #include <fornani/world/Camera.hpp>
 #include <memory>
 #include <optional>
@@ -47,6 +48,7 @@ class Dojo final : public GameplayState {
 	std::string m_item_tag{};
 
 	std::unordered_map<int, std::string> m_map_markers{};
+	Register<int> m_cutscenes{};
 
 	util::Cooldown m_enter_room;
 	util::Cooldown m_loading;
