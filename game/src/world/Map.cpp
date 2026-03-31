@@ -703,24 +703,12 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 	for (auto& proj : active_projectiles) {
 		proj.update(svc, *player);
 		if (proj.whiffed() && !proj.poofed() && !proj.made_contact()) {
-			effects.push_back(entity::Effect(svc, "bullet_whiff", proj.get_position(), proj.get_velocity() * 0.05f, proj.effect_type()));
+			effects.push_back(entity::Effect(svc, "bullet_whiff", proj.get_collider().get_global_center(), proj.get_velocity() * 0.05f, proj.effect_type()));
 			proj.poof();
 		}
 	}
 
 	std::erase_if(active_projectiles, [](auto const& p) { return p.destroyed(); });
-
-	// TODO: refactor this and move it into appropriate classes
-	if (player->fire_weapon()) {
-		svc.stats.player.bullets_fired.update();
-		sf::Vector2f tweak = player->controller.facing_left() ? sf::Vector2f{0.f, 0.f} : sf::Vector2f{-3.f, 0.f};
-		if (player->equipped_weapon().multishot()) {
-			for (int i = 0; i < player->equipped_weapon().get_multishot(); ++i) { spawn_projectile_at(svc, player->equipped_weapon(), player->equipped_weapon().get_barrel_point()); }
-		} else {
-			player->equipped_weapon().shoot(svc, *this);
-		}
-		if (!player->equipped_weapon().automatic() && !player->equipped_weapon().is_chargeable()) { player->controller.set_shot(false); }
-	}
 }
 
 void Map::generate_collidable_layer(bool live) {

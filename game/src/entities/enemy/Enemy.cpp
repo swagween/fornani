@@ -333,8 +333,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 	flags.state.set(enemy::StateFlags::shot);
 	auto secondary_collision = hit_second && !hit_main;
 	if (((secondary_collision && flags.general.test(GeneralFlags::invincible_secondary)) || is_invincible()) && !died()) {
-		map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position()));
-		svc.soundboard.flags.world.set(audio::World::hard_hit);
+		proj.handle_hard_hit(svc, map);
 	} else if (!is_invincible() && !died()) {
 		if (proj.persistent()) {
 			proj.damage_over_time();

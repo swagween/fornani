@@ -85,7 +85,7 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
 	void set_barrel_point(sf::Vector2f point);
 	void set_orientation(Direction to_direction);
 	void set_team(Team team);
-	void set_firing_direction(Direction to_direction);
+	void set_firing_direction(CardinalDirection to_direction);
 	void reset();
 
 	void set_hotbar() { inventory_state = InventoryState::hotbar; }
@@ -94,6 +94,7 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
 	void deselect() { flags.ui.reset(UIFlags::selected); }
 	void set_reload_multiplier(float const to) { m_modifiers.reload_multiplier = to; }
 	void reduce_reload_time(float percentage);
+	void flip_firing_direction() { firing_direction.flip(); }
 
 	[[nodiscard]] auto selected() const -> bool { return flags.ui.test(UIFlags::selected); }
 	[[nodiscard]] auto shot() const -> bool { return cooldowns.cooldown.just_started(); }
@@ -108,7 +109,7 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
 	[[nodiscard]] auto multishot() const -> bool { return specifications.multishot != 0; }
 	[[nodiscard]] auto get_barrel_point() const -> sf::Vector2f { return offsets.gameplay.barrel; }
 	[[nodiscard]] auto get_cooldown() const -> int { return cooldowns.cooldown.get(); }
-	[[nodiscard]] auto get_firing_direction() & -> Direction& { return firing_direction; }
+	[[nodiscard]] auto get_firing_direction() -> CardinalDirection { return firing_direction; }
 	[[nodiscard]] auto get_global_offset() const -> sf::Vector2f { return offsets.render.global; };
 	[[nodiscard]] auto get_recoil() const -> float { return specifications.recoil; }
 	[[nodiscard]] auto get_multishot() const -> int { return specifications.multishot; }
@@ -137,7 +138,7 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
 	} metadata{};
 
 	Offsets offsets{};
-	Direction firing_direction{};
+	CardinalDirection firing_direction{};
 	WeaponSpecifications specifications{};
 	util::BitFlags<WeaponAttributes> attributes{};
 

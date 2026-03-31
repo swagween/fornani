@@ -69,13 +69,14 @@ class Projectile : public Animatable {
 	void handle_collision(automa::ServiceProvider& svc, world::Map& map);
 	void on_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void on_explode(automa::ServiceProvider& svc, world::Map& map);
+	void handle_hard_hit(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f cam);
 	void destroy(bool completely, bool whiffed = false);
 	void seed(automa::ServiceProvider& svc, sf::Vector2f target = {}, float speed_multiplier = 1.f, float damage_multiplier = 1.f);
 	void register_chunk(std::uint8_t chunk) { m_chunk_id = chunk; }
 	void set_position(sf::Vector2f pos);
 	void set_team(Team to_team);
-	void set_firing_direction(Direction to_direction);
+	void set_firing_direction(CardinalDirection to_direction);
 	void multiply(float factor) { variables.damage_multiplier = std::min(variables.damage_multiplier * factor, variables.damage_multiplier * 5.f); }
 	void poof();
 	void damage_over_time();
@@ -96,7 +97,7 @@ class Projectile : public Animatable {
 	[[nodiscard]] auto get_velocity() const -> sf::Vector2f { return physical.collider.physics.apparent_velocity(); }
 	[[nodiscard]] auto get_destruction_point() const -> sf::Vector2f { return variables.destruction_point; }
 	[[nodiscard]] auto get_team() const -> Team { return metadata.team; }
-	[[nodiscard]] auto get_direction() const -> Direction { return physical.direction; }
+	[[nodiscard]] auto get_direction() const -> CardinalDirection { return physical.direction; }
 	[[nodiscard]] auto get_collider() -> shape::CircleCollider& { return physical.collider; }
 	[[nodiscard]] auto can_damage() const -> bool { return damage_timer.is_almost_complete() || !persistent(); }
 	[[nodiscard]] auto has_critical_damage() const -> bool { return variables.damage_multiplier > 2.f; }
@@ -144,7 +145,7 @@ class Projectile : public Animatable {
 	} audio;
 
 	struct {
-		Direction direction{};
+		CardinalDirection direction{};
 		sf::Vector2f max_dimensions{};
 		shape::CircleCollider collider{4.f};
 		std::optional<components::CircleSensor> sensor{};

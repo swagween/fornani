@@ -210,14 +210,11 @@ void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 
 void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
 	if (proj.transcendent()) { return; }
-	if (proj.get_collider().collides_with(get_collider().bounding_box)) {
-		if (!proj.destruction_initiated()) {
-			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position(), get_collider().physics.apparent_velocity()));
-			if (proj.get_direction().lnr == LNR::neutral) { map.effects.back().rotate(); }
-			svc.soundboard.flags.world.set(audio::World::hard_hit);
-		}
-		proj.destroy(false);
+	if (proj.reflect()) {
+		proj.get_collider().handle_collision(m_collider.get()->bounding_box);
+		return;
 	}
+	if (proj.get_collider().collides_with(m_collider.get()->bounding_box)) { proj.handle_hard_hit(svc, map); }
 }
 
 void Platform::switch_directions() {

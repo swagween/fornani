@@ -9,7 +9,7 @@
   "inv_hit": {
     "frame_count": 4,
     "framerate": 12,
-    "dimensions": [16, 16]
+    "dimensions": [18, 18]
   },
   "doublejump": {
     "frame_count": 5,
@@ -151,8 +151,13 @@
     "x_reflection": true,
     "y_reflection": true
   },
+  "wall_hit": {
+    "frame_count": 4,
+    "framerate": 16,
+    "dimensions": [16, 16]
+  },
   "small_flash": {
-    "frame_count": 6,
+    "frame_count": 5,
     "framerate": 14,
     "dimensions": [20, 20]
   },

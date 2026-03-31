@@ -66,7 +66,7 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		for (auto& proj : map.active_projectiles) {
 			if (proj.get_team() == arms::Team::skycorps) { continue; }
 			if (attacks.stab.hit.within_bounds(proj.get_collider())) {
-				map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position()));
+				proj.handle_hard_hit(svc, map);
 				random::percent_chance(50) ? svc.soundboard.flags.lynx.set(audio::Lynx::ping_1) : svc.soundboard.flags.lynx.set(audio::Lynx::ping_2);
 				proj.destroy(false);
 				svc.ticker.freeze_frame(3);

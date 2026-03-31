@@ -17,6 +17,7 @@ enum class RotationType { clockwise, counterclockwise };
 enum class DirectionFlags { locked };
 
 class Direction;
+class CardinalDirection;
 
 class SimpleDirection {
   public:
@@ -47,6 +48,7 @@ class SimpleDirection {
 
 struct Direction {
 	Direction(SimpleDirection dir) : Direction(UND::neutral, dir.as<LNR>()) {}
+	Direction(CardinalDirection dir);
 	Direction(UND und_preset = UND::neutral, LNR lnr_preset = LNR::neutral) : und(und_preset), lnr(lnr_preset) {}
 	Direction(sf::Vector2i preset) : lnr{preset.x == 0 ? LNR::neutral : preset.x == 1 ? LNR::right : LNR::left}, und{preset.y == 0 ? UND::neutral : preset.y == 1 ? UND::up : UND::down} {}
 	Direction(sf::Vector2i preset, bool world_orientation) : lnr{preset.x == 0 ? LNR::neutral : preset.x == 1 ? LNR::right : LNR::left}, und{preset.y == 0 ? UND::neutral : preset.y == -1 ? UND::up : UND::down} {}
@@ -150,6 +152,10 @@ struct CardinalDirection {
 			}
 			break;
 		}
+	}
+	void flip() {
+		rotate(RotationType::clockwise);
+		rotate(RotationType::clockwise);
 	}
 
 	[[nodiscard]] auto get() const -> UDLR { return udlr; }

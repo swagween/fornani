@@ -1644,7 +1644,7 @@
         [
           {
             "codes": [[1, 3]],
-            "message": "Instructions from whom?"
+            "message": "Instruction from whom?"
           }
         ]
       ],
@@ -1688,7 +1688,7 @@
         ],
         [
           {
-            "message": "From us."
+            "message": "Well, from us."
           },
           {
             "message": "Bryn? Have you still got that old field telephone lying around?"
@@ -3570,7 +3570,7 @@
         [
           {
             "codes": [[1, 1]],
-            "message": "Yeah. (give the code)"
+            "message": "Yeah. It's 'AC-7738'."
           }
         ],
         [
@@ -3666,6 +3666,36 @@
             "codes": [[1, 4]],
             "message": "I don't understand..."
           }
+        ],
+        [
+          {
+            "codes": [[1, 5]],
+            "message": "What was it that you stole, exactly?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 6]],
+            "message": "Oh, come on, now's not the time for secrets!"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 7]],
+            "message": "Just like you protected me from getting kidnapped by Skycorps?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 8]],
+            "message": "Where's the Pixiote Temple...?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 9]],
+            "message": "What...? No! You can't just leave again!"
+          }
         ]
       ],
       "suite": [
@@ -3719,11 +3749,74 @@
             "message": "But for now, you should know that Dr. Willett is not who you think he is."
           },
           {
-            "message": "Or, at least, he isn't who he "
+            "message": "Or, at least, he isn't who he purports to be."
+          },
+          {
+            "message": "He is a man out for his own interests, and nothing more. He does not care about the Kariba or this island."
           },
           {
             "codes": [[1, 4]],
-            "message": "Nor would I expect you to. At least, not now."
+            "message": "And the clearer that became to me, the less fault I found in my decision to sabotage his research."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 5]],
+            "message": "Hah... Now, Nani, there will always be knowledge not meant for you to know."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 6]],
+            "message": "It is a secret for your own good, Nani! I am merely protecting you!"
+          }
+        ],
+        [
+          {
+            "message": "..."
+          },
+          {
+            "message": "My dear sister..."
+          },
+          {
+            "message": "I suppose you are now an adult and very capable of making your own decisions, and suffering their consequences."
+          },
+          {
+            "message": "So if you must know what I stole from Willett, so be it."
+          },
+          {
+            "message": "It is not safe to tell you - especially not here. Even better is if I simply show you."
+          },
+          {
+            "codes": [[1, 7]],
+            "message": "Find me at the heart of the Pixiote Temple. There, you will learn the whole truth."
+          }
+        ],
+        [
+          {
+            "message": "As I told you, the Mother Worm is ever in conference with your soul. You need only listen, and she will show you the way."
+          },
+          {
+            "codes": [[1, 8]],
+            "message": "Goodbye for now, Nani. I trust you will act in accordance with the Mother and our people."
+          }
+        ],
+        [
+          {
+            "message": "I'm not going anywhere. You have other challenges ahead of you that you must deal with before we can speak again. Until then, I will be with you in spirit."
+          },
+          {
+            "message": "I trust you'll tell no one of our conversation, though I know very well that I cannot control what you do. Nor would I want to."
+          },
+          {
+            "message": "The future is in your hands, Nani. It's up to you what you want it to look like."
+          },
+          {
+            "codes": [
+              [8, 0],
+              [23, 10]
+            ],
+            "message": "See you at Pixiote Temple, sis. Good luck."
           }
         ]
       ]

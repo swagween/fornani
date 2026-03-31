@@ -56,14 +56,7 @@ void Destructible::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::P
 		proj.get_collider().handle_collision(m_collider.get()->bounding_box);
 		return;
 	}
-	if (proj.get_collider().collides_with(m_collider.get()->bounding_box)) {
-		if (!proj.destruction_initiated()) {
-			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position()));
-			if (proj.get_direction().lnr == LNR::neutral) { map.effects.back().rotate(); }
-			svc.soundboard.flags.world.set(audio::World::hard_hit);
-		}
-		proj.destroy(false);
-	}
+	if (proj.get_collider().collides_with(m_collider.get()->bounding_box)) { proj.handle_hard_hit(svc, map); }
 }
 
 shape::Shape& Destructible::get_bounding_box() { return m_collider.get()->bounding_box; }

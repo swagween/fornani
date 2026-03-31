@@ -180,7 +180,7 @@ class DataManager final {
 	[[nodiscard]] auto get_destroyed_inspectables() const -> Register<int> { return destroyed_inspectables; }
 	std::vector<std::uint64_t> opened_chests{};
 	Register<std::string> unlocked_doors{};
-	std::vector<int> activated_switches{};
+	Register<int> activated_switches{};
 	std::vector<std::pair<int, int>> destructible_states{};
 	Register<int> destroyed_inspectables{};
 	std::vector<util::QuestKey> quest_progressions{};

@@ -1,9 +1,10 @@
+
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "fornani/io/Logger.hpp"
-#include "fornani/utils/Direction.hpp"
-#include "fornani/weapon/Projectile.hpp"
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/Direction.hpp>
+#include <fornani/weapon/Projectile.hpp>
 
 namespace fornani::player {
 class Player;

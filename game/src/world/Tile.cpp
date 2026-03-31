@@ -17,15 +17,10 @@ Tile::Tile(sf::Vector2<std::uint32_t> i, sf::Vector2f p, std::uint32_t val, std:
 
 void Tile::on_hit(automa::ServiceProvider& svc, player::Player& player, world::Map& map, arms::Projectile& proj) {
 	if (proj.transcendent()) { return; }
-	// if (!map.nearby(bounding_box, proj.get_collider())) { return; }
 	collision_check = true;
 	if ((proj.get_collider().collides_with(bounding_box) && is_occupied())) {
 		if (!is_collidable() || is_platform()) { return; }
 		if (!proj.reflect()) {
-			if (!proj.destruction_initiated()) {
-				map.effects.push_back(entity::Effect(svc, "wall_hit", proj.get_destruction_point() + proj.get_position(), {}, proj.effect_type()));
-				if (proj.get_direction().lnr == LNR::neutral) { map.effects.back().rotate(); }
-			}
 			proj.destroy(false);
 		} else {
 			auto direction = sf::Vector2i{};

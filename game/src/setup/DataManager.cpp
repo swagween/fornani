@@ -364,7 +364,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	for (auto& room : save["discovered_rooms"].as_array()) { discovered_rooms.add(room.as<int>()); }
 	for (auto& door : save["unlocked_doors"].as_array()) { unlocked_doors.add(door.as_string()); }
 	for (auto& chest : save["opened_chests"].as_array()) { opened_chests.push_back(chest.as<int>()); }
-	for (auto& s : save["activated_switches"].as_array()) { activated_switches.push_back(s.as<int>()); }
+	for (auto& s : save["activated_switches"].as_array()) { activated_switches.add(s.as<int>()); }
 	for (auto& block : save["destroyed_blocks"].as_array()) { destructible_states.push_back(std::make_pair(block[0].as<int>(), block[1].as<int>())); }
 	for (auto& inspectable : save["destroyed_inspectables"].as_array()) { destroyed_inspectables.add(inspectable.as<int>()); }
 	for (auto& q : save["quest_progressions"].as_array()) {
@@ -534,7 +534,13 @@ void DataManager::reveal_room(int id) { discovered_rooms.add(id); }
 void DataManager::unlock_door(std::string_view tag) { unlocked_doors.add(tag.data()); }
 
 void DataManager::activate_switch(int id) {
-	if (!switch_is_activated(id)) { activated_switches.push_back(id); }
+	if (!activated_switches.contains(id)) {
+		activated_switches.add(id);
+		auto& save = files.at(current_save).save_data;
+		save["activated_switches"] = dj::Json::empty_array();
+		for (auto& s : activated_switches) { save["activated_switches"].push_back(s); }
+		if (!save.dj::Json::to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save file!"); }
+	}
 }
 
 void DataManager::switch_destructible_state(int id, bool inverse) {

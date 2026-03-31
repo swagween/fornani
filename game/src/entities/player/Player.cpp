@@ -493,6 +493,10 @@ void Player::update_animation() {
 
 	if (controller.get_ability_animation() && controller.is_ability_active() && controller.is_animation_request()) { m_animation_machine.request(*controller.get_ability_animation()); }
 
+	if (!hotbar) {
+		if (controller.has_flag_set(PlayerControllerFlags::shot_weapon)) { m_animation_machine.request(AnimState::melee_front_kick); }
+	}
+
 	if (m_animation_machine.is_state(AnimState::sit)) { set_flag(PlayerFlags::show_weapon, false); }
 	if (controller.inspecting()) { m_animation_machine.request(AnimState::inspect); }
 	if (controller.is_crouching() && grounded()) { controller.moving() ? m_animation_machine.request(AnimState::crawl) : m_animation_machine.request(AnimState::crouch); }
@@ -635,16 +639,26 @@ void Player::update_direction() {
 }
 
 void Player::update_weapon(world::Map& map) {
+	if (fire_weapon()) {
+		m_services->stats.player.bullets_fired.update();
+		sf::Vector2f tweak = controller.facing_left() ? sf::Vector2f{0.f, 0.f} : sf::Vector2f{-3.f, 0.f};
+		if (equipped_weapon().multishot()) {
+			for (int i = 0; i < equipped_weapon().get_multishot(); ++i) { map.spawn_projectile_at(*m_services, equipped_weapon(), equipped_weapon().get_barrel_point()); }
+		} else {
+			equipped_weapon().shoot(*m_services, map);
+		}
+		if (!equipped_weapon().automatic() && !equipped_weapon().is_chargeable()) { controller.set_shot(false); }
+	}
 	controller.set_arsenal(static_cast<bool>(hotbar));
 	if (!arsenal) { return; }
 	if (!hotbar) { return; }
 	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching
 	for (auto& weapon : arsenal.value().get_loadout()) {
 		hotbar->has(weapon->get_tag()) ? weapon->set_hotbar() : weapon->set_reserved();
-		if (controller.is_wallsliding() && !controller.direction.up_or_down()) { weapon->get_firing_direction().flip(); }
 		weapon->update(*m_services, map, controller.direction);
 		weapon->set_position(m_weapon_socket);
 		weapon->set_firing_direction(controller.direction);
+		if (controller.is_wallsliding() && !controller.direction.up_or_down()) { weapon->flip_firing_direction(); }
 	}
 	equipped_weapon().set_flag(arms::WeaponFlags::firing, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
 	equipped_weapon().set_flag(arms::WeaponFlags::charging, controller.has_flag_set(PlayerControllerFlags::firing_weapon));

@@ -162,7 +162,7 @@ void Weapon::shoot() {
 
 	active_projectiles.update();
 	ammo.use();
-	physical.physics.apply_force(firing_direction.get_vector() * -1.f);
+	physical.physics.apply_force(firing_direction.as_vector() * -1.f);
 	cooldowns.shoot_effect.start();
 	if (!attributes.test(WeaponAttributes::automatic) && !attributes.test(WeaponAttributes::charge)) { m_services->soundboard.play_sound(get_audio_tag(), get_barrel_point()); }
 }
@@ -206,29 +206,19 @@ void Weapon::set_orientation(Direction to_direction) {
 	auto left_barrel_offset = sf::Vector2f{-offsets.render.barrel.x, offsets.render.barrel.y};
 	auto const& position = physical.final_position;
 	set_rotation(sf::degrees(neutral_rotation));
-	switch (firing_direction.lnr) {
-	case LNR::right:
-		set_scale(right_scale);
-		offsets.gameplay.barrel = position + right_offset + right_barrel_offset;
-		break;
-	case LNR::left:
-		set_scale(left_scale);
-		offsets.gameplay.barrel = position + left_offset + left_barrel_offset;
-		break;
-	default: break;
-	}
-	switch (firing_direction.und) {
-	case UND::up:
-		to_direction.right() ? Drawable::rotate(sf::degrees(-90)) : Drawable::rotate(sf::degrees(90));
+	to_direction.right() ? set_scale(right_scale) : set_scale(left_scale);
+	switch (firing_direction.get()) {
+	case UDLR::right: offsets.gameplay.barrel = position + right_offset + right_barrel_offset; break;
+	case UDLR::left: offsets.gameplay.barrel = position + left_offset + left_barrel_offset; break;
+	case UDLR::up:
+		to_direction.right() ? Drawable::set_rotation(sf::degrees(-90)) : Drawable::set_rotation(sf::degrees(90));
 		if (to_direction.left()) { offsets.gameplay.barrel = {position.x - left_offset.y - left_barrel_offset.y, position.y + left_offset.x + left_barrel_offset.x}; }
 		if (to_direction.right()) { offsets.gameplay.barrel = {position.x + right_offset.y + right_barrel_offset.y, position.y - right_offset.x - right_barrel_offset.x}; }
-		firing_direction.neutralize_lr();
 		break;
-	case UND::down:
-		to_direction.lnr == LNR::right ? Drawable::rotate(sf::degrees(90)) : Drawable::rotate(sf::degrees(-90));
+	case UDLR::down:
+		to_direction.right() ? Drawable::set_rotation(sf::degrees(90)) : Drawable::set_rotation(sf::degrees(-90));
 		if (to_direction.left()) { offsets.gameplay.barrel = {position.x + left_offset.y + left_barrel_offset.y, position.y - left_offset.x - left_barrel_offset.x}; }
 		if (to_direction.right()) { offsets.gameplay.barrel = {position.x - right_offset.y - right_barrel_offset.y, position.y + right_offset.x + right_barrel_offset.x}; }
-		firing_direction.neutralize_lr();
 		break;
 	default: break;
 	}
@@ -237,7 +227,7 @@ void Weapon::set_orientation(Direction to_direction) {
 
 void Weapon::set_team(Team team) { projectile.set_team(team); }
 
-void Weapon::set_firing_direction(Direction to_direction) { firing_direction = to_direction; }
+void Weapon::set_firing_direction(CardinalDirection to_direction) { firing_direction = to_direction; }
 
 void Weapon::reduce_reload_time(float percentage) {
 	auto amount = static_cast<int>(static_cast<float>(cooldowns.reload.get_native_time()) * percentage);
