@@ -11,14 +11,14 @@
 namespace fornani::gui {
 
 ClockGizmo::ClockGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement)
-	: Gizmo("Clock", true), m_sprites{.clock{sf::Sprite{svc.assets.get_texture("clock_gizmo")}}, .hand{sf::Sprite{svc.assets.get_texture("clock_hand")}}}, m_text{.readout{svc.text.fonts.basic}} {
+	: Gizmo("Clock", true), m_sprites{.clock{sf::Sprite{svc.assets.get_texture("clock_gizmo")}}, .hand{sf::Sprite{svc.assets.get_texture("clock_hand")}}}, m_text{.readout{svc.text.fonts.basic.font}} {
 	m_physics.position = sf::Vector2f{334.f, 100.f};
 	m_placement = placement;
 	m_sprites.clock.setScale(constants::f_scale_vec);
 	m_sprites.hand.setOrigin({4.f, 4.f});
 	m_sprites.clock.setOrigin(m_sprites.clock.getLocalBounds().getCenter());
 	m_text.readout.setFillColor(colors::pioneer_red);
-	m_text.readout.setCharacterSize(16);
+	m_text.readout.setCharacterSize(svc.text.fonts.basic.glyph_size);
 }
 
 void ClockGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {

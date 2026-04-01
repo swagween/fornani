@@ -7,7 +7,7 @@
 
 namespace fornani::automa {
 
-Option::Option(ServiceProvider& svc, MenuTheme& theme, std::string_view lbl) : label(svc.text.fonts.title), selectable{true}, m_theme{&theme} {
+Option::Option(ServiceProvider& svc, MenuTheme& theme, std::string_view lbl) : label(svc.text.fonts.title.font), selectable{true}, m_theme{&theme} {
 	label.setString(std::string{lbl});
 	label.setCharacterSize(16);
 	label.setLetterSpacing(1.f);

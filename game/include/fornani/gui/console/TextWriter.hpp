@@ -6,18 +6,16 @@
 #include <djson/json.hpp>
 #include <fornani/core/Common.hpp>
 #include <fornani/gui/console/Message.hpp>
+#include <fornani/utils/Counter.hpp>
+#include <fornani/utils/TextUtils.hpp>
 #include <deque>
-#include <ranges>
 #include <string>
 #include <string_view>
-#include <unordered_map>
-#include "fornani/graphics/HelpText.hpp"
 #include "fornani/io/Logger.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Decoder.hpp"
 #include "fornani/utils/QuestCode.hpp"
-#include "fornani/utils/Shipment.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -56,7 +54,7 @@ class TextWriter {
 	void set_bounds(sf::FloatRect to_bounds, bool wrap = false);
 	void append(std::string_view content);
 	void set_font_color(sf::Color to_color);
-	void set_font(sf::Font& to_font);
+	void set_font(FontSpec& to_font);
 	///@return true when we are able to progress in the writer, false if inputs should do nothing
 	bool request_next();
 	void speed_up();
@@ -121,12 +119,11 @@ class TextWriter {
 	sf::Text working_message;
 
 	std::string working_str{};
-	sf::Font* m_font;
+	FontSpec* m_font;
 	sf::FloatRect m_bounds{};
 	sf::FloatRect m_previous_bounds{};
 	float m_delta_threshold{};
 	int m_writing_speed{};
-	int m_text_size{};
 	bool m_hide_cursor{};
 	bool m_is_first{};
 

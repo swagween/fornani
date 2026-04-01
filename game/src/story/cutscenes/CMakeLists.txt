@@ -1,6 +1,7 @@
 nani_add_sources(
   BrynPostMiaag.cpp
         LadyNimbusIntro.cpp
+        LothAtWorm.cpp
         PioneerBaseDebrief.cpp
         MainIntro.cpp
         NightsideStation.cpp

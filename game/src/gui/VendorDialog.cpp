@@ -14,13 +14,13 @@ namespace fornani::gui {
 
 VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id)
 	: vendor_id(vendor_id), m_buy_selector{{4, 2}, {32.f, 32.f}}, m_sell_selector{{8, 4}, {18.f, 18.f}}, orb{.sprite{anim::AnimatedSprite(svc.assets.get_texture("orbs"), {24, 24})}},
-	  m_artwork{svc, "vendor_" + std::string{*svc.data.get_npc_label_from_id(vendor_id)}}, text{.vendor_name{svc.text.fonts.title},
-																								.buy_tab{svc.text.fonts.title},
-																								.sell_tab{svc.text.fonts.title},
-																								.orb_count{svc.text.fonts.title},
-																								.price{svc.text.fonts.title},
-																								.price_number{svc.text.fonts.title},
-																								.item_label{svc.text.fonts.basic}},
+	  m_artwork{svc, "vendor_" + std::string{*svc.data.get_npc_label_from_id(vendor_id)}}, text{.vendor_name{svc.text.fonts.title.font},
+																								.buy_tab{svc.text.fonts.title.font},
+																								.sell_tab{svc.text.fonts.title.font},
+																								.orb_count{svc.text.fonts.title.font},
+																								.price{svc.text.fonts.title.font},
+																								.price_number{svc.text.fonts.title.font},
+																								.item_label{svc.text.fonts.basic.font}},
 	  m_constituents{
 		  VendorConstituent{svc, "portrait", {{}, {96, 144}}},			VendorConstituent{svc, "wares", {{0, 335}, {200, 118}}, 200, util::InterpolationType::cubic},
 		  VendorConstituent{svc, "description", {{96, 0}, {256, 137}}}, VendorConstituent{svc, "name", {{0, 144}, {103, 58}}, 80},
@@ -65,12 +65,12 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	text.sell_tab.setString(svc.data.gui_text["vendor"]["sell"].as_string());
 	text.price.setString(svc.data.gui_text["vendor"]["price"].as_string());
 	// font
-	text.vendor_name.setCharacterSize(16);
-	text.buy_tab.setCharacterSize(16);
-	text.sell_tab.setCharacterSize(16);
-	text.price.setCharacterSize(16);
-	text.item_label.setCharacterSize(16);
-	text.price_number.setCharacterSize(16);
+	text.vendor_name.setCharacterSize(svc.text.fonts.title.glyph_size);
+	text.buy_tab.setCharacterSize(svc.text.fonts.title.glyph_size);
+	text.sell_tab.setCharacterSize(svc.text.fonts.title.glyph_size);
+	text.price.setCharacterSize(svc.text.fonts.title.glyph_size);
+	text.item_label.setCharacterSize(svc.text.fonts.basic.glyph_size);
+	text.price_number.setCharacterSize(svc.text.fonts.title.glyph_size);
 	// colors
 	text.vendor_name.setFillColor(colors::pioneer_red);
 	text.price.setFillColor(colors::pioneer_red);
@@ -259,7 +259,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	text.vendor_name.setPosition(m_constituents[static_cast<int>(VendorConstituentType::name)].get_window_position() + sf::Vector2f{26.f, 34.f});
 	text.price.setPosition(m_constituents[static_cast<int>(VendorConstituentType::core)].get_window_position() + sf::Vector2f{72.f, 164.f});
 	text.price_number.setPosition(m_constituents[static_cast<int>(VendorConstituentType::core)].get_window_position() + sf::Vector2f{150.f, 206.f});
-	text.item_label.setPosition(m_constituents[static_cast<int>(VendorConstituentType::core)].get_window_position() + sf::Vector2f{92.f, 98.f});
+	text.item_label.setPosition(m_constituents[static_cast<int>(VendorConstituentType::core)].get_window_position() + sf::Vector2f{92.f, 98.f} + svc.text.fonts.basic.offset);
 }
 
 void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map, LightShader& shader) {

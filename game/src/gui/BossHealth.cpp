@@ -6,9 +6,9 @@
 namespace fornani::gui {
 
 BossHealth::BossHealth(automa::ServiceProvider& svc, std::string_view label)
-	: HealthBar{svc, colors::red}, m_label{svc.text.fonts.title}, m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "boss_health", 128, util::InterpolationType::quadratic} {
+	: HealthBar{svc, colors::red}, m_label{svc.text.fonts.title.font}, m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "boss_health", 128, util::InterpolationType::quadratic} {
 	m_label.setString(label.data());
-	m_label.setCharacterSize(16);
+	m_label.setCharacterSize(svc.text.fonts.title.glyph_size);
 	m_label.setFillColor(colors::red);
 
 	p_taken.setFillColor(colors::goldenrod);

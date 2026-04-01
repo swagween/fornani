@@ -3,7 +3,9 @@
     "label": "error_sound",
     "bus": "system",
     "volume": 1.0,
-    "pitch_offset": 0.0
+    "pitch_offset": 0.0,
+    "fade_in": 0,
+    "fade_out": 0
   },
   {
     "label": "default_gui",

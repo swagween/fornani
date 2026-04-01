@@ -52,13 +52,13 @@ void CreditsMenu::refresh(ServiceProvider& svc) {
 	std::string lookup = options.at(current_selection.get()).label.getString();
 	m_credits.clear();
 	for (auto const& credit : m_data[lookup].as_array()) {
-		auto next = sf::Text{svc.text.fonts.basic};
+		auto next = sf::Text{svc.text.fonts.basic.font};
 		next.setFillColor(colors::bright_orange);
-		next.setCharacterSize(16);
+		next.setCharacterSize(svc.text.fonts.basic.glyph_size);
 		next.setString(credit["name"].as_string());
-		auto desc = sf::Text{svc.text.fonts.basic};
+		auto desc = sf::Text{svc.text.fonts.basic.font};
 		desc.setFillColor(colors::dark_fucshia);
-		desc.setCharacterSize(16);
+		desc.setCharacterSize(svc.text.fonts.basic.glyph_size);
 		desc.setString(credit["description"].as_string());
 		m_credits.push_back(Credit{next, desc, credit["line_breaks"].as<int>()});
 	}

@@ -6,8 +6,8 @@
 
 namespace fornani::automa {
 
-MainMenu::MainMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "main"), subtitle{svc.text.fonts.basic}, instruction(svc.text.fonts.basic), title(svc.assets.get_texture("menu_title")) {
-	subtitle.setFont(svc.text.fonts.basic);
+MainMenu::MainMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "main"), subtitle{svc.text.fonts.basic.font}, instruction(svc.text.fonts.basic.font), title(svc.assets.get_texture("menu_title")) {
+	subtitle.setFont(svc.text.fonts.basic.font);
 	// playtester edition
 	flags.set(GameStateFlags::playtest);
 	// playtester edition
@@ -19,10 +19,10 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc
 	title.setScale({5.f, 5.f});
 
 	if (flags.test(GameStateFlags::playtest)) { subtitle.setString(svc.version->version_title()); }
-	subtitle.setLineSpacing(1.5f);
+	subtitle.setLineSpacing(svc.text.fonts.basic.line_spacing);
 	subtitle.setLetterSpacing(1.2f);
-	subtitle.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
-	subtitle.setPosition({svc.window->f_center_screen().x - subtitle.getLocalBounds().getCenter().x, svc.window->i_screen_dimensions().y - 300.f});
+	subtitle.setCharacterSize(svc.text.fonts.basic.glyph_size);
+	subtitle.setPosition(sf::Vector2f{svc.window->f_center_screen().x - subtitle.getLocalBounds().getCenter().x, svc.window->i_screen_dimensions().y - 300.f} + svc.text.fonts.basic.offset);
 	subtitle.setFillColor(p_theme.activated_text_color);
 	if (flags.test(GameStateFlags::playtest)) { instruction.setString("press [P] to open playtester portal"); }
 	instruction.setLineSpacing(1.5f);

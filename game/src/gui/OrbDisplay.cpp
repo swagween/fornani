@@ -4,7 +4,7 @@
 
 namespace fornani::gui {
 
-OrbDisplay::OrbDisplay(automa::ServiceProvider& svc) : Animatable(svc, "orbs", {12, 12}), m_amount{svc.text.fonts.title} {
+OrbDisplay::OrbDisplay(automa::ServiceProvider& svc) : Animatable(svc, "orbs", {12, 12}), m_amount{svc.text.fonts.title.font} {
 	set_parameters(anim::Parameters{0, 7, 24, -1});
 	m_amount.setCharacterSize(16);
 }

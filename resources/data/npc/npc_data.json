@@ -397,12 +397,16 @@
         "parameters": [0, 6, 48, -1, false]
       },
       {
+        "label": "walk",
+        "parameters": [0, 6, 48, -1, false]
+      },
+      {
         "label": "turn",
         "parameters": [6, 3, 32, 0, false]
       },
       {
         "label": "inspect",
-        "parameters": [9, 6, 48, -1, true]
+        "parameters": [9, 6, 48, -1, false]
       }
     ]
   },

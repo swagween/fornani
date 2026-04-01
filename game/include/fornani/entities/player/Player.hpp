@@ -152,6 +152,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void set_idle();
 	void set_slow_walk();
 	void set_sleeping(bool on_floor = false);
+	void stall_idle_timer();
 	void set_hurt();
 	void set_direction(Direction to);
 	void piggyback(int id);

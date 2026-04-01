@@ -3642,6 +3642,7 @@
   },
   "loth": {
     "1": {
+      "output": 3,
       "responses": [
         [
           {
@@ -3651,50 +3652,11 @@
         ],
         [
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [1, 2],
+              [8, 0]
+            ],
             "message": "Where were you?"
-          }
-        ],
-        [
-          {
-            "codes": [[1, 3]],
-            "message": "For me? What do you mean?"
-          }
-        ],
-        [
-          {
-            "codes": [[1, 4]],
-            "message": "I don't understand..."
-          }
-        ],
-        [
-          {
-            "codes": [[1, 5]],
-            "message": "What was it that you stole, exactly?"
-          }
-        ],
-        [
-          {
-            "codes": [[1, 6]],
-            "message": "Oh, come on, now's not the time for secrets!"
-          }
-        ],
-        [
-          {
-            "codes": [[1, 7]],
-            "message": "Just like you protected me from getting kidnapped by Skycorps?"
-          }
-        ],
-        [
-          {
-            "codes": [[1, 8]],
-            "message": "Where's the Pixiote Temple...?"
-          }
-        ],
-        [
-          {
-            "codes": [[1, 9]],
-            "message": "What...? No! You can't just leave again!"
           }
         ]
       ],
@@ -3710,19 +3672,48 @@
             "message": "I knew you'd be arriving soon. I felt your energy through the Mother."
           },
           {
+            "codes": [
+              [1, 1],
+              [23, 1]
+            ],
+            "message": "She is magnificent to behold, is she not? Even if it is just a tiny portion of her that we see."
+          }
+        ]
+      ]
+    },
+    "2": {
+      "output": 3,
+      "responses": [
+        [
+          {
             "codes": [[1, 1]],
-            "message": "You know, she is ever in conversation with our spirits. We need only listen."
+            "message": "For me? What do you mean?"
           }
         ],
         [
           {
+            "codes": [[1, 2]],
+            "message": "I don't understand..."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 3]],
+            "message": "You're doing that cryptic thing again..."
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [[23, 2]],
             "message": "There is much you should know, sis. And perhaps I should have told you sooner, but it's too late for that now."
           },
           {
             "message": "I am not the thief that Dr. Willett would have you believe, nor the traitor that Bryn surely thinks I am."
           },
           {
-            "codes": [[1, 2]],
+            "codes": [[1, 0]],
             "message": "Everything I've done and will do, Nani, is for you."
           }
         ],
@@ -3737,37 +3728,89 @@
             "message": "And I don't mean just those who live on this island. I mean everyone on the planet."
           },
           {
-            "codes": [[1, 3]],
+            "codes": [[1, 1]],
             "message": "You see, Nani... you are the future of our people."
           }
         ],
         [
           {
-            "message": "Nor would I expect you to. At least, not now."
+            "codes": [[1, 2]],
+            "message": "Nor would I expect you to. At least, not yet."
+          }
+        ],
+        [
+          {
+            "message": "Hmph."
           },
           {
-            "message": "But for now, you should know that Dr. Willett is not who you think he is."
+            "message": "Apologies. In the last years I have seen much more than any Kariba ought to see. So my perspective is admittedly skewed."
           },
           {
-            "message": "Or, at least, he isn't who he purports to be."
-          },
+            "codes": [
+              [23, 3],
+              [8, 0]
+            ],
+            "message": "For now, at least, I'll give you a more direct warning."
+          }
+        ]
+      ]
+    },
+    "3": {
+      "output": 3,
+      "responses": [
+        [
           {
-            "message": "He is a man out for his own interests, and nothing more. He does not care about the Kariba or this island."
-          },
+            "codes": [[1, 1]],
+            "message": "What was it that you stole, exactly?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "Now's not the time for secrets, Loth."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 3]],
+            "message": "Just like you protected me from getting kidnapped by Skycorps?"
+          }
+        ],
+        [
           {
             "codes": [[1, 4]],
-            "message": "And the clearer that became to me, the less fault I found in my decision to sabotage his research."
+            "message": "Where's the Pixiote Temple...?"
           }
         ],
         [
           {
             "codes": [[1, 5]],
+            "message": "What...? No! You can't just leave again!"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "message": "You should know that Dr. Willett is not who he purports to be."
+          },
+          {
+            "message": "He is a man out for his own interests, and nothing more. He does not care about the Kariba or this island."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "And the clearer that became to me, the less fault I found in my decision to sabotage his research."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 1]],
             "message": "Hah... Now, Nani, there will always be knowledge not meant for you to know."
           }
         ],
         [
           {
-            "codes": [[1, 6]],
+            "codes": [[1, 2]],
             "message": "It is a secret for your own good, Nani! I am merely protecting you!"
           }
         ],
@@ -3788,16 +3831,16 @@
             "message": "It is not safe to tell you - especially not here. Even better is if I simply show you."
           },
           {
-            "codes": [[1, 7]],
+            "codes": [[1, 3]],
             "message": "Find me at the heart of the Pixiote Temple. There, you will learn the whole truth."
           }
         ],
         [
           {
-            "message": "As I told you, the Mother Worm is ever in conference with your soul. You need only listen, and she will show you the way."
+            "message": "The Mother Worm is ever in conference with your spirit. You need only listen, and she will show you the way."
           },
           {
-            "codes": [[1, 8]],
+            "codes": [[1, 4]],
             "message": "Goodbye for now, Nani. I trust you will act in accordance with the Mother and our people."
           }
         ],

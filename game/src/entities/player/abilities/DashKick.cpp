@@ -15,8 +15,9 @@ DashKick::DashKick(automa::ServiceProvider& svc, world::Map& map, shape::Collide
 	map.spawn_effect(svc, "bright_flare", pos);
 	map.spawn_emitter(svc, "dash_kick", pos, Direction{UND::up});
 	map.spawn_emitter(svc, "dash_kick", pos, Direction{UND::down});
-	svc.soundboard.flags.player.set(audio::Player::dash_kick);
+	svc.soundboard.play_sound("nani_dash_kick");
 	original_gravity = collider.physics.gravity;
+	svc.ticker.freeze_frame(8);
 }
 
 void DashKick::update(shape::Collider& collider, PlayerController& controller) {

@@ -5,7 +5,7 @@
 
 namespace fornani::automa {
 
-StatSheet::StatSheet(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "stat"), stats(svc.text.fonts.basic), title(svc.text.fonts.title) {
+StatSheet::StatSheet(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "stat"), stats(svc.text.fonts.basic.font), title(svc.text.fonts.title.font) {
 	m_parent_menu = MenuType::file_select;
 	current_selection = util::Circuit(static_cast<int>(options.size()));
 	auto ctr{1};

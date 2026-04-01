@@ -5,7 +5,7 @@
 
 namespace fornani::graphics {
 
-HelpText::HelpText(automa::ServiceProvider& svc) : data(svc.text.fonts.title) {}
+HelpText::HelpText(automa::ServiceProvider& svc) : data(svc.text.fonts.title.font) {}
 
 HelpText::HelpText(automa::ServiceProvider& svc, std::string start, input::DigitalAction const& code, std::string end, int delay_time, bool include_background, bool no_blink) : HelpText(svc) {
 	text_color = colors::ui_white;

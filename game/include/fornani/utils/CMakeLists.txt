@@ -26,6 +26,7 @@ nani_add_headers(
         StateFunction.hpp
         StateMachine.hpp
         Stopwatch.hpp
+        TextUtils.hpp
         Ticker.hpp
         WorldClock.hpp
         RectPath.hpp

@@ -8,3 +8,4 @@ nani_add_headers(
         Version.hpp
         WindowManager.hpp
 )
+add_subdirectory(localization)

@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Constants.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <chrono>
 #include <deque>
@@ -39,13 +40,21 @@ class Ticker {
 			if (slowdown.running()) { dt_scalar -= slowdown_rate; }
 			if (slowdown.is_complete()) { dt_scalar += slowdown_rate; }
 			dt_scalar = ccm::ext::clamp(dt_scalar, slowdown_target, 1.f);
-			if (freezeframe.running()) { dt_scalar = slowdown_target; }
+			if (freezeframe.running()) {
+				dt_scalar = 0.f;
+			} else {
+				dt_scalar = ccm::ext::clamp(dt_scalar + slowdown_rate, 0.f, 1.f);
+			}
 		}
+
+		freezeframe.update();
 
 		new_time = Clk::now();
 		dt = std::chrono::duration_cast<Sec>(new_time - current_time);
 		dt *= dt_scalar;
 		current_time = new_time;
+
+		if (dt_scalar < constants::tiny_value) { return; }
 
 		if (dt.count() > tick_limit.count()) { return; } // return for unexpected dt values, particularly during the beginning of the state
 
@@ -69,7 +78,6 @@ class Ticker {
 
 		residue = accumulator;
 		slowdown.update();
-		freezeframe.update();
 		accumulator = Sec::zero();
 		++calls_per_frame;
 	};
@@ -78,7 +86,7 @@ class Ticker {
 	void end_frame();
 	void calculate_fps();
 	void slow_down(int time, float target = 0.2f, float rate = 0.05f);
-	void freeze_frame(int time, float rate = 0.1f);
+	void freeze_frame(int time);
 	void set_time(Sec time);
 	void scale_dt();
 	void reset_dt();

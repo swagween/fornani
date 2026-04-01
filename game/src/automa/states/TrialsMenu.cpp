@@ -81,7 +81,7 @@ void TrialsMenu::switch_selections(ServiceProvider& svc) {
 		std::sort(list->begin(), list->end(), [](TrialAttempt const& a, TrialAttempt const& b) { return a.time < b.time; });
 		auto ctr = 0;
 		for (auto& time : *list) {
-			auto next = TrialListing{{svc.text.fonts.basic}, {svc.text.fonts.title}};
+			auto next = TrialListing{{svc.text.fonts.basic.font}, {svc.text.fonts.title.font}};
 			next.tag.setString(time.player_tag);
 			next.tag.setCharacterSize(16);
 			switch (ctr) {

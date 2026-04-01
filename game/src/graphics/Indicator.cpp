@@ -4,8 +4,8 @@
 
 namespace fornani::graphics {
 
-Indicator::Indicator(automa::ServiceProvider& svc, IndicatorType type) : m_label{svc.text.fonts.title}, m_type{type} {
-	m_label.setCharacterSize(16);
+Indicator::Indicator(automa::ServiceProvider& svc, IndicatorType type) : m_label{svc.text.fonts.title.font}, m_type{type} {
+	m_label.setCharacterSize(svc.text.fonts.title.glyph_size);
 	m_label.setLetterSpacing(0.6f);
 	if (type == IndicatorType::health) { color_fade = vfx::ColorFade({colors::ui_white, colors::red, colors::dark_fucshia}, 16, addition_time); }
 	if (type == IndicatorType::orb) { color_fade = vfx::ColorFade({colors::ui_white, colors::goldenrod, colors::dark_orange}, 16, addition_time); }

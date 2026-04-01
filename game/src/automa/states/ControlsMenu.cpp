@@ -10,7 +10,7 @@ namespace fornani::automa {
 constexpr std::array<std::string_view, 2> tabs = {"controls_platformer", "controls_menu"};
 constexpr std::array<std::string_view, 2> tab_id_prefixes = {"", "menu_"};
 
-ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "controls_platformer"), instruction(svc.text.fonts.title), m_current_tab{tabs.size()}, m_scene{"controls_platformer"} {
+ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "controls_platformer"), instruction(svc.text.fonts.title.font), m_current_tab{tabs.size()}, m_scene{"controls_platformer"} {
 	m_parent_menu = MenuType::options;
 	change_scene(svc, m_scene);
 	instruction.setLineSpacing(1.5f);
@@ -145,7 +145,7 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 			control.setString(std::string(input::string_from_scancode(svc.input_system.get_primary_keyboard_binding(action))));
 			control.setOrigin({control.getLocalBounds().size.x, control.getLocalBounds().getCenter().y});
 			control.setPosition({svc.window->i_screen_dimensions().x * 0.5f + center_offset, option.position.y});
-			control.setCharacterSize(16);
+			control.setCharacterSize(svc.text.fonts.title.glyph_size);
 			control.setLetterSpacing(1.f);
 			control.setFillColor(option.label.getFillColor());
 			control.setOrigin(control.getLocalBounds().getCenter());
@@ -184,7 +184,7 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 		option.index = ctr;
 		option.update(current_selection.get());
 
-		control_list.push_back(sf::Text(svc.text.fonts.title));
+		control_list.push_back(sf::Text(svc.text.fonts.title.font));
 		++ctr;
 	}
 }

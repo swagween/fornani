@@ -213,13 +213,10 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	// shake
 	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
-	if (svc.ticker.every_x_ticks(20)) { m_random_offset = random::random_vector_float(-energy, energy); }
+	if (svc.ticker.every_x_ticks(14)) { m_random_offset = random::random_vector_float(-energy, energy); }
 	if (hitstun.running() && !flags.state.test(StateFlags::no_slowdown)) {
 		hitstun.update();
-		if (svc.ticker.every_x_ticks(4)) {
-		} else {
-			return;
-		}
+		if (svc.ticker.every_x_ticks(2)) { get_collider().physics.zero(); }
 	}
 
 	// stuff that slows down from hitstun
@@ -255,8 +252,6 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 			m_weakness.start();
 			player.set_flag(player::PlayerFlags::dash_kick);
 		}
-	} else {
-		// player.set_flag(player::PlayerFlags::dash_kick, false);
 	}
 
 	// update ranges

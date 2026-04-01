@@ -1,5 +1,5 @@
 
-#include "fornani/utils/Ticker.hpp"
+#include <fornani/utils/Ticker.hpp>
 
 namespace fornani::util {
 
@@ -35,10 +35,10 @@ void Ticker::slow_down(int time, float target, float rate) {
 	slowdown_rate = rate;
 }
 
-void Ticker::freeze_frame(int time, float target) {
+void Ticker::freeze_frame(int time) {
 	freezeframe.start(time);
-	slowdown_target = target;
-	slowdown_rate = 0.1f;
+	dt_scalar = 0.f;
+	slowdown_rate = 0.05f;
 }
 
 void Ticker::set_time(Sec time) {

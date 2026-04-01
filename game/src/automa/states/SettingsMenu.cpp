@@ -11,7 +11,7 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player)
 													  .fullscreen = options.at(static_cast<int>(SettingsToggles::fullscreen)).label,
 													  .military_time = options.at(static_cast<int>(SettingsToggles::military_time)).label},
 	  music_label{options.at(static_cast<int>(SettingsToggles::music)).label}, ambience_label{options.at(static_cast<int>(SettingsToggles::ambience)).label}, sfx_label{options.at(static_cast<int>(SettingsToggles::sfx)).label},
-	  toggle_options{.enabled{svc.text.fonts.title}, .disabled{svc.text.fonts.title}}, sliders{.music_volume{svc.text.fonts.title}, .ambience_volume{svc.text.fonts.title}, .sfx_volume{svc.text.fonts.title}} {
+	  toggle_options{.enabled{svc.text.fonts.title.font}, .disabled{svc.text.fonts.title.font}}, sliders{.music_volume{svc.text.fonts.title.font}, .ambience_volume{svc.text.fonts.title.font}, .sfx_volume{svc.text.fonts.title.font}} {
 	m_parent_menu = MenuType::options;
 	toggle_options.enabled.setString("enabled");
 	toggle_options.disabled.setString("disabled");

@@ -5,7 +5,7 @@
 namespace fornani {
 
 Notification::Notification(automa::ServiceProvider& svc, std::string_view message)
-	: m_message{svc.text.fonts.basic, std::string{message}}, m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "notification", 64, util::InterpolationType::linear}, m_stall{360}, m_fade{32}, m_input_code{"    "} {
+	: m_message{svc.text.fonts.basic.font, std::string{message}}, m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "notification", 64, util::InterpolationType::linear}, m_stall{360}, m_fade{32}, m_input_code{"    "} {
 	m_message.setCharacterSize(16);
 	m_path.set_section("in");
 	m_message.setPosition({24.f, -256.f});

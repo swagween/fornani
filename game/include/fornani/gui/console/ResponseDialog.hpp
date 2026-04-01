@@ -59,7 +59,7 @@ class ResponseDialog final : public Flaggable<ResponseDialogFlags> {
 	void stylize(sf::Text& message) const;
 	sf::Vector2f m_position{};
 	ResponseIndicator m_indicator{};
-	int m_text_size;
+	FontSpec* m_font;
 	int m_index{};
 	bool m_ready{};
 	util::Circuit m_selection;

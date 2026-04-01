@@ -571,6 +571,8 @@ void Player::set_sleeping(bool on_floor) {
 	}
 }
 
+void Player::stall_idle_timer() { m_animation_machine.idle_timer.start(); }
+
 void Player::set_hurt() {
 	m_animation_machine.force(AnimState::hurt, "hurt");
 	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_hurt, &m_animation_machine);
@@ -682,7 +684,6 @@ void Player::hurt(float amount, bool force) {
 	if (health.is_dead()) { return; }
 	if (is_intangible()) { return; }
 	if (!health.invincible() || force) {
-		m_services->ticker.freeze_frame(12 * std::min(static_cast<int>(amount), 3));
 		m_sprite_shake.start();
 		m_hurt_cooldown.start();
 		health.inflict(amount, force, !is_stunned());
@@ -695,6 +696,7 @@ void Player::hurt(float amount, bool force) {
 		hurt_cooldown.start(2);
 		if (health.is_dead()) { m_death_type = PlayerDeathType::normal; }
 		if (is_stunned() && cooldowns.stun.get_normalized() < 0.9f) { cooldowns.stun.start(4); }
+		m_services->ticker.freeze_frame(24 * std::min(static_cast<int>(amount), 3));
 	}
 }
 

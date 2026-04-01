@@ -2,14 +2,16 @@
 #include <SFML/Graphics.hpp>
 #include <ccmath/ext/clamp.hpp>
 #include <fornani/gui/console/TextWriter.hpp>
+#include <fornani/utils/TextUtils.hpp>
+#include <fstream>
 #include <string>
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::gui {
 
 TextWriter::TextWriter(automa::ServiceProvider& svc)
-	: m_services(&svc), working_message{svc.text.fonts.basic}, zero_option{.data{svc.text.fonts.basic}}, m_font{&svc.text.fonts.basic}, m_mode{WriterMode::stall}, m_delay{util::Cooldown{32}}, m_writing_speed{default_writing_speed_v},
-	  m_delta_threshold{8.f}, m_text_size{16}, m_input_code{"   "} {
+	: m_services(&svc), working_message{svc.text.fonts.basic.font}, zero_option{.data{svc.text.fonts.basic.font}}, m_font{&svc.text.fonts.basic}, m_mode{WriterMode::stall}, m_delay{util::Cooldown{32}},
+	  m_writing_speed{default_writing_speed_v}, m_delta_threshold{8.f}, m_input_code{"   "} {
 	NANI_LOG_DEBUG(m_logger, "TextWriter ctor @{}", static_cast<void const*>(this));
 	bounds_box.setFillColor(sf::Color(200, 200, 10, 10));
 	bounds_box.setOutlineColor(sf::Color(255, 80, 80, 180));
@@ -133,8 +135,8 @@ void TextWriter::constrain() {
 void TextWriter::load_single_message(std::string_view message) {
 	flush();
 	auto message_container = std::deque<Message>{};
-	message_container.push_back({sf::Text(*m_font)});
-	message_container.back().data.setString(message.data());
+	message_container.push_back({sf::Text(m_font->font)});
+	set_utf8_string(message, message_container.back().data);
 	stylize(message_container.back().data);
 	suite = DialogueSuite{message_container};
 	constrain();
@@ -142,7 +144,7 @@ void TextWriter::load_single_message(std::string_view message) {
 
 void TextWriter::load_message(dj::Json& source) {
 	flush();
-	suite = DialogueSuite{source, *m_font, *m_services, -1};
+	suite = DialogueSuite{source, m_font->font, *m_services, -1};
 	for (auto& msg : suite->suite) {
 		for (auto& m : msg) { stylize(m.data); }
 	}
@@ -154,7 +156,7 @@ void TextWriter::load_message(dj::Json& source) {
 
 void TextWriter::load_message(dj::Json& source, std::string_view key, int target_index) {
 	flush();
-	suite = DialogueSuite{source, *m_font, *m_services, key, target_index};
+	suite = DialogueSuite{source, m_font->font, *m_services, key, target_index};
 	for (auto& msg : suite->suite) {
 		for (auto& m : msg) { stylize(m.data); }
 	}
@@ -173,10 +175,10 @@ void TextWriter::append(std::string_view content) {
 }
 
 void TextWriter::stylize(sf::Text& msg) const {
-	msg.setCharacterSize(m_text_size);
+	msg.setCharacterSize(m_font->glyph_size);
 	msg.setFillColor(colors::ui_white);
-	msg.setFont(*m_font);
-	msg.setLineSpacing(1.5f);
+	msg.setFont(m_font->font);
+	msg.setLineSpacing(m_font->line_spacing);
 	msg.setPosition(m_bounds.position);
 }
 
@@ -214,12 +216,12 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	if (m_iterators.current_suite_set >= suite->suite.size()) { return; }
 	if (suite->suite.at(m_iterators.current_suite_set).empty()) { return; }
 	auto& current_message = suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
-	current_message.setPosition(m_bounds.position);
+	current_message.setPosition(m_bounds.position + m_font->offset);
 	if (!is_writing()) {
 		win.draw(current_message);
 		if (m_services->ticker.every_x_frames(blink_rate)) { show_cursor = !show_cursor; }
 		auto last_glyph_position = current_message.findCharacterPos(working_message.getString().getSize() - 1);
-		cursor.setPosition(last_glyph_position + cursor_offset);
+		cursor.setPosition(last_glyph_position + cursor_offset - m_font->offset);
 		if (show_cursor && !m_hide_cursor) { win.draw(cursor); }
 		// insert an icon hint if there is one
 		if (m_flags.test(WriterFlags::input_hint) && m_input_icon) { insert_input_hint(win, current_message); }
@@ -227,9 +229,9 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	}
 	show_cursor = true;
 	working_message.setFillColor(colors::ui_white);
-	working_message.setPosition(m_bounds.position);
+	working_message.setPosition(m_bounds.position + m_font->offset);
 	auto last_glyph_position = working_message.findCharacterPos(working_message.getString().getSize() - 1);
-	cursor.setPosition(last_glyph_position + cursor_offset);
+	cursor.setPosition(last_glyph_position + cursor_offset - m_font->offset);
 	win.draw(working_message);
 	if (!m_hide_cursor) { win.draw(cursor); }
 	if (m_flags.test(WriterFlags::input_hint) && m_input_icon) { insert_input_hint(win, working_message); }
@@ -250,7 +252,7 @@ void TextWriter::set_font_color(sf::Color to_color) {
 	cursor.setFillColor(to_color);
 }
 
-void TextWriter::set_font(sf::Font& to_font) { m_font = &to_font; }
+void TextWriter::set_font(FontSpec& to_font) { m_font = &to_font; }
 
 void TextWriter::reset() {
 	slow_down();
@@ -316,25 +318,15 @@ DialogueSuite::DialogueSuite(dj::Json const& in, sf::Font& font, automa::Service
 			auto which = 0;
 			if (msg["messages"].is_array()) { which = target_index == -1 ? random::random_range(0, msg["messages"].as_array().size() - 1) : target_index; }
 			if (msg["codes"].is_array()) {
-				for (auto const& code : msg["codes"].as_array()) {
-					codes.push_back(MessageCode{code});
-					// NANI_LOG_DEBUG(m_logger, "Code pushed to this set: {}", codes.back().value);
-				}
+				for (auto const& code : msg["codes"].as_array()) { codes.push_back(MessageCode{code}); }
 			}
 			if (msg["code_list"].is_array()) {
-				for (auto const& code : msg["code_list"][which].as_array()) {
-					codes.push_back(MessageCode{code});
-					// NANI_LOG_DEBUG(m_logger, "Code pushed to this set: {}", codes.back().value);
-				}
+				for (auto const& code : msg["code_list"][which].as_array()) { codes.push_back(MessageCode{code}); }
 			}
 			this_set.push_back({sf::Text(font), codes});
-			if (msg["message"]) {
-				this_set.back().data.setString(msg["message"].as_string().data());
-				// NANI_LOG_DEBUG(m_logger, "Message pushed to this set: {}", std::string{msg["message"].as_string()});
-			}
-			if (msg["messages"].is_array()) { this_set.back().data.setString(msg["messages"][which].as_string().data()); }
+			if (msg["message"]) { set_utf8_string(msg["message"], this_set.back().data); }
+			if (msg["messages"].is_array()) { set_utf8_string(msg["messages"][which], this_set.back().data); }
 		}
-		// NANI_LOG_DEBUG(m_logger, "Finished set: {} messages kept", this_set.size());
 		if (!this_set.empty()) { suite.push_back(std::move(this_set)); }
 	}
 	if (suite.empty()) { NANI_LOG_DEBUG(m_logger, "Invalid suite!"); }

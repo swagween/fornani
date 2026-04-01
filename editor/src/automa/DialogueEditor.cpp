@@ -124,7 +124,7 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 						if (ImGui::Selectable(conversation.c_str())) {
 							this_tag = conversation;
 							this_host = host;
-							m_suite = DialogueSuite{p_services->text.fonts.basic, *m_data, this_host, this_tag};
+							m_suite = DialogueSuite{p_services->text.fonts.basic.font, *m_data, this_host, this_tag};
 							ImGui::CloseCurrentPopup();
 							open_file = false;
 						}
@@ -219,7 +219,7 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 			options_popup = false;
 			ImGui::InputTextWithHint("Message", "message...", messagebuf, IM_ARRAYSIZE(messagebuf));
 			if (ImGui::Button("Apply")) {
-				auto to_node = Node(p_services->text.fonts.basic, messagebuf, m_current_node->get_type());
+				auto to_node = Node(p_services->text.fonts.basic.font, messagebuf, m_current_node->get_type());
 				if (m_suite) { m_suite->swap_node(to_node); }
 				ImGui::CloseCurrentPopup();
 			}
@@ -286,7 +286,7 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 			ImGui::InputTextWithHint("NPC Name", "name", hostbuf, IM_ARRAYSIZE(hostbuf));
 			ImGui::InputTextWithHint("Tag", "tag", tagbuf, IM_ARRAYSIZE(tagbuf));
 			if (ImGui::Button("Create")) {
-				m_suite = DialogueSuite{p_services->text.fonts.basic, *m_data, hostbuf, tagbuf};
+				m_suite = DialogueSuite{p_services->text.fonts.basic.font, *m_data, hostbuf, tagbuf};
 				ImGui::CloseCurrentPopup();
 				new_file = false;
 			}
@@ -309,7 +309,7 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 						if (ImGui::Selectable(conversation.c_str())) {
 							this_tag = conversation;
 							this_host = host;
-							m_suite = DialogueSuite{p_services->text.fonts.basic, *m_data, this_host, this_tag};
+							m_suite = DialogueSuite{p_services->text.fonts.basic.font, *m_data, this_host, this_tag};
 							ImGui::CloseCurrentPopup();
 							open_file = false;
 						}

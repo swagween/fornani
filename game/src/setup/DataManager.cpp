@@ -206,7 +206,7 @@ void DataManager::load_data() {
 
 	for (auto [i, item] : std::views::enumerate(item.as_array())) { NANI_LOG_INFO(m_logger, "{} : {}", item["tag"].as_string(), i); }
 
-	gui_text = *dj::Json::from_file((finder.resource_path() + "/text/console/gui.json").c_str());
+	gui_text = *dj::Json::from_file((finder.resource_path() + m_services->localization.get_folder_string() + "/gui.json").c_str());
 	assert(!gui_text.is_null());
 	menu_themes = *dj::Json::from_file((finder.resource_path() + "/data/gui/menu_themes.json").c_str());
 	assert(!menu_themes.is_null());
@@ -423,6 +423,8 @@ void DataManager::load_settings() {
 	m_services->ambience_player.set_volume(settings["ambience_volume"].as<float>());
 	m_services->soundboard.set_volume(settings["sfx_volume"].as<float>());
 	m_services->set_fullscreen(settings["fullscreen"].as_bool());
+	m_services->localization.set_language(settings["language"].as_string());
+	NANI_LOG_INFO(m_logger, "Set Language to {}", m_services->localization.get_language_title().value());
 	NANI_LOG_INFO(m_logger, "Enabled user settings.");
 }
 

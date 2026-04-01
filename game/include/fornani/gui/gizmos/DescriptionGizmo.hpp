@@ -19,7 +19,7 @@ class DescriptionGizmo : public Gizmo {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground = false) override;
 	bool handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
 
-	void write(automa::ServiceProvider& svc, std::string_view message, sf::Font& font);
+	void write(automa::ServiceProvider& svc, std::string_view message, FontSpec& font);
 	void set_offset(sf::Vector2f const offset = {});
 	void adjust_bounds(sf::Vector2f const adjustment);
 	void flush() { m_text = {}; }

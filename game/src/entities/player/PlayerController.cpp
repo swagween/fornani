@@ -164,7 +164,6 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 
 	if (player.can_dash_kick() && !cooldowns.dash_kick.running()) {
 		m_ability = std::make_unique<DashKick>(svc, map, player.get_collider(), player.get_actual_direction());
-		svc.ticker.freeze_frame(8);
 		player.health.invincibility.start(16);
 		player.m_ability_usage.dash.update(-1);
 		player.set_flag(PlayerFlags::dash_kick, false);

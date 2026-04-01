@@ -6,7 +6,7 @@
 
 namespace pi {
 
-Room::Room(fornani::automa::ServiceProvider& svc, fornani::data::MapData& in) : id{in.metadata["meta"]["room_id"].as<int>()}, m_label{svc.text.fonts.config}, m_biome{svc.text.fonts.config}, m_data(&in) {
+Room::Room(fornani::automa::ServiceProvider& svc, fornani::data::MapData& in) : id{in.metadata["meta"]["room_id"].as<int>()}, m_label{svc.text.fonts.config.font}, m_biome{svc.text.fonts.config.font}, m_data(&in) {
 	m_label.setString(in.room_label);
 	m_biome.setString(in.metadata["meta"]["biome"].as_string());
 	m_position = sf::Vector2i{in.metadata["meta"]["metagrid"][0].as<int>(), in.metadata["meta"]["metagrid"][1].as<int>()};
