@@ -20,7 +20,8 @@
           1,
           1
         ],
-        "face_player": true,
+        "direction": 1,
+        "face_player": false,
         "hidden": false,
         "id": 258,
         "label": "loth",

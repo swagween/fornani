@@ -462,9 +462,15 @@ void Player::end_tick() {
 	flags.triggers = {};
 }
 
+void Player::turn() {
+	auto to_dir = get_actual_direction().right() ? SimpleDirection{LR::left} : SimpleDirection{LR::right};
+	controller.set_direction(Direction{to_dir});
+}
+
 void Player::update_animation() {
 	if (!collider.has_value()) { return; }
 	if (has_flag_set(PlayerFlags::cutscene)) {
+		handle_turning();
 		m_animation_machine.update();
 		return;
 	}

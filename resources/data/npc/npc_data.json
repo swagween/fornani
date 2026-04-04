@@ -391,6 +391,7 @@
     "dimensions": [24, 24],
     "sprite_dimensions": [28, 28],
     "sprite_offset": [0, -13],
+    "walk_speed": 0.6,
     "animation": [
       {
         "label": "idle",
@@ -398,14 +399,14 @@
       },
       {
         "label": "walk",
-        "parameters": [0, 6, 48, -1, false]
+        "parameters": [0, 4, 48, 1, false]
       },
       {
         "label": "turn",
-        "parameters": [6, 3, 32, 0, false]
+        "parameters": [6, 3, 48, 0, false]
       },
       {
-        "label": "inspect",
+        "label": "busy",
         "parameters": [9, 6, 48, -1, false]
       }
     ]

@@ -24,6 +24,7 @@ class SimpleDirection {
 	SimpleDirection() = default;
 	SimpleDirection(Direction const to);
 	SimpleDirection(LR to) : lr{to} {}
+	SimpleDirection(int to) { lr = to == 1 ? LR::right : LR::left; }
 
 	void set(LR to) { lr = to; }
 	void set(LNR to) { lr = to == LNR::left ? LR::left : LR::right; }

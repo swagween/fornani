@@ -283,9 +283,8 @@ fsm::StateFunction PlayerAnimation::update_turn() {
 		if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
 		if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
-
-		m_player->animation.set_params(get_params("idle"));
-		return PA_BIND(update_idle);
+		request(AnimState::idle);
+		if (change_state(AnimState::idle, get_params("idle"))) { return PA_BIND(update_idle); }
 	}
 
 	return PA_BIND(update_turn);

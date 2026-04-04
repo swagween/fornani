@@ -140,6 +140,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 		m_animation_machine.force(to, tag);
 		m_animation_machine.state_function = std::forward<Factory>(factory)(get_animation());
 	}
+	void turn();
 	void set_animation_flag(AnimTriggers const flag, bool on = true) { on ? m_animation_machine.triggers.set(flag) : m_animation_machine.triggers.reset(flag); }
 	void set_sleep_timer(int time = 0) { m_animation_machine.set_sleep_timer(time); }
 	void set_death_type(PlayerDeathType const to) { m_death_type = to; }

@@ -3642,7 +3642,7 @@
   },
   "loth": {
     "1": {
-      "output": 3,
+      "output": 2,
       "responses": [
         [
           {
@@ -3682,7 +3682,7 @@
       ]
     },
     "2": {
-      "output": 3,
+      "output": 2,
       "responses": [
         [
           {
@@ -3756,7 +3756,7 @@
       ]
     },
     "3": {
-      "output": 3,
+      "output": 2,
       "responses": [
         [
           {
@@ -3811,17 +3811,19 @@
         [
           {
             "codes": [[1, 2]],
-            "message": "It is a secret for your own good, Nani! I am merely protecting you!"
+            "message": "It is a secret for your own good, Nani. I am merely protecting you."
           }
         ],
         [
           {
+            "codes": [[23, 7]],
             "message": "..."
           },
           {
             "message": "My dear sister..."
           },
           {
+            "codes": [[23, 9]],
             "message": "I suppose you are now an adult and very capable of making your own decisions, and suffering their consequences."
           },
           {
@@ -3857,7 +3859,7 @@
           {
             "codes": [
               [8, 0],
-              [23, 10]
+              [23, 11]
             ],
             "message": "See you at Pixiote Temple, sis. Good luck."
           }

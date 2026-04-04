@@ -200,6 +200,17 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	b_transition_in = true;
 
 	player->register_with_map(*this);
+	if (m_biome.get_id() == 10) {
+		player->texture_updater.load_pixel_map(svc.assets.get_texture_modifiable("nani_palette_night"));
+		player->catalog.wardrobe.set_palette(svc.assets.get_texture_modifiable("nani_palette_night"));
+		player->update_sprite();
+		player->update_wardrobe();
+	} else {
+		player->texture_updater.load_pixel_map(svc.assets.get_texture_modifiable("nani_palette_default"));
+		player->catalog.wardrobe.set_palette(svc.assets.get_texture_modifiable("nani_palette_default"));
+		player->update_sprite();
+		player->update_wardrobe();
+	}
 	NANI_LOG_INFO(m_logger, "Player registered with map.");
 }
 

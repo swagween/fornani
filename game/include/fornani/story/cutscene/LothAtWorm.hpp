@@ -5,7 +5,7 @@
 
 namespace fornani {
 
-enum class LothAtWormFlags { player_stopped };
+enum class LothAtWormFlags { player_stopped, nani_turned };
 
 class LothAtWorm final : public Cutscene {
   public:

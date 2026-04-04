@@ -188,7 +188,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	m_map->background->update(svc);
 	hud.update(svc, *player);
-	svc.soundboard.play_sounds(engine, svc);
 }
 
 void Dojo::frame_update(ServiceProvider& svc) {}

@@ -7,10 +7,11 @@
 
 namespace fornani {
 
-LothAtWorm::LothAtWorm(automa::ServiceProvider& svc) : Cutscene(svc, 268, "loth_at_worm"), m_intro{400} {
+LothAtWorm::LothAtWorm(automa::ServiceProvider& svc) : Cutscene(svc, 268, "loth_at_worm"), m_intro{200} {
 	m_intro.start();
 	svc.music_player.load(svc.finder, "looking_glass");
 	svc.input_system.flush_inputs();
+	svc.state_flags.set(automa::StateFlags::cutscene);
 }
 
 void LothAtWorm::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
@@ -21,9 +22,10 @@ void LothAtWorm::update(automa::ServiceProvider& svc, std::optional<std::unique_
 		svc.state_flags.reset(automa::StateFlags::cutscene);
 		svc.camera_controller.set_owner(graphics::CameraOwner::player);
 		svc.music_player.stop();
-		svc.music_player.load(svc.finder, "wind");
+		svc.music_player.load(svc.finder, "none");
 		svc.music_player.play_looped();
 		flags.set(CutsceneFlags::delete_me);
+		player.set_flag(player::PlayerFlags::cutscene, false);
 		return;
 	}
 
@@ -37,6 +39,11 @@ void LothAtWorm::update(automa::ServiceProvider& svc, std::optional<std::unique_
 
 	player.controller.restrict_movement();
 	player.stall_idle_timer();
+	player.set_flag(player::PlayerFlags::show_weapon, false);
+
+	auto npcs = map.get_entities<NPC>();
+	auto lit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 37; });
+	auto& loth = *lit;
 
 	if (m_intro.just_started()) {
 		player.controller.prevent_movement();
@@ -44,16 +51,13 @@ void LothAtWorm::update(automa::ServiceProvider& svc, std::optional<std::unique_
 		player.set_flag(player::PlayerFlags::cutscene);
 		if (player.get_actual_direction().left()) { player.set_direction(Direction{LR::right}); }
 		player.set_slow_walk();
+		loth->set_flag(NPCFlags::cutscene);
 	}
 	if (m_intro.is_almost_complete()) { cooldowns.beginning.start(); }
 	m_intro.update();
 	if (m_intro.running()) { return; }
 
 	if (console) { console.value()->set_no_exit(true); }
-
-	auto npcs = map.get_entities<NPC>();
-	auto lit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 37; });
-	auto& loth = *lit;
 
 	auto total_suites{0};
 	for (auto& npc : npcs) { total_suites += npc->get_number_of_suites(); }
@@ -84,6 +88,7 @@ void LothAtWorm::update(automa::ServiceProvider& svc, std::optional<std::unique_
 			loth->flush_conversations();
 			loth->push_conversation(2);
 			cooldowns.long_pause.start(256);
+			loth->set_desired_direction(LR::left);
 			++progress;
 			return;
 		}
@@ -107,12 +112,33 @@ void LothAtWorm::update(automa::ServiceProvider& svc, std::optional<std::unique_
 		break;
 	case 4:
 		loth->walk();
+		++progress;
+		break;
+	case 5:
+		if (loth->get_collider().get_center().x < player.get_center().x && !m_flags.test(LothAtWormFlags::nani_turned)) {
+			player.turn();
+			m_flags.set(LothAtWormFlags::nani_turned);
+		}
 		if (cooldowns.long_pause.is_almost_complete()) {
+			loth->request(NPCAnimationState::busy);
 			loth->force_engage();
 			++progress;
 		}
 		break;
-	case 5: break;
+	case 7:
+		svc.music_player.stop();
+		svc.music_player.load(svc.finder, "spiral_glass");
+		loth->set_desired_direction(LR::right);
+		++progress;
+		break;
+	case 9:
+		svc.music_player.play_looped();
+		++progress;
+		break;
+	case 11:
+		cooldowns.end.start();
+		++progress;
+		break;
 	}
 }
 

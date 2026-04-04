@@ -89,7 +89,6 @@ NPC::NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vect
 	  m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[label]["id"].as<int>()}, m_current_conversation{1}, m_suites{suites}, m_services{&svc}, m_walk_speed{default_walk_speed_v} {
 	repeatable = false;
 	copyable = false;
-	set_flag(NPCFlags::face_player); // default to face player
 }
 
 void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
@@ -125,7 +124,6 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 	}
 	if (m_params.contains("idle")) { Mobile::set_parameters(m_params.at("idle")); }
 	request(NPCAnimationState::idle);
-	directions.actual.lnr = LNR::left;
 	if (in_data["no_animation"].as_bool()) { set_flag(NPCFlags::no_animation); }
 
 	if (m_hidden) { m_state.set(NPCState::hidden); }
@@ -137,6 +135,7 @@ void NPC::serialize(dj::Json& out) {
 	out["background"] = m_background;
 	out["label"] = m_label;
 	out["hidden"] = m_hidden;
+	out["direction"] = static_cast<int>(directions.actual.as_float());
 	out["face_player"] = has_flag_set(NPCFlags::face_player);
 	for (auto& suite : m_suites) {
 		auto entry = dj::Json::empty_array();
@@ -149,11 +148,8 @@ void NPC::serialize(dj::Json& out) {
 void NPC::unserialize(dj::Json const& in) {
 	Entity::unserialize(in);
 	m_background = in["background"].as_bool();
-	if (in["face_player"].is_object()) {
-		in["face_player"].as_bool() ? set_flag(NPCFlags::face_player) : set_flag(NPCFlags::face_player, false);
-	} else {
-		set_flag(NPCFlags::face_player); // default to facing player
-	}
+	set_flag(NPCFlags::face_player, in["face_player"].as_bool());
+	set_direction(SimpleDirection{in["direction"].as<int>()});
 	m_label = in["label"].as_string();
 	m_hidden = in["hidden"].as_bool();
 	for (auto const& suite : in["suites"].as_array()) {
@@ -245,7 +241,7 @@ void NPC::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 		} else {
 			if (!has_flag_set(NPCFlags::no_animation)) { win.draw(static_cast<Mobile&>(*this)); }
 		}
-		if (!has_flag_set(NPCFlags::no_animation)) { win.draw(m_indicator); }
+		if (!has_flag_set(NPCFlags::no_animation) && !has_flag_set(NPCFlags::cutscene)) { win.draw(m_indicator); }
 	}
 }
 

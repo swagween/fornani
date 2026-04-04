@@ -133,6 +133,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 				m_game_menu.value()->get_current_state().tick_update(services, audio_engine);
 			} else {
 				game_state.get_current_state().tick_update(services, audio_engine);
+				services.soundboard.play_sounds(audio_engine, services);
 			}
 			if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.update(services); }
 			if (game_state.get_current_state().flags.test(automa::GameStateFlags::settings_request)) {
