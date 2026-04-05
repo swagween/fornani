@@ -272,6 +272,60 @@
       }
     ]
   },
+  "garth": {
+    "id": 38,
+    "dimensions": [32, 32],
+    "sprite_dimensions": [32, 32],
+    "sprite_offset": [0, -15],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 8, 60, -1, false]
+      }
+    ]
+  },
+  "guppy": {
+    "id": 15,
+    "dimensions": [16, 16],
+    "sprite_dimensions": [16, 16],
+    "sprite_offset": [0, -5],
+    "random_walk": true,
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 6, 16, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [6, 1, 16, 0, false]
+      },
+      {
+        "label": "walk",
+        "parameters": [7, 4, 16, 2, false]
+      }
+    ]
+  },
+  "disco": {
+    "id": 11,
+    "dimensions": [16, 16],
+    "sprite_dimensions": [16, 16],
+    "sprite_offset": [0, -5],
+    "random_walk": true,
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 6, 16, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [6, 1, 16, 0, false]
+      },
+      {
+        "label": "walk",
+        "parameters": [7, 4, 16, 2, false]
+      }
+    ]
+  },
   "amber": {
     "id": 28,
     "dimensions": [32, 32],
@@ -399,7 +453,7 @@
       },
       {
         "label": "walk",
-        "parameters": [0, 4, 48, 1, false]
+        "parameters": [15, 4, 48, 1, false]
       },
       {
         "label": "turn",
@@ -408,6 +462,10 @@
       {
         "label": "busy",
         "parameters": [9, 6, 48, -1, false]
+      },
+      {
+        "label": "special_1",
+        "parameters": [19, 4, 16, 6, false]
       }
     ]
   },

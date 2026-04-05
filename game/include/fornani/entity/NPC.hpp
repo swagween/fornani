@@ -20,7 +20,7 @@ namespace fornani {
 
 enum class NPCFlags { has_turn_animation, face_player, background, no_animation, random_walk, cutscene, piggyback };
 enum class NPCState { engaged, force_interact, introduced, talking, cutscene, piggybacking, hidden, distant_interact, just_engaged, random_walk, invisible };
-enum class NPCAnimationState { idle, turn, walk, inspect, fall, land, busy, stagger };
+enum class NPCAnimationState { idle, turn, walk, inspect, fall, land, busy, stagger, special_1, special_2, special_3 };
 
 class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>, public Flaggable<NPCFlags> {
   public:
@@ -57,6 +57,9 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	fsm::StateFunction update_land();
 	fsm::StateFunction update_busy();
 	fsm::StateFunction update_stagger();
+	fsm::StateFunction update_special_1();
+	fsm::StateFunction update_special_2();
+	fsm::StateFunction update_special_3();
 
 	/* gameplay helpers */
 	void walk();
@@ -73,6 +76,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	[[nodiscard]] auto get_tag() const -> std::string { return m_label; }
 	[[nodiscard]] auto get_specifier() const -> int { return m_id.get(); }
 	[[nodiscard]] auto get_vendor_id() const -> int { return get_specifier(); }
+	[[nodiscard]] auto is_animation_complete() -> bool { return Mobile::animation.is_complete(); }
 
 	[[nodiscard]] auto get_vendor() const -> std::optional<npc::Vendor*> { return vendor; }
 

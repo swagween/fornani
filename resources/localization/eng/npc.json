@@ -3274,6 +3274,109 @@
       ]
     }
   },
+  "guppy": {
+    "1": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "(Pet the cat)"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [[1, 0]],
+            "messages": ["Mreow...", "Rrrrwr!"]
+          }
+        ],
+        [
+          {
+            "message": "Purr..."
+          }
+        ]
+      ]
+    }
+  },
+  "disco": {
+    "1": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "(Pet the cat)"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [[1, 0]],
+            "messages": ["Roooww!", "Mrrr..."]
+          }
+        ],
+        [
+          {
+            "message": "Purr..."
+          }
+        ]
+      ]
+    }
+  },
+  "garth": {
+    "1": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "Can I have a drink? (20 orbs)"
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "What happened to Woodshine?"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [[1, 0]],
+            "messages": [
+              "Welcome to the Chafed Worm!",
+              "How can I help ya?",
+              "Ever the weary traveler, eh?"
+            ]
+          }
+        ],
+        [
+          {
+            "codes": [[1, 0]],
+            "messages": [
+              "Sure thing. This ought to fix you up nice and good.",
+              "I'll hook you up with the freshest brew we got.",
+              "Absolutely. We got the finest stuff on this side of Mother Worm."
+            ]
+          }
+        ],
+        [
+          {
+            "message": "Sergeant Haunch came and basically waged war on us."
+          },
+          {
+            "message": "The young ones fought and mostly died. We lost Peegle, Tom Hollow, Young Mimic, your brother..."
+          },
+          {
+            "message": "Now, this is all that's left of us. I guess Skycorps don't see us as much of a threat anymore, so they mostly leave us alone."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "It's sad, but what can we do besides move forward?"
+          }
+        ]
+      ]
+    }
+  },
   "ward": {
     "1": {
       "responses": [
@@ -3642,7 +3745,7 @@
   },
   "loth": {
     "1": {
-      "output": 2,
+      "output": 3,
       "responses": [
         [
           {
@@ -3663,7 +3766,10 @@
       "suite": [
         [
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [1, 0],
+              [5, 2]
+            ],
             "message": "Nani."
           }
         ],
@@ -3674,7 +3780,8 @@
           {
             "codes": [
               [1, 1],
-              [23, 1]
+              [23, 1],
+              [5, 1]
             ],
             "message": "She is magnificent to behold, is she not? Even if it is just a tiny portion of her that we see."
           }
@@ -3682,7 +3789,7 @@
       ]
     },
     "2": {
-      "output": 2,
+      "output": 3,
       "responses": [
         [
           {
@@ -3706,7 +3813,10 @@
       "suite": [
         [
           {
-            "codes": [[23, 2]],
+            "codes": [
+              [23, 2],
+              [5, 0]
+            ],
             "message": "There is much you should know, sis. And perhaps I should have told you sooner, but it's too late for that now."
           },
           {
@@ -3719,9 +3829,11 @@
         ],
         [
           {
+            "codes": [[5, 2]],
             "message": "We are a dying people. Skycorps relentlessly raid our last holdfast, all the while hammering away at the island, oblivious to the consequences."
           },
           {
+            "codes": [[5, 1]],
             "message": "If we do not protect our home and our tribe, we will all die."
           },
           {
@@ -3734,12 +3846,16 @@
         ],
         [
           {
-            "codes": [[1, 2]],
+            "codes": [
+              [1, 2],
+              [5, 2]
+            ],
             "message": "Nor would I expect you to. At least, not yet."
           }
         ],
         [
           {
+            "codes": [[5, 0]],
             "message": "Hmph."
           },
           {
@@ -3748,7 +3864,8 @@
           {
             "codes": [
               [23, 3],
-              [8, 0]
+              [8, 0],
+              [5, 2]
             ],
             "message": "For now, at least, I'll give you a more direct warning."
           }
@@ -3756,7 +3873,7 @@
       ]
     },
     "3": {
-      "output": 2,
+      "output": 3,
       "responses": [
         [
           {
@@ -3792,6 +3909,7 @@
       "suite": [
         [
           {
+            "codes": [[5, 2]],
             "message": "You should know that Dr. Willett is not who he purports to be."
           },
           {
@@ -3804,7 +3922,10 @@
         ],
         [
           {
-            "codes": [[1, 1]],
+            "codes": [
+              [1, 1],
+              [5, 0]
+            ],
             "message": "Hah... Now, Nani, there will always be knowledge not meant for you to know."
           }
         ],
@@ -3816,14 +3937,20 @@
         ],
         [
           {
-            "codes": [[23, 7]],
+            "codes": [
+              [23, 7],
+              [5, 2]
+            ],
             "message": "..."
           },
           {
             "message": "My dear sister..."
           },
           {
-            "codes": [[23, 9]],
+            "codes": [
+              [23, 9],
+              [5, 1]
+            ],
             "message": "I suppose you are now an adult and very capable of making your own decisions, and suffering their consequences."
           },
           {
@@ -3839,10 +3966,14 @@
         ],
         [
           {
+            "codes": [[5, 0]],
             "message": "The Mother Worm is ever in conference with your spirit. You need only listen, and she will show you the way."
           },
           {
-            "codes": [[1, 4]],
+            "codes": [
+              [1, 4],
+              [5, 1]
+            ],
             "message": "Goodbye for now, Nani. I trust you will act in accordance with the Mother and our people."
           }
         ],
@@ -3859,7 +3990,8 @@
           {
             "codes": [
               [8, 0],
-              [23, 11]
+              [23, 11],
+              [5, 2]
             ],
             "message": "See you at Pixiote Temple, sis. Good luck."
           }

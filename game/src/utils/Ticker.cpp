@@ -30,7 +30,7 @@ void Ticker::calculate_fps() {
 }
 
 void Ticker::slow_down(int time, float target, float rate) {
-	slowdown.start(time);
+	slowdown.set_and_start(time);
 	slowdown_target = target;
 	slowdown_rate = rate;
 }
@@ -52,6 +52,20 @@ void Ticker::scale_dt() { flags.set(TickerFlags::forced_slowdown); }
 void Ticker::reset_dt() {
 	flags.reset(TickerFlags::forced_slowdown);
 	dt_scalar = 1.f;
+}
+
+void Ticker::manage_slowdowns() {
+	if (!flags.test(TickerFlags::forced_slowdown)) {
+		if (freezeframe.running()) {
+			dt_scalar = 0.f;
+		} else {
+			dt_scalar = ccm::ext::clamp(dt_scalar + slowdown_rate, 0.f, 1.f);
+		}
+		if (slowdown.running()) { dt_scalar = ccm::ext::clamp(1.f - slowdown_target * util::slowdown(slowdown.get_normalized()), 0.f, 1.f); }
+	}
+
+	freezeframe.update();
+	slowdown.update();
 }
 
 } // namespace fornani::util

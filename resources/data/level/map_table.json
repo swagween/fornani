@@ -446,6 +446,12 @@
     },
     {
       "folder": "overturned",
+      "label": "copse.json",
+      "region": "overturned",
+      "room_id": 256
+    },
+    {
+      "folder": "overturned",
       "label": "cove.json",
       "region": "overturned",
       "room_id": 216
@@ -530,6 +536,12 @@
     },
     {
       "folder": "overturned",
+      "label": "hallows.json",
+      "region": "overturned",
+      "room_id": 259
+    },
+    {
+      "folder": "overturned",
       "label": "hanging_roots.json",
       "region": "overturned",
       "room_id": 213
@@ -581,6 +593,12 @@
       "label": "lower_glades.json",
       "region": "overturned",
       "room_id": 217
+    },
+    {
+      "folder": "overturned",
+      "label": "march.json",
+      "region": "overturned",
+      "room_id": 260
     },
     {
       "folder": "overturned",

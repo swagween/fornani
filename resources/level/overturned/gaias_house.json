@@ -21,6 +21,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 406,
@@ -28,6 +29,48 @@
         "position": [
           9,
           12
+        ],
+        "suites": [
+          [
+            1
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": true,
+        "hidden": false,
+        "id": 404,
+        "label": "guppy",
+        "position": [
+          12,
+          9
+        ],
+        "suites": [
+          [
+            1
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": true,
+        "hidden": false,
+        "id": 404,
+        "label": "disco",
+        "position": [
+          9,
+          4
         ],
         "suites": [
           [
@@ -46,7 +89,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           6,

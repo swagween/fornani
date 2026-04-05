@@ -42,6 +42,7 @@ inline sf::Vector2f round_up_to_even(sf::Vector2f input) {
 	ret = 2.f * static_cast<sf::Vector2f>(intpos);
 	return ret;
 }
+inline float slowdown(float t) { return 1.0f - 4.0f * (t - 0.5f) * (t - 0.5f); }
 inline float ease_in_out(float x, float y, float progress) { return ccm::ext::cubic(y, x, y, x, progress); }
 inline float ease_out_back(float progress) {
 	constexpr auto c1{1.70158f};

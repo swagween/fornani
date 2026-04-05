@@ -26,6 +26,7 @@ void LothAtWorm::update(automa::ServiceProvider& svc, std::optional<std::unique_
 		svc.music_player.play_looped();
 		flags.set(CutsceneFlags::delete_me);
 		player.set_flag(player::PlayerFlags::cutscene, false);
+		svc.camera_controller.constrain();
 		return;
 	}
 
@@ -136,8 +137,21 @@ void LothAtWorm::update(automa::ServiceProvider& svc, std::optional<std::unique_
 		++progress;
 		break;
 	case 11:
-		cooldowns.end.start();
-		++progress;
+		if (!console) {
+			loth->request(NPCAnimationState::special_1);
+			svc.soundboard.play_sound("magical_teleport");
+			++progress;
+		}
+		break;
+	case 12:
+		if (loth->is_animation_complete()) {
+			cooldowns.end.start();
+			loth->hide();
+			svc.soundboard.play_sound("magical_sparkle");
+			map.spawn_emitter(svc, "radiance", loth->get_collider().get_center(), Direction{});
+			map.spawn_effect(svc, "giga_flare", loth->get_collider().get_center());
+			++progress;
+		}
 		break;
 	}
 }
