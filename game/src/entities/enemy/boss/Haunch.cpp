@@ -1,0 +1,279 @@
+
+#include <fornani/entities/enemy/boss/Haunch.hpp>
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/utils/Random.hpp>
+#include <fornani/world/Map.hpp>
+
+namespace fornani::enemy {
+
+constexpr auto haunch_framerate{14};
+
+Haunch::Haunch(automa::ServiceProvider& svc, world::Map& map)
+	: Boss{svc, map, "haunch"}, m_services{&svc}, m_map{&map}, m_gun{svc, "big_laser_gun"}, m_stun_grenade{svc, "stun_grenade"}, m_hand_grenade{svc, "hand_grenade"}, m_cooldowns{.run{100}, .grenade{40}, .laser_charge{288}, .post_laser{96}},
+	  m_laser_gun{svc, "haunch_laser_gun", {37, 15}} {
+	m_params = {{"idle", {0, 6, haunch_framerate * 3, -1}},
+				{"turn", {18, 1, haunch_framerate * 3, 0}},
+				{"shoot_high", {6, 3, haunch_framerate * 4, 0, true}},
+				{"shoot_low", {10, 4, haunch_framerate * 3, 0, true}},
+				{"get_up", {14, 3, haunch_framerate * 4, 0}},
+				{"airborne", {20, 1, haunch_framerate, -1}},
+				{"walk", {17, 4, haunch_framerate * 2, -1}},
+				{"pull_grenade", {21, 3, haunch_framerate * 3, 0}},
+				{"throw_grenade", {24, 3, haunch_framerate * 2, 0}},
+				{"triple_toss", {24, 3, haunch_framerate, 2}},
+				{"throw_grenade_down", {27, 5, haunch_framerate * 2, 0}}};
+	animation.set_params(get_params("idle"));
+	get_collider().physics.set_friction_componentwise({0.99f, 1.f});
+	m_gun.get().set_team(arms::Team::skycorps);
+	m_stun_grenade.get().set_team(arms::Team::skycorps);
+	m_hand_grenade.get().set_team(arms::Team::skycorps);
+	m_laser_gun.push_animation("fire", {10, 5, 32, 0});
+	m_laser_gun.push_animation("charge", {1, 9, 32, 0});
+	m_laser_gun.push_and_set_animation("neutral", {0, 1, 32, -1});
+	m_laser_gun.center();
+	flags.state.set(StateFlags::no_shake);
+	flags.state.set(StateFlags::no_slowdown);
+}
+
+void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	Boss::update(svc, map, player);
+	if (!has_flag_set(BossFlags::battle_mode)) { return; }
+
+	m_cooldowns.grenade.update();
+	m_cooldowns.run.update();
+	m_cooldowns.laser_charge.update();
+	m_cooldowns.post_laser.update();
+
+	m_laser_gun.tick();
+	if (m_gun.get().has_flag_set(arms::WeaponFlags::charging)) {
+		auto progress = static_cast<int>(std::round(m_cooldowns.laser_charge.get_inverse_normalized() * 9.f)) - 1;
+		m_laser_gun.set_frame(progress);
+	}
+	if (m_laser_gun.animation.is_complete() && m_flags.test(HaunchFlags::laser_fired)) {
+		m_laser_gun.set_animation("neutral");
+		m_flags.reset(HaunchFlags::laser_fired);
+	}
+	m_flags.reset(HaunchFlags::show_gun);
+	if (is_state(HaunchState::shoot_low) || is_state(HaunchState::shoot_high) || is_state(HaunchState::walk) || is_state(HaunchState::idle) || is_state(HaunchState::airborne) || is_state(HaunchState::get_up)) {
+		m_flags.set(HaunchFlags::show_gun);
+	}
+
+	m_stun_grenade.update(svc, map, *this);
+	m_hand_grenade.update(svc, map, *this);
+	m_stun_grenade.get().set_firing_direction(CardinalDirection{UDLR::down});
+	m_hand_grenade.get().set_firing_direction(CardinalDirection{UDLR::up});
+	m_gun.update(svc, map, *this);
+	auto bp = get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * -8.f, -16.f};
+	m_stun_grenade.get().set_barrel_point(get_collider().get_center());
+	m_hand_grenade.get().set_barrel_point(get_collider().get_center());
+	m_attack_target = player.get_collider().get_center() + sf::Vector2f{0.f, -20.f} - bp;
+	auto offset = is_state(HaunchState::shoot_low) ? sf::Vector2f{directions.actual.as_float() * 38.f, 42.f} : is_state(HaunchState::shoot_high) ? sf::Vector2f{directions.actual.as_float() * 48.f, -6.f} : sf::Vector2f{};
+	m_gun_socket = bp + offset;
+	m_gun.get().set_barrel_point(m_gun_socket + sf::Vector2f{36.f * directions.actual.as_float(), -8.f});
+	m_laser_gun.set_scale({-get_scale().x, get_scale().y});
+
+	if (is_alert()) { request(HaunchState::pull_grenade); }
+	if (is_hostile()) { request(HaunchState::throw_grenade_down); }
+	if (!is_alert() && !is_hostile()) { request(HaunchState::walk); }
+
+	if (secondary_collider) {
+		get_secondary_collider().physics.position = get_collider().get_top() - get_secondary_collider().dimensions * 0.5f;
+		get_secondary_collider().sync_components();
+	}
+
+	face_player(player);
+	flags.state.set(StateFlags::vulnerable);
+
+	// hurt
+	if (flags.state.test(StateFlags::hurt)) {
+		if (!hurt_effect.running()) { hurt_effect.start(128); }
+		flags.state.reset(StateFlags::hurt);
+	}
+
+	if (directions.actual.lnr != directions.desired.lnr) { request(HaunchState::turn); }
+
+	state_function = state_function();
+}
+
+void Haunch::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	Enemy::render(svc, win, cam);
+	m_laser_gun.set_position(m_gun_socket - cam);
+	if (m_flags.test(HaunchFlags::show_gun)) { win.draw(m_laser_gun); }
+	if (svc.greyblock_mode()) {}
+}
+
+void Haunch::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	Boss::gui_render(svc, win, cam);
+	debug();
+}
+
+void Haunch::debug() {
+	static auto sz = ImVec2{180.f, 250.f};
+	ImGui::SetNextWindowSize(sz);
+	if (ImGui::Begin("Haunch Debug")) {
+		if (ImGui::Button("Start Battle")) { start_battle(); }
+		ImGui::SeparatorText("Info");
+		ImGui::SeparatorText("Controls");
+		if (ImGui::Button("get up")) { request(HaunchState::get_up); }
+		if (ImGui::Button("shoot high")) { request(HaunchState::shoot_high); }
+		if (ImGui::Button("shoot low")) { request(HaunchState::shoot_low); }
+		if (ImGui::Button("pull grenade")) { request(HaunchState::pull_grenade); }
+		if (ImGui::Button("throw grenade")) { request(HaunchState::throw_grenade); }
+		if (ImGui::Button("throw grenade down")) { request(HaunchState::throw_grenade_down); }
+		if (ImGui::Button("walk")) { request(HaunchState::walk); }
+		ImGui::End();
+	}
+}
+
+fsm::StateFunction Haunch::update_idle() {
+	p_state.actual = HaunchState::idle;
+	if (change_state(HaunchState::walk, get_params("walk"))) { return HAUNCH_BIND(update_walk); }
+	if (change_state(HaunchState::turn, get_params("turn"))) { return HAUNCH_BIND(update_turn); }
+	if (change_state(HaunchState::pull_grenade, get_params("pull_grenade"))) { return HAUNCH_BIND(update_pull_grenade); }
+	if (change_state(HaunchState::throw_grenade_down, get_params("throw_grenade_down")) && get_collider().grounded()) { return HAUNCH_BIND(update_throw_grenade_down); }
+	return HAUNCH_BIND(update_idle);
+}
+
+fsm::StateFunction Haunch::update_airborne() {
+	p_state.actual = HaunchState::airborne;
+	if (change_state(HaunchState::throw_grenade_down, get_params("throw_grenade_down")) && get_collider().grounded()) { return HAUNCH_BIND(update_throw_grenade_down); }
+	if (get_collider().grounded()) {
+		request(HaunchState::idle);
+		if (change_state(HaunchState::idle, get_params("idle"))) { return HAUNCH_BIND(update_idle); }
+	}
+	return HAUNCH_BIND(update_airborne);
+}
+
+fsm::StateFunction Haunch::update_turn() {
+	p_state.actual = HaunchState::turn;
+	if (animation.complete()) {
+		request_flip();
+		if (change_state(HaunchState::throw_grenade_down, get_params("throw_grenade_down")) && get_collider().grounded()) { return HAUNCH_BIND(update_throw_grenade_down); }
+		request(HaunchState::idle);
+		if (change_state(HaunchState::idle, get_params("idle"))) { return HAUNCH_BIND(update_idle); }
+	}
+	return HAUNCH_BIND(update_turn);
+}
+
+fsm::StateFunction Haunch::update_shoot_high() {
+	p_state.actual = HaunchState::shoot_high;
+	shoot_gun();
+	if (change_state(HaunchState::idle, get_params("idle"))) { return HAUNCH_BIND(update_idle); }
+	return HAUNCH_BIND(update_shoot_high);
+}
+
+fsm::StateFunction Haunch::update_shoot_low() {
+	p_state.actual = HaunchState::shoot_low;
+	shoot_gun();
+	if (change_state(HaunchState::get_up, get_params("get_up"))) { return HAUNCH_BIND(update_get_up); }
+	return HAUNCH_BIND(update_shoot_low);
+}
+
+fsm::StateFunction Haunch::update_get_up() {
+	p_state.actual = HaunchState::get_up;
+	if (animation.is_complete()) {
+		request(HaunchState::idle);
+		if (change_state(HaunchState::idle, get_params("idle"))) { return HAUNCH_BIND(update_idle); }
+	}
+	return HAUNCH_BIND(update_get_up);
+}
+
+fsm::StateFunction Haunch::update_walk() {
+	p_state.actual = HaunchState::walk;
+	get_collider().physics.apply_force({directions.actual.as_float(), 0.f});
+	if (change_state(HaunchState::pull_grenade, get_params("pull_grenade"))) { return HAUNCH_BIND(update_pull_grenade); }
+	return HAUNCH_BIND(update_walk);
+}
+
+fsm::StateFunction Haunch::update_pull_grenade() {
+	p_state.actual = HaunchState::pull_grenade;
+	if (animation.just_started()) { m_services->soundboard.play_sound("grenade_pin"); }
+	if (animation.is_complete()) {
+		half_health() ? (random::coin_flip() ? request(HaunchState::triple_toss) : request(HaunchState::throw_grenade)) : request(HaunchState::throw_grenade);
+		if (change_state(HaunchState::triple_toss, get_params("triple_toss"))) { return HAUNCH_BIND(update_triple_toss); }
+		if (change_state(HaunchState::throw_grenade, get_params("throw_grenade"))) { return HAUNCH_BIND(update_throw_grenade); }
+	}
+	return HAUNCH_BIND(update_pull_grenade);
+}
+
+fsm::StateFunction Haunch::update_throw_grenade() {
+	p_state.actual = HaunchState::throw_grenade;
+	if (animation.just_started() && !m_cooldowns.grenade.running()) {
+		m_hand_grenade.shoot(*m_services, *m_map, m_attack_target);
+		m_cooldowns.grenade.start();
+		get_collider().physics.apply_force({directions.actual.as_float() * 10.f, -12.f});
+	}
+	if (animation.complete()) {
+		if (change_state(HaunchState::throw_grenade_down, get_params("throw_grenade_down")) && get_collider().grounded()) { return HAUNCH_BIND(update_throw_grenade_down); }
+		get_collider().grounded() ? (random::coin_flip() ? request(HaunchState::shoot_low) : request(HaunchState::shoot_high)) : request(HaunchState::airborne);
+		if (change_state(HaunchState::shoot_high, get_params("shoot_high"))) { return HAUNCH_BIND(update_shoot_high); }
+		if (change_state(HaunchState::shoot_low, get_params("shoot_low"))) { return HAUNCH_BIND(update_shoot_low); }
+		if (change_state(HaunchState::airborne, get_params("airborne"))) { return HAUNCH_BIND(update_airborne); }
+	}
+	return HAUNCH_BIND(update_throw_grenade);
+}
+
+fsm::StateFunction Haunch::update_triple_toss() {
+	p_state.actual = HaunchState::triple_toss;
+	if (animation.just_started()) { get_collider().physics.apply_force({directions.actual.as_float() * -10.f, -60.f}); }
+	if (animation.get_frame_count() == 0 && !m_cooldowns.grenade.running()) {
+		m_hand_grenade.shoot(*m_services, *m_map, m_attack_target);
+		m_cooldowns.grenade.start();
+	}
+	if (animation.complete()) {
+		if (change_state(HaunchState::throw_grenade_down, get_params("throw_grenade_down")) && get_collider().grounded()) { return HAUNCH_BIND(update_throw_grenade_down); }
+		get_collider().grounded() ? (random::coin_flip() ? request(HaunchState::shoot_low) : request(HaunchState::shoot_high)) : request(HaunchState::airborne);
+		if (change_state(HaunchState::shoot_high, get_params("shoot_high"))) { return HAUNCH_BIND(update_shoot_high); }
+		if (change_state(HaunchState::shoot_low, get_params("shoot_low"))) { return HAUNCH_BIND(update_shoot_low); }
+		if (change_state(HaunchState::airborne, get_params("airborne"))) { return HAUNCH_BIND(update_airborne); }
+	}
+	return HAUNCH_BIND(update_triple_toss);
+}
+
+fsm::StateFunction Haunch::update_throw_grenade_down() {
+	p_state.actual = HaunchState::throw_grenade_down;
+	if (animation.get_frame_count() == 2 && !m_cooldowns.grenade.running()) {
+		m_stun_grenade.shoot(*m_services, *m_map, m_attack_target);
+		m_cooldowns.grenade.start();
+	}
+	if (animation.just_started() && !m_flags.test(HaunchFlags::jumped)) {
+		get_collider().physics.apply_force({directions.actual.as_float() * 20.f, -100.f});
+		m_flags.set(HaunchFlags::jumped);
+	}
+	if (animation.is_complete()) {
+		m_flags.reset(HaunchFlags::jumped);
+		get_collider().grounded() ? request(HaunchState::idle) : request(HaunchState::airborne);
+		if (change_state(HaunchState::airborne, get_params("airborne"))) { return HAUNCH_BIND(update_airborne); }
+		if (change_state(HaunchState::idle, get_params("idle"))) { return HAUNCH_BIND(update_idle); }
+	}
+	return HAUNCH_BIND(update_throw_grenade_down);
+}
+
+void Haunch::shoot_gun() {
+	if (animation.just_started()) {
+		m_cooldowns.laser_charge.start();
+		m_laser_gun.set_animation("charge");
+	}
+	if (m_cooldowns.laser_charge.running()) { m_services->soundboard.repeat_sound("charge_laser_gun", 1, m_gun.get().get_barrel_point()); }
+	if (m_cooldowns.laser_charge.is_almost_complete()) {
+		m_laser_gun.set_animation("fire");
+		m_flags.set(HaunchFlags::laser_fired);
+		auto attributes = util::BitFlags<world::LaserAttributes>{};
+		attributes.set(world::LaserAttributes::no_collision);
+		m_map->spawn_laser(*m_services, m_gun.get().get_barrel_point(), m_gun.get().get_firing_direction(), arms::LaserSpecifications{{}, 80, 128, 0.75, 1.f, attributes});
+		m_cooldowns.post_laser.start();
+		m_services->soundboard.play_sound("release_laser_gun");
+	}
+	if (m_cooldowns.post_laser.is_almost_complete()) { is_state(HaunchState::shoot_low) ? request(HaunchState::get_up) : request(HaunchState::idle); }
+}
+
+bool Haunch::change_state(HaunchState next, anim::Parameters params) {
+	if (p_state.desired == next) {
+		animation.set_params(params);
+		return true;
+	}
+	return false;
+}
+
+} // namespace fornani::enemy

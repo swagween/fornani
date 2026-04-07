@@ -18,7 +18,7 @@ namespace fornani::world {
 
 class Map;
 
-enum class ExplosionFlags { exhausted };
+enum class ExplosionFlags { exhausted, stun };
 
 struct ExplosionSpecifications {
 	std::string tag{};
@@ -29,11 +29,12 @@ struct ExplosionSpecifications {
 	int channel{};
 	int volatility{};
 	util::Cooldown delay{24};
+	bool stun{};
 };
 
 class Explosion : public Flaggable<ExplosionFlags> {
   public:
-	Explosion(automa::ServiceProvider& svc, arms::Team team, sf::Vector2f position, float radius);
+	Explosion(automa::ServiceProvider& svc, arms::Team team, sf::Vector2f position, float radius, bool stun = false);
 	void update(automa::ServiceProvider& svc, player::Player& player, Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 

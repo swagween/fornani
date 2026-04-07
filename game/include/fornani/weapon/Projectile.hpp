@@ -58,6 +58,7 @@ struct ExplosionAttributes {
 	float radius{};
 	int channel{};
 	int volatility{};
+	bool stun{};
 };
 
 enum class ProjectileState { initialized, destruction_initiated, destroyed, whiffed, poof, contact, stuck };

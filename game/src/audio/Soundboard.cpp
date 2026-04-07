@@ -13,6 +13,8 @@ Soundboard::Soundboard(automa::ServiceProvider& svc, capo::IEngine& engine) : m_
 	npc_map["gobe"] = make_int_setter<NPCGobe>(npc_flags.gobe);
 	npc_map["minigus"] = make_int_setter<NPCMinigus>(npc_flags.minigus);
 	npc_map["mirin"] = make_int_setter<NPCMirin>(npc_flags.mirin);
+	npc_map["dr_willett"] = make_int_setter<NPCDrWillett>(npc_flags.dr_willett);
+	npc_map["loth"] = make_int_setter<NPCLoth>(npc_flags.loth);
 
 	auto filename = svc.finder.resource_path() + "/data/audio/sfx.json";
 	auto sfx_data_result = dj::Json::from_file(filename);
@@ -244,6 +246,24 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	// gobe
 	if (npc_flags.gobe.test(NPCGobe::oh)) { play(engine, svc, "gobe_oh"); }
 	if (npc_flags.gobe.test(NPCGobe::orewa)) { play(engine, svc, "gobe_orewa"); }
+
+	// willett
+	auto willett_volume = 50.f;
+	if (npc_flags.dr_willett.test(NPCDrWillett::ahhyes)) { play(engine, svc, "dr_willett_ahhyes", 0.f, willett_volume); }
+	if (npc_flags.dr_willett.test(NPCDrWillett::hm)) { play(engine, svc, "dr_willett_hm", 0.f, willett_volume); }
+	if (npc_flags.dr_willett.test(NPCDrWillett::mm)) { play(engine, svc, "dr_willett_mm", 0.f, willett_volume); }
+	if (npc_flags.dr_willett.test(NPCDrWillett::nani)) { play(engine, svc, "dr_willett_nani", 0.f, willett_volume); }
+	if (npc_flags.dr_willett.test(NPCDrWillett::ohno)) { play(engine, svc, "dr_willett_ohno", 0.f, willett_volume); }
+	if (npc_flags.dr_willett.test(NPCDrWillett::runalongnow)) { play(engine, svc, "dr_willett_runalongnow", 0.f, willett_volume); }
+	if (npc_flags.dr_willett.test(NPCDrWillett::yes)) { play(engine, svc, "dr_willett_yes", 0.f, willett_volume); }
+
+	// loth
+	auto loth_volume = 40.f;
+	if (npc_flags.loth.test(NPCLoth::ahh)) { play(engine, svc, "loth_ahh", 0.f, loth_volume); }
+	if (npc_flags.loth.test(NPCLoth::chuckle)) { play(engine, svc, "loth_chuckle", 0.f, loth_volume); }
+	if (npc_flags.loth.test(NPCLoth::hmph)) { play(engine, svc, "loth_hmph", 0.f, loth_volume); }
+	if (npc_flags.loth.test(NPCLoth::hoho)) { play(engine, svc, "loth_hoho", 0.f, loth_volume); }
+	if (npc_flags.loth.test(NPCLoth::nani)) { play(engine, svc, "loth_nani", 0.f, loth_volume); }
 
 	// mirin
 	if (npc_flags.mirin.test(NPCMirin::ah)) { play(engine, svc, "mirin_ah"); }

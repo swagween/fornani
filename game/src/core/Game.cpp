@@ -457,6 +457,22 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							}
 							ImGui::EndTabItem();
 						}
+						if (ImGui::BeginTabItem("Willett")) {
+							for (auto i = 0; i <= static_cast<int>(audio::NPCDrWillett::yes); ++i) {
+								ImGui::PushID(i);
+								if (ImGui::Button("OOO##i")) { services.soundboard.npc_map.at("dr_willett")(i); }
+								ImGui::PopID();
+							}
+							ImGui::EndTabItem();
+						}
+						if (ImGui::BeginTabItem("Loth")) {
+							for (auto i = 0; i <= static_cast<int>(audio::NPCLoth::nani); ++i) {
+								ImGui::PushID(i);
+								if (ImGui::Button("OOO##i")) { services.soundboard.npc_map.at("loth")(i); }
+								ImGui::PopID();
+							}
+							ImGui::EndTabItem();
+						}
 						ImGui::EndTabBar();
 					}
 					ImGui::EndTabItem();

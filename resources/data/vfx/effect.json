@@ -104,6 +104,11 @@
     "framerate": 16,
     "dimensions": [48, 48]
   },
+  "stun_explosion": {
+    "frame_count": 8,
+    "framerate": 16,
+    "dimensions": [48, 48]
+  },
   "huge_explosion": {
     "frame_count": 10,
     "framerate": 16,

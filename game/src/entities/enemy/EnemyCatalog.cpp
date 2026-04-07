@@ -1,6 +1,7 @@
 
 #include <fornani/entities/enemy/EnemyCatalog.hpp>
 #include <fornani/entities/enemy/boss/GrandMastiff.hpp>
+#include <fornani/entities/enemy/boss/Haunch.hpp>
 #include <fornani/entities/enemy/boss/Lynx.hpp>
 #include <fornani/entities/enemy/boss/Miaag.hpp>
 #include <fornani/entities/enemy/boss/Minigus.hpp>
@@ -66,6 +67,7 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[m
 	case 25: enemies.push_back(std::make_unique<Crow>(svc, map, multispawn.spread)); break;
 	case 26: enemies.push_back(std::make_unique<Mizzle>(svc, map)); break;
 	case 27: enemies.push_back(std::make_unique<MizzleEgg>(svc, map)); break;
+	case 28: enemies.push_back(std::make_unique<Haunch>(svc, map)); break;
 	default: enemies.push_back(std::make_unique<Frdog>(svc, map)); break;
 	}
 

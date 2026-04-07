@@ -63,6 +63,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 		metadata.explosion->radius = in_data["explosion"]["radius"].as<float>();
 		metadata.explosion->channel = in_data["explosion"]["channel"].as<int>();
 		metadata.explosion->volatility = in_data["explosion"]["volatility"].as<int>();
+		metadata.explosion->stun = in_data["explosion"]["stun"].as_bool();
 	}
 
 	visual.num_angles = in_data["animation"]["angles"].as<int>();
@@ -141,13 +142,10 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 		physical.collider.handle_map_collision(map);
 		if (physical.collider.collided() && !m_reflected.running()) {
 			m_reflected.start();
-			if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) {
-				on_explode(svc, map);
-			} else {
-				svc.soundboard.play_sound(audio.hit_tag, physical.collider.get_global_center());
-			}
+			svc.soundboard.play_sound(audio.hit_tag, physical.collider.get_global_center());
 		}
 		physical.collider.physics.acceleration = {};
+		if (metadata.attributes.test(ProjectileAttributes::explode_on_impact) && lifetime.is_almost_complete()) { on_explode(svc, map); }
 		return;
 	}
 	if (sticky()) {
@@ -156,6 +154,13 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 			svc.soundboard.play_sound(audio.hit_tag, physical.collider.get_global_center());
 			variables.state.set(ProjectileState::stuck);
 		}
+		return;
+	}
+	if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) {
+		physical.collider.handle_map_collision(map);
+		if (physical.collider.collided()) { on_explode(svc, map); }
+		if (lifetime.is_almost_complete()) { on_explode(svc, map); }
+		physical.collider.physics.acceleration = {};
 		return;
 	}
 	if (map.check_cell_collision_circle(physical.collider, false)) {
@@ -195,7 +200,7 @@ void Projectile::on_player_hit(automa::ServiceProvider& svc, world::Map& map, pl
 void Projectile::on_explode(automa::ServiceProvider& svc, world::Map& map) {
 	if (!metadata.explosion) { return; }
 	if (!has_attribute(arms::ProjectileAttributes::explode_on_impact)) { return; }
-	map.spawn_explosion(svc, metadata.explosion->tag, metadata.explosion->emitter, get_team(), get_position(), metadata.explosion->radius, metadata.explosion->channel, metadata.explosion->volatility);
+	map.spawn_explosion(svc, metadata.explosion->tag, metadata.explosion->emitter, get_team(), get_position(), metadata.explosion->radius, metadata.explosion->channel, metadata.explosion->volatility, metadata.explosion->stun);
 	destroy(false);
 }
 

@@ -31,7 +31,7 @@ void Boss::end_battle() {
 	set_flag(BossFlags::battle_mode, false);
 	p_health_bar.send_out();
 	p_services->soundboard.play_sound("boss_defeat");
-	p_services->ticker.slow_down(64);
+	p_services->ticker.slow_down(128);
 }
 
 } // namespace fornani::enemy

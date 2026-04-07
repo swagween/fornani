@@ -657,8 +657,8 @@ void Map::spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::
 	active_emitters.push_back(std::make_unique<vfx::Emitter>(svc, *this, pos, dim, tag, color, dir));
 }
 
-void Map::spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel, int volatility) {
-	m_explosions.push_back(Explosion{svc, team, pos, radius});
+void Map::spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel, int volatility, bool stun) {
+	m_explosions.push_back(Explosion{svc, team, pos, radius, stun});
 	spawn_effect(svc, tag, pos, {}, channel);
 	spawn_emitter(svc, emitter, pos, Direction{});
 	if (volatility > 0) {

@@ -1464,7 +1464,10 @@
             "message": "..."
           },
           {
-            "codes": [[14, 1]],
+            "codes": [
+              [14, 1],
+              [4, 2]
+            ],
             "message": "Good heavens, you scared me half to death. I don't know if my old heart can take many more such frights."
           },
           {
@@ -1474,7 +1477,10 @@
             "message": "Do my eyes deceive me?"
           },
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [1, 0],
+              [4, 3]
+            ],
             "message": "Is that really you, Nani?"
           }
         ],
@@ -1489,6 +1495,7 @@
         ],
         [
           {
+            "codes": [[4, 0]],
             "message": "Ah, yes... Bryn. My courageous student."
           },
           {
@@ -1531,6 +1538,7 @@
         ],
         [
           {
+            "codes": [[4, 6]],
             "message": "That would be excellent. Despite what it may seem, these old knees aren't much fit for spelunking!"
           },
           {
@@ -3768,7 +3776,8 @@
           {
             "codes": [
               [1, 0],
-              [5, 2]
+              [5, 2],
+              [4, 4]
             ],
             "message": "Nani."
           }
@@ -3829,7 +3838,10 @@
         ],
         [
           {
-            "codes": [[5, 2]],
+            "codes": [
+              [5, 2],
+              [4, 0]
+            ],
             "message": "We are a dying people. Skycorps relentlessly raid our last holdfast, all the while hammering away at the island, oblivious to the consequences."
           },
           {
@@ -3855,7 +3867,10 @@
         ],
         [
           {
-            "codes": [[5, 0]],
+            "codes": [
+              [5, 0],
+              [4, 2]
+            ],
             "message": "Hmph."
           },
           {
@@ -3924,7 +3939,8 @@
           {
             "codes": [
               [1, 1],
-              [5, 0]
+              [5, 0],
+              [4, 1]
             ],
             "message": "Hah... Now, Nani, there will always be knowledge not meant for you to know."
           }
@@ -3944,6 +3960,7 @@
             "message": "..."
           },
           {
+            "codes": [[4, 2]],
             "message": "My dear sister..."
           },
           {
@@ -3979,6 +3996,7 @@
         ],
         [
           {
+            "codes": [[4, 3]],
             "message": "I'm not going anywhere. You have other challenges ahead of you that you must deal with before we can speak again. Until then, I will be with you in spirit."
           },
           {

@@ -190,6 +190,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	}
 	auto overlap = collider.has_value() ? player.get_collider().bounding_box.overlaps(get_collider().bounding_box) : false;
 	if (overlap || (m_state.test(NPCState::distant_interact) && m_state.test(NPCState::force_interact))) {
+		m_state.set(NPCState::interacting);
 		if (!m_state.test(NPCState::engaged)) { m_state.set(NPCState::just_engaged); }
 		m_state.set(NPCState::engaged);
 		if ((player.controller.inspecting() || m_state.test(NPCState::force_interact)) && !conversations.empty() && !player.has_flag_set(player::PlayerFlags::in_front_of_door)) {
@@ -219,6 +220,8 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 		if (!get_collider().grounded()) { request(NPCAnimationState::fall); }
 	}
 	if (directions.actual.lnr != directions.desired.lnr) { request(NPCAnimationState::turn); }
+
+	if (!console.has_value()) { m_state.reset(NPCState::interacting); }
 
 	if (!has_flag_set(NPCFlags::no_animation)) { state_function = std::move(state_function()); }
 	if (is_hidden()) { return; }
@@ -269,6 +272,7 @@ void NPC::pop_conversation() {
 }
 
 void NPC::play_voice_cue(automa::ServiceProvider& svc, int which) const {
+	if (!m_state.test(NPCState::interacting)) { return; }
 	if (svc.soundboard.npc_map.contains(m_label)) { svc.soundboard.npc_map.at(m_label)(which); }
 }
 
@@ -286,6 +290,7 @@ void NPC::flush_conversations() { conversations.clear(); }
 
 void NPC::force_engage() {
 	m_state.set(NPCState::engaged);
+	m_state.set(NPCState::interacting);
 	m_state.set(NPCState::cutscene);
 	m_state.set(NPCState::distant_interact);
 	m_state.set(NPCState::force_interact);

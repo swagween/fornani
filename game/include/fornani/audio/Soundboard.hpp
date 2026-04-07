@@ -108,6 +108,8 @@ enum class NPCCarl { hah, eh };
 enum class NPCGo { oh, mm };
 enum class NPCBit { hey, hehe };
 enum class NPCMinigus { greatidea, dontlookatme, laugh, getit, pizza, grunt };
+enum class NPCDrWillett { ahhyes, hm, mm, nani, ohno, runalongnow, yes };
+enum class NPCLoth { ahh, chuckle, hmph, hoho, nani };
 
 enum class Minigus {
 	hurt_1,
@@ -202,6 +204,8 @@ class Soundboard {
 		util::BitFlags<NPCCarl> carl{};
 		util::BitFlags<NPCBit> bit{};
 		util::BitFlags<NPCMinigus> minigus{};
+		util::BitFlags<NPCDrWillett> dr_willett{};
+		util::BitFlags<NPCLoth> loth{};
 	} npc_flags{};
 
 	std::unordered_map<std::string, std::function<void(int)>> npc_map;

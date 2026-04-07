@@ -1278,5 +1278,60 @@
       "foreground": false,
       "rare_drops": false
     }
+  },
+  "haunch": {
+    "metadata": {
+      "id": 28,
+      "variant": "skycorps"
+    },
+    "physical": {
+      "dimensions": [48, 80],
+      "sprite_dimensions": [79, 80],
+      "offset": [0, -37],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [380.0, 200.0],
+      "hostile_range": [160.0, 80.0],
+      "friction": 1.0,
+      "gravity": 4.0
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 1
+    },
+    "audio": {
+      "hit": -1
+    },
+    "attributes": {
+      "base_hp": 1000,
+      "base_damage": 1.0,
+      "speed": 15.5,
+      "loot_multiplier": 100.0,
+      "drop_range": [30, 36],
+      "rare_drop_id": 0,
+      "respawn_distance": 8,
+      "permadeath": true,
+      "size": 1,
+      "team": 1
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "map_collision": true,
+      "player_collision": false,
+      "secondary_collider": true,
+      "rare_drops": true,
+      "foreground": false,
+      "sturdy": true
+    },
+    "treasure": {
+      "chance": 1.0,
+      "guns": [
+        {
+          "tag": "laser_gun",
+          "chance": 1.0
+        }
+      ]
+    }
   }
 }
