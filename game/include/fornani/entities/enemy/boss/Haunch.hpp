@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <fornani/components/SteeringBehavior.hpp>
+#include <fornani/components/SteeringComponent.hpp>
 #include <fornani/entities/enemy/Boss.hpp>
 #include <fornani/entities/packages/Attack.hpp>
 #include <fornani/entities/packages/Caution.hpp>
@@ -13,7 +13,7 @@
 
 namespace fornani::enemy {
 
-enum class HaunchState { idle, airborne, turn, shoot_high, shoot_low, get_up, walk, pull_grenade, throw_grenade, throw_grenade_down, triple_toss };
+enum class HaunchState { idle, airborne, turn, shoot_high, shoot_low, get_up, walk, pull_grenade, throw_grenade, throw_grenade_down, triple_toss, whistle, triple_down_toss };
 enum class HaunchFlags { laser_fired, jumped, show_gun };
 
 class Haunch final : public Boss, public StateMachine<HaunchState> {
@@ -37,6 +37,8 @@ class Haunch final : public Boss, public StateMachine<HaunchState> {
 	fsm::StateFunction update_throw_grenade();
 	fsm::StateFunction update_triple_toss();
 	fsm::StateFunction update_throw_grenade_down();
+	fsm::StateFunction update_whistle();
+	fsm::StateFunction update_triple_down_toss();
 
   private:
 	void shoot_gun();
@@ -44,9 +46,12 @@ class Haunch final : public Boss, public StateMachine<HaunchState> {
   private:
 	struct {
 		util::Cooldown run;
+		util::Cooldown post_run;
 		util::Cooldown grenade;
 		util::Cooldown laser_charge;
 		util::Cooldown post_laser;
+		util::Cooldown whistle;
+		util::Cooldown post_whistle;
 	} m_cooldowns{};
 
 	util::BitFlags<HaunchFlags> m_flags{};
@@ -55,7 +60,7 @@ class Haunch final : public Boss, public StateMachine<HaunchState> {
 
 	bool change_state(HaunchState next, anim::Parameters params);
 
-	components::SteeringBehavior m_steering{};
+	components::SteeringComponent m_gun_steering{};
 	entity::Caution m_caution{};
 
 	entity::WeaponPackage m_stun_grenade;

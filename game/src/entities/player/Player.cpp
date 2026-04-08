@@ -647,7 +647,7 @@ void Player::update_direction() {
 }
 
 void Player::update_weapon(world::Map& map) {
-	if (fire_weapon()) {
+	if (fire_weapon() && !is_dead()) {
 		m_services->stats.player.bullets_fired.update();
 		sf::Vector2f tweak = controller.facing_left() ? sf::Vector2f{0.f, 0.f} : sf::Vector2f{-3.f, 0.f};
 		if (equipped_weapon().multishot()) {
@@ -657,7 +657,7 @@ void Player::update_weapon(world::Map& map) {
 		}
 		if (!equipped_weapon().automatic() && !equipped_weapon().is_chargeable()) { controller.set_shot(false); }
 	}
-	controller.set_arsenal(static_cast<bool>(hotbar));
+	controller.set_arsenal(hotbar.has_value());
 	if (!arsenal) { return; }
 	if (!hotbar) { return; }
 	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching

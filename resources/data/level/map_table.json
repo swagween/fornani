@@ -254,6 +254,12 @@
     },
     {
       "folder": "junkyard",
+      "label": "maintenance_hangar.json",
+      "region": "junkyard",
+      "room_id": 906
+    },
+    {
+      "folder": "junkyard",
       "label": "shooting_range.json",
       "region": "junkyard",
       "room_id": 720
