@@ -25,7 +25,7 @@ class Haunch final : public Boss, public StateMachine<HaunchState> {
 
 	void debug();
 
-	fsm::StateFunction state_function = std::bind(&Haunch::update_idle, this);
+	fsm::StateFunction state_function = std::bind(&Haunch::update_airborne, this);
 	fsm::StateFunction update_idle();
 	fsm::StateFunction update_airborne();
 	fsm::StateFunction update_turn();

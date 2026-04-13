@@ -25,8 +25,9 @@ Haunch::Haunch(automa::ServiceProvider& svc, world::Map& map)
 				{"throw_grenade_down", {29, 5, haunch_framerate * 2, 0}},
 				{"triple_down_toss", {29, 5, haunch_framerate, 2}},
 				{"whistle", {34, 8, haunch_framerate * 2, 0}}};
-	animation.set_params(get_params("idle"));
+	animation.set_params(get_params("airborne"));
 	get_collider().physics.set_friction_componentwise({0.99f, 1.f});
+	set_direction({LR::right});
 	m_gun.get().set_team(arms::Team::skycorps);
 	m_stun_grenade.get().set_team(arms::Team::skycorps);
 	m_hand_grenade.get().set_team(arms::Team::skycorps);
@@ -40,11 +41,7 @@ Haunch::Haunch(automa::ServiceProvider& svc, world::Map& map)
 
 void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	Boss::update(svc, map, player);
-	if (consume_flag(BossFlags::start_battle)) {
-		svc.data.switch_destructible_state(90102, true);
-		svc.music_player.load(svc.finder, "scuffle");
-		svc.music_player.play_looped();
-	}
+	if (consume_flag(BossFlags::start_battle)) { svc.data.switch_destructible_state(90102, true); }
 	if (has_flag_set(BossFlags::end_battle) && !has_flag_set(BossFlags::post_death)) {
 		svc.data.switch_destructible_state(90102, true);
 		svc.music_player.pause();
@@ -52,7 +49,10 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		svc.music_player.load(svc.finder, "none");
 		svc.music_player.play_looped();
 	}
-	if (!has_flag_set(BossFlags::battle_mode)) { return; }
+	if (!has_flag_set(BossFlags::battle_mode)) {
+		state_function = state_function();
+		return;
+	}
 
 	m_cooldowns.grenade.update();
 	m_cooldowns.run.update();
@@ -105,8 +105,15 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		}
 	}
 	if (is_hostile()) { half_health() ? request(HaunchState::triple_down_toss) : request(HaunchState::throw_grenade_down); }
-	if (!is_alert() && !is_hostile()) { m_cooldowns.run.start(80); }
+	if (!is_alert() && !is_hostile()) {
+		if (half_health() && random::coin_flip()) {
+			request(HaunchState::whistle);
+		} else {
+			m_cooldowns.run.start(80);
+		}
+	}
 	if (m_cooldowns.run.running()) { request(HaunchState::walk); }
+	if (player.get_collider().get_center().y < get_collider().get_top().y && player.controller.is_wallsliding()) { request(HaunchState::triple_down_toss); }
 
 	if (secondary_collider) {
 		get_secondary_collider().physics.position = get_collider().get_top() - get_secondary_collider().dimensions * 0.5f;
@@ -136,7 +143,7 @@ void Haunch::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 void Haunch::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Boss::gui_render(svc, win, cam);
-	debug();
+	// debug();
 }
 
 void Haunch::debug() {

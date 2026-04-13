@@ -1,0 +1,29 @@
+{
+	"army_truck": [
+		{
+			"label": "arrive",
+			"path": [
+				{
+					"position": [ -400, 94 ]
+				},
+				{
+					"position": [ 64, 94 ]
+				}
+			]
+		},
+		{
+			"label": "depart",
+			"path": [
+				{
+					"position": [ 64, 94 ]
+				},
+				{
+					"position": [ 528, 94 ]
+				},
+				{
+					"position": [ 992, 94 ]
+				}
+			]
+		}
+	]
+}

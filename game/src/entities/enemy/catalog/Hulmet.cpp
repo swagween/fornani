@@ -21,6 +21,12 @@ Hulmet::Hulmet(automa::ServiceProvider& svc, world::Map& map)
 void Hulmet::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	Enemy::update(svc, map, player);
 	if (died()) { return; }
+	if (svc.state_flags.test(automa::StateFlags::cutscene)) {
+		face_player(player);
+		if (directions.actual.lnr != directions.desired.lnr) { request(HulmetState::turn); }
+		state_function = state_function();
+		return;
+	}
 	if (svc.ticker.every_second()) {
 		if (random::percent_chance(20)) { request(HulmetState::run); }
 	}

@@ -24,6 +24,7 @@ class Cutscene : public UniquePolymorphic {
 	Cutscene(automa::ServiceProvider& svc, int id, std::string_view label);
 
 	virtual void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] world::Map& map, [[maybe_unused]] player::Player& player) {};
+	virtual void render(sf::RenderWindow& win, sf::Vector2f cam) {};
 	[[nodiscard]] auto complete() const -> bool { return flags.test(CutsceneFlags::complete); }
 	[[nodiscard]] auto delete_me() const -> bool { return flags.test(CutsceneFlags::delete_me); }
 

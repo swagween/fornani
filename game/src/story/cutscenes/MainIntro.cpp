@@ -94,6 +94,7 @@ void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_p
 	if (npcs.empty()) { return; }
 
 	player.controller.restrict_movement();
+	player.stall_idle_timer();
 
 	svc.camera_controller.set_owner(graphics::CameraOwner::system);
 	svc.camera_controller.free();

@@ -205,6 +205,10 @@ void Projectile::on_explode(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Projectile::handle_hard_hit(automa::ServiceProvider& svc, world::Map& map) {
+	if (has_attribute(arms::ProjectileAttributes::explode_on_impact)) {
+		on_explode(svc, map);
+		return;
+	}
 	if (!destruction_initiated()) {
 		map.spawn_effect(svc, "inv_hit", get_collider().get_global_center(), {}, effect_type());
 		svc.soundboard.flags.world.set(audio::World::hard_hit);

@@ -216,7 +216,7 @@ void DataManager::load_data() {
 	NANI_LOG_INFO(m_logger, "Loaded theme {}", themestr);
 
 	m_services->stopwatch.stop();
-	m_services->stopwatch.print_time("data loaded");
+	// m_services->stopwatch.print_time("data loaded");
 	m_services->stopwatch.start();
 }
 

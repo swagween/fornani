@@ -318,7 +318,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 			enemy_catalog.enemies.back()->intangible_start(64);
 			enemy_catalog.enemies.back()->set_position(spawn.pos);
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
-			spawn_effect(svc, "small_flash", enemy_catalog.enemies.back()->get_collider().get_center());
+			if (spawn.effect) { spawn_effect(svc, "small_flash", enemy_catalog.enemies.back()->get_collider().get_center()); }
 		}
 		enemy_spawns.clear();
 		flags.state.reset(LevelState::spawn_enemy);
@@ -451,6 +451,8 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		generate_layer_textures(svc);
 		svc.debug_flags.reset(automa::DebugFlags::greyblock_trigger);
 	}
+
+	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->render(win, cam); }
 
 	if (m_entities) {
 		// TODO: uncomment below once all entities have been refactored!
@@ -669,7 +671,7 @@ void Map::spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, st
 	}
 }
 
-void Map::spawn_enemy(int id, sf::Vector2f pos, int variant, bool allow_proximity_to_player) {
+void Map::spawn_enemy(int id, sf::Vector2f pos, int variant, bool allow_proximity_to_player, bool effect) {
 	if (!allow_proximity_to_player) {
 		auto break_out = 0;
 		while (player->distant_vicinity.contains_point(pos) && break_out < 32) {
@@ -678,7 +680,7 @@ void Map::spawn_enemy(int id, sf::Vector2f pos, int variant, bool allow_proximit
 			++break_out;
 		}
 	}
-	enemy_spawns.push_back({pos, id, variant});
+	enemy_spawns.push_back({pos, id, variant, effect});
 	spawn_counter.update();
 	flags.state.set(LevelState::spawn_enemy);
 }

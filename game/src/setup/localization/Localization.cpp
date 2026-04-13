@@ -4,8 +4,8 @@
 namespace fornani {
 
 Localization::Localization(ResourceFinder& finder) {
-	auto localization_result = dj::Json::from_file(finder.resource_path() + "/data/config/localization.json");
-	if (!localization_result) { NANI_LOG_ERROR(m_logger, "Failed to load localization data from {}.", finder.resource_path() + "/data/config/localization.json"); }
+	auto localization_result = dj::Json::from_file(finder.resource_path() + "/data/localization/localization.json");
+	if (!localization_result) { NANI_LOG_ERROR(m_logger, "Failed to load localization data from {}.", finder.resource_path() + "/data/localization/localization.json"); }
 	m_language_list = std::move(*localization_result);
 }
 

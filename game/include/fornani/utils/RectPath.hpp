@@ -28,6 +28,7 @@ class RectPath {
 	void reset();
 
 	void set_dimensions(sf::Vector2f to) { m_current_dimensions = to; }
+	void set_interpolation_type(InterpolationType to) { m_interpolation_type = to; }
 
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_current_position; }
 	[[nodiscard]] auto get_dimensions() const -> sf::Vector2f { return m_current_dimensions; }

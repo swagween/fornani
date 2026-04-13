@@ -81,6 +81,7 @@ struct EnemySpawn {
 	sf::Vector2f pos{};
 	int id{};
 	int variant{};
+	bool effect{};
 };
 
 struct MapAttributes {
@@ -125,7 +126,7 @@ class Map {
 	void spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0);
 	void spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, Direction dir, sf::Vector2f dim = {16.f, 16.f}, sf::Color color = colors::nani_white);
 	void spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel, int volatility = 0, bool stun = false);
-	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0, bool allow_proximity_to_player = false);
+	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0, bool allow_proximity_to_player = false, bool effect = true);
 	void spawn_chest(automa::ServiceProvider& svc, enemy::Treasure const& treasure, sf::Vector2f pos, sf::Vector2f vel = {});
 
 	void reveal_npc(std::string_view label);

@@ -30,6 +30,17 @@
           21,
           27
         ]
+      },
+      {
+        "dimensions": [
+          3,
+          14
+        ],
+        "id": 900,
+        "position": [
+          16,
+          1
+        ]
       }
     ],
     "destructibles": [
@@ -164,24 +175,6 @@
         ]
       }
     ],
-    "enemies": [
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 28,
-        "position": [
-          9,
-          11
-        ],
-        "start_direction": [
-          0,
-          0
-        ],
-        "variant": 0
-      }
-    ],
     "npcs": [
       {
         "background": false,
@@ -201,6 +194,27 @@
         "suites": [
           [
             2
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": false,
+        "hidden": false,
+        "id": 901,
+        "label": "haunch",
+        "position": [
+          14,
+          12
+        ],
+        "suites": [
+          [
+            1
           ]
         ]
       }

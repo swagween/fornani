@@ -1,5 +1,7 @@
 nani_add_sources(
   BrynPostMiaag.cpp
+  HaunchIntro.cpp
+  HaunchEscape.cpp
         LadyNimbusIntro.cpp
         LothAtWorm.cpp
         PioneerBaseDebrief.cpp

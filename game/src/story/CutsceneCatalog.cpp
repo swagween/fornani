@@ -1,6 +1,8 @@
 
 #include "fornani/story/CutsceneCatalog.hpp"
 #include <fornani/story/cutscene/BrynPostMiaag.hpp>
+#include <fornani/story/cutscene/HaunchEscape.hpp>
+#include <fornani/story/cutscene/HaunchIntro.hpp>
 #include <fornani/story/cutscene/LadyNimbusIntro.hpp>
 #include <fornani/story/cutscene/LothAtWorm.hpp>
 #include <fornani/story/cutscene/MainIntro.hpp>
@@ -26,6 +28,8 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	case 901: cutscenes.push_back(std::make_unique<NightsideStation>(svc)); break;
 	case 903: cutscenes.push_back(std::make_unique<NightsideWall>(svc)); break;
 	case 268: cutscenes.push_back(std::make_unique<LothAtWorm>(svc)); break;
+	case 900: cutscenes.push_back(std::make_unique<HaunchIntro>(svc)); break;
+	// case 902: cutscenes.push_back(std::make_unique<HaunchEscape>(svc)); break;
 	default: cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc)); break;
 	}
 	m_register.add(id);
