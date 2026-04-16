@@ -15,7 +15,7 @@ Explosion::Explosion(automa::ServiceProvider& svc, arms::Team team, sf::Vector2f
 
 void Explosion::update(automa::ServiceProvider& svc, player::Player& player, Map& map) {
 	m_lifetime.update();
-	if (m_sensor.within_bounds(player.get_collider().hurtbox) && m_team != arms::Team::nani) { has_flag_set(ExplosionFlags::stun) ? player.hurt_and_stun() : player.hurt(); }
+	if (m_sensor.within_bounds(player.hurtbox) && m_team != arms::Team::nani) { has_flag_set(ExplosionFlags::stun) ? player.hurt_and_stun() : player.hurt(); }
 	auto exhausted = false;
 	for (auto& enemy : map.enemy_catalog.enemies) {
 		if (m_sensor.within_bounds(enemy->get_collider().hurtbox) && m_team != enemy->get_team() && !has_flag_set(ExplosionFlags::exhausted)) {

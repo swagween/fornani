@@ -309,7 +309,7 @@ void Enemy::handle_player_collision(player::Player& player) const {
 		if (has_secondary_collider()) { player.get_collider().handle_collider_collision(get_secondary_collider()); }
 	}
 	if (flags.general.test(GeneralFlags::hurt_on_contact)) {
-		if (player.get_collider().hurtbox.overlaps(get_collider().bounding_box)) { player.hurt(attributes.base_damage); }
+		if (player.hurtbox.overlaps(get_collider().bounding_box)) { player.hurt(attributes.base_damage); }
 	}
 }
 

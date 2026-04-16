@@ -258,6 +258,11 @@ void Player::update(world::Map& map) {
 	invincible() ? get_collider().draw_hurtbox.setFillColor(colors::red) : get_collider().draw_hurtbox.setFillColor(colors::blue);
 	if (has_death_type(PlayerDeathType::crushed)) { get_collider().physics.gravity = 0.f; }
 
+	// hurtbox
+	is_in_animation(AnimState::crawl) || is_in_animation(AnimState::crouch) ? hurtbox.set_dimensions(sf::Vector2f{12.f, 12.f}) : hurtbox.set_dimensions(sf::Vector2f{12.f, 26.f});
+	is_in_animation(AnimState::crawl) || is_in_animation(AnimState::crouch) ? hurtbox.set_position(get_collider().hurtbox.get_position() + sf::Vector2f{0.f, 4.f})
+																			: hurtbox.set_position(get_collider().hurtbox.get_position() - sf::Vector2f{0.f, 10.f});
+
 	get_collider().set_flag(shape::ColliderFlags::sinking, has_death_type(PlayerDeathType::drowned));
 
 	if (get_collider().has_flag_set(shape::ColliderFlags::submerged)) {
@@ -339,7 +344,6 @@ void Player::update(world::Map& map) {
 	}
 
 	// get_collider().update(*m_services);
-	hurtbox.set_position(get_collider().hurtbox.get_position() - sf::Vector2f{0.f, 10.f});
 	health.update();
 	health_indicator.update(*m_services, get_collider().physics.position);
 	orb_indicator.update(*m_services, get_collider().physics.position);
@@ -393,8 +397,8 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		win.draw(*this);
 		sf::RectangleShape box{};
 		box.setFillColor(sf::Color::Transparent);
-		box.setOutlineColor(colors::green);
-		box.setOutlineThickness(-1);
+		box.setOutlineColor(colors::red);
+		box.setOutlineThickness(-2.f);
 		box.setPosition(hurtbox.get_position() - cam);
 		box.setSize(hurtbox.get_dimensions());
 		win.draw(box);

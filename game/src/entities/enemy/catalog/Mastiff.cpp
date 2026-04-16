@@ -48,7 +48,7 @@ void Mastiff::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 
 	state_function = state_function();
 
-	if (m_bite.hit.within_bounds(player.get_collider().hurtbox) && m_bite.hit.active() && !health.is_dead()) { player.hurt(); }
+	if (m_bite.hit.within_bounds(player.hurtbox) && m_bite.hit.active() && !health.is_dead()) { player.hurt(); }
 }
 
 void Mastiff::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {

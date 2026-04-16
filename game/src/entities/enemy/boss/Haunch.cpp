@@ -50,6 +50,7 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		svc.music_player.play_looped();
 	}
 	if (!has_flag_set(BossFlags::battle_mode)) {
+		m_gun_steering.seek(m_gun_socket);
 		state_function = state_function();
 		return;
 	}
@@ -106,10 +107,10 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	}
 	if (is_hostile()) { half_health() ? request(HaunchState::triple_down_toss) : request(HaunchState::throw_grenade_down); }
 	if (!is_alert() && !is_hostile()) {
-		if (half_health() && random::coin_flip()) {
+		if (half_health() && !m_cooldowns.post_whistle.running()) {
 			request(HaunchState::whistle);
 		} else {
-			m_cooldowns.run.start(80);
+			random::percent_chance(70) ? m_cooldowns.run.start(80) : request(HaunchState::pull_grenade);
 		}
 	}
 	if (m_cooldowns.run.running()) { request(HaunchState::walk); }

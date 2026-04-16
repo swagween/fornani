@@ -79,7 +79,7 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 	m_direction.as_hv() == HV::horizontal ? m_drawbox.setOrigin({0.f, (m_breadth - constants::f_cell_size) * m_size * 0.5f}) : m_drawbox.setOrigin({(m_breadth - constants::f_cell_size) * m_size * 0.5f, 0.f});
 	m_breadth = is_active() ? constants::f_cell_size * m_size + 4.f * m_pulse.get() : util::round_to_nearest(constants::f_cell_size * m_size * m_cooldown.get_quadratic_normalized(), 4.f);
 	is_active() ? m_drawbox.setFillColor(colors::ui_white) : m_cooldown.get_normalized() > 0.6f ? m_drawbox.setFillColor(colors::goldenrod) : m_drawbox.setFillColor(colors::dark_goldenrod);
-	if (player.get_collider().hurtbox.overlaps(m_hitbox) && is_active() && m_team != arms::Team::nani) { player.hurt(); }
+	if (player.hurtbox.overlaps(m_hitbox) && is_active() && m_team != arms::Team::nani) { player.hurt(); }
 }
 
 void Laser::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {

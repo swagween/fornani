@@ -90,6 +90,11 @@
 				"revealed": false
 			},
 			{
+				"label": "kariba_talisman",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
 				"label": "navy_top",
 				"quantity": 1,
 				"revealed": false

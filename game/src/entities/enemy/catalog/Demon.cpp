@@ -95,7 +95,7 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		get_secondary_collider().physics.position = get_collider().physics.position - sf::Vector2f{0.f, 20.f};
 		get_secondary_collider().physics.position.x += 1.f;
 		get_secondary_collider().sync_components();
-		if (player.get_collider().hurtbox.overlaps(get_secondary_collider().bounding_box) && !is_dormant()) { player.hurt(); }
+		if (player.hurtbox.overlaps(get_secondary_collider().bounding_box) && !is_dormant()) { player.hurt(); }
 	}
 
 	if (svc.ticker.every_x_ticks(200)) {

@@ -90,7 +90,7 @@ void DumpsterDiver::update(automa::ServiceProvider& svc, world::Map& map, player
 	// attack
 	auto hit_offset = sf::Vector2f{directions.actual.as_float() * 64.f, -48.f};
 	m_attack.hit.set_position(get_collider().get_center() + hit_offset);
-	if (m_attack.hit.within_bounds(player.get_collider().hurtbox)) { player.hurt(); }
+	if (m_attack.hit.within_bounds(player.hurtbox)) { player.hurt(); }
 
 	// hurt
 	if (flags.state.test(StateFlags::hurt)) {

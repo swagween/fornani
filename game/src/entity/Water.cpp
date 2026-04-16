@@ -70,7 +70,7 @@ void Water::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 }
 
 void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
-	if (player.get_collider().hurtbox.overlaps(m_bounding_box)) {
+	if (player.hurtbox.overlaps(m_bounding_box)) {
 		if (!has_flag_set(WaterFlags::splashed)) {
 			svc.soundboard.flags.world.set(audio::World::splash);
 			map.spawn_effect(svc, "splash", sf::Vector2f{player.get_collider().get_center().x, m_bounding_box.get_position().y});
