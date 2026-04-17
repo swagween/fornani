@@ -16,11 +16,13 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 	m_wait.start();
 
 	player.reset_flags();
-	m_map->load(svc, m_console, room_number);
-	m_map->transition.set_duration(400);
+	m_map->clear();
+	m_map->load(svc, p_context.console, room_number);
+	p_context.transition.set_duration(400);
 
 	svc.soundboard.turn_on();
 	svc.state_flags.set(automa::StateFlags::cutscene);
+	svc.app_flags.reset(automa::AppFlags::custom_map_start);
 
 	player.set_camera_bounds(m_map->real_dimensions);
 	player.force_camera_center();
@@ -81,21 +83,21 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	// cutscene logic
 	if (m_intro_shot.get() == 1000) { m_location_text.start(); }
-	if (m_intro_shot.is_almost_complete()) { m_map->transition.start(); }
-	if (m_map->transition.is_black() && m_intro_shot.is_complete()) { m_flags.set(IntroFlags::established); }
-	if (m_map->transition.is_black() && m_flags.test(IntroFlags::established) && !m_flags.test(IntroFlags::cutscene_started)) {
+	if (m_intro_shot.is_almost_complete()) { p_context.transition.start(); }
+	if (p_context.transition.is_black() && m_intro_shot.is_complete()) { m_flags.set(IntroFlags::established); }
+	if (p_context.transition.is_black() && m_flags.test(IntroFlags::established) && !m_flags.test(IntroFlags::cutscene_started)) {
 		svc.app_flags.set(AppFlags::in_game);
-		m_map->cutscene_catalog.push_cutscene(svc, *m_map, *player, 1);
-		m_map->transition.end();
+		p_context.cutscene_catalog.push_cutscene(svc, *m_map, *player, 1);
+		p_context.transition.end();
 		m_flags.set(IntroFlags::cutscene_started);
 	}
-	if (m_flags.test(IntroFlags::cutscene_started) && m_map->cutscene_catalog.cutscenes.empty()) {
+	if (m_flags.test(IntroFlags::cutscene_started) && p_context.cutscene_catalog.cutscenes.empty()) {
 		if (!m_flags.test(IntroFlags::cutscene_over)) { m_end_wait.start(); }
 		m_flags.set(IntroFlags::cutscene_over);
 	}
 	if (m_flags.test(IntroFlags::cutscene_over)) {
 		if (m_end_wait.is_almost_complete()) {
-			m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "intro", gui::OutputType::no_skip);
+			p_context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "intro", gui::OutputType::no_skip);
 			svc.music_player.load(svc.finder, "none");
 			svc.music_player.play_looped();
 			m_flags.set(IntroFlags::console_message);
@@ -103,10 +105,10 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		}
 		svc.ambience_player.set_balance(0.f);
 		if (m_attack_fadeout.running()) { svc.ambience_player.set_volume(m_attack_fadeout.get_quadratic_normalized()); }
-		if (!m_console && m_flags.test(IntroFlags::console_message)) { m_flags.set(IntroFlags::complete); }
+		if (!p_context.console && m_flags.test(IntroFlags::console_message)) { m_flags.set(IntroFlags::complete); }
 	}
 
-	if (m_flags.test(IntroFlags::complete) && m_map->cutscene_catalog.cutscenes.empty()) {
+	if (m_flags.test(IntroFlags::complete) && p_context.cutscene_catalog.cutscenes.empty()) {
 		svc.state_controller.actions.set(automa::Actions::intro_done);
 		svc.state_controller.actions.set(automa::Actions::trigger);
 		player->cooldowns.tutorial.start();
@@ -119,10 +121,10 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	svc.a11y.set_action_ctx_bar_enabled(false);
 
-	if (m_console) {
-		if (m_console.value()->was_response_created() && !m_console.value()->has_nani_portrait()) {
+	if (p_context.console) {
+		if (p_context.console.value()->was_response_created() && !p_context.console.value()->has_nani_portrait()) {
 			player->wardrobe_widget.update(*player);
-			m_console.value()->set_nani_sprite(player->wardrobe_widget.get_sprite());
+			p_context.console.value()->set_nani_sprite(player->wardrobe_widget.get_sprite());
 		}
 	}
 
@@ -131,12 +133,12 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	// physical tick
 	player->update(*m_map);
 	player->start_tick();
-	m_map->update(svc, m_console);
+	m_map->update(svc, p_context.console, p_context.transition);
 
 	m_map->debug_mode = debug_mode;
 
 	player->end_tick();
-	if (!m_console) { player->set_busy(false); }
+	if (!p_context.console) { player->set_busy(false); }
 
 	m_map->background->update(svc);
 	hud.update(svc, *player);

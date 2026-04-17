@@ -29,9 +29,9 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player)
 void SettingsMenu::on_exit() { p_services->data.save_settings(); }
 
 void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-	m_input_authorized = !adjust_mode() && !m_console;
+	m_input_authorized = !adjust_mode() && !p_context.console;
 	adjust_mode() ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
-	if (!m_console) {
+	if (!p_context.console) {
 		if (svc.input_system.menu_move(input::MoveDirection::down)) {
 			if (adjust_mode()) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
 			m_mode = SettingsMenuMode::ready;
@@ -57,7 +57,7 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			case static_cast<int>(SettingsToggles::sfx): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
 			case static_cast<int>(SettingsToggles::fullscreen):
 				svc.toggle_fullscreen();
-				m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "fullscreen", gui::OutputType::gradual);
+				p_context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "fullscreen", gui::OutputType::gradual);
 				break;
 			case static_cast<int>(SettingsToggles::military_time): svc.world_clock.toggle_military_time(); break;
 			}
@@ -108,9 +108,9 @@ void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (is(SettingsToggles::ambience)) { options.at(index).label.setString(ambience_label.getString() + std::to_string(static_cast<int>(svc.ambience_player.get_volume() * 100.f)) + "%"); }
 	if (is(SettingsToggles::sfx)) { options.at(index).label.setString(sfx_label.getString() + std::to_string(static_cast<int>(svc.soundboard.get_volume() * 100.f)) + "%"); }
 
-	if (m_console) {
-		m_console.value()->render(win);
-		m_console.value()->write(win, true);
+	if (p_context.console) {
+		p_context.console.value()->render(win);
+		p_context.console.value()->write(win, true);
 	}
 }
 

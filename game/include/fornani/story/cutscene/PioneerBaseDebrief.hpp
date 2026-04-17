@@ -8,7 +8,7 @@ namespace fornani {
 class PioneerBaseDebrief final : public Cutscene {
   public:
 	explicit PioneerBaseDebrief(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) override;
+	void update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player, graphics::Transition& transition) override;
 
   private:
 };

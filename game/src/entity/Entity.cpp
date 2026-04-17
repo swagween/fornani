@@ -53,7 +53,7 @@ auto Entity::contains_point(sf::Vector2u test) const -> bool {
 	return false;
 }
 
-void Entity::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) { tick(); }
+void Entity::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) { tick(); }
 
 void Entity::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	if (!m_editor) { return; }

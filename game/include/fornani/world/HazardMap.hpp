@@ -25,7 +25,7 @@ class HazardMap {
 	void remove_tile(sf::Vector2u position);
 
 	// gameplay functions
-	void update(player::Player& player, world::Map& map);
+	void update(player::Player& player, world::Map& map, graphics::Transition& transition);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void render(sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f scale, sf::Vector2f origin);
 

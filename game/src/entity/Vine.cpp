@@ -105,8 +105,8 @@ void Vine::expose() {
 	fg ? m_flags.set(VineFlags::foreground) : m_flags.reset(VineFlags::foreground);
 }
 
-void Vine::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
-	Entity::update(svc, map, console, player);
+void Vine::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
+	Entity::update(svc, map, context, player);
 	if (m_init.running()) {
 		for (int i = 0; i < simulations_v; ++i) { m_chain.update(svc, map, player); }
 	} else {

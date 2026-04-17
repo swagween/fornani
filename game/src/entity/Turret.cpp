@@ -81,8 +81,8 @@ void Turret::expose() {
 	m_direction = CardinalDirection{dir};
 }
 
-void Turret::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
-	Entity::update(svc, map, console, player);
+void Turret::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
+	Entity::update(svc, map, context, player);
 	m_firing.update();
 	m_rate.update();
 	m_shoot.update();

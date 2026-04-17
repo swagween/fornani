@@ -3,27 +3,12 @@
 
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
+#include <fornani/core/Fwd.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/Constants.hpp>
 #include <fornani/utils/ID.hpp>
 #include <fornani/utils/IWorldPositionable.hpp>
-
-namespace fornani::automa {
-struct ServiceProvider;
-}
-
-namespace fornani::world {
-class Map;
-}
-
-namespace fornani::gui {
-class Console;
-}
-
-namespace fornani::player {
-class Player;
-}
 
 namespace fornani {
 
@@ -38,7 +23,7 @@ class Entity : public Animatable, public IWorldPositionable {
 	virtual void serialize(dj::Json& out);
 	virtual void unserialize(dj::Json const& in);
 	virtual void expose();
-	virtual void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player);
+	virtual void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player);
 	virtual void render(sf::RenderWindow& win, sf::Vector2f cam, float size);
 	void set_handle(EntityHandle to) { m_handle = to; }
 	void set_position(sf::Vector2u to_position);

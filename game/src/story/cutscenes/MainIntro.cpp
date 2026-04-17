@@ -27,7 +27,7 @@ MainIntro::MainIntro(automa::ServiceProvider& svc, world::Map& map, player::Play
 	player.set_idle();
 }
 
-void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
+void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player, graphics::Transition& transition) {
 
 	static auto progress = util::Counter{};
 
@@ -117,7 +117,7 @@ void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_p
 		svc.ambience_player.set_balance(m_outro.get_normalized());
 	}
 
-	if (!map.transition.is(graphics::TransitionState::inactive)) {
+	if (!transition.is(graphics::TransitionState::inactive)) {
 		svc.camera_controller.set_position(willett->Mobile::get_global_center());
 		return;
 	}
@@ -246,7 +246,7 @@ void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_p
 			willett->flush_conversations();
 			set_flag(MainIntroFlags::takeover);
 			set_flag(MainIntroFlags::start_takeover);
-			map.transition.start();
+			transition.start();
 			m_outro.start();
 		}
 		break;

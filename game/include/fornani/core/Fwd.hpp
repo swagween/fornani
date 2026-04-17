@@ -15,4 +15,6 @@ namespace player {
 class Player;
 }
 
+struct SceneContext;
+
 } // namespace fornani

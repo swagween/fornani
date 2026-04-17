@@ -23,6 +23,7 @@ void LothAtWorm::update(automa::ServiceProvider& svc, std::optional<std::unique_
 		svc.camera_controller.set_owner(graphics::CameraOwner::player);
 		svc.music_player.stop();
 		svc.music_player.load(svc.finder, "none");
+		svc.quest_table.progress_quest("mystery_of_pixiote", 1, 26801);
 		svc.music_player.play_looped();
 		flags.set(CutsceneFlags::delete_me);
 		player.set_flag(player::PlayerFlags::cutscene, false);

@@ -11,7 +11,7 @@ namespace fornani {
 class HazardTile : public IWorldPositionable, public Drawable {
   public:
 	HazardTile(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2u position, sf::Vector2i lookup, sf::Vector2i dimensions, sf::Vector2i table_dimensions, CardinalDirection direction = {});
-	void update(player::Player& player, world::Map& map);
+	void update(player::Player& player, world::Map& map, graphics::Transition& transition);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 
 	[[nodiscard]] auto get_lookup() const -> sf::Vector2i { return m_lookup; }

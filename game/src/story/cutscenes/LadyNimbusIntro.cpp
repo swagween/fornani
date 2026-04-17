@@ -12,13 +12,13 @@ LadyNimbusIntro::LadyNimbusIntro(automa::ServiceProvider& svc) : Cutscene(svc, 6
 	svc.world_clock.set_time(9, 30);
 }
 
-void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
+void LadyNimbusIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player, graphics::Transition& transition) {
 
-	if (complete() && map.transition.is(graphics::TransitionState::inactive)) {
-		map.transition.start();
+	if (complete() && transition.is(graphics::TransitionState::inactive)) {
+		transition.start();
 		return;
-	} else if (complete() && map.transition.is(graphics::TransitionState::black)) {
-		svc.state_controller.switch_rooms(199, metadata.target_state_on_end, map.transition);
+	} else if (complete() && transition.is(graphics::TransitionState::black)) {
+		svc.state_controller.switch_rooms(199, metadata.target_state_on_end, transition);
 		svc.state_controller.player_position = sf::Vector2f{13, 60} * constants::f_cell_size;
 		svc.state_controller.actions.set(automa::Actions::custom_player_position);
 		svc.state_flags.reset(automa::StateFlags::no_menu);

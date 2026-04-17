@@ -69,7 +69,7 @@ void Water::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	win.draw(surface_sprite);
 }
 
-void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
+void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
 	if (player.hurtbox.overlaps(m_bounding_box)) {
 		if (!has_flag_set(WaterFlags::splashed)) {
 			svc.soundboard.flags.world.set(audio::World::splash);

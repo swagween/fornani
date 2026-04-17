@@ -11,14 +11,11 @@
 #include <fornani/world/Map.hpp>
 #include <ranges>
 
-static bool b_transition_in{};
-
 namespace fornani::world {
 
-Map::Map(automa::ServiceProvider& svc, player::Player& player)
-	: player(&player), enemy_catalog(svc), transition(svc.window->f_screen_dimensions(), 96), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}} {}
+Map::Map(automa::ServiceProvider& svc, player::Player& player) : player(&player), enemy_catalog(svc), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}} {}
 
-void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number) {
+void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& context, int room_number) {
 
 	unserialize(svc, room_number);
 
@@ -47,7 +44,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 		auto csource = meta["cutscene_on_entry"]["source"].as<int>();
 		auto cutscene = util::QuestKey{ctype, cid, csource};
 		svc.quest.process(svc, cutscene);
-		cutscene_catalog.push_cutscene(svc, *this, *player, cid);
+		svc.events.launch_cutscene_event.dispatch(svc, cid);
 	}
 	for (auto& pl : entities["lights"].as_array()) {
 		point_lights.push_back(PointLight(svc.data.light[pl["label"].as_string()], sf::Vector2f{pl["position"][0].as<float>() + 0.5f, pl["position"][1].as<float>() + 0.5f} * constants::f_cell_size));
@@ -194,10 +191,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std:
 	generate_layer_textures(svc);
 	cooldowns.fade_obscured.start();
 	player->map_reset();
-	transition.set(graphics::TransitionState::black);
 	cooldowns.loading.start();
-
-	b_transition_in = true;
 
 	player->register_with_map(*this);
 	if (m_biome.get_id() == 10) {
@@ -287,17 +281,12 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 	generate_collidable_layer(live);
 }
 
-void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console) {
+void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, graphics::Transition& transition) {
 	if (!player->has_collider()) { return; }
 	auto& layers = svc.data.get_layers(room_id);
 	flags.state.reset(LevelState::camera_shake);
 
 	update_balance(svc);
-
-	if (b_transition_in && transition.has_waited(64)) {
-		transition.end();
-		b_transition_in = false;
-	}
 
 	// camera effects
 	if (svc.ticker.every_second() && m_attributes.shake_properties.shaking) {
@@ -349,7 +338,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	}
 
 	// hazards
-	if (m_hazards) { m_hazards->update(*player, *this); }
+	if (m_hazards) { m_hazards->update(*player, *this, transition); }
 
 	std::erase_if(active_emitters, [](auto const& p) { return p->done(); });
 	std::erase_if(effects, [](auto& e) { return e.done(); });
@@ -357,7 +346,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	std::erase_if(incinerite_blocks, [](auto const& i) { return i->is_destroyed(); });
 	std::erase_if(breakables, [](auto const& b) { return b->is_destroyed(); });
 	std::erase_if(m_explosions, [](auto const& e) { return e.is_done(); });
-	std::erase_if(cutscene_catalog.cutscenes, [](auto const& c) { return c->delete_me(); });
 	enemy_catalog.update();
 
 	manage_projectiles(svc);
@@ -415,7 +403,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& exp : m_explosions) { exp.update(svc, *player, *this); }
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& chest : chests) { chest->update(svc, *this, console, *player); }
-	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->update(svc, console, *this, *player); }
 	for (auto& inspectable : inspectables) { inspectable.update(svc, *this, console, *player); }
 	for (auto& animator : animators) { animator.update(); }
 	for (auto& effect : effects) { effect.update(); }
@@ -435,7 +422,6 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	// for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	for (auto& timer_block : timer_blocks) { timer_block.update(svc, *this, *player); }
 	for (auto& pl : point_lights) { pl.update(); }
-	if (cooldowns.loading.is_complete()) { transition.update(*player); }
 	if (player->get_collider().collision_depths) { player->get_collider().collision_depths.value().update(); }
 	// if (save_point) { save_point->update(svc, *player, console); }
 	if (rain) { rain.value().update(svc, *this); }
@@ -451,8 +437,6 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		generate_layer_textures(svc);
 		svc.debug_flags.reset(automa::DebugFlags::greyblock_trigger);
 	}
-
-	for (auto& cutscene : cutscene_catalog.cutscenes) { cutscene->render(win, cam); }
 
 	if (m_entities) {
 		// TODO: uncomment below once all entities have been refactored!
@@ -899,7 +883,6 @@ void Map::clear() {
 	target_points.clear();
 	home_points.clear();
 	waterfalls.clear();
-	cutscene_catalog.cutscenes.clear();
 	m_explosions.clear();
 	rain.reset();
 	fire.reset();

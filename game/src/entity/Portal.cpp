@@ -1,8 +1,8 @@
 
+#include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entity/Portal.hpp>
 #include <fornani/events/SystemEvent.hpp>
-#include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
 
@@ -104,18 +104,18 @@ void Portal::expose() {
 	}
 }
 
-void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
-	Entity::update(svc, map, console, player);
+void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
+	Entity::update(svc, map, context, player);
 	m_render_state = is_already_open() ? PortalRenderState::open : is_locked() ? PortalRenderState::locked : m_render_state;
 	auto lookup = sf::IntRect({static_cast<int>(m_render_state) * constants::i_cell_resolution, map.get_style_id() * constants::i_cell_resolution * 2}, {constants::i_cell_resolution, constants::i_cell_resolution * 2});
 	set_texture_rect(lookup);
-	if (!map.transition.is(graphics::TransitionState::inactive)) { m_state.reset(PortalState::ready); }
+	if (!context.transition.is(graphics::TransitionState::inactive)) { m_state.reset(PortalState::ready); }
 	if (bounding_box.overlaps(player.get_collider().bounding_box)) {
 		player.set_flag(player::PlayerFlags::in_front_of_door);
 		if (m_attributes.test(PortalAttributes::activate_on_contact)) {
 			if (!m_state.test(PortalState::transitioning) && m_state.test(PortalState::ready)) { m_state.set(PortalState::activated); }
 			if (is_left_or_right()) {
-				if (map.transition.is(graphics::TransitionState::fading_to_black)) {
+				if (context.transition.is(graphics::TransitionState::fading_to_black)) {
 					auto towards = player.entered_from().left() ? SimpleDirection{LR::right} : SimpleDirection{LR::left};
 					player.controller.direction.set_from_simple(towards);
 					player.controller.autonomous_walk();
@@ -133,9 +133,9 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 		m_state.set(PortalState::ready);
 	}
 	if (m_state.test(PortalState::activated)) {
-		if (!console) {
+		if (!context.console) {
 			if (m_state.test(PortalState::unlocked)) {
-				change_states(svc, map.room_id, map.transition);
+				change_states(svc, map.room_id, context.transition);
 				m_state.reset(PortalState::unlocked);
 			}
 		}
@@ -144,22 +144,22 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 				m_state.reset(PortalState::locked);
 				m_state.set(PortalState::unlocked);
 				svc.soundboard.flags.world.set(audio::World::door_unlock);
-				console = std::make_unique<gui::Console>(svc, svc.text.basic, "unlocked_door", gui::OutputType::gradual);
-				console.value()->append(player.catalog.inventory.find_item(key_tag.value())->get_title());
-				console.value()->display_item(key_tag.value());
+				context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "unlocked_door", gui::OutputType::gradual);
+				context.console.value()->append(player.catalog.inventory.find_item(key_tag.value())->get_title());
+				context.console.value()->display_item(key_tag.value());
 				svc.data.unlock_door(key_tag.value());
 				svc.soundboard.flags.world.set(audio::World::door_unlock);
 			} else {
-				console = std::make_unique<gui::Console>(svc, svc.text.basic, "locked_door", gui::OutputType::gradual);
+				context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "locked_door", gui::OutputType::gradual);
 				m_state.reset(PortalState::activated);
 			}
 			return;
 		}
 		if (m_state.test(PortalState::unlocked)) { return; }
-		change_states(svc, map.room_id, map.transition);
+		change_states(svc, map.room_id, context.transition);
 	}
 	if (m_state.test(PortalState::transitioning)) {
-		if (map.transition.is(graphics::TransitionState::black)) {
+		if (context.transition.is(graphics::TransitionState::black)) {
 			m_state.reset(PortalState::transitioning);
 			if (svc.data.exists(destination_id)) {
 				svc.state_controller.next_state = destination_id;

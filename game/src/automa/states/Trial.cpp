@@ -20,7 +20,7 @@ Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scen
 		svc.data.rooms.push_back(room_number);
 		svc.data.load_data();
 	} else {
-		m_map->load(svc, m_console, room_number);
+		m_map->load(svc, p_context.console, room_number);
 	}
 
 	svc.state_controller.player_position = m_map->get_player_start();
@@ -30,11 +30,11 @@ Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scen
 
 	player.get_collider().physics.zero();
 	player.set_position(m_map->get_player_start());
+	player.reset_flags();
+	player.set_direction(Direction{{1, 0}});
 
 	// save was loaded from a json, or player died, so we successfully skipped door search
 	if (!player.is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
-
-	player.controller.prevent_movement();
 	svc.world_timer.restart();
 }
 
@@ -51,7 +51,7 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	svc.app_flags.set(AppFlags::in_game);
 
 	// set action set
-	if (p_pause_window || m_console) {
+	if (p_pause_window || p_context.console) {
 		svc.input_system.set_action_set(input::ActionSet::Menu);
 		svc.input_system.set_joystick_throttle({});
 	} else {
@@ -59,8 +59,8 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	if (p_pause_window) {
-		if (m_console) { m_console.value()->update(svc); }
-		p_pause_window.value()->update(svc, m_console);
+		if (p_context.console) { p_context.console.value()->update(svc); }
+		p_pause_window.value()->update(svc, p_context.console);
 		if (p_pause_window.value()->settings_requested()) {
 			flags.set(GameStateFlags::settings_request);
 			p_pause_window.value()->reset();
@@ -84,15 +84,15 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		player->update(*m_map);
 		player->start_tick();
 	}
-	m_map->update(svc, m_console);
+	m_map->update(svc, p_context.console, p_context.transition);
 
 	m_map->debug_mode = debug_mode;
 
 	player->end_tick();
-	if (!m_console) { player->set_busy(false); }
+	if (!p_context.console) { player->set_busy(false); }
 
 	if (player->is_dead()) {
-		m_map->transition.start();
+		p_context.transition.start();
 		player->health.refill();
 		svc.state_controller.actions.set(Actions::restart);
 		m_reset.start();

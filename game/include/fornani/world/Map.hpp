@@ -112,9 +112,9 @@ class Map {
 	Map(automa::ServiceProvider& svc, player::Player& player);
 
 	// methods
-	void load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number);
+	void load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& context, int room_number);
 	void unserialize(automa::ServiceProvider& svc, int room_number, bool live = false);
-	void update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console);
+	void update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, graphics::Transition& transition);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	bool handle_entry(player::Player& player, util::Cooldown& enter_room);
@@ -232,9 +232,6 @@ class Map {
 	std::optional<std::vector<Fire>> fire{};
 
 	std::unique_ptr<graphics::Background> background{};
-	graphics::Transition transition;
-
-	CutsceneCatalog cutscene_catalog;
 
 	sf::RectangleShape center_box{};
 

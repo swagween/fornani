@@ -18,23 +18,23 @@ Hazard::Hazard(dj::Json const& in, sf::Vector2f position, sf::Vector2f center, s
 
 Hazard::Hazard(sf::Vector2f position, float radius) : m_sensor{radius} { m_sensor.set_position(position); }
 
-void Hazard::update(player::Player& player, world::Map& map) {
+void Hazard::update(player::Player& player, world::Map& map, graphics::Transition& transition) {
 	auto player_overlap = m_sensor.within_bounds(player.hurtbox);
-	if (map.transition.is(graphics::TransitionState::black)) { player.controller.unrestrict(); }
-	if (has_flag_set(HazardFlags::reset) && map.transition.is(graphics::TransitionState::black)) {
+	if (transition.is(graphics::TransitionState::black)) { player.controller.unrestrict(); }
+	if (has_flag_set(HazardFlags::reset) && transition.is(graphics::TransitionState::black)) {
 		player.set_position(map.last_checkpoint());
 		player.get_collider().physics.zero();
 		player.controller.prevent_movement();
 		player.controller.restrict_movement();
-		map.transition.end();
+		transition.end();
 		set_flag(HazardFlags::reset, false);
 	}
-	if (player_overlap && map.transition.is(graphics::TransitionState::inactive) && !player.invincible() && !player.is_dead()) {
+	if (player_overlap && transition.is(graphics::TransitionState::inactive) && !player.invincible() && !player.is_dead()) {
 		player.hurt();
 		player.freeze_position();
 		player.shake_sprite();
 		set_flag(HazardFlags::reset);
-		map.transition.start();
+		transition.start();
 	}
 }
 

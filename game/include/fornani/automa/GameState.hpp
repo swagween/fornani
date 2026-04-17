@@ -2,6 +2,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/gui/hud/HUD.hpp>
@@ -49,7 +50,7 @@ class GameState : public UniquePolymorphic {
 	float top_buffer{80.f};
 
   protected:
-	std::optional<std::unique_ptr<gui::Console>> m_console;
+	SceneContext p_context;
 	std::optional<world::Map> m_map;
 	StateType m_type{};
 	io::Logger m_logger{"GameState"};

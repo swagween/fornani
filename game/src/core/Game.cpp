@@ -280,8 +280,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						}
 						ImGui::Separator();
 						map->get().debug();
-						ImGui::Text("Transition State: %s", map->get().transition.as_string().c_str());
-						ImGui::Text("Transition Cooldown: %.5f", map->get().transition.get_cooldown());
 						ImGui::SeparatorText("Entities");
 						ImGui::Text("Active Loot: %i", map->get().active_loot.size());
 						ImGui::Indent();
@@ -591,7 +589,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							if (ImGui::BeginTabItem("Death")) {
 								ImGui::Text("Is player dead? %s", player.is_dead() ? "Yes" : "No");
 								ImGui::Text("Death type: %i", player.get_i_death_type());
-								if (map) { ImGui::Text("Map transition: %s", map->get().transition.as_string()); }
 								ImGui::EndTabItem();
 							}
 

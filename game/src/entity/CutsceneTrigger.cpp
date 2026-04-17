@@ -67,7 +67,7 @@ void CutsceneTrigger::render(sf::RenderWindow& win, sf::Vector2f cam, float size
 	}
 }
 
-void CutsceneTrigger::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
+void CutsceneTrigger::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
 	if (!svc.quest_table.are_contingencies_met(m_contingencies)) { return; }
 	if (player.get_collider().bounding_box.overlaps(m_bounding_box) && !is_pushed()) {
 		if (m_attributes.test(CutsceneTriggerAttributes::callbox)) {
@@ -77,7 +77,7 @@ void CutsceneTrigger::update([[maybe_unused]] automa::ServiceProvider& svc, [[ma
 		}
 	}
 	if (is_activated()) {
-		if (get_id() != 0) { map.cutscene_catalog.push_cutscene(svc, map, player, get_id()); }
+		if (get_id() != 0) { svc.events.launch_cutscene_event.dispatch(svc, get_id()); }
 		m_flags.reset(CutsceneTriggerFlags::activated);
 		m_flags.set(CutsceneTriggerFlags::pushed);
 	}

@@ -20,8 +20,8 @@ HazardTile::HazardTile(automa::ServiceProvider& svc, std::string_view tag, sf::V
 	Drawable::set_position(get_global_center());
 }
 
-void HazardTile::update(player::Player& player, world::Map& map) {
-	for (auto& hazard : m_hazards) { hazard.update(player, map); }
+void HazardTile::update(player::Player& player, world::Map& map, graphics::Transition& transition) {
+	for (auto& hazard : m_hazards) { hazard.update(player, map, transition); }
 }
 
 void HazardTile::render(sf::RenderWindow& win, sf::Vector2f cam) {

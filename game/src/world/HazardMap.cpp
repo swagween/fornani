@@ -66,8 +66,8 @@ void HazardMap::remove_tile(sf::Vector2u position) {
 	refresh_texture();
 }
 
-void HazardMap::update(player::Player& player, world::Map& map) {
-	for (auto& hazard : m_tiles) { hazard.update(player, map); }
+void HazardMap::update(player::Player& player, world::Map& map, graphics::Transition& transition) {
+	for (auto& hazard : m_tiles) { hazard.update(player, map, transition); }
 }
 
 void HazardMap::render(sf::RenderWindow& win, sf::Vector2f cam) {

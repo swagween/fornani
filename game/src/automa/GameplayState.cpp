@@ -7,9 +7,23 @@ namespace fornani::automa {
 GameplayState::GameplayState(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number), p_services{&svc} {
 	svc.input_system.set_action_set(input::ActionSet::Platformer);
 	svc.events.play_song_event.attach_to(p_slot, &GameplayState::play_song_by_id, this);
+	p_context.transition.set(graphics::TransitionState::black);
 }
 
 void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
+
+	if (p_context.transition.has_waited(64) && !has_flag_set(GameplayStateFlags::transitioned_in)) {
+		p_context.transition.end();
+		set_flag(GameplayStateFlags::transitioned_in);
+	}
+	p_context.transition.update(*player);
+
+	// cutscenes
+	std::erase_if(p_context.cutscene_catalog.cutscenes, [](auto const& c) { return c->delete_me(); });
+	for (auto& cutscene : p_context.cutscene_catalog.cutscenes) {
+		cutscene->update(svc, p_context.console, *m_map, *player);
+		cutscene->update(svc, p_context.console, *m_map, *player, p_context.transition);
+	}
 
 	// gamepad disconnected
 	if (svc.input_system.process_gamepad_disconnection()) { pause(svc); }
@@ -27,7 +41,7 @@ void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		m_map->set_target_balance(0.f, audio::BalanceTarget::music);
 		m_map->set_target_balance(0.f, audio::BalanceTarget::ambience);
 		m_map->update_balance(svc);
-		p_pause_window.value()->update(svc, m_console);
+		p_pause_window.value()->update(svc, p_context.console);
 		if (p_pause_window.value()->settings_requested()) {
 			flags.set(GameStateFlags::settings_request);
 			p_pause_window.value()->reset();
@@ -48,21 +62,21 @@ void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 void GameplayState::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
-	m_console || svc.state_flags.test(automa::StateFlags::cutscene) ? svc.state_flags.set(automa::StateFlags::hide_hud) : svc.state_flags.reset(automa::StateFlags::hide_hud);
+	p_context.console || svc.state_flags.test(automa::StateFlags::cutscene) ? svc.state_flags.set(automa::StateFlags::hide_hud) : svc.state_flags.reset(automa::StateFlags::hide_hud);
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(svc, *player, win); }
 
 	if (p_vendor_dialog && p_gui_shader) { p_vendor_dialog.value()->render(svc, win, *player, *m_map, *p_gui_shader); }
 	if (p_inventory_window && p_gui_shader) { p_inventory_window.value()->render(svc, win, *player, *p_gui_shader); }
 
-	m_map->transition.render(win);
+	p_context.transition.render(win);
 
 	if (p_reward_sequence) { p_reward_sequence.value()->render(win); }
 
 	if (p_pause_window) { p_pause_window.value()->render(svc, win); }
-	if (m_console) {
-		m_console.value()->render(win);
-		m_console.value()->write(win);
+	if (p_context.console) {
+		p_context.console.value()->render(win);
+		p_context.console.value()->write(win);
 	}
 	if (svc.debug_mode()) { /*m_map->debug();*/
 	}

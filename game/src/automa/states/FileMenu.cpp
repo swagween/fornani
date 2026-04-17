@@ -25,9 +25,9 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc
 }
 
 void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-	m_input_authorized = !m_file_select_menu && !m_console;
+	m_input_authorized = !m_file_select_menu && !p_context.console;
 	MenuState::tick_update(svc, engine);
-	if (!m_console) {
+	if (!p_context.console) {
 		if (m_file_select_menu) {
 			m_file_select_menu->handle_inputs(svc.input_system, svc.soundboard);
 		} else {
@@ -56,7 +56,7 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 					svc.soundboard.flags.menu.set(audio::Menu::select);
 					break;
 				case 2:
-					m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "delete_file", gui::OutputType::gradual);
+					p_context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "delete_file", gui::OutputType::gradual);
 					m_file_select_menu.reset();
 					break;
 				}
@@ -104,9 +104,9 @@ void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		hud.render(svc, *player, win);
 		if (m_file_select_menu) { m_file_select_menu->render(win); }
 	}
-	if (m_console) {
-		m_console.value()->render(win);
-		m_console.value()->write(win, false);
+	if (p_context.console) {
+		p_context.console.value()->render(win);
+		p_context.console.value()->write(win, false);
 	}
 }
 

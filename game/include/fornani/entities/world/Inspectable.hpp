@@ -33,7 +33,7 @@ enum class InspectableFlags { hovered, hovered_trigger, activated, destroy, enga
 class Inspectable : public IWorldPositionable {
   public:
 	Inspectable(automa::ServiceProvider& svc, dj::Json const& in, int room, int index);
-	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player);
+	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player);
 	void destroy() { flags.set(InspectableFlags::destroy); }
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos);
 	void destroy_by_id(int id);

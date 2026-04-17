@@ -170,7 +170,7 @@ void NPC::expose() {
 	}
 }
 
-void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
+void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
 
 	if (has_flag_set(NPCFlags::face_player) && !has_flag_set(NPCFlags::cutscene)) { face_player(player); }
 	svc.data.set_npc_location(m_id.get(), current_location);

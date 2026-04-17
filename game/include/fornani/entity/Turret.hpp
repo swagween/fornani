@@ -46,7 +46,7 @@ class Turret : public Entity, public Flaggable<TurretFlags> {
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;
 	void expose() override;
-	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) override;
+	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
 
 	void set_position(sf::Vector2f const to) { m_position = to; }

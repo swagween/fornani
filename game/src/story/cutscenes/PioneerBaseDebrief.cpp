@@ -16,14 +16,15 @@ PioneerBaseDebrief::PioneerBaseDebrief(automa::ServiceProvider& svc, world::Map&
 	auto& willett = *wit;
 
 	svc.camera_controller.set_position(willett->Mobile::get_global_center());
-	map.transition.start();
 
 	svc.music_player.load(svc.finder, "glitchified");
 }
 
-void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
+void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player, graphics::Transition& transition) {
 
 	static auto ended = false;
+
+	if (cooldowns.beginning.just_started()) { transition.start(); }
 
 	if (complete()) {
 		player.controller.unrestrict();
@@ -31,7 +32,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 		svc.state_flags.reset(automa::StateFlags::no_menu);
 		svc.state_flags.reset(automa::StateFlags::cutscene);
 		svc.camera_controller.set_owner(graphics::CameraOwner::player);
-		map.transition.end();
+		transition.end();
 		flags.set(CutsceneFlags::delete_me);
 		svc.quest_table.progress_quest("defeat_skycorps", 1, 50901);
 		svc.music_player.load(svc.finder, "bryns_turn");
@@ -39,7 +40,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 		return;
 	}
 
-	if (cooldowns.pause.is_almost_complete() && ended) { map.transition.start(); }
+	if (cooldowns.pause.is_almost_complete() && ended) { transition.start(); }
 	if (cooldowns.end.is_almost_complete() && ended) { flags.set(CutsceneFlags::complete); }
 
 	svc.state_flags.set(automa::StateFlags::hide_hud);
@@ -48,7 +49,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 	cooldowns.pause.update();
 	cooldowns.long_pause.update();
 
-	if (map.transition.is(graphics::TransitionState::black)) {
+	if (transition.is(graphics::TransitionState::black)) {
 		cooldowns.beginning.update();
 		cooldowns.end.update();
 	}
@@ -64,8 +65,8 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 	auto wit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 2; });
 	auto& willett = *wit;
 
-	if (map.transition.is(graphics::TransitionState::black) && cooldowns.beginning.is_complete()) {
-		map.transition.end();
+	if (transition.is(graphics::TransitionState::black) && cooldowns.beginning.is_complete()) {
+		transition.end();
 		svc.music_player.play_looped();
 		bryn->set_position_from_scaled({10.f, 16.f});
 		willett->set_position_from_scaled({12.f, 16.f});
@@ -90,7 +91,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 	total_conversations = std::max(total_conversations, total_suites);
 	if (cooldowns.end.is_almost_complete()) {
 		flags.set(CutsceneFlags::complete);
-		map.transition.end();
+		transition.end();
 		return;
 	}
 	if (npcs.empty()) { return; }
@@ -106,7 +107,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 
 	svc.camera_controller.set_owner(graphics::CameraOwner::system);
 
-	if (!map.transition.is(graphics::TransitionState::inactive)) { return; }
+	if (!transition.is(graphics::TransitionState::inactive)) { return; }
 
 	switch (progress) {
 	case 0:

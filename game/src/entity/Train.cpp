@@ -31,7 +31,7 @@ void Train::unserialize(dj::Json const& in) {
 
 void Train::expose() { Entity::expose(); }
 
-void Train::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
+void Train::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
 
 	if (!m_chain) { return; }
 

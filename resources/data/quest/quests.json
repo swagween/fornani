@@ -194,5 +194,11 @@
     "tag": "open_pioneer_station",
     "target": 1,
     "displayed": false
+  },
+  {
+    "title": "Mystery of Pixiote",
+    "tag": "mystery_of_pixiote",
+    "target": 4,
+    "displayed": false
   }
 ]
