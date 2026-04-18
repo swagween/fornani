@@ -1,5 +1,6 @@
 
 #include <fornani/automa/states/Intro.hpp>
+#include <fornani/entities/player/Player.hpp>
 #include <fornani/events/GameplayEvent.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 
@@ -8,7 +9,7 @@ namespace fornani::automa {
 Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number)
 	: GameplayState(svc, player, scene, room_number), m_airship{svc, "scenery_firstwind_airship", {480, 256}}, m_cloud_sea{svc, "cloud_sea"}, m_cloud{svc, "cloud"}, m_intro_shot{1600}, m_wait{800}, m_end_wait{800}, m_attack_fadeout{2600},
 	  m_location_text{svc, svc.data.gui_text["locations"]["firstwind"].as_string_view()} {
-	m_map = world::Map{svc, player};
+	m_map.emplace(svc, player);
 
 	svc.music_player.load(svc.finder, "wind");
 	svc.ambience_player.load(svc.finder, "firstwind");
@@ -17,7 +18,7 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 
 	player.reset_flags();
 	m_map->clear();
-	m_map->load(svc, p_context.console, room_number);
+	m_map->load(svc, p_context, room_number);
 	p_context.transition.set_duration(400);
 
 	svc.soundboard.turn_on();
@@ -55,12 +56,12 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 
 void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
+	m_wait.update();
+	if (m_wait.running()) { return; }
+
 	set_flag(GameplayStateFlags::early_tick_return, false);
 	GameplayState::tick_update(svc, engine);
 	if (has_flag_set(GameplayStateFlags::early_tick_return)) { return; }
-
-	m_wait.update();
-	if (m_wait.running()) { return; }
 
 	for (auto& n : m_nighthawks) {
 		n.steering.seek({-800.f, 400.f}, n.z);
@@ -133,7 +134,7 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	// physical tick
 	player->update(*m_map);
 	player->start_tick();
-	m_map->update(svc, p_context.console, p_context.transition);
+	m_map->update(svc, p_context);
 
 	m_map->debug_mode = debug_mode;
 

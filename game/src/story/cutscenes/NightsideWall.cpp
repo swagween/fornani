@@ -1,4 +1,5 @@
 
+#include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -21,7 +22,7 @@ NightsideWall::NightsideWall(automa::ServiceProvider& svc) : Cutscene(svc, 903, 
 	}
 }
 
-void NightsideWall::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
+void NightsideWall::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 	if (complete()) {
 		player.controller.unrestrict();
 		svc.state_flags.reset(automa::StateFlags::hide_hud);
@@ -44,7 +45,7 @@ void NightsideWall::update(automa::ServiceProvider& svc, std::optional<std::uniq
 	cooldowns.long_pause.update();
 	cooldowns.end.update();
 
-	if (!(progress == 7 && console.has_value())) { m_intro.update(); }
+	if (!(progress == 7 && context.console.has_value())) { m_intro.update(); }
 	if (m_intro.is_almost_complete()) { cooldowns.beginning.start(); }
 	if (m_intro.running()) {
 		if (m_intro.get() == 400) { svc.soundboard.play_sound("phone_dial"); }
@@ -53,7 +54,7 @@ void NightsideWall::update(automa::ServiceProvider& svc, std::optional<std::uniq
 
 	player.controller.restrict_movement();
 
-	if (console) { console.value()->set_no_exit(true); }
+	if (context.console) { context.console.value()->set_no_exit(true); }
 
 	auto npcs = map.get_entities<NPC>();
 	auto bit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 34; });
@@ -73,9 +74,9 @@ void NightsideWall::update(automa::ServiceProvider& svc, std::optional<std::uniq
 		map.reveal_npc("aviator_bryn");
 		bryn->set_invisible();
 		svc.music_player.play_looped();
-		if (!console.has_value()) { bryn->force_engage(); }
+		if (!context.console.has_value()) { bryn->force_engage(); }
 	}
-	if (console) { bryn->disengage(); }
+	if (context.console) { bryn->disengage(); }
 
 	auto camera_focus = player.get_camera_focus_point();
 	if (progress > 0) { camera_focus = sf::Vector2f{31.f, 77.f} * constants::f_cell_size; }
@@ -91,7 +92,7 @@ void NightsideWall::update(automa::ServiceProvider& svc, std::optional<std::uniq
 	case 4: camera_focus = sf::Vector2f{40.f, 25.f} * constants::f_cell_size; break;
 	case 5:
 		camera_focus = player.get_camera_focus_point();
-		if (!console.has_value()) {
+		if (!context.console.has_value()) {
 			cooldowns.end.start();
 			++progress;
 		}
@@ -108,7 +109,7 @@ void NightsideWall::update(automa::ServiceProvider& svc, std::optional<std::uniq
 	case 11: camera_focus = player.get_camera_focus_point(); break;
 	case 12:
 		camera_focus = player.get_camera_focus_point();
-		if (!console.has_value()) {
+		if (!context.console.has_value()) {
 			cooldowns.end.start();
 			++progress;
 		}

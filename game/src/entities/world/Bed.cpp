@@ -1,4 +1,6 @@
+
 #include "fornani/entities/world/Bed.hpp"
+#include <fornani/automa/SceneContext.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -20,7 +22,7 @@ Bed::Bed(automa::ServiceProvider& svc, sf::Vector2f position, int style, bool fl
 constexpr auto sleep_timer_v = 100;
 constexpr auto rest_time_v = 200;
 
-void Bed::update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player, graphics::Transition& transition) {
+void Bed::update(automa::ServiceProvider& svc, world::Map& map, SceneContext& context, player::Player& player) {
 	fadeout.update();
 	sparkler.update(svc);
 	sparkler.set_position(bounding_box.get_position());
@@ -31,8 +33,8 @@ void Bed::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 		sparkler.activate();
 		fadeout.start();
 		if (!flags.test(BedFlags::engaged) && !flags.test(BedFlags::slept_in) && player.controller.inspecting() && !player.is_busy()) { player.set_flag(player::PlayerFlags::sleep); }
-		if (player.is_in_animation(player::AnimState::sleep) && !console && player.get_elapsed_animation_ticks() >= sleep_timer_v && !flags.test(BedFlags::slept_in)) {
-			if (!flags.test(BedFlags::engaged)) { transition.start(); }
+		if (player.is_in_animation(player::AnimState::sleep) && !context.console && player.get_elapsed_animation_ticks() >= sleep_timer_v && !flags.test(BedFlags::slept_in)) {
+			if (!flags.test(BedFlags::engaged)) { context.transition.start(); }
 			flags.set(BedFlags::engaged);
 		}
 	} else {
@@ -42,17 +44,17 @@ void Bed::update(automa::ServiceProvider& svc, world::Map& map, std::optional<st
 	if (flags.test(BedFlags::engaged)) {
 		svc.music_player.pause();
 		svc.data.respawn_all(); // respawn enemies
-		if (transition.has_waited(rest_time_v) && !console) {
+		if (context.transition.has_waited(rest_time_v) && !context.console) {
 			flags.set(BedFlags::slept_in);
-			console = std::make_unique<gui::Console>(svc, svc.text.basic, "bed", gui::OutputType::gradual);
+			context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "bed", gui::OutputType::gradual);
 			player.health.refill();
 			svc.soundboard.flags.item.set(audio::Item::heal);
 			svc.music_player.play_looped();
-			transition.end();
+			context.transition.end();
 			flags.reset(BedFlags::engaged);
 		}
 	}
-	if (!console && flags.test(BedFlags::slept_in)) {
+	if (!context.console && flags.test(BedFlags::slept_in)) {
 		player.set_flag(player::PlayerFlags::wake_up);
 		flags.reset(BedFlags::slept_in);
 	}

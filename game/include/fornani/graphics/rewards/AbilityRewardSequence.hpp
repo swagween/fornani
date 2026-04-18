@@ -15,7 +15,7 @@ enum class AbilityRewardSequenceFlags {};
 
 class AbilityRewardSequence : public IRewardSequence, public Flaggable<AbilityRewardSequenceFlags> {
   public:
-	AbilityRewardSequence(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
+	AbilityRewardSequence(automa::ServiceProvider& svc, player::Player& player, SceneContext& context);
 	void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) override;
 	void render(sf::RenderWindow& win) override;
 

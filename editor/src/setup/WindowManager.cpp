@@ -13,7 +13,7 @@ void WindowManager::set() {
 
 	if (!screencap.resize(window.getSize())) { NANI_LOG_WARN(m_logger, "Failed to resize screencap."); }
 	window.setVerticalSyncEnabled(true);
-	window.setFramerateLimit(60);
+	window.setFramerateLimit(120);
 	window.setKeyRepeatEnabled(false);
 }
 

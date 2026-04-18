@@ -2,6 +2,7 @@
 #pragma once
 
 #include <djson/json.hpp>
+#include <fornani/core/Fwd.hpp>
 #include <fornani/entities/Animation/StateMachine.hpp>
 #include <fornani/entities/Mobile.hpp>
 #include <fornani/entities/npc/Vendor.hpp>
@@ -9,7 +10,6 @@
 #include <fornani/events/Subscription.hpp>
 #include <fornani/story/Quest.hpp>
 #include <fornani/utils/Circuit.hpp>
-#include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/Flaggable.hpp>
 #include <fornani/utils/ID.hpp>
 #include <fornani/utils/StateFunction.hpp>

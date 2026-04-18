@@ -1,8 +1,8 @@
 
+#include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entity/NPC.hpp>
 #include <fornani/events/ConsoleEvent.hpp>
-#include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
 
@@ -180,7 +180,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 
 	m_indicator.tick();
 
-	console ? m_state.set(NPCState::talking) : m_state.reset(NPCState::talking);
+	context.console ? m_state.set(NPCState::talking) : m_state.reset(NPCState::talking);
 
 	if (collider.has_value()) {
 		get_collider().update(svc);
@@ -194,7 +194,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 		if (!m_state.test(NPCState::engaged)) { m_state.set(NPCState::just_engaged); }
 		m_state.set(NPCState::engaged);
 		if ((player.controller.inspecting() || m_state.test(NPCState::force_interact)) && !conversations.empty() && !player.has_flag_set(player::PlayerFlags::in_front_of_door)) {
-			start_conversation(svc, console);
+			start_conversation(svc, context.console);
 			player.set_busy(true);
 		}
 	} else {
@@ -221,7 +221,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	}
 	if (directions.actual.lnr != directions.desired.lnr) { request(NPCAnimationState::turn); }
 
-	if (!console.has_value()) { m_state.reset(NPCState::interacting); }
+	if (!context.console.has_value()) { m_state.reset(NPCState::interacting); }
 
 	if (!has_flag_set(NPCFlags::no_animation)) { state_function = std::move(state_function()); }
 	if (is_hidden()) { return; }

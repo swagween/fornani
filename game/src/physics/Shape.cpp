@@ -6,7 +6,7 @@
 
 namespace fornani::shape {
 
-Shape::Shape(Vec dim, int num_vertices) {
+Shape::Shape(sf::Vector2f dim, int num_vertices) {
 	vertices.reserve(num_vertices);
 	vertices.push_back({});
 	vertices.push_back({dim.x, 0.f});
@@ -14,7 +14,7 @@ Shape::Shape(Vec dim, int num_vertices) {
 	if (num_vertices > 3) { vertices.push_back({0.f, dim.y}); }
 }
 
-void Shape::set_dimensions(Vec const new_dim) {
+void Shape::set_dimensions(sf::Vector2f const new_dim) {
 	if (vertices.size() < 4) { return; }
 	vertices[1].x = vertices[0].x + new_dim.x;
 	vertices[2].x = vertices[0].x + new_dim.x;
@@ -22,20 +22,19 @@ void Shape::set_dimensions(Vec const new_dim) {
 	vertices[3].y = vertices[0].y + new_dim.y;
 }
 
-sf::Vector2f Shape::perp(Vec edg) const {
-	Vec temp = Vec(-edg.y, edg.x);
-	float mag;
-	float a_squared = temp.x * temp.x;
-	float b_squared = temp.y * temp.y;
-	mag = sqrt(a_squared + b_squared);
-	if (ccm::abs(mag) > 0) {
-		temp.x = temp.x / mag;
-		temp.y = temp.y / mag;
+sf::Vector2f Shape::perp(sf::Vector2f edg) const {
+	auto x = -edg.y;
+	auto y = edg.x;
+	auto mag = std::sqrt(x * x + y * y);
+	if (mag > 0.0f) {
+		float inv = 1.0f / mag;
+		x *= inv;
+		y *= inv;
 	}
-	return temp;
+	return {x, y};
 }
 
-void Shape::set_position(Vec const new_pos) {
+void Shape::set_position(sf::Vector2f const new_pos) {
 	position = new_pos;
 	auto dimensions = get_dimensions();
 	if (vertices.size() >= 4) {
@@ -51,31 +50,33 @@ void Shape::set_position(Vec const new_pos) {
 	}
 }
 
-Shape::Vec Shape::get_normalized(Vec const v) const {
+sf::Vector2f Shape::get_normalized(sf::Vector2f const v) const {
 	float length = util::magnitude(v);
-	if (length == 0.f) { return Vec(); }
-	return Vec(v.x / length, v.y / length);
+	if (length == 0.f) { return sf::Vector2f(); }
+	return sf::Vector2f(v.x / length, v.y / length);
 }
 
-Shape::Vec Shape::get_normal(Vec const v) { return Vec(-v.y, v.x); }
+sf::Vector2f Shape::get_normal(sf::Vector2f const v) { return sf::Vector2f(-v.y, v.x); }
 
-Shape::Vec Shape::project_on_axis(std::vector<Vec> const vertices, Vec const axis) const {
-	float min = std::numeric_limits<float>::infinity();
-	float max = -std::numeric_limits<float>::infinity();
-	for (auto& vertex : vertices) {
-		float projection = dot_product(vertex, axis);
-		if (projection < min) { min = projection; }
-		if (projection > max) { max = projection; }
+sf::Vector2f Shape::project_on_axis(std::vector<sf::Vector2f> const& vertices, sf::Vector2f const& axis) const {
+	float min = vertices[0].x * axis.x + vertices[0].y * axis.y;
+	float max = min;
+
+	for (size_t i = 1; i < vertices.size(); ++i) {
+		float projection = vertices[i].x * axis.x + vertices[i].y * axis.y;
+		if (projection < min) min = projection;
+		if (projection > max) max = projection;
 	}
-	return Vec(min, max);
+
+	return {min, max};
 }
 
-Shape::Vec Shape::project_circle_on_axis(Vec center, float radius, Vec const axis) const {
+sf::Vector2f Shape::project_circle_on_axis(sf::Vector2f center, float radius, sf::Vector2f const axis) const {
 	float projection = dot_product(center, axis);
-	return Vec(projection - radius, projection + radius);
+	return sf::Vector2f(projection - radius, projection + radius);
 }
 
-std::vector<Shape::Vec> Shape::get_vertices(Shape const& shape) { return shape.vertices; }
+std::vector<sf::Vector2f> Shape::get_vertices(Shape const& shape) { return shape.vertices; }
 
 std::vector<sf::Vector2f> Shape::get_poles(sf::CircleShape const& circle) {
 	auto ret = std::vector<sf::Vector2f>{};
@@ -89,8 +90,8 @@ std::vector<sf::Vector2f> Shape::get_poles(sf::CircleShape const& circle) {
 	return ret;
 }
 
-Shape::Vec Shape::get_MTV(Shape const& obb1, Shape const& obb2) {
-	auto t_mtv = Vec{};
+sf::Vector2f Shape::get_MTV(Shape const& obb1, Shape const& obb2) {
+	auto t_mtv = sf::Vector2f{};
 	auto const& vertices1 = vertices;
 	auto const vertices2 = get_vertices(obb2);
 
@@ -101,8 +102,8 @@ Shape::Vec Shape::get_MTV(Shape const& obb1, Shape const& obb2) {
 	auto minOverlap = std::numeric_limits<float>::max();
 
 	for (auto& axis : axes1) {
-		Vec proj1 = project_on_axis(vertices1, axis);
-		Vec proj2 = project_on_axis(vertices2, axis);
+		sf::Vector2f proj1 = project_on_axis(vertices1, axis);
+		sf::Vector2f proj2 = project_on_axis(vertices2, axis);
 
 		float overlap = get_overlap_length(proj1, proj2);
 		if (overlap == 0.f) { // shapes are not overlapping
@@ -116,8 +117,8 @@ Shape::Vec Shape::get_MTV(Shape const& obb1, Shape const& obb2) {
 		}
 	}
 	for (auto& axis : axes2) {
-		Vec proj1 = project_on_axis(vertices1, axis);
-		Vec proj2 = project_on_axis(vertices2, axis);
+		sf::Vector2f proj1 = project_on_axis(vertices1, axis);
+		sf::Vector2f proj2 = project_on_axis(vertices2, axis);
 
 		float overlap = get_overlap_length(proj1, proj2);
 		if (overlap == 0.f) { // shapes are not overlapping
@@ -143,7 +144,7 @@ Shape::Vec Shape::get_MTV(Shape const& obb1, Shape const& obb2) {
 }
 
 bool Shape::SAT(Shape const& other) {
-	auto t_mtv = Vec{};
+	auto t_mtv = sf::Vector2f{};
 	auto const& vertices1 = vertices;
 	auto const vertices2 = get_vertices(other);
 
@@ -292,7 +293,7 @@ bool Shape::overlaps(sf::Vector2f point) const {
 	return true;
 }
 
-bool Shape::contains_point(Vec point) {
+bool Shape::contains_point(sf::Vector2f point) {
 	bool ret{true};
 	if (vertices.at(0).x > point.x) { ret = false; }
 	if (vertices.at(1).x < point.x) { ret = false; }
@@ -336,9 +337,17 @@ void Shape::draw(sf::RenderTexture& tex) {
 }
 
 std::vector<sf::Vector2f> Shape::get_normals() const {
-	std::vector<sf::Vector2f> ret{};
-	auto edges = get_edges();
-	for (auto i{0}; i < vertices.size(); ++i) { ret.push_back(perp(edges[i])); }
+	size_t n = vertices.size();
+	std::vector<sf::Vector2f> ret(n);
+
+	for (size_t i = 0; i < n; ++i) {
+		auto const& current = vertices[i];
+		auto const& next = vertices[(i + 1) % n];
+
+		auto edge = next - current;
+		ret[i] = perp(edge);
+	}
+
 	return ret;
 }
 

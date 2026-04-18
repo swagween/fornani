@@ -1,7 +1,8 @@
 
-#include "fornani/automa/states/StatSheet.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/utils/Constants.hpp"
+#include <fornani/automa/states/StatSheet.hpp>
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/utils/Constants.hpp>
 
 namespace fornani::automa {
 

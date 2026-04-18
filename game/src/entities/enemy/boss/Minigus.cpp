@@ -1,6 +1,6 @@
 
 #include "fornani/entities/enemy/boss/Minigus.hpp"
-#include <fornani/gui/console/Console.hpp>
+#include <fornani/automa/SceneContext.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
@@ -8,9 +8,9 @@
 
 namespace fornani::enemy {
 
-Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console)
+Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, SceneContext& context)
 	: Boss(svc, map, "minigus"), gun(svc, "minigun"), soda(svc, "soda_gun"), m_services(&svc), NPC(svc, map, std::string_view{"minigus"}), m_map(&map),
-	  sparkler(svc, Enemy::get_collider().get_vicinity_rect().size, colors::ui_white, "minigus"), m_console{&console}, m_mode{MinigusMode::neutral}, m_minigun{svc},
+	  sparkler(svc, Enemy::get_collider().get_vicinity_rect().size, colors::ui_white, "minigus"), m_context{&context}, m_mode{MinigusMode::neutral}, m_minigun{svc},
 	  attacks{.left_shockwave{{50, 600, 3, {-0.6f, 0.f}}}, .right_shockwave{{50, 600, 3, {0.6f, 0.f}}}} {
 
 	Enemy::m_params = {{"idle", {0, 6, 48, -1}}, {"shoot", {10, 1, 38, -1}}, {"jumpsquat", {18, 1, 58, 0}}, {"hurt", {21, 4, 24, 2}},	  {"jump", {14, 1, 22, -1}},	 {"jump_shoot", {32, 1, 42, -1}},		  {"reload", {7, 7, 18, 0}},
@@ -265,14 +265,14 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	// NPC stuff
 	if (player.get_collider().bounding_box.overlaps(distant_range) && !was_introduced() && is_force_interact()) { set_distant_interact(true); }
 
-	NPC::update(svc, map, *m_console, player);
-	if (m_console && was_introduced()) {
-		if (m_console->has_value()) {
-			m_console->value()->set_no_exit(true);
+	NPC::update(svc, map, *m_context, player);
+	if (m_context->console && was_introduced()) {
+		if (m_context->console.has_value()) {
+			m_context->console.value()->set_no_exit(true);
 			set_force_interact(false);
 		}
 	}
-	console_complete = static_cast<bool>(m_console);
+	console_complete = !m_context->console.has_value();
 
 	if (Boss::consume_flag(BossFlags::start_battle)) {
 		m_mode = MinigusMode::battle_one;
@@ -785,7 +785,7 @@ fsm::StateFunction Minigus::update_struggle() {
 			m_services->soundboard.flags.minigus.set(audio::Minigus::quick_breath);
 			m_services->soundboard.flags.minigus.set(audio::Minigus::long_moan);
 		}
-		if (!Enemy::animation.just_started() && !m_console->has_value() && !status.test(MinigusFlags::exit_scene)) {
+		if (!Enemy::animation.just_started() && !m_context->console.has_value() && !status.test(MinigusFlags::exit_scene)) {
 			NANI_LOG_DEBUG(m_logger, "Exit cooldown started");
 			status.set(MinigusFlags::exit_scene);
 			cooldowns.exit.start();

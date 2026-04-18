@@ -37,15 +37,14 @@ void EnemyCatalog::update() {
 	std::erase_if(enemies, [this](auto const& e) { return e->gone() || e->despawn_requested(); });
 }
 
-void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int id, bool spawned, int variant, sf::Vector2<int> start_direction,
-							  Multispawn multispawn) {
+void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, SceneContext& context, int id, bool spawned, int variant, sf::Vector2<int> start_direction, Multispawn multispawn) {
 	switch (id) {
 	case 0: enemies.push_back(std::make_unique<Hulmet>(svc, map)); break;
 	case 1: enemies.push_back(std::make_unique<Tank>(svc, map, variant)); break;
 	case 3: enemies.push_back(std::make_unique<Thug>(svc, map)); break;
 	case 4: enemies.push_back(std::make_unique<Eyebot>(svc, map)); break;
 	case 5: enemies.push_back(std::make_unique<Eyebit>(svc, map, spawned)); break;
-	case 6: enemies.push_back(std::make_unique<Minigus>(svc, map, console)); break;
+	case 6: enemies.push_back(std::make_unique<Minigus>(svc, map, context)); break;
 	case 7: enemies.push_back(std::make_unique<Demon>(svc, map, variant)); break;
 	case 8: enemies.push_back(std::make_unique<Caster>(svc, map, variant)); break;
 	case 9: enemies.push_back(std::make_unique<Archer>(svc, map)); break;
@@ -54,7 +53,7 @@ void EnemyCatalog::push_enemy(automa::ServiceProvider& svc, world::Map& map, [[m
 	case 12: enemies.push_back(std::make_unique<Imp>(svc, map, variant)); break;
 	case 13: enemies.push_back(std::make_unique<Hulmet>(svc, map)); break;
 	case 14: enemies.push_back(std::make_unique<Miaag>(svc, map)); break;
-	case 15: enemies.push_back(std::make_unique<Lynx>(svc, map, console)); break;
+	case 15: enemies.push_back(std::make_unique<Lynx>(svc, map, context)); break;
 	case 16: enemies.push_back(std::make_unique<Summoner>(svc, map, variant)); break;
 	case 17: enemies.push_back(std::make_unique<Minion>(svc, map, variant)); break;
 	case 18: enemies.push_back(std::make_unique<Spitefly>(svc, map, variant)); break;

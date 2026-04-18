@@ -16,7 +16,7 @@ enum class HealthRewardSequenceFlags { slotted, cinematic, show_heart, finished 
 
 class HealthRewardSequence : public IRewardSequence, public Animatable, public Flaggable<HealthRewardSequenceFlags> {
   public:
-	HealthRewardSequence(automa::ServiceProvider& svc, player::Player& player, world::Map& map, sf::Vector2f hud_point);
+	HealthRewardSequence(automa::ServiceProvider& svc, player::Player& player, SceneContext& context, sf::Vector2f hud_point);
 	void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) override;
 	void render(sf::RenderWindow& win) override;
 

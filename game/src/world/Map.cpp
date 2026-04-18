@@ -1,9 +1,9 @@
 
 #include <imgui.h>
 #include <ccmath/ext/clamp.hpp>
+#include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/graphics/Colors.hpp>
-#include <fornani/gui/Portrait.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Math.hpp>
@@ -138,7 +138,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 					spawn_range = random::random_vector_float({-in["spread"][0].as<float>(), -in["spread"][1].as<float>()}, {in["spread"][0].as<float>(), in["spread"][1].as<float>()});
 				}
 			}
-			enemy_catalog.push_enemy(svc, *this, console, entry["id"].as<int>(), false, variant, start, enemy::Multispawn{spawn_range});
+			enemy_catalog.push_enemy(svc, *this, context, entry["id"].as<int>(), false, variant, start, enemy::Multispawn{spawn_range});
 			enemy_catalog.enemies.back()->set_position_from_scaled(sf::Vector2f{pos * constants::f_cell_size});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 			enemy_catalog.enemies.back()->set_stable_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
@@ -281,7 +281,7 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 	generate_collidable_layer(live);
 }
 
-void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, graphics::Transition& transition) {
+void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	if (!player->has_collider()) { return; }
 	auto& layers = svc.data.get_layers(room_id);
 	flags.state.reset(LevelState::camera_shake);
@@ -303,7 +303,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 
 	if (flags.state.test(LevelState::spawn_enemy)) {
 		for (auto& spawn : enemy_spawns) {
-			enemy_catalog.push_enemy(*m_services, *this, console, spawn.id, true, spawn.variant);
+			enemy_catalog.push_enemy(*m_services, *this, context, spawn.id, true, spawn.variant);
 			enemy_catalog.enemies.back()->intangible_start(64);
 			enemy_catalog.enemies.back()->set_position(spawn.pos);
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
@@ -338,7 +338,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	}
 
 	// hazards
-	if (m_hazards) { m_hazards->update(*player, *this, transition); }
+	if (m_hazards) { m_hazards->update(*player, *this, context.transition); }
 
 	std::erase_if(active_emitters, [](auto const& p) { return p->done(); });
 	std::erase_if(effects, [](auto& e) { return e.done(); });
@@ -383,7 +383,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 				++num_collision_checks;
 			}
 		}
-		collider.detect_map_collision(*this);
+		if (!collider.has_attribute(shape::ColliderAttributes::fixed)) { collider.detect_map_collision(*this); }
 	}
 
 	for (auto& enemy : enemy_catalog.enemies) { enemy->post_update(svc, *this, *player); }
@@ -394,16 +394,16 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	player->reset_water_flags();
 
 	if (m_entities) {
-		for (auto& entity : m_entities.value().variables.entities) { entity->update(svc, *this, console, *player); }
+		for (auto& entity : m_entities.value().variables.entities) { entity->update(svc, *this, context, *player); }
 	}
 	if (fire) {
-		for (auto& f : fire.value()) { f.update(svc, *player, *this, console); }
+		for (auto& f : fire.value()) { f.update(svc, *player, *this, context.console); }
 	}
 	for (auto& laser : lasers) { laser.update(svc, *player, *this); }
 	for (auto& exp : m_explosions) { exp.update(svc, *player, *this); }
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
-	for (auto& chest : chests) { chest->update(svc, *this, console, *player); }
-	for (auto& inspectable : inspectables) { inspectable.update(svc, *this, console, *player); }
+	for (auto& chest : chests) { chest->update(svc, *this, context.console, *player); }
+	for (auto& inspectable : inspectables) { inspectable.update(svc, *this, context, *player); }
 	for (auto& animator : animators) { animator.update(); }
 	for (auto& effect : effects) { effect.update(); }
 	for (auto& atm : atmosphere) { atm.update(svc, *this, *player); }
@@ -412,7 +412,7 @@ void Map::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
 	for (auto& destructible : destructibles) { destructible->update(svc, *this, *player); }
 	for (auto& checkpoint : checkpoints) { checkpoint.update(svc, *this, *player); }
-	for (auto& bed : beds) { bed.update(svc, *this, console, *player, transition); }
+	for (auto& bed : beds) { bed.update(svc, *this, context, *player); }
 	for (auto& breakable : breakables) { breakable->update(svc, *this, *player); }
 	for (auto& waterfall : waterfalls) { waterfall->update(svc, *this, *player); }
 	for (auto& incinerite : incinerite_blocks) { incinerite->update(svc, *this, *player); }

@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <fornani/automa/SceneContext.hpp>
-#include <fornani/entities/player/Player.hpp>
+#include <fornani/core/Fwd.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/gui/hud/HUD.hpp>
 #include <fornani/utils/Polymorphic.hpp>
@@ -35,6 +35,8 @@ class GameState : public UniquePolymorphic {
 	virtual void reload(ServiceProvider& svc, int target_state) {};
 	virtual void on_exit() {};
 	virtual std::optional<std::reference_wrapper<world::Map>> get_map() { return std::nullopt; }
+
+	SceneContext const& get_context() { return p_context; }
 
 	[[nodiscard]] auto is_ready() const -> bool { return flags.test(GameStateFlags::ready); }
 	[[nodiscard]] auto is(StateType test) const -> bool { return m_type == test; }

@@ -1,5 +1,6 @@
 
 #include <fornani/automa/states/Dojo.hpp>
+#include <fornani/entities/player/Player.hpp>
 #include <fornani/events/GameplayEvent.hpp>
 #include <fornani/events/InventoryEvent.hpp>
 #include <fornani/graphics/rewards/AbilityRewardSequence.hpp>
@@ -178,7 +179,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	// physical tick
 	player->update(*m_map);
 	player->start_tick();
-	m_map->update(svc, p_context.console, p_context.transition);
+	m_map->update(svc, p_context);
 	handle_player_death(svc, *player);
 
 	m_map->debug_mode = debug_mode;
@@ -230,6 +231,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 void Dojo::reload(ServiceProvider& svc, int target_state) {
 	m_map->clear();
+	set_flag(GameplayStateFlags::transitioned_in, false);
 	m_flags.reset(GameplayFlags::transitioning);
 	p_context.transition.set(graphics::TransitionState::black);
 	p_context.transition.hang();
@@ -245,7 +247,7 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 		svc.data.rooms.push_back(target_state);
 		svc.data.load_data();
 	} else {
-		m_map->load(svc, p_context.console, target_state);
+		m_map->load(svc, p_context, target_state);
 		NANI_LOG_INFO(m_logger, "Map loaded.");
 	}
 
@@ -374,7 +376,7 @@ bool Dojo::check_for_vendor(ServiceProvider& svc) {
 	}
 	if (p_vendor_dialog) {
 		p_context.transition.update(*player);
-		p_vendor_dialog.value()->update(svc, *m_map, *player);
+		p_vendor_dialog.value()->update(svc, *m_map, *player, p_context);
 		if (!p_vendor_dialog.value()->is_open()) {
 			if (p_vendor_dialog.value()->made_profit()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
 			p_vendor_dialog = {};
@@ -431,12 +433,12 @@ void Dojo::handle_player_death(ServiceProvider& svc, player::Player& player) {
 }
 
 void Dojo::handle_health_increase(ServiceProvider& svc, player::Player& player) {
-	if (!p_reward_sequence) { p_reward_sequence.emplace(std::make_unique<graphics::HealthRewardSequence>(svc, player, *m_map, hud.get_hearts_endpoint())); }
+	if (!p_reward_sequence) { p_reward_sequence.emplace(std::make_unique<graphics::HealthRewardSequence>(svc, player, p_context, hud.get_hearts_endpoint())); }
 }
 
 void Dojo::handle_ability_acquisition(ServiceProvider& svc, player::Player& player, std::string_view label) {
 	if (!p_reward_sequence) {
-		p_reward_sequence.emplace(std::make_unique<graphics::AbilityRewardSequence>(svc, player, *m_map));
+		p_reward_sequence.emplace(std::make_unique<graphics::AbilityRewardSequence>(svc, player, p_context));
 		p_reward_sequence.value()->flags.set(graphics::RewardSequenceFlags::show_player);
 		p_reward_sequence.value()->set_label(label);
 	}

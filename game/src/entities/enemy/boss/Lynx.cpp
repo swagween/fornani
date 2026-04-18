@@ -1,4 +1,5 @@
 
+#include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/enemy/boss/Lynx.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -11,8 +12,8 @@ constexpr auto b_lynx_debug{false};
 constexpr auto lynx_framerate = 7;
 constexpr auto run_threshold_v = 0.002f;
 
-Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console)
-	: NPC(svc, map, std::string_view{"lynx"}, false), Boss(svc, map, "lynx"), m_console{&console}, m_map{&map},
+Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, SceneContext& context)
+	: NPC(svc, map, std::string_view{"lynx"}, false), Boss(svc, map, "lynx"), m_context{&context}, m_map{&map},
 	  m_cooldowns{.run{240}, .post_hurt{64}, .post_shuriken_toss{1200}, .post_levitate{1000}, .start_levitate{150}, .throw_shuriken{60}, .post_defeat{800}}, m_services{&svc},
 	  m_attacks{.left_shockwave{{30, 400, 2, {-1.5f, 0.f}}}, .right_shockwave{{30, 400, 2, {1.5f, 0.f}}}}, m_shuriken(svc, "shuriken"), m_magic{svc, {40.f, 40.f}, colors::white, "lynx_magic"}, m_seek_friction{0.9f, 0.9f} {
 	Enemy::m_params = {
@@ -66,7 +67,7 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	m_cooldowns.post_shuriken_toss.update();
 	m_cooldowns.post_levitate.update();
 	m_cooldowns.throw_shuriken.update();
-	if (!m_console->has_value()) { m_cooldowns.post_defeat.update(); }
+	if (!m_context->console.has_value()) { m_cooldowns.post_defeat.update(); }
 
 	Enemy::get_collider().has_flag_set(shape::ColliderFlags::simple) ? Enemy::get_collider().physics.set_friction_componentwise(m_seek_friction) : Enemy::get_collider().physics.set_friction_componentwise({0.97f, 0.99f});
 
@@ -208,12 +209,12 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		svc.music_player.stop();
 	}
 
-	NPC::update(svc, map, *m_console, player);
-	if (m_console->has_value() && was_introduced()) { set_force_interact(false); }
+	NPC::update(svc, map, *m_context, player);
+	if (m_context->console.has_value() && was_introduced()) { set_force_interact(false); }
 
 	if (!health.is_dead()) {
 		// first phase starts
-		if (Boss::has_flag_set(BossFlags::start_battle) && !m_console->has_value()) {
+		if (Boss::has_flag_set(BossFlags::start_battle) && !m_context->console.has_value()) {
 			request(LynxState::get_up);
 			Boss::set_flag(BossFlags::start_battle, false);
 			svc.music_player.load(svc.finder, "tumult");
@@ -631,7 +632,7 @@ fsm::StateFunction Lynx::update_second_phase() {
 	Enemy::get_collider().physics.set_friction_componentwise(m_seek_friction);
 	m_map->set_target_balance(0.f, audio::BalanceTarget::music);
 	m_map->set_target_balance(0.f, audio::BalanceTarget::ambience);
-	if (!m_console->has_value()) {
+	if (!m_context->console.has_value()) {
 		m_services->music_player.load(m_services->finder, "tumultuous_spirit");
 		m_services->music_player.play_looped();
 		flags.general.set(GeneralFlags::gravity);

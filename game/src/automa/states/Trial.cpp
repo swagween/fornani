@@ -1,5 +1,6 @@
 
 #include <fornani/automa/states/Trial.hpp>
+#include <fornani/entities/player/Player.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Random.hpp>
 
@@ -20,7 +21,7 @@ Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scen
 		svc.data.rooms.push_back(room_number);
 		svc.data.load_data();
 	} else {
-		m_map->load(svc, p_context.console, room_number);
+		m_map->load(svc, p_context, room_number);
 	}
 
 	svc.state_controller.player_position = m_map->get_player_start();
@@ -84,7 +85,7 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		player->update(*m_map);
 		player->start_tick();
 	}
-	m_map->update(svc, p_context.console, p_context.transition);
+	m_map->update(svc, p_context);
 
 	m_map->debug_mode = debug_mode;
 

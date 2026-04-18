@@ -1,10 +1,11 @@
 
-#include "fornani/entities/world/Inspectable.hpp"
+#include <fornani/automa/SceneContext.hpp>
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/entities/world/Inspectable.hpp>
 #include <fornani/events/ConsoleEvent.hpp>
 #include <fornani/gui/console/Console.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::entity {
 
@@ -53,14 +54,14 @@ void Inspectable::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_
 	if (flags.test(InspectableFlags::activated) && !player.is_busy()) {
 		player.set_busy(true);
 		auto output_type = attributes.test(InspectableAttributes::instant) ? gui::OutputType::instant : gui::OutputType::gradual;
-		console = std::make_unique<gui::Console>(svc, set["series"][current_alt], output_type);
+		context.console = std::make_unique<gui::Console>(svc, set["series"][current_alt], output_type);
 	}
 
 	if (flags.test(InspectableFlags::hovered) && flags.consume(InspectableFlags::hovered_trigger) && animation.complete()) { animation.set_params(params); }
-	if (console) {
-		if (console.value()->get_key() == key) { flags.set(InspectableFlags::engaged); }
+	if (context.console) {
+		if (context.console.value()->get_key() == key) { flags.set(InspectableFlags::engaged); }
 	}
-	if (!console) {
+	if (!context.console) {
 		flags.reset(InspectableFlags::engaged);
 		player.set_busy(false);
 	}

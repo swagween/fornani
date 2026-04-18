@@ -202,7 +202,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 
 	bool* b_debug{};
 	static bool limit_framerate{true};
-	static int frame_limit{60};
+	static int frame_limit{120};
 	float const PAD = 10.0f;
 	static int corner = 1;
 	ImGuiIO& io = ImGui::GetIO();
@@ -476,6 +476,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Story")) {
+					ImGui::SeparatorText("Cutscenes");
+					ImGui::Text("Number of active cutscenes: %i", game_state.get_current_state().get_context().cutscene_catalog.cutscenes.size());
 					ImGui::SeparatorText("Quest Info");
 					for (auto i = 0; i < services.quest_registry.get_size(); ++i) { ImGui::Text("Title: %s", services.quest_registry.get_quest_metadata(i).get_title().data()); }
 

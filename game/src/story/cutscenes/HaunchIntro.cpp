@@ -1,4 +1,5 @@
 
+#include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -19,7 +20,7 @@ HaunchIntro::HaunchIntro(automa::ServiceProvider& svc)
 	m_army_truck_undercarriage.push_animation("stopped", {0, 1, 32, -1});
 }
 
-void HaunchIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
+void HaunchIntro::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 	if (m_flags.consume(HaunchIntroFlags::done)) {
 		player.controller.unrestrict();
 		svc.state_flags.reset(automa::StateFlags::hide_hud);
@@ -75,7 +76,7 @@ void HaunchIntro::update(automa::ServiceProvider& svc, std::optional<std::unique
 	m_intro.update();
 	if (m_intro.running()) { return; }
 
-	if (console) { console.value()->set_no_exit(true); }
+	if (context.console) { context.console.value()->set_no_exit(true); }
 
 	auto total_suites{0};
 	for (auto& npc : npcs) { total_suites += npc->get_number_of_suites(); }
@@ -88,7 +89,7 @@ void HaunchIntro::update(automa::ServiceProvider& svc, std::optional<std::unique
 
 	if (cooldowns.end.running()) { haunch->disengage(); }
 	if (cooldowns.beginning.is_almost_complete()) {}
-	if (console) { haunch->disengage(); }
+	if (context.console) { haunch->disengage(); }
 
 	svc.camera_controller.set_owner(graphics::CameraOwner::system);
 	svc.camera_controller.free();
@@ -119,7 +120,7 @@ void HaunchIntro::update(automa::ServiceProvider& svc, std::optional<std::unique
 	case 3: break;
 	case 4: break;
 	case 10:
-		if (!console.has_value()) {
+		if (!context.console.has_value()) {
 			m_flags.set(HaunchIntroFlags::done);
 			svc.music_player.load(svc.finder, "scuffle");
 			svc.music_player.play_looped();

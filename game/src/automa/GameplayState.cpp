@@ -20,10 +20,7 @@ void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	// cutscenes
 	std::erase_if(p_context.cutscene_catalog.cutscenes, [](auto const& c) { return c->delete_me(); });
-	for (auto& cutscene : p_context.cutscene_catalog.cutscenes) {
-		cutscene->update(svc, p_context.console, *m_map, *player);
-		cutscene->update(svc, p_context.console, *m_map, *player, p_context.transition);
-	}
+	for (auto& cutscene : p_context.cutscene_catalog.cutscenes) { cutscene->update(svc, p_context, *m_map, *player); }
 
 	// gamepad disconnected
 	if (svc.input_system.process_gamepad_disconnection()) { pause(svc); }

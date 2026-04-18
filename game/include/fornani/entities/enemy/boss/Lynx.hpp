@@ -18,7 +18,7 @@ enum class LynxFlags { conversing, just_levitated, player_defeated };
 
 class Lynx final : public NPC, public Boss {
   public:
-	Lynx(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console);
+	Lynx(automa::ServiceProvider& svc, world::Map& map, SceneContext& context);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
@@ -92,7 +92,7 @@ class Lynx final : public NPC, public Boss {
 	entity::WeaponPackage m_shuriken;
 	sf::Vector2f m_attack_target{};
 
-	std::optional<std::unique_ptr<gui::Console>>* m_console;
+	SceneContext* m_context;
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;
 

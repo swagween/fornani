@@ -6,8 +6,8 @@
 
 namespace fornani::graphics {
 
-AbilityRewardSequence::AbilityRewardSequence(automa::ServiceProvider& svc, player::Player& player, world::Map& map)
-	: IRewardSequence{svc, player, map}, m_sparkler{svc, sf::Vector2f{96.f, 96.f}, colors::ui_white, "item"}, m_cinematic{1000} {
+AbilityRewardSequence::AbilityRewardSequence(automa::ServiceProvider& svc, player::Player& player, SceneContext& context)
+	: IRewardSequence{svc, player, context}, m_sparkler{svc, sf::Vector2f{96.f, 96.f}, colors::ui_white, "item"}, m_cinematic{1000} {
 	player.set_flag(player::PlayerFlags::in_reward_sequence);
 	svc.camera_controller.free();
 	flags.set(RewardSequenceFlags::console_after_exit);

@@ -50,7 +50,7 @@ struct VendorConstituent : public Drawable {
 class VendorDialog {
   public:
 	VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id);
-	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, SceneContext& context);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map, LightShader& shader);
 	void close();
 	void update_table(player::Player& player, world::Map& map, bool new_dim);
@@ -65,7 +65,7 @@ class VendorDialog {
 	[[nodiscard]] auto is_closing() const -> bool { return m_outro.running() || flags.test(VendorDialogStatus::closed); }
 
   private:
-	bool fade_logic(automa::ServiceProvider& svc, world::Map& map);
+	bool fade_logic(automa::ServiceProvider& svc, graphics::Transition& transition);
 	VendorState m_state{};
 	InventorySelector m_buy_selector;
 	InventorySelector m_sell_selector;

@@ -1,4 +1,5 @@
 
+#include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -20,11 +21,9 @@ PioneerBaseDebrief::PioneerBaseDebrief(automa::ServiceProvider& svc, world::Map&
 	svc.music_player.load(svc.finder, "glitchified");
 }
 
-void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player, graphics::Transition& transition) {
+void PioneerBaseDebrief::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 
-	static auto ended = false;
-
-	if (cooldowns.beginning.just_started()) { transition.start(); }
+	if (cooldowns.beginning.just_started()) { context.transition.start(); }
 
 	if (complete()) {
 		player.controller.unrestrict();
@@ -32,7 +31,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 		svc.state_flags.reset(automa::StateFlags::no_menu);
 		svc.state_flags.reset(automa::StateFlags::cutscene);
 		svc.camera_controller.set_owner(graphics::CameraOwner::player);
-		transition.end();
+		context.transition.end();
 		flags.set(CutsceneFlags::delete_me);
 		svc.quest_table.progress_quest("defeat_skycorps", 1, 50901);
 		svc.music_player.load(svc.finder, "bryns_turn");
@@ -40,8 +39,8 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 		return;
 	}
 
-	if (cooldowns.pause.is_almost_complete() && ended) { transition.start(); }
-	if (cooldowns.end.is_almost_complete() && ended) { flags.set(CutsceneFlags::complete); }
+	if (cooldowns.pause.is_almost_complete() && m_ended) { context.transition.start(); }
+	if (cooldowns.end.is_almost_complete() && m_ended) { flags.set(CutsceneFlags::complete); }
 
 	svc.state_flags.set(automa::StateFlags::hide_hud);
 	svc.state_flags.set(automa::StateFlags::no_menu);
@@ -49,15 +48,15 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 	cooldowns.pause.update();
 	cooldowns.long_pause.update();
 
-	if (transition.is(graphics::TransitionState::black)) {
+	if (context.transition.is(graphics::TransitionState::black)) {
 		cooldowns.beginning.update();
 		cooldowns.end.update();
 	}
-	if (ended) { return; }
+	if (m_ended) { return; }
 
 	player.controller.restrict_movement();
 
-	if (console) { console.value()->set_no_exit(true); }
+	if (context.console) { context.console.value()->set_no_exit(true); }
 
 	auto npcs = map.get_entities<NPC>();
 	auto bit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 0; });
@@ -65,8 +64,8 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 	auto wit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 2; });
 	auto& willett = *wit;
 
-	if (transition.is(graphics::TransitionState::black) && cooldowns.beginning.is_complete()) {
-		transition.end();
+	if (context.transition.is(graphics::TransitionState::black) && cooldowns.beginning.is_complete()) {
+		context.transition.end();
 		svc.music_player.play_looped();
 		bryn->set_position_from_scaled({10.f, 16.f});
 		willett->set_position_from_scaled({12.f, 16.f});
@@ -75,8 +74,8 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 		bryn->request(NPCAnimationState::inspect);
 	}
 
-	if (console.has_value()) { bryn->disengage(); }
-	if (console.has_value()) { willett->disengage(); }
+	if (context.console.has_value()) { bryn->disengage(); }
+	if (context.console.has_value()) { willett->disengage(); }
 
 	if (!flags.test(CutsceneFlags::started)) {
 		bryn->flush_conversations();
@@ -91,7 +90,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 	total_conversations = std::max(total_conversations, total_suites);
 	if (cooldowns.end.is_almost_complete()) {
 		flags.set(CutsceneFlags::complete);
-		transition.end();
+		context.transition.end();
 		return;
 	}
 	if (npcs.empty()) { return; }
@@ -107,15 +106,15 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 
 	svc.camera_controller.set_owner(graphics::CameraOwner::system);
 
-	if (!transition.is(graphics::TransitionState::inactive)) { return; }
+	if (!context.transition.is(graphics::TransitionState::inactive)) { return; }
 
 	switch (progress) {
 	case 0:
-		if (!console) { willett->force_engage(); }
+		if (!context.console) { willett->force_engage(); }
 		++progress;
 		return;
 	case 1:
-		if (!console) {
+		if (!context.console) {
 			willett->flush_conversations();
 			willett->push_conversation(11);
 			bryn->force_engage();
@@ -125,7 +124,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 		}
 		break;
 	case 2:
-		if (!console) {
+		if (!context.console) {
 			bryn->flush_conversations();
 			bryn->push_conversation(11);
 			willett->force_engage();
@@ -135,7 +134,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 		}
 		break;
 	case 3:
-		if (!console) {
+		if (!context.console) {
 			willett->flush_conversations();
 			willett->push_conversation(12);
 			bryn->force_engage();
@@ -145,7 +144,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 		}
 		break;
 	case 4:
-		if (!console) {
+		if (!context.console) {
 			bryn->flush_conversations();
 			bryn->push_conversation(12);
 			willett->force_engage();
@@ -155,7 +154,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 		}
 		break;
 	case 5:
-		if (!console) {
+		if (!context.console) {
 			willett->flush_conversations();
 			willett->push_conversation(14);
 			bryn->force_engage();
@@ -165,7 +164,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 		}
 		break;
 	case 6:
-		if (!console) {
+		if (!context.console) {
 			bryn->pop_conversation();
 			willett->force_engage();
 			svc.camera_controller.set_position(willett->Mobile::get_global_center());
@@ -174,14 +173,14 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, std::optional<std:
 		}
 		break;
 	case 7:
-		if (!console && !ended) {
+		if (!context.console && !m_ended) {
 			cooldowns.end.start();
 			cooldowns.pause.start();
 			bryn->flush_conversations();
 			willett->flush_conversations();
 			bryn->push_conversation(6);
 			willett->push_conversation(13);
-			ended = true;
+			m_ended = true;
 			return;
 		}
 		break;

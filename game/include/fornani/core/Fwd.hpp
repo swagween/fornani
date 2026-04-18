@@ -15,6 +15,10 @@ namespace player {
 class Player;
 }
 
+namespace gui {
+class Console;
+}
+
 struct SceneContext;
 
 } // namespace fornani

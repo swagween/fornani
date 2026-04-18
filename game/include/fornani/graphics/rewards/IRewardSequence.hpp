@@ -13,7 +13,7 @@ enum class RewardSequenceFlags { show_player, console_after_exit };
 
 class IRewardSequence : public Polymorphic {
   public:
-	IRewardSequence(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
+	IRewardSequence(automa::ServiceProvider& svc, player::Player& player, SceneContext& context);
 	virtual void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 	virtual void render(sf::RenderWindow& win);
 	void set_label(std::string_view to) { p_label.emplace(to.data()); }

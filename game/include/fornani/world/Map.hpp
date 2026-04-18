@@ -114,7 +114,7 @@ class Map {
 	// methods
 	void load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& context, int room_number);
 	void unserialize(automa::ServiceProvider& svc, int room_number, bool live = false);
-	void update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, graphics::Transition& transition);
+	void update(automa::ServiceProvider& svc, SceneContext& context);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	bool handle_entry(player::Player& player, util::Cooldown& enter_room);

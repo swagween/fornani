@@ -1,14 +1,14 @@
 
-#include "fornani/gui/VendorDialog.hpp"
+#include <fornani/automa/SceneContext.hpp>
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/graphics/Transition.hpp>
+#include <fornani/gui/VendorDialog.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/utils/ColorUtils.hpp>
+#include <fornani/utils/Math.hpp>
+#include <fornani/world/Map.hpp>
 #include <algorithm>
 #include <cctype>
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/graphics/Transition.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/utils/ColorUtils.hpp"
-#include "fornani/utils/Math.hpp"
-#include "fornani/utils/Random.hpp"
-#include "fornani/world/Map.hpp"
 
 namespace fornani::gui {
 
@@ -101,9 +101,9 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	NANI_LOG_INFO(m_logger, "Vendor NPC: {}", my_npc->get_tag());
 }
 
-void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, SceneContext& context) {
 
-	if (fade_logic(svc, map)) { return; }
+	if (fade_logic(svc, context.transition)) { return; }
 
 	auto& selector = is_buying() ? m_buy_selector : m_sell_selector;
 
@@ -353,26 +353,26 @@ void VendorDialog::refresh(automa::ServiceProvider& svc, player::Player& player,
 	player.update_wardrobe();
 }
 
-bool VendorDialog::fade_logic(automa::ServiceProvider& svc, world::Map& map) {
+bool VendorDialog::fade_logic(automa::ServiceProvider& svc, graphics::Transition& transition) {
 	m_intro.update();
 	m_outro.update();
 	m_fade_in.update();
 	if (m_intro.is_almost_complete()) {
-		map.transition.start();
+		transition.start();
 		flags.set(VendorDialogStatus::intro_done);
 	}
-	if (map.transition.is(graphics::TransitionState::black) && flags.test(VendorDialogStatus::intro_done)) {
+	if (transition.is(graphics::TransitionState::black) && flags.test(VendorDialogStatus::intro_done)) {
 		m_fade_in.start();
 		flags.reset(VendorDialogStatus::intro_done);
-		map.transition.end();
+		transition.end();
 	}
 	if (m_outro.is_almost_complete()) {
-		map.transition.start();
+		transition.start();
 		flags.set(VendorDialogStatus::closed);
 	}
-	if (map.transition.is(graphics::TransitionState::black) && flags.test(VendorDialogStatus::closed)) {
+	if (transition.is(graphics::TransitionState::black) && flags.test(VendorDialogStatus::closed)) {
 		flags.reset(VendorDialogStatus::opened);
-		map.transition.end();
+		transition.end();
 	}
 	!flags.test(VendorDialogStatus::opened) ? m_background.setFillColor(util::ColorUtils::fade_out(colors::pioneer_black)) : m_background.setFillColor(util::ColorUtils::fade_in(colors::pioneer_black));
 	return is_opening() || is_closing();

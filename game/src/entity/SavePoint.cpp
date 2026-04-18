@@ -1,7 +1,7 @@
 
+#include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entity/SavePoint.hpp>
-#include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 
 namespace fornani {
@@ -59,7 +59,7 @@ void SavePoint::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_un
 					save(svc, player);
 					svc.state_controller.save_point_id = get_id();
 					svc.soundboard.flags.world.set(audio::World::save);
-					console = std::make_unique<gui::Console>(svc, svc.text.basic, "save", gui::OutputType::gradual);
+					context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "save", gui::OutputType::gradual);
 				}
 			}
 		} else {

@@ -1,4 +1,5 @@
 
+#include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -14,7 +15,7 @@ LothAtWorm::LothAtWorm(automa::ServiceProvider& svc) : Cutscene(svc, 268, "loth_
 	svc.state_flags.set(automa::StateFlags::cutscene);
 }
 
-void LothAtWorm::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
+void LothAtWorm::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 	if (complete()) {
 		player.controller.unrestrict();
 		svc.state_flags.reset(automa::StateFlags::hide_hud);
@@ -59,7 +60,7 @@ void LothAtWorm::update(automa::ServiceProvider& svc, std::optional<std::unique_
 	m_intro.update();
 	if (m_intro.running()) { return; }
 
-	if (console) { console.value()->set_no_exit(true); }
+	if (context.console) { context.console.value()->set_no_exit(true); }
 
 	auto total_suites{0};
 	for (auto& npc : npcs) { total_suites += npc->get_number_of_suites(); }
@@ -72,11 +73,11 @@ void LothAtWorm::update(automa::ServiceProvider& svc, std::optional<std::unique_
 
 	if (cooldowns.end.running()) { loth->disengage(); }
 	if (cooldowns.beginning.is_almost_complete()) {}
-	if (console) { loth->disengage(); }
+	if (context.console) { loth->disengage(); }
 	if (player.get_collider().get_vicinity_rect().contains(loth->get_collider().get_center()) && !m_flags.test(LothAtWormFlags::player_stopped)) {
 		player.set_idle();
 		m_flags.set(LothAtWormFlags::player_stopped);
-		if (!console.has_value()) { loth->force_engage(); }
+		if (!context.console.has_value()) { loth->force_engage(); }
 	}
 	if (m_flags.test(LothAtWormFlags::player_stopped)) {}
 
@@ -86,7 +87,7 @@ void LothAtWorm::update(automa::ServiceProvider& svc, std::optional<std::unique_
 
 	switch (progress) {
 	case 1:
-		if (!console) {
+		if (!context.console) {
 			loth->flush_conversations();
 			loth->push_conversation(2);
 			cooldowns.long_pause.start(256);
@@ -103,7 +104,7 @@ void LothAtWorm::update(automa::ServiceProvider& svc, std::optional<std::unique_
 		}
 		break;
 	case 3:
-		if (!console) {
+		if (!context.console) {
 			loth->flush_conversations();
 			loth->push_conversation(3);
 			loth->request(NPCAnimationState::inspect);
@@ -138,7 +139,7 @@ void LothAtWorm::update(automa::ServiceProvider& svc, std::optional<std::unique_
 		++progress;
 		break;
 	case 11:
-		if (!console) {
+		if (!context.console) {
 			loth->request(NPCAnimationState::special_1);
 			svc.soundboard.play_sound("magical_teleport");
 			++progress;

@@ -1,14 +1,12 @@
 
 #pragma once
 
-#include <capo/engine.hpp>
 #include <fornani/entities/enemy/Boss.hpp>
 #include <fornani/entity/NPC.hpp>
 #include "fornani/entities/packages/Attack.hpp"
 #include "fornani/entities/packages/Caution.hpp"
 #include "fornani/entities/packages/Shockwave.hpp"
 #include "fornani/graphics/SpriteHistory.hpp"
-#include "fornani/gui/BossHealth.hpp"
 #include "fornani/io/Logger.hpp"
 #include "fornani/particle/Sparkler.hpp"
 
@@ -44,7 +42,7 @@ class Minigun : public Animatable {
 class Minigus : public Boss, public NPC, public StateMachine<MinigusState> {
 
   public:
-	Minigus(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console);
+	Minigus(automa::ServiceProvider& svc, world::Map& map, SceneContext& context);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
@@ -76,7 +74,7 @@ class Minigus : public Boss, public NPC, public StateMachine<MinigusState> {
 
   private:
 	[[nodiscard]] auto is(MinigusState const test) const -> bool { return StateMachine<MinigusState>::is_state(test); }
-	[[nodiscard]] auto is_battle_mode() const -> bool { return (m_mode == MinigusMode::battle_one || m_mode == MinigusMode::battle_two) && !m_console->has_value(); }
+	[[nodiscard]] auto is_battle_mode() const -> bool { return (m_mode == MinigusMode::battle_one || m_mode == MinigusMode::battle_two) && console_complete; }
 
 	bool anim_debug{};
 	bool console_complete{};
@@ -139,7 +137,7 @@ class Minigus : public Boss, public NPC, public StateMachine<MinigusState> {
 
 	bool change_state(MinigusState next, anim::Parameters params);
 
-	std::optional<std::unique_ptr<gui::Console>>* m_console;
+	SceneContext* m_context;
 
 	io::Logger m_logger{"boss"};
 };
