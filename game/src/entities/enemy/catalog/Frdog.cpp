@@ -5,7 +5,10 @@
 
 namespace fornani::enemy {
 
-Frdog::Frdog(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "frdog") { animation.set_params(idle); }
+Frdog::Frdog(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "frdog") {
+	animation.set_params(idle);
+	m_params = {{"idle", {14, 2, 36, -1}}};
+}
 
 void Frdog::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (died()) {

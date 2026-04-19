@@ -1,5 +1,6 @@
 
 #include "fornani/entities/enemy/catalog/Hulmet.hpp"
+#include <fornani/entities/enemy/EnemyRegistry.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"

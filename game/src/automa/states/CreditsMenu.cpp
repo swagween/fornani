@@ -18,17 +18,14 @@ CreditsMenu::CreditsMenu(ServiceProvider& svc, player::Player& player) : MenuSta
 	assert(!m_data.is_null());
 
 	refresh(svc);
+	p_option_justification = TextJustification::left;
 }
 
 void CreditsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	auto prev_selection = current_selection.get();
 	MenuState::tick_update(svc, engine);
 	m_loading.update();
-	for (auto& option : options) {
-		option.position.x = 64.f;
-		option.update(current_selection.get());
-		option.label.setOrigin({});
-	}
+	for (auto& option : options) { option.position.x = 64.f; }
 	if (current_selection.get() != prev_selection) { refresh(svc); }
 }
 

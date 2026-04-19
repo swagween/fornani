@@ -363,7 +363,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	m_services->world_clock.set_time(save["map_data"]["world_time"]["hours"].as<int>(), save["map_data"]["world_time"]["minutes"].as<int>());
 	for (auto& room : save["discovered_rooms"].as_array()) { discovered_rooms.add(room.as<int>()); }
 	for (auto& door : save["unlocked_doors"].as_array()) { unlocked_doors.add(door.as_string()); }
-	for (auto& chest : save["opened_chests"].as_array()) { opened_chests.push_back(chest.as<int>()); }
+	for (auto& chest : save["opened_chests"].as_array()) { opened_chests.add(chest.as<std::uint64_t>()); }
 	for (auto& s : save["activated_switches"].as_array()) { activated_switches.add(s.as<int>()); }
 	for (auto& block : save["destroyed_blocks"].as_array()) { destructible_states.push_back(std::make_pair(block[0].as<int>(), block[1].as<int>())); }
 	for (auto& inspectable : save["destroyed_inspectables"].as_array()) { destroyed_inspectables.add(inspectable.as<int>()); }
@@ -463,19 +463,10 @@ void DataManager::load_trial_save(player::Player& player) const {
 
 	auto const& save = trial_file.save_data;
 	assert(!save.is_null());
-
-	// set player data based on save file
-	player.health.set_capacity(save["player_data"]["max_hp"].as<float>());
-	player.health.set_quantity(save["player_data"]["hp"].as<float>());
-	for (auto& item : save["player_data"]["items"].as_array()) { player.give_item(item["label"].as_string(), item["quantity"].as<int>()); }
-
-	// load player's arsenal
-	player.arsenal = {};
+	player.unserialize(save["player_data"]);
 }
 
 void DataManager::load_player_params(player::Player& player) {
-
-	// std::cout << "loading player params ...";
 	player_params = *dj::Json::from_file((m_services->finder.resource_path() + "/data/player/physics_params.json").c_str());
 	assert(!player_params.is_null());
 
@@ -529,7 +520,7 @@ void DataManager::save_player_params(player::Player& player) {
 	if (!player_params.dj::Json::to_file((finder.resource_path() + "/data/player/physics_params.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save physics params!"); }
 }
 
-void DataManager::open_chest(std::uint64_t id) { opened_chests.push_back(id); }
+void DataManager::open_chest(std::uint64_t id) { opened_chests.add(id); }
 
 void DataManager::reveal_room(int id) { discovered_rooms.add(id); }
 
@@ -601,12 +592,7 @@ bool data::DataManager::is_duplicate_room(int id) const {
 
 bool DataManager::is_door_unlocked(std::string_view tag) const { return unlocked_doors.contains(tag.data()); }
 
-bool DataManager::chest_is_open(std::uint64_t id) const {
-	for (auto& chest : opened_chests) {
-		if (chest == id) { return true; }
-	}
-	return false;
-}
+bool DataManager::chest_is_open(std::uint64_t id) const { return opened_chests.contains(id); }
 
 bool DataManager::switch_is_activated(int id) const {
 	for (auto& s : activated_switches) {

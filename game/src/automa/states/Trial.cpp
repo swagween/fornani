@@ -40,43 +40,12 @@ Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scen
 }
 
 void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-	GameState::tick_update(svc, engine);
+
+	set_flag(GameplayStateFlags::early_tick_return, false);
+	GameplayState::tick_update(svc, engine);
+	if (has_flag_set(GameplayStateFlags::early_tick_return)) { return; }
+
 	m_reset.update();
-
-	// gamepad disconnected
-	if (svc.input_system.process_gamepad_disconnection()) { pause(svc); }
-	if (svc.input_system.digital(input::DigitalAction::pause).triggered) { pause(svc); }
-
-	svc.a11y.set_action_ctx_bar_enabled(false);
-
-	svc.app_flags.set(AppFlags::in_game);
-
-	// set action set
-	if (p_pause_window || p_context.console) {
-		svc.input_system.set_action_set(input::ActionSet::Menu);
-		svc.input_system.set_joystick_throttle({});
-	} else {
-		svc.input_system.set_action_set(input::ActionSet::Platformer);
-	}
-
-	if (p_pause_window) {
-		if (p_context.console) { p_context.console.value()->update(svc); }
-		p_pause_window.value()->update(svc, p_context.console);
-		if (p_pause_window.value()->settings_requested()) {
-			flags.set(GameStateFlags::settings_request);
-			p_pause_window.value()->reset();
-		}
-		if (p_pause_window.value()->controls_requested()) {
-			flags.set(GameStateFlags::controls_request);
-			p_pause_window.value()->reset();
-		}
-		if (p_pause_window.value()->exit_requested()) {
-			p_pause_window.reset();
-			svc.world_timer.resume();
-		}
-		return;
-	}
-
 	svc.world_clock.update(svc);
 
 	if (!m_map) { return; }
@@ -101,6 +70,7 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		player->controller.prevent_movement();
 		player->map_reset();
 		player->accumulated_forces.clear();
+		player->set_direction({LR::right});
 	}
 
 	m_map->background->update(svc);

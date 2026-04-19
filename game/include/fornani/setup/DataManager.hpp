@@ -178,7 +178,7 @@ class DataManager final {
 
   private:
 	[[nodiscard]] auto get_destroyed_inspectables() const -> Register<int> { return destroyed_inspectables; }
-	std::vector<std::uint64_t> opened_chests{};
+	Register<std::uint64_t> opened_chests{};
 	Register<std::string> unlocked_doors{};
 	Register<int> activated_switches{};
 	std::vector<std::pair<int, int>> destructible_states{};

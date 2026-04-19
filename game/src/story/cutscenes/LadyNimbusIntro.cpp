@@ -28,6 +28,8 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, SceneContext& context
 		player.set_sleep_timer(1024);
 		svc.app_flags.set(automa::AppFlags::custom_map_start);
 		svc.world_clock.set_time(9, 30);
+		svc.events.transition_event.dispatch();
+		flags.set(CutsceneFlags::delete_me);
 		return;
 	}
 

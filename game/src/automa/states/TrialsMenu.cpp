@@ -30,15 +30,12 @@ TrialsMenu::TrialsMenu(ServiceProvider& svc, player::Player& player) : MenuState
 	m_parent_menu = MenuType::play;
 	m_loading.start();
 	switch_selections(svc);
+	p_option_justification = TextJustification::left;
 }
 
 void TrialsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-	MenuState::tick_update(svc, engine);
 	m_loading.update();
-	for (auto& option : options) {
-		option.update(current_selection.get());
-		option.label.setOrigin({});
-	}
+	MenuState::tick_update(svc, engine);
 	if (svc.input_system.menu_move(input::MoveDirection::up)) { switch_selections(svc); }
 	if (svc.input_system.menu_move(input::MoveDirection::down)) { switch_selections(svc); }
 	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {

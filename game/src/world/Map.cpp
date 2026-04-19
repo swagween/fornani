@@ -138,7 +138,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 					spawn_range = random::random_vector_float({-in["spread"][0].as<float>(), -in["spread"][1].as<float>()}, {in["spread"][0].as<float>(), in["spread"][1].as<float>()});
 				}
 			}
-			enemy_catalog.push_enemy(svc, *this, context, entry["id"].as<int>(), false, variant, start, enemy::Multispawn{spawn_range});
+			enemy_catalog.push_enemy(svc, *this, context, entry["id"].as<int>(), {variant, start, enemy::Multispawn{spawn_range}, false});
 			enemy_catalog.enemies.back()->set_position_from_scaled(sf::Vector2f{pos * constants::f_cell_size});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 			enemy_catalog.enemies.back()->set_stable_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
@@ -303,7 +303,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 
 	if (flags.state.test(LevelState::spawn_enemy)) {
 		for (auto& spawn : enemy_spawns) {
-			enemy_catalog.push_enemy(*m_services, *this, context, spawn.id, true, spawn.variant);
+			enemy_catalog.push_enemy(*m_services, *this, context, spawn.id, {spawn.variant, {-1, 0}, {}, true});
 			enemy_catalog.enemies.back()->intangible_start(64);
 			enemy_catalog.enemies.back()->set_position(spawn.pos);
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
@@ -852,6 +852,12 @@ void Map::clear_projectiles() {
 	for (auto& proj : active_projectiles) { proj.destroy(false); }
 }
 
+void Map::clear_enemies(std::unordered_set<int> const& exceptions) {
+	for (auto& enemy : enemy_catalog.enemies) {
+		if (!exceptions.contains(enemy->get_stable_id())) { enemy->kill(); }
+	}
+}
+
 void Map::shake_camera() { flags.state.set(LevelState::camera_shake); }
 
 void Map::clear() {
@@ -984,6 +990,12 @@ std::size_t Map::get_index_at_position(sf::Vector2f position) { return get_middl
 int Map::get_tile_value_at_position(sf::Vector2f position) { return get_middleground()->grid.get_cell(get_index_at_position(position)).value; }
 
 Tile& Map::get_cell_at_position(sf::Vector2f position) { return get_middleground()->grid.cells.at(get_index_at_position(position)); }
+
+enemy::Enemy* Map::get_enemy(int id) {
+	auto it = std::find_if(enemy_catalog.enemies.begin(), enemy_catalog.enemies.end(), [id](auto const& e) { return e->get_stable_id() == id; });
+	if (it == enemy_catalog.enemies.end()) { return nullptr; }
+	return it->get();
+}
 
 MapAttributes::MapAttributes(dj::Json const& in) {
 	// map properties

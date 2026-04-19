@@ -248,7 +248,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (npc_flags.gobe.test(NPCGobe::orewa)) { play(engine, svc, "gobe_orewa"); }
 
 	// willett
-	auto willett_volume = 50.f;
+	auto willett_volume = 30.f;
 	if (npc_flags.dr_willett.test(NPCDrWillett::ahhyes)) { play(engine, svc, "dr_willett_ahhyes", 0.f, willett_volume); }
 	if (npc_flags.dr_willett.test(NPCDrWillett::hm)) { play(engine, svc, "dr_willett_hm", 0.f, willett_volume); }
 	if (npc_flags.dr_willett.test(NPCDrWillett::mm)) { play(engine, svc, "dr_willett_mm", 0.f, willett_volume); }

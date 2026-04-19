@@ -38,6 +38,7 @@ class Dojo final : public GameplayState {
 	void handle_player_death(ServiceProvider& svc, player::Player& player);
 	void handle_health_increase(ServiceProvider& svc, player::Player& player);
 	void handle_ability_acquisition(ServiceProvider& svc, player::Player& player, std::string_view label);
+	void handle_transition();
 
 	bool show_colliders{false};
 

@@ -11,7 +11,7 @@ constexpr auto haunch_framerate{14};
 
 Haunch::Haunch(automa::ServiceProvider& svc, world::Map& map)
 	: Boss{svc, map, "haunch"}, m_services{&svc}, m_map{&map}, m_gun{svc, "big_laser_gun"}, m_stun_grenade{svc, "stun_grenade"}, m_hand_grenade{svc, "hand_grenade"},
-	  m_cooldowns{.run{200}, .post_run{1800}, .grenade{40}, .laser_charge{288}, .post_laser{96}, .whistle{400}, .post_whistle{1400}}, m_laser_gun{svc, "haunch_laser_gun", {37, 15}} {
+	  m_cooldowns{.run{200}, .post_run{1800}, .grenade{40}, .laser_charge{288}, .post_laser{96}, .whistle{400}, .post_whistle{1400}, .post_death{3000}}, m_laser_gun{svc, "haunch_laser_gun", {37, 15}} {
 	m_params = {{"idle", {0, 6, haunch_framerate * 3, -1}},
 				{"turn", {18, 1, haunch_framerate * 3, 0}},
 				{"shoot_high", {6, 3, haunch_framerate * 4, 0, true}},
@@ -24,7 +24,8 @@ Haunch::Haunch(automa::ServiceProvider& svc, world::Map& map)
 				{"triple_toss", {26, 3, haunch_framerate, 2}},
 				{"throw_grenade_down", {29, 5, haunch_framerate * 2, 0}},
 				{"triple_down_toss", {29, 5, haunch_framerate, 2}},
-				{"whistle", {34, 8, haunch_framerate * 2, 0}}};
+				{"whistle", {34, 8, haunch_framerate * 2, 0}},
+				{"struggle", {42, 1, haunch_framerate * 2, 0}}};
 	animation.set_params(get_params("airborne"));
 	get_collider().physics.set_friction_componentwise({0.99f, 1.f});
 	set_direction({LR::right});
@@ -37,6 +38,7 @@ Haunch::Haunch(automa::ServiceProvider& svc, world::Map& map)
 	m_laser_gun.center();
 	flags.state.set(StateFlags::no_shake);
 	flags.state.set(StateFlags::no_slowdown);
+	flags.general.set(GeneralFlags::post_death_render);
 }
 
 void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -46,8 +48,26 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		svc.data.switch_destructible_state(90102, true);
 		svc.music_player.pause();
 		set_flag(BossFlags::post_death);
-		svc.music_player.load(svc.finder, "none");
+		svc.music_player.load(svc.finder, "wind");
 		svc.music_player.play_looped();
+		flags.state.set(StateFlags::special_death_mode);
+		request(HaunchState::struggle);
+		map.clear_projectiles();
+		map.clear_enemies({39});
+	}
+	if (has_flag_set(BossFlags::post_death)) {
+		if (!hurt_effect.running()) { hurt_effect.start(128); }
+		shake();
+		m_cooldowns.post_death.update();
+		if (!m_cooldowns.post_death.running()) { m_cooldowns.post_death.start(); }
+		if (svc.ticker.every_x_ticks(70)) {
+			auto pos = get_collider().get_center() + random::random_vector_float(-40.f, 40.f);
+			map.spawn_effect(svc, "puff", pos, {}, 1);
+		}
+	}
+	if (m_cooldowns.post_death.is_almost_complete()) {
+		svc.events.launch_cutscene_event.dispatch(svc, 902);
+		set_flag(BossFlags::post_death, false);
 	}
 	if (!has_flag_set(BossFlags::battle_mode)) {
 		m_gun_steering.seek(m_gun_socket);
@@ -131,6 +151,7 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	}
 
 	if (directions.actual.lnr != directions.desired.lnr) { request(HaunchState::turn); }
+	if (has_flag_set(BossFlags::post_death)) { request(HaunchState::struggle); }
 
 	state_function = state_function();
 }
@@ -169,6 +190,7 @@ void Haunch::debug() {
 
 fsm::StateFunction Haunch::update_idle() {
 	p_state.actual = HaunchState::idle;
+	if (change_state(HaunchState::struggle, get_params("struggle"))) { return HAUNCH_BIND(update_struggle); }
 	if (change_state(HaunchState::whistle, get_params("whistle"))) { return HAUNCH_BIND(update_whistle); }
 	if (change_state(HaunchState::walk, get_params("walk"))) { return HAUNCH_BIND(update_walk); }
 	if (change_state(HaunchState::turn, get_params("turn"))) { return HAUNCH_BIND(update_turn); }
@@ -180,6 +202,7 @@ fsm::StateFunction Haunch::update_idle() {
 
 fsm::StateFunction Haunch::update_airborne() {
 	p_state.actual = HaunchState::airborne;
+	if (change_state(HaunchState::struggle, get_params("struggle"))) { return HAUNCH_BIND(update_struggle); }
 	if (change_state(HaunchState::triple_down_toss, get_params("triple_down_toss")) && get_collider().grounded()) { return HAUNCH_BIND(update_triple_down_toss); }
 	if (change_state(HaunchState::throw_grenade_down, get_params("throw_grenade_down")) && get_collider().grounded()) { return HAUNCH_BIND(update_throw_grenade_down); }
 	if (get_collider().grounded()) {
@@ -191,6 +214,7 @@ fsm::StateFunction Haunch::update_airborne() {
 
 fsm::StateFunction Haunch::update_turn() {
 	p_state.actual = HaunchState::turn;
+	if (change_state(HaunchState::struggle, get_params("struggle"))) { return HAUNCH_BIND(update_struggle); }
 	if (animation.complete()) {
 		request_flip();
 		if (change_state(HaunchState::triple_down_toss, get_params("triple_down_toss")) && get_collider().grounded()) { return HAUNCH_BIND(update_triple_down_toss); }
@@ -203,6 +227,7 @@ fsm::StateFunction Haunch::update_turn() {
 
 fsm::StateFunction Haunch::update_shoot_high() {
 	p_state.actual = HaunchState::shoot_high;
+	if (change_state(HaunchState::struggle, get_params("struggle"))) { return HAUNCH_BIND(update_struggle); }
 	shoot_gun();
 	if (change_state(HaunchState::idle, get_params("idle"))) { return HAUNCH_BIND(update_idle); }
 	return HAUNCH_BIND(update_shoot_high);
@@ -210,6 +235,7 @@ fsm::StateFunction Haunch::update_shoot_high() {
 
 fsm::StateFunction Haunch::update_shoot_low() {
 	p_state.actual = HaunchState::shoot_low;
+	if (change_state(HaunchState::struggle, get_params("struggle"))) { return HAUNCH_BIND(update_struggle); }
 	if (animation.get_frame_count() == 1 && animation.keyframe_started()) { m_services->soundboard.play_sound("thud", get_collider().get_center()); }
 	shoot_gun();
 	if (change_state(HaunchState::get_up, get_params("get_up"))) { return HAUNCH_BIND(update_get_up); }
@@ -218,6 +244,7 @@ fsm::StateFunction Haunch::update_shoot_low() {
 
 fsm::StateFunction Haunch::update_get_up() {
 	p_state.actual = HaunchState::get_up;
+	if (change_state(HaunchState::struggle, get_params("struggle"))) { return HAUNCH_BIND(update_struggle); }
 	if (animation.is_complete()) {
 		if (change_state(HaunchState::walk, get_params("walk"))) { return HAUNCH_BIND(update_walk); }
 		request(HaunchState::idle);
@@ -228,6 +255,7 @@ fsm::StateFunction Haunch::update_get_up() {
 
 fsm::StateFunction Haunch::update_walk() {
 	p_state.actual = HaunchState::walk;
+	if (change_state(HaunchState::struggle, get_params("struggle"))) { return HAUNCH_BIND(update_struggle); }
 	if (!get_collider().grounded()) { request(HaunchState::airborne); }
 	if (change_state(HaunchState::airborne, get_params("airborne"))) { return HAUNCH_BIND(update_airborne); }
 	if (animation.get_frame_count() % 2 == 0 && animation.keyframe_started()) { m_services->soundboard.play_sound("tank_step", get_collider().get_center()); }
@@ -241,6 +269,7 @@ fsm::StateFunction Haunch::update_walk() {
 
 fsm::StateFunction Haunch::update_pull_grenade() {
 	p_state.actual = HaunchState::pull_grenade;
+	if (change_state(HaunchState::struggle, get_params("struggle"))) { return HAUNCH_BIND(update_struggle); }
 	if (animation.just_started()) { m_services->soundboard.play_sound("grenade_pin"); }
 	if (animation.is_complete()) {
 		half_health() ? (random::percent_chance(65) ? request(HaunchState::triple_toss) : request(HaunchState::throw_grenade)) : request(HaunchState::throw_grenade);
@@ -252,6 +281,7 @@ fsm::StateFunction Haunch::update_pull_grenade() {
 
 fsm::StateFunction Haunch::update_throw_grenade() {
 	p_state.actual = HaunchState::throw_grenade;
+	if (change_state(HaunchState::struggle, get_params("struggle"))) { return HAUNCH_BIND(update_struggle); }
 	if (animation.just_started() && !m_cooldowns.grenade.running()) {
 		m_hand_grenade.shoot(*m_services, *m_map, m_attack_target);
 		m_services->soundboard.play_sound("grenade_toss", get_collider().get_center());
@@ -270,6 +300,7 @@ fsm::StateFunction Haunch::update_throw_grenade() {
 
 fsm::StateFunction Haunch::update_triple_toss() {
 	p_state.actual = HaunchState::triple_toss;
+	if (change_state(HaunchState::struggle, get_params("struggle"))) { return HAUNCH_BIND(update_struggle); }
 	if (animation.just_started()) { get_collider().physics.apply_force({directions.actual.as_float() * -10.f, -60.f}); }
 	if (animation.get_frame_count() == 0 && !m_cooldowns.grenade.running()) {
 		m_hand_grenade.shoot(*m_services, *m_map, m_attack_target);
@@ -287,6 +318,7 @@ fsm::StateFunction Haunch::update_triple_toss() {
 
 fsm::StateFunction Haunch::update_throw_grenade_down() {
 	p_state.actual = HaunchState::throw_grenade_down;
+	if (change_state(HaunchState::struggle, get_params("struggle"))) { return HAUNCH_BIND(update_struggle); }
 	if (animation.get_frame_count() == 2 && !m_cooldowns.grenade.running()) {
 		m_stun_grenade.shoot(*m_services, *m_map, m_attack_target);
 		m_services->soundboard.play_sound("grenade_toss", get_collider().get_center());
@@ -307,6 +339,7 @@ fsm::StateFunction Haunch::update_throw_grenade_down() {
 
 fsm::StateFunction Haunch::update_whistle() {
 	p_state.actual = HaunchState::whistle;
+	if (change_state(HaunchState::struggle, get_params("struggle"))) { return HAUNCH_BIND(update_struggle); }
 	if (animation.get_frame_count() == 1 && animation.keyframe_started()) { m_services->soundboard.play_sound("haunch_whistle", get_collider().get_center()); }
 	if (animation.get_frame_count() == 5 && !m_cooldowns.whistle.running()) {
 		for (auto i = 0; i < 3; ++i) {
@@ -325,6 +358,7 @@ fsm::StateFunction Haunch::update_whistle() {
 
 fsm::StateFunction Haunch::update_triple_down_toss() {
 	p_state.actual = HaunchState::triple_down_toss;
+	if (change_state(HaunchState::struggle, get_params("struggle"))) { return HAUNCH_BIND(update_struggle); }
 	if (animation.just_started()) { get_collider().physics.apply_force({directions.actual.as_float() * -60.f, -150.f}); }
 	if (animation.get_frame_count() == 2 && !m_cooldowns.grenade.running()) {
 		m_stun_grenade.shoot(*m_services, *m_map, m_attack_target);
@@ -339,6 +373,11 @@ fsm::StateFunction Haunch::update_triple_down_toss() {
 		if (change_state(HaunchState::airborne, get_params("airborne"))) { return HAUNCH_BIND(update_airborne); }
 	}
 	return HAUNCH_BIND(update_triple_down_toss);
+}
+
+fsm::StateFunction Haunch::update_struggle() {
+	p_state.actual = HaunchState::struggle;
+	return HAUNCH_BIND(update_struggle);
 }
 
 void Haunch::shoot_gun() {

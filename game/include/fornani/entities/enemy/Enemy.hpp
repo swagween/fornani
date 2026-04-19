@@ -160,6 +160,7 @@ class Enemy : public Mobile {
 	void hurt(automa::ServiceProvider& svc, float amount = 1.f);
 	void shake() { energy = hit_energy; }
 	void stop_shaking() { flags.state.reset(StateFlags::shaking); }
+	void kill() { health.kill(); }
 
 	entity::Health health;
 	graphics::Indicator health_indicator;

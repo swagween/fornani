@@ -2,7 +2,7 @@
 #pragma once
 
 #include <fornani/core/Fwd.hpp>
-#include <fornani/entities/enemy/Enemy.hpp>
+#include <fornani/entities/enemy/EnemyRegistry.hpp>
 
 namespace fornani::gui {
 class Console;
@@ -10,15 +10,11 @@ class Console;
 
 namespace fornani::enemy {
 
-struct Multispawn {
-	sf::Vector2f spread{};
-};
-
 class EnemyCatalog {
   public:
 	explicit EnemyCatalog(automa::ServiceProvider& svc);
 	void update();
-	void push_enemy(automa::ServiceProvider& svc, world::Map& map, SceneContext& context, int id, bool spawned = false, int variant = 0, sf::Vector2<int> start_direction = {-1, 0}, Multispawn multispawn = {});
+	void push_enemy(automa::ServiceProvider& svc, world::Map& map, SceneContext& context, int id, EnemyParameters params = {0, {-1, 0}, {}, false});
 	template <typename T>
 	std::vector<T*> get_enemies() {
 		std::vector<T*> ret;

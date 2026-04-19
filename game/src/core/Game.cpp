@@ -307,7 +307,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Separator();
 					ImGui::Text("Save Point ID: %i", services.state_controller.save_point_id);
 					ImGui::Separator();
-					for (auto const& c : services.data.opened_chests) { ImGui::Text("%i", c); }
+					for (auto const& c : services.data.opened_chests) { ImGui::Text("%llu", c); }
 					ImGui::Separator();
 					ImGui::EndTabItem();
 				}

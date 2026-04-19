@@ -122,6 +122,7 @@
           "transcendent": false,
           "persistent": false,
           "constrained": false,
+          "hitstun": true,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
           "dampen_factor": 0.975
@@ -172,7 +173,7 @@
         "dimensions": [6.0, 4.0],
         "radius": 5.0,
         "attributes": {
-          "base_damage": 1,
+          "base_damage": 2,
           "power": 1,
           "lifespan": 100,
           "lifespan_variance": 0,
@@ -304,7 +305,7 @@
         "radius": 11.0,
         "audio": { "hit": 2 },
         "attributes": {
-          "base_damage": 8,
+          "base_damage": 14,
           "lifespan": 140,
           "lifespan_variance": 0,
           "speed": 35.0,
@@ -314,6 +315,7 @@
           "transcendent": false,
           "omnidirectional": false,
           "explode_on_impact": true,
+          "hitstun": true,
           "reflect": false,
           "range_variance": 0.0,
           "acceleration_factor": 2.0,
@@ -373,7 +375,7 @@
         "dimensions": [12.0, 12.0],
         "radius": 11.0,
         "attributes": {
-          "base_damage": 12,
+          "base_damage": 40,
           "lifespan": 440,
           "lifespan_variance": 0,
           "speed": 1.9,
@@ -445,7 +447,7 @@
         "dimensions": [8.0, 8.0],
         "radius": 6.0,
         "attributes": {
-          "base_damage": 10,
+          "base_damage": 12,
           "lifespan": 1080,
           "lifespan_variance": 0,
           "speed": 6.0,
@@ -456,6 +458,7 @@
           "omnidirectional": false,
           "reflect": true,
           "boomerang": true,
+          "hitstun": true,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
           "dampen_factor": 1.0,
@@ -513,7 +516,7 @@
         "dimensions": [14.0, 14.0],
         "radius": 12.0,
         "attributes": {
-          "base_damage": 10,
+          "base_damage": 14,
           "lifespan": 120,
           "lifespan_variance": 0,
           "speed": 80.0,
@@ -571,7 +574,7 @@
         "dimensions": [8.0, 8.0],
         "radius": 7.0,
         "attributes": {
-          "base_damage": 5,
+          "base_damage": 9,
           "lifespan": 420,
           "lifespan_variance": 0,
           "speed": 32.0,
@@ -579,6 +582,7 @@
           "acceleration_factor": 0.0,
           "dampen_factor": 1.0,
           "reflect": true,
+          "hitstun": true,
           "gravity": 0.4,
           "elasticity": 0.95
         },

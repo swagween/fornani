@@ -20,7 +20,6 @@
 #include <fornani/graphics/DayNightShifter.hpp>
 #include <fornani/graphics/Rain.hpp>
 #include <fornani/graphics/Scenery.hpp>
-#include <fornani/graphics/Transition.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Effect.hpp>
 #include <fornani/particle/Emitter.hpp>
@@ -28,7 +27,6 @@
 #include <fornani/physics/Shape.hpp>
 #include <fornani/shader/LightShader.hpp>
 #include <fornani/shader/Palette.hpp>
-#include <fornani/story/CutsceneCatalog.hpp>
 #include <fornani/systems/Register.hpp>
 #include <fornani/utils/Constants.hpp>
 #include <fornani/utils/Stopwatch.hpp>
@@ -46,6 +44,7 @@
 #include <fornani/world/SwitchBlock.hpp>
 #include <fornani/world/TimerBlock.hpp>
 #include <optional>
+#include <unordered_set>
 #include <vector>
 
 namespace fornani::automa {
@@ -61,14 +60,6 @@ class Console;
 class Portrait;
 class InventoryWindow;
 } // namespace fornani::gui
-
-namespace arms {
-class Weapon;
-}
-
-namespace entity {
-class WeaponPackage;
-}
 
 namespace fornani::world {
 
@@ -142,6 +133,7 @@ class Map {
 	void handle_cell_collision(shape::CircleCollider& collider);
 	void handle_breakable_collision(shape::CircleCollider& collider);
 	void clear_projectiles();
+	void clear_enemies(std::unordered_set<int> const& exceptions);
 	void shake_camera();
 	void clear();
 	void wrap(sf::Vector2f& position) const;
@@ -188,6 +180,8 @@ class Map {
 	std::size_t get_index_at_position(sf::Vector2f position);
 	int get_tile_value_at_position(sf::Vector2f position);
 	Tile& get_cell_at_position(sf::Vector2f position);
+
+	enemy::Enemy* get_enemy(int id);
 
 	template <typename T>
 	std::vector<T*> get_entities() {

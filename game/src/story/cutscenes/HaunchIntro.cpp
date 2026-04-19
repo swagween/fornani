@@ -12,7 +12,6 @@ HaunchIntro::HaunchIntro(automa::ServiceProvider& svc)
 	: Cutscene(svc, 900, "haunch_intro"), m_intro{200}, m_army_truck_body{svc, "army_truck_body", {203, 132}}, m_army_truck_undercarriage{svc, "army_truck_undercarriage", {203, 132}},
 	  m_truck_path{svc.finder, std::filesystem::path{"/data/vfx/scenery_paths.json"}, "army_truck", 1000, util::InterpolationType::quadratic}, m_hulmet_spawn_delay{140} {
 	m_intro.start();
-	svc.music_player.load(svc.finder, "haunchs_theme");
 	svc.input_system.flush_inputs();
 	svc.state_flags.set(automa::StateFlags::cutscene);
 	m_truck_path.set_section("arrive");
@@ -105,6 +104,7 @@ void HaunchIntro::update(automa::ServiceProvider& svc, SceneContext& context, wo
 		}
 		break;
 	case 1:
+		svc.music_player.load(svc.finder, "haunchs_theme");
 		svc.music_player.play_looped();
 		haunch->force_engage();
 		m_hulmet_spawn_delay.start();

@@ -884,6 +884,12 @@
     },
     {
       "folder": "trials",
+      "label": "dps_test.json",
+      "region": "firstwind",
+      "room_id": 88867
+    },
+    {
+      "folder": "trials",
       "label": "mayhem.json",
       "region": "firstwind",
       "room_id": 9900

@@ -41,7 +41,7 @@ MenuState::MenuState(ServiceProvider& svc, player::Player& player, std::string_v
 void MenuState::tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
 	svc.soundboard.play_sounds(engine, svc);
-	for (auto& option : options) { option.update(current_selection.get()); }
+	for (auto& option : options) { option.update(current_selection.get(), p_option_justification); }
 	if (svc.input_system.menu_move(input::MoveDirection::down) && m_input_authorized) {
 		current_selection.modulate(1);
 		svc.soundboard.flags.menu.set(audio::Menu::shift);

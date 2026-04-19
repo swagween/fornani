@@ -17,9 +17,6 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	m_type = StateType::dojo;
 	player.set_flag(player::PlayerFlags::trial, false);
 
-	// inventory events// inventory events
-	svc.events.acquire_item_from_console_event.attach_to(p_slot, &Dojo::acquire_item_from_console, this);
-	svc.events.acquire_item_event.attach_to(p_slot, &Dojo::acquire_item, this);
 	// inventory events
 	svc.events.acquire_item_from_console_event.attach_to(p_slot, &Dojo::acquire_item_from_console, this);
 	svc.events.read_item_by_id_event.attach_to(p_slot, &Dojo::read_item, this);
@@ -36,6 +33,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene,
 	svc.events.add_map_marker_event.attach_to(p_slot, &Dojo::add_map_marker, this);
 	svc.events.health_increase_event.attach_to(p_slot, &Dojo::handle_health_increase, this);
 	svc.events.ability_acquisition_event.attach_to(p_slot, &Dojo::handle_ability_acquisition, this);
+	svc.events.transition_event.attach_to(p_slot, &Dojo::handle_transition, this);
 
 	m_map_markers.insert({1, "main"});
 	m_map_markers.insert({2, "woodshine"});
@@ -242,6 +240,8 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 	}
 	player->reset_flags();
 
+	if (p_context.console) { p_context.console.reset(); }
+
 	// the following should only happen for the editor demo
 	if (!svc.data.exists(target_state)) {
 		svc.data.rooms.push_back(target_state);
@@ -443,5 +443,7 @@ void Dojo::handle_ability_acquisition(ServiceProvider& svc, player::Player& play
 		p_reward_sequence.value()->set_label(label);
 	}
 }
+
+void Dojo::handle_transition() { set_flag(GameplayStateFlags::transitioned_in, false); }
 
 } // namespace fornani::automa

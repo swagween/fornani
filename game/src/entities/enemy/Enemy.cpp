@@ -351,7 +351,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 			} else {
 				map.spawn_effect(svc, "hit_flash", proj.get_position());
 			}
-			hitstun.start(32);
+			if (proj.has_attribute(arms::ProjectileAttributes::hitstun)) { hitstun.start(32); }
 		}
 	}
 	if (!proj.persistent() && (!died() || just_died())) { proj.destroy(false); }

@@ -376,7 +376,9 @@ void Player::simple_update() {
 	update_sprite();
 	update_antennae();
 	m_piggyback_socket = m_sprite_position + sf::Vector2f{-8.f * directions.actual.as_float(), -16.f};
+	m_weapon_socket = m_sprite_position;
 	if (piggybacker) { piggybacker->update(*m_services, *this); }
+	update_weapon_simple();
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -385,7 +387,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	m_sprite_position.x += controller.facing_left() ? -1.f : 1.f;
 	Animatable::set_position(m_sprite_position - cam);
 
-	if (has_death_type(PlayerDeathType::crushed) || has_death_type(PlayerDeathType::swallowed)) { return; }
+	if (has_death_type(PlayerDeathType::crushed) || has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::fallen)) { return; }
 	if (has_death_type(PlayerDeathType::drowned)) { set_color(colors::blue); }
 	if (piggybacker && !has_flag_set(PlayerFlags::in_reward_sequence)) { piggybacker->render(svc, win, cam); }
 
@@ -675,6 +677,15 @@ void Player::update_weapon(world::Map& map) {
 	equipped_weapon().set_flag(arms::WeaponFlags::firing, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
 	equipped_weapon().set_flag(arms::WeaponFlags::charging, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
 	equipped_weapon().set_flag(arms::WeaponFlags::released, controller.has_flag_set(PlayerControllerFlags::released_weapon));
+}
+
+void Player::update_weapon_simple() {
+	if (!arsenal) { return; }
+	if (!hotbar) { return; }
+	for (auto& weapon : arsenal.value().get_loadout()) {
+		weapon->force_position(m_weapon_socket);
+		weapon->set_firing_direction(controller.direction);
+	}
 }
 
 void Player::walk() {

@@ -32,6 +32,7 @@ class MenuState : public GameState {
 	MenuTheme p_theme;
 	sf::RectangleShape p_backdrop{};
 	ServiceProvider* p_services;
+	TextJustification p_option_justification{TextJustification::center};
 
   private:
 	std::array<DotInticator, 2> m_dot_indicators{};

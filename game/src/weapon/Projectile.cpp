@@ -55,6 +55,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	if (in_data["attributes"]["reflect"].as_bool()) { metadata.attributes.set(ProjectileAttributes::reflect); }
 	if (in_data["attributes"]["sprite_flip"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sprite_flip); }
 	if (in_data["attributes"]["sticky"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sticky); }
+	if (in_data["attributes"]["hitstun"].as_bool()) { metadata.attributes.set(ProjectileAttributes::hitstun); }
 
 	if (in_data["explosion"]) {
 		metadata.explosion = ExplosionAttributes{};

@@ -42,8 +42,11 @@
             "message": "This is the ancestral home of the Kariba. For thousands of years, our tribe have lived and gathered here in peaceful symbiosis with the Mother Worm."
           },
           {
+            "message": "Lately it's been declining. We've suffered numerous attacks and kidnappings from Skycorps, and our men have been disappearing or dying trying to fight back."
+          },
+          {
             "codes": [[1, 0]],
-            "message": "Lately it's been declining. We've suffered numerous attacks and kidnappings from Skycorps dogs, and our men have been disappearing or dying trying to fight back."
+            "message": "I hope you find some peace here in any case."
           }
         ],
         [
@@ -3384,6 +3387,20 @@
           }
         ]
       ]
+    },
+    "3": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "codes": [[5, 1]],
+            "message": "That's it...!"
+          },
+          {
+            "message": "You're dead meat, kid!"
+          }
+        ]
+      ]
     }
   },
   "guppy": {
@@ -4104,7 +4121,7 @@
             "message": "I'm not going anywhere. You have other challenges ahead of you that you must deal with before we can speak again. Until then, I will be with you in spirit."
           },
           {
-            "message": "I trust you'll tell no one of our conversation, though I know very well that I cannot control what you do. Nor would I want to."
+            "message": "I trust you'll tell no one of our conversation."
           },
           {
             "message": "The future is in your hands, Nani. It's up to you what you want it to look like."
