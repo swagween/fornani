@@ -22,7 +22,7 @@ static bool b_reloaded{};
 
 Editor::Editor(fornani::automa::ServiceProvider& svc)
 	: EditorState(svc), map(svc, SelectionType::canvas, fornani::Biome{}), palette(svc, SelectionType::palette, fornani::Biome{}), current_tool(std::make_unique<Hand>()), secondary_tool(std::make_unique<Hand>()), grid_refresh(16),
-	  active_layer{0}, m_tool_sprite{svc.assets.get_texture("editor_tools")}, m_services(&svc) {
+	  active_layer{0}, m_tool_sprite{svc.assets.get_texture("editor_tools")}, m_services(&svc), m_menu_alpha{.5f} {
 
 	p_target_state = EditorStateType::editor;
 
@@ -88,6 +88,7 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 	auto& source = palette_mode() || current_tool->has_palette_selection ? palette : map;
 
 	// keyboard events
+	ImGuiIO& io = ImGui::GetIO();
 	if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
 		if (!menu_hovered && !popup_open && !key_pressed->control) {
 			if (key_pressed->scancode == sf::Keyboard::Scancode::A) { current_tool->change_size(-1); }
@@ -212,7 +213,10 @@ void Editor::logic() {
 	map.constrain(p_services->window->f_screen_dimensions());
 	m_middleground = map.get_layers().get_middleground();
 
-	window_hovered = ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemActive();
+	current_tool->set_mode(m_mode);
+
+	ImGuiIO& io = ImGui::GetIO();
+	window_hovered = io.WantCaptureMouse;
 	current_tool->palette_mode = palette_mode();
 
 	if (tool->type == ToolType::entity_editor) { map.flags.show_entities = true; }
@@ -268,7 +272,6 @@ void Editor::logic() {
 	map.flags.show_current_layer = shift_pressed() && !control_pressed() ? map.flags.show_all_layers : !map.flags.show_all_layers;
 
 	// set tool positions
-	ImGuiIO& io = ImGui::GetIO();
 	current_tool->set_position((sf::Vector2f{io.MousePos.x, io.MousePos.y} - target.get_position()) / target.get_scale());
 	secondary_tool->set_position((sf::Vector2f{io.MousePos.x, io.MousePos.y} - target.get_position()) / target.get_scale());
 	current_tool->set_window_position(sf::Vector2f{io.MousePos.x, io.MousePos.y});
@@ -737,21 +740,6 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				map.entities.clear();
 			}
 			ImGui::Separator();
-			if (ImGui::BeginMenu("Style")) {
-				auto i{0};
-				for (auto const& choice : m_services->data.biomes["biomes"].as_array()) {
-					if (ImGui::MenuItem(std::string{choice.as_string()}.c_str())) { map.biome = m_services->data.construct_biome(choice.as_string()); }
-				}
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Background")) {
-				auto i{0};
-				for (auto const& [key, entry] : m_services->data.background.as_object()) {
-					if (ImGui::MenuItem(key.c_str())) { map.background = std::make_unique<fornani::graphics::Background>(*m_services, key); }
-					++i;
-				}
-				ImGui::EndMenu();
-			}
 			if (ImGui::MenuItem("Themes", "", &open_themes)) {}
 
 			ImGui::EndMenu();
@@ -851,47 +839,76 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		static std::string music_str{};
 		static std::string ambience_str{};
 		static std::vector<std::string> atmosphere_list{};
-		ImGui::Text("Music:");
-		auto i = 0;
-		for (auto [i, entry] : std::views::enumerate(m_services->data.audio_library["music"].as_array())) {
-			ImGui::PushID(i);
-			if (ImGui::ArrowButton(std::to_string(i).c_str(), ImGuiDir::ImGuiDir_Right)) {
-				m_services->music_player.load(m_services->finder, entry.as_string());
-				m_services->music_player.play_looped();
-			}
-			ImGui::SameLine();
-			if (ImGui::Selectable(entry.as_string().c_str(), i == music_selected, ImGuiSelectableFlags_DontClosePopups)) {
-				music_str = entry.as_string();
-				music_selected = i;
-			}
-			ImGui::PopID();
-			++i;
-		}
-		ImGui::Text("Ambience:");
-		for (auto [i, entry] : std::views::enumerate(m_services->data.audio_library["ambience"].as_array())) {
-			if (ImGui::Selectable(entry.as_string().c_str(), i == ambience_selected, ImGuiSelectableFlags_DontClosePopups)) {
-				ambience_str = entry.as_string();
-				ambience_selected = i;
-			}
-		}
-		ImGui::Text("Atmosphere");
-		for (auto [i, entry] : std::views::enumerate(m_services->data.biomes["atmosphere"].as_array())) {
-			if (ImGui::Selectable(entry.as_string().c_str(), ImGuiSelectableFlags_DontClosePopups)) {
-				map.add_atmosphere(entry.as_string());
-			} else {
-				map.remove_atmosphere(entry.as_string());
-			}
-		}
 
-		if (ImGui::Button("Close")) {
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+		ImGui::BeginChild("ChildM", ImVec2(400, 600), true, ImGuiWindowFlags_None);
+		if (ImGui::BeginTabBar("##themebar")) {
+			if (ImGui::BeginTabItem("Style")) {
+				for (auto const& choice : m_services->data.biomes["biomes"].as_array()) {
+					if (ImGui::MenuItem(std::string{choice.as_string()}.c_str())) { map.biome = m_services->data.construct_biome(choice.as_string()); }
+				}
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("Background")) {
+				for (auto const& [key, entry] : m_services->data.background.as_object()) {
+					if (ImGui::MenuItem(key.c_str())) { map.background = std::make_unique<fornani::graphics::Background>(*m_services, key); }
+				}
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("Music")) {
+				auto i = 0;
+				for (auto [i, entry] : std::views::enumerate(m_services->data.audio_library["music"].as_array())) {
+					ImGui::PushID(i);
+					if (ImGui::ArrowButton(std::to_string(i).c_str(), ImGuiDir::ImGuiDir_Right)) {
+						m_services->music_player.load(m_services->finder, entry.as_string());
+						m_services->music_player.play_looped();
+					}
+					ImGui::SameLine();
+					if (ImGui::Selectable(entry.as_string().c_str(), i == music_selected, ImGuiSelectableFlags_DontClosePopups)) {
+						music_str = entry.as_string();
+						music_selected = i;
+					}
+					ImGui::PopID();
+					++i;
+				}
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("Ambience")) {
+				m_services->music_player.pause();
+				for (auto [i, entry] : std::views::enumerate(m_services->data.audio_library["ambience"].as_array())) {
+					if (ImGui::Selectable(entry.as_string().c_str(), i == ambience_selected, ImGuiSelectableFlags_DontClosePopups)) {
+						ambience_str = entry.as_string();
+						ambience_selected = i;
+					}
+				}
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("Atmosphere")) {
+				m_services->music_player.pause();
+				for (auto [i, entry] : std::views::enumerate(m_services->data.biomes["atmosphere"].as_array())) {
+					if (ImGui::Selectable(entry.as_string().c_str(), map.has_atmosphere(entry.as_string()), ImGuiSelectableFlags_DontClosePopups)) {
+						map.has_atmosphere(entry.as_string()) ? map.remove_atmosphere(entry.as_string()) : map.add_atmosphere(entry.as_string());
+					} else {
+					}
+				}
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+		}
+		ImGui::PopStyleVar();
+		ImGui::EndChild();
+
+		ImGui::Separator();
+
+		if (ImGui::Button("OK")) {
+			map.set_music(music_str);
+			map.set_ambience(ambience_str);
 			m_services->music_player.pause();
 			ImGui::CloseCurrentPopup();
 		}
-		if (ImGui::Button("Confirm")) {
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel")) {
 			m_services->music_player.pause();
-			map.set_music(music_str);
-			NANI_LOG_DEBUG(p_logger, "Set music to {}", music_str);
-			map.set_ambience(ambience_str);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
@@ -914,7 +931,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	window_pos.y = PAD;
 	window_flags |= ImGuiWindowFlags_NoMove;
 
-	ImGui::SetNextWindowBgAlpha(0.35f);
+	ImGui::SetNextWindowBgAlpha(m_menu_alpha);
 	if (show_overlay) {
 		ImGui::ShowDemoWindow();
 		ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always);
@@ -1001,8 +1018,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	}
 
 	if (m_options.sidebar) {
-		ImGui::SetNextWindowBgAlpha(0.65f); // Transparent background
-		work_pos = viewport->WorkPos;		// Use work area to avoid menu-bar/task-bar, if any!
+		ImGui::SetNextWindowBgAlpha(m_menu_alpha); // Transparent background
+		work_pos = viewport->WorkPos;			   // Use work area to avoid menu-bar/task-bar, if any!
 		work_size = viewport->WorkSize;
 		window_pos.x = work_pos.x + work_size.x - PAD;
 		window_pos.y = work_pos.y + PAD;
@@ -1146,41 +1163,70 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::EndChild();
 			ImGui::PopStyleVar();
 
-			ImGui::Separator();
-			ImGui::Text("Canvas Settings");
-			ImGui::Separator();
+			// Palette Modes
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+			ImGui::BeginChild("ChildM", ImVec2(320, 52), true, ImGuiWindowFlags_None);
+			if (ImGui::Selectable("Tile", current_tool->is_mode(BrushMode::tile))) {
+				m_mode = BrushMode::tile;
+				m_options.palette = true;
+			}
+			if (ImGui::Selectable("Hazard", current_tool->is_mode(BrushMode::hazard))) { m_mode = BrushMode::hazard; }
+			ImGui::EndChild();
+			ImGui::PopStyleVar();
+			ImGui::SeparatorText("Settings");
+			if (ImGui::BeginTabBar("##globset")) {
+				if (ImGui::BeginTabItem("Canvas")) {
+					if (ImGui::BeginTabBar("##gensettings")) {
+						if (ImGui::BeginTabItem("Layer Properties")) {
+							if (ImGui::Checkbox("Ignore Lighting", &map.get_active_layer().ignore_lighting)) {};
+							ImGui::SliderFloat("Parallax Factor", &map.get_active_layer().parallax, 0.f, 1.f);
+							ImGui::EndTabItem();
+						}
+						ImGui::EndTabBar();
+					}
 
-			if (ImGui::BeginTabBar("##gensettings")) {
-				if (ImGui::BeginTabItem("General")) {
-					ImGui::Checkbox("Debug Overlay", &show_overlay);
-					ImGui::Checkbox("Show Entities", &map.flags.show_entities);
-					ImGui::Checkbox("Show Background", &map.flags.show_background);
-					ImGui::Checkbox("Show Grid", &map.flags.show_grid);
-					ImGui::SliderInt("Demo Save File", &m_services->editor_settings.save_file, 0, 2);
+					prev_window_size = ImGui::GetWindowSize();
+					prev_window_pos = ImGui::GetWindowPos();
+
 					ImGui::EndTabItem();
 				}
-				if (ImGui::BeginTabItem("Layer Settings")) {
-					if (ImGui::Checkbox("Show All Layers", &map.flags.show_all_layers)) { map.flags.show_current_layer = !map.flags.show_all_layers; };
-					ImGui::Checkbox("Show Obscuring Layer", &map.flags.show_obscured_layer);
-					ImGui::Checkbox("Show Reverse Obscuring Layer", &map.flags.show_reverse_obscured_layer);
-					ImGui::Checkbox("Show Indicated Layers", &map.flags.show_indicated_layers);
-					ImGui::EndTabItem();
-				}
-				if (ImGui::BeginTabItem("Layer Properties")) {
-					if (ImGui::Checkbox("Ignore Lighting", &map.get_active_layer().ignore_lighting)) {};
-					ImGui::SliderFloat("Parallax Factor", &map.get_active_layer().parallax, 0.f, 1.f);
+				if (ImGui::BeginTabItem("Editor")) {
+					window_flags = ImGuiWindowFlags_None;
+					if (ImGui::BeginTabBar("##prf")) {
+						if (ImGui::BeginTabItem("Visual")) {
+							ImGui::Checkbox("Show Entities", &map.flags.show_entities);
+							ImGui::Checkbox("Show Background", &map.flags.show_background);
+							ImGui::Checkbox("Show Grid", &map.flags.show_grid);
+							if (ImGui::Checkbox("Show All Layers", &map.flags.show_all_layers)) { map.flags.show_current_layer = !map.flags.show_all_layers; };
+							ImGui::Checkbox("Show Obscuring Layer", &map.flags.show_obscured_layer);
+							ImGui::Checkbox("Show Reverse Obscuring Layer", &map.flags.show_reverse_obscured_layer);
+							ImGui::Checkbox("Show Indicated Layers", &map.flags.show_indicated_layers);
+							ImGui::EndTabItem();
+						}
+						if (ImGui::BeginTabItem("Playtest")) {
+							ImGui::SliderInt("Save File", &m_services->editor_settings.save_file, 0, 2);
+							ImGui::EndTabItem();
+						}
+						if (ImGui::BeginTabItem("Config")) {
+							ImGui::SliderFloat("Widget Alpha", &m_menu_alpha, 0.f, 1.f);
+							ImGui::Checkbox("Debug Overlay", &show_overlay);
+							ImGui::EndTabItem();
+						}
+						ImGui::EndTabBar();
+					}
+
+					prev_window_size = ImGui::GetWindowSize();
+					prev_window_pos = ImGui::GetWindowPos();
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();
 			}
-			ImGui::Separator();
-			ImGui::Text("Room ID: %u", map.room_id);
+			ImGui::SeparatorText("Info");
+			ImGui::Text("Current Room ID: %u", map.room_id);
 
-			prev_window_size = ImGui::GetWindowSize();
-			prev_window_pos = ImGui::GetWindowPos();
 			ImGui::End();
 		}
-		if (m_options.console) { console.write_console(prev_window_size, prev_window_pos); }
+		if (m_options.console) { console.write_console(prev_window_size, prev_window_pos, m_menu_alpha); }
 	}
 
 	if (current_tool->type == ToolType::entity_editor && !window_hovered && current_tool->entity_mode != EntityMode::editor && !current_tool->entity_menu) {

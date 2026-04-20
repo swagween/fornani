@@ -26,7 +26,7 @@ class Room : public fornani::Flaggable<RoomFlags> {
   public:
 	Room(fornani::automa::ServiceProvider& svc, fornani::data::MapData& in);
 
-	void update(sf::Vector2f mouse_position) { m_highlighted = m_box.getGlobalBounds().contains(mouse_position); }
+	void update(sf::Vector2f mouse_position, bool window_hovered) { m_highlighted = m_box.getGlobalBounds().contains(mouse_position) && !window_hovered; }
 	bool serialize(fornani::automa::ServiceProvider& svc);
 
 	void render(sf::RenderWindow& win, sf::Vector2f cam);

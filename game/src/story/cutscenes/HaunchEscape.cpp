@@ -8,7 +8,7 @@
 
 namespace fornani {
 
-HaunchEscape::HaunchEscape(automa::ServiceProvider& svc) : Cutscene(svc, 900, "haunch_intro"), m_intro{200} {
+HaunchEscape::HaunchEscape(automa::ServiceProvider& svc) : Cutscene(svc, 900, "haunch_intro"), m_intro{200}, m_champion{svc} {
 	m_intro.start();
 	svc.music_player.load(svc.finder, "haunchs_theme");
 	svc.input_system.flush_inputs();
@@ -38,6 +38,8 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 	cooldowns.pause.update();
 	cooldowns.long_pause.update();
 	cooldowns.end.update();
+
+	m_champion.update();
 
 	player.controller.restrict_movement();
 	player.stall_idle_timer();

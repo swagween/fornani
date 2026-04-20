@@ -10,7 +10,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           5,
@@ -27,8 +26,8 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
-        "locked": false,
+        "key_tag": "skycorps_access_permit",
+        "locked": true,
         "position": [
           6,
           44

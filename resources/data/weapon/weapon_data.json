@@ -3,7 +3,8 @@
     "metadata": {
       "id": 0,
       "label": "Bryn's Gun",
-      "description": "A single-action revolver that you found in Firstwind Lab."
+      "description": "A single-action revolver that you found in Firstwind Lab.",
+      "widget_lookup": 0
     },
     "visual": {
       "texture_lookup": 0,
@@ -74,7 +75,8 @@
     "metadata": {
       "id": 1,
       "label": "Wasp",
-      "description": "A powerful pistol that Bryn gave to you in exchange for her gun that you found in Firstwind's laboratory."
+      "description": "A powerful pistol that Bryn gave to you in exchange for her gun that you found in Firstwind's laboratory.",
+      "widget_lookup": 1
     },
     "visual": {
       "texture_lookup": 1,
@@ -142,7 +144,8 @@
     "metadata": {
       "id": 2,
       "label": "Gnat",
-      "description": "A high-rate machine gun. If you shoot downwards or upwards, its recoil will affect your fall speed."
+      "description": "A high-rate machine gun. If you shoot downwards or upwards, its recoil will affect your fall speed.",
+      "widget_lookup": 2
     },
     "visual": {
       "texture_lookup": 2,
@@ -415,7 +418,8 @@
     "metadata": {
       "id": 3,
       "label": "Tomahawk",
-      "description": "A ceremonial weapon of your tribe. You earned this by defeating the demon at Woodshine's burial ground."
+      "description": "A ceremonial weapon of your tribe. You earned this by defeating the demon at Woodshine's burial ground.",
+      "widget_lookup": 3
     },
     "visual": {
       "texture_lookup": 3,
@@ -437,7 +441,7 @@
         "no_reload": true,
         "ammo": 1,
         "reload": 32,
-        "cooldown_time": 48,
+        "cooldown_time": 18,
         "recoil": 0.0
       }
     },
@@ -448,7 +452,7 @@
         "radius": 6.0,
         "attributes": {
           "base_damage": 12,
-          "lifespan": 1080,
+          "lifespan": 600,
           "lifespan_variance": 0,
           "speed": 6.0,
           "variance": 0.0,

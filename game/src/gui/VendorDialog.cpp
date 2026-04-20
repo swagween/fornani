@@ -336,7 +336,7 @@ void VendorDialog::refresh(automa::ServiceProvider& svc, player::Player& player,
 				slot.id = item.item->get_id();
 				auto f_value = static_cast<float>(item.item->get_value());
 				auto upcharge = f_value * m_upcharge;
-				slot.price_display = NumberDisplay{svc, static_cast<int>(f_value + upcharge), slot.id};
+				slot.price_display = NumberDisplay{svc, static_cast<int>(item.quantity), slot.id};
 			} // populate next slot with item
 		}
 	}

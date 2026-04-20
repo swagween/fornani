@@ -592,8 +592,11 @@
             "message": "This is a field telephone that the pioneers used to use. I know it's a little old-fashioned, but it's all we've got."
           },
           {
+            "message": "With this, we'll radio to you every step of the way, as long as we can reach you."
+          },
+          {
             "codes": [[1, 0]],
-            "message": "With this, we'll radio to you every step of the way, as long as we can reach you. Some areas have better reception than others, so you'll be on your own quite a lot."
+            "message": "Some areas have better reception than others, so you'll be on your own quite a lot."
           }
         ]
       ]
@@ -1000,6 +1003,12 @@
               [3, 9, 1, 300]
             ],
             "message": "Here, as promised..."
+          },
+          {
+            "message": "It should pack a bit more of a punch than my old pistol, though the color is a bit drab..."
+          },
+          {
+            "message": "Thanks again."
           }
         ],
         [
@@ -1009,7 +1018,7 @@
           },
           {
             "codes": [[5, 0]],
-            "message": "Well, if you ever decide to change your mind, I'm here."
+            "message": "If you ever decide to change your mind, I'm here."
           }
         ]
       ]
@@ -1084,7 +1093,7 @@
           {
             "codes": [
               [1, 1],
-              [5, 2]
+              [5, 1]
             ],
             "message": "Oh, awesome! Are you sure?"
           }
@@ -1112,7 +1121,7 @@
             "message": "It's hard to blame you, really. That old pistol is one-of-a-kind, and I imagine you've grown just as attached to it as I had."
           },
           {
-            "codes": [[5, 0]],
+            "codes": [[5, 1]],
             "message": "Well, if you ever decide to change your mind, I'm here."
           }
         ],
@@ -1469,11 +1478,13 @@
           {
             "codes": [
               [14, 1],
-              [4, 2]
+              [4, 2],
+              [5, 1]
             ],
             "message": "Good heavens, you scared me half to death. I don't know if my old heart can take many more such frights."
           },
           {
+            "codes": [[5, 0]],
             "message": "Wait a second..."
           },
           {
@@ -1482,7 +1493,8 @@
           {
             "codes": [
               [1, 0],
-              [4, 3]
+              [4, 3],
+              [5, 1]
             ],
             "message": "Is that really you, Nani?"
           }
@@ -1702,7 +1714,7 @@
         ],
         [
           {
-            "message": "Well, from us."
+            "message": "From us."
           },
           {
             "message": "Bryn? Have you still got that old field telephone lying around?"
@@ -1712,7 +1724,18 @@
     },
     "14": {
       "output": 2,
-      "responses": [],
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "I won't let you down."
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "This is a lot of stuff to carry around..."
+          }
+        ]
+      ],
       "suite": [
         [
           {
@@ -1723,6 +1746,38 @@
             "message": "Here, I'll mark the station on your map."
           },
           {
+            "message": "And... If you are to have any hope of navigating the Skycorps junkyards to get there, you'll need an access permit."
+          },
+          {
+            "codes": [[2, 1]],
+            "message": "Here."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "That ought to grant you basic security clearance."
+          }
+        ],
+        [
+          {
+            "codes": [[4, 0]],
+            "message": "Now that's the spirit!"
+          },
+          {
+            "codes": [[4, 5]],
+            "message": "Best of luck to you, Nani."
+          },
+          {
+            "codes": [[8, 0]],
+            "message": "The fate of this island lies in your hands..."
+          }
+        ],
+        [
+          {
+            "codes": [[4, 0]],
+            "message": "Indeed! Nothing a spirited adventurer like you can't handle!"
+          },
+          {
+            "codes": [[4, 5]],
             "message": "Best of luck to you, Nani."
           },
           {
@@ -3335,7 +3390,7 @@
             "message": "I'm Sergeant Haunch of Lady Nimbus's Harpoon Squad."
           },
           {
-            "message": "You know, I'm surprised you haven't heard of me considering I killed half your village."
+            "message": "You know, I'm surprised you haven't heard of me considering I killed half your tribe."
           },
           {
             "codes": [[1, 1]],
@@ -3347,7 +3402,7 @@
             "message": "Then you came to the wrong place at the wrong time, I regret to say."
           },
           {
-            "message": "I've had no trouble gunning down your people in the recent past, so I don't see what makes you any different."
+            "message": "I've had no trouble gunning down your people in the past, so I don't see what makes you any different."
           },
           {
             "codes": [
@@ -3375,10 +3430,15 @@
       ]
     },
     "2": {
+      "output": 3,
       "responses": [],
       "suite": [
         [
           {
+            "codes": [
+              [23, 10],
+              [12, 0]
+            ],
             "messages": [
               "What's the matter, couldn't take the heat?",
               "Don't know when to give up, do you?",

@@ -87,7 +87,7 @@ EditorStateType Metagrid::run(char** argv) {
 	logic();
 
 	ImGuiIO& io = ImGui::GetIO();
-	window_hovered = ImGui::IsAnyItemHovered();
+	window_hovered = io.WantCaptureMouse;
 	io.MouseDrawCursor = menu_open || window_hovered;
 	p_services->window->get().setMouseCursorVisible(io.MouseDrawCursor);
 
@@ -102,7 +102,6 @@ EditorStateType Metagrid::run(char** argv) {
 void Metagrid::handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) {
 	ImGuiIO& io = ImGui::GetIO();
 	m_current_mouse_position = sf::Vector2f{io.MousePos.x, io.MousePos.y};
-
 	if (auto const* button_pressed = event->getIf<sf::Event::MouseButtonPressed>()) {
 		if (button_pressed->button == sf::Mouse::Button::Middle) { pressed_keys.set(PressedKeys::mouse_middle); }
 		if (button_pressed->button == sf::Mouse::Button::Left) {
@@ -129,14 +128,14 @@ void Metagrid::handle_events(std::optional<sf::Event> event, sf::RenderWindow& w
 		}
 		if (button_released->button == sf::Mouse::Button::Right) { pressed_keys.reset(PressedKeys::mouse_right); }
 	}
-	if (m_highlighted_room && pressed_keys.test(PressedKeys::mouse_left)) { m_tool->handle_inputs(*m_highlighted_room.value(), m_camera, m_left_clicked_position); }
+	if (m_highlighted_room && pressed_keys.test(PressedKeys::mouse_left) && !window_hovered) { m_tool->handle_inputs(*m_highlighted_room.value(), m_camera, m_left_clicked_position); }
 }
 
 void Metagrid::logic() {
 	auto last_workspace_position = menu_open ? m_left_clicked_position : m_current_mouse_position;
 	if (pressed_keys.test(PressedKeys::mouse_right)) { m_camera += m_current_mouse_position - m_dragged_position; }
 	m_dragged_position = sf::Vector2f{m_current_mouse_position};
-	for (auto& r : m_rooms) { r.update(last_workspace_position); }
+	for (auto& r : m_rooms) { r.update(last_workspace_position, window_hovered); }
 	m_tool->update(m_current_mouse_position);
 }
 
@@ -168,6 +167,13 @@ void Metagrid::render(sf::RenderWindow& win) {
 	}
 	auto view = std::span<Room>(m_rooms);
 	if (!pressed_keys.test(PressedKeys::mouse_left) && !menu_open && !window_hovered) { m_highlighted_room = &view[it]; }
+
+	if (window_hovered) {
+		auto screen = sf::RectangleShape{};
+		screen.setFillColor(sf::Color{40, 40, 40, 80});
+		screen.setSize(p_services->window->f_screen_dimensions());
+		win.draw(screen);
+	}
 
 	// ImGui stuff
 	bool options_popup{clicked && found_one && m_tool->is(MetagridToolType::cursor)};

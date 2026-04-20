@@ -345,7 +345,6 @@
           "dampen_factor": 0.993,
           "dampen_variance": 0.002,
           "sprite_flip": true,
-          "reflect": true,
           "explode_on_impact": true,
           "gravity": 3.0
         },
@@ -800,7 +799,6 @@
           "acceleration_factor": 0.0,
           "dampen_factor": 0.995,
           "dampen_variance": 0.002,
-          "reflect": true,
           "explode_on_impact": true,
           "gravity": 5.0
         },

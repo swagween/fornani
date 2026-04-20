@@ -74,7 +74,7 @@ struct AppLog {
 class Console {
   public:
 	void add_log(char const* message);
-	void write_console(ImVec2 prev_size, ImVec2 prev_pos);
+	void write_console(ImVec2 prev_size, ImVec2 prev_pos, float alpha);
 
   private:
 	AppLog log{};

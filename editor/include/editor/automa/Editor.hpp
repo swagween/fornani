@@ -88,6 +88,7 @@ class Editor final : public EditorState {
 	std::unique_ptr<Tool> current_tool;
 	std::unique_ptr<Tool> secondary_tool;
 	util::BitFlags<GlobalFlags> flags{};
+	BrushMode m_mode{};
 	Console console{};
 	struct {
 		sf::Color backdrop{};
@@ -115,6 +116,7 @@ class Editor final : public EditorState {
 	int m_middleground{};
 
 	int m_new_id{};
+	float m_menu_alpha;
 
 	fornani::automa::ServiceProvider* m_services;
 };

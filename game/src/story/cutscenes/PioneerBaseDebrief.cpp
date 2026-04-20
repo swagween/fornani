@@ -17,13 +17,12 @@ PioneerBaseDebrief::PioneerBaseDebrief(automa::ServiceProvider& svc, world::Map&
 	auto& willett = *wit;
 
 	svc.camera_controller.set_position(willett->Mobile::get_global_center());
-
-	svc.music_player.load(svc.finder, "glitchified");
+	m_flags.set(PioneerBaseDebriefFlags::start);
 }
 
 void PioneerBaseDebrief::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 
-	if (cooldowns.beginning.just_started()) { context.transition.start(); }
+	if (m_flags.consume(PioneerBaseDebriefFlags::start)) { context.transition.start(); }
 
 	if (complete()) {
 		player.controller.unrestrict();
@@ -35,12 +34,13 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, SceneContext& cont
 		flags.set(CutsceneFlags::delete_me);
 		svc.quest_table.progress_quest("defeat_skycorps", 1, 50901);
 		svc.music_player.load(svc.finder, "bryns_turn");
+		player.set_flag(player::PlayerFlags::cutscene, false);
 		svc.music_player.play_looped();
 		return;
 	}
 
-	if (cooldowns.pause.is_almost_complete() && m_ended) { context.transition.start(); }
-	if (cooldowns.end.is_almost_complete() && m_ended) { flags.set(CutsceneFlags::complete); }
+	if (cooldowns.pause.is_almost_complete() && m_flags.test(PioneerBaseDebriefFlags::end)) { context.transition.start(); }
+	if (cooldowns.end.is_almost_complete() && m_flags.test(PioneerBaseDebriefFlags::end)) { flags.set(CutsceneFlags::complete); }
 
 	svc.state_flags.set(automa::StateFlags::hide_hud);
 	svc.state_flags.set(automa::StateFlags::no_menu);
@@ -52,9 +52,10 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, SceneContext& cont
 		cooldowns.beginning.update();
 		cooldowns.end.update();
 	}
-	if (m_ended) { return; }
+	if (m_flags.test(PioneerBaseDebriefFlags::end)) { return; }
 
 	player.controller.restrict_movement();
+	player.stall_idle_timer();
 
 	if (context.console) { context.console.value()->set_no_exit(true); }
 
@@ -66,11 +67,14 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, SceneContext& cont
 
 	if (context.transition.is(graphics::TransitionState::black) && cooldowns.beginning.is_complete()) {
 		context.transition.end();
+		svc.music_player.load(svc.finder, "glitchified");
 		svc.music_player.play_looped();
 		bryn->set_position_from_scaled({10.f, 16.f});
 		willett->set_position_from_scaled({12.f, 16.f});
 		player.set_position_on_grid({11, 16});
 		player.set_idle();
+		player.set_direction({LR::right});
+		player.set_flag(player::PlayerFlags::cutscene);
 		bryn->request(NPCAnimationState::inspect);
 	}
 
@@ -118,6 +122,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, SceneContext& cont
 			willett->flush_conversations();
 			willett->push_conversation(11);
 			bryn->force_engage();
+			player.turn();
 			svc.camera_controller.set_position(bryn->Mobile::get_global_center());
 			++progress;
 			return;
@@ -128,6 +133,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, SceneContext& cont
 			bryn->flush_conversations();
 			bryn->push_conversation(11);
 			willett->force_engage();
+			player.turn();
 			svc.camera_controller.set_position(willett->Mobile::get_global_center());
 			++progress;
 			return;
@@ -138,6 +144,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, SceneContext& cont
 			willett->flush_conversations();
 			willett->push_conversation(12);
 			bryn->force_engage();
+			player.turn();
 			svc.camera_controller.set_position(bryn->Mobile::get_global_center());
 			++progress;
 			return;
@@ -148,6 +155,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, SceneContext& cont
 			bryn->flush_conversations();
 			bryn->push_conversation(12);
 			willett->force_engage();
+			player.turn();
 			svc.camera_controller.set_position(willett->Mobile::get_global_center());
 			++progress;
 			return;
@@ -158,6 +166,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, SceneContext& cont
 			willett->flush_conversations();
 			willett->push_conversation(14);
 			bryn->force_engage();
+			player.turn();
 			svc.camera_controller.set_position(bryn->Mobile::get_global_center());
 			++progress;
 			return;
@@ -167,20 +176,23 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, SceneContext& cont
 		if (!context.console) {
 			bryn->pop_conversation();
 			willett->force_engage();
+			player.turn();
 			svc.camera_controller.set_position(willett->Mobile::get_global_center());
 			++progress;
 			return;
 		}
 		break;
 	case 7:
-		if (!context.console && !m_ended) {
+		if (!context.console && !m_flags.test(PioneerBaseDebriefFlags::end)) {
 			cooldowns.end.start();
 			cooldowns.pause.start();
 			bryn->flush_conversations();
 			willett->flush_conversations();
 			bryn->push_conversation(6);
 			willett->push_conversation(13);
-			m_ended = true;
+			m_flags.set(PioneerBaseDebriefFlags::end);
+			svc.quest_table.set_quest_progression("npc_dialogue", {"bryn", 300}, 1, {3001});
+			svc.quest_table.progress_quest("npc_dialogue", {"dr_willett", 300}, 1, -1);
 			return;
 		}
 		break;

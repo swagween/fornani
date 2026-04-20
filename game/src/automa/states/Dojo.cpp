@@ -60,7 +60,10 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	svc.a11y.set_action_ctx_bar_enabled(svc.data.settings["tutorial"].as_bool());
 
 	if (!p_context.console && !m_cutscenes.is_empty()) {
-		for (auto const& cutscene : m_cutscenes) { p_context.cutscene_catalog.push_cutscene(svc, *m_map, *player, cutscene); }
+		for (auto const& cutscene : m_cutscenes) {
+			p_context.cutscene_catalog.push_cutscene(svc, *m_map, *player, cutscene);
+			NANI_LOG_INFO(m_logger, "Launching cutscene {}.", cutscene);
+		}
 		m_cutscenes.clear();
 	}
 

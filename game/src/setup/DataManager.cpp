@@ -681,6 +681,8 @@ auto DataManager::get_map_json_from_id(int id) -> std::optional<std::reference_w
 
 auto DataManager::get_item_json_from_tag(std::string_view tag) const -> dj::Json const& { return item[item_id_from_label(tag)]; }
 
+auto DataManager::get_gun_json_from_tag(std::string_view tag) const -> dj::Json const& { return weapon[tag]; }
+
 auto DataManager::get_room_data_from_id(int id) const -> std::optional<dj::Json> {
 	for (auto const& room : map_table["rooms"].as_array()) {
 		if (room["room_id"].as<int>() == id) { return room; }

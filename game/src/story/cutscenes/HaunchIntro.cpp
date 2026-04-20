@@ -70,6 +70,10 @@ void HaunchIntro::update(automa::ServiceProvider& svc, SceneContext& context, wo
 		player.set_flag(player::PlayerFlags::cutscene);
 		player.set_idle();
 		haunch->set_flag(NPCFlags::cutscene);
+		haunch->flush_conversations();
+		auto prog = svc.quest_table.get_quest_progression("haunch_dialogue");
+		auto which = prog == 0 ? 1 : 2;
+		haunch->push_conversation(which);
 	}
 	if (m_intro.is_almost_complete()) { cooldowns.beginning.start(); }
 	m_intro.update();
@@ -98,7 +102,7 @@ void HaunchIntro::update(automa::ServiceProvider& svc, SceneContext& context, wo
 	case 0:
 		if (m_truck_path.completed_step(1)) {
 			++progress;
-			map.spawn_enemy(28, m_truck_path.get_position() + sf::Vector2f{180.f, 64.f}, 0, false, false);
+			map.spawn_enemy(28, m_truck_path.get_position() + sf::Vector2f{180.f, 100.f}, 0, false, false);
 			m_army_truck_undercarriage.set_animation("stopped");
 			svc.soundboard.play_sound("train_steam");
 		}
@@ -112,8 +116,8 @@ void HaunchIntro::update(automa::ServiceProvider& svc, SceneContext& context, wo
 		break;
 	case 2:
 		if (m_hulmet_spawn_delay.is_almost_complete()) {
-			map.spawn_enemy(13, m_truck_path.get_position() + sf::Vector2f{140.f, 80.f}, 0, false, false);
-			map.spawn_enemy(13, m_truck_path.get_position() + sf::Vector2f{240.f, 80.f}, 0, false, false);
+			map.spawn_enemy(13, m_truck_path.get_position() + sf::Vector2f{140.f, 100.f}, 0, false, false);
+			map.spawn_enemy(13, m_truck_path.get_position() + sf::Vector2f{240.f, 100.f}, 0, false, false);
 			++progress;
 		}
 		break;
@@ -124,6 +128,8 @@ void HaunchIntro::update(automa::ServiceProvider& svc, SceneContext& context, wo
 			m_flags.set(HaunchIntroFlags::done);
 			svc.music_player.load(svc.finder, "scuffle");
 			svc.music_player.play_looped();
+			svc.quest_table.progress_quest("haunch_dialogue", 1, 1);
+			svc.data.save_quests();
 			++progress;
 		}
 		break;

@@ -1,9 +1,9 @@
 
 #pragma once
 
+#include <fornani/entities/scenery/ChampionJ5.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/story/Cutscene.hpp>
-#include <fornani/utils/RectPath.hpp>
 
 namespace fornani {
 
@@ -17,6 +17,7 @@ class HaunchEscape final : public Cutscene {
 
   private:
 	util::Cooldown m_intro;
+	ChampionJ5 m_champion;
 
 	util::BitFlags<HaunchEscapeFlags> m_flags{};
 };

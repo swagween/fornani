@@ -36,7 +36,7 @@ void EntityEditor::update(Canvas& canvas) {
 			if (!entity_menu || active) { ent->highlighted = ent->contains_point(scaled_position()); }
 			if (active && ent->highlighted && is_ready()) {
 				if (ent->copyable) { current_entity = ent->clone(); }
-				entity_menu = true;
+				entity_menu = !entity_menu;
 			}
 		}
 	}

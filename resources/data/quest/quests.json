@@ -200,5 +200,12 @@
     "tag": "mystery_of_pixiote",
     "target": 4,
     "displayed": false
+  },
+  {
+    "title": "Haunch Dialogue",
+    "tag": "haunch_dialogue",
+    "target": 1,
+    "objectives": [],
+    "displayed": false
   }
 ]

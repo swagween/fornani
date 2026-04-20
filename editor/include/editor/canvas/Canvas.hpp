@@ -80,6 +80,7 @@ class Canvas {
 
 	[[nodiscard]] auto test_property(fornani::world::MapProperties to_test) const -> bool { return m_attributes.properties.test(to_test); }
 
+	[[nodiscard]] auto has_atmosphere(std::string_view to) const -> bool { return m_attributes.atmosphere.contains(to.data()); }
 	[[nodiscard]] auto get_selection_type() const -> SelectionType { return type; }
 	[[nodiscard]] auto states_empty() const -> bool { return map_states.empty(); }
 	[[nodiscard]] auto is_palette() const -> bool { return type == SelectionType::palette; }
