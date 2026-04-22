@@ -10,7 +10,7 @@ namespace fornani {
 
 HaunchIntro::HaunchIntro(automa::ServiceProvider& svc)
 	: Cutscene(svc, 900, "haunch_intro"), m_intro{200}, m_army_truck_body{svc, "army_truck_body", {203, 132}}, m_army_truck_undercarriage{svc, "army_truck_undercarriage", {203, 132}},
-	  m_truck_path{svc.finder, std::filesystem::path{"/data/vfx/scenery_paths.json"}, "army_truck", 1000, util::InterpolationType::quadratic}, m_hulmet_spawn_delay{140} {
+	  m_truck_path{svc.finder, std::filesystem::path{"/data/vfx/scenery_paths.json"}, "army_truck", 1000, util::InterpolationType::quadratic}, m_hulmet_spawn_delay{100} {
 	m_intro.start();
 	svc.input_system.flush_inputs();
 	svc.state_flags.set(automa::StateFlags::cutscene);
@@ -20,6 +20,13 @@ HaunchIntro::HaunchIntro(automa::ServiceProvider& svc)
 }
 
 void HaunchIntro::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
+
+	cooldowns.beginning.update();
+	cooldowns.pause.update();
+	cooldowns.long_pause.update();
+	cooldowns.end.update();
+	m_hulmet_spawn_delay.update();
+
 	if (m_flags.consume(HaunchIntroFlags::done)) {
 		player.controller.unrestrict();
 		svc.state_flags.reset(automa::StateFlags::hide_hud);
@@ -47,11 +54,6 @@ void HaunchIntro::update(automa::ServiceProvider& svc, SceneContext& context, wo
 	svc.state_flags.set(automa::StateFlags::hide_hud);
 	svc.state_flags.set(automa::StateFlags::no_menu);
 	svc.state_flags.set(automa::StateFlags::cutscene);
-	cooldowns.beginning.update();
-	cooldowns.pause.update();
-	cooldowns.long_pause.update();
-	cooldowns.end.update();
-	m_hulmet_spawn_delay.update();
 
 	m_truck_path.update();
 	m_army_truck_undercarriage.tick();

@@ -133,7 +133,7 @@ class Map {
 	void handle_cell_collision(shape::CircleCollider& collider);
 	void handle_breakable_collision(shape::CircleCollider& collider);
 	void clear_projectiles();
-	void clear_enemies(std::unordered_set<int> const& exceptions);
+	void clear_enemies(std::unordered_set<int> const exceptions);
 	void shake_camera();
 	void clear();
 	void wrap(sf::Vector2f& position) const;

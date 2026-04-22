@@ -852,9 +852,12 @@ void Map::clear_projectiles() {
 	for (auto& proj : active_projectiles) { proj.destroy(false); }
 }
 
-void Map::clear_enemies(std::unordered_set<int> const& exceptions) {
+void Map::clear_enemies(std::unordered_set<int> const exceptions) {
 	for (auto& enemy : enemy_catalog.enemies) {
-		if (!exceptions.contains(enemy->get_stable_id())) { enemy->kill(); }
+		if (!exceptions.contains(enemy->get_id())) {
+			enemy->kill();
+			NANI_LOG_DEBUG(m_logger, "Killed enemy {}", enemy->get_id());
+		}
 	}
 }
 
@@ -992,8 +995,11 @@ int Map::get_tile_value_at_position(sf::Vector2f position) { return get_middlegr
 Tile& Map::get_cell_at_position(sf::Vector2f position) { return get_middleground()->grid.cells.at(get_index_at_position(position)); }
 
 enemy::Enemy* Map::get_enemy(int id) {
-	auto it = std::find_if(enemy_catalog.enemies.begin(), enemy_catalog.enemies.end(), [id](auto const& e) { return e->get_stable_id() == id; });
-	if (it == enemy_catalog.enemies.end()) { return nullptr; }
+	auto it = std::find_if(enemy_catalog.enemies.begin(), enemy_catalog.enemies.end(), [id](auto const& e) { return e->get_id() == id; });
+	if (it == enemy_catalog.enemies.end()) {
+		NANI_LOG_DEBUG(m_logger, "Enemy not found!");
+		return nullptr;
+	}
 	return it->get();
 }
 

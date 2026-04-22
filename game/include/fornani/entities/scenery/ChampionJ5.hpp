@@ -13,8 +13,8 @@ enum class ChampionJ5State { flying, land, grounded, take_off };
 
 class ChampionJ5 : public Mobile, public StateMachine<ChampionJ5State> {
   public:
-	ChampionJ5(automa::ServiceProvider& svc);
-	void update();
+	ChampionJ5(automa::ServiceProvider& svc, world::Map& map);
+	void update(world::Map& map);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_target(sf::Vector2f to) { m_target = to; }
 

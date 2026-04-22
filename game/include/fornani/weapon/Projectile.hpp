@@ -101,7 +101,7 @@ class Projectile : public Animatable {
 	[[nodiscard]] auto get_direction() const -> CardinalDirection { return physical.direction; }
 	[[nodiscard]] auto get_collider() -> shape::CircleCollider& { return physical.collider; }
 	[[nodiscard]] auto can_damage() const -> bool { return damage_timer.is_almost_complete() || !persistent(); }
-	[[nodiscard]] auto has_critical_damage() const -> bool { return variables.damage_multiplier > 2.f; }
+	[[nodiscard]] auto has_critical_damage() const -> bool { return variables.damage_multiplier > 1.9f; }
 
 	[[nodiscard]] auto get_chunk_id() const -> std::uint8_t { return m_chunk_id; }
 

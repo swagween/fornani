@@ -40,7 +40,7 @@ void MizzleEgg::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 		get_collider().physics.set_global_friction(0.99f);
 		if (m_hatch_timer.halfway()) {
 			shake();
-			m_services->soundboard.repeat_sound("mizzle_egg_shake", get_stable_id(), get_collider().get_center());
+			m_services->soundboard.repeat_sound("mizzle_egg_shake", get_stable_id().get(), get_collider().get_center());
 		}
 	}
 

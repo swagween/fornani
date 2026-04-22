@@ -155,7 +155,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		if (!p_context.console) {
 			p_inventory_window.value()->update(svc, *player, *m_map);
 			if (p_inventory_window.value()->exit_requested()) {
-				p_inventory_window = {};
+				p_inventory_window.reset();
 				svc.input_system.set_action_set(input::ActionSet::Platformer);
 			}
 			return;
@@ -172,7 +172,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	// in-game menus
-	if (svc.input_system.digital(input::DigitalAction::inventory).triggered) { p_inventory_window = std::make_unique<gui::InventoryWindow>(svc, *m_map, *player); }
+	if (svc.input_system.digital(input::DigitalAction::inventory).triggered && !svc.no_menu()) { p_inventory_window = std::make_unique<gui::InventoryWindow>(svc, *m_map, *player); }
 
 	m_enter_room.update();
 	if (m_enter_room.running()) { player->controller.autonomous_walk(); }

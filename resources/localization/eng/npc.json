@@ -3434,6 +3434,7 @@
       "responses": [],
       "suite": [
         [
+          { "message": "Hmph." },
           {
             "codes": [
               [23, 10],
@@ -3458,6 +3459,17 @@
           },
           {
             "message": "You're dead meat, kid!"
+          }
+        ]
+      ]
+    },
+    "4": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "codes": [[5, 1]],
+            "message": "If you wanna kill me, I'm takin' you with me!"
           }
         ]
       ]

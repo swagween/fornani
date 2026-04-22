@@ -13,7 +13,7 @@
 
 namespace fornani::enemy {
 
-enum class HaunchState { idle, airborne, turn, shoot_high, shoot_low, get_up, walk, pull_grenade, throw_grenade, throw_grenade_down, triple_toss, whistle, triple_down_toss, struggle };
+enum class HaunchState { idle, airborne, turn, shoot_high, shoot_low, get_up, walk, pull_grenade, throw_grenade, throw_grenade_down, triple_toss, whistle, triple_down_toss, struggle, stalk };
 enum class HaunchFlags { laser_fired, jumped, show_gun };
 
 class Haunch final : public Boss, public StateMachine<HaunchState> {
@@ -40,6 +40,7 @@ class Haunch final : public Boss, public StateMachine<HaunchState> {
 	fsm::StateFunction update_whistle();
 	fsm::StateFunction update_triple_down_toss();
 	fsm::StateFunction update_struggle();
+	fsm::StateFunction update_stalk();
 
   private:
 	void shoot_gun();

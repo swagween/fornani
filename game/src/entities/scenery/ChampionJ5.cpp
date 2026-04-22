@@ -4,20 +4,25 @@
 
 namespace fornani {
 
-ChampionJ5::ChampionJ5(automa::ServiceProvider& svc) : Mobile{svc, "champion_j5_body", {}}, m_propeller{svc, "champion_j5_propeller", {}} {
+ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "champion_j5_body", {80, 60}}, m_propeller{svc, "champion_j5_propeller", {80, 60}} {
 	push_and_set_animation("flying", {0, 1, 24, -1});
 	push_animation("land", {1, 4, 24, 0});
 	push_animation("grounded", {5, 1, 24, -1});
 	push_animation("take_off", {6, 2, 24, 0});
+	m_propeller.push_and_set_animation("spinning", {0, 3, 12, -1});
+	m_propeller.center();
 	center();
+	Mobile::register_collider(map, {40.f, 40.f});
 }
 
-void ChampionJ5::update() {
+void ChampionJ5::update(world::Map& map) {
 	tick();
 	m_propeller.tick();
 	get_collider().set_attribute(shape::ColliderAttributes::no_map_collision, is_state(ChampionJ5State::flying));
 	get_collider().set_flag(shape::ColliderFlags::simple, !is_state(ChampionJ5State::grounded));
 	if (get_collider().has_flag_set(shape::ColliderFlags::simple)) { m_steering.seek(get_collider().physics, m_target, 0.00045f); }
+	if ((get_collider().physics.position - m_target).length() < 8.f) { request(ChampionJ5State::land); }
+	state_function = state_function();
 }
 
 void ChampionJ5::render(sf::RenderWindow& win, sf::Vector2f cam) {

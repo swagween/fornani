@@ -8,6 +8,7 @@ GameplayState::GameplayState(ServiceProvider& svc, player::Player& player, std::
 	svc.input_system.set_action_set(input::ActionSet::Platformer);
 	svc.events.play_song_event.attach_to(p_slot, &GameplayState::play_song_by_id, this);
 	p_context.transition.set(graphics::TransitionState::black);
+	svc.app_flags.set(AppFlags::in_game);
 }
 
 void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {

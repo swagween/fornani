@@ -61,7 +61,7 @@ enum class GeneralFlags {
 	boss,
 	kick_immune
 };
-enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, no_shake, out_of_zone, no_slowdown, intangible, health_exposed, despawn, pre_battle_invincibility };
+enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, no_shake, out_of_zone, no_slowdown, intangible, health_exposed, despawn, pre_battle_invincibility, special_event };
 enum class Triggers { hostile, alert };
 enum class Variant { beast, soldier, elemental, worker, guardian };
 
@@ -116,6 +116,7 @@ class Enemy : public Mobile {
 	void despawn() { flags.state.set(StateFlags::despawn); }
 	void set_handle(EntityHandle to) { metadata.handle = to; }
 	void center_at_position();
+	void set_special_event(bool to = true) { to ? flags.state.set(StateFlags::special_event) : flags.state.reset(StateFlags::special_event); }
 
 	[[nodiscard]] auto is_hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto is_alert() const -> bool { return flags.state.test(StateFlags::alert); }
@@ -126,7 +127,8 @@ class Enemy : public Mobile {
 	[[nodiscard]] auto alertness_triggered() const -> bool { return flags.triggers.test(Triggers::alert); }
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
-	[[nodiscard]] auto get_stable_id() const -> int { return static_cast<int>(metadata.stable_id.get()); }
+	[[nodiscard]] auto get_id() const -> int { return metadata.id; }
+	[[nodiscard]] auto get_stable_id() const -> StableID { return metadata.stable_id; }
 	[[nodiscard]] auto get_handle() const -> int { return metadata.handle; }
 	[[nodiscard]] auto get_team() const -> arms::Team { return attributes.team; }
 	[[nodiscard]] auto has_secondary_collider() const -> bool { return secondary_collider.has_value(); }

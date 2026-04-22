@@ -267,7 +267,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	for (auto& enemy : fallen_enemies) {
 		auto entry = dj::Json::empty_array();
 		entry.push_back(enemy.code.first);
-		entry.push_back(enemy.code.second);
+		entry.push_back(enemy.code.second.get());
 		entry.push_back(enemy.respawn_distance);
 		entry.push_back(static_cast<int>(enemy.permanent));
 		entry.push_back(static_cast<int>(enemy.semipermanent));
@@ -378,7 +378,7 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	}
 	for (auto& location : save["npc_locations"].as_array()) { npc_locations.insert({location[0].as<int>(), location[1].as<int>()}); }
 	for (auto& enemy : save["map_data"]["fallen_enemies"].as_array()) {
-		fallen_enemies.push_back({std::make_pair(enemy[0].as<int>(), enemy[1].as<int>()), enemy[2].as<int>(), static_cast<bool>(enemy[3].as<int>()), static_cast<bool>(enemy[4].as<int>())});
+		fallen_enemies.push_back({std::make_pair(enemy[0].as<int>(), StableID{enemy[1].as<StableID::underlying_type>()}), enemy[2].as<int>(), static_cast<bool>(enemy[3].as<int>()), static_cast<bool>(enemy[4].as<int>())});
 	};
 	player.piggybacker = {};
 	if (save["piggybacker"].as<int>() != 0) { player.piggyback(save["piggybacker"].as<int>()); }
@@ -563,14 +563,14 @@ void DataManager::set_npc_location(int npc_id, int room_id) {
 	npc_locations.at(npc_id) = room_id;
 }
 
-void DataManager::kill_enemy(int room_id, int id, int distance, bool permanent, bool semipermanent) {
+void DataManager::kill_enemy(int room_id, StableID id, int distance, bool permanent, bool semipermanent) {
 	for (auto& e : fallen_enemies) {
 		if (e.code.first == room_id && e.code.second == id) { return; }
 	}
 	fallen_enemies.push_back({{room_id, id}, distance, permanent, semipermanent});
 }
 
-void DataManager::respawn_enemy(int room_id, int id) {
+void DataManager::respawn_enemy(int room_id, StableID id) {
 	std::erase_if(fallen_enemies, [room_id, id](auto const& i) { return i.code.first == room_id && i.code.second == id && !i.permanent; });
 }
 
@@ -605,7 +605,7 @@ bool DataManager::inspectable_is_destroyed(int id) const { return destroyed_insp
 
 bool DataManager::is_room_discovered(int id) const { return discovered_rooms.contains(id); }
 
-bool DataManager::enemy_is_fallen(int room_id, int id) const {
+bool DataManager::enemy_is_fallen(int room_id, StableID id) const {
 	for (auto& enemy : fallen_enemies) {
 		if (enemy.code.first == room_id && enemy.code.second == id) { return true; }
 	}

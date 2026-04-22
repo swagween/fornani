@@ -161,7 +161,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		if (get_secondary_collider().collision_depths) { get_secondary_collider().collision_depths.value().reset(); }
 	}
 
-	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.stable_id.get(), attributes.respawn_distance, permadeath(), flags.general.test(GeneralFlags::semipermanent)); }
+	if (just_died()) { svc.data.kill_enemy(map.room_id, metadata.stable_id, attributes.respawn_distance, permadeath(), flags.general.test(GeneralFlags::semipermanent)); }
 	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
 		svc.stats.enemy.enemies_killed.update();
 		auto individual_delay = flags.general.test(GeneralFlags::boss) ? 16 : 0;

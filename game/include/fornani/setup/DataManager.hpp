@@ -32,7 +32,7 @@ class Player;
 namespace fornani::data {
 
 struct EnemyState {
-	std::pair<int, int> code{};
+	std::pair<int, StableID> code{};
 	int respawn_distance{};
 	bool permanent{};
 	bool semipermanent{};
@@ -75,8 +75,8 @@ class DataManager final {
 	void destroy_inspectable(int id);
 	void push_quest(util::QuestKey key);
 	void set_npc_location(int npc_id, int room_id);
-	void kill_enemy(int room_id, int id, int distance, bool permanent, bool semipermanent);
-	void respawn_enemy(int room_id, int id);
+	void kill_enemy(int room_id, StableID id, int distance, bool permanent, bool semipermanent);
+	void respawn_enemy(int room_id, StableID id);
 	void respawn_enemies(int room_id, int distance);
 	void respawn_all();
 
@@ -86,7 +86,7 @@ class DataManager final {
 	bool switch_is_activated(int id) const;
 	bool inspectable_is_destroyed(int id) const;
 	bool is_room_discovered(int id) const;
-	bool enemy_is_fallen(int room_id, int id) const;
+	bool enemy_is_fallen(int room_id, StableID id) const;
 
 	int get_destructible_state(int id) const;
 
@@ -179,7 +179,7 @@ class DataManager final {
 
   private:
 	[[nodiscard]] auto get_destroyed_inspectables() const -> Register<int> { return destroyed_inspectables; }
-	Register<std::uint64_t> opened_chests{};
+	Register<StableID::underlying_type> opened_chests{};
 	Register<std::string> unlocked_doors{};
 	Register<int> activated_switches{};
 	std::vector<std::pair<int, int>> destructible_states{};
