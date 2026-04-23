@@ -5,6 +5,7 @@
 #include <fornani/graphics/Drawable.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/Constants.hpp>
+#include <fornani/utils/TransparentStringHash.hpp>
 
 namespace fornani {
 class Animatable : public Drawable {
@@ -36,11 +37,12 @@ class Animatable : public Drawable {
 	[[nodiscard]] auto is_complete() -> bool { return animation.complete(); }
 	[[nodiscard]] auto get_dimensions() const -> sf::Vector2i { return m_dimensions; }
 	[[nodiscard]] auto get_f_dimensions() const -> sf::Vector2f { return sf::Vector2f{m_dimensions}; }
+	[[nodiscard]] auto get_animation_tag() const -> std::string_view { return m_current; }
 
 	anim::Animation animation;
 
   protected:
-	std::unordered_map<std::string, anim::Parameters> p_animations{};
+	std::unordered_map<std::string, anim::Parameters, TransparentHash, TransparentEqual> p_animations{};
 
   private:
 	void set_rect();

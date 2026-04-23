@@ -16,14 +16,15 @@ Item::Item(dj::Json const& source, std::string_view label) : m_label{label}, m_t
 	std::size_t id = std::distance(arr.begin(), it);
 	auto const& in_data = *it;
 
+	auto dim = constants::i_resolution_vec_padded;
 	m_id = id;
 	m_type = static_cast<ItemType>(in_data["category"].as<int>());
 	m_lookup.position.x = in_data["lookup"][0].as<int>();
 	m_lookup.position.y = in_data["lookup"][1].as<int>();
 	m_table_origin.x = in_data["origin"][0].as<int>();
 	m_table_origin.y = in_data["origin"][1].as<int>();
-	m_lookup.position = m_lookup.position.componentWiseMul(constants::i_resolution_vec);
-	m_lookup.size = constants::i_resolution_vec;
+	m_lookup.position = m_lookup.position.componentWiseMul(dim);
+	m_lookup.size = dim;
 
 	if (in_data["sellable"].as_bool()) { m_flags.set(ItemFlags::sellable); }
 	if (in_data["readable"].as_bool()) { m_flags.set(ItemFlags::readable); }

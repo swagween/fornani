@@ -12,6 +12,7 @@
 #include <fornani/entities/world/Fire.hpp>
 #include <fornani/entities/world/Inspectable.hpp>
 #include <fornani/entities/world/Laser.hpp>
+#include <fornani/entities/world/TestMobile.hpp>
 #include <fornani/entities/world/Waterfall.hpp>
 #include <fornani/entity/EntitySet.hpp>
 #include <fornani/graphics/Background.hpp>
@@ -94,6 +95,10 @@ struct MapAttributes {
 };
 
 class Map {
+
+  public:
+	// debug
+	std::optional<TestMobile> test_mobile{};
 
   private:
 	std::vector<std::unique_ptr<shape::ICollider>> m_colliders{};

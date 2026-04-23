@@ -97,7 +97,26 @@ struct Counters {
 };
 
 enum class PlayerDeathType { normal, crushed, drowned, swallowed, fallen };
-enum class PlayerFlags { killed, dir_switch, show_weapon, impart_recoil, sleep, wake_up, busy, dash_kick, trial, cutscene, hit_target, in_front_of_door, health_increase, console_open, ability_acquisition, in_reward_sequence, stunned };
+enum class PlayerFlags {
+	killed,
+	dir_switch,
+	show_weapon,
+	impart_recoil,
+	sleep,
+	wake_up,
+	busy,
+	dash_kick,
+	trial,
+	cutscene,
+	hit_target,
+	in_front_of_door,
+	health_increase,
+	console_open,
+	ability_acquisition,
+	in_reward_sequence,
+	stunned,
+	bonus_health_added
+};
 enum class Triggers { hurt };
 
 struct Flags {
@@ -153,6 +172,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void handle_turning();
 	void flash_sprite();
 	void set_idle();
+	void set_sitting();
+	void set_jumping();
 	void set_slow_walk();
 	void set_sleeping(bool on_floor = false);
 	void stall_idle_timer();

@@ -25,6 +25,9 @@ sf::Vector2f random_vector_float(float lo, float hi);
 // Generates a random 2D vector of floats with x in [lo.x, hi.x] and y in [lo.y, hi.y]
 sf::Vector2f random_vector_float(sf::Vector2f lo, sf::Vector2f hi);
 
+// Generates a random vector from a point within `radius` distance, skewed toward the center
+sf::Vector2f random_weighted_offset(float radius, float bias = 2.0f);
+
 // Returns 0 or 1 based on a coin flip using an unsigned logic
 int unsigned_coin_flip();
 

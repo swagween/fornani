@@ -11,4 +11,5 @@ nani_add_headers(
         TreasureContainer.hpp
         Laser.hpp
         Waterfall.hpp
+        TestMobile.hpp
 )

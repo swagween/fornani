@@ -17,6 +17,7 @@ constexpr auto f_pi{static_cast<float>(std::numbers::pi)};
 
 enum class InterpolationType { linear, quadratic, cubic, ease };
 
+static float dot(sf::Vector2f a, sf::Vector2f b) { return a.x * b.x + a.y * b.y; }
 inline float magnitude(sf::Vector2f vec) { return ccm::sqrt((vec.x * vec.x) + (vec.y * vec.y)); }
 inline sf::Vector2f unit(sf::Vector2f vec) {
 	auto const denominator = ccm::sqrt((vec.x * vec.x) + (vec.y * vec.y));

@@ -42,6 +42,14 @@
     "max_distance": 256.0
   },
   {
+    "label": "shovel_dig",
+    "bus": "gameplay",
+    "volume": 0.7,
+    "pitch_offset": 0.1,
+    "min_distance": 32.0,
+    "max_distance": 1024.0
+  },
+  {
     "label": "missile_whistle",
     "bus": "gameplay",
     "volume": 1.0,

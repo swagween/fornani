@@ -16,10 +16,14 @@ namespace fornani {
 constexpr int dawn_time{6};
 constexpr int dusk_time{18};
 
+enum class WorldClockInterval { week, day, hour };
+
 class WorldClock {
   public:
 	WorldClock();
 	void update(automa::ServiceProvider& svc);
+	void serialize(dj::Json& out);
+	void unserialize(dj::Json const& in);
 	void set_time(int hour = 0, int minute = 0);
 	void set_speed(int to_rate, int to_transition = 4096);
 	void toggle_military_time();
@@ -34,8 +38,10 @@ class WorldClock {
 	[[nodiscard]] auto get_time_of_day() const -> TimeOfDay { return current_time_of_day.as<TimeOfDay>(); }
 	[[nodiscard]] auto get_previous_time_of_day() const -> TimeOfDay;
 	[[nodiscard]] auto get_transition() const -> float { return transition.get_normalized(); }
+	[[nodiscard]] auto get_days() const -> int { return increments.days.get(); }
 	[[nodiscard]] auto get_hours() const -> int { return increments.hours.get(); }
 	[[nodiscard]] auto get_minutes() const -> int { return increments.minutes.get(); }
+	[[nodiscard]] auto get_rng(WorldClockInterval interval) const -> float;
 	[[nodiscard]] auto get_rate() const -> int { return rate; }
 	[[nodiscard]] auto as_trio() const -> int { return is_daytime() ? 0 : is_nighttime() ? 2 : 1; }
 	[[nodiscard]] auto get_previous_as_trio() const -> int { return get_previous_time_of_day() == TimeOfDay::day ? 0 : get_previous_time_of_day() == TimeOfDay::night ? 2 : 1; }
@@ -49,9 +55,15 @@ class WorldClock {
 	[[nodiscard]] auto calculate_i_tod_from_hour() const -> int;
 	ClockMode m_mode{};
 	struct {
+		util::Circuit days{7};
 		util::Circuit hours{24};
 		util::Circuit minutes{60};
 	} increments;
+	struct {
+		float hourly{};
+		float daily{};
+		float weekly{};
+	} rng;
 	util::Circuit current_time_of_day{4};
 	int rate{};
 	util::Cooldown transition{};

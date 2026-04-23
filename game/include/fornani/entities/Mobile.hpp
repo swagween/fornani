@@ -4,6 +4,7 @@
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/physics/RegisteredCollider.hpp>
 #include <fornani/utils/Direction.hpp>
+#include <fornani/utils/TransparentStringHash.hpp>
 #include <optional>
 
 namespace fornani {
@@ -13,6 +14,11 @@ class Player;
 }
 
 enum class MobileState { flip };
+
+struct MobileSound {
+	int frame{};
+	std::string tag{};
+};
 
 class Mobile : public Animatable {
   public:
@@ -32,6 +38,7 @@ class Mobile : public Animatable {
   protected:
 	std::optional<shape::RegisteredCollider> owned_collider;
 	std::optional<std::reference_wrapper<shape::RegisteredCollider>> collider;
+	std::unordered_map<std::string, MobileSound, TransparentHash, TransparentEqual> p_sounds{};
 	void request_flip() { p_flags.set(MobileState::flip); }
 	anim::Parameters const& get_params(std::string const& key);
 	struct {

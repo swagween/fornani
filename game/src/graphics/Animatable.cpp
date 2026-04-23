@@ -19,8 +19,12 @@ void Animatable::push_and_set_animation(std::string_view label, anim::Parameters
 }
 
 void Animatable::set_animation(std::string_view to) {
-	set_parameters(p_animations.at(to.data()));
-	m_current = to.data();
+	if (!p_animations.contains(to)) { return; }
+	auto it = p_animations.find(to);
+	if (it != p_animations.end()) {
+		set_parameters(it->second);
+		m_current = to.data();
+	}
 }
 
 void Animatable::set_channel(int to) {

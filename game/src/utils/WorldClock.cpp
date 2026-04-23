@@ -1,5 +1,6 @@
 
 #include <fornani/service/ServiceProvider.hpp>
+#include <fornani/utils/Random.hpp>
 #include <fornani/utils/WorldClock.hpp>
 
 namespace fornani {
@@ -22,6 +23,7 @@ void WorldClock::update(automa::ServiceProvider& svc) {
 		if (increments.minutes.cycled()) {
 			bool change = is_twilight();
 			increments.hours.modulate(1);
+			rng.hourly = random::random_range_float(0.f, 1.f);
 			if (is_twilight()) {
 				transition.start();
 				current_time_of_day.modulate(1);
@@ -33,9 +35,29 @@ void WorldClock::update(automa::ServiceProvider& svc) {
 			if (is_nighttime() && change) {
 				transition.start();
 				current_time_of_day.modulate(1);
+				increments.days.modulate(1);
+				rng.daily = random::random_range_float(0.f, 1.f);
+				if (increments.days.cycled()) { rng.weekly = random::random_range_float(0.f, 1.f); }
 			}
 		}
 	}
+}
+
+void WorldClock::serialize(dj::Json& out) {
+	out["days"] = get_days();
+	out["hours"] = get_hours();
+	out["minutes"] = get_minutes();
+	out["rng"]["hourly"] = rng.hourly;
+	out["rng"]["daily"] = rng.daily;
+	out["rng"]["weekly"] = rng.weekly;
+}
+
+void WorldClock::unserialize(dj::Json const& in) {
+	increments.days.set(in["hours"].as<int>());
+	set_time(in["hours"].as<int>(), in["minutes"].as<int>());
+	rng.hourly = in["rng"]["hourly"].as<float>();
+	rng.daily = in["rng"]["daily"].as<float>();
+	rng.weekly = in["rng"]["weekly"].as<float>();
 }
 
 void WorldClock::set_time(int hour, int minute) {
@@ -69,6 +91,15 @@ auto WorldClock::get_previous_time_of_day() const -> TimeOfDay {
 	auto prev = current_time_of_day;
 	prev.modulate(-1);
 	return prev.as<TimeOfDay>();
+}
+
+auto WorldClock::get_rng(WorldClockInterval interval) const -> float {
+	switch (interval) {
+	case WorldClockInterval::week: return rng.weekly;
+	case WorldClockInterval::day: return rng.daily;
+	case WorldClockInterval::hour: return rng.hourly;
+	}
+	return 0.f;
 }
 
 std::string WorldClock::tod_as_string(TimeOfDay const tod) {

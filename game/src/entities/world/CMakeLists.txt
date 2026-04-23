@@ -9,6 +9,7 @@ nani_add_sources(
         Inspectable.cpp
         Laser.cpp
         SpawnablePlatform.cpp
+        TestMobile.cpp
         TreasureContainer.cpp
         Waterfall.cpp
 )

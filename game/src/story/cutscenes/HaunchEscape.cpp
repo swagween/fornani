@@ -8,7 +8,7 @@
 
 namespace fornani {
 
-HaunchEscape::HaunchEscape(automa::ServiceProvider& svc) : Cutscene(svc, 902, "haunch_escape"), m_intro{200}, m_dynamite{10}, m_bomb_tick{300}, m_heroes_exit{600}, m_outro{500}, m_champion_entry{600} {
+HaunchEscape::HaunchEscape(automa::ServiceProvider& svc) : Cutscene(svc, 902, "haunch_escape"), m_intro{200}, m_dynamite{10}, m_bomb_tick{300}, m_heroes_exit{600}, m_outro{500}, m_champion_entry{600}, m_player_jump{92} {
 	m_intro.start();
 	svc.music_player.load(svc.finder, "haunchs_theme");
 	svc.input_system.flush_inputs();
@@ -16,7 +16,7 @@ HaunchEscape::HaunchEscape(automa::ServiceProvider& svc) : Cutscene(svc, 902, "h
 }
 
 void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
-	if (m_flags.consume(HaunchEscapeFlags::done)) {
+	if (complete()) {
 		player.controller.unrestrict();
 		svc.state_flags.reset(automa::StateFlags::hide_hud);
 		svc.state_flags.reset(automa::StateFlags::no_menu);
@@ -26,9 +26,14 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 		player.set_flag(player::PlayerFlags::cutscene, false);
 		svc.camera_controller.constrain();
 		m_flags.set(HaunchEscapeFlags::over);
+		player.get_collider().set_attribute(shape::ColliderAttributes::no_collision, false);
+		svc.data.switch_destructible_state(90102, true);
 		return;
 	}
 	if (player.is_dead()) { return; }
+
+	if (m_flags.test(HaunchEscapeFlags::over) && context.transition.is(graphics::TransitionState::inactive)) { context.transition.start(); }
+	if (m_flags.test(HaunchEscapeFlags::over) && context.transition.is_black()) { flags.set(CutsceneFlags::delete_me); }
 
 	svc.state_flags.set(automa::StateFlags::no_menu);
 	cooldowns.beginning.update();
@@ -38,6 +43,7 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 	m_heroes_exit.update();
 	m_outro.update();
 	m_champion_entry.update();
+	m_player_jump.update();
 	if (!context.console) { m_bomb_tick.update(); }
 
 	if (m_champion) { m_champion->update(map); }
@@ -62,10 +68,8 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 		svc.camera_controller.set_owner(graphics::CameraOwner::system);
 		svc.camera_controller.free();
 
-		if (haunch_enemy != nullptr) {
-			svc.camera_controller.set_position(haunch_enemy->get_global_center());
-			// haunch->set_position(haunch_enemy->get_global_center());
-		}
+		if (haunch_enemy != nullptr) { svc.camera_controller.set_position(haunch_enemy->get_global_center()); }
+		if (progress >= 6 && progress <= 9) { svc.camera_controller.set_position(player.get_camera_focus_point()); }
 	}
 
 	if (m_intro.just_started()) {
@@ -108,6 +112,10 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 	if (m_champion) { bryn->set_position(m_champion->get_global_center() + sf::Vector2f{-4.f, -4.f}); }
 	bryn->request(NPCAnimationState::special_2);
 
+	auto champion_target = player.get_collider().get_top() - sf::Vector2f{0.f, 40.f};
+	auto player_seat = m_champion->get_global_center() + sf::Vector2f{-10.f, 0.f};
+	if (m_champion && progress > 8) { player.set_position(m_champion->get_global_center()); }
+
 	switch (progress) {
 	case 0:
 		haunch->force_engage();
@@ -141,20 +149,20 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 		// bryn rescues nani
 		if (!context.console) {
 			bryn->unhide();
+			bryn->get_collider().set_attribute(shape::ColliderAttributes::no_collision);
 			bryn->set_invisible(false);
 			player.controller.prevent_movement();
 			player.get_collider().physics.zero_x();
 			player.set_flag(player::PlayerFlags::cutscene);
 			player.set_idle();
-			if (m_champion) { m_champion->set_target(player.get_collider().get_top() - sf::Vector2f{0.f, 40.f}); }
+			if (m_champion) { m_champion->set_target(champion_target); }
 			m_champion_entry.start();
 			++progress;
 		}
 		break;
 	case 5:
-		if (m_champion_entry.is_almost_complete() && m_champion) { /*m_champion->flags.set(ChampionJ5Flags::interactable);*/
-		}
 		if (!context.console.has_value()) {
+			if (m_champion) { m_champion->set_target(champion_target); }
 			if (bryn->get_collider().bounding_box.overlaps(player.get_collider().get_vicinity_rect())) {
 				bryn->flush_and_push(4);
 				bryn->force_engage();
@@ -163,36 +171,47 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 		}
 		break;
 	case 6: break;
+	case 7:
+		player.set_jumping();
+		m_player_jump.start();
+		++progress;
+		break;
 	case 8:
-		if (!context.console) {
-			if (m_champion) {
-				m_champion->request(ChampionJ5State::take_off);
-				m_champion->set_target(sf::Vector2f{3000.f, -100.f});
-				player.set_position(m_champion->get_global_center());
+		if (m_player_jump.is_complete()) {
+			player.get_collider().set_attribute(shape::ColliderAttributes::no_collision);
+			if (m_champion) { player.set_position(player_seat); }
+			m_exit_point = player.get_camera_focus_point();
+			if (!context.console) {
+				player.set_sitting();
+				bryn->flush_and_push(5);
+				bryn->force_engage();
+				++progress;
 			}
-			player.request_animation(player::AnimState::sit);
-			++progress;
-			m_heroes_exit.start();
 		}
 		break;
 	case 9:
-		if (m_champion) { player.set_position(m_champion->get_global_center()); }
+		if (!context.console) {
+			m_heroes_exit.start();
+			m_champion->set_target(sf::Vector2f{2500.f, -100.f});
+			++progress;
+		}
+		break;
+	case 10:
+		svc.camera_controller.set_position(m_exit_point);
 		if (m_heroes_exit.is_almost_complete()) {
 			haunch->flush_and_push(5);
 			haunch->force_engage();
 			++progress;
 		}
 		break;
-	case 10: break;
 	case 11:
-		svc.data.switch_destructible_state(90102, true);
 		m_outro.start();
 		++progress;
 		break;
 	case 12:
 		if (!context.console) {
 			if (svc.ticker.every_x_ticks(80)) {
-				auto pos = random::random_vector_float(-300.f, 300.f);
+				auto pos = haunch_enemy->get_global_center() + random::random_weighted_offset(300.f);
 				map.spawn_explosion(svc, "explosion", "explosion", arms::Team::skycorps, pos, 48.f, 1, 4);
 			}
 			if (m_outro.is_almost_complete()) { cooldowns.end.start(); }

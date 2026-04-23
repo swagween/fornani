@@ -9,7 +9,7 @@
 
 namespace fornani::graphics {
 
-enum class RewardSequenceFlags { show_player, console_after_exit };
+enum class RewardSequenceFlags { show_player, console_after_exit, health_get };
 
 class IRewardSequence : public Polymorphic {
   public:

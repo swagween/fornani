@@ -8,7 +8,7 @@ namespace fornani::automa {
 
 Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameplayState(svc, player, scene, room_number), m_reset{64} {
 
-	m_map = world::Map{svc, player};
+	m_map.emplace(svc, player);
 
 	m_type = StateType::game;
 

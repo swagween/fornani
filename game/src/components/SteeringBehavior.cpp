@@ -7,6 +7,14 @@
 
 namespace fornani::components {
 
+static float wrap_angle(float a) {
+	while (a > std::numbers::pi_v<float>) a -= 2.f * std::numbers::pi_v<float>;
+	while (a < -std::numbers::pi_v<float>) a += 2.f * std::numbers::pi_v<float>;
+	return a;
+}
+
+static float angle_to_target(sf::Vector2f from, sf::Vector2f to) { return std::atan2(to.y - from.y, to.x - from.x); }
+
 void SteeringBehavior::smooth_random_walk(PhysicsComponent& physics, float dampen, float radius) { physics.apply_force(calculate_random_walk(physics, dampen, radius)); }
 
 void SteeringBehavior::smooth_random_walk(PhysicsComponent& physics, HV axis, float dampen, float radius) {
@@ -32,6 +40,75 @@ void SteeringBehavior::seek(components::PhysicsComponent& physics, sf::Vector2f 
 	force -= physics.velocity;
 	force *= strength;
 	physics.apply_force(force);
+}
+
+void SteeringBehavior::inertial_seek(components::PhysicsComponent& physics, sf::Vector2f point, float max_speed, float max_force) {
+
+	sf::Vector2f toTarget = point - physics.position;
+
+	float distance = std::sqrt(toTarget.x * toTarget.x + toTarget.y * toTarget.y);
+	if (distance < constants::tiny_value) { return; }
+
+	// Normalize
+	sf::Vector2f desired = toTarget / distance;
+
+	// 🔑 Scale speed based on distance
+	float speed = max_speed;
+	if (distance < 100.f) speed *= (distance / 100.f);
+
+	desired *= speed;
+
+	sf::Vector2f steering = desired - physics.velocity;
+
+	// Clamp force
+	float mag = std::sqrt(steering.x * steering.x + steering.y * steering.y);
+	if (mag > max_force) steering = (steering / mag) * max_force;
+
+	physics.apply_force(steering);
+}
+
+void SteeringBehavior::spring_seek(components::PhysicsComponent& physics, sf::Vector2f point, float stiffness, float damping) {
+	sf::Vector2f displacement = point - physics.position;
+	sf::Vector2f force = displacement * stiffness - physics.velocity * damping;
+	physics.apply_force(force);
+}
+
+void SteeringBehavior::thrust_seek(components::PhysicsComponent& physics, sf::Vector2f point, ThrustParameters params) {
+	sf::Vector2f to_target = point - physics.position;
+	float distance = to_target.length();
+
+	if (distance < constants::tiny_value) { return; }
+
+	sf::Vector2f desired_dir = to_target.normalized();
+
+	float jitter = 0.02f;
+	sf::Vector2f random_offset{random::random_range_float(-1.f, 1.f), random::random_range_float(-1.f, 1.f)};
+	desired_dir = (desired_dir + random_offset * jitter).normalized();
+
+	sf::Vector2f forward = physics.velocity.normalized();
+
+	if (forward.length() < constants::tiny_value) { forward = desired_dir; }
+
+	if (physics.actual_speed() < constants::tiny_value) {
+		forward = desired_dir;
+	} else {
+		forward = physics.velocity / physics.actual_speed();
+		forward = (forward + (desired_dir - forward) * params.turn_rate).normalized();
+	}
+
+	forward = (forward + (desired_dir - forward) * params.turn_rate).normalized();
+
+	float alignment = util::dot(forward, desired_dir);
+
+	float thrust_scale = 1.0f;
+	if (distance < params.arrival_radius) thrust_scale = distance / params.arrival_radius;
+
+	if (alignment > 0.7f) {
+		float final_thrust = params.thrust_power * alignment * thrust_scale;
+		physics.apply_force(forward * final_thrust);
+	}
+
+	physics.velocity *= params.damping;
 }
 
 void SteeringBehavior::evade(components::PhysicsComponent& physics, sf::Vector2f point, float strength, float max_force) {

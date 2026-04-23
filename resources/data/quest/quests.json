@@ -207,5 +207,11 @@
     "target": 1,
     "objectives": [],
     "displayed": false
+  },
+  {
+    "tag": "bonus_health",
+    "target": 1,
+    "objectives": [],
+    "displayed": false
   }
 ]

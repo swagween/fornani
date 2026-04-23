@@ -205,7 +205,13 @@
         "label": "turn",
         "parameters": [6, 3, 32, 0, false]
       }
-    ]
+    ],
+    "schedule": {
+      "night": 404,
+      "dusk": 404,
+      "dawn": 400,
+      "day": 400
+    }
   },
   "otto": {
     "id": 1,
@@ -293,7 +299,8 @@
         "label": "idle",
         "parameters": [0, 8, 60, -1, false]
       }
-    ]
+    ],
+    "voice_cues": [{ "tag": "euoah" }, { "tag": "ruah" }, { "tag": "uah" }, { "tag": "yeoww" }]
   },
   "guppy": {
     "id": 15,
@@ -394,6 +401,45 @@
         "parameters": [4, 4, 20, 3, false]
       }
     ]
+  },
+  "bongo": {
+    "id": 9,
+    "dimensions": [32, 32],
+    "sprite_dimensions": [54, 54],
+    "sprite_offset": [0, -29],
+    "random_walk": true,
+    "walk_chance": 6,
+    "walk_speed": 0.3,
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 12, 50, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [26, 2, 40, 0, false]
+      },
+      {
+        "label": "walk",
+        "parameters": [22, 4, 50, 3, false]
+      },
+      {
+        "label": "busy",
+        "sounds": [{ "frame": 6, "tag": "shovel_dig" }],
+        "parameters": [13, 7, 40, -1, false]
+      },
+      {
+        "label": "respond",
+        "parameters": [20, 2, 50, 0, false]
+      }
+    ],
+    "schedule": {
+      "night": 406,
+      "dusk": 400,
+      "dawn": 400,
+      "day": 400
+    },
+    "voice_cues": [{ "tag": "ah" }, { "tag": "auhh" }, { "tag": "ooh" }]
   },
   "lucie": {
     "id": 33,
@@ -498,7 +544,8 @@
         "label": "turn",
         "parameters": [6, 3, 40, 0, false]
       }
-    ]
+    ],
+    "voice_cues": [{ "tag": "yyyeah" }, { "tag": "rrreah" }, { "tag": "naninih" }]
   },
   "bit": {
     "id": 20,

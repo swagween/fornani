@@ -1,5 +1,6 @@
 
 #include <fornani/utils/Random.hpp>
+#include <numbers>
 
 namespace fornani::random {
 
@@ -35,6 +36,15 @@ sf::Vector2f random_vector_float(sf::Vector2f lo, sf::Vector2f hi) {
 	auto randx = random_range_float(lo.x, hi.x);
 	auto randy = random_range_float(lo.y, hi.y);
 	return {randx, randy};
+}
+
+sf::Vector2f random_weighted_offset(float radius, float bias) {
+	static std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+	float const angle = dist(engine()) * 2.0f * std::numbers::pi_v<float>;
+	float r = dist(engine());
+	r = std::pow(r, bias); // bias > 1 → more weight toward center
+	float const final_radius = r * radius;
+	return {std::cos(angle) * final_radius, std::sin(angle) * final_radius};
 }
 
 int unsigned_coin_flip() { return std::bernoulli_distribution(0.5)(engine()) ? 1 : 0; }

@@ -10,17 +10,38 @@
 #include <fornani/events/Subscription.hpp>
 #include <fornani/story/Quest.hpp>
 #include <fornani/utils/Circuit.hpp>
+#include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/Flaggable.hpp>
 #include <fornani/utils/ID.hpp>
 #include <fornani/utils/StateFunction.hpp>
+#include <fornani/utils/TransparentStringHash.hpp>
 #include <memory>
 #define NPC_BIND(f) [this]() { return this->f(); }
 
 namespace fornani {
 
-enum class NPCFlags { has_turn_animation, face_player, background, no_animation, random_walk, cutscene, piggyback };
+enum class NPCFlags { has_turn_animation, face_player, background, no_animation, random_walk, cutscene, piggyback, busy };
 enum class NPCState { engaged, force_interact, introduced, talking, cutscene, piggybacking, hidden, distant_interact, just_engaged, random_walk, invisible, interacting };
-enum class NPCAnimationState { idle, turn, walk, inspect, fall, land, busy, stagger, special_1, special_2, special_3 };
+enum class NPCAnimationState { idle, turn, walk, inspect, fall, land, busy, stagger, respond, special_1, special_2, special_3 };
+
+struct NPCSpawn {
+	NPCSpawn(dj::Json const& in) {
+		chance = in["chance"].as<float>();
+		interval = in["interval"].as<int>();
+	}
+	float chance;
+	int interval;
+};
+
+struct NPCVoiceCue {
+	std::string tag{};
+};
+
+struct NPCSchedule {
+	NPCSchedule(dj::Json const& in);
+	[[nodiscard]] auto is_here(int room_id, TimeOfDay tod) const -> bool { return destinations.contains(tod) ? destinations.at(tod) == room_id : true; }
+	std::unordered_map<TimeOfDay, int> destinations{};
+};
 
 class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>, public Flaggable<NPCFlags> {
   public:
@@ -58,6 +79,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	fsm::StateFunction update_land();
 	fsm::StateFunction update_busy();
 	fsm::StateFunction update_stagger();
+	fsm::StateFunction update_respond();
 	fsm::StateFunction update_special_1();
 	fsm::StateFunction update_special_2();
 	fsm::StateFunction update_special_3();
@@ -88,20 +110,27 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	std::shared_ptr<Slot const> slot{std::make_shared<Slot const>()};
 
   private:
-	bool change_state(NPCAnimationState next, anim::Parameters params);
+	bool change_state(NPCAnimationState next, std::string_view to);
+
+	std::unordered_map<int, NPCVoiceCue> m_voice_cues{};
 
 	/* gameplay members */
 	util::BitFlags<NPCState> m_state{};
 	util::Circuit m_current_conversation;
+	util::Cooldown m_busy_timer{};
 	std::deque<int> conversations{};
 	Animatable m_indicator;
 	sf::Vector2f m_offset{};
 	std::optional<npc::Vendor*> vendor;
 	int current_location{};
 	int vendor_id{};
+	int m_walk_chance{};
 	automa::ServiceProvider* m_services;
 
 	float m_walk_speed;
+
+	std::optional<NPCSpawn> m_spawn{};
+	std::optional<NPCSchedule> m_schedule{};
 
 	/* data-driven members */
 	ID m_id;
@@ -111,6 +140,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 
 	bool m_background{};
 	bool m_hidden{};
+	bool m_start_busy{};
 };
 
 } // namespace fornani

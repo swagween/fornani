@@ -17,6 +17,8 @@ Map::Map(automa::ServiceProvider& svc, player::Player& player) : player(&player)
 
 void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& context, int room_number) {
 
+	svc.current_room = room_number;
+
 	unserialize(svc, room_number);
 
 	auto it = std::find_if(svc.data.map_jsons.begin(), svc.data.map_jsons.end(), [room_number](auto const& r) { return r.id == room_number; });
@@ -37,7 +39,6 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 	for (auto const& atmo : m_attributes.atmosphere) { atmosphere.push_back(vfx::Atmosphere(svc, *this, atmo)); }
 	background = std::make_unique<graphics::Background>(svc, meta["background"].as_string());
 
-	svc.current_room = room_number;
 	if (meta["cutscene_on_entry"]["flag"].as_bool()) {
 		auto ctype = meta["cutscene_on_entry"]["type"].as<int>();
 		auto cid = meta["cutscene_on_entry"]["id"].as<int>();
@@ -194,7 +195,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 	cooldowns.loading.start();
 
 	player->register_with_map(*this);
-	if (m_biome.get_id() == 10) {
+	if (m_biome.get_id() == 12) {
 		player->texture_updater.load_pixel_map(svc.assets.get_texture_modifiable("nani_palette_night"));
 		player->catalog.wardrobe.set_palette(svc.assets.get_texture_modifiable("nani_palette_night"));
 		player->update_sprite();
@@ -416,6 +417,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	for (auto& breakable : breakables) { breakable->update(svc, *this, *player); }
 	for (auto& waterfall : waterfalls) { waterfall->update(svc, *this, *player); }
 	for (auto& incinerite : incinerite_blocks) { incinerite->update(svc, *this, *player); }
+	if (test_mobile) { test_mobile->update(*this); }
 
 	for (auto& pushable : pushables) { pushable->post_update(svc, *this, *player); }
 	for (auto& spike : spikes) { spike.update(svc, *player, *this); }
@@ -505,6 +507,8 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		}
 		for (auto t : get_entities<Turret>()) { t->render(win, cam, 1.0); }
 	}
+
+	if (test_mobile) { test_mobile->render(win, cam); }
 
 	// foreground enemies
 	for (auto& enemy : enemy_catalog.enemies) {
@@ -949,6 +953,14 @@ void Map::debug() {
 	ImGui::SliderFloat("Ambience Balance", &a, 0.f, 1.f);
 	music_balance.set_target(m);
 	ambience_balance.set_target(a);
+	ImGui::Separator();
+	if (ImGui::Button("Test Collider")) {
+		if (test_mobile) {
+			test_mobile.reset();
+		} else {
+			test_mobile.emplace(*m_services, *this);
+		}
+	}
 }
 
 bool Map::nearby(shape::Shape& first, shape::Shape& second) const {

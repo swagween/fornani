@@ -105,6 +105,7 @@
           17,
           25
         ],
+        "start_busy": false,
         "suites": [
           [
             1,
@@ -130,6 +131,7 @@
           14,
           13
         ],
+        "start_busy": false,
         "suites": [
           [
             1
@@ -151,9 +153,32 @@
           4,
           25
         ],
+        "start_busy": false,
         "suites": [
           [
             1
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": false,
+        "hidden": false,
+        "id": 406,
+        "label": "bongo",
+        "position": [
+          6,
+          25
+        ],
+        "start_busy": false,
+        "suites": [
+          [
+            2
           ]
         ]
       }

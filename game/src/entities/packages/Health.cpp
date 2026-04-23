@@ -16,7 +16,7 @@ void Health::set_quantity(float amount) { m_quantity = amount; }
 
 void Health::add_bonus(float amount) {
 	m_quantity += amount;
-	bonus = amount;
+	m_bonus = amount;
 }
 
 void Health::set_invincibility(float amount) { invincibility_time = static_cast<int>(amount); }
@@ -44,6 +44,7 @@ void Health::inflict(float amount, bool force, bool inv) {
 	if (invincibility.is_complete() || force) {
 		taken_point = m_quantity;
 		m_quantity = std::clamp(m_quantity - amount, 0.f, get_capacity());
+		m_bonus = std::clamp(m_bonus - amount, 0.f, m_bonus);
 		m_taken.start();
 		if (inv) { invincibility.start(invincibility_time); }
 		flags.set(HPState::hit);
@@ -59,7 +60,7 @@ void Health::kill() { m_quantity = 0.f; }
 void Health::debug() {
 	ImGui::SliderFloat("m_quantityf", &m_quantity, 1.f, get_capacity(), "%1.f");
 	ImGui::SliderFloat("max", &m_capacity, 3.f, 20.f, "%1.f");
-	ImGui::SliderFloat("bonusf", &bonus, 1.f, 3.f, "%1.f");
+	ImGui::SliderFloat("bonusf", &m_bonus, 1.f, 3.f, "%1.f");
 }
 
 } // namespace fornani::entity

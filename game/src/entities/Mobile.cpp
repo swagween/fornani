@@ -42,6 +42,11 @@ void Mobile::post_update(automa::ServiceProvider& svc, world::Map& map, player::
 		directions.actual = directions.desired;
 	}
 	if (tick) { Animatable::tick(); }
+
+	auto it = p_sounds.find(get_animation_tag());
+	if (it != p_sounds.end()) {
+		if (animation.get_frame_count() == it->second.frame && animation.keyframe_started()) { svc.soundboard.play_sound(it->second.tag, get_collider().get_center()); }
+	}
 }
 
 anim::Parameters const& Mobile::get_params(std::string const& key) { return p_animations.contains(key) ? p_animations.at(key) : p_animations.at("idle"); }

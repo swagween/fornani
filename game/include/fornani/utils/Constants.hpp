@@ -4,6 +4,7 @@
 
 namespace fornani::constants {
 
+constexpr std::uint8_t texture_pad_v = 2u;
 constexpr std::uint8_t u_scale_factor{2u};
 constexpr int i_scale_factor{static_cast<int>(u_scale_factor)};
 constexpr float f_scale_factor{static_cast<float>(u_scale_factor)};
@@ -12,6 +13,11 @@ constexpr std::uint8_t u_cell_resolution{16};
 constexpr unsigned int ui_cell_resolution{static_cast<unsigned int>(u_cell_resolution)};
 constexpr int i_cell_resolution{static_cast<int>(u_cell_resolution)};
 constexpr float f_cell_resolution{static_cast<float>(i_cell_resolution)};
+
+constexpr std::uint8_t u_cell_resolution_padded = u_cell_resolution + texture_pad_v;
+constexpr unsigned int ui_cell_resolution_padded = static_cast<unsigned int>(u_cell_resolution_padded);
+constexpr int i_cell_resolution_padded = static_cast<int>(u_cell_resolution_padded);
+constexpr float f_cell_resolution_padded = static_cast<float>(i_cell_resolution_padded);
 
 constexpr std::uint8_t u8_cell_size{u_cell_resolution * u_scale_factor};
 constexpr std::uint32_t u32_cell_size{static_cast<std::uint32_t>(u8_cell_size)};
@@ -24,6 +30,8 @@ constexpr sf::Vector2f f_cell_vec{f_cell_size, f_cell_size};
 
 constexpr sf::Vector2i i_resolution_vec{i_cell_resolution, i_cell_resolution};
 constexpr sf::Vector2f f_resolution_vec{f_cell_resolution, f_cell_resolution};
+constexpr sf::Vector2i i_resolution_vec_padded{i_cell_resolution_padded, i_cell_resolution_padded};
+constexpr sf::Vector2f f_resolution_vec_padded{f_cell_resolution_padded, f_cell_resolution_padded};
 constexpr sf::Vector2i i_scale_vec{i_scale_factor, i_scale_factor};
 constexpr sf::Vector2f f_scale_vec{f_scale_factor, f_scale_factor};
 constexpr sf::Vector2f f_inverse_scale_vec{-f_scale_factor, f_scale_factor};

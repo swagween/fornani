@@ -122,8 +122,8 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	for (auto& piece : player.get_outfit()) {
 		auto irow{static_cast<int>(row)};
 		auto icol = piece > 0 ? static_cast<int>(piece - 1) : 9; // 9 is where the default outfit is located on the atlas
-		auto lookup = sf::Vector2i{icol, irow} * constants::i_cell_resolution;
-		m_apparel_sprite.setTextureRect(sf::IntRect{lookup + wardrobe_origin, constants::i_resolution_vec});
+		auto lookup = sf::Vector2i{icol, irow} * constants::i_cell_resolution_padded;
+		m_apparel_sprite.setTextureRect(sf::IntRect{lookup + wardrobe_origin, constants::i_resolution_vec_padded});
 		m_apparel_sprite.setPosition(m_placement + m_path.get_position() + outfit_offset + row * spacing - cam);
 		m_apparel_sprite.setOrigin(constants::f_resolution_vec * 0.5f);
 		win.draw(m_apparel_sprite);

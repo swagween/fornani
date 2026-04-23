@@ -162,6 +162,7 @@ void Player::update(world::Map& map) {
 	if (is_dead() && !m_death_cooldown.running()) { m_death_cooldown.start(); }
 	set_flag(PlayerFlags::in_front_of_door, false);
 	m_death_cooldown.update();
+
 	if (!collider.has_value()) { return; }
 
 	// stun logic
@@ -230,6 +231,8 @@ void Player::update(world::Map& map) {
 	has_item_equipped("hoarders_trinket") ? health.set_invincibility(default_invincibility_time_v * 1.3f) : health.set_invincibility(default_invincibility_time_v);
 	if (arsenal && hotbar) { has_item_equipped("soda") ? equipped_weapon().set_reload_multiplier(0.85f) : equipped_weapon().set_reload_multiplier(1.f); }
 	if (has_item("soda")) { m_services->quest_table.set_quest_progression("carl_soda", 1, QuestRequirementType::loose); }
+	auto has_bonus_health = health.has_bonus() ? 1 : 0;
+	m_services->quest_table.set_quest_progression("bonus_health", has_bonus_health, QuestRequirementType::strict);
 
 	// map effects
 	if (controller.is_wallsliding()) {
@@ -475,7 +478,11 @@ void Player::purchase(int amount) {
 	m_services->soundboard.play_sound("vendor_sale");
 }
 
-void Player::give_bonus_health(int amount) { health.add_bonus(static_cast<float>(amount)); }
+void Player::give_bonus_health(int amount) {
+	health.refill();
+	health.add_bonus(static_cast<float>(amount));
+	set_flag(PlayerFlags::bonus_health_added);
+}
 
 void Player::turn() {
 	auto to_dir = get_actual_direction().right() ? SimpleDirection{LR::left} : SimpleDirection{LR::right};
@@ -574,6 +581,17 @@ void Player::flash_sprite() {
 void Player::set_idle() {
 	m_animation_machine.force(AnimState::idle, "idle");
 	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_idle, &m_animation_machine);
+}
+
+void Player::set_sitting() {
+	m_animation_machine.force(AnimState::sit, "sit");
+	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_sit, &m_animation_machine);
+}
+
+void Player::set_jumping() {
+	m_animation_machine.force(AnimState::rise, "rise");
+	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_rise, &m_animation_machine);
+	get_collider().physics.acceleration.y = -20.f;
 }
 
 void Player::set_slow_walk() {

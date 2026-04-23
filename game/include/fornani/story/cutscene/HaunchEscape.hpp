@@ -22,9 +22,12 @@ class HaunchEscape final : public Cutscene {
 	util::Cooldown m_heroes_exit;
 	util::Cooldown m_outro;
 	util::Cooldown m_champion_entry;
+	util::Cooldown m_player_jump;
 	std::optional<ChampionJ5> m_champion;
 
 	util::BitFlags<HaunchEscapeFlags> m_flags{};
+
+	sf::Vector2f m_exit_point{};
 };
 
 } // namespace fornani

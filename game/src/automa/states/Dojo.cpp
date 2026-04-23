@@ -103,6 +103,15 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		m_flags.set(GameplayFlags::item_music_played);
 	}
 
+	if (player->has_flag_set(player::PlayerFlags::bonus_health_added) && !p_context.console) {
+		svc.soundboard.play_sound("heart_get");
+		hud.refresh_hearts(svc, *player);
+		player->set_flag(player::PlayerFlags::bonus_health_added, false);
+		hud.spawn_effect(svc, "bonus_heart", hud.get_hearts_endpoint());
+	}
+
+	if (p_reward_sequence) {}
+
 	if (m_flags.consume(GameplayFlags::remove_item)) {
 		auto label = player->catalog.inventory.find_item(m_item_tag)->get_title();
 		NANI_LOG_DEBUG(m_logger, "removed item {}", label);
@@ -132,6 +141,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (p_reward_sequence) {
 		p_reward_sequence.value()->update(svc, *player, *m_map);
 		p_context.transition.update(*player);
+		if (p_reward_sequence.value()->flags.consume(graphics::RewardSequenceFlags::health_get)) { hud.spawn_effect(svc, "bonus_heart", hud.get_hearts_endpoint(), {}, 1); }
 		if (p_reward_sequence.value()->is_done()) {
 			p_context.transition.end();
 			m_flags.set(GameplayFlags::health_increase_exit);

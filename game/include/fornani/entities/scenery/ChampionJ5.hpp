@@ -35,6 +35,7 @@ class ChampionJ5 : public Mobile, public StateMachine<ChampionJ5State> {
 	Animatable m_propeller;
 	components::SteeringBehavior m_steering{};
 	sf::Vector2f m_target{};
+	ThrustParameters m_thrust;
 
 	io::Logger m_logger{"Scenery"};
 };

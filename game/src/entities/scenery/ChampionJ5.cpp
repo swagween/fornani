@@ -4,7 +4,7 @@
 
 namespace fornani {
 
-ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "champion_j5_body", {80, 60}}, m_propeller{svc, "champion_j5_propeller", {80, 60}} {
+ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "champion_j5_body", {80, 60}}, m_propeller{svc, "champion_j5_propeller", {80, 60}}, m_thrust{0.017f, .118f, .991f, 260.f} {
 	push_and_set_animation("flying", {0, 1, 24, -1});
 	push_animation("land", {1, 4, 24, 0});
 	push_animation("grounded", {5, 1, 24, -1});
@@ -13,7 +13,7 @@ ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{s
 	m_propeller.center();
 	center();
 	Mobile::register_collider(map, {40.f, 40.f});
-	get_collider().physics.set_friction_componentwise({0.99f, 0.99f});
+	get_collider().physics.set_friction_componentwise({1.f, 1.f});
 	get_collider().stats.GRAV = 4.2f;
 	get_collider().set_trait(shape::ColliderTrait::circle);
 	get_collider().set_exclusion_target(shape::ColliderTrait::circle);
@@ -21,6 +21,7 @@ ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{s
 	get_collider().set_exclusion_target(shape::ColliderTrait::player);
 	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 	get_collider().set_exclusion_target(shape::ColliderTrait::pushable);
+	get_collider().set_exclusion_target(shape::ColliderTrait::block);
 }
 
 void ChampionJ5::update(world::Map& map) {
@@ -39,7 +40,8 @@ void ChampionJ5::update(world::Map& map) {
 
 	// get_collider().has_flag_set(shape::ColliderFlags::simple) ? get_collider().physics.set_friction_componentwise({0.9f, 0.9f}) : get_collider().physics.set_friction_componentwise({0.99f, 0.99f});
 
-	if (get_collider().has_flag_set(shape::ColliderFlags::simple)) { m_steering.seek(get_collider().physics, m_target, 0.000045f); }
+	// if (get_collider().has_flag_set(shape::ColliderFlags::simple)) { m_steering.seek(get_collider().physics, m_target, 0.00003f); }
+	if (get_collider().has_flag_set(shape::ColliderFlags::simple)) { m_steering.thrust_seek(get_collider().physics, m_target, m_thrust); }
 	// if ((get_collider().physics.position - m_target).length() < 8.f && flags.test(ChampionJ5Flags::interactable)) { request(ChampionJ5State::land); }
 
 	state_function = state_function();

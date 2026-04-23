@@ -26,7 +26,7 @@ void ItemWidget::update(automa::ServiceProvider& svc) {
 }
 
 void ItemWidget::render(automa::ServiceProvider& svc, sf::RenderWindow& win) {
-	auto dim = m_type == ItemWidgetType::item ? sf::Vector2i{16, 16} : sf::Vector2i{24, 24};
+	auto dim = m_type == ItemWidgetType::item ? sf::Vector2i{18, 18} : sf::Vector2i{24, 24};
 	win.draw(m_sprites.sticker);
 	m_sprites.item.setTextureRect(sf::IntRect(m_lookup * dim.x, dim));
 	win.draw(m_sprites.item);

@@ -63,7 +63,8 @@ void HealthRewardSequence::update(automa::ServiceProvider& svc, player::Player& 
 	}
 	if (m_heart_path.is_almost_complete()) {
 		p_end.start();
-		svc.soundboard.play_sound("drop_spawn");
+		svc.soundboard.play_sound("heart_get");
+		flags.set(RewardSequenceFlags::health_get);
 	}
 	if (m_effect) {
 		m_effect->update();

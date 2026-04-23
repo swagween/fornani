@@ -89,6 +89,13 @@
     "framerate": 8,
     "dimensions": [64, 64]
   },
+  "bonus_heart": {
+    "frame_count": 6,
+    "framerate": 20,
+    "dimensions": [21, 21],
+    "x_reflection": true,
+    "y_reflection": true
+  },
   "flare": {
     "frame_count": 6,
     "framerate": 4,

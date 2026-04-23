@@ -246,8 +246,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	m_services->quest_table.serialize(save);
 
 	// write opened chests and doors
-	save["map_data"]["world_time"]["hours"] = m_services->world_clock.get_hours();
-	save["map_data"]["world_time"]["minutes"] = m_services->world_clock.get_minutes();
+	m_services->world_clock.serialize(save["map_data"]["world_time"]);
 	save["piggybacker"] = player.get_piggybacker_id();
 	save["npc_locations"] = dj::Json::empty_array();
 	save["map_data"]["fallen_enemies"] = dj::Json::empty_array();
@@ -360,7 +359,8 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 
 	m_services->quest_table.unserialize(save);
 
-	m_services->world_clock.set_time(save["map_data"]["world_time"]["hours"].as<int>(), save["map_data"]["world_time"]["minutes"].as<int>());
+	m_services->world_clock.unserialize(save["map_data"]["world_time"]);
+
 	for (auto& room : save["discovered_rooms"].as_array()) { discovered_rooms.add(room.as<int>()); }
 	for (auto& door : save["unlocked_doors"].as_array()) { unlocked_doors.add(door.as_string()); }
 	for (auto& chest : save["opened_chests"].as_array()) { opened_chests.add(chest.as<std::uint64_t>()); }

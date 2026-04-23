@@ -1363,6 +1363,110 @@
       ]
     }
   },
+  "bongo": {
+    "1": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "What are you doing?"
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "Heard any news lately?"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [
+              [1, 0],
+              [4, 0]
+            ],
+            "messages": [
+              "Not sure what you're lookin' for...",
+              "You look familiar.",
+              "Long as the grounds needs keepin', I won't be out a job."
+            ]
+          }
+        ],
+        [
+          {
+            "codes": [[4, 2]],
+            "message": "Just makin' sure the soil is nice and soft, and keepin' an eye on things around the village."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Gives me somethin' to take my mind off the raids."
+          }
+        ],
+        [
+          {
+            "message": "Yeah, a surveyor came through here not too long ago. Said he was lookin' for Young Mimic."
+          },
+          {
+            "message": "Told him he was two weeks too late. Young Mimic got killed by Sergeant Haunch and his big ol' laser gun."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "I do miss that boy, lemme tell ya. We used to drink each other under the table over at the Chafed Worm."
+          }
+        ]
+      ]
+    },
+    "2": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "Do you live here?"
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "Any news?"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "codes": [
+              [1, 0],
+              [4, 0]
+            ],
+            "messages": [
+              "Nothing like a cold drink after a long day of hard workin'",
+              "Got an early morning tomorrow.",
+              "Best be stayin' away from the wild woods. Nothing but trouble out there."
+            ]
+          }
+        ],
+        [
+          {
+            "message": "Indeed I do. Ever since Sergeant Haunch destroyed my house in Upper Woodshine, Garth here has been puttin' me up in a spare bed."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "But they say don't sleep where you drink..."
+          }
+        ],
+        [
+          {
+            "message": "There's been more critters wandering in the woods lately."
+          },
+          {
+            "codes": [[4, 1]],
+            "message": "Some say it's because the Mother Worm is gonna wake up soon, but I got my doubts."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Either way, makes me all the more content to keep my rear end right where it is."
+          }
+        ]
+      ]
+    }
+  },
   "dr_go": {
     "1": {
       "responses": [[]],
@@ -2201,6 +2305,21 @@
           }
         ]
       ]
+    },
+    "2": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "code_list": [[[5, 1]], [[5, 0]], [[5, 0]]],
+            "messages": [
+              "It's a gorgeous day today, isn't it?",
+              "I feel safe here in Woodshine, but as soon as I leave the village boundary I feel like I'm going to get eaten by a monster or something.",
+              "I really hope Sergeant Haunch doesn't come back anytime soon..."
+            ]
+          }
+        ]
+      ]
     }
   },
   "gobe": {
@@ -3003,7 +3122,9 @@
       "suite": [
         [
           {
+            "code_list": [[[4, 0]], [[4, 1]], [[4, 2]]],
             "messages": [
+              "Get me out of this smelly old tavern!",
               "My granddaughter doesn't know what she's thinking, marrying a human.",
               "This town isn't half of what it used to be ever since Skycorps started terrorizing us."
             ]
@@ -3475,6 +3596,7 @@
       ]
     },
     "5": {
+      "output": 3,
       "responses": [],
       "suite": [
         [
@@ -3483,7 +3605,7 @@
               [5, 1],
               [23, 11]
             ],
-            "message": "AAAAHHHHHHHHH!"
+            "message": "...AAAAHHHHHHHHH!"
           }
         ]
       ]
@@ -3546,10 +3668,17 @@
           {
             "codes": [
               [1, 1],
-              [24, 20],
+              [24, 40],
               [25, 1]
             ],
-            "message": "Can I have a drink? (20 orbs)"
+            "contingencies": [
+              {
+                "requirement": 0,
+                "strict": true,
+                "tag": "bonus_health"
+              }
+            ],
+            "message": "Can I have a drink? (40 orbs)"
           },
           {
             "codes": [[1, 2]],
@@ -3560,7 +3689,10 @@
       "suite": [
         [
           {
-            "codes": [[1, 0]],
+            "codes": [
+              [1, 0],
+              [4, 0]
+            ],
             "messages": [
               "Welcome to the Chafed Worm!",
               "How can I help ya?",
@@ -3570,7 +3702,7 @@
         ],
         [
           {
-            "codes": [[1, 0]],
+            "codes": [[4, 3]],
             "messages": [
               "Sure thing. This ought to fix you up nice and good.",
               "I'll hook you up with the freshest brew we got.",
@@ -3580,6 +3712,7 @@
         ],
         [
           {
+            "codes": [[4, 1]],
             "message": "Sergeant Haunch came and basically waged war on us."
           },
           {
@@ -3967,8 +4100,27 @@
       "suite": [
         [
           {
-            "codes": [[4, 4]],
+            "codes": [
+              [4, 4],
+              [5, 3],
+              [23, 7]
+            ],
             "message": "Nani! Get in!"
+          }
+        ]
+      ]
+    },
+    "5": {
+      "output": 2,
+      "responses": [],
+      "suite": [
+        [
+          {
+            "codes": [
+              [5, 3],
+              [23, 9]
+            ],
+            "message": "Hang on tight!"
           }
         ]
       ]
