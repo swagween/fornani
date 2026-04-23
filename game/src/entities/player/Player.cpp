@@ -36,6 +36,8 @@ Player::Player(automa::ServiceProvider& svc)
 	m_ear.physics.set_global_friction(0.8f);
 
 	svc.events.reveal_item_by_id_event.attach_to(slot, &Player::reveal_item, this);
+	svc.events.purchase_event.attach_to(slot, &Player::purchase, this);
+	svc.events.give_bonus_health_event.attach_to(slot, &Player::give_bonus_health, this);
 
 	m_attributes.stun_time = 512;
 }
@@ -467,6 +469,13 @@ void Player::end_tick() {
 	controller.clean();
 	flags.triggers = {};
 }
+
+void Player::purchase(int amount) {
+	give_drop(item::DropType::orb, -amount);
+	m_services->soundboard.play_sound("vendor_sale");
+}
+
+void Player::give_bonus_health(int amount) { health.add_bonus(static_cast<float>(amount)); }
 
 void Player::turn() {
 	auto to_dir = get_actual_direction().right() ? SimpleDirection{LR::left} : SimpleDirection{LR::right};

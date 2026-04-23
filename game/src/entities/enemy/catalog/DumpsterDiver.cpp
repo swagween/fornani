@@ -8,7 +8,7 @@
 namespace fornani::enemy {
 
 DumpsterDiver::DumpsterDiver(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "dumpster_diver"), m_services{&svc}, m_dive_time{800}, m_wait_time{400} {
-	m_params = {{"idle", {0, 6, 48, -1}}};
+	p_animations = {{"idle", {0, 6, 48, -1}}};
 	animation.set_params(get_params("idle"));
 	p_state.actual = DumpsterDiverState::idle;
 	m_wait_time.start();

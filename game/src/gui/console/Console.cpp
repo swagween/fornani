@@ -93,6 +93,10 @@ void Console::update(automa::ServiceProvider& svc) {
 				auto lookup = m_services->input_system.get_icon_lookup_by_action(static_cast<input::DigitalAction>(action_id));
 				m_writer->insert_icon_at(code.value, lookup);
 			}
+			if (code.is(MessageCodeType::give_bonus_health)) {
+				m_services->events.give_bonus_health_event.dispatch(code.value);
+				processed = true;
+			}
 			if (code.is(MessageCodeType::launch_cutscene) && m_process_code_before) {
 				m_services->events.launch_cutscene_event.dispatch(*m_services, code.value);
 				NANI_LOG_DEBUG(m_logger, "Launching cutscene: {}", code.value);
@@ -288,6 +292,8 @@ void Console::handle_inputs(input::InputSystem& controller) {
 						}
 					}
 					if (cde.is_piggyback()) { m_services->events.npc_piggyback_event.dispatch(*m_services, cde.value); }
+					if (cde.is(MessageCodeType::purchase)) { m_services->events.purchase_event.dispatch(cde.value); }
+					if (cde.is(MessageCodeType::give_bonus_health)) { m_services->events.give_bonus_health_event.dispatch(cde.value); }
 					if (cde.is_open_vendor()) { m_services->events.open_vendor_event.dispatch(*m_services, cde.value); }
 					if (cde.is_item()) {
 						m_services->events.acquire_item_from_console_event.dispatch(*m_services, cde.value);

@@ -14,5 +14,6 @@ struct ServiceProvider;
 struct NPCPiggybackEvent : Event<automa::ServiceProvider&, int> {};
 struct NPCPopConversationEvent : Event<> {};
 struct NPCVoiceCueEvent : Event<automa::ServiceProvider&, int> {};
+struct PurchaseEvent : Event<int> {};
 
 } // namespace fornani

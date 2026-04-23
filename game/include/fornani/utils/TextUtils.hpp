@@ -26,4 +26,11 @@ static void set_utf8_string(std::string_view in, sf::Text& text) {
 	text.setString(s);
 }
 
+static sf::Vector2f get_character_position(sf::Text& text, std::size_t index) {
+	auto const& glyphs = text.getShapedGlyphs();
+	if (glyphs.size() <= index) { return sf::Vector2f{}; }
+	sf::Vector2f local_position = glyphs[index].position;
+	return text.getTransform().transformPoint(local_position);
+}
+
 } // namespace fornani

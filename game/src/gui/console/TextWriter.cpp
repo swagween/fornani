@@ -210,17 +210,19 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	// win.draw(bounds_box);
 	if (!suite) { return; }
 	if (m_mode == WriterMode::stall) { return; }
+	cursor.setOrigin({0.f, cursor.getLocalBounds().size.y});
 	static bool show_cursor;
 	static auto blink_rate{24};
-	auto cursor_offset{sf::Vector2f{8.f, 0.f}};
 	if (m_iterators.current_suite_set >= suite->suite.size()) { return; }
 	if (suite->suite.at(m_iterators.current_suite_set).empty()) { return; }
 	auto& current_message = suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
 	current_message.setPosition(m_bounds.position + m_font->offset);
+	auto last_character_width = current_message.getShapedGlyphs()[0].glyph.bounds.size.x;
+	auto cursor_offset{sf::Vector2f{last_character_width, 0.f}};
 	if (!is_writing()) {
 		win.draw(current_message);
 		if (m_services->ticker.every_x_frames(blink_rate)) { show_cursor = !show_cursor; }
-		auto last_glyph_position = current_message.findCharacterPos(working_message.getString().getSize() - 1);
+		auto last_glyph_position = get_character_position(current_message, current_message.getString().getSize() - 1);
 		cursor.setPosition(last_glyph_position + cursor_offset - m_font->offset);
 		if (show_cursor && !m_hide_cursor) { win.draw(cursor); }
 		// insert an icon hint if there is one
@@ -230,7 +232,7 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 	show_cursor = true;
 	working_message.setFillColor(colors::ui_white);
 	working_message.setPosition(m_bounds.position + m_font->offset);
-	auto last_glyph_position = working_message.findCharacterPos(working_message.getString().getSize() - 1);
+	auto last_glyph_position = get_character_position(working_message, working_message.getString().getSize() - 1);
 	cursor.setPosition(last_glyph_position + cursor_offset - m_font->offset);
 	win.draw(working_message);
 	if (!m_hide_cursor) { win.draw(cursor); }
@@ -240,7 +242,7 @@ void TextWriter::write_gradual_message(sf::RenderWindow& win) {
 void TextWriter::insert_input_hint(sf::RenderWindow& win, sf::Text& message) {
 	auto insertion_index = message.getString().find(m_input_code);
 	if (insertion_index == std::string::npos) { return; }
-	auto insertion_point = message.findCharacterPos(insertion_index);
+	auto insertion_point = get_character_position(message, insertion_index);
 	m_input_icon->setPosition(insertion_point);
 	win.draw(*m_input_icon);
 }

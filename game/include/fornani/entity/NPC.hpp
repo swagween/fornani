@@ -43,6 +43,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	void play_voice_cue(automa::ServiceProvider& svc, int which) const;
 	void piggyback_me(automa::ServiceProvider& svc, int id);
 	void flush_conversations();
+	void flush_and_push(int convo);
 	void force_engage();
 	void disengage();
 	void set_invisible(bool to = true) { to ? m_state.set(NPCState::invisible) : m_state.reset(NPCState::invisible); }

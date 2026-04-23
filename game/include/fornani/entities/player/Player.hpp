@@ -132,6 +132,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void assign_texture(sf::Texture& tex);
 	void start_tick();
 	void end_tick();
+	void purchase(int amount);
+	void give_bonus_health(int amount);
 
 	// animation machine
 	void request_animation(AnimState const to) { m_animation_machine.request(to); }

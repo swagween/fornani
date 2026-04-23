@@ -39,6 +39,9 @@ class Animatable : public Drawable {
 
 	anim::Animation animation;
 
+  protected:
+	std::unordered_map<std::string, anim::Parameters> p_animations{};
+
   private:
 	void set_rect();
 
@@ -47,8 +50,6 @@ class Animatable : public Drawable {
 	std::string m_root_animation{};
 	sf::Vector2i m_dimensions;
 	int m_channel{};
-
-	std::unordered_map<std::string, anim::Parameters> m_animations{};
 };
 
 } // namespace fornani

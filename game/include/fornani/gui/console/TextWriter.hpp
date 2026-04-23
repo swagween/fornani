@@ -151,7 +151,7 @@ static inline void word_wrap(sf::Text& current_message, float const width) {
 			std::string left = current_message.getString().substring(0, static_cast<std::size_t>(last_space_index + 1));
 			std::string right = current_message.getString().substring(static_cast<std::size_t>(last_space_index + 1));
 			auto next_space{std::distance(right.begin(), std::find_if(right.begin(), right.end(), [](auto const& c) { return c == ' '; }))};
-			auto next_word = current_message.findCharacterPos(static_cast<std::size_t>(i + next_space));
+			auto next_word = get_character_position(current_message, static_cast<std::size_t>(i + next_space));
 			if (next_word.x > width) {
 				// splice!
 				left += '\n';

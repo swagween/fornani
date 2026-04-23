@@ -16,7 +16,7 @@ Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, SceneContext& context)
 	: NPC(svc, map, std::string_view{"lynx"}, false), Boss(svc, map, "lynx"), m_context{&context}, m_map{&map},
 	  m_cooldowns{.run{240}, .post_hurt{64}, .post_shuriken_toss{1200}, .post_levitate{1000}, .start_levitate{150}, .throw_shuriken{60}, .post_defeat{800}}, m_services{&svc},
 	  m_attacks{.left_shockwave{{30, 400, 2, {-1.5f, 0.f}}}, .right_shockwave{{30, 400, 2, {1.5f, 0.f}}}}, m_shuriken(svc, "shuriken"), m_magic{svc, {40.f, 40.f}, colors::white, "lynx_magic"}, m_seek_friction{0.9f, 0.9f} {
-	Enemy::m_params = {
+	Enemy::p_animations = {
 		{"sit", {0, 1, lynx_framerate, -1}},
 		{"get_up", {1, 2, lynx_framerate * 4, 0}},
 		{"idle", {3, 6, lynx_framerate * 4, -1}},

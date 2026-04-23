@@ -10,7 +10,7 @@ namespace fornani::enemy {
 constexpr auto junkfly_framerate = 12;
 
 Junkfly::Junkfly(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "junkfly"), m_services{&svc}, m_toss_time{800} {
-	m_params = {{"idle", {0, 4, junkfly_framerate * 2, -1}}, {"turn", {4, 2, junkfly_framerate * 2, 0}}, {"toss", {6, 4, junkfly_framerate * 2, 0}}};
+	p_animations = {{"idle", {0, 4, junkfly_framerate * 2, -1}}, {"turn", {4, 2, junkfly_framerate * 2, 0}}, {"toss", {6, 4, junkfly_framerate * 2, 0}}};
 	animation.set_params(get_params("idle"));
 	p_state.actual = JunkflyState::idle;
 

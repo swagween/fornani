@@ -14,7 +14,7 @@
 namespace fornani::enemy {
 
 enum class HaunchState { idle, airborne, turn, shoot_high, shoot_low, get_up, walk, pull_grenade, throw_grenade, throw_grenade_down, triple_toss, whistle, triple_down_toss, struggle, stalk };
-enum class HaunchFlags { laser_fired, jumped, show_gun };
+enum class HaunchFlags { laser_fired, jumped, show_gun, escape_cutscene_launched };
 
 class Haunch final : public Boss, public StateMachine<HaunchState> {
   public:
@@ -60,6 +60,7 @@ class Haunch final : public Boss, public StateMachine<HaunchState> {
 	util::BitFlags<HaunchFlags> m_flags{};
 
 	Animatable m_laser_gun;
+	std::optional<Animatable> m_dynamite_stick;
 
 	bool change_state(HaunchState next, anim::Parameters params);
 

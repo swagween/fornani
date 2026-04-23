@@ -13,14 +13,14 @@ constexpr auto summoner_framerate = 16;
 Summoner::Summoner(automa::ServiceProvider& svc, world::Map& map, int variant)
 	: Enemy(svc, map, "summoner"), m_variant{static_cast<SummonerVariant>(variant)}, m_map{&map}, m_cooldowns{.post_summon{2400}, .walk{200}, .post_walk{1400}, .post_hurt{20}, .pulse{48}}, m_services{&svc}, m_attacks{.pulse{}},
 	  m_pulse(svc, "pulse"), m_magic{svc, {40.f, 96.f}, colors::white, "guardian_magic"} {
-	m_params = {{"idle", {0, 5, summoner_framerate * 2, -1}},
-				{"walk", {5, 4, summoner_framerate * 2, -1}},
-				{"begin_summon", {9, 7, summoner_framerate * 2, 0}},
-				{"summon", {16, 5, summoner_framerate * 2, 3}},
-				{"horizontal_pulse", {21, 4, summoner_framerate * 2, 0}},
-				{"vertical_pulse", {25, 4, summoner_framerate * 2, 0}},
-				{"turn", {29, 5, summoner_framerate * 2, 0}},
-				{"dodge", {29, 5, summoner_framerate, 0}}};
+	p_animations = {{"idle", {0, 5, summoner_framerate * 2, -1}},
+					{"walk", {5, 4, summoner_framerate * 2, -1}},
+					{"begin_summon", {9, 7, summoner_framerate * 2, 0}},
+					{"summon", {16, 5, summoner_framerate * 2, 3}},
+					{"horizontal_pulse", {21, 4, summoner_framerate * 2, 0}},
+					{"vertical_pulse", {25, 4, summoner_framerate * 2, 0}},
+					{"turn", {29, 5, summoner_framerate * 2, 0}},
+					{"dodge", {29, 5, summoner_framerate, 0}}};
 	animation.set_params(get_params("idle"));
 	flags.state.set(StateFlags::no_shake);
 	flags.state.set(StateFlags::vulnerable);

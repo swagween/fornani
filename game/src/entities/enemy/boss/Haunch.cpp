@@ -12,7 +12,7 @@ constexpr auto haunch_framerate{14};
 Haunch::Haunch(automa::ServiceProvider& svc, world::Map& map)
 	: Boss{svc, map, "haunch"}, m_services{&svc}, m_map{&map}, m_gun{svc, "big_laser_gun"}, m_stun_grenade{svc, "stun_grenade"}, m_hand_grenade{svc, "hand_grenade"},
 	  m_cooldowns{.run{200}, .post_run{1800}, .grenade{40}, .laser_charge{288}, .post_laser{96}, .whistle{400}, .post_whistle{1400}, .post_death{1000}}, m_laser_gun{svc, "haunch_laser_gun", {37, 15}} {
-	m_params = {
+	p_animations = {
 		{"idle", {0, 6, haunch_framerate * 3, -1}},
 		{"turn", {18, 1, haunch_framerate * 3, 0}},
 		{"shoot_high", {6, 3, haunch_framerate * 4, 0, true}},
@@ -58,7 +58,9 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		map.clear_enemies({28});
 	}
 	if (has_flag_set(BossFlags::post_death)) {
+		m_flags.reset(HaunchFlags::show_gun);
 		if (!hurt_effect.running()) { hurt_effect.start(128); }
+		if (m_dynamite_stick) { m_dynamite_stick->tick(); }
 		shake();
 		m_cooldowns.post_death.update();
 		if (!m_cooldowns.post_death.running()) { m_cooldowns.post_death.start(); }
@@ -66,10 +68,20 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 			auto pos = get_collider().get_center() + random::random_vector_float(-40.f, 40.f);
 			map.spawn_effect(svc, "puff", pos, {}, 1);
 		}
-		if (flags.state.consume(StateFlags::special_event)) { request(HaunchState::stalk); }
+		if (flags.state.consume(StateFlags::special_event)) {
+			request(HaunchState::stalk);
+			if (!m_dynamite_stick) {
+				m_dynamite_stick.emplace(svc, "tnt", sf::Vector2i{18, 22});
+				m_dynamite_stick->push_and_set_animation("charged", {0, 6, 22, -1});
+				m_dynamite_stick->center();
+			}
+		}
 	}
 	if (m_cooldowns.post_death.is_almost_complete()) {
-		svc.events.launch_cutscene_event.dispatch(svc, 902);
+		if (!m_flags.test(HaunchFlags::escape_cutscene_launched)) {
+			svc.events.launch_cutscene_event.dispatch(svc, 902);
+			m_flags.set(HaunchFlags::escape_cutscene_launched);
+		}
 		set_flag(BossFlags::post_death, false);
 	}
 	if (!has_flag_set(BossFlags::battle_mode)) {
@@ -95,6 +107,7 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		m_laser_gun.set_animation("neutral");
 		m_flags.reset(HaunchFlags::laser_fired);
 	}
+
 	m_flags.reset(HaunchFlags::show_gun);
 	if (is_state(HaunchState::shoot_low) || is_state(HaunchState::shoot_high) || is_state(HaunchState::walk) || is_state(HaunchState::idle) || is_state(HaunchState::airborne) || is_state(HaunchState::get_up)) {
 		m_flags.set(HaunchFlags::show_gun);
@@ -164,6 +177,10 @@ void Haunch::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	m_laser_gun.set_position(m_gun_steering.physics.position - cam);
 	if (m_flags.test(HaunchFlags::show_gun)) { win.draw(m_laser_gun); }
 	if (svc.greyblock_mode()) {}
+	if (m_dynamite_stick) {
+		m_dynamite_stick->set_position(get_collider().get_center() - cam);
+		win.draw(*m_dynamite_stick);
+	}
 }
 
 void Haunch::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {

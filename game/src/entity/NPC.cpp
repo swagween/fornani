@@ -119,10 +119,11 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 	}
 
 	for (auto const& in_anim : in_data["animation"].as_array()) {
-		m_params.insert({in_anim["label"].as_string(), {in_anim["parameters"][0].as<int>(), in_anim["parameters"][1].as<int>(), in_anim["parameters"][2].as<int>(), in_anim["parameters"][3].as<int>(), in_anim["parameters"][4].as_bool()}});
+		Mobile::p_animations.insert(
+			{in_anim["label"].as_string(), {in_anim["parameters"][0].as<int>(), in_anim["parameters"][1].as<int>(), in_anim["parameters"][2].as<int>(), in_anim["parameters"][3].as<int>(), in_anim["parameters"][4].as_bool()}});
 		if (in_anim["label"].as_string() == "turn") { set_flag(NPCFlags::has_turn_animation); }
 	}
-	if (m_params.contains("idle")) { Mobile::set_parameters(m_params.at("idle")); }
+	if (Mobile::p_animations.contains("idle")) { Mobile::set_parameters(Mobile::p_animations.at("idle")); }
 	request(NPCAnimationState::idle);
 	if (in_data["no_animation"].as_bool()) { set_flag(NPCFlags::no_animation); }
 
@@ -288,6 +289,11 @@ void NPC::piggyback_me(automa::ServiceProvider& svc, int id) {
 
 void NPC::flush_conversations() { conversations.clear(); }
 
+void NPC::flush_and_push(int convo) {
+	flush_conversations();
+	push_conversation(convo);
+}
+
 void NPC::force_engage() {
 	m_state.set(NPCState::engaged);
 	m_state.set(NPCState::interacting);
@@ -425,9 +431,6 @@ fsm::StateFunction NPC::update_special_1() {
 fsm::StateFunction NPC::update_special_2() {
 	p_state.actual = NPCAnimationState::special_2;
 	if (change_state(NPCAnimationState::stagger, get_params("stagger"))) { return std::move(fsm::StateFunction{NPC_BIND(update_stagger)}); }
-	if (change_state(NPCAnimationState::turn, get_params("turn"))) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
-	if (change_state(NPCAnimationState::idle, get_params("idle"))) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
-	if (change_state(NPCAnimationState::walk, get_params("walk"))) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
 	return std::move(fsm::StateFunction{NPC_BIND(update_special_2)});
 }
 

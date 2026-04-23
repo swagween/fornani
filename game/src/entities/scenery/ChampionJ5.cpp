@@ -13,22 +13,43 @@ ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{s
 	m_propeller.center();
 	center();
 	Mobile::register_collider(map, {40.f, 40.f});
+	get_collider().physics.set_friction_componentwise({0.99f, 0.99f});
+	get_collider().stats.GRAV = 4.2f;
+	get_collider().set_trait(shape::ColliderTrait::circle);
+	get_collider().set_exclusion_target(shape::ColliderTrait::circle);
+	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
+	get_collider().set_exclusion_target(shape::ColliderTrait::player);
+	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
+	get_collider().set_exclusion_target(shape::ColliderTrait::pushable);
 }
 
 void ChampionJ5::update(world::Map& map) {
 	tick();
 	m_propeller.tick();
-	get_collider().set_attribute(shape::ColliderAttributes::no_map_collision, is_state(ChampionJ5State::flying));
-	get_collider().set_flag(shape::ColliderFlags::simple, !is_state(ChampionJ5State::grounded));
-	if (get_collider().has_flag_set(shape::ColliderFlags::simple)) { m_steering.seek(get_collider().physics, m_target, 0.00045f); }
-	if ((get_collider().physics.position - m_target).length() < 8.f) { request(ChampionJ5State::land); }
+	get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
+	get_collider().set_flag(shape::ColliderFlags::simple);
+
+	/*if (flags.test(ChampionJ5Flags::interactable)) {
+		get_collider().set_attribute(shape::ColliderAttributes::no_map_collision, is_state(ChampionJ5State::flying));
+		get_collider().set_flag(shape::ColliderFlags::simple, !is_state(ChampionJ5State::grounded));
+	} else {
+		get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
+		get_collider().set_flag(shape::ColliderFlags::simple);
+	}*/
+
+	// get_collider().has_flag_set(shape::ColliderFlags::simple) ? get_collider().physics.set_friction_componentwise({0.9f, 0.9f}) : get_collider().physics.set_friction_componentwise({0.99f, 0.99f});
+
+	if (get_collider().has_flag_set(shape::ColliderFlags::simple)) { m_steering.seek(get_collider().physics, m_target, 0.000045f); }
+	// if ((get_collider().physics.position - m_target).length() < 8.f && flags.test(ChampionJ5Flags::interactable)) { request(ChampionJ5State::land); }
+
 	state_function = state_function();
 }
 
 void ChampionJ5::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	m_propeller.set_position(get_collider().get_center() - cam);
+	auto drawpos = get_collider().get_center() + sf::Vector2f{0.f, 4.f};
+	m_propeller.set_position(drawpos - cam);
 	win.draw(m_propeller);
-	set_position(get_collider().get_center() - cam);
+	set_position(drawpos - cam);
 	win.draw(*this);
 }
 

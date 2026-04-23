@@ -1,5 +1,6 @@
 
 #pragma once
+
 #include <cstdint>
 
 namespace fornani {
@@ -30,7 +31,9 @@ enum class MessageCodeType {
 	open_vendor,
 	launch_cutscene,
 	add_map_marker,
-	set_cutscene_progression
+	set_cutscene_progression,
+	purchase,
+	give_bonus_health
 };
 
 enum class CodeSource { suite, response };

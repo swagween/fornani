@@ -8,7 +8,7 @@ namespace fornani::enemy {
 Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction)
 	: Enemy(svc, map, "beamstalk", false, 0, start_direction), m_services(&svc), m_map(&map), beam(svc, "green_beam"), fire_rate{24}, post_beam{680} {
 
-	m_params = {{"idle", {14, 14, 36, -1}}, {"charge", {0, 9, 24, 0}}, {"shoot", {9, 3, 24, 2}}, {"relax", {12, 2, 36, 0}}};
+	p_animations = {{"idle", {14, 14, 36, -1}}, {"charge", {0, 9, 24, 0}}, {"shoot", {9, 3, 24, 2}}, {"relax", {12, 2, 36, 0}}};
 
 	animation.set_params(get_params("idle"));
 	get_collider().physics.maximum_velocity = {8.f, 12.f};

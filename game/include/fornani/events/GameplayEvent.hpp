@@ -16,5 +16,6 @@ struct StartBattleEvent : Event<> {};
 struct HealthRewardSequenceEvent : Event<automa::ServiceProvider&, player::Player&> {};
 struct AbilityRewardSequenceEvent : Event<automa::ServiceProvider&, player::Player&, std::string_view> {};
 struct TransitionEvent : Event<> {};
+struct GiveBonusHealthEvent : Event<int> {};
 
 } // namespace fornani

@@ -10,7 +10,7 @@ namespace fornani::enemy {
 constexpr auto spitefly_framerate = 12;
 
 Spitefly::Spitefly(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "spitefly"), m_services{&svc} {
-	m_params = {{"idle", {0, 4, spitefly_framerate * 2, -1}}, {"turn", {4, 1, spitefly_framerate * 2, 0}}, {"sleep", {5, 1, spitefly_framerate * 2, -1}}, {"awaken", {6, 7, spitefly_framerate * 2, 0}}};
+	p_animations = {{"idle", {0, 4, spitefly_framerate * 2, -1}}, {"turn", {4, 1, spitefly_framerate * 2, 0}}, {"sleep", {5, 1, spitefly_framerate * 2, -1}}, {"awaken", {6, 7, spitefly_framerate * 2, 0}}};
 	animation.set_params(get_params("sleep"));
 	p_state.actual = SpiteflyState::sleep;
 	flags.general.set(GeneralFlags::hurt_on_contact);

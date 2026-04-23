@@ -11,8 +11,8 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map, int variant)
 	  parts{.spear{svc.assets.get_texture("demon_spear"), 2.0f, 0.85f, {-16.f, 8.f}}, .sword{svc.assets.get_texture("demon_sword"), 2.0f, 0.85f, {-4.f, 8.f}}, .shield{svc.assets.get_texture("demon_shield"), 2.0f, 0.85f, {-28.f, 8.f}}},
 	  m_variant{static_cast<DemonVariant>(variant)} {
 	auto demon_framerate = 24;
-	m_params = {{"idle", {0, 6, demon_framerate, -1}},	   {"turn", {9, 1, demon_framerate, 0}},  {"run", {6, 4, demon_framerate, -1}},		 {"jump", {7, 1, demon_framerate * 3, 0}},		 {"signal", {10, 1, demon_framerate * 3, 2}},
-				{"rush", {11, 1, demon_framerate * 2, 0}}, {"stab", {11, 3, demon_framerate, 0}}, {"uppercut", {14, 3, demon_framerate, 0}}, {"jumpsquat", {11, 1, demon_framerate * 3, 0}}, {"dormant", {18, 1, demon_framerate * 5, -1}}};
+	p_animations = {{"idle", {0, 6, demon_framerate, -1}},	   {"turn", {9, 1, demon_framerate, 0}},  {"run", {6, 4, demon_framerate, -1}},		 {"jump", {7, 1, demon_framerate * 3, 0}},		 {"signal", {10, 1, demon_framerate * 3, 2}},
+					{"rush", {11, 1, demon_framerate * 2, 0}}, {"stab", {11, 3, demon_framerate, 0}}, {"uppercut", {14, 3, demon_framerate, 0}}, {"jumpsquat", {11, 1, demon_framerate * 3, 0}}, {"dormant", {18, 1, demon_framerate * 5, -1}}};
 
 	animation.set_params(get_params("dormant"));
 	if (map.get_style_id() == 5) {

@@ -4,12 +4,14 @@
 #include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/entities/Mobile.hpp>
 #include <fornani/entities/animation/StateMachine.hpp>
+#include <fornani/io/Logger.hpp>
 #include <fornani/utils/StateFunction.hpp>
 #define CHAMPIONJ5_BIND(f) std::bind(&ChampionJ5::f, this)
 
 namespace fornani {
 
 enum class ChampionJ5State { flying, land, grounded, take_off };
+enum class ChampionJ5Flags { interactable };
 
 class ChampionJ5 : public Mobile, public StateMachine<ChampionJ5State> {
   public:
@@ -24,6 +26,8 @@ class ChampionJ5 : public Mobile, public StateMachine<ChampionJ5State> {
 	fsm::StateFunction update_grounded();
 	fsm::StateFunction update_take_off();
 
+	util::BitFlags<ChampionJ5Flags> flags{};
+
   private:
 	bool change_state(ChampionJ5State next, anim::Parameters params);
 
@@ -31,6 +35,8 @@ class ChampionJ5 : public Mobile, public StateMachine<ChampionJ5State> {
 	Animatable m_propeller;
 	components::SteeringBehavior m_steering{};
 	sf::Vector2f m_target{};
+
+	io::Logger m_logger{"Scenery"};
 };
 
 } // namespace fornani

@@ -13,6 +13,7 @@ struct EventRegistry {
 	NPCVoiceCueEvent npc_voice_cue_event{};
 	NPCPopConversationEvent npc_pop_conversation_event{};
 	NPCPiggybackEvent npc_piggyback_event{};
+	PurchaseEvent purchase_event{};
 
 	LaunchCutsceneEvent launch_cutscene_event{};
 	SetCutsceneProgressionEvent set_cutscene_progression_event{};
@@ -34,6 +35,7 @@ struct EventRegistry {
 	RemoveItemEvent remove_item_event{};
 	RemoveWeaponByIDEvent remove_weapon_by_id_event{};
 	RemoveItemByIDEvent remove_item_by_id_event{};
+	GiveBonusHealthEvent give_bonus_health_event{};
 
 	LoadFileEvent load_file_event{};
 	NewFileEvent new_file_event{};

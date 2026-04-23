@@ -10,7 +10,7 @@ namespace fornani::enemy {
 constexpr auto grand_mastiff_framerate = 12;
 
 GrandMastiff::GrandMastiff(automa::ServiceProvider& svc, world::Map& map) : Boss{svc, map, "grand_mastiff"}, m_post_slash{400}, m_post_bite{600} {
-	m_params = {{"idle", {0, 4, grand_mastiff_framerate * 3, -1}}, {"run", {4, 6, grand_mastiff_framerate, 2}}, {"growl", {15, 4, grand_mastiff_framerate * 2, 0}}, {"turn", {10, 4, grand_mastiff_framerate * 2, 0}}};
+	p_animations = {{"idle", {0, 4, grand_mastiff_framerate * 3, -1}}, {"run", {4, 6, grand_mastiff_framerate, 2}}, {"growl", {15, 4, grand_mastiff_framerate * 2, 0}}, {"turn", {10, 4, grand_mastiff_framerate * 2, 0}}};
 
 	animation.set_params(get_params("idle"));
 	m_bite.hit.bounds.setRadius(40.f);

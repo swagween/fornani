@@ -13,9 +13,9 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, SceneContext& co
 	  sparkler(svc, Enemy::get_collider().get_vicinity_rect().size, colors::ui_white, "minigus"), m_context{&context}, m_mode{MinigusMode::neutral}, m_minigun{svc},
 	  attacks{.left_shockwave{{50, 600, 3, {-0.6f, 0.f}}}, .right_shockwave{{50, 600, 3, {0.6f, 0.f}}}} {
 
-	Enemy::m_params = {{"idle", {0, 6, 48, -1}}, {"shoot", {10, 1, 38, -1}}, {"jumpsquat", {18, 1, 58, 0}}, {"hurt", {21, 4, 24, 2}},	  {"jump", {14, 1, 22, -1}},	 {"jump_shoot", {32, 1, 42, -1}},		  {"reload", {7, 7, 18, 0}},
-					   {"turn", {18, 2, 32, 0}}, {"run", {14, 4, 32, 3}},	 {"punch", {28, 4, 32, 0}},		{"uppercut", {35, 4, 32, 0}}, {"struggle", {35, 1, 24, -1}}, {"build_invincibility", {33, 2, 22, 4}}, {"laugh", {25, 3, 24, 4}},
-					   {"snap", {39, 3, 42, 0}}, {"rush", {66, 4, 22, -1}},	 {"drink", {42, 16, 20, 0}},	{"throw_can", {58, 8, 22, 0}}};
+	Enemy::p_animations = {{"idle", {0, 6, 48, -1}}, {"shoot", {10, 1, 38, -1}}, {"jumpsquat", {18, 1, 58, 0}}, {"hurt", {21, 4, 24, 2}},	  {"jump", {14, 1, 22, -1}},	 {"jump_shoot", {32, 1, 42, -1}},		  {"reload", {7, 7, 18, 0}},
+						   {"turn", {18, 2, 32, 0}}, {"run", {14, 4, 32, 3}},	 {"punch", {28, 4, 32, 0}},		{"uppercut", {35, 4, 32, 0}}, {"struggle", {35, 1, 24, -1}}, {"build_invincibility", {33, 2, 22, 4}}, {"laugh", {25, 3, 24, 4}},
+						   {"snap", {39, 3, 42, 0}}, {"rush", {66, 4, 22, -1}},	 {"drink", {42, 16, 20, 0}},	{"throw_can", {58, 8, 22, 0}}};
 
 	Enemy::animation.set_params(Enemy::get_params("idle"));
 	gun.clip_cooldown_time = 360;

@@ -9,8 +9,8 @@ namespace fornani {
 Animatable::Animatable(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions) : Drawable(svc, label), m_dimensions{dimensions} { set_texture_rect(sf::IntRect{{}, m_dimensions}); }
 
 void Animatable::push_animation(std::string_view label, anim::Parameters params) {
-	if (m_animations.empty()) { m_root_animation = label.data(); }
-	m_animations.insert({label.data(), params});
+	if (p_animations.empty()) { m_root_animation = label.data(); }
+	p_animations.insert({label.data(), params});
 }
 
 void Animatable::push_and_set_animation(std::string_view label, anim::Parameters params) {
@@ -19,7 +19,7 @@ void Animatable::push_and_set_animation(std::string_view label, anim::Parameters
 }
 
 void Animatable::set_animation(std::string_view to) {
-	set_parameters(m_animations.at(to.data()));
+	set_parameters(p_animations.at(to.data()));
 	m_current = to.data();
 }
 

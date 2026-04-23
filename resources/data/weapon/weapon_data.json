@@ -113,7 +113,7 @@
         "dimensions": [12, 12],
         "radius": 10.0,
         "attributes": {
-          "base_damage": 10,
+          "base_damage": 100,
           "power": 4,
           "lifespan": 70,
           "lifespan_variance": 0,

@@ -17,8 +17,11 @@ class HaunchEscape final : public Cutscene {
 
   private:
 	util::Cooldown m_intro;
-	util::Cooldown m_pipe_bomb;
+	util::Cooldown m_dynamite;
 	util::Cooldown m_bomb_tick;
+	util::Cooldown m_heroes_exit;
+	util::Cooldown m_outro;
+	util::Cooldown m_champion_entry;
 	std::optional<ChampionJ5> m_champion;
 
 	util::BitFlags<HaunchEscapeFlags> m_flags{};

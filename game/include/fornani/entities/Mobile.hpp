@@ -33,7 +33,6 @@ class Mobile : public Animatable {
 	std::optional<shape::RegisteredCollider> owned_collider;
 	std::optional<std::reference_wrapper<shape::RegisteredCollider>> collider;
 	void request_flip() { p_flags.set(MobileState::flip); }
-	std::unordered_map<std::string, anim::Parameters> m_params;
 	anim::Parameters const& get_params(std::string const& key);
 	struct {
 		Direction actual{};

@@ -29,6 +29,7 @@ class Cutscene : public UniquePolymorphic {
 	[[nodiscard]] auto get_id() const -> int { return id; }
 	[[nodiscard]] auto complete() const -> bool { return flags.test(CutsceneFlags::complete); }
 	[[nodiscard]] auto delete_me() const -> bool { return flags.test(CutsceneFlags::delete_me); }
+	[[nodiscard]] auto get_progress() const -> int { return progress; }
 
 	void set_progress(int const to);
 
