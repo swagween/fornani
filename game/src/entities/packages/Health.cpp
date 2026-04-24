@@ -14,6 +14,8 @@ void Health::set_capacity(float amount, bool memory) {
 
 void Health::set_quantity(float amount) { m_quantity = amount; }
 
+void Health::set_bonus(float amount) { m_bonus = amount; }
+
 void Health::add_bonus(float amount) {
 	m_quantity += amount;
 	m_bonus = amount;

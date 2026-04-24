@@ -9,7 +9,7 @@
 namespace fornani::gui {
 
 MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player)
-	: Gizmo("Minimap", false), m_minimap{&svc.data.minimap}, m_sprite{svc.assets.get_texture("map_gizmo")}, m_plugin_sprite{svc.assets.get_texture("map_gizmo")}, m_icon_sprite{svc.assets.get_texture("map_gizmo")},
+	: Gizmo("Minimap", false), m_minimap{&svc.data.minimap}, m_sprite{svc.assets.get_texture("map_gizmo")}, m_plugin_sprite{svc.assets.get_texture("map_gizmo")}, m_icon_sprite{svc.assets.get_texture("minimap_icons")},
 	  m_map_screen(svc, svc.assets.get_texture("map_screen"), {45, 45}, {1, 1}), m_map_shadow(svc, svc.assets.get_texture("map_shadow"), {45, 45}, {1, 1}),
 	  m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap", 32, util::InterpolationType::quadratic},
 	  m_motherboard_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap_motherboard", 108, util::InterpolationType::linear},
@@ -207,6 +207,10 @@ void MapGizmo::on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Pl
 	m_flags.icon.set(MapIconFlags::save);
 	m_plugins.push_back(MapPlugin(svc.finder, "plugin_bed", sf::IntRect{m_lookups.plugin + sf::Vector2i{0, 27}, {36, 15}}, audio::Pioneer::click));
 	m_flags.icon.set(MapIconFlags::bed);
+	if (player.has_item("gobe_plugin")) {
+		m_plugins.push_back(MapPlugin(svc.finder, "plugin_gobe", sf::IntRect{m_lookups.plugin + sf::Vector2i{36, 27}, {43, 22}}, audio::Pioneer::slot));
+		m_flags.icon.set(MapIconFlags::gobe);
+	}
 	//
 
 	m_minimap->set_flag(MiniMapFlags::open);

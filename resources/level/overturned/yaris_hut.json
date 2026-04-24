@@ -14,7 +14,6 @@
         ]
       }
     ],
-    "inspectables": null,
     "portals": [
       {
         "activate_on_contact": false,
@@ -25,7 +24,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           4,

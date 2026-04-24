@@ -43,8 +43,9 @@ Player::Player(automa::ServiceProvider& svc)
 }
 
 void Player::serialize(dj::Json& out) const {
-	out["max_hp"] = health.get_capacity();
+	out["max_hp"] = health.get_native_capacity();
 	out["hp"] = health.get_quantity();
+	out["bonus_hp"] = health.get_i_bonus();
 	out["orbs"] = wallet.get_balance();
 	out["position"]["x"] = get_position().x;
 	out["position"]["y"] = get_position().y;
@@ -82,6 +83,7 @@ void Player::serialize(dj::Json& out) const {
 void Player::unserialize(dj::Json const& in) {
 	health.set_capacity(in["max_hp"].as<float>());
 	health.set_quantity(in["hp"].as<float>());
+	health.set_bonus(in["bonus_hp"].as<float>());
 	wallet.set_balance(in["orbs"].as<int>());
 
 	// load player's arsenal
@@ -522,7 +524,8 @@ void Player::update_animation() {
 	if (controller.get_ability_animation() && controller.is_ability_active() && controller.is_animation_request()) { m_animation_machine.request(*controller.get_ability_animation()); }
 
 	if (!hotbar) {
-		if (controller.has_flag_set(PlayerControllerFlags::shot_weapon)) { m_animation_machine.request(AnimState::melee_front_kick); }
+		// melee attacks out of scope for now
+		// if (controller.has_flag_set(PlayerControllerFlags::shot_weapon)) { m_animation_machine.request(AnimState::melee_front_kick); }
 	}
 
 	if (m_animation_machine.is_state(AnimState::sit)) { set_flag(PlayerFlags::show_weapon, false); }
@@ -584,6 +587,7 @@ void Player::set_idle() {
 }
 
 void Player::set_sitting() {
+	if (is_in_animation(AnimState::sit)) { return; }
 	m_animation_machine.force(AnimState::sit, "sit");
 	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_sit, &m_animation_machine);
 }
@@ -591,7 +595,7 @@ void Player::set_sitting() {
 void Player::set_jumping() {
 	m_animation_machine.force(AnimState::rise, "rise");
 	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_rise, &m_animation_machine);
-	get_collider().physics.acceleration.y = -20.f;
+	get_collider().physics.acceleration.y = -10.f;
 }
 
 void Player::set_slow_walk() {

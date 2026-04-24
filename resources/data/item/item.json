@@ -938,5 +938,15 @@
     "actual_description": "A golden charm that is always warm to the touch. It allows you to dash in any direction.",
     "unique": true,
     "readable": true
+  },
+  {
+    "tag": "gobe_plugin",
+    "category": 5,
+    "lookup": [3, 3],
+    "origin": [-1, -1],
+    "naive_title": "Gobe Plugin",
+    "naive_description": "A plugin for your map gizmo that shows you where Gobe is.",
+    "unique": true,
+    "invisible": true
   }
 ]

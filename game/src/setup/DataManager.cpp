@@ -718,6 +718,27 @@ int DataManager::get_npc_location(int npc_id) {
 	return npc_locations.at(npc_id);
 }
 
+auto DataManager::get_npc_location(automa::ServiceProvider& svc, std::string_view label) const -> int {
+	auto const& npc_data = npc[label];
+	if (npc_data["locations"]) {
+		auto tag = npc_data["locations"]["contingency"]["tag"].as_string();
+		auto status = svc.quest_table.get_quest_progression(tag);
+		auto const& target_data = npc_data["locations"]["statuses"][status];
+		auto interval = static_cast<WorldClockInterval>(target_data["interval"].as<int>());
+		auto chance = svc.world_clock.get_rng(interval);
+		auto cumulative = 0.f;
+		for (auto const& room : target_data["distributions"].as_array()) {
+			cumulative += room["weight"].as<float>();
+			if (chance < cumulative) { return room["room"].as<int>(); }
+		}
+		if (target_data["schedule"]) {
+			auto schedule = NPCSchedule(target_data["schedule"]);
+			return schedule.get_location(svc.world_clock.get_time_of_day());
+		}
+	}
+	return 0;
+}
+
 std::vector<std::unique_ptr<world::Layer>>& DataManager::get_layers(int id) { return map_layers.at(get_room_index(id)); }
 
 } // namespace fornani::data

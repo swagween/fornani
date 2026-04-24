@@ -213,5 +213,11 @@
     "target": 1,
     "objectives": [],
     "displayed": false
+  },
+  {
+    "tag": "defeat_haunch",
+    "target": 1,
+    "objectives": [],
+    "displayed": false
   }
 ]

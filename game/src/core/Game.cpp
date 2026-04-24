@@ -443,14 +443,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							}
 							ImGui::EndTabItem();
 						}
-						if (ImGui::BeginTabItem("Gobe")) {
-							for (auto i = 0; i <= static_cast<int>(audio::NPCGobe::orewa); ++i) {
-								ImGui::PushID(i);
-								if (ImGui::Button("OOO##i")) { services.soundboard.npc_map.at("gobe")(i); }
-								ImGui::PopID();
-							}
-							ImGui::EndTabItem();
-						}
 						if (ImGui::BeginTabItem("Mirin")) {
 							for (auto i = 0; i <= static_cast<int>(audio::NPCMirin::haha); ++i) {
 								ImGui::PushID(i);

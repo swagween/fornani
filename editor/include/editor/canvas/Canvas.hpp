@@ -152,7 +152,8 @@ class Canvas {
 		int type{};
 		int id{};
 		int source{};
-	} cutscene{};
+		std::optional<fornani::QuestContingencySet> contingencies;
+	} cutscene;
 
 	struct {
 		fornani::graphics::ShakeProperties shake_properties{};

@@ -26,7 +26,7 @@ struct ItemStats {
 	int stack_limit{1};
 };
 
-enum class ItemType { ability, key, collectible, gizmo, apparel };
+enum class ItemType { ability, key, collectible, gizmo, apparel, plugin };
 enum class ItemFlags { sellable, readable, equippable, wearable, invisible };
 enum class ItemState { revealed, equipped };
 

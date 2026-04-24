@@ -11,12 +11,12 @@
 namespace fornani {
 
 enum class ChampionJ5State { flying, land, grounded, take_off };
-enum class ChampionJ5Flags { interactable };
+enum class ChampionJ5Flags { interactable, landed };
 
 class ChampionJ5 : public Mobile, public StateMachine<ChampionJ5State> {
   public:
 	ChampionJ5(automa::ServiceProvider& svc, world::Map& map);
-	void update(world::Map& map);
+	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_target(sf::Vector2f to) { m_target = to; }
 
@@ -28,6 +28,10 @@ class ChampionJ5 : public Mobile, public StateMachine<ChampionJ5State> {
 
 	util::BitFlags<ChampionJ5Flags> flags{};
 
+	[[nodiscard]] auto get_drivers_seat() const -> sf::Vector2f { return get_global_center() + sf::Vector2f{8.f, -30.f}; }
+	[[nodiscard]] auto get_passengers_seat() const -> sf::Vector2f { return get_global_center() + sf::Vector2f{-8.f, -26.f}; }
+	[[nodiscard]] auto is_close_to_target(float const distance) const -> bool { return (get_collider().physics.position - m_target).length() < distance; }
+
   private:
 	bool change_state(ChampionJ5State next, anim::Parameters params);
 
@@ -36,6 +40,8 @@ class ChampionJ5 : public Mobile, public StateMachine<ChampionJ5State> {
 	components::SteeringBehavior m_steering{};
 	sf::Vector2f m_target{};
 	ThrustParameters m_thrust;
+
+	automa::ServiceProvider* m_services;
 
 	io::Logger m_logger{"Scenery"};
 };

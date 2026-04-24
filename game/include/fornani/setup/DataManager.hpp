@@ -116,6 +116,7 @@ class DataManager final {
 
 	int get_room_index(int id);
 	int get_npc_location(int npc_id);
+	[[nodiscard]] auto get_npc_location(automa::ServiceProvider& svc, std::string_view label) const -> int;
 	std::vector<std::unique_ptr<world::Layer>>& get_layers(int id);
 
 	// gui

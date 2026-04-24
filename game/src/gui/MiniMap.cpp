@@ -35,6 +35,16 @@ void MiniMap::set_markers(world::Map& map, player::Player& player) {
 	} else {
 		m_markers.push_back({MapIconFlags::nani, m_player_position, map.room_id});
 	}
+
+	if (player.has_item("gobe_plugin")) {
+		auto npcs = map.get_entities<NPC>();
+		auto git = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 3 && !n->is_hidden(); });
+		if (git != npcs.end()) {
+			auto& gobe = *git;
+			auto gobepos = gobe->get_world_position() * m_texture_scale / constants::f_cell_size + room_pos;
+			m_markers.push_back({MapIconFlags::gobe, gobepos, map.room_id});
+		}
+	}
 }
 
 void MiniMap::add_quest_marker(QuestMarkerType type, int room_id) {
@@ -110,7 +120,7 @@ void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, player::Player
 }
 
 void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, sf::Sprite& icon_sprite) {
-	static auto flash_frame{util::Circuit{2}};
+	static auto flash_frame{util::Circuit{4}};
 	if (svc.ticker.every_x_frames(10)) { flash_frame.modulate(1); }
 	m_view = svc.window->get_view();
 	auto port = svc.window->get_viewport();
@@ -164,11 +174,10 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 		if (m_map_sprite) { win.draw(*m_map_sprite); }
 	}
 	icon_sprite.setScale(constants::f_scale_vec.componentWiseDiv(port.size));
-	auto icon_lookup{136};
-	auto icon_dim{6};
+	auto icon_dim{8};
 	for (auto& element : m_markers) {
 		if (!svc.data.is_room_discovered(element.room_id) && element.type != MapIconFlags::quest) { continue; }
-		icon_sprite.setTextureRect(sf::IntRect{{icon_lookup + icon_dim * flash_frame.get(), static_cast<int>(element.type) * icon_dim}, {icon_dim, icon_dim}});
+		icon_sprite.setTextureRect(sf::IntRect{{icon_dim * flash_frame.get(), static_cast<int>(element.type) * icon_dim}, {icon_dim, icon_dim}});
 		icon_sprite.setPosition((element.position * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size));
 		if (element.type == MapIconFlags::nani) { icon_sprite.setScale(icon_sprite.getScale().componentWiseMul(player.get_facing_scale())); }
 		win.draw(icon_sprite);

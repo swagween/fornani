@@ -36,6 +36,7 @@ class Health final {
 
 	void set_capacity(float amount, bool memory = false);
 	void set_quantity(float amount);
+	void set_bonus(float amount);
 	void add_bonus(float amount = 1.f);
 	void set_invincibility(float amount);
 	void heal(float amount);

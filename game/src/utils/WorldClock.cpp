@@ -31,13 +31,13 @@ void WorldClock::update(automa::ServiceProvider& svc) {
 			if (is_daytime() && change) {
 				transition.start();
 				current_time_of_day.modulate(1);
+				increments.days.modulate(1);
+				rng.daily = random::random_range_float(0.f, 1.f);
+				if (increments.days.cycled()) { rng.weekly = random::random_range_float(0.f, 1.f); }
 			}
 			if (is_nighttime() && change) {
 				transition.start();
 				current_time_of_day.modulate(1);
-				increments.days.modulate(1);
-				rng.daily = random::random_range_float(0.f, 1.f);
-				if (increments.days.cycled()) { rng.weekly = random::random_range_float(0.f, 1.f); }
 			}
 		}
 	}

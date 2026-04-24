@@ -45,6 +45,7 @@ Item::Item(dj::Json const& source, std::string_view label) : m_label{label}, m_t
 }
 
 void Item::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f position) {
+	if (is_invisible()) { return; }
 	sprite.setTextureRect(m_lookup);
 	sprite.setPosition(position);
 	win.draw(sprite);

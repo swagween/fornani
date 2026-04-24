@@ -191,6 +191,7 @@
           19,
           27
         ],
+        "start_busy": false,
         "suites": [
           [
             2
@@ -212,6 +213,7 @@
           14,
           12
         ],
+        "start_busy": false,
         "suites": [
           [
             1

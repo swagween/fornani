@@ -392,6 +392,12 @@
     },
     {
       "folder": "nightside",
+      "label": "sky.json",
+      "region": "nightside",
+      "room_id": 999
+    },
+    {
+      "folder": "nightside",
       "label": "station.json",
       "region": "nightside",
       "room_id": 901

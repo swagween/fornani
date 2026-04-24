@@ -95,6 +95,92 @@
       "uncommon_items": ["red_jeans", "rotary_gizmo"],
       "rare_items": ["sapphire"],
       "guaranteed_finite_items": ["lantern"]
+    },
+    "locations": {
+      "contingency": {
+        "tag": "rescue_justin"
+      },
+      "statuses": [
+        {
+          "interval": 1,
+          "distributions": [
+            { "room": 212, "weight": 0.9 },
+            { "room": 230, "weight": 0.1 }
+          ]
+        },
+        {
+          "interval": 1,
+          "distributions": [
+            { "room": 212, "weight": 0.6 },
+            { "room": 230, "weight": 0.1 },
+            { "room": 400, "weight": 0.2 },
+            { "room": 406, "weight": 0.1 }
+          ]
+        },
+        {
+          "interval": 1,
+          "distributions": [
+            { "room": 212, "weight": 0.6 },
+            { "room": 230, "weight": 0.1 },
+            { "room": 400, "weight": 0.2 },
+            { "room": 406, "weight": 0.1 }
+          ]
+        }
+      ]
+    },
+    "voice_cues": [{ "tag": "oah" }]
+  },
+  "justin": {
+    "id": 24,
+    "dimensions": [18, 18],
+    "sprite_dimensions": [18, 18],
+    "sprite_offset": [0, -8],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 4, 40, -1, false]
+      },
+      {
+        "label": "piggyback",
+        "parameters": [0, 4, 40, -1, false]
+      },
+      {
+        "label": "walk",
+        "parameters": [4, 4, 24, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [7, 1, 40, 0, false]
+      }
+    ],
+    "locations": {
+      "contingency": {
+        "tag": "rescue_justin"
+      },
+      "statuses": [
+        {
+          "interval": 1,
+          "distributions": [{ "room": 247, "weight": 1.0 }]
+        },
+        {
+          "interval": 1,
+          "distributions": [
+            { "room": 212, "weight": 0.6 },
+            { "room": 230, "weight": 0.1 },
+            { "room": 400, "weight": 0.2 },
+            { "room": 406, "weight": 0.1 }
+          ]
+        },
+        {
+          "interval": 1,
+          "distributions": [
+            { "room": 212, "weight": 0.6 },
+            { "room": 230, "weight": 0.1 },
+            { "room": 400, "weight": 0.2 },
+            { "room": 406, "weight": 0.1 }
+          ]
+        }
+      ]
     }
   },
   "minigus": {
@@ -560,30 +646,6 @@
       {
         "label": "turn",
         "parameters": [6, 2, 40, 0, false]
-      }
-    ]
-  },
-  "justin": {
-    "id": 24,
-    "dimensions": [18, 18],
-    "sprite_dimensions": [18, 18],
-    "sprite_offset": [0, -8],
-    "animation": [
-      {
-        "label": "idle",
-        "parameters": [0, 4, 40, -1, false]
-      },
-      {
-        "label": "piggyback",
-        "parameters": [0, 4, 40, -1, false]
-      },
-      {
-        "label": "walk",
-        "parameters": [4, 4, 24, -1, false]
-      },
-      {
-        "label": "turn",
-        "parameters": [7, 1, 40, 0, false]
       }
     ]
   },

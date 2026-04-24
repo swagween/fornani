@@ -163,6 +163,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 		m_camera_effects.frequency_in_seconds = meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>();
 	}
 	if (meta["cutscene_on_entry"]) {
+		if (meta["cutscene_on_entry"]["contingencies"]) { cutscene.contingencies.emplace(meta["cutscene_on_entry"]["contingencies"]); }
 		cutscene.flag = static_cast<bool>(meta["cutscene_on_entry"]["flag"].as_bool());
 		cutscene.type = meta["cutscene_on_entry"]["type"].as<int>();
 		cutscene.id = meta["cutscene_on_entry"]["id"].as<int>();
@@ -230,6 +231,7 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 	metadata["meta"]["cutscene_on_entry"]["type"] = cutscene.type;
 	metadata["meta"]["cutscene_on_entry"]["id"] = cutscene.id;
 	metadata["meta"]["cutscene_on_entry"]["source"] = cutscene.source;
+	if (cutscene.contingencies) { cutscene.contingencies->serialize(metadata["meta"]["cutscene_on_entry"]["contingencies"]); }
 	metadata["meta"]["shader"]["darken_factor"] = darken_factor;
 	if (!m_use_template) { m_attributes.serialize(metadata["meta"]); }
 

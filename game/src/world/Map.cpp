@@ -40,12 +40,18 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 	background = std::make_unique<graphics::Background>(svc, meta["background"].as_string());
 
 	if (meta["cutscene_on_entry"]["flag"].as_bool()) {
-		auto ctype = meta["cutscene_on_entry"]["type"].as<int>();
-		auto cid = meta["cutscene_on_entry"]["id"].as<int>();
-		auto csource = meta["cutscene_on_entry"]["source"].as<int>();
-		auto cutscene = util::QuestKey{ctype, cid, csource};
-		svc.quest.process(svc, cutscene);
-		svc.events.launch_cutscene_event.dispatch(svc, cid);
+		auto launch = true;
+		auto contingency_list = QuestContingencySet{meta["cutscene_on_entry"]["contingencies"]};
+		if (meta["cutscene_on_entry"]["contingencies"] && !svc.quest_table.are_contingencies_met(contingency_list)) { launch = false; }
+
+		if (launch) {
+			auto ctype = meta["cutscene_on_entry"]["type"].as<int>();
+			auto cid = meta["cutscene_on_entry"]["id"].as<int>();
+			auto csource = meta["cutscene_on_entry"]["source"].as<int>();
+			auto cutscene = util::QuestKey{ctype, cid, csource};
+			svc.quest.process(svc, cutscene);
+			svc.events.launch_cutscene_event.dispatch(svc, cid);
+		}
 	}
 	for (auto& pl : entities["lights"].as_array()) {
 		point_lights.push_back(PointLight(svc.data.light[pl["label"].as_string()], sf::Vector2f{pl["position"][0].as<float>() + 0.5f, pl["position"][1].as<float>() + 0.5f} * constants::f_cell_size));
@@ -1008,10 +1014,7 @@ Tile& Map::get_cell_at_position(sf::Vector2f position) { return get_middleground
 
 enemy::Enemy* Map::get_enemy(int id) {
 	auto it = std::find_if(enemy_catalog.enemies.begin(), enemy_catalog.enemies.end(), [id](auto const& e) { return e->get_id() == id; });
-	if (it == enemy_catalog.enemies.end()) {
-		NANI_LOG_DEBUG(m_logger, "Enemy not found!");
-		return nullptr;
-	}
+	if (it == enemy_catalog.enemies.end()) { return nullptr; }
 	return it->get();
 }
 

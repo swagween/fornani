@@ -34,6 +34,16 @@
     "max_distance": 512.0
   },
   {
+    "label": "champion_j5_propeller",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 32,
+    "fade_out": 32,
+    "min_distance": 128.0,
+    "max_distance": 512.0
+  },
+  {
     "label": "deep_laser_hum",
     "bus": "gameplay",
     "volume": 0.06,

@@ -129,8 +129,8 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 	}
 	for (auto [i, cue] : std::views::enumerate(in_data["voice_cues"].as_array())) { m_voice_cues.insert({static_cast<int>(i), NPCVoiceCue{m_label + "_" + cue["tag"].as_string()}}); }
 	if (Mobile::p_animations.contains("idle")) { Mobile::set_animation("idle"); }
-	request(NPCAnimationState::idle);
 	if (in_data["no_animation"].as_bool()) { set_flag(NPCFlags::no_animation); }
+	request(NPCAnimationState::idle);
 
 	if (m_hidden) { m_state.set(NPCState::hidden); }
 	if (m_background) { set_flag(NPCFlags::background); }
@@ -142,15 +142,52 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 		Mobile::set_animation("busy");
 	}
 
+	handle_spawning(svc, in_data);
+}
+
+void NPC::handle_spawning(automa::ServiceProvider& svc, dj::Json const& in_data) {
+
+	// There are multiple methods to determine if an NPC should spawn in a room. Combining them might be tricky, but shouldn't be necessary.
+
+	// simple percent chance (like Bongo)
 	if (m_spawn) {
 		if (m_spawn->chance > 0.f) {
 			if (m_spawn->chance < svc.world_clock.get_rng(static_cast<WorldClockInterval>(m_spawn->interval))) { hide(); }
 		}
 	}
 
+	// schedule (simple night/day activities, like Gaia)
 	if (in_data["schedule"]) { m_schedule.emplace(in_data["schedule"]); }
 	if (m_schedule) {
 		if (!m_schedule->is_here(svc.current_room, svc.world_clock.get_time_of_day())) { hide(); }
+	}
+
+	// distribution by time interval (complex room selection and distribution, like Gobe)
+	if (in_data["locations"]) {
+		NANI_LOG_INFO(Mobile::m_logger, "Spawning NPC {} based on location distribution.", m_label);
+		auto tag = in_data["locations"]["contingency"]["tag"].as_string();
+		auto status = svc.quest_table.get_quest_progression(tag);
+		NANI_LOG_INFO(Mobile::m_logger, "Using quest {} to target status index of {}.", tag, status);
+		auto const& target_data = in_data["locations"]["statuses"][status];
+		auto interval = static_cast<WorldClockInterval>(target_data["interval"].as<int>());
+		auto chance = svc.world_clock.get_rng(interval);
+		auto cumulative = 0.f;
+		auto spawn_me = false;
+		for (auto const& room : target_data["distributions"].as_array()) {
+			cumulative += room["weight"].as<float>();
+			if (chance < cumulative) {
+				if (room["room"].as<int>() == svc.current_room) {
+					spawn_me = true;
+					NANI_LOG_INFO(Mobile::m_logger, "Spawned {} in room {} with chance {} from weight {}.", m_label, svc.current_room, chance, room["weight"].as<float>());
+				}
+				break;
+			}
+		}
+		if (target_data["schedule"]) { m_schedule.emplace(target_data["schedule"]); }
+		if (m_schedule) {
+			if (m_schedule->is_here(svc.current_room, svc.world_clock.get_time_of_day())) { spawn_me = true; }
+		}
+		if (!spawn_me) { hide(); }
 	}
 }
 
@@ -204,7 +241,7 @@ void NPC::expose() {
 void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
 
 	if (has_flag_set(NPCFlags::face_player) && !has_flag_set(NPCFlags::cutscene)) { face_player(player); }
-	svc.data.set_npc_location(m_id.get(), current_location);
+	svc.data.set_npc_location(m_id.get(), m_current_location);
 
 	if (consume_flag(NPCFlags::piggyback)) { player.piggyback(m_id.get()); }
 	if (is_hidden()) { return; }
@@ -222,13 +259,13 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	}
 	auto overlap = collider.has_value() ? player.get_collider().bounding_box.overlaps(get_collider().bounding_box) : false;
 	if (overlap || (m_state.test(NPCState::distant_interact) && m_state.test(NPCState::force_interact))) {
-		m_state.set(NPCState::interacting);
 		if (!m_state.test(NPCState::engaged)) { m_state.set(NPCState::just_engaged); }
 		m_state.set(NPCState::engaged);
 		if ((player.controller.inspecting() || m_state.test(NPCState::force_interact)) && !conversations.empty() && !player.has_flag_set(player::PlayerFlags::in_front_of_door)) {
 			start_conversation(svc, context.console);
 			player.set_busy(true);
 			if (is_state(NPCAnimationState::busy)) { request(NPCAnimationState::respond); }
+			m_state.set(NPCState::interacting);
 		}
 	} else {
 		m_state.reset(NPCState::engaged);
@@ -252,7 +289,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	if (collider.has_value()) {
 		if (!get_collider().grounded()) { request(NPCAnimationState::fall); }
 	}
-	if (directions.actual.lnr != directions.desired.lnr && (!has_flag_set(NPCFlags::busy) || m_busy_timer.running())) { request(NPCAnimationState::turn); }
+	if (directions.actual.lnr != directions.desired.lnr && (!has_flag_set(NPCFlags::busy) || m_busy_timer.running()) && !was_requested(NPCAnimationState::special_2)) { request(NPCAnimationState::turn); }
 
 	if (!context.console.has_value()) { m_state.reset(NPCState::interacting); }
 

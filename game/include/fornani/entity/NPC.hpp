@@ -40,6 +40,7 @@ struct NPCVoiceCue {
 struct NPCSchedule {
 	NPCSchedule(dj::Json const& in);
 	[[nodiscard]] auto is_here(int room_id, TimeOfDay tod) const -> bool { return destinations.contains(tod) ? destinations.at(tod) == room_id : true; }
+	[[nodiscard]] auto get_location(TimeOfDay tod) const -> int { return destinations.contains(tod) ? destinations.at(tod) : 0; }
 	std::unordered_map<TimeOfDay, int> destinations{};
 };
 
@@ -50,6 +51,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	NPC(automa::ServiceProvider& svc, world::Map& map, std::string_view label, bool include_collider = true);
 	NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vector<std::vector<int>> const suites);
 	void init(automa::ServiceProvider& svc, dj::Json const& in_data);
+	void handle_spawning(automa::ServiceProvider& svc, dj::Json const& in_data);
 
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;
@@ -91,6 +93,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	void set_position(sf::Vector2f pos);
 	void set_position_from_scaled(sf::Vector2f scaled_pos);
 
+	[[nodiscard]] auto get_current_location(automa::ServiceProvider& svc) const -> int;
 	[[nodiscard]] auto is_hidden() const -> bool { return m_state.test(NPCState::hidden); }
 	[[nodiscard]] auto is_background() const -> bool { return has_flag_set(NPCFlags::background); }
 	[[nodiscard]] auto was_introduced() const -> bool { return m_state.test(NPCState::introduced); }
@@ -122,7 +125,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	Animatable m_indicator;
 	sf::Vector2f m_offset{};
 	std::optional<npc::Vendor*> vendor;
-	int current_location{};
+	int m_current_location{};
 	int vendor_id{};
 	int m_walk_chance{};
 	automa::ServiceProvider* m_services;

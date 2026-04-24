@@ -21,7 +21,7 @@ void ItemWidget::update(automa::ServiceProvider& svc) {
 	if (m_sparkler) { m_sparkler->update(svc); }
 	m_path.update();
 	m_sprites.sticker.setPosition(m_path.get_position());
-	m_sprites.item.setPosition(m_path.get_position());
+	m_sprites.item.setPosition(m_path.get_position() - sf::Vector2f{2.f, 2.f});
 	if (m_sparkler) { m_sparkler->set_position(m_sprites.sticker.getPosition() - m_sparkler->get_dimensions() * 0.5f); }
 }
 

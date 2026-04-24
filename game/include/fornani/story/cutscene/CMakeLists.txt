@@ -6,4 +6,5 @@ nani_add_headers(
         NightsideWall.hpp
         PioneerBaseDebrief.hpp
         MainIntro.hpp
+        ReturnToBase.hpp
 )

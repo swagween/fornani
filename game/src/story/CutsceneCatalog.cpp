@@ -9,6 +9,7 @@
 #include <fornani/story/cutscene/NightsideStation.hpp>
 #include <fornani/story/cutscene/NightsideWall.hpp>
 #include <fornani/story/cutscene/PioneerBaseDebrief.hpp>
+#include <fornani/story/cutscene/ReturnToBase.hpp>
 
 namespace fornani {
 
@@ -37,7 +38,11 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	case 268: cutscenes.push_back(std::make_unique<LothAtWorm>(svc)); break;
 	case 900: cutscenes.push_back(std::make_unique<HaunchIntro>(svc)); break;
 	case 902: cutscenes.push_back(std::make_unique<HaunchEscape>(svc)); break;
-	default: cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc)); break;
+	case 209: cutscenes.push_back(std::make_unique<ReturnToBase>(svc)); break;
+	default:
+		NANI_LOG_INFO(m_logger, "You forgot to add cutscene {} to catalog.", id);
+		cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc));
+		break;
 	}
 	m_register.add(id);
 	NANI_LOG_INFO(m_logger, "Pushed Cutscene: {}", id);

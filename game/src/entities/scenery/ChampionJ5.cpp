@@ -4,7 +4,7 @@
 
 namespace fornani {
 
-ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "champion_j5_body", {80, 60}}, m_propeller{svc, "champion_j5_propeller", {80, 60}}, m_thrust{0.017f, .118f, .991f, 260.f} {
+ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "champion_j5_body", {80, 60}}, m_services{&svc}, m_propeller{svc, "champion_j5_propeller", {80, 60}}, m_thrust{0.017f, .118f, .991f, 260.f} {
 	push_and_set_animation("flying", {0, 1, 24, -1});
 	push_animation("land", {1, 4, 24, 0});
 	push_animation("grounded", {5, 1, 24, -1});
@@ -24,31 +24,38 @@ ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{s
 	get_collider().set_exclusion_target(shape::ColliderTrait::block);
 }
 
-void ChampionJ5::update(world::Map& map) {
+void ChampionJ5::update(automa::ServiceProvider& svc, world::Map& map) {
 	tick();
 	m_propeller.tick();
 	get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
 	get_collider().set_flag(shape::ColliderFlags::simple);
+	if (m_propeller.is_animation("spinning")) {
+		auto max_vel = 8.f;
+		auto t = std::clamp(get_collider().physics.velocity.lengthSquared() / max_vel, 0.f, 1.f);
+		auto pitch = std::lerp(0.5f, 1.1f, get_collider().physics.velocity.lengthSquared());
+		svc.soundboard.repeat_sound("champion_j5_propeller", 1, get_collider().get_center(), pitch);
+	}
 
-	/*if (flags.test(ChampionJ5Flags::interactable)) {
+	if (flags.test(ChampionJ5Flags::interactable)) {
 		get_collider().set_attribute(shape::ColliderAttributes::no_map_collision, is_state(ChampionJ5State::flying));
 		get_collider().set_flag(shape::ColliderFlags::simple, !is_state(ChampionJ5State::grounded));
-	} else {
-		get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
-		get_collider().set_flag(shape::ColliderFlags::simple);
-	}*/
+	}
+	if (get_collider().grounded() && !flags.test(ChampionJ5Flags::landed)) {
+		flags.set(ChampionJ5Flags::landed);
+		svc.soundboard.play_sound("thud");
+	}
 
 	// get_collider().has_flag_set(shape::ColliderFlags::simple) ? get_collider().physics.set_friction_componentwise({0.9f, 0.9f}) : get_collider().physics.set_friction_componentwise({0.99f, 0.99f});
 
 	// if (get_collider().has_flag_set(shape::ColliderFlags::simple)) { m_steering.seek(get_collider().physics, m_target, 0.00003f); }
 	if (get_collider().has_flag_set(shape::ColliderFlags::simple)) { m_steering.thrust_seek(get_collider().physics, m_target, m_thrust); }
-	// if ((get_collider().physics.position - m_target).length() < 8.f && flags.test(ChampionJ5Flags::interactable)) { request(ChampionJ5State::land); }
+	if (is_close_to_target(constants::small_value) && flags.test(ChampionJ5Flags::interactable)) { request(ChampionJ5State::land); }
 
 	state_function = state_function();
 }
 
 void ChampionJ5::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	auto drawpos = get_collider().get_center() + sf::Vector2f{0.f, 4.f};
+	auto drawpos = get_collider().get_center() + sf::Vector2f{0.f, -16.f};
 	m_propeller.set_position(drawpos - cam);
 	win.draw(m_propeller);
 	set_position(drawpos - cam);
@@ -63,6 +70,7 @@ fsm::StateFunction ChampionJ5::update_flying() {
 
 fsm::StateFunction ChampionJ5::update_land() {
 	p_state.actual = ChampionJ5State::land;
+	if (animation.get_frame_count() == 2 && animation.keyframe_started()) { m_services->soundboard.play_sound("champion_j5_land"); }
 	if (animation.is_complete()) {
 		request(ChampionJ5State::grounded);
 		if (change_state(ChampionJ5State::grounded, get_params("grounded"))) { return CHAMPIONJ5_BIND(update_grounded); }

@@ -10,7 +10,6 @@ constexpr auto minimum_wait_time_v = 16;
 Soundboard::Soundboard(automa::ServiceProvider& svc, capo::IEngine& engine) : m_services(&svc), m_engine(&engine) {
 	npc_map["bryn"] = make_int_setter<NPCBryn>(npc_flags.bryn);
 	npc_map["aviator_bryn"] = make_int_setter<NPCBryn>(npc_flags.bryn);
-	npc_map["gobe"] = make_int_setter<NPCGobe>(npc_flags.gobe);
 	npc_map["minigus"] = make_int_setter<NPCMinigus>(npc_flags.minigus);
 	npc_map["mirin"] = make_int_setter<NPCMirin>(npc_flags.mirin);
 	npc_map["dr_willett"] = make_int_setter<NPCDrWillett>(npc_flags.dr_willett);
@@ -242,10 +241,6 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (npc_flags.bryn.test(NPCBryn::laugh_2)) { play(engine, svc, "bryn_laugh_2", 0.f, bryn_volume); }
 	if (npc_flags.bryn.test(NPCBryn::mm)) { play(engine, svc, "bryn_mm", 0.f, bryn_volume); }
 	if (npc_flags.bryn.test(NPCBryn::oeugh)) { play(engine, svc, "bryn_oeugh", 0.f, bryn_volume); }
-
-	// gobe
-	if (npc_flags.gobe.test(NPCGobe::oh)) { play(engine, svc, "gobe_oh"); }
-	if (npc_flags.gobe.test(NPCGobe::orewa)) { play(engine, svc, "gobe_orewa"); }
 
 	// willett
 	auto willett_volume = 30.f;

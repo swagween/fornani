@@ -101,7 +101,6 @@ enum class Summoner { hurt_1, hurt_2, death, block_1, block_2, summon, hah };
 enum class Mastiff { bite, growl };
 
 enum class NPCBryn { agh, ah_1, ah_2, chuckle, nani_1, nani_2, oh, ohh, sigh, whatsup, yah, yeah, yeahh, eagh, haha, hello, hey_1, hey_2, heyyy, hi, hmm, hmph, laugh_1, laugh_2, mm, oeugh };
-enum class NPCGobe { oh, orewa };
 enum class NPCLynx { hmph, hmm };
 enum class NPCMirin { ah, oh, haha };
 enum class NPCCarl { hah, eh };
@@ -197,7 +196,6 @@ class Soundboard {
 
 	struct {
 		util::BitFlags<NPCBryn> bryn{};
-		util::BitFlags<NPCGobe> gobe{};
 		util::BitFlags<NPCLynx> lynx{};
 		util::BitFlags<NPCMirin> mirin{};
 		util::BitFlags<NPCGo> go{};
