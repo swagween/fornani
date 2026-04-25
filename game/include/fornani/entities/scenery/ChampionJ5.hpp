@@ -28,7 +28,7 @@ class ChampionJ5 : public Mobile, public StateMachine<ChampionJ5State> {
 
 	util::BitFlags<ChampionJ5Flags> flags{};
 
-	[[nodiscard]] auto get_drivers_seat() const -> sf::Vector2f { return get_global_center() + sf::Vector2f{8.f, -30.f}; }
+	[[nodiscard]] auto get_drivers_seat() const -> sf::Vector2f { return get_global_center() + sf::Vector2f{10.f, -32.f}; }
 	[[nodiscard]] auto get_passengers_seat() const -> sf::Vector2f { return get_global_center() + sf::Vector2f{-8.f, -26.f}; }
 	[[nodiscard]] auto is_close_to_target(float const distance) const -> bool { return (get_collider().physics.position - m_target).length() < distance; }
 

@@ -19,7 +19,7 @@ class ReturnToBase final : public Cutscene {
 	util::Cooldown m_intro;
 	std::optional<ChampionJ5> m_champion;
 
-	util::BitFlags<ReturnToBase> m_flags{};
+	util::BitFlags<ReturnToBaseFlags> m_flags{};
 
 	sf::Vector2f m_exit_point{};
 };

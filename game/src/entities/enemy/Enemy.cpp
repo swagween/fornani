@@ -178,7 +178,6 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		}
 		map.spawn_counter.update(-1);
 		get_collider().set_flag(shape::ColliderFlags::intangible);
-		get_collider().set_attribute(shape::ColliderAttributes::no_collision);
 	}
 	flags.triggers = {};
 	if (map.off_the_bottom(get_collider().physics.position)) {

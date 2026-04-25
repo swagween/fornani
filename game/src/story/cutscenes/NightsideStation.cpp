@@ -24,6 +24,7 @@ void NightsideStation::update(automa::ServiceProvider& svc, SceneContext& contex
 		svc.music_player.stop();
 		svc.music_player.load(svc.finder, "wind");
 		svc.music_player.play_looped();
+		svc.quest_table.progress_quest("open_nightside_station", 1, 901);
 		flags.set(CutsceneFlags::delete_me);
 		return;
 	}

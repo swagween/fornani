@@ -10,7 +10,7 @@ namespace fornani::enemy {
 constexpr auto grand_mastiff_framerate = 12;
 
 GrandMastiff::GrandMastiff(automa::ServiceProvider& svc, world::Map& map) : Boss{svc, map, "grand_mastiff"}, m_post_slash{400}, m_post_bite{600} {
-	p_animations = {{"idle", {0, 4, grand_mastiff_framerate * 3, -1}}, {"run", {4, 6, grand_mastiff_framerate, 2}}, {"growl", {15, 4, grand_mastiff_framerate * 2, 0}}, {"turn", {10, 4, grand_mastiff_framerate * 2, 0}}};
+	p_animations = {{"idle", {0, 4, grand_mastiff_framerate * 3, -1}}, {"run", {4, 6, grand_mastiff_framerate, 2}}, {"growl", {15, 4, grand_mastiff_framerate * 2, 4}}, {"turn", {10, 4, grand_mastiff_framerate * 2, 0}}};
 
 	animation.set_params(get_params("idle"));
 	m_bite.hit.bounds.setRadius(40.f);
@@ -45,10 +45,19 @@ void GrandMastiff::update(automa::ServiceProvider& svc, world::Map& map, player:
 	face_player(player);
 	flags.state.set(StateFlags::vulnerable);
 
-	if (is_hostile()) { request(GrandMastiffState::bite); }
+	if (svc.ticker.every_x_ticks(600)) {
+		// choose a random attack
+	}
+
+	if (is_hostile()) { request(GrandMastiffState::growl); }
 
 	m_bite.hit.deactivate();
 	m_bite.hit.set_position(get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 32.f, -18.f});
+	if (m_bite_effect) {
+		m_bite_effect->tick();
+		if (m_bite_effect->is_complete()) { m_bite_effect.reset(); }
+		if (m_bite_effect->animation.get_frame_count() == 8) { m_bite.hit.activate(); }
+	}
 
 	if (svc.ticker.every_second()) {
 		if (random::percent_chance(30)) { request(GrandMastiffState::run); }
@@ -76,6 +85,10 @@ void GrandMastiff::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 	if (!has_flag_set(BossFlags::battle_mode)) { return; }
 	Enemy::render(svc, win, cam);
 	if (svc.greyblock_mode()) { m_bite.render(win, cam); }
+	if (m_bite_effect) {
+		m_bite_effect->set_position(m_bite.hit.bounds.getGeometricCenter());
+		win.draw(*m_bite_effect);
+	}
 }
 
 fsm::StateFunction GrandMastiff::update_idle() {
@@ -138,9 +151,10 @@ fsm::StateFunction GrandMastiff::update_slash() {
 
 fsm::StateFunction GrandMastiff::update_growl() {
 	p_state.actual = GrandMastiffState::growl;
+	if (animation.get_frame_count() == 1 && animation.keyframe_started()) { spawn_bite(); }
 	if (animation.is_complete()) {
-		request(GrandMastiffState::bite);
-		if (change_state(GrandMastiffState::bite, get_params("bite"))) { return GRAND_MASTIFF_BIND(update_bite); }
+		request(GrandMastiffState::idle);
+		if (change_state(GrandMastiffState::idle, get_params("idle"))) { return GRAND_MASTIFF_BIND(update_idle); }
 	}
 	return GRAND_MASTIFF_BIND(update_growl);
 }
@@ -174,6 +188,12 @@ bool GrandMastiff::change_state(GrandMastiffState next, anim::Parameters params)
 		return true;
 	}
 	return false;
+}
+
+void GrandMastiff::spawn_bite() {
+	m_bite_effect.emplace(*p_services, "mastiff_bite", sf::Vector2i{167, 167});
+	m_bite_effect->center();
+	m_bite_effect->push_and_set_animation("bite", {0, 12, 14, 0});
 }
 
 void GrandMastiff::debug() {

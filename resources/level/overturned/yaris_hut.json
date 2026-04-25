@@ -14,6 +14,30 @@
         ]
       }
     ],
+    "npcs": [
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": false,
+        "hidden": false,
+        "id": 248,
+        "label": "yari",
+        "position": [
+          8,
+          9
+        ],
+        "start_busy": false,
+        "suites": [
+          [
+            1
+          ]
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,
@@ -79,7 +103,7 @@
       21
     ],
     "minimap": true,
-    "music": "home_again",
+    "music": "none",
     "player_start": [
       0,
       0

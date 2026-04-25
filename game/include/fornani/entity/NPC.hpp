@@ -20,7 +20,7 @@
 
 namespace fornani {
 
-enum class NPCFlags { has_turn_animation, face_player, background, no_animation, random_walk, cutscene, piggyback, busy };
+enum class NPCFlags { has_turn_animation, face_player, background, no_animation, random_walk, cutscene, piggyback, busy, airborne, custom_camera };
 enum class NPCState { engaged, force_interact, introduced, talking, cutscene, piggybacking, hidden, distant_interact, just_engaged, random_walk, invisible, interacting };
 enum class NPCAnimationState { idle, turn, walk, inspect, fall, land, busy, stagger, respond, special_1, special_2, special_3 };
 
@@ -70,6 +70,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	void force_engage();
 	void disengage();
 	void set_invisible(bool to = true) { to ? m_state.set(NPCState::invisible) : m_state.reset(NPCState::invisible); }
+	void set_special_animation(int which);
 
 	/* animation */
 	fsm::StateFunction state_function{[this]() { return this->update_idle(); }};
@@ -93,7 +94,6 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	void set_position(sf::Vector2f pos);
 	void set_position_from_scaled(sf::Vector2f scaled_pos);
 
-	[[nodiscard]] auto get_current_location(automa::ServiceProvider& svc) const -> int;
 	[[nodiscard]] auto is_hidden() const -> bool { return m_state.test(NPCState::hidden); }
 	[[nodiscard]] auto is_background() const -> bool { return has_flag_set(NPCFlags::background); }
 	[[nodiscard]] auto was_introduced() const -> bool { return m_state.test(NPCState::introduced); }

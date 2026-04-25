@@ -216,7 +216,6 @@
       }
     ]
   },
-
   "dr_go": {
     "id": 16,
     "dimensions": [24, 24],
@@ -372,6 +371,18 @@
       {
         "label": "idle",
         "parameters": [0, 8, 60, -1, false]
+      }
+    ]
+  },
+  "yari": {
+    "id": 40,
+    "dimensions": [40, 40],
+    "sprite_dimensions": [40, 40],
+    "sprite_offset": [0, -17],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 8, 70, -1, false]
       }
     ]
   },
@@ -567,7 +578,11 @@
       },
       {
         "label": "special_2",
-        "parameters": [14, 2, 128, -1, false]
+        "parameters": [14, 2, 512, -1, false]
+      },
+      {
+        "label": "special_3",
+        "parameters": [16, 2, 32, 0, false]
       }
     ]
   },
@@ -653,7 +668,7 @@
     "id": 22,
     "dimensions": [24, 48],
     "sprite_dimensions": [23, 32],
-    "sprite_offset": [8.0, -14.0],
+    "sprite_offset": [8.0, -8.0],
     "animation": [
       {
         "label": "idle",

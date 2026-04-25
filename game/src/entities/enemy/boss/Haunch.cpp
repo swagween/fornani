@@ -52,12 +52,12 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		set_flag(BossFlags::post_death);
 		svc.music_player.load(svc.finder, "wind");
 		svc.music_player.play_looped();
-		flags.state.set(StateFlags::special_death_mode);
 		request(HaunchState::struggle);
 		map.clear_projectiles();
 		map.clear_enemies({28});
 	}
 	if (has_flag_set(BossFlags::post_death)) {
+		flags.state.set(StateFlags::special_death_mode);
 		m_flags.reset(HaunchFlags::show_gun);
 		if (!hurt_effect.running()) { hurt_effect.start(128); }
 		if (m_dynamite_stick) { m_dynamite_stick->tick(); }

@@ -29,8 +29,12 @@ class GrandMastiff final : public Boss, public StateMachine<GrandMastiffState> {
 	fsm::StateFunction update_die();
 
   private:
-	entity::Attack m_bite;
 	bool change_state(GrandMastiffState next, anim::Parameters params);
+	void spawn_bite();
+
+  private:
+	entity::Attack m_bite;
+	std::optional<Animatable> m_bite_effect{};
 
 	util::Cooldown m_post_slash;
 	util::Cooldown m_post_bite;

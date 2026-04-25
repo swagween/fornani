@@ -1190,6 +1190,174 @@
           }
         ]
       ]
+    },
+    "7": {
+      "responses": [
+        [
+          {
+            "codes": [[1, 4]],
+            "message": "What do we do now?"
+          },
+          {
+            "codes": [[1, 5]],
+            "message": "Tell me about the Ancient Kariba."
+          },
+          {
+            "codes": [[1, 1]],
+            "contingencies": [
+              {
+                "requirement": 1,
+                "strict": true,
+                "tag": "obtain_wasp"
+              }
+            ],
+            "message": "I'd like to give you back your gun."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 2]],
+            "message": "Yes."
+          },
+          {
+            "codes": [[1, 3]],
+            "message": "On second thought..."
+          }
+        ],
+        [
+          {
+            "codes": [[1, 6]],
+            "message": "What are Skycorps doing, exactly?"
+          }
+        ]
+      ],
+      "suite": [
+        [
+          {
+            "code_list": [
+              [
+                [1, 0],
+                [5, 2],
+                [3, 9, 1, 301],
+                [4, 4]
+              ],
+              [
+                [1, 0],
+                [5, 1],
+                [3, 9, 1, 301],
+                [4, 9]
+              ],
+              [
+                [1, 0],
+                [5, 2],
+                [3, 9, 1, 301],
+                [4, 19]
+              ]
+            ],
+            "messages": ["Nani! It's good to see you again.", "What's up?", "Hi Nani!"]
+          }
+        ],
+        [
+          {
+            "codes": [
+              [1, 1],
+              [5, 1]
+            ],
+            "message": "Oh, awesome! Are you sure?"
+          }
+        ],
+        [
+          {
+            "codes": [
+              [5, 2],
+              [16, 0]
+            ],
+            "message": "That means a lot, really!"
+          },
+          {
+            "codes": [
+              [5, 1],
+              [15, 1],
+              [3, 9, 1, 300]
+            ],
+            "message": "Here, as promised..."
+          }
+        ],
+        [
+          {
+            "codes": [[5, 0]],
+            "message": "It's hard to blame you, really. That old pistol is one-of-a-kind, and I imagine you've grown just as attached to it as I had."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "Well, if you ever decide to change your mind, I'm here."
+          }
+        ],
+        [
+          {
+            "codes": [[5, 0]],
+            "message": "Of course... It's easy to get bored around here."
+          },
+          {
+            "codes": [[5, 2]],
+            "message": "I mean, why do you think I throw myself into dangerous ruins?"
+          },
+          {
+            "codes": [
+              [5, 1],
+              [1, 0]
+            ],
+            "message": "Living with Doc is great and all, but it gets old. And I really wish he'd stop leaving his dentures next to my makeup..."
+          }
+        ],
+        [
+          {
+            "codes": [[5, 0]],
+            "message": "Well, they're your ancestors. And much like you and your tribe, they've called the Overturned Forest their home since as far back as written records go."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "They worshipped the Mother Worm and performed rituals to maintain her deep hibernation."
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "I'm not sure if they were afraid of what the Mother would do if she woke up, or if they merely did it out of reverence for the creature."
+          },
+          {
+            "message": "All I know is, I am personally very afraid of what might happen if the worm wakes up, and I'm equally afraid of what would happen if she died."
+          },
+          {
+            "message": "I suppose that's all to say that I support the Ancient Kariba mentality, to live in harmony with the worm. Maybe I'm biased because of all the research I've done."
+          },
+          {
+            "codes": [
+              [5, 1],
+              [1, 2]
+            ],
+            "message": "They would all surely be rolling in their graves to know what Skycorps have been doing..."
+          }
+        ],
+        [
+          {
+            "codes": [[5, 1]],
+            "message": "They've been riling up the worm, basically. The closer she is to waking up, the more rhenite she produces."
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "Skycorps are playing with fire. They know next to nothing about the worm and her physiology, and I imagine that even if they did, they wouldn't slow rhenite production one bit."
+          },
+          {
+            "message": "I'm not really sure I understand them, to be honest. Why can't they just plug along with the Nightside Projects and leave the Kariba and the Mother Worm alone?"
+          },
+          {
+            "codes": [
+              [5, 1],
+              [1, 0]
+            ],
+            "message": "I should stop worrying so much... but it's easy to get lost in your thoughts when you stay cooped up in an old fort all day..."
+          }
+        ]
+      ]
     }
   },
   "carl": {
@@ -2289,6 +2457,24 @@
           }
         ]
       ]
+    },
+    "4": {
+      "output": 2,
+      "responses": [],
+      "suite": [
+        [
+          {
+            "message": "I owe you my deepest gratitude for rescuing my student."
+          },
+          {
+            "message": "And Bryn filled me in on all the details, about the corrupted King Miaag that you defeated. Well done."
+          },
+          {
+            "codes": [[21, 300]],
+            "message": "Anyway, you've arrived at just the right time, as we've got pressing matters to discuss with you."
+          }
+        ]
+      ]
     }
   },
   "gaia": {
@@ -2735,7 +2921,7 @@
           },
           {
             "codes": [[1, 1]],
-            "message": "Have you any word of your brother?"
+            "message": "Have you any word of Loth or his whereabouts?"
           }
         ],
         [
@@ -2766,9 +2952,25 @@
                 "requirement": 0,
                 "strict": true,
                 "tag": "pioneer_trail"
+              },
+              {
+                "requirement": 0,
+                "strict": true,
+                "tag": "defeat_haunch"
               }
             ],
             "message": "Can you allow me passage to Pioneer Trail?"
+          },
+          {
+            "codes": [[1, 4]],
+            "contingencies": [
+              {
+                "requirement": 2,
+                "strict": false,
+                "tag": "defeat_haunch"
+              }
+            ],
+            "message": "I need passage to Pioneer Trail."
           }
         ]
       ],
@@ -2790,7 +2992,7 @@
         ],
         [
           {
-            "message": "I know just as much as you do. Your brother was doing some digging around the ancient Kariba burial grounds with his human girlfriend and that old Grand island professor, until one day he just disappeared."
+            "message": "I know just as much as you do. He was doing some digging around the ancient Kariba burial grounds with his human girlfriend and that old Grand island professor, until one day he just disappeared."
           },
           {
             "message": "I can only blame the humans so much... Loth is strong-willed and I suspect he left of his own accord."
@@ -2805,10 +3007,25 @@
         ],
         [
           {
+            "message": "For what? So you can disappear like your brother?"
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "No can do, Nani. Why don't you stick around for a while? We all missed you so much..."
+          }
+        ],
+        [
+          {
             "message": "Oh, is old Ward giving you a hard time?"
           },
           {
-            "message": "If you're ever to find your brother and bring him to his senses, I'll be the last to stand in your way."
+            "message": "You know, ever since you defeated Sergeant Haunch, the townspeople have been going on and on about you."
+          },
+          {
+            "message": "And I must say, anyone who can take him down is worthy to venture into the treacherous lands beyond our woods."
+          },
+          {
+            "message": "And besides, if you're ever to find your brother and bring him to his senses, I can't be standing in your way."
           },
           {
             "codes": [
@@ -2819,7 +3036,7 @@
           },
           {
             "codes": [[1, 0]],
-            "message": "That ought to convince him to open the gates for you."
+            "message": "That ought to convince Ward to open the gates for you."
           }
         ]
       ]
@@ -3552,6 +3769,18 @@
       ]
     }
   },
+  "yari": {
+    "1": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "message": "..."
+          }
+        ]
+      ]
+    }
+  },
   "haunch": {
     "1": {
       "responses": [
@@ -3630,16 +3859,19 @@
       ]
     },
     "2": {
-      "output": 3,
+      "output": 2,
       "responses": [],
       "suite": [
         [
-          { "message": "Hmph." },
           {
-            "codes": [
-              [23, 10],
-              [12, 0]
-            ],
+            "message": "Well, well, well."
+          },
+          {
+            "codes": [[23, 10]],
+            "message": "Look who's back!"
+          },
+          {
+            "codes": [[12, 0]],
             "messages": [
               "What's the matter, couldn't take the heat?",
               "Don't know when to give up, do you?",
@@ -4207,10 +4439,11 @@
     "6": {
       "output": 2,
       "responses": [
-        [{ "codes": [[1, 1]], "message": "Pretty smooth for a first flight." }],
+        [{ "codes": [[1, 1]], "message": "You saved my life..." }],
+        [{ "codes": [[1, 2]], "message": "Pretty smooth for a first flight." }],
         [
           {
-            "codes": [[1, 2]],
+            "codes": [[1, 3]],
             "message": "I think Skycorps must have been tracking me somehow ever since I defeated Minigus."
           }
         ]
@@ -4218,14 +4451,22 @@
       "suite": [
         [
           {
-            "codes": [[5, 3]],
+            "codes": [
+              [5, 3],
+              [1, 0]
+            ],
             "message": "That was a close one, huh?"
+          }
+        ],
+        [
+          {
+            "message": "I suppose that makes us even."
           },
           {
             "message": "As soon as I saw that Skycorps truck headed your way, I decided I might have to intervene."
           },
           {
-            "codes": [[1, 0]],
+            "codes": [[1, 1]],
             "message": "The timing worked out perfectly, too, since I just finished working on this bad boy yesterday."
           }
         ],
@@ -4235,7 +4476,7 @@
             "message": "My dad is a pilot, so I've been flying these things since I was a kid."
           },
           {
-            "codes": [[1, 1]],
+            "codes": [[1, 2]],
             "message": "Anyway, I'm sorry I led you into an ambush like that. I wasn't expecting anything like that at all..."
           }
         ],
@@ -4269,7 +4510,7 @@
           {
             "codes": [
               [5, 3],
-              [23, 2]
+              [23, 1]
             ],
             "message": "Here we are!"
           }
@@ -4283,7 +4524,26 @@
         [
           {
             "codes": [[5, 3]],
-            "message": "Hey Nani!"
+            "message": "We have some planning to do."
+          },
+          {
+            "codes": [[23, 4]],
+            "message": "But first, get some rest. You've been through the wringer the past few days."
+          }
+        ]
+      ]
+    },
+    "9": {
+      "output": 2,
+      "responses": [],
+      "suite": [
+        [
+          {
+            "codes": [[5, 3]],
+            "message": "Head on inside get some sleep."
+          },
+          {
+            "message": "You can come talk to me and Doc when you're ready."
           }
         ]
       ]

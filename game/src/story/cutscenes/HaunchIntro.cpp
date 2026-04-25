@@ -72,10 +72,9 @@ void HaunchIntro::update(automa::ServiceProvider& svc, SceneContext& context, wo
 		player.set_flag(player::PlayerFlags::cutscene);
 		player.set_idle();
 		haunch->set_flag(NPCFlags::cutscene);
-		haunch->flush_conversations();
 		auto prog = svc.quest_table.get_quest_progression("haunch_dialogue");
 		auto which = prog == 0 ? 1 : 2;
-		haunch->push_conversation(which);
+		haunch->flush_and_push(which);
 	}
 	if (m_intro.is_almost_complete()) { cooldowns.beginning.start(); }
 	m_intro.update();
@@ -112,6 +111,7 @@ void HaunchIntro::update(automa::ServiceProvider& svc, SceneContext& context, wo
 	case 1:
 		svc.music_player.load(svc.finder, "haunchs_theme");
 		svc.music_player.play_looped();
+		haunch->unhide();
 		haunch->force_engage();
 		m_hulmet_spawn_delay.start();
 		++progress;
@@ -128,6 +128,7 @@ void HaunchIntro::update(automa::ServiceProvider& svc, SceneContext& context, wo
 	case 10:
 		if (!context.console.has_value()) {
 			m_flags.set(HaunchIntroFlags::done);
+			haunch->hide();
 			svc.music_player.load(svc.finder, "scuffle");
 			svc.music_player.play_looped();
 			svc.quest_table.progress_quest("haunch_dialogue", 1, 1);

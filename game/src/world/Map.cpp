@@ -903,6 +903,7 @@ void Map::clear() {
 	home_points.clear();
 	waterfalls.clear();
 	m_explosions.clear();
+	m_chain_explosions.clear();
 	rain.reset();
 	fire.reset();
 	active_loot.clear();

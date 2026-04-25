@@ -11,13 +11,28 @@ namespace fornani {
 ReturnToBase::ReturnToBase(automa::ServiceProvider& svc) : Cutscene(svc, 209, "return_to_base"), m_intro{200} {
 	m_intro.start();
 	svc.input_system.flush_inputs();
+	svc.camera_controller.set_owner(graphics::CameraOwner::player);
+	svc.camera_controller.constrain();
 }
 
 void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
-	if (complete()) {
-		flags.set(CutsceneFlags::delete_me);
+
+	if (complete() && !m_flags.test(ReturnToBaseFlags::done)) {
+		m_flags.set(ReturnToBaseFlags::done);
+		player.controller.unrestrict();
+		svc.state_flags.reset(automa::StateFlags::hide_hud);
+		svc.state_flags.reset(automa::StateFlags::no_menu);
+		svc.state_flags.reset(automa::StateFlags::cutscene);
+		player.set_flag(player::PlayerFlags::cutscene, false);
 		svc.quest_table.set_quest_progression("defeat_haunch", 3);
+		svc.quest_table.progress_quest("defeat_skycorps", 1, 999);
+		svc.camera_controller.set_owner(graphics::CameraOwner::player);
+		svc.camera_controller.constrain();
+		svc.quest_table.set_quest_progression("npc_dialogue", {"dr_willett", 300}, 4, {209});
+		svc.quest_table.set_quest_progression("npc_dialogue", {"bryn", 300}, 2, {209});
 	}
+
+	if (m_flags.test(ReturnToBaseFlags::done)) { return; }
 
 	svc.state_flags.set(automa::StateFlags::no_menu);
 	cooldowns.beginning.update();
@@ -34,16 +49,10 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 	auto bit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 34; });
 	auto& bryn = *bit;
 
-	svc.state_flags.set(automa::StateFlags::cutscene);
 	svc.state_flags.set(automa::StateFlags::hide_hud);
 	player.controller.restrict_movement();
 	player.stall_idle_timer();
 	player.set_flag(player::PlayerFlags::show_weapon, false);
-
-	svc.camera_controller.set_owner(graphics::CameraOwner::system);
-	svc.camera_controller.free();
-
-	svc.camera_controller.set_position(player.get_camera_focus_point());
 
 	if (m_intro.just_started()) {
 		if (context.console) { context.console.reset(); }
@@ -53,8 +62,11 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 		player.set_sitting();
 		player.set_direction({LR::right});
 		m_champion.emplace(svc, map);
+		m_champion->set_channel(1);
 		m_champion->get_collider().set_position(sf::Vector2f{200.f, 100.f});
 		m_champion->set_target(constants::f_cell_size * sf::Vector2f{40.f, 8.f});
+		bryn->set_flag(NPCFlags::airborne);
+		bryn->set_flag(NPCFlags::custom_camera);
 	}
 
 	if (m_intro.is_almost_complete()) { cooldowns.beginning.start(); }
@@ -71,16 +83,15 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 	}
 	if (npcs.empty()) { return; }
 
-	if (cooldowns.beginning.is_almost_complete()) {}
+	auto going = progress < 5;
 	if (context.console) { bryn->disengage(); }
-	bryn->set_flag(NPCFlags::cutscene);
+	if (going) {
+		bryn->set_special_animation(2);
+		bryn->set_flag(NPCFlags::cutscene);
+	}
+	if (m_champion && going) { bryn->set_position(m_champion->get_drivers_seat()); }
+	if (m_champion && going) { player.set_position(m_champion->get_passengers_seat()); }
 
-	if (m_champion) { bryn->set_position(m_champion->get_drivers_seat()); }
-	bryn->request(NPCAnimationState::special_2);
-
-	auto champion_target = player.get_collider().get_top() - sf::Vector2f{0.f, 40.f};
-	auto player_seat = player.get_collider().get_top();
-	if (m_champion) { player.set_position(m_champion->get_passengers_seat()); }
 	if (m_intro.running()) { return; }
 
 	switch (progress) {
@@ -88,7 +99,33 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 		if (m_intro.is_complete()) {
 			bryn->flush_and_push(7);
 			bryn->force_engage();
+			++progress;
 		}
+		break;
+	case 1:
+		if (m_champion) {
+			if (m_champion->flags.test(ChampionJ5Flags::landed)) {
+				bryn->flush_and_push(8);
+				bryn->force_engage();
+				++progress;
+			}
+		}
+		break;
+	case 4:
+		if (!context.console) {
+			bryn->flush_and_push(9);
+			cooldowns.end.start();
+			player.set_idle();
+			++progress;
+		}
+		break;
+	case 5:
+		bryn->set_special_animation(3);
+		bryn->set_flag(NPCFlags::face_player);
+		bryn->set_flag(NPCFlags::airborne, false);
+		bryn->set_flag(NPCFlags::custom_camera, false);
+		bryn->set_flag(NPCFlags::cutscene, false);
+		++progress;
 		break;
 	default: break;
 	}

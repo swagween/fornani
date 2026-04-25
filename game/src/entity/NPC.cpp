@@ -272,10 +272,12 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	}
 	if (m_state.test(NPCState::engaged) && m_state.consume(NPCState::just_engaged)) { m_indicator.set_parameters(anim::Parameters{0, 15, 16, 0, true}); }
 
-	if (m_state.test(NPCState::talking)) {
-		svc.camera_controller.free();
-	} else if (!has_flag_set(NPCFlags::cutscene)) {
-		svc.camera_controller.constrain();
+	if (!has_flag_set(NPCFlags::custom_camera)) {
+		if (m_state.test(NPCState::talking)) {
+			svc.camera_controller.free();
+		} else if (!has_flag_set(NPCFlags::cutscene)) {
+			svc.camera_controller.constrain();
+		}
 	}
 
 	if (has_flag_set(NPCFlags::random_walk)) {
@@ -287,7 +289,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 		}
 	}
 	if (collider.has_value()) {
-		if (!get_collider().grounded()) { request(NPCAnimationState::fall); }
+		if (!get_collider().grounded() && !has_flag_set(NPCFlags::airborne)) { request(NPCAnimationState::fall); }
 	}
 	if (directions.actual.lnr != directions.desired.lnr && (!has_flag_set(NPCFlags::busy) || m_busy_timer.running()) && !was_requested(NPCAnimationState::special_2)) { request(NPCAnimationState::turn); }
 
@@ -380,6 +382,26 @@ void NPC::disengage() {
 	m_state.reset(NPCState::cutscene);
 	m_state.reset(NPCState::distant_interact);
 	m_state.reset(NPCState::force_interact);
+}
+
+void NPC::set_special_animation(int which) {
+	switch (which) {
+	case 1:
+		if (is_state(NPCAnimationState::special_1)) { return; }
+		Mobile::set_animation("special_1");
+		state_function = [this]() { return this->update_special_1(); };
+		break;
+	case 2:
+		if (is_state(NPCAnimationState::special_2)) { return; }
+		Mobile::set_animation("special_2");
+		state_function = [this]() { return this->update_special_2(); };
+		break;
+	case 3:
+		if (is_state(NPCAnimationState::special_3)) { return; }
+		Mobile::set_animation("special_3");
+		state_function = [this]() { return this->update_special_3(); };
+		break;
+	}
 }
 
 void NPC::walk() { request(NPCAnimationState::walk); }

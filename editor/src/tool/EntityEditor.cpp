@@ -19,7 +19,7 @@ void EntityEditor::update(Canvas& canvas) {
 	case EntityMode::mover: tooltip = "Mover"; break;
 	}
 
-	if (just_clicked) { just_clicked = false; }
+	just_clicked = false;
 	disable_highlight = true;
 
 	if (entity_menu) {
@@ -33,8 +33,9 @@ void EntityEditor::update(Canvas& canvas) {
 	if (selector_mode()) {
 		ent_type = EntityType::none;
 		for (auto& ent : canvas.entities.variables.entities) {
-			if (!entity_menu || active) { ent->highlighted = ent->contains_point(scaled_position()); }
-			if (active && ent->highlighted && is_ready()) {
+			if (active) { ent->selected = ent->contains_point(scaled_position()); }
+			ent->highlighted = ent->contains_point(scaled_position()) || ent->selected;
+			if (active && ent->selected && is_ready()) {
 				if (ent->copyable) { current_entity = ent->clone(); }
 				entity_menu = !entity_menu;
 			}

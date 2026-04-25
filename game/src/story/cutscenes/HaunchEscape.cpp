@@ -12,18 +12,19 @@ HaunchEscape::HaunchEscape(automa::ServiceProvider& svc) : Cutscene(svc, 902, "h
 	m_intro.start();
 	svc.input_system.flush_inputs();
 	svc.state_flags.set(automa::StateFlags::cutscene);
-	svc.quest_table.set_quest_progression("defeat_haunch", 1); // delete me!
-	if (svc.quest_table.get_quest_progression("defeat_haunch") > 0) { progress = 20; }
+	if (svc.quest_table.get_quest_progression("defeat_haunch") > 0) {
+		progress = 20;
+		svc.camera_controller.set_owner(graphics::CameraOwner::player);
+		svc.camera_controller.constrain();
+	}
 }
 
 void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 	if (complete() && !m_flags.test(HaunchEscapeFlags::over)) {
+		m_flags.set(HaunchEscapeFlags::over);
 		if (round_two()) {
-			m_flags.set(HaunchEscapeFlags::over);
 			svc.quest_table.set_quest_progression("defeat_haunch", 2);
-			svc.quest_table.progress_quest("defeat_skycorps", 2, 999);
 		} else {
-			m_flags.set(HaunchEscapeFlags::over);
 			svc.data.switch_destructible_state(90102, true);
 			svc.quest_table.set_quest_progression("defeat_haunch", 1);
 		}
@@ -34,6 +35,7 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 	if (m_flags.test(HaunchEscapeFlags::over) && context.transition.is_black()) {
 		flags.set(CutsceneFlags::delete_me);
 		round_two() ? svc.state_controller.switch_rooms(999, 209, context.transition) : svc.state_controller.switch_rooms(901, 999, context.transition);
+		return;
 	}
 
 	svc.state_flags.set(automa::StateFlags::no_menu);
@@ -60,6 +62,7 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 	auto haunch_enemy = map.get_enemy(28);
 
 	if (!evade_sequence) {
+		haunch->unhide();
 		svc.state_flags.set(automa::StateFlags::cutscene);
 		svc.state_flags.set(automa::StateFlags::hide_hud);
 		player.controller.restrict_movement();
@@ -70,8 +73,11 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 		svc.camera_controller.free();
 
 		if (haunch_enemy != nullptr) { svc.camera_controller.set_position(haunch_enemy->get_global_center()); }
-		if (progress >= 6 && progress <= 9) { svc.camera_controller.set_position(player.get_camera_focus_point()); }
+	} else {
+		haunch->hide();
 	}
+
+	if (progress >= 6 && progress <= 9) { svc.camera_controller.set_position(player.get_camera_focus_point()); }
 
 	if (m_intro.just_started()) {
 		if (context.console) { context.console.reset(); }
@@ -84,6 +90,7 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 		haunch->flush_and_push(3);
 		m_champion.emplace(svc, map);
 		if (round_two()) { m_champion->get_collider().set_position(sf::Vector2f{400.f, 400.f}); }
+		bryn->set_flag(NPCFlags::airborne);
 	}
 
 	if (m_intro.is_almost_complete()) { cooldowns.beginning.start(); }
@@ -105,6 +112,7 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 	if (cooldowns.beginning.is_almost_complete()) {}
 	if (context.console) { haunch->disengage(); }
 	if (context.console) { bryn->disengage(); }
+	bryn->set_flag(NPCFlags::cutscene);
 
 	if (m_bomb_tick.is_almost_complete()) {
 		m_dynamite.update();
@@ -113,9 +121,9 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 	}
 
 	if (m_champion) { bryn->set_position(m_champion->get_drivers_seat()); }
-	bryn->request(NPCAnimationState::special_2);
+	bryn->set_special_animation(2);
 
-	auto champion_target = player.get_collider().get_top() - sf::Vector2f{0.f, 40.f};
+	auto champion_target = player.get_collider().get_top() - sf::Vector2f{20.f, 40.f};
 	if (m_champion && progress > 8) { player.set_position(m_champion->get_passengers_seat()); }
 
 	if (round_two()) {
@@ -185,9 +193,11 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 		break;
 	case 6: break;
 	case 7:
-		player.set_jumping();
-		m_player_jump.start();
-		++progress;
+		if (!context.console) {
+			player.set_jumping();
+			m_player_jump.start();
+			++progress;
+		}
 		break;
 	case 8:
 		if (m_player_jump.is_complete()) {

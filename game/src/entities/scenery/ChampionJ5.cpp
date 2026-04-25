@@ -10,6 +10,7 @@ ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{s
 	push_animation("grounded", {5, 1, 24, -1});
 	push_animation("take_off", {6, 2, 24, 0});
 	m_propeller.push_and_set_animation("spinning", {0, 3, 12, -1});
+	m_propeller.push_animation("retract", {3, 8, 18, 0, true});
 	m_propeller.center();
 	center();
 	Mobile::register_collider(map, {40.f, 40.f});
@@ -22,6 +23,7 @@ ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{s
 	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 	get_collider().set_exclusion_target(shape::ColliderTrait::pushable);
 	get_collider().set_exclusion_target(shape::ColliderTrait::block);
+	get_collider().set_exclusion_target(shape::ColliderTrait::particle);
 }
 
 void ChampionJ5::update(automa::ServiceProvider& svc, world::Map& map) {
@@ -45,17 +47,17 @@ void ChampionJ5::update(automa::ServiceProvider& svc, world::Map& map) {
 		svc.soundboard.play_sound("thud");
 	}
 
-	// get_collider().has_flag_set(shape::ColliderFlags::simple) ? get_collider().physics.set_friction_componentwise({0.9f, 0.9f}) : get_collider().physics.set_friction_componentwise({0.99f, 0.99f});
+	get_collider().has_flag_set(shape::ColliderFlags::simple) ? get_collider().physics.set_friction_componentwise({1.f, 1.f}) : get_collider().physics.set_friction_componentwise({0.9f, 0.9f});
 
 	// if (get_collider().has_flag_set(shape::ColliderFlags::simple)) { m_steering.seek(get_collider().physics, m_target, 0.00003f); }
 	if (get_collider().has_flag_set(shape::ColliderFlags::simple)) { m_steering.thrust_seek(get_collider().physics, m_target, m_thrust); }
-	if (is_close_to_target(constants::small_value) && flags.test(ChampionJ5Flags::interactable)) { request(ChampionJ5State::land); }
+	if (is_close_to_target(0.03f) && flags.test(ChampionJ5Flags::interactable)) { request(ChampionJ5State::land); }
 
 	state_function = state_function();
 }
 
 void ChampionJ5::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	auto drawpos = get_collider().get_center() + sf::Vector2f{0.f, -16.f};
+	auto drawpos = get_collider().get_center() + sf::Vector2f{0.f, -17.f};
 	m_propeller.set_position(drawpos - cam);
 	win.draw(m_propeller);
 	set_position(drawpos - cam);
@@ -70,6 +72,7 @@ fsm::StateFunction ChampionJ5::update_flying() {
 
 fsm::StateFunction ChampionJ5::update_land() {
 	p_state.actual = ChampionJ5State::land;
+	if (animation.just_started()) { m_propeller.set_animation("retract"); }
 	if (animation.get_frame_count() == 2 && animation.keyframe_started()) { m_services->soundboard.play_sound("champion_j5_land"); }
 	if (animation.is_complete()) {
 		request(ChampionJ5State::grounded);

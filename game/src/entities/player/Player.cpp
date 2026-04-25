@@ -595,7 +595,7 @@ void Player::set_sitting() {
 void Player::set_jumping() {
 	m_animation_machine.force(AnimState::rise, "rise");
 	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_rise, &m_animation_machine);
-	get_collider().physics.acceleration.y = -10.f;
+	get_collider().physics.acceleration.y = -8.f;
 }
 
 void Player::set_slow_walk() {

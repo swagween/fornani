@@ -234,6 +234,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 53176,
@@ -242,6 +243,7 @@
           97,
           29
         ],
+        "start_busy": false,
         "suites": [
           [
             1
