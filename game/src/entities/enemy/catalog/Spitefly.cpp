@@ -52,7 +52,12 @@ void Spitefly::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 
 	if (is_active()) {
 		auto force = is_albino() ? 0.00012f : 0.0001f;
-		m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center(), force);
+		if (is_albino()) {
+			get_collider().physics.set_friction_componentwise({1.f, 0.99f});
+			m_steering.thrust_seek(Enemy::get_collider().physics, player.get_collider().get_center() + random::random_vector_float(-4.f, 4.f), {0.017f, .118f, .991f, 260.f});
+		} else {
+			m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center(), force);
+		}
 		if (is_bomb()) {
 			if (m_bomb) {
 				if (svc.ticker.every_x_ticks(1000)) {

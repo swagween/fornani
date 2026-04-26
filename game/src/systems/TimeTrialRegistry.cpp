@@ -63,7 +63,7 @@ bool TimeTrialRegistry::register_time(automa::ServiceProvider& svc, int course, 
 			c["times"].push_back(t);
 			svc.data.time_trial_data["trials"].push_back(c);
 		}
-		if (!svc.data.time_trial_data.to_file((svc.finder.resource_path() + "/data/save/time_trials.json").c_str())) {
+		if (!svc.data.time_trial_data.to_file((svc.finder.paths.save / fs::path{"time_trials.json"}).string())) {
 			NANI_LOG_ERROR(m_logger, "Failed to save time trial record!");
 		} else {
 			NANI_LOG_INFO(m_logger, "New Record! Registered [{}]'s Time for course {}: {}", tag.data(), course, time);

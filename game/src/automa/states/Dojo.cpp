@@ -323,7 +323,7 @@ void Dojo::acquire_gun_from_console(ServiceProvider& svc, int id) {
 
 void Dojo::acquire_gun(ServiceProvider& svc, std::string_view tag) {
 	if (tag == "bryns_gun") {
-		m_shoot_hint = util::Cooldown{500};
+		m_shoot_hint = util::Cooldown{1500};
 		m_shoot_hint->start();
 	}
 	NANI_LOG_DEBUG(m_logger, "Gun Tag: {}", tag.data());

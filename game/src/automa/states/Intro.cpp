@@ -7,7 +7,7 @@
 namespace fornani::automa {
 
 Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number)
-	: GameplayState(svc, player, scene, room_number), m_airship{svc, "scenery_firstwind_airship", {480, 256}}, m_cloud_sea{svc, "cloud_sea"}, m_cloud{svc, "cloud"}, m_intro_shot{1600}, m_wait{800}, m_end_wait{800}, m_attack_fadeout{2600},
+	: GameplayState(svc, player, scene, room_number), m_airship{svc, "scenery_firstwind_airship", {480, 256}}, m_cloud_sea{svc, "cloud_sea"}, m_cloud{svc, "cloud"}, m_intro_shot{1600}, m_wait{800}, m_end_wait{1200}, m_attack_fadeout{1200},
 	  m_location_text{svc, svc.data.gui_text["locations"]["firstwind"].as_string_view()} {
 	m_map.emplace(svc, player);
 
@@ -56,6 +56,7 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, std::string_view scen
 
 void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
+	m_airship.set_position(sf::Vector2f{0.f, 4.f * sin(m_intro_shot.get_normalized() * 10.f)});
 	m_wait.update();
 	if (m_wait.running()) { return; }
 
@@ -73,7 +74,6 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	m_cloud_sea.update(svc);
 	m_cloud.update(svc);
 	m_airship.tick();
-	m_airship.set_position(sf::Vector2f{0.f, 4.f * sin(m_intro_shot.get_normalized() * 10.f)});
 	m_intro_shot.update();
 	m_end_wait.update();
 	m_attack_fadeout.update();

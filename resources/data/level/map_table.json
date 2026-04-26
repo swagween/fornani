@@ -224,6 +224,12 @@
     },
     {
       "folder": "junkyard",
+      "label": "chute.json",
+      "region": "junkyard",
+      "room_id": 706
+    },
+    {
+      "folder": "junkyard",
       "label": "dump.json",
       "region": "junkyard",
       "room_id": 703

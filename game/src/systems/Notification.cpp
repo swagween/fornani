@@ -42,7 +42,7 @@ void Notification::insert_input_hint(automa::ServiceProvider& svc, int action_id
 	auto lookup = svc.input_system.get_icon_lookup_by_action(static_cast<input::DigitalAction>(action_id));
 	if (!m_input_icon) { return; }
 	m_input_icon->set_texture_rect(sf::IntRect{lookup * 18, {18, 18}});
-	m_input_icon->set_origin({-2.f, 4.f});
+	m_input_icon->set_origin({-2.f, 12.f});
 }
 
 } // namespace fornani

@@ -276,7 +276,7 @@ void TextWriter::insert_icon_at(int index, sf::Vector2i icon_lookup) {
 	m_input_icon = sf::Sprite{m_services->assets.get_texture("controller_button_icons")};
 	m_input_icon->setTextureRect(sf::IntRect{icon_lookup * 18, {18, 18}});
 	m_input_icon->setScale(constants::f_scale_vec);
-	m_input_icon->setOrigin({-2.f, 4.f});
+	m_input_icon->setOrigin({-2.f, 12.f});
 	auto msg = current_message.getString();
 	auto first = msg.substring(0, index);
 	auto second = msg.substring(index, std::string::npos);

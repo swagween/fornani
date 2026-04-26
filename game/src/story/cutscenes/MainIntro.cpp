@@ -134,6 +134,7 @@ void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, worl
 			svc.camera_controller.set_position(bryn->Mobile::get_global_center());
 			++progress;
 			bryn->set_desired_direction({LR::left});
+			bryn->start_busy_timer();
 			bryn->request(NPCAnimationState::turn);
 		}
 		break;

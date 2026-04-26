@@ -1296,18 +1296,19 @@
         [
           {
             "codes": [[5, 0]],
-            "message": "Of course... It's easy to get bored around here."
+            "message": "Well, I wouldn't blame you if you decided to abandon this mission altogether after that whole fiasco."
           },
           {
-            "codes": [[5, 2]],
-            "message": "I mean, why do you think I throw myself into dangerous ruins?"
+            "codes": [[5, 1]],
+            "message": "But otherwise you'll have to get to Ashtown the old-fashioned way."
           },
           {
-            "codes": [
-              [5, 1],
-              [1, 0]
-            ],
-            "message": "Living with Doc is great and all, but it gets old. And I really wish he'd stop leaving his dentures next to my makeup..."
+            "codes": [[22, 227, 1, 2]],
+            "message": "Take the Pioneer Trail as far as it goes. Once sec, I'll mark it on your map."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "There you go. Don't hesitate to ask us if you need any help."
           }
         ],
         [
@@ -2459,19 +2460,104 @@
       ]
     },
     "4": {
-      "output": 2,
-      "responses": [],
+      "responses": [
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "I need some clarification on the objective..."
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "Who were the pioneers, exactly?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 3]],
+            "message": "Through it...? What do you mean?"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 4]],
+            "message": "Where might I find a gas mask?"
+          }
+        ]
+      ],
       "suite": [
         [
           {
-            "message": "I owe you my deepest gratitude for rescuing my student."
+            "code_list": [
+              [
+                [4, 0],
+                [1, 0]
+              ],
+              [
+                [4, 1],
+                [1, 0]
+              ],
+              [
+                [4, 2],
+                [1, 0]
+              ]
+            ],
+            "messages": [
+              "There's always work that needs doing.",
+              "Yes?",
+              "You never cease to impress me."
+            ]
+          }
+        ],
+        [
+          {
+            "message": "Well, I promise you won't have such transportation hang-ups this time around, as no one can really stop you from walking there."
           },
           {
-            "message": "And Bryn filled me in on all the details, about the corrupted King Miaag that you defeated. Well done."
+            "message": "The fastest way to Ashtown is via the Pioneer Trail, which is due east of here. Bryn should be able to place a marker on your map gizmo if she hasn't already."
           },
           {
-            "codes": [[21, 300]],
-            "message": "Anyway, you've arrived at just the right time, as we've got pressing matters to discuss with you."
+            "codes": [[1, 1]],
+            "message": "Beyond that, my only concern is how you'll navigate around the Mother Worm... Perhaps you can just go through it, as the pioneers had once done."
+          }
+        ],
+        [
+          {
+            "codes": [[4, 2]],
+            "message": "Ah, the curious mind is sure to be a sharp one!"
+          },
+          {
+            "message": "The pioneers were simply the first Grand-Islanders to visit this place. Their maiden voyage was aboard an airship called 'Pioneer I', hence the origin of the term."
+          },
+          {
+            "message": "It was a brutally heavy and pragmatically designed ship, without all the modern niceties and advanced floatation technology that we've since developed. I imagine its interior looked much the same as this very base."
+          },
+          {
+            "message": "And despite that, I believe they had knowlegde that was somehow lost over the centuries. Every time I dismantle pioneer tech, I encounter some machinery that I had never imagined possible."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Truly, one could dedicate a lifetime to study them and still barely scratch the surface."
+          }
+        ],
+        [
+          {
+            "message": "I know it doesn't sound so appealing, but it's proven to be a much faster route. And a more discreet one, at that."
+          },
+          {
+            "message": "Beyond the Mother lies a series of caverns full of toxic waste. Whether that waste is a byproduct of Skycorps development projects or the Mother herself, I cannot say."
+          },
+          {
+            "codes": [[1, 2]],
+            "message": "Either way, you'll need a gas mask if you've any hope of getting through them."
+          }
+        ],
+        [
+          {
+            "message": "Alas, I haven't the slightest clue."
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "There's a chance you could find one lying around the junkyards, but it might be a needle in the haystack."
           }
         ]
       ]

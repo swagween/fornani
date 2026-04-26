@@ -5,7 +5,7 @@
 
 namespace fornani::enemy {
 
-Boss::Boss(automa::ServiceProvider& svc, world::Map& map, std::string_view label) : Enemy{svc, map, label}, p_health_bar{svc, label}, p_services{&svc} {
+Boss::Boss(automa::ServiceProvider& svc, world::Map& map, std::string_view label) : Enemy{svc, map, label}, p_health_bar{svc, label}, p_services{&svc}, p_map{&map} {
 	svc.events.start_battle_event.attach_to(slot, &Boss::start_battle, this);
 	flags.general.set(GeneralFlags::boss);
 }

@@ -23,6 +23,7 @@ class Boss : public Enemy, public Flaggable<BossFlags> {
   protected:
 	std::shared_ptr<Slot const> slot{std::make_shared<Slot const>()};
 	automa::ServiceProvider* p_services;
+	world::Map* p_map;
 	gui::BossHealth p_health_bar;
 };
 

@@ -14,7 +14,7 @@ ItemWidget::ItemWidget(automa::ServiceProvider& svc, ItemWidgetType type, std::s
 	m_sprites.sticker.setOrigin(m_sprites.sticker.getLocalBounds().getCenter());
 	m_sprites.item.setOrigin(dim / 2.f);
 	if (type == ItemWidgetType::item) { m_lookup = {svc.data.get_item_json_from_tag(tag)["lookup"][0].as<int>(), svc.data.get_item_json_from_tag(tag)["lookup"][1].as<int>()}; }
-	if (type == ItemWidgetType::gun) { m_lookup = {svc.data.get_gun_json_from_tag(tag)["metadata"]["widget_lookup"][0].as<int>(), 0}; }
+	if (type == ItemWidgetType::gun) { m_lookup = {svc.data.get_gun_json_from_tag(tag)["metadata"]["widget_lookup"].as<int>(), 0}; }
 }
 
 void ItemWidget::update(automa::ServiceProvider& svc) {

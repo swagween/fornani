@@ -17,6 +17,33 @@ void DataManager::load_data() {
 	NANI_LOG_INFO(m_logger, "Data loading started.");
 	auto const& finder = m_services->finder;
 
+	// save files
+	auto ctr{0};
+	for (auto& file : files) {
+		file.id = ctr;
+		file.label = "file_" + std::to_string(ctr);
+		auto filename = finder.paths.save / fs::path{"file_" + std::to_string(ctr) + ".json"};
+		auto template_file = finder.resource_path() / fs::path{"data/save/new_game.json"};
+		finder.ensure_file_exists(filename, template_file);
+
+		file.save_data = *dj::Json::from_file(filename.string());
+		if (file.save_data["status"]["new"].as_bool()) { file.flags.set(fornani::io::FileFlags::new_file); }
+		if (file.save_data["status"]["inspect_hint"].as_bool()) { file.flags.set(fornani::io::FileFlags::inspect_hint); }
+		++ctr;
+	}
+
+	auto time_trials_file = (finder.paths.save / fs::path{"time_trials.json"});
+	auto time_trials_template = finder.paths.config / fs::path{"time_trials.json"};
+	finder.ensure_file_exists(time_trials_file, time_trials_template);
+	time_trial_data = *dj::Json::from_file(time_trials_file.string());
+	assert(!time_trial_data.is_null());
+	for (auto const& course : time_trial_data["trials"].as_array()) {
+		for (auto const& time : course["times"].as_array()) { time_trial_registry.insert_time(*m_services, course["course_id"].as<int>(), time["player_tag"].as_string().data(), time["time"].as<float>()); }
+	}
+
+	blank_file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/new_game.json").c_str());
+	trial_file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/trial_save.json").c_str());
+
 	// load audio library
 	auto audio_path = std::filesystem::path{finder.resource_path()} / "audio";
 	auto song_list = audio_path / "songs";
@@ -124,24 +151,6 @@ void DataManager::load_data() {
 	}
 
 	for (auto& id : discovered_rooms) {}
-
-	auto ctr{0};
-	for (auto& file : files) {
-		file.id = ctr;
-		file.label = "file_" + std::to_string(ctr);
-		file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/file_" + std::to_string(ctr) + ".json").c_str());
-		if (file.save_data["status"]["new"].as_bool()) { file.flags.set(fornani::io::FileFlags::new_file); }
-		if (file.save_data["status"]["inspect_hint"].as_bool()) { file.flags.set(fornani::io::FileFlags::inspect_hint); }
-		++ctr;
-	}
-	blank_file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/new_game.json").c_str());
-	trial_file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/trial_save.json").c_str());
-
-	time_trial_data = *dj::Json::from_file((finder.resource_path() + "/data/save/time_trials.json").c_str());
-	assert(!time_trial_data.is_null());
-	for (auto const& course : time_trial_data["trials"].as_array()) {
-		for (auto const& time : course["times"].as_array()) { time_trial_registry.insert_time(*m_services, course["course_id"].as<int>(), time["player_tag"].as_string().data(), time["time"].as<float>()); }
-	}
 
 	weapon = *dj::Json::from_file((finder.resource_path() + "/data/weapon/weapon_data.json").c_str());
 	assert(!weapon.is_null());
@@ -311,7 +320,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	out_stat["seconds_played"] = m_services->ticker.in_game_seconds_passed.count();
 	out_stat["time_trials"]["bryns_gun"] = s.time_trials.bryns_gun;
 
-	if (!save.dj::Json::to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save file!"); }
+	if (!save.dj::Json::to_file((m_services->finder.paths.save / fs::path{"file_" + std::to_string(current_save) + ".json"}).string())) { NANI_LOG_ERROR(m_logger, "Failed to save file!"); }
 }
 
 void DataManager::save_settings() {
@@ -321,10 +330,9 @@ void DataManager::save_settings() {
 	settings["music_volume"] = m_services->music_player.get_volume();
 	settings["sfx_volume"] = m_services->soundboard.get_volume();
 	settings["fullscreen"] = m_services->fullscreen();
-	if (!settings.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str())) {
+	if (!settings.dj::Json::to_file((m_services->finder.paths.config / fs::path{"settings.json"}).string())) {
 		NANI_LOG_ERROR(m_logger, "Failed to save user settings!");
 	} else {
-
 		NANI_LOG_INFO(m_logger, "Saved settings.");
 	}
 }
@@ -414,7 +422,16 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 }
 
 void DataManager::load_settings() {
-	settings = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str());
+
+	auto& finder = m_services->finder;
+	auto settings_file = finder.paths.config / fs::path{"settings.json"};
+	auto settings_template = finder.resource_path() / fs::path{"data/config/settings.json"};
+	auto controls_file = finder.paths.config / fs::path{"controls.json"};
+	auto controls_template = finder.resource_path() / fs::path{"data/config/controls.json"};
+	finder.ensure_file_exists(settings_file, settings_template);
+	finder.ensure_file_exists(controls_file, controls_template);
+
+	settings = *dj::Json::from_file(settings_file.string());
 	assert(!settings.is_null());
 	m_services->input_system.set_setting(input::InputSystemSettings::auto_sprint, settings["auto_sprint"].as_bool());
 	m_services->set_tutorial(settings["tutorial"].as_bool());
@@ -432,7 +449,7 @@ void DataManager::delete_file(int index) {
 	if (index >= files.size()) { return; }
 	files.at(index).save_data = blank_file.save_data;
 	files.at(index).flags.set(fornani::io::FileFlags::new_file);
-	if (!files.at(index).save_data.to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to clear save data!"); }
+	if (!files.at(index).save_data.to_file((m_services->finder.paths.save / fs::path{"file_" + std::to_string(current_save) + ".json"}).string())) { NANI_LOG_ERROR(m_logger, "Failed to clear save data!"); }
 }
 
 void DataManager::write_death_count(player::Player& player) {
@@ -621,7 +638,7 @@ int DataManager::get_destructible_state(int id) const {
 
 void DataManager::load_controls(input::InputSystem& controller) {
 	// XXX change controls json when keybinds get modified
-	controls = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/control_map.json").c_str());
+	controls = *dj::Json::from_file((m_services->finder.paths.config / "controls.json").string());
 	assert(!controls.is_null());
 	assert(controls["controls"] && controls["controls"].is_object());
 
@@ -633,7 +650,7 @@ void DataManager::load_controls(input::InputSystem& controller) {
 }
 
 void DataManager::save_controls(input::InputSystem& controller) {
-	if (!controls.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/control_map.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save controls layout!"); }
+	if (!controls.dj::Json::to_file((m_services->finder.paths.config / "controls.json").string())) { NANI_LOG_ERROR(m_logger, "Failed to save controls layout!"); }
 }
 
 void DataManager::reset_controls() { controls = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/defaults.json").c_str()); }

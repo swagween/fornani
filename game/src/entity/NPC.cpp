@@ -510,6 +510,9 @@ fsm::StateFunction NPC::update_busy() {
 	if (change_state(NPCAnimationState::respond, "respond")) { return std::move(fsm::StateFunction{NPC_BIND(update_respond)}); }
 	if (change_state(NPCAnimationState::idle, "idle")) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
 	if (change_state(NPCAnimationState::walk, "walk")) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
+	if (m_busy_timer.running()) {
+		if (change_state(NPCAnimationState::turn, "turn")) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
+	}
 	return std::move(fsm::StateFunction{NPC_BIND(update_busy)});
 }
 

@@ -46,6 +46,7 @@ class Miaag : public Boss, public StateMachine<MiaagState> {
 	entity::WeaponPackage m_magic;
 	sf::Vector2f m_player_target{};
 	sf::Vector2f m_target_point{};
+	int m_magic_frequency{};
 
 	struct {
 		util::Cooldown fire;

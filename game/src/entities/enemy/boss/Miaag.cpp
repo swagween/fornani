@@ -29,6 +29,7 @@ Miaag::Miaag(automa::ServiceProvider& svc, world::Map& map)
 	m_spine_sprite.setOrigin({40.5f, 26.f});
 	for (auto const& link : m_spine->links) { m_spine_lookups.push_back(random::random_range(0, 2)); }
 	m_spine->set_free(true);
+	get_collider().set_exclusion_target(fornani::shape::ColliderTrait::enemy);
 }
 
 void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -93,11 +94,19 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	// movement
 	auto movement_force = m_cooldowns.charge.running() ? 0.00005f : 0.0001f;
-	if (battle_mode()) { m_steering.seek(Enemy::get_collider().physics, m_target_point + random::random_vector_float(-64.f, 64.f), movement_force); }
+	if (battle_mode()) {
+		if (second_phase()) {
+			get_collider().physics.set_friction_componentwise({1.f, 0.99f});
+			m_steering.thrust_seek(Enemy::get_collider().physics, m_target_point + random::random_vector_float(-64.f, 64.f), {0.017f, .118f, .991f, 260.f});
+		} else {
+			m_steering.seek(Enemy::get_collider().physics, m_target_point + random::random_vector_float(-64.f, 64.f), movement_force);
+		}
+	}
 
 	if (directions.actual.lnr != directions.desired.lnr) { request(MiaagState::turn); }
 	// attacks and animations
-	if (battle_mode() && svc.ticker.every_x_ticks(1000) && !m_cooldowns.post_magic.running()) {
+	auto freq = second_phase() ? 500 : 1000;
+	if (battle_mode() && svc.ticker.every_x_ticks(freq) && !m_cooldowns.post_magic.running()) {
 		if (second_phase()) {
 			random::percent_chance(50) ? request(MiaagState::spellcast) : request(MiaagState::chomp);
 		} else {
@@ -105,7 +114,8 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		}
 		was_requested(MiaagState::chomp) ? svc.soundboard.flags.miaag.set(audio::Miaag::growl) : svc.soundboard.flags.miaag.set(audio::Miaag::roar);
 		auto home = random::random_range(0, map.home_points.size() - 1);
-		m_target_point = map.home_points.at(home);
+		m_target_point = map.home_points.at(home) - get_collider().get_local_center();
+		if (second_phase()) { m_target_point += random::random_vector_float(-40.f, 40.f); }
 	}
 
 	// effects
@@ -192,6 +202,7 @@ fsm::StateFunction Miaag::update_hurt() {
 			m_cooldowns.post_death.start();
 			m_flags.set(MiaagFlags::gone);
 		} else {
+			m_cooldowns.post_magic.set_native_time(400);
 			request(MiaagState::idle);
 			if (change_state(MiaagState::idle, get_params("idle"))) { return MIAAG_BIND(update_idle); }
 		}
@@ -211,10 +222,11 @@ fsm::StateFunction Miaag::update_spellcast() {
 		m_cooldowns.charge.start();
 		m_cooldowns.limit.start();
 		m_services->soundboard.flags.summoner.set(audio::Summoner::summon);
+		m_magic_frequency = random::coin_flip() ? 48 : 96;
 	}
 	if (m_cooldowns.charge.is_complete()) {
-		auto first_channel = m_cooldowns.fire.get() > 32;
-		auto second_channel = m_cooldowns.fire.get() > 16;
+		auto first_channel = m_cooldowns.fire.get() > (m_magic_frequency / 3) * 2;
+		auto second_channel = m_cooldowns.fire.get() > m_magic_frequency / 3;
 		if (first_channel) {
 			set_channel(EnemyChannel::extra_1);
 		} else if (second_channel) {
@@ -226,7 +238,7 @@ fsm::StateFunction Miaag::update_spellcast() {
 			m_magic.get().set_barrel_point(get_collider().get_center());
 			m_magic.shoot(*m_services, *m_map, m_player_target - get_collider().get_center());
 			m_services->soundboard.flags.weapon.set(audio::Weapon::demon_magic);
-			m_cooldowns.fire.start();
+			m_cooldowns.fire.start(m_magic_frequency);
 		}
 	}
 	if (m_services->ticker.every_x_ticks(32)) { m_map->effects.push_back(entity::Effect(*m_services, "demon_breath", get_collider().get_center() + random::random_vector_float(-40.f, 40.f), {0.f, -0.2f})); }

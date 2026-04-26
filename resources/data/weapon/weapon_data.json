@@ -481,7 +481,8 @@
     "metadata": {
       "id": 15,
       "label": "Laser Gun",
-      "description": "A destructive weapon that fires a powerful laser when fully charged."
+      "description": "A destructive weapon that fires a powerful laser when fully charged.",
+      "widget_lookup": 5
     },
     "visual": {
       "texture_lookup": 15,
@@ -546,7 +547,8 @@
     "metadata": {
       "id": 16,
       "label": "Slingshot",
-      "description": "A traditional Kariba weapon."
+      "description": "A traditional Kariba weapon.",
+      "widget_lookup": 6
     },
     "visual": {
       "texture_lookup": 16,
