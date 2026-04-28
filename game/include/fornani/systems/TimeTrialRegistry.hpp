@@ -25,6 +25,9 @@ class TimeTrialRegistry {
 	std::optional<std::vector<TrialAttempt>> readout_attempts(int const course);
 
   private:
+	bool serialize_record(automa::ServiceProvider& svc);
+
+  private:
 	std::uint8_t calculate_rating(automa::ServiceProvider& svc, int const course_id, float const time) const;
 	std::unordered_map<int, std::vector<TrialAttempt>> m_trial_attempts{};
 

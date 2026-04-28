@@ -1,4 +1,5 @@
 nani_add_headers(
+  AmbientProp.hpp
   Animator.hpp
   Bed.hpp
   Chest.hpp

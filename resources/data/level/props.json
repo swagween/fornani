@@ -1,0 +1,16 @@
+{
+  "cattail": {
+    "num_frames": 9,
+    "sensitivity": 0.001,
+    "radius": 20.0,
+    "dimensions": [32, 32],
+    "destroy_effect": "grass_burst"
+  },
+  "reeds": {
+    "num_frames": 3,
+    "sensitivity": 0.001,
+    "radius": 16.0,
+    "dimensions": [64, 64],
+    "destroy_effect": "grass_burst"
+  }
+}

@@ -628,6 +628,10 @@
       {
         "label": "turn",
         "parameters": [6, 1, 30, 0, false]
+      },
+      {
+        "label": "walk",
+        "parameters": [6, 4, 30, 2, false]
       }
     ]
   },

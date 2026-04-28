@@ -1,4 +1,5 @@
 nani_add_sources(
+  AmbientProp.cpp
   Animator.cpp
   Bed.cpp
   Chest.cpp

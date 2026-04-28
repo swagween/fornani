@@ -87,7 +87,7 @@
       "day_night_shift": false,
       "environmental_randomness": false,
       "lighting": false,
-      "timer": true
+      "timer": false
     },
     "room_id": 88867,
     "shader": {

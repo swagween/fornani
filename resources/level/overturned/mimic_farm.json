@@ -7,6 +7,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 212,
@@ -15,6 +16,7 @@
           16,
           11
         ],
+        "start_busy": false,
         "suites": [
           [
             1,
@@ -45,6 +47,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 212,
@@ -53,6 +56,7 @@
           17,
           11
         ],
+        "start_busy": false,
         "suites": [
           [
             1

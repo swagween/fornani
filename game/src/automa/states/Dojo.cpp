@@ -138,7 +138,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	if (p_reward_sequence) {
 		p_reward_sequence.value()->update(svc, *player, *m_map);
-		p_context.transition.update(*player);
 		if (p_reward_sequence.value()->flags.consume(graphics::RewardSequenceFlags::health_get)) { hud.spawn_effect(svc, "bonus_heart", hud.get_hearts_endpoint(), {}, 1); }
 		if (p_reward_sequence.value()->is_done()) {
 			p_context.transition.end();
@@ -159,7 +158,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		m_map->set_target_balance(0.f, audio::BalanceTarget::music);
 		m_map->set_target_balance(0.f, audio::BalanceTarget::ambience);
 		m_map->update_balance(svc);
-		p_context.transition.update(*player);
 		if (!p_context.console) {
 			p_inventory_window.value()->update(svc, *player, *m_map);
 			if (p_inventory_window.value()->exit_requested()) {

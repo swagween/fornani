@@ -21,7 +21,26 @@ void PopupHandler::close_popup() {
 }
 
 void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, Console& console, char const* label, std::unique_ptr<Tool>& tool, int room_id) {
+	if (ImGui::BeginPopupModal("Ambient Prop Specifications", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
+		static bool activate_on_contact{};
+		static int channel{};
+		static char keybuffer[128] = "cattail";
 
+		ImGui::InputTextWithHint("Tag", "Pre-defined tag for prop parameters", keybuffer, IM_ARRAYSIZE(keybuffer));
+		ImGui::Separator();
+		ImGui::InputInt("Channel", &channel);
+		ImGui::SameLine();
+
+		if (ImGui::Button("Create")) {
+			m_is_open = false;
+			// switch to entity tool, and store the specified inspectable for placement
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<fornani::AmbientProp>(svc, channel, keybuffer);
+			ImGui::CloseCurrentPopup();
+		}
+		close_popup();
+	}
 	if (ImGui::BeginPopupModal("Inspectable Specifications", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
 		static bool activate_on_contact{};

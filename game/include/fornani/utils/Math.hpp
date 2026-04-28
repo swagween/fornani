@@ -72,5 +72,11 @@ inline sf::Vector2f arc_lerp_midpoint(sf::Vector2f const a, sf::Vector2f const b
 	float angle = angleA + direction * f_pi * t;
 	return center + sf::Vector2f(std::cos(angle) * r, std::sin(angle) * r);
 }
+inline int map_to_frame(float value, float min, float max, int min_frame, int max_frame) {
+	float v = std::clamp(value, min, max);
+	float t = (v - min) / (max - min);
+	float frame_float = min_frame + t * (max_frame - min_frame);
+	return static_cast<int>(std::round(frame_float));
+}
 
 } // namespace fornani::util

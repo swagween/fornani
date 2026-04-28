@@ -1,6 +1,8 @@
 
+#include <fornani/io/Codec.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/systems/TimeTrialRegistry.hpp>
+#include <fstream>
 
 namespace fornani {
 
@@ -63,11 +65,13 @@ bool TimeTrialRegistry::register_time(automa::ServiceProvider& svc, int course, 
 			c["times"].push_back(t);
 			svc.data.time_trial_data["trials"].push_back(c);
 		}
-		if (!svc.data.time_trial_data.to_file((svc.finder.paths.save / fs::path{"time_trials.json"}).string())) {
-			NANI_LOG_ERROR(m_logger, "Failed to save time trial record!");
-		} else {
-			NANI_LOG_INFO(m_logger, "New Record! Registered [{}]'s Time for course {}: {}", tag.data(), course, time);
+
+		// serialize record
+		if (!serialize_record(svc)) {
+			NANI_LOG_ERROR(m_logger, "Failed while writing save file!");
+			return false;
 		}
+		NANI_LOG_INFO(m_logger, "New Record! Registered [{}]'s Time for course {}: {}", tag.data(), course, time);
 	}
 	return was_registered;
 }
@@ -75,6 +79,17 @@ bool TimeTrialRegistry::register_time(automa::ServiceProvider& svc, int course, 
 std::optional<std::vector<TrialAttempt>> TimeTrialRegistry::readout_attempts(int const course) {
 	if (m_trial_attempts.contains(course)) { return m_trial_attempts.at(course); }
 	return std::nullopt;
+}
+
+bool TimeTrialRegistry::serialize_record(automa::ServiceProvider& svc) {
+	auto& save = svc.data.time_trial_data;
+	auto path = svc.finder.paths.save / ("time_trials.sav");
+
+	std::ofstream out(path, std::ios::binary);
+	if (!out) { return false; }
+	auto json = save.serialize();
+	if (!codec::encode(json, out)) { return false; }
+	return true;
 }
 
 std::uint8_t TimeTrialRegistry::calculate_rating(automa::ServiceProvider& svc, int const course_id, float const time) const {

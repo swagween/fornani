@@ -51,6 +51,7 @@ void Player::serialize(dj::Json& out) const {
 	out["position"]["y"] = get_position().y;
 	out["arsenal"] = dj::Json::empty_array();
 	out["hotbar"] = dj::Json::empty_array();
+
 	// push player arsenal
 	if (arsenal) {
 		for (auto const& gun : arsenal.value().get_loadout()) { out["arsenal"].push_back(gun->get_tag()); }
@@ -383,7 +384,6 @@ void Player::simple_update() {
 	update_sprite();
 	update_antennae();
 	m_piggyback_socket = m_sprite_position + sf::Vector2f{-8.f * directions.actual.as_float(), -16.f};
-	m_weapon_socket = m_sprite_position;
 	if (piggybacker) { piggybacker->update(*m_services, *this); }
 	update_weapon_simple();
 }
@@ -659,6 +659,7 @@ void Player::set_position_on_grid(sf::Vector2i grid_pos) { set_position(sf::Vect
 
 void Player::set_draw_position(sf::Vector2f const to) {
 	m_sprite_position = to;
+	m_weapon_socket = to + sf::Vector2f{0.f, 13.f};
 	sync_antennae();
 	health_indicator.set_position(to);
 	orb_indicator.set_position(to);
@@ -697,7 +698,7 @@ void Player::update_weapon(world::Map& map) {
 	controller.set_arsenal(hotbar.has_value());
 	if (!arsenal) { return; }
 	if (!hotbar) { return; }
-	// update all weapons in loadout to avoid unusual behavior upon fast weapon switching
+	// update all weapons in loadout to avoid unusual behavior upon weapon switching
 	for (auto& weapon : arsenal.value().get_loadout()) {
 		hotbar->has(weapon->get_tag()) ? weapon->set_hotbar() : weapon->set_reserved();
 		weapon->update(*m_services, map, controller.direction);
@@ -714,9 +715,14 @@ void Player::update_weapon_simple() {
 	if (!arsenal) { return; }
 	if (!hotbar) { return; }
 	for (auto& weapon : arsenal.value().get_loadout()) {
-		weapon->force_position(m_weapon_socket);
+		weapon->tick();
+		weapon->set_position(m_weapon_socket);
+		weapon->set_orientation(controller.direction);
 		weapon->set_firing_direction(controller.direction);
 	}
+	equipped_weapon().set_flag(arms::WeaponFlags::firing, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
+	equipped_weapon().set_flag(arms::WeaponFlags::charging, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
+	equipped_weapon().set_flag(arms::WeaponFlags::released, controller.has_flag_set(PlayerControllerFlags::released_weapon));
 }
 
 void Player::walk() {

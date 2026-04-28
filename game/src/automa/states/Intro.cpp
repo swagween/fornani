@@ -21,7 +21,7 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, int room_number)
 	m_map->load(svc, p_context, room_number);
 	p_context.transition.set_duration(400);
 
-	svc.soundboard.turn_on();
+	svc.soundboard.turn_off();
 	svc.state_flags.set(automa::StateFlags::cutscene);
 	svc.app_flags.reset(automa::AppFlags::custom_map_start);
 
@@ -83,7 +83,10 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (!m_map) { return; }
 
 	// cutscene logic
-	if (m_intro_shot.get() == 1000) { m_location_text.start(); }
+	if (m_intro_shot.get() == 1000) {
+		m_location_text.start();
+		svc.soundboard.turn_on();
+	}
 	if (m_intro_shot.is_almost_complete()) { p_context.transition.start(); }
 	if (p_context.transition.is_black() && m_intro_shot.is_complete()) { m_flags.set(IntroFlags::established); }
 	if (p_context.transition.is_black() && m_flags.test(IntroFlags::established) && !m_flags.test(IntroFlags::cutscene_started)) {

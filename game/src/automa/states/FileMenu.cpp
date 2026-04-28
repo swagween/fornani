@@ -100,6 +100,7 @@ void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!loading.is_complete()) { return; }
 	MenuState::render(svc, win);
 	for (auto& option : options) { win.draw(option.label); }
+	player->set_flag(player::PlayerFlags::show_weapon);
 	player->render(svc, win, {});
 	if (loading.is_complete()) {
 		hud.render(svc, *player, win);

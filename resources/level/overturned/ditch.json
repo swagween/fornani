@@ -1,5 +1,59 @@
 {
   "entities": {
+    "ambient_props": [
+      {
+        "channel": 1,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          6,
+          11
+        ],
+        "tag": "reeds"
+      },
+      {
+        "channel": 1,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          19,
+          11
+        ],
+        "tag": "reeds"
+      },
+      {
+        "channel": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          24,
+          12
+        ],
+        "tag": "reeds"
+      },
+      {
+        "channel": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          18,
+          11
+        ],
+        "tag": "cattail"
+      }
+    ],
     "enemies": [
       {
         "dimensions": [
@@ -96,6 +150,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 247,
@@ -104,6 +159,7 @@
           7,
           10
         ],
+        "start_busy": false,
         "suites": [
           [
             1

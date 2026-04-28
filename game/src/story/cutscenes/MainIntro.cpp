@@ -8,7 +8,7 @@
 
 namespace fornani {
 
-MainIntro::MainIntro(automa::ServiceProvider& svc, world::Map& map, player::Player& player) : Cutscene(svc, 300, "main_intro"), m_outro{2000} {
+MainIntro::MainIntro(automa::ServiceProvider& svc, world::Map& map, player::Player& player) : Cutscene(svc, 300, "main_intro"), m_outro{2000}, m_willett_walk{400} {
 	cooldowns.beginning.start();
 	auto npcs = map.get_entities<NPC>();
 	auto bit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 0; });
@@ -49,6 +49,7 @@ void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, worl
 	cooldowns.long_pause.update();
 	cooldowns.beginning.update();
 	m_outro.update();
+	m_willett_walk.update();
 
 	if (context.console) { context.console.value()->set_no_exit(true); }
 
@@ -72,7 +73,7 @@ void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, worl
 		willett->set_direction(LR::right);
 	}
 
-	if (willett->get_collider().get_center().x / constants::f_cell_size < 27.25f) {
+	if (willett->get_collider().get_center().x / constants::f_cell_size < 27.25f && progress < 6) {
 		willett->walk();
 	} else {
 		willett->face_player(player);
@@ -173,13 +174,12 @@ void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, worl
 		}
 		break;
 	case 5:
+		// got to 20 after this
 		svc.camera_controller.set_position(willett->Mobile::get_global_center());
 		if (!context.console) {
-			willett->flush_conversations();
-			willett->push_conversation(23);
-			bryn->force_engage();
-			svc.camera_controller.set_position(bryn->Mobile::get_global_center());
-			++progress;
+			willett->flush_and_push(26);
+			m_willett_walk.start();
+			progress = 20;
 		}
 		break;
 	case 6:
@@ -248,6 +248,25 @@ void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, worl
 			set_flag(MainIntroFlags::start_takeover);
 			context.transition.start();
 			m_outro.start();
+		}
+		break;
+	case 20:
+		willett->walk();
+		svc.camera_controller.set_position(willett->Mobile::get_global_center());
+		if (m_willett_walk.is_complete()) {
+			willett->set_desired_direction({LR::right});
+			willett->set_flag(NPCFlags::face_player);
+			willett->Mobile::set_animation("turn");
+			willett->force_engage();
+			++progress;
+		}
+		break;
+	case 21:
+		svc.camera_controller.set_position(willett->Mobile::get_global_center());
+		if (!context.console) {
+			willett->flush_and_push(23);
+			bryn->force_engage();
+			progress = 6;
 		}
 		break;
 	}

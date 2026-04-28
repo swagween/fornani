@@ -15,6 +15,7 @@ class MainIntro final : public Cutscene, public Flaggable<MainIntroFlags> {
 
   private:
 	util::Cooldown m_outro;
+	util::Cooldown m_willett_walk;
 };
 
 } // namespace fornani

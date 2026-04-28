@@ -32,6 +32,12 @@
     },
     {
       "folder": "config",
+      "label": "dps_test.json",
+      "region": "firstwind",
+      "room_id": 88867
+    },
+    {
+      "folder": "config",
       "label": "new_file.json",
       "region": "firstwind",
       "room_id": 1
@@ -893,12 +899,6 @@
       "label": "test_area.json",
       "region": "toxic",
       "room_id": 900
-    },
-    {
-      "folder": "trials",
-      "label": "dps_test.json",
-      "region": "firstwind",
-      "room_id": 88867
     },
     {
       "folder": "trials",

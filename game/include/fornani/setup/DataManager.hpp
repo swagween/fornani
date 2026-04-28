@@ -51,11 +51,11 @@ class DataManager final {
 	void save_progress(player::Player& player, int save_point_id);
 	void save_quests();
 	void save_current();
+	void serialize_death();
 	void load_localized_data(AppContext& ctx);
 	int load_progress(player::Player& player, int file, bool state_switch = false);
 	int reload_progress(player::Player& player);
 	void delete_file(int index);
-	void write_death_count(player::Player& player);
 	std::string_view load_blank_save(player::Player& player, bool state_switch = false) const;
 	void load_trial_save(player::Player& player) const;
 	dj::Json& get_save() { return files.at(current_save).save_data; }
@@ -129,6 +129,7 @@ class DataManager final {
 	dj::Json sparkler{};
 	dj::Json biomes{};
 	dj::Json hazards{};
+	dj::Json props{};
 	dj::Json npc{};
 	dj::Json item{};
 	dj::Json platform{};
@@ -175,6 +176,7 @@ class DataManager final {
 	[[nodiscard]] auto get_destroyed_inspectables() const -> Register<int> { return destroyed_inspectables; }
 	bool load_save_binary(fs::path const& path, player::Player& player);
 	bool load_save_json(fs::path const& path, player::Player& player, bool reload = false);
+	bool load_time_trials_binary(fs::path const& path);
 
   private:
 	Register<StableID::underlying_type> opened_chests{};

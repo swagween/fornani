@@ -37,14 +37,10 @@ void DataManager::load_data() {
 		finder.ensure_save_exists(filename, template_file);
 	}
 
-	auto time_trials_file = (finder.paths.save / fs::path{"time_trials.json"});
+	auto time_trials_file = (finder.paths.save / fs::path{"time_trials.sav"});
 	auto time_trials_template = finder.resource_path() / fs::path{"data/config/time_trials.json"};
-	finder.ensure_file_exists(time_trials_file, time_trials_template);
-	time_trial_data = *dj::Json::from_file(time_trials_file.string());
-	assert(!time_trial_data.is_null());
-	for (auto const& course : time_trial_data["trials"].as_array()) {
-		for (auto const& time : course["times"].as_array()) { time_trial_registry.insert_time(*m_services, course["course_id"].as<int>(), time["player_tag"].as_string().data(), time["time"].as<float>()); }
-	}
+	finder.ensure_save_exists(time_trials_file, time_trials_template);
+	load_time_trials_binary(time_trials_file);
 
 	blank_file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/new_game.json").c_str());
 	trial_file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/trial_save.json").c_str());
@@ -175,7 +171,8 @@ void DataManager::load_data() {
 	assert(!npc.is_null());
 	item = *dj::Json::from_file((finder.resource_path() + "/data/item/item.json").c_str());
 	assert(!item.is_null());
-	NANI_LOG_DEBUG(m_logger, "Item json size: {}", item.as_array().size());
+	props = *dj::Json::from_file((finder.resource_path() + "/data/level/props.json").c_str());
+	assert(!props.is_null());
 
 	platform = *dj::Json::from_file((finder.resource_path() + "/data/level/platform.json").c_str());
 	assert(!platform.is_null());
@@ -281,13 +278,11 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	}
 	for (auto& i : destroyed_inspectables) { save["destroyed_inspectables"].push_back(i); }
 
-	// save arsenal
 	player.serialize(save["player_data"]);
 
 	// stat tracker
 	auto& out_stat = save["player_data"]["stats"];
 	auto const& s = m_services->stats;
-	out_stat["death_count"] = s.player.death_count.get_count();
 	out_stat["bullets_fired"] = s.player.bullets_fired.get_count();
 	out_stat["guns_collected"] = s.player.guns_collected.get_count();
 	out_stat["items_collected"] = s.player.items_collected.get_count();
@@ -304,18 +299,21 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 
 void DataManager::save_current() {
 	auto& save = files.at(current_save).save_data;
-
 	auto path = m_services->finder.paths.save / ("file_" + std::to_string(current_save) + ".sav");
-
 	std::ofstream out(path, std::ios::binary);
 	if (!out) {
 		NANI_LOG_ERROR(m_logger, "Failed to open save file!");
 		return;
 	}
-
 	auto json = save.serialize();
-
 	if (!codec::encode(json, out)) { NANI_LOG_ERROR(m_logger, "Failed while writing save file!"); }
+}
+
+void DataManager::serialize_death() {
+	auto& save = files.at(current_save).save_data;
+	auto current_deaths = save["player_data"]["stats"]["death_count"].as<int>();
+	save["player_data"]["stats"]["death_count"] = current_deaths + 1;
+	save_current();
 }
 
 void DataManager::load_localized_data(AppContext& ctx) {
@@ -360,14 +358,6 @@ void DataManager::delete_file(int index) {
 	if (!files.at(index).save_data.to_file((m_services->finder.paths.save / fs::path{"file_" + std::to_string(current_save) + ".json"}).string())) { NANI_LOG_ERROR(m_logger, "Failed to clear save data!"); }
 }
 
-void DataManager::write_death_count(player::Player& player) {
-	auto& save = files.at(current_save).save_data;
-	auto& out_stat = save["player_data"]["stats"];
-	auto const& s = m_services->stats;
-	out_stat["death_count"] = s.player.death_count.get_count();
-	save_current();
-}
-
 std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) const {
 
 	auto const& save = blank_file.save_data;
@@ -385,7 +375,6 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 }
 
 void DataManager::load_trial_save(player::Player& player) const {
-
 	auto const& save = trial_file.save_data;
 	assert(!save.is_null());
 	player.unserialize(save["player_data"]);
@@ -728,6 +717,7 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	auto deaths = s.player.death_count.get_count();
 	s = {};
 	auto const& in_stat = save["player_data"]["stats"];
+	s.player.death_count.set(in_stat["death_count"].as<int>());
 	s.player.bullets_fired.set(in_stat["bullets_fired"].as<int>());
 	s.player.guns_collected.set(in_stat["guns_collected"].as<int>());
 	s.player.items_collected.set(in_stat["items_collected"].as<int>());
@@ -739,6 +729,34 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	s.time_trials.bryns_gun = in_stat["time_trials"]["bryns_gun"].as<float>();
 	m_services->ticker.set_time(m_services->stats.float_to_seconds(in_stat["seconds_played"].as<float>()));
 	if (files.at(current_save).is_new()) { s.player.death_count.set(0); }
+
+	return true;
+}
+
+bool DataManager::load_time_trials_binary(fs::path const& path) {
+	std::ifstream in(path, std::ios::binary);
+	if (!in) {
+		NANI_LOG_ERROR(m_logger, "Failed to open save file!");
+		return false;
+	}
+
+	std::string json;
+	if (!codec::decode(in, json)) {
+		NANI_LOG_ERROR(m_logger, "Failed to decode save file!");
+		return false;
+	}
+
+	auto result = dj::Json::parse(json);
+	if (!result) {
+		NANI_LOG_ERROR(m_logger, "Failed to parse JSON for time trials!");
+		return false;
+	}
+
+	time_trial_data = std::move(*result);
+	assert(!time_trial_data.is_null());
+	for (auto const& course : time_trial_data["trials"].as_array()) {
+		for (auto const& time : course["times"].as_array()) { time_trial_registry.insert_time(*m_services, course["course_id"].as<int>(), time["player_tag"].as_string().data(), time["time"].as<float>()); }
+	}
 
 	return true;
 }

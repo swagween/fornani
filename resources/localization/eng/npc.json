@@ -2379,11 +2379,7 @@
         [
           {
             "codes": [[4, 6]],
-            "message": "...Mh...Yes, indeed he is!"
-          },
-          {
-            "codes": [[8, 0]],
-            "message": "Or, he was..."
+            "message": "...Mh...Yes, indeed!"
           }
         ]
       ]
@@ -2437,6 +2433,18 @@
           {
             "codes": [[8, 0]],
             "message": "I think we need to get out of here!"
+          }
+        ]
+      ]
+    },
+    "26": {
+      "output": 2,
+      "responses": [[]],
+      "suite": [
+        [
+          {
+            "codes": [[8, 0]],
+            "message": "... I fear, however, that is no longer the case."
           }
         ]
       ]
@@ -2604,7 +2612,7 @@
           },
           {
             "codes": [[1, 2]],
-            "message": "I'm looking for my older brother."
+            "message": "I'm looking for my older brother, Loth."
           }
         ],
         [
@@ -3771,7 +3779,7 @@
               [1, 0],
               [5, 2]
             ],
-            "message": "I coun't myself lucky. At least I wasn't turned into one of their mutation experiments."
+            "message": "I count myself lucky. At least I wasn't turned into one of their mutation experiments."
           }
         ]
       ]

@@ -565,6 +565,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 			for (auto [i, layer] : std::views::enumerate(get_layers())) {
 				if (i == 1) {
 					if (m_entities) {
+						for (auto n : get_entities<AmbientProp>()) { n->render(win, cam, 1.f); }
 						for (auto n : get_entities<NPC>()) {
 							if (n->is_background()) { n->render(win, cam); }
 						}

@@ -4,6 +4,7 @@
 #include <imgui.h>
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
+#include <fornani/entity/AmbientProp.hpp>
 #include <fornani/entity/Animator.hpp>
 #include <fornani/entity/Bed.hpp>
 #include <fornani/entity/Chest.hpp>

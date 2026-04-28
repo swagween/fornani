@@ -1,5 +1,85 @@
 {
   "entities": {
+    "ambient_props": [
+      {
+        "channel": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          40,
+          22
+        ],
+        "tag": "cattail"
+      },
+      {
+        "channel": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          54,
+          22
+        ],
+        "tag": "cattail"
+      },
+      {
+        "channel": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          51,
+          22
+        ],
+        "tag": "cattail"
+      },
+      {
+        "channel": 1,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          52,
+          22
+        ],
+        "tag": "cattail"
+      },
+      {
+        "channel": 1,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          39,
+          22
+        ],
+        "tag": "cattail"
+      },
+      {
+        "channel": 1,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          37,
+          21
+        ],
+        "tag": "cattail"
+      }
+    ],
     "chests": [
       {
         "dimensions": [

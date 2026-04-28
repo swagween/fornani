@@ -54,6 +54,15 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 		}
 		svc.state_controller.actions.reset(Actions::exit_submenu);
 	}
+	if (svc.state_controller.actions.consume(Actions::trials)) {
+		if (svc.state_controller.actions.test(Actions::player_death)) {
+			player.start_over();
+			get_current_state().reload(svc, svc.data.reload_progress(player));
+			svc.state_controller.actions.reset(Actions::player_death);
+		} else {
+			set_current_state(std::make_unique<Trial>(svc, player, svc.state_controller.next_state));
+		}
+	}
 	if (svc.state_controller.actions.test(Actions::player_death)) {
 		if (svc.demo_mode()) {
 			if (m_flags.consume(StateManagerFlags::retry)) {
@@ -63,6 +72,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 				player.set_idle();
 				player.set_animation_flag(player::AnimTriggers::end_death, false);
 				svc.state_controller.actions.reset(Actions::player_death);
+				svc.state_controller.actions.reset(Actions::trigger);
 			} else {
 				return_to_main_menu();
 				svc.state_controller.actions.reset(Actions::player_death);
@@ -72,20 +82,18 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 			if (m_flags.consume(StateManagerFlags::retry)) {
 				NANI_LOG_INFO(m_logger, "Reloading save...");
 				player.start_over();
-				svc.data.reload_progress(player);
-				get_current_state().reload(svc, svc.state_controller.save_point_id);
-				svc.data.write_death_count(player);
-				svc.state_controller.actions.reset(Actions::player_death);
+				get_current_state().reload(svc, svc.data.reload_progress(player));
+				svc.data.serialize_death();
 				svc.state_controller.actions.reset(Actions::trigger);
+				svc.state_controller.actions.reset(Actions::player_death);
 			} else {
 				return_to_main_menu();
-				svc.data.write_death_count(player);
+				svc.data.serialize_death();
 				svc.state_controller.actions.reset(Actions::player_death);
 				return;
 			}
 		}
 	}
-	if (svc.state_controller.actions.consume(Actions::trials)) { set_current_state(std::make_unique<Trial>(svc, player, svc.state_controller.next_state)); }
 	if (svc.state_controller.actions.consume(Actions::trigger)) {
 		if (svc.state_controller.actions.test(Actions::print_stats)) {
 			print_stats(svc, player, ctx);
