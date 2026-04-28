@@ -15,7 +15,7 @@ enum class GameplayStateFlags { early_tick_return, transitioned_in };
 
 class GameplayState : public GameState, public Flaggable<GameplayStateFlags> {
   public:
-	GameplayState(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number);
+	GameplayState(ServiceProvider& svc, player::Player& player, int room_number);
 
 	virtual void tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine);
 	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win);

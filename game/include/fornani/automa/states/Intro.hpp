@@ -21,7 +21,7 @@ struct Nighthawk final : public Animatable {
 
 class Intro final : public GameplayState {
   public:
-	Intro(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
+	Intro(ServiceProvider& svc, player::Player& player, int room_number);
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;

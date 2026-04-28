@@ -18,38 +18,39 @@
 
 namespace fornani::automa {
 
-StateManager::StateManager(ServiceProvider& svc, player::Player& player, MenuType type) : m_player{&player} {
+StateManager::StateManager(ServiceProvider& svc, player::Player& player, AppContext& ctx, MenuType type) : m_player{&player} {
 
 	svc.events.return_to_main_menu_event.attach_to(m_slot, &StateManager::return_to_main_menu, this);
 	svc.events.reload_save_event.attach_to(m_slot, &StateManager::reload_save, this);
 
 	switch (type) {
-	case MenuType::main: g_current_state = std::make_unique<MainMenu>(svc, player); break;
-	case MenuType::settings: g_current_state = std::make_unique<SettingsMenu>(svc, player); break;
-	case MenuType::controls: g_current_state = std::make_unique<ControlsMenu>(svc, player); break;
+	case MenuType::main: g_current_state = std::make_unique<MainMenu>(svc, player, ctx); break;
+	case MenuType::settings: g_current_state = std::make_unique<SettingsMenu>(svc, player, ctx); break;
+	case MenuType::controls: g_current_state = std::make_unique<ControlsMenu>(svc, player, ctx); break;
 	}
 }
 
 void StateManager::process_state(ServiceProvider& svc, player::Player& player, fornani::Game& game) {
+	auto& ctx = game.get_context();
 	if (svc.state_controller.actions.test(Actions::trigger_submenu)) {
 		switch (svc.state_controller.submenu) {
-		case MenuType::play: set_current_state(std::make_unique<PlayMenu>(svc, player)); break;
-		case MenuType::file_select: set_current_state(std::make_unique<FileMenu>(svc, player)); break;
-		case MenuType::options: set_current_state(std::make_unique<OptionsMenu>(svc, player)); break;
-		case MenuType::settings: set_current_state(std::make_unique<SettingsMenu>(svc, player)); break;
-		case MenuType::controls: set_current_state(std::make_unique<ControlsMenu>(svc, player)); break;
-		case MenuType::credits: set_current_state(std::make_unique<CreditsMenu>(svc, player)); break;
-		case MenuType::trials: set_current_state(std::make_unique<TrialsMenu>(svc, player)); break;
-		case MenuType::themes: set_current_state(std::make_unique<ThemesMenu>(svc, player)); break;
+		case MenuType::play: set_current_state(std::make_unique<PlayMenu>(svc, player, ctx)); break;
+		case MenuType::file_select: set_current_state(std::make_unique<FileMenu>(svc, player, ctx)); break;
+		case MenuType::options: set_current_state(std::make_unique<OptionsMenu>(svc, player, ctx)); break;
+		case MenuType::settings: set_current_state(std::make_unique<SettingsMenu>(svc, player, ctx)); break;
+		case MenuType::controls: set_current_state(std::make_unique<ControlsMenu>(svc, player, ctx)); break;
+		case MenuType::credits: set_current_state(std::make_unique<CreditsMenu>(svc, player, ctx)); break;
+		case MenuType::trials: set_current_state(std::make_unique<TrialsMenu>(svc, player, ctx)); break;
+		case MenuType::themes: set_current_state(std::make_unique<ThemesMenu>(svc, player, ctx)); break;
 		default: break;
 		}
 		svc.state_controller.actions.reset(Actions::trigger_submenu);
 	}
 	if (svc.state_controller.actions.test(Actions::exit_submenu)) {
 		switch (svc.state_controller.submenu) {
-		case MenuType::options: set_current_state(std::make_unique<OptionsMenu>(svc, player)); break;
-		case MenuType::play: set_current_state(std::make_unique<PlayMenu>(svc, player)); break;
-		default: set_current_state(std::make_unique<MainMenu>(svc, player)); break;
+		case MenuType::options: set_current_state(std::make_unique<OptionsMenu>(svc, player, ctx)); break;
+		case MenuType::play: set_current_state(std::make_unique<PlayMenu>(svc, player, ctx)); break;
+		default: set_current_state(std::make_unique<MainMenu>(svc, player, ctx)); break;
 		}
 		svc.state_controller.actions.reset(Actions::exit_submenu);
 	}
@@ -84,20 +85,20 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 			}
 		}
 	}
-	if (svc.state_controller.actions.consume(Actions::trials)) { set_current_state(std::make_unique<Trial>(svc, player, "trial", svc.state_controller.next_state)); }
+	if (svc.state_controller.actions.consume(Actions::trials)) { set_current_state(std::make_unique<Trial>(svc, player, svc.state_controller.next_state)); }
 	if (svc.state_controller.actions.consume(Actions::trigger)) {
 		if (svc.state_controller.actions.test(Actions::print_stats)) {
-			print_stats(svc, player);
+			print_stats(svc, player, ctx);
 			return;
 		}
 		if (svc.data.get_file().is_new() && !svc.state_controller.actions.test(Actions::intro_done)) {
-			set_current_state(std::make_unique<Intro>(svc, player, "intro", 138));
+			set_current_state(std::make_unique<Intro>(svc, player, 138));
 		} else {
 			game.flags.set(fornani::GameFlags::in_game);
 			if (get_current_state().is(StateType::dojo)) {
 				get_current_state().reload(svc, svc.state_controller.next_state);
 			} else {
-				set_current_state(std::make_unique<Dojo>(svc, player, "dojo", svc.state_controller.next_state));
+				set_current_state(std::make_unique<Dojo>(svc, player, svc.state_controller.next_state));
 			}
 		}
 	}
@@ -108,7 +109,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 		if (svc.demo_mode()) {
 			svc.state_controller.actions.set(Actions::shutdown);
 		} else {
-			set_current_state(std::make_unique<MainMenu>(svc, *m_player));
+			set_current_state(std::make_unique<MainMenu>(svc, *m_player, ctx));
 		}
 		svc.state_flags = {};
 	}
@@ -119,8 +120,8 @@ void StateManager::return_to_main_menu() {
 	m_flags.set(StateManagerFlags::return_to_main_menu);
 }
 
-void StateManager::print_stats(ServiceProvider& svc, player::Player& player) {
-	set_current_state(std::make_unique<StatSheet>(svc, player));
+void StateManager::print_stats(ServiceProvider& svc, player::Player& player, AppContext& ctx) {
+	set_current_state(std::make_unique<StatSheet>(svc, player, ctx));
 	svc.state_controller.actions.reset(Actions::print_stats);
 	svc.state_controller.actions.reset(Actions::trigger);
 }

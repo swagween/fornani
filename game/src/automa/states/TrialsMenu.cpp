@@ -4,7 +4,7 @@
 
 namespace fornani::automa {
 
-TrialsMenu::TrialsMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "trials"), m_loading{8}, m_stars{svc, "tt_stars", {12, 12}} {
+TrialsMenu::TrialsMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "trials"), m_loading{8}, m_stars{svc, "tt_stars", {12, 12}} {
 	for (auto const& map : svc.data.map_table["rooms"].as_array()) {
 		if (map["folder"].as_string() == "trials") {
 			auto label = map["label"].as_string();
@@ -17,7 +17,7 @@ TrialsMenu::TrialsMenu(ServiceProvider& svc, player::Player& player) : MenuState
 
 	// maually set options based on contents of trials folder
 	options.clear();
-	for (auto const& course : m_courses) { options.push_back(Option(svc, p_theme, course.label)); }
+	for (auto const& course : m_courses) { options.push_back(Option(svc, p_app_context->settings.get_theme(), course.label)); }
 	auto ctr = 0;
 	for (auto& option : options) {
 		option.position = {64.f, top_buffer + ctr * spacing};

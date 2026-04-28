@@ -17,6 +17,7 @@ class ResourceFinder {
 	fs::path region_and_room() const;
 	fs::path find_directory(fs::path const& exe, fs::path const& target);
 	void ensure_file_exists(fs::path const& target, fs::path const& template_file) const;
+	void ensure_save_exists(fs::path const& sav_path, fs::path const& template_path) const;
 
 	[[nodiscard]] auto resource_path() const -> std::string { return paths.resources.string(); }
 

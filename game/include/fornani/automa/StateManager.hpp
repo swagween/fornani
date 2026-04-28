@@ -23,11 +23,11 @@ enum class StateManagerFlags { return_to_main_menu, retry };
 class StateManager {
 
   public:
-	StateManager(ServiceProvider& svc, player::Player& player, MenuType type);
+	StateManager(ServiceProvider& svc, player::Player& player, AppContext& ctx, MenuType type);
 	StateManager& operator=(StateManager&&) = delete;
 	void process_state(ServiceProvider& svc, player::Player& player, Game& game);
 	void return_to_main_menu();
-	void print_stats(ServiceProvider& svc, player::Player& player);
+	void print_stats(ServiceProvider& svc, player::Player& player, AppContext& ctx);
 	void reload_save(ServiceProvider& svc, int id);
 
 	GameState& get_current_state() const;

@@ -4,7 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 #include <fornani/entities/npc/Vendor.hpp>
-#include <fornani/graphics/MenuTheme.hpp>
 #include <fornani/gui/MiniMap.hpp>
 #include <fornani/io/File.hpp>
 #include <fornani/io/Logger.hpp>
@@ -29,6 +28,10 @@ namespace fornani::player {
 class Player;
 }
 
+namespace fornani {
+struct AppContext;
+}
+
 namespace fornani::data {
 
 struct EnemyState {
@@ -47,11 +50,10 @@ class DataManager final {
 	void load_data();
 	void save_progress(player::Player& player, int save_point_id);
 	void save_quests();
-	void save_settings();
-	void set_theme(MenuTheme to);
-	int load_progress(player::Player& player, int file, bool state_switch = false, bool from_menu = true);
+	void save_current();
+	void load_localized_data(AppContext& ctx);
+	int load_progress(player::Player& player, int file, bool state_switch = false);
 	int reload_progress(player::Player& player);
-	void load_settings();
 	void delete_file(int index);
 	void write_death_count(player::Player& player);
 	std::string_view load_blank_save(player::Player& player, bool state_switch = false) const;
@@ -89,11 +91,6 @@ class DataManager final {
 	bool enemy_is_fallen(int room_id, StableID id) const;
 
 	int get_destructible_state(int id) const;
-
-	// support user-defined control mapping
-	void load_controls(input::InputSystem& controller);
-	void save_controls(input::InputSystem& controller);
-	void reset_controls();
 
 	[[nodiscard]] auto exists(int candidate) const -> bool {
 		for (auto& room : rooms) {
@@ -155,13 +152,9 @@ class DataManager final {
 
 	dj::Json player_params{};
 	dj::Json menu{};
-	dj::Json controls{};
-	dj::Json settings{};
 	dj::Json map_table{};
 	dj::Json background{};
 	dj::Json audio_library{};
-
-	MenuTheme theme{};
 
 	std::vector<MapData> map_jsons{};
 	std::vector<MapTemplate> map_templates{};
@@ -180,6 +173,10 @@ class DataManager final {
 
   private:
 	[[nodiscard]] auto get_destroyed_inspectables() const -> Register<int> { return destroyed_inspectables; }
+	bool load_save_binary(fs::path const& path, player::Player& player);
+	bool load_save_json(fs::path const& path, player::Player& player, bool reload = false);
+
+  private:
 	Register<StableID::underlying_type> opened_chests{};
 	Register<std::string> unlocked_doors{};
 	Register<int> activated_switches{};

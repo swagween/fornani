@@ -14,7 +14,8 @@
 
 namespace fornani {
 class Game;
-}
+class UserSettings;
+} // namespace fornani
 
 namespace fornani::automa {
 class ControlsMenu;
@@ -93,6 +94,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	friend class automa::ControlsMenu;
 	friend class automa::SettingsMenu;
 	friend class data::DataManager;
+	friend class UserSettings;
 
 	InputSystem(ResourceFinder& finder);
 	void handle_event(std::optional<sf::Event> const event);

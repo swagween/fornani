@@ -27,6 +27,7 @@ class WorldClock {
 	void set_time(int hour = 0, int minute = 0);
 	void set_speed(int to_rate, int to_transition = 4096);
 	void toggle_military_time();
+	void set_military(bool const to_military);
 	[[nodiscard]] auto is_military() const -> bool { return m_mode == ClockMode::military; }
 	[[nodiscard]] auto get_normalized_time() const -> float { return static_cast<float>(get_hours() * 60 + get_minutes()) / 1440.f; }
 	[[nodiscard]] auto is_daytime() const -> bool { return calculate_tod_from_hour() == TimeOfDay::day; }

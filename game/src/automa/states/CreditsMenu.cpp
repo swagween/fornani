@@ -4,7 +4,7 @@
 
 namespace fornani::automa {
 
-CreditsMenu::CreditsMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "credits"), m_loading{8} {
+CreditsMenu::CreditsMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "credits"), m_loading{8} {
 	m_parent_menu = MenuType::options;
 	m_loading.start();
 

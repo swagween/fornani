@@ -10,7 +10,8 @@ namespace fornani::automa {
 constexpr std::array<std::string_view, 2> tabs = {"controls_platformer", "controls_menu"};
 constexpr std::array<std::string_view, 2> tab_id_prefixes = {"", "menu_"};
 
-ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "controls_platformer"), instruction(svc.text.fonts.title.font), m_current_tab{tabs.size()}, m_scene{"controls_platformer"} {
+ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx)
+	: MenuState(svc, player, ctx, "controls_platformer"), instruction(svc.text.fonts.title.font), m_current_tab{tabs.size()}, m_scene{"controls_platformer"} {
 	m_parent_menu = MenuType::options;
 	change_scene(svc, m_scene);
 	instruction.setLineSpacing(1.5f);
@@ -26,6 +27,8 @@ ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player) : MenuS
 	debug.setOutlineThickness(-1);
 	refresh_controls(svc);
 }
+
+void ControlsMenu::on_exit() { p_app_context->settings.save_user_controls(*p_services); }
 
 void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	m_input_authorized = !binding_mode;
@@ -59,6 +62,12 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 				binding_mode = false;
 				option_is_selected = false;
 				svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
+				if (action_to_bind) {
+					bool primary = true; // TODO: maybe implement secondary bindings later
+					auto action_name = options.at(current_selection.get()).label.getString().toAnsiString();
+					auto binding = primary ? svc.input_system.get_primary_keyboard_binding(*action_to_bind) : svc.input_system.get_secondary_keyboard_binding(*action_to_bind);
+					p_app_context->settings.serialize_control_binding(action_name, input::string_from_scancode(binding), primary);
+				}
 				refresh_controls(svc);
 			}
 		}
@@ -156,9 +165,9 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 }
 
 void ControlsMenu::restore_defaults(ServiceProvider& svc) {
-	svc.data.reset_controls();
-	svc.data.save_controls(svc.input_system);
-	svc.data.load_controls(svc.input_system);
+	p_app_context->settings.reset_user_controls(svc);
+	p_app_context->settings.save_user_controls(svc);
+	p_app_context->settings.set_user_controls(svc.input_system);
 }
 
 void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change_to) {
@@ -167,7 +176,7 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 	options.clear();
 	control_list.clear();
 	auto const& in_data = svc.data.menu["options"];
-	for (auto& entry : in_data[to_change_to].as_array()) { options.push_back(Option(svc, p_theme, entry.as_string())); }
+	for (auto& entry : in_data[to_change_to].as_array()) { options.push_back(Option(svc, p_app_context->settings.get_theme(), entry.as_string())); }
 	if (!options.empty()) { current_selection = util::Circuit(static_cast<int>(options.size())); }
 	top_buffer = svc.data.menu["config"][to_change_to]["top_buffer"].as<float>();
 	int ctr{};

@@ -4,7 +4,7 @@
 
 namespace fornani::automa {
 
-ThemesMenu::ThemesMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "themes") { m_parent_menu = MenuType::options; }
+ThemesMenu::ThemesMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "themes") { m_parent_menu = MenuType::options; }
 
 void ThemesMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	MenuState::tick_update(svc, engine);

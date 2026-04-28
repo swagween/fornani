@@ -120,6 +120,7 @@ void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, worl
 		return;
 	}
 
+	if (progress > 1) { bryn->start_busy_timer(); }
 	switch (progress) {
 	case 0:
 		if (!context.console) { willett->force_engage(); }

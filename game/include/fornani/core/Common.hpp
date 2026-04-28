@@ -1,9 +1,15 @@
 
 #pragma once
 
+#include <array>
 #include <cstdint>
+#include <string>
 
 namespace fornani {
+
+constexpr static std::uint32_t magic_key_v = 0x464F524E;
+constexpr std::array<std::uint8_t, 16> save_key_v = {0xF3, 0x91, 0x2A, 0x7C, 0xD8, 0x44, 0xB1, 0x09, 0x6E, 0xAF, 0x33, 0xC2, 0x18, 0x5D, 0x77, 0xE0};
+constexpr std::uint16_t save_version_v = 0;
 
 namespace gui {
 

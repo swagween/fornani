@@ -17,7 +17,7 @@ struct DotInticator {
 
 class MenuState : public GameState {
   public:
-	MenuState(ServiceProvider& svc, player::Player& player, std::string_view scene);
+	MenuState(ServiceProvider& svc, player::Player& player, AppContext& ctx, std::string_view tag);
 
 	virtual void tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine);
 	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win);
@@ -29,7 +29,7 @@ class MenuState : public GameState {
 	util::Circuit current_selection{1};
 	MenuType m_parent_menu{};
 	bool m_input_authorized{true};
-	MenuTheme p_theme;
+	AppContext* p_app_context;
 	sf::RectangleShape p_backdrop{};
 	ServiceProvider* p_services;
 	TextJustification p_option_justification{TextJustification::center};

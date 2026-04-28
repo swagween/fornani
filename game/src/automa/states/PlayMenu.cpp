@@ -4,7 +4,7 @@
 
 namespace fornani::automa {
 
-PlayMenu::PlayMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "play") { m_parent_menu = MenuType::main; }
+PlayMenu::PlayMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "play") { m_parent_menu = MenuType::main; }
 
 void PlayMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	MenuState::tick_update(svc, engine);

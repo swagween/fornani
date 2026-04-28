@@ -82,7 +82,7 @@ void InputSystem::init_steam_action_sets() {
 }
 
 void InputSystem::load_keyboard_controls(ResourceFinder& finder) { // load keyboard bindings
-	auto controls = dj::Json::from_file((finder.resource_path() + "/data/config/control_map.json").c_str());
+	auto controls = dj::Json::from_file((finder.paths.config / "controls.json").string());
 	if (!controls) {
 		NANI_LOG_ERROR(m_logger, "Failed to load input data for InputSystem.");
 		return;

@@ -6,14 +6,14 @@ namespace fornani::automa {
 
 constexpr auto dot_buffer_v = 16.f;
 
-MenuState::MenuState(ServiceProvider& svc, player::Player& player, std::string_view scene) : GameState(svc, player, scene), p_services{&svc}, p_theme{svc.data.theme} {
+MenuState::MenuState(ServiceProvider& svc, player::Player& player, AppContext& ctx, std::string_view tag) : GameState(svc, player), p_services{&svc}, p_app_context{&ctx} {
 	svc.input_system.set_action_set(input::ActionSet::Menu);
 	auto const& in_data = svc.data.menu["options"];
-	for (auto& entry : in_data[scene].as_array()) { options.push_back(Option(svc, p_theme, entry.as_string())); }
+	for (auto& entry : in_data[tag].as_array()) { options.push_back(Option(svc, ctx.settings.get_theme(), entry.as_string())); }
 	if (!options.empty()) { current_selection = util::Circuit(static_cast<int>(options.size())); }
 	p_backdrop.setSize(svc.window->get_f_display_dimensions());
 
-	top_buffer = svc.data.menu["config"][scene]["top_buffer"].as<float>();
+	top_buffer = svc.data.menu["config"][tag]["top_buffer"].as<float>();
 	int ctr{};
 	for (auto& option : options) {
 		option.position = {svc.window->i_screen_dimensions().x * 0.5f, top_buffer + ctr * spacing};
@@ -63,22 +63,19 @@ void MenuState::tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine
 		auto target = which == 0 ? center - offset : center + offset;
 		m_steering.seek(dot.physics, target);
 		dot.physics.simple_update();
-		dot.rect.setFillColor(p_theme.dot_color);
+		dot.rect.setFillColor(p_app_context->settings.get_theme().dot_color);
 		dot.rect.setPosition(dot.physics.position);
 		++which;
 	}
 }
 
 void MenuState::render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win) {
-	p_backdrop.setFillColor(p_theme.backdrop);
+	p_backdrop.setFillColor(p_app_context->settings.get_theme().backdrop);
 	win.draw(p_backdrop);
 	for (auto& dot : m_dot_indicators) { win.draw(dot.rect); }
 	for (auto& option : options) { win.draw(option.label); }
 }
 
-void MenuState::set_theme(ServiceProvider& svc, std::string_view theme) {
-	p_theme = MenuTheme{svc.data.menu_themes[theme]};
-	svc.data.set_theme(p_theme);
-}
+void MenuState::set_theme(ServiceProvider& svc, std::string_view theme) { p_app_context->settings.set_theme(theme); }
 
 } // namespace fornani::automa

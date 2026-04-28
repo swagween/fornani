@@ -1,5 +1,7 @@
 
 #include <platform_folders.h>
+#include <fornani/io/Codec.hpp>
+#include <fornani/io/FileSerializer.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
 
 namespace fornani {
@@ -42,14 +44,39 @@ fs::path ResourceFinder::find_directory(fs::path const& exe, fs::path const& tar
 
 void ResourceFinder::ensure_file_exists(fs::path const& target, fs::path const& template_file) const {
 	if (fs::exists(target)) {
-		NANI_LOG_INFO(m_logger, "Save File Found: {}", target.string());
+		NANI_LOG_INFO(m_logger, "Local user data found: {}", target.string());
 		return;
 	}
 	fs::create_directories(target.parent_path());
 	try {
 		fs::copy_file(template_file, target);
 		NANI_LOG_INFO(m_logger, "Created Save File: {}", target.string());
-	} catch (std::exception const& e) { NANI_LOG_INFO(m_logger, "Failed to create Save File: {}. exception: {}", target.string(), e.what()); }
+	} catch (std::exception const& e) { NANI_LOG_ERROR(m_logger, "Failed to create Save File: {}. exception: {}", target.string(), e.what()); }
+}
+
+void ResourceFinder::ensure_save_exists(fs::path const& sav_path, fs::path const& template_path) const {
+	if (fs::exists(sav_path)) {
+		NANI_LOG_INFO(m_logger, ".sav file exists: {}", sav_path.string());
+		return;
+	}
+
+	try {
+		auto in = dj::Json::from_file(template_path.string());
+		if (!in) { return; }
+
+		std::string json = in->serialize();
+
+		std::ofstream out(sav_path, std::ios::binary);
+		if (!out) {
+			NANI_LOG_ERROR(m_logger, "Failed to create Save File: {}", sav_path.string());
+			return;
+		}
+		if (!codec::encode(json, out)) {
+			NANI_LOG_ERROR(m_logger, "Failed to write Save File: {}", sav_path.string());
+			return;
+		}
+
+	} catch (std::exception const& e) { NANI_LOG_ERROR(m_logger, "Failed to create Save File: {}. exception: {}", sav_path.string(), e.what()); }
 }
 
 } // namespace fornani

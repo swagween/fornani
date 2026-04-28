@@ -4,7 +4,7 @@
 
 namespace fornani::automa {
 
-GameplayState::GameplayState(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : GameState(svc, player, scene, room_number), p_services{&svc} {
+GameplayState::GameplayState(ServiceProvider& svc, player::Player& player, int room_number) : GameState(svc, player), p_services{&svc} {
 	svc.input_system.set_action_set(input::ActionSet::Platformer);
 	svc.events.play_song_event.attach_to(p_slot, &GameplayState::play_song_by_id, this);
 	p_context.transition.set(graphics::TransitionState::black);

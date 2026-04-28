@@ -3,5 +3,6 @@ nani_add_sources(
         TextManager.cpp
         WindowManager.cpp
         ResourceFinder.cpp
+        UserSettings.cpp
 )
 add_subdirectory(localization)

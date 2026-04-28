@@ -4,7 +4,7 @@
 
 namespace fornani::automa {
 
-GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : player(&player), hud(svc, player), p_context{svc} {}
+GameState::GameState(ServiceProvider& svc, player::Player& player) : player(&player), hud(svc, player), p_context{svc} {}
 
 void GameState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	svc.notifications.update(svc);

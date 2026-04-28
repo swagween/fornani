@@ -15,7 +15,7 @@ enum class GameplayFlags { game_over, transitioning, open_vendor, give_item, ite
 
 class Dojo final : public GameplayState {
   public:
-	Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0, std::string_view room_name = "");
+	Dojo(ServiceProvider& svc, player::Player& player, int room_number);
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;

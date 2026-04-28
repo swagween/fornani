@@ -78,6 +78,8 @@ void WorldClock::set_speed(int to_rate, int to_transition) {
 
 void WorldClock::toggle_military_time() { m_mode = m_mode == ClockMode::standard ? ClockMode::military : ClockMode::standard; }
 
+void WorldClock::set_military(bool const to_military) { m_mode = to_military ? ClockMode::military : ClockMode::standard; }
+
 std::string WorldClock::get_hours_string() {
 	std::string ret{};
 	std::string twelve_hour = increments.hours.get() % 12 == 0 ? "12" : std::to_string(increments.hours.get() % 12);

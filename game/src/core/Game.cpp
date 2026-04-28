@@ -15,11 +15,12 @@ namespace fornani {
 
 static double average_frame_time{};
 
-Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& audio_engine) : services(argv, version, window, audio_engine), player(services), game_state(services, player, automa::MenuType::main) {
+Game::Game(char** argv, WindowManager& window, AppContext& context, capo::IEngine& audio_engine)
+	: m_context{&context}, services(argv, context, window, audio_engine), player(services), game_state(services, player, context, automa::MenuType::main) {
 
 	/* Set up ImGui Context */
-	auto wContext = ImGui::CreateContext();
-	ImGui::SetCurrentContext(wContext);
+	auto imgui_context = ImGui::CreateContext();
+	ImGui::SetCurrentContext(imgui_context);
 	ImGuiIO& io = ImGui::GetIO();
 	io.Fonts->AddFontDefault();
 	// NANI_LOG_INFO(m_logger, "ImGui IO.Fonts size: {}", io.Fonts->Fonts.size);
@@ -34,6 +35,8 @@ Game::Game(char** argv, WindowManager& window, Version& version, capo::IEngine& 
 
 void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2f player_position) {
 
+	services.data.load_localized_data(*m_context);
+
 	if (services.window->is_fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
 	services.set_editor(false);
 
@@ -46,7 +49,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		flags.set(GameFlags::in_game);
 		// services.music_player.turn_off();
 		services.data.load_progress(player, services.editor_settings.save_file);
-		game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, "dojo", room_id, levelpath.filename().string()));
+		game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, room_id));
 		services.state_controller.demo_level = room_id;
 		NANI_LOG_INFO(m_logger, "Launching demo in room {} from folder {} ", room_id, levelpath.filename().string());
 		services.state_controller.player_position = player_position;
@@ -86,6 +89,8 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 				if (key_pressed->scancode == sf::Keyboard::Scancode::F12) { continue; }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::G && key_pressed->control) { services.toggle_greyblock_mode(); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_pressed->control) {
+
+#if !defined(FORNANI_PRODUCTION)
 					services.toggle_debug();
 					if (flags.test(GameFlags::playtest)) {
 						flags.reset(GameFlags::playtest);
@@ -95,6 +100,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 						services.soundboard.flags.menu.set(audio::Menu::backward_switch);
 					}
 				}
+#endif()
 				if (key_pressed->scancode == sf::Keyboard::Scancode::R && key_pressed->control) { restart_trial(levelpath); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Equal) { take_screenshot(services.window->screencap); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Y) {
@@ -137,11 +143,11 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			services.soundboard.play_sounds(audio_engine, services);
 			if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.update(services); }
 			if (game_state.get_current_state().flags.test(automa::GameStateFlags::settings_request)) {
-				m_game_menu = std::make_unique<automa::StateManager>(services, player, automa::MenuType::settings);
+				m_game_menu = std::make_unique<automa::StateManager>(services, player, *m_context, automa::MenuType::settings);
 				game_state.get_current_state().flags.reset(automa::GameStateFlags::settings_request);
 			}
 			if (game_state.get_current_state().flags.test(automa::GameStateFlags::controls_request)) {
-				m_game_menu = std::make_unique<automa::StateManager>(services, player, automa::MenuType::controls);
+				m_game_menu = std::make_unique<automa::StateManager>(services, player, *m_context, automa::MenuType::controls);
 				game_state.get_current_state().flags.reset(automa::GameStateFlags::controls_request);
 			}
 			if (game_state.get_current_state().get_type() == automa::StateType::menu) { m_background->update(services); }
@@ -164,11 +170,8 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		ImGui::SFML::Update(services.window->get(), m_frame_tracker.get_elapsed_time());
 		m_frame_tracker.update();
 		if (services.ticker.every_x_frames(60)) { average_frame_time = m_frame_tracker.get_average_frame_time(); }
-
-#if not defined(FORNANI_PRODUCTION)
 		if (flags.test(GameFlags::playtest)) { playtester_portal(services.window->get()); }
 		flags.test(GameFlags::playtest) || demo ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
-#endif
 
 		services.window->get().clear();
 		if (services.window->is_fullscreen()) { services.window->get().setView(entire_window); }
@@ -230,7 +233,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Checkbox("Limit Framerate", &limit_framerate);
 					ImGui::InputInt("Frame Limit", &frame_limit);
 					limit_framerate ? services.window->get().setFramerateLimit(frame_limit) : services.window->get().setFramerateLimit(0);
-					if (ImGui::Button("Exit to Main Menu")) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player)); }
+					if (ImGui::Button("Exit to Main Menu")) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, *m_context)); }
 					ImGui::Text("In Game? %s", services.in_game() ? "Yes" : "No");
 					ImGui::Text("debug mode: %s", services.debug_mode() ? "Enabled" : "Disabled");
 					ImGui::Text("demo mode: %s", services.demo_mode() ? "Enabled" : "Disabled");
@@ -696,6 +699,6 @@ void Game::take_screenshot(sf::Texture& screencap) {
 	if (screencap.copyToImage().saveToFile(target.string())) { NANI_LOG_INFO(m_logger, "screenshot {} saved to {}", filename.string(), destination.string()); }
 }
 
-void Game::restart_trial(std::filesystem::path const& levelpath) { game_state.set_current_state(std::make_unique<automa::Trial>(services, player, "trial", services.state_controller.next_state, levelpath.filename().string())); }
+void Game::restart_trial(std::filesystem::path const& levelpath) { game_state.set_current_state(std::make_unique<automa::Trial>(services, player, services.state_controller.next_state)); }
 
 } // namespace fornani

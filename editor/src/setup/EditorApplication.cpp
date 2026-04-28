@@ -10,19 +10,19 @@
 
 namespace pi {
 
-EditorApplication::EditorApplication(char** argv) : metadata(game_info, m_services.finder), m_services(argv, metadata, window, *m_engine) {
+EditorApplication::EditorApplication(char** argv) : m_finder{argv}, m_services(argv, context, window, *m_engine), context{.settings{m_finder}, .localization{m_finder}, .version{game_info, m_finder}} {
 
 	// load app resources
 	game_info = *dj::Json::from_file((m_services.finder.paths.editor / "data/config/version.json").string().c_str());
 	assert(!game_info.is_null());
 
-	NANI_LOG_INFO(m_logger, "> Launching {}", metadata.long_title());
+	NANI_LOG_INFO(m_logger, "> Launching {}", context.version.long_title());
 
 	app_settings = *dj::Json::from_file((m_services.finder.paths.editor / "data/config/settings.json").string().c_str());
 	assert(!app_settings.is_null());
 
 	// create window
-	window.create(metadata.long_title(), app_settings["fullscreen"].as_bool(), {1920, 1080});
+	window.create(context.version.long_title(), app_settings["fullscreen"].as_bool(), {1920, 1080});
 	window.set();
 
 	// set app icon
@@ -43,6 +43,7 @@ EditorApplication::EditorApplication(char** argv) : metadata(game_info, m_servic
 }
 
 void EditorApplication::run(char** argv) {
+	context.localization.set_language("eng"); // default to english
 	while (window.get().isOpen()) {
 		while (std::optional const event = window.get().pollEvent()) {
 			ImGui::SFML::ProcessEvent(window.get(), *event);

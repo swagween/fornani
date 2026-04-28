@@ -8,7 +8,7 @@ namespace fornani::automa {
 
 constexpr auto num_files_v = 3;
 
-FileMenu::FileMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "file") {
+FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "file") {
 	m_parent_menu = MenuType::play;
 	current_selection = util::Circuit(num_files_v);
 	svc.data.load_blank_save(player);
@@ -44,8 +44,7 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			if (m_file_select_menu) {
 				switch (m_file_select_menu->get_selection()) {
 				case 0:
-					svc.data.load_blank_save(*player);
-					svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get(), true);
+					svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
 					svc.state_controller.actions.set(Actions::trigger);
 					svc.state_controller.actions.set(Actions::save_loaded);
 					svc.soundboard.flags.menu.set(audio::Menu::select);
@@ -64,7 +63,8 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			} else {
 				auto& opt = options.at(current_selection.get());
 				auto menu_pos = opt.position + sf::Vector2f{opt.label.getLocalBounds().getCenter().x + 2.f * spacing, 0.f};
-				m_file_select_menu = gui::MiniMenu(svc, {svc.data.gui_text["file_menu"]["play"].as_string(), svc.data.gui_text["file_menu"]["stats"].as_string(), svc.data.gui_text["file_menu"]["delete"].as_string()}, menu_pos, p_theme);
+				m_file_select_menu = gui::MiniMenu(svc, {svc.data.gui_text["file_menu"]["play"].as_string(), svc.data.gui_text["file_menu"]["stats"].as_string(), svc.data.gui_text["file_menu"]["delete"].as_string()}, menu_pos,
+												   p_app_context->settings.get_theme());
 			}
 		}
 	}
@@ -112,10 +112,8 @@ void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 }
 
 void FileMenu::refresh(ServiceProvider& svc) {
-	auto ctr{0};
-	for (auto& save : svc.data.files) {
-		if (save.is_new() && options.at(ctr).label.getString().getSize() < 8) { options.at(ctr).label.setString(options.at(ctr).label.getString() + " (new)"); }
-		++ctr;
+	for (auto [i, save] : std::views::enumerate(svc.data.files)) {
+		if (save.is_new() && options.at(i).label.getString().getSize() < 8) { options.at(i).label.setString(options.at(i).label.getString() + " (new)"); }
 	}
 	for (auto& option : options) { option.update(current_selection.get()); }
 }

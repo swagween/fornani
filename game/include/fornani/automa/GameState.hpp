@@ -6,6 +6,7 @@
 #include <fornani/core/Fwd.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/gui/hud/HUD.hpp>
+#include <fornani/setup/AppContext.hpp>
 #include <fornani/utils/Polymorphic.hpp>
 #include <fornani/world/Map.hpp>
 
@@ -27,7 +28,7 @@ class GameState : public UniquePolymorphic {
 	std::unordered_map<MenuSelection, int> menu_selection_id{{MenuSelection::play, 0},	 {MenuSelection::options, 1}, {MenuSelection::quit, 2},		{MenuSelection::controls, 0},
 															 {MenuSelection::themes, 3}, {MenuSelection::credits, 2}, {MenuSelection::settings, 1}, {MenuSelection::tutorial, 4}};
 
-	GameState(ServiceProvider& svc, player::Player& player, std::string_view scene = "", int room_number = 0);
+	GameState(ServiceProvider& svc, player::Player& player);
 
 	virtual void tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine);
 	virtual void frame_update([[maybe_unused]] ServiceProvider& svc) {}

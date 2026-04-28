@@ -11,11 +11,11 @@
 #include <fornani/graphics/CameraController.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/setup/AccessibilityService.hpp>
+#include <fornani/setup/AppContext.hpp>
 #include <fornani/setup/DataManager.hpp>
 #include <fornani/setup/TextManager.hpp>
 #include <fornani/setup/Version.hpp>
 #include <fornani/setup/WindowManager.hpp>
-#include <fornani/setup/localization/Localization.hpp>
 #include <fornani/story/Quest.hpp>
 #include <fornani/story/QuestTracker.hpp>
 #include <fornani/story/StatTracker.hpp>
@@ -38,13 +38,12 @@ struct EditorSettings {
 };
 
 struct ServiceProvider {
-	ServiceProvider(char** argv, Version& version, WindowManager& window, capo::IEngine& audio_engine)
-		: finder(argv), text{finder, localization}, data(*this), version(&version), window(&window), assets{finder}, sounds{finder}, music_player{audio_engine}, ambience_player{audio_engine}, quest_registry{finder},
+	ServiceProvider(char** argv, AppContext& context, WindowManager& window, capo::IEngine& audio_engine)
+		: finder(argv), text{finder, context.localization}, data(*this), version(&context.version), window(&window), assets{finder}, sounds{finder}, music_player{audio_engine}, ambience_player{audio_engine}, quest_registry{finder},
 		  quest_table{quest_registry}, soundboard{*this, audio_engine} {};
 
 	util::Stopwatch stopwatch{};
 	ResourceFinder finder;
-	Localization localization{finder};
 	input::InputSystem input_system{finder};
 	data::DataManager data;
 	data::TextManager text;

@@ -43,5 +43,9 @@
     "settings": "settings",
     "quit": "quit",
     "restart": "restart"
+  },
+  "settings": {
+    "enabled": "ON",
+    "disabled": "OFF"
   }
 }

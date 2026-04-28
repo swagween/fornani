@@ -1,10 +1,12 @@
 nani_add_headers(
         AccessibilityService.hpp
+        AppContext.hpp
         DataManager.hpp
         MapData.hpp
         ResourceFinder.hpp
         Tables.hpp
         TextManager.hpp
+        UserSettings.hpp
         Version.hpp
         WindowManager.hpp
 )

@@ -10,7 +10,7 @@
 
 namespace fornani::automa {
 
-Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameplayState(svc, player, scene, room_number), m_enter_room{100}, m_loading{4} {
+Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : GameplayState(svc, player, room_number), m_enter_room{100}, m_loading{4} {
 
 	m_map.emplace(svc, player);
 
@@ -56,8 +56,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		svc.music_player.fade_in(util::Sec{1.f});
 		m_flags.reset(GameplayFlags::item_music_played);
 	}
-
-	svc.a11y.set_action_ctx_bar_enabled(svc.data.settings["tutorial"].as_bool());
 
 	if (!p_context.console && !m_cutscenes.is_empty()) {
 		for (auto const& cutscene : m_cutscenes) {
