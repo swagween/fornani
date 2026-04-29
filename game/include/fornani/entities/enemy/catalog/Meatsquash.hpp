@@ -25,6 +25,9 @@ class Meatsquash final : public Enemy, public StateMachine<MeatsquashState>, pub
 	fsm::StateFunction update_open();
 
   private:
+	bool change_state(MeatsquashState next, anim::Parameters params);
+
+  private:
 	// attack
 	struct {
 		entity::Attack bite{};
@@ -32,8 +35,6 @@ class Meatsquash final : public Enemy, public StateMachine<MeatsquashState>, pub
 
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;
-
-	bool change_state(MeatsquashState next, anim::Parameters params);
 };
 
 } // namespace fornani::enemy

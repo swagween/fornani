@@ -1,7 +1,7 @@
 
 #include "editor/canvas/Map.hpp"
-
 #include <ccmath/ext/clamp.hpp>
+#include <ranges>
 
 namespace pi {
 
@@ -25,7 +25,7 @@ void Map::set_middleground(int to_middleground) {
 
 void Map::delete_layer_at(std::size_t const index) {
 	if (layers.size() <= 1) { return; }
-	std::erase_if(layers, [index](auto const& l) { return l.render_order == index; });
+	std::erase_if(layers, [index](auto const& l) { return static_cast<std::size_t>(l.render_order) == index; });
 	reorder();
 	if (index < m_middleground) { --m_middleground; }
 }
@@ -39,11 +39,7 @@ void Map::add_layer(int at, int direction) {
 }
 
 void Map::reorder() {
-	auto ctr{0};
-	for (auto& layer : layers) {
-		layer.render_order = ctr;
-		++ctr;
-	}
+	for (auto [i, layer] : std::views::enumerate(layers)) { layer.render_order = i; }
 }
 
 } // namespace pi

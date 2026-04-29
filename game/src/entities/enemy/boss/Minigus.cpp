@@ -113,40 +113,35 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	attacks.punch.update();
 	attacks.uppercut.update();
 	attacks.rush.update();
-	attacks.punch.handle_player(player);
-	attacks.uppercut.handle_player(player);
-	attacks.rush.handle_player(player);
-
 	attacks.left_shockwave.origin = Enemy::get_collider().physics.position + sf::Vector2f{0.f, Enemy::get_collider().bounding_box.get_dimensions().y};
 	attacks.right_shockwave.origin = Enemy::get_collider().physics.position + Enemy::get_collider().bounding_box.get_dimensions();
 	attacks.left_shockwave.update(svc, map);
 	attacks.right_shockwave.update(svc, map);
 
-	attacks.left_shockwave.handle_player(player);
-	attacks.right_shockwave.handle_player(player);
-
 	if (battle_mode()) {
+		attacks.punch.handle_player(player);
+		attacks.uppercut.handle_player(player);
+		attacks.rush.handle_player(player);
+		attacks.left_shockwave.handle_player(player);
+		attacks.right_shockwave.handle_player(player);
+
 		if (attacks.left_shockwave.hit.active() && !cooldowns.player_punch.running()) {
-			player.hurt(1);
 			if (!player.invincible()) { player.accumulated_forces.push_back({-40.f, -4.f}); }
 			attacks.left_shockwave.hit.deactivate();
 			cooldowns.player_punch.start();
 		}
 		if (attacks.right_shockwave.hit.active() && !cooldowns.player_punch.running()) {
-			player.hurt(1);
 			if (!player.invincible()) { player.accumulated_forces.push_back({40.f, -4.f}); }
 			attacks.right_shockwave.hit.deactivate();
 			cooldowns.player_punch.start();
 		}
 		if (Enemy::animation.get_frame() == 30 && attacks.punch.hit.active() && !cooldowns.player_punch.running()) {
-			player.hurt(1);
 			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
 			player.accumulated_forces.push_back({sign * 10.f, -4.f});
 			attacks.punch.sensor.deactivate();
 			cooldowns.player_punch.start();
 		}
 		if (Enemy::animation.get_frame() == 37 && attacks.uppercut.hit.active() && !cooldowns.player_punch.running()) {
-			player.hurt(1);
 			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
 			player.accumulated_forces.push_back({sign * 10.f, -4.f});
 			attacks.uppercut.sensor.deactivate();

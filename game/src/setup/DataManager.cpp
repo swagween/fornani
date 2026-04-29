@@ -231,7 +231,6 @@ void DataManager::save_quests() {
 void DataManager::save_progress(player::Player& player, int save_point_id) {
 	auto& save = files.at(current_save).save_data;
 	files.at(current_save).write();
-	save["status"]["inspect_hint"] = get_file().flags.test(io::FileFlags::inspect_hint);
 
 	// set file data based on player state
 	save["save_point_id"] = save_point_id;
@@ -354,7 +353,6 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 void DataManager::delete_file(int index) {
 	if (index >= files.size()) { return; }
 	files.at(index).save_data = blank_file.save_data;
-	files.at(index).flags.set(fornani::io::FileFlags::new_file);
 	if (!files.at(index).save_data.to_file((m_services->finder.paths.save / fs::path{"file_" + std::to_string(current_save) + ".json"}).string())) { NANI_LOG_ERROR(m_logger, "Failed to clear save data!"); }
 }
 
@@ -657,9 +655,6 @@ bool DataManager::load_save_binary(fs::path const& path, player::Player& player)
 
 	auto& file = files.at(current_save);
 	file.save_data = std::move(*result);
-
-	if (file.save_data["status"]["new"].as_bool()) file.flags.set(fornani::io::FileFlags::new_file);
-	if (file.save_data["status"]["inspect_hint"].as_bool()) file.flags.set(fornani::io::FileFlags::inspect_hint);
 
 	return true;
 }

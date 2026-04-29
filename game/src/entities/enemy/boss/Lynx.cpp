@@ -123,21 +123,8 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 				slash.enable();
 				if (Enemy::animation.get_frame_count() != 4) { slash.disable(); }
 			}
-			if (slash.hit.active()) {
-				if (slash.hit.within_bounds(player.get_collider().bounding_box)) {
-					if (!player.invincible()) { player.accumulated_forces.push_back({Enemy::directions.actual.as_float() * 4.f, -2.f}); }
-					player.hurt(damage);
-				}
-				for (auto& proj : map.active_projectiles) {
-					if (proj.get_team() == arms::Team::skycorps) { continue; }
-					if (slash.hit.within_bounds(proj.get_collider())) {
-						proj.handle_hard_hit(svc, map);
-						random::percent_chance(50) ? svc.soundboard.flags.lynx.set(audio::Lynx::ping_1) : svc.soundboard.flags.lynx.set(audio::Lynx::ping_2);
-						proj.destroy(false);
-						svc.ticker.freeze_frame(6);
-					}
-				}
-			}
+			slash.hurt_player(player, damage, {Enemy::directions.actual.as_float() * 4.f, -2.f});
+			slash.cancel_projectiles(svc, map, get_team(), 6);
 		}
 	}
 
@@ -251,14 +238,14 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 void Lynx::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	// NPC::render(win, cam);
 	Enemy::render(svc, win, cam);
-	if (b_lynx_debug) {
+	if (svc.greyblock_mode()) {
 		for (auto& slash : m_attacks.slash) {
 			if (slash.hit.active()) { slash.render(win, cam); }
 		}
 		m_attacks.left_shockwave.render(win, cam);
 		m_attacks.right_shockwave.render(win, cam);
 	}
-	// m_magic.render(win, cam);
+	m_magic.render(win, cam);
 }
 
 void Lynx::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {

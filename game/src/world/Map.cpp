@@ -485,11 +485,11 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& incinerite : incinerite_blocks) { incinerite->render(svc, win, cam); }
 	for (auto& pushable : pushables) { pushable->render(svc, win, cam); }
 	for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
-	for (auto& spike : spikes) { spike.render(svc, win, shader, m_palette, cam); }
 	for (auto& switch_block : switch_blocks) { switch_block->render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
 	for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
 	for (auto& exp : m_explosions) { exp.render(svc, win, cam); }
+	for (auto& spike : spikes) { spike.render(svc, win, shader, m_palette, cam); }
 
 	if (m_entities) {
 		for (auto w : get_entities<Water>()) { w->render(win, cam, 1.0); }
@@ -674,6 +674,12 @@ void Map::spawn_enemy(int id, sf::Vector2f pos, int variant, bool allow_proximit
 			pos -= distance;
 			++break_out;
 		}
+	}
+	auto break_out = 0;
+	while ((overlaps_middleground(pos) || !within_bounds(pos)) && break_out < 32) {
+		auto distance = (pos - real_dimensions * 0.5f) * 0.1f;
+		pos += distance;
+		++break_out;
 	}
 	enemy_spawns.push_back({pos, id, variant, effect});
 	spawn_counter.update();
@@ -981,6 +987,13 @@ bool Map::within_bounds(sf::Vector2f test) const { return test.x > 0.f && test.x
 bool Map::overlaps_middleground(shape::Shape& test) {
 	for (auto& cell : get_middleground()->grid.cells) {
 		if (test.overlaps(cell.bounding_box) && cell.is_solid()) { return true; }
+	}
+	return false;
+}
+
+bool Map::overlaps_middleground(sf::Vector2f test) {
+	for (auto& cell : get_middleground()->grid.cells) {
+		if (cell.bounding_box.contains_point(test) && cell.is_solid()) { return true; }
 	}
 	return false;
 }

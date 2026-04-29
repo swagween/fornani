@@ -44,7 +44,9 @@ void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::opt
 	auto tweak = constants::f_resolution_vec;
 	set_position(grid_position + tweak - cam);
 	if (shader && palette) {
-		shader->submit(win, palette.value(), get_sprite());
+		// shader->submit(win, palette.value(), get_sprite());
+		// forget about spike shaders for now...
+		win.draw(*this);
 	} else {
 		win.draw(*this);
 	}

@@ -86,12 +86,10 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, LightSha
 	auto sprites = day_night_shift ? std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.twilight.getTexture()}, sf::Sprite{m_texture.night.getTexture()}}
 								   : std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.day.getTexture()}};
 
-	auto ctr{0};
 	for (auto& sprite : sprites) {
 		sprite.setScale(constants::f_scale_vec);
 		sprite.setPosition({-cam.x * m_parallax, -cam.y});
 		shader.submit(win, palette, sprite);
-		++ctr;
 	}
 }
 

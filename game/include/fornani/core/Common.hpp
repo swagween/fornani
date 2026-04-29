@@ -68,6 +68,7 @@ enum class Rarity { common, uncommon, rare, priceless };
 constexpr auto gem_chance_v = 0.08f;
 constexpr auto heart_chance_v = 8.f;
 constexpr auto enemy_limit_v = 64;
+constexpr auto max_damage_v = 32.f;
 
 enum class TimeOfDay { dawn, day, dusk, night, END };
 enum class ClockMode { standard, military };

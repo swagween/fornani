@@ -75,7 +75,7 @@ void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, worl
 
 	if (willett->get_collider().get_center().x / constants::f_cell_size < 27.25f && progress < 6) {
 		willett->walk();
-	} else {
+	} else if (progress < 20) {
 		willett->face_player(player);
 		willett->request(NPCAnimationState::idle);
 	}
@@ -258,6 +258,7 @@ void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, worl
 			willett->set_flag(NPCFlags::face_player);
 			willett->Mobile::set_animation("turn");
 			willett->force_engage();
+			player.turn();
 			++progress;
 		}
 		break;

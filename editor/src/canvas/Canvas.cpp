@@ -379,7 +379,10 @@ void Canvas::activate_middleground() { map_states.back().layers.at(middleground(
 
 Map& Canvas::get_layers() { return map_states.back(); }
 
-Layer& Canvas::get_active_layer() { return get_layers().layers.at(active_layer); }
+Layer& Canvas::get_active_layer() {
+	if (active_layer < 0 || active_layer >= get_layers().layers.size()) { active_layer = 0; }
+	return get_layers().layers.at(active_layer);
+}
 
 sf::Vector2<int> Canvas::get_tile_coord(int lookup) {
 	sf::Vector2<int> ret{};

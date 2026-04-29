@@ -362,7 +362,8 @@
         "position": [
           78,
           11
-        ]
+        ],
+        "start_busy": false
       }
     ],
     "portals": [

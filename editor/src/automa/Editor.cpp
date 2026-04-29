@@ -1303,7 +1303,7 @@ void Editor::launch_demo(char** argv, int room_id, std::filesystem::path path, s
 
 void Editor::reset_layers() {
 	map.get_layers().set_labels();
-	for (int i = 0; i < static_cast<int>(map.get_layers().layers.size()); ++i) {
+	for (std::size_t i = 0; i < map.get_layers().layers.size(); ++i) {
 		m_labels.layer_str[i] = map.get_layers().get_layer_name(i);
 		m_labels.layers[i] = m_labels.layer_str[i].c_str();
 	}
@@ -1323,8 +1323,11 @@ void Editor::delete_current_layer() {
 	map.save_state(*current_tool, true);
 	map.get_layers().delete_layer_at(active_layer);
 	reset_layers();
-	if (layers.size() <= 1) { return; }
-	active_layer = ccm::ext::clamp(active_layer, 0, static_cast<int>(layers.size()) - 1);
+	if (layers.size() <= 1) {
+		active_layer = 0;
+		return;
+	}
+	active_layer = ccm::ext::clamp(active_layer, 0, layers.size() - 1);
 }
 
 } // namespace pi

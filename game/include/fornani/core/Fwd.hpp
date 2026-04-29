@@ -19,6 +19,10 @@ namespace gui {
 class Console;
 }
 
+namespace arms {
+enum class Team;
+}
+
 struct SceneContext;
 
 } // namespace fornani

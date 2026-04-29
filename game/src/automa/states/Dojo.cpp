@@ -75,10 +75,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			m_inspect_hint->start();
 		}
 	}
-	if (svc.input_system.digital(input::DigitalAction::inspect).triggered) {
-		svc.data.get_file().flags.reset(io::FileFlags::inspect_hint);
-		m_inspect_hint.reset();
-	}
+	if (svc.input_system.digital(input::DigitalAction::inspect).triggered) { m_inspect_hint.reset(); }
 
 	if (m_shoot_hint) {
 		m_shoot_hint->update();
@@ -293,7 +290,7 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 	p_gui_shader->set_texture_size(svc.window->f_screen_dimensions() * 3.f); // 3 is the number of screen-sized "cells" in the inventory window
 	svc.app_flags.reset(automa::AppFlags::custom_map_start);
 
-	if (svc.data.get_file().flags.test(io::FileFlags::inspect_hint)) {
+	if (svc.data.get_file().has_inspect_hint()) {
 		m_inspect_hint = util::Cooldown{2000};
 		m_inspect_hint->start();
 	}

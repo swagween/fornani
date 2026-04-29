@@ -226,6 +226,10 @@ void Player::update(world::Map& map) {
 		freeze_position();
 	}
 
+	if (m_death_type) {
+		if (m_death_type == player::PlayerDeathType::swallowed) { freeze_position(); }
+	}
+
 	if (has_item_equipped("boxing_glove")) {
 		if (arsenal && hotbar) {
 			if (consume_flag(PlayerFlags::hit_target)) { equipped_weapon().reduce_reload_time(0.1f); }
@@ -752,7 +756,7 @@ void Player::hurt(float amount, bool force) {
 		auto tag = has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? "nani_gulp" : cooldowns.stun.started() ? "nani_stun" : "nani_hurt";
 		m_services->soundboard.play_sound(tag);
 		hurt_cooldown.start(2);
-		if (health.is_dead()) { m_death_type = PlayerDeathType::normal; }
+		if (health.is_dead() && !is_dead()) { m_death_type = PlayerDeathType::normal; }
 		if (is_stunned() && cooldowns.stun.get_normalized() < 0.9f) { cooldowns.stun.start(4); }
 		m_services->ticker.freeze_frame(24 * std::min(static_cast<int>(amount), 3));
 	}

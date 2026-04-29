@@ -78,7 +78,7 @@ class Editor final : public EditorState {
 	bool menu_hovered{};
 	bool popup_open{};
 	bool hazard_hovered{};
-	int active_layer{};
+	std::size_t active_layer{};
 	std::uint32_t selected_block{};
 
   private:

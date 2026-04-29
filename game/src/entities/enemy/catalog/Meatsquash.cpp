@@ -36,18 +36,14 @@ void Meatsquash::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	auto bite_offset = sf::Vector2f{0.f, -98.f};
 	attacks.bite.set_position(get_collider().get_center() + bite_offset);
 	attacks.bite.update();
-	attacks.bite.handle_player(player);
 
 	if (attacks.bite.sensor.within_bounds(player.get_collider().bounding_box) && !player.is_dead()) { request(MeatsquashState::chomp); }
 
 	auto has_no_collision = is_state(MeatsquashState::open) || (is_state(MeatsquashState::chomp) && animation.get_frame_count() > 5);
 	has_no_collision ? flags.general.reset(GeneralFlags::player_collision) : flags.general.set(GeneralFlags::player_collision);
-	auto active = animation.get_frame() == 12;
-	if (attacks.bite.hit.active() && active && !(player.get_collider().get_center().y > get_collider().physics.position.y)) {
-		player.set_death_type(player::PlayerDeathType::swallowed);
-		set_flag(MeatsquashFlags::swallowed_player);
-		player.hurt(24.f);
-	}
+	auto active = animation.get_frame() == 12 && player.get_collider().get_center().y <= get_collider().physics.position.y;
+	active ? attacks.bite.enable() : attacks.bite.disable();
+	if (attacks.bite.kill_player(player, player::PlayerDeathType::swallowed)) { set_flag(MeatsquashFlags::swallowed_player); }
 
 	if (has_flag_set(MeatsquashFlags::swallowed_player)) { request(MeatsquashState::swallow); }
 
