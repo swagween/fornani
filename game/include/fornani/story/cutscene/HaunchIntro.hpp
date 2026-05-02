@@ -17,7 +17,10 @@ class HaunchIntro final : public Cutscene {
 
   private:
 	util::Cooldown m_intro;
+	util::Cooldown m_outro;
 	util::Cooldown m_hulmet_spawn_delay;
+	util::FloatCounter m_truck_shake;
+	float m_truck_y_offset{};
 
 	// cinematic elements
 	Animatable m_army_truck_body;

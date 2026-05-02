@@ -467,6 +467,7 @@ fsm::StateFunction PlayerAnimation::update_inspect() {
 		if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 		if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
+		if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 	}
 	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
 	if (change_state(AnimState::dash_up, get_params("dash_up"))) { return PA_BIND(update_dash_up); }

@@ -87,10 +87,11 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 
 			if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
 				if (key_pressed->scancode == sf::Keyboard::Scancode::F12) { continue; }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Equal) { take_screenshot(services.window->screencap); }
+#if !defined(FORNANI_PRODUCTION)
 				if (key_pressed->scancode == sf::Keyboard::Scancode::G && key_pressed->control) { services.toggle_greyblock_mode(); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_pressed->control) {
 
-#if !defined(FORNANI_PRODUCTION)
 					services.toggle_debug();
 					if (flags.test(GameFlags::playtest)) {
 						flags.reset(GameFlags::playtest);
@@ -100,9 +101,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 						services.soundboard.flags.menu.set(audio::Menu::backward_switch);
 					}
 				}
-#endif()
 				if (key_pressed->scancode == sf::Keyboard::Scancode::R && key_pressed->control) { restart_trial(levelpath); }
-				if (key_pressed->scancode == sf::Keyboard::Scancode::Equal) { take_screenshot(services.window->screencap); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Y) {
 					auto view = services.window->get_view();
 					view.zoom(0.5f);
@@ -110,6 +109,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 					zooming = !zooming;
 				}
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Escape) { m_game_menu = {}; }
+#endif()
 			}
 
 			if (auto const* joystick_moved = event->getIf<sf::Event::JoystickMoved>()) {
@@ -357,6 +357,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Up..............: %s", services.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::up) ? "held" : "");
 					ImGui::Text("Down............: %s", services.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::down) ? "held" : "");
 					ImGui::Text("Left Triggered..: %i", left_triggered.get());
+					ImGui::Text("Movement cooldown.....: %i", player.controller.get_movement_cooldown());
 					ImGui::SeparatorText("Gamepad and Joystick");
 					ImGui::Text("Move Input: %.3f", services.input_system.analog(input::AnalogAction::move).x);
 					ImGui::Text("Pan Input: %.3f", services.input_system.analog(input::AnalogAction::pan).y);

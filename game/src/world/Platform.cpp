@@ -158,7 +158,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 
 	counter.update();
 	animation.update();
-	if (get_velocity().lengthSquared() > constants::small_value) {
+	if (get_velocity().lengthSquared() > 0.001f) {
 		auto max_vel = 8.f;
 		auto t = std::clamp(get_velocity().lengthSquared() / max_vel, 0.f, 1.f);
 		auto pitch = std::lerp(1.f, 2.0f, get_velocity().lengthSquared());

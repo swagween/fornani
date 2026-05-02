@@ -38,7 +38,6 @@ void AmbientProp::expose() { Entity::expose(); }
 
 void AmbientProp::update(automa::ServiceProvider& svc, world::Map& map, SceneContext& context, player::Player& player) {
 	Entity::update(svc, map, context, player);
-	tick();
 	if (m_params) {
 		if (m_sensor.within_bounds(player.hurtbox)) {
 			auto pvel = player.get_collider().physics.actual_velocity() * 0.0008f;
@@ -62,16 +61,18 @@ void AmbientProp::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	if (!m_editor) {
 		drawbox.setSize(get_world_dimensions() * size);
 		drawbox.setPosition(get_world_dimensions() * size - cam);
-		win.draw(drawbox);
+		// win.draw(drawbox);
 	}
 	if (m_editor) { return; }
 	Animatable::set_position(get_global_center() - cam);
 	win.draw(*this);
+
 	/*sf::CircleShape bob{};
 	bob.setFillColor(sf::Color::Red);
 	bob.setRadius(2.f);
 	bob.setPosition(get_global_center() - cam + m_bob.physics.position);
-	win.draw(bob);*/
+	win.draw(bob);
+	m_sensor.render(win, cam);*/
 }
 
 AmbientPropParameters::AmbientPropParameters(dj::Json const& in) {

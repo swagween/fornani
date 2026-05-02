@@ -91,10 +91,10 @@
     ],
     "vendor": {
       "upcharge": 0.2,
-      "common_items": ["clay_statue", "bronze_bracelet", "clamp"],
-      "uncommon_items": ["red_jeans", "rotary_gizmo"],
+      "common_items": ["clay_statue", "bronze_bracelet"],
+      "uncommon_items": ["red_jeans", "rotary_gizmo", "magnifying_glass"],
       "rare_items": ["sapphire"],
-      "guaranteed_finite_items": ["lantern"]
+      "guaranteed_finite_items": ["lantern", "gas_mask"]
     },
     "locations": {
       "contingency": {
@@ -313,7 +313,7 @@
     "vendor": {
       "upcharge": 0.25,
       "common_items": ["clay_statue", "boxing_glove"],
-      "uncommon_items": ["soda", "silver_bracelet", "outfitter_gizmo"],
+      "uncommon_items": ["soda", "silver_bracelet", "outfitter_gizmo", "gas_mask"],
       "rare_items": ["sapphire", "ceremonial_garb", "ceremonial_skirt"],
       "guaranteed_finite_items": ["lantern"]
     }

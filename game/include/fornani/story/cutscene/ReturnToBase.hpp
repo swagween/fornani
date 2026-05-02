@@ -17,6 +17,7 @@ class ReturnToBase final : public Cutscene {
 
   private:
 	util::Cooldown m_intro;
+	util::Cooldown m_landed;
 	std::optional<ChampionJ5> m_champion;
 
 	util::BitFlags<ReturnToBaseFlags> m_flags{};

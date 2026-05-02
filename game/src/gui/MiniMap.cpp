@@ -143,9 +143,11 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 
 	if (port.size.x == 0.f || port.size.y == 0.f) { return; }
 
-	for (auto& line : m_dotted_lines) {
-		if (!svc.data.is_room_discovered(line.source) || !svc.data.is_room_discovered(line.destination)) { continue; }
-		line.line.render(win, get_ratio(), m_physics.position, scaled_port.size);
+	if (has_flag_set(MiniMapFlags::open)) {
+		for (auto& line : m_dotted_lines) {
+			if (!svc.data.is_room_discovered(line.source) || !svc.data.is_room_discovered(line.destination)) { continue; }
+			line.line.render(win, get_ratio(), m_physics.position, scaled_port.size);
+		}
 	}
 
 	for (auto& room : m_atlas) {
@@ -191,7 +193,6 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 }
 
 void MiniMap::update() {
-	m_physics.simple_update();
 	auto bounds{sf::FloatRect{{-(m_extent.size.x) * get_ratio() + m_view.getCenter().x, -(m_extent.size.y) * get_ratio() + m_view.getCenter().y},
 							  {-(m_extent.position.x) * get_ratio() + m_view.getCenter().x, -(m_extent.position.y) * get_ratio() + m_view.getCenter().y}}};
 	m_physics.position.x = ccm::ext::clamp(m_physics.position.x, bounds.position.x, bounds.size.x);
@@ -199,11 +200,19 @@ void MiniMap::update() {
 	m_pan_limit_x = m_physics.position.x == bounds.position.x || m_physics.position.x == bounds.size.x;
 	m_pan_limit_y = m_physics.position.y == bounds.position.y || m_physics.position.y == bounds.size.y;
 	m_resolution = m_scale < 32.f ? Resolution::high : m_scale < 128.f ? Resolution::medium : Resolution::low;
-	if ((m_target_position - m_physics.position).length() > constants::small_value) {
-		m_steering.target(m_physics, m_target_position, 0.003f);
+	if (has_flag_set(MiniMapFlags::moving)) {
+		m_physics.set_global_friction(0.9f);
+		if ((m_target_position - m_physics.position).length() > constants::small_value) {
+			m_steering.target(m_physics, m_target_position, 0.003f);
+		} else {
+			m_target_position = m_physics.position;
+		}
 	} else {
-		m_target_position = m_physics.position;
+		m_physics.set_global_friction(0.5f);
+		m_steering.target(m_physics, m_target_position, 0.1f);
 	}
+	set_flag(MiniMapFlags::moving, false);
+	m_physics.simple_update();
 }
 
 void MiniMap::clear_atlas() { m_atlas.clear(); }
@@ -213,6 +222,7 @@ void MiniMap::move(sf::Vector2f direction) {
 	if (ccm::abs(direction.x) + ccm::abs(direction.y) > 1.f) { speed /= ccm::sqrt(2.f); }
 	m_steering.target(m_physics, m_physics.position - direction * speed, 0.002f);
 	m_target_position = m_physics.position;
+	set_flag(MiniMapFlags::moving);
 }
 
 void MiniMap::zoom(float amount) {

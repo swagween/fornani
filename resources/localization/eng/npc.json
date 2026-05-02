@@ -1113,6 +1113,12 @@
               [3, 9, 1, 300]
             ],
             "message": "Here, as promised..."
+          },
+          {
+            "message": "It should pack a bit more of a punch than my old pistol, though the color is a bit drab..."
+          },
+          {
+            "message": "Thanks again."
           }
         ],
         [
@@ -2015,7 +2021,7 @@
             "message": "There is a train station in the Nightside complex that should have service to Ashtown. That ought to be the quickest way."
           },
           {
-            "codes": [[22, 810, 1, 1]],
+            "codes": [[22, 901, 1, 1]],
             "message": "Here, I'll mark the station on your map."
           },
           {
@@ -2109,7 +2115,7 @@
           },
           {
             "codes": [[1, 0]],
-            "message": "Spencer should be able to fix it right up."
+            "message": "I know someone in Ashtown who should be able to fix it right up."
           }
         ],
         [
@@ -4621,8 +4627,11 @@
             "message": "We have some planning to do."
           },
           {
-            "codes": [[23, 4]],
             "message": "But first, get some rest. You've been through the wringer the past few days."
+          },
+          {
+            "codes": [[23, 4]],
+            "message": "I'm gonna wash up and get changed, too. I'll see you inside!"
           }
         ]
       ]

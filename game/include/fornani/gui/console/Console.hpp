@@ -57,7 +57,6 @@ class Console {
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win);
 
-	void relaunch(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type, int target_index = -1);
 	void set_source(dj::Json const& json);
 	void set_nani_sprite(sf::Sprite const& sprite);
 	void set_no_exit(bool flag) { flag ? m_flags.set(ConsoleFlags::no_exit) : m_flags.reset(ConsoleFlags::no_exit); }

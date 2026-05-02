@@ -3,6 +3,7 @@
 
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/physics/Shape.hpp>
+#include <fornani/utils/ID.hpp>
 #include <fornani/utils/IWorldPositionable.hpp>
 
 namespace fornani::automa {
@@ -26,6 +27,7 @@ class Waterfall : public Animatable, public IWorldPositionable {
   private:
 	shape::Shape m_bounding_box{};
 	shape::Shape m_detector{};
+	StableID m_id;
 };
 
 } // namespace fornani::world

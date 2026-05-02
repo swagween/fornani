@@ -12,5 +12,17 @@
     "radius": 16.0,
     "dimensions": [64, 64],
     "destroy_effect": "grass_burst"
+  },
+  "pink_flower": {
+    "num_frames": 5,
+    "sensitivity": 0.001,
+    "radius": 16.0,
+    "dimensions": [64, 64]
+  },
+  "orange_flower": {
+    "num_frames": 5,
+    "sensitivity": 0.001,
+    "radius": 16.0,
+    "dimensions": [64, 64]
   }
 }

@@ -56,6 +56,7 @@ void RectPath::set_section(std::string_view to_section) {
 		if (section.label == to_section.data()) { m_current_section = counter; }
 		++counter;
 	}
+	m_previous_position = m_current_position;
 	m_current_position = m_sections.at(m_current_section).path.at(m_current_step).position;
 	m_current_dimensions = m_sections.at(m_current_section).path.at(m_current_step).size;
 }

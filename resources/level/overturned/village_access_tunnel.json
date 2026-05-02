@@ -10,7 +10,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           21,
@@ -27,7 +26,6 @@
           2
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           23,
@@ -44,13 +42,25 @@
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,
           7
         ],
         "source_id": 221
+      }
+    ],
+    "save_point": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 221,
+        "position": [
+          27,
+          59
+        ]
       }
     ],
     "vines": [

@@ -16,7 +16,7 @@ namespace fornani::player {
 
 constexpr static float crawl_speed_v{0.32f};
 
-PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect{64}, .dash_kick{134}}, post_slide{80}, post_wallslide{16}, wallslide_slowdown{64} {
+PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect{64}, .dash_kick{134}, .movement{90}}, post_slide{80}, post_wallslide{16}, wallslide_slowdown{64} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
@@ -88,6 +88,10 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (left) { m_dash_direction = Direction{{-1, 0}}; }
 	if (right) { m_dash_direction = Direction{{1, 0}}; }
 
+	// detect recent movement inputs for smoother walljumping, particularly on gamepads
+	cooldowns.movement.update();
+	if (left || right) { cooldowns.movement.start(); }
+
 	// inspect
 	auto const& inspected = (it) && grounded() && !left && !right;
 	cooldowns.inspect.update();
@@ -117,7 +121,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		if (player.can_jump()) { m_ability = std::make_unique<Jump>(svc, map, player.get_collider()); }
 		// guard for when player has jump and dash bound to the same key
 		auto const dash_exhausted = !player.can_dash() && !is_dashing();
-		auto direction_held = left || right;
+		auto direction_held = left || right || cooldowns.movement.running();
 		auto can_walljump = (player.get_collider().has_right_wallslide_collision() || player.get_collider().has_left_wallslide_collision()) && !player.get_collider().grounded() && player.can_walljump() && direction_held;
 		auto can_doublejump = (player.can_doublejump() && !dash_and_jump_combined) || (player.can_doublejump() && dash_and_jump_combined && (!any_direction_held || dash_exhausted));
 		auto jump_direction = player.get_collider().has_right_wallslide_collision() ? Direction{LR::right} : player.get_collider().has_left_wallslide_collision() ? Direction{LR::left} : Direction{};

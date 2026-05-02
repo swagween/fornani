@@ -44,6 +44,36 @@
     "max_distance": 512.0
   },
   {
+    "label": "truck_engine",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 200,
+    "fade_out": 32,
+    "min_distance": 64.0,
+    "max_distance": 1024.0
+  },
+  {
+    "label": "waterfall",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 256,
+    "fade_out": 256,
+    "min_distance": 64.0,
+    "max_distance": 512.0
+  },
+  {
+    "label": "deep_waterfall",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 256,
+    "fade_out": 256,
+    "min_distance": 128.0,
+    "max_distance": 1024.0
+  },
+  {
     "label": "deep_laser_hum",
     "bus": "gameplay",
     "volume": 0.06,
@@ -441,7 +471,7 @@
     "label": "shot_tomahawk",
     "bus": "gameplay",
     "volume": 1.0,
-    "pitch_offset": 0.0
+    "pitch_offset": 0.1
   },
   {
     "label": "pioneer_drawer",

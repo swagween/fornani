@@ -99,7 +99,7 @@ void GrandMastiff::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& wi
 		m_bite_effect->set_position(m_bite.hit.bounds.getPosition() - cam);
 		win.draw(*m_bite_effect);
 	}
-	debug();
+	// debug();
 }
 
 void GrandMastiff::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {

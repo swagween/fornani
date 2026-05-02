@@ -72,8 +72,8 @@
 	{
 		"english"
 		{
-			"platformer_title	"Platformer Controls"
-			"menu_title			"Menu Controls"
+			"platformer_title"	"Platformer Controls"
+			"menu_title"			"Menu Controls"
 			"platformer_up"		"Up (Keyboard)"
 			"platformer_down"		"Down (Keyboard)"
 			"platformer_left"		"Left (Keyboard)"

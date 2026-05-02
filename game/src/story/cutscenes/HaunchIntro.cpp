@@ -10,7 +10,7 @@ namespace fornani {
 
 HaunchIntro::HaunchIntro(automa::ServiceProvider& svc)
 	: Cutscene(svc, 900, "haunch_intro"), m_intro{200}, m_army_truck_body{svc, "army_truck_body", {203, 132}}, m_army_truck_undercarriage{svc, "army_truck_undercarriage", {203, 132}},
-	  m_truck_path{svc.finder, std::filesystem::path{"/data/vfx/scenery_paths.json"}, "army_truck", 1000, util::InterpolationType::quadratic}, m_hulmet_spawn_delay{100} {
+	  m_truck_path{svc.finder, std::filesystem::path{"/data/vfx/scenery_paths.json"}, "army_truck", 1000, util::InterpolationType::quadratic}, m_hulmet_spawn_delay{100}, m_truck_shake{util::f_pi}, m_outro{2000} {
 	m_intro.start();
 	svc.input_system.flush_inputs();
 	svc.state_flags.set(automa::StateFlags::cutscene);
@@ -33,30 +33,37 @@ void HaunchIntro::update(automa::ServiceProvider& svc, SceneContext& context, wo
 		svc.state_flags.reset(automa::StateFlags::no_menu);
 		svc.state_flags.reset(automa::StateFlags::cutscene);
 		svc.camera_controller.set_owner(graphics::CameraOwner::player);
-		svc.music_player.stop();
-		svc.music_player.load("scuffle");
-		svc.music_player.play_looped();
 		player.set_flag(player::PlayerFlags::cutscene, false);
 		svc.camera_controller.constrain();
 		m_flags.set(HaunchIntroFlags::over);
 		m_truck_path.set_section("depart");
 		m_truck_path.set_interpolation_type(util::InterpolationType::linear);
-		m_army_truck_undercarriage.set_animation("moving");
+		m_outro.start();
 		return;
 	}
 
+	auto max_vel = 1000.f;
+	auto t = std::clamp(m_truck_path.get_velocity().length() / max_vel, 0.f, 1.f);
+	NANI_LOG_DEBUG(p_logger, "vel: {}", m_truck_path.get_velocity().length());
+	auto pitch = std::lerp(0.7f, 1.7f, t);
+	svc.soundboard.repeat_sound("truck_engine", 1, m_truck_path.get_position(), pitch);
+	m_truck_y_offset = std::sin(m_truck_shake.get());
+	auto smoke_pos = m_truck_path.get_position() + sf::Vector2f{300.f, 40.f};
+	if (svc.ticker.every_x_ticks(40)) { map.spawn_emitter(svc, "smoke", smoke_pos, {UND::up}, {16.f, 16.f}); }
+	m_truck_shake.update(0.04f);
+	m_army_truck_undercarriage.tick();
+	m_truck_path.update();
+
 	if (m_flags.test(HaunchIntroFlags::over)) {
 		m_truck_path.update();
-		if (m_truck_path.completed_step(2)) { flags.set(CutsceneFlags::delete_me); }
+		m_outro.update();
+		if (m_outro.is_almost_complete()) { flags.set(CutsceneFlags::delete_me); }
 		return;
 	}
 
 	svc.state_flags.set(automa::StateFlags::hide_hud);
 	svc.state_flags.set(automa::StateFlags::no_menu);
 	svc.state_flags.set(automa::StateFlags::cutscene);
-
-	m_truck_path.update();
-	m_army_truck_undercarriage.tick();
 
 	player.controller.restrict_movement();
 	player.stall_idle_timer();
@@ -133,6 +140,7 @@ void HaunchIntro::update(automa::ServiceProvider& svc, SceneContext& context, wo
 			svc.music_player.play_looped();
 			svc.quest_table.progress_quest("haunch_dialogue", 1, 1);
 			svc.data.save_quests();
+			m_army_truck_undercarriage.set_animation("moving");
 			++progress;
 		}
 		break;
@@ -142,7 +150,7 @@ void HaunchIntro::update(automa::ServiceProvider& svc, SceneContext& context, wo
 }
 
 void HaunchIntro::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	m_army_truck_body.set_position(m_truck_path.get_position() - cam);
+	m_army_truck_body.set_position(m_truck_path.get_position() - cam + sf::Vector2f{0.f, m_truck_y_offset});
 	m_army_truck_undercarriage.set_position(m_truck_path.get_position() - cam);
 	win.draw(m_army_truck_undercarriage);
 	win.draw(m_army_truck_body);

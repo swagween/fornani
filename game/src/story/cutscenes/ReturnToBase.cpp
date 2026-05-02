@@ -8,7 +8,7 @@
 
 namespace fornani {
 
-ReturnToBase::ReturnToBase(automa::ServiceProvider& svc) : Cutscene(svc, 209, "return_to_base"), m_intro{200} {
+ReturnToBase::ReturnToBase(automa::ServiceProvider& svc) : Cutscene(svc, 209, "return_to_base"), m_intro{200}, m_landed{200} {
 	m_intro.start();
 	svc.input_system.flush_inputs();
 	svc.camera_controller.set_owner(graphics::CameraOwner::player);
@@ -17,17 +17,22 @@ ReturnToBase::ReturnToBase(automa::ServiceProvider& svc) : Cutscene(svc, 209, "r
 
 void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 
-	if (complete() && !m_flags.test(ReturnToBaseFlags::done)) {
+	auto npcs = map.get_entities<NPC>();
+	auto bit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 34; });
+	auto& bryn = *bit;
+
+	if (complete() && !m_flags.test(ReturnToBaseFlags::done) && context.transition.is_black()) {
 		m_flags.set(ReturnToBaseFlags::done);
 		player.controller.unrestrict();
 		svc.state_flags.reset(automa::StateFlags::hide_hud);
 		svc.state_flags.reset(automa::StateFlags::no_menu);
 		svc.state_flags.reset(automa::StateFlags::cutscene);
 		player.set_flag(player::PlayerFlags::cutscene, false);
-		svc.quest_table.set_quest_progression("defeat_haunch", 3);
 		svc.quest_table.progress_quest("defeat_skycorps", 1, 999);
 		svc.camera_controller.set_owner(graphics::CameraOwner::player);
 		svc.camera_controller.constrain();
+		context.transition.end();
+		bryn->hide();
 		svc.quest_table.set_quest_progression("npc_dialogue", {"dr_willett", 300}, 4, {209});
 		svc.quest_table.set_quest_progression("npc_dialogue", {"bryn", 300}, 2, {209});
 	}
@@ -39,15 +44,12 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 	cooldowns.pause.update();
 	cooldowns.long_pause.update();
 	cooldowns.end.update();
+	m_landed.update();
 
 	if (m_champion) {
 		if (m_champion->is_close_to_target(2.f)) { m_champion->flags.set(ChampionJ5Flags::interactable); }
 		m_champion->update(svc, map);
 	}
-
-	auto npcs = map.get_entities<NPC>();
-	auto bit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 34; });
-	auto& bryn = *bit;
 
 	svc.state_flags.set(automa::StateFlags::hide_hud);
 	player.controller.restrict_movement();
@@ -77,10 +79,6 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 	auto total_suites{0};
 	for (auto& npc : npcs) { total_suites += npc->get_number_of_suites(); }
 	total_conversations = std::max(total_conversations, total_suites);
-	if (cooldowns.end.is_almost_complete()) {
-		flags.set(CutsceneFlags::complete);
-		return;
-	}
 	if (npcs.empty()) { return; }
 
 	auto going = progress < 5;
@@ -104,9 +102,15 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 		break;
 	case 1:
 		if (m_champion) {
-			if (m_champion->flags.test(ChampionJ5Flags::landed)) {
+			if (m_champion->flags.test(ChampionJ5Flags::landed) && !m_landed.running()) { m_landed.start(); }
+			if (m_landed.is_almost_complete()) {
 				bryn->flush_and_push(8);
 				bryn->force_engage();
+				bryn->set_special_animation(3);
+				bryn->set_flag(NPCFlags::face_player);
+				bryn->set_flag(NPCFlags::airborne, false);
+				bryn->set_flag(NPCFlags::custom_camera, false);
+				player.set_idle();
 				++progress;
 			}
 		}
@@ -114,19 +118,14 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 	case 4:
 		if (!context.console) {
 			bryn->flush_and_push(9);
-			cooldowns.end.start();
-			player.set_idle();
+			flags.set(CutsceneFlags::complete);
+			context.transition.start();
+			svc.quest_table.set_quest_progression("defeat_haunch", 3);
+			bryn->set_flag(NPCFlags::cutscene, false);
 			++progress;
 		}
 		break;
-	case 5:
-		bryn->set_special_animation(3);
-		bryn->set_flag(NPCFlags::face_player);
-		bryn->set_flag(NPCFlags::airborne, false);
-		bryn->set_flag(NPCFlags::custom_camera, false);
-		bryn->set_flag(NPCFlags::cutscene, false);
-		++progress;
-		break;
+	case 5: ++progress; break;
 	default: break;
 	}
 }

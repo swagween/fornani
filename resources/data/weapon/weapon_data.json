@@ -113,7 +113,7 @@
         "dimensions": [12, 12],
         "radius": 10.0,
         "attributes": {
-          "base_damage": 100,
+          "base_damage": 10,
           "power": 4,
           "lifespan": 70,
           "lifespan_variance": 0,
@@ -451,7 +451,7 @@
         "dimensions": [8.0, 8.0],
         "radius": 6.0,
         "attributes": {
-          "base_damage": 12,
+          "base_damage": 9,
           "lifespan": 600,
           "lifespan_variance": 0,
           "speed": 6.0,

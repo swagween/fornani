@@ -82,7 +82,9 @@
     "actual_title": "Magnifying Glass",
     "naive_description": "When equipped, this allows you to see enemies' life force.",
     "unique": true,
-    "equippable": true
+    "sellable": true,
+    "equippable": true,
+    "value": 900
   },
   {
     "tag": "hoarders_trinket",
@@ -103,7 +105,9 @@
     "actual_title": "Magnet",
     "naive_description": "When equipped, drops will gravitate to you.",
     "unique": true,
-    "equippable": true
+    "sellable": true,
+    "equippable": true,
+    "value": 1100
   },
   {
     "tag": "firstwind_hangar_key",
@@ -277,6 +281,7 @@
     "naive_description": "When equipped, this will reduce reload times by 15%.",
     "unique": false,
     "equippable": true,
+    "sellable": true,
     "value": 380
   },
   {
@@ -347,7 +352,7 @@
   {
     "tag": "clamp",
     "category": 1,
-    "lookup": [6, 1],
+    "lookup": [10, 1],
     "origin": [8, 1],
     "actual_title": "Clamp",
     "naive_description": "A painted metal clamp. It could be useful for home improvements.",
@@ -649,9 +654,12 @@
     "lookup": [3, 2],
     "origin": [2, 2],
     "actual_title": "Gas Mask",
-    "naive_description": "You need to equip this to navigate the Toxic Caverns without dying.",
+    "naive_description": "A basic gas mask. It's not very comfortable...",
+    "hidden_description": "You need to equip this to navigate the Toxic Caverns without dying.",
     "unique": true,
-    "equippable": true
+    "equippable": true,
+    "sellable": true,
+    "value": 1400
   },
   {
     "tag": "chalcedony_tee",
@@ -705,6 +713,7 @@
     "unique": true,
     "equippable": false,
     "wearable": true,
+    "sellable": true,
     "apparel_type": 0,
     "value": 2000
   },
@@ -730,6 +739,7 @@
     "naive_description": "A whacky and rebellious hair color.",
     "unique": true,
     "equippable": false,
+    "sellable": true,
     "wearable": true,
     "apparel_type": 2,
     "value": 460
@@ -743,6 +753,7 @@
     "naive_description": "A shirt that awakens your rebellious spirit.",
     "unique": true,
     "equippable": false,
+    "sellable": true,
     "wearable": true,
     "apparel_type": 0,
     "value": 790

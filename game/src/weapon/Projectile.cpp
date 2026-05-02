@@ -9,9 +9,7 @@
 
 static bool is_heading_toward(sf::Vector2f const& position, sf::Vector2f const& velocity, sf::Vector2f const& target) {
 	sf::Vector2f to_target = target - position;
-
 	float dot = velocity.x * to_target.x + velocity.y * to_target.y;
-
 	return dot > 0.f;
 }
 
@@ -291,7 +289,7 @@ void Projectile::handle_player_hit(automa::ServiceProvider& svc, world::Map& map
 	if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) {
 		on_explode(svc, map);
 	} else if (metadata.specifications.stun_multiplier > constants::small_value) {
-		player.hurt_and_stun(metadata.specifications.stun_multiplier);
+		player.stun(metadata.specifications.stun_multiplier);
 	} else {
 		player.hurt(metadata.specifications.base_damage);
 	}

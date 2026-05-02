@@ -38,6 +38,7 @@ class Beamsprout final : public Enemy, public Flaggable<BeamsproutFlags>, public
 	components::SteeringBehavior m_steering{};
 
 	util::Cooldown post_beam;
+	util::Cooldown hurt_sound{40};
 	util::Cooldown init{80};
 
 	float fire_rate;

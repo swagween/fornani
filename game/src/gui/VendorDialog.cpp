@@ -278,7 +278,7 @@ void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, p
 	m_orb_display.render(win, m_constituents[static_cast<int>(VendorConstituentType::nani)].get_window_position() + sf::Vector2f{24.f, 238.f});
 
 	auto& selector = is_buying() ? m_buy_selector : m_sell_selector;
-	selector.render(win, m_selector_sprite.get_sprite(), {}, {});
+	selector.render(win, m_selector_sprite.get_sprite(), {0.f, -2.f}, {});
 
 	m_description->write(svc, "---", svc.text.fonts.basic);
 	auto vendor = my_npc->get_vendor();

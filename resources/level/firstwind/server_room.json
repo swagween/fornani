@@ -213,6 +213,86 @@
         "type": 2
       }
     ],
+    "inspectables": [
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": true,
+        "key": "server01",
+        "position": [
+          9,
+          13
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "message": "AVB: 147"
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": true,
+        "key": "server02",
+        "position": [
+          14,
+          13
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "message": "CRT: 295"
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": true,
+        "key": "server02",
+        "position": [
+          18,
+          13
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "message": "UAA: 011"
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ],
     "platforms": [
       {
         "dimensions": [

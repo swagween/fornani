@@ -84,6 +84,11 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		}
 		set_flag(BossFlags::post_death, false);
 	}
+	auto bp = get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * -8.f, -16.f};
+	auto offset = is_state(HaunchState::shoot_low)	  ? sf::Vector2f{directions.actual.as_float() * 38.f, 42.f}
+				  : is_state(HaunchState::shoot_high) ? sf::Vector2f{directions.actual.as_float() * 48.f, -6.f}
+													  : sf::Vector2f{directions.actual.as_float() * 18.f, 0.f};
+	m_gun_socket = bp + offset;
 	if (!has_flag_set(BossFlags::battle_mode)) {
 		m_gun_steering.seek(m_gun_socket);
 		state_function = state_function();
@@ -118,14 +123,9 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	m_stun_grenade.get().set_firing_direction(CardinalDirection{UDLR::down});
 	m_hand_grenade.get().set_firing_direction(CardinalDirection{UDLR::up});
 	m_gun.update(svc, map, *this);
-	auto bp = get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * -8.f, -16.f};
 	m_stun_grenade.get().set_barrel_point(get_collider().get_center());
 	m_hand_grenade.get().set_barrel_point(get_collider().get_center());
 	m_attack_target = player.get_collider().get_center() + sf::Vector2f{0.f, -20.f} - bp;
-	auto offset = is_state(HaunchState::shoot_low)	  ? sf::Vector2f{directions.actual.as_float() * 38.f, 42.f}
-				  : is_state(HaunchState::shoot_high) ? sf::Vector2f{directions.actual.as_float() * 48.f, -6.f}
-													  : sf::Vector2f{directions.actual.as_float() * 18.f, 0.f};
-	m_gun_socket = bp + offset;
 	m_gun.get().set_barrel_point(m_gun_socket + sf::Vector2f{36.f * directions.actual.as_float(), -8.f});
 	m_laser_gun.set_scale({-get_scale().x, get_scale().y});
 	m_gun_steering.seek(m_gun_socket);

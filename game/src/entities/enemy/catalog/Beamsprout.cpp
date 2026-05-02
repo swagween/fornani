@@ -34,6 +34,7 @@ void Beamsprout::update(automa::ServiceProvider& svc, world::Map& map, player::P
 		return;
 	}
 	post_beam.update();
+	hurt_sound.update();
 	face_player(player);
 	flags.state.set(StateFlags::vulnerable); // always vulnerable
 
@@ -47,10 +48,11 @@ void Beamsprout::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	bp.y -= 4.f;
 	beam.get().set_barrel_point(bp);
 
-	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
+	if (flags.state.test(StateFlags::hurt) && !hurt_sound.running()) {
 		m_services->soundboard.flags.beast.set(audio::Beast::hurt);
 		hurt_effect.start(128);
 		flags.state.reset(StateFlags::hurt);
+		hurt_sound.start();
 	}
 
 	hurt_effect.update();

@@ -1,5 +1,21 @@
 {
   "entities": {
+    "chests": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 61251,
+        "modifier": 0,
+        "position": [
+          14,
+          27
+        ],
+        "tag": "cridium_shard",
+        "type": 2
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": true,

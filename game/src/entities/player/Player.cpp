@@ -167,6 +167,7 @@ void Player::update(world::Map& map) {
 	m_death_cooldown.update();
 
 	if (!collider.has_value()) { return; }
+	get_collider().wallslide_pad = 10.f;
 
 	// stun logic
 	if (cooldowns.stun.just_started()) { map.spawn_effect(*m_services, "stun", get_collider().get_center()); }

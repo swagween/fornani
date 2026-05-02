@@ -37,14 +37,6 @@ Console::Console(automa::ServiceProvider& svc, dj::Json const& source, std::stri
 	load_and_launch(key, type, target_index);
 }
 
-void Console::relaunch(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type, int target_index) {
-	m_mode = ConsoleMode::writing;
-	NANI_LOG_DEBUG(m_logger, "Relaunched console.");
-	if (type == OutputType::no_skip) { m_exit_stall.start(); }
-	set_source(source);
-	load_and_launch(key, type, target_index);
-}
-
 void Console::update(automa::ServiceProvider& svc) {
 	m_exit_stall.update();
 	m_launch.update();

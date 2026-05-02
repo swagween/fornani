@@ -58,6 +58,7 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 	std::optional<AnimState> get_ability_animation() const;
 	[[nodiscard]] auto last_requested_direction() -> SimpleDirection const& { return m_last_requested_direction; }
 	[[nodiscard]] auto is_dash_kick_cooling_down() const -> bool { return cooldowns.dash_kick.running(); }
+	[[nodiscard]] auto get_movement_cooldown() const -> int { return cooldowns.movement.get(); }
 	[[nodiscard]] auto can_move() const -> bool { return !hard_state.test(HardState::no_move); }
 	[[nodiscard]] auto is(AbilityType type) const -> bool { return m_ability ? m_ability.value()->is(type) : false; }
 	[[nodiscard]] auto is_dashing() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::dash) : false; }
@@ -121,6 +122,7 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 	struct {
 		util::Cooldown inspect{};
 		util::Cooldown dash_kick{};
+		util::Cooldown movement{};
 	} cooldowns{};
 
 	Player* m_player;

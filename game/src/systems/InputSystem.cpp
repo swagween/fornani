@@ -6,8 +6,8 @@
 namespace fornani::input {
 
 constexpr auto default_joystick_sensitivity_v = 0.2f;
-constexpr auto analog_press_threshold_v = 0.3f;
-constexpr auto analog_release_threshold_v = 0.25f;
+constexpr auto analog_press_threshold_v = 0.25f;
+constexpr auto analog_release_threshold_v = 0.2f;
 
 static auto get_action_set_from_action(AnalogAction action) -> ActionSet {
 	switch (action) {
@@ -247,6 +247,8 @@ void InputSystem::gather_raw_input() {
 		}
 
 		raw.active = is_action_allowed(action);
+		if (std::abs(raw.x) > analog_press_threshold_v) { m_last_device_used = InputDevice::gamepad; }
+		if (std::abs(raw.y) > analog_press_threshold_v) { m_last_device_used = InputDevice::gamepad; }
 	}
 }
 
@@ -390,9 +392,9 @@ auto InputSystem::direction_released(AnalogAction action, MoveDirection dir) con
 
 auto InputSystem::query_direction(AnalogAction action, MoveDirection dir, DigitalActionQueryType type) const -> bool {
 	switch (type) {
-	case DigitalActionQueryType::held: return direction_held(input::AnalogAction::map_pan, dir);
-	case DigitalActionQueryType::triggered: return direction_triggered(input::AnalogAction::map_pan, dir);
-	case DigitalActionQueryType::released: return direction_released(input::AnalogAction::map_pan, dir);
+	case DigitalActionQueryType::held: return direction_held(action, dir);
+	case DigitalActionQueryType::triggered: return direction_triggered(action, dir);
+	case DigitalActionQueryType::released: return direction_released(action, dir);
 	}
 	return false;
 }
