@@ -50,6 +50,8 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	if (!m_map) { return; }
 
+	if (!p_pause_window) { svc.world_timer.resume(); }
+
 	if (!m_reset.running()) {
 		player->update(*m_map);
 		player->start_tick();

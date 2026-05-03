@@ -75,6 +75,7 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 		return std::nullopt;
 	}
 	[[nodiscard]] auto get_ability_direction() const -> Direction { return m_ability ? m_ability.value()->get_direction() : Direction{}; }
+	[[nodiscard]] auto get_ability_force() const -> float { return m_ability ? m_ability.value()->get_force() : 0.f; }
 
 	[[nodiscard]] auto nothing_pressed() -> bool { return key_map[ControllerInput::move_x] == 0.f && key_map[ControllerInput::inspect] == 0.f; }
 	[[nodiscard]] auto moving() -> bool { return key_map[ControllerInput::move_x] != 0.f; }
@@ -123,6 +124,8 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 		util::Cooldown inspect{};
 		util::Cooldown dash_kick{};
 		util::Cooldown movement{};
+		util::Cooldown left_pressed{};
+		util::Cooldown right_pressed{};
 	} cooldowns{};
 
 	Player* m_player;

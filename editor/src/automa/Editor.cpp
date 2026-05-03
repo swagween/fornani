@@ -1204,10 +1204,6 @@ void Editor::gui_render(sf::RenderWindow& win) {
 							ImGui::Checkbox("Show Indicated Layers", &map.flags.show_indicated_layers);
 							ImGui::EndTabItem();
 						}
-						if (ImGui::BeginTabItem("Playtest")) {
-							ImGui::SliderInt("Save File", &m_services->editor_settings.save_file, 0, 2);
-							ImGui::EndTabItem();
-						}
 						if (ImGui::BeginTabItem("Config")) {
 							ImGui::SliderFloat("Widget Alpha", &m_menu_alpha, 0.f, 1.f);
 							ImGui::Checkbox("Debug Overlay", &show_overlay);
@@ -1222,6 +1218,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				}
 				ImGui::EndTabBar();
 			}
+			ImGui::SeparatorText("Playtest");
+			auto& e = m_services->editor_settings.save_file;
+			ImGui::RadioButton("file 1", &e, 0);
+			ImGui::RadioButton("file 2", &e, 1);
+			ImGui::RadioButton("file 3", &e, 2);
 			ImGui::SeparatorText("Info");
 			ImGui::Text("Current Room ID: %u", map.room_id);
 

@@ -61,7 +61,7 @@
           31,
           22
         ],
-        "toxic": false
+        "type": 0
       },
       {
         "dimensions": [
@@ -73,7 +73,7 @@
           19,
           29
         ],
-        "toxic": false
+        "type": 0
       }
     ]
   },

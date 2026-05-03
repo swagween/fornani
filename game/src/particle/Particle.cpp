@@ -6,7 +6,7 @@
 
 namespace fornani::vfx {
 
-Particle::Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f dim, std::string_view type, sf::Color color, Direction direction) : position(pos), dimensions(dim) {
+Particle::Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f dim, std::string_view type, sf::Color color, Direction direction, int channel) : position(pos), dimensions(dim) {
 	box.setFillColor(color);
 	box.setSize(dimensions);
 	box.setOrigin(dimensions * 0.5f);
@@ -46,6 +46,7 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f 
 
 	if (m_animatable) {
 		m_animatable->center();
+		m_animatable->set_channel(channel);
 		if (random::percent_chance(50)) { m_animatable->scale({-1.f, 1.f}); }
 	}
 
@@ -56,7 +57,7 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f 
 	m_physics->position = position;
 }
 
-Particle::Particle(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f pos, sf::Vector2f dim, std::string_view type, sf::Color color, Direction direction) : Particle{svc, pos, dim, type, color, direction} {
+Particle::Particle(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f pos, sf::Vector2f dim, std::string_view type, sf::Color color, Direction direction, int channel) : Particle{svc, pos, dim, type, color, direction, channel} {
 	m_physics.reset();
 	m_collider.emplace(map, dim.x);
 

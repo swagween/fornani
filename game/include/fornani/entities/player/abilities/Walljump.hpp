@@ -6,7 +6,7 @@
 namespace fornani::player {
 class Walljump : public Ability {
   public:
-	Walljump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction);
+	Walljump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction, bool perfect);
 	void update(shape::Collider& collider, PlayerController& controller) override;
 
   private:

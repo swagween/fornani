@@ -445,12 +445,20 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 	if (ImGui::BeginPopupModal("Water Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
 		static int id{};
-		static bool toxic{};
+		static int type{};
 		static int width{0};
 		static int height{0};
+		static char const* types[3] = {"normal", "curative", "toxic"};
+		auto ctr{0};
+		if (ImGui::BeginCombo("Type", types[type])) {
+			for (auto const& t : types) {
+				if (ImGui::Selectable(t)) { type = ctr; }
+				++ctr;
+			}
+			ImGui::EndCombo();
+		}
 
 		ImGui::InputInt("ID", &id);
-		ImGui::Checkbox("Toxic", &toxic);
 
 		ImGui::InputInt("Width", &width);
 		ImGui::InputInt("Height", &height);
@@ -458,7 +466,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<fornani::Water>(svc, sf::Vector2u{static_cast<unsigned int>(width), static_cast<unsigned int>(height)}, id, toxic);
+			tool->current_entity = std::make_unique<fornani::Water>(svc, sf::Vector2u{static_cast<unsigned int>(width), static_cast<unsigned int>(height)}, id, static_cast<fornani::WaterType>(type));
 			ImGui::CloseCurrentPopup();
 		}
 		close_popup();

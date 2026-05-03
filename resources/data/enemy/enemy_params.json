@@ -1322,15 +1322,6 @@
       "rare_drops": false,
       "foreground": false,
       "sturdy": true
-    },
-    "treasure": {
-      "chance": 1.0,
-      "guns": [
-        {
-          "tag": "laser_gun",
-          "chance": 1.0
-        }
-      ]
     }
   }
 }

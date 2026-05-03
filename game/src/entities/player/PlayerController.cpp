@@ -16,7 +16,8 @@ namespace fornani::player {
 
 constexpr static float crawl_speed_v{0.32f};
 
-PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect{64}, .dash_kick{134}, .movement{90}}, post_slide{80}, post_wallslide{16}, wallslide_slowdown{64} {
+PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player)
+	: m_player(&player), cooldowns{.inspect{64}, .dash_kick{134}, .movement{60}, .left_pressed{20}, .right_pressed{20}}, post_slide{80}, post_wallslide{16}, wallslide_slowdown{64} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
@@ -90,6 +91,10 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 
 	// detect recent movement inputs for smoother walljumping, particularly on gamepads
 	cooldowns.movement.update();
+	cooldowns.left_pressed.update();
+	cooldowns.right_pressed.update();
+	if (left_pressed) { cooldowns.left_pressed.start(); }
+	if (right_pressed) { cooldowns.right_pressed.start(); }
 	if (left || right) { cooldowns.movement.start(); }
 
 	// inspect
@@ -122,11 +127,17 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		// guard for when player has jump and dash bound to the same key
 		auto const dash_exhausted = !player.can_dash() && !is_dashing();
 		auto direction_held = left || right || cooldowns.movement.running();
-		auto can_walljump = (player.get_collider().has_right_wallslide_collision() || player.get_collider().has_left_wallslide_collision()) && !player.get_collider().grounded() && player.can_walljump() && direction_held;
+
+		auto left_walljump_collision = player.get_collider().has_left_wallslide_collision() || player.get_collider().has_flag_set(shape::ColliderFlags::left_walljump);
+		auto right_walljump_collision = player.get_collider().has_right_wallslide_collision() || player.get_collider().has_flag_set(shape::ColliderFlags::right_walljump);
+		auto any_walljump_collision = right_walljump_collision || left_walljump_collision;
+
+		auto can_walljump = any_walljump_collision && !player.get_collider().grounded() && player.can_walljump() && direction_held;
 		auto can_doublejump = (player.can_doublejump() && !dash_and_jump_combined) || (player.can_doublejump() && dash_and_jump_combined && (!any_direction_held || dash_exhausted));
-		auto jump_direction = player.get_collider().has_right_wallslide_collision() ? Direction{LR::right} : player.get_collider().has_left_wallslide_collision() ? Direction{LR::left} : Direction{};
+		auto jump_direction = right_walljump_collision ? Direction{LR::right} : left_walljump_collision ? Direction{LR::left} : direction;
 		if (can_walljump) {
-			m_ability = std::make_unique<Walljump>(svc, map, player.get_collider(), jump_direction);
+			auto perfect = (direction.left() && cooldowns.right_pressed.running()) || (direction.right() && cooldowns.left_pressed.running());
+			m_ability = std::make_unique<Walljump>(svc, map, player.get_collider(), jump_direction, perfect);
 		} else if (can_doublejump && !player.can_dive()) {
 			m_ability = std::make_unique<Doublejump>(svc, map, player.get_collider());
 			player.m_ability_usage.doublejump.update();
@@ -134,6 +145,8 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		if (player.can_dive() && !can_walljump) { m_ability = std::make_unique<Dive>(svc, map, player.get_collider()); }
 	}
 	if (!is_wallsliding()) { svc.soundboard.flags.player.reset(audio::Player::wallslide); }
+	player.get_collider().set_flag(shape::ColliderFlags::left_walljump, false);
+	player.get_collider().set_flag(shape::ColliderFlags::right_walljump, false);
 
 	// crouching, rolling, and sliding
 	if (svc.input_system.digital(input::DigitalAction::slide).held) {

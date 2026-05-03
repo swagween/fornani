@@ -44,6 +44,7 @@ class Ability : public Polymorphic {
 	[[nodiscard]] auto is_animation_request() const -> bool { return m_animation_trigger.running(); }
 	[[nodiscard]] auto failed() const -> bool { return m_flags.test(AbilityFlags::failed); }
 	[[nodiscard]] auto cancelled() const -> bool { return m_flags.test(AbilityFlags::cancelled); }
+	[[nodiscard]] auto get_force() const -> float { return p_force; }
 
   protected:
 	util::Cooldown m_duration;
@@ -51,6 +52,7 @@ class Ability : public Polymorphic {
 	Direction m_direction;
 	AnimState m_state{};
 	AbilityType m_type;
+	float p_force{};
 	util::BitFlags<AbilityFlags> m_flags{};
 
 	io::Logger m_logger{"Ability"};

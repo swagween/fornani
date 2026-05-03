@@ -121,9 +121,11 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (battle_mode()) {
 		attacks.punch.handle_player(player);
 		attacks.uppercut.handle_player(player);
-		attacks.rush.handle_player(player);
-		attacks.left_shockwave.handle_player(player);
-		attacks.right_shockwave.handle_player(player);
+		attacks.punch.hurt_player(player);
+		attacks.uppercut.hurt_player(player);
+		attacks.rush.hurt_player(player);
+		attacks.left_shockwave.hurt_player(player);
+		attacks.right_shockwave.hurt_player(player);
 
 		if (attacks.left_shockwave.hit.active() && !cooldowns.player_punch.running()) {
 			if (!player.invincible()) { player.accumulated_forces.push_back({-40.f, -4.f}); }
@@ -135,13 +137,15 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 			attacks.right_shockwave.hit.deactivate();
 			cooldowns.player_punch.start();
 		}
-		if (Enemy::animation.get_frame() == 30 && attacks.punch.hit.active() && !cooldowns.player_punch.running()) {
+		if (Enemy::animation.get_frame() == 30 && !cooldowns.player_punch.running()) {
+			attacks.punch.hit.activate();
 			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
 			player.accumulated_forces.push_back({sign * 10.f, -4.f});
 			attacks.punch.sensor.deactivate();
 			cooldowns.player_punch.start();
 		}
-		if (Enemy::animation.get_frame() == 37 && attacks.uppercut.hit.active() && !cooldowns.player_punch.running()) {
+		if (Enemy::animation.get_frame() == 37 && !cooldowns.player_punch.running()) {
+			attacks.uppercut.hit.activate();
 			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
 			player.accumulated_forces.push_back({sign * 10.f, -4.f});
 			attacks.uppercut.sensor.deactivate();

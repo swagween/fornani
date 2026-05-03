@@ -137,6 +137,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			break;
 		} else {
 			edge_start = edge_end;
+			// animation.invert();
 			if (flags.attributes.test(PlatformAttributes::repeating)) {
 				path_position = 0.f;
 				edge_start = 0.f;
@@ -157,11 +158,14 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	}
 
 	counter.update();
+
+	auto st = std::clamp(get_velocity().lengthSquared(), 0.f, 1.f);
+	auto speed = std::lerp(0.f, 20.f, st);
+	animation.params.framerate = (24 - static_cast<int>(speed));
 	animation.update();
 	if (get_velocity().lengthSquared() > 0.001f) {
-		auto max_vel = 8.f;
-		auto t = std::clamp(get_velocity().lengthSquared() / max_vel, 0.f, 1.f);
-		auto pitch = std::lerp(1.f, 2.0f, get_velocity().lengthSquared());
+		auto pt = std::clamp(get_velocity().lengthSquared(), 0.f, 1.f);
+		auto pitch = std::lerp(1.f, 2.0f, pt);
 		svc.soundboard.repeat_sound("platform_industrial", m_handle, get_collider().get_center(), pitch);
 	}
 }
@@ -221,6 +225,7 @@ void Platform::switch_directions() {
 	std::ranges::reverse(track);
 	path_position = 1.0f - path_position;
 	switch_up.start();
+	animation.invert();
 	NANI_LOG_DEBUG(m_logger, "switched platform directions!");
 }
 

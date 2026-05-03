@@ -88,6 +88,7 @@ class DataManager final {
 	bool switch_is_activated(int id) const;
 	bool inspectable_is_destroyed(int id) const;
 	bool is_room_discovered(int id) const;
+	bool is_room_adjacent_to_discovered(int id) const;
 	bool enemy_is_fallen(int room_id, StableID id) const;
 
 	int get_destructible_state(int id) const;

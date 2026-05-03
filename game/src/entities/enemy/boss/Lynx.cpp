@@ -57,6 +57,8 @@ Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, SceneContext& context)
 	auto prog = svc.quest_table.get_quest_progression("lynx_dialogue");
 	auto which = prog == 0 ? 1 : 4;
 	push_conversation(which);
+
+	Enemy::get_collider().physics.maximum_velocity = sf::Vector2f{100.f, 100.f};
 }
 
 void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -69,6 +71,9 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	m_cooldowns.throw_shuriken.update();
 	if (!m_context->console.has_value()) { m_cooldowns.post_defeat.update(); }
 
+	// check if Lynx has teleported off the map (rare)
+	if (!map.within_bounds(Enemy::get_collider().get_center())) { Enemy::get_collider().set_position(m_home); }
+
 	Enemy::get_collider().has_flag_set(shape::ColliderFlags::simple) ? Enemy::get_collider().physics.set_friction_componentwise(m_seek_friction) : Enemy::get_collider().physics.set_friction_componentwise({0.97f, 0.99f});
 
 	Boss::update(svc, map, player);
@@ -79,8 +84,11 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	m_player_target = player.get_collider().get_center() + sf::Vector2f{player.get_actual_direction().as_float() * 50.f, -200.f};
 
 	if (Enemy::get_collider().has_flag_set(shape::ColliderFlags::simple)) {
-		if (is_levitating()) { m_steering.seek(Enemy::get_collider().physics, m_player_target, 0.00045f); }
-		if (slam_follow()) { m_steering.seek(Enemy::get_collider().physics, m_player_target, 0.0004f); }
+		if (is_levitating()) {
+			m_steering.seek(Enemy::get_collider().physics, m_player_target, 0.00045f);
+		} else if (slam_follow()) {
+			m_steering.seek(Enemy::get_collider().physics, m_player_target, 0.0004f);
+		}
 	}
 
 	// effects
@@ -124,7 +132,7 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 				if (Enemy::animation.get_frame_count() != 4) { slash.disable(); }
 			}
 			slash.hurt_player(player, damage, {Enemy::directions.actual.as_float() * 4.f, -2.f});
-			slash.cancel_projectiles(svc, map, get_team(), 6);
+			slash.cancel_projectiles(svc, map, get_team(), 4);
 		}
 	}
 
@@ -302,7 +310,7 @@ fsm::StateFunction Lynx::update_jump() {
 
 	// check if battle is over and Lynx peaced out
 	if (health.is_dead()) {
-		flags.general.reset(GeneralFlags::map_collision);
+		// flags.general.reset(GeneralFlags::map_collision);
 		Enemy::get_collider().physics.acceleration.y = -80.f;
 	} else {
 		if (Enemy::animation.get_frame_count() == 1 && Enemy::animation.keyframe_started()) {
@@ -388,10 +396,12 @@ fsm::StateFunction Lynx::update_downward_slam() {
 	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
 	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 	Enemy::get_collider().set_flag(shape::ColliderFlags::simple, slam_follow());
-	if (Enemy::animation.just_started()) { m_counters.slam.update(); }
+	if (Enemy::animation.just_started()) {
+		m_counters.slam.update();
+		Enemy::get_collider().physics.acceleration *= 0.01f;
+	}
 	if (Enemy::animation.get_frame_count() == 7) { Enemy::get_collider().physics.acceleration.y = 200.f; }
 	Enemy::animation.linger_on_frame(6, !Enemy::get_collider().grounded());
-	// if (Enemy::animation.get_frame_count() >= 7 && !Enemy::get_collider().grounded()) { Enemy::animation.set_frame(7); }
 	if (Enemy::animation.get_frame_count() == 4 && Enemy::animation.keyframe_started()) {
 		m_map->spawn_effect(*m_services, "bright_flare", Enemy::get_collider().get_center() - sf::Vector2f{-Enemy::directions.actual.as_float(), 64.f}, sf::Vector2f{Enemy::get_collider().physics.velocity.x * 0.2f, 0.f}, 1);
 	}
@@ -542,7 +552,10 @@ fsm::StateFunction Lynx::update_aerial_slash() {
 	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
 	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 	if (Enemy::animation.just_started()) { random::percent_chance(50) ? m_services->soundboard.flags.lynx.set(audio::Lynx::hoah) : m_services->soundboard.flags.lynx.set(audio::Lynx::huh); }
-	if (Enemy::animation.just_started()) { Enemy::get_collider().physics.acceleration.x = Enemy::directions.actual.as_float() * 600.f; }
+	if (Enemy::animation.just_started()) {
+		auto acc = Enemy::get_collider().grounded() ? 600.f : 400.f;
+		Enemy ::get_collider().physics.acceleration.x = Enemy::directions.actual.as_float() * acc;
+	}
 	if (Enemy::animation.get_frame_count() == 1 && Enemy::animation.keyframe_started()) {
 		random::percent_chance(50) ? m_services->soundboard.flags.lynx.set(audio::Lynx::swipe_1) : m_services->soundboard.flags.lynx.set(audio::Lynx::swipe_2);
 	}

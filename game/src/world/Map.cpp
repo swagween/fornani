@@ -599,20 +599,21 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 bool Map::handle_entry(player::Player& player, util::Cooldown& enter_room) {
 	auto ret = false;
 	if (!m_entities) { return false; }
-	for (auto const& entity : m_entities.value().variables.entities) {
-		if (auto* portal = dynamic_cast<Portal*>(entity.get())) {
-			if (portal->get_destination() == m_services->state_controller.source_id) {
-				ret = true;
-				sf::Vector2f spawn_position{portal->get_world_position().x + (portal->get_world_dimensions().x * 0.5f), portal->get_world_position().y + portal->get_world_dimensions().y - player.height()};
-				player.set_position(spawn_position, true);
-				player.force_camera_center();
-				if (portal->is_activate_on_contact() && portal->is_left_or_right()) {
-					enter_room.start();
-				} else {
-					if (!portal->is_already_open()) { portal->close(); }
-					player.set_idle();
-				}
-				if (portal->is_bottom()) { player.get_collider().physics.acceleration.y = -player.physics_stats.jump_velocity; }
+	for (auto const& portal : get_entities<Portal>()) {
+		if (portal->get_destination() == m_services->state_controller.source_id) {
+			ret = true;
+			sf::Vector2f spawn_position{portal->get_world_position().x + (portal->get_world_dimensions().x * 0.5f), portal->get_world_position().y + portal->get_world_dimensions().y - player.height()};
+			player.set_position(spawn_position, true);
+			player.force_camera_center();
+			if (portal->is_activate_on_contact() && portal->is_left_or_right()) {
+				enter_room.start();
+			} else {
+				if (!portal->is_already_open()) { portal->close(); }
+				player.set_idle();
+			}
+			if (portal->is_bottom()) {
+				player.get_collider().physics.acceleration.y = -player.physics_stats.jump_velocity;
+				player.accumulated_forces.push_back(sf::Vector2f{player::walk_speed_v * player.get_actual_direction().as_float(), 0.f});
 			}
 		}
 	}
@@ -650,8 +651,8 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon
 
 void Map::spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel, int channel) { effects.push_back(entity::Effect(svc, tag.data(), pos, vel, channel)); }
 
-void Map::spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, Direction dir, sf::Vector2f dim, sf::Color color) {
-	active_emitters.push_back(std::make_unique<vfx::Emitter>(svc, *this, pos, dim, tag, color, dir));
+void Map::spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, Direction dir, sf::Vector2f dim, sf::Color color, int channel) {
+	active_emitters.push_back(std::make_unique<vfx::Emitter>(svc, *this, pos, dim, tag, color, dir, channel));
 }
 
 void Map::spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel, int volatility, bool stun) {

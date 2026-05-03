@@ -7,18 +7,20 @@
 
 namespace fornani {
 
-enum class WaterAttributes { toxic };
-enum class WaterFlags { splashed };
+enum class WaterType { normal, curative, toxic };
+enum class WaterFlags { splashed, touched };
 
 class Water : public Entity, public Flaggable<WaterFlags> {
   public:
 	Water(automa::ServiceProvider& svc, dj::Json const& in);
-	Water(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, bool toxic = false);
+	Water(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, WaterType type);
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;
 	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) override;
 	void expose() override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
+
+	[[nodiscard]] auto get_i_type() const -> int { return static_cast<int>(m_type); }
 
 	shape::Shape const& get_bounding_box() const { return m_bounding_box; }
 
@@ -26,12 +28,13 @@ class Water : public Entity, public Flaggable<WaterFlags> {
 	sf::RenderTexture m_texture{};
 	sf::RenderTexture m_surface_texture{};
 	shape::Shape m_bounding_box{};
-	Drawable m_surface;
+	Animatable m_surface;
+	util::Cooldown m_replenish_cooldown;
 
 	util::FloatCounter m_wave_timer{};
 	sf::Vector2f m_wave_shift{};
 
-	util::BitFlags<WaterAttributes> m_attributes{};
+	WaterType m_type{};
 };
 
 } // namespace fornani

@@ -65,6 +65,15 @@ struct PhysicsStats {
 	float GRAV{0.002f};
 };
 
+struct DetectorPair {
+	DetectorPair(sf::Vector2f dimensions);
+	void set_position(sf::Vector2f position);
+	[[nodiscard]] auto get_dimensions() const -> sf::Vector2f { return sf::Vector2f{left.get_dimensions().x + right.get_dimensions().x, left.get_dimensions().y}; }
+
+	Shape left;
+	Shape right;
+};
+
 class Collider : public ICollider {
 
   public:
@@ -91,6 +100,7 @@ class Collider : public ICollider {
 	void reset();
 	void reset_ground_flags();
 	void adjust_acceleration();
+	void add_walljumper(sf::Vector2f dimensions);
 	void fix();
 
 	bool on_ramp() const;
@@ -141,6 +151,7 @@ class Collider : public ICollider {
 	Shape hurtbox{};
 	Shape horizontal{};
 	Shape vertical{};
+	std::optional<DetectorPair> walljumper{};
 
 	PhysicsStats stats{};
 

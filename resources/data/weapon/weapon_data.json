@@ -451,7 +451,7 @@
         "dimensions": [8.0, 8.0],
         "radius": 6.0,
         "attributes": {
-          "base_damage": 9,
+          "base_damage": 8,
           "lifespan": 600,
           "lifespan_variance": 0,
           "speed": 6.0,
@@ -514,7 +514,7 @@
         "active": 128,
         "cooldown": 128,
         "size": 0.6,
-        "damage": 0.2
+        "damage": 0.3
       },
       "projectile": {
         "type": 3,

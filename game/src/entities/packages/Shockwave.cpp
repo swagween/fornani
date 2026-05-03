@@ -28,7 +28,16 @@ void Shockwave::update(automa::ServiceProvider& svc, world::Map& map) {
 
 void Shockwave::set_position(sf::Vector2f to_position) { hit.bounds.setPosition(to_position); }
 
-void Shockwave::handle_player(player::Player& player) { hit.within_bounds(player.get_collider().bounding_box) && lifetime.running() ? hit.activate() : hit.deactivate(); }
+void Shockwave::handle_player(player::Player& player) { hit.within_bounds(player.hurtbox) && lifetime.running() ? hit.activate() : hit.deactivate(); }
+
+bool Shockwave::hurt_player(player::Player& player, float damage, sf::Vector2f knockback) {
+	if (hit.within_bounds(player.hurtbox) && lifetime.running()) {
+		if (!player.invincible() && !player.health.is_dead()) { player.accumulated_forces.push_back(knockback); }
+		player.hurt(damage);
+		return true;
+	}
+	return false;
+}
 
 void Shockwave::render(sf::RenderWindow& win, sf::Vector2f cam) { hit.render(win, cam); }
 

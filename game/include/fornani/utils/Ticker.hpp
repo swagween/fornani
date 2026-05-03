@@ -11,6 +11,8 @@
 
 namespace fornani::util {
 
+constexpr static auto default_slowdown_rate_v = 0.05f;
+
 using Clk = std::chrono::steady_clock;
 using Sec = std::chrono::duration<float>;
 using Mil = std::chrono::milliseconds;
@@ -73,8 +75,8 @@ class Ticker {
 	void start_frame();
 	void end_frame();
 	void calculate_fps();
-	void slow_down(int time, float target = 0.8f, float rate = 0.05f);
-	void freeze_frame(int time);
+	void slow_down(int time, float target = 0.8f, float rate = default_slowdown_rate_v);
+	void freeze_frame(int time, float rate = default_slowdown_rate_v);
 	void set_time(Sec time);
 	void scale_dt();
 	void reset_dt();
@@ -94,6 +96,7 @@ class Ticker {
 	float tick_rate{0.005f};
 	float tick_multiplier{24.f};
 	float dt_scalar{1.f};
+	float global_scalar{1.f};
 
 	static constexpr Sec tick_limit{0.8f};
 

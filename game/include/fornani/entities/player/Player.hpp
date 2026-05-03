@@ -115,7 +115,8 @@ enum class PlayerFlags {
 	ability_acquisition,
 	in_reward_sequence,
 	stunned,
-	bonus_health_added
+	bonus_health_added,
+	disable_abilities
 };
 enum class Triggers { hurt };
 
@@ -333,7 +334,9 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 
   private:
 	void set_facing_direction(SimpleDirection to_direction) { directions.desired = to_direction; }
+	[[nodiscard]] auto abilities_disabled() const -> bool;
 
+  private:
 	PlayerAnimation m_animation_machine;
 	PlayerAttributes m_attributes;
 

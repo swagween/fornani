@@ -232,7 +232,8 @@
     "actual_title": "Status Gizmo",
     "naive_description": "A gizmo that attaches to your inventory dashboard and displays your current outfit and lifeforce.",
     "actual_description": "A gizmo that attaches to your inventory dashboard and displays your current outfit and lifeforce.",
-    "unique": true
+    "unique": true,
+    "value": 1000
   },
   {
     "tag": "outfitter_gizmo",

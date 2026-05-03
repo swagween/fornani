@@ -1,0 +1,48 @@
+"controller_config"
+{
+    "title" "Default PS5 Configuration"
+    "description" "Platformer default bindings for DualSense"
+
+    "controller_type" "controller_ps5"
+
+    "actions"
+    {
+        "Platformer"
+        {
+            "move"    "joystick_left"
+            "pan"     "joystick_right"
+
+            "jump"    "button_cross"
+            "shoot"   "trigger_right"
+            "sprint"  "button_l3"
+            "crouch"  "button_circle"
+            "slide"   "button_circle"
+            "dash"    "button_triangle"
+            "inspect" "button_square"
+
+            "tab_left"  "button_l1"
+            "tab_right" "button_r1"
+
+            "pause"     "button_options"
+            "inventory" "button_touchpad"
+        }
+
+        "Menu"
+        {
+            "map_pan" "joystick_right"
+
+            "menu_up"    "dpad_up"
+            "menu_down"  "dpad_down"
+            "menu_left"  "dpad_left"
+            "menu_right" "dpad_right"
+
+            "menu_select"  "button_cross"
+            "menu_confirm" "button_cross"
+            "menu_back"    "button_circle"
+            "menu_close"   "button_options"
+
+            "menu_tab_left"  "button_l1"
+            "menu_tab_right" "button_r1"
+        }
+    }
+}

@@ -1,11 +1,10 @@
 
 #pragma once
 
-#include "fornani/io/Logger.hpp"
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/Counter.hpp"
-
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/Counter.hpp>
 #include <optional>
 
 namespace fornani::anim {
@@ -25,7 +24,7 @@ struct Parameters {
 	std::optional<std::string> target{};
 };
 
-enum class State { param_switch, keyframe, oneoff_complete };
+enum class State { param_switch, keyframe, oneoff_complete, inverted };
 
 struct Animation {
 
@@ -36,6 +35,7 @@ struct Animation {
 	void refresh();
 	void start();
 	void update();
+	void invert() { flags.toggle(State::inverted); }
 	void set_params(Parameters new_params, bool hard = true);
 	void switch_params();
 	void set_frame(int to) { frame.set(to); }

@@ -34,6 +34,7 @@ void Collider::sync_components() {
 	predictive_combined.set_dimensions(dimensions);
 
 	wallslider.set_position(sf::Vector2f{physics.position.x - wallslide_pad, physics.position.y + 2.f});
+	if (walljumper) { walljumper->set_position(physics.position + (dimensions * 0.5f) - (walljumper->get_dimensions() * 0.5f)); }
 	predictive_vertical.set_position(sf::Vector2f{physics.position.x + vertical_detector_buffer, physics.position.y - vertical_detector_buffer + physics.apparent_velocity().y});
 	predictive_horizontal.set_position(sf::Vector2f{physics.position.x - horizontal_detector_buffer + physics.apparent_velocity().x, physics.position.y + horizontal_detector_buffer});
 	predictive_combined.set_position(sf::Vector2f{physics.position.x + physics.apparent_velocity().x, physics.position.y + physics.apparent_velocity().y});
@@ -164,6 +165,10 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	}
 	if (!is_ramp && jumpbox.SAT(cell) && !tile.covered()) { flags.state.set(State::on_flat_surface); }
 	if (!is_ramp && wallslider.overlaps(cell)) { wallslider.vertices.at(0).x > cell.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
+	if (walljumper && !is_ramp) {
+		if (walljumper->left.overlaps(cell)) { set_flag(ColliderFlags::left_walljump); }
+		if (walljumper->right.overlaps(cell)) { set_flag(ColliderFlags::right_walljump); }
+	}
 
 	// long-winded, but I want to reserve SAT for colliders that actually need it
 	if (flags.general.test(General::complex)) {
@@ -355,6 +360,10 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 	}
 
 	if (wallslider.overlaps(collider)) { wallslider.vertices.at(0).x > collider.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
+	if (walljumper) {
+		if (walljumper->left.overlaps(collider)) { set_flag(ColliderFlags::left_walljump); }
+		if (walljumper->right.overlaps(collider)) { set_flag(ColliderFlags::right_walljump); }
+	}
 
 	if (jumpbox.SAT(collider) && !flags.movement.test(Movement::jumping)) {
 		flags.external_state.set(ExternalState::grounded);
@@ -516,6 +525,8 @@ void Collider::adjust_acceleration() {
 	acceleration_multiplier = 1.f;
 }
 
+void Collider::add_walljumper(sf::Vector2f dimensions) { walljumper.emplace(dimensions); }
+
 void Collider::fix() { flags.general.set(General::no_move); }
 
 bool Collider::on_ramp() const { return flags.external_state.test(ExternalState::on_ramp); }
@@ -542,6 +553,13 @@ bool Collider::pushes(Collider& other) const { return (physics.position.x < othe
 
 sf::Vector2f Collider::snap_to_grid(float size, float scale, float factor) {
 	return sf::Vector2f{std::round((physics.position.x * size / factor) / (size * (scale / factor))), std::round((physics.position.y * size / factor) / (size * (scale / factor)))} * scale;
+}
+
+DetectorPair::DetectorPair(sf::Vector2f dimensions) : left{{dimensions.x * 0.5f, dimensions.y}}, right{{dimensions.x * 0.5f, dimensions.y}} {}
+
+void DetectorPair::set_position(sf::Vector2f position) {
+	left.set_position(position);
+	right.set_position(position + sf::Vector2f{left.get_dimensions().x, 0.f});
 }
 
 } // namespace fornani::shape

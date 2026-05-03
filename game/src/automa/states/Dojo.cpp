@@ -117,6 +117,10 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	svc.soundboard.set_listener_position(player->get_ear_position());
 
+	if (m_enter_room.running()) {
+		if (player->grounded()) { player->controller.autonomous_walk(); }
+	}
+
 	set_flag(GameplayStateFlags::early_tick_return, false);
 	GameplayState::tick_update(svc, engine);
 	if (has_flag_set(GameplayStateFlags::early_tick_return)) { return; }
@@ -178,7 +182,9 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (svc.input_system.digital(input::DigitalAction::inventory).triggered && !svc.no_menu()) { p_inventory_window = std::make_unique<gui::InventoryWindow>(svc, *m_map, *player); }
 
 	m_enter_room.update();
-	if (m_enter_room.running()) { player->controller.autonomous_walk(); }
+
+	// prevent falling out of the world bugs
+	if (!p_context.transition.is(graphics::TransitionState::inactive)) { player->set_flag(player::PlayerFlags::disable_abilities); }
 
 	// physical tick
 	player->update(*m_map);
@@ -420,7 +426,7 @@ void Dojo::handle_player_death(ServiceProvider& svc, player::Player& player) {
 	if (!m_flags.test(GameplayFlags::game_over) && player.is_death_complete()) {
 		m_flags.set(GameplayFlags::death_console_launched);
 		svc.app_flags.reset(automa::AppFlags::in_game);
-		p_context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "death", gui::OutputType::gradual, static_cast<int>(player.get_i_death_type()));
+		p_context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "death", gui::OutputType::no_exit, static_cast<int>(player.get_i_death_type()));
 		m_flags.set(GameplayFlags::game_over);
 		svc.music_player.load(svc.finder, "mortem");
 		svc.music_player.play_looped();

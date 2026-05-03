@@ -92,7 +92,7 @@
     "vendor": {
       "upcharge": 0.2,
       "common_items": ["clay_statue", "bronze_bracelet"],
-      "uncommon_items": ["red_jeans", "rotary_gizmo", "magnifying_glass"],
+      "uncommon_items": ["red_jeans", "rotary_gizmo", "magnifying_glass", "status_gizmo"],
       "rare_items": ["sapphire"],
       "guaranteed_finite_items": ["lantern", "gas_mask"]
     },

@@ -211,7 +211,7 @@
     "shader": {
       "darken_factor": 0
     },
-    "use_template": true
+    "use_template": false
   },
   "tile": {
     "flags": {

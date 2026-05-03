@@ -35,10 +35,10 @@ void Ticker::slow_down(int time, float target, float rate) {
 	slowdown_rate = rate;
 }
 
-void Ticker::freeze_frame(int time) {
+void Ticker::freeze_frame(int time, float rate) {
 	freezeframe.start(time);
 	dt_scalar = 0.f;
-	slowdown_rate = 0.05f;
+	slowdown_rate = rate;
 }
 
 void Ticker::set_time(Sec time) {
@@ -47,22 +47,24 @@ void Ticker::set_time(Sec time) {
 	twenty_minute_ticker.elapsed = time;
 }
 
-void Ticker::scale_dt() { flags.set(TickerFlags::forced_slowdown); }
+void Ticker::scale_dt() {
+	flags.set(TickerFlags::forced_slowdown);
+	dt_scalar = global_scalar;
+}
 
 void Ticker::reset_dt() {
 	flags.reset(TickerFlags::forced_slowdown);
 	dt_scalar = 1.f;
+	global_scalar = 1.f;
 }
 
 void Ticker::manage_slowdowns() {
-	if (!flags.test(TickerFlags::forced_slowdown)) {
-		if (freezeframe.running()) {
-			dt_scalar = 0.f;
-		} else {
-			dt_scalar = ccm::ext::clamp(dt_scalar + slowdown_rate, 0.f, 1.f);
-		}
-		if (slowdown.running()) { dt_scalar = ccm::ext::clamp(1.f - slowdown_target * util::slowdown(slowdown.get_normalized()), 0.f, 1.f); }
+	if (freezeframe.running()) {
+		dt_scalar = 0.01f;
+	} else {
+		dt_scalar = ccm::ext::clamp(dt_scalar + slowdown_rate, 0.f, global_scalar);
 	}
+	if (slowdown.running()) { dt_scalar = ccm::ext::clamp(1.f - slowdown_target * util::slowdown(slowdown.get_normalized()), 0.f, global_scalar); }
 
 	freezeframe.update();
 	slowdown.update();

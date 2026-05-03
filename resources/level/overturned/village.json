@@ -686,19 +686,6 @@
           1,
           1
         ],
-        "foreground": false,
-        "id": 0,
-        "length": 4,
-        "position": [
-          40,
-          11
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
         "foreground": true,
         "id": 0,
         "length": 2,
@@ -714,49 +701,10 @@
         ],
         "foreground": true,
         "id": 0,
-        "length": 3,
-        "position": [
-          39,
-          14
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "foreground": true,
-        "id": 0,
-        "length": 3,
-        "position": [
-          36,
-          15
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "foreground": true,
-        "id": 0,
         "length": 4,
         "position": [
           49,
           15
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "foreground": true,
-        "id": 0,
-        "length": 4,
-        "position": [
-          51,
-          16
         ]
       },
       {
@@ -835,6 +783,71 @@
         "position": [
           91,
           16
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "length": 3,
+        "position": [
+          18,
+          9
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "length": 3,
+        "position": [
+          20,
+          10
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "length": 4,
+        "position": [
+          27,
+          15
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "length": 4,
+        "position": [
+          18,
+          22
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "length": 3,
+        "position": [
+          42,
+          12
         ]
       }
     ],

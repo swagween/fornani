@@ -719,7 +719,7 @@
     "animation": {
       "lookup": 0,
       "duration": 4,
-      "framerate": 16,
+      "framerate": 20,
       "loop": 0
     },
     "physics": {

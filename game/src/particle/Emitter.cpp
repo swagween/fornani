@@ -6,17 +6,17 @@
 
 namespace fornani::vfx {
 
-Emitter::Emitter(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color, Direction direction)
+Emitter::Emitter(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color, Direction direction, int channel)
 	: position(position), dimensions(dimensions), type(type), color(color), direction(direction) {
 	init(svc, position, dimensions, type, color, direction);
 
 	auto x = random::random_range_float(-dimensions.x * 0.5f, dimensions.x * 0.5f);
 	auto y = random::random_range_float(-dimensions.y * 0.5f, dimensions.y * 0.5f);
 	sf::Vector2f point{position.x + x, position.y + y};
-	particles.push_back(std::make_unique<Particle>(svc, point, particle_dimensions, type, color, direction));
+	particles.push_back(std::make_unique<Particle>(svc, point, particle_dimensions, type, color, direction, channel));
 }
 
-Emitter::Emitter(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color, Direction direction)
+Emitter::Emitter(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color, Direction direction, int channel)
 	: position(position), dimensions(dimensions), type(type), color(color), direction(direction) {
 	set_flag(EmitterFlags::map);
 	init(svc, position, dimensions, type, color, direction);
@@ -24,7 +24,7 @@ Emitter::Emitter(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f pos
 	auto x = random::random_range_float(-dimensions.x * 0.5f, dimensions.x * 0.5f);
 	auto y = random::random_range_float(-dimensions.y * 0.5f, dimensions.y * 0.5f);
 	sf::Vector2f point{position.x + x, position.y + y};
-	particles.push_back(std::make_unique<Particle>(svc, map, point, particle_dimensions, type, color, direction));
+	particles.push_back(std::make_unique<Particle>(svc, map, point, particle_dimensions, type, color, direction, channel));
 }
 
 void Emitter::init(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color, Direction direction) {

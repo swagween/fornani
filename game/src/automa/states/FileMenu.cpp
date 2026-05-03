@@ -11,8 +11,8 @@ constexpr auto num_files_v = 3;
 FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "file") {
 	m_parent_menu = MenuType::play;
 	current_selection = util::Circuit(num_files_v);
-	svc.data.load_blank_save(player);
 	hud.set_position({(svc.window->f_screen_dimensions().x / 2.f) - 140.f, 420.f}); // display hud preview for each file in the center of the screen
+	for (auto [i, save] : std::views::enumerate(svc.data.files)) { svc.data.load_progress(player, i); }
 	svc.state_controller.next_state = svc.data.load_progress(player, current_selection.get());
 	player.set_draw_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
 	/*player.antennae.at(0).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});

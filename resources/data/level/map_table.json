@@ -380,6 +380,12 @@
     },
     {
       "folder": "kariba",
+      "label": "tempidarium.json",
+      "region": "kariba",
+      "room_id": 515
+    },
+    {
+      "folder": "kariba",
       "label": "vault.json",
       "region": "kariba",
       "room_id": 509

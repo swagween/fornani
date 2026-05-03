@@ -8,11 +8,20 @@
 
 namespace fornani::player {
 
-Walljump::Walljump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction) : Ability(svc, map, collider, direction), m_vertical_multiplier{-11.f}, m_beginning{24} {
+Walljump::Walljump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction, bool perfect) : Ability(svc, map, collider, direction), m_vertical_multiplier{-11.f}, m_beginning{24} {
 	m_type = AbilityType::walljump;
 	m_state = AnimState::backflip;
 	svc.soundboard.flags.player.set(audio::Player::walljump);
-	map.effects.push_back(entity::Effect(svc, "walljump", collider.get_center() + sf::Vector2f{8.f * m_direction.as_float(), 0.f}, {}));
+	p_force = perfect ? 11.0f : 8.6f;
+	if (perfect) {
+		svc.soundboard.play_sound("nani_perfect_walljump");
+		collider.physics.zero();
+		collider.physics.forced_momentum.x = -direction.as_float() * 4.f;
+		svc.ticker.freeze_frame(2, 0.45f);
+		map.effects.push_back(entity::Effect(svc, "small_flash", collider.get_center() + sf::Vector2f{8.f * m_direction.as_float(), 0.f}, {}));
+	} else {
+		map.effects.push_back(entity::Effect(svc, "walljump", collider.get_center() + sf::Vector2f{8.f * m_direction.as_float(), 0.f}, {}));
+	}
 	m_duration.start(72);
 	m_beginning.start();
 	m_direction.lnr = direction.left() ? LNR::right : LNR::left;

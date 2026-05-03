@@ -12,8 +12,8 @@ enum class EmitterFlags { map };
 class Emitter : public Flaggable<EmitterFlags> {
   public:
 	Emitter() = default;
-	Emitter(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color = sf::Color::Transparent, Direction direction = {});
-	Emitter(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color = sf::Color::Transparent, Direction direction = {});
+	Emitter(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color = sf::Color::Transparent, Direction direction = {}, int channel = 0);
+	Emitter(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color = sf::Color::Transparent, Direction direction = {}, int channel = 0);
 	void init(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color = sf::Color::Transparent, Direction direction = {});
 
 	void update(automa::ServiceProvider& svc, world::Map& map);

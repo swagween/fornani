@@ -151,12 +151,16 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 	}
 
 	for (auto& room : m_atlas) {
-		if (!svc.data.is_room_discovered(room->get_id())) { continue; }
+		auto is_discovered = svc.data.is_room_discovered(room->get_id());
+		// check if the undiscovered room is adjacent to a discovered one
+		auto undiscovered_adjacent = false;
+		if (!is_discovered) { undiscovered_adjacent = svc.data.is_room_adjacent_to_discovered(room->get_id()); }
+		if (!is_discovered && !undiscovered_adjacent) { continue; }
 		room->set_resolution(m_resolution);
-		m_map_sprite = sf::Sprite{room->get(false, room->get_id() == get_currently_hovered_room()).getTexture()};
+		m_map_sprite = sf::Sprite{room->get(false, room->get_id() == get_currently_hovered_room(), undiscovered_adjacent).getTexture()};
 		m_map_sprite->setScale(get_ratio_vec2().componentWiseDiv(scaled_port.size));
 		m_map_sprite->setPosition((room->get_position() * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size));
-		auto outline{sf::Sprite{room->get(true, room->get_id() == get_currently_hovered_room()).getTexture()}};
+		auto outline{sf::Sprite{room->get(true, room->get_id() == get_currently_hovered_room(), undiscovered_adjacent).getTexture()}};
 		outline.setScale(get_ratio_vec2().componentWiseDiv(scaled_port.size));
 		for (auto i{-1}; i < 2; ++i) {
 			for (auto j{-1}; j < 2; ++j) {

@@ -517,6 +517,19 @@ bool DataManager::inspectable_is_destroyed(int id) const { return destroyed_insp
 
 bool DataManager::is_room_discovered(int id) const { return discovered_rooms.contains(id); }
 
+bool DataManager::is_room_adjacent_to_discovered(int id) const {
+	// loop over adjacent rooms
+	auto result = get_map_json_from_id(id);
+	if (!result) { return false; }
+	auto const& in = std::move(*result).get();
+	for (auto const& portal : in["entities"]["portals"].as_array()) {
+
+		if (is_room_discovered(portal["destination_id"].as<int>())) { return true; }
+	}
+
+	return false;
+}
+
 bool DataManager::enemy_is_fallen(int room_id, StableID id) const {
 	for (auto& enemy : fallen_enemies) {
 		if (enemy.code.first == room_id && enemy.code.second == id) { return true; }

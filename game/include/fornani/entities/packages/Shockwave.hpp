@@ -33,6 +33,7 @@ class Shockwave {
 	void start();
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void set_position(sf::Vector2f to_position);
+	bool hurt_player(player::Player& player, float amount = 1.f, sf::Vector2f knockback = {});
 	void handle_player(player::Player& player);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 

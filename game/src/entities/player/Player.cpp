@@ -12,7 +12,6 @@
 namespace fornani::player {
 
 constexpr auto wallslide_threshold_v = -0.16f;
-constexpr auto walljump_force_v = 8.6f;
 constexpr auto light_offset_v = 12.f;
 constexpr auto default_invincibility_time_v = 300;
 constexpr auto max_damage_v = 1024.f;
@@ -142,6 +141,8 @@ void Player::register_with_map(world::Map& map) {
 	get_collider().set_resolution_exclusion_target(shape::ColliderTrait::platform);
 	get_collider().set_resolution_exclusion_target(shape::ColliderTrait::enemy);
 
+	get_collider().add_walljumper({30.f, 24.f});
+
 	m_lighting.physics.velocity = random::random_vector_float(-1.f, 1.f);
 	m_lighting.physics.set_global_friction(0.95f);
 	m_lighting.physics.position = get_collider().get_center();
@@ -167,7 +168,6 @@ void Player::update(world::Map& map) {
 	m_death_cooldown.update();
 
 	if (!collider.has_value()) { return; }
-	get_collider().wallslide_pad = 10.f;
 
 	// stun logic
 	if (cooldowns.stun.just_started()) { map.spawn_effect(*m_services, "stun", get_collider().get_center()); }
@@ -271,7 +271,7 @@ void Player::update(world::Map& map) {
 	invincible() ? get_collider().draw_hurtbox.setFillColor(colors::red) : get_collider().draw_hurtbox.setFillColor(colors::blue);
 	if (has_death_type(PlayerDeathType::crushed)) { get_collider().physics.gravity = 0.f; }
 
-	// hurtbox
+	// hurtbox and walljumpbox
 	is_in_animation(AnimState::crawl) || is_in_animation(AnimState::crouch) ? hurtbox.set_dimensions(sf::Vector2f{12.f, 12.f}) : hurtbox.set_dimensions(sf::Vector2f{12.f, 26.f});
 	is_in_animation(AnimState::crawl) || is_in_animation(AnimState::crouch) ? hurtbox.set_position(get_collider().hurtbox.get_position() + sf::Vector2f{0.f, 4.f})
 																			: hurtbox.set_position(get_collider().hurtbox.get_position() - sf::Vector2f{0.f, 10.f});
@@ -328,7 +328,7 @@ void Player::update(world::Map& map) {
 	if (!controller.moving() && (!force_cooldown.running() || get_collider().world_grounded())) { get_collider().physics.acceleration.x = 0.0f; }
 
 	// weapon
-	if (controller.is(AbilityType::walljump) && controller.is_ability_active()) { accumulated_forces.push_back({walljump_force_v * controller.get_ability_direction().as_float(), 0.f}); }
+	if (controller.is(AbilityType::walljump) && controller.is_ability_active()) { accumulated_forces.push_back({controller.get_ability_force() * controller.get_ability_direction().as_float(), 0.f}); }
 	if (controller.shot() || controller.arms_switch()) { m_animation_machine.idle_timer.start(); }
 	if (has_flag_set(PlayerFlags::impart_recoil) && arsenal) {
 		if (controller.direction.und == UND::down) {
@@ -422,6 +422,20 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		box.setPosition(distant_vicinity.get_position() - cam);
 		box.setSize(distant_vicinity.get_dimensions());
 		win.draw(box);
+		if (get_collider().walljumper) {
+			get_collider().has_flag_set(shape::ColliderFlags::left_walljump) ? box.setFillColor(sf::Color{255, 100, 0, 20}) : box.setFillColor(sf::Color::Transparent);
+			get_collider().has_flag_set(shape::ColliderFlags::left_walljump) ? box.setOutlineColor(colors::bright_orange) : box.setOutlineColor(colors::pioneer_dark_red);
+			box.setOutlineThickness(-0.5f);
+			box.setPosition(get_collider().walljumper->left.get_position() - cam);
+			box.setSize({get_collider().walljumper->get_dimensions().x * 0.5f, get_collider().walljumper->get_dimensions().y});
+			win.draw(box);
+			get_collider().has_flag_set(shape::ColliderFlags::right_walljump) ? box.setFillColor(sf::Color{255, 100, 0, 20}) : box.setFillColor(sf::Color::Transparent);
+			get_collider().has_flag_set(shape::ColliderFlags::right_walljump) ? box.setOutlineColor(colors::bright_orange) : box.setOutlineColor(colors::pioneer_dark_red);
+			box.setOutlineThickness(-0.5f);
+			box.setPosition(get_collider().walljumper->right.get_position() - cam);
+			box.setSize({get_collider().walljumper->get_dimensions().x * 0.5f, get_collider().walljumper->get_dimensions().y});
+			win.draw(box);
+		}
 		// camera control debug
 		if (collider.has_value()) {
 			sf::RectangleShape camera_target{};
@@ -477,6 +491,7 @@ void Player::start_tick() {
 
 void Player::end_tick() {
 	controller.clean();
+	set_flag(PlayerFlags::disable_abilities, false);
 	flags.triggers = {};
 }
 
@@ -1003,15 +1018,21 @@ void Player::pop_from_loadout(std::string_view tag) {
 
 SimpleDirection Player::entered_from() const { return (get_collider().physics.position.x < constants::f_cell_size * 8.f) ? SimpleDirection(LR::right) : SimpleDirection(LR::left); }
 
+auto Player::abilities_disabled() const -> bool {
+	if (health.is_dead()) { return true; }
+	if (has_flag_set(PlayerFlags::disable_abilities)) { return true; }
+	return false;
+}
+
 auto Player::can_dash_kick() const -> bool {
-	if (health.is_dead()) { return false; }
+	if (abilities_disabled()) { return false; }
 	if (!catalog.inventory.has_item("forest_token")) { return false; }
 	if (!has_flag_set(PlayerFlags::dash_kick)) { return false; }
 	return true;
 }
 
 bool Player::can_dash() const {
-	if (health.is_dead()) { return false; }
+	if (abilities_disabled()) { return false; }
 	if (grounded()) { return false; }
 	if (!catalog.inventory.has_item("old_ivory_amulet")) { return false; }
 	if (m_ability_usage.dash.get_count() > 0) {
@@ -1021,10 +1042,13 @@ bool Player::can_dash() const {
 	return true;
 }
 
-bool Player::can_omnidirectional_dash() const { return catalog.inventory.has_item("ancient_periapt"); }
+bool Player::can_omnidirectional_dash() const {
+	if (abilities_disabled()) { return false; }
+	return catalog.inventory.has_item("ancient_periapt");
+}
 
 bool Player::can_doublejump() const {
-	if (health.is_dead()) { return false; }
+	if (abilities_disabled()) { return false; }
 	if (controller.is_wallsliding()) { return false; }
 	if (grounded()) { return false; }
 	if (m_ability_usage.doublejump.get_count() > 0) { return false; }
@@ -1033,7 +1057,7 @@ bool Player::can_doublejump() const {
 }
 
 bool Player::can_roll() const {
-	if (health.is_dead()) { return false; }
+	if (abilities_disabled()) { return false; }
 	if (controller.is_wallsliding()) { return false; }
 	if (grounded() && !controller.is(AbilityType::dash)) { return false; }
 	if (!catalog.inventory.has_item("woodshine_totem")) { return false; }
@@ -1041,7 +1065,7 @@ bool Player::can_roll() const {
 }
 
 bool Player::can_slide() const {
-	if (health.is_dead()) { return false; }
+	if (abilities_disabled()) { return false; }
 	if (controller.is_wallsliding() || controller.slid_in_air()) { return false; }
 	if (!grounded()) { return false; }
 	if (!catalog.inventory.has_item("pioneer_medal")) { return false; }
@@ -1049,15 +1073,16 @@ bool Player::can_slide() const {
 }
 
 bool Player::can_jump() const {
-	if (health.is_dead()) { return false; }
+	if (abilities_disabled()) { return false; }
 	if (controller.is_wallsliding()) { return false; }
 	if (m_animation_machine.is_state(AnimState::sleep)) { return false; }
+	if (m_animation_machine.is_state(AnimState::unconscious)) { return false; }
 	if (!grounded()) { return false; }
 	return true;
 }
 
 bool Player::can_wallslide() const {
-	if (health.is_dead()) { return false; }
+	if (abilities_disabled()) { return false; }
 	if (get_collider().grounded()) { return false; }
 	if (get_collider().physics.apparent_velocity().y < wallslide_threshold_v) { return false; }
 	if (!catalog.inventory.has_item("kariba_talisman")) { return false; }
@@ -1065,13 +1090,14 @@ bool Player::can_wallslide() const {
 }
 
 bool Player::can_walljump() const {
-	if (health.is_dead()) { return false; }
+	if (abilities_disabled()) { return false; }
+	if (get_collider().has_flag_set(shape::ColliderFlags::submerged)) { return false; }
 	if (!catalog.inventory.has_item("kariba_talisman")) { return false; }
 	return true;
 }
 
 bool Player::can_dive() const {
-	if (health.is_dead()) { return false; }
+	if (abilities_disabled()) { return false; }
 	if (!get_collider().has_flag_set(shape::ColliderFlags::in_water)) { return false; }
 	return true;
 }

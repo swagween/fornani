@@ -257,7 +257,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Frames Per Second: %.2f", services.ticker.fps);
 					ImGui::Text("Average Frame Time: %.4fms", average_frame_time);
 					ImGui::Separator();
-					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.dt_scalar, 0.0f, 2.f, "%.3f")) { services.ticker.scale_dt(); };
+					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.global_scalar, 0.0f, 2.f, "%.3f")) { services.ticker.scale_dt(); };
 					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }
 					ImGui::Separator();
 					ImGui::Text("World Time: %s", services.world_clock.get_string().c_str());
