@@ -21,6 +21,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 407,
@@ -29,6 +30,7 @@
           19,
           23
         ],
+        "start_busy": false,
         "suites": [
           [
             1
@@ -41,6 +43,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 407,
@@ -49,6 +52,7 @@
           23,
           23
         ],
+        "start_busy": false,
         "suites": [
           [
             1,

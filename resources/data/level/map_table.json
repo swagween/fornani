@@ -9,7 +9,7 @@
     {
       "folder": "config",
       "label": "chunk_test.json",
-      "region": "junkyard",
+      "region": "firstwind",
       "room_id": 0
     },
     {
@@ -368,6 +368,12 @@
     },
     {
       "folder": "kariba",
+      "label": "pit.json",
+      "region": "kariba",
+      "room_id": 516
+    },
+    {
+      "folder": "kariba",
       "label": "solarium.json",
       "region": "kariba",
       "room_id": 510
@@ -491,6 +497,12 @@
       "label": "crash_site.json",
       "region": "overturned",
       "room_id": 204
+    },
+    {
+      "folder": "overturned",
+      "label": "crawl.json",
+      "region": "overturned",
+      "room_id": 261
     },
     {
       "folder": "overturned",

@@ -13,7 +13,7 @@ nani_add_headers(
         Indicator.hpp
         MapTexture.hpp
         MenuTheme.hpp
-        Rain.hpp
+        Weather.hpp
         Scenery.hpp
         SpriteHistory.hpp
         SpriteRotator.hpp

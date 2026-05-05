@@ -19,6 +19,8 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map, int variant)
 	if (map.get_style_id() == 5) {
 		state_function = std::bind(&Demon::update_idle, this);
 		animation.set_params(get_params("idle"));
+	} else {
+		cooldowns.awaken.start();
 	}
 	get_collider().physics.maximum_velocity = {8.f, 12.f};
 	get_collider().flags.general.set(shape::General::complex);
@@ -33,8 +35,6 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map, int variant)
 	attacks.stab.sensor.drawable.setFillColor(colors::blue);
 	parts.shield.set_team(arms::Team::guardian);
 	flags.state.set(StateFlags::no_shake);
-
-	cooldowns.awaken.start();
 }
 
 void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -137,7 +137,7 @@ void Demon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	if (m_variant == DemonVariant::spearman) {
 		parts.spear.render(svc, win, cam);
 	} else if (m_variant == DemonVariant::warrior || m_variant == DemonVariant::duelist) {
-		parts.shield.render(svc, win, cam);
+		if (m_variant == DemonVariant::warrior) { parts.shield.render(svc, win, cam); }
 		if (!is_state(DemonState::stab) && !is_state(DemonState::uppercut)) { parts.sword.render(svc, win, cam); }
 	} else {
 		if (!is_state(DemonState::stab) && !is_state(DemonState::uppercut)) { parts.sword.render(svc, win, cam); }

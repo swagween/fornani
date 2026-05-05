@@ -1,8 +1,8 @@
 
 #include <fornani/entities/player/PlayerController.hpp>
 #include <fornani/entities/player/abilities/Jump.hpp>
-#include <fornani/service/ServiceProvider.hpp>
 #include <fornani/physics/Collider.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani::player {
@@ -29,6 +29,7 @@ void Jump::update(shape::Collider& collider, PlayerController& controller) {
 		}
 	}
 	if (!m_flags.test(AbilityFlags::active)) {
+		controller.post_walljump.start();
 		// this clause allows for players to jump while rolling up steep ramps
 		if (collider.flags.external_state.test(shape::ExternalState::on_ramp)) {
 			collider.physics.acceleration.x *= 0.5f;

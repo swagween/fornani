@@ -38,7 +38,7 @@ EditorApplication::EditorApplication(char** argv) : m_finder{argv}, m_services(a
 	assert(!user_data.is_null());
 	m_services.finder.paths.region = user_data["region"] ? user_data["region"].as_string() : "config";
 	m_services.finder.paths.room_name = user_data["room"] ? user_data["room"].as_string() : "new_file.json";
-	m_state = std::make_unique<Editor>(m_services);
+	m_state = std::make_unique<Editor>(m_services, editor_context);
 	m_current_state = EditorStateType::editor;
 }
 
@@ -59,9 +59,9 @@ void EditorApplication::run(char** argv) {
 		auto to_state = m_state->run(argv);
 		if (to_state != m_current_state) {
 			switch (to_state) {
-			case EditorStateType::editor: m_state = std::make_unique<Editor>(m_services); break;
-			case EditorStateType::metagrid: m_state = std::make_unique<Metagrid>(m_services); break;
-			case EditorStateType::dialogue_editor: m_state = std::make_unique<DialogueEditor>(m_services); break;
+			case EditorStateType::editor: m_state = std::make_unique<Editor>(m_services, editor_context); break;
+			case EditorStateType::metagrid: m_state = std::make_unique<Metagrid>(m_services, editor_context); break;
+			case EditorStateType::dialogue_editor: m_state = std::make_unique<DialogueEditor>(m_services, editor_context); break;
 			}
 			m_current_state = to_state;
 		}

@@ -141,7 +141,7 @@ void Player::register_with_map(world::Map& map) {
 	get_collider().set_resolution_exclusion_target(shape::ColliderTrait::platform);
 	get_collider().set_resolution_exclusion_target(shape::ColliderTrait::enemy);
 
-	get_collider().add_walljumper({30.f, 24.f});
+	get_collider().add_walljumper({24.f, 20.f});
 
 	m_lighting.physics.velocity = random::random_vector_float(-1.f, 1.f);
 	m_lighting.physics.set_global_friction(0.95f);

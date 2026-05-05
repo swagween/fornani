@@ -70,9 +70,9 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 	sound.echo_count = meta["sound"]["echo_count"].as<int>();
 	sound.echo_rate = meta["sound"]["echo_rate"].as<int>();
 
-	if (meta["weather"]["rain"]) { rain = vfx::Rain(meta["weather"]["rain"]["intensity"].as<int>(), meta["weather"]["rain"]["fall_speed"].as<float>(), meta["weather"]["rain"]["slant"].as<float>()); }
-	if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
-	if (meta["weather"]["leaves"]) { rain = vfx::Rain(meta["weather"]["leaves"]["intensity"].as<int>(), meta["weather"]["leaves"]["fall_speed"].as<float>(), meta["weather"]["leaves"]["slant"].as<float>(), true, true); }
+	if (meta["weather"]["rain"]) { m_weather = vfx::Weather(svc, *this, {meta["weather"]["rain"]["density"].as<int>(), meta["weather"]["rain"]["framerate"].as<int>()}); }
+	// if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
+	// if (meta["weather"]["leaves"]) { rain = vfx::Rain(meta["weather"]["leaves"]["intensity"].as<int>(), meta["weather"]["leaves"]["fall_speed"].as<float>(), meta["weather"]["leaves"]["slant"].as<float>(), true, true); }
 
 	for (auto& entry : entities["chests"].as_array()) {
 		sf::Vector2f pos{};
@@ -432,7 +432,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	for (auto& pl : point_lights) { pl.update(); }
 	if (player->get_collider().collision_depths) { player->get_collider().collision_depths.value().update(); }
 	// if (save_point) { save_point->update(svc, *player, console); }
-	if (rain) { rain.value().update(svc, *this); }
+	if (m_weather) { m_weather->update(svc, *this); }
 
 	player->get_collider().reset_ground_flags();
 
@@ -536,7 +536,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 
 	for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
 
-	if (rain) { rain->render(svc, win, cam); }
+	if (m_weather) { m_weather->render(svc, win, cam); }
 
 	if (m_attributes.properties.test(MapProperties::timer)) { svc.world_timer.render(win, sf::Vector2f{32.f, 32.f}); }
 
@@ -912,7 +912,7 @@ void Map::clear() {
 	waterfalls.clear();
 	m_explosions.clear();
 	m_chain_explosions.clear();
-	rain.reset();
+	m_weather.reset();
 	fire.reset();
 	active_loot.clear();
 	m_hazards.reset();

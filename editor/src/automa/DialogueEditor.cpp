@@ -19,7 +19,7 @@ static bool add_code{};
 static bool is_any_node_hovered{};
 static bool is_any_node_selected{};
 
-DialogueEditor::DialogueEditor(fornani::automa::ServiceProvider& svc) : EditorState(svc), m_tool{std::make_unique<Cursor>(svc)}, m_background_color{fornani::colors::pioneer_black}, m_data{&svc.text.npc} {
+DialogueEditor::DialogueEditor(fornani::automa::ServiceProvider& svc, EditorContext& ctx) : EditorState(svc, ctx), m_tool{std::make_unique<Cursor>(svc)}, m_background_color{fornani::colors::pioneer_black}, m_data{&svc.text.npc} {
 	svc.data.load_data();
 	p_target_state = EditorStateType::dialogue_editor;
 	p_wallpaper.setFillColor(m_background_color);

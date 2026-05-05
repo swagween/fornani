@@ -1,6 +1,7 @@
 #pragma once
 
 #include <capo/engine.hpp>
+#include <editor/automa/EditorContext.hpp>
 #include <editor/automa/EditorState.hpp>
 #include "fornani/io/Logger.hpp"
 #include "fornani/setup/AppContext.hpp"
@@ -21,6 +22,7 @@ class EditorApplication {
 	fornani::ResourceFinder m_finder;
 	dj::Json game_info{};
 	fornani::AppContext context;
+	EditorContext editor_context{};
 	dj::Json app_settings{};
 	dj::Json user_data{};
 	fornani::WindowManager window{};

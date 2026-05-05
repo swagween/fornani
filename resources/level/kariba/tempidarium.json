@@ -204,9 +204,9 @@
     ],
     "metagrid": [
       27,
-      31
+      27
     ],
-    "minimap": true,
+    "minimap": false,
     "music": "none",
     "player_start": [
       0,

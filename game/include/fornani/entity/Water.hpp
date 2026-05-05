@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/entity/Entity.hpp>
+#include <fornani/particle/Sparkler.hpp>
 #include <fornani/physics/Shape.hpp>
 #include <fornani/utils/Flaggable.hpp>
 
@@ -27,14 +28,16 @@ class Water : public Entity, public Flaggable<WaterFlags> {
   private:
 	sf::RenderTexture m_texture{};
 	sf::RenderTexture m_surface_texture{};
+	sf::BlendMode m_mode;
 	shape::Shape m_bounding_box{};
-	Animatable m_surface;
 	util::Cooldown m_replenish_cooldown;
 
 	util::FloatCounter m_wave_timer{};
 	sf::Vector2f m_wave_shift{};
 
 	WaterType m_type{};
+
+	std::optional<vfx::Sparkler> m_sparkler{};
 };
 
 } // namespace fornani

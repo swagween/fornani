@@ -8,19 +8,38 @@
 
 namespace pi {
 
+struct EditorContext;
+
+struct EditorMouseInput {
+	bool clicked{};
+	bool held{};
+	bool released{};
+};
+
 enum class EditorStateType { editor, metagrid, dialogue_editor };
 enum class PressedKeys { control, shift, mouse_left, mouse_middle, mouse_right, space };
 
 class EditorState {
   public:
-	EditorState(fornani::automa::ServiceProvider& svc);
+	EditorState(fornani::automa::ServiceProvider& svc, EditorContext& ctx);
 	virtual EditorStateType run(char** argv) { return EditorStateType::editor; }
 	virtual void handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) {}
 	virtual void logic() {}
 	virtual void render(sf::RenderWindow& win);
 
+	bool create_new_room();
+
   protected:
+	EditorContext* p_context;
+
+	char regbuffer[128] = "";
+	char roombuffer[128] = "";
+	int width{1};
+	int height{1};
+
 	fornani::util::BitFlags<PressedKeys> pressed_keys{};
+	EditorMouseInput p_left_mouse{};
+	EditorMouseInput p_right_mouse{};
 	fornani::automa::ServiceProvider* p_services;
 	sf::Clock p_delta_clock{};
 	std::shared_ptr<fornani::Slot const> p_slot{std::make_shared<fornani::Slot const>()};

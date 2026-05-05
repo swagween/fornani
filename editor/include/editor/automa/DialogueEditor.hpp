@@ -9,7 +9,7 @@ namespace pi {
 
 class DialogueEditor final : public EditorState {
   public:
-	DialogueEditor(fornani::automa::ServiceProvider& svc);
+	DialogueEditor(fornani::automa::ServiceProvider& svc, EditorContext& ctx);
 	EditorStateType run(char** argv) override;
 	void handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) override;
 	void logic() override;

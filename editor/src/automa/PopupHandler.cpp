@@ -389,7 +389,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = type == 1 ? std::make_unique<fornani::Chest>(svc, type, modifier, id) : std::make_unique<fornani::Chest>(svc, type, label, modifier, id);
+			tool->current_entity = type == 1 ? std::make_unique<fornani::Chest>(svc, type, modifier, id) : std::make_unique<fornani::Chest>(svc, type, std::string(label), modifier, id);
 			ImGui::CloseCurrentPopup();
 		}
 		close_popup();

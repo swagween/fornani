@@ -41,32 +41,6 @@
         "tag": "cattail"
       },
       {
-        "channel": 2,
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 0,
-        "position": [
-          17,
-          39
-        ],
-        "tag": "orange_flower"
-      },
-      {
-        "channel": 3,
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 0,
-        "position": [
-          14,
-          39
-        ],
-        "tag": "orange_flower"
-      },
-      {
         "channel": 1,
         "dimensions": [
           1,
@@ -862,7 +836,7 @@
           47,
           44
         ],
-        "toxic": false
+        "type": 0
       }
     ]
   },

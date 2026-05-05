@@ -25,6 +25,7 @@
     "pushed_to_hotbar": "Added to hotbar: ",
     "removed": "Removed ",
     "slots_full": "Equipment slots full!",
+    "swapped": "Swapped equipped items.",
     "map_marker": "Map marker added to minimap.",
     "inspect_hint": "Press      to inspect.",
     "shoot_hint": "Press      to shoot."

@@ -166,7 +166,7 @@
         "automatic": true,
         "ammo": 80,
         "reload": 1000,
-        "cooldown_time": 7,
+        "cooldown_time": 9,
         "recoil": 0.15
       }
     },

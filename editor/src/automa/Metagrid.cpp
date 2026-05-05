@@ -1,5 +1,6 @@
 
 #include <imgui.h>
+#include <editor/automa/EditorContext.hpp>
 #include <editor/automa/Metagrid.hpp>
 #include <editor/metagrid/tool/Cursor.hpp>
 #include <editor/metagrid/tool/Move.hpp>
@@ -8,11 +9,7 @@
 
 namespace pi {
 
-static bool menu_open{};
-static bool window_hovered{};
-static bool clicked{};
-
-Metagrid::Metagrid(fornani::automa::ServiceProvider& svc) : EditorState(svc), m_workspace{{256, 128}}, m_tool{std::make_unique<Cursor>(svc)}, m_background_color{fornani::colors::pioneer_black} {
+Metagrid::Metagrid(fornani::automa::ServiceProvider& svc, EditorContext& ctx) : EditorState(svc, ctx), m_workspace{{256, 128}}, m_tool{std::make_unique<Cursor>(svc)}, m_background_color{fornani::colors::pioneer_black} {
 	p_target_state = EditorStateType::metagrid;
 	p_wallpaper.setFillColor(m_background_color);
 	p_wallpaper.setSize(p_services->window->f_screen_dimensions());
@@ -87,8 +84,7 @@ EditorStateType Metagrid::run(char** argv) {
 	logic();
 
 	ImGuiIO& io = ImGui::GetIO();
-	window_hovered = io.WantCaptureMouse;
-	io.MouseDrawCursor = menu_open || window_hovered;
+	io.MouseDrawCursor = io.WantCaptureMouse;
 	p_services->window->get().setMouseCursorVisible(io.MouseDrawCursor);
 
 	EditorState::render(p_services->window->get());
@@ -102,11 +98,14 @@ EditorStateType Metagrid::run(char** argv) {
 void Metagrid::handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) {
 	ImGuiIO& io = ImGui::GetIO();
 	m_current_mouse_position = sf::Vector2f{io.MousePos.x, io.MousePos.y};
+	p_left_mouse.clicked = false;
+	p_left_mouse.released = false;
 	if (auto const* button_pressed = event->getIf<sf::Event::MouseButtonPressed>()) {
 		if (button_pressed->button == sf::Mouse::Button::Middle) { pressed_keys.set(PressedKeys::mouse_middle); }
 		if (button_pressed->button == sf::Mouse::Button::Left) {
+			p_left_mouse.clicked = true;
+			p_left_mouse.held = true;
 			if (!pressed_keys.test(PressedKeys::mouse_left) && m_highlighted_room) {
-				clicked = !menu_open;
 				m_left_clicked_position = sf::Vector2f{m_current_mouse_position - m_camera};
 				m_tool->set_original_position(m_highlighted_room.value()->get_board_position());
 			}
@@ -120,27 +119,48 @@ void Metagrid::handle_events(std::optional<sf::Event> event, sf::RenderWindow& w
 	if (auto const* button_released = event->getIf<sf::Event::MouseButtonReleased>()) {
 		if (button_released->button == sf::Mouse::Button::Middle) { pressed_keys.reset(PressedKeys::mouse_middle); }
 		if (button_released->button == sf::Mouse::Button::Left) {
+			p_left_mouse.held = false;
+			p_left_mouse.released = true;
 			if (pressed_keys.test(PressedKeys::mouse_left) && m_highlighted_room && m_tool->is(MetagridToolType::move)) {
 				if (!m_highlighted_room.value()->serialize(*p_services)) { NANI_LOG_INFO(p_logger, "Failed to save metadata for {}", m_highlighted_room.value()->get_label()); }
 			}
-			clicked = false;
 			pressed_keys.reset(PressedKeys::mouse_left);
 		}
 		if (button_released->button == sf::Mouse::Button::Right) { pressed_keys.reset(PressedKeys::mouse_right); }
 	}
-	if (m_highlighted_room && pressed_keys.test(PressedKeys::mouse_left) && !window_hovered) { m_tool->handle_inputs(*m_highlighted_room.value(), m_camera, m_left_clicked_position); }
+	if (m_highlighted_room && pressed_keys.test(PressedKeys::mouse_left) && !io.WantCaptureMouse) { m_tool->handle_inputs(*m_highlighted_room.value(), m_camera, m_left_clicked_position); }
 }
 
 void Metagrid::logic() {
-	auto last_workspace_position = menu_open ? m_left_clicked_position : m_current_mouse_position;
+	ImGuiIO& io = ImGui::GetIO();
+	auto last_workspace_position = io.WantCaptureMouse ? m_left_clicked_position : m_current_mouse_position;
 	if (pressed_keys.test(PressedKeys::mouse_right)) { m_camera += m_current_mouse_position - m_dragged_position; }
 	m_dragged_position = sf::Vector2f{m_current_mouse_position};
-	for (auto& r : m_rooms) { r.update(last_workspace_position, window_hovered); }
+	auto any_room_hovered = false;
+	for (auto& r : m_rooms) {
+		r.update(last_workspace_position, io.WantCaptureMouse);
+		if (r.is_highlighted()) { any_room_hovered = true; }
+	}
 	m_tool->update(m_current_mouse_position);
+	if (p_left_mouse.clicked) {
+		if (!any_room_hovered && !io.WantCaptureMouse) {
+			m_flags.set(MetagridFlags::context_menu);
+			p_context->metagrid_position = m_tool->get_workspace_coordinates(m_camera);
+		}
+	}
+	any_room_hovered || io.WantCaptureMouse ? m_flags.set(MetagridFlags::hide_cell) : m_flags.reset(MetagridFlags::hide_cell);
 }
 
 void Metagrid::render(sf::RenderWindow& win) {
+	ImGuiIO& io = ImGui::GetIO();
 	m_workspace.render(win, m_camera);
+
+	m_current_cell.setPosition(m_camera + sf::Vector2f{m_tool->get_workspace_coordinates(m_camera)} * spacing_v);
+	m_current_cell.setSize({spacing_v, spacing_v});
+	m_current_cell.setOutlineColor(fornani::colors::dark_grey);
+	m_current_cell.setFillColor(fornani::colors::transparent);
+	m_current_cell.setOutlineThickness(-2.f);
+	if (!m_flags.test(MetagridFlags::hide_cell)) { win.draw(m_current_cell); }
 
 	static auto current_room = 0;
 	static bool serialize{};
@@ -166,9 +186,9 @@ void Metagrid::render(sf::RenderWindow& win) {
 		++ctr;
 	}
 	auto view = std::span<Room>(m_rooms);
-	if (!pressed_keys.test(PressedKeys::mouse_left) && !menu_open && !window_hovered) { m_highlighted_room = &view[it]; }
+	if (!pressed_keys.test(PressedKeys::mouse_left) && !io.WantCaptureMouse) { m_highlighted_room = &view[it]; }
 
-	if (window_hovered) {
+	if (io.WantCaptureMouse) {
 		auto screen = sf::RectangleShape{};
 		screen.setFillColor(sf::Color{40, 40, 40, 80});
 		screen.setSize(p_services->window->f_screen_dimensions());
@@ -176,11 +196,23 @@ void Metagrid::render(sf::RenderWindow& win) {
 	}
 
 	// ImGui stuff
-	bool options_popup{clicked && found_one && m_tool->is(MetagridToolType::cursor)};
+	bool options_popup{p_left_mouse.clicked && found_one && m_tool->is(MetagridToolType::cursor)};
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) { ImGui::EndMenu(); }
 		if (ImGui::Button("Editor")) { p_target_state = EditorStateType::editor; }
 		ImGui::EndMainMenuBar();
+	}
+
+	if (m_flags.test(MetagridFlags::context_menu)) {
+		ImGui::OpenPopup("Context Menu");
+		m_flags.reset(MetagridFlags::context_menu);
+	}
+	if (ImGui::BeginPopupContextWindow("Context Menu")) {
+		if (ImGui::MenuItem("New Room")) {
+			p_target_state = EditorStateType::editor;
+			p_context->flags.set(EditorContextFlags::new_room);
+		}
+		ImGui::EndPopup();
 	}
 
 	// main toolbar
@@ -238,12 +270,8 @@ void Metagrid::render(sf::RenderWindow& win) {
 		ImGui::EndTooltip();
 	}
 
-	if (options_popup) {
-		ImGui::OpenPopup("Room Options");
-		clicked = false;
-	}
+	if (options_popup) { ImGui::OpenPopup("Room Options"); }
 	if (ImGui::BeginPopupContextWindow("Room Options")) {
-		menu_open = true;
 		auto ut = m_highlighted_room ? m_highlighted_room.value()->has_flag_set(RoomFlags::use_template) : false;
 		if (ImGui::BeginMenu("Edit")) {
 			if (ImGui::MenuItem("Toggle Minimap")) {
@@ -268,8 +296,6 @@ void Metagrid::render(sf::RenderWindow& win) {
 			}
 		}
 		ImGui::EndPopup();
-	} else {
-		menu_open = false;
 	}
 
 	if (serialize && m_highlighted_room) {

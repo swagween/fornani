@@ -28,7 +28,10 @@ Walljump::Walljump(automa::ServiceProvider& svc, world::Map& map, shape::Collide
 }
 
 void Walljump::update(shape::Collider& collider, PlayerController& controller) {
-	if (m_beginning.just_started()) { collider.physics.acceleration.y = m_vertical_multiplier; }
+	if (m_beginning.just_started()) {
+		collider.physics.acceleration.y = m_vertical_multiplier;
+		controller.post_walljump.start();
+	}
 	m_beginning.update();
 	collider.flags.movement.set(shape::Movement::walljumping);
 	if (m_beginning.is_complete()) { m_direction = controller.direction; }

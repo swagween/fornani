@@ -49,6 +49,14 @@ EquipmentStatus Inventory::equip_item(int item_id) {
 		} else {
 			++num_currently_equipped;
 		}
+		if (num_currently_equipped == num_equippable_items) {
+			auto to_replace = find_item(item);
+			if (to_replace == nullptr) { return EquipmentStatus::failure; }
+			item = item_id;
+			to_replace->set_equipped(false);
+			this_item->set_equipped(true);
+			return EquipmentStatus::swapped;
+		}
 	}
 
 	return EquipmentStatus::failure; // no more space

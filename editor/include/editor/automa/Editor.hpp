@@ -23,12 +23,13 @@
 namespace pi {
 
 enum class GlobalFlags { shutdown, palette_mode };
+enum class EditorFlags { create_new_room };
 
 constexpr static std::uint8_t max_layers_v{32};
 
 class Editor final : public EditorState {
   public:
-	Editor(fornani::automa::ServiceProvider& svc);
+	Editor(fornani::automa::ServiceProvider& svc, EditorContext& ctx);
 	EditorStateType run(char** argv) override;
 	void handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) override;
 	void logic() override;
@@ -80,6 +81,11 @@ class Editor final : public EditorState {
 	bool hazard_hovered{};
 	std::size_t active_layer{};
 	std::uint32_t selected_block{};
+
+	util::BitFlags<EditorFlags> editor_flags{};
+
+  private:
+	void set_new_room();
 
   private:
 	sf::Sprite m_tool_sprite;

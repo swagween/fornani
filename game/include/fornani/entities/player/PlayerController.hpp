@@ -104,6 +104,7 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 
 	util::Cooldown post_slide;
 	util::Cooldown post_wallslide;
+	util::Cooldown post_walljump;
 	util::Cooldown wallslide_slowdown;
 
   private:
@@ -126,6 +127,7 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 		util::Cooldown movement{};
 		util::Cooldown left_pressed{};
 		util::Cooldown right_pressed{};
+		util::Cooldown walljump_request{};
 	} cooldowns{};
 
 	Player* m_player;

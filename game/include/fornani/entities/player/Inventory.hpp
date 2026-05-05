@@ -11,7 +11,7 @@ namespace fornani::player {
 
 constexpr auto num_equippable_items_v = 4;
 
-enum class EquipmentStatus { equipped, unequipped, failure };
+enum class EquipmentStatus { equipped, unequipped, swapped, failure };
 
 struct ItemStack {
 	std::unique_ptr<item::Item> item{};

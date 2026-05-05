@@ -384,7 +384,25 @@
         "label": "idle",
         "parameters": [0, 8, 70, -1, false]
       }
-    ]
+    ],
+    "locations": {
+      "contingency": {
+        "tag": "defeat_miaag"
+      },
+      "statuses": [
+        {
+          "interval": 1,
+          "distributions": [{ "room": 248, "weight": 1.0 }]
+        },
+        {
+          "interval": 1,
+          "distributions": [
+            { "room": 213, "weight": 0.5 },
+            { "room": 248, "weight": 0.5 }
+          ]
+        }
+      ]
+    }
   },
   "garth": {
     "id": 38,

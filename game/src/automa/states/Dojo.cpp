@@ -351,7 +351,9 @@ void Dojo::equip_item(ServiceProvider& svc, int id) {
 													  : svc.soundboard.flags.menu.set(audio::Menu::error);
 	auto tag = equipped == player::EquipmentStatus::equipped ? "equipped" : "unequipped";
 	auto qualifier = svc.data.gui_text["notifications"][tag].as_string();
-	auto message = equipped != player::EquipmentStatus::failure ? qualifier + std::string{svc.data.item_label_from_id(id)} + "." : svc.data.gui_text["notifications"]["slots_full"].as_string();
+	auto message = equipped != player::EquipmentStatus::swapped	  ? qualifier + std::string{svc.data.item_label_from_id(id)} + "."
+				   : equipped == player::EquipmentStatus::swapped ? svc.data.gui_text["notifications"]["swapped"].as_string()
+																  : svc.data.gui_text["notifications"]["slots_full"].as_string();
 	svc.notifications.push_notification(svc, message);
 }
 

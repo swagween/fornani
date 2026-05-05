@@ -10,7 +10,7 @@ nani_add_sources(
         Indicator.cpp
         MapTexture.cpp
         MenuTheme.cpp
-        Rain.cpp
+        Weather.cpp
         Scenery.cpp
         SpriteHistory.cpp
         SpriteRotator.cpp

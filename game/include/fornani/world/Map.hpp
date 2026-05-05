@@ -19,8 +19,8 @@
 #include <fornani/graphics/Biome.hpp>
 #include <fornani/graphics/CameraController.hpp>
 #include <fornani/graphics/DayNightShifter.hpp>
-#include <fornani/graphics/Rain.hpp>
 #include <fornani/graphics/Scenery.hpp>
+#include <fornani/graphics/Weather.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Effect.hpp>
 #include <fornani/particle/Emitter.hpp>
@@ -228,7 +228,6 @@ class Map {
 	std::vector<std::unique_ptr<Waterfall>> waterfalls{};
 
 	// vfx
-	std::optional<vfx::Rain> rain{};
 	std::optional<std::vector<Fire>> fire{};
 
 	std::unique_ptr<graphics::Background> background{};
@@ -273,6 +272,7 @@ class Map {
 	std::vector<std::unique_ptr<vfx::Emitter>> active_emitters{};
 	std::vector<Explosion> m_explosions{};
 	std::vector<ExplosionSpecifications> m_chain_explosions{};
+	std::optional<vfx::Weather> m_weather{};
 
 	std::optional<Palette> m_palette{};
 	int abyss_distance{512};
