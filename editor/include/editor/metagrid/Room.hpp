@@ -14,7 +14,7 @@ struct ServiceProvider;
 }
 namespace pi {
 
-enum class RoomFlags { include_in_minimap, use_template };
+enum class RoomFlags { include_in_minimap, use_template, interior };
 
 constexpr auto spacing_v = 32.f;
 constexpr sf::Color excluded_room_color_v{120, 80, 80, 20};
@@ -38,9 +38,11 @@ class Room : public fornani::Flaggable<RoomFlags> {
 	[[nodiscard]] auto get_filename() const -> std::string { return m_data->room_label + ".json"; }
 	[[nodiscard]] auto get_label() const -> std::string { return m_label.getString(); }
 	[[nodiscard]] auto get_biome() const -> std::string { return m_biome.getString(); }
+	fornani::data::MapData& const get_data() { return *m_data; }
 
 	fornani::ID id;
 	bool no_border{};
+	bool show_tags{};
 
   private:
 	sf::RectangleShape m_box{};

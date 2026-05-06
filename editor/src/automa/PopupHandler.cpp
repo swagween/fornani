@@ -334,7 +334,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		static int id{fornani::random::random_range(10000, 99999)};
 		static int modifier{};
 		static int type{};
-		static char const* label{"item_label"};
+		static std::string item_lbl{"item_label"};
 		static char const* types[3] = {"gun", "orb", "item"};
 		static bool custom{};
 
@@ -357,14 +357,14 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		help_marker("0 for gun, 1 for orbs, 2 for item");
 
 		if (type == 0 || type == 2) {
-			if (ImGui::BeginCombo("Contents", label, ImGuiComboFlags_HeightLargest)) {
+			if (ImGui::BeginCombo("Contents", item_lbl.c_str(), ImGuiComboFlags_HeightLargest)) {
 				auto labels = std::vector<std::string>{};
 				switch (type) {
 				case 0:
 					for (auto const& gun : svc.data.weapon.as_object()) {
 						if (ImGui::Selectable(gun.first.c_str())) {
 							modifier = gun.second["metadata"]["id"].as<int>();
-							label = gun.first.c_str();
+							item_lbl = gun.first.c_str();
 							ImGui::SetItemDefaultFocus();
 						}
 					}
@@ -373,7 +373,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 					for (auto const& item : svc.data.item.as_array()) { labels.push_back(item["tag"].as_string()); }
 					std::ranges::sort(labels, {});
 					for (auto const& lbl : labels) {
-						if (ImGui::Selectable(lbl.c_str())) { label = lbl.c_str(); }
+						if (ImGui::Selectable(lbl.c_str())) { item_lbl = lbl.c_str(); }
 					}
 					break;
 				default: break;
@@ -389,7 +389,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = type == 1 ? std::make_unique<fornani::Chest>(svc, type, modifier, id) : std::make_unique<fornani::Chest>(svc, type, std::string(label), modifier, id);
+			tool->current_entity = type == 1 ? std::make_unique<fornani::Chest>(svc, type, modifier, id) : std::make_unique<fornani::Chest>(svc, type, std::string(item_lbl), modifier, id);
 			ImGui::CloseCurrentPopup();
 		}
 		close_popup();

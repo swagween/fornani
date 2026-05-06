@@ -23,7 +23,7 @@ class EditorState {
   public:
 	EditorState(fornani::automa::ServiceProvider& svc, EditorContext& ctx);
 	virtual EditorStateType run(char** argv) { return EditorStateType::editor; }
-	virtual void handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) {}
+	virtual void handle_events(std::optional<sf::Event> event, sf::RenderWindow& win);
 	virtual void logic() {}
 	virtual void render(sf::RenderWindow& win);
 

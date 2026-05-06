@@ -79,4 +79,38 @@ void ResourceFinder::ensure_save_exists(fs::path const& sav_path, fs::path const
 	} catch (std::exception const& e) { NANI_LOG_ERROR(m_logger, "Failed to create Save File: {}. exception: {}", sav_path.string(), e.what()); }
 }
 
+void ResourceFinder::overwrite_save(fs::path const& sav_path, fs::path const& template_path) const {
+	try {
+		auto in = dj::Json::from_file(template_path.string());
+		if (!in) {
+			NANI_LOG_ERROR(m_logger, "Failed to load template: {}", template_path.string());
+			return;
+		}
+
+		std::string json = in->serialize();
+
+		// Write to temp file first
+		fs::path tmp = sav_path;
+		tmp += ".tmp";
+
+		{
+			std::ofstream out(tmp, std::ios::binary);
+			if (!out) {
+				NANI_LOG_ERROR(m_logger, "Failed to create temp save file: {}", tmp.string());
+				return;
+			}
+
+			if (!codec::encode(json, out)) {
+				NANI_LOG_ERROR(m_logger, "Failed to write temp save file: {}", tmp.string());
+				return;
+			}
+		}
+
+		// Atomically replace
+		fs::rename(tmp, sav_path);
+
+		NANI_LOG_INFO(m_logger, "Save overwritten: {}", sav_path.string());
+	} catch (std::exception const& e) { NANI_LOG_ERROR(m_logger, "Failed to overwrite Save File: {}. exception: {}", sav_path.string(), e.what()); }
+}
+
 } // namespace fornani

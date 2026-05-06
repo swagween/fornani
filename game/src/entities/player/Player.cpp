@@ -506,6 +506,8 @@ void Player::give_bonus_health(int amount) {
 	set_flag(PlayerFlags::bonus_health_added);
 }
 
+void Player::set_invincible() { health.set_invincible(); }
+
 void Player::turn() {
 	auto to_dir = get_actual_direction().right() ? SimpleDirection{LR::left} : SimpleDirection{LR::right};
 	controller.set_direction(Direction{to_dir});
@@ -870,7 +872,7 @@ bool Player::fire_weapon() {
 
 void Player::update_invincibility() {
 	hurt_cooldown.update();
-	if (health.invincible()) {
+	if (health.has_flag_set(HealthFlags::hurt)) {
 		flash_sprite();
 	} else {
 		set_color(sf::Color::White);
@@ -888,7 +890,7 @@ void Player::start_over() {
 	health.reset();
 	controller.unrestrict();
 	m_services->camera_controller.set_owner(graphics::CameraOwner::player);
-	health.invincibility.start(8);
+	set_invincible();
 	hurt_cooldown.cancel();
 	set_flag(PlayerFlags::killed, false);
 	set_flag(PlayerFlags::cutscene, false);
@@ -905,6 +907,8 @@ void Player::start_over() {
 	update_wardrobe();
 	set_idle();
 }
+
+void Player::heal(float amount) { give_drop(item::DropType::heart, amount); }
 
 void Player::give_drop(item::DropType type, float value) {
 	if (is_dead()) { return; }

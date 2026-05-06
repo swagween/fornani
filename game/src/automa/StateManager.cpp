@@ -66,7 +66,8 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 	if (svc.state_controller.actions.test(Actions::player_death)) {
 		if (svc.demo_mode()) {
 			if (m_flags.consume(StateManagerFlags::retry)) {
-				svc.state_controller.next_state = svc.state_controller.demo_level;
+				get_current_state().reload(svc, svc.data.reload_progress(player));
+				get_current_state().reload(svc, svc.state_controller.demo_level);
 				player.place_at_demo_position();
 				player.start_over();
 				player.set_idle();

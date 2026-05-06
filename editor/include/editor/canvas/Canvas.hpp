@@ -10,6 +10,7 @@
 #include <fornani/graphics/Background.hpp>
 #include <fornani/graphics/Biome.hpp>
 #include <fornani/graphics/CameraController.hpp>
+#include <fornani/graphics/Weather.hpp>
 #include <fornani/utils/Constants.hpp>
 #include <fornani/world/HazardMap.hpp>
 #include <fornani/world/Map.hpp>
@@ -70,6 +71,7 @@ class Canvas {
 	void set_ambience(std::string_view to) { m_attributes.ambience = to; }
 	void add_atmosphere(std::string_view to) { m_attributes.atmosphere.add(to.data()); }
 	void remove_atmosphere(std::string_view to) { m_attributes.atmosphere.remove(to.data()); }
+	void report_weather();
 
 	Map& get_layers();
 	Layer& get_active_layer();
@@ -171,6 +173,7 @@ class Canvas {
 	fornani::world::MapAttributes m_attributes{};
 	std::optional<fornani::world::HazardMap> m_hazards{};
 	fornani::world::HazardMapProperties m_hazard_properties{};
+	std::optional<fornani::vfx::WeatherSpecifications> m_weather{};
 
 	sf::Vector2f position{};
 	sf::RenderTexture grid_texture{};

@@ -3,8 +3,9 @@
 
 #include <fornani/components/CircleSensor.hpp>
 #include <fornani/components/SteeringComponent.hpp>
-#include <fornani/entities/item/Drop.hpp>
+#include <fornani/core/Common.hpp>
 #include <fornani/entities/packages/Health.hpp>
+#include <fornani/graphics/Animatable.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;

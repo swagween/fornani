@@ -281,7 +281,7 @@
     ]
   },
   "meta": {
-    "ambience": "none",
+    "ambience": "",
     "background": "night",
     "biome": "firstwind",
     "border_color": [
@@ -308,12 +308,13 @@
       48,
       48
     ],
+    "interior": true,
     "metagrid": [
       17,
       1
     ],
     "minimap": true,
-    "music": "dusken",
+    "music": "",
     "player_start": [
       0,
       0
@@ -321,6 +322,7 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": false,
+      "interior": true,
       "lighting": false,
       "timer": false
     },
@@ -329,7 +331,15 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": {
+      "ambience": "rain",
+      "chance": 1,
+      "density": 2,
+      "effect": "raindrop",
+      "framerate": 8,
+      "type": "rain"
+    }
   },
   "tile": {
     "flags": {
@@ -2355,9 +2365,9 @@
         117,
         120,
         120,
-        117,
-        117,
-        132,
+        127,
+        0,
+        127,
         115,
         115,
         115,

@@ -16,6 +16,7 @@ class Grid {
 	sf::Vector2u dimensions{};
 
 	void check_neighbors(int i);
+	bool is_exposed_to_sky(std::size_t index) const;
 	NeighborSet get_solid_neighbors(int index);
 	void seed_vertex(int index);
 	void destroy_cell(sf::Vector2<int> pos);

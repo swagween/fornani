@@ -1,15 +1,89 @@
 
 #include <imgui.h>
+#include <SFML\Graphics\Color.hpp>
+#include <SFML\Graphics\RectangleShape.hpp>
+#include <SFML\Graphics\RenderWindow.hpp>
+#include <SFML\System\Vector2.hpp>
 #include <ccmath/ext/clamp.hpp>
+#include <djson\json.hpp>
 #include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/graphics/Colors.hpp>
-#include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Math.hpp>
 #include <fornani/utils/Random.hpp>
 #include <fornani/world/Map.hpp>
+#include <fornani\audio\Balance.hpp>
+#include <fornani\core\Common.hpp>
+#include <fornani\entities\atmosphere\Atmosphere.hpp>
+#include <fornani\entities\enemy\Enemy.hpp>
+#include <fornani\entities\enemy\EnemyRegistry.hpp>
+#include <fornani\entities\player\PlayerController.hpp>
+#include <fornani\entities\world\Animator.hpp>
+#include <fornani\entities\world\Bed.hpp>
+#include <fornani\entities\world\Chest.hpp>
+#include <fornani\entities\world\Explosion.hpp>
+#include <fornani\entities\world\Fire.hpp>
+#include <fornani\entities\world\Inspectable.hpp>
+#include <fornani\entities\world\Laser.hpp>
+#include <fornani\entities\world\Waterfall.hpp>
+#include <fornani\entity\AmbientProp.hpp>
+#include <fornani\entity\CutsceneTrigger.hpp>
+#include <fornani\entity\Entity.hpp>
+#include <fornani\entity\EntitySet.hpp>
+#include <fornani\entity\NPC.hpp>
+#include <fornani\entity\Portal.hpp>
+#include <fornani\entity\SavePoint.hpp>
+#include <fornani\entity\Train.hpp>
+#include <fornani\entity\Turret.hpp>
+#include <fornani\entity\Vine.hpp>
+#include <fornani\entity\Water.hpp>
+#include <fornani\graphics\Background.hpp>
+#include <fornani\graphics\Scenery.hpp>
+#include <fornani\graphics\Weather.hpp>
+#include <fornani\io\Logger.hpp>
+#include <fornani\particle\Effect.hpp>
+#include <fornani\particle\Emitter.hpp>
+#include <fornani\physics\CircleCollider.hpp>
+#include <fornani\physics\Collider.hpp>
+#include <fornani\physics\ICollider.hpp>
+#include <fornani\physics\Shape.hpp>
+#include <fornani\shader\LightShader.hpp>
+#include <fornani\shader\Palette.hpp>
+#include <fornani\story\Quest.hpp>
+#include <fornani\systems\Register.hpp>
+#include <fornani\utils\BitFlags.hpp>
+#include <fornani\utils\Constants.hpp>
+#include <fornani\utils\Cooldown.hpp>
+#include <fornani\utils\Direction.hpp>
+#include <fornani\utils\ID.hpp>
+#include <fornani\utils\QuestCode.hpp>
+#include <fornani\weapon\Weapon.hpp>
+#include <fornani\world\Breakable.hpp>
+#include <fornani\world\Checkpoint.hpp>
+#include <fornani\world\Destructible.hpp>
+#include <fornani\world\Incinerite.hpp>
+#include <fornani\world\Layer.hpp>
+#include <fornani\world\Platform.hpp>
+#include <fornani\world\Pushable.hpp>
+#include <fornani\world\Spawner.hpp>
+#include <fornani\world\Spike.hpp>
+#include <fornani\world\SwitchBlock.hpp>
+#include <fornani\world\SwitchButton.hpp>
+#include <fornani\world\Tile.hpp>
+#include <fornani\world\TimerBlock.hpp>
+#include <algorithm>
+#include <cstdint>
+#include <cstdlib>
+#include <limits>
+#include <memory>
+#include <optional>
 #include <ranges>
+#include <string>
+#include <string_view>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
 namespace fornani::world {
 
@@ -37,7 +111,6 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 	svc.ambience_player.load(svc.finder, m_attributes.ambience);
 	svc.ambience_player.play();
 	for (auto const& atmo : m_attributes.atmosphere) { atmosphere.push_back(vfx::Atmosphere(svc, *this, atmo)); }
-	background = std::make_unique<graphics::Background>(svc, meta["background"].as_string());
 
 	if (meta["cutscene_on_entry"]["flag"].as_bool()) {
 		auto launch = true;
@@ -70,7 +143,17 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 	sound.echo_count = meta["sound"]["echo_count"].as<int>();
 	sound.echo_rate = meta["sound"]["echo_rate"].as<int>();
 
-	if (meta["weather"]["rain"]) { m_weather = vfx::Weather(svc, *this, {meta["weather"]["rain"]["density"].as<int>(), meta["weather"]["rain"]["framerate"].as<int>()}); }
+	if (meta["weather"]) {
+		m_weather_specs.emplace(vfx::WeatherSpecifications{meta["weather"]});
+		if (svc.world_clock.happens(WorldClockInterval::day, m_weather_specs->chance)) {
+			m_weather = std::make_unique<vfx::Weather>(svc, *this, m_weather_specs->params);
+			svc.ambience_player.load(svc.finder, m_weather_specs->ambience);
+			svc.ambience_player.play();
+		}
+	}
+	auto bg_type = m_weather_specs ? meta["background"].as_string() + "_" + m_weather_specs->type : meta["background"].as_string();
+	background = std::make_unique<graphics::Background>(svc, bg_type);
+
 	// if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
 	// if (meta["weather"]["leaves"]) { rain = vfx::Rain(meta["weather"]["leaves"]["intensity"].as<int>(), meta["weather"]["leaves"]["fall_speed"].as<float>(), meta["weather"]["leaves"]["slant"].as<float>(), true, true); }
 
@@ -295,6 +378,19 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 
 	update_balance(svc);
 
+	// weather
+	if (svc.ticker.every_x_ticks(24)) {
+		if (m_weather && !m_attributes.properties.test(MapProperties::interior)) {
+			auto chance_per_point = 20;
+			for (auto& p : m_surface_points) {
+				if (random::percent_chance(chance_per_point)) {
+					auto pos = p.position + sf::Vector2f{random::random_range_float(-8.f, 8.f), 0.f};
+					spawn_effect(svc, m_weather_specs->effect, pos);
+				}
+			}
+		}
+	}
+
 	// camera effects
 	if (svc.ticker.every_second() && m_attributes.shake_properties.shaking) {
 		if (random::percent_chance(m_attributes.shake_properties.chance * 100.f)) {
@@ -432,7 +528,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	for (auto& pl : point_lights) { pl.update(); }
 	if (player->get_collider().collision_depths) { player->get_collider().collision_depths.value().update(); }
 	// if (save_point) { save_point->update(svc, *player, console); }
-	if (m_weather) { m_weather->update(svc, *this); }
+	if (m_weather) { m_weather.value()->update(svc, *this); }
 
 	player->get_collider().reset_ground_flags();
 
@@ -494,6 +590,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	if (m_entities) {
 		for (auto w : get_entities<Water>()) { w->render(win, cam, 1.0); }
 	}
+
 	if (!svc.greyblock_mode()) {
 		for (auto& layer : get_layers()) {
 			if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
@@ -536,7 +633,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 
 	for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
 
-	if (m_weather) { m_weather->render(svc, win, cam); }
+	if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather.value()->render(svc, win, cam, 0); }
 
 	if (m_attributes.properties.test(MapProperties::timer)) { svc.world_timer.render(win, sf::Vector2f{32.f, 32.f}); }
 
@@ -556,14 +653,17 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 }
 
 void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam) {
+
 	if (!svc.greyblock_mode()) {
 		background->render(svc, win, cam);
+		if (m_weather) { m_weather.value()->render(svc, win, cam, 2); }
 		for (auto& layer : scenery_layers) {
 			for (auto& piece : layer) { piece->render(svc, win, cam); }
 		}
 		if (!svc.greyblock_mode()) {
 			for (auto [i, layer] : std::views::enumerate(get_layers())) {
 				if (i == 1) {
+					if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather.value()->render(svc, win, cam, 1); }
 					if (m_entities) {
 						for (auto n : get_entities<AmbientProp>()) { n->render(win, cam, 1.f); }
 						for (auto n : get_entities<NPC>()) {
@@ -749,6 +849,7 @@ void Map::generate_collidable_layer(bool live) {
 			if (!fire) { fire = std::vector<Fire>{}; }
 			fire.value().push_back(Fire(*m_services, cell.position(), cell.value));
 		}
+		if (cell.is_solid() && get_middleground()->grid.is_exposed_to_sky(cell.one_d_index)) { m_surface_points.push_back(SurfacePoint{cell.bounding_box.get_top(), true}); }
 	}
 }
 
@@ -913,6 +1014,7 @@ void Map::clear() {
 	m_explosions.clear();
 	m_chain_explosions.clear();
 	m_weather.reset();
+	m_weather_specs.reset();
 	fire.reset();
 	active_loot.clear();
 	m_hazards.reset();
@@ -1040,6 +1142,7 @@ MapAttributes::MapAttributes(dj::Json const& in) {
 	if (in["properties"]["day_night_shift"].as_bool()) { properties.set(MapProperties::day_night_shift); }
 	if (in["properties"]["timer"].as_bool()) { properties.set(MapProperties::timer); }
 	if (in["properties"]["lighting"].as_bool()) { properties.set(MapProperties::lighting); }
+	if (in["properties"]["interior"].as_bool()) { properties.set(MapProperties::interior); }
 	if (in["minimap"].as_bool()) { properties.set(MapProperties::minimap); }
 
 	if (in["camera_effects"]) {
@@ -1066,6 +1169,7 @@ void MapAttributes::serialize(dj::Json& out) {
 	out["properties"]["day_night_shift"] = properties.test(fornani::world::MapProperties::day_night_shift);
 	out["properties"]["timer"] = properties.test(fornani::world::MapProperties::timer);
 	out["properties"]["lighting"] = properties.test(fornani::world::MapProperties::lighting);
+	out["properties"]["interior"] = properties.test(fornani::world::MapProperties::interior);
 
 	out["music"] = music;
 	NANI_LOG_DEBUG(m_logger, "Serialized music: {}", music);
@@ -1081,7 +1185,11 @@ void MapAttributes::serialize(dj::Json& out) {
 void Map::update_balance(automa::ServiceProvider& svc) {
 	music_balance.update(svc.ticker.dt.count());
 	ambience_balance.update(svc.ticker.dt.count());
-	set_target_balance(cooldowns.fade_obscured.get_normalized(), audio::BalanceTarget::ambience);
+	if (m_attributes.properties.test(MapProperties::interior)) {
+		set_target_balance(0.f, audio::BalanceTarget::ambience);
+	} else {
+		set_target_balance(cooldowns.fade_obscured.get_normalized(), audio::BalanceTarget::ambience);
+	}
 }
 
 } // namespace fornani::world

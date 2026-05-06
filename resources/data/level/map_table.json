@@ -122,6 +122,12 @@
     },
     {
       "folder": "firstwind",
+      "label": "duct.json",
+      "region": "firstwind",
+      "room_id": 139
+    },
+    {
+      "folder": "firstwind",
       "label": "fall.json",
       "region": "firstwind",
       "room_id": 199

@@ -3,7 +3,7 @@
 #include <fornani/entities/packages/Health.hpp>
 #include <algorithm>
 
-namespace fornani::entity {
+namespace fornani {
 
 Health::Health(float max) : m_capacity{max}, m_quantity{max}, m_taken{128} {}
 
@@ -30,6 +30,7 @@ void Health::update() {
 	if (m_taken.running()) {
 		if (m_taken.is_almost_complete()) { --taken_point; }
 	}
+	if (invincibility.is_complete()) { set_flag(HealthFlags::hurt, false); }
 }
 
 void Health::heal(float amount) {
@@ -48,10 +49,13 @@ void Health::inflict(float amount, bool force, bool inv) {
 		m_quantity = std::clamp(m_quantity - amount, 0.f, get_capacity());
 		m_bonus = std::clamp(m_bonus - amount, 0.f, m_bonus);
 		m_taken.start();
-		if (inv) { invincibility.start(invincibility_time); }
-		flags.set(HPState::hit);
+		if (inv) { set_invincible(); }
+		set_flag(HealthFlags::hurt);
+		set_flag(HealthFlags::hit);
 	}
 }
+
+void Health::set_invincible() { invincibility.start(invincibility_time); }
 
 void Health::increase_capacity(float amount) { set_capacity(m_capacity + amount, true); }
 
@@ -65,4 +69,4 @@ void Health::debug() {
 	ImGui::SliderFloat("bonusf", &m_bonus, 1.f, 3.f, "%1.f");
 }
 
-} // namespace fornani::entity
+} // namespace fornani

@@ -181,7 +181,7 @@
           10,
           95
         ],
-        "toxic": false
+        "type": 0
       }
     ]
   },
@@ -3193,6 +3193,7 @@
       48,
       112
     ],
+    "interior": false,
     "metagrid": [
       30,
       12
@@ -3206,6 +3207,7 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": true,
+      "interior": false,
       "lighting": false,
       "timer": false
     },
@@ -16931,7 +16933,7 @@
         0,
         458,
         459,
-        3,
+        52,
         0,
         0,
         0,
@@ -17125,8 +17127,8 @@
         0,
         0,
         0,
-        0,
-        0,
+        502,
+        502,
         0,
         0,
         0,
@@ -17173,8 +17175,8 @@
         502,
         502,
         502,
-        502,
-        502,
+        474,
+        473,
         502,
         0,
         0,

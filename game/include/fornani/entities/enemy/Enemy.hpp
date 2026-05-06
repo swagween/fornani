@@ -164,7 +164,7 @@ class Enemy : public Mobile {
 	void stop_shaking() { flags.state.reset(StateFlags::shaking); }
 	void kill() { health.kill(); }
 
-	entity::Health health;
+	Health health;
 	graphics::Indicator health_indicator;
 
 	void debug();

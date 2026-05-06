@@ -169,6 +169,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 		cutscene.id = meta["cutscene_on_entry"]["id"].as<int>();
 		cutscene.source = meta["cutscene_on_entry"]["source"].as<int>();
 	}
+	if (meta["weather"]) { m_weather.emplace(meta["weather"]); }
 	background = std::make_unique<fornani::graphics::Background>(svc, meta["background"].as_string());
 
 	darken_factor = meta["shader"]["darken_factor"].as<float>();
@@ -222,6 +223,7 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 	if (background) { metadata["meta"]["background"] = background->get_label(); }
 	metadata["meta"]["use_template"] = m_use_template;
 	metadata["meta"]["minimap"] = m_attributes.properties.test(fornani::world::MapProperties::minimap);
+	metadata["meta"]["interior"] = m_attributes.properties.test(fornani::world::MapProperties::interior);
 	metadata["meta"]["camera_effects"]["shake"]["frequency"] = m_camera_effects.shake_properties.frequency;
 	metadata["meta"]["camera_effects"]["shake"]["energy"] = m_camera_effects.shake_properties.energy;
 	metadata["meta"]["camera_effects"]["shake"]["start_time"] = m_camera_effects.shake_properties.start_time;
@@ -252,6 +254,7 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 		metadata["tile"]["ignore_lighting"].push_back(layer.ignore_lighting);
 		++current_layer;
 	}
+	if (m_weather) { m_weather->serialize(metadata["meta"]["weather"]); }
 
 	if (m_hazards) { m_hazards->serialize(metadata["hazards"]); }
 
@@ -376,6 +379,16 @@ void Canvas::set_grid_texture() {
 }
 
 void Canvas::activate_middleground() { map_states.back().layers.at(middleground()).active = true; }
+
+void Canvas::report_weather() {
+	if (m_weather) {
+		ImGui::Text("Current Weather: %s", m_weather->type);
+		ImGui::SliderFloat("Chance", &m_weather->chance, 0.f, 1.f, "%.1f");
+		if (ImGui::Button("Remove")) { m_weather.reset(); }
+	} else {
+		if (ImGui::Button("Add Weather")) { m_weather.emplace(); }
+	}
+}
 
 Map& Canvas::get_layers() { return map_states.back(); }
 

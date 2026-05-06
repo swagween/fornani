@@ -186,6 +186,8 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	// prevent falling out of the world bugs
 	if (!p_context.transition.is(graphics::TransitionState::inactive)) { player->set_flag(player::PlayerFlags::disable_abilities); }
 
+	if (p_context.console) { player->set_invincible(); }
+
 	// physical tick
 	player->update(*m_map);
 	player->start_tick();

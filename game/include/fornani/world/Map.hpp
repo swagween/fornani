@@ -67,13 +67,18 @@ namespace fornani::world {
 enum class LevelState { camera_shake, spawn_enemy };
 enum class MapState { unobscure };
 enum class LayerProperties { has_obscuring_layer, has_reverse_obscuring_layer };
-enum class MapProperties { minimap, environmental_randomness, day_night_shift, timer, lighting };
+enum class MapProperties { minimap, environmental_randomness, day_night_shift, timer, lighting, interior };
 
 struct EnemySpawn {
 	sf::Vector2f pos{};
 	int id{};
 	int variant{};
 	bool effect{};
+};
+
+struct SurfacePoint {
+	sf::Vector2f position{};
+	bool exposed{};
 };
 
 struct MapAttributes {
@@ -272,7 +277,11 @@ class Map {
 	std::vector<std::unique_ptr<vfx::Emitter>> active_emitters{};
 	std::vector<Explosion> m_explosions{};
 	std::vector<ExplosionSpecifications> m_chain_explosions{};
-	std::optional<vfx::Weather> m_weather{};
+
+	// weather
+	std::optional<vfx::WeatherSpecifications> m_weather_specs{};
+	std::optional<std::unique_ptr<vfx::Weather>> m_weather{};
+	std::vector<SurfacePoint> m_surface_points{};
 
 	std::optional<Palette> m_palette{};
 	int abyss_distance{512};

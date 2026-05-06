@@ -88,6 +88,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": true,
+      "interior": true,
       "lighting": true,
       "timer": false
     },
@@ -95,7 +96,9 @@
     "shader": {
       "darken_factor": 3
     },
-    "style": 5
+    "style": 5,
+    "use_template": false,
+    "weather": null
   },
   "tile": {
     "flags": {

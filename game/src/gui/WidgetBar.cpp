@@ -13,7 +13,7 @@ WidgetBar::WidgetBar(automa::ServiceProvider& svc, int amount, sf::Vector2i dime
 	for (auto i{0}; i < amount; ++i) { m_widgets.push_back(Widget(svc, tag, dimensions, i, origin + sf::Vector2f{i * dimensions.x * constants::f_scale_factor + i * pad, 0.f})); }
 }
 
-void WidgetBar::update(automa::ServiceProvider& svc, entity::Health& health, bool shake) {
+void WidgetBar::update(automa::ServiceProvider& svc, Health& health, bool shake) {
 	m_quantity = health.get_i_capacity();
 	auto qty = "x" + std::to_string(health.get_i_quantity());
 	m_text.setString(qty);

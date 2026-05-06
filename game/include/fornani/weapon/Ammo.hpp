@@ -32,7 +32,7 @@ class Ammo {
 
 	util::Cooldown restored{128};
 
-	entity::Health magazine{1.f};
+	Health magazine{1.f};
 
   private:
 	util::BitFlags<AmmoFlags> flags{};

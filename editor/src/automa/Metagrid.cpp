@@ -96,20 +96,16 @@ EditorStateType Metagrid::run(char** argv) {
 }
 
 void Metagrid::handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) {
+	EditorState::handle_events(event, win);
 	ImGuiIO& io = ImGui::GetIO();
 	m_current_mouse_position = sf::Vector2f{io.MousePos.x, io.MousePos.y};
-	p_left_mouse.clicked = false;
-	p_left_mouse.released = false;
 	if (auto const* button_pressed = event->getIf<sf::Event::MouseButtonPressed>()) {
 		if (button_pressed->button == sf::Mouse::Button::Middle) { pressed_keys.set(PressedKeys::mouse_middle); }
 		if (button_pressed->button == sf::Mouse::Button::Left) {
-			p_left_mouse.clicked = true;
-			p_left_mouse.held = true;
 			if (!pressed_keys.test(PressedKeys::mouse_left) && m_highlighted_room) {
 				m_left_clicked_position = sf::Vector2f{m_current_mouse_position - m_camera};
 				m_tool->set_original_position(m_highlighted_room.value()->get_board_position());
 			}
-			pressed_keys.set(PressedKeys::mouse_left);
 		}
 		if (button_pressed->button == sf::Mouse::Button::Right) {
 			pressed_keys.set(PressedKeys::mouse_right);
@@ -119,14 +115,10 @@ void Metagrid::handle_events(std::optional<sf::Event> event, sf::RenderWindow& w
 	if (auto const* button_released = event->getIf<sf::Event::MouseButtonReleased>()) {
 		if (button_released->button == sf::Mouse::Button::Middle) { pressed_keys.reset(PressedKeys::mouse_middle); }
 		if (button_released->button == sf::Mouse::Button::Left) {
-			p_left_mouse.held = false;
-			p_left_mouse.released = true;
 			if (pressed_keys.test(PressedKeys::mouse_left) && m_highlighted_room && m_tool->is(MetagridToolType::move)) {
 				if (!m_highlighted_room.value()->serialize(*p_services)) { NANI_LOG_INFO(p_logger, "Failed to save metadata for {}", m_highlighted_room.value()->get_label()); }
 			}
-			pressed_keys.reset(PressedKeys::mouse_left);
 		}
-		if (button_released->button == sf::Mouse::Button::Right) { pressed_keys.reset(PressedKeys::mouse_right); }
 	}
 	if (m_highlighted_room && pressed_keys.test(PressedKeys::mouse_left) && !io.WantCaptureMouse) { m_tool->handle_inputs(*m_highlighted_room.value(), m_camera, m_left_clicked_position); }
 }
@@ -166,6 +158,7 @@ void Metagrid::render(sf::RenderWindow& win) {
 	static bool serialize{};
 	static bool ignore_test_levels{true};
 	static bool hide_room_borders{};
+	static bool show_tags{};
 
 	// render rooms
 	auto found_one{false};
@@ -173,6 +166,7 @@ void Metagrid::render(sf::RenderWindow& win) {
 	auto ctr = 0;
 	for (auto& r : m_rooms) {
 		r.no_border = hide_room_borders;
+		r.show_tags = show_tags;
 		if (!r.has_flag_set(RoomFlags::include_in_minimap) && ignore_test_levels) {
 			++ctr;
 			continue;
@@ -257,6 +251,7 @@ void Metagrid::render(sf::RenderWindow& win) {
 		ImGui::Text("Workspace Coordinates: (%i, %i)", m_tool->get_workspace_coordinates(m_camera).x, m_tool->get_workspace_coordinates(m_camera).y);
 		ImGui::Checkbox("Ignore Test Levels", &ignore_test_levels);
 		ImGui::Checkbox("Hide Room Borders", &hide_room_borders);
+		ImGui::Checkbox("Show Tags", &show_tags);
 
 		ImGui::End();
 	}
@@ -267,6 +262,12 @@ void Metagrid::render(sf::RenderWindow& win) {
 		ImGui::Separator();
 		ImGui::Text("ID: %i", m_highlighted_room.value()->id.get());
 		ImGui::Text("Biome: %s", m_highlighted_room.value()->get_biome().c_str());
+		ImGui::Text("Interior: %s", m_highlighted_room.value()->has_flag_set(RoomFlags::interior) ? "Yes" : "No");
+		if (m_highlighted_room.value()->get_data().metadata["meta"]["weather"]) {
+			ImGui::SeparatorText("Weather");
+			ImGui::Text("Type: %s", m_highlighted_room.value()->get_data().metadata["meta"]["weather"]["type"].as_string().c_str());
+			ImGui::Text("Chance: %.1f", m_highlighted_room.value()->get_data().metadata["meta"]["weather"]["chance"].as<float>());
+		}
 		ImGui::EndTooltip();
 	}
 
@@ -277,6 +278,12 @@ void Metagrid::render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Toggle Minimap")) {
 				if (m_highlighted_room) {
 					m_highlighted_room.value()->toggle_flag(RoomFlags::include_in_minimap);
+					serialize = true;
+				}
+			}
+			if (ImGui::MenuItem("Toggle Interior")) {
+				if (m_highlighted_room) {
+					m_highlighted_room.value()->toggle_flag(RoomFlags::interior);
 					serialize = true;
 				}
 			}

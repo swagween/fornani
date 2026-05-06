@@ -287,6 +287,7 @@
       32,
       32
     ],
+    "interior": true,
     "metagrid": [
       28,
       24
@@ -300,6 +301,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": true,
+      "interior": true,
       "lighting": true,
       "timer": false
     },

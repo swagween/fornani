@@ -5,7 +5,31 @@
 
 namespace pi {
 
-EditorState::EditorState(fornani::automa::ServiceProvider& svc, EditorContext& ctx) : p_services(&svc), p_context(&ctx) {};
+EditorState::EditorState(fornani::automa::ServiceProvider& svc, EditorContext& ctx) : p_services(&svc), p_context(&ctx) {}
+
+void EditorState::handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) {
+	ImGuiIO& io = ImGui::GetIO();
+	p_left_mouse.clicked = false;
+	p_left_mouse.released = false;
+	if (auto const* button_pressed = event->getIf<sf::Event::MouseButtonPressed>()) {
+		if (button_pressed->button == sf::Mouse::Button::Middle) { pressed_keys.set(PressedKeys::mouse_middle); }
+		if (button_pressed->button == sf::Mouse::Button::Left) {
+			p_left_mouse.clicked = true;
+			p_left_mouse.held = true;
+			pressed_keys.set(PressedKeys::mouse_left);
+		}
+		if (button_pressed->button == sf::Mouse::Button::Right) { pressed_keys.set(PressedKeys::mouse_right); }
+	}
+	if (auto const* button_released = event->getIf<sf::Event::MouseButtonReleased>()) {
+		if (button_released->button == sf::Mouse::Button::Middle) { pressed_keys.reset(PressedKeys::mouse_middle); }
+		if (button_released->button == sf::Mouse::Button::Left) {
+			p_left_mouse.held = false;
+			p_left_mouse.released = true;
+			pressed_keys.reset(PressedKeys::mouse_left);
+		}
+		if (button_released->button == sf::Mouse::Button::Right) { pressed_keys.reset(PressedKeys::mouse_right); }
+	}
+}
 
 void EditorState::render(sf::RenderWindow& win) {
 

@@ -21,6 +21,7 @@ class Shape {
 	sf::Vector2f get_normal(sf::Vector2f const v);
 	sf::Vector2f project_on_axis(std::vector<sf::Vector2f> const& vertices, sf::Vector2f const& axis) const;
 	sf::Vector2f project_circle_on_axis(sf::Vector2f center, float radius, sf::Vector2f const axis) const;
+	sf::Vector2f get_top() const;
 	std::vector<sf::Vector2f> get_vertices(Shape const& shape);
 	std::vector<sf::Vector2f> get_poles(sf::CircleShape const& circle);
 	sf::Vector2f get_MTV(Shape const& obb1, Shape const& obb2);

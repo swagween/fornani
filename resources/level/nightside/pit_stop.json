@@ -89,6 +89,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": true,
       "lighting": false,
       "timer": false
     },

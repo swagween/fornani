@@ -1,18 +1,16 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <fornani/entities/Entity.hpp>
 #include <fornani/utils/Cooldown.hpp>
-#include <fornani/utils/Counter.hpp>
+#include <fornani/utils/Flaggable.hpp>
 
-namespace fornani::entity {
+namespace fornani {
 
-enum class HPState { hit };
+enum class HealthFlags { hurt, hit };
 
 constexpr auto critical_threshold{0.34f};
 
-class Health final {
+class Health final : public Flaggable<HealthFlags> {
   public:
 	explicit Health(float max);
 	void update();
@@ -42,13 +40,12 @@ class Health final {
 	void heal(float amount);
 	void refill();
 	void inflict(float amount, bool force = false, bool inv = true);
+	void set_invincible();
 	void increase_capacity(float amount);
 	void reset();
 	void kill();
 
 	void debug();
-
-	util::BitFlags<HPState> flags{};
 	util::Cooldown invincibility{};
 	util::Cooldown restored{128};
 
@@ -62,4 +59,4 @@ class Health final {
 	int invincibility_time{};
 };
 
-} // namespace fornani::entity
+} // namespace fornani

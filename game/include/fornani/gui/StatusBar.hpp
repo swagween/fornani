@@ -14,7 +14,7 @@ namespace fornani::gui {
 class StatusBar {
   public:
 	explicit StatusBar(automa::ServiceProvider& svc, sf::Vector2f dim = {8.f, 2.f}, std::vector<sf::Color> colors = {colors::red, colors::goldenrod, colors::navy_blue}, bool centered = true);
-	void update(automa::ServiceProvider& svc, sf::Vector2f position, entity::Health& status, bool ease = false);
+	void update(automa::ServiceProvider& svc, sf::Vector2f position, Health& status, bool ease = false);
 	void update(automa::ServiceProvider& svc, sf::Vector2f position, float fraction, float taken = 0.f, bool ease = false);
 	void render(sf::RenderWindow& win);
 	void set_origin(sf::Vector2f origin);

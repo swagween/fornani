@@ -154,6 +154,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void end_tick();
 	void purchase(int amount);
 	void give_bonus_health(int amount);
+	void set_invincible();
 
 	// animation machine
 	void request_animation(AnimState const to) { m_animation_machine.request(to); }
@@ -259,6 +260,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void update_invincibility();
 	void update_wardrobe();
 	void start_over();
+	void heal(float amount = 1.f);
 	void give_drop(item::DropType type, float value);
 	void give_item_by_id(int id, int amount);
 	void give_item(std::string_view label, int amount, bool from_save = false);
@@ -288,7 +290,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	PlayerController controller;
 	shape::Shape hurtbox{};
 	shape::Shape distant_vicinity{};
-	entity::Health health;
+	Health health;
 	Wallet wallet{};
 	graphics::Indicator health_indicator;
 	graphics::Indicator orb_indicator;
@@ -386,7 +388,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 
 	AbilityUsage m_ability_usage{};
 
-	entity::Health m_air_supply;
+	Health m_air_supply;
 	gui::HealthBar m_air_supply_bar;
 
 	std::shared_ptr<Slot const> slot{std::make_shared<Slot const>()};

@@ -46,6 +46,7 @@ class WorldClock {
 	[[nodiscard]] auto get_rate() const -> int { return rate; }
 	[[nodiscard]] auto as_trio() const -> int { return is_daytime() ? 0 : is_nighttime() ? 2 : 1; }
 	[[nodiscard]] auto get_previous_as_trio() const -> int { return get_previous_time_of_day() == TimeOfDay::day ? 0 : get_previous_time_of_day() == TimeOfDay::night ? 2 : 1; }
+	[[nodiscard]] auto happens(WorldClockInterval interval, float chance) { return get_rng(interval) < chance; }
 	std::string tod_as_string(TimeOfDay const tod);
 	std::string get_string();
 	std::string get_hours_string();

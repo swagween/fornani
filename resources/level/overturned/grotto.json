@@ -66,6 +66,9 @@
       0,
       0
     ],
+    "properties": {
+      "interior": true
+    },
     "room_id": 249,
     "shader": {
       "darken_factor": 0

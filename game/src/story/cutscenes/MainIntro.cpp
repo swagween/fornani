@@ -26,6 +26,8 @@ MainIntro::MainIntro(automa::ServiceProvider& svc, world::Map& map, player::Play
 	svc.ambience_player.tracks.open.fade_in(util::Sec{2.f});
 	svc.state_flags.set(automa::StateFlags::cutscene);
 	player.set_idle();
+
+	player.set_direction(Direction{LR::right});
 }
 
 void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
@@ -83,8 +85,6 @@ void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, worl
 		player.set_idle();
 		set_flag(MainIntroFlags::player_stopped);
 	}
-
-	player.set_direction(Direction{LR::right});
 
 	auto total_suites{0};
 	for (auto& npc : npcs) { total_suites += npc->get_number_of_suites(); }
@@ -188,6 +188,7 @@ void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, worl
 			bryn->flush_conversations();
 			bryn->push_conversation(23);
 			willett->force_engage();
+			player.turn();
 			svc.camera_controller.set_position(willett->Mobile::get_global_center());
 			++progress;
 		}
@@ -199,6 +200,7 @@ void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, worl
 			willett->push_conversation(24);
 			++progress;
 			bryn->force_engage();
+			player.turn();
 		}
 		break;
 	case 8:
@@ -207,6 +209,7 @@ void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, worl
 			bryn->flush_conversations();
 			bryn->push_conversation(24);
 			willett->force_engage();
+			player.turn();
 			svc.camera_controller.set_position(willett->Mobile::get_global_center());
 			++progress;
 		}
@@ -267,6 +270,7 @@ void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, worl
 		if (!context.console) {
 			willett->flush_and_push(23);
 			bryn->force_engage();
+			player.turn();
 			progress = 6;
 		}
 		break;

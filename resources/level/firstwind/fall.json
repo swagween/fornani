@@ -81,7 +81,14 @@
       "darken_factor": 0
     },
     "style": 0,
-    "use_template": false
+    "use_template": false, "weather": {
+      "ambience": "rain",
+      "chance": 1,
+      "density": 2,
+      "effect": "raindrop",
+      "framerate": 8,
+      "type": "rain"
+    }
   },
   "tile": {
     "flags": {

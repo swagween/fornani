@@ -84,6 +84,7 @@ EditorStateType Editor::run(char** argv) {
 }
 
 void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindow& win) {
+	EditorState::handle_events(event, win);
 	ImGuiIO& io = ImGui::GetIO();
 	auto& source = palette_mode() || current_tool->has_palette_selection ? palette : map;
 
@@ -298,6 +299,7 @@ void Editor::load_file(std::string_view to_region, std::string_view to_room) {
 }
 
 void Editor::new_file(int id) {
+	b_close_entity_popup = true;
 	editor_flags.set(EditorFlags::create_new_room);
 	m_new_id = id;
 }
@@ -464,15 +466,20 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				for (auto& ent : map.entities.variables.entities) {
 					if (ent->highlighted) { ent->overwrite = true; }
 				}
-				current_tool->suppress_until_released();
 				b_close_entity_popup = false;
 				ImGui::CloseCurrentPopup();
 			}
+			if (ImGui::Button("Close")) {
+				b_close_entity_popup = false;
+				ImGui::CloseCurrentPopup();
+			}
+			current_tool->suppress_until_released();
 		}
 		ImGui::EndPopup();
 	}
 
 	bool open_themes{};
+	bool b_help{};
 
 	bool entity_popup{};
 	std::string popup_label{};
@@ -690,17 +697,40 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu("Help")) {
+			b_help = true;
+			ImGui::EndMenu();
+		}
 		if (ImGui::Button("Metagrid")) { p_target_state = EditorStateType::metagrid; }
 		if (ImGui::Button("Dialogue")) { p_target_state = EditorStateType::dialogue_editor; }
 
 		ImGui::EndMainMenuBar();
 	}
 
+	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+	if (b_help) {
+		ImGui::OpenPopup("Help");
+		b_help = false;
+	}
+	if (ImGui::BeginPopupModal("Help", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+		ImGui::SeparatorText("Controls");
+		ImGui::NewLine();
+		ImGui::Text("Launch Playtest:.............................ctrl+L");
+		ImGui::Text("	Playtest Fullscreen:.........................alt");
+		ImGui::Text("	Playtest Set Player at Mouse Position:.....shift");
+		ImGui::NewLine();
+		ImGui::Text("Show Current Layer Only:......................shift");
+		ImGui::Text("Eyedropper:.....................................alt");
+		ImGui::NewLine();
+		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+		ImGui::EndPopup();
+	}
+
 	if (open_themes) {
 		ImGui::OpenPopup("Level Themes");
 		open_themes = false;
 	}
-	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 	if (ImGui::BeginPopupModal("Level Themes", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		static int music_selected{};
@@ -761,6 +791,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					} else {
 					}
 				}
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("Weather")) {
+				m_services->music_player.pause();
+				map.report_weather();
 				ImGui::EndTabItem();
 			}
 			ImGui::EndTabBar();

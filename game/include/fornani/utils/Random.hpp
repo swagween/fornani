@@ -1,6 +1,8 @@
+
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <cassert>
 #include <random>
 #include <vector>
 
@@ -27,6 +29,23 @@ sf::Vector2f random_vector_float(sf::Vector2f lo, sf::Vector2f hi);
 
 // Generates a random vector from a point within `radius` distance, skewed toward the center
 sf::Vector2f random_weighted_offset(float radius, float bias = 2.0f);
+
+// Grabs a random element from a vector
+template <typename T>
+T& random_element(std::vector<T>& v) {
+	assert(!v.empty() && "random_element: empty vector");
+
+	std::uniform_int_distribution<std::size_t> dist(0, v.size() - 1);
+	return v[dist(engine())];
+}
+
+template <typename T>
+T const& random_element(std::vector<T> const& v) {
+	assert(!v.empty() && "random_element: empty vector");
+
+	std::uniform_int_distribution<std::size_t> dist(0, v.size() - 1);
+	return v[dist(engine())];
+}
 
 // Returns 0 or 1 based on a coin flip using an unsigned logic
 int unsigned_coin_flip();

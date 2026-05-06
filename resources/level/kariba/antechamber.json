@@ -117,6 +117,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": true,
+      "interior": true,
       "lighting": true,
       "timer": false
     },
@@ -125,7 +126,8 @@
       "darken_factor": 4
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
     "flags": {

@@ -352,8 +352,9 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 
 void DataManager::delete_file(int index) {
 	if (index >= files.size()) { return; }
-	files.at(index).save_data = blank_file.save_data;
-	if (!files.at(index).save_data.to_file((m_services->finder.paths.save / fs::path{"file_" + std::to_string(current_save) + ".json"}).string())) { NANI_LOG_ERROR(m_logger, "Failed to clear save data!"); }
+	auto filename = m_services->finder.paths.save / fs::path{"file_" + std::to_string(index) + ".sav"};
+	auto template_file = m_services->finder.resource_path() / fs::path{"data/save/new_game.json"};
+	m_services->finder.overwrite_save(filename, template_file);
 }
 
 std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) const {

@@ -11,6 +11,8 @@ Room::Room(fornani::automa::ServiceProvider& svc, fornani::data::MapData& in) : 
 	m_biome.setString(in.metadata["meta"]["biome"].as_string());
 	m_position = sf::Vector2i{in.metadata["meta"]["metagrid"][0].as<int>(), in.metadata["meta"]["metagrid"][1].as<int>()};
 	set_flag(RoomFlags::include_in_minimap, in.metadata["meta"]["minimap"].as_bool());
+	set_flag(RoomFlags::use_template, in.metadata["meta"]["use_template"].as_bool());
+	set_flag(RoomFlags::interior, in.metadata["meta"]["properties"]["interior"].as_bool());
 	auto dimensions = sf::Vector2u{in.metadata["meta"]["dimensions"][0].as<unsigned int>(), in.metadata["meta"]["dimensions"][1].as<unsigned int>()} / fornani::constants::u32_chunk_size;
 	auto real_dimensions = sf::Vector2u{in.metadata["meta"]["dimensions"][0].as<unsigned int>(), in.metadata["meta"]["dimensions"][1].as<unsigned int>()};
 	m_box.setFillColor(room_color_v);
@@ -34,6 +36,7 @@ Room::Room(fornani::automa::ServiceProvider& svc, fornani::data::MapData& in) : 
 bool Room::serialize(fornani::automa::ServiceProvider& svc) {
 	m_data->metadata["meta"]["minimap"] = has_flag_set(RoomFlags::include_in_minimap);
 	m_data->metadata["meta"]["use_template"] = has_flag_set(RoomFlags::use_template);
+	m_data->metadata["meta"]["properties"]["interior"] = has_flag_set(RoomFlags::interior);
 	m_data->metadata["meta"]["metagrid"][0] = m_position.x;
 	m_data->metadata["meta"]["metagrid"][1] = m_position.y;
 	auto msg = std::string{};
@@ -54,6 +57,13 @@ void Room::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	sprite.scale({spacing_v / fornani::constants::f_chunk_size, spacing_v / fornani::constants::f_chunk_size});
 	win.draw(sprite);
 	win.draw(m_box);
+	if (show_tags) {
+		auto tag_barrier = sf::Vector2f{4.f, 4.f};
+		auto interior_tag = sf::CircleShape{2.f};
+		has_flag_set(RoomFlags::interior) ? interior_tag.setFillColor(fornani::colors::dark_fucshia) : interior_tag.setFillColor(fornani::colors::bright_purple);
+		interior_tag.setPosition(m_box.getPosition());
+		win.draw(interior_tag);
+	}
 }
 
 } // namespace pi

@@ -41,7 +41,7 @@ include(cmake/GenerateDataTemplates.cmake)
 
 add_subdirectory(dependencies)
 add_subdirectory(game)
-if (FORNANI_BUILD_EDITOR AND NOT FORNANI_PRODUCTION_BUILD)
+if (FORNANI_BUILD_EDITOR)
     add_subdirectory(editor)
 endif ()
 add_subdirectory(launcher)

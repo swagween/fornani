@@ -68,6 +68,20 @@
           88
         ],
         "type": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 80538,
+        "modifier": 0,
+        "position": [
+          44,
+          101
+        ],
+        "tag": "vermite",
+        "type": 2
       }
     ],
     "destructibles": [
@@ -547,7 +561,7 @@
     ]
   },
   "meta": {
-    "ambience": "none",
+    "ambience": "",
     "background": "night",
     "biome": "firstwind",
     "border_color": [
@@ -574,12 +588,13 @@
       48,
       112
     ],
+    "interior": true,
     "metagrid": [
       6,
       -2
     ],
     "minimap": true,
-    "music": "dusken",
+    "music": "",
     "player_start": [
       0,
       0
@@ -587,6 +602,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": true,
       "lighting": false,
       "timer": false
     },
@@ -595,7 +611,15 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": {
+      "ambience": "rain",
+      "chance": 0.30000001192092896,
+      "density": 1,
+      "effect": "raindrop",
+      "framerate": 8,
+      "type": "rain"
+    }
   },
   "tile": {
     "flags": {
@@ -17488,7 +17512,7 @@
         0,
         0,
         0,
-        0,
+        2,
         0,
         0,
         0,
@@ -17536,8 +17560,8 @@
         0,
         0,
         0,
-        0,
         2,
+        3,
         3,
         14,
         14,

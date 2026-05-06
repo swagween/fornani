@@ -16,10 +16,10 @@ void HUDHearts::update(automa::ServiceProvider& svc, player::Player& player) {
 	auto& hp = player.health;
 	if (m_health_bar) {
 		m_health_bar->set_quantity(hp.get_i_capacity());
-		m_health_bar->update(svc, hp, hp.flags.test(entity::HPState::hit));
+		m_health_bar->update(svc, hp, hp.has_flag_set(HealthFlags::hit));
 		if (p_rect) { m_health_bar->set_origin({0.f, p_rect->size.y}); }
 	}
-	player.health.flags.reset(entity::HPState::hit);
+	player.health.set_flag(HealthFlags::hit, false);
 }
 
 void HUDHearts::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f offset) {

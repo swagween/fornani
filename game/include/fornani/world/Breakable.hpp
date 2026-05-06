@@ -43,7 +43,7 @@ class Breakable : public Animatable {
   private:
 	shape::RegisteredCollider m_collider;
 	util::BitFlags<BreakableAttributes> attributes{};
-	entity::Health m_health;
+	Health m_health;
 	float energy{};
 	float dampen{0.1f};
 	float hit_energy{8.f};

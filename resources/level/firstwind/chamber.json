@@ -136,6 +136,22 @@
           5
         ],
         "source_id": 111
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "destination_id": 139,
+        "dimensions": [
+          5,
+          1
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          67,
+          15
+        ],
+        "source_id": 111
       }
     ],
     "switch_blocks": [
@@ -243,6 +259,7 @@
       96,
       16
     ],
+    "interior": true,
     "metagrid": [
       9,
       1
@@ -256,6 +273,7 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": false,
+      "interior": true,
       "lighting": false,
       "timer": false
     },
@@ -7937,9 +7955,9 @@
         1,
         1,
         1,
-        52,
-        53,
-        54,
+        1,
+        1,
+        1,
         1,
         1,
         0,
@@ -9083,7 +9101,7 @@
         0,
         0,
         0,
-        0,
+        29,
         0,
         0,
         0,
@@ -9179,7 +9197,7 @@
         0,
         0,
         0,
-        0,
+        29,
         0,
         0,
         0,
@@ -9275,7 +9293,7 @@
         0,
         0,
         0,
-        0,
+        29,
         0,
         0,
         0,
@@ -9371,7 +9389,7 @@
         0,
         0,
         0,
-        0,
+        29,
         0,
         0,
         0,
@@ -9467,17 +9485,17 @@
         0,
         0,
         0,
-        0,
-        45,
-        45,
-        45,
-        45,
-        45,
+        29,
+        52,
+        53,
+        53,
+        53,
+        54,
         16,
         18,
-        0,
-        0,
-        0,
+        52,
+        53,
+        54,
         32,
         34,
         0,

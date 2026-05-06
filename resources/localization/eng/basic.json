@@ -96,15 +96,21 @@
   "delete_file": {
     "suite": [
       [
-        { "message": "This action cannot be undone. Are you sure you want to delete this file?" },
-        { "message": "File deleted." }
-      ]
+        {
+          "codes": [[1, 0]],
+          "message": "This action cannot be undone. Are you sure you want to delete this file?"
+        }
+      ],
+      [{ "message": "File deleted." }]
     ],
     "responses": [
       [
         {
           "hide_portrait": true,
-          "codes": [[7, 3]],
+          "codes": [
+            [1, 1],
+            [7, 3]
+          ],
           "message": "Yes"
         },
         {

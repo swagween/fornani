@@ -960,5 +960,29 @@
     "naive_description": "A plugin for your map gizmo that shows you where Gobe is.",
     "unique": true,
     "invisible": true
+  },
+  {
+    "tag": "indigum",
+    "category": 2,
+    "lookup": [3, 6],
+    "origin": [4, 0],
+    "actual_title": "Indigum",
+    "naive_description": "A petrified resin produced by rhenite-corrupted flora.",
+    "unique": false,
+    "sellable": true,
+    "rarity": 2,
+    "value": 1700
+  },
+  {
+    "tag": "pioneer_scrap",
+    "category": 2,
+    "lookup": [0, 5],
+    "origin": [1, 4],
+    "actual_title": "Pioneer Scrap",
+    "naive_description": "Scrap metal from pioneer tech.",
+    "unique": false,
+    "sellable": true,
+    "rarity": 1,
+    "value": 500
   }
 ]

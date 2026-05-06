@@ -76,6 +76,8 @@ sf::Vector2f Shape::project_circle_on_axis(sf::Vector2f center, float radius, sf
 	return sf::Vector2f(projection - radius, projection + radius);
 }
 
+sf::Vector2f Shape::get_top() const { return {(vertices[0].x + vertices[1].x) * 0.5f, (vertices[0].y + vertices[1].y) * 0.5f}; }
+
 std::vector<sf::Vector2f> Shape::get_vertices(Shape const& shape) { return shape.vertices; }
 
 std::vector<sf::Vector2f> Shape::get_poles(sf::CircleShape const& circle) {
