@@ -1,66 +1,6 @@
 {
   "rooms": [
     {
-      "folder": "config",
-      "label": "bg_test.json",
-      "region": "overturned",
-      "room_id": 77123
-    },
-    {
-      "folder": "config",
-      "label": "chunk_test.json",
-      "region": "firstwind",
-      "room_id": 0
-    },
-    {
-      "folder": "config",
-      "label": "collision_test.json",
-      "region": "firstwind",
-      "room_id": 999886
-    },
-    {
-      "folder": "config",
-      "label": "collt.json",
-      "region": "firstwind",
-      "room_id": 11111
-    },
-    {
-      "folder": "config",
-      "label": "dns_test.json",
-      "region": "junkyard",
-      "room_id": 666666
-    },
-    {
-      "folder": "config",
-      "label": "dps_test.json",
-      "region": "firstwind",
-      "room_id": 88867
-    },
-    {
-      "folder": "config",
-      "label": "new_file.json",
-      "region": "firstwind",
-      "room_id": 1
-    },
-    {
-      "folder": "config",
-      "label": "nighty.json",
-      "region": "greatwing",
-      "room_id": 99900
-    },
-    {
-      "folder": "config",
-      "label": "pushable_test.json",
-      "region": "firstwind",
-      "room_id": 999888
-    },
-    {
-      "folder": "config",
-      "label": "turret_test.json",
-      "region": "firstwind",
-      "room_id": 999876
-    },
-    {
       "folder": "firstwind",
       "label": "atrium.json",
       "region": "firstwind",
@@ -155,12 +95,6 @@
       "label": "infirmary.json",
       "region": "firstwind",
       "room_id": 114
-    },
-    {
-      "folder": "firstwind",
-      "label": "json_city.json",
-      "region": "toxic",
-      "room_id": 213321321
     },
     {
       "folder": "firstwind",
@@ -917,6 +851,42 @@
       "label": "shop.json",
       "region": "base",
       "room_id": 4201
+    },
+    {
+      "folder": "toxic",
+      "label": "cavern.json",
+      "region": "toxic",
+      "room_id": 1003
+    },
+    {
+      "folder": "toxic",
+      "label": "cove.json",
+      "region": "toxic",
+      "room_id": 1006
+    },
+    {
+      "folder": "toxic",
+      "label": "crossroads.json",
+      "region": "toxic",
+      "room_id": 1005
+    },
+    {
+      "folder": "toxic",
+      "label": "entrypoint.json",
+      "region": "toxic",
+      "room_id": 1001
+    },
+    {
+      "folder": "toxic",
+      "label": "research_center.json",
+      "region": "toxic",
+      "room_id": 1002
+    },
+    {
+      "folder": "toxic",
+      "label": "spiral.json",
+      "region": "toxic",
+      "room_id": 1004
     },
     {
       "folder": "toxic",

@@ -32,7 +32,6 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx
 	instruction.setPosition({svc.window->i_screen_dimensions().x * 0.5f - instruction.getLocalBounds().getCenter().x, svc.window->i_screen_dimensions().y - 36.f});
 	instruction.setFillColor(ctx.settings.get_theme().deactivated_text_color);
 
-	svc.data.load_blank_save(player);
 	svc.ambience_player.load(svc.finder, "none");
 	svc.ambience_player.play();
 	loading.start();

@@ -9,6 +9,7 @@
     "equip": "equip",
     "unequip": "unequip",
     "read": "read",
+    "use": "use",
     "cancel": "cancel"
   },
   "exchange_menu": {

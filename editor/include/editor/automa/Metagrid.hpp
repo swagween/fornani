@@ -21,11 +21,6 @@ class Metagrid final : public EditorState {
 	sf::Color m_background_color;
 	Workspace m_workspace;
 	sf::RectangleShape m_current_cell{};
-	sf::Vector2f m_camera{};
-	sf::Vector2f m_dragged_position{};
-	sf::Vector2f m_left_clicked_position{};
-	sf::Vector2f m_right_clicked_position{};
-	sf::Vector2f m_current_mouse_position{};
 	std::vector<Room> m_rooms{};
 	std::unique_ptr<MetagridTool> m_tool;
 	std::optional<Room*> m_highlighted_room{};

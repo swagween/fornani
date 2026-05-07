@@ -24,6 +24,7 @@ DialogueEditor::DialogueEditor(fornani::automa::ServiceProvider& svc, EditorCont
 	p_target_state = EditorStateType::dialogue_editor;
 	p_wallpaper.setFillColor(m_background_color);
 	p_wallpaper.setSize(p_services->window->f_screen_dimensions());
+	p_camera = {-100.f, -100.f};
 }
 
 EditorStateType DialogueEditor::run(char** argv) {
@@ -39,12 +40,12 @@ EditorStateType DialogueEditor::run(char** argv) {
 	ImGui::SFML::Render(p_services->window->get());
 	p_services->window->get().display();
 
+	EditorState::run(argv);
 	return p_target_state;
 }
 
 void DialogueEditor::handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) {
 	ImGuiIO& io = ImGui::GetIO();
-	m_current_mouse_position = sf::Vector2f{io.MousePos.x, io.MousePos.y};
 	if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
 		if (key_pressed->control) {
 			if (key_pressed->scancode == sf::Keyboard::Scancode::N) { new_file = true; }
@@ -54,45 +55,24 @@ void DialogueEditor::handle_events(std::optional<sf::Event> event, sf::RenderWin
 			if (key_pressed->scancode == sf::Keyboard::Scancode::A) { add_set = true; }
 		}
 	}
-	if (auto const* button_pressed = event->getIf<sf::Event::MouseButtonPressed>()) {
-		if (button_pressed->button == sf::Mouse::Button::Middle) { pressed_keys.set(PressedKeys::mouse_middle); }
-		if (button_pressed->button == sf::Mouse::Button::Left) {
-			if (!pressed_keys.test(PressedKeys::mouse_left)) {
-				if (m_suite && !window_hovered) { m_suite->deselect_all(); }
-				clicked = !window_hovered;
-				m_left_clicked_position = sf::Vector2f{m_current_mouse_position - m_camera};
-				if (m_suite) { is_any_node_hovered = m_suite->is_any_node_hovered(); }
-				if (m_suite) { is_any_node_selected = m_suite->is_any_node_selected(); }
-				if (!is_any_node_hovered) { clicked = false; }
-			}
-			pressed_keys.set(PressedKeys::mouse_left);
-		}
-		if (button_pressed->button == sf::Mouse::Button::Right) {
-			pressed_keys.set(PressedKeys::mouse_right);
-			m_right_clicked_position = m_current_mouse_position;
-		}
-	}
-	if (auto const* button_released = event->getIf<sf::Event::MouseButtonReleased>()) {
-		if (button_released->button == sf::Mouse::Button::Middle) { pressed_keys.reset(PressedKeys::mouse_middle); }
-		if (button_released->button == sf::Mouse::Button::Left) {
-			clicked = false;
-			pressed_keys.reset(PressedKeys::mouse_left);
-		}
-		if (button_released->button == sf::Mouse::Button::Right) { pressed_keys.reset(PressedKeys::mouse_right); }
-	}
 	if (auto const* scrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
 		auto zoom_factor = 10.f;
 		auto delta = scrolled->delta * zoom_factor;
-		m_camera.y -= delta;
+		p_camera.y -= delta;
 	}
 }
 
 void DialogueEditor::logic() {
-	auto last_workspace_position = window_hovered ? m_left_clicked_position : m_current_mouse_position;
-	if (pressed_keys.test(PressedKeys::mouse_right)) { m_camera -= m_current_mouse_position - m_dragged_position; }
-	m_dragged_position = sf::Vector2f{m_current_mouse_position};
-	m_tool->update(m_current_mouse_position);
-	if (m_suite) { m_suite->update(m_current_mouse_position, clicked); }
+	if (p_left_mouse.clicked) {
+		if (m_suite && !window_hovered) { m_suite->deselect_all(); }
+		clicked = !window_hovered;
+		if (m_suite) { is_any_node_hovered = m_suite->is_any_node_hovered(); }
+		if (m_suite) { is_any_node_selected = m_suite->is_any_node_selected(); }
+		if (!is_any_node_hovered) { clicked = false; }
+	}
+	auto last_workspace_position = window_hovered ? p_left_clicked_position : p_current_mouse_position;
+	m_tool->update(p_current_mouse_position);
+	if (m_suite) { m_suite->update(p_current_mouse_position, clicked); }
 }
 
 void DialogueEditor::render(sf::RenderWindow& win) {
@@ -327,7 +307,7 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 
 	if (m_suite) {
 		if (window_hovered) { m_suite->unhover_all(); }
-		m_suite->render(win, m_camera);
+		m_suite->render(win, p_camera);
 	}
 	m_tool->render(win);
 }

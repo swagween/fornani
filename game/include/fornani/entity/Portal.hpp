@@ -14,11 +14,19 @@ enum class PortalState { activated, ready, locked, unlocked, transitioning };
 enum class PortalRenderState { closed, open, locked };
 enum class PortalOrientation { top, bottom, left, right, central };
 
+struct PortalSpecifications {
+	bool activate_on_contact{};
+	bool already_open{};
+	int source_map_id{};
+	int destination_map_id{};
+	int channel{};
+};
+
 class Portal : public Entity {
   public:
 	Portal(automa::ServiceProvider& svc, dj::Json const& in);
-	Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_map_id, int destination_map_id);
-	Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_map_id, int destination_map_id, std::string_view key_tag);
+	Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, PortalSpecifications specs);
+	Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, PortalSpecifications specs, std::string_view key);
 
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
@@ -47,6 +55,7 @@ class Portal : public Entity {
 
 	int source_id{};
 	int destination_id{};
+	int channel{};
 	std::optional<std::string> key_tag{};
 
 	PortalOrientation m_orientation{};

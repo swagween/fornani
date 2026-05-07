@@ -28,12 +28,16 @@ class Map;
 namespace fornani::gui {
 
 enum class InventoryView { dashboard, focused, exit };
+enum class InventoryWindowFlags { exit };
 
 class InventoryWindow {
   public:
 	InventoryWindow(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, LightShader& shader);
+
+	void close();
+
 	[[nodiscard]] auto exit_requested() const -> bool { return m_exit.is_almost_complete(); }
 
   private:
@@ -44,6 +48,7 @@ class InventoryWindow {
 	std::unique_ptr<Dashboard> m_dashboard{};
 	InventoryView m_view{};
 	util::Cooldown m_exit;
+	util::BitFlags<InventoryWindowFlags> m_flags{};
 
 	struct {
 		components::SteeringBehavior steering{};

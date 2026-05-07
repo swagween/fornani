@@ -249,6 +249,12 @@ void InventoryGizmo::handle_menu_selection(player::Player& player, int selection
 					m_services->events.equip_item_by_id_event.dispatch(*m_services, *m_current_item);
 					m_item_menu.reset();
 				}
+			} else if (m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["use"].as_string()) {
+				if (item->is_useable()) {
+					NANI_LOG_DEBUG(m_logger, "Using Item {}", *m_current_item);
+					m_services->events.use_item_by_id_event.dispatch(*m_services, *m_current_item);
+					m_item_menu.reset();
+				}
 			}
 		} else {
 			m_current_item.reset();

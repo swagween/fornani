@@ -20,6 +20,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 	// inventory events
 	svc.events.acquire_item_from_console_event.attach_to(p_slot, &Dojo::acquire_item_from_console, this);
 	svc.events.read_item_by_id_event.attach_to(p_slot, &Dojo::read_item, this);
+	svc.events.use_item_by_id_event.attach_to(p_slot, &Dojo::use_item, this);
 	svc.events.equip_item_by_id_event.attach_to(p_slot, &Dojo::equip_item, this);
 	svc.events.acquire_item_event.attach_to(p_slot, &Dojo::acquire_item, this);
 	svc.events.acquire_weapon_event.attach_to(p_slot, &Dojo::acquire_gun, this);
@@ -357,6 +358,11 @@ void Dojo::equip_item(ServiceProvider& svc, int id) {
 				   : equipped == player::EquipmentStatus::swapped ? svc.data.gui_text["notifications"]["swapped"].as_string()
 																  : svc.data.gui_text["notifications"]["slots_full"].as_string();
 	svc.notifications.push_notification(svc, message);
+}
+
+void Dojo::use_item(ServiceProvider& svc, int id) {
+	player->hold_item(id);
+	if (p_inventory_window) { p_inventory_window.value()->close(); }
 }
 
 void Dojo::open_vendor(ServiceProvider& svc, int id) {

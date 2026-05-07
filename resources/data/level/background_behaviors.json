@@ -18,6 +18,16 @@
       }
     ]
   },
+  "bright_slime": {
+    "tile": true,
+    "dimensions": [128, 128],
+    "layers": [
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.2
+      }
+    ]
+  },
   "rosy_haze": {
     "dimensions": [3840, 512],
     "lock": {

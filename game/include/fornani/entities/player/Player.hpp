@@ -116,7 +116,10 @@ enum class PlayerFlags {
 	in_reward_sequence,
 	stunned,
 	bonus_health_added,
-	disable_abilities
+	disable_abilities,
+	holding_item,
+	drank,
+	failed_to_drink
 };
 enum class Triggers { hurt };
 
@@ -264,6 +267,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void give_drop(item::DropType type, float value);
 	void give_item_by_id(int id, int amount);
 	void give_item(std::string_view label, int amount, bool from_save = false);
+	void hold_item(int id);
+	void use_item();
 	EquipmentStatus equip_item(int id);
 	void add_to_hotbar(std::string_view tag);
 	void remove_from_hotbar(std::string_view tag);
@@ -335,6 +340,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto can_dash_kick() const -> bool;
 
   private:
+	void handle_item_logic();
 	void set_facing_direction(SimpleDirection to_direction) { directions.desired = to_direction; }
 	[[nodiscard]] auto abilities_disabled() const -> bool;
 
@@ -343,6 +349,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	PlayerAttributes m_attributes;
 
 	std::optional<PlayerDeathType> m_death_type{};
+	std::optional<int> m_currently_held_item{};
 
 	[[nodiscard]] auto can_dash() const -> bool;
 	[[nodiscard]] auto can_omnidirectional_dash() const -> bool;

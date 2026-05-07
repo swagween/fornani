@@ -56,7 +56,8 @@ enum class AnimState {
 	recover,
 	melee_front_kick,
 	melee_side_kick,
-	melee_roundhouse_kick
+	melee_roundhouse_kick,
+	drink
 };
 
 enum class AnimTriggers { end_death };
@@ -128,6 +129,7 @@ class PlayerAnimation : public StateMachine<AnimState> {
 	fsm::StateFunction update_melee_front_kick();
 	fsm::StateFunction update_melee_side_kick();
 	fsm::StateFunction update_melee_roundhouse_kick();
+	fsm::StateFunction update_drink();
 
 	bool change_state(AnimState next, anim::Parameters params, bool hard = false);
 	void force(AnimState to_state, std::string_view key);

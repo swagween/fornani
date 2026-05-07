@@ -7,28 +7,70 @@ namespace pi {
 
 EditorState::EditorState(fornani::automa::ServiceProvider& svc, EditorContext& ctx) : p_services(&svc), p_context(&ctx) {}
 
+EditorStateType EditorState::run(char** argv) {
+	p_left_mouse.flush();
+	p_right_mouse.flush();
+	p_alt.flush();
+	p_control.flush();
+	p_shift.flush();
+	return EditorStateType::editor;
+}
+
 void EditorState::handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) {
 	ImGuiIO& io = ImGui::GetIO();
-	p_left_mouse.clicked = false;
-	p_left_mouse.released = false;
-	if (auto const* button_pressed = event->getIf<sf::Event::MouseButtonPressed>()) {
-		if (button_pressed->button == sf::Mouse::Button::Middle) { pressed_keys.set(PressedKeys::mouse_middle); }
-		if (button_pressed->button == sf::Mouse::Button::Left) {
-			p_left_mouse.clicked = true;
-			p_left_mouse.held = true;
-			pressed_keys.set(PressedKeys::mouse_left);
+
+	p_current_mouse_position = sf::Vector2f{io.MousePos.x, io.MousePos.y};
+
+	// Mouse input
+	if (!io.WantCaptureMouseUnlessPopupClose) {
+		if (auto const* button_pressed = event->getIf<sf::Event::MouseButtonPressed>()) {
+			if (button_pressed->button == sf::Mouse::Button::Left) {
+				p_left_mouse.press();
+				p_left_clicked_position = p_current_mouse_position;
+			}
+			if (button_pressed->button == sf::Mouse::Button::Right) {
+				p_right_mouse.press();
+				p_right_clicked_position = p_current_mouse_position;
+			}
 		}
-		if (button_pressed->button == sf::Mouse::Button::Right) { pressed_keys.set(PressedKeys::mouse_right); }
-	}
-	if (auto const* button_released = event->getIf<sf::Event::MouseButtonReleased>()) {
-		if (button_released->button == sf::Mouse::Button::Middle) { pressed_keys.reset(PressedKeys::mouse_middle); }
-		if (button_released->button == sf::Mouse::Button::Left) {
-			p_left_mouse.held = false;
-			p_left_mouse.released = true;
-			pressed_keys.reset(PressedKeys::mouse_left);
+		if (auto const* button_released = event->getIf<sf::Event::MouseButtonReleased>()) {
+			if (button_released->button == sf::Mouse::Button::Left) {
+				p_left_mouse.held = false;
+				p_left_mouse.released = true;
+			}
+			if (button_released->button == sf::Mouse::Button::Right) {
+				p_right_mouse.held = false;
+				p_right_mouse.released = true;
+			}
 		}
-		if (button_released->button == sf::Mouse::Button::Right) { pressed_keys.reset(PressedKeys::mouse_right); }
 	}
+
+	// Keyboard keys
+	if (!io.WantCaptureKeyboard) {
+		if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
+			if (key_pressed->scancode == sf::Keyboard::Scancode::LShift || key_pressed->scancode == sf::Keyboard::Scancode::RShift) { p_shift.press(); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::LControl || key_pressed->scancode == sf::Keyboard::Scancode::RControl) { p_control.press(); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::LAlt || key_pressed->scancode == sf::Keyboard::Scancode::RAlt) { p_alt.press(); }
+		}
+		if (auto const* key_pressed = event->getIf<sf::Event::KeyReleased>()) {
+			if (key_pressed->scancode == sf::Keyboard::Scancode::LShift || key_pressed->scancode == sf::Keyboard::Scancode::RShift) { p_shift.release(); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::LControl || key_pressed->scancode == sf::Keyboard::Scancode::RControl) { p_control.release(); }
+			if (key_pressed->scancode == sf::Keyboard::Scancode::LAlt || key_pressed->scancode == sf::Keyboard::Scancode::RAlt) { p_alt.release(); }
+		}
+	}
+}
+
+void EditorState::logic() {
+	p_mouse_cooldowns.left_click.update();
+	p_mouse_cooldowns.left_release.update();
+	p_mouse_cooldowns.right_click.update();
+	p_mouse_cooldowns.right_release.update();
+	if (p_left_mouse.clicked) { p_mouse_cooldowns.left_click.start(); }
+	if (p_left_mouse.released) { p_mouse_cooldowns.left_release.start(); }
+	if (p_right_mouse.clicked) { p_mouse_cooldowns.right_click.start(); }
+	if (p_right_mouse.released) { p_mouse_cooldowns.right_release.start(); }
+	if (p_right_mouse.held) { p_camera += p_current_mouse_position - p_dragged_position; }
+	p_dragged_position = sf::Vector2f{p_current_mouse_position};
 }
 
 void EditorState::render(sf::RenderWindow& win) {
@@ -51,6 +93,7 @@ bool EditorState::create_new_room() {
 
 	ImGui::InputTextWithHint("Region Name", "firstwind", regbuffer, IM_ARRAYSIZE(regbuffer));
 	ImGui::InputTextWithHint("Room Name", "boiler_room", roombuffer, IM_ARRAYSIZE(roombuffer));
+	ImGui::InputInt("ID", &p_new_id);
 	ImGui::Separator();
 	ImGui::NewLine();
 

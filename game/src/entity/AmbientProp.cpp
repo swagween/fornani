@@ -64,8 +64,10 @@ void AmbientProp::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 		// win.draw(drawbox);
 	}
 	if (m_editor) { return; }
-	Animatable::set_position(get_global_center() - cam);
-	win.draw(*this);
+	if (m_params) {
+		Animatable::set_position(get_global_center() - cam + m_params->offset);
+		win.draw(*this);
+	}
 
 	/*sf::CircleShape bob{};
 	bob.setFillColor(sf::Color::Red);
@@ -85,5 +87,6 @@ AmbientPropParameters::AmbientPropParameters(dj::Json const& in) {
 	in["foreground"].as_bool() ? attributes.set(AmbientPropAttributes::foreground) : attributes.reset(AmbientPropAttributes::foreground);
 	in["destructible"].as_bool() ? attributes.set(AmbientPropAttributes::destructible) : attributes.reset(AmbientPropAttributes::destructible);
 	in["audio"].as_bool() ? attributes.set(AmbientPropAttributes::audio) : attributes.reset(AmbientPropAttributes::audio);
+	offset = sf::Vector2f{in["offset"][0].as<float>(), in["offset"][1].as<float>()};
 }
 } // namespace fornani

@@ -28,6 +28,7 @@ struct EventRegistry {
 	AcquireItemFromConsoleEvent acquire_item_from_console_event{};
 	AcquireItemEvent acquire_item_event{};
 	ReadItemByIDEvent read_item_by_id_event{};
+	UseItemByIDEvent use_item_by_id_event{};
 	EquipItemByIDEvent equip_item_by_id_event{};
 	RevealItemByIDEvent reveal_item_by_id_event{};
 	AcquireWeaponEvent acquire_weapon_event{};

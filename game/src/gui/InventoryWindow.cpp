@@ -77,7 +77,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 
 	if (controller.digital(input::DigitalAction::menu_back).triggered) { m_view = m_view == InventoryView::focused ? InventoryView::dashboard : InventoryView::exit; }
 	if (controller.digital(input::DigitalAction::inventory).triggered || controller.digital(input::DigitalAction::menu_close).triggered) { m_view = InventoryView::exit; }
-	if (m_view == InventoryView::exit && !m_exit.running()) {
+	if ((m_view == InventoryView::exit || m_flags.test(InventoryWindowFlags::exit)) && !m_exit.running()) {
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 		m_exit.start();
 		m_dashboard->close();
@@ -95,5 +95,7 @@ void InventoryWindow::render(automa::ServiceProvider& svc, sf::RenderWindow& win
 	}
 	m_dashboard->render(svc, win, player, m_camera.physics.position, shader);
 }
+
+void InventoryWindow::close() { m_flags.set(InventoryWindowFlags::exit); }
 
 } // namespace fornani::gui

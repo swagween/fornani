@@ -26,8 +26,8 @@ struct ItemStats {
 	int stack_limit{1};
 };
 
-enum class ItemType { ability, key, collectible, gizmo, apparel, plugin };
-enum class ItemFlags { sellable, readable, equippable, wearable, invisible };
+enum class ItemType { ability, key, collectible, gizmo, apparel, plugin, useable };
+enum class ItemFlags { sellable, readable, equippable, wearable, invisible, useable };
 enum class ItemState { revealed, equipped };
 
 class Item : public Polymorphic {
@@ -67,6 +67,7 @@ class Item : public Polymorphic {
 	[[nodiscard]] auto is_collectible() const -> bool { return m_type == ItemType::collectible; }
 	[[nodiscard]] auto is_unique() const -> bool { return m_stats.stack_limit == 1; }
 	[[nodiscard]] auto is_ability() const -> bool { return m_type == ItemType::ability; }
+	[[nodiscard]] auto is_useable() const -> bool { return m_type == ItemType::useable || m_flags.test(ItemFlags::useable); }
 
   protected:
 	int m_id{};

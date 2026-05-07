@@ -8,19 +8,16 @@
 
 namespace fornani {
 
-Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_id, int destination_id)
-	: Entity(svc, "portals", 0, dimensions), source_id(source_id), destination_id(destination_id), key_tag(key_tag), m_services(&svc) {
-	set_texture_rect(sf::IntRect{{16 * already_open, 0}, {16, 32}});
+Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, PortalSpecifications specs)
+	: Entity(svc, "portals", 0, dimensions), source_id(specs.source_map_id), destination_id(specs.destination_map_id), key_tag(key_tag), m_services(&svc) {
+	set_texture_rect(sf::IntRect{{16 * specs.already_open, 0}, {16, 32}});
 	set_origin({0.f, 16.f});
-	if (activate_on_contact || dimensions.x * dimensions.y > 1) { m_textured = false; }
-	if (activate_on_contact) { m_attributes.set(PortalAttributes::activate_on_contact); }
-	if (already_open) { m_attributes.set(PortalAttributes::already_open); }
+	if (specs.activate_on_contact || dimensions.x * dimensions.y > 1) { m_textured = false; }
+	if (specs.activate_on_contact) { m_attributes.set(PortalAttributes::activate_on_contact); }
+	if (specs.already_open) { m_attributes.set(PortalAttributes::already_open); }
 }
 
-Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_id, int destination_id, std::string_view key_tag)
-	: Portal(svc, dimensions, activate_on_contact, already_open, source_id, destination_id) {
-	key_tag = std::string{key_tag};
-}
+Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, PortalSpecifications specs, std::string_view key) : Portal(svc, dimensions, specs) { key_tag = key.data(); }
 
 Portal::Portal(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals"), m_services(&svc) {
 	unserialize(in);
@@ -50,6 +47,7 @@ void Portal::serialize(dj::Json& out) {
 	out["already_open"] = is_already_open();
 	out["source_id"] = source_id;
 	out["destination_id"] = destination_id;
+	out["channel"] = channel;
 	out["locked"] = is_locked();
 	if (key_tag) { out["key_tag"] = key_tag.value(); }
 }
@@ -60,6 +58,7 @@ void Portal::unserialize(dj::Json const& in) {
 	in["already_open"].as_bool() ? m_attributes.set(PortalAttributes::already_open) : m_attributes.reset(PortalAttributes::already_open);
 	source_id = in["source_id"].as<int>();
 	destination_id = in["destination_id"].as<int>();
+	channel = in["channel"].as<int>();
 	in["locked"].as_bool() ? m_state.set(PortalState::locked) : m_state.reset(PortalState::locked);
 	if (in["key_tag"]) { key_tag = in["key_tag"].as_string(); }
 }
@@ -74,6 +73,7 @@ void Portal::expose() {
 	ImGui::Separator();
 	ImGui::Checkbox("Activate on Contact", &activate_on_contact);
 	ImGui::Checkbox("Already Open", &already_open);
+	ImGui::InputInt("Channel", &channel);
 	ImGui::Separator();
 	ImGui::Checkbox("Locked", &locked);
 	ImGui::Separator();
@@ -107,7 +107,7 @@ void Portal::expose() {
 void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
 	Entity::update(svc, map, context, player);
 	m_render_state = is_already_open() ? PortalRenderState::open : is_locked() ? PortalRenderState::locked : m_render_state;
-	auto lookup = sf::IntRect({static_cast<int>(m_render_state) * constants::i_cell_resolution, map.get_style_id() * constants::i_cell_resolution * 2}, {constants::i_cell_resolution, constants::i_cell_resolution * 2});
+	auto lookup = sf::IntRect({static_cast<int>(m_render_state) * constants::i_cell_resolution + 64 * channel, map.get_style_id() * constants::i_cell_resolution * 2}, {constants::i_cell_resolution, constants::i_cell_resolution * 2});
 	set_texture_rect(lookup);
 	if (!context.transition.is(graphics::TransitionState::inactive)) { m_state.reset(PortalState::ready); }
 	if (bounding_box.overlaps(player.get_collider().bounding_box)) {

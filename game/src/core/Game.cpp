@@ -687,17 +687,32 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 }
 
 void Game::take_screenshot(sf::Texture& screencap) {
+
+	// generate texture
 	services.window->screencap.update(services.window->get());
+	sf::Sprite cap{screencap};
+	cap.setScale(sf::Vector2f{1.f, 1.f} / constants::f_scale_factor);
+	sf::RenderTexture texture = sf::RenderTexture{};
+	if (!texture.resize(services.window->u_screen_dimensions() / 2u)) { NANI_LOG_ERROR(m_logger, "Failed to save screenshot!"); }
+	texture.clear(colors::transparent);
+	texture.draw(cap);
+	texture.display();
+
+	// generate name
 	std::time_t now = std::time(nullptr);
 	std::string time_str(21, '\0');
 	std::strftime(time_str.data(), time_str.size(), "%FT%TZ", std::gmtime(&now));
 	time_str.resize(std::strlen(time_str.c_str()));
 
+	// save out
 	std::erase_if(time_str, [](auto const& c) { return c == ':' || isspace(c); });
 	auto destination = std::filesystem::path{services.finder.paths.screenshots.string()};
 	auto filename = std::filesystem::path{"screenshot_" + time_str + ".png"};
 	auto target = destination / filename;
-	if (screencap.copyToImage().saveToFile(target.string())) { NANI_LOG_INFO(m_logger, "screenshot {} saved to {}", filename.string(), destination.string()); }
+	if (texture.getTexture().copyToImage().saveToFile(target.string())) {
+		NANI_LOG_INFO(m_logger, "screenshot {} saved to {}", filename.string(), destination.string());
+		services.notifications.push_notification(services, "Saved screenshot to " + target.string());
+	}
 }
 
 void Game::restart_trial(std::filesystem::path const& levelpath) { game_state.set_current_state(std::make_unique<automa::Trial>(services, player, services.state_controller.next_state)); }

@@ -20,6 +20,7 @@ struct AmbientPropParameters {
 	std::optional<std::string> destroy_effect{};
 	std::optional<std::string> sound_effect{};
 	util::BitFlags<AmbientPropAttributes> attributes{};
+	sf::Vector2f offset{};
 };
 
 class AmbientProp : public Entity {

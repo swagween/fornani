@@ -130,6 +130,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		static int width{0};
 		static int height{0};
 		static int destination{0};
+		static int channel{0};
 		static bool activate_on_contact{};
 		static bool already_open{};
 		static bool locked{};
@@ -161,6 +162,10 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		ImGui::Separator();
 		ImGui::NewLine();
 
+		ImGui::InputInt("Channel", &channel);
+		ImGui::SameLine();
+		help_marker("Which type of door to draw. Generally leave as 0.");
+
 		ImGui::Checkbox("Locked?", &locked);
 		if (locked) {
 			std::vector<std::string> labels{};
@@ -176,13 +181,14 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		}
 
 		if (ImGui::Button("Create")) {
+			auto specs = fornani::PortalSpecifications{activate_on_contact, already_open, room_id, destination, channel};
 			m_is_open = false;
 			// switch to entity tool, and store the specified portal for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			if (locked) {
-				tool->current_entity = std::make_unique<fornani::Portal>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, activate_on_contact, already_open, room_id, destination, key_tag);
+				tool->current_entity = std::make_unique<fornani::Portal>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, specs, key_tag);
 			} else {
-				tool->current_entity = std::make_unique<fornani::Portal>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, activate_on_contact, already_open, room_id, destination);
+				tool->current_entity = std::make_unique<fornani::Portal>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, specs);
 			}
 			console.add_log(std::string{"Room ID: " + std::to_string(room_id)}.c_str());
 			ImGui::CloseCurrentPopup();

@@ -31,6 +31,7 @@ Item::Item(dj::Json const& source, std::string_view label) : m_label{label}, m_t
 	if (in_data["equippable"].as_bool()) { m_flags.set(ItemFlags::equippable); }
 	if (in_data["wearable"].as_bool()) { m_flags.set(ItemFlags::wearable); }
 	if (in_data["invisible"].as_bool()) { m_flags.set(ItemFlags::invisible); }
+	if (in_data["useable"].as_bool()) { m_flags.set(ItemFlags::useable); }
 	m_stats.stack_limit = in_data["stack_limit"] ? in_data["stack_limit"].as<int>() : 1;
 	if (m_type == ItemType::collectible) { m_stats.stack_limit = 99; }
 
@@ -59,6 +60,7 @@ std::vector<std::string> Item::generate_menu_list(dj::Json const& in) const {
 	auto ret = std::vector<std::string>();
 	if (m_flags.test(ItemFlags::equippable)) { m_state.test(ItemState::equipped) ? ret.push_back(in["unequip"].as_string()) : ret.push_back(in["equip"].as_string()); }
 	if (m_flags.test(ItemFlags::readable)) { ret.push_back(in["read"].as_string()); }
+	if (is_useable()) { ret.push_back(in["use"].as_string()); }
 	ret.push_back(in["cancel"].as_string());
 	return ret;
 }

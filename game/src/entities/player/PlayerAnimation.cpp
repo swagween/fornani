@@ -52,7 +52,8 @@ PlayerAnimation::PlayerAnimation(Player& plr) : m_player(&plr), state_function{s
 						{"hover", {145, 3, 8 * nani_animation_rate_v, -1}},
 						{"melee_front_kick", {153, 5, 7 * nani_animation_rate_v, 0}},
 						{"melee_side_kick", {158, 4, 7 * nani_animation_rate_v, 0}},
-						{"melee_roundhouse_kick", {153, 4, 7 * nani_animation_rate_v, 0}}};
+						{"melee_roundhouse_kick", {153, 4, 7 * nani_animation_rate_v, 0}},
+						{"drink", {162, 12, 7 * nani_animation_rate_v, 0}}};
 
 	state_function = state_function();
 	m_player->animation.set_params(get_params("idle"));
@@ -1229,6 +1230,46 @@ fsm::StateFunction PlayerAnimation::update_melee_roundhouse_kick() {
 	m_player->animation.label = "melee_roundhouse_kick";
 	p_state.actual = AnimState::melee_roundhouse_kick;
 	return PA_BIND(update_melee_roundhouse_kick);
+}
+
+fsm::StateFunction PlayerAnimation::update_drink() {
+	m_player->animation.label = "drink";
+	p_state.actual = AnimState::drink;
+	m_player->controller.restrict_movement();
+	if (change_state(AnimState::die, get_params("die"), true)) {
+		m_player->set_flag(PlayerFlags::failed_to_drink);
+		return PA_BIND(update_die);
+	}
+	if (change_state(AnimState::drown, get_params("drown"), true)) {
+		m_player->set_flag(PlayerFlags::failed_to_drink);
+		return PA_BIND(update_drown);
+	}
+	if (change_state(AnimState::stun, get_params("stun"), true)) {
+		m_player->set_flag(PlayerFlags::failed_to_drink);
+		return PA_BIND(update_stun);
+	}
+	if (change_state(AnimState::hurt, get_params("hurt"), true)) {
+		m_player->set_flag(PlayerFlags::failed_to_drink);
+		return PA_BIND(update_hurt);
+	}
+	if (m_player->animation.complete()) {
+		m_player->controller.unrestrict();
+		m_player->set_flag(PlayerFlags::drank);
+		if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
+		if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
+		if (change_state(AnimState::land, get_params("land"), true)) { return PA_BIND(update_land); }
+		if (change_state(AnimState::suspend, get_params("suspend"), true)) { return PA_BIND(update_suspend); }
+		if (change_state(AnimState::fall, get_params("fall"), true)) { return PA_BIND(update_fall); }
+		if (change_state(AnimState::wallslide, get_params("wallslide"))) { return PA_BIND(update_wallslide); }
+		if (change_state(AnimState::shoot, get_params("shoot"))) { return PA_BIND(update_shoot); }
+		if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
+		if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
+		if (change_state(AnimState::dash_up, get_params("dash_up"))) { return PA_BIND(update_dash_up); }
+		if (change_state(AnimState::dash_down, get_params("dash_down"))) { return PA_BIND(update_dash_down); }
+		request(AnimState::idle);
+		if (change_state(AnimState::idle, get_params("idle"))) { return PA_BIND(update_idle); }
+	}
+	return PA_BIND(update_drink);
 }
 
 bool PlayerAnimation::change_state(AnimState next, anim::Parameters params, bool hard) {

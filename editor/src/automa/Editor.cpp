@@ -71,8 +71,8 @@ EditorStateType Editor::run(char** argv) {
 	logic();
 
 	ImGuiIO& io = ImGui::GetIO();
-	io.MouseDrawCursor = window_hovered || menu_hovered;
-	p_services->window->get().setMouseCursorVisible(io.MouseDrawCursor);
+	io.MouseDrawCursor = io.WantCaptureMouse;
+	p_services->window->get().setMouseCursorVisible(false);
 
 	EditorState::render(p_services->window->get());
 	render(p_services->window->get());
@@ -80,6 +80,7 @@ EditorStateType Editor::run(char** argv) {
 	p_services->window->get().display();
 
 	if (p_target_state != EditorStateType::editor) { save(); }
+	EditorState::run(argv);
 	return p_target_state;
 }
 
@@ -91,7 +92,7 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 	// keyboard events
 	if (!io.WantCaptureKeyboard) {
 		if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
-			if (!menu_hovered && !popup_open && !key_pressed->control) {
+			if (!key_pressed->control) {
 				if (key_pressed->scancode == sf::Keyboard::Scancode::A) { current_tool->change_size(-1); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::D) { current_tool->change_size(1); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::R) { center_map(); }
@@ -153,96 +154,81 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 				}
 			}
 			if (key_pressed->scancode == sf::Keyboard::Scancode::Q) { current_tool->handle_keyboard_events(map, key_pressed->scancode); }
-			if (key_pressed->scancode == sf::Keyboard::Scancode::LShift || key_pressed->scancode == sf::Keyboard::Scancode::RShift) { pressed_keys.set(PressedKeys::shift); }
-			if (key_pressed->scancode == sf::Keyboard::Scancode::LControl || key_pressed->scancode == sf::Keyboard::Scancode::RControl) { pressed_keys.set(PressedKeys::control); }
-			if (key_pressed->scancode == sf::Keyboard::Scancode::Space) { pressed_keys.set(PressedKeys::space); }
-			if (key_pressed->scancode == sf::Keyboard::Scancode::LAlt) {
-				if (current_tool->type == ToolType::brush) { current_tool = std::move(std::make_unique<Eyedropper>()); }
-			}
 			if (key_pressed->scancode == sf::Keyboard::Scancode::Z) {
 				if (key_pressed->control && !key_pressed->shift) { map.undo(); }
 				if (key_pressed->control && key_pressed->shift) { map.redo(); }
 			}
 		}
-
-		if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
-			if (key_released->scancode == sf::Keyboard::Scancode::LShift || key_released->scancode == sf::Keyboard::Scancode::RShift) { pressed_keys.reset(PressedKeys::shift); }
-			if (key_released->scancode == sf::Keyboard::Scancode::LControl || key_released->scancode == sf::Keyboard::Scancode::RControl) { pressed_keys.reset(PressedKeys::control); }
-			if (key_released->scancode == sf::Keyboard::Scancode::Space) { pressed_keys.reset(PressedKeys::space); }
-			if (key_released->scancode == sf::Keyboard::Scancode::LAlt) {
-				if (current_tool->type == ToolType::eyedropper) { current_tool = std::move(std::make_unique<Brush>()); }
-			}
-		}
 	}
 
 	// zoom controls
-	if (available()) {
-		if (auto const* scrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
-			if (pressed_keys.test(PressedKeys::control)) {
-				current_tool->direction.rotate(scrolled->delta > 0 ? fornani::RotationType::counterclockwise : fornani::RotationType::clockwise);
-			} else {
-				auto delta = scrolled->delta * zoom_factor * map.get_scale();
-				if (map.within_zoom_limits(delta)) { map.move(current_tool->f_position() * -delta); }
-				map.zoom(delta);
-				grid_refresh.start();
-			}
+	// if (!io.WantCaptureKeyboard && !io.WantCaptureMouse) {
+	if (auto const* scrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
+		if (control_held()) {
+			current_tool->direction.rotate(scrolled->delta > 0 ? fornani::RotationType::counterclockwise : fornani::RotationType::clockwise);
+		} else {
+			auto delta = scrolled->delta * zoom_factor * map.get_scale();
+			if (map.within_zoom_limits(delta)) { map.move(current_tool->f_position() * -delta); }
+			map.zoom(delta);
+			grid_refresh.start();
 		}
 	}
-
-	// mouse events
-	if (auto const* button_pressed = event->getIf<sf::Event::MouseButtonPressed>()) {
-		if (button_pressed->button == sf::Mouse::Button::Left) { pressed_keys.set(PressedKeys::mouse_left); }
-		if (button_pressed->button == sf::Mouse::Button::Right) { pressed_keys.set(PressedKeys::mouse_right); }
-		if (left_mouse_pressed()) { current_tool->click(); }
-		if (right_mouse_pressed()) { secondary_tool->click(); }
-	}
-	if (auto const* button_released = event->getIf<sf::Event::MouseButtonReleased>()) {
-		if (left_mouse_pressed()) { current_tool->unsuppress(); }
-		if (right_mouse_pressed()) { secondary_tool->unsuppress(); }
-		if (left_mouse_pressed()) { current_tool->neutralize(); }
-		if (right_mouse_pressed()) { secondary_tool->neutralize(); }
-		if (left_mouse_pressed()) { current_tool->release(); }
-		if (right_mouse_pressed()) { secondary_tool->release(); }
-		if (button_released->button == sf::Mouse::Button::Left) { pressed_keys.reset(PressedKeys::mouse_left); }
-		if (button_released->button == sf::Mouse::Button::Right) { pressed_keys.reset(PressedKeys::mouse_right); }
-	}
+	//}
 }
 
 void Editor::logic() {
+	EditorState::logic();
+	// input results
+
+	if (p_left_mouse.released) {
+		current_tool->unsuppress();
+		current_tool->release();
+		current_tool->neutralize();
+	}
+	if (p_right_mouse.released) {
+		secondary_tool->unsuppress();
+		secondary_tool->release();
+		secondary_tool->neutralize();
+	}
+	if (left_mouse_clicked()) { current_tool->click(); }
+	if (right_mouse_clicked()) { secondary_tool->click(); }
 
 	auto& target = palette_mode() ? palette : map;
-	auto& tool = right_mouse_pressed() ? secondary_tool : current_tool;
+	auto& tool = p_right_mouse.held ? secondary_tool : current_tool;
 	map.constrain(p_services->window->f_screen_dimensions());
 	m_middleground = map.get_layers().get_middleground();
 
 	current_tool->set_mode(m_mode);
 
 	ImGuiIO& io = ImGui::GetIO();
-	window_hovered = io.WantCaptureMouse;
 	current_tool->palette_mode = palette_mode();
 
 	if (tool->type == ToolType::entity_editor) { map.flags.show_entities = true; }
 
 	// tool logic
-	if (available() && !palette_mode()) { map.save_state(*tool); }
+	if (!is_any_widget_hovered() && !palette_mode()) { map.save_state(*tool); }
 	if (!hazard_hovered) {
-		left_mouse_pressed() && current_tool->is_ready() && available() ? current_tool->activate() : current_tool->deactivate();
-		right_mouse_pressed() && secondary_tool->is_ready() && available() ? secondary_tool->activate() : secondary_tool->deactivate();
+		left_mouse_held() && current_tool->is_ready() ? current_tool->activate() : current_tool->deactivate();
+		right_mouse_held() && secondary_tool->is_ready() ? secondary_tool->activate() : secondary_tool->deactivate();
 	}
 	tool->update(target);
 
-	if ((any_mouse_pressed()) && !menu_hovered && !window_hovered && !hazard_hovered) {
+	if (left_mouse_clicked()) {
 		if (tool->type == ToolType::eyedropper) { selected_block = current_tool->tile; }
 		if (palette_mode() && current_tool->type != ToolType::marquee) {
+			if (!current_tool->is_paintable()) { current_tool = std::move(std::make_unique<Brush>()); }
 			auto pos = current_tool->get_window_position() - palette.get_position();
 			auto idx = palette.tile_val_at_scaled(static_cast<int>(pos.x), static_cast<int>(pos.y), 0);
 			current_tool->store_tile(idx);
 			selected_block = idx;
-			if (!current_tool->is_paintable()) {
-				current_tool = std::move(std::make_unique<Brush>());
-				current_tool->suppress_until_released();
-			}
+			current_tool->suppress_until_released();
 		}
+	}
+	if (p_alt.clicked) {
+		if (current_tool->type == ToolType::brush) { current_tool = std::move(std::make_unique<Eyedropper>()); }
+	}
+	if (p_alt.released) {
+		if (current_tool->type == ToolType::eyedropper) { current_tool = std::move(std::make_unique<Brush>()); }
 	}
 
 	if (hazard_mode()) { m_options.palette = false; }
@@ -253,11 +239,11 @@ void Editor::logic() {
 	current_tool->tile = selected_block;
 	current_tool->pervasive = tool_flags.pervasive;
 	current_tool->contiguous = tool_flags.contiguous;
-	current_tool->set_usability(current_tool->in_bounds(target.dimensions));
+	current_tool->set_usability(current_tool->in_bounds(target.dimensions) || palette_mode());
 
 	map.update(*current_tool);
 	palette.update(*current_tool);
-	if (window_hovered || popup_open || menu_hovered) {
+	if (io.WantCaptureMouse) {
 		map.unhover();
 		palette.unhover();
 	}
@@ -265,19 +251,19 @@ void Editor::logic() {
 	if (palette.hovered() && m_options.palette) { map.unhover(); }
 
 	map.set_offset_from_center(map.get_position() + map.get_scaled_center() - p_services->window->f_center_screen());
-	m_options.palette&& available() && palette.hovered() && (!current_tool -> is_active() || current_tool->type == ToolType::marquee) ? flags.set(GlobalFlags::palette_mode) : flags.reset(GlobalFlags::palette_mode);
+	m_options.palette && !io.WantCaptureMouse && palette.hovered() && (!current_tool->is_active() || current_tool->type == ToolType::marquee) ? flags.set(GlobalFlags::palette_mode) : flags.reset(GlobalFlags::palette_mode);
 
 	grid_refresh.update();
 	if (grid_refresh.is_almost_complete()) { map.set_grid_texture(); }
 
-	map.flags.show_all_layers = shift_pressed() && !control_pressed() ? map.flags.show_current_layer : !map.flags.show_current_layer;
-	map.flags.show_current_layer = shift_pressed() && !control_pressed() ? map.flags.show_all_layers : !map.flags.show_all_layers;
+	map.flags.show_all_layers = shift_held() && !control_held() ? map.flags.show_current_layer : !map.flags.show_current_layer;
+	map.flags.show_current_layer = shift_held() && !control_held() ? map.flags.show_all_layers : !map.flags.show_all_layers;
 
 	// set tool positions
-	current_tool->set_position((sf::Vector2f{io.MousePos.x, io.MousePos.y} - target.get_position()) / target.get_scale());
-	secondary_tool->set_position((sf::Vector2f{io.MousePos.x, io.MousePos.y} - target.get_position()) / target.get_scale());
-	current_tool->set_window_position(sf::Vector2f{io.MousePos.x, io.MousePos.y});
-	secondary_tool->set_window_position(sf::Vector2f{io.MousePos.x, io.MousePos.y});
+	current_tool->set_position((p_current_mouse_position - target.get_position()) / target.get_scale());
+	secondary_tool->set_position((p_current_mouse_position - target.get_position()) / target.get_scale());
+	current_tool->set_window_position(p_current_mouse_position);
+	secondary_tool->set_window_position(p_current_mouse_position);
 }
 
 void Editor::load() {
@@ -301,7 +287,7 @@ void Editor::load_file(std::string_view to_region, std::string_view to_room) {
 void Editor::new_file(int id) {
 	b_close_entity_popup = true;
 	editor_flags.set(EditorFlags::create_new_room);
-	m_new_id = id;
+	p_new_id = id;
 }
 
 bool Editor::save() {
@@ -327,8 +313,7 @@ void Editor::render(sf::RenderWindow& win) {
 	auto& io = ImGui::GetIO();
 	auto mouse_position = sf::Vector2f{io.MousePos.x, io.MousePos.y};
 
-	auto soft_palette_mode = m_options.palette && available() && palette.hovered();
-	if (current_tool->in_bounds(map.dimensions) && !menu_hovered && !palette_mode() && current_tool->highlight_canvas() && !soft_palette_mode) {
+	if (current_tool->in_bounds(map.dimensions) && !palette_mode() && current_tool->highlight_canvas() && !is_any_widget_hovered()) {
 		auto tileset = current_tool->is_mode(BrushMode::tile) ? sf::Sprite{tileset_textures.at(map.get_i_style())} : sf::Sprite{m_services->assets.get_texture("hazard_" + std::string{map.get_hazard_properties().tag})};
 		auto dim = current_tool->is_mode(BrushMode::tile) ? fornani::constants::i_resolution_vec : map.get_hazard_properties().dimensions;
 		auto lookup = current_tool->is_mode(BrushMode::tile) ? palette.get_tile_coord(selected_block) : map.get_hazard_properties().get_lookup(selected_block);
@@ -366,7 +351,7 @@ void Editor::render(sf::RenderWindow& win) {
 
 		auto hazard_mouse_pos = mouse_position - hazard_map.getPosition();
 		auto htile = sf::Vector2i{hazard_mouse_pos.componentWiseDiv(sf::Vector2f{map.get_hazard_properties().dimensions})};
-		if (left_mouse_pressed() && current_tool->type == ToolType::brush) {
+		if (left_mouse_clicked() && current_tool->type == ToolType::brush) {
 			selected_block = htile.y * map.get_hazard_properties().table_dimensions.x + htile.x;
 			current_tool->store_tile(selected_block);
 		}
@@ -384,15 +369,15 @@ void Editor::render(sf::RenderWindow& win) {
 		hazard_hovered = false;
 	}
 
-	if (m_clipboard && (control_pressed() || current_tool->type == ToolType::marquee) && !current_tool->is_active()) { m_clipboard.value().render(map, *current_tool, win, map.get_position()); }
+	if (m_clipboard && (control_held() || current_tool->type == ToolType::marquee) && !current_tool->is_active()) { m_clipboard.value().render(map, *current_tool, win, map.get_position()); }
 
 	if (m_options.palette) {
 		palette.hovered() ? palette.set_backdrop_color({90, 90, 90, 255}) : palette.set_backdrop_color({40, 40, 40, 180});
 		palette.render(win, tileset);
 		if (palette_mode()) {
 			selector.setSize({palette.f_cell_size(), palette.f_cell_size()});
-			left_mouse_pressed() && palette_mode() ? selector.setOutlineColor({55, 255, 255, 180}) : selector.setOutlineColor({255, 255, 255, 80});
-			right_mouse_pressed() && palette_mode() ? selector.setFillColor({50, 250, 250, 60}) : selector.setFillColor({50, 250, 250, 20});
+			left_mouse_clicked() && palette_mode() ? selector.setOutlineColor({55, 255, 255, 180}) : selector.setOutlineColor({255, 255, 255, 80});
+			right_mouse_clicked() && palette_mode() ? selector.setFillColor({50, 250, 250, 60}) : selector.setFillColor({50, 250, 250, 20});
 			selector.setOutlineThickness(-2.f);
 			selector.setPosition(palette.get_tile_position_at(static_cast<int>(current_tool->get_window_position().x - palette.get_position().x), static_cast<int>(current_tool->get_window_position().y - palette.get_position().y)) +
 								 palette.get_position());
@@ -413,7 +398,6 @@ void Editor::render(sf::RenderWindow& win) {
 }
 
 void Editor::gui_render(sf::RenderWindow& win) {
-	popup_open = false;
 	bool* debug{};
 	float const PAD = 10.0f;
 	ImGuiIO& io = ImGui::GetIO();
@@ -465,15 +449,16 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::Button("Save Changes") || editor_flags.test(EditorFlags::create_new_room) || b_close_entity_popup) {
 				for (auto& ent : map.entities.variables.entities) {
 					if (ent->highlighted) { ent->overwrite = true; }
+					ent->highlighted = false;
 				}
 				b_close_entity_popup = false;
 				ImGui::CloseCurrentPopup();
 			}
 			if (ImGui::Button("Close")) {
+				for (auto& ent : map.entities.variables.entities) { ent->highlighted = false; }
 				b_close_entity_popup = false;
 				ImGui::CloseCurrentPopup();
 			}
-			current_tool->suppress_until_released();
 		}
 		ImGui::EndPopup();
 	}
@@ -492,12 +477,10 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	}
 
 	// Main Menu
-	menu_hovered = false;
 	if (ImGui::BeginMainMenuBar()) {
 		bool new_popup{};
 		bool save_as_popup{};
 		if (ImGui::BeginMenu("File")) {
-			menu_hovered = true;
 			if (ImGui::MenuItem("New", NULL, &new_popup)) {}
 
 			// Always center this p_services->window when appearing
@@ -506,7 +489,6 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::Separator();
 #ifdef _WIN32
 			if (ImGui::MenuItem("Open")) {
-				popup_open = true;
 				char filename[MAX_PATH];
 				OPENFILENAME ofn;
 				ZeroMemory(&filename, sizeof(filename));
@@ -563,7 +545,6 @@ void Editor::gui_render(sf::RenderWindow& win) {
 
 		if (save_as_popup) { ImGui::OpenPopup("Save As"); }
 		if (ImGui::BeginPopupModal("Save As", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-			popup_open = true;
 			ImGui::Text("Please enter a new room name.");
 			ImGui::Text("Convention is all lowercase, snake-case, and of the format `room_name`.");
 			ImGui::Separator();
@@ -591,7 +572,6 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::EndPopup();
 		}
 		if (ImGui::BeginMenu("Edit")) {
-			menu_hovered = true;
 			if (ImGui::MenuItem("Undo", "Ctrl+Z")) { map.undo(); }
 			if (ImGui::MenuItem("Redo", "Ctrl+Shift+Z")) { map.redo(); }
 			ImGui::Separator();
@@ -622,7 +602,6 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		}
 		bool flag{};
 		if (ImGui::BeginMenu("Insert")) {
-			menu_hovered = true;
 			if (ImGui::MenuItem("Ambient Prop", NULL, &entity_popup)) { popup_label = "Ambient Prop"; }
 			if (ImGui::MenuItem("Portal", NULL, &entity_popup)) { popup_label = "Portal"; }
 			if (ImGui::MenuItem("Inspectable", NULL, &entity_popup)) { popup_label = "Inspectable"; }
@@ -655,7 +634,6 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		}
 
 		if (ImGui::BeginMenu("Tools")) {
-			menu_hovered = true;
 			if (ImGui::MenuItem("Brush", "B")) { current_tool = std::move(std::make_unique<Brush>()); }
 			if (ImGui::MenuItem("Erase", "E")) { current_tool = std::move(std::make_unique<Erase>()); }
 			if (ImGui::MenuItem("(-) size", "A")) { current_tool->change_size(-1); }
@@ -670,7 +648,6 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		}
 
 		if (ImGui::BeginMenu("Actions")) {
-			menu_hovered = true;
 			if (ImGui::MenuItem("Export Layer to .png")) { export_layer_texture(); }
 			ImGui::Separator();
 			if (ImGui::MenuItem("Demo fullscreen", "", &m_demo.fullscreen)) {}
@@ -683,7 +660,6 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		}
 
 		if (ImGui::BeginMenu("View")) {
-			menu_hovered = true;
 			if (ImGui::MenuItem("Center Canvas", "R")) { center_map(); }
 			ImGui::Separator();
 			ImGui::MenuItem("Show Sidebar", "", &m_options.sidebar);
@@ -702,7 +678,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::EndMenu();
 		}
 		if (ImGui::Button("Metagrid")) { p_target_state = EditorStateType::metagrid; }
-		if (ImGui::Button("Dialogue")) { p_target_state = EditorStateType::dialogue_editor; }
+		// TODO: fix up dialogue later
+		// if (ImGui::Button("Dialogue")) { p_target_state = EditorStateType::dialogue_editor; }
 
 		ImGui::EndMainMenuBar();
 	}
@@ -820,10 +797,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	}
 
 	std::string label = popup_label + " Specifications";
-	if (entity_popup) {
-		ImGui::OpenPopup(label.c_str());
-		popup_open = true;
-	}
+	if (entity_popup) { ImGui::OpenPopup(label.c_str()); }
 
 	popup.launch(*p_services, p_services->finder, console, label.c_str(), current_tool, map.room_id);
 
@@ -859,7 +833,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					ImGui::Text("region: %s", p_services->finder.paths.region.c_str());
 					ImGui::Text("room..: %s", p_services->finder.paths.room_name.c_str());
 					ImGui::Separator();
-					ImGui::Text("Any Window Hovered: %s", window_hovered ? "Yes" : "No");
+					ImGui::Text("Any Widget Hovered: %s", is_any_widget_hovered() ? "Yes" : "No");
 					ImGui::Text("Palette Mode: %s", palette_mode() ? "Yes" : "No");
 					ImGui::Text("Has Palette Selection: %s", current_tool->has_palette_selection ? "Yes" : "No");
 					ImGui::Separator();
@@ -883,8 +857,15 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Tool")) {
-					ImGui::Text("Left Mouse: %s", left_mouse_pressed() ? "Pressed" : "");
-					ImGui::Text("Right Mouse: %s", right_mouse_pressed() ? "Pressed" : "");
+					ImGui::Text("Left Mouse Clicked....: %s", p_mouse_cooldowns.left_click.running() ? "Yes" : "");
+					ImGui::Text("Left Mouse Held.......: %s", p_left_mouse.held ? "Yes" : "");
+					ImGui::Text("Left Mouse Released...: %s", p_mouse_cooldowns.left_release.running() ? "Yes" : "");
+					ImGui::Text("Right Mouse Clicked...: %s", p_mouse_cooldowns.right_click.running() ? "Yes" : "");
+					ImGui::Text("Right Mouse Held......: %s", p_right_mouse.held ? "Yes" : "");
+					ImGui::Text("Right Mouse Released..: %s", p_mouse_cooldowns.right_release.running() ? "Yes" : "");
+					ImGui::Text("Control Held...: %s", p_control.held ? "Yes" : "");
+					ImGui::Text("Alt Held.......: %s", p_alt.held ? "Yes" : "");
+					ImGui::Text("Shift Held.....: %s", p_shift.held ? "Yes" : "");
 					ImGui::Separator();
 					if (current_tool->current_entity) { ImGui::Text("entity moved: %b", current_tool->current_entity.value()->moved); }
 					static bool current{};
@@ -1135,7 +1116,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		if (m_options.console) { console.write_console(prev_window_size, prev_window_pos, m_menu_alpha); }
 	}
 
-	if (current_tool->type == ToolType::entity_editor && !window_hovered && current_tool->entity_mode != EntityMode::editor && !current_tool->entity_menu) {
+	if (current_tool->type == ToolType::entity_editor && !is_any_widget_hovered() && current_tool->entity_mode != EntityMode::editor && !current_tool->entity_menu) {
 		ImGui::BeginTooltip();
 		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
 		ImGui::Text(current_tool->get_tooltip().c_str());
@@ -1195,7 +1176,6 @@ void Editor::center_map() {
 void Editor::launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2f player_position) {
 	m_demo.trigger_demo = false;
 	m_demo.custom_position = false;
-	pressed_keys = {};
 	current_tool->current_entity = {};
 	ImGui::SFML::Shutdown();
 	fornani::Application demo{argv};
@@ -1243,18 +1223,19 @@ void Editor::set_new_room() {
 	map.metagrid_coordinates = p_context->metagrid_position;
 	p_services->finder.paths.region = regbuffer;
 	p_services->finder.paths.room_name = std::string{roombuffer} + ".json";
-	map.room_id = m_new_id;
+	map.room_id = p_new_id;
 	save();
 	load();
 	reset_layers();
 	map.center(p_services->window->f_center_screen());
 	dj::Json this_room{};
-	this_room["room_id"] = m_new_id;
+	this_room["room_id"] = p_new_id;
 	this_room["region"] = p_services->finder.paths.region;
 	this_room["label"] = p_services->finder.paths.room_name;
+	this_room["minimap"] = true;
 	p_services->data.map_table["rooms"].push_back(this_room);
 	console.add_log(std::string{"In folder " + p_services->finder.paths.region}.c_str());
-	console.add_log(std::string{"Created new room with id " + std::to_string(m_new_id) + " and name " + p_services->finder.paths.room_name}.c_str());
+	console.add_log(std::string{"Created new room with id " + std::to_string(p_new_id) + " and name " + p_services->finder.paths.room_name}.c_str());
 
 	ImGui::CloseCurrentPopup();
 }
