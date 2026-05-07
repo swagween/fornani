@@ -89,6 +89,7 @@ NPC::NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vect
 	  m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[label]["id"].as<int>()}, m_current_conversation{1}, m_suites{suites}, m_services{&svc}, m_walk_speed{default_walk_speed_v} {
 	repeatable = false;
 	copyable = false;
+	set_flag(NPCFlags::face_player);
 }
 
 void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {

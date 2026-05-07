@@ -38,6 +38,7 @@ class Animatable : public Drawable {
 	[[nodiscard]] auto get_dimensions() const -> sf::Vector2i { return m_dimensions; }
 	[[nodiscard]] auto get_f_dimensions() const -> sf::Vector2f { return sf::Vector2f{m_dimensions}; }
 	[[nodiscard]] auto get_animation_tag() const -> std::string_view { return m_current; }
+	[[nodiscard]] auto get_frame() const -> int { return animation.get_frame(); }
 
 	anim::Animation animation;
 

@@ -13,7 +13,7 @@
 namespace fornani::gui {
 
 enum class InventoryGizmoFlags { is_item_hovered };
-enum class InventoryZoneType { ability, key, collectible, gizmo, COUNT };
+enum class InventoryZoneType { ability, key, collectible, useable, gizmo, COUNT };
 
 struct InventoryZone {
 	sf::Vector2i table_dimensions{};

@@ -84,6 +84,12 @@
     "framerate": 16,
     "dimensions": [128, 128]
   },
+  "toxic_gas": {
+    "frame_count": 8,
+    "framerate": 20,
+    "dimensions": [128, 128],
+    "x_reflection": true
+  },
   "bright_flare": {
     "frame_count": 8,
     "framerate": 8,

@@ -20,6 +20,7 @@
       {
         "activate_on_contact": false,
         "already_open": true,
+        "channel": 0,
         "destination_id": 205,
         "dimensions": [
           1,
@@ -36,6 +37,7 @@
       {
         "activate_on_contact": false,
         "already_open": true,
+        "channel": 0,
         "destination_id": 207,
         "dimensions": [
           1,
@@ -79,11 +81,12 @@
       16,
       16
     ],
+    "interior": false,
     "metagrid": [
-      20,
-      70
+      36,
+      33
     ],
-    "minimap": false,
+    "minimap": true,
     "music": "brown",
     "player_start": [
       0,
@@ -92,6 +95,7 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": false,
+      "interior": true,
       "lighting": false,
       "timer": false
     },
@@ -100,7 +104,8 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
     "flags": {

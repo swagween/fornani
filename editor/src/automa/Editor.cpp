@@ -17,7 +17,6 @@
 
 namespace pi {
 
-static bool b_close_entity_popup{};
 static bool b_reloaded{};
 
 Editor::Editor(fornani::automa::ServiceProvider& svc, EditorContext& ctx)
@@ -280,12 +279,10 @@ void Editor::load_file(std::string_view to_region, std::string_view to_room) {
 	p_services->finder.paths.region = to_region;
 	p_services->finder.paths.room_name = to_room;
 	load();
-	b_close_entity_popup = true;
 	NANI_LOG_INFO(p_logger, "Loaded file: {}.", to_room);
 }
 
 void Editor::new_file(int id) {
-	b_close_entity_popup = true;
 	editor_flags.set(EditorFlags::create_new_room);
 	p_new_id = id;
 }
@@ -446,20 +443,16 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	if (ImGui::BeginPopupContextWindow("Edit Entity")) {
 		if (current_tool->current_entity) {
 			current_tool->current_entity.value()->expose();
-			if (ImGui::Button("Save Changes") || editor_flags.test(EditorFlags::create_new_room) || b_close_entity_popup) {
+			if (ImGui::Button("Save Changes") || editor_flags.test(EditorFlags::create_new_room)) {
 				for (auto& ent : map.entities.variables.entities) {
 					if (ent->highlighted) { ent->overwrite = true; }
 					ent->highlighted = false;
 				}
-				b_close_entity_popup = false;
 				ImGui::CloseCurrentPopup();
 			}
-			if (ImGui::Button("Close")) {
-				for (auto& ent : map.entities.variables.entities) { ent->highlighted = false; }
-				b_close_entity_popup = false;
-				ImGui::CloseCurrentPopup();
-			}
+			if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
 		}
+		if (any_mouse_clicked()) { ImGui::CloseCurrentPopup(); }
 		ImGui::EndPopup();
 	}
 

@@ -170,6 +170,8 @@ class Map {
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
 	[[nodiscard]] auto get_echo_count() const -> int { return sound.echo_count; }
 	[[nodiscard]] auto get_echo_rate() const -> int { return sound.echo_rate; }
+	[[nodiscard]] auto has_property(MapProperties check) const -> bool { return m_attributes.properties.test(check); }
+	[[nodiscard]] auto is_interior() const -> bool { return m_attributes.properties.test(MapProperties::interior); }
 	[[nodiscard]] auto is_minimap() const -> bool { return m_attributes.properties.test(MapProperties::minimap); }
 	[[nodiscard]] auto has_obscuring_layer() const -> bool { return m_layer_properties.test(LayerProperties::has_obscuring_layer); }
 	[[nodiscard]] auto has_reverse_obscuring_layer() const -> bool { return m_layer_properties.test(LayerProperties::has_reverse_obscuring_layer); }

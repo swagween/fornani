@@ -1,6 +1,18 @@
 {
   "rooms": [
     {
+      "folder": "config",
+      "label": "test_portals.json",
+      "region": "toxic",
+      "room_id": 6767672
+    },
+    {
+      "folder": "config",
+      "label": "test_portals2.json",
+      "region": "toxic",
+      "room_id": 6767673
+    },
+    {
       "folder": "firstwind",
       "label": "atrium.json",
       "region": "firstwind",

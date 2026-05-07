@@ -377,6 +377,8 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	npc_flags = {};
 }
 
+void Soundboard::clear_sounds() { sound_pool.clear(); }
+
 void Soundboard::play_sound(std::string_view label) { play_sound(label, m_listener.position); }
 
 void Soundboard::play_sound(std::string_view label, sf::Vector2f position) {

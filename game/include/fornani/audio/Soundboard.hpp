@@ -150,6 +150,7 @@ class Soundboard {
   public:
 	Soundboard(automa::ServiceProvider& svc, capo::IEngine& engine);
 	void play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc, int echo_count = 0, int echo_rate = 1);
+	void clear_sounds();
 	void turn_on() { status = SoundboardState::on; }
 	void turn_off() { status = SoundboardState::off; }
 	void play_step(int tile_value, int style_id, bool land = false);

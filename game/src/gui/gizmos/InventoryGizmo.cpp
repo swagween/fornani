@@ -13,8 +13,8 @@ namespace fornani::gui {
 InventoryGizmo::InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f placement)
 	: Gizmo("Inventory", false), m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "inventory", 128, util::InterpolationType::cubic},
 	  m_lid_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "inventory", 128, util::InterpolationType::cubic}, m_sprite{svc.assets.get_texture("inventory_gizmo")},
-	  m_item_sprite{svc.assets.get_texture("inventory_items")},
-	  m_zones{InventoryZone{{9, 1}, {38.f, 36.f}, {414.f, 18.f}}, InventoryZone{{11, 4}, {36.f, 36.f}, {48.f, 114.f}}, InventoryZone{{8, 2}, {42.f, 62.f}, {124.f, 279.f}}, InventoryZone{{8, 1}, {60.f, 36.f}, {404.f, 430.f}}},
+	  m_item_sprite{svc.assets.get_texture("inventory_items")}, m_zones{InventoryZone{{9, 1}, {38.f, 36.f}, {414.f, 18.f}}, InventoryZone{{11, 4}, {36.f, 36.f}, {48.f, 114.f}}, InventoryZone{{8, 1}, {42.f, 62.f}, {124.f, 279.f}},
+																		InventoryZone{{8, 1}, {42.f, 62.f}, {124.f, 341.f}}, InventoryZone{{8, 1}, {60.f, 36.f}, {404.f, 430.f}}},
 	  m_selector(std::make_unique<InventorySelector>(m_zones.at(static_cast<int>(InventoryZoneType::key)).table_dimensions, m_zones.at(static_cast<int>(InventoryZoneType::key)).cell_size)), m_orb_display(svc), m_services(&svc),
 	  m_equipped_items_position{472.f, 106.f}, m_menu_offset{96.f, -16.f}, m_player{&player} {
 	p_theme.emplace(svc.data.menu_themes["mini_white"]);
@@ -51,6 +51,7 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 
 	if (get_zone_type() == InventoryZoneType::key) { m_selector->set_lookup({{448, 0}, {18, 18}}); }
 	if (get_zone_type() == InventoryZoneType::collectible) { m_selector->set_lookup({{448, 0}, {18, 18}}); }
+	if (get_zone_type() == InventoryZoneType::useable) { m_selector->set_lookup({{448, 0}, {18, 18}}); }
 	if (get_zone_type() == InventoryZoneType::gizmo) { m_selector->set_lookup({{448, 18}, {22, 22}}); }
 	if (get_zone_type() == InventoryZoneType::ability) { m_selector->set_lookup({{448, 40}, {20, 20}}); }
 
@@ -73,6 +74,7 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 	auto selector_offset = sf::Vector2f{};
 	if (get_zone_type() == InventoryZoneType::key) { selector_offset = sf::Vector2f{2.f, 2.f}; }
 	if (get_zone_type() == InventoryZoneType::collectible) { selector_offset = sf::Vector2f{2.f, 2.f}; }
+	if (get_zone_type() == InventoryZoneType::useable) { selector_offset = sf::Vector2f{2.f, 2.f}; }
 	if (get_zone_type() == InventoryZoneType::gizmo) { selector_offset = sf::Vector2f{6.f, 6.f}; }
 	if (get_zone_type() == InventoryZoneType::ability) { selector_offset = sf::Vector2f{4.f, 4.f}; }
 	m_selector->set_position(m_physics.position + m_path.get_position() + m_placement + current_zone.render_offset - selector_offset);

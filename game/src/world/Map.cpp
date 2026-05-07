@@ -391,6 +391,14 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 		}
 	}
 
+	// biome effects (this sucks)
+	if (get_style_id() == 7 && !is_interior()) {
+		if (svc.ticker.every_x_ticks(60)) {
+			auto pos = random::random_vector_float({}, real_dimensions);
+			spawn_effect(svc, "toxic_gas", pos);
+		}
+	}
+
 	// camera effects
 	if (svc.ticker.every_second() && m_attributes.shake_properties.shaking) {
 		if (random::percent_chance(m_attributes.shake_properties.chance * 100.f)) {

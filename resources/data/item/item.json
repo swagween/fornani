@@ -205,7 +205,7 @@
   },
   {
     "tag": "radar_device",
-    "category": 3,
+    "category": 4,
     "lookup": [15, 0],
     "origin": [0, 0],
     "naive_title": "Radar Device",
@@ -216,7 +216,7 @@
   },
   {
     "tag": "clock",
-    "category": 3,
+    "category": 4,
     "lookup": [0, 1],
     "origin": [1, 0],
     "naive_title": "Clock",
@@ -227,7 +227,7 @@
   },
   {
     "tag": "status_gizmo",
-    "category": 3,
+    "category": 4,
     "lookup": [1, 1],
     "origin": [2, 0],
     "naive_title": "Status Gizmo",
@@ -239,7 +239,7 @@
   },
   {
     "tag": "outfitter_gizmo",
-    "category": 3,
+    "category": 4,
     "lookup": [2, 1],
     "origin": [3, 0],
     "naive_title": "Outfitter Gizmo",
@@ -253,7 +253,7 @@
   },
   {
     "tag": "rotary_gizmo",
-    "category": 3,
+    "category": 4,
     "lookup": [11, 2],
     "origin": [4, 0],
     "naive_title": "Rotary Gizmo",
@@ -277,15 +277,16 @@
   },
   {
     "tag": "soda",
-    "category": 1,
-    "lookup": [2, 2],
-    "origin": [1, 1],
+    "category": 3,
+    "lookup": [2, 9],
+    "origin": [2, 0],
     "actual_title": "Soda",
-    "naive_description": "When equipped, this will reduce reload times by 15%.",
+    "naive_description": "Looks like an ordinary can of SkyCola.",
+    "hidden_description": "If you drink this, it will make you invincible for a brief duration.",
     "unique": false,
-    "equippable": true,
     "sellable": true,
-    "value": 380
+    "useable": true,
+    "value": 280
   },
   {
     "tag": "equip_slot",
@@ -298,9 +299,9 @@
   },
   {
     "tag": "ashtown_raspberry_preserves",
-    "category": 1,
-    "lookup": [5, 1],
-    "origin": [1, 3],
+    "category": 3,
+    "lookup": [0, 9],
+    "origin": [0, 0],
     "actual_title": "Ashtown Preserves",
     "naive_description": "A delicious raspberry treat. It would taste better on some toast, but it will still restore your health if you eat it.",
     "unique": false,
@@ -475,7 +476,7 @@
   },
   {
     "tag": "ceremonial_garb",
-    "category": 4,
+    "category": 5,
     "lookup": [4, 12],
     "origin": [4, 2],
     "actual_title": "Ceremonial Garb",
@@ -490,7 +491,7 @@
   },
   {
     "tag": "demon_cuirass",
-    "category": 4,
+    "category": 5,
     "lookup": [5, 12],
     "origin": [5, 2],
     "actual_title": "Demon Cuirass",
@@ -505,7 +506,7 @@
   },
   {
     "tag": "demon_greaves",
-    "category": 4,
+    "category": 5,
     "lookup": [5, 13],
     "origin": [5, 3],
     "actual_title": "Demon Greaves",
@@ -520,7 +521,7 @@
   },
   {
     "tag": "ceremonial_skirt",
-    "category": 4,
+    "category": 5,
     "lookup": [4, 13],
     "origin": [4, 3],
     "actual_title": "Ceremonial Skirt",
@@ -535,7 +536,7 @@
   },
   {
     "tag": "pioneer_armor",
-    "category": 4,
+    "category": 5,
     "lookup": [3, 12],
     "origin": [3, 2],
     "actual_title": "Pioneer Armor",
@@ -550,7 +551,7 @@
   },
   {
     "tag": "pioneer_tights",
-    "category": 4,
+    "category": 5,
     "lookup": [3, 13],
     "origin": [3, 3],
     "actual_title": "Pioneer Tights",
@@ -565,7 +566,7 @@
   },
   {
     "tag": "red_jeans",
-    "category": 4,
+    "category": 5,
     "lookup": [0, 13],
     "origin": [0, 3],
     "actual_title": "Red Jeans",
@@ -671,7 +672,7 @@
   },
   {
     "tag": "chalcedony_tee",
-    "category": 4,
+    "category": 5,
     "lookup": [1, 12],
     "origin": [1, 2],
     "actual_title": "Chalcedony Tee",
@@ -686,7 +687,7 @@
   },
   {
     "tag": "skycorps_tee",
-    "category": 4,
+    "category": 5,
     "lookup": [0, 12],
     "origin": [0, 2],
     "actual_title": "Skycorps Tee",
@@ -700,7 +701,7 @@
   },
   {
     "tag": "navy_top",
-    "category": 4,
+    "category": 5,
     "lookup": [9, 12],
     "origin": [9, 2],
     "actual_title": "Navy Top",
@@ -713,7 +714,7 @@
   },
   {
     "tag": "chalcedony_skirt",
-    "category": 4,
+    "category": 5,
     "lookup": [1, 13],
     "origin": [1, 3],
     "actual_title": "Chalcedony Skirt",
@@ -727,7 +728,7 @@
   },
   {
     "tag": "green_pants",
-    "category": 4,
+    "category": 5,
     "lookup": [9, 13],
     "origin": [9, 3],
     "actual_title": "Green Pants",
@@ -740,7 +741,7 @@
   },
   {
     "tag": "punk_hair_dye",
-    "category": 4,
+    "category": 5,
     "origin": [2, 0],
     "start_index": 160,
     "actual_title": "Punk Hair Dye",
@@ -754,7 +755,7 @@
   },
   {
     "tag": "punk_shirt",
-    "category": 4,
+    "category": 5,
     "lookup": [2, 12],
     "origin": [2, 2],
     "actual_title": "Punk Shirt",
@@ -770,7 +771,7 @@
     "tag": "punk_pants",
     "lookup": [2, 13],
     "origin": [2, 3],
-    "category": 4,
+    "category": 5,
     "actual_title": "Punk Pants",
     "naive_description": "Black pants with a rebellious chain accessory.",
     "unique": true,
@@ -781,7 +782,7 @@
   },
   {
     "tag": "hairtie",
-    "category": 4,
+    "category": 5,
     "start_index": 160,
     "actual_title": "Hairtie",
     "naive_description": "Wear this to keep your hair from going all over the place all the time.",
@@ -960,7 +961,7 @@
   },
   {
     "tag": "gobe_plugin",
-    "category": 5,
+    "category": 6,
     "lookup": [3, 3],
     "origin": [-1, -1],
     "naive_title": "Gobe Plugin",
@@ -1003,5 +1004,30 @@
     "equippable": true,
     "sellable": true,
     "value": 2200
+  },
+  {
+    "tag": "flashbang",
+    "category": 3,
+    "lookup": [1, 9],
+    "origin": [1, 0],
+    "actual_title": "Flashbang",
+    "naive_description": "A defensive grenade for use in close combat.",
+    "unique": false,
+    "useable": true,
+    "sellable": true,
+    "rarity": 1,
+    "value": 300
+  },
+  {
+    "tag": "feather",
+    "category": 1,
+    "lookup": [2, 2],
+    "origin": [1, 1],
+    "actual_title": "Feather",
+    "naive_description": "When equipped, this will reduce reload times by 15%.",
+    "unique": false,
+    "equippable": true,
+    "sellable": true,
+    "value": 380
   }
 ]

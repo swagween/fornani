@@ -70,7 +70,7 @@ void EditorState::logic() {
 	if (p_right_mouse.clicked) { p_mouse_cooldowns.right_click.start(); }
 	if (p_right_mouse.released) { p_mouse_cooldowns.right_release.start(); }
 	if (p_right_mouse.held) { p_camera += p_current_mouse_position - p_dragged_position; }
-	p_dragged_position = sf::Vector2f{p_current_mouse_position};
+	p_dragged_position = p_current_mouse_position;
 }
 
 void EditorState::render(sf::RenderWindow& win) {

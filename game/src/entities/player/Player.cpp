@@ -13,7 +13,6 @@ namespace fornani::player {
 
 constexpr auto wallslide_threshold_v = -0.16f;
 constexpr auto light_offset_v = 12.f;
-constexpr auto default_invincibility_time_v = 300;
 constexpr auto max_damage_v = 1024.f;
 
 Player::Player(automa::ServiceProvider& svc)
@@ -124,8 +123,8 @@ void Player::register_with_map(world::Map& map) {
 
 	auto result = dj::Json::from_file((m_services->finder.resource_path() + "/data/player/physics_params.json").c_str());
 	if (!result) { NANI_LOG_ERROR(m_logger, "Failed to load player physics params!"); }
-	auto in = std::move(*result);
-	get_collider().load_properties(in["properties"]);
+	m_physics_data = std::move(*result);
+	get_collider().load_properties(m_physics_data["properties"]);
 
 	if (has_collider()) { NANI_LOG_INFO(m_logger, "Player has a collider."); }
 	anchor_point = get_collider().physics.position + player_dimensions_v * 0.5f;
@@ -166,11 +165,16 @@ void Player::update(world::Map& map) {
 	if (is_dead() && !m_death_cooldown.running()) { m_death_cooldown.start(); }
 	set_flag(PlayerFlags::in_front_of_door, false);
 	m_death_cooldown.update();
+	cooldowns.suffocate.update();
 
 	if (!collider.has_value()) { return; }
 
 	// item use logic
 	handle_item_logic();
+	if (map.get_style_id() == 7 && !map.is_interior() && cooldowns.suffocate.is_complete()) {
+		cooldowns.suffocate.start();
+		if (!has_item_equipped("gas_mask")) { hurt(); }
+	}
 
 	// stun logic
 	if (cooldowns.stun.just_started()) { map.spawn_effect(*m_services, "stun", get_collider().get_center()); }
@@ -193,6 +197,7 @@ void Player::update(world::Map& map) {
 	m_hurt_cooldown.update();
 	distant_vicinity.set_position(get_collider().get_center() - distant_vicinity.get_dimensions() * 0.5f);
 	m_piggyback_socket = get_collider().get_top() + sf::Vector2f{-8.f * directions.actual.as_float(), -16.f};
+	m_head_socket = get_collider().get_top() + sf::Vector2f{-2.f * directions.actual.as_float(), -6.f};
 
 	// reward sequences
 	if (!has_flag_set(PlayerFlags::console_open)) {
@@ -372,6 +377,7 @@ void Player::update(world::Map& map) {
 		if (m_animation_machine.stepped() && abs(get_collider().physics.velocity.x) > 2.5f) { m_services->soundboard.play_step(map.get_tile_value_at_position(get_collider().get_below_point()), map.get_style_id()); }
 	}
 	Mobile::post_update(*m_services, map, *this);
+	if (m_headgear) { m_headgear->update(Animatable::get_frame()); }
 }
 
 void Player::simple_update() {
@@ -455,14 +461,19 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	}
 
 	if (has_flag_set(PlayerFlags::holding_item)) {
-		// TODO: clean this up later
 		if (m_currently_held_item) {
-			auto item = catalog.inventory.find_item(*m_currently_held_item);
-			auto spr = sf::Sprite{svc.assets.get_texture("inventory_items")};
-			spr.setOrigin({16.f, 16.f});
-			spr.setScale(constants::f_scale_vec);
-			item->render(win, spr, get_collider().get_center() + sf::Vector2f{8.f, 0.f} * directions.actual.as_float() - cam);
+			auto offset = sf::Vector2f{8.f, 0.f};
+			if (is_in_animation(AnimState::drink)) {
+				offset = sf::Vector2f{8.f, -4.f};
+				m_currently_held_item->set_rotation(directions.actual.left() ? sf::degrees(90) : sf::degrees(-90));
+			}
+			auto where = get_collider().get_center() - cam + offset * directions.actual.as_float();
+			m_currently_held_item->render(win, where);
 		}
+	}
+	if (m_headgear) {
+		m_headgear->set_scale(Animatable::get_sprite().getScale());
+		m_headgear->render(win, Animatable::get_window_position());
 	}
 
 	// light debug
@@ -509,7 +520,7 @@ void Player::give_bonus_health(int amount) {
 	set_flag(PlayerFlags::bonus_health_added);
 }
 
-void Player::set_invincible() { health.set_invincible(); }
+void Player::set_invincible(int time) { health.set_invincible(time); }
 
 void Player::turn() {
 	auto to_dir = get_actual_direction().right() ? SimpleDirection{LR::left} : SimpleDirection{LR::right};
@@ -791,7 +802,7 @@ void Player::hurt(float amount, bool force) {
 		get_collider().physics.velocity.y = 0.0f;
 		get_collider().physics.acceleration.y += -physics_stats.hurt_acc;
 		force_cooldown.start(60);
-		auto tag = has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? "nani_gulp" : cooldowns.stun.started() ? "nani_stun" : "nani_hurt";
+		auto tag = has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? "nani_gulp" : cooldowns.stun.started() ? "nani_stun" : cooldowns.suffocate.started() ? "nani_gulp" : "nani_hurt";
 		m_services->soundboard.play_sound(tag);
 		hurt_cooldown.start(2);
 		if (health.is_dead() && !is_dead()) { m_death_type = PlayerDeathType::normal; }
@@ -982,26 +993,18 @@ void Player::give_item(std::string_view label, int amount, bool from_save) {
 
 void Player::hold_item(int id) {
 	set_flag(PlayerFlags::holding_item);
-	m_currently_held_item.emplace(id);
+	auto lookup = m_services->data.get_item_json_from_tag(m_services->data.item_label_from_id(id))["origin"][0].as<int>();
+	m_currently_held_item.emplace(*m_services, id, lookup);
 }
 
 void Player::use_item() {
-
-	// equippable items
-	if (has_item_equipped("boxing_glove")) {
-		if (arsenal && hotbar) {
-			if (consume_flag(PlayerFlags::hit_target)) { equipped_weapon().reduce_reload_time(0.1f); }
-		}
-	}
-	has_item_equipped("hoarders_trinket") ? health.set_invincibility(default_invincibility_time_v * 1.3f) : health.set_invincibility(default_invincibility_time_v);
-	if (arsenal && hotbar) { has_item_equipped("soda") ? equipped_weapon().set_reload_multiplier(0.85f) : equipped_weapon().set_reload_multiplier(1.f); }
-	if (has_item("soda")) { m_services->quest_table.set_quest_progression("carl_soda", 1, QuestRequirementType::loose); }
-	auto has_bonus_health = health.has_bonus() ? 1 : 0;
-	m_services->quest_table.set_quest_progression("bonus_health", has_bonus_health, QuestRequirementType::strict);
-
 	// useable items
 	if (!m_currently_held_item) { return; }
-	switch (*m_currently_held_item) {
+	switch (m_currently_held_item->id) {
+	case 25:
+		m_animation_machine.force(AnimState::drink, "drink");
+		m_animation_machine.state_function = std::bind(&PlayerAnimation::update_drink, &m_animation_machine);
+		break;
 	case 27:
 		m_animation_machine.force(AnimState::drink, "drink");
 		m_animation_machine.state_function = std::bind(&PlayerAnimation::update_drink, &m_animation_machine);
@@ -1072,16 +1075,48 @@ void Player::pop_from_loadout(std::string_view tag) {
 SimpleDirection Player::entered_from() const { return (get_collider().physics.position.x < constants::f_cell_size * 8.f) ? SimpleDirection(LR::right) : SimpleDirection(LR::left); }
 
 void Player::handle_item_logic() {
+
+	// equippable items
+	if (has_item_equipped("boxing_glove")) {
+		if (arsenal && hotbar) {
+			if (consume_flag(PlayerFlags::hit_target)) { equipped_weapon().reduce_reload_time(0.1f); }
+		}
+	}
+	has_item_equipped("hoarders_trinket") ? health.set_invincibility(default_invincibility_time_v * 1.3f) : health.set_invincibility(default_invincibility_time_v);
+	if (arsenal && hotbar) { has_item_equipped("soda") ? equipped_weapon().set_reload_multiplier(0.85f) : equipped_weapon().set_reload_multiplier(1.f); }
+	if (has_item("soda")) { m_services->quest_table.set_quest_progression("carl_soda", 1, QuestRequirementType::loose); }
+	auto has_bonus_health = health.has_bonus() ? 1 : 0;
+	m_services->quest_table.set_quest_progression("bonus_health", has_bonus_health, QuestRequirementType::strict);
+	if (has_item_equipped("gas_mask")) {
+		m_services->soundboard.repeat_sound("gas_mask_breathing", 1, {}, health.is_critical() ? 0.8f : 1.f);
+		if (!m_headgear) { m_headgear.emplace(*m_services, 0, 1); }
+	} else {
+		if (m_headgear) { m_headgear.reset(); }
+	}
+	if (has_item_equipped("flippers")) {
+		get_collider().p_physics_properties.water_friction = {0.96, 0.92};
+	} else {
+		get_collider().p_physics_properties.water_friction = {m_physics_data["properties"]["water_friction"][0].as<float>(), m_physics_data["properties"]["water_friction"][1].as<float>()};
+	}
+
 	if (m_currently_held_item) {
+		m_currently_held_item->update();
 		if (consume_flag(PlayerFlags::failed_to_drink)) {
 			m_currently_held_item.reset();
 			controller.unrestrict();
 		}
 		if (consume_flag(PlayerFlags::drank)) {
-			if (m_currently_held_item.value() == 27) {
-				heal();
+			if (m_currently_held_item->id == 25) { // soda
+				set_invincible(default_invincibility_time_v * 3);
+				m_services->soundboard.play_sound("item_get");
 				m_currently_held_item.reset();
-				catalog.inventory.remove_item(m_services->data.item_label_from_id(*m_currently_held_item), 1);
+				catalog.inventory.remove_item(m_services->data.item_label_from_id(m_currently_held_item->id), 1);
+			}
+			if (m_currently_held_item->id == 27) { // ashtown preserves
+				heal();
+				m_services->soundboard.play_sound("heal");
+				m_currently_held_item.reset();
+				catalog.inventory.remove_item(m_services->data.item_label_from_id(m_currently_held_item->id), 1);
 			}
 		}
 	}

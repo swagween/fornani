@@ -7,7 +7,7 @@
 
 namespace pi {
 
-enum class MetagridFlags { context_menu, hide_cell };
+enum class MetagridFlags { context_menu, hide_cell, move_mode };
 
 class Metagrid final : public EditorState {
   public:

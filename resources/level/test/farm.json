@@ -60,15 +60,18 @@
     ],
     "metagrid": [
       -5,
-      1
+      8
     ],
     "minimap": false,
     "music": "whispering_island",
     "properties": {
-      "environmental_randomness": false
+      "environmental_randomness": false,
+      "interior": false
     },
     "room_id": 4205,
-    "style": 1
+    "style": 1,
+    "use_template": false,
+    "weather": null
   },
   "tile": {
     "flags": {

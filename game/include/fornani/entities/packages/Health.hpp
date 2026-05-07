@@ -40,7 +40,7 @@ class Health final : public Flaggable<HealthFlags> {
 	void heal(float amount);
 	void refill();
 	void inflict(float amount, bool force = false, bool inv = true);
-	void set_invincible();
+	void set_invincible(int time);
 	void increase_capacity(float amount);
 	void reset();
 	void kill();

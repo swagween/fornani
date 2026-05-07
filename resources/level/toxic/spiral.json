@@ -53,7 +53,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": "",
+    "background": "bright_slime",
     "biome": "toxic",
     "border_color": [
       0,

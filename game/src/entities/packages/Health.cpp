@@ -49,13 +49,13 @@ void Health::inflict(float amount, bool force, bool inv) {
 		m_quantity = std::clamp(m_quantity - amount, 0.f, get_capacity());
 		m_bonus = std::clamp(m_bonus - amount, 0.f, m_bonus);
 		m_taken.start();
-		if (inv) { set_invincible(); }
+		if (inv) { set_invincible(invincibility_time); }
 		set_flag(HealthFlags::hurt);
 		set_flag(HealthFlags::hit);
 	}
 }
 
-void Health::set_invincible() { invincibility.start(invincibility_time); }
+void Health::set_invincible(int time) { invincibility.start(time); }
 
 void Health::increase_capacity(float amount) { set_capacity(m_capacity + amount, true); }
 

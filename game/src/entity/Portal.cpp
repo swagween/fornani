@@ -68,7 +68,6 @@ void Portal::expose() {
 	static bool activate_on_contact{is_activate_on_contact()};
 	static bool already_open{is_already_open()};
 	static bool locked{is_locked()};
-	ImGui::InputInt("Source Room ID", &source_id);
 	ImGui::InputInt("Destination Room ID", &destination_id);
 	ImGui::Separator();
 	ImGui::Checkbox("Activate on Contact", &activate_on_contact);

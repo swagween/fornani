@@ -5,6 +5,8 @@
 #include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/entities/Mobile.hpp>
 #include <fornani/entities/item/Drop.hpp>
+#include <fornani/entities/item/Headgear.hpp>
+#include <fornani/entities/item/HeldItem.hpp>
 #include <fornani/entities/packages/Caution.hpp>
 #include <fornani/entities/packages/Health.hpp>
 #include <fornani/entities/player/Catalog.hpp>
@@ -62,7 +64,7 @@ constexpr float DETECTOR_HEIGHT = 22.0f;
 constexpr float WALL_SLIDE_DETECTOR_OFFSET = 20.0f;
 constexpr float DETECTOR_BUFFER = (player_dimensions_v.x - DETECTOR_HEIGHT) / 2;
 constexpr int JUMP_BUFFER_TIME = 12;
-constexpr int INVINCIBILITY_TIME = 200;
+constexpr auto default_invincibility_time_v = 300;
 constexpr int ANCHOR_BUFFER = 50;
 constexpr int num_sprites{220};
 
@@ -157,7 +159,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void end_tick();
 	void purchase(int amount);
 	void give_bonus_health(int amount);
-	void set_invincible();
+	void set_invincible(int time = default_invincibility_time_v);
 
 	// animation machine
 	void request_animation(AnimState const to) { m_animation_machine.request(to); }
@@ -319,6 +321,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 		util::Cooldown sprint_tutorial{800};
 		util::Cooldown push{32};
 		util::Cooldown stun{128};
+		util::Cooldown suffocate{360};
 	} cooldowns{};
 	Counters counters{};
 	std::vector<sf::Vector2f> accumulated_forces{};
@@ -348,8 +351,11 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	PlayerAnimation m_animation_machine;
 	PlayerAttributes m_attributes;
 
+	dj::Json m_physics_data{};
+
 	std::optional<PlayerDeathType> m_death_type{};
-	std::optional<int> m_currently_held_item{};
+	std::optional<item::HeldItem> m_currently_held_item{};
+	std::optional<item::Headgear> m_headgear{};
 
 	[[nodiscard]] auto can_dash() const -> bool;
 	[[nodiscard]] auto can_omnidirectional_dash() const -> bool;
@@ -386,6 +392,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	sf::Vector2f m_sprite_position{};
 	sf::Vector2f m_weapon_socket{};
 	sf::Vector2f m_piggyback_socket{};
+	sf::Vector2f m_head_socket{};
 	sf::Vector2f m_demo_position{};
 	components::SteeringComponent m_ear{};
 	std::pair<sf::Vector2f, sf::Vector2f> m_antenna_sockets{};

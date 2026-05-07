@@ -76,6 +76,7 @@ class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {
 	[[nodiscard]] auto get_vicinity_rect() const -> sf::FloatRect { return p_vicinity.as_rect(); }
 
 	components::PhysicsComponent physics{};
+	PhysicsProperties p_physics_properties{};
 
 	// debug
 	std::vector<std::string> print_chunks();
@@ -83,7 +84,6 @@ class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {
   protected:
 	shape::Shape p_vicinity;
 	ColliderType p_type{};
-	PhysicsProperties p_physics_properties{};
 
 	io::Logger p_logger{"Collider"};
 

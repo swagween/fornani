@@ -412,12 +412,35 @@
             3
           ]
         ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": true,
+        "hidden": false,
+        "id": 400,
+        "label": "gobina",
+        "position": [
+          55,
+          27
+        ],
+        "start_busy": false,
+        "suites": [
+          [
+            1
+          ]
+        ]
       }
     ],
     "portals": [
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 219,
         "dimensions": [
           1,
@@ -434,6 +457,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 401,
         "dimensions": [
           1,
@@ -450,6 +474,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 221,
         "dimensions": [
           5,
@@ -466,6 +491,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 402,
         "dimensions": [
           3,
@@ -482,6 +508,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 403,
         "dimensions": [
           1,
@@ -499,6 +526,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 404,
         "dimensions": [
           1,
@@ -515,6 +543,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 405,
         "dimensions": [
           1,
@@ -531,6 +560,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 406,
         "dimensions": [
           1,
@@ -547,6 +577,7 @@
       {
         "activate_on_contact": false,
         "already_open": true,
+        "channel": 0,
         "destination_id": 408,
         "dimensions": [
           1,
@@ -563,6 +594,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 409,
         "dimensions": [
           1,
@@ -579,6 +611,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 407,
         "dimensions": [
           1,
@@ -595,6 +628,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 413,
         "dimensions": [
           1,
@@ -611,6 +645,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 411,
         "dimensions": [
           1,
@@ -627,6 +662,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 412,
         "dimensions": [
           1,
@@ -871,6 +907,7 @@
       96,
       48
     ],
+    "interior": false,
     "metagrid": [
       52,
       15
@@ -884,6 +921,7 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": true,
+      "interior": false,
       "lighting": false,
       "timer": false
     },
@@ -14010,9 +14048,9 @@
         0,
         0,
         0,
+        214,
+        215,
         0,
-        0,
-        232,
         0,
         0,
         0,

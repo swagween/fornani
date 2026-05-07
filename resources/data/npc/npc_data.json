@@ -264,10 +264,32 @@
       }
     ]
   },
+  "gobina": {
+    "id": 41,
+    "dimensions": [24, 24],
+    "sprite_dimensions": [28, 28],
+    "sprite_offset": [0, -13],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 8, 40, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [8, 3, 40, 0, false]
+      }
+    ],
+    "schedule": {
+      "night": 406,
+      "dusk": 406,
+      "dawn": 400,
+      "day": 400
+    }
+  },
   "billy": {
     "id": 25,
     "dimensions": [24, 24],
-    "sprite_dimensions": [23, 11],
+    "sprite_dimensions": [28, 28],
     "sprite_offset": [-11, 2],
     "animation": [
       {

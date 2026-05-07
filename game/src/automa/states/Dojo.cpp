@@ -243,6 +243,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 }
 
 void Dojo::reload(ServiceProvider& svc, int target_state) {
+	svc.soundboard.clear_sounds();
 	m_map->clear();
 	set_flag(GameplayStateFlags::transitioned_in, false);
 	m_flags.reset(GameplayFlags::transitioning);
@@ -254,6 +255,7 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 		svc.stats.world.rooms_discovered.update();
 	}
 	player->reset_flags();
+	player->cooldowns.suffocate.start();
 
 	if (p_context.console) { p_context.console.reset(); }
 

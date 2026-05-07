@@ -100,23 +100,27 @@ EditorStateType Metagrid::run(char** argv) {
 void Metagrid::handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) {
 	EditorState::handle_events(event, win);
 	ImGuiIO& io = ImGui::GetIO();
-	if (m_highlighted_room && p_left_mouse.held && !io.WantCaptureMouse) { m_tool->handle_inputs(*m_highlighted_room.value(), p_camera, p_left_clicked_position); }
 }
 
 void Metagrid::logic() {
 	EditorState::logic();
 	ImGuiIO& io = ImGui::GetIO();
 
+	auto last_workspace_position = io.WantCaptureMouse ? p_left_clicked_position : p_current_mouse_position;
+
 	// mouse events
 	if (p_left_mouse.released && m_highlighted_room && m_tool->is(MetagridToolType::move)) {
 		if (!m_highlighted_room.value()->serialize(*p_services)) { NANI_LOG_INFO(p_logger, "Failed to save metadata for {}", m_highlighted_room.value()->get_label()); }
 	}
-	if (p_left_mouse.clicked && m_highlighted_room) {
-		p_left_clicked_position = sf::Vector2f{p_current_mouse_position - p_camera};
+	if (p_left_mouse.held && m_highlighted_room) {
+		m_flags.set(MetagridFlags::move_mode);
+		if (m_tool->is(MetagridToolType::move)) { m_highlighted_room.value()->set_position(m_tool->get_workspace_coordinates(p_camera)); }
+		p_left_clicked_position = p_current_mouse_position - p_camera;
 		m_tool->set_original_position(m_highlighted_room.value()->get_board_position());
+	} else {
+		m_flags.reset(MetagridFlags::move_mode);
 	}
 
-	auto last_workspace_position = io.WantCaptureMouse ? p_left_clicked_position : p_current_mouse_position;
 	auto any_room_hovered = false;
 	for (auto& r : m_rooms) {
 		r.update(last_workspace_position, io.WantCaptureMouse);
@@ -169,7 +173,8 @@ void Metagrid::render(sf::RenderWindow& win) {
 		++ctr;
 	}
 	auto view = std::span<Room>(m_rooms);
-	if (!p_left_mouse.clicked && !io.WantCaptureMouse) { m_highlighted_room = &view[it]; }
+	if (!p_left_mouse.clicked && !io.WantCaptureMouse && !m_flags.test(MetagridFlags::move_mode)) { m_highlighted_room = &view[it]; }
+	if (!found_one && !m_flags.test(MetagridFlags::move_mode) && !io.WantCaptureMouse) { m_highlighted_room.reset(); }
 
 	if (io.WantCaptureMouse) {
 		auto screen = sf::RectangleShape{};
@@ -238,6 +243,7 @@ void Metagrid::render(sf::RenderWindow& win) {
 		ImGui::Text("Current Room: %i", current_room);
 		ImGui::Text("Current Tool: %s", m_tool->get_label().data());
 		ImGui::Text("Workspace Coordinates: (%i, %i)", m_tool->get_workspace_coordinates(p_camera).x, m_tool->get_workspace_coordinates(p_camera).y);
+		if (m_flags.test(MetagridFlags::move_mode)) { ImGui::Text("MOVE MODE"); }
 		ImGui::Checkbox("Ignore Test Levels", &ignore_test_levels);
 		ImGui::Checkbox("Hide Room Borders", &hide_room_borders);
 		ImGui::Checkbox("Show Tags", &show_tags);
