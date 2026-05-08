@@ -152,7 +152,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 		}
 	}
 	auto bg_type = m_weather_specs ? meta["background"].as_string() + "_" + m_weather_specs->type : meta["background"].as_string();
-	background = std::make_unique<graphics::Background>(svc, bg_type);
+	background = std::make_unique<graphics::Background>(svc, bg_type, real_dimensions);
 
 	// if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }
 	// if (meta["weather"]["leaves"]) { rain = vfx::Rain(meta["weather"]["leaves"]["intensity"].as<int>(), meta["weather"]["leaves"]["fall_speed"].as<float>(), meta["weather"]["leaves"]["slant"].as<float>(), true, true); }
@@ -376,6 +376,8 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	auto& layers = svc.data.get_layers(room_id);
 	flags.state.reset(LevelState::camera_shake);
 
+	for (auto& layer : get_layers()) { layer->update(svc); }
+
 	update_balance(svc);
 
 	// weather
@@ -572,6 +574,9 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& chest : chests) { chest->render(win, cam); }
 
 	if (m_entities) {
+		for (auto n : get_entities<AmbientProp>()) {
+			if (n->is_foreground()) { n->render(win, cam, 1.f); }
+		}
 		for (auto n : get_entities<NPC>()) {
 			if (!n->is_background()) { n->render(win, cam); }
 		}
@@ -602,7 +607,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	if (!svc.greyblock_mode()) {
 		for (auto& layer : get_layers()) {
 			if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
-				shader->finalize();
+				shader->finalize(svc.data.biomes["properties"][get_biome_string()]["max_light"].as<float>());
 				layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
 			} else {
 				layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
@@ -673,7 +678,9 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 				if (i == 1) {
 					if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather.value()->render(svc, win, cam, 1); }
 					if (m_entities) {
-						for (auto n : get_entities<AmbientProp>()) { n->render(win, cam, 1.f); }
+						for (auto n : get_entities<AmbientProp>()) {
+							if (!n->is_foreground()) { n->render(win, cam, 1.f); }
+						}
 						for (auto n : get_entities<NPC>()) {
 							if (n->is_background()) { n->render(win, cam); }
 						}
@@ -681,7 +688,7 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 					}
 				}
 				if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
-					shader->finalize();
+					shader->finalize(svc.data.biomes["properties"][get_biome_string()]["max_light"].as<float>());
 					layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true);
 				} else {
 					layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true, m_attributes.properties.test(MapProperties::day_night_shift));

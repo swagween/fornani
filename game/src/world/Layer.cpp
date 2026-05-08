@@ -14,36 +14,64 @@ namespace fornani::world {
 
 void Layer::generate_textures(sf::Texture const& tex) {
 	if (middleground()) { m_barrier = sf::RenderTexture{}; }
-	for (auto cycle{0}; cycle < static_cast<int>(fornani::TimeOfDay::END); ++cycle) {
-		auto time = static_cast<fornani::TimeOfDay>(cycle);
-		auto const is_day = time == fornani::TimeOfDay::day;
-		auto const is_twilight = time == fornani::TimeOfDay::dawn || time == fornani::TimeOfDay::dusk;
-		auto const is_night = time == fornani::TimeOfDay::night;
-		auto barrier = m_barrier && cycle == 0;
-		auto lookup = is_day ? 0 : is_twilight ? 1 : 2;
+	if (!m_flags.test(LayerFlags::animated)) {
+		for (auto cycle{0}; cycle < static_cast<int>(fornani::TimeOfDay::END); ++cycle) {
+			auto time = static_cast<fornani::TimeOfDay>(cycle);
+			auto const is_day = time == fornani::TimeOfDay::day;
+			auto const is_twilight = time == fornani::TimeOfDay::dawn || time == fornani::TimeOfDay::dusk;
+			auto const is_night = time == fornani::TimeOfDay::night;
+			auto barrier = m_barrier && cycle == 0;
+			auto lookup = is_day ? 0 : is_twilight ? 1 : 2;
 
-		auto& texture = is_day ? m_texture.day : (is_twilight ? m_texture.twilight : m_texture.night);
-		sf::Vector2u size = grid.dimensions * constants::ui_cell_resolution;
-		if (!texture.resize(size)) { NANI_LOG_ERROR(m_logger, "Layer texture not created."); }
-		texture.clear(sf::Color::Transparent);
+			auto& texture = is_day ? m_texture.day : (is_twilight ? m_texture.twilight : m_texture.night);
+			sf::Vector2u size = grid.dimensions * constants::ui_cell_resolution;
+			if (!texture.resize(size)) { NANI_LOG_ERROR(m_logger, "Layer texture not created."); }
+			texture.clear(sf::Color::Transparent);
 
-		if (barrier) {
-			if (!m_barrier->resize(size)) { NANI_LOG_ERROR(m_logger, "Barrier texture not created."); }
-			m_barrier->clear(sf::Color::Transparent);
-		}
-		sf::Sprite tile{tex};
-		for (auto& cell : grid.cells) {
-			auto x_coord = static_cast<int>((cell.value % constants::tileset_dimensions.x + lookup * constants::tileset_dimensions.x) * constants::i_cell_resolution);
-			auto y_coord = static_cast<int>(ccm::floor(cell.value / constants::tileset_dimensions.x) * constants::i_cell_resolution);
-			tile.setTextureRect(sf::IntRect({x_coord, y_coord}, constants::i_resolution_vec));
-			tile.setPosition(cell.position() / constants::f_scale_factor);
-			if (cell.is_occupied() && !cell.is_special()) {
-				texture.draw(tile);
-				if (barrier && cell.is_border()) { m_barrier->draw(tile); }
+			if (barrier) {
+				if (!m_barrier->resize(size)) { NANI_LOG_ERROR(m_logger, "Barrier texture not created."); }
+				m_barrier->clear(sf::Color::Transparent);
 			}
+			sf::Sprite tile{tex};
+			for (auto& cell : grid.cells) {
+				auto x_coord = static_cast<int>((cell.value % constants::tileset_dimensions.x + lookup * constants::tileset_dimensions.x) * constants::i_cell_resolution);
+				auto y_coord = static_cast<int>(ccm::floor(cell.value / constants::tileset_dimensions.x) * constants::i_cell_resolution);
+				tile.setTextureRect(sf::IntRect({x_coord, y_coord}, constants::i_resolution_vec));
+				tile.setPosition(cell.position() / constants::f_scale_factor);
+				if (cell.is_occupied() && !cell.is_special()) {
+					texture.draw(tile);
+					if (barrier && cell.is_border()) { m_barrier->draw(tile); }
+				}
+			}
+			texture.display();
+			if (barrier) { m_barrier->display(); }
 		}
-		texture.display();
-		if (barrier) { m_barrier->display(); }
+	} else {
+		m_animated_texture.emplace();
+		for (auto [i, frame] : std::views::enumerate(m_animated_texture->frames)) {
+			sf::Vector2u size = grid.dimensions * constants::ui_cell_resolution;
+			if (!frame.resize(size)) { NANI_LOG_ERROR(m_logger, "Layer texture not created."); }
+			frame.clear(sf::Color::Transparent);
+			auto barrier = m_barrier && i == 0;
+			if (barrier) {
+				if (!m_barrier->resize(size)) { NANI_LOG_ERROR(m_logger, "Barrier texture not created."); }
+				m_barrier->clear(sf::Color::Transparent);
+			}
+
+			sf::Sprite tile{tex};
+			for (auto& cell : grid.cells) {
+				auto x_coord = static_cast<int>((cell.value % constants::tileset_dimensions.x) * constants::i_cell_resolution);
+				auto y_coord = static_cast<int>(ccm::floor(cell.value / constants::tileset_dimensions.x) * constants::i_cell_resolution + i * constants::tileset_dimensions.y * constants::i_cell_resolution);
+				tile.setTextureRect(sf::IntRect({x_coord, y_coord}, constants::i_resolution_vec));
+				tile.setPosition(cell.position() / constants::f_scale_factor);
+				if (cell.is_occupied() && !cell.is_special()) {
+					frame.draw(tile);
+					if (barrier && cell.is_border()) { m_barrier->draw(tile); }
+				}
+			}
+			frame.display();
+			if (barrier) { m_barrier->display(); }
+		}
 	}
 }
 
@@ -73,6 +101,10 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics
 	}
 }
 
+void Layer::update(automa::ServiceProvider& svc) {
+	if (svc.ticker.every_x_ticks(48)) { m_current_frame.modulate(1); }
+}
+
 void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, LightShader& shader, Palette& palette, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg, bool day_night_shift) const {
 	if (background() != is_bg) { return; }
 	if (m_barrier) {
@@ -83,13 +115,21 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, LightSha
 		spr.setPosition(-cam - sf::Vector2f{2 * border});
 		win.draw(spr);
 	}
-	auto sprites = day_night_shift ? std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.twilight.getTexture()}, sf::Sprite{m_texture.night.getTexture()}}
-								   : std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.day.getTexture()}};
 
-	for (auto& sprite : sprites) {
+	if (m_flags.test(LayerFlags::animated) && m_animated_texture) {
+		auto sprite = sf::Sprite{m_animated_texture->frames[m_current_frame.get()].getTexture()};
 		sprite.setScale(constants::f_scale_vec);
 		sprite.setPosition({-cam.x * m_parallax, -cam.y});
 		shader.submit(win, palette, sprite);
+	} else {
+
+		auto sprites = day_night_shift ? std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.twilight.getTexture()}, sf::Sprite{m_texture.night.getTexture()}}
+									   : std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.day.getTexture()}};
+		for (auto& sprite : sprites) {
+			sprite.setScale(constants::f_scale_vec);
+			sprite.setPosition({-cam.x * m_parallax, -cam.y});
+			shader.submit(win, palette, sprite);
+		}
 	}
 }
 

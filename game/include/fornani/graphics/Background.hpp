@@ -28,7 +28,7 @@ struct BackgroundLayer {
 class Background {
   public:
 	Background() = default;
-	Background(automa::ServiceProvider& svc, std::string_view label);
+	Background(automa::ServiceProvider& svc, std::string_view label, sf::Vector2f map_dimensions = {});
 
 	void update(automa::ServiceProvider& svc);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos);
@@ -45,6 +45,8 @@ class Background {
 	std::vector<BackgroundLayer> layers{};
 	sf::Vector2i scroll_pane{};
 	sf::Vector2i dimensions{};
+	sf::Vector2f origin{};
+	sf::Vector2f map_dimensions{};
 	util::BitFlags<BackgroundAttributes> m_attributes{};
 	graphics::DayNightShifter shifter{};
 

@@ -134,6 +134,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 204,
         "dimensions": [
           1,
@@ -150,6 +151,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 232,
         "dimensions": [
           1,
@@ -166,6 +168,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 210,
         "dimensions": [
           1,
@@ -182,6 +185,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 207,
         "dimensions": [
           1,
@@ -198,6 +202,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 213,
         "dimensions": [
           1,
@@ -214,6 +219,7 @@
       {
         "activate_on_contact": false,
         "already_open": true,
+        "channel": 0,
         "destination_id": 261,
         "dimensions": [
           1,
@@ -1800,6 +1806,7 @@
       96,
       176
     ],
+    "interior": false,
     "metagrid": [
       30,
       22
@@ -1813,6 +1820,7 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": true,
+      "interior": false,
       "lighting": false,
       "timer": false
     },
@@ -1824,6 +1832,12 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

@@ -7,10 +7,11 @@
 
 namespace fornani::graphics {
 
-Background::Background(automa::ServiceProvider& svc, std::string_view label) : m_label{label} {
+Background::Background(automa::ServiceProvider& svc, std::string_view label, sf::Vector2f map_dimensions) : m_label{label}, map_dimensions{map_dimensions} {
 	auto const& in_data = svc.data.background[label];
 	dimensions.x = in_data["dimensions"][0].as<int>();
 	dimensions.y = in_data["dimensions"][1].as<int>();
+	origin = sf::Vector2f{in_data["origin"][0].as<float>(), in_data["origin"][1].as<float>()};
 	scroll_pane = dimensions * 2;
 	if (in_data["lock"]["horizontal"].as_bool()) { lock_horizontally(); }
 	if (in_data["lock"]["vertical"].as_bool()) { lock_vertically(); }
@@ -25,6 +26,7 @@ Background::Background(automa::ServiceProvider& svc, std::string_view label) : m
 			sprite.setTextureRect(sf::IntRect{{dimensions.x * static_cast<int>(tod), dimensions.y * static_cast<int>(i)}, dimensions});
 			tex.draw(sprite);
 			tex.display();
+			tex.setRepeated(true);
 		}
 	}
 }
@@ -45,18 +47,22 @@ void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 		if (layer.physics.position.y < -scroll_pane.y && !locked_vertically()) { layer.physics.position.y = layer.physics.position.y + static_cast<float>(scroll_pane.y); }
 		if (layer.physics.position.y > 0.f && !locked_vertically()) { layer.physics.position.y = static_cast<float>(-scroll_pane.y) + layer.physics.position.y; }
 
-		layer.final_position = layer.physics.position - cam * layer.parallax;
+		layer.final_position = layer.physics.position + origin.componentWiseMul(map_dimensions);
 
 		if (locked_vertically()) { layer.final_position.y = ccm::ext::clamp(layer.final_position.y, std::min(static_cast<float>(-scroll_pane.y + svc.window->i_screen_dimensions().y), -1 + epsilon), 0.f); }
 		if (locked_horizontally()) { layer.final_position.x = ccm::ext::clamp(layer.final_position.x, std::min(static_cast<float>(-scroll_pane.x + svc.window->i_screen_dimensions().x), -1 + epsilon), 0.f); }
 		for (auto [tod, tex] : std::views::enumerate(layer.textures)) {
+			auto chunks = map_dimensions / constants::f_cell_size / constants::f_chunk_size;
+			auto multiplier = std::max(chunks.x, chunks.y);
 			auto sprite = sf::Sprite{tex.getTexture()};
 			sprite.setScale(constants::f_scale_vec);
-			sprite.setTextureRect(sf::IntRect{{}, svc.window->i_screen_dimensions() * 4});
-			sprite.setPosition(layer.final_position);
+			sprite.setTextureRect(sf::IntRect{{}, dimensions * static_cast<int>(multiplier)});
+			sprite.setPosition(layer.final_position - cam * layer.parallax);
+			sprite.setOrigin(sf::Vector2f{{sf::Vector2f{dimensions} * multiplier}}.componentWiseMul(origin));
 			shifter.render(svc, win, sprite, tod);
 		}
 	}
+	// debug();
 }
 
 void Background::lock() {
@@ -81,9 +87,15 @@ void Background::debug() {
 	window_flags |= ImGuiWindowFlags_NoMove;
 	ImGui::SetNextWindowBgAlpha(0.65f);
 	if (ImGui::Begin("Background Parameters", &b_debug, window_flags)) {
+		ImGui::Text("Origin X: %.1f", sf::Vector2f{{sf::Vector2f{dimensions} * 3.f}}.componentWiseMul(origin).x);
+		ImGui::Text("Origin Y: %.1f", sf::Vector2f{{sf::Vector2f{dimensions} * 3.f}}.componentWiseMul(origin).y);
+
+		ImGui::SeparatorText("Layers");
 		auto index{0};
 		for (auto& layer : layers) {
 			ImGui::Separator();
+			ImGui::Text("Position X: %.1f", layer.final_position.x);
+			ImGui::Text("Position Y: %.1f", layer.final_position.y);
 			ImGui::Text("Layer %i", index);
 			std::string plabel = "parallax" + std::to_string(index);
 			std::string slabel = "speed" + std::to_string(index);

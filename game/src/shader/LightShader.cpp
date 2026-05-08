@@ -9,8 +9,6 @@
 
 namespace fornani {
 
-constexpr auto max_light_v = 3.f;
-
 auto linear_debug = 3.0f;
 auto lumin_debug = 2.5f;
 auto rad_debug = 0.39f;
@@ -96,11 +94,11 @@ void LightShader::add_spotlight(sf::Vector2f position, sf::Vector2f direction, i
 	current_spotlight++;
 }
 
-void LightShader::finalize() {
+void LightShader::finalize(float max_light) {
 	m_shader.setUniform("u_px", m_scale);
 	m_shader.setUniform("u_tex_size", sf::Glsl::Vec2{m_texture_size});
 	m_shader.setUniform("u_parity", sf::Glsl::Vec2{m_parity});
-	m_shader.setUniform("u_max_light", max_light_v);
+	m_shader.setUniform("u_max_light", max_light);
 
 	m_shader.setUniform("pointlight_count", current_point_light + 1);
 	m_shader.setUniformArray("pointlight_position", pointlight_position.data(), pointlight_position.size());

@@ -117,7 +117,7 @@
     {
       "folder": "firstwind",
       "label": "plat_test.json",
-      "region": "firstwind",
+      "region": "overturned",
       "room_id": 123213
     },
     {
@@ -923,6 +923,12 @@
       "label": "race.json",
       "region": "firstwind",
       "room_id": 9899
+    },
+    {
+      "folder": "worm",
+      "label": "nephridiopore.json",
+      "region": "worm",
+      "room_id": 1101
     }
   ]
 }

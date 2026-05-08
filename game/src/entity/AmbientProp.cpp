@@ -8,6 +8,7 @@ namespace fornani {
 AmbientProp::AmbientProp(automa::ServiceProvider& svc, dj::Json const& in) : Entity{svc, in, "ambient_props"} {
 	unserialize(in);
 	m_params.emplace(svc.data.props[m_tag]);
+	if (in["foreground"].as_bool()) { m_params->attributes.set(AmbientPropAttributes::foreground); }
 	m_sensor = components::CircleSensor{m_params->radius};
 	Animatable::set_texture(svc.assets.get_texture("ambient_prop_" + m_tag));
 	Animatable::set_dimensions(m_params->dimensions);
@@ -16,9 +17,10 @@ AmbientProp::AmbientProp(automa::ServiceProvider& svc, dj::Json const& in) : Ent
 	Animatable::push_and_set_animation("basic", {0, 9, 1, -1});
 	m_bob.physics.set_friction_componentwise({0.99f, 0.99f});
 	m_sensor.set_position(get_global_center());
+	m_textured = false;
 }
 
-AmbientProp::AmbientProp(automa::ServiceProvider& svc, int channel, std::string_view tag) : Entity{svc, "ambient_props", 0}, m_tag{tag.data()}, m_channel{channel} {}
+AmbientProp::AmbientProp(automa::ServiceProvider& svc, int channel, std::string_view tag) : Entity{svc, "ambient_props", 0}, m_tag{tag.data()}, m_channel{channel} { m_textured = false; }
 
 std::unique_ptr<Entity> AmbientProp::clone() const { return std::make_unique<AmbientProp>(*this); }
 
@@ -26,6 +28,7 @@ void AmbientProp::serialize(dj::Json& out) {
 	Entity::serialize(out);
 	out["tag"] = m_tag;
 	out["channel"] = m_channel;
+	out["foreground"] = is_foreground();
 }
 
 void AmbientProp::unserialize(dj::Json const& in) {
@@ -63,7 +66,13 @@ void AmbientProp::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 		drawbox.setPosition(get_world_dimensions() * size - cam);
 		// win.draw(drawbox);
 	}
-	if (m_editor) { return; }
+	if (m_editor) {
+		if (m_params) {
+			Animatable::set_position(get_global_center() + cam + m_params->offset);
+			win.draw(*this);
+		}
+		return;
+	}
 	if (m_params) {
 		Animatable::set_position(get_global_center() - cam + m_params->offset);
 		win.draw(*this);

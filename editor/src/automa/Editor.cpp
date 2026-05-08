@@ -224,7 +224,7 @@ void Editor::logic() {
 		}
 	}
 	if (p_alt.clicked) {
-		if (current_tool->type == ToolType::brush) { current_tool = std::move(std::make_unique<Eyedropper>()); }
+		if (current_tool->type == ToolType::brush || current_tool->type == ToolType::erase) { current_tool = std::move(std::make_unique<Eyedropper>()); }
 	}
 	if (p_alt.released) {
 		if (current_tool->type == ToolType::eyedropper) { current_tool = std::move(std::make_unique<Brush>()); }
@@ -255,8 +255,8 @@ void Editor::logic() {
 	grid_refresh.update();
 	if (grid_refresh.is_almost_complete()) { map.set_grid_texture(); }
 
-	map.flags.show_all_layers = shift_held() && !control_held() ? map.flags.show_current_layer : !map.flags.show_current_layer;
-	map.flags.show_current_layer = shift_held() && !control_held() ? map.flags.show_all_layers : !map.flags.show_all_layers;
+	map.flags.show_all_layers = shift_held() ? map.flags.show_current_layer : !map.flags.show_current_layer;
+	// map.flags.show_current_layer = shift_held();
 
 	// set tool positions
 	current_tool->set_position((p_current_mouse_position - target.get_position()) / target.get_scale());

@@ -179,8 +179,9 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 	for (auto& layer : metadata["tile"]["layers"].as_array()) {
 		auto parallax = metadata["tile"]["parallax"][counter].as<float>();
 		auto ignore_lighting = metadata["tile"]["ignore_lighting"][counter].as_bool();
+		auto animated = metadata["tile"]["animated"][counter].as_bool();
 		if (parallax == 0) { parallax = 1.f; }
-		map_states.back().layers.push_back(Layer(counter, counter == map_states.back().get_middleground(), dimensions, parallax, ignore_lighting));
+		map_states.back().layers.push_back(Layer(counter, counter == map_states.back().get_middleground(), dimensions, parallax, ignore_lighting, animated));
 		int cell_counter{};
 		for (auto& cell : layer.as_array()) {
 			map_states.back().layers.back().grid.cells.at(cell_counter).value = cell.as<int>();
@@ -252,6 +253,7 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 		}
 		metadata["tile"]["parallax"].push_back(layer.parallax);
 		metadata["tile"]["ignore_lighting"].push_back(layer.ignore_lighting);
+		metadata["tile"]["animated"].push_back(layer.animated);
 		++current_layer;
 	}
 	if (m_weather) { m_weather->serialize(metadata["meta"]["weather"]); }

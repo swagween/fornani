@@ -12,5 +12,19 @@
     "ashtown",
     "nightside"
   ],
-  "atmosphere": ["dragonflies"]
+  "atmosphere": ["dragonflies"],
+  "properties": {
+    "worm": {
+      "max_light": 4.0
+    },
+    "pioneer": {
+      "max_light": 3.0
+    },
+    "toxic": {
+      "max_light": 3.0
+    },
+    "kariba": {
+      "max_light": 3.0
+    }
+  }
 }

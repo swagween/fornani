@@ -159,6 +159,7 @@
       {
         "activate_on_contact": false,
         "already_open": true,
+        "channel": 0,
         "destination_id": 213,
         "dimensions": [
           1,
@@ -202,6 +203,7 @@
       48,
       48
     ],
+    "interior": false,
     "metagrid": [
       27,
       27
@@ -215,6 +217,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": false,
       "lighting": true,
       "timer": false
     },
@@ -226,6 +229,12 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

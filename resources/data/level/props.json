@@ -38,5 +38,19 @@
     "radius": 16.0,
     "dimensions": [65, 36],
     "offset": [0.0, 0.0]
+  },
+  "worm_back": {
+    "num_frames": 1,
+    "sensitivity": 0.0,
+    "radius": 16.0,
+    "dimensions": [256, 256],
+    "offset": [184.0, 256.0]
+  },
+  "worm_front": {
+    "num_frames": 1,
+    "sensitivity": 0.0,
+    "radius": 16.0,
+    "dimensions": [256, 256],
+    "offset": [184.0, 256.0]
   }
 }

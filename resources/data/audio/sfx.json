@@ -184,6 +184,24 @@
     "pitch_offset": 0.0
   },
   {
+    "label": "steps_worm_1",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "steps_worm_2",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "steps_worm_3",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
     "label": "spitefly_death",
     "bus": "gameplay",
     "volume": 1.0,

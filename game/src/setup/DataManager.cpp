@@ -123,9 +123,10 @@ void DataManager::load_data() {
 			for (auto& layer : in_tile["layers"].as_array()) {
 				auto parallax = in_tile["parallax"][ctr].as<float>();
 				auto ignore_lighting = in_tile["ignore_lighting"][ctr].as_bool();
+				auto animated = in_tile["animated"][ctr].as_bool();
 				if (parallax == 0.f) { parallax = 1.f; }
 				auto partition = sf::Vector2i{in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].as_array().size())};
-				map_layers.back().push_back(std::make_unique<world::Layer>(ctr, partition, dimensions, in_tile["layers"][ctr], constants::f_cell_size, ho, hro, parallax, ignore_lighting));
+				map_layers.back().push_back(std::make_unique<world::Layer>(ctr, partition, dimensions, in_tile["layers"][ctr], constants::f_cell_size, ho, hro, parallax, ignore_lighting, animated));
 				++ctr;
 			}
 			if (room_data["meta"]["minimap"].as_bool()) { minimap.bake(*m_services, room_data); }
