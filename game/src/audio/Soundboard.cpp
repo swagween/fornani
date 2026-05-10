@@ -491,12 +491,20 @@ void Soundboard::randomize(automa::ServiceProvider& svc, Sound& sound, float ran
 void Soundboard::play_step(int tile_value, int style_id, bool land) {
 	if (style_id == 8) {
 		auto pick = random::random_range_float(0.f, 1.f);
-		if (pick < 0.33f) {
-			play_sound("steps_worm_1");
-		} else if (pick < 0.66f) {
-			play_sound("steps_worm_2");
+		if (land) {
+			if (pick < 0.5f) {
+				play_sound("land_worm_1");
+			} else {
+				play_sound("land_worm_2");
+			}
 		} else {
-			play_sound("steps_worm_3");
+			if (pick < 0.33f) {
+				play_sound("steps_worm_1");
+			} else if (pick < 0.66f) {
+				play_sound("steps_worm_2");
+			} else {
+				play_sound("steps_worm_3");
+			}
 		}
 		return;
 	}

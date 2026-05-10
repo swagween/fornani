@@ -41,6 +41,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 
 	// create shaders
 	p_world_shader = LightShader(svc.finder);
+	p_entity_shader = LightShader(svc.finder);
 	p_gui_shader = LightShader(svc.finder);
 
 	reload(svc, room_number);
@@ -216,8 +217,15 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (p_world_shader) {
 		m_map->render_background(svc, win, p_world_shader, cam);
 		for (auto& cutscene : p_context.cutscene_catalog.cutscenes) { cutscene->render(win, cam); }
+		p_entity_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
+		p_entity_shader->finalize(svc.data.biomes["properties"][m_map->get_biome_string()]["max_light"].as<float>());
+		auto ent_sprite = sf::Sprite{m_map->m_entity_texture.getTexture()};
+		ent_sprite.setPosition(-cam);
+		if (m_palette) { p_entity_shader->submit(win, *m_palette, ent_sprite); }
 		m_map->render(svc, win, p_world_shader, cam);
+
 		p_world_shader->clear_point_lights();
+		p_entity_shader->clear_point_lights();
 
 		float aspect = m_map->real_dimensions.x / m_map->real_dimensions.y;
 		for (auto& pl : m_map->point_lights) {
@@ -231,7 +239,11 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		auto normalized = sf::Vector2f{(puv.x - 0.5f) * aspect + 0.5f, puv.y};
 		auto ppl = PointLight(svc.data.light["lantern"], puv);
 		ppl.position = normalized;
-		if (player->has_item_equipped("lantern")) { p_world_shader->add_point_light(ppl); }
+		if (player->has_item_equipped("lantern")) {
+			p_world_shader->add_point_light(ppl);
+			p_entity_shader->add_point_light(ppl);
+		}
+
 		// m_shader->debug();
 	}
 
@@ -289,14 +301,16 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 		svc.state_controller.actions.reset(automa::Actions::custom_player_position);
 	}
 
-	// save was loaded from a json, or player died, so we successfully skipped door search
+	// save was loaded from a json, or player died, so we successfully skipped door searchm_map->loa
 	svc.state_controller.actions.reset(Actions::save_loaded);
 	if (!player->is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
 	player->visit_history.push_room(target_state);
 
 	player->controller.prevent_movement();
 	m_loading.start();
+	if (m_map->has_property(world::MapProperties::lighting)) { m_palette.emplace(m_map->get_biome_string(), svc.finder); }
 	p_world_shader->set_darken(m_map->darken_factor);
+	p_entity_shader->set_darken(m_map->darken_factor);
 	p_world_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
 	p_gui_shader->set_texture_size(svc.window->f_screen_dimensions() * 3.f); // 3 is the number of screen-sized "cells" in the inventory window
 	svc.app_flags.reset(automa::AppFlags::custom_map_start);

@@ -95,6 +95,9 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 
 	unserialize(svc, room_number);
 
+	auto u_dim = sf::Vector2u{real_dimensions};
+	if (!m_entity_texture.resize(u_dim)) {}
+
 	auto it = std::find_if(svc.data.map_jsons.begin(), svc.data.map_jsons.end(), [room_number](auto const& r) { return r.id == room_number; });
 	if (it == svc.data.map_jsons.end()) { return; }
 
@@ -546,6 +549,11 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 }
 
 void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam) {
+
+	m_entity_texture.clear(colors::transparent);
+
+	auto use_shader = m_attributes.properties.test(MapProperties::lighting) && m_palette && shader;
+	if (use_shader) { shader->finalize(svc.data.biomes["properties"][get_biome_string()]["max_light"].as<float>()); }
 	// check for a switch to greyblock mode
 	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
 		generate_layer_textures(svc);
@@ -555,7 +563,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	if (m_entities) {
 		// TODO: uncomment below once all entities have been refactored!
 		// for (auto& entity : m_entities.value().variables.entities) { entity->render(win, cam, 1.0); }
-		for (auto p : get_entities<Portal>()) { p->render(win, cam, 1.0); }
+		for (auto p : get_entities<Portal>()) { p->render(svc, m_entity_texture, cam); }
 		for (auto s : get_entities<SavePoint>()) { s->render(win, cam, 1.0); }
 		if (svc.greyblock_mode()) {
 			for (auto c : get_entities<CutsceneTrigger>()) { c->render(win, cam, c->get_f_grid_dimensions().x); }
@@ -574,9 +582,6 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& chest : chests) { chest->render(win, cam); }
 
 	if (m_entities) {
-		for (auto n : get_entities<AmbientProp>()) {
-			if (n->is_foreground()) { n->render(win, cam, 1.f); }
-		}
 		for (auto n : get_entities<NPC>()) {
 			if (!n->is_background()) { n->render(win, cam); }
 		}
@@ -589,7 +594,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
 	for (auto& emitter : active_emitters) { emitter->render(svc, win, cam); }
-	for (auto& platform : platforms) { platform->render(svc, win, cam); }
+	for (auto& plat : platforms) { plat->render(svc, m_entity_texture, cam); }
 	for (auto& breakable : breakables) { breakable->render(svc, win, cam); }
 	for (auto& incinerite : incinerite_blocks) { incinerite->render(svc, win, cam); }
 	for (auto& pushable : pushables) { pushable->render(svc, win, cam); }
@@ -605,12 +610,18 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	}
 
 	if (!svc.greyblock_mode()) {
-		for (auto& layer : get_layers()) {
-			if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
+		for (auto [i, layer] : std::views::enumerate(get_layers())) {
+			if (use_shader && !layer->ignore_lighting()) {
+				shader->set_texture_size(real_dimensions / constants::f_scale_factor);
 				shader->finalize(svc.data.biomes["properties"][get_biome_string()]["max_light"].as<float>());
 				layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
 			} else {
 				layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
+			}
+			if (i == m_middleground) {
+				for (auto n : get_entities<AmbientProp>()) {
+					if (n->is_foreground()) { n->render(win, cam, 1.f); }
+				}
 			}
 		}
 	}
@@ -663,6 +674,8 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		win.draw(center_box);
 		get_middleground()->grid.render(win, cam);
 	}
+
+	m_entity_texture.display();
 }
 
 void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam) {

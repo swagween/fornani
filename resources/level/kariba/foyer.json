@@ -38,6 +38,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 501,
         "dimensions": [
           1,
@@ -54,6 +55,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 504,
         "dimensions": [
           1,
@@ -70,6 +72,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 507,
         "dimensions": [
           1,
@@ -86,6 +89,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 503,
         "dimensions": [
           1,
@@ -130,6 +134,7 @@
       32,
       32
     ],
+    "interior": true,
     "metagrid": [
       50,
       29
@@ -152,10 +157,13 @@
       "darken_factor": 10
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

@@ -282,6 +282,9 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	auto horizontal_offset = sf::Vector2f{directions.actual.as_float(), 1.f};
 	auto sprite_position = get_collider().get_center() - cam + m_random_offset + m_native_offset.componentWiseMul(horizontal_offset);
 	Drawable::set_position(sprite_position);
+	// debug();
+
+	Drawable::draw(win);
 
 	if (svc.greyblock_mode()) {
 		get_collider().render(win, cam);
@@ -290,9 +293,6 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 		physical.hostile_range.render(win, cam);
 		physical.home_detector.render(win, cam, colors::blue);
 	}
-	// debug();
-
-	Drawable::draw(win);
 }
 
 void Enemy::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {

@@ -27,6 +27,11 @@ struct EditorInput {
 		clicked = false;
 		released = false;
 	}
+	void reset() {
+		clicked = false;
+		released = false;
+		held = false;
+	}
 };
 
 enum class EditorStateType { editor, metagrid, dialogue_editor };

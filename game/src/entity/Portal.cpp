@@ -50,6 +50,7 @@ void Portal::serialize(dj::Json& out) {
 	out["channel"] = channel;
 	out["locked"] = is_locked();
 	if (key_tag) { out["key_tag"] = key_tag.value(); }
+	if (m_custom_animation) { out["custom_animation"] = m_custom_animation->tag; }
 }
 
 void Portal::unserialize(dj::Json const& in) {
@@ -61,6 +62,11 @@ void Portal::unserialize(dj::Json const& in) {
 	channel = in["channel"].as<int>();
 	in["locked"].as_bool() ? m_state.set(PortalState::locked) : m_state.reset(PortalState::locked);
 	if (in["key_tag"]) { key_tag = in["key_tag"].as_string(); }
+	if (in["custom_animation"]) {
+		auto tag = in["custom_animation"].as_string();
+		m_custom_animation.emplace(*m_services, tag);
+		m_custom_animation->animatable.center();
+	}
 }
 
 void Portal::expose() {
@@ -172,16 +178,40 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 			svc.state_controller.refresh(source_id);
 		}
 	}
+	if (m_custom_animation) { m_custom_animation->animatable.tick(); }
 }
 
 void Portal::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
 	Entity::render(win, cam, size);
-	if (m_editor) { return; }
 	Animatable::set_scale(constants::f_scale_vec);
+	if (m_custom_animation) {
+		if (m_editor) {
+			m_custom_animation->animatable.set_scale(constants::f_scale_vec * size / constants::f_cell_size);
+			m_custom_animation->animatable.set_position((get_f_grid_position() + m_custom_animation->offset / constants::f_cell_size) * size + cam);
+		} else {
+			m_custom_animation->animatable.set_position(get_world_position() + m_custom_animation->offset - cam);
+		}
+		win.draw(m_custom_animation->animatable);
+		return;
+	}
+	if (m_editor) { return; }
 	if (!m_attributes.test(PortalAttributes::activate_on_contact) && get_grid_dimensions().x * get_grid_dimensions().y == 1) {
 		Animatable::set_position(get_world_position() - cam);
 		win.draw(*this);
+	}
+}
+
+void Portal::render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::Vector2f cam) {
+	Animatable::set_scale(constants::f_scale_vec);
+	if (m_custom_animation) {
+		m_custom_animation->animatable.set_position(get_world_position() + m_custom_animation->offset);
+		tex.draw(m_custom_animation->animatable);
+		return;
+	}
+	if (!m_attributes.test(PortalAttributes::activate_on_contact) && get_grid_dimensions().x * get_grid_dimensions().y == 1) {
+		Animatable::set_position(get_world_position());
+		tex.draw(*this);
 	}
 }
 
@@ -195,6 +225,19 @@ void Portal::change_states(automa::ServiceProvider& svc, int room_id, graphics::
 		m_state.set(PortalState::transitioning);
 	}
 	m_state.reset(PortalState::activated);
+}
+
+CustomPortalAnimation::CustomPortalAnimation(automa::ServiceProvider& svc, std::string_view tag) : animatable{svc, tag, {svc.data.portal[tag]["dimensions"][0].as<int>(), svc.data.portal[tag]["dimensions"][1].as<int>()}}, tag{tag} {
+	auto const& in = svc.data.portal[tag];
+	for (auto [i, in_anim] : std::views::enumerate(in["animations"].as_array())) {
+		animatable.push_animation(in_anim["label"].as_string(),
+								  {in_anim["parameters"][0].as<int>(), in_anim["parameters"][1].as<int>(), in_anim["parameters"][2].as<int>(), in_anim["parameters"][3].as<int>(), in_anim["parameters"][4].as_bool()});
+		if (i == 0) { animatable.set_animation(in_anim["label"].as_string()); }
+
+		for (auto const& sound : in["sounds"].as_array()) { sounds.push_back(sound.as_string()); }
+		offset = {svc.data.portal[tag]["offset"][0].as<float>(), svc.data.portal[tag]["offset"][1].as<float>()};
+		if (svc.data.portal[tag]["open_for_player"]) { flags.set(CustomPortalFlags::open_for_player); }
+	}
 }
 
 } // namespace fornani

@@ -33,30 +33,29 @@ void EditorState::handle_events(std::optional<sf::Event> event, sf::RenderWindow
 				p_right_clicked_position = p_current_mouse_position;
 			}
 		}
-		if (auto const* button_released = event->getIf<sf::Event::MouseButtonReleased>()) {
-			if (button_released->button == sf::Mouse::Button::Left) {
-				p_left_mouse.held = false;
-				p_left_mouse.released = true;
-			}
-			if (button_released->button == sf::Mouse::Button::Right) {
-				p_right_mouse.held = false;
-				p_right_mouse.released = true;
-			}
+	}
+	if (auto const* button_released = event->getIf<sf::Event::MouseButtonReleased>()) {
+		if (button_released->button == sf::Mouse::Button::Left) {
+			p_left_mouse.held = false;
+			p_left_mouse.released = true;
+		}
+		if (button_released->button == sf::Mouse::Button::Right) {
+			p_right_mouse.held = false;
+			p_right_mouse.released = true;
 		}
 	}
 
 	// Keyboard keys
-	if (!io.WantCaptureKeyboard) {
-		if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
-			if (key_pressed->scancode == sf::Keyboard::Scancode::LShift || key_pressed->scancode == sf::Keyboard::Scancode::RShift) { p_shift.press(); }
-			if (key_pressed->scancode == sf::Keyboard::Scancode::LControl || key_pressed->scancode == sf::Keyboard::Scancode::RControl) { p_control.press(); }
-			if (key_pressed->scancode == sf::Keyboard::Scancode::LAlt || key_pressed->scancode == sf::Keyboard::Scancode::RAlt) { p_alt.press(); }
-		}
-		if (auto const* key_pressed = event->getIf<sf::Event::KeyReleased>()) {
-			if (key_pressed->scancode == sf::Keyboard::Scancode::LShift || key_pressed->scancode == sf::Keyboard::Scancode::RShift) { p_shift.release(); }
-			if (key_pressed->scancode == sf::Keyboard::Scancode::LControl || key_pressed->scancode == sf::Keyboard::Scancode::RControl) { p_control.release(); }
-			if (key_pressed->scancode == sf::Keyboard::Scancode::LAlt || key_pressed->scancode == sf::Keyboard::Scancode::RAlt) { p_alt.release(); }
-		}
+	if (!io.WantCaptureKeyboard) {}
+	if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
+		if (key_pressed->scancode == sf::Keyboard::Scancode::LShift || key_pressed->scancode == sf::Keyboard::Scancode::RShift) { p_shift.press(); }
+		if (key_pressed->scancode == sf::Keyboard::Scancode::LControl || key_pressed->scancode == sf::Keyboard::Scancode::RControl) { p_control.press(); }
+		if (key_pressed->scancode == sf::Keyboard::Scancode::LAlt || key_pressed->scancode == sf::Keyboard::Scancode::RAlt) { p_alt.press(); }
+	}
+	if (auto const* key_pressed = event->getIf<sf::Event::KeyReleased>()) {
+		if (key_pressed->scancode == sf::Keyboard::Scancode::LShift || key_pressed->scancode == sf::Keyboard::Scancode::RShift) { p_shift.release(); }
+		if (key_pressed->scancode == sf::Keyboard::Scancode::LControl || key_pressed->scancode == sf::Keyboard::Scancode::RControl) { p_control.release(); }
+		if (key_pressed->scancode == sf::Keyboard::Scancode::LAlt || key_pressed->scancode == sf::Keyboard::Scancode::RAlt) { p_alt.release(); }
 	}
 }
 

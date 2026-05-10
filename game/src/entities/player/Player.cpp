@@ -374,7 +374,10 @@ void Player::update(world::Map& map) {
 
 	// step sounds
 	if (m_services->in_game()) {
-		if (m_animation_machine.stepped() && abs(get_collider().physics.velocity.x) > 2.5f) { m_services->soundboard.play_step(map.get_tile_value_at_position(get_collider().get_below_point()), map.get_style_id()); }
+		if (m_animation_machine.stepped() && abs(get_collider().physics.velocity.x) > 2.5f) {
+			m_services->soundboard.play_step(map.get_tile_value_at_position(get_collider().get_below_point()), map.get_style_id());
+			if (map.get_style_id() == 8) { map.spawn_effect(*m_services, "worm_steps", get_collider().get_bottom()); }
+		}
 	}
 	Mobile::post_update(*m_services, map, *this);
 	if (m_headgear) { m_headgear->update(Animatable::get_frame()); }

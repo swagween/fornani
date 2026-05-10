@@ -270,6 +270,8 @@ class Map {
 	audio::SoundBalance music_balance{};
 	audio::SoundBalance ambience_balance{};
 
+	sf::RenderTexture m_entity_texture{};
+
   private:
 	MapAttributes m_attributes{};
 	util::BitFlags<LayerProperties> m_layer_properties{};

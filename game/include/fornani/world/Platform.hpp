@@ -9,6 +9,11 @@
 #include <fornani/utils/Counter.hpp>
 #include <string_view>
 
+namespace fornani {
+class LightShader;
+class Palette;
+} // namespace fornani
+
 namespace fornani::automa {
 struct ServiceProvider;
 }
@@ -23,7 +28,7 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class PlatformAttributes { sticky, loop, repeating, player_activated, player_controlled, up_down, side_to_side, ease };
+enum class PlatformAttributes { sticky, loop, repeating, player_activated, player_controlled, up_down, side_to_side, ease, slide, hit_activated };
 enum class PlatformState { moving };
 
 class Platform : public Animatable {
@@ -31,7 +36,9 @@ class Platform : public Animatable {
 	Platform(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f position, sf::Vector2f dimensions, float extent, std::string_view specifications, float start_point = 0.f, int style = 0);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, LightShader& shader, Palette& palette, sf::Vector2f cam);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::Vector2f cam);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	void switch_directions();
 	void set_handle(EntityHandle to) { m_handle = to; }

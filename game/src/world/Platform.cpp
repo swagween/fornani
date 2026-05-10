@@ -93,6 +93,11 @@ Platform::Platform(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f p
 }
 
 void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	auto const u = state * 48;
+	auto v = animation.get_frame() * 112;
+	v = 0;
+	auto lookup = sf::Vector2<int>{u, v} + offset;
+	set_texture_rect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(get_collider().dimensions) / 2));
 	auto edge_start = 0.f;
 	switch_up.update();
 
@@ -197,6 +202,18 @@ void Platform::post_update(automa::ServiceProvider& svc, world::Map& map, player
 	}
 }
 
+void Platform::render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::Vector2f cam) {
+	Animatable::set_position(get_collider().physics.position);
+	auto const u = state * 48;
+	auto const v = animation.get_frame() * 112;
+	auto lookup = sf::Vector2<int>{u, v} + offset;
+	set_texture_rect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(get_collider().dimensions) / 2));
+	if (svc.greyblock_mode()) {
+	} else {
+		tex.draw(*this);
+	}
+}
+
 void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	track_shape.setPosition(-cam);
 	Animatable::set_position(get_collider().physics.position - cam);
@@ -209,6 +226,17 @@ void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 		get_collider().render(win, cam);
 	} else {
 		win.draw(*this);
+	}
+}
+
+void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, LightShader& shader, Palette& palette, sf::Vector2f cam) {
+	track_shape.setPosition(-cam);
+	Animatable::set_position(get_collider().physics.position - cam);
+	if (svc.greyblock_mode()) {
+		win.draw(track_shape);
+		get_collider().render(win, cam);
+	} else {
+		shader.submit(win, palette, get_sprite());
 	}
 }
 

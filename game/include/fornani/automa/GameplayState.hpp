@@ -26,6 +26,8 @@ class GameplayState : public GameState, public Flaggable<GameplayStateFlags> {
 	void play_song_by_id(int id);
 
   protected:
+	std::optional<Palette> m_palette{};
+	std::optional<LightShader> p_entity_shader{};
 	std::optional<LightShader> p_world_shader{};
 	std::optional<LightShader> p_gui_shader{};
 	std::optional<std::unique_ptr<gui::PauseWindow>> p_pause_window{};

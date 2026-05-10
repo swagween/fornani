@@ -12,6 +12,7 @@ void EntityEditor::update(Canvas& canvas) {
 
 	// set tooltip
 	switch (entity_mode) {
+	case EntityMode::neutral: tooltip = "Neutral"; break;
 	case EntityMode::selector: tooltip = "Selector"; break;
 	case EntityMode::editor: tooltip = "Editor"; break;
 	case EntityMode::placer: tooltip = "Placer (press Q to cancel)"; break;
@@ -33,11 +34,12 @@ void EntityEditor::update(Canvas& canvas) {
 	if (selector_mode()) {
 		ent_type = EntityType::none;
 		for (auto& ent : canvas.entities.variables.entities) {
-			if (active) { ent->selected = ent->contains_point(scaled_position()); }
+			if (active) { ent->selected = ent->contains_point(scaled_position()) && canvas.is_available(); }
 			ent->highlighted = ent->contains_point(scaled_position()) || ent->selected;
 			if (active && ent->selected && is_ready()) {
 				if (ent->copyable) { current_entity = ent->clone(); }
 				entity_menu = !entity_menu;
+				entity_mode = EntityMode::neutral;
 			}
 		}
 	}
@@ -59,6 +61,8 @@ void EntityEditor::update(Canvas& canvas) {
 		for (auto& ent : canvas.entities.variables.entities) {
 			if (ent->overwrite) {
 				if (current_entity) {
+					current_entity.value()->selected = false;
+					current_entity.value()->highlighted = false;
 					ent = std::move(current_entity.value());
 					current_entity = {};
 					break;
@@ -82,6 +86,8 @@ void EntityEditor::update(Canvas& canvas) {
 			if (!canvas.entities.overlaps(*current_entity.value())) {
 				auto repeat = current_entity.value()->repeatable && !current_entity.value()->moved;
 				auto clone = current_entity.value()->clone();
+				current_entity.value()->highlighted = false;
+				current_entity.value()->selected = false;
 				canvas.entities.variables.entities.push_back(std::move(current_entity.value()));
 				if (repeat) {
 					current_entity = std::move(clone);
@@ -96,7 +102,7 @@ void EntityEditor::update(Canvas& canvas) {
 
 	if (eraser_mode()) {
 		ent_type = EntityType::none;
-		std::erase_if(canvas.entities.variables.entities, [this](auto& e) { return e->highlighted; });
+		std::erase_if(canvas.entities.variables.entities, [this](auto& e) { return e->selected; });
 		entity_mode = EntityMode::selector;
 	}
 
@@ -107,14 +113,18 @@ void EntityEditor::update(Canvas& canvas) {
 				current_entity.value()->moved = true;
 			}
 		}
-		std::erase_if(canvas.entities.variables.entities, [this](auto& e) { return e->highlighted; });
+		std::erase_if(canvas.entities.variables.entities, [this](auto& e) { return e->selected; });
 		entity_mode = EntityMode::placer;
 	}
 }
 
 void EntityEditor::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode scancode) {
 	if (scancode == sf::Keyboard::Scancode::Q) {
-		current_entity = {}; // free the entity's memory otherwise
+		for (auto& ent : canvas.entities.variables.entities) {
+			ent->selected = false;
+			ent->highlighted = false;
+		}
+		current_entity.reset();
 		entity_mode = EntityMode::selector;
 	}
 }

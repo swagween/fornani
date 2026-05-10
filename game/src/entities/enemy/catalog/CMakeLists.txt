@@ -1,4 +1,5 @@
 nani_add_sources(
+        Antibody.cpp
         Archer.cpp
         Beamsprout.cpp
         Beamstalk.cpp
@@ -12,6 +13,7 @@ nani_add_sources(
         Imp.cpp
         Junker.cpp
         Junkfly.cpp
+        Lymphocyte.cpp
         Mastiff.cpp
         Meatsquash.cpp
         Minion.cpp

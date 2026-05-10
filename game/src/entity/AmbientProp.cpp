@@ -68,7 +68,9 @@ void AmbientProp::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	}
 	if (m_editor) {
 		if (m_params) {
-			Animatable::set_position(get_global_center() + cam + m_params->offset);
+			Animatable::set_scale(constants::f_scale_vec * size / constants::f_cell_size);
+			Animatable::set_position((get_f_grid_position() + m_params->offset / constants::f_cell_size) * size + cam);
+			Animatable::set_frame(0);
 			win.draw(*this);
 		}
 		return;

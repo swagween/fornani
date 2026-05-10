@@ -7,6 +7,7 @@
           1,
           1
         ],
+        "foreground": false,
         "id": 0,
         "position": [
           50,
@@ -338,6 +339,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": true,
       "reverse_obscuring": false

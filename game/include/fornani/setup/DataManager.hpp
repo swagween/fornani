@@ -138,6 +138,7 @@ class DataManager final {
 	dj::Json action_names{};
 	dj::Json light{};
 	dj::Json fader{};
+	dj::Json portal{};
 
 	// enemy
 	dj::Json enemy{};

@@ -1,4 +1,5 @@
 nani_add_headers(
+        Antibody.hpp
         Archer.hpp
         Beamsprout.hpp
         Beamstalk.hpp
@@ -12,6 +13,7 @@ nani_add_headers(
         Imp.hpp
         Junker.hpp
         Junkfly.hpp
+        Lymphocyte.hpp
         Mastiff.hpp
         Meatsquash.hpp
         Minion.hpp

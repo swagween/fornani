@@ -14,6 +14,17 @@ enum class PortalState { activated, ready, locked, unlocked, transitioning };
 enum class PortalRenderState { closed, open, locked };
 enum class PortalOrientation { top, bottom, left, right, central };
 
+enum class CustomPortalFlags { open_for_player };
+
+struct CustomPortalAnimation {
+	CustomPortalAnimation(automa::ServiceProvider& svc, std::string_view tag);
+	Animatable animatable;
+	std::vector<std::string> sounds{};
+	std::string tag{};
+	sf::Vector2f offset{};
+	util::BitFlags<CustomPortalFlags> flags{};
+};
+
 struct PortalSpecifications {
 	bool activate_on_contact{};
 	bool already_open{};
@@ -34,6 +45,7 @@ class Portal : public Entity {
 	void expose() override;
 	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
+	void render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::Vector2f cam);
 	void close() { m_render_state = PortalRenderState::closed; }
 
 	[[nodiscard]] auto get_source() const -> int { return source_id; }
@@ -62,6 +74,8 @@ class Portal : public Entity {
 	PortalRenderState m_render_state{};
 	util::BitFlags<PortalAttributes> m_attributes{};
 	util::BitFlags<PortalState> m_state{};
+
+	std::optional<CustomPortalAnimation> m_custom_animation{};
 
 	automa::ServiceProvider* m_services;
 };

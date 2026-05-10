@@ -4,6 +4,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 239,
         "dimensions": [
           2,
@@ -20,6 +21,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 241,
         "dimensions": [
           1,
@@ -884,6 +886,7 @@
       48,
       48
     ],
+    "interior": false,
     "metagrid": [
       59,
       29
@@ -897,6 +900,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": false,
       "lighting": false,
       "timer": false
     },
@@ -908,6 +912,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

@@ -30,7 +30,7 @@ class ResourceFinder;
 namespace pi {
 
 enum class CanvasProperties { editable };
-enum class CanvasState { hovered };
+enum class CanvasState { hovered, available };
 
 constexpr inline int chunk_size_v{16};
 constexpr inline int default_num_layers_v{8};
@@ -60,6 +60,7 @@ class Canvas {
 	void set_origin(sf::Vector2f to_origin);
 	void set_offset_from_center(sf::Vector2f offset);
 	void set_scale(float to_scale);
+	void set_state(CanvasState flag, bool to) { to ? state.set(flag) : state.reset(flag); }
 	void resize(sf::Vector2i adjustment);
 	void center(sf::Vector2f point);
 	void constrain(sf::Vector2f bounds);
@@ -87,6 +88,7 @@ class Canvas {
 	[[nodiscard]] auto states_empty() const -> bool { return map_states.empty(); }
 	[[nodiscard]] auto is_palette() const -> bool { return type == SelectionType::palette; }
 	[[nodiscard]] auto hovered() const -> bool { return state.test(CanvasState::hovered); }
+	[[nodiscard]] auto is_available() const -> bool { return state.test(CanvasState::available); }
 	[[nodiscard]] auto editable() const -> bool { return properties.test(CanvasProperties::editable); }
 	[[nodiscard]] auto chunk_dimensions() const -> sf::Vector2<std::uint32_t> { return dimensions / u_native_chunk_size(); }
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return position; }
@@ -133,7 +135,6 @@ class Canvas {
 	struct {
 		bool show_grid{true};
 		bool show_all_layers{true};
-		bool show_current_layer{false};
 		bool show_obscured_layer{false};
 		bool show_reverse_obscured_layer{false};
 		bool show_indicated_layers{true};

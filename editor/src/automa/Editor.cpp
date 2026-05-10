@@ -62,6 +62,9 @@ Editor::Editor(fornani::automa::ServiceProvider& svc, EditorContext& ctx)
 EditorStateType Editor::run(char** argv) {
 
 	if (m_demo.trigger_demo) {
+		p_alt.reset();
+		p_control.reset();
+		p_shift.reset();
 		auto ppos = m_demo.custom_position ? sf::Vector2f{map.entities.variables.player_hot_start} * 32.f : sf::Vector2f{map.entities.variables.player_start} * 32.f;
 		launch_demo(argv, map.room_id, p_services->finder.paths.room_name, ppos);
 		if (!ImGui::SFML::Init(p_services->window->get())) { console.add_log("ImGui::SFML::Init() failed!\n"); };
@@ -200,6 +203,7 @@ void Editor::logic() {
 	current_tool->set_mode(m_mode);
 
 	ImGuiIO& io = ImGui::GetIO();
+	map.set_state(CanvasState::available, !io.WantCaptureMouse);
 	current_tool->palette_mode = palette_mode();
 
 	if (tool->type == ToolType::entity_editor) { map.flags.show_entities = true; }
@@ -213,8 +217,9 @@ void Editor::logic() {
 	tool->update(target);
 
 	if (left_mouse_clicked()) {
-		if (tool->type == ToolType::eyedropper) { selected_block = current_tool->tile; }
-		if (palette_mode() && current_tool->type != ToolType::marquee) {
+		if (tool->type == ToolType::eyedropper) {
+			selected_block = current_tool->tile;
+		} else if (palette_mode() && current_tool->type != ToolType::marquee) {
 			if (!current_tool->is_paintable()) { current_tool = std::move(std::make_unique<Brush>()); }
 			auto pos = current_tool->get_window_position() - palette.get_position();
 			auto idx = palette.tile_val_at_scaled(static_cast<int>(pos.x), static_cast<int>(pos.y), 0);
@@ -255,8 +260,7 @@ void Editor::logic() {
 	grid_refresh.update();
 	if (grid_refresh.is_almost_complete()) { map.set_grid_texture(); }
 
-	map.flags.show_all_layers = shift_held() ? map.flags.show_current_layer : !map.flags.show_current_layer;
-	// map.flags.show_current_layer = shift_held();
+	map.flags.show_all_layers = !shift_held();
 
 	// set tool positions
 	current_tool->set_position((p_current_mouse_position - target.get_position()) / target.get_scale());
@@ -439,6 +443,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			current_tool->entity_menu = false;
 		}
 		ImGui::EndPopup();
+		ImGui::EndPopup();
 	}
 	if (ImGui::BeginPopupContextWindow("Edit Entity")) {
 		if (current_tool->current_entity) {
@@ -446,13 +451,20 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::Button("Save Changes") || editor_flags.test(EditorFlags::create_new_room)) {
 				for (auto& ent : map.entities.variables.entities) {
 					if (ent->highlighted) { ent->overwrite = true; }
+					ent->selected = false;
 					ent->highlighted = false;
 				}
 				ImGui::CloseCurrentPopup();
 			}
-			if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
+			if (ImGui::Button("Close")) {
+				for (auto& ent : map.entities.variables.entities) {
+					ent->selected = false;
+					ent->highlighted = false;
+				}
+				current_tool->current_entity.reset();
+				ImGui::CloseCurrentPopup();
+			}
 		}
-		if (any_mouse_clicked()) { ImGui::CloseCurrentPopup(); }
 		ImGui::EndPopup();
 	}
 
@@ -878,6 +890,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				}
 				if (ImGui::BeginTabItem("Canvas")) {
 					ImGui::Text("Map hovered? %s", map.hovered() ? "Yes" : "No");
+					ImGui::Text("Map available? %s", map.is_available() ? "Yes" : "No");
 					ImGui::Text("Palette hovered? %s", palette.hovered() ? "Yes" : "No");
 					ImGui::Text("Map undo states: %i", map.undo_states_size());
 					ImGui::Text("Map redo states: %i", map.redo_states_size());
@@ -1076,7 +1089,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 							ImGui::Checkbox("Show Entities", &map.flags.show_entities);
 							ImGui::Checkbox("Show Background", &map.flags.show_background);
 							ImGui::Checkbox("Show Grid", &map.flags.show_grid);
-							if (ImGui::Checkbox("Show All Layers", &map.flags.show_all_layers)) { map.flags.show_current_layer = !map.flags.show_all_layers; };
+							ImGui::Checkbox("Show All Layers", &map.flags.show_all_layers);
 							ImGui::Checkbox("Show Obscuring Layer", &map.flags.show_obscured_layer);
 							ImGui::Checkbox("Show Reverse Obscuring Layer", &map.flags.show_reverse_obscured_layer);
 							ImGui::Checkbox("Show Indicated Layers", &map.flags.show_indicated_layers);
