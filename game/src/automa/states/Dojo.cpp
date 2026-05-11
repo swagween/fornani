@@ -16,6 +16,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 
 	m_type = StateType::dojo;
 	player.set_flag(player::PlayerFlags::trial, false);
+	player.cooldowns.suffocate.start();
 
 	// inventory events
 	svc.events.acquire_item_from_console_event.attach_to(p_slot, &Dojo::acquire_item_from_console, this);
@@ -233,6 +234,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 			auto normalized = sf::Vector2f{(uv.x - 0.5f) * aspect + 0.5f, uv.y};
 			pl.position = normalized;
 			p_world_shader->add_point_light(pl);
+			p_entity_shader->add_point_light(pl);
 		}
 
 		auto puv = player->get_lantern_position().componentWiseDiv(m_map->real_dimensions);

@@ -19,8 +19,8 @@ enum class RoomFlags { include_in_minimap, use_template, interior };
 constexpr auto spacing_v = 32.f;
 constexpr sf::Color excluded_room_color_v{120, 80, 80, 20};
 constexpr sf::Color highlighted_excluded_room_color_v{120, 100, 80, 100};
-constexpr sf::Color room_color_v{79, 22, 32, 220};
-constexpr sf::Color highighted_room_color_v{79, 22, 32, 180};
+constexpr sf::Color room_color_v{120, 17, 42, 220};
+constexpr sf::Color highighted_room_color_v{120, 17, 42, 240};
 
 class Room : public fornani::Flaggable<RoomFlags> {
   public:

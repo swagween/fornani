@@ -178,7 +178,9 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 			svc.state_controller.refresh(source_id);
 		}
 	}
-	if (m_custom_animation) { m_custom_animation->animatable.tick(); }
+
+	// custom portal stuff
+	if (m_custom_animation) { m_custom_animation->update(svc, player, *this); }
 }
 
 void Portal::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
@@ -233,11 +235,27 @@ CustomPortalAnimation::CustomPortalAnimation(automa::ServiceProvider& svc, std::
 		animatable.push_animation(in_anim["label"].as_string(),
 								  {in_anim["parameters"][0].as<int>(), in_anim["parameters"][1].as<int>(), in_anim["parameters"][2].as<int>(), in_anim["parameters"][3].as<int>(), in_anim["parameters"][4].as_bool()});
 		if (i == 0) { animatable.set_animation(in_anim["label"].as_string()); }
-
-		for (auto const& sound : in["sounds"].as_array()) { sounds.push_back(sound.as_string()); }
-		offset = {svc.data.portal[tag]["offset"][0].as<float>(), svc.data.portal[tag]["offset"][1].as<float>()};
-		if (svc.data.portal[tag]["open_for_player"]) { flags.set(CustomPortalFlags::open_for_player); }
 	}
+	for (auto const& sound : in["sounds"].as_array()) { sounds.push_back(sound.as_string()); }
+	offset = {svc.data.portal[tag]["offset"][0].as<float>(), svc.data.portal[tag]["offset"][1].as<float>()};
+	if (svc.data.portal[tag]["open_for_player"]) { attributes.set(CustomPortalAttributes::open_for_player); }
+}
+
+void CustomPortalAnimation::update(automa::ServiceProvider& svc, player::Player& player, Portal& parent) {
+	if (attributes.test(CustomPortalAttributes::open_for_player)) {
+		if ((player.get_center() - parent.get_center()).length() < 150.f) {
+			flags.reset(CustomPortalFlags::closed);
+			animatable.set_animation("open");
+			if (!flags.test(CustomPortalFlags::opened) && sounds.size() > 1) { svc.soundboard.play_sound(sounds.at(1), parent.get_center()); }
+			flags.set(CustomPortalFlags::opened);
+		} else {
+			flags.reset(CustomPortalFlags::opened);
+			animatable.set_animation("close");
+			if (!flags.test(CustomPortalFlags::closed) && sounds.size() > 0) { svc.soundboard.play_sound(sounds.at(0), parent.get_center()); }
+			flags.set(CustomPortalFlags::closed);
+		}
+	}
+	animatable.tick();
 }
 
 } // namespace fornani

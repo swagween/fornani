@@ -21,7 +21,7 @@ void Animatable::push_and_set_animation(std::string_view label, anim::Parameters
 void Animatable::set_animation(std::string_view to) {
 	if (!p_animations.contains(to)) { return; }
 	auto it = p_animations.find(to);
-	if (it != p_animations.end()) {
+	if (it != p_animations.end() && m_current != to) {
 		set_parameters(it->second);
 		m_current = to.data();
 	}

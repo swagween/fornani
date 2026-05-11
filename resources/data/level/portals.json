@@ -3,14 +3,15 @@
     "dimensions": [82, 82],
     "offset": [0.0, 0.0],
     "sounds": ["sphincter_close", "sphincter_open"],
+    "open_for_player": true,
     "animations": [
       {
         "label": "close",
-        "parameters": [7, 4, 48, 0, true]
+        "parameters": [6, 4, 30, 0, true]
       },
       {
         "label": "open",
-        "parameters": [0, 7, 48, -1, true]
+        "parameters": [0, 6, 24, 0, true]
       }
     ]
   }

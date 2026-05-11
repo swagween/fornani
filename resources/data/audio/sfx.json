@@ -214,6 +214,18 @@
     "pitch_offset": 0.2
   },
   {
+    "label": "sphincter_close",
+    "bus": "gameplay",
+    "volume": 0.4,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "sphincter_open",
+    "bus": "gameplay",
+    "volume": 0.4,
+    "pitch_offset": 0.2
+  },
+  {
     "label": "spitefly_death",
     "bus": "gameplay",
     "volume": 1.0,

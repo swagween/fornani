@@ -9,7 +9,8 @@
 
 namespace pi {
 
-Metagrid::Metagrid(fornani::automa::ServiceProvider& svc, EditorContext& ctx) : EditorState(svc, ctx), m_workspace{{256, 128}}, m_tool{std::make_unique<Cursor>(svc)}, m_background_color{fornani::colors::pioneer_black} {
+Metagrid::Metagrid(fornani::automa::ServiceProvider& svc, EditorContext& ctx)
+	: EditorState(svc, ctx), m_workspace{{256, 128}}, m_tool{std::make_unique<Cursor>(svc)}, m_background_color{fornani::colors::pioneer_black}, m_metamap{svc.assets.get_texture("metamap")} {
 	svc.data.load_data();
 	p_target_state = EditorStateType::metagrid;
 	p_wallpaper.setFillColor(m_background_color);
@@ -140,6 +141,12 @@ void Metagrid::render(sf::RenderWindow& win) {
 	ImGuiIO& io = ImGui::GetIO();
 	m_workspace.render(win, p_camera);
 
+	m_metamap_settings.color.a = static_cast<unsigned char>(m_metamap_settings.alpha);
+	m_metamap.setColor(m_metamap_settings.color);
+	m_metamap.setPosition(m_metamap_settings.position + p_camera);
+	m_metamap.setScale({m_metamap_settings.scale, m_metamap_settings.scale});
+	if (m_metamap_settings.show) { win.draw(m_metamap); }
+
 	m_current_cell.setPosition(p_camera + sf::Vector2f{m_tool->get_workspace_coordinates(p_camera)} * spacing_v);
 	m_current_cell.setSize({spacing_v, spacing_v});
 	m_current_cell.setOutlineColor(fornani::colors::dark_grey);
@@ -247,6 +254,13 @@ void Metagrid::render(sf::RenderWindow& win) {
 		ImGui::Checkbox("Ignore Test Levels", &ignore_test_levels);
 		ImGui::Checkbox("Hide Room Borders", &hide_room_borders);
 		ImGui::Checkbox("Show Tags", &show_tags);
+
+		ImGui::SeparatorText("Metamap");
+		ImGui::Checkbox("Show", &m_metamap_settings.show);
+		ImGui::SliderFloat("X Position", &m_metamap_settings.position.x, -1204.f, 1184, "%.1f");
+		ImGui::SliderFloat("Y Position", &m_metamap_settings.position.y, -1450, 1430, "%.1f");
+		// ImGui::SliderFloat("Scale", &m_metamap_settings.scale, 0.f, 2.f, "%.1f");
+		ImGui::SliderInt("Opacity", &m_metamap_settings.alpha, 0, 255);
 
 		ImGui::End();
 	}

@@ -14,14 +14,19 @@ enum class PortalState { activated, ready, locked, unlocked, transitioning };
 enum class PortalRenderState { closed, open, locked };
 enum class PortalOrientation { top, bottom, left, right, central };
 
-enum class CustomPortalFlags { open_for_player };
+enum class CustomPortalAttributes { open_for_player };
+enum class CustomPortalFlags { opened, closed };
+
+class Portal;
 
 struct CustomPortalAnimation {
 	CustomPortalAnimation(automa::ServiceProvider& svc, std::string_view tag);
+	void update(automa::ServiceProvider& svc, player::Player& player, Portal& parent);
 	Animatable animatable;
 	std::vector<std::string> sounds{};
 	std::string tag{};
 	sf::Vector2f offset{};
+	util::BitFlags<CustomPortalAttributes> attributes{};
 	util::BitFlags<CustomPortalFlags> flags{};
 };
 
@@ -50,6 +55,7 @@ class Portal : public Entity {
 
 	[[nodiscard]] auto get_source() const -> int { return source_id; }
 	[[nodiscard]] auto get_destination() const -> int { return destination_id; }
+	[[nodiscard]] auto get_center() const -> sf::Vector2f { return bounding_box.get_center(); }
 	[[nodiscard]] auto is_activate_on_contact() const -> bool { return m_attributes.test(PortalAttributes::activate_on_contact); }
 	[[nodiscard]] auto is_already_open() const -> bool { return m_attributes.test(PortalAttributes::already_open); }
 	[[nodiscard]] auto is_locked() const -> bool { return m_state.test(PortalState::locked); }
@@ -63,6 +69,7 @@ class Portal : public Entity {
   private:
 	void change_states(automa::ServiceProvider& svc, int room_id, graphics::Transition& transition);
 
+  private:
 	shape::Shape bounding_box{};
 
 	int source_id{};

@@ -9,6 +9,14 @@ namespace pi {
 
 enum class MetagridFlags { context_menu, hide_cell, move_mode };
 
+struct MetamapSettings {
+	sf::Vector2f position{-1194.f, -1440.f};
+	float scale{1.f};
+	int alpha{60};
+	sf::Color color{255, 255, 255, 60};
+	bool show{true};
+};
+
 class Metagrid final : public EditorState {
   public:
 	Metagrid(fornani::automa::ServiceProvider& svc, EditorContext& ctx);
@@ -21,6 +29,8 @@ class Metagrid final : public EditorState {
 	sf::Color m_background_color;
 	Workspace m_workspace;
 	sf::RectangleShape m_current_cell{};
+	sf::Sprite m_metamap;
+	MetamapSettings m_metamap_settings{};
 	std::vector<Room> m_rooms{};
 	std::unique_ptr<MetagridTool> m_tool;
 	std::optional<Room*> m_highlighted_room{};

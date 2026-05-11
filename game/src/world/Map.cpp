@@ -564,12 +564,12 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		// TODO: uncomment below once all entities have been refactored!
 		// for (auto& entity : m_entities.value().variables.entities) { entity->render(win, cam, 1.0); }
 		for (auto p : get_entities<Portal>()) { p->render(svc, m_entity_texture, cam); }
-		for (auto s : get_entities<SavePoint>()) { s->render(win, cam, 1.0); }
+		for (auto s : get_entities<SavePoint>()) { s->render(win, cam, 1.f); }
 		if (svc.greyblock_mode()) {
 			for (auto c : get_entities<CutsceneTrigger>()) { c->render(win, cam, c->get_f_grid_dimensions().x); }
 		}
 		for (auto v : get_entities<Vine>()) {
-			if (!v->is_foreground()) { v->render(win, cam, 1.0); }
+			if (!v->is_foreground()) { v->render(win, cam, 1.f); }
 		}
 		// for (auto n : get_entities<NPC>()) { n->render(win, cam, 1.0); }
 	}
