@@ -215,7 +215,7 @@ class Map {
 	// entities
 	std::vector<arms::Projectile> active_projectiles{};
 	// std::vector<entity::Portal> portals{};
-	std::vector<entity::Inspectable> inspectables{};
+	// std::vector<entity::Inspectable> inspectables{};
 	std::vector<entity::Bed> beds{};
 	std::vector<entity::Animator> animators{};
 	std::vector<entity::Effect> effects{};

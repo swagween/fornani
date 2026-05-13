@@ -31,6 +31,8 @@ Console::Console(automa::ServiceProvider& svc, dj::Json const& source, OutputTyp
 	load_and_launch(type);
 }
 
+Console::Console(StableID speaker, automa::ServiceProvider& svc, dj::Json const& source, OutputType type) : Console(svc, source, type) { m_speaker_id.emplace(speaker); }
+
 Console::Console(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type, int target_index) : Console(svc) {
 	if (type == OutputType::no_skip) { m_exit_stall.start(); }
 	set_source(source);
@@ -289,7 +291,7 @@ void Console::handle_inputs(input::InputSystem& controller) {
 					if (cde.is_open_vendor()) { m_services->events.open_vendor_event.dispatch(*m_services, cde.value); }
 					if (cde.is_item()) {
 						m_services->events.acquire_item_from_console_event.dispatch(*m_services, cde.value);
-						if (cde.extras) { m_services->data.destroy_inspectable(cde.extras->at(0)); }
+						if (m_speaker_id) { m_services->data.destroy_inspectable(m_speaker_id->get()); }
 						m_flags.set(ConsoleFlags::close_after_process);
 					}
 					if (cde.is_destructible()) { m_services->data.switch_destructible_state(cde.value); }

@@ -7,7 +7,7 @@ namespace fornani {
 
 AmbientProp::AmbientProp(automa::ServiceProvider& svc, dj::Json const& in) : Entity{svc, in, "ambient_props"} {
 	unserialize(in);
-	m_params.emplace(svc.data.props[m_tag]);
+	m_params.emplace(svc, svc.data.props[m_tag]);
 	if (in["foreground"].as_bool()) { m_params->attributes.set(AmbientPropAttributes::foreground); }
 	m_sensor = components::CircleSensor{m_params->radius};
 	Animatable::set_texture(svc.assets.get_texture("ambient_prop_" + m_tag));
@@ -40,6 +40,7 @@ void AmbientProp::unserialize(dj::Json const& in) {
 void AmbientProp::expose() { Entity::expose(); }
 
 void AmbientProp::update(automa::ServiceProvider& svc, world::Map& map, SceneContext& context, player::Player& player) {
+	if (spawn_denied()) { return; }
 	Entity::update(svc, map, context, player);
 	if (m_params) {
 		if (m_sensor.within_bounds(player.hurtbox)) {
@@ -55,6 +56,9 @@ void AmbientProp::update(automa::ServiceProvider& svc, world::Map& map, SceneCon
 		auto frame = util::map_to_frame(normalized, -1.0f, 1.0f, 0, m_params->num_frames - 1);
 		set_frame(frame);
 		set_channel(m_channel);
+		if (m_params->emitter) {
+			if (svc.ticker.every_x_ticks(m_params->emitter->frequency)) { map.spawn_emitter(svc, m_params->emitter->tag, get_global_center() + m_params->emitter->offset, {UND::up}); }
+		}
 	}
 }
 
@@ -69,12 +73,13 @@ void AmbientProp::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	if (m_editor) {
 		if (m_params) {
 			Animatable::set_scale(constants::f_scale_vec * size / constants::f_cell_size);
-			Animatable::set_position((get_f_grid_position() + m_params->offset / constants::f_cell_size) * size + cam);
+			Animatable::set_position((get_f_grid_position() + m_params->offset / constants::f_cell_size) * size + cam + constants::f_cell_vec * 0.5f);
 			Animatable::set_frame(0);
 			win.draw(*this);
 		}
 		return;
 	}
+	if (spawn_denied()) { return; }
 	if (m_params) {
 		Animatable::set_position(get_global_center() - cam + m_params->offset);
 		win.draw(*this);
@@ -88,7 +93,7 @@ void AmbientProp::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	m_sensor.render(win, cam);*/
 }
 
-AmbientPropParameters::AmbientPropParameters(dj::Json const& in) {
+AmbientPropParameters::AmbientPropParameters(automa::ServiceProvider& svc, dj::Json const& in) {
 	num_frames = in["num_frames"].as<int>();
 	sensitivity = in["sensitivity"].as<float>();
 	radius = in["radius"].as<float>();
@@ -99,5 +104,11 @@ AmbientPropParameters::AmbientPropParameters(dj::Json const& in) {
 	in["destructible"].as_bool() ? attributes.set(AmbientPropAttributes::destructible) : attributes.reset(AmbientPropAttributes::destructible);
 	in["audio"].as_bool() ? attributes.set(AmbientPropAttributes::audio) : attributes.reset(AmbientPropAttributes::audio);
 	offset = sf::Vector2f{in["offset"][0].as<float>(), in["offset"][1].as<float>()};
+	if (in["emitter"]) {
+		auto params = vfx::EmitterParameters{};
+		params.tag = in["emitter"]["tag"].as_string();
+		params.frequency = in["emitter"]["frequency"].as<int>();
+		emitter.emplace(params);
+	}
 }
 } // namespace fornani

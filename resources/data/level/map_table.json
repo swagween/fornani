@@ -926,9 +926,21 @@
     },
     {
       "folder": "worm",
+      "label": "crop.json",
+      "region": "worm",
+      "room_id": 0
+    },
+    {
+      "folder": "worm",
       "label": "nephridiopore.json",
       "region": "worm",
       "room_id": 1101
+    },
+    {
+      "folder": "worm",
+      "label": "protonephridium.json",
+      "region": "worm",
+      "room_id": 1102
     }
   ]
 }

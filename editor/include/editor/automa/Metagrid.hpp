@@ -10,7 +10,7 @@ namespace pi {
 enum class MetagridFlags { context_menu, hide_cell, move_mode };
 
 struct MetamapSettings {
-	sf::Vector2f position{-1194.f, -1440.f};
+	sf::Vector2f position{-1195.2f, -1439.8f};
 	float scale{1.f};
 	int alpha{60};
 	sf::Color color{255, 255, 255, 60};

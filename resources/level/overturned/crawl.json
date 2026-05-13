@@ -86,7 +86,7 @@
       36,
       33
     ],
-    "minimap": true,
+    "minimap": false,
     "music": "brown",
     "player_start": [
       0,
@@ -108,6 +108,12 @@
     "weather": null
   },
   "tile": {
+    "animated": [
+      null,
+      null,
+      null,
+      null
+    ],
     "flags": {
       "obscuring": true,
       "reverse_obscuring": false

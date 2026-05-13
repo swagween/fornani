@@ -28,13 +28,10 @@ NPC::NPC(automa::ServiceProvider& svc, dj::Json const& in)
 	auto push = true;
 	auto fail_tag = std::string{};
 	if (in["contingencies"].is_array()) {
-		for (auto const& contingency : in["contingencies"].as_array()) {
-			auto cont = QuestContingency{contingency};
-			if (!svc.quest_table.are_contingencies_met({cont})) {
-				hide();
-				fail_tag = contingency["tag"].as_string();
-				NANI_LOG_DEBUG(Entity::m_logger, "NPC did not meet contingency for quest {}.", fail_tag);
-			}
+		auto cont = QuestContingencySet{in["contingencies"]};
+		if (!svc.quest_table.are_contingencies_met({cont})) {
+			hide();
+			NANI_LOG_DEBUG(Entity::m_logger, "NPC did not meet contingency for quest.");
 		}
 	}
 	auto npc_state = svc.quest_table.get_quest_progression("npc_dialogue", {m_label, in["id"].as<int>()});
@@ -209,7 +206,6 @@ void NPC::serialize(dj::Json& out) {
 		for (auto& set : suite) { entry.push_back(set); }
 		out["suites"].push_back(entry);
 	}
-	for (auto& contingency : m_contingencies) { contingency.serialize(out["contingencies"]); }
 }
 
 void NPC::unserialize(dj::Json const& in) {
@@ -226,16 +222,17 @@ void NPC::unserialize(dj::Json const& in) {
 		for (auto const& set : suite.as_array()) { entry.push_back(set.as<int>()); }
 		m_suites.push_back(entry);
 	}
-	for (auto const& contingency : in["contingencies"].as_array()) { m_contingencies.push_back(QuestContingency(contingency)); }
 }
 
 void NPC::expose() {
 	Entity::expose();
 	ImGui::Checkbox("Hidden?", &m_hidden);
-	for (auto [i, ct] : std::views::enumerate(m_contingencies)) {
-		ImGui::PushID(i);
-		ImGui::Text("Contingency %i: [%s, %i]", i, ct.tag.c_str(), ct.requirement);
-		ImGui::PopID();
+	if (p_contingencies) {
+		for (auto [i, ct] : std::views::enumerate(p_contingencies->contingencies)) {
+			ImGui::PushID(i);
+			ImGui::Text("Contingency %i: [%s, %i]", i, ct.tag.c_str(), ct.requirement);
+			ImGui::PopID();
+		}
 	}
 }
 

@@ -79,7 +79,6 @@ Metagrid::Metagrid(fornani::automa::ServiceProvider& svc, EditorContext& ctx)
 		}
 		if (!new_map.to_file((svc.finder.paths.levels / std::filesystem::path{"updated"} / map.region_label / std::filesystem::path{map.room_label + ".json"}).string())) {}
 	}
-	//
 }
 
 EditorStateType Metagrid::run(char** argv) {
@@ -101,11 +100,38 @@ EditorStateType Metagrid::run(char** argv) {
 void Metagrid::handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) {
 	EditorState::handle_events(event, win);
 	ImGuiIO& io = ImGui::GetIO();
+	if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
+		if (key_pressed->scancode == sf::Keyboard::Scancode::R) {
+			p_services->window->restore_view();
+			p_view = p_services->window->get_view();
+			p_zoom_level = 1.f;
+		}
+	}
+	if (auto const* scrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
+		auto zoom_rate = 0.1f;
+		auto max_zoom = 3.f;
+		auto min_zoom = -1.f;
+		auto delta = scrolled->delta * zoom_rate;
+		p_zoom_level += delta;
+		auto zoom = true;
+		if (p_zoom_level < min_zoom) {
+			p_zoom_level = min_zoom;
+			zoom = false;
+		}
+		if (p_zoom_level > max_zoom) {
+			p_zoom_level = max_zoom;
+			zoom = false;
+		}
+		if (zoom) { p_view.zoom(1.f - delta); }
+	}
 }
 
 void Metagrid::logic() {
 	EditorState::logic();
 	ImGuiIO& io = ImGui::GetIO();
+
+	auto cursorpos = sf::Vector2f{io.MousePos.x, io.MousePos.y};
+	sf::Vector2f relative_mouse = p_current_mouse_position - p_camera;
 
 	auto last_workspace_position = io.WantCaptureMouse ? p_left_clicked_position : p_current_mouse_position;
 
@@ -115,7 +141,7 @@ void Metagrid::logic() {
 	}
 	if (p_left_mouse.held && m_highlighted_room) {
 		m_flags.set(MetagridFlags::move_mode);
-		if (m_tool->is(MetagridToolType::move)) { m_highlighted_room.value()->set_position(m_tool->get_workspace_coordinates(p_camera)); }
+		if (m_tool->is(MetagridToolType::move)) { m_highlighted_room.value()->set_position(m_tool->get_workspace_coordinates(relative_mouse)); }
 		p_left_clicked_position = p_current_mouse_position - p_camera;
 		m_tool->set_original_position(m_highlighted_room.value()->get_board_position());
 	} else {
@@ -131,7 +157,7 @@ void Metagrid::logic() {
 	if (p_left_mouse.clicked) {
 		if (!any_room_hovered && !io.WantCaptureMouse) {
 			m_flags.set(MetagridFlags::context_menu);
-			p_context->metagrid_position = m_tool->get_workspace_coordinates(p_camera);
+			p_context->metagrid_position = m_tool->get_workspace_coordinates(relative_mouse);
 		}
 	}
 	any_room_hovered || io.WantCaptureMouse ? m_flags.set(MetagridFlags::hide_cell) : m_flags.reset(MetagridFlags::hide_cell);
@@ -139,7 +165,14 @@ void Metagrid::logic() {
 
 void Metagrid::render(sf::RenderWindow& win) {
 	ImGuiIO& io = ImGui::GetIO();
-	m_workspace.render(win, p_camera);
+	auto cursorpos = sf::Vector2f{io.MousePos.x, io.MousePos.y};
+	// calculate zoom
+	sf::View const& cview = win.getView();
+	float zoom = cview.getSize().x / win.getDefaultView().getSize().x;
+	float base_thickness = -2.f;
+
+	p_services->window->set_view(p_view);
+	if (p_zoom_level >= 1.f) { m_workspace.render(win, p_camera); }
 
 	m_metamap_settings.color.a = static_cast<unsigned char>(m_metamap_settings.alpha);
 	m_metamap.setColor(m_metamap_settings.color);
@@ -147,11 +180,14 @@ void Metagrid::render(sf::RenderWindow& win) {
 	m_metamap.setScale({m_metamap_settings.scale, m_metamap_settings.scale});
 	if (m_metamap_settings.show) { win.draw(m_metamap); }
 
-	m_current_cell.setPosition(p_camera + sf::Vector2f{m_tool->get_workspace_coordinates(p_camera)} * spacing_v);
+	sf::Vector2f relative_mouse = p_current_mouse_position - p_camera;
+	sf::Vector2f grid_pos = relative_mouse / spacing_v;
+
+	m_current_cell.setPosition(sf::Vector2f{m_tool->get_workspace_coordinates(relative_mouse)} * spacing_v + p_camera);
 	m_current_cell.setSize({spacing_v, spacing_v});
 	m_current_cell.setOutlineColor(fornani::colors::dark_grey);
 	m_current_cell.setFillColor(fornani::colors::transparent);
-	m_current_cell.setOutlineThickness(-2.f);
+	m_current_cell.setOutlineThickness(base_thickness * zoom);
 	if (!m_flags.test(MetagridFlags::hide_cell)) { win.draw(m_current_cell); }
 
 	static auto current_room = 0;
@@ -184,9 +220,9 @@ void Metagrid::render(sf::RenderWindow& win) {
 	if (!found_one && !m_flags.test(MetagridFlags::move_mode) && !io.WantCaptureMouse) { m_highlighted_room.reset(); }
 
 	if (io.WantCaptureMouse) {
-		auto screen = sf::RectangleShape{};
-		screen.setFillColor(sf::Color{40, 40, 40, 80});
-		screen.setSize(p_services->window->f_screen_dimensions());
+		p_services->window->restore_view();
+		auto screen = p_wallpaper;
+		screen.setFillColor(sf::Color{100, 100, 100, 20});
 		win.draw(screen);
 	}
 
@@ -249,7 +285,8 @@ void Metagrid::render(sf::RenderWindow& win) {
 		ImGui::Separator();
 		ImGui::Text("Current Room: %i", current_room);
 		ImGui::Text("Current Tool: %s", m_tool->get_label().data());
-		ImGui::Text("Workspace Coordinates: (%i, %i)", m_tool->get_workspace_coordinates(p_camera).x, m_tool->get_workspace_coordinates(p_camera).y);
+		ImGui::Text("Zoom Level: %.3f", p_zoom_level);
+		ImGui::Text("Workspace Coordinates: (%i, %i)", m_tool->get_workspace_coordinates(relative_mouse).x, m_tool->get_workspace_coordinates(relative_mouse).y);
 		if (m_flags.test(MetagridFlags::move_mode)) { ImGui::Text("MOVE MODE"); }
 		ImGui::Checkbox("Ignore Test Levels", &ignore_test_levels);
 		ImGui::Checkbox("Hide Room Borders", &hide_room_borders);
@@ -257,8 +294,8 @@ void Metagrid::render(sf::RenderWindow& win) {
 
 		ImGui::SeparatorText("Metamap");
 		ImGui::Checkbox("Show", &m_metamap_settings.show);
-		ImGui::SliderFloat("X Position", &m_metamap_settings.position.x, -1204.f, 1184, "%.1f");
-		ImGui::SliderFloat("Y Position", &m_metamap_settings.position.y, -1450, 1430, "%.1f");
+		ImGui::SliderFloat("X Position", &m_metamap_settings.position.x, -1204.f, -1184, "%.1f");
+		ImGui::SliderFloat("Y Position", &m_metamap_settings.position.y, -1450, -1430, "%.1f");
 		// ImGui::SliderFloat("Scale", &m_metamap_settings.scale, 0.f, 2.f, "%.1f");
 		ImGui::SliderInt("Opacity", &m_metamap_settings.alpha, 0, 255);
 
@@ -319,7 +356,9 @@ void Metagrid::render(sf::RenderWindow& win) {
 		serialize = false;
 	}
 
-	m_tool->render(win);
+	p_services->window->restore_view();
+	m_tool->render(win, sf::Vector2f{io.MousePos});
+	p_services->window->set_view(p_view);
 }
 
 } // namespace pi

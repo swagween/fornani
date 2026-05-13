@@ -19,13 +19,11 @@ std::unique_ptr<Entity> Train::clone() const { return std::make_unique<Train>(*t
 
 void Train::serialize(dj::Json& out) {
 	Entity::serialize(out);
-	if (m_contingencies) { m_contingencies->serialize(out["contingencies"]); }
 	out["style"] = m_style;
 }
 
 void Train::unserialize(dj::Json const& in) {
 	Entity::unserialize(in);
-	m_contingencies.emplace(in["contingencies"]);
 	m_style = in["style"].as<int>();
 }
 
@@ -98,7 +96,7 @@ void Train::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 	m_chain->update(svc, map, player, 0.99f);
 	tick();
 	m_chain->snap_to_axis(false);
-	auto running = m_contingencies ? svc.quest_table.are_contingencies_met(*m_contingencies) : true;
+	auto running = p_contingencies ? svc.quest_table.are_contingencies_met(*p_contingencies) : true;
 	auto arrive = svc.world_clock.get_hours() % 2 == 1;
 	auto leave = svc.world_clock.get_hours() % 2 == 0;
 	if (arrive && has_flag_set(TrainFlags::away) && running) {

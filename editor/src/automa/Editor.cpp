@@ -104,7 +104,7 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 				}
 				if (key_pressed->scancode == sf::Keyboard::Scancode::H) { current_tool->set_mode(BrushMode::hazard); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::B) { current_tool = std::move(std::make_unique<Brush>()); }
-				if (key_pressed->scancode == sf::Keyboard::Scancode::G) { current_tool = std::move(std::make_unique<Fill>()); }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::F) { current_tool = std::move(std::make_unique<Fill>()); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::E) { current_tool = std::move(std::make_unique<Erase>()); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::M) { current_tool = std::move(std::make_unique<Marquee>()); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::N) { current_tool = std::move(std::make_unique<EntityEditor>()); }
@@ -134,7 +134,6 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 					current_tool->handle_keyboard_events(map, key_pressed->scancode);
 					if (m_clipboard) { m_clipboard.value().paste(map, *current_tool); }
 				}
-				if (key_pressed->scancode == sf::Keyboard::Scancode::D) { m_clipboard = {}; }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::L) {
 					save();
 					m_demo.trigger_demo = true;
@@ -674,7 +673,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::Checkbox("Debug Overlay", &show_overlay);
 			ImGui::Checkbox("Show Entities", &map.flags.show_entities);
 			ImGui::Checkbox("Show Background", &map.flags.show_background);
-			ImGui::Checkbox("Show Grid", &map.flags.show_grid);
+			ImGui::Checkbox("Show Grid (Tab)", &map.flags.show_grid);
 			ImGui::EndMenu();
 		}
 
@@ -696,14 +695,26 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		b_help = false;
 	}
 	if (ImGui::BeginPopupModal("Help", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-		ImGui::SeparatorText("Controls");
-		ImGui::NewLine();
-		ImGui::Text("Launch Playtest:.............................ctrl+L");
-		ImGui::Text("	Playtest Fullscreen:.........................alt");
-		ImGui::Text("	Playtest Set Player at Mouse Position:.....shift");
-		ImGui::NewLine();
-		ImGui::Text("Show Current Layer Only:......................shift");
-		ImGui::Text("Eyedropper:.....................................alt");
+		ImGui::SeparatorText("Editor Controls");
+		ImGui::Text("Toggle Grid: Tab");
+		ImGui::Text("Show Current Layer Only: Shift");
+		ImGui::Text("Reset Zoom and Pan: R");
+		ImGui::Text("Layer Behind: Shift+Up");
+		ImGui::Text("Layer in Front: Shift+Down");
+		ImGui::SeparatorText("Tool Controls");
+		ImGui::Text("Brush Size -: A");
+		ImGui::Text("Brush Size +: D");
+		ImGui::Text("Brush: B");
+		ImGui::Text("Eyedropper: Alt");
+		ImGui::Text("Maruqee: M");
+		ImGui::Text("Fill: F");
+		ImGui::Text("Hand: H");
+		ImGui::Text("Eraser: E");
+		ImGui::Text("Entity Editor: N");
+		ImGui::SeparatorText("Playtest Controls");
+		ImGui::Text("Launch: Ctrl+L");
+		ImGui::Text("Launch at Mouse Position: Shift");
+		ImGui::Text("Fullscreen: Alt");
 		ImGui::NewLine();
 		if (ImGui::Button("Close")) { ImGui::CloseCurrentPopup(); }
 		ImGui::EndPopup();
@@ -1088,8 +1099,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 						if (ImGui::BeginTabItem("Visual")) {
 							ImGui::Checkbox("Show Entities", &map.flags.show_entities);
 							ImGui::Checkbox("Show Background", &map.flags.show_background);
-							ImGui::Checkbox("Show Grid", &map.flags.show_grid);
-							ImGui::Checkbox("Show All Layers", &map.flags.show_all_layers);
+							ImGui::Checkbox("Show Grid (Tab)", &map.flags.show_grid);
+							ImGui::Checkbox("Show All Layers (Shift)", &map.flags.show_all_layers);
 							ImGui::Checkbox("Show Obscuring Layer", &map.flags.show_obscured_layer);
 							ImGui::Checkbox("Show Reverse Obscuring Layer", &map.flags.show_reverse_obscured_layer);
 							ImGui::Checkbox("Show Indicated Layers", &map.flags.show_indicated_layers);

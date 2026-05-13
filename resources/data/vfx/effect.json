@@ -90,6 +90,11 @@
     "dimensions": [128, 128],
     "x_reflection": true
   },
+  "question_mark": {
+    "frame_count": 12,
+    "framerate": 20,
+    "dimensions": [16, 16]
+  },
   "worm_steps": {
     "frame_count": 3,
     "framerate": 16,

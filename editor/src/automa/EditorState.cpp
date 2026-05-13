@@ -5,7 +5,7 @@
 
 namespace pi {
 
-EditorState::EditorState(fornani::automa::ServiceProvider& svc, EditorContext& ctx) : p_services(&svc), p_context(&ctx) {}
+EditorState::EditorState(fornani::automa::ServiceProvider& svc, EditorContext& ctx) : p_services(&svc), p_context(&ctx) { p_view = svc.window->get_view(); }
 
 EditorStateType EditorState::run(char** argv) {
 	p_left_mouse.flush();
@@ -19,7 +19,9 @@ EditorStateType EditorState::run(char** argv) {
 void EditorState::handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) {
 	ImGuiIO& io = ImGui::GetIO();
 
-	p_current_mouse_position = sf::Vector2f{io.MousePos.x, io.MousePos.y};
+	sf::Vector2i mouse_pixel{static_cast<int>(io.MousePos.x), static_cast<int>(io.MousePos.y)};
+	sf::Vector2f world_pos = win.mapPixelToCoords(mouse_pixel, p_view);
+	p_current_mouse_position = world_pos;
 
 	// Mouse input
 	if (!io.WantCaptureMouseUnlessPopupClose) {
@@ -81,7 +83,10 @@ void EditorState::render(sf::RenderWindow& win) {
 	p_delta_clock.restart();
 
 	p_services->window->get().clear();
-	p_services->window->get().draw(p_wallpaper);
+	p_services->window->restore_view();
+	p_wallpaper.setPosition({});
+	p_wallpaper.setSize(sf::Vector2f{p_services->window->get_view().getSize()});
+	win.draw(p_wallpaper);
 }
 
 bool EditorState::create_new_room() {

@@ -13,6 +13,7 @@ struct EventRegistry {
 	NPCVoiceCueEvent npc_voice_cue_event{};
 	NPCPopConversationEvent npc_pop_conversation_event{};
 	NPCPiggybackEvent npc_piggyback_event{};
+	DestroyInspectableEvent destroy_inspectable_event{};
 	PurchaseEvent purchase_event{};
 
 	LaunchCutsceneEvent launch_cutscene_event{};

@@ -194,7 +194,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 		auto parallax = entry["parallax"].as<float>();
 		scenery_layers.at(lyr).push_back(std::make_unique<vfx::Scenery>(svc, pos, m_biome.get_id(), lyr, var, parallax));
 	}
-	for (auto [i, entry] : std::views::enumerate(entities["inspectables"].as_array())) {
+	/*for (auto [i, entry] : std::views::enumerate(entities["inspectables"].as_array())) {
 		auto push = true;
 		auto fail_tag = std::string{};
 		if (entry["contingencies"].is_array()) {
@@ -207,8 +207,8 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 			}
 		}
 		if (push) { inspectables.push_back(entity::Inspectable(svc, entry, room_id, i)); }
-		if (svc.data.inspectable_is_destroyed(inspectables.back().get_id())) { inspectables.back().destroy(); }
-	}
+		if (svc.data.inspectable_is_destroyed(inspectables.back().get_stable_id())) { inspectables.back().destroy(); }
+	}*/
 
 	for (auto& entry : entities["destructibles"].as_array()) { destructibles.push_back(std::make_unique<Destructible>(svc, *this, entry, m_biome.get_id())); }
 
@@ -519,7 +519,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	for (auto& exp : m_explosions) { exp.update(svc, *player, *this); }
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& chest : chests) { chest->update(svc, *this, context.console, *player); }
-	for (auto& inspectable : inspectables) { inspectable.update(svc, *this, context, *player); }
+	// for (auto& inspectable : inspectables) { inspectable.update(svc, *this, context, *player); }
 	for (auto& animator : animators) { animator.update(); }
 	for (auto& effect : effects) { effect.update(); }
 	for (auto& atm : atmosphere) { atm.update(svc, *this, *player); }
@@ -571,6 +571,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		for (auto v : get_entities<Vine>()) {
 			if (!v->is_foreground()) { v->render(win, cam, 1.f); }
 		}
+		for (auto i : get_entities<Inspectable>()) { i->render(win, cam, 1.f); }
 		// for (auto n : get_entities<NPC>()) { n->render(win, cam, 1.0); }
 	}
 
@@ -655,7 +656,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		if (animator.is_foreground()) { animator.render(win, cam); }
 	}
 
-	for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
+	// for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
 
 	if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather.value()->render(svc, win, cam, 0); }
 
@@ -1027,7 +1028,7 @@ void Map::clear() {
 	beds.clear();
 	background.reset();
 	active_projectiles.clear();
-	inspectables.clear();
+	// inspectables.clear();
 	animators.clear();
 	effects.clear();
 	for (auto& scenery : scenery_layers) { scenery.clear(); }

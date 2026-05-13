@@ -5,6 +5,7 @@
 #include <fornani/components/CircleSensor.hpp>
 #include <fornani/components/SteeringComponent.hpp>
 #include <fornani/entity/Entity.hpp>
+#include <fornani/particle/Emitter.hpp>
 #include <memory>
 
 namespace fornani {
@@ -12,7 +13,7 @@ namespace fornani {
 enum class AmbientPropAttributes { foreground, destructible, audio };
 
 struct AmbientPropParameters {
-	AmbientPropParameters(dj::Json const& in);
+	AmbientPropParameters(automa::ServiceProvider& svc, dj::Json const& in);
 	int num_frames{};
 	float sensitivity{};
 	float radius{};
@@ -21,6 +22,7 @@ struct AmbientPropParameters {
 	std::optional<std::string> sound_effect{};
 	util::BitFlags<AmbientPropAttributes> attributes{};
 	sf::Vector2f offset{};
+	std::optional<vfx::EmitterParameters> emitter{};
 };
 
 class AmbientProp : public Entity {

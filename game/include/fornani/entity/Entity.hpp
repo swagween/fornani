@@ -6,6 +6,7 @@
 #include <fornani/core/Fwd.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/io/Logger.hpp>
+#include <fornani/story/Quest.hpp>
 #include <fornani/utils/Constants.hpp>
 #include <fornani/utils/ID.hpp>
 #include <fornani/utils/IWorldPositionable.hpp>
@@ -13,6 +14,8 @@
 namespace fornani {
 
 using EntityHandle = std::uint64_t;
+
+enum class EntityFlags { spawn_denied };
 
 class Entity : public Animatable, public IWorldPositionable {
   public:
@@ -42,14 +45,18 @@ class Entity : public Animatable, public IWorldPositionable {
 	sf::RectangleShape drawbox{};
 	[[nodiscard]] auto get_handle() const -> EntityHandle { return m_handle; }
 	[[nodiscard]] auto get_id() const -> int { return m_id; }
+	[[nodiscard]] auto get_stable_id() const -> StableID::underlying_type { return p_stable_id.get(); }
 	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
 	[[nodiscard]] auto contains_point(sf::Vector2u test) const -> bool;
+	[[nodiscard]] auto spawn_denied() const -> bool { return p_flags.test(EntityFlags::spawn_denied); };
 
   protected:
 	bool m_editor{};
 	bool m_textured{true};
 	io::Logger m_logger{"Pioneer"};
 	StableID p_stable_id{};
+	std::optional<QuestContingencySet> p_contingencies{};
+	util::BitFlags<EntityFlags> p_flags{};
 
   private:
 	int m_id{};

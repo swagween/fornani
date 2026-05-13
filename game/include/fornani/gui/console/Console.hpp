@@ -9,6 +9,7 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/ID.hpp>
 #include <fornani/utils/NineSlice.hpp>
 #include <fornani/utils/RectPath.hpp>
 
@@ -46,6 +47,7 @@ class Console {
 	/// <param name="svc"></param>
 	/// <param name="type"></param>
 	explicit Console(automa::ServiceProvider& svc, dj::Json const& source, OutputType type);
+	explicit Console(StableID speaker, automa::ServiceProvider& svc, dj::Json const& source, OutputType type);
 
 	/// <summary>
 	/// @brief used for loading single messages (signs, inspectables, etc.)
@@ -128,6 +130,9 @@ class Console {
 	bool m_process_code_after{};
 
 	io::Logger m_logger{"gui"};
+
+  private:
+	std::optional<StableID> m_speaker_id{};
 };
 
 } // namespace fornani::gui

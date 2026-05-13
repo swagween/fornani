@@ -464,7 +464,7 @@ void DataManager::switch_destructible_state(int id, bool inverse) {
 	destructible_states.push_back({id, state});
 }
 
-void DataManager::destroy_inspectable(int id) { destroyed_inspectables.add(id); }
+void DataManager::destroy_inspectable(StableID::underlying_type id) { destroyed_inspectables.add(id); }
 
 void DataManager::push_quest(util::QuestKey key) {
 	for (auto& entry : quest_progressions) {
@@ -517,7 +517,7 @@ bool DataManager::switch_is_activated(int id) const {
 	return false;
 }
 
-bool DataManager::inspectable_is_destroyed(int id) const { return destroyed_inspectables.contains(id); }
+bool DataManager::inspectable_is_destroyed(StableID::underlying_type id) const { return destroyed_inspectables.contains(id); }
 
 bool DataManager::is_room_discovered(int id) const { return discovered_rooms.contains(id); }
 
@@ -708,7 +708,7 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	for (auto& chest : save["opened_chests"].as_array()) { opened_chests.add(chest.as<std::uint64_t>()); }
 	for (auto& s : save["activated_switches"].as_array()) { activated_switches.add(s.as<int>()); }
 	for (auto& block : save["destroyed_blocks"].as_array()) { destructible_states.push_back(std::make_pair(block[0].as<int>(), block[1].as<int>())); }
-	for (auto& inspectable : save["destroyed_inspectables"].as_array()) { destroyed_inspectables.add(inspectable.as<int>()); }
+	for (auto& inspectable : save["destroyed_inspectables"].as_array()) { destroyed_inspectables.add(inspectable.as<StableID::underlying_type>()); }
 
 	for (auto& enemy : save["map_data"]["fallen_enemies"].as_array()) {
 		fallen_enemies.push_back({std::make_pair(enemy[0].as<int>(), StableID{enemy[1].as<StableID::underlying_type>()}), enemy[2].as<int>(), static_cast<bool>(enemy[3].as<int>()), static_cast<bool>(enemy[4].as<int>())});

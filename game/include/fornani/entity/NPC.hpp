@@ -140,7 +140,6 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	ID m_id;
 	std::string m_label{};
 	std::vector<std::vector<int>> m_suites{};
-	std::vector<QuestContingency> m_contingencies{};
 
 	bool m_background{};
 	bool m_hidden{};

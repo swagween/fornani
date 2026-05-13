@@ -309,7 +309,7 @@ void DialogueEditor::render(sf::RenderWindow& win) {
 		if (window_hovered) { m_suite->unhover_all(); }
 		m_suite->render(win, p_camera);
 	}
-	m_tool->render(win);
+	m_tool->render(win, sf::Vector2f{});
 }
 
 void DialogueEditor::save() {

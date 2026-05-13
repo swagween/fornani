@@ -11,6 +11,9 @@ Entity::Entity(automa::ServiceProvider& svc, dj::Json const& in, std::string_vie
 	: Animatable(svc, label, dim), m_label{label}, IWorldPositionable({in["position"][0].as<std::uint32_t>(), in["position"][1].as<std::uint32_t>()}, {in["dimensions"][0].as<std::uint32_t>(), in["dimensions"][1].as<std::uint32_t>()}) {
 	unserialize(in);
 	m_editor = svc.is_editor();
+	if (p_contingencies) {
+		if (!svc.quest_table.are_contingencies_met(*p_contingencies)) { p_flags.set(EntityFlags::spawn_denied); }
+	}
 }
 
 Entity::Entity(automa::ServiceProvider& svc, std::string_view label, int to_id, sf::Vector2<std::uint32_t> dim) : Animatable(svc, label), m_id{to_id}, m_label{label}, IWorldPositionable{{}, dim} { m_editor = svc.is_editor(); }
@@ -23,9 +26,13 @@ void Entity::serialize(dj::Json& out) {
 	out["position"][1] = get_grid_position().y;
 	out["dimensions"][0] = get_grid_dimensions().x;
 	out["dimensions"][1] = get_grid_dimensions().y;
+	if (p_contingencies) { p_contingencies->serialize(out["contingencies"]); }
 }
 
-void Entity::unserialize(dj::Json const& in) { m_id = in["id"].as<int>(); }
+void Entity::unserialize(dj::Json const& in) {
+	m_id = in["id"].as<int>();
+	if (in["contingencies"]) { p_contingencies.emplace(in["contingencies"]); }
+}
 
 void Entity::expose() {
 	static int w = IWorldPositionable::m_dimensions.x;

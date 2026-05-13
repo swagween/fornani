@@ -58,6 +58,8 @@ class EditorState {
 
   protected:
 	EditorContext* p_context;
+	sf::View p_view{};
+	float p_zoom_level{1.f};
 
 	struct {
 		fornani::util::Cooldown left_click{8};

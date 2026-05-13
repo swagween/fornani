@@ -9,6 +9,14 @@ namespace fornani::vfx {
 
 enum class EmitterFlags { map };
 
+struct EmitterParameters {
+	std::string tag{};
+	int frequency{};
+	sf::Vector2f dimensions{16.f, 16.f};
+	sf::Vector2f offset{};
+	Direction direction{UND::up};
+};
+
 class Emitter : public Flaggable<EmitterFlags> {
   public:
 	Emitter() = default;

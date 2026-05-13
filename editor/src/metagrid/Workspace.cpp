@@ -13,10 +13,12 @@ Workspace::Workspace(sf::Vector2u dimensions) {
 		m_texture.draw(m_points.back().dot);
 	}
 	m_texture.display();
+	m_texture.setRepeated(true);
 }
 
 void Workspace::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	auto sprite = sf::Sprite{m_texture.getTexture()};
+	// sprite.setTextureRect({sf::Vector2i{cam}, sf::Vector2i{win.getDefaultView().getSize()}});
 	sprite.setPosition(cam + grid_offset_v);
 	win.draw(sprite);
 }

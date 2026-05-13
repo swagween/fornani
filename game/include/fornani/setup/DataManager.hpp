@@ -74,7 +74,7 @@ class DataManager final {
 	void unlock_door(std::string_view tag);
 	void activate_switch(int id);
 	void switch_destructible_state(int id, bool inverse = false);
-	void destroy_inspectable(int id);
+	void destroy_inspectable(StableID::underlying_type id);
 	void push_quest(util::QuestKey key);
 	void set_npc_location(int npc_id, int room_id);
 	void kill_enemy(int room_id, StableID id, int distance, bool permanent, bool semipermanent);
@@ -86,7 +86,7 @@ class DataManager final {
 	bool is_door_unlocked(std::string_view tag) const;
 	bool chest_is_open(std::uint64_t id) const;
 	bool switch_is_activated(int id) const;
-	bool inspectable_is_destroyed(int id) const;
+	bool inspectable_is_destroyed(StableID::underlying_type id) const;
 	bool is_room_discovered(int id) const;
 	bool is_room_adjacent_to_discovered(int id) const;
 	bool enemy_is_fallen(int room_id, StableID id) const;
@@ -175,17 +175,17 @@ class DataManager final {
 	TimeTrialRegistry time_trial_registry{};
 
   private:
-	[[nodiscard]] auto get_destroyed_inspectables() const -> Register<int> { return destroyed_inspectables; }
+	[[nodiscard]] auto get_destroyed_inspectables() const -> Register<StableID::underlying_type> { return destroyed_inspectables; }
 	bool load_save_binary(fs::path const& path, player::Player& player);
 	bool load_save_json(fs::path const& path, player::Player& player, bool reload = false);
 	bool load_time_trials_binary(fs::path const& path);
 
   private:
 	Register<StableID::underlying_type> opened_chests{};
+	Register<StableID::underlying_type> destroyed_inspectables{};
 	Register<std::string> unlocked_doors{};
 	Register<int> activated_switches{};
 	std::vector<std::pair<int, int>> destructible_states{};
-	Register<int> destroyed_inspectables{};
 	std::vector<util::QuestKey> quest_progressions{};
 	std::vector<std::string> m_biomes{};
 	std::unordered_map<int, std::string> m_map_labels{};

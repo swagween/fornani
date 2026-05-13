@@ -44,12 +44,19 @@ bool Room::serialize(fornani::automa::ServiceProvider& svc) {
 }
 
 void Room::render(sf::RenderWindow& win, sf::Vector2f cam) {
+
+	// calculate zoom
+	sf::View const& view = win.getView();
+	float zoom = view.getSize().x / win.getDefaultView().getSize().x;
+	float base_thickness = m_highlighted ? -2.f : -1.f;
+
+	m_box.setOutlineThickness(base_thickness * zoom);
 	auto& color = has_flag_set(RoomFlags::include_in_minimap) ? room_color_v : excluded_room_color_v;
 	auto& h_color = has_flag_set(RoomFlags::include_in_minimap) ? highighted_room_color_v : highlighted_excluded_room_color_v;
 	m_highlighted ? m_box.setFillColor(h_color) : m_box.setFillColor(sf::Color::Transparent);
 	m_highlighted ? m_box.setOutlineColor(sf::Color{241, 31, 98}) : m_box.setOutlineColor(sf::Color{187, 17, 58});
 	if (no_border) { m_box.setOutlineColor(sf::Color::Transparent); }
-	m_highlighted ? m_box.setOutlineThickness(-2.f) : m_box.setOutlineThickness(-1.f);
+	m_box.setOutlineThickness(base_thickness * zoom);
 	m_box.setPosition(get_board_position() + cam);
 	auto sprite = sf::Sprite{m_texture.getTexture()};
 	has_flag_set(RoomFlags::include_in_minimap) ? sprite.setColor(sf::Color::White) : sprite.setColor(fornani::colors::periwinkle);

@@ -36,10 +36,7 @@ class Train : public Entity, public Flaggable<TrainFlags> {
 	void debug();
 
   private:
-	// serializable
-	std::optional<QuestContingencySet> m_contingencies{};
 	int m_style{};
-	//
 
 	Animatable m_wheels;
 	std::optional<vfx::Chain> m_chain{};

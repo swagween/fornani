@@ -39,10 +39,9 @@ EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFin
 }
 
 EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, world::Map& map, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) : EntitySet(svc, finder, metadata, room_name, true) {
-
 	registered_map.emplace("npcs", &create_registered_entity<NPC>);
-
 	load_and_register(svc, map, finder, metadata, room_name);
+	for (auto& ent : variables.entities) { ent->set_stable_id(map.room_id); }
 }
 
 void EntitySet::render(sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f origin, float cell_size) {
