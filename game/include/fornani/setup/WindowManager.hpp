@@ -2,6 +2,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <fornani/core/Common.hpp>
 #include <fornani/io/Logger.hpp>
 #include <memory>
 

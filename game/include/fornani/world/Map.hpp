@@ -10,7 +10,6 @@
 #include <fornani/entities/world/Chest.hpp>
 #include <fornani/entities/world/Explosion.hpp>
 #include <fornani/entities/world/Fire.hpp>
-#include <fornani/entities/world/Inspectable.hpp>
 #include <fornani/entities/world/Laser.hpp>
 #include <fornani/entities/world/TestMobile.hpp>
 #include <fornani/entities/world/Waterfall.hpp>
@@ -67,7 +66,7 @@ namespace fornani::world {
 enum class LevelState { camera_shake, spawn_enemy };
 enum class MapState { unobscure };
 enum class LayerProperties { has_obscuring_layer, has_reverse_obscuring_layer };
-enum class MapProperties { minimap, environmental_randomness, day_night_shift, timer, lighting, interior };
+enum class MapProperties { minimap, environmental_randomness, day_night_shift, timer, lighting, interior, toxic };
 
 struct EnemySpawn {
 	sf::Vector2f pos{};
@@ -175,6 +174,7 @@ class Map {
 	[[nodiscard]] auto is_minimap() const -> bool { return m_attributes.properties.test(MapProperties::minimap); }
 	[[nodiscard]] auto has_obscuring_layer() const -> bool { return m_layer_properties.test(LayerProperties::has_obscuring_layer); }
 	[[nodiscard]] auto has_reverse_obscuring_layer() const -> bool { return m_layer_properties.test(LayerProperties::has_reverse_obscuring_layer); }
+	[[nodiscard]] auto is_toxic() const -> bool;
 	[[nodiscard]] auto get_biome_string() const -> std::string_view { return m_biome.get_label(); }
 	[[nodiscard]] auto get_room_string() const -> std::string { return m_metadata.room; }
 	[[nodiscard]] auto get_player_start() const -> sf::Vector2f { return m_player_start; }

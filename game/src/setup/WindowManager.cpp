@@ -1,9 +1,7 @@
 
 #include <fornani/setup/WindowManager.hpp>
 #include <fornani/utils/Constants.hpp>
-
 #include "app/app_icon_data.hpp" // embedded icon data
-
 #include <imgui-SFML.h>
 
 namespace fornani {
@@ -25,7 +23,7 @@ void WindowManager::set() {
 
 	if (!screencap.resize(m_window->getSize())) { NANI_LOG_WARN(m_logger, "Failed to resize screencap!"); }
 	m_window->setVerticalSyncEnabled(true);
-	m_window->setFramerateLimit(60);
+	m_window->setFramerateLimit(default_framerate_limit_v);
 	m_window->setKeyRepeatEnabled(false);
 
 	NANI_LOG_INFO(m_logger, "Letterbox size:		[{}, {}]", m_letterbox.x, m_letterbox.y);

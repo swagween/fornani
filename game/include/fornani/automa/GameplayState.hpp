@@ -7,6 +7,7 @@
 #include <fornani/gui/InventoryWindow.hpp>
 #include <fornani/gui/PauseWindow.hpp>
 #include <fornani/gui/VendorDialog.hpp>
+#include <fornani/shader/HazeShader.hpp>
 #include <fornani/utils/Flaggable.hpp>
 
 namespace fornani::automa {
@@ -30,6 +31,7 @@ class GameplayState : public GameState, public Flaggable<GameplayStateFlags> {
 	std::optional<LightShader> p_entity_shader{};
 	std::optional<LightShader> p_world_shader{};
 	std::optional<LightShader> p_gui_shader{};
+	std::optional<HazeShader> p_haze_shader{};
 	std::optional<std::unique_ptr<gui::PauseWindow>> p_pause_window{};
 	std::optional<std::unique_ptr<gui::VendorDialog>> p_vendor_dialog{};
 	std::optional<std::unique_ptr<gui::InventoryWindow>> p_inventory_window{};

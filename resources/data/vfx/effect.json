@@ -86,7 +86,7 @@
   },
   "toxic_gas": {
     "frame_count": 8,
-    "framerate": 20,
+    "framerate": 40,
     "dimensions": [128, 128],
     "x_reflection": true
   },

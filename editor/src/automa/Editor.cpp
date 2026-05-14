@@ -1039,14 +1039,21 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				static bool mp_randomness{map.test_property(fornani::world::MapProperties::environmental_randomness)};
 				static bool mp_shift{map.test_property(fornani::world::MapProperties::day_night_shift)};
 				static bool mp_lighting{map.test_property(fornani::world::MapProperties::lighting)};
+				static bool mp_int{map.test_property(fornani::world::MapProperties::interior)};
+				static bool mp_tox{map.test_property(fornani::world::MapProperties::toxic)};
+				static int darken = static_cast<float>(darken);
 				if (b_reloaded) {
 					mp_randomness = map.test_property(fornani::world::MapProperties::environmental_randomness);
 					mp_shift = map.test_property(fornani::world::MapProperties::day_night_shift);
 					mp_lighting = map.test_property(fornani::world::MapProperties::lighting);
+					mp_int = map.test_property(fornani::world::MapProperties::interior);
+					mp_tox = map.test_property(fornani::world::MapProperties::toxic);
+					darken = static_cast<int>(map.darken_factor);
 				}
-				static int darken{};
 				if (ImGui::MenuItem("Environmental Randomness", "", &mp_randomness)) {}
 				if (ImGui::MenuItem("Day Night Shift", "", &mp_shift)) {}
+				if (ImGui::MenuItem("Toxic", "", &mp_tox)) {}
+				if (ImGui::MenuItem("Interior", "", &mp_int)) {}
 				if (ImGui::MenuItem("Lighting", "", &mp_lighting)) {}
 				ImGui::Text("Shadow Level: ");
 				ImGui::SameLine();
@@ -1054,6 +1061,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				mp_randomness ? map.set_property(fornani::world::MapProperties::environmental_randomness) : map.reset_property(fornani::world::MapProperties::environmental_randomness);
 				mp_shift ? map.set_property(fornani::world::MapProperties::day_night_shift) : map.reset_property(fornani::world::MapProperties::day_night_shift);
 				mp_lighting ? map.set_property(fornani::world::MapProperties::lighting) : map.reset_property(fornani::world::MapProperties::lighting);
+				mp_int ? map.set_property(fornani::world::MapProperties::interior) : map.reset_property(fornani::world::MapProperties::interior);
+				mp_tox ? map.set_property(fornani::world::MapProperties::toxic) : map.reset_property(fornani::world::MapProperties::toxic);
 				reset_layers();
 				ImGui::EndMenu();
 			}

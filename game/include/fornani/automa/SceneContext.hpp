@@ -12,6 +12,7 @@ struct SceneContext {
 	std::optional<std::unique_ptr<gui::Console>> console;
 	graphics::Transition transition;
 	CutsceneCatalog cutscene_catalog;
+	std::optional<std::string> biome{};
 };
 
 } // namespace fornani

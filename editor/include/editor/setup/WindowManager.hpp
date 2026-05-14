@@ -2,8 +2,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-
-#include "fornani/io/Logger.hpp"
+#include <fornani/core/Common.hpp>
+#include <fornani/io/Logger.hpp>
 
 namespace pi {
 
@@ -35,7 +35,7 @@ class WindowManager {
 		sf::Vector2u current{};
 	} dimensions{};
 
-	fornani::io::Logger m_logger{ "pioneer" };
+	fornani::io::Logger m_logger{"pioneer"};
 };
 
 } // namespace pi

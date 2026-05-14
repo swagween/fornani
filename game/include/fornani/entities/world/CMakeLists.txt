@@ -6,7 +6,6 @@ nani_add_headers(
         Fire.hpp
         Hazard.hpp
         HazardTile.hpp
-        Inspectable.hpp
         SpawnablePlatform.hpp
         TreasureContainer.hpp
         Laser.hpp

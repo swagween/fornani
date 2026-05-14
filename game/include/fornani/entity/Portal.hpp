@@ -65,6 +65,7 @@ class Portal : public Entity {
 	[[nodiscard]] auto is_top() const -> bool { return m_orientation == PortalOrientation::top; }
 	[[nodiscard]] auto is_left() const -> bool { return m_orientation == PortalOrientation::left; }
 	[[nodiscard]] auto is_right() const -> bool { return m_orientation == PortalOrientation::right; }
+	[[nodiscard]] auto has_custom_animation() const -> bool { return m_custom_animation.has_value(); }
 
   private:
 	void change_states(automa::ServiceProvider& svc, int room_id, graphics::Transition& transition);

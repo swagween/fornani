@@ -31,6 +31,7 @@ Game::Game(char** argv, WindowManager& window, AppContext& context, capo::IEngin
 	}
 
 	m_background = std::make_unique<graphics::Background>(services, "black");
+	m_wallpaper.setSize(window.f_screen_dimensions());
 }
 
 void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2f player_position) {
@@ -169,11 +170,16 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		services.window->get().setMouseCursorVisible(io.MouseDrawCursor);
 		ImGui::SFML::Update(services.window->get(), m_frame_tracker.get_elapsed_time());
 		m_frame_tracker.update();
-		if (services.ticker.every_x_frames(60)) { average_frame_time = m_frame_tracker.get_average_frame_time(); }
+		if (services.ticker.every_x_frames(default_framerate_limit_v)) { average_frame_time = m_frame_tracker.get_average_frame_time(); }
 		if (flags.test(GameFlags::playtest)) { playtester_portal(services.window->get()); }
 		flags.test(GameFlags::playtest) || demo ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
 
+		// rendering
+		auto black = colors::black;
+		if (auto& themed_black = game_state.get_current_state().get_context().biome) { black = Color{services.data.biomes["properties"][*themed_black]["black"]}; }
+		m_wallpaper.setFillColor(black);
 		services.window->get().clear();
+		services.window->get().draw(m_wallpaper);
 		if (services.window->is_fullscreen()) { services.window->get().setView(entire_window); }
 		if (game_state.get_current_state().get_type() == automa::StateType::menu) { m_background->render(services, services.window->get(), {}); }
 		if (!zooming) { services.window->restore_view(); }
@@ -205,7 +211,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 
 	bool* b_debug{};
 	static bool limit_framerate{true};
-	static int frame_limit{120};
+	static int frame_limit{default_framerate_limit_v};
 	float const PAD = 10.0f;
 	static int corner = 1;
 	ImGuiIO& io = ImGui::GetIO();

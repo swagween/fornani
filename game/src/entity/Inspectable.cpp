@@ -1,7 +1,6 @@
 
 #include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
-#include <fornani/entities/world/Inspectable.hpp>
 #include <fornani/entity/Inspectable.hpp>
 #include <fornani/events/ConsoleEvent.hpp>
 #include <fornani/gui/console/Console.hpp>

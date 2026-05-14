@@ -54,9 +54,11 @@ void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 		for (auto [tod, tex] : std::views::enumerate(layer.textures)) {
 			auto chunks = map_dimensions / constants::f_cell_size / constants::f_chunk_size;
 			auto multiplier = std::max(chunks.x, chunks.y);
+			auto fdim = sf::Vector2i{map_dimensions};
+			auto map_mult = std::max(fdim.x, fdim.y);
 			auto sprite = sf::Sprite{tex.getTexture()};
 			sprite.setScale(constants::f_scale_vec);
-			sprite.setTextureRect(sf::IntRect{{}, dimensions * static_cast<int>(multiplier)});
+			sprite.setTextureRect(sf::IntRect{{}, dimensions * std::max(static_cast<int>(multiplier), map_mult)});
 			sprite.setPosition(layer.final_position - cam * layer.parallax);
 			sprite.setOrigin(sf::Vector2f{{sf::Vector2f{dimensions} * multiplier}}.componentWiseMul(origin));
 			shifter.render(svc, win, sprite, tod);

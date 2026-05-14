@@ -171,7 +171,7 @@ void Player::update(world::Map& map) {
 
 	// item use logic
 	handle_item_logic();
-	if (map.get_style_id() == 7 && !map.is_interior() && cooldowns.suffocate.is_complete()) {
+	if (map.is_toxic() && cooldowns.suffocate.is_complete()) {
 		cooldowns.suffocate.start();
 		if (!has_item_equipped("gas_mask")) { hurt(); }
 	}
@@ -805,7 +805,7 @@ void Player::hurt(float amount, bool force) {
 		get_collider().physics.velocity.y = 0.0f;
 		get_collider().physics.acceleration.y += -physics_stats.hurt_acc;
 		force_cooldown.start(60);
-		auto tag = has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? "nani_gulp" : cooldowns.stun.started() ? "nani_stun" : cooldowns.suffocate.started() ? "nani_gulp" : "nani_hurt";
+		auto tag = has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? "nani_gulp" : cooldowns.stun.started() ? "nani_stun" : cooldowns.suffocate.started() ? "nani_stun" : "nani_hurt";
 		m_services->soundboard.play_sound(tag);
 		hurt_cooldown.start(2);
 		if (health.is_dead() && !is_dead()) { m_death_type = PlayerDeathType::normal; }

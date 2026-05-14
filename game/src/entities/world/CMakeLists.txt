@@ -6,7 +6,6 @@ nani_add_sources(
         Fire.cpp
         Hazard.cpp
         HazardTile.cpp
-        Inspectable.cpp
         Laser.cpp
         SpawnablePlatform.cpp
         TestMobile.cpp

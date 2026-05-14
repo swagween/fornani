@@ -56,6 +56,7 @@ class Game final {
 	std::unique_ptr<graphics::Background> m_background{};
 
 	FrameTracker m_frame_tracker{};
+	sf::RectangleShape m_wallpaper{};
 
 	io::Logger m_logger{"core"};
 };

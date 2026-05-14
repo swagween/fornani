@@ -248,6 +248,13 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 		// m_shader->debug();
 	}
+	if (p_haze_shader) {
+		auto blanket = sf::RectangleShape{svc.window->f_screen_dimensions()};
+		auto highlight = Color{svc.data.biomes["properties"][m_map->get_biome_string()]["haze_highlight"]};
+		auto shadow = Color{svc.data.biomes["properties"][m_map->get_biome_string()]["haze_shadow"]};
+		p_haze_shader->finalize(svc.ticker.total_seconds_passed.count(), svc.window->get().getSize(), highlight, shadow, {cam.x, -cam.y});
+		p_haze_shader->submit(win, blanket, cam);
+	}
 
 	GameplayState::render(svc, win);
 
@@ -281,6 +288,12 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 		m_map->load(svc, p_context, target_state);
 		NANI_LOG_INFO(m_logger, "Map loaded.");
 	}
+
+	p_context.biome.emplace(m_map->get_biome_string());
+
+	// toxic haze
+	p_haze_shader.reset();
+	if (m_map->is_toxic()) { p_haze_shader.emplace(svc.finder, sf::Vector2u{svc.window->get().getSize()}, 2.1f); }
 
 	hud.reset_position(); // reset hud position to corner
 	svc.soundboard.turn_on();

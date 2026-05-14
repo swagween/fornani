@@ -24,7 +24,6 @@
 #include <fornani\entities\world\Chest.hpp>
 #include <fornani\entities\world\Explosion.hpp>
 #include <fornani\entities\world\Fire.hpp>
-#include <fornani\entities\world\Inspectable.hpp>
 #include <fornani\entities\world\Laser.hpp>
 #include <fornani\entities\world\Waterfall.hpp>
 #include <fornani\entity\AmbientProp.hpp>
@@ -368,7 +367,7 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 
 	m_chunks.resize(static_cast<std::size_t>((dimensions.x / constants::u32_chunk_size) * (dimensions.y / constants::u32_chunk_size)));
 
-	m_attributes.border_color = m_biome.get_id() == 2 ? colors::pioneer_black : colors::ui_black;
+	m_attributes.border_color = Color{svc.data.biomes["properties"][m_biome.get_label()]["black"]};
 	if (entities.is_object()) { m_entities = EntitySet(svc, *this, svc.finder, entities, m_metadata.room); }
 
 	generate_collidable_layer(live);
@@ -563,7 +562,13 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	if (m_entities) {
 		// TODO: uncomment below once all entities have been refactored!
 		// for (auto& entity : m_entities.value().variables.entities) { entity->render(win, cam, 1.0); }
-		for (auto p : get_entities<Portal>()) { p->render(svc, m_entity_texture, cam); }
+		for (auto p : get_entities<Portal>()) {
+			if (p->has_custom_animation()) {
+				p->render(svc, m_entity_texture, cam);
+			} else {
+				p->render(win, cam, 1.f);
+			}
+		}
 		for (auto s : get_entities<SavePoint>()) { s->render(win, cam, 1.f); }
 		if (svc.greyblock_mode()) {
 			for (auto c : get_entities<CutsceneTrigger>()) { c->render(win, cam, c->get_f_grid_dimensions().x); }
@@ -1145,6 +1150,8 @@ auto Map::get_closest_home_point(sf::Vector2f const check) const -> sf::Vector2f
 	return ret;
 }
 
+auto Map::is_toxic() const -> bool { return (get_style_id() == 7 && is_interior()) || has_property(MapProperties::toxic); }
+
 auto Map::get_ambience_balance() const -> float { return ambience_balance.get(); }
 
 dj::Json const& Map::get_json_data(automa::ServiceProvider& svc) const {
@@ -1172,6 +1179,7 @@ MapAttributes::MapAttributes(dj::Json const& in) {
 	if (in["properties"]["timer"].as_bool()) { properties.set(MapProperties::timer); }
 	if (in["properties"]["lighting"].as_bool()) { properties.set(MapProperties::lighting); }
 	if (in["properties"]["interior"].as_bool()) { properties.set(MapProperties::interior); }
+	if (in["properties"]["toxic"].as_bool()) { properties.set(MapProperties::toxic); }
 	if (in["minimap"].as_bool()) { properties.set(MapProperties::minimap); }
 
 	if (in["camera_effects"]) {
@@ -1190,7 +1198,6 @@ MapAttributes::MapAttributes(dj::Json const& in) {
 	for (auto& entry : in["atmosphere"].as_array()) { atmosphere.add(entry.as_string()); }
 
 	special_drop_id = in["special_drop_id"].as<int>();
-	border_color = sf::Color{in["border_color"][0].as<std::uint8_t>(), in["border_color"][1].as<std::uint8_t>(), in["border_color"][2].as<std::uint8_t>()};
 }
 
 void MapAttributes::serialize(dj::Json& out) {
@@ -1199,6 +1206,7 @@ void MapAttributes::serialize(dj::Json& out) {
 	out["properties"]["timer"] = properties.test(fornani::world::MapProperties::timer);
 	out["properties"]["lighting"] = properties.test(fornani::world::MapProperties::lighting);
 	out["properties"]["interior"] = properties.test(fornani::world::MapProperties::interior);
+	out["properties"]["toxic"] = properties.test(fornani::world::MapProperties::toxic);
 
 	out["music"] = music;
 	NANI_LOG_DEBUG(m_logger, "Serialized music: {}", music);
@@ -1206,9 +1214,6 @@ void MapAttributes::serialize(dj::Json& out) {
 	for (auto& atmo : atmosphere) { out["atmosphere"].push_back(atmo); }
 
 	out["special_drop_id"] = special_drop_id;
-	out["border_color"].push_back(border_color.r);
-	out["border_color"].push_back(border_color.g);
-	out["border_color"].push_back(border_color.b);
 }
 
 void Map::update_balance(automa::ServiceProvider& svc) {

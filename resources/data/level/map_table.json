@@ -926,9 +926,15 @@
     },
     {
       "folder": "worm",
+      "label": "chaetal_sac.json",
+      "region": "worm",
+      "room_id": 1104
+    },
+    {
+      "folder": "worm",
       "label": "crop.json",
       "region": "worm",
-      "room_id": 0
+      "room_id": 1103
     },
     {
       "folder": "worm",
@@ -941,6 +947,54 @@
       "label": "protonephridium.json",
       "region": "worm",
       "room_id": 1102
+    },
+    {
+      "folder": "worm",
+      "label": "subneural_vessel.json",
+      "region": "worm",
+      "room_id": 1106
+    },
+    {
+      "folder": "worm",
+      "label": "typhlosole.json",
+      "region": "worm",
+      "room_id": 1108
+    },
+    {
+      "folder": "worm",
+      "label": "upper_coelum.json",
+      "region": "worm",
+      "room_id": 1105
+    },
+    {
+      "folder": "worm",
+      "label": "ventral_vessel.json",
+      "region": "worm",
+      "room_id": 1107
+    },
+    {
+      "label": "dorsal_septum.json",
+      "minimap": true,
+      "region": "worm",
+      "room_id": 1109
+    },
+    {
+      "folder": "worm",
+      "label": "dorsal_septum.json",
+      "region": "worm",
+      "room_id": 1109
+    },
+    {
+      "label": "nephrostome.json",
+      "minimap": true,
+      "region": "worm",
+      "room_id": 1110
+    },
+    {
+      "folder": "worm",
+      "label": "nephrostome.json",
+      "region": "worm",
+      "room_id": 1110
     }
   ]
 }
