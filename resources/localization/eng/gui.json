@@ -49,5 +49,9 @@
   "settings": {
     "enabled": "ON",
     "disabled": "OFF"
+  },
+  "dialog": {
+    "enter_start": "Press ",
+    "enter_end": " to continue."
   }
 }

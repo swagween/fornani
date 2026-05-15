@@ -223,5 +223,11 @@
     "target": 1,
     "objectives": [],
     "displayed": false
+  },
+  {
+    "tag": "pioneer_tech",
+    "target": 2,
+    "objectives": [],
+    "displayed": true
   }
 ]

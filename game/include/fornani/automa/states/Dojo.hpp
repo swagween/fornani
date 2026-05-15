@@ -11,7 +11,7 @@
 
 namespace fornani::automa {
 
-enum class GameplayFlags { game_over, transitioning, open_vendor, give_item, item_music_played, death_console_launched, console_running, remove_item, health_increase_exit };
+enum class GameplayFlags { game_over, transitioning, open_vendor, give_item, item_music_played, death_console_launched, console_running, remove_item, health_increase_exit, open_builder };
 
 class Dojo final : public GameplayState {
   public:
@@ -32,6 +32,7 @@ class Dojo final : public GameplayState {
 	void equip_item(ServiceProvider& svc, int id);
 	void use_item(ServiceProvider& svc, int id);
 	void open_vendor(ServiceProvider& svc, int id);
+	void open_builder(ServiceProvider& svc, int id);
 	void launch_cutscene(ServiceProvider& svc, int id);
 	void add_map_marker(ServiceProvider& svc, int room_id, int type, int questline);
 	bool check_for_vendor(ServiceProvider& svc);
@@ -46,7 +47,7 @@ class Dojo final : public GameplayState {
   private:
 	util::BitFlags<GameplayFlags> m_flags{};
 
-	int m_vendor_id{};
+	int m_dialog_id{};
 	std::string m_item_tag{};
 
 	std::unordered_map<int, std::string> m_map_markers{};

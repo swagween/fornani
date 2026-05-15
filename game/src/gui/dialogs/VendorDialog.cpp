@@ -2,7 +2,7 @@
 #include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/graphics/Transition.hpp>
-#include <fornani/gui/VendorDialog.hpp>
+#include <fornani/gui/dialogs/VendorDialog.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/ColorUtils.hpp>
 #include <fornani/utils/Math.hpp>
@@ -13,23 +13,22 @@
 namespace fornani::gui {
 
 VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id)
-	: vendor_id(vendor_id), m_buy_selector{{4, 2}, {32.f, 32.f}}, m_sell_selector{{8, 4}, {18.f, 18.f}}, orb{.sprite{anim::AnimatedSprite(svc.assets.get_texture("orbs"), {24, 24})}},
-	  m_artwork{svc, "vendor_" + std::string{*svc.data.get_npc_label_from_id(vendor_id)}}, text{.vendor_name{svc.text.fonts.title.font},
-																								.buy_tab{svc.text.fonts.title.font},
-																								.sell_tab{svc.text.fonts.title.font},
-																								.orb_count{svc.text.fonts.title.font},
-																								.price{svc.text.fonts.title.font},
-																								.price_number{svc.text.fonts.title.font},
-																								.item_label{svc.text.fonts.basic.font}},
+	: IDialog(svc, map, player, vendor_id, "vendor"), m_buy_selector{{4, 2}, {32.f, 32.f}}, m_sell_selector{{8, 4}, {18.f, 18.f}}, orb{.sprite{anim::AnimatedSprite(svc.assets.get_texture("orbs"), {24, 24})}},
+	  text{.vendor_name{svc.text.fonts.title.font},
+		   .buy_tab{svc.text.fonts.title.font},
+		   .sell_tab{svc.text.fonts.title.font},
+		   .orb_count{svc.text.fonts.title.font},
+		   .price{svc.text.fonts.title.font},
+		   .price_number{svc.text.fonts.title.font},
+		   .item_label{svc.text.fonts.basic.font}},
 	  m_constituents{
 		  VendorConstituent{svc, "portrait", {{}, {96, 144}}},			VendorConstituent{svc, "wares", {{0, 335}, {200, 118}}, 200, util::InterpolationType::cubic},
 		  VendorConstituent{svc, "description", {{96, 0}, {256, 137}}}, VendorConstituent{svc, "name", {{0, 144}, {103, 58}}, 80},
 		  VendorConstituent{svc, "core", {{0, 202}, {207, 133}}, 200},	VendorConstituent{svc, "selection", {{200, 335}, {162, 95}}, 200, util::InterpolationType::cubic},
 		  VendorConstituent{svc, "nani", {{207, 190}, {171, 145}}},
 	  },
-	  m_intro{300}, m_fade_in{120}, m_outro{100}, m_vendor_portrait{svc, "character_portraits"}, m_orb_display{svc}, m_selector_sprite{svc, "vendor_gizmo"},
-	  my_npc{*std::find_if(map.get_entities<NPC>().begin(), map.get_entities<NPC>().end(), [vendor_id](auto const& n) { return n->get_vendor_id() == vendor_id; })}, npc_id{vendor_id}, m_item_sprite{svc, "inventory_items"},
-	  m_palette{"pioneer", svc.finder}, m_theme{svc.data.menu_themes["mini_white"]} {
+	  m_orb_display{svc}, my_npc{*std::find_if(map.get_entities<NPC>().begin(), map.get_entities<NPC>().end(), [vendor_id](auto const& n) { return n->get_vendor_id() == vendor_id; })}, npc_id{vendor_id},
+	  m_item_sprite{svc, "inventory_items"}, m_palette{"pioneer", svc.finder}, m_theme{svc.data.menu_themes["mini_white"]} {
 	if (!my_npc) {
 		NANI_LOG_ERROR(m_logger, "Tried to open vendor dialog with an undefined NPC: {}", vendor_id);
 		close();
@@ -41,9 +40,6 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 		return;
 	}
 	svc.input_system.set_action_set(input::ActionSet::Menu);
-	flags.set(VendorDialogStatus::opened);
-	m_artwork.center();
-	m_artwork.set_position(svc.window->f_center_screen());
 
 	for (auto& in_anim = svc.data.drop["orb"]["animation"]; auto& param : in_anim["params"].as_array()) {
 		anim::Parameters a{};
@@ -80,17 +76,10 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	text.sell_tab.setOrigin({0.f, text.sell_tab.getLocalBounds().getCenter().y});
 	text.price.setOrigin({0.f, text.price.getLocalBounds().getCenter().y});
 
-	m_vendor_portrait.set_texture_rect(sf::IntRect{{npc_id * 64, 0}, {64, 128}});
 	m_buy_selector.set_lookup({{103, 182}, {20, 20}});
 	m_sell_selector.set_lookup({{103, 182}, {20, 20}});
 
-	// background color
-	m_background.setFillColor(colors::pioneer_black);
-	m_background.setSize(svc.window->f_screen_dimensions());
-
-	m_intro.start();
 	for (auto& c : m_constituents) { c.update(); }
-	util::ColorUtils::reset();
 
 	m_description = std::make_unique<DescriptionGizmo>(svc, map, sf::Vector2f{}, sf::IntRect{}, sf::FloatRect{{108.f, 108.f}, {350.f, 120.f}}, sf::Vector2f{});
 	m_description->set_text_only(true);
@@ -102,8 +91,8 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 }
 
 void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, SceneContext& context) {
-
-	if (fade_logic(svc, context.transition)) { return; }
+	IDialog::update(svc, map, player, context);
+	if (early_tick_return()) { return; }
 
 	auto& selector = is_buying() ? m_buy_selector : m_sell_selector;
 
@@ -132,11 +121,11 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 			svc.soundboard.flags.menu.set(audio::Menu::shift);
 		}
 		if (svc.input_system.digital(input::DigitalAction::menu_tab_left).triggered) {
-			m_state = is_buying() ? VendorState::sell : VendorState::buy;
+			p_state = is_buying() ? DialogState::sell : DialogState::buy;
 			svc.soundboard.flags.menu.set(audio::Menu::select);
 		}
 		if (svc.input_system.digital(input::DigitalAction::menu_tab_right).triggered) {
-			m_state = is_buying() ? VendorState::sell : VendorState::buy;
+			p_state = is_buying() ? DialogState::sell : DialogState::buy;
 			svc.soundboard.flags.menu.set(audio::Menu::select);
 		}
 		if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {
@@ -202,11 +191,11 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 						}
 						destination_inventory.add_item(svc.data.item, item_lbl);
 						player.give_drop(item::DropType::orb, exchange);
-						balance += exchange;
+						p_balance += exchange;
 						source_inventory.remove_item(item_lbl, 1);
 						NANI_LOG_DEBUG(m_logger, "Removed {} from {} inventory", item_lbl, is_buying() ? "vendor" : "player");
 						svc.soundboard.flags.item.set(audio::Item::vendor_sale);
-						flags.set(VendorDialogStatus::made_sale);
+						p_flags.set(DialogStatus::made_sale);
 
 						m_item_menu = {};
 
@@ -263,22 +252,19 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 }
 
 void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map, LightShader& shader) {
-	if (!is_closing()) { win.draw(m_artwork); }
-	if (is_opening()) { return; }
-	if (m_fade_in.running()) { shader.set_darken(std::floor(m_fade_in.get_normalized() * 4.f)); }
-	if (is_closing()) { shader.set_darken(std::floor(m_outro.get_inverse_normalized() * 4.f)); }
-	win.draw(m_background);
-	if (m_outro.is_complete() && flags.test(VendorDialogStatus::closed)) { return; }
+	IDialog::render(svc, win, player, map, shader);
+	if (early_render_return()) { return; }
+
 	auto nani = player.wardrobe_widget.get_sprite();
 	nani.setPosition(m_constituents[static_cast<int>(VendorConstituentType::nani)].get_window_position() + sf::Vector2f{196.f, 14.f});
 	win.draw(nani);
-	m_vendor_portrait.set_position(m_constituents[static_cast<int>(VendorConstituentType::portrait)].get_window_position() + sf::Vector2f{20.f, 10.f});
-	win.draw(m_vendor_portrait);
+	p_vendor_portrait.set_position(m_constituents[static_cast<int>(VendorConstituentType::portrait)].get_window_position() + sf::Vector2f{20.f, 10.f});
+	win.draw(p_vendor_portrait);
 	for (auto& c : m_constituents) { c.render(win, shader, m_palette); }
 	m_orb_display.render(win, m_constituents[static_cast<int>(VendorConstituentType::nani)].get_window_position() + sf::Vector2f{24.f, 238.f});
 
 	auto& selector = is_buying() ? m_buy_selector : m_sell_selector;
-	selector.render(win, m_selector_sprite.get_sprite(), {0.f, -2.f}, {});
+	selector.render(win, p_selector_sprite.get_sprite(), {0.f, -2.f}, {});
 
 	m_description->write(svc, "---", svc.text.fonts.basic);
 	auto vendor = my_npc->get_vendor();
@@ -316,11 +302,8 @@ void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, p
 	if (m_item_menu) { m_item_menu->render(win); }
 }
 
-void VendorDialog::close() { m_outro.start(); }
-
-void VendorDialog::update_table(player::Player& player, world::Map& map, bool new_dim) {}
-
 void VendorDialog::refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
+	IDialog::refresh(svc, player, map);
 	// initialize item list
 	for (auto& slot : m_vendor_items_list) {
 		slot.id = -1;
@@ -351,31 +334,6 @@ void VendorDialog::refresh(automa::ServiceProvider& svc, player::Player& player,
 	for (auto [i, row] : std::views::enumerate(m_vendor_items_list)) { NANI_LOG_INFO(m_logger, "Row {}: {}", i, row.id); }
 	for (auto [i, row] : std::views::enumerate(m_player_items_list)) { NANI_LOG_INFO(m_logger, "Row {}: {}", i, row); }
 	player.update_wardrobe();
-}
-
-bool VendorDialog::fade_logic(automa::ServiceProvider& svc, graphics::Transition& transition) {
-	m_intro.update();
-	m_outro.update();
-	m_fade_in.update();
-	if (m_intro.is_almost_complete()) {
-		transition.start();
-		flags.set(VendorDialogStatus::intro_done);
-	}
-	if (transition.is(graphics::TransitionState::black) && flags.test(VendorDialogStatus::intro_done)) {
-		m_fade_in.start();
-		flags.reset(VendorDialogStatus::intro_done);
-		transition.end();
-	}
-	if (m_outro.is_almost_complete()) {
-		transition.start();
-		flags.set(VendorDialogStatus::closed);
-	}
-	if (transition.is(graphics::TransitionState::black) && flags.test(VendorDialogStatus::closed)) {
-		flags.reset(VendorDialogStatus::opened);
-		transition.end();
-	}
-	!flags.test(VendorDialogStatus::opened) ? m_background.setFillColor(util::ColorUtils::fade_out(colors::pioneer_black)) : m_background.setFillColor(util::ColorUtils::fade_in(colors::pioneer_black));
-	return is_opening() || is_closing();
 }
 
 VendorConstituent::VendorConstituent(automa::ServiceProvider& svc, std::string_view label, sf::IntRect lookup, int speed, util::InterpolationType type)

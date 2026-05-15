@@ -5,6 +5,8 @@
 #include <fornani/events/InventoryEvent.hpp>
 #include <fornani/graphics/rewards/AbilityRewardSequence.hpp>
 #include <fornani/graphics/rewards/HealthRewardSequence.hpp>
+#include <fornani/gui/dialogs/BuilderDialog.hpp>
+#include <fornani/gui/dialogs/VendorDialog.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Random.hpp>
 
@@ -31,6 +33,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 
 	// gameplay events
 	svc.events.open_vendor_event.attach_to(p_slot, &Dojo::open_vendor, this);
+	svc.events.open_builder_event.attach_to(p_slot, &Dojo::open_builder, this);
 	svc.events.launch_cutscene_event.attach_to(p_slot, &Dojo::launch_cutscene, this);
 	svc.events.add_map_marker_event.attach_to(p_slot, &Dojo::add_map_marker, this);
 	svc.events.health_increase_event.attach_to(p_slot, &Dojo::handle_health_increase, this);
@@ -68,7 +71,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		m_cutscenes.clear();
 	}
 
-	m_loading.is_complete() && !p_vendor_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
+	m_loading.is_complete() && !p_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
 	m_loading.update();
 	if (m_inspect_hint) {
 		m_inspect_hint->update();
@@ -136,7 +139,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			p_context.console.value()->set_nani_sprite(player->wardrobe_widget.get_sprite());
 		}
 	} else if (m_flags.consume(GameplayFlags::console_running)) {
-		auto to_set = p_inventory_window || p_vendor_dialog ? input::ActionSet::Menu : input::ActionSet::Platformer;
+		auto to_set = p_inventory_window || p_dialog ? input::ActionSet::Menu : input::ActionSet::Platformer;
 		svc.input_system.set_action_set(to_set);
 	}
 
@@ -398,7 +401,12 @@ void Dojo::use_item(ServiceProvider& svc, int id) {
 
 void Dojo::open_vendor(ServiceProvider& svc, int id) {
 	m_flags.set(GameplayFlags::open_vendor);
-	m_vendor_id = id;
+	m_dialog_id = id;
+}
+
+void Dojo::open_builder(ServiceProvider& svc, int id) {
+	m_flags.set(GameplayFlags::open_builder);
+	m_dialog_id = id;
 }
 
 void Dojo::launch_cutscene(ServiceProvider& svc, int id) { m_cutscenes.add(id); }
@@ -413,26 +421,32 @@ void Dojo::add_map_marker(ServiceProvider& svc, int room_id, int type, int quest
 
 bool Dojo::check_for_vendor(ServiceProvider& svc) {
 	if (p_context.console) { return false; }
-	if (m_flags.test(GameplayFlags::open_vendor)) {
+	if (m_flags.test(GameplayFlags::open_vendor) || m_flags.test(GameplayFlags::open_builder)) {
 		if (p_context.transition.is(graphics::TransitionState::inactive)) {
 			p_context.transition.start();
-			NANI_LOG_DEBUG(m_logger, "Vendor Started");
+			NANI_LOG_DEBUG(m_logger, "Dialog Started");
 		}
 		if (p_context.transition.is(graphics::TransitionState::black)) {
 			p_context.transition.end();
-			NANI_LOG_DEBUG(m_logger, "Vendor Opened");
-			p_vendor_dialog = std::make_unique<gui::VendorDialog>(svc, *m_map, *player, m_vendor_id);
+			NANI_LOG_DEBUG(m_logger, "Dialog Opened");
+			if (m_flags.test(GameplayFlags::open_vendor)) {
+				p_dialog = std::make_unique<gui::VendorDialog>(svc, *m_map, *player, m_dialog_id);
+				m_flags.reset(GameplayFlags::open_vendor);
+			}
+			if (m_flags.test(GameplayFlags::open_builder)) {
+				p_dialog = std::make_unique<gui::BuilderDialog>(svc, *m_map, *player, m_dialog_id);
+				m_flags.reset(GameplayFlags::open_builder);
+			}
 			svc.input_system.set_action_set(input::ActionSet::Menu);
 			svc.soundboard.flags.console.set(audio::Console::menu_open);
-			m_flags.reset(GameplayFlags::open_vendor);
 		}
 	}
-	if (p_vendor_dialog) {
+	if (p_dialog) {
 		p_context.transition.update(*player);
-		p_vendor_dialog.value()->update(svc, *m_map, *player, p_context);
-		if (!p_vendor_dialog.value()->is_open()) {
-			if (p_vendor_dialog.value()->made_profit()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
-			p_vendor_dialog = {};
+		p_dialog.value()->update(svc, *m_map, *player, p_context);
+		if (!p_dialog.value()->is_open()) {
+			if (p_dialog.value()->made_profit()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
+			p_dialog.reset();
 			svc.input_system.set_action_set(input::ActionSet::Platformer);
 			if (p_gui_shader) { p_gui_shader->set_darken(0.f); }
 		}

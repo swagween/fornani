@@ -19,6 +19,7 @@ struct EventRegistry {
 	LaunchCutsceneEvent launch_cutscene_event{};
 	SetCutsceneProgressionEvent set_cutscene_progression_event{};
 	OpenVendorEvent open_vendor_event{};
+	OpenBuilderEvent open_builder_event{};
 	AddMapMarkerEvent add_map_marker_event{};
 	PlaySongEvent play_song_event{};
 	StartBattleEvent start_battle_event{};

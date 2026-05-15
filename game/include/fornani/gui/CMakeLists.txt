@@ -16,11 +16,11 @@ nani_add_headers(
         Portrait.hpp
         InventorySelector.hpp
         StatusBar.hpp
-        VendorDialog.hpp
         WardrobeWidget.hpp
         Widget.hpp
         WidgetBar.hpp
 )
 add_subdirectory(console)
 add_subdirectory(gizmos)
+add_subdirectory(dialogs)
 add_subdirectory(hud)

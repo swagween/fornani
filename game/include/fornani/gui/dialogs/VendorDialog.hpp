@@ -10,6 +10,7 @@
 #include <fornani/gui/NumberDisplay.hpp>
 #include <fornani/gui/OrbDisplay.hpp>
 #include <fornani/gui/console/Console.hpp>
+#include <fornani/gui/dialogs/IDialog.hpp>
 #include <fornani/gui/gizmos/DescriptionGizmo.hpp>
 #include <fornani/gui/gizmos/InventoryGizmo.hpp>
 #include <fornani/shader/LightShader.hpp>
@@ -31,8 +32,6 @@ class Vendor;
 
 namespace fornani::gui {
 
-enum class VendorDialogStatus { opened, made_sale, closed, intro_done };
-enum class VendorState { buy, sell };
 enum class VendorConstituentType { portrait, wares, description, name, core, selection, nani };
 
 struct VendorItem {
@@ -47,49 +46,27 @@ struct VendorConstituent : public Drawable {
 	void render(sf::RenderWindow& win, LightShader& shader, Palette& palette);
 };
 
-class VendorDialog {
+class VendorDialog final : public IDialog {
   public:
 	VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id);
-	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, SceneContext& context);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map, LightShader& shader);
-	void close();
-	void update_table(player::Player& player, world::Map& map, bool new_dim);
-	void refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
-
-	[[nodiscard]] auto is_open() const -> bool { return flags.test(VendorDialogStatus::opened); }
-	[[nodiscard]] auto is_buying() const -> bool { return m_state == VendorState::buy; }
-	[[nodiscard]] auto is_selling() const -> bool { return m_state == VendorState::sell; }
-	[[nodiscard]] auto made_sale() const -> bool { return flags.test(VendorDialogStatus::made_sale); }
-	[[nodiscard]] auto made_profit() const -> bool { return balance > 0.f; }
-	[[nodiscard]] auto is_opening() const -> bool { return m_intro.running() || flags.test(VendorDialogStatus::intro_done); }
-	[[nodiscard]] auto is_closing() const -> bool { return m_outro.running() || flags.test(VendorDialogStatus::closed); }
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, SceneContext& context) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map, LightShader& shader) override;
+	void refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map) override;
 
   private:
-	bool fade_logic(automa::ServiceProvider& svc, graphics::Transition& transition);
-	VendorState m_state{};
 	InventorySelector m_buy_selector;
 	InventorySelector m_sell_selector;
 	std::optional<MiniMenu> m_item_menu{};
-	util::Cooldown m_intro;
-	util::Cooldown m_fade_in;
-	util::Cooldown m_outro;
-	util::BitFlags<VendorDialogStatus> flags{};
 	std::unique_ptr<DescriptionGizmo> m_description;
-	Drawable m_artwork;
-	Drawable m_selector_sprite;
-	Drawable m_vendor_portrait;
 	OrbDisplay m_orb_display;
-	sf::RectangleShape m_background{};
 	Palette m_palette;
 	MenuTheme m_theme;
 
 	NPC* my_npc;
 
-	int vendor_id{};
 	int npc_id{};
 
 	float sale_price{};
-	float balance{};
 	float m_upcharge{};
 	sf::Vector2f portrait_position{44.f, 18.f};
 	sf::Vector2f bring_in{};

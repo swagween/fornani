@@ -37,6 +37,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 200,
         "dimensions": [
           1,
@@ -53,6 +54,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 202,
         "dimensions": [
           1,
@@ -90,6 +92,7 @@
       80,
       32
     ],
+    "interior": false,
     "metagrid": [
       25,
       12
@@ -106,6 +109,16 @@
     "use_template": true
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": true,
       "reverse_obscuring": false

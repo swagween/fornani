@@ -1,8 +1,8 @@
 
 #pragma once
-#include <limits>
 
 #include <ccmath/ext/clamp.hpp>
+#include <limits>
 
 namespace fornani::util {
 
@@ -29,8 +29,12 @@ class FloatCounter {
   public:
 	FloatCounter(float const interval = default_interval) : m_interval{interval} {}
 	constexpr void reset() { m_value = 0.f; }
-	constexpr void update() { m_value = ccm::ext::clamp(m_value + m_interval, 0, std::numeric_limits<int>::max()); }
-	constexpr void update(float const amount) { m_value = ccm::ext::clamp(m_value + amount, 0, std::numeric_limits<int>::max()); }
+	constexpr void set_cycle_point(float const to) { m_cycle_point = to; }
+	constexpr void update(float amount) noexcept {
+		m_value += amount;
+		if (m_value >= m_cycle_point) { m_value -= m_cycle_point; }
+	}
+	constexpr void update() noexcept { update(m_interval); }
 	constexpr void set(int const value) { m_value = value; }
 	constexpr void cancel() { m_value = -1.f; }
 	[[nodiscard]] auto running() const -> bool { return m_value != 0.f; }
@@ -44,6 +48,7 @@ class FloatCounter {
   private:
 	float m_value{};
 	float m_interval{};
+	float m_cycle_point{std::numeric_limits<float>::max()};
 };
 
 } // namespace fornani::util

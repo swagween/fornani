@@ -2070,6 +2070,23 @@
       "responses": [
         [
           {
+            "codes": [[1, 4]],
+            "contingencies": [
+              {
+                "requirement": 0,
+                "strict": true,
+                "tag": "pioneer_tech"
+              }
+            ],
+            "message": "How can I get more pioneer tech?"
+          },
+          {
+            "codes": [[1, 5]],
+            "message": "I'm curious..."
+          }
+        ],
+        [
+          {
             "codes": [[1, 1]],
             "message": "Where is Ashtown?"
           },
@@ -2131,6 +2148,36 @@
           {
             "codes": [[1, 0]],
             "message": "We've heard nothing about him ever since, and I am beginning to suspect we will never see him again."
+          }
+        ],
+        [
+          {
+            "codes": [[4, 0]],
+            "message": "Well, dear Nani, you've asked the right man! During all my days cooped up in this hideout, I've had a lot of free time to study what the pioneers left behind. As such, I have developed a knack for fixing or repurposing their hardware."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "However, as they are, my gadgets have some loose screws and are prone to disassemble on the first use."
+          },
+          {
+            "codes": [
+              [4, 2],
+              [5, 0]
+            ],
+            "message": "Not exactly ideal, if you ask me!"
+          },
+          {
+            "codes": [
+              [3, 22, 1, 300],
+              [1, 0]
+            ],
+            "message": "In short, I need a screwdriver. Bring me one of those, and we can get building!"
+          }
+        ],
+        [
+          {
+            "codes": [[1, 1]],
+            "message": "What would you like to know?"
           }
         ]
       ]
@@ -2477,6 +2524,39 @@
       "responses": [
         [
           {
+            "codes": [[1, 5]],
+            "contingencies": [
+              {
+                "requirement": 0,
+                "strict": true,
+                "tag": "pioneer_tech"
+              }
+            ],
+            "message": "How can I get more pioneer tech?"
+          },
+          {
+            "codes": [[1, 6]],
+            "contingencies": [
+              {
+                "requirement": 2,
+                "strict": true,
+                "tag": "pioneer_tech"
+              }
+            ],
+            "message": "I have a screwdriver."
+          },
+          {
+            "codes": [[1, 7]],
+            "contingencies": [
+              {
+                "requirement": 3,
+                "strict": true,
+                "tag": "pioneer_tech"
+              }
+            ],
+            "message": "Let's make some pioneer tech!"
+          },
+          {
             "codes": [[1, 1]],
             "message": "I need some clarification on the objective..."
           },
@@ -2572,6 +2652,52 @@
           {
             "codes": [[1, 0]],
             "message": "There's a chance you could find one lying around the junkyards, but it might be a needle in the haystack."
+          }
+        ],
+        [
+          {
+            "codes": [[4, 0]],
+            "message": "Well, dear Nani, you've asked the right man! During all my days cooped up in this hideout, I've had a lot of free time to study what the pioneers left behind. As such, I have developed a knack for fixing or repurposing their hardware."
+          },
+          {
+            "codes": [[5, 1]],
+            "message": "However, as they are, my gadgets have some loose screws and are prone to disassemble on the first use."
+          },
+          {
+            "codes": [
+              [4, 2],
+              [5, 0]
+            ],
+            "message": "Not exactly ideal, if you ask me!"
+          },
+          {
+            "codes": [
+              [3, 22, 1, 300],
+              [1, 0]
+            ],
+            "message": "In short, I need a screwdriver. Bring me one of those, and we can get building!"
+          }
+        ],
+        [
+          {
+            "codes": [
+              [17, 32],
+              [3, 22, 1, 301]
+            ],
+            "message": "Excellent! You're someone who gets things done, eh?"
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Now we can get building!"
+          }
+        ],
+        [
+          {
+            "codes": [
+              [4, 0],
+              [26, 4]
+            ],
+            "message": "Have at it!"
           }
         ]
       ]

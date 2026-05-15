@@ -1,9 +1,9 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/Counter.hpp"
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/Counter.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -21,6 +21,7 @@ class HelpText {
   public:
 	explicit HelpText(automa::ServiceProvider& svc);
 	HelpText(automa::ServiceProvider& svc, std::string start, input::DigitalAction const& code, std::string end = "", int delay_time = 195, bool include_background = false, bool no_blink = false);
+	void update();
 	void render(sf::RenderWindow& win);
 	void set_color(sf::Color color);
 	void set_string(std::string string);
@@ -34,7 +35,7 @@ class HelpText {
   private:
 	util::BitFlags<HelpTextFlags> flags{};
 	util::Cooldown delay{195};
-	util::Counter alpha_counter{};
+	util::FloatCounter alpha_counter{};
 	sf::Text data;
 	std::string marker{};
 	int text_size{16};

@@ -938,9 +938,21 @@
     },
     {
       "folder": "worm",
+      "label": "dorsal_septum.json",
+      "region": "worm",
+      "room_id": 1109
+    },
+    {
+      "folder": "worm",
       "label": "nephridiopore.json",
       "region": "worm",
       "room_id": 1101
+    },
+    {
+      "folder": "worm",
+      "label": "nephrostome.json",
+      "region": "worm",
+      "room_id": 1110
     },
     {
       "folder": "worm",
@@ -971,30 +983,6 @@
       "label": "ventral_vessel.json",
       "region": "worm",
       "room_id": 1107
-    },
-    {
-      "label": "dorsal_septum.json",
-      "minimap": true,
-      "region": "worm",
-      "room_id": 1109
-    },
-    {
-      "folder": "worm",
-      "label": "dorsal_septum.json",
-      "region": "worm",
-      "room_id": 1109
-    },
-    {
-      "label": "nephrostome.json",
-      "minimap": true,
-      "region": "worm",
-      "room_id": 1110
-    },
-    {
-      "folder": "worm",
-      "label": "nephrostome.json",
-      "region": "worm",
-      "room_id": 1110
     }
   ]
 }

@@ -267,11 +267,6 @@
     "ambience": "",
     "background": "woods",
     "biome": "pioneer",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -307,7 +302,8 @@
       "environmental_randomness": true,
       "interior": true,
       "lighting": true,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 300,
     "shader": {

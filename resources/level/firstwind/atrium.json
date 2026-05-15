@@ -344,6 +344,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 102,
         "dimensions": [
           1,
@@ -360,6 +361,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 120,
         "dimensions": [
           1,
@@ -376,6 +378,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 105,
         "dimensions": [
           1,
@@ -392,6 +395,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 106,
         "dimensions": [
           1,
@@ -408,6 +412,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 118,
         "dimensions": [
           1,
@@ -425,6 +430,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 104,
         "dimensions": [
           1,
@@ -441,6 +447,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 111,
         "dimensions": [
           1,
@@ -457,6 +464,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 138,
         "dimensions": [
           1,
@@ -564,11 +572,6 @@
     "ambience": "",
     "background": "night",
     "biome": "firstwind",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -604,7 +607,8 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 103,
     "shader": {
@@ -622,6 +626,16 @@
     }
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": true,
       "reverse_obscuring": true

@@ -41,7 +41,8 @@ enum class MessageCodeType {
 	add_map_marker,
 	set_cutscene_progression,
 	purchase,
-	give_bonus_health
+	give_bonus_health,
+	open_builder
 };
 
 enum class CodeSource { suite, response };

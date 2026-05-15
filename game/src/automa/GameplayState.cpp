@@ -49,7 +49,7 @@ void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		}
 		if (p_pause_window.value()->exit_requested()) {
 			p_pause_window.reset();
-			auto to_set = p_inventory_window || p_vendor_dialog ? input::ActionSet::Menu : input::ActionSet::Platformer;
+			auto to_set = p_inventory_window || p_dialog ? input::ActionSet::Menu : input::ActionSet::Platformer;
 			svc.input_system.set_action_set(to_set);
 		}
 		set_flag(GameplayStateFlags::early_tick_return);
@@ -63,7 +63,7 @@ void GameplayState::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(svc, *player, win); }
 
-	if (p_vendor_dialog && p_gui_shader) { p_vendor_dialog.value()->render(svc, win, *player, *m_map, *p_gui_shader); }
+	if (p_dialog && p_gui_shader) { p_dialog.value()->render(svc, win, *player, *m_map, *p_gui_shader); }
 	if (p_inventory_window && p_gui_shader) { p_inventory_window.value()->render(svc, win, *player, *p_gui_shader); }
 
 	p_context.transition.render(win);

@@ -91,9 +91,9 @@
     ],
     "vendor": {
       "upcharge": 0.2,
-      "common_items": ["clay_statue", "bronze_bracelet"],
-      "uncommon_items": ["red_jeans", "rotary_gizmo", "magnifying_glass", "status_gizmo"],
-      "rare_items": ["sapphire"],
+      "common_items": ["bronze_bracelet", "bronze_bracelet", "soda"],
+      "uncommon_items": ["magnifying_glass", "status_gizmo", "screwdriver"],
+      "rare_items": ["priorite", "red_jeans", "sapphire"],
       "guaranteed_finite_items": ["lantern", "gas_mask"]
     },
     "locations": {
@@ -334,9 +334,9 @@
     ],
     "vendor": {
       "upcharge": 0.25,
-      "common_items": ["clay_statue", "boxing_glove"],
-      "uncommon_items": ["soda", "silver_bracelet", "outfitter_gizmo", "gas_mask"],
-      "rare_items": ["sapphire", "ceremonial_garb", "ceremonial_skirt"],
+      "common_items": ["clay_statue", "soda"],
+      "uncommon_items": ["silver_bracelet", "gas_mask", "boxing_glove"],
+      "rare_items": ["sapphire", "ceremonial_garb", "ceremonial_skirt", "screwdriver"],
       "guaranteed_finite_items": ["lantern"]
     }
   },
