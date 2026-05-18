@@ -30,13 +30,13 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 4200,
         "dimensions": [
           1,
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           9,
@@ -44,17 +44,184 @@
         ],
         "source_id": 4204
       }
+    ],
+    "switch_blocks": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 444455,
+        "position": [
+          24,
+          8
+        ],
+        "type": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 444455,
+        "position": [
+          31,
+          7
+        ],
+        "type": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 555555,
+        "position": [
+          28,
+          9
+        ],
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 555555,
+        "position": [
+          29,
+          9
+        ],
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 555555,
+        "position": [
+          30,
+          9
+        ],
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 666666,
+        "position": [
+          17,
+          7
+        ],
+        "type": 3
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 666666,
+        "position": [
+          19,
+          7
+        ],
+        "type": 3
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 666666,
+        "position": [
+          21,
+          7
+        ],
+        "type": 3
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 666667,
+        "position": [
+          18,
+          7
+        ],
+        "type": 3
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 666667,
+        "position": [
+          20,
+          7
+        ],
+        "type": 3
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 666667,
+        "position": [
+          22,
+          7
+        ],
+        "type": 3
+      }
+    ],
+    "switch_buttons": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 444455,
+        "position": [
+          14,
+          9
+        ],
+        "type": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 555555,
+        "position": [
+          21,
+          11
+        ],
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 666666,
+        "position": [
+          23,
+          11
+        ],
+        "type": 3
+      }
     ]
   },
   "meta": {
     "ambience": "",
     "background": "",
     "biome": "kariba",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -74,6 +241,7 @@
       48,
       16
     ],
+    "interior": false,
     "metagrid": [
       -7,
       2
@@ -87,8 +255,10 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": false,
       "lighting": true,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 4204,
     "shader": {
@@ -98,6 +268,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false
@@ -3501,16 +3681,16 @@
         0,
         0,
         0,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         1,
         1,
         1,
@@ -3549,15 +3729,15 @@
         0,
         0,
         0,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0,
         0,
         0,

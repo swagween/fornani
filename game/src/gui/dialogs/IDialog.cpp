@@ -9,17 +9,21 @@
 namespace fornani::gui {
 
 IDialog::IDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id, std::string const& type)
-	: m_vendor_id{vendor_id}, m_intro{300}, m_fade_in{120}, m_outro{100}, p_artwork{svc, type + "_" + std::string{*svc.data.get_npc_label_from_id(vendor_id)}}, p_vendor_portrait{svc, "character_portraits"},
-	  p_selector_sprite{svc, "vendor_gizmo"}, m_helptext{} {
+	: m_vendor_id{vendor_id}, m_intro{300}, m_fade_in{120}, m_outro{100}, p_vendor_portrait{svc, "character_portraits"}, p_selector_sprite{svc, "vendor_gizmo"} {
 	m_intro.start();
-	p_artwork.center();
-	p_artwork.set_position(svc.window->f_center_screen());
 	p_vendor_portrait.set_texture_rect(sf::IntRect{{vendor_id * 64, 0}, {64, 128}});
 	// background color
 	m_background.setFillColor(colors::pioneer_black);
 	m_background.setSize(svc.window->f_screen_dimensions());
 	p_flags.set(DialogStatus::opened);
 	util::ColorUtils::reset();
+
+	auto npc = svc.data.get_npc_label_from_id(vendor_id);
+	if (npc) {
+		p_artwork.emplace(svc, type + "_" + std::string{*npc});
+		p_artwork->center();
+		p_artwork->set_position(svc.window->f_center_screen());
+	}
 
 	m_helptext.emplace(svc, svc.data.gui_text["dialog"]["enter_start"].as_string(), fornani::input::DigitalAction::menu_select, svc.data.gui_text["dialog"]["enter_end"].as_string(), 195, true);
 }
@@ -30,7 +34,9 @@ void IDialog::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 }
 
 void IDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map, LightShader& shader) {
-	if (!is_closing()) { win.draw(p_artwork); }
+	if (!is_closing()) {
+		if (p_artwork) { win.draw(*p_artwork); }
+	}
 	if (is_opening() || p_flags.test(DialogStatus::waiting_to_enter)) {
 		if (m_intro.is_complete() && m_helptext) { m_helptext->render(win); }
 		m_flags.set(IDialogFlags::early_render_return);
@@ -71,6 +77,7 @@ bool IDialog::fade_logic(automa::ServiceProvider& svc, graphics::Transition& tra
 		m_fade_in.start();
 		p_flags.reset(DialogStatus::intro_done);
 		transition.end();
+		m_helptext.reset();
 	}
 	if (m_outro.is_almost_complete()) {
 		transition.start();

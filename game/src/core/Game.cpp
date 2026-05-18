@@ -251,6 +251,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					}
 					ImGui::Separator();
 					ImGui::Text("Camera");
+					ImGui::Text("Target Position: (%.2f, %.2f)", services.camera_controller.get_position().x, services.camera_controller.get_position().y);
+					ImGui::Text("Actual Position: (%.2f, %.2f)", player.get_actual_camera_position().x, player.get_actual_camera_position().y);
 					if (ImGui::Button("Toggle Freedom")) { services.camera_controller.is_free() ? services.camera_controller.constrain() : services.camera_controller.free(); }
 					ImGui::Separator();
 					ImGui::Text("Ticker");

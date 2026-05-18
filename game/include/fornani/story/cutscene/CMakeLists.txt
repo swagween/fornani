@@ -7,4 +7,5 @@ nani_add_headers(
         PioneerBaseDebrief.hpp
         MainIntro.hpp
         ReturnToBase.hpp
+        SwitchBlockPan.hpp
 )

@@ -15,13 +15,13 @@ struct ServiceProvider;
 
 namespace fornani::audio {
 
-enum class SoundType { gui, gameplay };
+enum class SoundBus { gameplay, gui };
 
 constexpr auto default_min_distance_v = 512.f;
 constexpr auto default_max_distance_v = 2048.f;
 
 struct SoundProperties {
-	SoundType type{};
+	SoundBus bus{};
 	float volume{1.f};
 	float pitch_offset{};
 	float min_distance{default_min_distance_v};
@@ -43,6 +43,7 @@ class Sound {
 	[[nodiscard]] auto is_playing() const -> bool { return m_sound->is_playing(); }
 	[[nodiscard]] auto is_looping() const -> bool { return m_sound->is_looping(); }
 	[[nodiscard]] auto is_running() const -> bool;
+	[[nodiscard]] auto get_bus() const -> SoundBus { return m_properties.bus; }
 
   private:
 	float compute_attenuation(float distance, float min_distance, float max_distance);

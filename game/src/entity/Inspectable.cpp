@@ -116,6 +116,7 @@ void Inspectable::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_
 	if (svc.data.inspectable_is_destroyed(p_stable_id.get())) { flags.set(InspectableFlags::destroy); }
 	if (destroyed()) { return; }
 	if (spawn_denied()) { return; }
+	if (player.has_flag_set(player::PlayerFlags::boss_fight)) { return; }
 
 	// check for quest-based alternates
 	/*auto quest_status = svc.quest.get_progression(quest::QuestType::inspectable, native_id);

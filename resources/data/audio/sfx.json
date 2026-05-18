@@ -20,6 +20,30 @@
     "pitch_offset": 0.0
   },
   {
+    "label": "load_game",
+    "bus": "gui",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "menu_shift",
+    "bus": "gui",
+    "volume": 0.6,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "pioneer_pap",
+    "bus": "gui",
+    "volume": 0.4,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "backward_switch",
+    "bus": "gui",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
     "label": "tank_sip",
     "bus": "gameplay",
     "volume": 1.0,

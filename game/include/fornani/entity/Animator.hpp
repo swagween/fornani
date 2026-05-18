@@ -15,7 +15,11 @@ class Animator : public Entity {
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;
 	void expose() override;
+	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
+	void render(sf::RenderTexture& tex, sf::Vector2f cam);
+
+	[[nodiscard]] auto is_foreground() const -> bool { return m_foreground; }
 
   private:
 	std::string m_label{};

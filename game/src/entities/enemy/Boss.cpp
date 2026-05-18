@@ -1,5 +1,6 @@
 
 #include <fornani/entities/enemy/Boss.hpp>
+#include <fornani/entities/player/Player.hpp>
 #include <fornani/events/GameplayEvent.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 
@@ -11,6 +12,7 @@ Boss::Boss(automa::ServiceProvider& svc, world::Map& map, std::string_view label
 }
 
 void Boss::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	player.set_flag(player::PlayerFlags::boss_fight, battle_mode());
 	has_flag_set(BossFlags::battle_mode) ? flags.state.reset(StateFlags::pre_battle_invincibility) : flags.state.set(StateFlags::pre_battle_invincibility);
 	Enemy::update(svc, map, player);
 	p_health_bar.update(health.get_normalized());

@@ -19,6 +19,7 @@ Walljump::Walljump(automa::ServiceProvider& svc, world::Map& map, shape::Collide
 		collider.physics.forced_momentum.x = -direction.as_float() * 4.f;
 		svc.ticker.freeze_frame(2, 0.45f);
 		map.effects.push_back(entity::Effect(svc, "small_flash", collider.get_center() + sf::Vector2f{8.f * m_direction.as_float(), 0.f}, {}));
+		m_vertical_multiplier = -13.f;
 	} else {
 		map.effects.push_back(entity::Effect(svc, "walljump", collider.get_center() + sf::Vector2f{8.f * m_direction.as_float(), 0.f}, {}));
 	}

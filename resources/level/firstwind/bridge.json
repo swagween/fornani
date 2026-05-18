@@ -322,6 +322,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 103,
         "dimensions": [
           1,
@@ -351,14 +352,9 @@
     ]
   },
   "meta": {
-    "ambience": "firstwind",
+    "ambience": "",
     "background": "night",
     "biome": "firstwind",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -394,7 +390,8 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 120,
     "shader": {
@@ -412,6 +409,17 @@
     }
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": true,
       "reverse_obscuring": false

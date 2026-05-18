@@ -19,13 +19,25 @@ MapInfoGizmo::MapInfoGizmo(automa::ServiceProvider& svc, int room_id, sf::Vector
 	m_sprites.panel.setTextureRect(sf::IntRect{{0, 110}, {219, 41}});
 	m_text.biome.setFillColor(colors::pioneer_red);
 	m_text.biome.setCharacterSize(svc.text.fonts.basic.glyph_size);
-	auto data = svc.data.get_map_data_from_id(room_id);
-	if (data) { m_text.biome.setString(data->get().biome_label); }
+	current_room = room_id;
+	auto data = svc.data.get_map_data_from_id(current_room);
+	if (data) {
+		if (svc.data.is_room_discovered(current_room)) {
+			m_text.biome.setString(data->get().biome_label);
+		} else {
+			m_text.biome.setString("???");
+		}
+	}
 	m_text.room.setFillColor(colors::pioneer_red);
 	m_text.room.setCharacterSize(svc.text.fonts.basic.glyph_size);
-	if (data) { m_text.room.setString(data->get().room_label); }
+	if (data) {
+		if (svc.data.is_room_discovered(current_room)) {
+			m_text.room.setString(data->get().room_label);
+		} else {
+			m_text.room.setString("???");
+		}
+	}
 	m_clip_path.set_section("open");
-	current_room = room_id;
 }
 
 void MapInfoGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
@@ -35,8 +47,20 @@ void MapInfoGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player:
 	m_clip_path.update();
 	if (m_clip_path.get_section() == 1 && m_clip_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::drag); }
 	auto data = svc.data.get_map_data_from_id(current_room);
-	if (data) { m_text.biome.setString(data->get().biome_label); }
-	if (data) { m_text.room.setString(data->get().room_label); }
+	if (data) {
+		if (svc.data.is_room_discovered(current_room)) {
+			m_text.biome.setString(data->get().biome_label);
+		} else {
+			m_text.biome.setString("???");
+		}
+	}
+	if (data) {
+		if (svc.data.is_room_discovered(current_room)) {
+			m_text.room.setString(data->get().room_label);
+		} else {
+			m_text.room.setString("???");
+		}
+	}
 }
 
 void MapInfoGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {

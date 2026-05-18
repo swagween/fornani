@@ -2081,6 +2081,28 @@
             "message": "How can I get more pioneer tech?"
           },
           {
+            "codes": [[1, 6]],
+            "contingencies": [
+              {
+                "requirement": 2,
+                "strict": true,
+                "tag": "pioneer_tech"
+              }
+            ],
+            "message": "I have a screwdriver."
+          },
+          {
+            "codes": [[1, 7]],
+            "contingencies": [
+              {
+                "requirement": 3,
+                "strict": true,
+                "tag": "pioneer_tech"
+              }
+            ],
+            "message": "Let's make some pioneer tech!"
+          },
+          {
             "codes": [[1, 5]],
             "message": "I'm curious..."
           }
@@ -2178,6 +2200,28 @@
           {
             "codes": [[1, 1]],
             "message": "What would you like to know?"
+          }
+        ],
+        [
+          {
+            "codes": [
+              [17, 32],
+              [3, 22, 1, 301]
+            ],
+            "message": "Excellent! You're someone who gets things done, eh?"
+          },
+          {
+            "codes": [[1, 0]],
+            "message": "Now we can get building!"
+          }
+        ],
+        [
+          {
+            "codes": [
+              [4, 0],
+              [26, 4]
+            ],
+            "message": "Have at it!"
           }
         ]
       ]

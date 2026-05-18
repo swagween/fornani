@@ -13,7 +13,7 @@ Incinerite::Incinerite(automa::ServiceProvider& svc, Map& map, sf::Vector2f posi
 	: Animatable(svc, "incinerite", {16, 16}), m_chunk_id{chunk_id}, health{40.f}, hit_energy{2.99f}, m_map{&map}, m_collider{map, {32.f, 32.f}} {
 	m_collider.get()->physics.position = position;
 	set_parameters({0, 3, 24, -1});
-	push_animation("default", {0, 1, 24, -1});
+	push_and_set_animation("default", {0, 1, 24, -1});
 	push_animation("shine", {1, 6, 24, 0});
 	m_collider.get()->set_trait(shape::ColliderTrait::block);
 	m_collider.get()->set_attribute(shape::ColliderAttributes::fixed);

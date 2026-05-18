@@ -308,6 +308,7 @@ void Metagrid::render(sf::RenderWindow& win) {
 		ImGui::Separator();
 		ImGui::Text("ID: %i", m_highlighted_room.value()->id.get());
 		ImGui::Text("Biome: %s", m_highlighted_room.value()->get_biome().c_str());
+		ImGui::Text("Music: %s", m_highlighted_room.value()->get_music().c_str());
 		ImGui::Text("Interior: %s", m_highlighted_room.value()->has_flag_set(RoomFlags::interior) ? "Yes" : "No");
 		if (m_highlighted_room.value()->get_data().metadata["meta"]["weather"]) {
 			ImGui::SeparatorText("Weather");

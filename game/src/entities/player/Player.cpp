@@ -726,22 +726,20 @@ void Player::update_direction() {
 }
 
 void Player::update_weapon(world::Map& map) {
-	auto early_return = false;
-	if (is_dead()) { early_return = true; }
-	if (is_busy()) { early_return = true; }
-	if (controller.restricted()) { early_return = true; }
-	if (m_animation_machine.is_state(AnimState::sleep) || m_animation_machine.is_state(AnimState::unconscious)) { early_return = true; }
-	if (has_flag_set(PlayerFlags::console_open)) { early_return = true; }
+	auto busy = false;
+	if (is_dead()) { busy = true; }
+	if (is_busy()) { busy = true; }
+	if (controller.restricted()) { busy = true; }
+	if (m_animation_machine.is_state(AnimState::sleep) || m_animation_machine.is_state(AnimState::unconscious)) { busy = true; }
+	if (has_flag_set(PlayerFlags::console_open)) { busy = true; }
 	if (has_flag_set(PlayerFlags::holding_item)) {
 		if (fire_weapon() && m_currently_held_item) { use_item(); }
-		early_return = true;
+		busy = true;
 	}
-	if (early_return) {
+	if (busy) {
 		equipped_weapon().set_flag(arms::WeaponFlags::firing, false);
 		equipped_weapon().set_flag(arms::WeaponFlags::charging, false);
-		return;
-	}
-	if (fire_weapon()) {
+	} else if (fire_weapon()) {
 		m_services->stats.player.bullets_fired.update();
 		sf::Vector2f tweak = controller.facing_left() ? sf::Vector2f{0.f, 0.f} : sf::Vector2f{-3.f, 0.f};
 		if (equipped_weapon().multishot()) {
@@ -762,9 +760,11 @@ void Player::update_weapon(world::Map& map) {
 		weapon->set_firing_direction(controller.direction);
 		if (controller.is_wallsliding() && !controller.direction.up_or_down()) { weapon->flip_firing_direction(); }
 	}
-	equipped_weapon().set_flag(arms::WeaponFlags::firing, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
-	equipped_weapon().set_flag(arms::WeaponFlags::charging, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
-	equipped_weapon().set_flag(arms::WeaponFlags::released, controller.has_flag_set(PlayerControllerFlags::released_weapon));
+	if (!busy) {
+		equipped_weapon().set_flag(arms::WeaponFlags::firing, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
+		equipped_weapon().set_flag(arms::WeaponFlags::charging, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
+		equipped_weapon().set_flag(arms::WeaponFlags::released, controller.has_flag_set(PlayerControllerFlags::released_weapon));
+	}
 }
 
 void Player::update_weapon_simple() {
@@ -1088,6 +1088,7 @@ void Player::handle_item_logic() {
 	has_item_equipped("hoarders_trinket") ? health.set_invincibility(default_invincibility_time_v * 1.3f) : health.set_invincibility(default_invincibility_time_v);
 	if (arsenal && hotbar) { has_item_equipped("soda") ? equipped_weapon().set_reload_multiplier(0.85f) : equipped_weapon().set_reload_multiplier(1.f); }
 	if (has_item("soda")) { m_services->quest_table.set_quest_progression("carl_soda", 1, QuestRequirementType::loose); }
+	if (has_item("screwdriver")) { m_services->quest_table.set_quest_progression("pioneer_tech", 2, QuestRequirementType::loose); }
 	auto has_bonus_health = health.has_bonus() ? 1 : 0;
 	m_services->quest_table.set_quest_progression("bonus_health", has_bonus_health, QuestRequirementType::strict);
 	if (has_item_equipped("gas_mask")) {

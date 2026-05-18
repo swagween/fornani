@@ -8,7 +8,7 @@ namespace fornani::automa {
 
 constexpr auto num_files_v = 3;
 
-FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "file") {
+FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "file"), switched{20} {
 	m_parent_menu = MenuType::play;
 	current_selection = util::Circuit(num_files_v);
 	hud.set_position({(svc.window->f_screen_dimensions().x / 2.f) - 140.f, 420.f}); // display hud preview for each file in the center of the screen
@@ -20,6 +20,7 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx
 	player.hurt_cooldown.cancel();
 
 	loading.start(4);
+	switched.start();
 	refresh(svc);
 	player.force_animation(player::AnimState::run, "run", [](player::PlayerAnimation& anim) { return anim.update_run(); });
 	player.set_direction(Direction{UND::neutral, LNR::left});
@@ -27,18 +28,16 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx
 
 void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	m_input_authorized = !m_file_select_menu && !p_context.console;
+	if (switched.is_almost_complete()) { svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get()); }
 	MenuState::tick_update(svc, engine);
 	if (!p_context.console) {
 		if (m_file_select_menu) {
 			m_file_select_menu->handle_inputs(svc.input_system, svc.soundboard);
 		} else {
-			if (svc.input_system.menu_move(input::MoveDirection::down) || svc.input_system.menu_move(input::MoveDirection::up)) { svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get()); }
+			if (svc.input_system.menu_move(input::MoveDirection::down) || svc.input_system.menu_move(input::MoveDirection::up)) { switched.start(); }
 		}
 		if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {
-			if (m_file_select_menu) {
-				m_file_select_menu.reset();
-				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-			}
+			if (m_file_select_menu) { m_file_select_menu.reset(); }
 		}
 		if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
 			if (m_file_select_menu) {
@@ -48,7 +47,6 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 					svc.state_controller.actions.set(Actions::trigger);
 					svc.state_controller.actions.set(Actions::save_loaded);
 					svc.soundboard.flags.menu.set(audio::Menu::select);
-					svc.soundboard.flags.world.set(audio::World::load);
 					break;
 				case 1:
 					svc.state_controller.actions.set(automa::Actions::print_stats);
@@ -89,6 +87,7 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	hud.update(svc, *player);
 
 	loading.update();
+	switched.update();
 
 	player->controller.clean();
 	player->flags.triggers = {};

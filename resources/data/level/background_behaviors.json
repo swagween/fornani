@@ -176,6 +176,34 @@
       }
     ]
   },
+  "overcast_rain": {
+    "dimensions": [960, 270],
+    "lock": {
+      "vertical": true
+    },
+    "layers": [
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.0
+      },
+      {
+        "scroll_speed": -0.48,
+        "parallax": 0.01
+      },
+      {
+        "scroll_speed": -0.8,
+        "parallax": 0.02
+      },
+      {
+        "scroll_speed": -1.6,
+        "parallax": 0.04
+      },
+      {
+        "scroll_speed": -2.9,
+        "parallax": 0.08
+      }
+    ]
+  },
   "dusk": {
     "dimensions": [960, 256],
     "lock": {

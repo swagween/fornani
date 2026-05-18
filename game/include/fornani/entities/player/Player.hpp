@@ -121,7 +121,8 @@ enum class PlayerFlags {
 	disable_abilities,
 	holding_item,
 	drank,
-	failed_to_drink
+	failed_to_drink,
+	boss_fight
 };
 enum class Triggers { hurt };
 
@@ -223,6 +224,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto firing_weapon() -> bool { return controller.shot(); }
 	[[nodiscard]] auto get_piggyback_socket() const -> sf::Vector2f { return m_piggyback_socket; }
 	[[nodiscard]] auto get_camera_position() const -> sf::Vector2f { return m_camera.camera.get_position(); }
+	[[nodiscard]] auto get_actual_camera_position() const -> sf::Vector2f { return m_camera.camera.get_actual_position(); }
+	[[nodiscard]] auto get_camera_center() const -> sf::Vector2f { return m_camera.camera.get_center(); }
 	[[nodiscard]] auto get_lantern_position() const -> sf::Vector2f { return m_lighting.physics.position; }
 	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2f { return collider.value().get().get_reference().get_center() + m_camera.target_point; }
 	[[nodiscard]] auto get_facing_scale() const -> sf::Vector2f { return controller.facing_left() ? sf::Vector2f{-1.f, 1.f} : sf::Vector2f{1.f, 1.f}; }

@@ -9,4 +9,5 @@ nani_add_sources(
         NightsideStation.cpp
         NightsideWall.cpp
         ReturnToBase.cpp
+        SwitchBlockPan.cpp
 )

@@ -36,6 +36,7 @@ struct ActiveSound {
 	sf::Vector2f position;
 	bool looping;
 	bool touched_this_tick;
+	bool delete_me;
 };
 
 enum class SoundboardState { on, off };
@@ -150,7 +151,7 @@ class Soundboard {
   public:
 	Soundboard(automa::ServiceProvider& svc, capo::IEngine& engine);
 	void play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc, int echo_count = 0, int echo_rate = 1);
-	void clear_sounds();
+	void clear_sounds(SoundBus bus);
 	void turn_on() { status = SoundboardState::on; }
 	void turn_off() { status = SoundboardState::off; }
 	void play_step(int tile_value, int style_id, bool land = false);

@@ -111,6 +111,13 @@
         {
           "interval": 1,
           "distributions": [
+            { "room": 212, "weight": 0.9 },
+            { "room": 230, "weight": 0.1 }
+          ]
+        },
+        {
+          "interval": 1,
+          "distributions": [
             { "room": 212, "weight": 0.6 },
             { "room": 230, "weight": 0.1 },
             { "room": 400, "weight": 0.2 },

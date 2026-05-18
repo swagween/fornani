@@ -33,6 +33,8 @@ class Camera {
 
 	[[nodiscard]] auto get_observed_velocity() const -> sf::Vector2f { return m_physics.apparent_velocity(); }
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_final_position; }
+	[[nodiscard]] auto get_actual_position() const -> sf::Vector2f { return m_physics.position; }
+	[[nodiscard]] auto get_center() const -> sf::Vector2f { return m_physics.position + m_view.getCenter(); }
 	[[nodiscard]] auto within_frame(sf::Vector2f point) const -> bool { return m_bounds.contains(point); }
 
   private:

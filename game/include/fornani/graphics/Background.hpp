@@ -14,7 +14,7 @@ struct ServiceProvider;
 
 namespace fornani::graphics {
 
-enum class BackgroundAttributes { vertical_lock, horizontal_lock };
+enum class BackgroundAttributes { vertical_lock, horizontal_lock, no_draw };
 
 struct BackgroundLayer {
 	int render_layer{};

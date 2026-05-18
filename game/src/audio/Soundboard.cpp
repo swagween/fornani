@@ -377,7 +377,12 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	npc_flags = {};
 }
 
-void Soundboard::clear_sounds() { sound_pool.clear(); }
+void Soundboard::clear_sounds(SoundBus bus) {
+	for (auto& sound : sound_pool) {
+		if (sound.sound.get_bus() == bus) { sound.delete_me = true; }
+	}
+	std::erase_if(sound_pool, [](auto const& s) { return s.delete_me; });
+}
 
 void Soundboard::play_sound(std::string_view label) { play_sound(label, m_listener.position); }
 

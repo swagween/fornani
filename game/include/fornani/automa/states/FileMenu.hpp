@@ -18,6 +18,7 @@ class FileMenu final : public MenuState {
 
   private:
 	util::Cooldown loading{};
+	util::Cooldown switched;
 	std::optional<gui::MiniMenu> m_file_select_menu{};
 };
 

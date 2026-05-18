@@ -103,22 +103,22 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 		if (controller.menu_move(input::MoveDirection::up)) {
 			m_description->flush();
 			if (selector.move_direction({0, -1}).up()) {}
-			svc.soundboard.flags.menu.set(audio::Menu::shift);
+			svc.soundboard.play_sound("menu_shift");
 		}
 		if (controller.menu_move(input::MoveDirection::down)) {
 			m_description->flush();
 			if (selector.move_direction({0, 1}).down()) {}
-			svc.soundboard.flags.menu.set(audio::Menu::shift);
+			svc.soundboard.play_sound("menu_shift");
 		}
 		if (controller.menu_move(input::MoveDirection::left)) {
 			m_description->flush();
 			if (selector.move_direction({-1, 0}).left()) {}
-			svc.soundboard.flags.menu.set(audio::Menu::shift);
+			svc.soundboard.play_sound("menu_shift");
 		}
 		if (controller.menu_move(input::MoveDirection::right)) {
 			m_description->flush();
 			if (selector.move_direction({1, 0}).right()) {}
-			svc.soundboard.flags.menu.set(audio::Menu::shift);
+			svc.soundboard.play_sound("menu_shift");
 		}
 		if (svc.input_system.digital(input::DigitalAction::menu_tab_left).triggered) {
 			p_state = is_buying() ? DialogState::sell : DialogState::buy;

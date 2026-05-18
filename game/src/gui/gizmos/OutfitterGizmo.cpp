@@ -114,25 +114,25 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	m_wires.render(svc, win, cam);
 	if (m_description) { m_description->render(svc, win, player, shader, palette, cam); }
 
-	debug();
+	// debug();
 }
 
 bool OutfitterGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
 	if (controller.menu_move(input::MoveDirection::up)) {
 		m_selector.move({0, -1});
-		soundboard.flags.menu.set(audio::Menu::shift);
+		soundboard.play_sound("menu_shift");
 	}
 	if (controller.menu_move(input::MoveDirection::down)) {
 		m_selector.move({0, 1});
-		soundboard.flags.menu.set(audio::Menu::shift);
+		soundboard.play_sound("menu_shift");
 	}
 	if (controller.menu_move(input::MoveDirection::left)) {
 		m_selector.move({-1, 0});
-		soundboard.flags.menu.set(audio::Menu::shift);
+		soundboard.play_sound("menu_shift");
 	}
 	if (controller.menu_move(input::MoveDirection::right)) {
 		m_selector.move({1, 0});
-		soundboard.flags.menu.set(audio::Menu::shift);
+		soundboard.play_sound("menu_shift");
 	}
 	if (controller.digital(input::DigitalAction::menu_select).triggered) { m_change_outfit = true; }
 	return Gizmo::handle_inputs(controller, soundboard);

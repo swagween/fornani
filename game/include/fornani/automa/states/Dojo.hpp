@@ -4,6 +4,7 @@
 #include <fornani/automa/GameplayState.hpp>
 #include <fornani/events/Subscription.hpp>
 #include <fornani/shader/LightShader.hpp>
+#include <fornani/story/CutsceneCatalog.hpp>
 #include <fornani/systems/Register.hpp>
 #include <fornani/world/Camera.hpp>
 #include <memory>
@@ -34,6 +35,7 @@ class Dojo final : public GameplayState {
 	void open_vendor(ServiceProvider& svc, int id);
 	void open_builder(ServiceProvider& svc, int id);
 	void launch_cutscene(ServiceProvider& svc, int id);
+	void press_permanent_switch(ServiceProvider& svc, int id);
 	void add_map_marker(ServiceProvider& svc, int room_id, int type, int questline);
 	bool check_for_vendor(ServiceProvider& svc);
 	void read_item(int id);
@@ -51,7 +53,7 @@ class Dojo final : public GameplayState {
 	std::string m_item_tag{};
 
 	std::unordered_map<int, std::string> m_map_markers{};
-	Register<int> m_cutscenes{};
+	Register<CutsceneSpec> m_cutscenes{};
 
 	util::Cooldown m_enter_room;
 	util::Cooldown m_loading;

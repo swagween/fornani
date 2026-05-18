@@ -19,7 +19,6 @@
 #include <fornani\entities\enemy\Enemy.hpp>
 #include <fornani\entities\enemy\EnemyRegistry.hpp>
 #include <fornani\entities\player\PlayerController.hpp>
-#include <fornani\entities\world\Animator.hpp>
 #include <fornani\entities\world\Bed.hpp>
 #include <fornani\entities\world\Chest.hpp>
 #include <fornani\entities\world\Explosion.hpp>
@@ -93,9 +92,6 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 	svc.current_room = room_number;
 
 	unserialize(svc, room_number);
-
-	auto u_dim = sf::Vector2u{real_dimensions};
-	if (!m_entity_texture.resize(u_dim)) {}
 
 	auto it = std::find_if(svc.data.map_jsons.begin(), svc.data.map_jsons.end(), [room_number](auto const& r) { return r.id == room_number; });
 	if (it == svc.data.map_jsons.end()) { return; }
@@ -171,12 +167,12 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 		chests.back()->set_position_from_scaled(pos);
 	}
 
-	for (auto& entry : entities["animators"].as_array()) {
+	/*for (auto& entry : entities["animators"].as_array()) {
 		sf::Vector2i scaled_pos{};
 		scaled_pos.x = entry["position"][0].as<int>();
 		scaled_pos.y = entry["position"][1].as<int>();
 		animators.push_back(entity::Animator(svc, entry["label"].as_string(), entry["id"].as<int>(), scaled_pos, entry["foreground"].as_bool()));
-	}
+	}*/
 	for (auto& entry : entities["beds"].as_array()) {
 		sf::Vector2f pos{};
 		pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
@@ -209,6 +205,9 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 		if (svc.data.inspectable_is_destroyed(inspectables.back().get_stable_id())) { inspectables.back().destroy(); }
 	}*/
 
+	if (m_entities) {
+		for (auto [k, i] : std::views::enumerate(get_entities<Inspectable>())) { i->set_index(k); }
+	}
 	for (auto& entry : entities["destructibles"].as_array()) { destructibles.push_back(std::make_unique<Destructible>(svc, *this, entry, m_biome.get_id())); }
 
 	for (auto& entry : entities["enemies"].as_array()) {
@@ -370,6 +369,11 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 	m_attributes.border_color = Color{svc.data.biomes["properties"][m_biome.get_label()]["black"]};
 	if (entities.is_object()) { m_entities = EntitySet(svc, *this, svc.finder, entities, m_metadata.room); }
 
+	auto u_dim = sf::Vector2u{real_dimensions};
+	if (!m_entity_texture.resize(u_dim)) { NANI_LOG_WARN(m_logger, "Failed to resize entity texture!"); }
+	if (!m_static_entity_texture.resize(u_dim)) { NANI_LOG_WARN(m_logger, "Failed to resize static entity texture!"); }
+	m_static_entity_texture.clear(colors::transparent);
+
 	generate_collidable_layer(live);
 }
 
@@ -392,14 +396,6 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 					spawn_effect(svc, m_weather_specs->effect, pos);
 				}
 			}
-		}
-	}
-
-	// biome effects (this sucks)
-	if (get_style_id() == 7 && !is_interior()) {
-		if (svc.ticker.every_x_ticks(60)) {
-			auto pos = random::random_vector_float({}, real_dimensions);
-			spawn_effect(svc, "toxic_gas", pos);
 		}
 	}
 
@@ -519,7 +515,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& chest : chests) { chest->update(svc, *this, context.console, *player); }
 	// for (auto& inspectable : inspectables) { inspectable.update(svc, *this, context, *player); }
-	for (auto& animator : animators) { animator.update(); }
+	// for (auto& animator : animators) { animator.update(); }
 	for (auto& effect : effects) { effect.update(); }
 	for (auto& atm : atmosphere) { atm.update(svc, *this, *player); }
 	for (auto& spawner : spawners) { spawner.update(svc, *this); }
@@ -563,11 +559,14 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 		// TODO: uncomment below once all entities have been refactored!
 		// for (auto& entity : m_entities.value().variables.entities) { entity->render(win, cam, 1.0); }
 		for (auto p : get_entities<Portal>()) {
-			if (p->has_custom_animation()) {
+			if (p->has_custom_animation() || has_property(MapProperties::lighting)) {
 				p->render(svc, m_entity_texture, cam);
 			} else {
 				p->render(win, cam, 1.f);
 			}
+		}
+		for (auto a : get_entities<Animator>()) {
+			if (!a->is_foreground()) { a->render(m_entity_texture, cam); }
 		}
 		for (auto s : get_entities<SavePoint>()) { s->render(win, cam, 1.f); }
 		if (svc.greyblock_mode()) {
@@ -600,7 +599,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
 	for (auto& emitter : active_emitters) { emitter->render(svc, win, cam); }
-	for (auto& plat : platforms) { plat->render(svc, m_entity_texture, cam); }
+	for (auto& plat : platforms) { has_property(MapProperties::lighting) ? plat->render(svc, m_entity_texture, cam) : plat->render(svc, win, cam); }
 	for (auto& breakable : breakables) { breakable->render(svc, win, cam); }
 	for (auto& incinerite : incinerite_blocks) { incinerite->render(svc, win, cam); }
 	for (auto& pushable : pushables) { pushable->render(svc, win, cam); }
@@ -609,7 +608,18 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
 	for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
 	for (auto& exp : m_explosions) { exp.render(svc, win, cam); }
-	for (auto& spike : spikes) { spike.render(svc, win, shader, m_palette, cam); }
+	if (!has_property(MapProperties::lighting)) {
+		for (auto& spike : spikes) { spike.render(svc, win, shader, m_palette, cam); }
+	}
+
+	if (svc.greyblock_mode()) {
+		sf::CircleShape c{4.f};
+		c.setFillColor(colors::orange);
+		for (auto& point : m_surface_points) {
+			c.setPosition(point.position - cam);
+			win.draw(c);
+		}
+	}
 
 	if (m_entities) {
 		for (auto w : get_entities<Water>()) { w->render(win, cam, 1.0); }
@@ -656,10 +666,14 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	}
 
 	player->render_indicators(svc, win, cam);
-
-	for (auto& animator : animators) {
-		if (animator.is_foreground()) { animator.render(win, cam); }
+	if (m_entities) {
+		for (auto a : get_entities<Animator>()) {
+			if (a->is_foreground()) { a->render(m_entity_texture, cam); }
+		}
 	}
+	/*for (auto& animator : animators) {
+		if (animator.is_foreground()) { animator.render(win, cam); }
+	}*/
 
 	// for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
 
@@ -721,9 +735,9 @@ void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		box.setSize(svc.window->f_screen_dimensions());
 		win.draw(box);
 	}
-	for (auto& animator : animators) {
+	/*for (auto& animator : animators) {
 		if (!animator.is_foreground()) { animator.render(win, cam); }
-	}
+	}*/
 	for (auto& timer_block : timer_blocks) { timer_block.render(svc, win, cam); }
 	for (auto& waterfall : waterfalls) { waterfall->render(svc, win, cam); }
 
@@ -873,6 +887,7 @@ void Map::generate_collidable_layer(bool live) {
 		if (cell.is_spike()) {
 			spikes.push_back(Spike(*m_services, m_services->assets.get_tileset(std::string{get_biome_string()}), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), m_biome.get_id(),
 								   m_attributes.properties.test(MapProperties::environmental_randomness)));
+			m_static_entity_texture.draw(spikes.back());
 		}
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.get_global_center(), 5)); }
 		if (cell.is_target()) { target_points.push_back(cell.get_global_center()); }
@@ -885,6 +900,7 @@ void Map::generate_collidable_layer(bool live) {
 		}
 		if (cell.is_solid() && get_middleground()->grid.is_exposed_to_sky(cell.one_d_index)) { m_surface_points.push_back(SurfacePoint{cell.bounding_box.get_top(), true}); }
 	}
+	m_static_entity_texture.display();
 }
 
 void Map::generate_layer_textures(automa::ServiceProvider& svc) const {
@@ -1034,7 +1050,7 @@ void Map::clear() {
 	background.reset();
 	active_projectiles.clear();
 	// inspectables.clear();
-	animators.clear();
+	// animators.clear();
 	effects.clear();
 	for (auto& scenery : scenery_layers) { scenery.clear(); }
 	lasers.clear();
@@ -1087,6 +1103,19 @@ sf::Vector2f Map::get_nearest_target_point(sf::Vector2f from) {
 		}
 	}
 	return ret;
+}
+
+sf::Vector2f Map::get_switch_block_position(int id) const {
+	auto running = sf::Vector2f{};
+	auto counted = 0;
+	for (auto const& block : switch_blocks) {
+		if (block->get_id() == id) {
+			running += block->get_bounding_box().get_center();
+			++counted;
+		}
+	}
+	if (counted == 0) { return running; }
+	return running / static_cast<float>(counted);
 }
 
 sf::Vector2f Map::last_checkpoint() {

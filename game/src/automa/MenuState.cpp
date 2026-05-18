@@ -40,20 +40,19 @@ MenuState::MenuState(ServiceProvider& svc, player::Player& player, AppContext& c
 
 void MenuState::tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
-	svc.soundboard.play_sounds(engine, svc);
 	for (auto& option : options) { option.update(current_selection.get(), p_option_justification); }
 	if (svc.input_system.menu_move(input::MoveDirection::down) && m_input_authorized) {
 		current_selection.modulate(1);
-		svc.soundboard.flags.menu.set(audio::Menu::shift);
+		svc.soundboard.play_sound("menu_shift");
 	}
 	if (svc.input_system.menu_move(input::MoveDirection::up) && m_input_authorized) {
 		current_selection.modulate(-1);
-		svc.soundboard.flags.menu.set(audio::Menu::shift);
+		svc.soundboard.play_sound("menu_shift");
 	}
 	if (svc.input_system.digital(input::DigitalAction::menu_back).triggered && m_input_authorized) {
 		svc.state_controller.submenu = m_parent_menu;
 		svc.state_controller.actions.set(Actions::exit_submenu);
-		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+		svc.soundboard.play_sound("menu_back");
 	}
 	auto which = 0;
 	auto center = options.at(current_selection.get()).label.getGlobalBounds().getCenter();

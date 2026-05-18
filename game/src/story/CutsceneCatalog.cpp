@@ -10,6 +10,7 @@
 #include <fornani/story/cutscene/NightsideWall.hpp>
 #include <fornani/story/cutscene/PioneerBaseDebrief.hpp>
 #include <fornani/story/cutscene/ReturnToBase.hpp>
+#include <fornani/story/cutscene/SwitchBlockPan.hpp>
 
 namespace fornani {
 
@@ -23,13 +24,14 @@ void CutsceneCatalog::update(automa::ServiceProvider& svc, SceneContext& context
 	for (auto& cutscene : cutscenes) { cutscene->update(svc, context, map, player); }
 }
 
-void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int id) {
+void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int id, int special_id) {
 	if (m_register.contains(id)) {
 		NANI_LOG_INFO(m_logger, "Cutscene {} already exists!", id);
 		return;
 	}
 	switch (id) {
 	case 1: cutscenes.push_back(std::make_unique<MainIntro>(svc, map, player)); break;
+	case 2: cutscenes.push_back(std::make_unique<SwitchBlockPan>(svc, special_id)); break;
 	case 6001: cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc)); break;
 	case 509: cutscenes.push_back(std::make_unique<BrynPostMiaag>(svc)); break;
 	case 300: cutscenes.push_back(std::make_unique<PioneerBaseDebrief>(svc, map, player)); break;

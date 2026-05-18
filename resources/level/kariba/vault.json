@@ -23,6 +23,11 @@
             "requirement": 1,
             "strict": true,
             "tag": "defeat_miaag"
+          },
+          {
+            "requirement": 1,
+            "strict": true,
+            "tag": "defeat_miaag"
           }
         ],
         "dimensions": [
@@ -604,6 +609,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 503,
         "dimensions": [
           2,
@@ -620,6 +626,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 237,
         "dimensions": [
           1,
@@ -639,11 +646,6 @@
     "ambience": "",
     "background": "woods",
     "biome": "kariba",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -663,6 +665,7 @@
       48,
       48
     ],
+    "interior": true,
     "metagrid": [
       52,
       34
@@ -678,17 +681,27 @@
       "environmental_randomness": true,
       "interior": true,
       "lighting": true,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 509,
     "shader": {
       "darken_factor": 2
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

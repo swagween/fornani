@@ -40,18 +40,17 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, SceneContext& co
 
 	attacks.punch.sensor.bounds.setRadius(60);
 	attacks.punch.sensor.drawable.setFillColor(colors::blue);
-	attacks.punch.hit.bounds.setRadius(28);
+	attacks.punch.hit.bounds.setRadius(32);
 	attacks.punch.origin = {-10.f, -26.f};
 
 	attacks.uppercut.sensor.bounds.setRadius(60);
 	attacks.uppercut.sensor.drawable.setFillColor(colors::blue);
-	attacks.uppercut.hit.bounds.setRadius(28);
+	attacks.uppercut.hit.bounds.setRadius(32);
 	attacks.uppercut.origin = {-8.f, 36.f};
 
 	attacks.rush.sensor.bounds.setRadius(60);
-	attacks.rush.hit.bounds.setRadius(40);
+	attacks.rush.hit.bounds.setRadius(60);
 	attacks.rush.origin = {40.f, 10.f};
-	attacks.rush.hit_offset = {-20.f, 0.f};
 
 	distant_range.set_dimensions({720, 800});
 	Enemy::get_collider().stats.GRAV = 6.0f;
@@ -121,43 +120,48 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (battle_mode()) {
 		attacks.punch.handle_player(player);
 		attacks.uppercut.handle_player(player);
-		attacks.punch.hurt_player(player);
-		attacks.uppercut.hurt_player(player);
-		attacks.rush.hurt_player(player);
-		attacks.left_shockwave.hurt_player(player);
-		attacks.right_shockwave.hurt_player(player);
+
+		attacks.punch.hit.deactivate();
+		attacks.uppercut.hit.deactivate();
+		attacks.rush.hit.deactivate();
 
 		if (attacks.left_shockwave.hit.active() && !cooldowns.player_punch.running()) {
-			if (!player.invincible()) { player.accumulated_forces.push_back({-40.f, -4.f}); }
+			if (attacks.left_shockwave.hurt_player(player)) { player.accumulated_forces.push_back({-40.f, -4.f}); }
 			attacks.left_shockwave.hit.deactivate();
 			cooldowns.player_punch.start();
 		}
 		if (attacks.right_shockwave.hit.active() && !cooldowns.player_punch.running()) {
-			if (!player.invincible()) { player.accumulated_forces.push_back({40.f, -4.f}); }
+			if (attacks.right_shockwave.hurt_player(player)) { player.accumulated_forces.push_back({40.f, -4.f}); }
 			attacks.right_shockwave.hit.deactivate();
 			cooldowns.player_punch.start();
 		}
 		if (Enemy::animation.get_frame() == 30 && !cooldowns.player_punch.running()) {
 			attacks.punch.hit.activate();
 			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
-			player.accumulated_forces.push_back({sign * 10.f, -4.f});
-			attacks.punch.sensor.deactivate();
-			cooldowns.player_punch.start();
+			if (attacks.punch.hurt_player(player)) {
+				player.accumulated_forces.push_back({sign * 10.f, -4.f});
+				attacks.punch.sensor.deactivate();
+				cooldowns.player_punch.start();
+			}
 		}
 		if (Enemy::animation.get_frame() == 37 && !cooldowns.player_punch.running()) {
 			attacks.uppercut.hit.activate();
 			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
-			player.accumulated_forces.push_back({sign * 10.f, -4.f});
-			attacks.uppercut.sensor.deactivate();
-			cooldowns.player_punch.start();
+			if (attacks.uppercut.hurt_player(player)) {
+				player.accumulated_forces.push_back({sign * 10.f, -4.f});
+				attacks.uppercut.sensor.deactivate();
+				cooldowns.player_punch.start();
+			}
 		}
-		if (is(MinigusState::rush) && attacks.rush.sensor.active() && !cooldowns.player_punch.running()) {
+		if (is(MinigusState::rush) && !cooldowns.player_punch.running()) {
 			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
 			if ((sign == -1.f && Enemy::player_behind(player)) || (sign == 1.f && !Enemy::player_behind(player))) {
-				player.hurt(1);
-				player.accumulated_forces.push_back({sign * 10.f, -4.f});
-				attacks.rush.sensor.deactivate();
-				cooldowns.player_punch.start();
+				attacks.rush.hit.activate();
+				if (attacks.rush.hurt_player(player)) {
+					player.accumulated_forces.push_back({sign * 10.f, -4.f});
+					attacks.rush.sensor.deactivate();
+					cooldowns.player_punch.start();
+				}
 			}
 		}
 	}
@@ -313,11 +317,10 @@ void Minigus::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	} else {
 		if (is(MinigusState::punch)) { attacks.punch.render(win, cam); }
 		if (is(MinigusState::uppercut)) { attacks.uppercut.render(win, cam); }
-		attacks.uppercut.render(win, cam);
 		attacks.rush.render(win, cam);
 		attacks.left_shockwave.render(win, cam);
 		attacks.right_shockwave.render(win, cam);
-		distant_range.render(win, cam);
+		// distant_range.render(win, cam);
 	}
 }
 
@@ -599,7 +602,7 @@ fsm::StateFunction Minigus::update_punch() {
 	if (Enemy::animation.just_started()) { m_services->soundboard.flags.minigus.set(audio::Minigus::mother); }
 	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
 	if (Enemy::animation.get_frame() == 30 && !status.test(MinigusFlags::punched)) {
-		m_map->effects.push_back(entity::Effect(*m_services, "small_flash", attacks.punch.hit.bounds.getPosition()));
+		m_map->effects.push_back(entity::Effect(*m_services, "medium_flash", attacks.punch.hit.bounds.getPosition()));
 		status.set(MinigusFlags::punched);
 	}
 	if (Enemy::animation.complete()) {
@@ -624,7 +627,7 @@ fsm::StateFunction Minigus::update_uppercut() {
 	if (Enemy::animation.just_started()) { m_services->soundboard.flags.minigus.set(audio::Minigus::momma); }
 	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
 	if (Enemy::animation.get_frame() == 37 && !status.test(MinigusFlags::punched)) {
-		m_map->effects.push_back(entity::Effect(*m_services, "small_flash", attacks.uppercut.hit.bounds.getPosition()));
+		m_map->effects.push_back(entity::Effect(*m_services, "medium_flash", attacks.uppercut.hit.bounds.getPosition()));
 		status.set(MinigusFlags::punched);
 	}
 	if (Enemy::animation.complete()) {

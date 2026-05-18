@@ -17,6 +17,7 @@ struct EventRegistry {
 	PurchaseEvent purchase_event{};
 
 	LaunchCutsceneEvent launch_cutscene_event{};
+	PressPermanentSwitchEvent press_permanent_switch_event{};
 	SetCutsceneProgressionEvent set_cutscene_progression_event{};
 	OpenVendorEvent open_vendor_event{};
 	OpenBuilderEvent open_builder_event{};

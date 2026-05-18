@@ -40,6 +40,11 @@
             "requirement": 0,
             "strict": true,
             "tag": "open_nightside_station"
+          },
+          {
+            "requirement": 0,
+            "strict": true,
+            "tag": "open_nightside_station"
           }
         ],
         "dimensions": [
@@ -176,7 +181,7 @@
         ],
         "enemy_clear": false,
         "id": 90102,
-        "inverse": true,
+        "inverse": false,
         "position": [
           24,
           3
@@ -247,6 +252,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 904,
         "dimensions": [
           1,
@@ -263,6 +269,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 902,
         "dimensions": [
           1,
@@ -372,11 +379,6 @@
     "ambience": "",
     "background": "dusk",
     "biome": "nightside",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -396,6 +398,7 @@
       64,
       48
     ],
+    "interior": false,
     "metagrid": [
       0,
       17
@@ -409,8 +412,10 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": false,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 901,
     "shader": {
@@ -420,6 +425,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

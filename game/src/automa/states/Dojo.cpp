@@ -35,6 +35,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 	svc.events.open_vendor_event.attach_to(p_slot, &Dojo::open_vendor, this);
 	svc.events.open_builder_event.attach_to(p_slot, &Dojo::open_builder, this);
 	svc.events.launch_cutscene_event.attach_to(p_slot, &Dojo::launch_cutscene, this);
+	svc.events.press_permanent_switch_event.attach_to(p_slot, &Dojo::press_permanent_switch, this);
 	svc.events.add_map_marker_event.attach_to(p_slot, &Dojo::add_map_marker, this);
 	svc.events.health_increase_event.attach_to(p_slot, &Dojo::handle_health_increase, this);
 	svc.events.ability_acquisition_event.attach_to(p_slot, &Dojo::handle_ability_acquisition, this);
@@ -65,8 +66,8 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	if (!p_context.console && !m_cutscenes.is_empty()) {
 		for (auto const& cutscene : m_cutscenes) {
-			p_context.cutscene_catalog.push_cutscene(svc, *m_map, *player, cutscene);
-			NANI_LOG_INFO(m_logger, "Launching cutscene {}.", cutscene);
+			p_context.cutscene_catalog.push_cutscene(svc, *m_map, *player, cutscene.id, cutscene.special);
+			NANI_LOG_INFO(m_logger, "Launching cutscene {}.", cutscene.id);
 		}
 		m_cutscenes.clear();
 	}
@@ -226,6 +227,9 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		auto ent_sprite = sf::Sprite{m_map->m_entity_texture.getTexture()};
 		ent_sprite.setPosition(-cam);
 		if (m_palette) { p_entity_shader->submit(win, *m_palette, ent_sprite); }
+		auto sent_sprite = sf::Sprite{m_map->m_static_entity_texture.getTexture()};
+		sent_sprite.setPosition(-cam);
+		if (m_palette) { p_entity_shader->submit(win, *m_palette, sent_sprite); }
 		m_map->render(svc, win, p_world_shader, cam);
 
 		p_world_shader->clear_point_lights();
@@ -267,7 +271,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 }
 
 void Dojo::reload(ServiceProvider& svc, int target_state) {
-	svc.soundboard.clear_sounds();
+	svc.soundboard.clear_sounds(audio::SoundBus::gameplay);
 	m_map->clear();
 	set_flag(GameplayStateFlags::transitioned_in, false);
 	m_flags.reset(GameplayFlags::transitioning);
@@ -409,7 +413,9 @@ void Dojo::open_builder(ServiceProvider& svc, int id) {
 	m_dialog_id = id;
 }
 
-void Dojo::launch_cutscene(ServiceProvider& svc, int id) { m_cutscenes.add(id); }
+void Dojo::launch_cutscene(ServiceProvider& svc, int id) { m_cutscenes.add(CutsceneSpec{id, 0}); }
+
+void Dojo::press_permanent_switch(ServiceProvider& svc, int id) { m_cutscenes.add(CutsceneSpec{2, id}); }
 
 void Dojo::add_map_marker(ServiceProvider& svc, int room_id, int type, int questline) {
 	if (!m_map) { return; }

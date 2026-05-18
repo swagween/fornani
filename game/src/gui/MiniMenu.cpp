@@ -60,11 +60,11 @@ void MiniMenu::render(sf::RenderWindow& win, sf::Vector2f cam) {
 void MiniMenu::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
 	if (controller.menu_move(input::MoveDirection::up)) {
 		selection.modulate(-1);
-		soundboard.flags.menu.set(audio::Menu::shift);
+		soundboard.play_sound("menu_shift");
 	}
 	if (controller.menu_move(input::MoveDirection::down)) {
 		selection.modulate(1);
-		soundboard.flags.menu.set(audio::Menu::shift);
+		soundboard.play_sound("menu_shift");
 	}
 	if (controller.digital(input::DigitalAction::menu_select).triggered) {
 		m_flags.set(MiniMenuFlags::selected);
@@ -72,7 +72,7 @@ void MiniMenu::handle_inputs(input::InputSystem& controller, [[maybe_unused]] au
 	}
 	if (controller.digital(input::DigitalAction::menu_back).triggered) {
 		m_flags.set(MiniMenuFlags::closed);
-		soundboard.flags.menu.set(audio::Menu::backward_switch);
+		soundboard.play_sound("menu_back");
 	}
 }
 

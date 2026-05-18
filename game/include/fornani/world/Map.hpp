@@ -5,7 +5,6 @@
 #include <fornani/entities/atmosphere/Atmosphere.hpp>
 #include <fornani/entities/enemy/EnemyCatalog.hpp>
 #include <fornani/entities/item/Loot.hpp>
-#include <fornani/entities/world/Animator.hpp>
 #include <fornani/entities/world/Bed.hpp>
 #include <fornani/entities/world/Chest.hpp>
 #include <fornani/entities/world/Explosion.hpp>
@@ -152,6 +151,7 @@ class Map {
 	std::unique_ptr<world::Layer>& get_middleground();
 	std::unique_ptr<world::Layer>& get_obscuring_layer();
 	sf::Vector2f get_nearest_target_point(sf::Vector2f from);
+	sf::Vector2f get_switch_block_position(int id) const;
 	sf::Vector2f last_checkpoint();
 
 	void debug();
@@ -217,7 +217,7 @@ class Map {
 	// std::vector<entity::Portal> portals{};
 	// std::vector<entity::Inspectable> inspectables{};
 	std::vector<entity::Bed> beds{};
-	std::vector<entity::Animator> animators{};
+	// std::vector<entity::Animator> animators{};
 	std::vector<entity::Effect> effects{};
 	std::array<std::vector<std::unique_ptr<vfx::Scenery>>, 6> scenery_layers{};
 	std::vector<item::Loot> active_loot{};
@@ -271,6 +271,7 @@ class Map {
 	audio::SoundBalance ambience_balance{};
 
 	sf::RenderTexture m_entity_texture{};
+	sf::RenderTexture m_static_entity_texture{};
 
   private:
 	MapAttributes m_attributes{};

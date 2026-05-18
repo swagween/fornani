@@ -251,7 +251,7 @@ fsm::StateFunction Summoner::update_vertical_pulse() {
 fsm::StateFunction Summoner::update_begin_summon() {
 	m_state.actual = SummonerState::begin_summon;
 	if (animation.is_complete()) {
-		m_services->soundboard.flags.summoner.set(audio::Summoner::summon);
+		m_services->soundboard.play_sound("summoner_summon", get_collider().get_center());
 		request(SummonerState::summon);
 		if (change_state(SummonerState::summon, get_params("summon"))) { return SUMMONER_BIND(update_summon); }
 	}
@@ -269,7 +269,6 @@ fsm::StateFunction Summoner::update_summon() {
 			auto offset = sf::Vector2f{xoffset, yoffset};
 			m_pulse.get().set_barrel_point(get_collider().get_center() + offset);
 			m_pulse.shoot(*m_services, *m_map, m_player_position - m_pulse.get().get_barrel_point());
-			m_services->soundboard.flags.weapon.set(audio::Weapon::pulse);
 		}
 	}
 	if (m_variant == SummonerVariant::mage) {

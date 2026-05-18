@@ -163,18 +163,18 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 	}
 
 	// zoom controls
-	// if (!io.WantCaptureKeyboard && !io.WantCaptureMouse) {
-	if (auto const* scrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
-		if (control_held()) {
-			current_tool->direction.rotate(scrolled->delta > 0 ? fornani::RotationType::counterclockwise : fornani::RotationType::clockwise);
-		} else {
-			auto delta = scrolled->delta * zoom_factor * map.get_scale();
-			if (map.within_zoom_limits(delta)) { map.move(current_tool->f_position() * -delta); }
-			map.zoom(delta);
-			grid_refresh.start();
+	if (!io.WantCaptureKeyboard && !io.WantCaptureMouse) {
+		if (auto const* scrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
+			if (control_held()) {
+				current_tool->direction.rotate(scrolled->delta > 0 ? fornani::RotationType::counterclockwise : fornani::RotationType::clockwise);
+			} else {
+				auto delta = scrolled->delta * zoom_factor * map.get_scale();
+				if (map.within_zoom_limits(delta)) { map.move(current_tool->f_position() * -delta); }
+				map.zoom(delta);
+				grid_refresh.start();
+			}
 		}
 	}
-	//}
 }
 
 void Editor::logic() {
@@ -259,7 +259,7 @@ void Editor::logic() {
 	grid_refresh.update();
 	if (grid_refresh.is_almost_complete()) { map.set_grid_texture(); }
 
-	map.flags.show_all_layers = !shift_held();
+	map.flags.show_all_layers = !shift_held() || control_held();
 
 	// set tool positions
 	current_tool->set_position((p_current_mouse_position - target.get_position()) / target.get_scale());

@@ -9,6 +9,11 @@ namespace fornani::graphics {
 
 Background::Background(automa::ServiceProvider& svc, std::string_view label, sf::Vector2f map_dimensions) : m_label{label}, map_dimensions{map_dimensions} {
 	auto const& in_data = svc.data.background[label];
+	if (label == "black") {
+		m_attributes.set(BackgroundAttributes::no_draw);
+	} else {
+		m_attributes.reset(BackgroundAttributes::no_draw);
+	}
 	dimensions.x = in_data["dimensions"][0].as<int>();
 	dimensions.y = in_data["dimensions"][1].as<int>();
 	origin = sf::Vector2f{in_data["origin"][0].as<float>(), in_data["origin"][1].as<float>()};
@@ -39,6 +44,7 @@ void Background::update(automa::ServiceProvider& svc) {
 }
 
 void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	if (m_attributes.test(BackgroundAttributes::no_draw)) { return; }
 	auto epsilon = 0.9999f;
 	for (auto [i, layer] : std::views::enumerate(layers)) {
 		// backtrack sprites for infinite scroll effect
@@ -49,7 +55,6 @@ void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 
 		layer.final_position = layer.physics.position + origin.componentWiseMul(map_dimensions);
 
-		if (locked_vertically()) { layer.final_position.y = ccm::ext::clamp(layer.final_position.y, std::min(static_cast<float>(-scroll_pane.y + svc.window->i_screen_dimensions().y), -1 + epsilon), 0.f); }
 		if (locked_horizontally()) { layer.final_position.x = ccm::ext::clamp(layer.final_position.x, std::min(static_cast<float>(-scroll_pane.x + svc.window->i_screen_dimensions().x), -1 + epsilon), 0.f); }
 		for (auto [tod, tex] : std::views::enumerate(layer.textures)) {
 			auto chunks = map_dimensions / constants::f_cell_size / constants::f_chunk_size;
@@ -59,7 +64,20 @@ void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 			auto sprite = sf::Sprite{tex.getTexture()};
 			sprite.setScale(constants::f_scale_vec);
 			sprite.setTextureRect(sf::IntRect{{}, dimensions * std::max(static_cast<int>(multiplier), map_mult)});
-			sprite.setPosition(layer.final_position - cam * layer.parallax);
+
+			auto fpos = layer.final_position - cam * layer.parallax;
+			if (locked_vertically()) {
+				float minY = svc.window->f_screen_dimensions().y - dimensions.y * constants::f_scale_factor;
+				if (minY == 0.f) {
+					fpos.y = 0.f;
+				} else {
+					float t = fpos.y / minY;
+					t = std::clamp(t, 0.f, 1.f);
+					t = t * t * (3.f - 2.f * t);
+					fpos.y = std::lerp(0.f, minY, t);
+				}
+			}
+			sprite.setPosition(fpos);
 			sprite.setOrigin(sf::Vector2f{{sf::Vector2f{dimensions} * multiplier}}.componentWiseMul(origin));
 			shifter.render(svc, win, sprite, tod);
 		}

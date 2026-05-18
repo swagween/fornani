@@ -43,7 +43,10 @@ void HealthRewardSequence::update(automa::ServiceProvider& svc, player::Player& 
 	m_cinematic.update();
 	if (!p_linger.running()) { m_heart_path.update(); }
 
-	if (p_end.is_almost_complete() && has_flag_set(HealthRewardSequenceFlags::cinematic)) { svc.soundboard.play_sound("gem_get"); }
+	if (p_end.is_almost_complete() && has_flag_set(HealthRewardSequenceFlags::cinematic)) {
+		svc.soundboard.play_sound("heart_get");
+		flags.set(RewardSequenceFlags::health_get);
+	}
 
 	if (m_emitter) { m_emitter.value()->update(svc, map); }
 	m_sparkler.update(svc);
@@ -61,11 +64,7 @@ void HealthRewardSequence::update(automa::ServiceProvider& svc, player::Player& 
 			m_emitter.emplace(std::make_unique<vfx::Emitter>(svc, m_render_point - sf::Vector2f{2.f, 2.f}, sf::Vector2f{4.f, 4.f}, "radiance"));
 		}
 	}
-	if (m_heart_path.is_almost_complete()) {
-		p_end.start();
-		svc.soundboard.play_sound("heart_get");
-		flags.set(RewardSequenceFlags::health_get);
-	}
+	if (m_heart_path.is_almost_complete()) { p_end.start(); }
 	if (m_effect) {
 		m_effect->update();
 		if (m_effect->done()) { m_effect.reset(); }

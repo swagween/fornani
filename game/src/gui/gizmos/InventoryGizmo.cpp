@@ -182,22 +182,22 @@ bool InventoryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unuse
 			if (controller.menu_move(input::MoveDirection::up)) {
 				m_description->flush();
 				if (m_selector->move_direction({0, -1}).up()) { switch_zones(-1); }
-				soundboard.flags.menu.set(audio::Menu::shift);
+				soundboard.play_sound("menu_shift");
 			}
 			if (controller.menu_move(input::MoveDirection::down)) {
 				m_description->flush();
 				if (m_selector->move_direction({0, 1}).down()) { switch_zones(1); }
-				soundboard.flags.menu.set(audio::Menu::shift);
+				soundboard.play_sound("menu_shift");
 			}
 			if (controller.menu_move(input::MoveDirection::left)) {
 				m_description->flush();
 				if (m_selector->move_direction({-1, 0}).left()) {}
-				soundboard.flags.menu.set(audio::Menu::shift);
+				soundboard.play_sound("menu_shift");
 			}
 			if (controller.menu_move(input::MoveDirection::right)) {
 				m_description->flush();
 				if (m_selector->move_direction({1, 0}).right()) {}
-				soundboard.flags.menu.set(audio::Menu::shift);
+				soundboard.play_sound("menu_shift");
 			}
 			if (controller.digital(input::DigitalAction::menu_select).triggered) {
 				if (is_item_hovered() && m_current_item) {

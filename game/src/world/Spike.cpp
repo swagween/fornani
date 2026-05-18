@@ -29,6 +29,9 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vecto
 	collider.sync_components();
 	collider.fix();
 	push_and_set_animation("basic", {style, 1, 24, -1});
+	tick();
+	auto tweak = constants::f_resolution_vec;
+	set_position(grid_position + tweak);
 }
 
 void Spike::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {

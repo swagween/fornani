@@ -82,6 +82,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 228,
         "dimensions": [
           1,
@@ -98,6 +99,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 225,
         "dimensions": [
           2,
@@ -114,6 +116,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 400,
         "dimensions": [
           1,
@@ -130,6 +133,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 215,
         "dimensions": [
           1,
@@ -146,6 +150,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 252,
         "dimensions": [
           1,
@@ -177,6 +182,7 @@
     ]
   },
   "meta": {
+    "ambience": "",
     "background": "woods",
     "biome": "overturned",
     "camera_effects": {
@@ -198,22 +204,43 @@
       32,
       96
     ],
+    "interior": false,
     "metagrid": [
       50,
       16
     ],
     "minimap": true,
+    "music": "whispering_island",
     "player_start": [
       0,
       0
     ],
+    "properties": {
+      "day_night_shift": false,
+      "environmental_randomness": false,
+      "interior": false,
+      "lighting": false,
+      "timer": false,
+      "toxic": false
+    },
     "room_id": 219,
     "shader": {
       "darken_factor": 0
     },
+    "special_drop_id": 0,
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

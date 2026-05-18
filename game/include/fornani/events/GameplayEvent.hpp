@@ -8,6 +8,7 @@
 namespace fornani {
 
 struct LaunchCutsceneEvent : Event<automa::ServiceProvider&, int> {};
+struct PressPermanentSwitchEvent : Event<automa::ServiceProvider&, int> {};
 struct SetCutsceneProgressionEvent : Event<int> {};
 struct OpenVendorEvent : Event<automa::ServiceProvider&, int> {};
 struct OpenBuilderEvent : Event<automa::ServiceProvider&, int> {};

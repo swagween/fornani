@@ -49,7 +49,7 @@ class IDialog : public UniquePolymorphic {
 	util::BitFlags<DialogStatus> p_flags{};
 	float p_balance{};
 
-	Drawable p_artwork;
+	std::optional<Drawable> p_artwork{};
 	Drawable p_selector_sprite;
 	Drawable p_vendor_portrait;
 

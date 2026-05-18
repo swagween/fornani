@@ -21,8 +21,10 @@ class Projectile;
 
 namespace fornani::world {
 
+class SwitchBlock;
+
 enum class SwitchType { toggler, permanent, movable, alternator };
-enum class SwitchButtonState { unpressed, pressed };
+enum class SwitchButtonState { unpressed, pressed, triggered };
 
 class SwitchButton {
   public:
@@ -46,13 +48,16 @@ class SwitchButton {
 	shape::Collider collider{};
 
   private:
+	bool matches(SwitchBlock& block);
+
+  private:
 	int id{};
 	sf::Vector2f sprite_dimensions{};
 	util::Cooldown shine_cooldown{800};
 	SwitchType type{};
 	SwitchButtonState state{};
 	SwitchButtonState external{};
-	util::BitFlags<SwitchButtonState> triggers{};
+	util::BitFlags<SwitchButtonState> m_flags{};
 	shape::Shape sensor{};
 	anim::AnimatedSprite sprite;
 	sf::RectangleShape sensorbox{};

@@ -25,6 +25,7 @@ class Inspectable : public Entity {
 	// gameplay
 	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player);
 	void destroy_me(automa::ServiceProvider& svc);
+	void set_index(int to) { m_index = to; }
 	[[nodiscard]] auto destroyed() const -> bool { return flags.test(InspectableFlags::destroy); }
 	[[nodiscard]] auto get_label() const -> std::string { return m_key; }
 
