@@ -208,9 +208,8 @@ void DataManager::load_data() {
 	// load marketplace
 	for (auto const& entry : npc.as_object()) {
 		if (!entry.second["vendor"].is_object()) { continue; }
-		marketplace.insert({entry.second["id"].as<int>(), npc::Vendor()});
+		marketplace.insert({entry.second["id"].as<int>(), npc::Vendor(entry.second["vendor"]["stock_size"].as<std::size_t>(), entry.second["vendor"]["upcharge"].as<float>())});
 		auto& vendor = marketplace.at(entry.second["id"].as<int>());
-		vendor.set_upcharge(entry.second["vendor"]["upcharge"].as<float>());
 		for (auto& item : entry.second["vendor"]["common_items"].as_array()) { vendor.common_items.push_back(item.as_string().data()); }
 		for (auto& item : entry.second["vendor"]["uncommon_items"].as_array()) { vendor.uncommon_items.push_back(item.as_string().data()); }
 		for (auto& item : entry.second["vendor"]["rare_items"].as_array()) { vendor.rare_items.push_back(item.as_string().data()); }
@@ -231,6 +230,12 @@ void DataManager::save_quests() {
 	m_services->quest_table.serialize(save);
 }
 
+void DataManager::save_seed() {
+	auto& save = files.at(current_save).save_data;
+	files.at(current_save).write();
+	save["vendor_seed"] = random::get_vendor_seed();
+}
+
 void DataManager::save_progress(player::Player& player, int save_point_id) {
 	auto& save = files.at(current_save).save_data;
 	files.at(current_save).write();
@@ -246,6 +251,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 		// for (auto& item : vendor.second.inventory.key_items_view()) { out_vendor.push_back(item.get_id()); }
 		save["marketplace"].push_back(out_vendor);
 	}
+	save["vendor_seed"] = random::get_vendor_seed();
 
 	m_services->quest_table.serialize(save);
 
@@ -688,6 +694,7 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 
 	// marketplace
 	for (auto& vendor : marketplace) {}
+	random::set_vendor_seed(save["vendor_seed"].as<random::seed_t>());
 
 	discovered_rooms.clear();
 	unlocked_doors.clear();

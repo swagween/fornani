@@ -190,6 +190,9 @@ void Player::update(world::Map& map) {
 	}
 	cooldowns.stun.update();
 
+	// drinking
+	if (is_in_animation(AnimState::drink)) { controller.restrict_movement(); }
+
 	caution.avoid_ledges(map, get_collider(), controller.direction, 8);
 	if (get_collider().collision_depths) { get_collider().collision_depths.value().reset(); }
 	get_collider().set_direction(directions.actual);
@@ -736,6 +739,8 @@ void Player::update_weapon(world::Map& map) {
 		if (fire_weapon() && m_currently_held_item) { use_item(); }
 		busy = true;
 	}
+	if (!arsenal) { return; }
+	if (!hotbar) { return; }
 	if (busy) {
 		equipped_weapon().set_flag(arms::WeaponFlags::firing, false);
 		equipped_weapon().set_flag(arms::WeaponFlags::charging, false);
@@ -750,8 +755,6 @@ void Player::update_weapon(world::Map& map) {
 		if (!equipped_weapon().automatic() && !equipped_weapon().is_chargeable()) { controller.set_shot(false); }
 	}
 	controller.set_arsenal(hotbar.has_value());
-	if (!arsenal) { return; }
-	if (!hotbar) { return; }
 	// update all weapons in loadout to avoid unusual behavior upon weapon switching
 	for (auto& weapon : arsenal.value().get_loadout()) {
 		hotbar->has(weapon->get_tag()) ? weapon->set_hotbar() : weapon->set_reserved();
@@ -1108,6 +1111,7 @@ void Player::handle_item_logic() {
 		if (consume_flag(PlayerFlags::failed_to_drink)) {
 			m_currently_held_item.reset();
 			controller.unrestrict();
+			set_flag(PlayerFlags::holding_item, false);
 		}
 		if (consume_flag(PlayerFlags::drank)) {
 			if (m_currently_held_item->id == 25) { // soda
@@ -1121,7 +1125,10 @@ void Player::handle_item_logic() {
 				m_services->soundboard.play_sound("heal");
 				m_currently_held_item.reset();
 				catalog.inventory.remove_item(m_services->data.item_label_from_id(m_currently_held_item->id), 1);
+				set_flag(PlayerFlags::holding_item, false);
 			}
+			controller.unrestrict();
+			set_flag(PlayerFlags::holding_item, false);
 		}
 	}
 }

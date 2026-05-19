@@ -50,6 +50,7 @@ class DataManager final {
 	void load_data();
 	void save_progress(player::Player& player, int save_point_id);
 	void save_quests();
+	void save_seed();
 	void save_current();
 	void serialize_death();
 	void load_localized_data(AppContext& ctx);

@@ -180,7 +180,8 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	// TODO: re-do this once I reimplement regular inventory + collectible items. we will check collectible_items_view, or something else.
 	if (player->visit_history.traveled_far() || svc.data.marketplace.at(3).inventory.items_view().is_empty()) {
-		random::set_vendor_seed();
+		random::reset_vendor_seed();
+		svc.data.save_seed();
 		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
 		player->visit_history.clear();
 	}
@@ -492,6 +493,7 @@ void Dojo::handle_player_death(ServiceProvider& svc, player::Player& player) {
 		svc.music_player.load(svc.finder, "mortem");
 		svc.music_player.play_looped();
 		svc.soundboard.turn_off();
+		player.visit_history.clear();
 		svc.stats.player.death_count.update();
 	}
 

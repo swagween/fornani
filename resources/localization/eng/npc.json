@@ -2219,7 +2219,7 @@
           {
             "codes": [
               [4, 0],
-              [26, 4]
+              [26, 2]
             ],
             "message": "Have at it!"
           }
@@ -2739,7 +2739,7 @@
           {
             "codes": [
               [4, 0],
-              [26, 4]
+              [26, 2]
             ],
             "message": "Have at it!"
           }
@@ -3238,6 +3238,11 @@
                 "requirement": 2,
                 "strict": false,
                 "tag": "defeat_haunch"
+              },
+              {
+                "requirement": 0,
+                "strict": true,
+                "tag": "pioneer_trail"
               }
             ],
             "message": "I need passage to Pioneer Trail."

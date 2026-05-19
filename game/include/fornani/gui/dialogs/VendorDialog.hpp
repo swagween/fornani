@@ -2,7 +2,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <fornani/automa/Option.hpp>
 #include <fornani/entities/animation/AnimatedSprite.hpp>
 #include <fornani/entity/NPC.hpp>
 #include <fornani/gui/InventorySelector.hpp>
@@ -11,11 +10,8 @@
 #include <fornani/gui/OrbDisplay.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/gui/dialogs/IDialog.hpp>
+#include <fornani/gui/dialogs/VendorConstituent.hpp>
 #include <fornani/gui/gizmos/DescriptionGizmo.hpp>
-#include <fornani/gui/gizmos/InventoryGizmo.hpp>
-#include <fornani/shader/LightShader.hpp>
-#include <fornani/shader/Palette.hpp>
-#include <fornani/utils/RectPath.hpp>
 #include <optional>
 
 namespace fornani::automa {
@@ -39,13 +35,6 @@ struct VendorItem {
 	std::optional<NumberDisplay> price_display{};
 };
 
-struct VendorConstituent : public Drawable {
-	VendorConstituent(automa::ServiceProvider& svc, std::string_view label, sf::IntRect lookup, int speed = 128, util::InterpolationType type = util::InterpolationType::quadratic);
-	util::RectPath path;
-	void update();
-	void render(sf::RenderWindow& win, LightShader& shader, Palette& palette);
-};
-
 class VendorDialog final : public IDialog {
   public:
 	VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id);
@@ -59,7 +48,6 @@ class VendorDialog final : public IDialog {
 	std::optional<MiniMenu> m_item_menu{};
 	std::unique_ptr<DescriptionGizmo> m_description;
 	OrbDisplay m_orb_display;
-	Palette m_palette;
 	MenuTheme m_theme;
 
 	NPC* my_npc;
@@ -67,7 +55,6 @@ class VendorDialog final : public IDialog {
 	int npc_id{};
 
 	float sale_price{};
-	float m_upcharge{};
 	sf::Vector2f portrait_position{44.f, 18.f};
 	sf::Vector2f bring_in{};
 

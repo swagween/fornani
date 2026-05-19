@@ -1,9 +1,17 @@
 
 #pragma once
 
+#include <fornani/graphics/Animatable.hpp>
+#include <fornani/gui/InventorySelector.hpp>
+#include <fornani/gui/MiniMenu.hpp>
+#include <fornani/gui/OrbDisplay.hpp>
 #include <fornani/gui/dialogs/IDialog.hpp>
+#include <fornani/gui/dialogs/VendorConstituent.hpp>
+#include <fornani/gui/gizmos/DescriptionGizmo.hpp>
 
 namespace fornani::gui {
+
+enum class BuilderConstituentType { docket, stage, inventory };
 
 class BuilderDialog final : public IDialog {
   public:
@@ -13,6 +21,20 @@ class BuilderDialog final : public IDialog {
 	void refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 
   private:
+	void debug();
+
+  private:
+	std::vector<std::string> m_docket{};
+	std::vector<std::string> m_player_items{};
+	sf::Vector2f m_docket_position{};
+	Animatable m_item_sprite;
+
+	std::array<VendorConstituent, 3> m_constituents;
+
+	std::optional<InventorySelector> m_selector{};
+	std::optional<MiniMenu> m_item_menu{};
+	std::unique_ptr<DescriptionGizmo> m_description;
+	OrbDisplay m_orb_display;
 };
 
 } // namespace fornani::gui

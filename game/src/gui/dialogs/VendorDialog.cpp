@@ -28,7 +28,7 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 		  VendorConstituent{svc, "nani", {{207, 190}, {171, 145}}},
 	  },
 	  m_orb_display{svc}, my_npc{*std::find_if(map.get_entities<NPC>().begin(), map.get_entities<NPC>().end(), [vendor_id](auto const& n) { return n->get_vendor_id() == vendor_id; })}, npc_id{vendor_id},
-	  m_item_sprite{svc, "inventory_items"}, m_palette{"pioneer", svc.finder}, m_theme{svc.data.menu_themes["mini_white"]} {
+	  m_item_sprite{svc, "inventory_items"}, m_theme{svc.data.menu_themes["mini_white"]} {
 	if (!my_npc) {
 		NANI_LOG_ERROR(m_logger, "Tried to open vendor dialog with an undefined NPC: {}", vendor_id);
 		close();
@@ -84,7 +84,7 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 	m_description = std::make_unique<DescriptionGizmo>(svc, map, sf::Vector2f{}, sf::IntRect{}, sf::FloatRect{{108.f, 108.f}, {350.f, 120.f}}, sf::Vector2f{});
 	m_description->set_text_only(true);
 
-	m_upcharge = my_npc->get_vendor().value()->get_upcharge();
+	p_upcharge = my_npc->get_vendor().value()->get_upcharge();
 	refresh(svc, player, map);
 
 	NANI_LOG_INFO(m_logger, "Vendor NPC: {}", my_npc->get_tag());
@@ -170,7 +170,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 			auto const& item_lbl = this_item.value()->get_label();
 			auto const item_id = this_item.value()->get_id();
 			auto f_value = static_cast<float>(this_item.value()->get_value());
-			auto upcharge = is_buying() ? f_value * m_upcharge : 0;
+			auto upcharge = is_buying() ? f_value * p_upcharge : 0;
 			sale_price = f_value + upcharge;
 			text.price_number.setString(std::format("{}", sale_price));
 			(player.wallet.get_balance() < sale_price) && is_buying() ? text.price_number.setFillColor(colors::dark_grey) : text.price_number.setFillColor(colors::periwinkle);
@@ -260,13 +260,13 @@ void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, p
 	win.draw(nani);
 	p_vendor_portrait.set_position(m_constituents[static_cast<int>(VendorConstituentType::portrait)].get_window_position() + sf::Vector2f{20.f, 10.f});
 	win.draw(p_vendor_portrait);
-	for (auto& c : m_constituents) { c.render(win, shader, m_palette); }
+	for (auto& c : m_constituents) { c.render(win, shader, p_palette); }
 	m_orb_display.render(win, m_constituents[static_cast<int>(VendorConstituentType::nani)].get_window_position() + sf::Vector2f{24.f, 238.f});
 
 	auto& selector = is_buying() ? m_buy_selector : m_sell_selector;
 	selector.render(win, p_selector_sprite.get_sprite(), {0.f, -2.f}, {});
 
-	m_description->write(svc, "---", svc.text.fonts.basic);
+	if (m_description) { m_description->write(svc, "---", svc.text.fonts.basic); }
 	auto vendor = my_npc->get_vendor();
 	if (vendor) {
 		auto& source_inventory = is_buying() ? vendor.value()->inventory : player.catalog.inventory;
@@ -290,7 +290,7 @@ void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, p
 		}
 	}
 
-	if (m_description) { m_description->render(svc, win, player, shader, m_palette, {}); }
+	if (m_description) { m_description->render(svc, win, player, shader, p_palette, {}); }
 
 	win.draw(text.buy_tab);
 	win.draw(text.sell_tab);
@@ -318,7 +318,7 @@ void VendorDialog::refresh(automa::ServiceProvider& svc, player::Player& player,
 			if (slot.id == -1) {
 				slot.id = item.item->get_id();
 				auto f_value = static_cast<float>(item.item->get_value());
-				auto upcharge = f_value * m_upcharge;
+				auto upcharge = f_value * p_upcharge;
 				slot.price_display = NumberDisplay{svc, static_cast<int>(item.quantity), slot.id};
 			} // populate next slot with item
 		}
@@ -335,17 +335,5 @@ void VendorDialog::refresh(automa::ServiceProvider& svc, player::Player& player,
 	for (auto [i, row] : std::views::enumerate(m_player_items_list)) { NANI_LOG_INFO(m_logger, "Row {}: {}", i, row); }
 	player.update_wardrobe();
 }
-
-VendorConstituent::VendorConstituent(automa::ServiceProvider& svc, std::string_view label, sf::IntRect lookup, int speed, util::InterpolationType type)
-	: Drawable(svc, "vendor_gizmo"), path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "vendor_" + std::string{label}, speed, type} {
-	set_texture_rect(lookup);
-}
-
-void VendorConstituent::update() {
-	path.update();
-	set_position(path.get_position());
-}
-
-void VendorConstituent::render(sf::RenderWindow& win, LightShader& shader, Palette& palette) { shader.submit(win, palette, get_sprite()); }
 
 } // namespace fornani::gui

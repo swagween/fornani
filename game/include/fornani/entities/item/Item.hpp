@@ -27,7 +27,7 @@ struct ItemStats {
 };
 
 enum class ItemType { ability, key, collectible, useable, gizmo, apparel, plugin };
-enum class ItemFlags { sellable, readable, equippable, wearable, invisible, useable };
+enum class ItemFlags { sellable, readable, equippable, wearable, invisible, useable, buildable };
 enum class ItemState { revealed, equipped };
 
 class Item : public Polymorphic {

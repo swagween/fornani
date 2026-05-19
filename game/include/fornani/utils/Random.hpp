@@ -8,6 +8,8 @@
 
 namespace fornani::random {
 
+using seed_t = std::uint32_t;
+
 static std::mt19937& engine() {
 	static std::mt19937 gen{std::random_device{}()};
 	return gen;
@@ -63,16 +65,17 @@ float random_range_normal(float mean, float std_dev);
 bool percent_chance(float percent);
 
 // Accessor for the vendor seed
-int get_vendor_seed();
+seed_t get_vendor_seed();
 
 // Accessor for the test seed
-int get_test_seed();
+seed_t get_test_seed();
 
 // Sets a new test seed
 void set_test_seed();
 
 // Sets a new vendor seed
-void set_vendor_seed();
+void reset_vendor_seed();
+void set_vendor_seed(seed_t const to);
 
 template <typename T, typename WeightFn>
 static T const& weighted_choice(std::vector<T> const& items, WeightFn weightFn) {

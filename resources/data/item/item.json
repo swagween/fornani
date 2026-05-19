@@ -212,7 +212,11 @@
     "actual_title": "Radar Device",
     "naive_description": "A map system. It fits perfectly in the top slot of your pocket gizmo.",
     "actual_description": "A map system. It fits perfectly in the top slot of your pocket gizmo.",
-    "unique": true
+    "unique": true,
+    "build": {
+      "recipe": ["priorite", "pioneer_scrap", "rhenite"],
+      "craft_price": 200
+    }
   },
   {
     "tag": "clock",
@@ -223,7 +227,11 @@
     "actual_title": "Clock",
     "naive_description": "A clock that reads the current time of day. It was designed to fit snugly into your pocket gizmo.",
     "actual_description": "A clock that reads the current time of day. It was designed to fit snugly into your pocket gizmo.",
-    "unique": true
+    "unique": true,
+    "build": {
+      "recipe": ["priorite", "pioneer_scrap", "magnet"],
+      "craft_price": 200
+    }
   },
   {
     "tag": "status_gizmo",
@@ -235,7 +243,11 @@
     "naive_description": "A gizmo that attaches to your inventory dashboard and displays your current outfit and lifeforce.",
     "actual_description": "A gizmo that attaches to your inventory dashboard and displays your current outfit and lifeforce.",
     "unique": true,
-    "value": 1000
+    "value": 1000,
+    "build": {
+      "recipe": ["priorite", "pioneer_scrap", "heart_keychain"],
+      "craft_price": 200
+    }
   },
   {
     "tag": "outfitter_gizmo",
@@ -249,7 +261,11 @@
     "unique": true,
     "readable": true,
     "rarity": 1,
-    "value": 560
+    "value": 560,
+    "build": {
+      "recipe": ["rhenite", "pioneer_scrap", "indigum"],
+      "craft_price": 200
+    }
   },
   {
     "tag": "rotary_gizmo",
@@ -263,7 +279,11 @@
     "unique": true,
     "readable": true,
     "rarity": 1,
-    "value": 900
+    "value": 900,
+    "build": {
+      "recipe": ["priorite", "pioneer_scrap", "brinium"],
+      "craft_price": 400
+    }
   },
   {
     "tag": "dog_leash",
@@ -295,7 +315,11 @@
     "actual_title": "Equip Slot",
     "naive_description": "Item equip slot.",
     "invisible": true,
-    "stack_limit": 3
+    "stack_limit": 3,
+    "build": {
+      "recipe": ["brinium", "pioneer_scrap", "indigum"],
+      "craft_price": 200
+    }
   },
   {
     "tag": "ashtown_raspberry_preserves",
@@ -1030,5 +1054,17 @@
     "equippable": true,
     "sellable": true,
     "value": 380
+  },
+  {
+    "tag": "brinium",
+    "category": 2,
+    "lookup": [1, 5],
+    "origin": [2, 4],
+    "actual_title": "Brinium",
+    "naive_description": "A rare element with strong electromagnetic properties/",
+    "unique": false,
+    "sellable": true,
+    "rarity": 2,
+    "value": 900
   }
 ]

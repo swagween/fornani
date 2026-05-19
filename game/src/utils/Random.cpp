@@ -4,14 +4,10 @@
 
 namespace fornani::random {
 
-namespace {
-
 struct {
-	int vendor;
-	int test;
-} seeds = {1997, 2007};
-
-} // namespace
+	seed_t vendor = 0x9E3779B9u; // golden ratio constant
+	seed_t test = 0x85EBCA6Bu;	 // MurmurHash3 mix constant
+} seeds{};
 
 // Generates a random integer in the range [lo, hi] using a provided seed
 int random_range(int lo, int hi) { return std::uniform_int_distribution<int>{lo, hi}(engine()); }
@@ -59,17 +55,22 @@ float random_range_normal(float mean, float std_dev) { return std::normal_distri
 // Returns true with a probability corresponding to the provided percent chance
 bool percent_chance(float percent) { return std::uniform_real_distribution<float>{0.0f, 100.0f}(engine()) < percent; }
 
-int get_vendor_seed() { return static_cast<int>(seeds.vendor); }
+seed_t get_vendor_seed() { return seeds.vendor; }
 
-int get_test_seed() { return static_cast<int>(seeds.test); }
+seed_t get_test_seed() { return seeds.test; }
 
-void set_vendor_seed() {
-	seeds.vendor = static_cast<uint32_t>(random_range(0, 100000));
+void reset_vendor_seed() {
+	seeds.vendor = random_range(0u, std::numeric_limits<std::uint32_t>::max());
+	engine().seed(seeds.vendor);
+}
+
+void set_vendor_seed(seed_t const to) {
+	seeds.vendor = to;
 	engine().seed(seeds.vendor);
 }
 
 void set_test_seed() {
-	seeds.test = static_cast<uint32_t>(random_range(0, 100000));
+	seeds.test = random_range(0u, std::numeric_limits<std::uint32_t>::max());
 	engine().seed(seeds.test);
 }
 

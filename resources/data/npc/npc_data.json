@@ -62,7 +62,18 @@
         "label": "inspect",
         "parameters": [14, 2, 32, -1, false]
       }
-    ]
+    ],
+    "builder": {
+      "upcharge": 0.0,
+      "docket": [
+        "equip_slot",
+        "outfitter_gizmo",
+        "status_gizmo",
+        "radar_device",
+        "rotary_gizmo",
+        "clock"
+      ]
+    }
   },
 
   "gobe": {
@@ -91,10 +102,11 @@
     ],
     "vendor": {
       "upcharge": 0.2,
+      "stock_size": 6,
       "common_items": ["bronze_bracelet", "bronze_bracelet", "soda"],
-      "uncommon_items": ["magnifying_glass", "status_gizmo", "screwdriver"],
-      "rare_items": ["priorite", "red_jeans", "sapphire"],
-      "guaranteed_finite_items": ["lantern", "gas_mask"]
+      "uncommon_items": ["lantern", "magnifying_glass", "status_gizmo", "screwdriver"],
+      "rare_items": ["pioneer_scrap", "red_jeans", "indigum"],
+      "guaranteed_finite_items": ["gas_mask"]
     },
     "locations": {
       "contingency": {
@@ -341,9 +353,15 @@
     ],
     "vendor": {
       "upcharge": 0.25,
+      "stock_size": 8,
       "common_items": ["clay_statue", "soda"],
-      "uncommon_items": ["silver_bracelet", "gas_mask", "boxing_glove"],
-      "rare_items": ["sapphire", "ceremonial_garb", "ceremonial_skirt", "screwdriver"],
+      "uncommon_items": [
+        "silver_bracelet",
+        "gas_mask",
+        "boxing_glove",
+        "ashtown_raspberry_preserves"
+      ],
+      "rare_items": ["sapphire", "ceremonial_skirt", "screwdriver"],
       "guaranteed_finite_items": ["lantern"]
     }
   },

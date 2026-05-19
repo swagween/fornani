@@ -5,6 +5,7 @@
 #include <fornani/core/Fwd.hpp>
 #include <fornani/graphics/Drawable.hpp>
 #include <fornani/graphics/HelpText.hpp>
+#include <fornani/shader/Palette.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/Polymorphic.hpp>
@@ -48,6 +49,9 @@ class IDialog : public UniquePolymorphic {
 	DialogState p_state{};
 	util::BitFlags<DialogStatus> p_flags{};
 	float p_balance{};
+	float p_upcharge{};
+	std::string p_npc_label{};
+	Palette p_palette;
 
 	std::optional<Drawable> p_artwork{};
 	Drawable p_selector_sprite;

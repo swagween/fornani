@@ -9,7 +9,7 @@
 namespace fornani::gui {
 
 IDialog::IDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id, std::string const& type)
-	: m_vendor_id{vendor_id}, m_intro{300}, m_fade_in{120}, m_outro{100}, p_vendor_portrait{svc, "character_portraits"}, p_selector_sprite{svc, "vendor_gizmo"} {
+	: m_vendor_id{vendor_id}, m_intro{300}, m_fade_in{120}, m_outro{100}, p_vendor_portrait{svc, "character_portraits"}, p_palette{"pioneer", svc.finder}, p_selector_sprite{svc, "vendor_gizmo"} {
 	m_intro.start();
 	p_vendor_portrait.set_texture_rect(sf::IntRect{{vendor_id * 64, 0}, {64, 128}});
 	// background color
@@ -23,6 +23,7 @@ IDialog::IDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& 
 		p_artwork.emplace(svc, type + "_" + std::string{*npc});
 		p_artwork->center();
 		p_artwork->set_position(svc.window->f_center_screen());
+		p_npc_label = *npc;
 	}
 
 	m_helptext.emplace(svc, svc.data.gui_text["dialog"]["enter_start"].as_string(), fornani::input::DigitalAction::menu_select, svc.data.gui_text["dialog"]["enter_end"].as_string(), 195, true);

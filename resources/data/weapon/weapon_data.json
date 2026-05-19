@@ -580,7 +580,7 @@
         "dimensions": [8.0, 8.0],
         "radius": 7.0,
         "attributes": {
-          "base_damage": 9,
+          "base_damage": 6,
           "lifespan": 420,
           "lifespan_variance": 0,
           "speed": 32.0,
@@ -589,7 +589,7 @@
           "dampen_factor": 1.0,
           "reflect": true,
           "hitstun": true,
-          "gravity": 0.4,
+          "gravity": 0.5,
           "elasticity": 0.95
         },
         "visual": {

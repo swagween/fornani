@@ -383,6 +383,18 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					left_triggered.update();
 					ImGui::EndTabItem();
 				}
+				if (ImGui::BeginTabItem("RNG")) {
+					ImGui::Text("Vendor Seed: %u", random::get_vendor_seed());
+					ImGui::Separator();
+					ImGui::Text("Distance Traveled: %i", player.visit_history.distance_traveled());
+					ImGui::Separator();
+					ImGui::Text("Room Deque: ");
+					for (auto& room : player.visit_history.room_deque) {
+						ImGui::Text("%i, ", room);
+						ImGui::SameLine();
+					}
+					ImGui::EndTabItem();
+				}
 				if (ImGui::BeginTabItem("Time Trials")) {
 					auto list = services.data.time_trial_registry.readout_attempts(9902);
 					if (list) {
@@ -416,10 +428,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Distance Traveled: %i", player.visit_history.distance_traveled());
 					ImGui::Text("Distance Traveled from 223: %i", player.visit_history.distance_traveled_from(223));
 					ImGui::Text("Visit History: ");
-					for (auto& room : player.visit_history.rooms_visited) {
-						ImGui::Text("%i, ", room);
-						ImGui::SameLine();
-					}
 					ImGui::Separator();
 					ImGui::Text("Room Deque: ");
 					for (auto& room : player.visit_history.room_deque) {
@@ -592,11 +600,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Actual Speed: %.2f", player.get_collider().physics.actual_speed());
 								ImGui::Separator();
 								ImGui::Text("Inventory Size: %i", static_cast<int>(player.catalog.inventory.items_view().size()));
-								ImGui::Text("Visit History: ");
-								for (auto& room : player.visit_history.rooms_visited) {
-									ImGui::Text("%i, ", room);
-									ImGui::SameLine();
-								}
 								ImGui::EndTabItem();
 							}
 							if (ImGui::BeginTabItem("Death")) {

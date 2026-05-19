@@ -1242,7 +1242,6 @@ fsm::StateFunction PlayerAnimation::update_melee_roundhouse_kick() {
 fsm::StateFunction PlayerAnimation::update_drink() {
 	m_player->animation.label = "drink";
 	p_state.actual = AnimState::drink;
-	m_player->controller.restrict_movement();
 	if (change_state(AnimState::die, get_params("die"), true)) {
 		m_player->set_flag(PlayerFlags::failed_to_drink);
 		return PA_BIND(update_die);
@@ -1260,7 +1259,6 @@ fsm::StateFunction PlayerAnimation::update_drink() {
 		return PA_BIND(update_hurt);
 	}
 	if (m_player->animation.complete()) {
-		m_player->controller.unrestrict();
 		m_player->set_flag(PlayerFlags::drank);
 		if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
 		if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
