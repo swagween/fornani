@@ -44,6 +44,7 @@ class AmbientProp : public Entity {
 	std::optional<AmbientPropParameters> m_params{};
 	components::SteeringComponent m_bob{};
 	components::CircleSensor m_sensor{};
+	util::Cooldown m_emitter_cooldown{};
 };
 
 } // namespace fornani

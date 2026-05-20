@@ -75,10 +75,44 @@
         ],
         "series": [
           {
+            "responses": [
+              [
+                {
+                  "codes": [
+                    [
+                      2,
+                      35,
+                      104
+                    ]
+                  ],
+                  "message": "Yes"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      1
+                    ]
+                  ],
+                  "message": "No"
+                }
+              ]
+            ],
             "suite": [
               [
                 {
+                  "codes": [
+                    [
+                      1,
+                      0
+                    ]
+                  ],
                   "message": "There's a rat. Do you want to take it?"
+                }
+              ],
+              [
+                {
+                  "message": "Good choice..."
                 }
               ]
             ]

@@ -45,6 +45,16 @@
             "requirement": 0,
             "strict": true,
             "tag": "open_nightside_station"
+          },
+          {
+            "requirement": 0,
+            "strict": true,
+            "tag": "open_nightside_station"
+          },
+          {
+            "requirement": 0,
+            "strict": true,
+            "tag": "open_nightside_station"
           }
         ],
         "dimensions": [

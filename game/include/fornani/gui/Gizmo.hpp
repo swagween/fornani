@@ -42,6 +42,12 @@ constexpr auto light_shift_time_v = 24;
 enum class GizmoState { neutral, hovered, selected, closed };
 enum class DashboardPort { minimap, wardrobe, arsenal, inventory, invalid };
 
+struct InventoryZone {
+	sf::Vector2i table_dimensions{};
+	sf::Vector2f cell_size{};
+	sf::Vector2f render_offset{};
+};
+
 struct Constituent {
 	sf::IntRect lookup{};
 	sf::Vector2f position{};

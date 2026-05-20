@@ -1,6 +1,12 @@
 {
   "rooms": [
     {
+      "folder": "ashtown",
+      "label": "town.json",
+      "region": "ashtown",
+      "room_id": 1300
+    },
+    {
       "folder": "config",
       "label": "test_portals.json",
       "region": "toxic",

@@ -12,7 +12,7 @@
           93,
           29
         ],
-        "tag": "ceremonial_garb",
+        "tag": "pioneer_scrap",
         "type": 2
       }
     ],
@@ -118,6 +118,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 229,
         "dimensions": [
           3,
@@ -134,6 +135,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 208,
         "dimensions": [
           1,
@@ -150,6 +152,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 204,
         "dimensions": [
           1,
@@ -166,6 +169,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 232,
         "dimensions": [
           3,
@@ -185,11 +189,6 @@
     "ambience": "",
     "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -209,6 +208,7 @@
       160,
       32
     ],
+    "interior": false,
     "metagrid": [
       30,
       19
@@ -222,8 +222,10 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": false,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 206,
     "shader": {
@@ -233,6 +235,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

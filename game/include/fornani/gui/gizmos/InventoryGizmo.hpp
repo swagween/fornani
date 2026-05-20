@@ -7,6 +7,7 @@
 #include <fornani/gui/MiniMenu.hpp>
 #include <fornani/gui/NumberDisplay.hpp>
 #include <fornani/gui/OrbDisplay.hpp>
+#include <fornani/gui/ZoneCollection.hpp>
 #include <fornani/gui/gizmos/DescriptionGizmo.hpp>
 #include <optional>
 
@@ -15,12 +16,6 @@ namespace fornani::gui {
 enum class InventoryGizmoFlags { is_item_hovered };
 enum class InventoryZoneType { ability, key, collectible, useable, gizmo, COUNT };
 
-struct InventoryZone {
-	sf::Vector2i table_dimensions{};
-	sf::Vector2f cell_size{};
-	sf::Vector2f render_offset{};
-};
-
 class InventoryGizmo : public Gizmo {
   public:
 	InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f placement);
@@ -28,7 +23,7 @@ class InventoryGizmo : public Gizmo {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground = false) override;
 	bool handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
 	[[nodiscard]] auto is_item_hovered() const -> int { return m_flags.test(InventoryGizmoFlags::is_item_hovered); }
-	[[nodiscard]] auto get_zone_type() const -> InventoryZoneType { return static_cast<InventoryZoneType>(m_zone_iterator.get()); }
+	[[nodiscard]] auto get_zone_type() const -> InventoryZoneType { return m_zones.get_zone(); }
 
   private:
 	void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
@@ -40,9 +35,7 @@ class InventoryGizmo : public Gizmo {
 
 	[[nodiscard]] auto zone_match(item::ItemType type) const -> bool { return static_cast<InventoryZoneType>(type) == get_zone_type(); }
 
-	std::array<InventoryZone, static_cast<int>(InventoryZoneType::COUNT)> m_zones;
-	std::array<sf::Vector2i, static_cast<int>(InventoryZoneType::COUNT)> m_remembered_locations{};
-	util::Circuit m_zone_iterator{static_cast<int>(InventoryZoneType::COUNT), static_cast<int>(InventoryZoneType::key)};
+	ZoneCollection<InventoryZoneType> m_zones;
 
 	int m_current_item_lookup{};
 

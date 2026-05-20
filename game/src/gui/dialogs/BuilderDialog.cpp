@@ -6,12 +6,12 @@
 namespace fornani::gui {
 
 fornani::gui::BuilderDialog::BuilderDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id)
-	: IDialog(svc, map, player, vendor_id, "builder"), m_item_sprite{svc, "inventory_items", {18, 18}}, m_orb_display{svc},
-	  m_constituents{VendorConstituent{svc, "docket", {{200, 335}, {162, 95}}, 200, util::InterpolationType::cubic}, VendorConstituent{svc, "stage", {{207, 190}, {171, 145}}}, VendorConstituent{svc, "inventory", {{207, 190}, {171, 145}}}} {
+	: IDialog(svc, map, player, vendor_id, "builder"), m_item_sprite{svc, "inventory_items", {18, 18}}, m_orb_display{svc}, m_docket_position{100.f, 100.f},
+	  m_constituents{VendorConstituent{svc, "docket", {{200, 335}, {162, 95}}, 200, util::InterpolationType::cubic}, VendorConstituent{svc, "stage", {{207, 190}, {171, 145}}}, VendorConstituent{svc, "inventory", {{300, 100}, {200, 150}}}},
+	  m_zones{InventoryZone{{1, 5}, {38.f, 38.f}, m_docket_position}, InventoryZone{{1, 2}, {36.f, 36.f}, {200.f, 100.f}}, InventoryZone{{1, 2}, {36.f, 36.f}, {300.f, 100.f}}} {
 	auto const& in = svc.data.npc[p_npc_label]["builder"];
 	p_upcharge = in["upcharge"].as<float>();
-	for (auto const& item : in["docket"].as_array()) { m_docket.push_back(item.as_string()); }
-	m_docket_position = {300.f, 100.f};
+	for (auto const& item : in["docket"].as_array()) { m_docket.push_back(item.as_string()); };
 	m_selector.emplace(sf::Vector2i{1, static_cast<int>(m_docket.size())}, sf::Vector2f{19.f, 19.f});
 	m_selector->set_lookup({{103, 182}, {20, 20}});
 	m_description = std::make_unique<DescriptionGizmo>(svc, map, sf::Vector2f{}, sf::IntRect{}, sf::FloatRect{{108.f, 108.f}, {350.f, 120.f}}, sf::Vector2f{});
@@ -30,6 +30,7 @@ void BuilderDialog::update(automa::ServiceProvider& svc, world::Map& map, player
 
 	auto& controller = svc.input_system;
 	if (!m_selector) { return; }
+	m_zones.set_current_location(m_selector->get_index());
 	if (controller.menu_move(input::MoveDirection::up)) {
 		svc.soundboard.play_sound("menu_shift");
 		if (m_selector->move_direction({0, -1}).up()) {}
@@ -40,11 +41,11 @@ void BuilderDialog::update(automa::ServiceProvider& svc, world::Map& map, player
 	}
 	if (controller.menu_move(input::MoveDirection::left)) {
 		svc.soundboard.play_sound("menu_shift");
-		if (m_selector->move_direction({-1, 0}).left()) {}
+		if (m_selector->move_direction({-1, 0}).left()) { switch_zones(-1); }
 	}
 	if (controller.menu_move(input::MoveDirection::right)) {
 		svc.soundboard.play_sound("menu_shift");
-		if (m_selector->move_direction({1, 0}).right()) {}
+		if (m_selector->move_direction({1, 0}).right()) { switch_zones(1); }
 	}
 	if (svc.input_system.digital(input::DigitalAction::menu_tab_left).triggered) {
 		p_state = is_buying() ? DialogState::sell : DialogState::buy;
@@ -87,7 +88,6 @@ void BuilderDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	if (!m_selector) { return; }
 	if (m_selector->get_current_selection() >= m_docket.size()) { return; }
 	auto& current_item = svc.data.get_item_json_from_tag(m_docket.at(m_selector->get_current_selection()));
-	m_selector->render(win, p_selector_sprite.get_sprite(), {2.f, 2.f}, {});
 	m_orb_display.render(win, {200.f, 480.f});
 	if (!m_description) { return; }
 	m_description->write(svc, current_item["naive_description"].as_string(), svc.text.fonts.basic);
@@ -97,14 +97,24 @@ void BuilderDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 		auto item = player.catalog.inventory.find_item_stack(id);
 		if (item == nullptr) { continue; }
 		if (m_selector->matches(index) && m_description) { m_description->write(svc, item->item->get_description(), svc.text.fonts.basic); }
-		auto where = m_constituents[static_cast<std::size_t>(BuilderConstituentType::inventory)].get_window_position() + sf::Vector2f{20.f, 34.f};
-		item->item->render(win, m_item_sprite.get_sprite(), where + m_selector->get_table_position_from_index(index) * constants::f_scale_factor);
+		auto where = m_constituents[static_cast<std::size_t>(BuilderConstituentType::inventory)].get_window_position() + sf::Vector2f{500.f, 134.f};
+		item->item->render(win, m_item_sprite.get_sprite(), where + sf::Vector2f{static_cast<float>(index), 0.f} * constants::f_cell_size);
 	}
+	m_selector->render(win, p_selector_sprite.get_sprite(), {2.f, 2.f}, {});
 
 	debug();
 }
 
 void BuilderDialog::refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {}
+
+void BuilderDialog::switch_zones(int modulation) {
+	m_zones.modulate(modulation);
+	auto position = m_selector->get_position();
+	auto& current_zone = m_zones.current();
+	m_selector.emplace(current_zone.table_dimensions, current_zone.cell_size);
+	m_selector->set_position(position, true);
+	m_selector->set_selection(m_zones.get_current_location());
+}
 
 void BuilderDialog::debug() {
 	ImGui::SetNextWindowSize(ImVec2{256.f, 128.f});
@@ -112,6 +122,7 @@ void BuilderDialog::debug() {
 		if (m_selector) {
 			ImGui::Text("Selection: %i", m_selector->get_current_selection());
 			ImGui::Text("Selector Index: %i", m_selector->get_index().y);
+			ImGui::Text("Current Zone: %i", static_cast<int>(m_zones.get_zone()));
 		}
 		ImGui::End();
 	}

@@ -66,4 +66,6 @@ std::vector<std::string> Item::generate_menu_list(dj::Json const& in) const {
 	return ret;
 }
 
+auto Item::get_f_origin() const -> sf::Vector2f { return sf::Vector2f{m_table_origin}; }
+
 } // namespace fornani::item

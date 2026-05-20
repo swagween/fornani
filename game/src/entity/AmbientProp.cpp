@@ -17,6 +17,12 @@ AmbientProp::AmbientProp(automa::ServiceProvider& svc, dj::Json const& in) : Ent
 	Animatable::push_and_set_animation("basic", {0, 9, 1, -1});
 	m_bob.physics.set_friction_componentwise({0.99f, 0.99f});
 	m_sensor.set_position(get_global_center());
+	if (m_params) {
+		if (m_params->emitter) {
+			m_emitter_cooldown.set_and_start(m_params->emitter->frequency);
+			m_emitter_cooldown.randomize();
+		}
+	}
 	m_textured = false;
 }
 
@@ -42,6 +48,7 @@ void AmbientProp::expose() { Entity::expose(); }
 void AmbientProp::update(automa::ServiceProvider& svc, world::Map& map, SceneContext& context, player::Player& player) {
 	if (spawn_denied()) { return; }
 	Entity::update(svc, map, context, player);
+	m_emitter_cooldown.update();
 	if (m_params) {
 		if (m_sensor.within_bounds(player.hurtbox)) {
 			auto pvel = player.get_collider().physics.actual_velocity() * 0.0008f;
@@ -57,7 +64,10 @@ void AmbientProp::update(automa::ServiceProvider& svc, world::Map& map, SceneCon
 		set_frame(frame);
 		set_channel(m_channel);
 		if (m_params->emitter) {
-			if (svc.ticker.every_x_ticks(m_params->emitter->frequency)) { map.spawn_emitter(svc, m_params->emitter->tag, get_global_center() + m_params->emitter->offset, {UND::up}); }
+			if (m_emitter_cooldown.is_almost_complete()) {
+				map.spawn_emitter(svc, m_params->emitter->tag, get_global_center() + m_params->emitter->offset, {UND::up});
+				m_emitter_cooldown.start(m_params->emitter->frequency);
+			}
 		}
 	}
 }

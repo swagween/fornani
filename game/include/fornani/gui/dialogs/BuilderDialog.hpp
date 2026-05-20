@@ -5,6 +5,7 @@
 #include <fornani/gui/InventorySelector.hpp>
 #include <fornani/gui/MiniMenu.hpp>
 #include <fornani/gui/OrbDisplay.hpp>
+#include <fornani/gui/ZoneCollection.hpp>
 #include <fornani/gui/dialogs/IDialog.hpp>
 #include <fornani/gui/dialogs/VendorConstituent.hpp>
 #include <fornani/gui/gizmos/DescriptionGizmo.hpp>
@@ -12,6 +13,7 @@
 namespace fornani::gui {
 
 enum class BuilderConstituentType { docket, stage, inventory };
+enum class BuilderZoneType { docket, controls, inventory, COUNT };
 
 class BuilderDialog final : public IDialog {
   public:
@@ -21,6 +23,7 @@ class BuilderDialog final : public IDialog {
 	void refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 
   private:
+	void switch_zones(int modulation);
 	void debug();
 
   private:
@@ -28,6 +31,8 @@ class BuilderDialog final : public IDialog {
 	std::vector<std::string> m_player_items{};
 	sf::Vector2f m_docket_position{};
 	Animatable m_item_sprite;
+
+	ZoneCollection<BuilderZoneType> m_zones;
 
 	std::array<VendorConstituent, 3> m_constituents;
 

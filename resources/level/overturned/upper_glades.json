@@ -168,13 +168,8 @@
   },
   "meta": {
     "ambience": "",
-    "background": "woods",
+    "background": "canopy",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -200,7 +195,7 @@
       9
     ],
     "minimap": true,
-    "music": "whispering_island",
+    "music": "",
     "player_start": [
       0,
       0
@@ -210,7 +205,8 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 235,
     "shader": {

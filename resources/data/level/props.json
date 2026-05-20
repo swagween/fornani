@@ -40,6 +40,14 @@
     "offset": [22.0, -18.0],
     "emitter": { "tag": "smoke", "frequency": 180, "offset": [0.0, -32.0] }
   },
+  "exhaust_pipe": {
+    "num_frames": 1,
+    "sensitivity": 0.0,
+    "radius": 16.0,
+    "dimensions": [16, 16],
+    "offset": [0.0, 0.0],
+    "emitter": { "tag": "exhaust", "frequency": 100, "offset": [0.0, -16.0] }
+  },
   "championj5": {
     "num_frames": 1,
     "sensitivity": 0.0,

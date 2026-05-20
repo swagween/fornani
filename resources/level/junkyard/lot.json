@@ -563,7 +563,7 @@
     "use_template": false,
     "weather": {
       "ambience": "rain",
-      "chance": 1,
+      "chance": 0.5,
       "density": 1,
       "effect": "raindrop",
       "framerate": 8,

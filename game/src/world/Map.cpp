@@ -149,7 +149,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 			svc.ambience_player.play();
 		}
 	}
-	auto bg_type = m_weather_specs ? meta["background"].as_string() + "_" + m_weather_specs->type : meta["background"].as_string();
+	auto bg_type = m_weather ? meta["background"].as_string() + "_" + m_weather_specs->type : meta["background"].as_string();
 	background = std::make_unique<graphics::Background>(svc, bg_type, real_dimensions);
 
 	// if (meta["weather"]["snow"]) { rain = vfx::Rain(meta["weather"]["snow"]["intensity"].as<int>(), meta["weather"]["snow"]["fall_speed"].as<float>(), meta["weather"]["snow"]["slant"].as<float>(), true); }

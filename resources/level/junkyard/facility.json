@@ -1213,7 +1213,7 @@
     ]
   },
   "meta": {
-    "ambience": "firstwind",
+    "ambience": "",
     "background": "overcast",
     "biome": "junkyard",
     "camera_effects": {
@@ -1259,7 +1259,15 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": {
+      "ambience": "rain",
+      "chance": 0.5,
+      "density": 1,
+      "effect": "raindrop",
+      "framerate": 8,
+      "type": "rain"
+    }
   },
   "tile": {
     "animated": [

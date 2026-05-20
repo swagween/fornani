@@ -19,6 +19,7 @@ nani_add_headers(
         WardrobeWidget.hpp
         Widget.hpp
         WidgetBar.hpp
+        ZoneCollection.hpp
 )
 add_subdirectory(console)
 add_subdirectory(gizmos)
