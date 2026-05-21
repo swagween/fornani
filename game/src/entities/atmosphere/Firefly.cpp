@@ -1,4 +1,6 @@
+
 #include "fornani/entities/atmosphere/Firefly.hpp"
+#include <fornani/graphics/Renderer.hpp>
 #include <numbers>
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
@@ -22,8 +24,8 @@ Firefly::Firefly(automa::ServiceProvider& svc, sf::Vector2f start) : sprite(svc.
 	sprite.set_scale(constants::f_scale_vec);
 	variant = random::percent_chance(60) ? 0 : random::percent_chance(50) ? 1 : random::percent_chance(50) ? 2 : 3;
 	if (variant == 0 && random::percent_chance(30)) {
-		trail = std::make_unique<graphics::SpriteHistory>();
-		trail.value()->set_sample_size(12);
+		trail.emplace();
+		trail->set_sample_size(12);
 	}
 }
 
@@ -44,13 +46,13 @@ void Firefly::update(automa::ServiceProvider& svc, world::Map& map) {
 		sprite.set_params("invisible", true);
 	}
 	sprite.update(physics.position, variant);
-	if (trail && (svc.ticker.every_x_ticks(20) || light.is_almost_complete())) { trail.value()->update(sprite.get_sprite(), physics.position); }
+	if (trail && (svc.ticker.every_x_ticks(20) || light.is_almost_complete())) { trail->update(sprite.get_sprite(), physics.position); }
 }
 
 void Firefly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (svc.greyblock_mode()) { return; }
 	++svc.out_value;
-	if (trail) { trail.value()->drag(win, cam); }
+	if (trail) { trail->drag(win, cam); }
 	if (glowing) { sprite.render(svc, win, cam); }
 	if (svc.greyblock_mode()) {
 		sf::RectangleShape drawbox{};
@@ -60,6 +62,15 @@ void Firefly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		win.draw(drawbox);
 		steering.render(svc, win, cam);
 	}
+}
+
+void Firefly::submit(Renderer& renderer) {
+	if (!glowing) { return; }
+	auto const pos = util::round_to_even(physics.position);
+	auto const& sprite_ref = sprite.get_sprite();
+	auto const& frame = sprite_ref.getTextureRect();
+	sf::FloatRect dest{pos, sf::Vector2f{static_cast<float>(frame.size.x), static_cast<float>(frame.size.y)}};
+	renderer.submit(sprite_ref.getTexture(), dest, frame);
 }
 
 } // namespace fornani::vfx

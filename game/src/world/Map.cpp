@@ -9,6 +9,7 @@
 #include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/graphics/Colors.hpp>
+#include <fornani/graphics/Renderer.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Math.hpp>
 #include <fornani/utils/Random.hpp>
@@ -543,7 +544,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	cooldowns.loading.update();
 }
 
-void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam) {
+void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam) {
 
 	m_entity_texture.clear(colors::transparent);
 
@@ -573,7 +574,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 			for (auto c : get_entities<CutsceneTrigger>()) { c->render(win, cam, c->get_f_grid_dimensions().x); }
 		}
 		for (auto v : get_entities<Vine>()) {
-			if (!v->is_foreground()) { v->render(win, cam, 1.f); }
+			if (!v->is_foreground()) { v->submit(renderer); }
 		}
 		for (auto i : get_entities<Inspectable>()) { i->render(win, cam, 1.f); }
 		// for (auto n : get_entities<NPC>()) { n->render(win, cam, 1.0); }
@@ -606,7 +607,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
 	for (auto& switch_block : switch_blocks) { switch_block->render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
-	for (auto& atm : atmosphere) { atm.render(svc, win, cam); }
+	for (auto& atm : atmosphere) { atm.render(renderer); }
 	for (auto& exp : m_explosions) { exp.render(svc, win, cam); }
 	if (!has_property(MapProperties::lighting)) {
 		for (auto& spike : spikes) { spike.render(svc, win, shader, m_palette, cam); }
@@ -646,7 +647,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 
 	if (m_entities) {
 		for (auto v : get_entities<Vine>()) {
-			if (v->is_foreground()) { v->render(win, cam, 1.0); }
+			if (v->is_foreground()) { v->submit(renderer); }
 		}
 		for (auto t : get_entities<Turret>()) { t->render(win, cam, 1.0); }
 	}
@@ -698,7 +699,7 @@ void Map::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optio
 	m_entity_texture.display();
 }
 
-void Map::render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam) {
+void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam) {
 
 	if (!svc.greyblock_mode()) {
 		background->render(svc, win, cam);

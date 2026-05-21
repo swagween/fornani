@@ -3,6 +3,7 @@
 
 #include <fornani/automa/GameState.hpp>
 #include <fornani/events/Subscription.hpp>
+#include <fornani/graphics/Renderer.hpp>
 #include <fornani/graphics/rewards/IRewardSequence.hpp>
 #include <fornani/gui/InventoryWindow.hpp>
 #include <fornani/gui/PauseWindow.hpp>
@@ -27,6 +28,7 @@ class GameplayState : public GameState, public Flaggable<GameplayStateFlags> {
 	void play_song_by_id(int id);
 
   protected:
+	Renderer p_renderer{};
 	std::optional<Palette> m_palette{};
 	std::optional<LightShader> p_entity_shader{};
 	std::optional<LightShader> p_world_shader{};

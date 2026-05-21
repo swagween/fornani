@@ -1,4 +1,5 @@
 
+#include <fornani/core/Debug.hpp>
 #include <fornani/particle/Particle.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Random.hpp>
@@ -121,6 +122,7 @@ void Particle::render(sf::RenderWindow& win, sf::Vector2f cam) {
 		box.setPosition(render_position);
 		win.draw(box);
 	}
+	++debug::draw_calls;
 }
 
 } // namespace fornani::vfx

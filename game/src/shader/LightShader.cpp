@@ -1,8 +1,8 @@
 
+#include <imgui.h>
+#include <fornani/core/Debug.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
 #include <fornani/shader/LightShader.hpp>
-
-#include <imgui.h>
 
 // its important this exactly matches the value in shaders/light_combined.frag
 #define MAX_POINT_LIGHTS 5
@@ -132,6 +132,7 @@ void LightShader::submit(sf::RenderWindow& win, Palette& palette, sf::Sprite con
 	m_shader.setUniform("texture", sprite.getTexture());
 
 	win.draw(sprite, &m_shader);
+	++debug::draw_calls;
 }
 
 void LightShader::clear_point_lights() {

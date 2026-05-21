@@ -11,6 +11,7 @@ nani_add_sources(
         MapTexture.cpp
         MenuTheme.cpp
         Weather.cpp
+        Renderer.cpp
         Scenery.cpp
         SpriteHistory.cpp
         SpriteRotator.cpp

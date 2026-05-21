@@ -79,6 +79,8 @@ void GameplayState::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	}
 
 	svc.notifications.render(win);
+
+	p_renderer.end();
 }
 
 void GameplayState::pause(ServiceProvider& svc) { p_pause_window = std::make_unique<gui::PauseWindow>(svc); }

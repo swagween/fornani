@@ -1,5 +1,6 @@
 
 #include <fornani/entities/world/TreasureContainer.hpp>
+#include <fornani/graphics/Renderer.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Random.hpp>
 #include <fornani/world/Map.hpp>
@@ -57,6 +58,14 @@ void TreasureContainer::render(automa::ServiceProvider& svc, sf::RenderWindow& w
 		Animatable::set_position(m_steering.physics.position - cam);
 		win.draw(*this);
 	}
+}
+
+void TreasureContainer::submit(Renderer& renderer) {
+	auto const pos = m_steering.physics.position;
+	auto const& frame = get_sprite().getTextureRect();
+
+	sf::FloatRect dest{pos, sf::Vector2f{frame.size}};
+	renderer.submit(get_sprite().getTexture(), dest, frame);
 }
 
 } // namespace fornani::entity

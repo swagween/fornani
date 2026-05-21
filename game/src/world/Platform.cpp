@@ -1,5 +1,6 @@
 
 #include "fornani/world/Platform.hpp"
+#include <fornani/core/Debug.hpp>
 #include <fornani/utils/Math.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"
@@ -211,6 +212,7 @@ void Platform::render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::
 	if (svc.greyblock_mode()) {
 	} else {
 		tex.draw(*this);
+		++debug::draw_calls;
 	}
 }
 
@@ -226,6 +228,7 @@ void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 		get_collider().render(win, cam);
 	} else {
 		win.draw(*this);
+		++debug::draw_calls;
 	}
 }
 

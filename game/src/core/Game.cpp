@@ -1,5 +1,6 @@
 
 #include "fornani/core/Game.hpp"
+#include <fornani/core/Debug.hpp>
 #include <ctime>
 #include "fornani/automa/states/Dojo.hpp"
 #include "fornani/automa/states/MainMenu.hpp"
@@ -249,6 +250,11 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
 						services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
 					}
+					ImGui::Separator();
+					ImGui::Text("Rendering");
+					ImGui::Text("Draw Calls: %i", debug::draw_calls);
+					ImGui::SliderInt("Calls", &debug::draw_calls, 0, 500, "%i", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_Logarithmic);
+					debug::draw_calls = 0;
 					ImGui::Separator();
 					ImGui::Text("Camera");
 					ImGui::Text("Target Position: (%.2f, %.2f)", services.camera_controller.get_position().x, services.camera_controller.get_position().y);

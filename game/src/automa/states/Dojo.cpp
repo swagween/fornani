@@ -219,9 +219,11 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	auto cam = player->get_camera_position();
 
+	p_renderer.begin(win, cam);
+
 	// TODO: do this somewhere else
 	if (p_world_shader) {
-		m_map->render_background(svc, win, p_world_shader, cam);
+		m_map->render_background(p_renderer, svc, win, p_world_shader, cam);
 		for (auto& cutscene : p_context.cutscene_catalog.cutscenes) { cutscene->render(win, cam); }
 		p_entity_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
 		p_entity_shader->finalize(svc.data.biomes["properties"][m_map->get_biome_string()]["max_light"].as<float>());
@@ -231,7 +233,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		auto sent_sprite = sf::Sprite{m_map->m_static_entity_texture.getTexture()};
 		sent_sprite.setPosition(-cam);
 		if (m_palette) { p_entity_shader->submit(win, *m_palette, sent_sprite); }
-		m_map->render(svc, win, p_world_shader, cam);
+		m_map->render(p_renderer, svc, win, p_world_shader, cam);
 
 		p_world_shader->clear_point_lights();
 		p_entity_shader->clear_point_lights();

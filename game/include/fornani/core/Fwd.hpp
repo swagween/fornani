@@ -25,4 +25,7 @@ enum class Team;
 
 struct SceneContext;
 
+class SpriteBatch;
+class Renderer;
+
 } // namespace fornani

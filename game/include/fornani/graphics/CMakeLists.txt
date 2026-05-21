@@ -14,7 +14,9 @@ nani_add_headers(
         MapTexture.hpp
         MenuTheme.hpp
         Weather.hpp
+        Renderer.hpp
         Scenery.hpp
+        SpriteBatch.hpp
         SpriteHistory.hpp
         SpriteRotator.hpp
         TextureUpdater.hpp

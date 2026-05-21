@@ -3,13 +3,17 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <memory>
+#include <optional>
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
 #include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/utils/Cooldown.hpp"
 #include "fornani/graphics/SpriteHistory.hpp"
-#include <optional>
-#include <memory>
+#include "fornani/utils/Cooldown.hpp"
+
+namespace fornani {
+class Renderer;
+}
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -26,6 +30,9 @@ class Firefly {
 	Firefly(automa::ServiceProvider& svc, sf::Vector2f start);
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void submit(Renderer& renderer);
+	std::optional<graphics::SpriteHistory> trail{};
+
   private:
 	components::PhysicsComponent physics{};
 	components::SteeringBehavior steering{};
@@ -33,7 +40,6 @@ class Firefly {
 	util::Cooldown light{};
 	int variant{};
 	bool glowing{};
-	std::optional<std::unique_ptr<graphics::SpriteHistory>> trail{};
 };
 
 } // namespace fornani::vfx

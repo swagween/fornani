@@ -28,6 +28,7 @@ class Entity : public Animatable, public IWorldPositionable {
 	virtual void expose();
 	virtual void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player);
 	virtual void render(sf::RenderWindow& win, sf::Vector2f cam, float size);
+	virtual void submit(Renderer& renderer);
 	void set_handle(EntityHandle to) { m_handle = to; }
 	void set_position(sf::Vector2u to_position);
 	void set_stable_id(int room_id) { p_stable_id = StableID::from(room_id, get_grid_position().x, get_grid_position().y); }
@@ -40,6 +41,7 @@ class Entity : public Animatable, public IWorldPositionable {
 	bool selected{};
 	bool moved{};
 	bool stackable{};
+	bool batch{};
 
 	// helpers
 	sf::RectangleShape drawbox{};

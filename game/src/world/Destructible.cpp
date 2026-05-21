@@ -1,5 +1,6 @@
 
 #include "fornani/world/Destructible.hpp"
+#include <fornani/core/Debug.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -46,6 +47,7 @@ void Destructible::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 		m_collider.get()->render(win, cam);
 	} else {
 		win.draw(sprite);
+		++debug::draw_calls;
 	}
 }
 

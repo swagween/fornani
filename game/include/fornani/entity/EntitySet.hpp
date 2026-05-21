@@ -25,6 +25,7 @@
 #include <fornani/entity/Turret.hpp>
 #include <fornani/entity/Vine.hpp>
 #include <fornani/entity/Water.hpp>
+#include <fornani/graphics/SpriteBatch.hpp>
 #include <fornani/io/Logger.hpp>
 #include <filesystem>
 #include <memory>
@@ -72,6 +73,7 @@ class EntitySet {
 
   private:
 	EntityHandle next_handle{};
+	SpriteBatch m_batch{};
 	sf::RectangleShape player_box{};
 	std::unordered_map<std::string, CreateEntitySignature> create_map;
 	std::unordered_map<std::string, CreateRegisteredEntitySignature> registered_map;

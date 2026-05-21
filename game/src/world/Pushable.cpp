@@ -1,5 +1,6 @@
 
 #include <ccmath/ext/clamp.hpp>
+#include <fornani/core/Debug.hpp>
 #include <fornani/world/Pushable.hpp>
 #include <cmath>
 #include "fornani/entities/player/Player.hpp"
@@ -188,6 +189,7 @@ void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 		m_return_indicator.setPosition(start_position - cam);
 		if (has_flag_set(PushableFlags::trying_to_respawn)) { win.draw(m_return_indicator); }
 		win.draw(*this);
+		++debug::draw_calls;
 	}
 }
 

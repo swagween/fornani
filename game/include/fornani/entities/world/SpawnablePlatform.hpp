@@ -3,18 +3,12 @@
 
 #include <fornani/components/CircleSensor.hpp>
 #include <fornani/components/SteeringComponent.hpp>
+#include <fornani/core/Fwd.hpp>
 #include <fornani/entities/animation/AnimatedSprite.hpp>
 #include <fornani/entities/packages/Health.hpp>
 #include <fornani/physics/Collider.hpp>
 #include <fornani/utils/StateFunction.hpp>
 #define SPAWNABLE_PLAT_BIND(f) std::bind(&SpawnablePlatform::f, this)
-
-namespace fornani::automa {
-struct ServiceProvider;
-}
-namespace fornani::player {
-class Player;
-}
 
 namespace fornani::entity {
 
@@ -28,6 +22,7 @@ class SpawnablePlatform {
 	void update(automa::ServiceProvider& svc, player::Player& player, sf::Vector2f target);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void submit(Renderer& renderer);
 	std::unique_ptr<SpawnablePlatform> clone() const { return std::make_unique<SpawnablePlatform>(*this); }
 	[[nodiscard]] auto get_index() const -> int { return index; }
 	[[nodiscard]] auto collidable() const -> bool { return state == SpawnablePlatformState::open || state == SpawnablePlatformState::opening || state == SpawnablePlatformState::fading; }

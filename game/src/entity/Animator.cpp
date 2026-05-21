@@ -1,4 +1,5 @@
 
+#include <fornani/core/Debug.hpp>
 #include <fornani/entity/Animator.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 
@@ -46,6 +47,7 @@ void Animator::render(sf::RenderTexture& tex, sf::Vector2f cam) {
 	Animatable::set_scale(constants::f_scale_vec);
 	Animatable::set_position(get_world_position());
 	tex.draw(*this);
+	++debug::draw_calls;
 }
 
 } // namespace fornani

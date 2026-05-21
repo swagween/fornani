@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/audio/Ambience.hpp>
+#include <fornani/core/Fwd.hpp>
 #include <fornani/entities/atmosphere/Atmosphere.hpp>
 #include <fornani/entities/enemy/EnemyCatalog.hpp>
 #include <fornani/entities/item/Loot.hpp>
@@ -18,6 +19,7 @@
 #include <fornani/graphics/CameraController.hpp>
 #include <fornani/graphics/DayNightShifter.hpp>
 #include <fornani/graphics/Scenery.hpp>
+#include <fornani/graphics/SpriteBatch.hpp>
 #include <fornani/graphics/Weather.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Effect.hpp>
@@ -46,16 +48,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace fornani::automa {
-struct ServiceProvider;
-}
-
-namespace fornani::player {
-class Player;
-}
-
 namespace fornani::gui {
-class Console;
 class Portrait;
 class InventoryWindow;
 } // namespace fornani::gui
@@ -114,8 +107,8 @@ class Map {
 	void load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& context, int room_number);
 	void unserialize(automa::ServiceProvider& svc, int room_number, bool live = false);
 	void update(automa::ServiceProvider& svc, SceneContext& context);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
-	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
+	void render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
+	void render_background(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	bool handle_entry(player::Player& player, util::Cooldown& enter_room);
 
 	// spawns

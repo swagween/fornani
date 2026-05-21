@@ -1,6 +1,8 @@
 
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entity/Vine.hpp>
+#include <fornani/graphics/Renderer.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Math.hpp>
 #include <fornani/utils/Random.hpp>
@@ -28,6 +30,7 @@ Vine::Vine(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "
 
 void Vine::init() {
 	m_init.start();
+	batch = true;
 	Animatable::center();
 	auto index = util::Circuit(4);
 	auto last_index = random::random_range(0, 3);
@@ -147,11 +150,29 @@ void Vine::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 		Animatable::set_scale(sf::Vector2f{static_cast<float>(encodings.at(ctr).at(1)), 1.f} * constants::f_scale_factor);
 		Animatable::set_position(util::round_to_even(link.get_bob()) - cam);
 		win.draw(*this);
+		++debug::draw_calls;
 		++ctr;
 		++current;
 	}
 	if (m_spawnable_platforms) {
 		for (auto const& plat : m_spawnable_platforms.value()) { plat->render(*m_services, win, cam); }
+	}
+}
+
+void Vine::submit(Renderer& renderer) {
+	if (m_treasure_balls) {
+		for (auto const& ball : m_treasure_balls.value()) { ball->submit(renderer); }
+	}
+
+	for (auto [i, link] : std::views::enumerate(m_chain.links)) {
+		auto const pos = util::round_to_even(link.get_bob() - sf::Vector2f{segment_size_v});
+		auto const& frame = sf::IntRect({static_cast<int>((static_cast<float>(i) / static_cast<float>(m_length)) * 3.f) * segment_size_v.x, encodings.at(i).at(0) * segment_size_v.y}, segment_size_v);
+		sf::FloatRect dest{pos, sf::Vector2f{frame.size}};
+		renderer.submit(get_sprite().getTexture(), dest, frame);
+	}
+
+	if (m_spawnable_platforms) {
+		for (auto const& plat : m_spawnable_platforms.value()) { plat->submit(renderer); }
 	}
 }
 

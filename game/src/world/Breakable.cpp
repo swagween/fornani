@@ -1,5 +1,6 @@
 
 #include <ccmath/ext/clamp.hpp>
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/particle/Effect.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -45,6 +46,7 @@ void Breakable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 		get_collider().render(win, cam);
 	} else {
 		win.draw(*this);
+		++debug::draw_calls;
 	}
 }
 

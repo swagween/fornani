@@ -1,5 +1,6 @@
 
 #include "fornani/weapon/Projectile.hpp"
+#include <fornani/core/Debug.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
@@ -218,7 +219,10 @@ void Projectile::handle_hard_hit(automa::ServiceProvider& svc, world::Map& map) 
 void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f cam) {
 
 	Animatable::set_position(physical.collider.get_global_center() - cam);
-	if (!lifetime.just_started()) { win.draw(*this); }
+	if (!lifetime.just_started()) {
+		win.draw(*this);
+		++debug::draw_calls;
+	}
 
 	// proj bounding box for debug
 	if (svc.greyblock_mode()) {

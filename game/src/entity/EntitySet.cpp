@@ -36,6 +36,8 @@ EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFin
 	create_map.emplace("cutscene_triggers", &create_entity<CutsceneTrigger>);
 
 	load(svc, finder, metadata, room_name);
+
+	m_batch.setScale(constants::f_scale_vec);
 }
 
 EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, world::Map& map, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) : EntitySet(svc, finder, metadata, room_name, true) {
@@ -53,7 +55,9 @@ void EntitySet::render(sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f ori
 	win.draw(player_box);
 
 	// draw general entities
-	for (auto& ent : variables.entities) { ent->render(win, cam, cell_size); }
+
+	// maybe handle batching here later?
+	for (auto& ent : variables.entities) { ent->batch ? ent->render(win, cam, cell_size) : ent->render(win, cam, cell_size); }
 }
 
 void EntitySet::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) {

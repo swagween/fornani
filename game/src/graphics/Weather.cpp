@@ -1,5 +1,6 @@
 
 #include "fornani/graphics/Weather.hpp"
+#include <fornani/core/Debug.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/world/Map.hpp"
 
@@ -43,6 +44,7 @@ void Weather::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		sprite.setPosition(util::round_to_even((buffer - cam) * this_layer.parallax));
 		sprite.setScale(constants::f_scale_vec);
 		win.draw(sprite);
+		++debug::draw_calls;
 	}
 }
 

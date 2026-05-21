@@ -1,4 +1,5 @@
 #include "fornani/particle/Effect.hpp"
+#include <fornani/core/Debug.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
 
@@ -26,6 +27,7 @@ void Effect::update() {
 void Effect::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	set_position(physics.position - cam);
 	win.draw(*this);
+	++debug::draw_calls;
 }
 
 void Effect::rotate() { Drawable::rotate(sf::degrees(90)); }

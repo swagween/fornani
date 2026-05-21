@@ -1,4 +1,5 @@
 
+#include <fornani/core/Debug.hpp>
 #include <fornani/particle/Antenna.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
@@ -44,6 +45,7 @@ void Antenna::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	if (history > 0) {
 		box.setFillColor(colors::fucshia);
 		win.draw(box);
+		++debug::draw_calls;
 	}
 
 	box.setFillColor(prev_color);
@@ -53,6 +55,7 @@ void Antenna::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		win.draw(box);
 	} else {
 		win.draw(box);
+		++debug::draw_calls;
 	}
 }
 

@@ -1,5 +1,6 @@
 
 #include "fornani/graphics/DayNightShifter.hpp"
+#include <fornani/core/Debug.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 
@@ -17,6 +18,7 @@ void DayNightShifter::render(automa::ServiceProvider& svc, sf::RenderWindow& win
 		sprite.setColor({255, 255, 255, alpha});
 		win.draw(sprite);
 	}
+	++debug::draw_calls;
 	sprite.setColor(sf::Color::White);
 }
 

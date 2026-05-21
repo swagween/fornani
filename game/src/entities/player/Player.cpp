@@ -1,4 +1,5 @@
 
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/item/Drop.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/events/InventoryEvent.hpp>
@@ -459,6 +460,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	} else {
 		if (antennae.size() > 1) { antennae[1]->render(svc, win, cam, 1); }
 		win.draw(*this);
+		++debug::draw_calls;
 		if (antennae.size() > 1) { antennae[0]->render(svc, win, cam, 1); }
 	}
 

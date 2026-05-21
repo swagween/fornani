@@ -1,5 +1,6 @@
 
 #include <ccmath/math/power/sqrt.hpp>
+#include <fornani/core/Debug.hpp>
 #include <fornani/particle/Spark.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Random.hpp>
@@ -56,6 +57,7 @@ void Spark::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	} else {
 		win.draw(box);
 	}
+	++debug::draw_calls;
 }
 
 } // namespace fornani::vfx

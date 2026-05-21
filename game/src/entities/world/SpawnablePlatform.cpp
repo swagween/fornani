@@ -1,5 +1,7 @@
 
 #include "fornani/entities/world/SpawnablePlatform.hpp"
+#include <fornani/core/Debug.hpp>
+#include <fornani/graphics/Renderer.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
@@ -58,6 +60,15 @@ void SpawnablePlatform::render(automa::ServiceProvider& svc, sf::RenderWindow& w
 	} else {
 		sprite.render(svc, win, cam);
 	}
+	++debug::draw_calls;
+}
+
+void SpawnablePlatform::submit(Renderer& renderer) {
+	auto const pos = sprite.get_position();
+	auto const& frame = sprite.get_sprite().getTextureRect();
+
+	sf::FloatRect dest{pos, sf::Vector2f{frame.size}};
+	renderer.submit(sprite.get_sprite().getTexture(), dest, frame);
 }
 
 fsm::StateFunction SpawnablePlatform::update_open() {

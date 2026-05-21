@@ -152,9 +152,10 @@ void Intro::frame_update(ServiceProvider& svc) {}
 
 void Intro::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!m_map) { return; }
+	p_renderer.begin(win, player->get_camera_position());
 	if (p_world_shader) {
-		m_map->render_background(svc, win, p_world_shader, player->get_camera_position());
-		m_map->render(svc, win, p_world_shader, player->get_camera_position());
+		m_map->render_background(p_renderer, svc, win, p_world_shader, player->get_camera_position());
+		m_map->render(p_renderer, svc, win, p_world_shader, player->get_camera_position());
 	}
 	if (!m_flags.test(IntroFlags::established)) {
 		m_cloud_sea.render(svc, win, {});

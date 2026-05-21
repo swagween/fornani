@@ -4,6 +4,10 @@
 #include <SFML/Graphics.hpp>
 #include <deque>
 
+namespace fornani {
+class Renderer;
+}
+
 namespace fornani::graphics {
 
 class SpriteHistory {
@@ -12,6 +16,7 @@ class SpriteHistory {
 	void update(sf::Sprite next, sf::Vector2f position);
 	void flush();
 	void drag(sf::RenderWindow& win, sf::Vector2f cam);
+	void submit(Renderer& renderer);
 	void set_sample_size(int size) { m_sample_size = size; }
 
   private:

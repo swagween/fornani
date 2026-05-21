@@ -1,5 +1,6 @@
 
 #include <imgui.h>
+#include <fornani/core/Debug.hpp>
 #include <fornani/entity/Entity.hpp>
 #include <fornani/graphics/Colors.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -63,6 +64,7 @@ auto Entity::contains_point(sf::Vector2u test) const -> bool {
 void Entity::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) { tick(); }
 
 void Entity::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
+	++debug::draw_calls;
 	if (!m_editor) { return; }
 	drawbox.setOutlineColor(colors::blue);
 	drawbox.setOutlineThickness(-2.f);
@@ -77,5 +79,7 @@ void Entity::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	if (m_textured) { win.draw(*this); }
 	win.draw(drawbox);
 }
+
+void Entity::submit(Renderer& renderer) {}
 
 } // namespace fornani
