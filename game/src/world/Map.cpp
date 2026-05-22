@@ -599,7 +599,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 	}
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
-	for (auto& emitter : active_emitters) { emitter->render(svc, win, cam); }
+	for (auto& emitter : active_emitters) { emitter->submit(renderer); }
 	for (auto& plat : platforms) { has_property(MapProperties::lighting) ? plat->render(svc, m_entity_texture, cam) : plat->render(svc, win, cam); }
 	for (auto& breakable : breakables) { breakable->render(svc, win, cam); }
 	for (auto& incinerite : incinerite_blocks) { incinerite->render(svc, win, cam); }
@@ -663,7 +663,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 
 	for (auto& laser : lasers) { laser.render(svc, win, cam); }
 	if (!svc.greyblock_mode()) {
-		for (auto& effect : effects) { effect.render(win, cam); }
+		for (auto& effect : effects) { effect.submit(renderer); }
 	}
 
 	player->render_indicators(svc, win, cam);

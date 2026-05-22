@@ -1,5 +1,7 @@
+
 #include "fornani/particle/Effect.hpp"
 #include <fornani/core/Debug.hpp>
+#include <fornani/graphics/Renderer.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
 
@@ -28,6 +30,14 @@ void Effect::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	set_position(physics.position - cam);
 	win.draw(*this);
 	++debug::draw_calls;
+}
+
+void Effect::submit(Renderer& renderer) {
+	auto const pos = physics.position - get_f_dimensions();
+	auto const& sprite_ref = get_sprite();
+	auto const& frame = sprite_ref.getTextureRect();
+	sf::FloatRect dest{pos, sf::Vector2f{static_cast<float>(frame.size.x), static_cast<float>(frame.size.y)}};
+	renderer.submit(sprite_ref.getTexture(), dest, frame);
 }
 
 void Effect::rotate() { Drawable::rotate(sf::degrees(90)); }

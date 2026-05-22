@@ -1,5 +1,6 @@
 
 #include <fornani/core/Debug.hpp>
+#include <fornani/graphics/Renderer.hpp>
 #include <fornani/particle/Particle.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Random.hpp>
@@ -123,6 +124,22 @@ void Particle::render(sf::RenderWindow& win, sf::Vector2f cam) {
 		win.draw(box);
 	}
 	++debug::draw_calls;
+}
+
+void Particle::submit(Renderer& renderer) {
+	auto render_position = m_collider ? m_collider->get_circle()->physics.position : m_physics ? m_physics->position : sf::Vector2f{};
+	auto const pos = render_position;
+	if (m_animatable || m_fader) {
+		auto const& sprite_ref = m_animatable ? m_animatable->get_sprite() : m_fader->get_sprite();
+		auto const& frame = sprite_ref.getTextureRect();
+		sf::FloatRect dest{pos, sf::Vector2f{static_cast<float>(frame.size.x), static_cast<float>(frame.size.y)}};
+		auto scale = m_fader ? dimensions.x : constants::f_scale_factor;
+		renderer.submit(sprite_ref.getTexture(), dest, frame, scale);
+	} else {
+		auto const& frame = box.getTextureRect();
+		sf::FloatRect dest{pos, sf::Vector2f{static_cast<float>(frame.size.x), static_cast<float>(frame.size.y)}};
+		renderer.submit(dest, frame, dimensions.x);
+	}
 }
 
 } // namespace fornani::vfx

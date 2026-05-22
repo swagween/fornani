@@ -1,9 +1,9 @@
 
-#include "fornani/graphics/SpriteHistory.hpp"
 #include <ccmath/ext/clamp.hpp>
 #include <ccmath/math/misc/lerp.hpp>
 #include <fornani/core/Debug.hpp>
 #include <fornani/graphics/Renderer.hpp>
+#include <fornani/graphics/SpriteHistory.hpp>
 
 namespace fornani::graphics {
 
@@ -45,7 +45,7 @@ void SpriteHistory::submit(Renderer& renderer) {
 		auto const uv = sprite.getTextureRect();
 
 		sf::FloatRect dest{sf::Vector2f{std::floor(pos.x), std::floor(pos.y)}, bounds.size};
-		renderer.submit(sprite.getTexture(), dest, uv, color);
+		renderer.submit(sprite.getTexture(), dest, uv, constants::f_scale_factor, color);
 		alpha = ccm::lerp(static_cast<float>(m_dimness_limit), 255.f, range);
 		alpha = ccm::ext::clamp(alpha, 0.f, 255.f);
 		range += 1.f / static_cast<float>(m_pairs.size());

@@ -68,6 +68,10 @@ void Emitter::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	for (auto& particle : particles) { particle->render(win, cam); }
 }
 
+void Emitter::submit(Renderer& renderer) {
+	for (auto& particle : particles) { particle->submit(renderer); }
+}
+
 void Emitter::set_position(sf::Vector2f pos) { position = pos; }
 
 void Emitter::set_dimensions(sf::Vector2f dim) { dimensions = dim; }

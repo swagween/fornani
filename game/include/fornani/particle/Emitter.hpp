@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/core/Fwd.hpp>
 #include <fornani/particle/Particle.hpp>
 #include <fornani/utils/Flaggable.hpp>
 #include <vector>
@@ -27,6 +28,7 @@ class Emitter : public Flaggable<EmitterFlags> {
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
+	void submit(Renderer& renderer);
 	void set_position(sf::Vector2f pos);
 	void set_dimensions(sf::Vector2f dim);
 	[[nodiscard]] auto done() const -> bool { return particles.empty(); }

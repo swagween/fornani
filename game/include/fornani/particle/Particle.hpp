@@ -1,20 +1,13 @@
 
 #pragma once
 
+#include <fornani/core/Fwd.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/physics/RegisteredCollider.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/Fader.hpp>
 #include <optional>
 #include <string_view>
-
-namespace fornani::automa {
-struct ServiceProvider;
-}
-
-namespace fornani::world {
-class Map;
-}
 
 namespace fornani::vfx {
 
@@ -25,6 +18,7 @@ class Particle {
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
+	void submit(Renderer& renderer);
 
 	[[nodiscard]] auto done() const -> bool { return lifespan.is_almost_complete(); }
 

@@ -48,7 +48,7 @@ void Dragonfly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 }
 
 void Dragonfly::submit(Renderer& renderer) {
-	auto const pos = util::round_to_even(physics.position);
+	auto const pos = physics.position;
 	auto const& sprite_ref = sprite.get_sprite();
 	auto const& frame = sprite_ref.getTextureRect();
 	sf::FloatRect dest{pos, sf::Vector2f{static_cast<float>(frame.size.x), static_cast<float>(frame.size.y)}};
