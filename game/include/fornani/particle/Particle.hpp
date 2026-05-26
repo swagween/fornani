@@ -3,6 +3,7 @@
 
 #include <fornani/core/Fwd.hpp>
 #include <fornani/graphics/Animatable.hpp>
+#include <fornani/graphics/SpriteBatch.hpp>
 #include <fornani/physics/RegisteredCollider.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/Fader.hpp>
@@ -32,6 +33,7 @@ class Particle {
 	std::optional<shape::RegisteredCollider> m_collider{};
 	std::optional<Animatable> m_animatable{};
 	std::optional<util::Fader> m_fader{};
+	util::BitFlags<SpriteFlip> m_flip{};
 	int frame{};
 };
 

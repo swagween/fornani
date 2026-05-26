@@ -1,12 +1,15 @@
 
 #include <ccmath/math/power/sqrt.hpp>
 #include <fornani/core/Debug.hpp>
+#include <fornani/graphics/Renderer.hpp>
 #include <fornani/particle/Spark.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Random.hpp>
 #include <numbers>
 
 namespace fornani::vfx {
+
+constexpr auto spark_size_v = 3.f;
 
 Spark::Spark(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Color color, std::string_view type) : type(type) {
 	auto const& in_data = svc.data.sparkler[type];
@@ -15,7 +18,7 @@ Spark::Spark(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Color color, st
 	parameters.speed = in_data["speed"].as<float>();
 	position = pos;
 	box.setFillColor(color);
-	box.setSize({3.f, 3.f});
+	box.setSize({spark_size_v, spark_size_v});
 	auto const variance = in_data["lifespan_variance"].as<int>();
 	auto const rand_diff = random::random_range(-variance, variance);
 	lifespan.start(in_data["lifespan"].as<int>() + rand_diff);
@@ -26,7 +29,7 @@ Spark::Spark(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Color color, st
 	variables.offset = random::random_range_float(0.f, static_cast<float>(std::numbers::pi) * 2.f);
 
 	if (in_data["fader"].as_bool()) { fader = util::Fader(svc, lifespan.get(), in_data["color"].as_string()); }
-	if (fader) { fader.value().get_sprite().setScale({3.f, 3.f}); }
+	if (fader) { fader.value().get_sprite().setScale({spark_size_v, spark_size_v}); }
 
 	if (in_data["animation"].is_object()) {
 		auto const& in_anim = in_data["animation"];
@@ -39,9 +42,8 @@ Spark::Spark(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Color color, st
 
 void Spark::update(automa::ServiceProvider& svc) {
 	if (m_sprite) { m_sprite->tick(); }
-	position.x += variables.energy * parameters.wobble * sin(parameters.frequency * frame + variables.offset);
+	position.x += variables.energy * parameters.wobble * sin(parameters.frequency * lifespan.get() + variables.offset);
 	position.y -= variables.energy * parameters.speed;
-	++frame;
 	lifespan.update();
 	if (fader) { fader.value().update(); }
 }
@@ -58,6 +60,21 @@ void Spark::render(sf::RenderWindow& win, sf::Vector2f cam) {
 		win.draw(box);
 	}
 	++debug::draw_calls;
+}
+
+void Spark::submit(Renderer& renderer) {
+	auto const pos = position;
+	if (fader || m_sprite) {
+		auto const& sprite_ref = m_sprite ? m_sprite->get_sprite() : fader->get_sprite();
+		auto const& frame = sprite_ref.getTextureRect();
+		sf::FloatRect dest{pos, sf::Vector2f{static_cast<float>(frame.size.x), static_cast<float>(frame.size.y)}};
+		auto scale = fader ? spark_size_v : constants::f_scale_factor;
+		renderer.submit(sprite_ref.getTexture(), dest, frame, scale);
+	} else {
+		auto const& frame = box.getTextureRect();
+		sf::FloatRect dest{pos, sf::Vector2f{static_cast<float>(frame.size.x), static_cast<float>(frame.size.y)}};
+		renderer.submit(dest, frame, spark_size_v);
+	}
 }
 
 } // namespace fornani::vfx

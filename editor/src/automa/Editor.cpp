@@ -25,6 +25,8 @@ Editor::Editor(fornani::automa::ServiceProvider& svc, EditorContext& ctx)
 
 	p_target_state = EditorStateType::editor;
 
+	svc.window->get().requestFocus();
+
 	svc.events.new_file_event.attach_to(p_slot, &Editor::new_file, this);
 	svc.events.load_file_event.attach_to(p_slot, &Editor::load_file, this);
 

@@ -27,42 +27,68 @@ fornani::gui::BuilderDialog::BuilderDialog(automa::ServiceProvider& svc, world::
 void BuilderDialog::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, SceneContext& context) {
 	IDialog::update(svc, map, player, context);
 	if (early_tick_return()) { return; }
+	auto& current_item = svc.data.get_item_json_from_tag(m_docket.at(m_selector->get_current_selection()));
 
 	auto& controller = svc.input_system;
 	if (!m_selector) { return; }
 	m_zones.set_current_location(m_selector->get_index());
-	if (controller.menu_move(input::MoveDirection::up)) {
-		svc.soundboard.play_sound("menu_shift");
-		if (m_selector->move_direction({0, -1}).up()) {}
-	}
-	if (controller.menu_move(input::MoveDirection::down)) {
-		svc.soundboard.play_sound("menu_shift");
-		if (m_selector->move_direction({0, 1}).down()) {}
-	}
-	if (controller.menu_move(input::MoveDirection::left)) {
-		svc.soundboard.play_sound("menu_shift");
-		if (m_selector->move_direction({-1, 0}).left()) { switch_zones(-1); }
-	}
-	if (controller.menu_move(input::MoveDirection::right)) {
-		svc.soundboard.play_sound("menu_shift");
-		if (m_selector->move_direction({1, 0}).right()) { switch_zones(1); }
-	}
-	if (svc.input_system.digital(input::DigitalAction::menu_tab_left).triggered) {
-		p_state = is_buying() ? DialogState::sell : DialogState::buy;
-		svc.soundboard.flags.menu.set(audio::Menu::select);
-	}
-	if (svc.input_system.digital(input::DigitalAction::menu_tab_right).triggered) {
-		p_state = is_buying() ? DialogState::sell : DialogState::buy;
-		svc.soundboard.flags.menu.set(audio::Menu::select);
-	}
-	if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {
-		close();
-		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+	if (m_item_menu) {
+		m_item_menu->handle_inputs(controller, svc.soundboard);
+	} else {
+		if (controller.menu_move(input::MoveDirection::up)) {
+			svc.soundboard.play_sound("menu_shift");
+			if (m_selector->move_direction({0, -1}).up()) {}
+		}
+		if (controller.menu_move(input::MoveDirection::down)) {
+			svc.soundboard.play_sound("menu_shift");
+			if (m_selector->move_direction({0, 1}).down()) {}
+		}
+		if (controller.menu_move(input::MoveDirection::left)) {
+			svc.soundboard.play_sound("menu_shift");
+			if (m_selector->move_direction({-1, 0}).left()) { switch_zones(-1); }
+		}
+		if (controller.menu_move(input::MoveDirection::right)) {
+			svc.soundboard.play_sound("menu_shift");
+			if (m_selector->move_direction({1, 0}).right()) { switch_zones(1); }
+		}
+		if (svc.input_system.digital(input::DigitalAction::menu_tab_left).triggered) {
+			p_state = is_buying() ? DialogState::sell : DialogState::buy;
+			svc.soundboard.flags.menu.set(audio::Menu::select);
+		}
+		if (svc.input_system.digital(input::DigitalAction::menu_tab_right).triggered) {
+			p_state = is_buying() ? DialogState::sell : DialogState::buy;
+			svc.soundboard.flags.menu.set(audio::Menu::select);
+		}
+		if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
+			auto exchange_text = is_buying() ? svc.data.gui_text["exchange_menu"]["build"].as_string() : svc.data.gui_text["exchange_menu"]["build"].as_string();
+			m_item_menu.emplace(MiniMenu{svc, {exchange_text, svc.data.gui_text["exchange_menu"]["cancel"].as_string()}, m_selector->get_position(), p_theme});
+			svc.soundboard.flags.console.set(audio::Console::menu_open);
+		}
+		if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {
+			close();
+			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+		}
 	}
 
 	if (m_item_menu && m_selector) {
 		m_item_menu->update(svc, {1.f, 1.f}, m_selector->get_position());
-		if (m_item_menu->was_closed()) { m_item_menu = {}; }
+		if (m_item_menu->was_closed()) {
+			m_item_menu.reset();
+		} else if (m_item_menu->was_selected()) {
+			switch (m_item_menu->get_selection()) {
+			case 0:
+				if (player.catalog.inventory.can_build(current_item)) {
+					player.catalog.inventory.build_item(current_item);
+					player.give_item(current_item["tag"].as_string(), 1);
+					svc.soundboard.play_sound("vendor_sale");
+					m_item_menu.reset();
+				} else {
+					svc.soundboard.play_sound("error");
+					m_item_menu.reset();
+				}
+				break;
+			}
+		}
 	}
 	if (m_selector) {
 		m_selector->set_position(m_docket_position + m_selector->get_menu_position());
@@ -101,6 +127,7 @@ void BuilderDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 		item->item->render(win, m_item_sprite.get_sprite(), where + sf::Vector2f{static_cast<float>(index), 0.f} * constants::f_cell_size);
 	}
 	m_selector->render(win, p_selector_sprite.get_sprite(), {2.f, 2.f}, {});
+	if (m_item_menu) { m_item_menu->render(win); }
 
 	debug();
 }

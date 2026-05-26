@@ -61,11 +61,11 @@ void TreasureContainer::render(automa::ServiceProvider& svc, sf::RenderWindow& w
 }
 
 void TreasureContainer::submit(Renderer& renderer) {
-	auto const pos = m_steering.physics.position;
+	auto const pos = m_steering.physics.position - sf::Vector2f{16.f, 16.f};
 	auto const& frame = get_sprite().getTextureRect();
 
 	sf::FloatRect dest{pos, sf::Vector2f{frame.size}};
-	renderer.submit(get_sprite().getTexture(), dest, frame);
+	renderer.submit(get_sprite().getTexture(), dest, frame, RenderLayer::background_entities);
 }
 
 } // namespace fornani::entity

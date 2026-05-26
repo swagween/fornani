@@ -68,6 +68,11 @@ void Inventory::reveal_item(int item_id) {
 	}
 }
 
+void Inventory::build_item(dj::Json const& product) {
+	auto const& recipe = product["build"]["recipe"];
+	for (auto const& ingredient : recipe.as_array()) { remove_item(ingredient.as_string(), 1); }
+}
+
 bool Inventory::has_item(int id) const {
 	for (auto& item : m_items) {
 		if (item.item->get_id() == id) { return true; }
@@ -127,6 +132,14 @@ ItemStack* Inventory::find_item_stack(std::string_view label) {
 int Inventory::get_quantity(std::string_view label) {
 	if (auto* stack = find_item_stack(label)) { return stack->quantity; }
 	return 0;
+}
+
+auto Inventory::can_build(dj::Json const& product) const -> bool {
+	auto const& recipe = product["build"]["recipe"];
+	for (auto const& ingredient : recipe.as_array()) {
+		if (!has_item(ingredient.as_string_view())) { return false; }
+	}
+	return true;
 }
 
 } // namespace fornani::player

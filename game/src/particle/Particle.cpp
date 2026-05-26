@@ -49,7 +49,7 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f 
 	if (m_animatable) {
 		m_animatable->center();
 		m_animatable->set_channel(channel);
-		if (random::percent_chance(50)) { m_animatable->scale({-1.f, 1.f}); }
+		if (random::coin_flip()) { m_flip.set(SpriteFlip::horizontal); }
 	}
 
 	if (in_data["fader"].as_bool()) { m_fader = util::Fader(svc, lifespan.get(), in_data["color"].as_string()); }
@@ -90,7 +90,7 @@ Particle::Particle(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f p
 	m_collider->get_circle()->set_exclusion_target(shape::ColliderTrait::particle);
 
 	m_collider->get_circle()->physics.apply_force_at_angle(expulsion, angle);
-	m_collider->get_circle()->physics.position = position;
+	m_collider->get_circle()->physics.position = pos;
 }
 
 void Particle::update(automa::ServiceProvider& svc, world::Map& map) {
@@ -106,7 +106,6 @@ void Particle::update(automa::ServiceProvider& svc, world::Map& map) {
 void Particle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (svc.greyblock_mode()) {
 		if (m_collider) { m_collider->get_circle()->render(win, cam); }
-	} else {
 		render(win, cam);
 	}
 }
@@ -128,16 +127,16 @@ void Particle::render(sf::RenderWindow& win, sf::Vector2f cam) {
 
 void Particle::submit(Renderer& renderer) {
 	auto render_position = m_collider ? m_collider->get_circle()->physics.position : m_physics ? m_physics->position : sf::Vector2f{};
-	auto const pos = render_position;
 	if (m_animatable || m_fader) {
+		auto const pos = m_animatable ? render_position - m_animatable->get_f_dimensions() : render_position;
 		auto const& sprite_ref = m_animatable ? m_animatable->get_sprite() : m_fader->get_sprite();
 		auto const& frame = sprite_ref.getTextureRect();
 		sf::FloatRect dest{pos, sf::Vector2f{static_cast<float>(frame.size.x), static_cast<float>(frame.size.y)}};
 		auto scale = m_fader ? dimensions.x : constants::f_scale_factor;
-		renderer.submit(sprite_ref.getTexture(), dest, frame, scale);
+		renderer.submit(sprite_ref.getTexture(), dest, frame, scale, sf::Color::White, m_flip);
 	} else {
 		auto const& frame = box.getTextureRect();
-		sf::FloatRect dest{pos, sf::Vector2f{static_cast<float>(frame.size.x), static_cast<float>(frame.size.y)}};
+		sf::FloatRect dest{render_position, sf::Vector2f{static_cast<float>(frame.size.x), static_cast<float>(frame.size.y)}};
 		renderer.submit(dest, frame, dimensions.x);
 	}
 }

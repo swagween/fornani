@@ -7,14 +7,14 @@ namespace fornani {
 
 AmbientProp::AmbientProp(automa::ServiceProvider& svc, dj::Json const& in) : Entity{svc, in, "ambient_props"} {
 	unserialize(in);
-	m_params.emplace(svc, svc.data.props[m_tag]);
+	auto const& in_data = svc.data.props[m_tag];
+	m_params.emplace(svc, in_data);
 	if (in["foreground"].as_bool()) { m_params->attributes.set(AmbientPropAttributes::foreground); }
 	m_sensor = components::CircleSensor{m_params->radius};
 	Animatable::set_texture(svc.assets.get_texture("ambient_prop_" + m_tag));
 	Animatable::set_dimensions(m_params->dimensions);
 	tick();
 	Animatable::center();
-	Animatable::push_and_set_animation("basic", {0, 9, 1, -1});
 	m_bob.physics.set_friction_componentwise({0.99f, 0.99f});
 	m_sensor.set_position(get_global_center());
 	if (m_params) {
@@ -22,6 +22,7 @@ AmbientProp::AmbientProp(automa::ServiceProvider& svc, dj::Json const& in) : Ent
 			m_emitter_cooldown.set_and_start(m_params->emitter->frequency);
 			m_emitter_cooldown.randomize();
 		}
+		Animatable::push_and_set_animation("basic", {0, m_params->num_frames, in_data["framerate"].as<int>(), -1});
 	}
 	m_textured = false;
 }
@@ -58,10 +59,14 @@ void AmbientProp::update(automa::ServiceProvider& svc, world::Map& map, SceneCon
 		m_bob.steering.seek(m_bob.physics, {}, m_params->sensitivity);
 		m_bob.physics.simple_update();
 
-		auto displacement = m_bob.physics.position.x;
-		float normalized = std::tanh(displacement);
-		auto frame = util::map_to_frame(normalized, -1.0f, 1.0f, 0, m_params->num_frames - 1);
-		set_frame(frame);
+		if (m_params->sensitivity > constants::tiny_value) {
+			auto displacement = m_bob.physics.position.x;
+			float normalized = std::tanh(displacement);
+			auto frame = util::map_to_frame(normalized, -1.0f, 1.0f, 0, m_params->num_frames - 1);
+			set_frame(frame);
+		} else {
+			tick();
+		}
 		set_channel(m_channel);
 		if (m_params->emitter) {
 			if (m_emitter_cooldown.is_almost_complete()) {

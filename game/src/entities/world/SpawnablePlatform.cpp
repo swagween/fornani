@@ -34,7 +34,7 @@ void SpawnablePlatform::update(automa::ServiceProvider& svc, player::Player& pla
 	collider.physics.previous_position = m_steering.physics.position;
 	sensor.set_position(m_steering.physics.position + collider.dimensions * 0.5f - sf::Vector2f{0.f, 16.f});
 	m_health.update();
-	sprite.update(util::round_to_even(m_steering.physics.position - sf::Vector2f{-4.f, 2.f}));
+	sprite.update(util::round_to_even(m_steering.physics.position - sf::Vector2f{-2.f, 10.f}));
 	state_function = state_function();
 }
 
@@ -68,7 +68,7 @@ void SpawnablePlatform::submit(Renderer& renderer) {
 	auto const& frame = sprite.get_sprite().getTextureRect();
 
 	sf::FloatRect dest{pos, sf::Vector2f{frame.size}};
-	renderer.submit(sprite.get_sprite().getTexture(), dest, frame);
+	renderer.submit(sprite.get_sprite().getTexture(), dest, frame, RenderLayer::platforms);
 }
 
 fsm::StateFunction SpawnablePlatform::update_open() {

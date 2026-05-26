@@ -485,7 +485,8 @@
     },
     "visual": {
       "effect_type": 0,
-      "effect_size": 1
+      "effect_size": 1,
+      "hit_effect": "green_blood"
     },
     "audio": {
       "hit": -1
@@ -1049,7 +1050,8 @@
     },
     "visual": {
       "effect_type": 0,
-      "effect_size": 1
+      "effect_size": 1,
+      "hit_effect": "green_blood"
     },
     "audio": {
       "hit": -1

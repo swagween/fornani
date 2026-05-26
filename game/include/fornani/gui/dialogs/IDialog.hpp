@@ -5,6 +5,8 @@
 #include <fornani/core/Fwd.hpp>
 #include <fornani/graphics/Drawable.hpp>
 #include <fornani/graphics/HelpText.hpp>
+#include <fornani/graphics/MenuTheme.hpp>
+#include <fornani/gui/MiniMenu.hpp>
 #include <fornani/shader/Palette.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Cooldown.hpp>
@@ -56,6 +58,7 @@ class IDialog : public UniquePolymorphic {
 	std::optional<Drawable> p_artwork{};
 	Drawable p_selector_sprite;
 	Drawable p_vendor_portrait;
+	MenuTheme p_theme;
 
   private:
 	bool fade_logic(automa::ServiceProvider& svc, graphics::Transition& transition);

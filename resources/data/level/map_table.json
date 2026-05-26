@@ -2,6 +2,12 @@
   "rooms": [
     {
       "folder": "ashtown",
+      "label": "hostel.json",
+      "region": "ashtown",
+      "room_id": 1310
+    },
+    {
+      "folder": "ashtown",
       "label": "town.json",
       "region": "ashtown",
       "room_id": 1300

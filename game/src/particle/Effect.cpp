@@ -37,7 +37,7 @@ void Effect::submit(Renderer& renderer) {
 	auto const& sprite_ref = get_sprite();
 	auto const& frame = sprite_ref.getTextureRect();
 	sf::FloatRect dest{pos, sf::Vector2f{static_cast<float>(frame.size.x), static_cast<float>(frame.size.y)}};
-	renderer.submit(sprite_ref.getTexture(), dest, frame);
+	renderer.submit(sprite_ref.getTexture(), dest, frame, RenderLayer::effects);
 }
 
 void Effect::rotate() { Drawable::rotate(sf::degrees(90)); }

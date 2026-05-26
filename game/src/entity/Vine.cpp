@@ -168,7 +168,7 @@ void Vine::submit(Renderer& renderer) {
 		auto const pos = util::round_to_even(link.get_bob() - sf::Vector2f{segment_size_v});
 		auto const& frame = sf::IntRect({static_cast<int>((static_cast<float>(i) / static_cast<float>(m_length)) * 3.f) * segment_size_v.x, encodings.at(i).at(0) * segment_size_v.y}, segment_size_v);
 		sf::FloatRect dest{pos, sf::Vector2f{frame.size}};
-		renderer.submit(get_sprite().getTexture(), dest, frame);
+		renderer.submit(get_sprite().getTexture(), dest, frame, is_foreground() ? RenderLayer::foreground_entities : RenderLayer::background_entities);
 	}
 
 	if (m_spawnable_platforms) {

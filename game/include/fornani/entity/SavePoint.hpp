@@ -5,8 +5,8 @@
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Sparkler.hpp>
-#include <fornani/utils/IWorldPositionable.hpp>
 #include <fornani/physics/Shape.hpp>
+#include <fornani/utils/IWorldPositionable.hpp>
 #include <optional>
 
 namespace fornani {
@@ -20,6 +20,7 @@ class SavePoint : public Entity {
 	void unserialize(dj::Json const& in) override;
 	void expose() override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
+	void submit(Renderer& renderer) override;
 	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) override;
 
   private:

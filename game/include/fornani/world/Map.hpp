@@ -228,7 +228,7 @@ class Map {
 	std::vector<std::unique_ptr<Waterfall>> waterfalls{};
 
 	// vfx
-	std::optional<std::vector<Fire>> fire{};
+	std::vector<Fire> fire{};
 
 	std::unique_ptr<graphics::Background> background{};
 

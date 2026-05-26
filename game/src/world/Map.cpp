@@ -508,9 +508,8 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	if (m_entities) {
 		for (auto& entity : m_entities.value().variables.entities) { entity->update(svc, *this, context, *player); }
 	}
-	if (fire) {
-		for (auto& f : fire.value()) { f.update(svc, *player, *this, context.console); }
-	}
+	for (auto& f : fire) { f.update(svc, *player, *this, context.console); }
+
 	for (auto& laser : lasers) { laser.update(svc, *player, *this); }
 	for (auto& exp : m_explosions) { exp.update(svc, *player, *this); }
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
@@ -569,21 +568,24 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		for (auto a : get_entities<Animator>()) {
 			if (!a->is_foreground()) { a->render(m_entity_texture, cam); }
 		}
-		for (auto s : get_entities<SavePoint>()) { s->render(win, cam, 1.f); }
+		for (auto s : get_entities<SavePoint>()) { s->submit(renderer); }
+		renderer.flush();
+
 		if (svc.greyblock_mode()) {
 			for (auto c : get_entities<CutsceneTrigger>()) { c->render(win, cam, c->get_f_grid_dimensions().x); }
 		}
 		for (auto v : get_entities<Vine>()) {
-			if (!v->is_foreground()) { v->submit(renderer); }
+			if (!v->is_foreground()) { svc.greyblock_mode() ? v->render(win, cam, 1.f) : v->submit(renderer); }
 		}
+		renderer.flush();
+
 		for (auto i : get_entities<Inspectable>()) { i->render(win, cam, 1.f); }
 		// for (auto n : get_entities<NPC>()) { n->render(win, cam, 1.0); }
 	}
 
 	// for (auto& portal : portals) { portal.render(svc, win, cam); }
-	if (fire) {
-		for (auto& f : fire.value()) { f.render(svc, win, cam); }
-	}
+	for (auto& f : fire) { f.submit(renderer); }
+	renderer.flush();
 	for (auto& bed : beds) { bed.render(svc, win, cam); }
 	for (auto& chest : chests) { chest->render(win, cam); }
 
@@ -599,7 +601,8 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 	}
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
-	for (auto& emitter : active_emitters) { emitter->submit(renderer); }
+	for (auto& emitter : active_emitters) { svc.greyblock_mode() ? emitter->render(svc, win, cam) : emitter->submit(renderer); }
+	renderer.flush();
 	for (auto& plat : platforms) { has_property(MapProperties::lighting) ? plat->render(svc, m_entity_texture, cam) : plat->render(svc, win, cam); }
 	for (auto& breakable : breakables) { breakable->render(svc, win, cam); }
 	for (auto& incinerite : incinerite_blocks) { incinerite->render(svc, win, cam); }
@@ -608,6 +611,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 	for (auto& switch_block : switch_blocks) { switch_block->render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
 	for (auto& atm : atmosphere) { atm.render(renderer); }
+	renderer.flush();
 	for (auto& exp : m_explosions) { exp.render(svc, win, cam); }
 	if (!has_property(MapProperties::lighting)) {
 		for (auto& spike : spikes) { spike.render(svc, win, shader, m_palette, cam); }
@@ -649,6 +653,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		for (auto v : get_entities<Vine>()) {
 			if (v->is_foreground()) { v->submit(renderer); }
 		}
+		renderer.flush();
 		for (auto t : get_entities<Turret>()) { t->render(win, cam, 1.0); }
 	}
 
@@ -665,6 +670,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 	if (!svc.greyblock_mode()) {
 		for (auto& effect : effects) { effect.submit(renderer); }
 	}
+	renderer.flush();
 
 	player->render_indicators(svc, win, cam);
 	if (m_entities) {
@@ -895,10 +901,7 @@ void Map::generate_collidable_layer(bool live) {
 		if (cell.is_home()) { home_points.push_back(cell.get_global_center()); }
 		if (cell.is_incinerite()) { incinerite_blocks.push_back(std::make_unique<Incinerite>(*m_services, *this, cell.position(), chunk_id)); }
 		if (cell.is_checkpoint()) { checkpoints.push_back(Checkpoint(*m_services, cell.position())); }
-		if (cell.is_fire()) {
-			if (!fire) { fire = std::vector<Fire>{}; }
-			fire.value().push_back(Fire(*m_services, cell.position(), cell.value));
-		}
+		if (cell.is_fire()) { fire.push_back(Fire(*m_services, cell.position(), cell.value)); }
 		if (cell.is_solid() && get_middleground()->grid.is_exposed_to_sky(cell.one_d_index)) { m_surface_points.push_back(SurfacePoint{cell.bounding_box.get_top(), true}); }
 	}
 	m_static_entity_texture.display();
@@ -1066,7 +1069,7 @@ void Map::clear() {
 	m_chain_explosions.clear();
 	m_weather.reset();
 	m_weather_specs.reset();
-	fire.reset();
+	fire.clear();
 	active_loot.clear();
 	m_hazards.reset();
 	point_lights.clear();

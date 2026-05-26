@@ -15,6 +15,7 @@
   "exchange_menu": {
     "buy": "buy",
     "sell": "sell",
+    "build": "build",
     "cancel": "cancel"
   },
   "notifications": {

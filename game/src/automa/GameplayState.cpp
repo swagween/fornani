@@ -59,6 +59,8 @@ void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 void GameplayState::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
+	p_renderer.end();
+
 	p_context.console || svc.state_flags.test(automa::StateFlags::cutscene) ? svc.state_flags.set(automa::StateFlags::hide_hud) : svc.state_flags.reset(automa::StateFlags::hide_hud);
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(svc, *player, win); }
@@ -79,8 +81,6 @@ void GameplayState::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	}
 
 	svc.notifications.render(win);
-
-	p_renderer.end();
 }
 
 void GameplayState::pause(ServiceProvider& svc) { p_pause_window = std::make_unique<gui::PauseWindow>(svc); }

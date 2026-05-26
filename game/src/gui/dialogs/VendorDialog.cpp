@@ -28,7 +28,7 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 		  VendorConstituent{svc, "nani", {{207, 190}, {171, 145}}},
 	  },
 	  m_orb_display{svc}, my_npc{*std::find_if(map.get_entities<NPC>().begin(), map.get_entities<NPC>().end(), [vendor_id](auto const& n) { return n->get_vendor_id() == vendor_id; })}, npc_id{vendor_id},
-	  m_item_sprite{svc, "inventory_items"}, m_theme{svc.data.menu_themes["mini_white"]} {
+	  m_item_sprite{svc, "inventory_items"} {
 	if (!my_npc) {
 		NANI_LOG_ERROR(m_logger, "Tried to open vendor dialog with an undefined NPC: {}", vendor_id);
 		close();
@@ -214,7 +214,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 				}
 			} else if (controller.digital(input::DigitalAction::menu_select).triggered) {
 				auto exchange_text = is_buying() ? svc.data.gui_text["exchange_menu"]["buy"].as_string() : svc.data.gui_text["exchange_menu"]["sell"].as_string();
-				m_item_menu = MiniMenu(svc, {exchange_text, svc.data.gui_text["exchange_menu"]["cancel"].as_string()}, selector.get_position(), m_theme);
+				m_item_menu = MiniMenu(svc, {exchange_text, svc.data.gui_text["exchange_menu"]["cancel"].as_string()}, selector.get_position(), p_theme);
 				svc.soundboard.flags.console.set(audio::Console::menu_open);
 			}
 		}

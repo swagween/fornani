@@ -30,12 +30,16 @@ class Inventory {
 	void remove_item(std::string_view tag, int amount);
 	void reveal_item(int item_id);
 	void add_equip_slot(int amount = 1) { m_open_equip_slots = std::clamp(m_open_equip_slots + amount, 0, num_equippable_items_v); }
+	void build_item(dj::Json const& product);
+
 	[[nodiscard]] EquipmentStatus equip_item(int item_id);
 	[[nodiscard]] bool has_item(int id) const;
 	[[nodiscard]] bool has_item_equipped(std::string_view id) const;
 	[[nodiscard]] bool has_item(std::string_view label) const;
 	[[nodiscard]] int get_quantity(std::string_view label);
 	[[nodiscard]] auto get_latest_item() const -> std::optional<std::string_view> { return m_latest_item; };
+	[[nodiscard]] auto can_build(dj::Json const& product) const -> bool;
+
 	Register<ItemStack> const& items_view() const { return m_items; }
 	std::array<int, num_equippable_items_v> const& equipped_items_view() const { return m_equipped_items; }
 	item::Item* find_item(int id) const;

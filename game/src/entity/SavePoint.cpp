@@ -2,6 +2,7 @@
 #include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entity/SavePoint.hpp>
+#include <fornani/graphics/Renderer.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 
 namespace fornani {
@@ -35,7 +36,16 @@ void SavePoint::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	auto offset = sf::Vector2f{-constants::f_cell_vec.x * 0.5f, -get_f_dimensions().y};
 	Animatable::set_position(get_world_position() - cam + offset);
 	win.draw(*this);
-	sparkler.render(win, cam);
+}
+
+void SavePoint::submit(Renderer& renderer) {
+	auto offset = sf::Vector2f{-constants::f_cell_vec.x * 0.5f, -get_f_dimensions().y};
+	auto const pos = get_world_position() + offset;
+	auto const& frame = get_sprite().getTextureRect();
+
+	sf::FloatRect dest{pos, sf::Vector2f{frame.size}};
+	renderer.submit(get_sprite().getTexture(), dest, frame, RenderLayer::background_entities);
+	sparkler.submit(renderer);
 }
 
 void SavePoint::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {

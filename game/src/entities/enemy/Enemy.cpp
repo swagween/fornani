@@ -183,9 +183,6 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (map.off_the_bottom(get_collider().physics.position)) {
 		if (svc.ticker.every_x_ticks(10)) { health.inflict(4.f); }
 	}
-	if (just_died() && !flags.general.test(GeneralFlags::post_death_render)) {
-		map.effects.push_back(entity::Effect(svc, "large_explosion", get_collider().get_center(), get_collider().physics.apparent_velocity() * 0.5f, visual.effect_type));
-	}
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) {
 		health_indicator.update(svc, m_death_position);
 		post_death.update();
@@ -341,6 +338,12 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 			}
 			player.set_flag(player::PlayerFlags::hit_target);
 			hurt(svc, proj.get_damage());
+			if (health.is_dead() && !flags.general.test(GeneralFlags::post_death_render)) {
+				for (auto i = 0; i < 3; ++i) {
+					auto random_vector = random::random_vector_float(-0.5f, 0.5f);
+					map.effects.push_back(entity::Effect(svc, "large_explosion", get_collider().get_center(), proj.get_direction().as_vector() + random_vector, visual.effect_type));
+				}
+			}
 			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
 			if (proj.has_critical_damage()) {
 				svc.soundboard.flags.projectile.set(audio::Projectile::critical_hit);
@@ -348,6 +351,11 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 				map.spawn_emitter(svc, "critical_hit", proj.get_position(), Direction{});
 				map.spawn_effect(svc, "flare", proj.get_position());
 			} else {
+				if (svc.data.enemy[label]["visual"]["hit_effect"]) {
+					map.spawn_emitter(svc, svc.data.enemy[label]["visual"]["hit_effect"].as_string(), get_collider().get_center(), Direction{});
+				} else {
+					map.spawn_emitter(svc, "blood", get_collider().get_center(), Direction{});
+				}
 				map.spawn_effect(svc, "hit_flash", proj.get_position());
 			}
 			if (proj.has_attribute(arms::ProjectileAttributes::hitstun)) { hitstun.start(32); }

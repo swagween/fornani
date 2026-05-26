@@ -5,7 +5,6 @@
 #include <fornani/entities/animation/AnimatedSprite.hpp>
 #include <fornani/entity/NPC.hpp>
 #include <fornani/gui/InventorySelector.hpp>
-#include <fornani/gui/MiniMenu.hpp>
 #include <fornani/gui/NumberDisplay.hpp>
 #include <fornani/gui/OrbDisplay.hpp>
 #include <fornani/gui/console/Console.hpp>
@@ -48,7 +47,6 @@ class VendorDialog final : public IDialog {
 	std::optional<MiniMenu> m_item_menu{};
 	std::unique_ptr<DescriptionGizmo> m_description;
 	OrbDisplay m_orb_display;
-	MenuTheme m_theme;
 
 	NPC* my_npc;
 

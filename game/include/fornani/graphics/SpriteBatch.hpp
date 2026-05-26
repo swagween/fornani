@@ -2,8 +2,21 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <fornani/utils/BitFlags.hpp>
 
 namespace fornani {
+
+enum class SpriteFlip { none, horizontal, vertical };
+enum class RenderLayer { background, scenery, background_entities, player, platforms, projectiles, atmosphere, middleground, particles, foreground_entities, effects, foreground, hud };
+
+struct RenderCommand {
+	sf::Texture const* texture{};
+	sf::FloatRect dest{};
+	sf::IntRect uv{};
+	sf::Color color{};
+	util::BitFlags<SpriteFlip> flip{};
+	RenderLayer layer{};
+};
 
 class SpriteBatch : public sf::Drawable, public sf::Transformable {
   public:
@@ -11,7 +24,7 @@ class SpriteBatch : public sf::Drawable, public sf::Transformable {
 
 	void setTexture(sf::Texture const& tex) { texture = &tex; }
 
-	void add(sf::FloatRect const& dest, sf::IntRect const& uv, sf::Color color = sf::Color::White) {
+	void add(sf::FloatRect const& dest, sf::IntRect const& uv, sf::Color color = sf::Color::White, util::BitFlags<SpriteFlip> flip = {}) {
 
 		sf::Vertex quad[4];
 
@@ -24,6 +37,9 @@ class SpriteBatch : public sf::Drawable, public sf::Transformable {
 		float v0 = static_cast<float>(uv.position.y);
 		float u1 = static_cast<float>(uv.position.x + uv.size.x);
 		float v1 = static_cast<float>(uv.position.y + uv.size.y);
+
+		if (flip.test(SpriteFlip::horizontal)) std::swap(u0, u1);
+		if (flip.test(SpriteFlip::vertical)) std::swap(v0, v1);
 
 		quad[0].position = {x, y};
 		quad[1].position = {x + w, y};
@@ -57,6 +73,8 @@ class SpriteBatch : public sf::Drawable, public sf::Transformable {
 		target.draw(vertices, states);
 	}
 
+  private:
+	util::BitFlags<SpriteFlip> m_flip{};
 	sf::VertexArray vertices{sf::PrimitiveType::Triangles};
 	sf::Texture const* texture{};
 };

@@ -1,5 +1,6 @@
 
 #include "fornani/entities/world/Fire.hpp"
+#include <fornani/graphics/Renderer.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/world/Map.hpp"
@@ -28,8 +29,16 @@ void Fire::update(automa::ServiceProvider& svc, player::Player& player, Map& map
 void Fire::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	set_position(bounding_box.get_position() + sprite_offset - cam);
 	win.draw(*this);
-	sparkler.render(win, cam);
 	if (svc.greyblock_mode()) {}
+}
+
+void Fire::submit(Renderer& renderer) {
+	auto const pos = bounding_box.get_position() + sprite_offset;
+	auto const& frame = get_sprite().getTextureRect();
+
+	sf::FloatRect dest{pos, sf::Vector2f{frame.size}};
+	renderer.submit(get_sprite().getTexture(), dest, frame, RenderLayer::background_entities);
+	sparkler.submit(renderer);
 }
 
 } // namespace fornani::world
