@@ -56,7 +56,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, SceneContext& context
 
 	auto npcs = map.get_entities<NPC>();
 	auto nit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 22; });
-	auto hit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 23; });
+	auto hit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 7; });
 
 	if (nit == npcs.end() || hit == npcs.end()) {
 		NANI_LOG_ERROR(p_logger, "Missing NPC from cutscene!");
@@ -99,6 +99,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, SceneContext& context
 		}
 		break;
 	case 2:
+		if (context.console) { context.console.value()->set_hologram(); }
 		if (!context.console && !cooldowns.pause.running()) {
 			cooldowns.pause.start();
 			hologus->pop_conversation();
@@ -123,6 +124,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, SceneContext& context
 		}
 		break;
 	case 4:
+		if (context.console) { context.console.value()->set_hologram(); }
 		if (!context.console && !cooldowns.pause.running()) {
 			cooldowns.pause.start();
 			hologus->pop_conversation();
@@ -147,6 +149,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, SceneContext& context
 		}
 		break;
 	case 6:
+		if (context.console) { context.console.value()->set_hologram(); }
 		if (!context.console && !cooldowns.pause.running()) {
 			cooldowns.pause.start();
 			hologus->pop_conversation();
@@ -171,6 +174,7 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, SceneContext& context
 		}
 		break;
 	case 8:
+		if (context.console) { context.console.value()->set_hologram(); }
 		if (!context.console && !cooldowns.pause.running()) {
 			cooldowns.pause.start();
 			hologus->pop_conversation();

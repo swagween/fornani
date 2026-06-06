@@ -47,11 +47,8 @@ void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			flags.set(GameStateFlags::controls_request);
 			p_pause_window.value()->reset();
 		}
-		if (p_pause_window.value()->exit_requested()) {
-			p_pause_window.reset();
-			auto to_set = p_inventory_window || p_dialog ? input::ActionSet::Menu : input::ActionSet::Platformer;
-			svc.input_system.set_action_set(to_set);
-		}
+		if (p_pause_window.value()->exit_requested()) { unpause(svc); }
+		if (svc.input_system.digital(input::DigitalAction::menu_close).triggered) { unpause(svc); }
 		set_flag(GameplayStateFlags::early_tick_return);
 	}
 	GameState::tick_update(svc, engine);
@@ -84,6 +81,12 @@ void GameplayState::render(ServiceProvider& svc, sf::RenderWindow& win) {
 }
 
 void GameplayState::pause(ServiceProvider& svc) { p_pause_window = std::make_unique<gui::PauseWindow>(svc); }
+
+void GameplayState::unpause(ServiceProvider& svc) {
+	p_pause_window.reset();
+	auto to_set = p_inventory_window || p_dialog ? input::ActionSet::Menu : input::ActionSet::Platformer;
+	svc.input_system.set_action_set(to_set);
+}
 
 void GameplayState::play_song_by_id(int id) { p_services->music_player.play_song_by_id(p_services->finder, id); }
 

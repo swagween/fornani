@@ -68,7 +68,10 @@ void NightsideStation::update(automa::ServiceProvider& svc, SceneContext& contex
 		svc.music_player.play_looped();
 		if (!context.console.has_value()) { bryn->force_engage(); }
 	}
-	if (context.console) { bryn->disengage(); }
+	if (context.console) {
+		bryn->disengage();
+		context.console.value()->set_hologram();
+	}
 
 	auto camera_focus = player.get_camera_focus_point();
 

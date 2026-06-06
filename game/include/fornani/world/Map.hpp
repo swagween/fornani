@@ -110,6 +110,7 @@ class Map {
 	void render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	void render_background(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	bool handle_entry(player::Player& player, util::Cooldown& enter_room);
+	void clear_weather();
 
 	// spawns
 	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {}, float speed_multiplier = 1.f, float damage_multiplier = 1.f);

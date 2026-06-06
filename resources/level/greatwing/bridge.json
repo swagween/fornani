@@ -12,10 +12,10 @@
       {
         "background": false,
         "dimensions": [0, 0],
-        "id": 23,
-        "label": "hologus",
+        "id": 7,
+        "label": "minigus",
         "position": [1, 1],
-        "suites": [[1, 2, 3, 4]]
+        "suites": [[11, 12, 13, 14]]
       }
     ],
     "portals": [

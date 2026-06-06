@@ -125,16 +125,9 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		attacks.uppercut.hit.deactivate();
 		attacks.rush.hit.deactivate();
 
-		if (attacks.left_shockwave.hit.active() && !cooldowns.player_punch.running()) {
-			if (attacks.left_shockwave.hurt_player(player)) { player.accumulated_forces.push_back({-40.f, -4.f}); }
-			attacks.left_shockwave.hit.deactivate();
-			cooldowns.player_punch.start();
-		}
-		if (attacks.right_shockwave.hit.active() && !cooldowns.player_punch.running()) {
-			if (attacks.right_shockwave.hurt_player(player)) { player.accumulated_forces.push_back({40.f, -4.f}); }
-			attacks.right_shockwave.hit.deactivate();
-			cooldowns.player_punch.start();
-		}
+		attacks.left_shockwave.hurt_player(player);
+		attacks.right_shockwave.hurt_player(player);
+
 		if (Enemy::animation.get_frame() == 30 && !cooldowns.player_punch.running()) {
 			attacks.punch.hit.activate();
 			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;

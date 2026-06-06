@@ -28,6 +28,8 @@ class WorldClock {
 	void set_speed(int to_rate, int to_transition = 4096);
 	void toggle_military_time();
 	void set_military(bool const to_military);
+	void set_rng(WorldClockInterval interval, float to);
+
 	[[nodiscard]] auto is_military() const -> bool { return m_mode == ClockMode::military; }
 	[[nodiscard]] auto get_normalized_time() const -> float { return static_cast<float>(get_hours() * 60 + get_minutes()) / 1440.f; }
 	[[nodiscard]] auto is_daytime() const -> bool { return calculate_tod_from_hour() == TimeOfDay::day; }
@@ -47,6 +49,7 @@ class WorldClock {
 	[[nodiscard]] auto as_trio() const -> int { return is_daytime() ? 0 : is_nighttime() ? 2 : 1; }
 	[[nodiscard]] auto get_previous_as_trio() const -> int { return get_previous_time_of_day() == TimeOfDay::day ? 0 : get_previous_time_of_day() == TimeOfDay::night ? 2 : 1; }
 	[[nodiscard]] auto happens(WorldClockInterval interval, float chance) { return get_rng(interval) < chance; }
+
 	std::string tod_as_string(TimeOfDay const tod);
 	std::string get_string();
 	std::string get_hours_string();

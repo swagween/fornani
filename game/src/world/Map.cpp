@@ -174,6 +174,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 		scaled_pos.y = entry["position"][1].as<int>();
 		animators.push_back(entity::Animator(svc, entry["label"].as_string(), entry["id"].as<int>(), scaled_pos, entry["foreground"].as_bool()));
 	}*/
+
 	for (auto& entry : entities["beds"].as_array()) {
 		sf::Vector2f pos{};
 		pos.x = entry["position"][0].as<float>() * constants::f_cell_size;
@@ -775,6 +776,16 @@ bool Map::handle_entry(player::Player& player, util::Cooldown& enter_room) {
 	return ret;
 }
 
+void Map::clear_weather() {
+	m_weather.reset();
+	m_weather_specs.reset();
+
+	auto const& metadata = m_services->data.get_map_json_from_id(room_id);
+	if (!metadata) { return; }
+	auto const bg_type = metadata.value().get()["meta"]["background"].as_string();
+	background = std::make_unique<graphics::Background>(*m_services, bg_type, real_dimensions);
+}
+
 void Map::spawn_laser(automa::ServiceProvider& svc, Turret& parent, sf::Vector2f position, LaserType type, util::BitFlags<LaserAttributes> attributes, CardinalDirection direction, int active, int cooldown, float size) {
 	lasers.push_back(Laser(svc, *this, parent, position, type, attributes, direction, active, cooldown, size));
 }
@@ -1072,6 +1083,7 @@ void Map::clear() {
 	fire.clear();
 	active_loot.clear();
 	m_hazards.reset();
+	m_surface_points.clear();
 	point_lights.clear();
 }
 

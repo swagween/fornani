@@ -23,7 +23,7 @@ class Portrait : public Drawable {
 	explicit Portrait(automa::ServiceProvider& svc, sf::Texture const& texture, int id, bool left = true);
 	explicit Portrait(automa::ServiceProvider& svc, int id, bool left = true);
 	void update(automa::ServiceProvider& svc);
-	void render(sf::RenderWindow& win);
+	void render(sf::RenderWindow& win, bool shader = false);
 	void reset(automa::ServiceProvider& svc);
 	void set_position(sf::Vector2f pos);
 	void bring_in();
@@ -32,9 +32,13 @@ class Portrait : public Drawable {
 	void add_sparkler(std::string_view tag);
 	void remove_sparkler();
 
+	sf::Sprite make_sprite();
+
 	[[nodiscard]] auto get_emotion() const -> int { return m_emotion; }
+	[[nodiscard]] auto get_texture() -> sf::RenderTexture& { return m_texture; }
 
   private:
+	sf::RenderTexture m_texture{};
 	sf::Sprite window;
 	std::string_view label{};
 	util::BitFlags<PortraitFlags> flags{};

@@ -1,19 +1,19 @@
 
 #pragma once
 
+#include <SFML/Graphics.hpp>
 #include <fornani/core/Common.hpp>
 #include <fornani/gui/ItemWidget.hpp>
 #include <fornani/gui/Portrait.hpp>
 #include <fornani/gui/console/ResponseDialog.hpp>
 #include <fornani/gui/console/TextWriter.hpp>
 #include <fornani/io/Logger.hpp>
+#include <fornani/shader/HoloShader.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/ID.hpp>
 #include <fornani/utils/NineSlice.hpp>
 #include <fornani/utils/RectPath.hpp>
-
-#include <SFML/Graphics.hpp>
 
 #include <memory>
 #include <string>
@@ -25,7 +25,7 @@ class ControllerMap;
 namespace fornani::gui {
 
 enum class ConsoleMode { writing, responding, off };
-enum class ConsoleFlags { no_exit, close_after_process };
+enum class ConsoleFlags { no_exit, close_after_process, hologram };
 enum class ConsoleTriggers { response_created };
 enum class OutputType { gradual, instant, no_exit, no_skip };
 
@@ -62,6 +62,8 @@ class Console {
 	void set_source(dj::Json const& json);
 	void set_nani_sprite(sf::Sprite const& sprite);
 	void set_no_exit(bool flag) { flag ? m_flags.set(ConsoleFlags::no_exit) : m_flags.reset(ConsoleFlags::no_exit); }
+	void toggle_hologram() { m_flags.toggle(ConsoleFlags::hologram); }
+	void set_hologram(bool on = true) { on ? m_flags.set(ConsoleFlags::hologram) : m_flags.reset(ConsoleFlags::hologram); }
 	void handle_actions(int value);
 	void display_item(std::string_view tag, bool sparkle = true);
 	void display_gun(std::string_view tag, bool sparkle = true);
@@ -115,6 +117,8 @@ class Console {
 
 	OutputType m_output_type{};
 	ConsoleMode m_mode{};
+
+	HoloShader m_holo_shader;
 
 	struct {
 		int corner_factor{};

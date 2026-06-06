@@ -25,6 +25,7 @@ class GameplayState : public GameState, public Flaggable<GameplayStateFlags> {
 
   protected:
 	virtual void pause(ServiceProvider& svc);
+	virtual void unpause(ServiceProvider& svc);
 	void play_song_by_id(int id);
 
   protected:

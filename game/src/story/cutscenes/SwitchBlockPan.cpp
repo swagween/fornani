@@ -37,7 +37,7 @@ void SwitchBlockPan::update(automa::ServiceProvider& svc, SceneContext& context,
 
 	switch (progress) {
 	case 0:
-		if ((player.get_camera_center() - campos).length() < 4.f) {
+		if ((player.get_camera_center() - campos).length() < 20.f) {
 			cooldowns.pause.start();
 			++progress;
 		}

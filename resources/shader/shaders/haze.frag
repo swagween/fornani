@@ -112,7 +112,7 @@ float n = fbm(uvw + p2 * 1.2);
 
 n = smoothstep(0.2, 0.9, n);
 
-   float alpha = n * 0.9;
+float alpha = n * 0.9;
 
 // quantize
 float quantize_factor = 6.0;

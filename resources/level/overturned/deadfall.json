@@ -72,20 +72,6 @@
         ],
         "tag": "clock",
         "type": 2
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 15308,
-        "modifier": 0,
-        "position": [
-          36,
-          85
-        ],
-        "tag": "flippers",
-        "type": 2
       }
     ],
     "enemies": [
@@ -3191,11 +3177,6 @@
     ],
     "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -3231,7 +3212,8 @@
       "environmental_randomness": true,
       "interior": false,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 202,
     "shader": {

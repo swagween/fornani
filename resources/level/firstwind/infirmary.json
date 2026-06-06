@@ -88,7 +88,7 @@
         "direction": -1,
         "face_player": true,
         "hidden": false,
-        "id": 113,
+        "id": 114,
         "label": "dr_go",
         "position": [
           16,
@@ -145,7 +145,7 @@
         "direction": -1,
         "face_player": true,
         "hidden": false,
-        "id": 21458,
+        "id": 114,
         "label": "billy",
         "position": [
           22,

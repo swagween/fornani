@@ -11,8 +11,8 @@ Effect::Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vecto
 	: Animatable(svc, "effect_" + label, {svc.data.effect[label]["dimensions"][0].as<int>(), svc.data.effect[label]["dimensions"][1].as<int>()}) {
 	set_channel(channel);
 	if (random::percent_chance(50)) {
-		if (svc.data.effect[label]["x_reflection"].as_bool()) { scale({-1.f, 1.f}); }
-		if (svc.data.effect[label]["y_reflection"].as_bool()) { scale({1.f, -1.f}); }
+		if (svc.data.effect[label]["x_reflection"].as_bool()) { m_transform.set(SpriteTransform::horizontal); }
+		if (svc.data.effect[label]["y_reflection"].as_bool()) { m_transform.set(SpriteTransform::vertical); }
 	}
 	center();
 	set_parameters({0, svc.data.effect[label]["frame_count"].as<int>(), svc.data.effect[label]["framerate"].as<int>(), 0});
@@ -37,9 +37,9 @@ void Effect::submit(Renderer& renderer) {
 	auto const& sprite_ref = get_sprite();
 	auto const& frame = sprite_ref.getTextureRect();
 	sf::FloatRect dest{pos, sf::Vector2f{static_cast<float>(frame.size.x), static_cast<float>(frame.size.y)}};
-	renderer.submit(sprite_ref.getTexture(), dest, frame, RenderLayer::effects);
+	renderer.submit(sprite_ref.getTexture(), dest, frame, constants::f_scale_factor, sf::Color::White, m_transform, RenderLayer::effects);
 }
 
-void Effect::rotate() { Drawable::rotate(sf::degrees(90)); }
+void Effect::rotate() { m_transform.set(SpriteTransform::rotate); }
 
 } // namespace fornani::entity

@@ -29,7 +29,6 @@ class BuilderDialog final : public IDialog {
   private:
 	std::vector<std::string> m_docket{};
 	std::vector<std::string> m_player_items{};
-	sf::Vector2f m_docket_position{};
 	Animatable m_item_sprite;
 
 	ZoneCollection<BuilderZoneType> m_zones;

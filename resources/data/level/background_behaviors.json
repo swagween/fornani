@@ -123,15 +123,15 @@
         "parallax": 0.0
       },
       {
-        "scroll_speed": 0.78,
+        "scroll_speed": 0.3,
         "parallax": 0.067
       },
       {
-        "scroll_speed": 1.4,
+        "scroll_speed": 0.6,
         "parallax": 0.108
       },
       {
-        "scroll_speed": 3.0,
+        "scroll_speed": 1.0,
         "parallax": 0.18
       }
     ]
@@ -143,7 +143,7 @@
     },
     "layers": [
       {
-        "scroll_speed": 3.9,
+        "scroll_speed": 1.9,
         "parallax": 0.22
       }
     ]

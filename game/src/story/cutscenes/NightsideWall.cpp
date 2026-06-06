@@ -75,7 +75,10 @@ void NightsideWall::update(automa::ServiceProvider& svc, SceneContext& context, 
 		svc.music_player.play_looped();
 		if (!context.console.has_value()) { bryn->force_engage(); }
 	}
-	if (context.console) { bryn->disengage(); }
+	if (context.console) {
+		bryn->disengage();
+		context.console.value()->set_hologram();
+	}
 
 	auto camera_focus = player.get_camera_focus_point();
 	if (progress > 0) { camera_focus = sf::Vector2f{31.f, 77.f} * constants::f_cell_size; }

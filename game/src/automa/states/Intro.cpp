@@ -7,8 +7,8 @@
 namespace fornani::automa {
 
 Intro::Intro(ServiceProvider& svc, player::Player& player, int room_number)
-	: GameplayState(svc, player, room_number), m_airship{svc, "scenery_firstwind_airship", {480, 256}}, m_cloud_sea{svc, "cloud_sea"}, m_cloud{svc, "cloud"}, m_intro_shot{1600}, m_wait{800}, m_end_wait{1200}, m_attack_fadeout{1200},
-	  m_location_text{svc, svc.data.gui_text["locations"]["firstwind"].as_string_view()} {
+	: GameplayState(svc, player, room_number), m_airship{svc, "scenery_firstwind_airship", {480, 256}}, m_cloud_sea{svc, "cloud_sea", {1024, 512}}, m_cloud{svc, "cloud", {1024, 512}}, m_intro_shot{1600}, m_wait{800}, m_end_wait{1200},
+	  m_attack_fadeout{1200}, m_location_text{svc, svc.data.gui_text["locations"]["firstwind"].as_string_view()} {
 	m_map.emplace(svc, player);
 
 	svc.music_player.load(svc.finder, "wind");
@@ -17,6 +17,7 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, int room_number)
 	m_wait.start();
 
 	player.reset_flags();
+	svc.world_clock.set_rng(WorldClockInterval::day, 0.9f);
 	m_map->clear();
 	m_map->load(svc, p_context, room_number);
 	p_context.transition.set_duration(400);

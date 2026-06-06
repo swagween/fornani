@@ -80,6 +80,14 @@ void WorldClock::toggle_military_time() { m_mode = m_mode == ClockMode::standard
 
 void WorldClock::set_military(bool const to_military) { m_mode = to_military ? ClockMode::military : ClockMode::standard; }
 
+void WorldClock::set_rng(WorldClockInterval interval, float to) {
+	switch (interval) {
+	case WorldClockInterval::week: rng.weekly = to;
+	case WorldClockInterval::day: rng.daily = to;
+	case WorldClockInterval::hour: rng.hourly = to;
+	}
+}
+
 std::string WorldClock::get_hours_string() {
 	std::string ret{};
 	std::string twelve_hour = increments.hours.get() % 12 == 0 ? "12" : std::to_string(increments.hours.get() % 12);

@@ -3071,80 +3071,6 @@
       ]
     }
   },
-  "hologus": {
-    "1": {
-      "responses": [],
-      "suite": [
-        [
-          {
-            "codes": [[4, 1]],
-            "message": "My Lady...?"
-          },
-          {
-            "message": "I'm here. I have an unstable connection here, and I can barely hear you."
-          },
-          {
-            "message": "I had to flee Firstwind."
-          }
-        ]
-      ]
-    },
-    "2": {
-      "responses": [],
-      "suite": [
-        [
-          {
-            "codes": [[4, 3]],
-            "message": "My mask was compromised. And besides, the storms up here are ferocious."
-          },
-          {
-            "message": "And I have even worse news..."
-          },
-          {
-            "message": "The Kariba girl escaped."
-          }
-        ]
-      ]
-    },
-    "3": {
-      "responses": [],
-      "suite": [
-        [
-          {
-            "codes": [[4, 5]],
-            "message": "I got nothing at all to say. She had a gun, and she's pretty nimble."
-          },
-          {
-            "message": "I won't underestimate her again."
-          },
-          {
-            "message": "And, by the way, it seems like her memories might be coming back, so I'd bet my next paycheck she's going to try to find her brother."
-          }
-        ]
-      ]
-    },
-    "4": {
-      "responses": [],
-      "suite": [
-        [
-          {
-            "codes": [
-              [4, 2],
-              [5, 1]
-            ],
-            "message": "I set myself up for that one, I guess."
-          },
-          {
-            "codes": [[5, 0]],
-            "message": "Anyway, do us both a favor and get someone else to deal with the Kariba for now."
-          },
-          {
-            "message": "I'll need to properly prepare for the next time I fight her, if it comes to that."
-          }
-        ]
-      ]
-    }
-  },
   "jimmy": {
     "1": {
       "output": 2,
@@ -3845,6 +3771,78 @@
               "Had enough yet?",
               "You don't know when to quit, do you?"
             ]
+          }
+        ]
+      ]
+    },
+    "11": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "codes": [[4, 1]],
+            "message": "My Lady...?"
+          },
+          {
+            "message": "I'm here. I have an unstable connection here, and I can barely hear you."
+          },
+          {
+            "message": "I had to flee Firstwind."
+          }
+        ]
+      ]
+    },
+    "12": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "codes": [[4, 3]],
+            "message": "My mask was compromised. And besides, the storms up here are ferocious."
+          },
+          {
+            "message": "And I have even worse news..."
+          },
+          {
+            "message": "The Kariba girl escaped."
+          }
+        ]
+      ]
+    },
+    "13": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "codes": [[4, 5]],
+            "message": "I got nothing at all to say. She had a gun, and she's pretty nimble."
+          },
+          {
+            "message": "I won't underestimate her again."
+          },
+          {
+            "message": "And, by the way, it seems like her memories might be coming back, so I'd bet my next paycheck she's going to try to find her brother."
+          }
+        ]
+      ]
+    },
+    "14": {
+      "responses": [],
+      "suite": [
+        [
+          {
+            "codes": [
+              [4, 2],
+              [5, 1]
+            ],
+            "message": "I set myself up for that one, I guess."
+          },
+          {
+            "codes": [[5, 0]],
+            "message": "Anyway, do us both a favor and get someone else to deal with the Kariba for now."
+          },
+          {
+            "message": "I'll need to properly prepare for the next time I fight her, if it comes to that."
           }
         ]
       ]

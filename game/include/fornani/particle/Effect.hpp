@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <fornani/core/Fwd.hpp>
+#include <fornani/graphics/SpriteBatch.hpp>
 #include "fornani/components/PhysicsComponent.hpp"
 #include "fornani/entities/animation/Animation.hpp"
 #include "fornani/graphics/Animatable.hpp"
@@ -16,10 +17,12 @@ class Effect final : public Animatable {
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void submit(Renderer& renderer);
 	void rotate();
+
 	[[nodiscard]] auto done() -> bool { return animation.complete(); }
 
   private:
 	components::PhysicsComponent physics{};
+	util::BitFlags<SpriteTransform> m_transform{};
 };
 
 } // namespace fornani::entity

@@ -308,7 +308,7 @@
   "billy": {
     "id": 25,
     "dimensions": [24, 24],
-    "sprite_dimensions": [28, 28],
+    "sprite_dimensions": [23, 11],
     "sprite_offset": [-11, 2],
     "animation": [
       {

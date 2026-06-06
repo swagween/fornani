@@ -6,7 +6,7 @@
 
 namespace fornani {
 
-enum class SpriteFlip { none, horizontal, vertical };
+enum class SpriteTransform { none, horizontal, vertical, rotate };
 enum class RenderLayer { background, scenery, background_entities, player, platforms, projectiles, atmosphere, middleground, particles, foreground_entities, effects, foreground, hud };
 
 struct RenderCommand {
@@ -14,7 +14,7 @@ struct RenderCommand {
 	sf::FloatRect dest{};
 	sf::IntRect uv{};
 	sf::Color color{};
-	util::BitFlags<SpriteFlip> flip{};
+	util::BitFlags<SpriteTransform> flip{};
 	RenderLayer layer{};
 };
 
@@ -23,35 +23,56 @@ class SpriteBatch : public sf::Drawable, public sf::Transformable {
 	void clear() { vertices.clear(); }
 
 	void setTexture(sf::Texture const& tex) { texture = &tex; }
-
-	void add(sf::FloatRect const& dest, sf::IntRect const& uv, sf::Color color = sf::Color::White, util::BitFlags<SpriteFlip> flip = {}) {
-
+	void add(sf::FloatRect const& dest, sf::IntRect const& uv, sf::Color color = sf::Color::White, util::BitFlags<SpriteTransform> flip = {}) {
 		sf::Vertex quad[4];
 
-		float x = dest.position.x;
-		float y = dest.position.y;
-		float w = dest.size.x;
-		float h = dest.size.y;
-
-		float u0 = static_cast<float>(uv.position.x);
-		float v0 = static_cast<float>(uv.position.y);
-		float u1 = static_cast<float>(uv.position.x + uv.size.x);
-		float v1 = static_cast<float>(uv.position.y + uv.size.y);
-
-		if (flip.test(SpriteFlip::horizontal)) std::swap(u0, u1);
-		if (flip.test(SpriteFlip::vertical)) std::swap(v0, v1);
+		float const x = dest.position.x;
+		float const y = dest.position.y;
+		float const w = dest.size.x;
+		float const h = dest.size.y;
+		float const u0 = static_cast<float>(uv.position.x);
+		float const v0 = static_cast<float>(uv.position.y);
+		float const u1 = static_cast<float>(uv.position.x + uv.size.x);
+		float const v1 = static_cast<float>(uv.position.y + uv.size.y);
 
 		quad[0].position = {x, y};
 		quad[1].position = {x + w, y};
 		quad[2].position = {x + w, y + h};
 		quad[3].position = {x, y + h};
 
-		quad[0].texCoords = {u0, v0};
-		quad[1].texCoords = {u1, v0};
-		quad[2].texCoords = {u1, v1};
-		quad[3].texCoords = {u0, v1};
+		sf::Vector2f texcoords[4] = {{u0, v0}, {u1, v0}, {u1, v1}, {u0, v1}};
 
-		for (auto& v : quad) v.color = color;
+		// horizontal flip
+		if (flip.test(SpriteTransform::horizontal)) {
+
+			std::swap(texcoords[0], texcoords[1]);
+			std::swap(texcoords[3], texcoords[2]);
+		}
+
+		// vertical flip
+		if (flip.test(SpriteTransform::vertical)) {
+
+			std::swap(texcoords[0], texcoords[3]);
+			std::swap(texcoords[1], texcoords[2]);
+		}
+
+		// 90 degree clockwise rotation
+		if (flip.test(SpriteTransform::rotate)) {
+
+			auto const tmp = texcoords[0];
+
+			texcoords[0] = texcoords[3];
+			texcoords[3] = texcoords[2];
+			texcoords[2] = texcoords[1];
+			texcoords[1] = tmp;
+		}
+
+		quad[0].texCoords = texcoords[0];
+		quad[1].texCoords = texcoords[1];
+		quad[2].texCoords = texcoords[2];
+		quad[3].texCoords = texcoords[3];
+
+		for (auto& v : quad) { v.color = color; }
 
 		vertices.append(quad[0]);
 		vertices.append(quad[1]);
@@ -74,7 +95,7 @@ class SpriteBatch : public sf::Drawable, public sf::Transformable {
 	}
 
   private:
-	util::BitFlags<SpriteFlip> m_flip{};
+	util::BitFlags<SpriteTransform> m_flip{};
 	sf::VertexArray vertices{sf::PrimitiveType::Triangles};
 	sf::Texture const* texture{};
 };

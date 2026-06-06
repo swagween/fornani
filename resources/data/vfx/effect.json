@@ -152,7 +152,7 @@
   "bullet_hit": {
     "frame_count": 4,
     "framerate": 16,
-    "dimensions": [8, 16]
+    "dimensions": [16, 16]
   },
   "puff": {
     "frame_count": 4,

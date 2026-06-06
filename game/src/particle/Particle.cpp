@@ -49,7 +49,7 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f 
 	if (m_animatable) {
 		m_animatable->center();
 		m_animatable->set_channel(channel);
-		if (random::coin_flip()) { m_flip.set(SpriteFlip::horizontal); }
+		if (random::coin_flip()) { m_flip.set(SpriteTransform::horizontal); }
 	}
 
 	if (in_data["fader"].as_bool()) { m_fader = util::Fader(svc, lifespan.get(), in_data["color"].as_string()); }
