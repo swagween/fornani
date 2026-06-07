@@ -55,6 +55,7 @@
     ]
   },
   "menu_return": {
+    "response_mode": 1,
     "suite": [
       [
         {

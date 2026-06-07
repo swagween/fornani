@@ -8,6 +8,7 @@
 #include <fornani/gui/console/TextWriter.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/Circuit.hpp>
+#include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/Flaggable.hpp>
 #include <string_view>
 
@@ -61,8 +62,8 @@ class ResponseDialog final : public Flaggable<ResponseDialogFlags> {
 	ResponseIndicator m_indicator{};
 	FontSpec* m_font;
 	int m_index{};
-	bool m_ready{};
 	util::Circuit m_selection;
+	util::Cooldown m_stall;
 
 	io::Logger m_logger{"Console"};
 };

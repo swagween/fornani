@@ -330,7 +330,7 @@ fsm::StateFunction Tank::update_shoot_vertical() {
 	auto slide = directions.actual.left() ? 8.f : -8.f;
 	m_gun.move(sf::Vector2f{slide, -8.f});
 	m_weapon.update(*m_services, *m_map, *this);
-	if (!m_weapon.get().cooling_down() && animation.get_frame_count() == 0) { m_weapon.shoot(*m_services, *m_map); }
+	if (!m_weapon.get().cooling_down() && animation.get_frame_count() == 1) { m_weapon.shoot(*m_services, *m_map); }
 	if (animation.complete() && animation.keyframe_over()) {
 		m_gun.sprite->setRotation(sf::degrees(0));
 		directions.actual.neutralize_und();

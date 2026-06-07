@@ -229,7 +229,11 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		p_entity_shader->finalize(svc.data.biomes["properties"][m_map->get_biome_string()]["max_light"].as<float>());
 		auto ent_sprite = sf::Sprite{m_map->m_entity_texture.getTexture()};
 		ent_sprite.setPosition(-cam);
-		if (m_palette) { p_entity_shader->submit(win, *m_palette, ent_sprite); }
+		if (m_palette) {
+			p_entity_shader->submit(win, *m_palette, ent_sprite);
+		} else {
+			win.draw(ent_sprite);
+		}
 		auto sent_sprite = sf::Sprite{m_map->m_static_entity_texture.getTexture()};
 		sent_sprite.setPosition(-cam);
 		if (m_palette) { p_entity_shader->submit(win, *m_palette, sent_sprite); }

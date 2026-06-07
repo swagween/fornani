@@ -45,10 +45,10 @@
     ],
     "interior": false,
     "metagrid": [
-      90,
-      0
+      99,
+      20
     ],
-    "minimap": false,
+    "minimap": true,
     "music": "i_dream_of_sky",
     "player_start": [
       0,

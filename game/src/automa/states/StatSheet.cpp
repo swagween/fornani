@@ -6,7 +6,7 @@
 
 namespace fornani::automa {
 
-StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "stat"), stats(svc.text.fonts.basic.font), title(svc.text.fonts.title.font) {
+StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "stat"), stats(svc.text.fonts.basic.font), title(svc.text.fonts.basic.font) {
 	m_parent_menu = MenuType::file_select;
 	current_selection = util::Circuit(static_cast<int>(options.size()));
 	auto ctr{1};
@@ -18,10 +18,15 @@ StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, AppContext& c
 	}
 	stats = options.at(0).label;
 	title = options.at(0).label;
+	stats.setFont(svc.text.fonts.basic.font);
+
+	auto filedata = svc.data.get_save();
+
 	title.setString("post-game stats");
 	std::string statistics = "death count: " + std::to_string(svc.stats.player.death_count.get_count()) + "\norbs collected: " + std::to_string(svc.stats.treasure.total_orbs_collected.get_count()) +
-							 "\nrooms discovered: " + std::to_string(svc.data.discovered_rooms.size()) + " / 25\nguns collected: " + std::to_string(player.arsenal_size()) +
-							 " / 2\n items found: " + std::to_string(player.catalog.inventory.items_view().size()) + " / 9\n'get bryn's gun' speedrun time: " + svc.stats.tt_formatted() + " seconds";
+							 "\nrooms discovered: " + std::to_string(svc.data.discovered_rooms.size()) + "\nguns collected: " + std::to_string(player.arsenal_size()) +
+							 "\nitems found: " + std::to_string(player.catalog.inventory.items_view().size()) + "\n'get bryn's gun' speedrun time: " + svc.stats.tt_formatted() + " seconds" +
+							 "\nseconds played: " + std::to_string(filedata["player_data"]["stats"]["seconds_played"].as<int>());
 	stats.setString(statistics);
 	stats.setLineSpacing(2.0f);
 	svc.music_player.load(svc.finder, "firstwind");

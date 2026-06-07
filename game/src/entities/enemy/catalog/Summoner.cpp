@@ -36,6 +36,7 @@ Summoner::Summoner(automa::ServiceProvider& svc, world::Map& map, int variant)
 		m_home.y = std::max(pt.x, m_home.y);
 	}
 	flags.state.set(StateFlags::no_slowdown);
+	if (m_variant == SummonerVariant::mage) { attributes.base_hp = 280; }
 }
 
 void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {

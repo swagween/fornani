@@ -28,6 +28,16 @@
             "requirement": 1,
             "strict": true,
             "tag": "defeat_miaag"
+          },
+          {
+            "requirement": 1,
+            "strict": true,
+            "tag": "defeat_miaag"
+          },
+          {
+            "requirement": 1,
+            "strict": true,
+            "tag": "defeat_miaag"
           }
         ],
         "dimensions": [

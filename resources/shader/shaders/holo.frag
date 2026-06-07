@@ -72,7 +72,7 @@ void main()
     color.rgb =
     mix(holo, color.rgb, 0.25);
     
-    color.rgb *= 1.25;
+    color.rgb *= 1.05;
 
     // -------------------------------------------------
     // glow (emission)
@@ -80,7 +80,7 @@ void main()
     float emission =
         smoothstep(0.4, 1.0, lum);
 
-    color.rgb += u_highlight.rgb * emission * 1.2;
+    color.rgb += u_highlight.rgb * emission * 1.1;
 
     // -------------------------------------------------
     // HARD stepped scanlines (pixel stable)

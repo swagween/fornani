@@ -1,5 +1,4 @@
 nani_add_headers(
-        Animator.hpp
         Bed.hpp
         Chest.hpp
         Explosion.hpp

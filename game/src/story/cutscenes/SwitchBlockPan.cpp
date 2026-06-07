@@ -7,7 +7,10 @@
 
 namespace fornani {
 
-fornani::SwitchBlockPan::SwitchBlockPan(automa::ServiceProvider& svc, int block_id) : Cutscene(svc, 2, "switch_block_pan"), m_block_id{block_id} { cooldowns.beginning.set_and_start(32); }
+fornani::SwitchBlockPan::SwitchBlockPan(automa::ServiceProvider& svc, int block_id) : Cutscene(svc, 2, "switch_block_pan"), m_block_id{block_id}, m_wait{256} {
+	cooldowns.beginning.set_and_start(32);
+	m_wait.start();
+}
 
 void SwitchBlockPan::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 
@@ -27,17 +30,17 @@ void SwitchBlockPan::update(automa::ServiceProvider& svc, SceneContext& context,
 	cooldowns.pause.update();
 	cooldowns.long_pause.update();
 	cooldowns.end.update();
+	m_wait.update();
 	player.controller.restrict_movement();
 	if (cooldowns.beginning.running()) { return; }
 
 	auto campos = progress < 5 ? map.get_switch_block_position(m_block_id) : player.get_camera_focus_point();
 	svc.camera_controller.set_owner(graphics::CameraOwner::system);
-	svc.camera_controller.free();
 	svc.camera_controller.set_position(campos);
 
 	switch (progress) {
 	case 0:
-		if ((player.get_camera_center() - campos).length() < 20.f) {
+		if (m_wait.is_almost_complete()) {
 			cooldowns.pause.start();
 			++progress;
 		}

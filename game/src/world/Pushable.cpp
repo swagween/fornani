@@ -64,12 +64,13 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	if (weakened.is_complete()) { hit_count.start(); }
 
 	// reset position if it's far away, and if the player isn't overlapping the start position
+	bool can_respawn = true;
+	if (player.get_collider().bounding_box.overlaps(start_box)) { can_respawn = false; }
+	for (auto& pushable : map.pushables) {
+		if (pushable->get_bounding_box().overlaps(start_box) && pushable.get() != this) { can_respawn = false; }
+	}
 	if (hit_count.get_count() > 2 || map.off_the_bottom(get_collider().physics.position)) {
-		bool can_respawn = true;
-		if (player.get_collider().bounding_box.overlaps(start_box)) { can_respawn = false; }
-		for (auto& pushable : map.pushables) {
-			if (pushable->get_bounding_box().overlaps(start_box) && pushable.get() != this) { can_respawn = false; }
-		}
+
 		if (can_respawn) {
 			reset(svc, map);
 			svc.soundboard.flags.world.set(audio::World::small_crash);
@@ -80,6 +81,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	} else {
 		set_flag(PushableFlags::trying_to_respawn, false);
 	}
+	if (weakened.running() && !can_respawn) { set_flag(PushableFlags::trying_to_respawn); }
 
 	// player pushes block
 	set_flag(PushableFlags::pushed, false);

@@ -149,6 +149,7 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (consume_flag(BossFlags::start_battle)) {
 		set_flag(BossFlags::battle_mode);
 		svc.data.switch_destructible_state(miaag_outer_destructibles);
+		svc.data.destroy_inspectable(5091);
 		request(MiaagState::awaken);
 		svc.music_player.load(svc.finder, "scuffle");
 		svc.music_player.play_looped();

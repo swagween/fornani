@@ -13,6 +13,7 @@ class SwitchBlockPan final : public Cutscene {
 
   private:
 	int m_block_id{};
+	util::Cooldown m_wait;
 };
 
 } // namespace fornani

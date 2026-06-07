@@ -9,7 +9,7 @@
 
 namespace fornani::gui {
 
-ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, QuestTable& quest_table, std::string_view key, int index, sf::Vector2f start_position) : m_font{&text.fonts.basic}, m_selection{1}, m_index{index} {
+ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, QuestTable& quest_table, std::string_view key, int index, sf::Vector2f start_position) : m_font{&text.fonts.basic}, m_selection{1}, m_index{index}, m_stall{32} {
 	auto& set = key == null_key ? source["responses"][index] : source[key]["responses"][index];
 	for (auto& msg : set.as_array()) {
 		auto contingencies_met = true;
@@ -37,6 +37,7 @@ ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, QuestT
 	m_indicator.position = start_position;
 	m_indicator.physics.position = start_position;
 	m_position = start_position;
+	if (source["response_mode"].as<int>() != 1) { m_stall.start(); }
 }
 
 auto ResponseDialog::get_codes(std::size_t index) const -> std::optional<std::vector<MessageCode>> {
@@ -56,10 +57,6 @@ bool ResponseDialog::handle_inputs(input::InputSystem& controller, audio::Soundb
 	auto const& down = controller.menu_move(input::MoveDirection::down);
 	auto const& select = controller.digital(input::DigitalAction::menu_select).triggered;
 
-	if (select && m_ready) {
-		soundboard.flags.console.set(audio::Console::next);
-		return false;
-	}
 	if (up) {
 		soundboard.flags.console.set(audio::Console::shift);
 		m_selection.modulate(-1);
@@ -68,7 +65,11 @@ bool ResponseDialog::handle_inputs(input::InputSystem& controller, audio::Soundb
 		soundboard.flags.console.set(audio::Console::shift);
 		m_selection.modulate(1);
 	}
-	m_ready = true;
+	if (m_stall.running()) { return true; }
+	if (select) {
+		soundboard.flags.console.set(audio::Console::next);
+		return false;
+	}
 	return true;
 }
 
@@ -90,7 +91,10 @@ void ResponseDialog::render(sf::RenderWindow& win) {
 	}
 }
 
-void ResponseDialog::update() { m_indicator.update(); }
+void ResponseDialog::update() {
+	m_indicator.update();
+	m_stall.update();
+}
 
 void ResponseDialog::set_position(sf::Vector2f to_position) { m_position = to_position; }
 
