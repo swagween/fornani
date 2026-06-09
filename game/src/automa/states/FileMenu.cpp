@@ -70,8 +70,8 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	// file deletion requested
 	if (svc.state_controller.actions.consume(Actions::delete_file)) {
 		svc.data.delete_file(current_selection.get());
-		refresh(svc);
 		svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
+		refresh(svc);
 	}
 
 	auto& opt = options.at(current_selection.get());

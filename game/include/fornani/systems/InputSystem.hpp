@@ -90,11 +90,11 @@ struct DigitalActionSource {
 
 class InputSystem final : public Flaggable<InputSystemFlags> {
   public:
-	friend class Game;
+	friend class fornani::Game;
 	friend class automa::ControlsMenu;
 	friend class automa::SettingsMenu;
 	friend class data::DataManager;
-	friend class UserSettings;
+	friend class fornani::UserSettings;
 
 	InputSystem(ResourceFinder& finder);
 	void handle_event(std::optional<sf::Event> const event);

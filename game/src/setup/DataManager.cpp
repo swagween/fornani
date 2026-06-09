@@ -719,7 +719,7 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 
 	for (auto& enemy : save["map_data"]["fallen_enemies"].as_array()) {
 		fallen_enemies.push_back({std::make_pair(enemy[0].as<int>(), StableID{enemy[1].as<StableID::underlying_type>()}), enemy[2].as<int>(), static_cast<bool>(enemy[3].as<int>()), static_cast<bool>(enemy[4].as<int>())});
-	};
+	}
 	player.piggybacker = {};
 	if (save["piggybacker"].as<int>() != 0) { player.piggyback(save["piggybacker"].as<int>()); }
 

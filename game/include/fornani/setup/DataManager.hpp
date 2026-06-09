@@ -44,7 +44,7 @@ struct EnemyState {
 class DataManager final {
 
   public:
-	friend class Game;
+	friend class fornani::Game;
 	explicit DataManager(automa::ServiceProvider& svc);
 	// game save
 	void load_data();

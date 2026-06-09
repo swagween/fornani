@@ -39,7 +39,7 @@ class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {
 	virtual void handle_map_collision(world::Map& map);
 	virtual void handle_map_collision(world::Tile const& tile);
 	virtual void detect_map_collision(world::Map& map);
-	virtual void handle_collision(Shape const& shape, bool soft = false);
+	virtual void handle_collision(Shape const& shape, bool soft);
 	virtual bool handle_collider_collision(Shape const& collider, bool soft = false, sf::Vector2f velocity = {}, float force = 0.01f, bool crusher = false); // returns true if grounded on collider
 	virtual void handle_collider_collision(Collider const& collider, bool momentum = false);
 	virtual void handle_collider_collision(CircleCollider& collider);

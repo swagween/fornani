@@ -10,7 +10,7 @@ namespace fornani {
 class HoloShader {
   public:
 	HoloShader(ResourceFinder& finder);
-	void finalize(float time, sf::Color highlight, sf::Color shadow);
+	void finalize(float time, sf::Color highlight, sf::Color shadow, float glow = 1.1f);
 	void submit(sf::RenderWindow& win, sf::Sprite const& sprite);
 
   private:

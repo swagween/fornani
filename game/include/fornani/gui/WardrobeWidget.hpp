@@ -1,19 +1,14 @@
 
 #pragma once
 
-#include "fornani/entities/player/Wardrobe.hpp"
-
+#include <SFML/Graphics.hpp>
+#include <fornani/core/Fwd.hpp>
+#include <fornani/entities/player/Wardrobe.hpp>
 #include <fornani/io/Logger.hpp>
 
-#include <SFML/Graphics.hpp>
-
-namespace fornani::automa {
-struct ServiceProvider;
+namespace fornani {
+class HoloShader;
 }
-
-namespace fornani::player {
-class Player;
-} // namespace fornani::player
 
 namespace fornani::gui {
 
@@ -22,6 +17,7 @@ class WardrobeWidget {
 	explicit WardrobeWidget(automa::ServiceProvider& svc);
 	void update(player::Player& player);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
+	void submit(automa::ServiceProvider& svc, sf::RenderWindow& win, HoloShader& shader, sf::Vector2f cam, sf::Color highlight, sf::Color shadow);
 	void set_position(sf::Vector2f pos) { position = pos; }
 	[[nodiscard]] auto get_sprite() -> sf::Sprite& { return out_nani; }
 

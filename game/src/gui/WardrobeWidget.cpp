@@ -1,5 +1,6 @@
 
 #include "fornani/gui/WardrobeWidget.hpp"
+#include <fornani/shader/HoloShader.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
@@ -31,6 +32,14 @@ void WardrobeWidget::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	win.draw(background);
 	out_nani.setPosition(position - cam);
 	win.draw(out_nani);
+}
+
+void WardrobeWidget::submit(automa::ServiceProvider& svc, sf::RenderWindow& win, HoloShader& shader, sf::Vector2f cam, sf::Color highlight, sf::Color shadow) {
+	background.setPosition(position - cam);
+	win.draw(background);
+	out_nani.setPosition(position - cam);
+	shader.finalize(svc.ticker.total_seconds_passed.count(), highlight, shadow, 0.1f);
+	shader.submit(win, out_nani);
 }
 
 auto WardrobeWidget::get_lookup(player::ApparelType type, player::Player& player) const -> sf::IntRect {

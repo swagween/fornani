@@ -13,12 +13,16 @@ HoloShader::HoloShader(ResourceFinder& finder) {
 	// if (!m_shader.loadFromFile(vert, frag)) { NANI_LOG_WARN(m_logger, "Failed to load shader {}", frag.string()); }
 }
 
-void HoloShader::finalize(float time, sf::Color highlight, sf::Color shadow) {
+void HoloShader::finalize(float time, sf::Color highlight, sf::Color shadow, float glow) {
 	m_shader.setUniform("u_time", time);
 	m_shader.setUniform("u_highlight", sf::Glsl::Vec4(highlight));
 	m_shader.setUniform("u_shadow", sf::Glsl::Vec4(shadow));
+	m_shader.setUniform("u_glowStrength", glow);
 }
 
-void HoloShader::submit(sf::RenderWindow& win, sf::Sprite const& sprite) { win.draw(sprite, &m_shader); }
+void HoloShader::submit(sf::RenderWindow& win, sf::Sprite const& sprite) {
+	m_shader.setUniform("u_textureSize", sf::Glsl::Vec2(sprite.getTexture().getSize()));
+	win.draw(sprite, &m_shader);
+}
 
 } // namespace fornani

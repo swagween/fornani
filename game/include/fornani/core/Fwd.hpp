@@ -27,5 +27,6 @@ struct SceneContext;
 
 class SpriteBatch;
 class Renderer;
+class ResourceFinder;
 
 } // namespace fornani

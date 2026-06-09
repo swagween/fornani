@@ -227,6 +227,7 @@ void Console::display_gun(std::string_view tag, bool sparkle) {
 void Console::write(sf::RenderWindow& win, bool instant) {
 	if (!is_active()) { return; }
 	if (!m_writer) { return; }
+	if (m_launch.running()) { return; }
 	instant ? m_writer->write_instant_message(win) : m_writer->write_gradual_message(win);
 }
 
