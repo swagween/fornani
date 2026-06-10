@@ -259,6 +259,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Camera");
 					ImGui::Text("Target Position: (%.2f, %.2f)", services.camera_controller.get_position().x, services.camera_controller.get_position().y);
 					ImGui::Text("Actual Position: (%.2f, %.2f)", player.get_actual_camera_position().x, player.get_actual_camera_position().y);
+					ImGui::Text("Camera state: %s", services.camera_controller.is_free() ? "free" : "constrained");
 					if (ImGui::Button("Toggle Freedom")) { services.camera_controller.is_free() ? services.camera_controller.constrain() : services.camera_controller.free(); }
 					ImGui::Separator();
 					ImGui::Text("Ticker");
@@ -549,6 +550,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
 								ImGui::Text("Push Time: %i", player.cooldowns.push.get());
 								ImGui::Text("Acceleration Multiplier: %f", player.get_collider().acceleration_multiplier);
+								ImGui::Text("Accumumalted Momentum: %i", player.accumulated_momentum.size());
 								ImGui::Separator();
 								ImGui::SliderFloat("Antenna Force", &player.physics_stats.antenna_force, 0.1f, 3.f);
 								ImGui::SliderFloat("Antenna Friction", &player.physics_stats.antenna_friction, 0.8f, 1.f);

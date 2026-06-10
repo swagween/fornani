@@ -271,7 +271,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	if (m_state.test(NPCState::engaged) && m_state.consume(NPCState::just_engaged)) { m_indicator.set_parameters(anim::Parameters{0, 15, 16, 0, true}); }
 
 	if (!has_flag_set(NPCFlags::custom_camera)) {
-		if (m_state.test(NPCState::talking)) {
+		if (m_state.test(NPCState::interacting)) {
 			svc.camera_controller.free();
 		} else if (!has_flag_set(NPCFlags::cutscene)) {
 			svc.camera_controller.constrain();

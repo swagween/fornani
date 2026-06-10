@@ -142,4 +142,8 @@ auto Inventory::can_build(dj::Json const& product) const -> bool {
 	return true;
 }
 
+auto Inventory::get_number_of_items(item::ItemType type) const -> std::size_t {
+	return std::ranges::count_if(m_items, [type](auto const& item) { return item.item->get_type() == type; });
+}
+
 } // namespace fornani::player

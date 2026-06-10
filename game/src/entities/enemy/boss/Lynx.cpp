@@ -131,7 +131,7 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 				slash.enable();
 				if (Enemy::animation.get_frame_count() != 4) { slash.disable(); }
 			}
-			slash.hurt_player(player, damage, {Enemy::directions.actual.as_float() * 4.f, -2.f});
+			slash.hurt_player(player, damage, {Enemy::directions.desired.as_float() * 0.4f, -0.2f});
 			slash.cancel_projectiles(svc, map, get_team(), 4);
 		}
 	}

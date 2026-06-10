@@ -12,7 +12,7 @@ namespace fornani::entity {
 
 class Effect final : public Animatable {
   public:
-	Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0);
+	Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0, float scale = 1.f);
 	void update();
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void submit(Renderer& renderer);

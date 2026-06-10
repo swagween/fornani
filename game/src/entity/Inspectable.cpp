@@ -36,6 +36,7 @@ void Inspectable::serialize(dj::Json& out) {
 	out["series"] = dj::Json::empty_array();
 	for (auto i{0}; i < 1; ++i) {
 		auto next = dj::Json{};
+		next["hide_portrait"] = true;
 		for (auto j = 0; j < 2; ++j) {
 			auto& from_set = j == 0 ? m_suites : m_responses;
 			auto tag = j == 0 ? "suite" : "responses";

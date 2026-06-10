@@ -1374,5 +1374,52 @@
       "foreground": true,
       "rare_drops": false
     }
+  },
+  "sentinel": {
+    "metadata": {
+      "id": 30,
+      "variant": "guardian"
+    },
+    "physical": {
+      "dimensions": [108, 108],
+      "sprite_dimensions": [96, 96],
+      "offset": [0, -39],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [900.0, 900.0],
+      "hostile_range": [400.0, 400.0],
+      "friction": 0.99,
+      "gravity": 3.0
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 0
+    },
+    "audio": {
+      "hit": -1
+    },
+    "attributes": {
+      "base_hp": 300,
+      "base_damage": 1.0,
+      "speed": 1.6,
+      "loot_multiplier": 12.0,
+      "drop_range": [15, 18],
+      "respawn_distance": 10,
+      "permadeath": false,
+      "size": 2,
+      "team": 1
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "map_collision": true,
+      "player_collision": true,
+      "hurt_on_contact": false,
+      "uncrushable": true,
+      "foreground": true,
+      "rare_drops": false,
+      "sturdy": true,
+      "crusher": true
+    }
   }
 }

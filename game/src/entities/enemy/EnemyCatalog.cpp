@@ -25,10 +25,12 @@
 #include <fornani/entities/enemy/catalog/Minion.hpp>
 #include <fornani/entities/enemy/catalog/Mizzle.hpp>
 #include <fornani/entities/enemy/catalog/MizzleEgg.hpp>
+#include <fornani/entities/enemy/catalog/Sentinel.hpp>
 #include <fornani/entities/enemy/catalog/Spitefly.hpp>
 #include <fornani/entities/enemy/catalog/Summoner.hpp>
 #include <fornani/entities/enemy/catalog/Tank.hpp>
 #include <fornani/entities/enemy/catalog/Thug.hpp>
+
 namespace fornani::enemy {
 
 EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
@@ -61,6 +63,7 @@ EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
 	EnemyRegistry::register_factory(27, [](auto& svc, auto& map, auto&, EnemyParameters const&) { return std::make_unique<MizzleEgg>(svc, map); });
 	EnemyRegistry::register_factory(28, [](auto& svc, auto& map, auto&, EnemyParameters const&) { return std::make_unique<Haunch>(svc, map); });
 	EnemyRegistry::register_factory(29, [](auto& svc, auto& map, auto&, EnemyParameters const&) { return std::make_unique<Lymphocyte>(svc, map); });
+	EnemyRegistry::register_factory(30, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Sentinel>(svc, map, p.variant); });
 }
 
 void EnemyCatalog::update() {

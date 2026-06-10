@@ -154,6 +154,16 @@
     "framerate": 16,
     "dimensions": [16, 16]
   },
+  "sword_slash": {
+    "frame_count": 2,
+    "framerate": 32,
+    "dimensions": [186, 186]
+  },
+  "sword_swipe": {
+    "frame_count": 2,
+    "framerate": 32,
+    "dimensions": [186, 186]
+  },
   "puff": {
     "frame_count": 4,
     "framerate": 32,

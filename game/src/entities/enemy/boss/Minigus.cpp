@@ -131,7 +131,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		if (Enemy::animation.get_frame() == 30 && !cooldowns.player_punch.running()) {
 			attacks.punch.hit.activate();
 			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
-			if (attacks.punch.hurt_player(player)) {
+			if (attacks.punch.hurt_player(player, 1.f, {sign * 0.9f, -0.4f})) {
 				player.accumulated_forces.push_back({sign * 10.f, -4.f});
 				attacks.punch.sensor.deactivate();
 				cooldowns.player_punch.start();
@@ -140,8 +140,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		if (Enemy::animation.get_frame() == 37 && !cooldowns.player_punch.running()) {
 			attacks.uppercut.hit.activate();
 			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
-			if (attacks.uppercut.hurt_player(player)) {
-				player.accumulated_forces.push_back({sign * 10.f, -4.f});
+			if (attacks.uppercut.hurt_player(player, 1.f, {sign * 0.8f, -0.9f})) {
 				attacks.uppercut.sensor.deactivate();
 				cooldowns.player_punch.start();
 			}
@@ -150,8 +149,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
 			if ((sign == -1.f && Enemy::player_behind(player)) || (sign == 1.f && !Enemy::player_behind(player))) {
 				attacks.rush.hit.activate();
-				if (attacks.rush.hurt_player(player)) {
-					player.accumulated_forces.push_back({sign * 10.f, -4.f});
+				if (attacks.rush.hurt_player(player, 1.f, {sign * 1.2f, -0.3f})) {
 					attacks.rush.sensor.deactivate();
 					cooldowns.player_punch.start();
 				}

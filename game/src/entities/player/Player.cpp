@@ -347,6 +347,13 @@ void Player::update(world::Map& map) {
 
 	force_cooldown.update();
 	for (auto& force : accumulated_forces) { get_collider().physics.apply_force(force); }
+	auto sum = 0.f;
+	for (auto& force : accumulated_momentum) {
+		get_collider().physics.apply_force(force);
+		force = force.componentWiseMul({0.995f, 0.95f});
+		sum += force.lengthSquared();
+	}
+	if (sum < constants::small_value) { accumulated_momentum.clear(); }
 	accumulated_forces.clear();
 	get_collider().physics.impart_momentum();
 	if (controller.moving() || get_collider().has_horizontal_collision() || get_collider().flags.external_state.test(shape::ExternalState::vert_world_collision) || get_collider().world_grounded()) {
@@ -815,7 +822,11 @@ void Player::hurt(float amount, bool force) {
 		hurt_cooldown.start(2);
 		if (health.is_dead() && !is_dead()) { m_death_type = PlayerDeathType::normal; }
 		if (is_stunned() && cooldowns.stun.get_normalized() < 0.9f) { cooldowns.stun.start(4); }
-		m_services->ticker.freeze_frame(24 * std::min(static_cast<int>(amount), 3));
+		if (amount > 1.f) {
+			m_services->ticker.freeze_frame(48, 0.01f);
+		} else {
+			m_services->ticker.freeze_frame(24);
+		}
 	}
 }
 

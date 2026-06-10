@@ -815,7 +815,7 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon
 	if (weapon.secondary_emitter) { spawn_emitter(svc, weapon.secondary_emitter.value().type, weapon.get_barrel_point(), weapon.get_firing_direction(), weapon.secondary_emitter.value().dimensions, weapon.secondary_emitter.value().color); }
 }
 
-void Map::spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel, int channel) { effects.push_back(entity::Effect(svc, tag.data(), pos, vel, channel)); }
+void Map::spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel, int channel, float scale) { effects.push_back(entity::Effect(svc, tag.data(), pos, vel, channel, scale)); }
 
 void Map::spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, Direction dir, sf::Vector2f dim, sf::Color color, int channel) {
 	active_emitters.push_back(std::make_unique<vfx::Emitter>(svc, *this, pos, dim, tag, color, dir, channel));
@@ -1195,7 +1195,7 @@ auto Map::get_closest_home_point(sf::Vector2f const check) const -> sf::Vector2f
 	return ret;
 }
 
-auto Map::is_toxic() const -> bool { return (get_style_id() == 7 && is_interior()) || has_property(MapProperties::toxic); }
+auto Map::is_toxic() const -> bool { return (get_style_id() == 7 && !is_interior()) || has_property(MapProperties::toxic); }
 
 auto Map::get_ambience_balance() const -> float { return ambience_balance.get(); }
 

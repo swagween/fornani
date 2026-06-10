@@ -48,6 +48,7 @@ Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position
 	if (size > 1) { get_collider().set_attribute(shape::ColliderAttributes::crusher); }
 	get_collider().wallslide_buffer = 0.9f;
 	m_intro.start();
+	get_collider().physics.acceleration.x = speed / mass;
 }
 
 void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {

@@ -8,7 +8,7 @@ namespace fornani::gui {
 fornani::gui::BuilderDialog::BuilderDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id)
 	: IDialog(svc, map, player, vendor_id, "builder"), m_item_sprite{svc, "inventory_items", {18, 18}}, m_orb_display{svc},
 	  m_constituents{VendorConstituent{svc, "docket", {{200, 335}, {162, 95}}, 200, util::InterpolationType::cubic}, VendorConstituent{svc, "stage", {{207, 190}, {171, 145}}}, VendorConstituent{svc, "inventory", {{300, 100}, {200, 150}}}},
-	  m_zones{InventoryZone{{1, 1}, {19.f, 19.f}, {100.f, 100.f}}, InventoryZone{{1, 2}, {19.f, 19.f}, {200.f, 100.f}}, InventoryZone{{4, 4}, {19.f, 19.f}, {300.f, 100.f}}} {
+	  m_zones{InventoryZone{{1, 1}, {19.f, 19.f}, {100.f, 100.f}}, InventoryZone{{1, 3}, {19.f, 19.f}, {200.f, 100.f}}, InventoryZone{{1, 1}, {19.f, 19.f}, {300.f, 100.f}}} {
 	auto const& in = svc.data.npc[p_npc_label]["builder"];
 	p_upcharge = in["upcharge"].as<float>();
 	for (auto const& item : in["docket"].as_array()) { m_docket.push_back(item.as_string()); };
@@ -18,11 +18,11 @@ fornani::gui::BuilderDialog::BuilderDialog(automa::ServiceProvider& svc, world::
 	m_description = std::make_unique<DescriptionGizmo>(svc, map, sf::Vector2f{}, sf::IntRect{}, sf::FloatRect{{308.f, 308.f}, {350.f, 120.f}}, sf::Vector2f{});
 	m_description->set_text_only(true);
 
-	std::size_t index = 0;
 	for (auto [i, item] : std::views::enumerate(player.catalog.inventory.items_view())) {
 		if (!item.item->is_collectible()) { continue; }
 		m_player_items.push_back(item.item->get_label());
 	}
+	m_zones.at(BuilderZoneType::inventory).table_dimensions.x = static_cast<int>(m_player_items.size());
 }
 
 void BuilderDialog::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, SceneContext& context) {
@@ -74,6 +74,7 @@ void BuilderDialog::update(automa::ServiceProvider& svc, world::Map& map, player
 
 	auto tag = std::string{};
 	if (m_zones.get_zone() == BuilderZoneType::docket) { tag = m_docket.at(m_selector->get_current_selection()); }
+	if (m_zones.get_zone() == BuilderZoneType::inventory) { tag = m_player_items.at(m_selector->get_current_selection()); }
 	auto const& current_item = svc.data.get_item_json_from_tag(tag);
 	if (m_item_menu && m_selector && !current_item.is_null()) {
 		if (m_item_menu->was_selected()) {
@@ -84,6 +85,12 @@ void BuilderDialog::update(automa::ServiceProvider& svc, world::Map& map, player
 					player.give_item(current_item["tag"].as_string(), 1);
 					svc.soundboard.play_sound("vendor_sale");
 					m_item_menu.reset();
+					m_player_items.clear();
+					for (auto [i, item] : std::views::enumerate(player.catalog.inventory.items_view())) {
+						if (!item.item->is_collectible()) { continue; }
+						m_player_items.push_back(item.item->get_label());
+					}
+					m_zones.at(BuilderZoneType::inventory).table_dimensions.x = static_cast<int>(m_player_items.size());
 				} else {
 					svc.soundboard.play_sound("error");
 					m_item_menu.reset();
@@ -125,22 +132,23 @@ void BuilderDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 		win.draw(m_item_sprite);
 	}
 	if (!m_selector) { return; }
-	if (m_selector->get_current_selection() >= m_docket.size()) { return; }
 
-	auto& current_item = svc.data.get_item_json_from_tag(m_docket.at(m_selector->get_current_selection()));
+	auto tag = std::string{};
+	if (m_zones.get_zone() == BuilderZoneType::docket) { tag = m_docket.at(m_selector->get_current_selection()); }
+	if (m_zones.get_zone() == BuilderZoneType::inventory) { tag = m_player_items.at(m_selector->get_current_selection()); }
+	auto const& current_item = svc.data.get_item_json_from_tag(tag);
 
 	m_orb_display.render(win, {200.f, 480.f});
-	if (m_selector->matches(BuilderZoneType::docket)) {
-		for (auto [index, ingredient] : std::views::enumerate(current_item["build"]["recipe"].as_array())) {
-			auto item = player.catalog.inventory.find_item_stack(ingredient.as_string_view());
-			if (item == nullptr) { continue; }
-			auto where = m_zones.at(BuilderZoneType::controls).render_offset;
-			item->item->render(win, m_item_sprite.get_sprite(), where + sf::Vector2f{0.f, static_cast<float>(index)} * 38.f);
+	if (m_zones.get_zone() == BuilderZoneType::docket) {
+		if (!current_item.is_null()) {
+			for (auto [index, ingredient] : std::views::enumerate(current_item["build"]["recipe"].as_array())) {
+				auto item = player.catalog.inventory.find_item_stack(ingredient.as_string_view());
+				if (item == nullptr) { continue; }
+				auto where = m_zones.at(BuilderZoneType::controls).render_offset;
+				item->item->render(win, m_item_sprite.get_sprite(), where + sf::Vector2f{0.f, static_cast<float>(index)} * 38.f);
+			}
 		}
 	}
-	if (!m_description) { return; }
-	m_description->write(svc, current_item["naive_description"].as_string(), svc.text.fonts.basic);
-	m_description->render(svc, win, player, shader, p_palette, {600.f, 100.f});
 
 	for (auto [index, id] : std::views::enumerate(m_player_items)) {
 		auto item = player.catalog.inventory.find_item_stack(id);
@@ -150,6 +158,12 @@ void BuilderDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 		item->item->render(win, m_item_sprite.get_sprite(), where + sf::Vector2f{static_cast<float>(index), 0.f} * 38.f);
 	}
 	m_selector->render(win, p_selector_sprite.get_sprite(), {2.f, 2.f}, {});
+
+	if (!m_description) { return; }
+	if (m_zones.get_zone() == BuilderZoneType::docket || m_zones.get_zone() == BuilderZoneType::inventory) {
+		m_description->write(svc, current_item["naive_description"].as_string(), svc.text.fonts.basic);
+		m_description->render(svc, win, player, shader, p_palette, {600.f, 100.f});
+	}
 	if (m_item_menu) { m_item_menu->render(win); }
 
 	debug();
@@ -175,6 +189,7 @@ void BuilderDialog::debug() {
 			ImGui::Text("Selector X Index: %i", m_selector->get_index().x);
 			ImGui::Text("Selector Y Index: %i", m_selector->get_index().y);
 			ImGui::Text("Current Zone: %i", static_cast<int>(m_zones.get_zone()));
+			ImGui::Text("Player Inventory: %i", static_cast<int>(m_player_items.size()));
 		}
 		ImGui::End();
 	}

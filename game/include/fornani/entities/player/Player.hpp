@@ -328,6 +328,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	} cooldowns{};
 	Counters counters{};
 	std::vector<sf::Vector2f> accumulated_forces{};
+	std::vector<sf::Vector2f> accumulated_momentum{};
 	std::optional<util::QuestCode> quest_code{};
 	std::optional<Piggybacker> piggybacker{};
 

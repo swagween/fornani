@@ -10,6 +10,8 @@ nani_add_sources(
         Eyebit.cpp
         Eyebot.cpp
         Frdog.cpp
+        Golem.cpp
+        Hellion.cpp
         Imp.cpp
         Junker.cpp
         Junkfly.cpp
@@ -22,6 +24,7 @@ nani_add_sources(
         Tank.cpp
         Thug.cpp
         Hulmet.cpp
+        Sentinel.cpp
         Spitefly.cpp
         Summoner.cpp
 )

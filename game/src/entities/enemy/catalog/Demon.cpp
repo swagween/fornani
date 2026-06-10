@@ -49,7 +49,7 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	cooldowns.stab.update();
 
 	attacks.stab.update();
-	attacks.stab.hurt_player(player, 1.f, {Enemy::directions.actual.as_float() * 4.f, -2.f});
+	attacks.stab.hurt_player(player, 1.f, {Enemy::directions.actual.as_float() * 0.5f, -0.1f});
 	attacks.stab.cancel_projectiles(svc, map, get_team());
 	attacks.stab.disable();
 	if (is_state(DemonState::stab)) {

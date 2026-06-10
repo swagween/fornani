@@ -7,12 +7,15 @@
 
 namespace fornani::entity {
 
-Effect::Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vector2f pos, sf::Vector2f vel, int channel)
+Effect::Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vector2f pos, sf::Vector2f vel, int channel, float scale)
 	: Animatable(svc, "effect_" + label, {svc.data.effect[label]["dimensions"][0].as<int>(), svc.data.effect[label]["dimensions"][1].as<int>()}) {
 	set_channel(channel);
 	if (random::percent_chance(50)) {
 		if (svc.data.effect[label]["x_reflection"].as_bool()) { m_transform.set(SpriteTransform::horizontal); }
 		if (svc.data.effect[label]["y_reflection"].as_bool()) { m_transform.set(SpriteTransform::vertical); }
+	}
+	if (scale != 1.f) {
+		if (scale == -1.f) { m_transform.set(SpriteTransform::horizontal); }
 	}
 	center();
 	set_parameters({0, svc.data.effect[label]["frame_count"].as<int>(), svc.data.effect[label]["framerate"].as<int>(), 0});

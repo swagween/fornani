@@ -10,6 +10,8 @@ nani_add_headers(
         Eyebit.hpp
         Eyebot.hpp
         Frdog.hpp
+        Golem.hpp
+        Hellion.hpp
         Imp.hpp
         Junker.hpp
         Junkfly.hpp
@@ -22,6 +24,7 @@ nani_add_headers(
         Tank.hpp
         Thug.hpp
         Hulmet.hpp
+        Sentinel.hpp
         Spitefly.hpp
         Summoner.hpp
 )

@@ -80,6 +80,674 @@
         ]
       }
     ],
+    "chests": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 78329,
+        "modifier": 0,
+        "position": [
+          21,
+          17
+        ],
+        "tag": "cridium_shard",
+        "type": 2
+      }
+    ],
+    "destructibles": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 30001,
+        "inverse": false,
+        "position": [
+          19,
+          17
+        ]
+      }
+    ],
+    "inspectables": [
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": false,
+        "key": "base_server",
+        "position": [
+          4,
+          15
+        ],
+        "series": [
+          {
+            "hide_portrait": true,
+            "responses": [
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      1
+                    ]
+                  ],
+                  "message": "7"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      2
+                    ]
+                  ],
+                  "message": "8"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      2
+                    ]
+                  ],
+                  "message": "9"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "message": "7"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "message": "8"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "message": "9"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "message": "1"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "message": "2"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "message": "3"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "message": "0"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "message": "1"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "message": "4"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "message": "5"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "message": "6"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      7
+                    ]
+                  ],
+                  "message": "4"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      8
+                    ]
+                  ],
+                  "message": "5"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      8
+                    ]
+                  ],
+                  "message": "6"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      8
+                    ]
+                  ],
+                  "message": "0"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      8
+                    ]
+                  ],
+                  "message": "1"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      8
+                    ]
+                  ],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      9
+                    ]
+                  ],
+                  "message": "0"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      10
+                    ]
+                  ],
+                  "message": "1"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      10
+                    ]
+                  ],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      10
+                    ]
+                  ],
+                  "message": "0"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      10
+                    ]
+                  ],
+                  "message": "1"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      10
+                    ]
+                  ],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      12
+                    ]
+                  ],
+                  "message": "0"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      12
+                    ]
+                  ],
+                  "message": "1"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      11
+                    ]
+                  ],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      12
+                    ]
+                  ],
+                  "message": "0"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      12
+                    ]
+                  ],
+                  "message": "1"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      12
+                    ]
+                  ],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      14
+                    ]
+                  ],
+                  "message": "0"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      13
+                    ]
+                  ],
+                  "message": "1"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      14
+                    ]
+                  ],
+                  "message": "2"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      14
+                    ]
+                  ],
+                  "message": "4"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      14
+                    ]
+                  ],
+                  "message": "5"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      14
+                    ]
+                  ],
+                  "message": "6"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      14
+                    ]
+                  ],
+                  "message": "4"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      15
+                    ]
+                  ],
+                  "message": "5"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      14
+                    ]
+                  ],
+                  "message": "6"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      14
+                    ]
+                  ],
+                  "message": "7"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      14
+                    ]
+                  ],
+                  "message": "8"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      14
+                    ]
+                  ],
+                  "message": "9"
+                }
+              ]
+            ],
+            "suite": [
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      0
+                    ]
+                  ],
+                  "message": "Server Code: BRAVECAT"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      1
+                    ]
+                  ],
+                  "message": "Server Code: BRAVECAT"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      2
+                    ]
+                  ],
+                  "message": "Server Code: BRAVECAT"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "message": "Server Code: BRAVECAT"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "message": "Server Code: BRAVECAT"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "message": "Server Code: BRAVECAT"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "message": "Server Code: BRAVECAT"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      7
+                    ]
+                  ],
+                  "message": "Server Code: BRAVECAT"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      8
+                    ]
+                  ],
+                  "message": "Server Code: BRAVECAT"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      9
+                    ]
+                  ],
+                  "message": "Server Code: BRAVECAT"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      10
+                    ]
+                  ],
+                  "message": "Server Code: BRAVECAT"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      11
+                    ]
+                  ],
+                  "message": "Server Code: BRAVECAT"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      12
+                    ]
+                  ],
+                  "message": "Server Code: BRAVECAT"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      1,
+                      13
+                    ]
+                  ],
+                  "message": "Server Code: BRAVECAT"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      8,
+                      0
+                    ]
+                  ],
+                  "message": "ACCESS DENIED"
+                }
+              ],
+              [
+                {
+                  "codes": [
+                    [
+                      9,
+                      30001
+                    ]
+                  ],
+                  "message": "ACCESS GRANTED"
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ],
     "lights": [
       {
         "dimensions": [
@@ -324,7 +992,7 @@
       false
     ],
     "flags": {
-      "obscuring": false,
+      "obscuring": true,
       "reverse_obscuring": false
     },
     "ignore_lighting": [
@@ -609,7 +1277,7 @@
         65,
         69,
         0,
-        0,
+        132,
         0,
         0,
         0,
@@ -873,8 +1541,8 @@
         0,
         0,
         0,
-        0,
-        0,
+        132,
+        132,
         0,
         0,
         0,
@@ -902,10 +1570,10 @@
         128,
         129,
         130,
-        0,
-        0,
-        0,
-        0,
+        132,
+        132,
+        132,
+        132,
         0,
         0,
         0,
@@ -5006,9 +5674,9 @@
         0,
         0,
         0,
-        2,
-        2,
-        2,
+        0,
+        0,
+        0,
         2,
         2,
         2,
@@ -6032,9 +6700,9 @@
         0,
         0,
         0,
-        19,
-        17,
-        21,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -6064,9 +6732,9 @@
         0,
         0,
         0,
-        32,
-        33,
-        34,
+        19,
+        17,
+        21,
         479,
         0,
         0,
@@ -8055,6 +8723,9 @@
         0,
         0,
         0,
+        2,
+        2,
+        2,
         0,
         0,
         0,
@@ -8082,14 +8753,11 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        55,
+        2,
+        2,
+        2,
+        2,
         0,
         0,
         0,

@@ -39,6 +39,7 @@ class Inventory {
 	[[nodiscard]] int get_quantity(std::string_view label);
 	[[nodiscard]] auto get_latest_item() const -> std::optional<std::string_view> { return m_latest_item; };
 	[[nodiscard]] auto can_build(dj::Json const& product) const -> bool;
+	[[nodiscard]] auto get_number_of_items(item::ItemType type) const -> std::size_t;
 
 	Register<ItemStack> const& items_view() const { return m_items; }
 	std::array<int, num_equippable_items_v> const& equipped_items_view() const { return m_equipped_items; }
