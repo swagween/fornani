@@ -49,7 +49,7 @@ class Sentinel final : public Enemy, public StateMachine<SentinelState>, public 
 		util::Cooldown alerted{2000};
 		util::Cooldown post_jump{400};
 		util::Cooldown run{80};
-		util::Cooldown post_attack{280};
+		util::Cooldown post_attack{480};
 	} m_cooldowns{};
 
 	float fire_chance{50.f};

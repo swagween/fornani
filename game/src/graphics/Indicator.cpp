@@ -7,8 +7,8 @@ namespace fornani::graphics {
 Indicator::Indicator(automa::ServiceProvider& svc, IndicatorType type) : m_label{svc.text.fonts.title.font}, m_type{type} {
 	m_label.setCharacterSize(svc.text.fonts.title.glyph_size);
 	m_label.setLetterSpacing(0.6f);
-	if (type == IndicatorType::health) { color_fade = vfx::ColorFade({colors::ui_white, colors::red, colors::dark_fucshia}, 16, addition_time); }
-	if (type == IndicatorType::orb) { color_fade = vfx::ColorFade({colors::ui_white, colors::goldenrod, colors::dark_orange}, 16, addition_time); }
+	if (type == IndicatorType::health) { color_fade = vfx::ColorFade({colors::ui_white, colors::red, colors::dark_fucshia}, 48, addition_time); }
+	if (type == IndicatorType::orb) { color_fade = vfx::ColorFade({colors::ui_white, colors::goldenrod, colors::dark_orange}, 48, addition_time); }
 	float fric{0.85f};
 	m_steering.physics.set_friction_componentwise({fric, fric});
 }
@@ -18,7 +18,7 @@ void Indicator::shift() { position += {0.f, -20.f}; }
 void Indicator::update(automa::ServiceProvider& svc, sf::Vector2f pos) {
 	m_steering.seek(pos);
 	if (addition_limit.get() == fadeout_time) { fadeout.start(fadeout_time); }
-	if (fadeout.running()) { m_steering.seek(pos + sf::Vector2f{60.f, 0.f}); }
+	if (fadeout.running()) { m_steering.seek(pos + sf::Vector2f{64.f, 0.f}); }
 	addition_limit.update();
 	fadeout.update();
 	color_fade.update();
@@ -51,6 +51,7 @@ void Indicator::add(float amount) {
 	std::string sign = variables.amount >= 0 ? "+" : "";
 	auto round = static_cast<int>(variables.amount);
 	m_label.setString(sign + std::to_string(round));
+	m_label.setOrigin(m_label.getLocalBounds().getCenter());
 	addition_limit.start(addition_time);
 	color_fade.start();
 }

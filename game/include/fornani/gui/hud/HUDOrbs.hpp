@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/gui/hud/HUDWidget.hpp>
+#include <fornani/utils/Circuit.hpp>
 
 namespace fornani::gui {
 
@@ -15,7 +16,10 @@ class HUDOrbs final : public HUDWidget {
   private:
 	Drawable m_orb_text;
 	std::string m_digits{};
+	float m_displayed_amount;
 	float m_label_width;
+	int m_frame{};
+	util::Circuit m_circuit;
 };
 
 } // namespace fornani::gui

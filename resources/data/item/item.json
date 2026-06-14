@@ -25,6 +25,7 @@
     "actual_title": "Bipolar Junction Transistor",
     "naive_description": "It looks like a mechanical part of sorts.",
     "actual_description": "Beeker says this is required to build a special kind of gun. You should hold on to it.",
+    "ingredient": true,
     "unique": true,
     "lookup": [4, 0],
     "origin": [6, 2]
@@ -109,6 +110,7 @@
     "unique": true,
     "sellable": true,
     "equippable": true,
+    "ingredient": true,
     "value": 1100
   },
   {
@@ -246,7 +248,8 @@
     "value": 1000,
     "build": {
       "recipe": ["priorite", "pioneer_scrap", "heart_keychain"],
-      "craft_price": 200
+      "craft_price": 200,
+      "lookup": 3
     }
   },
   {
@@ -264,7 +267,8 @@
     "value": 560,
     "build": {
       "recipe": ["rhenite", "pioneer_scrap", "indigum"],
-      "craft_price": 200
+      "craft_price": 200,
+      "lookup": 1
     }
   },
   {
@@ -282,7 +286,8 @@
     "value": 900,
     "build": {
       "recipe": ["priorite", "pioneer_scrap", "brinium"],
-      "craft_price": 400
+      "craft_price": 400,
+      "lookup": 2
     }
   },
   {
@@ -318,7 +323,8 @@
     "stack_limit": 3,
     "build": {
       "recipe": ["brinium", "pioneer_scrap", "indigum"],
-      "craft_price": 200
+      "craft_price": 200,
+      "lookup": 0
     }
   },
   {
@@ -826,6 +832,7 @@
     "naive_description": "A rare red gem of concentrated material produced by the Mother Worm.",
     "unique": false,
     "sellable": true,
+    "ingredient": true,
     "rarity": 2,
     "value": 1300
   },
@@ -838,6 +845,7 @@
     "naive_description": "A rare blue gem.",
     "unique": false,
     "sellable": true,
+    "ingredient": true,
     "rarity": 2,
     "value": 1100
   },
@@ -850,6 +858,7 @@
     "naive_description": "A rare amber gemstone from Grand Island.",
     "unique": false,
     "sellable": true,
+    "ingredient": true,
     "rarity": 2,
     "value": 800
   },
@@ -875,6 +884,7 @@
     "naive_description": "A legendary multicolored gem of pure energy formed in the heart of the Mother Worm.",
     "unique": false,
     "sellable": true,
+    "ingredient": true,
     "rarity": 3,
     "value": 3400
   },
@@ -1005,6 +1015,7 @@
     "naive_description": "A petrified resin produced by rhenite-corrupted flora.",
     "unique": false,
     "sellable": true,
+    "ingredient": true,
     "rarity": 2,
     "value": 1700
   },
@@ -1017,6 +1028,7 @@
     "naive_description": "Scrap metal from pioneer tech.",
     "unique": false,
     "sellable": true,
+    "ingredient": true,
     "rarity": 1,
     "value": 500
   },
@@ -1063,9 +1075,10 @@
     "lookup": [1, 5],
     "origin": [2, 4],
     "actual_title": "Brinium",
-    "naive_description": "A rare element with strong electromagnetic properties/",
+    "naive_description": "A rare element with strong electromagnetic properties.",
     "unique": false,
     "sellable": true,
+    "ingredient": true,
     "rarity": 2,
     "value": 900
   }

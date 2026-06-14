@@ -62,7 +62,11 @@ void GameplayState::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(svc, *player, win); }
 
-	if (p_dialog && p_gui_shader) { p_dialog.value()->render(svc, win, *player, *m_map, *p_gui_shader); }
+	if (p_dialog && p_gui_shader) {
+		p_renderer.begin(win, {});
+		p_dialog.value()->render(svc, win, *player, *m_map, *p_gui_shader, p_renderer);
+		p_renderer.end();
+	}
 	if (p_inventory_window && p_gui_shader) { p_inventory_window.value()->render(svc, win, *player, *p_gui_shader); }
 
 	p_context.transition.render(win);

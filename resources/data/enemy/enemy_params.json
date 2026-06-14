@@ -1387,7 +1387,7 @@
       "num_colliders": 1,
       "num_hurtboxes": 1,
       "alert_range": [900.0, 900.0],
-      "hostile_range": [400.0, 400.0],
+      "hostile_range": [700.0, 400.0],
       "friction": 0.99,
       "gravity": 3.0
     },
@@ -1415,6 +1415,7 @@
       "map_collision": true,
       "player_collision": true,
       "hurt_on_contact": false,
+      "secondary_collider": true,
       "uncrushable": true,
       "foreground": true,
       "rare_drops": false,

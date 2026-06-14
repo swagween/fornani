@@ -84,7 +84,7 @@ class Ticker {
 	void unpause() { flags.reset(TickerFlags::paused); }
 	[[nodiscard]] auto paused() const -> bool { return flags.test(TickerFlags::paused); }
 
-	[[nodiscard]] auto global_tick_rate() const -> float { return ft.count() * tick_multiplier; }
+	[[nodiscard]] auto global_tick_rate() const -> float;
 	[[nodiscard]] auto every_x_frames(int const freq) const -> bool { return num_frames % freq == 0; }
 	[[nodiscard]] auto every_x_ticks(int const freq) const -> bool { return ticks % freq == 0; }
 	[[nodiscard]] auto every_second() const -> bool { return periods.test(Period::second); }

@@ -9,15 +9,16 @@ namespace fornani::enemy {
 
 Sentinel::Sentinel(automa::ServiceProvider& svc, world::Map& map, int variant)
 	: Enemy(svc, map, "sentinel"), m_variant{static_cast<SentinelVariant>(variant)}, m_services(&svc), m_map(&map), m_sword{svc.assets.get_texture("sentinel_sword"), 4.0f, 0.85f, {0.f, 0.f}} {
-	p_animations = {{"idle", {0, 6, 40, -1}},  {"run", {6, 4, 22, 5}},	  {"turn", {10, 3, 30, 0}},			{"jump", {13, 4, 22, -1}},		 {"land", {19, 3, 12, 0}},
+	p_animations = {{"idle", {0, 6, 40, -1}},  {"run", {6, 4, 48, 2}},	  {"turn", {10, 3, 30, 0}},			{"jump", {13, 4, 22, -1}},		 {"land", {19, 3, 12, 0}},
 					{"slash", {19, 3, 48, 0}}, {"swipe", {19, 3, 48, 0}}, {"charge_swipe", {17, 2, 80, 0}}, {"charge_slash", {22, 2, 80, 0}}};
 	animation.set_params(get_params("idle"));
 	get_collider().physics.air_friction = {0.95f, 0.999f};
 	get_collider().physics.ground_friction = {0.95f, 0.999f};
+	get_secondary_collider().set_dimensions({28.f, 28.f});
+	get_secondary_collider().set_attribute(shape::ColliderAttributes::no_collision);
 	if (m_variant == SentinelVariant::knight) {
-		m_shield.emplace(entity::FloatingPart(svc.assets.get_texture("sentinel_shield"), 2.0f, 0.65f, {0.f, 0.f}));
-		m_shield->set_shield({24.f, 64.f}, {});
-		m_shield->sprite->setOrigin({29.f, 64.f});
+		m_shield.emplace(entity::FloatingPart(svc.assets.get_texture("sentinel_shield"), 2.0f, 0.65f, {-100.f, 20.f}));
+		m_shield->set_team(arms::Team::guardian);
 	}
 	flags.state.set(StateFlags::vulnerable);
 }
@@ -26,6 +27,8 @@ void Sentinel::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	if (just_died()) { m_services->soundboard.play_sound("tank_death", get_collider().get_center()); }
 	Enemy::update(svc, map, player);
 	if (died()) { return; }
+
+	m_cooldowns.post_attack.update();
 
 	hurt_effect.update();
 	if (flags.state.test(StateFlags::hurt)) {
@@ -39,9 +42,11 @@ void Sentinel::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	auto tweak = is_state(SentinelState::charge_slash) ? sf::Vector2f{-100.f * directions.actual.as_float(), 0.f} : sf::Vector2f{};
 	if (is_state(SentinelState::charge_swipe)) { tweak = sf::Vector2f{-50.f * directions.actual.as_float(), -100.f}; }
 	auto sword_offset = sf::Vector2f{-28.f * directions.actual.as_float(), 6.f} + tweak;
-	auto shield_offset = sf::Vector2f{64.f * directions.actual.as_float(), 48.f};
 	m_sword.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center() + sword_offset);
-	if (m_shield) { m_shield->update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center() + shield_offset); }
+	if (m_shield) {
+		m_shield->update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center());
+		m_shield->set_shield({24.f, 96.f});
+	}
 	m_sword.sprite->setOrigin(m_sword.sprite->getLocalBounds().getCenter());
 	m_sword.sprite->setTextureRect(sf::IntRect{{0, 0}, {84, 43}});
 	m_sword.sprite->setRotation(sf::degrees(0));
@@ -50,6 +55,11 @@ void Sentinel::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		m_sword.sprite->setTextureRect(sf::IntRect{{0, 43}, {84, 43}});
 		if (directions.actual.left()) { m_sword.sprite->setRotation(sf::degrees(-90)); }
 		if (directions.actual.right()) { m_sword.sprite->setRotation(sf::degrees(90)); }
+	}
+	if (secondary_collider) {
+		get_secondary_collider().physics.position = get_collider().physics.position + sf::Vector2f{40.f, -20.f};
+		get_secondary_collider().physics.position.x += 1.f;
+		get_secondary_collider().sync_components();
 	}
 
 	// attacks
@@ -83,6 +93,10 @@ void Sentinel::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		}
 		attack.hurt_player(player, 2.f, {directions.actual.as_float() * 20.f, -0.4f});
 	}
+
+	// behavior
+	if (svc.ticker.every_second() && random::percent_chance(10)) { request(SentinelState::run); }
+	if (is_hostile() && !m_cooldowns.post_attack.running()) { random::coin_flip() ? request(SentinelState::charge_slash) : request(SentinelState::charge_swipe); }
 
 	if (directions.actual.lnr != directions.desired.lnr) { request(SentinelState::turn); }
 
@@ -150,6 +164,7 @@ fsm::StateFunction Sentinel::update_land() {
 fsm::StateFunction Sentinel::update_swipe() {
 	p_state.actual = SentinelState::swipe;
 	if (animation.complete()) {
+		m_cooldowns.post_attack.start();
 		request(SentinelState::idle);
 		if (change_state(SentinelState::idle, get_params("idle"))) { return SENTINEL_BIND(update_idle); }
 	}
@@ -159,6 +174,7 @@ fsm::StateFunction Sentinel::update_swipe() {
 fsm::StateFunction Sentinel::update_slash() {
 	p_state.actual = SentinelState::slash;
 	if (animation.complete()) {
+		m_cooldowns.post_attack.start();
 		request(SentinelState::idle);
 		if (change_state(SentinelState::idle, get_params("idle"))) { return SENTINEL_BIND(update_idle); }
 	}
@@ -168,6 +184,7 @@ fsm::StateFunction Sentinel::update_slash() {
 fsm::StateFunction Sentinel::update_charge_swipe() {
 	p_state.actual = SentinelState::charge_swipe;
 	if (animation.complete()) {
+		m_services->soundboard.play_sound("sentinel_swipe_2");
 		auto swipe_offset = sf::Vector2f{100.f * directions.actual.as_float(), -40.f};
 		m_map->spawn_effect(*m_services, "sword_swipe", get_collider().get_center() + swipe_offset, {}, 0, -directions.actual.as_float());
 		get_collider().physics.apply_force({80.f * directions.actual.as_float(), 0.f});
@@ -180,6 +197,7 @@ fsm::StateFunction Sentinel::update_charge_swipe() {
 fsm::StateFunction Sentinel::update_charge_slash() {
 	p_state.actual = SentinelState::charge_slash;
 	if (animation.complete()) {
+		m_services->soundboard.play_sound("sentinel_swipe_1");
 		auto swipe_offset = sf::Vector2f{100.f * directions.actual.as_float(), 0.f};
 		m_map->spawn_effect(*m_services, "sword_slash", get_collider().get_center() + swipe_offset, {}, 0, -directions.actual.as_float());
 		get_collider().physics.apply_force({80.f * directions.actual.as_float(), 0.f});

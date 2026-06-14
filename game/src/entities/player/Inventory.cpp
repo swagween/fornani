@@ -12,6 +12,7 @@ void Inventory::add_item(dj::Json const& source, std::string_view label) {
 		++find_item_stack(label)->quantity;
 	}
 	m_latest_item = label.data();
+	m_item_log.add(label.data());
 }
 
 void Inventory::remove_item(std::string_view tag, int amount) {
@@ -92,6 +93,8 @@ bool Inventory::has_item(std::string_view label) const {
 	}
 	return false;
 }
+
+bool Inventory::was_item_logged(std::string_view label) const { return m_item_log.contains(label.data()); }
 
 item::Item* Inventory::find_item(int id) const {
 	if (auto it = std::ranges::find_if(m_items, [&](auto const& item) { return item.item->get_id() == id; }); it != m_items.end()) { return it->item.get(); }

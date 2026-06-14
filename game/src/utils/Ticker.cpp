@@ -58,6 +58,8 @@ void Ticker::reset_dt() {
 	global_scalar = 1.f;
 }
 
+auto Ticker::global_tick_rate() const -> float { return ft.count() * tick_multiplier; }
+
 void Ticker::manage_slowdowns() {
 	if (freezeframe.running()) {
 		dt_scalar = 0.01f;

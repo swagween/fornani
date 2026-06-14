@@ -32,6 +32,7 @@ Item::Item(dj::Json const& source, std::string_view label) : m_label{label}, m_t
 	if (in_data["wearable"].as_bool()) { m_flags.set(ItemFlags::wearable); }
 	if (in_data["invisible"].as_bool()) { m_flags.set(ItemFlags::invisible); }
 	if (in_data["useable"].as_bool()) { m_flags.set(ItemFlags::useable); }
+	if (in_data["ingredient"].as_bool()) { m_flags.set(ItemFlags::ingredient); }
 	if (in_data["build"]) { m_flags.set(ItemFlags::buildable); }
 	m_stats.stack_limit = in_data["stack_limit"] ? in_data["stack_limit"].as<int>() : 1;
 	if (m_type == ItemType::collectible) { m_stats.stack_limit = 99; }

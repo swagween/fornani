@@ -4,13 +4,16 @@
 
 namespace fornani::gui {
 
-OrbDisplay::OrbDisplay(automa::ServiceProvider& svc) : Animatable(svc, "orbs", {12, 12}), m_amount{svc.text.fonts.title.font} {
+OrbDisplay::OrbDisplay(automa::ServiceProvider& svc) : Animatable(svc, "orbs", {12, 12}), m_amount{svc.text.fonts.title.font}, m_displayed_amount{0.f} {
 	set_parameters(anim::Parameters{0, 7, 24, -1});
 	m_amount.setCharacterSize(16);
 }
 
-void OrbDisplay::update(int amount) {
-	m_amount.setString(std::to_string(amount));
+void OrbDisplay::update(int amount, float dt) {
+	constexpr float speed = 8.f;
+	m_displayed_amount += (static_cast<float>(amount) - m_displayed_amount) * speed * dt;
+	if (std::abs(m_displayed_amount - amount) < 0.01f) { m_displayed_amount = static_cast<float>(amount); }
+	m_amount.setString(std::to_string(static_cast<int>(std::round(m_displayed_amount))));
 	tick();
 }
 

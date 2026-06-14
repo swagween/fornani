@@ -656,12 +656,10 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							}
 							if (ImGui::BeginTabItem("Catalog")) {
 								ImGui::Separator();
-								ImGui::Text("Inventory");
-								for (auto& item : player.catalog.inventory.items_view()) {
-									ImGui::Text("%s", item.item->get_label().data());
-									ImGui::SameLine();
-								}
-								ImGui::Separator();
+								ImGui::SeparatorText("Inventory");
+								for (auto& item : player.catalog.inventory.items_view()) { ImGui::Text("%s", item.item->get_label().data()); }
+								ImGui::SeparatorText("Item Log");
+								for (auto& item : player.catalog.inventory.item_log_view()) { ImGui::Text("%s", item.c_str()); }
 
 								ImGui::EndTabItem();
 							}

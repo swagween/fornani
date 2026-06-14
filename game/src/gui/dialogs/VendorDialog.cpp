@@ -27,8 +27,7 @@ VendorDialog::VendorDialog(automa::ServiceProvider& svc, world::Map& map, player
 		  VendorConstituent{svc, "core", {{0, 202}, {207, 133}}, 200},	VendorConstituent{svc, "selection", {{200, 335}, {162, 95}}, 200, util::InterpolationType::cubic},
 		  VendorConstituent{svc, "nani", {{207, 190}, {171, 145}}},
 	  },
-	  m_orb_display{svc}, my_npc{*std::find_if(map.get_entities<NPC>().begin(), map.get_entities<NPC>().end(), [vendor_id](auto const& n) { return n->get_vendor_id() == vendor_id; })}, npc_id{vendor_id},
-	  m_item_sprite{svc, "inventory_items"} {
+	  my_npc{*std::find_if(map.get_entities<NPC>().begin(), map.get_entities<NPC>().end(), [vendor_id](auto const& n) { return n->get_vendor_id() == vendor_id; })}, npc_id{vendor_id}, m_item_sprite{svc, "inventory_items"} {
 	if (!my_npc) {
 		NANI_LOG_ERROR(m_logger, "Tried to open vendor dialog with an undefined NPC: {}", vendor_id);
 		close();
@@ -171,33 +170,33 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 			auto const item_id = this_item.value()->get_id();
 			auto f_value = static_cast<float>(this_item.value()->get_value());
 			auto upcharge = is_buying() ? f_value * p_upcharge : 0;
-			sale_price = f_value + upcharge;
-			text.price_number.setString(std::format("{}", sale_price));
-			(player.wallet.get_balance() < sale_price) && is_buying() ? text.price_number.setFillColor(colors::dark_grey) : text.price_number.setFillColor(colors::periwinkle);
+			p_sale_price = f_value + upcharge;
+			text.price_number.setString(std::format("{}", p_sale_price));
+			(player.wallet.get_balance() < p_sale_price) && is_buying() ? text.price_number.setFillColor(colors::dark_grey) : text.price_number.setFillColor(colors::periwinkle);
 			text.item_label.setString(this_item.value()->get_title());
 
 			if (m_item_menu) {
 				if (m_item_menu->was_selected()) {
 					// some snazzy local variables
-					auto exchange = is_buying() ? -sale_price : sale_price;
+					auto exchange = is_buying() ? -p_sale_price : p_sale_price;
 					auto apparel_type = this_item.value()->get_apparel_type();
 
 					switch (m_item_menu->get_selection()) {
 					case 0:
-						if (is_buying() && player.wallet.get_balance() < sale_price) {
+						if (is_buying() && player.wallet.get_balance() < p_sale_price) {
 							svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 							m_item_menu = {};
 							break;
 						}
 						destination_inventory.add_item(svc.data.item, item_lbl);
 						player.give_drop(item::DropType::orb, exchange);
+						p_orb_indicator.add(exchange);
 						p_balance += exchange;
 						source_inventory.remove_item(item_lbl, 1);
 						NANI_LOG_DEBUG(m_logger, "Removed {} from {} inventory", item_lbl, is_buying() ? "vendor" : "player");
 						svc.soundboard.flags.item.set(audio::Item::vendor_sale);
 						p_flags.set(DialogStatus::made_sale);
-
-						m_item_menu = {};
+						m_item_menu.reset();
 
 						// a bit messy, but check if sold item was a wardrobe piece and act accordingly
 						if (apparel_type && is_selling()) {
@@ -225,7 +224,6 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 		if (m_item_menu->was_closed()) { m_item_menu = {}; }
 	}
 
-	m_orb_display.update(player.wallet.get_balance());
 	if (m_description) { m_description->update(svc, player, map, m_constituents[static_cast<int>(VendorConstituentType::description)].get_window_position()); }
 
 	for (auto& c : m_constituents) { c.update(); }
@@ -251,8 +249,8 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	text.item_label.setPosition(m_constituents[static_cast<int>(VendorConstituentType::core)].get_window_position() + sf::Vector2f{92.f, 98.f} + svc.text.fonts.basic.offset);
 }
 
-void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map, LightShader& shader) {
-	IDialog::render(svc, win, player, map, shader);
+void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map, LightShader& shader, Renderer& renderer) {
+	IDialog::render(svc, win, player, map, shader, renderer);
 	if (early_render_return()) { return; }
 
 	auto nani = player.wardrobe_widget.get_sprite();
@@ -261,7 +259,7 @@ void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, p
 	p_vendor_portrait.set_position(m_constituents[static_cast<int>(VendorConstituentType::portrait)].get_window_position() + sf::Vector2f{20.f, 10.f});
 	win.draw(p_vendor_portrait);
 	for (auto& c : m_constituents) { c.render(win, shader, p_palette); }
-	m_orb_display.render(win, m_constituents[static_cast<int>(VendorConstituentType::nani)].get_window_position() + sf::Vector2f{24.f, 238.f});
+	p_orb_display.render(win, m_constituents[static_cast<int>(VendorConstituentType::nani)].get_window_position() + sf::Vector2f{24.f, 238.f});
 
 	auto& selector = is_buying() ? m_buy_selector : m_sell_selector;
 	selector.render(win, p_selector_sprite.get_sprite(), {0.f, -2.f}, {});
@@ -300,6 +298,7 @@ void VendorDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, p
 	win.draw(text.item_label);
 
 	if (m_item_menu) { m_item_menu->render(win); }
+	IDialog::post_render(svc, win, renderer);
 }
 
 void VendorDialog::refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {

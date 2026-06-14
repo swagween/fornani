@@ -42,7 +42,7 @@ class Indicator {
 	int addition_time{300};
 	sf::Vector2f position{};
 	sf::Vector2f shadow{2.f, 0.f};
-	sf::Vector2f offset{-8.f, -40.f};
+	sf::Vector2f offset{0.f, -40.f};
 	vfx::ColorFade color_fade{};
 	components::SteeringComponent m_steering{};
 };

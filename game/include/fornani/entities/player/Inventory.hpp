@@ -36,12 +36,14 @@ class Inventory {
 	[[nodiscard]] bool has_item(int id) const;
 	[[nodiscard]] bool has_item_equipped(std::string_view id) const;
 	[[nodiscard]] bool has_item(std::string_view label) const;
+	[[nodiscard]] bool was_item_logged(std::string_view label) const;
 	[[nodiscard]] int get_quantity(std::string_view label);
 	[[nodiscard]] auto get_latest_item() const -> std::optional<std::string_view> { return m_latest_item; };
 	[[nodiscard]] auto can_build(dj::Json const& product) const -> bool;
 	[[nodiscard]] auto get_number_of_items(item::ItemType type) const -> std::size_t;
 
 	Register<ItemStack> const& items_view() const { return m_items; }
+	Register<std::string> const& item_log_view() const { return m_item_log; }
 	std::array<int, num_equippable_items_v> const& equipped_items_view() const { return m_equipped_items; }
 	item::Item* find_item(int id) const;
 	item::Item* find_item(std::string_view label) const;
@@ -50,6 +52,7 @@ class Inventory {
 
   private:
 	Register<ItemStack> m_items{};
+	Register<std::string> m_item_log{};
 	std::array<int, num_equippable_items_v> m_equipped_items{-1, -1, -1, -1};
 	std::optional<std::string> m_latest_item{};
 	int m_open_equip_slots{1};

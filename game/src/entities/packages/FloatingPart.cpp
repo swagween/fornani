@@ -18,7 +18,7 @@ FloatingPart::FloatingPart(sf::Texture const& tex, float force, float friction, 
 	right.x *= -1.f;
 	debugbox.setFillColor(sf::Color::Transparent);
 	debugbox.setOutlineColor(sf::Color::Red);
-	debugbox.setOutlineThickness(-1);
+	debugbox.setOutlineThickness(-2);
 }
 
 FloatingPart::FloatingPart(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions, std::vector<anim::Parameters> params, std::vector<std::string_view> labels, float force, float friction, sf::Vector2f offset, int id)
@@ -96,12 +96,12 @@ void FloatingPart::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 	if (svc.greyblock_mode()) {
 		if (hitbox) {
 			debugbox.setSize(hitbox.value().get_dimensions());
-			debugbox.setPosition(hitbox.value().get_position());
+			debugbox.setPosition(hitbox.value().get_position() - cam);
 			win.draw(debugbox);
 		}
 		if (shieldbox) {
 			debugbox.setSize(shieldbox.value().get_dimensions());
-			debugbox.setPosition(shieldbox.value().get_position());
+			debugbox.setPosition(shieldbox.value().get_position() - cam);
 			win.draw(debugbox);
 		}
 	}

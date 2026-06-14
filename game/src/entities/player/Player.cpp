@@ -74,6 +74,8 @@ void Player::serialize(dj::Json& out) const {
 		this_item["revealed"] = item.item->is_revealed();
 		out["items"].push_back(this_item);
 	}
+	out["item_log"] = dj::Json::empty_array();
+	for (auto& item : catalog.inventory.item_log_view()) { out["items"].push_back(item); }
 
 	// equipped items
 	out["equipped_items"] = dj::Json::empty_array();
@@ -350,10 +352,10 @@ void Player::update(world::Map& map) {
 	auto sum = 0.f;
 	for (auto& force : accumulated_momentum) {
 		get_collider().physics.apply_force(force);
-		force = force.componentWiseMul({0.995f, 0.95f});
+		force = force.componentWiseMul({0.99f, 0.95f});
 		sum += force.lengthSquared();
 	}
-	if (sum < constants::small_value) { accumulated_momentum.clear(); }
+	if (sum < constants::small_value || controller.is(AbilityType::roll) || controller.is(AbilityType::dash)) { accumulated_momentum.clear(); }
 	accumulated_forces.clear();
 	get_collider().physics.impart_momentum();
 	if (controller.moving() || get_collider().has_horizontal_collision() || get_collider().flags.external_state.test(shape::ExternalState::vert_world_collision) || get_collider().world_grounded()) {

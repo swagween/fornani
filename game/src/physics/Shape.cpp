@@ -306,7 +306,7 @@ bool Shape::contains_point(sf::Vector2f point) {
 
 void Shape::render(sf::RenderWindow& win, sf::Vector2f cam, sf::Color color) {
 	if (vertices.size() == 4) {
-		auto mcolor = non_square() ? sf::Color{0, 0, 255, 48} : color;
+		auto mcolor = non_square() ? sf::Color{0, 0, 255, 24} : color;
 		sf::Vertex line1[] = {{vertices[0] - cam, mcolor}, {vertices[1] - cam, mcolor}, {vertices[2] - cam, mcolor}};
 		win.draw(line1, 3, sf::PrimitiveType::Triangles);
 		sf::Vertex line2[] = {{vertices[0] - cam, mcolor}, {vertices[2] - cam, mcolor}, {vertices[3] - cam, mcolor}};

@@ -6,20 +6,11 @@
 #include <fornani/entity/NPC.hpp>
 #include <fornani/gui/InventorySelector.hpp>
 #include <fornani/gui/NumberDisplay.hpp>
-#include <fornani/gui/OrbDisplay.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/gui/dialogs/IDialog.hpp>
 #include <fornani/gui/dialogs/VendorConstituent.hpp>
 #include <fornani/gui/gizmos/DescriptionGizmo.hpp>
 #include <optional>
-
-namespace fornani::automa {
-struct ServiceProvider;
-}
-
-namespace fornani::player {
-class Player;
-}
 
 namespace fornani::npc {
 class Vendor;
@@ -38,7 +29,7 @@ class VendorDialog final : public IDialog {
   public:
 	VendorDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, SceneContext& context) override;
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map, LightShader& shader) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, world::Map& map, LightShader& shader, Renderer& renderer) override;
 	void refresh(automa::ServiceProvider& svc, player::Player& player, world::Map& map) override;
 
   private:
@@ -46,13 +37,11 @@ class VendorDialog final : public IDialog {
 	InventorySelector m_sell_selector;
 	std::optional<MiniMenu> m_item_menu{};
 	std::unique_ptr<DescriptionGizmo> m_description;
-	OrbDisplay m_orb_display;
 
 	NPC* my_npc;
 
 	int npc_id{};
 
-	float sale_price{};
 	sf::Vector2f portrait_position{44.f, 18.f};
 	sf::Vector2f bring_in{};
 

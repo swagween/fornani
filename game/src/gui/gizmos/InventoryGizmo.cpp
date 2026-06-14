@@ -81,7 +81,7 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 	m_selector->set_position(m_physics.position + m_path.get_position() + m_placement + current_zone.render_offset - selector_offset);
 	m_selector->update();
 
-	m_orb_display.update(player.wallet.get_balance());
+	m_orb_display.update(player.wallet.get_balance(), svc.ticker.dt.count());
 
 	if (m_description) { m_description->update(svc, player, map, m_physics.position + m_path.get_position()); }
 	m_current_item_lookup = m_selector->get_current_selection(current_zone.table_dimensions.x);
