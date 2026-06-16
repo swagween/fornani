@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics/Text.hpp>
 #include <djson/json.hpp>
+#include <fornani/io/Logger.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
 #include <fornani/setup/localization/Localization.hpp>
 #include <fornani/utils/TextUtils.hpp>
@@ -25,6 +26,9 @@ class TextManager {
 		FontSpec basic{};
 		FontSpec config{};
 	} fonts{};
+
+  private:
+	io::Logger m_logger{"TextManager"};
 };
 
 } // namespace fornani::data

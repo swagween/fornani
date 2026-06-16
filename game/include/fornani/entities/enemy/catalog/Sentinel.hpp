@@ -10,7 +10,7 @@
 
 namespace fornani::enemy {
 
-enum class SentinelState { idle, run, turn, jump, land, swipe, slash, charge_swipe, charge_slash };
+enum class SentinelState { idle, run, turn, jump, land, swipe, slash, charge_swipe, charge_slash, prepare_dash, dash, summon };
 enum class SentinelFlags { show_weapon, shorthop };
 enum class SentinelVariant { knight, duelist };
 enum class SentinelMode { neutral, hostile };
@@ -33,11 +33,15 @@ class Sentinel final : public Enemy, public StateMachine<SentinelState>, public 
 	fsm::StateFunction update_slash();
 	fsm::StateFunction update_charge_swipe();
 	fsm::StateFunction update_charge_slash();
+	fsm::StateFunction update_prepare_dash();
+	fsm::StateFunction update_dash();
+	fsm::StateFunction update_summon();
 
 	[[nodiscard]] auto is_mid_run() { return m_cooldowns.run.is_almost_complete(); }
 	[[nodiscard]] auto has_been_alerted() { return m_cooldowns.alerted.running(); }
 
   private:
+	void jump(bool forward);
 	bool change_state(SentinelState next, anim::Parameters params);
 	void debug();
 
@@ -47,7 +51,7 @@ class Sentinel final : public Enemy, public StateMachine<SentinelState>, public 
 
 	struct {
 		util::Cooldown alerted{2000};
-		util::Cooldown post_jump{400};
+		util::Cooldown post_jump{200};
 		util::Cooldown run{80};
 		util::Cooldown post_attack{480};
 	} m_cooldowns{};

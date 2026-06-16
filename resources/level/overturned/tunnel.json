@@ -112,6 +112,22 @@
           0
         ],
         "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 31,
+        "position": [
+          31,
+          10
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
       }
     ],
     "portals": [

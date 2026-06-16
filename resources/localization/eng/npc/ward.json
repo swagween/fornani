@@ -1,0 +1,202 @@
+{
+  "1": {
+    "responses": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              1
+            ]
+          ],
+          "message": "Why is the trail blocked?"
+        },
+        {
+          "codes": [
+            [
+              1,
+              3
+            ]
+          ],
+          "contingencies": [
+            {
+              "requirement": 2,
+              "strict": true,
+              "tag": "pioneer_trail"
+            }
+          ],
+          "message": "I have permission to pass."
+        }
+      ],
+      [
+        {
+          "codes": [
+            [
+              1,
+              2
+            ]
+          ],
+          "message": "Can you let me through?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "code_list": [
+            [
+              [
+                1,
+                0
+              ]
+            ],
+            [
+              [
+                1,
+                0
+              ]
+            ],
+            [
+              [
+                1,
+                0
+              ]
+            ]
+          ],
+          "messages": [
+            "Take a rest here, if you'd like. It's a cruel world.",
+            "These woods are too windy for an old man like me.",
+            "Someday soon I hope to go back home and sleep in my bed."
+          ]
+        }
+      ],
+      [
+        {
+          "message": "It's a means of protecting us and Woodshine. Or, whatever's left of it at least."
+        },
+        {
+          "codes": [
+            [
+              1,
+              1
+            ]
+          ],
+          "message": "Your father stationed me here a few months ago, and I've been hunkered down since."
+        }
+      ],
+      [
+        {
+          "message": "Afraid not. Chieftain's orders."
+        },
+        {
+          "message": "If you want me to grant you passage, I'll need written permission from him."
+        },
+        {
+          "codes": [
+            [
+              3,
+              12,
+              1,
+              416
+            ]
+          ],
+          "message": "Shouldn't be too hard to get, eh? After all, he is your dad."
+        }
+      ],
+      [
+        {
+          "message": "Let me see here..."
+        },
+        {
+          "codes": [
+            [
+              9,
+              22501
+            ]
+          ],
+          "message": "Well, looks like you do indeed."
+        },
+        {
+          "codes": [
+            [
+              3,
+              12,
+              1,
+              225
+            ]
+          ],
+          "message": "Go on ahead. But be careful out there. The path is blocked for a good reason!"
+        }
+      ]
+    ]
+  },
+  "2": {
+    "responses": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              1
+            ]
+          ],
+          "message": "What lies beyond the barrier?"
+        },
+        {
+          "codes": [
+            [
+              1,
+              2
+            ]
+          ],
+          "message": "Tell me about the forest."
+        }
+      ],
+      []
+    ],
+    "suite": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "Hm?"
+        }
+      ],
+      [
+        {
+          "message": "The Pioneer Trail. It's an old trade route the pioneers used to use way back when. It's since been blocked off by the Mother Worm, so it's mostly abandoned."
+        },
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "Some lone travelers still take that way to Ashtown, though, because even if it's rough going, it's pretty fast. Just pray you don't get trapped inside the Mother or suffocate in the toxic caverns beyond..."
+        }
+      ],
+      [
+        {
+          "message": "These woods are not for the faint of heart, nor outsiders of any ilk."
+        },
+        {
+          "message": "They are shrouded in mystery and home to thousands of spirits and rhenite demons. And despite all that, I still feel quite at peace here."
+        },
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "I imagine you do, too. You are a young Kariba, and your tenacious spirit emanates from you!"
+        }
+      ]
+    ]
+  }
+}

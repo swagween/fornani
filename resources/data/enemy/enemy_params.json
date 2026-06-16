@@ -1352,7 +1352,7 @@
     "attributes": {
       "base_hp": 100,
       "base_damage": 1.0,
-      "speed": 6.0,
+      "speed": 0.01,
       "loot_multiplier": 2.0,
       "drop_range": [1, 2],
       "respawn_distance": 1,
@@ -1386,14 +1386,18 @@
       "offset": [0, -39],
       "num_colliders": 1,
       "num_hurtboxes": 1,
-      "alert_range": [900.0, 900.0],
+      "alert_range": [200.0, 900.0],
       "hostile_range": [700.0, 400.0],
       "friction": 0.99,
-      "gravity": 3.0
+      "gravity": 4.0
     },
     "visual": {
       "effect_type": 0,
-      "effect_size": 0
+      "effect_size": 0,
+      "death": {
+        "size": 2,
+        "style": "guardian"
+      }
     },
     "audio": {
       "hit": -1
@@ -1401,7 +1405,7 @@
     "attributes": {
       "base_hp": 300,
       "base_damage": 1.0,
-      "speed": 1.6,
+      "speed": 0.6,
       "loot_multiplier": 12.0,
       "drop_range": [15, 18],
       "respawn_distance": 10,
@@ -1421,6 +1425,58 @@
       "rare_drops": false,
       "sturdy": true,
       "crusher": true
+    }
+  },
+  "hellion": {
+    "metadata": {
+      "id": 31,
+      "variant": "guardian"
+    },
+    "physical": {
+      "dimensions": [48, 70],
+      "sprite_dimensions": [64, 64],
+      "offset": [0, -14],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [200.0, 900.0],
+      "hostile_range": [700.0, 400.0],
+      "friction": 0.99,
+      "gravity": 4.0
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 0,
+      "death": {
+        "size": 1,
+        "style": "guardian"
+      }
+    },
+    "audio": {
+      "hit": -1
+    },
+    "attributes": {
+      "base_hp": 80,
+      "base_damage": 1.0,
+      "speed": 10.0,
+      "loot_multiplier": 6.0,
+      "drop_range": [8, 10],
+      "respawn_distance": 6,
+      "permadeath": false,
+      "size": 2,
+      "team": 1
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "map_collision": true,
+      "player_collision": false,
+      "hurt_on_contact": true,
+      "secondary_collider": false,
+      "uncrushable": false,
+      "foreground": false,
+      "rare_drops": false,
+      "sturdy": false,
+      "crusher": false
     }
   }
 }

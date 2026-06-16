@@ -355,7 +355,8 @@ void Player::update(world::Map& map) {
 		force = force.componentWiseMul({0.99f, 0.95f});
 		sum += force.lengthSquared();
 	}
-	if (sum < constants::small_value || controller.is(AbilityType::roll) || controller.is(AbilityType::dash)) { accumulated_momentum.clear(); }
+	if (controller.is(AbilityType::roll) || controller.is(AbilityType::dash)) { accumulated_momentum.clear(); }
+	if (sum < constants::small_value) { accumulated_momentum.clear(); }
 	accumulated_forces.clear();
 	get_collider().physics.impart_momentum();
 	if (controller.moving() || get_collider().has_horizontal_collision() || get_collider().flags.external_state.test(shape::ExternalState::vert_world_collision) || get_collider().world_grounded()) {
@@ -366,7 +367,6 @@ void Player::update(world::Map& map) {
 		get_collider().physics.forced_acceleration = {};
 	}
 
-	// get_collider().update(*m_services);
 	health.update();
 	health_indicator.update(*m_services, get_collider().physics.position);
 	orb_indicator.update(*m_services, get_collider().physics.position);

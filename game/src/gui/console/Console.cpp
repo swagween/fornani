@@ -169,6 +169,8 @@ void Console::render(sf::RenderWindow& win) {
 	if (m_nani_portrait) {
 		if (m_response) {
 			if (!m_response->has_flag_set(ResponseDialogFlags::hide_portrait)) { m_nani_portrait->render(win); }
+		} else {
+			m_nani_portrait->render(win);
 		}
 		m_mode == ConsoleMode::responding ? m_nani_portrait->bring_in() : m_nani_portrait->send_out();
 	}

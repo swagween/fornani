@@ -1,0 +1,166 @@
+{
+  "1": {
+    "responses": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              1
+            ]
+          ],
+          "message": "What are you doing?"
+        },
+        {
+          "codes": [
+            [
+              1,
+              2
+            ]
+          ],
+          "message": "Heard any news lately?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              0
+            ],
+            [
+              4,
+              0
+            ]
+          ],
+          "messages": [
+            "Not sure what you're lookin' for...",
+            "You look familiar.",
+            "Long as the grounds needs keepin', I won't be out a job."
+          ]
+        }
+      ],
+      [
+        {
+          "codes": [
+            [
+              4,
+              2
+            ]
+          ],
+          "message": "Just makin' sure the soil is nice and soft, and keepin' an eye on things around the village."
+        },
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "Gives me somethin' to take my mind off the raids."
+        }
+      ],
+      [
+        {
+          "message": "Yeah, a surveyor came through here not too long ago. Said he was lookin' for Young Mimic."
+        },
+        {
+          "message": "Told him he was two weeks too late. Young Mimic got killed by Sergeant Haunch and his big ol' laser gun."
+        },
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "I do miss that boy, lemme tell ya. We used to drink each other under the table over at the Chafed Worm."
+        }
+      ]
+    ]
+  },
+  "2": {
+    "responses": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              1
+            ]
+          ],
+          "message": "Do you live here?"
+        },
+        {
+          "codes": [
+            [
+              1,
+              2
+            ]
+          ],
+          "message": "Any news?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              0
+            ],
+            [
+              4,
+              0
+            ]
+          ],
+          "messages": [
+            "Nothing like a cold drink after a long day of hard workin'",
+            "Got an early morning tomorrow.",
+            "Best be stayin' away from the wild woods. Nothing but trouble out there."
+          ]
+        }
+      ],
+      [
+        {
+          "message": "Indeed I do. Ever since Sergeant Haunch destroyed my house in Upper Woodshine, Garth here has been puttin' me up in a spare bed."
+        },
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "But they say don't sleep where you drink..."
+        }
+      ],
+      [
+        {
+          "message": "There's been more critters wandering in the woods lately."
+        },
+        {
+          "codes": [
+            [
+              4,
+              1
+            ]
+          ],
+          "message": "Some say it's because the Mother Worm is gonna wake up soon, but I got my doubts."
+        },
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "Either way, makes me all the more content to keep my rear end right where it is."
+        }
+      ]
+    ]
+  }
+}

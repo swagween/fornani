@@ -1,0 +1,197 @@
+{
+  "1": {
+    "output": 2,
+    "responses": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              1
+            ]
+          ],
+          "message": "You know who I am?"
+        }
+      ],
+      [
+        {
+          "codes": [
+            [
+              1,
+              2
+            ]
+          ],
+          "message": "Why are you here, then?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "message": "..."
+        },
+        {
+          "codes": [
+            [
+              5,
+              1
+            ]
+          ],
+          "message": "You must be Nani."
+        },
+        {
+          "codes": [
+            [
+              5,
+              0
+            ],
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "I knew you'd come traveling down this road eventually, but I wasn't expecting you to arrive here so soon."
+        }
+      ],
+      [
+        {
+          "message": "Of course. You know, I used to be like you, years ago. Full of spirit, and determined to cut down everything in my path."
+        },
+        {
+          "message": "You do remind me of your brother in that way."
+        },
+        {
+          "codes": [
+            [
+              5,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          "message": "No matter. I am not here to redeem you or convince you of anything."
+        }
+      ],
+      [
+        {
+          "codes": [
+            [
+              9,
+              25702,
+              1
+            ]
+          ],
+          "message": "To teach you a lesson I learned long ago."
+        },
+        {
+          "codes": [
+            [
+              12,
+              0
+            ]
+          ],
+          "message": "Enough talking, now. It is time you prove to me why Gus couldn't take care of you himself!"
+        }
+      ]
+    ]
+  },
+  "2": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [
+            [
+              9,
+              25703,
+              1
+            ]
+          ],
+          "message": "Augh..."
+        },
+        {
+          "codes": [
+            [
+              9,
+              25701
+            ],
+            [
+              9,
+              25702
+            ]
+          ],
+          "message": "I have failed..."
+        }
+      ]
+    ]
+  },
+  "3": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [
+            [
+              5,
+              2,
+              1
+            ]
+          ],
+          "message": "HYEAHAH!"
+        },
+        {
+          "message": "It's been a long time since I've had a real challenge like this..."
+        },
+        {
+          "codes": [
+            [
+              5,
+              3,
+              1
+            ]
+          ],
+          "message": "Bring it on!"
+        }
+      ]
+    ]
+  },
+  "4": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [
+            [
+              9,
+              25702,
+              1
+            ]
+          ],
+          "messages": [
+            "Hmph...",
+            "..."
+          ]
+        },
+        {
+          "codes": [
+            [
+              12,
+              0
+            ]
+          ],
+          "messages": [
+            "Still determined to defeat me?",
+            "You're not going to win...",
+            "You again?",
+            "Will you ever give up?"
+          ]
+        }
+      ]
+    ]
+  }
+}

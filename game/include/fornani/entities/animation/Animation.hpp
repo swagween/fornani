@@ -52,6 +52,7 @@ struct Animation {
 		if (frame.canceled()) { ret = true; }
 		return ret;
 	}
+	[[nodiscard]] auto is_first_loop() const -> bool;
 	[[nodiscard]] auto is_complete() -> bool { return complete() && keyframe_over(); }
 	[[nodiscard]] auto totally_complete() const -> bool { return frame.get_count() == params.duration - 1 && frame_timer.is_almost_complete(); }
 	[[nodiscard]] auto keyframe_over() -> bool { return flags.consume(State::keyframe); }

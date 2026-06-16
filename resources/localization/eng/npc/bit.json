@@ -1,0 +1,367 @@
+{
+  "1": {
+    "responses": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              1
+            ]
+          ],
+          "message": "Sure."
+        },
+        {
+          "codes": [
+            [
+              1,
+              2
+            ]
+          ],
+          "message": "I had better get going..."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "message": "..."
+        },
+        {
+          "codes": [
+            [
+              13,
+              20,
+              102
+            ]
+          ],
+          "message": "Psst... Hey!"
+        },
+        {
+          "message": "Hey, you!"
+        },
+        {
+          "message": "I don't know how you managed to escape your cell, but, er... I'm still in a bit of a bind here myself."
+        },
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "Would you help me out?"
+        }
+      ],
+      [
+        {
+          "message": "I appreciate it... you know, I'll owe you big time if you can manage to get me outta here."
+        },
+        {
+          "message": "You might find the key to this cell lying around the ship somewhere."
+        },
+        {
+          "message": "If you do, you should be able to use it on that there door and let me free!"
+        }
+      ],
+      [
+        {
+          "message": "Well uh... okay. If you change your mind, you'll know where to find me."
+        }
+      ]
+    ]
+  },
+  "2": {
+    "responses": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              1
+            ]
+          ],
+          "message": "Where are we?"
+        },
+        {
+          "codes": [
+            [
+              1,
+              2
+            ]
+          ],
+          "message": "How long have I been asleep...?"
+        }
+      ],
+      [
+        {
+          "codes": [
+            [
+              1,
+              3
+            ]
+          ],
+          "message": "I was with some researchers in the gallery, and then the ship was attacked..."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "message": "Listen, I don't wanna rush you, but..."
+        },
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "I'm starting to get pretty hungry, and I haven't seen the jailer in a few days..."
+        }
+      ],
+      [
+        {
+          "message": "I'm not gonna sugarcoat it. We're in prison."
+        },
+        {
+          "message": "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!"
+        },
+        {
+          "message": "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below."
+        },
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here."
+        }
+      ],
+      [
+        {
+          "codes": [
+            [
+              1,
+              1
+            ]
+          ],
+          "message": "Asleep? Wait a minute... What's the last thing you remember?"
+        }
+      ],
+      [
+        {
+          "message": "Oh... That... That was a very long time ago. You must have some amnesia from Skycorps's, er, knowledge retrieval tactics, we'll call them."
+        },
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "Best of luck to you..."
+        }
+      ]
+    ]
+  },
+  "3": {
+    "responses": [
+      {
+        "message": "Where are we?"
+      },
+      {
+        "codes": [
+          [
+            1,
+            2
+          ]
+        ],
+        "message": "How long have I been asleep...?"
+      },
+      {
+        "codes": [
+          [
+            1,
+            4
+          ]
+        ],
+        "message": "Who are you?"
+      },
+      [
+        {
+          "codes": [
+            [
+              1,
+              3
+            ]
+          ],
+          "message": "I was with some researchers in the gallery, and then the ship was attacked..."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "messages": [
+            "Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya.",
+            "I've started marking the days on the wall next to my bed.",
+            "I haven't eaten in a really long time..."
+          ]
+        }
+      ],
+      [
+        {
+          "message": "I'm not gonna sugarcoat it. We're in prison."
+        },
+        {
+          "message": "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!"
+        },
+        {
+          "message": "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below."
+        },
+        {
+          "message": "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here."
+        }
+      ],
+      [
+        {
+          "codes": [
+            [
+              1,
+              1
+            ]
+          ],
+          "message": "Asleep? Wait a minute... What's the last thing you remember?"
+        }
+      ],
+      [
+        {
+          "message": "Oh... That... That was a very long time ago. You must have some amnesia from Skycorps's, er, knowledge retrieval tactics, we'll call them."
+        },
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "Best of luck to you..."
+        }
+      ],
+      [
+        {
+          "message": "My name's Bit. I worked in the engine room before the Skycorps takeover, and they tossed me in this cell because I tried to escape in one of the nighthawks on the deck."
+        },
+        {
+          "message": "Gosh, it's probably been months..."
+        },
+        {
+          "message": "I'm sure some of the old crew are still around. You know, this was originally a Grand Island research vessel before the raid."
+        },
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "This is what I get for leaving my tribe and trying to make a better life working for humans..."
+        }
+      ]
+    ]
+  },
+  "4": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [
+            [
+              3,
+              0,
+              1,
+              101
+            ],
+            [
+              13,
+              20,
+              101
+            ]
+          ],
+          "message": "I can't believe it... You actually did it!"
+        },
+        {
+          "message": "I really can't thank you enough..."
+        },
+        {
+          "message": "Heh, like I said... I owe you big time!"
+        }
+      ]
+    ]
+  },
+  "5": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [
+            [
+              13,
+              20,
+              101
+            ]
+          ],
+          "message": "..."
+        },
+        {
+          "message": "I, er... I'll have to gather some stuff here before I head out. But I'll be right behind ya!"
+        }
+      ]
+    ]
+  },
+  "6": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [
+            [
+              13,
+              20,
+              101
+            ]
+          ],
+          "message": "Listen, I don't exactly have much to give you right now."
+        },
+        {
+          "message": "I'm sure you understand..."
+        },
+        {
+          "message": "But! Fear not! If we bump into each other again someday, I'll have something for you!"
+        }
+      ]
+    ]
+  },
+  "7": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "messages": [
+            "Thanks again for helping me. Stay safe out there!",
+            "Heh... See ya around!"
+          ]
+        }
+      ]
+    ]
+  }
+}

@@ -91,4 +91,6 @@ void Animation::log_info() const { NANI_LOG_INFO(m_logger, "\n\nCurrent Frame: [
 
 int Animation::get_frame() const { return frame.canceled() ? params.lookup : params.lookup + frame.get_count(); }
 
+auto Animation::is_first_loop() const -> bool { return global_counter.get_count() < params.duration * params.framerate; }
+
 } // namespace fornani::anim

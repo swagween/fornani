@@ -110,8 +110,9 @@ void FloatingPart::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 void FloatingPart::set_shield(sf::Vector2f dim, sf::Vector2f pos) {
 	if ((dim.x == 0.f || dim.y == 0.f) && sprite) { dim = sprite->getLocalBounds().size; }
 	if (!shieldbox) { shieldbox = shape::Shape(dim); }
-	if (pos.x == 0.f && pos.y == 0.f && sprite) { pos = m_steering.physics.position - sprite->getLocalBounds().getCenter(); }
-	shieldbox.value().set_position(pos);
+	auto fpos = sf::Vector2f{};
+	if (sprite) { fpos = m_steering.physics.position - sprite->getLocalBounds().getCenter() + pos; }
+	shieldbox.value().set_position(fpos);
 }
 
 void FloatingPart::set_hitbox(sf::Vector2f dim, sf::Vector2f pos) {

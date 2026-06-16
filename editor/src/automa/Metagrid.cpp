@@ -16,7 +16,16 @@ Metagrid::Metagrid(fornani::automa::ServiceProvider& svc, EditorContext& ctx)
 	p_wallpaper.setFillColor(m_background_color);
 	p_wallpaper.setSize(p_services->window->f_screen_dimensions());
 	for (auto& map : svc.data.map_jsons) { m_rooms.push_back(Room(svc, map)); }
+
 	return;
+
+	// convert big npc file to many small ones
+	for (auto const& [key, data] : svc.text.npc.as_object()) {
+		auto path = std::filesystem::path{std::filesystem::path{svc.finder.resource_path()} / "localization" / "eng" / "npc"};
+		auto file = key + ".json";
+		auto to_json = path / file;
+		if (!data.to_file(to_json.string())) {}
+	}
 
 	// here we convert legacy inspectables.
 	for (auto& map : svc.data.map_jsons) {

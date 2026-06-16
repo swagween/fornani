@@ -385,7 +385,11 @@ void Collider::handle_collider_collision(Collider const& collider, bool momentum
 		if (jumpbox.get_position().y > collider.physics.position.y + 4.f || physics.acceleration.y < 0.0f) { return; }
 	}
 	if (handle_collider_collision(collider.bounding_box, should_softly_collide_with(collider), collider.physics.apparent_velocity() * 2.f, 0.01f, collider.has_attribute(ColliderAttributes::crusher))) {
-		if (momentum) { physics.forced_momentum = collider.physics.actual_velocity(); }
+		if (momentum) {
+			auto stuck_left = has_left_wallslide_collision() && collider.physics.velocity.x < 0.f;
+			auto stuck_right = has_right_wallslide_collision() && collider.physics.velocity.x > 0.f;
+			if (!(stuck_right || stuck_left)) { physics.forced_momentum = collider.physics.actual_velocity(); }
+		}
 	}
 	if (jumpbox.overlaps(collider.bounding_box)) { flags.external_state.set(ExternalState::grounded); }
 }
@@ -399,7 +403,7 @@ void Collider::update(automa::ServiceProvider& svc) {
 	flags.external_state = {};
 	adjust_acceleration();
 	if (!has_attribute(ColliderAttributes::fixed)) {
-		if (!flags.general.test(General::no_move)) { has_flag_set(ColliderFlags::simple) ? physics.simple_update() : physics.update(svc); }
+		if (!flags.general.test(General::no_move)) { has_flag_set(ColliderFlags::simple) ? physics.simple_update(has_flag_set(ColliderFlags::gravity)) : physics.update(svc); }
 	}
 	sync_components();
 	physics.gravity = flags.state.test(State::grounded) ? 0.0f : stats.GRAV;

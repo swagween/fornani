@@ -53,6 +53,7 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 	void stop_walljumping();
 	void set_arsenal(bool const has);
 	void set_direction(Direction to);
+	void flush_ability() { m_ability.reset(); }
 
 	std::optional<float> get_controller_state(ControllerInput key) const;
 	std::optional<AnimState> get_ability_animation() const;
@@ -108,7 +109,6 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 	util::Cooldown wallslide_slowdown;
 
   private:
-	void flush_ability() { m_ability = {}; }
 	Direction m_dash_direction{};
 
 	std::unordered_map<ControllerInput, float> key_map{};

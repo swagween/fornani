@@ -1,0 +1,36 @@
+{
+  "1": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "code_list": [
+            [
+              [
+                4,
+                0
+              ]
+            ],
+            [
+              [
+                4,
+                1
+              ]
+            ],
+            [
+              [
+                4,
+                2
+              ]
+            ]
+          ],
+          "messages": [
+            "Get me out of this smelly old tavern!",
+            "My granddaughter doesn't know what she's thinking, marrying a human.",
+            "This town isn't half of what it used to be ever since Skycorps started terrorizing us."
+          ]
+        }
+      ]
+    ]
+  }
+}
