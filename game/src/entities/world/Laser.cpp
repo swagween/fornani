@@ -1,11 +1,11 @@
 
-#include <ccmath/math/basic/fmod.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entities/world/Laser.hpp>
 #include <fornani/entity/Turret.hpp>
 #include <fornani/graphics/Colors.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
+#include <cmath>
 
 namespace fornani::world {
 
@@ -104,7 +104,7 @@ sf::Vector2f Laser::calculate_size(Map& map) {
 		current += step;
 		if (map.get_cell_at_position(current).is_solid() || !map.within_bounds(current)) {
 			auto& part = m_direction.as_hv() == HV::horizontal ? current.x : current.y;
-			auto mod = constants::f_cell_size - ccm::fmod(part, constants::f_cell_size);
+			auto mod = constants::f_cell_size - std::fmod(part, constants::f_cell_size);
 			axis += m_direction.right() || m_direction.down() ? -constants::f_cell_size + mod : -mod;
 			return ret;
 		}
@@ -127,8 +127,8 @@ sf::Vector2f Laser::calculate_end_point() {
 void Laser::handle_collision(shape::Shape& obstacle, sf::Vector2f size) {
 	if (auto coll = calculate_collision_point(obstacle)) {
 		auto sign = m_direction.up() || m_direction.left() ? 1.f : -1.f;
-		auto new_width = ccm::abs(sign + m_spawn_point.x - coll->x);
-		auto new_height = ccm::abs(sign + m_spawn_point.y - coll->y);
+		auto new_width = std::abs(sign + m_spawn_point.x - coll->x);
+		auto new_height = std::abs(sign + m_spawn_point.y - coll->y);
 		switch (m_direction.get()) {
 		case UDLR::up:
 			m_hitbox.set_dimensions({m_hitbox.get_dimensions().x, new_height});

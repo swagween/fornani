@@ -8,6 +8,12 @@
     },
     {
       "folder": "ashtown",
+      "label": "pipers_house.json",
+      "region": "ashtown",
+      "room_id": 1302
+    },
+    {
+      "folder": "ashtown",
       "label": "town.json",
       "region": "ashtown",
       "room_id": 1300
@@ -884,6 +890,12 @@
     },
     {
       "folder": "toxic",
+      "label": "chasm.json",
+      "region": "toxic",
+      "room_id": 1010
+    },
+    {
+      "folder": "toxic",
       "label": "cove.json",
       "region": "toxic",
       "room_id": 1006
@@ -899,6 +911,18 @@
       "label": "entrypoint.json",
       "region": "toxic",
       "room_id": 1001
+    },
+    {
+      "folder": "toxic",
+      "label": "filtration_center.json",
+      "region": "toxic",
+      "room_id": 1009
+    },
+    {
+      "folder": "toxic",
+      "label": "gauntlet.json",
+      "region": "toxic",
+      "room_id": 1008
     },
     {
       "folder": "toxic",
@@ -971,6 +995,24 @@
       "label": "protonephridium.json",
       "region": "worm",
       "room_id": 1102
+    },
+    {
+      "folder": "worm",
+      "label": "sebum.json",
+      "region": "worm",
+      "room_id": 1113
+    },
+    {
+      "folder": "worm",
+      "label": "septum.json",
+      "region": "worm",
+      "room_id": 1112
+    },
+    {
+      "folder": "worm",
+      "label": "seta.json",
+      "region": "worm",
+      "room_id": 1111
     },
     {
       "folder": "worm",

@@ -14,7 +14,7 @@ void HUDOrbs::update(automa::ServiceProvider& svc, player::Player& player) {
 	constexpr float speed = 2.0f;
 	auto amount = player.wallet.get_balance();
 	m_displayed_amount += (static_cast<float>(amount) - m_displayed_amount) * speed * svc.ticker.dt.count();
-	if (std::abs(m_displayed_amount - amount) < 0.01f) { m_displayed_amount = static_cast<float>(amount); }
+	if (std::abs(m_displayed_amount - amount) < 0.01f || !svc.in_game()) { m_displayed_amount = static_cast<float>(amount); }
 	auto display = static_cast<int>(std::round(m_displayed_amount));
 	if (display != amount) { /*svc.soundboard.play_sound("drop_spawn");*/
 		m_frame = 1 + m_circuit.get();

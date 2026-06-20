@@ -1,5 +1,5 @@
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/gui/MiniMap.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -199,8 +199,8 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 void MiniMap::update() {
 	auto bounds{sf::FloatRect{{-(m_extent.size.x) * get_ratio() + m_view.getCenter().x, -(m_extent.size.y) * get_ratio() + m_view.getCenter().y},
 							  {-(m_extent.position.x) * get_ratio() + m_view.getCenter().x, -(m_extent.position.y) * get_ratio() + m_view.getCenter().y}}};
-	m_physics.position.x = ccm::ext::clamp(m_physics.position.x, bounds.position.x, bounds.size.x);
-	m_physics.position.y = ccm::ext::clamp(m_physics.position.y, bounds.position.y, bounds.size.y);
+	m_physics.position.x = std::clamp(m_physics.position.x, bounds.position.x, bounds.size.x);
+	m_physics.position.y = std::clamp(m_physics.position.y, bounds.position.y, bounds.size.y);
 	m_pan_limit_x = m_physics.position.x == bounds.position.x || m_physics.position.x == bounds.size.x;
 	m_pan_limit_y = m_physics.position.y == bounds.position.y || m_physics.position.y == bounds.size.y;
 	m_resolution = m_scale < 32.f ? Resolution::high : m_scale < 128.f ? Resolution::medium : Resolution::low;
@@ -223,7 +223,7 @@ void MiniMap::clear_atlas() { m_atlas.clear(); }
 
 void MiniMap::move(sf::Vector2f direction) {
 	auto speed = m_speed;
-	if (ccm::abs(direction.x) + ccm::abs(direction.y) > 1.f) { speed /= ccm::sqrt(2.f); }
+	if (std::abs(direction.x) + std::abs(direction.y) > 1.f) { speed /= std::sqrt(2.f); }
 	m_steering.target(m_physics, m_physics.position - direction * speed, 0.002f);
 	m_target_position = m_physics.position;
 	set_flag(MiniMapFlags::moving);
@@ -232,12 +232,12 @@ void MiniMap::move(sf::Vector2f direction) {
 void MiniMap::zoom(float amount) {
 	auto prev_ratio = get_ratio();
 	auto max_scale{64.f};
-	m_scale = ccm::ext::clamp(m_scale + amount, m_texture_scale, m_texture_scale * max_scale);
+	m_scale = std::clamp(m_scale + amount, m_texture_scale, m_texture_scale * max_scale);
 	m_zoom_limit = m_scale == m_texture_scale || m_scale == m_texture_scale * max_scale;
 	auto r_delta = get_ratio() - prev_ratio;
 	auto sz{m_port_dimensions.componentWiseDiv(m_view.getSize())};
 	m_center_position = (m_physics.position - m_view.getCenter().componentWiseMul(sz)) / prev_ratio;
-	if (ccm::abs(r_delta) > 0.f) { m_physics.position += m_center_position * r_delta; }
+	if (std::abs(r_delta) > 0.f) { m_physics.position += m_center_position * r_delta; }
 	m_target_position = m_physics.position;
 }
 

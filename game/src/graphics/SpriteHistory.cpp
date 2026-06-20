@@ -1,9 +1,9 @@
 
-#include <ccmath/ext/clamp.hpp>
-#include <ccmath/math/misc/lerp.hpp>
 #include <fornani/core/Debug.hpp>
 #include <fornani/graphics/Renderer.hpp>
 #include <fornani/graphics/SpriteHistory.hpp>
+#include <algorithm>
+#include <cmath>
 
 namespace fornani::graphics {
 
@@ -27,8 +27,8 @@ void SpriteHistory::drag(sf::RenderWindow& win, sf::Vector2f cam) {
 		pair.first.setPosition(pair.second - cam);
 		win.draw(pair.first);
 		++debug::draw_calls;
-		a = ccm::lerp(m_dimness_limit, 255, range);
-		a = ccm::ext::clamp(a, 0, 255);
+		a = std::lerp(m_dimness_limit, 255, range);
+		a = std::clamp(a, 0, 255);
 		range += 1.f / static_cast<float>(m_pairs.size());
 	}
 }
@@ -46,8 +46,8 @@ void SpriteHistory::submit(Renderer& renderer) {
 
 		sf::FloatRect dest{sf::Vector2f{std::floor(pos.x), std::floor(pos.y)}, bounds.size};
 		renderer.submit(sprite.getTexture(), dest, uv, constants::f_scale_factor, color, {}, RenderLayer::atmosphere);
-		alpha = ccm::lerp(static_cast<float>(m_dimness_limit), 255.f, range);
-		alpha = ccm::ext::clamp(alpha, 0.f, 255.f);
+		alpha = std::lerp(static_cast<float>(m_dimness_limit), 255.f, range);
+		alpha = std::clamp(alpha, 0.f, 255.f);
 		range += 1.f / static_cast<float>(m_pairs.size());
 	}
 }

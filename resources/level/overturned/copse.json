@@ -17,6 +17,7 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
             "suite": [
               [
                 {
@@ -32,6 +33,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 255,
         "dimensions": [
           1,
@@ -48,6 +50,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 260,
         "dimensions": [
           3,
@@ -73,7 +76,7 @@
           8,
           29
         ],
-        "toxic": false
+        "type": 0
       }
     ]
   },
@@ -81,11 +84,6 @@
     "ambience": "overturned",
     "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -105,6 +103,7 @@
       32,
       48
     ],
+    "interior": false,
     "metagrid": [
       62,
       20
@@ -116,10 +115,12 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
+      "day_night_shift": true,
       "environmental_randomness": false,
+      "interior": false,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 256,
     "shader": {
@@ -129,6 +130,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false
@@ -7065,10 +7076,10 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
-        96,
+        171,
+        171,
+        171,
+        171,
         96,
         96,
         96,
@@ -7097,7 +7108,7 @@
         96,
         96,
         96,
-        96,
+        205,
         96,
         96,
         96,
@@ -8571,6 +8582,10 @@
         0,
         0,
         0,
+        121,
+        122,
+        123,
+        124,
         0,
         0,
         0,
@@ -8603,6 +8618,7 @@
         0,
         0,
         0,
+        186,
         0,
         0,
         0,
@@ -8631,6 +8647,10 @@
         0,
         0,
         0,
+        202,
+        187,
+        217,
+        219,
         0,
         0,
         0,
@@ -8658,16 +8678,7 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        219,
         0,
         0,
         0,

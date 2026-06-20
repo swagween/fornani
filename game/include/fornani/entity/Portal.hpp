@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/components/SteeringComponent.hpp>
 #include <fornani/entity/Entity.hpp>
 #include <fornani/graphics/Transition.hpp>
 #include <fornani/physics/Shape.hpp>
@@ -14,7 +15,7 @@ enum class PortalState { activated, ready, locked, unlocked, transitioning };
 enum class PortalRenderState { closed, open, locked };
 enum class PortalOrientation { top, bottom, left, right, central };
 
-enum class CustomPortalAttributes { open_for_player };
+enum class CustomPortalAttributes { open_for_player, gravitate };
 enum class CustomPortalFlags { opened, closed };
 
 class Portal;
@@ -28,6 +29,9 @@ struct CustomPortalAnimation {
 	sf::Vector2f offset{};
 	util::BitFlags<CustomPortalAttributes> attributes{};
 	util::BitFlags<CustomPortalFlags> flags{};
+
+  private:
+	components::SteeringComponent m_player_steering{};
 };
 
 struct PortalSpecifications {
@@ -59,6 +63,8 @@ class Portal : public Entity {
 	[[nodiscard]] auto is_activate_on_contact() const -> bool { return m_attributes.test(PortalAttributes::activate_on_contact); }
 	[[nodiscard]] auto is_already_open() const -> bool { return m_attributes.test(PortalAttributes::already_open); }
 	[[nodiscard]] auto is_locked() const -> bool { return m_state.test(PortalState::locked); }
+	[[nodiscard]] auto is_activated() const -> bool { return m_state.test(PortalState::activated); }
+	[[nodiscard]] auto is_transitioning() const -> bool { return m_state.test(PortalState::transitioning); }
 	[[nodiscard]] auto is_top_or_bottom() const -> bool { return is_bottom() || is_top(); }
 	[[nodiscard]] auto is_left_or_right() const -> bool { return is_left() || is_right(); }
 	[[nodiscard]] auto is_bottom() const -> bool { return m_orientation == PortalOrientation::bottom; }

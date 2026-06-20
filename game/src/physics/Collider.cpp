@@ -1,6 +1,6 @@
 
 #include "fornani/physics/Collider.hpp"
-#include <ccmath/math/power/sqrt.hpp>
+#include <cmath>
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 #include "fornani/world/Map.hpp"
@@ -127,7 +127,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.state.set(State::tickwise_ramp_collision);
 			if (is_ground_ramp) {
 				flags.external_state.set(ExternalState::on_ramp);
-				physics.position.y -= ccm::abs(mtvs.actual.y);
+				physics.position.y -= std::abs(mtvs.actual.y);
 				//  still zero this because of gravity
 				if (!flags.movement.test(Movement::jumping) && bounding_box.bottom() <= cell.bottom()) {
 					if (physics.apparent_velocity().y > vert_threshold) {
@@ -140,7 +140,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			}
 			if (is_ceiling_ramp) {
 				tile.debug_flag = true;
-				physics.position.y += ccm::abs(mtvs.combined.y) * 4.f;
+				physics.position.y += std::abs(mtvs.combined.y) * 4.f;
 				if (physics.apparent_velocity().y < 0.f) { physics.zero_y(); }
 				flags.external_state.set(ExternalState::ceiling_ramp_hit);
 				physics.acceleration.x *= 0.9f;
@@ -241,9 +241,9 @@ void Collider::correct_x(sf::Vector2f mtv, bool has_velocity) {
 void Collider::correct_y(sf::Vector2f mtv, bool ricochet) {
 	if (has_attribute(ColliderAttributes::custom_resolution)) { return; }
 	// for large mtv values, overcorrect to prevent clipping
-	if (ccm::abs(mtv.x) > 12.f || ccm::abs(mtv.y) > 12.f) {
-		mtv.x = ccm::abs(mtv.y) > 0 ? mtv.y : mtv.x;
-		mtv.y = ccm::abs(mtv.x) > 0 ? mtv.x : mtv.y;
+	if (std::abs(mtv.x) > 12.f || std::abs(mtv.y) > 12.f) {
+		mtv.x = std::abs(mtv.y) > 0 ? mtv.y : mtv.x;
+		mtv.y = std::abs(mtv.x) > 0 ? mtv.x : mtv.y;
 	}
 	auto ydist = predictive_vertical.get_position().y + vertical_detector_buffer - physics.position.y;
 	auto correction = ydist + mtv.y;
@@ -265,7 +265,7 @@ void Collider::correct_x_y(sf::Vector2f mtv) {
 
 void Collider::correct_corner(sf::Vector2f mtv) {
 	if (has_attribute(ColliderAttributes::custom_resolution)) { return; }
-	if (ccm::abs(mtv.x) >= ccm::abs(mtv.y)) {
+	if (std::abs(mtv.x) >= std::abs(mtv.y)) {
 		physics.position.x = predictive_combined.get_position().x + mtv.x;
 		physics.zero_x();
 	} else {

@@ -16,22 +16,6 @@
           0
         ],
         "variant": 0
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 7,
-        "position": [
-          24,
-          21
-        ],
-        "start_direction": [
-          0,
-          0
-        ],
-        "variant": 0
       }
     ],
     "portals": [
@@ -106,7 +90,7 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
+      "day_night_shift": true,
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
@@ -118,7 +102,8 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
     "animated": [

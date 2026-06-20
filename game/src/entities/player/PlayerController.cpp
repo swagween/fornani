@@ -137,7 +137,10 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	auto can_doublejump = (player.can_doublejump() && !dash_and_jump_combined) || (player.can_doublejump() && dash_and_jump_combined && (!any_direction_held || dash_exhausted));
 	auto jump_direction = right_walljump_collision ? Direction{LR::right} : left_walljump_collision ? Direction{LR::left} : direction;
 	if (svc.input_system.digital(input::DigitalAction::jump).triggered) {
-		if (player.can_jump()) { m_ability = std::make_unique<Jump>(svc, map, player.get_collider()); }
+		if (player.can_jump()) {
+			if (consume_flag(PlayerControllerFlags::slide_jump)) { player.accumulated_momentum.push_back({player.get_collider().physics.velocity.x * 0.5f, 0.f}); }
+			m_ability = std::make_unique<Jump>(svc, map, player.get_collider());
+		}
 		cooldowns.walljump_request.start();
 		if (can_walljump) {
 			auto perfect = (direction.left() && cooldowns.right_pressed.running()) || (direction.right() && cooldowns.left_pressed.running());

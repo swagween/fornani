@@ -190,6 +190,7 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
             "suite": [
               [
                 {
@@ -216,6 +217,7 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
             "suite": [
               [
                 {
@@ -255,6 +257,7 @@
       {
         "activate_on_contact": true,
         "already_open": true,
+        "channel": 0,
         "destination_id": 227,
         "dimensions": [
           1,
@@ -271,6 +274,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 219,
         "dimensions": [
           2,
@@ -287,6 +291,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 208,
         "dimensions": [
           1,
@@ -303,6 +308,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 242,
         "dimensions": [
           1,
@@ -1615,11 +1621,6 @@
     "ambience": "overturned",
     "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -1639,6 +1640,7 @@
       112,
       64
     ],
+    "interior": false,
     "metagrid": [
       45,
       22
@@ -1650,19 +1652,32 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
+      "day_night_shift": true,
       "environmental_randomness": false,
+      "interior": false,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 225,
     "shader": {
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": true,
       "reverse_obscuring": false

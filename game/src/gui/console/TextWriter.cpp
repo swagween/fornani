@@ -1,6 +1,6 @@
 
 #include <SFML/Graphics.hpp>
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include <fornani/gui/console/TextWriter.hpp>
 #include <fornani/utils/TextUtils.hpp>
 #include <fstream>
@@ -102,7 +102,7 @@ void TextWriter::debug() {
 
 void TextWriter::set_bounds(sf::FloatRect to_bounds, bool wrap) {
 	m_bounds = to_bounds;
-	if (ccm::abs(m_bounds.size.x - m_previous_bounds.size.x) > m_delta_threshold || wrap) {
+	if (std::abs(m_bounds.size.x - m_previous_bounds.size.x) > m_delta_threshold || wrap) {
 		constrain();
 		m_previous_bounds = m_bounds;
 	}
@@ -183,12 +183,12 @@ void TextWriter::stylize(sf::Text& msg) const {
 }
 
 void TextWriter::set_suite(int to_suite) {
-	m_iterators.current_suite_set = ccm::ext::clamp(to_suite, 0, static_cast<int>(suite->suite.size() - 1));
+	m_iterators.current_suite_set = std::clamp(to_suite, 0, static_cast<int>(suite->suite.size() - 1));
 	m_iterators.index = 0;
 	reset();
 }
 
-void TextWriter::set_index(int to_index) { m_iterators.index = ccm::ext::clamp(to_index, 0, static_cast<int>(suite->suite.at(m_iterators.current_suite_set).size() - 1)); }
+void TextWriter::set_index(int to_index) { m_iterators.index = std::clamp(to_index, 0, static_cast<int>(suite->suite.at(m_iterators.current_suite_set).size() - 1)); }
 
 void TextWriter::write_instant_message(sf::RenderWindow& win) {
 	// win.draw(bounds_box);

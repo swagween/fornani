@@ -2,7 +2,6 @@
 #pragma once
 
 #include <fornani/entities/enemy/Enemy.hpp>
-#include <fornani/utils/Flaggable.hpp>
 #define HELLION_BIND(f) std::bind(&Hellion::f, this)
 
 namespace fornani::enemy {

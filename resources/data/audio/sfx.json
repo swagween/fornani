@@ -574,6 +574,12 @@
     "pitch_offset": 0.0
   },
   {
+    "label": "hellion_hurt",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
     "label": "console_speech",
     "bus": "gui",
     "volume": 1.0,

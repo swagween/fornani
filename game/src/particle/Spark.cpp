@@ -1,5 +1,5 @@
 
-#include <ccmath/math/power/sqrt.hpp>
+#include <cmath>
 #include <fornani/core/Debug.hpp>
 #include <fornani/graphics/Renderer.hpp>
 #include <fornani/particle/Spark.hpp>

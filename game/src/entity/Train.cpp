@@ -119,7 +119,7 @@ void Train::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	Entity::render(win, cam, size);
 	if (m_editor) { return; }
 	if (!m_chain) { return; }
-	bool debug_draw = true;
+	bool debug_draw = false;
 	Animatable::center();
 	set_channel(m_style);
 	m_wheels.set_channel(m_style);

@@ -1,5 +1,5 @@
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include <fornani/audio/MusicPlayer.hpp>
 #include <fornani/utils/Constants.hpp>
 #include <filesystem>
@@ -29,7 +29,7 @@ void MusicPlayer::load(ResourceFinder const& finder, std::string_view song_name)
 	if (is_off()) { return; }
 	if (song_name.empty()) { return; }
 	if (song_name == m_current_song) { return; }
-	m_jukebox.set_gain(ccm::ext::clamp(m_volume_multiplier * global_volume_damp_v, 0.f, 1.f));
+	m_jukebox.set_gain(std::clamp(m_volume_multiplier * global_volume_damp_v, 0.f, 1.f));
 	m_current_song = song_name;
 	auto path = std::filesystem::path{finder.resource_path() + "/audio/songs/" + song_name.data() + ".xm"};
 	m_jukebox.load_media(path);

@@ -105,8 +105,8 @@ bool EditorState::create_new_room() {
 	ImGui::Separator();
 	ImGui::NewLine();
 
-	width = ccm::ext::clamp(width, 1, std::numeric_limits<int>::max());
-	height = ccm::ext::clamp(height, 1, std::numeric_limits<int>::max());
+	width = std::clamp(width, 1, std::numeric_limits<int>::max());
+	height = std::clamp(height, 1, std::numeric_limits<int>::max());
 
 	ImGui::InputInt("Width", &width);
 	ImGui::NewLine();

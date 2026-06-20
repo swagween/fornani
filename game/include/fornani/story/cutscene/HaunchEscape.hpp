@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/components/SteeringComponent.hpp>
 #include <fornani/entities/scenery/ChampionJ5.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/story/Cutscene.hpp>
@@ -26,6 +27,7 @@ class HaunchEscape final : public Cutscene {
 	util::Cooldown m_champion_entry;
 	util::Cooldown m_player_jump;
 	std::optional<ChampionJ5> m_champion;
+	components::SteeringComponent m_player_steering{};
 
 	util::BitFlags<HaunchEscapeFlags> m_flags{};
 

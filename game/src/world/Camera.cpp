@@ -3,7 +3,7 @@
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 
 namespace fornani {
 
@@ -27,7 +27,7 @@ void Camera::update(automa::ServiceProvider& svc) {
 	if (m_shake.timer.running() && m_shake.timer.get() % m_shake.properties.frequency == 0) {
 		m_shake.dampen.update();
 		auto diff = static_cast<float>(m_shake.dampen.get()) * m_shake.properties.energy;
-		if (ccm::abs(diff) < 0.1f) {
+		if (std::abs(diff) < 0.1f) {
 			m_shake.timer.cancel();
 			diff = 0.f;
 		}
@@ -69,7 +69,7 @@ auto Camera::get_clamped_position(sf::Vector2f const position) const -> sf::Vect
 	auto bottom_right = top_left + m_bounds.size - m_view.size;
 	bottom_right.x = free_xpan ? bottom_right.x : top_left.x;
 	bottom_right.y = free_ypan ? bottom_right.y : top_left.y;
-	return sf::Vector2f{ccm::ext::clamp(position.x, top_left.x, bottom_right.x), ccm::ext::clamp(position.y, top_left.y, bottom_right.y)};
+	return sf::Vector2f{std::clamp(position.x, top_left.x, bottom_right.x), std::clamp(position.y, top_left.y, bottom_right.y)};
 }
 
 } // namespace fornani

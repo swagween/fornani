@@ -64,9 +64,9 @@ void Ticker::manage_slowdowns() {
 	if (freezeframe.running()) {
 		dt_scalar = 0.01f;
 	} else {
-		dt_scalar = ccm::ext::clamp(dt_scalar + slowdown_rate, 0.f, global_scalar);
+		dt_scalar = std::clamp(dt_scalar + slowdown_rate, 0.f, global_scalar);
 	}
-	if (slowdown.running()) { dt_scalar = ccm::ext::clamp(1.f - slowdown_target * util::slowdown(slowdown.get_normalized()), 0.f, global_scalar); }
+	if (slowdown.running()) { dt_scalar = std::clamp(1.f - slowdown_target * util::slowdown(slowdown.get_normalized()), 0.f, global_scalar); }
 
 	freezeframe.update();
 	slowdown.update();

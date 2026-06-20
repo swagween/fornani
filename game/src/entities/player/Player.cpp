@@ -624,7 +624,7 @@ void Player::update_sprite() {
 void Player::handle_turning() {
 	if (directions.desired != directions.actual) {
 		if (has_collider()) {
-			ccm::abs(get_collider().physics.velocity.x) > thresholds.quick_turn ? m_animation_machine.request(AnimState::sharp_turn) : m_animation_machine.request(AnimState::turn);
+			std::abs(get_collider().physics.velocity.x) > thresholds.quick_turn ? m_animation_machine.request(AnimState::sharp_turn) : m_animation_machine.request(AnimState::turn);
 		} else {
 			m_animation_machine.request(AnimState::turn);
 		}

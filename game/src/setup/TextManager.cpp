@@ -40,9 +40,6 @@ TextManager::TextManager(ResourceFinder& finder, Localization& localization)
 	// assert(!npc.is_null());
 
 	auto npc_catalog = fs::path{finder.resource_path() + localization.get_folder_string()} / "npc";
-	NANI_LOG_DEBUG(m_logger, "{}", npc_catalog.string());
-	NANI_LOG_DEBUG(m_logger, "{}", std::filesystem::exists(npc_catalog));
-	NANI_LOG_DEBUG(m_logger, "{}", std::filesystem::is_directory(npc_catalog));
 	for (auto const& character : std::filesystem::recursive_directory_iterator(npc_catalog)) {
 		if (character.path().extension() != ".json") { continue; }
 		auto result = dj::Json::from_file(character.path().string());

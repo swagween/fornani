@@ -1,5 +1,5 @@
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include <fornani/core/Debug.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/particle/Effect.hpp>
@@ -21,7 +21,7 @@ Breakable::Breakable(automa::ServiceProvider& svc, Map& map, sf::Vector2f positi
 void Breakable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 	if (is_destroyed()) { return; }
 	tick();
-	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
+	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) {
 		energy = 0.f;
 		random_offset = {};

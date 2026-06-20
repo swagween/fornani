@@ -384,7 +384,7 @@ fsm::StateFunction Tank::update_sleep() {
 	p_state.actual = TankState::sleep;
 	if (hostility_triggered()) { request(TankState::alert); }
 	if (is_hurt()) { request(TankState::alert); }
-	if (ccm::abs(get_collider().physics.actual_velocity().x) > 0.01f) { request(TankState::idle); }
+	if (std::abs(get_collider().physics.actual_velocity().x) > 0.01f) { request(TankState::idle); }
 	if (change_state(TankState::alert, get_params("alert"))) { return TANK_BIND(update_alert); }
 	if (change_state(TankState::idle, get_params("idle"))) { return TANK_BIND(update_idle); }
 	return TANK_BIND(update_sleep);

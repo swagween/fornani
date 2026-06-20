@@ -343,6 +343,12 @@ void Metagrid::render(sf::RenderWindow& win) {
 					serialize = true;
 				}
 			}
+			if (ImGui::MenuItem("Toggle DayNightShift")) {
+				if (m_highlighted_room) {
+					m_highlighted_room.value()->toggle_flag(RoomFlags::day_night_shift);
+					serialize = true;
+				}
+			}
 			if (ImGui::Checkbox("Use Template", &ut)) {
 				if (m_highlighted_room) {
 					m_highlighted_room.value()->toggle_flag(RoomFlags::use_template);

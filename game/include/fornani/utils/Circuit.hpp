@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include <ccmath/math/basic/min.hpp>
 #include <fornani/io/Logger.hpp>
+#include <algorithm>
 #include <cassert>
 
 namespace fornani::util {
@@ -26,7 +26,7 @@ class Circuit {
 	void set_order(int const to_order) {
 		if (debug) { NANI_LOG_DEBUG(m_logger, "Order before setting: {}", m_order); }
 		m_order = to_order;
-		m_selection = ccm::min(m_selection, m_order - 1);
+		m_selection = std::min(m_selection, m_order - 1);
 		if (debug) { NANI_LOG_DEBUG(m_logger, "Order after setting: {}", m_order); }
 	}
 	[[nodiscard]] auto get_order() const -> int { return m_order; }

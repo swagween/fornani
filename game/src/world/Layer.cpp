@@ -3,12 +3,10 @@
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/shader/LightShader.hpp>
 #include <fornani/shader/Palette.hpp>
+#include <cmath>
 #include "fornani/graphics/DayNightShifter.hpp"
 #include "fornani/utils/Constants.hpp"
 #include "fornani/utils/WorldClock.hpp"
-
-#include <ccmath/ccmath.hpp>
-#include <ccmath/math/misc/lerp.hpp>
 
 namespace fornani::world {
 
@@ -35,7 +33,7 @@ void Layer::generate_textures(sf::Texture const& tex) {
 			sf::Sprite tile{tex};
 			for (auto& cell : grid.cells) {
 				auto x_coord = static_cast<int>((cell.value % constants::tileset_dimensions.x + lookup * constants::tileset_dimensions.x) * constants::i_cell_resolution);
-				auto y_coord = static_cast<int>(ccm::floor(cell.value / constants::tileset_dimensions.x) * constants::i_cell_resolution);
+				auto y_coord = static_cast<int>(std::floor(cell.value / constants::tileset_dimensions.x) * constants::i_cell_resolution);
 				tile.setTextureRect(sf::IntRect({x_coord, y_coord}, constants::i_resolution_vec));
 				tile.setPosition(cell.position() / constants::f_scale_factor);
 				if (cell.is_occupied() && !cell.is_special()) {
@@ -61,7 +59,7 @@ void Layer::generate_textures(sf::Texture const& tex) {
 			sf::Sprite tile{tex};
 			for (auto& cell : grid.cells) {
 				auto x_coord = static_cast<int>((cell.value % constants::tileset_dimensions.x) * constants::i_cell_resolution);
-				auto y_coord = static_cast<int>(ccm::floor(cell.value / constants::tileset_dimensions.x) * constants::i_cell_resolution + i * constants::tileset_dimensions.y * constants::i_cell_resolution);
+				auto y_coord = static_cast<int>(std::floor(cell.value / constants::tileset_dimensions.x) * constants::i_cell_resolution + i * constants::tileset_dimensions.y * constants::i_cell_resolution);
 				tile.setTextureRect(sf::IntRect({x_coord, y_coord}, constants::i_resolution_vec));
 				tile.setPosition(cell.position() / constants::f_scale_factor);
 				if (cell.is_occupied() && !cell.is_special()) {
@@ -90,8 +88,8 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics
 
 	auto ctr{0};
 	for (auto& sprite : sprites) {
-		std::uint8_t alpha = ccm::lerp(0, 255, fade);
-		std::uint8_t revalpha = ccm::lerp(0, 255, 1.f - fade);
+		std::uint8_t alpha = std::lerp(0, 255, fade);
+		std::uint8_t revalpha = std::lerp(0, 255, 1.f - fade);
 		sprite.setScale(constants::f_scale_vec);
 		sprite.setPosition({-cam.x * m_parallax, -cam.y});
 		if (obscuring()) { shifter.render(svc, win, sprite, ctr, alpha); }

@@ -1,9 +1,9 @@
 
 #include <imgui.h>
-#include <ccmath/ext/clamp.hpp>
 #include <fornani/graphics/Background.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Math.hpp>
+#include <algorithm>
 
 namespace fornani::graphics {
 
@@ -55,7 +55,7 @@ void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 
 		layer.final_position = layer.physics.position + origin.componentWiseMul(map_dimensions);
 
-		if (locked_horizontally()) { layer.final_position.x = ccm::ext::clamp(layer.final_position.x, std::min(static_cast<float>(-scroll_pane.x + svc.window->i_screen_dimensions().x), -1 + epsilon), 0.f); }
+		if (locked_horizontally()) { layer.final_position.x = std::clamp(layer.final_position.x, std::min(static_cast<float>(-scroll_pane.x + svc.window->i_screen_dimensions().x), -1 + epsilon), 0.f); }
 		for (auto [tod, tex] : std::views::enumerate(layer.textures)) {
 			auto chunks = map_dimensions / constants::f_cell_size / constants::f_chunk_size;
 			auto multiplier = std::max(chunks.x, chunks.y);

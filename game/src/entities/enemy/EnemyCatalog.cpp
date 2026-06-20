@@ -17,6 +17,7 @@
 #include <fornani/entities/enemy/catalog/Frdog.hpp>
 #include <fornani/entities/enemy/catalog/Hellion.hpp>
 #include <fornani/entities/enemy/catalog/Hulmet.hpp>
+#include <fornani/entities/enemy/catalog/Hurtle.hpp>
 #include <fornani/entities/enemy/catalog/Imp.hpp>
 #include <fornani/entities/enemy/catalog/Junker.hpp>
 #include <fornani/entities/enemy/catalog/Junkfly.hpp>
@@ -66,6 +67,7 @@ EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
 	EnemyRegistry::register_factory(29, [](auto& svc, auto& map, auto&, EnemyParameters const&) { return std::make_unique<Lymphocyte>(svc, map); });
 	EnemyRegistry::register_factory(30, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Sentinel>(svc, map, p.variant); });
 	EnemyRegistry::register_factory(31, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Hellion>(svc, map); });
+	EnemyRegistry::register_factory(32, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Hurtle>(svc, map); });
 }
 
 void EnemyCatalog::update() {

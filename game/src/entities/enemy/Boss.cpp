@@ -34,6 +34,7 @@ void Boss::end_battle() {
 	p_health_bar.send_out();
 	p_services->soundboard.play_sound("boss_defeat");
 	p_services->ticker.slow_down(128);
+	p_services->camera_controller.shake(10, 0.4f, 900);
 }
 
 } // namespace fornani::enemy

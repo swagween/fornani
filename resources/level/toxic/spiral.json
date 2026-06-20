@@ -34,6 +34,23 @@
           57
         ],
         "source_id": 1004
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 1005,
+        "dimensions": [
+          1,
+          2
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          31,
+          56
+        ],
+        "source_id": 1004
       }
     ],
     "water": [
@@ -55,11 +72,6 @@
     "ambience": "",
     "background": "bright_slime",
     "biome": "toxic",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -95,7 +107,8 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 1004,
     "shader": {
@@ -105,6 +118,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

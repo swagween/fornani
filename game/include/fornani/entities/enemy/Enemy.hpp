@@ -222,6 +222,7 @@ class Enemy : public Mobile {
 	fornani::io::Logger m_logger{"Enemy"};
 
   private:
+	util::Cooldown m_freeze;
 	sf::Vector2f m_random_offset{};
 	sf::Vector2f m_native_offset{};
 	gui::HealthBar m_health_bar;

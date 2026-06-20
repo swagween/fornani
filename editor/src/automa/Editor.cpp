@@ -1,9 +1,9 @@
 
 #include "editor/automa/Editor.hpp"
-#include <ccmath/ext/clamp.hpp>
 #include <editor/automa/EditorContext.hpp>
 #include <editor/util/Constants.hpp>
 #include <fornani/events/SystemEvent.hpp>
+#include <algorithm>
 #include "editor/gui/Console.hpp"
 #include "fornani/core/Application.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
@@ -114,8 +114,8 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Tab) { map.flags.show_grid = !map.flags.show_grid; }
 			}
 			if (key_pressed->shift && !key_pressed->control) {
-				if (key_pressed->scancode == sf::Keyboard::Scancode::Up) { active_layer = ccm::ext::clamp(active_layer - 1, 0, static_cast<int>(map.get_layers().layers.size())); }
-				if (key_pressed->scancode == sf::Keyboard::Scancode::Down) { active_layer = ccm::ext::clamp(active_layer + 1, 0, static_cast<int>(map.get_layers().layers.size())); }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Up) { active_layer = std::clamp(active_layer > 0 ? active_layer - 1 : std::size_t{0}, std::size_t{0}, map.get_layers().layers.size() - 1); }
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Down) { active_layer = std::clamp(active_layer < map.get_layers().layers.size() - 1 ? active_layer + 1 : std::size_t{0}, std::size_t{0}, map.get_layers().layers.size()); }
 			}
 			if (key_pressed->control) {
 				if (key_pressed->scancode == sf::Keyboard::Scancode::X) {
@@ -1017,7 +1017,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 				ImGui::Text("Middleground: ");
 				ImGui::SameLine();
 				if (ImGui::InputInt("##smg", &m_middleground)) {
-					m_middleground = ccm::ext::clamp(m_middleground, 0, static_cast<int>(map.get_layers().layers.size()) - 1);
+					m_middleground = std::clamp(m_middleground, 0, static_cast<int>(map.get_layers().layers.size()) - 1);
 					map.get_layers().set_middleground(m_middleground);
 				}
 				auto ho{map.get_layers().m_flags.has_obscuring_layer};
@@ -1240,7 +1240,7 @@ void Editor::delete_current_layer() {
 		active_layer = 0;
 		return;
 	}
-	active_layer = ccm::ext::clamp(active_layer, 0, layers.size() - 1);
+	active_layer = std::clamp(active_layer > 0 ? active_layer - 1 : std::size_t{0}, std::size_t{0}, map.get_layers().layers.size() - 1);
 }
 
 void Editor::set_new_room() {

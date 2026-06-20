@@ -1,8 +1,8 @@
 
 #include "fornani/entities/enemy/Enemy.hpp"
 #include <imgui.h>
-#include <ccmath/ext/clamp.hpp>
 #include <fornani/world/Map.hpp>
+#include <algorithm>
 #include <numbers>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -12,7 +12,7 @@ namespace fornani::enemy {
 
 Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
 	: Mobile(svc, map, "enemy_" + std::string{label}, sf::Vector2i{svc.data.enemy[label]["physical"]["sprite_dimensions"][0].as<int>(), svc.data.enemy[label]["physical"]["sprite_dimensions"][1].as<int>()}), metadata{.variant{variant}},
-	  label(label), health_indicator{svc}, hurt_effect{128}, m_health_bar{svc, colors::mythic_green}, health{svc.data.enemy[label]["attributes"]["base_hp"].as<float>()}, m_weakness{160} {
+	  label(label), health_indicator{svc}, hurt_effect{128}, m_freeze{12}, m_health_bar{svc, colors::mythic_green}, health{svc.data.enemy[label]["attributes"]["base_hp"].as<float>()}, m_weakness{160} {
 
 	get_collider().set_trait(shape::ColliderTrait::enemy);
 	if (spawned) { flags.general.set(GeneralFlags::spawned); }
@@ -155,6 +155,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	sound.hurt_sound_cooldown.update();
 	intangibility.update();
 	m_weakness.update();
+	m_freeze.update();
 
 	if (get_collider().collision_depths) { get_collider().collision_depths.value().reset(); }
 	if (has_secondary_collider()) {
@@ -207,7 +208,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	hurt_effect.update();
 
 	// shake
-	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
+	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
 	if (svc.ticker.every_x_ticks(14)) { m_random_offset = random::random_vector_float(-energy, energy); }
 	if (hitstun.running() && !flags.state.test(StateFlags::no_slowdown)) {
@@ -302,7 +303,7 @@ void Enemy::handle_player_collision(player::Player& player) const {
 	if (died()) { return; }
 	if (player_collision()) {
 		player.get_collider().handle_collider_collision(get_collider());
-		if (has_secondary_collider()) { player.get_collider().handle_collider_collision(get_secondary_collider()); }
+		// if (has_secondary_collider()) { player.get_collider().handle_collider_collision(get_secondary_collider()); }
 	}
 	if (flags.general.test(GeneralFlags::hurt_on_contact)) {
 		if (player.hurtbox.overlaps(get_collider().bounding_box)) { player.hurt(attributes.base_damage); }
@@ -331,6 +332,10 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 			proj.increment_hits();
 		}
 		if (proj.can_damage()) {
+			if (!m_freeze.running()) {
+				svc.ticker.freeze_frame(1, 0.2f);
+				m_freeze.start();
+			}
 			if (proj.has_attribute(arms::ProjectileAttributes::explode_on_impact)) { proj.on_explode(svc, map); }
 			if (m_weakness.running()) {
 				proj.multiply(2.f);

@@ -1,5 +1,5 @@
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include <fornani/graphics/HelpText.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 
@@ -38,8 +38,8 @@ void HelpText::render(sf::RenderWindow& win) {
 	if (!ready()) { return; }
 	auto alpha = static_cast<unsigned>(-128 * sin(alpha_counter.get()) + 128);
 	if (flags.test(HelpTextFlags::no_blink)) { alpha = 255u; }
-	text_color.a = ccm::ext::clamp(alpha, 0u, 255u);
-	bg_color.a = ccm::ext::clamp(alpha, 0u, 255u);
+	text_color.a = std::clamp(alpha, 0u, 255u);
+	bg_color.a = std::clamp(alpha, 0u, 255u);
 	if (background) {
 		data.setPosition(position + bg_offset);
 		data.setFillColor(bg_color);

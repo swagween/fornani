@@ -51,19 +51,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(ksignal)
 
-# ccmath
-set(CCMATH_ENABLE_EXTENSIONS ON)
-set(CCMATH_DISABLE_ERRNO ON)
-set(CCMATH_STRICT_WARNINGS OFF)
-FetchContent_Declare(
-        ccmath
-        GIT_REPOSITORY https://github.com/Rinzii/ccmath
-        GIT_TAG 15260da # IanP: This specific commit id is stable but more recent than main
-)
-FetchContent_MakeAvailable(ccmath)
-
 # Used for assertions and crash handling
-
 FetchContent_Declare(
         cpptrace
         GIT_REPOSITORY https://github.com/jeremy-rifkin/cpptrace
@@ -155,7 +143,6 @@ target_link_libraries(fornani-dependencies INTERFACE
         sago::platform_folders
         djson::djson
         ksignal::ksignal
-        ccmath::ccmath
         ImGui-SFML::ImGui-SFML
         SFML::System
         SFML::Graphics

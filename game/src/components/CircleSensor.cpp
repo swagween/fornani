@@ -1,5 +1,5 @@
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include <fornani/components/CircleSensor.hpp>
 #include <fornani/physics/CircleCollider.hpp>
 #include <fornani/utils/Math.hpp>
@@ -31,8 +31,8 @@ bool CircleSensor::within_bounds(sf::Vector2f const point) const { return (point
 
 bool CircleSensor::within_bounds(shape::Shape const& shape) const {
 	if (shape.non_square()) { return shape.circle_SAT(bounds); }
-	auto const x = ccm::ext::clamp(bounds.getPosition().x, shape.get_position().x, shape.get_position().x + shape.get_dimensions().x);
-	auto const y = ccm::ext::clamp(bounds.getPosition().y, shape.get_position().y, shape.get_position().y + shape.get_dimensions().y);
+	auto const x = std::clamp(bounds.getPosition().x, shape.get_position().x, shape.get_position().x + shape.get_dimensions().x);
+	auto const y = std::clamp(bounds.getPosition().y, shape.get_position().y, shape.get_position().y + shape.get_dimensions().y);
 	sf::Vector2 const closest{x, y};
 	return util::magnitude(closest - bounds.getPosition()) < bounds.getRadius();
 }

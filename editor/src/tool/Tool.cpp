@@ -1,7 +1,7 @@
 
 #include "editor/tool/Tool.hpp"
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 
 namespace pi {
 
@@ -25,7 +25,7 @@ void Tool::click() { just_clicked = true; }
 
 void Tool::release() { just_released = true; }
 
-void Tool::change_size(int amount) { size = ccm::ext::clamp(size + amount, 1, max_size); }
+void Tool::change_size(int amount) { size = std::clamp(size + amount, 1, max_size); }
 
 void Tool::update(Canvas& canvas) {
 	if (just_clicked) { selection_type = canvas.editable() ? SelectionType::canvas : SelectionType::palette; }

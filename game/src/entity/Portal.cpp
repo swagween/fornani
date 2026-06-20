@@ -237,8 +237,9 @@ CustomPortalAnimation::CustomPortalAnimation(automa::ServiceProvider& svc, std::
 		if (i == 0) { animatable.set_animation(in_anim["label"].as_string()); }
 	}
 	for (auto const& sound : in["sounds"].as_array()) { sounds.push_back(sound.as_string()); }
-	offset = {svc.data.portal[tag]["offset"][0].as<float>(), svc.data.portal[tag]["offset"][1].as<float>()};
-	if (svc.data.portal[tag]["open_for_player"]) { attributes.set(CustomPortalAttributes::open_for_player); }
+	offset = {in["offset"][0].as<float>(), in["offset"][1].as<float>()};
+	if (in["open_for_player"].as_bool()) { attributes.set(CustomPortalAttributes::open_for_player); }
+	if (in["gravitate"].as_bool()) { attributes.set(CustomPortalAttributes::gravitate); }
 }
 
 void CustomPortalAnimation::update(automa::ServiceProvider& svc, player::Player& player, Portal& parent) {
@@ -253,6 +254,14 @@ void CustomPortalAnimation::update(automa::ServiceProvider& svc, player::Player&
 			animatable.set_animation("close");
 			if (!flags.test(CustomPortalFlags::closed) && sounds.size() > 0) { svc.soundboard.play_sound(sounds.at(0), parent.get_center()); }
 			flags.set(CustomPortalFlags::closed);
+		}
+	}
+	if (attributes.test(CustomPortalAttributes::gravitate)) {
+		if (parent.is_transitioning()) {
+			m_player_steering.seek(parent.get_world_position(), 0.005f);
+			player.set_position(m_player_steering.physics.position);
+		} else {
+			m_player_steering.physics.position = player.get_position();
 		}
 	}
 	animatable.tick();

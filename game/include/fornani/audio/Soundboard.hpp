@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <capo/engine.hpp>
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include <fornani/audio/Sound.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
@@ -155,7 +155,7 @@ class Soundboard {
 	void turn_on() { status = SoundboardState::on; }
 	void turn_off() { status = SoundboardState::off; }
 	void play_step(int tile_value, int style_id, bool land = false);
-	void set_volume(float to) { m_volume_multiplier = ccm::ext::clamp(to, 0.f, 1.f); }
+	void set_volume(float to) { m_volume_multiplier = std::clamp(to, 0.f, 1.f); }
 	void adjust_volume(float amount) { set_volume(m_volume_multiplier + amount); }
 	void set_listener_position(sf::Vector2f const to) { m_listener.position = to; }
 

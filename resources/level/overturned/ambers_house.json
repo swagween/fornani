@@ -49,6 +49,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 38552,
@@ -57,6 +58,7 @@
           10,
           12
         ],
+        "start_busy": false,
         "suites": [
           [
             1
@@ -69,6 +71,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 409,
@@ -77,6 +80,7 @@
           9,
           4
         ],
+        "start_busy": false,
         "suites": [
           [
             1
@@ -89,6 +93,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 409,
@@ -97,6 +102,7 @@
           11,
           4
         ],
+        "start_busy": false,
         "suites": [
           [
             1
@@ -109,6 +115,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 409,
@@ -117,6 +124,7 @@
           7,
           12
         ],
+        "start_busy": false,
         "suites": [
           [
             1
@@ -128,6 +136,7 @@
       {
         "activate_on_contact": false,
         "already_open": true,
+        "channel": 0,
         "destination_id": 400,
         "dimensions": [
           1,
@@ -157,14 +166,9 @@
     ]
   },
   "meta": {
-    "ambience": "none",
+    "ambience": "",
     "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -184,12 +188,13 @@
       16,
       16
     ],
+    "interior": true,
     "metagrid": [
       54,
       18
     ],
     "minimap": true,
-    "music": "home_again",
+    "music": "dandelions",
     "player_start": [
       0,
       0
@@ -199,7 +204,8 @@
       "environmental_randomness": true,
       "interior": true,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 409,
     "shader": {
@@ -209,6 +215,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

@@ -124,7 +124,12 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 	bryn->set_special_animation(2);
 
 	auto champion_target = player.get_collider().get_top() - sf::Vector2f{20.f, 40.f};
-	if (m_champion && progress > 8) { player.set_position(m_champion->get_passengers_seat()); }
+	if (m_champion && progress > 8) {
+		m_player_steering.seek(m_champion->get_passengers_seat(), 0.005f);
+		player.set_position(m_player_steering.physics.position);
+	} else {
+		m_player_steering.physics.position = player.get_position();
+	}
 
 	if (round_two()) {
 		if (m_champion) {

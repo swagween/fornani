@@ -6,7 +6,7 @@
 #include "fornani/utils/Random.hpp"
 #include "fornani/world/Map.hpp"
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 
 namespace fornani::gui {
 
@@ -54,8 +54,8 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 		if (controller.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::released) && m_dashboard->get_selected_position() == sf::Vector2i{1, 0}) { m_dashboard->set_selection({0, 0}); }
 
 		if (selected && m_dashboard->is_hovering()) {
-			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = ccm::ext::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
-			if (m_dashboard->get_selected_position().y == 0) { m_grid_position.x = ccm::ext::clamp(m_grid_position.x + m_dashboard->get_selected_position().x, -1.f, 1.f); }
+			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = std::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
+			if (m_dashboard->get_selected_position().y == 0) { m_grid_position.x = std::clamp(m_grid_position.x + m_dashboard->get_selected_position().x, -1.f, 1.f); }
 			if (m_dashboard->select_gizmo()) {
 				m_view = InventoryView::focused;
 			} else {

@@ -116,7 +116,7 @@ void SteeringBehavior::evade(components::PhysicsComponent& physics, sf::Vector2f
 	auto mag = util::magnitude(distance);
 	mag = std::max(0.0001f, mag);
 	auto str = strength / (mag * mag);
-	str = ccm::ext::clamp(str, 0.f, max_force);
+	str = std::clamp(str, 0.f, max_force);
 	physics.apply_force(distance * str * -1.f);
 }
 

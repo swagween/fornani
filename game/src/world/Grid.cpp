@@ -2,7 +2,7 @@
 #include "fornani/world/Grid.hpp"
 #include "fornani/utils/Constants.hpp"
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include <cmath>
 #include <ranges>
 
@@ -294,7 +294,7 @@ void Grid::draw(sf::RenderTexture& tex) {
 std::size_t Grid::get_index_at_position(sf::Vector2f position) const {
 	auto start_index = sf::Vector2<std::size_t>(static_cast<std::size_t>((position.x / constants::f_cell_size)), static_cast<std::size_t>((position.y / constants::f_cell_size)));
 	auto ret = static_cast<std::size_t>(dimensions.x) * start_index.y + start_index.x;
-	return ccm::ext::clamp(ret, std::size_t{0}, cells.size() - 1);
+	return std::clamp(ret, std::size_t{0}, cells.size() - 1);
 }
 
 Tile& Grid::get_cell(std::size_t index) { return cells.at(index); }

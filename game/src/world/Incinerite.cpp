@@ -1,5 +1,5 @@
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include <fornani/core/Debug.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/particle/Effect.hpp>
@@ -32,7 +32,7 @@ void Incinerite::update(automa::ServiceProvider& svc, Map& map, player::Player& 
 	tick();
 	if (svc.ticker.every_x_ticks(1000)) { set_animation("shine"); }
 	if (animation.complete()) { set_animation("default"); }
-	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
+	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
 	if (svc.ticker.every_x_ticks(20)) { random_offset = random::random_vector_float(-energy, energy); }
 	handle_collision(player.get_collider());

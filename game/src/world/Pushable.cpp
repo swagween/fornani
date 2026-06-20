@@ -1,5 +1,5 @@
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include <fornani/core/Debug.hpp>
 #include <fornani/world/Pushable.hpp>
 #include <cmath>
@@ -58,7 +58,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	get_collider().physics.acceleration = {};
 
 	collision_box.set_position(get_collider().physics.position - sf::Vector2f{0.f, 1.f});
-	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
+	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
 	if (svc.ticker.every_x_ticks(20)) { random_offset = random::random_vector_float(-energy, energy); }
 	weakened.update();
@@ -90,7 +90,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	if (player.get_collider().wallslider.overlaps(collision_box) && player.pushing() && player.is_in_animation(player::AnimState::push) && get_collider().physics.actual_velocity().y < 0.3f) {
 		if (player.controller.moving_right() && player.get_collider().physics.position.x < get_collider().physics.position.x) { get_collider().physics.acceleration.x = speed / mass; }
 		if (player.controller.moving_left() && player.get_collider().physics.position.x > get_collider().physics.position.x) { get_collider().physics.acceleration.x = -speed / mass; }
-		if (ccm::abs(get_collider().physics.actual_velocity().x) > constants::small_value) { svc.soundboard.repeat_sound("pushable_move"); }
+		if (std::abs(get_collider().physics.actual_velocity().x) > constants::small_value) { svc.soundboard.repeat_sound("pushable_move"); }
 
 		set_flag(PushableFlags::moved);
 		set_flag(PushableFlags::pushed);

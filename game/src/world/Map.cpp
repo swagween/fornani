@@ -4,7 +4,6 @@
 #include <SFML\Graphics\RectangleShape.hpp>
 #include <SFML\Graphics\RenderWindow.hpp>
 #include <SFML\System\Vector2.hpp>
-#include <ccmath/ext/clamp.hpp>
 #include <djson\json.hpp>
 #include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
@@ -250,7 +249,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 		pos *= constants::f_cell_size;
 		dim *= constants::f_cell_size;
 		auto start = entry["start"].as<float>();
-		start = ccm::ext::clamp(start, 0.f, 1.f);
+		start = std::clamp(start, 0.f, 1.f);
 		auto type = entry["type"].as_string();
 		platforms.push_back(std::make_unique<Platform>(svc, *this, pos, dim, entry["extent"].as<float>(), type, start, entry["style"].as<int>()));
 		platforms.back()->set_handle(++plat_handle);

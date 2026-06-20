@@ -188,7 +188,7 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	m_attacks.left_shockwave.handle_player(player);
 	m_attacks.right_shockwave.handle_player(player);
 
-	if (ccm::abs(Enemy::get_collider().physics.acceleration.x) > run_threshold_v) { request(LynxState::run); }
+	if (std::abs(Enemy::get_collider().physics.acceleration.x) > run_threshold_v) { request(LynxState::run); }
 	if (Enemy::get_collider().get_center().x < m_home.x || Enemy::get_collider().get_center().x > m_home.y) {
 		request(LynxState::jump);
 		flags.state.set(StateFlags::out_of_zone);

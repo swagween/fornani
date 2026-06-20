@@ -29,11 +29,12 @@ void Sentinel::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	flags.state.set(StateFlags::vulnerable);
 	flags.general.reset(GeneralFlags::hurt_on_contact);
 	flags.general.set(GeneralFlags::player_collision);
-	if (is_state(SentinelState::dash) || is_state(SentinelState::summon) || is_state(SentinelState::prepare_dash)) {
+	if (is_state(SentinelState::dash)) {
 		flags.general.reset(GeneralFlags::player_collision);
 		flags.state.reset(StateFlags::vulnerable);
 		flags.general.set(GeneralFlags::hurt_on_contact);
 	}
+	if (is_state(SentinelState::summon) || is_state(SentinelState::prepare_dash)) { flags.state.reset(StateFlags::vulnerable); }
 	Enemy::update(svc, map, player);
 	if (died()) { return; }
 
@@ -134,7 +135,7 @@ void Sentinel::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 	//}
 }
 
-void Sentinel::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) { debug(); }
+void Sentinel::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) { /*debug();*/ }
 
 fsm::StateFunction Sentinel::update_idle() {
 	p_state.actual = SentinelState::idle;
@@ -219,8 +220,9 @@ fsm::StateFunction Sentinel::update_slash() {
 
 fsm::StateFunction Sentinel::update_charge_swipe() {
 	p_state.actual = SentinelState::charge_swipe;
+	if (animation.just_started()) { m_services->soundboard.play_sound("sentinel_alert", get_collider().get_center()); }
 	if (animation.complete()) {
-		m_services->soundboard.play_sound("sentinel_swipe_2");
+		m_services->soundboard.play_sound("sentinel_swipe_2", get_collider().get_center());
 		auto swipe_offset = sf::Vector2f{90.f * directions.actual.as_float(), -50.f};
 		m_map->spawn_effect(*m_services, "sword_swipe", get_collider().get_center() + swipe_offset, {}, 0, -directions.actual.as_float());
 		get_collider().physics.apply_force({1.0f * directions.actual.as_float(), 0.f});
@@ -232,8 +234,9 @@ fsm::StateFunction Sentinel::update_charge_swipe() {
 
 fsm::StateFunction Sentinel::update_charge_slash() {
 	p_state.actual = SentinelState::charge_slash;
+	if (animation.just_started()) { m_services->soundboard.play_sound("sentinel_alert", get_collider().get_center()); }
 	if (animation.complete()) {
-		m_services->soundboard.play_sound("sentinel_swipe_1");
+		m_services->soundboard.play_sound("sentinel_swipe_1", get_collider().get_center());
 		auto swipe_offset = sf::Vector2f{100.f * directions.actual.as_float(), 0.f};
 		m_map->spawn_effect(*m_services, "sword_slash", get_collider().get_center() + swipe_offset, {}, 0, -directions.actual.as_float());
 		get_collider().physics.apply_force({1.0f * directions.actual.as_float(), 0.f});
@@ -245,7 +248,10 @@ fsm::StateFunction Sentinel::update_charge_slash() {
 
 fsm::StateFunction Sentinel::update_prepare_dash() {
 	p_state.actual = SentinelState::prepare_dash;
-	if (animation.just_started()) { m_map->spawn_effect(*m_services, "giga_flare", get_collider().get_center()); }
+	if (animation.just_started()) {
+		m_services->soundboard.play_sound("sentinel_prepare", get_collider().get_center());
+		m_map->spawn_effect(*m_services, "giga_flare", get_collider().get_center());
+	}
 	shake();
 	if (animation.complete()) {
 		request(SentinelState::dash);
@@ -256,6 +262,7 @@ fsm::StateFunction Sentinel::update_prepare_dash() {
 
 fsm::StateFunction Sentinel::update_dash() {
 	p_state.actual = SentinelState::dash;
+	if (animation.just_started()) { m_services->soundboard.play_sound("sentinel_charge", get_collider().get_center()); }
 	get_collider().physics.velocity.x = 20.f * directions.actual.as_float();
 	if (animation.complete()) {
 		request(SentinelState::summon);
@@ -267,6 +274,7 @@ fsm::StateFunction Sentinel::update_dash() {
 fsm::StateFunction Sentinel::update_summon() {
 	p_state.actual = SentinelState::summon;
 	shake();
+	if (animation.just_started()) { m_services->soundboard.play_sound("sentinel_summon", get_collider().get_center()); }
 	if (animation.complete()) {
 		for (int i = 0; i < 3; ++i) { m_map->spawn_enemy(18, get_collider().get_center() + random::random_vector_float(-180.f, 180.f) + sf::Vector2f{0.f, -260.f}, 2); }
 		if (change_state(SentinelState::turn, get_params("turn"))) { return SENTINEL_BIND(update_turn); }

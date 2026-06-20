@@ -2,7 +2,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <ccmath/ccmath.hpp>
 #include <fornani/entities/player/abilities/Ability.hpp>
 #include <fornani/utils/Direction.hpp>
 #include <fornani/utils/Flaggable.hpp>
@@ -24,7 +23,7 @@ constexpr static float walk_speed_v{0.62f};
 constexpr static float sprint_speed_v{1.0f};
 constexpr static float sprint_threshold_v{0.01f};
 
-enum class PlayerControllerFlags { shot_weapon, firing_weapon, released_weapon };
+enum class PlayerControllerFlags { shot_weapon, firing_weapon, released_weapon, slide_jump };
 enum class ControllerInput { move_x, sprint, shoot, arms_switch, inspect, move_y, slide };
 enum class MovementState { restricted, walljumping, crouch };
 enum class HardState { no_move, has_arsenal, walking_autonomously };
@@ -80,7 +79,7 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 
 	[[nodiscard]] auto nothing_pressed() -> bool { return key_map[ControllerInput::move_x] == 0.f && key_map[ControllerInput::inspect] == 0.f; }
 	[[nodiscard]] auto moving() -> bool { return key_map[ControllerInput::move_x] != 0.f; }
-	[[nodiscard]] auto sprinting() -> bool { return ccm::abs(key_map[ControllerInput::move_x]) > walk_speed_v + sprint_threshold_v; }
+	[[nodiscard]] auto sprinting() -> bool { return std::abs(key_map[ControllerInput::move_x]) > walk_speed_v + sprint_threshold_v; }
 	[[nodiscard]] auto sprint_held() -> bool { return input_flags.test(InputState::sprint); }
 	[[nodiscard]] auto moving_left() -> bool { return key_map[ControllerInput::move_x] < 0.f; }
 	[[nodiscard]] auto moving_right() -> bool { return key_map[ControllerInput::move_x] > 0.f; }
@@ -91,7 +90,7 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 	[[nodiscard]] auto is_walljumping() const -> bool { return flags.test(MovementState::walljumping); }
 	[[nodiscard]] auto walking_autonomously() const -> bool { return hard_state.test(HardState::walking_autonomously); }
 	[[nodiscard]] auto shot() -> bool { return key_map[ControllerInput::shoot] == 1.f; }
-	[[nodiscard]] auto is_sprinting() -> bool { return ccm::abs(key_map[ControllerInput::move_x]) > walk_speed_v; }
+	[[nodiscard]] auto is_sprinting() -> bool { return std::abs(key_map[ControllerInput::move_x]) > walk_speed_v; }
 	[[nodiscard]] auto has_arsenal() const -> bool { return hard_state.test(HardState::has_arsenal); }
 	[[nodiscard]] auto inspecting() -> bool { return key_map[ControllerInput::inspect] == 1.f; }
 	[[nodiscard]] auto sprint_released() const -> bool { return sprint_flags.test(Sprint::released); }
