@@ -48,6 +48,7 @@ enum class GeneralFlags {
 	custom_sounds,
 	uncrushable,
 	foreground,
+	background,
 	spawned,
 	transcendent,
 	rare_drops,
@@ -59,9 +60,10 @@ enum class GeneralFlags {
 	semipermanent,
 	no_tick,
 	boss,
-	kick_immune
+	kick_immune,
+	tick_slowdown
 };
-enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, no_shake, out_of_zone, no_slowdown, intangible, health_exposed, despawn, pre_battle_invincibility, special_event };
+enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, no_shake, out_of_zone, intangible, health_exposed, despawn, pre_battle_invincibility, special_event };
 enum class Triggers { hostile, alert };
 enum class Variant { beast, soldier, elemental, worker, guardian };
 
@@ -140,6 +142,7 @@ class Enemy : public Mobile {
 	[[nodiscard]] auto player_collision() const -> bool { return flags.general.test(GeneralFlags::player_collision); }
 	[[nodiscard]] auto has_map_collision() const -> bool { return flags.general.test(GeneralFlags::map_collision); }
 	[[nodiscard]] auto spawn_loot() const -> bool { return !flags.general.test(GeneralFlags::no_loot); }
+	[[nodiscard]] auto is_background() const -> bool { return flags.general.test(GeneralFlags::background); }
 	[[nodiscard]] auto is_foreground() const -> bool { return flags.general.test(GeneralFlags::foreground); }
 	[[nodiscard]] auto is_transcendent() const -> bool { return flags.general.test(GeneralFlags::transcendent); }
 	[[nodiscard]] auto permadeath() const -> bool { return flags.general.test(GeneralFlags::permadeath); }

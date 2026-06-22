@@ -40,7 +40,6 @@ Haunch::Haunch(automa::ServiceProvider& svc, world::Map& map)
 	m_laser_gun.push_and_set_animation("neutral", {0, 1, 32, -1});
 	m_laser_gun.center();
 	flags.state.set(StateFlags::no_shake);
-	flags.state.set(StateFlags::no_slowdown);
 	flags.general.set(GeneralFlags::post_death_render);
 }
 

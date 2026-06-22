@@ -52,7 +52,6 @@ Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, SceneContext& context)
 		m_home.x = std::min(pt.x, m_home.x);
 		m_home.y = std::max(pt.x, m_home.y);
 	}
-	flags.state.set(StateFlags::no_slowdown);
 
 	auto prog = svc.quest_table.get_quest_progression("lynx_dialogue");
 	auto which = prog == 0 ? 1 : 4;

@@ -394,6 +394,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	} m_camera{};
 
 	sf::Vector2f m_sprite_position{};
+	sf::Vector2f m_shake_offset{};
 	sf::Vector2f m_weapon_socket{};
 	sf::Vector2f m_piggyback_socket{};
 	sf::Vector2f m_head_socket{};

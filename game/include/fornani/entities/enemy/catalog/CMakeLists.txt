@@ -11,6 +11,7 @@ nani_add_headers(
         Eyebot.hpp
         Frdog.hpp
         Golem.hpp
+        Grappler.hpp
         Hellion.hpp
         Hurtle.hpp
         Imp.hpp
@@ -23,6 +24,7 @@ nani_add_headers(
         Mizzle.hpp
         MizzleEgg.hpp
         Tank.hpp
+        Thief.hpp
         Thug.hpp
         Hulmet.hpp
         Sentinel.hpp

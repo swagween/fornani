@@ -29,6 +29,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 	svc.events.acquire_weapon_event.attach_to(p_slot, &Dojo::acquire_gun, this);
 	svc.events.acquire_weapon_from_console_event.attach_to(p_slot, &Dojo::acquire_gun_from_console, this);
 	svc.events.remove_weapon_by_id_event.attach_to(p_slot, &Dojo::remove_gun_by_id, this);
+	svc.events.remove_item_event.attach_to(p_slot, &Dojo::remove_item, this);
 	svc.events.remove_item_by_id_event.attach_to(p_slot, &Dojo::remove_item_by_id, this);
 
 	// gameplay events
@@ -117,8 +118,9 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (m_flags.consume(GameplayFlags::remove_item)) {
 		auto label = player->catalog.inventory.find_item(m_item_tag)->get_title();
 		NANI_LOG_DEBUG(m_logger, "removed item {}", label);
-		p_context.console.value()->display_item(m_item_tag, false);
+		if (p_context.console) { p_context.console.value()->display_item(m_item_tag, false); }
 		svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["removed"].as_string() + std::string{label} + ".");
+		if (player->has_item_equipped(m_item_tag)) { player->equip_item(svc.data.item_id_from_label(m_item_tag)); }
 		player->catalog.inventory.remove_item(m_item_tag, 1);
 	}
 
@@ -361,7 +363,7 @@ void Dojo::acquire_item(ServiceProvider& svc, std::string_view tag) {
 }
 
 void Dojo::remove_item(ServiceProvider& svc, std::string_view tag) {
-	m_item_tag = tag.data();
+	m_item_tag = std::string(tag);
 	m_flags.set(GameplayFlags::remove_item);
 }
 

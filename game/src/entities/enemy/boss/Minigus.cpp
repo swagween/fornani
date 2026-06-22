@@ -36,7 +36,6 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, SceneContext& co
 	m_minigun.center();
 	m_minigun.set_parameters(m_minigun.neutral);
 	flags.state.set(StateFlags::vulnerable);
-	flags.state.set(StateFlags::no_slowdown);
 
 	attacks.punch.sensor.bounds.setRadius(60);
 	attacks.punch.sensor.drawable.setFillColor(colors::blue);

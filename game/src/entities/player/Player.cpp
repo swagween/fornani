@@ -18,7 +18,7 @@ constexpr auto max_damage_v = 1024.f;
 
 Player::Player(automa::ServiceProvider& svc)
 	: Mobile(svc, "nani", {26, 26}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb},
-	  m_sprite_shake{40}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{10.f, -3.f} {
+	  m_sprite_shake{200}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{10.f, -3.f} {
 
 	center();
 	svc.data.load_player_params(*this);
@@ -184,7 +184,6 @@ void Player::update(world::Map& map) {
 	if (is_stunned()) {
 		controller.restrict_movement();
 		get_collider().set_flag(shape::ColliderFlags::no_physics);
-		m_sprite_shake.start();
 	}
 	if (cooldowns.stun.is_almost_complete()) {
 		get_collider().set_flag(shape::ColliderFlags::no_physics, false);
@@ -409,8 +408,11 @@ void Player::simple_update() {
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 
-	m_sprite_position = collider.has_value() ? get_collider().get_average_tick_position() + sprite_offset : m_sprite_position;
+	m_sprite_position = collider.has_value() ? get_collider().get_position() + sprite_offset : m_sprite_position;
 	m_sprite_position.x += controller.facing_left() ? -1.f : 1.f;
+	if (m_sprite_shake.get() % 10 == 0) { m_shake_offset = random::random_vector_float(-8.f, 8.f); }
+	if (!m_sprite_shake.running()) { m_shake_offset = {}; }
+	m_sprite_position += m_shake_offset;
 	Animatable::set_position(m_sprite_position - cam);
 
 	if (has_death_type(PlayerDeathType::crushed) || has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::fallen)) { return; }
@@ -902,6 +904,7 @@ void Player::stun(float multiplier) {
 	set_flag(PlayerFlags::stunned);
 	cooldowns.stun.set_and_start(std::round(static_cast<float>(m_attributes.stun_time) * multiplier));
 	m_services->soundboard.play_sound("stun");
+	shake_sprite();
 }
 
 void Player::hurt_and_stun(float multiplier) {

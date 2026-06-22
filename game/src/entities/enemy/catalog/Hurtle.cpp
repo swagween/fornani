@@ -49,8 +49,7 @@ void Hurtle::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	}
 
 	// caution
-	auto incoming_projectile = m_caution.projectile_detected(map, physical.alert_range, arms::Team::beast);
-	if (incoming_projectile.lnr != LNR::neutral) { request(HurtleState::sleep); }
+	if (m_caution.is_projectile_detected(map, physical.alert_range, arms::Team::beast)) { request(HurtleState::sleep); }
 
 	state_function = state_function();
 }
@@ -72,8 +71,7 @@ fsm::StateFunction Hurtle::update_run() {
 fsm::StateFunction Hurtle::update_sleep() {
 	p_state.actual = HurtleState::sleep;
 	if (animation.complete()) {
-		auto incoming_projectile = m_caution.projectile_detected(*m_map, physical.alert_range, arms::Team::beast);
-		if (incoming_projectile.lnr != LNR::neutral) {
+		if (m_caution.is_projectile_detected(*m_map, physical.alert_range, arms::Team::beast)) {
 			request(HurtleState::sleep);
 			if (change_state(HurtleState::sleep, get_params("sleep"))) { return HURTLE_BIND(update_sleep); }
 		}

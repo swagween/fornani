@@ -1281,5 +1281,65 @@
         }
       }
     }
+  },
+  "slash_wave": {
+    "metadata": {
+      "id": 13,
+      "label": "Slash Wave"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [0, 0],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "guardian",
+        "color": "guardian"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 4,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 2.0
+      }
+    },
+    "audio": { "shoot": 5 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [16.0, 16.0],
+        "radius": 6.0,
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 800,
+          "lifespan_variance": 0,
+          "speed": 40.0,
+          "variance": 0.5,
+          "stun_multiplier": 0.0,
+          "knockback": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.999,
+          "dampen_variance": 0.002,
+          "omnidirectional": false,
+          "explode_on_impact": false,
+          "gravity": 6.0
+        },
+        "visual": {
+          "effect_type": 2
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 18
+        }
+      }
+    }
   }
 }

@@ -31,9 +31,7 @@ void Mobile::set_direction(SimpleDirection to) {
 
 void Mobile::set_desired_direction(SimpleDirection to) { directions.desired = Direction{to}; }
 
-bool Mobile::player_behind(player::Player& player) const {
-	return player.get_collider().physics.position.x + player.get_collider().bounding_box.get_dimensions().x * 0.5f < get_collider().physics.position.x + get_collider().dimensions.x * 0.5f;
-}
+bool Mobile::player_behind(player::Player& player) const { return player.get_center().x < get_collider().get_center().x; }
 
 void Mobile::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, bool tick) {
 	if (p_flags.consume(MobileState::flip)) {

@@ -1,7 +1,9 @@
 
 #include <fornani/entities/player/Player.hpp>
+#include <fornani/graphics/Color.hpp>
 #include <fornani/gui/dialogs/BuilderDialog.hpp>
 #include <fornani/service/ServiceProvider.hpp>
+#include <span>
 
 namespace fornani::gui {
 
@@ -9,7 +11,7 @@ fornani::gui::BuilderDialog::BuilderDialog(automa::ServiceProvider& svc, world::
 	: IDialog(svc, map, player, vendor_id, "builder"), m_item_sprite{svc, "inventory_items", {18, 18}},
 	  m_constituents{VendorConstituent{svc, "docket", {{200, 335}, {162, 95}}, 200, util::InterpolationType::cubic}, VendorConstituent{svc, "stage", {{207, 190}, {171, 145}}}, VendorConstituent{svc, "inventory", {{300, 100}, {200, 150}}}},
 	  m_zones{InventoryZone{{1, 1}, {19.f, 19.f}, {100.f, 100.f}}, InventoryZone{{1, 3}, {19.f, 19.f}, {200.f, 100.f}}, InventoryZone{{1, 1}, {19.f, 19.f}, {300.f, 100.f}}}, m_unknown{svc, "unknown_item", {18, 18}},
-	  m_turntable{svc, "item_turntable", {128, 128}}, m_flat_shader{svc.finder}, m_holo_shader{svc.finder}, m_question_mark{svc, "question_mark", {32, 32}} {
+	  m_turntable{svc, "item_turntable", {128, 128}}, m_flat_shader{svc.finder}, m_holo_shader{svc.finder}, m_question_mark{svc, "question_mark", {32, 32}}, m_just_built{200} {
 	auto const& in = svc.data.npc[p_npc_label]["builder"];
 	p_upcharge = in["upcharge"].as<float>();
 	for (auto const& item : in["docket"].as_array()) { m_docket.push_back(item.as_string()); };
@@ -37,6 +39,9 @@ void BuilderDialog::update(automa::ServiceProvider& svc, world::Map& map, player
 
 	m_turntable.tick();
 	m_question_mark.tick();
+	m_just_built.update();
+
+	m_turntable.set_framerate(20 - static_cast<int>(19.f * m_just_built.get_normalized()));
 
 	// need to change this to use the InventoryZone, otherwise we easily end up out of range
 	auto& controller = svc.input_system;
@@ -174,9 +179,18 @@ void BuilderDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	m_turntable.set_position({280, 330});
 	m_question_mark.set_position(m_turntable.get_window_position());
 	m_turntable.set_channel(svc.data.get_item_json_from_tag(m_docket_item)["build"]["lookup"].as<int>());
-	m_flat_shader.finalize(sf::Color{37, 13, 21});
+	auto color = sf::Color{37, 13, 21};
+	if (m_just_built.running()) {
+		auto o = colors::orange;
+		o.a = 100;
+		auto r = colors::red;
+		r.a = 60;
+		auto cvec = std::vector{colors::ui_white, o, r, colors::transparent};
+		color = gradient_color(cvec, m_just_built.get_inverse_normalized());
+	}
+	m_flat_shader.finalize(color);
 	auto hide_me = false;
-	if (!player.has_item(m_docket_item)) {
+	if (!player.has_item(m_docket_item) || m_just_built.running()) {
 		hide_me = true;
 	} else {
 		auto item = player.catalog.inventory.find_item_stack(m_docket_item);
@@ -187,7 +201,7 @@ void BuilderDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 		}
 	}
 	hide_me ? m_flat_shader.submit(win, m_turntable.get_sprite()) : win.draw(m_turntable);
-	if (hide_me) { win.draw(m_question_mark); }
+	if (hide_me && !m_just_built.running()) { win.draw(m_question_mark); }
 
 	m_selector->render(win, p_selector_sprite.get_sprite(), {2.f, 2.f}, {});
 
@@ -211,8 +225,8 @@ void BuilderDialog::build_item(automa::ServiceProvider& svc, player::Player& pla
 			if (id == ingredient.as_string()) { spawn_effect(svc, "bonus_heart", where, {}, 2); }
 		}
 	}
-	spawn_emitter(svc, "radiance", m_turntable.get_window_position(), Direction{}, {4.f, 4.f});
-	spawn_effect(svc, "giga_flare", m_turntable.get_window_position());
+	spawn_emitter(svc, "radiance", m_turntable.get_window_position() - sf::Vector2f{64.f, 64.f}, Direction{}, {128.f, 128.f});
+	// spawn_effect(svc, "giga_flare", m_turntable.get_window_position());
 	player.catalog.inventory.build_item(current_item);
 	player.give_item(current_item["tag"].as_string(), 1);
 	svc.soundboard.play_sound("vendor_sale");
@@ -226,6 +240,7 @@ void BuilderDialog::build_item(automa::ServiceProvider& svc, player::Player& pla
 		m_number_displays.push_back(NumberDisplay(svc, player.catalog.inventory.get_quantity(item.item->get_label()), item.item->get_id()));
 	}
 	m_zones.at(BuilderZoneType::inventory).table_dimensions.x = static_cast<int>(m_player_items.size());
+	m_just_built.start();
 }
 
 void BuilderDialog::switch_zones(int modulation) {

@@ -11,6 +11,7 @@ nani_add_sources(
         Eyebot.cpp
         Frdog.cpp
         Golem.cpp
+        Grappler.cpp
         Hellion.cpp
         Hurtle.cpp
         Imp.cpp
@@ -23,6 +24,7 @@ nani_add_sources(
         Mizzle.cpp
         MizzleEgg.cpp
         Tank.cpp
+        Thief.cpp
         Thug.cpp
         Hulmet.cpp
         Sentinel.cpp

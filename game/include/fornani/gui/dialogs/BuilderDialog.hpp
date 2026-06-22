@@ -12,6 +12,7 @@
 #include <fornani/gui/gizmos/DescriptionGizmo.hpp>
 #include <fornani/shader/FlatShader.hpp>
 #include <fornani/shader/HoloShader.hpp>
+#include <fornani/utils/Cooldown.hpp>
 
 namespace fornani::gui {
 
@@ -44,6 +45,8 @@ class BuilderDialog final : public IDialog {
 	HoloShader m_holo_shader;
 
 	ZoneCollection<BuilderZoneType> m_zones;
+
+	util::Cooldown m_just_built;
 
 	std::array<VendorConstituent, 3> m_constituents;
 

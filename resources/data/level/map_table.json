@@ -188,6 +188,12 @@
     },
     {
       "folder": "greatwing",
+      "label": "ballroom.json",
+      "region": "greatwing",
+      "room_id": 2001
+    },
+    {
+      "folder": "greatwing",
       "label": "bridge.json",
       "region": "greatwing",
       "room_id": 601
@@ -935,6 +941,12 @@
       "label": "spiral.json",
       "region": "toxic",
       "room_id": 1004
+    },
+    {
+      "folder": "toxic",
+      "label": "storage_shed.json",
+      "region": "toxic",
+      "room_id": 1011
     },
     {
       "folder": "toxic",

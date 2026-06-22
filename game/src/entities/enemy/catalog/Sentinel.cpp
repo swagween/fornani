@@ -21,7 +21,6 @@ Sentinel::Sentinel(automa::ServiceProvider& svc, world::Map& map, int variant)
 		m_shield->set_team(arms::Team::guardian);
 	}
 	flags.general.set(GeneralFlags::has_invincible_channel);
-	flags.state.set(StateFlags::no_slowdown);
 }
 
 void Sentinel::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {

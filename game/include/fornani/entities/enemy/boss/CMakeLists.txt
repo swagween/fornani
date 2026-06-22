@@ -4,4 +4,5 @@ nani_add_headers(
         Minigus.hpp
         GrandMastiff.hpp
         Haunch.hpp
+        Nimbus.hpp
 )

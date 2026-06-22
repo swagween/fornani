@@ -595,9 +595,12 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		}
 	}
 
+	for (auto& enemy : enemy_catalog.enemies) {
+		if (enemy->is_background()) { enemy->render(svc, win, cam); }
+	}
 	player->render(svc, win, cam);
 	for (auto& enemy : enemy_catalog.enemies) {
-		if (!enemy->is_foreground()) { enemy->render(svc, win, cam); }
+		if (!enemy->is_foreground() && !enemy->is_background()) { enemy->render(svc, win, cam); }
 	}
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
@@ -1193,6 +1196,8 @@ auto Map::get_closest_home_point(sf::Vector2f const check) const -> sf::Vector2f
 	}
 	return ret;
 }
+
+auto Map::get_random_home_point() const -> sf::Vector2f { return random::random_element(home_points); }
 
 auto Map::is_toxic() const -> bool { return (get_style_id() == 7 && !is_interior()) || has_property(MapProperties::toxic); }
 

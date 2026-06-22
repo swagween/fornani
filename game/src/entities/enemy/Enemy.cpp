@@ -81,6 +81,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	if (in_general["player_collision"].as_bool()) { flags.general.set(GeneralFlags::player_collision); }
 	if (in_general["hurt_on_contact"].as_bool()) { flags.general.set(GeneralFlags::hurt_on_contact); }
 	if (in_general["uncrushable"].as_bool()) { flags.general.set(GeneralFlags::uncrushable); }
+	if (in_general["background"].as_bool()) { flags.general.set(GeneralFlags::background); }
 	if (in_general["foreground"].as_bool()) { flags.general.set(GeneralFlags::foreground); }
 	if (in_general["rare_drops"].as_bool()) { flags.general.set(GeneralFlags::rare_drops); }
 	if (in_general["spike_collision"].as_bool()) { flags.general.set(GeneralFlags::spike_collision); }
@@ -88,6 +89,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	if (in_general["crusher"].as_bool()) { get_collider().set_attribute(shape::ColliderAttributes::crusher); }
 	if (in_general["fixed"].as_bool()) { get_collider().set_attribute(shape::ColliderAttributes::fixed); }
 	if (in_general["semipermanent"].as_bool()) { flags.general.set(GeneralFlags::semipermanent); }
+	if (in_general["tick_slowdown"].as_bool()) { flags.general.set(GeneralFlags::tick_slowdown); }
 	if (in_general["no_tick"].as_bool()) { flags.general.set(GeneralFlags::no_tick); }
 	if (in_general["kick_immune"].as_bool()) { flags.general.set(GeneralFlags::kick_immune); }
 	if (!flags.general.test(GeneralFlags::gravity)) { get_collider().stats.GRAV = 0.f; }
@@ -138,6 +140,12 @@ void Enemy::set_stable_id(std::pair<int, sf::Vector2<int>> code) {
 }
 
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+
+	auto const& in_data = svc.data.enemy[label];
+	auto const& in_audio = in_data["audio"];
+	if (just_died()) {
+		if (in_audio["death"]) { svc.soundboard.play_sound(in_audio["death"].as_string(), get_collider().get_center()); }
+	}
 
 	directions.desired.lnr = (player.get_collider().get_center().x < get_collider().get_center().x) ? LNR::left : LNR::right;
 	directions.movement.lnr = get_collider().physics.velocity.x > 0.f ? LNR::right : LNR::left;
@@ -211,7 +219,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
 	if (svc.ticker.every_x_ticks(14)) { m_random_offset = random::random_vector_float(-energy, energy); }
-	if (hitstun.running() && !flags.state.test(StateFlags::no_slowdown)) {
+	if (hitstun.running() && flags.general.test(GeneralFlags::tick_slowdown)) {
 		hitstun.update();
 		if (svc.ticker.every_x_ticks(2)) { get_collider().physics.zero(); }
 	}
