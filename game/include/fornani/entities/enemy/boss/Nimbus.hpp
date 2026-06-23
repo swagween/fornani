@@ -48,7 +48,7 @@ class Nimbus final : public Boss, public StateMachine<NimbusState> {
 
   private:
 	struct {
-
+		util::Cooldown post_slash{600};
 	} m_cooldowns{};
 
 	struct {

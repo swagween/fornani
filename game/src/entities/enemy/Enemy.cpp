@@ -295,7 +295,7 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	if (svc.greyblock_mode()) {
 		get_collider().render(win, cam);
 		if (secondary_collider) { get_secondary_collider().render(win, cam); }
-		// physical.alert_range.render(win, cam);
+		physical.alert_range.render(win, cam);
 		physical.hostile_range.render(win, cam);
 		physical.home_detector.render(win, cam, colors::blue);
 	}

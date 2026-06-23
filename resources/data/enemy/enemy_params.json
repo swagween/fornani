@@ -1659,10 +1659,10 @@
       "offset": [0, -23],
       "num_colliders": 1,
       "num_hurtboxes": 1,
-      "alert_range": [800.0, 600.0],
+      "alert_range": [300.0, 600.0],
       "hostile_range": [40.0, 180.0],
       "friction": 0.99,
-      "gravity": 5.0
+      "gravity": 7.0
     },
     "visual": {
       "effect_type": 0,
@@ -1677,7 +1677,7 @@
       "death": "nimbus_death"
     },
     "attributes": {
-      "base_hp": 1200,
+      "base_hp": 1800,
       "base_damage": 1.0,
       "speed": 16.0,
       "loot_multiplier": 50.0,

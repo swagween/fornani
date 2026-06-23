@@ -1314,22 +1314,24 @@
     "class_package": {
       "projectile": {
         "type": 0,
-        "dimensions": [16.0, 16.0],
-        "radius": 6.0,
+        "dimensions": [32.0, 32.0],
+        "radius": 28.0,
         "attributes": {
           "base_damage": 1,
-          "lifespan": 800,
+          "lifespan": 1400,
           "lifespan_variance": 0,
-          "speed": 40.0,
-          "variance": 0.5,
+          "speed": 36.0,
+          "variance": 0.0,
           "stun_multiplier": 0.0,
           "knockback": 0.0,
           "acceleration_factor": 0.0,
-          "dampen_factor": 0.999,
-          "dampen_variance": 0.002,
-          "omnidirectional": false,
+          "dampen_factor": 0.998,
+          "dampen_variance": 0.0,
+          "omnidirectional": true,
           "explode_on_impact": false,
-          "gravity": 6.0
+          "reflect": true,
+          "elasticity": 0.99,
+          "gravity": 1.0
         },
         "visual": {
           "effect_type": 2
@@ -1337,7 +1339,7 @@
         "animation": {
           "num_sprites": 1,
           "num_frames": 4,
-          "framerate": 18
+          "framerate": 12
         }
       }
     }
