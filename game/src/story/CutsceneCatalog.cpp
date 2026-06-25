@@ -1,5 +1,7 @@
 
 #include "fornani/story/CutsceneCatalog.hpp"
+#include <fornani/story/cutscene/BanditEncounter.hpp>
+#include <fornani/story/cutscene/BitCell.hpp>
 #include <fornani/story/cutscene/BrynPostMiaag.hpp>
 #include <fornani/story/cutscene/HaunchEscape.hpp>
 #include <fornani/story/cutscene/HaunchIntro.hpp>
@@ -32,6 +34,7 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	switch (id) {
 	case 1: cutscenes.push_back(std::make_unique<MainIntro>(svc, map, player)); break;
 	case 2: cutscenes.push_back(std::make_unique<SwitchBlockPan>(svc, special_id)); break;
+	case 101: cutscenes.push_back(std::make_unique<BitCell>(svc)); break;
 	case 6001: cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc)); break;
 	case 509: cutscenes.push_back(std::make_unique<BrynPostMiaag>(svc)); break;
 	case 300: cutscenes.push_back(std::make_unique<PioneerBaseDebrief>(svc, map, player)); break;
@@ -41,6 +44,7 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	case 900: cutscenes.push_back(std::make_unique<HaunchIntro>(svc)); break;
 	case 902: cutscenes.push_back(std::make_unique<HaunchEscape>(svc)); break;
 	case 209: cutscenes.push_back(std::make_unique<ReturnToBase>(svc)); break;
+	case 1002: cutscenes.push_back(std::make_unique<BanditEncounter>(svc)); break;
 	default:
 		NANI_LOG_INFO(m_logger, "You forgot to add cutscene {} to catalog.", id);
 		cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc));

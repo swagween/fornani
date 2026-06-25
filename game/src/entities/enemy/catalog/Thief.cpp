@@ -19,6 +19,7 @@ Thief::Thief(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "t
 	flags.state.set(StateFlags::intangible);
 	flags.state.set(StateFlags::vulnerable);
 	m_respawn.start();
+	m_flags.set(ThiefFlags::hiding);
 }
 
 void Thief::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -28,7 +29,7 @@ void Thief::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	m_respawn.update();
 
 	// logic
-	if (m_respawn.running()) { set_direction(player_behind(player) ? LR::left : LR::right); }
+	if (m_respawn.running() || m_flags.test(ThiefFlags::hiding)) { set_direction(player_behind(player) ? LR::left : LR::right); }
 	if (get_collider().bounding_box.overlaps(player.hurtbox) && (is_state(ThiefState::dash) || is_state(ThiefState::stop)) && !m_flags.test(ThiefFlags::succeeded)) {
 		if (player.has_item("gas_mask")) {
 			svc.events.remove_item_event.dispatch(svc, "gas_mask");
@@ -54,6 +55,7 @@ void Thief::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		if (!m_flags.test(ThiefFlags::dive_in)) {
 			map.spawn_effect(*m_services, "medium_flash", get_collider().get_center());
 			svc.soundboard.play_sound("thief_hurah", get_collider().get_center());
+			m_flags.reset(ThiefFlags::hiding);
 		}
 		m_flags.set(ThiefFlags::dive_in);
 		flags.state.reset(StateFlags::invisible);

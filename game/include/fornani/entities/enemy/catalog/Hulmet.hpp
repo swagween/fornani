@@ -67,9 +67,6 @@ class Hulmet final : public Enemy, public StateMachine<HulmetState>, public Flag
 		anim::Parameters reload{38, 5, 48, 0};
 	} m_animations{};
 
-	float m_jump_force;
-	int m_jump_time{4};
-
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;
 

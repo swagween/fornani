@@ -217,8 +217,6 @@ void DataManager::load_data() {
 		NANI_LOG_INFO(m_logger, "Created Vendor in marketplace with ID {}", entry.second["id"].as<int>());
 	}
 
-	for (auto [i, item] : std::views::enumerate(item.as_array())) { NANI_LOG_INFO(m_logger, "{} : {}", item["tag"].as_string(), i); }
-
 	m_services->stopwatch.stop();
 	// m_services->stopwatch.print_time("data loaded");
 	m_services->stopwatch.start();

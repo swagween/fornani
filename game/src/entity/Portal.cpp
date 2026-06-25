@@ -9,7 +9,7 @@
 namespace fornani {
 
 Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, PortalSpecifications specs)
-	: Entity(svc, "portals", 0, dimensions), source_id(specs.source_map_id), destination_id(specs.destination_map_id), key_tag(key_tag), m_services(&svc) {
+	: Entity(svc, "portals", 0, dimensions), source_id(specs.source_map_id), destination_id(specs.destination_map_id), key_tag(key_tag), m_services(&svc), m_opened_cooldown{200} {
 	set_texture_rect(sf::IntRect{{16 * specs.already_open, 0}, {16, 32}});
 	set_origin({0.f, 16.f});
 	if (specs.activate_on_contact || dimensions.x * dimensions.y > 1) { m_textured = false; }
@@ -19,7 +19,7 @@ Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, PortalSpec
 
 Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, PortalSpecifications specs, std::string_view key) : Portal(svc, dimensions, specs) { key_tag = key.data(); }
 
-Portal::Portal(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals"), m_services(&svc) {
+Portal::Portal(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals"), m_services(&svc), m_opened_cooldown{200} {
 	unserialize(in);
 	if (is_activate_on_contact()) { m_textured = false; }
 	set_origin({0.f, 16.f});
@@ -112,8 +112,16 @@ void Portal::expose() {
 void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
 	Entity::update(svc, map, context, player);
 	m_render_state = is_already_open() ? PortalRenderState::open : is_locked() ? PortalRenderState::locked : m_render_state;
+
+	// opened by someone else
+	m_opened_cooldown.update();
+	if (m_opened_cooldown.running()) {
+		if (!m_attributes.test(PortalAttributes::already_open) && !is_large() && m_render_state != PortalRenderState::open) { svc.soundboard.flags.world.set(audio::World::door_open); }
+		m_render_state = PortalRenderState::open;
+	}
 	auto lookup = sf::IntRect({static_cast<int>(m_render_state) * constants::i_cell_resolution + 64 * channel, map.get_style_id() * constants::i_cell_resolution * 2}, {constants::i_cell_resolution, constants::i_cell_resolution * 2});
 	set_texture_rect(lookup);
+
 	if (!context.transition.is(graphics::TransitionState::inactive)) { m_state.reset(PortalState::ready); }
 	if (bounding_box.overlaps(player.get_collider().bounding_box)) {
 		player.set_flag(player::PlayerFlags::in_front_of_door);

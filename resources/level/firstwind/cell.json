@@ -29,6 +29,42 @@
         ]
       }
     ],
+    "chests": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 45421,
+        "modifier": 0,
+        "position": [
+          4,
+          13
+        ],
+        "tag": "ashtown_raspberry_preserves",
+        "type": 2
+      }
+    ],
+    "cutscene_triggers": [
+      {
+        "contingencies": [
+          {
+            "requirement": 0,
+            "strict": true,
+            "tag": "free_bit"
+          }
+        ],
+        "dimensions": [
+          2,
+          5
+        ],
+        "id": 101,
+        "position": [
+          8,
+          7
+        ]
+      }
+    ],
     "npcs": [
       {
         "background": false,
@@ -44,27 +80,18 @@
           1
         ],
         "direction": -1,
-        "face_player": true,
+        "face_player": false,
         "hidden": false,
         "id": 101,
         "label": "bit",
         "position": [
-          9,
+          5,
           11
         ],
         "start_busy": false,
         "suites": [
           [
-            4,
-            5,
-            6
-          ],
-          [
-            5,
-            6
-          ],
-          [
-            6
+            4
           ]
         ]
       }
@@ -1391,6 +1418,7 @@
         1,
         1,
         1,
+        503,
         1,
         1,
         1,
@@ -1406,10 +1434,9 @@
         1,
         1,
         1,
-        1,
-        1,
-        1,
-        1,
+        503,
+        503,
+        0,
         1,
         1,
         1,
@@ -1649,6 +1676,7 @@
         0,
         0,
         0,
+        1,
         0,
         0,
         0,
@@ -1664,10 +1692,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
+        1,
+        1,
+        1,
         0,
         0,
         0,

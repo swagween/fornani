@@ -1,8 +1,9 @@
 
-#include <cmath>
 #include <fornani/graphics/Colors.hpp>
 #include <fornani/physics/Shape.hpp>
+#include <fornani/utils/Constants.hpp>
 #include <fornani/utils/Math.hpp>
+#include <cmath>
 
 namespace fornani::shape {
 
@@ -251,6 +252,37 @@ sf::Vector2f Shape::circle_SAT_MTV(sf::CircleShape const& circle) const {
 	}
 	if (!are_overlapping(proj1, proj2)) { return {}; }
 	return ret;
+}
+
+sf::Vector2f Shape::compute_mtv(sf::Vector2f p) {
+	float min_overlap = std::numeric_limits<float>::max();
+	sf::Vector2f best_axis{};
+
+	auto axes = get_normals();
+
+	for (auto& axis : axes) {
+		auto proj_shape = project_on_axis(vertices, axis);
+		auto proj_point = project_circle_on_axis(p, 4.f, axis);
+
+		if (!are_overlapping(proj_shape, proj_point)) return {};
+
+		float overlap = get_overlap_length(proj_shape, proj_point);
+
+		if (overlap < min_overlap) {
+			min_overlap = overlap;
+
+			float shape_center = (proj_shape.x + proj_shape.y) * 0.5f;
+			float point_proj = dot_product(p, axis);
+
+			sf::Vector2f dir = axis;
+
+			if (point_proj < shape_center) dir = -axis;
+
+			best_axis = dir;
+		}
+	}
+
+	return best_axis * min_overlap;
 }
 
 bool Shape::overlaps(Shape const& other) const {

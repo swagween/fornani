@@ -7,7 +7,7 @@
 
 namespace fornani::enemy {
 
-Grappler::Grappler(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "grappler"), m_services(&svc), m_map(&map), m_hold_time{600}, m_leap_cooldown{400} {
+Grappler::Grappler(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "grappler"), m_services(&svc), m_map(&map), m_hold_time{560}, m_leap_cooldown{400} {
 	p_animations = {{"idle", {0, 4, 40, -1}}, {"leap", {4, 5, 40, 0}}, {"snag", {9, 1, 40, -1}}, {"release", {10, 2, 40, 0}}, {"turn", {12, 3, 40, 0}}, {"whiff", {1, 1, 40, 0}}};
 	animation.set_params(get_params("idle"));
 	get_collider().physics.set_friction_componentwise({0.99f, 0.99f});
@@ -31,8 +31,11 @@ void Grappler::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		sound.hurt_sound_cooldown.start();
 	}
 
-	if (is_state(GrapplerState::snag) && m_flags.test(GrapplerFlags::caught_player)) { player.set_position(get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 18.f, 0.f}, true); }
-	if (m_flags.consume(GrapplerFlags::released_player)) { player.accumulated_momentum.push_back({directions.actual.as_float() * 14.f, -0.6f}); }
+	if (is_state(GrapplerState::snag) && m_flags.test(GrapplerFlags::caught_player)) {
+		player.set_position(get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 24.f, 0.f}, true);
+		player.get_collider().physics.zero();
+	}
+	if (m_flags.consume(GrapplerFlags::released_player)) { player.accumulated_momentum.push_back({directions.actual.as_float() * 10.f, -0.6f}); }
 	m_grab.set_position(get_collider().get_center() + sf::Vector2f{36.f, 0.f} * directions.actual.as_float());
 	m_grab.sensor.deactivate();
 	if (animation.get_frame() == 6 || animation.get_frame() == 7) { m_grab.sensor.activate(); }
@@ -62,7 +65,7 @@ fsm::StateFunction Grappler::update_idle() {
 
 fsm::StateFunction Grappler::update_leap() {
 	p_state.actual = GrapplerState::leap;
-	if (animation.get_frame_count() == 2 && animation.keyframe_started()) { get_collider().physics.velocity = sf::Vector2f{directions.actual.as_float() * attributes.speed, 5.0f}; }
+	if (animation.get_frame_count() == 2 && animation.keyframe_started()) { get_collider().physics.velocity = sf::Vector2f{directions.actual.as_float() * attributes.speed, -5.0f}; }
 	if (m_flags.test(GrapplerFlags::caught_player)) {
 		m_leap_cooldown.start();
 		m_hold_time.start();

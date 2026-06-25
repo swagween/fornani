@@ -18,6 +18,7 @@ nani_add_sources(
         Junker.cpp
         Junkfly.cpp
         Lymphocyte.cpp
+        Macrophage.cpp
         Mastiff.cpp
         Meatsquash.cpp
         Minion.cpp

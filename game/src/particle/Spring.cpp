@@ -1,11 +1,11 @@
 
-#include <algorithm>
 #include <fornani/particle/Spring.hpp>
 #include <fornani/service/ServiceProvider.hpp>
+#include <algorithm>
 
 namespace fornani::vfx {
 
-Spring::Spring(SpringParameters params) : params(params) {
+Spring::Spring(SpringParameters params) : params(params), m_bob_positions{32} {
 	variables.bob_physics.set_constant_friction({params.dampen_factor, params.dampen_factor});
 	variables.bob_physics.maximum_velocity = {60.f, 60.f};
 	variables.anchor_physics.set_constant_friction({params.dampen_factor, params.dampen_factor});
@@ -13,9 +13,23 @@ Spring::Spring(SpringParameters params) : params(params) {
 	sensor.bounds.setOrigin({sensor.bounds.getRadius(), sensor.bounds.getRadius()});
 }
 
-Spring::Spring(SpringParameters params, sf::Vector2f anchor, sf::Vector2f bob) : anchor(anchor), bob(bob) {}
+Spring::Spring(SpringParameters params, sf::Vector2f anchor, sf::Vector2f bob) : anchor(anchor), bob(bob), m_bob_positions{32} {}
 
-void Spring::calculate() { calculate_force(); }
+void Spring::calculate() {
+	variables.spring_force = bob - anchor;
+
+	float mag = sqrt(variables.spring_force.x * variables.spring_force.x + variables.spring_force.y * variables.spring_force.y);
+	variables.extension = mag - params.rest_length;
+
+	if (mag == 0.f) { return; }
+
+	variables.spring_force /= mag;
+	variables.spring_force *= -params.spring_constant * variables.extension;
+	variables.spring_force.x = std::clamp(variables.spring_force.x, -spring_max, spring_max);
+	variables.spring_force.y = std::clamp(variables.spring_force.y, -spring_max, spring_max);
+	variables.bob_physics.acceleration = variables.spring_force;
+	variables.anchor_physics.acceleration = -variables.spring_force;
+}
 
 void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2f external_force, bool loose, bool sag) {
 	variables.bob_physics.gravity = sag ? custom_grav : 0.f;
@@ -30,6 +44,21 @@ void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2
 	bob = variables.bob_physics.position;
 	if (loose) { anchor = variables.anchor_physics.position; }
 	sensor.bounds.setPosition(bob);
+}
+
+void Spring::update_constrained(automa::ServiceProvider& svc, float custom_grav, sf::Vector2f external_force) {
+	// bob
+	variables.bob_physics.acceleration = {};
+	variables.bob_physics.apply_force(external_force);
+
+	variables.bob_physics.velocity *= 0.98f;
+	variables.bob_physics.update(svc);
+
+	bob = variables.bob_physics.position;
+
+	sensor.bounds.setPosition(bob);
+
+	m_bob_positions.push(bob);
 }
 
 void Spring::simulate(float custom_grav, bool loose, bool sag) {
@@ -62,19 +91,27 @@ void Spring::render(sf::RenderWindow& win, sf::Vector2f cam) {
 }
 
 void Spring::calculate_force() {
-	variables.spring_force = bob - anchor;
+	sf::Vector2f delta = bob - anchor;
 
-	float mag = sqrt(variables.spring_force.x * variables.spring_force.x + variables.spring_force.y * variables.spring_force.y);
-	variables.extension = mag - params.rest_length;
+	float distSq = delta.x * delta.x + delta.y * delta.y;
+	if (distSq == 0.f) {
+		variables.spring_force = {};
+		return;
+	}
 
-	if (mag == 0.f) { return; }
+	float dist = std::sqrt(distSq);
+	variables.extension = dist - params.rest_length;
+	sf::Vector2f dir = delta / dist;
+	sf::Vector2f force = dir * (-params.spring_constant * variables.extension);
 
-	variables.spring_force /= mag;
-	variables.spring_force *= -params.spring_constant * variables.extension;
-	variables.spring_force.x = std::clamp(variables.spring_force.x, -spring_max, spring_max);
-	variables.spring_force.y = std::clamp(variables.spring_force.y, -spring_max, spring_max);
-	variables.bob_physics.acceleration = variables.spring_force;
-	variables.anchor_physics.acceleration = -variables.spring_force;
+	// magnitude clamp (not per-component)
+	float magSq = force.x * force.x + force.y * force.y;
+	if (magSq > spring_max * spring_max) {
+		float mag = std::sqrt(magSq);
+		force *= (spring_max / mag);
+	}
+
+	variables.spring_force = force;
 }
 
 void Spring::reverse_anchor_and_bob() {

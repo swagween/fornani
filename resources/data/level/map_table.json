@@ -938,9 +938,21 @@
     },
     {
       "folder": "toxic",
+      "label": "roof.json",
+      "region": "toxic",
+      "room_id": 1012
+    },
+    {
+      "folder": "toxic",
       "label": "spiral.json",
       "region": "toxic",
       "room_id": 1004
+    },
+    {
+      "folder": "toxic",
+      "label": "squeeze.json",
+      "region": "toxic",
+      "room_id": 1013
     },
     {
       "folder": "toxic",

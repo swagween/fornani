@@ -410,7 +410,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 	m_sprite_position = collider.has_value() ? get_collider().get_position() + sprite_offset : m_sprite_position;
 	m_sprite_position.x += controller.facing_left() ? -1.f : 1.f;
-	if (m_sprite_shake.get() % 10 == 0) { m_shake_offset = random::random_vector_float(-8.f, 8.f); }
+	if (m_sprite_shake.get() % 10 == 0) { m_shake_offset = random::random_vector_float(-4.f, 4.f); }
 	if (!m_sprite_shake.running()) { m_shake_offset = {}; }
 	m_sprite_position += m_shake_offset;
 	Animatable::set_position(m_sprite_position - cam);
@@ -814,7 +814,6 @@ void Player::hurt(float amount, bool force) {
 	if (health.is_dead()) { return; }
 	if (is_intangible()) { return; }
 	if (!health.invincible() || force) {
-		m_sprite_shake.start();
 		m_hurt_cooldown.start();
 		health.inflict(amount, force, !is_stunned());
 		health_indicator.add(-amount);
@@ -830,6 +829,7 @@ void Player::hurt(float amount, bool force) {
 		}
 		if (is_stunned() && cooldowns.stun.get_normalized() < 0.9f) { cooldowns.stun.start(4); }
 		if (amount > 1.f) {
+			m_sprite_shake.start();
 			m_services->ticker.freeze_frame(80, 0.01f);
 		} else {
 			m_services->ticker.freeze_frame(24);

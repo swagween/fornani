@@ -24,6 +24,7 @@
 #include <fornani/entities/enemy/catalog/Junker.hpp>
 #include <fornani/entities/enemy/catalog/Junkfly.hpp>
 #include <fornani/entities/enemy/catalog/Lymphocyte.hpp>
+#include <fornani/entities/enemy/catalog/Macrophage.hpp>
 #include <fornani/entities/enemy/catalog/Mastiff.hpp>
 #include <fornani/entities/enemy/catalog/Meatsquash.hpp>
 #include <fornani/entities/enemy/catalog/Minion.hpp>
@@ -74,6 +75,7 @@ EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
 	EnemyRegistry::register_factory(33, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Thief>(svc, map); });
 	EnemyRegistry::register_factory(34, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Grappler>(svc, map); });
 	EnemyRegistry::register_factory(35, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Nimbus>(svc, map); });
+	EnemyRegistry::register_factory(36, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Macrophage>(svc, map); });
 }
 
 void EnemyCatalog::update() {

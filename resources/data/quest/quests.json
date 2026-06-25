@@ -11,13 +11,7 @@
     "title": "Discover the mystery of the Firstwind Laboratory terminal",
     "tag": "firstwind_mystery",
     "target": 5,
-    "objectives": [
-      "Enter the username.",
-      "Enter the authorization key.",
-      "Open the chest.",
-      "Find the Boiler Room.",
-      "Open the chest."
-    ],
+    "objectives": ["Enter the username.", "Enter the authorization key.", "Open the chest.", "Find the Boiler Room.", "Open the chest."],
     "displayed": true
   },
 
@@ -45,6 +39,10 @@
       {
         "tag": "bit",
         "id": 101
+      },
+      {
+        "tag": "bit",
+        "id": 1310
       },
       {
         "tag": "carl",
@@ -105,10 +103,7 @@
     "title": "Rescue Justin",
     "tag": "rescue_justin",
     "target": 2,
-    "objectives": [
-      "Find Gobe's dog. He is somewhere near Old Mimic's Farm.",
-      "Return Justin to Gobe at Old Mimic's Farm."
-    ],
+    "objectives": ["Find Gobe's dog. He is somewhere near Old Mimic's Farm.", "Return Justin to Gobe at Old Mimic's Farm."],
     "displayed": true
   },
   {
@@ -129,9 +124,7 @@
     "title": "Defeat Skycorps",
     "tag": "defeat_skycorps",
     "target": 4,
-    "objectives": [
-      "Infiltrate the Greatwing and take down Skycorps before they awaken the Mother Worm."
-    ],
+    "objectives": ["Infiltrate the Greatwing and take down Skycorps before they awaken the Mother Worm."],
     "displayed": true
   },
   {
@@ -226,6 +219,12 @@
   },
   {
     "tag": "pioneer_tech",
+    "target": 2,
+    "objectives": [],
+    "displayed": true
+  },
+  {
+    "tag": "ashtown_bandit",
     "target": 2,
     "objectives": [],
     "displayed": true

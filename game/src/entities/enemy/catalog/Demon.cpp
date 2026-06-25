@@ -41,7 +41,8 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	Enemy::update(svc, map, player);
 	if (died()) { return; }
 
-	player_behind(player) ? m_flags.set(DemonFlags::player_behind) : m_flags.reset(DemonFlags::player_behind);
+	auto behind = (player_behind(player) && directions.actual.left()) || (!player_behind(player) && directions.actual.right());
+	behind ? m_flags.set(DemonFlags::player_behind) : m_flags.reset(DemonFlags::player_behind);
 
 	cooldowns.rush_hit.update();
 	cooldowns.post_jump.update();

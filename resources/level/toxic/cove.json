@@ -16,6 +16,24 @@
         "type": 2
       }
     ],
+    "enemies": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 33,
+        "position": [
+          16,
+          9
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,
@@ -1923,6 +1941,7 @@
         0,
         0,
         0,
+        488,
         0,
         0,
         0,
@@ -1932,8 +1951,7 @@
         0,
         0,
         0,
-        0,
-        0,
+        488,
         0,
         0,
         2,

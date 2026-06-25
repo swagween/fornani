@@ -7,7 +7,7 @@
 namespace fornani::enemy {
 
 enum class ThiefState { dive, land, prepare, dash, stop, laugh, escape, hurt };
-enum class ThiefFlags { succeeded, dive_in };
+enum class ThiefFlags { succeeded, dive_in, hiding };
 
 class Thief final : public Enemy, public StateMachine<ThiefState> {
 

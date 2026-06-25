@@ -1,4 +1,6 @@
 nani_add_headers(
+  BanditEncounter.hpp
+  BitCell.hpp
   BrynPostMiaag.hpp
         LadyNimbusIntro.hpp
         LothAtWorm.hpp

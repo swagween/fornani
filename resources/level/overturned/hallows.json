@@ -4,6 +4,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 258,
         "dimensions": [
           3,
@@ -20,6 +21,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 260,
         "dimensions": [
           3,
@@ -45,7 +47,7 @@
           28,
           41
         ],
-        "toxic": false
+        "type": 0
       }
     ]
   },
@@ -53,11 +55,6 @@
     "ambience": "overturned",
     "background": "dense_woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -77,6 +74,7 @@
       48,
       48
     ],
+    "interior": false,
     "metagrid": [
       64,
       20
@@ -92,26 +90,26 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 259,
     "shader": {
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
     "animated": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ],
     "flags": {
       "obscuring": false,
@@ -10095,8 +10093,8 @@
         0,
         0,
         0,
-        96,
-        96,
+        0,
+        0,
         96,
         96,
         96,
@@ -10147,7 +10145,7 @@
         0,
         0,
         0,
-        96,
+        0,
         96,
         96,
         96,

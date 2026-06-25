@@ -921,7 +921,7 @@ void Map::generate_collidable_layer(bool live) {
 }
 
 void Map::generate_layer_textures(automa::ServiceProvider& svc) const {
-	for (auto& layer : svc.data.get_layers(room_id)) { layer->generate_textures(svc.assets.get_tileset(std::string{get_biome_string()})); }
+	for (auto& layer : svc.data.get_layers(room_id)) { layer->generate_textures(svc.assets.get_tileset(std::string{get_biome_string()}), m_attributes.properties.test(MapProperties::day_night_shift)); }
 }
 
 void Map::register_collider(std::unique_ptr<shape::ICollider> collider) {
@@ -1180,6 +1180,13 @@ bool Map::overlaps_middleground(sf::Vector2f test) {
 		if (cell.bounding_box.contains_point(test) && cell.is_solid()) { return true; }
 	}
 	return false;
+}
+
+sf::Vector2f Map::compute_mtv(sf::Vector2f test) {
+	for (auto& cell : get_middleground()->grid.cells) {
+		if (cell.bounding_box.contains_point(test) && cell.is_solid()) { return cell.bounding_box.compute_mtv(test); }
+	}
+	return {};
 }
 
 auto Map::get_music_balance() const -> float { return music_balance.get(); }

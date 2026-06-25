@@ -16,6 +16,24 @@
         "tag": "nephridiopore"
       }
     ],
+    "enemies": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 36,
+        "position": [
+          48,
+          6
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      }
+    ],
     "lights": [
       {
         "dimensions": [

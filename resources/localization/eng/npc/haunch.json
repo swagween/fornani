@@ -3,32 +3,17 @@
     "responses": [
       [
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "Who are you?"
         }
       ],
       [
         {
-          "codes": [
-            [
-              1,
-              2
-            ]
-          ],
+          "codes": [[1, 2]],
           "message": "Look, I don't want any trouble..."
         },
         {
-          "codes": [
-            [
-              1,
-              3
-            ]
-          ],
+          "codes": [[1, 3]],
           "message": "How long are you going to keep talking?"
         }
       ]
@@ -42,12 +27,7 @@
           "message": "Looks like our intel was spot-on, boys. The mischievous Kariba walked straight into our hands."
         },
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
+          "codes": [[1, 0]],
           "message": "You ain't as smart as I was expecting, missy!"
         }
       ],
@@ -59,12 +39,7 @@
           "message": "You know, I'm surprised you haven't heard of me considering I killed half your tribe."
         },
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "Anyhow, makes no difference to me. Your time makin' trouble for Skycorps has come to an end."
         }
       ],
@@ -77,14 +52,8 @@
         },
         {
           "codes": [
-            [
-              23,
-              10
-            ],
-            [
-              12,
-              0
-            ]
+            [23, 10],
+            [12, 0]
           ],
           "message": "I'm sure you'll bleed just like the rest of 'em."
         }
@@ -98,14 +67,8 @@
         },
         {
           "codes": [
-            [
-              23,
-              10
-            ],
-            [
-              12,
-              0
-            ]
+            [23, 10],
+            [12, 0]
           ],
           "message": "Time to die!"
         }
@@ -121,21 +84,11 @@
           "message": "Well, well, well."
         },
         {
-          "codes": [
-            [
-              23,
-              10
-            ]
-          ],
+          "codes": [[23, 10]],
           "message": "Look who's back!"
         },
         {
-          "codes": [
-            [
-              12,
-              0
-            ]
-          ],
+          "codes": [[12, 0]],
           "messages": [
             "What's the matter, couldn't take the heat?",
             "Don't know when to give up, do you?",
@@ -150,12 +103,7 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              5,
-              1
-            ]
-          ],
+          "codes": [[5, 1]],
           "message": "That's it...!"
         },
         {
@@ -169,12 +117,7 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              5,
-              1
-            ]
-          ],
+          "codes": [[5, 1]],
           "message": "If you wanna kill me, I'm takin' you with me!"
         }
       ]
@@ -187,14 +130,8 @@
       [
         {
           "codes": [
-            [
-              5,
-              1
-            ],
-            [
-              23,
-              11
-            ]
+            [5, 1],
+            [23, 11]
           ],
           "message": "...AAAAHHHHHHHHH!"
         }

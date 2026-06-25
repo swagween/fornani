@@ -63,7 +63,26 @@ enum class GeneralFlags {
 	kick_immune,
 	tick_slowdown
 };
-enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, no_shake, out_of_zone, intangible, health_exposed, despawn, pre_battle_invincibility, special_event };
+enum class StateFlags {
+	alive,
+	alert,
+	hostile,
+	shot,
+	vulnerable,
+	hurt,
+	shaking,
+	special_death_mode,
+	invisible,
+	advance,
+	no_shake,
+	out_of_zone,
+	intangible,
+	health_exposed,
+	despawn,
+	pre_battle_invincibility,
+	special_event,
+	blocked_projectile
+};
 enum class Triggers { hostile, alert };
 enum class Variant { beast, soldier, elemental, worker, guardian };
 

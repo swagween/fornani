@@ -334,6 +334,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 	auto secondary_collision = hit_second && !hit_main;
 	if (((secondary_collision && flags.general.test(GeneralFlags::invincible_secondary)) || is_invincible()) && !died()) {
 		proj.handle_hard_hit(svc, map);
+		flags.state.set(StateFlags::blocked_projectile);
 	} else if (!is_invincible() && !died()) {
 		if (proj.persistent()) {
 			proj.damage_over_time();

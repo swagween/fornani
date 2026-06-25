@@ -21,6 +21,7 @@ nani_add_headers(
         QuestCode.hpp
         Random.hpp
         RichText.hpp
+        RingBuffer.hpp
         Shipment.hpp
         StateFlag.hpp
         StateFunction.hpp

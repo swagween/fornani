@@ -162,7 +162,7 @@ void Console::render(sf::RenderWindow& win) {
 		if (m_flags.test(ConsoleFlags::hologram)) {
 			sf::Color highlight(245, 195, 135); // warm amber glow
 			sf::Color shadow(55, 32, 18);		// softened warm dark
-			m_holo_shader.finalize(m_services->ticker.total_seconds_passed.count(), highlight, shadow);
+			m_holo_shader.finalize(m_services->ticker.total_seconds_passed.count(), highlight, shadow, 1.6f);
 			m_holo_shader.submit(win, m_npc_portrait->make_sprite());
 		}
 	}

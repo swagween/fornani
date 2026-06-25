@@ -8,7 +8,7 @@
 namespace fornani::enemy {
 
 Hulmet::Hulmet(automa::ServiceProvider& svc, world::Map& map)
-	: Enemy(svc, map, "hulmet"), m_services(&svc), m_map(&map), m_parts{.gun{svc, "hulmet_gun", {24, 10}, {{0, 4, 24, -1}}, {"main"}, 2.0f, 0.85f, {-12.f, 6.f}}}, m_weapon{svc, "skycorps_ar"}, m_jump_force{-88.f} {
+	: Enemy(svc, map, "hulmet"), m_services(&svc), m_map(&map), m_parts{.gun{svc, "hulmet_gun", {24, 10}, {{0, 4, 24, -1}}, {"main"}, 2.0f, 0.85f, {-12.f, 6.f}}}, m_weapon{svc, "skycorps_ar"} {
 	animation.set_params(m_animations.idle);
 	m_parts.gun.set_magnitude(2.f);
 	m_weapon.clip_cooldown_time = 360;
@@ -88,10 +88,7 @@ fsm::StateFunction Hulmet::update_idle() {
 	if (change_state(HulmetState::reload, m_animations.reload)) { return HULMET_BIND(update_reload); }
 	if (change_state(HulmetState::sleep, m_animations.sleep)) { return HULMET_BIND(update_sleep); }
 	if (change_state(HulmetState::alert, m_animations.alert)) { return HULMET_BIND(update_alert); }
-	if (change_state(HulmetState::jump, m_animations.jump)) {
-		impulse.start(m_jump_time);
-		return HULMET_BIND(update_jump);
-	}
+	if (change_state(HulmetState::jump, m_animations.jump)) { return HULMET_BIND(update_jump); }
 	if (change_state(HulmetState::run, m_animations.run)) { return HULMET_BIND(update_run); }
 	if (was_alerted()) {
 		if (change_state(HulmetState::shoot, m_animations.shoot)) { return HULMET_BIND(update_shoot); }
@@ -129,10 +126,7 @@ fsm::StateFunction Hulmet::update_run() {
 	if (m_caution.detected_step(*m_map, get_collider(), directions.actual)) {
 		request(HulmetState::jump);
 		m_cooldowns.run.start();
-		if (change_state(HulmetState::jump, m_animations.jump)) {
-			impulse.start(m_jump_time);
-			return HULMET_BIND(update_jump);
-		}
+		if (change_state(HulmetState::jump, m_animations.jump)) { return HULMET_BIND(update_jump); }
 	}
 	if (change_state(HulmetState::turn, m_animations.turn)) {
 		m_cooldowns.run.start();
@@ -153,7 +147,6 @@ fsm::StateFunction Hulmet::update_run() {
 		}
 	}
 	if (change_state(HulmetState::jump, m_animations.jump)) {
-		impulse.start(m_jump_time);
 		m_cooldowns.run.start();
 		return HULMET_BIND(update_jump);
 	}
@@ -175,10 +168,7 @@ fsm::StateFunction Hulmet::update_alert() {
 	if (animation.complete()) {
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
 		if (change_state(HulmetState::roll, m_animations.roll)) { return HULMET_BIND(update_roll); }
-		if (change_state(HulmetState::jump, m_animations.jump)) {
-			impulse.start(m_jump_time);
-			return HULMET_BIND(update_jump);
-		}
+		if (change_state(HulmetState::jump, m_animations.jump)) { return HULMET_BIND(update_jump); }
 		if (!is_out_of_ammo()) { request(HulmetState::shoot); }
 		if (change_state(HulmetState::shoot, m_animations.shoot)) { return HULMET_BIND(update_shoot); }
 	}
@@ -193,18 +183,12 @@ fsm::StateFunction Hulmet::update_roll() {
 	get_collider().physics.apply_force({sign * attributes.speed * 2.f, 0.f});
 	if (m_caution.detected_step(*m_map, get_collider(), directions.movement)) {
 		request(HulmetState::jump);
-		if (change_state(HulmetState::jump, m_animations.jump)) {
-			impulse.start(m_jump_time);
-			return HULMET_BIND(update_jump);
-		}
+		if (change_state(HulmetState::jump, m_animations.jump)) { return HULMET_BIND(update_jump); }
 	}
 	if (animation.complete()) {
 		m_cooldowns.post_roll.start();
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
-		if (change_state(HulmetState::jump, m_animations.jump)) {
-			impulse.start(m_jump_time);
-			return HULMET_BIND(update_jump);
-		}
+		if (change_state(HulmetState::jump, m_animations.jump)) { return HULMET_BIND(update_jump); }
 		if (change_state(HulmetState::run, m_animations.run)) { return HULMET_BIND(update_run); }
 		if (!is_out_of_ammo()) {
 			if (change_state(HulmetState::shoot, m_animations.shoot)) { return HULMET_BIND(update_shoot); }
@@ -220,9 +204,8 @@ fsm::StateFunction Hulmet::update_jump() {
 	animation.label = "jump";
 	p_state.actual = HulmetState::jump;
 	flags.state.set(StateFlags::vulnerable);
-	if (impulse.running()) { get_collider().physics.apply_force({0, m_jump_force}); }
-	auto sign = directions.actual.left() ? -1.f : 1.f;
-	get_collider().physics.apply_force({sign * attributes.speed, 0.f});
+	if (animation.just_started()) { get_collider().physics.velocity = sf::Vector2f{0.f, -20.f}; }
+	get_collider().physics.acceleration.x = directions.actual.as_float() * 0.4f;
 	if (animation.complete()) {
 		m_cooldowns.post_jump.start();
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
@@ -246,10 +229,7 @@ fsm::StateFunction Hulmet::update_shoot() {
 		m_cooldowns.post_fire.start();
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
 		if (change_state(HulmetState::run, m_animations.run)) { return HULMET_BIND(update_run); }
-		if (change_state(HulmetState::jump, m_animations.jump)) {
-			impulse.start(m_jump_time);
-			return HULMET_BIND(update_jump);
-		}
+		if (change_state(HulmetState::jump, m_animations.jump)) { return HULMET_BIND(update_jump); }
 		animation.set_params(m_animations.idle);
 		p_state.desired = HulmetState::idle;
 		return HULMET_BIND(update_idle);

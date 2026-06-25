@@ -1,5 +1,6 @@
 
 #include "fornani/world/Layer.hpp"
+#include <fornani/core/Debug.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/shader/LightShader.hpp>
 #include <fornani/shader/Palette.hpp>
@@ -10,11 +11,12 @@
 
 namespace fornani::world {
 
-void Layer::generate_textures(sf::Texture const& tex) {
-	if (middleground()) { m_barrier = sf::RenderTexture{}; }
+void Layer::generate_textures(sf::Texture const& tex, bool day_night_shift) {
+	if (middleground()) { m_barrier.emplace(); }
 	if (!m_flags.test(LayerFlags::animated)) {
-		for (auto cycle{0}; cycle < static_cast<int>(fornani::TimeOfDay::END); ++cycle) {
-			auto time = static_cast<fornani::TimeOfDay>(cycle);
+		auto amt = day_night_shift ? static_cast<int>(fornani::TimeOfDay::END) : 1;
+		for (int cycle = 0; cycle < amt; ++cycle) {
+			auto time = !day_night_shift ? TimeOfDay::day : static_cast<fornani::TimeOfDay>(cycle);
 			auto const is_day = time == fornani::TimeOfDay::day;
 			auto const is_twilight = time == fornani::TimeOfDay::dawn || time == fornani::TimeOfDay::dusk;
 			auto const is_night = time == fornani::TimeOfDay::night;
@@ -23,6 +25,7 @@ void Layer::generate_textures(sf::Texture const& tex) {
 
 			auto& texture = is_day ? m_texture.day : (is_twilight ? m_texture.twilight : m_texture.night);
 			sf::Vector2u size = grid.dimensions * constants::ui_cell_resolution;
+			NANI_LOG_DEBUG(m_logger, "Grid size: ({}, {})", grid.dimensions.x, grid.dimensions.y);
 			if (!texture.resize(size)) { NANI_LOG_ERROR(m_logger, "Layer texture not created."); }
 			texture.clear(sf::Color::Transparent);
 
@@ -82,20 +85,27 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics
 		spr.setScale(constants::f_scale_vec);
 		spr.setPosition(-cam - sf::Vector2f{2 * border});
 		win.draw(spr);
+		++debug::draw_calls;
 	}
-	auto sprites = day_night_shift ? std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.twilight.getTexture()}, sf::Sprite{m_texture.night.getTexture()}}
-								   : std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.day.getTexture()}};
 
-	auto ctr{0};
-	for (auto& sprite : sprites) {
-		std::uint8_t alpha = std::lerp(0, 255, fade);
-		std::uint8_t revalpha = std::lerp(0, 255, 1.f - fade);
+	std::uint8_t alpha = std::lerp(0, 255, fade);
+	std::uint8_t revalpha = std::lerp(0, 255, 1.f - fade);
+	if (day_night_shift) {
+		auto sprites = std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.twilight.getTexture()}, sf::Sprite{m_texture.night.getTexture()}};
+		for (auto [i, sprite] : std::views::enumerate(sprites)) {
+			sprite.setScale(constants::f_scale_vec);
+			sprite.setPosition({-cam.x * m_parallax, -cam.y});
+			if (obscuring()) { shifter.render(svc, win, sprite, i, alpha); }
+			if (reverse_obscuring()) { shifter.render(svc, win, sprite, i, revalpha); }
+			if (not_obscuring()) { shifter.render(svc, win, sprite, i); }
+		}
+	} else {
+		auto sprite = sf::Sprite{m_texture.day.getTexture()};
 		sprite.setScale(constants::f_scale_vec);
 		sprite.setPosition({-cam.x * m_parallax, -cam.y});
-		if (obscuring()) { shifter.render(svc, win, sprite, ctr, alpha); }
-		if (reverse_obscuring()) { shifter.render(svc, win, sprite, ctr, revalpha); }
-		if (not_obscuring()) { shifter.render(svc, win, sprite, ctr); }
-		++ctr;
+		if (obscuring()) { shifter.render(svc, win, sprite, 0, alpha); }
+		if (reverse_obscuring()) { shifter.render(svc, win, sprite, 0, revalpha); }
+		if (not_obscuring()) { shifter.render(svc, win, sprite, 0); }
 	}
 }
 
@@ -120,10 +130,15 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, LightSha
 		sprite.setPosition({-cam.x * m_parallax, -cam.y});
 		shader.submit(win, palette, sprite);
 	} else {
-
-		auto sprites = day_night_shift ? std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.twilight.getTexture()}, sf::Sprite{m_texture.night.getTexture()}}
-									   : std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.day.getTexture()}};
-		for (auto& sprite : sprites) {
+		if (day_night_shift) {
+			auto sprites = std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.twilight.getTexture()}, sf::Sprite{m_texture.night.getTexture()}};
+			for (auto& sprite : sprites) {
+				sprite.setScale(constants::f_scale_vec);
+				sprite.setPosition({-cam.x * m_parallax, -cam.y});
+				shader.submit(win, palette, sprite);
+			}
+		} else {
+			auto sprite = sf::Sprite{m_texture.day.getTexture()};
 			sprite.setScale(constants::f_scale_vec);
 			sprite.setPosition({-cam.x * m_parallax, -cam.y});
 			shader.submit(win, palette, sprite);

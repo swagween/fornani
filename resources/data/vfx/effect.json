@@ -95,6 +95,11 @@
     "framerate": 20,
     "dimensions": [16, 16]
   },
+  "exclamation_mark": {
+    "frame_count": 12,
+    "framerate": 20,
+    "dimensions": [16, 16]
+  },
   "worm_steps": {
     "frame_count": 3,
     "framerate": 16,

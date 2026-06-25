@@ -1,4 +1,6 @@
 nani_add_sources(
+  BanditEncounter.cpp
+  BitCell.cpp
   BrynPostMiaag.cpp
   HaunchIntro.cpp
   HaunchEscape.cpp

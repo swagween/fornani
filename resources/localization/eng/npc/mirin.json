@@ -4,35 +4,17 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              3,
-              2,
-              18
-            ]
-          ],
+          "codes": [[3, 2, 18]],
           "message": "You must be one of the prisoners we scooped up some months back."
         },
         {
-          "codes": [
-            [
-              5,
-              1
-            ]
-          ],
+          "codes": [[5, 1]],
           "message": "You know, despite everything that's happened between our tribes, I would never wish any of this upon you."
         },
         {
           "codes": [
-            [
-              13,
-              18,
-              114
-            ],
-            [
-              5,
-              0
-            ]
+            [13, 18, 114],
+            [5, 0]
           ],
           "message": "There's something about being so high up in the sky that tends to bring our people together."
         }
@@ -51,15 +33,8 @@
         },
         {
           "codes": [
-            [
-              13,
-              18,
-              114
-            ],
-            [
-              5,
-              1
-            ]
+            [13, 18, 114],
+            [5, 1]
           ],
           "message": "Okay, that was a bit rude. Sorry."
         },
@@ -73,30 +48,15 @@
     "responses": [
       [
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "Who are you?"
         },
         {
-          "codes": [
-            [
-              1,
-              2
-            ]
-          ],
+          "codes": [[1, 2]],
           "message": "How can I get back to the island?"
         },
         {
-          "codes": [
-            [
-              1,
-              3
-            ]
-          ],
+          "codes": [[1, 3]],
           "message": "Tell me about your tribe."
         }
       ]
@@ -104,23 +64,13 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
+          "codes": [[1, 0]],
           "message": "What's up?"
         }
       ],
       [
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
+          "codes": [[1, 0]],
           "message": "I'm Mirin. I'm Dr. Go's daughter, and though I have no qualifications to be a nurse, that's what I am."
         }
       ],
@@ -129,12 +79,7 @@
           "message": "If I knew the answer to that, we wouldn't be having this conversation."
         },
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
+          "codes": [[1, 0]],
           "message": "We're miles in the sky, and the last time I looked outside, I saw nothing but raging clouds."
         }
       ],
@@ -149,12 +94,7 @@
           "message": "The Kariba come, they kill one of us, they leave, repeat."
         },
         {
-          "codes": [
-            [
-              5,
-              1
-            ]
-          ],
+          "codes": [[5, 1]],
           "message": "The tables really turned when Skycorps came in and took our side against you. It was our turn to do the needless killing, and we went way overboard."
         },
         {
@@ -165,14 +105,8 @@
         },
         {
           "codes": [
-            [
-              1,
-              0
-            ],
-            [
-              5,
-              2
-            ]
+            [1, 0],
+            [5, 2]
           ],
           "message": "I count myself lucky. At least I wasn't turned into one of their mutation experiments."
         }

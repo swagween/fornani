@@ -26,8 +26,6 @@ class CutsceneTrigger : public Entity {
 	[[nodiscard]] auto is_pushed() const -> bool { return m_flags.test(CutsceneTriggerFlags::pushed); }
 
   private:
-	std::vector<QuestContingency> m_contingencies{};
-
 	// in-game use
 	shape::Shape m_bounding_box{};
 	util::BitFlags<CutsceneTriggerFlags> m_flags{};

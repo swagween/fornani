@@ -154,6 +154,7 @@ class Map {
 	bool within_bounds(sf::Vector2f test) const;
 	bool overlaps_middleground(shape::Shape& test);
 	bool overlaps_middleground(sf::Vector2f test);
+	sf::Vector2f compute_mtv(sf::Vector2f test);
 
 	[[nodiscard]] auto get_style_id() const -> int { return m_biome.get_id(); }
 	[[nodiscard]] auto get_special_drop_id() const -> int { return m_attributes.special_drop_id; }

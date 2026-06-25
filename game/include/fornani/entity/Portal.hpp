@@ -6,6 +6,7 @@
 #include <fornani/graphics/Transition.hpp>
 #include <fornani/physics/Shape.hpp>
 #include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/IWorldPositionable.hpp>
 
 namespace fornani {
@@ -56,6 +57,7 @@ class Portal : public Entity {
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
 	void render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::Vector2f cam);
 	void close() { m_render_state = PortalRenderState::closed; }
+	void open() { m_opened_cooldown.start(); }
 
 	[[nodiscard]] auto get_source() const -> int { return source_id; }
 	[[nodiscard]] auto get_destination() const -> int { return destination_id; }
@@ -73,12 +75,13 @@ class Portal : public Entity {
 	[[nodiscard]] auto is_right() const -> bool { return m_orientation == PortalOrientation::right; }
 	[[nodiscard]] auto has_custom_animation() const -> bool { return m_custom_animation.has_value(); }
 
+  public:
+	shape::Shape bounding_box{};
+
   private:
 	void change_states(automa::ServiceProvider& svc, int room_id, graphics::Transition& transition);
 
   private:
-	shape::Shape bounding_box{};
-
 	int source_id{};
 	int destination_id{};
 	int channel{};
@@ -88,6 +91,7 @@ class Portal : public Entity {
 	PortalRenderState m_render_state{};
 	util::BitFlags<PortalAttributes> m_attributes{};
 	util::BitFlags<PortalState> m_state{};
+	util::Cooldown m_opened_cooldown;
 
 	std::optional<CustomPortalAnimation> m_custom_animation{};
 

@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/utils/RingBuffer.hpp>
 #include <optional>
 #include "fornani/components/CircleSensor.hpp"
 #include "fornani/components/PhysicsComponent.hpp"
@@ -20,6 +21,7 @@ class Spring {
 	Spring(SpringParameters params, sf::Vector2f anchor, sf::Vector2f bob);
 	void calculate();
 	void update(automa::ServiceProvider& svc, float custom_grav = 1.5f, sf::Vector2f external_force = {}, bool loose = false, bool sag = false);
+	void update_constrained(automa::ServiceProvider& svc, float custom_grav = 1.5f, sf::Vector2f external_force = {});
 	void simulate(float custom_grav = 1.5f, bool loose = false, bool sag = false);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void calculate_force();
@@ -37,6 +39,7 @@ class Spring {
 	std::optional<Spring*> cousin{};
 	[[nodiscard]] auto is_locked() const -> bool { return locked; }
 	[[nodiscard]] auto get_equilibrium_point() const -> float { return params.grav / params.spring_constant; }
+	[[nodiscard]] auto get_average_bob_position() const -> sf::Vector2f { return m_bob_positions.average(); }
 
 	int num_links{8};
 
@@ -50,6 +53,8 @@ class Spring {
   private:
 	sf::Vector2f anchor{};
 	sf::Vector2f bob{};
+	sf::Vector2f m_average_bob{};
+	RingBuffer<sf::Vector2f> m_bob_positions;
 	sf::Vector2f coil{};
 	float spring_max{64.f};
 	bool locked{};

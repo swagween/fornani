@@ -174,17 +174,6 @@ auto QuestTable::are_contingencies_met(QuestContingencySet const& set) const -> 
 	return true;
 }
 
-auto QuestTable::are_contingencies_met(std::vector<QuestContingency> const& set) const -> bool {
-	for (auto const& contingency : set) {
-		if (contingency.strict) {
-			if (get_quest_progression(contingency.tag) != contingency.requirement) { return false; }
-		} else {
-			if (get_quest_progression(contingency.tag) < contingency.requirement) { return false; }
-		}
-	}
-	return true;
-}
-
 QuestContingency::QuestContingency(dj::Json const& in) {
 	tag = in["tag"].as_string();
 	requirement = in["requirement"].as<int>();
@@ -199,6 +188,8 @@ void QuestContingency::serialize(dj::Json& out) const {
 	out.push_back(entry);
 }
 
+QuestContingencySet::QuestContingencySet(std::vector<QuestContingency> const& cont) { contingencies = cont; }
+
 QuestContingencySet::QuestContingencySet(dj::Json const& in) {
 	for (auto const& contingency : in.as_array()) { contingencies.push_back(QuestContingency(contingency)); }
 }
@@ -206,5 +197,7 @@ QuestContingencySet::QuestContingencySet(dj::Json const& in) {
 void QuestContingencySet::serialize(dj::Json& out) const {
 	for (auto& contingency : contingencies) { contingency.serialize(out); }
 }
+
+void QuestContingencySet::add(QuestContingency cont) { contingencies.push_back(cont); }
 
 } // namespace fornani

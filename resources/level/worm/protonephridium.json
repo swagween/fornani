@@ -1,5 +1,23 @@
 {
   "entities": {
+    "enemies": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 36,
+        "position": [
+          8,
+          19
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      }
+    ],
     "platforms": [
       {
         "dimensions": [

@@ -144,7 +144,7 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 	m_icon_sprite.setScale(constants::f_scale_vec);
 	m_map_screen.render(win, cam);
 	m_map_shadow.render(win, cam);
-	for (auto& chain : m_chains) { chain->render(svc, win, cam); }
+	for (auto& chain : m_chains) { chain->render(svc, win, cam, false); }
 	for (auto& plugin : m_plugins) { plugin.render(win, m_plugin_sprite, cam, {}, shader, palette); }
 	if (m_info) { m_info->render(svc, win, player, shader, palette, cam, foreground); }
 	m_constituents.gizmo.top_left.position = m_path.get_position();

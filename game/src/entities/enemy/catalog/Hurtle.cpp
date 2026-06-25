@@ -49,6 +49,10 @@ void Hurtle::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	}
 
 	// caution
+	if (m_caution.is_ledge_detected(map, get_collider(), directions.actual, 2) && !m_turn.running()) {
+		directions.desired = m_caution.direction;
+		request(HurtleState::turn);
+	}
 	if (m_caution.is_projectile_detected(map, physical.alert_range, arms::Team::beast)) { request(HurtleState::sleep); }
 
 	state_function = state_function();
@@ -57,6 +61,7 @@ void Hurtle::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 void Hurtle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Enemy::render(svc, win, cam);
 	if (died()) { return; }
+	if (svc.greyblock_mode()) { m_caution.debug_render(win, cam); }
 }
 
 fsm::StateFunction Hurtle::update_run() {
@@ -83,6 +88,7 @@ fsm::StateFunction Hurtle::update_sleep() {
 
 fsm::StateFunction Hurtle::update_turn() {
 	p_state.actual = HurtleState::turn;
+	directions.desired.lock();
 	if (animation.complete()) {
 		m_turn.start();
 		request_flip();

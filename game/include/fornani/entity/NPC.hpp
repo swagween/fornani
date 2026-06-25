@@ -72,6 +72,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	void set_invisible(bool to = true) { to ? m_state.set(NPCState::invisible) : m_state.reset(NPCState::invisible); }
 	void set_special_animation(int which);
 	void start_busy_timer() { m_busy_timer.start(); }
+	void use_portal(world::Map& map);
 
 	/* animation */
 	fsm::StateFunction state_function{[this]() { return this->update_idle(); }};
@@ -122,6 +123,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	util::BitFlags<NPCState> m_state{};
 	util::Circuit m_current_conversation;
 	util::Cooldown m_busy_timer{};
+	util::Cooldown m_disappear;
 	std::deque<int> conversations{};
 	Animatable m_indicator;
 	sf::Vector2f m_offset{};

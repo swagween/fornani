@@ -69,7 +69,7 @@ class Layer {
 	Grid grid;
 
   private:
-	void generate_textures(sf::Texture const& tex);
+	void generate_textures(sf::Texture const& tex, bool day_night_shift);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg = false, bool day_night_shift = false) const;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, LightShader& shader, Palette& palette, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg = false, bool day_night_shift = false) const;
 	std::uint8_t m_render_order{};

@@ -28,6 +28,7 @@ class Shape {
 	bool SAT(Shape const& other);
 	bool circle_SAT(sf::CircleShape const& circle) const;
 	sf::Vector2f circle_SAT_MTV(sf::CircleShape const& circle) const;
+	sf::Vector2f compute_mtv(sf::Vector2f test);
 	bool overlaps(Shape const& other) const;
 	bool overlaps(sf::FloatRect const& other) const;
 	bool overlaps(sf::Vector2f point) const;

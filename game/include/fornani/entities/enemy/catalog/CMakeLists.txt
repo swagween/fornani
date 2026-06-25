@@ -18,6 +18,7 @@ nani_add_headers(
         Junker.hpp
         Junkfly.hpp
         Lymphocyte.hpp
+        Macrophage.hpp
         Mastiff.hpp
         Meatsquash.hpp
         Minion.hpp

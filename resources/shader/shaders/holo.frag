@@ -94,7 +94,7 @@ void main()
     }
 
     // -------------------------------------------------
-    // subtle scanline intensity
+    // scanline intensity
     // -------------------------------------------------
     float scanIntensity =
         (stepVal < 1.0) ? 0.92 :
@@ -102,6 +102,21 @@ void main()
                           1.08;
 
     color.rgb *= scanIntensity;
+
+
+    // -------------------------------------------------
+    // white noise
+    // -------------------------------------------------
+    float noiseTime = floor(u_time * 10.0);
+    float seed = hash(noiseTime);
+    float noise =
+    hash(
+        pixelCoord.x +
+        pixelCoord.y * 1024.0 +
+        seed * 10000.0
+    );
+    float noiseIntensity = mix(0.97, 1.03, noise);
+    color.rgb *= noiseIntensity;
 
     // -------------------------------------------------
     // output

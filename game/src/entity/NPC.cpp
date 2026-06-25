@@ -12,7 +12,7 @@ constexpr float default_walk_speed_v = 0.8f;
 
 NPC::NPC(automa::ServiceProvider& svc, dj::Json const& in)
 	: Entity(svc, in, "npcs"), Mobile(svc, "npc_" + std::string{in["label"].as_string()}, {svc.data.npc[in["label"].as_string()]["sprite_dimensions"][0].as<int>(), svc.data.npc[in["label"].as_string()]["sprite_dimensions"][1].as<int>()}),
-	  m_label(in["label"].as_string()), m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[in["label"].as_string()]["id"].as<int>()}, m_current_conversation{1}, m_services{&svc} {
+	  m_label(in["label"].as_string()), m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[in["label"].as_string()]["id"].as<int>()}, m_current_conversation{1}, m_services{&svc}, m_disappear{100} {
 	unserialize(in);
 	repeatable = false;
 	copyable = false;
@@ -44,7 +44,7 @@ NPC::NPC(automa::ServiceProvider& svc, dj::Json const& in)
 NPC::NPC(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in)
 	: Entity(svc, in, "npcs"),
 	  Mobile(svc, map, "npc_" + std::string{in["label"].as_string()}, {svc.data.npc[in["label"].as_string()]["sprite_dimensions"][0].as<int>(), svc.data.npc[in["label"].as_string()]["sprite_dimensions"][1].as<int>()}),
-	  m_label(in["label"].as_string()), m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[in["label"].as_string()]["id"].as<int>()}, m_current_conversation{1}, m_services{&svc} {
+	  m_label(in["label"].as_string()), m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[in["label"].as_string()]["id"].as<int>()}, m_current_conversation{1}, m_services{&svc}, m_disappear{100} {
 	unserialize(in);
 	repeatable = false;
 	copyable = false;
@@ -58,14 +58,10 @@ NPC::NPC(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in)
 	set_position_from_scaled(sf::Vector2f{in["position"][0].as<float>(), in["position"][1].as<float>()});
 	auto push = true;
 	auto fail_tag = std::string{};
-	if (in["contingencies"].is_array()) {
-		for (auto const& contingency : in["contingencies"].as_array()) {
-			auto cont = QuestContingency{contingency};
-			if (!svc.quest_table.are_contingencies_met({cont})) {
-				hide();
-				fail_tag = contingency["tag"].as_string();
-				NANI_LOG_DEBUG(Entity::m_logger, "NPC did not meet contingency for quest {}.", fail_tag);
-			}
+	if (p_contingencies) {
+		if (!svc.quest_table.are_contingencies_met(*p_contingencies)) {
+			hide();
+			NANI_LOG_DEBUG(Entity::m_logger, "NPC did not meet contingencies for quests.");
 		}
 	}
 	auto npc_state = svc.quest_table.get_quest_progression("npc_dialogue", {m_label, in["id"].as<int>()});
@@ -246,6 +242,8 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 
 	m_indicator.tick();
 	m_busy_timer.update();
+	m_disappear.update();
+	if (m_disappear.is_almost_complete()) { hide(); }
 
 	context.console ? m_state.set(NPCState::talking) : m_state.reset(NPCState::talking);
 
@@ -402,6 +400,18 @@ void NPC::set_special_animation(int which) {
 	}
 }
 
+void NPC::use_portal(world::Map& map) {
+	if (is_hidden()) { return; }
+	for (auto portal : map.get_entities<Portal>()) {
+		if (std::abs(portal->bounding_box.get_center().x - get_collider().get_center().x) < 4.f) {
+			portal->open();
+			request(NPCAnimationState::inspect);
+			get_collider().physics.zero();
+			if (!m_disappear.running()) { m_disappear.start(); }
+		}
+	}
+}
+
 void NPC::walk() { request(NPCAnimationState::walk); }
 
 void NPC::set_position(sf::Vector2f pos) { get_collider().physics.position = pos; }
@@ -437,6 +447,7 @@ fsm::StateFunction NPC::update_walk() {
 	if (collider.has_value()) { get_collider().physics.acceleration.x = m_walk_speed * directions.actual.as_float(); }
 	if (change_state(NPCAnimationState::stagger, "stagger")) { return std::move(fsm::StateFunction{NPC_BIND(update_stagger)}); }
 	if (change_state(NPCAnimationState::busy, "busy")) { return std::move(fsm::StateFunction{NPC_BIND(update_busy)}); }
+	if (change_state(NPCAnimationState::inspect, "inspect")) { return std::move(fsm::StateFunction{NPC_BIND(update_inspect)}); }
 	if (!m_state.test(NPCState::random_walk)) {
 		if (change_state(NPCAnimationState::turn, "turn")) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
 	} else {
@@ -554,9 +565,11 @@ fsm::StateFunction NPC::update_special_2() {
 fsm::StateFunction NPC::update_special_3() {
 	p_state.actual = NPCAnimationState::special_3;
 	if (change_state(NPCAnimationState::stagger, "stagger")) { return std::move(fsm::StateFunction{NPC_BIND(update_stagger)}); }
-	if (change_state(NPCAnimationState::turn, "turn")) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
-	if (change_state(NPCAnimationState::idle, "idle")) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
-	if (change_state(NPCAnimationState::walk, "walk")) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
+	if (Mobile::animation.is_complete()) {
+		if (change_state(NPCAnimationState::turn, "turn")) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
+		if (change_state(NPCAnimationState::idle, "idle")) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
+		if (change_state(NPCAnimationState::walk, "walk")) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
+	}
 	return std::move(fsm::StateFunction{NPC_BIND(update_special_3)});
 }
 

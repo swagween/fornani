@@ -38,6 +38,7 @@ EditorApplication::EditorApplication(char** argv) : m_finder{argv}, m_services(a
 	assert(!user_data.is_null());
 	m_services.finder.paths.region = user_data["region"] ? user_data["region"].as_string() : "config";
 	m_services.finder.paths.room_name = user_data["room"] ? user_data["room"].as_string() : "new_file.json";
+	m_services.editor_settings.save_file = user_data["file"].as<int>();
 	m_state = std::make_unique<Editor>(m_services, editor_context);
 	m_current_state = EditorStateType::editor;
 }
@@ -71,6 +72,7 @@ void EditorApplication::run(char** argv) {
 void EditorApplication::shutdown() {
 	user_data["region"] = m_services.finder.paths.region;
 	user_data["room"] = m_services.finder.paths.room_name;
+	user_data["file"] = m_services.editor_settings.save_file;
 	if (!user_data.to_file((m_services.finder.paths.editor / "data" / "config" / "user.json").string().c_str())) { NANI_LOG_WARN(m_logger, "Failed to log user data."); }
 }
 

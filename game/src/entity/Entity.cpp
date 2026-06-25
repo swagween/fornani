@@ -48,6 +48,36 @@ void Entity::expose() {
 	ImGui::InputInt("Width", &w);
 	ImGui::InputInt("Height", &h);
 	set_grid_dimensions(sf::Vector2i{w, h});
+	ImGui::Text("Quest Contingencies");
+	static char tag_buffer[256] = "";
+	static int requirement{};
+	static bool strict{};
+	ImGui::InputTextWithHint("Tag", "Quest Tag", tag_buffer, IM_ARRAYSIZE(tag_buffer));
+	ImGui::InputInt("Requirement", &requirement);
+	ImGui::Checkbox("Strict?", &strict);
+	if (ImGui::Button("Add Contingency")) {
+		auto ct = QuestContingency{tag_buffer, requirement, strict};
+		if (!p_contingencies) {
+			p_contingencies.emplace({ct});
+		} else {
+			p_contingencies->add(ct);
+		}
+	}
+	ImGui::NewLine();
+	ImGui::Separator();
+	ImGui::Text("Current List:");
+	if (p_contingencies) {
+		for (auto [i, ct] : std::views::enumerate(p_contingencies->contingencies)) {
+			ImGui::PushID(i);
+			if (ImGui::SmallButton("x")) { ct.delete_me = true; }
+			ImGui::SameLine();
+			ImGui::Text("[%s, %i]", ct.tag.c_str(), ct.requirement);
+			ImGui::PopID();
+		}
+		std::erase_if(p_contingencies->contingencies, [](auto const& ct) { return ct.delete_me; });
+	} else {
+		ImGui::Text("<none>");
+	}
 }
 
 void Entity::set_position(sf::Vector2u to_position) { set_grid_position(to_position); }
