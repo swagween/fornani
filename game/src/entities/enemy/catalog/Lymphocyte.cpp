@@ -8,7 +8,7 @@ namespace fornani::enemy {
 
 constexpr auto lymphocyte_framerate = 20;
 
-Lymphocyte::Lymphocyte(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "lymphocyte"), m_services{&svc} {
+Lymphocyte::Lymphocyte(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "lymphocyte"), m_services{&svc}, m_map{&map} {
 	p_animations = {{"dormant", {0, 1, lymphocyte_framerate, -1}},
 					{"spawn", {0, 3, lymphocyte_framerate, 0}},
 					{"idle", {3, 4, lymphocyte_framerate * 2, -1}},
@@ -24,7 +24,7 @@ Lymphocyte::Lymphocyte(automa::ServiceProvider& svc, world::Map& map) : Enemy(sv
 }
 
 void Lymphocyte::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-
+	if (just_died()) { spawn_antibody(3); }
 	Enemy::update(svc, map, player);
 	if (physical.hostile_range.overlaps(player.hurtbox)) {
 		m_flags.set(LymphocyteFlags::alerted);
@@ -34,6 +34,7 @@ void Lymphocyte::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	if (!m_flags.test(LymphocyteFlags::alerted)) { return; }
 
 	flags.state.set(StateFlags::vulnerable);
+	if (died()) { return; }
 
 	if (is_alert()) {
 		face_player(player);
@@ -51,7 +52,7 @@ void Lymphocyte::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	}
 
 	if (directions.actual.lnr != directions.desired.lnr) { request(LymphocyteState::turn); }
-	if (is_alert() && svc.ticker.every_x_ticks(2000)) { request(LymphocyteState::make_antibody); }
+	if (is_alert() && svc.ticker.every_x_ticks(700)) { request(LymphocyteState::make_antibody); }
 
 	state_function = state_function();
 }
@@ -87,6 +88,7 @@ fsm::StateFunction Lymphocyte::update_idle() {
 
 fsm::StateFunction Lymphocyte::update_make_antibody() {
 	p_state.actual = LymphocyteState::make_antibody;
+	if (animation.get_frame_count() == 1 && animation.keyframe_started()) { spawn_antibody(1); }
 	if (animation.complete()) {
 		request(LymphocyteState::idle);
 		if (change_state(LymphocyteState::idle, get_params("idle"))) { return LYMPHOCYTE_BIND(update_idle); }
@@ -110,6 +112,13 @@ bool Lymphocyte::change_state(LymphocyteState next, anim::Parameters params) {
 		return true;
 	}
 	return false;
+}
+
+void Lymphocyte::spawn_antibody(int amount) {
+	for (int i = 0; i < amount; ++i) {
+		auto variant = random::percent_chance(20) ? 1 : 0;
+		m_map->spawn_enemy(37, get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 8.f, 0.f}, variant, true, false);
+	}
 }
 
 } // namespace fornani::enemy

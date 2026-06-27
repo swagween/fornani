@@ -101,7 +101,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 	get_collider().set_exclusion_target(shape::ColliderTrait::secondary);
 	get_collider().set_resolution_exclusion_target(shape::ColliderTrait::player);
-	get_collider().set_soft_target(shape::ColliderTrait::enemy);
+	if (!in_general["no_soft_collision"].as_bool()) { get_collider().set_soft_target(shape::ColliderTrait::enemy); }
 	if (get_collider().has_attribute(shape::ColliderAttributes::sturdy)) { get_collider().set_exclusion_target(shape::ColliderTrait::enemy); }
 
 	if (in_general["secondary_collider"].as_bool()) {
@@ -202,15 +202,12 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	m_health_bar.update(health.get_normalized(), get_collider().get_top() + sf::Vector2f{-24.f, -32.f});
 	player.has_item_equipped("magnifying_glass") && !flags.general.test(GeneralFlags::boss) ? flags.state.set(StateFlags::health_exposed) : flags.state.reset(StateFlags::health_exposed);
 	auto flash_rate = 32;
-	if (!flags.general.test(GeneralFlags::custom_channels)) {
-		set_channel(EnemyChannel::standard);
-	} else {
-		set_channel(m_custom_channel);
-	}
+	if (!flags.general.test(GeneralFlags::custom_channels)) { set_channel(EnemyChannel::standard); }
 	if (flags.general.test(GeneralFlags::has_invincible_channel)) {
 		flags.state.test(StateFlags::vulnerable) || flags.state.test(StateFlags::pre_battle_invincibility) ? set_channel(EnemyChannel::standard) : set_channel(EnemyChannel::invincible);
 	}
 	if (hurt_effect.running()) { set_channel((hurt_effect.get() / flash_rate) % 2 == 0 ? EnemyChannel::hurt_1 : EnemyChannel::hurt_2); }
+	if (flags.general.test(GeneralFlags::custom_channels)) { set_channel(m_custom_channel); }
 
 	if (hurt_effect.running() && !flags.state.test(StateFlags::no_shake)) { shake(); }
 	hurt_effect.update();

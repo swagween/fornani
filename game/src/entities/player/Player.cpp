@@ -169,6 +169,7 @@ void Player::update(world::Map& map) {
 	set_flag(PlayerFlags::in_front_of_door, false);
 	m_death_cooldown.update();
 	cooldowns.suffocate.update();
+	cooldowns.stun_immunity.update();
 
 	if (!collider.has_value()) { return; }
 
@@ -188,6 +189,7 @@ void Player::update(world::Map& map) {
 	if (cooldowns.stun.is_almost_complete()) {
 		get_collider().set_flag(shape::ColliderFlags::no_physics, false);
 		set_flag(PlayerFlags::stunned, false);
+		cooldowns.stun_immunity.start();
 		controller.unrestrict();
 	}
 	cooldowns.stun.update();
@@ -312,6 +314,10 @@ void Player::update(world::Map& map) {
 		if (!had_special_death()) { m_services->soundboard.play_step(val, map.get_style_id(), true); }
 	}
 	get_collider().flags.state.reset(shape::State::just_landed);
+
+	// materials
+	get_collider().set_flag(shape::ColliderFlags::in_goo, has_flag_set(PlayerFlags::in_goo));
+	reset_flag(PlayerFlags::in_goo);
 
 	// lighting
 	auto light_target = get_collider().get_center() + sf::Vector2f{controller.direction.as_float() * light_offset_v, 0.f};
@@ -698,6 +704,8 @@ auto Player::get_item_count(std::string_view tag) -> int {
 
 bool Player::is_intangible() const { return controller.is_dashing() && has_item_equipped("carises_soul"); }
 
+auto Player::can_be_stunned() const -> bool { return !is_stunned() && !cooldowns.stun_immunity.running(); }
+
 void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	sf::Vector2f offset{};
 	offset.x = centered ? get_collider().dimensions.x * 0.5f : 0.f;
@@ -815,7 +823,7 @@ void Player::hurt(float amount, bool force) {
 	if (is_intangible()) { return; }
 	if (!health.invincible() || force) {
 		m_hurt_cooldown.start();
-		health.inflict(amount, force, !is_stunned());
+		health.inflict(amount, force);
 		health_indicator.add(-amount);
 		get_collider().physics.velocity.y = 0.0f;
 		get_collider().physics.acceleration.y += -physics_stats.hurt_acc;
@@ -904,14 +912,15 @@ void Player::sync_antennae() {
 }
 
 void Player::stun(float multiplier) {
-	set_flag(PlayerFlags::stunned);
+	if (is_stunned() || cooldowns.stun_immunity.running()) { return; }
 	cooldowns.stun.set_and_start(std::round(static_cast<float>(m_attributes.stun_time) * multiplier));
 	m_services->soundboard.play_sound("stun");
 	shake_sprite();
+	set_flag(PlayerFlags::stunned);
 }
 
 void Player::hurt_and_stun(float multiplier) {
-	if (is_stunned()) { return; }
+	if (is_stunned() || cooldowns.stun_immunity.running()) { return; }
 	stun(multiplier);
 	hurt(1.f, true);
 }

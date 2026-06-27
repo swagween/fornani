@@ -6,6 +6,7 @@
 #include <fornani/entities/enemy/boss/Miaag.hpp>
 #include <fornani/entities/enemy/boss/Minigus.hpp>
 #include <fornani/entities/enemy/boss/Nimbus.hpp>
+#include <fornani/entities/enemy/catalog/Antibody.hpp>
 #include <fornani/entities/enemy/catalog/Archer.hpp>
 #include <fornani/entities/enemy/catalog/Beamsprout.hpp>
 #include <fornani/entities/enemy/catalog/Beamstalk.hpp>
@@ -75,7 +76,8 @@ EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
 	EnemyRegistry::register_factory(33, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Thief>(svc, map); });
 	EnemyRegistry::register_factory(34, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Grappler>(svc, map); });
 	EnemyRegistry::register_factory(35, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Nimbus>(svc, map); });
-	EnemyRegistry::register_factory(36, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Macrophage>(svc, map); });
+	EnemyRegistry::register_factory(36, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Macrophage>(svc, map, p.variant); });
+	EnemyRegistry::register_factory(37, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Antibody>(svc, map, p.variant); });
 }
 
 void EnemyCatalog::update() {

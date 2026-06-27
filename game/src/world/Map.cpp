@@ -413,11 +413,12 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 		}
 	}
 
+	// enemy spawns
 	if (flags.state.test(LevelState::spawn_enemy)) {
 		for (auto& spawn : enemy_spawns) {
 			enemy_catalog.push_enemy(*m_services, *this, context, spawn.id, {spawn.variant, {-1, 0}, {}, true});
 			enemy_catalog.enemies.back()->intangible_start(64);
-			enemy_catalog.enemies.back()->set_position(spawn.pos);
+			enemy_catalog.enemies.back()->set_position(spawn.pos - enemy_catalog.enemies.back()->get_collider().get_local_center());
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 			if (spawn.effect) { spawn_effect(svc, "small_flash", enemy_catalog.enemies.back()->get_collider().get_center()); }
 		}

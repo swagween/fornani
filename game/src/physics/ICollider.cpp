@@ -33,6 +33,10 @@ void ICollider::update(automa::ServiceProvider& svc) {
 		physics.set_friction_componentwise(p_physics_properties.friction.componentWiseMul(p_physics_properties.water_friction));
 		physics.gravity = p_physics_properties.gravity * multiplier;
 	}
+	if (has_flag_set(ColliderFlags::in_goo)) {
+		physics.set_friction_componentwise(p_physics_properties.friction.componentWiseMul(p_physics_properties.water_friction));
+		physics.gravity = p_physics_properties.gravity * 0.1f;
+	}
 }
 
 void ICollider::handle_map_collision(world::Map& map) {}

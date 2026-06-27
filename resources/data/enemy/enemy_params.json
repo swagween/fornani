@@ -1367,10 +1367,10 @@
     "general": {
       "mobile": true,
       "gravity": false,
-      "map_collision": true,
+      "map_collision": false,
       "player_collision": false,
       "hurt_on_contact": true,
-      "uncrushable": false,
+      "uncrushable": true,
       "foreground": true,
       "rare_drops": false
     }
@@ -1713,7 +1713,52 @@
       "offset": [0, 0],
       "num_colliders": 1,
       "num_hurtboxes": 1,
-      "alert_range": [900.0, 900.0],
+      "alert_range": [800.0, 800.0],
+      "hostile_range": [800.0, 800.0],
+      "friction": 0.99,
+      "gravity": 1.0
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 0
+    },
+    "audio": {
+      "hit": 3
+    },
+    "attributes": {
+      "base_hp": 100,
+      "base_damage": 1.0,
+      "speed": 6.0,
+      "loot_multiplier": 2.0,
+      "drop_range": [10, 12],
+      "respawn_distance": 1,
+      "permadeath": false,
+      "team": 1
+    },
+    "general": {
+      "mobile": true,
+      "gravity": false,
+      "map_collision": false,
+      "player_collision": false,
+      "hurt_on_contact": false,
+      "uncrushable": true,
+      "foreground": true,
+      "sturdy": true,
+      "rare_drops": false
+    }
+  },
+  "antibody": {
+    "metadata": {
+      "id": 37,
+      "variant": "beast"
+    },
+    "physical": {
+      "dimensions": [36, 36],
+      "sprite_dimensions": [34, 34],
+      "offset": [0, 0],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [700.0, 700.0],
       "hostile_range": [400.0, 400.0],
       "friction": 0.99,
       "gravity": 0.0
@@ -1726,7 +1771,7 @@
       "hit": 3
     },
     "attributes": {
-      "base_hp": 100,
+      "base_hp": 1,
       "base_damage": 1.0,
       "speed": 6.0,
       "loot_multiplier": 0.1,
@@ -1740,10 +1785,12 @@
       "gravity": false,
       "map_collision": false,
       "player_collision": false,
-      "hurt_on_contact": true,
+      "hurt_on_contact": false,
       "uncrushable": true,
       "foreground": true,
-      "rare_drops": false
+      "rare_drops": false,
+      "no_soft_collision": true,
+      "sturdy": true
     }
   }
 }

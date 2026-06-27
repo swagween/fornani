@@ -25,12 +25,14 @@ class Lymphocyte final : public Enemy, public StateMachine<LymphocyteState> {
 
   private:
 	bool change_state(LymphocyteState next, anim::Parameters params);
+	void spawn_antibody(int amount);
 
   private:
 	components::SteeringBehavior m_steering{};
 	util::BitFlags<LymphocyteFlags> m_flags{};
 
 	automa::ServiceProvider* m_services;
+	world::Map* m_map;
 };
 
 } // namespace fornani::enemy

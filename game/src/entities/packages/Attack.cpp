@@ -27,8 +27,9 @@ bool Attack::hurt_player(player::Player& player, float damage, sf::Vector2f knoc
 	return false;
 }
 
-bool Attack::kill_player(player::Player& player, player::PlayerDeathType death) {
-	if (hit.within_bounds(player.hurtbox) && hit.active()) {
+bool Attack::kill_player(player::Player& player, player::PlayerDeathType death, bool center_only) {
+	auto triggered = center_only ? hit.within_bounds(player.hurtbox.get_center()) : hit.within_bounds(player.hurtbox);
+	if (triggered && hit.active()) {
 		player.set_death_type(death);
 		player.hurt(max_damage_v);
 		return true;

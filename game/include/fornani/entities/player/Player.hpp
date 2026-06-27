@@ -122,7 +122,8 @@ enum class PlayerFlags {
 	holding_item,
 	drank,
 	failed_to_drink,
-	boss_fight
+	boss_fight,
+	in_goo
 };
 enum class Triggers { hurt };
 
@@ -236,6 +237,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto get_luck() const -> float { return m_attributes.luck; }
 	[[nodiscard]] auto get_item_count(std::string_view tag) -> int;
 	[[nodiscard]] bool is_intangible() const;
+	[[nodiscard]] auto can_be_stunned() const -> bool;
 
 	void set_desired_direction(SimpleDirection to) { directions.desired = Direction{to}; }
 
@@ -325,6 +327,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 		util::Cooldown push{32};
 		util::Cooldown stun{128};
 		util::Cooldown suffocate{360};
+		util::Cooldown stun_immunity{400};
 	} cooldowns{};
 	Counters counters{};
 	std::vector<sf::Vector2f> accumulated_forces{};

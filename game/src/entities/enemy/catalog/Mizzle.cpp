@@ -25,7 +25,7 @@ void Mizzle::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 
 	if (is_alert()) {
 		face_player(player);
-		m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center() + sf::Vector2f{0.f, -8.f}, 0.00006f);
+		m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center() + sf::Vector2f{0.f, -8.f}, 0.0006f);
 	} else {
 		face_movement();
 		m_steering.smooth_random_walk(Enemy::get_collider().physics, 0.005f, 64.f);

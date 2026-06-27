@@ -555,6 +555,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::SliderFloat("Antenna Force", &player.physics_stats.antenna_force, 0.1f, 3.f);
 								ImGui::SliderFloat("Antenna Friction", &player.physics_stats.antenna_friction, 0.8f, 1.f);
 								ImGui::Separator();
+								ImGui::Text("Stunned? %s", player.is_stunned() ? "Yes" : "No");
 								if (ImGui::Button("Stun")) { player.stun(); }
 								if (ImGui::Button("Hurt and Stun")) { player.hurt_and_stun(); }
 								ImGui::Separator();

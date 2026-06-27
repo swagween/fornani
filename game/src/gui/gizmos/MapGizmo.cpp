@@ -72,23 +72,23 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	if (m_path.get_step() == 2 && m_path.get_section() == 0 && m_chains.empty()) {
 		// bottom
 		m_chains.push_back(
-			std::make_unique<vfx::Chain>(svc, svc.assets.get_texture("map_chain"), sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + sf::Vector2f{-60.f, m_chain_offsets.at(0).y}, 14, false, 4.f));
-		m_chains.back()->set_texture_rect(sf::IntRect{{0, 39}, {26, 32}});
+			std::make_unique<vfx::Chain>(svc, "map_chain", sf::Vector2i{26, 32}, sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + sf::Vector2f{-60.f, m_chain_offsets.at(0).y}, 14, false, 4.f));
+		if (m_chains.back()->sprite) { m_chains.back()->sprite->set_texture_rect(sf::IntRect{{0, 39}, {26, 32}}); }
 		m_chains.back()->flags.set(vfx::ChainFlags::ignore_player_collision);
 		// top
 		m_chains.push_back(
-			std::make_unique<vfx::Chain>(svc, svc.assets.get_texture("map_chain"), sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + sf::Vector2f{-60.f, m_chain_offsets.at(1).y}, 14, false, 4.f));
-		m_chains.back()->set_texture_rect(sf::IntRect{{0, 27}, {26, 12}});
+			std::make_unique<vfx::Chain>(svc, "map_chain", sf::Vector2i{26, 12}, sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + sf::Vector2f{-60.f, m_chain_offsets.at(1).y}, 14, false, 4.f));
+		if (m_chains.back()->sprite) { m_chains.back()->sprite->set_texture_rect(sf::IntRect{{0, 27}, {26, 12}}); }
 		m_chains.back()->flags.set(vfx::ChainFlags::ignore_player_collision);
 	}
 	if (m_path.get_step() == 3 && m_path.get_section() == 0 && m_chains.size() < 4) {
 		// left
-		m_chains.push_back(std::make_unique<vfx::Chain>(svc, svc.assets.get_texture("map_chain"), sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + m_chain_offsets.at(2), 6, false));
-		m_chains.back()->set_texture_rect(sf::IntRect{{}, {12, 28}});
+		m_chains.push_back(std::make_unique<vfx::Chain>(svc, "map_chain", sf::Vector2i{12, 28}, sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + m_chain_offsets.at(2), 6, false));
+		if (m_chains.back()->sprite) { m_chains.back()->sprite->set_texture_rect(sf::IntRect{{}, {12, 28}}); }
 		m_chains.back()->flags.set(vfx::ChainFlags::ignore_player_collision);
 		// right
-		m_chains.push_back(std::make_unique<vfx::Chain>(svc, svc.assets.get_texture("map_chain"), sparams, m_path.get_position() + m_path.get_dimensions() + m_placement + m_chain_offsets.at(3), 6, false));
-		m_chains.back()->set_texture_rect(sf::IntRect{{12, 0}, {12, 28}});
+		m_chains.push_back(std::make_unique<vfx::Chain>(svc, "map_chain", sf::Vector2i{12, 28}, sparams, m_path.get_position() + m_path.get_dimensions() + m_placement + m_chain_offsets.at(3), 6, false));
+		if (m_chains.back()->sprite) { m_chains.back()->sprite->set_texture_rect(sf::IntRect{{12, 0}, {12, 28}}); }
 		m_chains.back()->flags.set(vfx::ChainFlags::ignore_player_collision);
 	}
 

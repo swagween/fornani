@@ -1,10 +1,16 @@
 
+#include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/SpriteRotator.hpp>
 #include <fornani/utils/Constants.hpp>
 #include <fornani/utils/Math.hpp>
 #include <numbers>
 
 namespace fornani::vfx {
+
+void SpriteRotator::handle_rotation(Animatable& sprite, sf::Vector2f direction, AnimatableAxis axis, int num_angles, bool radial) {
+	handle_rotation(sprite.get_sprite(), direction, num_angles, radial);
+	axis == AnimatableAxis::channel ? sprite.set_channel(sprite_angle_index) : sprite.set_frame(sprite_angle_index);
+}
 
 void SpriteRotator::handle_rotation(sf::Sprite& sprite, sf::Vector2f direction, int num_angles, bool radial) {
 

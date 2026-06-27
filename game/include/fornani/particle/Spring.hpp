@@ -1,10 +1,11 @@
 
 #pragma once
 
+#include <fornani/components/CircleSensor.hpp>
+#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/RingBuffer.hpp>
 #include <optional>
-#include "fornani/components/CircleSensor.hpp"
-#include "fornani/components/PhysicsComponent.hpp"
 
 namespace fornani::vfx {
 struct SpringParameters {
@@ -31,15 +32,23 @@ class Spring {
 	void set_rest_length(float point);
 	void set_force(float force);
 	void lock() { locked = true; };
+	void set_channel(int to) { m_channel = to; }
+	sf::Vector2f get_bob() const { return bob; };
+	sf::Vector2f get_anchor() const { return anchor; };
 	sf::Vector2f& get_bob();
 	sf::Vector2f& get_anchor();
 	sf::Vector2f get_rope(int index);
 	SpringParameters& get_params() { return params; }
+	void fade(int time);
 	components::CircleSensor sensor{8.f};
 	std::optional<Spring*> cousin{};
+
+	[[nodiscard]] auto get_fade() -> util::Cooldown& { return m_fade; }
 	[[nodiscard]] auto is_locked() const -> bool { return locked; }
+	[[nodiscard]] auto get_channel() const -> int { return m_channel; }
 	[[nodiscard]] auto get_equilibrium_point() const -> float { return params.grav / params.spring_constant; }
 	[[nodiscard]] auto get_average_bob_position() const -> sf::Vector2f { return m_bob_positions.average(); }
+	[[nodiscard]] auto get_direction_vector() const -> sf::Vector2f;
 
 	int num_links{8};
 
@@ -58,6 +67,8 @@ class Spring {
 	sf::Vector2f coil{};
 	float spring_max{64.f};
 	bool locked{};
+	int m_channel{};
+	util::Cooldown m_fade;
 
 	SpringParameters params{};
 

@@ -8,13 +8,14 @@
 
 namespace fornani::enemy {
 
+enum class MacrophageVariant { monocyte, epithelioid };
 enum class MacrophageState { idle };
-enum class MacrophageFlags { caught_player, released_player };
+enum class MacrophageFlags { caught_player, swallowed_player, released_player, broken };
 
 class Macrophage final : public Enemy, public StateMachine<MacrophageState> {
 
   public:
-	Macrophage(automa::ServiceProvider& svc, world::Map& map);
+	Macrophage(automa::ServiceProvider& svc, world::Map& map, int variant);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 
@@ -25,6 +26,7 @@ class Macrophage final : public Enemy, public StateMachine<MacrophageState> {
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;
 
+	MacrophageVariant m_variant;
 	components::SteeringBehavior m_steering{};
 	util::BitFlags<MacrophageFlags> m_flags{};
 	entity::Attack m_grab{};

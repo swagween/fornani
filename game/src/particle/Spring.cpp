@@ -5,7 +5,7 @@
 
 namespace fornani::vfx {
 
-Spring::Spring(SpringParameters params) : params(params), m_bob_positions{32} {
+Spring::Spring(SpringParameters params) : params(params), m_bob_positions{32}, m_fade{100} {
 	variables.bob_physics.set_constant_friction({params.dampen_factor, params.dampen_factor});
 	variables.bob_physics.maximum_velocity = {60.f, 60.f};
 	variables.anchor_physics.set_constant_friction({params.dampen_factor, params.dampen_factor});
@@ -13,7 +13,7 @@ Spring::Spring(SpringParameters params) : params(params), m_bob_positions{32} {
 	sensor.bounds.setOrigin({sensor.bounds.getRadius(), sensor.bounds.getRadius()});
 }
 
-Spring::Spring(SpringParameters params, sf::Vector2f anchor, sf::Vector2f bob) : anchor(anchor), bob(bob), m_bob_positions{32} {}
+Spring::Spring(SpringParameters params, sf::Vector2f anchor, sf::Vector2f bob) : anchor(anchor), bob(bob), m_bob_positions{32}, m_fade{100} {}
 
 void Spring::calculate() {
 	variables.spring_force = bob - anchor;
@@ -32,6 +32,7 @@ void Spring::calculate() {
 }
 
 void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2f external_force, bool loose, bool sag) {
+	m_fade.update();
 	variables.bob_physics.gravity = sag ? custom_grav : 0.f;
 	variables.anchor_physics.gravity = sag ? custom_grav : 0.f;
 	calculate();
@@ -47,6 +48,7 @@ void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2
 }
 
 void Spring::update_constrained(automa::ServiceProvider& svc, float custom_grav, sf::Vector2f external_force) {
+	m_fade.update();
 	// bob
 	variables.bob_physics.acceleration = {};
 	variables.bob_physics.apply_force(external_force);
@@ -145,5 +147,9 @@ sf::Vector2f Spring::get_rope(int index) {
 	ret = bob - ret * (float)index;
 	return ret;
 }
+
+void Spring::fade(int time) { m_fade.set_and_start(time); }
+
+auto Spring::get_direction_vector() const -> sf::Vector2f { return (get_anchor() - get_bob()).normalized(); }
 
 } // namespace fornani::vfx
