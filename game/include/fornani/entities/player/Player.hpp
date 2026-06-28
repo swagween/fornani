@@ -363,6 +363,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	std::optional<PlayerDeathType> m_death_type{};
 	std::optional<item::HeldItem> m_currently_held_item{};
 	std::optional<item::Headgear> m_headgear{};
+	std::optional<world::Map*> m_map;
 
 	[[nodiscard]] auto can_dash() const -> bool;
 	[[nodiscard]] auto can_omnidirectional_dash() const -> bool;

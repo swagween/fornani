@@ -14,6 +14,7 @@ EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFin
 	player_box.setOutlineThickness(-2);
 
 	if (!delegated) { create_map.emplace("npcs", &create_entity<NPC>); }
+	if (!delegated) { create_map.emplace("destructibles", &create_entity<Destructible>); }
 
 	create_map.emplace("beds", &create_entity<Bed>);
 	create_map.emplace("vines", &create_entity<Vine>);
@@ -31,7 +32,6 @@ EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFin
 	create_map.emplace("inspectables", &create_entity<Inspectable>);
 	create_map.emplace("ambient_props", &create_entity<AmbientProp>);
 	create_map.emplace("switch_blocks", &create_entity<SwitchBlock>);
-	create_map.emplace("destructibles", &create_entity<Destructible>);
 	create_map.emplace("switch_buttons", &create_entity<SwitchButton>);
 	create_map.emplace("cutscene_triggers", &create_entity<CutsceneTrigger>);
 
@@ -42,6 +42,7 @@ EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFin
 
 EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, world::Map& map, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) : EntitySet(svc, finder, metadata, room_name, true) {
 	registered_map.emplace("npcs", &create_registered_entity<NPC>);
+	registered_map.emplace("destructibles", &create_registered_entity<Destructible>);
 	load_and_register(svc, map, finder, metadata, room_name);
 	for (auto& ent : variables.entities) { ent->set_stable_id(map.room_id); }
 }

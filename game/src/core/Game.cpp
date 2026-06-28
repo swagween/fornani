@@ -278,6 +278,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("World Time: %s", services.world_clock.get_string().c_str());
 					ImGui::Text("Time of Day: %s", services.world_clock.tod_as_string(services.world_clock.get_time_of_day()));
 					ImGui::Text("Previous Time of Day: %s", services.world_clock.tod_as_string(services.world_clock.get_previous_time_of_day()));
+					ImGui::Text("World Clock Transition: %f", services.world_clock.get_transition());
 					ImGui::Text("World Clock RNG (weekly): %f", services.world_clock.get_rng(WorldClockInterval::week));
 					ImGui::Text("World Clock RNG (daily): %f", services.world_clock.get_rng(WorldClockInterval::day));
 					ImGui::Text("World Clock RNG (hourly): %f", services.world_clock.get_rng(WorldClockInterval::hour));

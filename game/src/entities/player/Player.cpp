@@ -123,6 +123,7 @@ void Player::unserialize(dj::Json const& in) {
 
 void Player::register_with_map(world::Map& map) {
 	Mobile::register_collider(map, player_dimensions_v);
+	m_map.emplace(&map);
 
 	auto result = dj::Json::from_file((m_services->finder.resource_path() + "/data/player/physics_params.json").c_str());
 	if (!result) { NANI_LOG_ERROR(m_logger, "Failed to load player physics params!"); }
@@ -158,10 +159,18 @@ void Player::register_with_map(world::Map& map) {
 }
 
 void Player::unregister_with_map() {
+	if (!owned_collider || !collider) {
+		NANI_LOG_ERROR(m_logger, "Tried to unregister a nonexistent collider!");
+		return;
+	}
+	if (m_map) {
+		m_map.value()->unregister_collider(owned_collider.value().get());
+		NANI_LOG_INFO(m_logger, "Player was unregistered with map.");
+	}
 	owned_collider.reset();
 	collider.reset();
 	antennae.clear();
-	NANI_LOG_INFO(m_logger, "Player was unregistered with map.");
+	NANI_LOG_INFO(m_logger, "Player's collider was deleted.");
 }
 
 void Player::update(world::Map& map) {
@@ -357,7 +366,7 @@ void Player::update(world::Map& map) {
 	auto sum = 0.f;
 	for (auto& force : accumulated_momentum) {
 		get_collider().physics.apply_force(force);
-		force = force.componentWiseMul({0.99f, 0.95f});
+		force = force.componentWiseMul({0.985f, 0.95f});
 		sum += force.lengthSquared();
 	}
 	if (controller.is(AbilityType::roll) || controller.is(AbilityType::dash)) { accumulated_momentum.clear(); }
@@ -1048,7 +1057,14 @@ void Player::use_item() {
 	}
 }
 
-EquipmentStatus Player::equip_item(int id) { return catalog.inventory.equip_item(id); }
+EquipmentStatus Player::equip_item(int id) {
+	auto ret = catalog.inventory.equip_item(id);
+	if (id == 56) {
+		ret == EquipmentStatus::equipped ? catalog.wardrobe.equip(ApparelType::hairstyle, 1) : catalog.wardrobe.unequip(ApparelType::hairstyle);
+		wardrobe_widget.update(*this);
+	}
+	return ret;
+}
 
 void Player::reset_flags() {
 	flags = {};

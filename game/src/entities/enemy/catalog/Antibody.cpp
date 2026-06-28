@@ -24,7 +24,7 @@ void Antibody::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	if (died()) { return; }
 	m_post_stun.update();
 
-	auto lower_bound = m_variant == AntibodyVariant::igg ? 8.f : 4.f;
+	auto lower_bound = m_variant == AntibodyVariant::igg ? 8.f : 6.f;
 	auto upper_bound = m_variant == AntibodyVariant::igg ? 48.f : 24.f;
 	set_framerate(static_cast<int>(std::lerp(lower_bound, upper_bound, std::clamp((player.get_collider().get_center() - get_collider().get_center()).length() / 260.f, 0.f, 1.f))));
 
@@ -32,7 +32,7 @@ void Antibody::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		m_variant == AntibodyVariant::igg ? player.stun(0.8f) : player.hurt_and_stun();
 		request(AntibodyState::stun);
 	}
-	if (is_alert() && !m_post_stun.running()) {
+	if ((is_alert() && !m_post_stun.running()) || !map.within_bounds(get_collider().get_center())) {
 		auto force = m_variant == AntibodyVariant::igg ? 0.02f : 0.025f;
 		m_steering.thrust_seek(get_collider().physics, player.get_collider().get_center(), ThrustParameters{force, .218f, .999, 40.f});
 	} else {

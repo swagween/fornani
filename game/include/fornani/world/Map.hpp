@@ -34,7 +34,6 @@
 #include <fornani/weapon/Projectile.hpp>
 #include <fornani/world/Breakable.hpp>
 #include <fornani/world/Checkpoint.hpp>
-#include <fornani/world/Destructible.hpp>
 #include <fornani/world/HazardMap.hpp>
 #include <fornani/world/Incinerite.hpp>
 #include <fornani/world/Layer.hpp>
@@ -126,9 +125,14 @@ class Map {
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc) const;
+
 	void register_collider(std::unique_ptr<shape::ICollider> collider);
 	void unregister_collider(shape::ICollider* collider);
+	shape::Collider* create_collider(sf::Vector2f dim);
+	shape::CircleCollider* create_collider(float radius);
+	void destroy_collider(shape::ICollider* collider);
 	void refresh_collider_chunks(Register<int> const& old_chunks, Register<int> const& new_chunks, shape::ICollider* ptr);
+
 	bool check_cell_collision(shape::Collider& collider, bool foreground = false);
 	bool check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	sf::Vector2i get_circle_collision_result(shape::CircleCollider& collider, bool collide_with_platforms = true);
@@ -315,7 +319,6 @@ class Map {
 	std::vector<std::unique_ptr<Breakable>> breakables{};
 	std::vector<std::unique_ptr<Platform>> platforms{};
 	std::vector<std::unique_ptr<SwitchBlock>> switch_blocks{};
-	std::vector<std::unique_ptr<Destructible>> destructibles{};
 	std::vector<std::unique_ptr<Incinerite>> incinerite_blocks{};
 	std::vector<std::unique_ptr<entity::Chest>> chests{};
 	std::vector<std::unique_ptr<Pushable>> pushables{};

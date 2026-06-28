@@ -30,7 +30,9 @@
     "swapped": "Swapped equipped items.",
     "map_marker": "Map marker added to minimap.",
     "inspect_hint": "Press      to inspect.",
-    "shoot_hint": "Press      to shoot."
+    "shoot_hint": "Press      to shoot.",
+    "cannot_build": "You do not have the necessary ingredients to build this item.",
+    "already_have_max_item": "You already have the maximum amount of this item."
   },
   "locations": {
     "firstwind": "- Firstwind Airship - "

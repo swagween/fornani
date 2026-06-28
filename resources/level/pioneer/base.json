@@ -108,7 +108,8 @@
         "position": [
           19,
           17
-        ]
+        ],
+        "unlit": true
       }
     ],
     "inspectables": [

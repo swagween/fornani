@@ -1716,7 +1716,7 @@
       "alert_range": [800.0, 800.0],
       "hostile_range": [800.0, 800.0],
       "friction": 0.99,
-      "gravity": 1.0
+      "gravity": 3.0
     },
     "visual": {
       "effect_type": 0,

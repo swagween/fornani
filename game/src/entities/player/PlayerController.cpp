@@ -138,7 +138,8 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	auto jump_direction = right_walljump_collision ? Direction{LR::right} : left_walljump_collision ? Direction{LR::left} : direction;
 	if (svc.input_system.digital(input::DigitalAction::jump).triggered) {
 		if (player.can_jump()) {
-			if (consume_flag(PlayerControllerFlags::slide_jump)) { player.accumulated_momentum.push_back({player.get_collider().physics.velocity.x * 0.5f, 0.f}); }
+			auto multiplier = consume_flag(PlayerControllerFlags::super_slide) ? 0.55f : 0.25f;
+			if (consume_flag(PlayerControllerFlags::slide_jump)) { player.accumulated_momentum.push_back({player.get_collider().physics.velocity.x * multiplier, 0.f}); }
 			m_ability = std::make_unique<Jump>(svc, map, player.get_collider());
 		}
 		cooldowns.walljump_request.start();
@@ -157,6 +158,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 			m_ability = std::make_unique<Walljump>(svc, map, player.get_collider(), jump_direction, perfect);
 		}
 	}
+	if (!is_rolling() && !is_sliding()) { set_flag(PlayerControllerFlags::slide_jump, false); }
 	if (!is_wallsliding()) { svc.soundboard.flags.player.reset(audio::Player::wallslide); }
 	player.get_collider().set_flag(shape::ColliderFlags::left_walljump, false);
 	player.get_collider().set_flag(shape::ColliderFlags::right_walljump, false);

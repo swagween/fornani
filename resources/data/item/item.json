@@ -232,7 +232,8 @@
     "unique": true,
     "build": {
       "recipe": ["priorite", "pioneer_scrap", "magnet"],
-      "craft_price": 200
+      "craft_price": 200,
+      "lookup": 4
     }
   },
   {

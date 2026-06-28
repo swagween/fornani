@@ -175,7 +175,7 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 				// boost correction when too close to center
 				if (t < 0.7f) {
 					float boost = (1.f - t) * (1.f - t);
-					strength *= (1.f + boost * 6.0f);
+					strength *= (1.f + boost * 10.0f);
 				}
 
 				sf::Vector2f correction = (offset / radius) * strength;
@@ -199,7 +199,7 @@ void Chain::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 		if (flags.test(ChainFlags::broken) && link.get_fade().is_complete()) { continue; }
 		if (svc.greyblock_mode()) { link.render(win, cam); }
 		if (sprite) {
-			m_rotator.handle_rotation(*sprite, get_tangent(i), AnimatableAxis::frame, m_num_angles);
+			if (m_num_angles > 0) { m_rotator.handle_rotation(*sprite, get_tangent(i), AnimatableAxis::frame, m_num_angles); }
 			sprite->set_channel(link.get_channel());
 			auto pos = average ? link.get_average_bob_position() : link.get_bob();
 			sprite->set_position(link.get_average_bob_position() - cam);

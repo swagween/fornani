@@ -22,6 +22,7 @@ nani_add_headers(
         Random.hpp
         RichText.hpp
         RingBuffer.hpp
+        Shaker.hpp
         Shipment.hpp
         StateFlag.hpp
         StateFunction.hpp

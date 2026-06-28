@@ -21,7 +21,7 @@ void OrbDisplay::render(sf::RenderWindow& win, sf::Vector2f const pos) {
 	set_position(pos);
 	auto text_offset = sf::Vector2f{46.f, 4.f};
 	m_amount.setPosition(pos + text_offset);
-	m_amount.setFillColor(colors::pioneer_red);
+	m_displayed_amount < 0.f ? m_amount.setFillColor(colors::blue) : m_amount.setFillColor(colors::pioneer_red);
 	win.draw(m_amount);
 	win.draw(*this);
 }

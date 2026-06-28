@@ -267,10 +267,23 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		m_is_open = true;
 		static int id{};
 		ImGui::InputInt("ID", &id);
+		static bool unlit{};
+		static bool inverse{};
+		static bool enemy_clear{};
+
+		ImGui::Checkbox("Unlit", &unlit);
+		ImGui::Checkbox("Inverse", &inverse);
+		ImGui::Checkbox("Enemy Clear", &enemy_clear);
+
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<fornani::Destructible>(svc, id);
+
+			auto attributes = fornani::util::BitFlags<fornani::DestructibleAttributes>{};
+			if (unlit) { attributes.set(fornani::DestructibleAttributes::unlit); }
+			if (inverse) { attributes.set(fornani::DestructibleAttributes::inverse); }
+			if (enemy_clear) { attributes.set(fornani::DestructibleAttributes::enemy_clear); }
+			tool->current_entity = std::make_unique<fornani::Destructible>(svc, id, attributes);
 			ImGui::CloseCurrentPopup();
 		}
 		close_popup();

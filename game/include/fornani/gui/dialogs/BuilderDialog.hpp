@@ -13,6 +13,7 @@
 #include <fornani/shader/FlatShader.hpp>
 #include <fornani/shader/HoloShader.hpp>
 #include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/Shaker.hpp>
 
 namespace fornani::gui {
 
@@ -29,20 +30,27 @@ class BuilderDialog final : public IDialog {
   private:
 	void build_item(automa::ServiceProvider& svc, player::Player& player, dj::Json const& current_item);
 	void switch_zones(int modulation);
+	void refresh_stage(automa::ServiceProvider& svc);
 	void debug();
 
   private:
 	std::vector<std::string> m_docket{};
 	std::vector<std::string> m_player_items{};
+	std::vector<std::string> m_staged_items{};
 	std::string m_docket_item{};
 	Animatable m_item_sprite;
 	Animatable m_unknown;
 	Animatable m_question_mark;
+	Drawable m_dot;
+	Drawable m_press;
+	Drawable m_backdrop;
+	Drawable m_mask;
+	Drawable m_overlay;
 	std::vector<NumberDisplay> m_number_displays{};
 	Animatable m_turntable;
+	Shaker m_shaker;
 
 	FlatShader m_flat_shader;
-	HoloShader m_holo_shader;
 
 	ZoneCollection<BuilderZoneType> m_zones;
 

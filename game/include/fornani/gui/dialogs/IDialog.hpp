@@ -12,6 +12,7 @@
 #include <fornani/gui/OrbDisplay.hpp>
 #include <fornani/particle/Effect.hpp>
 #include <fornani/particle/Emitter.hpp>
+#include <fornani/shader/HoloShader.hpp>
 #include <fornani/shader/Palette.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Cooldown.hpp>
@@ -69,7 +70,11 @@ class IDialog : public UniquePolymorphic {
 	Drawable p_vendor_portrait;
 	MenuTheme p_theme;
 
+	HoloShader p_holo_shader;
+	sf::Vector2f p_position{};
+
 	OrbDisplay p_orb_display;
+	OrbDisplay p_price_display;
 	graphics::Indicator p_orb_indicator;
 
   private:

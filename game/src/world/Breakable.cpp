@@ -1,5 +1,4 @@
 
-#include <algorithm>
 #include <fornani/core/Debug.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/particle/Effect.hpp>
@@ -7,6 +6,7 @@
 #include <fornani/utils/Random.hpp>
 #include <fornani/world/Breakable.hpp>
 #include <fornani/world/Map.hpp>
+#include <algorithm>
 
 namespace fornani::world {
 

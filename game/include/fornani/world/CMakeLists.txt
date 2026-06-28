@@ -1,7 +1,6 @@
 nani_add_headers(
         Breakable.hpp
         Camera.hpp
-        Destructible.hpp
         Grid.hpp
         HazardMap.hpp
         Incinerite.hpp

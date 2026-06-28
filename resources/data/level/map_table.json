@@ -20,6 +20,18 @@
     },
     {
       "folder": "config",
+      "label": "collider_test.json",
+      "region": "junkyard",
+      "room_id": 99880
+    },
+    {
+      "folder": "config",
+      "label": "collider_test_2.json",
+      "region": "junkyard",
+      "room_id": 99881
+    },
+    {
+      "folder": "config",
       "label": "test_portals.json",
       "region": "toxic",
       "room_id": 6767672

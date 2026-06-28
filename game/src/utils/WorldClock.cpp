@@ -27,8 +27,10 @@ void WorldClock::update(automa::ServiceProvider& svc) {
 			if (is_twilight()) {
 				transition.start();
 				current_time_of_day.modulate(1);
+				NANI_LOG_DEBUG(m_logger, "changed to twilight.");
 			}
 			if (is_daytime() && change) {
+				NANI_LOG_DEBUG(m_logger, "changed to daytime.");
 				transition.start();
 				current_time_of_day.modulate(1);
 				increments.days.modulate(1);
@@ -36,6 +38,7 @@ void WorldClock::update(automa::ServiceProvider& svc) {
 				if (increments.days.cycled()) { rng.weekly = random::random_range_float(0.f, 1.f); }
 			}
 			if (is_nighttime() && change) {
+				NANI_LOG_DEBUG(m_logger, "changed to nighttime.");
 				transition.start();
 				current_time_of_day.modulate(1);
 			}

@@ -12,7 +12,7 @@ namespace fornani::gui {
 
 IDialog::IDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id, std::string const& type)
 	: m_vendor_id{vendor_id}, m_intro{300}, m_fade_in{120}, m_outro{100}, p_vendor_portrait{svc, "character_portraits"}, p_palette{"pioneer", svc.finder}, p_selector_sprite{svc, "vendor_gizmo"}, p_theme{svc.data.menu_themes["mini_white"]},
-	  p_orb_indicator{svc, graphics::IndicatorType::orb}, p_orb_display{svc} {
+	  p_orb_indicator{svc, graphics::IndicatorType::orb}, p_orb_display{svc}, p_price_display{svc}, p_holo_shader{svc.finder} {
 	m_intro.start();
 	p_vendor_portrait.set_texture_rect(sf::IntRect{{vendor_id * 64, 0}, {64, 128}});
 	// background color
@@ -35,8 +35,9 @@ IDialog::IDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& 
 void IDialog::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, SceneContext& context) {
 	if (m_helptext) { m_helptext->update(); }
 	if (fade_logic(svc, context.transition)) { m_flags.set(IDialogFlags::early_tick_return); }
+	p_price_display.update(p_sale_price, svc.ticker.dt.count());
 	p_orb_display.update(player.wallet.get_balance(), svc.ticker.dt.count());
-	p_orb_indicator.update(svc, p_orb_display.get_window_position() + sf::Vector2f{p_orb_display.get_f_dimensions()} * 0.5f);
+	p_orb_indicator.update(svc, p_orb_display.get_window_position() + sf::Vector2f{32.f, 0.f});
 	std::erase_if(m_emitters, [](auto const& e) { return e.done(); });
 	std::erase_if(m_effects, [](auto& e) { return e.done(); });
 	for (auto& e : m_emitters) { e.update(svc, map); }

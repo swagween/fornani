@@ -127,7 +127,7 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	// effects
 	if (m_cooldowns.interlude.running()) {
 		if (m_cooldowns.interlude.get() % 32 == 0) {
-			for (auto& destructible : map.destructibles) {
+			for (auto destructible : map.get_entities<Destructible>()) {
 				if (destructible->get_id() == miaag_floor_destructibles) {
 					map.effects.push_back(entity::Effect(*m_services, "puff", destructible->get_global_center(), {0.f, -0.2f}, 2));
 					map.effects.back().random_start();

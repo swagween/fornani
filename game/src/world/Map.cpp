@@ -59,7 +59,6 @@
 #include <fornani\weapon\Weapon.hpp>
 #include <fornani\world\Breakable.hpp>
 #include <fornani\world\Checkpoint.hpp>
-#include <fornani\world\Destructible.hpp>
 #include <fornani\world\Incinerite.hpp>
 #include <fornani\world\Layer.hpp>
 #include <fornani\world\Platform.hpp>
@@ -209,7 +208,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 	if (m_entities) {
 		for (auto [k, i] : std::views::enumerate(get_entities<Inspectable>())) { i->set_index(k); }
 	}
-	for (auto& entry : entities["destructibles"].as_array()) { destructibles.push_back(std::make_unique<Destructible>(svc, *this, entry, m_biome.get_id())); }
+	// for (auto& entry : entities["destructibles"].as_array()) { destructibles.push_back(std::make_unique<Destructible>(svc, *this, entry, m_biome.get_id())); }
 
 	for (auto& entry : entities["enemies"].as_array()) {
 		int id{};
@@ -468,7 +467,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 		for (auto& platform : platforms) { platform->on_hit(svc, *this, proj); }
 		for (auto& breakable : breakables) { breakable->on_hit(svc, *this, proj); }
 		for (auto& pushable : pushables) { pushable->on_hit(svc, *this, proj); }
-		for (auto& destructible : destructibles) { destructible->on_hit(svc, *this, proj); }
+		for (auto destructible : get_entities<Destructible>()) { destructible->on_hit(svc, *this, proj); }
 		for (auto& block : switch_blocks) { block->on_hit(svc, *this, proj); }
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj, *player); }
 		for (auto& incinerite : incinerite_blocks) { incinerite->on_hit(svc, *this, proj); }
@@ -522,7 +521,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	for (auto& spawner : spawners) { spawner.update(svc, *this); }
 	for (auto& switch_block : switch_blocks) { switch_block->update(svc, *this, *player); }
 	for (auto& switch_button : switch_buttons) { switch_button->update(svc, *this, *player); }
-	for (auto& destructible : destructibles) { destructible->update(svc, *this, *player); }
+	// for (auto& destructible : destructibles) { destructible->update(svc, *this, *player); }
 	for (auto& checkpoint : checkpoints) { checkpoint.update(svc, *this, *player); }
 	for (auto& bed : beds) { bed.update(svc, *this, context, *player); }
 	for (auto& breakable : breakables) { breakable->update(svc, *this, *player); }
@@ -651,7 +650,8 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		}
 	}
 
-	for (auto& destructible : destructibles) { destructible->render(svc, win, cam); }
+	// for (auto& destructible : destructibles) { destructible->render(svc, win, cam); }
+	for (auto d : get_entities<Destructible>()) { d->is_unlit() ? d->render(win, cam, 1.f) : d->render(m_entity_texture, cam); }
 
 	if (m_entities) {
 		for (auto v : get_entities<Vine>()) {
@@ -937,16 +937,43 @@ void Map::unregister_collider(shape::ICollider* collider) {
 	for (auto& chunk : m_chunks) { chunk.erase(std::remove(chunk.begin(), chunk.end(), collider), chunk.end()); }
 }
 
+shape::Collider* Map::create_collider(sf::Vector2f dim) {
+	auto ptr = std::make_unique<shape::Collider>(dim);
+	auto raw = ptr.get();
+	m_colliders.push_back(std::move(ptr));
+	return raw;
+}
+
+shape::CircleCollider* Map::create_collider(float radius) {
+	auto ptr = std::make_unique<shape::CircleCollider>(radius);
+	auto raw = ptr.get();
+	m_colliders.push_back(std::move(ptr));
+	return raw;
+}
+
+void Map::destroy_collider(shape::ICollider* collider) {
+	// remove from chunks first
+	for (auto& chunk : m_chunks) { std::erase(chunk, collider); }
+	// destroy ownership
+	std::erase_if(m_colliders, [&](std::unique_ptr<shape::ICollider> const& ptr) { return ptr.get() == collider; });
+}
+
 void Map::refresh_collider_chunks(Register<int> const& old_chunks, Register<int> const& new_chunks, shape::ICollider* ptr) {
-	for (auto chunk : old_chunks) {
+	for (int chunk : old_chunks) {
 		if (!new_chunks.contains(chunk)) {
-			auto& bucket = m_chunks[chunk];
-			bucket.erase(std::remove(bucket.begin(), bucket.end(), ptr), bucket.end());
+			if (chunk < m_chunks.size()) {
+				auto& bucket = m_chunks[chunk];
+				bucket.erase(std::remove(bucket.begin(), bucket.end(), ptr), bucket.end());
+			}
 		}
 	}
 
-	for (auto chunk : new_chunks) {
-		if (!old_chunks.contains(chunk)) { m_chunks[chunk].push_back(ptr); }
+	for (int chunk : new_chunks) {
+		if (!old_chunks.contains(chunk)) {
+			auto& bucket = m_chunks[chunk];
+
+			if (std::find(bucket.begin(), bucket.end(), ptr) == bucket.end()) bucket.push_back(ptr);
+		}
 	}
 }
 
@@ -1055,7 +1082,7 @@ void Map::clear() {
 	platforms.clear();
 	breakables.clear();
 	pushables.clear();
-	destructibles.clear();
+	// destructibles.clear();
 	switch_blocks.clear();
 	switch_buttons.clear();
 	incinerite_blocks.clear();

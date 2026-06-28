@@ -52,7 +52,7 @@ class Chain {
 	float m_grav{1.f};
 	float m_radius{};
 	int m_num_collisions{};
-	int m_num_angles{3};
+	int m_num_angles{};
 	bool m_free{};
 };
 

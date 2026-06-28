@@ -8,6 +8,7 @@ nani_add_sources(
         Oscillator.cpp
         Random.cpp
         RectPath.cpp
+        Shaker.cpp
         Stopwatch.cpp
         Ticker.cpp
         WorldClock.cpp

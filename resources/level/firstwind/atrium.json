@@ -96,7 +96,8 @@
         "position": [
           10,
           84
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -109,7 +110,8 @@
         "position": [
           10,
           85
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -122,7 +124,8 @@
         "position": [
           14,
           76
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -135,7 +138,8 @@
         "position": [
           14,
           77
-        ]
+        ],
+        "unlit": false
       }
     ],
     "enemies": [

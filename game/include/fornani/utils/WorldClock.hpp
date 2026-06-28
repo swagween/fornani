@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/core/Common.hpp>
+#include <fornani/io/Logger.hpp>
 #include <fornani/utils/Circuit.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <cstdint>
@@ -72,6 +73,7 @@ class WorldClock {
 	util::Circuit current_time_of_day{4};
 	int rate{};
 	util::Cooldown transition{};
+	io::Logger m_logger{"World Clock"};
 };
 
 } // namespace fornani

@@ -60,7 +60,7 @@ seed_t get_vendor_seed() { return seeds.vendor; }
 seed_t get_test_seed() { return seeds.test; }
 
 void reset_vendor_seed() {
-	seeds.vendor = random_range(0u, std::numeric_limits<std::uint32_t>::max());
+	seeds.vendor = random_range(0u, std::numeric_limits<int>::max());
 	engine().seed(seeds.vendor);
 }
 
@@ -70,7 +70,7 @@ void set_vendor_seed(seed_t const to) {
 }
 
 void set_test_seed() {
-	seeds.test = random_range(0u, std::numeric_limits<std::uint32_t>::max());
+	seeds.test = random_range(0u, std::numeric_limits<int>::max());
 	engine().seed(seeds.test);
 }
 
