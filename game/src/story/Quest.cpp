@@ -43,9 +43,11 @@ Quest::Quest(dj::Json const& in) {
 	if (in["subquests"].is_array()) {
 		m_subquests = std::vector<Subquest>{};
 	} else {
-		m_subquests = {};
+		m_subquests.reset();
 	}
-	for (auto const& subquest : in["subquests"].as_array()) { m_subquests->push_back(Subquest{subquest["tag"].as_string(), subquest["id"].as<int>()}); }
+	if (m_subquests) {
+		for (auto const& subquest : in["subquests"].as_array()) { m_subquests->push_back(Subquest{subquest["tag"].as_string(), subquest["id"].as<int>()}); }
+	}
 }
 
 auto Quest::get_objectives() const -> std::string {

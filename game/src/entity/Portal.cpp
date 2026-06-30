@@ -141,6 +141,7 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 			}
 		} else if (player.controller.inspecting()) {
 			m_state.set(PortalState::activated);
+			player.get_collider().physics.acceleration.x = 0.f;
 		}
 	} else {
 		m_state.set(PortalState::ready);

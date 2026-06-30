@@ -366,7 +366,8 @@ void Player::update(world::Map& map) {
 	auto sum = 0.f;
 	for (auto& force : accumulated_momentum) {
 		get_collider().physics.apply_force(force);
-		force = force.componentWiseMul({0.985f, 0.95f});
+		auto fric = get_collider().grounded() ? 0.985f : 0.985f;
+		force = force.componentWiseMul({fric, 0.95f});
 		sum += force.lengthSquared();
 	}
 	if (controller.is(AbilityType::roll) || controller.is(AbilityType::dash)) { accumulated_momentum.clear(); }
@@ -919,6 +920,8 @@ void Player::sync_antennae() {
 		}
 	}
 }
+
+void Player::apply_impulse(sf::Vector2f impulse) { accumulated_momentum.push_back(impulse); }
 
 void Player::stun(float multiplier) {
 	if (is_stunned() || cooldowns.stun_immunity.running()) { return; }

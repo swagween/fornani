@@ -32,7 +32,8 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, SceneContext& co
 	flags.general.set(GeneralFlags::post_death_render);
 	flags.general.set(GeneralFlags::has_invincible_channel);
 
-	get_secondary_collider().set_dimensions({48.f, 36.f});
+	get_secondary_collider().set_attribute(shape::ColliderAttributes::no_collision);
+	get_secondary_collider().set_dimensions({40.f, 40.f});
 	m_minigun.center();
 	m_minigun.set_parameters(m_minigun.neutral);
 	flags.state.set(StateFlags::vulnerable);
@@ -42,9 +43,9 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, SceneContext& co
 	attacks.punch.hit.bounds.setRadius(32);
 	attacks.punch.origin = {-10.f, -26.f};
 
-	attacks.uppercut.sensor.bounds.setRadius(60);
+	attacks.uppercut.sensor.bounds.setRadius(68);
 	attacks.uppercut.sensor.drawable.setFillColor(colors::blue);
-	attacks.uppercut.hit.bounds.setRadius(32);
+	attacks.uppercut.hit.bounds.setRadius(38);
 	attacks.uppercut.origin = {-8.f, 36.f};
 
 	attacks.rush.sensor.bounds.setRadius(60);
@@ -130,8 +131,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		if (Enemy::animation.get_frame() == 30 && !cooldowns.player_punch.running()) {
 			attacks.punch.hit.activate();
 			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
-			if (attacks.punch.hurt_player(player, 1.f, {sign * 0.9f, -0.4f})) {
-				player.accumulated_forces.push_back({sign * 10.f, -4.f});
+			if (attacks.punch.hurt_player(player, 1.f, {sign * 0.2f, -0.4f})) {
 				attacks.punch.sensor.deactivate();
 				cooldowns.player_punch.start();
 			}
@@ -139,7 +139,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		if (Enemy::animation.get_frame() == 37 && !cooldowns.player_punch.running()) {
 			attacks.uppercut.hit.activate();
 			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
-			if (attacks.uppercut.hurt_player(player, 1.f, {sign * 0.8f, -0.9f})) {
+			if (attacks.uppercut.hurt_player(player, 1.f, {sign * 0.2f, -0.2f})) {
 				attacks.uppercut.sensor.deactivate();
 				cooldowns.player_punch.start();
 			}
@@ -148,7 +148,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
 			if ((sign == -1.f && Enemy::player_behind(player)) || (sign == 1.f && !Enemy::player_behind(player))) {
 				attacks.rush.hit.activate();
-				if (attacks.rush.hurt_player(player, 1.f, {sign * 1.2f, -0.3f})) {
+				if (attacks.rush.hurt_player(player, 1.f, {sign * 0.4f, -0.3f})) {
 					attacks.rush.sensor.deactivate();
 					cooldowns.player_punch.start();
 				}
@@ -174,11 +174,9 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	Boss::update(svc, map, player);
 
 	if (secondary_collider) {
-		get_secondary_collider().physics.position = Enemy::get_collider().physics.position;
-		get_secondary_collider().physics.position.y -= get_secondary_collider().dimensions.y;
-		get_secondary_collider().physics.position.x += Enemy::directions.actual.lnr == LNR::left ? 0 : Enemy::get_collider().dimensions.x - get_secondary_collider().dimensions.x;
-		get_secondary_collider().sync_components();
-		if (battle_mode() && player_collision()) { player.get_collider().handle_collider_collision(get_secondary_collider()); }
+		get_secondary_collider().set_position(Enemy::get_collider().physics.position +
+											  sf::Vector2f{Enemy::directions.actual.lnr == LNR::left ? 0 : Enemy::get_collider().dimensions.x - get_secondary_collider().dimensions.x, -get_secondary_collider().dimensions.y});
+		// if (battle_mode() && player_collision()) { player.get_collider().handle_collider_collision(get_secondary_collider()); }
 	}
 	distant_range.set_position(Enemy::get_collider().bounding_box.get_position() - (distant_range.get_dimensions() * 0.5f) + (Enemy::get_collider().dimensions * 0.5f));
 	player.get_collider().bounding_box.overlaps(distant_range) ? status.set(MinigusFlags::distant_range_activated) : status.reset(MinigusFlags::distant_range_activated);

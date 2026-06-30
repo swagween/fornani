@@ -91,6 +91,7 @@ void Destructible::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::P
 shape::Shape& Destructible::get_bounding_box() { return get_collider().bounding_box; }
 
 void Destructible::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
+	if (ignore_updates()) { return; }
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
 	Entity::render(win, cam, size);
 	if (m_editor) { return; }

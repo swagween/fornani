@@ -139,7 +139,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (svc.input_system.digital(input::DigitalAction::jump).triggered) {
 		if (player.can_jump()) {
 			auto multiplier = consume_flag(PlayerControllerFlags::super_slide) ? 0.55f : 0.25f;
-			if (consume_flag(PlayerControllerFlags::slide_jump)) { player.accumulated_momentum.push_back({player.get_collider().physics.velocity.x * multiplier, 0.f}); }
+			if (consume_flag(PlayerControllerFlags::slide_jump)) { player.apply_impulse({player.get_collider().physics.velocity.x * multiplier, 0.f}); }
 			m_ability = std::make_unique<Jump>(svc, map, player.get_collider());
 		}
 		cooldowns.walljump_request.start();

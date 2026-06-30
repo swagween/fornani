@@ -12,8 +12,10 @@ ResourceFinder::ResourceFinder(char** argv) {
 	auto root = fs::path{sago::getDataHome()};
 	paths.save = root / "fornani" / "save";
 	paths.config = root / "fornani" / "config";
+	paths.screenshots = root / "fornani" / "screenshots";
 	std::filesystem::create_directories(paths.save);
 	std::filesystem::create_directories(paths.config);
+	std::filesystem::create_directories(paths.screenshots);
 
 	paths.resources = find_directory(argv[0], fs::path{"resources"});
 	paths.editor = find_directory(argv[0], paths.resources / fs::path{"editor"});

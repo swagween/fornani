@@ -122,6 +122,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 			get_secondary_collider().set_attribute(shape::ColliderAttributes::sturdy);
 		}
 		if (get_collider().has_attribute(shape::ColliderAttributes::crusher)) { get_secondary_collider().set_attribute(shape::ColliderAttributes::crusher); }
+		get_secondary_collider().flags.general.set(shape::General::complex);
+		get_secondary_collider().clear_chunks();
 	}
 
 	if (in_treasure.is_object()) {

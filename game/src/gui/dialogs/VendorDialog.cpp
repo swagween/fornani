@@ -185,7 +185,9 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 					case 0:
 						if (is_buying() && player.wallet.get_balance() < p_sale_price) {
 							svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-							m_item_menu = {};
+							svc.soundboard.play_sound("error");
+							svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["insufficient_funds"].as_string());
+							m_item_menu.reset();
 							break;
 						}
 						destination_inventory.add_item(svc.data.item, item_lbl);

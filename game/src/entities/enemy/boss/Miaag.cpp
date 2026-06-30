@@ -44,6 +44,8 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (health.is_dead() && !m_flags.test(MiaagFlags::gone)) {
 		request(MiaagState::hurt);
 		if (battle_mode()) {
+			m_flags.reset(MiaagFlags::seek_player);
+			get_collider().physics.set_friction_componentwise({0.5f, 0.5f});
 			m_services->camera_controller.shake(10, 0.8f, 200, 20);
 			m_services->soundboard.flags.world.set(audio::World::vibration);
 			m_services->soundboard.flags.miaag.set(audio::Miaag::growl);

@@ -42,7 +42,8 @@
         "position": [
           12,
           19
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -55,7 +56,8 @@
         "position": [
           12,
           20
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -68,7 +70,8 @@
         "position": [
           12,
           21
-        ]
+        ],
+        "unlit": false
       }
     ],
     "enemies": [
@@ -106,6 +109,7 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
             "responses": [
               [
                 {

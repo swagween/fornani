@@ -105,7 +105,11 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics
 		sprite.setPosition({-cam.x * m_parallax, -cam.y});
 		if (obscuring()) { shifter.render(svc, win, sprite, svc.world_clock.as_trio(), alpha); }
 		if (reverse_obscuring()) { shifter.render(svc, win, sprite, svc.world_clock.as_trio(), revalpha); }
-		if (not_obscuring()) { shifter.render(svc, win, sprite, svc.world_clock.as_trio()); }
+		if (not_obscuring()) {
+			sprite.setScale(constants::f_scale_vec);
+			sprite.setPosition({-cam.x * m_parallax, -cam.y});
+			win.draw(sprite);
+		}
 	}
 }
 

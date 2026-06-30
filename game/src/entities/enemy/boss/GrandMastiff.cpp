@@ -49,12 +49,17 @@ void GrandMastiff::update(automa::ServiceProvider& svc, world::Map& map, player:
 
 	m_post_bite.update();
 	m_post_howl.update();
+	m_attack_timer.update();
 	m_demon_star.update(svc, map, *this);
 
 	face_player(player);
 	flags.state.set(StateFlags::vulnerable);
 
-	if (svc.ticker.every_x_ticks(600)) {
+	if (svc.ticker.every_second()) {
+		if (random::percent_chance(30)) { request(GrandMastiffState::run); }
+	}
+	if (m_attack_timer.is_complete()) {
+		m_attack_timer.start();
 		// choose a random attack
 		auto choice = random::random_range_float(0.f, 1.f);
 		if (choice < 0.7f) {
@@ -75,10 +80,6 @@ void GrandMastiff::update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 	m_bite.set_position(m_bite_target);
 	m_player_position = player.get_center();
-
-	if (svc.ticker.every_second()) {
-		if (random::percent_chance(30)) { request(GrandMastiffState::run); }
-	}
 
 	// hurt
 	if (flags.state.test(StateFlags::hurt)) {
@@ -122,8 +123,9 @@ fsm::StateFunction GrandMastiff::update_run() {
 	p_state.actual = GrandMastiffState::run;
 	auto speed = animation.get_frame_count() == 3 || animation.get_frame_count() == 4 ? attributes.speed : attributes.speed * 0.5f;
 	get_collider().physics.acceleration.x = directions.actual.as_float() * speed;
+	if (change_state(GrandMastiffState::growl, get_params("growl")) && get_collider().grounded()) { return GRAND_MASTIFF_BIND(update_growl); }
+	if (change_state(GrandMastiffState::howl, get_params("howl")) && get_collider().grounded()) { return GRAND_MASTIFF_BIND(update_howl); }
 	if (animation.is_complete()) {
-		if (change_state(GrandMastiffState::growl, get_params("growl")) && get_collider().grounded()) { return GRAND_MASTIFF_BIND(update_growl); }
 		if (change_state(GrandMastiffState::turn, get_params("turn"))) { return GRAND_MASTIFF_BIND(update_turn); }
 		request(GrandMastiffState::idle);
 		if (change_state(GrandMastiffState::idle, get_params("idle"))) { return GRAND_MASTIFF_BIND(update_idle); }

@@ -84,6 +84,7 @@ void Console::update(automa::ServiceProvider& svc) {
 			}
 			if (code.is_destroy_inspectable()) {
 				m_services->data.destroy_inspectable(code.value);
+				if (m_speaker_id) { m_services->data.destroy_inspectable(m_speaker_id->get()); }
 				processed = true;
 			}
 			if (code.is_input_hint()) {

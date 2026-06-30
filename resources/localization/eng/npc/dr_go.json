@@ -1,22 +1,4 @@
 {
-  "1": {
-    "responses": [[]],
-    "suite": [
-      [
-        {
-          "codes": [[3, 2, 16]],
-          "message": "Oh!"
-        },
-        {
-          "message": "I wasn't expecting a Kariba to stroll in here."
-        },
-        {
-          "codes": [[13, 16, 113]],
-          "message": "Are you sick?"
-        }
-      ]
-    ]
-  },
   "2": {
     "responses": [
       [
@@ -38,7 +20,7 @@
       [
         {
           "codes": [[1, 0]],
-          "messages": ["Yes?", "How can I help you?"]
+          "messages": ["I wasn't expecting a Kariba to stroll in here.", "Are you feeling sick?", "How can I help you?"]
         }
       ],
       [

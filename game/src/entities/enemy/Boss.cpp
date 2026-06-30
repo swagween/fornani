@@ -17,6 +17,14 @@ void Boss::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	Enemy::update(svc, map, player);
 	p_health_bar.update(health.get_normalized());
 	if (health.is_dead() && !has_flag_set(BossFlags::end_battle)) { end_battle(); }
+
+	// make sure boss stays in bounds;
+	if (!map.within_bounds(get_collider().get_center())) { m_oob_counter.update(); }
+	if (m_oob_counter.get_count() > 400) {
+		m_oob_counter.cancel();
+		Enemy::set_position(map.get_closest_home_point(get_collider().get_center()));
+		map.spawn_effect(svc, "medium_flash", get_collider().get_center());
+	}
 }
 
 void Boss::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) { p_health_bar.render(win); }

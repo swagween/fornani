@@ -41,6 +41,7 @@ class GrandMastiff final : public Boss, public StateMachine<GrandMastiffState> {
 	util::Cooldown m_post_bite;
 	util::Cooldown m_post_howl;
 	util::Counter m_howl_count;
+	util::Cooldown m_attack_timer{600};
 
 	entity::WeaponPackage m_demon_star;
 

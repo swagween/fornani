@@ -224,14 +224,15 @@ void DataManager::load_data() {
 
 void DataManager::save_quests() {
 	auto& save = files.at(current_save).save_data;
-	files.at(current_save).write();
 	m_services->quest_table.serialize(save);
+	save_current();
 }
 
 void DataManager::save_seed() {
 	auto& save = files.at(current_save).save_data;
-	files.at(current_save).write();
 	save["vendor_seed"] = random::get_vendor_seed();
+	save_current();
+	NANI_LOG_INFO(m_logger, "Saved vendor seed: {}", random::get_vendor_seed());
 }
 
 void DataManager::save_progress(player::Player& player, int save_point_id) {
@@ -250,6 +251,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 		save["marketplace"].push_back(out_vendor);
 	}
 	save["vendor_seed"] = random::get_vendor_seed();
+	NANI_LOG_INFO(m_logger, "Saved vendor seed: {}", random::get_vendor_seed());
 
 	m_services->quest_table.serialize(save);
 
@@ -693,6 +695,7 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	// marketplace
 	for (auto& vendor : marketplace) {}
 	random::set_vendor_seed(save["vendor_seed"].as<random::seed_t>());
+	NANI_LOG_INFO(m_logger, "Loaded vendor seed: {}", save["vendor_seed"].as<random::seed_t>());
 
 	discovered_rooms.clear();
 	unlocked_doors.clear();

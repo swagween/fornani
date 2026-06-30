@@ -35,7 +35,7 @@ void Grappler::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		player.set_position(get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 24.f, 0.f}, true);
 		player.get_collider().physics.zero();
 	}
-	if (m_flags.consume(GrapplerFlags::released_player)) { player.accumulated_momentum.push_back({directions.actual.as_float() * 10.f, -0.6f}); }
+	if (m_flags.consume(GrapplerFlags::released_player)) { player.apply_impulse({directions.actual.as_float() * 10.f, -0.6f}); }
 	m_grab.set_position(get_collider().get_center() + sf::Vector2f{36.f, 0.f} * directions.actual.as_float());
 	m_grab.sensor.deactivate();
 	if (animation.get_frame() == 6 || animation.get_frame() == 7) { m_grab.sensor.activate(); }

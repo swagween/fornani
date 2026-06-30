@@ -180,12 +180,14 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	if (check_for_vendor(svc)) { return; }
 
-	// TODO: re-do this once I reimplement regular inventory + collectible items. we will check collectible_items_view, or something else.
-	if (player->visit_history.traveled_far() || svc.data.marketplace.at(3).inventory.items_view().is_empty()) {
+	if (player->visit_history.traveled_far()) {
 		random::reset_vendor_seed();
 		svc.data.save_seed();
-		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
 		player->visit_history.clear();
+		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
+	}
+	if (svc.data.marketplace.at(3).inventory.items_view().is_empty()) {
+		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
 	}
 
 	// in-game menus

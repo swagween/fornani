@@ -506,12 +506,11 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						ImGui::Text("Current cutscene progress: %i", game_state.get_current_state().get_context().cutscene_catalog.cutscenes.at(0)->get_progress());
 					}
 					ImGui::SeparatorText("Quest Info");
-					for (auto i = 0; i < services.quest_registry.get_size(); ++i) { ImGui::Text("Title: %s", services.quest_registry.get_quest_metadata(i).get_title().data()); }
-
 					for (auto i = 0; i < services.quest_registry.get_size(); ++i) {
-						ImGui::Separator();
 						auto const& meta = services.quest_registry.get_quest_metadata(i);
 						auto tag = meta.get_tag().data();
+						if (services.quest_table.get_quest_progression(tag) == 0) { continue; }
+						ImGui::Separator();
 						ImGui::Text(services.quest_table.print_progressions(tag).c_str());
 					}
 					ImGui::Separator();
@@ -551,7 +550,16 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
 								ImGui::Text("Push Time: %i", player.cooldowns.push.get());
 								ImGui::Text("Acceleration Multiplier: %f", player.get_collider().acceleration_multiplier);
-								ImGui::Text("Accumumalted Momentum: %i", player.accumulated_momentum.size());
+								ImGui::SeparatorText("Player Momentum");
+								static sf::Vector2f force{};
+								ImGui::SliderFloat("X", &force.x, -10.f, 10.f, "%.3f");
+								ImGui::SliderFloat("y", &force.y, -10.f, 10.f, "%.3f");
+								if (ImGui::Button("Apply Momentum")) { player.apply_impulse(force); }
+								ImGui::Text("Has Momentum? %s", player.get_collider().has_flag_set(shape::ColliderFlags::momentum) ? "Yes" : "No");
+								auto total = sf::Vector2f{};
+								for (auto v : player.accumulated_momentum) { total += v; }
+								ImGui::Text("Accumumalted Momentum: (%.1f, %.1f)", total.x, total.y);
+								ImGui::Text("Accumumalted Momentum Count: %i", player.accumulated_momentum.size());
 								ImGui::Separator();
 								ImGui::SliderFloat("Antenna Force", &player.physics_stats.antenna_force, 0.1f, 3.f);
 								ImGui::SliderFloat("Antenna Friction", &player.physics_stats.antenna_friction, 0.8f, 1.f);
@@ -712,7 +720,8 @@ void Game::take_screenshot(sf::Texture& screencap) {
 	sf::Sprite cap{screencap};
 	cap.setScale(sf::Vector2f{1.f, 1.f} / constants::f_scale_factor);
 	sf::RenderTexture texture = sf::RenderTexture{};
-	if (!texture.resize(services.window->u_screen_dimensions() / 2u)) { NANI_LOG_ERROR(m_logger, "Failed to save screenshot!"); }
+	auto sz = services.window->is_fullscreen() ? services.window->get_display_dimensions() / static_cast<unsigned int>(constants::u_scale_factor) : services.window->u_screen_dimensions();
+	if (!texture.resize(sz)) { NANI_LOG_ERROR(m_logger, "Failed to save screenshot!"); }
 	texture.clear(colors::transparent);
 	texture.draw(cap);
 	texture.display();
@@ -730,7 +739,7 @@ void Game::take_screenshot(sf::Texture& screencap) {
 	auto target = destination / filename;
 	if (texture.getTexture().copyToImage().saveToFile(target.string())) {
 		NANI_LOG_INFO(m_logger, "screenshot {} saved to {}", filename.string(), destination.string());
-		services.notifications.push_notification(services, "Saved screenshot to " + target.string());
+		services.notifications.push_notification(services, "Saved screenshot to location:\n" + target.string());
 	}
 }
 

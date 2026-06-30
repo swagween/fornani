@@ -16,7 +16,7 @@ class WardrobeWidget {
   public:
 	explicit WardrobeWidget(automa::ServiceProvider& svc);
 	void update(player::Player& player);
-	void render(sf::RenderWindow& win, sf::Vector2f cam);
+	void render(sf::RenderWindow& win, sf::Vector2f cam, bool bg = true);
 	void submit(automa::ServiceProvider& svc, sf::RenderWindow& win, HoloShader& shader, sf::Vector2f cam, sf::Color highlight, sf::Color shadow);
 	void set_position(sf::Vector2f pos) { position = pos; }
 	[[nodiscard]] auto get_sprite() -> sf::Sprite& { return out_nani; }

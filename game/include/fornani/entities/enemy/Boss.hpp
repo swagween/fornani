@@ -25,6 +25,9 @@ class Boss : public Enemy, public Flaggable<BossFlags> {
 	automa::ServiceProvider* p_services;
 	world::Map* p_map;
 	gui::BossHealth p_health_bar;
+
+  private:
+	util::Counter m_oob_counter{};
 };
 
 } // namespace fornani::enemy

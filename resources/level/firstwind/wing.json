@@ -12,7 +12,8 @@
         "position": [
           63,
           8
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -25,7 +26,8 @@
         "position": [
           36,
           3
-        ]
+        ],
+        "unlit": false
       }
     ],
     "enemies": [

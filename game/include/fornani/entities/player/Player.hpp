@@ -258,6 +258,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void handle_map_collision(world::Map& map);
 	void update_antennae();
 	void sync_antennae();
+	void apply_impulse(sf::Vector2f impulse);
 
 	void set_busy(bool flag) { set_flag(PlayerFlags::busy, flag); }
 	void stun(float multiplier = 1.f);
@@ -331,7 +332,6 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	} cooldowns{};
 	Counters counters{};
 	std::vector<sf::Vector2f> accumulated_forces{};
-	std::vector<sf::Vector2f> accumulated_momentum{};
 	std::optional<util::QuestCode> quest_code{};
 	std::optional<Piggybacker> piggybacker{};
 
@@ -408,6 +408,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	util::Cooldown m_sprite_shake;
 	util::Cooldown m_hurt_cooldown;
 	util::Cooldown m_death_cooldown;
+
+	std::vector<sf::Vector2f> accumulated_momentum{};
 
 	AbilityUsage m_ability_usage{};
 
