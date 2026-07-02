@@ -7,7 +7,7 @@
 namespace fornani::automa {
 
 StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, AppContext& ctx)
-	: MenuState(svc, player, ctx, "stat"), stats(svc.text.fonts.basic.font), title(svc.text.fonts.basic.font), m_player{&player}, m_items_sprite{svc, "inventory_items", {18, 18}} {
+	: MenuState(svc, player, ctx, "stat"), stats(svc.text.fonts.basic.font), title(svc.text.fonts.basic.font), m_player{&player}, m_items_sprite{svc, "inventory_items", {18, 18}}, m_guns_sprite{svc, "inventory_guns", {24, 24}} {
 	m_parent_menu = MenuType::file_select;
 	current_selection = util::Circuit(static_cast<int>(options.size()));
 	auto ctr{1};
@@ -58,7 +58,7 @@ void StatSheet::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		option.position = {svc.window->f_center_screen().x, svc.window->f_screen_dimensions().y - 40.f - ctr * 28.f};
 		++ctr;
 	}
-	stats.setPosition({360.f, 265.f});
+	stats.setPosition({460.f, 265.f});
 	title.setPosition({svc.window->f_screen_dimensions().x * 0.5f, 60.f});
 }
 
@@ -74,10 +74,17 @@ void StatSheet::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	auto xdim = 16;
 	auto fxdim = static_cast<float>(xdim);
 	for (auto [i, item] : std::views::enumerate(m_player->catalog.inventory.items_view())) {
-		auto where = sf::Vector2f{260.f + static_cast<float>(i % xdim) * 36.f, 100.f + 48.f * std::floor((static_cast<float>(i) / fxdim))};
+		auto where = sf::Vector2f{300.f + static_cast<float>(i % xdim) * 36.f, 100.f + 48.f * std::floor((static_cast<float>(i) / fxdim))};
 		item.item->render(win, m_items_sprite.get_sprite(), where);
 		for (auto& display : m_number_displays) {
 			if (display.matches(item.item->get_id())) { display.render(win, where + sf::Vector2f{36.f, 36.f}); }
+		}
+	}
+	if (m_player->arsenal) {
+		for (auto [i, gun] : std::views::enumerate(m_player->arsenal->get_loadout())) {
+			m_guns_sprite.set_channel(svc.data.weapon[gun->get_tag()]["metadata"]["widget_lookup"].as<int>());
+			m_guns_sprite.set_position(sf::Vector2f{200.f, 40.f} + sf::Vector2f{0.f, static_cast<float>(i) * 48.f});
+			win.draw(m_guns_sprite);
 		}
 	}
 	hud.render(svc, *m_player, win);

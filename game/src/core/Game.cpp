@@ -639,6 +639,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::EndTabItem();
 							}
 							if (ImGui::BeginTabItem("Weapon")) {
+								if (ImGui::Button("Give Pulsar")) { services.events.acquire_weapon_event.dispatch(services, "pulsar"); }
 								ImGui::Text("Current Weapon:");
 								ImGui::Separator();
 								if (player.hotbar) {

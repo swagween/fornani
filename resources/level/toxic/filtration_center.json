@@ -1,5 +1,21 @@
 {
   "entities": {
+    "chests": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 66357,
+        "modifier": 0,
+        "position": [
+          18,
+          8
+        ],
+        "tag": "egg",
+        "type": 2
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,

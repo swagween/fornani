@@ -160,7 +160,7 @@ void InputSystem::update() {
 	SteamInput()->RunFrame();
 	gather_raw_input();
 	resolve_input();
-	update_steam_controllers();
+	// update_steam_controllers();
 }
 
 void InputSystem::flush_inputs() {
@@ -221,7 +221,7 @@ void InputSystem::gather_raw_input() {
 		bool gamepad_pressed = false;
 		if (m_controller_handle != 0) {
 			auto data = SteamInput()->GetDigitalActionData(m_controller_handle, steam_handle_for(action));
-			gamepad_pressed = data.bState;
+			gamepad_pressed = data.bActive && data.bState;
 		}
 		raw.held = keyboard_pressed || gamepad_pressed;
 		raw.active = is_action_allowed(action);
@@ -241,9 +241,10 @@ void InputSystem::gather_raw_input() {
 
 		if (m_controller_handle != 0) {
 			auto data = SteamInput()->GetAnalogActionData(m_controller_handle, steam_handle_for(action));
-
-			raw.x = data.x;
-			raw.y = -data.y; // negative because steam's vertical axis is inverted (???)
+			if (data.bActive) {
+				raw.x = data.x;
+				raw.y = -data.y; // negative because steam's vertical axis is inverted (???)
+			}
 		}
 
 		raw.active = is_action_allowed(action);
@@ -311,6 +312,10 @@ void InputSystem::update_steam_controllers() {
 		m_controller_handle = 0;
 		return;
 	}
+	if (SteamInput()->GetInputTypeForHandle(m_controller_handle) == k_ESteamInputType_Unknown) {
+		m_controller_handle = 0;
+		return;
+	}
 
 	static InputHandle_t active_controller = 0;
 
@@ -332,6 +337,8 @@ void InputSystem::update_steam_controllers() {
 		return;
 	}
 
+	// Treat the rest as controllers.
+
 	// Otherwise, pick the first connected controller
 	m_controller_handle = controllers[0];
 	auto set = SteamInput()->GetCurrentActionSet(m_controller_handle);
@@ -343,6 +350,7 @@ void InputSystem::set_action_set(ActionSet new_set) {
 	if (m_active_action_set == new_set) { return; }
 	m_active_action_set = new_set;
 	set_flag(InputSystemFlags::changed_action_sets);
+	update_steam_controllers();
 }
 
 float InputSystem::analog_axis_value(ResolvedAnalogState const& a, MoveDirection dir, bool previous) const {
@@ -409,6 +417,10 @@ auto InputSystem::is_any_direction_held(AnalogAction action) const -> bool {
 void InputSystem::set_steam_action_set(InputActionSetHandle_t to_set) {
 	if (!m_controller_handle) { return; }
 	NANI_LOG_INFO(m_logger, "Setting controller action set...");
+	NANI_LOG_INFO(m_logger, "Handle: {}", m_controller_handle);
+	InputHandle_t controllers[STEAM_INPUT_MAX_COUNT];
+	int count = SteamInput()->GetConnectedControllers(controllers);
+	NANI_LOG_INFO(m_logger, "Count: {}", count);
 	set_flag(InputSystemFlags::changed_action_sets);
 	SteamInput()->ActivateActionSet(m_controller_handle, to_set);
 }
@@ -449,7 +461,7 @@ void InputSystem::handle_gamepad_connection(SteamInputDeviceConnected_t* data) {
 	m_controller_handle = data->m_ulConnectedDeviceHandle;
 	m_last_device_used = InputDevice::gamepad; // Quickly switch to gamepad input
 	setup_action_handles();
-	set_action_set(m_active_action_set);
+	update_steam_controllers();
 }
 
 void InputSystem::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t* data) {

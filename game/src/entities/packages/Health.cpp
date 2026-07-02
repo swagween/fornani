@@ -55,7 +55,7 @@ void Health::inflict(float amount, bool force, bool inv) {
 	}
 }
 
-void Health::set_invincible(int time) { invincibility.start(time); }
+void Health::set_invincible(int time) { invincibility.set_and_start(time); }
 
 void Health::increase_capacity(float amount) { set_capacity(m_capacity + amount, true); }
 

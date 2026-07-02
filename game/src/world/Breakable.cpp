@@ -64,10 +64,12 @@ void Breakable::on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile&
 
 void Breakable::on_smash(automa::ServiceProvider& svc, world::Map& map, float power) {
 	if (is_destroyed()) { return; }
+	auto diff = m_health.get_i_quantity();
 	m_health.inflict(power);
 	energy = hit_energy;
 	svc.soundboard.flags.world.set(audio::World::breakable_hit);
 	if (is_destroyed()) {
+		// svc.ticker.freeze_frame(diff, 0.25f);
 		map.spawn_effect(svc, "small_explosion", get_collider().get_center());
 		map.spawn_emitter(svc, "breakable", get_collider().get_position(), Direction{}, {32.f, 32.f});
 		svc.soundboard.flags.world.set(audio::World::breakable_shatter);

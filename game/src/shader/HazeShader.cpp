@@ -2,6 +2,7 @@
 #include <fornani/setup/ResourceFinder.hpp>
 #include <fornani/shader/HazeShader.hpp>
 #include <fornani/utils/Constants.hpp>
+#include <fornani/utils/Math.hpp>
 
 namespace fornani {
 

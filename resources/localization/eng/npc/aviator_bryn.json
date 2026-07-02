@@ -3,23 +3,13 @@
     "responses": [
       [
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "The way up is closed off."
         }
       ],
       [
         {
-          "codes": [
-            [
-              1,
-              2
-            ]
-          ],
+          "codes": [[1, 2]],
           "message": "Yes! But only one of them..."
         }
       ]
@@ -27,12 +17,7 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              4,
-              5
-            ]
-          ],
+          "codes": [[4, 5]],
           "message": "...Nani?"
         },
         {
@@ -42,28 +27,14 @@
           "message": "It's me, Bryn."
         },
         {
-          "codes": [
-            [
-              5,
-              1
-            ]
-          ],
+          "codes": [[5, 1]],
           "message": "I was finally able to detect your field telephone, but even now the connection is barely stable."
         },
         {
           "codes": [
-            [
-              1,
-              0
-            ],
-            [
-              5,
-              0
-            ],
-            [
-              23,
-              1
-            ]
+            [1, 0],
+            [5, 0],
+            [23, 1]
           ],
           "message": "What do you see?"
         }
@@ -71,72 +42,36 @@
       [
         {
           "codes": [
-            [
-              4,
-              20
-            ],
-            [
-              5,
-              1
-            ]
+            [4, 20],
+            [5, 1]
           ],
           "message": "Alright, looks like Nightside's old security systems are still in place."
         },
         {
-          "codes": [
-            [
-              13,
-              34,
-              903
-            ]
-          ],
+          "codes": [[13, 34, 903]],
           "message": "Let me try something here..."
         },
         {
           "codes": [
-            [
-              23,
-              2
-            ],
-            [
-              5,
-              0
-            ]
+            [23, 2],
+            [5, 0]
           ],
           "message": "...There!"
         },
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "Okay, did that open up any paths?"
         }
       ],
       [
         {
-          "codes": [
-            [
-              3,
-              15,
-              1,
-              903
-            ]
-          ],
+          "codes": [[3, 15, 1, 903]],
           "message": "Dang, alright..."
         },
         {
           "codes": [
-            [
-              5,
-              1
-            ],
-            [
-              23,
-              4
-            ]
+            [5, 1],
+            [23, 4]
           ],
           "message": "See if you can head up to that terminal and tell me if it displays any transmission code or something like that."
         },
@@ -146,14 +81,8 @@
         },
         {
           "codes": [
-            [
-              23,
-              5
-            ],
-            [
-              5,
-              0
-            ]
+            [23, 5],
+            [5, 0]
           ],
           "message": "I'll be waiting for your call. Good luck!"
         }
@@ -164,23 +93,13 @@
     "responses": [
       [
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "The tracks are blocked off."
         }
       ],
       [
         {
-          "codes": [
-            [
-              1,
-              2
-            ]
-          ],
+          "codes": [[1, 2]],
           "message": "Go ahead and unblock the way. I'll investigate."
         }
       ]
@@ -188,52 +107,28 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              4,
-              5
-            ]
-          ],
+          "codes": [[4, 5]],
           "message": "Hello?"
         },
         {
           "message": "It's me again."
         },
         {
-          "codes": [
-            [
-              5,
-              1
-            ]
-          ],
+          "codes": [[5, 1]],
           "message": "I can barely see Nightside Station from here, but I'm guessing you've made it there since I'm getting a strong radar reading from your field telephone's signature."
         },
         {
           "codes": [
-            [
-              1,
-              0
-            ],
-            [
-              5,
-              0
-            ],
-            [
-              23,
-              1
-            ]
+            [1, 0],
+            [5, 0],
+            [23, 1]
           ],
           "message": "Are you able to take the train? I see some construction on the tracks."
         }
       ],
       [
         {
-          "codes": [
-            [
-              4,
-              20
-            ]
-          ],
+          "codes": [[4, 20]],
           "message": "Hmph."
         },
         {
@@ -247,56 +142,30 @@
         },
         {
           "codes": [
-            [
-              5,
-              1
-            ],
-            [
-              1,
-              1
-            ]
+            [5, 1],
+            [1, 1]
           ],
           "message": "You made it this far. I guess it can't hurt to try."
         }
       ],
       [
         {
-          "codes": [
-            [
-              5,
-              0
-            ]
-          ],
+          "codes": [[5, 0]],
           "message": "Roger that."
         },
         {
           "message": "Just a second..."
         },
         {
-          "codes": [
-            [
-              23,
-              2
-            ]
-          ],
+          "codes": [[23, 2]],
           "message": "There. Should be good to go."
         },
         {
-          "codes": [
-            [
-              5,
-              0
-            ]
-          ],
+          "codes": [[5, 0]],
           "message": "Proceed at your own risk, Nani. I get the sense that something fishy might be going on."
         },
         {
-          "codes": [
-            [
-              23,
-              4
-            ]
-          ],
+          "codes": [[23, 4]],
           "message": "Good luck, Nani. Over and out!"
         }
       ]
@@ -306,23 +175,13 @@
     "responses": [
       [
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "Yeah. It's 'AC-7738'."
         }
       ],
       [
         {
-          "codes": [
-            [
-              1,
-              2
-            ]
-          ],
+          "codes": [[1, 2]],
           "message": "Looks like it worked!"
         }
       ]
@@ -331,14 +190,8 @@
       [
         {
           "codes": [
-            [
-              1,
-              0
-            ],
-            [
-              4,
-              16
-            ]
+            [1, 0],
+            [4, 16]
           ],
           "message": "Hey Nani, me again. You got the code?"
         }
@@ -346,18 +199,9 @@
       [
         {
           "codes": [
-            [
-              4,
-              20
-            ],
-            [
-              23,
-              8
-            ],
-            [
-              5,
-              1
-            ]
+            [4, 20],
+            [23, 8],
+            [5, 1]
           ],
           "message": "Awesome. Let me just..."
         },
@@ -367,18 +211,9 @@
         },
         {
           "codes": [
-            [
-              1,
-              1
-            ],
-            [
-              5,
-              0
-            ],
-            [
-              23,
-              9
-            ]
+            [1, 1],
+            [5, 0],
+            [23, 9]
           ],
           "message": "Boom! Any luck?"
         }
@@ -386,50 +221,25 @@
       [
         {
           "codes": [
-            [
-              5,
-              0
-            ],
-            [
-              4,
-              22
-            ],
-            [
-              23,
-              11
-            ]
+            [5, 0],
+            [4, 22],
+            [23, 11]
           ],
           "message": "Great! That should clear the way for you to get to Nightside Station."
         },
         {
           "codes": [
-            [
-              5,
-              1
-            ],
-            [
-              4,
-              8
-            ]
+            [5, 1],
+            [4, 8]
           ],
           "message": "But please... Be careful. I see some Skycorps security vehicles near where you are, so I hope they haven't somehow tracked you down..."
         },
         {
-          "codes": [
-            [
-              5,
-              0
-            ]
-          ],
+          "codes": [[5, 0]],
           "message": "There should be another callbox at the station. Give me a ring when you get there."
         },
         {
-          "codes": [
-            [
-              23,
-              12
-            ]
-          ],
+          "codes": [[23, 12]],
           "message": "Over and out!"
         }
       ]
@@ -442,18 +252,9 @@
       [
         {
           "codes": [
-            [
-              4,
-              4
-            ],
-            [
-              5,
-              3
-            ],
-            [
-              23,
-              7
-            ]
+            [4, 4],
+            [5, 3],
+            [23, 7]
           ],
           "message": "Nani! Get in!"
         }
@@ -467,14 +268,8 @@
       [
         {
           "codes": [
-            [
-              5,
-              3
-            ],
-            [
-              23,
-              9
-            ]
+            [5, 3],
+            [23, 9]
           ],
           "message": "Hang on tight!"
         }
@@ -486,34 +281,19 @@
     "responses": [
       [
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "You saved my life..."
         }
       ],
       [
         {
-          "codes": [
-            [
-              1,
-              2
-            ]
-          ],
+          "codes": [[1, 2]],
           "message": "Pretty smooth for a first flight."
         }
       ],
       [
         {
-          "codes": [
-            [
-              1,
-              3
-            ]
-          ],
+          "codes": [[1, 3]],
           "message": "I think Skycorps must have been tracking me somehow ever since I defeated Minigus."
         }
       ]
@@ -522,14 +302,8 @@
       [
         {
           "codes": [
-            [
-              5,
-              3
-            ],
-            [
-              1,
-              0
-            ]
+            [5, 3],
+            [1, 0]
           ],
           "message": "That was a close one, huh?"
         }
@@ -542,52 +316,27 @@
           "message": "As soon as I saw that Skycorps truck headed your way, I decided I might have to intervene."
         },
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "The timing worked out perfectly, too, since I just finished working on this bad boy yesterday."
         }
       ],
       [
         {
-          "codes": [
-            [
-              5,
-              3
-            ]
-          ],
+          "codes": [[5, 3]],
           "message": "My dad is a pilot, so I've been flying these things since I was a kid."
         },
         {
-          "codes": [
-            [
-              1,
-              2
-            ]
-          ],
+          "codes": [[1, 2]],
           "message": "Anyway, I'm sorry I led you into an ambush like that. I wasn't expecting anything like that at all..."
         }
       ],
       [
         {
-          "codes": [
-            [
-              5,
-              3
-            ]
-          ],
+          "codes": [[5, 3]],
           "message": "You what...?!"
         },
         {
-          "codes": [
-            [
-              4,
-              14
-            ]
-          ],
+          "codes": [[4, 14]],
           "message": "Hah... And to think it was all just with my little pistol."
         },
         {
@@ -597,12 +346,7 @@
           "message": "Just like the first pioneers did, way back when."
         },
         {
-          "codes": [
-            [
-              23,
-              25
-            ]
-          ],
+          "codes": [[23, 25]],
           "message": "Looks like we're almost back to base. Hold on to your seat, it'll be a pretty tight landing!"
         }
       ]
@@ -615,14 +359,8 @@
       [
         {
           "codes": [
-            [
-              5,
-              3
-            ],
-            [
-              23,
-              1
-            ]
+            [5, 3],
+            [23, 1]
           ],
           "message": "Here we are!"
         }
@@ -635,24 +373,14 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              5,
-              3
-            ]
-          ],
+          "codes": [[5, 3]],
           "message": "We have some planning to do."
         },
         {
           "message": "But first, get some rest. You've been through the wringer the past few days."
         },
         {
-          "codes": [
-            [
-              23,
-              4
-            ]
-          ],
+          "codes": [[23, 4]],
           "message": "I'm gonna wash up and get changed, too. I'll see you inside!"
         }
       ]
@@ -664,12 +392,7 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              5,
-              3
-            ]
-          ],
+          "codes": [[5, 3]],
           "message": "Head on inside get some sleep."
         },
         {

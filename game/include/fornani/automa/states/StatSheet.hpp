@@ -17,6 +17,7 @@ class StatSheet final : public MenuState {
 
   private:
 	Animatable m_items_sprite;
+	Animatable m_guns_sprite;
 	player::Player* m_player;
 	sf::Text title;
 	sf::Text stats;

@@ -38,15 +38,15 @@ class WorldClock {
 	[[nodiscard]] auto is_dusk() const -> bool { return calculate_tod_from_hour() == TimeOfDay::dusk; }
 	[[nodiscard]] auto is_dawn() const -> bool { return calculate_tod_from_hour() == TimeOfDay::dawn; }
 	[[nodiscard]] auto is_twilight() const -> bool { return is_dawn() || is_dusk(); }
-	[[nodiscard]] auto is_transitioning() const -> bool { return transition.running(); }
+	[[nodiscard]] auto is_transitioning() const -> bool { return get_transition() > 0.f; }
 	[[nodiscard]] auto get_time_of_day() const -> TimeOfDay { return current_time_of_day.as<TimeOfDay>(); }
 	[[nodiscard]] auto get_previous_time_of_day() const -> TimeOfDay;
-	[[nodiscard]] auto get_transition() const -> float { return transition.get_normalized(); }
+	[[nodiscard]] auto get_transition() const -> float;
 	[[nodiscard]] auto get_days() const -> int { return increments.days.get(); }
 	[[nodiscard]] auto get_hours() const -> int { return increments.hours.get(); }
 	[[nodiscard]] auto get_minutes() const -> int { return increments.minutes.get(); }
 	[[nodiscard]] auto get_rng(WorldClockInterval interval) const -> float;
-	[[nodiscard]] auto get_rate() const -> int { return rate; }
+	[[nodiscard]] auto get_rate() const -> int { return rate.get_native_time(); }
 	[[nodiscard]] auto as_trio() const -> int { return is_daytime() ? 0 : is_nighttime() ? 2 : 1; }
 	[[nodiscard]] auto get_previous_as_trio() const -> int { return get_previous_time_of_day() == TimeOfDay::day ? 0 : get_previous_time_of_day() == TimeOfDay::night ? 2 : 1; }
 	[[nodiscard]] auto happens(WorldClockInterval interval, float chance) { return get_rng(interval) < chance; }
@@ -71,8 +71,7 @@ class WorldClock {
 		float weekly{};
 	} rng;
 	util::Circuit current_time_of_day{4};
-	int rate{};
-	util::Cooldown transition{};
+	util::Cooldown rate;
 	io::Logger m_logger{"World Clock"};
 };
 

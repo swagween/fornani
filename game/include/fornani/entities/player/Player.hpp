@@ -123,7 +123,9 @@ enum class PlayerFlags {
 	drank,
 	failed_to_drink,
 	boss_fight,
-	in_goo
+	in_goo,
+	special_render,
+	intangible
 };
 enum class Triggers { hurt };
 
@@ -357,6 +359,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
   private:
 	PlayerAnimation m_animation_machine;
 	PlayerAttributes m_attributes;
+	Animatable m_sprite_overlay;
 
 	dj::Json m_physics_data{};
 

@@ -14,6 +14,19 @@
         ],
         "tag": "vermite",
         "type": 2
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 76878,
+        "modifier": 8,
+        "position": [
+          41,
+          68
+        ],
+        "type": 1
       }
     ],
     "platforms": [
@@ -106,6 +119,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 905,
         "dimensions": [
           1,
@@ -122,6 +136,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 901,
         "dimensions": [
           1,
@@ -975,11 +990,6 @@
     "ambience": "",
     "background": "dusk",
     "biome": "nightside",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -999,6 +1009,7 @@
       48,
       80
     ],
+    "interior": false,
     "metagrid": [
       3,
       20
@@ -1012,8 +1023,10 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": false,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 904,
     "shader": {
@@ -1023,6 +1036,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false
@@ -19710,9 +19733,9 @@
         0,
         0,
         0,
-        2,
-        2,
-        2,
+        0,
+        0,
+        0,
         2,
         2,
         0,
@@ -23552,9 +23575,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        6,
+        6,
+        6,
         0,
         0,
         0,

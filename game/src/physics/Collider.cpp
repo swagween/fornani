@@ -157,7 +157,11 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			auto positive_input = to_the_right ? cell.get_height_at(physics.position.x + dimensions.x - cell.get_position().x) : cell.get_height_at(physics.position.x + dimensions.x - cell.get_position().x);
 			if (tile.is_negative_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(physics.position.x - cell.get_position().x)); }
 			if (tile.is_positive_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, positive_input); }
-			if (!has_flag_set(ColliderFlags::submerged)) { physics.position.y = cell.get_position().y + cell.get_dimensions().y - maximum_ramp_height - dimensions.y; }
+			if (!has_flag_set(ColliderFlags::submerged)) {
+				physics.position.y = cell.get_position().y + cell.get_dimensions().y - maximum_ramp_height - dimensions.y;
+			} else {
+				physics.velocity.y += -2.1f;
+			}
 			if ((physics.apparent_velocity().x >= 0.f && tile.is_negative_ramp()) || (physics.apparent_velocity().x <= 0.f && tile.is_positive_ramp())) { flags.perma_state.set(PermaFlags::downhill); }
 		} else if (flags.state.test(State::on_flat_surface)) {
 			flags.perma_state.reset(PermaFlags::downhill);

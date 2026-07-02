@@ -5,7 +5,7 @@
 
 namespace fornani::vfx {
 
-Spring::Spring(SpringParameters params) : params(params), m_bob_positions{32}, m_fade{100} {
+Spring::Spring(SpringParameters params) : params(params), m_bob_positions{32}, m_fade{100}, m_channel{0} {
 	variables.bob_physics.set_constant_friction({params.dampen_factor, params.dampen_factor});
 	variables.bob_physics.maximum_velocity = {60.f, 60.f};
 	variables.anchor_physics.set_constant_friction({params.dampen_factor, params.dampen_factor});
@@ -13,7 +13,7 @@ Spring::Spring(SpringParameters params) : params(params), m_bob_positions{32}, m
 	sensor.bounds.setOrigin({sensor.bounds.getRadius(), sensor.bounds.getRadius()});
 }
 
-Spring::Spring(SpringParameters params, sf::Vector2f anchor, sf::Vector2f bob) : anchor(anchor), bob(bob), m_bob_positions{32}, m_fade{100} {}
+Spring::Spring(SpringParameters params, sf::Vector2f anchor, sf::Vector2f bob) : anchor(anchor), bob(bob), m_bob_positions{32}, m_fade{100}, m_channel{0} {}
 
 void Spring::calculate() {
 	variables.spring_force = bob - anchor;

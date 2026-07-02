@@ -81,7 +81,7 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 	total_conversations = std::max(total_conversations, total_suites);
 	if (npcs.empty()) { return; }
 
-	auto going = progress < 5;
+	auto going = progress < 6;
 	if (context.console) { bryn->disengage(); }
 	if (going) {
 		bryn->set_special_animation(2);
@@ -106,26 +106,29 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 			if (m_landed.is_almost_complete()) {
 				bryn->flush_and_push(8);
 				bryn->force_engage();
-				bryn->set_special_animation(3);
+				/*bryn->set_special_animation(3);
 				bryn->set_flag(NPCFlags::face_player);
 				bryn->set_flag(NPCFlags::airborne, false);
 				bryn->set_flag(NPCFlags::custom_camera, false);
-				player.set_idle();
+				player.set_idle();*/
 				++progress;
 			}
 		}
 		break;
 	case 4:
 		if (!context.console) {
-			bryn->flush_and_push(9);
-			flags.set(CutsceneFlags::complete);
 			context.transition.start();
-			svc.quest_table.set_quest_progression("defeat_haunch", 3);
-			bryn->set_flag(NPCFlags::cutscene, false);
+			context.transition.hang();
 			++progress;
 		}
 		break;
-	case 5: ++progress; break;
+	case 5:
+		if (context.transition.has_waited(400)) {
+			flags.set(CutsceneFlags::complete);
+			++progress;
+			svc.quest_table.set_quest_progression("defeat_haunch", 3);
+		}
+		break;
 	default: break;
 	}
 }

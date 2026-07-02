@@ -17,7 +17,7 @@ class Ambience {
 	void load(ResourceFinder& finder, std::string_view source);
 	void play();
 	void set_balance(float balance);
-	void set_volume(float const vol) { m_volume_multiplier = vol; }
+	void set_volume(float const vol) { m_volume_multiplier = std::clamp(vol, 0.f, 1.f); }
 	void adjust_volume(float delta) { set_volume(get_volume() + delta); };
 	struct {
 		MusicPlayer open;

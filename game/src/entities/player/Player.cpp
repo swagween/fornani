@@ -18,9 +18,10 @@ constexpr auto max_damage_v = 1024.f;
 
 Player::Player(automa::ServiceProvider& svc)
 	: Mobile(svc, "nani", {26, 26}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb},
-	  m_sprite_shake{200}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{10.f, -3.f} {
+	  m_sprite_shake{200}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{10.f, -3.f}, m_sprite_overlay{svc, "nani", {26, 26}} {
 
 	center();
+	m_sprite_overlay.center();
 	svc.data.load_player_params(*this);
 
 	health.set_invincibility(default_invincibility_time_v);
@@ -203,8 +204,18 @@ void Player::update(world::Map& map) {
 	}
 	cooldowns.stun.update();
 
+	// intangibility
+	if (controller.is_dashing() && has_item_equipped("carises_soul")) { set_flag(PlayerFlags::intangible); }
+	if (is_intangible()) {
+		if (m_services->ticker.every_x_ticks(20)) { map.spawn_emitter(*m_services, "intangibility", get_collider().get_position(), Direction{UND::up}, get_collider().dimensions); }
+	}
+	if (!health.invincible()) { set_flag(PlayerFlags::intangible, false); }
+
 	// drinking
-	if (is_in_animation(AnimState::drink)) { controller.restrict_movement(); }
+	if (is_in_animation(AnimState::drink)) {
+		controller.restrict_movement();
+		m_services->soundboard.repeat_sound("nani_drink", 5U);
+	}
 
 	caution.avoid_ledges(map, get_collider(), controller.direction, 8);
 	if (get_collider().collision_depths) { get_collider().collision_depths.value().reset(); }
@@ -420,6 +431,7 @@ void Player::simple_update() {
 	m_piggyback_socket = m_sprite_position + sf::Vector2f{-8.f * directions.actual.as_float(), -16.f};
 	if (piggybacker) { piggybacker->update(*m_services, *this); }
 	update_weapon_simple();
+	set_flag(PlayerFlags::special_render, false);
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -430,6 +442,18 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	if (!m_sprite_shake.running()) { m_shake_offset = {}; }
 	m_sprite_position += m_shake_offset;
 	Animatable::set_position(m_sprite_position - cam);
+	m_sprite_overlay.set_position(m_sprite_position - cam);
+
+	// handle special render
+	set_flag(PlayerFlags::special_render, false);
+	m_sprite_overlay.set_channel(0);
+	m_sprite_overlay.set_frame(Animatable::get_frame());
+	m_sprite_overlay.set_scale(Animatable::get_scale());
+	if (is_intangible() && svc.in_game()) {
+		set_flag(PlayerFlags::special_render, true);
+		int value = 2 + (std::min(19, static_cast<int>(health.invincibility.get_quadratic_normalized() * 20)) % 2);
+		m_sprite_overlay.set_channel(value);
+	}
 
 	if (has_death_type(PlayerDeathType::crushed) || has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::fallen)) { return; }
 	if (has_death_type(PlayerDeathType::drowned)) { set_color(colors::blue); }
@@ -486,7 +510,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		}
 	} else {
 		if (antennae.size() > 1) { antennae[1]->render(svc, win, cam, 1); }
-		win.draw(*this);
+		has_flag_set(PlayerFlags::special_render) ? win.draw(m_sprite_overlay) : win.draw(*this);
 		++debug::draw_calls;
 		if (antennae.size() > 1) { antennae[0]->render(svc, win, cam, 1); }
 	}
@@ -712,7 +736,7 @@ auto Player::get_item_count(std::string_view tag) -> int {
 	return 0;
 }
 
-bool Player::is_intangible() const { return controller.is_dashing() && has_item_equipped("carises_soul"); }
+bool Player::is_intangible() const { return has_flag_set(PlayerFlags::intangible); }
 
 auto Player::can_be_stunned() const -> bool { return !is_stunned() && !cooldowns.stun_immunity.running(); }
 
@@ -973,6 +997,7 @@ void Player::start_over() {
 	hurt_cooldown.cancel();
 	set_flag(PlayerFlags::killed, false);
 	set_flag(PlayerFlags::cutscene, false);
+	set_flag(PlayerFlags::special_render, false);
 	m_animation_machine.triggers.reset(AnimTriggers::end_death);
 	set_animation_flag(player::AnimTriggers::end_death, false);
 	m_animation_machine.post_death.cancel();
@@ -1137,14 +1162,15 @@ void Player::handle_item_logic() {
 			if (consume_flag(PlayerFlags::hit_target)) { equipped_weapon().reduce_reload_time(0.1f); }
 		}
 	}
+	m_air_supply.set_capacity(has_item_equipped("oxygen_tank") ? 400.f : 100.f, true);
 	has_item_equipped("hoarders_trinket") ? health.set_invincibility(default_invincibility_time_v * 1.3f) : health.set_invincibility(default_invincibility_time_v);
 	if (arsenal && hotbar) { has_item_equipped("soda") ? equipped_weapon().set_reload_multiplier(0.85f) : equipped_weapon().set_reload_multiplier(1.f); }
 	if (has_item("soda")) { m_services->quest_table.set_quest_progression("carl_soda", 1, QuestRequirementType::loose); }
 	if (has_item("screwdriver")) { m_services->quest_table.set_quest_progression("pioneer_tech", 2, QuestRequirementType::loose); }
 	auto has_bonus_health = health.has_bonus() ? 1 : 0;
 	m_services->quest_table.set_quest_progression("bonus_health", has_bonus_health, QuestRequirementType::strict);
-	if (has_item_equipped("gas_mask")) {
-		m_services->soundboard.repeat_sound("gas_mask_breathing", 1, {}, health.is_critical() ? 0.8f : 1.f);
+	if (has_item_equipped("gas_mask") && !is_dead()) {
+		m_services->soundboard.repeat_sound("gas_mask_breathing", 1, {}, health.is_critical() ? 0.7f : 1.f);
 		if (!m_headgear) { m_headgear.emplace(*m_services, 0, 1); }
 	} else {
 		if (m_headgear) { m_headgear.reset(); }
@@ -1166,8 +1192,10 @@ void Player::handle_item_logic() {
 			if (m_currently_held_item->id == 25) { // soda
 				set_invincible(default_invincibility_time_v * 3);
 				m_services->soundboard.play_sound("item_get");
+				m_services->soundboard.play_sound("reward_sparkle");
 				m_currently_held_item.reset();
 				catalog.inventory.remove_item(m_services->data.item_label_from_id(m_currently_held_item->id), 1);
+				set_flag(PlayerFlags::intangible);
 			}
 			if (m_currently_held_item->id == 27) { // ashtown preserves
 				heal();

@@ -171,7 +171,6 @@ void ControlsMenu::restore_defaults(ServiceProvider& svc) {
 }
 
 void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change_to) {
-
 	m_scene = to_change_to;
 	options.clear();
 	control_list.clear();
@@ -187,8 +186,6 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 		} else {
 			option.position.x = svc.window->i_screen_dimensions().x * 0.5f - center_offset + option.label.getLocalBounds().getCenter().x;
 		}
-		// FIXME Spacing is broken in other menus. getLocalBounds().height is returning 0 because the font isn't set when the function is called
-		// 	     To make up for it we don't add the getLocalBounds().height factor here, but keep it in mind when it is fixed!
 		option.position.y = top_buffer + ctr * (spacing);
 		option.index = ctr;
 		option.update(current_selection.get());
@@ -196,6 +193,7 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 		control_list.push_back(sf::Text(svc.text.fonts.title.font));
 		++ctr;
 	}
+	refresh_controls(svc);
 }
 
 } // namespace fornani::automa

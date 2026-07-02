@@ -200,9 +200,9 @@ void Chain::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 		if (svc.greyblock_mode()) { link.render(win, cam); }
 		if (sprite) {
 			if (m_num_angles > 0) { m_rotator.handle_rotation(*sprite, get_tangent(i), AnimatableAxis::frame, m_num_angles); }
-			sprite->set_channel(link.get_channel());
+			if (link.get_channel() > 0) { sprite->set_channel(link.get_channel()); }
 			auto pos = average ? link.get_average_bob_position() : link.get_bob();
-			sprite->set_position(link.get_average_bob_position() - cam);
+			sprite->set_position(pos - cam);
 			win.draw(*sprite);
 		}
 	}

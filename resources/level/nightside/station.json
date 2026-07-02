@@ -91,7 +91,8 @@
         "position": [
           33,
           14
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -104,7 +105,8 @@
         "position": [
           34,
           14
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -117,7 +119,8 @@
         "position": [
           35,
           14
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -125,12 +128,13 @@
           1
         ],
         "enemy_clear": false,
-        "id": 90102,
+        "id": 90103,
         "inverse": true,
         "position": [
           46,
           7
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -138,12 +142,13 @@
           1
         ],
         "enemy_clear": false,
-        "id": 90102,
+        "id": 90103,
         "inverse": true,
         "position": [
           46,
           8
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -151,12 +156,13 @@
           1
         ],
         "enemy_clear": false,
-        "id": 90102,
+        "id": 90103,
         "inverse": true,
         "position": [
           46,
           9
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -164,12 +170,13 @@
           1
         ],
         "enemy_clear": false,
-        "id": 90102,
+        "id": 90103,
         "inverse": true,
         "position": [
           46,
           10
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -177,12 +184,13 @@
           1
         ],
         "enemy_clear": false,
-        "id": 90102,
+        "id": 90103,
         "inverse": true,
         "position": [
           46,
           11
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -195,7 +203,8 @@
         "position": [
           24,
           3
-        ]
+        ],
+        "unlit": false
       }
     ],
     "npcs": [

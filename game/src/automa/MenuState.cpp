@@ -40,6 +40,7 @@ MenuState::MenuState(ServiceProvider& svc, player::Player& player, AppContext& c
 
 void MenuState::tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine) {
 	GameState::tick_update(svc, engine);
+	svc.input_system.process_gamepad_disconnection();
 	for (auto& option : options) { option.update(current_selection.get(), p_option_justification); }
 	if (svc.input_system.menu_move(input::MoveDirection::down) && m_input_authorized) {
 		current_selection.modulate(1);

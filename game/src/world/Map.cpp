@@ -549,11 +549,6 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 
 	auto use_shader = m_attributes.properties.test(MapProperties::lighting) && m_palette && shader;
 	if (use_shader) { shader->finalize(svc.data.biomes["properties"][get_biome_string()]["max_light"].as<float>()); }
-	// check for a switch to greyblock mode
-	if (svc.debug_flags.test(automa::DebugFlags::greyblock_trigger)) {
-		generate_layer_textures(svc);
-		svc.debug_flags.reset(automa::DebugFlags::greyblock_trigger);
-	}
 
 	if (m_entities) {
 		// TODO: uncomment below once all entities have been refactored!

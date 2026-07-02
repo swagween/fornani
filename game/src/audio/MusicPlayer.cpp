@@ -1,7 +1,7 @@
 
-#include <algorithm>
 #include <fornani/audio/MusicPlayer.hpp>
 #include <fornani/utils/Constants.hpp>
+#include <algorithm>
 #include <filesystem>
 
 namespace fornani::audio {
@@ -58,6 +58,7 @@ void MusicPlayer::play_once() {
 void MusicPlayer::play_looped() {
 	if (is_off()) { return; }
 	m_jukebox.play();
+	m_ringtone.stop();
 }
 
 void MusicPlayer::update() {

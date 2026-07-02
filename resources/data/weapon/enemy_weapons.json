@@ -1041,7 +1041,7 @@
         "radius": 12.0,
         "audio": { "hit": 2 },
         "attributes": {
-          "base_damage": 1,
+          "base_damage": 0,
           "lifespan": 300,
           "lifespan_variance": 0,
           "speed": 8.0,

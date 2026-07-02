@@ -96,6 +96,14 @@
     "fade_out": 256
   },
   {
+    "label": "nani_drink",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 64,
+    "fade_out": 64
+  },
+  {
     "label": "gas_mask_breathing",
     "bus": "gameplay",
     "volume": 0.1,

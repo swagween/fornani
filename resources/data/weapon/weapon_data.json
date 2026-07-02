@@ -346,7 +346,8 @@
     "metadata": {
       "id": 6,
       "label": "RPG",
-      "description": "A powerful shoulder-mounted missile launcher."
+      "description": "A powerful shoulder-mounted missile launcher.",
+      "widget_lookup": 7
     },
     "visual": {
       "texture_lookup": 6,

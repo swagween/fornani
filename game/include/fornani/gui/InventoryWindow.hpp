@@ -48,6 +48,7 @@ class InventoryWindow {
 	std::unique_ptr<Dashboard> m_dashboard{};
 	InventoryView m_view{};
 	util::Cooldown m_exit;
+	util::Cooldown m_stall;
 	util::BitFlags<InventoryWindowFlags> m_flags{};
 
 	struct {

@@ -1083,5 +1083,26 @@
     "ingredient": true,
     "rarity": 2,
     "value": 900
+  },
+  {
+    "tag": "oxygen_tank",
+    "category": 1,
+    "lookup": [13, 2],
+    "origin": [10, 2],
+    "actual_title": "Oxygen Tank",
+    "naive_description": "Allows you to spend more time underwater when equipped.",
+    "unique": true,
+    "equippable": true,
+    "sellable": true,
+    "value": 2200
+  },
+  {
+    "tag": "egg",
+    "category": 1,
+    "lookup": [4, 1],
+    "origin": [10, 3],
+    "actual_title": "Egg",
+    "naive_description": "If you found this, it means you did a good job.",
+    "unique": true
   }
 ]

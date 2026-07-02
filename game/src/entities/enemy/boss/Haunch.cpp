@@ -45,7 +45,7 @@ Haunch::Haunch(automa::ServiceProvider& svc, world::Map& map)
 
 void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	Boss::update(svc, map, player);
-	if (consume_flag(BossFlags::start_battle)) { svc.data.switch_destructible_state(90102, true); }
+	if (consume_flag(BossFlags::start_battle)) { svc.data.switch_destructible_state(90103, true); }
 	if (has_flag_set(BossFlags::end_battle) && !has_flag_set(BossFlags::post_death)) {
 		svc.music_player.stop();
 		set_flag(BossFlags::post_death);
@@ -77,7 +77,7 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		}
 	}
 	if (m_cooldowns.post_death.is_almost_complete()) {
-		if (!m_flags.test(HaunchFlags::escape_cutscene_launched)) {
+		if (!m_flags.test(HaunchFlags::escape_cutscene_launched) && !player.is_dead()) {
 			svc.events.launch_cutscene_event.dispatch(svc, 902);
 			m_flags.set(HaunchFlags::escape_cutscene_launched);
 		}
@@ -166,7 +166,7 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	}
 
 	if (directions.actual.lnr != directions.desired.lnr) { request(HaunchState::turn); }
-	if (has_flag_set(BossFlags::post_death)) { request(HaunchState::struggle); }
+	if (has_flag_set(BossFlags::post_death) && !m_flags.test(HaunchFlags::escape_cutscene_launched)) { request(HaunchState::struggle); }
 
 	state_function = state_function();
 }
@@ -236,7 +236,7 @@ fsm::StateFunction Haunch::update_turn() {
 	if (change_state(HaunchState::struggle, get_params("struggle"))) { return HAUNCH_BIND(update_struggle); }
 	if (animation.complete()) {
 		request_flip();
-		if (has_flag_set(BossFlags::post_death)) {
+		if (m_flags.test(HaunchFlags::escape_cutscene_launched)) {
 			request(HaunchState::stalk);
 			if (change_state(HaunchState::stalk, get_params("stalk"))) { return HAUNCH_BIND(update_stalk); }
 		}

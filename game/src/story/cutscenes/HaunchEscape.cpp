@@ -14,8 +14,8 @@ HaunchEscape::HaunchEscape(automa::ServiceProvider& svc) : Cutscene(svc, 902, "h
 	svc.state_flags.set(automa::StateFlags::cutscene);
 	if (svc.quest_table.get_quest_progression("defeat_haunch") > 0) {
 		progress = 20;
-		svc.camera_controller.set_owner(graphics::CameraOwner::player);
-		svc.camera_controller.constrain();
+		svc.camera_controller.set_owner(graphics::CameraOwner::system);
+		svc.camera_controller.free();
 	}
 }
 
@@ -24,8 +24,8 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 		m_flags.set(HaunchEscapeFlags::over);
 		if (round_two()) {
 			svc.quest_table.set_quest_progression("defeat_haunch", 2);
+			svc.data.switch_destructible_state(90103, true);
 		} else {
-			svc.data.switch_destructible_state(90102, true);
 			svc.quest_table.set_quest_progression("defeat_haunch", 1);
 		}
 	}
@@ -124,9 +124,10 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 	bryn->set_special_animation(2);
 
 	auto champion_target = player.get_collider().get_top() - sf::Vector2f{20.f, 40.f};
-	if (m_champion && progress > 8) {
+	if (m_champion && progress > 7) {
 		m_player_steering.seek(m_champion->get_passengers_seat(), 0.005f);
 		player.set_position(m_player_steering.physics.position);
+		if (progress > 9) { player.set_position(m_champion->get_passengers_seat()); }
 	} else {
 		m_player_steering.physics.position = player.get_position();
 	}
@@ -139,6 +140,8 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 			}
 		}
 	}
+
+	if (progress >= 20) { svc.camera_controller.set_position(player.get_camera_focus_point() + sf::Vector2f{0.f, 100.f}); }
 
 	switch (progress) {
 	case 0:
@@ -156,6 +159,7 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 			svc.camera_controller.set_owner(graphics::CameraOwner::player);
 			player.set_flag(player::PlayerFlags::cutscene, false);
 			svc.camera_controller.constrain();
+			svc.data.switch_destructible_state(90102);
 			++progress;
 		}
 		break;

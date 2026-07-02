@@ -214,6 +214,24 @@
     "color": "fire"
   },
 
+  "intangibility": {
+    "load": 3,
+    "rate": 100.0,
+    "expulsion": 1.0,
+    "expulsion_variance": 0.5,
+    "cone": 0.08,
+    "friction": 0.999,
+    "elasticity": 0.95,
+    "gravity": -1.5,
+    "lifespan": 260,
+    "lifespan_variance": 85,
+    "dimensions": [3, 3],
+    "animated": false,
+    "colliding": true,
+    "fader": true,
+    "color": "yellow"
+  },
+
   "peckett_2": {
     "load": 4,
     "rate": 100.0,
