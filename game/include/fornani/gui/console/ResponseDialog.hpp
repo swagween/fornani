@@ -42,7 +42,7 @@ struct ResponseIndicator {
 
 class ResponseDialog final : public Flaggable<ResponseDialogFlags> {
   public:
-	ResponseDialog(data::TextManager& text, dj::Json& source, QuestTable& quest_table, std::string_view key, int index = 0, sf::Vector2f start_position = {});
+	ResponseDialog(data::TextManager& text, dj::Json& source, QuestTable& quest_table, std::string_view key, int index = 0, sf::Vector2f start_position = {}, int stall = 32);
 
 	/// @return true if dialog is still processing inputs, false when exit is requested
 	bool handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard);

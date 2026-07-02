@@ -37,6 +37,9 @@ MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx
 	loading.start();
 	svc.ambience_player.set_balance(1.f);
 	svc.music_player.set_balance(0.f);
+
+	// main menu will not have a back button
+	p_back_button.reset();
 }
 
 void MainMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
@@ -48,7 +51,7 @@ void MainMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		svc.music_player.play_looped();
 	}
 	loading.update();
-	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
+	if (was_selected(svc.input_system)) {
 		NANI_LOG_DEBUG(m_logger, "Menu Select Triggered.");
 		if (current_selection.get() == menu_selection_id.at(MenuSelection::play)) {
 			svc.state_controller.submenu = MenuType::play;

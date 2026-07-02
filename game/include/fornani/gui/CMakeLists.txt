@@ -2,6 +2,7 @@ nani_add_headers(
         ActionContextBar.hpp
         ActionControlIconQuery.hpp
         BossHealth.hpp
+        Button.hpp
         Dashboard.hpp
         DottedLine.hpp
         Gizmo.hpp

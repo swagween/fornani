@@ -3,6 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
+#include <fornani/core/Fwd.hpp>
+#include <fornani/utils/Cooldown.hpp>
 #include <string_view>
 
 namespace fornani {
@@ -28,6 +30,8 @@ struct Option {
 
   private:
 	MenuTheme* m_theme;
+	int m_last_selection{};
+	util::Cooldown m_fade;
 };
 
 } // namespace fornani::automa

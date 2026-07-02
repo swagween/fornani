@@ -233,7 +233,7 @@
     "unique": true,
     "build": {
       "recipe": ["priorite", "pioneer_scrap", "magnet"],
-      "craft_price": 200,
+      "craft_price": 100,
       "lookup": 4
     }
   },
@@ -269,7 +269,7 @@
     "value": 560,
     "build": {
       "recipe": ["rhenite", "pioneer_scrap", "indigum"],
-      "craft_price": 200,
+      "craft_price": 400,
       "lookup": 1
     }
   },
@@ -325,7 +325,7 @@
     "stack_limit": 3,
     "build": {
       "recipe": ["brinium", "pioneer_scrap", "indigum"],
-      "craft_price": 200,
+      "craft_price": 800,
       "lookup": 0
     }
   },
@@ -1104,5 +1104,19 @@
     "actual_title": "Egg",
     "naive_description": "If you found this, it means you did a good job.",
     "unique": true
+  },
+  {
+    "tag": "golden_tiara",
+    "category": 5,
+    "origin": [3, 0],
+    "start_index": 160,
+    "actual_title": "Golden Tiara",
+    "naive_description": "A shiny tiara. You suspect it's not made of real gold...",
+    "unique": true,
+    "equippable": false,
+    "sellable": false,
+    "wearable": true,
+    "apparel_type": 0,
+    "value": 90
   }
 ]

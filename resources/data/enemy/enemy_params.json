@@ -46,7 +46,7 @@
     "physical": {
       "dimensions": [80, 80],
       "sprite_dimensions": [64, 64],
-      "offset": [0, -23],
+      "offset": [0, -21],
       "alert_range": [600.0, 200.0],
       "hostile_range": [200.0, 100.0],
       "home_detector": [24.0, 80.0],

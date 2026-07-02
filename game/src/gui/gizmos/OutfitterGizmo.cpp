@@ -80,10 +80,11 @@ void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 
 	// wires
 	wire_sound.update(); // play the wire plug sound at the exact right moment
-	if (wire_sound.is_almost_complete() && is_selected()) { svc.soundboard.flags.pioneer.set(audio::Pioneer::wires); }
+	// if (wire_sound.is_almost_complete() && is_selected()) { svc.soundboard.flags.pioneer.set(audio::Pioneer::wires); }
 	auto wire_offset{sf::Vector2f{-42.f, 26.f}};
 	m_wires.update(m_physics.position + m_placement + wire_offset);
 	if (m_path.completed_step(1)) { m_wires.set_params("plug"); }
+	if ((m_wires.get_frame() == 2 || m_wires.get_frame() == 4 || m_wires.get_frame() == 5 || m_wires.get_frame() == 6) && m_wires.keyframe_started()) { svc.soundboard.play_sound("pioneer_slot"); }
 }
 
 void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {

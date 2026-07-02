@@ -158,6 +158,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 		sf::Vector2f pos{};
 		pos.x = entry["position"][0].as<float>();
 		pos.y = entry["position"][1].as<float>();
+		if (!svc.quest_table.are_contingencies_met({QuestContingencySet{entry["contingencies"]}})) { continue; }
 		if (entry["tag"]) {
 			chests.push_back(std::make_unique<entity::Chest>(svc, *this, StableID::from(room_id, pos.x, pos.y), static_cast<entity::ChestType>(entry["type"].as<int>()), entry["tag"].as_string(), entry["modifier"].as<int>()));
 		} else {

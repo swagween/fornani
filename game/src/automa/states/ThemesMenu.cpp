@@ -8,7 +8,7 @@ ThemesMenu::ThemesMenu(ServiceProvider& svc, player::Player& player, AppContext&
 
 void ThemesMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	MenuState::tick_update(svc, engine);
-	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
+	if (was_selected(svc.input_system)) {
 		for (auto& option : options) {
 			if (current_selection.get() == option.index) {
 				svc.soundboard.flags.menu.set(audio::Menu::forward_switch);

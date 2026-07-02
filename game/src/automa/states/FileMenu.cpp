@@ -8,7 +8,7 @@ namespace fornani::automa {
 
 constexpr auto num_files_v = 3;
 
-FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "file"), switched{20} {
+FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "file"), switched{20}, m_menu_opened{24} {
 	m_parent_menu = MenuType::play;
 	current_selection = util::Circuit(num_files_v);
 	hud.set_position({(svc.window->f_screen_dimensions().x / 2.f) - 140.f, 420.f}); // display hud preview for each file in the center of the screen
@@ -34,12 +34,12 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		if (m_file_select_menu) {
 			m_file_select_menu->handle_inputs(svc.input_system, svc.soundboard);
 		} else {
-			if (svc.input_system.menu_move(input::MoveDirection::down) || svc.input_system.menu_move(input::MoveDirection::up)) { switched.start(); }
+			if (svc.input_system.menu_move(input::MoveDirection::down) || svc.input_system.menu_move(input::MoveDirection::up) || current_selection.get() != m_previous_selection) { switched.start(); }
 		}
 		if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {
 			if (m_file_select_menu) { m_file_select_menu.reset(); }
 		}
-		if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
+		if (was_selected(svc.input_system, true)) {
 			if (m_file_select_menu) {
 				switch (m_file_select_menu->get_selection()) {
 				case 0:
@@ -58,13 +58,18 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 					m_file_select_menu.reset();
 					break;
 				}
-			} else {
+			} else if (was_selected(svc.input_system)) {
 				auto& opt = options.at(current_selection.get());
 				auto menu_pos = opt.position + sf::Vector2f{opt.label.getLocalBounds().getCenter().x + 2.f * spacing, 0.f};
 				m_file_select_menu = gui::MiniMenu(svc, {svc.data.gui_text["file_menu"]["play"].as_string(), svc.data.gui_text["file_menu"]["stats"].as_string(), svc.data.gui_text["file_menu"]["delete"].as_string()}, menu_pos,
 												   p_app_context->settings.get_theme());
+				m_menu_opened.start();
 			}
 		}
+	}
+	m_previous_selection = current_selection.get();
+	if (svc.input_system.is_mouse_active() && m_file_select_menu && !m_menu_opened.running()) {
+		if ((m_file_select_menu->get_center() - svc.input_system.get_mouse_position()).length() > 300.f) { m_file_select_menu.reset(); }
 	}
 
 	// file deletion requested
@@ -88,6 +93,7 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	loading.update();
 	switched.update();
+	m_menu_opened.update();
 
 	player->controller.clean();
 	player->flags.triggers = {};

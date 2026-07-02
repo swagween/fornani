@@ -50,7 +50,7 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 			}
 		}
-		if (svc.input_system.digital(input::DigitalAction::menu_select).triggered && !adjust_mode()) {
+		if (was_selected(svc.input_system) && !adjust_mode()) {
 			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 			switch (current_selection.get()) {
 			case static_cast<int>(SettingsToggles::autosprint): svc.input_system.set_setting(input::InputSystemSettings::auto_sprint, !svc.input_system.is_autosprint_enabled()); break;
@@ -71,7 +71,7 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			options.at(static_cast<int>(SettingsToggles::gamepad)).label.setString(toggleables.gamepad.getString() + (svc.input_system.is_gamepad_input_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 			options.at(static_cast<int>(SettingsToggles::fullscreen)).label.setString(toggleables.fullscreen.getString() + (svc.fullscreen() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 			options.at(static_cast<int>(SettingsToggles::military_time)).label.setString(toggleables.military_time.getString() + (svc.world_clock.is_military() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
-		} else if (svc.input_system.digital(input::DigitalAction::menu_select).triggered && adjust_mode()) {
+		} else if (was_selected(svc.input_system) && adjust_mode()) {
 			m_mode = SettingsMenuMode::ready;
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 		}

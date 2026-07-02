@@ -5,6 +5,7 @@
 #include <fornani/automa/StateManager.hpp>
 #include <fornani/core/FrameTracker.hpp>
 #include <fornani/entities/player/Player.hpp>
+#include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/Background.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/setup/AppContext.hpp>
@@ -54,6 +55,7 @@ class Game final {
 	automa::StateManager game_state;
 	std::optional<std::unique_ptr<automa::StateManager>> m_game_menu;
 	std::unique_ptr<graphics::Background> m_background{};
+	Animatable m_cursor;
 
 	FrameTracker m_frame_tracker{};
 	sf::RectangleShape m_wallpaper{};

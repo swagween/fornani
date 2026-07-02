@@ -20,6 +20,8 @@ class FileMenu final : public MenuState {
 	util::Cooldown loading{};
 	util::Cooldown switched;
 	std::optional<gui::MiniMenu> m_file_select_menu{};
+	int m_previous_selection{};
+	util::Cooldown m_menu_opened;
 };
 
 } // namespace fornani::automa

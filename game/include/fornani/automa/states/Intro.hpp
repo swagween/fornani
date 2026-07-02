@@ -34,6 +34,7 @@ class Intro final : public GameplayState {
 	Animatable m_airship;
 	std::vector<Nighthawk> m_nighthawks;
 	util::Cooldown m_intro_shot;
+	util::Cooldown m_airship_movement;
 	util::Cooldown m_wait;
 	util::Cooldown m_end_wait;
 	util::Cooldown m_attack_fadeout;

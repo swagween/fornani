@@ -35,6 +35,7 @@ class GameState : public UniquePolymorphic {
 	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win) {}
 	virtual void reload(ServiceProvider& svc, int target_state) {};
 	virtual void on_exit() {};
+	virtual void clear_back_button() {}
 	virtual std::optional<std::reference_wrapper<world::Map>> get_map() { return std::nullopt; }
 
 	SceneContext const& get_context() { return p_context; }

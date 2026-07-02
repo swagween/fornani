@@ -8,7 +8,7 @@ namespace fornani::automa {
 
 Intro::Intro(ServiceProvider& svc, player::Player& player, int room_number)
 	: GameplayState(svc, player, room_number), m_airship{svc, "scenery_firstwind_airship", {480, 256}}, m_cloud_sea{svc, "cloud_sea", {1024, 512}}, m_cloud{svc, "cloud", {1024, 512}}, m_intro_shot{1600}, m_wait{800}, m_end_wait{1200},
-	  m_attack_fadeout{1200}, m_location_text{svc, svc.data.gui_text["locations"]["firstwind"].as_string_view()} {
+	  m_airship_movement{3200}, m_attack_fadeout{1200}, m_location_text{svc, svc.data.gui_text["locations"]["firstwind"].as_string_view()} {
 	m_map.emplace(svc, player);
 
 	svc.music_player.load(svc.finder, "wind");
@@ -36,10 +36,12 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, int room_number)
 	player.controller.prevent_movement();
 	p_world_shader->set_darken(m_map->darken_factor);
 	p_world_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
+	p_entity_shader = LightShader(svc.finder);
 
 	m_airship.push_animation("main", {0, 4, 40, -1});
 	m_airship.set_animation("main");
 	m_intro_shot.start();
+	m_airship_movement.start();
 	m_location_text.set_bounds(sf::FloatRect({20.f, 480.f}, {600.f, 100.f}));
 
 	for (auto i{0}; i < 4; ++i) {
@@ -57,7 +59,8 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, int room_number)
 
 void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
-	m_airship.set_position(sf::Vector2f{0.f, 4.f * sin(m_intro_shot.get_normalized() * 10.f)});
+	m_airship.set_position(sf::Vector2f{0.f, 4.f * sin(m_airship_movement.get_normalized() * 20.f)});
+	m_airship_movement.update();
 	m_wait.update();
 	if (m_wait.running()) { return; }
 
@@ -153,9 +156,22 @@ void Intro::frame_update(ServiceProvider& svc) {}
 
 void Intro::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!m_map) { return; }
+	auto cam = player->get_camera_position();
 	p_renderer.begin(win, player->get_camera_position());
 	if (p_world_shader) {
 		m_map->render_background(p_renderer, svc, win, p_world_shader, player->get_camera_position());
+		p_entity_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
+		p_entity_shader->finalize(svc.data.biomes["properties"][m_map->get_biome_string()]["max_light"].as<float>());
+		auto ent_sprite = sf::Sprite{m_map->m_entity_texture.getTexture()};
+		ent_sprite.setPosition(-cam);
+		if (m_palette) {
+			p_entity_shader->submit(win, *m_palette, ent_sprite);
+		} else {
+			win.draw(ent_sprite);
+		}
+		auto sent_sprite = sf::Sprite{m_map->m_static_entity_texture.getTexture()};
+		sent_sprite.setPosition(-cam);
+		if (m_palette) { p_entity_shader->submit(win, *m_palette, sent_sprite); }
 		m_map->render(p_renderer, svc, win, p_world_shader, player->get_camera_position());
 	}
 	if (!m_flags.test(IntroFlags::established)) {

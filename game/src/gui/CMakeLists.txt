@@ -2,6 +2,7 @@ nani_add_sources(
         ActionContextBar.cpp
         ActionControlIconQuery.cpp
         BossHealth.cpp
+        Button.cpp
         Dashboard.cpp
         DottedLine.cpp
         Gizmo.cpp

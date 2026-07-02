@@ -332,7 +332,8 @@ void Console::handle_inputs(input::InputSystem& controller) {
 			for (auto& code : codes.value()) {
 				if (code.is_response()) {
 					// create a response dialog, feed it inputs, and await its closure before resuming m_writer
-					m_response = ResponseDialog(m_services->text, text_suite, m_services->quest_table, native_key, code.value, m_position + m_response_offset);
+					auto stall = m_services->state_flags.test(automa::StateFlags::cutscene) ? 80 : 32;
+					m_response = ResponseDialog(m_services->text, text_suite, m_services->quest_table, native_key, code.value, m_position + m_response_offset, stall);
 					m_mode = ConsoleMode::responding;
 					m_writer->wait();
 					m_services->soundboard.flags.console.set(audio::Console::next);

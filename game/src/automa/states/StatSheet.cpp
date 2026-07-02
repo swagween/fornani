@@ -40,7 +40,7 @@ StatSheet::StatSheet(ServiceProvider& svc, player::Player& player, AppContext& c
 
 void StatSheet::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	MenuState::tick_update(svc, engine);
-	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
+	if (was_selected(svc.input_system)) {
 		if (current_selection.get() == 1) {
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 			svc.events.return_to_main_menu_event.dispatch();

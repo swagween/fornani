@@ -9,7 +9,8 @@
 
 namespace fornani::gui {
 
-ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, QuestTable& quest_table, std::string_view key, int index, sf::Vector2f start_position) : m_font{&text.fonts.basic}, m_selection{1}, m_index{index}, m_stall{32} {
+ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, QuestTable& quest_table, std::string_view key, int index, sf::Vector2f start_position, int stall)
+	: m_font{&text.fonts.basic}, m_selection{1}, m_index{index}, m_stall{stall} {
 	auto& set = key == null_key ? source["responses"][index] : source[key]["responses"][index];
 	auto& data = key == null_key ? source : source[key];
 	if (data["hide_portrait"].as_bool()) { set_flag(ResponseDialogFlags::hide_portrait); }

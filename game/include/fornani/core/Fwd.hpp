@@ -23,6 +23,10 @@ namespace arms {
 enum class Team;
 }
 
+namespace input {
+class InputSystem;
+}
+
 struct SceneContext;
 
 class SpriteBatch;

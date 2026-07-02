@@ -17,7 +17,7 @@ namespace fornani {
 static double average_frame_time{};
 
 Game::Game(char** argv, WindowManager& window, AppContext& context, capo::IEngine& audio_engine)
-	: m_context{&context}, services(argv, context, window, audio_engine), player(services), game_state(services, player, context, automa::MenuType::main) {
+	: m_context{&context}, services(argv, context, window, audio_engine), player(services), game_state(services, player, context, automa::MenuType::main), m_cursor{services, "mouse_cursor", {8, 8}} {
 
 	/* Set up ImGui Context */
 	auto imgui_context = ImGui::CreateContext();
@@ -110,8 +110,9 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 					services.window->get().setView(view);
 					zooming = !zooming;
 				}
-				if (key_pressed->scancode == sf::Keyboard::Scancode::Escape) { m_game_menu = {}; }
 #endif()
+
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Escape) { m_game_menu = {}; }
 			}
 
 			if (auto const* joystick_moved = event->getIf<sf::Event::JoystickMoved>()) {
@@ -119,7 +120,6 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 				auto jy = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::Y);
 				services.input_system.set_joystick_throttle(sf::Vector2f{jx, jy});
 			}
-
 			services.input_system.handle_event(*event);
 			ImGui::SFML::ProcessEvent(services.window->get(), *event);
 		}
@@ -128,6 +128,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 
 		bool has_focus = services.window->get().hasFocus();
 		services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services, &audio_engine = audio_engine] {
+			services.input_system.sync_mouse(services.window->get());
 			services.input_system.update();
 			services.music_player.update();
 			if (services.input_system.digital(input::DigitalAction::menu_back).triggered && m_game_menu) {
@@ -153,9 +154,11 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 				game_state.get_current_state().flags.reset(automa::GameStateFlags::controls_request);
 			}
 			if (game_state.get_current_state().get_type() == automa::StateType::menu) { m_background->update(services); }
+			services.input_system.flush_mouse_input();
 		});
 		if (m_game_menu) {
 			m_game_menu.value()->get_current_state().frame_update(services);
+			m_game_menu.value()->get_current_state().clear_back_button();
 		} else {
 			game_state.get_current_state().frame_update(services);
 		}
@@ -192,6 +195,8 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		}
 
 		if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.render(services.window->get()); }
+		m_cursor.set_position(services.input_system.get_mouse_position());
+		if (services.input_system.is_mouse_active()) { services.window->get().draw(m_cursor); }
 
 		ImGui::SFML::Render(services.window->get());
 		services.window->get().display();
@@ -388,6 +393,10 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					case input::ActionSet::Platformer: ImGui::Text("Platformer"); break;
 					case input::ActionSet::Menu: ImGui::Text("Menu"); break;
 					}
+					ImGui::SeparatorText("Mouse");
+					ImGui::Text("Left Mouse Button: %s", services.input_system.left_clicked() ? "clicked" : "");
+					ImGui::Text("Mouse Active: %s", services.input_system.is_mouse_active() ? "Yes" : "No");
+
 					left_triggered.update();
 					ImGui::EndTabItem();
 				}
@@ -501,6 +510,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 				}
 				if (ImGui::BeginTabItem("Story")) {
 					ImGui::SeparatorText("Cutscenes");
+					ImGui::Text("Cutscene Active (svc)? %s", services.state_flags.test(automa::StateFlags::cutscene) ? "Yes" : "No");
+					ImGui::Text("Cutscene Active (plr)? %s", player.has_flag_set(player::PlayerFlags::cutscene) ? "Yes" : "No");
 					ImGui::Text("Number of active cutscenes: %i", game_state.get_current_state().get_context().cutscene_catalog.cutscenes.size());
 					if (game_state.get_current_state().get_context().cutscene_catalog.cutscenes.size() > 0) {
 						ImGui::Text("Current cutscene progress: %i", game_state.get_current_state().get_context().cutscene_catalog.cutscenes.at(0)->get_progress());

@@ -32,6 +32,7 @@ class TrialsMenu final : public MenuState {
 	std::vector<CourseListing> m_courses;
 	util::Cooldown m_loading;
 	Animatable m_stars;
+	int m_previous_selection{};
 };
 
 } // namespace fornani::automa

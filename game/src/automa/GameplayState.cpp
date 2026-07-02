@@ -12,7 +12,6 @@ GameplayState::GameplayState(ServiceProvider& svc, player::Player& player, int r
 }
 
 void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-
 	if (p_context.transition.has_waited(64) && !has_flag_set(GameplayStateFlags::transitioned_in)) {
 		p_context.transition.end();
 		set_flag(GameplayStateFlags::transitioned_in);
@@ -50,6 +49,8 @@ void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		if (p_pause_window.value()->exit_requested()) { unpause(svc); }
 		if (svc.input_system.digital(input::DigitalAction::menu_close).triggered) { unpause(svc); }
 		set_flag(GameplayStateFlags::early_tick_return);
+	} else {
+		svc.input_system.cancel_mouse();
 	}
 	GameState::tick_update(svc, engine);
 }

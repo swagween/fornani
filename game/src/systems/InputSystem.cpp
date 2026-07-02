@@ -1,4 +1,5 @@
 
+#include <imgui.h>
 #include <djson/json.hpp>
 #include <fornani/gui/ActionControlIconQuery.hpp>
 #include <fornani/systems/InputSystem.hpp>
@@ -54,7 +55,7 @@ static auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 	return ActionSet::Platformer; // This will never be hit
 }
 
-InputSystem::InputSystem(ResourceFinder& finder) : m_stick_sensitivity{default_joystick_sensitivity_v} {
+InputSystem::InputSystem(ResourceFinder& finder) : m_stick_sensitivity{default_joystick_sensitivity_v}, m_mouse_active{1200} {
 	NANI_LOG_INFO(m_logger, "Initializing Steam Input");
 	if (!SteamInput()->Init(true)) {
 		NANI_LOG_WARN(m_logger, "Could not initialize Steam Input!");
@@ -144,6 +145,7 @@ void InputSystem::setup_action_handles() {
 }
 
 void InputSystem::handle_event(std::optional<sf::Event> const event) {
+	auto& left_mouse = m_mouse.left_button;
 	if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
 		m_last_device_used = InputDevice::keyboard;
 		m_last_key_pressed = key_pressed->scancode;
@@ -153,6 +155,23 @@ void InputSystem::handle_event(std::optional<sf::Event> const event) {
 	} else if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
 		keys_pressed.erase(key_released->scancode);
 	}
+	if (auto const* mouse_pressed = event->getIf<sf::Event::MouseButtonPressed>()) {
+		if (mouse_pressed->button == sf::Mouse::Button::Left) {
+			left_mouse.triggered = true;
+			left_mouse.held = true;
+		}
+	}
+	if (auto const* mouse_released = event->getIf<sf::Event::MouseButtonReleased>()) {
+		if (mouse_released->button == sf::Mouse::Button::Left) {
+			left_mouse.released = true;
+			left_mouse.held = false;
+		}
+	}
+}
+
+void InputSystem::sync_mouse(sf::RenderWindow& window) {
+	m_mouse.previous_position = m_mouse.position;
+	m_mouse.position = window.mapPixelToCoords(sf::Mouse::getPosition());
 }
 
 void InputSystem::update() {
@@ -160,10 +179,12 @@ void InputSystem::update() {
 	SteamInput()->RunFrame();
 	gather_raw_input();
 	resolve_input();
-	// update_steam_controllers();
+	if (has_mouse_moved()) { m_mouse_active.start(); }
+	m_mouse_active.update();
 }
 
 void InputSystem::flush_inputs() {
+
 	for (auto& state : m_resolved_digital) {
 		state.held = false;
 		state.triggered = false;
@@ -469,6 +490,15 @@ void InputSystem::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t* d
 	if (is_gamepad_connected()) { set_flag(InputSystemFlags::gamepad_disconnected); }
 	m_controller_handle = 0;
 	m_last_device_used = InputDevice::keyboard; // Quickly switch to keyboard input
+}
+
+auto InputSystem::has_mouse_moved() const -> bool { return (m_mouse.position - m_mouse.previous_position).length() > constants::tiny_value; }
+
+void InputSystem::flush_mouse_input() {
+	m_mouse.left_button.triggered = false;
+	m_mouse.left_button.released = false;
+	m_mouse.right_button.triggered = false;
+	m_mouse.right_button.released = false;
 }
 
 void InputSystem::open_bindings_overlay() const {

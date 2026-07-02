@@ -102,7 +102,7 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		m_current_tab.modulate(1);
 		change_scene(svc, tabs[m_current_tab.get()]);
 	}
-	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
+	if (was_selected(svc.input_system)) {
 		svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		// Gamepad settings should be second to last option
 		if (current_selection.get() == 0) {

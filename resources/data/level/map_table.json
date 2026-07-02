@@ -2,6 +2,18 @@
   "rooms": [
     {
       "folder": "ashtown",
+      "label": "curio_shop.json",
+      "region": "ashtown",
+      "room_id": 1303
+    },
+    {
+      "folder": "ashtown",
+      "label": "hideout.json",
+      "region": "ashtown",
+      "room_id": 1311
+    },
+    {
+      "folder": "ashtown",
       "label": "hostel.json",
       "region": "ashtown",
       "room_id": 1310
@@ -11,6 +23,12 @@
       "label": "pipers_house.json",
       "region": "ashtown",
       "room_id": 1302
+    },
+    {
+      "folder": "ashtown",
+      "label": "sarah_banes_house.json",
+      "region": "ashtown",
+      "room_id": 1304
     },
     {
       "folder": "ashtown",

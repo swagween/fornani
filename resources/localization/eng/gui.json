@@ -38,6 +38,7 @@
   "locations": {
     "firstwind": "- Firstwind Airship - "
   },
+  "menu": { "back_button": "< back" },
   "file_menu": {
     "play": "play",
     "stats": "stats",

@@ -6,6 +6,8 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
 #include <fornani/systems/InputActionMap.hpp>
+#include <fornani/utils/Constants.hpp>
+#include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/Flaggable.hpp>
 #include <algorithm>
 #include <array>
@@ -84,6 +86,14 @@ struct DigitalActionSource {
 	sf::Keyboard::Scancode key{};
 };
 
+// mouse input
+struct MouseInput {
+	ResolvedDigitalState left_button{};
+	ResolvedDigitalState right_button{};
+	sf::Vector2f previous_position;
+	sf::Vector2f position;
+};
+
 // --------------------------------------------------
 // Input system
 // --------------------------------------------------
@@ -98,6 +108,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 
 	InputSystem(ResourceFinder& finder);
 	void handle_event(std::optional<sf::Event> const event);
+	void sync_mouse(sf::RenderWindow& window);
 	void update(); // calls gather + resolve
 	void flush_inputs();
 
@@ -144,6 +155,15 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	[[nodiscard]] auto is_gamepad() const -> bool { return m_last_device_used == InputDevice::gamepad; }
 	[[nodiscard]] auto is_keyboard() const -> bool { return m_last_device_used == InputDevice::keyboard; }
 	[[nodiscard]] auto get_controller_handle() const -> InputHandle_t { return m_controller_handle; }
+
+	// --- Mouse ---
+	[[nodiscard]] auto has_mouse_moved() const -> bool;
+	[[nodiscard]] auto is_mouse_active() const -> bool { return m_mouse_active.running(); }
+	[[nodiscard]] auto get_mouse_position() const -> sf::Vector2f { return m_mouse.position; }
+	[[nodiscard]] auto left_clicked() const -> bool { return m_mouse.left_button.triggered; }
+	[[nodiscard]] auto right_clicked() const -> bool { return m_mouse.right_button.triggered; }
+	void cancel_mouse() { m_mouse_active.cancel(); }
+	void flush_mouse_input();
 
 	// --- Gamepad handling ---
 	void open_bindings_overlay() const;
@@ -199,6 +219,10 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	// --- Joystick Input ---
 	sf::Vector2f m_joystick_throttle{};
 	float m_stick_sensitivity;
+
+	// --- Mouse Inout ---
+	MouseInput m_mouse{};
+	util::Cooldown m_mouse_active;
 
 	// --- Raw (per-frame scratch) ---
 	std::array<RawDigitalState, static_cast<size_t>(DigitalAction::END)> m_raw_digital;

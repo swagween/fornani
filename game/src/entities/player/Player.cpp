@@ -478,22 +478,22 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		box.setPosition(distant_vicinity.get_position() - cam);
 		box.setSize(distant_vicinity.get_dimensions());
 		win.draw(box);
-		if (get_collider().walljumper) {
-			get_collider().has_flag_set(shape::ColliderFlags::left_walljump) ? box.setFillColor(sf::Color{255, 100, 0, 20}) : box.setFillColor(sf::Color::Transparent);
-			get_collider().has_flag_set(shape::ColliderFlags::left_walljump) ? box.setOutlineColor(colors::bright_orange) : box.setOutlineColor(colors::pioneer_dark_red);
-			box.setOutlineThickness(-0.5f);
-			box.setPosition(get_collider().walljumper->left.get_position() - cam);
-			box.setSize({get_collider().walljumper->get_dimensions().x * 0.5f, get_collider().walljumper->get_dimensions().y});
-			win.draw(box);
-			get_collider().has_flag_set(shape::ColliderFlags::right_walljump) ? box.setFillColor(sf::Color{255, 100, 0, 20}) : box.setFillColor(sf::Color::Transparent);
-			get_collider().has_flag_set(shape::ColliderFlags::right_walljump) ? box.setOutlineColor(colors::bright_orange) : box.setOutlineColor(colors::pioneer_dark_red);
-			box.setOutlineThickness(-0.5f);
-			box.setPosition(get_collider().walljumper->right.get_position() - cam);
-			box.setSize({get_collider().walljumper->get_dimensions().x * 0.5f, get_collider().walljumper->get_dimensions().y});
-			win.draw(box);
-		}
-		// camera control debug
-		if (collider.has_value()) {
+		if (has_collider()) {
+			if (get_collider().walljumper) {
+				get_collider().has_flag_set(shape::ColliderFlags::left_walljump) ? box.setFillColor(sf::Color{255, 100, 0, 20}) : box.setFillColor(sf::Color::Transparent);
+				get_collider().has_flag_set(shape::ColliderFlags::left_walljump) ? box.setOutlineColor(colors::bright_orange) : box.setOutlineColor(colors::pioneer_dark_red);
+				box.setOutlineThickness(-0.5f);
+				box.setPosition(get_collider().walljumper->left.get_position() - cam);
+				box.setSize({get_collider().walljumper->get_dimensions().x * 0.5f, get_collider().walljumper->get_dimensions().y});
+				win.draw(box);
+				get_collider().has_flag_set(shape::ColliderFlags::right_walljump) ? box.setFillColor(sf::Color{255, 100, 0, 20}) : box.setFillColor(sf::Color::Transparent);
+				get_collider().has_flag_set(shape::ColliderFlags::right_walljump) ? box.setOutlineColor(colors::bright_orange) : box.setOutlineColor(colors::pioneer_dark_red);
+				box.setOutlineThickness(-0.5f);
+				box.setPosition(get_collider().walljumper->right.get_position() - cam);
+				box.setSize({get_collider().walljumper->get_dimensions().x * 0.5f, get_collider().walljumper->get_dimensions().y});
+				win.draw(box);
+			}
+			// camera control debug
 			sf::RectangleShape camera_target{};
 			camera_target.setFillColor(colors::pioneer_red);
 			camera_target.setSize({4.f, 4.f});
