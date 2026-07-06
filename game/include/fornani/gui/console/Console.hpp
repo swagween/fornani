@@ -27,7 +27,6 @@ namespace fornani::gui {
 enum class ConsoleMode { writing, responding, off };
 enum class ConsoleFlags { no_exit, close_after_process, hologram };
 enum class ConsoleTriggers { response_created };
-enum class OutputType { gradual, instant, no_exit, no_skip };
 
 class Console {
   public:

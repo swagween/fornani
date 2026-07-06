@@ -37,6 +37,12 @@
       "room_id": 1300
     },
     {
+      "folder": "ashtown",
+      "label": "trade_shop.json",
+      "region": "ashtown",
+      "room_id": 1305
+    },
+    {
       "folder": "config",
       "label": "collider_test.json",
       "region": "junkyard",

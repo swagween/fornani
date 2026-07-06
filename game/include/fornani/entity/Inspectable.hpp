@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/core/Common.hpp>
 #include <fornani/entity/Entity.hpp>
 #include <fornani/events/Subscription.hpp>
 #include <fornani/gui/console/Message.hpp>
@@ -47,6 +48,7 @@ class Inspectable : public Entity {
 	util::BitFlags<InspectableAttributes> attributes{};
 	util::BitFlags<InspectableFlags> flags{};
 	util::Cooldown m_indicator_cooldown{1300};
+	gui::OutputType m_output{};
 };
 
 } // namespace fornani

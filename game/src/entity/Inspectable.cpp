@@ -37,6 +37,7 @@ void Inspectable::serialize(dj::Json& out) {
 	for (auto i{0}; i < 1; ++i) {
 		auto next = dj::Json{};
 		next["hide_portrait"] = true;
+		next["output"] = m_instant ? 1 : static_cast<int>(m_output);
 		for (auto j = 0; j < 2; ++j) {
 			auto& from_set = j == 0 ? m_suites : m_responses;
 			auto tag = j == 0 ? "suite" : "responses";
@@ -74,6 +75,7 @@ void Inspectable::unserialize(dj::Json const& in) {
 		for (auto j = 0; j < 2; ++j) {
 			auto& to_set = j == 0 ? m_suites : m_responses;
 			auto tag = j == 0 ? "suite" : "responses";
+			m_output = m_instant ? gui::OutputType::instant : static_cast<gui::OutputType>(entry["output"].as<int>());
 			for (auto const& in_suite : entry[tag].as_array()) {
 				auto s = std::vector<gui::BasicMessage>{};
 				for (auto const& message : in_suite.as_array()) {
@@ -138,8 +140,7 @@ void Inspectable::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_
 	}
 	if (flags.test(InspectableFlags::activated) && !player.is_busy()) {
 		player.set_busy(true);
-		auto output_type = attributes.test(InspectableAttributes::instant) ? gui::OutputType::instant : gui::OutputType::gradual;
-		context.console = std::make_unique<gui::Console>(p_stable_id, svc, set["series"][current_alt], output_type);
+		context.console = std::make_unique<gui::Console>(p_stable_id, svc, set["series"][current_alt], m_output);
 	}
 
 	if (flags.test(InspectableFlags::hovered) && flags.consume(InspectableFlags::hovered_trigger) && !attributes.test(InspectableAttributes::activate_on_contact)) {

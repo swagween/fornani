@@ -654,6 +654,14 @@
     "max_distance": 512.0
   },
   {
+    "label": "pushable_move",
+    "bus": "gameplay",
+    "volume": 0.6,
+    "pitch_offset": 0.0,
+    "fade_in": 16,
+    "fade_out": 16
+  },
+  {
     "label": "mizzle_egg_shake",
     "bus": "gameplay",
     "volume": 1.0,

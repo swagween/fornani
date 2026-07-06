@@ -409,6 +409,30 @@
       }
     ]
   },
+  "spencer": {
+    "id": 6,
+    "dimensions": [24, 24],
+    "sprite_dimensions": [24, 24],
+    "sprite_offset": [0, -9],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 6, 60, -1, false]
+      },
+      {
+        "label": "walk",
+        "parameters": [6, 4, 60, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [12, 5, 40, 0, false]
+      },
+      {
+        "label": "busy",
+        "parameters": [10, 2, 180, -1, false]
+      }
+    ]
+  },
   "ward": {
     "id": 30,
     "dimensions": [60, 60],

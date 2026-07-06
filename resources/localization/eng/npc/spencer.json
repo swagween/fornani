@@ -1,0 +1,29 @@
+{
+  "1": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "I found your golder tiara."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[1, 0]],
+          "message": "Welcome back."
+        }
+      ],
+      [
+        {
+          "message": "Oh, no, it's not mine. You can keep it. I just wanted to make sure I could trust you."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "I still don't. It's not personal, though. I don't trust anybody."
+        }
+      ]
+    ]
+  }
+}

@@ -25,7 +25,7 @@ namespace fornani::world {
 class Map;
 
 enum class PushableAttributes { bulletproof };
-enum class PushableFlags { moved, pushed, trying_to_respawn };
+enum class PushableFlags { moved, pushed, trying_to_respawn, blocked_left, blocked_right, landed };
 
 class Pushable : public Drawable, public Flaggable<PushableFlags> {
   public:

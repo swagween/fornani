@@ -15,6 +15,7 @@ constexpr int default_framerate_limit_v = 120;
 
 namespace gui {
 
+enum class OutputType { gradual, instant, no_exit, no_skip };
 enum class MessageCodeType {
 	none,
 	response,

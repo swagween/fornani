@@ -75,6 +75,8 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
+            "output": 0,
             "responses": [
               [
                 {
@@ -135,6 +137,8 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
+            "output": 1,
             "suite": [
               [
                 {
