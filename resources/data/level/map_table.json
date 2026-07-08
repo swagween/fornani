@@ -8,6 +8,12 @@
     },
     {
       "folder": "ashtown",
+      "label": "dougs_house.json",
+      "region": "ashtown",
+      "room_id": 1312
+    },
+    {
+      "folder": "ashtown",
       "label": "hideout.json",
       "region": "ashtown",
       "room_id": 1311
@@ -35,6 +41,12 @@
       "label": "town.json",
       "region": "ashtown",
       "room_id": 1300
+    },
+    {
+      "folder": "ashtown",
+      "label": "town_hall.json",
+      "region": "ashtown",
+      "room_id": 1307
     },
     {
       "folder": "ashtown",

@@ -65,6 +65,8 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		m_flags.reset(GameplayFlags::item_music_played);
 	}
 
+	if (svc.ticker.every_second()) { svc.quest_table.set_quest_progression("nighttime", svc.world_clock.is_nighttime() ? 2 : 1); }
+
 	if (!p_context.console && !m_cutscenes.is_empty()) {
 		for (auto const& cutscene : m_cutscenes) {
 			p_context.cutscene_catalog.push_cutscene(svc, *m_map, *player, cutscene.id, cutscene.special);
@@ -116,12 +118,17 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (p_reward_sequence) {}
 
 	if (m_flags.consume(GameplayFlags::remove_item)) {
-		auto label = player->catalog.inventory.find_item(m_item_tag)->get_title();
-		NANI_LOG_DEBUG(m_logger, "removed item {}", label);
-		if (p_context.console) { p_context.console.value()->display_item(m_item_tag, false); }
-		svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["removed"].as_string() + std::string{label} + ".");
-		if (player->has_item_equipped(m_item_tag)) { player->equip_item(svc.data.item_id_from_label(m_item_tag)); }
-		player->catalog.inventory.remove_item(m_item_tag, 1);
+		auto item = player->catalog.inventory.find_item(m_item_tag);
+		if (item == nullptr) {
+			NANI_LOG_ERROR(m_logger, "Tried to remove an item that wasn't there!");
+		} else {
+			auto label = item->get_title();
+			NANI_LOG_DEBUG(m_logger, "removed item {}", label);
+			if (p_context.console) { p_context.console.value()->display_item(m_item_tag, false); }
+			svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["removed"].as_string() + std::string{label} + ".");
+			if (player->has_item_equipped(m_item_tag)) { player->equip_item(svc.data.item_id_from_label(m_item_tag)); }
+			player->catalog.inventory.remove_item(m_item_tag, 1);
+		}
 	}
 
 	svc.soundboard.set_listener_position(player->get_ear_position());

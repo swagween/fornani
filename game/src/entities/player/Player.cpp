@@ -1167,6 +1167,7 @@ void Player::handle_item_logic() {
 	if (arsenal && hotbar) { has_item_equipped("soda") ? equipped_weapon().set_reload_multiplier(0.85f) : equipped_weapon().set_reload_multiplier(1.f); }
 	if (has_item("soda")) { m_services->quest_table.set_quest_progression("carl_soda", 1, QuestRequirementType::loose); }
 	if (has_item("screwdriver")) { m_services->quest_table.set_quest_progression("pioneer_tech", 2, QuestRequirementType::loose); }
+	if (has_item("velvet_rose")) { m_services->quest_table.set_quest_progression("cajole_doug", 2, QuestRequirementType::strict); }
 	auto has_bonus_health = health.has_bonus() ? 1 : 0;
 	m_services->quest_table.set_quest_progression("bonus_health", has_bonus_health, QuestRequirementType::strict);
 	if (has_item_equipped("gas_mask") && !is_dead()) {

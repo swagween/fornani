@@ -82,6 +82,12 @@ void Console::update(automa::ServiceProvider& svc) {
 				m_services->events.set_cutscene_progression_event.dispatch(code.value);
 				processed = true;
 			}
+			if (code.is(MessageCodeType::set_quest_progression)) {
+				if (code.extras) {
+					if (code.extras->size() > 0) { svc.quest_table.set_quest_progression(svc.quest_registry.get_quest_metadata(code.value).get_tag(), code.extras->at(0)); }
+				}
+				processed = true;
+			}
 			if (code.is_destroy_inspectable()) {
 				m_services->data.destroy_inspectable(code.value);
 				if (m_speaker_id) { m_services->data.destroy_inspectable(m_speaker_id->get()); }
@@ -301,6 +307,11 @@ void Console::handle_inputs(input::InputSystem& controller) {
 					if (cde.is_quest()) {
 						if (cde.extras) {
 							if (cde.extras->size() > 1) { m_services->quest_table.progress_quest(m_services->quest_registry.get_quest_metadata(cde.value).get_tag(), cde.extras->at(0), cde.extras->at(1)); }
+						}
+					}
+					if (cde.is(MessageCodeType::set_quest_progression)) {
+						if (cde.extras) {
+							if (cde.extras->size() > 0) { m_services->quest_table.set_quest_progression(m_services->quest_registry.get_quest_metadata(cde.value).get_tag(), cde.extras->at(0)); }
 						}
 					}
 					if (cde.is_piggyback()) { m_services->events.npc_piggyback_event.dispatch(*m_services, cde.value); }

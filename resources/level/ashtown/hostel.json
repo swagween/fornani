@@ -104,7 +104,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": "overcast",
+    "background": "opensky",
     "biome": "ashtown",
     "camera_effects": {
       "shake": {
@@ -131,7 +131,7 @@
       20
     ],
     "minimap": true,
-    "music": "home_again",
+    "music": "bossanova",
     "player_start": [
       0,
       0
@@ -141,6 +141,7 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": false,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

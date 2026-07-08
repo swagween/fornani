@@ -82,6 +82,7 @@ struct MapAttributes {
 	Register<std::string> atmosphere{};
 	int special_drop_id{};
 	sf::Color border_color{};
+	int sky_limit{};
 
 	void serialize(dj::Json& out);
 

@@ -96,7 +96,7 @@
     "vendor": {
       "upcharge": 0.2,
       "stock_size": 6,
-      "common_items": ["bronze_bracelet", "bronze_bracelet", "soda"],
+      "common_items": ["bronze_bracelet", "soda"],
       "uncommon_items": ["lantern", "magnifying_glass", "screwdriver"],
       "rare_items": ["pioneer_scrap", "red_jeans", "indigum", "magnet"],
       "guaranteed_finite_items": ["gas_mask"]
@@ -298,6 +298,87 @@
       "day": 400
     }
   },
+  "sarah_bane": {
+    "id": 43,
+    "dimensions": [24, 24],
+    "sprite_dimensions": [28, 28],
+    "sprite_offset": [0, -13],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 8, 40, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [8, 3, 40, 0, false]
+      }
+    ]
+  },
+  "eugene": {
+    "id": 44,
+    "dimensions": [24, 24],
+    "sprite_dimensions": [34, 34],
+    "sprite_offset": [0, -19],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 6, 40, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [6, 2, 40, 0, false]
+      }
+    ],
+    "schedule": {
+      "night": 1307,
+      "dusk": 1307,
+      "dawn": 1300,
+      "day": 1300
+    }
+  },
+  "doug": {
+    "id": 45,
+    "dimensions": [24, 24],
+    "sprite_dimensions": [34, 34],
+    "sprite_offset": [0, -19],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 6, 80, -1, false]
+      }
+    ],
+    "schedule": {
+      "night": 1312,
+      "dusk": 1312,
+      "dawn": 1300,
+      "day": 1300
+    }
+  },
+  "ambrose": {
+    "id": 46,
+    "vendor_id": 46,
+    "dimensions": [24, 24],
+    "sprite_dimensions": [34, 34],
+    "sprite_offset": [0, -19],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 8, 60, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [8, 1, 60, 0, false]
+      }
+    ],
+    "vendor": {
+      "upcharge": 0.3,
+      "stock_size": 8,
+      "common_items": ["flashbang", "soda"],
+      "uncommon_items": ["feather", "flippers"],
+      "rare_items": ["brinium", "skycorps_tee", "indigum", "magnet"],
+      "guaranteed_finite_items": ["velvet_rose"]
+    }
+  },
   "bandit": {
     "id": 42,
     "dimensions": [24, 24],
@@ -425,11 +506,19 @@
       },
       {
         "label": "turn",
-        "parameters": [12, 5, 40, 0, false]
+        "parameters": [12, 5, 20, 0, false]
       },
       {
         "label": "busy",
         "parameters": [10, 2, 180, -1, false]
+      },
+      {
+        "label": "special_1",
+        "parameters": [17, 6, 30, -1, false]
+      },
+      {
+        "label": "special_2",
+        "parameters": [23, 5, 30, 0, false]
       }
     ]
   },

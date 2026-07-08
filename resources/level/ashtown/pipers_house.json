@@ -52,7 +52,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": "black",
+    "background": "opensky",
     "biome": "ashtown",
     "camera_effects": {
       "shake": {
@@ -73,13 +73,13 @@
       32,
       16
     ],
-    "interior": false,
+    "interior": true,
     "metagrid": [
       88,
       22
     ],
     "minimap": true,
-    "music": "home_again",
+    "music": "bossanova",
     "player_start": [
       0,
       0
@@ -89,6 +89,7 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": false,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -98,7 +99,14 @@
     },
     "special_drop_id": 0,
     "use_template": false,
-    "weather": null
+    "weather": {
+      "ambience": "rain",
+      "chance": 0.30000001192092896,
+      "density": 1,
+      "effect": "raindrop",
+      "framerate": 8,
+      "type": "rain"
+    }
   },
   "tile": {
     "animated": [

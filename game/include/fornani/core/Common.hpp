@@ -43,7 +43,8 @@ enum class MessageCodeType {
 	set_cutscene_progression,
 	purchase,
 	give_bonus_health,
-	open_builder
+	open_builder,
+	set_quest_progression
 };
 
 enum class CodeSource { suite, response };

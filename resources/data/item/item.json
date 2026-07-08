@@ -1118,5 +1118,25 @@
     "wearable": true,
     "apparel_type": 0,
     "value": 90
+  },
+  {
+    "tag": "eugenes_letter",
+    "category": 1,
+    "lookup": [14, 2],
+    "origin": [9, 2],
+    "actual_title": "Eugene's Letter",
+    "naive_description": "You promised Eugene that you'd deliver this letter to the Nightside Post Office.",
+    "actual_description": "You promised Eugene that you'd deliver this letter to the Nightside Post Office.",
+    "unique": true
+  },
+  {
+    "tag": "velvet_rose",
+    "category": 1,
+    "lookup": [15, 2],
+    "origin": [9, 3],
+    "actual_title": "Velvet Rose",
+    "naive_description": "A dark red rose. This would make an excellent gift for a lonely guy.",
+    "unique": true,
+    "value": 180
   }
 ]

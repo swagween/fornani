@@ -1,5 +1,7 @@
 
 #include "fornani/story/CutsceneCatalog.hpp"
+#include <fornani/story/cutscene/AshtownCall.hpp>
+#include <fornani/story/cutscene/BanditConfrontation.hpp>
 #include <fornani/story/cutscene/BanditEncounter.hpp>
 #include <fornani/story/cutscene/BitCell.hpp>
 #include <fornani/story/cutscene/BrynPostMiaag.hpp>
@@ -45,6 +47,8 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	case 902: cutscenes.push_back(std::make_unique<HaunchEscape>(svc)); break;
 	case 209: cutscenes.push_back(std::make_unique<ReturnToBase>(svc)); break;
 	case 1002: cutscenes.push_back(std::make_unique<BanditEncounter>(svc)); break;
+	case 1300: cutscenes.push_back(std::make_unique<AshtownCall>(svc)); break;
+	case 1301: cutscenes.push_back(std::make_unique<BanditConfrontation>(svc)); break;
 	default:
 		NANI_LOG_INFO(m_logger, "You forgot to add cutscene {} to catalog.", id);
 		cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc));

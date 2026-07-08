@@ -1,4 +1,7 @@
 nani_add_headers(
+  AshtownCall.hpp
+  BanditConfrontation.hpp
+  SpencerReveal.hpp
   BanditEncounter.hpp
   BitCell.hpp
   BrynPostMiaag.hpp

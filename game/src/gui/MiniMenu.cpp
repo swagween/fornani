@@ -34,7 +34,7 @@ void MiniMenu::update(automa::ServiceProvider& svc, sf::Vector2f dim, sf::Vector
 		option.update(selection.get());
 		if (auto to = option.label.getLocalBounds().size.x > largest_option.x) { largest_option.x = to; }
 		if (i > 2) { largest_option.y += option.label.getLocalBounds().size.y; }
-		if (option.label.getGlobalBounds().contains(svc.input_system.get_mouse_position())) {
+		if (option.label.getGlobalBounds().contains(svc.input_system.get_mouse_position()) && svc.input_system.is_mouse_active()) {
 			if (selection.get() != i) { svc.soundboard.play_sound("menu_shift"); }
 			selection.set(i);
 			m_flags.set(MiniMenuFlags::option_hovered);

@@ -1032,5 +1032,75 @@
         }
       ]
     ]
+  },
+  "30": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "It was quite the adventure."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "Who is it?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [
+            [4, 5],
+            [5, 1]
+          ],
+          "message": "Hey, Nani!"
+        },
+        {
+          "codes": [[5, 0]],
+          "message": "I was so happy when I saw your beacon pop up on my radar!"
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "We were beginning to worry something terrible had happened..."
+        }
+      ],
+      [
+        {
+          "message": "I can only imagine, really."
+        },
+        {
+          "message": "Anyhow, welcome to Ashtown."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "There's someone here you need to find. He was an old classmate of mine, and he should be able to fix that floppy disc."
+        }
+      ],
+      [
+        {
+          "message": "His name is Spencer."
+        },
+        {
+          "message": "Unfortunately, I can't really help you any further, as he's a bit of a recluse ever since the government went after him."
+        },
+        {
+          "codes": [[5, 0]],
+          "message": "Just ask around town to see if anyone might know where he is."
+        },
+        {
+          "codes": [
+            [5, 1],
+            [4, 21]
+          ],
+          "message": "But try to be discreet. Who knows if Skycorps have any spies lurking around there..."
+        },
+        {
+          "codes": [[23, 1]],
+          "message": "Good luck, Nani. Over and out!"
+        }
+      ]
+    ]
   }
 }

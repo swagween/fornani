@@ -912,7 +912,7 @@ void Map::generate_collidable_layer(bool live) {
 		if (cell.is_incinerite()) { incinerite_blocks.push_back(std::make_unique<Incinerite>(*m_services, *this, cell.position(), chunk_id)); }
 		if (cell.is_checkpoint()) { checkpoints.push_back(Checkpoint(*m_services, cell.position())); }
 		if (cell.is_fire()) { fire.push_back(Fire(*m_services, cell.position(), cell.value)); }
-		if (cell.is_solid() && get_middleground()->grid.is_exposed_to_sky(cell.one_d_index)) { m_surface_points.push_back(SurfacePoint{cell.bounding_box.get_top(), true}); }
+		if (cell.is_solid() && get_middleground()->grid.is_exposed_to_sky(cell.one_d_index, m_attributes.sky_limit)) { m_surface_points.push_back(SurfacePoint{cell.bounding_box.get_top(), true}); }
 	}
 	m_static_entity_texture.display();
 }
@@ -1260,6 +1260,7 @@ MapAttributes::MapAttributes(dj::Json const& in) {
 	if (in["properties"]["lighting"].as_bool()) { properties.set(MapProperties::lighting); }
 	if (in["properties"]["interior"].as_bool()) { properties.set(MapProperties::interior); }
 	if (in["properties"]["toxic"].as_bool()) { properties.set(MapProperties::toxic); }
+	if (in["properties"]["sky_limit"]) { sky_limit = in["properties"]["sky_limit"].as<int>(); }
 	if (in["minimap"].as_bool()) { properties.set(MapProperties::minimap); }
 
 	if (in["camera_effects"]) {
@@ -1287,6 +1288,7 @@ void MapAttributes::serialize(dj::Json& out) {
 	out["properties"]["lighting"] = properties.test(fornani::world::MapProperties::lighting);
 	out["properties"]["interior"] = properties.test(fornani::world::MapProperties::interior);
 	out["properties"]["toxic"] = properties.test(fornani::world::MapProperties::toxic);
+	out["properties"]["sky_limit"] = sky_limit;
 
 	out["music"] = music;
 	NANI_LOG_DEBUG(m_logger, "Serialized music: {}", music);

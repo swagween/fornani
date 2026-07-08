@@ -63,16 +63,19 @@ void Grid::check_neighbors(int i) {
 	cells.at(i).exposed = exposed;
 }
 
-bool Grid::is_exposed_to_sky(std::size_t index) const {
+bool Grid::is_exposed_to_sky(std::size_t index, int limit) const {
 	// top row is not exposed
 	if (index < dimensions.x) { return false; }
 
 	// walk upward row by row
+	auto limit_counter = 0;
 	for (std::size_t i = index; i >= dimensions.x; i -= dimensions.x) {
 		std::size_t up = i - dimensions.x;
 
 		auto const& cell = cells[up];
 		if (cell.is_solid() || cell.is_ramp()) { return false; }
+		++limit_counter;
+		if (limit_counter > limit && limit != 0) { return true; }
 	}
 
 	return true;

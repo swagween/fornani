@@ -1,4 +1,7 @@
 nani_add_sources(
+  AshtownCall.cpp
+  BanditConfrontation.cpp
+  SpencerReveal.cpp
   BanditEncounter.cpp
   BitCell.cpp
   BrynPostMiaag.cpp

@@ -33,11 +33,47 @@
     "npcs": [
       {
         "background": false,
+        "contingencies": [
+          {
+            "requirement": 2,
+            "strict": true,
+            "tag": "ashtown_bandit"
+          }
+        ],
         "dimensions": [
           1,
           1
         ],
-        "direction": 0,
+        "direction": -1,
+        "face_player": true,
+        "hidden": false,
+        "id": 1312,
+        "label": "bandit",
+        "position": [
+          11,
+          10
+        ],
+        "start_busy": false,
+        "suites": [
+          [
+            1
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "contingencies": [
+          {
+            "requirement": 3,
+            "strict": false,
+            "tag": "ashtown_bandit"
+          }
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 1311,
@@ -113,6 +149,7 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": false,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -121,7 +158,15 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": {
+      "ambience": "rain",
+      "chance": 0.30000001192092896,
+      "density": 1,
+      "effect": "raindrop",
+      "framerate": 8,
+      "type": "rain"
+    }
   },
   "tile": {
     "animated": [
@@ -2300,11 +2345,11 @@
         0,
         0,
         0,
-        154,
-        361,
-        361,
-        361,
-        154,
+        10,
+        10,
+        10,
+        10,
+        10,
         0,
         0,
         0,

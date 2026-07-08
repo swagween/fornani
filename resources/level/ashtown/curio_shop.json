@@ -44,6 +44,30 @@
         "unlit": true
       }
     ],
+    "npcs": [
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": 0,
+        "face_player": true,
+        "hidden": false,
+        "id": 1303,
+        "label": "ambrose",
+        "position": [
+          21,
+          9
+        ],
+        "start_busy": false,
+        "suites": [
+          [
+            1
+          ]
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,
@@ -83,7 +107,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": "overcast",
+    "background": "opensky",
     "biome": "ashtown",
     "camera_effects": {
       "shake": {
@@ -110,7 +134,7 @@
       19
     ],
     "minimap": true,
-    "music": "home_again",
+    "music": "bossanova",
     "player_start": [
       0,
       0
@@ -120,6 +144,7 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": false,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -2418,7 +2443,7 @@
         10,
         10,
         10,
-        182,
+        0,
         0,
         0,
         0,
@@ -2932,7 +2957,7 @@
         0,
         0,
         0,
-        0,
+        214,
         0,
         180,
         181,
@@ -3952,7 +3977,6 @@
         0,
         0,
         0,
-        10,
         0,
         0,
         0,
@@ -3984,7 +4008,8 @@
         0,
         0,
         0,
-        10,
+        0,
+        0,
         0,
         0,
         0,
