@@ -799,6 +799,7 @@ void Player::update_weapon(world::Map& map) {
 	if (busy) {
 		equipped_weapon().set_flag(arms::WeaponFlags::firing, false);
 		equipped_weapon().set_flag(arms::WeaponFlags::charging, false);
+		equipped_weapon().set_flag(arms::WeaponFlags::released, true);
 	} else if (fire_weapon()) {
 		m_services->stats.player.bullets_fired.update();
 		sf::Vector2f tweak = controller.facing_left() ? sf::Vector2f{0.f, 0.f} : sf::Vector2f{-3.f, 0.f};

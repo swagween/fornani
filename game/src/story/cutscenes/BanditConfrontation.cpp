@@ -20,6 +20,7 @@ void BanditConfrontation::update(automa::ServiceProvider& svc, SceneContext& con
 		svc.state_flags.reset(automa::StateFlags::no_menu);
 		svc.state_flags.reset(automa::StateFlags::cutscene);
 		svc.camera_controller.set_owner(graphics::CameraOwner::player);
+		svc.camera_controller.constrain();
 		svc.quest_table.set_quest_progression("ashtown_bandit", 10);
 		svc.music_player.resume();
 		flags.set(CutsceneFlags::delete_me);
@@ -29,6 +30,7 @@ void BanditConfrontation::update(automa::ServiceProvider& svc, SceneContext& con
 	svc.state_flags.set(automa::StateFlags::hide_hud);
 	svc.state_flags.set(automa::StateFlags::no_menu);
 	svc.state_flags.set(automa::StateFlags::cutscene);
+	svc.camera_controller.free();
 	player.stall_idle_timer();
 	cooldowns.beginning.update();
 	cooldowns.pause.update();

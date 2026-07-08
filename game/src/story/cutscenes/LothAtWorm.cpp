@@ -13,6 +13,7 @@ LothAtWorm::LothAtWorm(automa::ServiceProvider& svc) : Cutscene(svc, 268, "loth_
 	svc.music_player.load(svc.finder, "looking_glass");
 	svc.input_system.flush_inputs();
 	svc.state_flags.set(automa::StateFlags::cutscene);
+	cooldowns.beginning.start();
 }
 
 void LothAtWorm::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {

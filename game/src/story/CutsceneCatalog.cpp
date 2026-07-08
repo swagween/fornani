@@ -14,6 +14,7 @@
 #include <fornani/story/cutscene/NightsideWall.hpp>
 #include <fornani/story/cutscene/PioneerBaseDebrief.hpp>
 #include <fornani/story/cutscene/ReturnToBase.hpp>
+#include <fornani/story/cutscene/SpencerReveal.hpp>
 #include <fornani/story/cutscene/SwitchBlockPan.hpp>
 
 namespace fornani {
@@ -49,6 +50,7 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	case 1002: cutscenes.push_back(std::make_unique<BanditEncounter>(svc)); break;
 	case 1300: cutscenes.push_back(std::make_unique<AshtownCall>(svc)); break;
 	case 1301: cutscenes.push_back(std::make_unique<BanditConfrontation>(svc)); break;
+	case 1310: cutscenes.push_back(std::make_unique<SpencerReveal>(svc)); break;
 	default:
 		NANI_LOG_INFO(m_logger, "You forgot to add cutscene {} to catalog.", id);
 		cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc));

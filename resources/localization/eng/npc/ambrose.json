@@ -28,10 +28,10 @@
       ],
       [
         {
+          "codes": [[9, 130302]],
           "message": "Just a moment..."
         },
         {
-          "codes": [[9, 130302]],
           "message": "Boom! All set."
         }
       ],

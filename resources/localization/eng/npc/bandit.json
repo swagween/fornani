@@ -158,5 +158,111 @@
         }
       ]
     ]
+  },
+  "4": {
+    "output": 2,
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "Where is Spencer?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "What..."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 3]],
+          "message": "What...? Why?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 4]],
+          "message": "Fine. Then what?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 5]],
+          "message": "I don't have time for these games!"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "message": "Well, well, well. Looks like you finally made it."
+        },
+        {
+          "message": "Is this the part where you betray me and shoot me anyway?"
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "If so, please just get it over with!"
+        }
+      ],
+      [
+        {
+          "message": "Right! Right... Spencer..."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "Now, before I can show you Spencer, I need a favor..."
+        }
+      ],
+      [
+        {
+          "message": "There's a girl in town named Sarah Bane. She lives in the Blue District."
+        },
+        {
+          "message": "I need you to sneak into her house at nighttime and steal the golden tiara from her dresser."
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "Can you do that?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 3]],
+          "message": "Just... Can you do it, or not?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 4]],
+          "message": "Then bring it to me. I'll be waiting here. And once you bring it, I can take you to Spencer."
+        }
+      ],
+      [
+        {
+          "codes": [[13, 42, 1310]],
+          "message": "Well, you don't have much of a choice, do you? Huh?"
+        },
+        {
+          "message": "I have something you want."
+        },
+        {
+          "codes": [[23, 1]],
+          "message": "Now go get that tiara and bring it to me!"
+        }
+      ]
+    ]
+  },
+  "5": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[23, 1]],
+          "message": "I'm waiting on that golden tiara from Sarah Bane's house. I won't talk to you further until you bring it to me."
+        }
+      ]
+    ]
   }
 }
