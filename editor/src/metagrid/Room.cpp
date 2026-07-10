@@ -6,11 +6,14 @@
 
 namespace pi {
 
-Room::Room(fornani::automa::ServiceProvider& svc, fornani::data::MapData& in) : id{in.metadata["meta"]["room_id"].as<int>()}, m_label{svc.text.fonts.config}, m_biome{svc.text.fonts.config}, m_data(&in) {
+Room::Room(fornani::automa::ServiceProvider& svc, fornani::data::MapData& in) : id{in.metadata["meta"]["room_id"].as<int>()}, m_label{svc.text.fonts.config.font}, m_biome{svc.text.fonts.config.font}, m_data(&in) {
 	m_label.setString(in.room_label);
 	m_biome.setString(in.metadata["meta"]["biome"].as_string());
 	m_position = sf::Vector2i{in.metadata["meta"]["metagrid"][0].as<int>(), in.metadata["meta"]["metagrid"][1].as<int>()};
 	set_flag(RoomFlags::include_in_minimap, in.metadata["meta"]["minimap"].as_bool());
+	set_flag(RoomFlags::use_template, in.metadata["meta"]["use_template"].as_bool());
+	set_flag(RoomFlags::interior, in.metadata["meta"]["properties"]["interior"].as_bool());
+	set_flag(RoomFlags::day_night_shift, in.metadata["meta"]["properties"]["day_night_shift"].as_bool());
 	auto dimensions = sf::Vector2u{in.metadata["meta"]["dimensions"][0].as<unsigned int>(), in.metadata["meta"]["dimensions"][1].as<unsigned int>()} / fornani::constants::u32_chunk_size;
 	auto real_dimensions = sf::Vector2u{in.metadata["meta"]["dimensions"][0].as<unsigned int>(), in.metadata["meta"]["dimensions"][1].as<unsigned int>()};
 	m_box.setFillColor(room_color_v);
@@ -34,6 +37,8 @@ Room::Room(fornani::automa::ServiceProvider& svc, fornani::data::MapData& in) : 
 bool Room::serialize(fornani::automa::ServiceProvider& svc) {
 	m_data->metadata["meta"]["minimap"] = has_flag_set(RoomFlags::include_in_minimap);
 	m_data->metadata["meta"]["use_template"] = has_flag_set(RoomFlags::use_template);
+	m_data->metadata["meta"]["properties"]["interior"] = has_flag_set(RoomFlags::interior);
+	m_data->metadata["meta"]["properties"]["day_night_shift"] = has_flag_set(RoomFlags::day_night_shift);
 	m_data->metadata["meta"]["metagrid"][0] = m_position.x;
 	m_data->metadata["meta"]["metagrid"][1] = m_position.y;
 	auto msg = std::string{};
@@ -41,12 +46,19 @@ bool Room::serialize(fornani::automa::ServiceProvider& svc) {
 }
 
 void Room::render(sf::RenderWindow& win, sf::Vector2f cam) {
+
+	// calculate zoom
+	sf::View const& view = win.getView();
+	float zoom = view.getSize().x / win.getDefaultView().getSize().x;
+	float base_thickness = m_highlighted ? -2.f : -1.f;
+
+	m_box.setOutlineThickness(base_thickness * zoom);
 	auto& color = has_flag_set(RoomFlags::include_in_minimap) ? room_color_v : excluded_room_color_v;
 	auto& h_color = has_flag_set(RoomFlags::include_in_minimap) ? highighted_room_color_v : highlighted_excluded_room_color_v;
 	m_highlighted ? m_box.setFillColor(h_color) : m_box.setFillColor(sf::Color::Transparent);
-	m_highlighted ? m_box.setOutlineColor(fornani::colors::pioneer_red) : m_box.setOutlineColor(sf::Color{79, 22, 32});
+	m_highlighted ? m_box.setOutlineColor(sf::Color{241, 31, 98}) : m_box.setOutlineColor(sf::Color{187, 17, 58});
 	if (no_border) { m_box.setOutlineColor(sf::Color::Transparent); }
-	m_highlighted ? m_box.setOutlineThickness(-2.f) : m_box.setOutlineThickness(-1.f);
+	m_box.setOutlineThickness(base_thickness * zoom);
 	m_box.setPosition(get_board_position() + cam);
 	auto sprite = sf::Sprite{m_texture.getTexture()};
 	has_flag_set(RoomFlags::include_in_minimap) ? sprite.setColor(sf::Color::White) : sprite.setColor(fornani::colors::periwinkle);
@@ -54,6 +66,16 @@ void Room::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	sprite.scale({spacing_v / fornani::constants::f_chunk_size, spacing_v / fornani::constants::f_chunk_size});
 	win.draw(sprite);
 	win.draw(m_box);
+	if (show_tags) {
+		auto tag_barrier = sf::Vector2f{4.f, 4.f};
+		auto interior_tag = sf::CircleShape{2.f};
+		has_flag_set(RoomFlags::interior) ? interior_tag.setFillColor(fornani::colors::dark_fucshia) : interior_tag.setFillColor(fornani::colors::bright_purple);
+		interior_tag.setPosition(m_box.getPosition());
+		win.draw(interior_tag);
+		has_flag_set(RoomFlags::day_night_shift) ? interior_tag.setFillColor(fornani::colors::bright_orange) : interior_tag.setFillColor(fornani::colors::navy_blue);
+		interior_tag.setPosition(m_box.getPosition() + sf::Vector2f{0.f, 6.f});
+		win.draw(interior_tag);
+	}
 }
 
 } // namespace pi

@@ -25,7 +25,7 @@ constexpr auto vicinity_pad_v = 31.f;
 class Collider;
 class CircleCollider;
 
-enum class ColliderFlags { custom_properties, changed, intangible, simple, no_physics, registered, crushed, landed, in_water, submerged, sinking, no_update };
+enum class ColliderFlags { custom_properties, changed, intangible, simple, no_physics, registered, crushed, landed, in_water, submerged, sinking, no_update, left_walljump, right_walljump, gravity, in_goo, momentum };
 enum class ColliderType { rectangle, circle };
 enum class ColliderAttributes { fixed, soft, top_only, no_collision, no_map_collision, sturdy, crusher, custom_resolution };
 enum class ColliderTrait { circle, player, enemy, npc, secondary, block, particle, platform, pushable };
@@ -39,7 +39,7 @@ class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {
 	virtual void handle_map_collision(world::Map& map);
 	virtual void handle_map_collision(world::Tile const& tile);
 	virtual void detect_map_collision(world::Map& map);
-	virtual void handle_collision(Shape const& shape, bool soft = false);
+	virtual void handle_collision(Shape const& shape, bool soft);
 	virtual bool handle_collider_collision(Shape const& collider, bool soft = false, sf::Vector2f velocity = {}, float force = 0.01f, bool crusher = false); // returns true if grounded on collider
 	virtual void handle_collider_collision(Collider const& collider, bool momentum = false);
 	virtual void handle_collider_collision(CircleCollider& collider);
@@ -76,6 +76,7 @@ class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {
 	[[nodiscard]] auto get_vicinity_rect() const -> sf::FloatRect { return p_vicinity.as_rect(); }
 
 	components::PhysicsComponent physics{};
+	PhysicsProperties p_physics_properties{};
 
 	// debug
 	std::vector<std::string> print_chunks();
@@ -83,7 +84,6 @@ class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {
   protected:
 	shape::Shape p_vicinity;
 	ColliderType p_type{};
-	PhysicsProperties p_physics_properties{};
 
 	io::Logger p_logger{"Collider"};
 

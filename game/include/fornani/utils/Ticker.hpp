@@ -2,12 +2,16 @@
 #pragma once
 
 #include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Constants.hpp>
 #include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/Math.hpp>
 #include <chrono>
 #include <deque>
 #include <thread>
 
 namespace fornani::util {
+
+constexpr static auto default_slowdown_rate_v = 0.05f;
 
 using Clk = std::chrono::steady_clock;
 using Sec = std::chrono::duration<float>;
@@ -34,18 +38,14 @@ class Ticker {
 	void tick(F fn) {
 
 		ft = Sec{tick_rate};
-
-		if (!flags.test(TickerFlags::forced_slowdown)) {
-			if (slowdown.running()) { dt_scalar -= slowdown_rate; }
-			if (slowdown.is_complete()) { dt_scalar += slowdown_rate; }
-			dt_scalar = ccm::ext::clamp(dt_scalar, slowdown_target, 1.f);
-			if (freezeframe.running()) { dt_scalar = slowdown_target; }
-		}
+		manage_slowdowns();
 
 		new_time = Clk::now();
 		dt = std::chrono::duration_cast<Sec>(new_time - current_time);
 		dt *= dt_scalar;
 		current_time = new_time;
+
+		if (dt_scalar < constants::tiny_value) { return; }
 
 		if (dt.count() > tick_limit.count()) { return; } // return for unexpected dt values, particularly during the beginning of the state
 
@@ -68,8 +68,6 @@ class Ticker {
 		}
 
 		residue = accumulator;
-		slowdown.update();
-		freezeframe.update();
 		accumulator = Sec::zero();
 		++calls_per_frame;
 	};
@@ -77,8 +75,8 @@ class Ticker {
 	void start_frame();
 	void end_frame();
 	void calculate_fps();
-	void slow_down(int time, float target = 0.2f, float rate = 0.05f);
-	void freeze_frame(int time, float rate = 0.1f);
+	void slow_down(int time, float target = 0.8f, float rate = default_slowdown_rate_v);
+	void freeze_frame(int time, float rate = default_slowdown_rate_v);
 	void set_time(Sec time);
 	void scale_dt();
 	void reset_dt();
@@ -86,7 +84,7 @@ class Ticker {
 	void unpause() { flags.reset(TickerFlags::paused); }
 	[[nodiscard]] auto paused() const -> bool { return flags.test(TickerFlags::paused); }
 
-	[[nodiscard]] auto global_tick_rate() const -> float { return ft.count() * tick_multiplier; }
+	[[nodiscard]] auto global_tick_rate() const -> float;
 	[[nodiscard]] auto every_x_frames(int const freq) const -> bool { return num_frames % freq == 0; }
 	[[nodiscard]] auto every_x_ticks(int const freq) const -> bool { return ticks % freq == 0; }
 	[[nodiscard]] auto every_second() const -> bool { return periods.test(Period::second); }
@@ -98,6 +96,7 @@ class Ticker {
 	float tick_rate{0.005f};
 	float tick_multiplier{24.f};
 	float dt_scalar{1.f};
+	float global_scalar{1.f};
 
 	static constexpr Sec tick_limit{0.8f};
 
@@ -122,6 +121,9 @@ class Ticker {
 	PeriodicBool second_ticker{std::chrono::seconds{1}};
 	PeriodicBool twenty_minute_ticker{std::chrono::seconds{1200}};
 	float fps{60.f};
+
+  private:
+	void manage_slowdowns();
 
   private:
 	std::deque<Sec> frame_list{};

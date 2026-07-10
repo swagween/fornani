@@ -4,14 +4,13 @@
 
 namespace fornani::automa {
 
-GameState::GameState(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number) : player(&player), hud(svc, player) {}
+GameState::GameState(ServiceProvider& svc, player::Player& player) : player(&player), hud(svc, player), p_context{svc} {}
 
 void GameState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	svc.notifications.update(svc);
-	svc.soundboard.play_sounds(engine, svc);
-	if (m_console) {
-		m_console.value()->update(svc);
-		if (m_console.value()->exit_requested()) { m_console = {}; }
+	if (p_context.console) {
+		p_context.console.value()->update(svc);
+		if (p_context.console.value()->exit_requested()) { p_context.console = {}; }
 	}
 }
 

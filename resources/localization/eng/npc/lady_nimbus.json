@@ -1,0 +1,103 @@
+{
+  "1": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "message": "Gus... Gus...?"
+        },
+        {
+          "message": "Gus, do you copy?"
+        }
+      ]
+    ]
+  },
+  "2": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [
+            [
+              5,
+              1
+            ]
+          ],
+          "message": "Flee?!"
+        },
+        {
+          "message": "What do you mean?"
+        },
+        {
+          "codes": [
+            [
+              5,
+              0
+            ]
+          ],
+          "message": "The ship has been securely ours for months."
+        }
+      ]
+    ]
+  },
+  "3": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [
+            [
+              5,
+              2
+            ]
+          ],
+          "message": "..."
+        },
+        {
+          "codes": [
+            [
+              5,
+              0
+            ]
+          ],
+          "message": "It is unlike you to fail me so, Gus."
+        }
+      ]
+    ]
+  },
+  "4": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "message": "Your next paycheck isn't going to exist, I'm afraid."
+        }
+      ]
+    ]
+  },
+  "5": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "message": "I'll see to it that it won't."
+        },
+        {
+          "message": "I have no interest in wasting any more time dealing with Nani."
+        },
+        {
+          "codes": [
+            [
+              5,
+              2
+            ]
+          ],
+          "message": "I'm sending Lynx after her, and that'll be the end of it."
+        },
+        {
+          "message": "Over and out."
+        }
+      ]
+    ]
+  }
+}

@@ -1,4 +1,5 @@
 nani_add_headers(
+  AmbientProp.hpp
   Animator.hpp
   Bed.hpp
   Chest.hpp
@@ -17,6 +18,7 @@ nani_add_headers(
         SwitchButton.hpp
         TimerBlock.hpp
         Turret.hpp
+        Train.hpp
         Vine.hpp
         Water.hpp
 )

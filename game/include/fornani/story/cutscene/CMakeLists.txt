@@ -1,6 +1,16 @@
 nani_add_headers(
+  AshtownCall.hpp
+  BanditConfrontation.hpp
+  SpencerReveal.hpp
+  BanditEncounter.hpp
+  BitCell.hpp
   BrynPostMiaag.hpp
         LadyNimbusIntro.hpp
+        LothAtWorm.hpp
+        NightsideStation.hpp
+        NightsideWall.hpp
         PioneerBaseDebrief.hpp
         MainIntro.hpp
+        ReturnToBase.hpp
+        SwitchBlockPan.hpp
 )

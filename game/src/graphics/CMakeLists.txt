@@ -10,7 +10,8 @@ nani_add_sources(
         Indicator.cpp
         MapTexture.cpp
         MenuTheme.cpp
-        Rain.cpp
+        Weather.cpp
+        Renderer.cpp
         Scenery.cpp
         SpriteHistory.cpp
         SpriteRotator.cpp
@@ -18,3 +19,4 @@ nani_add_sources(
         Transition.cpp
         Tutorial.cpp
 )
+add_subdirectory(rewards)

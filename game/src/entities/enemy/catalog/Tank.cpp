@@ -9,9 +9,9 @@ namespace fornani::enemy {
 
 Tank::Tank(automa::ServiceProvider& svc, world::Map& map, int variant)
 	: Enemy(svc, map, "tank"), m_variant{static_cast<TankVariant>(variant)}, m_weapon(svc, "skycorps_smg"), m_services(&svc), m_map(&map), m_gun{svc.assets.get_texture("tank_gun"), 2.0f, 0.65f, {-12.f, 6.f}}, m_debug{false} {
-	m_params = {{"idle", {0, 6, 28, -1}}, {"run", {6, 4, 38, 2}},	{"shoot_horizontal", {10, 4, 22, 0}}, {"shoot_vertical", {14, 4, 22, 0}}, {"jumpsquat", {18, 5, 12, 0, true}}, {"jump", {23, 4, 22, 0, true}},
-				{"land", {27, 3, 22, 0}}, {"turn", {30, 2, 32, 0}}, {"type", {32, 2, 128, -1}},			  {"alert", {34, 7, 32, 0}},		  {"pocket", {41, 6, 32, 0}},		   {"sleep", {47, 2, 256, -1}},
-				{"drink", {49, 6, 32, 0}}};
+	p_animations = {{"idle", {0, 6, 28, -1}}, {"run", {6, 4, 38, 2}},	{"shoot_horizontal", {10, 4, 22, 0}}, {"shoot_vertical", {14, 4, 22, 0}}, {"jumpsquat", {18, 5, 12, 0, true}}, {"jump", {23, 4, 22, 0, true}},
+					{"land", {27, 3, 22, 0}}, {"turn", {30, 2, 32, 0}}, {"type", {32, 2, 128, -1}},			  {"alert", {34, 7, 32, 0}},		  {"pocket", {41, 6, 32, 0}},		   {"sleep", {47, 2, 256, -1}},
+					{"drink", {49, 6, 32, 0}}};
 	animation.set_params(get_params("type"));
 	m_gun.set_magnitude(1.f);
 	m_weapon.clip_cooldown_time = 360;
@@ -330,7 +330,7 @@ fsm::StateFunction Tank::update_shoot_vertical() {
 	auto slide = directions.actual.left() ? 8.f : -8.f;
 	m_gun.move(sf::Vector2f{slide, -8.f});
 	m_weapon.update(*m_services, *m_map, *this);
-	if (!m_weapon.get().cooling_down() && animation.get_frame_count() == 0) { m_weapon.shoot(*m_services, *m_map); }
+	if (!m_weapon.get().cooling_down() && animation.get_frame_count() == 1) { m_weapon.shoot(*m_services, *m_map); }
 	if (animation.complete() && animation.keyframe_over()) {
 		m_gun.sprite->setRotation(sf::degrees(0));
 		directions.actual.neutralize_und();
@@ -384,7 +384,7 @@ fsm::StateFunction Tank::update_sleep() {
 	p_state.actual = TankState::sleep;
 	if (hostility_triggered()) { request(TankState::alert); }
 	if (is_hurt()) { request(TankState::alert); }
-	if (ccm::abs(get_collider().physics.actual_velocity().x) > 0.01f) { request(TankState::idle); }
+	if (std::abs(get_collider().physics.actual_velocity().x) > 0.01f) { request(TankState::idle); }
 	if (change_state(TankState::alert, get_params("alert"))) { return TANK_BIND(update_alert); }
 	if (change_state(TankState::idle, get_params("idle"))) { return TANK_BIND(update_idle); }
 	return TANK_BIND(update_sleep);

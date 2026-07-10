@@ -57,8 +57,8 @@
       16
     ],
     "metagrid": [
-      53,
-      22
+      47,
+      12
     ],
     "minimap": true,
     "music": "none",
@@ -69,6 +69,7 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": true,
+      "interior": true,
       "lighting": false,
       "timer": false
     },
@@ -76,7 +77,8 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 1
+    "style": 1,
+    "use_template": false
   },
   "tile": {
     "flags": {

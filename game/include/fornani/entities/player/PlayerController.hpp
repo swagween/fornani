@@ -2,12 +2,11 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <ccmath/ccmath.hpp>
 #include <fornani/entities/player/abilities/Ability.hpp>
+#include <fornani/utils/Direction.hpp>
+#include <fornani/utils/Flaggable.hpp>
 #include <optional>
 #include <unordered_map>
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Direction.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -24,6 +23,7 @@ constexpr static float walk_speed_v{0.62f};
 constexpr static float sprint_speed_v{1.0f};
 constexpr static float sprint_threshold_v{0.01f};
 
+enum class PlayerControllerFlags { shot_weapon, firing_weapon, released_weapon, slide_jump, super_slide };
 enum class ControllerInput { move_x, sprint, shoot, arms_switch, inspect, move_y, slide };
 enum class MovementState { restricted, walljumping, crouch };
 enum class HardState { no_move, has_arsenal, walking_autonomously };
@@ -31,7 +31,7 @@ enum class InputState { slide_in_air, sprint };
 
 enum class Sprint { released };
 
-class PlayerController {
+class PlayerController final : public Flaggable<PlayerControllerFlags> {
 
   public:
 	friend class Player;
@@ -52,10 +52,15 @@ class PlayerController {
 	void stop_walljumping();
 	void set_arsenal(bool const has);
 	void set_direction(Direction to);
+	void flush_ability() { m_ability.reset(); }
+	void set_crouching(bool to = true) { to ? flags.set(MovementState::crouch) : flags.reset(MovementState::crouch); }
+	void set_last_requested_direction(Direction to) { m_last_requested_direction = to; }
 
 	std::optional<float> get_controller_state(ControllerInput key) const;
 	std::optional<AnimState> get_ability_animation() const;
 	[[nodiscard]] auto last_requested_direction() -> SimpleDirection const& { return m_last_requested_direction; }
+	[[nodiscard]] auto is_dash_kick_cooling_down() const -> bool { return cooldowns.dash_kick.running(); }
+	[[nodiscard]] auto get_movement_cooldown() const -> int { return cooldowns.movement.get(); }
 	[[nodiscard]] auto can_move() const -> bool { return !hard_state.test(HardState::no_move); }
 	[[nodiscard]] auto is(AbilityType type) const -> bool { return m_ability ? m_ability.value()->is(type) : false; }
 	[[nodiscard]] auto is_dashing() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::dash) : false; }
@@ -72,10 +77,11 @@ class PlayerController {
 		return std::nullopt;
 	}
 	[[nodiscard]] auto get_ability_direction() const -> Direction { return m_ability ? m_ability.value()->get_direction() : Direction{}; }
+	[[nodiscard]] auto get_ability_force() const -> float { return m_ability ? m_ability.value()->get_force() : 0.f; }
 
 	[[nodiscard]] auto nothing_pressed() -> bool { return key_map[ControllerInput::move_x] == 0.f && key_map[ControllerInput::inspect] == 0.f; }
 	[[nodiscard]] auto moving() -> bool { return key_map[ControllerInput::move_x] != 0.f; }
-	[[nodiscard]] auto sprinting() -> bool { return ccm::abs(key_map[ControllerInput::move_x]) > walk_speed_v + sprint_threshold_v; }
+	[[nodiscard]] auto sprinting() -> bool { return std::abs(key_map[ControllerInput::move_x]) > walk_speed_v + sprint_threshold_v; }
 	[[nodiscard]] auto sprint_held() -> bool { return input_flags.test(InputState::sprint); }
 	[[nodiscard]] auto moving_left() -> bool { return key_map[ControllerInput::move_x] < 0.f; }
 	[[nodiscard]] auto moving_right() -> bool { return key_map[ControllerInput::move_x] > 0.f; }
@@ -86,7 +92,7 @@ class PlayerController {
 	[[nodiscard]] auto is_walljumping() const -> bool { return flags.test(MovementState::walljumping); }
 	[[nodiscard]] auto walking_autonomously() const -> bool { return hard_state.test(HardState::walking_autonomously); }
 	[[nodiscard]] auto shot() -> bool { return key_map[ControllerInput::shoot] == 1.f; }
-	[[nodiscard]] auto is_sprinting() -> bool { return ccm::abs(key_map[ControllerInput::move_x]) > walk_speed_v; }
+	[[nodiscard]] auto is_sprinting() -> bool { return std::abs(key_map[ControllerInput::move_x]) > walk_speed_v; }
 	[[nodiscard]] auto has_arsenal() const -> bool { return hard_state.test(HardState::has_arsenal); }
 	[[nodiscard]] auto inspecting() -> bool { return key_map[ControllerInput::inspect] == 1.f; }
 	[[nodiscard]] auto sprint_released() const -> bool { return sprint_flags.test(Sprint::released); }
@@ -100,10 +106,10 @@ class PlayerController {
 
 	util::Cooldown post_slide;
 	util::Cooldown post_wallslide;
+	util::Cooldown post_walljump;
 	util::Cooldown wallslide_slowdown;
 
   private:
-	void flush_ability() { m_ability = {}; }
 	Direction m_dash_direction{};
 
 	std::unordered_map<ControllerInput, float> key_map{};
@@ -119,6 +125,10 @@ class PlayerController {
 	struct {
 		util::Cooldown inspect{};
 		util::Cooldown dash_kick{};
+		util::Cooldown movement{};
+		util::Cooldown left_pressed{};
+		util::Cooldown right_pressed{};
+		util::Cooldown walljump_request{};
 	} cooldowns{};
 
 	Player* m_player;

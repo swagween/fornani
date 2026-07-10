@@ -1,7 +1,8 @@
 
-#include "fornani/entities/packages/Attack.hpp"
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/world/Map.hpp"
+#include <fornani/entities/packages/Attack.hpp>
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/world/Map.hpp>
 
 namespace fornani::entity {
 
@@ -15,9 +16,39 @@ void Attack::set_position(sf::Vector2f position) {
 	hit.bounds.setPosition(position + hit_offset + origin);
 }
 
-void Attack::handle_player(player::Player& player) {
-	sensor.within_bounds(player.get_collider().bounding_box) ? sensor.activate() : sensor.deactivate();
-	hit.within_bounds(player.get_collider().bounding_box) ? hit.activate() : hit.deactivate();
+void Attack::handle_player(player::Player& player) { sensor.within_bounds(player.hurtbox) ? sensor.activate() : sensor.deactivate(); }
+
+bool Attack::hurt_player(player::Player& player, float damage, sf::Vector2f knockback) {
+	if (hit.within_bounds(player.hurtbox) && hit.active()) {
+		if (!player.invincible() && !player.health.is_dead()) { player.apply_impulse(knockback); }
+		player.hurt(damage);
+		return true;
+	}
+	return false;
+}
+
+bool Attack::kill_player(player::Player& player, player::PlayerDeathType death, bool center_only) {
+	auto triggered = center_only ? hit.within_bounds(player.hurtbox.get_center()) : hit.within_bounds(player.hurtbox);
+	if (triggered && hit.active()) {
+		player.set_death_type(death);
+		player.hurt(max_damage_v);
+		return true;
+	}
+	return false;
+}
+
+void Attack::cancel_projectiles(automa::ServiceProvider& svc, world::Map& map, arms::Team team, int freezeframe) {
+	if (hit.active()) {
+		for (auto& proj : map.active_projectiles) {
+			if (proj.get_team() == team) { continue; }
+			if (hit.within_bounds(proj.get_collider())) {
+				proj.handle_hard_hit(svc, map);
+				random::percent_chance(50) ? svc.soundboard.play_sound("projectile_ping_1", proj.get_collider().get_global_center()) : svc.soundboard.play_sound("projectile_ping_2", proj.get_collider().get_global_center());
+				proj.destroy(false);
+				svc.ticker.freeze_frame(freezeframe);
+			}
+		}
+	}
 }
 
 void Attack::set_constant_radius(float to) {
@@ -26,7 +57,7 @@ void Attack::set_constant_radius(float to) {
 }
 
 void Attack::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	sensor.render(win, cam);
+	// sensor.render(win, cam);
 	hit.render(win, cam);
 }
 

@@ -9,7 +9,7 @@
 namespace fornani::gui {
 
 MapInfoGizmo::MapInfoGizmo(automa::ServiceProvider& svc, int room_id, sf::Vector2f placement)
-	: Gizmo("Map Info", false), m_sprites{.panel{sf::Sprite{svc.assets.get_texture("map_gizmo")}}, .clip{sf::Sprite{svc.assets.get_texture("map_gizmo")}}}, m_text{.biome{svc.text.fonts.basic}, .room{svc.text.fonts.basic}},
+	: Gizmo("Map Info", false), m_sprites{.panel{sf::Sprite{svc.assets.get_texture("map_gizmo")}}, .clip{sf::Sprite{svc.assets.get_texture("map_gizmo")}}}, m_text{.biome{svc.text.fonts.basic.font}, .room{svc.text.fonts.basic.font}},
 	  m_constituents{.left_clip{.lookup{{89, 151}, {97, 11}}, .position{}}, .right_clip{.lookup{{89, 162}, {39, 11}}, .position{}}},
 	  m_clip_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap_info", 86, util::InterpolationType::linear} {
 	m_physics.position = sf::Vector2f{374.f, 1600.f};
@@ -18,14 +18,26 @@ MapInfoGizmo::MapInfoGizmo(automa::ServiceProvider& svc, int room_id, sf::Vector
 	m_sprites.clip.setScale(constants::f_scale_vec);
 	m_sprites.panel.setTextureRect(sf::IntRect{{0, 110}, {219, 41}});
 	m_text.biome.setFillColor(colors::pioneer_red);
-	m_text.biome.setCharacterSize(16);
-	auto data = svc.data.get_map_data_from_id(room_id);
-	if (data) { m_text.biome.setString(data->get().biome_label); }
-	m_text.room.setFillColor(colors::pioneer_red);
-	m_text.room.setCharacterSize(16);
-	if (data) { m_text.room.setString(data->get().room_label); }
-	m_clip_path.set_section("open");
+	m_text.biome.setCharacterSize(svc.text.fonts.basic.glyph_size);
 	current_room = room_id;
+	auto data = svc.data.get_map_data_from_id(current_room);
+	if (data) {
+		if (svc.data.is_room_discovered(current_room)) {
+			m_text.biome.setString(data->get().biome_label);
+		} else {
+			m_text.biome.setString("???");
+		}
+	}
+	m_text.room.setFillColor(colors::pioneer_red);
+	m_text.room.setCharacterSize(svc.text.fonts.basic.glyph_size);
+	if (data) {
+		if (svc.data.is_room_discovered(current_room)) {
+			m_text.room.setString(data->get().room_label);
+		} else {
+			m_text.room.setString("???");
+		}
+	}
+	m_clip_path.set_section("open");
 }
 
 void MapInfoGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
@@ -35,8 +47,20 @@ void MapInfoGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player:
 	m_clip_path.update();
 	if (m_clip_path.get_section() == 1 && m_clip_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::drag); }
 	auto data = svc.data.get_map_data_from_id(current_room);
-	if (data) { m_text.biome.setString(data->get().biome_label); }
-	if (data) { m_text.room.setString(data->get().room_label); }
+	if (data) {
+		if (svc.data.is_room_discovered(current_room)) {
+			m_text.biome.setString(data->get().biome_label);
+		} else {
+			m_text.biome.setString("???");
+		}
+	}
+	if (data) {
+		if (svc.data.is_room_discovered(current_room)) {
+			m_text.room.setString(data->get().room_label);
+		} else {
+			m_text.room.setString("???");
+		}
+	}
 }
 
 void MapInfoGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {

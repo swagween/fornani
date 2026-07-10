@@ -8,7 +8,7 @@
 namespace fornani::enemy {
 
 DumpsterDiver::DumpsterDiver(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "dumpster_diver"), m_services{&svc}, m_dive_time{800}, m_wait_time{400} {
-	m_params = {{"idle", {0, 6, 48, -1}}};
+	p_animations = {{"idle", {0, 6, 48, -1}}};
 	animation.set_params(get_params("idle"));
 	p_state.actual = DumpsterDiverState::idle;
 	m_wait_time.start();
@@ -90,7 +90,7 @@ void DumpsterDiver::update(automa::ServiceProvider& svc, world::Map& map, player
 	// attack
 	auto hit_offset = sf::Vector2f{directions.actual.as_float() * 64.f, -48.f};
 	m_attack.hit.set_position(get_collider().get_center() + hit_offset);
-	if (m_attack.hit.within_bounds(player.get_collider().hurtbox)) { player.hurt(); }
+	if (m_attack.hit.within_bounds(player.hurtbox)) { player.hurt(); }
 
 	// hurt
 	if (flags.state.test(StateFlags::hurt)) {

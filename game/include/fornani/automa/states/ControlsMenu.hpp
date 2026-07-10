@@ -8,7 +8,8 @@ namespace fornani::automa {
 
 class ControlsMenu final : public MenuState {
   public:
-	ControlsMenu(ServiceProvider& svc, player::Player& player);
+	ControlsMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx);
+	void on_exit() override;
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;

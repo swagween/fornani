@@ -7,12 +7,13 @@
           1
         ],
         "id": 49173,
-        "modifier": 197,
+        "modifier": 16,
         "position": [
           3,
           4
         ],
-        "type": 2
+        "tag": "slingshot",
+        "type": 0
       }
     ],
     "portals": [
@@ -25,7 +26,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           10,
@@ -74,8 +74,9 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
+      "day_night_shift": true,
       "environmental_randomness": false,
+      "interior": true,
       "lighting": false,
       "timer": false
     },
@@ -84,9 +85,20 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
+    "animated": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

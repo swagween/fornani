@@ -23,15 +23,15 @@ void QuestProgression::progress(Subquest const identifier, int const amount, int
 	}
 }
 
-void QuestProgression::set_progression(QuestIdentifier const identifier, int const amount, std::vector<int> const sources) {
+void QuestProgression::set_progression(QuestIdentifier const identifier, int const amount, std::vector<int> const sources, QuestRequirementType type) {
 	if (!progressions.contains(identifier)) { progressions.insert({identifier, 0}); }
-	progressions.at(identifier) = amount;
+	progressions.at(identifier) = type == QuestRequirementType::strict ? amount : std::max(progressions.at(identifier), amount);
 	m_sources = sources;
 }
 
-void QuestProgression::set_progression(Subquest const identifier, int const amount, std::vector<int> const sources) {
+void QuestProgression::set_progression(Subquest const identifier, int const amount, std::vector<int> const sources, QuestRequirementType type) {
 	if (!subquest_progressions.contains(identifier)) { subquest_progressions.insert({identifier, 0}); }
-	subquest_progressions.at(identifier) = amount;
+	subquest_progressions.at(identifier) = type == QuestRequirementType::strict ? amount : std::max(subquest_progressions.at(identifier), amount);
 	m_sources = sources;
 }
 
@@ -43,9 +43,11 @@ Quest::Quest(dj::Json const& in) {
 	if (in["subquests"].is_array()) {
 		m_subquests = std::vector<Subquest>{};
 	} else {
-		m_subquests = {};
+		m_subquests.reset();
 	}
-	for (auto const& subquest : in["subquests"].as_array()) { m_subquests->push_back(Subquest{subquest["tag"].as_string(), subquest["id"].as<int>()}); }
+	if (m_subquests) {
+		for (auto const& subquest : in["subquests"].as_array()) { m_subquests->push_back(Subquest{subquest["tag"].as_string(), subquest["id"].as<int>()}); }
+	}
 }
 
 auto Quest::get_objectives() const -> std::string {
@@ -130,9 +132,11 @@ void QuestTable::progress_quest(std::string_view tag, Subquest const subquest, i
 	m_quests.at(tag.data()).progress(subquest, amount, source);
 }
 
-void QuestTable::set_quest_progression(std::string_view tag, QuestIdentifier const identifier, int const amount, std::vector<int> sources) {
+void QuestTable::set_quest_progression(std::string_view tag, int const amount, QuestRequirementType type) { set_quest_progression(tag, 0, amount, {}, type); }
+
+void QuestTable::set_quest_progression(std::string_view tag, QuestIdentifier const identifier, int const amount, std::vector<int> sources, QuestRequirementType type) {
 	if (!m_quests.contains(tag.data())) { start_quest(tag, {{identifier, 0}}); }
-	m_quests.at(tag.data()).set_progression(identifier, amount, sources);
+	m_quests.at(tag.data()).set_progression(identifier, amount, sources, type);
 }
 
 void QuestTable::set_quest_progression(std::string_view tag, Subquest const subquest, int const amount, std::vector<int> const sources, QuestIdentifier const identifier) {
@@ -161,8 +165,8 @@ auto QuestTable::print_progressions(std::string_view tag, std::string_view ident
 	return ret;
 }
 
-auto QuestTable::are_contingencies_met(std::vector<QuestContingency> const& set) const -> bool {
-	for (auto const& contingency : set) {
+auto QuestTable::are_contingencies_met(QuestContingencySet const& set) const -> bool {
+	for (auto const& contingency : set.contingencies) {
 		if (contingency.strict) {
 			if (get_quest_progression(contingency.tag) != contingency.requirement) { return false; }
 		} else {
@@ -185,5 +189,17 @@ void QuestContingency::serialize(dj::Json& out) const {
 	entry["strict"] = strict;
 	out.push_back(entry);
 }
+
+QuestContingencySet::QuestContingencySet(std::vector<QuestContingency> const& cont) { contingencies = cont; }
+
+QuestContingencySet::QuestContingencySet(dj::Json const& in) {
+	for (auto const& contingency : in.as_array()) { contingencies.push_back(QuestContingency(contingency)); }
+}
+
+void QuestContingencySet::serialize(dj::Json& out) const {
+	for (auto& contingency : contingencies) { contingency.serialize(out); }
+}
+
+void QuestContingencySet::add(QuestContingency cont) { contingencies.push_back(cont); }
 
 } // namespace fornani

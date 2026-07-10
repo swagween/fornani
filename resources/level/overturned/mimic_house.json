@@ -7,15 +7,75 @@
           1
         ],
         "id": 71532,
-        "modifier": 29,
+        "modifier": 17,
         "position": [
           5,
           4
         ],
+        "tag": "cridium_shard",
         "type": 2
       }
     ],
-    "inspectables": [],
+    "npcs": [
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "face_player": true,
+        "hidden": false,
+        "id": 230,
+        "label": "gobe",
+        "position": [
+          10,
+          10
+        ],
+        "suites": [
+          [
+            1,
+            2
+          ],
+          [
+            2
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "contingencies": [
+          {
+            "requirement": 2,
+            "strict": true,
+            "tag": "rescue_justin"
+          }
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "face_player": true,
+        "hidden": false,
+        "id": 230,
+        "label": "justin",
+        "position": [
+          11,
+          10
+        ],
+        "suites": [
+          [
+            1
+          ]
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,
@@ -26,7 +86,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           5,
@@ -53,6 +112,11 @@
     "ambience": "none",
     "background": "woods",
     "biome": "overturned",
+    "border_color": [
+      0,
+      0,
+      0
+    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -85,6 +149,7 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": true,
+      "interior": true,
       "lighting": false,
       "timer": false
     },
@@ -92,7 +157,8 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 1
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
     "flags": {

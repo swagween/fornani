@@ -19,7 +19,7 @@ class Portal;
 
 namespace fornani::gui {
 
-enum class MiniMapFlags { open };
+enum class MiniMapFlags { open, moving };
 enum class MapIconFlags { nani, gunsmith, save, chest, bed, door, boss, gobe, vendor, quest };
 enum class ChunkType { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
 enum class QuestMarkerType { main };

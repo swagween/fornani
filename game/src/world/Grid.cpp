@@ -2,7 +2,7 @@
 #include "fornani/world/Grid.hpp"
 #include "fornani/utils/Constants.hpp"
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include <cmath>
 #include <ranges>
 
@@ -63,29 +63,37 @@ void Grid::check_neighbors(int i) {
 	cells.at(i).exposed = exposed;
 }
 
-sf::Vector2<int> Grid::get_solid_neighbors(int index) {
-	auto ret = sf::Vector2<int>{};
+bool Grid::is_exposed_to_sky(std::size_t index, int limit) const {
+	// top row is not exposed
+	if (index < dimensions.x) { return false; }
+
+	// walk upward row by row
+	auto limit_counter = 0;
+	for (std::size_t i = index; i >= dimensions.x; i -= dimensions.x) {
+		std::size_t up = i - dimensions.x;
+
+		auto const& cell = cells[up];
+		if (cell.is_solid() || cell.is_ramp()) { return false; }
+		++limit_counter;
+		if (limit_counter > limit && limit != 0) { return true; }
+	}
+
+	return true;
+}
+
+NeighborSet Grid::get_solid_neighbors(int index) {
+	auto ret = NeighborSet{};
 	auto right = static_cast<std::size_t>(index + 1);
 	auto left = static_cast<std::size_t>(index - 1);
 	auto up = static_cast<std::size_t>(index - dimensions.x);
 	auto down = static_cast<std::size_t>(index + dimensions.x);
 	auto ui = static_cast<std::uint32_t>(index);
-	// left neighbor
-	if (index != 0 && index % dimensions.x != 0) {
-		if (cells.at(left).is_solid()) { ret.x = -1; }
-	}
-	// right neighbor
-	if (index != cells.size() - 1 && index % dimensions.x != dimensions.x - 1) {
-		if (cells.at(right).is_solid()) { ret.x = 1; }
-	}
-	// top neighbor
-	if (!(ui < dimensions.x)) {
-		if (cells.at(up).is_solid()) { ret.y = -1; }
-	}
-	// bottom neighbor
-	if (!(ui > cells.size() - dimensions.x - 1)) {
-		if (cells.at(down).is_solid()) { ret.y = 1; }
-	}
+
+	if (index != 0 && index % dimensions.x != 0) { ret.set(UDLR::left, cells.at(left).value); }
+	if (index != cells.size() - 1 && index % dimensions.x != dimensions.x - 1) { ret.set(UDLR::right, cells.at(right).value); }
+	if (!(ui < dimensions.x)) { ret.set(UDLR::up, cells.at(up).value); }
+	if (!(ui > cells.size() - dimensions.x - 1)) { ret.set(UDLR::down, cells.at(down).value); }
+
 	return ret;
 }
 
@@ -289,7 +297,7 @@ void Grid::draw(sf::RenderTexture& tex) {
 std::size_t Grid::get_index_at_position(sf::Vector2f position) const {
 	auto start_index = sf::Vector2<std::size_t>(static_cast<std::size_t>((position.x / constants::f_cell_size)), static_cast<std::size_t>((position.y / constants::f_cell_size)));
 	auto ret = static_cast<std::size_t>(dimensions.x) * start_index.y + start_index.x;
-	return ccm::ext::clamp(ret, std::size_t{0}, cells.size() - 1);
+	return std::clamp(ret, std::size_t{0}, cells.size() - 1);
 }
 
 Tile& Grid::get_cell(std::size_t index) { return cells.at(index); }

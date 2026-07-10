@@ -41,7 +41,7 @@ include(cmake/GenerateDataTemplates.cmake)
 
 add_subdirectory(dependencies)
 add_subdirectory(game)
-if (FORNANI_BUILD_EDITOR AND NOT FORNANI_PRODUCTION_BUILD)
+if (FORNANI_BUILD_EDITOR)
     add_subdirectory(editor)
 endif ()
 add_subdirectory(launcher)
@@ -58,24 +58,6 @@ endif ()
 if (FORNANI_PRODUCTION_BUILD)
     target_compile_definitions(fornani PRIVATE FORNANI_PRODUCTION)
 endif ()
-
-# TODO: This is kinda janky and is only a stop gap. At some point we will have cmake handle packaging and this will have to change.
-
-# Generate save files
-if (NOT FORNANI_PRODUCTION_BUILD)
-    configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/file_0.template" "${FORNANI_ROOT_DIR}/resources/data/save/file_0.json" COPYONLY)
-    configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/file_1.template" "${FORNANI_ROOT_DIR}/resources/data/save/file_1.json" COPYONLY)
-    configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/file_2.template" "${FORNANI_ROOT_DIR}/resources/data/save/file_2.json" COPYONLY)
-endif ()
-configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/new_game.template" "${FORNANI_ROOT_DIR}/resources/data/save/new_game.json" COPYONLY)
-configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/trial_save.template" "${FORNANI_ROOT_DIR}/resources/data/save/trial_save.json" COPYONLY)
-configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/save/time_trials.template" "${FORNANI_ROOT_DIR}/resources/data/save/time_trials.json" COPYONLY)
-
-# Generate config files
-configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/config/control_map.template" "${FORNANI_ROOT_DIR}/resources/data/config/control_map.json" COPYONLY)
-configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/config/defaults.template" "${FORNANI_ROOT_DIR}/resources/data/config/defaults.json" COPYONLY)
-configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/config/settings.template" "${FORNANI_ROOT_DIR}/resources/data/config/settings.json" COPYONLY)
-configure_file("${FORNANI_ROOT_DIR}/cmake/templates/data/config/version.template" "${FORNANI_ROOT_DIR}/resources/data/config/version.json" COPYONLY)
 
 if (WIN32)
     target_link_options(fornani PRIVATE

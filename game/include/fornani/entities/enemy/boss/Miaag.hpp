@@ -3,6 +3,7 @@
 
 #include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/entities/enemy/Boss.hpp>
+#include <fornani/entities/packages/Attack.hpp>
 #include <fornani/gui/BossHealth.hpp>
 #include <fornani/particle/Chain.hpp>
 #include <fornani/particle/Sparkler.hpp>
@@ -12,7 +13,7 @@
 namespace fornani::enemy {
 
 enum class MiaagState { idle, hurt, closed, dying, blinking, dormant, chomp, turn, awaken, spellcast };
-enum class MiaagFlags { gone };
+enum class MiaagFlags { gone, seek_player };
 
 class Miaag : public Boss, public StateMachine<MiaagState> {
   public:
@@ -41,11 +42,13 @@ class Miaag : public Boss, public StateMachine<MiaagState> {
 	std::unique_ptr<vfx::Chain> m_spine{};
 	std::vector<int> m_spine_lookups{};
 	sf::Sprite m_spine_sprite;
+	entity::Attack m_bite{};
 
 	components::SteeringBehavior m_steering{};
 	entity::WeaponPackage m_magic;
 	sf::Vector2f m_player_target{};
 	sf::Vector2f m_target_point{};
+	int m_magic_frequency{};
 
 	struct {
 		util::Cooldown fire;

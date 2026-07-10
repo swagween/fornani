@@ -1,4 +1,5 @@
 
+#include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -7,7 +8,7 @@
 
 namespace fornani {
 
-MainIntro::MainIntro(automa::ServiceProvider& svc, world::Map& map, player::Player& player) : Cutscene(svc, 300, "main_intro"), m_outro{2000} {
+MainIntro::MainIntro(automa::ServiceProvider& svc, world::Map& map, player::Player& player) : Cutscene(svc, 300, "main_intro"), m_outro{2000}, m_willett_walk{400} {
 	cooldowns.beginning.start();
 	auto npcs = map.get_entities<NPC>();
 	auto bit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 0; });
@@ -25,12 +26,11 @@ MainIntro::MainIntro(automa::ServiceProvider& svc, world::Map& map, player::Play
 	svc.ambience_player.tracks.open.fade_in(util::Sec{2.f});
 	svc.state_flags.set(automa::StateFlags::cutscene);
 	player.set_idle();
+
+	player.set_direction(Direction{LR::right});
 }
 
-void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
-
-	static auto progress = util::Counter{};
-
+void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 	if (complete()) {
 		player.controller.unrestrict();
 		svc.state_flags.reset(automa::StateFlags::hide_hud);
@@ -51,8 +51,9 @@ void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_p
 	cooldowns.long_pause.update();
 	cooldowns.beginning.update();
 	m_outro.update();
+	m_willett_walk.update();
 
-	if (console) { console.value()->set_no_exit(true); }
+	if (context.console) { context.console.value()->set_no_exit(true); }
 
 	auto npcs = map.get_entities<NPC>();
 	auto bit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 0; });
@@ -60,8 +61,8 @@ void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_p
 	auto wit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 2; });
 	auto& willett = *wit;
 
-	if (console.has_value()) { bryn->disengage(); }
-	if (console.has_value()) { willett->disengage(); }
+	if (context.console.has_value()) { bryn->disengage(); }
+	if (context.console.has_value()) { willett->disengage(); }
 
 	if (!flags.test(CutsceneFlags::started)) {
 		bryn->flush_conversations();
@@ -74,9 +75,9 @@ void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_p
 		willett->set_direction(LR::right);
 	}
 
-	if (willett->get_collider().get_center().x / constants::f_cell_size < 27.25f) {
+	if (willett->get_collider().get_center().x / constants::f_cell_size < 27.25f && progress < 6) {
 		willett->walk();
-	} else {
+	} else if (progress < 20) {
 		willett->face_player(player);
 		willett->request(NPCAnimationState::idle);
 	}
@@ -85,8 +86,6 @@ void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_p
 		set_flag(MainIntroFlags::player_stopped);
 	}
 
-	player.set_direction(Direction{LR::right});
-
 	auto total_suites{0};
 	for (auto& npc : npcs) { total_suites += npc->get_number_of_suites(); }
 	total_conversations = std::max(total_conversations, total_suites);
@@ -94,6 +93,7 @@ void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_p
 	if (npcs.empty()) { return; }
 
 	player.controller.restrict_movement();
+	player.stall_idle_timer();
 
 	svc.camera_controller.set_owner(graphics::CameraOwner::system);
 	svc.camera_controller.free();
@@ -116,25 +116,27 @@ void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_p
 		svc.ambience_player.set_balance(m_outro.get_normalized());
 	}
 
-	if (!map.transition.is(graphics::TransitionState::inactive)) {
+	if (!context.transition.is(graphics::TransitionState::inactive)) {
 		svc.camera_controller.set_position(willett->Mobile::get_global_center());
 		return;
 	}
 
-	switch (progress.get_count()) {
+	if (progress > 1) { bryn->start_busy_timer(); }
+	switch (progress) {
 	case 0:
-		if (!console) { willett->force_engage(); }
-		progress.update();
+		if (!context.console) { willett->force_engage(); }
+		++progress;
 		break;
 	case 1:
 		svc.camera_controller.set_position(willett->Mobile::get_global_center());
-		if (!console) {
+		if (!context.console) {
 			willett->flush_conversations();
 			willett->push_conversation(21);
 			cooldowns.long_pause.start(360);
 			svc.camera_controller.set_position(bryn->Mobile::get_global_center());
-			progress.update();
+			++progress;
 			bryn->set_desired_direction({LR::left});
+			bryn->start_busy_timer();
 			bryn->request(NPCAnimationState::turn);
 		}
 		break;
@@ -142,111 +144,134 @@ void MainIntro::update(automa::ServiceProvider& svc, std::optional<std::unique_p
 		if (cooldowns.long_pause.is_almost_complete()) { bryn->force_engage(); }
 		cooldowns.long_pause.running() ? bryn->walk() : bryn->request(NPCAnimationState::idle);
 		svc.camera_controller.set_position(bryn->Mobile::get_global_center());
-		if (!console && !cooldowns.long_pause.running()) {
+		if (!context.console && !cooldowns.long_pause.running()) {
 			bryn->flush_conversations();
 			bryn->push_conversation(21);
 			willett->force_engage();
 			svc.camera_controller.set_position(willett->Mobile::get_global_center());
-			progress.update();
+			++progress;
 		}
 		break;
 	case 3:
 		svc.camera_controller.set_position(willett->Mobile::get_global_center());
-		if (!console) {
+		if (!context.console) {
 			willett->flush_conversations();
 			willett->push_conversation(22);
 			bryn->force_engage();
 			svc.camera_controller.set_position(bryn->Mobile::get_global_center());
-			progress.update();
+			++progress;
 			return;
 		}
 		break;
 	case 4:
 		svc.camera_controller.set_position(bryn->Mobile::get_global_center());
-		if (!console) {
+		if (!context.console) {
 			bryn->flush_conversations();
 			bryn->push_conversation(22);
 			willett->force_engage();
 			svc.camera_controller.set_position(willett->Mobile::get_global_center());
-			progress.update();
+			++progress;
 		}
 		break;
 	case 5:
+		// got to 20 after this
 		svc.camera_controller.set_position(willett->Mobile::get_global_center());
-		if (!console) {
-			willett->flush_conversations();
-			willett->push_conversation(23);
-			bryn->force_engage();
-			svc.camera_controller.set_position(bryn->Mobile::get_global_center());
-			progress.update();
+		if (!context.console) {
+			willett->flush_and_push(26);
+			m_willett_walk.start();
+			progress = 20;
 		}
 		break;
 	case 6:
 		svc.camera_controller.set_position(bryn->Mobile::get_global_center());
-		if (!console) {
+		if (!context.console) {
 			bryn->flush_conversations();
 			bryn->push_conversation(23);
 			willett->force_engage();
+			player.turn();
 			svc.camera_controller.set_position(willett->Mobile::get_global_center());
-			progress.update();
+			++progress;
 		}
 		break;
 	case 7:
 		svc.camera_controller.set_position(willett->Mobile::get_global_center());
-		if (!console) {
+		if (!context.console) {
 			willett->flush_conversations();
 			willett->push_conversation(24);
-			progress.update();
+			++progress;
 			bryn->force_engage();
+			player.turn();
 		}
 		break;
 	case 8:
 		svc.camera_controller.set_position(bryn->Mobile::get_global_center());
-		if (!console) {
+		if (!context.console) {
 			bryn->flush_conversations();
 			bryn->push_conversation(24);
 			willett->force_engage();
+			player.turn();
 			svc.camera_controller.set_position(willett->Mobile::get_global_center());
-			progress.update();
+			++progress;
 		}
 		break;
 	case 9:
 		svc.camera_controller.set_position(willett->Mobile::get_global_center());
-		if (!console) {
+		if (!context.console) {
 			willett->flush_conversations();
 			willett->push_conversation(25);
 			set_flag(MainIntroFlags::rumble);
-			progress.update();
+			++progress;
 			cooldowns.long_pause.start();
 		}
 		break;
 	case 10:
 		if (cooldowns.long_pause.is_almost_complete()) { bryn->force_engage(); }
 		svc.camera_controller.set_position(bryn->Mobile::get_global_center());
-		if (!console && !cooldowns.long_pause.running()) {
+		if (!context.console && !cooldowns.long_pause.running()) {
 			bryn->flush_conversations();
 			willett->force_engage();
 			svc.camera_controller.set_position(willett->Mobile::get_global_center());
-			progress.update();
+			++progress;
 		}
 		break;
 	case 11:
 		svc.camera_controller.set_position(willett->Mobile::get_global_center());
-		if (!console) {
+		if (!context.console) {
 			willett->flush_conversations();
-			progress.update();
+			++progress;
 			set_flag(MainIntroFlags::rumble);
 		}
 		break;
 	case 12:
 		svc.camera_controller.set_position(willett->Mobile::get_global_center());
-		if (!console && !has_flag_set(MainIntroFlags::takeover)) {
+		if (!context.console && !has_flag_set(MainIntroFlags::takeover)) {
 			bryn->flush_conversations();
 			willett->flush_conversations();
 			set_flag(MainIntroFlags::takeover);
 			set_flag(MainIntroFlags::start_takeover);
-			map.transition.start();
+			context.transition.start();
 			m_outro.start();
+		}
+		break;
+	case 20:
+		willett->walk();
+		svc.camera_controller.set_position(willett->Mobile::get_global_center());
+		if (m_willett_walk.is_complete()) {
+			willett->set_desired_direction({LR::right});
+			willett->set_flag(NPCFlags::face_player);
+			willett->Mobile::set_animation("turn");
+			willett->force_engage();
+			player.turn();
+			++progress;
+		}
+		break;
+	case 21:
+		svc.camera_controller.set_position(willett->Mobile::get_global_center());
+		if (!context.console) {
+			willett->flush_and_push(23);
+			bryn->force_engage();
+			player.turn();
+			progress = 6;
 		}
 		break;
 	}

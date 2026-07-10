@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <ccmath/math/misc/lerp.hpp>
+#include <cmath>
 #include <algorithm>
 #include <cmath>
 
@@ -34,7 +34,7 @@ class CyclicLerp {
 		// Fast start, slower finish
 		t = ease_out_cubic(t);
 
-		m_position = ccm::lerp(m_start, m_end, t);
+		m_position = std::lerp(m_start, m_end, t);
 
 		if (m_time >= m_duration) {
 			m_position = m_end;

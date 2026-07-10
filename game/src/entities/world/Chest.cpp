@@ -8,19 +8,21 @@
 
 namespace fornani::entity {
 
-Chest::Chest(automa::ServiceProvider& svc, world::Map& map, int id, ChestType type, int modifier) : Animatable(svc, "chests", {16, 16}), m_id(id), m_type{type}, m_content_modifier{modifier}, m_collider{map, 14.f} {
+Chest::Chest(automa::ServiceProvider& svc, world::Map& map, StableID id, ChestType type, int modifier) : Animatable(svc, "chests", {16, 16}), m_id(id), m_type{type}, m_content_modifier{modifier}, m_collider{map, 14.f} {
 	get_collider().physics.elasticity = 0.4f;
 	get_collider().physics.set_friction_componentwise({0.99f, 0.998f});
 	get_collider().physics.gravity = 10.f;
 	get_collider().set_exclusion_target(shape::ColliderTrait::player);
 	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
+	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
 
 	Animatable::set_parameters(m_animations.unopened);
 
-	if (svc.data.chest_is_open(id) && id != -1) { state.set(ChestState::open); }
+	if (svc.data.chest_is_open(id.get()) && id.get() != 0) { state.set(ChestState::open); }
+	NANI_LOG_DEBUG(m_logger, "Created Chest with StableID: {}", id.get());
 }
 
-Chest::Chest(automa::ServiceProvider& svc, world::Map& map, int id, ChestType type, std::string tag, int modifier) : Chest(svc, map, id, type, modifier) { m_tag = tag; }
+Chest::Chest(automa::ServiceProvider& svc, world::Map& map, StableID id, ChestType type, std::string tag, int modifier) : Chest(svc, map, id, type, modifier) { m_tag = tag; }
 
 void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player) {
 
@@ -59,7 +61,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 				svc.soundboard.flags.world.set(audio::World::chest);
 				state.set(ChestState::open);
 				Animatable::set_parameters(m_animations.opened);
-				if (m_id != -1) { svc.data.open_chest(m_id); }
+				if (m_id.get() != -1) { svc.data.open_chest(m_id.get()); }
 				auto fmodifier = static_cast<float>(m_content_modifier);
 				auto range_modifier = std::max(6, static_cast<int>(m_content_modifier / 8.f));
 				if (m_type == ChestType::gun && m_tag.has_value()) { svc.events.acquire_weapon_event.dispatch(svc, std::string_view{*m_tag}); }

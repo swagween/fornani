@@ -18,7 +18,7 @@ FloatingPart::FloatingPart(sf::Texture const& tex, float force, float friction, 
 	right.x *= -1.f;
 	debugbox.setFillColor(sf::Color::Transparent);
 	debugbox.setOutlineColor(sf::Color::Red);
-	debugbox.setOutlineThickness(-1);
+	debugbox.setOutlineThickness(-2);
 }
 
 FloatingPart::FloatingPart(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions, std::vector<anim::Parameters> params, std::vector<std::string_view> labels, float force, float friction, sf::Vector2f offset, int id)
@@ -67,7 +67,7 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 	if (sprite) { sprite->setScale(scale); }
 	if (hitbox) {
-		if (player.get_collider().hurtbox.overlaps(hitbox.value())) { player.hurt(); }
+		if (player.hurtbox.overlaps(hitbox.value())) { player.hurt(); }
 	}
 	if (shieldbox) {
 		for (auto& proj : map.active_projectiles) {
@@ -96,12 +96,12 @@ void FloatingPart::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 	if (svc.greyblock_mode()) {
 		if (hitbox) {
 			debugbox.setSize(hitbox.value().get_dimensions());
-			debugbox.setPosition(hitbox.value().get_position());
+			debugbox.setPosition(hitbox.value().get_position() - cam);
 			win.draw(debugbox);
 		}
 		if (shieldbox) {
 			debugbox.setSize(shieldbox.value().get_dimensions());
-			debugbox.setPosition(shieldbox.value().get_position());
+			debugbox.setPosition(shieldbox.value().get_position() - cam);
 			win.draw(debugbox);
 		}
 	}
@@ -110,8 +110,9 @@ void FloatingPart::render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 void FloatingPart::set_shield(sf::Vector2f dim, sf::Vector2f pos) {
 	if ((dim.x == 0.f || dim.y == 0.f) && sprite) { dim = sprite->getLocalBounds().size; }
 	if (!shieldbox) { shieldbox = shape::Shape(dim); }
-	if (pos.x == 0.f && pos.y == 0.f && sprite) { pos = m_steering.physics.position - sprite->getLocalBounds().getCenter(); }
-	shieldbox.value().set_position(pos);
+	auto fpos = sf::Vector2f{};
+	if (sprite) { fpos = m_steering.physics.position - sprite->getLocalBounds().getCenter() + pos; }
+	shieldbox.value().set_position(fpos);
 }
 
 void FloatingPart::set_hitbox(sf::Vector2f dim, sf::Vector2f pos) {

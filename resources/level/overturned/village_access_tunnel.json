@@ -4,13 +4,13 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 400,
         "dimensions": [
           5,
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           21,
@@ -21,13 +21,13 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 249,
         "dimensions": [
           2,
           2
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           23,
@@ -38,19 +38,32 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 220,
         "dimensions": [
           1,
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,
           7
         ],
         "source_id": 221
+      }
+    ],
+    "save_point": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 221,
+        "position": [
+          27,
+          59
+        ]
       }
     ],
     "vines": [
@@ -105,7 +118,7 @@
           16,
           17
         ],
-        "toxic": false
+        "type": 0
       }
     ]
   },
@@ -113,11 +126,6 @@
     "ambience": "overturned",
     "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -137,6 +145,7 @@
       32,
       64
     ],
+    "interior": false,
     "metagrid": [
       55,
       11
@@ -150,8 +159,10 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": true,
+      "interior": false,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 221,
     "shader": {
@@ -161,6 +172,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

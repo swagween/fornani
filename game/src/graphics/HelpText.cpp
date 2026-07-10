@@ -1,16 +1,16 @@
-#include "fornani/graphics/HelpText.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
+#include <fornani/graphics/HelpText.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 
 namespace fornani::graphics {
 
-HelpText::HelpText(automa::ServiceProvider& svc) : data(svc.text.fonts.title) {}
+HelpText::HelpText(automa::ServiceProvider& svc) : data(svc.text.fonts.title.font) { alpha_counter.set_cycle_point(std::numbers::pi * 2.f); }
 
 HelpText::HelpText(automa::ServiceProvider& svc, std::string start, input::DigitalAction const& code, std::string end, int delay_time, bool include_background, bool no_blink) : HelpText(svc) {
 	text_color = colors::ui_white;
 	text_color.a = 0;
-	bg_color = colors::ui_black;
+	bg_color = colors::black;
 	bg_color.a = 0;
 	data.setCharacterSize(text_size);
 	data.setLineSpacing(1.5f);
@@ -28,14 +28,18 @@ HelpText::HelpText(automa::ServiceProvider& svc, std::string start, input::Digit
 	}
 }
 
-void HelpText::render(sf::RenderWindow& win) {
+void HelpText::update() {
 	delay.update();
 	if (!ready()) { return; }
-	alpha_counter.update();
-	auto alpha = static_cast<unsigned>(-128 * cos(0.06f * alpha_counter.get_count()) + 128);
+	alpha_counter.update(0.02f);
+}
+
+void HelpText::render(sf::RenderWindow& win) {
+	if (!ready()) { return; }
+	auto alpha = static_cast<unsigned>(-128 * sin(alpha_counter.get()) + 128);
 	if (flags.test(HelpTextFlags::no_blink)) { alpha = 255u; }
-	text_color.a = ccm::ext::clamp(alpha, 0u, 255u);
-	bg_color.a = ccm::ext::clamp(alpha, 0u, 255u);
+	text_color.a = std::clamp(alpha, 0u, 255u);
+	bg_color.a = std::clamp(alpha, 0u, 255u);
 	if (background) {
 		data.setPosition(position + bg_offset);
 		data.setFillColor(bg_color);
@@ -56,7 +60,7 @@ void HelpText::set_position(sf::Vector2f pos) { position = pos; }
 
 void HelpText::reset() {
 	text_color.a = 0;
-	alpha_counter.start();
+	alpha_counter.reset();
 }
 
 } // namespace fornani::graphics

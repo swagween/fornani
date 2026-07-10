@@ -1,5 +1,6 @@
 
 #include "fornani/gui/PauseWindow.hpp"
+#include "fornani/gui/console/Console.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::gui {
@@ -22,7 +23,7 @@ void PauseWindow::update(automa::ServiceProvider& svc, std::optional<std::unique
 	m_menu.update(svc, m_dimensions, svc.window->f_center_screen());
 	if (console) { return; }
 	m_menu.handle_inputs(svc.input_system, svc.soundboard);
-	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
+	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered || (svc.input_system.is_mouse_active() && m_menu.is_mouse_hovering_option() && svc.input_system.left_clicked())) {
 		switch (m_menu.get_selection()) {
 		case 0:
 			m_state = PauseWindowState::exit;

@@ -1,0 +1,19 @@
+{
+  "sphincter": {
+    "dimensions": [82, 82],
+    "offset": [0.0, 16.0],
+    "sounds": ["sphincter_close", "sphincter_open"],
+    "open_for_player": true,
+    "gravitate": true,
+    "animations": [
+      {
+        "label": "close",
+        "parameters": [6, 4, 30, 0, true]
+      },
+      {
+        "label": "open",
+        "parameters": [0, 6, 24, 0, true]
+      }
+    ]
+  }
+}

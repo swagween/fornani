@@ -1,19 +1,17 @@
 
 #pragma once
 
-#include <fornani/entity/Entity.hpp>
-#include <fornani/io/Logger.hpp>
-
 #include <imgui.h>
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
-
+#include <fornani/entity/AmbientProp.hpp>
 #include <fornani/entity/Animator.hpp>
 #include <fornani/entity/Bed.hpp>
 #include <fornani/entity/Chest.hpp>
 #include <fornani/entity/CutsceneTrigger.hpp>
 #include <fornani/entity/Destructible.hpp>
 #include <fornani/entity/Enemy.hpp>
+#include <fornani/entity/Entity.hpp>
 #include <fornani/entity/Inspectable.hpp>
 #include <fornani/entity/Light.hpp>
 #include <fornani/entity/NPC.hpp>
@@ -23,9 +21,12 @@
 #include <fornani/entity/SwitchBlock.hpp>
 #include <fornani/entity/SwitchButton.hpp>
 #include <fornani/entity/TimerBlock.hpp>
+#include <fornani/entity/Train.hpp>
 #include <fornani/entity/Turret.hpp>
 #include <fornani/entity/Vine.hpp>
 #include <fornani/entity/Water.hpp>
+#include <fornani/graphics/SpriteBatch.hpp>
+#include <fornani/io/Logger.hpp>
 #include <filesystem>
 #include <memory>
 #include <string_view>
@@ -72,6 +73,7 @@ class EntitySet {
 
   private:
 	EntityHandle next_handle{};
+	SpriteBatch m_batch{};
 	sf::RectangleShape player_box{};
 	std::unordered_map<std::string, CreateEntitySignature> create_map;
 	std::unordered_map<std::string, CreateRegisteredEntitySignature> registered_map;

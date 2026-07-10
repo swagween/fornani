@@ -35,7 +35,7 @@ void CircleCollider::handle_collision(ICollider& other) {
 	if (!other.has_attribute(ColliderAttributes::fixed)) { other.handle_collider_collision(*this); }
 }
 
-void CircleCollider::handle_collider_collision(Collider const& collider, bool momentum) { handle_collision(collider.bounding_box); }
+void CircleCollider::handle_collider_collision(Collider const& collider, bool momentum) { handle_collision(collider.bounding_box, collider.has_trait(ColliderTrait::block)); }
 
 void CircleCollider::detect_map_collision(world::Map& map) { handle_map_collision(map); }
 
@@ -47,8 +47,8 @@ void CircleCollider::handle_collision(shape::Shape const& shape, bool soft) {
 	auto circle_above = sensor.bounds.getPosition().y < shape.get_center().y;
 	auto circle_below = !circle_above;
 	auto mtv = sensor.get_MTV(shape);
-	auto leeway = soft ? 0.f : 1.5f;
-	auto nudge = soft ? 1.f : 0.f;
+	auto leeway = soft && !circle_above ? 0.f : 1.5f;
+	auto nudge = soft && !circle_above ? 1.f : 0.f;
 	auto vertical = abs(mtv.y) > abs(mtv.x);
 	if (shape.non_square()) {
 		vertical ? physics.position.y -= mtv.y* leeway + nudge : physics.position.x -= mtv.x * leeway + nudge;
@@ -56,7 +56,7 @@ void CircleCollider::handle_collision(shape::Shape const& shape, bool soft) {
 		physics.position.x += circle_right_of ? abs(mtv.x) * leeway + nudge : abs(mtv.x) * -leeway - nudge;
 		physics.position.y += circle_below ? abs(mtv.y) * leeway + nudge : abs(mtv.y) * -leeway - nudge;
 	}
-	if (!soft) { vertical ? physics.collide({0, 1}) : physics.collide({1, 0}); }
+	if (!(soft && !circle_above)) { vertical ? physics.collide({0, 1}) : physics.collide({1, 0}); }
 	m_flags.set(CircleColliderFlags::collided);
 	sensor.set_position(physics.position);
 }

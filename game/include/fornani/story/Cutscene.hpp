@@ -1,28 +1,21 @@
 
 #pragma once
 
-#include <fornani/io/Logger.hpp>
-#include "fornani/utils/BitFlags.hpp"
-#include "fornani/utils/Cooldown.hpp"
-#include "fornani/utils/Polymorphic.hpp"
-
 #include <SFML/Graphics.hpp>
-
+#include <fornani/core/Fwd.hpp>
+#include <fornani/events/Subscription.hpp>
+#include <fornani/graphics/Transition.hpp>
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/Polymorphic.hpp>
 #include <optional>
 #include <string_view>
 
-namespace fornani::automa {
-struct ServiceProvider;
-}
 namespace fornani::gui {
 class Console;
 }
-namespace fornani::world {
-class Map;
-}
-namespace fornani::player {
-class Player;
-}
+
 namespace fornani {
 
 enum class CutsceneFlags { complete, started, delete_me };
@@ -31,9 +24,14 @@ class Cutscene : public UniquePolymorphic {
   public:
 	Cutscene(automa::ServiceProvider& svc, int id, std::string_view label);
 
-	virtual void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] world::Map& map, [[maybe_unused]] player::Player& player) {};
+	virtual void update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {};
+	virtual void render(sf::RenderWindow& win, sf::Vector2f cam) {};
+	[[nodiscard]] auto get_id() const -> int { return id; }
 	[[nodiscard]] auto complete() const -> bool { return flags.test(CutsceneFlags::complete); }
 	[[nodiscard]] auto delete_me() const -> bool { return flags.test(CutsceneFlags::delete_me); }
+	[[nodiscard]] auto get_progress() const -> int { return progress; }
+
+	void set_progress(int const to);
 
   protected:
 	util::BitFlags<CutsceneFlags> flags{};
@@ -56,6 +54,8 @@ class Cutscene : public UniquePolymorphic {
 	bool debug{};
 
 	io::Logger p_logger{"Cutscene"};
+
+	std::shared_ptr<Slot const> p_slot{std::make_shared<Slot const>()};
 };
 
 } // namespace fornani

@@ -14,7 +14,30 @@
         ]
       }
     ],
-    "inspectables": null,
+    "npcs": [
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": false,
+        "hidden": false,
+        "id": 248,
+        "label": "yari",
+        "position": [
+          8,
+          9
+        ],
+        "start_busy": false,
+        "suites": [
+          [
+            1
+          ]
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,
@@ -25,7 +48,6 @@
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           4,
@@ -80,8 +102,8 @@
       42,
       21
     ],
-    "minimap": true,
-    "music": "home_again",
+    "minimap": false,
+    "music": "none",
     "player_start": [
       0,
       0
@@ -89,6 +111,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": true,
       "lighting": false,
       "timer": false
     },

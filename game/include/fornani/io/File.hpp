@@ -6,19 +6,17 @@
 
 namespace fornani::io {
 
-enum class FileFlags { new_file, inspect_hint };
-
 class File {
   public:
-	[[nodiscard]] auto is_new() const -> bool { return flags.test(FileFlags::new_file); }
+	[[nodiscard]] auto is_new() const -> bool { return save_data["status"]["new"].as_bool(); }
+	[[nodiscard]] auto has_inspect_hint() const -> bool { return save_data["status"]["inspect_hint"].as_bool(); }
 	void write() {
 		save_data["status"]["new"] = false;
-		flags.reset(FileFlags::new_file);
+		save_data["status"]["inspect_hint"] = false;
 	}
 	int id{};
 	dj::Json save_data{};
 	std::string label{};
-	util::BitFlags<FileFlags> flags{};
 };
 
 } // namespace fornani::io

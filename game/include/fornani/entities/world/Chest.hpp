@@ -2,10 +2,11 @@
 #pragma once
 
 #include <fornani/entities/animation/Animation.hpp>
-#include <fornani/entities/item/Item.hpp>
 #include <fornani/graphics/Animatable.hpp>
+#include <fornani/io/Logger.hpp>
 #include <fornani/particle/Sparkler.hpp>
 #include <fornani/physics/RegisteredCollider.hpp>
+#include <fornani/utils/ID.hpp>
 #include <optional>
 
 namespace fornani::automa {
@@ -32,14 +33,16 @@ enum class ChestAttributes { mythic };
 
 class Chest final : public Animatable {
   public:
-	Chest(automa::ServiceProvider& svc, world::Map& map, int id, ChestType type, int modifier);
-	Chest(automa::ServiceProvider& svc, world::Map& map, int id, ChestType type, std::string tag, int modifier);
+	Chest(automa::ServiceProvider& svc, world::Map& map, StableID id, ChestType type, int modifier);
+	Chest(automa::ServiceProvider& svc, world::Map& map, StableID id, ChestType type, std::string tag, int modifier);
 	void update(automa::ServiceProvider& svc, world::Map& map, std::optional<std::unique_ptr<gui::Console>>& console, player::Player& player);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f pos);
 	void set_position_from_scaled(sf::Vector2f scaled_pos);
 	shape::CircleCollider& get_collider() { return *m_collider.get_circle(); }
 	void set_attribute(ChestAttributes const to_set, bool on = true) { on ? m_attributes.set(to_set) : m_attributes.reset(to_set); }
+
+	[[nodiscard]] auto get_stable_id() const -> int { return m_id.get(); }
 
   private:
 	shape::RegisteredCollider m_collider;
@@ -50,7 +53,7 @@ class Chest final : public Animatable {
 
 	std::optional<vfx::Sparkler> m_sparkler{};
 
-	int m_id{};
+	StableID m_id{};
 	int m_content_modifier{};
 	std::optional<std::string> m_tag{};
 
@@ -59,6 +62,8 @@ class Chest final : public Animatable {
 		anim::Parameters shine{1, 5, 24, 0};
 		anim::Parameters opened{6, 1, 8, -1};
 	} m_animations{};
+
+	io::Logger m_logger{"Chest"};
 };
 
 } // namespace fornani::entity

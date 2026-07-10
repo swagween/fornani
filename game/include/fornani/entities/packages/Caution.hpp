@@ -1,9 +1,10 @@
+
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "fornani/io/Logger.hpp"
-#include "fornani/utils/Direction.hpp"
-#include "fornani/weapon/Projectile.hpp"
+#include <fornani/io/Logger.hpp>
+#include <fornani/utils/Direction.hpp>
+#include <fornani/weapon/Projectile.hpp>
 
 namespace fornani::player {
 class Player;
@@ -25,7 +26,9 @@ class Caution {
 	Caution() = default;
 	void update();
 	void avoid_player(player::Player& player);
-	void avoid_ledges(world::Map& map, shape::Collider& collider, Direction const& direction, int height);
+	void avoid_ledges(world::Map& map, shape::Collider& collider, Direction const& dir, int height);
+	bool is_ledge_detected(world::Map& map, shape::Collider& collider, Direction const& dir, int height = 1);
+	bool is_projectile_detected(world::Map& map, shape::Shape& zone, arms::Team friendly_fire);
 	Direction projectile_detected(world::Map& map, shape::Shape& zone, arms::Team friendly_fire);
 	bool detected_step(world::Map& map, shape::Collider& collider, Direction const& direction, sf::Vector2f offset = {}, int vision = 1);
 	bool detected_ceiling(world::Map& map, shape::Collider& collider, sf::Vector2f offset = {}, int vision = 1);
@@ -35,6 +38,7 @@ class Caution {
 	[[nodiscard]] bool danger() const;
 
 	sf::Vector2f retreat{};
+	SimpleDirection direction{};
 	struct {
 		sf::Vector2f left{};
 		sf::Vector2f right{};

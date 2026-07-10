@@ -36,7 +36,9 @@ void SwitchBlock::handle_collision(shape::Collider& other) const { other.handle_
 
 void SwitchBlock::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool background) {
 	if (m_state == SwitchBlockState::empty && !background) { return; }
-	set_position(get_collider().physics.position - cam);
+
+	auto render_position = util::round_to(get_collider().physics.position, constants::f_cell_size);
+	set_position(render_position - cam);
 
 	svc.greyblock_mode() ? get_collider().render(win, cam) : win.draw(*this);
 }
@@ -44,13 +46,11 @@ void SwitchBlock::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf
 void SwitchBlock::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) const {
 	if (proj.transcendent()) { return; }
 	if (m_state == SwitchBlockState::empty) { return; }
-	if (proj.get_collider().collides_with(m_collider.get()->bounding_box)) {
-		if (!proj.destruction_initiated()) {
-			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position()));
-			svc.soundboard.flags.world.set(audio::World::hard_hit);
-		}
-		proj.destroy(false);
+	if (proj.reflect()) {
+		proj.get_collider().handle_collision(m_collider.get()->bounding_box);
+		return;
 	}
+	if (proj.get_collider().collides_with(m_collider.get()->bounding_box)) { proj.handle_hard_hit(svc, map); }
 }
 
 } // namespace fornani::world

@@ -49,7 +49,15 @@ enum class AnimState {
 	dash_kick,
 	slow_walk,
 	swim,
-	dive
+	dive,
+	hover,
+	stun,
+	unconscious,
+	recover,
+	melee_front_kick,
+	melee_side_kick,
+	melee_roundhouse_kick,
+	drink
 };
 
 enum class AnimTriggers { end_death };
@@ -73,7 +81,7 @@ class PlayerAnimation : public StateMachine<AnimState> {
 	[[nodiscard]] auto is_sleep_timer_running() const -> bool { return m_sleep_timer.running(); }
 
 	bool stepped() const;
-	void set_sleep_timer();
+	void set_sleep_timer(int time = 0);
 
 	fsm::StateFunction state_function;
 
@@ -107,13 +115,21 @@ class PlayerAnimation : public StateMachine<AnimState> {
 	fsm::StateFunction update_turn_slide();
 	fsm::StateFunction update_shoot();
 	fsm::StateFunction update_sleep();
+	fsm::StateFunction update_unconscious();
 	fsm::StateFunction update_wake_up();
+	fsm::StateFunction update_recover();
 	fsm::StateFunction update_crouch();
 	fsm::StateFunction update_crawl();
 	fsm::StateFunction update_dash_kick();
 	fsm::StateFunction update_slow_walk();
 	fsm::StateFunction update_swim();
 	fsm::StateFunction update_dive();
+	fsm::StateFunction update_hover();
+	fsm::StateFunction update_stun();
+	fsm::StateFunction update_melee_front_kick();
+	fsm::StateFunction update_melee_side_kick();
+	fsm::StateFunction update_melee_roundhouse_kick();
+	fsm::StateFunction update_drink();
 
 	bool change_state(AnimState next, anim::Parameters params, bool hard = false);
 	void force(AnimState to_state, std::string_view key);

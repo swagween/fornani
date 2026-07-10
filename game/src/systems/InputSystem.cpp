@@ -1,4 +1,5 @@
 
+#include <imgui.h>
 #include <djson/json.hpp>
 #include <fornani/gui/ActionControlIconQuery.hpp>
 #include <fornani/systems/InputSystem.hpp>
@@ -6,8 +7,8 @@
 namespace fornani::input {
 
 constexpr auto default_joystick_sensitivity_v = 0.2f;
-constexpr auto analog_press_threshold_v = 0.3f;
-constexpr auto analog_release_threshold_v = 0.25f;
+constexpr auto analog_press_threshold_v = 0.25f;
+constexpr auto analog_release_threshold_v = 0.2f;
 
 static auto get_action_set_from_action(AnalogAction action) -> ActionSet {
 	switch (action) {
@@ -54,7 +55,7 @@ static auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 	return ActionSet::Platformer; // This will never be hit
 }
 
-InputSystem::InputSystem(ResourceFinder& finder) : m_stick_sensitivity{default_joystick_sensitivity_v} {
+InputSystem::InputSystem(ResourceFinder& finder) : m_stick_sensitivity{default_joystick_sensitivity_v}, m_mouse_active{1200} {
 	NANI_LOG_INFO(m_logger, "Initializing Steam Input");
 	if (!SteamInput()->Init(true)) {
 		NANI_LOG_WARN(m_logger, "Could not initialize Steam Input!");
@@ -82,7 +83,7 @@ void InputSystem::init_steam_action_sets() {
 }
 
 void InputSystem::load_keyboard_controls(ResourceFinder& finder) { // load keyboard bindings
-	auto controls = dj::Json::from_file((finder.resource_path() + "/data/config/control_map.json").c_str());
+	auto controls = dj::Json::from_file((finder.paths.config / "controls.json").string());
 	if (!controls) {
 		NANI_LOG_ERROR(m_logger, "Failed to load input data for InputSystem.");
 		return;
@@ -144,6 +145,7 @@ void InputSystem::setup_action_handles() {
 }
 
 void InputSystem::handle_event(std::optional<sf::Event> const event) {
+	auto& left_mouse = m_mouse.left_button;
 	if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
 		m_last_device_used = InputDevice::keyboard;
 		m_last_key_pressed = key_pressed->scancode;
@@ -153,6 +155,23 @@ void InputSystem::handle_event(std::optional<sf::Event> const event) {
 	} else if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
 		keys_pressed.erase(key_released->scancode);
 	}
+	if (auto const* mouse_pressed = event->getIf<sf::Event::MouseButtonPressed>()) {
+		if (mouse_pressed->button == sf::Mouse::Button::Left) {
+			left_mouse.triggered = true;
+			left_mouse.held = true;
+		}
+	}
+	if (auto const* mouse_released = event->getIf<sf::Event::MouseButtonReleased>()) {
+		if (mouse_released->button == sf::Mouse::Button::Left) {
+			left_mouse.released = true;
+			left_mouse.held = false;
+		}
+	}
+}
+
+void InputSystem::sync_mouse(sf::RenderWindow& window) {
+	m_mouse.previous_position = m_mouse.position;
+	m_mouse.position = window.mapPixelToCoords(sf::Mouse::getPosition());
 }
 
 void InputSystem::update() {
@@ -160,10 +179,12 @@ void InputSystem::update() {
 	SteamInput()->RunFrame();
 	gather_raw_input();
 	resolve_input();
-	update_steam_controllers();
+	if (has_mouse_moved()) { m_mouse_active.start(); }
+	m_mouse_active.update();
 }
 
 void InputSystem::flush_inputs() {
+
 	for (auto& state : m_resolved_digital) {
 		state.held = false;
 		state.triggered = false;
@@ -221,7 +242,7 @@ void InputSystem::gather_raw_input() {
 		bool gamepad_pressed = false;
 		if (m_controller_handle != 0) {
 			auto data = SteamInput()->GetDigitalActionData(m_controller_handle, steam_handle_for(action));
-			gamepad_pressed = data.bState;
+			gamepad_pressed = data.bActive && data.bState;
 		}
 		raw.held = keyboard_pressed || gamepad_pressed;
 		raw.active = is_action_allowed(action);
@@ -241,12 +262,15 @@ void InputSystem::gather_raw_input() {
 
 		if (m_controller_handle != 0) {
 			auto data = SteamInput()->GetAnalogActionData(m_controller_handle, steam_handle_for(action));
-
-			raw.x = data.x;
-			raw.y = -data.y; // negative because steam's vertical axis is inverted (???)
+			if (data.bActive) {
+				raw.x = data.x;
+				raw.y = -data.y; // negative because steam's vertical axis is inverted (???)
+			}
 		}
 
 		raw.active = is_action_allowed(action);
+		if (std::abs(raw.x) > analog_press_threshold_v) { m_last_device_used = InputDevice::gamepad; }
+		if (std::abs(raw.y) > analog_press_threshold_v) { m_last_device_used = InputDevice::gamepad; }
 	}
 }
 
@@ -309,6 +333,10 @@ void InputSystem::update_steam_controllers() {
 		m_controller_handle = 0;
 		return;
 	}
+	if (SteamInput()->GetInputTypeForHandle(m_controller_handle) == k_ESteamInputType_Unknown) {
+		m_controller_handle = 0;
+		return;
+	}
 
 	static InputHandle_t active_controller = 0;
 
@@ -330,6 +358,8 @@ void InputSystem::update_steam_controllers() {
 		return;
 	}
 
+	// Treat the rest as controllers.
+
 	// Otherwise, pick the first connected controller
 	m_controller_handle = controllers[0];
 	auto set = SteamInput()->GetCurrentActionSet(m_controller_handle);
@@ -341,6 +371,7 @@ void InputSystem::set_action_set(ActionSet new_set) {
 	if (m_active_action_set == new_set) { return; }
 	m_active_action_set = new_set;
 	set_flag(InputSystemFlags::changed_action_sets);
+	update_steam_controllers();
 }
 
 float InputSystem::analog_axis_value(ResolvedAnalogState const& a, MoveDirection dir, bool previous) const {
@@ -390,9 +421,9 @@ auto InputSystem::direction_released(AnalogAction action, MoveDirection dir) con
 
 auto InputSystem::query_direction(AnalogAction action, MoveDirection dir, DigitalActionQueryType type) const -> bool {
 	switch (type) {
-	case DigitalActionQueryType::held: return direction_held(input::AnalogAction::map_pan, dir);
-	case DigitalActionQueryType::triggered: return direction_triggered(input::AnalogAction::map_pan, dir);
-	case DigitalActionQueryType::released: return direction_released(input::AnalogAction::map_pan, dir);
+	case DigitalActionQueryType::held: return direction_held(action, dir);
+	case DigitalActionQueryType::triggered: return direction_triggered(action, dir);
+	case DigitalActionQueryType::released: return direction_released(action, dir);
 	}
 	return false;
 }
@@ -407,6 +438,10 @@ auto InputSystem::is_any_direction_held(AnalogAction action) const -> bool {
 void InputSystem::set_steam_action_set(InputActionSetHandle_t to_set) {
 	if (!m_controller_handle) { return; }
 	NANI_LOG_INFO(m_logger, "Setting controller action set...");
+	NANI_LOG_INFO(m_logger, "Handle: {}", m_controller_handle);
+	InputHandle_t controllers[STEAM_INPUT_MAX_COUNT];
+	int count = SteamInput()->GetConnectedControllers(controllers);
+	NANI_LOG_INFO(m_logger, "Count: {}", count);
 	set_flag(InputSystemFlags::changed_action_sets);
 	SteamInput()->ActivateActionSet(m_controller_handle, to_set);
 }
@@ -447,7 +482,7 @@ void InputSystem::handle_gamepad_connection(SteamInputDeviceConnected_t* data) {
 	m_controller_handle = data->m_ulConnectedDeviceHandle;
 	m_last_device_used = InputDevice::gamepad; // Quickly switch to gamepad input
 	setup_action_handles();
-	set_action_set(m_active_action_set);
+	update_steam_controllers();
 }
 
 void InputSystem::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t* data) {
@@ -455,6 +490,15 @@ void InputSystem::handle_gamepad_disconnection(SteamInputDeviceDisconnected_t* d
 	if (is_gamepad_connected()) { set_flag(InputSystemFlags::gamepad_disconnected); }
 	m_controller_handle = 0;
 	m_last_device_used = InputDevice::keyboard; // Quickly switch to keyboard input
+}
+
+auto InputSystem::has_mouse_moved() const -> bool { return (m_mouse.position - m_mouse.previous_position).length() > constants::tiny_value; }
+
+void InputSystem::flush_mouse_input() {
+	m_mouse.left_button.triggered = false;
+	m_mouse.left_button.released = false;
+	m_mouse.right_button.triggered = false;
+	m_mouse.right_button.released = false;
 }
 
 void InputSystem::open_bindings_overlay() const {

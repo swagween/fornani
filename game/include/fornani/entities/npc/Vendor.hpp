@@ -13,9 +13,9 @@ enum class VendorType { surveyor, gunsmith, engineer, fortuneteller, seamstress 
 /* NPCs will optionally have this package */
 class Vendor {
   public:
+	Vendor(std::size_t stock, float upcharge) : m_stock_size{stock}, m_upcharge{upcharge} {}
 	void generate_inventory(automa::ServiceProvider& svc);
-	void set_upcharge(float to_upcharge) { upcharge = to_upcharge; }
-	[[nodiscard]] auto get_upcharge() const -> float { return upcharge; }
+	[[nodiscard]] auto get_upcharge() const -> float { return m_upcharge; }
 	player::Inventory inventory{};
 	std::vector<std::string> common_items{};
 	std::vector<std::string> uncommon_items{};
@@ -23,7 +23,7 @@ class Vendor {
 	std::vector<std::string> guaranteed_finite_items{};
 
   private:
-	float upcharge{0.2f};
-	int stock_size{6};
+	float m_upcharge{0.2f};
+	std::size_t m_stock_size{6};
 };
 } // namespace fornani::npc

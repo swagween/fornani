@@ -9,7 +9,7 @@ namespace fornani::enemy {
 Beamsprout::Beamsprout(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction)
 	: Enemy(svc, map, "beamsprout", false, 0, start_direction), m_services(&svc), m_map(&map), beam(svc, "poison_ball"), fire_rate{72}, post_beam{336} {
 
-	m_params = {{"idle", {0, 12, 28, -1}}, {"charge", {12, 10, 20, 0}}, {"shoot", {22, 3, 20, 2}}, {"relax", {25, 1, 20, 0}}, {"turn", {26, 2, 32, 0}}};
+	p_animations = {{"idle", {0, 12, 28, -1}}, {"charge", {12, 10, 20, 0}}, {"shoot", {22, 3, 20, 2}}, {"relax", {25, 1, 20, 0}}, {"turn", {26, 2, 32, 0}}};
 
 	animation.set_params(get_params("idle"));
 	get_collider().physics.maximum_velocity = {8.f, 12.f};
@@ -34,6 +34,7 @@ void Beamsprout::update(automa::ServiceProvider& svc, world::Map& map, player::P
 		return;
 	}
 	post_beam.update();
+	hurt_sound.update();
 	face_player(player);
 	flags.state.set(StateFlags::vulnerable); // always vulnerable
 
@@ -47,10 +48,11 @@ void Beamsprout::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	bp.y -= 4.f;
 	beam.get().set_barrel_point(bp);
 
-	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
+	if (flags.state.test(StateFlags::hurt) && !hurt_sound.running()) {
 		m_services->soundboard.flags.beast.set(audio::Beast::hurt);
 		hurt_effect.start(128);
 		flags.state.reset(StateFlags::hurt);
+		hurt_sound.start();
 	}
 
 	hurt_effect.update();
@@ -82,10 +84,9 @@ fsm::StateFunction Beamsprout::update_charge() {
 	if (animation.just_started()) { m_services->soundboard.flags.beamsprout.set(audio::Beamsprout::charge); }
 	if (animation.get_frame_count() > 7) {
 		if (!has_flag_set(BeamsproutFlags::spit)) {
-			m_map->spawn_projectile_at(*m_services, beam.get(), beam.get().get_barrel_point());
+			beam.shoot(*m_services, *m_map);
 			get_collider().physics.apply_force(directions.actual.as_float() * beam.get().get_recoil_force());
 			m_root->variables.bob_physics.velocity.x = directions.actual.as_float() * beam.get().get_recoil_force().x * 2.f;
-			m_services->soundboard.flags.beamsprout.set(audio::Beamsprout::shoot);
 			set_flag(BeamsproutFlags::spit);
 		}
 	}
@@ -102,7 +103,7 @@ fsm::StateFunction Beamsprout::update_shoot() {
 	animation.label = "shoot";
 	p_state.actual = BeamsproutState::shoot;
 	if (m_services->ticker.every_x_ticks(static_cast<int>(fire_rate))) {
-		m_map->spawn_projectile_at(*m_services, beam.get(), beam.get().get_barrel_point());
+		beam.shoot(*m_services, *m_map);
 		get_collider().physics.apply_force(directions.actual.as_float() * beam.get().get_recoil_force());
 	}
 	if (animation.complete()) {

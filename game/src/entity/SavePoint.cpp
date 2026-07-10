@@ -1,7 +1,8 @@
 
+#include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entity/SavePoint.hpp>
-#include <fornani/gui/console/Console.hpp>
+#include <fornani/graphics/Renderer.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 
 namespace fornani {
@@ -35,11 +36,20 @@ void SavePoint::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	auto offset = sf::Vector2f{-constants::f_cell_vec.x * 0.5f, -get_f_dimensions().y};
 	Animatable::set_position(get_world_position() - cam + offset);
 	win.draw(*this);
-	sparkler.render(win, cam);
 }
 
-void SavePoint::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
-	Entity::update(svc, map, console, player);
+void SavePoint::submit(Renderer& renderer) {
+	auto offset = sf::Vector2f{-constants::f_cell_vec.x * 0.5f, -get_f_dimensions().y};
+	auto const pos = get_world_position() + offset;
+	auto const& frame = get_sprite().getTextureRect();
+
+	sf::FloatRect dest{pos, sf::Vector2f{frame.size}};
+	renderer.submit(get_sprite().getTexture(), dest, frame, RenderLayer::background_entities);
+	sparkler.submit(renderer);
+}
+
+void SavePoint::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
+	Entity::update(svc, map, context, player);
 	sparkler.update(svc);
 	intensity < 2 ? sparkler.set_color(colors::periwinkle) : sparkler.set_color(colors::ui_white);
 
@@ -59,7 +69,7 @@ void SavePoint::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_un
 					save(svc, player);
 					svc.state_controller.save_point_id = get_id();
 					svc.soundboard.flags.world.set(audio::World::save);
-					console = std::make_unique<gui::Console>(svc, svc.text.basic, "save", gui::OutputType::gradual);
+					context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "save", gui::OutputType::gradual);
 				}
 			}
 		} else {

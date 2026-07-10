@@ -1,5 +1,5 @@
 
-#include "fornani/utils/Ticker.hpp"
+#include <fornani/utils/Ticker.hpp>
 
 namespace fornani::util {
 
@@ -30,15 +30,15 @@ void Ticker::calculate_fps() {
 }
 
 void Ticker::slow_down(int time, float target, float rate) {
-	slowdown.start(time);
+	slowdown.set_and_start(time);
 	slowdown_target = target;
 	slowdown_rate = rate;
 }
 
-void Ticker::freeze_frame(int time, float target) {
+void Ticker::freeze_frame(int time, float rate) {
 	freezeframe.start(time);
-	slowdown_target = target;
-	slowdown_rate = 0.1f;
+	dt_scalar = 0.f;
+	slowdown_rate = rate;
 }
 
 void Ticker::set_time(Sec time) {
@@ -47,11 +47,29 @@ void Ticker::set_time(Sec time) {
 	twenty_minute_ticker.elapsed = time;
 }
 
-void Ticker::scale_dt() { flags.set(TickerFlags::forced_slowdown); }
+void Ticker::scale_dt() {
+	flags.set(TickerFlags::forced_slowdown);
+	dt_scalar = global_scalar;
+}
 
 void Ticker::reset_dt() {
 	flags.reset(TickerFlags::forced_slowdown);
 	dt_scalar = 1.f;
+	global_scalar = 1.f;
+}
+
+auto Ticker::global_tick_rate() const -> float { return ft.count() * tick_multiplier; }
+
+void Ticker::manage_slowdowns() {
+	if (freezeframe.running()) {
+		dt_scalar = 0.01f;
+	} else {
+		dt_scalar = std::clamp(dt_scalar + slowdown_rate, 0.f, global_scalar);
+	}
+	if (slowdown.running()) { dt_scalar = std::clamp(1.f - slowdown_target * util::slowdown(slowdown.get_normalized()), 0.f, global_scalar); }
+
+	freezeframe.update();
+	slowdown.update();
 }
 
 } // namespace fornani::util

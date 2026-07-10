@@ -16,20 +16,24 @@ Item::Item(dj::Json const& source, std::string_view label) : m_label{label}, m_t
 	std::size_t id = std::distance(arr.begin(), it);
 	auto const& in_data = *it;
 
+	auto dim = constants::i_resolution_vec_padded;
 	m_id = id;
 	m_type = static_cast<ItemType>(in_data["category"].as<int>());
 	m_lookup.position.x = in_data["lookup"][0].as<int>();
 	m_lookup.position.y = in_data["lookup"][1].as<int>();
 	m_table_origin.x = in_data["origin"][0].as<int>();
 	m_table_origin.y = in_data["origin"][1].as<int>();
-	m_lookup.position = m_lookup.position.componentWiseMul(constants::i_resolution_vec);
-	m_lookup.size = constants::i_resolution_vec;
+	m_lookup.position = m_lookup.position.componentWiseMul(dim);
+	m_lookup.size = dim;
 
 	if (in_data["sellable"].as_bool()) { m_flags.set(ItemFlags::sellable); }
 	if (in_data["readable"].as_bool()) { m_flags.set(ItemFlags::readable); }
 	if (in_data["equippable"].as_bool()) { m_flags.set(ItemFlags::equippable); }
 	if (in_data["wearable"].as_bool()) { m_flags.set(ItemFlags::wearable); }
 	if (in_data["invisible"].as_bool()) { m_flags.set(ItemFlags::invisible); }
+	if (in_data["useable"].as_bool()) { m_flags.set(ItemFlags::useable); }
+	if (in_data["ingredient"].as_bool()) { m_flags.set(ItemFlags::ingredient); }
+	if (in_data["build"]) { m_flags.set(ItemFlags::buildable); }
 	m_stats.stack_limit = in_data["stack_limit"] ? in_data["stack_limit"].as<int>() : 1;
 	if (m_type == ItemType::collectible) { m_stats.stack_limit = 99; }
 
@@ -44,6 +48,7 @@ Item::Item(dj::Json const& source, std::string_view label) : m_label{label}, m_t
 }
 
 void Item::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f position) {
+	if (is_invisible()) { return; }
 	sprite.setTextureRect(m_lookup);
 	sprite.setPosition(position);
 	win.draw(sprite);
@@ -57,8 +62,11 @@ std::vector<std::string> Item::generate_menu_list(dj::Json const& in) const {
 	auto ret = std::vector<std::string>();
 	if (m_flags.test(ItemFlags::equippable)) { m_state.test(ItemState::equipped) ? ret.push_back(in["unequip"].as_string()) : ret.push_back(in["equip"].as_string()); }
 	if (m_flags.test(ItemFlags::readable)) { ret.push_back(in["read"].as_string()); }
+	if (is_useable()) { ret.push_back(in["use"].as_string()); }
 	ret.push_back(in["cancel"].as_string());
 	return ret;
 }
+
+auto Item::get_f_origin() const -> sf::Vector2f { return sf::Vector2f{m_table_origin}; }
 
 } // namespace fornani::item

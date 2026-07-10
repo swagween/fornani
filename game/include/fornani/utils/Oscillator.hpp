@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <ccmath/math/basic.hpp>
+#include <cmath>
 
 namespace fornani {
 
@@ -11,7 +11,7 @@ class Oscillator {
 	void update(float dt);
 
 	[[nodiscard]] auto get() const -> float { return m_position; }
-	[[nodiscard]] auto get_zero_centered() const -> float { return ccm::abs(m_position); }
+	[[nodiscard]] auto get_zero_centered() const -> float { return std::abs(m_position); }
 
 	void set_stiffness(float k) { m_stiffness = k; }
 	void set_damping(float d) { m_damping = d; }

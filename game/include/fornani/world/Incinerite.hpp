@@ -38,7 +38,7 @@ class Incinerite : public Animatable {
 	[[nodiscard]] auto is_destroyed() const -> bool { return health.is_dead(); }
 	[[nodiscard]] auto get_chunk_id() const -> int { return m_chunk_id; }
 
-	entity::Health health;
+	Health health;
 
   private:
 	shape::RegisteredCollider m_collider;

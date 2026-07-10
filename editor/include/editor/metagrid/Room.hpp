@@ -14,19 +14,19 @@ struct ServiceProvider;
 }
 namespace pi {
 
-enum class RoomFlags { include_in_minimap, use_template };
+enum class RoomFlags { include_in_minimap, use_template, interior, day_night_shift };
 
 constexpr auto spacing_v = 32.f;
 constexpr sf::Color excluded_room_color_v{120, 80, 80, 20};
 constexpr sf::Color highlighted_excluded_room_color_v{120, 100, 80, 100};
-constexpr sf::Color room_color_v{79, 22, 32, 220};
-constexpr sf::Color highighted_room_color_v{79, 22, 32, 180};
+constexpr sf::Color room_color_v{120, 17, 42, 210};
+constexpr sf::Color highighted_room_color_v{120, 17, 42, 140};
 
 class Room : public fornani::Flaggable<RoomFlags> {
   public:
 	Room(fornani::automa::ServiceProvider& svc, fornani::data::MapData& in);
 
-	void update(sf::Vector2f mouse_position) { m_highlighted = m_box.getGlobalBounds().contains(mouse_position); }
+	void update(sf::Vector2f mouse_position, bool window_hovered) { m_highlighted = m_box.getGlobalBounds().contains(mouse_position) && !window_hovered; }
 	bool serialize(fornani::automa::ServiceProvider& svc);
 
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
@@ -38,9 +38,12 @@ class Room : public fornani::Flaggable<RoomFlags> {
 	[[nodiscard]] auto get_filename() const -> std::string { return m_data->room_label + ".json"; }
 	[[nodiscard]] auto get_label() const -> std::string { return m_label.getString(); }
 	[[nodiscard]] auto get_biome() const -> std::string { return m_biome.getString(); }
+	[[nodiscard]] auto get_music() const -> std::string { return m_data->metadata["meta"]["music"].as_string(); }
+	fornani::data::MapData& get_data() { return *m_data; }
 
 	fornani::ID id;
 	bool no_border{};
+	bool show_tags{};
 
   private:
 	sf::RectangleShape m_box{};

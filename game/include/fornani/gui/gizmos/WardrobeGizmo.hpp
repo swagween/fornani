@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/shader/HoloShader.hpp>
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/gui/Gizmo.hpp"
 #include "fornani/gui/gizmos/OutfitterGizmo.hpp"
@@ -30,6 +31,8 @@ class WardrobeGizmo : public Gizmo {
 	sf::Vector2f m_nani_offset{};
 	sf::Vector2f m_pawn_offset{};
 	sf::Vector2f m_light_offset{};
+
+	HoloShader m_holo_shader;
 
 	anim::AnimatedSprite m_core;
 	anim::AnimatedSprite m_light;

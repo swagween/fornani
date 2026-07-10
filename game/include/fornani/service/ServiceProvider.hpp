@@ -11,6 +11,7 @@
 #include <fornani/graphics/CameraController.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/setup/AccessibilityService.hpp>
+#include <fornani/setup/AppContext.hpp>
 #include <fornani/setup/DataManager.hpp>
 #include <fornani/setup/TextManager.hpp>
 #include <fornani/setup/Version.hpp>
@@ -37,15 +38,15 @@ struct EditorSettings {
 };
 
 struct ServiceProvider {
-	ServiceProvider(char** argv, Version& version, WindowManager& window, capo::IEngine& audio_engine)
-		: finder(argv), text{finder}, data(*this), version(&version), window(&window), assets{finder}, sounds{finder}, music_player{audio_engine}, ambience_player{audio_engine}, quest_registry{finder}, quest_table{quest_registry},
-		  soundboard{*this, audio_engine} {};
+	ServiceProvider(char** argv, AppContext& context, WindowManager& window, capo::IEngine& audio_engine)
+		: finder(argv), text{finder, context.localization}, data(*this), version(&context.version), window(&window), assets{finder}, sounds{finder}, music_player{audio_engine}, ambience_player{audio_engine}, quest_registry{finder},
+		  quest_table{quest_registry}, soundboard{*this, audio_engine} {};
 
 	util::Stopwatch stopwatch{};
 	ResourceFinder finder;
 	input::InputSystem input_system{finder};
-	data::TextManager text;
 	data::DataManager data;
+	data::TextManager text;
 	Version* version;
 	WindowManager* window;
 	core::SoundManager sounds;

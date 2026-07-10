@@ -1,0 +1,88 @@
+{
+  "cattail": {
+    "num_frames": 9,
+    "sensitivity": 0.001,
+    "radius": 20.0,
+    "dimensions": [32, 32],
+    "destroy_effect": "grass_burst"
+  },
+  "reeds": {
+    "num_frames": 3,
+    "sensitivity": 0.001,
+    "radius": 16.0,
+    "dimensions": [64, 64],
+    "destroy_effect": "grass_burst"
+  },
+  "pink_flower": {
+    "num_frames": 5,
+    "sensitivity": 0.001,
+    "radius": 16.0,
+    "dimensions": [64, 64]
+  },
+  "orange_flower": {
+    "num_frames": 5,
+    "sensitivity": 0.001,
+    "radius": 16.0,
+    "dimensions": [64, 64]
+  },
+  "pioneer_base": {
+    "num_frames": 1,
+    "sensitivity": 0.0,
+    "radius": 16.0,
+    "dimensions": [169, 95],
+    "offset": [-11.0, -9.0]
+  },
+  "totaled_championj5": {
+    "num_frames": 1,
+    "sensitivity": 0.0,
+    "radius": 16.0,
+    "dimensions": [65, 36],
+    "offset": [22.0, -18.0],
+    "emitter": { "tag": "smoke", "frequency": 180, "offset": [0.0, -32.0] }
+  },
+  "exhaust_pipe": {
+    "num_frames": 1,
+    "sensitivity": 0.0,
+    "radius": 16.0,
+    "dimensions": [16, 16],
+    "offset": [0.0, 0.0],
+    "emitter": { "tag": "exhaust", "frequency": 100, "offset": [0.0, -16.0] }
+  },
+  "drill": {
+    "num_frames": 6,
+    "framerate": 80,
+    "sensitivity": 0.0,
+    "radius": 16.0,
+    "dimensions": [90, 90],
+    "offset": [0.0, -68.0],
+    "emitter": { "tag": "exhaust", "frequency": 140, "offset": [64.0, -16.0] }
+  },
+  "championj5": {
+    "num_frames": 1,
+    "sensitivity": 0.0,
+    "radius": 16.0,
+    "dimensions": [65, 36],
+    "offset": [22.0, -18.0]
+  },
+  "nephridiopore": {
+    "num_frames": 1,
+    "sensitivity": 0.0,
+    "radius": 16.0,
+    "dimensions": [128, 128],
+    "offset": [48.0, 16.0]
+  },
+  "worm_back": {
+    "num_frames": 1,
+    "sensitivity": 0.0,
+    "radius": 16.0,
+    "dimensions": [256, 256],
+    "offset": [16.0, 16.0]
+  },
+  "worm_front": {
+    "num_frames": 1,
+    "sensitivity": 0.0,
+    "radius": 16.0,
+    "dimensions": [256, 256],
+    "offset": [-18.0, -24.0]
+  }
+}

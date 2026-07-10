@@ -10,7 +10,7 @@ namespace fornani::enemy {
 constexpr auto spitefly_framerate = 12;
 
 Spitefly::Spitefly(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "spitefly"), m_services{&svc} {
-	m_params = {{"idle", {0, 4, spitefly_framerate * 2, -1}}, {"turn", {4, 1, spitefly_framerate * 2, 0}}, {"sleep", {5, 1, spitefly_framerate * 2, -1}}, {"awaken", {6, 7, spitefly_framerate * 2, 0}}};
+	p_animations = {{"idle", {0, 4, spitefly_framerate * 2, -1}}, {"turn", {4, 1, spitefly_framerate * 2, 0}}, {"sleep", {5, 1, spitefly_framerate * 2, -1}}, {"awaken", {6, 7, spitefly_framerate * 2, 0}}};
 	animation.set_params(get_params("sleep"));
 	p_state.actual = SpiteflyState::sleep;
 	flags.general.set(GeneralFlags::hurt_on_contact);
@@ -52,13 +52,18 @@ void Spitefly::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 
 	if (is_active()) {
 		auto force = is_albino() ? 0.00012f : 0.0001f;
-		m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center(), force);
+		if (is_albino()) {
+			get_collider().physics.set_friction_componentwise({1.f, 0.99f});
+			m_steering.thrust_seek(Enemy::get_collider().physics, player.get_collider().get_center() + random::random_vector_float(-4.f, 4.f), {0.017f, .118f, .991f, 260.f});
+		} else {
+			m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center(), force);
+		}
 		if (is_bomb()) {
 			if (m_bomb) {
 				if (svc.ticker.every_x_ticks(1000)) {
 					auto bp = sf::Vector2f{0.f, 32.f};
 					m_bomb->get().set_barrel_point(get_collider().get_center() + bp);
-					map.spawn_projectile_at(svc, m_bomb->get(), get_collider().get_center() + bp, player.get_collider().get_center() - get_collider().get_center() + bp);
+					m_bomb->shoot(svc, map, player.get_collider().get_center() - get_collider().get_center() + bp);
 				}
 			}
 		}

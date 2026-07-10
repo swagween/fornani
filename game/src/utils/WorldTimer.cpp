@@ -5,7 +5,7 @@
 
 namespace fornani {
 
-WorldTimer::WorldTimer(automa::ServiceProvider& svc) : m_text{svc.text.fonts.title}, m_flash{80}, m_dt{&svc.ticker.dt_scalar} {
+WorldTimer::WorldTimer(automa::ServiceProvider& svc) : m_text{svc.text.fonts.title.font}, m_flash{80}, m_dt{&svc.ticker.dt_scalar} {
 	m_text.setFillColor(colors::ui_white);
 	m_text.setCharacterSize(16);
 }

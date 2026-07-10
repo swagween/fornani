@@ -29,13 +29,24 @@ class GrandMastiff final : public Boss, public StateMachine<GrandMastiffState> {
 	fsm::StateFunction update_die();
 
   private:
-	entity::Attack m_bite;
 	bool change_state(GrandMastiffState next, anim::Parameters params);
+	void spawn_bite();
+	void debug();
+
+  private:
+	entity::Attack m_bite;
+	std::optional<Animatable> m_bite_effect{};
 
 	util::Cooldown m_post_slash;
 	util::Cooldown m_post_bite;
+	util::Cooldown m_post_howl;
+	util::Counter m_howl_count;
+	util::Cooldown m_attack_timer{600};
 
-	void debug();
+	entity::WeaponPackage m_demon_star;
+
+	sf::Vector2f m_bite_target{};
+	sf::Vector2f m_player_position{};
 };
 
 } // namespace fornani::enemy

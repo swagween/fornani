@@ -9,7 +9,7 @@
 namespace fornani::gui {
 
 MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player)
-	: Gizmo("Minimap", false), m_minimap{&svc.data.minimap}, m_sprite{svc.assets.get_texture("map_gizmo")}, m_plugin_sprite{svc.assets.get_texture("map_gizmo")}, m_icon_sprite{svc.assets.get_texture("map_gizmo")},
+	: Gizmo("Minimap", false), m_minimap{&svc.data.minimap}, m_sprite{svc.assets.get_texture("map_gizmo")}, m_plugin_sprite{svc.assets.get_texture("map_gizmo")}, m_icon_sprite{svc.assets.get_texture("minimap_icons")},
 	  m_map_screen(svc, svc.assets.get_texture("map_screen"), {45, 45}, {1, 1}), m_map_shadow(svc, svc.assets.get_texture("map_shadow"), {45, 45}, {1, 1}),
 	  m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap", 32, util::InterpolationType::quadratic},
 	  m_motherboard_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap_motherboard", 108, util::InterpolationType::linear},
@@ -72,20 +72,36 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	if (m_path.get_step() == 2 && m_path.get_section() == 0 && m_chains.empty()) {
 		// bottom
 		m_chains.push_back(
-			std::make_unique<vfx::Chain>(svc, svc.assets.get_texture("map_chain"), sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + sf::Vector2f{-60.f, m_chain_offsets.at(0).y}, 14, false, 4.f));
-		m_chains.back()->set_texture_rect(sf::IntRect{{0, 39}, {26, 32}});
+			std::make_unique<vfx::Chain>(svc, "map_chain", sf::Vector2i{26, 32}, sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + sf::Vector2f{-60.f, m_chain_offsets.at(0).y}, 14, false, 4.f));
+		if (m_chains.back()->sprite) {
+			m_chains.back()->sprite->set_texture_rect(sf::IntRect{{0, 39}, {26, 32}});
+			m_chains.back()->sprite->set_origin({});
+		}
+		m_chains.back()->flags.set(vfx::ChainFlags::ignore_player_collision);
 		// top
 		m_chains.push_back(
-			std::make_unique<vfx::Chain>(svc, svc.assets.get_texture("map_chain"), sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + sf::Vector2f{-60.f, m_chain_offsets.at(1).y}, 14, false, 4.f));
-		m_chains.back()->set_texture_rect(sf::IntRect{{0, 27}, {26, 12}});
+			std::make_unique<vfx::Chain>(svc, "map_chain", sf::Vector2i{26, 12}, sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + sf::Vector2f{-60.f, m_chain_offsets.at(1).y}, 14, false, 4.f));
+		if (m_chains.back()->sprite) {
+			m_chains.back()->sprite->set_texture_rect(sf::IntRect{{0, 27}, {26, 12}});
+			m_chains.back()->sprite->set_origin({});
+		}
+		m_chains.back()->flags.set(vfx::ChainFlags::ignore_player_collision);
 	}
 	if (m_path.get_step() == 3 && m_path.get_section() == 0 && m_chains.size() < 4) {
 		// left
-		m_chains.push_back(std::make_unique<vfx::Chain>(svc, svc.assets.get_texture("map_chain"), sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + m_chain_offsets.at(2), 6, false));
-		m_chains.back()->set_texture_rect(sf::IntRect{{}, {12, 28}});
+		m_chains.push_back(std::make_unique<vfx::Chain>(svc, "map_chain", sf::Vector2i{12, 28}, sparams, m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y} + m_placement + m_chain_offsets.at(2), 6, false));
+		if (m_chains.back()->sprite) {
+			m_chains.back()->sprite->set_texture_rect(sf::IntRect{{}, {12, 28}});
+			m_chains.back()->sprite->set_origin({});
+		}
+		m_chains.back()->flags.set(vfx::ChainFlags::ignore_player_collision);
 		// right
-		m_chains.push_back(std::make_unique<vfx::Chain>(svc, svc.assets.get_texture("map_chain"), sparams, m_path.get_position() + m_path.get_dimensions() + m_placement + m_chain_offsets.at(3), 6, false));
-		m_chains.back()->set_texture_rect(sf::IntRect{{12, 0}, {12, 28}});
+		m_chains.push_back(std::make_unique<vfx::Chain>(svc, "map_chain", sf::Vector2i{12, 28}, sparams, m_path.get_position() + m_path.get_dimensions() + m_placement + m_chain_offsets.at(3), 6, false));
+		if (m_chains.back()->sprite) {
+			m_chains.back()->sprite->set_texture_rect(sf::IntRect{{12, 0}, {12, 28}});
+			m_chains.back()->sprite->set_origin({});
+		}
+		m_chains.back()->flags.set(vfx::ChainFlags::ignore_player_collision);
 	}
 
 	if (m_path.get_step() == 1 && m_path.get_section() == 1) { m_chains.clear(); }
@@ -140,7 +156,7 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 	m_icon_sprite.setScale(constants::f_scale_vec);
 	m_map_screen.render(win, cam);
 	m_map_shadow.render(win, cam);
-	for (auto& chain : m_chains) { chain->render(svc, win, cam); }
+	for (auto& chain : m_chains) { chain->render(svc, win, cam, false); }
 	for (auto& plugin : m_plugins) { plugin.render(win, m_plugin_sprite, cam, {}, shader, palette); }
 	if (m_info) { m_info->render(svc, win, player, shader, palette, cam, foreground); }
 	m_constituents.gizmo.top_left.position = m_path.get_position();
@@ -156,6 +172,13 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 bool MapGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard) {
 	auto zoom_factor{0.005f};
 	zoom_factor *= m_minimap->get_scale();
+	if (controller.digital(input::DigitalAction::menu_tab_left).held) {
+		m_minimap->zoom(zoom_factor);
+		if (!m_minimap->hit_zoom_limit()) { soundboard.repeat_sound("pioneer_buzz"); }
+	} else if (controller.digital(input::DigitalAction::menu_tab_right).held) {
+		m_minimap->zoom(-zoom_factor);
+		if (!m_minimap->hit_zoom_limit()) { soundboard.repeat_sound("pioneer_buzz"); }
+	}
 	if (controller.is_gamepad() && controller.is_any_direction_held(input::AnalogAction::map_pan)) {
 		m_minimap->move(controller.get_joystick_throttle(input::AnalogAction::map_pan) * 2.f); // idk why I have to multiply this by 2
 		if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
@@ -177,13 +200,6 @@ bool MapGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboard& 
 			if (!m_minimap->hit_horiz_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
 		}
 	}
-	if (controller.digital(input::DigitalAction::menu_tab_left).held) {
-		m_minimap->zoom(zoom_factor);
-		if (!m_minimap->hit_zoom_limit()) { soundboard.repeat_sound("pioneer_buzz"); }
-	} else if (controller.digital(input::DigitalAction::menu_tab_right).held) {
-		m_minimap->zoom(-zoom_factor);
-		if (!m_minimap->hit_zoom_limit()) { soundboard.repeat_sound("pioneer_buzz"); }
-	}
 	if (controller.digital(input::DigitalAction::menu_select).triggered) {
 		m_minimap->center();
 		soundboard.flags.pioneer.set(audio::Pioneer::click);
@@ -203,6 +219,10 @@ void MapGizmo::on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Pl
 	m_flags.icon.set(MapIconFlags::save);
 	m_plugins.push_back(MapPlugin(svc.finder, "plugin_bed", sf::IntRect{m_lookups.plugin + sf::Vector2i{0, 27}, {36, 15}}, audio::Pioneer::click));
 	m_flags.icon.set(MapIconFlags::bed);
+	if (player.has_item("gobe_plugin")) {
+		m_plugins.push_back(MapPlugin(svc.finder, "plugin_gobe", sf::IntRect{m_lookups.plugin + sf::Vector2i{36, 27}, {43, 22}}, audio::Pioneer::slot));
+		m_flags.icon.set(MapIconFlags::gobe);
+	}
 	//
 
 	m_minimap->set_flag(MiniMapFlags::open);

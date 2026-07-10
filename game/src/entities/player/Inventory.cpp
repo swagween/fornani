@@ -11,6 +11,8 @@ void Inventory::add_item(dj::Json const& source, std::string_view label) {
 	} else {
 		++find_item_stack(label)->quantity;
 	}
+	m_latest_item = label.data();
+	m_item_log.add(label.data());
 }
 
 void Inventory::remove_item(std::string_view tag, int amount) {
@@ -48,6 +50,14 @@ EquipmentStatus Inventory::equip_item(int item_id) {
 		} else {
 			++num_currently_equipped;
 		}
+		if (num_currently_equipped == num_equippable_items) {
+			auto to_replace = find_item(item);
+			if (to_replace == nullptr) { return EquipmentStatus::failure; }
+			item = item_id;
+			to_replace->set_equipped(false);
+			this_item->set_equipped(true);
+			return EquipmentStatus::swapped;
+		}
 	}
 
 	return EquipmentStatus::failure; // no more space
@@ -59,6 +69,11 @@ void Inventory::reveal_item(int item_id) {
 	}
 }
 
+void Inventory::build_item(dj::Json const& product) {
+	auto const& recipe = product["build"]["recipe"];
+	for (auto const& ingredient : recipe.as_array()) { remove_item(ingredient.as_string(), 1); }
+}
+
 bool Inventory::has_item(int id) const {
 	for (auto& item : m_items) {
 		if (item.item->get_id() == id) { return true; }
@@ -66,8 +81,10 @@ bool Inventory::has_item(int id) const {
 	return false;
 }
 
-bool Inventory::has_item_equipped(int id) const {
-	return std::find_if(m_equipped_items.begin(), m_equipped_items.end(), [id](auto const& i) { return i == id; }) != m_equipped_items.end();
+bool Inventory::has_item_equipped(std::string_view id) const {
+	auto item_ptr = find_item(id);
+	if (item_ptr == nullptr) { return false; }
+	return std::find_if(m_equipped_items.begin(), m_equipped_items.end(), [item_ptr](auto const& i) { return i == item_ptr->get_id(); }) != m_equipped_items.end();
 }
 
 bool Inventory::has_item(std::string_view label) const {
@@ -76,6 +93,8 @@ bool Inventory::has_item(std::string_view label) const {
 	}
 	return false;
 }
+
+bool Inventory::was_item_logged(std::string_view label) const { return m_item_log.contains(label.data()); }
 
 item::Item* Inventory::find_item(int id) const {
 	if (auto it = std::ranges::find_if(m_items, [&](auto const& item) { return item.item->get_id() == id; }); it != m_items.end()) { return it->item.get(); }
@@ -116,6 +135,18 @@ ItemStack* Inventory::find_item_stack(std::string_view label) {
 int Inventory::get_quantity(std::string_view label) {
 	if (auto* stack = find_item_stack(label)) { return stack->quantity; }
 	return 0;
+}
+
+auto Inventory::can_build(dj::Json const& product) const -> bool {
+	auto const& recipe = product["build"]["recipe"];
+	for (auto const& ingredient : recipe.as_array()) {
+		if (!has_item(ingredient.as_string_view())) { return false; }
+	}
+	return true;
+}
+
+auto Inventory::get_number_of_items(item::ItemType type) const -> std::size_t {
+	return std::ranges::count_if(m_items, [type](auto const& item) { return item.item->get_type() == type; });
 }
 
 } // namespace fornani::player

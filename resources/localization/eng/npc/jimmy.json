@@ -1,0 +1,172 @@
+{
+	"1": {
+		"output": 2,
+		"responses": [
+			[
+				{
+					"codes": [ [ 1, 1 ] ],
+					"message": "I was held hostage my Skycorps."
+				}
+			],
+			[
+				{
+					"codes": [ [ 1, 2 ] ],
+					"message": "None at all..."
+				}
+			]
+		],
+		"suite": [
+			[
+				{
+					"message": "Nani!"
+				},
+				{
+					"message": "Could it be...?"
+				},
+				{
+					"message": "Oh, how I feared I would never see you again..."
+				},
+				{
+					"codes": [ [ 1, 0 ] ],
+					"message": "Where have you been all this time?"
+				}
+			],
+			[
+				{
+					"message": "And here I was hoping you'd get caught up in less mischief than your brother..."
+				},
+				{
+					"message": "If only your mother could have lived to help me raise you two."
+				},
+				{
+					"codes": [ [ 13, 8, 407 ] ],
+					"message": "Anyway, it is good to have you home again, despite the circumstances."
+				},
+				{
+					"codes": [ [ 1, 1 ] ],
+					"message": "Have you any word of Loth or his whereabouts?"
+				}
+			],
+			[
+				{
+					"message": "Alas, then, it is as I feared."
+				},
+				{
+					"message": "Please, do what you can to bring him home, will you?"
+				}
+			]
+		]
+	},
+	"2": {
+		"responses": [
+			[
+				{
+					"codes": [ [ 1, 1 ] ],
+					"message": "What are we doing about Skycorps?"
+				},
+				{
+					"codes": [ [ 1, 2 ] ],
+					"message": "Where might Loth be?"
+				},
+				{
+					"codes": [ [ 1, 3 ] ],
+					"contingencies": [
+						{
+							"requirement": 1,
+							"strict": true,
+							"tag": "pioneer_trail"
+						},
+						{
+							"requirement": 0,
+							"strict": true,
+							"tag": "defeat_haunch"
+						}
+					],
+					"message": "Can you allow me passage to Pioneer Trail?"
+				},
+				{
+					"codes": [ [ 1, 4 ] ],
+					"contingencies": [
+						{
+							"requirement": 2,
+							"strict": false,
+							"tag": "defeat_haunch"
+						},
+						{
+							"requirement": 1,
+							"strict": true,
+							"tag": "pioneer_trail"
+						}
+					],
+					"message": "I need passage to Pioneer Trail."
+				}
+			]
+		],
+		"suite": [
+			[
+				{
+					"codes": [ [ 1, 0 ] ],
+					"messages": [ "Oh, Nani!", "How is my daughter doing?", "Welcome home, my child." ]
+				}
+			],
+			[
+				{
+					"message": "As much as we can. They are a force to be reckoned with, but luckily Woodshine is still small potatoes to them."
+				},
+				{
+					"codes": [ [ 1, 0 ] ],
+					"message": "Regrettably, though, it seems they will stop at nothing to find Loth. Your brother has done a very grave thing, Nani..."
+				}
+			],
+			[
+				{
+					"message": "I know just as much as you do. He was doing some digging around the ancient Kariba burial grounds with his human girlfriend and that old Grand Island professor, until one day he just disappeared."
+				},
+				{
+					"message": "I can only blame the humans so much... Loth is strong-willed and I suspect he left of his own accord."
+				},
+				{
+					"message": "I do fear he is heading down a very dangerous path, and if you don't find him soon he may be a lost cause."
+				},
+				{
+					"codes": [ [ 1, 0 ] ],
+					"message": "Maybe he's headed for the Mother Worm herself. After all, he has been a vehement worshipper for as long as he could talk."
+				}
+			],
+			[
+				{
+					"message": "For what? So you can disappear like your brother?"
+				},
+				{
+					"codes": [ [ 1, 0 ] ],
+					"message": "No can do, Nani. Why don't you stick around for a while? We all missed you so much..."
+				}
+			],
+			[
+				{
+					"message": "Oh, is old Ward giving you a hard time?"
+				},
+				{
+					"message": "You know, ever since you defeated Sergeant Haunch, the townspeople have been going on and on about you."
+				},
+				{
+					"message": "And I must say, anyone who can take him down is worthy to venture into the treacherous lands beyond our woods."
+				},
+				{
+					"message": "And besides, if you're ever to find your brother and bring him to his senses, I can't be standing in your way."
+				},
+				{
+					"codes": [
+						[ 2, 39 ],
+						[ 3, 12, 1, 415 ]
+					],
+					"message": "Here, take this."
+				},
+				{
+					"codes": [ [ 1, 0 ] ],
+					"message": "That ought to convince Ward to open the gates for you."
+				}
+			]
+		]
+	}
+}

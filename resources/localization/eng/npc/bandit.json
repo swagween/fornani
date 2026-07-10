@@ -1,0 +1,311 @@
+{
+  "1": {
+    "output": 3,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[23, 1]],
+          "message": ". . ."
+        }
+      ]
+    ]
+  },
+  "2": {
+    "output": 2,
+    "responses": [
+      [{ "codes": [[1, 1]], "message": "Stop right there!" }],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "Give me one reason not to!"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 3]],
+          "message": "Tell me where Spencer is."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 4]],
+          "message": "Yeah. Word around here is that you kidnapped him."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 5]],
+          "message": "None of your business...?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "message": ". . ."
+        },
+        {
+          "codes": [
+            [1, 0],
+            [23, 1]
+          ],
+          "message": "AHHH!"
+        }
+      ],
+      [
+        {
+          "message": "Okay, okay!"
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "Please, don't shoot me!"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "No, please! I'll do anything you want. Anything!!!"
+        }
+      ],
+      [
+        {
+          "message": "..."
+        },
+        {
+          "codes": [[1, 3]],
+          "message": "Spencer?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 4]],
+          "message": "What do you want Spencer for?"
+        }
+      ],
+      [
+        {
+          "codes": [[23, 3]],
+          "message": "I need to know."
+        }
+      ]
+    ]
+  },
+  "3": {
+    "output": 2,
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "I wish I could believe that..."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "And Spencer will be there?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 3]],
+          "message": "If you're lying to me..."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "message": "AHH! Okay, okay, fine!!!"
+        },
+        {
+          "message": "I can take you to Spencer, if that's all you want!"
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "No need to get violent!"
+        }
+      ],
+      [
+        {
+          "message": "Okay, listen."
+        },
+        {
+          "message": "There's a curio shop in the Red District. Go inside and say to the owner, 'I need to tell you a white lie.'"
+        },
+        {
+          "message": "It's a code phrase. He'll let you access my hideout once you say it."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "Don't go sharing that code with anyone! It's very secret."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "Yeah, he'll be there. I promise. Now just let me out of here before anyone sees me!"
+        }
+      ],
+      [
+        {
+          "codes": [[27, 25, 5]],
+          "message": "Hah, me? Lying? I would never..."
+        },
+        {
+          "codes": [[23, 5]],
+          "message": "Anyway... Gotta run! See ya later!"
+        }
+      ]
+    ]
+  },
+  "4": {
+    "output": 2,
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "Where is Spencer?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "What..."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 3]],
+          "message": "What...? Why?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 4]],
+          "message": "Fine. Then what?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 5]],
+          "message": "I don't have time for these games!"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "message": "Well, well, well. Looks like you finally made it."
+        },
+        {
+          "message": "Is this the part where you betray me and shoot me anyway?"
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "If so, please just get it over with!"
+        }
+      ],
+      [
+        {
+          "message": "Right! Right... Spencer..."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "Now, before I can show you Spencer, I need a favor..."
+        }
+      ],
+      [
+        {
+          "message": "There's a girl in town named Sarah Bane. She lives in the Blue District."
+        },
+        {
+          "message": "I need you to sneak into her house at nighttime and steal the golden tiara from her dresser."
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "Can you do that?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 3]],
+          "message": "Just... Can you do it, or not?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 4]],
+          "message": "Then bring it to me. I'll be waiting here. And once you bring it, I can take you to Spencer."
+        }
+      ],
+      [
+        {
+          "codes": [[13, 42, 1310]],
+          "message": "Well, you don't have much of a choice, do you? Huh?"
+        },
+        {
+          "message": "I have something you want."
+        },
+        {
+          "codes": [[23, 1]],
+          "message": "Now go get that tiara and bring it to me!"
+        }
+      ]
+    ]
+  },
+  "5": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[23, 1]],
+          "message": "I'm waiting on that golden tiara from Sarah Bane's house. I won't talk to you further until you bring it to me."
+        }
+      ]
+    ]
+  },
+  "6": {
+    "output": 2,
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "Here's your golden tiara..."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "So... Spencer?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[1, 0]],
+          "message": "Welcome back."
+        }
+      ],
+      [
+        {
+          "message": "Oh, no, it's not mine. You can keep it. I just wanted to make sure I could trust you."
+        },
+        {
+          "message": "I still don't."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "It's not personal, though. I don't trust anybody."
+        }
+      ],
+      [
+        {
+          "codes": [[23, 10]],
+          "message": "Yeah, uh... about that."
+        }
+      ]
+    ]
+  }
+}

@@ -1,4 +1,5 @@
 nani_add_sources(
+  AmbientProp.cpp
   Animator.cpp
   Bed.cpp
   Chest.cpp
@@ -16,6 +17,7 @@ nani_add_sources(
         SwitchBlock.cpp
         SwitchButton.cpp
         TimerBlock.cpp
+        Train.cpp
         Turret.cpp
         Vine.cpp
         Water.cpp

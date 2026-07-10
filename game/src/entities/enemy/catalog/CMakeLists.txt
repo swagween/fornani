@@ -1,4 +1,5 @@
 nani_add_sources(
+        Antibody.cpp
         Archer.cpp
         Beamsprout.cpp
         Beamstalk.cpp
@@ -9,15 +10,25 @@ nani_add_sources(
         Eyebit.cpp
         Eyebot.cpp
         Frdog.cpp
+        Golem.cpp
+        Grappler.cpp
+        Hellion.cpp
+        Hurtle.cpp
         Imp.cpp
         Junker.cpp
         Junkfly.cpp
+        Lymphocyte.cpp
+        Macrophage.cpp
         Mastiff.cpp
         Meatsquash.cpp
         Minion.cpp
+        Mizzle.cpp
+        MizzleEgg.cpp
         Tank.cpp
+        Thief.cpp
         Thug.cpp
         Hulmet.cpp
+        Sentinel.cpp
         Spitefly.cpp
         Summoner.cpp
 )

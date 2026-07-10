@@ -1,6 +1,7 @@
 
-#include <ccmath/ext/clamp.hpp>
+#include <fornani/core/Debug.hpp>
 #include <fornani/world/Pushable.hpp>
+#include <algorithm>
 #include <cmath>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"
@@ -47,6 +48,7 @@ Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position
 	if (size > 1) { get_collider().set_attribute(shape::ColliderAttributes::crusher); }
 	get_collider().wallslide_buffer = 0.9f;
 	m_intro.start();
+	get_collider().physics.acceleration.x = speed / mass;
 }
 
 void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
@@ -56,19 +58,20 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	get_collider().physics.acceleration = {};
 
 	collision_box.set_position(get_collider().physics.position - sf::Vector2f{0.f, 1.f});
-	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
+	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
 	if (svc.ticker.every_x_ticks(20)) { random_offset = random::random_vector_float(-energy, energy); }
 	weakened.update();
 	if (weakened.is_complete()) { hit_count.start(); }
 
 	// reset position if it's far away, and if the player isn't overlapping the start position
+	bool can_respawn = true;
+	if (player.get_collider().bounding_box.overlaps(start_box)) { can_respawn = false; }
+	for (auto& pushable : map.pushables) {
+		if (pushable->get_bounding_box().overlaps(start_box) && pushable.get() != this) { can_respawn = false; }
+	}
 	if (hit_count.get_count() > 2 || map.off_the_bottom(get_collider().physics.position)) {
-		bool can_respawn = true;
-		if (player.get_collider().bounding_box.overlaps(start_box)) { can_respawn = false; }
-		for (auto& pushable : map.pushables) {
-			if (pushable->get_bounding_box().overlaps(start_box) && pushable.get() != this) { can_respawn = false; }
-		}
+
 		if (can_respawn) {
 			reset(svc, map);
 			svc.soundboard.flags.world.set(audio::World::small_crash);
@@ -79,21 +82,26 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	} else {
 		set_flag(PushableFlags::trying_to_respawn, false);
 	}
+	if (weakened.running() && !can_respawn) { set_flag(PushableFlags::trying_to_respawn); }
 
 	// player pushes block
 	set_flag(PushableFlags::pushed, false);
 	handle_collision(player.get_collider());
 	if (player.get_collider().wallslider.overlaps(collision_box) && player.pushing() && player.is_in_animation(player::AnimState::push) && get_collider().physics.actual_velocity().y < 0.3f) {
-		if (player.controller.moving_left() && player.get_collider().physics.position.x > get_collider().physics.position.x) { get_collider().physics.acceleration.x = -speed / mass; }
 		if (player.controller.moving_right() && player.get_collider().physics.position.x < get_collider().physics.position.x) { get_collider().physics.acceleration.x = speed / mass; }
-		if (ccm::abs(get_collider().physics.actual_velocity().x) > constants::small_value) { svc.soundboard.repeat_sound("pushable_move"); }
+		if (player.controller.moving_left() && player.get_collider().physics.position.x > get_collider().physics.position.x) { get_collider().physics.acceleration.x = -speed / mass; }
+		if (std::abs(get_collider().physics.actual_velocity().x) > constants::small_value) { svc.soundboard.repeat_sound("pushable_move"); }
 
 		set_flag(PushableFlags::moved);
 		set_flag(PushableFlags::pushed);
 	}
 
+	set_flag(PushableFlags::blocked_right, map.overlaps_middleground(collision_box.get_center() + sf::Vector2f{collision_box.get_dimensions().x * 0.501f, 0.f}));
+	set_flag(PushableFlags::blocked_left, map.overlaps_middleground(collision_box.get_center() - sf::Vector2f{collision_box.get_dimensions().x * 0.501f, 0.f}));
+
 	for (auto& pushable : map.pushables) {
 		if (pushable.get() == this) { continue; }
+		if (pushable->has_flag_set(PushableFlags::blocked_right) || pushable->has_flag_set(PushableFlags::blocked_left)) { continue; }
 		if (get_collider().jumpbox.overlaps(pushable->get_collider().predictive_vertical) && !has_flag_set(PushableFlags::pushed)) { get_collider().physics.adopt(pushable->get_collider().physics); }
 		if (pushable->get_collider().wallslider.overlaps(collision_box)) {
 			if (pushable->get_collider().pushes(*m_collider.get()) && get_collider().grounded()) { set_flag(PushableFlags::pushed); }
@@ -107,21 +115,30 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 
 	auto test_position = is_moving() ? get_collider().get_center() : get_collider().get_bottom();
 
+	auto any_jumpbox_coll = false;
 	for (auto& pushable : map.pushables) {
 		if (pushable.get() == this) { continue; }
+		if (get_collider().jumpbox.overlaps(pushable->collision_box) && get_collider().physics.velocity.y > 2.f) {
+			if (!has_flag_set(PushableFlags::landed)) { set_flag(PushableFlags::landed); }
+			any_jumpbox_coll = true;
+		}
+		if (pushable->has_flag_set(PushableFlags::blocked_right) || pushable->has_flag_set(PushableFlags::blocked_left)) { continue; }
 		auto block = true;
 		if (pushable->get_collider().wallslider.overlaps(collision_box)) {
 			auto hit_wall = (pushable->get_collider().get_center().x < get_collider().get_center().x && get_collider().has_right_wallslide_collision()) ||
 							(pushable->get_collider().get_center().x > get_collider().get_center().x && get_collider().has_left_wallslide_collision());
-			if (pushable->get_collider().pushes(*m_collider.get()) && has_flag_set(PushableFlags::pushed) && !hit_wall) {
-				get_collider().physics.acceleration.x += pushable->get_collider().physics.acceleration.x;
+			auto blocked = has_flag_set(PushableFlags::blocked_right) || has_flag_set(PushableFlags::blocked_left);
+			if (pushable->get_collider().pushes(*m_collider.get()) && has_flag_set(PushableFlags::pushed) && !hit_wall && !blocked) {
+				get_collider().physics.acceleration.x += pushable->get_collider().physics.acceleration.x * .5f;
 				block = false;
 			}
+			if (blocked) { block = false; }
 		}
 		if (pushable->get_collider().jumpbox.overlaps(collision_box)) { block = true; }
 		if (get_collider().jumpbox.overlaps(pushable->collision_box)) { block = true; }
 		if (block) { pushable->get_collider().handle_collider_collision(collision_box); }
 	}
+	if (!any_jumpbox_coll) { set_flag(PushableFlags::landed, false); }
 
 	auto touching_plat = false;
 	for (auto& platform : map.platforms) {
@@ -144,7 +161,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 
 void Pushable::post_update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 
-	if (get_collider().has_flag_set(shape::ColliderFlags::landed)) {
+	if (consume_flag(PushableFlags::landed) || get_collider().has_flag_set(shape::ColliderFlags::landed)) {
 		auto point = size == 1 ? get_collider().get_top() : get_collider().get_center();
 		if (!m_intro.running()) {
 			map.effects.push_back(entity::Effect(svc, "dust", point));
@@ -179,6 +196,16 @@ void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 		has_flag_set(PushableFlags::pushed) ? coll.setOutlineColor(colors::mythic_green) : is_moving() ? coll.setOutlineColor(colors::goldenrod) : coll.setOutlineColor(colors::dark_goldenrod);
 		coll.setPosition(collision_box.get_position() - cam);
 		win.draw(coll);
+
+		sf::CircleShape r{};
+		r.setRadius(4.f);
+		r.setOrigin({4.f, 4.f});
+		r.setPosition(collision_box.get_center() + sf::Vector2f{collision_box.get_dimensions().x * 0.5f, 0.f} - cam);
+		has_flag_set(PushableFlags::blocked_right) ? r.setFillColor(colors::red) : r.setFillColor(colors::green);
+		win.draw(r);
+		r.setPosition(collision_box.get_center() - sf::Vector2f{collision_box.get_dimensions().x * 0.5f, 0.f} - cam);
+		has_flag_set(PushableFlags::blocked_left) ? r.setFillColor(colors::red) : r.setFillColor(colors::green);
+		win.draw(r);
 	} else {
 		m_blink.get_normalized() < 0.25f  ? m_return_indicator.setOutlineColor(colors::red)
 		: m_blink.get_normalized() < 0.5f ? m_return_indicator.setOutlineColor(colors::dark_fucshia)
@@ -188,6 +215,7 @@ void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 		m_return_indicator.setPosition(start_position - cam);
 		if (has_flag_set(PushableFlags::trying_to_respawn)) { win.draw(m_return_indicator); }
 		win.draw(*this);
+		++debug::draw_calls;
 	}
 }
 
@@ -208,6 +236,8 @@ void Pushable::reset(automa::ServiceProvider& svc, world::Map& map) {
 	auto label = size == 1 ? "small_explosion" : "large_explosion";
 	map.effects.push_back(entity::Effect(svc, label, get_collider().get_center()));
 	get_collider().physics.position = start_position;
+	get_collider().physics.zero();
+	get_collider().sync_components();
 	map.effects.push_back(entity::Effect(svc, label, get_collider().get_center()));
 	energy = 0.f;
 }

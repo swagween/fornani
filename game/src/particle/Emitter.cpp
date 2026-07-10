@@ -6,8 +6,29 @@
 
 namespace fornani::vfx {
 
-Emitter::Emitter(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color, Direction direction)
+Emitter::Emitter(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color, Direction direction, int channel)
 	: position(position), dimensions(dimensions), type(type), color(color), direction(direction) {
+	init(svc, position, dimensions, type, color, direction);
+
+	auto x = random::random_range_float(-dimensions.x * 0.5f, dimensions.x * 0.5f);
+	auto y = random::random_range_float(-dimensions.y * 0.5f, dimensions.y * 0.5f);
+	sf::Vector2f point{position.x + x, position.y + y};
+	particles.push_back(std::make_unique<Particle>(svc, point, particle_dimensions, type, color, direction, channel));
+}
+
+Emitter::Emitter(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color, Direction direction, int channel)
+	: position(position), dimensions(dimensions), type(type), color(color), direction(direction) {
+	set_flag(EmitterFlags::map);
+	init(svc, position, dimensions, type, color, direction);
+
+	auto x = random::random_range_float(-dimensions.x * 0.5f, dimensions.x * 0.5f);
+	auto y = random::random_range_float(-dimensions.y * 0.5f, dimensions.y * 0.5f);
+	sf::Vector2f point{position.x + x, position.y + y};
+	particles.push_back(std::make_unique<Particle>(svc, map, point, particle_dimensions, type, color, direction, channel));
+}
+
+void Emitter::init(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector2f dimensions, std::string_view type, sf::Color color, Direction direction) {
+
 	auto const& in_data = svc.data.particle[type];
 	variables.load = in_data["load"].as<int>();
 	variables.rate = in_data["rate"].as<float>();
@@ -20,11 +41,6 @@ Emitter::Emitter(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f pos
 	drawbox.setOutlineThickness(-1);
 	drawbox.setOutlineColor(sf::Color::Red);
 	drawbox.setSize(dimensions);
-
-	auto x = random::random_range_float(-dimensions.x * 0.5f, dimensions.x * 0.5f);
-	auto y = random::random_range_float(-dimensions.y * 0.5f, dimensions.y * 0.5f);
-	sf::Vector2f point{position.x + x, position.y + y};
-	particles.push_back(std::make_unique<Particle>(svc, map, point, particle_dimensions, type, color, direction));
 }
 
 void Emitter::update(automa::ServiceProvider& svc, world::Map& map) {
@@ -34,7 +50,8 @@ void Emitter::update(automa::ServiceProvider& svc, world::Map& map) {
 		auto x = random::random_range_float(0.f, dimensions.x);
 		auto y = random::random_range_float(0.f, dimensions.y);
 		sf::Vector2f point{position.x + x, position.y + y};
-		particles.push_back(std::make_unique<Particle>(svc, map, point, particle_dimensions, type, color, direction));
+		has_flag_set(EmitterFlags::map) ? particles.push_back(std::make_unique<Particle>(svc, map, point, particle_dimensions, type, color, direction))
+										: particles.push_back(std::make_unique<Particle>(svc, point, particle_dimensions, type, color, direction));
 	}
 	for (auto& particle : particles) { particle->update(svc, map); }
 }
@@ -45,6 +62,14 @@ void Emitter::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		win.draw(drawbox);
 	}
 	for (auto& particle : particles) { particle->render(svc, win, cam); }
+}
+
+void Emitter::render(sf::RenderWindow& win, sf::Vector2f cam) {
+	for (auto& particle : particles) { particle->render(win, cam); }
+}
+
+void Emitter::submit(Renderer& renderer) {
+	for (auto& particle : particles) { particle->submit(renderer); }
 }
 
 void Emitter::set_position(sf::Vector2f pos) { position = pos; }

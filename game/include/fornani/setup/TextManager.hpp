@@ -3,13 +3,16 @@
 
 #include <SFML/Graphics/Text.hpp>
 #include <djson/json.hpp>
+#include <fornani/io/Logger.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
+#include <fornani/setup/localization/Localization.hpp>
+#include <fornani/utils/TextUtils.hpp>
 
 namespace fornani::data {
 
 class TextManager {
   public:
-	explicit TextManager(ResourceFinder& finder);
+	explicit TextManager(ResourceFinder& finder, Localization& localization);
 
 	// jsons
 	dj::Json console{};
@@ -19,15 +22,13 @@ class TextManager {
 	dj::Json npc{};
 
 	struct {
-		std::filesystem::path title{};
-		std::filesystem::path basic{};
-		std::filesystem::path config{};
-	} sources{};
-	struct {
-		sf::Font title{};
-		sf::Font basic{};
-		sf::Font config{};
+		FontSpec title{};
+		FontSpec basic{};
+		FontSpec config{};
 	} fonts{};
+
+  private:
+	io::Logger m_logger{"TextManager"};
 };
 
 } // namespace fornani::data

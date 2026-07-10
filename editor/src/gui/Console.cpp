@@ -11,11 +11,11 @@ void Console::add_log(char const* message) {
 	log.add_log(msg.data());
 }
 
-void Console::write_console(ImVec2 prev_size, ImVec2 prev_pos) {
+void Console::write_console(ImVec2 prev_size, ImVec2 prev_pos, float alpha) {
 	auto pad{10.f};
 	ImGuiViewport const* viewport = ImGui::GetMainViewport();
 	auto port_size = viewport->WorkSize;
-	ImGui::SetNextWindowBgAlpha(0.65f);
+	ImGui::SetNextWindowBgAlpha(alpha);
 	ImVec2 work_pos = prev_pos;
 	ImVec2 work_size = prev_size;
 	work_pos.y += prev_size.y + pad;

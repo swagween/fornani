@@ -1,15 +1,13 @@
 
+#include <imgui.h>
+#include <fornani/core/Debug.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
 #include <fornani/shader/LightShader.hpp>
-
-#include <imgui.h>
 
 // its important this exactly matches the value in shaders/light_combined.frag
 #define MAX_POINT_LIGHTS 5
 
 namespace fornani {
-
-constexpr auto max_light_v = 3.f;
 
 auto linear_debug = 3.0f;
 auto lumin_debug = 2.5f;
@@ -96,11 +94,11 @@ void LightShader::add_spotlight(sf::Vector2f position, sf::Vector2f direction, i
 	current_spotlight++;
 }
 
-void LightShader::finalize() {
+void LightShader::finalize(float max_light) {
 	m_shader.setUniform("u_px", m_scale);
 	m_shader.setUniform("u_tex_size", sf::Glsl::Vec2{m_texture_size});
 	m_shader.setUniform("u_parity", sf::Glsl::Vec2{m_parity});
-	m_shader.setUniform("u_max_light", max_light_v);
+	m_shader.setUniform("u_max_light", max_light);
 
 	m_shader.setUniform("pointlight_count", current_point_light + 1);
 	m_shader.setUniformArray("pointlight_position", pointlight_position.data(), pointlight_position.size());
@@ -134,6 +132,7 @@ void LightShader::submit(sf::RenderWindow& win, Palette& palette, sf::Sprite con
 	m_shader.setUniform("texture", sprite.getTexture());
 
 	win.draw(sprite, &m_shader);
+	++debug::draw_calls;
 }
 
 void LightShader::clear_point_lights() {

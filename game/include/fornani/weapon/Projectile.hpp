@@ -1,17 +1,14 @@
 
 #pragma once
 
-#include <fornani/audio/Soundboard.hpp>
 #include <fornani/components/CircleSensor.hpp>
-#include <fornani/components/PhysicsComponent.hpp>
+#include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/core/Common.hpp>
 #include <fornani/entities/animation/AnimatedSprite.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/SpriteHistory.hpp>
 #include <fornani/io/Logger.hpp>
-#include <fornani/particle/Antenna.hpp>
 #include <fornani/physics/CircleCollider.hpp>
-#include <fornani/physics/Shape.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/Direction.hpp>
@@ -31,10 +28,10 @@ class Player;
 namespace fornani::arms {
 
 class Weapon;
-enum class ProjectileType { bullet, missile, melee };
+enum class ProjectileType { bullet, missile, melee, laser };
 enum class RenderType { animated, single_sprite, multi_sprite };
 
-enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky, explode_on_impact };
+enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky, explode_on_impact, hitstun };
 struct ProjectileSpecifications {
 	float base_damage{};
 	float power{};
@@ -43,7 +40,7 @@ struct ProjectileSpecifications {
 	float speed{};
 	float speed_variance{};
 	float variance{};
-	float stun_time{};
+	float stun_multiplier{};
 	float knockback{};
 	float acceleration_factor{};
 	float dampen_factor{};
@@ -52,6 +49,7 @@ struct ProjectileSpecifications {
 	float elasticty{};
 	float spin{};
 	float spin_dampen{};
+	int max_hits{1};
 };
 
 struct ExplosionAttributes {
@@ -59,6 +57,8 @@ struct ExplosionAttributes {
 	std::string emitter{};
 	float radius{};
 	int channel{};
+	int volatility{};
+	bool stun{};
 };
 
 enum class ProjectileState { initialized, destruction_initiated, destroyed, whiffed, poof, contact, stuck };
@@ -70,17 +70,19 @@ class Projectile : public Animatable {
 	void handle_collision(automa::ServiceProvider& svc, world::Map& map);
 	void on_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void on_explode(automa::ServiceProvider& svc, world::Map& map);
+	void handle_hard_hit(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f cam);
 	void destroy(bool completely, bool whiffed = false);
-	void seed(automa::ServiceProvider& svc, sf::Vector2f target = {}, float speed_multiplier = 1.f);
+	void seed(automa::ServiceProvider& svc, sf::Vector2f target = {}, float speed_multiplier = 1.f, float damage_multiplier = 1.f);
 	void register_chunk(std::uint8_t chunk) { m_chunk_id = chunk; }
 	void set_position(sf::Vector2f pos);
 	void set_team(Team to_team);
-	void set_firing_direction(Direction to_direction);
+	void set_firing_direction(CardinalDirection to_direction);
 	void multiply(float factor) { variables.damage_multiplier = std::min(variables.damage_multiplier * factor, variables.damage_multiplier * 5.f); }
 	void poof();
 	void damage_over_time();
 	void bounce_off_surface(sf::Vector2i direction);
+	void increment_hits(int amount = 1) { variables.hits.update(amount); }
 
 	[[nodiscard]] auto effect_type() const -> int { return visual.effect_type; }
 	[[nodiscard]] auto get_type() const -> ProjectileType { return metadata.type; }
@@ -96,10 +98,10 @@ class Projectile : public Animatable {
 	[[nodiscard]] auto get_velocity() const -> sf::Vector2f { return physical.collider.physics.apparent_velocity(); }
 	[[nodiscard]] auto get_destruction_point() const -> sf::Vector2f { return variables.destruction_point; }
 	[[nodiscard]] auto get_team() const -> Team { return metadata.team; }
-	[[nodiscard]] auto get_direction() const -> Direction { return physical.direction; }
+	[[nodiscard]] auto get_direction() const -> CardinalDirection { return physical.direction; }
 	[[nodiscard]] auto get_collider() -> shape::CircleCollider& { return physical.collider; }
 	[[nodiscard]] auto can_damage() const -> bool { return damage_timer.is_almost_complete() || !persistent(); }
-	[[nodiscard]] auto has_critical_damage() const -> bool { return variables.damage_multiplier > 1.f; }
+	[[nodiscard]] auto has_critical_damage() const -> bool { return variables.damage_multiplier > 1.9f; }
 
 	[[nodiscard]] auto get_chunk_id() const -> std::uint8_t { return m_chunk_id; }
 
@@ -115,11 +117,14 @@ class Projectile : public Animatable {
 	[[nodiscard]] auto wander() const -> bool { return metadata.attributes.test(ProjectileAttributes::wander); }
 
   private:
+	void handle_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
+
+  private:
 	struct {
 		int id{};
 		Team team{};
 		ProjectileType type{};
-		std::string_view label{};
+		std::string label{};
 		ProjectileSpecifications specifications{};
 		util::BitFlags<ProjectileAttributes> attributes{};
 		std::optional<ExplosionAttributes> explosion{};
@@ -137,11 +142,11 @@ class Projectile : public Animatable {
 	} visual;
 
 	struct {
-		audio::Projectile hit{};
+		std::string hit_tag{};
 	} audio;
 
 	struct {
-		Direction direction{};
+		CardinalDirection direction{};
 		sf::Vector2f max_dimensions{};
 		shape::CircleCollider collider{4.f};
 		std::optional<components::CircleSensor> sensor{};
@@ -153,6 +158,7 @@ class Projectile : public Animatable {
 		sf::Vector2f fired_point{};
 		sf::Vector2f destruction_point{};
 		util::BitFlags<ProjectileState> state{};
+		util::Counter hits{};
 	} variables{};
 
 	std::uint8_t m_chunk_id{};

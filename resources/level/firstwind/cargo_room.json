@@ -75,10 +75,46 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
+            "output": 0,
+            "responses": [
+              [
+                {
+                  "codes": [
+                    [
+                      2,
+                      35,
+                      104
+                    ]
+                  ],
+                  "message": "Yes"
+                },
+                {
+                  "codes": [
+                    [
+                      1,
+                      1
+                    ]
+                  ],
+                  "message": "No"
+                }
+              ]
+            ],
             "suite": [
               [
                 {
+                  "codes": [
+                    [
+                      1,
+                      0
+                    ]
+                  ],
                   "message": "There's a rat. Do you want to take it?"
+                }
+              ],
+              [
+                {
+                  "message": "Good choice..."
                 }
               ]
             ]
@@ -101,6 +137,8 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
+            "output": 1,
             "suite": [
               [
                 {
@@ -127,21 +165,28 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
-        "id": 53338,
+        "id": 104,
         "label": "carl",
         "position": [
           26,
           20
         ],
+        "start_busy": false,
         "suites": [
           [
             1,
-            2
+            2,
+            3
           ],
           [
-            2
+            2,
+            3
+          ],
+          [
+            3
           ]
         ]
       }
@@ -166,6 +211,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 103,
         "dimensions": [
           1,
@@ -198,11 +244,6 @@
     "ambience": "",
     "background": "night",
     "biome": "firstwind",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -222,6 +263,7 @@
       32,
       32
     ],
+    "interior": true,
     "metagrid": [
       4,
       1
@@ -233,19 +275,39 @@
       0
     ],
     "properties": {
-      "day_night_shift": true,
+      "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": true,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 104,
     "shader": {
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": {
+      "ambience": "rain",
+      "chance": 0.30000001192092896,
+      "density": 1,
+      "effect": "raindrop",
+      "framerate": 8,
+      "type": "rain"
+    }
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

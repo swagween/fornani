@@ -1,5 +1,6 @@
 
 #include <imgui.h>
+#include <editor/automa/EditorContext.hpp>
 #include <editor/automa/Metagrid.hpp>
 #include <editor/metagrid/tool/Cursor.hpp>
 #include <editor/metagrid/tool/Move.hpp>
@@ -8,16 +9,23 @@
 
 namespace pi {
 
-static bool menu_open{};
-static bool window_hovered{};
-static bool clicked{};
-
-Metagrid::Metagrid(fornani::automa::ServiceProvider& svc) : EditorState(svc), m_workspace{{256, 128}}, m_tool{std::make_unique<Cursor>(svc)}, m_background_color{fornani::colors::pioneer_black} {
+Metagrid::Metagrid(fornani::automa::ServiceProvider& svc, EditorContext& ctx)
+	: EditorState(svc, ctx), m_workspace{{256, 128}}, m_tool{std::make_unique<Cursor>(svc)}, m_background_color{fornani::colors::pioneer_black}, m_metamap{svc.assets.get_texture("metamap")} {
+	svc.data.load_data();
 	p_target_state = EditorStateType::metagrid;
 	p_wallpaper.setFillColor(m_background_color);
 	p_wallpaper.setSize(p_services->window->f_screen_dimensions());
 	for (auto& map : svc.data.map_jsons) { m_rooms.push_back(Room(svc, map)); }
+
 	return;
+
+	// convert big npc file to many small ones
+	for (auto const& [key, data] : svc.text.npc.as_object()) {
+		auto path = std::filesystem::path{std::filesystem::path{svc.finder.resource_path()} / "localization" / "eng" / "npc"};
+		auto file = key + ".json";
+		auto to_json = path / file;
+		if (!data.to_file(to_json.string())) {}
+	}
 
 	// here we convert legacy inspectables.
 	for (auto& map : svc.data.map_jsons) {
@@ -80,15 +88,13 @@ Metagrid::Metagrid(fornani::automa::ServiceProvider& svc) : EditorState(svc), m_
 		}
 		if (!new_map.to_file((svc.finder.paths.levels / std::filesystem::path{"updated"} / map.region_label / std::filesystem::path{map.room_label + ".json"}).string())) {}
 	}
-	//
 }
 
 EditorStateType Metagrid::run(char** argv) {
 	logic();
 
 	ImGuiIO& io = ImGui::GetIO();
-	window_hovered = ImGui::IsAnyItemHovered();
-	io.MouseDrawCursor = menu_open || window_hovered;
+	io.MouseDrawCursor = io.WantCaptureMouse;
 	p_services->window->get().setMouseCursorVisible(io.MouseDrawCursor);
 
 	EditorState::render(p_services->window->get());
@@ -96,57 +102,108 @@ EditorStateType Metagrid::run(char** argv) {
 	ImGui::SFML::Render(p_services->window->get());
 	p_services->window->get().display();
 
+	EditorState::run(argv);
 	return p_target_state;
 }
 
 void Metagrid::handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) {
+	EditorState::handle_events(event, win);
 	ImGuiIO& io = ImGui::GetIO();
-	m_current_mouse_position = sf::Vector2f{io.MousePos.x, io.MousePos.y};
-
-	if (auto const* button_pressed = event->getIf<sf::Event::MouseButtonPressed>()) {
-		if (button_pressed->button == sf::Mouse::Button::Middle) { pressed_keys.set(PressedKeys::mouse_middle); }
-		if (button_pressed->button == sf::Mouse::Button::Left) {
-			if (!pressed_keys.test(PressedKeys::mouse_left) && m_highlighted_room) {
-				clicked = !menu_open;
-				m_left_clicked_position = sf::Vector2f{m_current_mouse_position - m_camera};
-				m_tool->set_original_position(m_highlighted_room.value()->get_board_position());
-			}
-			pressed_keys.set(PressedKeys::mouse_left);
-		}
-		if (button_pressed->button == sf::Mouse::Button::Right) {
-			pressed_keys.set(PressedKeys::mouse_right);
-			m_right_clicked_position = m_current_mouse_position;
+	if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
+		if (key_pressed->scancode == sf::Keyboard::Scancode::R) {
+			p_services->window->restore_view();
+			p_view = p_services->window->get_view();
+			p_zoom_level = 1.f;
 		}
 	}
-	if (auto const* button_released = event->getIf<sf::Event::MouseButtonReleased>()) {
-		if (button_released->button == sf::Mouse::Button::Middle) { pressed_keys.reset(PressedKeys::mouse_middle); }
-		if (button_released->button == sf::Mouse::Button::Left) {
-			if (pressed_keys.test(PressedKeys::mouse_left) && m_highlighted_room && m_tool->is(MetagridToolType::move)) {
-				if (!m_highlighted_room.value()->serialize(*p_services)) { NANI_LOG_INFO(p_logger, "Failed to save metadata for {}", m_highlighted_room.value()->get_label()); }
-			}
-			clicked = false;
-			pressed_keys.reset(PressedKeys::mouse_left);
+	if (auto const* scrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
+		auto zoom_rate = 0.1f;
+		auto max_zoom = 3.f;
+		auto min_zoom = -1.f;
+		auto delta = scrolled->delta * zoom_rate;
+		p_zoom_level += delta;
+		auto zoom = true;
+		if (p_zoom_level < min_zoom) {
+			p_zoom_level = min_zoom;
+			zoom = false;
 		}
-		if (button_released->button == sf::Mouse::Button::Right) { pressed_keys.reset(PressedKeys::mouse_right); }
+		if (p_zoom_level > max_zoom) {
+			p_zoom_level = max_zoom;
+			zoom = false;
+		}
+		if (zoom) { p_view.zoom(1.f - delta); }
 	}
-	if (m_highlighted_room && pressed_keys.test(PressedKeys::mouse_left)) { m_tool->handle_inputs(*m_highlighted_room.value(), m_camera, m_left_clicked_position); }
 }
 
 void Metagrid::logic() {
-	auto last_workspace_position = menu_open ? m_left_clicked_position : m_current_mouse_position;
-	if (pressed_keys.test(PressedKeys::mouse_right)) { m_camera += m_current_mouse_position - m_dragged_position; }
-	m_dragged_position = sf::Vector2f{m_current_mouse_position};
-	for (auto& r : m_rooms) { r.update(last_workspace_position); }
-	m_tool->update(m_current_mouse_position);
+	EditorState::logic();
+	ImGuiIO& io = ImGui::GetIO();
+
+	auto cursorpos = sf::Vector2f{io.MousePos.x, io.MousePos.y};
+	sf::Vector2f relative_mouse = p_current_mouse_position - p_camera;
+
+	auto last_workspace_position = io.WantCaptureMouse ? p_left_clicked_position : p_current_mouse_position;
+
+	// mouse events
+	if (p_left_mouse.released && m_highlighted_room && m_tool->is(MetagridToolType::move)) {
+		if (!m_highlighted_room.value()->serialize(*p_services)) { NANI_LOG_INFO(p_logger, "Failed to save metadata for {}", m_highlighted_room.value()->get_label()); }
+	}
+	if (p_left_mouse.held && m_highlighted_room) {
+		m_flags.set(MetagridFlags::move_mode);
+		if (m_tool->is(MetagridToolType::move)) { m_highlighted_room.value()->set_position(m_tool->get_workspace_coordinates(relative_mouse)); }
+		p_left_clicked_position = p_current_mouse_position - p_camera;
+		m_tool->set_original_position(m_highlighted_room.value()->get_board_position());
+	} else {
+		m_flags.reset(MetagridFlags::move_mode);
+	}
+
+	auto any_room_hovered = false;
+	for (auto& r : m_rooms) {
+		r.update(last_workspace_position, io.WantCaptureMouse);
+		if (r.is_highlighted()) { any_room_hovered = true; }
+	}
+	m_tool->update(p_current_mouse_position);
+	if (p_left_mouse.clicked) {
+		if (!any_room_hovered && !io.WantCaptureMouse) {
+			m_flags.set(MetagridFlags::context_menu);
+			p_context->metagrid_position = m_tool->get_workspace_coordinates(relative_mouse);
+		}
+	}
+	any_room_hovered || io.WantCaptureMouse ? m_flags.set(MetagridFlags::hide_cell) : m_flags.reset(MetagridFlags::hide_cell);
 }
 
 void Metagrid::render(sf::RenderWindow& win) {
-	m_workspace.render(win, m_camera);
+	ImGuiIO& io = ImGui::GetIO();
+	auto cursorpos = sf::Vector2f{io.MousePos.x, io.MousePos.y};
+	// calculate zoom
+	sf::View const& cview = win.getView();
+	float zoom = cview.getSize().x / win.getDefaultView().getSize().x;
+	float base_thickness = -2.f;
+
+	p_services->window->set_view(p_view);
+	if (p_zoom_level >= 1.f) { m_workspace.render(win, p_camera); }
+
+	m_metamap_settings.color.a = static_cast<unsigned char>(m_metamap_settings.alpha);
+	m_metamap.setColor(m_metamap_settings.color);
+	m_metamap.setPosition(m_metamap_settings.position + p_camera);
+	m_metamap.setScale({m_metamap_settings.scale, m_metamap_settings.scale});
+	if (m_metamap_settings.show) { win.draw(m_metamap); }
+
+	sf::Vector2f relative_mouse = p_current_mouse_position - p_camera;
+	sf::Vector2f grid_pos = relative_mouse / spacing_v;
+
+	m_current_cell.setPosition(sf::Vector2f{m_tool->get_workspace_coordinates(relative_mouse)} * spacing_v + p_camera);
+	m_current_cell.setSize({spacing_v, spacing_v});
+	m_current_cell.setOutlineColor(fornani::colors::dark_grey);
+	m_current_cell.setFillColor(fornani::colors::transparent);
+	m_current_cell.setOutlineThickness(base_thickness * zoom);
+	if (!m_flags.test(MetagridFlags::hide_cell)) { win.draw(m_current_cell); }
 
 	static auto current_room = 0;
 	static bool serialize{};
 	static bool ignore_test_levels{true};
 	static bool hide_room_borders{};
+	static bool show_tags{};
 
 	// render rooms
 	auto found_one{false};
@@ -154,6 +211,7 @@ void Metagrid::render(sf::RenderWindow& win) {
 	auto ctr = 0;
 	for (auto& r : m_rooms) {
 		r.no_border = hide_room_borders;
+		r.show_tags = show_tags;
 		if (!r.has_flag_set(RoomFlags::include_in_minimap) && ignore_test_levels) {
 			++ctr;
 			continue;
@@ -163,18 +221,38 @@ void Metagrid::render(sf::RenderWindow& win) {
 			current_room = r.id.get();
 			it = ctr;
 		}
-		r.render(win, m_camera);
+		r.render(win, p_camera);
 		++ctr;
 	}
 	auto view = std::span<Room>(m_rooms);
-	if (!pressed_keys.test(PressedKeys::mouse_left) && !menu_open && !window_hovered) { m_highlighted_room = &view[it]; }
+	if (!p_left_mouse.clicked && !io.WantCaptureMouse && !m_flags.test(MetagridFlags::move_mode)) { m_highlighted_room = &view[it]; }
+	if (!found_one && !m_flags.test(MetagridFlags::move_mode) && !io.WantCaptureMouse) { m_highlighted_room.reset(); }
+
+	if (io.WantCaptureMouse) {
+		p_services->window->restore_view();
+		auto screen = p_wallpaper;
+		screen.setFillColor(sf::Color{100, 100, 100, 20});
+		win.draw(screen);
+	}
 
 	// ImGui stuff
-	bool options_popup{clicked && found_one && m_tool->is(MetagridToolType::cursor)};
+	bool options_popup{p_left_mouse.clicked && found_one && m_tool->is(MetagridToolType::cursor)};
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) { ImGui::EndMenu(); }
 		if (ImGui::Button("Editor")) { p_target_state = EditorStateType::editor; }
 		ImGui::EndMainMenuBar();
+	}
+
+	if (m_flags.test(MetagridFlags::context_menu)) {
+		ImGui::OpenPopup("Context Menu");
+		m_flags.reset(MetagridFlags::context_menu);
+	}
+	if (ImGui::BeginPopupContextWindow("Context Menu")) {
+		if (ImGui::MenuItem("New Room")) {
+			p_target_state = EditorStateType::editor;
+			p_context->flags.set(EditorContextFlags::new_room);
+		}
+		ImGui::EndPopup();
 	}
 
 	// main toolbar
@@ -216,9 +294,19 @@ void Metagrid::render(sf::RenderWindow& win) {
 		ImGui::Separator();
 		ImGui::Text("Current Room: %i", current_room);
 		ImGui::Text("Current Tool: %s", m_tool->get_label().data());
-		ImGui::Text("Workspace Coordinates: (%i, %i)", m_tool->get_workspace_coordinates(m_camera).x, m_tool->get_workspace_coordinates(m_camera).y);
+		ImGui::Text("Zoom Level: %.3f", p_zoom_level);
+		ImGui::Text("Workspace Coordinates: (%i, %i)", m_tool->get_workspace_coordinates(relative_mouse).x, m_tool->get_workspace_coordinates(relative_mouse).y);
+		if (m_flags.test(MetagridFlags::move_mode)) { ImGui::Text("MOVE MODE"); }
 		ImGui::Checkbox("Ignore Test Levels", &ignore_test_levels);
 		ImGui::Checkbox("Hide Room Borders", &hide_room_borders);
+		ImGui::Checkbox("Show Tags", &show_tags);
+
+		ImGui::SeparatorText("Metamap");
+		ImGui::Checkbox("Show", &m_metamap_settings.show);
+		ImGui::SliderFloat("X Position", &m_metamap_settings.position.x, -1204.f, -1184, "%.1f");
+		ImGui::SliderFloat("Y Position", &m_metamap_settings.position.y, -1450, -1430, "%.1f");
+		// ImGui::SliderFloat("Scale", &m_metamap_settings.scale, 0.f, 2.f, "%.1f");
+		ImGui::SliderInt("Opacity", &m_metamap_settings.alpha, 0, 255);
 
 		ImGui::End();
 	}
@@ -229,20 +317,35 @@ void Metagrid::render(sf::RenderWindow& win) {
 		ImGui::Separator();
 		ImGui::Text("ID: %i", m_highlighted_room.value()->id.get());
 		ImGui::Text("Biome: %s", m_highlighted_room.value()->get_biome().c_str());
+		ImGui::Text("Music: %s", m_highlighted_room.value()->get_music().c_str());
+		ImGui::Text("Interior: %s", m_highlighted_room.value()->has_flag_set(RoomFlags::interior) ? "Yes" : "No");
+		if (m_highlighted_room.value()->get_data().metadata["meta"]["weather"]) {
+			ImGui::SeparatorText("Weather");
+			ImGui::Text("Type: %s", m_highlighted_room.value()->get_data().metadata["meta"]["weather"]["type"].as_string().c_str());
+			ImGui::Text("Chance: %.1f", m_highlighted_room.value()->get_data().metadata["meta"]["weather"]["chance"].as<float>());
+		}
 		ImGui::EndTooltip();
 	}
 
-	if (options_popup) {
-		ImGui::OpenPopup("Room Options");
-		clicked = false;
-	}
+	if (options_popup) { ImGui::OpenPopup("Room Options"); }
 	if (ImGui::BeginPopupContextWindow("Room Options")) {
-		menu_open = true;
 		auto ut = m_highlighted_room ? m_highlighted_room.value()->has_flag_set(RoomFlags::use_template) : false;
 		if (ImGui::BeginMenu("Edit")) {
 			if (ImGui::MenuItem("Toggle Minimap")) {
 				if (m_highlighted_room) {
 					m_highlighted_room.value()->toggle_flag(RoomFlags::include_in_minimap);
+					serialize = true;
+				}
+			}
+			if (ImGui::MenuItem("Toggle Interior")) {
+				if (m_highlighted_room) {
+					m_highlighted_room.value()->toggle_flag(RoomFlags::interior);
+					serialize = true;
+				}
+			}
+			if (ImGui::MenuItem("Toggle DayNightShift")) {
+				if (m_highlighted_room) {
+					m_highlighted_room.value()->toggle_flag(RoomFlags::day_night_shift);
 					serialize = true;
 				}
 			}
@@ -262,8 +365,6 @@ void Metagrid::render(sf::RenderWindow& win) {
 			}
 		}
 		ImGui::EndPopup();
-	} else {
-		menu_open = false;
 	}
 
 	if (serialize && m_highlighted_room) {
@@ -271,7 +372,9 @@ void Metagrid::render(sf::RenderWindow& win) {
 		serialize = false;
 	}
 
-	m_tool->render(win);
+	p_services->window->restore_view();
+	m_tool->render(win, sf::Vector2f{io.MousePos});
+	p_services->window->set_view(p_view);
 }
 
 } // namespace pi

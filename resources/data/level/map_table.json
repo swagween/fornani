@@ -1,58 +1,82 @@
 {
   "rooms": [
     {
-      "folder": "config",
-      "label": "bg_test.json",
-      "region": "overturned",
-      "room_id": 77123
+      "folder": "ashtown",
+      "label": "curio_shop.json",
+      "region": "ashtown",
+      "room_id": 1303
+    },
+    {
+      "folder": "ashtown",
+      "label": "dougs_house.json",
+      "region": "ashtown",
+      "room_id": 1312
+    },
+    {
+      "folder": "ashtown",
+      "label": "hideout.json",
+      "region": "ashtown",
+      "room_id": 1311
+    },
+    {
+      "folder": "ashtown",
+      "label": "hostel.json",
+      "region": "ashtown",
+      "room_id": 1310
+    },
+    {
+      "folder": "ashtown",
+      "label": "pipers_house.json",
+      "region": "ashtown",
+      "room_id": 1302
+    },
+    {
+      "folder": "ashtown",
+      "label": "sarah_banes_house.json",
+      "region": "ashtown",
+      "room_id": 1304
+    },
+    {
+      "folder": "ashtown",
+      "label": "town.json",
+      "region": "ashtown",
+      "room_id": 1300
+    },
+    {
+      "folder": "ashtown",
+      "label": "town_hall.json",
+      "region": "ashtown",
+      "room_id": 1307
+    },
+    {
+      "folder": "ashtown",
+      "label": "trade_shop.json",
+      "region": "ashtown",
+      "room_id": 1305
     },
     {
       "folder": "config",
-      "label": "chunk_test.json",
+      "label": "collider_test.json",
       "region": "junkyard",
-      "room_id": 0
+      "room_id": 99880
     },
     {
       "folder": "config",
-      "label": "collision_test.json",
-      "region": "firstwind",
-      "room_id": 999886
-    },
-    {
-      "folder": "config",
-      "label": "collt.json",
-      "region": "firstwind",
-      "room_id": 11111
-    },
-    {
-      "folder": "config",
-      "label": "dns_test.json",
+      "label": "collider_test_2.json",
       "region": "junkyard",
-      "room_id": 666666
+      "room_id": 99881
     },
     {
       "folder": "config",
-      "label": "new_file.json",
-      "region": "firstwind",
-      "room_id": 1
+      "label": "test_portals.json",
+      "region": "toxic",
+      "room_id": 6767672
     },
     {
       "folder": "config",
-      "label": "nighty.json",
-      "region": "greatwing",
-      "room_id": 99900
-    },
-    {
-      "folder": "config",
-      "label": "pushable_test.json",
-      "region": "firstwind",
-      "room_id": 999888
-    },
-    {
-      "folder": "config",
-      "label": "turret_test.json",
-      "region": "firstwind",
-      "room_id": 999876
+      "label": "test_portals2.json",
+      "region": "toxic",
+      "room_id": 6767673
     },
     {
       "folder": "firstwind",
@@ -116,6 +140,12 @@
     },
     {
       "folder": "firstwind",
+      "label": "duct.json",
+      "region": "firstwind",
+      "room_id": 139
+    },
+    {
+      "folder": "firstwind",
       "label": "fall.json",
       "region": "firstwind",
       "room_id": 199
@@ -146,12 +176,6 @@
     },
     {
       "folder": "firstwind",
-      "label": "json_city.json",
-      "region": "overturned",
-      "room_id": 213321321
-    },
-    {
-      "folder": "firstwind",
       "label": "laboratory.json",
       "region": "firstwind",
       "room_id": 110
@@ -159,7 +183,7 @@
     {
       "folder": "firstwind",
       "label": "plat_test.json",
-      "region": "firstwind",
+      "region": "overturned",
       "room_id": 123213
     },
     {
@@ -212,15 +236,33 @@
     },
     {
       "folder": "greatwing",
+      "label": "ballroom.json",
+      "region": "greatwing",
+      "room_id": 2001
+    },
+    {
+      "folder": "greatwing",
       "label": "bridge.json",
       "region": "greatwing",
       "room_id": 601
+    },
+    {
+      "folder": "hoarder",
+      "label": "den.json",
+      "region": "ashtown",
+      "room_id": 1410
     },
     {
       "folder": "junkyard",
       "label": "assembly_line.json",
       "region": "junkyard",
       "room_id": 707
+    },
+    {
+      "folder": "junkyard",
+      "label": "chute.json",
+      "region": "junkyard",
+      "room_id": 706
     },
     {
       "folder": "junkyard",
@@ -242,9 +284,27 @@
     },
     {
       "folder": "junkyard",
+      "label": "lobby.json",
+      "region": "junkyard",
+      "room_id": 708
+    },
+    {
+      "folder": "junkyard",
       "label": "lot.json",
       "region": "junkyard",
       "room_id": 701
+    },
+    {
+      "folder": "junkyard",
+      "label": "maintenance_hangar.json",
+      "region": "junkyard",
+      "room_id": 906
+    },
+    {
+      "folder": "junkyard",
+      "label": "shooting_range.json",
+      "region": "junkyard",
+      "room_id": 720
     },
     {
       "folder": "junkyard",
@@ -281,6 +341,12 @@
       "label": "cellar.json",
       "region": "kariba",
       "room_id": 505
+    },
+    {
+      "folder": "kariba",
+      "label": "cistern.json",
+      "region": "kariba",
+      "room_id": 514
     },
     {
       "folder": "kariba",
@@ -332,6 +398,12 @@
     },
     {
       "folder": "kariba",
+      "label": "pit.json",
+      "region": "kariba",
+      "room_id": 516
+    },
+    {
+      "folder": "kariba",
       "label": "solarium.json",
       "region": "kariba",
       "room_id": 510
@@ -344,6 +416,12 @@
     },
     {
       "folder": "kariba",
+      "label": "tempidarium.json",
+      "region": "kariba",
+      "room_id": 515
+    },
+    {
+      "folder": "kariba",
       "label": "vault.json",
       "region": "kariba",
       "room_id": 509
@@ -353,6 +431,42 @@
       "label": "west_wing.json",
       "region": "kariba",
       "room_id": 504
+    },
+    {
+      "folder": "nightside",
+      "label": "obstacle_course.json",
+      "region": "nightside",
+      "room_id": 904
+    },
+    {
+      "folder": "nightside",
+      "label": "pit_stop.json",
+      "region": "nightside",
+      "room_id": 905
+    },
+    {
+      "folder": "nightside",
+      "label": "sky.json",
+      "region": "nightside",
+      "room_id": 999
+    },
+    {
+      "folder": "nightside",
+      "label": "station.json",
+      "region": "nightside",
+      "room_id": 901
+    },
+    {
+      "folder": "nightside",
+      "label": "station_house.json",
+      "region": "nightside",
+      "room_id": 902
+    },
+    {
+      "folder": "nightside",
+      "label": "upper_wall.json",
+      "region": "nightside",
+      "room_id": 903
     },
     {
       "folder": "overturned",
@@ -374,6 +488,12 @@
     },
     {
       "folder": "overturned",
+      "label": "bramble.json",
+      "region": "overturned",
+      "room_id": 254
+    },
+    {
+      "folder": "overturned",
       "label": "burrow.json",
       "region": "overturned",
       "room_id": 233
@@ -386,6 +506,18 @@
     },
     {
       "folder": "overturned",
+      "label": "concourse.json",
+      "region": "overturned",
+      "room_id": 255
+    },
+    {
+      "folder": "overturned",
+      "label": "copse.json",
+      "region": "overturned",
+      "room_id": 256
+    },
+    {
+      "folder": "overturned",
       "label": "cove.json",
       "region": "overturned",
       "room_id": 216
@@ -395,6 +527,12 @@
       "label": "crash_site.json",
       "region": "overturned",
       "room_id": 204
+    },
+    {
+      "folder": "overturned",
+      "label": "crawl.json",
+      "region": "overturned",
+      "room_id": 261
     },
     {
       "folder": "overturned",
@@ -470,6 +608,12 @@
     },
     {
       "folder": "overturned",
+      "label": "hallows.json",
+      "region": "overturned",
+      "room_id": 259
+    },
+    {
+      "folder": "overturned",
       "label": "hanging_roots.json",
       "region": "overturned",
       "room_id": 213
@@ -521,6 +665,12 @@
       "label": "lower_glades.json",
       "region": "overturned",
       "room_id": 217
+    },
+    {
+      "folder": "overturned",
+      "label": "march.json",
+      "region": "overturned",
+      "room_id": 260
     },
     {
       "folder": "overturned",
@@ -584,6 +734,12 @@
     },
     {
       "folder": "overturned",
+      "label": "pioneer_station.json",
+      "region": "overturned",
+      "room_id": 257
+    },
+    {
+      "folder": "overturned",
       "label": "pioneer_trail.json",
       "region": "overturned",
       "room_id": 227
@@ -641,6 +797,12 @@
       "label": "thicket.json",
       "region": "overturned",
       "room_id": 229
+    },
+    {
+      "folder": "overturned",
+      "label": "thorn_bush.json",
+      "region": "overturned",
+      "room_id": 252
     },
     {
       "folder": "overturned",
@@ -710,6 +872,12 @@
     },
     {
       "folder": "overturned",
+      "label": "worm_access.json",
+      "region": "overturned",
+      "room_id": 258
+    },
+    {
+      "folder": "overturned",
       "label": "yard.json",
       "region": "overturned",
       "room_id": 219
@@ -776,6 +944,78 @@
     },
     {
       "folder": "toxic",
+      "label": "cavern.json",
+      "region": "toxic",
+      "room_id": 1003
+    },
+    {
+      "folder": "toxic",
+      "label": "chasm.json",
+      "region": "toxic",
+      "room_id": 1010
+    },
+    {
+      "folder": "toxic",
+      "label": "cove.json",
+      "region": "toxic",
+      "room_id": 1006
+    },
+    {
+      "folder": "toxic",
+      "label": "crossroads.json",
+      "region": "toxic",
+      "room_id": 1005
+    },
+    {
+      "folder": "toxic",
+      "label": "entrypoint.json",
+      "region": "toxic",
+      "room_id": 1001
+    },
+    {
+      "folder": "toxic",
+      "label": "filtration_center.json",
+      "region": "toxic",
+      "room_id": 1009
+    },
+    {
+      "folder": "toxic",
+      "label": "gauntlet.json",
+      "region": "toxic",
+      "room_id": 1008
+    },
+    {
+      "folder": "toxic",
+      "label": "research_center.json",
+      "region": "toxic",
+      "room_id": 1002
+    },
+    {
+      "folder": "toxic",
+      "label": "roof.json",
+      "region": "toxic",
+      "room_id": 1012
+    },
+    {
+      "folder": "toxic",
+      "label": "spiral.json",
+      "region": "toxic",
+      "room_id": 1004
+    },
+    {
+      "folder": "toxic",
+      "label": "squeeze.json",
+      "region": "toxic",
+      "room_id": 1013
+    },
+    {
+      "folder": "toxic",
+      "label": "storage_shed.json",
+      "region": "toxic",
+      "room_id": 1011
+    },
+    {
+      "folder": "toxic",
       "label": "test_area.json",
       "region": "toxic",
       "room_id": 900
@@ -797,6 +1037,90 @@
       "label": "race.json",
       "region": "firstwind",
       "room_id": 9899
+    },
+    {
+      "folder": "worm",
+      "label": "chaetal_sac.json",
+      "region": "worm",
+      "room_id": 1104
+    },
+    {
+      "folder": "worm",
+      "label": "crop.json",
+      "region": "worm",
+      "room_id": 1103
+    },
+    {
+      "folder": "worm",
+      "label": "dorsal_septum.json",
+      "region": "worm",
+      "room_id": 1109
+    },
+    {
+      "folder": "worm",
+      "label": "esophagus.json",
+      "region": "worm",
+      "room_id": 1115
+    },
+    {
+      "folder": "worm",
+      "label": "nephridiopore.json",
+      "region": "worm",
+      "room_id": 1101
+    },
+    {
+      "folder": "worm",
+      "label": "nephrostome.json",
+      "region": "worm",
+      "room_id": 1110
+    },
+    {
+      "folder": "worm",
+      "label": "protonephridium.json",
+      "region": "worm",
+      "room_id": 1102
+    },
+    {
+      "folder": "worm",
+      "label": "sebum.json",
+      "region": "worm",
+      "room_id": 1113
+    },
+    {
+      "folder": "worm",
+      "label": "septum.json",
+      "region": "worm",
+      "room_id": 1112
+    },
+    {
+      "folder": "worm",
+      "label": "seta.json",
+      "region": "worm",
+      "room_id": 1111
+    },
+    {
+      "folder": "worm",
+      "label": "subneural_vessel.json",
+      "region": "worm",
+      "room_id": 1106
+    },
+    {
+      "folder": "worm",
+      "label": "typhlosole.json",
+      "region": "worm",
+      "room_id": 1108
+    },
+    {
+      "folder": "worm",
+      "label": "upper_coelum.json",
+      "region": "worm",
+      "room_id": 1105
+    },
+    {
+      "folder": "worm",
+      "label": "ventral_vessel.json",
+      "region": "worm",
+      "room_id": 1107
     }
   ]
 }

@@ -26,7 +26,10 @@
 			"description": "Optimized build with debug info",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "RelWithDebInfo",
-				"CMAKE_POLICY_VERSION_MINIMUM": "3.5"
+				"CMAKE_POLICY_VERSION_MINIMUM": "3.5",
+				"FORNANI_DEV_BUILD": "ON",
+				"FORNANI_BUILD_EDITOR": "ON",
+				"FORNANI_PRODUCTION_BUILD": "OFF"
 			}
 		},
 		{
@@ -35,7 +38,10 @@
 			"description": "Optimized release build",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Release",
-				"CMAKE_POLICY_VERSION_MINIMUM": "3.5"
+				"CMAKE_POLICY_VERSION_MINIMUM": "3.5",
+				"FORNANI_PRODUCTION_BUILD": "ON",
+				"FORNANI_DEV_BUILD": "OFF",
+				"FORNANI_BUILD_EDITOR": "OFF"
 			}
 		}
 	],

@@ -28,7 +28,8 @@ void Animation::update() {
 		// reset the timers
 		flags.set(State::keyframe);
 		frame_timer.start(params.framerate);
-		frame.update(); // increment frame
+		auto dir = flags.test(State::inverted) ? -1 : 1;
+		frame.get_count() == 0 && flags.test(State::inverted) ? frame.cancel() : frame.update(dir); // increment frame
 
 		// frame is over, so we can switch params if requested
 		if (flags.test(State::param_switch)) {
@@ -36,7 +37,8 @@ void Animation::update() {
 			return;
 		}
 
-		if (frame.get_count() == params.duration) { // we hit the end of the animation
+		auto duration = flags.test(State::inverted) ? 0 : params.duration;
+		if (frame.get_count() == duration) { // we hit the end of the animation
 
 			// for one-off animations, set oneoff flag and leave
 			if (params.num_loops == 0) {
@@ -44,7 +46,8 @@ void Animation::update() {
 				flags.set(State::oneoff_complete);
 			} else {
 				// for animations that loop indefinitely, just reset
-				frame.start();
+				auto start_point = flags.test(State::inverted) ? params.duration - 1 : 0;
+				frame.set(start_point);
 			}
 
 			// for animations with multiple loops, increment the loop counter and start over
@@ -87,5 +90,7 @@ void Animation::linger_on_frame(int which, bool condition) {
 void Animation::log_info() const { NANI_LOG_INFO(m_logger, "\n\nCurrent Frame: [{}]\nFrame Timer: [{}]\n\n", frame.get_count(), frame_timer.get()); }
 
 int Animation::get_frame() const { return frame.canceled() ? params.lookup : params.lookup + frame.get_count(); }
+
+auto Animation::is_first_loop() const -> bool { return global_counter.get_count() < params.duration * params.framerate; }
 
 } // namespace fornani::anim

@@ -1,5 +1,6 @@
 
 #include "fornani/world/Platform.hpp"
+#include <fornani/core/Debug.hpp>
 #include <fornani/utils/Math.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/particle/Effect.hpp"
@@ -93,6 +94,11 @@ Platform::Platform(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f p
 }
 
 void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	auto const u = state * 48;
+	auto v = animation.get_frame() * 112;
+	v = 0;
+	auto lookup = sf::Vector2<int>{u, v} + offset;
+	set_texture_rect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(get_collider().dimensions) / 2));
 	auto edge_start = 0.f;
 	switch_up.update();
 
@@ -137,6 +143,7 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			break;
 		} else {
 			edge_start = edge_end;
+			// animation.invert();
 			if (flags.attributes.test(PlatformAttributes::repeating)) {
 				path_position = 0.f;
 				edge_start = 0.f;
@@ -157,11 +164,14 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	}
 
 	counter.update();
+
+	auto st = std::clamp(get_velocity().lengthSquared(), 0.f, 1.f);
+	auto speed = std::lerp(0.f, 20.f, st);
+	animation.params.framerate = (24 - static_cast<int>(speed));
 	animation.update();
-	if (get_velocity().lengthSquared() > constants::tiny_value) {
-		auto max_vel = 8.f;
-		auto t = std::clamp(get_velocity().lengthSquared() / max_vel, 0.f, 1.f);
-		auto pitch = std::lerp(1.f, 2.0f, get_velocity().lengthSquared());
+	if (get_velocity().lengthSquared() > 0.001f) {
+		auto pt = std::clamp(get_velocity().lengthSquared(), 0.f, 1.f);
+		auto pitch = std::lerp(1.f, 2.0f, pt);
 		svc.soundboard.repeat_sound("platform_industrial", m_handle, get_collider().get_center(), pitch);
 	}
 }
@@ -193,6 +203,19 @@ void Platform::post_update(automa::ServiceProvider& svc, world::Map& map, player
 	}
 }
 
+void Platform::render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::Vector2f cam) {
+	Animatable::set_position(get_collider().physics.position);
+	auto const u = state * 48;
+	auto const v = animation.get_frame() * 112;
+	auto lookup = sf::Vector2<int>{u, v} + offset;
+	set_texture_rect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(get_collider().dimensions) / 2));
+	if (svc.greyblock_mode()) {
+	} else {
+		tex.draw(*this);
+		++debug::draw_calls;
+	}
+}
+
 void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	track_shape.setPosition(-cam);
 	Animatable::set_position(get_collider().physics.position - cam);
@@ -205,25 +228,35 @@ void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 		get_collider().render(win, cam);
 	} else {
 		win.draw(*this);
+		++debug::draw_calls;
+	}
+}
+
+void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, LightShader& shader, Palette& palette, sf::Vector2f cam) {
+	track_shape.setPosition(-cam);
+	Animatable::set_position(get_collider().physics.position - cam);
+	if (svc.greyblock_mode()) {
+		win.draw(track_shape);
+		get_collider().render(win, cam);
+	} else {
+		shader.submit(win, palette, get_sprite());
 	}
 }
 
 void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
 	if (proj.transcendent()) { return; }
-	if (proj.get_collider().collides_with(get_collider().bounding_box)) {
-		if (!proj.destruction_initiated()) {
-			map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_destruction_point() + proj.get_position(), get_collider().physics.apparent_velocity()));
-			if (proj.get_direction().lnr == LNR::neutral) { map.effects.back().rotate(); }
-			svc.soundboard.flags.world.set(audio::World::hard_hit);
-		}
-		proj.destroy(false);
+	if (proj.reflect()) {
+		proj.get_collider().handle_collision(m_collider.get()->bounding_box);
+		return;
 	}
+	if (proj.get_collider().collides_with(m_collider.get()->bounding_box)) { proj.handle_hard_hit(svc, map); }
 }
 
 void Platform::switch_directions() {
 	std::ranges::reverse(track);
 	path_position = 1.0f - path_position;
 	switch_up.start();
+	animation.invert();
 	NANI_LOG_DEBUG(m_logger, "switched platform directions!");
 }
 

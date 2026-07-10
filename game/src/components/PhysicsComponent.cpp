@@ -1,10 +1,8 @@
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include <fornani/components/PhysicsComponent.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <cmath>
-
-// TODO: Replace functions in here with ccmath functions instead.
 
 namespace fornani::components {
 
@@ -40,10 +38,9 @@ void PhysicsComponent::integrate(automa::ServiceProvider& svc) {
 
 	acceleration.y += gravity * dt;
 	sf::Vector2f friction = flags.test(State::grounded) ? ground_friction : air_friction;
-	velocity.x = (velocity.x + (acceleration.x / mass) * dt) * friction.x;
-	velocity.y = (velocity.y + (acceleration.y / mass) * dt) * friction.y;
-	velocity.x = ccm::ext::clamp(velocity.x, -maximum_velocity.x, maximum_velocity.x);
-	velocity.y = ccm::ext::clamp(velocity.y, -maximum_velocity.y, maximum_velocity.y);
+	velocity = (velocity + (acceleration / mass) * dt).componentWiseMul(friction);
+	velocity.x = std::clamp(velocity.x, -maximum_velocity.x, maximum_velocity.x);
+	velocity.y = std::clamp(velocity.y, -maximum_velocity.y, maximum_velocity.y);
 	position = position + velocity * dt;
 	real_velocity = velocity * dt;
 }
@@ -55,8 +52,8 @@ void PhysicsComponent::update_dampen(automa::ServiceProvider& svc) {
 	acceleration = {};
 }
 
-void PhysicsComponent::simple_update(bool gravity) {
-	if (gravity) { acceleration.y = gravity; }
+void PhysicsComponent::simple_update(bool grav) {
+	if (grav) { acceleration.y += gravity; }
 	velocity *= air_friction.x;
 	velocity += acceleration;
 	position += velocity;

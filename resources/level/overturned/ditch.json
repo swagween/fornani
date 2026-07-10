@@ -1,5 +1,59 @@
 {
   "entities": {
+    "ambient_props": [
+      {
+        "channel": 1,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          6,
+          11
+        ],
+        "tag": "reeds"
+      },
+      {
+        "channel": 1,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          19,
+          11
+        ],
+        "tag": "reeds"
+      },
+      {
+        "channel": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          24,
+          12
+        ],
+        "tag": "reeds"
+      },
+      {
+        "channel": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          18,
+          11
+        ],
+        "tag": "cattail"
+      }
+    ],
     "enemies": [
       {
         "dimensions": [
@@ -96,6 +150,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 247,
@@ -104,6 +159,7 @@
           7,
           10
         ],
+        "start_busy": false,
         "suites": [
           [
             1
@@ -124,7 +180,6 @@
           2
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           47,
@@ -173,8 +228,9 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
+      "day_night_shift": true,
       "environmental_randomness": false,
+      "interior": false,
       "lighting": false,
       "timer": false
     },
@@ -183,10 +239,20 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "style": 1,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
+    "animated": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

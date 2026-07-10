@@ -5,4 +5,5 @@ nani_add_headers(
   Boss.hpp
         Enemy.hpp
         EnemyCatalog.hpp
+        EnemyRegistry.hpp
 )

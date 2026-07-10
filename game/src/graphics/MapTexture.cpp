@@ -6,7 +6,9 @@
 
 namespace fornani::gui {
 
-MapTexture::MapTexture(automa::ServiceProvider& svc) : m_border_color{201, 9, 42}, m_tile_color{colors::pioneer_dark_red}, m_hovered_border_color{colors::pioneer_red}, m_hovered_center_color{136, 19, 43}, m_scale{4.f} {
+MapTexture::MapTexture(automa::ServiceProvider& svc)
+	: m_border_color{201, 9, 42}, m_tile_color{colors::pioneer_dark_red}, m_hovered_border_color{colors::pioneer_red}, m_hovered_center_color{136, 19, 43}, m_undiscovered_center_color{colors::pioneer_black},
+	  m_undiscovered_border_color{colors::navy_blue}, m_scale{4.f} {
 	m_tile_box.setFillColor(m_tile_color);
 	m_tile_box.setSize({m_scale, m_scale});
 }
@@ -39,6 +41,10 @@ void MapTexture::bake(dj::Json const& in) {
 		layer.hovered_center_texture.clear(sf::Color::Transparent);
 		if (!layer.hovered_border_texture.resize(u_dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
 		layer.hovered_border_texture.clear(sf::Color::Transparent);
+		if (!layer.undiscovered_center_texture.resize(u_dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
+		layer.undiscovered_center_texture.clear(sf::Color::Transparent);
+		if (!layer.undiscovered_border_texture.resize(u_dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
+		layer.undiscovered_border_texture.clear(sf::Color::Transparent);
 
 		for (auto [j, tile] : std::views::enumerate(in["tile"]["layers"][in["tile"]["middleground"].as<int>()].as_array())) {
 			if (lores) {
@@ -59,19 +65,31 @@ void MapTexture::bake(dj::Json const& in) {
 				auto res_scale = lores ? static_cast<float>(low_resolution_scale) : medres ? static_cast<float>(med_resolution_scale) : 1.f;
 				draw_plat ? m_tile_box.setScale({res_scale, res_scale * 0.75f}) : m_tile_box.setScale({res_scale, res_scale});
 				draw_plat ? m_tile_box.setOrigin({0.0f, -0.25f * res_scale * m_scale}) : m_tile_box.setOrigin({});
+
 				layer.center_texture.draw(m_tile_box);
+
 				m_tile_box.setFillColor(m_hovered_center_color);
 				layer.hovered_center_texture.draw(m_tile_box);
+
+				m_tile_box.setFillColor(m_undiscovered_center_color);
+				layer.undiscovered_center_texture.draw(m_tile_box);
+
 				m_tile_box.setFillColor(m_border_color);
 				layer.border_texture.draw(m_tile_box);
+
 				m_tile_box.setFillColor(m_hovered_border_color);
 				layer.hovered_border_texture.draw(m_tile_box);
+
+				m_tile_box.setFillColor(m_undiscovered_border_color);
+				layer.undiscovered_border_texture.draw(m_tile_box);
 			}
 		}
 		layer.border_texture.display();
 		layer.center_texture.display();
 		layer.hovered_border_texture.display();
 		layer.hovered_center_texture.display();
+		layer.undiscovered_border_texture.display();
+		layer.undiscovered_center_texture.display();
 	}
 }
 
@@ -120,7 +138,8 @@ auto MapTexture::contains(sf::Vector2f point) const -> bool {
 	return true;
 }
 
-sf::RenderTexture& MapTexture::get(bool border, bool hovered) {
+sf::RenderTexture& MapTexture::get(bool border, bool hovered, bool undiscovered) {
+	if (undiscovered) { return border ? current_layer().undiscovered_border_texture : current_layer().undiscovered_center_texture; }
 	return border ? (hovered ? current_layer().hovered_border_texture : current_layer().border_texture) : (hovered ? current_layer().hovered_center_texture : current_layer().center_texture);
 }
 

@@ -6,12 +6,12 @@
 #include "fornani/utils/Random.hpp"
 #include "fornani/world/Map.hpp"
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 
 namespace fornani::gui {
 
 InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map, player::Player& player)
-	: m_cell_dimensions{svc.window->f_screen_dimensions()}, m_dashboard{std::make_unique<Dashboard>(svc, map, player, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}}, m_exit{64} {
+	: m_cell_dimensions{svc.window->f_screen_dimensions()}, m_dashboard{std::make_unique<Dashboard>(svc, map, player, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}}, m_exit{64}, m_stall{40} {
 	svc.input_system.set_action_set(input::ActionSet::Menu);
 	m_debug.border.setFillColor(sf::Color{12, 12, 20});
 	m_debug.border.setSize(svc.window->f_screen_dimensions());
@@ -27,6 +27,7 @@ InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map, 
 	m_dashboard->set_position(sf::Vector2f{250.f, 32.f}, true);
 	svc.soundboard.flags.console.set(audio::Console::menu_open);
 	util::ColorUtils::reset();
+	m_stall.start();
 }
 
 void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map) {
@@ -34,6 +35,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	auto& controller = svc.input_system;
 
 	m_exit.update();
+	m_stall.update();
 	if (m_view == InventoryView::focused) {
 		if (!m_dashboard->handle_inputs(controller, svc.soundboard)) { m_grid_position = {}; }
 	}
@@ -54,8 +56,8 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 		if (controller.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::released) && m_dashboard->get_selected_position() == sf::Vector2i{1, 0}) { m_dashboard->set_selection({0, 0}); }
 
 		if (selected && m_dashboard->is_hovering()) {
-			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = ccm::ext::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
-			if (m_dashboard->get_selected_position().y == 0) { m_grid_position.x = ccm::ext::clamp(m_grid_position.x + m_dashboard->get_selected_position().x, -1.f, 1.f); }
+			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = std::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
+			if (m_dashboard->get_selected_position().y == 0) { m_grid_position.x = std::clamp(m_grid_position.x + m_dashboard->get_selected_position().x, -1.f, 1.f); }
 			if (m_dashboard->select_gizmo()) {
 				m_view = InventoryView::focused;
 			} else {
@@ -76,8 +78,8 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	m_dashboard->update(svc, player, map);
 
 	if (controller.digital(input::DigitalAction::menu_back).triggered) { m_view = m_view == InventoryView::focused ? InventoryView::dashboard : InventoryView::exit; }
-	if (controller.digital(input::DigitalAction::inventory).triggered || controller.digital(input::DigitalAction::menu_close).triggered) { m_view = InventoryView::exit; }
-	if (m_view == InventoryView::exit && !m_exit.running()) {
+	if ((controller.digital(input::DigitalAction::inventory).triggered || controller.digital(input::DigitalAction::menu_close).triggered) && m_stall.is_complete()) { m_view = InventoryView::exit; }
+	if ((m_view == InventoryView::exit || m_flags.test(InventoryWindowFlags::exit)) && !m_exit.running()) {
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 		m_exit.start();
 		m_dashboard->close();
@@ -93,7 +95,10 @@ void InventoryWindow::render(automa::ServiceProvider& svc, sf::RenderWindow& win
 			// win.draw(m_debug.center);
 		}
 	}
+	if (m_stall.get_normalized() > 0.9f) { return; }
 	m_dashboard->render(svc, win, player, m_camera.physics.position, shader);
 }
+
+void InventoryWindow::close() { m_flags.set(InventoryWindowFlags::exit); }
 
 } // namespace fornani::gui

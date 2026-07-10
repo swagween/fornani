@@ -1,24 +1,34 @@
 
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entities/world/Laser.hpp>
+#include <fornani/entity/Turret.hpp>
 #include <fornani/graphics/Colors.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
+#include <cmath>
 
 namespace fornani::world {
 
-Laser::Laser(automa::ServiceProvider& svc, Map& map, Turret& parent, sf::Vector2f position, LaserType type, util::BitFlags<LaserAttributes> attributes, CardinalDirection direction, int active, int cooldown, float size)
-	: m_type{type}, m_attributes{attributes}, m_direction{direction}, m_active{active}, m_cooldown{cooldown}, m_size{size}, m_breadth{constants::f_cell_size}, m_spawn_point{position}, m_parent{&parent} {
+Laser::Laser(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, LaserType type, util::BitFlags<LaserAttributes> attributes, CardinalDirection direction, int active, int cooldown, float size)
+	: m_type{type}, m_attributes{attributes}, m_direction{direction}, m_active{active}, m_cooldown{cooldown}, m_size{size}, m_breadth{constants::f_cell_size}, m_spawn_point{position} {
 	m_drawbox.setFillColor(colors::ui_white);
 	m_hitbox.set_position(position);
 	fire();
+	m_team = attributes.test(LaserAttributes::player) ? arms::Team::nani : arms::Team::skycorps;
+}
+
+Laser::Laser(automa::ServiceProvider& svc, Map& map, Turret& parent, sf::Vector2f position, LaserType type, util::BitFlags<LaserAttributes> attributes, CardinalDirection direction, int active, int cooldown, float size)
+	: Laser(svc, map, position, type, attributes, direction, active, cooldown, size) {
+	m_parent = &parent;
 }
 
 void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& map) {
 	m_cooldown.update();
 	m_active.update();
-	auto offset = m_parent->has_flag_set(TurretFlags::platform) ? m_direction.as_vector() * constants::small_value : sf::Vector2f{};
-	m_spawn_point = m_parent->Turret::get_position() + offset;
+	if (m_parent) {
+		auto offset = m_parent.value()->has_flag_set(TurretFlags::platform) ? m_direction.as_vector() * constants::small_value : sf::Vector2f{};
+		m_spawn_point = m_parent.value()->Turret::get_position() + offset;
+	}
 	if (m_attributes.test(LaserAttributes::infinite)) { fire(); }
 	if (m_active.is_almost_complete()) { m_cooldown.start(); }
 	auto size = calculate_size(map);
@@ -29,13 +39,15 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 	m_hitbox.set_dimensions(hit_size);
 
 	// set dimensions based on cardinal direction
-	auto sign = m_direction.left() || m_direction.up() ? -0.5f : 0.5f;
-	auto size_offset = m_direction.as_hv() == HV::horizontal ? sf::Vector2f{0.f, constants::f_cell_size * (1.f - m_size) * sign} : sf::Vector2f{constants::f_cell_size * (1.f - m_size) * sign, 0.f};
-	m_hitbox.set_position(m_spawn_point + size_offset);
-	if (m_direction.left()) { m_hitbox.set_position(m_spawn_point - sf::Vector2f{m_hitbox.get_dimensions().x - constants::f_cell_size, constants::f_cell_size * (1.f - m_size) * sign}); }
-	if (m_direction.up()) { m_hitbox.set_position(m_spawn_point - sf::Vector2f{constants::f_cell_size * (1.f - m_size) * sign, m_hitbox.get_dimensions().y - constants::f_cell_size}); }
+	auto offset = m_direction.left() || m_direction.right() ? sf::Vector2f{0.f, constants::f_cell_size * m_size * 0.5f} : sf::Vector2f{constants::f_cell_size * m_size * 0.5f, 0.f};
+	m_hitbox.set_position(m_spawn_point - offset);
+	if (m_direction.left()) { m_hitbox.set_position(m_spawn_point - sf::Vector2f{m_hitbox.get_dimensions().x, 0.f} - offset); }
+	if (m_direction.up()) { m_hitbox.set_position(m_spawn_point - sf::Vector2f{0.f, m_hitbox.get_dimensions().y} - offset); }
 
-	for (auto& b : map.breakables) { handle_collision(b->get_bounding_box(), size); }
+	for (auto& b : map.breakables) {
+		handle_collision(b->get_bounding_box(), size);
+		if (m_hitbox.overlaps(b->get_bounding_box())) { b->on_smash(svc, map); }
+	}
 	for (auto& p : map.pushables) { handle_collision(p->collision_box, size); }
 	for (auto& p : map.platforms) { handle_collision(p->get_collider().bounding_box, size); }
 	for (auto& b : map.switch_blocks) {
@@ -45,8 +57,13 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 	for (auto& i : map.incinerite_blocks) {
 		if (m_hitbox.overlaps(i->get_bounding_box())) { i->hit(); }
 	}
+	for (auto& e : map.enemy_catalog.enemies) {
+		if (m_hitbox.overlaps(e->get_collider().bounding_box) && e->get_team() != m_team) { e->hurt(svc, m_damage); }
+	}
 
-	if (!player.is_intangible()) { player.get_collider().handle_collider_collision(m_hitbox, true, {}, 0.1f); }
+	if (!m_attributes.test(LaserAttributes::no_collision)) {
+		if (!player.is_intangible() && m_team != arms::Team::nani) { player.get_collider().handle_collider_collision(m_hitbox, true, {}, 0.1f); }
+	}
 
 	// calculate laser end and spawn an effect there
 	if (svc.ticker.every_x_ticks(18)) {
@@ -62,7 +79,7 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 	m_direction.as_hv() == HV::horizontal ? m_drawbox.setOrigin({0.f, (m_breadth - constants::f_cell_size) * m_size * 0.5f}) : m_drawbox.setOrigin({(m_breadth - constants::f_cell_size) * m_size * 0.5f, 0.f});
 	m_breadth = is_active() ? constants::f_cell_size * m_size + 4.f * m_pulse.get() : util::round_to_nearest(constants::f_cell_size * m_size * m_cooldown.get_quadratic_normalized(), 4.f);
 	is_active() ? m_drawbox.setFillColor(colors::ui_white) : m_cooldown.get_normalized() > 0.6f ? m_drawbox.setFillColor(colors::goldenrod) : m_drawbox.setFillColor(colors::dark_goldenrod);
-	if (player.get_collider().hurtbox.overlaps(m_hitbox) && is_active()) { player.hurt(); }
+	if (player.hurtbox.overlaps(m_hitbox) && is_active() && m_team != arms::Team::nani) { player.hurt(); }
 }
 
 void Laser::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -85,7 +102,12 @@ sf::Vector2f Laser::calculate_size(Map& map) {
 		auto step = constants::f_cell_size * m_direction.as_vector();
 		axis += constants::f_cell_size;
 		current += step;
-		if (map.get_cell_at_position(current).is_solid() || !map.within_bounds(current)) { return ret; }
+		if (map.get_cell_at_position(current).is_solid() || !map.within_bounds(current)) {
+			auto& part = m_direction.as_hv() == HV::horizontal ? current.x : current.y;
+			auto mod = constants::f_cell_size - std::fmod(part, constants::f_cell_size);
+			axis += m_direction.right() || m_direction.down() ? -constants::f_cell_size + mod : -mod;
+			return ret;
+		}
 	}
 	return ret;
 }
@@ -105,8 +127,8 @@ sf::Vector2f Laser::calculate_end_point() {
 void Laser::handle_collision(shape::Shape& obstacle, sf::Vector2f size) {
 	if (auto coll = calculate_collision_point(obstacle)) {
 		auto sign = m_direction.up() || m_direction.left() ? 1.f : -1.f;
-		auto new_width = ccm::abs(sign * constants::f_cell_size + m_spawn_point.x - coll->x);
-		auto new_height = ccm::abs(sign * constants::f_cell_size + m_spawn_point.y - coll->y);
+		auto new_width = std::abs(sign + m_spawn_point.x - coll->x);
+		auto new_height = std::abs(sign + m_spawn_point.y - coll->y);
 		switch (m_direction.get()) {
 		case UDLR::up:
 			m_hitbox.set_dimensions({m_hitbox.get_dimensions().x, new_height});
@@ -114,8 +136,8 @@ void Laser::handle_collision(shape::Shape& obstacle, sf::Vector2f size) {
 			m_drawbox.setSize({size.x, new_height});
 			break;
 		case UDLR::down:
-			m_hitbox.set_dimensions({m_hitbox.get_dimensions().x, new_height - constants::f_cell_size});
-			m_drawbox.setSize({size.x, new_height - constants::f_cell_size});
+			m_hitbox.set_dimensions({m_hitbox.get_dimensions().x, new_height});
+			m_drawbox.setSize({size.x, new_height});
 			break;
 		case UDLR::left:
 			m_hitbox.set_dimensions({new_width, m_hitbox.get_dimensions().y});
@@ -123,8 +145,8 @@ void Laser::handle_collision(shape::Shape& obstacle, sf::Vector2f size) {
 			m_drawbox.setSize({new_width, size.y});
 			break;
 		case UDLR::right:
-			m_hitbox.set_dimensions({new_width - constants::f_cell_size, m_hitbox.get_dimensions().y});
-			m_drawbox.setSize({new_width - constants::f_cell_size, size.y});
+			m_hitbox.set_dimensions({new_width, m_hitbox.get_dimensions().y});
+			m_drawbox.setSize({new_width, size.y});
 			break;
 		default: break;
 		}

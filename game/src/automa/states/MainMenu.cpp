@@ -6,37 +6,40 @@
 
 namespace fornani::automa {
 
-MainMenu::MainMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "main"), subtitle{svc.text.fonts.basic}, instruction(svc.text.fonts.basic), title(svc.assets.get_texture("menu_title")) {
-	subtitle.setFont(svc.text.fonts.basic);
+MainMenu::MainMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx)
+	: MenuState(svc, player, ctx, "main"), subtitle{svc.text.fonts.basic.font}, instruction(svc.text.fonts.basic.font), title(svc.assets.get_texture("menu_title")) {
+	subtitle.setFont(svc.text.fonts.basic.font);
 	// playtester edition
 	flags.set(GameStateFlags::playtest);
 	// playtester edition
 	svc.app_flags.reset(AppFlags::in_game);
 	svc.state_controller.actions.reset(Actions::intro_done);
 
-	title.setTextureRect(sf::IntRect{{0, 10 * p_theme.title_index}, {47, 10}});
+	title.setTextureRect(sf::IntRect{{0, 10 * ctx.settings.get_theme().title_index}, {47, 10}});
 	title.setPosition({362.f, 161.f});
 	title.setScale({5.f, 5.f});
 
 	if (flags.test(GameStateFlags::playtest)) { subtitle.setString(svc.version->version_title()); }
-	subtitle.setLineSpacing(1.5f);
+	subtitle.setLineSpacing(svc.text.fonts.basic.line_spacing);
 	subtitle.setLetterSpacing(1.2f);
-	subtitle.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
-	subtitle.setPosition({svc.window->f_center_screen().x - subtitle.getLocalBounds().getCenter().x, svc.window->i_screen_dimensions().y - 300.f});
-	subtitle.setFillColor(p_theme.activated_text_color);
+	subtitle.setCharacterSize(svc.text.fonts.basic.glyph_size);
+	subtitle.setPosition(sf::Vector2f{svc.window->f_center_screen().x - subtitle.getLocalBounds().getCenter().x, svc.window->i_screen_dimensions().y - 300.f} + svc.text.fonts.basic.offset);
+	subtitle.setFillColor(ctx.settings.get_theme().activated_text_color);
 	if (flags.test(GameStateFlags::playtest)) { instruction.setString("press [P] to open playtester portal"); }
 	instruction.setLineSpacing(1.5f);
 	instruction.setLetterSpacing(1.2f);
 	instruction.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
 	instruction.setPosition({svc.window->i_screen_dimensions().x * 0.5f - instruction.getLocalBounds().getCenter().x, svc.window->i_screen_dimensions().y - 36.f});
-	instruction.setFillColor(p_theme.deactivated_text_color);
+	instruction.setFillColor(ctx.settings.get_theme().deactivated_text_color);
 
-	svc.data.load_blank_save(player);
 	svc.ambience_player.load(svc.finder, "none");
 	svc.ambience_player.play();
 	loading.start();
 	svc.ambience_player.set_balance(1.f);
 	svc.music_player.set_balance(0.f);
+
+	// main menu will not have a back button
+	p_back_button.reset();
 }
 
 void MainMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
@@ -48,7 +51,7 @@ void MainMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		svc.music_player.play_looped();
 	}
 	loading.update();
-	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
+	if (was_selected(svc.input_system)) {
 		NANI_LOG_DEBUG(m_logger, "Menu Select Triggered.");
 		if (current_selection.get() == menu_selection_id.at(MenuSelection::play)) {
 			svc.state_controller.submenu = MenuType::play;

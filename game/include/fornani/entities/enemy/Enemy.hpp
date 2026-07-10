@@ -15,8 +15,7 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Flaggable.hpp>
-#include <fornani/utils/Math.hpp>
-#include <fornani/utils/Polymorphic.hpp>
+#include <fornani/utils/ID.hpp>
 #include <fornani/utils/StateFunction.hpp>
 #include <string_view>
 
@@ -49,6 +48,7 @@ enum class GeneralFlags {
 	custom_sounds,
 	uncrushable,
 	foreground,
+	background,
 	spawned,
 	transcendent,
 	rare_drops,
@@ -60,9 +60,29 @@ enum class GeneralFlags {
 	semipermanent,
 	no_tick,
 	boss,
-	kick_immune
+	kick_immune,
+	tick_slowdown
 };
-enum class StateFlags { alive, alert, hostile, shot, vulnerable, hurt, shaking, special_death_mode, invisible, advance, no_shake, out_of_zone, no_slowdown, intangible, health_exposed, despawn };
+enum class StateFlags {
+	alive,
+	alert,
+	hostile,
+	shot,
+	vulnerable,
+	hurt,
+	shaking,
+	special_death_mode,
+	invisible,
+	advance,
+	no_shake,
+	out_of_zone,
+	intangible,
+	health_exposed,
+	despawn,
+	pre_battle_invincibility,
+	special_event,
+	blocked_projectile
+};
 enum class Triggers { hostile, alert };
 enum class Variant { beast, soldier, elemental, worker, guardian };
 
@@ -98,7 +118,7 @@ class Enemy : public Mobile {
   public:
 	Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view label, bool spawned = false, int variant = 0, sf::Vector2<int> start_direction = {-1, 0});
 
-	void set_external_id(std::pair<int, sf::Vector2<int>> code);
+	void set_stable_id(std::pair<int, sf::Vector2<int>> code);
 
 	virtual void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
@@ -116,16 +136,20 @@ class Enemy : public Mobile {
 	void set_channel(EnemyChannel to) { Animatable::set_channel(static_cast<int>(to)); }
 	void despawn() { flags.state.set(StateFlags::despawn); }
 	void set_handle(EntityHandle to) { metadata.handle = to; }
+	void center_at_position();
+	void set_special_event(bool to = true) { to ? flags.state.set(StateFlags::special_event) : flags.state.reset(StateFlags::special_event); }
 
 	[[nodiscard]] auto is_hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto is_alert() const -> bool { return flags.state.test(StateFlags::alert); }
 	[[nodiscard]] auto is_hurt() const -> bool { return hurt_effect.running(); }
+	[[nodiscard]] auto is_invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable) || flags.state.test(StateFlags::pre_battle_invincibility); }
 	[[nodiscard]] auto despawn_requested() const -> bool { return flags.state.test(StateFlags::despawn); }
 	[[nodiscard]] auto hostility_triggered() const -> bool { return flags.triggers.test(Triggers::hostile); }
 	[[nodiscard]] auto alertness_triggered() const -> bool { return flags.triggers.test(Triggers::alert); }
 	[[nodiscard]] auto get_attributes() const -> Attributes { return attributes; }
 	[[nodiscard]] auto get_flags() const -> Flags { return flags; }
-	[[nodiscard]] auto get_external_id() const -> int { return metadata.external_id; }
+	[[nodiscard]] auto get_id() const -> int { return metadata.id; }
+	[[nodiscard]] auto get_stable_id() const -> StableID { return metadata.stable_id; }
 	[[nodiscard]] auto get_handle() const -> int { return metadata.handle; }
 	[[nodiscard]] auto get_team() const -> arms::Team { return attributes.team; }
 	[[nodiscard]] auto has_secondary_collider() const -> bool { return secondary_collider.has_value(); }
@@ -137,6 +161,7 @@ class Enemy : public Mobile {
 	[[nodiscard]] auto player_collision() const -> bool { return flags.general.test(GeneralFlags::player_collision); }
 	[[nodiscard]] auto has_map_collision() const -> bool { return flags.general.test(GeneralFlags::map_collision); }
 	[[nodiscard]] auto spawn_loot() const -> bool { return !flags.general.test(GeneralFlags::no_loot); }
+	[[nodiscard]] auto is_background() const -> bool { return flags.general.test(GeneralFlags::background); }
 	[[nodiscard]] auto is_foreground() const -> bool { return flags.general.test(GeneralFlags::foreground); }
 	[[nodiscard]] auto is_transcendent() const -> bool { return flags.general.test(GeneralFlags::transcendent); }
 	[[nodiscard]] auto permadeath() const -> bool { return flags.general.test(GeneralFlags::permadeath); }
@@ -156,10 +181,12 @@ class Enemy : public Mobile {
 
 	void set_position_from_scaled(sf::Vector2f pos);
 	void hurt(float amount = 1.f);
+	void hurt(automa::ServiceProvider& svc, float amount = 1.f);
 	void shake() { energy = hit_energy; }
 	void stop_shaking() { flags.state.reset(StateFlags::shaking); }
+	void kill() { health.kill(); }
 
-	entity::Health health;
+	Health health;
 	graphics::Indicator health_indicator;
 
 	void debug();
@@ -187,7 +214,7 @@ class Enemy : public Mobile {
 	struct {
 		int id{};
 		int variant{};
-		int external_id{};
+		StableID stable_id{};
 		EntityHandle handle{};
 	} metadata{};
 
@@ -217,6 +244,7 @@ class Enemy : public Mobile {
 	fornani::io::Logger m_logger{"Enemy"};
 
   private:
+	util::Cooldown m_freeze;
 	sf::Vector2f m_random_offset{};
 	sf::Vector2f m_native_offset{};
 	gui::HealthBar m_health_bar;

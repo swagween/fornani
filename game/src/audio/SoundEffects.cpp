@@ -2,7 +2,6 @@
 // Headers
 ////////////////////////////////////////////////////////////
 
-
 #include <array>
 #include <limits>
 #include <memory>
@@ -14,11 +13,11 @@
 #include "fornani/audio/SoundEffects.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-#include <ccmath/math/power/sqrt.hpp>
+#include <cmath>
 
 namespace {
 constexpr auto pi = std::numbers::pi_v<float>;
-constexpr auto sqrt2 = ccm::sqrtf(2.0f); // 2.0f * 0.707106781186547524401f;
+auto sqrt2 = std::sqrtf(2.0f); // 2.0f * 0.707106781186547524401f;
 
 } // namespace
 
@@ -42,8 +41,8 @@ class PitchVolume final : public Effect {
 	}
 
 	void onUpdate(float /*time*/, float x, float y) override {
-		m_pitch = ccm::ext::clamp(2.f * x, 0.f, 2.f);
-		m_volume = ccm::ext::clamp(100.f * (1.f - y), 0.f, 100.f);
+		m_pitch = std::clamp(2.f * x, 0.f, 2.f);
+		m_volume = std::clamp(100.f * (1.f - y), 0.f, 100.f);
 
 		m_music.setPitch(m_pitch);
 		m_music.setVolume(m_volume);
@@ -102,8 +101,8 @@ class Tone : public sf::SoundStream, public Effect {
 	Tone(automa::ServiceProvider& svc) : Effect(svc) { sf::SoundStream::initialize(1, sampleRate, {sf::SoundChannel::Mono}); }
 
 	void onUpdate(float /*time*/, float x, float y) override {
-		m_amplitude = ccm::ext::clamp(0.2f * (1.f - y), 0.f, 0.2f);
-		m_frequency = ccm::ext::clamp(500.f * x, 0.f, 500.f);
+		m_amplitude = std::clamp(0.2f * (1.f - y), 0.f, 0.2f);
+		m_frequency = std::clamp(500.f * x, 0.f, 500.f);
 	}
 
 	void onStart() override {
@@ -183,8 +182,8 @@ class Doppler : public sf::SoundStream, public Effect {
 	}
 
 	void onUpdate(float time, float x, float y) override {
-		m_velocity = ccm::ext::clamp(150.f * (1.f - y), 0.f, 150.f);
-		m_factor = ccm::ext::clamp(x, 0.f, 1.f);
+		m_velocity = std::clamp(150.f * (1.f - y), 0.f, 150.f);
+		m_factor = std::clamp(x, 0.f, 1.f);
 
 		setPosition({m_position.x, m_position.y, 0.f});
 	}

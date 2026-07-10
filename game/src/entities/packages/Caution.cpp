@@ -9,7 +9,7 @@ void Caution::update() {}
 
 void Caution::avoid_player(player::Player& player) {}
 
-void Caution::avoid_ledges(world::Map& map, shape::Collider& collider, Direction const& direction, int height) {
+void Caution::avoid_ledges(world::Map& map, shape::Collider& collider, Direction const& dir, int height) {
 	heights.danger = height;
 	heights.perceived = {};
 	retreat = {};
@@ -19,7 +19,7 @@ void Caution::avoid_ledges(world::Map& map, shape::Collider& collider, Direction
 	testers.right = collider.get_vicinity_rect().position + collider.get_vicinity_rect().size - buffer;
 
 	// only test cells later in the grid to save time
-	auto& probe = direction.left() ? testers.left : testers.right;
+	auto& probe = dir.left() ? testers.left : testers.right;
 	auto start_index = map.get_index_at_position(probe);
 	for (auto i{start_index}; i < map.get_middleground()->grid.cells.size(); i += map.dimensions.x) {
 		auto& cell = map.get_middleground()->grid.cells.at(static_cast<int>(i));
@@ -30,13 +30,48 @@ void Caution::avoid_ledges(world::Map& map, shape::Collider& collider, Direction
 		}
 	}
 	if (heights.perceived >= height) { retreat = {10.f, 0.f}; }
-	if (direction.right()) { retreat.x *= -1.f; }
+	if (dir.right()) { retreat.x *= -1.f; }
+}
+
+bool Caution::is_ledge_detected(world::Map& map, shape::Collider& collider, Direction const& dir, int height) {
+	heights.danger = height;
+	heights.perceived = {};
+	retreat = {};
+	if (height < 1 || map.dimensions.x < 1 || map.dimensions.y < 1) { return false; }
+	auto buffer = sf::Vector2f{0.f, 8.f};
+	testers.left = collider.get_vicinity_rect().position + sf::Vector2f{0.f, collider.get_vicinity_rect().size.y} - buffer;
+	testers.right = collider.get_vicinity_rect().position + collider.get_vicinity_rect().size - buffer;
+
+	// only test cells later in the grid to save time
+	auto& probe = dir.left() ? testers.left : testers.right;
+	auto start_index = map.get_index_at_position(probe);
+	for (auto i{start_index}; i < map.get_middleground()->grid.cells.size(); i += map.dimensions.x) {
+		auto& cell = map.get_middleground()->grid.cells.at(static_cast<int>(i));
+		if (cell.is_solid() || cell.is_platform()) {
+			break;
+		} else {
+			++heights.perceived;
+		}
+	}
+	if (heights.perceived >= height) {
+		direction = dir;
+		direction.flip();
+		return true;
+	}
+	return false;
+}
+
+bool Caution::is_projectile_detected(world::Map& map, shape::Shape& zone, arms::Team friendly_fire) {
+	for (auto& proj : map.active_projectiles) {
+		if (proj.get_collider().collides_with(zone) && proj.get_team() != friendly_fire) { return true; }
+	}
+	return false;
 }
 
 Direction Caution::projectile_detected(world::Map& map, shape::Shape& zone, arms::Team friendly_fire) {
 	auto ret = Direction{};
 	for (auto& proj : map.active_projectiles) {
-		if (proj.get_collider().collides_with(zone) && proj.get_team() != friendly_fire) { ret = proj.get_direction(); }
+		if (proj.get_collider().collides_with(zone) && proj.get_team() != friendly_fire) { ret = Direction{proj.get_direction()}; }
 	}
 	return ret;
 }

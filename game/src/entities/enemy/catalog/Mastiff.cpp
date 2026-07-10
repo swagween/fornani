@@ -10,7 +10,7 @@ namespace fornani::enemy {
 constexpr auto mastiff_framerate = 10;
 
 Mastiff::Mastiff(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "mastiff"), m_services{&svc} {
-	m_params = {{"idle", {0, 6, mastiff_framerate * 2, -1}}, {"run", {6, 4, mastiff_framerate * 2, 4}}, {"bite", {10, 6, mastiff_framerate * 2, 0}}, {"turn", {16, 2, mastiff_framerate * 2, 0}}};
+	p_animations = {{"idle", {0, 6, mastiff_framerate * 2, -1}}, {"run", {6, 4, mastiff_framerate * 2, 4}}, {"bite", {10, 6, mastiff_framerate * 2, 0}}, {"turn", {16, 2, mastiff_framerate * 2, 0}}};
 	animation.set_params(get_params("idle"));
 	m_bite.hit.bounds.setRadius(40.f);
 
@@ -48,7 +48,7 @@ void Mastiff::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 
 	state_function = state_function();
 
-	if (m_bite.hit.within_bounds(player.get_collider().hurtbox) && m_bite.hit.active() && !health.is_dead()) { player.hurt(); }
+	if (m_bite.hit.within_bounds(player.hurtbox) && m_bite.hit.active() && !health.is_dead()) { player.hurt(); }
 }
 
 void Mastiff::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {

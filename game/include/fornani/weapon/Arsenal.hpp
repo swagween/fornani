@@ -18,7 +18,7 @@ class Arsenal {
 	std::vector<std::unique_ptr<Weapon>> const& get_loadout() const { return loadout; }
 	[[nodiscard]] auto size() const -> std::size_t { return loadout.size(); }
 	[[nodiscard]] auto empty() const -> bool { return loadout.empty(); }
-	bool has(std::string_view tag);
+	bool has(std::string_view tag) const;
 
   private:
 	std::vector<std::unique_ptr<Weapon>> loadout{};

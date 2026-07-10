@@ -13,14 +13,14 @@ constexpr auto summoner_framerate = 16;
 Summoner::Summoner(automa::ServiceProvider& svc, world::Map& map, int variant)
 	: Enemy(svc, map, "summoner"), m_variant{static_cast<SummonerVariant>(variant)}, m_map{&map}, m_cooldowns{.post_summon{2400}, .walk{200}, .post_walk{1400}, .post_hurt{20}, .pulse{48}}, m_services{&svc}, m_attacks{.pulse{}},
 	  m_pulse(svc, "pulse"), m_magic{svc, {40.f, 96.f}, colors::white, "guardian_magic"} {
-	m_params = {{"idle", {0, 5, summoner_framerate * 2, -1}},
-				{"walk", {5, 4, summoner_framerate * 2, -1}},
-				{"begin_summon", {9, 7, summoner_framerate * 2, 0}},
-				{"summon", {16, 5, summoner_framerate * 2, 3}},
-				{"horizontal_pulse", {21, 4, summoner_framerate * 2, 0}},
-				{"vertical_pulse", {25, 4, summoner_framerate * 2, 0}},
-				{"turn", {29, 5, summoner_framerate * 2, 0}},
-				{"dodge", {29, 5, summoner_framerate, 0}}};
+	p_animations = {{"idle", {0, 5, summoner_framerate * 2, -1}},
+					{"walk", {5, 4, summoner_framerate * 2, -1}},
+					{"begin_summon", {9, 7, summoner_framerate * 2, 0}},
+					{"summon", {16, 5, summoner_framerate * 2, 3}},
+					{"horizontal_pulse", {21, 4, summoner_framerate * 2, 0}},
+					{"vertical_pulse", {25, 4, summoner_framerate * 2, 0}},
+					{"turn", {29, 5, summoner_framerate * 2, 0}},
+					{"dodge", {29, 5, summoner_framerate, 0}}};
 	animation.set_params(get_params("idle"));
 	flags.state.set(StateFlags::no_shake);
 	flags.state.set(StateFlags::vulnerable);
@@ -35,7 +35,7 @@ Summoner::Summoner(automa::ServiceProvider& svc, world::Map& map, int variant)
 		m_home.x = std::min(pt.x, m_home.x);
 		m_home.y = std::max(pt.x, m_home.y);
 	}
-	flags.state.set(StateFlags::no_slowdown);
+	if (m_variant == SummonerVariant::mage) { attributes.base_hp = 280; }
 }
 
 void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -209,8 +209,7 @@ fsm::StateFunction Summoner::update_horizontal_pulse() {
 		auto bp = get_collider().get_center();
 		bp.x += 52.f * directions.actual.as_float();
 		m_pulse.get().set_barrel_point(bp);
-		m_map->spawn_projectile_at(*m_services, m_pulse.get(), m_pulse.get().get_barrel_point(), m_player_position - m_pulse.get().get_barrel_point());
-		m_services->soundboard.flags.weapon.set(audio::Weapon::pulse);
+		m_pulse.shoot(*m_services, *m_map, m_player_position - m_pulse.get().get_barrel_point());
 	}
 	for (auto [i, orb] : std::views::enumerate(m_attacks.pulse)) {
 		auto offset = i != 1 ? 4.f : 0.f;
@@ -233,8 +232,7 @@ fsm::StateFunction Summoner::update_vertical_pulse() {
 		auto bp = get_collider().get_center();
 		bp.y -= 52.f;
 		m_pulse.get().set_barrel_point(bp);
-		m_map->spawn_projectile_at(*m_services, m_pulse.get(), m_pulse.get().get_barrel_point(), m_player_position - m_pulse.get().get_barrel_point());
-		m_services->soundboard.flags.weapon.set(audio::Weapon::pulse);
+		m_pulse.shoot(*m_services, *m_map, m_player_position - m_pulse.get().get_barrel_point());
 	}
 	for (auto [i, orb] : std::views::enumerate(m_attacks.pulse)) {
 		auto offset = i != 1 ? 4.f : 0.f;
@@ -253,7 +251,7 @@ fsm::StateFunction Summoner::update_vertical_pulse() {
 fsm::StateFunction Summoner::update_begin_summon() {
 	m_state.actual = SummonerState::begin_summon;
 	if (animation.is_complete()) {
-		m_services->soundboard.flags.summoner.set(audio::Summoner::summon);
+		m_services->soundboard.play_sound("summoner_summon", get_collider().get_center());
 		request(SummonerState::summon);
 		if (change_state(SummonerState::summon, get_params("summon"))) { return SUMMONER_BIND(update_summon); }
 	}
@@ -270,8 +268,7 @@ fsm::StateFunction Summoner::update_summon() {
 			auto yoffset = random::random_range_float(-220.f, -190.f);
 			auto offset = sf::Vector2f{xoffset, yoffset};
 			m_pulse.get().set_barrel_point(get_collider().get_center() + offset);
-			m_map->spawn_projectile_at(*m_services, m_pulse.get(), m_pulse.get().get_barrel_point(), m_player_position - m_pulse.get().get_barrel_point());
-			m_services->soundboard.flags.weapon.set(audio::Weapon::pulse);
+			m_pulse.shoot(*m_services, *m_map, m_player_position - m_pulse.get().get_barrel_point());
 		}
 	}
 	if (m_variant == SummonerVariant::mage) {

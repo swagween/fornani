@@ -29,13 +29,13 @@
 		[ 30, 0 ],
 		[ 22, 6001 ]
 	],
-	"opened_chests": [ 567911, 76304 ],
+	"opened_chests": [],
 	"piggybacker": 24,
 	"player_data": {
 		"abilities": [],
-		"arsenal": [ "bryns_gun", "gnat", "wasp", "pulsar", "wraith", "tomahawk" ],
-		"equipped_gun": "pulsar",
-		"hotbar": [ "bryns_gun", "gnat", "pulsar" ],
+		"arsenal": [ "bryns_gun", "gnat", "wasp", "pulsar", "wraith", "tomahawk", "rpg", "scorpion", "laser_gun", "manta", "slingshot" ],
+		"equipped_gun": "scorpion",
+		"hotbar": [ "bryns_gun", "gnat", "wasp", "pulsar", "wraith", "tomahawk", "rpg", "scorpion", "laser_gun", "manta", "slingshot" ],
 		"hp": 3,
 		"items": [
 			{
@@ -175,6 +175,16 @@
 			},
 			{
 				"label": "rotary_gizmo",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "demon_cuirass",
+				"quantity": 1,
+				"revealed": false
+			},
+			{
+				"label": "demon_greaves",
 				"quantity": 1,
 				"revealed": false
 			}

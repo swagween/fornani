@@ -27,6 +27,8 @@ struct MapTextureLayer {
 	sf::RenderTexture border_texture{};
 	sf::RenderTexture hovered_center_texture{};
 	sf::RenderTexture hovered_border_texture{};
+	sf::RenderTexture undiscovered_center_texture{};
+	sf::RenderTexture undiscovered_border_texture{};
 };
 
 class MapTexture {
@@ -45,7 +47,7 @@ class MapTexture {
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return get_position() + get_dimensions() * 0.5f; }
 	[[nodiscard]] auto contains(sf::Vector2f point) const -> bool;
 
-	sf::RenderTexture& get(bool border = false, bool hovered = false);
+	sf::RenderTexture& get(bool border = false, bool hovered = false, bool undiscovered = false);
 	sf::Vector2f get_position() const;
 	sf::Vector2f get_dimensions() const;
 
@@ -59,6 +61,8 @@ class MapTexture {
 	sf::Color m_border_color{};
 	sf::Color m_hovered_center_color{};
 	sf::Color m_hovered_border_color{};
+	sf::Color m_undiscovered_center_color{};
+	sf::Color m_undiscovered_border_color{};
 	sf::Vector2<int> m_global_offset{};
 	sf::Vector2f m_map_dimensions{};
 	util::BitFlags<MapTextureFlags> m_flags{};

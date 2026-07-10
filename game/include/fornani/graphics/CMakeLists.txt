@@ -13,11 +13,14 @@ nani_add_headers(
         Indicator.hpp
         MapTexture.hpp
         MenuTheme.hpp
-        Rain.hpp
+        Weather.hpp
+        Renderer.hpp
         Scenery.hpp
+        SpriteBatch.hpp
         SpriteHistory.hpp
         SpriteRotator.hpp
         TextureUpdater.hpp
         Transition.hpp
         Tutorial.hpp
 )
+add_subdirectory(rewards)

@@ -28,8 +28,10 @@ class RectPath {
 	void reset();
 
 	void set_dimensions(sf::Vector2f to) { m_current_dimensions = to; }
+	void set_interpolation_type(InterpolationType to) { m_interpolation_type = to; }
 
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_current_position; }
+	[[nodiscard]] auto get_velocity() const -> sf::Vector2f { return m_current_position - m_previous_position; }
 	[[nodiscard]] auto get_dimensions() const -> sf::Vector2f { return m_current_dimensions; }
 	[[nodiscard]] auto get_local_center() const -> sf::Vector2f { return m_current_dimensions * 0.5f; }
 	[[nodiscard]] auto get_global_center() const -> sf::Vector2f { return m_current_position + m_current_dimensions * 0.5f; }
@@ -45,6 +47,7 @@ class RectPath {
 	float m_scale{};
 	bool m_step_completed{};
 	sf::Vector2f m_current_position{};
+	sf::Vector2f m_previous_position{};
 	sf::Vector2f m_current_dimensions{};
 	util::Cooldown m_interpolation;
 	util::InterpolationType m_interpolation_type{};

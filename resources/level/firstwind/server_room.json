@@ -213,6 +213,86 @@
         "type": 2
       }
     ],
+    "inspectables": [
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": true,
+        "key": "server01",
+        "position": [
+          9,
+          13
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "message": "AVB: 147"
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": true,
+        "key": "server02",
+        "position": [
+          14,
+          13
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "message": "CRT: 295"
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": true,
+        "key": "server02",
+        "position": [
+          18,
+          13
+        ],
+        "series": [
+          {
+            "suite": [
+              [
+                {
+                  "message": "EAA: 011"
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ],
     "platforms": [
       {
         "dimensions": [
@@ -295,14 +375,15 @@
       0
     ],
     "minimap": true,
-    "music": "dusken",
+    "music": "none",
     "player_start": [
       0,
       0
     ],
     "properties": {
-      "day_night_shift": true,
+      "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": true,
       "lighting": false,
       "timer": false
     },
@@ -311,9 +392,20 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
+    "animated": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

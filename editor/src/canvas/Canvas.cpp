@@ -1,5 +1,5 @@
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include <editor/canvas/Canvas.hpp>
 #include <editor/tool/Tool.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -32,6 +32,11 @@ Canvas::Canvas(fornani::automa::ServiceProvider& svc, sf::Vector2<std::uint32_t>
 
 	border.setFillColor(sf::Color::Transparent);
 	border.setOutlineThickness(4.f);
+
+	m_hazard_properties.tag = "thorns"; // obviously placeholder
+	auto const& config = svc.data.hazards[m_hazard_properties.tag];
+	m_hazard_properties.dimensions = sf::Vector2i{config["dimensions"][0].as<int>(), config["dimensions"][1].as<int>()};
+	m_hazard_properties.table_dimensions = sf::Vector2i{config["table_dimensions"][0].as<int>(), config["table_dimensions"][1].as<int>()};
 }
 
 void Canvas::update(Tool& tool) {
@@ -54,6 +59,9 @@ void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
 	win.draw(border);
 	if (!states_empty()) {
 		for (auto& layer : get_layers().layers) {
+			if (layer.collidable) {
+				if (m_hazards) { m_hazards->render(win, position, sf::Vector2f{scale, scale}, get_origin()); }
+			}
 			box.setFillColor(sf::Color{40, 240, 80, 20});
 			for (auto& cell : layer.grid.cells) {
 				cell.set_scale(scale);
@@ -144,6 +152,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 	m_player_start.x = meta["player_start"][0].as<float>();
 	m_player_start.y = meta["player_start"][1].as<float>();
 	real_dimensions = {static_cast<float>(dimensions.x) * fornani::constants::f_cell_size, static_cast<float>(dimensions.y) * fornani::constants::f_cell_size};
+	m_hazard_properties.texture_dimensions = sf::Vector2u{real_dimensions};
 	biome = svc.data.construct_biome(bstr);
 
 	if (meta["camera_effects"]) {
@@ -154,11 +163,13 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 		m_camera_effects.frequency_in_seconds = meta["camera_effects"]["shake"]["frequency_in_seconds"].as<int>();
 	}
 	if (meta["cutscene_on_entry"]) {
+		if (meta["cutscene_on_entry"]["contingencies"]) { cutscene.contingencies.emplace(meta["cutscene_on_entry"]["contingencies"]); }
 		cutscene.flag = static_cast<bool>(meta["cutscene_on_entry"]["flag"].as_bool());
 		cutscene.type = meta["cutscene_on_entry"]["type"].as<int>();
 		cutscene.id = meta["cutscene_on_entry"]["id"].as<int>();
 		cutscene.source = meta["cutscene_on_entry"]["source"].as<int>();
 	}
+	if (meta["weather"]) { m_weather.emplace(meta["weather"]); }
 	background = std::make_unique<fornani::graphics::Background>(svc, meta["background"].as_string());
 
 	darken_factor = meta["shader"]["darken_factor"].as<float>();
@@ -168,8 +179,9 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 	for (auto& layer : metadata["tile"]["layers"].as_array()) {
 		auto parallax = metadata["tile"]["parallax"][counter].as<float>();
 		auto ignore_lighting = metadata["tile"]["ignore_lighting"][counter].as_bool();
+		auto animated = metadata["tile"]["animated"][counter].as_bool();
 		if (parallax == 0) { parallax = 1.f; }
-		map_states.back().layers.push_back(Layer(counter, counter == map_states.back().get_middleground(), dimensions, parallax, ignore_lighting));
+		map_states.back().layers.push_back(Layer(counter, counter == map_states.back().get_middleground(), dimensions, parallax, ignore_lighting, animated));
 		int cell_counter{};
 		for (auto& cell : layer.as_array()) {
 			map_states.back().layers.back().grid.cells.at(cell_counter).value = cell.as<int>();
@@ -183,6 +195,11 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 	entities.variables.player_start = map_states.back().layers.at(middleground()).grid.first_available_ground();
 	map_states.back().set_labels();
 	set_grid_texture();
+
+	// hazards
+	auto& hazards = metadata["hazards"];
+	if (hazards) { m_hazards.emplace(svc, hazards, sf::Vector2u{real_dimensions}); }
+
 	return success;
 }
 
@@ -207,6 +224,7 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 	if (background) { metadata["meta"]["background"] = background->get_label(); }
 	metadata["meta"]["use_template"] = m_use_template;
 	metadata["meta"]["minimap"] = m_attributes.properties.test(fornani::world::MapProperties::minimap);
+	metadata["meta"]["interior"] = m_attributes.properties.test(fornani::world::MapProperties::interior);
 	metadata["meta"]["camera_effects"]["shake"]["frequency"] = m_camera_effects.shake_properties.frequency;
 	metadata["meta"]["camera_effects"]["shake"]["energy"] = m_camera_effects.shake_properties.energy;
 	metadata["meta"]["camera_effects"]["shake"]["start_time"] = m_camera_effects.shake_properties.start_time;
@@ -216,6 +234,7 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 	metadata["meta"]["cutscene_on_entry"]["type"] = cutscene.type;
 	metadata["meta"]["cutscene_on_entry"]["id"] = cutscene.id;
 	metadata["meta"]["cutscene_on_entry"]["source"] = cutscene.source;
+	if (cutscene.contingencies) { cutscene.contingencies->serialize(metadata["meta"]["cutscene_on_entry"]["contingencies"]); }
 	metadata["meta"]["shader"]["darken_factor"] = darken_factor;
 	if (!m_use_template) { m_attributes.serialize(metadata["meta"]); }
 
@@ -234,8 +253,12 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 		}
 		metadata["tile"]["parallax"].push_back(layer.parallax);
 		metadata["tile"]["ignore_lighting"].push_back(layer.ignore_lighting);
+		metadata["tile"]["animated"].push_back(layer.animated);
 		++current_layer;
 	}
+	if (m_weather) { m_weather->serialize(metadata["meta"]["weather"]); }
+
+	if (m_hazards) { m_hazards->serialize(metadata["hazards"]); }
 
 	auto success{true};
 	auto to_file = std::filesystem::path{region} / std::filesystem::path{room_name};
@@ -323,11 +346,11 @@ void Canvas::resize(sf::Vector2i adjustment) {
 void Canvas::center(sf::Vector2f point) { set_position(point - real_dimensions * 0.5f); }
 
 void Canvas::constrain(sf::Vector2f bounds) {
-	position.x = ccm::ext::clamp(position.x, -get_real_dimensions().x, bounds.x);
-	position.y = ccm::ext::clamp(position.y, -get_real_dimensions().y, bounds.y);
+	position.x = std::clamp(position.x, -get_real_dimensions().x, bounds.x);
+	position.y = std::clamp(position.y, -get_real_dimensions().y, bounds.y);
 }
 
-void Canvas::zoom(float amount) { scale = ccm::ext::clamp(scale + amount, min_scale, max_scale); }
+void Canvas::zoom(float amount) { scale = std::clamp(scale + amount, min_scale, max_scale); }
 
 void Canvas::set_backdrop_color(sf::Color color) { border.setFillColor(color); }
 
@@ -359,9 +382,22 @@ void Canvas::set_grid_texture() {
 
 void Canvas::activate_middleground() { map_states.back().layers.at(middleground()).active = true; }
 
+void Canvas::report_weather() {
+	if (m_weather) {
+		ImGui::Text("Current Weather: %s", m_weather->type);
+		ImGui::SliderFloat("Chance", &m_weather->chance, 0.f, 1.f, "%.1f");
+		if (ImGui::Button("Remove")) { m_weather.reset(); }
+	} else {
+		if (ImGui::Button("Add Weather")) { m_weather.emplace(); }
+	}
+}
+
 Map& Canvas::get_layers() { return map_states.back(); }
 
-Layer& Canvas::get_active_layer() { return get_layers().layers.at(active_layer); }
+Layer& Canvas::get_active_layer() {
+	if (active_layer < 0 || active_layer >= get_layers().layers.size()) { active_layer = 0; }
+	return get_layers().layers.at(active_layer);
+}
 
 sf::Vector2<int> Canvas::get_tile_coord(int lookup) {
 	sf::Vector2<int> ret{};
@@ -381,6 +417,15 @@ void Canvas::edit_tile_at(int i, int j, int new_val, int layer_index) {
 	if (layer_index >= map_states.back().layers.size()) { return; }
 	if ((i + j * dimensions.x) >= map_states.back().layers.at(layer_index).grid.cells.size()) { return; };
 	map_states.back().layers.at(layer_index).grid.cells.at(i + j * dimensions.x).value = new_val;
+}
+
+void Canvas::add_hazard_at(sf::Vector2i position, int value, fornani::CardinalDirection direction) {
+	if (!m_hazards) { m_hazards.emplace(*m_services, m_hazard_properties.texture_dimensions, m_hazard_properties.tag); }
+	if (m_hazards) { m_hazards->add_tile(*m_services, m_hazard_properties.tag, position, value, direction); }
+}
+
+void Canvas::erase_hazard_at(sf::Vector2u position) {
+	if (m_hazards) { m_hazards->remove_tile(position); }
 }
 
 void Canvas::erase_at(int i, int j, int layer_index) { edit_tile_at(i, j, 0, layer_index); }

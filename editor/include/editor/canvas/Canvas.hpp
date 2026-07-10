@@ -10,7 +10,9 @@
 #include <fornani/graphics/Background.hpp>
 #include <fornani/graphics/Biome.hpp>
 #include <fornani/graphics/CameraController.hpp>
+#include <fornani/graphics/Weather.hpp>
 #include <fornani/utils/Constants.hpp>
+#include <fornani/world/HazardMap.hpp>
 #include <fornani/world/Map.hpp>
 #include <deque>
 #include <filesystem>
@@ -28,7 +30,7 @@ class ResourceFinder;
 namespace pi {
 
 enum class CanvasProperties { editable };
-enum class CanvasState { hovered };
+enum class CanvasState { hovered, available };
 
 constexpr inline int chunk_size_v{16};
 constexpr inline int default_num_layers_v{8};
@@ -58,6 +60,7 @@ class Canvas {
 	void set_origin(sf::Vector2f to_origin);
 	void set_offset_from_center(sf::Vector2f offset);
 	void set_scale(float to_scale);
+	void set_state(CanvasState flag, bool to) { to ? state.set(flag) : state.reset(flag); }
 	void resize(sf::Vector2i adjustment);
 	void center(sf::Vector2f point);
 	void constrain(sf::Vector2f bounds);
@@ -69,6 +72,7 @@ class Canvas {
 	void set_ambience(std::string_view to) { m_attributes.ambience = to; }
 	void add_atmosphere(std::string_view to) { m_attributes.atmosphere.add(to.data()); }
 	void remove_atmosphere(std::string_view to) { m_attributes.atmosphere.remove(to.data()); }
+	void report_weather();
 
 	Map& get_layers();
 	Layer& get_active_layer();
@@ -79,10 +83,12 @@ class Canvas {
 
 	[[nodiscard]] auto test_property(fornani::world::MapProperties to_test) const -> bool { return m_attributes.properties.test(to_test); }
 
+	[[nodiscard]] auto has_atmosphere(std::string_view to) const -> bool { return m_attributes.atmosphere.contains(to.data()); }
 	[[nodiscard]] auto get_selection_type() const -> SelectionType { return type; }
 	[[nodiscard]] auto states_empty() const -> bool { return map_states.empty(); }
 	[[nodiscard]] auto is_palette() const -> bool { return type == SelectionType::palette; }
 	[[nodiscard]] auto hovered() const -> bool { return state.test(CanvasState::hovered); }
+	[[nodiscard]] auto is_available() const -> bool { return state.test(CanvasState::available); }
 	[[nodiscard]] auto editable() const -> bool { return properties.test(CanvasProperties::editable); }
 	[[nodiscard]] auto chunk_dimensions() const -> sf::Vector2<std::uint32_t> { return dimensions / u_native_chunk_size(); }
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return position; }
@@ -112,11 +118,14 @@ class Canvas {
 
 	void replace_tile(std::uint32_t from, std::uint32_t to, int layer_index);
 	void edit_tile_at(int i, int j, int new_val, int layer_index);
+	void add_hazard_at(sf::Vector2i position, int value, fornani::CardinalDirection direction);
+	void erase_hazard_at(sf::Vector2u position);
 	void erase_at(int i, int j, int layer_index);
 	int tile_val_at(int i, int j, int layer);
 	int tile_val_at_scaled(int i, int j, int layer);
 	sf::Vector2f get_tile_position_at(int i, int j, int layer = 0);
 	Tile& get_tile_at(int i, int j, int layer = 0);
+	[[nodiscard]] auto get_hazard_properties() -> fornani::world::HazardMapProperties& { return m_hazard_properties; }
 
 	// layers
 	sf::Vector2<std::uint32_t> dimensions{};
@@ -126,7 +135,6 @@ class Canvas {
 	struct {
 		bool show_grid{true};
 		bool show_all_layers{true};
-		bool show_current_layer{false};
 		bool show_obscured_layer{false};
 		bool show_reverse_obscured_layer{false};
 		bool show_indicated_layers{true};
@@ -147,7 +155,8 @@ class Canvas {
 		int type{};
 		int id{};
 		int source{};
-	} cutscene{};
+		std::optional<fornani::QuestContingencySet> contingencies;
+	} cutscene;
 
 	struct {
 		fornani::graphics::ShakeProperties shake_properties{};
@@ -163,6 +172,9 @@ class Canvas {
 
   private:
 	fornani::world::MapAttributes m_attributes{};
+	std::optional<fornani::world::HazardMap> m_hazards{};
+	fornani::world::HazardMapProperties m_hazard_properties{};
+	std::optional<fornani::vfx::WeatherSpecifications> m_weather{};
 
 	sf::Vector2f position{};
 	sf::RenderTexture grid_texture{};

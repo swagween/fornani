@@ -1,16 +1,32 @@
 {
   "entities": {
+    "chests": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 69788,
+        "modifier": 0,
+        "position": [
+          7,
+          7
+        ],
+        "tag": "cridium_shard",
+        "type": 2
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 501,
         "dimensions": [
           1,
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           11,
@@ -43,6 +59,7 @@
       16,
       16
     ],
+    "interior": true,
     "metagrid": [
       47,
       27
@@ -56,16 +73,30 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": true,
+      "interior": true,
       "lighting": true,
-      "timer": false
+      "sky_limit": 0,
+      "timer": false,
+      "toxic": false
     },
     "room_id": 513,
     "shader": {
       "darken_factor": 1
     },
-    "style": 5
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

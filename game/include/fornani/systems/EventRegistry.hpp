@@ -2,18 +2,9 @@
 #pragma once
 
 #include <fornani/events/ConsoleEvent.hpp>
-#include <fornani/events/EventBase.hpp>
 #include <fornani/events/GameplayEvent.hpp>
 #include <fornani/events/InventoryEvent.hpp>
 #include <fornani/events/SystemEvent.hpp>
-#include <fornani/gui/console/Console.hpp>
-#include <fornani/io/Logger.hpp>
-#include <ksignal/ksignal.hpp>
-#include <concepts>
-#include <map>
-#include <memory>
-#include <typeindex>
-#include <unordered_map>
 
 namespace fornani {
 
@@ -22,22 +13,33 @@ struct EventRegistry {
 	NPCVoiceCueEvent npc_voice_cue_event{};
 	NPCPopConversationEvent npc_pop_conversation_event{};
 	NPCPiggybackEvent npc_piggyback_event{};
+	DestroyInspectableEvent destroy_inspectable_event{};
+	PurchaseEvent purchase_event{};
 
 	LaunchCutsceneEvent launch_cutscene_event{};
+	PressPermanentSwitchEvent press_permanent_switch_event{};
+	SetCutsceneProgressionEvent set_cutscene_progression_event{};
 	OpenVendorEvent open_vendor_event{};
+	OpenBuilderEvent open_builder_event{};
 	AddMapMarkerEvent add_map_marker_event{};
 	PlaySongEvent play_song_event{};
 	StartBattleEvent start_battle_event{};
+	HealthRewardSequenceEvent health_increase_event{};
+	AbilityRewardSequenceEvent ability_acquisition_event{};
+	TransitionEvent transition_event{};
 
 	AcquireItemFromConsoleEvent acquire_item_from_console_event{};
 	AcquireItemEvent acquire_item_event{};
 	ReadItemByIDEvent read_item_by_id_event{};
+	UseItemByIDEvent use_item_by_id_event{};
 	EquipItemByIDEvent equip_item_by_id_event{};
 	RevealItemByIDEvent reveal_item_by_id_event{};
 	AcquireWeaponEvent acquire_weapon_event{};
 	AcquireWeaponFromConsoleEvent acquire_weapon_from_console_event{};
 	RemoveItemEvent remove_item_event{};
 	RemoveWeaponByIDEvent remove_weapon_by_id_event{};
+	RemoveItemByIDEvent remove_item_by_id_event{};
+	GiveBonusHealthEvent give_bonus_health_event{};
 
 	LoadFileEvent load_file_event{};
 	NewFileEvent new_file_event{};

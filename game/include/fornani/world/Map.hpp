@@ -2,25 +2,25 @@
 #pragma once
 
 #include <fornani/audio/Ambience.hpp>
+#include <fornani/core/Fwd.hpp>
 #include <fornani/entities/atmosphere/Atmosphere.hpp>
 #include <fornani/entities/enemy/EnemyCatalog.hpp>
 #include <fornani/entities/item/Loot.hpp>
-#include <fornani/entities/world/Animator.hpp>
 #include <fornani/entities/world/Bed.hpp>
 #include <fornani/entities/world/Chest.hpp>
 #include <fornani/entities/world/Explosion.hpp>
 #include <fornani/entities/world/Fire.hpp>
-#include <fornani/entities/world/Inspectable.hpp>
 #include <fornani/entities/world/Laser.hpp>
+#include <fornani/entities/world/TestMobile.hpp>
 #include <fornani/entities/world/Waterfall.hpp>
 #include <fornani/entity/EntitySet.hpp>
 #include <fornani/graphics/Background.hpp>
 #include <fornani/graphics/Biome.hpp>
 #include <fornani/graphics/CameraController.hpp>
 #include <fornani/graphics/DayNightShifter.hpp>
-#include <fornani/graphics/Rain.hpp>
 #include <fornani/graphics/Scenery.hpp>
-#include <fornani/graphics/Transition.hpp>
+#include <fornani/graphics/SpriteBatch.hpp>
+#include <fornani/graphics/Weather.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Effect.hpp>
 #include <fornani/particle/Emitter.hpp>
@@ -28,15 +28,13 @@
 #include <fornani/physics/Shape.hpp>
 #include <fornani/shader/LightShader.hpp>
 #include <fornani/shader/Palette.hpp>
-#include <fornani/story/CutsceneCatalog.hpp>
 #include <fornani/systems/Register.hpp>
 #include <fornani/utils/Constants.hpp>
 #include <fornani/utils/Stopwatch.hpp>
-#include <fornani/weapon/Grenade.hpp>
 #include <fornani/weapon/Projectile.hpp>
 #include <fornani/world/Breakable.hpp>
 #include <fornani/world/Checkpoint.hpp>
-#include <fornani/world/Destructible.hpp>
+#include <fornani/world/HazardMap.hpp>
 #include <fornani/world/Incinerite.hpp>
 #include <fornani/world/Layer.hpp>
 #include <fornani/world/Platform.hpp>
@@ -45,20 +43,11 @@
 #include <fornani/world/Spike.hpp>
 #include <fornani/world/SwitchBlock.hpp>
 #include <fornani/world/TimerBlock.hpp>
-#include <list>
 #include <optional>
+#include <unordered_set>
 #include <vector>
 
-namespace fornani::automa {
-struct ServiceProvider;
-}
-
-namespace fornani::player {
-class Player;
-}
-
 namespace fornani::gui {
-class Console;
 class Portrait;
 class InventoryWindow;
 } // namespace fornani::gui
@@ -68,12 +57,18 @@ namespace fornani::world {
 enum class LevelState { camera_shake, spawn_enemy };
 enum class MapState { unobscure };
 enum class LayerProperties { has_obscuring_layer, has_reverse_obscuring_layer };
-enum class MapProperties { minimap, environmental_randomness, day_night_shift, timer, lighting };
+enum class MapProperties { minimap, environmental_randomness, day_night_shift, timer, lighting, interior, toxic };
 
 struct EnemySpawn {
 	sf::Vector2f pos{};
 	int id{};
 	int variant{};
+	bool effect{};
+};
+
+struct SurfacePoint {
+	sf::Vector2f position{};
+	bool exposed{};
 };
 
 struct MapAttributes {
@@ -87,6 +82,7 @@ struct MapAttributes {
 	Register<std::string> atmosphere{};
 	int special_drop_id{};
 	sf::Color border_color{};
+	int sky_limit{};
 
 	void serialize(dj::Json& out);
 
@@ -95,6 +91,11 @@ struct MapAttributes {
 };
 
 class Map {
+
+  public:
+	// debug
+	std::optional<TestMobile> test_mobile{};
+
   private:
 	std::vector<std::unique_ptr<shape::ICollider>> m_colliders{};
 	std::vector<std::vector<shape::ICollider*>> m_chunks;
@@ -103,31 +104,43 @@ class Map {
 	Map(automa::ServiceProvider& svc, player::Player& player);
 
 	// methods
-	void load(automa::ServiceProvider& svc, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, int room_number);
+	void load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& context, int room_number);
 	void unserialize(automa::ServiceProvider& svc, int room_number, bool live = false);
-	void update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
-	void render_background(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
+	void update(automa::ServiceProvider& svc, SceneContext& context);
+	void render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
+	void render_background(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam);
 	bool handle_entry(player::Player& player, util::Cooldown& enter_room);
-	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {}, float speed_multiplier = 1.f);
-	void spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0);
-	void spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, Direction dir, sf::Vector2f dim = {16.f, 16.f}, sf::Color color = colors::nani_white);
-	void spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel);
-	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0);
+	void clear_weather();
+
+	// spawns
+	void spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon, sf::Vector2f pos, sf::Vector2f target = {}, float speed_multiplier = 1.f, float damage_multiplier = 1.f);
+	void spawn_laser(automa::ServiceProvider& svc, Turret& parent, sf::Vector2f position, LaserType type, util::BitFlags<LaserAttributes> attributes, CardinalDirection direction, int active = 128, int cooldown = 128, float size = 1.f);
+	void spawn_laser(automa::ServiceProvider& svc, sf::Vector2f position, CardinalDirection direction, arms::LaserSpecifications specs);
+	void spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0, float scale = 1.f);
+	void spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, Direction dir, sf::Vector2f dim = {16.f, 16.f}, sf::Color color = colors::nani_white, int channel = 0);
+	void spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel, int volatility = 0, bool stun = false);
+	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0, bool allow_proximity_to_player = false, bool effect = true);
 	void spawn_chest(automa::ServiceProvider& svc, enemy::Treasure const& treasure, sf::Vector2f pos, sf::Vector2f vel = {});
+
 	void reveal_npc(std::string_view label);
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc) const;
+
 	void register_collider(std::unique_ptr<shape::ICollider> collider);
 	void unregister_collider(shape::ICollider* collider);
+	shape::Collider* create_collider(sf::Vector2f dim);
+	shape::CircleCollider* create_collider(float radius);
+	void destroy_collider(shape::ICollider* collider);
 	void refresh_collider_chunks(Register<int> const& old_chunks, Register<int> const& new_chunks, shape::ICollider* ptr);
+
 	bool check_cell_collision(shape::Collider& collider, bool foreground = false);
 	bool check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	sf::Vector2i get_circle_collision_result(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	void handle_cell_collision(shape::CircleCollider& collider);
 	void handle_breakable_collision(shape::CircleCollider& collider);
 	void clear_projectiles();
+	void clear_enemies(std::unordered_set<int> const exceptions);
 	void shake_camera();
 	void clear();
 	void wrap(sf::Vector2f& position) const;
@@ -137,6 +150,7 @@ class Map {
 	std::unique_ptr<world::Layer>& get_middleground();
 	std::unique_ptr<world::Layer>& get_obscuring_layer();
 	sf::Vector2f get_nearest_target_point(sf::Vector2f from);
+	sf::Vector2f get_switch_block_position(int id) const;
 	sf::Vector2f last_checkpoint();
 
 	void debug();
@@ -144,6 +158,8 @@ class Map {
 	bool nearby(shape::Shape& first, shape::Shape& second) const;
 	bool within_bounds(sf::Vector2f test) const;
 	bool overlaps_middleground(shape::Shape& test);
+	bool overlaps_middleground(sf::Vector2f test);
+	sf::Vector2f compute_mtv(sf::Vector2f test);
 
 	[[nodiscard]] auto get_style_id() const -> int { return m_biome.get_id(); }
 	[[nodiscard]] auto get_special_drop_id() const -> int { return m_attributes.special_drop_id; }
@@ -153,9 +169,12 @@ class Map {
 	[[nodiscard]] auto camera_shake() const -> bool { return flags.state.test(LevelState::camera_shake); }
 	[[nodiscard]] auto get_echo_count() const -> int { return sound.echo_count; }
 	[[nodiscard]] auto get_echo_rate() const -> int { return sound.echo_rate; }
+	[[nodiscard]] auto has_property(MapProperties check) const -> bool { return m_attributes.properties.test(check); }
+	[[nodiscard]] auto is_interior() const -> bool { return m_attributes.properties.test(MapProperties::interior); }
 	[[nodiscard]] auto is_minimap() const -> bool { return m_attributes.properties.test(MapProperties::minimap); }
 	[[nodiscard]] auto has_obscuring_layer() const -> bool { return m_layer_properties.test(LayerProperties::has_obscuring_layer); }
 	[[nodiscard]] auto has_reverse_obscuring_layer() const -> bool { return m_layer_properties.test(LayerProperties::has_reverse_obscuring_layer); }
+	[[nodiscard]] auto is_toxic() const -> bool;
 	[[nodiscard]] auto get_biome_string() const -> std::string_view { return m_biome.get_label(); }
 	[[nodiscard]] auto get_room_string() const -> std::string { return m_metadata.room; }
 	[[nodiscard]] auto get_player_start() const -> sf::Vector2f { return m_player_start; }
@@ -168,12 +187,15 @@ class Map {
 	[[nodiscard]] auto get_ambience_balance() const -> float;
 	[[nodiscard]] auto get_music_balance() const -> float;
 	[[nodiscard]] auto get_closest_home_point(sf::Vector2f const check) const -> sf::Vector2f;
+	[[nodiscard]] auto get_random_home_point() const -> sf::Vector2f;
 
 	dj::Json const& get_json_data(automa::ServiceProvider& svc) const;
 
 	std::size_t get_index_at_position(sf::Vector2f position);
 	int get_tile_value_at_position(sf::Vector2f position);
 	Tile& get_cell_at_position(sf::Vector2f position);
+
+	enemy::Enemy* get_enemy(int id);
 
 	template <typename T>
 	std::vector<T*> get_entities() {
@@ -194,9 +216,9 @@ class Map {
 	// entities
 	std::vector<arms::Projectile> active_projectiles{};
 	// std::vector<entity::Portal> portals{};
-	std::vector<entity::Inspectable> inspectables{};
+	// std::vector<entity::Inspectable> inspectables{};
 	std::vector<entity::Bed> beds{};
-	std::vector<entity::Animator> animators{};
+	// std::vector<entity::Animator> animators{};
 	std::vector<entity::Effect> effects{};
 	std::array<std::vector<std::unique_ptr<vfx::Scenery>>, 6> scenery_layers{};
 	std::vector<item::Loot> active_loot{};
@@ -214,13 +236,9 @@ class Map {
 	std::vector<std::unique_ptr<Waterfall>> waterfalls{};
 
 	// vfx
-	std::optional<vfx::Rain> rain{};
-	std::optional<std::vector<Fire>> fire{};
+	std::vector<Fire> fire{};
 
 	std::unique_ptr<graphics::Background> background{};
-	graphics::Transition transition;
-
-	CutsceneCatalog cutscene_catalog;
 
 	sf::RectangleShape center_box{};
 
@@ -253,13 +271,23 @@ class Map {
 	audio::SoundBalance music_balance{};
 	audio::SoundBalance ambience_balance{};
 
+	sf::RenderTexture m_entity_texture{};
+	sf::RenderTexture m_static_entity_texture{};
+
   private:
 	MapAttributes m_attributes{};
 	util::BitFlags<LayerProperties> m_layer_properties{};
 
 	std::optional<EntitySet> m_entities{};
+	std::optional<HazardMap> m_hazards{};
 	std::vector<std::unique_ptr<vfx::Emitter>> active_emitters{};
 	std::vector<Explosion> m_explosions{};
+	std::vector<ExplosionSpecifications> m_chain_explosions{};
+
+	// weather
+	std::optional<vfx::WeatherSpecifications> m_weather_specs{};
+	std::optional<std::unique_ptr<vfx::Weather>> m_weather{};
+	std::vector<SurfacePoint> m_surface_points{};
 
 	std::optional<Palette> m_palette{};
 	int abyss_distance{512};
@@ -292,7 +320,6 @@ class Map {
 	std::vector<std::unique_ptr<Breakable>> breakables{};
 	std::vector<std::unique_ptr<Platform>> platforms{};
 	std::vector<std::unique_ptr<SwitchBlock>> switch_blocks{};
-	std::vector<std::unique_ptr<Destructible>> destructibles{};
 	std::vector<std::unique_ptr<Incinerite>> incinerite_blocks{};
 	std::vector<std::unique_ptr<entity::Chest>> chests{};
 	std::vector<std::unique_ptr<Pushable>> pushables{};

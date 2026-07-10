@@ -1,17 +1,18 @@
 
 #include "fornani/automa/states/FileMenu.hpp"
-#include "fornani/service/ServiceProvider.hpp"
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 #include "fornani/utils/Constants.hpp"
 
 namespace fornani::automa {
 
 constexpr auto num_files_v = 3;
 
-FileMenu::FileMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "file") {
+FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "file"), switched{20}, m_menu_opened{24} {
 	m_parent_menu = MenuType::play;
 	current_selection = util::Circuit(num_files_v);
-	svc.data.load_blank_save(player);
 	hud.set_position({(svc.window->f_screen_dimensions().x / 2.f) - 140.f, 420.f}); // display hud preview for each file in the center of the screen
+	for (auto [i, save] : std::views::enumerate(svc.data.files)) { svc.data.load_progress(player, i); }
 	svc.state_controller.next_state = svc.data.load_progress(player, current_selection.get());
 	player.set_draw_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
 	/*player.antennae.at(0).set_position({svc.window->f_screen_dimensions().x / 2 + 80, 360});
@@ -19,36 +20,33 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc
 	player.hurt_cooldown.cancel();
 
 	loading.start(4);
+	switched.start();
 	refresh(svc);
 	player.force_animation(player::AnimState::run, "run", [](player::PlayerAnimation& anim) { return anim.update_run(); });
 	player.set_direction(Direction{UND::neutral, LNR::left});
 }
 
 void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-	m_input_authorized = !m_file_select_menu && !m_console;
+	m_input_authorized = !m_file_select_menu && !p_context.console;
+	if (switched.is_almost_complete()) { svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get()); }
 	MenuState::tick_update(svc, engine);
-	if (!m_console) {
+	if (!p_context.console) {
 		if (m_file_select_menu) {
 			m_file_select_menu->handle_inputs(svc.input_system, svc.soundboard);
 		} else {
-			if (svc.input_system.menu_move(input::MoveDirection::down) || svc.input_system.menu_move(input::MoveDirection::up)) { svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get()); }
+			if (svc.input_system.menu_move(input::MoveDirection::down) || svc.input_system.menu_move(input::MoveDirection::up) || current_selection.get() != m_previous_selection) { switched.start(); }
 		}
 		if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {
-			if (m_file_select_menu) {
-				m_file_select_menu.reset();
-				svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-			}
+			if (m_file_select_menu) { m_file_select_menu.reset(); }
 		}
-		if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
+		if (was_selected(svc.input_system, true)) {
 			if (m_file_select_menu) {
 				switch (m_file_select_menu->get_selection()) {
 				case 0:
-					svc.data.load_blank_save(*player);
-					svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get(), true);
+					svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
 					svc.state_controller.actions.set(Actions::trigger);
 					svc.state_controller.actions.set(Actions::save_loaded);
 					svc.soundboard.flags.menu.set(audio::Menu::select);
-					svc.soundboard.flags.world.set(audio::World::load);
 					break;
 				case 1:
 					svc.state_controller.actions.set(automa::Actions::print_stats);
@@ -56,23 +54,29 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 					svc.soundboard.flags.menu.set(audio::Menu::select);
 					break;
 				case 2:
-					m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "delete_file", gui::OutputType::gradual);
+					p_context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "delete_file", gui::OutputType::gradual);
 					m_file_select_menu.reset();
 					break;
 				}
-			} else {
+			} else if (was_selected(svc.input_system)) {
 				auto& opt = options.at(current_selection.get());
 				auto menu_pos = opt.position + sf::Vector2f{opt.label.getLocalBounds().getCenter().x + 2.f * spacing, 0.f};
-				m_file_select_menu = gui::MiniMenu(svc, {svc.data.gui_text["file_menu"]["play"].as_string(), svc.data.gui_text["file_menu"]["stats"].as_string(), svc.data.gui_text["file_menu"]["delete"].as_string()}, menu_pos, p_theme);
+				m_file_select_menu = gui::MiniMenu(svc, {svc.data.gui_text["file_menu"]["play"].as_string(), svc.data.gui_text["file_menu"]["stats"].as_string(), svc.data.gui_text["file_menu"]["delete"].as_string()}, menu_pos,
+												   p_app_context->settings.get_theme());
+				m_menu_opened.start();
 			}
 		}
+	}
+	m_previous_selection = current_selection.get();
+	if (svc.input_system.is_mouse_active() && m_file_select_menu && !m_menu_opened.running()) {
+		if ((m_file_select_menu->get_center() - svc.input_system.get_mouse_position()).length() > 300.f) { m_file_select_menu.reset(); }
 	}
 
 	// file deletion requested
 	if (svc.state_controller.actions.consume(Actions::delete_file)) {
 		svc.data.delete_file(current_selection.get());
-		refresh(svc);
 		svc.state_controller.next_state = svc.data.load_progress(*player, current_selection.get());
+		refresh(svc);
 	}
 
 	auto& opt = options.at(current_selection.get());
@@ -88,6 +92,8 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	hud.update(svc, *player);
 
 	loading.update();
+	switched.update();
+	m_menu_opened.update();
 
 	player->controller.clean();
 	player->flags.triggers = {};
@@ -99,22 +105,21 @@ void FileMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!loading.is_complete()) { return; }
 	MenuState::render(svc, win);
 	for (auto& option : options) { win.draw(option.label); }
+	player->set_flag(player::PlayerFlags::show_weapon);
 	player->render(svc, win, {});
 	if (loading.is_complete()) {
 		hud.render(svc, *player, win);
 		if (m_file_select_menu) { m_file_select_menu->render(win); }
 	}
-	if (m_console) {
-		m_console.value()->render(win);
-		m_console.value()->write(win, false);
+	if (p_context.console) {
+		p_context.console.value()->render(win);
+		p_context.console.value()->write(win, false);
 	}
 }
 
 void FileMenu::refresh(ServiceProvider& svc) {
-	auto ctr{0};
-	for (auto& save : svc.data.files) {
-		if (save.is_new() && options.at(ctr).label.getString().getSize() < 8) { options.at(ctr).label.setString(options.at(ctr).label.getString() + " (new)"); }
-		++ctr;
+	for (auto [i, save] : std::views::enumerate(svc.data.files)) {
+		if (save.is_new() && options.at(i).label.getString().getSize() < 8) { options.at(i).label.setString(options.at(i).label.getString() + " (new)"); }
 	}
 	for (auto& option : options) { option.update(current_selection.get()); }
 }

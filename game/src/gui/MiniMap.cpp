@@ -1,5 +1,5 @@
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/gui/MiniMap.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -17,7 +17,7 @@ MiniMap::MiniMap(automa::ServiceProvider& svc) : m_texture(svc), m_speed{64.f} {
 void MiniMap::set_textures(automa::ServiceProvider& svc) {
 	m_cursor = sf::Sprite{svc.assets.get_texture("map_cursor")};
 	m_cursor->setScale(constants::f_scale_vec);
-	m_cursor->setOrigin({7.f, 7.f});
+	m_cursor->setOrigin({5.5f, 5.5f});
 	m_border.setSize(svc.window->f_screen_dimensions());
 }
 
@@ -34,6 +34,16 @@ void MiniMap::set_markers(world::Map& map, player::Player& player) {
 		mit->position = m_player_position;
 	} else {
 		m_markers.push_back({MapIconFlags::nani, m_player_position, map.room_id});
+	}
+
+	if (player.has_item("gobe_plugin")) {
+		auto npcs = map.get_entities<NPC>();
+		auto git = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 3 && !n->is_hidden(); });
+		if (git != npcs.end()) {
+			auto& gobe = *git;
+			auto gobepos = gobe->get_world_position() * m_texture_scale / constants::f_cell_size + room_pos;
+			m_markers.push_back({MapIconFlags::gobe, gobepos, map.room_id});
+		}
 	}
 }
 
@@ -110,7 +120,7 @@ void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, player::Player
 }
 
 void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, sf::Sprite& icon_sprite) {
-	static auto flash_frame{util::Circuit{2}};
+	static auto flash_frame{util::Circuit{4}};
 	if (svc.ticker.every_x_frames(10)) { flash_frame.modulate(1); }
 	m_view = svc.window->get_view();
 	auto port = svc.window->get_viewport();
@@ -133,18 +143,24 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 
 	if (port.size.x == 0.f || port.size.y == 0.f) { return; }
 
-	for (auto& line : m_dotted_lines) {
-		if (!svc.data.is_room_discovered(line.source) || !svc.data.is_room_discovered(line.destination)) { continue; }
-		line.line.render(win, get_ratio(), m_physics.position, scaled_port.size);
+	if (has_flag_set(MiniMapFlags::open)) {
+		for (auto& line : m_dotted_lines) {
+			if (!svc.data.is_room_discovered(line.source) || !svc.data.is_room_discovered(line.destination)) { continue; }
+			line.line.render(win, get_ratio(), m_physics.position, scaled_port.size);
+		}
 	}
 
 	for (auto& room : m_atlas) {
-		if (!svc.data.is_room_discovered(room->get_id())) { continue; }
+		auto is_discovered = svc.data.is_room_discovered(room->get_id());
+		// check if the undiscovered room is adjacent to a discovered one
+		auto undiscovered_adjacent = false;
+		if (!is_discovered) { undiscovered_adjacent = svc.data.is_room_adjacent_to_discovered(room->get_id()); }
+		if (!is_discovered && !undiscovered_adjacent) { continue; }
 		room->set_resolution(m_resolution);
-		m_map_sprite = sf::Sprite{room->get(false, room->get_id() == get_currently_hovered_room()).getTexture()};
+		m_map_sprite = sf::Sprite{room->get(false, room->get_id() == get_currently_hovered_room(), undiscovered_adjacent).getTexture()};
 		m_map_sprite->setScale(get_ratio_vec2().componentWiseDiv(scaled_port.size));
 		m_map_sprite->setPosition((room->get_position() * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size));
-		auto outline{sf::Sprite{room->get(true, room->get_id() == get_currently_hovered_room()).getTexture()}};
+		auto outline{sf::Sprite{room->get(true, room->get_id() == get_currently_hovered_room(), undiscovered_adjacent).getTexture()}};
 		outline.setScale(get_ratio_vec2().componentWiseDiv(scaled_port.size));
 		for (auto i{-1}; i < 2; ++i) {
 			for (auto j{-1}; j < 2; ++j) {
@@ -158,17 +174,16 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 		}
 		if (m_map_sprite->getGlobalBounds().contains(svc.window->f_center_screen())) {
 			m_currently_hovered_room = room->get_id();
-			if (m_currently_hovered_room != m_previously_hovered_room && has_flag_set(MiniMapFlags::open)) { svc.soundboard.flags.menu.set(audio::Menu::shift); }
+			if (m_currently_hovered_room != m_previously_hovered_room && has_flag_set(MiniMapFlags::open)) { svc.soundboard.play_sound("pioneer_pap"); }
 			m_previously_hovered_room = m_currently_hovered_room;
 		}
 		if (m_map_sprite) { win.draw(*m_map_sprite); }
 	}
 	icon_sprite.setScale(constants::f_scale_vec.componentWiseDiv(port.size));
-	auto icon_lookup{136};
-	auto icon_dim{6};
+	auto icon_dim{8};
 	for (auto& element : m_markers) {
 		if (!svc.data.is_room_discovered(element.room_id) && element.type != MapIconFlags::quest) { continue; }
-		icon_sprite.setTextureRect(sf::IntRect{{icon_lookup + icon_dim * flash_frame.get(), static_cast<int>(element.type) * icon_dim}, {icon_dim, icon_dim}});
+		icon_sprite.setTextureRect(sf::IntRect{{icon_dim * flash_frame.get(), static_cast<int>(element.type) * icon_dim}, {icon_dim, icon_dim}});
 		icon_sprite.setPosition((element.position * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size));
 		if (element.type == MapIconFlags::nani) { icon_sprite.setScale(icon_sprite.getScale().componentWiseMul(player.get_facing_scale())); }
 		win.draw(icon_sprite);
@@ -182,39 +197,47 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 }
 
 void MiniMap::update() {
-	m_physics.simple_update();
 	auto bounds{sf::FloatRect{{-(m_extent.size.x) * get_ratio() + m_view.getCenter().x, -(m_extent.size.y) * get_ratio() + m_view.getCenter().y},
 							  {-(m_extent.position.x) * get_ratio() + m_view.getCenter().x, -(m_extent.position.y) * get_ratio() + m_view.getCenter().y}}};
-	m_physics.position.x = ccm::ext::clamp(m_physics.position.x, bounds.position.x, bounds.size.x);
-	m_physics.position.y = ccm::ext::clamp(m_physics.position.y, bounds.position.y, bounds.size.y);
+	m_physics.position.x = std::clamp(m_physics.position.x, bounds.position.x, bounds.size.x);
+	m_physics.position.y = std::clamp(m_physics.position.y, bounds.position.y, bounds.size.y);
 	m_pan_limit_x = m_physics.position.x == bounds.position.x || m_physics.position.x == bounds.size.x;
 	m_pan_limit_y = m_physics.position.y == bounds.position.y || m_physics.position.y == bounds.size.y;
 	m_resolution = m_scale < 32.f ? Resolution::high : m_scale < 128.f ? Resolution::medium : Resolution::low;
-	if ((m_target_position - m_physics.position).length() > constants::small_value) {
-		m_steering.target(m_physics, m_target_position, 0.003f);
+	if (has_flag_set(MiniMapFlags::moving)) {
+		m_physics.set_global_friction(0.9f);
+		if ((m_target_position - m_physics.position).length() > constants::small_value) {
+			m_steering.target(m_physics, m_target_position, 0.003f);
+		} else {
+			m_target_position = m_physics.position;
+		}
 	} else {
-		m_target_position = m_physics.position;
+		m_physics.set_global_friction(0.5f);
+		m_steering.target(m_physics, m_target_position, 0.1f);
 	}
+	set_flag(MiniMapFlags::moving, false);
+	m_physics.simple_update();
 }
 
 void MiniMap::clear_atlas() { m_atlas.clear(); }
 
 void MiniMap::move(sf::Vector2f direction) {
 	auto speed = m_speed;
-	if (ccm::abs(direction.x) + ccm::abs(direction.y) > 1.f) { speed /= ccm::sqrt(2.f); }
+	if (std::abs(direction.x) + std::abs(direction.y) > 1.f) { speed /= std::sqrt(2.f); }
 	m_steering.target(m_physics, m_physics.position - direction * speed, 0.002f);
 	m_target_position = m_physics.position;
+	set_flag(MiniMapFlags::moving);
 }
 
 void MiniMap::zoom(float amount) {
 	auto prev_ratio = get_ratio();
 	auto max_scale{64.f};
-	m_scale = ccm::ext::clamp(m_scale + amount, m_texture_scale, m_texture_scale * max_scale);
+	m_scale = std::clamp(m_scale + amount, m_texture_scale, m_texture_scale * max_scale);
 	m_zoom_limit = m_scale == m_texture_scale || m_scale == m_texture_scale * max_scale;
 	auto r_delta = get_ratio() - prev_ratio;
 	auto sz{m_port_dimensions.componentWiseDiv(m_view.getSize())};
 	m_center_position = (m_physics.position - m_view.getCenter().componentWiseMul(sz)) / prev_ratio;
-	if (ccm::abs(r_delta) > 0.f) { m_physics.position += m_center_position * r_delta; }
+	if (std::abs(r_delta) > 0.f) { m_physics.position += m_center_position * r_delta; }
 	m_target_position = m_physics.position;
 }
 

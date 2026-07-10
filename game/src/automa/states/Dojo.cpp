@@ -1,41 +1,56 @@
 
 #include <fornani/automa/states/Dojo.hpp>
+#include <fornani/entities/player/Player.hpp>
 #include <fornani/events/GameplayEvent.hpp>
 #include <fornani/events/InventoryEvent.hpp>
+#include <fornani/graphics/rewards/AbilityRewardSequence.hpp>
+#include <fornani/graphics/rewards/HealthRewardSequence.hpp>
+#include <fornani/gui/dialogs/BuilderDialog.hpp>
+#include <fornani/gui/dialogs/VendorDialog.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Random.hpp>
 
 namespace fornani::automa {
 
-Dojo::Dojo(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameplayState(svc, player, scene, room_number), m_enter_room{100}, m_loading{4} {
+Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : GameplayState(svc, player, room_number), m_enter_room{100}, m_loading{4} {
 
-	m_map = world::Map{svc, player};
+	m_map.emplace(svc, player);
 
 	m_type = StateType::dojo;
 	player.set_flag(player::PlayerFlags::trial, false);
+	player.cooldowns.suffocate.start();
 
-	// inventory events// inventory events
-	svc.events.acquire_item_from_console_event.attach_to(p_slot, &Dojo::acquire_item_from_console, this);
-	svc.events.acquire_item_event.attach_to(p_slot, &Dojo::acquire_item, this);
 	// inventory events
 	svc.events.acquire_item_from_console_event.attach_to(p_slot, &Dojo::acquire_item_from_console, this);
 	svc.events.read_item_by_id_event.attach_to(p_slot, &Dojo::read_item, this);
+	svc.events.use_item_by_id_event.attach_to(p_slot, &Dojo::use_item, this);
 	svc.events.equip_item_by_id_event.attach_to(p_slot, &Dojo::equip_item, this);
 	svc.events.acquire_item_event.attach_to(p_slot, &Dojo::acquire_item, this);
 	svc.events.acquire_weapon_event.attach_to(p_slot, &Dojo::acquire_gun, this);
 	svc.events.acquire_weapon_from_console_event.attach_to(p_slot, &Dojo::acquire_gun_from_console, this);
 	svc.events.remove_weapon_by_id_event.attach_to(p_slot, &Dojo::remove_gun_by_id, this);
+	svc.events.remove_item_event.attach_to(p_slot, &Dojo::remove_item, this);
+	svc.events.remove_item_by_id_event.attach_to(p_slot, &Dojo::remove_item_by_id, this);
 
 	// gameplay events
 	svc.events.open_vendor_event.attach_to(p_slot, &Dojo::open_vendor, this);
+	svc.events.open_builder_event.attach_to(p_slot, &Dojo::open_builder, this);
 	svc.events.launch_cutscene_event.attach_to(p_slot, &Dojo::launch_cutscene, this);
+	svc.events.press_permanent_switch_event.attach_to(p_slot, &Dojo::press_permanent_switch, this);
 	svc.events.add_map_marker_event.attach_to(p_slot, &Dojo::add_map_marker, this);
+	svc.events.health_increase_event.attach_to(p_slot, &Dojo::handle_health_increase, this);
+	svc.events.ability_acquisition_event.attach_to(p_slot, &Dojo::handle_ability_acquisition, this);
+	svc.events.transition_event.attach_to(p_slot, &Dojo::handle_transition, this);
 
 	m_map_markers.insert({1, "main"});
 	m_map_markers.insert({2, "woodshine"});
+	m_map_markers.insert({3, "pioneer_trail"});
+	m_map_markers.insert({4, "nightside_station"});
+	m_map_markers.insert({5, "hoarders_cave"});
 
 	// create shaders
 	p_world_shader = LightShader(svc.finder);
+	p_entity_shader = LightShader(svc.finder);
 	p_gui_shader = LightShader(svc.finder);
 
 	reload(svc, room_number);
@@ -53,9 +68,17 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		m_flags.reset(GameplayFlags::item_music_played);
 	}
 
-	svc.a11y.set_action_ctx_bar_enabled(svc.data.settings["tutorial"].as_bool());
+	if (svc.ticker.every_second()) { svc.quest_table.set_quest_progression("nighttime", svc.world_clock.is_nighttime() ? 2 : 1); }
 
-	m_loading.is_complete() && !p_vendor_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
+	if (!p_context.console && !m_cutscenes.is_empty()) {
+		for (auto const& cutscene : m_cutscenes) {
+			p_context.cutscene_catalog.push_cutscene(svc, *m_map, *player, cutscene.id, cutscene.special);
+			NANI_LOG_INFO(m_logger, "Launching cutscene {}.", cutscene.id);
+		}
+		m_cutscenes.clear();
+	}
+
+	m_loading.is_complete() && !p_dialog ? svc.app_flags.set(AppFlags::in_game) : svc.app_flags.reset(AppFlags::in_game);
 	m_loading.update();
 	if (m_inspect_hint) {
 		m_inspect_hint->update();
@@ -65,10 +88,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			m_inspect_hint->start();
 		}
 	}
-	if (svc.input_system.digital(input::DigitalAction::inspect).triggered) {
-		svc.data.get_file().flags.reset(io::FileFlags::inspect_hint);
-		m_inspect_hint.reset();
-	}
+	if (svc.input_system.digital(input::DigitalAction::inspect).triggered) { m_inspect_hint.reset(); }
 
 	if (m_shoot_hint) {
 		m_shoot_hint->update();
@@ -81,31 +101,75 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	if (m_flags.consume(GameplayFlags::give_item)) {
 		player->give_item(m_item_tag, 1);
-		if (!m_console) {
-			m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
-			m_console.value()->append(player->catalog.inventory.find_item(m_item_tag)->get_title());
-			m_console.value()->append("!");
+		if (!p_context.console) {
+			p_context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
+			p_context.console.value()->append(player->catalog.inventory.find_item(m_item_tag)->get_title());
+			p_context.console.value()->append("!");
 		}
-		m_console.value()->display_item(m_item_tag);
+		p_context.console.value()->display_item(m_item_tag);
 		svc.music_player.quick_play(svc.finder, "discovery");
 		m_flags.set(GameplayFlags::item_music_played);
 	}
 
+	if (player->has_flag_set(player::PlayerFlags::bonus_health_added) && !p_context.console) {
+		svc.soundboard.play_sound("heart_get");
+		hud.refresh_hearts(svc, *player);
+		player->set_flag(player::PlayerFlags::bonus_health_added, false);
+		hud.spawn_effect(svc, "bonus_heart", hud.get_hearts_endpoint());
+	}
+
+	if (p_reward_sequence) {}
+
+	if (m_flags.consume(GameplayFlags::remove_item)) {
+		auto item = player->catalog.inventory.find_item(m_item_tag);
+		if (item == nullptr) {
+			NANI_LOG_ERROR(m_logger, "Tried to remove an item that wasn't there!");
+		} else {
+			auto label = item->get_title();
+			NANI_LOG_DEBUG(m_logger, "removed item {}", label);
+			if (p_context.console) { p_context.console.value()->display_item(m_item_tag, false); }
+			svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["removed"].as_string() + std::string{label} + ".");
+			if (player->has_item_equipped(m_item_tag)) { player->equip_item(svc.data.item_id_from_label(m_item_tag)); }
+			player->catalog.inventory.remove_item(m_item_tag, 1);
+		}
+	}
+
 	svc.soundboard.set_listener_position(player->get_ear_position());
+
+	if (m_enter_room.running()) {
+		if (player->grounded()) { player->controller.autonomous_walk(); }
+	}
 
 	set_flag(GameplayStateFlags::early_tick_return, false);
 	GameplayState::tick_update(svc, engine);
 	if (has_flag_set(GameplayStateFlags::early_tick_return)) { return; }
 
-	if (m_console) {
+	player->set_flag(player::PlayerFlags::console_open, p_context.console.has_value());
+	if (p_context.console) {
 		m_flags.set(GameplayFlags::console_running);
-		if (m_console.value()->was_response_created() && !m_console.value()->has_nani_portrait()) {
+		if (p_context.console.value()->was_response_created() && !p_context.console.value()->has_nani_portrait()) {
 			player->wardrobe_widget.update(*player);
-			m_console.value()->set_nani_sprite(player->wardrobe_widget.get_sprite());
+			p_context.console.value()->set_nani_sprite(player->wardrobe_widget.get_sprite());
 		}
 	} else if (m_flags.consume(GameplayFlags::console_running)) {
-		auto to_set = p_inventory_window || p_vendor_dialog ? input::ActionSet::Menu : input::ActionSet::Platformer;
+		auto to_set = p_inventory_window || p_dialog ? input::ActionSet::Menu : input::ActionSet::Platformer;
 		svc.input_system.set_action_set(to_set);
+	}
+
+	if (p_reward_sequence) {
+		p_reward_sequence.value()->update(svc, *player, *m_map);
+		if (p_reward_sequence.value()->flags.consume(graphics::RewardSequenceFlags::health_get)) { hud.spawn_effect(svc, "bonus_heart", hud.get_hearts_endpoint(), {}, 1); }
+		if (p_reward_sequence.value()->is_done()) {
+			p_context.transition.end();
+			m_flags.set(GameplayFlags::health_increase_exit);
+		}
+		if (p_context.transition.is(graphics::TransitionState::inactive) && m_flags.consume(GameplayFlags::health_increase_exit)) {
+			if (p_reward_sequence.value()->flags.test(graphics::RewardSequenceFlags::console_after_exit)) {
+				if (auto rs_label = p_reward_sequence.value()->get_label()) { p_context.console.emplace(std::make_unique<gui::Console>(svc, svc.text.item["abilities"], *rs_label, gui::OutputType::no_skip)); }
+			}
+			p_reward_sequence.reset();
+		}
+		return;
 	}
 
 	svc.world_clock.update(svc);
@@ -114,11 +178,10 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		m_map->set_target_balance(0.f, audio::BalanceTarget::music);
 		m_map->set_target_balance(0.f, audio::BalanceTarget::ambience);
 		m_map->update_balance(svc);
-		m_map->transition.update(*player);
-		if (!m_console) {
+		if (!p_context.console) {
 			p_inventory_window.value()->update(svc, *player, *m_map);
 			if (p_inventory_window.value()->exit_requested()) {
-				p_inventory_window = {};
+				p_inventory_window.reset();
 				svc.input_system.set_action_set(input::ActionSet::Platformer);
 			}
 			return;
@@ -127,29 +190,36 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	if (check_for_vendor(svc)) { return; }
 
-	// TODO: re-do this once I reimplement regular inventory + collectible items. we will check collectible_items_view, or something else.
-	if (player->visit_history.traveled_far() || svc.data.marketplace.at(3).inventory.items_view().is_empty()) {
-		random::set_vendor_seed();
-		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
+	if (player->visit_history.traveled_far()) {
+		random::reset_vendor_seed();
+		svc.data.save_seed();
 		player->visit_history.clear();
+		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
+	}
+	if (svc.data.marketplace.at(3).inventory.items_view().is_empty()) {
+		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
 	}
 
 	// in-game menus
-	if (svc.input_system.digital(input::DigitalAction::inventory).triggered) { p_inventory_window = std::make_unique<gui::InventoryWindow>(svc, *m_map, *player); }
+	if (svc.input_system.digital(input::DigitalAction::inventory).triggered && !svc.no_menu()) { p_inventory_window = std::make_unique<gui::InventoryWindow>(svc, *m_map, *player); }
 
 	m_enter_room.update();
-	if (m_enter_room.running()) { player->controller.autonomous_walk(); }
+
+	// prevent falling out of the world bugs
+	if (!p_context.transition.is(graphics::TransitionState::inactive)) { player->set_flag(player::PlayerFlags::disable_abilities); }
+
+	if (p_context.console) { player->set_invincible(); }
 
 	// physical tick
 	player->update(*m_map);
 	player->start_tick();
-	m_map->update(svc, m_console);
+	m_map->update(svc, p_context);
 	handle_player_death(svc, *player);
 
 	m_map->debug_mode = debug_mode;
 
 	player->end_tick();
-	if (!m_console) { player->set_busy(false); }
+	if (!p_context.console) { player->set_busy(false); }
 
 	m_map->background->update(svc);
 	hud.update(svc, *player);
@@ -161,11 +231,31 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	if (!m_map) { return; }
 
+	auto cam = player->get_camera_position();
+
+	p_renderer.begin(win, cam);
+
 	// TODO: do this somewhere else
 	if (p_world_shader) {
-		m_map->render_background(svc, win, p_world_shader, player->get_camera_position());
-		m_map->render(svc, win, p_world_shader, player->get_camera_position());
+		m_map->render_background(p_renderer, svc, win, p_world_shader, cam);
+		for (auto& cutscene : p_context.cutscene_catalog.cutscenes) { cutscene->render(win, cam); }
+		p_entity_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
+		p_entity_shader->finalize(svc.data.biomes["properties"][m_map->get_biome_string()]["max_light"].as<float>());
+		auto ent_sprite = sf::Sprite{m_map->m_entity_texture.getTexture()};
+		ent_sprite.setPosition(-cam);
+		if (m_palette) {
+			p_entity_shader->submit(win, *m_palette, ent_sprite);
+		} else {
+			win.draw(ent_sprite);
+		}
+		auto sent_sprite = sf::Sprite{m_map->m_static_entity_texture.getTexture()};
+		sent_sprite.setPosition(-cam);
+		if (m_palette) { p_entity_shader->submit(win, *m_palette, sent_sprite); }
+
+		m_map->render(p_renderer, svc, win, p_world_shader, cam);
+
 		p_world_shader->clear_point_lights();
+		p_entity_shader->clear_point_lights();
 
 		float aspect = m_map->real_dimensions.x / m_map->real_dimensions.y;
 		for (auto& pl : m_map->point_lights) {
@@ -173,39 +263,66 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 			auto normalized = sf::Vector2f{(uv.x - 0.5f) * aspect + 0.5f, uv.y};
 			pl.position = normalized;
 			p_world_shader->add_point_light(pl);
+			p_entity_shader->add_point_light(pl);
 		}
 
 		auto puv = player->get_lantern_position().componentWiseDiv(m_map->real_dimensions);
 		auto normalized = sf::Vector2f{(puv.x - 0.5f) * aspect + 0.5f, puv.y};
 		auto ppl = PointLight(svc.data.light["lantern"], puv);
 		ppl.position = normalized;
-		if (player->has_item_equipped(svc.data.item_id_from_label("lantern"))) { p_world_shader->add_point_light(ppl); }
+		if (player->has_item_equipped("lantern")) {
+			p_world_shader->add_point_light(ppl);
+			p_entity_shader->add_point_light(ppl);
+		}
+
 		// m_shader->debug();
+	}
+	if (p_haze_shader) {
+		auto blanket = sf::RectangleShape{svc.window->f_screen_dimensions()};
+		auto highlight = Color{svc.data.biomes["properties"][m_map->get_biome_string()]["haze_highlight"]};
+		auto shadow = Color{svc.data.biomes["properties"][m_map->get_biome_string()]["haze_shadow"]};
+		p_haze_shader->finalize(svc.ticker.total_seconds_passed.count(), svc.window->get().getSize(), highlight, shadow, {cam.x, -cam.y});
+		p_haze_shader->submit(win, blanket, cam);
 	}
 
 	GameplayState::render(svc, win);
+
+	if (p_reward_sequence) {
+		if (p_reward_sequence.value()->flags.test(graphics::RewardSequenceFlags::show_player)) { player->render(svc, win, cam); }
+	}
 }
 
 void Dojo::reload(ServiceProvider& svc, int target_state) {
+	svc.soundboard.clear_sounds(audio::SoundBus::gameplay);
 	m_map->clear();
+	set_flag(GameplayStateFlags::transitioned_in, false);
 	m_flags.reset(GameplayFlags::transitioning);
-	m_map->transition.set(graphics::TransitionState::black);
-	m_map->transition.hang();
+	p_context.transition.set(graphics::TransitionState::black);
+	p_context.transition.hang();
 	svc.menu_controller.reset_vendor_dialog();
 	if (!svc.data.is_room_discovered(target_state)) {
 		svc.data.discovered_rooms.add(target_state);
 		svc.stats.world.rooms_discovered.update();
 	}
 	player->reset_flags();
+	player->cooldowns.suffocate.start();
+
+	if (p_context.console) { p_context.console.reset(); }
 
 	// the following should only happen for the editor demo
 	if (!svc.data.exists(target_state)) {
 		svc.data.rooms.push_back(target_state);
 		svc.data.load_data();
 	} else {
-		m_map->load(svc, m_console, target_state);
+		m_map->load(svc, p_context, target_state);
 		NANI_LOG_INFO(m_logger, "Map loaded.");
 	}
+
+	p_context.biome.emplace(m_map->get_biome_string());
+
+	// toxic haze
+	p_haze_shader.reset();
+	if (m_map->is_toxic()) { p_haze_shader.emplace(svc.finder, sf::Vector2u{svc.window->get().getSize()}, 2.1f); }
 
 	hud.reset_position(); // reset hud position to corner
 	svc.soundboard.turn_on();
@@ -218,26 +335,31 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 	bool found_one{};
 	// only search for door entry if room was not loaded from main menu and player didn't die
 	if (!svc.state_controller.actions.test(Actions::save_loaded) && !svc.state_controller.actions.test(Actions::player_death)) { found_one = m_map->handle_entry(*player, m_enter_room); }
-	if (!found_one) {
+	if (!found_one && !svc.state_controller.actions.test(Actions::custom_player_position)) {
 		float ppx = svc.data.get_save()["player_data"]["position"]["x"].as<float>();
 		float ppy = svc.data.get_save()["player_data"]["position"]["y"].as<float>();
 		sf::Vector2f player_pos = {ppx, ppy};
 		svc.demo_mode() ? player->place_at_demo_position() : player->set_position(player_pos);
+	} else if (svc.state_controller.actions.test(Actions::custom_player_position)) {
+		player->set_position(svc.state_controller.player_position);
+		svc.state_controller.actions.reset(automa::Actions::custom_player_position);
 	}
 
-	// save was loaded from a json, or player died, so we successfully skipped door search
+	// save was loaded from a json, or player died, so we successfully skipped door searchm_map->loa
 	svc.state_controller.actions.reset(Actions::save_loaded);
 	if (!player->is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
 	player->visit_history.push_room(target_state);
 
 	player->controller.prevent_movement();
 	m_loading.start();
+	if (m_map->has_property(world::MapProperties::lighting)) { m_palette.emplace(m_map->get_biome_string(), svc.finder); }
 	p_world_shader->set_darken(m_map->darken_factor);
+	p_entity_shader->set_darken(m_map->darken_factor);
 	p_world_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
 	p_gui_shader->set_texture_size(svc.window->f_screen_dimensions() * 3.f); // 3 is the number of screen-sized "cells" in the inventory window
 	svc.app_flags.reset(automa::AppFlags::custom_map_start);
 
-	if (svc.data.get_file().flags.test(io::FileFlags::inspect_hint)) {
+	if (svc.data.get_file().has_inspect_hint()) {
 		m_inspect_hint = util::Cooldown{2000};
 		m_inspect_hint->start();
 	}
@@ -252,23 +374,28 @@ void Dojo::acquire_item(ServiceProvider& svc, std::string_view tag) {
 	m_flags.set(GameplayFlags::give_item);
 }
 
+void Dojo::remove_item(ServiceProvider& svc, std::string_view tag) {
+	m_item_tag = std::string(tag);
+	m_flags.set(GameplayFlags::remove_item);
+}
+
 void Dojo::acquire_gun_from_console(ServiceProvider& svc, int id) {
 	if (auto tag = svc.data.get_gun_tag_from_id(id)) { acquire_gun(svc, *tag); }
 }
 
 void Dojo::acquire_gun(ServiceProvider& svc, std::string_view tag) {
 	if (tag == "bryns_gun") {
-		m_shoot_hint = util::Cooldown{500};
+		m_shoot_hint = util::Cooldown{1500};
 		m_shoot_hint->start();
 	}
 	NANI_LOG_DEBUG(m_logger, "Gun Tag: {}", tag.data());
 	player->push_to_loadout(tag);
-	if (!m_console) {
-		m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
-		m_console.value()->append(player->arsenal.value().get_weapon_at(tag).get_label());
-		m_console.value()->append("!");
+	if (!p_context.console) {
+		p_context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
+		p_context.console.value()->append(player->arsenal.value().get_weapon_at(tag).get_label());
+		p_context.console.value()->append("!");
 	}
-	m_console.value()->display_gun(tag);
+	p_context.console.value()->display_gun(tag);
 	svc.music_player.quick_play(svc.finder, "revelation");
 
 	m_flags.set(GameplayFlags::item_music_played);
@@ -278,6 +405,8 @@ void Dojo::remove_gun_by_id(ServiceProvider& svc, int id) {
 	if (auto tag = svc.data.get_gun_tag_from_id(id)) { remove_gun(svc, *tag); }
 }
 
+void Dojo::remove_item_by_id(ServiceProvider& svc, int id) { remove_item(svc, svc.data.item_label_from_id(id)); }
+
 void Dojo::equip_item(ServiceProvider& svc, int id) {
 	auto equipped = player->equip_item(id);
 	equipped == player::EquipmentStatus::equipped	  ? svc.soundboard.flags.item.set(audio::Item::equip)
@@ -285,19 +414,30 @@ void Dojo::equip_item(ServiceProvider& svc, int id) {
 													  : svc.soundboard.flags.menu.set(audio::Menu::error);
 	auto tag = equipped == player::EquipmentStatus::equipped ? "equipped" : "unequipped";
 	auto qualifier = svc.data.gui_text["notifications"][tag].as_string();
-	auto message = equipped != player::EquipmentStatus::failure ? qualifier + std::string{svc.data.item_label_from_id(id)} + "." : svc.data.gui_text["notifications"]["slots_full"].as_string();
+	auto message = equipped != player::EquipmentStatus::swapped	  ? qualifier + std::string{svc.data.item_label_from_id(id)} + "."
+				   : equipped == player::EquipmentStatus::swapped ? svc.data.gui_text["notifications"]["swapped"].as_string()
+																  : svc.data.gui_text["notifications"]["slots_full"].as_string();
 	svc.notifications.push_notification(svc, message);
+}
+
+void Dojo::use_item(ServiceProvider& svc, int id) {
+	player->hold_item(id);
+	if (p_inventory_window) { p_inventory_window.value()->close(); }
 }
 
 void Dojo::open_vendor(ServiceProvider& svc, int id) {
 	m_flags.set(GameplayFlags::open_vendor);
-	m_vendor_id = id;
+	m_dialog_id = id;
 }
 
-void Dojo::launch_cutscene(ServiceProvider& svc, int id) {
-	if (m_console) { return; }
-	m_map->cutscene_catalog.push_cutscene(svc, *m_map, *player, id);
+void Dojo::open_builder(ServiceProvider& svc, int id) {
+	m_flags.set(GameplayFlags::open_builder);
+	m_dialog_id = id;
 }
+
+void Dojo::launch_cutscene(ServiceProvider& svc, int id) { m_cutscenes.add(CutsceneSpec{id, 0}); }
+
+void Dojo::press_permanent_switch(ServiceProvider& svc, int id) { m_cutscenes.add(CutsceneSpec{2, id}); }
 
 void Dojo::add_map_marker(ServiceProvider& svc, int room_id, int type, int questline) {
 	if (!m_map) { return; }
@@ -308,27 +448,33 @@ void Dojo::add_map_marker(ServiceProvider& svc, int room_id, int type, int quest
 }
 
 bool Dojo::check_for_vendor(ServiceProvider& svc) {
-	if (m_console) { return false; }
-	if (m_flags.test(GameplayFlags::open_vendor)) {
-		if (m_map->transition.is(graphics::TransitionState::inactive)) {
-			m_map->transition.start();
-			NANI_LOG_DEBUG(m_logger, "Vendor Started");
+	if (p_context.console) { return false; }
+	if (m_flags.test(GameplayFlags::open_vendor) || m_flags.test(GameplayFlags::open_builder)) {
+		if (p_context.transition.is(graphics::TransitionState::inactive)) {
+			p_context.transition.start();
+			NANI_LOG_DEBUG(m_logger, "Dialog Started");
 		}
-		if (m_map->transition.is(graphics::TransitionState::black)) {
-			m_map->transition.end();
-			NANI_LOG_DEBUG(m_logger, "Vendor Opened");
-			p_vendor_dialog = std::make_unique<gui::VendorDialog>(svc, *m_map, *player, m_vendor_id);
+		if (p_context.transition.is(graphics::TransitionState::black)) {
+			p_context.transition.end();
+			NANI_LOG_DEBUG(m_logger, "Dialog Opened");
+			if (m_flags.test(GameplayFlags::open_vendor)) {
+				p_dialog = std::make_unique<gui::VendorDialog>(svc, *m_map, *player, m_dialog_id);
+				m_flags.reset(GameplayFlags::open_vendor);
+			}
+			if (m_flags.test(GameplayFlags::open_builder)) {
+				p_dialog = std::make_unique<gui::BuilderDialog>(svc, *m_map, *player, m_dialog_id);
+				m_flags.reset(GameplayFlags::open_builder);
+			}
 			svc.input_system.set_action_set(input::ActionSet::Menu);
 			svc.soundboard.flags.console.set(audio::Console::menu_open);
-			m_flags.reset(GameplayFlags::open_vendor);
 		}
 	}
-	if (p_vendor_dialog) {
-		m_map->transition.update(*player);
-		p_vendor_dialog.value()->update(svc, *m_map, *player);
-		if (!p_vendor_dialog.value()->is_open()) {
-			if (p_vendor_dialog.value()->made_profit()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
-			p_vendor_dialog = {};
+	if (p_dialog) {
+		p_context.transition.update(*player);
+		p_dialog.value()->update(svc, *m_map, *player, p_context);
+		if (!p_dialog.value()->is_open()) {
+			if (p_dialog.value()->made_profit()) { svc.soundboard.flags.item.set(audio::Item::orb_max); }
+			p_dialog.reset();
 			svc.input_system.set_action_set(input::ActionSet::Platformer);
 			if (p_gui_shader) { p_gui_shader->set_darken(0.f); }
 		}
@@ -343,17 +489,17 @@ bool Dojo::check_for_vendor(ServiceProvider& svc) {
 void Dojo::remove_gun(ServiceProvider& svc, std::string_view tag) {
 	auto label = player->arsenal.value().get_weapon_at(tag).get_label();
 	svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["removed"].as_string() + std::string{label} + ".");
-	if (!m_console) {
-		m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "removed", gui::OutputType::no_skip);
-		m_console.value()->append(player->arsenal.value().get_weapon_at(tag).get_label());
-		m_console.value()->append(".");
+	if (!p_context.console) {
+		p_context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "removed", gui::OutputType::no_skip);
+		p_context.console.value()->append(player->arsenal.value().get_weapon_at(tag).get_label());
+		p_context.console.value()->append(".");
 	}
 	player->pop_from_loadout(tag);
 	svc.soundboard.flags.item.set(audio::Item::unequip);
-	m_console.value()->display_gun(tag, false);
+	p_context.console.value()->display_gun(tag, false);
 }
 
-void Dojo::read_item(int id) { m_console = std::make_unique<gui::Console>(*p_services, p_services->text.item, p_services->data.item_label_from_id(id), gui::OutputType::gradual); }
+void Dojo::read_item(int id) { p_context.console = std::make_unique<gui::Console>(*p_services, p_services->text.item, p_services->data.item_label_from_id(id), gui::OutputType::gradual); }
 
 void Dojo::handle_player_death(ServiceProvider& svc, player::Player& player) {
 	if (!m_map) { return; }
@@ -363,22 +509,37 @@ void Dojo::handle_player_death(ServiceProvider& svc, player::Player& player) {
 	if (!m_flags.test(GameplayFlags::game_over) && player.is_death_complete()) {
 		m_flags.set(GameplayFlags::death_console_launched);
 		svc.app_flags.reset(automa::AppFlags::in_game);
-		m_console = std::make_unique<gui::Console>(svc, svc.text.basic, "death", gui::OutputType::gradual, static_cast<int>(player.get_i_death_type()));
+		p_context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "death", gui::OutputType::no_exit, static_cast<int>(player.get_i_death_type()));
 		m_flags.set(GameplayFlags::game_over);
 		svc.music_player.load(svc.finder, "mortem");
 		svc.music_player.play_looped();
 		svc.soundboard.turn_off();
+		player.visit_history.clear();
 		svc.stats.player.death_count.update();
 	}
 
-	if (!m_console && m_flags.test(GameplayFlags::game_over)) {
-		if (!m_flags.test(GameplayFlags::transitioning)) { m_map->transition.start(); }
+	if (!p_context.console && m_flags.test(GameplayFlags::game_over)) {
+		if (!m_flags.test(GameplayFlags::transitioning)) { p_context.transition.start(); }
 		m_flags.set(GameplayFlags::transitioning);
-		if (m_map->transition.is(graphics::TransitionState::black) && !svc.state_controller.actions.test(automa::Actions::player_death)) {
+		if (p_context.transition.is(graphics::TransitionState::black) && !svc.state_controller.actions.test(automa::Actions::player_death)) {
 			svc.state_controller.actions.set(automa::Actions::player_death);
 			m_flags.reset(GameplayFlags::game_over);
 		}
 	}
 }
+
+void Dojo::handle_health_increase(ServiceProvider& svc, player::Player& player) {
+	if (!p_reward_sequence) { p_reward_sequence.emplace(std::make_unique<graphics::HealthRewardSequence>(svc, player, p_context, hud.get_hearts_endpoint())); }
+}
+
+void Dojo::handle_ability_acquisition(ServiceProvider& svc, player::Player& player, std::string_view label) {
+	if (!p_reward_sequence) {
+		p_reward_sequence.emplace(std::make_unique<graphics::AbilityRewardSequence>(svc, player, p_context));
+		p_reward_sequence.value()->flags.set(graphics::RewardSequenceFlags::show_player);
+		p_reward_sequence.value()->set_label(label);
+	}
+}
+
+void Dojo::handle_transition() { set_flag(GameplayStateFlags::transitioned_in, false); }
 
 } // namespace fornani::automa

@@ -2,7 +2,7 @@
 #include "fornani/gui/InventorySelector.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 
 namespace fornani::gui {
 

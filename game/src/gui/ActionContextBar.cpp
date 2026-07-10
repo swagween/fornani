@@ -22,7 +22,7 @@ void ActionContextBar::update(automa::ServiceProvider& svc) {
 	//	text.add_sprite(sprite);
 
 	//	auto str = input::str(action);
-	//	text.add_text(str, svc.text.fonts.basic, 16, colors::dark_grey);
+	//	text.add_text(str, svc.text.fonts.basic.font, 16, colors::dark_grey);
 	//	text.add_spacing(15.f);
 	//}
 }

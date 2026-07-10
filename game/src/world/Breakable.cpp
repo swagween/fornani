@@ -1,11 +1,12 @@
 
-#include <ccmath/ext/clamp.hpp>
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/particle/Effect.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Random.hpp>
 #include <fornani/world/Breakable.hpp>
 #include <fornani/world/Map.hpp>
+#include <algorithm>
 
 namespace fornani::world {
 
@@ -14,14 +15,19 @@ Breakable::Breakable(automa::ServiceProvider& svc, Map& map, sf::Vector2f positi
 	get_collider().sync_components();
 	m_collider.get()->set_attribute(shape::ColliderAttributes::fixed);
 	m_collider.get()->set_trait(shape::ColliderTrait::block);
+	NANI_LOG_DEBUG(m_logger, "Breakable Position: {:.3f}, {:.3f}", get_collider().physics.position.x / 32.f, get_collider().physics.position.y / 32.f);
 }
 
 void Breakable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 	if (is_destroyed()) { return; }
 	tick();
-	energy = ccm::ext::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
-	if (energy < 0.2f) { energy = 0.f; }
-	if (svc.ticker.every_x_ticks(20)) { random_offset = random::random_vector_float(-energy, energy); }
+	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
+	if (energy < 0.2f) {
+		energy = 0.f;
+		random_offset = {};
+	} else {
+		if (svc.ticker.every_x_ticks(20)) { random_offset = random::random_vector_float(-energy, energy); }
+	}
 	handle_collision(player.get_collider());
 	set_channel(map.get_style_id());
 	set_frame(m_health.get_i_quantity() - 1);
@@ -34,11 +40,13 @@ void Breakable::handle_collision(shape::Collider& other) const {
 
 void Breakable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (is_destroyed()) { return; }
-	Animatable::set_position(get_collider().physics.position - cam + random_offset);
+	auto render_position = util::round_to(get_collider().physics.position, constants::f_cell_size);
+	Animatable::set_position(render_position - cam + random_offset);
 	if (svc.greyblock_mode()) {
 		get_collider().render(win, cam);
 	} else {
 		win.draw(*this);
+		++debug::draw_calls;
 	}
 }
 
@@ -56,10 +64,12 @@ void Breakable::on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile&
 
 void Breakable::on_smash(automa::ServiceProvider& svc, world::Map& map, float power) {
 	if (is_destroyed()) { return; }
+	auto diff = m_health.get_i_quantity();
 	m_health.inflict(power);
 	energy = hit_energy;
 	svc.soundboard.flags.world.set(audio::World::breakable_hit);
 	if (is_destroyed()) {
+		// svc.ticker.freeze_frame(diff, 0.25f);
 		map.spawn_effect(svc, "small_explosion", get_collider().get_center());
 		map.spawn_emitter(svc, "breakable", get_collider().get_position(), Direction{}, {32.f, 32.f});
 		svc.soundboard.flags.world.set(audio::World::breakable_shatter);

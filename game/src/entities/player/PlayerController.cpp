@@ -16,7 +16,8 @@ namespace fornani::player {
 
 constexpr static float crawl_speed_v{0.32f};
 
-PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player) : m_player(&player), cooldowns{.inspect{64}, .dash_kick{134}}, post_slide{80}, post_wallslide{16}, wallslide_slowdown{64} {
+PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player)
+	: m_player(&player), cooldowns{.inspect{64}, .dash_kick{134}, .movement{60}, .left_pressed{20}, .right_pressed{20}, .walljump_request{12}}, post_slide{80}, post_wallslide{16}, post_walljump{20}, wallslide_slowdown{64} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
@@ -80,11 +81,25 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	auto const left_pressed = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::left);
 	auto const right_pressed = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::right);
 
+	set_flag(PlayerControllerFlags::firing_weapon, svc.input_system.digital(input::DigitalAction::shoot).held);
+
+	// set input direction
+	if (left) { player.directions.input.set_from_simple({LR::left}); }
+	if (right) { player.directions.input.set_from_simple({LR::right}); }
+
 	// set dash direction
 	if (up) { m_dash_direction = Direction{{0, 1}}; }
 	if (down) { m_dash_direction = Direction{{0, -1}}; }
 	if (left) { m_dash_direction = Direction{{-1, 0}}; }
 	if (right) { m_dash_direction = Direction{{1, 0}}; }
+
+	// detect recent movement inputs for smoother walljumping, particularly on gamepads
+	cooldowns.movement.update();
+	cooldowns.left_pressed.update();
+	cooldowns.right_pressed.update();
+	if (left_pressed) { cooldowns.left_pressed.start(); }
+	if (right_pressed) { cooldowns.right_pressed.start(); }
+	if (left || right) { cooldowns.movement.start(); }
 
 	// inspect
 	auto const& inspected = (it) && grounded() && !left && !right;
@@ -103,6 +118,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	/* handle abilities */
 	post_slide.update();
 	post_wallslide.update();
+	post_walljump.update();
 	if (player.grounded()) { player.m_ability_usage = {}; }
 	if (svc.input_system.digital(input::DigitalAction::dash).triggered) {
 		auto const dj_guard = (dash_and_jump_combined && any_direction_held) || !dash_and_jump_combined;
@@ -111,23 +127,46 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 			player.m_ability_usage.dash.update();
 		}
 	}
+
+	// jump triggered
+	// guard for when player has jump and dash bound to the same key
+	auto const dash_exhausted = !player.can_dash() && !is_dashing();
+	auto direction_held = left || right || cooldowns.movement.running();
+
+	auto left_walljump_collision = player.get_collider().has_left_wallslide_collision() || player.get_collider().has_flag_set(shape::ColliderFlags::left_walljump);
+	auto right_walljump_collision = player.get_collider().has_right_wallslide_collision() || player.get_collider().has_flag_set(shape::ColliderFlags::right_walljump);
+	auto any_walljump_collision = right_walljump_collision || left_walljump_collision;
+
+	auto can_walljump = any_walljump_collision && !player.get_collider().grounded() && player.can_walljump() && direction_held;
+	auto can_doublejump = (player.can_doublejump() && !dash_and_jump_combined) || (player.can_doublejump() && dash_and_jump_combined && (!any_direction_held || dash_exhausted));
+	auto jump_direction = right_walljump_collision ? Direction{LR::right} : left_walljump_collision ? Direction{LR::left} : direction;
 	if (svc.input_system.digital(input::DigitalAction::jump).triggered) {
-		if (player.can_jump()) { m_ability = std::make_unique<Jump>(svc, map, player.get_collider()); }
-		// guard for when player has jump and dash bound to the same key
-		auto const dash_exhausted = !player.can_dash() && !is_dashing();
-		auto direction_held = left || right;
-		auto can_walljump = (player.get_collider().has_right_wallslide_collision() || player.get_collider().has_left_wallslide_collision()) && !player.get_collider().grounded() && player.can_walljump() && direction_held;
-		auto can_doublejump = (player.can_doublejump() && !dash_and_jump_combined) || (player.can_doublejump() && dash_and_jump_combined && (!any_direction_held || dash_exhausted));
-		auto jump_direction = player.get_collider().has_right_wallslide_collision() ? Direction{LR::right} : player.get_collider().has_left_wallslide_collision() ? Direction{LR::left} : Direction{};
+		if (player.can_jump()) {
+			auto multiplier = consume_flag(PlayerControllerFlags::super_slide) ? 0.55f : 0.25f;
+			if (consume_flag(PlayerControllerFlags::slide_jump)) { player.apply_impulse({player.get_collider().physics.velocity.x * multiplier, 0.f}); }
+			m_ability = std::make_unique<Jump>(svc, map, player.get_collider());
+		}
+		cooldowns.walljump_request.start();
 		if (can_walljump) {
-			m_ability = std::make_unique<Walljump>(svc, map, player.get_collider(), jump_direction);
+			auto perfect = (direction.left() && cooldowns.right_pressed.running()) || (direction.right() && cooldowns.left_pressed.running());
+			m_ability = std::make_unique<Walljump>(svc, map, player.get_collider(), jump_direction, perfect);
 		} else if (can_doublejump && !player.can_dive()) {
 			m_ability = std::make_unique<Doublejump>(svc, map, player.get_collider());
 			player.m_ability_usage.doublejump.update();
 		}
 		if (player.can_dive() && !can_walljump) { m_ability = std::make_unique<Dive>(svc, map, player.get_collider()); }
 	}
+	if (cooldowns.walljump_request.running() && !m_ability.has_value() && !post_walljump.running()) {
+		if (can_walljump) {
+			auto perfect = (direction.left() && cooldowns.right_pressed.running()) || (direction.right() && cooldowns.left_pressed.running());
+			m_ability = std::make_unique<Walljump>(svc, map, player.get_collider(), jump_direction, perfect);
+		}
+	}
+	if (!is_rolling() && !is_sliding()) { set_flag(PlayerControllerFlags::slide_jump, false); }
 	if (!is_wallsliding()) { svc.soundboard.flags.player.reset(audio::Player::wallslide); }
+	player.get_collider().set_flag(shape::ColliderFlags::left_walljump, false);
+	player.get_collider().set_flag(shape::ColliderFlags::right_walljump, false);
+	cooldowns.walljump_request.update();
 
 	// crouching, rolling, and sliding
 	if (svc.input_system.digital(input::DigitalAction::slide).held) {
@@ -162,7 +201,6 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 
 	if (player.can_dash_kick() && !cooldowns.dash_kick.running()) {
 		m_ability = std::make_unique<DashKick>(svc, map, player.get_collider(), player.get_actual_direction());
-		svc.ticker.freeze_frame(8);
 		player.health.invincibility.start(16);
 		player.m_ability_usage.dash.update(-1);
 		player.set_flag(PlayerFlags::dash_kick, false);
@@ -175,7 +213,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		// stop rising if player releases jump control
 		if (is(AbilityType::jump) || is(AbilityType::doublejump) || is(AbilityType::walljump) || is(AbilityType::dive)) {
 			if (svc.input_system.digital(input::DigitalAction::jump).released) { m_ability.value()->cancel(); }
-			if (m_ability.value()->cancelled() && player.get_collider().physics.apparent_velocity().y < 0.0f) {
+			if (m_ability.value()->cancelled() && (player.get_collider().physics.apparent_velocity().y < 0.0f || is(AbilityType::walljump))) {
 				player.get_collider().physics.acceleration.y *= player.physics_stats.jump_release_multiplier;
 				m_ability.value()->fail();
 			}
@@ -212,11 +250,8 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (sprint_release) { sprint_flags.set(Sprint::released); }
 	if (grounded()) { sprint_flags = {}; }
 
-	if (shoot_pressed) { key_map[ControllerInput::shoot] = 1.f; }
-	if (shoot_released) { key_map[ControllerInput::shoot] = 0.f; }
-
 	bool firing_automatic = false;
-	if (!restricted() && (!shot() || !has_arsenal())) {
+	if (!restricted() && (!shot() || !has_arsenal()) && !shoot_released) {
 		direction.lnr = moving_left() ? LNR::left : direction.lnr;
 		direction.lnr = moving_right() ? LNR::right : direction.lnr;
 		direction.und = UND::neutral;
@@ -228,6 +263,10 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	} else if (((moving_left() && direction.lnr == LNR::right) || (moving_right() && direction.lnr == LNR::left))) {
 		key_map[ControllerInput::slide] = 0.f;
 	}
+	if (shoot_pressed) { key_map[ControllerInput::shoot] = 1.f; }
+	if (shoot_released) { key_map[ControllerInput::shoot] = 0.f; }
+	set_flag(PlayerControllerFlags::released_weapon, shoot_released);
+	set_flag(PlayerControllerFlags::shot_weapon, shoot_pressed);
 
 	if ((left_pressed || left) && !firing_automatic && !is_crouching()) { m_last_requested_direction.set(LR::left); }
 	if ((right_pressed || right) && !firing_automatic && !is_crouching()) { m_last_requested_direction.set(LR::right); }

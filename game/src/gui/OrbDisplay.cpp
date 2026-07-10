@@ -4,13 +4,16 @@
 
 namespace fornani::gui {
 
-OrbDisplay::OrbDisplay(automa::ServiceProvider& svc) : Animatable(svc, "orbs", {12, 12}), m_amount{svc.text.fonts.title} {
+OrbDisplay::OrbDisplay(automa::ServiceProvider& svc) : Animatable(svc, "orbs", {12, 12}), m_amount{svc.text.fonts.title.font}, m_displayed_amount{0.f} {
 	set_parameters(anim::Parameters{0, 7, 24, -1});
 	m_amount.setCharacterSize(16);
 }
 
-void OrbDisplay::update(int amount) {
-	m_amount.setString(std::to_string(amount));
+void OrbDisplay::update(int amount, float dt) {
+	constexpr float speed = 8.f;
+	m_displayed_amount += (static_cast<float>(amount) - m_displayed_amount) * speed * dt;
+	if (std::abs(m_displayed_amount - amount) < 0.01f) { m_displayed_amount = static_cast<float>(amount); }
+	m_amount.setString(std::to_string(static_cast<int>(std::round(m_displayed_amount))));
 	tick();
 }
 
@@ -18,7 +21,7 @@ void OrbDisplay::render(sf::RenderWindow& win, sf::Vector2f const pos) {
 	set_position(pos);
 	auto text_offset = sf::Vector2f{46.f, 4.f};
 	m_amount.setPosition(pos + text_offset);
-	m_amount.setFillColor(colors::pioneer_red);
+	m_displayed_amount < 0.f ? m_amount.setFillColor(colors::blue) : m_amount.setFillColor(colors::pioneer_red);
 	win.draw(m_amount);
 	win.draw(*this);
 }

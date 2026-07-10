@@ -10,7 +10,7 @@ namespace fornani::enemy {
 Caster::Caster(automa::ServiceProvider& svc, world::Map& map, int variant)
 	: Enemy(svc, map, "caster"), m_services(&svc), m_map(&map), parts{.scepter{svc.assets.get_texture("caster_scepter"), 2.0f, 0.85f, {-16.f, 38.f}}, .wand{svc.assets.get_texture("caster_wand"), 2.0f, 0.85f, {-40.f, 48.f}}},
 	  energy_ball(svc, "energy_ball"), m_variant{static_cast<CasterVariant>(variant)}, m_target_force{0.0003f}, m_debug{} {
-	m_params = {{"idle", {0, 4, 28, -1}}, {"turn", {9, 3, 18, 0}}, {"prepare", {9, 3, 18, 0}}, {"signal", {4, 4, 28, 2}}, {"dormant", {8, 1, 32, -1}}};
+	p_animations = {{"idle", {0, 4, 28, -1}}, {"turn", {9, 3, 18, 0}}, {"prepare", {9, 3, 18, 0}}, {"signal", {4, 4, 28, 2}}, {"dormant", {8, 1, 32, -1}}};
 	animation.set_params(get_params("dormant"));
 	if (map.get_style_id() == 5) { cooldowns.awaken = util::Cooldown{4}; }
 	get_collider().physics.set_friction_componentwise({0.964f, 0.964f});
@@ -181,9 +181,8 @@ fsm::StateFunction Caster::update_signal() {
 	parts.wand.sprite->setTextureRect(sf::IntRect{{0, wand_dimensions.y + wand_dimensions.y * flash.get_alternator()}, wand_dimensions});
 	if (m_variant == CasterVariant::tyrant) { cooldowns.rapid_fire.update(); }
 	if (cooldowns.rapid_fire.is_almost_complete()) {
-		m_map->spawn_projectile_at(*m_services, energy_ball.get(), energy_ball.get().get_barrel_point(), attack_target);
+		energy_ball.shoot(*m_services, *m_map, attack_target);
 		cooldowns.rapid_fire.start();
-		m_services->soundboard.flags.weapon.set(audio::Weapon::energy_ball);
 	}
 	if (animation.complete()) {
 		parts.scepter.sprite->setTextureRect(sf::IntRect{{0, 0}, scepter_dimensions});
@@ -191,10 +190,7 @@ fsm::StateFunction Caster::update_signal() {
 		auto sign = directions.actual.lnr == LNR::left ? 1.f : -1.f;
 		parts.scepter.sprite->rotate(sf::degrees(-90.f) * sign);
 		cooldowns.post_cast.start();
-		if (m_variant == CasterVariant::apprentice) {
-			m_map->spawn_projectile_at(*m_services, energy_ball.get(), energy_ball.get().get_barrel_point(), attack_target);
-			m_services->soundboard.flags.weapon.set(audio::Weapon::energy_ball);
-		}
+		if (m_variant == CasterVariant::apprentice) { energy_ball.shoot(*m_services, *m_map, attack_target); }
 		if (change_state(CasterState::turn, get_params("turn"))) { return CASTER_BIND(update_turn); }
 		request(CasterState::idle);
 		if (change_state(CasterState::idle, get_params("idle"))) { return CASTER_BIND(update_idle); }

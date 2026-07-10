@@ -14,6 +14,8 @@
 
 namespace fornani {
 
+constexpr auto max_light_v = 3.f;
+
 struct PointLight {
 	PointLight() = default;
 	PointLight(dj::Json const& in, sf::Vector2f pos) : world_position{pos} {
@@ -90,7 +92,7 @@ class LightShader {
 	void set_texture_size(sf::Vector2f const to) { m_texture_size = to; }
 	void set_parity(sf::Vector2i const reference) { m_parity = sf::Vector2f{static_cast<float>(std::abs(reference.x) % 2), static_cast<float>(std::abs(reference.y) % 2)}; }
 
-	void finalize();
+	void finalize(float max_light = max_light_v);
 	void submit(sf::RenderWindow& win, Palette& palette, sf::Sprite const& sprite);
 
 	void debug();

@@ -2,6 +2,7 @@ nani_add_headers(
         ActionContextBar.hpp
         ActionControlIconQuery.hpp
         BossHealth.hpp
+        Button.hpp
         Dashboard.hpp
         DottedLine.hpp
         Gizmo.hpp
@@ -16,11 +17,12 @@ nani_add_headers(
         Portrait.hpp
         InventorySelector.hpp
         StatusBar.hpp
-        VendorDialog.hpp
         WardrobeWidget.hpp
         Widget.hpp
         WidgetBar.hpp
+        ZoneCollection.hpp
 )
 add_subdirectory(console)
 add_subdirectory(gizmos)
+add_subdirectory(dialogs)
 add_subdirectory(hud)

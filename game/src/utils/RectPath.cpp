@@ -1,6 +1,6 @@
 
-#include <ccmath/ext/clamp.hpp>
-#include <ccmath/math/misc/lerp.hpp>
+#include <algorithm>
+#include <cmath>
 #include <djson/json.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
 #include <fornani/utils/RectPath.hpp>
@@ -26,11 +26,11 @@ void RectPath::update() {
 	auto end{static_cast<int>(m_sections.at(m_current_section).path.size()) - 1};
 	auto target_position{m_sections.at(m_current_section).path.at(m_current_step).position};
 	auto target_dimensions{m_sections.at(m_current_section).path.at(m_current_step).size};
-	auto previous_position{m_sections.at(m_current_section).path.at(ccm::ext::clamp(m_current_step + -1, 0, end)).position};
-	auto previous_dimensions{m_sections.at(m_current_section).path.at(ccm::ext::clamp(m_current_step + -1, 0, end)).size};
+	auto previous_position{m_sections.at(m_current_section).path.at(std::clamp(m_current_step + -1, 0, end)).position};
+	auto previous_dimensions{m_sections.at(m_current_section).path.at(std::clamp(m_current_step + -1, 0, end)).size};
 	if (m_current_position == target_position && m_current_dimensions == target_dimensions) {
 		if (m_current_step != end) { m_interpolation.start(); }
-		m_current_step = ccm::ext::clamp(m_current_step + 1, 0, end);
+		m_current_step = std::clamp(m_current_step + 1, 0, end);
 		m_step_completed = true;
 		return;
 	}
@@ -40,12 +40,13 @@ void RectPath::update() {
 	case util::InterpolationType::linear: interpolation = m_interpolation.get_inverse_normalized(); break;
 	case util::InterpolationType::quadratic: interpolation = m_interpolation.get_inverse_quadratic_normalized(); break;
 	case util::InterpolationType::cubic: interpolation = m_interpolation.get_inverse_cubic_normalized(); break;
+	case util::InterpolationType::ease: interpolation = util::smootherstep(m_interpolation.get_inverse_normalized()); break;
 	}
 
-	m_current_position.x = ccm::lerp(previous_position.x, target_position.x, interpolation);
-	m_current_position.y = ccm::lerp(previous_position.y, target_position.y, interpolation);
-	m_current_dimensions.x = ccm::lerp(previous_dimensions.x, target_dimensions.x, interpolation);
-	m_current_dimensions.y = ccm::lerp(previous_dimensions.y, target_dimensions.y, interpolation);
+	m_current_position.x = std::lerp(previous_position.x, target_position.x, interpolation);
+	m_current_position.y = std::lerp(previous_position.y, target_position.y, interpolation);
+	m_current_dimensions.x = std::lerp(previous_dimensions.x, target_dimensions.x, interpolation);
+	m_current_dimensions.y = std::lerp(previous_dimensions.y, target_dimensions.y, interpolation);
 }
 
 void RectPath::set_section(std::string_view to_section) {
@@ -55,6 +56,7 @@ void RectPath::set_section(std::string_view to_section) {
 		if (section.label == to_section.data()) { m_current_section = counter; }
 		++counter;
 	}
+	m_previous_position = m_current_position;
 	m_current_position = m_sections.at(m_current_section).path.at(m_current_step).position;
 	m_current_dimensions = m_sections.at(m_current_section).path.at(m_current_step).size;
 }

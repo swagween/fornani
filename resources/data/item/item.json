@@ -10,33 +10,46 @@
     "unique": true
   },
   {
-    "tag": "factory_access_permit",
-    "actual_title": "Factory Access Permit",
-    "naive_description": "A permit that grants you access to the Nimbus III Maintenance Facility.",
-    "unique": true
+    "tag": "skycorps_access_permit",
+    "category": 1,
+    "lookup": [1, 0],
+    "origin": [5, 3],
+    "actual_title": "Skycorps Access Permit",
+    "naive_description": "A permit that grants you access to the Skycorps junkyards.",
+    "unique": true,
+    "is_key": true
   },
   {
     "tag": "bipolar_junction_transistor",
+    "category": 1,
     "actual_title": "Bipolar Junction Transistor",
     "naive_description": "It looks like a mechanical part of sorts.",
     "actual_description": "Beeker says this is required to build a special kind of gun. You should hold on to it.",
-    "unique": true
+    "ingredient": true,
+    "unique": true,
+    "lookup": [4, 0],
+    "origin": [6, 2]
   },
   {
     "tag": "willets_floppy_disc",
-    "actual_title": "Willet's Floppy Disc",
-    "naive_description": "Contains schematics for the Greatwing, which we will need in order to stop Skycorps from taking over the island. Dr. Willet told me to bring it to someone named Spencer in Ashtown.",
+    "category": 1,
+    "lookup": [3, 0],
+    "origin": [5, 2],
+    "actual_title": "Willett's Floppy Disc",
+    "naive_description": "Contains schematics for the Greatwing, which we will need in order to stop Skycorps from taking over the island. Dr. Willett told me to bring it to someone named Spencer in Ashtown.",
     "actual_description": "Contains schematics for the Greatwing. Spencer needs a track zero sensor and a fresh head motor to access its contents.",
     "unique": true
   },
   {
     "tag": "track_zero_sensor",
+    "category": 1,
     "actual_title": "Track Zero Sensor",
     "naive_description": "A small sensor that Spencer needs to repair his floppy disc drive. Without it, he can't access the Greatwing schematics.",
     "unique": true
   },
   {
     "tag": "head_motor",
+    "category": 1,
     "actual_title": "Head Motor",
     "naive_description": "A tiny motor that Spencer needs to access Doc Willet's floppy disc.",
     "unique": true
@@ -72,7 +85,9 @@
     "actual_title": "Magnifying Glass",
     "naive_description": "When equipped, this allows you to see enemies' life force.",
     "unique": true,
-    "equippable": true
+    "sellable": true,
+    "equippable": true,
+    "value": 900
   },
   {
     "tag": "hoarders_trinket",
@@ -93,7 +108,10 @@
     "actual_title": "Magnet",
     "naive_description": "When equipped, drops will gravitate to you.",
     "unique": true,
-    "equippable": true
+    "sellable": true,
+    "equippable": true,
+    "ingredient": true,
+    "value": 1100
   },
   {
     "tag": "firstwind_hangar_key",
@@ -108,15 +126,21 @@
   },
   {
     "tag": "woodshine_warehouse_key",
+    "category": 1,
+    "lookup": [8, 0],
+    "origin": [7, 3],
     "actual_title": "Woodshine Warehouse Key",
     "naive_description": "Allows you to enter Woodshine's warehouse.",
     "unique": true,
     "is_key": true
   },
   {
-    "tag": "nimbus_iii_boiler_room_key",
-    "actual_title": "Nimbus III Boiler Room Key",
-    "naive_description": "Allows you to enter Nimbus III's boiler room.",
+    "tag": "pioneer_station_key",
+    "category": 1,
+    "lookup": [8, 0],
+    "origin": [4, 4],
+    "actual_title": "Pioneer Station Key",
+    "naive_description": "Grants you access to Pioneer Station from Woodshine Village.",
     "unique": true,
     "is_key": true
   },
@@ -144,11 +168,15 @@
   },
   {
     "tag": "four_of_diamonds",
+    "category": 1,
+    "lookup": [12, 0],
+    "origin": [5, 3],
     "actual_title": "Four of Diamonds",
-    "naive_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
-    "actual_description": "An old playing card you found in Bit's prison cell on Firstwind. It's definitely completely worthless.",
+    "naive_description": "An old playing card that Carl gave you in exchange for a soda. You suspect it might be completely worthless.",
+    "actual_description": "An old playing card that Carl gave you in exchange for a soda. You suspect it might be completely worthless.",
     "sellable": true,
-    "unique": true
+    "unique": true,
+    "value": 20
   },
   {
     "tag": "lantern",
@@ -163,7 +191,7 @@
     "equippable": true,
     "sellable": true,
     "rarity": 2,
-    "value": 1800
+    "value": 800
   },
   {
     "tag": "boiler_key",
@@ -179,40 +207,56 @@
   },
   {
     "tag": "radar_device",
-    "category": 3,
+    "category": 4,
     "lookup": [15, 0],
     "origin": [0, 0],
     "naive_title": "Radar Device",
     "actual_title": "Radar Device",
     "naive_description": "A map system. It fits perfectly in the top slot of your pocket gizmo.",
     "actual_description": "A map system. It fits perfectly in the top slot of your pocket gizmo.",
-    "unique": true
+    "unique": true,
+    "build": {
+      "recipe": ["priorite", "pioneer_scrap", "rhenite"],
+      "craft_price": 200,
+      "lookup": 5
+    }
   },
   {
     "tag": "clock",
-    "category": 3,
+    "category": 4,
     "lookup": [0, 1],
     "origin": [1, 0],
     "naive_title": "Clock",
     "actual_title": "Clock",
     "naive_description": "A clock that reads the current time of day. It was designed to fit snugly into your pocket gizmo.",
     "actual_description": "A clock that reads the current time of day. It was designed to fit snugly into your pocket gizmo.",
-    "unique": true
+    "unique": true,
+    "build": {
+      "recipe": ["priorite", "pioneer_scrap", "magnet"],
+      "craft_price": 100,
+      "lookup": 4
+    }
   },
   {
     "tag": "status_gizmo",
-    "category": 3,
+    "category": 4,
     "lookup": [1, 1],
     "origin": [2, 0],
     "naive_title": "Status Gizmo",
     "actual_title": "Status Gizmo",
     "naive_description": "A gizmo that attaches to your inventory dashboard and displays your current outfit and lifeforce.",
     "actual_description": "A gizmo that attaches to your inventory dashboard and displays your current outfit and lifeforce.",
-    "unique": true
+    "unique": true,
+    "value": 1000,
+    "build": {
+      "recipe": ["priorite", "pioneer_scrap", "heart_keychain"],
+      "craft_price": 200,
+      "lookup": 3
+    }
   },
   {
     "tag": "outfitter_gizmo",
-    "category": 3,
+    "category": 4,
     "lookup": [2, 1],
     "origin": [3, 0],
     "naive_title": "Outfitter Gizmo",
@@ -222,11 +266,16 @@
     "unique": true,
     "readable": true,
     "rarity": 1,
-    "value": 560
+    "value": 560,
+    "build": {
+      "recipe": ["rhenite", "pioneer_scrap", "indigum"],
+      "craft_price": 400,
+      "lookup": 1
+    }
   },
   {
     "tag": "rotary_gizmo",
-    "category": 3,
+    "category": 4,
     "lookup": [11, 2],
     "origin": [4, 0],
     "naive_title": "Rotary Gizmo",
@@ -236,7 +285,12 @@
     "unique": true,
     "readable": true,
     "rarity": 1,
-    "value": 900
+    "value": 900,
+    "build": {
+      "recipe": ["priorite", "pioneer_scrap", "brinium"],
+      "craft_price": 400,
+      "lookup": 2
+    }
   },
   {
     "tag": "dog_leash",
@@ -250,13 +304,16 @@
   },
   {
     "tag": "soda",
-    "category": 1,
-    "lookup": [2, 2],
-    "origin": [1, 1],
+    "category": 3,
+    "lookup": [2, 9],
+    "origin": [2, 0],
     "actual_title": "Soda",
-    "naive_description": "When equipped, this will reduce reload times by 15%.",
+    "naive_description": "Looks like an ordinary can of SkyCola.",
+    "hidden_description": "If you drink this, it will make you invincible for a brief duration.",
     "unique": false,
-    "equippable": true
+    "sellable": true,
+    "useable": true,
+    "value": 280
   },
   {
     "tag": "equip_slot",
@@ -265,20 +322,31 @@
     "actual_title": "Equip Slot",
     "naive_description": "Item equip slot.",
     "invisible": true,
-    "stack_limit": 3
+    "stack_limit": 3,
+    "build": {
+      "recipe": ["brinium", "pioneer_scrap", "indigum"],
+      "craft_price": 800,
+      "lookup": 0
+    }
   },
   {
     "tag": "ashtown_raspberry_preserves",
+    "category": 3,
+    "lookup": [0, 9],
+    "origin": [0, 0],
     "actual_title": "Ashtown Preserves",
     "naive_description": "A delicious raspberry treat. It would taste better on some toast, but it will still restore your health if you eat it.",
     "unique": false,
-    "usable": true,
+    "useable": true,
+    "sellable": true,
     "rarity": 1,
     "value": 660
   },
   {
     "tag": "bronze_bracelet",
-    "lookup": [10, 1],
+    "category": 2,
+    "lookup": [6, 1],
+    "origin": [5, 3],
     "actual_title": "Bronze Bracelet",
     "naive_description": "A common treasure item.",
     "unique": false,
@@ -288,6 +356,9 @@
   },
   {
     "tag": "silver_bracelet",
+    "category": 2,
+    "lookup": [7, 1],
+    "origin": [6, 3],
     "actual_title": "Silver Bracelet",
     "naive_description": "A common treasure item.",
     "unique": false,
@@ -310,6 +381,7 @@
   },
   {
     "tag": "walkie_talkie",
+    "category": 1,
     "actual_title": "Walkie-Talkie",
     "naive_description": "The batteries are dead.",
     "unique": false,
@@ -318,26 +390,43 @@
     "value": 60
   },
   {
-    "tag": "clamp",
-    "lookup": [6, 1],
+    "tag": "screwdriver",
+    "category": 1,
+    "lookup": [10, 1],
     "origin": [8, 1],
-    "actual_title": "Clamp",
-    "naive_description": "A painted metal clamp. It could be useful for home improvements.",
+    "actual_title": "Screwdriver",
+    "naive_description": "Just an ordinary screwdriver.",
+    "hidden_description": "Give this to Dr. Willett to enable him to craft pioneer tech.",
     "unique": false,
     "equippable": false,
     "sellable": true,
-    "value": 90
+    "value": 120
   },
   {
     "tag": "heart_keychain",
-    "category": 5,
+    "category": 1,
+    "lookup": [12, 1],
+    "origin": [8, 3],
     "actual_title": "Heart Keychain",
     "naive_description": "A heart keychain. You attach it to your belt and it gives you extra life.",
     "unique": false,
+    "equippable": true,
     "rarity": 1
   },
   {
+    "tag": "cridium_shard",
+    "category": 2,
+    "lookup": [6, 6],
+    "origin": [1, 0],
+    "actual_title": "Cridium Shard",
+    "naive_description": "A shard of a rare rhenite-based compound. From its spectacular facets radiates a warm energy.",
+    "actual_description": "A shard of a rare rhenite-based compound. From its spectacular facets radiates a warm energy.",
+    "unique": false,
+    "readable": true
+  },
+  {
     "tag": "stationary_rat",
+    "category": 1,
     "actual_title": "Stationary Rat",
     "naive_description": "You discovered this rat inside a chest. It obviously didn't want to be found.",
     "actual_description": "A very good boy who cannot spin.",
@@ -420,7 +509,7 @@
   },
   {
     "tag": "ceremonial_garb",
-    "category": 4,
+    "category": 5,
     "lookup": [4, 12],
     "origin": [4, 2],
     "actual_title": "Ceremonial Garb",
@@ -435,7 +524,7 @@
   },
   {
     "tag": "demon_cuirass",
-    "category": 4,
+    "category": 5,
     "lookup": [5, 12],
     "origin": [5, 2],
     "actual_title": "Demon Cuirass",
@@ -450,22 +539,22 @@
   },
   {
     "tag": "demon_greaves",
-    "category": 4,
-    "lookup": [5, 12],
-    "origin": [5, 2],
+    "category": 5,
+    "lookup": [5, 13],
+    "origin": [5, 3],
     "actual_title": "Demon Greaves",
     "actual_description": "Ancient rhenite greaves worn by Kariba warriors.",
     "unique": true,
     "equippable": false,
     "wearable": true,
     "sellable": true,
-    "apparel_type": 2,
+    "apparel_type": 3,
     "rarity": 2,
-    "value": 2800
+    "value": 2000
   },
   {
     "tag": "ceremonial_skirt",
-    "category": 4,
+    "category": 5,
     "lookup": [4, 13],
     "origin": [4, 3],
     "actual_title": "Ceremonial Skirt",
@@ -480,7 +569,7 @@
   },
   {
     "tag": "pioneer_armor",
-    "category": 4,
+    "category": 5,
     "lookup": [3, 12],
     "origin": [3, 2],
     "actual_title": "Pioneer Armor",
@@ -495,7 +584,7 @@
   },
   {
     "tag": "pioneer_tights",
-    "category": 4,
+    "category": 5,
     "lookup": [3, 13],
     "origin": [3, 3],
     "actual_title": "Pioneer Tights",
@@ -510,7 +599,7 @@
   },
   {
     "tag": "red_jeans",
-    "category": 4,
+    "category": 5,
     "lookup": [0, 13],
     "origin": [0, 3],
     "actual_title": "Red Jeans",
@@ -526,6 +615,7 @@
   {
     "tag": "clay_statue",
     "lookup": [0, 4],
+    "origin": [0, 1],
     "category": 2,
     "actual_title": "Clay Statue",
     "naive_description": "A common artifact of the ancient peoples.",
@@ -538,6 +628,8 @@
   {
     "tag": "glass_statue",
     "category": 2,
+    "lookup": [1, 4],
+    "origin": [1, 1],
     "actual_title": "Glass Statue",
     "naive_description": "An uncommon artifact of the ancient peoples.",
     "rarity": 1,
@@ -549,6 +641,8 @@
   {
     "tag": "bronze_statue",
     "category": 2,
+    "lookup": [2, 4],
+    "origin": [2, 1],
     "actual_title": "Bronze Statue",
     "naive_description": "A rare artifact of the ancient peoples.",
     "rarity": 2,
@@ -560,6 +654,8 @@
   {
     "tag": "cinnabar_statue",
     "category": 2,
+    "lookup": [3, 4],
+    "origin": [3, 1],
     "actual_title": "Cinnabar Statue",
     "naive_description": "A very rare artifact of the ancient peoples.",
     "rarity": 2,
@@ -571,6 +667,8 @@
   {
     "tag": "jade_statue",
     "category": 2,
+    "lookup": [4, 4],
+    "origin": [4, 1],
     "actual_title": "Jade Statue",
     "naive_description": "An incredibly rare artifact of the ancient peoples.",
     "rarity": 2,
@@ -582,6 +680,8 @@
   {
     "tag": "alabaster_statue",
     "category": 2,
+    "lookup": [5, 4],
+    "origin": [5, 1],
     "actual_title": "Alabaster Statue",
     "naive_description": "A legendary artifact of the ancient peoples.",
     "rarity": 3,
@@ -596,13 +696,16 @@
     "lookup": [3, 2],
     "origin": [2, 2],
     "actual_title": "Gas Mask",
-    "naive_description": "You need to equip this to navigate the Toxic Caverns without dying.",
+    "naive_description": "A basic gas mask. It's not very comfortable...",
+    "hidden_description": "You need to equip this to navigate the Toxic Caverns without dying.",
     "unique": true,
-    "equippable": true
+    "equippable": true,
+    "sellable": true,
+    "value": 1400
   },
   {
     "tag": "chalcedony_tee",
-    "category": 4,
+    "category": 5,
     "lookup": [1, 12],
     "origin": [1, 2],
     "actual_title": "Chalcedony Tee",
@@ -617,7 +720,7 @@
   },
   {
     "tag": "skycorps_tee",
-    "category": 4,
+    "category": 5,
     "lookup": [0, 12],
     "origin": [0, 2],
     "actual_title": "Skycorps Tee",
@@ -631,7 +734,7 @@
   },
   {
     "tag": "navy_top",
-    "category": 4,
+    "category": 5,
     "lookup": [9, 12],
     "origin": [9, 2],
     "actual_title": "Navy Top",
@@ -644,7 +747,7 @@
   },
   {
     "tag": "chalcedony_skirt",
-    "category": 4,
+    "category": 5,
     "lookup": [1, 13],
     "origin": [1, 3],
     "actual_title": "Chalcedony Skirt",
@@ -652,12 +755,13 @@
     "unique": true,
     "equippable": false,
     "wearable": true,
+    "sellable": true,
     "apparel_type": 0,
     "value": 2000
   },
   {
     "tag": "green_pants",
-    "category": 4,
+    "category": 5,
     "lookup": [9, 13],
     "origin": [9, 3],
     "actual_title": "Green Pants",
@@ -670,25 +774,28 @@
   },
   {
     "tag": "punk_hair_dye",
-    "category": 4,
+    "category": 5,
+    "origin": [2, 0],
     "start_index": 160,
     "actual_title": "Punk Hair Dye",
     "naive_description": "A whacky and rebellious hair color.",
     "unique": true,
     "equippable": false,
+    "sellable": true,
     "wearable": true,
     "apparel_type": 2,
     "value": 460
   },
   {
     "tag": "punk_shirt",
-    "category": 4,
+    "category": 5,
     "lookup": [2, 12],
     "origin": [2, 2],
     "actual_title": "Punk Shirt",
     "naive_description": "A shirt that awakens your rebellious spirit.",
     "unique": true,
     "equippable": false,
+    "sellable": true,
     "wearable": true,
     "apparel_type": 0,
     "value": 790
@@ -697,7 +804,7 @@
     "tag": "punk_pants",
     "lookup": [2, 13],
     "origin": [2, 3],
-    "category": 4,
+    "category": 5,
     "actual_title": "Punk Pants",
     "naive_description": "Black pants with a rebellious chain accessory.",
     "unique": true,
@@ -708,7 +815,7 @@
   },
   {
     "tag": "hairtie",
-    "category": 4,
+    "category": 5,
     "start_index": 160,
     "actual_title": "Hairtie",
     "naive_description": "Wear this to keep your hair from going all over the place all the time.",
@@ -727,6 +834,7 @@
     "naive_description": "A rare red gem of concentrated material produced by the Mother Worm.",
     "unique": false,
     "sellable": true,
+    "ingredient": true,
     "rarity": 2,
     "value": 1300
   },
@@ -739,6 +847,7 @@
     "naive_description": "A rare blue gem.",
     "unique": false,
     "sellable": true,
+    "ingredient": true,
     "rarity": 2,
     "value": 1100
   },
@@ -751,6 +860,7 @@
     "naive_description": "A rare amber gemstone from Grand Island.",
     "unique": false,
     "sellable": true,
+    "ingredient": true,
     "rarity": 2,
     "value": 800
   },
@@ -770,10 +880,13 @@
   {
     "tag": "mythic_rhenite",
     "category": 2,
+    "lookup": [8, 6],
+    "origin": [7, 0],
     "actual_title": "Mythic Rhenite",
     "naive_description": "A legendary multicolored gem of pure energy formed in the heart of the Mother Worm.",
     "unique": false,
     "sellable": true,
+    "ingredient": true,
     "rarity": 3,
     "value": 3400
   },
@@ -884,5 +997,147 @@
     "actual_description": "A golden charm that is always warm to the touch. It allows you to dash in any direction.",
     "unique": true,
     "readable": true
+  },
+  {
+    "tag": "gobe_plugin",
+    "category": 6,
+    "lookup": [3, 3],
+    "origin": [-1, -1],
+    "naive_title": "Gobe Plugin",
+    "naive_description": "A plugin for your map gizmo that shows you where Gobe is.",
+    "unique": true,
+    "invisible": true
+  },
+  {
+    "tag": "indigum",
+    "category": 2,
+    "lookup": [3, 6],
+    "origin": [4, 0],
+    "actual_title": "Indigum",
+    "naive_description": "A petrified resin produced by rhenite-corrupted flora.",
+    "unique": false,
+    "sellable": true,
+    "ingredient": true,
+    "rarity": 2,
+    "value": 1700
+  },
+  {
+    "tag": "pioneer_scrap",
+    "category": 2,
+    "lookup": [0, 5],
+    "origin": [1, 4],
+    "actual_title": "Pioneer Scrap",
+    "naive_description": "Scrap metal from pioneer tech.",
+    "unique": false,
+    "sellable": true,
+    "ingredient": true,
+    "rarity": 1,
+    "value": 500
+  },
+  {
+    "tag": "flippers",
+    "category": 1,
+    "lookup": [12, 2],
+    "origin": [2, 3],
+    "actual_title": "Flippers",
+    "naive_description": "These allow you to move faster in water.",
+    "unique": true,
+    "equippable": true,
+    "sellable": true,
+    "value": 2200
+  },
+  {
+    "tag": "flashbang",
+    "category": 3,
+    "lookup": [1, 9],
+    "origin": [1, 0],
+    "actual_title": "Flashbang",
+    "naive_description": "A defensive grenade for use in close combat.",
+    "unique": false,
+    "useable": true,
+    "sellable": true,
+    "rarity": 1,
+    "value": 300
+  },
+  {
+    "tag": "feather",
+    "category": 1,
+    "lookup": [2, 2],
+    "origin": [1, 1],
+    "actual_title": "Feather",
+    "naive_description": "When equipped, this will reduce reload times by 15%.",
+    "unique": false,
+    "equippable": true,
+    "sellable": true,
+    "value": 380
+  },
+  {
+    "tag": "brinium",
+    "category": 2,
+    "lookup": [1, 5],
+    "origin": [5, 0],
+    "actual_title": "Brinium",
+    "naive_description": "A rare element with strong electromagnetic properties.",
+    "unique": false,
+    "sellable": true,
+    "ingredient": true,
+    "rarity": 2,
+    "value": 900
+  },
+  {
+    "tag": "oxygen_tank",
+    "category": 1,
+    "lookup": [13, 2],
+    "origin": [10, 2],
+    "actual_title": "Oxygen Tank",
+    "naive_description": "Allows you to spend more time underwater when equipped.",
+    "unique": true,
+    "equippable": true,
+    "sellable": true,
+    "value": 2200
+  },
+  {
+    "tag": "egg",
+    "category": 1,
+    "lookup": [4, 1],
+    "origin": [10, 3],
+    "actual_title": "Egg",
+    "naive_description": "If you found this, it means you did a good job.",
+    "unique": true
+  },
+  {
+    "tag": "golden_tiara",
+    "category": 5,
+    "lookup": [1, 10],
+    "origin": [1, 0],
+    "start_index": 160,
+    "actual_title": "Golden Tiara",
+    "naive_description": "A shiny tiara. You suspect it's not made of real gold...",
+    "unique": true,
+    "equippable": false,
+    "sellable": false,
+    "wearable": true,
+    "apparel_type": 0,
+    "value": 90
+  },
+  {
+    "tag": "eugenes_letter",
+    "category": 1,
+    "lookup": [14, 2],
+    "origin": [9, 2],
+    "actual_title": "Eugene's Letter",
+    "naive_description": "You promised Eugene that you'd deliver this letter to the Nightside Post Office.",
+    "actual_description": "You promised Eugene that you'd deliver this letter to the Nightside Post Office.",
+    "unique": true
+  },
+  {
+    "tag": "velvet_rose",
+    "category": 1,
+    "lookup": [15, 2],
+    "origin": [9, 3],
+    "actual_title": "Velvet Rose",
+    "naive_description": "A dark red rose. This would make an excellent gift for a lonely guy.",
+    "unique": true,
+    "value": 180
   }
 ]

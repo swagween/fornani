@@ -13,10 +13,11 @@ namespace fornani::gui {
 InventoryGizmo::InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f placement)
 	: Gizmo("Inventory", false), m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "inventory", 128, util::InterpolationType::cubic},
 	  m_lid_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "inventory", 128, util::InterpolationType::cubic}, m_sprite{svc.assets.get_texture("inventory_gizmo")},
-	  m_item_sprite{svc.assets.get_texture("inventory_items")},
-	  m_zones{InventoryZone{{9, 1}, {38.f, 36.f}, {414.f, 18.f}}, InventoryZone{{11, 4}, {36.f, 36.f}, {48.f, 114.f}}, InventoryZone{{8, 2}, {42.f, 62.f}, {124.f, 279.f}}, InventoryZone{{8, 1}, {60.f, 36.f}, {404.f, 430.f}}},
-	  m_selector(std::make_unique<InventorySelector>(m_zones.at(static_cast<int>(InventoryZoneType::key)).table_dimensions, m_zones.at(static_cast<int>(InventoryZoneType::key)).cell_size)), m_orb_display(svc), m_services(&svc),
-	  m_equipped_items_position{472.f, 106.f}, m_menu_offset{96.f, -16.f}, m_player{&player} {
+	  m_item_sprite{svc.assets.get_texture("inventory_items")}, m_zones{InventoryZone{{9, 1}, {38.f, 36.f}, {414.f, 18.f}}, InventoryZone{{11, 4}, {36.f, 36.f}, {50.f, 116.f}}, InventoryZone{{8, 1}, {42.f, 62.f}, {124.f, 280.f}},
+																		InventoryZone{{8, 1}, {42.f, 62.f}, {124.f, 341.f}}, InventoryZone{{8, 1}, {60.f, 36.f}, {404.f, 430.f}}},
+	  m_selector(std::make_unique<InventorySelector>(m_zones.at(InventoryZoneType::key).table_dimensions, m_zones.at(InventoryZoneType::key).cell_size)), m_orb_display(svc), m_services(&svc), m_equipped_items_position{472.f, 106.f},
+	  m_menu_offset{96.f, -16.f}, m_player{&player} {
+	m_zones.set_location(InventoryZoneType::key);
 	p_theme.emplace(svc.data.menu_themes["mini_white"]);
 	m_dashboard_port = DashboardPort::inventory;
 	m_path.set_section("start");
@@ -47,10 +48,11 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 		m_exit_trigger = false;
 	}
 
-	auto& current_zone = m_zones.at(m_zone_iterator.get());
+	auto& current_zone = m_zones.current();
 
 	if (get_zone_type() == InventoryZoneType::key) { m_selector->set_lookup({{448, 0}, {18, 18}}); }
 	if (get_zone_type() == InventoryZoneType::collectible) { m_selector->set_lookup({{448, 0}, {18, 18}}); }
+	if (get_zone_type() == InventoryZoneType::useable) { m_selector->set_lookup({{448, 0}, {18, 18}}); }
 	if (get_zone_type() == InventoryZoneType::gizmo) { m_selector->set_lookup({{448, 18}, {22, 22}}); }
 	if (get_zone_type() == InventoryZoneType::ability) { m_selector->set_lookup({{448, 40}, {20, 20}}); }
 
@@ -73,12 +75,13 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 	auto selector_offset = sf::Vector2f{};
 	if (get_zone_type() == InventoryZoneType::key) { selector_offset = sf::Vector2f{2.f, 2.f}; }
 	if (get_zone_type() == InventoryZoneType::collectible) { selector_offset = sf::Vector2f{2.f, 2.f}; }
+	if (get_zone_type() == InventoryZoneType::useable) { selector_offset = sf::Vector2f{2.f, 2.f}; }
 	if (get_zone_type() == InventoryZoneType::gizmo) { selector_offset = sf::Vector2f{6.f, 6.f}; }
 	if (get_zone_type() == InventoryZoneType::ability) { selector_offset = sf::Vector2f{4.f, 4.f}; }
 	m_selector->set_position(m_physics.position + m_path.get_position() + m_placement + current_zone.render_offset - selector_offset);
 	m_selector->update();
 
-	m_orb_display.update(player.wallet.get_balance());
+	m_orb_display.update(player.wallet.get_balance(), svc.ticker.dt.count());
 
 	if (m_description) { m_description->update(svc, player, map, m_physics.position + m_path.get_position()); }
 	m_current_item_lookup = m_selector->get_current_selection(current_zone.table_dimensions.x);
@@ -89,7 +92,7 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 
 void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
 	Gizmo::render(svc, win, player, shader, palette, cam, foreground);
-	auto& current_zone = m_zones.at(m_zone_iterator.get());
+	auto& current_zone = m_zones.current();
 	if (foreground) { // lid
 		m_sprite.setTextureRect(sf::IntRect{{0, 249}, {448, 249}});
 		m_sprite.setPosition(m_placement + m_lid_path.get_position() - cam);
@@ -132,10 +135,10 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 
 		for (auto& item : player.catalog.inventory.items_view()) {
 			if (item.item->is_invisible()) { continue; }
-			auto iterator = static_cast<std::size_t>(item.item->get_type());
-			if (iterator >= m_zones.size()) { continue; }
-			auto const& zone = m_zones.at(iterator);
-			auto where = m_placement + m_path.get_position() - cam + zone.render_offset + item.item->get_f_origin().componentWiseMul(zone.cell_size);
+			auto zone_type = static_cast<InventoryZoneType>(item.item->get_type());
+			if (!m_zones.contains(zone_type)) { continue; }
+			auto const& zone = m_zones.at(zone_type);
+			auto where = m_placement + m_path.get_position() - cam + zone.render_offset + item.item->get_f_origin().componentWiseMul(zone.cell_size) - sf::Vector2f{2.f, 2.f};
 			item.item->render(win, m_item_sprite, where);
 			for (auto& display : m_number_displays) {
 				if (display.matches(item.item->get_id())) { display.render(win, where + count_offset); }
@@ -149,6 +152,14 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 			auto spacing = sf::Vector2f{0.f, 44.f};
 			auto where = m_placement + m_path.get_position() - cam + m_equipped_items_position + spacing * static_cast<float>(j);
 			item->render(win, m_item_sprite, where);
+		}
+
+		// heart shards
+		auto cridium_count = player.get_item_count("cridium_shard") % 4;
+		if (cridium_count != 0) {
+			m_sprite.setTextureRect(sf::IntRect{{451, 85 + 19 * (cridium_count - 1)}, {19, 19}});
+			m_sprite.setPosition(m_placement + m_path.get_position() - cam + sf::Vector2f{66.f, 302.f});
+			win.draw(m_sprite);
 		}
 
 		if (is_selected()) { m_selector->render(win, m_sprite, cam, {}, shader, palette); }
@@ -168,26 +179,26 @@ bool InventoryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unuse
 				}
 			}
 		} else {
-			m_remembered_locations.at(m_zone_iterator.get()) = m_selector->get_index();
+			m_zones.set_current_location(m_selector->get_index());
 			if (controller.menu_move(input::MoveDirection::up)) {
 				m_description->flush();
 				if (m_selector->move_direction({0, -1}).up()) { switch_zones(-1); }
-				soundboard.flags.menu.set(audio::Menu::shift);
+				soundboard.play_sound("menu_shift");
 			}
 			if (controller.menu_move(input::MoveDirection::down)) {
 				m_description->flush();
 				if (m_selector->move_direction({0, 1}).down()) { switch_zones(1); }
-				soundboard.flags.menu.set(audio::Menu::shift);
+				soundboard.play_sound("menu_shift");
 			}
 			if (controller.menu_move(input::MoveDirection::left)) {
 				m_description->flush();
 				if (m_selector->move_direction({-1, 0}).left()) {}
-				soundboard.flags.menu.set(audio::Menu::shift);
+				soundboard.play_sound("menu_shift");
 			}
 			if (controller.menu_move(input::MoveDirection::right)) {
 				m_description->flush();
 				if (m_selector->move_direction({1, 0}).right()) {}
-				soundboard.flags.menu.set(audio::Menu::shift);
+				soundboard.play_sound("menu_shift");
 			}
 			if (controller.digital(input::DigitalAction::menu_select).triggered) {
 				if (is_item_hovered() && m_current_item) {
@@ -241,6 +252,12 @@ void InventoryGizmo::handle_menu_selection(player::Player& player, int selection
 					m_services->events.equip_item_by_id_event.dispatch(*m_services, *m_current_item);
 					m_item_menu.reset();
 				}
+			} else if (m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["use"].as_string()) {
+				if (item->is_useable()) {
+					NANI_LOG_DEBUG(m_logger, "Using Item {}", *m_current_item);
+					m_services->events.use_item_by_id_event.dispatch(*m_services, *m_current_item);
+					m_item_menu.reset();
+				}
 			}
 		} else {
 			m_current_item.reset();
@@ -249,19 +266,18 @@ void InventoryGizmo::handle_menu_selection(player::Player& player, int selection
 }
 
 void InventoryGizmo::switch_zones(int modulation) {
-	m_zone_iterator.modulate(modulation);
+	m_zones.modulate(modulation);
 	auto position = m_selector->get_position();
-	auto& current_zone = m_zones.at(m_zone_iterator.get());
+	auto& current_zone = m_zones.current();
 	m_selector = std::make_unique<InventorySelector>(current_zone.table_dimensions, current_zone.cell_size);
 	m_selector->set_position(position, true);
 	m_selector->set_lookup({{448, 0}, {18, 18}});
-	m_selector->set_selection(m_remembered_locations.at(m_zone_iterator.get()));
+	m_selector->set_selection(m_zones.get_current_location());
 }
 
 void InventoryGizmo::write_description(item::Item& piece, sf::RenderWindow& win, player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam) {
 	auto title_offset = sf::Vector2f{36.f, 80.f};
-	auto& current_zone = m_zones.at(m_zone_iterator.get());
-	if (piece.get_table_index(current_zone.table_dimensions.x) == m_current_item_lookup) {
+	if (piece.get_table_index(m_zones.current().table_dimensions.x) == m_current_item_lookup) {
 		m_description->adjust_bounds(cam);
 		m_description->adjust_bounds(title_offset);
 		m_description->write(*m_services, piece.get_title(), m_services->text.fonts.basic);

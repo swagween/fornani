@@ -1,12 +1,22 @@
 
+#include <fornani/automa/SceneContext.hpp>
+#include <fornani/entities/player/Player.hpp>
 #include <fornani/entity/Inspectable.hpp>
+#include <fornani/events/ConsoleEvent.hpp>
+#include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
+#include <fornani/world/Map.hpp>
 
 namespace fornani {
 
 Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "inspectables") {
 	unserialize(in);
+	if (in["activate_on_contact"].as_bool()) { attributes.set(InspectableAttributes::activate_on_contact); }
+	if (in["instant"].as_bool()) { attributes.set(InspectableAttributes::instant); }
+	m_key = in["key"].as_string();
+	alternates = in["alternates"].as<int>();
 	m_textured = false;
+	svc.events.destroy_inspectable_event.attach_to(slot, &Inspectable::destroy_me, this);
 }
 
 Inspectable::Inspectable(automa::ServiceProvider& svc, std::vector<std::vector<gui::BasicMessage>> suite, std::vector<std::vector<gui::BasicMessage>> responses, bool activate_on_contact, std::string key, int alternates, bool instant)
@@ -26,6 +36,8 @@ void Inspectable::serialize(dj::Json& out) {
 	out["series"] = dj::Json::empty_array();
 	for (auto i{0}; i < 1; ++i) {
 		auto next = dj::Json{};
+		next["hide_portrait"] = true;
+		next["output"] = m_instant ? 1 : static_cast<int>(m_output);
 		for (auto j = 0; j < 2; ++j) {
 			auto& from_set = j == 0 ? m_suites : m_responses;
 			auto tag = j == 0 ? "suite" : "responses";
@@ -48,7 +60,6 @@ void Inspectable::serialize(dj::Json& out) {
 		out["series"].push_back(next);
 		NANI_LOG_DEBUG(m_logger, "Serialized a series entry.");
 	}
-	for (auto& contingency : m_contingencies) { contingency.serialize(out["contingencies"]); }
 }
 
 void Inspectable::unserialize(dj::Json const& in) {
@@ -64,6 +75,7 @@ void Inspectable::unserialize(dj::Json const& in) {
 		for (auto j = 0; j < 2; ++j) {
 			auto& to_set = j == 0 ? m_suites : m_responses;
 			auto tag = j == 0 ? "suite" : "responses";
+			m_output = m_instant ? gui::OutputType::instant : static_cast<gui::OutputType>(entry["output"].as<int>());
 			for (auto const& in_suite : entry[tag].as_array()) {
 				auto s = std::vector<gui::BasicMessage>{};
 				for (auto const& message : in_suite.as_array()) {
@@ -83,7 +95,6 @@ void Inspectable::unserialize(dj::Json const& in) {
 			}
 		}
 	}
-	for (auto const& contingency : in["contingencies"].as_array()) { m_contingencies.push_back(QuestContingency(contingency)); }
 }
 
 void Inspectable::expose() {
@@ -94,8 +105,59 @@ void Inspectable::expose() {
 }
 
 void Inspectable::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
-	highlighted ? drawbox.setFillColor(sf::Color{255, 100, 60, 180}) : drawbox.setFillColor(sf::Color{255, 60, 60, 80});
-	Entity::render(win, cam, size);
+	if (m_editor) {
+		highlighted ? drawbox.setFillColor(sf::Color{255, 100, 60, 180}) : drawbox.setFillColor(sf::Color{255, 60, 60, 80});
+		Entity::render(win, cam, size);
+	}
+}
+
+void Inspectable::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
+	auto const& set = map.get_json_data(svc)["entities"]["inspectables"][m_index];
+	bounding_box.set_position(get_world_position());
+	flags.reset(InspectableFlags::activated);
+	if (m_indicator_cooldown.is_almost_complete()) { flags.reset(InspectableFlags::hovered); }
+	if (svc.data.inspectable_is_destroyed(p_stable_id.get())) { flags.set(InspectableFlags::destroy); }
+	if (destroyed()) { return; }
+	if (spawn_denied()) { return; }
+	if (player.has_flag_set(player::PlayerFlags::boss_fight)) { return; }
+
+	// check for quest-based alternates
+	/*auto quest_status = svc.quest.get_progression(quest::QuestType::inspectable, native_id);
+	if (quest_status > 0) { current_alt = quest_status; }*/
+
+	if (bounding_box.overlaps(player.get_collider().hurtbox)) {
+		if (!flags.test(InspectableFlags::hovered)) { flags.set(InspectableFlags::hovered_trigger); }
+		flags.set(InspectableFlags::hovered);
+		if (attributes.test(InspectableAttributes::activate_on_contact) && flags.test(InspectableFlags::can_engage) && player.get_collider().grounded()) {
+			flags.set(InspectableFlags::activated);
+			flags.reset(InspectableFlags::can_engage);
+		}
+		if (player.controller.inspecting()) { flags.set(InspectableFlags::activated); }
+	} else {
+		m_indicator_cooldown.update();
+		if (!m_indicator_cooldown.running()) { m_indicator_cooldown.start(); }
+		flags.set(InspectableFlags::can_engage);
+	}
+	if (flags.test(InspectableFlags::activated) && !player.is_busy()) {
+		player.set_busy(true);
+		context.console = std::make_unique<gui::Console>(p_stable_id, svc, set["series"][current_alt], m_output);
+	}
+
+	if (flags.test(InspectableFlags::hovered) && flags.consume(InspectableFlags::hovered_trigger) && !attributes.test(InspectableAttributes::activate_on_contact)) {
+		map.spawn_effect(svc, "question_mark", get_global_center() + sf::Vector2f{0.f, -32.f});
+	}
+	if (context.console) {
+		if (context.console.value()->get_key() == m_key) { flags.set(InspectableFlags::engaged); }
+	}
+	if (!context.console) {
+		flags.reset(InspectableFlags::engaged);
+		player.set_busy(false);
+	}
+}
+
+void Inspectable::destroy_me(automa::ServiceProvider& svc) {
+	svc.data.destroy_inspectable(p_stable_id.get());
+	flags.set(InspectableFlags::destroy);
 }
 
 } // namespace fornani

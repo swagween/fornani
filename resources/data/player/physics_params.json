@@ -1,32 +1,32 @@
 {
-	"properties": {
-		"gravity": 1.053610,
-		"friction": [ 0.938, 0.929 ],
-		"water_gravity_multiplier": -0.5,
-		"water_friction_multiplier": 0.9,
-		"water_surface_multiplier": 0.995,
-		"water_sinking_multiplier": 0.9
-	},
-	"physics": {
-		"grav": 1.053610,
-		"ground_fric": 0.938000,
-		"air_fric": 0.929000,
-		"x_acc": 4.2000,
-		"air_multiplier": 0.851000,
-		"sprint_multiplier": 1.557000,
-		"jump_velocity": 13.760310,
-		"jump_release_multiplier": 0.517890,
-		"hurt_acc": 2.150000,
-		"maximum_velocity": {
-			"x": 32.490000,
-			"y": 18.680000
-		},
-		"mass": 1.000000,
-		"vertical_dash_multiplier": 1.837000,
-		"dash_speed": 1.00,
-		"dash_dampen": 2.00,
-		"wallslide_speed": 2.076000,
-		"roll_speed": 10.0,
-		"slide_speed": 6.5
-	}
+  "properties": {
+    "gravity": 1.05361,
+    "friction": [0.938, 0.929],
+    "water_friction": [0.9, 0.9],
+    "water_gravity_multiplier": -0.5,
+    "water_surface_multiplier": 0.995,
+    "water_sinking_multiplier": 0.9
+  },
+  "physics": {
+    "grav": 1.05361,
+    "ground_fric": 0.938,
+    "air_fric": 0.929,
+    "x_acc": 4.2,
+    "air_multiplier": 0.851,
+    "sprint_multiplier": 1.557,
+    "jump_velocity": 13.76031,
+    "jump_release_multiplier": 0.51789,
+    "hurt_acc": 2.15,
+    "maximum_velocity": {
+      "x": 32.49,
+      "y": 18.68
+    },
+    "mass": 1.0,
+    "vertical_dash_multiplier": 1.837,
+    "dash_speed": 1.0,
+    "dash_dampen": 2.0,
+    "wallslide_speed": 2.076,
+    "roll_speed": 10.0,
+    "slide_speed": 6.5
+  }
 }

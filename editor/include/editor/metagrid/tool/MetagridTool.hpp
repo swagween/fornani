@@ -18,8 +18,8 @@ class MetagridTool : public fornani::UniquePolymorphic {
 	}
 	virtual void handle_inputs(Room& room, sf::Vector2f const cam, sf::Vector2f const clicked_position) {}
 	virtual void update(sf::Vector2f const position) { p_position = position; }
-	virtual void render(sf::RenderWindow& win) {
-		p_sprite.setPosition(p_position);
+	virtual void render(sf::RenderWindow& win, sf::Vector2f position) {
+		p_sprite.setPosition(position);
 		win.draw(p_sprite);
 	}
 	void set_original_position(sf::Vector2f to) { p_original_position = to; }
@@ -27,7 +27,7 @@ class MetagridTool : public fornani::UniquePolymorphic {
 	[[nodiscard]] auto is(MetagridToolType const test) const -> bool { return m_type == test; }
 	[[nodiscard]] auto get_label() const -> std::string_view { return p_label; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return p_position; }
-	[[nodiscard]] auto get_workspace_coordinates(sf::Vector2f const cam) const -> sf::Vector2i { return sf::Vector2i{(p_position - cam) / spacing_v}; }
+	[[nodiscard]] auto get_workspace_coordinates(sf::Vector2f const pos) const -> sf::Vector2i { return sf::Vector2i{pos / spacing_v}; }
 
   protected:
 	sf::Vector2f p_position{};

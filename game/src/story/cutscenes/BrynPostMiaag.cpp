@@ -1,4 +1,5 @@
 
+#include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -9,8 +10,8 @@ namespace fornani {
 
 BrynPostMiaag::BrynPostMiaag(automa::ServiceProvider& svc) : Cutscene(svc, 509, "bryn_post_miaag") { cooldowns.beginning.start(); }
 
-void BrynPostMiaag::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) {
-	static auto failsafe = util::Counter();
+void BrynPostMiaag::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
+
 	if (complete()) {
 		player.controller.unrestrict();
 		svc.state_flags.reset(automa::StateFlags::hide_hud);
@@ -32,7 +33,7 @@ void BrynPostMiaag::update(automa::ServiceProvider& svc, std::optional<std::uniq
 
 	player.controller.restrict_movement();
 
-	if (console) { console.value()->set_no_exit(true); }
+	if (context.console) { context.console.value()->set_no_exit(true); }
 
 	auto npcs = map.get_entities<NPC>();
 	auto bit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 0; });
@@ -56,20 +57,19 @@ void BrynPostMiaag::update(automa::ServiceProvider& svc, std::optional<std::uniq
 		return;
 	}
 
-	// get npcs
 	if (cooldowns.end.running()) { bryn->disengage(); }
 	if (bryn->get_collider().bounding_box.overlaps(player.get_collider().get_vicinity_rect())) {
-		if (!console) {
+		if (!context.console) {
 			bryn->force_engage();
 			bryn->request(NPCAnimationState::idle);
 			cooldowns.end.start(4);
 		}
 	} else {
 		bryn->walk();
-		failsafe.update();
-		if (failsafe.get_count() > 4000) {
+		m_failsafe.update();
+		if (m_failsafe.get_count() > 4000) {
 			bryn->set_position(player.get_collider().physics.position - sf::Vector2f{16.f, 0.f});
-			failsafe.cancel();
+			m_failsafe.cancel();
 		}
 	}
 	svc.camera_controller.set_owner(graphics::CameraOwner::system);

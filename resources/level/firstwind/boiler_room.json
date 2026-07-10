@@ -63,12 +63,13 @@
       16,
       16
     ],
+    "interior": true,
     "metagrid": [
       5,
       3
     ],
     "minimap": true,
-    "music": "",
+    "music": "brown",
     "player_start": [
       0,
       0
@@ -76,6 +77,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": true,
       "lighting": false,
       "timer": false
     },

@@ -6,6 +6,7 @@ namespace fornani::gui {
 
 Portrait::Portrait(automa::ServiceProvider& svc, sf::Texture const& texture, int id, bool left) : Portrait(svc, id, left) {
 	Drawable::set_texture(texture);
+
 	set_scale({1.f, 1.f});
 	flags.set(PortraitFlags::custom);
 	set_texture_rect(sf::IntRect({}, sf::Vector2i{dimensions * constants::f_scale_factor}));
@@ -18,6 +19,15 @@ Portrait::Portrait(automa::ServiceProvider& svc, int id, bool left) : Drawable(s
 	if (!left) { end_position.x = svc.window->i_screen_dimensions().x - pad_x - dimensions.x * constants::f_scale_factor; }
 	left ? flags.reset(PortraitFlags::right) : flags.set(PortraitFlags::right);
 	reset(svc);
+
+	if (!m_texture.resize({64u, 512u})) {}
+	m_texture.clear(colors::transparent);
+	auto reel = sf::Sprite(svc.assets.get_texture("character_portraits"));
+	reel.setTextureRect(sf::IntRect(sf::Vector2i{dimensions}.componentWiseMul({m_id, 0}), sf::Vector2i{dimensions} * 4));
+	m_texture.draw(reel);
+	m_texture.setRepeated(true);
+	m_texture.setSmooth(false);
+	m_texture.display();
 }
 
 void Portrait::update(automa::ServiceProvider& svc) {
@@ -31,10 +41,11 @@ void Portrait::update(automa::ServiceProvider& svc) {
 	}
 }
 
-void Portrait::render(sf::RenderWindow& win) {
-	if (!flags.test(PortraitFlags::custom)) { set_texture_rect(sf::IntRect(sf::Vector2i{dimensions}.componentWiseMul({m_id, m_emotion}), sf::Vector2i{dimensions})); }
+void Portrait::render(sf::RenderWindow& win, bool shader) {
+	auto rect = sf::IntRect(sf::Vector2i{dimensions}.componentWiseMul({m_id, m_emotion}), sf::Vector2i{dimensions});
+	if (!flags.test(PortraitFlags::custom)) { set_texture_rect(rect); }
 	win.draw(window);
-	win.draw(*this);
+	if (!shader) { win.draw(*this); }
 	if (m_sparkler) { m_sparkler->render(win, {}); }
 }
 
@@ -63,5 +74,14 @@ void Portrait::set_emotion(int new_emotion) {
 void Portrait::add_sparkler(std::string_view tag) { m_sparkler = vfx::Sparkler(*m_services, dimensions * constants::f_scale_factor, colors::ui_black, tag); }
 
 void Portrait::remove_sparkler() { m_sparkler = {}; }
+
+sf::Sprite Portrait::make_sprite() {
+	auto rect = sf::IntRect(sf::Vector2i{dimensions}.componentWiseMul({0, m_emotion}), sf::Vector2i{dimensions});
+	auto sprite = sf::Sprite{m_texture.getTexture()};
+	sprite.setTextureRect(rect);
+	sprite.setScale(get_scale());
+	sprite.setPosition(get_window_position());
+	return sprite;
+}
 
 } // namespace fornani::gui

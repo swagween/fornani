@@ -10,7 +10,7 @@ namespace fornani::enemy {
 constexpr auto junker_framerate = 12;
 
 Junker::Junker(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "junker"), m_services{&svc}, m_toss_time{400} {
-	m_params = {{"idle", {0, 8, junker_framerate * 2, -1}}, {"turn", {12, 2, junker_framerate * 2, 0}}, {"toss", {8, 4, junker_framerate * 3, 0}}, {"hide", {14, 1, junker_framerate * 2, -1}}};
+	p_animations = {{"idle", {0, 8, junker_framerate * 2, -1}}, {"turn", {12, 2, junker_framerate * 2, 0}}, {"toss", {8, 4, junker_framerate * 3, 0}}, {"hide", {14, 1, junker_framerate * 2, -1}}};
 	animation.set_params(get_params("hide"));
 	p_state.actual = JunkerState::hide;
 
@@ -44,7 +44,7 @@ void Junker::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		auto sign = directions.actual.as_float();
 		auto bp = sf::Vector2f{sign * 18.f, -18.f};
 		m_bomb->get().set_barrel_point(get_collider().get_center() + bp);
-		map.spawn_projectile_at(svc, m_bomb->get(), get_collider().get_center() + bp, player.get_collider().get_center() - get_collider().get_center() + bp);
+		m_bomb->get().shoot(svc, map, player.get_collider().get_center() - get_collider().get_center() + bp);
 		m_toss_time.start();
 		set_flag(JunkerFlags::toss, false);
 	}

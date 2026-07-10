@@ -1,28 +1,25 @@
 
+#include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entity/Portal.hpp>
 #include <fornani/events/SystemEvent.hpp>
-#include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani {
 
-Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_id, int destination_id)
-	: Entity(svc, "portals", 0, dimensions), source_id(source_id), destination_id(destination_id), key_tag(key_tag), m_services(&svc) {
-	set_texture_rect(sf::IntRect{{16 * already_open, 0}, {16, 32}});
+Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, PortalSpecifications specs)
+	: Entity(svc, "portals", 0, dimensions), source_id(specs.source_map_id), destination_id(specs.destination_map_id), key_tag(key_tag), m_services(&svc), m_opened_cooldown{200} {
+	set_texture_rect(sf::IntRect{{16 * specs.already_open, 0}, {16, 32}});
 	set_origin({0.f, 16.f});
-	if (activate_on_contact || dimensions.x * dimensions.y > 1) { m_textured = false; }
-	if (activate_on_contact) { m_attributes.set(PortalAttributes::activate_on_contact); }
-	if (already_open) { m_attributes.set(PortalAttributes::already_open); }
+	if (specs.activate_on_contact || dimensions.x * dimensions.y > 1) { m_textured = false; }
+	if (specs.activate_on_contact) { m_attributes.set(PortalAttributes::activate_on_contact); }
+	if (specs.already_open) { m_attributes.set(PortalAttributes::already_open); }
 }
 
-Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, bool activate_on_contact, bool already_open, int source_id, int destination_id, std::string_view key_tag)
-	: Portal(svc, dimensions, activate_on_contact, already_open, source_id, destination_id) {
-	key_tag = std::string{key_tag};
-}
+Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, PortalSpecifications specs, std::string_view key) : Portal(svc, dimensions, specs) { key_tag = key.data(); }
 
-Portal::Portal(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals"), m_services(&svc) {
+Portal::Portal(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals"), m_services(&svc), m_opened_cooldown{200} {
 	unserialize(in);
 	if (is_activate_on_contact()) { m_textured = false; }
 	set_origin({0.f, 16.f});
@@ -50,8 +47,10 @@ void Portal::serialize(dj::Json& out) {
 	out["already_open"] = is_already_open();
 	out["source_id"] = source_id;
 	out["destination_id"] = destination_id;
+	out["channel"] = channel;
 	out["locked"] = is_locked();
 	if (key_tag) { out["key_tag"] = key_tag.value(); }
+	if (m_custom_animation) { out["custom_animation"] = m_custom_animation->tag; }
 }
 
 void Portal::unserialize(dj::Json const& in) {
@@ -60,8 +59,14 @@ void Portal::unserialize(dj::Json const& in) {
 	in["already_open"].as_bool() ? m_attributes.set(PortalAttributes::already_open) : m_attributes.reset(PortalAttributes::already_open);
 	source_id = in["source_id"].as<int>();
 	destination_id = in["destination_id"].as<int>();
+	channel = in["channel"].as<int>();
 	in["locked"].as_bool() ? m_state.set(PortalState::locked) : m_state.reset(PortalState::locked);
 	if (in["key_tag"]) { key_tag = in["key_tag"].as_string(); }
+	if (in["custom_animation"]) {
+		auto tag = in["custom_animation"].as_string();
+		m_custom_animation.emplace(*m_services, tag);
+		m_custom_animation->animatable.center();
+	}
 }
 
 void Portal::expose() {
@@ -69,11 +74,11 @@ void Portal::expose() {
 	static bool activate_on_contact{is_activate_on_contact()};
 	static bool already_open{is_already_open()};
 	static bool locked{is_locked()};
-	ImGui::InputInt("Source Room ID", &source_id);
 	ImGui::InputInt("Destination Room ID", &destination_id);
 	ImGui::Separator();
 	ImGui::Checkbox("Activate on Contact", &activate_on_contact);
 	ImGui::Checkbox("Already Open", &already_open);
+	ImGui::InputInt("Channel", &channel);
 	ImGui::Separator();
 	ImGui::Checkbox("Locked", &locked);
 	ImGui::Separator();
@@ -104,18 +109,26 @@ void Portal::expose() {
 	}
 }
 
-void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) {
-	Entity::update(svc, map, console, player);
+void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
+	Entity::update(svc, map, context, player);
 	m_render_state = is_already_open() ? PortalRenderState::open : is_locked() ? PortalRenderState::locked : m_render_state;
-	auto lookup = sf::IntRect({static_cast<int>(m_render_state) * constants::i_cell_resolution, map.get_style_id() * constants::i_cell_resolution * 2}, {constants::i_cell_resolution, constants::i_cell_resolution * 2});
+
+	// opened by someone else
+	m_opened_cooldown.update();
+	if (m_opened_cooldown.running()) {
+		if (!m_attributes.test(PortalAttributes::already_open) && !is_large() && m_render_state != PortalRenderState::open) { svc.soundboard.flags.world.set(audio::World::door_open); }
+		m_render_state = PortalRenderState::open;
+	}
+	auto lookup = sf::IntRect({static_cast<int>(m_render_state) * constants::i_cell_resolution + 64 * channel, map.get_style_id() * constants::i_cell_resolution * 2}, {constants::i_cell_resolution, constants::i_cell_resolution * 2});
 	set_texture_rect(lookup);
-	if (!map.transition.is(graphics::TransitionState::inactive)) { m_state.reset(PortalState::ready); }
+
+	if (!context.transition.is(graphics::TransitionState::inactive)) { m_state.reset(PortalState::ready); }
 	if (bounding_box.overlaps(player.get_collider().bounding_box)) {
 		player.set_flag(player::PlayerFlags::in_front_of_door);
 		if (m_attributes.test(PortalAttributes::activate_on_contact)) {
 			if (!m_state.test(PortalState::transitioning) && m_state.test(PortalState::ready)) { m_state.set(PortalState::activated); }
 			if (is_left_or_right()) {
-				if (map.transition.is(graphics::TransitionState::fading_to_black)) {
+				if (context.transition.is(graphics::TransitionState::fading_to_black)) {
 					auto towards = player.entered_from().left() ? SimpleDirection{LR::right} : SimpleDirection{LR::left};
 					player.controller.direction.set_from_simple(towards);
 					player.controller.autonomous_walk();
@@ -128,14 +141,15 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 			}
 		} else if (player.controller.inspecting()) {
 			m_state.set(PortalState::activated);
+			player.get_collider().physics.acceleration.x = 0.f;
 		}
 	} else {
 		m_state.set(PortalState::ready);
 	}
 	if (m_state.test(PortalState::activated)) {
-		if (!console) {
+		if (!context.console) {
 			if (m_state.test(PortalState::unlocked)) {
-				change_states(svc, map.room_id, map.transition);
+				change_states(svc, map.room_id, context.transition);
 				m_state.reset(PortalState::unlocked);
 			}
 		}
@@ -144,22 +158,22 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 				m_state.reset(PortalState::locked);
 				m_state.set(PortalState::unlocked);
 				svc.soundboard.flags.world.set(audio::World::door_unlock);
-				console = std::make_unique<gui::Console>(svc, svc.text.basic, "unlocked_door", gui::OutputType::gradual);
-				console.value()->append(player.catalog.inventory.find_item(key_tag.value())->get_title());
-				console.value()->display_item(key_tag.value());
+				context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "unlocked_door", gui::OutputType::gradual);
+				context.console.value()->append(player.catalog.inventory.find_item(key_tag.value())->get_title());
+				context.console.value()->display_item(key_tag.value());
 				svc.data.unlock_door(key_tag.value());
 				svc.soundboard.flags.world.set(audio::World::door_unlock);
 			} else {
-				console = std::make_unique<gui::Console>(svc, svc.text.basic, "locked_door", gui::OutputType::gradual);
+				context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "locked_door", gui::OutputType::gradual);
 				m_state.reset(PortalState::activated);
 			}
 			return;
 		}
 		if (m_state.test(PortalState::unlocked)) { return; }
-		change_states(svc, map.room_id, map.transition);
+		change_states(svc, map.room_id, context.transition);
 	}
 	if (m_state.test(PortalState::transitioning)) {
-		if (map.transition.is(graphics::TransitionState::black)) {
+		if (context.transition.is(graphics::TransitionState::black)) {
 			m_state.reset(PortalState::transitioning);
 			if (svc.data.exists(destination_id)) {
 				svc.state_controller.next_state = destination_id;
@@ -173,16 +187,42 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 			svc.state_controller.refresh(source_id);
 		}
 	}
+
+	// custom portal stuff
+	if (m_custom_animation) { m_custom_animation->update(svc, player, *this); }
 }
 
 void Portal::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
 	Entity::render(win, cam, size);
-	if (m_editor) { return; }
 	Animatable::set_scale(constants::f_scale_vec);
+	if (m_custom_animation) {
+		if (m_editor) {
+			m_custom_animation->animatable.set_scale(constants::f_scale_vec * size / constants::f_cell_size);
+			m_custom_animation->animatable.set_position((get_f_grid_position() + m_custom_animation->offset / constants::f_cell_size) * size + cam);
+		} else {
+			m_custom_animation->animatable.set_position(get_world_position() + m_custom_animation->offset - cam);
+		}
+		win.draw(m_custom_animation->animatable);
+		return;
+	}
+	if (m_editor) { return; }
 	if (!m_attributes.test(PortalAttributes::activate_on_contact) && get_grid_dimensions().x * get_grid_dimensions().y == 1) {
 		Animatable::set_position(get_world_position() - cam);
 		win.draw(*this);
+	}
+}
+
+void Portal::render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::Vector2f cam) {
+	Animatable::set_scale(constants::f_scale_vec);
+	if (m_custom_animation) {
+		m_custom_animation->animatable.set_position(get_world_position() + m_custom_animation->offset);
+		tex.draw(m_custom_animation->animatable);
+		return;
+	}
+	if (!m_attributes.test(PortalAttributes::activate_on_contact) && get_grid_dimensions().x * get_grid_dimensions().y == 1) {
+		Animatable::set_position(get_world_position());
+		tex.draw(*this);
 	}
 }
 
@@ -196,6 +236,44 @@ void Portal::change_states(automa::ServiceProvider& svc, int room_id, graphics::
 		m_state.set(PortalState::transitioning);
 	}
 	m_state.reset(PortalState::activated);
+}
+
+CustomPortalAnimation::CustomPortalAnimation(automa::ServiceProvider& svc, std::string_view tag) : animatable{svc, tag, {svc.data.portal[tag]["dimensions"][0].as<int>(), svc.data.portal[tag]["dimensions"][1].as<int>()}}, tag{tag} {
+	auto const& in = svc.data.portal[tag];
+	for (auto [i, in_anim] : std::views::enumerate(in["animations"].as_array())) {
+		animatable.push_animation(in_anim["label"].as_string(),
+								  {in_anim["parameters"][0].as<int>(), in_anim["parameters"][1].as<int>(), in_anim["parameters"][2].as<int>(), in_anim["parameters"][3].as<int>(), in_anim["parameters"][4].as_bool()});
+		if (i == 0) { animatable.set_animation(in_anim["label"].as_string()); }
+	}
+	for (auto const& sound : in["sounds"].as_array()) { sounds.push_back(sound.as_string()); }
+	offset = {in["offset"][0].as<float>(), in["offset"][1].as<float>()};
+	if (in["open_for_player"].as_bool()) { attributes.set(CustomPortalAttributes::open_for_player); }
+	if (in["gravitate"].as_bool()) { attributes.set(CustomPortalAttributes::gravitate); }
+}
+
+void CustomPortalAnimation::update(automa::ServiceProvider& svc, player::Player& player, Portal& parent) {
+	if (attributes.test(CustomPortalAttributes::open_for_player)) {
+		if ((player.get_center() - parent.get_center()).length() < 150.f) {
+			flags.reset(CustomPortalFlags::closed);
+			animatable.set_animation("open");
+			if (!flags.test(CustomPortalFlags::opened) && sounds.size() > 1) { svc.soundboard.play_sound(sounds.at(1), parent.get_center()); }
+			flags.set(CustomPortalFlags::opened);
+		} else {
+			flags.reset(CustomPortalFlags::opened);
+			animatable.set_animation("close");
+			if (!flags.test(CustomPortalFlags::closed) && sounds.size() > 0) { svc.soundboard.play_sound(sounds.at(0), parent.get_center()); }
+			flags.set(CustomPortalFlags::closed);
+		}
+	}
+	if (attributes.test(CustomPortalAttributes::gravitate)) {
+		if (parent.is_transitioning()) {
+			m_player_steering.seek(parent.get_world_position(), 0.005f);
+			player.set_position(m_player_steering.physics.position);
+		} else {
+			m_player_steering.physics.position = player.get_position();
+		}
+	}
+	animatable.tick();
 }
 
 } // namespace fornani

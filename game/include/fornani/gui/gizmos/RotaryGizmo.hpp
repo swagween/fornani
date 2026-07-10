@@ -28,6 +28,7 @@ class RotaryGizmo final : public Gizmo, public Flaggable<RotaryGizmoFlags> {
 	std::optional<std::unique_ptr<HotbarGizmo>> m_hotbar{};
 	Animatable m_sprite;
 	Animatable m_gun_display;
+	Animatable m_gun_selector;
 	Drawable m_dashboard_rail;
 	util::Circuit m_selection;
 	CyclicLerp m_frame_lerp;

@@ -33,40 +33,13 @@
           1
         ],
         "id": 30355,
-        "modifier": 29,
+        "modifier": 0,
         "position": [
           12,
           9
         ],
+        "tag": "cridium_shard",
         "type": 2
-      }
-    ],
-    "destructibles": [
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "enemy_clear": false,
-        "id": 40901,
-        "inverse": false,
-        "position": [
-          11,
-          8
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "enemy_clear": false,
-        "id": 40901,
-        "inverse": false,
-        "position": [
-          11,
-          9
-        ]
       }
     ],
     "npcs": [
@@ -76,6 +49,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 38552,
@@ -84,6 +58,7 @@
           10,
           12
         ],
+        "start_busy": false,
         "suites": [
           [
             1
@@ -96,6 +71,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 409,
@@ -104,6 +80,7 @@
           9,
           4
         ],
+        "start_busy": false,
         "suites": [
           [
             1
@@ -116,6 +93,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 409,
@@ -124,6 +102,7 @@
           11,
           4
         ],
+        "start_busy": false,
         "suites": [
           [
             1
@@ -136,6 +115,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 409,
@@ -144,6 +124,7 @@
           7,
           12
         ],
+        "start_busy": false,
         "suites": [
           [
             1
@@ -155,6 +136,7 @@
       {
         "activate_on_contact": false,
         "already_open": true,
+        "channel": 0,
         "destination_id": 400,
         "dimensions": [
           1,
@@ -184,14 +166,9 @@
     ]
   },
   "meta": {
-    "ambience": "none",
+    "ambience": "",
     "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -211,12 +188,13 @@
       16,
       16
     ],
+    "interior": true,
     "metagrid": [
       54,
       18
     ],
     "minimap": true,
-    "music": "home_again",
+    "music": "dandelions",
     "player_start": [
       0,
       0
@@ -224,8 +202,10 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": true,
+      "interior": true,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 409,
     "shader": {
@@ -235,6 +215,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false
@@ -1422,7 +1412,7 @@
         0,
         0,
         0,
-        0,
+        489,
         0,
         221,
         96,
@@ -1438,7 +1428,7 @@
         0,
         0,
         0,
-        0,
+        489,
         0,
         221,
         96,

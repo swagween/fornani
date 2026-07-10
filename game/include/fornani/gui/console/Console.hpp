@@ -1,18 +1,19 @@
 
 #pragma once
 
+#include <SFML/Graphics.hpp>
 #include <fornani/core/Common.hpp>
 #include <fornani/gui/ItemWidget.hpp>
 #include <fornani/gui/Portrait.hpp>
 #include <fornani/gui/console/ResponseDialog.hpp>
 #include <fornani/gui/console/TextWriter.hpp>
 #include <fornani/io/Logger.hpp>
+#include <fornani/shader/HoloShader.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Cooldown.hpp>
+#include <fornani/utils/ID.hpp>
 #include <fornani/utils/NineSlice.hpp>
 #include <fornani/utils/RectPath.hpp>
-
-#include <SFML/Graphics.hpp>
 
 #include <memory>
 #include <string>
@@ -24,9 +25,8 @@ class ControllerMap;
 namespace fornani::gui {
 
 enum class ConsoleMode { writing, responding, off };
-enum class ConsoleFlags { no_exit, close_after_process };
+enum class ConsoleFlags { no_exit, close_after_process, hologram };
 enum class ConsoleTriggers { response_created };
-enum class OutputType { gradual, instant, no_exit, no_skip };
 
 class Console {
   public:
@@ -46,6 +46,7 @@ class Console {
 	/// <param name="svc"></param>
 	/// <param name="type"></param>
 	explicit Console(automa::ServiceProvider& svc, dj::Json const& source, OutputType type);
+	explicit Console(StableID speaker, automa::ServiceProvider& svc, dj::Json const& source, OutputType type);
 
 	/// <summary>
 	/// @brief used for loading single messages (signs, inspectables, etc.)
@@ -57,10 +58,11 @@ class Console {
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win);
 
-	void relaunch(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type, int target_index = -1);
 	void set_source(dj::Json const& json);
 	void set_nani_sprite(sf::Sprite const& sprite);
 	void set_no_exit(bool flag) { flag ? m_flags.set(ConsoleFlags::no_exit) : m_flags.reset(ConsoleFlags::no_exit); }
+	void toggle_hologram() { m_flags.toggle(ConsoleFlags::hologram); }
+	void set_hologram(bool on = true) { on ? m_flags.set(ConsoleFlags::hologram) : m_flags.reset(ConsoleFlags::hologram); }
 	void handle_actions(int value);
 	void display_item(std::string_view tag, bool sparkle = true);
 	void display_gun(std::string_view tag, bool sparkle = true);
@@ -82,6 +84,8 @@ class Console {
 	[[nodiscard]] auto has_nani_portrait() const -> bool { return static_cast<bool>(m_nani_portrait); }
 	[[nodiscard]] auto was_response_created() const -> bool { return m_triggers.test(ConsoleTriggers::response_created); }
 	[[nodiscard]] auto can_exit() const -> bool { return m_output_type != OutputType::no_skip && m_output_type != OutputType::no_exit; }
+	[[nodiscard]] auto get_speaker() const -> StableID { return m_speaker_id.has_value() ? m_speaker_id.value() : StableID{}; }
+	[[nodiscard]] auto get_i_speaker() const -> int { return m_speaker_id.has_value() ? m_speaker_id->get() : -1; }
 
 	util::RectPath m_path;
 	dj::Json text_suite{};
@@ -115,6 +119,8 @@ class Console {
 	OutputType m_output_type{};
 	ConsoleMode m_mode{};
 
+	HoloShader m_holo_shader;
+
 	struct {
 		int corner_factor{};
 		int edge_factor{};
@@ -129,6 +135,9 @@ class Console {
 	bool m_process_code_after{};
 
 	io::Logger m_logger{"gui"};
+
+  private:
+	std::optional<StableID> m_speaker_id{};
 };
 
 } // namespace fornani::gui

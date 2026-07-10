@@ -11,10 +11,11 @@ enum class MainIntroFlags { player_stopped, rumble, takeover, start_takeover };
 class MainIntro final : public Cutscene, public Flaggable<MainIntroFlags> {
   public:
 	explicit MainIntro(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console, world::Map& map, player::Player& player) override;
+	void update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) override;
 
   private:
 	util::Cooldown m_outro;
+	util::Cooldown m_willett_walk;
 };
 
 } // namespace fornani

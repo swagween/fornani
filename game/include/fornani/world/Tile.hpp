@@ -22,10 +22,11 @@ namespace fornani::world {
 
 class Map;
 
-enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, big_spike, breakable, pushable, target, spawner, checkpoint, bonfire, campfire, home, incinerite, waterfall };
+enum class TileType { empty, solid, platform, ceiling_ramp, ground_ramp, spike, spike_orienter, breakable, pushable, target, spawner, checkpoint, bonfire, campfire, home, incinerite, waterfall };
 enum class TileState { ramp_adjacent, big_ramp, covered, border };
 
-constexpr static int special_index_v{448};
+constexpr auto special_index_v = 448;
+constexpr auto platform_buffer_v = 4;
 
 constexpr auto get_type_by_value(int const val) -> TileType {
 	if (val < special_index_v && val > 0) { return TileType::solid; }
@@ -42,7 +43,7 @@ constexpr auto get_type_by_value(int const val) -> TileType {
 	if (val == special_index_v + 54) { return TileType::checkpoint; }
 	if (val == special_index_v + 55) { return TileType::breakable; }
 	if (val == special_index_v + 56) { return TileType::waterfall; }
-	if (val == special_index_v + 62) { return TileType::big_spike; }
+	if (val == special_index_v + 62) { return TileType::spike_orienter; }
 	if (val == special_index_v + 63) { return TileType::spike; }
 	return TileType::empty;
 }
@@ -64,6 +65,7 @@ struct Tile {
 	void draw(sf::RenderTexture& tex);
 	void set_type();
 
+	[[nodiscard]] auto is(TileType const check) const -> bool { return type == check; }
 	[[nodiscard]] auto is_occupied() const -> bool { return value > 0; }
 	[[nodiscard]] auto is_collidable() const -> bool { return type == TileType::solid || is_ramp() || is_spawner() || is_platform(); }
 	[[nodiscard]] auto is_solid() const -> bool { return type == TileType::solid; }
@@ -74,7 +76,7 @@ struct Tile {
 	[[nodiscard]] auto is_ceiling_ramp() const -> bool { return type == TileType::ceiling_ramp; }
 	[[nodiscard]] auto is_platform() const -> bool { return type == TileType::platform; }
 	[[nodiscard]] auto is_spike() const -> bool { return type == TileType::spike; }
-	[[nodiscard]] auto is_big_spike() const -> bool { return type == TileType::big_spike; }
+	[[nodiscard]] auto is_spike_orienter() const -> bool { return type == TileType::spike_orienter; }
 	[[nodiscard]] auto is_breakable() const -> bool { return type == TileType::breakable; }
 	[[nodiscard]] auto is_waterfall() const -> bool { return type == TileType::waterfall; }
 	[[nodiscard]] auto is_pushable() const -> bool { return type == TileType::pushable; }
@@ -84,7 +86,7 @@ struct Tile {
 	[[nodiscard]] auto is_incinerite() const -> bool { return type == TileType::incinerite; }
 	[[nodiscard]] auto is_checkpoint() const -> bool { return type == TileType::checkpoint; }
 	[[nodiscard]] auto is_fire() const -> bool { return type == TileType::bonfire || type == TileType::campfire; }
-	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable() || is_incinerite() || is_target() || is_checkpoint() || is_fire() || is_spike() || is_big_spike() || is_home() || is_waterfall(); }
+	[[nodiscard]] auto is_special() const -> bool { return is_pushable() || is_breakable() || is_incinerite() || is_target() || is_checkpoint() || is_fire() || is_spike() || is_spike_orienter() || is_home() || is_waterfall(); }
 	[[nodiscard]] auto ramp_adjacent() const -> bool { return flags.test(TileState::ramp_adjacent); }
 	[[nodiscard]] auto covered() const -> bool { return flags.test(TileState::covered); }
 	[[nodiscard]] auto is_negative_ramp() const -> bool {
@@ -119,5 +121,7 @@ struct Tile {
 	float m_spacing;
 	std::uint8_t m_chunk_id{};
 };
+
+static auto is_above_platform(Tile const& tile, float y) -> bool { return tile.is_platform() && (y > tile.bounding_box.get_position().y + platform_buffer_v); }
 
 } // namespace fornani::world

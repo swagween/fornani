@@ -1,19 +1,20 @@
 
 #pragma once
 
+#include <fornani/entities/world/Laser.hpp>
 #include <fornani/io/Logger.hpp>
 #include <optional>
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
-#include "fornani/entities/animation/AnimatedSprite.hpp"
-#include "fornani/utils/BitFlags.hpp"
+#include "fornani/utils/Flaggable.hpp"
 #include "fornani/weapon/Ammo.hpp"
 #include "fornani/weapon/Projectile.hpp"
 
 namespace fornani::arms {
 
+enum class WeaponFlags { firing, charging, released, overdrive };
 enum class WeaponState { unlocked, equipped, reloading };
-enum class WeaponAttributes { automatic, no_reload };
+enum class WeaponAttributes { automatic, no_reload, charge };
 enum class InventoryState { reserve, hotbar };
 enum class UIFlags { selected };
 
@@ -22,6 +23,17 @@ struct WeaponSpecifications {
 	int reload_time{};
 	int multishot{};
 	float recoil{};
+	float charge_multiplier{1.f};
+	float speed_multiplier{1.f};
+};
+
+struct LaserSpecifications {
+	world::LaserType type{};
+	int active{};
+	int cooldown{};
+	float size{};
+	float damage{};
+	util::BitFlags<world::LaserAttributes> attributes{};
 };
 
 struct Offsets {
@@ -35,6 +47,8 @@ struct Offsets {
 };
 
 struct WeaponModifiers {
+	float speed_multiplier{1.f};
+	float damage_multiplier{1.f};
 	float reload_multiplier{1.f};
 };
 
@@ -44,11 +58,11 @@ struct EmitterAttributes {
 	sf::Color color{};
 };
 
-class Weapon : public Animatable {
+class Weapon : public Animatable, public Flaggable<WeaponFlags> {
   public:
 	explicit Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy = false);
 
-	void update(automa::ServiceProvider& svc, Direction to_direction);
+	void update(automa::ServiceProvider& svc, world::Map& map, Direction to_direction);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void render_ui(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f position);
 
@@ -57,6 +71,7 @@ class Weapon : public Animatable {
 	void unlock();
 	void lock();
 	void shoot();
+	void shoot(automa::ServiceProvider& svc, world::Map& map);
 	void shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f target);
 	void decrement_projectiles();
 
@@ -70,7 +85,7 @@ class Weapon : public Animatable {
 	void set_barrel_point(sf::Vector2f point);
 	void set_orientation(Direction to_direction);
 	void set_team(Team team);
-	void set_firing_direction(Direction to_direction);
+	void set_firing_direction(CardinalDirection to_direction);
 	void reset();
 
 	void set_hotbar() { inventory_state = InventoryState::hotbar; }
@@ -79,10 +94,12 @@ class Weapon : public Animatable {
 	void deselect() { flags.ui.reset(UIFlags::selected); }
 	void set_reload_multiplier(float const to) { m_modifiers.reload_multiplier = to; }
 	void reduce_reload_time(float percentage);
+	void flip_firing_direction() { firing_direction.flip(); }
 
 	[[nodiscard]] auto selected() const -> bool { return flags.ui.test(UIFlags::selected); }
 	[[nodiscard]] auto shot() const -> bool { return cooldowns.cooldown.just_started(); }
 	[[nodiscard]] auto automatic() const -> bool { return attributes.test(WeaponAttributes::automatic); }
+	[[nodiscard]] auto is_chargeable() const -> bool { return attributes.test(WeaponAttributes::charge); }
 	[[nodiscard]] auto get_id() const -> int { return metadata.id; }
 	[[nodiscard]] auto get_sound_id() const -> int { return static_cast<int>(m_audio.shoot); }
 	[[nodiscard]] auto get_active_projectiles() const -> int { return active_projectiles.get_count(); }
@@ -92,7 +109,7 @@ class Weapon : public Animatable {
 	[[nodiscard]] auto multishot() const -> bool { return specifications.multishot != 0; }
 	[[nodiscard]] auto get_barrel_point() const -> sf::Vector2f { return offsets.gameplay.barrel; }
 	[[nodiscard]] auto get_cooldown() const -> int { return cooldowns.cooldown.get(); }
-	[[nodiscard]] auto get_firing_direction() & -> Direction& { return firing_direction; }
+	[[nodiscard]] auto get_firing_direction() -> CardinalDirection { return firing_direction; }
 	[[nodiscard]] auto get_global_offset() const -> sf::Vector2f { return offsets.render.global; };
 	[[nodiscard]] auto get_recoil() const -> float { return specifications.recoil; }
 	[[nodiscard]] auto get_multishot() const -> int { return specifications.multishot; }
@@ -121,7 +138,7 @@ class Weapon : public Animatable {
 	} metadata{};
 
 	Offsets offsets{};
-	Direction firing_direction{};
+	CardinalDirection firing_direction{};
 	WeaponSpecifications specifications{};
 	util::BitFlags<WeaponAttributes> attributes{};
 
@@ -158,6 +175,9 @@ class Weapon : public Animatable {
 	} cooldowns{};
 
 	WeaponModifiers m_modifiers{};
+	std::optional<LaserSpecifications> m_laser{};
+
+	automa::ServiceProvider* m_services;
 
 	io::Logger m_logger{"Arms"};
 };

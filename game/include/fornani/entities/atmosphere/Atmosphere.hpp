@@ -1,33 +1,26 @@
+
 #pragma once
 
+#include <fornani/core/Fwd.hpp>
+#include <fornani/entities/atmosphere/Dragonfly.hpp>
+#include <fornani/entities/atmosphere/Firefly.hpp>
+#include <fornani/graphics/SpriteBatch.hpp>
 #include <memory>
 #include <vector>
-#include "fornani/entities/atmosphere/Dragonfly.hpp"
-#include "fornani/entities/atmosphere/Firefly.hpp"
-
-namespace fornani::automa {
-struct ServiceProvider;
-} // namespace fornani::automa
-
-namespace fornani::world {
-class Map;
-} // namespace fornani::world
-
-namespace fornani::player {
-class Player;
-} // namespace fornani::player
 
 namespace fornani::vfx {
 class Atmosphere {
   public:
 	Atmosphere(automa::ServiceProvider& svc, world::Map& map, std::string_view type);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void render(Renderer& renderer);
 	void debug();
 
   private:
 	std::vector<std::unique_ptr<Firefly>> fireflies{};
 	std::vector<std::unique_ptr<Dragonfly>> dragonflies{};
+
+	SpriteBatch m_firefly_batch{};
 
 	// debug
 	struct {
@@ -36,4 +29,5 @@ class Atmosphere {
 		float evade{};
 	} forces{};
 };
+
 } // namespace fornani::vfx

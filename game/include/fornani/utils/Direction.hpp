@@ -12,16 +12,19 @@ enum class UND { up, down, neutral };
 enum class UDLR { up, down, left, right };
 enum class Inter { north, south, east, west, northeast, northwest, southeast, southwest };
 enum class HV { horizontal, vertical };
+enum class RotationType { clockwise, counterclockwise };
 
 enum class DirectionFlags { locked };
 
 class Direction;
+class CardinalDirection;
 
 class SimpleDirection {
   public:
 	SimpleDirection() = default;
 	SimpleDirection(Direction const to);
 	SimpleDirection(LR to) : lr{to} {}
+	SimpleDirection(int to) { lr = to == 1 ? LR::right : LR::left; }
 
 	void set(LR to) { lr = to; }
 	void set(LNR to) { lr = to == LNR::left ? LR::left : LR::right; }
@@ -44,41 +47,9 @@ class SimpleDirection {
 	LR lr{};
 };
 
-struct CardinalDirection {
-  public:
-	CardinalDirection() = default;
-	CardinalDirection(int to) : udlr{static_cast<UDLR>(to)} {}
-	CardinalDirection(UDLR to) : udlr{to} {}
-
-	void set(UDLR to) { udlr = to; }
-	void set(LR to) { udlr = to == LR::left ? UDLR::left : UDLR::right; }
-	void set(LNR to) { udlr = to == LNR::left ? UDLR::left : UDLR::right; }
-	void set(UND to) { udlr = to == UND::up ? UDLR::up : UDLR::down; }
-
-	[[nodiscard]] auto get() const -> UDLR { return udlr; }
-	[[nodiscard]] auto up() const -> bool { return udlr == UDLR::up; }
-	[[nodiscard]] auto down() const -> bool { return udlr == UDLR::down; }
-	[[nodiscard]] auto left() const -> bool { return udlr == UDLR::left; }
-	[[nodiscard]] auto right() const -> bool { return udlr == UDLR::right; }
-	[[nodiscard]] auto print() const -> std::string { return left() ? "left" : right() ? "right" : up() ? "up" : "down"; }
-	[[nodiscard]] auto as_hv() const -> HV { return up() || down() ? HV::vertical : HV::horizontal; }
-	[[nodiscard]] auto as_vector() const -> sf::Vector2f { return up() ? sf::Vector2f{0.f, -1.f} : down() ? sf::Vector2f{0.f, 1.f} : left() ? sf::Vector2f{-1.f, 0.f} : sf::Vector2f{1.f, 0.f}; }
-	[[nodiscard]] auto as_degrees() const -> float { return up() ? 0.f : down() ? 180.f : left() ? 270.f : 90.f; }
-
-	bool operator==(CardinalDirection const& other) const { return other.udlr == udlr; }
-	bool operator!=(CardinalDirection const& other) const { return other.udlr != udlr; }
-
-	template <typename T>
-	T as() const {
-		return static_cast<T>(udlr);
-	}
-
-  private:
-	UDLR udlr{};
-};
-
 struct Direction {
 	Direction(SimpleDirection dir) : Direction(UND::neutral, dir.as<LNR>()) {}
+	Direction(CardinalDirection dir);
 	Direction(UND und_preset = UND::neutral, LNR lnr_preset = LNR::neutral) : und(und_preset), lnr(lnr_preset) {}
 	Direction(sf::Vector2i preset) : lnr{preset.x == 0 ? LNR::neutral : preset.x == 1 ? LNR::right : LNR::left}, und{preset.y == 0 ? UND::neutral : preset.y == 1 ? UND::up : UND::down} {}
 	Direction(sf::Vector2i preset, bool world_orientation) : lnr{preset.x == 0 ? LNR::neutral : preset.x == 1 ? LNR::right : LNR::left}, und{preset.y == 0 ? UND::neutral : preset.y == -1 ? UND::up : UND::down} {}
@@ -88,6 +59,12 @@ struct Direction {
 
 	LNR lnr{LNR::neutral};
 	UND und{UND::neutral};
+
+	Direction flipped() {
+		auto ret = Direction{*this};
+		ret.flip();
+		return ret;
+	}
 
 	[[nodiscard]] auto up() const -> bool { return und == UND::up; }
 	[[nodiscard]] auto down() const -> bool { return und == UND::down; }
@@ -140,5 +117,90 @@ struct Direction {
   private:
 	util::BitFlags<DirectionFlags> m_flags{};
 };
+
+struct CardinalDirection {
+  public:
+	CardinalDirection() = default;
+	CardinalDirection(int to) : udlr{static_cast<UDLR>(to)} {}
+	CardinalDirection(UDLR to) : udlr{to} {}
+	CardinalDirection(Direction from) : udlr{from.left() ? UDLR::left : from.right() ? UDLR::right : from.up() ? UDLR::up : UDLR::down} {
+		switch (from.lnr) {
+		case LNR::left: udlr = UDLR::left; break;
+		case LNR::right: udlr = UDLR::right; break;
+		default: break;
+		}
+		switch (from.und) {
+		case UND::up: udlr = UDLR::up; break;
+		case UND::down: udlr = UDLR::down; break;
+		default: break;
+		}
+	}
+
+	void set(UDLR to) { udlr = to; }
+	void set(LR to) { udlr = to == LR::left ? UDLR::left : UDLR::right; }
+	void set(LNR to) { udlr = to == LNR::left ? UDLR::left : UDLR::right; }
+	void set(UND to) { udlr = to == UND::up ? UDLR::up : UDLR::down; }
+	void rotate(RotationType type = RotationType::clockwise) {
+		switch (type) {
+		case RotationType::clockwise:
+			switch (udlr) {
+			case UDLR::up: udlr = UDLR::right; break;
+			case UDLR::down: udlr = UDLR::left; break;
+			case UDLR::left: udlr = UDLR::up; break;
+			case UDLR::right: udlr = UDLR::down; break;
+			}
+			break;
+		case RotationType::counterclockwise:
+			switch (udlr) {
+			case UDLR::up: udlr = UDLR::left; break;
+			case UDLR::down: udlr = UDLR::right; break;
+			case UDLR::left: udlr = UDLR::down; break;
+			case UDLR::right: udlr = UDLR::up; break;
+			}
+			break;
+		}
+	}
+	void flip() {
+		rotate(RotationType::clockwise);
+		rotate(RotationType::clockwise);
+	}
+
+	[[nodiscard]] auto get() const -> UDLR { return udlr; }
+	[[nodiscard]] auto up() const -> bool { return udlr == UDLR::up; }
+	[[nodiscard]] auto down() const -> bool { return udlr == UDLR::down; }
+	[[nodiscard]] auto left() const -> bool { return udlr == UDLR::left; }
+	[[nodiscard]] auto right() const -> bool { return udlr == UDLR::right; }
+	[[nodiscard]] auto up_or_down() const -> bool { return up() || down(); }
+	[[nodiscard]] auto left_or_right() const -> bool { return left() || right(); }
+	[[nodiscard]] auto print() const -> std::string { return left() ? "left" : right() ? "right" : up() ? "up" : "down"; }
+	[[nodiscard]] auto as_hv() const -> HV { return up() || down() ? HV::vertical : HV::horizontal; }
+	[[nodiscard]] auto as_vector() const -> sf::Vector2f { return up() ? sf::Vector2f{0.f, -1.f} : down() ? sf::Vector2f{0.f, 1.f} : left() ? sf::Vector2f{-1.f, 0.f} : sf::Vector2f{1.f, 0.f}; }
+	[[nodiscard]] auto as_degrees() const -> float { return up() ? 0.f : down() ? 180.f : left() ? 270.f : 90.f; }
+	[[nodiscard]] auto as_angle() const -> sf::Angle { return sf::degrees(as_degrees()); }
+	[[nodiscard]] auto opposite() const -> CardinalDirection {
+		switch (udlr) {
+		case UDLR::up: return CardinalDirection(UDLR::down); break;
+		case UDLR::down: return CardinalDirection(UDLR::up); break;
+		case UDLR::left: return CardinalDirection(UDLR::right); break;
+		case UDLR::right: return CardinalDirection(UDLR::left); break;
+		}
+		return CardinalDirection(UDLR::left);
+	}
+
+	bool operator==(CardinalDirection const& other) const { return other.udlr == udlr; }
+	bool operator!=(CardinalDirection const& other) const { return other.udlr != udlr; }
+
+	template <typename T>
+	T as() const {
+		return static_cast<T>(udlr);
+	}
+
+  private:
+	UDLR udlr{};
+};
+
+constexpr static auto get_hv_from_vector(sf::Vector2f const from) -> HV { return std::abs(from.x) >= std::abs(from.y) ? HV::horizontal : HV::vertical; }
+
+constexpr static auto get_inverse_hv_from_vector(sf::Vector2f const from) -> HV { return std::abs(from.x) < std::abs(from.y) ? HV::horizontal : HV::vertical; }
 
 } // namespace fornani

@@ -4,11 +4,11 @@
 
 namespace fornani::automa {
 
-ThemesMenu::ThemesMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "themes") { m_parent_menu = MenuType::options; }
+ThemesMenu::ThemesMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "themes") { m_parent_menu = MenuType::options; }
 
 void ThemesMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	MenuState::tick_update(svc, engine);
-	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
+	if (was_selected(svc.input_system)) {
 		for (auto& option : options) {
 			if (current_selection.get() == option.index) {
 				svc.soundboard.flags.menu.set(audio::Menu::forward_switch);

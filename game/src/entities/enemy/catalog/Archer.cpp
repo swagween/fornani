@@ -8,7 +8,7 @@ namespace fornani::enemy {
 
 Archer::Archer(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "archer"), m_services(&svc), m_map(&map), m_bow(svc, "demon_bow"), parts{.bow{svc.assets.get_texture("archer_bow"), 0.8f, 0.85f, {-18.f, -8.f}}} {
 	auto archer_framerate = 12;
-	m_params = {{"idle", {0, 8, archer_framerate * 2, -1}}, {"turn", {8, 1, archer_framerate * 2, 0}}, {"run", {9, 4, archer_framerate * 2, 4}}, {"jump", {9, 1, archer_framerate * 3, 0}}, {"shoot", {13, 1, archer_framerate * 12, 0}}};
+	p_animations = {{"idle", {0, 8, archer_framerate * 2, -1}}, {"turn", {8, 1, archer_framerate * 2, 0}}, {"run", {9, 4, archer_framerate * 2, 4}}, {"jump", {9, 1, archer_framerate * 3, 0}}, {"shoot", {13, 1, archer_framerate * 12, 0}}};
 	get_collider().physics.maximum_velocity = {8.f, 12.f};
 	get_collider().physics.air_friction = {0.95f, 0.999f};
 	get_collider().flags.general.set(shape::General::complex);
@@ -141,7 +141,7 @@ fsm::StateFunction Archer::update_shoot() {
 		bp.x += 24.f * directions.actual.as_float();
 		bp.y -= 48.f;
 		m_bow.get().set_barrel_point(bp);
-		m_map->spawn_projectile_at(*m_services, m_bow.get(), m_bow.get().get_barrel_point(), m_player_target - m_bow.get().get_barrel_point());
+		m_bow.shoot(*m_services, *m_map, m_player_target - m_bow.get().get_barrel_point());
 		parts.bow.sprite->setTextureRect(sf::IntRect{{0, 0}, bow_dimensions});
 		cooldowns.post_shoot.start();
 		request(ArcherState::idle);

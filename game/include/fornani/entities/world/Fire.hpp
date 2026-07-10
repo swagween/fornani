@@ -1,18 +1,11 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <fornani/core/Fwd.hpp>
 #include <fornani/particle/Sparkler.hpp>
 #include <fornani/physics/Shape.hpp>
 #include <memory>
 #include <optional>
-
-namespace fornani::player {
-class Player;
-}
-
-namespace fornani::gui {
-class Console;
-}
 
 namespace fornani::world {
 
@@ -23,6 +16,7 @@ class Fire : public Animatable {
 	Fire(automa::ServiceProvider& svc, sf::Vector2f position, int lookup);
 	void update(automa::ServiceProvider& svc, player::Player& player, Map& map, std::optional<std::unique_ptr<gui::Console>>& console);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void submit(Renderer& renderer);
 
   private:
 	int size{};

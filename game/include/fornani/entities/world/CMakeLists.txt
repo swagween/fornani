@@ -1,12 +1,13 @@
 nani_add_headers(
-        Animator.hpp
         Bed.hpp
         Chest.hpp
         Explosion.hpp
         Fire.hpp
-        Inspectable.hpp
+        Hazard.hpp
+        HazardTile.hpp
         SpawnablePlatform.hpp
         TreasureContainer.hpp
         Laser.hpp
         Waterfall.hpp
+        TestMobile.hpp
 )

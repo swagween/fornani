@@ -1,12 +1,13 @@
 nani_add_sources(
-        Animator.cpp
         Bed.cpp
         Chest.cpp
         Explosion.cpp
         Fire.cpp
-        Inspectable.cpp
+        Hazard.cpp
+        HazardTile.cpp
         Laser.cpp
         SpawnablePlatform.cpp
+        TestMobile.cpp
         TreasureContainer.cpp
         Waterfall.cpp
 )

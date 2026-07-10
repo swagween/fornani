@@ -16,6 +16,23 @@
     }
   },
 
+  "curative_water": {
+    "rate": 40.0,
+    "volatility": 0.01,
+    "wobble": 0.1,
+    "frequency": 0.01,
+    "speed": 0.26,
+    "lifespan": 120,
+    "lifespan_variance": 100,
+    "animation": {
+      "label": "drop",
+      "variants": 6,
+      "num_frames": 6,
+      "framerate": 24,
+      "dimensions": [7, 7]
+    }
+  },
+
   "item": {
     "rate": 4.0,
     "volatility": 0.7,

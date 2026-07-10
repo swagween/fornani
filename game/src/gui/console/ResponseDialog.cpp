@@ -9,19 +9,21 @@
 
 namespace fornani::gui {
 
-ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, QuestTable& quest_table, std::string_view key, int index, sf::Vector2f start_position) : m_text_size{16}, m_selection{1}, m_index{index} {
+ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, QuestTable& quest_table, std::string_view key, int index, sf::Vector2f start_position, int stall)
+	: m_font{&text.fonts.basic}, m_selection{1}, m_index{index}, m_stall{stall} {
 	auto& set = key == null_key ? source["responses"][index] : source[key]["responses"][index];
+	auto& data = key == null_key ? source : source[key];
+	if (data["hide_portrait"].as_bool()) { set_flag(ResponseDialogFlags::hide_portrait); }
 	for (auto& msg : set.as_array()) {
 		auto contingencies_met = true;
-		if (msg["hide_portrait"].as_bool()) { set_flag(ResponseDialogFlags::hide_portrait); }
 		if (msg["contingencies"]) {
 			auto contingencies = std::vector<QuestContingency>{};
 			for (auto const& cont : msg["contingencies"].as_array()) { contingencies.push_back(QuestContingency{cont}); }
 			if (!quest_table.are_contingencies_met(contingencies)) { contingencies_met = false; }
 		}
 		if (!contingencies_met) { continue; }
-		responses.push_back(Message{sf::Text(text.fonts.basic)});
-		responses.back().data.setString(msg["message"].as_string().data());
+		responses.push_back(Message{sf::Text(text.fonts.basic.font)});
+		set_utf8_string(msg["message"], responses.back().data);
 		stylize(responses.back().data);
 		if (msg["codes"].is_array()) {
 			responses.back().codes = std::vector<MessageCode>{};
@@ -37,6 +39,7 @@ ResponseDialog::ResponseDialog(data::TextManager& text, dj::Json& source, QuestT
 	m_indicator.position = start_position;
 	m_indicator.physics.position = start_position;
 	m_position = start_position;
+	if (source["response_mode"].as<int>() != 1) { m_stall.start(); }
 }
 
 auto ResponseDialog::get_codes(std::size_t index) const -> std::optional<std::vector<MessageCode>> {
@@ -46,7 +49,7 @@ auto ResponseDialog::get_codes(std::size_t index) const -> std::optional<std::ve
 }
 
 void ResponseDialog::stylize(sf::Text& message) const {
-	message.setCharacterSize(m_text_size);
+	message.setCharacterSize(m_font->glyph_size);
 	message.setFillColor(colors::ui_white);
 	message.setLineSpacing(1.5f);
 }
@@ -56,10 +59,6 @@ bool ResponseDialog::handle_inputs(input::InputSystem& controller, audio::Soundb
 	auto const& down = controller.menu_move(input::MoveDirection::down);
 	auto const& select = controller.digital(input::DigitalAction::menu_select).triggered;
 
-	if (select && m_ready) {
-		soundboard.flags.console.set(audio::Console::next);
-		return false;
-	}
 	if (up) {
 		soundboard.flags.console.set(audio::Console::shift);
 		m_selection.modulate(-1);
@@ -68,7 +67,11 @@ bool ResponseDialog::handle_inputs(input::InputSystem& controller, audio::Soundb
 		soundboard.flags.console.set(audio::Console::shift);
 		m_selection.modulate(1);
 	}
-	m_ready = true;
+	if (m_stall.running()) { return true; }
+	if (select) {
+		soundboard.flags.console.set(audio::Console::next);
+		return false;
+	}
 	return true;
 }
 
@@ -90,7 +93,10 @@ void ResponseDialog::render(sf::RenderWindow& win) {
 	}
 }
 
-void ResponseDialog::update() { m_indicator.update(); }
+void ResponseDialog::update() {
+	m_indicator.update();
+	m_stall.update();
+}
 
 void ResponseDialog::set_position(sf::Vector2f to_position) { m_position = to_position; }
 

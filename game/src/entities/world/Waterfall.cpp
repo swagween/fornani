@@ -10,24 +10,27 @@ Waterfall::Waterfall(automa::ServiceProvider& svc, Map& map, sf::Vector2u positi
 	set_animation("main");
 	m_bounding_box.set_position(get_world_position());
 	m_detector.set_position(get_world_position() + sf::Vector2f{0.f, 8.f});
+	auto code = map.get_chunk_id_from_position(get_world_position());
+	m_id = StableID::from(code, 1, 1);
+	for (auto& water : map.get_entities<Water>()) { set_channel(water->get_i_type()); }
 }
 
 void Waterfall::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 	tick();
 	for (auto& water : map.get_entities<Water>()) {
 		if (m_detector.overlaps(water->get_bounding_box())) {
+			svc.soundboard.repeat_sound("waterfall", m_id.get(), get_world_position());
+			svc.soundboard.repeat_sound("deep_waterfall", m_id.get(), get_world_position());
 			auto pos = m_detector.get_center() + sf::Vector2f{0.f, 16.f} + random::random_vector_float({-16.f, 0.f}, {16.f, 0.f});
 			if (svc.ticker.every_x_ticks(18)) {
-				map.spawn_effect(svc, "steam", pos, {random::random_range_float(-0.2f, 0.2f), -0.3f}, 0);
-				map.spawn_emitter(svc, "steam", pos, Direction{UND::down});
+				map.spawn_effect(svc, "steam", pos, {random::random_range_float(-0.2f, 0.2f), -0.3f}, water->get_i_type());
+				map.spawn_emitter(svc, "steam", pos, Direction{UND::down}, constants::f_resolution_vec, colors::nani_white, water->get_i_type());
 			}
 		}
 	}
 }
 
 void Waterfall::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	m_bounding_box.render(win, cam, sf::Color{100, 160, 220, 30});
-	// m_detector.render(win, cam, sf::Color{255, 0, 0, 60});
 	Animatable::set_position(get_world_position() - cam);
 	win.draw(*this);
 }

@@ -1,5 +1,6 @@
 
 #include <imgui.h>
+#include <fornani/core/Debug.hpp>
 #include <fornani/entity/Entity.hpp>
 #include <fornani/graphics/Colors.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -11,6 +12,9 @@ Entity::Entity(automa::ServiceProvider& svc, dj::Json const& in, std::string_vie
 	: Animatable(svc, label, dim), m_label{label}, IWorldPositionable({in["position"][0].as<std::uint32_t>(), in["position"][1].as<std::uint32_t>()}, {in["dimensions"][0].as<std::uint32_t>(), in["dimensions"][1].as<std::uint32_t>()}) {
 	unserialize(in);
 	m_editor = svc.is_editor();
+	if (p_contingencies) {
+		if (!svc.quest_table.are_contingencies_met(*p_contingencies)) { p_flags.set(EntityFlags::spawn_denied); }
+	}
 }
 
 Entity::Entity(automa::ServiceProvider& svc, std::string_view label, int to_id, sf::Vector2<std::uint32_t> dim) : Animatable(svc, label), m_id{to_id}, m_label{label}, IWorldPositionable{{}, dim} { m_editor = svc.is_editor(); }
@@ -23,9 +27,13 @@ void Entity::serialize(dj::Json& out) {
 	out["position"][1] = get_grid_position().y;
 	out["dimensions"][0] = get_grid_dimensions().x;
 	out["dimensions"][1] = get_grid_dimensions().y;
+	if (p_contingencies) { p_contingencies->serialize(out["contingencies"]); }
 }
 
-void Entity::unserialize(dj::Json const& in) { m_id = in["id"].as<int>(); }
+void Entity::unserialize(dj::Json const& in) {
+	m_id = in["id"].as<int>();
+	if (in["contingencies"]) { p_contingencies.emplace(in["contingencies"]); }
+}
 
 void Entity::expose() {
 	static int w = IWorldPositionable::m_dimensions.x;
@@ -40,6 +48,36 @@ void Entity::expose() {
 	ImGui::InputInt("Width", &w);
 	ImGui::InputInt("Height", &h);
 	set_grid_dimensions(sf::Vector2i{w, h});
+	ImGui::Text("Quest Contingencies");
+	static char tag_buffer[256] = "";
+	static int requirement{};
+	static bool strict{};
+	ImGui::InputTextWithHint("Tag", "Quest Tag", tag_buffer, IM_ARRAYSIZE(tag_buffer));
+	ImGui::InputInt("Requirement", &requirement);
+	ImGui::Checkbox("Strict?", &strict);
+	if (ImGui::Button("Add Contingency")) {
+		auto ct = QuestContingency{tag_buffer, requirement, strict};
+		if (!p_contingencies) {
+			p_contingencies.emplace({ct});
+		} else {
+			p_contingencies->add(ct);
+		}
+	}
+	ImGui::NewLine();
+	ImGui::Separator();
+	ImGui::Text("Current List:");
+	if (p_contingencies) {
+		for (auto [i, ct] : std::views::enumerate(p_contingencies->contingencies)) {
+			ImGui::PushID(i);
+			if (ImGui::SmallButton("x")) { ct.delete_me = true; }
+			ImGui::SameLine();
+			ImGui::Text("[%s, %i]", ct.tag.c_str(), ct.requirement);
+			ImGui::PopID();
+		}
+		std::erase_if(p_contingencies->contingencies, [](auto const& ct) { return ct.delete_me; });
+	} else {
+		ImGui::Text("<none>");
+	}
 }
 
 void Entity::set_position(sf::Vector2u to_position) { set_grid_position(to_position); }
@@ -53,7 +91,7 @@ auto Entity::contains_point(sf::Vector2u test) const -> bool {
 	return false;
 }
 
-void Entity::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) { tick(); }
+void Entity::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) { tick(); }
 
 void Entity::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	if (!m_editor) { return; }
@@ -70,5 +108,7 @@ void Entity::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	if (m_textured) { win.draw(*this); }
 	win.draw(drawbox);
 }
+
+void Entity::submit(Renderer& renderer) {}
 
 } // namespace fornani

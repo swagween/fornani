@@ -39,6 +39,7 @@ class AnimatedSprite {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, LightShader& shader, Palette& palette);
 	[[nodiscard]] auto get_frame() const -> int { return animation.get_frame(); }
 	[[nodiscard]] auto just_started() const -> bool { return animation.just_started(); }
+	[[nodiscard]] auto keyframe_started() const -> bool { return animation.keyframe_started(); }
 	[[nodiscard]] auto complete() -> bool { return animation.complete(); }
 	[[nodiscard]] auto size() const -> int { return static_cast<int>(params.size()); }
 	[[nodiscard]] auto get_sprite_angle_index() const -> int { return rotator.get_sprite_angle_index(); }

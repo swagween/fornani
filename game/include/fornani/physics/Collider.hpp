@@ -65,6 +65,15 @@ struct PhysicsStats {
 	float GRAV{0.002f};
 };
 
+struct DetectorPair {
+	DetectorPair(sf::Vector2f dimensions);
+	void set_position(sf::Vector2f position);
+	[[nodiscard]] auto get_dimensions() const -> sf::Vector2f { return sf::Vector2f{left.get_dimensions().x + right.get_dimensions().x, left.get_dimensions().y}; }
+
+	Shape left;
+	Shape right;
+};
+
 class Collider : public ICollider {
 
   public:
@@ -79,7 +88,7 @@ class Collider : public ICollider {
 	void correct_x_y(sf::Vector2f mtv);
 	void correct_corner(sf::Vector2f mtv);
 	void resolve_depths();
-	void handle_collision(ICollider& other);
+	void handle_collision(ICollider& other) override;
 	void handle_collider_collision(CircleCollider& collider) override;
 	bool handle_collider_collision(Shape const& collider, bool soft = false, sf::Vector2f velocity = {}, float force = 0.01f, bool crusher = false) override; // returns true if grounded on collider
 	void handle_collider_collision(Collider const& collider, bool momentum = false) override;
@@ -91,6 +100,7 @@ class Collider : public ICollider {
 	void reset();
 	void reset_ground_flags();
 	void adjust_acceleration();
+	void add_walljumper(sf::Vector2f dimensions);
 	void fix();
 
 	bool on_ramp() const;
@@ -115,6 +125,7 @@ class Collider : public ICollider {
 	[[nodiscard]] auto dash_was_canceled() const -> bool { return flags.dash.test(Dash::dash_cancel_collision); }
 	[[nodiscard]] auto crushed() const -> bool { return collision_depths ? collision_depths.value().crushed() : false; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return physics.position + dimensions * 0.5f; }
+	[[nodiscard]] auto get_local_center() const -> sf::Vector2f { return dimensions * 0.5f; }
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return physics.position; }
 	[[nodiscard]] auto get_top() const -> sf::Vector2f { return sf::Vector2f{physics.position.x + dimensions.x * 0.5f, physics.position.y}; }
 	[[nodiscard]] auto get_bottom() const -> sf::Vector2f { return sf::Vector2f{physics.position.x + dimensions.x * 0.5f, physics.position.y + dimensions.y}; }
@@ -140,6 +151,7 @@ class Collider : public ICollider {
 	Shape hurtbox{};
 	Shape horizontal{};
 	Shape vertical{};
+	std::optional<DetectorPair> walljumper{};
 
 	PhysicsStats stats{};
 

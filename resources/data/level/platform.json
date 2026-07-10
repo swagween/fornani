@@ -1,170 +1,228 @@
 {
-	"standard_up_down": {
-		"sticky": true,
-		"loop": true,
-		"repeating": false,
-		"player_activated": false,
-		"player_controlled": false,
-		"ease": true,
-		"speed": 0.0005,
-		"track": [
-			[ 0, 0 ],
-			[ 0, 32 ]
-		]
-	},
-	"standard_side_to_side": {
-		"sticky": true,
-		"loop": true,
-		"repeating": false,
-		"player_activated": false,
-		"player_controlled": false,
-		"ease": true,
-		"speed": 0.0005,
-		"track": [
-			[ 0, 0 ],
-			[ 32, 0 ]
-		]
-	},
-	"slow_side_to_side": {
-		"sticky": true,
-		"loop": true,
-		"repeating": false,
-		"player_activated": false,
-		"player_controlled": false,
-		"ease": true,
-		"speed": 0.0002,
-		"track": [
-			[ 0, 0 ],
-			[ 32, 0 ]
-		]
-	},
-	"standard_nonstick": {
-		"sticky": false,
-		"loop": true,
-		"repeating": false,
-		"player_activated": false,
-		"player_controlled": false,
-		"speed": 0.001,
-		"track": [
-			[ 0, 0 ],
-			[ 32, 0 ]
-		]
-	},
-	"standard_square": {
-		"sticky": true,
-		"loop": true,
-		"repeating": false,
-		"player_activated": false,
-		"player_controlled": false,
-		"speed": 0.0005,
-		"track": [
-			[ 0, 0 ],
-			[ 32, 0 ],
-			[ 32, 32 ],
-			[ 0, 32 ]
-		]
-	},
-	"standard_slow_square": {
-		"sticky": true,
-		"loop": true,
-		"repeating": false,
-		"player_activated": false,
-		"player_controlled": false,
-		"speed": 0.0002,
-		"track": [
-			[ 0, 0 ],
-			[ 32, 0 ],
-			[ 32, 32 ],
-			[ 0, 32 ]
-		]
-	},
-	"slow_up_down": {
-		"sticky": true,
-		"loop": true,
-		"repeating": false,
-		"player_activated": false,
-		"player_controlled": false,
-		"ease": true,
-		"speed": 0.0002,
-		"track": [
-			[ 0, 0 ],
-			[ 0, 32 ]
-		]
-	},
-	"standard_activated": {
-		"sticky": true,
-		"loop": true,
-		"repeating": false,
-		"player_activated": true,
-		"player_controlled": false,
-		"ease": true,
-		"speed": 0.001,
-		"track": [
-			[ 0, 0 ],
-			[ 32, 0 ]
-		]
-	},
-	"standard_activated_side_to_side": {
-		"sticky": true,
-		"loop": true,
-		"repeating": false,
-		"player_activated": true,
-		"player_controlled": false,
-		"ease": true,
-		"speed": 0.0005,
-		"track": [
-			[ 0, 0 ],
-			[ 32, 0 ]
-		]
-	},
-	"standard_activated_up_down": {
-		"sticky": true,
-		"loop": true,
-		"repeating": false,
-		"player_activated": true,
-		"player_controlled": false,
-		"ease": true,
-		"speed": 0.0005,
-		"track": [
-			[ 0, 0 ],
-			[ 0, 32 ]
-		]
-	},
-	"slow_activated_up_down": {
-		"sticky": true,
-		"loop": true,
-		"repeating": false,
-		"player_activated": true,
-		"player_controlled": false,
-		"ease": true,
-		"speed": 0.0002,
-		"track": [
-			[ 0, 0 ],
-			[ 0, 32 ]
-		]
-	},
-	"standard_up_down_repeater": {
-		"sticky": true,
-		"loop": true,
-		"repeating": true,
-		"player_activated": false,
-		"player_controlled": false,
-		"speed": 0.0005,
-		"track": [
-			[ 0, 0 ],
-			[ 0, 32 ]
-		]
-	},
-	"standard_down_up_repeater": {
-		"sticky": true,
-		"loop": true,
-		"repeating": true,
-		"player_activated": false,
-		"player_controlled": false,
-		"speed": 0.0005,
-		"track": [
-			[ 0, 32 ],
-			[ 0, 0 ]
-		]
-	}
+  "standard_up_down": {
+    "sticky": true,
+    "loop": true,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "ease": true,
+    "speed": 0.0005,
+    "track": [
+      [0, 0],
+      [0, 32]
+    ]
+  },
+  "standard_side_to_side": {
+    "sticky": true,
+    "loop": true,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "ease": true,
+    "speed": 0.0005,
+    "track": [
+      [0, 0],
+      [32, 0]
+    ]
+  },
+  "slow_side_to_side": {
+    "sticky": true,
+    "loop": true,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "ease": true,
+    "speed": 0.0002,
+    "track": [
+      [0, 0],
+      [32, 0]
+    ]
+  },
+  "standard_nonstick": {
+    "sticky": false,
+    "loop": true,
+    "ease": true,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "speed": 0.0005,
+    "track": [
+      [0, 0],
+      [32, 0]
+    ]
+  },
+  "standard_square": {
+    "sticky": true,
+    "loop": true,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "speed": 0.0005,
+    "track": [
+      [0, 0],
+      [32, 0],
+      [32, 32],
+      [0, 32]
+    ]
+  },
+  "standard_slow_square": {
+    "sticky": true,
+    "loop": true,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "speed": 0.0002,
+    "track": [
+      [0, 0],
+      [32, 0],
+      [32, 32],
+      [0, 32]
+    ]
+  },
+  "slow_up_down": {
+    "sticky": true,
+    "loop": true,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "ease": true,
+    "speed": 0.0002,
+    "track": [
+      [0, 0],
+      [0, 32]
+    ]
+  },
+  "standard_activated": {
+    "sticky": true,
+    "loop": true,
+    "repeating": false,
+    "player_activated": true,
+    "player_controlled": false,
+    "ease": true,
+    "speed": 0.001,
+    "track": [
+      [0, 0],
+      [32, 0]
+    ]
+  },
+  "standard_activated_side_to_side": {
+    "sticky": true,
+    "loop": true,
+    "repeating": false,
+    "player_activated": true,
+    "player_controlled": false,
+    "ease": true,
+    "speed": 0.0005,
+    "track": [
+      [0, 0],
+      [32, 0]
+    ]
+  },
+  "standard_activated_up_down": {
+    "sticky": true,
+    "loop": true,
+    "repeating": false,
+    "player_activated": true,
+    "player_controlled": false,
+    "ease": true,
+    "speed": 0.0005,
+    "track": [
+      [0, 0],
+      [0, 32]
+    ]
+  },
+  "slow_activated_up_down": {
+    "sticky": true,
+    "loop": true,
+    "repeating": false,
+    "player_activated": true,
+    "player_controlled": false,
+    "ease": true,
+    "speed": 0.0002,
+    "track": [
+      [0, 0],
+      [0, 32]
+    ]
+  },
+  "standard_up_down_repeater": {
+    "sticky": true,
+    "loop": true,
+    "repeating": true,
+    "player_activated": false,
+    "player_controlled": false,
+    "speed": 0.0005,
+    "track": [
+      [0, 0],
+      [0, 32]
+    ]
+  },
+  "standard_down_up_repeater": {
+    "sticky": true,
+    "loop": true,
+    "repeating": true,
+    "player_activated": false,
+    "player_controlled": false,
+    "speed": 0.0005,
+    "track": [
+      [0, 32],
+      [0, 0]
+    ]
+  },
+  "standard_worm_side_to_side": {
+    "sticky": true,
+    "loop": true,
+    "slide": true,
+    "hit_activated": true,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "speed": 0.0005,
+    "track": [
+      [0, 0],
+      [32, 0]
+    ]
+  },
+  "standard_worm_up_down": {
+    "sticky": true,
+    "loop": true,
+    "slide": true,
+    "hit_activated": true,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "speed": 0.0005,
+    "track": [
+      [0, 0],
+      [0, 32]
+    ]
+  },
+  "slippery_worm_up_down": {
+    "sticky": false,
+    "loop": true,
+    "slide": true,
+    "hit_activated": true,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "speed": 0.0005,
+    "track": [
+      [0, 0],
+      [0, 32]
+    ]
+  },
+  "slippery_worm_side_to_side": {
+    "sticky": false,
+    "ease": true,
+    "loop": true,
+    "slide": true,
+    "hit_activated": true,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "speed": 0.0005,
+    "track": [
+      [0, 0],
+      [32, 0]
+    ]
+  }
 }

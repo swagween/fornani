@@ -12,7 +12,8 @@
         "position": [
           90,
           10
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -25,7 +26,8 @@
         "position": [
           91,
           10
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -38,7 +40,8 @@
         "position": [
           91,
           11
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -51,7 +54,8 @@
         "position": [
           90,
           11
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -64,7 +68,8 @@
         "position": [
           90,
           12
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -77,7 +82,8 @@
         "position": [
           91,
           12
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -90,7 +96,8 @@
         "position": [
           55,
           6
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -103,7 +110,8 @@
         "position": [
           57,
           6
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -116,7 +124,8 @@
         "position": [
           56,
           6
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -129,7 +138,8 @@
         "position": [
           83,
           13
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -142,7 +152,8 @@
         "position": [
           84,
           13
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -155,7 +166,8 @@
         "position": [
           85,
           13
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -168,7 +180,8 @@
         "position": [
           86,
           13
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -181,7 +194,8 @@
         "position": [
           87,
           13
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -194,7 +208,8 @@
         "position": [
           88,
           13
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -207,7 +222,106 @@
         "position": [
           89,
           13
-        ]
+        ],
+        "unlit": false
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 25703,
+        "inverse": true,
+        "position": [
+          63,
+          13
+        ],
+        "unlit": false
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 25703,
+        "inverse": true,
+        "position": [
+          62,
+          13
+        ],
+        "unlit": false
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 25703,
+        "inverse": true,
+        "position": [
+          61,
+          13
+        ],
+        "unlit": false
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 25703,
+        "inverse": true,
+        "position": [
+          60,
+          13
+        ],
+        "unlit": false
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 25703,
+        "inverse": true,
+        "position": [
+          59,
+          13
+        ],
+        "unlit": false
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 25703,
+        "inverse": true,
+        "position": [
+          58,
+          13
+        ],
+        "unlit": false
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 25703,
+        "inverse": true,
+        "position": [
+          57,
+          13
+        ],
+        "unlit": false
       }
     ],
     "enemies": [
@@ -245,6 +359,7 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
             "suite": [
               [
                 {
@@ -263,6 +378,7 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
         "id": 227,
@@ -270,24 +386,59 @@
         "position": [
           78,
           11
-        ]
+        ],
+        "start_busy": false
       }
     ],
     "portals": [
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 225,
         "dimensions": [
           1,
           8
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,
           4
+        ],
+        "source_id": 227
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 255,
+        "dimensions": [
+          4,
+          1
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          150,
+          0
+        ],
+        "source_id": 227
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 258,
+        "dimensions": [
+          1,
+          5
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          191,
+          5
         ],
         "source_id": 227
       }
@@ -304,17 +455,64 @@
           5
         ]
       }
+    ],
+    "switch_blocks": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 22701,
+        "position": [
+          184,
+          8
+        ],
+        "type": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 22701,
+        "position": [
+          184,
+          9
+        ],
+        "type": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 22701,
+        "position": [
+          184,
+          10
+        ],
+        "type": 1
+      }
+    ],
+    "switch_buttons": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 22701,
+        "position": [
+          188,
+          9
+        ],
+        "type": 1
+      }
     ]
   },
   "meta": {
     "ambience": "",
     "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -334,6 +532,7 @@
       192,
       16
     ],
+    "interior": false,
     "metagrid": [
       52,
       23
@@ -345,10 +544,12 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
+      "day_night_shift": true,
       "environmental_randomness": false,
+      "interior": false,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 227,
     "shader": {
@@ -358,6 +559,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false
@@ -12820,10 +13031,10 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
-        96,
+        0,
+        0,
+        0,
+        0,
         96,
         96,
         96,
@@ -13012,10 +13223,10 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
-        96,
+        0,
+        0,
+        0,
+        0,
         96,
         96,
         96,
@@ -13204,10 +13415,10 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
-        96,
+        477,
+        0,
+        0,
+        0,
         96,
         96,
         96,
@@ -13397,10 +13608,10 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
-        96,
+        0,
+        0,
+        0,
+        481,
         96,
         96,
         96,
@@ -13589,12 +13800,12 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
+        496,
+        0,
+        0,
+        0,
+        0,
+        481,
         96,
         96,
         96,
@@ -13782,15 +13993,15 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
-        96,
         0,
         0,
         0,
         0,
         0,
+        452,
+        453,
+        454,
+        455,
         96,
         96,
         96,
@@ -13812,14 +14023,14 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
+        64,
+        65,
+        66,
+        189,
+        189,
+        456,
+        457,
+        0,
         0,
         0,
         0,
@@ -13974,7 +14185,6 @@
         96,
         96,
         96,
-        96,
         0,
         0,
         0,
@@ -13984,6 +14194,7 @@
         0,
         0,
         0,
+        481,
         96,
         96,
         96,
@@ -14002,15 +14213,15 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
+        67,
+        68,
+        32,
+        33,
+        34,
+        456,
+        457,
+        0,
+        0,
         0,
         0,
         0,
@@ -14164,6 +14375,8 @@
         455,
         96,
         96,
+        460,
+        461,
         0,
         0,
         0,
@@ -14174,31 +14387,29 @@
         0,
         0,
         0,
+        481,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        460,
+        461,
         0,
         0,
-        0,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        0,
-        0,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
+        452,
+        453,
+        454,
+        455,
+        35,
+        36,
+        48,
+        49,
+        50,
         0,
         0,
         0,
@@ -14376,8 +14587,8 @@
         96,
         96,
         96,
-        96,
-        0,
+        460,
+        461,
         0,
         0,
         0,
@@ -14561,13 +14772,13 @@
         0,
         0,
         0,
-        0,
+        462,
+        463,
         96,
-        96,
-        96,
-        96,
-        96,
-        96,
+        448,
+        449,
+        450,
+        451,
         0,
         0,
         0,
@@ -14743,9 +14954,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        16,
+        17,
+        18,
         0,
         0,
         0,
@@ -14777,9 +14988,9 @@
         0,
         0,
         468,
-        469,
-        470,
-        471,
+        16,
+        17,
+        18,
         96,
         96,
         0,
@@ -14935,9 +15146,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        32,
+        33,
+        34,
         0,
         0,
         0,
@@ -14966,12 +15177,12 @@
         0,
         468,
         469,
-        470,
-        471,
-        96,
-        96,
-        96,
-        96,
+        16,
+        17,
+        18,
+        32,
+        33,
+        34,
         96,
         96,
         96,
@@ -15127,9 +15338,9 @@
         96,
         464,
         465,
-        466,
-        467,
-        0,
+        48,
+        49,
+        50,
         0,
         0,
         0,
@@ -15158,12 +15369,12 @@
         471,
         96,
         96,
-        96,
-        96,
-        96,
-        96,
-        96,
-        96,
+        32,
+        33,
+        34,
+        48,
+        49,
+        50,
         96,
         96,
         96,
@@ -15350,9 +15561,9 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
+        48,
+        49,
+        50,
         96,
         96,
         96,
@@ -17464,7 +17675,7 @@
         0,
         0,
         0,
-        0,
+        88,
         0,
         0,
         0,
@@ -17656,7 +17867,7 @@
         0,
         0,
         0,
-        0,
+        88,
         0,
         0,
         0,
@@ -17848,7 +18059,7 @@
         0,
         0,
         0,
-        0,
+        88,
         0,
         0,
         0,
@@ -18427,8 +18638,8 @@
         0,
         0,
         0,
-        0,
-        0,
+        456,
+        457,
         0,
         0,
         0,

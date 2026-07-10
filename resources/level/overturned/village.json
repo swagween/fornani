@@ -1,5 +1,91 @@
 {
   "entities": {
+    "ambient_props": [
+      {
+        "channel": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          58,
+          43
+        ],
+        "tag": "cattail"
+      },
+      {
+        "channel": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          48,
+          43
+        ],
+        "tag": "cattail"
+      },
+      {
+        "channel": 1,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          47,
+          42
+        ],
+        "tag": "cattail"
+      },
+      {
+        "channel": 1,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          44,
+          42
+        ],
+        "tag": "orange_flower"
+      },
+      {
+        "channel": 2,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          42,
+          42
+        ],
+        "tag": "pink_flower"
+      },
+      {
+        "channel": 3,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          32,
+          12
+        ],
+        "tag": "pink_flower"
+      }
+    ],
     "chests": [
       {
         "dimensions": [
@@ -7,11 +93,26 @@
           1
         ],
         "id": 40487,
-        "modifier": 104,
+        "modifier": 0,
         "position": [
           60,
           8
         ],
+        "tag": "cridium_shard",
+        "type": 2
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 23323,
+        "modifier": 0,
+        "position": [
+          56,
+          36
+        ],
+        "tag": "indigum",
         "type": 2
       }
     ],
@@ -98,6 +199,7 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
             "suite": [
               [
                 {
@@ -124,6 +226,7 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
             "suite": [
               [
                 {
@@ -150,6 +253,7 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
             "suite": [
               [
                 {
@@ -176,6 +280,7 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
             "suite": [
               [
                 {
@@ -202,6 +307,7 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
             "suite": [
               [
                 {
@@ -228,6 +334,7 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
             "suite": [
               [
                 {
@@ -239,10 +346,127 @@
         ]
       }
     ],
+    "npcs": [
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": true,
+        "hidden": false,
+        "id": 400,
+        "label": "bongo",
+        "position": [
+          88,
+          20
+        ],
+        "spawn": {
+          "chance": 0.15000000596046448,
+          "interval": 1
+        },
+        "start_busy": true,
+        "suites": [
+          [
+            1
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": 1,
+        "face_player": true,
+        "hidden": false,
+        "id": 400,
+        "label": "gaia",
+        "position": [
+          35,
+          25
+        ],
+        "start_busy": false,
+        "suites": [
+          [
+            2
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": false,
+        "hidden": false,
+        "id": 400,
+        "label": "gobe",
+        "position": [
+          71,
+          22
+        ],
+        "start_busy": false,
+        "suites": [
+          [
+            5
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": false,
+        "hidden": false,
+        "id": 406,
+        "label": "justin",
+        "position": [
+          72,
+          22
+        ],
+        "start_busy": false,
+        "suites": [
+          [
+            3
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": true,
+        "hidden": false,
+        "id": 400,
+        "label": "gobina",
+        "position": [
+          55,
+          27
+        ],
+        "start_busy": false,
+        "suites": [
+          [
+            1
+          ]
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 219,
         "dimensions": [
           1,
@@ -259,6 +483,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 401,
         "dimensions": [
           1,
@@ -275,6 +500,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 221,
         "dimensions": [
           5,
@@ -291,6 +517,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 402,
         "dimensions": [
           3,
@@ -307,6 +534,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 403,
         "dimensions": [
           1,
@@ -324,6 +552,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 404,
         "dimensions": [
           1,
@@ -340,6 +569,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 405,
         "dimensions": [
           1,
@@ -356,6 +586,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 406,
         "dimensions": [
           1,
@@ -372,6 +603,7 @@
       {
         "activate_on_contact": false,
         "already_open": true,
+        "channel": 0,
         "destination_id": 408,
         "dimensions": [
           1,
@@ -388,6 +620,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 409,
         "dimensions": [
           1,
@@ -404,6 +637,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 407,
         "dimensions": [
           1,
@@ -420,6 +654,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 413,
         "dimensions": [
           1,
@@ -436,6 +671,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 411,
         "dimensions": [
           1,
@@ -452,6 +688,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 412,
         "dimensions": [
           1,
@@ -485,19 +722,6 @@
           1,
           1
         ],
-        "foreground": false,
-        "id": 0,
-        "length": 4,
-        "position": [
-          40,
-          11
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
         "foreground": true,
         "id": 0,
         "length": 2,
@@ -513,49 +737,10 @@
         ],
         "foreground": true,
         "id": 0,
-        "length": 3,
-        "position": [
-          39,
-          14
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "foreground": true,
-        "id": 0,
-        "length": 3,
-        "position": [
-          36,
-          15
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "foreground": true,
-        "id": 0,
         "length": 4,
         "position": [
           49,
           15
-        ]
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "foreground": true,
-        "id": 0,
-        "length": 4,
-        "position": [
-          51,
-          16
         ]
       },
       {
@@ -635,6 +820,71 @@
           91,
           16
         ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "length": 3,
+        "position": [
+          18,
+          9
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "length": 3,
+        "position": [
+          20,
+          10
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "length": 4,
+        "position": [
+          27,
+          15
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "length": 4,
+        "position": [
+          18,
+          22
+        ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "length": 3,
+        "position": [
+          42,
+          12
+        ]
       }
     ],
     "water": [
@@ -648,7 +898,7 @@
           47,
           44
         ],
-        "toxic": false
+        "type": 0
       }
     ]
   },
@@ -659,11 +909,6 @@
     ],
     "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -683,6 +928,7 @@
       96,
       48
     ],
+    "interior": false,
     "metagrid": [
       52,
       15
@@ -696,8 +942,10 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": true,
+      "interior": false,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 400,
     "shader": {
@@ -707,6 +955,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": true,
       "reverse_obscuring": false
@@ -2057,7 +2315,7 @@
         0,
         0,
         0,
-        0,
+        45,
         0,
         0,
         0,
@@ -2153,7 +2411,7 @@
         0,
         0,
         0,
-        0,
+        45,
         0,
         0,
         0,
@@ -4137,10 +4395,10 @@
         45,
         45,
         0,
-        0,
-        0,
-        0,
-        0,
+        45,
+        45,
+        45,
+        45,
         0,
         0,
         0,
@@ -4233,10 +4491,10 @@
         45,
         45,
         0,
-        0,
-        0,
-        0,
-        0,
+        45,
+        45,
+        45,
+        45,
         0,
         0,
         0,
@@ -4329,8 +4587,8 @@
         45,
         45,
         0,
-        0,
-        0,
+        11,
+        12,
         0,
         0,
         0,
@@ -11277,7 +11535,7 @@
         0,
         0,
         0,
-        0,
+        241,
         0,
         0,
         0,
@@ -13822,9 +14080,9 @@
         0,
         0,
         0,
+        214,
+        215,
         0,
-        0,
-        232,
         0,
         0,
         0,
@@ -20113,7 +20371,7 @@
         108,
         107,
         108,
-        107,
+        493,
         221,
         221,
         96,
@@ -20209,7 +20467,7 @@
         96,
         96,
         96,
-        96,
+        503,
         96,
         96,
         96,
@@ -20305,7 +20563,7 @@
         96,
         96,
         96,
-        96,
+        503,
         96,
         96,
         96,
@@ -20401,7 +20659,7 @@
         96,
         96,
         96,
-        96,
+        503,
         96,
         96,
         96,
@@ -20497,7 +20755,7 @@
         96,
         96,
         96,
-        96,
+        0,
         96,
         96,
         96,
@@ -20593,8 +20851,8 @@
         96,
         96,
         96,
-        460,
-        463,
+        0,
+        481,
         96,
         96,
         96,
@@ -22577,10 +22835,10 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
-        96,
+        450,
+        451,
+        452,
+        453,
         96,
         96,
         96,
@@ -22673,10 +22931,10 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
-        96,
+        0,
+        0,
+        0,
+        478,
         96,
         96,
         96,
@@ -22769,8 +23027,8 @@
         96,
         96,
         96,
-        96,
-        96,
+        503,
+        503,
         96,
         96,
         96,
@@ -22865,8 +23123,8 @@
         96,
         96,
         96,
-        96,
-        96,
+        503,
+        503,
         96,
         96,
         96,
@@ -24723,7 +24981,7 @@
         0,
         0,
         0,
-        188,
+        103,
         0,
         0,
         202,
@@ -24819,7 +25077,7 @@
         0,
         0,
         0,
-        217,
+        96,
         218,
         219,
         0,
@@ -24915,7 +25173,7 @@
         0,
         0,
         0,
-        0,
+        96,
         0,
         0,
         0,
@@ -25011,7 +25269,7 @@
         0,
         0,
         0,
-        0,
+        96,
         0,
         0,
         0,
@@ -25107,7 +25365,7 @@
         0,
         0,
         0,
-        0,
+        114,
         0,
         0,
         0,
@@ -29333,6 +29591,7 @@
         0,
         0,
         0,
+        188,
         0,
         0,
         0,
@@ -29428,8 +29687,7 @@
         0,
         0,
         0,
-        0,
-        0,
+        217,
         0,
         0,
         0,
@@ -36310,6 +36568,12 @@
         0,
         0,
         0,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
         0,
         0,
         0,
@@ -36400,6 +36664,12 @@
         0,
         0,
         0,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
         0,
         0,
         0,
@@ -36490,6 +36760,12 @@
         0,
         0,
         0,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
         0,
         0,
         0,
@@ -36580,6 +36856,12 @@
         0,
         0,
         0,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
         0,
         0,
         0,
@@ -36670,36 +36952,12 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
         0,
         0,
         0,

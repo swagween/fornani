@@ -3,7 +3,9 @@
     "label": "error_sound",
     "bus": "system",
     "volume": 1.0,
-    "pitch_offset": 0.0
+    "pitch_offset": 0.0,
+    "fade_in": 0,
+    "fade_out": 0
   },
   {
     "label": "default_gui",
@@ -14,6 +16,30 @@
   {
     "label": "default_gameplay",
     "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "load_game",
+    "bus": "gui",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "menu_shift",
+    "bus": "gui",
+    "volume": 0.6,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "pioneer_pap",
+    "bus": "gui",
+    "volume": 0.4,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "backward_switch",
+    "bus": "gui",
     "volume": 1.0,
     "pitch_offset": 0.0
   },
@@ -32,12 +58,84 @@
     "max_distance": 512.0
   },
   {
+    "label": "champion_j5_propeller",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 32,
+    "fade_out": 32,
+    "min_distance": 128.0,
+    "max_distance": 512.0
+  },
+  {
+    "label": "truck_engine",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 200,
+    "fade_out": 32,
+    "min_distance": 64.0,
+    "max_distance": 1024.0
+  },
+  {
+    "label": "waterfall",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 256,
+    "fade_out": 256,
+    "min_distance": 64.0,
+    "max_distance": 512.0
+  },
+  {
+    "label": "regenerate",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 256,
+    "fade_out": 256
+  },
+  {
+    "label": "nani_drink",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 64,
+    "fade_out": 64
+  },
+  {
+    "label": "gas_mask_breathing",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.0,
+    "fade_in": 24,
+    "fade_out": 24
+  },
+  {
+    "label": "deep_waterfall",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 256,
+    "fade_out": 256,
+    "min_distance": 128.0,
+    "max_distance": 1024.0
+  },
+  {
     "label": "deep_laser_hum",
     "bus": "gameplay",
     "volume": 0.06,
     "pitch_offset": 0.0,
     "min_distance": 32.0,
     "max_distance": 256.0
+  },
+  {
+    "label": "shovel_dig",
+    "bus": "gameplay",
+    "volume": 0.7,
+    "pitch_offset": 0.1,
+    "min_distance": 32.0,
+    "max_distance": 1024.0
   },
   {
     "label": "missile_whistle",
@@ -118,6 +216,48 @@
     "pitch_offset": 0.0
   },
   {
+    "label": "steps_worm_1",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "steps_worm_2",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "steps_worm_3",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "land_worm_1",
+    "bus": "gameplay",
+    "volume": 0.4,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "land_worm_2",
+    "bus": "gameplay",
+    "volume": 0.4,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "sphincter_close",
+    "bus": "gameplay",
+    "volume": 0.4,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "sphincter_open",
+    "bus": "gameplay",
+    "volume": 0.4,
+    "pitch_offset": 0.2
+  },
+  {
     "label": "spitefly_death",
     "bus": "gameplay",
     "volume": 1.0,
@@ -140,24 +280,6 @@
     "bus": "gameplay",
     "volume": 1.0,
     "pitch_offset": 0.0
-  },
-  {
-    "label": "arms_shot_skycorps_smg",
-    "bus": "gameplay",
-    "volume": 0.7,
-    "pitch_offset": 0.2
-  },
-  {
-    "label": "arms_shot_skycorps_ar",
-    "bus": "gameplay",
-    "volume": 1.0,
-    "pitch_offset": 0.1
-  },
-  {
-    "label": "arms_shot_minigun",
-    "bus": "gameplay",
-    "volume": 1.0,
-    "pitch_offset": 0.1
   },
   {
     "label": "nani_wallslide",
@@ -190,10 +312,280 @@
     "pitch_offset": 0.0
   },
   {
+    "label": "shot_gnat",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2,
+    "fade_in": 8,
+    "fade_out": 8
+  },
+  {
+    "label": "shot_nova",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "shot_bryns_gun",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "shot_wasp",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_minigun",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_manta",
+    "bus": "gameplay",
+    "volume": 0.5,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "shot_skycorps_ar",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_energy_ball",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "shot_demon_bow",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "shot_skycorps_smg",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "shot_demon_bomb",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "shot_demon_magic",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_poison_ball",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_green_beam",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_slingshot",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "shot_slingshot",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "charge_slingshot",
+    "bus": "gameplay",
+    "volume": 0.5,
+    "pitch_offset": 0.0,
+    "fade_in": 0,
+    "fade_out": 18
+  },
+  {
+    "label": "charge_complete_slingshot",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "overdrive_slingshot",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 0,
+    "fade_out": 18
+  },
+  {
+    "label": "release_slingshot",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "hit_slingshot",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "shot_laser_gun",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "charge_laser_gun",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 0,
+    "fade_out": 18
+  },
+  {
+    "label": "charge_complete_laser_gun",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "overdrive_laser_gun",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 0,
+    "fade_out": 18
+  },
+  {
+    "label": "release_laser_gun",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "shot_scorpion",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1,
+    "fade_in": 0,
+    "fade_out": 18
+  },
+  {
+    "label": "hit_demon_bow",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "hit_pulse",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "hit_demon_bomb",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "hit_shuriken",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "hit_tomahawk",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "hit_demon_magic",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "hit_pulsar",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_shuriken",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "shot_pulse",
+    "bus": "gameplay",
+    "volume": 0.5,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_rpg",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.05
+  },
+  {
+    "label": "shot_pulsar",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_wraith",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.05
+  },
+  {
+    "label": "shot_tomahawk",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
+  },
+  {
     "label": "pioneer_drawer",
     "bus": "gui",
     "volume": 1.0,
     "pitch_offset": 0.1
+  },
+  {
+    "label": "reveal_overturned",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "reveal_junkyard",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "hellion_hurt",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
   },
   {
     "label": "console_speech",
@@ -202,6 +594,12 @@
     "pitch_offset": 0.0,
     "fade_in": 16,
     "fade_out": 16
+  },
+  {
+    "label": "enemy_hit",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1
   },
   {
     "label": "pioneer_rotary",
@@ -240,13 +638,73 @@
     "pitch_offset": 0.1
   },
   {
+    "label": "boss_defeat",
+    "bus": "gameplay",
+    "volume": 0.6,
+    "pitch_offset": 0.0
+  },
+  {
     "label": "platform_industrial",
     "bus": "gameplay",
-    "volume": 0.3,
+    "volume": 0.6,
     "pitch_offset": 0.0,
     "fade_in": 8,
     "fade_out": 32,
     "min_distance": 128.0,
     "max_distance": 512.0
+  },
+  {
+    "label": "pushable_move",
+    "bus": "gameplay",
+    "volume": 0.6,
+    "pitch_offset": 0.0,
+    "fade_in": 16,
+    "fade_out": 16
+  },
+  {
+    "label": "mizzle_egg_shake",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 8,
+    "fade_out": 32
+  },
+  {
+    "label": "heart_spin",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 8,
+    "fade_out": 32
+  },
+  {
+    "label": "train_horn_1",
+    "bus": "gameplay",
+    "volume": 0.7,
+    "pitch_offset": 0.0,
+    "fade_in": 8,
+    "fade_out": 32,
+    "min_distance": 512.0,
+    "max_distance": 2048.0
+  },
+  {
+    "label": "train_horn_2",
+    "bus": "gameplay",
+    "volume": 0.7,
+    "pitch_offset": 0.0,
+    "fade_in": 8,
+    "fade_out": 32,
+    "min_distance": 512.0,
+    "max_distance": 2048.0
+  },
+  {
+    "label": "train_moving",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 8,
+    "fade_out": 32,
+    "min_distance": 512.0,
+    "max_distance": 1024.0
   }
 ]

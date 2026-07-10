@@ -1,8 +1,8 @@
 
 #include <fornani/entities/player/PlayerController.hpp>
 #include <fornani/entities/player/abilities/Doublejump.hpp>
-#include <fornani/service/ServiceProvider.hpp>
 #include <fornani/physics/Collider.hpp>
+#include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani::player {
@@ -17,6 +17,7 @@ Doublejump::Doublejump(automa::ServiceProvider& svc, world::Map& map, shape::Col
 
 void Doublejump::update(shape::Collider& collider, PlayerController& controller) {
 	if (!m_flags.test(AbilityFlags::active)) {
+		controller.post_walljump.start();
 		collider.physics.acceleration.y = m_vertical_multiplier;
 		collider.physics.velocity.y = 0.f;
 	}

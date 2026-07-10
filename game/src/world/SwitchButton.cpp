@@ -28,6 +28,7 @@ SwitchButton::SwitchButton(automa::ServiceProvider& svc, sf::Vector2f position, 
 	sprite.set_params("neutral");
 	if (svc.data.switch_is_activated(id)) {
 		state = SwitchButtonState::pressed;
+		m_flags.set(SwitchButtonState::pressed);
 		state_function = std::bind(&SwitchButton::update_pressed, this);
 		collider.dimensions.y = 4.f;
 		collider.physics.position.y += 6.f;
@@ -43,7 +44,11 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 	sprite.update(collider.physics.position, static_cast<int>(type), static_cast<int>(state));
 
 	for (auto& block : map.switch_blocks) {
-		if (block->get_id() == id) { pressed() ? block->turn_off() : block->turn_on(); }
+		if (type == SwitchType::permanent) { continue; }
+		if (matches(*block)) { pressed() ? block->turn_off() : block->turn_on(); }
+		if (block->get_type() == SwitchType::alternator && type == SwitchType::alternator) {
+			if (block->get_id() == id + 1) { pressed() ? block->turn_on() : block->turn_off(); }
+		}
 	}
 
 	// type-specific stuff
@@ -53,34 +58,45 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 		collider.handle_collider_collision(player.get_collider().bounding_box);
 	}
 
-	// press permanent switches forever
-	if (type == SwitchType::permanent && pressed()) { svc.data.activate_switch(id); }
+	if (m_flags.test(SwitchButtonState::triggered)) {
+		state = SwitchButtonState::pressed;
+		svc.soundboard.play_sound("switch_press");
+		m_flags.reset(SwitchButtonState::triggered);
+		if (type == SwitchType::permanent) { svc.events.press_permanent_switch_event.dispatch(svc, id); }
+	}
+
+	// press permanent switches forever and use cutscene events to do it
+	if (type == SwitchType::permanent) {
+		if (svc.data.switch_is_activated(id) && !m_flags.test(SwitchButtonState::pressed)) {
+			m_flags.set(SwitchButtonState::pressed);
+			for (auto& block : map.switch_blocks) {
+				if (matches(*block)) { block->turn_off(); }
+			}
+		}
+	}
 
 	// assume unpressed, then check everything for a press
-	if (type != SwitchType::permanent) { state = SwitchButtonState::unpressed; }
 	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable->get_bounding_box()); }
+	auto was_pressed = false;
 	for (auto& platform : map.platforms) {
-		if (platform->get_collider().bounding_box.overlaps(sensor)) { state = SwitchButtonState::pressed; }
+		if (platform->get_collider().bounding_box.overlaps(sensor)) { was_pressed = true; }
 	}
 	for (auto& chest : map.chests) {
-		if (chest->get_collider().collides_with(sensor)) { state = SwitchButtonState::pressed; }
+		if (chest->get_collider().collides_with(sensor)) { was_pressed = true; }
 	}
 	for (auto& pushable : map.pushables) {
-		if (pushable->get_collider().jumpbox.overlaps(sensor)) { state = SwitchButtonState::pressed; }
+		if (pushable->get_collider().jumpbox.overlaps(sensor)) { was_pressed = true; }
 	}
-	if (player.get_collider().jumpbox.overlaps(sensor)) { state = SwitchButtonState::pressed; }
+	if (player.get_collider().jumpbox.overlaps(sensor)) { was_pressed = true; }
+	if (was_pressed && !pressed()) { m_flags.set(SwitchButtonState::triggered); }
+	if (!was_pressed && pressed() && type != SwitchType::permanent) { state = SwitchButtonState::unpressed; }
 
 	collider.detect_map_collision(map);
 	handle_collision(player.get_collider());
 	collider.reset();
 	collider.reset_ground_flags();
 	collider.physics.acceleration = {};
-	if (collider.collision_depths) {
-		// if (collider.collision_depths.value().vertical_squish()) { state = SwitchButtonState::pressed; }
-		collider.collision_depths.value().update();
-	}
-
-	if (pressed() && triggers.consume(SwitchButtonState::pressed)) { svc.soundboard.flags.world.set(audio::World::switch_press); }
+	if (collider.collision_depths) { collider.collision_depths.value().update(); }
 
 	state_function = state_function();
 }
@@ -161,7 +177,6 @@ fsm::StateFunction SwitchButton::update_squished() {
 
 fsm::StateFunction SwitchButton::update_pressed() {
 	external = SwitchButtonState::pressed;
-	if (sprite.just_started()) { triggers.set(SwitchButtonState::pressed); }
 	sensor.set_position(collider.physics.position + sf::Vector2f{2.f, -10.f});
 	if (change_state(SwitchButtonState::unpressed, "rising")) {
 		collider.dimensions.y = 10.f;
@@ -197,5 +212,7 @@ bool SwitchButton::change_state(SwitchButtonState next, std::string_view tag) {
 	}
 	return false;
 }
+
+bool SwitchButton::matches(SwitchBlock& block) { return block.get_id() == id && block.get_type() == type; }
 
 } // namespace fornani::world

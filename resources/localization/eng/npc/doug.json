@@ -1,0 +1,192 @@
+{
+  "1": {
+    "output": 2,
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "contingencies": [
+            {
+              "requirement": 0,
+              "strict": true,
+              "tag": "cajole_doug"
+            }
+          ],
+          "message": "What do you know about the Ashtown Bandit?"
+        },
+        {
+          "codes": [[1, 5]],
+          "contingencies": [
+            {
+              "requirement": 1,
+              "strict": true,
+              "tag": "cajole_doug"
+            }
+          ],
+          "message": "What do you know about the Ashtown Bandit?"
+        },
+        {
+          "codes": [[1, 3]],
+          "contingencies": [
+            {
+              "requirement": 4,
+              "strict": true,
+              "tag": "cajole_doug"
+            }
+          ],
+          "message": "What do you know about the Ashtown Bandit?"
+        },
+        {
+          "codes": [[1, 2]],
+          "contingencies": [
+            {
+              "requirement": 2,
+              "strict": true,
+              "tag": "cajole_doug"
+            }
+          ],
+          "message": "Here, I wanted to give you this."
+        },
+        {
+          "codes": [[1, 3]],
+          "contingencies": [
+            {
+              "requirement": 3,
+              "strict": true,
+              "tag": "cajole_doug"
+            }
+          ],
+          "message": "Now, tell me about the Ashtown Bandit..."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 4]],
+          "message": "I'll see if I can catch him."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[1, 0]],
+          "message": "What do you want?"
+        }
+      ],
+      [
+        {
+          "codes": [[]],
+          "message": "I ain't talkin' to no Kariba."
+        },
+        {
+          "codes": [[27, 25, 1]],
+          "message": "Get outta here!"
+        }
+      ],
+      [
+        {
+          "codes": [[17, 91]],
+          "message": "Woah, a flower?"
+        },
+        {
+          "codes": [[27, 25, 3]],
+          "message": "I... I don't know what to say."
+        },
+        {
+          "message": "No one's ever gotten me a flower before. I'll make sure to take good care of it."
+        }
+      ],
+      [
+        {
+          "message": "Well, if you must know..."
+        },
+        {
+          "message": "He stole my screwdriver. It's no big deal, really. I can buy a new one."
+        },
+        {
+          "message": "But I decided I'd try to catch him in the act, so I left my toolbox out in the open, up at the top level of the Yellow District."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "Problem is, I always fall asleep before he shows up, so I'm not really sure if it's going to work."
+        }
+      ],
+      [
+        {
+          "codes": [
+            [13, 45, 1300],
+            [27, 25, 4]
+          ],
+          "message": "Best of luck to you. The people around here would owe you a great debt if you caught him."
+        }
+      ],
+      [
+        {
+          "message": "I already told ya, I ain't talkin' to no Kariba!"
+        },
+        {
+          "message": "Beat it!"
+        }
+      ]
+    ]
+  },
+  "2": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "I need more info about the Bandit."
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "What do you have against the Kariba?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[1, 0]],
+          "messages": ["Yeah?", "What do you need?", "Hi."]
+        }
+      ],
+      [
+        {
+          "message": "You'll probably only find him at night."
+        },
+        {
+          "message": "Just waiting around might be boring. If you need to pass the day quickly, just head over to the inn and ask Nana Bane to tell you a story. Always puts me right out."
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "Remember, I left my toolbox out in the open at the top level of the Yellow District. He won't be able to resist it!"
+        }
+      ],
+      [
+        {
+          "message": "Everything."
+        },
+        {
+          "message": "All they do is yap about the mother worm and attack us humans for invading their island."
+        },
+        {
+          "message": "Wasn't my choice to live on this dump!"
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "Anyway, you got me a flower so you're on my good side. But don't push your luck!"
+        }
+      ]
+    ]
+  },
+  "3": {
+    "responses": [[]],
+    "suite": [
+      [
+        {
+          "messages": ["I'm pretty tired right now. If you wanna talk, meet me by the mines in the Yellow District.", "How'd you get in here?", "Hey, can you leave?."]
+        }
+      ]
+    ]
+  }
+}

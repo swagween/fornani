@@ -29,33 +29,69 @@
         ]
       }
     ],
-    "npcs": [
+    "chests": [
       {
-        "background": false,
         "dimensions": [
           1,
           1
         ],
-        "face_player": true,
+        "id": 45421,
+        "modifier": 0,
+        "position": [
+          4,
+          13
+        ],
+        "tag": "ashtown_raspberry_preserves",
+        "type": 2
+      }
+    ],
+    "cutscene_triggers": [
+      {
+        "contingencies": [
+          {
+            "requirement": 0,
+            "strict": true,
+            "tag": "free_bit"
+          }
+        ],
+        "dimensions": [
+          2,
+          5
+        ],
+        "id": 101,
+        "position": [
+          8,
+          7
+        ]
+      }
+    ],
+    "npcs": [
+      {
+        "background": false,
+        "contingencies": [
+          {
+            "requirement": 0,
+            "strict": true,
+            "tag": "free_bit"
+          }
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": false,
         "hidden": false,
         "id": 101,
         "label": "bit",
         "position": [
-          9,
+          5,
           11
         ],
+        "start_busy": false,
         "suites": [
           [
             4
-          ],
-          [
-            4,
-            5
-          ],
-          [
-            4,
-            5,
-            6
           ]
         ]
       }
@@ -64,13 +100,13 @@
       {
         "activate_on_contact": false,
         "already_open": true,
+        "channel": 0,
         "destination_id": 102,
         "dimensions": [
           1,
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           12,
@@ -84,11 +120,6 @@
     "ambience": "",
     "background": "night",
     "biome": "firstwind",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -108,30 +139,44 @@
       16,
       16
     ],
+    "interior": true,
     "metagrid": [
       1,
       -1
     ],
     "minimap": true,
-    "music": "",
+    "music": "brown",
     "player_start": [
       0,
       0
     ],
     "properties": {
-      "day_night_shift": true,
+      "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": true,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 101,
     "shader": {
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false
@@ -1374,6 +1419,7 @@
         1,
         1,
         1,
+        503,
         1,
         1,
         1,
@@ -1389,10 +1435,9 @@
         1,
         1,
         1,
-        1,
-        1,
-        1,
-        1,
+        503,
+        503,
+        0,
         1,
         1,
         1,
@@ -1632,6 +1677,7 @@
         0,
         0,
         0,
+        1,
         0,
         0,
         0,
@@ -1647,10 +1693,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
+        1,
+        1,
+        1,
         0,
         0,
         0,

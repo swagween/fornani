@@ -1,4 +1,5 @@
 
+#include <fornani/core/Debug.hpp>
 #include <fornani/entity/Animator.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 
@@ -7,7 +8,11 @@ namespace fornani {
 Animator::Animator(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "animators") {
 	unserialize(in);
 	repeatable = true;
+	set_dimensions({16, 16});
+	set_texture(svc.assets.get_texture("animators_" + m_label));
 	set_texture_rect(sf::IntRect{{16 * get_id(), 0}, {16, 16}});
+	set_parameters({0, 6, 32, -1});
+	set_channel(get_id());
 }
 
 Animator::Animator(automa::ServiceProvider& svc, int id, std::string_view label) : Entity(svc, "animators", id, {1, 1}), m_label{label} {
@@ -31,9 +36,18 @@ void Animator::unserialize(dj::Json const& in) {
 
 void Animator::expose() { Entity::expose(); }
 
+void Animator::update(automa::ServiceProvider& svc, world::Map& map, SceneContext& context, player::Player& player) { tick(); }
+
 void Animator::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{120, 250, 250, 60}) : drawbox.setFillColor(sf::Color::Transparent);
 	Entity::render(win, cam, size);
+}
+
+void Animator::render(sf::RenderTexture& tex, sf::Vector2f cam) {
+	Animatable::set_scale(constants::f_scale_vec);
+	Animatable::set_position(get_world_position());
+	tex.draw(*this);
+	++debug::draw_calls;
 }
 
 } // namespace fornani

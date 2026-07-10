@@ -3,18 +3,17 @@
 #include "fornani/entities/packages/Health.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/utils/Math.hpp"
 #include "fornani/utils/Random.hpp"
 
 namespace fornani::gui {
 
 WidgetBar::WidgetBar(automa::ServiceProvider& svc, int amount, sf::Vector2i dimensions, std::string_view tag, sf::Vector2f origin, float pad, bool compress)
-	: m_text{svc.text.fonts.title}, m_quantity{amount}, m_compress{compress}, m_position{origin} {
+	: m_text{svc.text.fonts.title.font}, m_quantity{amount}, m_compress{compress}, m_position{origin}, m_dimensions{dimensions}, m_pad{pad} {
 	m_text.setCharacterSize(16);
 	for (auto i{0}; i < amount; ++i) { m_widgets.push_back(Widget(svc, tag, dimensions, i, origin + sf::Vector2f{i * dimensions.x * constants::f_scale_factor + i * pad, 0.f})); }
 }
 
-void WidgetBar::update(automa::ServiceProvider& svc, entity::Health& health, bool shake) {
+void WidgetBar::update(automa::ServiceProvider& svc, Health& health, bool shake) {
 	m_quantity = health.get_i_capacity();
 	auto qty = "x" + std::to_string(health.get_i_quantity());
 	m_text.setString(qty);
@@ -38,10 +37,10 @@ void WidgetBar::render(sf::RenderWindow& win) {
 	if (m_quantity > 16 && m_compress) {
 		auto& widget = m_widgets.at(0);
 		widget.render(win);
-		m_text.setPosition(widget.get_window_position() + sf::Vector2f{16.f, 12.f});
+		m_text.setPosition(m_position + sf::Vector2f{16.f, -24.f});
 		m_text.setFillColor(colors::navy_blue);
 		win.draw(m_text);
-		m_text.setPosition(widget.get_window_position() + sf::Vector2f{14.f, 10.f});
+		m_text.setPosition(m_position + sf::Vector2f{14.f, -26.f});
 		widget.is_state(WidgetState::neutral) ? m_text.setFillColor(colors::ui_white) : widget.is_state(WidgetState::taken) ? m_text.setFillColor(colors::dark_goldenrod) : m_text.setFillColor(colors::blue);
 		if (!widget.is_state(WidgetState::gone)) { win.draw(m_text); }
 	} else {

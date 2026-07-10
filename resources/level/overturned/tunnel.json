@@ -7,11 +7,12 @@
           1
         ],
         "id": 26056,
-        "modifier": 99,
+        "modifier": 0,
         "position": [
           93,
           29
         ],
+        "tag": "pioneer_scrap",
         "type": 2
       }
     ],
@@ -111,19 +112,35 @@
           0
         ],
         "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 31,
+        "position": [
+          31,
+          10
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
       }
     ],
     "portals": [
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 229,
         "dimensions": [
           3,
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           70,
@@ -134,13 +151,13 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 208,
         "dimensions": [
           1,
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           159,
@@ -151,13 +168,13 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 204,
         "dimensions": [
           1,
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,
@@ -168,13 +185,13 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 232,
         "dimensions": [
           3,
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           101,
@@ -185,6 +202,7 @@
     ]
   },
   "meta": {
+    "ambience": "",
     "background": "woods",
     "biome": "overturned",
     "camera_effects": {
@@ -206,22 +224,44 @@
       160,
       32
     ],
+    "interior": false,
     "metagrid": [
       30,
       19
     ],
     "minimap": true,
+    "music": "",
     "player_start": [
       0,
       0
     ],
+    "properties": {
+      "day_night_shift": true,
+      "environmental_randomness": false,
+      "interior": false,
+      "lighting": false,
+      "timer": false,
+      "toxic": false
+    },
     "room_id": 206,
     "shader": {
       "darken_factor": 0
     },
-    "use_template": true
+    "special_drop_id": 0,
+    "use_template": false,
+    "weather": null
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

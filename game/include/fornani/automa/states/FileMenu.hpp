@@ -10,7 +10,7 @@ namespace fornani::automa {
 
 class FileMenu final : public MenuState {
   public:
-	FileMenu(ServiceProvider& svc, player::Player& player);
+	FileMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx);
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
@@ -18,7 +18,10 @@ class FileMenu final : public MenuState {
 
   private:
 	util::Cooldown loading{};
+	util::Cooldown switched;
 	std::optional<gui::MiniMenu> m_file_select_menu{};
+	int m_previous_selection{};
+	util::Cooldown m_menu_opened;
 };
 
 } // namespace fornani::automa

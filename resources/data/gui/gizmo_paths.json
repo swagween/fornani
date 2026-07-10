@@ -344,6 +344,33 @@
       ]
     }
   ],
+  "plugin_gobe": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [-80, -152],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [-79, -152],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [-78, -152],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [28, -142],
+          "dimensions": [0, 0]
+        },
+        {
+          "position": [24, -142],
+          "dimensions": [0, 0]
+        }
+      ]
+    }
+  ],
   "wardrobe": [
     {
       "label": "start",

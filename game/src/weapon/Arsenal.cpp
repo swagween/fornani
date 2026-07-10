@@ -34,7 +34,7 @@ Weapon& Arsenal::get_weapon_at(std::string_view tag) {
 	return *loadout.at(index).get();
 }
 
-bool Arsenal::has(std::string_view tag) {
+bool Arsenal::has(std::string_view tag) const {
 	for (auto& gun : loadout) {
 		if (gun->get_tag() == tag) { return true; }
 	}

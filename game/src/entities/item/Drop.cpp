@@ -1,4 +1,5 @@
 
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/item/Drop.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -97,7 +98,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	if (!check_delay(svc)) { return; }
 	tick();
 	delay.update();
-	auto magnet = player.has_item_equipped(svc.data.item_id_from_label("magnet"));
+	auto magnet = player.has_item_equipped("magnet");
 	if (magnet) {
 		get_collider().physics.set_friction_componentwise({0.995f, 0.995f});
 		m_steering.seek(get_collider().physics, player.get_collider().get_center(), 0.0001f);
@@ -156,7 +157,10 @@ void Drop::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 	if (m_start_delay) { return; }
 	auto offset = sf::Vector2f{0.f, get_collider().get_radius() - Animatable::get_f_dimensions().y};
 	Animatable::set_position(get_collider().get_global_center() + offset - cam);
-	if (!is_inactive() && !is_completely_gone() && (lifespan.get() > 500 || (lifespan.get() / 20) % 2 == 0)) { win.draw(*this); }
+	if (!is_inactive() && !is_completely_gone() && (lifespan.get() > 500 || (lifespan.get() / 20) % 2 == 0)) {
+		win.draw(*this);
+		++debug::draw_calls;
+	}
 	sparkler.render(win, cam);
 	if (svc.greyblock_mode()) { get_collider().render(win, cam); }
 }

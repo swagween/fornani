@@ -12,7 +12,6 @@ namespace fornani::gui {
 class InventorySelector {
 	friend class OutfitterGizmo;
 	friend class InventoryGizmo;
-	friend class VendorDialog;
 
   public:
 	InventorySelector(sf::Vector2i range, sf::Vector2f spacing = constants::f_cell_vec);
@@ -39,13 +38,13 @@ class InventorySelector {
 		return get_current_selection() == static_cast<int>(i);
 	}
 
-  private:
+	Direction move_direction(sf::Vector2i direction);
 	void set_lookup(sf::IntRect to_lookup) { m_body.constituent.lookup = to_lookup; }
 	void set_position(sf::Vector2f to_position, bool force = false);
 	void move(sf::Vector2i direction);
 	void set_selection(sf::Vector2i to_selection);
 
-	Direction move_direction(sf::Vector2i direction);
+  private:
 	FreeConstituent m_body{};
 	std::array<util::Circuit, 2> m_selection;
 	sf::Vector2i m_table_dimensions{};

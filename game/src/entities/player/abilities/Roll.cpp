@@ -29,6 +29,7 @@ void Roll::update(shape::Collider& collider, PlayerController& controller) {
 		}
 		return;
 	}
+	controller.set_flag(PlayerControllerFlags::slide_jump);
 	Ability::update(collider, controller);
 	if (m_duration.is_complete()) {
 		collider.physics.acceleration.x = {};

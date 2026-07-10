@@ -5,6 +5,8 @@
 #include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/entities/Mobile.hpp>
 #include <fornani/entities/item/Drop.hpp>
+#include <fornani/entities/item/Headgear.hpp>
+#include <fornani/entities/item/HeldItem.hpp>
 #include <fornani/entities/packages/Caution.hpp>
 #include <fornani/entities/packages/Health.hpp>
 #include <fornani/entities/player/Catalog.hpp>
@@ -62,7 +64,7 @@ constexpr float DETECTOR_HEIGHT = 22.0f;
 constexpr float WALL_SLIDE_DETECTOR_OFFSET = 20.0f;
 constexpr float DETECTOR_BUFFER = (player_dimensions_v.x - DETECTOR_HEIGHT) / 2;
 constexpr int JUMP_BUFFER_TIME = 12;
-constexpr int INVINCIBILITY_TIME = 200;
+constexpr auto default_invincibility_time_v = 300;
 constexpr int ANCHOR_BUFFER = 50;
 constexpr int num_sprites{220};
 
@@ -97,7 +99,35 @@ struct Counters {
 };
 
 enum class PlayerDeathType { normal, crushed, drowned, swallowed, fallen };
-enum class PlayerFlags { killed, dir_switch, show_weapon, impart_recoil, sleep, wake_up, busy, dash_kick, trial, cutscene, hit_target, in_front_of_door };
+enum class PlayerFlags {
+	killed,
+	dir_switch,
+	show_weapon,
+	impart_recoil,
+	sleep,
+	wake_up,
+	busy,
+	dash_kick,
+	trial,
+	cutscene,
+	hit_target,
+	in_front_of_door,
+	health_increase,
+	console_open,
+	ability_acquisition,
+	in_reward_sequence,
+	stunned,
+	bonus_health_added,
+	disable_abilities,
+	holding_item,
+	drank,
+	failed_to_drink,
+	boss_fight,
+	in_goo,
+	special_render,
+	intangible,
+	no_turn
+};
 enum class Triggers { hurt };
 
 struct Flags {
@@ -132,6 +162,9 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void assign_texture(sf::Texture& tex);
 	void start_tick();
 	void end_tick();
+	void purchase(int amount);
+	void give_bonus_health(int amount);
+	void set_invincible(int time = default_invincibility_time_v);
 
 	// animation machine
 	void request_animation(AnimState const to) { m_animation_machine.request(to); }
@@ -140,8 +173,9 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 		m_animation_machine.force(to, tag);
 		m_animation_machine.state_function = std::forward<Factory>(factory)(get_animation());
 	}
+	void turn();
 	void set_animation_flag(AnimTriggers const flag, bool on = true) { on ? m_animation_machine.triggers.set(flag) : m_animation_machine.triggers.reset(flag); }
-	void set_sleep_timer() { m_animation_machine.set_sleep_timer(); }
+	void set_sleep_timer(int time = 0) { m_animation_machine.set_sleep_timer(time); }
 	void set_death_type(PlayerDeathType const to) { m_death_type = to; }
 	[[nodiscard]] auto get_elapsed_animation_ticks() const -> int { return animation.get_elapsed_ticks(); }
 
@@ -150,8 +184,11 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void handle_turning();
 	void flash_sprite();
 	void set_idle();
+	void set_sitting();
+	void set_jumping();
 	void set_slow_walk();
-	void set_sleeping();
+	void set_sleeping(bool on_floor = false);
+	void stall_idle_timer();
 	void set_hurt();
 	void set_direction(Direction to);
 	void piggyback(int id);
@@ -163,6 +200,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
 	[[nodiscard]] auto is_dead() const -> bool { return m_death_type.has_value(); }
 	[[nodiscard]] auto is_death_complete() const -> bool { return m_death_cooldown.is_almost_complete(); }
+	[[nodiscard]] auto is_stunned() const -> bool { return has_flag_set(PlayerFlags::stunned); }
 	[[nodiscard]] auto had_special_death() const -> bool { return m_death_type ? m_death_type.value() != PlayerDeathType::normal : false; }
 	[[nodiscard]] auto has_death_type(PlayerDeathType const test) const -> bool { return m_death_type ? m_death_type.value() == test : false; }
 	[[nodiscard]] auto get_i_death_type() const -> int { return m_death_type ? static_cast<int>(m_death_type.value()) : -1; }
@@ -181,7 +219,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto is_sneaking() const -> bool { return is_in_animation(player::AnimState::crouch) || is_in_animation(player::AnimState::crawl); }
 	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.inventory.has_item(id); }
 	[[nodiscard]] auto has_item(std::string_view tag) const -> bool { return catalog.inventory.has_item(tag); }
-	[[nodiscard]] auto has_item_equipped(int id) const -> bool { return catalog.inventory.has_item_equipped(id); }
+	[[nodiscard]] auto has_item_equipped(std::string_view id) const -> bool { return catalog.inventory.has_item_equipped(id); }
+	[[nodiscard]] auto has_weapon(std::string_view tag) const -> bool;
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
 	[[nodiscard]] auto has_map() const -> bool { return catalog.inventory.has_item(16); }
 	[[nodiscard]] auto has_collider() const -> bool { return collider.has_value(); }
@@ -190,6 +229,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto firing_weapon() -> bool { return controller.shot(); }
 	[[nodiscard]] auto get_piggyback_socket() const -> sf::Vector2f { return m_piggyback_socket; }
 	[[nodiscard]] auto get_camera_position() const -> sf::Vector2f { return m_camera.camera.get_position(); }
+	[[nodiscard]] auto get_actual_camera_position() const -> sf::Vector2f { return m_camera.camera.get_actual_position(); }
+	[[nodiscard]] auto get_camera_center() const -> sf::Vector2f { return m_camera.camera.get_center(); }
 	[[nodiscard]] auto get_lantern_position() const -> sf::Vector2f { return m_lighting.physics.position; }
 	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2f { return collider.value().get().get_reference().get_center() + m_camera.target_point; }
 	[[nodiscard]] auto get_facing_scale() const -> sf::Vector2f { return controller.facing_left() ? sf::Vector2f{-1.f, 1.f} : sf::Vector2f{1.f, 1.f}; }
@@ -198,7 +239,9 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto get_actual_direction() const -> SimpleDirection { return SimpleDirection{directions.actual}; }
 	[[nodiscard]] auto get_piggybacker_id() const -> int { return piggybacker ? piggybacker->get_id() : 0; }
 	[[nodiscard]] auto get_luck() const -> float { return m_attributes.luck; }
+	[[nodiscard]] auto get_item_count(std::string_view tag) -> int;
 	[[nodiscard]] bool is_intangible() const;
+	[[nodiscard]] auto can_be_stunned() const -> bool;
 
 	void set_desired_direction(SimpleDirection to) { directions.desired = Direction{to}; }
 
@@ -206,19 +249,24 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void force_camera_center() { m_camera.camera.force_center(get_camera_focus_point()); }
 
 	void set_position(sf::Vector2f new_pos, bool centered = false);
+	void set_position_on_grid(sf::Vector2i grid_pos);
 	void set_draw_position(sf::Vector2f const to);
 	void freeze_position();
 	void shake_sprite();
 	void update_direction();
-	void update_weapon();
+	void update_weapon(world::Map& map);
+	void update_weapon_simple();
 	void walk();
 	void hurt(float amount = 1.f, bool force = false);
 	void on_crush(world::Map& map);
 	void handle_map_collision(world::Map& map);
 	void update_antennae();
 	void sync_antennae();
+	void apply_impulse(sf::Vector2f impulse);
 
 	void set_busy(bool flag) { set_flag(PlayerFlags::busy, flag); }
+	void stun(float multiplier = 1.f);
+	void hurt_and_stun(float multiplier = 1.f);
 	void set_trigger(Triggers const to_set, bool on = true) { on ? flags.triggers.set(to_set) : flags.triggers.reset(to_set); }
 
 	bool grounded() const;
@@ -227,9 +275,12 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void update_invincibility();
 	void update_wardrobe();
 	void start_over();
+	void heal(float amount = 1.f);
 	void give_drop(item::DropType type, float value);
 	void give_item_by_id(int id, int amount);
 	void give_item(std::string_view label, int amount, bool from_save = false);
+	void hold_item(int id);
+	void use_item();
 	EquipmentStatus equip_item(int id);
 	void add_to_hotbar(std::string_view tag);
 	void remove_from_hotbar(std::string_view tag);
@@ -256,7 +307,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	PlayerController controller;
 	shape::Shape hurtbox{};
 	shape::Shape distant_vicinity{};
-	entity::Health health;
+	Health health;
 	Wallet wallet{};
 	graphics::Indicator health_indicator;
 	graphics::Indicator orb_indicator;
@@ -266,7 +317,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	std::optional<arms::Hotbar> hotbar{};
 
 	sf::Vector2f anchor_point{};
-	sf::Vector2f sprite_offset{10.f, -3.f};
+	sf::Vector2f sprite_offset;
 
 	std::vector<std::unique_ptr<vfx::Antenna>> antennae{};
 
@@ -279,6 +330,10 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 		util::Cooldown tutorial{400};
 		util::Cooldown sprint_tutorial{800};
 		util::Cooldown push{32};
+		util::Cooldown stun{128};
+		util::Cooldown suffocate{360};
+		util::Cooldown stun_immunity{400};
+		util::Cooldown post_push{20};
 	} cooldowns{};
 	Counters counters{};
 	std::vector<sf::Vector2f> accumulated_forces{};
@@ -300,12 +355,21 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto can_dash_kick() const -> bool;
 
   private:
+	void handle_item_logic();
 	void set_facing_direction(SimpleDirection to_direction) { directions.desired = to_direction; }
+	[[nodiscard]] auto abilities_disabled() const -> bool;
 
+  private:
 	PlayerAnimation m_animation_machine;
 	PlayerAttributes m_attributes;
+	Animatable m_sprite_overlay;
+
+	dj::Json m_physics_data{};
 
 	std::optional<PlayerDeathType> m_death_type{};
+	std::optional<item::HeldItem> m_currently_held_item{};
+	std::optional<item::Headgear> m_headgear{};
+	std::optional<world::Map*> m_map;
 
 	[[nodiscard]] auto can_dash() const -> bool;
 	[[nodiscard]] auto can_omnidirectional_dash() const -> bool;
@@ -340,8 +404,10 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	} m_camera{};
 
 	sf::Vector2f m_sprite_position{};
+	sf::Vector2f m_shake_offset{};
 	sf::Vector2f m_weapon_socket{};
 	sf::Vector2f m_piggyback_socket{};
+	sf::Vector2f m_head_socket{};
 	sf::Vector2f m_demo_position{};
 	components::SteeringComponent m_ear{};
 	std::pair<sf::Vector2f, sf::Vector2f> m_antenna_sockets{};
@@ -349,9 +415,11 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	util::Cooldown m_hurt_cooldown;
 	util::Cooldown m_death_cooldown;
 
+	std::vector<sf::Vector2f> accumulated_momentum{};
+
 	AbilityUsage m_ability_usage{};
 
-	entity::Health m_air_supply;
+	Health m_air_supply;
 	gui::HealthBar m_air_supply_bar;
 
 	std::shared_ptr<Slot const> slot{std::make_shared<Slot const>()};

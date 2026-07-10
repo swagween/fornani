@@ -15,16 +15,20 @@ nani_add_headers(
         ID.hpp
         IWorldPositionable.hpp
         Math.hpp
+        NeighborSet.hpp
         NineSlice.hpp
         Oscillator.hpp
         QuestCode.hpp
         Random.hpp
         RichText.hpp
+        RingBuffer.hpp
+        Shaker.hpp
         Shipment.hpp
         StateFlag.hpp
         StateFunction.hpp
         StateMachine.hpp
         Stopwatch.hpp
+        TextUtils.hpp
         Ticker.hpp
         WorldClock.hpp
         RectPath.hpp

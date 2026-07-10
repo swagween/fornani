@@ -3811,6 +3811,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 102,
         "dimensions": [
           1,
@@ -3840,6 +3841,7 @@
     ]
   },
   "meta": {
+    "ambience": "",
     "background": "overcast",
     "biome": "firstwind",
     "camera_effects": {
@@ -3861,22 +3863,44 @@
       32,
       16
     ],
+    "interior": true,
     "metagrid": [
       0,
       0
     ],
     "minimap": true,
+    "music": "dusken",
     "player_start": [
       0,
       0
     ],
+    "properties": {
+      "day_night_shift": false,
+      "environmental_randomness": false,
+      "interior": true,
+      "lighting": false,
+      "timer": false,
+      "toxic": false
+    },
     "room_id": 100,
     "shader": {
       "darken_factor": 0
     },
-    "use_template": true
+    "special_drop_id": 0,
+    "use_template": false,
+    "weather": null
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

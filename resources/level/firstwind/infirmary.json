@@ -85,19 +85,17 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
-        "id": 16505,
+        "id": 114,
         "label": "dr_go",
         "position": [
           16,
           10
         ],
+        "start_busy": false,
         "suites": [
-          [
-            1,
-            2
-          ],
           [
             2
           ]
@@ -109,14 +107,16 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
-        "id": 57394,
+        "id": 114,
         "label": "mirin",
         "position": [
           19,
           10
         ],
+        "start_busy": false,
         "suites": [
           [
             1,
@@ -138,14 +138,16 @@
           1,
           1
         ],
+        "direction": -1,
         "face_player": true,
         "hidden": false,
-        "id": 21458,
+        "id": 114,
         "label": "billy",
         "position": [
           22,
           10
         ],
+        "start_busy": false,
         "suites": [
           [
             1
@@ -157,6 +159,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 107,
         "dimensions": [
           1,
@@ -173,6 +176,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 115,
         "dimensions": [
           1,
@@ -202,14 +206,9 @@
     ]
   },
   "meta": {
-    "ambience": "none",
+    "ambience": "",
     "background": "night",
     "biome": "firstwind",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -229,6 +228,7 @@
       32,
       16
     ],
+    "interior": true,
     "metagrid": [
       17,
       -2
@@ -240,19 +240,39 @@
       0
     ],
     "properties": {
-      "day_night_shift": true,
+      "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": true,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 114,
     "shader": {
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": {
+      "ambience": "rain",
+      "chance": 0.5,
+      "density": 1,
+      "effect": "raindrop",
+      "framerate": 8,
+      "type": "rain"
+    }
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

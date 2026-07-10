@@ -128,8 +128,8 @@
       32
     ],
     "metagrid": [
-      1,
-      12
+      0,
+      11
     ],
     "minimap": false,
     "music": "dusken",
@@ -140,10 +140,13 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": false,
       "timer": true
     },
     "room_id": 9900,
-    "style": 0
+    "style": 0,
+    "use_template": false,
+    "weather": null
   },
   "tile": {
     "flags": {

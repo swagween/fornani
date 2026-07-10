@@ -6,6 +6,7 @@ nani_add_headers(
         MenuController.hpp
         MenuState.hpp
         Option.hpp
+        SceneContext.hpp
         StateController.hpp
         StateManager.hpp
 )

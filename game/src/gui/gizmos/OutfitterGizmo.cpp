@@ -1,12 +1,9 @@
 
 #include "fornani/gui/gizmos/OutfitterGizmo.hpp"
-
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
 #include "fornani/world/Map.hpp"
-
-#include <numbers>
 
 namespace fornani::gui {
 
@@ -52,20 +49,23 @@ void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 
 	if (m_description) { m_description->update(svc, player, map, m_physics.position + m_path.get_dimensions()); }
 
-	// change outfit if player has selected item
+	m_current_item_tag.reset();
 	for (auto const& i : player.catalog.inventory.items_view()) {
 		if (i.item->is_apparel()) {
 			if (i.item->get_origin() == m_selector.get_index()) { m_current_item_tag = i.item->get_label(); }
 		}
 	}
+	// change outfit if player has selected item
 	if (m_change_outfit) {
-		auto index{m_selector.get_horizonal_index() + 1};
-		if (player.has_item(m_current_item_tag) || index >= m_max_slots) {
-			m_sliders[m_selector.get_vertical_index()].selection = index;
-			m_outfit.at(m_selector.get_vertical_index()) = index >= m_max_slots ? 0 : index;
-			svc.soundboard.flags.pioneer.set(audio::Pioneer::slot);
-			player.set_outfit(m_outfit);
-			m_outfit = player.get_outfit();
+		if (m_current_item_tag) {
+			auto index{m_selector.get_horizonal_index() + 1};
+			if (player.has_item(*m_current_item_tag)) {
+				m_sliders[m_selector.get_vertical_index()].selection = index;
+				m_outfit.at(m_selector.get_vertical_index()) = index >= m_max_slots ? 0 : index;
+				svc.soundboard.flags.pioneer.set(audio::Pioneer::slot);
+				player.set_outfit(m_outfit);
+				m_outfit = player.get_outfit();
+			}
 		} else {
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 		}
@@ -80,10 +80,11 @@ void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 
 	// wires
 	wire_sound.update(); // play the wire plug sound at the exact right moment
-	if (wire_sound.is_almost_complete() && is_selected()) { svc.soundboard.flags.pioneer.set(audio::Pioneer::wires); }
+	// if (wire_sound.is_almost_complete() && is_selected()) { svc.soundboard.flags.pioneer.set(audio::Pioneer::wires); }
 	auto wire_offset{sf::Vector2f{-42.f, 26.f}};
 	m_wires.update(m_physics.position + m_placement + wire_offset);
 	if (m_path.completed_step(1)) { m_wires.set_params("plug"); }
+	if ((m_wires.get_frame() == 2 || m_wires.get_frame() == 4 || m_wires.get_frame() == 5 || m_wires.get_frame() == 6) && m_wires.keyframe_started() && is_selected()) { svc.soundboard.play_sound("pioneer_plug"); }
 }
 
 void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
@@ -101,9 +102,9 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		auto row{0.f};
 		m_description->write(svc, "---", svc.text.fonts.basic);
 		for (auto& item : player.catalog.inventory.items_view()) {
-			if (item.item->get_type() != item::ItemType::apparel) { continue; }
+			if (!item.item->is_apparel()) { continue; }
 			m_apparel_sprite.setTextureRect(item.item->get_lookup());
-			m_apparel_sprite.setOrigin({-6.f, -6.f}); // center sprite in window
+			m_apparel_sprite.setOrigin({-4.f, -4.f}); // center sprite in window
 			item.item->render(win, m_apparel_sprite, m_physics.position + m_placement + m_grid_offset + item.item->get_f_origin().componentWiseMul(m_selector.get_spacing()) - cam);
 			if (item.item->get_label() == m_current_item_tag && m_description) { m_description->write(svc, item.item->get_title() + ": " + item.item->get_description(), svc.text.fonts.basic); }
 		}
@@ -114,25 +115,25 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	m_wires.render(svc, win, cam);
 	if (m_description) { m_description->render(svc, win, player, shader, palette, cam); }
 
-	debug();
+	// debug();
 }
 
 bool OutfitterGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
 	if (controller.menu_move(input::MoveDirection::up)) {
 		m_selector.move({0, -1});
-		soundboard.flags.menu.set(audio::Menu::shift);
+		soundboard.play_sound("menu_shift");
 	}
 	if (controller.menu_move(input::MoveDirection::down)) {
 		m_selector.move({0, 1});
-		soundboard.flags.menu.set(audio::Menu::shift);
+		soundboard.play_sound("menu_shift");
 	}
 	if (controller.menu_move(input::MoveDirection::left)) {
 		m_selector.move({-1, 0});
-		soundboard.flags.menu.set(audio::Menu::shift);
+		soundboard.play_sound("menu_shift");
 	}
 	if (controller.menu_move(input::MoveDirection::right)) {
 		m_selector.move({1, 0});
-		soundboard.flags.menu.set(audio::Menu::shift);
+		soundboard.play_sound("menu_shift");
 	}
 	if (controller.digital(input::DigitalAction::menu_select).triggered) { m_change_outfit = true; }
 	return Gizmo::handle_inputs(controller, soundboard);
@@ -172,11 +173,15 @@ void OutfitterGizmo::update_sliders(player::Player& player) {
 		++row;
 	}
 }
+
 void OutfitterGizmo::debug() {
 	ImGui::SetNextWindowSize(ImVec2{256.f, 128.f});
 	if (ImGui::Begin("Outfitter Debug")) {
 		ImGui::Text("Selection: %i", m_selector.get_current_selection());
-		ImGui::Text("Current Item ID: %s", m_current_item_tag);
+		ImGui::Text("Selector Index: %i", m_selector.get_index().x);
+		ImGui::SameLine();
+		ImGui::Text(", %i", m_selector.get_index().y);
+		if (m_current_item_tag) { ImGui::Text("Current Item Tag: %s", m_current_item_tag.value().c_str()); }
 		ImGui::Text("Selector Menu Pos: %.0f", m_selector.get_menu_position().x);
 		ImGui::SameLine();
 		ImGui::Text(", %.0f", m_selector.get_menu_position().y);

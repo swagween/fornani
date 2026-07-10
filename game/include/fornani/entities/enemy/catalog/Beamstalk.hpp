@@ -37,6 +37,7 @@ class Beamstalk final : public Enemy, public Flaggable<BeamstalkFlags>, public S
 	components::SteeringBehavior m_steering{};
 
 	util::Cooldown post_beam;
+	util::Cooldown hurt_sound{40};
 	util::Cooldown init{80};
 
 	float fire_rate;

@@ -12,7 +12,8 @@
         "position": [
           63,
           8
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -25,7 +26,8 @@
         "position": [
           36,
           3
-        ]
+        ],
+        "unlit": false
       }
     ],
     "enemies": [
@@ -63,6 +65,7 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
             "suite": [
               [
                 {
@@ -94,13 +97,13 @@
       {
         "activate_on_contact": false,
         "already_open": true,
+        "channel": 0,
         "destination_id": 116,
         "dimensions": [
           1,
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           3,
@@ -111,13 +114,13 @@
       {
         "activate_on_contact": true,
         "already_open": true,
+        "channel": 0,
         "destination_id": 199,
         "dimensions": [
           16,
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           64,
@@ -144,11 +147,6 @@
     "ambience": "firstwind",
     "background": "night",
     "biome": "firstwind",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -168,6 +166,7 @@
       80,
       16
     ],
+    "interior": false,
     "metagrid": [
       19,
       4
@@ -181,17 +180,37 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": true,
+      "interior": false,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 117,
     "shader": {
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": {
+      "ambience": "rain",
+      "chance": 1,
+      "density": 2,
+      "effect": "raindrop",
+      "framerate": 8,
+      "type": "rain"
+    }
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": true,
       "reverse_obscuring": false
@@ -5374,47 +5393,47 @@
         1,
         1,
         1,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
         0,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         21,
         22,
         16,
         17,
         18,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
-        447,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         447,
         32,
         33,

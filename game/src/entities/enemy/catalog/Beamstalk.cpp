@@ -8,7 +8,7 @@ namespace fornani::enemy {
 Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction)
 	: Enemy(svc, map, "beamstalk", false, 0, start_direction), m_services(&svc), m_map(&map), beam(svc, "green_beam"), fire_rate{24}, post_beam{680} {
 
-	m_params = {{"idle", {14, 14, 36, -1}}, {"charge", {0, 9, 24, 0}}, {"shoot", {9, 3, 24, 2}}, {"relax", {12, 2, 36, 0}}};
+	p_animations = {{"idle", {14, 14, 36, -1}}, {"charge", {0, 9, 24, 0}}, {"shoot", {9, 3, 24, 2}}, {"relax", {12, 2, 36, 0}}};
 
 	animation.set_params(get_params("idle"));
 	get_collider().physics.maximum_velocity = {8.f, 12.f};
@@ -34,6 +34,7 @@ void Beamstalk::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 	}
 	post_beam.update();
 	flags.state.set(StateFlags::vulnerable); // always vulnerable
+	hurt_sound.update();
 
 	Enemy::update(svc, map, player);
 	auto offset = get_collider().dimensions * 0.5f + sf::Vector2f{-40.f * directions.actual.as_float(), -128.f};
@@ -45,10 +46,11 @@ void Beamstalk::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 	bp.y -= 16.f;
 	beam.get().set_barrel_point(bp);
 
-	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
+	if (flags.state.test(StateFlags::hurt) && !hurt_sound.running()) {
 		m_services->soundboard.flags.beast.set(audio::Beast::hurt);
 		hurt_effect.start(128);
 		flags.state.reset(StateFlags::hurt);
+		hurt_sound.start();
 	}
 
 	hurt_effect.update();
@@ -77,7 +79,7 @@ fsm::StateFunction Beamstalk::update_charge() {
 	p_state.actual = BeamstalkState::charge;
 	if (animation.get_frame() > 6) {
 		if (m_services->ticker.every_x_ticks(static_cast<int>(fire_rate))) {
-			m_map->spawn_projectile_at(*m_services, beam.get(), beam.get().get_barrel_point());
+			beam.shoot(*m_services, *m_map);
 			get_collider().physics.apply_force({-beam.get().get_recoil(), 0.f});
 			if (!has_flag_set(BeamstalkFlags::spit)) {
 				m_services->soundboard.flags.beast.set(audio::Beast::growl);
@@ -97,7 +99,7 @@ fsm::StateFunction Beamstalk::update_shoot() {
 	animation.label = "shoot";
 	p_state.actual = BeamstalkState::shoot;
 	if (m_services->ticker.every_x_ticks(static_cast<int>(fire_rate))) {
-		m_map->spawn_projectile_at(*m_services, beam.get(), beam.get().get_barrel_point());
+		beam.shoot(*m_services, *m_map);
 		get_collider().physics.apply_force(directions.actual.as_float() * beam.get().get_recoil_force());
 		m_root->variables.bob_physics.velocity.x = directions.actual.as_float() * beam.get().get_recoil_force().x;
 	}

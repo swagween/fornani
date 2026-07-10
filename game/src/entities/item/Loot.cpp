@@ -27,7 +27,7 @@ Loot::Loot(automa::ServiceProvider& svc, world::Map& map, player::Player& player
 		auto rand_vec = random::random_vector_float({-xinit, -yinit}, {xinit, 0});
 		drops.push_back(std::make_unique<Drop>(svc, map, key, properties.probability, properties.delay_time, properties.special_id));
 		drops.back()->set_position(pos);
-		if (player.has_item_equipped(svc.data.item_id_from_label("magnet"))) { rand_vec *= 0.01f; }
+		if (player.has_item_equipped("magnet")) { rand_vec *= 0.01f; }
 		auto delayed = properties.individual_delay > 0;
 		drops.back()->apply_force(rand_vec, delayed);
 		if (delayed) { drops.back()->set_delay(properties.individual_delay * i); }

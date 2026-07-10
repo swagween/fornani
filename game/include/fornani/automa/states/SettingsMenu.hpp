@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "fornani/automa/MenuState.hpp"
+#include <fornani/automa/MenuState.hpp>
 
 namespace fornani::automa {
 
@@ -10,7 +10,7 @@ enum class SettingsMenuMode { ready, adjust };
 
 class SettingsMenu final : public MenuState {
   public:
-	SettingsMenu(ServiceProvider& svc, player::Player& player);
+	SettingsMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx);
 	void on_exit() override;
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
 	void frame_update(ServiceProvider& svc) override;

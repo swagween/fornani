@@ -20,7 +20,7 @@ StatusBar::StatusBar(automa::ServiceProvider& svc, sf::Vector2f dim, std::vector
 	}
 }
 
-void StatusBar::update(automa::ServiceProvider& svc, sf::Vector2f position, entity::Health& status, bool ease) { update(svc, position, status.get_normalized(), status.get_taken_point()); }
+void StatusBar::update(automa::ServiceProvider& svc, sf::Vector2f position, Health& status, bool ease) { update(svc, position, status.get_normalized(), status.get_taken_point()); }
 
 void StatusBar::update(automa::ServiceProvider& svc, sf::Vector2f position, float fraction, float taken, bool ease) {
 

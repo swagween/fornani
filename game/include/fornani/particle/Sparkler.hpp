@@ -11,6 +11,7 @@ class Sparkler {
 	explicit Sparkler(automa::ServiceProvider& svc, sf::Vector2f dimensions = {2.f, 2.f}, sf::Color color = sf::Color::White, std::string_view type = "");
 	void update(automa::ServiceProvider& svc);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
+	void submit(Renderer& renderer);
 	void set_position(sf::Vector2f pos);
 	void set_dimensions(sf::Vector2f dim);
 	void activate();

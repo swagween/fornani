@@ -9,9 +9,11 @@ constexpr auto minimum_wait_time_v = 16;
 
 Soundboard::Soundboard(automa::ServiceProvider& svc, capo::IEngine& engine) : m_services(&svc), m_engine(&engine) {
 	npc_map["bryn"] = make_int_setter<NPCBryn>(npc_flags.bryn);
-	npc_map["gobe"] = make_int_setter<NPCGobe>(npc_flags.gobe);
+	npc_map["aviator_bryn"] = make_int_setter<NPCBryn>(npc_flags.bryn);
 	npc_map["minigus"] = make_int_setter<NPCMinigus>(npc_flags.minigus);
 	npc_map["mirin"] = make_int_setter<NPCMirin>(npc_flags.mirin);
+	npc_map["dr_willett"] = make_int_setter<NPCDrWillett>(npc_flags.dr_willett);
+	npc_map["loth"] = make_int_setter<NPCLoth>(npc_flags.loth);
 
 	auto filename = svc.finder.resource_path() + "/data/audio/sfx.json";
 	auto sfx_data_result = dj::Json::from_file(filename);
@@ -240,9 +242,23 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (npc_flags.bryn.test(NPCBryn::mm)) { play(engine, svc, "bryn_mm", 0.f, bryn_volume); }
 	if (npc_flags.bryn.test(NPCBryn::oeugh)) { play(engine, svc, "bryn_oeugh", 0.f, bryn_volume); }
 
-	// gobe
-	if (npc_flags.gobe.test(NPCGobe::oh)) { play(engine, svc, "gobe_oh"); }
-	if (npc_flags.gobe.test(NPCGobe::orewa)) { play(engine, svc, "gobe_orewa"); }
+	// willett
+	auto willett_volume = 30.f;
+	if (npc_flags.dr_willett.test(NPCDrWillett::ahhyes)) { play(engine, svc, "dr_willett_ahhyes", 0.f, willett_volume); }
+	if (npc_flags.dr_willett.test(NPCDrWillett::hm)) { play(engine, svc, "dr_willett_hm", 0.f, willett_volume); }
+	if (npc_flags.dr_willett.test(NPCDrWillett::mm)) { play(engine, svc, "dr_willett_mm", 0.f, willett_volume); }
+	if (npc_flags.dr_willett.test(NPCDrWillett::nani)) { play(engine, svc, "dr_willett_nani", 0.f, willett_volume); }
+	if (npc_flags.dr_willett.test(NPCDrWillett::ohno)) { play(engine, svc, "dr_willett_ohno", 0.f, willett_volume); }
+	if (npc_flags.dr_willett.test(NPCDrWillett::runalongnow)) { play(engine, svc, "dr_willett_runalongnow", 0.f, willett_volume); }
+	if (npc_flags.dr_willett.test(NPCDrWillett::yes)) { play(engine, svc, "dr_willett_yes", 0.f, willett_volume); }
+
+	// loth
+	auto loth_volume = 40.f;
+	if (npc_flags.loth.test(NPCLoth::ahh)) { play(engine, svc, "loth_ahh", 0.f, loth_volume); }
+	if (npc_flags.loth.test(NPCLoth::chuckle)) { play(engine, svc, "loth_chuckle", 0.f, loth_volume); }
+	if (npc_flags.loth.test(NPCLoth::hmph)) { play(engine, svc, "loth_hmph", 0.f, loth_volume); }
+	if (npc_flags.loth.test(NPCLoth::hoho)) { play(engine, svc, "loth_hoho", 0.f, loth_volume); }
+	if (npc_flags.loth.test(NPCLoth::nani)) { play(engine, svc, "loth_nani", 0.f, loth_volume); }
 
 	// mirin
 	if (npc_flags.mirin.test(NPCMirin::ah)) { play(engine, svc, "mirin_ah"); }
@@ -322,7 +338,7 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.player.test(Player::roll)) { play(engine, svc, "nani_roll", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	/*flags.player.test(Player::wallslide) ? simple_repeat(engine, svc.sounds.get_buffer("nani_wallslide"), "nani_wallslide", 32) : fade_out("nani_wallslide");
 	flags.player.test(Player::turn_slide) ? simple_repeat(engine, svc.sounds.get_buffer("nani_turn_slide"), "nani_turn_slide", 8) : fade_out("nani_turn_slide");*/
-	if (flags.player.test(Player::dash_kick)) { play(engine, svc, "nani_dash_kick", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	// if (flags.player.test(Player::dash_kick)) { play(engine, svc, "nani_dash_kick", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.player.test(Player::dive)) { play(engine, svc, "nani_dive", 0.3f, 50.f, 0, 1.f, {}, echo_count, echo_rate); }
 
 	// steps
@@ -337,15 +353,16 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.arms.test(Arms::frag_grenade)) { play(engine, svc, "frag_grenade", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.arms.test(Arms::whistle)) { play(engine, svc, "missile_whistle", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 
-	if (flags.weapon.test(Weapon::bryns_gun)) { play(engine, svc, "arms_shot_bg", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	/*if (flags.weapon.test(Weapon::bryns_gun)) { play(engine, svc, "arms_shot_bg", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::gnat)) { play(engine, svc, "arms_shot_gnat", 0.1f, 100.f, 2, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::wasp)) { play(engine, svc, "arms_shot_wasp", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::tomahawk)) { play(engine, svc, "arms_shot_tomahawk", 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
-	if (flags.weapon.test(Weapon::tomahawk_catch)) { play(engine, svc, "arms_catch_tomahawk", 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.weapon.test(Weapon::skycorps_ar)) { play(engine, svc, "arms_shot_skycorps_ar", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
-	if (flags.weapon.test(Weapon::pulse)) { play(engine, svc, "arms_shot_pulse", 0.2f, 20.f); }
 	if (flags.weapon.test(Weapon::demon_magic)) { play(engine, svc, "arms_shot_demon_magic", 0.1f, 40.f); }
-	if (flags.weapon.test(Weapon::nova)) { play(engine, svc, "arms_shot_nova", 0.1f); }
+	if (flags.weapon.test(Weapon::nova)) { play(engine, svc, "arms_shot_nova", 0.1f); }*/
+
+	if (flags.weapon.test(Weapon::tomahawk_catch)) { play(engine, svc, "arms_catch_tomahawk", 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.weapon.test(Weapon::pulse)) { play(engine, svc, "magic_pulse", 0.2f, 20.f); }
 
 	if (flags.weapon.test(Weapon::energy_ball)) { play(engine, svc, "arms_shot_energy_ball", 0.1f); }
 
@@ -360,11 +377,20 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	npc_flags = {};
 }
 
+void Soundboard::clear_sounds(SoundBus bus) {
+	for (auto& sound : sound_pool) {
+		if (sound.sound.get_bus() == bus) { sound.delete_me = true; }
+	}
+	std::erase_if(sound_pool, [](auto const& s) { return s.delete_me; });
+}
+
+void Soundboard::play_sound(std::string_view label) { play_sound(label, m_listener.position); }
+
 void Soundboard::play_sound(std::string_view label, sf::Vector2f position) {
 	auto it = m_property_map.find(label);
 	if (it == m_property_map.end()) { it = m_property_map.find("error_sound"); }
 
-	std::string_view lookup = it->first;
+	std::string_view lookup = label;
 
 	auto tick = m_services->ticker.ticks;
 	if (tick - minimum_wait_time_v < m_services->sounds.get_tick_for_buffer(lookup)) { return; }
@@ -468,6 +494,25 @@ void Soundboard::randomize(automa::ServiceProvider& svc, Sound& sound, float ran
 }
 
 void Soundboard::play_step(int tile_value, int style_id, bool land) {
+	if (style_id == 8) {
+		auto pick = random::random_range_float(0.f, 1.f);
+		if (land) {
+			if (pick < 0.5f) {
+				play_sound("land_worm_1");
+			} else {
+				play_sound("land_worm_2");
+			}
+		} else {
+			if (pick < 0.33f) {
+				play_sound("steps_worm_1");
+			} else if (pick < 0.66f) {
+				play_sound("steps_worm_2");
+			} else {
+				play_sound("steps_worm_3");
+			}
+		}
+		return;
+	}
 	auto& set = land ? flags.land : flags.step;
 	if (!get_step_sound.contains(style_id)) {
 		set.set(audio::Step::basic);

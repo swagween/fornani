@@ -26,8 +26,8 @@ struct ItemStats {
 	int stack_limit{1};
 };
 
-enum class ItemType { ability, key, collectible, gizmo, apparel };
-enum class ItemFlags { sellable, readable, equippable, wearable, invisible };
+enum class ItemType { ability, key, collectible, useable, gizmo, apparel, plugin };
+enum class ItemFlags { sellable, readable, equippable, wearable, invisible, useable, buildable, ingredient };
 enum class ItemState { revealed, equipped };
 
 class Item : public Polymorphic {
@@ -50,7 +50,7 @@ class Item : public Polymorphic {
 	[[nodiscard]] auto get_lookup() const -> sf::IntRect { return m_lookup; }
 	[[nodiscard]] auto get_table_index(int table_width) const -> int { return m_table_origin.x + m_table_origin.y * table_width; }
 	[[nodiscard]] auto get_origin() const -> sf::Vector2i { return m_table_origin; }
-	[[nodiscard]] auto get_f_origin() const -> sf::Vector2f { return sf::Vector2f{m_table_origin}; }
+	[[nodiscard]] auto get_f_origin() const -> sf::Vector2f;
 	[[nodiscard]] auto get_table_position() const -> sf::Vector2f { return sf::Vector2f{m_lookup.position} - get_f_origin(); }
 	[[nodiscard]] auto get_apparel_type() const -> std::optional<int> { return m_stats.apparel_type != -1 ? std::optional<int>{m_stats.apparel_type} : std::nullopt; }
 
@@ -60,6 +60,8 @@ class Item : public Polymorphic {
 	[[nodiscard]] auto is_equippable() const -> bool { return m_flags.test(ItemFlags::equippable); }
 	[[nodiscard]] auto is_wearable() const -> bool { return m_flags.test(ItemFlags::wearable); }
 	[[nodiscard]] auto is_invisible() const -> bool { return m_flags.test(ItemFlags::invisible); }
+	[[nodiscard]] auto is_buildable() const -> bool { return m_flags.test(ItemFlags::buildable); }
+	[[nodiscard]] auto is_ingredient() const -> bool { return m_flags.test(ItemFlags::ingredient); }
 
 	[[nodiscard]] auto is_key() const -> bool { return m_type == ItemType::key; }
 	[[nodiscard]] auto is_gizmo() const -> bool { return m_type == ItemType::gizmo; }
@@ -67,6 +69,7 @@ class Item : public Polymorphic {
 	[[nodiscard]] auto is_collectible() const -> bool { return m_type == ItemType::collectible; }
 	[[nodiscard]] auto is_unique() const -> bool { return m_stats.stack_limit == 1; }
 	[[nodiscard]] auto is_ability() const -> bool { return m_type == ItemType::ability; }
+	[[nodiscard]] auto is_useable() const -> bool { return m_type == ItemType::useable || m_flags.test(ItemFlags::useable); }
 
   protected:
 	int m_id{};

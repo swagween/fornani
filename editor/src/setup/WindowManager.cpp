@@ -1,4 +1,5 @@
-#include "editor/setup/WindowManager.hpp"
+
+#include <editor/setup/WindowManager.hpp>
 
 namespace pi {
 
@@ -13,7 +14,7 @@ void WindowManager::set() {
 
 	if (!screencap.resize(window.getSize())) { NANI_LOG_WARN(m_logger, "Failed to resize screencap."); }
 	window.setVerticalSyncEnabled(true);
-	window.setFramerateLimit(60);
+	window.setFramerateLimit(fornani::default_framerate_limit_v);
 	window.setKeyRepeatEnabled(false);
 }
 

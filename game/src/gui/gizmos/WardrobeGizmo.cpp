@@ -12,7 +12,7 @@ namespace fornani::gui {
 WardrobeGizmo::WardrobeGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement)
 	: Gizmo("Wardrobe", false), m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "wardrobe", 48, util::InterpolationType::cubic}, m_core(svc.assets.get_texture("wardrobe_gizmo_core"), {139, 255}),
 	  m_apparel_sprite{sf::Sprite{svc.assets.get_texture("inventory_items")}}, m_light(svc.assets.get_texture("red_light"), {5, 4}), m_nani_offset{38.f, 38.f}, m_pawn_offset{106.f, 332.f}, m_light_offset{12.f, 272.f},
-	  m_scanline{sf::Sprite{svc.assets.get_texture("portrait_scanline")}}, m_sprite{sf::Sprite{svc.assets.get_texture("wardrobe_gizmo")}},
+	  m_scanline{sf::Sprite{svc.assets.get_texture("portrait_scanline")}}, m_sprite{sf::Sprite{svc.assets.get_texture("wardrobe_gizmo")}}, m_holo_shader{svc.finder},
 	  m_health_display{.hearts{sf::Sprite{svc.assets.get_texture("pioneer_hearts")}}, .sockets{sf::Sprite{svc.assets.get_texture("pioneer_heart_sockets")}}, .position{16.f, 374}} {
 	m_dashboard_port = DashboardPort::wardrobe;
 	m_placement = placement;
@@ -92,12 +92,15 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	if (m_outfitter) { m_outfitter->render(svc, win, player, shader, palette, cam, foreground); }
 
 	// player portrait + scanline
-	player.wardrobe_widget.render(win, cam);
-	static auto movement{util::Circuit{4}};
-	if (svc.ticker.every_x_frames(8)) { movement.modulate(1); }
-	auto movement_vec{sf::Vector2f{-2.f, -4.f + static_cast<float>(movement.get())}};
-	m_scanline.setPosition(m_placement + m_path.get_position() + m_nani_offset - cam + movement_vec);
-	win.draw(m_scanline);
+	// player.wardrobe_widget.render(win, cam);
+	sf::Color highlight(245, 195, 135); // warm amber glow
+	sf::Color shadow(55, 32, 18);		// softened warm dark
+	player.wardrobe_widget.submit(svc, win, m_holo_shader, cam, highlight, shadow);
+	// static auto movement{util::Circuit{4}};
+	// if (svc.ticker.every_x_frames(8)) { movement.modulate(1); }
+	// auto movement_vec{sf::Vector2f{-2.f, -4.f + static_cast<float>(movement.get())}};
+	// m_scanline.setPosition(m_placement + m_path.get_position() + m_nani_offset - cam + movement_vec);
+	// win.draw(m_scanline);
 
 	// main piece
 	m_core.render(svc, win, cam, shader, palette);
@@ -115,17 +118,17 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 
 	// wardrobe display
 	// the following vectors originate from positions on the artwork
-	auto wardrobe_origin = sf::Vector2i{0, 160};
+	auto wardrobe_origin = sf::Vector2i{0, 180};
 	auto outfit_offset = sf::Vector2f{214.f, 54.f};
 	auto spacing = sf::Vector2f{0.f, 48.f};
 	auto row{0.f};
 	for (auto& piece : player.get_outfit()) {
 		auto irow{static_cast<int>(row)};
 		auto icol = piece > 0 ? static_cast<int>(piece - 1) : 9; // 9 is where the default outfit is located on the atlas
-		auto lookup = sf::Vector2i{icol, irow} * constants::i_cell_resolution;
-		m_apparel_sprite.setTextureRect(sf::IntRect{lookup + wardrobe_origin, constants::i_resolution_vec});
+		auto lookup = sf::Vector2i{icol, irow} * constants::i_cell_resolution_padded;
+		m_apparel_sprite.setTextureRect(sf::IntRect{lookup + wardrobe_origin, constants::i_resolution_vec_padded});
 		m_apparel_sprite.setPosition(m_placement + m_path.get_position() + outfit_offset + row * spacing - cam);
-		m_apparel_sprite.setOrigin(constants::f_resolution_vec * 0.5f);
+		m_apparel_sprite.setOrigin(m_apparel_sprite.getLocalBounds().getCenter());
 		win.draw(m_apparel_sprite);
 		++row;
 	}

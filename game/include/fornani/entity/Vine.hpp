@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/core/Fwd.hpp>
 #include <fornani/entities/world/SpawnablePlatform.hpp>
 #include <fornani/entities/world/TreasureContainer.hpp>
 #include <fornani/entity/Entity.hpp>
@@ -9,18 +10,6 @@
 #include <memory>
 #include <optional>
 #include <vector>
-
-namespace fornani::automa {
-struct ServiceProvider;
-}
-
-namespace fornani::world {
-class Map;
-}
-
-namespace fornani::player {
-class Player;
-}
 
 namespace fornani {
 
@@ -35,8 +24,9 @@ class Vine : public Entity {
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;
 	void expose() override;
-	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] std::optional<std::unique_ptr<gui::Console>>& console, [[maybe_unused]] player::Player& player) override;
+	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
+	void submit(Renderer& renderer) override;
 
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, player::Player& player) const;
 	void add_platform(automa::ServiceProvider& svc, int link_index);

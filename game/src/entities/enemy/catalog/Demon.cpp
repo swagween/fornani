@@ -11,11 +11,17 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map, int variant)
 	  parts{.spear{svc.assets.get_texture("demon_spear"), 2.0f, 0.85f, {-16.f, 8.f}}, .sword{svc.assets.get_texture("demon_sword"), 2.0f, 0.85f, {-4.f, 8.f}}, .shield{svc.assets.get_texture("demon_shield"), 2.0f, 0.85f, {-28.f, 8.f}}},
 	  m_variant{static_cast<DemonVariant>(variant)} {
 	auto demon_framerate = 24;
-	m_params = {{"idle", {0, 6, demon_framerate, -1}},	   {"turn", {9, 1, demon_framerate, 0}},  {"run", {6, 4, demon_framerate, -1}},		 {"jump", {7, 1, demon_framerate * 3, 0}},		 {"signal", {10, 1, demon_framerate * 3, 2}},
-				{"rush", {11, 1, demon_framerate * 2, 0}}, {"stab", {11, 3, demon_framerate, 0}}, {"uppercut", {14, 3, demon_framerate, 0}}, {"jumpsquat", {11, 1, demon_framerate * 3, 0}}, {"dormant", {18, 1, demon_framerate * 5, -1}}};
+	if (m_variant == DemonVariant::duelist) { demon_framerate = 20; }
+	p_animations = {{"idle", {0, 6, demon_framerate, -1}},	   {"turn", {9, 1, demon_framerate, 0}},  {"run", {6, 4, demon_framerate, -1}},		 {"jump", {7, 1, demon_framerate * 3, 0}},		 {"signal", {10, 1, demon_framerate * 3, 2}},
+					{"rush", {11, 1, demon_framerate * 2, 0}}, {"stab", {11, 3, demon_framerate, 0}}, {"uppercut", {14, 3, demon_framerate, 0}}, {"jumpsquat", {11, 1, demon_framerate * 3, 0}}, {"dormant", {18, 1, demon_framerate * 5, -1}}};
 
 	animation.set_params(get_params("dormant"));
-	if (map.get_style_id() == 5) { animation.set_params(get_params("idle")); }
+	if (map.get_style_id() == 5) {
+		state_function = std::bind(&Demon::update_idle, this);
+		animation.set_params(get_params("idle"));
+	} else {
+		cooldowns.awaken.start();
+	}
 	get_collider().physics.maximum_velocity = {8.f, 12.f};
 	get_collider().flags.general.set(shape::General::complex);
 	get_collider().physics.air_friction = {0.95f, 0.999f};
@@ -29,15 +35,14 @@ Demon::Demon(automa::ServiceProvider& svc, world::Map& map, int variant)
 	attacks.stab.sensor.drawable.setFillColor(colors::blue);
 	parts.shield.set_team(arms::Team::guardian);
 	flags.state.set(StateFlags::no_shake);
-
-	cooldowns.awaken.start();
 }
 
 void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	Enemy::update(svc, map, player);
 	if (died()) { return; }
 
-	player_behind(player) ? m_flags.set(DemonFlags::player_behind) : m_flags.reset(DemonFlags::player_behind);
+	auto behind = (player_behind(player) && directions.actual.left()) || (!player_behind(player) && directions.actual.right());
+	behind ? m_flags.set(DemonFlags::player_behind) : m_flags.reset(DemonFlags::player_behind);
 
 	cooldowns.rush_hit.update();
 	cooldowns.post_jump.update();
@@ -45,7 +50,8 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	cooldowns.stab.update();
 
 	attacks.stab.update();
-	attacks.stab.handle_player(player);
+	attacks.stab.hurt_player(player, 1.f, {Enemy::directions.actual.as_float() * 0.5f, -0.1f});
+	attacks.stab.cancel_projectiles(svc, map, get_team());
 	attacks.stab.disable();
 	if (is_state(DemonState::stab)) {
 		attacks.stab.enable();
@@ -54,21 +60,6 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (is_state(DemonState::uppercut)) {
 		attacks.stab.enable();
 		if (Enemy::animation.get_frame_count() != 1) { attacks.stab.disable(); }
-	}
-	if (attacks.stab.hit.active()) {
-		if (attacks.stab.hit.within_bounds(player.get_collider().bounding_box)) {
-			if (!player.invincible()) { player.accumulated_forces.push_back({Enemy::directions.actual.as_float() * 4.f, -2.f}); }
-			player.hurt();
-		}
-		for (auto& proj : map.active_projectiles) {
-			if (proj.get_team() == arms::Team::skycorps) { continue; }
-			if (attacks.stab.hit.within_bounds(proj.get_collider())) {
-				map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position()));
-				random::percent_chance(50) ? svc.soundboard.flags.lynx.set(audio::Lynx::ping_1) : svc.soundboard.flags.lynx.set(audio::Lynx::ping_2);
-				proj.destroy(false);
-				svc.ticker.freeze_frame(3);
-			}
-		}
 	}
 
 	flags.state.set(StateFlags::vulnerable); // demon is always vulnerable
@@ -92,7 +83,7 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		get_secondary_collider().physics.position = get_collider().physics.position - sf::Vector2f{0.f, 20.f};
 		get_secondary_collider().physics.position.x += 1.f;
 		get_secondary_collider().sync_components();
-		if (player.get_collider().hurtbox.overlaps(get_secondary_collider().bounding_box) && !is_dormant()) { player.hurt(); }
+		if (player.hurtbox.overlaps(get_secondary_collider().bounding_box) && !is_dormant()) { player.hurt(); }
 	}
 
 	if (svc.ticker.every_x_ticks(200)) {
@@ -146,8 +137,8 @@ void Demon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	if (died() || is_state(DemonState::dormant)) { return; }
 	if (m_variant == DemonVariant::spearman) {
 		parts.spear.render(svc, win, cam);
-	} else if (m_variant == DemonVariant::warrior) {
-		parts.shield.render(svc, win, cam);
+	} else if (m_variant == DemonVariant::warrior || m_variant == DemonVariant::duelist) {
+		if (m_variant == DemonVariant::warrior) { parts.shield.render(svc, win, cam); }
 		if (!is_state(DemonState::stab) && !is_state(DemonState::uppercut)) { parts.sword.render(svc, win, cam); }
 	} else {
 		if (!is_state(DemonState::stab) && !is_state(DemonState::uppercut)) { parts.sword.render(svc, win, cam); }

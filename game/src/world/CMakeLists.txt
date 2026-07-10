@@ -2,8 +2,8 @@ nani_add_sources(
         Breakable.cpp
         Camera.cpp
         Checkpoint.cpp
-        Destructible.cpp
         Grid.cpp
+        HazardMap.cpp
         Incinerite.cpp
         Layer.cpp
         Map.cpp

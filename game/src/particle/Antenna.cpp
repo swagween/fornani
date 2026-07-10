@@ -1,4 +1,5 @@
 
+#include <fornani/core/Debug.hpp>
 #include <fornani/particle/Antenna.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
@@ -18,6 +19,7 @@ Antenna::Antenna(world::Map& map, sf::Vector2f pos, sf::Color col, float agf, sf
 	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
 	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 	get_collider().set_exclusion_target(shape::ColliderTrait::block);
+	get_collider().set_exclusion_target(shape::ColliderTrait::circle);
 	get_collider().set_attribute(shape::ColliderAttributes::no_collision);
 	get_collider().set_attribute(shape::ColliderAttributes::custom_resolution);
 }
@@ -43,6 +45,7 @@ void Antenna::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	if (history > 0) {
 		box.setFillColor(colors::fucshia);
 		win.draw(box);
+		++debug::draw_calls;
 	}
 
 	box.setFillColor(prev_color);
@@ -52,6 +55,7 @@ void Antenna::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		win.draw(box);
 	} else {
 		win.draw(box);
+		++debug::draw_calls;
 	}
 }
 

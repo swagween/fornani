@@ -1,13 +1,14 @@
 
 #include <fornani/automa/states/Trial.hpp>
+#include <fornani/entities/player/Player.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Random.hpp>
 
 namespace fornani::automa {
 
-Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scene, int room_number, std::string_view room_name) : GameplayState(svc, player, scene, room_number), m_reset{64} {
+Trial::Trial(ServiceProvider& svc, player::Player& player, int room_number) : GameplayState(svc, player, room_number), m_reset{64} {
 
-	m_map = world::Map{svc, player};
+	m_map.emplace(svc, player);
 
 	m_type = StateType::game;
 
@@ -20,7 +21,7 @@ Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scen
 		svc.data.rooms.push_back(room_number);
 		svc.data.load_data();
 	} else {
-		m_map->load(svc, m_console, room_number);
+		m_map->load(svc, p_context, room_number);
 	}
 
 	svc.state_controller.player_position = m_map->get_player_start();
@@ -30,76 +31,42 @@ Trial::Trial(ServiceProvider& svc, player::Player& player, std::string_view scen
 
 	player.get_collider().physics.zero();
 	player.set_position(m_map->get_player_start());
+	player.reset_flags();
+	player.set_direction(Direction{{1, 0}});
 
 	// save was loaded from a json, or player died, so we successfully skipped door search
 	if (!player.is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
-
-	player.controller.prevent_movement();
 	svc.world_timer.restart();
 }
 
 void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-	GameState::tick_update(svc, engine);
+
+	set_flag(GameplayStateFlags::early_tick_return, false);
+	GameplayState::tick_update(svc, engine);
+	if (has_flag_set(GameplayStateFlags::early_tick_return)) { return; }
+
 	m_reset.update();
-
-	// gamepad disconnected
-	if (svc.input_system.process_gamepad_disconnection()) { pause(svc); }
-	if (svc.input_system.digital(input::DigitalAction::pause).triggered) { pause(svc); }
-
-	svc.a11y.set_action_ctx_bar_enabled(false);
-
-	svc.app_flags.set(AppFlags::in_game);
-
-	// set action set
-	if (p_pause_window || m_console) {
-		svc.input_system.set_action_set(input::ActionSet::Menu);
-		svc.input_system.set_joystick_throttle({});
-	} else {
-		svc.input_system.set_action_set(input::ActionSet::Platformer);
-	}
-
-	if (p_pause_window) {
-		if (m_console) { m_console.value()->update(svc); }
-		p_pause_window.value()->update(svc, m_console);
-		if (p_pause_window.value()->settings_requested()) {
-			flags.set(GameStateFlags::settings_request);
-			p_pause_window.value()->reset();
-		}
-		if (p_pause_window.value()->controls_requested()) {
-			flags.set(GameStateFlags::controls_request);
-			p_pause_window.value()->reset();
-		}
-		if (p_pause_window.value()->exit_requested()) {
-			p_pause_window.reset();
-			svc.world_timer.resume();
-		}
-		return;
-	}
-
 	svc.world_clock.update(svc);
 
 	if (!m_map) { return; }
+
+	if (!p_pause_window) { svc.world_timer.resume(); }
 
 	if (!m_reset.running()) {
 		player->update(*m_map);
 		player->start_tick();
 	}
-	m_map->update(svc, m_console);
+	m_map->update(svc, p_context);
 
 	m_map->debug_mode = debug_mode;
 
 	player->end_tick();
-	if (!m_console) { player->set_busy(false); }
+	if (!p_context.console) { player->set_busy(false); }
 
 	if (player->is_dead()) {
-		m_map->transition.start();
-		player->health.refill();
+		p_context.transition.start();
+		player->start_over();
 		svc.state_controller.actions.set(Actions::restart);
-		m_reset.start();
-		player->get_collider().physics.zero();
-		player->controller.prevent_movement();
-		player->map_reset();
-		player->accumulated_forces.clear();
 	}
 
 	m_map->background->update(svc);
@@ -109,9 +76,46 @@ void Trial::frame_update(ServiceProvider& svc) {}
 
 void Trial::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!m_map) { return; }
-	m_map->render_background(svc, win, p_world_shader, player->get_camera_position());
-	m_map->render(svc, win, p_world_shader, player->get_camera_position());
+	p_renderer.begin(win, player->get_camera_position());
+	m_map->render_background(p_renderer, svc, win, p_world_shader, player->get_camera_position());
+	m_map->render(p_renderer, svc, win, p_world_shader, player->get_camera_position());
 	GameplayState::render(svc, win);
+}
+
+void Trial::reload(ServiceProvider& svc, int target_state) {
+	m_map->clear();
+	set_flag(GameplayStateFlags::transitioned_in, false);
+	p_context.transition.hang();
+	player->reset_flags();
+
+	if (p_context.console) { p_context.console.reset(); }
+	m_map->load(svc, p_context, target_state);
+
+	hud.reset_position();
+	svc.soundboard.turn_on();
+	player->set_camera_bounds(m_map->real_dimensions);
+	player->force_camera_center();
+	player->get_collider().physics.zero();
+	if (!svc.state_controller.actions.test(Actions::custom_player_position)) {
+		float ppx = svc.data.get_save()["player_data"]["position"]["x"].as<float>();
+		float ppy = svc.data.get_save()["player_data"]["position"]["y"].as<float>();
+		sf::Vector2f player_pos = {ppx, ppy};
+		svc.demo_mode() ? player->place_at_demo_position() : player->set_position(player_pos);
+	} else if (svc.state_controller.actions.test(Actions::custom_player_position)) {
+		player->set_position(svc.state_controller.player_position);
+		svc.state_controller.actions.reset(automa::Actions::custom_player_position);
+	}
+
+	// save was loaded from a json, or player died, so we successfully skipped door search
+	svc.state_controller.actions.reset(Actions::save_loaded);
+	if (!player->is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
+	player->visit_history.push_room(target_state);
+
+	player->controller.prevent_movement();
+	p_world_shader->set_darken(m_map->darken_factor);
+	p_world_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
+	p_gui_shader->set_texture_size(svc.window->f_screen_dimensions() * 3.f); // 3 is the number of screen-sized "cells" in the inventory window
+	svc.app_flags.reset(automa::AppFlags::custom_map_start);
 }
 
 void Trial::pause(ServiceProvider& svc) {

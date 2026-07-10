@@ -3,10 +3,19 @@ project(fornani-dependencies)
 include(FetchContent)
 set(BUILD_SHARED_LIBS OFF)
 
+# PlatformFolders
+FetchContent_Declare(
+        sago
+        GIT_REPOSITORY https://github.com/sago007/PlatformFolders
+        GIT_TAG 4.3.0
+)
+FetchContent_MakeAvailable(sago)
+
 # SFML
-FetchContent_Declare(sfml
+FetchContent_Declare(
+        sfml
         GIT_REPOSITORY https://github.com/SFML/SFML
-        GIT_TAG 3.0.0
+        GIT_TAG 3.1.0
 )
 FetchContent_MakeAvailable(sfml)
 
@@ -42,19 +51,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(ksignal)
 
-# ccmath
-set(CCMATH_ENABLE_EXTENSIONS ON)
-set(CCMATH_DISABLE_ERRNO ON)
-set(CCMATH_STRICT_WARNINGS OFF)
-FetchContent_Declare(
-        ccmath
-        GIT_REPOSITORY https://github.com/Rinzii/ccmath
-        GIT_TAG 15260da # IanP: This specific commit id is stable but more recent than main
-)
-FetchContent_MakeAvailable(ccmath)
-
 # Used for assertions and crash handling
-
 FetchContent_Declare(
         cpptrace
         GIT_REPOSITORY https://github.com/jeremy-rifkin/cpptrace
@@ -143,9 +140,9 @@ add_library(fornani-dependencies INTERFACE)
 add_library(fornani::deps ALIAS fornani-dependencies)
 
 target_link_libraries(fornani-dependencies INTERFACE
+        sago::platform_folders
         djson::djson
         ksignal::ksignal
-        ccmath::ccmath
         ImGui-SFML::ImGui-SFML
         SFML::System
         SFML::Graphics
@@ -156,6 +153,9 @@ target_link_libraries(fornani-dependencies INTERFACE
         cpptrace::cpptrace
         libassert::assert
 )
+
+get_target_property(INCLUDES sago::platform_folders INTERFACE_INCLUDE_DIRECTORIES)
+message(STATUS "sago includes: ${INCLUDES}")
 
 if (WIN32 AND NOT FORNANI_PRODUCTION_BUILD AND NOT DEFINED FORNANI_DISABLE_DBGHELP)
     target_link_libraries(fornani-dependencies INTERFACE

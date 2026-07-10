@@ -11,8 +11,8 @@ namespace fornani::gui {
 
 Console::Console(automa::ServiceProvider& svc)
 	: m_services(&svc), m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "standard", 64}, m_styling{.corner_factor{28}, .edge_factor{1}, .padding_scale{1.1f}},
-	  m_nineslice(svc, svc.assets.get_texture("blue_console"), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}), m_mode{ConsoleMode::writing}, m_response_offset{-192.f, 16.f},
-	  m_exit_stall{450}, m_item_display_timer{1200}, m_launch{8} {
+	  m_nineslice(svc, svc.assets.get_texture("blue_console"), {m_styling.corner_factor, m_styling.corner_factor}, {m_styling.edge_factor, m_styling.edge_factor}), m_mode{ConsoleMode::writing}, m_holo_shader{svc.finder},
+	  m_response_offset{-192.f, 16.f}, m_exit_stall{450}, m_item_display_timer{1200}, m_launch{8} {
 	NANI_LOG_DEBUG(m_logger, "Console ctor @{}", static_cast<void const*>(this));
 	svc.input_system.set_action_set(input::ActionSet::Menu);
 	text_suite = svc.text.console;
@@ -31,15 +31,9 @@ Console::Console(automa::ServiceProvider& svc, dj::Json const& source, OutputTyp
 	load_and_launch(type);
 }
 
-Console::Console(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type, int target_index) : Console(svc) {
-	if (type == OutputType::no_skip) { m_exit_stall.start(); }
-	set_source(source);
-	load_and_launch(key, type, target_index);
-}
+Console::Console(StableID speaker, automa::ServiceProvider& svc, dj::Json const& source, OutputType type) : Console(svc, source, type) { m_speaker_id.emplace(speaker); }
 
-void Console::relaunch(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type, int target_index) {
-	m_mode = ConsoleMode::writing;
-	NANI_LOG_DEBUG(m_logger, "Relaunched console.");
+Console::Console(automa::ServiceProvider& svc, dj::Json const& source, std::string_view key, OutputType type, int target_index) : Console(svc) {
 	if (type == OutputType::no_skip) { m_exit_stall.start(); }
 	set_source(source);
 	load_and_launch(key, type, target_index);
@@ -84,13 +78,38 @@ void Console::update(automa::ServiceProvider& svc) {
 				m_services->events.reveal_item_by_id_event.dispatch(code.value);
 				processed = true;
 			}
+			if (code.is(MessageCodeType::set_cutscene_progression)) {
+				m_services->events.set_cutscene_progression_event.dispatch(code.value);
+				processed = true;
+			}
+			if (code.is(MessageCodeType::set_quest_progression)) {
+				if (code.extras) {
+					if (code.extras->size() > 0) { svc.quest_table.set_quest_progression(svc.quest_registry.get_quest_metadata(code.value).get_tag(), code.extras->at(0)); }
+				}
+				processed = true;
+			}
+			if (code.is_destroy_inspectable()) {
+				m_services->data.destroy_inspectable(code.value);
+				if (m_speaker_id) { m_services->data.destroy_inspectable(m_speaker_id->get()); }
+				processed = true;
+			}
 			if (code.is_input_hint()) {
 				auto action_id = code.extras ? code.extras->at(0) : 0;
 				auto lookup = m_services->input_system.get_icon_lookup_by_action(static_cast<input::DigitalAction>(action_id));
 				m_writer->insert_icon_at(code.value, lookup);
 			}
+			if (code.is(MessageCodeType::give_bonus_health)) {
+				m_services->events.give_bonus_health_event.dispatch(code.value);
+				processed = true;
+			}
 			if (code.is(MessageCodeType::launch_cutscene) && m_process_code_before) {
 				m_services->events.launch_cutscene_event.dispatch(*m_services, code.value);
+				NANI_LOG_DEBUG(m_logger, "Launching cutscene: {}", code.value);
+				processed = true;
+			}
+			if (code.is_remove_item() && m_process_code_before) {
+				m_services->events.remove_item_by_id_event.dispatch(*m_services, code.value);
+				NANI_LOG_DEBUG(m_logger, "Removed item from console {}", code.value);
 				processed = true;
 			}
 			if (code.is(MessageCodeType::add_map_marker) && m_process_code_before && code.extras) {
@@ -150,9 +169,21 @@ void Console::render(sf::RenderWindow& win) {
 	if (!m_writer || !is_active()) { return; }
 	m_nineslice.render(win);
 	if (m_item_widget) { m_item_widget->render(*m_services, win); }
-	if (m_npc_portrait) { m_npc_portrait->render(win); }
+	if (m_npc_portrait) {
+		m_npc_portrait->render(win, m_flags.test(ConsoleFlags::hologram));
+		if (m_flags.test(ConsoleFlags::hologram)) {
+			sf::Color highlight(245, 195, 135); // warm amber glow
+			sf::Color shadow(55, 32, 18);		// softened warm dark
+			m_holo_shader.finalize(m_services->ticker.total_seconds_passed.count(), highlight, shadow, 1.6f);
+			m_holo_shader.submit(win, m_npc_portrait->make_sprite());
+		}
+	}
 	if (m_nani_portrait) {
-		m_nani_portrait->render(win);
+		if (m_response) {
+			if (!m_response->has_flag_set(ResponseDialogFlags::hide_portrait)) { m_nani_portrait->render(win); }
+		} else {
+			m_nani_portrait->render(win);
+		}
 		m_mode == ConsoleMode::responding ? m_nani_portrait->bring_in() : m_nani_portrait->send_out();
 	}
 	if (m_response) { m_response->render(win); }
@@ -212,6 +243,7 @@ void Console::display_gun(std::string_view tag, bool sparkle) {
 void Console::write(sf::RenderWindow& win, bool instant) {
 	if (!is_active()) { return; }
 	if (!m_writer) { return; }
+	if (m_launch.running()) { return; }
 	instant ? m_writer->write_instant_message(win) : m_writer->write_gradual_message(win);
 }
 
@@ -282,19 +314,31 @@ void Console::handle_inputs(input::InputSystem& controller) {
 							if (cde.extras->size() > 1) { m_services->quest_table.progress_quest(m_services->quest_registry.get_quest_metadata(cde.value).get_tag(), cde.extras->at(0), cde.extras->at(1)); }
 						}
 					}
+					if (cde.is(MessageCodeType::set_quest_progression)) {
+						if (cde.extras) {
+							if (cde.extras->size() > 0) { m_services->quest_table.set_quest_progression(m_services->quest_registry.get_quest_metadata(cde.value).get_tag(), cde.extras->at(0)); }
+						}
+					}
 					if (cde.is_piggyback()) { m_services->events.npc_piggyback_event.dispatch(*m_services, cde.value); }
+					if (cde.is(MessageCodeType::purchase)) { m_services->events.purchase_event.dispatch(cde.value); }
+					if (cde.is(MessageCodeType::give_bonus_health)) { m_services->events.give_bonus_health_event.dispatch(cde.value); }
 					if (cde.is_open_vendor()) { m_services->events.open_vendor_event.dispatch(*m_services, cde.value); }
+					if (cde.is(MessageCodeType::open_builder) && m_process_code_after) { m_services->events.open_builder_event.dispatch(*m_services, cde.value); }
 					if (cde.is_item()) {
 						m_services->events.acquire_item_from_console_event.dispatch(*m_services, cde.value);
-						if (cde.extras) { m_services->data.destroy_inspectable(cde.extras->at(0)); }
+						if (m_speaker_id) { m_services->data.destroy_inspectable(m_speaker_id->get()); }
 						m_flags.set(ConsoleFlags::close_after_process);
 					}
 					if (cde.is_destructible()) { m_services->data.switch_destructible_state(cde.value); }
+					if (cde.is_remove_item()) {
+						m_services->events.remove_item_by_id_event.dispatch(*m_services, cde.value);
+						NANI_LOG_DEBUG(m_logger, "Removed item from console {}", cde.value);
+					}
 					if (cde.is_exit()) {
 						end();
 						return;
 					}
-					m_response = {};
+					m_response.reset();
 					responded = true;
 				}
 			}
@@ -308,7 +352,8 @@ void Console::handle_inputs(input::InputSystem& controller) {
 			for (auto& code : codes.value()) {
 				if (code.is_response()) {
 					// create a response dialog, feed it inputs, and await its closure before resuming m_writer
-					m_response = ResponseDialog(m_services->text, text_suite, m_services->quest_table, native_key, code.value, m_position + m_response_offset);
+					auto stall = m_services->state_flags.test(automa::StateFlags::cutscene) ? 80 : 32;
+					m_response = ResponseDialog(m_services->text, text_suite, m_services->quest_table, native_key, code.value, m_position + m_response_offset, stall);
 					m_mode = ConsoleMode::responding;
 					m_writer->wait();
 					m_services->soundboard.flags.console.set(audio::Console::next);
@@ -336,6 +381,7 @@ void Console::handle_inputs(input::InputSystem& controller) {
 				if (code.is_weapon() && m_process_code_after) { m_services->events.acquire_weapon_from_console_event.dispatch(*m_services, code.value); }
 				if (code.is_remove_weapon() && m_process_code_after) { m_services->events.remove_weapon_by_id_event.dispatch(*m_services, code.value); }
 				if (code.is_open_vendor() && m_process_code_after) { m_services->events.open_vendor_event.dispatch(*m_services, code.value); }
+				if (code.is(MessageCodeType::open_builder) && m_process_code_after) { m_services->events.open_builder_event.dispatch(*m_services, code.value); }
 				if (code.is_emotion() && m_process_code_after && m_npc_portrait && responded) { m_npc_portrait->set_emotion(code.value); }
 				if (code.is_destroy_inspectable()) { m_services->data.destroy_inspectable(code.value); }
 				if (code.is_destructible() && m_process_code_after) {

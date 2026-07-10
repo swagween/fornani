@@ -34,6 +34,10 @@ void Sparkler::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	}
 }
 
+void Sparkler::submit(Renderer& renderer) {
+	for (auto& spark : sparkles) { spark.submit(renderer); }
+}
+
 void Sparkler::set_position(sf::Vector2f pos) { position = pos; }
 
 void Sparkler::set_dimensions(sf::Vector2f dim) { dimensions = dim; }

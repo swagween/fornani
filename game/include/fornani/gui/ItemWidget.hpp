@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/utils/Cooldown.hpp>
 #include <string>
 #include "fornani/particle/Sparkler.hpp"
 #include "fornani/utils/RectPath.hpp"
@@ -31,6 +32,7 @@ class ItemWidget {
 	} m_sprites;
 	util::RectPath m_path;
 	std::optional<vfx::Sparkler> m_sparkler;
+	util::Cooldown m_startup;
 };
 
 } // namespace fornani::gui

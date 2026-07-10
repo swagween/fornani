@@ -19,6 +19,7 @@ void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 	orbs.update(svc, player);
 	ammo.update(svc, player);
 	gun.update(svc, player);
+	for (auto& e : m_effects) { e.update(); }
 }
 
 void HUD::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win) {
@@ -30,6 +31,9 @@ void HUD::render(automa::ServiceProvider& svc, player::Player& player, sf::Rende
 	ammo.render(svc, player, win, offset);
 	offset += sign * ammo.HUDAmmo::get_offset();
 	gun.render(svc, player, win, offset);
+	for (auto& e : m_effects) { e.render(win, {}); }
 }
+
+void HUD::spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel, int channel) { m_effects.push_back(entity::Effect(svc, tag.data(), pos, vel, channel)); }
 
 } // namespace fornani::gui

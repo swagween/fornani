@@ -48,6 +48,7 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
             "suite": [
               [
                 {
@@ -63,6 +64,7 @@
       {
         "activate_on_contact": false,
         "already_open": true,
+        "channel": 0,
         "destination_id": 106,
         "dimensions": [
           1,
@@ -75,6 +77,23 @@
           11
         ],
         "source_id": 109
+      },
+      {
+        "activate_on_contact": false,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 139,
+        "dimensions": [
+          2,
+          2
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          5,
+          1
+        ],
+        "source_id": 109
       }
     ]
   },
@@ -82,11 +101,6 @@
     "ambience": "firstwind",
     "background": "night",
     "biome": "firstwind",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -106,6 +120,7 @@
       16,
       16
     ],
+    "interior": true,
     "metagrid": [
       11,
       2
@@ -117,19 +132,32 @@
       0
     ],
     "properties": {
-      "day_night_shift": true,
+      "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": true,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 109,
     "shader": {
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": true,
       "reverse_obscuring": false
@@ -167,6 +195,8 @@
         0,
         0,
         0,
+        177,
+        177,
         0,
         0,
         0,
@@ -181,6 +211,8 @@
         0,
         0,
         0,
+        177,
+        177,
         0,
         0,
         0,
@@ -195,12 +227,8 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        177,
+        177,
         0,
         0,
         0,
@@ -425,6 +453,8 @@
         0,
         0,
         0,
+        198,
+        198,
         0,
         0,
         0,
@@ -439,10 +469,8 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
+        197,
+        197,
         0,
         0,
         0,
@@ -683,6 +711,8 @@
         0,
         0,
         0,
+        181,
+        182,
         0,
         0,
         0,
@@ -697,10 +727,8 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
+        181,
+        182,
         0,
         0,
         0,
@@ -1199,6 +1227,8 @@
         1,
         1,
         1,
+        0,
+        0,
         1,
         1,
         1,
@@ -1213,6 +1243,8 @@
         1,
         1,
         1,
+        0,
+        0,
         1,
         1,
         1,
@@ -1227,12 +1259,8 @@
         1,
         1,
         1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
+        0,
+        0,
         1,
         1,
         1,

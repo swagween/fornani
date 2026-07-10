@@ -1,14 +1,12 @@
 
-#include "fornani/entities/player/Wardrobe.hpp"
-#include <fornani/gui/console/Console.hpp>
-#include "fornani/graphics/TextureUpdater.hpp"
-#include "fornani/service/ServiceProvider.hpp"
+#include <fornani/entities/player/Wardrobe.hpp>
+#include <fornani/graphics/TextureUpdater.hpp>
 
 namespace fornani::player {
 
 Wardrobe::Wardrobe() {
 	m_outfit.insert({ApparelType::hairstyle, std::make_unique<Hairstyle>()});
-	m_outfit.insert({ApparelType::headgear, std::make_unique<Headgear>()});
+	m_outfit.insert({ApparelType::accessory, std::make_unique<Headgear>()});
 	m_outfit.insert({ApparelType::shirt, std::make_unique<Shirt>()});
 	m_outfit.insert({ApparelType::pants, std::make_unique<Pants>()});
 }
@@ -28,11 +26,13 @@ void Wardrobe::update(graphics::TextureUpdater& updater) {
 	case 2: change_outfit({{{2, 0}, sf::Color{229, 234, 160}}, {{3, 0}, sf::Color{196, 213, 119}}}); break;
 	case 3: change_outfit({{{2, 0}, sf::Color{33, 34, 30}}, {{3, 0}, sf::Color{20, 19, 16}}}); break;
 	case 4: change_outfit({{{2, 0}, sf::Color{33, 34, 30}}, {{3, 0}, sf::Color{20, 19, 16}}}); break;
+	case 5: change_outfit({{{2, 0}, sf::Color{33, 34, 30}}, {{3, 0}, sf::Color{20, 19, 16}}}); break;
+	case 6: change_outfit({{{2, 0}, sf::Color{160, 22, 85}}, {{3, 0}, sf::Color{115, 19, 109}}}); break;
 	default: break;
 	}
 	switch (get_variant(ApparelType::hairstyle)) {
 	case 0: change_outfit({{{0, 1}, sf::Color{255, 255, 255}}, {{2, 1}, sf::Color{156, 142, 212}}}); break;
-	case 2: change_outfit({{{0, 1}, sf::Color{131, 52, 227}}, {{2, 1}, sf::Color{118, 114, 249}}}); break;
+	case 3: change_outfit({{{0, 1}, sf::Color{131, 52, 227}}, {{2, 1}, sf::Color{118, 114, 249}}}); break;
 	default: break;
 	}
 	switch (get_variant(ApparelType::shirt)) {
@@ -40,6 +40,8 @@ void Wardrobe::update(graphics::TextureUpdater& updater) {
 	case 2: change_outfit({{{3, 2}, sf::Color{132, 113, 250}}}); break;
 	case 3: change_outfit({{{3, 2}, sf::Color{194, 217, 211}}}); break;
 	case 4: change_outfit({{{3, 2}, sf::Color{33, 34, 30}}, {{3, 0}, sf::Color{20, 19, 16}}}); break;
+	case 5: change_outfit({{{3, 2}, sf::Color{33, 34, 30}}, {{3, 0}, sf::Color{20, 19, 16}}}); break;
+	case 6: change_outfit({{{3, 2}, sf::Color{12, 12, 20}}, {{3, 1}, sf::Color{234, 227, 255}}, {{0, 2}, sf::Color{234, 227, 255}}, {{1, 2}, sf::Color{234, 227, 255}}}); break;
 	default: break;
 	}
 	updater.switch_to_palette(m_palette);
@@ -64,7 +66,7 @@ int Wardrobe::get_variant(ApparelType type) const {
 }
 
 std::array<int, static_cast<int>(ApparelType::END)> Wardrobe::get() {
-	return std::array<int, static_cast<int>(ApparelType::END)>{m_outfit.at(ApparelType::hairstyle)->get_variant(), m_outfit.at(ApparelType::headgear)->get_variant(), m_outfit.at(ApparelType::shirt)->get_variant(),
+	return std::array<int, static_cast<int>(ApparelType::END)>{m_outfit.at(ApparelType::hairstyle)->get_variant(), m_outfit.at(ApparelType::accessory)->get_variant(), m_outfit.at(ApparelType::shirt)->get_variant(),
 															   m_outfit.at(ApparelType::pants)->get_variant()};
 }
 

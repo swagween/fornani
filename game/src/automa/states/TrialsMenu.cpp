@@ -4,7 +4,7 @@
 
 namespace fornani::automa {
 
-TrialsMenu::TrialsMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "trials"), m_loading{8}, m_stars{svc, "tt_stars", {12, 12}} {
+TrialsMenu::TrialsMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "trials"), m_loading{8}, m_stars{svc, "tt_stars", {12, 12}} {
 	for (auto const& map : svc.data.map_table["rooms"].as_array()) {
 		if (map["folder"].as_string() == "trials") {
 			auto label = map["label"].as_string();
@@ -17,10 +17,10 @@ TrialsMenu::TrialsMenu(ServiceProvider& svc, player::Player& player) : MenuState
 
 	// maually set options based on contents of trials folder
 	options.clear();
-	for (auto const& course : m_courses) { options.push_back(Option(svc, p_theme, course.label)); }
+	for (auto const& course : m_courses) { options.push_back(Option(svc, p_app_context->settings.get_theme(), course.label)); }
 	auto ctr = 0;
 	for (auto& option : options) {
-		option.position = {64.f, top_buffer + ctr * spacing};
+		option.position = {264.f, top_buffer + ctr * spacing};
 		option.index = ctr;
 		option.update(current_selection.get());
 		++ctr;
@@ -30,21 +30,19 @@ TrialsMenu::TrialsMenu(ServiceProvider& svc, player::Player& player) : MenuState
 	m_parent_menu = MenuType::play;
 	m_loading.start();
 	switch_selections(svc);
+	p_option_justification = TextJustification::left;
 }
 
 void TrialsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-	MenuState::tick_update(svc, engine);
 	m_loading.update();
-	for (auto& option : options) {
-		option.update(current_selection.get());
-		option.label.setOrigin({});
-	}
-	if (svc.input_system.menu_move(input::MoveDirection::up)) { switch_selections(svc); }
-	if (svc.input_system.menu_move(input::MoveDirection::down)) { switch_selections(svc); }
-	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
+	MenuState::tick_update(svc, engine);
+	auto changed = svc.input_system.menu_move(input::MoveDirection::up) || svc.input_system.menu_move(input::MoveDirection::down) || current_selection.get() != m_previous_selection;
+	if (changed) { switch_selections(svc); }
+	if (was_selected(svc.input_system)) {
 		svc.state_controller.next_state = m_courses.at(current_selection.get()).id;
 		svc.state_controller.actions.set(Actions::trials);
 	}
+	m_previous_selection = current_selection.get();
 }
 
 void TrialsMenu::frame_update(ServiceProvider& svc) {}
@@ -81,7 +79,7 @@ void TrialsMenu::switch_selections(ServiceProvider& svc) {
 		std::sort(list->begin(), list->end(), [](TrialAttempt const& a, TrialAttempt const& b) { return a.time < b.time; });
 		auto ctr = 0;
 		for (auto& time : *list) {
-			auto next = TrialListing{{svc.text.fonts.basic}, {svc.text.fonts.title}};
+			auto next = TrialListing{{svc.text.fonts.basic.font}, {svc.text.fonts.title.font}};
 			next.tag.setString(time.player_tag);
 			next.tag.setCharacterSize(16);
 			switch (ctr) {

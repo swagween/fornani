@@ -4,14 +4,25 @@
 
 namespace fornani::audio {
 
+static std::optional<SoundBus> string_to_bus(std::string_view str) {
+	switch (str.size()) {
+	case 3:
+		if (str == "gui") { return SoundBus::gui; }
+	case 8:
+		if (str == "gameplay") { return SoundBus::gameplay; }
+	}
+	return std::nullopt;
+}
+
 SoundProperties SoundProperties::from_json(dj::Json const& in) {
 	SoundProperties p{};
+	if (auto bus = string_to_bus(in["bus"].as_string())) { p.bus = *bus; }
 	p.volume = in["volume"].as<float>();
 	p.max_distance = in["max_distance"] ? in["max_distance"].as<float>() : default_max_distance_v;
 	p.min_distance = in["min_distance"] ? in["min_distance"].as<float>() : default_min_distance_v;
 	p.pitch_offset = in["pitch_offset"].as<float>();
-	p.fade_in = in["fade_in"].as<int>();
-	p.fade_out = in["fade_out"].as<int>();
+	if (in["fade_in"]) { p.fade_in = in["fade_in"].as<int>(); }
+	if (in["fade_out"]) { p.fade_out = in["fade_out"].as<int>(); }
 	return p;
 }
 
@@ -28,6 +39,7 @@ Sound::Sound(capo::IEngine& engine, capo::Buffer const& buffer, std::string_view
 void Sound::update(automa::ServiceProvider& svc, sf::Vector2f position) {
 	auto& sound = m_sound;
 	auto attenuation = compute_attenuation(position.length(), m_properties.min_distance, m_properties.max_distance);
+	if (get_bus() == SoundBus::gui) { attenuation = 1.f; }
 	m_actual_volume = m_properties.volume * attenuation;
 	sound->set_gain(m_actual_volume);
 	if (m_fade_in) {

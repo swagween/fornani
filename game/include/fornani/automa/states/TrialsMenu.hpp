@@ -19,17 +19,20 @@ struct TrialListing {
 
 class TrialsMenu final : public MenuState {
   public:
-	TrialsMenu(ServiceProvider& svc, player::Player& player);
+	TrialsMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx);
 	void tick_update(ServiceProvider& svc, capo::IEngine& engine) override;
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
 
   private:
 	void switch_selections(ServiceProvider& svc);
+
+  private:
 	std::vector<TrialListing> m_listings;
 	std::vector<CourseListing> m_courses;
 	util::Cooldown m_loading;
 	Animatable m_stars;
+	int m_previous_selection{};
 };
 
 } // namespace fornani::automa

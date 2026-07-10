@@ -1,4 +1,5 @@
 nani_add_headers(
+        Antibody.hpp
         Archer.hpp
         Beamsprout.hpp
         Beamstalk.hpp
@@ -9,15 +10,25 @@ nani_add_headers(
         Eyebit.hpp
         Eyebot.hpp
         Frdog.hpp
+        Golem.hpp
+        Grappler.hpp
+        Hellion.hpp
+        Hurtle.hpp
         Imp.hpp
         Junker.hpp
         Junkfly.hpp
+        Lymphocyte.hpp
+        Macrophage.hpp
         Mastiff.hpp
         Meatsquash.hpp
         Minion.hpp
+        Mizzle.hpp
+        MizzleEgg.hpp
         Tank.hpp
+        Thief.hpp
         Thug.hpp
         Hulmet.hpp
+        Sentinel.hpp
         Spitefly.hpp
         Summoner.hpp
 )

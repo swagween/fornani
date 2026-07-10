@@ -67,6 +67,7 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
             "suite": [
               [
                 {
@@ -82,13 +83,13 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 228,
         "dimensions": [
           1,
           2
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,
@@ -99,13 +100,13 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 225,
         "dimensions": [
           2,
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           7,
@@ -116,13 +117,13 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 400,
         "dimensions": [
           1,
           5
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           31,
@@ -133,17 +134,34 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 215,
         "dimensions": [
           1,
           3
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           0,
           38
+        ],
+        "source_id": 219
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 252,
+        "dimensions": [
+          1,
+          3
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          31,
+          74
         ],
         "source_id": 219
       }
@@ -165,6 +183,7 @@
     ]
   },
   "meta": {
+    "ambience": "",
     "background": "woods",
     "biome": "overturned",
     "camera_effects": {
@@ -186,22 +205,43 @@
       32,
       96
     ],
+    "interior": false,
     "metagrid": [
       50,
       16
     ],
     "minimap": true,
+    "music": "whispering_island",
     "player_start": [
       0,
       0
     ],
+    "properties": {
+      "day_night_shift": true,
+      "environmental_randomness": false,
+      "interior": false,
+      "lighting": false,
+      "timer": false,
+      "toxic": false
+    },
     "room_id": 219,
     "shader": {
       "darken_factor": 0
     },
-    "use_template": true
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false
@@ -14911,9 +14951,9 @@
         0,
         0,
         0,
-        96,
-        96,
-        96,
+        0,
+        0,
+        0,
         96,
         96,
         96,
@@ -14943,9 +14983,9 @@
         0,
         0,
         0,
-        96,
-        96,
-        96,
+        0,
+        0,
+        0,
         96,
         96,
         96,
@@ -14975,9 +15015,9 @@
         0,
         0,
         0,
-        96,
-        96,
-        96,
+        0,
+        0,
+        0,
         96,
         96,
         96,

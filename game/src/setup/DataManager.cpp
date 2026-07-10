@@ -1,6 +1,10 @@
 
 #include "fornani/setup/DataManager.hpp"
+#include <fornani/core/Common.hpp>
 #include <fornani/graphics/MenuTheme.hpp>
+#include <fornani/io/Codec.hpp>
+#include <fornani/io/FileSerializer.hpp>
+#include <fstream>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/systems/InputSystem.hpp"
@@ -8,14 +12,38 @@
 namespace fornani::data {
 
 DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc), minimap{svc} {
-	load_settings();
 	load_data();
+	// load themes
+	auto themes_result = dj::Json::from_file((svc.finder.resource_path() + "/data/gui/menu_themes.json").c_str());
+	if (!themes_result) {
+		NANI_LOG_ERROR(m_logger, "Failed to load themes!");
+		return;
+	}
+	menu_themes = std::move(*themes_result);
+	assert(!menu_themes.is_null());
 }
 
 void DataManager::load_data() {
 	m_services->stopwatch.start();
 	NANI_LOG_INFO(m_logger, "Data loading started.");
 	auto const& finder = m_services->finder;
+
+	// save files
+	for (auto [i, file] : std::views::enumerate(files)) {
+		file.id = i;
+		file.label = "file_" + std::to_string(i);
+		auto filename = finder.paths.save / fs::path{"file_" + std::to_string(i) + ".sav"};
+		auto template_file = finder.resource_path() / fs::path{"data/save/new_game.json"};
+		finder.ensure_save_exists(filename, template_file);
+	}
+
+	auto time_trials_file = (finder.paths.save / fs::path{"time_trials.sav"});
+	auto time_trials_template = finder.resource_path() / fs::path{"data/config/time_trials.json"};
+	finder.ensure_save_exists(time_trials_file, time_trials_template);
+	load_time_trials_binary(time_trials_file);
+
+	blank_file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/new_game.json").c_str());
+	trial_file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/trial_save.json").c_str());
 
 	// load audio library
 	auto audio_path = std::filesystem::path{finder.resource_path()} / "audio";
@@ -95,9 +123,10 @@ void DataManager::load_data() {
 			for (auto& layer : in_tile["layers"].as_array()) {
 				auto parallax = in_tile["parallax"][ctr].as<float>();
 				auto ignore_lighting = in_tile["ignore_lighting"][ctr].as_bool();
+				auto animated = in_tile["animated"][ctr].as_bool();
 				if (parallax == 0.f) { parallax = 1.f; }
 				auto partition = sf::Vector2i{in_tile["middleground"].as<int>(), static_cast<int>(in_tile["layers"].as_array().size())};
-				map_layers.back().push_back(std::make_unique<world::Layer>(ctr, partition, dimensions, in_tile["layers"][ctr], constants::f_cell_size, ho, hro, parallax, ignore_lighting));
+				map_layers.back().push_back(std::make_unique<world::Layer>(ctr, partition, dimensions, in_tile["layers"][ctr], constants::f_cell_size, ho, hro, parallax, ignore_lighting, animated));
 				++ctr;
 			}
 			if (room_data["meta"]["minimap"].as_bool()) { minimap.bake(*m_services, room_data); }
@@ -125,24 +154,6 @@ void DataManager::load_data() {
 
 	for (auto& id : discovered_rooms) {}
 
-	auto ctr{0};
-	for (auto& file : files) {
-		file.id = ctr;
-		file.label = "file_" + std::to_string(ctr);
-		file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/file_" + std::to_string(ctr) + ".json").c_str());
-		if (file.save_data["status"]["new"].as_bool()) { file.flags.set(fornani::io::FileFlags::new_file); }
-		if (file.save_data["status"]["inspect_hint"].as_bool()) { file.flags.set(fornani::io::FileFlags::inspect_hint); }
-		++ctr;
-	}
-	blank_file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/new_game.json").c_str());
-	trial_file.save_data = *dj::Json::from_file((finder.resource_path() + "/data/save/trial_save.json").c_str());
-
-	time_trial_data = *dj::Json::from_file((finder.resource_path() + "/data/save/time_trials.json").c_str());
-	assert(!time_trial_data.is_null());
-	for (auto const& course : time_trial_data["trials"].as_array()) {
-		for (auto const& time : course["times"].as_array()) { time_trial_registry.insert_time(*m_services, course["course_id"].as<int>(), time["player_tag"].as_string().data(), time["time"].as<float>()); }
-	}
-
 	weapon = *dj::Json::from_file((finder.resource_path() + "/data/weapon/weapon_data.json").c_str());
 	assert(!weapon.is_null());
 	enemy_weapon = *dj::Json::from_file((finder.resource_path() + "/data/weapon/enemy_weapons.json").c_str());
@@ -161,7 +172,10 @@ void DataManager::load_data() {
 	assert(!npc.is_null());
 	item = *dj::Json::from_file((finder.resource_path() + "/data/item/item.json").c_str());
 	assert(!item.is_null());
-	NANI_LOG_DEBUG(m_logger, "Item json size: {}", item.as_array().size());
+	props = *dj::Json::from_file((finder.resource_path() + "/data/level/props.json").c_str());
+	assert(!props.is_null());
+	portal = *dj::Json::from_file((finder.resource_path() + "/data/level/portals.json").c_str());
+	assert(!portal.is_null());
 
 	platform = *dj::Json::from_file((finder.resource_path() + "/data/level/platform.json").c_str());
 	assert(!platform.is_null());
@@ -170,6 +184,8 @@ void DataManager::load_data() {
 	biomes = *dj::Json::from_file((finder.resource_path() + "/data/level/biomes.json").c_str());
 	assert(!biomes.is_null());
 	for (auto const& b : biomes["biomes"].as_array()) { m_biomes.push_back(b.as_string()); }
+	hazards = *dj::Json::from_file((finder.resource_path() + "/data/level/tables/hazards.json").c_str());
+	assert(!hazards.is_null());
 
 	action_names = *dj::Json::from_file((finder.resource_path() + "/data/gui/action_names.json").c_str());
 	assert(!action_names.is_null());
@@ -192,9 +208,8 @@ void DataManager::load_data() {
 	// load marketplace
 	for (auto const& entry : npc.as_object()) {
 		if (!entry.second["vendor"].is_object()) { continue; }
-		marketplace.insert({entry.second["id"].as<int>(), npc::Vendor()});
+		marketplace.insert({entry.second["id"].as<int>(), npc::Vendor(entry.second["vendor"]["stock_size"].as<std::size_t>(), entry.second["vendor"]["upcharge"].as<float>())});
 		auto& vendor = marketplace.at(entry.second["id"].as<int>());
-		vendor.set_upcharge(entry.second["vendor"]["upcharge"].as<float>());
 		for (auto& item : entry.second["vendor"]["common_items"].as_array()) { vendor.common_items.push_back(item.as_string().data()); }
 		for (auto& item : entry.second["vendor"]["uncommon_items"].as_array()) { vendor.uncommon_items.push_back(item.as_string().data()); }
 		for (auto& item : entry.second["vendor"]["rare_items"].as_array()) { vendor.rare_items.push_back(item.as_string().data()); }
@@ -202,30 +217,27 @@ void DataManager::load_data() {
 		NANI_LOG_INFO(m_logger, "Created Vendor in marketplace with ID {}", entry.second["id"].as<int>());
 	}
 
-	gui_text = *dj::Json::from_file((finder.resource_path() + "/text/console/gui.json").c_str());
-	assert(!gui_text.is_null());
-	menu_themes = *dj::Json::from_file((finder.resource_path() + "/data/gui/menu_themes.json").c_str());
-	assert(!menu_themes.is_null());
-
-	auto themestr = settings["theme"] ? settings["theme"].as_string() : "classic";
-	theme = MenuTheme{menu_themes[themestr]};
-	NANI_LOG_INFO(m_logger, "Loaded theme {}", themestr);
-
 	m_services->stopwatch.stop();
-	m_services->stopwatch.print_time("data loaded");
+	// m_services->stopwatch.print_time("data loaded");
 	m_services->stopwatch.start();
 }
 
 void DataManager::save_quests() {
 	auto& save = files.at(current_save).save_data;
-	files.at(current_save).write();
 	m_services->quest_table.serialize(save);
+	save_current();
+}
+
+void DataManager::save_seed() {
+	auto& save = files.at(current_save).save_data;
+	save["vendor_seed"] = random::get_vendor_seed();
+	save_current();
+	NANI_LOG_INFO(m_logger, "Saved vendor seed: {}", random::get_vendor_seed());
 }
 
 void DataManager::save_progress(player::Player& player, int save_point_id) {
 	auto& save = files.at(current_save).save_data;
 	files.at(current_save).write();
-	save["status"]["inspect_hint"] = get_file().flags.test(io::FileFlags::inspect_hint);
 
 	// set file data based on player state
 	save["save_point_id"] = save_point_id;
@@ -238,14 +250,14 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 		// for (auto& item : vendor.second.inventory.key_items_view()) { out_vendor.push_back(item.get_id()); }
 		save["marketplace"].push_back(out_vendor);
 	}
+	save["vendor_seed"] = random::get_vendor_seed();
+	NANI_LOG_INFO(m_logger, "Saved vendor seed: {}", random::get_vendor_seed());
 
 	m_services->quest_table.serialize(save);
 
 	// write opened chests and doors
-	save["map_data"]["world_time"]["hours"] = m_services->world_clock.get_hours();
-	save["map_data"]["world_time"]["minutes"] = m_services->world_clock.get_minutes();
+	m_services->world_clock.serialize(save["map_data"]["world_time"]);
 	save["piggybacker"] = player.get_piggybacker_id();
-	save["npc_locations"] = dj::Json::empty_array();
 	save["map_data"]["fallen_enemies"] = dj::Json::empty_array();
 	save["discovered_rooms"] = dj::Json::empty_array();
 	save["unlocked_doors"] = dj::Json::empty_array();
@@ -253,17 +265,10 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["activated_switches"] = dj::Json::empty_array();
 	save["destroyed_blocks"] = dj::Json::empty_array();
 	save["destroyed_inspectables"] = dj::Json::empty_array();
-	save["quest_progressions"] = dj::Json::empty_array();
-	for (auto& location : npc_locations) {
-		auto entry = dj::Json::empty_array();
-		entry.push_back(location.first);
-		entry.push_back(location.second);
-		save["npc_locations"].push_back(entry);
-	}
 	for (auto& enemy : fallen_enemies) {
 		auto entry = dj::Json::empty_array();
 		entry.push_back(enemy.code.first);
-		entry.push_back(enemy.code.second);
+		entry.push_back(enemy.code.second.get());
 		entry.push_back(enemy.respawn_distance);
 		entry.push_back(static_cast<int>(enemy.permanent));
 		entry.push_back(static_cast<int>(enemy.semipermanent));
@@ -280,23 +285,12 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 		save["destroyed_blocks"].push_back(state);
 	}
 	for (auto& i : destroyed_inspectables) { save["destroyed_inspectables"].push_back(i); }
-	for (auto& q : quest_progressions) {
-		auto out_quest = dj::Json::empty_array();
-		out_quest.push_back(q.type);
-		out_quest.push_back(q.id);
-		out_quest.push_back(q.source_id);
-		out_quest.push_back(q.amount);
-		out_quest.push_back(q.hard_set);
-		save["quest_progressions"].push_back(out_quest);
-	}
 
-	// save arsenal
 	player.serialize(save["player_data"]);
 
 	// stat tracker
 	auto& out_stat = save["player_data"]["stats"];
 	auto const& s = m_services->stats;
-	out_stat["death_count"] = s.player.death_count.get_count();
 	out_stat["bullets_fired"] = s.player.bullets_fired.get_count();
 	out_stat["guns_collected"] = s.player.guns_collected.get_count();
 	out_stat["items_collected"] = s.player.items_collected.get_count();
@@ -308,133 +302,68 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	out_stat["seconds_played"] = m_services->ticker.in_game_seconds_passed.count();
 	out_stat["time_trials"]["bryns_gun"] = s.time_trials.bryns_gun;
 
-	if (!save.dj::Json::to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save file!"); }
+	save_current();
 }
 
-void DataManager::save_settings() {
-	settings["auto_sprint"] = m_services->input_system.is_autosprint_enabled();
-	settings["tutorial"] = m_services->tutorial();
-	settings["gamepad"] = m_services->input_system.is_gamepad_input_enabled();
-	settings["music_volume"] = m_services->music_player.get_volume();
-	settings["sfx_volume"] = m_services->soundboard.get_volume();
-	settings["fullscreen"] = m_services->fullscreen();
-	if (!settings.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str())) {
-		NANI_LOG_ERROR(m_logger, "Failed to save user settings!");
-	} else {
-
-		NANI_LOG_INFO(m_logger, "Saved settings.");
+void DataManager::save_current() {
+	auto& save = files.at(current_save).save_data;
+	auto path = m_services->finder.paths.save / ("file_" + std::to_string(current_save) + ".sav");
+	std::ofstream out(path, std::ios::binary);
+	if (!out) {
+		NANI_LOG_ERROR(m_logger, "Failed to open save file!");
+		return;
 	}
+	auto json = save.serialize();
+	if (!codec::encode(json, out)) { NANI_LOG_ERROR(m_logger, "Failed while writing save file!"); }
 }
 
-void DataManager::set_theme(MenuTheme to) {
-	settings["theme"] = to.label;
-	theme = to;
-	save_settings();
+void DataManager::serialize_death() {
+	auto& save = files.at(current_save).save_data;
+	auto current_deaths = save["player_data"]["stats"]["death_count"].as<int>();
+	save["player_data"]["stats"]["death_count"] = current_deaths + 1;
+	save_current();
 }
 
-int DataManager::reload_progress(player::Player& player) { return load_progress(player, current_save, false, false); }
+void DataManager::load_localized_data(AppContext& ctx) {
+	auto gui_text_result = dj::Json::from_file((m_services->finder.resource_path() + ctx.localization.get_folder_string() + "/gui.json").c_str());
+	if (!gui_text_result) {
+		NANI_LOG_ERROR(m_logger, "Failed to load gui text!");
+		return;
+	}
+	gui_text = std::move(*gui_text_result);
+	assert(!gui_text.is_null());
+}
 
-int DataManager::load_progress(player::Player& player, int const file, bool state_switch, bool from_menu) {
+int DataManager::reload_progress(player::Player& player) { return load_progress(player, current_save, true); }
 
+int DataManager::load_progress(player::Player& player, int const file, bool state_switch) {
 	current_save = file;
-	auto const& save = files.at(file).save_data;
-	assert(!save.is_null());
+	auto base = "file_" + std::to_string(current_save);
+	auto sav_path = m_services->finder.paths.save / (base + ".sav");
+	auto json_path = m_services->finder.paths.save / (base + ".json");
 
-	// marketplace
-	for (auto& vendor : marketplace) {}
-
-	m_services->quest = {};
-	discovered_rooms.clear();
-	unlocked_doors.clear();
-	opened_chests.clear();
-	destructible_states.clear();
-	activated_switches.clear();
-	destroyed_inspectables.clear();
-	quest_progressions.clear();
-	npc_locations.clear();
-	fallen_enemies.clear();
-
-	m_services->quest_table.unserialize(save);
-
-	m_services->world_clock.set_time(save["map_data"]["world_time"]["hours"].as<int>(), save["map_data"]["world_time"]["minutes"].as<int>());
-	for (auto& room : save["discovered_rooms"].as_array()) { discovered_rooms.add(room.as<int>()); }
-	for (auto& door : save["unlocked_doors"].as_array()) { unlocked_doors.add(door.as_string()); }
-	for (auto& chest : save["opened_chests"].as_array()) { opened_chests.push_back(chest.as<int>()); }
-	for (auto& s : save["activated_switches"].as_array()) { activated_switches.push_back(s.as<int>()); }
-	for (auto& block : save["destroyed_blocks"].as_array()) { destructible_states.push_back(std::make_pair(block[0].as<int>(), block[1].as<int>())); }
-	for (auto& inspectable : save["destroyed_inspectables"].as_array()) { destroyed_inspectables.add(inspectable.as<int>()); }
-	for (auto& q : save["quest_progressions"].as_array()) {
-		auto type = q[0].as<int>();
-		auto id = q[1].as<int>();
-		auto srcid = q[2].as<int>();
-		auto amt = q[3].as<int>();
-		auto hard = q[4].as<int>();
-		quest_progressions.push_back(util::QuestKey{type, id, srcid, amt, hard});
-		m_services->quest.process(*m_services, quest_progressions.back());
+	if (fs::exists(sav_path)) {
+		NANI_LOG_INFO(m_logger, "Loading save from binary: {}", sav_path.string());
+		if (!load_save_binary(sav_path, player)) {
+			NANI_LOG_ERROR(m_logger, "Failed save from binary!!");
+			return 0;
+		}
+		if (!load_save_json(json_path, player, state_switch)) {
+			NANI_LOG_ERROR(m_logger, "Failed save from json!!");
+			return 0;
+		}
+	} else if (fs::exists(json_path)) {
+		NANI_LOG_INFO(m_logger, "Loading save from json: {}", json_path.string());
+		if (!load_save_json(json_path, player)) { return 0; }
 	}
-	for (auto& location : save["npc_locations"].as_array()) { npc_locations.insert({location[0].as<int>(), location[1].as<int>()}); }
-	for (auto& enemy : save["map_data"]["fallen_enemies"].as_array()) {
-		fallen_enemies.push_back({std::make_pair(enemy[0].as<int>(), enemy[1].as<int>()), enemy[2].as<int>(), static_cast<bool>(enemy[3].as<int>()), static_cast<bool>(enemy[4].as<int>())});
-	};
-	player.piggybacker = {};
-	if (save["piggybacker"].as<int>() != 0) { player.piggyback(save["piggybacker"].as<int>()); }
-
-	int save_pt_id = save["save_point_id"].as<int>();
-	int room_id = save_pt_id;
-	m_services->state_controller.save_point_id = save_pt_id;
-
-	// set player data based on save file
-	// in the future, all player data will be unserialized from this function
-	player.unserialize(save["player_data"]);
-
-	// stat tracker
-	auto& s = m_services->stats;
-	auto deaths = s.player.death_count.get_count();
-	s = {};
-	if (!from_menu) { s.player.death_count.set(deaths); }
-	auto const& in_stat = save["player_data"]["stats"];
-	if (from_menu) { s.player.death_count.set(in_stat["death_count"].as<int>()); }
-	s.player.bullets_fired.set(in_stat["bullets_fired"].as<int>());
-	s.player.guns_collected.set(in_stat["guns_collected"].as<int>());
-	s.player.items_collected.set(in_stat["items_collected"].as<int>());
-	s.treasure.total_orbs_collected.set(in_stat["orbs_collected"].as<int>());
-	s.treasure.blue_orbs.set(in_stat["blue_orbs"].as<int>());
-	s.treasure.highest_indicator_amount.set(in_stat["highest_indicator_amount"].as<int>());
-	s.enemy.enemies_killed.set(in_stat["enemies_killed"].as<int>());
-	s.world.rooms_discovered.set(in_stat["rooms_discovered"].as<int>());
-	s.time_trials.bryns_gun = in_stat["time_trials"]["bryns_gun"].as<float>();
-	m_services->ticker.set_time(m_services->stats.float_to_seconds(in_stat["seconds_played"].as<float>()));
-	if (files.at(file).is_new()) { s.player.death_count.set(0); }
-
-	return room_id;
-}
-
-void DataManager::load_settings() {
-	settings = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/settings.json").c_str());
-	assert(!settings.is_null());
-	m_services->input_system.set_setting(input::InputSystemSettings::auto_sprint, settings["auto_sprint"].as_bool());
-	m_services->set_tutorial(settings["tutorial"].as_bool());
-	m_services->input_system.set_setting(input::InputSystemSettings::gamepad_input_enabled, settings["gamepad"].as_bool());
-	m_services->music_player.set_volume(settings["music_volume"].as<float>());
-	m_services->ambience_player.set_volume(settings["ambience_volume"].as<float>());
-	m_services->soundboard.set_volume(settings["sfx_volume"].as<float>());
-	m_services->set_fullscreen(settings["fullscreen"].as_bool());
-	NANI_LOG_INFO(m_logger, "Enabled user settings.");
+	return files.at(current_save).save_data["save_point_id"].as<int>();
 }
 
 void DataManager::delete_file(int index) {
 	if (index >= files.size()) { return; }
-	files.at(index).save_data = blank_file.save_data;
-	files.at(index).flags.set(fornani::io::FileFlags::new_file);
-	if (!files.at(index).save_data.to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to clear save data!"); }
-}
-
-void DataManager::write_death_count(player::Player& player) {
-	auto& save = files.at(current_save).save_data;
-	auto& out_stat = save["player_data"]["stats"];
-	auto const& s = m_services->stats;
-	out_stat["death_count"] = s.player.death_count.get_count();
-	if (!save.to_file((m_services->finder.resource_path() + "/data/save/file_" + std::to_string(current_save) + ".json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to write death count to save!"); }
+	auto filename = m_services->finder.paths.save / fs::path{"file_" + std::to_string(index) + ".sav"};
+	auto template_file = m_services->finder.resource_path() / fs::path{"data/save/new_game.json"};
+	m_services->finder.overwrite_save(filename, template_file);
 }
 
 std::string_view DataManager::load_blank_save(player::Player& player, bool state_switch) const {
@@ -454,22 +383,12 @@ std::string_view DataManager::load_blank_save(player::Player& player, bool state
 }
 
 void DataManager::load_trial_save(player::Player& player) const {
-
 	auto const& save = trial_file.save_data;
 	assert(!save.is_null());
-
-	// set player data based on save file
-	player.health.set_capacity(save["player_data"]["max_hp"].as<float>());
-	player.health.set_quantity(save["player_data"]["hp"].as<float>());
-	for (auto& item : save["player_data"]["items"].as_array()) { player.give_item(item["label"].as_string(), item["quantity"].as<int>()); }
-
-	// load player's arsenal
-	player.arsenal = {};
+	player.unserialize(save["player_data"]);
 }
 
 void DataManager::load_player_params(player::Player& player) {
-
-	// std::cout << "loading player params ...";
 	player_params = *dj::Json::from_file((m_services->finder.resource_path() + "/data/player/physics_params.json").c_str());
 	assert(!player_params.is_null());
 
@@ -523,14 +442,20 @@ void DataManager::save_player_params(player::Player& player) {
 	if (!player_params.dj::Json::to_file((finder.resource_path() + "/data/player/physics_params.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save physics params!"); }
 }
 
-void DataManager::open_chest(int id) { opened_chests.push_back(id); }
+void DataManager::open_chest(std::uint64_t id) { opened_chests.add(id); }
 
 void DataManager::reveal_room(int id) { discovered_rooms.add(id); }
 
 void DataManager::unlock_door(std::string_view tag) { unlocked_doors.add(tag.data()); }
 
 void DataManager::activate_switch(int id) {
-	if (!switch_is_activated(id)) { activated_switches.push_back(id); }
+	if (!activated_switches.contains(id)) {
+		activated_switches.add(id);
+		auto& save = files.at(current_save).save_data;
+		save["activated_switches"] = dj::Json::empty_array();
+		for (auto& s : activated_switches) { save["activated_switches"].push_back(s); }
+		save_current();
+	}
 }
 
 void DataManager::switch_destructible_state(int id, bool inverse) {
@@ -545,7 +470,7 @@ void DataManager::switch_destructible_state(int id, bool inverse) {
 	destructible_states.push_back({id, state});
 }
 
-void DataManager::destroy_inspectable(int id) { destroyed_inspectables.add(id); }
+void DataManager::destroy_inspectable(StableID::underlying_type id) { destroyed_inspectables.add(id); }
 
 void DataManager::push_quest(util::QuestKey key) {
 	for (auto& entry : quest_progressions) {
@@ -560,19 +485,20 @@ void DataManager::set_npc_location(int npc_id, int room_id) {
 	npc_locations.at(npc_id) = room_id;
 }
 
-void DataManager::kill_enemy(int room_id, int id, int distance, bool permanent, bool semipermanent) {
+void DataManager::kill_enemy(int room_id, StableID id, int distance, bool permanent, bool semipermanent) {
 	for (auto& e : fallen_enemies) {
 		if (e.code.first == room_id && e.code.second == id) { return; }
 	}
 	fallen_enemies.push_back({{room_id, id}, distance, permanent, semipermanent});
 }
 
-void DataManager::respawn_enemy(int room_id, int id) {
+void DataManager::respawn_enemy(int room_id, StableID id) {
 	std::erase_if(fallen_enemies, [room_id, id](auto const& i) { return i.code.first == room_id && i.code.second == id && !i.permanent; });
 }
 
 void DataManager::respawn_enemies(int room_id, int distance) {
 	std::erase_if(fallen_enemies, [room_id, distance](auto const& i) { return i.code.first == room_id && i.respawn_distance < distance && !i.permanent; });
+	NANI_LOG_DEBUG(m_logger, "Tried to respawn enemies for room: {} from distance {}", room_id, distance);
 }
 
 void DataManager::respawn_all() {
@@ -588,12 +514,7 @@ bool data::DataManager::is_duplicate_room(int id) const {
 
 bool DataManager::is_door_unlocked(std::string_view tag) const { return unlocked_doors.contains(tag.data()); }
 
-bool DataManager::chest_is_open(int id) const {
-	for (auto& chest : opened_chests) {
-		if (chest == id) { return true; }
-	}
-	return false;
-}
+bool DataManager::chest_is_open(std::uint64_t id) const { return opened_chests.contains(id); }
 
 bool DataManager::switch_is_activated(int id) const {
 	for (auto& s : activated_switches) {
@@ -602,11 +523,24 @@ bool DataManager::switch_is_activated(int id) const {
 	return false;
 }
 
-bool DataManager::inspectable_is_destroyed(int id) const { return destroyed_inspectables.contains(id); }
+bool DataManager::inspectable_is_destroyed(StableID::underlying_type id) const { return destroyed_inspectables.contains(id); }
 
 bool DataManager::is_room_discovered(int id) const { return discovered_rooms.contains(id); }
 
-bool DataManager::enemy_is_fallen(int room_id, int id) const {
+bool DataManager::is_room_adjacent_to_discovered(int id) const {
+	// loop over adjacent rooms
+	auto result = get_map_json_from_id(id);
+	if (!result) { return false; }
+	auto const& in = std::move(*result).get();
+	for (auto const& portal : in["entities"]["portals"].as_array()) {
+
+		if (is_room_discovered(portal["destination_id"].as<int>())) { return true; }
+	}
+
+	return false;
+}
+
+bool DataManager::enemy_is_fallen(int room_id, StableID id) const {
 	for (auto& enemy : fallen_enemies) {
 		if (enemy.code.first == room_id && enemy.code.second == id) { return true; }
 	}
@@ -619,25 +553,6 @@ int DataManager::get_destructible_state(int id) const {
 	}
 	return -1;
 }
-
-void DataManager::load_controls(input::InputSystem& controller) {
-	// XXX change controls json when keybinds get modified
-	controls = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/control_map.json").c_str());
-	assert(!controls.is_null());
-	assert(controls["controls"] && controls["controls"].is_object());
-
-	for (auto const& [key, item] : controls["controls"].as_object()) {
-		assert(item.is_object());
-		if (item.as_object().contains("primary_key")) { controller.set_primary_keyboard_binding(input::action_from_string(key), input::scancode_from_string(item["primary_key"].as_string())); }
-	}
-	controller.load_keyboard_controls(m_services->finder);
-}
-
-void DataManager::save_controls(input::InputSystem& controller) {
-	if (!controls.dj::Json::to_file((m_services->finder.resource_path() + "/data/config/control_map.json").c_str())) { NANI_LOG_ERROR(m_logger, "Failed to save controls layout!"); }
-}
-
-void DataManager::reset_controls() { controls = *dj::Json::from_file((m_services->finder.resource_path() + "/data/config/defaults.json").c_str()); }
 
 auto DataManager::item_id_from_label(std::string_view label) const -> int {
 	auto const& arr = item.as_array();
@@ -682,6 +597,8 @@ auto DataManager::get_map_json_from_id(int id) -> std::optional<std::reference_w
 
 auto DataManager::get_item_json_from_tag(std::string_view tag) const -> dj::Json const& { return item[item_id_from_label(tag)]; }
 
+auto DataManager::get_gun_json_from_tag(std::string_view tag) const -> dj::Json const& { return weapon[tag]; }
+
 auto DataManager::get_room_data_from_id(int id) const -> std::optional<dj::Json> {
 	for (auto const& room : map_table["rooms"].as_array()) {
 		if (room["room_id"].as<int>() == id) { return room; }
@@ -717,6 +634,151 @@ int DataManager::get_npc_location(int npc_id) {
 	return npc_locations.at(npc_id);
 }
 
+auto DataManager::get_npc_location(automa::ServiceProvider& svc, std::string_view label) const -> int {
+	auto const& npc_data = npc[label];
+	if (npc_data["locations"]) {
+		auto tag = npc_data["locations"]["contingency"]["tag"].as_string();
+		auto status = svc.quest_table.get_quest_progression(tag);
+		auto const& target_data = npc_data["locations"]["statuses"][status];
+		auto interval = static_cast<WorldClockInterval>(target_data["interval"].as<int>());
+		auto chance = svc.world_clock.get_rng(interval);
+		auto cumulative = 0.f;
+		for (auto const& room : target_data["distributions"].as_array()) {
+			cumulative += room["weight"].as<float>();
+			if (chance < cumulative) { return room["room"].as<int>(); }
+		}
+		if (target_data["schedule"]) {
+			auto schedule = NPCSchedule(target_data["schedule"]);
+			return schedule.get_location(svc.world_clock.get_time_of_day());
+		}
+	}
+	return 0;
+}
+
 std::vector<std::unique_ptr<world::Layer>>& DataManager::get_layers(int id) { return map_layers.at(get_room_index(id)); }
+
+bool DataManager::load_save_binary(fs::path const& path, player::Player& player) {
+	std::ifstream in(path, std::ios::binary);
+	if (!in) {
+		NANI_LOG_ERROR(m_logger, "Failed to open save file!");
+		return false;
+	}
+
+	std::string json;
+	if (!codec::decode(in, json)) {
+		NANI_LOG_ERROR(m_logger, "Failed to decode save file!");
+		return false;
+	}
+
+	auto result = dj::Json::parse(json);
+	if (!result) {
+		NANI_LOG_ERROR(m_logger, "Failed to parse JSON!");
+		return false;
+	}
+
+	auto& file = files.at(current_save);
+	file.save_data = std::move(*result);
+
+	return true;
+}
+
+bool DataManager::load_save_json(fs::path const& path, player::Player& player, bool reload) {
+
+	auto blank_template = m_services->finder.resource_path() / fs::path{"data/save/new_game.json"};
+	auto blank_result = dj::Json::from_file(blank_template.string());
+	if (!blank_result) { NANI_LOG_ERROR(m_logger, "Failed to clear out save data!"); }
+	auto& save = files.at(current_save).save_data;
+	// if (reload) { save = std::move(*blank_result); }
+
+	assert(!save.is_null());
+
+	// marketplace
+	for (auto& vendor : marketplace) {}
+	random::set_vendor_seed(save["vendor_seed"].as<random::seed_t>());
+	NANI_LOG_INFO(m_logger, "Loaded vendor seed: {}", save["vendor_seed"].as<random::seed_t>());
+
+	discovered_rooms.clear();
+	unlocked_doors.clear();
+	opened_chests.clear();
+	destructible_states.clear();
+	activated_switches.clear();
+	destroyed_inspectables.clear();
+	quest_progressions.clear();
+	npc_locations.clear();
+	fallen_enemies.clear();
+
+	m_services->quest_table.unserialize(save);
+
+	m_services->world_clock.unserialize(save["map_data"]["world_time"]);
+
+	for (auto& room : save["discovered_rooms"].as_array()) { discovered_rooms.add(room.as<int>()); }
+	for (auto& door : save["unlocked_doors"].as_array()) { unlocked_doors.add(door.as_string()); }
+	for (auto& chest : save["opened_chests"].as_array()) { opened_chests.add(chest.as<std::uint64_t>()); }
+	for (auto& s : save["activated_switches"].as_array()) { activated_switches.add(s.as<int>()); }
+	for (auto& block : save["destroyed_blocks"].as_array()) { destructible_states.push_back(std::make_pair(block[0].as<int>(), block[1].as<int>())); }
+	for (auto& inspectable : save["destroyed_inspectables"].as_array()) { destroyed_inspectables.add(inspectable.as<StableID::underlying_type>()); }
+
+	for (auto& enemy : save["map_data"]["fallen_enemies"].as_array()) {
+		fallen_enemies.push_back({std::make_pair(enemy[0].as<int>(), StableID{enemy[1].as<StableID::underlying_type>()}), enemy[2].as<int>(), static_cast<bool>(enemy[3].as<int>()), static_cast<bool>(enemy[4].as<int>())});
+	}
+	player.piggybacker = {};
+	if (save["piggybacker"].as<int>() != 0) { player.piggyback(save["piggybacker"].as<int>()); }
+
+	int save_pt_id = save["save_point_id"].as<int>();
+	int room_id = save_pt_id;
+	m_services->state_controller.save_point_id = save_pt_id;
+
+	// set player data based on save file
+	// in the future, all player data will be unserialized from this function
+	player.unserialize(save["player_data"]);
+
+	// stat tracker
+	auto& s = m_services->stats;
+	auto deaths = s.player.death_count.get_count();
+	s = {};
+	auto const& in_stat = save["player_data"]["stats"];
+	s.player.death_count.set(in_stat["death_count"].as<int>());
+	s.player.bullets_fired.set(in_stat["bullets_fired"].as<int>());
+	s.player.guns_collected.set(in_stat["guns_collected"].as<int>());
+	s.player.items_collected.set(in_stat["items_collected"].as<int>());
+	s.treasure.total_orbs_collected.set(in_stat["orbs_collected"].as<int>());
+	s.treasure.blue_orbs.set(in_stat["blue_orbs"].as<int>());
+	s.treasure.highest_indicator_amount.set(in_stat["highest_indicator_amount"].as<int>());
+	s.enemy.enemies_killed.set(in_stat["enemies_killed"].as<int>());
+	s.world.rooms_discovered.set(in_stat["rooms_discovered"].as<int>());
+	s.time_trials.bryns_gun = in_stat["time_trials"]["bryns_gun"].as<float>();
+	m_services->ticker.set_time(m_services->stats.float_to_seconds(in_stat["seconds_played"].as<float>()));
+	if (files.at(current_save).is_new()) { s.player.death_count.set(0); }
+
+	return true;
+}
+
+bool DataManager::load_time_trials_binary(fs::path const& path) {
+	std::ifstream in(path, std::ios::binary);
+	if (!in) {
+		NANI_LOG_ERROR(m_logger, "Failed to open save file!");
+		return false;
+	}
+
+	std::string json;
+	if (!codec::decode(in, json)) {
+		NANI_LOG_ERROR(m_logger, "Failed to decode save file!");
+		return false;
+	}
+
+	auto result = dj::Json::parse(json);
+	if (!result) {
+		NANI_LOG_ERROR(m_logger, "Failed to parse JSON for time trials!");
+		return false;
+	}
+
+	time_trial_data = std::move(*result);
+	assert(!time_trial_data.is_null());
+	for (auto const& course : time_trial_data["trials"].as_array()) {
+		for (auto const& time : course["times"].as_array()) { time_trial_registry.insert_time(*m_services, course["course_id"].as<int>(), time["player_tag"].as_string().data(), time["time"].as<float>()); }
+	}
+
+	return true;
+}
 
 } // namespace fornani::data

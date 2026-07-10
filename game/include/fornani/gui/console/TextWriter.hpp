@@ -6,18 +6,16 @@
 #include <djson/json.hpp>
 #include <fornani/core/Common.hpp>
 #include <fornani/gui/console/Message.hpp>
+#include <fornani/utils/Counter.hpp>
+#include <fornani/utils/TextUtils.hpp>
 #include <deque>
-#include <ranges>
 #include <string>
 #include <string_view>
-#include <unordered_map>
-#include "fornani/graphics/HelpText.hpp"
 #include "fornani/io/Logger.hpp"
 #include "fornani/utils/BitFlags.hpp"
 #include "fornani/utils/Cooldown.hpp"
 #include "fornani/utils/Decoder.hpp"
 #include "fornani/utils/QuestCode.hpp"
-#include "fornani/utils/Shipment.hpp"
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -56,7 +54,7 @@ class TextWriter {
 	void set_bounds(sf::FloatRect to_bounds, bool wrap = false);
 	void append(std::string_view content);
 	void set_font_color(sf::Color to_color);
-	void set_font(sf::Font& to_font);
+	void set_font(FontSpec& to_font);
 	///@return true when we are able to progress in the writer, false if inputs should do nothing
 	bool request_next();
 	void speed_up();
@@ -121,12 +119,11 @@ class TextWriter {
 	sf::Text working_message;
 
 	std::string working_str{};
-	sf::Font* m_font;
+	FontSpec* m_font;
 	sf::FloatRect m_bounds{};
 	sf::FloatRect m_previous_bounds{};
 	float m_delta_threshold{};
 	int m_writing_speed{};
-	int m_text_size{};
 	bool m_hide_cursor{};
 	bool m_is_first{};
 
@@ -154,7 +151,7 @@ static inline void word_wrap(sf::Text& current_message, float const width) {
 			std::string left = current_message.getString().substring(0, static_cast<std::size_t>(last_space_index + 1));
 			std::string right = current_message.getString().substring(static_cast<std::size_t>(last_space_index + 1));
 			auto next_space{std::distance(right.begin(), std::find_if(right.begin(), right.end(), [](auto const& c) { return c == ' '; }))};
-			auto next_word = current_message.findCharacterPos(static_cast<std::size_t>(i + next_space));
+			auto next_word = get_character_position(current_message, static_cast<std::size_t>(i + next_space));
 			if (next_word.x > width) {
 				// splice!
 				left += '\n';

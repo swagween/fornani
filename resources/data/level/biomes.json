@@ -1,15 +1,44 @@
 {
-  "biomes": [
-    "firstwind",
-    "overturned",
-    "pioneer",
-    "factory",
-    "greatwing",
-    "kariba",
-    "junkyard",
-    "toxic",
-    "worm",
-    "ashtown"
-  ],
-  "atmosphere": ["dragonflies"]
+  "biomes": ["firstwind", "overturned", "pioneer", "factory", "greatwing", "kariba", "junkyard", "toxic", "worm", "ashtown", "nightside"],
+  "atmosphere": ["dragonflies"],
+  "properties": {
+    "firstwind": {
+      "black": [12, 12, 20]
+    },
+    "overturned": {
+      "black": [12, 12, 20]
+    },
+    "pioneer": {
+      "black": [16, 8, 28],
+      "max_light": 3.0
+    },
+    "greatwing": {
+      "black": [12, 12, 20],
+      "max_light": 3.0
+    },
+    "kariba": {
+      "black": [12, 12, 20],
+      "max_light": 3.0
+    },
+    "junkyard": {
+      "black": [16, 9, 11],
+      "max_light": 3.0
+    },
+    "worm": {
+      "black": [9, 1, 17],
+      "haze_highlight": [0, 91, 91],
+      "haze_shadow": [0, 51, 91],
+      "max_light": 4.0
+    },
+    "toxic": {
+      "black": [13, 15, 14],
+      "haze_highlight": [210, 241, 68],
+      "haze_shadow": [29, 204, 129],
+      "max_light": 3.0
+    },
+    "nightside": {
+      "black": [19, 18, 16],
+      "max_light": 3.0
+    }
+  }
 }

@@ -4,11 +4,11 @@
 
 namespace fornani::automa {
 
-OptionsMenu::OptionsMenu(ServiceProvider& svc, player::Player& player) : MenuState(svc, player, "options") { m_parent_menu = MenuType::main; }
+OptionsMenu::OptionsMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "options") { m_parent_menu = MenuType::main; }
 
 void OptionsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	MenuState::tick_update(svc, engine);
-	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
+	if (was_selected(svc.input_system)) {
 		if (current_selection.get() == menu_selection_id.at(MenuSelection::credits)) {
 			svc.state_controller.submenu = MenuType::credits;
 			svc.state_controller.actions.set(Actions::trigger_submenu);

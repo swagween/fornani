@@ -9,7 +9,7 @@
   "inv_hit": {
     "frame_count": 4,
     "framerate": 12,
-    "dimensions": [16, 16]
+    "dimensions": [18, 18]
   },
   "doublejump": {
     "frame_count": 5,
@@ -74,15 +74,60 @@
     "dimensions": [100, 100],
     "x_reflection": true
   },
+  "slow_flare": {
+    "frame_count": 8,
+    "framerate": 16,
+    "dimensions": [64, 64]
+  },
+  "giga_flare": {
+    "frame_count": 9,
+    "framerate": 16,
+    "dimensions": [128, 128]
+  },
+  "toxic_gas": {
+    "frame_count": 8,
+    "framerate": 40,
+    "dimensions": [128, 128],
+    "x_reflection": true
+  },
+  "question_mark": {
+    "frame_count": 12,
+    "framerate": 20,
+    "dimensions": [16, 16]
+  },
+  "exclamation_mark": {
+    "frame_count": 12,
+    "framerate": 20,
+    "dimensions": [16, 16]
+  },
+  "worm_steps": {
+    "frame_count": 3,
+    "framerate": 16,
+    "dimensions": [16, 16],
+    "x_reflection": true
+  },
   "bright_flare": {
     "frame_count": 8,
     "framerate": 8,
     "dimensions": [64, 64]
   },
+  "bonus_heart": {
+    "frame_count": 6,
+    "framerate": 20,
+    "dimensions": [21, 21],
+    "x_reflection": true,
+    "y_reflection": true
+  },
   "flare": {
     "frame_count": 6,
     "framerate": 4,
     "dimensions": [64, 64]
+  },
+  "raindrop": {
+    "frame_count": 4,
+    "framerate": 12,
+    "dimensions": [16, 16],
+    "x_reflection": true
   },
   "large_explosion": {
     "frame_count": 8,
@@ -90,6 +135,11 @@
     "dimensions": [27, 27]
   },
   "explosion": {
+    "frame_count": 8,
+    "framerate": 16,
+    "dimensions": [48, 48]
+  },
+  "stun_explosion": {
     "frame_count": 8,
     "framerate": 16,
     "dimensions": [48, 48]
@@ -107,7 +157,17 @@
   "bullet_hit": {
     "frame_count": 4,
     "framerate": 16,
-    "dimensions": [8, 16]
+    "dimensions": [16, 16]
+  },
+  "sword_slash": {
+    "frame_count": 2,
+    "framerate": 32,
+    "dimensions": [186, 186]
+  },
+  "sword_swipe": {
+    "frame_count": 2,
+    "framerate": 32,
+    "dimensions": [186, 186]
   },
   "puff": {
     "frame_count": 4,
@@ -134,10 +194,22 @@
     "x_reflection": true,
     "y_reflection": true
   },
-  "small_flash": {
+  "stun": {
+    "frame_count": 5,
+    "framerate": 16,
+    "dimensions": [48, 48],
+    "x_reflection": true,
+    "y_reflection": true
+  },
+  "wall_hit": {
     "frame_count": 4,
     "framerate": 16,
     "dimensions": [16, 16]
+  },
+  "small_flash": {
+    "frame_count": 5,
+    "framerate": 14,
+    "dimensions": [20, 20]
   },
   "medium_flash": {
     "frame_count": 5,

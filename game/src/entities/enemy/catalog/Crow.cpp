@@ -10,7 +10,7 @@ namespace fornani::enemy {
 constexpr auto crow_framerate = 6;
 
 Crow::Crow(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f spread) : Enemy(svc, map, "crow"), m_services{&svc}, m_evade_force{15.f}, m_home_force{0.01f}, m_start{spread}, m_fear{80}, m_init{4} {
-	m_params = {{"idle", {0, 1, crow_framerate * 2, -1}}, {"peck", {4, 1, crow_framerate * 4, 0}}, {"hop", {5, 1, crow_framerate * 8, 0}}, {"turn", {1, 1, crow_framerate * 2, 0}}, {"fly", {2, 2, crow_framerate * 2, -1}}};
+	p_animations = {{"idle", {0, 1, crow_framerate * 2, -1}}, {"peck", {4, 1, crow_framerate * 4, 0}}, {"hop", {5, 1, crow_framerate * 8, 0}}, {"turn", {1, 1, crow_framerate * 2, 0}}, {"fly", {2, 2, crow_framerate * 2, -1}}};
 	animation.set_params(get_params("idle"));
 	m_init.start();
 	if (random::percent_chance(0.1f)) {

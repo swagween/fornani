@@ -1,6 +1,6 @@
 
 #include "fornani/gui/Dashboard.hpp"
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/gui/gizmos/ClockGizmo.hpp"
 #include "fornani/gui/gizmos/InventoryGizmo.hpp"
@@ -86,7 +86,7 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 		case 3: button.position = {-1, 0}; break;
 		}
 		button.state = button.position == m_selected_position ? GizmoButtonState::hovered : GizmoButtonState::off;
-		if (button.state == GizmoButtonState::hovered) { m_current_port = static_cast<DashboardPort>(ccm::ext::clamp(ctr, 0, static_cast<int>(DashboardPort::invalid))); }
+		if (button.state == GizmoButtonState::hovered) { m_current_port = static_cast<DashboardPort>(std::clamp(ctr, 0, static_cast<int>(DashboardPort::invalid))); }
 		button.box.setPosition(svc.window->f_center_screen() + pos);
 		button.state == GizmoButtonState::hovered ? button.box.setOutlineColor(colors::bright_orange) : button.box.setOutlineColor(colors::dark_fucshia);
 

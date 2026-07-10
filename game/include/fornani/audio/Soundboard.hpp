@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <capo/engine.hpp>
-#include <ccmath/ext/clamp.hpp>
+#include <algorithm>
 #include <fornani/audio/Sound.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
@@ -36,6 +36,7 @@ struct ActiveSound {
 	sf::Vector2f position;
 	bool looping;
 	bool touched_this_tick;
+	bool delete_me;
 };
 
 enum class SoundboardState { on, off };
@@ -101,13 +102,14 @@ enum class Summoner { hurt_1, hurt_2, death, block_1, block_2, summon, hah };
 enum class Mastiff { bite, growl };
 
 enum class NPCBryn { agh, ah_1, ah_2, chuckle, nani_1, nani_2, oh, ohh, sigh, whatsup, yah, yeah, yeahh, eagh, haha, hello, hey_1, hey_2, heyyy, hi, hmm, hmph, laugh_1, laugh_2, mm, oeugh };
-enum class NPCGobe { oh, orewa };
 enum class NPCLynx { hmph, hmm };
 enum class NPCMirin { ah, oh, haha };
 enum class NPCCarl { hah, eh };
 enum class NPCGo { oh, mm };
 enum class NPCBit { hey, hehe };
 enum class NPCMinigus { greatidea, dontlookatme, laugh, getit, pizza, grunt };
+enum class NPCDrWillett { ahhyes, hm, mm, nani, ohno, runalongnow, yes };
+enum class NPCLoth { ahh, chuckle, hmph, hoho, nani };
 
 enum class Minigus {
 	hurt_1,
@@ -149,10 +151,11 @@ class Soundboard {
   public:
 	Soundboard(automa::ServiceProvider& svc, capo::IEngine& engine);
 	void play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc, int echo_count = 0, int echo_rate = 1);
+	void clear_sounds(SoundBus bus);
 	void turn_on() { status = SoundboardState::on; }
 	void turn_off() { status = SoundboardState::off; }
 	void play_step(int tile_value, int style_id, bool land = false);
-	void set_volume(float to) { m_volume_multiplier = ccm::ext::clamp(to, 0.f, 1.f); }
+	void set_volume(float to) { m_volume_multiplier = std::clamp(to, 0.f, 1.f); }
 	void adjust_volume(float amount) { set_volume(m_volume_multiplier + amount); }
 	void set_listener_position(sf::Vector2f const to) { m_listener.position = to; }
 
@@ -195,18 +198,20 @@ class Soundboard {
 
 	struct {
 		util::BitFlags<NPCBryn> bryn{};
-		util::BitFlags<NPCGobe> gobe{};
 		util::BitFlags<NPCLynx> lynx{};
 		util::BitFlags<NPCMirin> mirin{};
 		util::BitFlags<NPCGo> go{};
 		util::BitFlags<NPCCarl> carl{};
 		util::BitFlags<NPCBit> bit{};
 		util::BitFlags<NPCMinigus> minigus{};
+		util::BitFlags<NPCDrWillett> dr_willett{};
+		util::BitFlags<NPCLoth> loth{};
 	} npc_flags{};
 
 	std::unordered_map<std::string, std::function<void(int)>> npc_map;
 
-	void play_sound(std::string_view label, sf::Vector2f position = {});
+	void play_sound(std::string_view label);
+	void play_sound(std::string_view label, sf::Vector2f position);
 	void repeat_sound(std::string_view label, SoundProducerID id = 0, sf::Vector2f position = {}, float pitch = 1.f);
 
 	void play(capo::IEngine& engine, automa::ServiceProvider& svc, std::string const& label, SoundProperties properties, int frequency = 0, float attenuation = 1.f);

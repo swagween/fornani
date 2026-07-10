@@ -6,6 +6,7 @@ nani_add_sources(
         MenuController.cpp
         MenuState.cpp
         Option.cpp
+        SceneContext.cpp
         StateController.cpp
         StateManager.cpp
 )

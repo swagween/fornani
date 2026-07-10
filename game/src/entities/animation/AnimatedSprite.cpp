@@ -1,5 +1,6 @@
 
 #include "fornani/entities/animation/AnimatedSprite.hpp"
+#include <fornani/core/Debug.hpp>
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
 
@@ -65,6 +66,7 @@ void AnimatedSprite::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		drawbox.setPosition(position - cam);
 		win.draw(drawbox);
 	}
+	++debug::draw_calls;
 }
 
 void AnimatedSprite::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, LightShader& shader, Palette& palette) {

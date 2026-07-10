@@ -1,6 +1,18 @@
 nani_add_sources(
+  AshtownCall.cpp
+  BanditConfrontation.cpp
+  SpencerReveal.cpp
+  BanditEncounter.cpp
+  BitCell.cpp
   BrynPostMiaag.cpp
+  HaunchIntro.cpp
+  HaunchEscape.cpp
         LadyNimbusIntro.cpp
+        LothAtWorm.cpp
         PioneerBaseDebrief.cpp
         MainIntro.cpp
+        NightsideStation.cpp
+        NightsideWall.cpp
+        ReturnToBase.cpp
+        SwitchBlockPan.cpp
 )
