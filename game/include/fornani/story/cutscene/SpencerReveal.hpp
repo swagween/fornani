@@ -14,6 +14,8 @@ class SpencerReveal final : public Cutscene {
 
   private:
 	util::Cooldown m_intro;
+	util::Cooldown m_spencer_reveal;
+	util::Cooldown m_dial;
 	util::BitFlags<SpencerRevealFlags> m_flags{};
 };
 

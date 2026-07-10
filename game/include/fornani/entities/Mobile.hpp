@@ -46,6 +46,7 @@ class Mobile : public Animatable {
 		Direction actual{};
 		Direction desired{};
 		Direction movement{};
+		Direction input{};
 	} directions{};
 
 	util::BitFlags<MobileState> p_flags{};

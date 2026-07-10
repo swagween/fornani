@@ -553,6 +553,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Last Requested Direction: %s", player.controller.last_requested_direction().print().c_str());
 								ImGui::Text("Desired Direction: %s", player.get_desired_direction().print().c_str());
 								ImGui::Text("Actual Direction: %s", player.get_actual_direction().print().c_str());
+								ImGui::Text("Movement Direction: %s", player.directions.movement.print().c_str());
+								ImGui::Text("Input Direction: %s", player.directions.input.print().c_str());
 								ImGui::Text("Collider Direction: %s", player.get_collider().get_direction().print().c_str());
 								ImGui::Text("Ability Direction: %s", player.controller.get_ability_direction().print().c_str());
 								ImGui::Separator();
@@ -603,7 +605,14 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Separator();
 								ImGui::Text("Sliding? %s", player.controller.is_sliding() ? "Yes" : "No");
 								ImGui::Text("Can Slide? %s", player.can_slide() ? "Yes" : "No");
-								ImGui::Text("Post-Slide Cooldown: %i", player.controller.post_slide.get());
+								ImGui::Text("Post-Slide Cooldown");
+								ImGui::ProgressBar(player.controller.post_slide.get_normalized(), {300.f, 4.f}, "");
+								ImGui::Separator();
+								ImGui::Text("No Turn? %s", player.has_flag_set(player::PlayerFlags::no_turn) ? "Yes" : "No");
+								ImGui::Text("Push Cooldown");
+								ImGui::ProgressBar(player.cooldowns.push.get_normalized(), {300.f, 4.f}, "");
+								ImGui::Text("Post-Push Cooldown");
+								ImGui::ProgressBar(player.cooldowns.post_push.get_normalized(), {300.f, 4.f}, "");
 								ImGui::Separator();
 								ImGui::Text("Crouching? %s", player.controller.is_crouching() ? "Yes" : "No");
 								ImGui::Text("Inspecting? %s", player.controller.inspecting() ? "Yes" : "No");

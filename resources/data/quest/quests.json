@@ -87,6 +87,10 @@
       {
         "tag": "jimmy",
         "id": 407
+      },
+      {
+        "tag": "spencer",
+        "id": 1311
       }
     ]
   },
@@ -154,6 +158,18 @@
       {
         "tag": "woodshine",
         "id": 400
+      },
+      {
+        "tag": "nightside_station",
+        "id": 901
+      },
+      {
+        "tag": "pioneer_trail",
+        "id": 227
+      },
+      {
+        "tag": "hoarders_cave",
+        "id": 1410
       }
     ]
   },
@@ -233,13 +249,13 @@
   },
   {
     "tag": "ashtown_bandit",
-    "target": 2,
+    "target": 11,
     "objectives": [],
     "displayed": true
   },
   {
     "tag": "find_spencer",
-    "target": 2,
+    "target": 11,
     "objectives": [],
     "displayed": true
   },
@@ -251,6 +267,18 @@
   },
   {
     "tag": "nighttime",
+    "target": 2,
+    "objectives": [],
+    "displayed": false
+  },
+  {
+    "tag": "the_hoarder",
+    "target": 11,
+    "objectives": [],
+    "displayed": true
+  },
+  {
+    "tag": "build_scorpion",
     "target": 2,
     "objectives": [],
     "displayed": false

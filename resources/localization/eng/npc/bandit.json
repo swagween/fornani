@@ -264,5 +264,48 @@
         }
       ]
     ]
+  },
+  "6": {
+    "output": 2,
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "Here's your golden tiara..."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "So... Spencer?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[1, 0]],
+          "message": "Welcome back."
+        }
+      ],
+      [
+        {
+          "message": "Oh, no, it's not mine. You can keep it. I just wanted to make sure I could trust you."
+        },
+        {
+          "message": "I still don't."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "It's not personal, though. I don't trust anybody."
+        }
+      ],
+      [
+        {
+          "codes": [[23, 10]],
+          "message": "Yeah, uh... about that."
+        }
+      ]
+    ]
   }
 }

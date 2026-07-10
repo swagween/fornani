@@ -247,6 +247,12 @@
       "room_id": 601
     },
     {
+      "folder": "hoarder",
+      "label": "den.json",
+      "region": "ashtown",
+      "room_id": 1410
+    },
+    {
       "folder": "junkyard",
       "label": "assembly_line.json",
       "region": "junkyard",
@@ -1049,6 +1055,12 @@
       "label": "dorsal_septum.json",
       "region": "worm",
       "room_id": 1109
+    },
+    {
+      "folder": "worm",
+      "label": "esophagus.json",
+      "region": "worm",
+      "room_id": 1115
     },
     {
       "folder": "worm",

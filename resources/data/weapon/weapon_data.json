@@ -164,10 +164,10 @@
     "gameplay": {
       "attributes": {
         "automatic": true,
-        "ammo": 80,
+        "ammo": 60,
         "reload": 1000,
-        "cooldown_time": 9,
-        "recoil": 0.15
+        "cooldown_time": 14,
+        "recoil": 0.25
       }
     },
     "class_package": {
@@ -571,7 +571,7 @@
         "charge_multiplier": 5.0,
         "ammo": 1,
         "reload": 100,
-        "cooldown_time": 64,
+        "cooldown_time": 14,
         "recoil": 0.0
       }
     },
@@ -628,7 +628,7 @@
         "ammo": 28,
         "reload": 600,
         "cooldown_time": 16,
-        "recoil": 0.35
+        "recoil": 0.45
       }
     },
     "class_package": {
@@ -638,7 +638,7 @@
         "radius": 9.0,
         "attributes": {
           "base_damage": 4,
-          "power": 2,
+          "power": 4,
           "lifespan": 100,
           "lifespan_variance": 0,
           "speed": 30.0,
@@ -702,7 +702,7 @@
           "power": 4,
           "lifespan": 200,
           "lifespan_variance": 0,
-          "speed": 26.0,
+          "speed": 46.0,
           "variance": 0.5,
           "stun_time": 0.0,
           "knockback": 0.0,

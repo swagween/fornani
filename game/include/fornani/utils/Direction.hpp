@@ -60,6 +60,12 @@ struct Direction {
 	LNR lnr{LNR::neutral};
 	UND und{UND::neutral};
 
+	Direction flipped() {
+		auto ret = Direction{*this};
+		ret.flip();
+		return ret;
+	}
+
 	[[nodiscard]] auto up() const -> bool { return und == UND::up; }
 	[[nodiscard]] auto down() const -> bool { return und == UND::down; }
 	[[nodiscard]] auto left() const -> bool { return lnr == LNR::left; }

@@ -53,6 +53,8 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 	void set_arsenal(bool const has);
 	void set_direction(Direction to);
 	void flush_ability() { m_ability.reset(); }
+	void set_crouching(bool to = true) { to ? flags.set(MovementState::crouch) : flags.reset(MovementState::crouch); }
+	void set_last_requested_direction(Direction to) { m_last_requested_direction = to; }
 
 	std::optional<float> get_controller_state(ControllerInput key) const;
 	std::optional<AnimState> get_ability_animation() const;

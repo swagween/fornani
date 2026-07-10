@@ -71,6 +71,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	void disengage();
 	void set_invisible(bool to = true) { to ? m_state.set(NPCState::invisible) : m_state.reset(NPCState::invisible); }
 	void set_special_animation(int which);
+	void set_busy();
 	void start_busy_timer() { m_busy_timer.start(); }
 	void use_portal(world::Map& map);
 

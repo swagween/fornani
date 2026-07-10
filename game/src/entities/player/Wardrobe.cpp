@@ -6,7 +6,7 @@ namespace fornani::player {
 
 Wardrobe::Wardrobe() {
 	m_outfit.insert({ApparelType::hairstyle, std::make_unique<Hairstyle>()});
-	m_outfit.insert({ApparelType::headgear, std::make_unique<Headgear>()});
+	m_outfit.insert({ApparelType::accessory, std::make_unique<Headgear>()});
 	m_outfit.insert({ApparelType::shirt, std::make_unique<Shirt>()});
 	m_outfit.insert({ApparelType::pants, std::make_unique<Pants>()});
 }
@@ -32,7 +32,7 @@ void Wardrobe::update(graphics::TextureUpdater& updater) {
 	}
 	switch (get_variant(ApparelType::hairstyle)) {
 	case 0: change_outfit({{{0, 1}, sf::Color{255, 255, 255}}, {{2, 1}, sf::Color{156, 142, 212}}}); break;
-	case 2: change_outfit({{{0, 1}, sf::Color{131, 52, 227}}, {{2, 1}, sf::Color{118, 114, 249}}}); break;
+	case 3: change_outfit({{{0, 1}, sf::Color{131, 52, 227}}, {{2, 1}, sf::Color{118, 114, 249}}}); break;
 	default: break;
 	}
 	switch (get_variant(ApparelType::shirt)) {
@@ -66,7 +66,7 @@ int Wardrobe::get_variant(ApparelType type) const {
 }
 
 std::array<int, static_cast<int>(ApparelType::END)> Wardrobe::get() {
-	return std::array<int, static_cast<int>(ApparelType::END)>{m_outfit.at(ApparelType::hairstyle)->get_variant(), m_outfit.at(ApparelType::headgear)->get_variant(), m_outfit.at(ApparelType::shirt)->get_variant(),
+	return std::array<int, static_cast<int>(ApparelType::END)>{m_outfit.at(ApparelType::hairstyle)->get_variant(), m_outfit.at(ApparelType::accessory)->get_variant(), m_outfit.at(ApparelType::shirt)->get_variant(),
 															   m_outfit.at(ApparelType::pants)->get_variant()};
 }
 

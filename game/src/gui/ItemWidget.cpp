@@ -6,7 +6,7 @@ namespace fornani::gui {
 
 ItemWidget::ItemWidget(automa::ServiceProvider& svc, ItemWidgetType type, std::string_view tag)
 	: m_type{type}, m_sprites{.sticker{svc.assets.get_texture("item_sticker")}, .item = type == ItemWidgetType::item ? sf::Sprite{svc.assets.get_texture("inventory_items")} : sf::Sprite{svc.assets.get_texture("inventory_guns")}},
-	  m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "sticker", 128, util::InterpolationType::quadratic}, m_sparkler{vfx::Sparkler{svc, sf::Vector2f{64.f, 64.f}, colors::ui_white, "item"}} {
+	  m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "sticker", 128, util::InterpolationType::quadratic}, m_sparkler{vfx::Sparkler{svc, sf::Vector2f{64.f, 64.f}, colors::ui_white, "item"}}, m_startup{8} {
 	bring_in();
 	auto dim = type == ItemWidgetType::item ? sf::Vector2f{16.f, 16.f} : sf::Vector2f{24.f, 24.f};
 	m_sprites.item.setScale(constants::f_scale_vec);
@@ -15,11 +15,13 @@ ItemWidget::ItemWidget(automa::ServiceProvider& svc, ItemWidgetType type, std::s
 	m_sprites.item.setOrigin(dim / 2.f);
 	if (type == ItemWidgetType::item) { m_lookup = {svc.data.get_item_json_from_tag(tag)["lookup"][0].as<int>(), svc.data.get_item_json_from_tag(tag)["lookup"][1].as<int>()}; }
 	if (type == ItemWidgetType::gun) { m_lookup = {svc.data.get_gun_json_from_tag(tag)["metadata"]["widget_lookup"].as<int>(), 0}; }
+	m_startup.start();
 }
 
 void ItemWidget::update(automa::ServiceProvider& svc) {
 	if (m_sparkler) { m_sparkler->update(svc); }
 	m_path.update();
+	m_startup.update();
 	m_sprites.sticker.setPosition(m_path.get_position());
 	m_sprites.item.setPosition(m_path.get_position() - sf::Vector2f{2.f, 2.f});
 	if (m_sparkler) { m_sparkler->set_position(m_sprites.sticker.getPosition() - m_sparkler->get_dimensions() * 0.5f); }
@@ -30,7 +32,7 @@ void ItemWidget::render(automa::ServiceProvider& svc, sf::RenderWindow& win) {
 	win.draw(m_sprites.sticker);
 	m_sprites.item.setTextureRect(sf::IntRect(m_lookup * dim.x, dim));
 	win.draw(m_sprites.item);
-	if (m_sparkler) { m_sparkler->render(win, {}); }
+	if (m_sparkler && !m_startup.running()) { m_sparkler->render(win, {}); }
 }
 
 void ItemWidget::bring_in() { m_path.set_section("in"); }

@@ -118,7 +118,7 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 
 	// wardrobe display
 	// the following vectors originate from positions on the artwork
-	auto wardrobe_origin = sf::Vector2i{0, 160};
+	auto wardrobe_origin = sf::Vector2i{0, 180};
 	auto outfit_offset = sf::Vector2f{214.f, 54.f};
 	auto spacing = sf::Vector2f{0.f, 48.f};
 	auto row{0.f};
@@ -128,7 +128,7 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 		auto lookup = sf::Vector2i{icol, irow} * constants::i_cell_resolution_padded;
 		m_apparel_sprite.setTextureRect(sf::IntRect{lookup + wardrobe_origin, constants::i_resolution_vec_padded});
 		m_apparel_sprite.setPosition(m_placement + m_path.get_position() + outfit_offset + row * spacing - cam);
-		m_apparel_sprite.setOrigin(constants::f_resolution_vec * 0.5f);
+		m_apparel_sprite.setOrigin(m_apparel_sprite.getLocalBounds().getCenter());
 		win.draw(m_apparel_sprite);
 		++row;
 	}

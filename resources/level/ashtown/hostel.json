@@ -100,6 +100,19 @@
         ],
         "source_id": 1310
       }
+    ],
+    "save_point": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 1310,
+        "position": [
+          6,
+          27
+        ]
+      }
     ]
   },
   "meta": {
@@ -128,7 +141,7 @@
     "interior": true,
     "metagrid": [
       99,
-      20
+      18
     ],
     "minimap": true,
     "music": "bossanova",

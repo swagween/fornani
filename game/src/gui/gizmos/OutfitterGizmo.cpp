@@ -84,7 +84,7 @@ void OutfitterGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 	auto wire_offset{sf::Vector2f{-42.f, 26.f}};
 	m_wires.update(m_physics.position + m_placement + wire_offset);
 	if (m_path.completed_step(1)) { m_wires.set_params("plug"); }
-	if ((m_wires.get_frame() == 2 || m_wires.get_frame() == 4 || m_wires.get_frame() == 5 || m_wires.get_frame() == 6) && m_wires.keyframe_started()) { svc.soundboard.play_sound("pioneer_slot"); }
+	if ((m_wires.get_frame() == 2 || m_wires.get_frame() == 4 || m_wires.get_frame() == 5 || m_wires.get_frame() == 6) && m_wires.keyframe_started() && is_selected()) { svc.soundboard.play_sound("pioneer_plug"); }
 }
 
 void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
@@ -104,7 +104,7 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		for (auto& item : player.catalog.inventory.items_view()) {
 			if (!item.item->is_apparel()) { continue; }
 			m_apparel_sprite.setTextureRect(item.item->get_lookup());
-			m_apparel_sprite.setOrigin({-6.f, -6.f}); // center sprite in window
+			m_apparel_sprite.setOrigin({-4.f, -4.f}); // center sprite in window
 			item.item->render(win, m_apparel_sprite, m_physics.position + m_placement + m_grid_offset + item.item->get_f_origin().componentWiseMul(m_selector.get_spacing()) - cam);
 			if (item.item->get_label() == m_current_item_tag && m_description) { m_description->write(svc, item.item->get_title() + ": " + item.item->get_description(), svc.text.fonts.basic); }
 		}

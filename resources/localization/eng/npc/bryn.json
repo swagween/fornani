@@ -976,7 +976,7 @@
           "message": "But otherwise you'll have to get to Ashtown the old-fashioned way."
         },
         {
-          "codes": [[22, 227, 1, 2]],
+          "codes": [[22, 227, 1, 3]],
           "message": "Take the Pioneer Trail as far as it goes. Once sec, I'll mark it on your map."
         },
         {
@@ -1099,6 +1099,54 @@
         {
           "codes": [[23, 1]],
           "message": "Good luck, Nani. Over and out!"
+        }
+      ]
+    ]
+  },
+  "31": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [
+            [5, 1],
+            [8, 0]
+          ],
+          "message": "Spencer? Is that you?"
+        }
+      ]
+    ]
+  },
+  "32": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[5, 1]],
+          "message": "We're just hiding in the forest like usual."
+        },
+        {
+          "codes": [[8, 0]],
+          "message": "What happened with the blueprints?"
+        }
+      ]
+    ]
+  },
+  "33": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[5, 1]],
+          "message": "Oh, god..."
+        },
+        {
+          "codes": [[4, 8]],
+          "message": "You know what, I'll call you later. Doc's not taking the news so well."
+        },
+        {
+          "codes": [[8, 0]],
+          "message": "See ya!"
         }
       ]
     ]

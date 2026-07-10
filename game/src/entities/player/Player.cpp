@@ -180,6 +180,7 @@ void Player::update(world::Map& map) {
 	m_death_cooldown.update();
 	cooldowns.suffocate.update();
 	cooldowns.stun_immunity.update();
+	cooldowns.post_push.update();
 
 	if (!collider.has_value()) { return; }
 
@@ -280,7 +281,7 @@ void Player::update(world::Map& map) {
 
 	// camera stuff
 	auto skew = 120.f;
-	auto camx = controller.direction.as_float() * 32.f + skew * m_services->input_system.analog(input::AnalogAction::pan).x;
+	auto camx = directions.input.as_float() * 32.f + skew * m_services->input_system.analog(input::AnalogAction::pan).x;
 	auto vert = m_services->input_system.is_gamepad() ? m_services->input_system.analog(input::AnalogAction::pan).y : controller.vertical_movement();
 	m_camera.target_point = sf::Vector2f{camx, skew * vert};
 	auto force_multiplier = 1.f;
@@ -314,10 +315,9 @@ void Player::update(world::Map& map) {
 	update_direction();
 	controller.update(*m_services, map, *this);
 	if (get_collider().hit_ceiling_ramp()) { controller.flush_ability(); }
+	if (m_animation_machine.is_state(AnimState::between_push) || m_animation_machine.is_state(AnimState::push)) { controller.set_crouching(false); }
 	controller.is_crouching() ? get_collider().flags.movement.set(shape::Movement::crouching) : get_collider().flags.movement.reset(shape::Movement::crouching);
 	if (!controller.is(AbilityType::jump)) { get_collider().flags.movement.reset(shape::Movement::jumping); }
-
-	update_weapon(map);
 
 	// do this elsehwere later
 	if (get_collider().flags.state.test(shape::State::just_landed)) {
@@ -347,7 +347,12 @@ void Player::update(world::Map& map) {
 
 	// check direction switch
 	directions.desired = controller.last_requested_direction();
+	if ((m_animation_machine.is_state(AnimState::push) || m_animation_machine.is_state(AnimState::between_push)) && directions.input.left_or_right()) {
+		directions.desired = directions.input.flipped();
+		controller.set_last_requested_direction(directions.desired);
+	}
 	controller.direction.lnr = directions.desired.lnr;
+	update_weapon(map);
 
 	if (hotbar) { hotbar.value().switch_weapon(*m_services, static_cast<int>(controller.arms_switch())); }
 	update_animation();
@@ -437,7 +442,7 @@ void Player::simple_update() {
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 
 	m_sprite_position = collider.has_value() ? get_collider().get_position() + sprite_offset : m_sprite_position;
-	m_sprite_position.x += controller.facing_left() ? -1.f : 1.f;
+	m_sprite_position.x += directions.actual.left() ? -1.f : 1.f;
 	if (m_sprite_shake.get() % 10 == 0) { m_shake_offset = random::random_vector_float(-4.f, 4.f); }
 	if (!m_sprite_shake.running()) { m_shake_offset = {}; }
 	m_sprite_position += m_shake_offset;
@@ -595,8 +600,10 @@ void Player::update_animation() {
 	}
 	m_sprite_shake.update();
 	set_flag(PlayerFlags::show_weapon);
+	set_flag(PlayerFlags::no_turn, false);
 
 	if (grounded()) {
+
 		if (controller.inspecting()) { m_animation_machine.request(AnimState::inspect); }
 		if (!(m_animation_machine.is_state(AnimState::land) || m_animation_machine.is_state(AnimState::rise))) {
 			if (controller.nothing_pressed() && !controller.is_dashing() && !(m_animation_machine.is_state(AnimState::inspect)) && !(m_animation_machine.is_state(AnimState::sit))) { m_animation_machine.request(AnimState::idle); }
@@ -606,7 +613,22 @@ void Player::update_animation() {
 			if (hotbar && arsenal) {
 				if (controller.has_flag_set(PlayerControllerFlags::shot_weapon) && equipped_weapon().can_shoot()) { m_animation_machine.request(AnimState::shoot); }
 			}
-			handle_turning();
+			if (controller.moving()) {
+				if (get_collider().has_left_wallslide_collision() && controller.horizontal_movement() < 0.f) { cooldowns.push.update(); }
+				if (get_collider().has_right_wallslide_collision() && controller.horizontal_movement() > 0.f) { cooldowns.push.update(); }
+			}
+			bool skip_turn = false;
+			if ((get_collider().has_right_wallslide_collision() || get_collider().has_left_wallslide_collision()) && cooldowns.push.is_complete()) {
+				auto other_way = (get_collider().has_right_wallslide_collision() && directions.actual.right()) || (get_collider().has_left_wallslide_collision() && directions.actual.left());
+				auto push_right = get_collider().has_right_wallslide_collision() && controller.moving_right();
+				auto push_left = get_collider().has_left_wallslide_collision() && controller.moving_left();
+				if (push_left || push_right) {
+					auto flip_me = (push_left && directions.actual.left()) || (push_right && directions.actual.right());
+					flip_me ? m_animation_machine.request(AnimState::between_push) : m_animation_machine.request(AnimState::push);
+					skip_turn = true;
+				}
+			}
+			if (!skip_turn) { handle_turning(); }
 		}
 	} else {
 		if (get_collider().physics.apparent_velocity().y > -thresholds.suspend && get_collider().physics.apparent_velocity().y < thresholds.suspend && !controller.is_wallsliding() && !controller.is_walljumping()) {
@@ -626,11 +648,6 @@ void Player::update_animation() {
 	if (m_animation_machine.is_state(AnimState::sit)) { set_flag(PlayerFlags::show_weapon, false); }
 	if (controller.inspecting()) { m_animation_machine.request(AnimState::inspect); }
 	if (controller.is_crouching() && grounded()) { controller.moving() ? m_animation_machine.request(AnimState::crawl) : m_animation_machine.request(AnimState::crouch); }
-	if (controller.moving() && grounded()) {
-		if (get_collider().has_left_wallslide_collision() && controller.horizontal_movement() < 0.f) { cooldowns.push.update(); }
-		if (get_collider().has_right_wallslide_collision() && controller.horizontal_movement() > 0.f) { cooldowns.push.update(); }
-		if (cooldowns.push.is_complete() && (get_collider().has_right_wallslide_collision() || get_collider().has_left_wallslide_collision())) { m_animation_machine.request(AnimState::push); }
-	}
 
 	if (hurt_cooldown.running()) { m_animation_machine.request(AnimState::hurt); }
 	if (is_stunned()) { m_animation_machine.request(AnimState::stun); }
@@ -651,7 +668,6 @@ void Player::update_animation() {
 }
 
 void Player::update_sprite() {
-
 	if (has_collider()) {
 		if (!grounded() || controller.is_dashing()) {
 			if (directions.desired != directions.actual) { request_flip(); }
@@ -664,6 +680,7 @@ void Player::update_sprite() {
 }
 
 void Player::handle_turning() {
+	if (has_flag_set(PlayerFlags::no_turn)) { return; }
 	if (directions.desired != directions.actual) {
 		if (has_collider()) {
 			std::abs(get_collider().physics.velocity.x) > thresholds.quick_turn ? m_animation_machine.request(AnimState::sharp_turn) : m_animation_machine.request(AnimState::turn);
@@ -725,10 +742,15 @@ void Player::set_direction(Direction to) {
 
 void Player::piggyback(int id) {
 	if (!piggybacker) {
-		piggybacker = Piggybacker(*m_services, *m_services->data.get_npc_label_from_id(id), get_center());
+		piggybacker.emplace(*m_services, *m_services->data.get_npc_label_from_id(id), get_center());
 	} else {
-		piggybacker = {};
+		piggybacker.reset();
 	}
+}
+
+auto Player::has_weapon(std::string_view tag) const -> bool {
+	if (!arsenal) { return false; }
+	return arsenal->has(tag);
 }
 
 auto Player::get_item_count(std::string_view tag) -> int {
@@ -799,7 +821,7 @@ void Player::update_weapon(world::Map& map) {
 	if (busy) {
 		equipped_weapon().set_flag(arms::WeaponFlags::firing, false);
 		equipped_weapon().set_flag(arms::WeaponFlags::charging, false);
-		equipped_weapon().set_flag(arms::WeaponFlags::released, true);
+		equipped_weapon().set_flag(arms::WeaponFlags::released, controller.has_flag_set(PlayerControllerFlags::released_weapon));
 	} else if (fire_weapon()) {
 		m_services->stats.player.bullets_fired.update();
 		sf::Vector2f tweak = controller.facing_left() ? sf::Vector2f{0.f, 0.f} : sf::Vector2f{-3.f, 0.f};
@@ -1056,7 +1078,12 @@ void Player::remove_from_hotbar(std::string_view tag) {
 }
 
 void Player::set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_outfit) {
-	for (auto i{0}; i < to_outfit.size(); ++i) { catalog.wardrobe.equip(static_cast<ApparelType>(i), to_outfit[i]); }
+	for (auto i{0}; i < to_outfit.size(); ++i) {
+		catalog.wardrobe.equip(static_cast<ApparelType>(i), to_outfit[i]);
+		if (static_cast<ApparelType>(i) == ApparelType::hairstyle) {
+			if (has_item_equipped("gas_mask")) { equip_item(56); }
+		}
+	}
 }
 
 void Player::give_item(std::string_view label, int amount, bool from_save) {
@@ -1089,9 +1116,16 @@ void Player::use_item() {
 EquipmentStatus Player::equip_item(int id) {
 	auto ret = catalog.inventory.equip_item(id);
 	if (id == 56) {
-		ret == EquipmentStatus::equipped ? catalog.wardrobe.equip(ApparelType::hairstyle, 1) : catalog.wardrobe.unequip(ApparelType::hairstyle);
+		ret == EquipmentStatus::equipped || ret == EquipmentStatus::swapped ? catalog.wardrobe.equip(ApparelType::hairstyle, 1) : catalog.wardrobe.unequip(ApparelType::hairstyle);
 		wardrobe_widget.update(*this);
 	}
+
+	// check for gas mask swapping
+	if (!std::ranges::contains(catalog.inventory.equipped_items_view(), 56) && ret == EquipmentStatus::swapped) {
+		catalog.wardrobe.unequip(ApparelType::hairstyle);
+		wardrobe_widget.update(*this);
+	}
+
 	return ret;
 }
 
@@ -1165,10 +1199,12 @@ void Player::handle_item_logic() {
 	}
 	m_air_supply.set_capacity(has_item_equipped("oxygen_tank") ? 400.f : 100.f, true);
 	has_item_equipped("hoarders_trinket") ? health.set_invincibility(default_invincibility_time_v * 1.3f) : health.set_invincibility(default_invincibility_time_v);
-	if (arsenal && hotbar) { has_item_equipped("soda") ? equipped_weapon().set_reload_multiplier(0.85f) : equipped_weapon().set_reload_multiplier(1.f); }
+	if (arsenal && hotbar) { has_item_equipped("feather") ? equipped_weapon().set_reload_multiplier(0.85f) : equipped_weapon().set_reload_multiplier(1.f); }
 	if (has_item("soda")) { m_services->quest_table.set_quest_progression("carl_soda", 1, QuestRequirementType::loose); }
 	if (has_item("screwdriver")) { m_services->quest_table.set_quest_progression("pioneer_tech", 2, QuestRequirementType::loose); }
 	if (has_item("velvet_rose")) { m_services->quest_table.set_quest_progression("cajole_doug", 2, QuestRequirementType::strict); }
+	if (has_weapon("gnat") && has_weapon("wasp")) { m_services->quest_table.set_quest_progression("build_scorpion", 1, QuestRequirementType::loose); }
+	if (has_item("golden_tiara") && m_services->quest_table.get_quest_progression("find_spencer") < 10) { m_services->quest_table.set_quest_progression("find_spencer", 10, QuestRequirementType::strict); }
 	auto has_bonus_health = health.has_bonus() ? 1 : 0;
 	m_services->quest_table.set_quest_progression("bonus_health", has_bonus_health, QuestRequirementType::strict);
 	if (has_item_equipped("gas_mask") && !is_dead()) {
@@ -1260,6 +1296,7 @@ bool Player::can_roll() const {
 
 bool Player::can_slide() const {
 	if (abilities_disabled()) { return false; }
+	if (m_animation_machine.is_state(AnimState::between_push) || m_animation_machine.is_state(AnimState::push)) { return false; }
 	if (controller.is_wallsliding() || controller.slid_in_air()) { return false; }
 	if (!grounded()) { return false; }
 	if (!catalog.inventory.has_item("pioneer_medal")) { return false; }

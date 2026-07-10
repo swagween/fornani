@@ -44,6 +44,9 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 
 	m_map_markers.insert({1, "main"});
 	m_map_markers.insert({2, "woodshine"});
+	m_map_markers.insert({3, "pioneer_trail"});
+	m_map_markers.insert({4, "nightside_station"});
+	m_map_markers.insert({5, "hoarders_cave"});
 
 	// create shaders
 	p_world_shader = LightShader(svc.finder);

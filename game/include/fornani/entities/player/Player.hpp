@@ -125,7 +125,8 @@ enum class PlayerFlags {
 	boss_fight,
 	in_goo,
 	special_render,
-	intangible
+	intangible,
+	no_turn
 };
 enum class Triggers { hurt };
 
@@ -219,6 +220,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto has_item(int id) const -> bool { return catalog.inventory.has_item(id); }
 	[[nodiscard]] auto has_item(std::string_view tag) const -> bool { return catalog.inventory.has_item(tag); }
 	[[nodiscard]] auto has_item_equipped(std::string_view id) const -> bool { return catalog.inventory.has_item_equipped(id); }
+	[[nodiscard]] auto has_weapon(std::string_view tag) const -> bool;
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
 	[[nodiscard]] auto has_map() const -> bool { return catalog.inventory.has_item(16); }
 	[[nodiscard]] auto has_collider() const -> bool { return collider.has_value(); }
@@ -331,6 +333,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 		util::Cooldown stun{128};
 		util::Cooldown suffocate{360};
 		util::Cooldown stun_immunity{400};
+		util::Cooldown post_push{20};
 	} cooldowns{};
 	Counters counters{};
 	std::vector<sf::Vector2f> accumulated_forces{};

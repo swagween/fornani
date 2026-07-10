@@ -34,7 +34,25 @@
       {
         "contingencies": [
           {
-            "requirement": 0,
+            "requirement": 1,
+            "strict": true,
+            "tag": "find_spencer"
+          }
+        ],
+        "dimensions": [
+          2,
+          2
+        ],
+        "id": 1310,
+        "position": [
+          4,
+          8
+        ]
+      },
+      {
+        "contingencies": [
+          {
+            "requirement": 10,
             "strict": true,
             "tag": "find_spencer"
           }
@@ -55,9 +73,9 @@
         "background": false,
         "contingencies": [
           {
-            "requirement": 0,
+            "requirement": 10,
             "strict": true,
-            "tag": "find_spencer"
+            "tag": "ashtown_bandit"
           }
         ],
         "dimensions": [
@@ -67,7 +85,7 @@
         "direction": -1,
         "face_player": true,
         "hidden": false,
-        "id": 1312,
+        "id": 1310,
         "label": "bandit",
         "position": [
           11,
@@ -91,6 +109,11 @@
             "requirement": 1,
             "strict": false,
             "tag": "find_spencer"
+          },
+          {
+            "requirement": 0,
+            "strict": true,
+            "tag": "the_hoarder"
           }
         ],
         "dimensions": [
@@ -112,6 +135,74 @@
             1
           ]
         ]
+      },
+      {
+        "background": false,
+        "contingencies": [
+          {
+            "requirement": 2,
+            "strict": false,
+            "tag": "find_spencer"
+          },
+          {
+            "requirement": 1,
+            "strict": false,
+            "tag": "the_hoarder"
+          }
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": true,
+        "hidden": false,
+        "id": 1311,
+        "label": "spencer",
+        "position": [
+          11,
+          10
+        ],
+        "start_busy": false,
+        "suites": [
+          [
+            11
+          ]
+        ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": true,
+        "hidden": true,
+        "id": 1311,
+        "label": "bryn",
+        "position": [
+          8,
+          10
+        ],
+        "start_busy": false
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": true,
+        "hidden": true,
+        "id": 1311,
+        "label": "dr_willett",
+        "position": [
+          7,
+          10
+        ],
+        "start_busy": false
       }
     ],
     "portals": [
@@ -159,7 +250,7 @@
     ],
     "interior": true,
     "metagrid": [
-      95,
+      94,
       19
     ],
     "minimap": true,

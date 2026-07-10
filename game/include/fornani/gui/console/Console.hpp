@@ -84,6 +84,8 @@ class Console {
 	[[nodiscard]] auto has_nani_portrait() const -> bool { return static_cast<bool>(m_nani_portrait); }
 	[[nodiscard]] auto was_response_created() const -> bool { return m_triggers.test(ConsoleTriggers::response_created); }
 	[[nodiscard]] auto can_exit() const -> bool { return m_output_type != OutputType::no_skip && m_output_type != OutputType::no_exit; }
+	[[nodiscard]] auto get_speaker() const -> StableID { return m_speaker_id.has_value() ? m_speaker_id.value() : StableID{}; }
+	[[nodiscard]] auto get_i_speaker() const -> int { return m_speaker_id.has_value() ? m_speaker_id->get() : -1; }
 
 	util::RectPath m_path;
 	dj::Json text_suite{};

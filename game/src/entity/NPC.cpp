@@ -400,6 +400,13 @@ void NPC::set_special_animation(int which) {
 	}
 }
 
+void NPC::set_busy() {
+	state_function = {[this]() { return this->update_busy(); }};
+	set_flag(NPCFlags::busy);
+	request(NPCAnimationState::busy);
+	Mobile::set_animation("busy");
+}
+
 void NPC::use_portal(world::Map& map) {
 	if (is_hidden()) { return; }
 	for (auto portal : map.get_entities<Portal>()) {

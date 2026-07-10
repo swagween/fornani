@@ -116,6 +116,23 @@
           6
         ],
         "source_id": 1101
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 1115,
+        "dimensions": [
+          2,
+          1
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          65,
+          15
+        ],
+        "source_id": 1101
       }
     ],
     "save_point": [
@@ -171,6 +188,7 @@
       "environmental_randomness": true,
       "interior": true,
       "lighting": true,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -5157,8 +5175,8 @@
         260,
         261,
         262,
-        0,
-        0,
+        493,
+        495,
         24,
         25,
         30,
@@ -5317,8 +5335,8 @@
         292,
         293,
         294,
-        341,
-        342,
+        0,
+        0,
         56,
         57,
         62,

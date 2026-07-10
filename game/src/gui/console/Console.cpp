@@ -107,6 +107,11 @@ void Console::update(automa::ServiceProvider& svc) {
 				NANI_LOG_DEBUG(m_logger, "Launching cutscene: {}", code.value);
 				processed = true;
 			}
+			if (code.is_remove_item() && m_process_code_before) {
+				m_services->events.remove_item_by_id_event.dispatch(*m_services, code.value);
+				NANI_LOG_DEBUG(m_logger, "Removed item from console {}", code.value);
+				processed = true;
+			}
 			if (code.is(MessageCodeType::add_map_marker) && m_process_code_before && code.extras) {
 				if (code.extras->size() > 1) {
 					m_services->events.add_map_marker_event.dispatch(*m_services, code.value, code.extras->at(0), code.extras->at(1));
@@ -325,11 +330,15 @@ void Console::handle_inputs(input::InputSystem& controller) {
 						m_flags.set(ConsoleFlags::close_after_process);
 					}
 					if (cde.is_destructible()) { m_services->data.switch_destructible_state(cde.value); }
+					if (cde.is_remove_item()) {
+						m_services->events.remove_item_by_id_event.dispatch(*m_services, cde.value);
+						NANI_LOG_DEBUG(m_logger, "Removed item from console {}", cde.value);
+					}
 					if (cde.is_exit()) {
 						end();
 						return;
 					}
-					m_response = {};
+					m_response.reset();
 					responded = true;
 				}
 			}
@@ -371,10 +380,6 @@ void Console::handle_inputs(input::InputSystem& controller) {
 				if (code.is_item() && m_process_code_after) { m_services->events.acquire_item_from_console_event.dispatch(*m_services, code.value); }
 				if (code.is_weapon() && m_process_code_after) { m_services->events.acquire_weapon_from_console_event.dispatch(*m_services, code.value); }
 				if (code.is_remove_weapon() && m_process_code_after) { m_services->events.remove_weapon_by_id_event.dispatch(*m_services, code.value); }
-				if (code.is_remove_item() && m_process_code_after) {
-					m_services->events.remove_item_by_id_event.dispatch(*m_services, code.value);
-					NANI_LOG_DEBUG(m_logger, "Removed item from console {}", code.value);
-				}
 				if (code.is_open_vendor() && m_process_code_after) { m_services->events.open_vendor_event.dispatch(*m_services, code.value); }
 				if (code.is(MessageCodeType::open_builder) && m_process_code_after) { m_services->events.open_builder_event.dispatch(*m_services, code.value); }
 				if (code.is_emotion() && m_process_code_after && m_npc_portrait && responded) { m_npc_portrait->set_emotion(code.value); }

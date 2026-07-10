@@ -35,8 +35,8 @@
     "category": 1,
     "lookup": [3, 0],
     "origin": [5, 2],
-    "actual_title": "Willet's Floppy Disc",
-    "naive_description": "Contains schematics for the Greatwing, which we will need in order to stop Skycorps from taking over the island. Dr. Willet told me to bring it to someone named Spencer in Ashtown.",
+    "actual_title": "Willett's Floppy Disc",
+    "naive_description": "Contains schematics for the Greatwing, which we will need in order to stop Skycorps from taking over the island. Dr. Willett told me to bring it to someone named Spencer in Ashtown.",
     "actual_description": "Contains schematics for the Greatwing. Spencer needs a track zero sensor and a fresh head motor to access its contents.",
     "unique": true
   },
@@ -1108,7 +1108,8 @@
   {
     "tag": "golden_tiara",
     "category": 5,
-    "origin": [3, 0],
+    "lookup": [1, 10],
+    "origin": [1, 0],
     "start_index": 160,
     "actual_title": "Golden Tiara",
     "naive_description": "A shiny tiara. You suspect it's not made of real gold...",

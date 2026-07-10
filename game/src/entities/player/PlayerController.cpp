@@ -83,6 +83,10 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 
 	set_flag(PlayerControllerFlags::firing_weapon, svc.input_system.digital(input::DigitalAction::shoot).held);
 
+	// set input direction
+	if (left) { player.directions.input.set_from_simple({LR::left}); }
+	if (right) { player.directions.input.set_from_simple({LR::right}); }
+
 	// set dash direction
 	if (up) { m_dash_direction = Direction{{0, 1}}; }
 	if (down) { m_dash_direction = Direction{{0, -1}}; }
