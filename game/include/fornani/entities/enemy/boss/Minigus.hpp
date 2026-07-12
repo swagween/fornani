@@ -2,7 +2,6 @@
 #pragma once
 
 #include <fornani/entities/enemy/Boss.hpp>
-#include <fornani/entity/NPC.hpp>
 #include "fornani/entities/packages/Attack.hpp"
 #include "fornani/entities/packages/Caution.hpp"
 #include "fornani/entities/packages/Shockwave.hpp"
@@ -39,7 +38,7 @@ class Minigun : public Animatable {
 	components::SteeringBehavior m_steering{};
 };
 
-class Minigus : public Boss, public NPC, public StateMachine<MinigusState> {
+class Minigus : public Boss, public StateMachine<MinigusState> {
 
   public:
 	Minigus(automa::ServiceProvider& svc, world::Map& map, SceneContext& context);

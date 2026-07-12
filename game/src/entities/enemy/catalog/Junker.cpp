@@ -9,7 +9,7 @@ namespace fornani::enemy {
 
 constexpr auto junker_framerate = 12;
 
-Junker::Junker(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "junker"), m_services{&svc}, m_toss_time{400} {
+Junker::Junker(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "junker"), Animatable{svc, "enemy_junker", {30, 30}}, m_services{&svc}, m_toss_time{400} {
 	p_animations = {{"idle", {0, 8, junker_framerate * 2, -1}}, {"turn", {12, 2, junker_framerate * 2, 0}}, {"toss", {8, 4, junker_framerate * 3, 0}}, {"hide", {14, 1, junker_framerate * 2, -1}}};
 	animation.set_params(get_params("hide"));
 	p_state.actual = JunkerState::hide;

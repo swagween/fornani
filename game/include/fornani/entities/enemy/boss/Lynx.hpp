@@ -6,7 +6,6 @@
 #include <fornani/entities/packages/Attack.hpp>
 #include <fornani/entities/packages/Caution.hpp>
 #include <fornani/entities/packages/Shockwave.hpp>
-#include <fornani/entity/NPC.hpp>
 #include <fornani/particle/Sparkler.hpp>
 
 #define LYNX_BIND(f) std::bind(&Lynx::f, this)
@@ -16,7 +15,7 @@ namespace fornani::enemy {
 enum class LynxState { sit, get_up, idle, jump, forward_slash, levitate, run, downward_slam, prepare_shuriken, toss_shuriken, upward_slash, triple_slash, turn, aerial_slash, prepare_slash, defeat, second_phase, laugh, stagger };
 enum class LynxFlags { conversing, just_levitated, player_defeated };
 
-class Lynx final : public NPC, public Boss {
+class Lynx final : public Boss {
   public:
 	Lynx(automa::ServiceProvider& svc, world::Map& map, SceneContext& context);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
@@ -66,6 +65,7 @@ class Lynx final : public NPC, public Boss {
 		util::Cooldown start_levitate;
 		util::Cooldown throw_shuriken;
 		util::Cooldown post_defeat;
+		util::Cooldown stall;
 	} m_cooldowns{};
 
 	struct {

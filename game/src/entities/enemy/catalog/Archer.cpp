@@ -6,7 +6,8 @@
 
 namespace fornani::enemy {
 
-Archer::Archer(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "archer"), m_services(&svc), m_map(&map), m_bow(svc, "demon_bow"), parts{.bow{svc.assets.get_texture("archer_bow"), 0.8f, 0.85f, {-18.f, -8.f}}} {
+Archer::Archer(automa::ServiceProvider& svc, world::Map& map)
+	: Enemy(svc, map, "archer"), Animatable{svc, "enemy_archer", {32, 32}}, m_services(&svc), m_map(&map), m_bow(svc, "demon_bow"), parts{.bow{svc.assets.get_texture("archer_bow"), 0.8f, 0.85f, {-18.f, -8.f}}} {
 	auto archer_framerate = 12;
 	p_animations = {{"idle", {0, 8, archer_framerate * 2, -1}}, {"turn", {8, 1, archer_framerate * 2, 0}}, {"run", {9, 4, archer_framerate * 2, 4}}, {"jump", {9, 1, archer_framerate * 3, 0}}, {"shoot", {13, 1, archer_framerate * 12, 0}}};
 	get_collider().physics.maximum_velocity = {8.f, 12.f};

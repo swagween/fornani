@@ -6,7 +6,8 @@
 
 namespace fornani::enemy {
 
-Antibody::Antibody(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "antibody"), m_services{&svc}, m_post_stun{400}, m_variant{static_cast<AntibodyVariant>(variant)} {
+Antibody::Antibody(automa::ServiceProvider& svc, world::Map& map, int variant)
+	: Enemy(svc, map, "antibody"), Animatable{svc, "enemy_antibody", {34, 34}}, m_services{&svc}, m_post_stun{400}, m_variant{static_cast<AntibodyVariant>(variant)} {
 	p_animations = {{"idle", {0, 8, 20, -1}}, {"stun", {8, 7, 32, 0}}};
 	animation.set_params(get_params("idle"));
 	p_state.actual = AntibodyState::idle;

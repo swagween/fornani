@@ -4,7 +4,7 @@
 
 namespace fornani {
 
-Enemy::Enemy(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "enemies") {
+Enemy::Enemy(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "enemies"), Animatable{svc, "enemies"} {
 	unserialize(in);
 	repeatable = true;
 	auto tag = svc.data.get_enemy_label_from_id(get_id());
@@ -14,7 +14,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in,
 	}
 }
 
-Enemy::Enemy(automa::ServiceProvider& svc, int id, int variant) : Entity(svc, "enemies", id, {1, 1}), m_variant{variant} {
+Enemy::Enemy(automa::ServiceProvider& svc, int id, int variant) : Entity(svc, "enemies", id, {1, 1}), Animatable{svc, "enemies"}, m_variant{variant} {
 	repeatable = true;
 	auto tag = svc.data.get_enemy_label_from_id(id);
 	if (tag) {

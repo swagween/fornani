@@ -170,6 +170,10 @@ void InputSystem::handle_event(std::optional<sf::Event> const event) {
 }
 
 void InputSystem::sync_mouse(sf::RenderWindow& window) {
+	if (!window.hasFocus()) {
+		m_mouse_active.cancel();
+		return;
+	}
 	m_mouse.previous_position = m_mouse.position;
 	m_mouse.position = window.mapPixelToCoords(sf::Mouse::getPosition());
 }

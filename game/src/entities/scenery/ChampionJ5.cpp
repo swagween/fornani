@@ -4,7 +4,8 @@
 
 namespace fornani {
 
-ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "champion_j5_body", {80, 60}}, m_services{&svc}, m_propeller{svc, "champion_j5_propeller", {80, 60}}, m_thrust{0.017f, .118f, .991f, 260.f} {
+ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map)
+	: Mobile{svc, "champion_j5_body", {80, 60}}, Animatable{svc, "champion_j5_body", {80, 60}}, m_services{&svc}, m_propeller{svc, "champion_j5_propeller", {80, 60}}, m_thrust{0.017f, .118f, .991f, 260.f} {
 	push_and_set_animation("flying", {0, 1, 24, -1});
 	push_animation("land", {1, 4, 24, 0});
 	push_animation("grounded", {5, 1, 24, -1});

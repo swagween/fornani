@@ -1,6 +1,7 @@
 
 #include "fornani/core/Game.hpp"
 #include <fornani/core/Debug.hpp>
+#include <cstring>
 #include <ctime>
 #include "fornani/automa/states/Dojo.hpp"
 #include "fornani/automa/states/MainMenu.hpp"

@@ -20,6 +20,10 @@ void Wallslide::update(shape::Collider& collider, PlayerController& controller) 
 		collider.physics.acceleration.y = m_base_grav;
 		collider.physics.maximum_velocity.y = m_speed_multiplier;
 	}
+	if (controller.is_wallclinging()) {
+		collider.physics.acceleration.y = controller.wallslide_slowdown.get_normalized();
+		collider.physics.velocity.y = controller.wallslide_slowdown.get_normalized();
+	}
 	auto const left_released = m_services->input_system.direction_released(input::AnalogAction::move, input::MoveDirection::left);
 	auto const right_released = m_services->input_system.direction_released(input::AnalogAction::move, input::MoveDirection::right);
 	auto const left_pressed = m_services->input_system.direction_released(input::AnalogAction::move, input::MoveDirection::left);

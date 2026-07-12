@@ -9,7 +9,7 @@ namespace fornani::enemy {
 
 constexpr auto mastiff_framerate = 10;
 
-Mastiff::Mastiff(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "mastiff"), m_services{&svc} {
+Mastiff::Mastiff(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "mastiff"), Animatable{svc, "enemy_mastiff", {64, 64}}, m_services{&svc} {
 	p_animations = {{"idle", {0, 6, mastiff_framerate * 2, -1}}, {"run", {6, 4, mastiff_framerate * 2, 4}}, {"bite", {10, 6, mastiff_framerate * 2, 0}}, {"turn", {16, 2, mastiff_framerate * 2, 0}}};
 	animation.set_params(get_params("idle"));
 	m_bite.hit.bounds.setRadius(40.f);

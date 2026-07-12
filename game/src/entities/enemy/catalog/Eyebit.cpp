@@ -5,7 +5,7 @@
 
 namespace fornani::enemy {
 
-Eyebit::Eyebit(automa::ServiceProvider& svc, world::Map& map, bool spawned) : Enemy(svc, map, "eyebit", spawned) {
+Eyebit::Eyebit(automa::ServiceProvider& svc, world::Map& map, bool spawned) : Enemy(svc, map, "eyebit", spawned), Animatable{svc, "enemy_eyebit", {16, 16}} {
 	p_animations = {{"idle", {0, 4, 28, -1}}, {"turn", {4, 1, 38, 0}}};
 	animation.set_params(get_params("idle"));
 	flags.general.set(GeneralFlags::transcendent);

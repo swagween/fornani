@@ -7,7 +7,7 @@
 
 namespace fornani::enemy {
 
-Eyebot::Eyebot(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "eyebot") {
+Eyebot::Eyebot(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "eyebot"), Animatable{svc, "enemy_eyebot", {64, 64}} {
 	animation.set_params(idle);
 	seeker_cooldown.start(2);
 }

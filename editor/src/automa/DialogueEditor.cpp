@@ -3,6 +3,7 @@
 #include <editor/automa/DialogueEditor.hpp>
 #include <editor/metagrid/tool/Cursor.hpp>
 #include <editor/metagrid/tool/Move.hpp>
+#include <cstring>
 #include <span>
 #include <imgui-SFML.h>
 

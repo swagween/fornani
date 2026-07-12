@@ -6,14 +6,15 @@
 
 namespace fornani {
 
-CutsceneTrigger::CutsceneTrigger(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "cutscene_triggers"), m_bounding_box{get_world_dimensions()} {
+CutsceneTrigger::CutsceneTrigger(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "cutscene_triggers"), Animatable{svc, "cutscene_triggers"}, m_bounding_box{get_world_dimensions()} {
 	unserialize(in);
 	m_bounding_box.set_position(get_world_position());
 	set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 	repeatable = false;
 }
 
-CutsceneTrigger::CutsceneTrigger(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, util::BitFlags<CutsceneTriggerAttributes> attributes) : Entity(svc, "cutscene_triggers", id, dimensions), m_attributes{attributes} {
+CutsceneTrigger::CutsceneTrigger(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, util::BitFlags<CutsceneTriggerAttributes> attributes)
+	: Entity(svc, "cutscene_triggers", id, dimensions), Animatable{svc, "cutscene_triggers"}, m_attributes{attributes} {
 	set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 	repeatable = false;
 }

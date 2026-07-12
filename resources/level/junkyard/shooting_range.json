@@ -42,6 +42,48 @@
         ],
         "tag": "manta",
         "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 98682,
+        "modifier": 17,
+        "position": [
+          5,
+          23
+        ],
+        "tag": "scorpion",
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 98682,
+        "modifier": 17,
+        "position": [
+          2,
+          20
+        ],
+        "tag": "kariba_talisman",
+        "type": 2
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 98682,
+        "modifier": 17,
+        "position": [
+          3,
+          20
+        ],
+        "tag": "pioneer_medal",
+        "type": 2
       }
     ],
     "enemies": [
@@ -60,6 +102,19 @@
           0
         ],
         "variant": 0
+      }
+    ],
+    "save_point": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 720,
+        "position": [
+          7,
+          15
+        ]
       }
     ]
   },
@@ -7066,7 +7121,7 @@
         0,
         0,
         0,
-        0,
+        12,
         12,
         12,
         0,
@@ -7302,9 +7357,9 @@
         34,
         32,
         34,
-        0,
-        0,
-        0,
+        12,
+        12,
+        12,
         0,
         0,
         23,

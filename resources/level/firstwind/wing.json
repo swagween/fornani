@@ -1,5 +1,25 @@
 {
   "entities": {
+    "cutscene_triggers": [
+      {
+        "contingencies": [
+          {
+            "requirement": 0,
+            "strict": true,
+            "tag": "defeat_minigus"
+          }
+        ],
+        "dimensions": [
+          2,
+          14
+        ],
+        "id": 117,
+        "position": [
+          45,
+          0
+        ]
+      }
+    ],
     "destructibles": [
       {
         "dimensions": [
@@ -66,6 +86,7 @@
         "series": [
           {
             "hide_portrait": true,
+            "output": 0,
             "suite": [
               [
                 {
@@ -74,6 +95,30 @@
               ]
             ]
           }
+        ]
+      }
+    ],
+    "npcs": [
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": true,
+        "hidden": true,
+        "id": 117,
+        "label": "minigus",
+        "position": [
+          55,
+          9
+        ],
+        "start_busy": false,
+        "suites": [
+          [
+            1
+          ]
         ]
       }
     ],
@@ -182,6 +227,7 @@
       "environmental_randomness": true,
       "interior": false,
       "lighting": false,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

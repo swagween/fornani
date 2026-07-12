@@ -13,8 +13,8 @@ constexpr auto lynx_framerate = 7;
 constexpr auto run_threshold_v = 0.002f;
 
 Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, SceneContext& context)
-	: NPC(svc, map, std::string_view{"lynx"}, false), Boss(svc, map, "lynx"), m_context{&context}, m_map{&map},
-	  m_cooldowns{.run{240}, .post_hurt{64}, .post_shuriken_toss{1200}, .post_levitate{1000}, .start_levitate{150}, .throw_shuriken{60}, .post_defeat{800}}, m_services{&svc},
+	: Boss(svc, map, "lynx"), Animatable{svc, "enemy_lynx", {128, 81}}, m_context{&context}, m_map{&map},
+	  m_cooldowns{.run{240}, .post_hurt{64}, .post_shuriken_toss{1200}, .post_levitate{1000}, .start_levitate{150}, .throw_shuriken{60}, .post_defeat{800}, .stall{80}}, m_services{&svc},
 	  m_attacks{.left_shockwave{{30, 400, 2, {-1.5f, 0.f}}}, .right_shockwave{{30, 400, 2, {1.5f, 0.f}}}}, m_shuriken(svc, "shuriken"), m_magic{svc, {40.f, 40.f}, colors::white, "lynx_magic"}, m_seek_friction{0.9f, 0.9f} {
 	Enemy::p_animations = {
 		{"sit", {0, 1, lynx_framerate, -1}},
@@ -40,7 +40,6 @@ Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, SceneContext& context)
 	Enemy::animation.set_params(Enemy::get_params("sit"));
 	flags.state.set(StateFlags::no_shake);
 	flags.general.set(GeneralFlags::post_death_render);
-	set_force_interact(true);
 	flags.state.reset(StateFlags::vulnerable);
 
 	m_shuriken.get().set_team(arms::Team::skycorps);
@@ -53,10 +52,6 @@ Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, SceneContext& context)
 		m_home.y = std::max(pt.x, m_home.y);
 	}
 
-	auto prog = svc.quest_table.get_quest_progression("lynx_dialogue");
-	auto which = prog == 0 ? 1 : 4;
-	push_conversation(which);
-
 	Enemy::get_collider().physics.maximum_velocity = sf::Vector2f{100.f, 100.f};
 }
 
@@ -68,6 +63,7 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	m_cooldowns.post_shuriken_toss.update();
 	m_cooldowns.post_levitate.update();
 	m_cooldowns.throw_shuriken.update();
+	m_cooldowns.stall.update();
 	if (!m_context->console.has_value()) { m_cooldowns.post_defeat.update(); }
 
 	// check if Lynx has teleported off the map (rare)
@@ -198,21 +194,11 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		request(LynxState::laugh);
 	}
 
-	if (player.get_collider().bounding_box.overlaps(m_distant_range) && !was_introduced() && is_force_interact()) {
-		set_distant_interact(true);
-		svc.music_player.stop();
-	}
-
-	NPC::update(svc, map, *m_context, player);
-	if (m_context->console.has_value() && was_introduced()) { set_force_interact(false); }
-
 	if (!health.is_dead()) {
 		// first phase starts
 		if (Boss::has_flag_set(BossFlags::start_battle) && !m_context->console.has_value()) {
 			request(LynxState::get_up);
 			Boss::set_flag(BossFlags::start_battle, false);
-			svc.music_player.load(svc.finder, "tumult");
-			svc.music_player.play_looped();
 			flags.general.set(GeneralFlags::has_invincible_channel);
 			flags.state.set(StateFlags::vulnerable);
 			svc.quest_table.progress_quest("lynx_dialogue", 1, 1);
@@ -221,10 +207,9 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		// second phase starts
 		if (half_health() && !Boss::has_flag_set(BossFlags::second_phase)) {
 			request(LynxState::second_phase);
-			set_distant_interact(true);
-			set_force_interact(true);
-			flush_conversations();
-			push_conversation(3);
+			set_flag(BossFlags::second_phase);
+			svc.quest_table.set_quest_progression("defeat_lynx", 1);
+			svc.events.launch_cutscene_event.dispatch(svc, 227);
 		}
 	}
 	if (Boss::has_flag_set(BossFlags::battle_mode)) { flags.state.set(StateFlags::vulnerable); }
@@ -599,12 +584,9 @@ fsm::StateFunction Lynx::update_defeat() {
 	if (Enemy::animation.just_started()) {
 		m_cooldowns.post_defeat.start();
 		Boss::set_flag(BossFlags::battle_mode, false);
-		set_distant_interact(true);
-		set_force_interact(true);
+		m_services->quest_table.set_quest_progression("defeat_lynx", 2);
+		m_services->events.launch_cutscene_event.dispatch(*m_services, 227);
 		m_map->clear_projectiles();
-		flush_conversations();
-		push_conversation(2);
-		m_services->music_player.pause();
 		m_services->soundboard.flags.lynx.set(audio::Lynx::defeat);
 	}
 	if (m_cooldowns.post_defeat.is_almost_complete()) {
@@ -621,6 +603,10 @@ fsm::StateFunction Lynx::update_second_phase() {
 	m_state.actual = LynxState::second_phase;
 	Boss::set_flag(BossFlags::second_phase);
 	flags.state.reset(StateFlags::vulnerable);
+	if (m_cooldowns.stall.is_almost_complete()) {
+		request(LynxState::downward_slam);
+		if (change_state(LynxState::downward_slam, Enemy::get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
+	}
 	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
 	if (Enemy::animation.just_started()) {
 		m_services->soundboard.flags.lynx.set(audio::Lynx::laugh);
@@ -631,13 +617,10 @@ fsm::StateFunction Lynx::update_second_phase() {
 	Enemy::get_collider().physics.set_friction_componentwise(m_seek_friction);
 	m_map->set_target_balance(0.f, audio::BalanceTarget::music);
 	m_map->set_target_balance(0.f, audio::BalanceTarget::ambience);
-	if (!m_context->console.has_value()) {
-		m_services->music_player.load(m_services->finder, "tumultuous_spirit");
-		m_services->music_player.play_looped();
+	if (flags.state.consume(StateFlags::special_event)) {
 		flags.general.set(GeneralFlags::gravity);
 		Enemy::get_collider().set_flag(shape::ColliderFlags::simple, false);
-		request(LynxState::downward_slam);
-		if (change_state(LynxState::downward_slam, Enemy::get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
+		m_cooldowns.stall.start();
 	}
 	return LYNX_BIND(update_second_phase);
 }

@@ -195,6 +195,17 @@
         ]
       ],
       "responses": []
+    },
+    "pirag_charm": {
+      "suite": [
+        [
+          {
+            "codes": [[10, 104, 6]],
+            "message": "This charm grants you the ability to cling to walls whilst not sprinting (hold   if auto-sprint is enabled). You can cling to walls indefinitely."
+          }
+        ]
+      ],
+      "responses": []
     }
   }
 }

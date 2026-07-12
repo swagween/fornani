@@ -9,7 +9,7 @@ namespace fornani::enemy {
 
 constexpr auto minion_framerate = 10;
 
-Minion::Minion(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "minion"), m_services{&svc}, m_jump{8}, m_tick{120} {
+Minion::Minion(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "minion"), Animatable{svc, "enemy_minion", {16, 16}}, m_services{&svc}, m_jump{8}, m_tick{120} {
 	p_animations = {{"idle", {0, 1, minion_framerate * 2, -1}}, {"blink", {1, 2, minion_framerate * 2, 0}}, {"jump", {3, 4, minion_framerate * 2, 0}}, {"turn", {7, 1, minion_framerate * 2, 0}}};
 	animation.set_params(get_params("idle"));
 	flags.state.set(StateFlags::no_shake);

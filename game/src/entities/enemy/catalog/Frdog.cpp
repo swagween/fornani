@@ -5,7 +5,7 @@
 
 namespace fornani::enemy {
 
-Frdog::Frdog(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "frdog") {
+Frdog::Frdog(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "frdog"), Animatable{svc, "enemy_frdog", {40, 28}} {
 	animation.set_params(idle);
 	p_animations = {{"idle", {14, 2, 36, -1}}};
 }

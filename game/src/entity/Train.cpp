@@ -6,14 +6,16 @@
 
 namespace fornani {
 
-Train::Train(automa::ServiceProvider& svc, dj::Json const& in) : Entity{svc, in, "train"}, m_wheels{svc, "train_wheels", {303, 39}} {
+Train::Train(automa::ServiceProvider& svc, dj::Json const& in) : Entity{svc, in, "train"}, Animatable{svc, "train"}, m_wheels{svc, "train_wheels", {303, 39}} {
 	unserialize(in);
 	init(svc);
 }
 
-Train::Train(automa::ServiceProvider& svc) : Entity{svc, "train", 0}, m_wheels{svc, "train_wheels", {303, 39}} { init(svc); }
+Train::Train(automa::ServiceProvider& svc) : Entity{svc, "train", 0}, Animatable{svc, "train"}, m_wheels{svc, "train_wheels", {303, 39}} { init(svc); }
 
-Train::Train(automa::ServiceProvider& svc, int style) : Entity{svc, "train", 0}, m_style{style}, m_prepare_arrive{200}, m_prepare_leave{200}, m_play_horn{500}, m_wheels{svc, "train_wheels", {303, 39}} { init(svc); }
+Train::Train(automa::ServiceProvider& svc, int style) : Entity{svc, "train", 0}, Animatable{svc, "train"}, m_style{style}, m_prepare_arrive{200}, m_prepare_leave{200}, m_play_horn{500}, m_wheels{svc, "train_wheels", {303, 39}} {
+	init(svc);
+}
 
 std::unique_ptr<Entity> Train::clone() const { return std::make_unique<Train>(*this); }
 

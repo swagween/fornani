@@ -5,6 +5,8 @@ nani_add_headers(
   BanditEncounter.hpp
   BitCell.hpp
   BrynPostMiaag.hpp
+  EncounterMinigus.hpp
+  EncounterLynx.hpp
         LadyNimbusIntro.hpp
         LothAtWorm.hpp
         NightsideStation.hpp

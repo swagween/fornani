@@ -4,26 +4,15 @@
     "responses": [
       [
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "...Loth?"
         }
       ],
       [
         {
           "codes": [
-            [
-              1,
-              2
-            ],
-            [
-              8,
-              0
-            ]
+            [1, 2],
+            [8, 0]
           ],
           "message": "Where were you?"
         }
@@ -33,18 +22,9 @@
       [
         {
           "codes": [
-            [
-              1,
-              0
-            ],
-            [
-              5,
-              2
-            ],
-            [
-              4,
-              4
-            ]
+            [1, 0],
+            [5, 2],
+            [4, 4]
           ],
           "message": "Nani."
         }
@@ -55,18 +35,9 @@
         },
         {
           "codes": [
-            [
-              1,
-              1
-            ],
-            [
-              23,
-              1
-            ],
-            [
-              5,
-              1
-            ]
+            [1, 1],
+            [23, 1],
+            [5, 1]
           ],
           "message": "She is magnificent to behold, is she not? Even if it is just a tiny portion of her that we see."
         }
@@ -78,34 +49,19 @@
     "responses": [
       [
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "For me? What do you mean?"
         }
       ],
       [
         {
-          "codes": [
-            [
-              1,
-              2
-            ]
-          ],
+          "codes": [[1, 2]],
           "message": "I don't understand..."
         }
       ],
       [
         {
-          "codes": [
-            [
-              1,
-              3
-            ]
-          ],
+          "codes": [[1, 3]],
           "message": "You're doing that cryptic thing again..."
         }
       ]
@@ -114,14 +70,8 @@
       [
         {
           "codes": [
-            [
-              23,
-              2
-            ],
-            [
-              5,
-              0
-            ]
+            [23, 2],
+            [5, 0]
           ],
           "message": "There is much you should know, sis. And perhaps I should have told you sooner, but it's too late for that now."
         },
@@ -129,62 +79,35 @@
           "message": "I am not the thief that Dr. Willett would have you believe, nor the traitor that Bryn surely thinks I am."
         },
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
+          "codes": [[1, 0]],
           "message": "Everything I've done and will do, Nani, is for you."
         }
       ],
       [
         {
           "codes": [
-            [
-              5,
-              2
-            ],
-            [
-              4,
-              0
-            ]
+            [5, 2],
+            [4, 0]
           ],
           "message": "We are a dying people. Skycorps relentlessly raid our last holdfast, all the while hammering away at the island, oblivious to the consequences."
         },
         {
-          "codes": [
-            [
-              5,
-              1
-            ]
-          ],
+          "codes": [[5, 1]],
           "message": "If we do not protect our home and our tribe, we will all die."
         },
         {
           "message": "And I don't mean just those who live on this island. I mean everyone on the planet."
         },
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "You see, Nani... you are the future of our people."
         }
       ],
       [
         {
           "codes": [
-            [
-              1,
-              2
-            ],
-            [
-              5,
-              2
-            ]
+            [1, 2],
+            [5, 2]
           ],
           "message": "Nor would I expect you to. At least, not yet."
         }
@@ -192,14 +115,8 @@
       [
         {
           "codes": [
-            [
-              5,
-              0
-            ],
-            [
-              4,
-              2
-            ]
+            [5, 0],
+            [4, 2]
           ],
           "message": "Hmph."
         },
@@ -208,18 +125,9 @@
         },
         {
           "codes": [
-            [
-              23,
-              3
-            ],
-            [
-              8,
-              0
-            ],
-            [
-              5,
-              2
-            ]
+            [23, 3],
+            [8, 0],
+            [5, 2]
           ],
           "message": "For now, at least, I'll give you a more direct warning."
         }
@@ -231,56 +139,31 @@
     "responses": [
       [
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "What was it that you stole, exactly?"
         }
       ],
       [
         {
-          "codes": [
-            [
-              1,
-              2
-            ]
-          ],
+          "codes": [[1, 2]],
           "message": "Now's not the time for secrets, Loth."
         }
       ],
       [
         {
-          "codes": [
-            [
-              1,
-              3
-            ]
-          ],
+          "codes": [[1, 3]],
           "message": "Just like you protected me from getting kidnapped by Skycorps?"
         }
       ],
       [
         {
-          "codes": [
-            [
-              1,
-              4
-            ]
-          ],
+          "codes": [[1, 4]],
           "message": "Where's the Pixiote Temple...?"
         }
       ],
       [
         {
-          "codes": [
-            [
-              1,
-              5
-            ]
-          ],
+          "codes": [[1, 5]],
           "message": "What...? No! You can't just leave again!"
         }
       ]
@@ -288,90 +171,49 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              5,
-              2
-            ]
-          ],
+          "codes": [[5, 2]],
           "message": "You should know that Dr. Willett is not who he purports to be."
         },
         {
           "message": "He is a man out for his own interests, and nothing more. He does not care about the Kariba or this island."
         },
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
+          "codes": [[1, 0]],
           "message": "And the clearer that became to me, the less fault I found in my decision to sabotage his research."
         }
       ],
       [
         {
           "codes": [
-            [
-              1,
-              1
-            ],
-            [
-              5,
-              0
-            ],
-            [
-              4,
-              1
-            ]
+            [1, 1],
+            [5, 0],
+            [4, 1]
           ],
           "message": "Hah... Now, Nani, there will always be knowledge not meant for you to know."
         }
       ],
       [
         {
-          "codes": [
-            [
-              1,
-              2
-            ]
-          ],
+          "codes": [[1, 2]],
           "message": "It is a secret for your own good, Nani. I am merely protecting you."
         }
       ],
       [
         {
           "codes": [
-            [
-              23,
-              7
-            ],
-            [
-              5,
-              2
-            ]
+            [23, 7],
+            [5, 2]
           ],
           "message": "..."
         },
         {
-          "codes": [
-            [
-              4,
-              2
-            ]
-          ],
+          "codes": [[4, 2]],
           "message": "My dear sister..."
         },
         {
           "codes": [
-            [
-              23,
-              9
-            ],
-            [
-              5,
-              1
-            ]
+            [23, 9],
+            [5, 1]
           ],
           "message": "I suppose you are now an adult and very capable of making your own decisions, and suffering their consequences."
         },
@@ -382,47 +224,30 @@
           "message": "It is not safe to tell you - especially not here. Even better is if I simply show you."
         },
         {
-          "codes": [
-            [
-              1,
-              3
-            ]
-          ],
+          "codes": [[1, 3]],
           "message": "Find me at the heart of the Pixiote Temple. There, you will learn the whole truth."
         }
       ],
       [
         {
-          "codes": [
-            [
-              5,
-              0
-            ]
-          ],
+          "codes": [[5, 0]],
           "message": "The Mother Worm is ever in conference with your spirit. You need only listen, and she will show you the way."
         },
         {
+          "codes": [[2, 74]],
+          "message": "Take this as a small token of my guidance. I pray you will find it useful."
+        },
+        {
           "codes": [
-            [
-              1,
-              4
-            ],
-            [
-              5,
-              1
-            ]
+            [1, 4],
+            [5, 1]
           ],
           "message": "Goodbye for now, Nani. I trust you will act in accordance with the Mother and our people."
         }
       ],
       [
         {
-          "codes": [
-            [
-              4,
-              3
-            ]
-          ],
+          "codes": [[4, 3]],
           "message": "I'm not going anywhere. You have other challenges ahead of you that you must deal with before we can speak again. Until then, I will be with you in spirit."
         },
         {
@@ -433,18 +258,9 @@
         },
         {
           "codes": [
-            [
-              8,
-              0
-            ],
-            [
-              23,
-              11
-            ],
-            [
-              5,
-              2
-            ]
+            [8, 0],
+            [23, 11],
+            [5, 2]
           ],
           "message": "See you at Pixiote Temple, sis. Good luck."
         }

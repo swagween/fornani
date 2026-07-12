@@ -9,7 +9,7 @@
 namespace fornani {
 
 Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, PortalSpecifications specs)
-	: Entity(svc, "portals", 0, dimensions), source_id(specs.source_map_id), destination_id(specs.destination_map_id), key_tag(key_tag), m_services(&svc), m_opened_cooldown{200} {
+	: Entity(svc, "portals", 0, dimensions), Animatable{svc, "portals", sf::Vector2i{dimensions}}, source_id(specs.source_map_id), destination_id(specs.destination_map_id), key_tag(key_tag), m_services(&svc), m_opened_cooldown{200} {
 	set_texture_rect(sf::IntRect{{16 * specs.already_open, 0}, {16, 32}});
 	set_origin({0.f, 16.f});
 	if (specs.activate_on_contact || dimensions.x * dimensions.y > 1) { m_textured = false; }
@@ -19,7 +19,7 @@ Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, PortalSpec
 
 Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, PortalSpecifications specs, std::string_view key) : Portal(svc, dimensions, specs) { key_tag = key.data(); }
 
-Portal::Portal(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals"), m_services(&svc), m_opened_cooldown{200} {
+Portal::Portal(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals"), Animatable{svc, "portals"}, m_services(&svc), m_opened_cooldown{200} {
 	unserialize(in);
 	if (is_activate_on_contact()) { m_textured = false; }
 	set_origin({0.f, 16.f});

@@ -8,7 +8,7 @@
 namespace fornani::enemy {
 
 Sentinel::Sentinel(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, map, "sentinel"), m_variant{static_cast<SentinelVariant>(variant)}, m_services(&svc), m_map(&map), m_sword{svc.assets.get_texture("sentinel_sword"), 4.0f, 0.85f, {0.f, 0.f}} {
+	: Enemy(svc, map, "sentinel"), Animatable{svc, "enemy_sentinel", {96, 96}}, m_variant{static_cast<SentinelVariant>(variant)}, m_services(&svc), m_map(&map), m_sword{svc.assets.get_texture("sentinel_sword"), 4.0f, 0.85f, {0.f, 0.f}} {
 	p_animations = {{"idle", {0, 6, 40, -1}},  {"run", {6, 4, 48, 2}},	 {"turn", {10, 3, 30, 0}},			{"jump", {13, 4, 48, -1}},	 {"land", {19, 3, 48, 0}},		   {"slash", {13, 4, 48, -1}},
 					{"swipe", {19, 3, 48, 0}}, {"dash", {25, 4, 20, 1}}, {"prepare_dash", {24, 1, 120, 0}}, {"summon", {29, 1, 180, 0}}, {"charge_swipe", {17, 2, 80, 0}}, {"charge_slash", {22, 2, 80, 0}}};
 	animation.set_params(get_params("idle"));

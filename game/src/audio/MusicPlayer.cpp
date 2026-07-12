@@ -26,9 +26,19 @@ void MusicPlayer::quick_play(ResourceFinder const& finder, std::string_view song
 }
 
 void MusicPlayer::load(ResourceFinder const& finder, std::string_view song_name) {
-	if (is_off()) { return; }
-	if (song_name.empty()) { return; }
-	if (song_name == m_current_song) { return; }
+	if (is_off()) {
+		NANI_LOG_DEBUG(m_logger, "Tried loading song {}, but player was off!", song_name);
+		return;
+	}
+	if (song_name.empty()) {
+		NANI_LOG_DEBUG(m_logger, "Tried loading song {}, but song name was empty!", song_name);
+		return;
+	}
+	if (song_name == m_current_song) {
+		NANI_LOG_DEBUG(m_logger, "Tried loading song {}, but song name was the same as current song!", song_name);
+		return;
+	}
+	NANI_LOG_DEBUG(m_logger, "Loading song: {}", song_name);
 	m_jukebox.set_gain(std::clamp(m_volume_multiplier * global_volume_damp_v, 0.f, 1.f));
 	m_current_song = song_name;
 	auto path = std::filesystem::path{finder.resource_path() + "/audio/songs/" + song_name.data() + ".xm"};

@@ -27,7 +27,7 @@ class Turret : public Entity, public Flaggable<TurretFlags> {
 	Turret(automa::ServiceProvider& svc, int id, TurretType type, TurretPattern pattern, CardinalDirection dir, TurretSettings settings);
 
 	// Copy constructor
-	Turret(Turret const& other) : Entity(other), m_type(other.m_type), m_pattern(other.m_pattern), m_direction(other.m_direction), m_settings(other.m_settings) {}
+	Turret(Turret const& other) : Entity(other), Animatable(other), m_type(other.m_type), m_pattern(other.m_pattern), m_direction(other.m_direction), m_settings(other.m_settings) {}
 
 	// Copy assignment
 	Turret& operator=(Turret const& other) {

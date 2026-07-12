@@ -7,7 +7,7 @@
 namespace fornani::enemy {
 
 Beamsprout::Beamsprout(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction)
-	: Enemy(svc, map, "beamsprout", false, 0, start_direction), m_services(&svc), m_map(&map), beam(svc, "poison_ball"), fire_rate{72}, post_beam{336} {
+	: Enemy(svc, map, "beamsprout", false, 0, start_direction), Animatable{svc, "enemy_beamsprout", {64, 64}}, m_services(&svc), m_map(&map), beam(svc, "poison_ball"), fire_rate{72}, post_beam{336} {
 
 	p_animations = {{"idle", {0, 12, 28, -1}}, {"charge", {12, 10, 20, 0}}, {"shoot", {22, 3, 20, 2}}, {"relax", {25, 1, 20, 0}}, {"turn", {26, 2, 32, 0}}};
 

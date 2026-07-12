@@ -4,6 +4,7 @@
 #include <editor/util/Constants.hpp>
 #include <fornani/events/SystemEvent.hpp>
 #include <algorithm>
+#include <cstring>
 #include "editor/gui/Console.hpp"
 #include "fornani/core/Application.hpp"
 #include "fornani/setup/ResourceFinder.hpp"

@@ -23,7 +23,7 @@ constexpr static float walk_speed_v{0.62f};
 constexpr static float sprint_speed_v{1.0f};
 constexpr static float sprint_threshold_v{0.01f};
 
-enum class PlayerControllerFlags { shot_weapon, firing_weapon, released_weapon, slide_jump, super_slide };
+enum class PlayerControllerFlags { shot_weapon, firing_weapon, released_weapon, slide_jump, super_slide, wallcling };
 enum class ControllerInput { move_x, sprint, shoot, arms_switch, inspect, move_y, slide };
 enum class MovementState { restricted, walljumping, crouch };
 enum class HardState { no_move, has_arsenal, walking_autonomously };
@@ -66,6 +66,7 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 	[[nodiscard]] auto is_dashing() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::dash) : false; }
 	[[nodiscard]] auto is_sliding() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::slide) : false; }
 	[[nodiscard]] auto is_wallsliding() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::wallslide) : false; }
+	[[nodiscard]] auto is_wallclinging() const -> bool { return has_flag_set(PlayerControllerFlags::wallcling); }
 	[[nodiscard]] auto is_rolling() const -> bool { return m_ability ? m_ability.value()->is(AbilityType::roll) && m_ability.value()->is_active() : false; }
 	[[nodiscard]] auto slid_in_air() const -> bool { return input_flags.test(InputState::slide_in_air); }
 	[[nodiscard]] auto is_crouching() const -> bool { return flags.test(MovementState::crouch); }

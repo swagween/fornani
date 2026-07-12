@@ -17,8 +17,9 @@ constexpr auto light_offset_v = 12.f;
 constexpr auto max_damage_v = 1024.f;
 
 Player::Player(automa::ServiceProvider& svc)
-	: Mobile(svc, "nani", {26, 26}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb},
-	  m_sprite_shake{200}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{10.f, -3.f}, m_sprite_overlay{svc, "nani", {26, 26}} {
+	: Mobile(svc, "nani", {26, 26}), Animatable{svc, "nani", {26, 26}}, arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc},
+	  orb_indicator{svc, graphics::IndicatorType::orb}, m_sprite_shake{200}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{10.f, -3.f},
+	  m_sprite_overlay{svc, "nani", {26, 26}} {
 
 	center();
 	m_sprite_overlay.center();
@@ -268,7 +269,7 @@ void Player::update(world::Map& map) {
 	}
 
 	// map effects
-	if (controller.is_wallsliding()) {
+	if (controller.is_wallsliding() && !controller.is_wallclinging()) {
 		auto freq = controller.wallslide_slowdown.get_quadratic_normalized() * 80.f;
 		if (m_services->ticker.every_x_ticks(std::clamp(static_cast<int>(freq), 24, 80))) {
 			map.effects.push_back(entity::Effect(*m_services, "wallslide", get_collider().get_center() + sf::Vector2f{12.f * controller.direction.as_float(), -8.f}, get_collider().physics.apparent_velocity() * 0.3f));
@@ -836,10 +837,10 @@ void Player::update_weapon(world::Map& map) {
 	// update all weapons in loadout to avoid unusual behavior upon weapon switching
 	for (auto& weapon : arsenal.value().get_loadout()) {
 		hotbar->has(weapon->get_tag()) ? weapon->set_hotbar() : weapon->set_reserved();
-		weapon->update(*m_services, map, controller.direction);
+		auto dir = controller.is_wallsliding() ? controller.direction.flipped() : controller.direction;
+		weapon->update(*m_services, map, dir);
 		weapon->set_position(m_weapon_socket);
-		weapon->set_firing_direction(controller.direction);
-		if (controller.is_wallsliding() && !controller.direction.up_or_down()) { weapon->flip_firing_direction(); }
+		weapon->set_firing_direction(dir);
 	}
 	if (!busy) {
 		equipped_weapon().set_flag(arms::WeaponFlags::firing, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
@@ -852,10 +853,11 @@ void Player::update_weapon_simple() {
 	if (!arsenal) { return; }
 	if (!hotbar) { return; }
 	for (auto& weapon : arsenal.value().get_loadout()) {
+		auto dir = controller.is_wallsliding() ? controller.direction.flipped() : controller.direction;
 		weapon->tick();
 		weapon->set_position(m_weapon_socket);
-		weapon->set_orientation(controller.direction);
-		weapon->set_firing_direction(controller.direction);
+		weapon->set_orientation(dir);
+		weapon->set_firing_direction(dir);
 	}
 	equipped_weapon().set_flag(arms::WeaponFlags::firing, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
 	equipped_weapon().set_flag(arms::WeaponFlags::charging, controller.has_flag_set(PlayerControllerFlags::firing_weapon));
@@ -1317,6 +1319,14 @@ bool Player::can_wallslide() const {
 	if (get_collider().grounded()) { return false; }
 	if (get_collider().physics.apparent_velocity().y < wallslide_threshold_v) { return false; }
 	if (!catalog.inventory.has_item("kariba_talisman")) { return false; }
+	return true;
+}
+
+bool Player::can_wallcling() const {
+	if (abilities_disabled()) { return false; }
+	if (get_collider().grounded()) { return false; }
+	if (get_collider().physics.apparent_velocity().y < wallslide_threshold_v) { return false; }
+	if (!catalog.inventory.has_item("pirag_charm")) { return false; }
 	return true;
 }
 

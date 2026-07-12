@@ -8,8 +8,9 @@
 namespace fornani::enemy {
 
 Caster::Caster(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, map, "caster"), m_services(&svc), m_map(&map), parts{.scepter{svc.assets.get_texture("caster_scepter"), 2.0f, 0.85f, {-16.f, 38.f}}, .wand{svc.assets.get_texture("caster_wand"), 2.0f, 0.85f, {-40.f, 48.f}}},
-	  energy_ball(svc, "energy_ball"), m_variant{static_cast<CasterVariant>(variant)}, m_target_force{0.0003f}, m_debug{} {
+	: Enemy(svc, map, "caster"), Animatable{svc, "enemy_caster", {36, 36}}, m_services(&svc), m_map(&map),
+	  parts{.scepter{svc.assets.get_texture("caster_scepter"), 2.0f, 0.85f, {-16.f, 38.f}}, .wand{svc.assets.get_texture("caster_wand"), 2.0f, 0.85f, {-40.f, 48.f}}}, energy_ball(svc, "energy_ball"),
+	  m_variant{static_cast<CasterVariant>(variant)}, m_target_force{0.0003f}, m_debug{} {
 	p_animations = {{"idle", {0, 4, 28, -1}}, {"turn", {9, 3, 18, 0}}, {"prepare", {9, 3, 18, 0}}, {"signal", {4, 4, 28, 2}}, {"dormant", {8, 1, 32, -1}}};
 	animation.set_params(get_params("dormant"));
 	if (map.get_style_id() == 5) { cooldowns.awaken = util::Cooldown{4}; }

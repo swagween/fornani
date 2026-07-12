@@ -378,6 +378,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto can_slide() const -> bool;
 	[[nodiscard]] auto can_jump() const -> bool;
 	[[nodiscard]] auto can_wallslide() const -> bool;
+	[[nodiscard]] auto can_wallcling() const -> bool;
 	[[nodiscard]] auto can_walljump() const -> bool;
 	[[nodiscard]] auto can_dive() const -> bool;
 

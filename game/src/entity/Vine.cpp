@@ -14,7 +14,7 @@ constexpr auto segment_size_v = sf::Vector2i{64, 64};
 constexpr auto simulations_v = 32;
 
 Vine::Vine(automa::ServiceProvider& svc, int length, int size, bool foreground, bool reversed, std::vector<int> const platform_indeces)
-	: Entity(svc, "vines", 0), m_length(length), m_chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, get_world_position(), length, reversed, 2.f), m_services(&svc), m_init{64} {
+	: Entity(svc, "vines", 0), Animatable{svc, "vines"}, m_length(length), m_chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, get_world_position(), length, reversed, 2.f), m_services(&svc), m_init{64} {
 	for (auto const& i : platform_indeces) {
 		if (i == -1) { continue; }
 		add_platform(svc, i);
@@ -23,7 +23,8 @@ Vine::Vine(automa::ServiceProvider& svc, int length, int size, bool foreground, 
 	foreground ? m_flags.set(VineFlags::foreground) : m_flags.reset(VineFlags::foreground);
 }
 
-Vine::Vine(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "vines", segment_size_v), m_services(&svc), m_chain(svc, {0.995f, 0.06f, 16.f, 14.f}, get_world_position(), in["length"].as<int>(), false, 2.f), m_init{64} {
+Vine::Vine(automa::ServiceProvider& svc, dj::Json const& in)
+	: Entity(svc, in, "vines", segment_size_v), Animatable{svc, "vines"}, m_services(&svc), m_chain(svc, {0.995f, 0.06f, 16.f, 14.f}, get_world_position(), in["length"].as<int>(), false, 2.f), m_init{64} {
 	unserialize(in);
 	init();
 }
@@ -94,7 +95,7 @@ void Vine::expose() {
 		ImGui::SameLine();
 		if (ImGui::SmallButton("-")) { remove_platform(i); }
 		ImGui::SameLine();
-		ImGui::Text("%i: ", i);
+		ImGui::Text("%i: ", static_cast<int>(i));
 		if (m_spawnable_platforms) {
 			for (auto const& plat : m_spawnable_platforms.value()) {
 				if (plat->get_index() == i) {

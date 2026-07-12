@@ -282,5 +282,17 @@
     "target": 2,
     "objectives": [],
     "displayed": false
+  },
+  {
+    "tag": "defeat_minigus",
+    "target": 2,
+    "objectives": [],
+    "displayed": false
+  },
+  {
+    "tag": "defeat_lynx",
+    "target": 2,
+    "objectives": [],
+    "displayed": false
   }
 ]

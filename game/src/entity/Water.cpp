@@ -6,7 +6,7 @@
 
 namespace fornani {
 
-Water::Water(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "water"), m_bounding_box{get_world_dimensions()}, m_replenish_cooldown{260}, m_mode{sf::BlendNone} {
+Water::Water(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "water"), Animatable{svc, "water"}, m_bounding_box{get_world_dimensions()}, m_replenish_cooldown{260}, m_mode{sf::BlendNone} {
 	unserialize(in);
 	set_channel(get_i_type());
 	auto lookup = sf::Vector2i{66 * static_cast<int>(m_type), 0};
@@ -41,7 +41,7 @@ Water::Water(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in,
 	}
 }
 
-Water::Water(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, WaterType type) : Entity(svc, "water", id, dimensions), m_type{type} {
+Water::Water(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, WaterType type) : Entity(svc, "water", id, dimensions), Animatable{svc, "water"}, m_type{type} {
 	repeatable = false;
 	copyable = false;
 }

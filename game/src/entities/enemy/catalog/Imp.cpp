@@ -9,7 +9,7 @@ namespace fornani::enemy {
 constexpr static int imp_framerate{16};
 
 Imp::Imp(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, map, "imp"), m_services(&svc), m_map(&map),
+	: Enemy(svc, map, "imp"), m_services(&svc), m_map(&map), Animatable{svc, "enemy_imp", {40, 20}},
 	  parts{.weapon = random::percent_chance(50) ? entity::FloatingPart{svc,
 																		"imp_knife",
 																		{36, 20},

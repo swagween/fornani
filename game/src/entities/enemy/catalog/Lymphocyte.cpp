@@ -8,7 +8,7 @@ namespace fornani::enemy {
 
 constexpr auto lymphocyte_framerate = 20;
 
-Lymphocyte::Lymphocyte(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "lymphocyte"), m_services{&svc}, m_map{&map} {
+Lymphocyte::Lymphocyte(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "lymphocyte"), Animatable{svc, "enemy_lymphocyte", {48, 48}}, m_services{&svc}, m_map{&map} {
 	p_animations = {{"dormant", {0, 1, lymphocyte_framerate, -1}},
 					{"spawn", {0, 3, lymphocyte_framerate, 0}},
 					{"idle", {3, 4, lymphocyte_framerate * 2, -1}},

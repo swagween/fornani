@@ -13,8 +13,9 @@ auto constexpr miaag_outer_destructibles = 50902;
 auto constexpr miaag_exit_destructibles = 509;
 
 Miaag::Miaag(automa::ServiceProvider& svc, world::Map& map)
-	: Boss(svc, map, "miaag"), m_magic{svc, "demon_magic"}, m_services{&svc}, m_map{&map}, m_cooldowns{.fire{48}, .charge{320}, .limit{960}, .post_magic{800}, .interlude{1000}, .chomped{800}, .post_death{1600}},
-	  m_spine_sprite{svc.assets.get_texture("miaag_spines")}, m_spine{std::make_unique<vfx::Chain>(svc, vfx::SpringParameters{0.99f, 0.08f, 1.f, 4.f}, anchor_position_v * constants::f_cell_size, 8, false)} {
+	: Boss(svc, map, "miaag"), Animatable{svc, "enemy_miaag", {80, 80}}, m_magic{svc, "demon_magic"}, m_services{&svc}, m_map{&map},
+	  m_cooldowns{.fire{48}, .charge{320}, .limit{960}, .post_magic{800}, .interlude{1000}, .chomped{800}, .post_death{1600}}, m_spine_sprite{svc.assets.get_texture("miaag_spines")},
+	  m_spine{std::make_unique<vfx::Chain>(svc, vfx::SpringParameters{0.99f, 0.08f, 1.f, 4.f}, anchor_position_v * constants::f_cell_size, 8, false)} {
 	p_animations = {{"idle", {0, 7, 40, -1}}, {"chomp", {7, 9, 40, 0}},	   {"spellcast", {7, 5, 80, 0, true}}, {"hurt", {9, 1, 1000, 0}},
 					{"turn", {16, 1, 40, 0}}, {"closed", {15, 1, 40, -1}}, {"awaken", {17, 4, 40, 0}},		   {"dormant", {17, 1, 40, -1}}};
 

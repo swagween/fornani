@@ -7,7 +7,7 @@
 
 namespace fornani::enemy {
 
-Hurtle::Hurtle(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "hurtle"), m_services(&svc), m_map(&map), m_turn{200} {
+Hurtle::Hurtle(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "hurtle"), Animatable{svc, "enemy_hurtle", {44, 44}}, m_services(&svc), m_map(&map), m_turn{200} {
 	p_animations = {{"run", {0, 4, 30, -1}}, {"sleep", {4, 1, 80, 0}}, {"turn", {5, 1, 30, 0}}};
 	animation.set_params(get_params("run"));
 	get_collider().physics.set_friction_componentwise({0.98f, 0.999f});

@@ -933,8 +933,8 @@
     "origin": [3, 0],
     "naive_title": "Mysterious Charm",
     "actual_title": "Pirag Charm",
-    "naive_description": "A mysterious charm of unknown origin. It doesn't seem to do anything.",
-    "actual_description": "A mysterious charm of unknown origin. It allows you to see the life force of your enemies.",
+    "naive_description": "A mysterious charm of unknown origin. It allows you to cling to walls while not sprinting.",
+    "actual_description": "A mysterious charm of unknown origin. It allows you to cling to walls while not sprinting.",
     "unique": true,
     "readable": true
   },

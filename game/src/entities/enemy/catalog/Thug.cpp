@@ -6,7 +6,7 @@
 
 namespace fornani::enemy {
 
-Thug::Thug(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "thug"), m_services(&svc), m_map(&map) {
+Thug::Thug(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "thug"), Animatable{svc, "enemy_thug", {64, 64}}, m_services(&svc), m_map(&map) {
 	animation.set_params(idle);
 	get_collider().physics.maximum_velocity = {8.f, 12.f};
 	get_collider().physics.air_friction = {0.95f, 0.999f};

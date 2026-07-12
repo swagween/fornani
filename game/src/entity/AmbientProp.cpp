@@ -5,7 +5,7 @@
 
 namespace fornani {
 
-AmbientProp::AmbientProp(automa::ServiceProvider& svc, dj::Json const& in) : Entity{svc, in, "ambient_props"} {
+AmbientProp::AmbientProp(automa::ServiceProvider& svc, dj::Json const& in) : Entity{svc, in, "ambient_props"}, Animatable{svc, "ambient_props"} {
 	unserialize(in);
 	auto const& in_data = svc.data.props[m_tag];
 	m_params.emplace(svc, in_data);
@@ -27,7 +27,7 @@ AmbientProp::AmbientProp(automa::ServiceProvider& svc, dj::Json const& in) : Ent
 	m_textured = false;
 }
 
-AmbientProp::AmbientProp(automa::ServiceProvider& svc, int channel, std::string_view tag) : Entity{svc, "ambient_props", 0}, m_tag{tag.data()}, m_channel{channel} { m_textured = false; }
+AmbientProp::AmbientProp(automa::ServiceProvider& svc, int channel, std::string_view tag) : Entity{svc, "ambient_props", 0}, Animatable{svc, "ambient_props"}, m_tag{tag.data()}, m_channel{channel} { m_textured = false; }
 
 std::unique_ptr<Entity> AmbientProp::clone() const { return std::make_unique<AmbientProp>(*this); }
 

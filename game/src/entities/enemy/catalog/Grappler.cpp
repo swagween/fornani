@@ -7,7 +7,7 @@
 
 namespace fornani::enemy {
 
-Grappler::Grappler(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "grappler"), m_services(&svc), m_map(&map), m_hold_time{560}, m_leap_cooldown{400} {
+Grappler::Grappler(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "grappler"), Animatable{svc, "enemy_grappler", {80, 80}}, m_services(&svc), m_map(&map), m_hold_time{560}, m_leap_cooldown{400} {
 	p_animations = {{"idle", {0, 4, 40, -1}}, {"leap", {4, 5, 40, 0}}, {"snag", {9, 1, 40, -1}}, {"release", {10, 2, 40, 0}}, {"turn", {12, 3, 40, 0}}, {"whiff", {1, 1, 40, 0}}};
 	animation.set_params(get_params("idle"));
 	get_collider().physics.set_friction_componentwise({0.99f, 0.99f});

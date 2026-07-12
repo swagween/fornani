@@ -4,14 +4,14 @@
 
 namespace fornani {
 
-Light::Light(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "lights") {
+Light::Light(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "lights"), Animatable{svc, "lights"} {
 	unserialize(in);
 	set_texture_rect(sf::IntRect{{}, fornani::constants::i_resolution_vec});
 	repeatable = true;
 	m_textured = false;
 }
 
-Light::Light(fornani::automa::ServiceProvider& svc, int id, std::string_view type) : Entity(svc, "lights", id), m_type{type} {
+Light::Light(fornani::automa::ServiceProvider& svc, int id, std::string_view type) : Entity(svc, "lights", id), Animatable{svc, "lights"}, m_type{type} {
 	set_texture_rect(sf::IntRect{{}, fornani::constants::i_resolution_vec});
 	repeatable = true;
 	m_textured = false;

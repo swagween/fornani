@@ -7,7 +7,7 @@
 
 namespace fornani {
 
-Destructible::Destructible(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "destructibles") {
+Destructible::Destructible(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "destructibles"), Animatable{svc, "destructibles"} {
 	unserialize(in);
 	set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 	repeatable = false;
@@ -23,7 +23,7 @@ Destructible::Destructible(automa::ServiceProvider& svc, world::Map& map, dj::Js
 	set_texture_rect(sf::IntRect{{map.get_style_id() * constants::i_cell_resolution, 0}, constants::i_resolution_vec});
 }
 
-Destructible::Destructible(automa::ServiceProvider& svc, int id, util::BitFlags<DestructibleAttributes> attributes) : Entity(svc, "destructibles", id), m_attributes{attributes} {
+Destructible::Destructible(automa::ServiceProvider& svc, int id, util::BitFlags<DestructibleAttributes> attributes) : Entity(svc, "destructibles", id), Animatable{svc, "destructibles"}, m_attributes{attributes} {
 	set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 	repeatable = false;
 	copyable = false;

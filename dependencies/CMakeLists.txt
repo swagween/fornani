@@ -17,6 +17,10 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/SFML/SFML
         GIT_TAG 3.1.0
 )
+set(SFML_BUILD_NETWORK OFF CACHE BOOL "" FORCE)
+set(SFML_BUILD_AUDIO OFF CACHE BOOL "" FORCE)
+set(SFML_BUILD_GRAPHICS ON CACHE BOOL "" FORCE)
+set(SFML_BUILD_WINDOW ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(sfml)
 
 # Dear ImGui

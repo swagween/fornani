@@ -9,7 +9,7 @@
 namespace fornani::enemy {
 
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, SceneContext& context)
-	: Boss(svc, map, "minigus"), gun(svc, "minigun"), soda(svc, "soda_gun"), m_services(&svc), NPC(svc, map, std::string_view{"minigus"}), m_map(&map),
+	: Boss(svc, map, "minigus"), Animatable{svc, "enemy_minigus", {60, 60}}, gun(svc, "minigun"), soda(svc, "soda_gun"), m_services(&svc), m_map(&map),
 	  sparkler(svc, Enemy::get_collider().get_vicinity_rect().size, colors::ui_white, "minigus"), m_context{&context}, m_mode{MinigusMode::neutral}, m_minigun{svc},
 	  attacks{.left_shockwave{{50, 600, 3, {-0.6f, 0.f}}}, .right_shockwave{{50, 600, 3, {0.6f, 0.f}}}} {
 
@@ -28,7 +28,6 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, SceneContext& co
 	cooldowns.exit.start();
 	afterlife = 2000;
 
-	set_force_interact(true);
 	flags.general.set(GeneralFlags::post_death_render);
 	flags.general.set(GeneralFlags::has_invincible_channel);
 
@@ -56,10 +55,6 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, SceneContext& co
 	Enemy::get_collider().stats.GRAV = 6.0f;
 	sprite_direction.lnr = LNR::left;
 	Enemy::directions.actual.lnr = LNR::left;
-
-	auto prog = svc.quest_table.get_quest_progression("minigus_dialogue");
-	auto which = prog == 0 ? 1 : 4;
-	push_conversation(which);
 
 	sparkler.set_dimensions(Enemy::get_collider().get_vicinity_rect().size);
 }
@@ -253,33 +248,13 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 
 	if (player.is_dead()) { request(MinigusState::laugh); }
 
-	// NPC stuff
-	if (player.get_collider().bounding_box.overlaps(distant_range) && !was_introduced() && is_force_interact()) { set_distant_interact(true); }
-
-	NPC::update(svc, map, *m_context, player);
-	if (m_context->console && was_introduced()) {
-		if (m_context->console.has_value()) {
-			m_context->console.value()->set_no_exit(true);
-			set_force_interact(false);
-		}
-	}
 	console_complete = !m_context->console.has_value();
 
 	if (Boss::consume_flag(BossFlags::start_battle)) {
 		m_mode = MinigusMode::battle_one;
 		svc.quest_table.progress_quest("minigus_dialogue", 1, 1);
 		svc.data.save_quests();
-		set_distant_interact(false);
-		set_force_interact(false);
-		svc.music_player.load(svc.finder, "scuffle");
-		svc.music_player.play_looped();
 		cooldowns.vulnerability.start();
-	}
-
-	if (was_introduced() && !status.test(MinigusFlags::theme_song)) {
-		svc.music_player.load(svc.finder, "minigus");
-		svc.music_player.play_looped();
-		status.set(MinigusFlags::theme_song);
 	}
 
 	if (health.is_dead() && !status.test(MinigusFlags::over_and_out) && !status.test(MinigusFlags::goodbye)) { request(MinigusState::struggle); }
@@ -292,7 +267,6 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 }
 
 void Minigus::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	NPC::render(win, cam);
 	Enemy::render(svc, win, cam);
 
 	m_minigun.set_scale(Enemy::get_scale());
@@ -766,11 +740,8 @@ fsm::StateFunction Minigus::update_struggle() {
 	// after health is empty
 	if (health.is_dead()) {
 		if (Enemy::animation.just_started()) {
-			set_distant_interact(true);
-			set_force_interact(true);
-			flush_conversations();
-			push_conversation(2);
-			m_services->music_player.pause();
+			m_services->quest_table.progress_quest("defeat_minigus", 1, 117);
+			m_services->events.launch_cutscene_event.dispatch(*m_services, 117);
 			m_services->soundboard.flags.minigus.set(audio::Minigus::crash);
 			m_services->soundboard.flags.minigus.set(audio::Minigus::quick_breath);
 			m_services->soundboard.flags.minigus.set(audio::Minigus::long_moan);
@@ -783,13 +754,8 @@ fsm::StateFunction Minigus::update_struggle() {
 		post_death.start(afterlife);
 		flags.state.set(StateFlags::special_death_mode);
 
-		if (cooldowns.exit.is_complete() && status.test(MinigusFlags::exit_scene)) {
+		if (cooldowns.exit.is_complete() && status.test(MinigusFlags::exit_scene) && flags.state.test(StateFlags::special_event)) {
 			NANI_LOG_DEBUG(m_logger, "Goodbye started");
-			set_distant_interact(true);
-			set_force_interact(true);
-			m_services->music_player.stop();
-			flush_conversations();
-			push_conversation(3);
 			status.reset(MinigusFlags::exit_scene);
 			status.set(MinigusFlags::goodbye);
 			stop_shaking();

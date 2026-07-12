@@ -3,8 +3,8 @@
 
 #include <djson/json.hpp>
 #include <fornani/core/Fwd.hpp>
-#include <fornani/entities/Animation/StateMachine.hpp>
 #include <fornani/entities/Mobile.hpp>
+#include <fornani/entities/animation/StateMachine.hpp>
 #include <fornani/entities/npc/Vendor.hpp>
 #include <fornani/entity/Entity.hpp>
 #include <fornani/events/Subscription.hpp>

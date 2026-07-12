@@ -33,7 +33,7 @@ class Vine : public Entity {
 	void remove_platform(int link_index);
 
 	// Copy constructor
-	Vine(Vine const& other) : Entity(other), m_length(other.m_length), m_chain(other.m_chain), m_services(other.m_services) {
+	Vine(Vine const& other) : Entity(other), Animatable(other), m_length(other.m_length), m_chain(other.m_chain), m_services(other.m_services) {
 		if (other.m_treasure_balls) {
 			m_treasure_balls.emplace();
 			for (auto const& tb_ptr : *other.m_treasure_balls) { m_treasure_balls->push_back(tb_ptr->clone()); }

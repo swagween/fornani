@@ -8,7 +8,7 @@ namespace fornani::enemy {
 
 constexpr auto mizzle_framerate = 6;
 
-Mizzle::Mizzle(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "mizzle"), m_services{&svc} {
+Mizzle::Mizzle(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "mizzle"), Animatable{svc, "enemy_mizzle", {32, 32}}, m_services{&svc} {
 	p_animations = {{"idle", {0, 4, mizzle_framerate * 2, -1}}, {"turn", {4, 1, mizzle_framerate * 2, 0}}};
 	animation.set_params(get_params("idle"));
 	p_state.actual = MizzleState::idle;

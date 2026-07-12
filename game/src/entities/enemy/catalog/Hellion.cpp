@@ -7,7 +7,7 @@
 
 namespace fornani::enemy {
 
-Hellion::Hellion(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "hellion"), m_services(&svc), m_map(&map), m_poison(svc, "demon_ball") {
+Hellion::Hellion(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "hellion"), Animatable{svc, "enemy_hellion", {64, 64}}, m_services(&svc), m_map(&map), m_poison(svc, "demon_ball") {
 	p_animations = {{"run", {0, 12, 10, -1}}, {"sleep", {25, 1, 48, -1}}, {"awaken", {26, 15, 16, 0}}, {"turn", {12, 13, 20, 0}}};
 	animation.set_params(get_params("sleep"));
 	get_collider().physics.set_friction_componentwise({0.98f, 0.999f});

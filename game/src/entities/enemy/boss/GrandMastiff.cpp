@@ -9,7 +9,8 @@ namespace fornani::enemy {
 
 constexpr auto grand_mastiff_framerate = 12;
 
-GrandMastiff::GrandMastiff(automa::ServiceProvider& svc, world::Map& map) : Boss{svc, map, "grand_mastiff"}, m_demon_star(svc, "demon_star"), m_post_slash{400}, m_post_bite{1600}, m_post_howl{1800} {
+GrandMastiff::GrandMastiff(automa::ServiceProvider& svc, world::Map& map)
+	: Boss{svc, map, "grand_mastiff"}, Animatable{svc, "enemy_grand_mastiff", {297, 256}}, m_demon_star(svc, "demon_star"), m_post_slash{400}, m_post_bite{1600}, m_post_howl{1800} {
 	p_animations = {{"idle", {0, 4, grand_mastiff_framerate * 3, -1}},
 					{"run", {4, 4, grand_mastiff_framerate * 2, 2}},
 					{"growl", {15, 4, grand_mastiff_framerate * 7, 3}},

@@ -5,6 +5,8 @@ nani_add_sources(
   BanditEncounter.cpp
   BitCell.cpp
   BrynPostMiaag.cpp
+  EncounterMinigus.cpp
+  EncounterLynx.cpp
   HaunchIntro.cpp
   HaunchEscape.cpp
         LadyNimbusIntro.cpp

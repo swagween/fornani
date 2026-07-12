@@ -4,12 +4,12 @@
 
 namespace fornani {
 
-Chest::Chest(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "chests"), m_services{&svc} {
+Chest::Chest(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "chests"), Animatable{svc, "chests"}, m_services{&svc} {
 	unserialize(in);
 	Drawable::set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 }
 
-Chest::Chest(automa::ServiceProvider& svc, int type, int modifier, int id) : Entity(svc, "chests", id, {1, 1}), m_type{type}, m_content_modifier{modifier}, m_services{&svc} {
+Chest::Chest(automa::ServiceProvider& svc, int type, int modifier, int id) : Entity(svc, "chests", id, {1, 1}), Animatable{svc, "chests"}, m_type{type}, m_content_modifier{modifier}, m_services{&svc} {
 	repeatable = false;
 	Drawable::set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 }

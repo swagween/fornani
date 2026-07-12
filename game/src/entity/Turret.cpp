@@ -6,13 +6,13 @@
 
 namespace fornani {
 
-Turret::Turret(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "turrets", constants::i_resolution_vec), m_rate{560}, m_shoot{600} {
+Turret::Turret(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "turrets", constants::i_resolution_vec), Animatable{svc, "turrets"}, m_rate{560}, m_shoot{600} {
 	unserialize(in);
 	init(svc);
 }
 
 Turret::Turret(automa::ServiceProvider& svc, int id, TurretType type, TurretPattern pattern, CardinalDirection dir, TurretSettings settings)
-	: Entity(svc, "turrets", id), m_type{type}, m_pattern{pattern}, m_direction{dir}, m_settings{settings}, m_rate{560} {
+	: Entity(svc, "turrets", id), Animatable{svc, "turrets"}, m_type{type}, m_pattern{pattern}, m_direction{dir}, m_settings{settings}, m_rate{560} {
 	init(svc);
 }
 

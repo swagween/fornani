@@ -8,7 +8,7 @@
 namespace fornani::enemy {
 
 Hulmet::Hulmet(automa::ServiceProvider& svc, world::Map& map)
-	: Enemy(svc, map, "hulmet"), m_services(&svc), m_map(&map), m_parts{.gun{svc, "hulmet_gun", {24, 10}, {{0, 4, 24, -1}}, {"main"}, 2.0f, 0.85f, {-12.f, 6.f}}}, m_weapon{svc, "skycorps_ar"} {
+	: Enemy(svc, map, "hulmet"), Animatable{svc, "enemy_hulmet", {32, 32}}, m_services(&svc), m_map(&map), m_parts{.gun{svc, "hulmet_gun", {24, 10}, {{0, 4, 24, -1}}, {"main"}, 2.0f, 0.85f, {-12.f, 6.f}}}, m_weapon{svc, "skycorps_ar"} {
 	animation.set_params(m_animations.idle);
 	m_parts.gun.set_magnitude(2.f);
 	m_weapon.clip_cooldown_time = 360;

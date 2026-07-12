@@ -1,5 +1,25 @@
 {
   "entities": {
+    "cutscene_triggers": [
+      {
+        "contingencies": [
+          {
+            "requirement": 0,
+            "strict": true,
+            "tag": "defeat_lynx"
+          }
+        ],
+        "dimensions": [
+          2,
+          10
+        ],
+        "id": 227,
+        "position": [
+          69,
+          4
+        ]
+      }
+    ],
     "destructibles": [
       {
         "dimensions": [
@@ -360,6 +380,7 @@
         "series": [
           {
             "hide_portrait": true,
+            "output": 1,
             "suite": [
               [
                 {
@@ -385,6 +406,23 @@
         "label": "lynx",
         "position": [
           78,
+          11
+        ],
+        "start_busy": false
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": true,
+        "hidden": false,
+        "id": 227,
+        "label": "lynx",
+        "position": [
+          74,
           11
         ],
         "start_busy": false
@@ -548,6 +586,7 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

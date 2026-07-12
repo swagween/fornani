@@ -5,7 +5,7 @@
 
 namespace fornani {
 
-Animator::Animator(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "animators") {
+Animator::Animator(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "animators"), Animatable{svc, "animators"} {
 	unserialize(in);
 	repeatable = true;
 	set_dimensions({16, 16});
@@ -15,7 +15,7 @@ Animator::Animator(automa::ServiceProvider& svc, dj::Json const& in) : Entity(sv
 	set_channel(get_id());
 }
 
-Animator::Animator(automa::ServiceProvider& svc, int id, std::string_view label) : Entity(svc, "animators", id, {1, 1}), m_label{label} {
+Animator::Animator(automa::ServiceProvider& svc, int id, std::string_view label) : Entity(svc, "animators", id, {1, 1}), Animatable{svc, "ambient_props"}, m_label{label} {
 	repeatable = true;
 	set_texture_rect(sf::IntRect{{16 * id, 0}, {16, 16}});
 }

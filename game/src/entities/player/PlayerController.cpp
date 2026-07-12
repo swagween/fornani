@@ -2,7 +2,7 @@
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entities/player/PlayerController.hpp>
 #include <fornani/entities/player/abilities/Dash.hpp>
-#include <fornani/entities/player/abilities/Dashkick.hpp>
+#include <fornani/entities/player/abilities/DashKick.hpp>
 #include <fornani/entities/player/abilities/Dive.hpp>
 #include <fornani/entities/player/abilities/Doublejump.hpp>
 #include <fornani/entities/player/abilities/Jump.hpp>
@@ -163,7 +163,8 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		}
 	}
 	if (!is_rolling() && !is_sliding()) { set_flag(PlayerControllerFlags::slide_jump, false); }
-	if (!is_wallsliding()) { svc.soundboard.flags.player.reset(audio::Player::wallslide); }
+	if (!is_wallsliding() || is_wallclinging()) { svc.soundboard.flags.player.reset(audio::Player::wallslide); }
+	set_flag(PlayerControllerFlags::wallcling, !sprint && is_wallsliding() && player.can_wallcling());
 	player.get_collider().set_flag(shape::ColliderFlags::left_walljump, false);
 	player.get_collider().set_flag(shape::ColliderFlags::right_walljump, false);
 	cooldowns.walljump_request.update();
@@ -248,7 +249,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 
 	// sprint
 	if (sprint_release) { sprint_flags.set(Sprint::released); }
-	if (grounded()) { sprint_flags = {}; }
+	sprint_flags = {};
 
 	bool firing_automatic = false;
 	if (!restricted() && (!shot() || !has_arsenal()) && !shoot_released) {

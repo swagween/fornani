@@ -10,7 +10,7 @@ namespace fornani::enemy {
 constexpr auto haunch_framerate{14};
 
 Haunch::Haunch(automa::ServiceProvider& svc, world::Map& map)
-	: Boss{svc, map, "haunch"}, m_services{&svc}, m_map{&map}, m_gun{svc, "big_laser_gun"}, m_stun_grenade{svc, "stun_grenade"}, m_hand_grenade{svc, "hand_grenade"},
+	: Boss{svc, map, "haunch"}, Animatable{svc, "enemy_haunch", {79, 80}}, m_services{&svc}, m_map{&map}, m_gun{svc, "big_laser_gun"}, m_stun_grenade{svc, "stun_grenade"}, m_hand_grenade{svc, "hand_grenade"},
 	  m_cooldowns{.run{200}, .post_run{1800}, .grenade{40}, .laser_charge{288}, .post_laser{96}, .whistle{400}, .post_whistle{1400}, .post_death{1000}}, m_laser_gun{svc, "haunch_laser_gun", {37, 15}} {
 	p_animations = {
 		{"idle", {0, 6, haunch_framerate * 3, -1}},

@@ -6,7 +6,7 @@
 
 namespace fornani::enemy {
 
-Meatsquash::Meatsquash(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "meatsquash"), m_services(&svc), m_map(&map) {
+Meatsquash::Meatsquash(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "meatsquash"), Animatable{svc, "enemy_meatsquash", {128, 128}}, m_services(&svc), m_map(&map) {
 	p_animations = {{"idle", {0, 6, 32, -1}}, {"chomp", {6, 12, 36, 0}}, {"open", {19, 4, 24, 0}}, {"swallow", {23, 13, 24, 0}}};
 	animation.set_params(get_params("idle"));
 	random_start();

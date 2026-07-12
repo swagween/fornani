@@ -7,7 +7,7 @@
 
 namespace fornani::enemy {
 
-Thief::Thief(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "thief"), m_services(&svc), m_map(&map), m_respawn{400} {
+Thief::Thief(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "thief"), Animatable{svc, "enemy_thief", {32, 32}}, m_services(&svc), m_map(&map), m_respawn{400} {
 	auto fr = 22;
 	p_animations = {{"dive", {0, 1, fr, -1}}, {"land", {1, 3, fr, 0}},	{"prepare", {4, 1, fr * 2, 0}},		  {"dash", {5, 1, fr * 3, 0}},
 					{"stop", {6, 2, fr, 0}},  {"laugh", {8, 2, fr, 3}}, {"escape", {10, 2, fr * 2, 0, true}}, {"hurt", {12, 1, fr * 4, 0}}};

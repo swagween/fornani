@@ -6,12 +6,15 @@
 
 namespace fornani {
 
-Platform::Platform(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "platforms") {
+Platform::Platform(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "platforms"), Animatable{svc, "platforms"} {
 	unserialize(in);
 	init(svc);
 }
 
-Platform::Platform(fornani::automa::ServiceProvider& svc, sf::Vector2u dim, int extent, std::string type, float start) : Entity(svc, "platforms", 0, dim), extent(extent), type(type), start(start) { init(svc); }
+Platform::Platform(fornani::automa::ServiceProvider& svc, sf::Vector2u dim, int extent, std::string type, float start)
+	: Entity(svc, "platforms", 0, dim), Animatable{svc, "platforms", sf::Vector2i{dim}}, extent(extent), type(type), start(start) {
+	init(svc);
+}
 
 std::unique_ptr<Entity> Platform::clone() const { return std::make_unique<Platform>(*this); }
 

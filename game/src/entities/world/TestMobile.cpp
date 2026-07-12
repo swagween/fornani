@@ -3,7 +3,7 @@
 
 namespace fornani {
 
-TestMobile::TestMobile(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "test_collider", {16, 16}} {
+TestMobile::TestMobile(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "test_collider", {16, 16}}, Animatable{svc, "test_collider", {16, 16}} {
 	register_collider(map, {32.f, 32.f});
 	get_collider().set_attribute(shape::ColliderAttributes::no_collision);
 	push_and_set_animation("basic", {0, 1, 32, -1});

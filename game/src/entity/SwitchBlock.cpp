@@ -4,13 +4,13 @@
 
 namespace fornani {
 
-SwitchBlock::SwitchBlock(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "switch_blocks") {
+SwitchBlock::SwitchBlock(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "switch_blocks"), Animatable{svc, "switch_blocks"} {
 	unserialize(in);
 	set_texture_rect(sf::IntRect{{fornani::constants::i_cell_resolution * m_type, 0}, fornani::constants::i_resolution_vec});
 	repeatable = true;
 }
 
-SwitchBlock::SwitchBlock(fornani::automa::ServiceProvider& svc, int id, int type) : Entity(svc, "switch_blocks", id), m_type{type} {
+SwitchBlock::SwitchBlock(fornani::automa::ServiceProvider& svc, int id, int type) : Entity(svc, "switch_blocks", id), Animatable{svc, "switch_blocks"}, m_type{type} {
 	set_texture_rect(sf::IntRect{{fornani::constants::i_cell_resolution * type, 0}, fornani::constants::i_resolution_vec});
 	repeatable = true;
 }
