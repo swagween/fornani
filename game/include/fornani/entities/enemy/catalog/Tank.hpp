@@ -8,8 +8,8 @@
 
 namespace fornani::enemy {
 
-enum class TankState { idle, run, shoot_horizontal, shoot_vertical, jumpsquat, jump, land, turn, type, alert, pocket, sleep, drink };
-enum class TankFlags { show_weapon, shorthop };
+enum class TankState { idle, run, shoot_horizontal, shoot_vertical, jumpsquat, jump, land, turn, type, alert, pocket, sleep, drink, squish };
+enum class TankFlags { show_weapon, shorthop, squishing };
 enum class TankVariant { watchman, typist };
 enum class TankMode { neutral, hostile };
 
@@ -35,6 +35,7 @@ class Tank final : public Enemy, public StateMachine<TankState>, public Flaggabl
 	fsm::StateFunction update_pocket();
 	fsm::StateFunction update_sleep();
 	fsm::StateFunction update_drink();
+	fsm::StateFunction update_squish();
 
 	[[nodiscard]] auto is_mid_run() { return m_cooldowns.run.is_almost_complete(); }
 	[[nodiscard]] auto has_been_alerted() { return m_cooldowns.alerted.running(); }

@@ -39,6 +39,9 @@ class Destructible : public Entity {
 	[[nodiscard]] auto has_collider() const -> bool { return collider.has_value(); }
 
   private:
+	void debug();
+
+  private:
 	int quest_id{};
 	std::optional<shape::RegisteredCollider> owned_collider;
 	std::optional<std::reference_wrapper<shape::RegisteredCollider>> collider;

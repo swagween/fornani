@@ -11,9 +11,8 @@
 namespace fornani::enemy {
 
 Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
-	: Mobile(svc, map, "enemy_" + std::string{label}, sf::Vector2i{svc.data.enemy[label]["physical"]["sprite_dimensions"][0].as<int>(), svc.data.enemy[label]["physical"]["sprite_dimensions"][1].as<int>()}),
-	  Animatable(svc, "enemy_" + std::string{label}, sf::Vector2i{svc.data.enemy[label]["physical"]["sprite_dimensions"][0].as<int>(), svc.data.enemy[label]["physical"]["sprite_dimensions"][1].as<int>()}), metadata{.variant{variant}},
-	  label(label), health_indicator{svc}, hurt_effect{128}, m_freeze{12}, m_health_bar{svc, colors::mythic_green}, health{svc.data.enemy[label]["attributes"]["base_hp"].as<float>()}, m_weakness{160} {
+	: Mobile(svc, map, "enemy_" + std::string{label}, sf::Vector2i{svc.data.enemy[label]["physical"]["sprite_dimensions"][0].as<int>(), svc.data.enemy[label]["physical"]["sprite_dimensions"][1].as<int>()}), metadata{.variant{variant}},
+	  label(label), health_indicator{svc}, hurt_effect{128}, m_freeze{12}, m_health_bar{svc, colors::mythic_green}, health{svc.data.enemy[label]["attributes"]["base_hp"].as<float>()}, m_weakness{160}, m_crush{6} {
 
 	get_collider().set_trait(shape::ColliderTrait::enemy);
 	if (spawned) { flags.general.set(GeneralFlags::spawned); }
@@ -64,7 +63,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	anim::Parameters params{};
 	params.duration = in_animation["duration"].as<int>();
 	params.framerate = in_animation["framerate"].as<int>();
-	animation.set_params(params);
+	p_animatable.animation.set_params(params);
 
 	switch (in_audio["hit"].as<int>()) {
 	case -1: flags.general.set(GeneralFlags::custom_sounds); break;
@@ -134,7 +133,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 		for (auto const& entry : in_treasure["guns"].as_array()) { m_treasure->push_back(Treasure{entity::ChestType::gun, entry["chance"].as<float>(), entry["tag"].as_string(), entry["mythic"].as_bool()}); }
 	}
 
-	center();
+	p_animatable.center();
 }
 
 void Enemy::set_stable_id(std::pair<int, sf::Vector2<int>> code) {
@@ -287,10 +286,10 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	if (flags.state.test(StateFlags::invisible)) { return; }
 	auto horizontal_offset = sf::Vector2f{directions.actual.as_float(), 1.f};
 	auto sprite_position = get_collider().get_center() - cam + m_random_offset + m_native_offset.componentWiseMul(horizontal_offset);
-	Drawable::set_position(sprite_position);
+	p_animatable.set_position(sprite_position);
 	// debug();
 
-	Drawable::draw(win);
+	p_animatable.draw(win);
 
 	if (svc.greyblock_mode()) {
 		get_collider().render(win, cam);
@@ -405,7 +404,9 @@ void Enemy::on_crush(world::Map& map) {
 	if (!get_collider().collision_depths) { return; }
 	if (flags.general.test(GeneralFlags::uncrushable)) { return; }
 	auto second_crush = secondary_collider ? get_secondary_collider().crushed() : false;
-	if (get_collider().crushed() || second_crush) {
+	m_crush.update();
+	if ((get_collider().crushed() || second_crush) && !m_crush.running()) { m_crush.start(); }
+	if (m_crush.is_almost_complete()) {
 		hurt(1024.f);
 		get_collider().collision_depths = {};
 	}
@@ -446,7 +447,7 @@ void Enemy::set_position_from_scaled(sf::Vector2f pos) {
 void Enemy::debug() {
 	static bool* b_debug{};
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-	static ImVec2 pos = ImVec2{Drawable::get_window_position()};
+	static ImVec2 pos = ImVec2{p_animatable.get_window_position()};
 	ImGui::SetNextWindowPos(ImVec2{0, 0}, ImGuiCond_Always);
 	ImGui::SetNextWindowBgAlpha(0.65f);
 	if (ImGui::Begin("Enemy Info", b_debug, window_flags)) {

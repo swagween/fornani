@@ -14,9 +14,6 @@ enum class ImpVariant { fork, knife };
 class Imp final : public Enemy {
 
   public:
-	Imp() = delete;
-	~Imp() override {}
-	Imp& operator=(Imp&&) = delete;
 	Imp(automa::ServiceProvider& svc, world::Map& map, int variant);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;

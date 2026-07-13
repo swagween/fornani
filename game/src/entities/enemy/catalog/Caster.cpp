@@ -8,11 +8,10 @@
 namespace fornani::enemy {
 
 Caster::Caster(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, map, "caster"), Animatable{svc, "enemy_caster", {36, 36}}, m_services(&svc), m_map(&map),
-	  parts{.scepter{svc.assets.get_texture("caster_scepter"), 2.0f, 0.85f, {-16.f, 38.f}}, .wand{svc.assets.get_texture("caster_wand"), 2.0f, 0.85f, {-40.f, 48.f}}}, energy_ball(svc, "energy_ball"),
-	  m_variant{static_cast<CasterVariant>(variant)}, m_target_force{0.0003f}, m_debug{} {
-	p_animations = {{"idle", {0, 4, 28, -1}}, {"turn", {9, 3, 18, 0}}, {"prepare", {9, 3, 18, 0}}, {"signal", {4, 4, 28, 2}}, {"dormant", {8, 1, 32, -1}}};
-	animation.set_params(get_params("dormant"));
+	: Enemy(svc, map, "caster"), m_services(&svc), m_map(&map), parts{.scepter{svc.assets.get_texture("caster_scepter"), 2.0f, 0.85f, {-16.f, 38.f}}, .wand{svc.assets.get_texture("caster_wand"), 2.0f, 0.85f, {-40.f, 48.f}}},
+	  energy_ball(svc, "energy_ball"), m_variant{static_cast<CasterVariant>(variant)}, m_target_force{0.0003f}, m_debug{} {
+	p_animatable.set_animations({{"idle", {0, 4, 28, -1}}, {"turn", {9, 3, 18, 0}}, {"prepare", {9, 3, 18, 0}}, {"signal", {4, 4, 28, 2}}, {"dormant", {8, 1, 32, -1}}});
+	p_animatable.animation.set_params(get_params("dormant"));
 	if (map.get_style_id() == 5) { cooldowns.awaken = util::Cooldown{4}; }
 	get_collider().physics.set_friction_componentwise({0.964f, 0.964f});
 	get_collider().flags.general.set(shape::General::complex);
@@ -76,8 +75,8 @@ void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	face_player(player);
 	directions.movement.lnr = get_collider().physics.velocity.x > 0.f ? LNR::right : LNR::left;
 	if (!is_dormant()) {
-		parts.scepter.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center());
-		parts.wand.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center());
+		parts.scepter.update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center());
+		parts.wand.update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center());
 	}
 
 	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
@@ -138,20 +137,20 @@ void Caster::teleport() {
 }
 
 fsm::StateFunction Caster::update_idle() {
-	animation.label = "idle";
+	p_animatable.animation.label = "idle";
 	p_state.actual = CasterState::idle;
 	cooldowns.pre_invisibility.update();
-	if (animation.just_started()) { flags.state.reset(StateFlags::hostile); }
+	if (p_animatable.animation.just_started()) { flags.state.reset(StateFlags::hostile); }
 	if (change_state(CasterState::turn, get_params("turn"))) { return CASTER_BIND(update_turn); }
 	if (change_state(CasterState::prepare, get_params("prepare"))) { return CASTER_BIND(update_prepare); }
 	return CASTER_BIND(update_idle);
 };
 
 fsm::StateFunction Caster::update_turn() {
-	animation.label = "turn";
+	p_animatable.animation.label = "turn";
 	p_state.actual = CasterState::turn;
 	cooldowns.pre_invisibility.update();
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		request(CasterState::idle);
 		if (change_state(CasterState::idle, get_params("idle"))) { return CASTER_BIND(update_idle); }
@@ -160,9 +159,9 @@ fsm::StateFunction Caster::update_turn() {
 }
 fsm::StateFunction Caster::update_prepare() {
 	p_state.actual = CasterState::prepare;
-	if (animation.just_started()) { m_services->soundboard.play_sound("caster_scream", get_collider().get_center()); }
+	if (p_animatable.animation.just_started()) { m_services->soundboard.play_sound("caster_scream", get_collider().get_center()); }
 	cooldowns.pre_invisibility.update();
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request(CasterState::signal);
 		if (change_state(CasterState::signal, get_params("signal"))) { return CASTER_BIND(update_signal); }
 	}
@@ -170,9 +169,9 @@ fsm::StateFunction Caster::update_prepare() {
 };
 
 fsm::StateFunction Caster::update_signal() {
-	animation.label = "signal";
+	p_animatable.animation.label = "signal";
 	p_state.actual = CasterState::signal;
-	if (animation.just_started()) {
+	if (p_animatable.animation.just_started()) {
 		auto sign = directions.actual.lnr == LNR::left ? 1.f : -1.f;
 		parts.scepter.sprite->rotate(sf::degrees(90.f) * sign);
 		cooldowns.rapid_fire.start(208);
@@ -185,7 +184,7 @@ fsm::StateFunction Caster::update_signal() {
 		energy_ball.shoot(*m_services, *m_map, attack_target);
 		cooldowns.rapid_fire.start();
 	}
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		parts.scepter.sprite->setTextureRect(sf::IntRect{{0, 0}, scepter_dimensions});
 		parts.wand.sprite->setTextureRect(sf::IntRect{{0, 0}, wand_dimensions});
 		auto sign = directions.actual.lnr == LNR::left ? 1.f : -1.f;
@@ -222,7 +221,7 @@ fsm::StateFunction Caster::update_dormant() {
 
 bool Caster::change_state(CasterState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params, true);
+		p_animatable.animation.set_params(params, true);
 		return true;
 	}
 	return false;
@@ -234,7 +233,7 @@ void Caster::debug() {
 	ImGui::SetNextWindowSize(sz);
 	if (ImGui::Begin("Caster Debug")) {
 		ImGui::SeparatorText("Info");
-		ImGui::Text("Animation: %s", animation.label.c_str());
+		ImGui::Text("Animation: %s", p_animatable.animation.label.c_str());
 		ImGui::SeparatorText("Controls");
 		ImGui::SliderFloat("Friction", &fric, 0.9f, 0.999f);
 		ImGui::SliderFloat("Target Force", &m_target_force, 0.0001f, 0.0005f, "%.4f");

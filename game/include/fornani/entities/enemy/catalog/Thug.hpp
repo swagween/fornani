@@ -10,33 +10,28 @@ namespace fornani::enemy {
 enum class ThugState { idle, turn, run, jump, alert, rush, punch };
 
 class Thug final : public Enemy {
+  public:
+	Thug(automa::ServiceProvider& svc, world::Map& map);
+	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
+	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 
-	  public:
-		Thug() = delete;
-		~Thug() override {}
-		Thug& operator = (Thug&&) = delete;
-		Thug(automa::ServiceProvider& svc, world::Map& map);
-		void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
-		void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
+	fsm::StateFunction state_function = std::bind(&Thug::update_idle, this);
+	fsm::StateFunction update_idle();
+	fsm::StateFunction update_turn();
+	fsm::StateFunction update_run();
+	fsm::StateFunction update_jump();
+	fsm::StateFunction update_alert();
+	fsm::StateFunction update_rush();
+	fsm::StateFunction update_punch();
 
-		fsm::StateFunction state_function = std::bind(&Thug::update_idle, this);
-		fsm::StateFunction update_idle();
-		fsm::StateFunction update_turn();
-		fsm::StateFunction update_run();
-		fsm::StateFunction update_jump();
-		fsm::StateFunction update_alert();
-		fsm::StateFunction update_rush();
-		fsm::StateFunction update_punch();
+  private:
+	ThugState state{};
 
-	  private:
-		ThugState state{};
-
-
-	//packages
-		struct {
-			entity::Attack punch{};
-			entity::Attack rush{};
-		} attacks{};
+	// packages
+	struct {
+		entity::Attack punch{};
+		entity::Attack rush{};
+	} attacks{};
 	entity::Caution caution{};
 
 	struct {
@@ -57,7 +52,6 @@ class Thug final : public Enemy {
 	world::Map* m_map;
 
 	bool change_state(ThugState next, anim::Parameters params);
-
 };
 
 } // namespace fornani::enemy

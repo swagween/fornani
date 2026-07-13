@@ -9,10 +9,9 @@ namespace fornani::enemy {
 
 constexpr auto crow_framerate = 6;
 
-Crow::Crow(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f spread)
-	: Enemy(svc, map, "crow"), Animatable{svc, "enemy_crow", {16, 16}}, m_services{&svc}, m_evade_force{15.f}, m_home_force{0.01f}, m_start{spread}, m_fear{80}, m_init{4} {
-	p_animations = {{"idle", {0, 1, crow_framerate * 2, -1}}, {"peck", {4, 1, crow_framerate * 4, 0}}, {"hop", {5, 1, crow_framerate * 8, 0}}, {"turn", {1, 1, crow_framerate * 2, 0}}, {"fly", {2, 2, crow_framerate * 2, -1}}};
-	animation.set_params(get_params("idle"));
+Crow::Crow(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f spread) : Enemy(svc, map, "crow"), m_services{&svc}, m_evade_force{15.f}, m_home_force{0.01f}, m_start{spread}, m_fear{80}, m_init{4} {
+	p_animatable.set_animations({{"idle", {0, 1, crow_framerate * 2, -1}}, {"peck", {4, 1, crow_framerate * 4, 0}}, {"hop", {5, 1, crow_framerate * 8, 0}}, {"turn", {1, 1, crow_framerate * 2, 0}}, {"fly", {2, 2, crow_framerate * 2, -1}}});
+	p_animatable.animation.set_params(get_params("idle"));
 	m_init.start();
 	if (random::percent_chance(0.1f)) {
 		m_variant = CrowVariant::mythic;
@@ -97,7 +96,7 @@ fsm::StateFunction Crow::update_idle() {
 
 fsm::StateFunction Crow::update_peck() {
 	p_state.actual = CrowState::peck;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		if (change_state(CrowState::fly, get_params("fly")) && get_collider().grounded()) { return CROW_BIND(update_fly); }
 		if (change_state(CrowState::turn, get_params("turn"))) { return CROW_BIND(update_turn); }
 		request(CrowState::idle);
@@ -108,11 +107,11 @@ fsm::StateFunction Crow::update_peck() {
 
 fsm::StateFunction Crow::update_hop() {
 	p_state.actual = CrowState::hop;
-	if (animation.just_started()) {
+	if (p_animatable.animation.just_started()) {
 		set_direction(random::percent_chance(50) ? SimpleDirection{LR::left} : SimpleDirection{LR::right});
 		get_collider().physics.apply_force(sf::Vector2f{directions.actual.as_float() * 4.f, -2.f} * 20.f);
 	}
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		if (change_state(CrowState::fly, get_params("fly")) && get_collider().grounded()) { return CROW_BIND(update_fly); }
 		if (change_state(CrowState::turn, get_params("turn"))) { return CROW_BIND(update_turn); }
 		request(CrowState::idle);
@@ -124,7 +123,7 @@ fsm::StateFunction Crow::update_hop() {
 fsm::StateFunction Crow::update_fly() {
 	p_state.actual = CrowState::fly;
 	set_direction(m_flee_direction);
-	if (animation.just_started()) {
+	if (p_animatable.animation.just_started()) {
 		m_random_x = random::random_range_float(0.2f, 0.3f);
 		random::percent_chance(50) ? m_services->soundboard.flags.crow.set(audio::Crow::fly) : m_services->soundboard.flags.crow.set(audio::Crow::flap);
 	}
@@ -142,7 +141,7 @@ fsm::StateFunction Crow::update_turn() {
 
 bool Crow::change_state(CrowState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

@@ -6,10 +6,10 @@
 
 namespace fornani::enemy {
 
-Archer::Archer(automa::ServiceProvider& svc, world::Map& map)
-	: Enemy(svc, map, "archer"), Animatable{svc, "enemy_archer", {32, 32}}, m_services(&svc), m_map(&map), m_bow(svc, "demon_bow"), parts{.bow{svc.assets.get_texture("archer_bow"), 0.8f, 0.85f, {-18.f, -8.f}}} {
+Archer::Archer(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "archer"), m_services(&svc), m_map(&map), m_bow(svc, "demon_bow"), parts{.bow{svc.assets.get_texture("archer_bow"), 0.8f, 0.85f, {-18.f, -8.f}}} {
 	auto archer_framerate = 12;
-	p_animations = {{"idle", {0, 8, archer_framerate * 2, -1}}, {"turn", {8, 1, archer_framerate * 2, 0}}, {"run", {9, 4, archer_framerate * 2, 4}}, {"jump", {9, 1, archer_framerate * 3, 0}}, {"shoot", {13, 1, archer_framerate * 12, 0}}};
+	p_animatable.set_animations(
+		{{"idle", {0, 8, archer_framerate * 2, -1}}, {"turn", {8, 1, archer_framerate * 2, 0}}, {"run", {9, 4, archer_framerate * 2, 4}}, {"jump", {9, 1, archer_framerate * 3, 0}}, {"shoot", {13, 1, archer_framerate * 12, 0}}});
 	get_collider().physics.maximum_velocity = {8.f, 12.f};
 	get_collider().physics.air_friction = {0.95f, 0.999f};
 	get_collider().flags.general.set(shape::General::complex);
@@ -52,7 +52,7 @@ void Archer::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	directions.movement.lnr = get_collider().physics.velocity.x > 0.f ? LNR::right : LNR::left;
 	Enemy::update(svc, map, player);
 	auto shooting_offset = is_state(ArcherState::shoot) ? sf::Vector2{0.f, -6.f} : sf::Vector2{0.f, 0.f};
-	parts.bow.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center() + shooting_offset);
+	parts.bow.update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center() + shooting_offset);
 
 	if (svc.ticker.every_x_ticks(200)) {
 		if (random::percent_chance(4) && !caution.danger()) { request(ArcherState::run); }
@@ -87,7 +87,7 @@ void Archer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 fsm::StateFunction Archer::update_idle() {
 	m_state.actual = ArcherState::idle;
-	if (animation.just_started()) { flags.state.reset(StateFlags::hostile); }
+	if (p_animatable.animation.just_started()) { flags.state.reset(StateFlags::hostile); }
 	if (change_state(ArcherState::turn, get_params("turn"))) { return ARCHER_BIND(update_turn); }
 	if (change_state(ArcherState::run, get_params("run"))) { return ARCHER_BIND(update_run); }
 	if (change_state(ArcherState::shoot, get_params("shoot"))) { return ARCHER_BIND(update_shoot); }
@@ -96,7 +96,7 @@ fsm::StateFunction Archer::update_idle() {
 
 fsm::StateFunction Archer::update_turn() {
 	m_state.actual = ArcherState::turn;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		request(ArcherState::idle);
 		if (change_state(ArcherState::idle, get_params("idle"))) { return ARCHER_BIND(update_idle); }
@@ -108,7 +108,7 @@ fsm::StateFunction Archer::update_run() {
 	m_state.actual = ArcherState::run;
 	auto const facing = directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	get_collider().physics.apply_force({attributes.speed * facing, 0.f});
-	if (caution.danger() || animation.complete()) {
+	if (caution.danger() || p_animatable.animation.complete()) {
 		request(ArcherState::shoot);
 		if (change_state(ArcherState::shoot, get_params("shoot"))) { return ARCHER_BIND(update_shoot); }
 	}
@@ -118,7 +118,7 @@ fsm::StateFunction Archer::update_run() {
 
 fsm::StateFunction Archer::update_jump() {
 	m_state.actual = ArcherState::jump;
-	if (animation.just_started()) {
+	if (p_animatable.animation.just_started()) {
 		cooldowns.jump.start();
 		rand_jump = random::percent_chance(50) ? -1.f : 1.f;
 	}
@@ -135,9 +135,9 @@ fsm::StateFunction Archer::update_jump() {
 
 fsm::StateFunction Archer::update_shoot() {
 	m_state.actual = ArcherState::shoot;
-	auto bow_frame = animation.frame_timer.get() >= animation.params.framerate / 2 ? 1 : 2;
+	auto bow_frame = p_animatable.animation.frame_timer.get() >= p_animatable.animation.params.framerate / 2 ? 1 : 2;
 	parts.bow.sprite->setTextureRect(sf::IntRect{{41 * bow_frame, 0}, bow_dimensions});
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		auto bp = get_collider().get_center();
 		bp.x += 24.f * directions.actual.as_float();
 		bp.y -= 48.f;
@@ -153,7 +153,7 @@ fsm::StateFunction Archer::update_shoot() {
 
 bool Archer::change_state(ArcherState next, anim::Parameters params) {
 	if (m_state.desired == next) {
-		animation.set_params(params, true);
+		p_animatable.animation.set_params(params, true);
 		return true;
 	}
 	return false;

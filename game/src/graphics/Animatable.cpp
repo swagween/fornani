@@ -27,6 +27,8 @@ void Animatable::set_animation(std::string_view to) {
 	}
 }
 
+void Animatable::set_animations(std::unordered_map<std::string, anim::Parameters, TransparentHash, TransparentEqual> const& list) { p_animations = list; }
+
 void Animatable::set_channel(int to) {
 	m_channel = to;
 	set_rect();

@@ -32,6 +32,7 @@ class CollisionDepth {
 	void reset() { iterations.start(); }
 	void render(shape::Shape const& bounding_box, sf::RenderWindow& win, sf::Vector2f cam);
 	[[nodiscard]] auto crushed() const -> bool;
+	[[nodiscard]] auto squished() const -> bool;
 	[[nodiscard]] bool horizontal_squish() const;
 	[[nodiscard]] bool vertical_squish() const;
 

@@ -9,9 +9,9 @@ namespace fornani::enemy {
 
 constexpr auto junkfly_framerate = 12;
 
-Junkfly::Junkfly(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "junkfly"), Animatable{svc, "enemy_junkfly", {36, 36}}, m_services{&svc}, m_toss_time{800} {
-	p_animations = {{"idle", {0, 4, junkfly_framerate * 2, -1}}, {"turn", {4, 2, junkfly_framerate * 2, 0}}, {"toss", {6, 4, junkfly_framerate * 2, 0}}};
-	animation.set_params(get_params("idle"));
+Junkfly::Junkfly(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "junkfly"), m_services{&svc}, m_toss_time{800} {
+	p_animatable.set_animations({{"idle", {0, 4, junkfly_framerate * 2, -1}}, {"turn", {4, 2, junkfly_framerate * 2, 0}}, {"toss", {6, 4, junkfly_framerate * 2, 0}}});
+	p_animatable.animation.set_params(get_params("idle"));
 	p_state.actual = JunkflyState::idle;
 
 	flags.general.reset(GeneralFlags::gravity);
@@ -77,11 +77,11 @@ fsm::StateFunction Junkfly::update_idle() {
 
 fsm::StateFunction Junkfly::update_toss() {
 	p_state.actual = JunkflyState::toss;
-	if (animation.get_frame_count() == 2 && animation.keyframe_started()) {
+	if (p_animatable.animation.get_frame_count() == 2 && p_animatable.animation.keyframe_started()) {
 		set_flag(JunkflyFlags::toss);
 		if (!health.is_dead()) { m_services->soundboard.play_sound("missile_whistle", get_collider().get_center()); }
 	}
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		request(JunkflyState::idle);
 		if (change_state(JunkflyState::idle, get_params("idle"))) { return JUNKFLY_BIND(update_idle); }
 	}
@@ -90,7 +90,7 @@ fsm::StateFunction Junkfly::update_toss() {
 
 fsm::StateFunction Junkfly::update_turn() {
 	p_state.actual = JunkflyState::turn;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		request(JunkflyState::idle);
 		if (change_state(JunkflyState::idle, get_params("idle"))) { return JUNKFLY_BIND(update_idle); }
@@ -100,7 +100,7 @@ fsm::StateFunction Junkfly::update_turn() {
 
 bool Junkfly::change_state(JunkflyState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

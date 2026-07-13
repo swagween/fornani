@@ -5,9 +5,9 @@
 
 namespace fornani::enemy {
 
-Eyebit::Eyebit(automa::ServiceProvider& svc, world::Map& map, bool spawned) : Enemy(svc, map, "eyebit", spawned), Animatable{svc, "enemy_eyebit", {16, 16}} {
-	p_animations = {{"idle", {0, 4, 28, -1}}, {"turn", {4, 1, 38, 0}}};
-	animation.set_params(get_params("idle"));
+Eyebit::Eyebit(automa::ServiceProvider& svc, world::Map& map, bool spawned) : Enemy(svc, map, "eyebit", spawned) {
+	p_animatable.set_animations({{"idle", {0, 4, 28, -1}}, {"turn", {4, 1, 38, 0}}});
+	p_animatable.animation.set_params(get_params("idle"));
 	flags.general.set(GeneralFlags::transcendent);
 	flags.state.set(StateFlags::vulnerable);
 	flags.general.reset(GeneralFlags::gravity);
@@ -36,7 +36,7 @@ fsm::StateFunction Eyebit::update_idle() {
 
 fsm::StateFunction Eyebit::update_turn() {
 	p_state.actual = EyebitState::turn;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		request(EyebitState::idle);
 		if (change_state(EyebitState::idle, get_params("idle"))) { return EYEBIT_BIND(update_idle); }
@@ -46,7 +46,7 @@ fsm::StateFunction Eyebit::update_turn() {
 
 bool Eyebit::change_state(EyebitState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

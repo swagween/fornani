@@ -8,10 +8,20 @@
 namespace fornani::enemy {
 
 Sentinel::Sentinel(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, map, "sentinel"), Animatable{svc, "enemy_sentinel", {96, 96}}, m_variant{static_cast<SentinelVariant>(variant)}, m_services(&svc), m_map(&map), m_sword{svc.assets.get_texture("sentinel_sword"), 4.0f, 0.85f, {0.f, 0.f}} {
-	p_animations = {{"idle", {0, 6, 40, -1}},  {"run", {6, 4, 48, 2}},	 {"turn", {10, 3, 30, 0}},			{"jump", {13, 4, 48, -1}},	 {"land", {19, 3, 48, 0}},		   {"slash", {13, 4, 48, -1}},
-					{"swipe", {19, 3, 48, 0}}, {"dash", {25, 4, 20, 1}}, {"prepare_dash", {24, 1, 120, 0}}, {"summon", {29, 1, 180, 0}}, {"charge_swipe", {17, 2, 80, 0}}, {"charge_slash", {22, 2, 80, 0}}};
-	animation.set_params(get_params("idle"));
+	: Enemy(svc, map, "sentinel"), m_variant{static_cast<SentinelVariant>(variant)}, m_services(&svc), m_map(&map), m_sword{svc.assets.get_texture("sentinel_sword"), 4.0f, 0.85f, {0.f, 0.f}} {
+	p_animatable.set_animations({{"idle", {0, 6, 40, -1}},
+								 {"run", {6, 4, 48, 2}},
+								 {"turn", {10, 3, 30, 0}},
+								 {"jump", {13, 4, 48, -1}},
+								 {"land", {19, 3, 48, 0}},
+								 {"slash", {13, 4, 48, -1}},
+								 {"swipe", {19, 3, 48, 0}},
+								 {"dash", {25, 4, 20, 1}},
+								 {"prepare_dash", {24, 1, 120, 0}},
+								 {"summon", {29, 1, 180, 0}},
+								 {"charge_swipe", {17, 2, 80, 0}},
+								 {"charge_slash", {22, 2, 80, 0}}});
+	p_animatable.animation.set_params(get_params("idle"));
 	get_collider().physics.set_friction_componentwise({0.97f, 0.999f});
 	get_collider().physics.air_friction = {0.999f, 0.999f};
 	get_secondary_collider().set_dimensions({28.f, 28.f});
@@ -53,9 +63,9 @@ void Sentinel::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	if (is_state(SentinelState::charge_swipe)) { tweak = sf::Vector2f{-50.f * directions.actual.as_float(), -100.f}; }
 	// if (is_state(SentinelState::slash)) { tweak = sf::Vector2f{50.f * directions.actual.as_float(), -140.f}; }
 	auto sword_offset = sf::Vector2f{-28.f * directions.actual.as_float(), 6.f} + tweak;
-	m_sword.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center() + sword_offset);
+	m_sword.update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center() + sword_offset);
 	if (m_shield) {
-		m_shield->update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center());
+		m_shield->update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center());
 		m_shield->set_shield({24.f, 100.f}, {0.f, -24.f});
 	}
 	m_sword.sprite->setOrigin(m_sword.sprite->getLocalBounds().getCenter());
@@ -102,7 +112,7 @@ void Sentinel::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			}
 			break;
 		}
-		if ((animation.get_frame() == 19 && is_state(SentinelState::swipe)) || (animation.get_frame() == 13 && is_state(SentinelState::slash) && animation.is_first_loop())) {
+		if ((p_animatable.animation.get_frame() == 19 && is_state(SentinelState::swipe)) || (p_animatable.animation.get_frame() == 13 && is_state(SentinelState::slash) && p_animatable.animation.is_first_loop())) {
 			attack.hit.activate();
 		} else {
 			attack.hit.deactivate();
@@ -148,9 +158,9 @@ fsm::StateFunction Sentinel::update_idle() {
 
 fsm::StateFunction Sentinel::update_run() {
 	p_state.actual = SentinelState::run;
-	if ((animation.get_frame_count() == 1 || animation.get_frame_count() == 3) && animation.keyframe_started()) { m_services->soundboard.play_sound("tank_step", get_collider().get_center()); }
+	if ((p_animatable.animation.get_frame_count() == 1 || p_animatable.animation.get_frame_count() == 3) && p_animatable.animation.keyframe_started()) { m_services->soundboard.play_sound("tank_step", get_collider().get_center()); }
 	get_collider().physics.apply_force({attributes.speed * directions.actual.as_float(), 0.f});
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		if (change_state(SentinelState::turn, get_params("turn"))) { return SENTINEL_BIND(update_turn); }
 		request(SentinelState::idle);
 		if (change_state(SentinelState::idle, get_params("idle"))) { return SENTINEL_BIND(update_idle); }
@@ -160,7 +170,7 @@ fsm::StateFunction Sentinel::update_run() {
 
 fsm::StateFunction Sentinel::update_turn() {
 	p_state.actual = SentinelState::turn;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		request(SentinelState::idle);
 		if (change_state(SentinelState::idle, get_params("idle"))) { return SENTINEL_BIND(update_idle); }
@@ -170,7 +180,7 @@ fsm::StateFunction Sentinel::update_turn() {
 
 fsm::StateFunction Sentinel::update_jump() {
 	p_state.actual = SentinelState::jump;
-	if (animation.just_started()) {
+	if (p_animatable.animation.just_started()) {
 		jump(true);
 		m_cooldowns.post_jump.start();
 	}
@@ -183,11 +193,11 @@ fsm::StateFunction Sentinel::update_jump() {
 
 fsm::StateFunction Sentinel::update_land() {
 	p_state.actual = SentinelState::land;
-	if (animation.just_started()) {
+	if (p_animatable.animation.just_started()) {
 		m_services->soundboard.play_sound("thud", get_collider().get_center());
 		m_services->camera_controller.shake(10, 0.3f, 200, 20);
 	}
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request(SentinelState::prepare_dash);
 		if (change_state(SentinelState::prepare_dash, get_params("prepare_dash"))) { return SENTINEL_BIND(update_prepare_dash); }
 	}
@@ -196,7 +206,7 @@ fsm::StateFunction Sentinel::update_land() {
 
 fsm::StateFunction Sentinel::update_swipe() {
 	p_state.actual = SentinelState::swipe;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		m_cooldowns.post_attack.start();
 		request(SentinelState::idle);
 		if (change_state(SentinelState::idle, get_params("idle"))) { return SENTINEL_BIND(update_idle); }
@@ -206,7 +216,7 @@ fsm::StateFunction Sentinel::update_swipe() {
 
 fsm::StateFunction Sentinel::update_slash() {
 	p_state.actual = SentinelState::slash;
-	if (animation.just_started()) {
+	if (p_animatable.animation.just_started()) {
 		jump(false);
 		m_cooldowns.post_jump.start();
 	}
@@ -219,8 +229,8 @@ fsm::StateFunction Sentinel::update_slash() {
 
 fsm::StateFunction Sentinel::update_charge_swipe() {
 	p_state.actual = SentinelState::charge_swipe;
-	if (animation.just_started()) { m_services->soundboard.play_sound("sentinel_alert", get_collider().get_center()); }
-	if (animation.complete()) {
+	if (p_animatable.animation.just_started()) { m_services->soundboard.play_sound("sentinel_alert", get_collider().get_center()); }
+	if (p_animatable.animation.complete()) {
 		m_services->soundboard.play_sound("sentinel_swipe_2", get_collider().get_center());
 		auto swipe_offset = sf::Vector2f{90.f * directions.actual.as_float(), -50.f};
 		m_map->spawn_effect(*m_services, "sword_swipe", get_collider().get_center() + swipe_offset, {}, 0, -directions.actual.as_float());
@@ -233,8 +243,8 @@ fsm::StateFunction Sentinel::update_charge_swipe() {
 
 fsm::StateFunction Sentinel::update_charge_slash() {
 	p_state.actual = SentinelState::charge_slash;
-	if (animation.just_started()) { m_services->soundboard.play_sound("sentinel_alert", get_collider().get_center()); }
-	if (animation.complete()) {
+	if (p_animatable.animation.just_started()) { m_services->soundboard.play_sound("sentinel_alert", get_collider().get_center()); }
+	if (p_animatable.animation.complete()) {
 		m_services->soundboard.play_sound("sentinel_swipe_1", get_collider().get_center());
 		auto swipe_offset = sf::Vector2f{100.f * directions.actual.as_float(), 0.f};
 		m_map->spawn_effect(*m_services, "sword_slash", get_collider().get_center() + swipe_offset, {}, 0, -directions.actual.as_float());
@@ -247,12 +257,12 @@ fsm::StateFunction Sentinel::update_charge_slash() {
 
 fsm::StateFunction Sentinel::update_prepare_dash() {
 	p_state.actual = SentinelState::prepare_dash;
-	if (animation.just_started()) {
+	if (p_animatable.animation.just_started()) {
 		m_services->soundboard.play_sound("sentinel_prepare", get_collider().get_center());
 		m_map->spawn_effect(*m_services, "giga_flare", get_collider().get_center());
 	}
 	shake();
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request(SentinelState::dash);
 		if (change_state(SentinelState::dash, get_params("dash"))) { return SENTINEL_BIND(update_dash); }
 	}
@@ -261,9 +271,9 @@ fsm::StateFunction Sentinel::update_prepare_dash() {
 
 fsm::StateFunction Sentinel::update_dash() {
 	p_state.actual = SentinelState::dash;
-	if (animation.just_started()) { m_services->soundboard.play_sound("sentinel_charge", get_collider().get_center()); }
+	if (p_animatable.animation.just_started()) { m_services->soundboard.play_sound("sentinel_charge", get_collider().get_center()); }
 	get_collider().physics.velocity.x = 20.f * directions.actual.as_float();
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request(SentinelState::summon);
 		if (change_state(SentinelState::summon, get_params("summon"))) { return SENTINEL_BIND(update_summon); }
 	}
@@ -273,8 +283,8 @@ fsm::StateFunction Sentinel::update_dash() {
 fsm::StateFunction Sentinel::update_summon() {
 	p_state.actual = SentinelState::summon;
 	shake();
-	if (animation.just_started()) { m_services->soundboard.play_sound("sentinel_summon", get_collider().get_center()); }
-	if (animation.complete()) {
+	if (p_animatable.animation.just_started()) { m_services->soundboard.play_sound("sentinel_summon", get_collider().get_center()); }
+	if (p_animatable.animation.complete()) {
 		for (int i = 0; i < 3; ++i) { m_map->spawn_enemy(18, get_collider().get_center() + random::random_vector_float(-180.f, 180.f) + sf::Vector2f{0.f, -260.f}, 2); }
 		if (change_state(SentinelState::turn, get_params("turn"))) { return SENTINEL_BIND(update_turn); }
 		request(SentinelState::idle);
@@ -290,7 +300,7 @@ void Sentinel::jump(bool forward) {
 
 bool Sentinel::change_state(SentinelState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params, true);
+		p_animatable.animation.set_params(params, true);
 		return true;
 	}
 	return false;
@@ -301,7 +311,7 @@ void Sentinel::debug() {
 	ImGui::SetNextWindowSize(sz);
 	if (ImGui::Begin("Sentinel Debug")) {
 		ImGui::SeparatorText("Info");
-		ImGui::Text("Animation: %s", animation.label.c_str());
+		ImGui::Text("Animation: %s", p_animatable.animation.label.c_str());
 		ImGui::Text("Retreat: %.4f", m_caution.retreat.lengthSquared());
 		ImGui::ProgressBar(m_cooldowns.alerted.get_normalized());
 		ImGui::Text("Alerted: %i", m_cooldowns.alerted.get());

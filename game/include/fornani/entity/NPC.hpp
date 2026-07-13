@@ -105,7 +105,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	[[nodiscard]] auto get_tag() const -> std::string { return m_label; }
 	[[nodiscard]] auto get_specifier() const -> int { return m_id.get(); }
 	[[nodiscard]] auto get_vendor_id() const -> int { return get_specifier(); }
-	[[nodiscard]] auto is_animation_complete() -> bool { return Mobile::animation.is_complete(); }
+	[[nodiscard]] auto is_animation_complete() -> bool { return Mobile::p_animatable.animation.is_complete(); }
 
 	[[nodiscard]] auto get_vendor() const -> std::optional<npc::Vendor*> { return vendor; }
 

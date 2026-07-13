@@ -6,9 +6,9 @@
 
 namespace fornani {
 
-Water::Water(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "water"), Animatable{svc, "water"}, m_bounding_box{get_world_dimensions()}, m_replenish_cooldown{260}, m_mode{sf::BlendNone} {
+Water::Water(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "water"), m_bounding_box{get_world_dimensions()}, m_replenish_cooldown{260}, m_mode{sf::BlendNone} {
 	unserialize(in);
-	set_channel(get_i_type());
+	p_animatable.set_channel(get_i_type());
 	auto lookup = sf::Vector2i{66 * static_cast<int>(m_type), 0};
 	auto buffer = sf::Vector2i{1, 1};
 	repeatable = false;
@@ -16,7 +16,7 @@ Water::Water(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in,
 
 	m_bounding_box.set_position(get_world_position());
 
-	auto u_dimensions = sf::Vector2u{get_dimensions()};
+	auto u_dimensions = sf::Vector2u{p_animatable.get_dimensions()};
 	if (!m_texture.resize(u_dimensions)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
 	if (!m_surface_texture.resize(sf::Vector2u{u_dimensions.x, 64})) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
 	m_surface_texture.clear(sf::Color::Transparent);
@@ -41,7 +41,7 @@ Water::Water(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in,
 	}
 }
 
-Water::Water(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, WaterType type) : Entity(svc, "water", id, dimensions), Animatable{svc, "water"}, m_type{type} {
+Water::Water(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, WaterType type) : Entity(svc, "water", id, dimensions), m_type{type} {
 	repeatable = false;
 	copyable = false;
 }

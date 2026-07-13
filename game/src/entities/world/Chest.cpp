@@ -72,9 +72,9 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 			}
 		}
 		if (console && state.test(ChestState::open) && m_type != ChestType::orbs) {
-			svc.camera_controller.free();
+			// svc.camera_controller.free();
 		} else {
-			svc.camera_controller.constrain();
+			// svc.camera_controller.constrain();
 		}
 	}
 }

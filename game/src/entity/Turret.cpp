@@ -6,31 +6,31 @@
 
 namespace fornani {
 
-Turret::Turret(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "turrets", constants::i_resolution_vec), Animatable{svc, "turrets"}, m_rate{560}, m_shoot{600} {
+Turret::Turret(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "turrets", constants::i_resolution_vec), m_rate{560}, m_shoot{600} {
 	unserialize(in);
 	init(svc);
 }
 
 Turret::Turret(automa::ServiceProvider& svc, int id, TurretType type, TurretPattern pattern, CardinalDirection dir, TurretSettings settings)
-	: Entity(svc, "turrets", id), Animatable{svc, "turrets"}, m_type{type}, m_pattern{pattern}, m_direction{dir}, m_settings{settings}, m_rate{560} {
+	: Entity(svc, "turrets", id), m_type{type}, m_pattern{pattern}, m_direction{dir}, m_settings{settings}, m_rate{560} {
 	init(svc);
 }
 
 void Turret::init(automa::ServiceProvider& svc) {
-	set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
+	p_animatable.set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 	repeatable = true;
 	auto start_time = m_pattern == TurretPattern::constant ? m_rate.get_native_time() : m_rate.get_native_time() * (1.f - m_settings.delay);
 	m_rate.start(start_time);
 
-	push_animation("off", {0, 1, 18, -1});
-	push_animation("charging", {1, 3, 32, 0});
-	push_animation("firing", {4, 2, 18, -1});
-	push_animation("cooling_down", {6, 2, 18, 0});
-	push_animation("quick_fire", {4, 4, 18, 0});
+	p_animatable.push_animation("off", {0, 1, 18, -1});
+	p_animatable.push_animation("charging", {1, 3, 32, 0});
+	p_animatable.push_animation("firing", {4, 2, 18, -1});
+	p_animatable.push_animation("cooling_down", {6, 2, 18, 0});
+	p_animatable.push_animation("quick_fire", {4, 4, 18, 0});
 
 	m_firing = util::Cooldown{m_settings.duration};
 
-	m_pattern == TurretPattern::constant ? set_animation("firing") : set_animation("off");
+	m_pattern == TurretPattern::constant ? p_animatable.set_animation("firing") : p_animatable.set_animation("off");
 
 	m_position = get_world_position();
 
@@ -43,7 +43,7 @@ void Turret::init(automa::ServiceProvider& svc) {
 		m_weapon.value()->set_team(arms::Team::skycorps);
 	}
 	auto label = m_type == TurretType::laser ? "turrets_laser" : "turrets_projectile";
-	set_texture(svc.assets.get_texture(label));
+	p_animatable.set_texture(svc.assets.get_texture(label));
 }
 
 std::unique_ptr<Entity> Turret::clone() const { return std::make_unique<Turret>(*this); }
@@ -87,7 +87,7 @@ void Turret::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 	m_rate.update();
 	m_shoot.update();
 
-	if (m_type == TurretType::laser) { Animatable::set_rotation(sf::degrees(m_direction.as_degrees())); }
+	if (m_type == TurretType::laser) { p_animatable.set_rotation(sf::degrees(m_direction.as_degrees())); }
 	auto attributes = util::BitFlags<world::LaserAttributes>{};
 	if (m_pattern == TurretPattern::constant) { attributes.set(world::LaserAttributes::infinite); }
 	auto target = player.get_collider().get_center() - get_position();
@@ -99,8 +99,8 @@ void Turret::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 		}
 	}
 	if (m_type == TurretType::projectile || m_type == TurretType::stun) {
-		m_rotator.handle_rotation(get_sprite(), target.perpendicular(), 4);
-		set_channel(m_rotator.get_sprite_angle_index());
+		m_rotator.handle_rotation(p_animatable.get_sprite(), target.perpendicular(), 4);
+		p_animatable.set_channel(m_rotator.get_sprite_angle_index());
 	}
 
 	state_function = state_function();
@@ -128,12 +128,12 @@ void Turret::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 
 void Turret::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
-	Animatable::set_position(m_position + get_local_center() - cam);
-	Animatable::set_origin({});
+	p_animatable.set_position(m_position + get_local_center() - cam);
+	p_animatable.set_origin({});
 	Entity::render(win, cam, size);
 	if (m_editor) { return; }
-	Animatable::center();
-	win.draw(*this);
+	p_animatable.center();
+	win.draw(p_animatable);
 }
 
 auto Turret::get_position() const -> sf::Vector2f { return m_position + get_local_center() + get_offset(); }
@@ -162,7 +162,7 @@ fsm::StateFunction Turret::update_off() {
 
 fsm::StateFunction Turret::update_charging() {
 	m_state.actual = TurretState::charging;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		m_rate.start();
 		request(TurretState::firing);
 	}
@@ -180,21 +180,21 @@ fsm::StateFunction Turret::update_firing() {
 
 fsm::StateFunction Turret::update_cooling_down() {
 	m_state.actual = TurretState::cooling_down;
-	if (animation.is_complete()) { request(TurretState::off); }
+	if (p_animatable.animation.is_complete()) { request(TurretState::off); }
 	if (change_state(TurretState::off, "off")) { return TURRET_BIND(update_off); }
 	return TURRET_BIND(update_cooling_down);
 }
 
 fsm::StateFunction Turret::update_quick_fire() {
 	m_state.actual = TurretState::quick_fire;
-	if (animation.is_complete()) { request(TurretState::off); }
+	if (p_animatable.animation.is_complete()) { request(TurretState::off); }
 	if (change_state(TurretState::off, "off")) { return TURRET_BIND(update_off); }
 	return TURRET_BIND(update_cooling_down);
 }
 
 bool Turret::change_state(TurretState next, std::string_view tag) {
 	if (m_state.desired == next) {
-		set_animation(tag);
+		p_animatable.set_animation(tag);
 		return true;
 	}
 	return false;

@@ -9,9 +9,9 @@ namespace fornani::enemy {
 
 constexpr auto minion_framerate = 10;
 
-Minion::Minion(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "minion"), Animatable{svc, "enemy_minion", {16, 16}}, m_services{&svc}, m_jump{8}, m_tick{120} {
-	p_animations = {{"idle", {0, 1, minion_framerate * 2, -1}}, {"blink", {1, 2, minion_framerate * 2, 0}}, {"jump", {3, 4, minion_framerate * 2, 0}}, {"turn", {7, 1, minion_framerate * 2, 0}}};
-	animation.set_params(get_params("idle"));
+Minion::Minion(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "minion"), m_services{&svc}, m_jump{8}, m_tick{120} {
+	p_animatable.set_animations({{"idle", {0, 1, minion_framerate * 2, -1}}, {"blink", {1, 2, minion_framerate * 2, 0}}, {"jump", {3, 4, minion_framerate * 2, 0}}, {"turn", {7, 1, minion_framerate * 2, 0}}});
+	p_animatable.animation.set_params(get_params("idle"));
 	flags.state.set(StateFlags::no_shake);
 	flags.general.set(GeneralFlags::hurt_on_contact);
 	auto random_start = random::random_range(0, m_tick.get_native_time());
@@ -64,7 +64,7 @@ fsm::StateFunction Minion::update_idle() {
 
 fsm::StateFunction Minion::update_blink() {
 	m_state.actual = MinionState::blink;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		if (change_state(MinionState::jump, get_params("jump")) && get_collider().grounded()) { return MINION_BIND(update_jump); }
 		if (change_state(MinionState::turn, get_params("turn"))) { return MINION_BIND(update_turn); }
 		request(MinionState::idle);
@@ -75,10 +75,10 @@ fsm::StateFunction Minion::update_blink() {
 
 fsm::StateFunction Minion::update_jump() {
 	m_state.actual = MinionState::jump;
-	if (animation.just_started()) { m_jump.start(); }
+	if (p_animatable.animation.just_started()) { m_jump.start(); }
 	if (m_jump.running()) { get_collider().physics.acceleration.y = -18.f; }
 	get_collider().physics.acceleration.x = directions.actual.as_float() * 2.f;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		request(MinionState::idle);
 		if (change_state(MinionState::idle, get_params("idle"))) { return MINION_BIND(update_idle); }
 	}
@@ -87,7 +87,7 @@ fsm::StateFunction Minion::update_jump() {
 
 fsm::StateFunction Minion::update_turn() {
 	m_state.actual = MinionState::turn;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		if (change_state(MinionState::jump, get_params("jump")) && get_collider().grounded()) { return MINION_BIND(update_jump); }
 		request(MinionState::idle);
@@ -98,7 +98,7 @@ fsm::StateFunction Minion::update_turn() {
 
 bool Minion::change_state(MinionState next, anim::Parameters params) {
 	if (m_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

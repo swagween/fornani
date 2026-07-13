@@ -7,18 +7,26 @@
 namespace fornani::enemy {
 
 Demon::Demon(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, map, "demon"), m_services(&svc), m_map(&map), Animatable{svc, "enemy_demon", {128, 80}},
+	: Enemy(svc, map, "demon"), m_services(&svc), m_map(&map),
 	  parts{.spear{svc.assets.get_texture("demon_spear"), 2.0f, 0.85f, {-16.f, 8.f}}, .sword{svc.assets.get_texture("demon_sword"), 2.0f, 0.85f, {-4.f, 8.f}}, .shield{svc.assets.get_texture("demon_shield"), 2.0f, 0.85f, {-28.f, 8.f}}},
 	  m_variant{static_cast<DemonVariant>(variant)} {
 	auto demon_framerate = 24;
 	if (m_variant == DemonVariant::duelist) { demon_framerate = 20; }
-	p_animations = {{"idle", {0, 6, demon_framerate, -1}},	   {"turn", {9, 1, demon_framerate, 0}},  {"run", {6, 4, demon_framerate, -1}},		 {"jump", {7, 1, demon_framerate * 3, 0}},		 {"signal", {10, 1, demon_framerate * 3, 2}},
-					{"rush", {11, 1, demon_framerate * 2, 0}}, {"stab", {11, 3, demon_framerate, 0}}, {"uppercut", {14, 3, demon_framerate, 0}}, {"jumpsquat", {11, 1, demon_framerate * 3, 0}}, {"dormant", {18, 1, demon_framerate * 5, -1}}};
+	p_animatable.set_animations({{"idle", {0, 6, demon_framerate, -1}},
+								 {"turn", {9, 1, demon_framerate, 0}},
+								 {"run", {6, 4, demon_framerate, -1}},
+								 {"jump", {7, 1, demon_framerate * 3, 0}},
+								 {"signal", {10, 1, demon_framerate * 3, 2}},
+								 {"rush", {11, 1, demon_framerate * 2, 0}},
+								 {"stab", {11, 3, demon_framerate, 0}},
+								 {"uppercut", {14, 3, demon_framerate, 0}},
+								 {"jumpsquat", {11, 1, demon_framerate * 3, 0}},
+								 {"dormant", {18, 1, demon_framerate * 5, -1}}});
 
-	animation.set_params(get_params("dormant"));
+	p_animatable.animation.set_params(get_params("dormant"));
 	if (map.get_style_id() == 5) {
 		state_function = std::bind(&Demon::update_idle, this);
-		animation.set_params(get_params("idle"));
+		p_animatable.animation.set_params(get_params("idle"));
 	} else {
 		cooldowns.awaken.start();
 	}
@@ -55,11 +63,11 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	attacks.stab.disable();
 	if (is_state(DemonState::stab)) {
 		attacks.stab.enable();
-		if (Enemy::animation.get_frame_count() != 1) { attacks.stab.disable(); }
+		if (p_animatable.animation.get_frame_count() != 1) { attacks.stab.disable(); }
 	}
 	if (is_state(DemonState::uppercut)) {
 		attacks.stab.enable();
-		if (Enemy::animation.get_frame_count() != 1) { attacks.stab.disable(); }
+		if (p_animatable.animation.get_frame_count() != 1) { attacks.stab.disable(); }
 	}
 
 	flags.state.set(StateFlags::vulnerable); // demon is always vulnerable
@@ -69,9 +77,9 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	directions.desired.lnr = (player.get_collider().get_center().x < get_collider().get_center().x) ? LNR::left : LNR::right;
 	directions.movement.lnr = get_collider().physics.velocity.x > 0.f ? LNR::right : LNR::left;
 	if (!is_dormant()) {
-		parts.spear.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center());
-		parts.sword.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center());
-		parts.shield.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center());
+		parts.spear.update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center());
+		parts.sword.update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center());
+		parts.shield.update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center());
 	}
 	if (m_variant == DemonVariant::spearman) { parts.spear.set_hitbox(); }
 	if (m_variant == DemonVariant::warrior) {
@@ -150,7 +158,7 @@ void Demon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 
 fsm::StateFunction Demon::update_idle() {
 	m_state.actual = DemonState::idle;
-	if (animation.just_started()) { flags.state.reset(StateFlags::hostile); }
+	if (p_animatable.animation.just_started()) { flags.state.reset(StateFlags::hostile); }
 	if (change_state(DemonState::turn, get_params("turn"))) { return DEMON_BIND(update_turn); }
 	if (change_state(DemonState::stab, get_params("stab"))) { return DEMON_BIND(update_stab); }
 	if (change_state(DemonState::uppercut, get_params("uppercut"))) { return DEMON_BIND(update_uppercut); }
@@ -162,7 +170,7 @@ fsm::StateFunction Demon::update_idle() {
 
 fsm::StateFunction Demon::update_turn() {
 	m_state.actual = DemonState::turn;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		request(DemonState::idle);
 		if (change_state(DemonState::idle, get_params("idle"))) { return DEMON_BIND(update_idle); }
@@ -177,7 +185,7 @@ fsm::StateFunction Demon::update_run() {
 	if (change_state(DemonState::turn, get_params("turn"))) { return DEMON_BIND(update_turn); }
 	if (change_state(DemonState::stab, get_params("stab"))) { return DEMON_BIND(update_stab); }
 	if (change_state(DemonState::uppercut, get_params("uppercut"))) { return DEMON_BIND(update_uppercut); }
-	if (caution.danger() || animation.complete()) {
+	if (caution.danger() || p_animatable.animation.complete()) {
 		request(DemonState::idle);
 		if (change_state(DemonState::idle, get_params("idle"))) { return DEMON_BIND(update_idle); }
 	}
@@ -188,7 +196,7 @@ fsm::StateFunction Demon::update_run() {
 
 fsm::StateFunction Demon::update_jump() {
 	m_state.actual = DemonState::jump;
-	if (animation.just_started()) {
+	if (p_animatable.animation.just_started()) {
 		cooldowns.jump.start();
 		rand_jump = random::percent_chance(50) ? -1.f : 1.f;
 		if (cooldowns.post_rush.running()) { rand_jump = directions.actual.lnr == LNR::left ? 1.f : -1.f; } // always jump backwards after a rush otherwise it feels unfair
@@ -206,9 +214,9 @@ fsm::StateFunction Demon::update_jump() {
 
 fsm::StateFunction Demon::update_signal() {
 	m_state.actual = DemonState::signal;
-	if (animation.just_started()) { m_services->soundboard.flags.demon.set(audio::Demon::up_snort); }
+	if (p_animatable.animation.just_started()) { m_services->soundboard.flags.demon.set(audio::Demon::up_snort); }
 	shake();
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		switch (m_variant) {
 		case DemonVariant::spearman:
 			request(DemonState::rush);
@@ -234,9 +242,9 @@ fsm::StateFunction Demon::update_rush() {
 		if (change_state(DemonState::idle, get_params("idle"))) { return DEMON_BIND(update_idle); }
 	}
 	auto force = 34.f * directions.actual.as_float();
-	if (animation.just_started()) { get_collider().physics.apply_force({force, 0.f}); }
+	if (p_animatable.animation.just_started()) { get_collider().physics.apply_force({force, 0.f}); }
 	parts.spear.move({directions.actual.as_float() * 70.f, 0.f});
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		cooldowns.post_rush.start();
 		request(DemonState::idle);
 		if (change_state(DemonState::idle, get_params("idle"))) { return DEMON_BIND(update_idle); }
@@ -246,7 +254,7 @@ fsm::StateFunction Demon::update_rush() {
 
 fsm::StateFunction Demon::update_stab() {
 	m_state.actual = DemonState::stab;
-	if (animation.just_started()) {
+	if (p_animatable.animation.just_started()) {
 		random::percent_chance(50) ? m_services->soundboard.flags.lynx.set(audio::Lynx::swipe_1) : m_services->soundboard.flags.lynx.set(audio::Lynx::swipe_2);
 		cooldowns.stab.start();
 	}
@@ -256,7 +264,7 @@ fsm::StateFunction Demon::update_stab() {
 	}
 	attacks.stab.set_position(get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 52.f, 4.f});
 	attacks.stab.set_constant_radius(32.f);
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		m_flags.reset(DemonFlags::parrying);
 		cooldowns.post_rush.start();
 		if (!m_flags.test(DemonFlags::player_behind)) {
@@ -271,13 +279,13 @@ fsm::StateFunction Demon::update_stab() {
 
 fsm::StateFunction Demon::update_uppercut() {
 	m_state.actual = DemonState::uppercut;
-	if (animation.just_started()) {
+	if (p_animatable.animation.just_started()) {
 		random::percent_chance(50) ? m_services->soundboard.flags.lynx.set(audio::Lynx::swipe_1) : m_services->soundboard.flags.lynx.set(audio::Lynx::swipe_2);
 		cooldowns.stab.start();
 	}
 	attacks.stab.set_position(get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 22.f, -28.f});
 	attacks.stab.set_constant_radius(48.f);
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		m_flags.reset(DemonFlags::parrying);
 		cooldowns.post_rush.start();
 		request(DemonState::idle);
@@ -309,8 +317,8 @@ fsm::StateFunction Demon::update_dormant() {
 
 fsm::StateFunction Demon::update_jumpsquat() {
 	m_state.actual = DemonState::jumpsquat;
-	if (animation.just_started()) { m_services->soundboard.flags.demon.set(audio::Demon::snort); }
-	if (animation.complete()) {
+	if (p_animatable.animation.just_started()) { m_services->soundboard.flags.demon.set(audio::Demon::snort); }
+	if (p_animatable.animation.complete()) {
 		request(DemonState::jump);
 		if (change_state(DemonState::jump, get_params("jump"))) { return DEMON_BIND(update_jump); }
 	}
@@ -319,7 +327,7 @@ fsm::StateFunction Demon::update_jumpsquat() {
 
 bool Demon::change_state(DemonState next, anim::Parameters params) {
 	if (m_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

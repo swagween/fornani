@@ -7,9 +7,9 @@
 
 namespace fornani::enemy {
 
-DumpsterDiver::DumpsterDiver(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "dumpster_diver"), Animatable{svc, "enemy_dumpster_diver", {192, 192}}, m_services{&svc}, m_dive_time{800}, m_wait_time{400} {
-	p_animations = {{"idle", {0, 6, 48, -1}}};
-	animation.set_params(get_params("idle"));
+DumpsterDiver::DumpsterDiver(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "dumpster_diver"), m_services{&svc}, m_dive_time{800}, m_wait_time{400} {
+	p_animatable.set_animations({{"idle", {0, 6, 48, -1}}});
+	p_animatable.animation.set_params(get_params("idle"));
 	p_state.actual = DumpsterDiverState::idle;
 	m_wait_time.start();
 	m_attack.hit.bounds.setRadius(64.f);
@@ -76,7 +76,7 @@ void DumpsterDiver::update(automa::ServiceProvider& svc, world::Map& map, player
 		get_collider().set_position(pos);
 
 		auto frame = std::floor(m_dive_time.get_inverse_normalized() * 6.f);
-		Animatable::set_frame(frame);
+		p_animatable.set_frame(frame);
 	}
 
 	if (svc.ticker.every_x_ticks(48)) {
@@ -124,7 +124,7 @@ fsm::StateFunction DumpsterDiver::update_idle() {
 
 bool DumpsterDiver::change_state(DumpsterDiverState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

@@ -244,6 +244,7 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": false,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

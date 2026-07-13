@@ -111,7 +111,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 					services.window->get().setView(view);
 					zooming = !zooming;
 				}
-#endif()
+#endif
 
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Escape) { m_game_menu = {}; }
 			}

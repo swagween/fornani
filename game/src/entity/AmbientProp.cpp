@@ -5,16 +5,16 @@
 
 namespace fornani {
 
-AmbientProp::AmbientProp(automa::ServiceProvider& svc, dj::Json const& in) : Entity{svc, in, "ambient_props"}, Animatable{svc, "ambient_props"} {
+AmbientProp::AmbientProp(automa::ServiceProvider& svc, dj::Json const& in) : Entity{svc, in, "ambient_props"} {
 	unserialize(in);
 	auto const& in_data = svc.data.props[m_tag];
 	m_params.emplace(svc, in_data);
 	if (in["foreground"].as_bool()) { m_params->attributes.set(AmbientPropAttributes::foreground); }
 	m_sensor = components::CircleSensor{m_params->radius};
-	Animatable::set_texture(svc.assets.get_texture("ambient_prop_" + m_tag));
-	Animatable::set_dimensions(m_params->dimensions);
-	tick();
-	Animatable::center();
+	p_animatable.set_texture(svc.assets.get_texture("ambient_prop_" + m_tag));
+	p_animatable.set_dimensions(m_params->dimensions);
+	p_animatable.tick();
+	p_animatable.center();
 	m_bob.physics.set_friction_componentwise({0.99f, 0.99f});
 	m_sensor.set_position(get_global_center());
 	if (m_params) {
@@ -22,12 +22,12 @@ AmbientProp::AmbientProp(automa::ServiceProvider& svc, dj::Json const& in) : Ent
 			m_emitter_cooldown.set_and_start(m_params->emitter->frequency);
 			m_emitter_cooldown.randomize();
 		}
-		Animatable::push_and_set_animation("basic", {0, m_params->num_frames, in_data["framerate"].as<int>(), -1});
+		p_animatable.push_and_set_animation("basic", {0, m_params->num_frames, in_data["framerate"].as<int>(), -1});
 	}
 	m_textured = false;
 }
 
-AmbientProp::AmbientProp(automa::ServiceProvider& svc, int channel, std::string_view tag) : Entity{svc, "ambient_props", 0}, Animatable{svc, "ambient_props"}, m_tag{tag.data()}, m_channel{channel} { m_textured = false; }
+AmbientProp::AmbientProp(automa::ServiceProvider& svc, int channel, std::string_view tag) : Entity{svc, "ambient_props", 0}, m_tag{tag.data()}, m_channel{channel} { m_textured = false; }
 
 std::unique_ptr<Entity> AmbientProp::clone() const { return std::make_unique<AmbientProp>(*this); }
 
@@ -63,11 +63,11 @@ void AmbientProp::update(automa::ServiceProvider& svc, world::Map& map, SceneCon
 			auto displacement = m_bob.physics.position.x;
 			float normalized = std::tanh(displacement);
 			auto frame = util::map_to_frame(normalized, -1.0f, 1.0f, 0, m_params->num_frames - 1);
-			set_frame(frame);
+			p_animatable.set_frame(frame);
 		} else {
-			tick();
+			p_animatable.tick();
 		}
-		set_channel(m_channel);
+		p_animatable.set_channel(m_channel);
 		if (m_params->emitter) {
 			if (m_emitter_cooldown.is_almost_complete()) {
 				map.spawn_emitter(svc, m_params->emitter->tag, get_global_center() + m_params->emitter->offset, {UND::up});
@@ -87,17 +87,17 @@ void AmbientProp::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	}
 	if (m_editor) {
 		if (m_params) {
-			Animatable::set_scale(constants::f_scale_vec * size / constants::f_cell_size);
-			Animatable::set_position((get_f_grid_position() + m_params->offset / constants::f_cell_size) * size + cam + constants::f_cell_vec * 0.5f);
-			Animatable::set_frame(0);
-			win.draw(*this);
+			p_animatable.set_scale(constants::f_scale_vec * size / constants::f_cell_size);
+			p_animatable.set_position((get_f_grid_position() + m_params->offset / constants::f_cell_size) * size + cam + constants::f_cell_vec * 0.5f);
+			p_animatable.set_frame(0);
+			win.draw(p_animatable);
 		}
 		return;
 	}
 	if (spawn_denied()) { return; }
 	if (m_params) {
-		Animatable::set_position(get_global_center() - cam + m_params->offset);
-		win.draw(*this);
+		p_animatable.set_position(get_global_center() - cam + m_params->offset);
+		win.draw(p_animatable);
 	}
 
 	/*sf::CircleShape bob{};

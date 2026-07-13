@@ -121,6 +121,8 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
+            "output": 1,
             "suite": [
               [
                 {
@@ -147,6 +149,8 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
+            "output": 1,
             "suite": [
               [
                 {
@@ -173,6 +177,8 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
+            "output": 1,
             "suite": [
               [
                 {
@@ -199,6 +205,8 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
+            "output": 1,
             "suite": [
               [
                 {
@@ -225,6 +233,8 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
+            "output": 1,
             "suite": [
               [
                 {
@@ -396,6 +406,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 111,
         "dimensions": [
           1,
@@ -412,6 +423,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 106,
         "dimensions": [
           1,
@@ -428,6 +440,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 116,
         "dimensions": [
           1,
@@ -445,6 +458,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 114,
         "dimensions": [
           1,
@@ -461,6 +475,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 105,
         "dimensions": [
           1,
@@ -477,6 +492,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 108,
         "dimensions": [
           1,
@@ -548,11 +564,6 @@
     "ambience": "none",
     "background": "night",
     "biome": "firstwind",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -588,26 +599,27 @@
       "environmental_randomness": true,
       "interior": true,
       "lighting": false,
-      "timer": false
+      "sky_limit": 0,
+      "timer": false,
+      "toxic": false
     },
     "room_id": 107,
     "shader": {
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
     "animated": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ],
     "flags": {
       "obscuring": true,
@@ -17421,8 +17433,8 @@
         0,
         15,
         15,
-        15,
-        15,
+        0,
+        0,
         15,
         15,
         15,
@@ -17453,8 +17465,8 @@
         0,
         15,
         15,
-        15,
-        15,
+        0,
+        0,
         0,
         0,
         0,

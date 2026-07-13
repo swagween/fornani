@@ -4,16 +4,15 @@
 
 namespace fornani {
 
-ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map)
-	: Mobile{svc, "champion_j5_body", {80, 60}}, Animatable{svc, "champion_j5_body", {80, 60}}, m_services{&svc}, m_propeller{svc, "champion_j5_propeller", {80, 60}}, m_thrust{0.017f, .118f, .991f, 260.f} {
-	push_and_set_animation("flying", {0, 1, 24, -1});
-	push_animation("land", {1, 4, 24, 0});
-	push_animation("grounded", {5, 1, 24, -1});
-	push_animation("take_off", {6, 2, 24, 0});
+ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "champion_j5_body", {80, 60}}, m_services{&svc}, m_propeller{svc, "champion_j5_propeller", {80, 60}}, m_thrust{0.017f, .118f, .991f, 260.f} {
+	p_animatable.push_and_set_animation("flying", {0, 1, 24, -1});
+	p_animatable.push_animation("land", {1, 4, 24, 0});
+	p_animatable.push_animation("grounded", {5, 1, 24, -1});
+	p_animatable.push_animation("take_off", {6, 2, 24, 0});
 	m_propeller.push_and_set_animation("spinning", {0, 3, 12, -1});
 	m_propeller.push_animation("retract", {3, 8, 18, 0, true});
 	m_propeller.center();
-	center();
+	p_animatable.center();
 	Mobile::register_collider(map, {40.f, 40.f});
 	get_collider().physics.set_friction_componentwise({1.f, 1.f});
 	get_collider().stats.GRAV = 4.2f;
@@ -28,7 +27,7 @@ ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map)
 }
 
 void ChampionJ5::update(automa::ServiceProvider& svc, world::Map& map) {
-	tick();
+	p_animatable.tick();
 	m_propeller.tick();
 	get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
 	get_collider().set_flag(shape::ColliderFlags::simple);
@@ -61,8 +60,8 @@ void ChampionJ5::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	auto drawpos = get_collider().get_center() + sf::Vector2f{0.f, -17.f};
 	m_propeller.set_position(drawpos - cam);
 	win.draw(m_propeller);
-	set_position(drawpos - cam);
-	win.draw(*this);
+	p_animatable.set_position(drawpos - cam);
+	win.draw(p_animatable);
 }
 
 fsm::StateFunction ChampionJ5::update_flying() {
@@ -73,9 +72,9 @@ fsm::StateFunction ChampionJ5::update_flying() {
 
 fsm::StateFunction ChampionJ5::update_land() {
 	p_state.actual = ChampionJ5State::land;
-	if (animation.just_started()) { m_propeller.set_animation("retract"); }
-	if (animation.get_frame_count() == 2 && animation.keyframe_started()) { m_services->soundboard.play_sound("champion_j5_land"); }
-	if (animation.is_complete()) {
+	if (p_animatable.animation.just_started()) { m_propeller.set_animation("retract"); }
+	if (p_animatable.animation.get_frame_count() == 2 && p_animatable.animation.keyframe_started()) { m_services->soundboard.play_sound("champion_j5_land"); }
+	if (p_animatable.animation.is_complete()) {
 		request(ChampionJ5State::grounded);
 		if (change_state(ChampionJ5State::grounded, get_params("grounded"))) { return CHAMPIONJ5_BIND(update_grounded); }
 	}
@@ -90,7 +89,7 @@ fsm::StateFunction ChampionJ5::update_grounded() {
 
 fsm::StateFunction ChampionJ5::update_take_off() {
 	p_state.actual = ChampionJ5State::take_off;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		request(ChampionJ5State::flying);
 		if (change_state(ChampionJ5State::flying, get_params("flying"))) { return CHAMPIONJ5_BIND(update_flying); }
 	}
@@ -99,7 +98,7 @@ fsm::StateFunction ChampionJ5::update_take_off() {
 
 bool ChampionJ5::change_state(ChampionJ5State next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

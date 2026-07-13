@@ -133,7 +133,7 @@ class Enemy : public Mobile {
 	void spawn_treasure(automa::ServiceProvider& svc, world::Map& map);
 	void on_crush(world::Map& map);
 	bool seek_home(world::Map& map);
-	void set_channel(EnemyChannel to) { Animatable::set_channel(static_cast<int>(to)); }
+	void set_channel(EnemyChannel to) { p_animatable.set_channel(static_cast<int>(to)); }
 	void despawn() { flags.state.set(StateFlags::despawn); }
 	void set_handle(EntityHandle to) { metadata.handle = to; }
 	void center_at_position();
@@ -206,6 +206,7 @@ class Enemy : public Mobile {
 	sf::Vector2f m_death_position{};
 
 	util::Cooldown hurt_effect{};
+	util::Cooldown m_crush;
 
 	EnemyChannel m_custom_channel{};
 

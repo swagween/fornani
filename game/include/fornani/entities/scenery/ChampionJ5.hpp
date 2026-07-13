@@ -19,6 +19,7 @@ class ChampionJ5 : public Mobile, public StateMachine<ChampionJ5State> {
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_target(sf::Vector2f to) { m_target = to; }
+	void set_channel(int to) { p_animatable.set_channel(to); }
 
 	fsm::StateFunction state_function = std::bind(&ChampionJ5::update_flying, this);
 	fsm::StateFunction update_flying();

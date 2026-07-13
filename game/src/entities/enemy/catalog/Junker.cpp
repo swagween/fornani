@@ -9,9 +9,9 @@ namespace fornani::enemy {
 
 constexpr auto junker_framerate = 12;
 
-Junker::Junker(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "junker"), Animatable{svc, "enemy_junker", {30, 30}}, m_services{&svc}, m_toss_time{400} {
-	p_animations = {{"idle", {0, 8, junker_framerate * 2, -1}}, {"turn", {12, 2, junker_framerate * 2, 0}}, {"toss", {8, 4, junker_framerate * 3, 0}}, {"hide", {14, 1, junker_framerate * 2, -1}}};
-	animation.set_params(get_params("hide"));
+Junker::Junker(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "junker"), m_services{&svc}, m_toss_time{400} {
+	p_animatable.set_animations({{"idle", {0, 8, junker_framerate * 2, -1}}, {"turn", {12, 2, junker_framerate * 2, 0}}, {"toss", {8, 4, junker_framerate * 3, 0}}, {"hide", {14, 1, junker_framerate * 2, -1}}});
+	p_animatable.animation.set_params(get_params("hide"));
 	p_state.actual = JunkerState::hide;
 
 	m_variant = static_cast<JunkerVariant>(variant);
@@ -81,8 +81,8 @@ fsm::StateFunction Junker::update_idle() {
 
 fsm::StateFunction Junker::update_toss() {
 	p_state.actual = JunkerState::toss;
-	if (animation.get_frame_count() == 2 && animation.keyframe_started()) { set_flag(JunkerFlags::toss); }
-	if (animation.is_complete()) {
+	if (p_animatable.animation.get_frame_count() == 2 && p_animatable.animation.keyframe_started()) { set_flag(JunkerFlags::toss); }
+	if (p_animatable.animation.is_complete()) {
 		request(JunkerState::hide);
 		if (change_state(JunkerState::hide, get_params("hide"))) { return JUNKER_BIND(update_hide); }
 	}
@@ -91,7 +91,7 @@ fsm::StateFunction Junker::update_toss() {
 
 fsm::StateFunction Junker::update_turn() {
 	p_state.actual = JunkerState::turn;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		request(JunkerState::hide);
 		if (change_state(JunkerState::hide, get_params("hide"))) { return JUNKER_BIND(update_hide); }
@@ -102,7 +102,7 @@ fsm::StateFunction Junker::update_turn() {
 fsm::StateFunction Junker::update_hide() {
 	p_state.actual = JunkerState::hide;
 	if (directions.actual.lnr != directions.desired.lnr) {
-		flip();
+		p_animatable.flip();
 		directions.actual = directions.desired;
 	}
 	if (change_state(JunkerState::toss, get_params("toss"))) { return JUNKER_BIND(update_toss); }
@@ -111,7 +111,7 @@ fsm::StateFunction Junker::update_hide() {
 
 bool Junker::change_state(JunkerState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

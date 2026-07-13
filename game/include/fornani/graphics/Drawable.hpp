@@ -19,6 +19,7 @@ class Drawable : public sf::Drawable, Polymorphic {
 	Drawable(automa::ServiceProvider& svc, std::string_view label);
 	void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const override;
 
+	void set_texture(sf::Texture const& to) { m_sprite.setTexture(to); }
 	void set_texture_rect(sf::IntRect const to) { m_sprite.setTextureRect(to); }
 	void set_position(sf::Vector2f const to) { m_sprite.setPosition(to); }
 	void set_origin(sf::Vector2f const to) { m_sprite.setOrigin(to); }
@@ -37,7 +38,6 @@ class Drawable : public sf::Drawable, Polymorphic {
 	sf::Sprite& get_sprite() { return m_sprite; }
 
   protected:
-	void set_texture(sf::Texture const& to) { m_sprite.setTexture(to); }
 	void set_sprite(sf::Sprite const& sprite) { m_sprite = sprite; }
 	io::Logger m_logger{"Rendering"};
 

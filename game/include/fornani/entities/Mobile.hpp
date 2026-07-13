@@ -20,7 +20,7 @@ struct MobileSound {
 	std::string tag{};
 };
 
-class Mobile : public virtual Animatable {
+class Mobile {
   public:
 	Mobile(automa::ServiceProvider& svc, world::Map& map, std::string_view label, sf::Vector2i dimensions = constants::i_cell_vec, bool include_collider = true);
 	Mobile(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions = constants::i_cell_vec);
@@ -30,6 +30,7 @@ class Mobile : public virtual Animatable {
 	void face_movement() { directions.desired.set(directions.movement.lnr); }
 	void set_direction(SimpleDirection to);
 	void set_desired_direction(SimpleDirection to);
+	void set_animation(std::string_view to) { p_animatable.set_animation(to); }
 	[[nodiscard]] bool player_behind(player::Player& player) const;
 	[[nodiscard]] auto get_desired_direction() const -> Direction { return directions.desired; }
 	[[nodiscard]] auto get_actual_direction() const -> Direction { return directions.actual; }
@@ -37,6 +38,7 @@ class Mobile : public virtual Animatable {
 	[[nodiscard]] auto get_collider() const -> shape::Collider& { return collider.value().get().get_reference(); }
 
   protected:
+	Animatable p_animatable;
 	std::optional<shape::RegisteredCollider> owned_collider;
 	std::optional<std::reference_wrapper<shape::RegisteredCollider>> collider;
 	std::unordered_map<std::string, MobileSound, TransparentHash, TransparentEqual> p_sounds{};

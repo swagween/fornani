@@ -9,9 +9,9 @@
 namespace fornani {
 
 Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, PortalSpecifications specs)
-	: Entity(svc, "portals", 0, dimensions), Animatable{svc, "portals", sf::Vector2i{dimensions}}, source_id(specs.source_map_id), destination_id(specs.destination_map_id), key_tag(key_tag), m_services(&svc), m_opened_cooldown{200} {
-	set_texture_rect(sf::IntRect{{16 * specs.already_open, 0}, {16, 32}});
-	set_origin({0.f, 16.f});
+	: Entity(svc, "portals", 0, dimensions), source_id(specs.source_map_id), destination_id(specs.destination_map_id), key_tag(key_tag), m_services(&svc), m_opened_cooldown{200} {
+	p_animatable.set_texture_rect(sf::IntRect{{16 * specs.already_open, 0}, {16, 32}});
+	p_animatable.set_origin({0.f, 16.f});
 	if (specs.activate_on_contact || dimensions.x * dimensions.y > 1) { m_textured = false; }
 	if (specs.activate_on_contact) { m_attributes.set(PortalAttributes::activate_on_contact); }
 	if (specs.already_open) { m_attributes.set(PortalAttributes::already_open); }
@@ -19,10 +19,10 @@ Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, PortalSpec
 
 Portal::Portal(automa::ServiceProvider& svc, sf::Vector2u dimensions, PortalSpecifications specs, std::string_view key) : Portal(svc, dimensions, specs) { key_tag = key.data(); }
 
-Portal::Portal(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals"), Animatable{svc, "portals"}, m_services(&svc), m_opened_cooldown{200} {
+Portal::Portal(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "portals"), m_services(&svc), m_opened_cooldown{200} {
 	unserialize(in);
 	if (is_activate_on_contact()) { m_textured = false; }
-	set_origin({0.f, 16.f});
+	p_animatable.set_origin({0.f, 16.f});
 	bounding_box = shape::Shape(get_world_dimensions());
 	bounding_box.set_position(get_world_position());
 	m_orientation = PortalOrientation::central;
@@ -120,7 +120,7 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 		m_render_state = PortalRenderState::open;
 	}
 	auto lookup = sf::IntRect({static_cast<int>(m_render_state) * constants::i_cell_resolution + 64 * channel, map.get_style_id() * constants::i_cell_resolution * 2}, {constants::i_cell_resolution, constants::i_cell_resolution * 2});
-	set_texture_rect(lookup);
+	p_animatable.set_texture_rect(lookup);
 
 	if (!context.transition.is(graphics::TransitionState::inactive)) { m_state.reset(PortalState::ready); }
 	if (bounding_box.overlaps(player.get_collider().bounding_box)) {
@@ -195,7 +195,7 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 void Portal::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
 	Entity::render(win, cam, size);
-	Animatable::set_scale(constants::f_scale_vec);
+	p_animatable.set_scale(constants::f_scale_vec);
 	if (m_custom_animation) {
 		if (m_editor) {
 			m_custom_animation->animatable.set_scale(constants::f_scale_vec * size / constants::f_cell_size);
@@ -208,21 +208,21 @@ void Portal::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	}
 	if (m_editor) { return; }
 	if (!m_attributes.test(PortalAttributes::activate_on_contact) && get_grid_dimensions().x * get_grid_dimensions().y == 1) {
-		Animatable::set_position(get_world_position() - cam);
-		win.draw(*this);
+		p_animatable.set_position(get_world_position() - cam);
+		win.draw(p_animatable);
 	}
 }
 
 void Portal::render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::Vector2f cam) {
-	Animatable::set_scale(constants::f_scale_vec);
+	p_animatable.set_scale(constants::f_scale_vec);
 	if (m_custom_animation) {
 		m_custom_animation->animatable.set_position(get_world_position() + m_custom_animation->offset);
 		tex.draw(m_custom_animation->animatable);
 		return;
 	}
 	if (!m_attributes.test(PortalAttributes::activate_on_contact) && get_grid_dimensions().x * get_grid_dimensions().y == 1) {
-		Animatable::set_position(get_world_position());
-		tex.draw(*this);
+		p_animatable.set_position(get_world_position());
+		tex.draw(p_animatable);
 	}
 }
 

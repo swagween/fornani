@@ -4,12 +4,12 @@
 
 namespace fornani {
 
-Bed::Bed(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "beds"), Animatable{svc, "beds"} {
+Bed::Bed(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "beds") {
 	unserialize(in);
-	set_texture_rect(sf::IntRect{{}, {32, 16}});
+	p_animatable.set_texture_rect(sf::IntRect{{}, {32, 16}});
 }
 
-Bed::Bed(automa::ServiceProvider& svc, int id, bool flipped) : Entity(svc, "beds", id), Animatable{svc, "beds"}, m_flipped{flipped} { set_texture_rect(sf::IntRect{{}, {32, 16}}); }
+Bed::Bed(automa::ServiceProvider& svc, int id, bool flipped) : Entity(svc, "beds", id), m_flipped{flipped} { p_animatable.set_texture_rect(sf::IntRect{{}, {32, 16}}); }
 
 std::unique_ptr<Entity> Bed::clone() const { return std::make_unique<Bed>(*this); }
 

@@ -6,6 +6,7 @@
 namespace fornani::util {
 
 constexpr auto crush_threshold_v = sf::Vector2f{8.f, 30.f};
+constexpr auto squish_threshold_v = sf::Vector2f{0.f, 30.f};
 
 void CollisionDepth::calculate(shape::Collider const& native, shape::Shape const& other) {
 	if (iterations.get_count() == 0) { collision_direction = CollisionDirection::none; }
@@ -49,8 +50,13 @@ void CollisionDepth::print() {
 
 static auto is_within_crush_range(float const test, bool positive) { return positive ? test > crush_threshold_v.x && test < crush_threshold_v.y : test < -crush_threshold_v.x && test > -crush_threshold_v.y; }
 
+static auto is_within_squish_range(float const test, bool positive) { return positive ? test > squish_threshold_v.x && test < squish_threshold_v.y : test < -squish_threshold_v.x && test > -squish_threshold_v.y; }
+
 bool CollisionDepth::crushed() const {
 	return (is_within_crush_range(out_depth.bottom, false) && is_within_crush_range(out_depth.top, true)) || (is_within_crush_range(out_depth.right, false) && is_within_crush_range(out_depth.left, true));
+}
+bool CollisionDepth::squished() const {
+	return (is_within_squish_range(out_depth.bottom, false) && is_within_squish_range(out_depth.top, true)) || (is_within_squish_range(out_depth.right, false) && is_within_squish_range(out_depth.left, true));
 }
 
 void CollisionDepth::render(shape::Shape const& bounding_box, sf::RenderWindow& win, sf::Vector2f cam) {

@@ -17,7 +17,7 @@ using EntityHandle = std::uint64_t;
 
 enum class EntityFlags { spawn_denied };
 
-class Entity : public virtual Animatable, public IWorldPositionable {
+class Entity : public IWorldPositionable, Polymorphic {
   public:
 	explicit Entity(automa::ServiceProvider& svc, dj::Json const& in, std::string_view label, sf::Vector2i dim = constants::i_cell_vec);
 	explicit Entity(automa::ServiceProvider& svc, std::string_view label, int to_id, sf::Vector2<std::uint32_t> dim = {1, 1});
@@ -53,6 +53,7 @@ class Entity : public virtual Animatable, public IWorldPositionable {
 	[[nodiscard]] auto spawn_denied() const -> bool { return p_flags.test(EntityFlags::spawn_denied); };
 
   protected:
+	Animatable p_animatable;
 	bool m_editor{};
 	bool m_textured{true};
 	io::Logger m_logger{"Pioneer"};

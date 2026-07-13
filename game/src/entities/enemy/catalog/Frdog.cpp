@@ -5,9 +5,9 @@
 
 namespace fornani::enemy {
 
-Frdog::Frdog(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "frdog"), Animatable{svc, "enemy_frdog", {40, 28}} {
-	animation.set_params(idle);
-	p_animations = {{"idle", {14, 2, 36, -1}}};
+Frdog::Frdog(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "frdog") {
+	p_animatable.animation.set_params(idle);
+	p_animatable.set_animations({{"idle", {14, 2, 36, -1}}});
 }
 
 void Frdog::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -29,15 +29,15 @@ void Frdog::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 }
 
 fsm::StateFunction Frdog::update_idle() {
-	animation.label = "idle";
+	p_animatable.animation.label = "idle";
 	if (state.test(AnimState::turn)) {
 		state.reset(AnimState::idle);
-		animation.set_params(turn);
+		p_animatable.animation.set_params(turn);
 		return FRDOG_BIND(update_turn);
 	}
 	if (state.test(AnimState::hurt)) {
 		state.reset(AnimState::idle);
-		animation.set_params(hurt);
+		p_animatable.animation.set_params(hurt);
 		return FRDOG_BIND(update_hurt);
 	}
 	state = {};
@@ -47,16 +47,16 @@ fsm::StateFunction Frdog::update_idle() {
 fsm::StateFunction Frdog::update_sleep() { return FRDOG_BIND(update_idle); };
 fsm::StateFunction Frdog::update_sit() { return FRDOG_BIND(update_idle); };
 fsm::StateFunction Frdog::update_turn() {
-	animation.label = "turn";
-	if (animation.complete()) {
+	p_animatable.animation.label = "turn";
+	if (p_animatable.animation.complete()) {
 		if (state.test(AnimState::hurt)) {
 			state.reset(AnimState::turn);
-			animation.set_params(hurt);
+			p_animatable.animation.set_params(hurt);
 			return FRDOG_BIND(update_hurt);
 		}
 		state = {};
 		state.set(AnimState::idle);
-		animation.set_params(idle);
+		p_animatable.animation.set_params(idle);
 		return FRDOG_BIND(update_idle);
 	}
 	state = {};
@@ -66,21 +66,21 @@ fsm::StateFunction Frdog::update_turn() {
 fsm::StateFunction Frdog::update_charge() { return FRDOG_BIND(update_idle); };
 fsm::StateFunction Frdog::update_run() { return FRDOG_BIND(update_idle); };
 fsm::StateFunction Frdog::update_hurt() {
-	animation.label = "hurt";
-	if (animation.complete()) {
+	p_animatable.animation.label = "hurt";
+	if (p_animatable.animation.complete()) {
 		if (state.test(AnimState::hurt)) {
 			state.reset(AnimState::hurt);
-			animation.set_params(hurt);
+			p_animatable.animation.set_params(hurt);
 			return FRDOG_BIND(update_hurt);
 		}
 		if (state.test(AnimState::turn)) {
 			state.reset(AnimState::turn);
-			animation.set_params(turn);
+			p_animatable.animation.set_params(turn);
 			return FRDOG_BIND(update_turn);
 		}
 		state = {};
 		state.set(AnimState::idle);
-		animation.set_params(idle);
+		p_animatable.animation.set_params(idle);
 		return FRDOG_BIND(update_idle);
 	}
 	state = {};

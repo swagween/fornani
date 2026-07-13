@@ -9,15 +9,14 @@ namespace fornani::enemy {
 
 constexpr auto grand_mastiff_framerate = 12;
 
-GrandMastiff::GrandMastiff(automa::ServiceProvider& svc, world::Map& map)
-	: Boss{svc, map, "grand_mastiff"}, Animatable{svc, "enemy_grand_mastiff", {297, 256}}, m_demon_star(svc, "demon_star"), m_post_slash{400}, m_post_bite{1600}, m_post_howl{1800} {
-	p_animations = {{"idle", {0, 4, grand_mastiff_framerate * 3, -1}},
-					{"run", {4, 4, grand_mastiff_framerate * 2, 2}},
-					{"growl", {15, 4, grand_mastiff_framerate * 7, 3}},
-					{"turn", {10, 4, grand_mastiff_framerate * 2, 0}},
-					{"howl", {0, 4, grand_mastiff_framerate * 12, 0}}};
+GrandMastiff::GrandMastiff(automa::ServiceProvider& svc, world::Map& map) : Boss{svc, map, "grand_mastiff"}, m_demon_star(svc, "demon_star"), m_post_slash{400}, m_post_bite{1600}, m_post_howl{1800} {
+	p_animatable.set_animations({{"idle", {0, 4, grand_mastiff_framerate * 3, -1}},
+								 {"run", {4, 4, grand_mastiff_framerate * 2, 2}},
+								 {"growl", {15, 4, grand_mastiff_framerate * 7, 3}},
+								 {"turn", {10, 4, grand_mastiff_framerate * 2, 0}},
+								 {"howl", {0, 4, grand_mastiff_framerate * 12, 0}}});
 
-	animation.set_params(get_params("idle"));
+	p_animatable.animation.set_params(get_params("idle"));
 	m_bite.hit.bounds.setRadius(48.f);
 	m_demon_star.get().set_team(arms::Team::guardian);
 
@@ -122,11 +121,11 @@ fsm::StateFunction GrandMastiff::update_idle() {
 
 fsm::StateFunction GrandMastiff::update_run() {
 	p_state.actual = GrandMastiffState::run;
-	auto speed = animation.get_frame_count() == 3 || animation.get_frame_count() == 4 ? attributes.speed : attributes.speed * 0.5f;
+	auto speed = p_animatable.animation.get_frame_count() == 3 || p_animatable.animation.get_frame_count() == 4 ? attributes.speed : attributes.speed * 0.5f;
 	get_collider().physics.acceleration.x = directions.actual.as_float() * speed;
 	if (change_state(GrandMastiffState::growl, get_params("growl")) && get_collider().grounded()) { return GRAND_MASTIFF_BIND(update_growl); }
 	if (change_state(GrandMastiffState::howl, get_params("howl")) && get_collider().grounded()) { return GRAND_MASTIFF_BIND(update_howl); }
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		if (change_state(GrandMastiffState::turn, get_params("turn"))) { return GRAND_MASTIFF_BIND(update_turn); }
 		request(GrandMastiffState::idle);
 		if (change_state(GrandMastiffState::idle, get_params("idle"))) { return GRAND_MASTIFF_BIND(update_idle); }
@@ -136,13 +135,13 @@ fsm::StateFunction GrandMastiff::update_run() {
 
 fsm::StateFunction GrandMastiff::update_bite() {
 	p_state.actual = GrandMastiffState::bite;
-	if (animation.just_started()) { p_services->soundboard.flags.mastiff.set(audio::Mastiff::growl); }
+	if (p_animatable.animation.just_started()) { p_services->soundboard.flags.mastiff.set(audio::Mastiff::growl); }
 	get_collider().physics.acceleration.x = directions.actual.as_float() * 5.f;
-	if (animation.get_frame_count() == 4) {
+	if (p_animatable.animation.get_frame_count() == 4) {
 		m_bite.hit.activate();
-		if (animation.keyframe_started()) { p_services->soundboard.flags.mastiff.set(audio::Mastiff::bite); }
+		if (p_animatable.animation.keyframe_started()) { p_services->soundboard.flags.mastiff.set(audio::Mastiff::bite); }
 	}
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		request(GrandMastiffState::idle);
 		if (change_state(GrandMastiffState::idle, get_params("idle"))) { return GRAND_MASTIFF_BIND(update_idle); }
 	}
@@ -151,7 +150,7 @@ fsm::StateFunction GrandMastiff::update_bite() {
 
 fsm::StateFunction GrandMastiff::update_turn() {
 	p_state.actual = GrandMastiffState::turn;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		if (change_state(GrandMastiffState::growl, get_params("growl")) && get_collider().grounded()) { return GRAND_MASTIFF_BIND(update_growl); }
 		request(GrandMastiffState::idle);
@@ -162,7 +161,7 @@ fsm::StateFunction GrandMastiff::update_turn() {
 
 fsm::StateFunction GrandMastiff::update_slash() {
 	p_state.actual = GrandMastiffState::slash;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		request(GrandMastiffState::idle);
 		if (change_state(GrandMastiffState::idle, get_params("idle"))) { return GRAND_MASTIFF_BIND(update_idle); }
 	}
@@ -171,9 +170,9 @@ fsm::StateFunction GrandMastiff::update_slash() {
 
 fsm::StateFunction GrandMastiff::update_growl() {
 	p_state.actual = GrandMastiffState::growl;
-	if (animation.get_frame_count() == 1 && animation.keyframe_started()) { p_services->soundboard.play_sound("grand_mastiff_growl", get_collider().get_center()); }
-	if (animation.get_frame_count() == 2 && animation.keyframe_started()) { spawn_bite(); }
-	if (animation.is_complete()) {
+	if (p_animatable.animation.get_frame_count() == 1 && p_animatable.animation.keyframe_started()) { p_services->soundboard.play_sound("grand_mastiff_growl", get_collider().get_center()); }
+	if (p_animatable.animation.get_frame_count() == 2 && p_animatable.animation.keyframe_started()) { spawn_bite(); }
+	if (p_animatable.animation.is_complete()) {
 		m_post_bite.start();
 		request(GrandMastiffState::idle);
 		if (change_state(GrandMastiffState::idle, get_params("idle"))) { return GRAND_MASTIFF_BIND(update_idle); }
@@ -183,7 +182,7 @@ fsm::StateFunction GrandMastiff::update_growl() {
 
 fsm::StateFunction GrandMastiff::update_wag() {
 	p_state.actual = GrandMastiffState::wag;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		request(GrandMastiffState::slash);
 		if (change_state(GrandMastiffState::slash, get_params("slash"))) { return GRAND_MASTIFF_BIND(update_slash); }
 	}
@@ -192,7 +191,7 @@ fsm::StateFunction GrandMastiff::update_wag() {
 
 fsm::StateFunction GrandMastiff::update_howl() {
 	p_state.actual = GrandMastiffState::howl;
-	if (animation.just_started()) { m_howl_count.cancel(); }
+	if (p_animatable.animation.just_started()) { m_howl_count.cancel(); }
 	auto fire_rate = 70;
 	if (m_howl_count.get_count() % fire_rate == 0) {
 		auto xoffset = random::random_range_float(0.f, 680.f) * directions.actual.as_float();
@@ -202,7 +201,7 @@ fsm::StateFunction GrandMastiff::update_howl() {
 		m_demon_star.get().set_barrel_point(get_collider().get_center() + offset);
 		m_demon_star.shoot(*p_services, *p_map, sf::Vector2f{randx, 4.f});
 	}
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		m_post_howl.start();
 		request(GrandMastiffState::idle);
 		if (change_state(GrandMastiffState::idle, get_params("idle"))) { return GRAND_MASTIFF_BIND(update_idle); }
@@ -218,7 +217,7 @@ fsm::StateFunction GrandMastiff::update_die() {
 
 bool GrandMastiff::change_state(GrandMastiffState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

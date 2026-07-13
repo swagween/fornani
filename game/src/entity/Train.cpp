@@ -6,16 +6,14 @@
 
 namespace fornani {
 
-Train::Train(automa::ServiceProvider& svc, dj::Json const& in) : Entity{svc, in, "train"}, Animatable{svc, "train"}, m_wheels{svc, "train_wheels", {303, 39}} {
+Train::Train(automa::ServiceProvider& svc, dj::Json const& in) : Entity{svc, in, "train"}, m_wheels{svc, "train_wheels", {303, 39}} {
 	unserialize(in);
 	init(svc);
 }
 
-Train::Train(automa::ServiceProvider& svc) : Entity{svc, "train", 0}, Animatable{svc, "train"}, m_wheels{svc, "train_wheels", {303, 39}} { init(svc); }
+Train::Train(automa::ServiceProvider& svc) : Entity{svc, "train", 0}, m_wheels{svc, "train_wheels", {303, 39}} { init(svc); }
 
-Train::Train(automa::ServiceProvider& svc, int style) : Entity{svc, "train", 0}, Animatable{svc, "train"}, m_style{style}, m_prepare_arrive{200}, m_prepare_leave{200}, m_play_horn{500}, m_wheels{svc, "train_wheels", {303, 39}} {
-	init(svc);
-}
+Train::Train(automa::ServiceProvider& svc, int style) : Entity{svc, "train", 0}, m_style{style}, m_prepare_arrive{200}, m_prepare_leave{200}, m_play_horn{500}, m_wheels{svc, "train_wheels", {303, 39}} { init(svc); }
 
 std::unique_ptr<Entity> Train::clone() const { return std::make_unique<Train>(*this); }
 
@@ -96,7 +94,7 @@ void Train::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 
 	m_chain->set_position(m_steering.physics.position);
 	m_chain->update(svc, map, player, 0.99f);
-	tick();
+	p_animatable.tick();
 	m_chain->snap_to_axis(false);
 	auto running = p_contingencies ? svc.quest_table.are_contingencies_met(*p_contingencies) : true;
 	auto arrive = svc.world_clock.get_hours() % 2 == 1;
@@ -122,17 +120,17 @@ void Train::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	if (m_editor) { return; }
 	if (!m_chain) { return; }
 	bool debug_draw = false;
-	Animatable::center();
-	set_channel(m_style);
+	p_animatable.center();
+	p_animatable.set_channel(m_style);
 	m_wheels.set_channel(m_style);
 	if (has_flag_set(TrainFlags::away)) { return; }
 	if (m_cars.size() != m_chain->links.size()) { return; }
 	sf::CircleShape debug_circle{};
 	debug_circle.setRadius(4.f);
 	for (auto [i, link] : std::views::enumerate(m_chain->links)) {
-		set_frame(m_cars[i].index);
-		Animatable::set_position(link.get_bob() - cam - m_cars[i].position);
-		win.draw(*this);
+		p_animatable.set_frame(m_cars[i].index);
+		p_animatable.set_position(link.get_bob() - cam - m_cars[i].position);
+		win.draw(p_animatable);
 		m_wheels.set_position(link.get_bob() - cam - m_cars[i].position + sf::Vector2f{-24.f, 89.f});
 		win.draw(m_wheels);
 
@@ -152,9 +150,9 @@ void Train::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 void Train::init(automa::ServiceProvider& svc) {
 	// m_textured = false;
 	repeatable = false;
-	Animatable::set_dimensions({401, 128});
+	p_animatable.set_dimensions({401, 128});
 	m_chain.emplace(vfx::Chain(svc, vfx::SpringParameters{0.96f, 0.4f, 0.f, 0.f}, {}, 8));
-	Animatable::center();
+	p_animatable.center();
 	m_wheels.center();
 	if (m_chain) {
 		for (auto [i, link] : std::views::enumerate(m_chain->links)) {

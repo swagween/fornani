@@ -87,7 +87,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	// player pushes block
 	set_flag(PushableFlags::pushed, false);
 	handle_collision(player.get_collider());
-	if (player.get_collider().wallslider.overlaps(collision_box) && player.pushing() && player.is_in_animation(player::AnimState::push) && get_collider().physics.actual_velocity().y < 0.3f) {
+	if (player.get_collider().wallslider.overlaps(collision_box) && player.pushing() && get_collider().physics.actual_velocity().y < 0.3f) {
 		if (player.controller.moving_right() && player.get_collider().physics.position.x < get_collider().physics.position.x) { get_collider().physics.acceleration.x = speed / mass; }
 		if (player.controller.moving_left() && player.get_collider().physics.position.x > get_collider().physics.position.x) { get_collider().physics.acceleration.x = -speed / mass; }
 		if (std::abs(get_collider().physics.actual_velocity().x) > constants::small_value) { svc.soundboard.repeat_sound("pushable_move"); }
@@ -95,7 +95,6 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		set_flag(PushableFlags::moved);
 		set_flag(PushableFlags::pushed);
 	}
-
 	set_flag(PushableFlags::blocked_right, map.overlaps_middleground(collision_box.get_center() + sf::Vector2f{collision_box.get_dimensions().x * 0.501f, 0.f}));
 	set_flag(PushableFlags::blocked_left, map.overlaps_middleground(collision_box.get_center() - sf::Vector2f{collision_box.get_dimensions().x * 0.501f, 0.f}));
 

@@ -8,13 +8,13 @@ namespace fornani::enemy {
 
 constexpr auto lymphocyte_framerate = 20;
 
-Lymphocyte::Lymphocyte(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "lymphocyte"), Animatable{svc, "enemy_lymphocyte", {48, 48}}, m_services{&svc}, m_map{&map} {
-	p_animations = {{"dormant", {0, 1, lymphocyte_framerate, -1}},
-					{"spawn", {0, 3, lymphocyte_framerate, 0}},
-					{"idle", {3, 4, lymphocyte_framerate * 2, -1}},
-					{"make_antibody", {7, 6, lymphocyte_framerate * 2, 0}},
-					{"turn", {13, 2, lymphocyte_framerate, 0}}};
-	animation.set_params(get_params("dormant"));
+Lymphocyte::Lymphocyte(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "lymphocyte"), m_services{&svc}, m_map{&map} {
+	p_animatable.set_animations({{"dormant", {0, 1, lymphocyte_framerate, -1}},
+								 {"spawn", {0, 3, lymphocyte_framerate, 0}},
+								 {"idle", {3, 4, lymphocyte_framerate * 2, -1}},
+								 {"make_antibody", {7, 6, lymphocyte_framerate * 2, 0}},
+								 {"turn", {13, 2, lymphocyte_framerate, 0}}});
+	p_animatable.animation.set_params(get_params("dormant"));
 	p_state.actual = LymphocyteState::dormant;
 
 	flags.general.reset(GeneralFlags::gravity);
@@ -71,7 +71,7 @@ fsm::StateFunction Lymphocyte::update_dormant() {
 
 fsm::StateFunction Lymphocyte::update_spawn() {
 	p_state.actual = LymphocyteState::spawn;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		if (change_state(LymphocyteState::turn, get_params("turn"))) { return LYMPHOCYTE_BIND(update_turn); }
 		request(LymphocyteState::idle);
 		if (change_state(LymphocyteState::idle, get_params("idle"))) { return LYMPHOCYTE_BIND(update_idle); }
@@ -88,8 +88,8 @@ fsm::StateFunction Lymphocyte::update_idle() {
 
 fsm::StateFunction Lymphocyte::update_make_antibody() {
 	p_state.actual = LymphocyteState::make_antibody;
-	if (animation.get_frame_count() == 1 && animation.keyframe_started()) { spawn_antibody(1); }
-	if (animation.complete()) {
+	if (p_animatable.animation.get_frame_count() == 1 && p_animatable.animation.keyframe_started()) { spawn_antibody(1); }
+	if (p_animatable.animation.complete()) {
 		request(LymphocyteState::idle);
 		if (change_state(LymphocyteState::idle, get_params("idle"))) { return LYMPHOCYTE_BIND(update_idle); }
 	}
@@ -98,7 +98,7 @@ fsm::StateFunction Lymphocyte::update_make_antibody() {
 
 fsm::StateFunction Lymphocyte::update_turn() {
 	p_state.actual = LymphocyteState::turn;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		request(LymphocyteState::idle);
 		if (change_state(LymphocyteState::idle, get_params("idle"))) { return LYMPHOCYTE_BIND(update_idle); }
@@ -108,7 +108,7 @@ fsm::StateFunction Lymphocyte::update_turn() {
 
 bool Lymphocyte::change_state(LymphocyteState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

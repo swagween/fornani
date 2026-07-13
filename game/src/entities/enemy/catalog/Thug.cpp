@@ -6,8 +6,8 @@
 
 namespace fornani::enemy {
 
-Thug::Thug(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "thug"), Animatable{svc, "enemy_thug", {64, 64}}, m_services(&svc), m_map(&map) {
-	animation.set_params(idle);
+Thug::Thug(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "thug"), m_services(&svc), m_map(&map) {
+	p_animatable.animation.set_params(idle);
 	get_collider().physics.maximum_velocity = {8.f, 12.f};
 	get_collider().physics.air_friction = {0.95f, 0.999f};
 	directions.desired.lnr = LNR::left;
@@ -105,7 +105,7 @@ void Thug::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 }
 
 fsm::StateFunction Thug::update_idle() {
-	animation.label = "idle";
+	p_animatable.animation.label = "idle";
 	if (change_state(ThugState::turn, turn)) { return THUG_BIND(update_turn); }
 	if (change_state(ThugState::alert, alert)) { return THUG_BIND(update_alert); }
 	if (change_state(ThugState::run, run)) { return THUG_BIND(update_run); }
@@ -114,24 +114,24 @@ fsm::StateFunction Thug::update_idle() {
 	return THUG_BIND(update_idle);
 };
 fsm::StateFunction Thug::update_turn() {
-	animation.label = "turn";
-	if (animation.complete()) {
-		flip();
+	p_animatable.animation.label = "turn";
+	if (p_animatable.animation.complete()) {
+		p_animatable.flip();
 		directions.actual = directions.desired;
 		state = ThugState::idle;
-		animation.set_params(idle, false);
+		p_animatable.animation.set_params(idle, false);
 		return THUG_BIND(update_idle);
 	}
 	state = ThugState::turn;
 	return THUG_BIND(update_turn);
 };
 fsm::StateFunction Thug::update_run() {
-	animation.label = "run";
+	p_animatable.animation.label = "run";
 	auto facing = directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	get_collider().physics.apply_force({attributes.speed * facing, 0.f});
-	if (caution.danger() || animation.complete()) {
+	if (caution.danger() || p_animatable.animation.complete()) {
 		state = ThugState::idle;
-		animation.set_params(idle);
+		p_animatable.animation.set_params(idle);
 		return THUG_BIND(update_idle);
 	}
 	if (change_state(ThugState::turn, turn)) { return THUG_BIND(update_turn); }
@@ -140,14 +140,14 @@ fsm::StateFunction Thug::update_run() {
 	return THUG_BIND(update_run);
 }
 fsm::StateFunction Thug::update_jump() {
-	animation.label = "jump";
+	p_animatable.animation.label = "jump";
 	if (change_state(ThugState::turn, turn)) { return THUG_BIND(update_turn); }
-	if (animation.just_started()) { cooldowns.jump.start(); }
+	if (p_animatable.animation.just_started()) { cooldowns.jump.start(); }
 	cooldowns.jump.update();
 	if (cooldowns.jump.running()) { get_collider().physics.apply_force({-2.f, -8.f}); }
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		state = ThugState::idle;
-		animation.set_params(idle);
+		p_animatable.animation.set_params(idle);
 		return THUG_BIND(update_idle);
 	}
 	state = ThugState::jump;
@@ -155,22 +155,22 @@ fsm::StateFunction Thug::update_jump() {
 }
 
 fsm::StateFunction Thug::update_alert() {
-	animation.label = "alert";
-	if (animation.just_started()) {
+	p_animatable.animation.label = "alert";
+	if (p_animatable.animation.just_started()) {
 		if (random::percent_chance(50)) {
 			m_services->soundboard.flags.thug.set(audio::Thug::alert_1);
 		} else {
 			m_services->soundboard.flags.thug.set(audio::Thug::alert_2);
 		}
 	}
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		if (directions.actual.lnr != directions.desired.lnr) {
 			state = ThugState::turn;
-			animation.set_params(turn);
+			p_animatable.animation.set_params(turn);
 			return THUG_BIND(update_turn);
 		}
 		state = ThugState::rush;
-		animation.set_params(rush);
+		p_animatable.animation.set_params(rush);
 		return THUG_BIND(update_rush);
 	}
 	state = ThugState::alert;
@@ -181,15 +181,15 @@ fsm::StateFunction Thug::update_rush() {
 	if (change_state(ThugState::turn, turn)) { return THUG_BIND(update_turn); }
 	if (caution.danger()) {
 		state = ThugState::idle;
-		animation.set_params(idle);
+		p_animatable.animation.set_params(idle);
 		return THUG_BIND(update_idle);
 	}
 	auto force{16.f};
 	force *= directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	get_collider().physics.apply_force({force, 0.f});
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		state = ThugState::idle;
-		animation.set_params(idle);
+		p_animatable.animation.set_params(idle);
 		return THUG_BIND(update_idle);
 	};
 	state = ThugState::rush;
@@ -200,7 +200,7 @@ fsm::StateFunction Thug::update_punch() { return THUG_BIND(update_idle); }
 
 bool Thug::change_state(ThugState next, anim::Parameters params) {
 	if (state == next) {
-		animation.set_params(params, false);
+		p_animatable.animation.set_params(params, false);
 		return true;
 	}
 	return false;

@@ -8,9 +8,9 @@
 
 namespace fornani::enemy {
 
-Nimbus::Nimbus(automa::ServiceProvider& svc, world::Map& map) : Boss(svc, map, "nimbus"), Animatable{svc, "enemy_nimbus", {64, 64}}, m_slash_wave(svc, "slash_wave"), m_map{&map}, m_services{&svc} {
+Nimbus::Nimbus(automa::ServiceProvider& svc, world::Map& map) : Boss(svc, map, "nimbus"), m_slash_wave(svc, "slash_wave"), m_map{&map}, m_services{&svc} {
 	auto fr = 8;
-	p_animations = {{"idle", {93, 4, fr * 4, -1}},
+	p_animatable.set_animations({{"idle", {93, 4, fr * 4, -1}},
 					{"jump", {1, 7, fr * 5, 0, true}},
 					{"land", {8, 7, fr * 3, 0}},
 					{"get_up", {12, 2, fr * 4, 0}},
@@ -26,8 +26,8 @@ Nimbus::Nimbus(automa::ServiceProvider& svc, world::Map& map) : Boss(svc, map, "
 					{"begin_levitate", {72, 5, fr * 2, 0}},
 					{"levitate", {77, 4, fr * 4, -1}},
 					{"spellcast", {81, 3, fr * 2, 3}},
-					{"double_aerial_slash", {84, 9, fr * 2, 0}}};
-	animation.set_params(get_params("idle"));
+					{"double_aerial_slash", {84, 9, fr * 2, 0}}});
+	p_animatable.animation.set_params(get_params("idle"));
 	get_collider().physics.set_friction_componentwise({0.99f, 0.999f});
 	m_slash_wave.get().set_team(arms::Team::skycorps);
 	flags.general.set(GeneralFlags::has_invincible_channel);
@@ -57,22 +57,22 @@ void Nimbus::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 			slash.update();
 			if (is_state(NimbusState::upward_cut)) {
 				slash.enable();
-				if (animation.get_frame_count() != 1) { slash.disable(); }
+				if (p_animatable.animation.get_frame_count() != 1) { slash.disable(); }
 				damage = 1.f;
 			}
 			if (is_state(NimbusState::turn)) {
 				slash.enable();
-				if (animation.get_frame_count() != 3 && animation.get_frame_count() != 4) { slash.disable(); }
+				if (p_animatable.animation.get_frame_count() != 3 && p_animatable.animation.get_frame_count() != 4) { slash.disable(); }
 				damage = 2.f;
 			}
 			if (is_state(NimbusState::forward_slash)) {
 				slash.enable();
-				if (animation.get_frame_count() != 1 && animation.get_frame_count() != 2) { slash.disable(); }
+				if (p_animatable.animation.get_frame_count() != 1 && p_animatable.animation.get_frame_count() != 2) { slash.disable(); }
 				damage = 2.f;
 			}
 			if (is_state(NimbusState::downward_cut)) {
 				slash.enable();
-				if (animation.get_frame_count() != 3 && animation.get_frame_count() != 4) { slash.disable(); }
+				if (p_animatable.animation.get_frame_count() != 3 && p_animatable.animation.get_frame_count() != 4) { slash.disable(); }
 				damage = 2.f;
 			}
 			slash.hurt_player(player, damage, {directions.desired.as_float() * 0.4f, -0.2f});
@@ -127,11 +127,11 @@ fsm::StateFunction Nimbus::update_idle() {
 
 fsm::StateFunction Nimbus::update_jump() {
 	p_state.actual = NimbusState::jump;
-	if (animation.get_frame_count() == 1 && animation.keyframe_started()) { get_collider().physics.velocity = sf::Vector2f{directions.actual.as_float() * 5.f, -15.f}; }
-	if (animation.get_frame_count() >= 1) { get_collider().physics.apply_force({directions.actual.as_float(), 0.f}); }
-	if (animation.get_frame_count() == 6 && is_alert()) { request(NimbusState::downward_cut); }
+	if (p_animatable.animation.get_frame_count() == 1 && p_animatable.animation.keyframe_started()) { get_collider().physics.velocity = sf::Vector2f{directions.actual.as_float() * 5.f, -15.f}; }
+	if (p_animatable.animation.get_frame_count() >= 1) { get_collider().physics.apply_force({directions.actual.as_float(), 0.f}); }
+	if (p_animatable.animation.get_frame_count() == 6 && is_alert()) { request(NimbusState::downward_cut); }
 	if (change_state(NimbusState::downward_cut, get_params("downward_cut"))) { return NIMBUS_BIND(update_downward_cut); }
-	if (animation.is_complete() && get_collider().grounded()) {
+	if (p_animatable.animation.is_complete() && get_collider().grounded()) {
 		request(NimbusState::land);
 		if (change_state(NimbusState::land, Enemy::get_params("land"))) { return NIMBUS_BIND(update_land); }
 	}
@@ -140,7 +140,7 @@ fsm::StateFunction Nimbus::update_jump() {
 
 fsm::StateFunction Nimbus::update_land() {
 	p_state.actual = NimbusState::land;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		request(NimbusState::idle);
 		if (change_state(NimbusState::idle, Enemy::get_params("idle"))) { return NIMBUS_BIND(update_idle); }
 	}
@@ -149,7 +149,7 @@ fsm::StateFunction Nimbus::update_land() {
 
 fsm::StateFunction Nimbus::update_get_up() {
 	p_state.actual = NimbusState::get_up;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		if (change_state(NimbusState::turn, Enemy::get_params("turn"))) { return NIMBUS_BIND(update_turn); }
 		if (!m_cooldowns.post_slash.running()) { random::coin_flip() ? request(NimbusState::prepare_forward_slash) : request(NimbusState::prepare_twirl_cut); }
 		if (change_state(NimbusState::prepare_forward_slash, Enemy::get_params("prepare_forward_slash"))) { return NIMBUS_BIND(update_prepare_forward_slash); }
@@ -164,7 +164,7 @@ fsm::StateFunction Nimbus::update_get_up() {
 
 fsm::StateFunction Nimbus::update_prepare_forward_slash() {
 	p_state.actual = NimbusState::prepare_forward_slash;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		request(NimbusState::forward_slash);
 		if (change_state(NimbusState::forward_slash, Enemy::get_params("forward_slash"))) { return NIMBUS_BIND(update_forward_slash); }
 	}
@@ -173,13 +173,13 @@ fsm::StateFunction Nimbus::update_prepare_forward_slash() {
 
 fsm::StateFunction Nimbus::update_forward_slash() {
 	p_state.actual = NimbusState::forward_slash;
-	if (animation.get_frame_count() == 1 && animation.keyframe_started()) { m_services->soundboard.play_sound("nimbus_swipe_1", get_collider().get_center()); }
-	if (animation.just_started()) { get_collider().physics.velocity = sf::Vector2f{directions.actual.as_float() * 40.f, -7.f}; }
+	if (p_animatable.animation.get_frame_count() == 1 && p_animatable.animation.keyframe_started()) { m_services->soundboard.play_sound("nimbus_swipe_1", get_collider().get_center()); }
+	if (p_animatable.animation.just_started()) { get_collider().physics.velocity = sf::Vector2f{directions.actual.as_float() * 40.f, -7.f}; }
 	for (auto [i, slash] : std::views::enumerate(m_attacks.slash)) {
 		slash.set_position(Enemy::get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 28.f, 8.f});
 		i == 1 ? slash.set_constant_radius(40.f) : slash.set_constant_radius(18.f);
 	}
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		flags.state.set(StateFlags::vulnerable);
 		m_cooldowns.post_slash.start();
 		if (change_state(NimbusState::turn, Enemy::get_params("turn"))) { return NIMBUS_BIND(update_turn); }
@@ -191,7 +191,7 @@ fsm::StateFunction Nimbus::update_forward_slash() {
 
 fsm::StateFunction Nimbus::update_prepare_twirl_cut() {
 	p_state.actual = NimbusState::prepare_twirl_cut;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		request(NimbusState::twirl_cut);
 		if (change_state(NimbusState::twirl_cut, Enemy::get_params("twirl_cut"))) { return NIMBUS_BIND(update_twirl_cut); }
 	}
@@ -200,11 +200,11 @@ fsm::StateFunction Nimbus::update_prepare_twirl_cut() {
 
 fsm::StateFunction Nimbus::update_twirl_cut() {
 	p_state.actual = NimbusState::twirl_cut;
-	if (animation.just_started()) {
+	if (p_animatable.animation.just_started()) {
 		m_slash_wave.shoot(*m_services, *m_map, (get_collider().get_center() + sf::Vector2f{directions.actual.as_float(), -1.f}) - get_collider().get_center());
 		m_services->soundboard.play_sound("nimbus_swipe_2", get_collider().get_center());
 	}
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		flags.state.set(StateFlags::vulnerable);
 		request(NimbusState::land);
 		if (change_state(NimbusState::land, Enemy::get_params("land"))) { return NIMBUS_BIND(update_land); }
@@ -214,7 +214,7 @@ fsm::StateFunction Nimbus::update_twirl_cut() {
 
 fsm::StateFunction Nimbus::update_flourish() {
 	p_state.actual = NimbusState::flourish;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		if (!m_cooldowns.post_slash.running()) { request(NimbusState::prepare_forward_slash); }
 		if (change_state(NimbusState::prepare_forward_slash, Enemy::get_params("prepare_forward_slash"))) { return NIMBUS_BIND(update_prepare_forward_slash); }
 		request(NimbusState::idle);
@@ -225,17 +225,17 @@ fsm::StateFunction Nimbus::update_flourish() {
 
 fsm::StateFunction Nimbus::update_downward_cut() {
 	p_state.actual = NimbusState::downward_cut;
-	if (animation.get_frame_count() == 3 && animation.keyframe_started()) { m_services->soundboard.play_sound("nimbus_swipe_1", get_collider().get_center()); }
-	if (animation.just_started()) {
+	if (p_animatable.animation.get_frame_count() == 3 && p_animatable.animation.keyframe_started()) { m_services->soundboard.play_sound("nimbus_swipe_1", get_collider().get_center()); }
+	if (p_animatable.animation.just_started()) {
 		if (directions.desired != directions.actual) { request_flip(); }
 	}
 	for (auto [i, slash] : std::views::enumerate(m_attacks.slash)) {
 		slash.set_position(Enemy::get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 28.f, 10.f});
 		i == 1 ? slash.set_constant_radius(32.f) : slash.set_constant_radius(18.f);
 	}
-	if (animation.get_frame_count() < 2) { get_collider().physics.zero(); }
-	if (animation.get_frame_count() == 2 && animation.keyframe_started()) { get_collider().physics.velocity = sf::Vector2f{directions.actual.as_float() * 28.f, 18.f}; }
-	if (animation.is_complete()) {
+	if (p_animatable.animation.get_frame_count() < 2) { get_collider().physics.zero(); }
+	if (p_animatable.animation.get_frame_count() == 2 && p_animatable.animation.keyframe_started()) { get_collider().physics.velocity = sf::Vector2f{directions.actual.as_float() * 28.f, 18.f}; }
+	if (p_animatable.animation.is_complete()) {
 		request(NimbusState::get_up);
 		if (change_state(NimbusState::get_up, Enemy::get_params("get_up"))) { return NIMBUS_BIND(update_get_up); }
 	}
@@ -244,14 +244,14 @@ fsm::StateFunction Nimbus::update_downward_cut() {
 
 fsm::StateFunction Nimbus::update_upward_cut() {
 	p_state.actual = NimbusState::upward_cut;
-	if (animation.get_frame_count() == 1 && animation.keyframe_started()) { m_services->soundboard.play_sound("nimbus_swipe_3", get_collider().get_center()); }
-	if (animation.just_started()) { m_slash_wave.shoot(*m_services, *m_map, (get_collider().get_center() + sf::Vector2f{0.f, -1.f}) - get_collider().get_center()); }
+	if (p_animatable.animation.get_frame_count() == 1 && p_animatable.animation.keyframe_started()) { m_services->soundboard.play_sound("nimbus_swipe_3", get_collider().get_center()); }
+	if (p_animatable.animation.just_started()) { m_slash_wave.shoot(*m_services, *m_map, (get_collider().get_center() + sf::Vector2f{0.f, -1.f}) - get_collider().get_center()); }
 	auto sign = directions.actual.as_float();
 	for (auto [i, slash] : std::views::enumerate(m_attacks.slash)) {
 		slash.set_position(Enemy::get_collider().get_center() + sf::Vector2f{0.f, -18.f});
 		i == 1 ? slash.set_constant_radius(40.f) : slash.set_constant_radius(18.f);
 	}
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		request(NimbusState::idle);
 		if (change_state(NimbusState::idle, Enemy::get_params("idle"))) { return NIMBUS_BIND(update_idle); }
 	}
@@ -261,12 +261,12 @@ fsm::StateFunction Nimbus::update_upward_cut() {
 fsm::StateFunction Nimbus::update_turn() {
 	p_state.actual = NimbusState::turn;
 	directions.desired.lock();
-	if (animation.get_frame_count() == 3 && animation.keyframe_started()) { m_services->soundboard.play_sound("nimbus_swipe_3", get_collider().get_center()); }
+	if (p_animatable.animation.get_frame_count() == 3 && p_animatable.animation.keyframe_started()) { m_services->soundboard.play_sound("nimbus_swipe_3", get_collider().get_center()); }
 	for (auto [i, slash] : std::views::enumerate(m_attacks.slash)) {
 		slash.set_position(Enemy::get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * -20.f, -18.f});
 		i == 1 ? slash.set_constant_radius(44.f) : slash.set_constant_radius(18.f);
 	}
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		flags.state.set(StateFlags::vulnerable);
 		m_cooldowns.post_slash.start();
 		request_flip();
@@ -278,7 +278,7 @@ fsm::StateFunction Nimbus::update_turn() {
 
 fsm::StateFunction Nimbus::update_parry() {
 	p_state.actual = NimbusState::parry;
-	animation.get_frame_count() == 0 ? flags.state.reset(StateFlags::vulnerable) : flags.state.set(StateFlags::vulnerable);
+	p_animatable.animation.get_frame_count() == 0 ? flags.state.reset(StateFlags::vulnerable) : flags.state.set(StateFlags::vulnerable);
 	if (change_state(NimbusState::upward_cut, Enemy::get_params("upward_cut"))) { return NIMBUS_BIND(update_upward_cut); }
 	if (change_state(NimbusState::parry, Enemy::get_params("parry"))) { return NIMBUS_BIND(update_parry); }
 	if (flags.state.consume(StateFlags::blocked_projectile)) {
@@ -290,7 +290,7 @@ fsm::StateFunction Nimbus::update_parry() {
 			if (change_state(NimbusState::prepare_twirl_cut, Enemy::get_params("prepare_twirl_cut"))) { return NIMBUS_BIND(update_prepare_twirl_cut); }
 		}
 	}
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		flags.state.set(StateFlags::vulnerable);
 		if (random::percent_chance(25)) { request(NimbusState::jump); }
 		if (!m_cooldowns.post_slash.running()) { random::coin_flip() ? request(NimbusState::prepare_forward_slash) : request(NimbusState::prepare_twirl_cut); }
@@ -307,8 +307,8 @@ fsm::StateFunction Nimbus::update_begin_levitate() {
 	p_state.actual = NimbusState::begin_levitate;
 	get_collider().set_flag(shape::ColliderFlags::simple);
 	get_collider().set_flag(shape::ColliderFlags::gravity, false);
-	if (animation.just_started()) { m_steer_target = m_map->get_random_home_point(); }
-	if (animation.is_complete()) {
+	if (p_animatable.animation.just_started()) { m_steer_target = m_map->get_random_home_point(); }
+	if (p_animatable.animation.is_complete()) {
 		request(NimbusState::levitate);
 		if (change_state(NimbusState::levitate, Enemy::get_params("levitate"))) { return NIMBUS_BIND(update_levitate); }
 	}
@@ -331,8 +331,8 @@ fsm::StateFunction Nimbus::update_double_aerial_slash() {
 	p_state.actual = NimbusState::double_aerial_slash;
 	get_collider().set_flag(shape::ColliderFlags::simple, false);
 	get_collider().set_flag(shape::ColliderFlags::gravity);
-	if (animation.get_frame_count() < 2) { get_collider().physics.zero(); }
-	if (animation.is_complete()) {
+	if (p_animatable.animation.get_frame_count() < 2) { get_collider().physics.zero(); }
+	if (p_animatable.animation.is_complete()) {
 		request(NimbusState::land);
 		if (change_state(NimbusState::land, Enemy::get_params("land"))) { return NIMBUS_BIND(update_land); }
 	}
@@ -363,7 +363,7 @@ void Nimbus::debug() {
 
 bool Nimbus::change_state(NimbusState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

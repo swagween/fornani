@@ -7,11 +7,11 @@
 namespace fornani::enemy {
 
 Beamsprout::Beamsprout(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction)
-	: Enemy(svc, map, "beamsprout", false, 0, start_direction), Animatable{svc, "enemy_beamsprout", {64, 64}}, m_services(&svc), m_map(&map), beam(svc, "poison_ball"), fire_rate{72}, post_beam{336} {
+	: Enemy(svc, map, "beamsprout", false, 0, start_direction), m_services(&svc), m_map(&map), beam(svc, "poison_ball"), fire_rate{72}, post_beam{336} {
 
-	p_animations = {{"idle", {0, 12, 28, -1}}, {"charge", {12, 10, 20, 0}}, {"shoot", {22, 3, 20, 2}}, {"relax", {25, 1, 20, 0}}, {"turn", {26, 2, 32, 0}}};
+	p_animatable.set_animations({{"idle", {0, 12, 28, -1}}, {"charge", {12, 10, 20, 0}}, {"shoot", {22, 3, 20, 2}}, {"relax", {25, 1, 20, 0}}, {"turn", {26, 2, 32, 0}}});
 
-	animation.set_params(get_params("idle"));
+	p_animatable.animation.set_params(get_params("idle"));
 	get_collider().physics.maximum_velocity = {8.f, 12.f};
 	get_collider().physics.air_friction = {0.95f, 0.999f};
 	flags.general.reset(GeneralFlags::gravity);
@@ -70,19 +70,19 @@ void Beamsprout::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 }
 
 fsm::StateFunction Beamsprout::update_idle() {
-	animation.label = "idle";
+	p_animatable.animation.label = "idle";
 	p_state.actual = BeamsproutState::idle;
-	if (animation.just_started()) { flags.state.reset(StateFlags::hostile); }
+	if (p_animatable.animation.just_started()) { flags.state.reset(StateFlags::hostile); }
 	if (change_state(BeamsproutState::turn, get_params("turn"))) { return BEAMSPROUT_BIND(update_turn); }
 	if (change_state(BeamsproutState::charge, get_params("charge"))) { return BEAMSPROUT_BIND(update_charge); }
 	return BEAMSPROUT_BIND(update_idle);
 };
 
 fsm::StateFunction Beamsprout::update_charge() {
-	animation.label = "charge";
+	p_animatable.animation.label = "charge";
 	p_state.actual = BeamsproutState::charge;
-	if (animation.just_started()) { m_services->soundboard.flags.beamsprout.set(audio::Beamsprout::charge); }
-	if (animation.get_frame_count() > 7) {
+	if (p_animatable.animation.just_started()) { m_services->soundboard.flags.beamsprout.set(audio::Beamsprout::charge); }
+	if (p_animatable.animation.get_frame_count() > 7) {
 		if (!has_flag_set(BeamsproutFlags::spit)) {
 			beam.shoot(*m_services, *m_map);
 			get_collider().physics.apply_force(directions.actual.as_float() * beam.get().get_recoil_force());
@@ -90,7 +90,7 @@ fsm::StateFunction Beamsprout::update_charge() {
 			set_flag(BeamsproutFlags::spit);
 		}
 	}
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		post_beam.start();
 		set_flag(BeamsproutFlags::spit, false);
 		request(BeamsproutState::relax);
@@ -100,13 +100,13 @@ fsm::StateFunction Beamsprout::update_charge() {
 };
 
 fsm::StateFunction Beamsprout::update_shoot() {
-	animation.label = "shoot";
+	p_animatable.animation.label = "shoot";
 	p_state.actual = BeamsproutState::shoot;
 	if (m_services->ticker.every_x_ticks(static_cast<int>(fire_rate))) {
 		beam.shoot(*m_services, *m_map);
 		get_collider().physics.apply_force(directions.actual.as_float() * beam.get().get_recoil_force());
 	}
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		post_beam.start();
 		request(BeamsproutState::relax);
 		if (change_state(BeamsproutState::relax, get_params("relax"))) { return BEAMSPROUT_BIND(update_relax); }
@@ -115,9 +115,9 @@ fsm::StateFunction Beamsprout::update_shoot() {
 }
 
 fsm::StateFunction Beamsprout::update_relax() {
-	animation.label = "relax";
+	p_animatable.animation.label = "relax";
 	p_state.actual = BeamsproutState::relax;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		if (change_state(BeamsproutState::turn, get_params("turn"))) { return BEAMSPROUT_BIND(update_turn); }
 		request(BeamsproutState::idle);
 		if (change_state(BeamsproutState::idle, get_params("idle"))) { return BEAMSPROUT_BIND(update_idle); }
@@ -127,7 +127,7 @@ fsm::StateFunction Beamsprout::update_relax() {
 
 fsm::StateFunction Beamsprout::update_turn() {
 	p_state.actual = BeamsproutState::turn;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		m_root->variables.bob_physics.velocity.x = directions.actual.as_float() * 4.f;
 		request_flip();
 		request(BeamsproutState::relax);
@@ -138,7 +138,7 @@ fsm::StateFunction Beamsprout::update_turn() {
 
 bool Beamsprout::change_state(BeamsproutState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params, true);
+		p_animatable.animation.set_params(params, true);
 		return true;
 	}
 	return false;

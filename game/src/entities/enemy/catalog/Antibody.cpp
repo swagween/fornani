@@ -6,10 +6,9 @@
 
 namespace fornani::enemy {
 
-Antibody::Antibody(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, map, "antibody"), Animatable{svc, "enemy_antibody", {34, 34}}, m_services{&svc}, m_post_stun{400}, m_variant{static_cast<AntibodyVariant>(variant)} {
-	p_animations = {{"idle", {0, 8, 20, -1}}, {"stun", {8, 7, 32, 0}}};
-	animation.set_params(get_params("idle"));
+Antibody::Antibody(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "antibody"), m_services{&svc}, m_post_stun{400}, m_variant{static_cast<AntibodyVariant>(variant)} {
+	p_animatable.set_animations({{"idle", {0, 8, 20, -1}}, {"stun", {8, 7, 32, 0}}});
+	p_animatable.animation.set_params(get_params("idle"));
 	p_state.actual = AntibodyState::idle;
 
 	get_collider().set_flag(shape::ColliderFlags::simple);
@@ -27,7 +26,7 @@ void Antibody::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 
 	auto lower_bound = m_variant == AntibodyVariant::igg ? 8.f : 6.f;
 	auto upper_bound = m_variant == AntibodyVariant::igg ? 48.f : 24.f;
-	set_framerate(static_cast<int>(std::lerp(lower_bound, upper_bound, std::clamp((player.get_collider().get_center() - get_collider().get_center()).length() / 260.f, 0.f, 1.f))));
+	p_animatable.set_framerate(static_cast<int>(std::lerp(lower_bound, upper_bound, std::clamp((player.get_collider().get_center() - get_collider().get_center()).length() / 260.f, 0.f, 1.f))));
 
 	if (player.hurtbox.overlaps(get_collider().bounding_box) && player.can_be_stunned() && !m_post_stun.running()) {
 		m_variant == AntibodyVariant::igg ? player.stun(0.8f) : player.hurt_and_stun();
@@ -53,8 +52,8 @@ fsm::StateFunction Antibody::update_idle() {
 
 fsm::StateFunction Antibody::update_stun() {
 	p_state.actual = AntibodyState::stun;
-	if (animation.get_frame_count() < 2) { shake(); }
-	if (animation.complete()) {
+	if (p_animatable.animation.get_frame_count() < 2) { shake(); }
+	if (p_animatable.animation.complete()) {
 		m_post_stun.start();
 		request(AntibodyState::idle);
 		if (change_state(AntibodyState::idle, get_params("idle"))) { return ANTIBODY_BIND(update_idle); }
@@ -64,7 +63,7 @@ fsm::StateFunction Antibody::update_stun() {
 
 bool Antibody::change_state(AntibodyState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

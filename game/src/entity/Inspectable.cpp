@@ -9,7 +9,7 @@
 
 namespace fornani {
 
-Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "inspectables"), Animatable{svc, "inspectables"} {
+Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "inspectables") {
 	unserialize(in);
 	if (in["activate_on_contact"].as_bool()) { attributes.set(InspectableAttributes::activate_on_contact); }
 	if (in["instant"].as_bool()) { attributes.set(InspectableAttributes::instant); }
@@ -20,7 +20,7 @@ Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in) : Ent
 }
 
 Inspectable::Inspectable(automa::ServiceProvider& svc, std::vector<std::vector<gui::BasicMessage>> suite, std::vector<std::vector<gui::BasicMessage>> responses, bool activate_on_contact, std::string key, int alternates, bool instant)
-	: Entity(svc, "inspectables", 0, {1, 1}), Animatable{svc, "inspectables"}, m_activate_on_contact{activate_on_contact}, m_key{key}, m_alternates{alternates}, m_instant{instant}, m_suites{suite}, m_responses{responses} {
+	: Entity(svc, "inspectables", 0, {1, 1}), m_activate_on_contact{activate_on_contact}, m_key{key}, m_alternates{alternates}, m_instant{instant}, m_suites{suite}, m_responses{responses} {
 	m_textured = false;
 }
 

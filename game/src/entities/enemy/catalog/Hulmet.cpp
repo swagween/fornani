@@ -8,8 +8,8 @@
 namespace fornani::enemy {
 
 Hulmet::Hulmet(automa::ServiceProvider& svc, world::Map& map)
-	: Enemy(svc, map, "hulmet"), Animatable{svc, "enemy_hulmet", {32, 32}}, m_services(&svc), m_map(&map), m_parts{.gun{svc, "hulmet_gun", {24, 10}, {{0, 4, 24, -1}}, {"main"}, 2.0f, 0.85f, {-12.f, 6.f}}}, m_weapon{svc, "skycorps_ar"} {
-	animation.set_params(m_animations.idle);
+	: Enemy(svc, map, "hulmet"), m_services(&svc), m_map(&map), m_parts{.gun{svc, "hulmet_gun", {24, 10}, {{0, 4, 24, -1}}, {"main"}, 2.0f, 0.85f, {-12.f, 6.f}}}, m_weapon{svc, "skycorps_ar"} {
+	p_animatable.animation.set_params(m_animations.idle);
 	m_parts.gun.set_magnitude(2.f);
 	m_weapon.clip_cooldown_time = 360;
 	m_weapon.get().set_team(arms::Team::skycorps);
@@ -48,7 +48,7 @@ void Hulmet::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	m_cooldowns.post_roll.update();
 	m_cooldowns.alerted.update();
 
-	m_parts.gun.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center());
+	m_parts.gun.update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center());
 	m_weapon.update(svc, map, *this);
 	m_weapon.barrel_offset = sf::Vector2f{directions.actual.as_float() * 40.f, 0.f};
 	if (p_state.actual == HulmetState::roll) { cancel_shake(); }
@@ -79,7 +79,7 @@ void Hulmet::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 }
 
 fsm::StateFunction Hulmet::update_idle() {
-	animation.label = "idle";
+	p_animatable.animation.label = "idle";
 	p_state.actual = HulmetState::idle;
 	flags.state.set(StateFlags::vulnerable);
 	if (is_hurt()) { request(HulmetState::panic); }
@@ -98,18 +98,18 @@ fsm::StateFunction Hulmet::update_idle() {
 }
 
 fsm::StateFunction Hulmet::update_turn() {
-	animation.label = "turn";
+	p_animatable.animation.label = "turn";
 	p_state.actual = HulmetState::turn;
 	flags.state.set(StateFlags::vulnerable);
 	directions.desired.lock();
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		if (change_state(HulmetState::alert, m_animations.alert)) { return HULMET_BIND(update_alert); }
 		if (change_state(HulmetState::run, m_animations.run)) { return HULMET_BIND(update_run); }
 		if (was_alerted()) {
 			if (change_state(HulmetState::shoot, m_animations.shoot)) { return HULMET_BIND(update_shoot); }
 		}
-		animation.set_params(m_animations.idle);
+		p_animatable.animation.set_params(m_animations.idle);
 		p_state.desired = HulmetState::idle;
 		return HULMET_BIND(update_idle);
 	}
@@ -117,7 +117,7 @@ fsm::StateFunction Hulmet::update_turn() {
 }
 
 fsm::StateFunction Hulmet::update_run() {
-	animation.label = "run";
+	p_animatable.animation.label = "run";
 	p_state.actual = HulmetState::run;
 	flags.state.set(StateFlags::vulnerable);
 	auto sign = directions.actual.left() ? -1.f : 1.f;
@@ -140,7 +140,7 @@ fsm::StateFunction Hulmet::update_run() {
 		m_cooldowns.run.start();
 		return HULMET_BIND(update_alert);
 	}
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		if (change_state(HulmetState::roll, m_animations.roll)) {
 			m_cooldowns.run.start();
 			return HULMET_BIND(update_roll);
@@ -150,8 +150,8 @@ fsm::StateFunction Hulmet::update_run() {
 		m_cooldowns.run.start();
 		return HULMET_BIND(update_jump);
 	}
-	if (animation.complete()) {
-		animation.set_params(m_animations.idle);
+	if (p_animatable.animation.complete()) {
+		p_animatable.animation.set_params(m_animations.idle);
 		p_state.desired = HulmetState::idle;
 		m_cooldowns.run.start();
 		return HULMET_BIND(update_idle);
@@ -160,12 +160,12 @@ fsm::StateFunction Hulmet::update_run() {
 }
 
 fsm::StateFunction Hulmet::update_alert() {
-	animation.label = "alert";
+	p_animatable.animation.label = "alert";
 	p_state.actual = HulmetState::alert;
 	flags.state.set(StateFlags::vulnerable);
 	m_cooldowns.alerted.start();
-	if (animation.just_started()) { m_services->soundboard.flags.hulmet.set(audio::Hulmet::alert); }
-	if (animation.complete()) {
+	if (p_animatable.animation.just_started()) { m_services->soundboard.flags.hulmet.set(audio::Hulmet::alert); }
+	if (p_animatable.animation.complete()) {
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
 		if (change_state(HulmetState::roll, m_animations.roll)) { return HULMET_BIND(update_roll); }
 		if (change_state(HulmetState::jump, m_animations.jump)) { return HULMET_BIND(update_jump); }
@@ -176,7 +176,7 @@ fsm::StateFunction Hulmet::update_alert() {
 }
 
 fsm::StateFunction Hulmet::update_roll() {
-	animation.label = "roll";
+	p_animatable.animation.label = "roll";
 	p_state.actual = HulmetState::roll;
 	flags.state.reset(StateFlags::vulnerable);
 	auto sign = directions.actual.left() ? -1.f : 1.f;
@@ -185,7 +185,7 @@ fsm::StateFunction Hulmet::update_roll() {
 		request(HulmetState::jump);
 		if (change_state(HulmetState::jump, m_animations.jump)) { return HULMET_BIND(update_jump); }
 	}
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		m_cooldowns.post_roll.start();
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
 		if (change_state(HulmetState::jump, m_animations.jump)) { return HULMET_BIND(update_jump); }
@@ -193,7 +193,7 @@ fsm::StateFunction Hulmet::update_roll() {
 		if (!is_out_of_ammo()) {
 			if (change_state(HulmetState::shoot, m_animations.shoot)) { return HULMET_BIND(update_shoot); }
 		}
-		animation.set_params(m_animations.idle);
+		p_animatable.animation.set_params(m_animations.idle);
 		p_state.desired = HulmetState::idle;
 		return HULMET_BIND(update_idle);
 	}
@@ -201,18 +201,18 @@ fsm::StateFunction Hulmet::update_roll() {
 }
 
 fsm::StateFunction Hulmet::update_jump() {
-	animation.label = "jump";
+	p_animatable.animation.label = "jump";
 	p_state.actual = HulmetState::jump;
 	flags.state.set(StateFlags::vulnerable);
-	if (animation.just_started()) { get_collider().physics.velocity = sf::Vector2f{0.f, -20.f}; }
+	if (p_animatable.animation.just_started()) { get_collider().physics.velocity = sf::Vector2f{0.f, -20.f}; }
 	get_collider().physics.acceleration.x = directions.actual.as_float() * 0.4f;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		m_cooldowns.post_jump.start();
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
 		if (change_state(HulmetState::roll, m_animations.roll)) { return HULMET_BIND(update_roll); }
 		if (change_state(HulmetState::run, m_animations.run)) { return HULMET_BIND(update_run); }
 		if (change_state(HulmetState::shoot, m_animations.shoot)) { return HULMET_BIND(update_shoot); }
-		animation.set_params(m_animations.idle);
+		p_animatable.animation.set_params(m_animations.idle);
 		p_state.desired = HulmetState::idle;
 		return HULMET_BIND(update_idle);
 	}
@@ -220,17 +220,17 @@ fsm::StateFunction Hulmet::update_jump() {
 }
 
 fsm::StateFunction Hulmet::update_shoot() {
-	animation.label = "shoot";
+	p_animatable.animation.label = "shoot";
 	p_state.actual = HulmetState::shoot;
 	flags.state.set(StateFlags::vulnerable);
 	if (!m_weapon.get().cooling_down()) { m_weapon.shoot(*m_services, *m_map); }
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		set_flag(HulmetFlags::out_of_ammo);
 		m_cooldowns.post_fire.start();
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
 		if (change_state(HulmetState::run, m_animations.run)) { return HULMET_BIND(update_run); }
 		if (change_state(HulmetState::jump, m_animations.jump)) { return HULMET_BIND(update_jump); }
-		animation.set_params(m_animations.idle);
+		p_animatable.animation.set_params(m_animations.idle);
 		p_state.desired = HulmetState::idle;
 		return HULMET_BIND(update_idle);
 	}
@@ -238,7 +238,7 @@ fsm::StateFunction Hulmet::update_shoot() {
 }
 
 fsm::StateFunction Hulmet::update_sleep() {
-	animation.label = "sleep";
+	p_animatable.animation.label = "sleep";
 	p_state.actual = HulmetState::sleep;
 	flags.state.set(StateFlags::vulnerable);
 	if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
@@ -247,12 +247,12 @@ fsm::StateFunction Hulmet::update_sleep() {
 }
 
 fsm::StateFunction Hulmet::update_panic() {
-	animation.label = "panic";
+	p_animatable.animation.label = "panic";
 	p_state.actual = HulmetState::panic;
 	flags.state.set(StateFlags::vulnerable);
 	m_cooldowns.alerted.start();
-	if (animation.just_started()) { m_services->soundboard.flags.hulmet.set(audio::Hulmet::alert); }
-	if (animation.complete()) {
+	if (p_animatable.animation.just_started()) { m_services->soundboard.flags.hulmet.set(audio::Hulmet::alert); }
+	if (p_animatable.animation.complete()) {
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
 		random::percent_chance(50) && !is_out_of_ammo() ? request(HulmetState::shoot) : request(HulmetState::roll);
 		if (change_state(HulmetState::shoot, m_animations.shoot)) { return HULMET_BIND(update_shoot); }
@@ -262,15 +262,15 @@ fsm::StateFunction Hulmet::update_panic() {
 }
 
 fsm::StateFunction Hulmet::update_reload() {
-	animation.label = "reload";
+	p_animatable.animation.label = "reload";
 	p_state.actual = HulmetState::reload;
 	flags.state.set(StateFlags::vulnerable);
-	if (animation.get_frame_count() == 3 && animation.keyframe_started()) {
+	if (p_animatable.animation.get_frame_count() == 3 && p_animatable.animation.keyframe_started()) {
 		m_services->soundboard.flags.hulmet.set(audio::Hulmet::reload);
 		set_flag(HulmetFlags::out_of_ammo, false);
 		if (m_parts.gun.animated_sprite) { m_parts.gun.animated_sprite->animation.start(); }
 	}
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		if (change_state(HulmetState::turn, m_animations.turn)) { return HULMET_BIND(update_turn); }
 		is_hostile() ? request(HulmetState::shoot) : request(HulmetState::idle);
 		if (change_state(HulmetState::shoot, m_animations.shoot)) { return HULMET_BIND(update_shoot); }
@@ -282,7 +282,7 @@ fsm::StateFunction Hulmet::update_reload() {
 
 bool Hulmet::change_state(HulmetState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params, true);
+		p_animatable.animation.set_params(params, true);
 		return true;
 	}
 	return false;

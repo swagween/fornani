@@ -4,15 +4,15 @@
 
 namespace fornani {
 
-SwitchButton::SwitchButton(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "switch_buttons"), Animatable{svc, "switch_buttons"} {
+SwitchButton::SwitchButton(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "switch_buttons") {
 	unserialize(in);
-	set_texture_rect(sf::IntRect{{fornani::constants::i_cell_resolution * m_type, 0}, {fornani::constants::i_cell_resolution, 8}});
-	set_origin({0.f, -8.f});
+	p_animatable.set_texture_rect(sf::IntRect{{fornani::constants::i_cell_resolution * m_type, 0}, {fornani::constants::i_cell_resolution, 8}});
+	p_animatable.set_origin({0.f, -8.f});
 }
 
-SwitchButton::SwitchButton(fornani::automa::ServiceProvider& svc, int id, int type) : Entity(svc, "switch_buttons", id), Animatable{svc, "switch_buttons"}, m_type{type} {
-	set_texture_rect(sf::IntRect{{fornani::constants::i_cell_resolution * type, 0}, {fornani::constants::i_cell_resolution, 8}});
-	set_origin({0.f, -8.f});
+SwitchButton::SwitchButton(fornani::automa::ServiceProvider& svc, int id, int type) : Entity(svc, "switch_buttons", id), m_type{type} {
+	p_animatable.set_texture_rect(sf::IntRect{{fornani::constants::i_cell_resolution * type, 0}, {fornani::constants::i_cell_resolution, 8}});
+	p_animatable.set_origin({0.f, -8.f});
 }
 
 std::unique_ptr<Entity> SwitchButton::clone() const { return std::make_unique<SwitchButton>(*this); }

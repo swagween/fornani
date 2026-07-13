@@ -259,7 +259,7 @@ void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, worl
 		if (m_willett_walk.is_complete()) {
 			willett->set_desired_direction({LR::right});
 			willett->set_flag(NPCFlags::face_player);
-			willett->Mobile::set_animation("turn");
+			willett->set_animation("turn");
 			willett->force_engage();
 			player.turn();
 			++progress;

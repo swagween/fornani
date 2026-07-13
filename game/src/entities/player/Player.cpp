@@ -17,11 +17,10 @@ constexpr auto light_offset_v = 12.f;
 constexpr auto max_damage_v = 1024.f;
 
 Player::Player(automa::ServiceProvider& svc)
-	: Mobile(svc, "nani", {26, 26}), Animatable{svc, "nani", {26, 26}}, arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc},
-	  orb_indicator{svc, graphics::IndicatorType::orb}, m_sprite_shake{200}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{10.f, -3.f},
-	  m_sprite_overlay{svc, "nani", {26, 26}} {
+	: Mobile(svc, "nani", {26, 26}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb},
+	  m_sprite_shake{200}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{10.f, -3.f}, m_sprite_overlay{svc, "nani", {26, 26}} {
 
-	center();
+	p_animatable.center();
 	m_sprite_overlay.center();
 	svc.data.load_player_params(*this);
 
@@ -278,7 +277,7 @@ void Player::update(world::Map& map) {
 	if (controller.is_rolling() || m_animation_machine.is_state(AnimState::turn_slide)) {
 		if (m_services->ticker.every_x_ticks(24)) { map.effects.push_back(entity::Effect(*m_services, "roll", get_collider().get_center(), sf::Vector2f{get_collider().physics.apparent_velocity().x * 0.1f, 0.f})); }
 	}
-	if (m_animation_machine.is_state(AnimState::turn_slide) && (animation.get_frame_count() > 2 && animation.get_frame_count() < 6)) { m_services->soundboard.repeat_sound("nani_turn_slide"); }
+	if (m_animation_machine.is_state(AnimState::turn_slide) && (p_animatable.animation.get_frame_count() > 2 && p_animatable.animation.get_frame_count() < 6)) { m_services->soundboard.repeat_sound("nani_turn_slide"); }
 
 	// camera stuff
 	auto skew = 120.f;
@@ -425,12 +424,12 @@ void Player::update(world::Map& map) {
 		}
 	}
 	Mobile::post_update(*m_services, map, *this);
-	if (m_headgear) { m_headgear->update(Animatable::get_frame()); }
+	if (m_headgear) { m_headgear->update(p_animatable.get_frame()); }
 }
 
 void Player::simple_update() {
 	handle_turning();
-	tick();
+	p_animatable.tick();
 	m_animation_machine.update();
 	update_sprite();
 	update_antennae();
@@ -447,14 +446,14 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	if (m_sprite_shake.get() % 10 == 0) { m_shake_offset = random::random_vector_float(-4.f, 4.f); }
 	if (!m_sprite_shake.running()) { m_shake_offset = {}; }
 	m_sprite_position += m_shake_offset;
-	Animatable::set_position(m_sprite_position - cam);
+	p_animatable.set_position(m_sprite_position - cam);
 	m_sprite_overlay.set_position(m_sprite_position - cam);
 
 	// handle special render
 	set_flag(PlayerFlags::special_render, false);
 	m_sprite_overlay.set_channel(0);
-	m_sprite_overlay.set_frame(Animatable::get_frame());
-	m_sprite_overlay.set_scale(Animatable::get_scale());
+	m_sprite_overlay.set_frame(p_animatable.get_frame());
+	m_sprite_overlay.set_scale(p_animatable.get_scale());
 	if (is_intangible() && svc.in_game()) {
 		set_flag(PlayerFlags::special_render, true);
 		int value = 2 + (std::min(19, static_cast<int>(health.invincibility.get_quadratic_normalized() * 20)) % 2);
@@ -462,15 +461,15 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	}
 
 	if (has_death_type(PlayerDeathType::crushed) || has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::fallen)) { return; }
-	if (has_death_type(PlayerDeathType::drowned)) { set_color(colors::blue); }
+	if (has_death_type(PlayerDeathType::drowned)) { p_animatable.set_color(colors::blue); }
 	if (piggybacker && !has_flag_set(PlayerFlags::in_reward_sequence)) { piggybacker->render(svc, win, cam); }
 
-	if (consume_flag(PlayerFlags::dir_switch)) { Animatable::scale({-1.f, 1.f}); }
+	if (consume_flag(PlayerFlags::dir_switch)) { p_animatable.scale({-1.f, 1.f}); }
 
 	if (arsenal && hotbar && collider.has_value()) { get_collider().flags.general.set(shape::General::complex); }
 
 	if (svc.greyblock_mode()) {
-		win.draw(*this);
+		win.draw(p_animatable);
 		sf::RectangleShape box{};
 		box.setFillColor(sf::Color::Transparent);
 		box.setOutlineColor(colors::red);
@@ -516,7 +515,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		}
 	} else {
 		if (antennae.size() > 1) { antennae[1]->render(svc, win, cam, 1); }
-		has_flag_set(PlayerFlags::special_render) ? win.draw(m_sprite_overlay) : win.draw(*this);
+		has_flag_set(PlayerFlags::special_render) ? win.draw(m_sprite_overlay) : win.draw(p_animatable);
 		++debug::draw_calls;
 		if (antennae.size() > 1) { antennae[0]->render(svc, win, cam, 1); }
 	}
@@ -537,8 +536,8 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		}
 	}
 	if (m_headgear) {
-		m_headgear->set_scale(Animatable::get_sprite().getScale());
-		m_headgear->render(win, Animatable::get_window_position());
+		m_headgear->set_scale(p_animatable.get_sprite().getScale());
+		m_headgear->render(win, p_animatable.get_window_position());
 	}
 
 	// light debug
@@ -550,8 +549,8 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f forced_position) {
-	Animatable::set_position(forced_position - cam);
-	win.draw(*this);
+	p_animatable.set_position(forced_position - cam);
+	win.draw(p_animatable);
 }
 
 void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -561,7 +560,7 @@ void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& w
 	if (get_collider().has_flag_set(shape::ColliderFlags::submerged) || !m_air_supply.full()) { m_air_supply_bar.render(win, cam); }
 }
 
-void Player::assign_texture(sf::Texture& tex) { Animatable::set_texture(tex); }
+void Player::assign_texture(sf::Texture& tex) { p_animatable.set_texture(tex); }
 
 void Player::start_tick() {
 	if (collider.has_value()) { get_collider().flags.external_state.reset(shape::ExternalState::grounded); }
@@ -677,7 +676,7 @@ void Player::update_sprite() {
 		if (directions.desired != directions.actual) { request_flip(); }
 	}
 
-	Animatable::set_texture(texture_updater.get_dynamic_texture());
+	p_animatable.set_texture(texture_updater.get_dynamic_texture());
 }
 
 void Player::handle_turning() {
@@ -693,7 +692,7 @@ void Player::handle_turning() {
 
 void Player::flash_sprite() {
 	auto flash_rate = 30;
-	(health.invincibility.get() / flash_rate) % 2 == 0 ? Animatable::set_color(colors::red) : Animatable::set_color(colors::blue);
+	(health.invincibility.get() / flash_rate) % 2 == 0 ? p_animatable.set_color(colors::red) : p_animatable.set_color(colors::blue);
 }
 
 void Player::set_idle() {
@@ -722,7 +721,7 @@ void Player::set_sleeping(bool on_floor) {
 	if (!on_floor) {
 		m_animation_machine.force(AnimState::sleep, "sleep");
 		m_animation_machine.state_function = std::bind(&PlayerAnimation::update_sleep, &m_animation_machine);
-		animation.set_frame(3);
+		p_animatable.animation.set_frame(3);
 	} else {
 		m_animation_machine.force(AnimState::unconscious, "unconscious");
 		m_animation_machine.state_function = std::bind(&PlayerAnimation::update_unconscious, &m_animation_machine);
@@ -837,7 +836,7 @@ void Player::update_weapon(world::Map& map) {
 	// update all weapons in loadout to avoid unusual behavior upon weapon switching
 	for (auto& weapon : arsenal.value().get_loadout()) {
 		hotbar->has(weapon->get_tag()) ? weapon->set_hotbar() : weapon->set_reserved();
-		auto dir = controller.is_wallsliding() ? controller.direction.flipped() : controller.direction;
+		auto dir = controller.is_wallsliding() || pushing() ? controller.direction.flipped() : controller.direction;
 		weapon->update(*m_services, map, dir);
 		weapon->set_position(m_weapon_socket);
 		weapon->set_firing_direction(dir);
@@ -853,7 +852,7 @@ void Player::update_weapon_simple() {
 	if (!arsenal) { return; }
 	if (!hotbar) { return; }
 	for (auto& weapon : arsenal.value().get_loadout()) {
-		auto dir = controller.is_wallsliding() ? controller.direction.flipped() : controller.direction;
+		auto dir = controller.is_wallsliding() || pushing() ? controller.direction.flipped() : controller.direction;
 		weapon->tick();
 		weapon->set_position(m_weapon_socket);
 		weapon->set_orientation(dir);
@@ -1003,7 +1002,7 @@ void Player::update_invincibility() {
 	if (health.has_flag_set(HealthFlags::hurt)) {
 		flash_sprite();
 	} else {
-		set_color(sf::Color::White);
+		p_animatable.set_color(sf::Color::White);
 	}
 }
 

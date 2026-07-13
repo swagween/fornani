@@ -7,9 +7,9 @@
 
 namespace fornani::enemy {
 
-Hurtle::Hurtle(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "hurtle"), Animatable{svc, "enemy_hurtle", {44, 44}}, m_services(&svc), m_map(&map), m_turn{200} {
-	p_animations = {{"run", {0, 4, 30, -1}}, {"sleep", {4, 1, 80, 0}}, {"turn", {5, 1, 30, 0}}};
-	animation.set_params(get_params("run"));
+Hurtle::Hurtle(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "hurtle"), m_services(&svc), m_map(&map), m_turn{200} {
+	p_animatable.set_animations({{"run", {0, 4, 30, -1}}, {"sleep", {4, 1, 80, 0}}, {"turn", {5, 1, 30, 0}}});
+	p_animatable.animation.set_params(get_params("run"));
 	get_collider().physics.set_friction_componentwise({0.98f, 0.999f});
 	attributes.team = arms::Team::guardian;
 	get_secondary_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
@@ -66,7 +66,7 @@ void Hurtle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 fsm::StateFunction Hurtle::update_run() {
 	p_state.actual = HurtleState::run;
-	auto spd = animation.get_frame_count() % 2 == 0 ? attributes.speed : attributes.speed * 0.6f;
+	auto spd = p_animatable.animation.get_frame_count() % 2 == 0 ? attributes.speed : attributes.speed * 0.6f;
 	get_collider().physics.velocity.x = directions.actual.as_float() * spd;
 	if (change_state(HurtleState::sleep, get_params("sleep"))) { return HURTLE_BIND(update_sleep); }
 	if (change_state(HurtleState::turn, get_params("turn"))) { return HURTLE_BIND(update_turn); }
@@ -75,7 +75,7 @@ fsm::StateFunction Hurtle::update_run() {
 
 fsm::StateFunction Hurtle::update_sleep() {
 	p_state.actual = HurtleState::sleep;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		if (m_caution.is_projectile_detected(*m_map, physical.alert_range, arms::Team::beast)) {
 			request(HurtleState::sleep);
 			if (change_state(HurtleState::sleep, get_params("sleep"))) { return HURTLE_BIND(update_sleep); }
@@ -89,7 +89,7 @@ fsm::StateFunction Hurtle::update_sleep() {
 fsm::StateFunction Hurtle::update_turn() {
 	p_state.actual = HurtleState::turn;
 	directions.desired.lock();
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		m_turn.start();
 		request_flip();
 		request(HurtleState::run);
@@ -100,7 +100,7 @@ fsm::StateFunction Hurtle::update_turn() {
 
 bool Hurtle::change_state(HurtleState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params, true);
+		p_animatable.animation.set_params(params, true);
 		return true;
 	}
 	return false;

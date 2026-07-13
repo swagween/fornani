@@ -6,11 +6,11 @@
 namespace fornani::enemy {
 
 Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<int> start_direction)
-	: Enemy(svc, map, "beamstalk", false, 0, start_direction), Animatable{svc, "enemy_beamstalk", {100, 100}}, m_services(&svc), m_map(&map), beam(svc, "green_beam"), fire_rate{24}, post_beam{680} {
+	: Enemy(svc, map, "beamstalk", false, 0, start_direction), m_services(&svc), m_map(&map), beam(svc, "green_beam"), fire_rate{24}, post_beam{680} {
 
-	p_animations = {{"idle", {14, 14, 36, -1}}, {"charge", {0, 9, 24, 0}}, {"shoot", {9, 3, 24, 2}}, {"relax", {12, 2, 36, 0}}};
+	p_animatable.set_animations({{"idle", {14, 14, 36, -1}}, {"charge", {0, 9, 24, 0}}, {"shoot", {9, 3, 24, 2}}, {"relax", {12, 2, 36, 0}}});
 
-	animation.set_params(get_params("idle"));
+	p_animatable.animation.set_params(get_params("idle"));
 	get_collider().physics.maximum_velocity = {8.f, 12.f};
 	get_collider().physics.air_friction = {0.95f, 0.999f};
 	flags.general.reset(GeneralFlags::gravity);
@@ -67,17 +67,17 @@ void Beamstalk::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 }
 
 fsm::StateFunction Beamstalk::update_idle() {
-	animation.label = "idle";
+	p_animatable.animation.label = "idle";
 	p_state.actual = BeamstalkState::idle;
-	if (animation.just_started()) { flags.state.reset(StateFlags::hostile); }
+	if (p_animatable.animation.just_started()) { flags.state.reset(StateFlags::hostile); }
 	if (change_state(BeamstalkState::charge, get_params("charge"))) { return BEAMSTALK_BIND(update_charge); }
 	return BEAMSTALK_BIND(update_idle);
 };
 
 fsm::StateFunction Beamstalk::update_charge() {
-	animation.label = "charge";
+	p_animatable.animation.label = "charge";
 	p_state.actual = BeamstalkState::charge;
-	if (animation.get_frame() > 6) {
+	if (p_animatable.animation.get_frame() > 6) {
 		if (m_services->ticker.every_x_ticks(static_cast<int>(fire_rate))) {
 			beam.shoot(*m_services, *m_map);
 			get_collider().physics.apply_force({-beam.get().get_recoil(), 0.f});
@@ -87,7 +87,7 @@ fsm::StateFunction Beamstalk::update_charge() {
 			}
 		}
 	}
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		set_flag(BeamstalkFlags::spit, false);
 		request(BeamstalkState::shoot);
 		if (change_state(BeamstalkState::shoot, get_params("shoot"))) { return BEAMSTALK_BIND(update_shoot); }
@@ -96,14 +96,14 @@ fsm::StateFunction Beamstalk::update_charge() {
 };
 
 fsm::StateFunction Beamstalk::update_shoot() {
-	animation.label = "shoot";
+	p_animatable.animation.label = "shoot";
 	p_state.actual = BeamstalkState::shoot;
 	if (m_services->ticker.every_x_ticks(static_cast<int>(fire_rate))) {
 		beam.shoot(*m_services, *m_map);
 		get_collider().physics.apply_force(directions.actual.as_float() * beam.get().get_recoil_force());
 		m_root->variables.bob_physics.velocity.x = directions.actual.as_float() * beam.get().get_recoil_force().x;
 	}
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		post_beam.start();
 		request(BeamstalkState::relax);
 		if (change_state(BeamstalkState::relax, get_params("relax"))) { return BEAMSTALK_BIND(update_relax); }
@@ -112,9 +112,9 @@ fsm::StateFunction Beamstalk::update_shoot() {
 }
 
 fsm::StateFunction Beamstalk::update_relax() {
-	animation.label = "relax";
+	p_animatable.animation.label = "relax";
 	p_state.actual = BeamstalkState::relax;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request(BeamstalkState::idle);
 		if (change_state(BeamstalkState::idle, get_params("idle"))) { return BEAMSTALK_BIND(update_idle); }
 	}
@@ -123,7 +123,7 @@ fsm::StateFunction Beamstalk::update_relax() {
 
 bool Beamstalk::change_state(BeamstalkState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params, true);
+		p_animatable.animation.set_params(params, true);
 		return true;
 	}
 	return false;

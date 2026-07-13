@@ -4,14 +4,14 @@
 
 namespace fornani {
 
-TimerBlock::TimerBlock(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "timer_blocks"), Animatable{svc, "timer_blocks"} {
+TimerBlock::TimerBlock(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "timer_blocks") {
 	unserialize(in);
-	set_texture_rect(sf::IntRect{{}, fornani::constants::i_resolution_vec});
+	p_animatable.set_texture_rect(sf::IntRect{{}, fornani::constants::i_resolution_vec});
 	repeatable = true;
 }
 
-TimerBlock::TimerBlock(fornani::automa::ServiceProvider& svc, int id, int type) : Entity(svc, "timer_blocks", id), Animatable{svc, "timer_blocks"}, m_type{type} {
-	set_texture_rect(sf::IntRect{{}, fornani::constants::i_resolution_vec});
+TimerBlock::TimerBlock(fornani::automa::ServiceProvider& svc, int id, int type) : Entity(svc, "timer_blocks", id), m_type{type} {
+	p_animatable.set_texture_rect(sf::IntRect{{}, fornani::constants::i_resolution_vec});
 	repeatable = true;
 }
 

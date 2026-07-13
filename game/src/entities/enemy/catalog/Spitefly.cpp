@@ -9,9 +9,9 @@ namespace fornani::enemy {
 
 constexpr auto spitefly_framerate = 12;
 
-Spitefly::Spitefly(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "spitefly"), Animatable{svc, "enemy_spitefly", {40, 40}}, m_services{&svc} {
-	p_animations = {{"idle", {0, 4, spitefly_framerate * 2, -1}}, {"turn", {4, 1, spitefly_framerate * 2, 0}}, {"sleep", {5, 1, spitefly_framerate * 2, -1}}, {"awaken", {6, 7, spitefly_framerate * 2, 0}}};
-	animation.set_params(get_params("sleep"));
+Spitefly::Spitefly(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "spitefly"), m_services{&svc} {
+	p_animatable.set_animations({{"idle", {0, 4, spitefly_framerate * 2, -1}}, {"turn", {4, 1, spitefly_framerate * 2, 0}}, {"sleep", {5, 1, spitefly_framerate * 2, -1}}, {"awaken", {6, 7, spitefly_framerate * 2, 0}}});
+	p_animatable.animation.set_params(get_params("sleep"));
 	p_state.actual = SpiteflyState::sleep;
 	flags.general.set(GeneralFlags::hurt_on_contact);
 
@@ -30,7 +30,7 @@ Spitefly::Spitefly(automa::ServiceProvider& svc, world::Map& map, int variant) :
 		flags.general.set(GeneralFlags::custom_channels);
 		m_custom_channel = EnemyChannel::invincible;
 		flags.general.reset(GeneralFlags::map_collision);
-		animation.set_params(get_params("awaken"));
+		p_animatable.animation.set_params(get_params("awaken"));
 		p_state.actual = SpiteflyState::awaken;
 		state_function = std::bind(&Spitefly::update_awaken, this);
 		attributes.base_hp = 8;
@@ -48,7 +48,7 @@ void Spitefly::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 
 	// bomb variant stuff
 	if (m_bomb) { m_bomb->update(svc, map, *this); }
-	if (m_bomb_part) { m_bomb_part->update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center()); }
+	if (m_bomb_part) { m_bomb_part->update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center()); }
 
 	if (is_active()) {
 		auto force = is_albino() ? 0.00012f : 0.0001f;
@@ -92,7 +92,7 @@ void Spitefly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 
 fsm::StateFunction Spitefly::update_idle() {
 	p_state.actual = SpiteflyState::idle;
-	if (animation.get_frame() == 0 && animation.keyframe_started()) { get_collider().physics.acceleration.y -= is_bomb() ? 1.6f : 0.8f; }
+	if (p_animatable.animation.get_frame() == 0 && p_animatable.animation.keyframe_started()) { get_collider().physics.acceleration.y -= is_bomb() ? 1.6f : 0.8f; }
 	if (change_state(SpiteflyState::turn, get_params("turn"))) { return SPITEFLY_BIND(update_turn); }
 	return SPITEFLY_BIND(update_idle);
 }
@@ -105,7 +105,7 @@ fsm::StateFunction Spitefly::update_sleep() {
 
 fsm::StateFunction Spitefly::update_awaken() {
 	p_state.actual = SpiteflyState::awaken;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		m_services->soundboard.play_sound("spitefly_screech", get_collider().get_center());
 		flags.general.set(GeneralFlags::gravity);
 		request(SpiteflyState::idle);
@@ -116,7 +116,7 @@ fsm::StateFunction Spitefly::update_awaken() {
 
 fsm::StateFunction Spitefly::update_turn() {
 	p_state.actual = SpiteflyState::turn;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		request(SpiteflyState::idle);
 		if (change_state(SpiteflyState::idle, get_params("idle"))) { return SPITEFLY_BIND(update_idle); }
@@ -126,7 +126,7 @@ fsm::StateFunction Spitefly::update_turn() {
 
 bool Spitefly::change_state(SpiteflyState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

@@ -6,10 +6,10 @@
 
 namespace fornani::enemy {
 
-Meatsquash::Meatsquash(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "meatsquash"), Animatable{svc, "enemy_meatsquash", {128, 128}}, m_services(&svc), m_map(&map) {
-	p_animations = {{"idle", {0, 6, 32, -1}}, {"chomp", {6, 12, 36, 0}}, {"open", {19, 4, 24, 0}}, {"swallow", {23, 13, 24, 0}}};
-	animation.set_params(get_params("idle"));
-	random_start();
+Meatsquash::Meatsquash(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "meatsquash"), m_services(&svc), m_map(&map) {
+	p_animatable.set_animations({{"idle", {0, 6, 32, -1}}, {"chomp", {6, 12, 36, 0}}, {"open", {19, 4, 24, 0}}, {"swallow", {23, 13, 24, 0}}});
+	p_animatable.animation.set_params(get_params("idle"));
+	p_animatable.random_start();
 	get_collider().physics.maximum_velocity = {8.f, 12.f};
 	get_collider().physics.air_friction = {0.95f, 0.999f};
 	get_collider().flags.general.set(shape::General::complex);
@@ -39,9 +39,9 @@ void Meatsquash::update(automa::ServiceProvider& svc, world::Map& map, player::P
 
 	if (attacks.bite.sensor.within_bounds(player.get_collider().bounding_box) && !player.is_dead()) { request(MeatsquashState::chomp); }
 
-	auto has_no_collision = is_state(MeatsquashState::open) || (is_state(MeatsquashState::chomp) && animation.get_frame_count() > 5);
+	auto has_no_collision = is_state(MeatsquashState::open) || (is_state(MeatsquashState::chomp) && p_animatable.animation.get_frame_count() > 5);
 	has_no_collision ? flags.general.reset(GeneralFlags::player_collision) : flags.general.set(GeneralFlags::player_collision);
-	auto active = animation.get_frame() == 12 && player.get_collider().get_center().y <= get_collider().physics.position.y;
+	auto active = p_animatable.animation.get_frame() == 12 && player.get_collider().get_center().y <= get_collider().physics.position.y;
 	active ? attacks.bite.enable() : attacks.bite.disable();
 	if (attacks.bite.kill_player(player, player::PlayerDeathType::swallowed)) { set_flag(MeatsquashFlags::swallowed_player); }
 
@@ -67,19 +67,19 @@ void Meatsquash::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 }
 
 fsm::StateFunction Meatsquash::update_idle() {
-	animation.label = "idle";
+	p_animatable.animation.label = "idle";
 	p_state.actual = MeatsquashState::idle;
-	if (animation.just_started()) { flags.state.reset(StateFlags::hostile); }
+	if (p_animatable.animation.just_started()) { flags.state.reset(StateFlags::hostile); }
 	if (change_state(MeatsquashState::chomp, get_params("chomp"))) { return MEATSQUASH_BIND(update_chomp); }
 	return MEATSQUASH_BIND(update_idle);
 };
 
 fsm::StateFunction Meatsquash::update_chomp() {
-	animation.label = "chomp";
+	p_animatable.animation.label = "chomp";
 	p_state.actual = MeatsquashState::chomp;
-	if (animation.just_started()) { m_services->soundboard.flags.meatsquash.set(audio::Meatsquash::chomp); }
-	if (animation.get_frame_count() == 5 && animation.keyframe_started()) { m_services->soundboard.flags.meatsquash.set(audio::Meatsquash::whip); }
-	if (animation.complete()) {
+	if (p_animatable.animation.just_started()) { m_services->soundboard.flags.meatsquash.set(audio::Meatsquash::chomp); }
+	if (p_animatable.animation.get_frame_count() == 5 && p_animatable.animation.keyframe_started()) { m_services->soundboard.flags.meatsquash.set(audio::Meatsquash::whip); }
+	if (p_animatable.animation.complete()) {
 		if (change_state(MeatsquashState::swallow, get_params("swallow"))) { return MEATSQUASH_BIND(update_swallow); }
 		request(MeatsquashState::open);
 		if (change_state(MeatsquashState::open, get_params("open"))) { return MEATSQUASH_BIND(update_open); }
@@ -88,10 +88,10 @@ fsm::StateFunction Meatsquash::update_chomp() {
 };
 
 fsm::StateFunction Meatsquash::update_swallow() {
-	animation.label = "swallow";
+	p_animatable.animation.label = "swallow";
 	p_state.actual = MeatsquashState::swallow;
-	if (animation.get_frame_count() == 1 && animation.keyframe_started()) { m_services->soundboard.flags.meatsquash.set(audio::Meatsquash::swallow); }
-	if (animation.complete()) {
+	if (p_animatable.animation.get_frame_count() == 1 && p_animatable.animation.keyframe_started()) { m_services->soundboard.flags.meatsquash.set(audio::Meatsquash::swallow); }
+	if (p_animatable.animation.complete()) {
 		set_flag(MeatsquashFlags::swallowed_player, false);
 		request(MeatsquashState::open);
 		if (change_state(MeatsquashState::open, get_params("open"))) { return MEATSQUASH_BIND(update_open); }
@@ -100,10 +100,10 @@ fsm::StateFunction Meatsquash::update_swallow() {
 }
 
 fsm::StateFunction Meatsquash::update_open() {
-	animation.label = "open";
+	p_animatable.animation.label = "open";
 	p_state.actual = MeatsquashState::open;
-	if (animation.just_started()) { m_services->soundboard.flags.meatsquash.set(audio::Meatsquash::open); }
-	if (animation.complete()) {
+	if (p_animatable.animation.just_started()) { m_services->soundboard.flags.meatsquash.set(audio::Meatsquash::open); }
+	if (p_animatable.animation.complete()) {
 		request(MeatsquashState::idle);
 		if (change_state(MeatsquashState::idle, get_params("idle"))) { return MEATSQUASH_BIND(update_idle); }
 	}
@@ -112,7 +112,7 @@ fsm::StateFunction Meatsquash::update_open() {
 
 bool Meatsquash::change_state(MeatsquashState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params, true);
+		p_animatable.animation.set_params(params, true);
 		return true;
 	}
 	return false;

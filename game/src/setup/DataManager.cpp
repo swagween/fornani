@@ -280,8 +280,8 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	for (auto& s : activated_switches) { save["activated_switches"].push_back(s); }
 	for (auto& block : destructible_states) {
 		auto state = dj::Json{};
-		state.push_back({block.first});
-		state.push_back({block.second});
+		state.push_back({block.code});
+		state.push_back({block.state});
 		save["destroyed_blocks"].push_back(state);
 	}
 	for (auto& i : destroyed_inspectables) { save["destroyed_inspectables"].push_back(i); }
@@ -459,15 +459,15 @@ void DataManager::activate_switch(int id) {
 }
 
 void DataManager::switch_destructible_state(int id, bool inverse) {
-	for (auto [i, d] : std::views::enumerate(destructible_states)) {
-		if (d.first == id) {
-			d.second = (d.second + 1) % 2;
-			NANI_LOG_DEBUG(m_logger, "State was set to {} in DataManager.", d.second);
+	for (auto&& [i, d] : std::views::enumerate(destructible_states)) {
+		if (d.code == id) {
+			d.state = (d.state + 1) % 2;
+			NANI_LOG_DEBUG(m_logger, "Switched state for destructible {} to {}.", d.code, d.state);
 			return;
 		}
 	}
 	auto state = inverse ? 0 : 1;
-	destructible_states.push_back({id, state});
+	destructible_states.add({id, state});
 }
 
 void DataManager::destroy_inspectable(StableID::underlying_type id) { destroyed_inspectables.add(id); }
@@ -549,7 +549,7 @@ bool DataManager::enemy_is_fallen(int room_id, StableID id) const {
 
 int DataManager::get_destructible_state(int id) const {
 	for (auto [i, d] : std::views::enumerate(destructible_states)) {
-		if (d.first == id) { return d.second; }
+		if (d.code == id) { return d.state; }
 	}
 	return -1;
 }
@@ -715,7 +715,7 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	for (auto& door : save["unlocked_doors"].as_array()) { unlocked_doors.add(door.as_string()); }
 	for (auto& chest : save["opened_chests"].as_array()) { opened_chests.add(chest.as<std::uint64_t>()); }
 	for (auto& s : save["activated_switches"].as_array()) { activated_switches.add(s.as<int>()); }
-	for (auto& block : save["destroyed_blocks"].as_array()) { destructible_states.push_back(std::make_pair(block[0].as<int>(), block[1].as<int>())); }
+	for (auto& block : save["destroyed_blocks"].as_array()) { destructible_states.add({block[0].as<int>(), block[1].as<int>()}); }
 	for (auto& inspectable : save["destroyed_inspectables"].as_array()) { destroyed_inspectables.add(inspectable.as<StableID::underlying_type>()); }
 
 	for (auto& enemy : save["map_data"]["fallen_enemies"].as_array()) {

@@ -9,7 +9,7 @@
 namespace fornani {
 
 Entity::Entity(automa::ServiceProvider& svc, dj::Json const& in, std::string_view label, sf::Vector2i dim)
-	: Animatable(svc, label, dim), m_label{label}, IWorldPositionable({in["position"][0].as<std::uint32_t>(), in["position"][1].as<std::uint32_t>()}, {in["dimensions"][0].as<std::uint32_t>(), in["dimensions"][1].as<std::uint32_t>()}) {
+	: p_animatable(svc, label, dim), m_label{label}, IWorldPositionable({in["position"][0].as<std::uint32_t>(), in["position"][1].as<std::uint32_t>()}, {in["dimensions"][0].as<std::uint32_t>(), in["dimensions"][1].as<std::uint32_t>()}) {
 	unserialize(in);
 	m_editor = svc.is_editor();
 	if (p_contingencies) {
@@ -17,7 +17,7 @@ Entity::Entity(automa::ServiceProvider& svc, dj::Json const& in, std::string_vie
 	}
 }
 
-Entity::Entity(automa::ServiceProvider& svc, std::string_view label, int to_id, sf::Vector2<std::uint32_t> dim) : Animatable(svc, label), m_id{to_id}, m_label{label}, IWorldPositionable{{}, dim} { m_editor = svc.is_editor(); }
+Entity::Entity(automa::ServiceProvider& svc, std::string_view label, int to_id, sf::Vector2<std::uint32_t> dim) : p_animatable(svc, label), m_id{to_id}, m_label{label}, IWorldPositionable{{}, dim} { m_editor = svc.is_editor(); }
 
 std::unique_ptr<Entity> Entity::clone() const { return std::unique_ptr<Entity>(); }
 
@@ -91,7 +91,7 @@ auto Entity::contains_point(sf::Vector2u test) const -> bool {
 	return false;
 }
 
-void Entity::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) { tick(); }
+void Entity::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) { p_animatable.tick(); }
 
 void Entity::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	if (!m_editor) { return; }
@@ -103,9 +103,9 @@ void Entity::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	}
 	drawbox.setSize(get_f_grid_dimensions() * size);
 	drawbox.setPosition(get_f_grid_position() * size + cam);
-	Animatable::set_scale(constants::f_scale_vec * size / constants::f_cell_size);
-	Animatable::set_position(get_f_grid_position() * size + cam);
-	if (m_textured) { win.draw(*this); }
+	p_animatable.set_scale(constants::f_scale_vec * size / constants::f_cell_size);
+	p_animatable.set_position(get_f_grid_position() * size + cam);
+	if (m_textured) { win.draw(p_animatable); }
 	win.draw(drawbox);
 }
 

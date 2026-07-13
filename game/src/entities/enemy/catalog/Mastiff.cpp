@@ -9,9 +9,9 @@ namespace fornani::enemy {
 
 constexpr auto mastiff_framerate = 10;
 
-Mastiff::Mastiff(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "mastiff"), Animatable{svc, "enemy_mastiff", {64, 64}}, m_services{&svc} {
-	p_animations = {{"idle", {0, 6, mastiff_framerate * 2, -1}}, {"run", {6, 4, mastiff_framerate * 2, 4}}, {"bite", {10, 6, mastiff_framerate * 2, 0}}, {"turn", {16, 2, mastiff_framerate * 2, 0}}};
-	animation.set_params(get_params("idle"));
+Mastiff::Mastiff(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "mastiff"), m_services{&svc} {
+	p_animatable.set_animations({{"idle", {0, 6, mastiff_framerate * 2, -1}}, {"run", {6, 4, mastiff_framerate * 2, 4}}, {"bite", {10, 6, mastiff_framerate * 2, 0}}, {"turn", {16, 2, mastiff_framerate * 2, 0}}});
+	p_animatable.animation.set_params(get_params("idle"));
 	m_bite.hit.bounds.setRadius(40.f);
 
 	get_collider().physics.set_friction_componentwise({0.92f, 0.99f});
@@ -67,7 +67,7 @@ fsm::StateFunction Mastiff::update_idle() {
 fsm::StateFunction Mastiff::update_run() {
 	p_state.actual = MastiffState::run;
 	get_collider().physics.acceleration.x = directions.actual.as_float() * attributes.speed;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		if (change_state(MastiffState::bite, get_params("bite")) && get_collider().grounded()) { return MASTIFF_BIND(update_bite); }
 		if (change_state(MastiffState::turn, get_params("turn"))) { return MASTIFF_BIND(update_turn); }
 		request(MastiffState::idle);
@@ -78,13 +78,13 @@ fsm::StateFunction Mastiff::update_run() {
 
 fsm::StateFunction Mastiff::update_bite() {
 	p_state.actual = MastiffState::bite;
-	if (animation.just_started()) { m_services->soundboard.flags.mastiff.set(audio::Mastiff::growl); }
+	if (p_animatable.animation.just_started()) { m_services->soundboard.flags.mastiff.set(audio::Mastiff::growl); }
 	get_collider().physics.acceleration.x = directions.actual.as_float() * 5.f;
-	if (animation.get_frame_count() == 4) {
+	if (p_animatable.animation.get_frame_count() == 4) {
 		m_bite.hit.activate();
-		if (animation.keyframe_started()) { m_services->soundboard.flags.mastiff.set(audio::Mastiff::bite); }
+		if (p_animatable.animation.keyframe_started()) { m_services->soundboard.flags.mastiff.set(audio::Mastiff::bite); }
 	}
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		request(MastiffState::idle);
 		if (change_state(MastiffState::idle, get_params("idle"))) { return MASTIFF_BIND(update_idle); }
 	}
@@ -93,7 +93,7 @@ fsm::StateFunction Mastiff::update_bite() {
 
 fsm::StateFunction Mastiff::update_turn() {
 	p_state.actual = MastiffState::turn;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		if (change_state(MastiffState::bite, get_params("bite")) && get_collider().grounded()) { return MASTIFF_BIND(update_bite); }
 		request(MastiffState::idle);
@@ -104,7 +104,7 @@ fsm::StateFunction Mastiff::update_turn() {
 
 bool Mastiff::change_state(MastiffState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

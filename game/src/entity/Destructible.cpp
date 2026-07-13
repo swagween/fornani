@@ -7,9 +7,9 @@
 
 namespace fornani {
 
-Destructible::Destructible(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "destructibles"), Animatable{svc, "destructibles"} {
+Destructible::Destructible(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "destructibles") {
 	unserialize(in);
-	set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
+	p_animatable.set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 	repeatable = false;
 	copyable = false;
 	owned_collider.reset();
@@ -20,11 +20,11 @@ Destructible::Destructible(automa::ServiceProvider& svc, world::Map& map, dj::Js
 	owned_collider.emplace(map, sf::Vector2f{constants::f_cell_vec - sf::Vector2f{2.f, 2.f}});
 	collider = *owned_collider;
 	init(svc, in);
-	set_texture_rect(sf::IntRect{{map.get_style_id() * constants::i_cell_resolution, 0}, constants::i_resolution_vec});
+	p_animatable.set_texture_rect(sf::IntRect{{map.get_style_id() * constants::i_cell_resolution, 0}, constants::i_resolution_vec});
 }
 
-Destructible::Destructible(automa::ServiceProvider& svc, int id, util::BitFlags<DestructibleAttributes> attributes) : Entity(svc, "destructibles", id), Animatable{svc, "destructibles"}, m_attributes{attributes} {
-	set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
+Destructible::Destructible(automa::ServiceProvider& svc, int id, util::BitFlags<DestructibleAttributes> attributes) : Entity(svc, "destructibles", id), m_attributes{attributes} {
+	p_animatable.set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 	repeatable = false;
 	copyable = false;
 	owned_collider.reset();
@@ -51,6 +51,23 @@ void Destructible::unserialize(dj::Json const& in) {
 void Destructible::expose() { Entity::expose(); }
 
 auto Destructible::ignore_updates() const -> bool { return is_destroyed(); }
+
+void Destructible::debug() {
+	static auto sz = ImVec2{180.f, 450.f};
+	ImGui::SetNextWindowSize(sz);
+	if (ImGui::Begin("Destructible Debug")) {
+		ImGui::SeparatorText("Info");
+		ImGui::Text("State: %s", m_state == 0 ? "Solid" : m_state == 1 ? "Destroyed" : "ERROR");
+		ImGui::Text("Code: %i", quest_id);
+		ImGui::Text("Ignore Updates?: %s", ignore_updates() ? "Yes" : "No");
+		ImGui::Text("Has Collider?: %s", has_collider() ? "Yes" : "No");
+		if (has_collider()) {
+			ImGui::Text("No Collision?: %s", get_collider().has_attribute(shape::ColliderAttributes::no_collision) ? "Yes" : "No");
+			ImGui::Text("Intangible?: %s", get_collider().has_flag_set(shape::ColliderFlags::intangible) ? "Yes" : "No");
+		}
+		ImGui::End();
+	}
+}
 
 void Destructible::update(automa::ServiceProvider& svc, world::Map& map, SceneContext& context, player::Player& player) {
 	if (!has_collider()) { return; }
@@ -91,19 +108,21 @@ void Destructible::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::P
 shape::Shape& Destructible::get_bounding_box() { return get_collider().bounding_box; }
 
 void Destructible::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
+	// debug();
 	if (ignore_updates()) { return; }
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
 	Entity::render(win, cam, size);
 	if (m_editor) { return; }
-	Animatable::set_position(get_world_position() - cam);
-	win.draw(*this);
+	p_animatable.set_position(get_world_position() - cam);
+	win.draw(p_animatable);
 }
 
 void Destructible::render(sf::RenderTexture& tex, sf::Vector2f cam) {
+	// debug();
 	if (ignore_updates()) { return; }
-	Animatable::set_scale(constants::f_scale_vec);
-	Animatable::set_position(get_world_position());
-	tex.draw(*this);
+	p_animatable.set_scale(constants::f_scale_vec);
+	p_animatable.set_position(get_world_position());
+	tex.draw(p_animatable);
 	++debug::draw_calls;
 }
 

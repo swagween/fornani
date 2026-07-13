@@ -8,9 +8,9 @@ namespace fornani::enemy {
 
 constexpr auto mizzle_framerate = 6;
 
-Mizzle::Mizzle(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "mizzle"), Animatable{svc, "enemy_mizzle", {32, 32}}, m_services{&svc} {
-	p_animations = {{"idle", {0, 4, mizzle_framerate * 2, -1}}, {"turn", {4, 1, mizzle_framerate * 2, 0}}};
-	animation.set_params(get_params("idle"));
+Mizzle::Mizzle(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "mizzle"), m_services{&svc} {
+	p_animatable.set_animations({{"idle", {0, 4, mizzle_framerate * 2, -1}}, {"turn", {4, 1, mizzle_framerate * 2, 0}}});
+	p_animatable.animation.set_params(get_params("idle"));
 	p_state.actual = MizzleState::idle;
 
 	flags.general.reset(GeneralFlags::gravity);
@@ -54,7 +54,7 @@ fsm::StateFunction Mizzle::update_idle() {
 }
 fsm::StateFunction Mizzle::update_turn() {
 	p_state.actual = MizzleState::turn;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		request(MizzleState::idle);
 		if (change_state(MizzleState::idle, get_params("idle"))) { return MIZZLE_BIND(update_idle); }
@@ -64,7 +64,7 @@ fsm::StateFunction Mizzle::update_turn() {
 
 bool Mizzle::change_state(MizzleState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

@@ -108,17 +108,11 @@
       "statuses": [
         {
           "interval": 1,
-          "distributions": [
-            { "room": 212, "weight": 0.9 },
-            { "room": 230, "weight": 0.1 }
-          ]
+          "distributions": [{ "room": 212, "weight": 1.0 }]
         },
         {
           "interval": 1,
-          "distributions": [
-            { "room": 212, "weight": 0.9 },
-            { "room": 230, "weight": 0.1 }
-          ]
+          "distributions": [{ "room": 212, "weight": 1.0 }]
         },
         {
           "interval": 1,

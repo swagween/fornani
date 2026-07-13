@@ -3,16 +3,16 @@
 
 namespace fornani {
 
-TestMobile::TestMobile(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "test_collider", {16, 16}}, Animatable{svc, "test_collider", {16, 16}} {
+TestMobile::TestMobile(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "test_collider", {16, 16}} {
 	register_collider(map, {32.f, 32.f});
 	get_collider().set_attribute(shape::ColliderAttributes::no_collision);
-	push_and_set_animation("basic", {0, 1, 32, -1});
-	center();
+	p_animatable.push_and_set_animation("basic", {0, 1, 32, -1});
+	p_animatable.center();
 	friction = 1.f;
 }
 
 void TestMobile::update(world::Map& map) {
-	tick();
+	p_animatable.tick();
 	get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
 	get_collider().set_flag(shape::ColliderFlags::simple);
 	get_collider().physics.set_friction_componentwise({friction, friction});
@@ -20,8 +20,8 @@ void TestMobile::update(world::Map& map) {
 }
 
 void TestMobile::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	set_position(get_collider().get_center() - cam);
-	win.draw(*this);
+	p_animatable.set_position(get_collider().get_center() - cam);
+	win.draw(p_animatable);
 	debug();
 }
 

@@ -9,7 +9,7 @@ namespace fornani::enemy {
 constexpr static int imp_framerate{16};
 
 Imp::Imp(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, map, "imp"), m_services(&svc), m_map(&map), Animatable{svc, "enemy_imp", {40, 20}},
+	: Enemy(svc, map, "imp"), m_services(&svc), m_map(&map),
 	  parts{.weapon = random::percent_chance(50) ? entity::FloatingPart{svc,
 																		"imp_knife",
 																		{36, 20},
@@ -32,7 +32,7 @@ Imp::Imp(automa::ServiceProvider& svc, world::Map& map, int variant)
 	  dormant{0, 1, imp_framerate, -1}, idle{1, 6, imp_framerate, -1}, turn{7, 3, imp_framerate, 0}, run{10, 8, imp_framerate, -1}, jump{18, 5, imp_framerate, 0}, fall{24, 3, imp_framerate, -1}, attack{27, 7, imp_framerate, 0},
 	  m_variant{static_cast<ImpVariant>(variant)} {
 
-	animation.set_params(dormant);
+	p_animatable.animation.set_params(dormant);
 	get_collider().physics.maximum_velocity = {40.f, 12.f};
 	get_collider().physics.air_friction = {0.95f, 0.999f};
 	get_collider().flags.general.set(shape::General::complex);
@@ -75,8 +75,8 @@ void Imp::update(automa::ServiceProvider& svc, world::Map& map, player::Player& 
 
 	Enemy::update(svc, map, player);
 	if (!is_dormant()) {
-		parts.weapon.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center());
-		parts.hand.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center());
+		parts.weapon.update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center());
+		parts.hand.update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center());
 	}
 	parts.weapon.set_hitbox();
 
@@ -122,10 +122,10 @@ void Imp::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 }
 
 fsm::StateFunction Imp::update_idle() {
-	animation.label = "idle";
+	p_animatable.animation.label = "idle";
 	parts.weapon.animated_sprite->set_animation("idle");
 	attacks.stab.disable();
-	if (animation.just_started()) { flags.state.reset(StateFlags::hostile); }
+	if (p_animatable.animation.just_started()) { flags.state.reset(StateFlags::hostile); }
 	if (change_state(ImpState::turn, turn)) { return IMP_BIND(update_turn); }
 	if (change_state(ImpState::attack, attack)) { return IMP_BIND(update_attack); }
 	if (change_state(ImpState::fall, fall)) { return IMP_BIND(update_fall); }
@@ -136,15 +136,15 @@ fsm::StateFunction Imp::update_idle() {
 };
 
 fsm::StateFunction Imp::update_turn() {
-	animation.label = "turn";
+	p_animatable.animation.label = "turn";
 	// animation.log_info();
 	attacks.stab.disable();
-	if (animation.totally_complete()) {
+	if (p_animatable.animation.totally_complete()) {
 		NANI_LOG_INFO(m_logger, "finished!");
-		flip();
+		p_animatable.flip();
 		directions.actual = directions.desired;
 		state = ImpState::idle;
-		animation.set_params(idle, false);
+		p_animatable.animation.set_params(idle, false);
 		return IMP_BIND(update_idle);
 	}
 	state = ImpState::turn;
@@ -152,15 +152,15 @@ fsm::StateFunction Imp::update_turn() {
 };
 
 fsm::StateFunction Imp::update_run() {
-	animation.label = "run";
-	if (animation.just_started()) { parts.weapon.animated_sprite->set_animation("lift"); }
+	p_animatable.animation.label = "run";
+	if (p_animatable.animation.just_started()) { parts.weapon.animated_sprite->set_animation("lift"); }
 	if (parts.weapon.animated_sprite->is_complete()) { parts.weapon.animated_sprite->set_animation("run"); }
 	attacks.stab.disable();
 	auto facing = directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	get_collider().physics.apply_force({attributes.speed * facing, 0.f});
-	if (caution.danger() || animation.complete()) {
+	if (caution.danger() || p_animatable.animation.complete()) {
 		state = ImpState::idle;
-		animation.set_params(idle);
+		p_animatable.animation.set_params(idle);
 		return IMP_BIND(update_idle);
 	}
 	if (change_state(ImpState::turn, turn)) { return IMP_BIND(update_turn); }
@@ -170,23 +170,23 @@ fsm::StateFunction Imp::update_run() {
 }
 
 fsm::StateFunction Imp::update_jump() {
-	animation.label = "jump";
+	p_animatable.animation.label = "jump";
 	auto jumpsquat_frame{1};
 	attacks.stab.disable();
-	if (animation.just_started()) {
+	if (p_animatable.animation.just_started()) {
 		cooldowns.jump.start();
 		rand_jump = random::percent_chance(50) ? -1.f : 1.f;
 		if (cooldowns.post_attack.running()) { rand_jump = directions.actual.lnr == LNR::left ? 1.f : -1.f; } // always jump backwards after a attack otherwise it feels unfair
 	}
-	if (cooldowns.jump.running() && animation.get_frame_count() > jumpsquat_frame) { get_collider().physics.apply_force({0, -2.5f}); }
-	if (!get_collider().grounded() && animation.get_frame_count() > jumpsquat_frame) { get_collider().physics.apply_force({rand_jump * 2.f, 0.f}); }
-	if (animation.get_frame_count() > jumpsquat_frame) { cooldowns.jump.update(); }
+	if (cooldowns.jump.running() && p_animatable.animation.get_frame_count() > jumpsquat_frame) { get_collider().physics.apply_force({0, -2.5f}); }
+	if (!get_collider().grounded() && p_animatable.animation.get_frame_count() > jumpsquat_frame) { get_collider().physics.apply_force({rand_jump * 2.f, 0.f}); }
+	if (p_animatable.animation.get_frame_count() > jumpsquat_frame) { cooldowns.jump.update(); }
 	if (cooldowns.jump.is_complete()) {
 		cooldowns.post_jump.start();
 		if (change_state(ImpState::fall, fall)) { return IMP_BIND(update_fall); }
 		if (change_state(ImpState::turn, turn)) { return IMP_BIND(update_turn); }
 		state = ImpState::idle;
-		animation.set_params(idle);
+		p_animatable.animation.set_params(idle);
 		return IMP_BIND(update_idle);
 	}
 	state = ImpState::jump;
@@ -194,12 +194,12 @@ fsm::StateFunction Imp::update_jump() {
 }
 
 fsm::StateFunction Imp::update_fall() {
-	animation.label = "fall";
+	p_animatable.animation.label = "fall";
 	attacks.stab.disable();
 	if (get_collider().grounded()) {
 		if (change_state(ImpState::turn, turn)) { return IMP_BIND(update_turn); }
 		state = ImpState::idle;
-		animation.set_params(idle);
+		p_animatable.animation.set_params(idle);
 		return IMP_BIND(update_idle);
 	}
 	state = ImpState::fall;
@@ -207,18 +207,18 @@ fsm::StateFunction Imp::update_fall() {
 }
 
 fsm::StateFunction Imp::update_attack() {
-	animation.label = "attack";
+	p_animatable.animation.label = "attack";
 	attacks.stab.enable();
-	if (animation.just_started()) { parts.weapon.animated_sprite->set_animation("attack"); }
+	if (p_animatable.animation.just_started()) { parts.weapon.animated_sprite->set_animation("attack"); }
 	if (parts.weapon.animated_sprite->is_complete()) { parts.weapon.animated_sprite->set_animation("swoosh"); }
 	auto force{3.f};
 	force *= directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	get_collider().physics.apply_force({force, 0.f});
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		cooldowns.post_attack.start();
 		if (change_state(ImpState::turn, turn)) { return IMP_BIND(update_turn); }
 		state = ImpState::idle;
-		animation.set_params(idle);
+		p_animatable.animation.set_params(idle);
 		return IMP_BIND(update_idle);
 	}
 	state = ImpState::attack;
@@ -226,7 +226,7 @@ fsm::StateFunction Imp::update_attack() {
 }
 
 fsm::StateFunction Imp::update_dormant() {
-	animation.label = "dormant";
+	p_animatable.animation.label = "dormant";
 	parts.weapon.animated_sprite->set_animation("dormant");
 	is_hostile() ? cooldowns.awaken.update() : cooldowns.awaken.reverse();
 	if (cooldowns.awaken.halfway()) {
@@ -238,7 +238,7 @@ fsm::StateFunction Imp::update_dormant() {
 		m_map->effects.push_back(entity::Effect(*m_services, "small_explosion", get_collider().physics.position, {}, 2));
 		m_services->soundboard.flags.world.set(audio::World::block_toggle);
 		state = ImpState::jump;
-		animation.set_params(jump);
+		p_animatable.animation.set_params(jump);
 		return IMP_BIND(update_jump);
 	}
 	state = ImpState::dormant;
@@ -247,7 +247,7 @@ fsm::StateFunction Imp::update_dormant() {
 
 bool Imp::change_state(ImpState next, anim::Parameters params) {
 	if (state == next) {
-		animation.set_params(params, true);
+		p_animatable.animation.set_params(params, true);
 		return true;
 	}
 	return false;

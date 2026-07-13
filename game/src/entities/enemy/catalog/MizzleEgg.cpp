@@ -9,9 +9,9 @@ namespace fornani::enemy {
 
 constexpr auto mizzle_egg_framerate = 32;
 
-MizzleEgg::MizzleEgg(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "mizzle_egg"), Animatable{svc, "enemy_mizzle_egg", {36, 36}}, m_services{&svc}, m_map{&map}, m_hatch_timer{400}, m_mizzle_spawn{600} {
-	p_animations = {{"closed", {0, 1, mizzle_egg_framerate, -1}}, {"in_between", {1, 1, mizzle_egg_framerate, 0}}, {"open", {2, 1, mizzle_egg_framerate, -1}}, {"hatch", {3, 1, mizzle_egg_framerate, -1}}};
-	animation.set_params(get_params("closed"));
+MizzleEgg::MizzleEgg(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "mizzle_egg"), m_services{&svc}, m_map{&map}, m_hatch_timer{400}, m_mizzle_spawn{600} {
+	p_animatable.set_animations({{"closed", {0, 1, mizzle_egg_framerate, -1}}, {"in_between", {1, 1, mizzle_egg_framerate, 0}}, {"open", {2, 1, mizzle_egg_framerate, -1}}, {"hatch", {3, 1, mizzle_egg_framerate, -1}}});
+	p_animatable.animation.set_params(get_params("closed"));
 	p_state.actual = MizzleEggState::closed;
 	set_root(map);
 	flags.general.reset(GeneralFlags::gravity);
@@ -84,7 +84,7 @@ fsm::StateFunction MizzleEgg::update_closed() {
 fsm::StateFunction MizzleEgg::update_in_between() {
 	p_state.actual = MizzleEggState::in_between;
 	if (change_state(MizzleEggState::hatch, get_params("hatch"))) { return MIZZLE_EGG_BIND(update_hatch); }
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		if (change_state(MizzleEggState::closed, get_params("closed"))) {
 			m_services->soundboard.play_sound("mizzle_egg_close", get_collider().get_center());
 			return MIZZLE_EGG_BIND(update_closed);
@@ -133,7 +133,7 @@ void MizzleEgg::spawn_mizzle() {
 
 bool MizzleEgg::change_state(MizzleEggState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

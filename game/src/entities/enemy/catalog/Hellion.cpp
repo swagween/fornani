@@ -7,9 +7,9 @@
 
 namespace fornani::enemy {
 
-Hellion::Hellion(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "hellion"), Animatable{svc, "enemy_hellion", {64, 64}}, m_services(&svc), m_map(&map), m_poison(svc, "demon_ball") {
-	p_animations = {{"run", {0, 12, 10, -1}}, {"sleep", {25, 1, 48, -1}}, {"awaken", {26, 15, 16, 0}}, {"turn", {12, 13, 20, 0}}};
-	animation.set_params(get_params("sleep"));
+Hellion::Hellion(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "hellion"), m_services(&svc), m_map(&map), m_poison(svc, "demon_ball") {
+	p_animatable.set_animations({{"run", {0, 12, 10, -1}}, {"sleep", {25, 1, 48, -1}}, {"awaken", {26, 15, 16, 0}}, {"turn", {12, 13, 20, 0}}});
+	p_animatable.animation.set_params(get_params("sleep"));
 	get_collider().physics.set_friction_componentwise({0.98f, 0.999f});
 	flags.state.set(StateFlags::vulnerable);
 	m_poison.get().set_team(arms::Team::guardian);
@@ -67,7 +67,7 @@ fsm::StateFunction Hellion::update_sleep() {
 
 fsm::StateFunction Hellion::update_awaken() {
 	p_state.actual = HellionState::awaken;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		if (change_state(HellionState::turn, get_params("turn"))) { return HELLION_BIND(update_turn); }
 		request(HellionState::run);
 		if (change_state(HellionState::run, get_params("run"))) { return HELLION_BIND(update_run); }
@@ -77,9 +77,9 @@ fsm::StateFunction Hellion::update_awaken() {
 
 fsm::StateFunction Hellion::update_turn() {
 	p_state.actual = HellionState::turn;
-	if (animation.just_started()) { m_services->soundboard.play_sound("hellion_purr", get_collider().get_center()); }
-	if (animation.get_frame_count() == 10 && animation.keyframe_started()) { m_poison.shoot(*m_services, *m_map, m_target); }
-	if (animation.complete()) {
+	if (p_animatable.animation.just_started()) { m_services->soundboard.play_sound("hellion_purr", get_collider().get_center()); }
+	if (p_animatable.animation.get_frame_count() == 10 && p_animatable.animation.keyframe_started()) { m_poison.shoot(*m_services, *m_map, m_target); }
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		request(HellionState::run);
 		if (change_state(HellionState::run, get_params("run"))) { return HELLION_BIND(update_run); }
@@ -89,7 +89,7 @@ fsm::StateFunction Hellion::update_turn() {
 
 bool Hellion::change_state(HellionState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params, true);
+		p_animatable.animation.set_params(params, true);
 		return true;
 	}
 	return false;

@@ -15,6 +15,7 @@ class Animatable : public Drawable {
 	void push_animation(std::string_view label, anim::Parameters params);
 	void push_and_set_animation(std::string_view label, anim::Parameters params);
 	void set_animation(std::string_view to);
+	void set_animations(std::unordered_map<std::string, anim::Parameters, TransparentHash, TransparentEqual> const& list);
 	void set_parameters(anim::Parameters params) { animation.set_params(params); }
 	void set_framerate(int to) { animation.params.framerate = to; }
 	void set_channel(int to);
@@ -39,6 +40,8 @@ class Animatable : public Drawable {
 	[[nodiscard]] auto get_f_dimensions() const -> sf::Vector2f { return sf::Vector2f{m_dimensions}; }
 	[[nodiscard]] auto get_animation_tag() const -> std::string_view { return m_current; }
 	[[nodiscard]] auto get_frame() const -> int { return animation.get_frame(); }
+	[[nodiscard]] auto has_animation(std::string_view key) const -> bool { return p_animations.contains(key); }
+	anim::Parameters const& get_params(std::string const& key) { return p_animations.at(key); }
 
 	anim::Animation animation;
 

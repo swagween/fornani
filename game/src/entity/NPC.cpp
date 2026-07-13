@@ -12,20 +12,19 @@ constexpr float default_walk_speed_v = 0.8f;
 
 NPC::NPC(automa::ServiceProvider& svc, dj::Json const& in)
 	: Entity(svc, in, "npcs"), Mobile(svc, "npc_" + std::string{in["label"].as_string()}, {svc.data.npc[in["label"].as_string()]["sprite_dimensions"][0].as<int>(), svc.data.npc[in["label"].as_string()]["sprite_dimensions"][1].as<int>()}),
-	  Animatable{svc, "npc_" + std::string{in["label"].as_string()}, {svc.data.npc[in["label"].as_string()]["sprite_dimensions"][0].as<int>(), svc.data.npc[in["label"].as_string()]["sprite_dimensions"][1].as<int>()}},
 	  m_label(in["label"].as_string()), m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[in["label"].as_string()]["id"].as<int>()}, m_current_conversation{1}, m_services{&svc}, m_disappear{100} {
 	unserialize(in);
 	repeatable = false;
 	copyable = false;
-	Mobile::center();
-	Entity::center();
+	Mobile::p_animatable.center();
+	Mobile::p_animatable.center();
 	m_indicator.center();
 
 	NANI_LOG_DEBUG(Entity::m_logger, "Created NPC with label {}", m_label);
 
 	auto scaled_pos = sf::Vector2f{in["position"][0].as<float>(), in["position"][1].as<float>()};
 	auto new_pos = scaled_pos * constants::f_cell_size;
-	Animatable::set_position(new_pos);
+	Mobile::p_animatable.set_position(new_pos);
 	auto push = true;
 	auto fail_tag = std::string{};
 	if (in["contingencies"].is_array()) {
@@ -45,13 +44,12 @@ NPC::NPC(automa::ServiceProvider& svc, dj::Json const& in)
 NPC::NPC(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in)
 	: Entity(svc, in, "npcs"),
 	  Mobile(svc, map, "npc_" + std::string{in["label"].as_string()}, {svc.data.npc[in["label"].as_string()]["sprite_dimensions"][0].as<int>(), svc.data.npc[in["label"].as_string()]["sprite_dimensions"][1].as<int>()}),
-	  Animatable{svc, "npc_" + std::string{in["label"].as_string()}, {svc.data.npc[in["label"].as_string()]["sprite_dimensions"][0].as<int>(), svc.data.npc[in["label"].as_string()]["sprite_dimensions"][1].as<int>()}},
 	  m_label(in["label"].as_string()), m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[in["label"].as_string()]["id"].as<int>()}, m_current_conversation{1}, m_services{&svc}, m_disappear{100} {
 	unserialize(in);
 	repeatable = false;
 	copyable = false;
-	Mobile::center();
-	Entity::center();
+	Mobile::p_animatable.center();
+	Mobile::p_animatable.center();
 	m_indicator.center();
 
 	NANI_LOG_DEBUG(Entity::m_logger, "Created NPC with label {}", m_label);
@@ -74,16 +72,14 @@ NPC::NPC(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in)
 }
 
 NPC::NPC(automa::ServiceProvider& svc, world::Map& map, std::string_view label, bool include_collider)
-	: Entity(svc, "npcs", 0), Mobile(svc, map, "npc_" + std::string{label}, {svc.data.npc[label]["sprite_dimensions"][0].as<int>(), svc.data.npc[label]["sprite_dimensions"][1].as<int>()}, include_collider),
-	  Animatable{svc, "npc_" + std::string{label}, {svc.data.npc[label]["sprite_dimensions"][0].as<int>(), svc.data.npc[label]["sprite_dimensions"][1].as<int>()}}, m_label(label), m_indicator(svc, "arrow_indicator", {16, 16}),
-	  m_id{svc.data.npc[label]["id"].as<int>()}, m_current_conversation{1}, m_services{&svc} {
+	: Entity(svc, "npcs", 0), Mobile(svc, map, "npc_" + std::string{label}, {svc.data.npc[label]["sprite_dimensions"][0].as<int>(), svc.data.npc[label]["sprite_dimensions"][1].as<int>()}, include_collider), m_label(label),
+	  m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[label]["id"].as<int>()}, m_current_conversation{1}, m_services{&svc} {
 	init(svc, svc.data.npc[label]);
 }
 
 NPC::NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vector<std::vector<int>> const suites)
-	: Entity(svc, "npcs", id, {1, 1}), Mobile(svc, "npc_" + std::string{label}, {svc.data.npc[label]["sprite_dimensions"][0].as<int>(), svc.data.npc[label]["sprite_dimensions"][1].as<int>()}),
-	  Animatable{svc, "npc_" + std::string{label}, {svc.data.npc[label]["sprite_dimensions"][0].as<int>(), svc.data.npc[label]["sprite_dimensions"][1].as<int>()}}, m_label(label), m_indicator(svc, "arrow_indicator", {16, 16}),
-	  m_id{svc.data.npc[label]["id"].as<int>()}, m_current_conversation{1}, m_suites{suites}, m_services{&svc}, m_walk_speed{default_walk_speed_v} {
+	: Entity(svc, "npcs", id, {1, 1}), Mobile(svc, "npc_" + std::string{label}, {svc.data.npc[label]["sprite_dimensions"][0].as<int>(), svc.data.npc[label]["sprite_dimensions"][1].as<int>()}), m_label(label),
+	  m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[label]["id"].as<int>()}, m_current_conversation{1}, m_suites{suites}, m_services{&svc}, m_walk_speed{default_walk_speed_v} {
 	repeatable = false;
 	copyable = false;
 	set_flag(NPCFlags::face_player);
@@ -120,13 +116,13 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 	}
 
 	for (auto const& in_anim : in_data["animation"].as_array()) {
-		Mobile::p_animations.insert(
-			{in_anim["label"].as_string(), {in_anim["parameters"][0].as<int>(), in_anim["parameters"][1].as<int>(), in_anim["parameters"][2].as<int>(), in_anim["parameters"][3].as<int>(), in_anim["parameters"][4].as_bool()}});
+		Mobile::p_animatable.push_animation(in_anim["label"].as_string(),
+											{in_anim["parameters"][0].as<int>(), in_anim["parameters"][1].as<int>(), in_anim["parameters"][2].as<int>(), in_anim["parameters"][3].as<int>(), in_anim["parameters"][4].as_bool()});
 		if (in_anim["label"].as_string() == "turn") { set_flag(NPCFlags::has_turn_animation); }
 		for (auto const& sound : in_anim["sounds"].as_array()) { p_sounds.insert({in_anim["label"].as_string(), MobileSound{sound["frame"].as<int>(), sound["tag"].as_string()}}); }
 	}
 	for (auto [i, cue] : std::views::enumerate(in_data["voice_cues"].as_array())) { m_voice_cues.insert({static_cast<int>(i), NPCVoiceCue{m_label + "_" + cue["tag"].as_string()}}); }
-	if (Mobile::p_animations.contains("idle")) { Mobile::set_animation("idle"); }
+	if (Mobile::p_animatable.has_animation("idle")) { Mobile::p_animatable.set_animation("idle"); }
 	if (in_data["no_animation"].as_bool()) { set_flag(NPCFlags::no_animation); }
 	request(NPCAnimationState::idle);
 
@@ -137,7 +133,7 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 		state_function = {[this]() { return this->update_busy(); }};
 		set_flag(NPCFlags::busy);
 		request(NPCAnimationState::busy);
-		Mobile::set_animation("busy");
+		Mobile::p_animatable.set_animation("busy");
 	}
 
 	handle_spawning(svc, in_data);
@@ -162,10 +158,10 @@ void NPC::handle_spawning(automa::ServiceProvider& svc, dj::Json const& in_data)
 
 	// distribution by time interval (complex room selection and distribution, like Gobe)
 	if (in_data["locations"]) {
-		NANI_LOG_INFO(Mobile::m_logger, "Spawning NPC {} based on location distribution.", m_label);
+		NANI_LOG_INFO(m_logger, "Spawning NPC {} based on location distribution.", m_label);
 		auto tag = in_data["locations"]["contingency"]["tag"].as_string();
 		auto status = svc.quest_table.get_quest_progression(tag);
-		NANI_LOG_INFO(Mobile::m_logger, "Using quest {} to target status index of {}.", tag, status);
+		NANI_LOG_INFO(m_logger, "Using quest {} to target status index of {}.", tag, status);
 		auto const& target_data = in_data["locations"]["statuses"][status];
 		auto interval = static_cast<WorldClockInterval>(target_data["interval"].as<int>());
 		auto chance = svc.world_clock.get_rng(interval);
@@ -176,7 +172,7 @@ void NPC::handle_spawning(automa::ServiceProvider& svc, dj::Json const& in_data)
 			if (chance < cumulative) {
 				if (room["room"].as<int>() == svc.current_room) {
 					spawn_me = true;
-					NANI_LOG_INFO(Mobile::m_logger, "Spawned {} in room {} with chance {} from weight {}.", m_label, svc.current_room, chance, room["weight"].as<float>());
+					NANI_LOG_INFO(m_logger, "Spawned {} in room {} with chance {} from weight {}.", m_label, svc.current_room, chance, room["weight"].as<float>());
 				}
 				break;
 			}
@@ -307,14 +303,14 @@ void NPC::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	} else {
 		if (is_hidden() || m_state.test(NPCState::invisible)) { return; }
 		if (collider.has_value()) {
-			Mobile::set_position(get_collider().get_center() + m_offset - cam);
+			Mobile::p_animatable.set_position(get_collider().get_center() + m_offset - cam);
 			auto indicator_offset = sf::Vector2f{0.f, -constants::f_cell_size};
 			m_indicator.set_position(get_collider().get_top() + indicator_offset - cam);
 		}
 		if (m_services->greyblock_mode()) {
 			if (collider.has_value()) { get_collider().render(win, cam); }
 		} else {
-			if (!has_flag_set(NPCFlags::no_animation)) { win.draw(static_cast<Mobile&>(*this)); }
+			if (!has_flag_set(NPCFlags::no_animation)) { win.draw(Mobile::p_animatable); }
 		}
 		if (!has_flag_set(NPCFlags::no_animation) && !has_flag_set(NPCFlags::cutscene)) { win.draw(m_indicator); }
 	}
@@ -346,10 +342,7 @@ void NPC::pop_conversation() {
 void NPC::play_voice_cue(automa::ServiceProvider& svc, int which) const {
 	if (!m_state.test(NPCState::interacting)) { return; }
 	if (svc.soundboard.npc_map.contains(m_label)) { svc.soundboard.npc_map.at(m_label)(which); }
-	if (m_voice_cues.contains(which)) {
-		auto it = m_voice_cues.find(which);
-		if (it != m_voice_cues.end()) { svc.soundboard.play_sound(it->second.tag); }
-	}
+	if (auto it = m_voice_cues.find(which); it != m_voice_cues.end()) { svc.soundboard.play_sound(it->second.tag); }
 }
 
 void NPC::piggyback_me(automa::ServiceProvider& svc, int id) {
@@ -388,17 +381,17 @@ void NPC::set_special_animation(int which) {
 	switch (which) {
 	case 1:
 		if (is_state(NPCAnimationState::special_1)) { return; }
-		Mobile::set_animation("special_1");
+		Mobile::p_animatable.set_animation("special_1");
 		state_function = [this]() { return this->update_special_1(); };
 		break;
 	case 2:
 		if (is_state(NPCAnimationState::special_2)) { return; }
-		Mobile::set_animation("special_2");
+		Mobile::p_animatable.set_animation("special_2");
 		state_function = [this]() { return this->update_special_2(); };
 		break;
 	case 3:
 		if (is_state(NPCAnimationState::special_3)) { return; }
-		Mobile::set_animation("special_3");
+		Mobile::p_animatable.set_animation("special_3");
 		state_function = [this]() { return this->update_special_3(); };
 		break;
 	}
@@ -408,7 +401,7 @@ void NPC::set_busy() {
 	state_function = {[this]() { return this->update_busy(); }};
 	set_flag(NPCFlags::busy);
 	request(NPCAnimationState::busy);
-	Mobile::set_animation("busy");
+	Mobile::p_animatable.set_animation("busy");
 }
 
 void NPC::use_portal(world::Map& map) {
@@ -462,7 +455,7 @@ fsm::StateFunction NPC::update_walk() {
 	if (!m_state.test(NPCState::random_walk)) {
 		if (change_state(NPCAnimationState::turn, "turn")) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
 	} else {
-		if (Mobile::animation.is_complete()) {
+		if (Mobile::p_animatable.animation.is_complete()) {
 			request(NPCAnimationState::idle);
 			m_state.reset(NPCState::random_walk);
 			if (random::coin_flip()) {
@@ -492,7 +485,7 @@ fsm::StateFunction NPC::update_inspect() {
 fsm::StateFunction NPC::update_turn() {
 	p_state.actual = NPCAnimationState::turn;
 	directions.desired.lock();
-	if (Mobile::animation.is_complete()) {
+	if (Mobile::p_animatable.animation.is_complete()) {
 		request_flip();
 		if (change_state(NPCAnimationState::stagger, "stagger")) { return std::move(fsm::StateFunction{NPC_BIND(update_stagger)}); }
 		if (change_state(NPCAnimationState::walk, "walk")) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
@@ -515,7 +508,7 @@ fsm::StateFunction NPC::update_fall() {
 
 fsm::StateFunction NPC::update_land() {
 	p_state.actual = NPCAnimationState::land;
-	if (Mobile::animation.is_complete()) {
+	if (Mobile::p_animatable.animation.is_complete()) {
 		if (change_state(NPCAnimationState::turn, "turn")) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
 		if (change_state(NPCAnimationState::walk, "walk")) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
 		request(NPCAnimationState::idle);
@@ -538,7 +531,7 @@ fsm::StateFunction NPC::update_busy() {
 
 fsm::StateFunction NPC::update_stagger() {
 	p_state.actual = NPCAnimationState::stagger;
-	if (Mobile::animation.is_complete()) {
+	if (Mobile::p_animatable.animation.is_complete()) {
 		if (change_state(NPCAnimationState::turn, "turn")) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
 		if (change_state(NPCAnimationState::walk, "walk")) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
 		request(NPCAnimationState::idle);
@@ -549,8 +542,8 @@ fsm::StateFunction NPC::update_stagger() {
 
 fsm::StateFunction NPC::update_respond() {
 	p_state.actual = NPCAnimationState::respond;
-	if (Mobile::animation.just_started()) { m_busy_timer.start(); }
-	if (Mobile::animation.is_complete()) {
+	if (Mobile::p_animatable.animation.just_started()) { m_busy_timer.start(); }
+	if (Mobile::p_animatable.animation.is_complete()) {
 		if (change_state(NPCAnimationState::turn, "turn")) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
 		request(NPCAnimationState::idle);
 		if (change_state(NPCAnimationState::idle, "idle")) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
@@ -576,7 +569,7 @@ fsm::StateFunction NPC::update_special_2() {
 fsm::StateFunction NPC::update_special_3() {
 	p_state.actual = NPCAnimationState::special_3;
 	if (change_state(NPCAnimationState::stagger, "stagger")) { return std::move(fsm::StateFunction{NPC_BIND(update_stagger)}); }
-	if (Mobile::animation.is_complete()) {
+	if (Mobile::p_animatable.animation.is_complete()) {
 		if (change_state(NPCAnimationState::turn, "turn")) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
 		if (change_state(NPCAnimationState::idle, "idle")) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
 		if (change_state(NPCAnimationState::walk, "walk")) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
@@ -586,7 +579,7 @@ fsm::StateFunction NPC::update_special_3() {
 
 bool NPC::change_state(NPCAnimationState next, std::string_view to) {
 	if (p_state.desired == next) {
-		Mobile::set_animation(to);
+		Mobile::p_animatable.set_animation(to);
 		return true;
 	}
 	return false;

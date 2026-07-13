@@ -177,7 +177,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void set_animation_flag(AnimTriggers const flag, bool on = true) { on ? m_animation_machine.triggers.set(flag) : m_animation_machine.triggers.reset(flag); }
 	void set_sleep_timer(int time = 0) { m_animation_machine.set_sleep_timer(time); }
 	void set_death_type(PlayerDeathType const to) { m_death_type = to; }
-	[[nodiscard]] auto get_elapsed_animation_ticks() const -> int { return animation.get_elapsed_ticks(); }
+	[[nodiscard]] auto get_elapsed_animation_ticks() const -> int { return p_animatable.animation.get_elapsed_ticks(); }
+	[[nodiscard]] auto get_window_position() const -> sf::Vector2f { return p_animatable.get_window_position(); }
 
 	void update_animation();
 	void update_sprite();

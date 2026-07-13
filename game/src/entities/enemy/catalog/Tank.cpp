@@ -8,12 +8,22 @@
 namespace fornani::enemy {
 
 Tank::Tank(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, map, "tank"), Animatable{svc, "enemy_tank", {64, 64}}, m_variant{static_cast<TankVariant>(variant)}, m_weapon(svc, "skycorps_smg"), m_services(&svc), m_map(&map),
-	  m_gun{svc.assets.get_texture("tank_gun"), 2.0f, 0.65f, {-12.f, 6.f}}, m_debug{false} {
-	p_animations = {{"idle", {0, 6, 28, -1}}, {"run", {6, 4, 38, 2}},	{"shoot_horizontal", {10, 4, 22, 0}}, {"shoot_vertical", {14, 4, 22, 0}}, {"jumpsquat", {18, 5, 12, 0, true}}, {"jump", {23, 4, 22, 0, true}},
-					{"land", {27, 3, 22, 0}}, {"turn", {30, 2, 32, 0}}, {"type", {32, 2, 128, -1}},			  {"alert", {34, 7, 32, 0}},		  {"pocket", {41, 6, 32, 0}},		   {"sleep", {47, 2, 256, -1}},
-					{"drink", {49, 6, 32, 0}}};
-	animation.set_params(get_params("type"));
+	: Enemy(svc, map, "tank"), m_variant{static_cast<TankVariant>(variant)}, m_weapon(svc, "skycorps_smg"), m_services(&svc), m_map(&map), m_gun{svc.assets.get_texture("tank_gun"), 2.0f, 0.65f, {-12.f, 6.f}}, m_debug{false} {
+	p_animatable.set_animations({{"idle", {0, 6, 28, -1}},
+								 {"run", {6, 4, 38, 2}},
+								 {"shoot_horizontal", {10, 4, 22, 0}},
+								 {"shoot_vertical", {14, 4, 22, 0}},
+								 {"squish", {14, 1, 22, -1}},
+								 {"jumpsquat", {18, 5, 12, 0, true}},
+								 {"jump", {23, 4, 22, 0, true}},
+								 {"land", {27, 3, 22, 0}},
+								 {"turn", {30, 2, 32, 0}},
+								 {"type", {32, 2, 128, -1}},
+								 {"alert", {34, 7, 32, 0}},
+								 {"pocket", {41, 6, 32, 0}},
+								 {"sleep", {47, 2, 256, -1}},
+								 {"drink", {49, 6, 32, 0}}});
+	p_animatable.animation.set_params(get_params("type"));
 	m_gun.set_magnitude(1.f);
 	m_weapon.clip_cooldown_time = 360;
 	m_weapon.get().set_team(arms::Team::skycorps);
@@ -44,7 +54,7 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	m_caution.avoid_ledges(map, get_collider(), directions.actual, 4);
 
 	auto gun_offset = p_state.actual == TankState::pocket ? sf::Vector2f{directions.actual.as_float() * -30.f, 12.f} : sf::Vector2f{0.f, 4.f};
-	m_gun.update(svc, map, player, directions.actual, Drawable::get_scale(), get_collider().get_center() + gun_offset);
+	m_gun.update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center() + gun_offset);
 
 	hurt_effect.update();
 	m_cooldowns.post_jump.update();
@@ -122,6 +132,15 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		if (directions.actual.lnr != directions.desired.lnr && !is_state(TankState::type)) { request(TankState::turn); }
 	}
 
+	if (get_collider().collision_depths.has_value()) {
+		if (get_collider().collision_depths->squished()) {
+			request(TankState::squish);
+			set_flag(TankFlags::squishing);
+		} else {
+			set_flag(TankFlags::squishing, false);
+		}
+	}
+
 	if (just_died()) { m_services->soundboard.play_sound("tank_death", get_collider().get_center()); }
 
 	state_function = state_function();
@@ -150,8 +169,9 @@ void Tank::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 }
 
 fsm::StateFunction Tank::update_idle() {
-	animation.label = "idle";
+	p_animatable.animation.label = "idle";
 	p_state.actual = TankState::idle;
+	if (change_state(TankState::squish, get_params("squish"))) { return TANK_BIND(update_squish); }
 	if (change_state(TankState::pocket, get_params("pocket"))) { return TANK_BIND(update_pocket); }
 	if (change_state(TankState::alert, get_params("alert"))) { return TANK_BIND(update_alert); }
 	if (change_state(TankState::turn, get_params("turn"))) { return TANK_BIND(update_turn); }
@@ -166,9 +186,10 @@ fsm::StateFunction Tank::update_idle() {
 }
 
 fsm::StateFunction Tank::update_turn() {
-	animation.label = "turn";
+	p_animatable.animation.label = "turn";
 	p_state.actual = TankState::turn;
-	if (animation.complete()) {
+	if (change_state(TankState::squish, get_params("squish"))) { return TANK_BIND(update_squish); }
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		if (change_state(TankState::pocket, get_params("pocket"))) { return TANK_BIND(update_pocket); }
 		if (change_state(TankState::type, get_params("type"))) { return TANK_BIND(update_type); }
@@ -180,8 +201,9 @@ fsm::StateFunction Tank::update_turn() {
 }
 
 fsm::StateFunction Tank::update_type() {
-	animation.label = "type";
+	p_animatable.animation.label = "type";
 	p_state.actual = TankState::type;
+	if (change_state(TankState::squish, get_params("squish"))) { return TANK_BIND(update_squish); }
 	if (m_services->ticker.every_second()) {
 		if (random::percent_chance(10)) { request(TankState::drink); }
 		if (change_state(TankState::drink, get_params("drink"))) { return TANK_BIND(update_drink); }
@@ -193,9 +215,10 @@ fsm::StateFunction Tank::update_type() {
 }
 
 fsm::StateFunction Tank::update_run() {
-	animation.label = "run";
+	p_animatable.animation.label = "run";
 	p_state.actual = TankState::run;
-	if ((animation.get_frame_count() == 1 || animation.get_frame_count() == 3) && animation.keyframe_started()) { m_services->soundboard.play_sound("tank_step", get_collider().get_center()); }
+	if (change_state(TankState::squish, get_params("squish"))) { return TANK_BIND(update_squish); }
+	if ((p_animatable.animation.get_frame_count() == 1 || p_animatable.animation.get_frame_count() == 3) && p_animatable.animation.keyframe_started()) { m_services->soundboard.play_sound("tank_step", get_collider().get_center()); }
 	get_collider().physics.apply_force({attributes.speed * directions.actual.as_float(), 0.f});
 	m_cooldowns.run.update();
 	if (change_state(TankState::pocket, get_params("pocket"))) {
@@ -230,7 +253,7 @@ fsm::StateFunction Tank::update_run() {
 		m_cooldowns.run.start();
 		return TANK_BIND(update_sleep);
 	}
-	if (m_caution.danger() || animation.complete()) {
+	if (m_caution.danger() || p_animatable.animation.complete()) {
 		m_cooldowns.run.start();
 		request(TankState::idle);
 		if (change_state(TankState::idle, get_params("idle"))) { return TANK_BIND(update_idle); }
@@ -247,16 +270,17 @@ fsm::StateFunction Tank::update_run() {
 }
 
 fsm::StateFunction Tank::update_shoot_horizontal() {
-	animation.label = "shoot";
+	p_animatable.animation.label = "shoot";
 	p_state.actual = TankState::shoot_horizontal;
+	if (change_state(TankState::squish, get_params("squish"))) { return TANK_BIND(update_squish); }
 	set_flag(TankFlags::show_weapon);
 	if (change_state(TankState::pocket, get_params("pocket"))) { return TANK_BIND(update_pocket); }
 	if (change_state(TankState::turn, get_params("turn"))) { return TANK_BIND(update_turn); }
-	if (!m_weapon.get().cooling_down() && animation.get_frame_count() == 2) {
+	if (!m_weapon.get().cooling_down() && p_animatable.animation.get_frame_count() == 2) {
 		m_weapon.shoot(*m_services, *m_map);
 		m_gun.set_position(m_gun.get_position() + directions.actual.get_vector() * -18.f);
 	}
-	if (animation.complete() && animation.keyframe_over()) {
+	if (p_animatable.animation.complete() && p_animatable.animation.keyframe_over()) {
 		m_cooldowns.post_shoot.start();
 		m_weapon.clip_cooldown.start(m_weapon.clip_cooldown_time);
 		request(TankState::idle);
@@ -266,10 +290,11 @@ fsm::StateFunction Tank::update_shoot_horizontal() {
 }
 
 fsm::StateFunction Tank::update_jumpsquat() {
-	animation.label = "jumpsquat";
+	p_animatable.animation.label = "jumpsquat";
 	p_state.actual = TankState::jumpsquat;
+	if (change_state(TankState::squish, get_params("squish"))) { return TANK_BIND(update_squish); }
 	set_flag(TankFlags::show_weapon);
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request(TankState::jump);
 		if (change_state(TankState::jump, get_params("jump"))) {
 			impulse.start(3);
@@ -281,8 +306,9 @@ fsm::StateFunction Tank::update_jumpsquat() {
 }
 
 fsm::StateFunction Tank::update_jump() {
-	animation.label = "jump";
+	p_animatable.animation.label = "jump";
 	p_state.actual = TankState::jump;
+	if (change_state(TankState::squish, get_params("squish"))) { return TANK_BIND(update_squish); }
 	if (has_flag_set(TankFlags::shorthop)) {
 		get_collider().physics.apply_force({-attributes.speed * directions.actual.as_float(), 0.f});
 		if (impulse.running()) { get_collider().physics.apply_force({0, -40.f}); }
@@ -294,7 +320,7 @@ fsm::StateFunction Tank::update_jump() {
 		get_collider().physics.apply_force({attributes.speed * directions.actual.as_float(), 0.f});
 		if (impulse.running()) { get_collider().physics.apply_force({0, -100.f}); }
 	}
-	if (animation.complete() && get_collider().grounded()) {
+	if (p_animatable.animation.complete() && get_collider().grounded()) {
 		set_flag(TankFlags::shorthop, false);
 		request(TankState::land);
 		m_services->soundboard.play_sound("thud", get_collider().get_center());
@@ -305,9 +331,10 @@ fsm::StateFunction Tank::update_jump() {
 }
 
 fsm::StateFunction Tank::update_land() {
-	animation.label = "land";
+	p_animatable.animation.label = "land";
 	p_state.actual = TankState::land;
-	if (animation.complete()) {
+	if (change_state(TankState::squish, get_params("squish"))) { return TANK_BIND(update_squish); }
+	if (p_animatable.animation.complete()) {
 		m_cooldowns.post_jump.start();
 		if (change_state(TankState::pocket, get_params("pocket"))) { return TANK_BIND(update_pocket); }
 		if (change_state(TankState::shoot_horizontal, get_params("shoot_horizontal"))) { return TANK_BIND(update_shoot_horizontal); }
@@ -320,8 +347,9 @@ fsm::StateFunction Tank::update_land() {
 }
 
 fsm::StateFunction Tank::update_shoot_vertical() {
-	animation.label = "shoot_vertical";
+	p_animatable.animation.label = "shoot_vertical";
 	p_state.actual = TankState::shoot_vertical;
+	if (change_state(TankState::squish, get_params("squish"))) { return TANK_BIND(update_squish); }
 	set_flag(TankFlags::show_weapon);
 	m_weapon.barrel_offset = sf::Vector2f{0.f, -40.f};
 	directions.actual.und = UND::up;
@@ -331,8 +359,8 @@ fsm::StateFunction Tank::update_shoot_vertical() {
 	auto slide = directions.actual.left() ? 8.f : -8.f;
 	m_gun.move(sf::Vector2f{slide, -8.f});
 	m_weapon.update(*m_services, *m_map, *this);
-	if (!m_weapon.get().cooling_down() && animation.get_frame_count() == 1) { m_weapon.shoot(*m_services, *m_map); }
-	if (animation.complete() && animation.keyframe_over()) {
+	if (!m_weapon.get().cooling_down() && p_animatable.animation.get_frame_count() == 1) { m_weapon.shoot(*m_services, *m_map); }
+	if (p_animatable.animation.complete() && p_animatable.animation.keyframe_over()) {
 		m_gun.sprite->setRotation(sf::degrees(0));
 		directions.actual.neutralize_und();
 		m_cooldowns.post_shoot.start();
@@ -348,9 +376,10 @@ fsm::StateFunction Tank::update_shoot_vertical() {
 }
 
 fsm::StateFunction Tank::update_alert() {
-	animation.label = "alert";
+	p_animatable.animation.label = "alert";
 	p_state.actual = TankState::alert;
-	if (animation.just_started()) {
+	if (change_state(TankState::squish, get_params("squish"))) { return TANK_BIND(update_squish); }
+	if (p_animatable.animation.just_started()) {
 		m_cooldowns.alerted.start();
 		if (random::percent_chance(50)) {
 			m_services->soundboard.play_sound("tank_alert_1", get_collider().get_center());
@@ -358,7 +387,7 @@ fsm::StateFunction Tank::update_alert() {
 			m_services->soundboard.play_sound("tank_alert_2", get_collider().get_center());
 		}
 	}
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		m_mode = TankMode::hostile;
 		request(TankState::pocket);
 		if (change_state(TankState::pocket, get_params("pocket"))) { return TANK_BIND(update_pocket); }
@@ -367,9 +396,10 @@ fsm::StateFunction Tank::update_alert() {
 }
 
 fsm::StateFunction Tank::update_pocket() {
-	animation.label = "pocket";
+	p_animatable.animation.label = "pocket";
 	p_state.actual = TankState::pocket;
-	if (animation.complete()) {
+	if (change_state(TankState::squish, get_params("squish"))) { return TANK_BIND(update_squish); }
+	if (p_animatable.animation.complete()) {
 		toggle_flag(TankFlags::show_weapon);
 		if (change_state(TankState::turn, get_params("turn"))) { return TANK_BIND(update_turn); }
 		if (change_state(TankState::shoot_vertical, get_params("shoot_vertical"))) { return TANK_BIND(update_shoot_vertical); }
@@ -381,8 +411,9 @@ fsm::StateFunction Tank::update_pocket() {
 }
 
 fsm::StateFunction Tank::update_sleep() {
-	animation.label = "sleep";
+	p_animatable.animation.label = "sleep";
 	p_state.actual = TankState::sleep;
+	if (change_state(TankState::squish, get_params("squish"))) { return TANK_BIND(update_squish); }
 	if (hostility_triggered()) { request(TankState::alert); }
 	if (is_hurt()) { request(TankState::alert); }
 	if (std::abs(get_collider().physics.actual_velocity().x) > 0.01f) { request(TankState::idle); }
@@ -392,20 +423,31 @@ fsm::StateFunction Tank::update_sleep() {
 }
 
 fsm::StateFunction Tank::update_drink() {
-	animation.label = "drink";
+	p_animatable.animation.label = "drink";
 	p_state.actual = TankState::drink;
-	if (animation.just_started()) { m_services->soundboard.play_sound("tank_sip", get_collider().get_center()); }
+	if (change_state(TankState::squish, get_params("squish"))) { return TANK_BIND(update_squish); }
+	if (p_animatable.animation.just_started()) { m_services->soundboard.play_sound("tank_sip", get_collider().get_center()); }
 	if (change_state(TankState::alert, get_params("alert"))) { return TANK_BIND(update_alert); }
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request(TankState::type);
 		if (change_state(TankState::type, get_params("type"))) { return TANK_BIND(update_type); }
 	}
 	return TANK_BIND(update_drink);
 }
 
+fsm::StateFunction Tank::update_squish() {
+	p_animatable.animation.label = "squish";
+	p_state.actual = TankState::squish;
+	if (!has_flag_set(TankFlags::squishing)) {
+		request(TankState::idle);
+		if (change_state(TankState::idle, get_params("idle"))) { return TANK_BIND(update_idle); }
+	}
+	return TANK_BIND(update_squish);
+}
+
 bool Tank::change_state(TankState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params, true);
+		p_animatable.animation.set_params(params, true);
 		return true;
 	}
 	return false;
@@ -416,7 +458,7 @@ void Tank::debug() {
 	ImGui::SetNextWindowSize(sz);
 	if (ImGui::Begin("Tank Debug")) {
 		ImGui::SeparatorText("Info");
-		ImGui::Text("Animation: %s", animation.label.c_str());
+		ImGui::Text("Animation: %s", p_animatable.animation.label.c_str());
 		ImGui::Text("Retreat: %.4f", m_caution.retreat.lengthSquared());
 		ImGui::ProgressBar(m_cooldowns.alerted.get_normalized());
 		ImGui::Text("Alerted: %i", m_cooldowns.alerted.get());

@@ -8,13 +8,12 @@
 namespace fornani::enemy {
 
 Macrophage::Macrophage(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, map, "macrophage"), Animatable{svc, "enemy_macrophage", {32, 32}}, m_services(&svc), m_map(&map),
-	  m_body{std::make_unique<vfx::Chain>(svc, variant == 0 ? "macrophage_wall" : "epithelioid_wall", sf::Vector2i{14, 14}, vfx::SpringParameters{0.999f, 0.08f, 16.5f, 4.f}, get_collider().get_center(), variant == 0 ? 32 : 20, false, 16.5f,
-										  true)},
+	: Enemy(svc, map, "macrophage"), m_services(&svc), m_map(&map), m_body{std::make_unique<vfx::Chain>(svc, variant == 0 ? "macrophage_wall" : "epithelioid_wall", sf::Vector2i{14, 14}, vfx::SpringParameters{0.999f, 0.08f, 16.5f, 4.f},
+																										get_collider().get_center(), variant == 0 ? 32 : 20, false, 16.5f, true)},
 	  m_variant{static_cast<MacrophageVariant>(variant)} {
 	NANI_LOG_DEBUG(m_logger, "Size: {}", m_body->links.size());
-	p_animations = {{"idle", {0, 4, 40, -1}}};
-	animation.set_params(get_params("idle"));
+	p_animatable.set_animations({{"idle", {0, 4, 40, -1}}});
+	p_animatable.animation.set_params(get_params("idle"));
 	get_collider().physics.set_friction_componentwise({0.999f, 0.999f});
 	Enemy::get_collider().set_flag(shape::ColliderFlags::simple);
 	attributes.team = arms::Team::beast;
@@ -105,7 +104,7 @@ fsm::StateFunction Macrophage::update_idle() {
 
 bool Macrophage::change_state(MacrophageState next, anim::Parameters params) {
 	if (p_state.desired == next) {
-		animation.set_params(params, true);
+		p_animatable.animation.set_params(params, true);
 		return true;
 	}
 	return false;

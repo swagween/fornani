@@ -7,8 +7,8 @@
 
 namespace fornani::enemy {
 
-Eyebot::Eyebot(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "eyebot"), Animatable{svc, "enemy_eyebot", {64, 64}} {
-	animation.set_params(idle);
+Eyebot::Eyebot(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "eyebot") {
+	p_animatable.animation.set_params(idle);
 	seeker_cooldown.start(2);
 }
 
@@ -42,10 +42,10 @@ void Eyebot::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 }
 
 fsm::StateFunction Eyebot::update_idle() {
-	animation.label = "idle";
+	p_animatable.animation.label = "idle";
 	if (state.test(EyebotState::turn)) {
 		state.reset(EyebotState::idle);
-		animation.set_params(turn);
+		p_animatable.animation.set_params(turn);
 		return EYEBOT_BIND(update_turn);
 	}
 	state = {};
@@ -54,12 +54,12 @@ fsm::StateFunction Eyebot::update_idle() {
 };
 
 fsm::StateFunction Eyebot::update_turn() {
-	animation.label = "turn";
-	if (animation.complete()) {
-		flip();
+	p_animatable.animation.label = "turn";
+	if (p_animatable.animation.complete()) {
+		p_animatable.flip();
 		state = {};
 		state.set(EyebotState::idle);
-		animation.set_params(idle);
+		p_animatable.animation.set_params(idle);
 		return EYEBOT_BIND(update_idle);
 	}
 	state = {};

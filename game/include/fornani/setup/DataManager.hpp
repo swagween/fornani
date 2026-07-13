@@ -41,6 +41,12 @@ struct EnemyState {
 	bool semipermanent{};
 };
 
+struct DestructibleRecord {
+	int code{};
+	int state{};
+	auto operator==(DestructibleRecord const&) const -> bool = default;
+};
+
 class DataManager final {
 
   public:
@@ -186,7 +192,7 @@ class DataManager final {
 	Register<StableID::underlying_type> destroyed_inspectables{};
 	Register<std::string> unlocked_doors{};
 	Register<int> activated_switches{};
-	std::vector<std::pair<int, int>> destructible_states{};
+	Register<DestructibleRecord> destructible_states{};
 	std::vector<util::QuestKey> quest_progressions{};
 	std::vector<std::string> m_biomes{};
 	std::unordered_map<int, std::string> m_map_labels{};

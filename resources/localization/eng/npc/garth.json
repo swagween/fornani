@@ -4,18 +4,9 @@
       [
         {
           "codes": [
-            [
-              1,
-              1
-            ],
-            [
-              24,
-              40
-            ],
-            [
-              25,
-              1
-            ]
+            [1, 1],
+            [24, 40],
+            [25, 1]
           ],
           "contingencies": [
             {
@@ -27,12 +18,7 @@
           "message": "Can I have a drink? (40 orbs)"
         },
         {
-          "codes": [
-            [
-              1,
-              2
-            ]
-          ],
+          "codes": [[1, 2]],
           "message": "What happened to Woodshine?"
         }
       ]
@@ -41,45 +27,21 @@
       [
         {
           "codes": [
-            [
-              1,
-              0
-            ],
-            [
-              4,
-              0
-            ]
+            [1, 0],
+            [4, 0]
           ],
-          "messages": [
-            "Welcome to the Chafed Worm!",
-            "How can I help ya?",
-            "Ever the weary traveler, eh?"
-          ]
+          "messages": ["Welcome to the Chafed Worm!", "How can I help ya?", "Ever the weary traveler, eh?"]
         }
       ],
       [
         {
-          "codes": [
-            [
-              4,
-              3
-            ]
-          ],
-          "messages": [
-            "Sure thing. This ought to fix you up nice and good.",
-            "I'll hook you up with the freshest brew we got.",
-            "Absolutely. We got the finest stuff on this side of Mother Worm."
-          ]
+          "codes": [[4, 3]],
+          "messages": ["Sure thing. This ought to fix you up nice and good.", "I'll hook you up with the freshest brew we got.", "Absolutely. We got the finest stuff on this side of Mother Worm."]
         }
       ],
       [
         {
-          "codes": [
-            [
-              4,
-              1
-            ]
-          ],
+          "codes": [[4, 1]],
           "message": "Sergeant Haunch came and basically waged war on us."
         },
         {
@@ -89,12 +51,7 @@
           "message": "Now, this is all that's left of us. I guess Skycorps don't see us as much of a threat anymore, so they mostly leave us alone."
         },
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
+          "codes": [[1, 0]],
           "message": "It's sad, but what can we do besides move forward?"
         }
       ]

@@ -11,17 +11,17 @@ bool b_summoner_debug{};
 constexpr auto summoner_framerate = 16;
 
 Summoner::Summoner(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, map, "summoner"), Animatable{svc, "enemy_summoner", {64, 64}}, m_variant{static_cast<SummonerVariant>(variant)}, m_map{&map}, m_cooldowns{.post_summon{2400}, .walk{200}, .post_walk{1400}, .post_hurt{20}, .pulse{48}},
-	  m_services{&svc}, m_attacks{.pulse{}}, m_pulse(svc, "pulse"), m_magic{svc, {40.f, 96.f}, colors::white, "guardian_magic"} {
-	p_animations = {{"idle", {0, 5, summoner_framerate * 2, -1}},
-					{"walk", {5, 4, summoner_framerate * 2, -1}},
-					{"begin_summon", {9, 7, summoner_framerate * 2, 0}},
-					{"summon", {16, 5, summoner_framerate * 2, 3}},
-					{"horizontal_pulse", {21, 4, summoner_framerate * 2, 0}},
-					{"vertical_pulse", {25, 4, summoner_framerate * 2, 0}},
-					{"turn", {29, 5, summoner_framerate * 2, 0}},
-					{"dodge", {29, 5, summoner_framerate, 0}}};
-	animation.set_params(get_params("idle"));
+	: Enemy(svc, map, "summoner"), m_variant{static_cast<SummonerVariant>(variant)}, m_map{&map}, m_cooldowns{.post_summon{2400}, .walk{200}, .post_walk{1400}, .post_hurt{20}, .pulse{48}}, m_services{&svc}, m_attacks{.pulse{}},
+	  m_pulse(svc, "pulse"), m_magic{svc, {40.f, 96.f}, colors::white, "guardian_magic"} {
+	p_animatable.set_animations({{"idle", {0, 5, summoner_framerate * 2, -1}},
+								 {"walk", {5, 4, summoner_framerate * 2, -1}},
+								 {"begin_summon", {9, 7, summoner_framerate * 2, 0}},
+								 {"summon", {16, 5, summoner_framerate * 2, 3}},
+								 {"horizontal_pulse", {21, 4, summoner_framerate * 2, 0}},
+								 {"vertical_pulse", {25, 4, summoner_framerate * 2, 0}},
+								 {"turn", {29, 5, summoner_framerate * 2, 0}},
+								 {"dodge", {29, 5, summoner_framerate, 0}}});
+	p_animatable.animation.set_params(get_params("idle"));
 	flags.state.set(StateFlags::no_shake);
 	flags.state.set(StateFlags::vulnerable);
 
@@ -68,7 +68,7 @@ void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		attack.update();
 		if (is_pulsing()) {
 			attack.enable();
-			if (animation.get_frame_count() > 1 || !m_cooldowns.pulse.running()) { attack.disable(); }
+			if (p_animatable.animation.get_frame_count() > 1 || !m_cooldowns.pulse.running()) { attack.disable(); }
 		}
 		if (attack.hit.active()) {
 			if (attack.hit.within_bounds(player.get_collider().bounding_box)) {
@@ -155,7 +155,7 @@ fsm::StateFunction Summoner::update_idle() {
 
 fsm::StateFunction Summoner::update_turn() {
 	m_state.actual = SummonerState::turn;
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		if (change_state(SummonerState::horizontal_pulse, get_params("horizontal_pulse"))) { return SUMMONER_BIND(update_horizontal_pulse); }
 		if (change_state(SummonerState::vertical_pulse, get_params("vertical_pulse"))) { return SUMMONER_BIND(update_vertical_pulse); }
@@ -170,7 +170,7 @@ fsm::StateFunction Summoner::update_turn() {
 fsm::StateFunction Summoner::update_dodge() {
 	m_state.actual = SummonerState::dodge;
 	get_collider().physics.acceleration.x = 12.f * directions.actual.as_float();
-	if (animation.complete()) {
+	if (p_animatable.animation.complete()) {
 		request_flip();
 		if (change_state(SummonerState::turn, get_params("turn"))) { return SUMMONER_BIND(update_turn); }
 		if (change_state(SummonerState::horizontal_pulse, get_params("horizontal_pulse"))) { return SUMMONER_BIND(update_horizontal_pulse); }
@@ -186,7 +186,7 @@ fsm::StateFunction Summoner::update_dodge() {
 fsm::StateFunction Summoner::update_walk() {
 	m_state.actual = SummonerState::walk;
 	get_collider().physics.acceleration.x = directions.actual.as_float() * 1.f;
-	if (animation.just_started()) { m_cooldowns.walk.start(); }
+	if (p_animatable.animation.just_started()) { m_cooldowns.walk.start(); }
 	if (change_state(SummonerState::horizontal_pulse, get_params("horizontal_pulse"))) {
 		NANI_LOG_DEBUG(m_logger, ":dgsfgdsf:");
 		return SUMMONER_BIND(update_horizontal_pulse);
@@ -204,7 +204,7 @@ fsm::StateFunction Summoner::update_walk() {
 
 fsm::StateFunction Summoner::update_horizontal_pulse() {
 	m_state.actual = SummonerState::horizontal_pulse;
-	if (animation.just_started()) {
+	if (p_animatable.animation.just_started()) {
 		m_cooldowns.pulse.start();
 		auto bp = get_collider().get_center();
 		bp.x += 52.f * directions.actual.as_float();
@@ -215,7 +215,7 @@ fsm::StateFunction Summoner::update_horizontal_pulse() {
 		auto offset = i != 1 ? 4.f : 0.f;
 		orb.set_position(get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * (48.f - offset), -8.f + (i - 1) * 32.f});
 	}
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		if (change_state(SummonerState::dodge, get_params("dodge"))) { return SUMMONER_BIND(update_dodge); }
 		if (change_state(SummonerState::turn, get_params("turn"))) { return SUMMONER_BIND(update_turn); }
 		if (change_state(SummonerState::vertical_pulse, get_params("vertical_pulse"))) { return SUMMONER_BIND(update_vertical_pulse); }
@@ -227,7 +227,7 @@ fsm::StateFunction Summoner::update_horizontal_pulse() {
 
 fsm::StateFunction Summoner::update_vertical_pulse() {
 	m_state.actual = SummonerState::vertical_pulse;
-	if (animation.just_started()) {
+	if (p_animatable.animation.just_started()) {
 		m_cooldowns.pulse.start();
 		auto bp = get_collider().get_center();
 		bp.y -= 52.f;
@@ -238,7 +238,7 @@ fsm::StateFunction Summoner::update_vertical_pulse() {
 		auto offset = i != 1 ? 4.f : 0.f;
 		orb.set_position(get_collider().get_center() + sf::Vector2f{(directions.actual.as_float() * 6.f) + (i - 1) * 32.f, -52.f + offset});
 	}
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		if (change_state(SummonerState::dodge, get_params("dodge"))) { return SUMMONER_BIND(update_dodge); }
 		if (change_state(SummonerState::turn, get_params("turn"))) { return SUMMONER_BIND(update_turn); }
 		if (change_state(SummonerState::horizontal_pulse, get_params("horizontal_pulse"))) { return SUMMONER_BIND(update_horizontal_pulse); }
@@ -250,7 +250,7 @@ fsm::StateFunction Summoner::update_vertical_pulse() {
 
 fsm::StateFunction Summoner::update_begin_summon() {
 	m_state.actual = SummonerState::begin_summon;
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		m_services->soundboard.play_sound("summoner_summon", get_collider().get_center());
 		request(SummonerState::summon);
 		if (change_state(SummonerState::summon, get_params("summon"))) { return SUMMONER_BIND(update_summon); }
@@ -260,7 +260,7 @@ fsm::StateFunction Summoner::update_begin_summon() {
 
 fsm::StateFunction Summoner::update_summon() {
 	m_state.actual = SummonerState::summon;
-	if (animation.just_started()) { m_counters.summon.cancel(); }
+	if (p_animatable.animation.just_started()) { m_counters.summon.cancel(); }
 	if (m_variant == SummonerVariant::mother) {
 		auto fire_rate = 48;
 		if (m_counters.summon.get_count() % fire_rate == 0) {
@@ -281,7 +281,7 @@ fsm::StateFunction Summoner::update_summon() {
 		}
 	}
 	m_counters.summon.update();
-	if (animation.is_complete()) {
+	if (p_animatable.animation.is_complete()) {
 		m_cooldowns.post_summon.start();
 		if (change_state(SummonerState::dodge, get_params("dodge"))) { return SUMMONER_BIND(update_dodge); }
 		if (change_state(SummonerState::turn, get_params("turn"))) { return SUMMONER_BIND(update_turn); }
@@ -295,7 +295,7 @@ fsm::StateFunction Summoner::update_summon() {
 
 bool Summoner::change_state(SummonerState next, anim::Parameters params) {
 	if (m_state.desired == next) {
-		animation.set_params(params);
+		p_animatable.animation.set_params(params);
 		return true;
 	}
 	return false;

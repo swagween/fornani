@@ -6,15 +6,12 @@
 
 namespace fornani {
 
-Platform::Platform(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "platforms"), Animatable{svc, "platforms"} {
+Platform::Platform(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "platforms") {
 	unserialize(in);
 	init(svc);
 }
 
-Platform::Platform(fornani::automa::ServiceProvider& svc, sf::Vector2u dim, int extent, std::string type, float start)
-	: Entity(svc, "platforms", 0, dim), Animatable{svc, "platforms", sf::Vector2i{dim}}, extent(extent), type(type), start(start) {
-	init(svc);
-}
+Platform::Platform(fornani::automa::ServiceProvider& svc, sf::Vector2u dim, int extent, std::string type, float start) : Entity(svc, "platforms", 0, dim), extent(extent), type(type), start(start) { init(svc); }
 
 std::unique_ptr<Entity> Platform::clone() const { return std::make_unique<Platform>(*this); }
 
@@ -56,7 +53,7 @@ void Platform::init(fornani::automa::ServiceProvider& svc) {
 	if (get_grid_dimensions().x == 3) { offset = {0, 16}; }
 	if (get_grid_dimensions().y == 2) { offset = {0, 32}; }
 	if (get_grid_dimensions().y == 3) { offset = {0, 64}; }
-	set_texture_rect(sf::IntRect{{offset}, {sf::Vector2i{get_grid_dimensions()} * fornani::constants::i_cell_resolution}});
+	p_animatable.set_texture_rect(sf::IntRect{{offset}, {sf::Vector2i{get_grid_dimensions()} * fornani::constants::i_cell_resolution}});
 	m_track.setFillColor(sf::Color::Transparent);
 	auto color = fornani::colors::goldenrod;
 	color.a = 80;

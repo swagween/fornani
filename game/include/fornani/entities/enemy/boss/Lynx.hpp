@@ -28,7 +28,7 @@ class Lynx final : public Boss {
 	[[nodiscard]] auto quarter_health() const -> bool { return health.get_quantity() < health.get_capacity() * 0.25f; }
 	[[nodiscard]] auto is_state(LynxState test) const -> bool { return m_state.actual == test; }
 	[[nodiscard]] auto is_levitating() const -> bool { return is_state(LynxState::levitate) || is_state(LynxState::second_phase); }
-	[[nodiscard]] auto slam_follow() const -> bool { return is_state(LynxState::downward_slam) && half_health() && Enemy::animation.get_frame_count() < 6; }
+	[[nodiscard]] auto slam_follow() const -> bool { return is_state(LynxState::downward_slam) && half_health() && p_animatable.animation.get_frame_count() < 6; }
 
 	fsm::StateFunction state_function = std::bind(&Lynx::update_sit, this);
 	fsm::StateFunction update_sit();

@@ -14,7 +14,7 @@ constexpr auto segment_size_v = sf::Vector2i{64, 64};
 constexpr auto simulations_v = 32;
 
 Vine::Vine(automa::ServiceProvider& svc, int length, int size, bool foreground, bool reversed, std::vector<int> const platform_indeces)
-	: Entity(svc, "vines", 0), Animatable{svc, "vines"}, m_length(length), m_chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, get_world_position(), length, reversed, 2.f), m_services(&svc), m_init{64} {
+	: Entity(svc, "vines", 0), m_length(length), m_chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, get_world_position(), length, reversed, 2.f), m_services(&svc), m_init{64} {
 	for (auto const& i : platform_indeces) {
 		if (i == -1) { continue; }
 		add_platform(svc, i);
@@ -23,8 +23,7 @@ Vine::Vine(automa::ServiceProvider& svc, int length, int size, bool foreground, 
 	foreground ? m_flags.set(VineFlags::foreground) : m_flags.reset(VineFlags::foreground);
 }
 
-Vine::Vine(automa::ServiceProvider& svc, dj::Json const& in)
-	: Entity(svc, in, "vines", segment_size_v), Animatable{svc, "vines"}, m_services(&svc), m_chain(svc, {0.995f, 0.06f, 16.f, 14.f}, get_world_position(), in["length"].as<int>(), false, 2.f), m_init{64} {
+Vine::Vine(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "vines", segment_size_v), m_services(&svc), m_chain(svc, {0.995f, 0.06f, 16.f, 14.f}, get_world_position(), in["length"].as<int>(), false, 2.f), m_init{64} {
 	unserialize(in);
 	init();
 }
@@ -32,7 +31,7 @@ Vine::Vine(automa::ServiceProvider& svc, dj::Json const& in)
 void Vine::init() {
 	m_init.start();
 	batch = true;
-	Animatable::center();
+	p_animatable.center();
 	auto index = util::Circuit(4);
 	auto last_index = random::random_range(0, 3);
 	auto ctr{0};
@@ -147,10 +146,10 @@ void Vine::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	auto current = 0.f;
 	auto total = static_cast<float>(m_chain.links.size());
 	for (auto& link : m_chain.links) {
-		Animatable::set_texture_rect(sf::IntRect({static_cast<int>((current / static_cast<float>(m_length)) * 3.f) * segment_size_v.x, encodings.at(ctr).at(0) * segment_size_v.y}, segment_size_v));
-		Animatable::set_scale(sf::Vector2f{static_cast<float>(encodings.at(ctr).at(1)), 1.f} * constants::f_scale_factor);
-		Animatable::set_position(util::round_to_even(link.get_bob()) - cam);
-		win.draw(*this);
+		p_animatable.set_texture_rect(sf::IntRect({static_cast<int>((current / static_cast<float>(m_length)) * 3.f) * segment_size_v.x, encodings.at(ctr).at(0) * segment_size_v.y}, segment_size_v));
+		p_animatable.set_scale(sf::Vector2f{static_cast<float>(encodings.at(ctr).at(1)), 1.f} * constants::f_scale_factor);
+		p_animatable.set_position(util::round_to_even(link.get_bob()) - cam);
+		win.draw(p_animatable);
 		++debug::draw_calls;
 		++ctr;
 		++current;
@@ -169,7 +168,7 @@ void Vine::submit(Renderer& renderer) {
 		auto const pos = util::round_to_even(link.get_bob() - sf::Vector2f{segment_size_v});
 		auto const& frame = sf::IntRect({static_cast<int>((static_cast<float>(i) / static_cast<float>(m_length)) * 3.f) * segment_size_v.x, encodings.at(i).at(0) * segment_size_v.y}, segment_size_v);
 		sf::FloatRect dest{pos, sf::Vector2f{frame.size}};
-		renderer.submit(get_sprite().getTexture(), dest, frame, is_foreground() ? RenderLayer::foreground_entities : RenderLayer::background_entities);
+		renderer.submit(p_animatable.get_sprite().getTexture(), dest, frame, is_foreground() ? RenderLayer::foreground_entities : RenderLayer::background_entities);
 	}
 
 	if (m_spawnable_platforms) {

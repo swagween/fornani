@@ -5,19 +5,19 @@
 
 namespace fornani {
 
-Animator::Animator(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "animators"), Animatable{svc, "animators"} {
+Animator::Animator(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "animators") {
 	unserialize(in);
 	repeatable = true;
-	set_dimensions({16, 16});
-	set_texture(svc.assets.get_texture("animators_" + m_label));
-	set_texture_rect(sf::IntRect{{16 * get_id(), 0}, {16, 16}});
-	set_parameters({0, 6, 32, -1});
-	set_channel(get_id());
+	p_animatable.set_dimensions({16, 16});
+	p_animatable.set_texture(svc.assets.get_texture("animators_" + m_label));
+	p_animatable.set_texture_rect(sf::IntRect{{16 * get_id(), 0}, {16, 16}});
+	p_animatable.set_parameters({0, 6, 32, -1});
+	p_animatable.set_channel(get_id());
 }
 
-Animator::Animator(automa::ServiceProvider& svc, int id, std::string_view label) : Entity(svc, "animators", id, {1, 1}), Animatable{svc, "ambient_props"}, m_label{label} {
+Animator::Animator(automa::ServiceProvider& svc, int id, std::string_view label) : Entity(svc, "animators", id, {1, 1}), m_label{label} {
 	repeatable = true;
-	set_texture_rect(sf::IntRect{{16 * id, 0}, {16, 16}});
+	p_animatable.set_texture_rect(sf::IntRect{{16 * id, 0}, {16, 16}});
 }
 
 std::unique_ptr<Entity> Animator::clone() const { return std::make_unique<Animator>(*this); }
@@ -36,7 +36,7 @@ void Animator::unserialize(dj::Json const& in) {
 
 void Animator::expose() { Entity::expose(); }
 
-void Animator::update(automa::ServiceProvider& svc, world::Map& map, SceneContext& context, player::Player& player) { tick(); }
+void Animator::update(automa::ServiceProvider& svc, world::Map& map, SceneContext& context, player::Player& player) { p_animatable.tick(); }
 
 void Animator::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{120, 250, 250, 60}) : drawbox.setFillColor(sf::Color::Transparent);
@@ -44,9 +44,9 @@ void Animator::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 }
 
 void Animator::render(sf::RenderTexture& tex, sf::Vector2f cam) {
-	Animatable::set_scale(constants::f_scale_vec);
-	Animatable::set_position(get_world_position());
-	tex.draw(*this);
+	p_animatable.set_scale(constants::f_scale_vec);
+	p_animatable.set_position(get_world_position());
+	tex.draw(p_animatable);
 	++debug::draw_calls;
 }
 
