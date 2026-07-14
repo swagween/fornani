@@ -47,6 +47,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 	m_map_markers.insert({3, "pioneer_trail"});
 	m_map_markers.insert({4, "nightside_station"});
 	m_map_markers.insert({5, "hoarders_cave"});
+	m_map_markers.insert({6, "junkyard"});
 
 	// create shaders
 	p_world_shader = LightShader(svc.finder);
@@ -117,8 +118,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		player->set_flag(player::PlayerFlags::bonus_health_added, false);
 		hud.spawn_effect(svc, "bonus_heart", hud.get_hearts_endpoint());
 	}
-
-	if (p_reward_sequence) {}
 
 	if (m_flags.consume(GameplayFlags::remove_item)) {
 		auto item = player->catalog.inventory.find_item(m_item_tag);

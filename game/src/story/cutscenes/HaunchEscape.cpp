@@ -194,6 +194,7 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 		if (!context.console.has_value()) {
 			if (m_champion) { m_champion->set_target(champion_target); }
 			if (bryn->get_collider().bounding_box.overlaps(player.get_collider().get_vicinity_rect())) {
+				if (haunch_enemy != nullptr) { haunch_enemy->set_special_event(); }
 				bryn->flush_and_push(4);
 				bryn->force_engage();
 				++progress;

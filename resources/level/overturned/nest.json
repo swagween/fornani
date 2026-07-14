@@ -1,5 +1,77 @@
 {
   "entities": {
+    "destructibles": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": true,
+        "id": 23401,
+        "inverse": false,
+        "position": [
+          2,
+          6
+        ],
+        "unlit": false
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": true,
+        "id": 23401,
+        "inverse": false,
+        "position": [
+          2,
+          7
+        ],
+        "unlit": false
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": true,
+        "id": 23401,
+        "inverse": false,
+        "position": [
+          2,
+          8
+        ],
+        "unlit": false
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": true,
+        "id": 23401,
+        "inverse": false,
+        "position": [
+          2,
+          9
+        ],
+        "unlit": false
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": true,
+        "id": 23401,
+        "inverse": false,
+        "position": [
+          2,
+          10
+        ],
+        "unlit": false
+      }
+    ],
     "enemies": [
       {
         "dimensions": [
@@ -22,6 +94,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 204,
         "dimensions": [
           1,
@@ -38,6 +111,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 233,
         "dimensions": [
           1,
@@ -71,11 +145,6 @@
     "ambience": "overturned",
     "background": "dense_woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -95,6 +164,7 @@
       32,
       16
     ],
+    "interior": false,
     "metagrid": [
       30,
       21
@@ -110,26 +180,27 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
-      "timer": false
+      "sky_limit": 0,
+      "timer": false,
+      "toxic": false
     },
     "room_id": 234,
     "shader": {
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
     "animated": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ],
     "flags": {
       "obscuring": false,
@@ -309,6 +380,7 @@
         0,
         0,
         0,
+        90,
         0,
         0,
         0,
@@ -340,6 +412,7 @@
         0,
         0,
         0,
+        90,
         0,
         0,
         0,
@@ -371,6 +444,7 @@
         0,
         0,
         0,
+        90,
         0,
         0,
         0,
@@ -402,10 +476,7 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
+        90,
         0,
         0,
         0,
@@ -437,7 +508,7 @@
         0,
         0,
         0,
-        0,
+        90,
         0,
         0,
         0,
@@ -469,7 +540,7 @@
         0,
         0,
         0,
-        0,
+        90,
         0,
         0,
         0,
@@ -2454,8 +2525,8 @@
         0,
         0,
         0,
-        16,
-        18,
+        64,
+        66,
         0,
         0,
         0,

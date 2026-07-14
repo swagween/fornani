@@ -28,7 +28,8 @@
         "position": [
           37,
           68
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -41,7 +42,8 @@
         "position": [
           37,
           69
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -54,7 +56,8 @@
         "position": [
           38,
           69
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -67,7 +70,8 @@
         "position": [
           38,
           68
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -80,7 +84,8 @@
         "position": [
           39,
           68
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -93,7 +98,8 @@
         "position": [
           40,
           68
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -106,7 +112,8 @@
         "position": [
           39,
           69
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -119,7 +126,8 @@
         "position": [
           40,
           69
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -132,7 +140,8 @@
         "position": [
           32,
           62
-        ]
+        ],
+        "unlit": false
       }
     ],
     "enemies": [
@@ -277,6 +286,7 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": true,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

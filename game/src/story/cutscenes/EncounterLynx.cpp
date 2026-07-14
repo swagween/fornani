@@ -12,7 +12,7 @@ EncounterLynx::EncounterLynx(automa::ServiceProvider& svc) : Cutscene(svc, 227, 
 	cooldowns.beginning.set_and_start(40);
 	auto prog = svc.quest_table.get_quest_progression("defeat_lynx");
 	progress = prog == 0 ? 0 : prog == 1 ? 10 : 20;
-	if (progress > 10) { svc.music_player.stop(); }
+	if (progress > 10 || progress == 0) { svc.music_player.stop(); }
 }
 
 void EncounterLynx::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
@@ -47,6 +47,7 @@ void EncounterLynx::update(automa::ServiceProvider& svc, SceneContext& context, 
 			lynx->set_invisible();
 			lynx->flush_and_push(which);
 			lynx->force_engage();
+			svc.music_player.stop();
 			++progress;
 		}
 		break;

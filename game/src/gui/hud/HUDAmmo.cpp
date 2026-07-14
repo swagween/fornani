@@ -33,7 +33,7 @@ void HUDAmmo::render(automa::ServiceProvider& svc, player::Player& player, sf::R
 	if (player.arsenal && player.hotbar) {
 		if (m_ammo_bar) { m_ammo_bar->set_position(get_root() + offset); }
 		if (m_ammo_bar) { m_ammo_bar->render(win); }
-		m_reload_bar.set_position(m_ammo_bar->get_position() + sf::Vector2f{0.f, -2.f});
+		if (m_ammo_bar) { m_reload_bar.set_position(m_ammo_bar->get_position() + sf::Vector2f{0.f, -2.f}); }
 		m_reload_bar.render(win);
 	}
 }

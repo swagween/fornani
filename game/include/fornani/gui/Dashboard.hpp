@@ -53,6 +53,7 @@ class Dashboard {
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return m_physical.physics.position; }
 	[[nodiscard]] auto get_selected_position() const -> sf::Vector2i { return m_selected_position; }
 	[[nodiscard]] auto is_hovering() const -> bool { return m_state == DashboardState::hovering; }
+	[[nodiscard]] auto is_gizmo() const -> bool { return m_state == DashboardState::gizmo; }
 	[[nodiscard]] auto is_home() const -> bool { return m_state == DashboardState::home; }
 
   private:

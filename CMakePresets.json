@@ -21,6 +21,14 @@
 			}
 		},
 		{
+			"name": "ASan",
+			"inherits": "Debug",
+			"description": "Debug build with AddressSanitizer",
+			"cacheVariables": {
+				"ENABLE_ASAN": "ON"
+			}
+		},
+		{
 			"name": "RelWithDebInfo",
 			"inherits": "default",
 			"description": "Optimized build with debug info",
@@ -49,6 +57,10 @@
 		{
 			"name": "Debug",
 			"configurePreset": "Debug"
+		},
+		{
+			"name": "ASan",
+			"configurePreset": "ASan"
 		},
 		{
 			"name": "RelWithDebInfo",

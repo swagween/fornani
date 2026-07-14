@@ -4,6 +4,7 @@
 #include <fornani/entities/enemy/Enemy.hpp>
 #include <fornani/events/Subscription.hpp>
 #include <fornani/gui/BossHealth.hpp>
+#include <fornani/utils/Polymorphic.hpp>
 
 namespace fornani::enemy {
 

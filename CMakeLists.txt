@@ -67,3 +67,14 @@ if (WIN32)
     )
 endif()
 
+    target_compile_options(fornani PRIVATE
+        $<$<CONFIG:Debug>:/RTC1>
+    )
+
+option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
+
+if(ENABLE_ASAN AND MSVC)
+    add_compile_options(/fsanitize=address /Zi)
+    add_link_options(/INFERASANLIBS /DEBUG)
+endif()
+

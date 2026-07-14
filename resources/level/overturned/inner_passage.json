@@ -166,6 +166,19 @@
         ],
         "source_id": 210
       }
+    ],
+    "save_point": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 210,
+        "position": [
+          3,
+          12
+        ]
+      }
     ]
   },
   "hazards": {
@@ -291,6 +304,7 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -299,8 +313,7 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
     "animated": [
@@ -17427,7 +17440,7 @@
         96,
         96,
         96,
-        96,
+        480,
         0,
         0,
         0,
@@ -17491,9 +17504,9 @@
         96,
         96,
         96,
-        96,
-        476,
-        477,
+        0,
+        0,
+        0,
         478,
         479,
         207,
@@ -17555,9 +17568,9 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
+        98,
+        99,
+        110,
         96,
         96,
         191,

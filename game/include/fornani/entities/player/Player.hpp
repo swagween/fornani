@@ -126,7 +126,8 @@ enum class PlayerFlags {
 	in_goo,
 	special_render,
 	intangible,
-	no_turn
+	no_turn,
+	encumbered
 };
 enum class Triggers { hurt };
 

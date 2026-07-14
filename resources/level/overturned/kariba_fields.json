@@ -12,7 +12,8 @@
         "position": [
           88,
           34
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -25,7 +26,8 @@
         "position": [
           88,
           35
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -38,7 +40,8 @@
         "position": [
           88,
           36
-        ]
+        ],
+        "unlit": false
       }
     ],
     "enemies": [
@@ -199,6 +202,7 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

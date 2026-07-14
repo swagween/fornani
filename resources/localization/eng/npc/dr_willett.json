@@ -454,11 +454,14 @@
           "message": "There is a train station in the Nightside complex that should have service to Ashtown. That ought to be the quickest way."
         },
         {
-          "codes": [[22, 901, 1, 4]],
-          "message": "Here, I'll mark the station on your map."
+          "message": "You'll have to navigate the Skycorps junkyards to get there."
         },
         {
-          "message": "And... If you are to have any hope of navigating the Skycorps junkyards to get there, you'll need an access permit."
+          "codes": [[22, 700, 1, 6]],
+          "message": "I'll mark their location on your map."
+        },
+        {
+          "message": "Still, you'll need an access permit to enter them."
         },
         {
           "codes": [[2, 1]],

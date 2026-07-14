@@ -38,6 +38,7 @@ void ICollider::update(automa::ServiceProvider& svc) {
 		physics.set_friction_componentwise(p_physics_properties.friction.componentWiseMul(p_physics_properties.water_friction));
 		physics.gravity = p_physics_properties.gravity * 0.1f;
 	}
+	if (has_flag_set(ColliderFlags::encumbered)) { physics.set_friction_componentwise(p_physics_properties.friction.componentWiseMul({0.96f, 1.f})); }
 }
 
 void ICollider::handle_map_collision(world::Map& map) {}

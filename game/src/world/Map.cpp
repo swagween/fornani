@@ -86,6 +86,11 @@ namespace fornani::world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player) : player(&player), enemy_catalog(svc), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}} {}
 
+Map::~Map() {
+	m_destroying = true;
+	m_colliders.clear();
+}
+
 void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& context, int room_number) {
 
 	svc.current_room = room_number;
@@ -929,6 +934,7 @@ void Map::register_collider(std::unique_ptr<shape::ICollider> collider) {
 }
 
 void Map::unregister_collider(shape::ICollider* collider) {
+	if (m_destroying) { return; }
 	std::erase_if(m_colliders, [&](auto& ptr) { return ptr.get() == collider; });
 	for (auto& chunk : m_chunks) { chunk.erase(std::remove(chunk.begin(), chunk.end(), collider), chunk.end()); }
 }

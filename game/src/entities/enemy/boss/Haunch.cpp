@@ -15,6 +15,7 @@ Haunch::Haunch(automa::ServiceProvider& svc, world::Map& map)
 	p_animatable.set_animations({
 		{"idle", {0, 6, haunch_framerate * 3, -1}},
 		{"turn", {18, 1, haunch_framerate * 3, 0}},
+		{"rage_turn", {18, 1, haunch_framerate * 3, 0}},
 		{"shoot_high", {6, 3, haunch_framerate * 4, 0, true}},
 		{"shoot_low", {10, 4, haunch_framerate * 3, 0, true}},
 		{"get_up", {14, 5, haunch_framerate * 2, 0}},
@@ -27,6 +28,7 @@ Haunch::Haunch(automa::ServiceProvider& svc, world::Map& map)
 		{"triple_down_toss", {29, 5, haunch_framerate, 2}},
 		{"whistle", {34, 8, haunch_framerate * 2, 0}},
 		{"struggle", {42, 1, haunch_framerate * 2, 0}},
+		{"rage_struggle", {42, 1, haunch_framerate * 2, 0}},
 		{"stalk", {19, 4, haunch_framerate * 2, -1}},
 	});
 	p_animatable.animation.set_params(get_params("airborne"));
@@ -46,26 +48,43 @@ Haunch::Haunch(automa::ServiceProvider& svc, world::Map& map)
 void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	Boss::update(svc, map, player);
 	if (consume_flag(BossFlags::start_battle)) { svc.data.switch_destructible_state(90103, true); }
+
+	// haunch was just killed by the player
 	if (has_flag_set(BossFlags::end_battle) && !has_flag_set(BossFlags::post_death)) {
+		reset_flag(BossFlags::end_battle);
 		svc.music_player.stop();
-		set_flag(BossFlags::post_death);
 		svc.music_player.load(svc.finder, "wind");
 		svc.music_player.play_looped();
-		request(HaunchState::struggle);
+		set_flag(BossFlags::post_death);
 		map.clear_projectiles();
 		map.clear_enemies({28});
+		m_cooldowns.post_death.start();
+		request(HaunchState::struggle);
 	}
+
+	// launch the cutscene
+	if (m_cooldowns.post_death.is_almost_complete()) {
+		if (!m_flags.test(HaunchFlags::escape_cutscene_launched) && !player.is_dead()) {
+			svc.events.launch_cutscene_event.dispatch(svc, 902);
+			m_flags.set(HaunchFlags::escape_cutscene_launched);
+		}
+	}
+
+	// haunch is dead and in the cutscene
 	if (has_flag_set(BossFlags::post_death)) {
 		flags.state.set(StateFlags::special_death_mode);
 		m_flags.reset(HaunchFlags::show_gun);
 		if (!hurt_effect.running()) { hurt_effect.start(128); }
 		if (m_dynamite_stick) { m_dynamite_stick->tick(); }
 		shake();
-		m_cooldowns.post_death.update();
-		if (!m_cooldowns.post_death.running()) { m_cooldowns.post_death.start(); }
+		if (!player.has_flag_set(player::PlayerFlags::console_open)) { m_cooldowns.post_death.update(); }
 		if (svc.ticker.every_x_ticks(70)) {
 			auto pos = get_collider().get_center() + random::random_vector_float(-40.f, 40.f);
 			map.spawn_effect(svc, "puff", pos, {}, 1);
+		}
+		// haunch talks again and decides to hunt down the player
+		if (is_state(HaunchState::stalk) || is_state(HaunchState::rage_turn)) {
+			if (flags.state.consume(StateFlags::special_event)) { request(HaunchState::rage_struggle); }
 		}
 		if (flags.state.consume(StateFlags::special_event)) {
 			request(HaunchState::stalk);
@@ -75,13 +94,6 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 				m_dynamite_stick->center();
 			}
 		}
-	}
-	if (m_cooldowns.post_death.is_almost_complete()) {
-		if (!m_flags.test(HaunchFlags::escape_cutscene_launched) && !player.is_dead()) {
-			svc.events.launch_cutscene_event.dispatch(svc, 902);
-			m_flags.set(HaunchFlags::escape_cutscene_launched);
-		}
-		set_flag(BossFlags::post_death, false);
 	}
 	auto bp = get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * -8.f, -16.f};
 	auto offset = is_state(HaunchState::shoot_low)	  ? sf::Vector2f{directions.actual.as_float() * 38.f, 42.f}
@@ -165,7 +177,7 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		flags.state.reset(StateFlags::hurt);
 	}
 
-	if (directions.actual.lnr != directions.desired.lnr) { request(HaunchState::turn); }
+	if (directions.actual.lnr != directions.desired.lnr) { m_dynamite_stick ? request(HaunchState::rage_turn) : request(HaunchState::turn); }
 	if (has_flag_set(BossFlags::post_death) && !m_flags.test(HaunchFlags::escape_cutscene_launched)) { request(HaunchState::struggle); }
 
 	state_function = state_function();
@@ -195,6 +207,13 @@ void Haunch::debug() {
 		ImGui::SeparatorText("Info");
 		ImGui::Text("Run: %i", m_cooldowns.run.get());
 		ImGui::Text("Post Run: %i", m_cooldowns.post_run.get());
+		ImGui::SeparatorText("Death Sequence");
+		ImGui::Text("Post Death? %s", has_flag_set(BossFlags::post_death) ? "Yes" : "No");
+		ImGui::Text("Battle Mode? %s", has_flag_set(BossFlags::battle_mode) ? "Yes" : "No");
+		ImGui::Text("Cutscene Launched?? %s", m_flags.test(HaunchFlags::escape_cutscene_launched) ? "Yes" : "No");
+		ImGui::Text("Post Death: %i", m_cooldowns.post_death.get());
+		ImGui::SeparatorText("Animation");
+		ImGui::Text("Current Animation: %s", p_animatable.get_animation_tag());
 		ImGui::SeparatorText("Controls");
 		if (ImGui::Button("get up")) { request(HaunchState::get_up); }
 		if (ImGui::Button("shoot high")) { request(HaunchState::shoot_high); }
@@ -406,11 +425,28 @@ fsm::StateFunction Haunch::update_struggle() {
 
 fsm::StateFunction Haunch::update_stalk() {
 	p_state.actual = HaunchState::stalk;
+	if (change_state(HaunchState::rage_struggle, get_params("rage_struggle"))) { return HAUNCH_BIND(update_rage_struggle); }
 	if (p_animatable.animation.get_frame_count() % 2 == 0 && p_animatable.animation.keyframe_started()) { m_services->soundboard.play_sound("tank_step", get_collider().get_center()); }
 	get_collider().physics.apply_force({directions.actual.as_float(), 0.f});
-	if (directions.actual.lnr != directions.desired.lnr) { request(HaunchState::turn); }
-	if (change_state(HaunchState::turn, get_params("turn"))) { return HAUNCH_BIND(update_turn); }
+	if (directions.actual.lnr != directions.desired.lnr) { request(HaunchState::rage_turn); }
+	if (change_state(HaunchState::rage_turn, get_params("rage_turn"))) { return HAUNCH_BIND(update_rage_turn); }
 	return HAUNCH_BIND(update_stalk);
+}
+
+fsm::StateFunction Haunch::update_rage_turn() {
+	p_state.actual = HaunchState::rage_turn;
+	if (change_state(HaunchState::rage_struggle, get_params("rage_struggle"))) { return HAUNCH_BIND(update_rage_struggle); }
+	if (p_animatable.animation.complete()) {
+		request_flip();
+		request(HaunchState::stalk);
+		if (change_state(HaunchState::stalk, get_params("stalk"))) { return HAUNCH_BIND(update_stalk); }
+	}
+	return HAUNCH_BIND(update_rage_turn);
+}
+
+fsm::StateFunction Haunch::update_rage_struggle() {
+	p_state.actual = HaunchState::rage_struggle;
+	return HAUNCH_BIND(update_rage_struggle);
 }
 
 void Haunch::shoot_gun() {

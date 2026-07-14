@@ -20,7 +20,7 @@ struct MobileSound {
 	std::string tag{};
 };
 
-class Mobile {
+class Mobile : public Polymorphic {
   public:
 	Mobile(automa::ServiceProvider& svc, world::Map& map, std::string_view label, sf::Vector2i dimensions = constants::i_cell_vec, bool include_collider = true);
 	Mobile(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions = constants::i_cell_vec);

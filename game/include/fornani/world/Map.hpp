@@ -102,6 +102,7 @@ class Map {
 
   public:
 	Map(automa::ServiceProvider& svc, player::Player& player);
+	~Map();
 
 	// methods
 	void load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& context, int room_number);
@@ -314,6 +315,7 @@ class Map {
 	int m_middleground{};
 
 	io::Logger m_logger{"Map"};
+	bool m_destroying{false};
 
   public:
 	enemy::EnemyCatalog enemy_catalog;

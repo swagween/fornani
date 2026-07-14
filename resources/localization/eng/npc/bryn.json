@@ -976,11 +976,16 @@
           "message": "But otherwise you'll have to get to Ashtown the old-fashioned way."
         },
         {
-          "codes": [[22, 227, 1, 3]],
-          "message": "Take the Pioneer Trail as far as it goes. Once sec, I'll mark it on your map."
+          "message": "Take the Pioneer Trail as far as it goes."
         },
         {
-          "codes": [[1, 0]],
+          "message": "Once sec, I'll mark it on your map."
+        },
+        {
+          "codes": [
+            [1, 0],
+            [22, 227, 1, 3]
+          ],
           "message": "There you go. Don't hesitate to ask us if you need any help."
         }
       ],

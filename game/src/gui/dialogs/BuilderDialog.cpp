@@ -85,9 +85,13 @@ void BuilderDialog::update(automa::ServiceProvider& svc, world::Map& map, player
 			svc.soundboard.flags.menu.set(audio::Menu::select);
 		}
 		if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
-			auto exchange_text = is_buying() ? svc.data.gui_text["exchange_menu"]["build"].as_string() : svc.data.gui_text["exchange_menu"]["build"].as_string();
-			m_item_menu.emplace(MiniMenu{svc, {exchange_text, svc.data.gui_text["exchange_menu"]["cancel"].as_string()}, m_selector->get_position(), p_theme});
-			svc.soundboard.flags.console.set(audio::Console::menu_open);
+			if (m_zones.get_zone() == BuilderZoneType::docket) {
+				auto exchange_text = is_buying() ? svc.data.gui_text["exchange_menu"]["build"].as_string() : svc.data.gui_text["exchange_menu"]["build"].as_string();
+				m_item_menu.emplace(MiniMenu{svc, {exchange_text, svc.data.gui_text["exchange_menu"]["cancel"].as_string()}, m_selector->get_position(), p_theme});
+				svc.soundboard.flags.console.set(audio::Console::menu_open);
+			} else {
+				svc.soundboard.play_sound("error");
+			}
 		}
 		if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {
 			close();

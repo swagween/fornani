@@ -504,9 +504,9 @@
         "speed_multiplier": 1.4,
         "charge_multiplier": 1.1,
         "ammo": 1,
-        "reload": 220,
-        "cooldown_time": 64,
-        "recoil": 0.0
+        "reload": 180,
+        "cooldown_time": 32,
+        "recoil": 10.0
       }
     },
     "class_package": {

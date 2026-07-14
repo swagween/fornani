@@ -69,8 +69,8 @@ class MiniMap final : public Flaggable<MiniMapFlags> {
 	bool m_pan_limit_y{};
 	int m_currently_hovered_room{};
 	int m_previously_hovered_room{};
-	float m_scale{8.f};
-	float m_speed{};
+	float m_scale;
+	float m_speed;
 	float m_texture_scale{};
 	Resolution m_resolution{};
 	sf::FloatRect m_extent{};

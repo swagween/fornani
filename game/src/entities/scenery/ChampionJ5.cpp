@@ -17,6 +17,7 @@ ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{s
 	get_collider().physics.set_friction_componentwise({1.f, 1.f});
 	get_collider().stats.GRAV = 4.2f;
 	get_collider().set_trait(shape::ColliderTrait::circle);
+	get_collider().set_exclusion_target(shape::ColliderTrait::chest);
 	get_collider().set_exclusion_target(shape::ColliderTrait::circle);
 	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
 	get_collider().set_exclusion_target(shape::ColliderTrait::player);

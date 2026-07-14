@@ -39,6 +39,10 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	if (svc.quest_table.get_quest_progression("map_markers", Subquest{"main", 810}) == 1) { m_minimap->add_quest_marker(QuestMarkerType::main, 810); }
 	if (svc.quest_table.get_quest_progression("map_markers", Subquest{"woodshine", 400}) == 1) { m_minimap->add_quest_marker(QuestMarkerType::main, 400); }
+	if (svc.quest_table.get_quest_progression("map_markers", Subquest{"nightside_station", 901}) == 1) { m_minimap->add_quest_marker(QuestMarkerType::main, 901); }
+	if (svc.quest_table.get_quest_progression("map_markers", Subquest{"pioneer_trail", 227}) == 1) { m_minimap->add_quest_marker(QuestMarkerType::main, 227); }
+	if (svc.quest_table.get_quest_progression("map_markers", Subquest{"hoarders_cave", 1410}) == 1) { m_minimap->add_quest_marker(QuestMarkerType::main, 1410); }
+	if (svc.quest_table.get_quest_progression("map_markers", Subquest{"junkyard", 700}) == 1) { m_minimap->add_quest_marker(QuestMarkerType::main, 700); }
 }
 
 void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {

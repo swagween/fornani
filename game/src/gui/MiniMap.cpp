@@ -1,13 +1,13 @@
 
-#include <algorithm>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/gui/MiniMap.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
+#include <algorithm>
 
 namespace fornani::gui {
 
-MiniMap::MiniMap(automa::ServiceProvider& svc) : m_texture(svc), m_speed{64.f} {
+MiniMap::MiniMap(automa::ServiceProvider& svc) : m_texture(svc), m_speed{64.f}, m_scale{32.f} {
 	m_border.setOutlineColor(colors::pioneer_dark_red);
 	m_border.setOutlineThickness(-4.f);
 	m_border.setFillColor(sf::Color::Transparent);

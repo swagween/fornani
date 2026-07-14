@@ -2,17 +2,17 @@
 {
 	"version"		"3"
 	"revision"		"23"
-	"title"		""
+	"title"		"switch_pro"
 	"description"		""
 	"creator"		"76561199487987424"
-	"progenitor"		"default://3218760"
-	"url"		"autosave://C:\\Program Files (x86)\\Steam\\steamapps\\common\\Steam Controller Configs\\1527721696\\config\\3218760\\controller_ps5.vdf"
-	"export_type"		"unknown"
-	"controller_type"		"controller_ps5"
-	"controller_caps"		"580344831"
+	"progenitor"		"usercloud://3218760/switch_pro_0"
+	"url"		"autosave://C:\\Program Files (x86)\\Steam\\steamapps\\common\\Steam Controller Configs\\1527721696\\config\\3218760\\controller_switch_pro.vdf"
+	"export_type"		"personal_local"
+	"controller_type"		"controller_switch_pro"
+	"controller_caps"		"76547071"
 	"major_revision"		"0"
 	"minor_revision"		"0"
-	"Timestamp"		"1777736473"
+	"Timestamp"		"1777585626"
 	"actions"
 	{
 		"Platformer"
@@ -85,7 +85,9 @@
 	{
 		"english"
 		{
-			"platformer_title"		"Platformer Controls"
+			"platformer_title	"		"Platformer"
+			"Controls"		"
+			"
 			"menu_title"		"Menu Controls"
 			"platformer_up"		"Up (Keyboard)"
 			"platformer_down"		"Down (Keyboard)"
@@ -93,7 +95,7 @@
 			"platformer_right"		"Right (Keyboard)"
 			"platformer_jump"		"Jump"
 			"platformer_shoot"		"Use Weapon"
-			"platformer_sprint"		"Sprint (Keyboard)"
+			"platformer_sprint"		"Sprint"
 			"platformer_crouch"		"Crouch"
 			"platformer_slide"		"Slide"
 			"platformer_dash"		"Dash"
@@ -125,7 +127,7 @@
 		"description"		""
 		"inputs"
 		{
-			"button_a"
+			"button_b"
 			{
 				"activators"
 				{
@@ -141,7 +143,7 @@
 				{
 				}
 			}
-			"button_b"
+			"button_a"
 			{
 				"activators"
 				{
@@ -157,7 +159,7 @@
 				{
 				}
 			}
-			"button_x"
+			"button_y"
 			{
 				"activators"
 				{
@@ -173,7 +175,7 @@
 				{
 				}
 			}
-			"button_y"
+			"button_x"
 			{
 				"activators"
 				{
@@ -299,7 +301,7 @@
 		"description"		""
 		"inputs"
 		{
-			"button_a"
+			"button_b"
 			{
 				"activators"
 				{
@@ -315,7 +317,7 @@
 				{
 				}
 			}
-			"button_b"
+			"button_a"
 			{
 				"activators"
 				{
@@ -355,7 +357,7 @@
 	}
 	"group"
 	{
-		"id"		"15"
+		"id"		"12"
 		"mode"		"joystick_move"
 		"name"		""
 		"description"		""
@@ -373,8 +375,8 @@
 	}
 	"group"
 	{
-		"id"		"16"
-		"mode"		"joystick_move"
+		"id"		"13"
+		"mode"		"joystick_mouse"
 		"name"		""
 		"description"		""
 		"inputs"
@@ -383,6 +385,7 @@
 		"settings"
 		{
 			"virtual_mode"		"1"
+			"output_joystick"		"2"
 		}
 		"gameactions"
 		{
@@ -391,43 +394,22 @@
 	}
 	"group"
 	{
+		"id"		"16"
+		"mode"		"dpad"
+		"name"		""
+		"description"		""
+		"inputs"
+		{
+		}
+		"settings"
+		{
+			"requires_click"		"0"
+			"haptic_intensity_override"		"0"
+		}
+	}
+	"group"
+	{
 		"id"		"17"
-		"mode"		"joystick_move"
-		"name"		""
-		"description"		""
-		"inputs"
-		{
-		}
-		"settings"
-		{
-			"virtual_mode"		"1"
-		}
-		"gameactions"
-		{
-			"Platformer"		"Move"
-		}
-	}
-	"group"
-	{
-		"id"		"18"
-		"mode"		"joystick_move"
-		"name"		""
-		"description"		""
-		"inputs"
-		{
-		}
-		"settings"
-		{
-			"virtual_mode"		"1"
-		}
-		"gameactions"
-		{
-			"Menu"		"map_pan"
-		}
-	}
-	"group"
-	{
-		"id"		"24"
 		"mode"		"dpad"
 		"name"		""
 		"description"		""
@@ -502,6 +484,42 @@
 		{
 			"requires_click"		"0"
 			"haptic_intensity_override"		"0"
+		}
+	}
+	"group"
+	{
+		"id"		"19"
+		"mode"		"joystick_move"
+		"name"		""
+		"description"		""
+		"inputs"
+		{
+		}
+		"settings"
+		{
+			"virtual_mode"		"1"
+		}
+		"gameactions"
+		{
+			"Platformer"		"pan"
+		}
+	}
+	"group"
+	{
+		"id"		"20"
+		"mode"		"joystick_move"
+		"name"		""
+		"description"		""
+		"inputs"
+		{
+		}
+		"settings"
+		{
+			"virtual_mode"		"1"
+		}
+		"gameactions"
+		{
+			"Menu"		"map_pan"
 		}
 	}
 	"group"
@@ -602,22 +620,6 @@
 				{
 				}
 			}
-			"button_menu"
-			{
-				"activators"
-				{
-					"Full_Press"
-					{
-						"bindings"
-						{
-							"binding"		"game_action Menu menu_confirm, Confirm, , "
-						}
-					}
-				}
-				"disabled_activators"
-				{
-				}
-			}
 			"left_bumper"
 			{
 				"activators"
@@ -662,9 +664,10 @@
 			"1"		"button_diamond active"
 			"2"		"left_trigger active"
 			"3"		"right_trigger active"
-			"17"		"joystick active"
-			"15"		"right_joystick inactive"
-			"16"		"right_joystick active"
+			"12"		"joystick active"
+			"13"		"right_joystick inactive"
+			"19"		"right_joystick active"
+			"16"		"dpad inactive"
 		}
 	}
 	"preset"
@@ -677,8 +680,8 @@
 			"5"		"button_diamond active"
 			"6"		"left_trigger active"
 			"7"		"right_trigger active"
-			"18"		"joystick active"
-			"24"		"dpad active"
+			"20"		"joystick active"
+			"17"		"dpad active"
 		}
 	}
 	"settings"

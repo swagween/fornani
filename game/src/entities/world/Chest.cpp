@@ -15,6 +15,7 @@ Chest::Chest(automa::ServiceProvider& svc, world::Map& map, StableID id, ChestTy
 	get_collider().set_exclusion_target(shape::ColliderTrait::player);
 	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
+	get_collider().set_trait(shape::ColliderTrait::chest);
 
 	Animatable::set_parameters(m_animations.unopened);
 

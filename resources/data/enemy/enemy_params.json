@@ -863,13 +863,13 @@
       "hit": -1
     },
     "attributes": {
-      "base_hp": 10,
+      "base_hp": 20,
       "base_damage": 1.0,
       "speed": 2.5,
       "loot_multiplier": 1.0,
       "drop_range": [2, 3],
       "rare_drop_id": 0,
-      "respawn_distance": 2,
+      "respawn_distance": 0,
       "permadeath": false,
       "size": 1,
       "team": 1

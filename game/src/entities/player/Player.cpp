@@ -228,7 +228,7 @@ void Player::update(world::Map& map) {
 	m_head_socket = get_collider().get_top() + sf::Vector2f{-2.f * directions.actual.as_float(), -6.f};
 
 	// reward sequences
-	if (!has_flag_set(PlayerFlags::console_open)) {
+	if (!has_flag_set(PlayerFlags::console_open) && !has_flag_set(PlayerFlags::cutscene)) {
 		if (consume_flag(PlayerFlags::health_increase)) {
 			if (get_item_count("cridium_shard") % 4 == 0) {
 				health.increase_capacity(1.f);
@@ -311,7 +311,6 @@ void Player::update(world::Map& map) {
 		map.set_target_balance(0.f, audio::BalanceTarget::music);
 		map.set_target_balance(0.f, audio::BalanceTarget::ambience);
 	}
-
 	update_direction();
 	controller.update(*m_services, map, *this);
 	if (get_collider().hit_ceiling_ramp()) { controller.flush_ability(); }
@@ -338,6 +337,10 @@ void Player::update(world::Map& map) {
 	// materials
 	get_collider().set_flag(shape::ColliderFlags::in_goo, has_flag_set(PlayerFlags::in_goo));
 	reset_flag(PlayerFlags::in_goo);
+
+	// encumbered
+	get_collider().set_flag(shape::ColliderFlags::encumbered, has_flag_set(PlayerFlags::encumbered));
+	set_flag(PlayerFlags::encumbered, false);
 
 	// lighting
 	auto light_target = get_collider().get_center() + sf::Vector2f{controller.direction.as_float() * light_offset_v, 0.f};
@@ -437,6 +440,12 @@ void Player::simple_update() {
 	if (piggybacker) { piggybacker->update(*m_services, *this); }
 	update_weapon_simple();
 	set_flag(PlayerFlags::special_render, false);
+	if (has_item_equipped("gas_mask") && !is_dead()) {
+		if (!m_headgear) { m_headgear.emplace(*m_services, 0, 1); }
+	} else {
+		if (m_headgear) { m_headgear.reset(); }
+	}
+	if (m_headgear) { m_headgear->update(p_animatable.get_frame()); }
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -812,12 +821,14 @@ void Player::update_weapon(world::Map& map) {
 	if (controller.restricted()) { busy = true; }
 	if (m_animation_machine.is_state(AnimState::sleep) || m_animation_machine.is_state(AnimState::unconscious)) { busy = true; }
 	if (has_flag_set(PlayerFlags::console_open)) { busy = true; }
+	if (has_flag_set(PlayerFlags::cutscene)) { busy = true; }
 	if (has_flag_set(PlayerFlags::holding_item)) {
 		if (fire_weapon() && m_currently_held_item) { use_item(); }
 		busy = true;
 	}
 	if (!arsenal) { return; }
 	if (!hotbar) { return; }
+	if (equipped_weapon().get_id() == 15) { set_flag(PlayerFlags::encumbered); }
 	if (busy) {
 		equipped_weapon().set_flag(arms::WeaponFlags::firing, false);
 		equipped_weapon().set_flag(arms::WeaponFlags::charging, false);
@@ -1202,7 +1213,7 @@ void Player::handle_item_logic() {
 	has_item_equipped("hoarders_trinket") ? health.set_invincibility(default_invincibility_time_v * 1.3f) : health.set_invincibility(default_invincibility_time_v);
 	if (arsenal && hotbar) { has_item_equipped("feather") ? equipped_weapon().set_reload_multiplier(0.85f) : equipped_weapon().set_reload_multiplier(1.f); }
 	if (has_item("soda")) { m_services->quest_table.set_quest_progression("carl_soda", 1, QuestRequirementType::loose); }
-	if (has_item("screwdriver")) { m_services->quest_table.set_quest_progression("pioneer_tech", 2, QuestRequirementType::loose); }
+	if (has_item("screwdriver") && m_services->quest_table.get_quest_progression("pioneer_tech") == 1) { m_services->quest_table.set_quest_progression("pioneer_tech", 2, QuestRequirementType::loose); }
 	if (has_item("velvet_rose")) { m_services->quest_table.set_quest_progression("cajole_doug", 2, QuestRequirementType::strict); }
 	if (has_weapon("gnat") && has_weapon("wasp")) { m_services->quest_table.set_quest_progression("build_scorpion", 1, QuestRequirementType::loose); }
 	if (has_item("golden_tiara") && m_services->quest_table.get_quest_progression("find_spencer") < 10) { m_services->quest_table.set_quest_progression("find_spencer", 10, QuestRequirementType::strict); }

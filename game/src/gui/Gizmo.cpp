@@ -19,7 +19,7 @@ void Gizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_
 }
 
 bool Gizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
-	if (controller.digital(input::DigitalAction::menu_back).triggered) {
+	if (controller.digital(input::DigitalAction::menu_back).triggered || controller.digital(input::DigitalAction::menu_close).triggered) {
 		deselect();
 		return false;
 	}

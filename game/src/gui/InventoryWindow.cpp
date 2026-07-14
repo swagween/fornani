@@ -11,7 +11,7 @@
 namespace fornani::gui {
 
 InventoryWindow::InventoryWindow(automa::ServiceProvider& svc, world::Map& map, player::Player& player)
-	: m_cell_dimensions{svc.window->f_screen_dimensions()}, m_dashboard{std::make_unique<Dashboard>(svc, map, player, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}}, m_exit{64}, m_stall{40} {
+	: m_cell_dimensions{svc.window->f_screen_dimensions()}, m_dashboard{std::make_unique<Dashboard>(svc, map, player, sf::Vector2f{300.f, 300.f})}, m_camera{.parallax{0.9f}}, m_exit{64}, m_double_exit{32}, m_stall{40} {
 	svc.input_system.set_action_set(input::ActionSet::Menu);
 	m_debug.border.setFillColor(sf::Color{12, 12, 20});
 	m_debug.border.setSize(svc.window->f_screen_dimensions());
@@ -35,6 +35,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	auto& controller = svc.input_system;
 
 	m_exit.update();
+	m_double_exit.update();
 	m_stall.update();
 	if (m_view == InventoryView::focused) {
 		if (!m_dashboard->handle_inputs(controller, svc.soundboard)) { m_grid_position = {}; }
@@ -80,10 +81,13 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	if (controller.digital(input::DigitalAction::menu_back).triggered) { m_view = m_view == InventoryView::focused ? InventoryView::dashboard : InventoryView::exit; }
 	if ((controller.digital(input::DigitalAction::inventory).triggered || controller.digital(input::DigitalAction::menu_close).triggered) && m_stall.is_complete()) { m_view = InventoryView::exit; }
 	if ((m_view == InventoryView::exit || m_flags.test(InventoryWindowFlags::exit)) && !m_exit.running()) {
-		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
-		m_exit.start();
-		m_dashboard->close();
-		util::ColorUtils::reset();
+		if (m_dashboard->is_gizmo() && !m_double_exit.running()) { m_double_exit.start(); }
+		if (!m_double_exit.running()) {
+			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
+			m_exit.start();
+			m_dashboard->close();
+			util::ColorUtils::reset();
+		}
 	}
 }
 
