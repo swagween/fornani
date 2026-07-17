@@ -56,6 +56,7 @@ class DataManager final {
 	void load_data();
 	void save_progress(player::Player& player, int save_point_id);
 	void save_quests();
+	void save_dialogue_quests();
 	void save_seed();
 	void save_current();
 	void serialize_death();
@@ -88,6 +89,7 @@ class DataManager final {
 	void respawn_enemy(int room_id, StableID id);
 	void respawn_enemies(int room_id, int distance);
 	void respawn_all();
+	void register_loot(dj::Json const& chest);
 
 	bool is_duplicate_room(int id) const;
 	bool is_door_unlocked(std::string_view tag) const;
@@ -118,6 +120,7 @@ class DataManager final {
 	[[nodiscard]] auto get_room_data_from_id(int id) const -> std::optional<dj::Json>;
 	[[nodiscard]] auto get_npc_label_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] auto get_enemy_label_from_id(int id) const -> std::optional<std::string_view>;
+	[[nodiscard]] std::unordered_map<std::string, int> const& loot_register() const noexcept { return m_loot; }
 
 	int get_room_index(int id);
 	int get_npc_location(int npc_id);
@@ -190,6 +193,7 @@ class DataManager final {
   private:
 	Register<StableID::underlying_type> opened_chests{};
 	Register<StableID::underlying_type> destroyed_inspectables{};
+	std::unordered_map<std::string, int> m_loot{};
 	Register<std::string> unlocked_doors{};
 	Register<int> activated_switches{};
 	Register<DestructibleRecord> destructible_states{};

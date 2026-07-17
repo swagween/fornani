@@ -34,7 +34,7 @@ enum class ActionSet { Platformer, Menu, END };
 enum class DigitalActionQueryType { held, triggered, released };
 enum class InputDevice { none, keyboard, gamepad };
 enum class InputSystemSettings { gamepad_input_enabled, auto_sprint };
-enum class InputSystemFlags { gamepad_disconnected, keyboard_input_detected, changed_action_sets, key_was_pressed };
+enum class InputSystemFlags { gamepad_disconnected, keyboard_input_detected, changed_action_sets, key_was_pressed, any_key_pressed };
 
 // raw input
 struct RawDigitalState {
@@ -140,6 +140,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 
 	// --- Keyboard queries ---
 	[[nodiscard]] auto was_keyboard_input_detected() const -> bool { return has_flag_set(InputSystemFlags::keyboard_input_detected); }
+	[[nodiscard]] auto is_any_key_pressed() const -> bool { return has_flag_set(InputSystemFlags::any_key_pressed); }
 	[[nodiscard]] auto get_last_key_pressed() const -> sf::Keyboard::Scancode { return m_last_key_pressed; };
 
 	// --- Binding queries ---

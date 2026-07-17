@@ -164,7 +164,8 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	}
 	if (!is_rolling() && !is_sliding()) { set_flag(PlayerControllerFlags::slide_jump, false); }
 	if (!is_wallsliding() || is_wallclinging()) { svc.soundboard.flags.player.reset(audio::Player::wallslide); }
-	set_flag(PlayerControllerFlags::wallcling, !sprint && is_wallsliding() && player.can_wallcling());
+	auto cling = svc.input_system.is_keyboard() ? !sprint : svc.input_system.digital(input::DigitalAction::crouch).held;
+	set_flag(PlayerControllerFlags::wallcling, cling && is_wallsliding() && player.can_wallcling());
 	player.get_collider().set_flag(shape::ColliderFlags::left_walljump, false);
 	player.get_collider().set_flag(shape::ColliderFlags::right_walljump, false);
 	cooldowns.walljump_request.update();
@@ -340,5 +341,7 @@ std::optional<AnimState> PlayerController::get_ability_animation() const {
 }
 
 bool PlayerController::grounded() const { return m_player->grounded(); }
+
+bool PlayerController::on_water_surface() const { return m_player->on_water_surface(); }
 
 } // namespace fornani::player

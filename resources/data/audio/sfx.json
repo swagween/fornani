@@ -486,6 +486,22 @@
     "fade_out": 18
   },
   {
+    "label": "shot_plasmer",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1,
+    "fade_in": 2,
+    "fade_out": 4
+  },
+  {
+    "label": "shot_stinger",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1,
+    "fade_in": 16,
+    "fade_out": 16
+  },
+  {
     "label": "hit_demon_bow",
     "bus": "gameplay",
     "volume": 1.0,

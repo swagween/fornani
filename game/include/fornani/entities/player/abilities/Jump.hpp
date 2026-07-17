@@ -12,6 +12,7 @@ class Jump : public Ability {
 
   private:
 	float m_multiplier;
+	bool is_water{};
 	util::Cooldown m_request;
 	util::Cooldown m_post_jump;
 	audio::Soundboard* m_soundboard;

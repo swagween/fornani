@@ -527,6 +527,24 @@
     "color": "yellow"
   },
 
+  "plasmer": {
+    "load": 2,
+    "rate": 100.0,
+    "expulsion": 50.0,
+    "expulsion_variance": 30.0,
+    "cone": 0.28,
+    "friction": 0.99,
+    "elasticity": 0.9,
+    "gravity": 0.0,
+    "lifespan": 100,
+    "lifespan_variance": 80,
+    "dimensions": [3, 3],
+    "animated": false,
+    "colliding": true,
+    "fader": true,
+    "color": "night"
+  },
+
   "manta": {
     "load": 6,
     "rate": 100.0,

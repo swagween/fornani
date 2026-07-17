@@ -39,6 +39,7 @@ Quest::Quest(dj::Json const& in) {
 	m_title = in["title"].as_string();
 	m_tag = in["tag"].as_string();
 	m_progression_target = in["target"].as<int>();
+	if (in["dialogue"].as_bool()) { m_attributes.set(QuestAttributes::dialogue); }
 	for (auto const& objective : in["objectives"].as_array()) { m_objectives.push_back(objective.as_string()); }
 	if (in["subquests"].is_array()) {
 		m_subquests = std::vector<Subquest>{};
@@ -93,6 +94,40 @@ void QuestTable::serialize(dj::Json& to_save) {
 			out_quest["subquests"].push_back(out_status);
 		}
 		to_save["quests"].push_back(out_quest);
+	}
+}
+
+void QuestTable::serialize_dialogue(dj::Json& to_save) {
+	for (auto const& [tag, quest] : m_quests) {
+		if (!m_registry->get_quest_metadata(tag).has_attribute(QuestAttributes::dialogue)) { continue; }
+		dj::Json out_quest{};
+		out_quest["tag"] = tag;
+		bool found = false;
+		for (auto const& existing : to_save["quests"].as_array()) {
+			if (existing["tag"].as_string() == tag) {
+				// overwrite existing
+				// don't need to do anything here, as if the quest exists, the dialogue has been serialized already
+				// note, I'll have to change this if I want to use this function for anything but boss dialogue
+				found = true;
+			}
+		}
+		if (!found) {
+			// create new
+			for (auto& progression : quest.progressions) {
+				dj::Json out_status{};
+				out_status.push_back(progression.first);
+				out_status.push_back(progression.second);
+				out_quest["status"].push_back(out_status);
+			}
+			for (auto& progression : quest.subquest_progressions) {
+				dj::Json out_status{};
+				out_status["tag"] = progression.first.tag;
+				out_status["id"] = progression.first.id;
+				out_status["status"].push_back(progression.second);
+				out_quest["subquests"].push_back(out_status);
+			}
+			to_save["quests"].push_back(out_quest);
+		}
 	}
 }
 

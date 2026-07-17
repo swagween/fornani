@@ -18,10 +18,11 @@
         "series": [
           {
             "hide_portrait": true,
+            "output": 1,
             "suite": [
               [
                 {
-                  "message": "^ Woodshine Station"
+                  "message": "^ Pioneer Station"
                 }
               ]
             ]
@@ -125,6 +126,7 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

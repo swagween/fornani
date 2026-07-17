@@ -56,23 +56,6 @@
         "activate_on_contact": true,
         "already_open": false,
         "channel": 0,
-        "destination_id": 504,
-        "dimensions": [
-          1,
-          4
-        ],
-        "id": 0,
-        "locked": false,
-        "position": [
-          0,
-          21
-        ],
-        "source_id": 502
-      },
-      {
-        "activate_on_contact": true,
-        "already_open": false,
-        "channel": 0,
         "destination_id": 507,
         "dimensions": [
           1,
@@ -103,6 +86,23 @@
           29
         ],
         "source_id": 502
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 504,
+        "dimensions": [
+          1,
+          4
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          0,
+          22
+        ],
+        "source_id": 502
       }
     ]
   },
@@ -110,11 +110,6 @@
     "ambience": "",
     "background": "woods",
     "biome": "kariba",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -150,7 +145,9 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": true,
-      "timer": false
+      "sky_limit": 0,
+      "timer": false,
+      "toxic": false
     },
     "room_id": 502,
     "shader": {
@@ -1840,10 +1837,10 @@
         22,
         24,
         3,
-        54,
-        55,
-        55,
-        56,
+        38,
+        39,
+        39,
+        40,
         0,
         0,
         38,
@@ -1872,10 +1869,10 @@
         38,
         40,
         3,
-        0,
-        0,
-        0,
-        0,
+        54,
+        55,
+        55,
+        56,
         0,
         0,
         38,
@@ -2000,8 +1997,8 @@
         0,
         0,
         0,
-        22,
-        24,
+        0,
+        0,
         0,
         0,
         0,
@@ -2032,8 +2029,8 @@
         0,
         0,
         0,
-        38,
-        40,
+        22,
+        24,
         0,
         0,
         0,

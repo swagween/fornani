@@ -134,6 +134,7 @@ class Projectile : public Animatable {
 		int effect_type{};
 		int sprite_index{};
 		int num_angles{};
+		int num_sprites{};
 		RenderType render_type{};
 		sf::Vector2<int> dimensions{};
 		graphics::SpriteHistory sprite_history{};

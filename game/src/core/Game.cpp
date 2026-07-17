@@ -332,6 +332,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("[%s]", chunk);
 							}
 						}
+						ImGui::SeparatorText("World Loot");
+						for (auto const& entry : services.data.loot_register()) { ImGui::Text("%i of %s", entry.second, entry.first.c_str()); }
 					}
 					ImGui::Separator();
 					ImGui::Text("Save Point ID: %i", services.state_controller.save_point_id);
@@ -561,6 +563,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Separator();
 								ImGui::Text("Grounded? %s", player.grounded() ? "Yes" : "No");
 								ImGui::Text("World Grounded? %s", player.get_collider().perma_grounded() ? "Yes" : "No");
+								ImGui::Text("On Water Surface? %s", player.on_water_surface() ? "Yes" : "No");
 								ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
 								ImGui::Text("Push Time: %i", player.cooldowns.push.get());
 								ImGui::Text("Acceleration Multiplier: %f", player.get_collider().acceleration_multiplier);
@@ -625,6 +628,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Wallsliding? %s", player.controller.is_wallsliding() ? "Yes" : "No");
 								ImGui::Text("Walljumping? %s", player.controller.is_walljumping() ? "Yes" : "No");
 								ImGui::Text("On Ramp? %s", player.get_collider().on_ramp() ? "Yes" : "No");
+								ImGui::Separator();
+								ImGui::Text("Water Exit Cooldown");
+								ImGui::ProgressBar(player.cooldowns.water_exit.get_normalized(), {300.f, 4.f}, "");
 								ImGui::Text("Submerged? %s", player.get_collider().has_flag_set(shape::ColliderFlags::submerged) ? "Yes" : "No");
 								ImGui::Text("In Water? %s", player.get_collider().has_flag_set(shape::ColliderFlags::in_water) ? "Yes" : "No");
 								ImGui::Separator();

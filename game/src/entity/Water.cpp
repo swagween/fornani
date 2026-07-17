@@ -93,7 +93,11 @@ void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 	} else {
 		set_flag(WaterFlags::splashed, false);
 	}
-	if (m_bounding_box.contains_point(player.get_collider().get_top())) { player.get_collider().set_flag(shape::ColliderFlags::submerged); }
+	if (m_bounding_box.contains_point(player.get_collider().get_top())) {
+		player.get_collider().set_flag(shape::ColliderFlags::submerged);
+	} else if (player.get_collider().has_flag_set(shape::ColliderFlags::in_water)) {
+		player.exit_water();
+	}
 
 	m_wave_timer.update(0.005f);
 	auto phase = m_wave_timer.get();

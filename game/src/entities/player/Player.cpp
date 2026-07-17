@@ -181,6 +181,7 @@ void Player::update(world::Map& map) {
 	cooldowns.suffocate.update();
 	cooldowns.stun_immunity.update();
 	cooldowns.post_push.update();
+	cooldowns.water_exit.update();
 
 	if (!collider.has_value()) { return; }
 
@@ -249,7 +250,8 @@ void Player::update(world::Map& map) {
 		if (m_services->ticker.every_x_ticks(8)) { m_air_supply.heal(1.f); }
 	}
 
-	// check for drown
+	// water
+	if (get_collider().physics.velocity.y < -4.f && !get_collider().has_flag_set(shape::ColliderFlags::in_water)) { cooldowns.water_exit.cancel(); }
 	if (m_air_supply.is_dead()) {
 		m_death_type = PlayerDeathType::drowned;
 		hurt(max_damage_v, true);
@@ -771,6 +773,8 @@ bool Player::is_intangible() const { return has_flag_set(PlayerFlags::intangible
 
 auto Player::can_be_stunned() const -> bool { return !is_stunned() && !cooldowns.stun_immunity.running(); }
 
+auto Player::on_water_surface() const -> bool { return (get_collider().has_flag_set(shape::ColliderFlags::in_water) || cooldowns.water_exit.running()) && !get_collider().has_flag_set(shape::ColliderFlags::submerged); }
+
 void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	sf::Vector2f offset{};
 	offset.x = centered ? get_collider().dimensions.x * 0.5f : 0.f;
@@ -1172,6 +1176,8 @@ void Player::map_reset() {
 	controller.flush_ability();
 }
 
+void Player::exit_water() { cooldowns.water_exit.start(); }
+
 arms::Weapon& Player::equipped_weapon() { return arsenal.value().get_weapon_at(hotbar.value().get_tag()); }
 
 void Player::push_to_loadout(std::string_view tag, bool from_save) {
@@ -1320,7 +1326,7 @@ bool Player::can_jump() const {
 	if (controller.is_wallsliding()) { return false; }
 	if (m_animation_machine.is_state(AnimState::sleep)) { return false; }
 	if (m_animation_machine.is_state(AnimState::unconscious)) { return false; }
-	if (!grounded()) { return false; }
+	if (!grounded() && !on_water_surface()) { return false; }
 	return true;
 }
 
@@ -1349,7 +1355,7 @@ bool Player::can_walljump() const {
 
 bool Player::can_dive() const {
 	if (abilities_disabled()) { return false; }
-	if (!get_collider().has_flag_set(shape::ColliderFlags::in_water)) { return false; }
+	if (!get_collider().has_flag_set(shape::ColliderFlags::submerged)) { return false; }
 	return true;
 }
 

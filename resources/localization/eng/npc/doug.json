@@ -135,7 +135,30 @@
       [
         {
           "codes": [[1, 1]],
+          "contingencies": [
+            {
+              "requirement": 0,
+              "strict": true,
+              "tag": "find_spencer"
+            }
+          ],
           "message": "I need more info about the Bandit."
+        },
+        {
+          "codes": [[1, 3]],
+          "contingencies": [
+            {
+              "requirement": 1,
+              "strict": false,
+              "tag": "find_spencer"
+            },
+            {
+              "requirement": 5,
+              "strict": true,
+              "tag": "cajole_doug"
+            }
+          ],
+          "message": "I caught the Ashtown Bandit."
         },
         {
           "codes": [[1, 2]],
@@ -176,6 +199,25 @@
           "codes": [[1, 0]],
           "message": "Anyway, you got me a flower so you're on my good side. But don't push your luck!"
         }
+      ],
+      [
+        {
+          "message": "Really?!"
+        },
+        {
+          "message": "Say, you sure are a special one."
+        },
+        {
+          "message": "I ought to give you something for your efforts."
+        },
+        {
+          "codes": [
+            [27, 25, 6],
+            [2, 83]
+          ],
+          "message": "Here. These were just taking up space in my closet. They're all yours!"
+        },
+        { "codes": [[1, 0]], "message": "Hope you find them useful." }
       ]
     ]
   },

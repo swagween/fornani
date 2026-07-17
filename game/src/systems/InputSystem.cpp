@@ -146,10 +146,12 @@ void InputSystem::setup_action_handles() {
 
 void InputSystem::handle_event(std::optional<sf::Event> const event) {
 	auto& left_mouse = m_mouse.left_button;
+	set_flag(InputSystemFlags::any_key_pressed, false);
 	if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
 		m_last_device_used = InputDevice::keyboard;
 		m_last_key_pressed = key_pressed->scancode;
 		set_flag(InputSystemFlags::key_was_pressed);
+		set_flag(InputSystemFlags::any_key_pressed);
 		if (key_pressed->scancode != sf::Keyboard::Scancode::Unknown) { keys_pressed.insert(key_pressed->scancode); }
 		set_flag(InputSystemFlags::keyboard_input_detected);
 	} else if (auto const* key_released = event->getIf<sf::Event::KeyReleased>()) {
@@ -184,6 +186,7 @@ void InputSystem::update() {
 	gather_raw_input();
 	resolve_input();
 	if (has_mouse_moved()) { m_mouse_active.start(); }
+	if (is_any_key_pressed()) { m_mouse_active.cancel(); }
 	m_mouse_active.update();
 }
 

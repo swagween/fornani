@@ -7,12 +7,12 @@
           1
         ],
         "id": 92091,
-        "modifier": 16,
+        "modifier": 0,
         "position": [
           53,
           6
         ],
-        "tag": "vermite",
+        "tag": "magnet",
         "type": 2
       }
     ],
@@ -1251,6 +1251,7 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

@@ -244,6 +244,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto get_item_count(std::string_view tag) -> int;
 	[[nodiscard]] bool is_intangible() const;
 	[[nodiscard]] auto can_be_stunned() const -> bool;
+	[[nodiscard]] auto on_water_surface() const -> bool;
 
 	void set_desired_direction(SimpleDirection to) { directions.desired = Direction{to}; }
 
@@ -294,6 +295,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void reset_water_flags();
 	void total_reset();
 	void map_reset();
+	void exit_water();
 
 	arms::Weapon& equipped_weapon();
 	void push_to_loadout(std::string_view tag, bool from_save = false);
@@ -336,6 +338,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 		util::Cooldown suffocate{360};
 		util::Cooldown stun_immunity{400};
 		util::Cooldown post_push{20};
+		util::Cooldown water_exit{80};
 	} cooldowns{};
 	Counters counters{};
 	std::vector<sf::Vector2f> accumulated_forces{};

@@ -26,6 +26,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	Animatable::set_dimensions({in_data["dimensions"][0].as<int>(), in_data["dimensions"][1].as<int>()});
 	Animatable::set_origin(sf::Vector2f{in_data["dimensions"][0].as<float>(), in_data["dimensions"][1].as<float>()} * 0.5f);
 	Animatable::set_parameters(anim::Parameters{0, in_data["animation"]["num_frames"].as<int>(), in_data["animation"]["framerate"].as<int>(), -1});
+	visual.num_sprites = in_data["animation"]["num_sprites"].as<int>();
 
 	metadata.specifications.base_damage = in_data["attributes"]["base_damage"].as<float>();
 	metadata.specifications.power = in_data["attributes"]["power"] ? in_data["attributes"]["power"].as<float>() : 1.f;
@@ -125,6 +126,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	auto rotation_angle = metadata.specifications.spin > 0.f ? physical.collider.physics.velocity.rotatedBy(sf::radians(rotation + dampened)) : physical.collider.physics.velocity;
 	if (visual.num_angles > 0 && !sprite_flip() && !is_stuck()) { visual.rotator.handle_rotation(get_sprite(), rotation_angle, visual.num_angles); }
 	set_channel(visual.rotator.get_sprite_angle_index());
+	if (visual.num_sprites > 1) { set_channel(visual.sprite_index); }
 	if (physical.sensor) { physical.sensor->set_position(physical.collider.get_global_center()); }
 
 	if (lifetime.is_complete()) {
@@ -243,6 +245,7 @@ void Projectile::destroy(bool completely, bool whiffed) {
 
 void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2f target, float speed_multiplier, float damage_multiplier) {
 	float var = random::random_range_float(-metadata.specifications.variance, metadata.specifications.variance);
+	if (visual.num_sprites > 1) { visual.sprite_index = random::random_range(0, visual.num_sprites - 1); }
 	metadata.specifications.speed *= speed_multiplier;
 	variables.damage_multiplier *= damage_multiplier;
 	if (omnidirectional()) {

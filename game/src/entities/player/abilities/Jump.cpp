@@ -22,6 +22,10 @@ void Jump::update(shape::Collider& collider, PlayerController& controller) {
 		if (controller.grounded()) {
 			m_soundboard->flags.player.set(audio::Player::jump);
 			m_request.cancel();
+		} else if (controller.on_water_surface()) {
+			m_soundboard->play_sound("nani_water_jump");
+			is_water = true;
+			m_request.cancel();
 		} else {
 			if (m_request.is_complete()) { m_flags.set(AbilityFlags::failed); }
 			if (m_request.is_complete() && !failed()) { m_soundboard->flags.player.set(audio::Player::jump); }
@@ -38,7 +42,11 @@ void Jump::update(shape::Collider& collider, PlayerController& controller) {
 		collider.physics.acceleration.y = m_multiplier;
 		collider.physics.velocity.y = 0.f;
 		collider.flags.movement.set(shape::Movement::jumping);
-		m_map->effects.push_back(entity::Effect(*m_services, "jump", collider.get_center(), {collider.physics.apparent_velocity().x * 0.1f, 0.f}));
+		if (is_water) {
+			m_map->spawn_effect(*m_services, "splash", collider.get_center());
+		} else {
+			m_map->spawn_effect(*m_services, "jump", collider.get_center(), {collider.physics.apparent_velocity().x * 0.1f, 0.f});
+		}
 		m_post_jump.start();
 		m_request.cancel();
 	} else if (m_post_jump.is_complete()) {

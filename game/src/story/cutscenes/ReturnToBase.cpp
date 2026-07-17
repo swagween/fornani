@@ -23,18 +23,14 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 
 	if (complete() && !m_flags.test(ReturnToBaseFlags::done) && context.transition.is_black()) {
 		m_flags.set(ReturnToBaseFlags::done);
-		player.controller.unrestrict();
-		svc.state_flags.reset(automa::StateFlags::hide_hud);
-		svc.state_flags.reset(automa::StateFlags::no_menu);
-		svc.state_flags.reset(automa::StateFlags::cutscene);
 		player.set_flag(player::PlayerFlags::cutscene, false);
 		svc.quest_table.progress_quest("defeat_skycorps", 1, 999);
-		svc.camera_controller.set_owner(graphics::CameraOwner::player);
-		svc.camera_controller.constrain();
 		context.transition.end();
 		bryn->hide();
 		svc.quest_table.set_quest_progression("npc_dialogue", {"dr_willett", 300}, 4, {209});
 		svc.quest_table.set_quest_progression("npc_dialogue", {"bryn", 300}, 2, {209});
+
+		Cutscene::end(svc, player);
 	}
 
 	if (m_flags.test(ReturnToBaseFlags::done)) { return; }
@@ -125,6 +121,7 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 	case 5:
 		if (context.transition.has_waited(400)) {
 			flags.set(CutsceneFlags::complete);
+			m_champion.reset();
 			++progress;
 			svc.quest_table.set_quest_progression("defeat_haunch", 3);
 		}

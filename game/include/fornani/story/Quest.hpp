@@ -4,6 +4,7 @@
 #include <djson/json.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
+#include <fornani/utils/BitFlags.hpp>
 #include <functional>
 #include <optional>
 #include <string_view>
@@ -11,6 +12,7 @@
 #include <vector>
 
 namespace fornani {
+
 struct Subquest {
 	std::string tag{};
 	int id{};
@@ -34,6 +36,7 @@ struct hash<fornani::Subquest> {
 namespace fornani {
 
 enum class QuestRequirementType { strict, loose };
+enum class QuestAttributes { dialogue };
 
 using ProgressionState = int;
 using QuestIdentifier = int;
@@ -85,12 +88,14 @@ class Quest {
 	[[nodiscard]] auto get_title() const -> std::string_view { return m_title; }
 	[[nodiscard]] auto get_tag() const -> std::string_view { return m_tag; }
 	[[nodiscard]] auto get_objectives() const -> std::string;
+	[[nodiscard]] auto has_attribute(QuestAttributes test) const -> bool { return m_attributes.test(test); }
 
   private:
 	std::string m_title{"Null"};
 	std::string m_tag{"null"};
 	std::vector<std::string> m_objectives{};
 	std::optional<std::vector<Subquest>> m_subquests{};
+	util::BitFlags<QuestAttributes> m_attributes{};
 	int m_progression_target{};
 };
 
@@ -99,6 +104,7 @@ class QuestRegistry {
   public:
 	QuestRegistry(ResourceFinder& finder);
 
+	[[nodiscard]] auto get_quest_metadata(std::string_view tag) const& -> Quest { return get_quest_metadata(get_index_from_tag(tag)); }
 	[[nodiscard]] auto get_quest_metadata(int index) const& -> Quest { return m_registry.contains(index) ? m_registry.at(index) : null_quest; }
 	[[nodiscard]] auto get_index_from_tag(std::string_view tag) const -> std::size_t { return m_indeces.contains(tag.data()) ? m_indeces.at(tag.data()) : -1; }
 	[[nodiscard]] auto get_size() const -> std::size_t { return m_registry.size(); }
@@ -116,6 +122,7 @@ class QuestTable {
   public:
 	QuestTable(QuestRegistry& registry);
 	void serialize(dj::Json& to_save);
+	void serialize_dialogue(dj::Json& to_save);
 	void unserialize(dj::Json const& from_save);
 
 	void progress_quest(std::string_view tag, int const amount, int const source, QuestIdentifier const identifier = 0);

@@ -6,14 +6,15 @@
 
 namespace fornani {
 
-CutsceneTrigger::CutsceneTrigger(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "cutscene_triggers"), m_bounding_box{get_world_dimensions()} {
+CutsceneTrigger::CutsceneTrigger(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "cutscene_triggers"), m_bounding_box{get_world_dimensions()}, m_hover_trigger{100} {
 	unserialize(in);
 	m_bounding_box.set_position(get_world_position());
 	p_animatable.set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 	repeatable = false;
 }
 
-CutsceneTrigger::CutsceneTrigger(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, util::BitFlags<CutsceneTriggerAttributes> attributes) : Entity(svc, "cutscene_triggers", id, dimensions), m_attributes{attributes} {
+CutsceneTrigger::CutsceneTrigger(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, util::BitFlags<CutsceneTriggerAttributes> attributes)
+	: Entity(svc, "cutscene_triggers", id, dimensions), m_attributes{attributes}, m_hover_trigger{100} {
 	p_animatable.set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 	repeatable = false;
 }
@@ -48,12 +49,20 @@ void CutsceneTrigger::update([[maybe_unused]] automa::ServiceProvider& svc, [[ma
 	if (p_contingencies) {
 		if (!svc.quest_table.are_contingencies_met(*p_contingencies)) { return; }
 	}
+	m_hover_trigger.update();
 	if (player.get_collider().bounding_box.overlaps(m_bounding_box) && !is_pushed()) {
 		if (m_attributes.test(CutsceneTriggerAttributes::callbox)) {
 			if (player.controller.inspecting()) { m_flags.set(CutsceneTriggerFlags::activated); }
+			if (!m_flags.test(CutsceneTriggerFlags::hovered)) {
+				if (!m_hover_trigger.running()) { map.spawn_effect(svc, "question_mark", get_global_center() + sf::Vector2f{0.f, -32.f}); }
+				m_flags.set(CutsceneTriggerFlags::hovered);
+				m_hover_trigger.start();
+			}
 		} else {
 			m_flags.set(CutsceneTriggerFlags::activated);
 		}
+	} else {
+		m_flags.reset(CutsceneTriggerFlags::hovered);
 	}
 	if (is_activated()) {
 		if (get_id() != 0) { svc.events.launch_cutscene_event.dispatch(svc, get_id()); }

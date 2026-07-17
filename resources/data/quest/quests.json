@@ -127,14 +127,16 @@
     "tag": "lynx_dialogue",
     "target": 1,
     "objectives": [],
-    "displayed": false
+    "displayed": false,
+    "dialogue": true
   },
   {
     "title": "Minigus Dialogue",
     "tag": "minigus_dialogue",
     "target": 1,
     "objectives": [],
-    "displayed": false
+    "displayed": false,
+    "dialogue": true
   },
   {
     "title": "Defeat Skycorps",
@@ -235,7 +237,8 @@
     "tag": "haunch_dialogue",
     "target": 1,
     "objectives": [],
-    "displayed": false
+    "displayed": false,
+    "dialogue": true
   },
   {
     "tag": "bonus_health",

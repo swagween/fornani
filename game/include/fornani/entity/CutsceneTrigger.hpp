@@ -8,7 +8,7 @@
 
 namespace fornani {
 
-enum class CutsceneTriggerFlags { activated, pushed };
+enum class CutsceneTriggerFlags { activated, pushed, hovered };
 enum class CutsceneTriggerAttributes { callbox };
 
 class CutsceneTrigger : public Entity {
@@ -28,6 +28,7 @@ class CutsceneTrigger : public Entity {
   private:
 	// in-game use
 	shape::Shape m_bounding_box{};
+	util::Cooldown m_hover_trigger;
 	util::BitFlags<CutsceneTriggerFlags> m_flags{};
 	util::BitFlags<CutsceneTriggerAttributes> m_attributes{};
 };

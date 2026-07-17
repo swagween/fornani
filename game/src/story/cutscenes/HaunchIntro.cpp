@@ -139,7 +139,7 @@ void HaunchIntro::update(automa::ServiceProvider& svc, SceneContext& context, wo
 			svc.music_player.load(svc.finder, "scuffle");
 			svc.music_player.play_looped();
 			svc.quest_table.progress_quest("haunch_dialogue", 1, 1);
-			svc.data.save_quests();
+			svc.data.save_dialogue_quests();
 			m_army_truck_undercarriage.set_animation("moving");
 			++progress;
 		}

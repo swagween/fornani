@@ -138,7 +138,7 @@
     "tag": "pioneer_station_key",
     "category": 1,
     "lookup": [8, 0],
-    "origin": [4, 4],
+    "origin": [8, 3],
     "actual_title": "Pioneer Station Key",
     "naive_description": "Grants you access to Pioneer Station from Woodshine Village.",
     "unique": true,
@@ -249,7 +249,7 @@
     "unique": true,
     "value": 1000,
     "build": {
-      "recipe": ["priorite", "pioneer_scrap", "heart_keychain"],
+      "recipe": ["priorite", "pioneer_scrap", "indigum"],
       "craft_price": 200,
       "lookup": 3
     }

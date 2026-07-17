@@ -228,6 +228,12 @@ void DataManager::save_quests() {
 	save_current();
 }
 
+void DataManager::save_dialogue_quests() {
+	auto& save = files.at(current_save).save_data;
+	m_services->quest_table.serialize_dialogue(save);
+	save_current();
+}
+
 void DataManager::save_seed() {
 	auto& save = files.at(current_save).save_data;
 	save["vendor_seed"] = random::get_vendor_seed();
@@ -504,6 +510,7 @@ void DataManager::respawn_enemies(int room_id, int distance) {
 void DataManager::respawn_all() {
 	std::erase_if(fallen_enemies, [](auto const& i) { return !i.permanent && !i.semipermanent; });
 }
+void DataManager::register_loot(dj::Json const& chest) { ++m_loot[chest["tag"].as_string()]; }
 
 bool data::DataManager::is_duplicate_room(int id) const {
 	for (auto& json : map_jsons) {

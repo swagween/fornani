@@ -12,8 +12,8 @@
 
 namespace fornani::enemy {
 
-enum class LynxState { sit, get_up, idle, jump, forward_slash, levitate, run, downward_slam, prepare_shuriken, toss_shuriken, upward_slash, triple_slash, turn, aerial_slash, prepare_slash, defeat, second_phase, laugh, stagger };
-enum class LynxFlags { conversing, just_levitated, player_defeated };
+enum class LynxState { sit, get_up, idle, jump, forward_slash, levitate, run, downward_slam, prepare_shuriken, toss_shuriken, upward_slash, triple_slash, turn, aerial_slash, prepare_slash, defeat, second_phase, laugh, stagger, fall_over };
+enum class LynxFlags { conversing, just_levitated, player_defeated, slammed };
 
 class Lynx final : public Boss {
   public:
@@ -50,6 +50,7 @@ class Lynx final : public Boss {
 	fsm::StateFunction update_second_phase();
 	fsm::StateFunction update_laugh();
 	fsm::StateFunction update_stagger();
+	fsm::StateFunction update_fall_over();
 
   private:
 	struct {
@@ -84,6 +85,7 @@ class Lynx final : public Boss {
 	void request(LynxState to) { m_state.desired = to; }
 	bool change_state(LynxState next, anim::Parameters params);
 	vfx::Sparkler m_magic;
+	Animatable m_sword_slam;
 	shape::Shape m_distant_range{};
 
 	components::SteeringBehavior m_steering{};

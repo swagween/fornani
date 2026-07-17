@@ -90,6 +90,7 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 	[[nodiscard]] auto facing_right() const -> bool { return direction.lnr == LNR::right; }
 	[[nodiscard]] auto restricted() const -> bool { return flags.test(MovementState::restricted); }
 	[[nodiscard]] auto grounded() const -> bool;
+	[[nodiscard]] auto on_water_surface() const -> bool;
 	[[nodiscard]] auto is_walljumping() const -> bool { return flags.test(MovementState::walljumping); }
 	[[nodiscard]] auto walking_autonomously() const -> bool { return hard_state.test(HardState::walking_autonomously); }
 	[[nodiscard]] auto shot() -> bool { return key_map[ControllerInput::shoot] == 1.f; }

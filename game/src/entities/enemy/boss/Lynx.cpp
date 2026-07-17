@@ -14,7 +14,8 @@ constexpr auto run_threshold_v = 0.002f;
 
 Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, SceneContext& context)
 	: Boss(svc, map, "lynx"), m_context{&context}, m_map{&map}, m_cooldowns{.run{240}, .post_hurt{64}, .post_shuriken_toss{1200}, .post_levitate{1000}, .start_levitate{150}, .throw_shuriken{60}, .post_defeat{800}, .stall{80}},
-	  m_services{&svc}, m_attacks{.left_shockwave{{30, 400, 2, {-1.5f, 0.f}}}, .right_shockwave{{30, 400, 2, {1.5f, 0.f}}}}, m_shuriken(svc, "shuriken"), m_magic{svc, {40.f, 40.f}, colors::white, "lynx_magic"}, m_seek_friction{0.9f, 0.9f} {
+	  m_services{&svc}, m_attacks{.left_shockwave{{30, 400, 2, {-1.5f, 0.f}}}, .right_shockwave{{30, 400, 2, {1.5f, 0.f}}}}, m_shuriken(svc, "shuriken"), m_magic{svc, {40.f, 40.f}, colors::white, "lynx_magic"}, m_seek_friction{0.9f, 0.9f},
+	  m_sword_slam{svc, "sword_slam", {196, 88}} {
 	p_animatable.set_animations({
 		{"sit", {0, 1, lynx_framerate, -1}},
 		{"get_up", {1, 2, lynx_framerate * 4, 0}},
@@ -31,11 +32,16 @@ Lynx::Lynx(automa::ServiceProvider& svc, world::Map& map, SceneContext& context)
 		{"turn", {55, 8, lynx_framerate * 2, 0}},
 		{"aerial_slash", {63, 4, lynx_framerate * 2, 0}},
 		{"prepare_slash", {45, 4, lynx_framerate * 5, 0}},
+		{"fall_over", {73, 3, lynx_framerate * 6, -1, true}},
 		{"defeat", {67, 6, lynx_framerate * 6, -1}},
 		{"second_phase", {18, 4, lynx_framerate * 4, -1}},
-		{"laugh", {73, 4, lynx_framerate * 3, 4}},
-		{"stagger", {77, 1, lynx_framerate * 4, -1}},
+		{"laugh", {76, 4, lynx_framerate * 3, 4}},
+		{"stagger", {80, 1, lynx_framerate * 4, -1}},
 	});
+	m_sword_slam.push_and_set_animation("stop", {0, 1, lynx_framerate, -1});
+	m_sword_slam.push_animation("start", {1, 1, lynx_framerate * 3, -1});
+	m_sword_slam.push_animation("release", {2, 5, lynx_framerate * 2, -1, true});
+	m_sword_slam.center();
 	p_animatable.animation.set_params(Enemy::get_params("sit"));
 	flags.state.set(StateFlags::no_shake);
 	flags.general.set(GeneralFlags::post_death_render);
@@ -88,6 +94,8 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	// effects
 	m_magic.set_position(Enemy::get_collider().physics.position);
 	m_magic.update(svc);
+	m_sword_slam.tick();
+	if (m_sword_slam.is_animation("release") && m_sword_slam.is_complete()) { m_sword_slam.set_animation("stop"); }
 
 	// attacks
 	// shuriken
@@ -201,7 +209,7 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 			flags.general.set(GeneralFlags::has_invincible_channel);
 			flags.state.set(StateFlags::vulnerable);
 			svc.quest_table.progress_quest("lynx_dialogue", 1, 1);
-			svc.data.save_quests();
+			svc.data.save_dialogue_quests();
 		}
 		// second phase starts
 		if (half_health() && !Boss::has_flag_set(BossFlags::second_phase)) {
@@ -227,7 +235,6 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 }
 
 void Lynx::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	// NPC::render(win, cam);
 	Enemy::render(svc, win, cam);
 	if (svc.greyblock_mode()) {
 		for (auto& slash : m_attacks.slash) {
@@ -237,6 +244,8 @@ void Lynx::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 		m_attacks.right_shockwave.render(win, cam);
 	}
 	m_magic.render(win, cam);
+	m_sword_slam.set_position(get_collider().get_center() - cam + sf::Vector2f{0.f, -43.f});
+	win.draw(m_sword_slam);
 }
 
 void Lynx::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -383,7 +392,10 @@ fsm::StateFunction Lynx::update_downward_slam() {
 		m_counters.slam.update();
 		Enemy::get_collider().physics.acceleration *= 0.01f;
 	}
-	if (p_animatable.animation.get_frame_count() == 7) { Enemy::get_collider().physics.acceleration.y = 200.f; }
+	if (p_animatable.animation.get_frame_count() == 7) {
+		Enemy::get_collider().physics.acceleration.y = 200.f;
+		m_sword_slam.set_animation("start");
+	}
 	p_animatable.animation.linger_on_frame(6, !Enemy::get_collider().grounded());
 	if (p_animatable.animation.get_frame_count() == 4 && p_animatable.animation.keyframe_started()) {
 		m_map->spawn_effect(*m_services, "bright_flare", Enemy::get_collider().get_center() - sf::Vector2f{-Enemy::directions.actual.as_float(), 64.f}, sf::Vector2f{Enemy::get_collider().physics.velocity.x * 0.2f, 0.f}, 1);
@@ -397,6 +409,7 @@ fsm::StateFunction Lynx::update_downward_slam() {
 		m_services->soundboard.flags.world.set(audio::World::thud);
 		m_services->soundboard.flags.world.set(audio::World::vibration);
 		m_map->spawn_emitter(*m_services, "fireworks", Enemy::get_collider().get_center(), Direction{UND::up}, {16.f, 16.f});
+		if (get_collider().grounded()) { m_sword_slam.set_animation("release"); }
 	}
 	p_animatable.animation.get_frame_count() < 8 ? flags.general.reset(GeneralFlags::gravity) : flags.general.set(GeneralFlags::gravity);
 	auto sign = Enemy::directions.actual.as_float();
@@ -591,10 +604,12 @@ fsm::StateFunction Lynx::update_defeat() {
 		m_services->soundboard.flags.lynx.set(audio::Lynx::defeat);
 	}
 	if (m_cooldowns.post_defeat.is_almost_complete()) {
-		m_map->spawn_emitter(*m_services, "white_fireworks", Enemy::get_collider().get_center(), Direction{UND::up});
+		request(LynxState::fall_over);
+		if (change_state(LynxState::fall_over, Enemy::get_params("fall_over"))) { return LYNX_BIND(update_fall_over); }
+		/*m_map->spawn_emitter(*m_services, "white_fireworks", Enemy::get_collider().get_center(), Direction{UND::up});
 		m_map->spawn_effect(*m_services, "small_explosion", Enemy::get_collider().get_center());
 		flags.general.reset(GeneralFlags::post_death_render);
-		m_services->soundboard.flags.enemy.set(audio::Enemy::disappear);
+		m_services->soundboard.flags.enemy.set(audio::Enemy::disappear);*/
 		post_death.cancel();
 	}
 	return LYNX_BIND(update_defeat);
@@ -645,6 +660,11 @@ fsm::StateFunction Lynx::update_stagger() {
 		if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
 	}
 	return LYNX_BIND(update_stagger);
+}
+
+fsm::StateFunction Lynx::update_fall_over() {
+	m_state.actual = LynxState::fall_over;
+	return LYNX_BIND(update_fall_over);
 }
 
 bool Lynx::change_state(LynxState next, anim::Parameters params) {

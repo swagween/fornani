@@ -267,7 +267,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	if (Boss::consume_flag(BossFlags::start_battle)) {
 		m_mode = MinigusMode::battle_one;
 		svc.quest_table.progress_quest("minigus_dialogue", 1, 1);
-		svc.data.save_quests();
+		svc.data.save_dialogue_quests();
 		cooldowns.vulnerability.start();
 	}
 

@@ -218,6 +218,7 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": true,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

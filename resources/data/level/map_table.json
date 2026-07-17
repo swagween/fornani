@@ -2,6 +2,12 @@
   "rooms": [
     {
       "folder": "ashtown",
+      "label": "blue_district.json",
+      "region": "ashtown",
+      "room_id": 1350
+    },
+    {
+      "folder": "ashtown",
       "label": "curio_shop.json",
       "region": "ashtown",
       "room_id": 1303
@@ -14,6 +20,12 @@
     },
     {
       "folder": "ashtown",
+      "label": "east_outpost.json",
+      "region": "ashtown",
+      "room_id": 1451
+    },
+    {
+      "folder": "ashtown",
       "label": "hideout.json",
       "region": "ashtown",
       "room_id": 1311
@@ -23,6 +35,12 @@
       "label": "hostel.json",
       "region": "ashtown",
       "room_id": 1310
+    },
+    {
+      "folder": "ashtown",
+      "label": "intersection.json",
+      "region": "ashtown",
+      "room_id": 1440
     },
     {
       "folder": "ashtown",
@@ -743,6 +761,12 @@
       "label": "pioneer_trail.json",
       "region": "overturned",
       "room_id": 227
+    },
+    {
+      "folder": "overturned",
+      "label": "pond.json",
+      "region": "overturned",
+      "room_id": 262
     },
     {
       "folder": "overturned",

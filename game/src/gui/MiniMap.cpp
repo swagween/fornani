@@ -65,6 +65,13 @@ void MiniMap::bake(automa::ServiceProvider& svc, dj::Json const& in) {
 	m_extent.size.y = std::max(current_map->get_position().y + current_map->get_dimensions().y, m_extent.size.y);
 
 	if (!in["meta"]["minimap"].as_bool()) { return; }
+
+	// keep track of total items in world
+	for (auto const& chest : in["entities"]["chests"].as_array()) {
+		if (chest["type"].as<int>() == 1) { continue; } // skip orb chests
+		svc.data.register_loot(chest);
+	}
+
 	auto room_id = in["meta"]["room_id"].as<int>();
 	auto it = std::find_if(m_atlas.begin(), m_atlas.end(), [room_id](auto const& e) { return e->get_id() == room_id; });
 	if (it == m_atlas.end()) { return; }

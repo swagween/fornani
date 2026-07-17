@@ -598,6 +598,23 @@
           31
         ],
         "source_id": 1300
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 1440,
+        "dimensions": [
+          1,
+          4
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          143,
+          38
+        ],
+        "source_id": 1300
       }
     ],
     "train": [

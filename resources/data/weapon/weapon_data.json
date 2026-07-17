@@ -203,6 +203,71 @@
       }
     }
   },
+  "staple_gun": {
+    "metadata": {
+      "id": 4,
+      "label": "Staple Gun",
+      "description": "Just an ordinary staple gun.",
+      "widget_lookup": 4
+    },
+    "visual": {
+      "texture_lookup": 4,
+      "dimensions": [10, 8],
+      "offsets": {
+        "global": [-1.5, 2.5],
+        "barrel": [30.0, 1.5],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [4.0, 4.0],
+        "type": "wasp_2",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 6,
+        "reload": 180,
+        "cooldown_time": 8,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 1 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [12, 12],
+        "radius": 10.0,
+        "attributes": {
+          "base_damage": 4,
+          "power": 1,
+          "lifespan": 270,
+          "lifespan_variance": 0,
+          "speed": 30.0,
+          "variance": 0.1,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "persistent": false,
+          "constrained": false,
+          "hitstun": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.985
+        },
+        "visual": {
+          "effect_type": 0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 1,
+          "framerate": 8,
+          "angles": 2
+        }
+      }
+    }
+  },
   "pulsar": {
     "metadata": {
       "id": 13,
@@ -379,7 +444,7 @@
         "dimensions": [12.0, 12.0],
         "radius": 11.0,
         "attributes": {
-          "base_damage": 40,
+          "base_damage": 10,
           "lifespan": 440,
           "lifespan_variance": 0,
           "speed": 1.9,
@@ -719,6 +784,126 @@
           "num_frames": 2,
           "framerate": 8,
           "angles": 2
+        }
+      }
+    }
+  },
+  "plasmer": {
+    "metadata": {
+      "id": 12,
+      "label": "Plasmer",
+      "description": "A precise fully-automatic defense weapon. This was the standard issue firearm given to members of the Nightside Security Faction until it was decommissioned."
+    },
+    "visual": {
+      "texture_lookup": 12,
+      "dimensions": [22, 8],
+      "offsets": {
+        "global": [6.5, 3.5],
+        "barrel": [32.0, 1.5],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "type": "plasmer"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": true,
+        "ammo": 12,
+        "reload": 300,
+        "cooldown_time": 12,
+        "recoil": 0.45
+      }
+    },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [13.0, 13.0],
+        "radius": 2.0,
+        "attributes": {
+          "base_damage": 4,
+          "power": 2,
+          "lifespan": 100,
+          "lifespan_variance": 0,
+          "speed": 38.0,
+          "variance": 0.3,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "persistent": false,
+          "constrained": false,
+          "range_variance": 8.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.999
+        },
+        "visual": {
+          "effect_type": 3
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 2,
+          "framerate": 8,
+          "angles": 2
+        }
+      }
+    }
+  },
+  "stinger": {
+    "metadata": {
+      "id": 19,
+      "label": "Stinger",
+      "description": "A versatile fully-automatic gun. Spencer managed to build this by combining the Gnat and Bryn's Gun."
+    },
+    "visual": {
+      "texture_lookup": 19,
+      "dimensions": [16, 8],
+      "offsets": {
+        "global": [2.5, 3.5],
+        "barrel": [32.0, 1.5],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "type": "stinger"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": true,
+        "ammo": 30,
+        "reload": 480,
+        "cooldown_time": 10,
+        "recoil": 0.15
+      }
+    },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [7.0, 7.0],
+        "radius": 4.0,
+        "attributes": {
+          "base_damage": 3,
+          "power": 2,
+          "lifespan": 80,
+          "lifespan_variance": 0,
+          "speed": 30.0,
+          "variance": 0.3,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "persistent": false,
+          "constrained": false,
+          "range_variance": 8.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.999
+        },
+        "visual": {
+          "effect_type": 0
+        },
+        "animation": {
+          "num_sprites": 8,
+          "num_frames": 1,
+          "framerate": 8,
+          "angles": 8
         }
       }
     }
