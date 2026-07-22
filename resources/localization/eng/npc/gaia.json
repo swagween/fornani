@@ -4,6 +4,18 @@
     "suite": [
       [
         {
+          "code_list": [
+            [
+              [
+                27,
+                34, 1
+              ]
+            ],
+            [[]
+            ],
+            [[]
+            ]
+          ],
           "messages": [
             "I don't suppose you've seen my husband?",
             "Nani... it's been a while, huh?",

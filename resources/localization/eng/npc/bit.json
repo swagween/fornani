@@ -1,255 +1,258 @@
 {
-  "1": {
-    "responses": [
-      [
-        {
-          "codes": [[1, 1]],
-          "message": "Sure."
-        },
-        {
-          "codes": [[1, 2]],
-          "message": "I had better get going..."
-        }
-      ]
-    ],
-    "suite": [
-      [
-        { "message": "..." },
-        {
-          "codes": [[13, 20, 102]],
-          "message": "Psst... Hey!"
-        },
-        { "message": "Hey, you!" },
-        { "message": "I don't know how you managed to escape your cell, but, er... I'm still in a bit of a bind here myself." },
-        {
-          "codes": [[1, 0]],
-          "message": "Would you help me out?"
-        }
-      ],
-      [
-        { "message": "I appreciate it... you know, I'll owe you big time if you can manage to get me outta here." },
-        { "message": "You might find the key to this cell lying around the ship somewhere." },
-        { "message": "If you do, you should be able to use it on that there door and let me free!" }
-      ],
-      [{ "message": "Well uh... okay. If you change your mind, you'll know where to find me." }]
-    ]
-  },
-  "2": {
-    "responses": [
-      [
-        {
-          "codes": [[1, 1]],
-          "message": "Where are we?"
-        },
-        {
-          "codes": [[1, 2]],
-          "message": "How long have I been asleep...?"
-        }
-      ],
-      [
-        {
-          "codes": [[1, 3]],
-          "message": "I was with some researchers in the gallery, and then the ship was attacked..."
-        }
-      ]
-    ],
-    "suite": [
-      [
-        { "message": "Listen, I don't wanna rush you, but..." },
-        {
-          "codes": [[1, 0]],
-          "message": "I'm starting to get pretty hungry, and I haven't seen the jailer in a few days..."
-        }
-      ],
-      [
-        { "message": "I'm not gonna sugarcoat it. We're in prison." },
-        { "message": "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!" },
-        { "message": "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below." },
-        {
-          "codes": [[1, 0]],
-          "message": "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here."
-        }
-      ],
-      [
-        {
-          "codes": [[1, 1]],
-          "message": "Asleep? Wait a minute... What's the last thing you remember?"
-        }
-      ],
-      [
-        { "message": "Oh... That... That was a very long time ago. You must have some amnesia from Skycorps's, er, knowledge retrieval tactics, we'll call them." },
-        {
-          "codes": [[1, 0]],
-          "message": "Best of luck to you..."
-        }
-      ]
-    ]
-  },
-  "3": {
-    "responses": [
-      { "message": "Where are we?" },
-      {
-        "codes": [[1, 2]],
-        "message": "How long have I been asleep...?"
-      },
-      {
-        "codes": [[1, 4]],
-        "message": "Who are you?"
-      },
-      [
-        {
-          "codes": [[1, 3]],
-          "message": "I was with some researchers in the gallery, and then the ship was attacked..."
-        }
-      ]
-    ],
-    "suite": [
-      [
-        {
-          "codes": [[1, 0]],
-          "messages": [
-            "Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya.",
-            "I've started marking the days on the wall next to my bed.",
-            "I haven't eaten in a really long time..."
-          ]
-        }
-      ],
-      [
-        { "message": "I'm not gonna sugarcoat it. We're in prison." },
-        { "message": "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!" },
-        { "message": "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below." },
-        { "message": "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here." }
-      ],
-      [
-        {
-          "codes": [[1, 1]],
-          "message": "Asleep? Wait a minute... What's the last thing you remember?"
-        }
-      ],
-      [
-        { "message": "Oh... That... That was a very long time ago. You must have some amnesia from Skycorps's, er, knowledge retrieval tactics, we'll call them." },
-        {
-          "codes": [[1, 0]],
-          "message": "Best of luck to you..."
-        }
-      ],
-      [
-        { "message": "My name's Bit. I worked in the engine room before the Skycorps takeover, and they tossed me in this cell because I tried to escape in one of the nighthawks on the deck." },
-        { "message": "Gosh, it's probably been months..." },
-        { "message": "I'm sure some of the old crew are still around. You know, this was originally a Grand Island research vessel before the raid." },
-        {
-          "codes": [[1, 0]],
-          "message": "This is what I get for leaving my tribe and trying to make a better life working for humans..."
-        }
-      ]
-    ]
-  },
-  "4": {
-    "responses": [],
-    "suite": [
-      [
-        {
-          "message": "I can't believe it... You actually did it!"
-        },
-        {
-          "codes": [[23, 1]],
-          "message": "No doubt about it... I owe you big time!"
-        }
-      ]
-    ]
-  },
-  "5": {
-    "responses": [],
-    "suite": [
-      [
-        {
-          "message": "..."
-        },
-        { "message": "Well, uh... See ya later!" }
-      ]
-    ]
-  },
-  "10": {
-    "responses": [
-      [
-        {
-          "codes": [[1, 2]],
-          "message": "Tell me what happened!"
-        },
-        {
-          "contingencies": [
-            {
-              "requirement": 1,
-              "strict": true,
-              "tag": "free_bit"
-            }
-          ],
-          "codes": [[1, 1]],
-          "message": "I'm glad you managed to find safety."
-        }
-      ],
-      [
-        {
-          "codes": [[1, 3]],
-          "message": "Wh... What?!"
-        }
-      ]
-    ],
-    "suite": [
-      [
-        { "message": "Well, would you look at that!" },
-        { "message": "I was wondering if you had managed to escape the Firstwind alive." },
-        { "message": "I myself managed to sneak through a few air vents and hide in a storage closet until we made landfall somewhere." },
-        {
-          "codes": [[1, 0]],
-          "message": "After that, it's a pretty wild story, but I'll spare you the details."
-        }
-      ],
-      [
-        { "message": "Yeah, no kidding! Especially after I realized what they were doing to my tribe. I saw people I knew getting turned into... mutants..." },
-        { "message": "Still gives me chills to think about it." },
-        {
-          "codes": [
-            [15, 6],
-            [3, 0, 1, 1310],
-            [13, 20, 1310]
-          ],
-          "message": "Anyhow, I promised I'd repay you for saving me, so, here you go."
-        },
-        { "message": "I found it in an old military yard and thought I could use it to protect myself, but it's a bit too unwieldy for me." },
-        { "message": "I nearly blew myself up merely trying to reload it!" }
-      ],
-      [
-        { "message": "So like I was saying, we made landfall somewhere, but I was still hiding in a closet nearly starving to death." },
-        { "message": "I figured I could stay put and wither away, or try to sneak out before we took back to the skies." },
-        { "message": "I did just that, with the help of some crewmates from the infirmary." },
-        { "message": "We made it to some strange, floating ruins in the sky, and we were all surrounded by huge white clouds, and the sun was shining on my face for the first time in months." },
-        { "message": "Man, it felt like pure heaven." },
-        { "message": "Anyhow, some Skycorps goons saw us trying to flee and they chased us for a long time into the wilds." },
-        { "message": "We managed to get away and survive on our own for some time, but then..." },
-        {
-          "codes": [[1, 1]],
-          "message": "Some giant bird showed up and ate the other two crewmates."
-        }
-      ],
-      [
-        { "message": "I know, sounds like a nightmare come true, right?" },
-        { "message": "Well, it happened! I swear it!" },
-        { "message": "Turns out we were camped near the bird's eggs and it wasn't too happy about that." },
-        { "message": "I survived on my own after a narrow escape, and eventually I ran into some poachers who offered to give me a ride back to the island." },
-        { "message": "Sounds kind of surreal when I sum it all up like that, huh?" },
-        { "message": "Well, life just gets crazier by the day ever since Skycorps came and ruined everything." }
-      ]
-    ]
-  },
-  "11": {
-    "responses": [],
-    "suite": [
-      [
-        {
-          "messages": ["Stay safe out there. Skycorps won't rest until we're all under their iron fist!"]
-        }
-      ]
-    ]
-  }
+	"1": {
+		"responses": [
+			[
+				{
+					"codes": [ [ 1, 1 ] ],
+					"message": "Sure."
+				},
+				{
+					"codes": [ [ 1, 2 ] ],
+					"message": "I had better get going..."
+				}
+			]
+		],
+		"suite": [
+			[
+				{ "message": "..." },
+				{
+					"codes": [ [ 13, 20, 102 ] ],
+					"message": "Psst... Hey!"
+				},
+				{ "message": "Hey, you!" },
+				{ "message": "I don't know how you managed to escape your cell, but, er... I'm still in a bit of a bind here myself." },
+				{
+					"codes": [ [ 1, 0 ] ],
+					"message": "Would you help me out?"
+				}
+			],
+			[
+				{
+					"codes": [ [ 27, 0, 0 ] ],
+					"message": "I appreciate it... you know, I'll owe you big time if you can manage to get me outta here."
+				},
+				{ "message": "You might find the key to this cell lying around the ship somewhere." },
+				{ "message": "If you do, you should be able to use it on that there door and let me free!" }
+			],
+			[ { "message": "Well uh... okay. If you change your mind, you'll know where to find me." } ]
+		]
+	},
+	"2": {
+		"responses": [
+			[
+				{
+					"codes": [ [ 1, 1 ] ],
+					"message": "Where are we?"
+				},
+				{
+					"codes": [ [ 1, 2 ] ],
+					"message": "How long have I been asleep...?"
+				}
+			],
+			[
+				{
+					"codes": [ [ 1, 3 ] ],
+					"message": "I was with some researchers in the gallery, and then the ship was attacked..."
+				}
+			]
+		],
+		"suite": [
+			[
+				{ "message": "Listen, I don't wanna rush you, but..." },
+				{
+					"codes": [ [ 1, 0 ] ],
+					"message": "I'm starting to get pretty hungry, and I haven't seen the jailer in a few days..."
+				}
+			],
+			[
+				{ "message": "I'm not gonna sugarcoat it. We're in prison." },
+				{ "message": "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!" },
+				{ "message": "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below." },
+				{
+					"codes": [ [ 1, 0 ] ],
+					"message": "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here."
+				}
+			],
+			[
+				{
+					"codes": [ [ 1, 1 ] ],
+					"message": "Asleep? Wait a minute... What's the last thing you remember?"
+				}
+			],
+			[
+				{ "message": "Oh... That... That was a very long time ago. You must have some amnesia from Skycorps's, er, knowledge retrieval tactics, we'll call them." },
+				{
+					"codes": [ [ 1, 0 ] ],
+					"message": "Best of luck to you..."
+				}
+			]
+		]
+	},
+	"3": {
+		"responses": [
+			{ "message": "Where are we?" },
+			{
+				"codes": [ [ 1, 2 ] ],
+				"message": "How long have I been asleep...?"
+			},
+			{
+				"codes": [ [ 1, 4 ] ],
+				"message": "Who are you?"
+			},
+			[
+				{
+					"codes": [ [ 1, 3 ] ],
+					"message": "I was with some researchers in the gallery, and then the ship was attacked..."
+				}
+			]
+		],
+		"suite": [
+			[
+				{
+					"codes": [ [ 1, 0 ] ],
+					"messages": [
+						"Careful out there, by the way. There's a ton of security guards and booby traps and the like. If you get gunned down, don't say I didn't warn ya.",
+						"I've started marking the days on the wall next to my bed.",
+						"I haven't eaten in a really long time..."
+					]
+				}
+			],
+			[
+				{ "message": "I'm not gonna sugarcoat it. We're in prison." },
+				{ "message": "Why you're here, I couldn't tell ya, but I was here way before that, and it's for no good reason!" },
+				{ "message": "You see, there was a hostile takeover of this place, or something like it anyway, and the old crew were either conscripted or thrown overboard to die in the clouds below." },
+				{ "message": "For some reason, they thought I was too useless to join their crew, but not important enough to kill, so they just left me in here." }
+			],
+			[
+				{
+					"codes": [ [ 1, 1 ] ],
+					"message": "Asleep? Wait a minute... What's the last thing you remember?"
+				}
+			],
+			[
+				{ "message": "Oh... That... That was a very long time ago. You must have some amnesia from Skycorps's, er, knowledge retrieval tactics, we'll call them." },
+				{
+					"codes": [ [ 1, 0 ] ],
+					"message": "Best of luck to you..."
+				}
+			],
+			[
+				{ "message": "My name's Bit. I worked in the engine room before the Skycorps takeover, and they tossed me in this cell because I tried to escape in one of the nighthawks on the deck." },
+				{ "message": "Gosh, it's probably been months..." },
+				{ "message": "I'm sure some of the old crew are still around. You know, this was originally a Grand Island research vessel before the raid." },
+				{
+					"codes": [ [ 1, 0 ] ],
+					"message": "This is what I get for leaving my tribe and trying to make a better life working for humans..."
+				}
+			]
+		]
+	},
+	"4": {
+		"responses": [],
+		"suite": [
+			[
+				{
+					"message": "I can't believe it... You actually did it!"
+				},
+				{
+					"codes": [ [ 23, 1 ] ],
+					"message": "No doubt about it... I owe you big time!"
+				}
+			]
+		]
+	},
+	"5": {
+		"responses": [],
+		"suite": [
+			[
+				{
+					"message": "..."
+				},
+				{ "message": "Well, uh... See ya later!" }
+			]
+		]
+	},
+	"10": {
+		"responses": [
+			[
+				{
+					"codes": [ [ 1, 2 ] ],
+					"message": "Tell me what happened!"
+				},
+				{
+					"contingencies": [
+						{
+							"requirement": 1,
+							"strict": true,
+							"tag": "free_bit"
+						}
+					],
+					"codes": [ [ 1, 1 ] ],
+					"message": "I'm glad you managed to find safety."
+				}
+			],
+			[
+				{
+					"codes": [ [ 1, 3 ] ],
+					"message": "Wh... What?!"
+				}
+			]
+		],
+		"suite": [
+			[
+				{ "message": "Well, would you look at that!" },
+				{ "message": "I was wondering if you had managed to escape the Firstwind alive." },
+				{ "message": "I myself managed to sneak through a few air vents and hide in a storage closet until we made landfall somewhere." },
+				{
+					"codes": [ [ 1, 0 ] ],
+					"message": "After that, it's a pretty wild story, but I'll spare you the details."
+				}
+			],
+			[
+				{ "message": "Yeah, no kidding! Especially after I realized what they were doing to my tribe. I saw people I knew getting turned into... mutants..." },
+				{ "message": "Still gives me chills to think about it." },
+				{
+					"codes": [
+						[ 15, 6 ],
+						[ 3, 0, 1, 1310 ],
+						[ 13, 20, 1310 ]
+					],
+					"message": "Anyhow, I promised I'd repay you for saving me, so, here you go."
+				},
+				{ "message": "I found it in an old military yard and thought I could use it to protect myself, but it's a bit too unwieldy for me." },
+				{ "message": "I nearly blew myself up merely trying to reload it!" }
+			],
+			[
+				{ "message": "So like I was saying, we made landfall somewhere, but I was still hiding in a closet nearly starving to death." },
+				{ "message": "I figured I could stay put and wither away, or try to sneak out before we took back to the skies." },
+				{ "message": "I did just that, with the help of some crewmates from the infirmary." },
+				{ "message": "We made it to some strange, floating ruins in the sky, and we were all surrounded by huge white clouds, and the sun was shining on my face for the first time in months." },
+				{ "message": "Man, it felt like pure heaven." },
+				{ "message": "Anyhow, some Skycorps goons saw us trying to flee and they chased us for a long time into the wilds." },
+				{ "message": "We managed to get away and survive on our own for some time, but then..." },
+				{
+					"codes": [ [ 1, 1 ] ],
+					"message": "Some giant bird showed up and ate the other two crewmates."
+				}
+			],
+			[
+				{ "message": "I know, sounds like a nightmare come true, right?" },
+				{ "message": "Well, it happened! I swear it!" },
+				{ "message": "Turns out we were camped near the bird's eggs and it wasn't too happy about that." },
+				{ "message": "I survived on my own after a narrow escape, and eventually I ran into some poachers who offered to give me a ride back to the island." },
+				{ "message": "Sounds kind of surreal when I sum it all up like that, huh?" },
+				{ "message": "Well, life just gets crazier by the day ever since Skycorps came and ruined everything." }
+			]
+		]
+	},
+	"11": {
+		"responses": [],
+		"suite": [
+			[
+				{
+					"messages": [ "Stay safe out there. Skycorps won't rest until we're all under their iron fist!" ]
+				}
+			]
+		]
+	}
 }

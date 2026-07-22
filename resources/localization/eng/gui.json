@@ -33,12 +33,13 @@
     "shoot_hint": "Press      to shoot.",
     "cannot_build": "You do not have the necessary ingredients to build that item.",
     "already_have_max_item": "You already have the maximum amount of that item.",
-    "insufficient_funds": "You cannot afford that item."
+    "insufficient_funds": "You cannot afford that item.",
+    "journal_updated": "Journal updated."
   },
   "locations": {
     "firstwind": "- Firstwind Airship - "
   },
-  "menu": { "back_button": "< back" },
+  "menu": { "back_button": "< back", "completed": "<completed>" },
   "file_menu": {
     "play": "play",
     "stats": "stats",

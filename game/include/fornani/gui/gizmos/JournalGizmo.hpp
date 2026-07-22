@@ -1,20 +1,22 @@
 
 #pragma once
 
-#include <fornani/graphics/Animatable.hpp>
 #include <fornani/gui/Gizmo.hpp>
-#include <fornani/gui/gizmos/HotbarGizmo.hpp>
-#include <fornani/utils/Circuit.hpp>
-#include <fornani/utils/CyclicLerp.hpp>
-#include <fornani/utils/Flaggable.hpp>
+#include <fornani/gui/InventorySelector.hpp>
+#include <fornani/gui/console/TextWriter.hpp>
+#include <fornani/utils/RectPath.hpp>
 
 namespace fornani::gui {
 
-enum class RotaryGizmoFlags { push_to_hotbar };
+struct QuestEntry {
+	std::string tag;
+	sf::Text title;
+	sf::Vector2f offset{};
+};
 
-class RotaryGizmo final : public Gizmo, public Flaggable<RotaryGizmoFlags> {
+class JournalGizmo : public Gizmo {
   public:
-	explicit RotaryGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f placement);
+	JournalGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement);
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground = false) override;
 	bool handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
@@ -22,21 +24,25 @@ class RotaryGizmo final : public Gizmo, public Flaggable<RotaryGizmoFlags> {
   private:
 	void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 	void on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
-
-	void debug();
+	void refresh();
 
   private:
-	std::optional<std::unique_ptr<HotbarGizmo>> m_hotbar{};
-	Animatable m_sprite;
-	Animatable m_gun_display;
-	Animatable m_gun_selector;
-	Drawable m_dashboard_rail;
-	util::Circuit m_selection;
-	CyclicLerp m_frame_lerp;
+	sf::Vector2f m_questlog_position{};
+	struct {
+		sf::Text readout;
+		std::vector<QuestEntry> listing{};
+		std::optional<gui::TextWriter> objective{};
+		float anim{};
+		float desc_offset{};
+	} m_text;
+
+	std::optional<InventorySelector> m_selector{};
+	sf::RenderTexture m_screen{};
 	util::RectPath m_path;
-	util::RectPath m_rail_path;
-	float m_previous_position{};
-	int m_gun_id{};
+	automa::ServiceProvider* m_services;
+	sf::Sprite m_selector_sprite;
+
+	float m_spacing{24.f};
 };
 
 } // namespace fornani::gui

@@ -1,14 +1,16 @@
 
-#include "fornani/gui/Dashboard.hpp"
+#include <imgui.h>
+#include <fornani/entities/player/Player.hpp>
+#include <fornani/gui/Dashboard.hpp>
+#include <fornani/gui/gizmos/ClockGizmo.hpp>
+#include <fornani/gui/gizmos/InventoryGizmo.hpp>
+#include <fornani/gui/gizmos/JournalGizmo.hpp>
+#include <fornani/gui/gizmos/MapGizmo.hpp>
+#include <fornani/gui/gizmos/RotaryGizmo.hpp>
+#include <fornani/gui/gizmos/WardrobeGizmo.hpp>
+#include <fornani/service/ServiceProvider.hpp>
+#include <fornani/systems/InputSystem.hpp>
 #include <algorithm>
-#include "fornani/entities/player/Player.hpp"
-#include "fornani/gui/gizmos/ClockGizmo.hpp"
-#include "fornani/gui/gizmos/InventoryGizmo.hpp"
-#include "fornani/gui/gizmos/MapGizmo.hpp"
-#include "fornani/gui/gizmos/RotaryGizmo.hpp"
-#include "fornani/gui/gizmos/WardrobeGizmo.hpp"
-#include "fornani/service/ServiceProvider.hpp"
-#include "fornani/systems/InputSystem.hpp"
 
 namespace fornani::gui {
 
@@ -21,14 +23,16 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 																												 .arsenal_slot{{{253, 127}, {184, 137}}, {52, 218}},
 																												 .motherboard{{{434, 0}, {222, 212}}, {14.f, 68.f}}},
 	  m_paths{.map{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_minimap", 32, util::InterpolationType::quadratic},
-			  .rotary{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_rotary", 180, util::InterpolationType::quadratic}},
+			  .rotary{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_rotary", 180, util::InterpolationType::quadratic},
+			  .frontplate{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_frontplate", 80, util::InterpolationType::quadratic},
+			  .basis{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_basis", 60, util::InterpolationType::quadratic}},
 	  m_palette{"pioneer", svc.finder}, m_services{&svc} {
 	m_debug.box.setFillColor(sf::Color{180, 150, 20, 50});
 	m_debug.box.setOutlineThickness(-2.f);
 	m_debug.box.setOutlineColor(sf::Color{220, 180, 10, 180});
 	m_debug.box.setSize(m_physical.dimensions);
 	m_debug.box.setOrigin(m_physical.dimensions * 0.5f);
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < 5; ++i) {
 		m_debug.buttons.push_back(GizmoButton{});
 		m_debug.buttons.back().box.setSize({64.f, 64.f});
 		m_debug.buttons.back().box.setFillColor(sf::Color::Transparent);
@@ -37,6 +41,8 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 	}
 	m_paths.map.set_section("start");
 	m_paths.rotary.set_section("start");
+	m_paths.frontplate.set_section("start");
+	m_paths.basis.set_section("start");
 
 	// populate dashboard depending on the player's inventory
 
@@ -46,6 +52,7 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 	auto rotary_placement{sf::Vector2f{356.f, 326.f}};
 
 	// push gizmos in clockwise order so selection setting will work
+	m_gizmos.push_back(std::make_unique<JournalGizmo>(svc, map, sf::Vector2f{200.f, 60.f}));
 	if (player.catalog.inventory.has_item("radar_device")) { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player)); }
 	if (player.catalog.inventory.has_item("status_gizmo")) { m_gizmos.push_back(std::make_unique<WardrobeGizmo>(svc, map, wardrobe_placement)); }
 	if (player.catalog.inventory.has_item("clock")) { m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map, clock_placement)); }
@@ -59,10 +66,21 @@ void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pl
 	auto& controller = svc.input_system;
 	m_paths.map.update();
 	m_paths.rotary.update();
+	m_paths.frontplate.update();
+	m_paths.basis.update();
 	m_light_up.update();
 	m_light_shift.update();
 	for (auto& gizmo : m_gizmos) {
 		gizmo->update(svc, player, map, m_physical.physics.position + m_paths.map.get_position());
+		if (gizmo->get_dashboard_port() == DashboardPort::inventory) {
+			gizmo->displace({m_paths.basis.get_position().x, 0.f});
+		} else if (gizmo->get_dashboard_port() == DashboardPort::minimap) {
+			gizmo->displace({0.f, m_paths.basis.get_position().y});
+		} else if (gizmo->get_dashboard_port() == DashboardPort::wardrobe) {
+			gizmo->displace({m_paths.basis.get_dimensions().x, 0.f});
+		} else {
+			gizmo->displace({0.f, m_paths.basis.get_dimensions().y});
+		}
 		if (m_current_port == DashboardPort::minimap && gizmo->get_label() == "Clock") { gizmo->select(); }
 		m_current_port == gizmo->get_dashboard_port() ? gizmo->hover() : gizmo->neutralize();
 	}
@@ -75,15 +93,17 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 	auto pos{sf::Vector2f{}};
 	auto ctr{0};
 	auto dist{256.f};
-	m_current_port = DashboardPort::invalid;
+	m_current_port = DashboardPort::journal;
 	for (auto& button : m_debug.buttons) {
 		pos.x = ctr % 2 == 0 ? 0.f : ctr == 1 ? dist : -dist;
 		pos.y = ctr % 2 == 1 ? 0.f : ctr == 2 ? dist * 0.5f : -dist * 0.5f;
+		if (ctr == 4) { pos = {}; }
 		switch (ctr) { // up, right, down, left
 		case 0: button.position = {0, -1}; break;
 		case 1: button.position = {1, 0}; break;
 		case 2: button.position = {0, 1}; break;
 		case 3: button.position = {-1, 0}; break;
+		case 4: button.position = {0, 0}; break;
 		}
 		button.state = button.position == m_selected_position ? GizmoButtonState::hovered : GizmoButtonState::off;
 		if (button.state == GizmoButtonState::hovered) { m_current_port = static_cast<DashboardPort>(std::clamp(ctr, 0, static_cast<int>(DashboardPort::invalid))); }
@@ -99,28 +119,31 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 
 	// dashboard constituents
 	auto render_position{-m_physical.physics.position + cam};
-	is_home() ? shader.set_darken(lighten_factor) : shader.set_darken(darken_factor);
+	is_home() || m_current_port == DashboardPort::journal ? shader.set_darken(lighten_factor) : shader.set_darken(darken_factor);
 	m_constituents.motherboard.render(win, m_sprite, render_position, {}, shader, m_palette);
 	m_constituents.top_left_slot.render(win, m_sprite, render_position - m_paths.map.get_position(), {}, shader, m_palette);
 	m_constituents.top_right_slot.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {}, shader, m_palette);
 	m_constituents.arsenal_slot.render(win, m_sprite, render_position - m_paths.rotary.get_position() - m_paths.rotary.get_dimensions(), {}, shader, m_palette);
 	for (auto& gizmo : m_gizmos) {
 		shader.set_darken(max_dark);
+		if (gizmo->get_dashboard_port() == DashboardPort::journal && flags.test(DashboardFlags::exiting)) { continue; }
+		if (gizmo->get_dashboard_port() == DashboardPort::journal && m_current_port != DashboardPort::journal && m_state == DashboardState::gizmo) { continue; }
 		gizmo->render(svc, win, player, shader, m_palette, cam, false);
 	}
-	is_home() ? shader.set_darken(lighten_factor) : shader.set_darken(darken_factor);
+	is_home() || m_current_port == DashboardPort::journal ? shader.set_darken(lighten_factor) : shader.set_darken(darken_factor);
 	if (m_state == DashboardState::gizmo && m_current_port == DashboardPort::minimap) { shader.set_darken(lighten_factor); }
 	if (m_state == DashboardState::gizmo && m_current_port == DashboardPort::arsenal) { shader.set_darken(lighten_factor); }
-	m_constituents.top_left_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position(), {}, shader, m_palette);
-	m_constituents.top_right_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions(), {}, shader, m_palette);
+	m_constituents.top_left_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.frontplate.get_position(), {}, shader, m_palette);
+	m_constituents.top_right_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions() - m_paths.frontplate.get_position(), {}, shader, m_palette);
 	m_constituents.arsenal_frontplate.render(win, m_sprite, render_position - m_paths.rotary.get_position() - m_paths.rotary.get_dimensions(), {}, shader, m_palette);
-	is_home() ? shader.set_darken(lighten_factor) : shader.set_darken(darken_factor);
+	is_home() || m_current_port == DashboardPort::journal ? shader.set_darken(lighten_factor) : shader.set_darken(darken_factor);
 	for (auto& gizmo : m_gizmos) {
 		shader.set_darken(max_dark);
 		gizmo->render(svc, win, player, shader, m_palette, cam, true);
 	}
 
 	// for (auto& button : m_debug.buttons) { win.draw(button.box); }
+	// debug();
 }
 
 bool Dashboard::handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard) {
@@ -129,6 +152,11 @@ bool Dashboard::handle_inputs(input::InputSystem& controller, audio::Soundboard&
 			if (!gizmo->handle_inputs(controller, soundboard)) {
 				if (gizmo->get_dashboard_port() == DashboardPort::minimap) { m_paths.map.set_section("close"); }	// adjust dashboard art for map gizmo
 				if (gizmo->get_dashboard_port() == DashboardPort::arsenal) { m_paths.rotary.set_section("close"); } // adjust dashboard art for rotary gizmo
+				if (gizmo->get_dashboard_port() == DashboardPort::journal) {
+					m_paths.rotary.set_section("journal_close");
+					m_paths.frontplate.set_section("journal_close");
+					m_paths.basis.set_section("close");
+				} // adjust dashboard art for journal gizmo
 				m_state = DashboardState::home;
 				m_current_port = DashboardPort::invalid;
 				m_selected_position = {};
@@ -168,6 +196,11 @@ bool Dashboard::select_gizmo() {
 			m_state = DashboardState::gizmo;
 			if (gizmo->get_label() == "Minimap") { m_paths.map.set_section("open"); }	// the minimap affects the Dashboard's constituents
 			if (gizmo->get_label() == "Rotary") { m_paths.rotary.set_section("open"); } // the rotary affects the Dashboard's constituents
+			if (gizmo->get_label() == "Journal") {
+				m_paths.rotary.set_section("journal_open");
+				m_paths.frontplate.set_section("journal_open");
+				m_paths.basis.set_section("open");
+			} // the journal affects the Dashboard's constituents
 			return true;
 		}
 	}
@@ -178,6 +211,22 @@ void Dashboard::hover(sf::Vector2i direction) {}
 
 void Dashboard::close() {
 	for (auto& gizmo : m_gizmos) { gizmo->close(); }
+}
+
+void Dashboard::debug() {
+	static auto sz = ImVec2{180.f, 250.f};
+	ImGui::SetNextWindowSize(sz);
+	if (ImGui::Begin("Dashboard Debug")) {
+		switch (m_current_port) {
+		case DashboardPort::minimap: ImGui::Text("Minimap"); break;
+		case DashboardPort::wardrobe: ImGui::Text("Wardrobe"); break;
+		case DashboardPort::arsenal: ImGui::Text("Arsenal"); break;
+		case DashboardPort::inventory: ImGui::Text("Inventory"); break;
+		case DashboardPort::journal: ImGui::Text("Journal"); break;
+		case DashboardPort::invalid: ImGui::Text("Invalid"); break;
+		}
+		ImGui::End();
+	}
 }
 
 } // namespace fornani::gui

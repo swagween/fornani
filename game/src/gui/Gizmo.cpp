@@ -45,6 +45,8 @@ void Gizmo::hover() {
 	}
 }
 
+void Gizmo::displace(sf::Vector2f factor) { m_displacement = factor; }
+
 void Gizmo::select() {
 	m_state = GizmoState::selected;
 	m_switched = true;

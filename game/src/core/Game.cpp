@@ -345,6 +345,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 				if (ImGui::BeginTabItem("Data")) {
 					ImGui::Text("Destroyed Inspectables: ");
 					for (auto& i : services.data.get_destroyed_inspectables()) { ImGui::Text("%i, ", i); }
+					ImGui::SeparatorText("Bestiary: ");
+					for (auto const& e : services.data.get_bestiary()) { ImGui::Text("%s: %i", e.tag, e.fallen); }
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Tests")) {

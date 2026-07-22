@@ -49,8 +49,12 @@ class TextWriter {
 	explicit TextWriter(automa::ServiceProvider& svc, dj::Json& source, std::string_view key, int target_index = -1);
 	explicit TextWriter(automa::ServiceProvider& svc, std::string_view message);
 	explicit TextWriter(automa::ServiceProvider& svc, std::string_view message, sf::FloatRect bounds);
+	explicit TextWriter(automa::ServiceProvider& svc);
+
+	void load_single_message(std::string_view message);
 	void start();
 	void update();
+	void flush();
 	void set_bounds(sf::FloatRect to_bounds, bool wrap = false);
 	void append(std::string_view content);
 	void set_font_color(sf::Color to_color);
@@ -80,8 +84,6 @@ class TextWriter {
 	void write_gradual_message(sf::RenderWindow& win);
 
   private:
-	explicit TextWriter(automa::ServiceProvider& svc);
-	void load_single_message(std::string_view message);
 	void load_message(dj::Json& source, std::string_view key, int target_index = -1);
 	void load_message(dj::Json& source);
 	void insert_input_hint(sf::RenderWindow& win, sf::Text& message);
@@ -92,7 +94,6 @@ class TextWriter {
 	void constrain();
 	void shutdown();
 	void reset();
-	void flush();
 	void wait();
 	void respond();
 	void stall();

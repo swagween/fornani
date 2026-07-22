@@ -31,6 +31,7 @@ constexpr sf::Color beige{195, 185, 136};
 constexpr sf::Color treasure_blue{15, 104, 248};
 constexpr sf::Color bright_purple{219, 194, 255};
 constexpr sf::Color pioneer_red{229, 59, 68};
+constexpr sf::Color pioneer_mid_red{136, 19, 43};
 constexpr sf::Color pioneer_dark_red{80, 22, 34};
 constexpr sf::Color pioneer_black{16, 8, 28};
 

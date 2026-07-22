@@ -4,6 +4,7 @@ nani_add_headers(
   DescriptionGizmo.hpp
   HotbarGizmo.hpp
   InventoryGizmo.hpp
+  JournalGizmo.hpp
   MapInfoGizmo.hpp
   OutfitterGizmo.hpp
   RotaryGizmo.hpp

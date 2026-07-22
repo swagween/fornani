@@ -8,7 +8,7 @@ namespace fornani::player {
 constexpr auto nani_animation_rate_v{4};
 // { lookup, duration, framerate, num_loops (-1 for infinite), repeat_last_frame, interruptible }
 
-PlayerAnimation::PlayerAnimation(Player& plr) : m_player(&plr), state_function{std::bind(&PlayerAnimation::update_idle, this)}, m_buffer{16}, m_sleep_timer{512} {
+PlayerAnimation::PlayerAnimation(Player& plr) : m_player(&plr), state_function{std::bind(&PlayerAnimation::update_idle, this)}, m_buffer{16}, m_sleep_timer{512}, m_ko_timer{80} {
 	plr.p_animatable.set_animations({{"idle", {20, 8, 7 * nani_animation_rate_v, -1, false, true}},
 									 {"turn", {33, 3, 4 * nani_animation_rate_v, 0}},
 									 {"sharp_turn", {16, 2, 5 * nani_animation_rate_v, 0}},
@@ -33,6 +33,7 @@ PlayerAnimation::PlayerAnimation(Player& plr) : m_player(&plr), state_function{s
 									 {"dash_up", {120, 4, 4 * nani_animation_rate_v, 0}},
 									 {"dash_down", {124, 4, 4 * nani_animation_rate_v, 0}},
 									 {"wallslide", {66, 4, 7 * nani_animation_rate_v, -1}},
+									 {"knock_over", {76, 3, 8 * nani_animation_rate_v, 0}},
 									 {"die", {76, 4, 8 * nani_animation_rate_v, -1, true}},
 									 {"drown", {149, 4, 8 * nani_animation_rate_v, -1, true}},
 									 {"backflip", {90, 6, 6 * nani_animation_rate_v, 0}},
@@ -84,8 +85,10 @@ fsm::StateFunction PlayerAnimation::update_idle() {
 	m_player->p_animatable.animation.label = "idle";
 	p_state.actual = AnimState::idle;
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
+
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (m_player->p_animatable.animation.just_started()) {
 		idle_timer.start();
 		m_player->cooldowns.push.start();
@@ -132,6 +135,7 @@ fsm::StateFunction PlayerAnimation::update_sprint() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
@@ -169,6 +173,7 @@ fsm::StateFunction PlayerAnimation::update_shield() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 	if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }
@@ -187,6 +192,7 @@ fsm::StateFunction PlayerAnimation::update_between_push() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (m_player->p_animatable.animation.complete()) {
@@ -204,6 +210,7 @@ fsm::StateFunction PlayerAnimation::update_push() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (!was_requested(AnimState::push)) {
@@ -221,6 +228,7 @@ fsm::StateFunction PlayerAnimation::update_run() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
 	if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
@@ -325,6 +333,7 @@ fsm::StateFunction PlayerAnimation::update_rise() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
@@ -356,6 +365,7 @@ fsm::StateFunction PlayerAnimation::update_suspend() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::dive, get_params("dive"))) { return PA_BIND(update_dive); }
 	if (change_state(AnimState::swim, get_params("swim"))) { return PA_BIND(update_swim); }
 	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
@@ -388,6 +398,7 @@ fsm::StateFunction PlayerAnimation::update_fall() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::dive, get_params("dive"))) { return PA_BIND(update_dive); }
 	if (change_state(AnimState::swim, get_params("swim"))) { return PA_BIND(update_swim); }
@@ -422,6 +433,7 @@ fsm::StateFunction PlayerAnimation::update_stop() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
@@ -455,6 +467,7 @@ fsm::StateFunction PlayerAnimation::update_inspect() {
 	if (change_state(AnimState::swim, get_params("swim"))) { return PA_BIND(update_swim); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::sleep, get_params("sleep"))) { return PA_BIND(update_sleep); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
@@ -481,6 +494,7 @@ fsm::StateFunction PlayerAnimation::update_sit() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
@@ -508,6 +522,7 @@ fsm::StateFunction PlayerAnimation::update_land() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
 	if (change_state(AnimState::sharp_turn, get_params("sharp_turn"))) { return PA_BIND(update_sharp_turn); }
@@ -537,6 +552,7 @@ fsm::StateFunction PlayerAnimation::update_hurt() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
 	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
@@ -574,6 +590,7 @@ fsm::StateFunction PlayerAnimation::update_dash() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::dash_kick, get_params("dash_kick"))) { return PA_BIND(update_dash_kick); }
 	if (change_state(AnimState::turn_slide, get_params("turn_slide"))) { return PA_BIND(update_turn_slide); }
 	if (change_state(AnimState::dive, get_params("dive"))) { return PA_BIND(update_dive); }
@@ -614,6 +631,7 @@ fsm::StateFunction PlayerAnimation::update_dash_up() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 	if (change_state(AnimState::dash_kick, get_params("dash_kick"))) { return PA_BIND(update_dash_kick); }
 	if (change_state(AnimState::dive, get_params("dive"))) { return PA_BIND(update_dive); }
@@ -650,6 +668,7 @@ fsm::StateFunction PlayerAnimation::update_dash_down() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::dash_kick, get_params("dash_kick"))) { return PA_BIND(update_dash_kick); }
 	if (change_state(AnimState::dive, get_params("dive"))) { return PA_BIND(update_dive); }
 	if (change_state(AnimState::swim, get_params("swim"))) { return PA_BIND(update_swim); }
@@ -683,6 +702,7 @@ fsm::StateFunction PlayerAnimation::update_wallslide() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::walljump, get_params("walljump"), true)) { return PA_BIND(update_walljump); }
 	if (change_state(AnimState::rise, get_params("walljump"), true)) { return PA_BIND(update_walljump); }
 	if (change_state(AnimState::dive, get_params("dive"))) { return PA_BIND(update_dive); }
@@ -711,6 +731,7 @@ fsm::StateFunction PlayerAnimation::update_walljump() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"), true)) { return PA_BIND(update_wallslide); }
@@ -784,6 +805,7 @@ fsm::StateFunction PlayerAnimation::update_backflip() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"), true)) { return PA_BIND(update_wallslide); }
@@ -809,6 +831,7 @@ fsm::StateFunction PlayerAnimation::update_slide() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::get_up, get_params("get_up"))) { return PA_BIND(update_get_up); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
@@ -834,6 +857,7 @@ fsm::StateFunction PlayerAnimation::update_get_up() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
@@ -865,6 +889,7 @@ fsm::StateFunction PlayerAnimation::update_roll() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
 	if (change_state(AnimState::inspect, get_params("inspect"))) {
 		m_player->get_collider().physics.stop_x();
@@ -898,6 +923,7 @@ fsm::StateFunction PlayerAnimation::update_turn_slide() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
 	if (change_state(AnimState::inspect, get_params("inspect"))) {
 		m_player->get_collider().physics.stop_x();
@@ -929,6 +955,7 @@ fsm::StateFunction PlayerAnimation::update_shoot() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 	if (change_state(AnimState::sprint, get_params("run"))) { return PA_BIND(update_run); }
@@ -973,8 +1000,8 @@ fsm::StateFunction PlayerAnimation::update_unconscious() {
 	m_player->set_flag(PlayerFlags::show_weapon, false);
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();
-	if (m_player->has_collider()) { m_player->get_collider().physics.zero_x(); }
-	if (m_sleep_timer.is_almost_complete()) { request(AnimState::recover); }
+	if (m_player->has_collider() && !m_ko_timer.running()) { m_player->get_collider().physics.zero_x(); }
+	if (m_sleep_timer.is_almost_complete() || m_ko_timer.is_almost_complete()) { request(AnimState::recover); }
 	if (change_state(AnimState::recover, get_params("recover"), true)) { return PA_BIND(update_recover); }
 	return PA_BIND(update_unconscious);
 }
@@ -1016,6 +1043,7 @@ fsm::StateFunction player::PlayerAnimation::update_crouch() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
@@ -1040,6 +1068,7 @@ fsm::StateFunction player::PlayerAnimation::update_crawl() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
@@ -1065,6 +1094,7 @@ fsm::StateFunction player::PlayerAnimation::update_dash_kick() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (m_player->p_animatable.animation.complete()) {
 		if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
 		if (change_state(AnimState::land, get_params("land"), true)) { return PA_BIND(update_land); }
@@ -1088,6 +1118,7 @@ fsm::StateFunction player::PlayerAnimation::update_slow_walk() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	return PA_BIND(update_slow_walk);
 }
 
@@ -1097,6 +1128,7 @@ fsm::StateFunction player::PlayerAnimation::update_swim() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::land, get_params("land"))) { return PA_BIND(update_land); }
 	if (change_state(AnimState::dive, get_params("dive"))) { return PA_BIND(update_dive); }
 	if (change_state(AnimState::suspend, get_params("suspend"), true)) { return PA_BIND(update_suspend); }
@@ -1119,6 +1151,7 @@ fsm::StateFunction player::PlayerAnimation::update_dive() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
 	if (change_state(AnimState::dash_up, get_params("dash_up"))) { return PA_BIND(update_dash_up); }
 	if (change_state(AnimState::dash_down, get_params("dash_down"))) { return PA_BIND(update_dash_down); }
@@ -1143,6 +1176,7 @@ fsm::StateFunction PlayerAnimation::update_hover() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::land, get_params("land"))) { return PA_BIND(update_land); }
 	return PA_BIND(update_hover);
 }
@@ -1188,6 +1222,7 @@ fsm::StateFunction PlayerAnimation::update_melee_front_kick() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
 	if (change_state(AnimState::dash_up, get_params("dash_up"))) { return PA_BIND(update_dash_up); }
@@ -1218,6 +1253,7 @@ fsm::StateFunction PlayerAnimation::update_melee_side_kick() {
 	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
 	if (change_state(AnimState::dash_up, get_params("dash_up"))) { return PA_BIND(update_dash_up); }
@@ -1280,6 +1316,24 @@ fsm::StateFunction PlayerAnimation::update_drink() {
 		if (change_state(AnimState::idle, get_params("idle"))) { return PA_BIND(update_idle); }
 	}
 	return PA_BIND(update_drink);
+}
+
+fsm::StateFunction PlayerAnimation::update_knock_over() {
+	m_player->p_animatable.animation.label = "knock_over";
+	p_state.actual = AnimState::knock_over;
+	if (m_player->has_collider()) {
+		m_player->p_animatable.animation.linger_on_frame(1, !m_player->get_collider().grounded());
+		m_player->get_collider().collision_depths = {};
+	}
+	m_player->controller.restrict_movement();
+	m_player->controller.prevent_movement();
+	if (m_player->p_animatable.animation.complete()) {
+		m_player->set_flag(PlayerFlags::knocked_over, false);
+		m_ko_timer.start();
+		request(AnimState::unconscious);
+		if (change_state(AnimState::unconscious, get_params("unconscious"))) { return PA_BIND(update_unconscious); }
+	}
+	return PA_BIND(update_knock_over);
 }
 
 bool PlayerAnimation::change_state(AnimState next, anim::Parameters params, bool hard) {

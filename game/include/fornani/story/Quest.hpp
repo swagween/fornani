@@ -104,6 +104,8 @@ class QuestRegistry {
   public:
 	QuestRegistry(ResourceFinder& finder);
 
+	[[nodiscard]] auto get_json(std::string_view tag) const& -> dj::Json;
+	[[nodiscard]] auto get_json(int index) const& -> dj::Json { return m_quest_data[index]; }
 	[[nodiscard]] auto get_quest_metadata(std::string_view tag) const& -> Quest { return get_quest_metadata(get_index_from_tag(tag)); }
 	[[nodiscard]] auto get_quest_metadata(int index) const& -> Quest { return m_registry.contains(index) ? m_registry.at(index) : null_quest; }
 	[[nodiscard]] auto get_index_from_tag(std::string_view tag) const -> std::size_t { return m_indeces.contains(tag.data()) ? m_indeces.at(tag.data()) : -1; }
@@ -113,6 +115,7 @@ class QuestRegistry {
 	std::unordered_map<int, Quest> m_registry{};
 	std::unordered_map<std::string, std::size_t> m_indeces{};
 	Quest null_quest{};
+	dj::Json m_quest_data{};
 
 	io::Logger m_logger{"quest"};
 };
@@ -131,9 +134,11 @@ class QuestTable {
 	void set_quest_progression(std::string_view tag, QuestIdentifier const identifier, int const amount, std::vector<int> sources, QuestRequirementType type = QuestRequirementType::strict);
 	void set_quest_progression(std::string_view tag, Subquest const subquest, int const amount, std::vector<int> const sources, QuestIdentifier const identifier = 0);
 
+	[[nodiscard]] auto was_quest_started(std::string_view tag) const -> bool { return m_quests.contains(tag.data()); }
 	[[nodiscard]] auto get_quest_progression(std::string_view tag, QuestIdentifier const identifier = 0) const -> ProgressionState { return m_quests.contains(tag.data()) ? m_quests.at(tag.data()).get_progression(identifier) : 0; }
 	[[nodiscard]] auto get_quest_progression(std::string_view tag, Subquest const identifier) const -> ProgressionState { return m_quests.contains(tag.data()) ? m_quests.at(tag.data()).get_progression(identifier) : 0; }
 	[[nodiscard]] auto print_progressions(std::string_view tag, std::string_view identifier = "") const -> std::string;
+	[[nodiscard]] auto readout(std::string_view tag, std::string_view identifier = "") const -> std::string;
 	[[nodiscard]] auto are_contingencies_met(QuestContingencySet const& set) const -> bool;
 
   private:

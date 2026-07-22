@@ -83,6 +83,8 @@
         ],
         "series": [
           {
+            "hide_portrait": true,
+            "output": 0,
             "suite": [
               [
                 {
@@ -98,6 +100,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 500,
         "dimensions": [
           1,
@@ -114,6 +117,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 502,
         "dimensions": [
           1,
@@ -130,6 +134,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 513,
         "dimensions": [
           1,
@@ -142,6 +147,23 @@
           18
         ],
         "source_id": 501
+      },
+      {
+        "activate_on_contact": false,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 263,
+        "dimensions": [
+          1,
+          2
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          28,
+          1
+        ],
+        "source_id": 501
       }
     ]
   },
@@ -149,11 +171,6 @@
     "ambience": "",
     "background": "woods",
     "biome": "kariba",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -173,6 +190,7 @@
       32,
       64
     ],
+    "interior": true,
     "metagrid": [
       48,
       26
@@ -188,17 +206,28 @@
       "environmental_randomness": true,
       "interior": true,
       "lighting": true,
-      "timer": false
+      "sky_limit": 0,
+      "timer": false,
+      "toxic": false
     },
     "room_id": 501,
     "shader": {
       "darken_factor": 2
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false
@@ -8475,7 +8504,7 @@
         134,
         134,
         134,
-        134,
+        0,
         134,
         134,
         134,
@@ -8507,7 +8536,7 @@
         134,
         134,
         134,
-        134,
+        0,
         134,
         134,
         134,
@@ -8539,7 +8568,7 @@
         134,
         134,
         134,
-        134,
+        0,
         134,
         134,
         134,
@@ -8571,7 +8600,7 @@
         134,
         134,
         134,
-        134,
+        0,
         134,
         134,
         134,
@@ -8603,7 +8632,7 @@
         134,
         134,
         134,
-        134,
+        0,
         134,
         134,
         134,
@@ -8632,10 +8661,10 @@
         0,
         118,
         120,
-        134,
-        134,
-        134,
-        134,
+        0,
+        0,
+        0,
+        0,
         134,
         134,
         134,
@@ -8663,8 +8692,8 @@
         0,
         0,
         0,
-        134,
-        134,
+        0,
+        0,
         134,
         134,
         134,

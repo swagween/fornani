@@ -89,6 +89,7 @@
 					"message": "You awaken now after a slumber of unknown length."
 				},
 				{
+					"codes": [ [ 27, 32, 1 ] ],
 					"message": "The world shakes around you..."
 				}
 			]

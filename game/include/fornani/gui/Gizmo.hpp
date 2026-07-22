@@ -40,7 +40,7 @@ namespace fornani::gui {
 constexpr auto light_shift_time_v = 24;
 
 enum class GizmoState { neutral, hovered, selected, closed };
-enum class DashboardPort { minimap, wardrobe, arsenal, inventory, invalid };
+enum class DashboardPort { minimap, wardrobe, arsenal, inventory, journal, invalid };
 
 struct InventoryZone {
 	sf::Vector2i table_dimensions{};
@@ -75,6 +75,7 @@ class Gizmo : public UniquePolymorphic {
 	void deselect();
 	void neutralize();
 	void hover();
+	void displace(sf::Vector2f factor);
 
 	[[nodiscard]] auto is_foreground() const -> bool { return m_foreground; }
 	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
@@ -83,6 +84,7 @@ class Gizmo : public UniquePolymorphic {
 	[[nodiscard]] auto is_selected() const -> bool { return m_state == GizmoState::selected; }
 	[[nodiscard]] auto is_closed() const -> bool { return m_state == GizmoState::closed; }
 	[[nodiscard]] auto get_dashboard_port() const -> DashboardPort { return m_dashboard_port ? *m_dashboard_port : DashboardPort::invalid; }
+	[[nodiscard]] auto get_placement() const -> sf::Vector2f { return m_placement + m_displacement; }
 
 	// debug
 	void report();
@@ -103,6 +105,7 @@ class Gizmo : public UniquePolymorphic {
 	components::SteeringBehavior m_steering{};
 	// the (x, y) of the target top left position of gizmo. all constituent parts will refer to this position for drawing.
 	sf::Vector2f m_placement{};
+	sf::Vector2f m_displacement{};
 	//
 	io::Logger m_logger{"Gizmo"};
 };

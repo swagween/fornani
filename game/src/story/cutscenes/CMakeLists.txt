@@ -7,6 +7,7 @@ nani_add_sources(
   BrynPostMiaag.cpp
   EncounterMinigus.cpp
   EncounterLynx.cpp
+  FamilyReunion.cpp
   HaunchIntro.cpp
   HaunchEscape.cpp
         LadyNimbusIntro.cpp
@@ -15,6 +16,7 @@ nani_add_sources(
         MainIntro.cpp
         NightsideStation.cpp
         NightsideWall.cpp
+        RetrieveLynx.cpp
         ReturnToBase.cpp
         SwitchBlockPan.cpp
 )

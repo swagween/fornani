@@ -64,13 +64,20 @@ QuestRegistry::QuestRegistry(ResourceFinder& finder) {
 		NANI_LOG_ERROR(m_logger, "Failed to load quest data from path {}.", path.string());
 		return;
 	}
-	auto quest_data = std::move(*quest_data_result);
+	m_quest_data = std::move(*quest_data_result);
 	auto index = 0;
-	for (auto const& entry : quest_data.as_array()) {
+	for (auto const& entry : m_quest_data.as_array()) {
 		m_registry.insert({index, Quest{entry}});
 		m_indeces.insert({entry["tag"].as_string(), index});
 		++index;
 	}
+}
+
+auto QuestRegistry::get_json(std::string_view tag) const& -> dj::Json {
+	for (auto const& quest : m_quest_data.as_array()) {
+		if (quest["tag"].as_string() == tag) { return quest; }
+	}
+	return m_quest_data[0];
 }
 
 QuestTable::QuestTable(QuestRegistry& registry) : m_registry(&registry) {}
@@ -198,6 +205,15 @@ auto QuestTable::print_progressions(std::string_view tag, std::string_view ident
 		ret += label + next + ": " + id + " - " + std::to_string(p.second) + "\n";
 	}
 	return ret;
+}
+
+auto QuestTable::readout(std::string_view tag, std::string_view identifier) const -> std::string {
+	if (!m_quests.contains(tag.data())) { return ""; }
+	auto current_objective = std::string{};
+	for (auto const& objective : m_registry->get_json(tag)["objectives"].as_array()) {
+		if (objective["index"].as<int>() == get_quest_progression(tag)) { current_objective = objective["readout"].as_string(); }
+	}
+	return current_objective;
 }
 
 auto QuestTable::are_contingencies_met(QuestContingencySet const& set) const -> bool {

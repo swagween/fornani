@@ -674,6 +674,12 @@
     },
     {
       "folder": "overturned",
+      "label": "lake.json",
+      "region": "overturned",
+      "room_id": 263
+    },
+    {
+      "folder": "overturned",
       "label": "landing.json",
       "region": "overturned",
       "room_id": 200
@@ -893,6 +899,12 @@
       "label": "warehouse.json",
       "region": "overturned",
       "room_id": 403
+    },
+    {
+      "folder": "overturned",
+      "label": "waterway.json",
+      "region": "overturned",
+      "room_id": 264
     },
     {
       "folder": "overturned",

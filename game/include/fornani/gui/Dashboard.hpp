@@ -31,6 +31,7 @@ namespace fornani::gui {
 
 enum class DashboardState { home, hovering, gizmo };
 enum class GizmoButtonState { off, hovered, clicked };
+enum class DashboardFlags { exiting };
 
 struct GizmoButton {
 	sf::RectangleShape box{};
@@ -56,6 +57,12 @@ class Dashboard {
 	[[nodiscard]] auto is_gizmo() const -> bool { return m_state == DashboardState::gizmo; }
 	[[nodiscard]] auto is_home() const -> bool { return m_state == DashboardState::home; }
 
+  public:
+	util::BitFlags<DashboardFlags> flags{};
+
+  private:
+	void debug();
+
   private:
 	std::vector<std::unique_ptr<Gizmo>> m_gizmos{};
 	sf::Vector2i m_selected_position{};
@@ -80,6 +87,8 @@ class Dashboard {
 	struct {
 		util::RectPath map;
 		util::RectPath rotary;
+		util::RectPath frontplate;
+		util::RectPath basis;
 	} m_paths;
 
 	struct {

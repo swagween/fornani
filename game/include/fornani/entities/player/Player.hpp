@@ -127,7 +127,8 @@ enum class PlayerFlags {
 	special_render,
 	intangible,
 	no_turn,
-	encumbered
+	encumbered,
+	knocked_over
 };
 enum class Triggers { hurt };
 
@@ -189,6 +190,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void set_sitting();
 	void set_jumping();
 	void set_slow_walk();
+	void set_knocked_over();
 	void set_sleeping(bool on_floor = false);
 	void stall_idle_timer();
 	void set_hurt();
@@ -203,6 +205,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto is_dead() const -> bool { return m_death_type.has_value(); }
 	[[nodiscard]] auto is_death_complete() const -> bool { return m_death_cooldown.is_almost_complete(); }
 	[[nodiscard]] auto is_stunned() const -> bool { return has_flag_set(PlayerFlags::stunned); }
+	[[nodiscard]] auto is_knocked_over() const -> bool { return has_flag_set(PlayerFlags::knocked_over); }
 	[[nodiscard]] auto had_special_death() const -> bool { return m_death_type ? m_death_type.value() != PlayerDeathType::normal : false; }
 	[[nodiscard]] auto has_death_type(PlayerDeathType const test) const -> bool { return m_death_type ? m_death_type.value() == test : false; }
 	[[nodiscard]] auto get_i_death_type() const -> int { return m_death_type ? static_cast<int>(m_death_type.value()) : -1; }
@@ -266,10 +269,10 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void update_antennae();
 	void sync_antennae();
 	void apply_impulse(sf::Vector2f impulse);
-
 	void set_busy(bool flag) { set_flag(PlayerFlags::busy, flag); }
 	void stun(float multiplier = 1.f);
 	void hurt_and_stun(float multiplier = 1.f);
+	void knock_over() { set_flag(PlayerFlags::knocked_over); }
 	void set_trigger(Triggers const to_set, bool on = true) { on ? flags.triggers.set(to_set) : flags.triggers.reset(to_set); }
 
 	bool grounded() const;

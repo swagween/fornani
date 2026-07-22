@@ -662,6 +662,7 @@ void Player::update_animation() {
 
 	if (hurt_cooldown.running()) { m_animation_machine.request(AnimState::hurt); }
 	if (is_stunned()) { m_animation_machine.request(AnimState::stun); }
+	if (is_knocked_over()) { m_animation_machine.request(AnimState::stun); }
 
 	if (consume_flag(PlayerFlags::sleep)) { m_animation_machine.request(AnimState::sleep); }
 	if (consume_flag(PlayerFlags::wake_up)) { m_animation_machine.request(AnimState::wake_up); }
@@ -726,6 +727,11 @@ void Player::set_jumping() {
 void Player::set_slow_walk() {
 	m_animation_machine.force(AnimState::slow_walk, "slow_walk");
 	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_slow_walk, &m_animation_machine);
+}
+
+void Player::set_knocked_over() {
+	m_animation_machine.force(AnimState::knock_over, "knock_over");
+	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_knock_over, &m_animation_machine);
 }
 
 void Player::set_sleeping(bool on_floor) {
@@ -1105,6 +1111,7 @@ void Player::set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_o
 void Player::give_item(std::string_view label, int amount, bool from_save) {
 	for (auto i{0}; i < amount; ++i) { catalog.inventory.add_item(m_services->data.item, label); }
 	if (label == "cridium_shard" && !from_save) { set_flag(PlayerFlags::health_increase); }
+	if (label == "dog_leash" && !from_save) { m_services->quest_table.set_quest_progression("rescue_justin", 0, QuestRequirementType::loose); }
 	if (m_services->data.get_item_json_from_tag(label)["category"].as<int>() == 0 && !from_save) { set_flag(PlayerFlags::ability_acquisition); }
 }
 
@@ -1254,7 +1261,7 @@ void Player::handle_item_logic() {
 				set_flag(PlayerFlags::intangible);
 			}
 			if (m_currently_held_item->id == 27) { // ashtown preserves
-				heal();
+				health.refill();
 				m_services->soundboard.play_sound("heal");
 				m_currently_held_item.reset();
 				catalog.inventory.remove_item(m_services->data.item_label_from_id(m_currently_held_item->id), 1);

@@ -47,6 +47,12 @@ struct DestructibleRecord {
 	auto operator==(DestructibleRecord const&) const -> bool = default;
 };
 
+struct EnemyRecord {
+	std::string tag{};
+	int fallen{};
+	auto operator==(EnemyRecord const&) const -> bool = default;
+};
+
 class DataManager final {
 
   public:
@@ -90,6 +96,7 @@ class DataManager final {
 	void respawn_enemies(int room_id, int distance);
 	void respawn_all();
 	void register_loot(dj::Json const& chest);
+	void register_enemy(std::string_view tag);
 
 	bool is_duplicate_room(int id) const;
 	bool is_door_unlocked(std::string_view tag) const;
@@ -121,6 +128,7 @@ class DataManager final {
 	[[nodiscard]] auto get_npc_label_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] auto get_enemy_label_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] std::unordered_map<std::string, int> const& loot_register() const noexcept { return m_loot; }
+	[[nodiscard]] Register<EnemyRecord> const& get_bestiary() const noexcept { return m_bestiary; }
 
 	int get_room_index(int id);
 	int get_npc_location(int npc_id);
@@ -195,6 +203,7 @@ class DataManager final {
 	Register<StableID::underlying_type> destroyed_inspectables{};
 	std::unordered_map<std::string, int> m_loot{};
 	Register<std::string> unlocked_doors{};
+	Register<EnemyRecord> m_bestiary{};
 	Register<int> activated_switches{};
 	Register<DestructibleRecord> destructible_states{};
 	std::vector<util::QuestKey> quest_progressions{};

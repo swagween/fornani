@@ -68,7 +68,7 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	m_motherboard_path.update();
 	m_minimap->update();
 
-	if (m_info) { m_info->update(svc, player, map, m_placement + m_path.get_position()); }
+	if (m_info) { m_info->update(svc, player, map, get_placement() + m_path.get_position()); }
 	for (auto& plugin : m_plugins) { plugin.update(svc.soundboard); }
 
 	// create and destroy chain borders
@@ -139,12 +139,12 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 		++ctr;
 	}
 
-	m_minimap->set_port_position(m_path.get_position() + m_placement - m_map_screen.get_f_corner_dimensions());
+	m_minimap->set_port_position(m_path.get_position() + get_placement() - m_map_screen.get_f_corner_dimensions());
 	m_minimap->set_port_dimensions(m_map_screen.get_bounds());
 	if (m_state != GizmoState::selected || (m_state == GizmoState::selected && !m_path.finished())) { m_minimap->center(); }
-	m_map_screen.set_position(m_path.get_position() + m_placement);
+	m_map_screen.set_position(m_path.get_position() + get_placement());
 	m_map_screen.set_dimensions(m_path.get_dimensions());
-	m_map_shadow.set_position(m_path.get_position() + m_placement);
+	m_map_shadow.set_position(m_path.get_position() + get_placement());
 	m_map_shadow.set_dimensions(m_path.get_dimensions());
 
 	if (m_info) { m_info->current_room = m_minimap->get_currently_hovered_room(); }
@@ -153,7 +153,7 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
 	Gizmo::render(svc, win, player, shader, palette, cam, foreground);
 	if (is_foreground() != foreground) { return; }
-	auto render_position{-m_placement + cam};
+	auto render_position{-get_placement() + cam};
 	m_constituents.gizmo.motherboard.position = m_path.get_position() + m_motherboard_path.get_position() - m_map_screen.get_f_corner_dimensions();
 	m_constituents.gizmo.motherboard.render(win, m_sprite, render_position, sf::Vector2f{100.f, -6.f}, shader, palette);
 	m_minimap->render(svc, win, player, cam, m_icon_sprite);

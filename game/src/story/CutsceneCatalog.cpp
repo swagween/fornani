@@ -7,6 +7,7 @@
 #include <fornani/story/cutscene/BrynPostMiaag.hpp>
 #include <fornani/story/cutscene/EncounterLynx.hpp>
 #include <fornani/story/cutscene/EncounterMinigus.hpp>
+#include <fornani/story/cutscene/FamilyReunion.hpp>
 #include <fornani/story/cutscene/HaunchEscape.hpp>
 #include <fornani/story/cutscene/HaunchIntro.hpp>
 #include <fornani/story/cutscene/LadyNimbusIntro.hpp>
@@ -15,6 +16,7 @@
 #include <fornani/story/cutscene/NightsideStation.hpp>
 #include <fornani/story/cutscene/NightsideWall.hpp>
 #include <fornani/story/cutscene/PioneerBaseDebrief.hpp>
+#include <fornani/story/cutscene/RetrieveLynx.hpp>
 #include <fornani/story/cutscene/ReturnToBase.hpp>
 #include <fornani/story/cutscene/SpencerReveal.hpp>
 #include <fornani/story/cutscene/SwitchBlockPan.hpp>
@@ -55,6 +57,8 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	case 1300: cutscenes.push_back(std::make_unique<AshtownCall>(svc)); break;
 	case 1301: cutscenes.push_back(std::make_unique<BanditConfrontation>(svc)); break;
 	case 1310: cutscenes.push_back(std::make_unique<SpencerReveal>(svc)); break;
+	case 2270: cutscenes.push_back(std::make_unique<RetrieveLynx>(svc)); break;
+	case 400: cutscenes.push_back(std::make_unique<RetrieveLynx>(svc)); break;
 	default:
 		NANI_LOG_INFO(m_logger, "You forgot to add cutscene {} to catalog.", id);
 		cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc));

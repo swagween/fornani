@@ -20,7 +20,7 @@ void Dive::update(shape::Collider& collider, PlayerController& controller) {
 	m_post_dive.update();
 	if (!m_flags.test(AbilityFlags::active)) {
 		collider.physics.acceleration.y = m_multiplier;
-		collider.physics.velocity.y = 0.f;
+		collider.physics.velocity.y *= 0.8f;
 		m_post_dive.start();
 		m_request.cancel();
 	}

@@ -14,7 +14,8 @@ Water::Water(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in,
 	repeatable = false;
 	copyable = false;
 
-	m_bounding_box.set_position(get_world_position());
+	auto pos = get_world_position().length() < constants::small_value ? -constants::f_cell_vec : get_world_position();
+	m_bounding_box.set_position(pos);
 
 	auto u_dimensions = sf::Vector2u{p_animatable.get_dimensions()};
 	if (!m_texture.resize(u_dimensions)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
@@ -105,7 +106,8 @@ void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 	m_wave_shift.x = std::cos(wrapped);
 	m_wave_shift.y = std::sin(2.f * wrapped);
 	if (phase >= 2.f * std::numbers::pi) { m_wave_timer.reset(); }
-	m_bounding_box.set_position(get_world_position());
+	auto pos = get_world_position() == sf::Vector2f{0.f, 0.f} ? -constants::f_cell_vec : get_world_position();
+	m_bounding_box.set_position(pos);
 	m_bounding_box.set_position({m_bounding_box.get_position().x + m_wave_shift.x * 3.f, m_bounding_box.get_position().y + m_wave_shift.y * 2.f});
 }
 

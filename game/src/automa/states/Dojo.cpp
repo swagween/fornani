@@ -41,6 +41,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 	svc.events.health_increase_event.attach_to(p_slot, &Dojo::handle_health_increase, this);
 	svc.events.ability_acquisition_event.attach_to(p_slot, &Dojo::handle_ability_acquisition, this);
 	svc.events.transition_event.attach_to(p_slot, &Dojo::handle_transition, this);
+	svc.events.set_quest_progression_event.attach_to(p_slot, &Dojo::set_quest_progression, this);
 
 	m_map_markers.insert({1, "main"});
 	m_map_markers.insert({2, "woodshine"});
@@ -542,5 +543,14 @@ void Dojo::handle_ability_acquisition(ServiceProvider& svc, player::Player& play
 }
 
 void Dojo::handle_transition() { set_flag(GameplayStateFlags::transitioned_in, false); }
+
+void Dojo::set_quest_progression(int quest, int value) {
+	auto tag = p_services->quest_registry.get_json(quest)["tag"].as_string();
+	p_services->quest_table.set_quest_progression(tag, value);
+	for (auto const& objective : p_services->quest_registry.get_json(tag)["objectives"].as_array()) {
+		if (objective["index"].as<int>() == value) { p_services->notifications.push_notification(*p_services, p_services->data.gui_text["notifications"]["journal_updated"].as_string()); }
+	}
+	NANI_LOG_DEBUG(m_logger, "Set quest {}'s progression to {}", tag, value);
+}
 
 } // namespace fornani::automa

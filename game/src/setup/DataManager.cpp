@@ -271,6 +271,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["activated_switches"] = dj::Json::empty_array();
 	save["destroyed_blocks"] = dj::Json::empty_array();
 	save["destroyed_inspectables"] = dj::Json::empty_array();
+	save["bestiary"] = dj::Json::empty_array();
 	for (auto& enemy : fallen_enemies) {
 		auto entry = dj::Json::empty_array();
 		entry.push_back(enemy.code.first);
@@ -284,6 +285,12 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	for (auto& door : unlocked_doors) { save["unlocked_doors"].push_back(door); }
 	for (auto& chest : opened_chests) { save["opened_chests"].push_back(chest); }
 	for (auto& s : activated_switches) { save["activated_switches"].push_back(s); }
+	for (auto& enemy : m_bestiary) {
+		auto record = dj::Json{};
+		record["tag"] = enemy.tag;
+		record["fallen"] = enemy.fallen;
+		save["bestiary"].push_back(record);
+	}
 	for (auto& block : destructible_states) {
 		auto state = dj::Json{};
 		state.push_back({block.code});
@@ -512,6 +519,16 @@ void DataManager::respawn_all() {
 }
 void DataManager::register_loot(dj::Json const& chest) { ++m_loot[chest["tag"].as_string()]; }
 
+void DataManager::register_enemy(std::string_view tag) {
+	for (auto& entry : m_bestiary) {
+		if (entry.tag == tag) {
+			++entry.fallen;
+			return;
+		}
+	}
+	m_bestiary.add(EnemyRecord{tag.data(), 1});
+}
+
 bool data::DataManager::is_duplicate_room(int id) const {
 	for (auto& json : map_jsons) {
 		if (json.id == id) { return true; }
@@ -713,12 +730,14 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	quest_progressions.clear();
 	npc_locations.clear();
 	fallen_enemies.clear();
+	m_bestiary.clear();
 
 	m_services->quest_table.unserialize(save);
 
 	m_services->world_clock.unserialize(save["map_data"]["world_time"]);
 
 	for (auto& room : save["discovered_rooms"].as_array()) { discovered_rooms.add(room.as<int>()); }
+	for (auto& enemy : save["bestiary"].as_array()) { m_bestiary.add(EnemyRecord{enemy["tag"].as_string(), enemy["fallen"].as<int>()}); }
 	for (auto& door : save["unlocked_doors"].as_array()) { unlocked_doors.add(door.as_string()); }
 	for (auto& chest : save["opened_chests"].as_array()) { opened_chests.add(chest.as<std::uint64_t>()); }
 	for (auto& s : save["activated_switches"].as_array()) { activated_switches.add(s.as<int>()); }

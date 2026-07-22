@@ -57,7 +57,8 @@ enum class AnimState {
 	melee_front_kick,
 	melee_side_kick,
 	melee_roundhouse_kick,
-	drink
+	drink,
+	knock_over
 };
 
 enum class AnimTriggers { end_death };
@@ -130,6 +131,7 @@ class PlayerAnimation : public StateMachine<AnimState> {
 	fsm::StateFunction update_melee_side_kick();
 	fsm::StateFunction update_melee_roundhouse_kick();
 	fsm::StateFunction update_drink();
+	fsm::StateFunction update_knock_over();
 
 	bool change_state(AnimState next, anim::Parameters params, bool hard = false);
 	void force(AnimState to_state, std::string_view key);
@@ -144,6 +146,7 @@ class PlayerAnimation : public StateMachine<AnimState> {
 	anim::Parameters const& get_params(std::string const& key);
 	util::Cooldown m_buffer;
 	util::Cooldown m_sleep_timer;
+	util::Cooldown m_ko_timer;
 
 	io::Logger m_logger{"animation"};
 };

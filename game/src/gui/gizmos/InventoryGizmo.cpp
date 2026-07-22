@@ -95,14 +95,14 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	auto& current_zone = m_zones.current();
 	if (foreground) { // lid
 		m_sprite.setTextureRect(sf::IntRect{{0, 249}, {448, 249}});
-		m_sprite.setPosition(m_placement + m_lid_path.get_position() - cam);
+		m_sprite.setPosition(get_placement() + m_lid_path.get_position() - cam);
 		shader.submit(win, palette, m_sprite);
 	} else {
 		m_sprite.setTextureRect(sf::IntRect{{}, {448, 249}});
-		m_sprite.setPosition(m_placement + m_path.get_position() - cam);
+		m_sprite.setPosition(get_placement() + m_path.get_position() - cam);
 		shader.submit(win, palette, m_sprite);
 
-		if (m_description) {
+		if (m_description && is_selected()) {
 			if (m_current_item) {
 				if (auto* item = m_player->catalog.inventory.find_item(*m_current_item)) {
 					assert(item != nullptr); // already handled
@@ -119,7 +119,7 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		auto equip_slot_offset = sf::Vector2f{466.f, 100.f};
 		for (auto i = 0; i < num_equip_slots + 1; ++i) {
 			m_sprite.setTextureRect(sf::IntRect{{448, 63}, {22, 22}});
-			m_sprite.setPosition(m_placement + m_path.get_position() - cam + equip_slot_offset + sf::Vector2f{0.f, static_cast<float>(i) * 44.f});
+			m_sprite.setPosition(get_placement() + m_path.get_position() - cam + equip_slot_offset + sf::Vector2f{0.f, static_cast<float>(i) * 44.f});
 			shader.submit(win, palette, m_sprite);
 		}
 
@@ -131,14 +131,14 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 
 		auto orb_offset = sf::Vector2f{208.f, 419.f};
 		auto count_offset = sf::Vector2f{32.f, 39.f};
-		m_orb_display.render(win, m_placement + m_path.get_position() - cam + orb_offset);
+		m_orb_display.render(win, get_placement() + m_path.get_position() - cam + orb_offset);
 
 		for (auto& item : player.catalog.inventory.items_view()) {
 			if (item.item->is_invisible()) { continue; }
 			auto zone_type = static_cast<InventoryZoneType>(item.item->get_type());
 			if (!m_zones.contains(zone_type)) { continue; }
 			auto const& zone = m_zones.at(zone_type);
-			auto where = m_placement + m_path.get_position() - cam + zone.render_offset + item.item->get_f_origin().componentWiseMul(zone.cell_size) - sf::Vector2f{2.f, 2.f};
+			auto where = get_placement() + m_path.get_position() - cam + zone.render_offset + item.item->get_f_origin().componentWiseMul(zone.cell_size) - sf::Vector2f{2.f, 2.f};
 			item.item->render(win, m_item_sprite, where);
 			for (auto& display : m_number_displays) {
 				if (display.matches(item.item->get_id())) { display.render(win, where + count_offset); }
@@ -150,7 +150,7 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 			if (item == nullptr) { continue; }
 			if (item->is_invisible()) { continue; }
 			auto spacing = sf::Vector2f{0.f, 44.f};
-			auto where = m_placement + m_path.get_position() - cam + m_equipped_items_position + spacing * static_cast<float>(j);
+			auto where = get_placement() + m_path.get_position() - cam + m_equipped_items_position + spacing * static_cast<float>(j);
 			item->render(win, m_item_sprite, where);
 		}
 
@@ -158,7 +158,7 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		auto cridium_count = player.get_item_count("cridium_shard") % 4;
 		if (cridium_count != 0) {
 			m_sprite.setTextureRect(sf::IntRect{{451, 85 + 19 * (cridium_count - 1)}, {19, 19}});
-			m_sprite.setPosition(m_placement + m_path.get_position() - cam + sf::Vector2f{66.f, 302.f});
+			m_sprite.setPosition(get_placement() + m_path.get_position() - cam + sf::Vector2f{66.f, 302.f});
 			win.draw(m_sprite);
 		}
 

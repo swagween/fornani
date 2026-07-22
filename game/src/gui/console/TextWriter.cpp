@@ -1,8 +1,8 @@
 
 #include <SFML/Graphics.hpp>
-#include <algorithm>
 #include <fornani/gui/console/TextWriter.hpp>
 #include <fornani/utils/TextUtils.hpp>
+#include <algorithm>
 #include <fstream>
 #include <string>
 #include "fornani/service/ServiceProvider.hpp"
@@ -195,6 +195,7 @@ void TextWriter::write_instant_message(sf::RenderWindow& win) {
 	if (!suite) { return; }
 	if (m_iterators.current_suite_set >= suite->suite.size()) { return; }
 	if (suite->suite.at(m_iterators.current_suite_set).empty()) { return; }
+	if (suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index).data.getString().getSize() < 1) { return; }
 	bounds_box.setOutlineColor(sf::Color{0, 255, 80});
 	bounds_box.setSize(suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index).data.getLocalBounds().size);
 	// win.draw(bounds_box);

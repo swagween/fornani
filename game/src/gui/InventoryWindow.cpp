@@ -44,6 +44,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	svc.soundboard.repeat_sound("pioneer_hum");
 
 	m_view == InventoryView::exit ? m_background.setFillColor(util::ColorUtils::fade_out(colors::pioneer_black)) : m_background.setFillColor(util::ColorUtils::fade_in(colors::pioneer_black));
+	if (m_view == InventoryView::exit) { m_dashboard->flags.set(DashboardFlags::exiting); }
 
 	if (m_view == InventoryView::dashboard) {
 		auto const& selected = controller.digital(input::DigitalAction::menu_select).triggered;
@@ -56,7 +57,7 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 		if (controller.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::released) && m_dashboard->get_selected_position() == sf::Vector2i{-1, 0}) { m_dashboard->set_selection({0, 0}); }
 		if (controller.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::released) && m_dashboard->get_selected_position() == sf::Vector2i{1, 0}) { m_dashboard->set_selection({0, 0}); }
 
-		if (selected && m_dashboard->is_hovering()) {
+		if (selected && (m_dashboard->is_hovering() || m_dashboard->is_home())) {
 			if (m_dashboard->get_selected_position().x == 0) { m_grid_position.y = std::clamp(m_grid_position.y + m_dashboard->get_selected_position().y, -1.f, 1.f); }
 			if (m_dashboard->get_selected_position().y == 0) { m_grid_position.x = std::clamp(m_grid_position.x + m_dashboard->get_selected_position().x, -1.f, 1.f); }
 			if (m_dashboard->select_gizmo()) {

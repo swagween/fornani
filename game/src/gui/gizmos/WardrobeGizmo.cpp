@@ -61,9 +61,9 @@ void WardrobeGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player
 	}
 
 	m_path.update();
-	player.wardrobe_widget.set_position(m_placement + m_path.get_position() + m_nani_offset);
-	m_core.update(m_placement + m_path.get_position());
-	m_light.update(m_placement + m_path.get_position() + m_light_offset);
+	player.wardrobe_widget.set_position(get_placement() + m_path.get_position() + m_nani_offset);
+	m_core.update(get_placement() + m_path.get_position());
+	m_light.update(get_placement() + m_path.get_position() + m_light_offset);
 
 	// health display
 	m_health_display.socket_state = player.health.get_i_capacity() - 3;
@@ -85,7 +85,7 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	// insertion pins
 	m_sprite.setTextureRect(sf::IntRect{{330, 10}, {7, 80}});
 	auto pin_offset{sf::Vector2f{260.f, 72.f}};
-	m_sprite.setPosition(m_placement + m_path.get_position() + pin_offset - cam);
+	m_sprite.setPosition(get_placement() + m_path.get_position() + pin_offset - cam);
 	shader.submit(win, palette, m_sprite);
 
 	// outfitter
@@ -106,13 +106,13 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	m_core.render(svc, win, cam, shader, palette);
 
 	// small add-ons
-	player.render(svc, win, cam, m_placement + m_path.get_position() + m_pawn_offset);
+	player.render(svc, win, cam, get_placement() + m_path.get_position() + m_pawn_offset);
 	m_light.render(svc, win, cam);
 
 	// health display
 	auto offset{sf::Vector2f{10.f, 4.f}};
-	m_health_display.hearts.setPosition(m_placement + m_path.get_position() + m_health_display.position + offset - cam);
-	m_health_display.sockets.setPosition(m_placement + m_path.get_position() + m_health_display.position - cam);
+	m_health_display.hearts.setPosition(get_placement() + m_path.get_position() + m_health_display.position + offset - cam);
+	m_health_display.sockets.setPosition(get_placement() + m_path.get_position() + m_health_display.position - cam);
 	shader.submit(win, palette, m_health_display.sockets);
 	win.draw(m_health_display.hearts);
 
@@ -127,7 +127,7 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 		auto icol = piece > 0 ? static_cast<int>(piece - 1) : 9; // 9 is where the default outfit is located on the atlas
 		auto lookup = sf::Vector2i{icol, irow} * constants::i_cell_resolution_padded;
 		m_apparel_sprite.setTextureRect(sf::IntRect{lookup + wardrobe_origin, constants::i_resolution_vec_padded});
-		m_apparel_sprite.setPosition(m_placement + m_path.get_position() + outfit_offset + row * spacing - cam);
+		m_apparel_sprite.setPosition(get_placement() + m_path.get_position() + outfit_offset + row * spacing - cam);
 		m_apparel_sprite.setOrigin(m_apparel_sprite.getLocalBounds().getCenter());
 		win.draw(m_apparel_sprite);
 		++row;

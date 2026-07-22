@@ -68,6 +68,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 211,
         "dimensions": [
           1,
@@ -84,6 +85,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 230,
         "dimensions": [
           1,
@@ -121,37 +123,32 @@
       32,
       16
     ],
+    "interior": false,
     "metagrid": [
       42,
       12
     ],
     "minimap": true,
-    "music": null,
     "player_start": [
       0,
       0
     ],
-    "properties": {
-      "day_night_shift": true,
-      "interior": false
-    },
     "room_id": 212,
     "shader": {
       "darken_factor": 0
     },
-    "use_template": true,
-    "weather": null
+    "use_template": true
   },
   "tile": {
     "animated": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ],
     "flags": {
       "obscuring": false,

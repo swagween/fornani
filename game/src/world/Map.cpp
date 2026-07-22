@@ -759,6 +759,13 @@ void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf
 bool Map::handle_entry(player::Player& player, util::Cooldown& enter_room) {
 	auto ret = false;
 	if (!m_entities) { return false; }
+	auto underwater = false;
+	for (auto const& water : get_entities<Water>()) {
+		if (water->get_grid_dimensions().y >= dimensions.y) {
+			underwater = true;
+			NANI_LOG_DEBUG(m_logger, "WATER ENTRY!");
+		}
+	}
 	for (auto const& portal : get_entities<Portal>()) {
 		if (portal->get_destination() == m_services->state_controller.source_id) {
 			ret = true;
@@ -773,7 +780,11 @@ bool Map::handle_entry(player::Player& player, util::Cooldown& enter_room) {
 			}
 			if (portal->is_bottom()) {
 				player.get_collider().physics.acceleration.y = -player.physics_stats.jump_velocity;
-				player.accumulated_forces.push_back(sf::Vector2f{player::walk_speed_v * player.get_actual_direction().as_float(), 0.f});
+				player.apply_impulse({player::walk_speed_v * player.get_actual_direction().as_float(), 0.f});
+			}
+			if (portal->is_top() && underwater) {
+				player.get_collider().physics.acceleration.y = player.physics_stats.jump_velocity;
+				player.apply_impulse({0.f, 10.f});
 			}
 		}
 	}
