@@ -1,6 +1,12 @@
 {
   "rooms": [
     {
+      "folder": "abandoned",
+      "label": "glade.json",
+      "region": "abandoned",
+      "room_id": 1600
+    },
+    {
       "folder": "ashtown",
       "label": "blue_district.json",
       "region": "ashtown",

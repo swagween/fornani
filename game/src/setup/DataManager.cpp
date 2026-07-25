@@ -260,6 +260,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	NANI_LOG_INFO(m_logger, "Saved vendor seed: {}", random::get_vendor_seed());
 
 	m_services->quest_table.serialize(save);
+	save["active_quest"] = active_quest;
 
 	// write opened chests and doors
 	m_services->world_clock.serialize(save["map_data"]["world_time"]);
@@ -733,6 +734,7 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	m_bestiary.clear();
 
 	m_services->quest_table.unserialize(save);
+	active_quest = save["active_quest"].as<int>();
 
 	m_services->world_clock.unserialize(save["map_data"]["world_time"]);
 

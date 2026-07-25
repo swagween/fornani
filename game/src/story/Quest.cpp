@@ -227,6 +227,8 @@ auto QuestTable::are_contingencies_met(QuestContingencySet const& set) const -> 
 	return true;
 }
 
+auto QuestTable::is_quest_complete(std::string_view tag) const -> bool { return get_quest_progression(tag) >= m_registry->get_json(tag)["target"].as<int>(); }
+
 QuestContingency::QuestContingency(dj::Json const& in) {
 	tag = in["tag"].as_string();
 	requirement = in["requirement"].as<int>();

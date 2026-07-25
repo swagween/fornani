@@ -70,7 +70,7 @@
     "tag": "carises_soul",
     "category": 1,
     "lookup": [4, 2],
-    "origin": [6, 3],
+    "origin": [1, 3],
     "actual_title": "Carise's Soul",
     "naive_description": "When equipped, this makes you intangible while dashing.",
     "unique": true,
@@ -170,7 +170,7 @@
     "tag": "four_of_diamonds",
     "category": 1,
     "lookup": [12, 0],
-    "origin": [5, 3],
+    "origin": [6, 3],
     "actual_title": "Four of Diamonds",
     "naive_description": "An old playing card that Carl gave you in exchange for a soda. You suspect it might be completely worthless.",
     "actual_description": "An old playing card that Carl gave you in exchange for a soda. You suspect it might be completely worthless.",
@@ -1104,6 +1104,16 @@
     "actual_title": "Egg",
     "naive_description": "If you found this, it means you did a good job.",
     "unique": true
+  },
+  {
+    "tag": "diver_boots",
+    "category": 1,
+    "lookup": [5, 1],
+    "origin": [9, 3],
+    "actual_title": "Diver Boots",
+    "naive_description": "When equipped, these boots will cause you to sink in water.",
+    "unique": true,
+    "equippable": true
   },
   {
     "tag": "golden_tiara",

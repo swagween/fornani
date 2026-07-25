@@ -128,7 +128,8 @@ enum class PlayerFlags {
 	intangible,
 	no_turn,
 	encumbered,
-	knocked_over
+	knocked_over,
+	heavy
 };
 enum class Triggers { hurt };
 
@@ -246,6 +247,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto get_luck() const -> float { return m_attributes.luck; }
 	[[nodiscard]] auto get_item_count(std::string_view tag) -> int;
 	[[nodiscard]] bool is_intangible() const;
+	[[nodiscard]] bool is_swimming() const;
 	[[nodiscard]] auto can_be_stunned() const -> bool;
 	[[nodiscard]] auto on_water_surface() const -> bool;
 

@@ -170,6 +170,7 @@ class DataManager final {
 	std::array<io::File, 3> files{};
 	io::File blank_file{};
 	io::File trial_file{};
+	int active_quest{};
 
 	dj::Json player_params{};
 	dj::Json menu{};

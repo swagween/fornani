@@ -32,7 +32,7 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, SceneContext& cont
 		svc.camera_controller.set_owner(graphics::CameraOwner::player);
 		context.transition.end();
 		flags.set(CutsceneFlags::delete_me);
-		svc.quest_table.progress_quest("defeat_skycorps", 1, 50901);
+		svc.quest_table.set_quest_progression("defeat_skycorps", 1);
 		svc.music_player.load(svc.finder, "bryns_turn");
 		player.set_flag(player::PlayerFlags::cutscene, false);
 		svc.music_player.play_looped();

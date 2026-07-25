@@ -78,7 +78,6 @@ void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			for (auto& proj : map.active_projectiles) {
 				if (proj.get_team() == arms::Team::guardian) { continue; }
 				if (attack.hit.within_bounds(proj.get_collider())) {
-					NANI_LOG_DEBUG(m_logger, ":FKAS:");
 					map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position()));
 					random::percent_chance(50) ? svc.soundboard.flags.summoner.set(audio::Summoner::block_1) : svc.soundboard.flags.summoner.set(audio::Summoner::block_2);
 					proj.destroy(false);
@@ -88,7 +87,7 @@ void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		}
 	}
 
-	auto can_summon = map.enemy_catalog.enemies.size() < 20;
+	auto can_summon = map.enemy_catalog.enemies.size() < 20 && is_hostile();
 
 	if (is_state(SummonerState::idle) && svc.ticker.every_second()) {
 		if (!m_cooldowns.post_summon.running() && can_summon) {
@@ -100,7 +99,7 @@ void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	if (player.get_collider().bounding_box.overlaps(get_collider().get_vicinity_rect()) && !m_cooldowns.post_walk.running()) { request(SummonerState::walk); }
 
 	// caution
-	auto incoming_projectile = m_caution.projectile_detected(map, physical.alert_range, arms::Team::skycorps);
+	auto incoming_projectile = m_caution.projectile_detected(map, physical.alert_range, arms::Team::guardian);
 	if (incoming_projectile.lnr != LNR::neutral) {
 		if (incoming_projectile.lnr != directions.actual.lnr) {
 			request(SummonerState::horizontal_pulse);
@@ -268,7 +267,7 @@ fsm::StateFunction Summoner::update_summon() {
 			auto yoffset = random::random_range_float(-220.f, -190.f);
 			auto offset = sf::Vector2f{xoffset, yoffset};
 			m_pulse.get().set_barrel_point(get_collider().get_center() + offset);
-			m_pulse.shoot(*m_services, *m_map, m_player_position - m_pulse.get().get_barrel_point());
+			if (!m_map->overlaps_middleground(m_pulse.get().get_barrel_point())) { m_pulse.shoot(*m_services, *m_map, m_player_position - m_pulse.get().get_barrel_point()); }
 		}
 	}
 	if (m_variant == SummonerVariant::mage) {

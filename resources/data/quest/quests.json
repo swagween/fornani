@@ -155,8 +155,24 @@
 	{
 		"title": "Defeat Skycorps",
 		"tag": "defeat_skycorps",
-		"target": 4,
-		"objectives": [ "Infiltrate the Greatwing and take down Skycorps before they awaken the Mother Worm." ],
+		"target": 8,
+		"objectives": [ 
+			{
+				"index": 1,
+				"readout": "Take the Nightside train to Ashtown and await further instruction from Doc and Bryn."
+			},
+			{
+				"index": 2,
+				"readout": "Take Pioneer Trail to Ashtown and await further instruction from Doc and Bryn."
+			},
+			{
+				"index": 3,
+				"readout": "Find someone named Spencer in Ashtown."
+			},
+			{
+				"index": 8,
+				"readout": "Infiltrate the Greatwing and take down Skycorps before they awaken the Mother Worm."
+			} ],
 		"displayed": true
 	},
 	{
@@ -268,8 +284,17 @@
 	},
 	{
 		"tag": "pioneer_tech",
-		"target": 2,
-		"objectives": [],
+		"title": "Pioneer Tech",
+		"target": 3,
+		"objectives": [
+			{
+				"index": 1,
+				"readout": "Find a screwdriver and bring it to Dr. Willett."
+			},
+			{
+				"index": 2,
+				"readout": "Bring a screwdriver to Dr. Willett."
+			}],
 		"displayed": true
 	},
 	{
@@ -376,6 +401,18 @@
 			{
 				"index": 1,
 				"readout": "Find Gaia's husband, Ruan."
+			}
+		],
+		"displayed": true
+	},
+	{
+		"tag": "find_gas_mask",
+		"title": "Find a Gas Mask",
+		"target": 2,
+		"objectives": [
+			{
+				"index": 1,
+				"readout": "I need to find a Gas Mask so I can take the long road to Ashtown."
 			}
 		],
 		"displayed": true

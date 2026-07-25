@@ -31,7 +31,12 @@ void ICollider::update(automa::ServiceProvider& svc) {
 	if (has_flag_set(ColliderFlags::in_water)) {
 		auto multiplier = has_flag_set(ColliderFlags::submerged) ? p_physics_properties.water_gravity_multiplier : 0.9f;
 		if (has_flag_set(ColliderFlags::sinking)) { multiplier = 0.005f; }
-		physics.set_friction_componentwise(p_physics_properties.friction.componentWiseMul(p_physics_properties.water_friction));
+		auto fric = p_physics_properties.water_friction;
+		if (has_flag_set(ColliderFlags::sink)) {
+			multiplier = 0.5f;
+			fric.y = p_physics_properties.friction.y * 0.9f;
+		}
+		physics.set_friction_componentwise(p_physics_properties.friction.componentWiseMul(fric));
 		physics.gravity = p_physics_properties.gravity * multiplier;
 	}
 	if (has_flag_set(ColliderFlags::in_goo)) {

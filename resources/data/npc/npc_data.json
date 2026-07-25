@@ -97,9 +97,9 @@
       "upcharge": 0.2,
       "stock_size": 6,
       "common_items": ["bronze_bracelet", "soda"],
-      "uncommon_items": ["lantern", "magnifying_glass", "screwdriver"],
+      "uncommon_items": ["lantern", "magnifying_glass"],
       "rare_items": ["pioneer_scrap", "red_jeans", "indigum", "magnet"],
-      "guaranteed_finite_items": ["gas_mask"]
+      "guaranteed_finite_items": ["gas_mask", "screwdriver"]
     },
     "locations": {
       "contingency": {

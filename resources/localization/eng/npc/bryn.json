@@ -107,7 +107,7 @@
       ],
       [
         {
-          "codes": [[5, 0]],
+          "codes": [[5, 0], [27, 33, 2]],
           "message": "No matter. We need to get out of this place and back to the base."
         },
         {
@@ -593,7 +593,7 @@
         {
           "codes": [
             [13, 0, 509],
-            [5, 1]
+            [5, 1], [27, 33, 3]
           ],
           "message": "You know what, I'll hang around for a little longer. I'm interested to find any clues that Miaag and his people might have left behind in this place."
         }
@@ -614,6 +614,7 @@
     ]
   },
   "5": {
+    "output": 2,
     "responses": [
       [
         {
@@ -636,7 +637,7 @@
           "message": "Welcome back!"
         },
         {
-          "codes": [[13, 0, 300]],
+          "codes": [[13, 0, 300],[27, 33, 4]],
           "message": "Listen, I can't thank you enough for getting me out of those ruins."
         },
         {
@@ -976,6 +977,7 @@
           "message": "But otherwise you'll have to get to Ashtown the old-fashioned way."
         },
         {
+          "codes": [[27, 8, 2]],
           "message": "Take the Pioneer Trail as far as it goes."
         },
         {

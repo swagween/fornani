@@ -25,6 +25,7 @@ Palette::Palette(std::string_view source, ResourceFinder& finder) {
 		offset.x += 1.f;
 	}
 	m_texture.display();
+	m_texture.setSmooth(false);
 }
 
 void Palette::render(sf::RenderWindow& win) {

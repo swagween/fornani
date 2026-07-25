@@ -18,6 +18,13 @@ void Inventory::add_item(dj::Json const& source, std::string_view label) {
 void Inventory::remove_item(std::string_view tag, int amount) {
 	auto const& item = find_item_stack(tag);
 	if (item->quantity == 1) {
+		// check if it's equipped; if so, unequip it
+		for (auto& i : m_equipped_items) {
+			if (i == item->item->get_id()) {
+				i = -1;
+				item->item->set_equipped(false);
+			}
+		}
 		m_items.remove(*item);
 	} else {
 		--item->quantity;

@@ -1,5 +1,5 @@
 {
-  "biomes": ["firstwind", "overturned", "pioneer", "factory", "greatwing", "kariba", "junkyard", "toxic", "worm", "ashtown", "nightside"],
+  "biomes": ["firstwind", "overturned", "pioneer", "factory", "greatwing", "kariba", "junkyard", "toxic", "worm", "ashtown", "nightside", "abandoned"],
   "atmosphere": ["dragonflies"],
   "properties": {
     "firstwind": {

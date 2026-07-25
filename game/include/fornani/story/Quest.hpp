@@ -140,6 +140,7 @@ class QuestTable {
 	[[nodiscard]] auto print_progressions(std::string_view tag, std::string_view identifier = "") const -> std::string;
 	[[nodiscard]] auto readout(std::string_view tag, std::string_view identifier = "") const -> std::string;
 	[[nodiscard]] auto are_contingencies_met(QuestContingencySet const& set) const -> bool;
+	[[nodiscard]] auto is_quest_complete(std::string_view tag) const -> bool;
 
   private:
 	void start_quest(std::string_view tag, std::vector<std::pair<QuestIdentifier, ProgressionState>> status);

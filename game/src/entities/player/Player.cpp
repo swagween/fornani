@@ -251,12 +251,13 @@ void Player::update(world::Map& map) {
 	}
 
 	// water
-	if (get_collider().physics.velocity.y < -4.f && !get_collider().has_flag_set(shape::ColliderFlags::in_water)) { cooldowns.water_exit.cancel(); }
+	if (get_collider().physics.velocity.y < -6.f && !get_collider().has_flag_set(shape::ColliderFlags::in_water)) { cooldowns.water_exit.cancel(); }
 	if (m_air_supply.is_dead()) {
 		m_death_type = PlayerDeathType::drowned;
 		hurt(max_damage_v, true);
 	}
 	m_air_supply_bar.update(m_air_supply.get_normalized(), get_collider().get_top() + sf::Vector2f{0.f, -32.f}, true);
+	get_collider().set_flag(shape::ColliderFlags::sink, has_flag_set(PlayerFlags::heavy));
 
 	// check for fall
 	if (map.off_the_bottom(get_collider().physics.position)) {
@@ -643,7 +644,7 @@ void Player::update_animation() {
 		}
 	} else {
 		if (get_collider().physics.apparent_velocity().y > -thresholds.suspend && get_collider().physics.apparent_velocity().y < thresholds.suspend && !controller.is_wallsliding() && !controller.is_walljumping()) {
-			get_collider().has_flag_set(shape::ColliderFlags::in_water) ? m_animation_machine.request(AnimState::swim) : m_animation_machine.request(AnimState::suspend);
+			get_collider().has_flag_set(shape::ColliderFlags::in_water) && !has_flag_set(PlayerFlags::heavy) ? m_animation_machine.request(AnimState::swim) : m_animation_machine.request(AnimState::suspend);
 		}
 	}
 
@@ -776,6 +777,8 @@ auto Player::get_item_count(std::string_view tag) -> int {
 }
 
 bool Player::is_intangible() const { return has_flag_set(PlayerFlags::intangible); }
+
+bool Player::is_swimming() const { return !has_flag_set(PlayerFlags::heavy) && get_collider().has_flag_set(shape::ColliderFlags::submerged); }
 
 auto Player::can_be_stunned() const -> bool { return !is_stunned() && !cooldowns.stun_immunity.running(); }
 
@@ -916,8 +919,8 @@ void Player::hurt(float amount, bool force) {
 		}
 		if (is_stunned() && cooldowns.stun.get_normalized() < 0.9f) { cooldowns.stun.start(4); }
 		if (amount > 1.f) {
-			m_sprite_shake.start();
-			m_services->ticker.freeze_frame(80, 0.01f);
+			if (!health.is_dead()) { m_sprite_shake.start(); }
+			m_services->ticker.freeze_frame(40, 0.02f);
 		} else {
 			m_services->ticker.freeze_frame(24);
 		}
@@ -1217,12 +1220,12 @@ SimpleDirection Player::entered_from() const { return (get_collider().physics.po
 void Player::handle_item_logic() {
 
 	// equippable items
-	if (has_item_equipped("boxing_glove")) {
-		if (arsenal && hotbar) {
-			if (consume_flag(PlayerFlags::hit_target)) { equipped_weapon().reduce_reload_time(0.1f); }
-		}
+	if (has_item("gas_mask")) { m_services->quest_table.set_quest_progression("find_gas_mask", 2, QuestRequirementType::strict); }
+	if (has_item_equipped("boxing_glove") && arsenal && hotbar) {
+		if (consume_flag(PlayerFlags::hit_target)) { equipped_weapon().reduce_reload_time(0.1f); }
 	}
 	m_air_supply.set_capacity(has_item_equipped("oxygen_tank") ? 400.f : 100.f, true);
+	set_flag(PlayerFlags::heavy, has_item_equipped("diver_boots"));
 	has_item_equipped("hoarders_trinket") ? health.set_invincibility(default_invincibility_time_v * 1.3f) : health.set_invincibility(default_invincibility_time_v);
 	if (arsenal && hotbar) { has_item_equipped("feather") ? equipped_weapon().set_reload_multiplier(0.85f) : equipped_weapon().set_reload_multiplier(1.f); }
 	if (has_item("soda")) { m_services->quest_table.set_quest_progression("carl_soda", 1, QuestRequirementType::loose); }
@@ -1355,14 +1358,14 @@ bool Player::can_wallcling() const {
 
 bool Player::can_walljump() const {
 	if (abilities_disabled()) { return false; }
-	if (get_collider().has_flag_set(shape::ColliderFlags::submerged)) { return false; }
+	if (is_swimming()) { return false; }
 	if (!catalog.inventory.has_item("kariba_talisman")) { return false; }
 	return true;
 }
 
 bool Player::can_dive() const {
 	if (abilities_disabled()) { return false; }
-	if (!get_collider().has_flag_set(shape::ColliderFlags::submerged)) { return false; }
+	if (!is_swimming()) { return false; }
 	return true;
 }
 

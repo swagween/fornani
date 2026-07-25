@@ -546,7 +546,7 @@ void Dojo::handle_transition() { set_flag(GameplayStateFlags::transitioned_in, f
 
 void Dojo::set_quest_progression(int quest, int value) {
 	auto tag = p_services->quest_registry.get_json(quest)["tag"].as_string();
-	p_services->quest_table.set_quest_progression(tag, value);
+	p_services->quest_table.set_quest_progression(tag, value, QuestRequirementType::strict);
 	for (auto const& objective : p_services->quest_registry.get_json(tag)["objectives"].as_array()) {
 		if (objective["index"].as<int>() == value) { p_services->notifications.push_notification(*p_services, p_services->data.gui_text["notifications"]["journal_updated"].as_string()); }
 	}

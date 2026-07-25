@@ -40,6 +40,7 @@
     "firstwind": "- Firstwind Airship - "
   },
   "menu": { "back_button": "< back", "completed": "<completed>" },
+  "journal": { "quest": "<Journal>", "bestiary": "<Bestiary>" },
   "file_menu": {
     "play": "play",
     "stats": "stats",
@@ -59,5 +60,8 @@
   "dialog": {
     "enter_start": "Press ",
     "enter_end": " to continue."
+  },
+  "bestiary": {
+    "fallen": "fallen: "
   }
 }

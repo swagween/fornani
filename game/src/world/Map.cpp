@@ -761,10 +761,7 @@ bool Map::handle_entry(player::Player& player, util::Cooldown& enter_room) {
 	if (!m_entities) { return false; }
 	auto underwater = false;
 	for (auto const& water : get_entities<Water>()) {
-		if (water->get_grid_dimensions().y >= dimensions.y) {
-			underwater = true;
-			NANI_LOG_DEBUG(m_logger, "WATER ENTRY!");
-		}
+		if (water->get_grid_dimensions().y >= dimensions.y) { underwater = true; }
 	}
 	for (auto const& portal : get_entities<Portal>()) {
 		if (portal->get_destination() == m_services->state_controller.source_id) {

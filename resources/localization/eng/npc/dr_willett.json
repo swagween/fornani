@@ -398,7 +398,7 @@
         },
         {
           "codes": [
-            [3, 22, 1, 300],
+            [27, 22, 1],
             [1, 0]
           ],
           "message": "In short, I need a screwdriver. Bring me one of those, and we can get building!"
@@ -482,7 +482,7 @@
           "message": "Best of luck to you, Nani."
         },
         {
-          "codes": [[8, 0]],
+          "codes": [[8, 0], [27, 8, 1]],
           "message": "The fate of this island lies in your hands..."
         }
       ],
@@ -496,7 +496,7 @@
           "message": "Best of luck to you, Nani."
         },
         {
-          "codes": [[8, 0]],
+          "codes": [[8, 0], [27, 8, 1]],
           "message": "The fate of this island lies in your hands..."
         }
       ]
@@ -923,6 +923,7 @@
           "message": "Well, I promise you won't have such transportation hang-ups this time around, as no one can really stop you from walking to Ashtown."
         },
         {
+          "codes": [[27, 8, 2]],
           "message": "The fastest way there is via the Pioneer Trail, which is due east of here. Bryn should be able to place a marker on your map gizmo if she hasn't already."
         },
         {
@@ -957,7 +958,7 @@
           "message": "Beyond the Mother lies a series of caverns full of toxic waste. Whether that waste is a byproduct of Skycorps development projects or the Mother herself, I cannot say."
         },
         {
-          "codes": [[1, 2]],
+          "codes": [[1, 2], [27, 35, 1]],
           "message": "Either way, you'll need a gas mask if you've any hope of getting through them."
         }
       ],
@@ -988,7 +989,7 @@
         },
         {
           "codes": [
-            [3, 22, 1, 300],
+            [27, 22, 1],
             [1, 0]
           ],
           "message": "In short, I need a screwdriver. Bring me one of those, and we can get building!"

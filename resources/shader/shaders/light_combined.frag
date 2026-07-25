@@ -81,16 +81,19 @@ void global_shift(float amount) {
 
 vec4 shift(float amount) {
     vec4 px = source;
+    float v = 0.5;
 
-	for (int i = 0; i <= palette_size; i++) {
-		float fi = float(i);
-		vec4 swatch = texture2D(palette, vec2(fi / float(palette_size), 0));
-		if (source.rgb == swatch.rgb) { 
-            //need something here to clamp this texture pull to the border, if its not already there
-            fi = clamp((fi + amount) / float(palette_size), 0.0, 1.0);
-			px = texture2D(palette, vec2(fi, 0)); 
-		}
-	}
+	for (int i = 0; i < palette_size; ++i) {
+    float u = (float(i) + 0.5) / float(palette_size);
+    vec4 swatch = texture2D(palette, vec2(u, 0.5));
+
+    if (distance(source.rgb, swatch.rgb) < 0.001) {
+        float shifted = clamp(float(i) + amount, 0.0, float(palette_size - 1));
+        float shiftedU = (shifted + 0.5) / float(palette_size);
+        px = texture2D(palette, vec2(shiftedU, 0.5));
+        break;
+    }
+    }
     return px;
 }
 

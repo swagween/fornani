@@ -94,7 +94,7 @@ void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 	} else {
 		set_flag(WaterFlags::splashed, false);
 	}
-	if (m_bounding_box.contains_point(player.get_collider().get_top())) {
+	if (m_bounding_box.contains_point(player.get_collider().get_top() + sf::Vector2f{0.f, -2.f})) {
 		player.get_collider().set_flag(shape::ColliderFlags::submerged);
 	} else if (player.get_collider().has_flag_set(shape::ColliderFlags::in_water)) {
 		player.exit_water();

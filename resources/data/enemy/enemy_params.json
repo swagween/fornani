@@ -40,6 +40,7 @@
 
   "tank": {
     "metadata": {
+      "name": "Skycorps Tank",
       "id": 1,
       "variant": "skycorps"
     },
@@ -87,6 +88,7 @@
   },
   "thug": {
     "metadata": {
+      "name": "Skycorps Thug",
       "id": 3,
       "variant": "skycorps"
     },
@@ -134,6 +136,7 @@
 
   "eyebot": {
     "metadata": {
+      "name": "Eyebot",
       "id": 2,
       "variant": "beast"
     },
@@ -182,6 +185,7 @@
 
   "eyebit": {
     "metadata": {
+      "name": "Eyebit",
       "id": 3,
       "variant": "beast"
     },
@@ -231,6 +235,7 @@
 
   "minigus": {
     "metadata": {
+      "name": "Minigus",
       "id": 6,
       "variant": "skycorps"
     },
@@ -279,6 +284,7 @@
   },
   "demon": {
     "metadata": {
+      "name": "Demon",
       "id": 7,
       "variant": "guardian"
     },
@@ -326,6 +332,7 @@
   },
   "caster": {
     "metadata": {
+      "name": "Caster",
       "id": 8,
       "variant": "guardian"
     },
@@ -374,6 +381,7 @@
   },
   "archer": {
     "metadata": {
+      "name": "Archer",
       "id": 9,
       "variant": "guardian"
     },
@@ -422,6 +430,7 @@
   },
   "imp": {
     "metadata": {
+      "name": "Imp",
       "id": 12,
       "variant": "guardian"
     },
@@ -469,6 +478,7 @@
   },
   "beamstalk": {
     "metadata": {
+      "name": "Beamstalk",
       "id": 10,
       "variant": "beast"
     },
@@ -517,6 +527,7 @@
   },
   "meatsquash": {
     "metadata": {
+      "name": "Meatsquash",
       "id": 11,
       "variant": "beast"
     },
@@ -561,6 +572,7 @@
   },
   "hulmet": {
     "metadata": {
+      "name": "Hulmet",
       "id": 13,
       "variant": "skycorps"
     },
@@ -605,6 +617,7 @@
   },
   "miaag": {
     "metadata": {
+      "name": "Miaag",
       "id": 14,
       "variant": "demon"
     },
@@ -648,6 +661,7 @@
   },
   "lynx": {
     "metadata": {
+      "name": "Lynx",
       "id": 15,
       "variant": "skycorps"
     },
@@ -691,6 +705,7 @@
   },
   "summoner": {
     "metadata": {
+      "name": "Summoner",
       "id": 16,
       "variant": "guardian"
     },
@@ -701,7 +716,7 @@
       "num_colliders": 1,
       "num_hurtboxes": 1,
       "alert_range": [380.0, 64.0],
-      "hostile_range": [90.0, 32.0],
+      "hostile_range": [790.0, 732.0],
       "friction": 0.99,
       "gravity": 12.0
     },
@@ -757,6 +772,7 @@
   },
   "minion": {
     "metadata": {
+      "name": "Minion",
       "id": 17,
       "variant": "guardian"
     },
@@ -801,6 +817,7 @@
   },
   "spitefly": {
     "metadata": {
+      "name": "Spitefly",
       "id": 18,
       "variant": "guardian"
     },
@@ -843,6 +860,7 @@
   },
   "junkfly": {
     "metadata": {
+      "name": "Junkfly",
       "id": 19,
       "variant": "beast"
     },
@@ -885,6 +903,7 @@
   },
   "junker": {
     "metadata": {
+      "name": "Junker",
       "id": 20,
       "variant": "beast"
     },
@@ -927,6 +946,7 @@
   },
   "dumpster_diver": {
     "metadata": {
+      "name": "Dumpster Diver",
       "id": 21,
       "variant": "beast"
     },
@@ -990,6 +1010,7 @@
   },
   "mastiff": {
     "metadata": {
+      "name": "Mastiff",
       "id": 22,
       "variant": "guardian"
     },
@@ -1034,6 +1055,7 @@
   },
   "beamsprout": {
     "metadata": {
+      "name": "Beamsprout",
       "id": 23,
       "variant": "beast"
     },
@@ -1082,6 +1104,7 @@
   },
   "grand_mastiff": {
     "metadata": {
+      "name": "Grand Mastiff",
       "id": 24,
       "variant": "guardian"
     },
@@ -1137,6 +1160,7 @@
   },
   "crow": {
     "metadata": {
+      "name": "Crow",
       "id": 25,
       "variant": "beast"
     },
@@ -1185,6 +1209,7 @@
   },
   "mizzle": {
     "metadata": {
+      "name": "Mizzle",
       "id": 26,
       "variant": "beast"
     },
@@ -1233,6 +1258,7 @@
   },
   "mizzle_egg": {
     "metadata": {
+      "name": "Mizzle Egg",
       "id": 27,
       "variant": "beast"
     },
@@ -1282,6 +1308,7 @@
   },
   "haunch": {
     "metadata": {
+      "name": "Haunch",
       "id": 28,
       "variant": "skycorps"
     },
@@ -1328,6 +1355,7 @@
   },
   "lymphocyte": {
     "metadata": {
+      "name": "Lymphocyte",
       "id": 29,
       "variant": "beast"
     },
@@ -1377,6 +1405,7 @@
   },
   "sentinel": {
     "metadata": {
+      "name": "Sentinel",
       "id": 30,
       "variant": "guardian"
     },
@@ -1429,6 +1458,7 @@
   },
   "hellion": {
     "metadata": {
+      "name": "Hellion",
       "id": 31,
       "variant": "guardian"
     },
@@ -1481,6 +1511,7 @@
   },
   "hurtle": {
     "metadata": {
+      "name": "Hurtle",
       "id": 32,
       "variant": "beast"
     },
@@ -1533,6 +1564,7 @@
   },
   "thief": {
     "metadata": {
+      "name": "Thief",
       "id": 33,
       "variant": "beast"
     },
@@ -1596,6 +1628,7 @@
   },
   "grappler": {
     "metadata": {
+      "name": "Grappler",
       "id": 34,
       "variant": "beast"
     },
@@ -1650,6 +1683,7 @@
   },
   "nimbus": {
     "metadata": {
+      "name": "Lady Nimbus",
       "id": 35,
       "variant": "skycorps"
     },
@@ -1704,6 +1738,7 @@
   },
   "macrophage": {
     "metadata": {
+      "name": "Macrophage",
       "id": 36,
       "variant": "beast"
     },
@@ -1749,6 +1784,7 @@
   },
   "antibody": {
     "metadata": {
+      "name": "Antibody",
       "id": 37,
       "variant": "beast"
     },
