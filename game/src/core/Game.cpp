@@ -280,6 +280,11 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Separator();
 					if (ImGui::SliderFloat("DeltaTime Scalar", &services.ticker.global_scalar, 0.0f, 2.f, "%.3f")) { services.ticker.scale_dt(); };
 					if (ImGui::Button("Reset")) { services.ticker.reset_dt(); }
+
+					ImGui::Text("Ticker Freeze-Frame");
+					ImGui::ProgressBar(services.ticker.get_freezeframe(), {300.f, 4.f}, "");
+					ImGui::Text("Ticker Slowdown");
+					ImGui::ProgressBar(services.ticker.get_slowdown(), {300.f, 4.f}, "");
 					ImGui::Separator();
 					ImGui::Text("World Time: %s", services.world_clock.get_string().c_str());
 					ImGui::Text("Time of Day: %s", services.world_clock.tod_as_string(services.world_clock.get_time_of_day()));

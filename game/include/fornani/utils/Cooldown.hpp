@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include <algorithm>
 #include <fornani/utils/Random.hpp>
+#include <algorithm>
 #include <limits>
 
 namespace fornani::util {

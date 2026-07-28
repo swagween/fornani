@@ -342,7 +342,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 		}
 		if (proj.can_damage()) {
 			if (!m_freeze.running()) {
-				svc.ticker.freeze_frame(1, 0.2f);
+				svc.ticker.freeze_frame(0.05f, 1.f);
 				m_freeze.start();
 			}
 			if (proj.has_attribute(arms::ProjectileAttributes::explode_on_impact)) { proj.on_explode(svc, map); }

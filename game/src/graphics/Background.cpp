@@ -63,7 +63,8 @@ void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 			auto map_mult = std::max(fdim.x, fdim.y);
 			auto sprite = sf::Sprite{tex.getTexture()};
 			sprite.setScale(constants::f_scale_vec);
-			sprite.setTextureRect(sf::IntRect{{}, dimensions * std::max(static_cast<int>(multiplier), map_mult)});
+			auto sample = dimensions * 16;
+			sprite.setTextureRect(sf::IntRect{{}, sample});
 
 			auto fpos = layer.final_position - cam * layer.parallax;
 			if (locked_vertically()) {
@@ -78,7 +79,6 @@ void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 				}
 			}
 			sprite.setPosition(fpos);
-			sprite.setOrigin(sf::Vector2f{{sf::Vector2f{dimensions} * multiplier}}.componentWiseMul(origin));
 			shifter.render(svc, win, sprite, tod);
 		}
 	}

@@ -85,6 +85,7 @@ void EditorState::render(sf::RenderWindow& win) {
 	p_services->window->get().clear();
 	p_services->window->restore_view();
 	p_wallpaper.setPosition({});
+	p_wallpaper.setFillColor(p_colors.backdrop);
 	p_wallpaper.setSize(sf::Vector2f{p_services->window->get_view().getSize()});
 	win.draw(p_wallpaper);
 }

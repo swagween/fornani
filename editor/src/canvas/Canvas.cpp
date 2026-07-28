@@ -1,9 +1,9 @@
 
-#include <algorithm>
 #include <editor/canvas/Canvas.hpp>
 #include <editor/tool/Tool.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
+#include <algorithm>
 #include <cassert>
 
 namespace pi {
@@ -52,7 +52,7 @@ void Canvas::update(Tool& tool) {
 }
 
 void Canvas::render(sf::RenderWindow& win, sf::Sprite& tileset) {
-	if (flags.show_background) { background->render(*m_services, win, position); }
+	if (flags.show_background) { background->render(*m_services, win, {}); }
 	border.setPosition(get_position());
 	hovered() ? border.setOutlineColor({240, 230, 255, 80}) : border.setOutlineColor({240, 230, 255, 40});
 	border.setSize(get_real_dimensions());

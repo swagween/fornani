@@ -18,7 +18,7 @@ struct Attack {
 	void handle_player(player::Player& player);
 	bool hurt_player(player::Player& player, float damage = 1.f, sf::Vector2f knockback = {});
 	bool kill_player(player::Player& player, player::PlayerDeathType death, bool center_only = false);
-	void cancel_projectiles(automa::ServiceProvider& svc, world::Map& map, arms::Team team, int freezeframe = 3);
+	void cancel_projectiles(automa::ServiceProvider& svc, world::Map& map, arms::Team team, float freezeframe = 0.08);
 	void set_constant_radius(float to);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void enable();

@@ -257,10 +257,20 @@
 		"displayed": false
 	},
 	{
-		"title": "Mystery of Pixiote",
-		"tag": "mystery_of_pixiote",
+		"title": "The Lost Artifact",
+		"tag": "lost_artifact",
 		"target": 4,
-		"displayed": false
+		"objectives": [
+			{
+				"index": 1,
+				"readout": "Meet Loth at the Pixiote Temple."
+			},
+			{
+				"index": 2,
+				"readout": ""
+			}
+		],
+		"displayed": true
 	},
 	{
 		"title": "Haunch Dialogue",
@@ -417,5 +427,4 @@
 		],
 		"displayed": true
 	}
-
 ]

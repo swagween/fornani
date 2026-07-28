@@ -86,9 +86,6 @@ class Editor final : public EditorState {
 	BrushMode m_mode{};
 	Console console{};
 	struct {
-		sf::Color backdrop{};
-	} colors{};
-	struct {
 		bool pervasive{};
 		bool contiguous{};
 	} tool_flags{};

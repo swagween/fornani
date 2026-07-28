@@ -37,7 +37,7 @@ bool Attack::kill_player(player::Player& player, player::PlayerDeathType death, 
 	return false;
 }
 
-void Attack::cancel_projectiles(automa::ServiceProvider& svc, world::Map& map, arms::Team team, int freezeframe) {
+void Attack::cancel_projectiles(automa::ServiceProvider& svc, world::Map& map, arms::Team team, float freezeframe) {
 	if (hit.active()) {
 		for (auto& proj : map.active_projectiles) {
 			if (proj.get_team() == team) { continue; }

@@ -3,8 +3,8 @@
 
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Constants.hpp>
-#include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/Math.hpp>
+#include <fornani/utils/Timer.hpp>
 #include <chrono>
 #include <deque>
 #include <thread>
@@ -76,7 +76,7 @@ class Ticker {
 	void end_frame();
 	void calculate_fps();
 	void slow_down(int time, float target = 0.8f, float rate = default_slowdown_rate_v);
-	void freeze_frame(int time, float rate = default_slowdown_rate_v);
+	void freeze_frame(float time, float rate = default_slowdown_rate_v);
 	void set_time(Sec time);
 	void scale_dt();
 	void reset_dt();
@@ -89,6 +89,9 @@ class Ticker {
 	[[nodiscard]] auto every_x_ticks(int const freq) const -> bool { return ticks % freq == 0; }
 	[[nodiscard]] auto every_second() const -> bool { return periods.test(Period::second); }
 	[[nodiscard]] auto every_twenty_minutes() const -> bool { return periods.test(Period::twenty_minutes); }
+
+	[[nodiscard]] auto get_freezeframe() const -> float { return freezeframe.normalized(); }
+	[[nodiscard]] auto get_slowdown() const -> float { return slowdown.normalized(); }
 
 	Clk::time_point current_time{Clk::now()};
 	Clk::time_point new_time{Clk::now()};
@@ -131,8 +134,8 @@ class Ticker {
 	BitFlags<Period> periods{};
 	float slowdown_target{};
 	float slowdown_rate{};
-	Cooldown slowdown{};
-	Cooldown freezeframe{};
+	Timer slowdown{};
+	Timer freezeframe{};
 };
 
 } // namespace fornani::util

@@ -58,8 +58,7 @@ Editor::Editor(fornani::automa::ServiceProvider& svc, EditorContext& ctx)
 	bool debug_mode = false;
 
 	p_wallpaper.setSize(p_services->window->f_screen_dimensions());
-	colors.backdrop = sf::Color{40, 60, 80};
-	p_wallpaper.setFillColor(colors.backdrop);
+	p_colors.backdrop = sf::Color{40, 60, 80};
 }
 
 EditorStateType Editor::run(char** argv) {
@@ -1121,6 +1120,15 @@ void Editor::gui_render(sf::RenderWindow& win) {
 						if (ImGui::BeginTabItem("Config")) {
 							ImGui::SliderFloat("Widget Alpha", &m_menu_alpha, 0.f, 1.f);
 							ImGui::Checkbox("Debug Overlay", &show_overlay);
+							auto r = static_cast<float>(p_colors.backdrop.r) / 255.f;
+							auto g = static_cast<float>(p_colors.backdrop.g) / 255.f;
+							auto b = static_cast<float>(p_colors.backdrop.b) / 255.f;
+							static float wallpaper[3] = {r, g, b};
+							ImGui::ColorEdit3("Wallpaper", wallpaper);
+							auto wr = static_cast<std::uint8_t>(wallpaper[0] * 255.f);
+							auto wg = static_cast<std::uint8_t>(wallpaper[1] * 255.f);
+							auto wb = static_cast<std::uint8_t>(wallpaper[2] * 255.f);
+							p_colors.backdrop = sf::Color{wr, wg, wb};
 							ImGui::EndTabItem();
 						}
 						ImGui::EndTabBar();

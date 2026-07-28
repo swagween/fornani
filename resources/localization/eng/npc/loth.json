@@ -224,7 +224,7 @@
           "message": "It is not safe to tell you - especially not here. Even better is if I simply show you."
         },
         {
-          "codes": [[1, 3]],
+          "codes": [[1, 3], [27, 18, 1]],
           "message": "Find me at the heart of the Pixiote Temple. There, you will learn the whole truth."
         }
       ],

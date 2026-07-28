@@ -67,6 +67,9 @@ class EditorState {
 		fornani::util::Cooldown right_click{8};
 		fornani::util::Cooldown right_release{8};
 	} p_mouse_cooldowns{};
+	struct {
+		sf::Color backdrop{};
+	} p_colors{};
 
 	char regbuffer[128] = "";
 	char roombuffer[128] = "";

@@ -2,6 +2,12 @@
   "rooms": [
     {
       "folder": "abandoned",
+      "label": "clearing.json",
+      "region": "abandoned",
+      "room_id": 1601
+    },
+    {
+      "folder": "abandoned",
       "label": "glade.json",
       "region": "abandoned",
       "room_id": 1600

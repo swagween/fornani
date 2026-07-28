@@ -5,6 +5,7 @@
 #include <fornani/components/PhysicsComponent.hpp>
 #include <fornani/core/Common.hpp>
 #include <fornani/graphics/DayNightShifter.hpp>
+#include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <unordered_map>
 
@@ -51,6 +52,8 @@ class Background {
 	graphics::DayNightShifter shifter{};
 
 	std::string m_label;
+
+	io::Logger m_logger{"Background"};
 };
 
 } // namespace fornani::graphics

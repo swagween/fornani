@@ -30,12 +30,12 @@ void Ticker::calculate_fps() {
 }
 
 void Ticker::slow_down(int time, float target, float rate) {
-	slowdown.set_and_start(time);
+	slowdown.start(time);
 	slowdown_target = target;
 	slowdown_rate = rate;
 }
 
-void Ticker::freeze_frame(int time, float rate) {
+void Ticker::freeze_frame(float time, float rate) {
 	freezeframe.start(time);
 	dt_scalar = 0.f;
 	slowdown_rate = rate;
@@ -61,15 +61,11 @@ void Ticker::reset_dt() {
 auto Ticker::global_tick_rate() const -> float { return ft.count() * tick_multiplier; }
 
 void Ticker::manage_slowdowns() {
-	if (freezeframe.running()) {
-		dt_scalar = 0.01f;
-	} else {
-		dt_scalar = std::clamp(dt_scalar + slowdown_rate, 0.f, global_scalar);
-	}
-	if (slowdown.running()) { dt_scalar = std::clamp(1.f - slowdown_target * util::slowdown(slowdown.get_normalized()), 0.f, global_scalar); }
+	if (freezeframe.running()) { dt_scalar = freezeframe.quadratic_inverse_normalized(); }
+	if (slowdown.running()) { dt_scalar = std::clamp(1.f - slowdown_target * util::slowdown(slowdown.normalized()), 0.f, global_scalar); }
 
-	freezeframe.update();
-	slowdown.update();
+	freezeframe.update(dt.count() * slowdown_rate);
+	slowdown.update(dt.count() * slowdown_rate);
 }
 
 } // namespace fornani::util

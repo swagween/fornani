@@ -30,6 +30,7 @@ nani_add_headers(
         Stopwatch.hpp
         TextUtils.hpp
         Ticker.hpp
+        Timer.hpp
         WorldClock.hpp
         RectPath.hpp
         TransparentStringHash.hpp

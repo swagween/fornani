@@ -289,7 +289,6 @@
     ]
   },
   "woods": {
-    "origin": [0.5, 0.5],
     "dimensions": [960, 512],
     "layers": [
       {
@@ -323,19 +322,19 @@
       },
       {
         "scroll_speed": 0.0,
-        "parallax": 0.017
+        "parallax": 0.17
       },
       {
         "scroll_speed": 0.0,
-        "parallax": 0.08
+        "parallax": 0.28
       },
       {
         "scroll_speed": 0.0,
-        "parallax": 0.11
+        "parallax": 0.31
       },
       {
         "scroll_speed": 0.0,
-        "parallax": 0.16
+        "parallax": 0.46
       }
     ]
   },

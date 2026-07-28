@@ -87,7 +87,7 @@ void Weapon::update(automa::ServiceProvider& svc, world::Map& map, Direction to_
 		if (cooldowns.reload.is_complete()) {
 			if (m_laser) {
 				map.spawn_laser(svc, get_barrel_point(), CardinalDirection{firing_direction}, *m_laser);
-				svc.ticker.freeze_frame(6);
+				svc.ticker.freeze_frame(0.08f, 1.f);
 			} else {
 				shoot(svc, map, get_barrel_point());
 			}
