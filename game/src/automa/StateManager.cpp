@@ -107,7 +107,7 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 			if (get_current_state().is(StateType::dojo)) {
 				get_current_state().reload(svc, svc.state_controller.next_state);
 			} else {
-				svc.soundboard.play_sound("load_game");
+				if (get_current_state().is(StateType::menu)) { svc.soundboard.play_sound("load_game"); }
 				set_current_state(std::make_unique<Dojo>(svc, player, svc.state_controller.next_state));
 			}
 		}

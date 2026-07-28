@@ -1,7 +1,5 @@
 
 # fornani specific
-resources/data/config/*
-resources/data/save/*
 resources/editor/export/*
 
 # User Specific Generated Files

@@ -29,7 +29,7 @@ void Ticker::calculate_fps() {
 	seconds_passed = Sec::zero();
 }
 
-void Ticker::slow_down(int time, float target, float rate) {
+void Ticker::slow_down(float time, float target, float rate) {
 	slowdown.start(time);
 	slowdown_target = target;
 	slowdown_rate = rate;
@@ -61,7 +61,8 @@ void Ticker::reset_dt() {
 auto Ticker::global_tick_rate() const -> float { return ft.count() * tick_multiplier; }
 
 void Ticker::manage_slowdowns() {
-	if (freezeframe.running()) { dt_scalar = freezeframe.quadratic_inverse_normalized(); }
+	dt_scalar = 1.f;
+	if (freezeframe.running()) { dt_scalar = std::max(0.01f, freezeframe.cubic_inverse_normalized()); }
 	if (slowdown.running()) { dt_scalar = std::clamp(1.f - slowdown_target * util::slowdown(slowdown.normalized()), 0.f, global_scalar); }
 
 	freezeframe.update(dt.count() * slowdown_rate);

@@ -274,7 +274,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void set_busy(bool flag) { set_flag(PlayerFlags::busy, flag); }
 	void stun(float multiplier = 1.f);
 	void hurt_and_stun(float multiplier = 1.f);
-	void knock_over() { set_flag(PlayerFlags::knocked_over); }
+	void knock_over();
 	void set_trigger(Triggers const to_set, bool on = true) { on ? flags.triggers.set(to_set) : flags.triggers.reset(to_set); }
 
 	bool grounded() const;

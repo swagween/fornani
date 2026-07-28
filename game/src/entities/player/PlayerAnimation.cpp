@@ -69,6 +69,7 @@ void PlayerAnimation::update() {
 	if (m_player->is_dead()) { request(AnimState::die); }
 	m_buffer.update();
 	m_sleep_timer.update();
+	m_ko_timer.update();
 }
 
 void PlayerAnimation::start() { m_player->p_animatable.animation.start(); }

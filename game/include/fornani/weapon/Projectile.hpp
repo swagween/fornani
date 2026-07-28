@@ -31,7 +31,7 @@ class Weapon;
 enum class ProjectileType { bullet, missile, melee, laser };
 enum class RenderType { animated, single_sprite, multi_sprite };
 
-enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky, explode_on_impact, hitstun };
+enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky, explode_on_impact, hitstun, automatic };
 struct ProjectileSpecifications {
 	float base_damage{};
 	float power{};

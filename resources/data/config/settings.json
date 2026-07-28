@@ -1,0 +1,13 @@
+{
+	"auto_sprint": true,
+	"keyboard": true,
+	"gamepad": true,
+	"music_volume": 0.5,
+	"ambience_volume": 0.5,
+	"sfx_volume": 0.5,
+	"tutorial": false,
+	"fullscreen": true,
+	"military_time": false,
+	"theme": "classic",
+	"language": "eng"
+}

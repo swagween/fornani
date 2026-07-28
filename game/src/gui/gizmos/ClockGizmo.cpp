@@ -13,6 +13,7 @@ namespace fornani::gui {
 ClockGizmo::ClockGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f placement)
 	: Gizmo("Clock", true), m_sprites{.clock{sf::Sprite{svc.assets.get_texture("clock_gizmo")}}, .hand{sf::Sprite{svc.assets.get_texture("clock_hand")}}}, m_text{.readout{svc.text.fonts.basic.font}} {
 	m_physics.position = sf::Vector2f{334.f, 100.f};
+	m_dashboard_port = DashboardPort::minimap;
 	m_placement = placement;
 	m_sprites.clock.setScale(constants::f_scale_vec);
 	m_sprites.hand.setOrigin({4.f, 4.f});
@@ -23,9 +24,9 @@ ClockGizmo::ClockGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Vector
 
 void ClockGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
 	Gizmo::update(svc, player, map, position);
-	m_steering.target(m_physics, position + m_placement, 0.01f);
-	m_physics.position = position + m_placement;
-	m_readout_position = position + sf::Vector2f{102.f, 42.f};
+	m_steering.target(m_physics, position + get_placement(), 0.01f);
+	m_physics.position = position + get_placement();
+	m_readout_position = position + sf::Vector2f{20.f, -94.f} + get_placement();
 	m_text.readout.setString(svc.world_clock.get_hours_string());
 	m_physics.simple_update();
 }

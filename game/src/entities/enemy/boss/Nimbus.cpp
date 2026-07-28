@@ -11,22 +11,22 @@ namespace fornani::enemy {
 Nimbus::Nimbus(automa::ServiceProvider& svc, world::Map& map) : Boss(svc, map, "nimbus"), m_slash_wave(svc, "slash_wave"), m_map{&map}, m_services{&svc} {
 	auto fr = 8;
 	p_animatable.set_animations({{"idle", {93, 4, fr * 4, -1}},
-					{"jump", {1, 7, fr * 5, 0, true}},
-					{"land", {8, 7, fr * 3, 0}},
-					{"get_up", {12, 2, fr * 4, 0}},
-					{"prepare_forward_slash", {16, 3, fr * 5, 0}},
-					{"forward_slash", {19, 9, fr * 2, 0}},
-					{"prepare_twirl_cut", {29, 4, fr * 6, 0}},
-					{"twirl_cut", {33, 6, fr * 2, 0}},
-					{"flourish", {39, 9, fr * 3, 0}},
-					{"downward_cut", {48, 8, fr * 3, 0}},
-					{"upward_cut", {56, 6, fr * 3, 0}},
-					{"turn", {62, 7, fr * 2, 0}},
-					{"parry", {69, 3, fr * 4, 0}},
-					{"begin_levitate", {72, 5, fr * 2, 0}},
-					{"levitate", {77, 4, fr * 4, -1}},
-					{"spellcast", {81, 3, fr * 2, 3}},
-					{"double_aerial_slash", {84, 9, fr * 2, 0}}});
+								 {"jump", {1, 7, fr * 5, 0, true}},
+								 {"land", {8, 7, fr * 3, 0}},
+								 {"get_up", {12, 2, fr * 4, 0}},
+								 {"prepare_forward_slash", {16, 3, fr * 5, 0}},
+								 {"forward_slash", {19, 9, fr * 2, 0}},
+								 {"prepare_twirl_cut", {29, 4, fr * 6, 0}},
+								 {"twirl_cut", {33, 6, fr * 2, 0}},
+								 {"flourish", {39, 9, fr * 3, 0}},
+								 {"downward_cut", {48, 8, fr * 3, 0}},
+								 {"upward_cut", {56, 6, fr * 3, 0}},
+								 {"turn", {62, 7, fr * 2, 0}},
+								 {"parry", {69, 3, fr * 4, 0}},
+								 {"begin_levitate", {72, 5, fr * 2, 0}},
+								 {"levitate", {77, 4, fr * 4, -1}},
+								 {"spellcast", {81, 3, fr * 2, 3}},
+								 {"double_aerial_slash", {84, 9, fr * 2, 0}}});
 	p_animatable.animation.set_params(get_params("idle"));
 	get_collider().physics.set_friction_componentwise({0.99f, 0.999f});
 	m_slash_wave.get().set_team(arms::Team::skycorps);
@@ -76,7 +76,7 @@ void Nimbus::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 				damage = 2.f;
 			}
 			slash.hurt_player(player, damage, {directions.desired.as_float() * 0.4f, -0.2f});
-			slash.cancel_projectiles(svc, map, get_team(), 4);
+			slash.cancel_projectiles(svc, map, get_team());
 		}
 	}
 

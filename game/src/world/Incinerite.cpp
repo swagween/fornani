@@ -1,5 +1,4 @@
 
-#include <algorithm>
 #include <fornani/core/Debug.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/particle/Effect.hpp>
@@ -7,6 +6,7 @@
 #include <fornani/utils/Random.hpp>
 #include <fornani/world/Incinerite.hpp>
 #include <fornani/world/Map.hpp>
+#include <algorithm>
 
 namespace fornani::world {
 
@@ -23,7 +23,7 @@ Incinerite::Incinerite(automa::ServiceProvider& svc, Map& map, sf::Vector2f posi
 void Incinerite::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 	m_collider.get()->sync_components();
 	if (is_destroyed()) {
-		svc.ticker.freeze_frame(2);
+		svc.ticker.freeze_frame(0.05f);
 		svc.soundboard.flags.world.set(audio::World::incinerite_explosion);
 		map.spawn_emitter(svc, "incinerite", m_collider.get()->physics.position, Direction{UND::up}, m_collider.get()->dimensions);
 		map.spawn_effect(svc, "small_explosion", m_collider.get()->get_center(), {}, 3);

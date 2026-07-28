@@ -105,7 +105,7 @@ void MainIntro::update(automa::ServiceProvider& svc, SceneContext& context, worl
 		set_flag(MainIntroFlags::rumble, false);
 		bryn->request(NPCAnimationState::stagger);
 		svc.music_player.stop();
-		svc.ticker.freeze_frame(10);
+		svc.ticker.freeze_frame(0.05f);
 	}
 	if (has_flag_set(MainIntroFlags::takeover)) {
 		if (has_flag_set(MainIntroFlags::start_takeover)) {

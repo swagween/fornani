@@ -20,7 +20,8 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	: Animatable(svc, "projectile_" + std::string{label}), metadata{.id = id, .label = label.data()}, m_weapon(&weapon),
 	  physical{.collider{enemy ? svc.data.enemy_weapon[label]["class_package"]["projectile"]["radius"].as<float>() : svc.data.weapon[label]["class_package"]["projectile"]["radius"].as<float>()}}, m_reflected{48} {
 
-	auto const& in_data = enemy ? svc.data.enemy_weapon[label]["class_package"]["projectile"] : svc.data.weapon[label]["class_package"]["projectile"];
+	auto const& in_weapon = enemy ? svc.data.enemy_weapon[label] : svc.data.weapon[label];
+	auto const& in_data = in_weapon["class_package"]["projectile"];
 
 	metadata.type = static_cast<ProjectileType>(in_data["type"].as<int>());
 	Animatable::set_dimensions({in_data["dimensions"][0].as<int>(), in_data["dimensions"][1].as<int>()});
@@ -56,6 +57,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	if (in_data["attributes"]["sprite_flip"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sprite_flip); }
 	if (in_data["attributes"]["sticky"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sticky); }
 	if (in_data["attributes"]["hitstun"].as_bool()) { metadata.attributes.set(ProjectileAttributes::hitstun); }
+	if (in_weapon["gameplay"]["attributes"]["automatic"].as_bool()) { metadata.attributes.set(ProjectileAttributes::automatic); }
 
 	if (in_data["explosion"]) {
 		metadata.explosion = ExplosionAttributes{};

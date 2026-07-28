@@ -42,7 +42,7 @@ void RotaryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::
 	m_path.update();
 	m_rail_path.update();
 
-	if (m_hotbar) { m_hotbar.value()->update(svc, player, map, m_placement + m_rail_path.get_position()); }
+	if (m_hotbar) { m_hotbar.value()->update(svc, player, map, get_placement() + m_rail_path.get_position()); }
 
 	if (player.arsenal) {
 		if (player.arsenal->get_loadout().size() >= m_selection.get_order()) {
@@ -84,14 +84,14 @@ void RotaryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[
 	if (is_foreground() != foreground) { return; }
 
 	if (is_selected()) {
-		m_dashboard_rail.set_position(m_placement + m_rail_path.get_position() + m_rail_path.get_dimensions() - cam);
+		m_dashboard_rail.set_position(get_placement() + m_rail_path.get_position() + m_rail_path.get_dimensions() - cam);
 		win.draw(m_dashboard_rail);
 	}
 
 	m_sprite.set_channel(1);
 	auto frame = static_cast<int>(m_frame_lerp.get());
 	m_sprite.set_frame(frame);
-	m_sprite.set_position(m_placement + m_path.get_position() - cam);
+	m_sprite.set_position(get_placement() + m_path.get_position() - cam);
 	shader.submit(win, palette, m_sprite.get_sprite());
 
 	if (m_hotbar) {
@@ -110,19 +110,19 @@ void RotaryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[
 					if (player.hotbar->has(*tag)) { m_gun_display.set_channel(i == 0 ? 2 : 3); }
 				}
 				auto xoff = i == 0 ? 0.f : -16.f;
-				m_gun_display.set_position(m_placement + m_path.get_position() + gun_offset + sf::Vector2f{xoff, static_cast<float>(i) * 56.f} - cam);
+				m_gun_display.set_position(get_placement() + m_path.get_position() + gun_offset + sf::Vector2f{xoff, static_cast<float>(i) * 56.f} - cam);
 				m_gun_display.set_frame(gun_id);
 				win.draw(m_gun_display);
 			}
 		}
 		auto selector_offset = sf::Vector2f{100.f, 96.f};
-		m_gun_selector.set_position(m_placement + m_path.get_position() + selector_offset - cam);
+		m_gun_selector.set_position(get_placement() + m_path.get_position() + selector_offset - cam);
 		if (is_selected()) { win.draw(m_gun_selector); }
 	}
 
 	m_sprite.set_channel(0);
 	m_sprite.set_frame(frame);
-	m_sprite.set_position(m_placement + m_path.get_position() - cam);
+	m_sprite.set_position(get_placement() + m_path.get_position() - cam);
 	shader.submit(win, palette, m_sprite.get_sprite());
 }
 

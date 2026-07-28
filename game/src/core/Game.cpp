@@ -285,6 +285,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::ProgressBar(services.ticker.get_freezeframe(), {300.f, 4.f}, "");
 					ImGui::Text("Ticker Slowdown");
 					ImGui::ProgressBar(services.ticker.get_slowdown(), {300.f, 4.f}, "");
+					ImGui::Text("DT Scalar: %.4f", services.ticker.dt_scalar);
+					if (ImGui::Button("Slowdown Test")) { services.ticker.slow_down(0.7f, 0.2f, 0.4f); }
+					if (ImGui::Button("Freezeframe Test")) { services.ticker.freeze_frame(0.06f); }
 					ImGui::Separator();
 					ImGui::Text("World Time: %s", services.world_clock.get_string().c_str());
 					ImGui::Text("Time of Day: %s", services.world_clock.tod_as_string(services.world_clock.get_time_of_day()));
@@ -591,6 +594,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Stunned? %s", player.is_stunned() ? "Yes" : "No");
 								if (ImGui::Button("Stun")) { player.stun(); }
 								if (ImGui::Button("Hurt and Stun")) { player.hurt_and_stun(); }
+								if (ImGui::Button("Knock Over")) { player.knock_over(); }
 								ImGui::Separator();
 								ImGui::Text("Ability");
 								ImGui::Text("Current: ");

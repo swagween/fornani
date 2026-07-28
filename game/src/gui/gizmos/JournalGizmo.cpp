@@ -234,10 +234,10 @@ void JournalGizmo::switch_sections(automa::ServiceProvider& svc) {
 		break;
 	}
 	m_text.readout.setOrigin({10.f, m_text.readout.getLocalBounds().size.y * 1.5f});
-	m_selector.emplace(InventorySelector{{1, static_cast<int>(m_text.listing.size())}, {0.f, m_spacing}});
+	if (!m_text.listing.empty()) { m_selector.emplace(InventorySelector{{1, static_cast<int>(m_text.listing.size())}, {0.f, m_spacing}}); }
 	for (auto [i, entry] : std::views::enumerate(m_text.listing)) {
 		if (svc.data.active_quest == svc.quest_registry.get_index_from_tag(entry.tag)) {
-			m_selector->set_selection({0, static_cast<int>(i)});
+			if (m_selector) { m_selector->set_selection({0, static_cast<int>(i)}); }
 			m_selected_quest = i;
 		}
 	}

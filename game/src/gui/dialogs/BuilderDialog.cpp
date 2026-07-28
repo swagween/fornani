@@ -305,7 +305,7 @@ void BuilderDialog::build_item(automa::ServiceProvider& svc, player::Player& pla
 	m_zones.at(BuilderZoneType::inventory).table_dimensions.x = static_cast<int>(m_player_items.size());
 	m_just_built.start();
 	m_shaker.shake();
-	svc.ticker.freeze_frame(0.1f, 0.04f);
+	svc.ticker.freeze_frame(0.06f);
 }
 
 void BuilderDialog::switch_zones(int modulation) {

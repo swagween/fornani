@@ -201,7 +201,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	// in-game menus
-	if (svc.input_system.digital(input::DigitalAction::inventory).triggered && !svc.no_menu() && p_context.transition.is(graphics::TransitionState::inactive)) {
+	if (svc.input_system.digital(input::DigitalAction::inventory).triggered && !svc.no_menu() && p_context.transition.is(graphics::TransitionState::inactive) && !player->is_dead()) {
 		p_inventory_window = std::make_unique<gui::InventoryWindow>(svc, *m_map, *player);
 	}
 

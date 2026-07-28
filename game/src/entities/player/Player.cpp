@@ -663,7 +663,7 @@ void Player::update_animation() {
 
 	if (hurt_cooldown.running()) { m_animation_machine.request(AnimState::hurt); }
 	if (is_stunned()) { m_animation_machine.request(AnimState::stun); }
-	if (is_knocked_over()) { m_animation_machine.request(AnimState::stun); }
+	if (is_knocked_over()) { m_animation_machine.request(AnimState::knock_over); }
 
 	if (consume_flag(PlayerFlags::sleep)) { m_animation_machine.request(AnimState::sleep); }
 	if (consume_flag(PlayerFlags::wake_up)) { m_animation_machine.request(AnimState::wake_up); }
@@ -920,9 +920,9 @@ void Player::hurt(float amount, bool force) {
 		if (is_stunned() && cooldowns.stun.get_normalized() < 0.9f) { cooldowns.stun.start(4); }
 		if (amount > 1.f) {
 			if (!health.is_dead()) { m_sprite_shake.start(); }
-			m_services->ticker.freeze_frame(40, 0.02f);
+			m_services->ticker.freeze_frame(0.05f, 1.f);
 		} else {
-			m_services->ticker.freeze_frame(24);
+			m_services->ticker.freeze_frame(0.04f, 1.f);
 		}
 	}
 }
@@ -1007,6 +1007,11 @@ void Player::hurt_and_stun(float multiplier) {
 	if (is_stunned() || cooldowns.stun_immunity.running()) { return; }
 	stun(multiplier);
 	hurt(1.f, true);
+}
+
+void Player::knock_over() {
+	set_flag(PlayerFlags::knocked_over);
+	m_services->soundboard.play_sound("nani_hurt");
 }
 
 bool Player::grounded() const { return get_collider().flags.external_state.test(shape::ExternalState::grounded); }

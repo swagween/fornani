@@ -55,6 +55,8 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, int room_number)
 		m_nighthawks.back().set_frame(f);
 		m_nighthawks.back().z = (3.f - static_cast<float>(c)) * 0.00002f;
 	}
+
+	svc.soundboard.play_sound("load_game");
 }
 
 void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {

@@ -78,10 +78,13 @@ void Dashboard::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pl
 			gizmo->displace({0.f, m_paths.basis.get_position().y});
 		} else if (gizmo->get_dashboard_port() == DashboardPort::wardrobe) {
 			gizmo->displace({m_paths.basis.get_dimensions().x, 0.f});
+		} else if (gizmo->get_dashboard_port() == DashboardPort::arsenal) {
+			gizmo->displace({0.f, m_paths.basis.get_dimensions().y});
 		} else {
 			gizmo->displace({0.f, m_paths.basis.get_dimensions().y});
 		}
 		if (m_current_port == DashboardPort::minimap && gizmo->get_label() == "Clock") { gizmo->select(); }
+		if (m_current_port == DashboardPort::journal && gizmo->get_label() == "Clock") { gizmo->displace({0.f, m_paths.frontplate.get_position().y}); }
 		m_current_port == gizmo->get_dashboard_port() ? gizmo->hover() : gizmo->neutralize();
 	}
 	m_physical.physics.simple_update();
@@ -135,7 +138,7 @@ void Dashboard::render(automa::ServiceProvider& svc, sf::RenderWindow& win, play
 	if (m_state == DashboardState::gizmo && m_current_port == DashboardPort::arsenal) { shader.set_darken(lighten_factor); }
 	m_constituents.top_left_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.frontplate.get_position(), {}, shader, m_palette);
 	m_constituents.top_right_frontplate.render(win, m_sprite, render_position - m_paths.map.get_position() - m_paths.map.get_dimensions() - m_paths.frontplate.get_position(), {}, shader, m_palette);
-	m_constituents.arsenal_frontplate.render(win, m_sprite, render_position - m_paths.rotary.get_position() - m_paths.rotary.get_dimensions(), {}, shader, m_palette);
+	m_constituents.arsenal_frontplate.render(win, m_sprite, render_position - m_paths.rotary.get_position() - m_paths.rotary.get_dimensions() - m_paths.frontplate.get_position(), {}, shader, m_palette);
 	is_home() || m_current_port == DashboardPort::journal ? shader.set_darken(lighten_factor) : shader.set_darken(darken_factor);
 	for (auto& gizmo : m_gizmos) {
 		shader.set_darken(max_dark);
