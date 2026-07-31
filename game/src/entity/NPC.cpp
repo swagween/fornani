@@ -185,6 +185,13 @@ void NPC::handle_spawning(automa::ServiceProvider& svc, dj::Json const& in_data)
 	}
 }
 
+void NPC::give_prop(automa::ServiceProvider& svc, world::Map& map, std::string_view label, sf::Vector2i dimensions) { m_mobile_prop.emplace(svc, map, label, dimensions); }
+
+void NPC::drop_prop() {
+	if (!m_mobile_prop) { return; }
+	m_mobile_prop->drop();
+}
+
 void NPC::serialize(dj::Json& out) {
 	Entity::serialize(out);
 	out["background"] = m_background;
@@ -233,6 +240,11 @@ void NPC::expose() {
 }
 
 void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
+
+	if (m_mobile_prop) {
+		m_mobile_prop->set_target(m_prop_socket);
+		m_mobile_prop->update(map);
+	}
 
 	if (has_flag_set(NPCFlags::face_player) && !has_flag_set(NPCFlags::cutscene)) { face_player(player); }
 	svc.data.set_npc_location(m_id.get(), m_current_location);
@@ -314,6 +326,7 @@ void NPC::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 		}
 		if (!has_flag_set(NPCFlags::no_animation) && !has_flag_set(NPCFlags::cutscene)) { win.draw(m_indicator); }
 	}
+	if (m_mobile_prop) { m_mobile_prop->render(win, cam); }
 }
 
 void NPC::start_conversation(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console) {

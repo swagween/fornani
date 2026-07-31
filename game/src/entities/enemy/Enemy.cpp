@@ -342,7 +342,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 		}
 		if (proj.can_damage()) {
 			if (!m_freeze.running()) {
-				auto rate = proj.has_attribute(arms::ProjectileAttributes::automatic) ? 0.012f : 0.018f;
+				auto rate = proj.has_attribute(arms::ProjectileAttributes::automatic) ? 0.011f : 0.016f;
 				svc.ticker.freeze_frame(rate);
 				m_freeze.start();
 			}

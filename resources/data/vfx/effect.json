@@ -187,6 +187,17 @@
     "dimensions": [32, 32],
     "x_reflection": true
   },
+  "tiny_smoke": {
+    "frame_count": 4,
+    "framerate": 16,
+    "dimensions": [8, 8]
+  },
+  "press": {
+    "frame_count": 5,
+    "framerate": 20,
+    "dimensions": [32, 88],
+    "x_reflection": true
+  },
   "steam": {
     "frame_count": 5,
     "framerate": 24,

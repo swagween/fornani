@@ -34,10 +34,12 @@
     "cannot_build": "You do not have the necessary ingredients to build that item.",
     "already_have_max_item": "You already have the maximum amount of that item.",
     "insufficient_funds": "You cannot afford that item.",
-    "journal_updated": "Journal updated."
+    "journal_updated": "Journal updated.",
+    "quest_completed": "Quest completed: "
   },
   "locations": {
-    "firstwind": "- Firstwind Airship - "
+    "firstwind": "- Firstwind Airship - ",
+    "greatwing": "- Greatwing Airship - "
   },
   "menu": { "back_button": "< back", "completed": "<completed>" },
   "journal": { "quest": "<Journal>", "bestiary": "<Bestiary>" },

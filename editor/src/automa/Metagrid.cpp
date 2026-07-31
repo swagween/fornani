@@ -14,6 +14,7 @@ Metagrid::Metagrid(fornani::automa::ServiceProvider& svc, EditorContext& ctx)
 	svc.data.load_data();
 	p_target_state = EditorStateType::metagrid;
 	p_wallpaper.setFillColor(m_background_color);
+	p_colors.backdrop = m_background_color;
 	p_wallpaper.setSize(p_services->window->f_screen_dimensions());
 	for (auto& map : svc.data.map_jsons) { m_rooms.push_back(Room(svc, map)); }
 

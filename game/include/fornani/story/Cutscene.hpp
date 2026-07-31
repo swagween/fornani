@@ -26,6 +26,7 @@ class Cutscene : public UniquePolymorphic {
 
 	virtual void update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player);
 	virtual void render(sf::RenderWindow& win, sf::Vector2f cam) {};
+	virtual void render_on_top(sf::RenderWindow& win, sf::Vector2f cam) {};
 	virtual void end(automa::ServiceProvider& svc, player::Player& player);
 	[[nodiscard]] auto get_id() const -> int { return id; }
 	[[nodiscard]] auto complete() const -> bool { return flags.test(CutsceneFlags::complete); }

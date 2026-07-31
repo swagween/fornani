@@ -144,17 +144,18 @@ void BuilderDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	// draw stage
 	if (!docket_item.is_null()) {
 		for (auto [index, ingredient] : std::views::enumerate(docket_item["build"]["recipe"].as_array())) {
-			auto item = player.catalog.inventory.find_item_stack(ingredient.as_string_view());
+			auto const& in_item = svc.data.get_item_json_from_tag(ingredient.as_string_view());
+			m_item_sprite.set_channel(in_item["lookup"][0].as<int>());
+			m_item_sprite.set_frame(in_item["lookup"][1].as<int>());
 			auto offset = sf::Vector2f{static_cast<float>(index), 0.f} * 34.f;
 			auto where = m_zones.at(BuilderZoneType::stage).render_offset + offset + p_position;
-			if (item == nullptr) {
-				m_unknown.set_position(where);
-				m_unknown.set_channel(0);
-				if (player.catalog.inventory.was_item_logged(ingredient.as_string_view())) { m_unknown.set_channel(1); }
-				win.draw(m_unknown);
-				continue;
+			m_item_sprite.set_position(where);
+			win.draw(m_item_sprite);
+			auto light_on = player.has_item(ingredient.as_string_view());
+			if (light_on) {
+				m_dot.set_position(where + sf::Vector2f{23.f + (static_cast<float>(index) - 1.f) * -6.f, 69.f});
+				win.draw(m_dot);
 			}
-			item->item->render(win, m_item_sprite.get_sprite(), where);
 		}
 	}
 
@@ -286,7 +287,7 @@ void BuilderDialog::build_item(automa::ServiceProvider& svc, player::Player& pla
 		}
 	}
 	spawn_emitter(svc, "radiance", m_turntable.get_window_position() - sf::Vector2f{64.f, 64.f}, Direction{}, {128.f, 128.f});
-	// spawn_effect(svc, "giga_flare", m_turntable.get_window_position());
+	spawn_effect(svc, "press", m_press.get_sprite().getGlobalBounds().getCenter() + sf::Vector2f{177.f, 0.f});
 	player.catalog.inventory.build_item(current_item);
 	player.give_item(current_item["tag"].as_string(), 1);
 	svc.soundboard.play_sound("vendor_sale");
@@ -305,7 +306,7 @@ void BuilderDialog::build_item(automa::ServiceProvider& svc, player::Player& pla
 	m_zones.at(BuilderZoneType::inventory).table_dimensions.x = static_cast<int>(m_player_items.size());
 	m_just_built.start();
 	m_shaker.shake();
-	svc.ticker.freeze_frame(0.06f);
+	svc.ticker.freeze_frame(0.03f);
 }
 
 void BuilderDialog::switch_zones(int modulation) {

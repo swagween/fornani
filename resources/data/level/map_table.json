@@ -277,6 +277,12 @@
       "room_id": 601
     },
     {
+      "folder": "greatwing",
+      "label": "docking_bay.json",
+      "region": "greatwing",
+      "room_id": 607
+    },
+    {
       "folder": "hoarder",
       "label": "den.json",
       "region": "ashtown",

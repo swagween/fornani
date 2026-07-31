@@ -10,6 +10,7 @@
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/setup/AppContext.hpp>
 #include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Cooldown.hpp>
 #include <filesystem>
 #include <imgui-SFML.h>
 
@@ -32,7 +33,7 @@ class Game final {
 
   private:
 	void playtester_portal(sf::RenderWindow& window);
-	void take_screenshot(sf::Texture& screencap);
+	void take_screenshot(sf::Texture& screencap, bool pixel_perfect = true);
 	void restart_trial(std::filesystem::path const& levelpath);
 
   private:
@@ -56,6 +57,7 @@ class Game final {
 	std::optional<std::unique_ptr<automa::StateManager>> m_game_menu;
 	std::unique_ptr<graphics::Background> m_background{};
 	Animatable m_cursor;
+	util::Cooldown m_screencap_timer;
 
 	FrameTracker m_frame_tracker{};
 	sf::RectangleShape m_wallpaper{};

@@ -6,6 +6,7 @@
 #include <fornani/entities/Mobile.hpp>
 #include <fornani/entities/animation/StateMachine.hpp>
 #include <fornani/entities/npc/Vendor.hpp>
+#include <fornani/entities/packages/MobileProp.hpp>
 #include <fornani/entity/Entity.hpp>
 #include <fornani/events/Subscription.hpp>
 #include <fornani/story/Quest.hpp>
@@ -52,6 +53,9 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vector<std::vector<int>> const suites);
 	void init(automa::ServiceProvider& svc, dj::Json const& in_data);
 	void handle_spawning(automa::ServiceProvider& svc, dj::Json const& in_data);
+	void give_prop(automa::ServiceProvider& svc, world::Map& map, std::string_view label, sf::Vector2i dimensions);
+	void set_prop_socket(sf::Vector2f to) { m_prop_socket = to; }
+	void drop_prop();
 
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;
@@ -108,6 +112,8 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	[[nodiscard]] auto is_animation_complete() -> bool { return Mobile::p_animatable.animation.is_complete(); }
 
 	[[nodiscard]] auto get_vendor() const -> std::optional<npc::Vendor*> { return vendor; }
+	[[nodiscard]] auto has_prop() const -> bool { return m_mobile_prop.has_value(); }
+	[[nodiscard]] auto get_prop() -> MobileProp& { return m_mobile_prop.value(); }
 
   protected:
 	void set_force_interact(bool to) { to ? m_state.set(NPCState::force_interact) : m_state.reset(NPCState::force_interact); }
@@ -119,6 +125,9 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	bool change_state(NPCAnimationState next, std::string_view to);
 
 	std::unordered_map<int, NPCVoiceCue> m_voice_cues{};
+
+	std::optional<MobileProp> m_mobile_prop;
+	sf::Vector2f m_prop_socket{};
 
 	/* gameplay members */
 	util::BitFlags<NPCState> m_state{};

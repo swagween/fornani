@@ -3,30 +3,15 @@
     "responses": [
       [
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "Who are you?"
         },
         {
-          "codes": [
-            [
-              1,
-              2
-            ]
-          ],
+          "codes": [[1, 2]],
           "message": "Whatever I need to do."
         },
         {
-          "codes": [
-            [
-              1,
-              3
-            ]
-          ],
+          "codes": [[1, 3]],
           "message": "Where is my brother?"
         }
       ]
@@ -35,15 +20,8 @@
       [
         {
           "codes": [
-            [
-              9,
-              11701,
-              1
-            ],
-            [
-              4,
-              4
-            ]
+            [9, 11701, 1],
+            [4, 4]
           ],
           "message": "Well, would you look at that!"
         },
@@ -57,23 +35,13 @@
           "message": "And yet a prisoner you shall remain, if I have anything to say about it."
         },
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
+          "codes": [[1, 0]],
           "message": "Now tell me, girl, what do you plan to do with that pathetic little pistol of yours?"
         }
       ],
       [
         {
-          "codes": [
-            [
-              4,
-              3
-            ]
-          ],
+          "codes": [[4, 3]],
           "message": "I asked you a question."
         },
         {
@@ -83,45 +51,24 @@
           "message": "You see, we do whatever cleaning up needs to be done down on the island."
         },
         {
-          "codes": [
-            [
-              12,
-              0
-            ]
-          ],
+          "codes": [[12, 0]],
           "message": "But anyway, I'm tired of talkin' to you. Get ready to die!"
         }
       ],
       [
         {
           "codes": [
-            [
-              4,
-              2
-            ],
-            [
-              5,
-              1
-            ]
+            [4, 2],
+            [5, 1]
           ],
           "message": "Hah!"
         },
         {
-          "codes": [
-            [
-              5,
-              0
-            ]
-          ],
+          "codes": [[5, 0]],
           "message": "Sure is some tough talk for a scrawny girl."
         },
         {
-          "codes": [
-            [
-              12,
-              0
-            ]
-          ],
+          "codes": [[12, 0]],
           "message": "So, let's see what you've got, then."
         }
       ],
@@ -130,12 +77,7 @@
           "message": "..."
         },
         {
-          "codes": [
-            [
-              4,
-              1
-            ]
-          ],
+          "codes": [[4, 1]],
           "message": "Your brother...?"
         },
         {
@@ -145,12 +87,7 @@
           "message": "But either way, you'll get no further information from me on that front."
         },
         {
-          "codes": [
-            [
-              12,
-              0
-            ]
-          ],
+          "codes": [[12, 0]],
           "message": "Now, I'm tired of talkin' to you. Get ready to die!"
         }
       ]
@@ -161,12 +98,7 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              4,
-              1
-            ]
-          ],
+          "codes": [[4, 1]],
           "message": "My Lady...?"
         },
         {
@@ -183,12 +115,7 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              4,
-              3
-            ]
-          ],
+          "codes": [[4, 3]],
           "message": "My mask was compromised. And besides, the storms up here are ferocious."
         },
         {
@@ -205,12 +132,7 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              4,
-              5
-            ]
-          ],
+          "codes": [[4, 5]],
           "message": "I got nothing at all to say. She had a gun, and she's pretty nimble."
         },
         {
@@ -228,24 +150,13 @@
       [
         {
           "codes": [
-            [
-              4,
-              2
-            ],
-            [
-              5,
-              1
-            ]
+            [4, 2],
+            [5, 1]
           ],
           "message": "I set myself up for that one, I guess."
         },
         {
-          "codes": [
-            [
-              5,
-              0
-            ]
-          ],
+          "codes": [[5, 0]],
           "message": "Anyway, do us both a favor and get someone else to deal with the Kariba for now."
         },
         {
@@ -259,24 +170,14 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              5,
-              2
-            ]
-          ],
+          "codes": [[5, 2]],
           "message": "..."
         },
         {
           "message": "GAH!!!"
         },
         {
-          "codes": [
-            [
-              9,
-              1171
-            ]
-          ],
+          "codes": [[9, 1171]],
           "message": "My mask!! What have you done?!"
         }
       ]
@@ -288,14 +189,8 @@
       [
         {
           "codes": [
-            [
-              5,
-              2
-            ],
-            [
-              4,
-              5
-            ]
+            [5, 2],
+            [4, 5]
           ],
           "message": "This isn't over!"
         }
@@ -308,21 +203,33 @@
       [
         {
           "codes": [
-            [
-              12,
-              0
-            ],
-            [
-              9,
-              11701,
-              1
-            ]
+            [12, 0],
+            [9, 11701, 1]
           ],
-          "messages": [
-            "Back for more?",
-            "Had enough yet?",
-            "You don't know when to quit, do you?"
-          ]
+          "messages": ["Back for more?", "Had enough yet?", "You don't know when to quit, do you?"]
+        }
+      ]
+    ]
+  },
+  "60": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "message": "These storms are something from another world."
+        }
+      ]
+    ]
+  },
+  "61": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "message": "I found her on the Pioneer Trail. She's unconscious and barely breathing."
+        },
+        {
+          "message": "I'm not so optimistic, boss..."
         }
       ]
     ]

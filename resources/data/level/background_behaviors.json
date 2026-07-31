@@ -56,6 +56,31 @@
       }
     ]
   },
+  "pale_garden": {
+    "dimensions": [960, 512],
+    "layers": [
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.0
+      },
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.017
+      },
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.08
+      },
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.11
+      },
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.16
+      }
+    ]
+  },
   "night": {
     "dimensions": [960, 256],
     "lock": {
@@ -145,6 +170,54 @@
       {
         "scroll_speed": 1.9,
         "parallax": 0.22
+      }
+    ]
+  },
+  "stormcloud_sea": {
+    "dimensions": [960, 256],
+    "lock": {
+      "vertical": true
+    },
+    "layers": [
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.0
+      },
+      {
+        "scroll_speed": -0.3,
+        "parallax": 0.067
+      },
+      {
+        "scroll_speed": -0.6,
+        "parallax": 0.108
+      },
+      {
+        "scroll_speed": -1.0,
+        "parallax": 0.18
+      }
+    ]
+  },
+  "duskcloud_sea": {
+    "dimensions": [960, 256],
+    "lock": {
+      "vertical": true
+    },
+    "layers": [
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.0
+      },
+      {
+        "scroll_speed": -0.1,
+        "parallax": 0.067
+      },
+      {
+        "scroll_speed": -0.3,
+        "parallax": 0.108
+      },
+      {
+        "scroll_speed": -0.5,
+        "parallax": 0.18
       }
     ]
   },

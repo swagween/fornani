@@ -81,7 +81,7 @@ void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 					map.effects.push_back(entity::Effect(svc, "inv_hit", proj.get_position()));
 					random::percent_chance(50) ? svc.soundboard.flags.summoner.set(audio::Summoner::block_1) : svc.soundboard.flags.summoner.set(audio::Summoner::block_2);
 					proj.destroy(false);
-					svc.ticker.freeze_frame(3);
+					svc.ticker.freeze_frame(0.02f);
 				}
 			}
 		}

@@ -57,8 +57,8 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	case 1300: cutscenes.push_back(std::make_unique<AshtownCall>(svc)); break;
 	case 1301: cutscenes.push_back(std::make_unique<BanditConfrontation>(svc)); break;
 	case 1310: cutscenes.push_back(std::make_unique<SpencerReveal>(svc)); break;
-	case 2270: cutscenes.push_back(std::make_unique<RetrieveLynx>(svc)); break;
-	case 400: cutscenes.push_back(std::make_unique<RetrieveLynx>(svc)); break;
+	case 407: cutscenes.push_back(std::make_unique<FamilyReunion>(svc)); break;
+	case 607: cutscenes.push_back(std::make_unique<RetrieveLynx>(svc, map, player)); break;
 	default:
 		NANI_LOG_INFO(m_logger, "You forgot to add cutscene {} to catalog.", id);
 		cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc));

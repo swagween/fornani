@@ -1,4 +1,5 @@
 nani_add_sources(
+  AirTravel.cpp
   AshtownCall.cpp
   BanditConfrontation.cpp
   SpencerReveal.cpp

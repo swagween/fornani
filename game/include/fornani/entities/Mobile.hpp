@@ -30,6 +30,8 @@ class Mobile : public Polymorphic {
 	void face_movement() { directions.desired.set(directions.movement.lnr); }
 	void set_direction(SimpleDirection to);
 	void set_desired_direction(SimpleDirection to);
+	void push_and_set_animation(std::string_view tag, anim::Parameters params) { p_animatable.push_and_set_animation(tag, params); }
+	void push_animation(std::string_view tag, anim::Parameters params) { p_animatable.push_animation(tag, params); }
 	void set_animation(std::string_view to) { p_animatable.set_animation(to); }
 	[[nodiscard]] bool player_behind(player::Player& player) const;
 	[[nodiscard]] auto get_desired_direction() const -> Direction { return directions.desired; }

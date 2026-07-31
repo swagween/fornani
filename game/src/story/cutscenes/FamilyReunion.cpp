@@ -8,7 +8,7 @@
 
 namespace fornani {
 
-FamilyReunion::FamilyReunion(automa::ServiceProvider& svc) : Cutscene(svc, 300, "bandit_encounter") { cooldowns.beginning.start(); }
+FamilyReunion::FamilyReunion(automa::ServiceProvider& svc) : Cutscene(svc, 300, "family_reunion") { cooldowns.beginning.start(); }
 
 void FamilyReunion::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {}
 

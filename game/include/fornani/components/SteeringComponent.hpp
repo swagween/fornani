@@ -11,6 +11,10 @@ struct SteeringComponent {
 		steering.seek(physics, target, force);
 		physics.simple_update();
 	}
+	void thrust_seek(sf::Vector2f const target, ThrustParameters params) {
+		steering.thrust_seek(physics, target, params);
+		physics.simple_update();
+	}
 	SteeringBehavior steering{};
 	PhysicsComponent physics{};
 };

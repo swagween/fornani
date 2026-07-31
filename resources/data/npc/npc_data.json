@@ -191,12 +191,25 @@
   },
   "minigus": {
     "id": 7,
-    "dimensions": [24, 24],
-    "no_animation": true,
+    "dimensions": [30, 30],
+    "sprite_dimensions": [70, 70],
+    "sprite_offset": [0, -30],
     "animation": [
       {
+        "label": "special_1",
+        "parameters": [0, 1, 30, -1, false]
+      },
+      {
+        "label": "special_2",
+        "parameters": [3, 2, 30, -1, true]
+      },
+      {
+        "label": "land",
+        "parameters": [0, 1, 30, -1, false]
+      },
+      {
         "label": "idle",
-        "parameters": [0, 8, 30, -1, false]
+        "parameters": [4, 1, 30, -1, false]
       }
     ]
   },
@@ -868,8 +881,9 @@
   "lady_nimbus": {
     "id": 22,
     "dimensions": [24, 48],
-    "sprite_dimensions": [23, 32],
-    "sprite_offset": [8.0, -8.0],
+    "sprite_dimensions": [24, 33],
+    "sprite_offset": [8.0, -6.0],
+    "walk_speed": 0.5,
     "animation": [
       {
         "label": "idle",
@@ -877,11 +891,23 @@
       },
       {
         "label": "turn",
-        "parameters": [1, 1, 40, -1, false]
+        "parameters": [1, 1, 40, 0, false]
       },
       {
-        "label": "shift",
-        "parameters": [1, 4, 40, 0, false]
+        "label": "special_1",
+        "parameters": [1, 4, 40, 0, true]
+      },
+      {
+        "label": "walk",
+        "parameters": [5, 4, 40, -1, false]
+      },
+      {
+        "label": "back_shift",
+        "parameters": [10, 5, 40, 0, false]
+      },
+      {
+        "label": "busy",
+        "parameters": [9, 1, 40, -1, false]
       }
     ]
   },

@@ -65,10 +65,17 @@
       }
     },
     "cutscene_on_entry": {
-      "flag": false,
-      "id": 0,
-      "source": 0,
-      "type": 0
+      "contingencies": [
+        {
+          "requirement": 0,
+          "strict": true,
+          "tag": "retrieve_lynx"
+        }
+      ],
+      "flag": true,
+      "id": 607,
+      "source": 607,
+      "type": 8
     },
     "dimensions": [
       32,
@@ -90,6 +97,7 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

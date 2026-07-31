@@ -30,6 +30,22 @@
         ]
       }
     ],
+    "platforms": [
+      {
+        "dimensions": [
+          3,
+          2
+        ],
+        "extent": 12,
+        "id": 0,
+        "position": [
+          13,
+          23
+        ],
+        "start": 0,
+        "type": "slippery_worm_side_to_side"
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": true,
@@ -65,6 +81,20 @@
           21
         ],
         "source_id": 1111
+      }
+    ],
+    "water": [
+      {
+        "dimensions": [
+          18,
+          7
+        ],
+        "id": 0,
+        "position": [
+          10,
+          25
+        ],
+        "type": 2
       }
     ]
   },
@@ -107,8 +137,9 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": true,
+      "sky_limit": 0,
       "timer": false,
-      "toxic": false
+      "toxic": true
     },
     "room_id": 1111,
     "shader": {

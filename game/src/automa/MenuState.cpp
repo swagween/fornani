@@ -55,6 +55,7 @@ void MenuState::tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine
 		svc.input_system.cancel_mouse();
 		svc.soundboard.play_sound("menu_shift");
 	}
+	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered && m_input_authorized) { svc.input_system.cancel_mouse(); }
 	if (went_back(svc.input_system) && m_input_authorized) {
 		svc.state_controller.submenu = m_parent_menu;
 		svc.state_controller.actions.set(Actions::exit_submenu);

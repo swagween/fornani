@@ -3,6 +3,7 @@ nani_add_headers(
         Caution.hpp
         FloatingPart.hpp
         Health.hpp
+        MobileProp.hpp
         Shockwave.hpp
         WeaponPackage.hpp
 )

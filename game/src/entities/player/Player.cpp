@@ -187,7 +187,7 @@ void Player::update(world::Map& map) {
 
 	// item use logic
 	handle_item_logic();
-	if (map.is_toxic() && cooldowns.suffocate.is_complete()) {
+	if (map.is_toxic() && cooldowns.suffocate.is_complete() && !m_animation_machine.is_state(AnimState::sleep)) {
 		cooldowns.suffocate.start();
 		if (!has_item_equipped("gas_mask")) { hurt(); }
 	}
@@ -277,7 +277,7 @@ void Player::update(world::Map& map) {
 			map.effects.push_back(entity::Effect(*m_services, "wallslide", get_collider().get_center() + sf::Vector2f{12.f * controller.direction.as_float(), -8.f}, get_collider().physics.apparent_velocity() * 0.3f));
 		}
 	}
-	if (controller.is_rolling() || m_animation_machine.is_state(AnimState::turn_slide)) {
+	if ((controller.is_rolling() || m_animation_machine.is_state(AnimState::turn_slide)) && !has_flag_set(PlayerFlags::cutscene)) {
 		if (m_services->ticker.every_x_ticks(24)) { map.effects.push_back(entity::Effect(*m_services, "roll", get_collider().get_center(), sf::Vector2f{get_collider().physics.apparent_velocity().x * 0.1f, 0.f})); }
 	}
 	if (m_animation_machine.is_state(AnimState::turn_slide) && (p_animatable.animation.get_frame_count() > 2 && p_animatable.animation.get_frame_count() < 6)) { m_services->soundboard.repeat_sound("nani_turn_slide"); }

@@ -3,6 +3,7 @@ nani_add_sources(
         Caution.cpp
         FloatingPart.cpp
         Health.cpp
+        MobileProp.cpp
         Shockwave.cpp
         WeaponPackage.cpp
 )

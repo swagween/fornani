@@ -39,7 +39,7 @@ void Thief::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (get_collider().bounding_box.overlaps(player.hurtbox) && (is_state(ThiefState::dash) || is_state(ThiefState::stop)) && !m_flags.test(ThiefFlags::succeeded)) {
 		if (player.has_item("gas_mask")) {
 			svc.events.remove_item_event.dispatch(svc, "gas_mask");
-			m_services->ticker.freeze_frame(24, 0.02f);
+			svc.ticker.freeze_frame(0.02f);
 			m_loot.emplace(svc, "gas_mask");
 			m_loot->center();
 			m_flags.set(ThiefFlags::succeeded);

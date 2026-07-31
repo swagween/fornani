@@ -18,7 +18,7 @@ namespace fornani {
 static double average_frame_time{};
 
 Game::Game(char** argv, WindowManager& window, AppContext& context, capo::IEngine& audio_engine)
-	: m_context{&context}, services(argv, context, window, audio_engine), player(services), game_state(services, player, context, automa::MenuType::main), m_cursor{services, "mouse_cursor", {8, 8}} {
+	: m_context{&context}, services(argv, context, window, audio_engine), player(services), game_state(services, player, context, automa::MenuType::main), m_cursor{services, "mouse_cursor", {8, 8}}, m_screencap_timer{8} {
 
 	/* Set up ImGui Context */
 	auto imgui_context = ImGui::CreateContext();
@@ -90,8 +90,8 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 
 			if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
 				if (key_pressed->scancode == sf::Keyboard::Scancode::F12) { continue; }
-				if (key_pressed->scancode == sf::Keyboard::Scancode::Equal) { take_screenshot(services.window->screencap); }
 #if !defined(FORNANI_PRODUCTION)
+				if (key_pressed->scancode == sf::Keyboard::Scancode::Space) { m_screencap_timer.start(); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::G && key_pressed->control) { services.toggle_greyblock_mode(); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_pressed->control) {
 
@@ -171,6 +171,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		ImGuiIO& io = ImGui::GetIO();
 		io.IniFilename = NULL;
 		io.LogFilename = NULL;
+		if (m_screencap_timer.running()) { flags.reset(GameFlags::draw_cursor); }
 		io.MouseDrawCursor = flags.test(GameFlags::draw_cursor);
 		services.window->get().setMouseCursorVisible(io.MouseDrawCursor);
 		ImGui::SFML::Update(services.window->get(), m_frame_tracker.get_elapsed_time());
@@ -205,6 +206,9 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		services.ticker.end_frame();
 
 		if (!m_game_menu) { game_state.process_state(services, player, *this); }
+
+		m_screencap_timer.update();
+		if (m_screencap_timer.is_almost_complete()) { take_screenshot(services.window->screencap, false); }
 	}
 	shutdown();
 }
@@ -752,14 +756,14 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 	}
 }
 
-void Game::take_screenshot(sf::Texture& screencap) {
-
+void Game::take_screenshot(sf::Texture& screencap, bool pixel_perfect) {
 	// generate texture
 	services.window->screencap.update(services.window->get());
 	sf::Sprite cap{screencap};
-	cap.setScale(sf::Vector2f{1.f, 1.f} / constants::f_scale_factor);
+	if (pixel_perfect) { cap.setScale(sf::Vector2f{1.f, 1.f} / constants::f_scale_factor); }
 	sf::RenderTexture texture = sf::RenderTexture{};
-	auto sz = services.window->is_fullscreen() ? services.window->get_display_dimensions() / static_cast<unsigned int>(constants::u_scale_factor) : services.window->u_screen_dimensions();
+	auto fs_sz = pixel_perfect ? services.window->get_display_dimensions() / static_cast<unsigned int>(constants::u_scale_factor) : services.window->get_display_dimensions();
+	auto sz = services.window->is_fullscreen() ? fs_sz : services.window->u_screen_dimensions();
 	if (!texture.resize(sz)) { NANI_LOG_ERROR(m_logger, "Failed to save screenshot!"); }
 	texture.clear(colors::transparent);
 	texture.draw(cap);
