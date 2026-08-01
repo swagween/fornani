@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/Polymorphic.hpp>
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -33,6 +34,7 @@ class Drawable : public sf::Drawable, Polymorphic {
 	void flip(std::pair<bool, bool> orientation = {true, false});
 
 	[[nodiscard]] auto get_scale() const -> sf::Vector2f { return m_sprite.getScale(); }
+	[[nodiscard]] auto get_origin() const -> sf::Vector2f { return m_sprite.getOrigin(); }
 	[[nodiscard]] auto get_window_position() const -> sf::Vector2f { return m_sprite.getPosition(); }
 
 	sf::Sprite& get_sprite() { return m_sprite; }
@@ -43,6 +45,7 @@ class Drawable : public sf::Drawable, Polymorphic {
 
   private:
 	sf::Sprite m_sprite;
+	sf::RectangleShape m_shape{};
 };
 
 } // namespace fornani

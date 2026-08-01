@@ -1,5 +1,6 @@
 
 #include <fornani/automa/SceneContext.hpp>
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entity/NPC.hpp>
 #include <fornani/events/ConsoleEvent.hpp>
@@ -113,13 +114,19 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 		get_collider().set_exclusion_target(shape::ColliderTrait::player);
 		get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 		get_collider().set_exclusion_target(shape::ColliderTrait::pushable);
+		get_collider().set_exclusion_target(shape::ColliderTrait::prop);
 	}
 
 	for (auto const& in_anim : in_data["animation"].as_array()) {
 		Mobile::p_animatable.push_animation(in_anim["label"].as_string(),
 											{in_anim["parameters"][0].as<int>(), in_anim["parameters"][1].as<int>(), in_anim["parameters"][2].as<int>(), in_anim["parameters"][3].as<int>(), in_anim["parameters"][4].as_bool()});
 		if (in_anim["label"].as_string() == "turn") { set_flag(NPCFlags::has_turn_animation); }
-		for (auto const& sound : in_anim["sounds"].as_array()) { p_sounds.insert({in_anim["label"].as_string(), MobileSound{sound["frame"].as<int>(), sound["tag"].as_string()}}); }
+		for (auto const& sound : in_anim["sounds"].as_array()) {
+			for (auto const& frame : sound["frames"].as_array()) {
+				p_sounds.insert({{frame.as<int>(), in_anim["label"].as_string_view()}, MobileSound{sound["tag"].as_string()}});
+				NANI_LOG_INFO(Entity::m_logger, "pushed sound {} for animation {} at frame {}", sound["tag"].as_string(), in_anim["label"].as_string(), frame.as<int>());
+			}
+		}
 	}
 	for (auto [i, cue] : std::views::enumerate(in_data["voice_cues"].as_array())) { m_voice_cues.insert({static_cast<int>(i), NPCVoiceCue{m_label + "_" + cue["tag"].as_string()}}); }
 	if (Mobile::p_animatable.has_animation("idle")) { Mobile::p_animatable.set_animation("idle"); }
@@ -192,6 +199,16 @@ void NPC::drop_prop() {
 	m_mobile_prop->drop();
 }
 
+void NPC::pick_up_prop() {
+	if (!m_mobile_prop) { return; }
+	m_mobile_prop->set_flag(MobilePropFlags::dropped, false);
+}
+
+void NPC::give_vehicle(automa::ServiceProvider& svc, world::Map& map, std::string_view label) {
+	m_vehicle.emplace(svc, map, label);
+	m_vehicle->set_position(get_collider().get_center());
+}
+
 void NPC::serialize(dj::Json& out) {
 	Entity::serialize(out);
 	out["background"] = m_background;
@@ -245,6 +262,16 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 		m_mobile_prop->set_target(m_prop_socket);
 		m_mobile_prop->update(map);
 	}
+	if (m_vehicle) {
+		if (has_flag_set(NPCFlags::airborne)) {
+			m_vehicle->set_target(get_collider().get_center() + m_offset);
+			m_vehicle->set_idle(false);
+		} else {
+			m_vehicle->set_idle(true);
+		}
+		m_vehicle->set_desired_direction(directions.actual);
+		m_vehicle->update(svc, map, player);
+	}
 
 	if (has_flag_set(NPCFlags::face_player) && !has_flag_set(NPCFlags::cutscene)) { face_player(player); }
 	svc.data.set_npc_location(m_id.get(), m_current_location);
@@ -283,7 +310,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	if (!has_flag_set(NPCFlags::custom_camera)) {
 		if (m_state.test(NPCState::interacting)) {
 			svc.camera_controller.free();
-		} else if (!has_flag_set(NPCFlags::cutscene)) {
+		} else if (!has_flag_set(NPCFlags::cutscene) && overlap) {
 			svc.camera_controller.constrain();
 		}
 	}
@@ -309,24 +336,43 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 }
 
 void NPC::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
-	if (m_editor) {
-		highlighted ? drawbox.setFillColor(sf::Color{250, 80, 250, 60}) : drawbox.setFillColor(sf::Color::Transparent);
-		Entity::render(win, cam, size);
-	} else {
-		if (is_hidden() || m_state.test(NPCState::invisible)) { return; }
-		if (collider.has_value()) {
-			Mobile::p_animatable.set_position(get_collider().get_center() + m_offset - cam);
-			auto indicator_offset = sf::Vector2f{0.f, -constants::f_cell_size};
-			m_indicator.set_position(get_collider().get_top() + indicator_offset - cam);
-		}
-		if (m_services->greyblock_mode()) {
-			if (collider.has_value()) { get_collider().render(win, cam); }
+	switch (debug::mode) {
+	case debug::PresentationMode::production:
+		if (m_editor) {
+			highlighted ? drawbox.setFillColor(sf::Color{250, 80, 250, 60}) : drawbox.setFillColor(sf::Color::Transparent);
+			Entity::render(win, cam, size);
 		} else {
-			if (!has_flag_set(NPCFlags::no_animation)) { win.draw(Mobile::p_animatable); }
+			if (is_hidden() || m_state.test(NPCState::invisible)) { return; }
+			if (collider.has_value()) {
+				Mobile::p_animatable.set_position(get_collider().get_center() + m_offset - cam);
+				auto indicator_offset = sf::Vector2f{0.f, -constants::f_cell_size};
+				m_indicator.set_position(get_collider().get_top() + indicator_offset - cam);
+			}
+			if (m_services->greyblock_mode()) {
+				if (collider.has_value()) { get_collider().render(win, cam); }
+			} else {
+				if (m_vehicle && has_flag_set(NPCFlags::background)) {
+					m_vehicle->render(win, cam, DrawOrder::back);
+					if (!has_flag_set(NPCFlags::in_vehicle)) { m_vehicle->render(win, cam, DrawOrder::front); }
+				}
+				if (!has_flag_set(NPCFlags::no_animation)) { win.draw(Mobile::p_animatable); }
+			}
+			if (!has_flag_set(NPCFlags::no_animation) && !has_flag_set(NPCFlags::cutscene)) { win.draw(m_indicator); }
 		}
-		if (!has_flag_set(NPCFlags::no_animation) && !has_flag_set(NPCFlags::cutscene)) { win.draw(m_indicator); }
+		break;
+	case debug::PresentationMode::debug: get_collider().render(win, cam); break;
+	case debug::PresentationMode::greyblock: break;
 	}
+	if (m_vehicle && has_flag_set(NPCFlags::in_vehicle) && has_flag_set(NPCFlags::background)) { m_vehicle->render(win, cam, DrawOrder::front); }
 	if (m_mobile_prop) { m_mobile_prop->render(win, cam); }
+}
+
+void NPC::render_props(sf::RenderWindow& win, sf::Vector2f cam, DrawOrder order) {
+	if (has_flag_set(NPCFlags::background)) { return; }
+	if (m_vehicle) {
+		m_vehicle->render(win, cam, DrawOrder::back);
+		m_vehicle->render(win, cam, DrawOrder::front);
+	}
 }
 
 void NPC::start_conversation(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console) {
@@ -431,7 +477,10 @@ void NPC::use_portal(world::Map& map) {
 
 void NPC::walk() { request(NPCAnimationState::walk); }
 
-void NPC::set_position(sf::Vector2f pos) { get_collider().physics.position = pos; }
+void NPC::set_position(sf::Vector2f pos) {
+	get_collider().physics.position = pos;
+	if (m_vehicle) { m_vehicle->set_position(pos); }
+}
 
 void NPC::set_position_from_scaled(sf::Vector2f scaled_pos) {
 	auto new_pos = scaled_pos * constants::f_cell_size;
@@ -492,6 +541,7 @@ fsm::StateFunction NPC::update_inspect() {
 	if (change_state(NPCAnimationState::idle, "idle")) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
 	if (change_state(NPCAnimationState::turn, "turn")) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
 	if (change_state(NPCAnimationState::walk, "walk")) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
+	if (change_state(NPCAnimationState::special_1, "special_1")) { return std::move(fsm::StateFunction{NPC_BIND(update_special_1)}); }
 	return std::move(fsm::StateFunction{NPC_BIND(update_inspect)});
 }
 

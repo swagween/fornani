@@ -157,6 +157,7 @@ class DataManager final {
 	dj::Json light{};
 	dj::Json fader{};
 	dj::Json portal{};
+	dj::Json vehicle{};
 
 	// enemy
 	dj::Json enemy{};

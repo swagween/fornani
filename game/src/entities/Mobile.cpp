@@ -41,9 +41,9 @@ void Mobile::post_update(automa::ServiceProvider& svc, world::Map& map, player::
 	}
 	if (tick) { p_animatable.tick(); }
 
-	auto it = p_sounds.find(p_animatable.get_animation_tag());
+	auto it = p_sounds.find(MobileFrame{p_animatable.animation.get_frame_count(), p_animatable.get_animation_tag()});
 	if (it != p_sounds.end()) {
-		if (p_animatable.animation.get_frame_count() == it->second.frame && p_animatable.animation.keyframe_started()) { svc.soundboard.play_sound(it->second.tag, get_collider().get_center()); }
+		if (p_animatable.animation.keyframe_started()) { svc.soundboard.play_sound(it->second.tag, get_collider().get_center()); }
 	}
 }
 

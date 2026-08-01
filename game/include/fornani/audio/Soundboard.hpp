@@ -3,12 +3,12 @@
 
 #include <SFML/Graphics.hpp>
 #include <capo/engine.hpp>
-#include <algorithm>
 #include <fornani/audio/Sound.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/TransparentStringHash.hpp>
+#include <algorithm>
 #include <functional>
 #include <unordered_map>
 
@@ -80,7 +80,7 @@ enum class Weapon { bryns_gun, wasp, skycorps_ar, tomahawk, tomahawk_catch, clov
 enum class Projectile { basic, shuriken, pulse, hard_hit, critical_hit };
 enum class Arms { reload, frag_grenade, whistle };
 enum class Transmission { statics };
-enum class Step { basic, grass };
+enum class Step { basic, grass, metal };
 
 // critters
 enum class Enemy { hit_squeak, hit_high, hit_medium, hit_low, standard_death, jump_low, high_death, low_death, disappear };
@@ -238,22 +238,7 @@ class Soundboard {
 		float save{};
 	} proximities{};
 
-	std::unordered_map<int, std::unordered_map<int, Step>> get_step_sound{{1,
-																		   {{96, Step::grass},
-																			{464, Step::grass},
-																			{465, Step::grass},
-																			{466, Step::grass},
-																			{467, Step::grass},
-																			{468, Step::grass},
-																			{469, Step::grass},
-																			{470, Step::grass},
-																			{471, Step::grass},
-																			{476, Step::grass},
-																			{477, Step::grass},
-																			{478, Step::grass},
-																			{479, Step::grass},
-																			{496, Step::grass},
-																			{497, Step::grass}}}};
+	std::unordered_map<int, std::unordered_map<int, Step>> get_step_sound{};
 
 	io::Logger m_logger{"Audio"};
 };

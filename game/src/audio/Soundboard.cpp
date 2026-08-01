@@ -23,6 +23,27 @@ Soundboard::Soundboard(automa::ServiceProvider& svc, capo::IEngine& engine) : m_
 	}
 	auto sfx_data = std::move(*sfx_data_result);
 	for (auto const& entry : sfx_data.as_array()) { m_property_map.insert({entry["label"].as_string(), SoundProperties::from_json(entry)}); }
+
+	get_step_sound.insert({1,
+						   {{96, Step::grass},
+							{464, Step::grass},
+							{465, Step::grass},
+							{466, Step::grass},
+							{467, Step::grass},
+							{468, Step::grass},
+							{469, Step::grass},
+							{470, Step::grass},
+							{471, Step::grass},
+							{476, Step::grass},
+							{477, Step::grass},
+							{478, Step::grass},
+							{479, Step::grass},
+							{496, Step::grass},
+							{497, Step::grass}}});
+	get_step_sound.insert({7, {{3, Step::metal},   {5, Step::metal},   {6, Step::metal},   {7, Step::metal},   {16, Step::metal},  {17, Step::metal},  {18, Step::metal},  {20, Step::metal},  {21, Step::metal},  {35, Step::metal},
+							   {37, Step::metal},  {51, Step::metal},  {53, Step::metal},  {64, Step::metal},  {65, Step::metal},  {66, Step::metal},  {67, Step::metal},  {68, Step::metal},  {69, Step::metal},  {70, Step::metal},
+							   {71, Step::metal},  {464, Step::metal}, {465, Step::metal}, {466, Step::metal}, {467, Step::metal}, {468, Step::metal}, {469, Step::metal}, {470, Step::metal}, {471, Step::metal}, {476, Step::metal},
+							   {477, Step::metal}, {478, Step::metal}, {479, Step::metal}, {493, Step::metal}, {494, Step::metal}, {495, Step::metal}, {498, Step::metal}, {499, Step::metal}}});
 }
 
 void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc, int echo_count, int echo_rate) {
@@ -344,8 +365,10 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	// steps
 	if (flags.step.test(Step::basic)) { play(engine, svc, "nani_steps", 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.step.test(Step::grass)) { play(engine, svc, "nani_steps_grass", 0.3f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.step.test(Step::metal)) { play(engine, svc, "nani_steps_metal", 0.3f, 80.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.land.test(Step::basic)) { play(engine, svc, "nani_landed", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.land.test(Step::grass)) { play(engine, svc, "nani_landed_grass", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.land.test(Step::metal)) { play(engine, svc, "nani_landed_metal", 0.2f, 90.f, 0, 1.f, {}, echo_count, echo_rate); }
 
 	// arms
 	if (flags.player.test(Player::arms_switch)) { play(engine, svc, "arms_switch", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }

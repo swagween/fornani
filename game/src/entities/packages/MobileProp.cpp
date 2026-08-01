@@ -4,30 +4,33 @@
 namespace fornani {
 
 MobileProp::MobileProp(automa::ServiceProvider& svc, world::Map& map, std::string_view tag, sf::Vector2i dimensions) : Mobile{svc, tag, dimensions} {
-	register_collider(map, sf::Vector2f{dimensions * constants::i_scale_factor + sf::Vector2i{-4, -9}});
+	register_collider(map, sf::Vector2f{dimensions * constants::i_scale_factor + sf::Vector2i{-4, -8}});
+	get_collider().set_trait(shape::ColliderTrait::prop);
 	get_collider().set_attribute(shape::ColliderAttributes::no_collision);
 	get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
+	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 	p_animatable.center();
 	friction = 0.995f;
 }
 
 void MobileProp::update(world::Map& map) {
 	p_animatable.tick();
-	get_collider().physics.set_friction_componentwise({friction, friction});
 	if (has_flag_set(MobilePropFlags::dropped)) {
+		get_collider().physics.set_friction_componentwise({friction, friction});
 		get_collider().set_flag(shape::ColliderFlags::simple, false);
 		get_collider().set_attribute(shape::ColliderAttributes::no_collision, false);
 		get_collider().set_attribute(shape::ColliderAttributes::no_map_collision, false);
 		get_collider().set_flag(shape::ColliderFlags::gravity, true);
 		get_collider().physics.gravity = 2.f;
 	} else {
+		get_collider().physics.set_friction_componentwise({0.8f, 0.8f});
 		get_collider().set_flag(shape::ColliderFlags::simple);
-		m_steering.seek(get_collider().physics, m_target, 0.1f);
+		m_steering.seek(get_collider().physics, m_target, 0.08f);
 	}
 }
 
 void MobileProp::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	p_animatable.set_position(get_collider().get_center() - cam);
+	p_animatable.set_position(get_collider().get_center() - cam + sf::Vector2f{0.f, 1.f});
 	win.draw(p_animatable);
 	// debug();
 }

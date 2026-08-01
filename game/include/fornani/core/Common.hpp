@@ -75,6 +75,8 @@ constexpr auto heart_chance_v = 8.f;
 constexpr auto enemy_limit_v = 64;
 constexpr auto max_damage_v = 32.f;
 
+enum class DrawOrder { back, front };
+
 enum class TimeOfDay { dawn, day, dusk, night, END };
 enum class ClockMode { standard, military };
 

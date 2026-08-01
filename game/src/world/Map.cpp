@@ -727,6 +727,7 @@ void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf
 							if (!n->is_foreground()) { n->render(win, cam, 1.f); }
 						}
 						for (auto n : get_entities<NPC>()) {
+							n->render_props(win, cam, DrawOrder::back);
 							if (n->is_background()) { n->render(win, cam); }
 						}
 						for (auto t : get_entities<Train>()) { t->render(win, cam, 1.f); }

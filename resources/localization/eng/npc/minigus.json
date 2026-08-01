@@ -233,5 +233,25 @@
         }
       ]
     ]
+  },
+  "62": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "message": "The lab...? Not the infirmary?"
+        }
+      ]
+    ]
+  },
+  "63": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "message": "Surely there's another way!"
+        }
+      ]
+    ]
   }
 }

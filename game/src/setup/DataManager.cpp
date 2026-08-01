@@ -176,6 +176,8 @@ void DataManager::load_data() {
 	assert(!props.is_null());
 	portal = *dj::Json::from_file((finder.resource_path() + "/data/level/portals.json").c_str());
 	assert(!portal.is_null());
+	vehicle = *dj::Json::from_file((finder.resource_path() + "/data/level/vehicle.json").c_str());
+	assert(!vehicle.is_null());
 
 	platform = *dj::Json::from_file((finder.resource_path() + "/data/level/platform.json").c_str());
 	assert(!platform.is_null());

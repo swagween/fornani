@@ -6,6 +6,7 @@ add_subdirectory(npc)
 add_subdirectory(packages)
 add_subdirectory(player)
 add_subdirectory(scenery)
+add_subdirectory(vehicle)
 add_subdirectory(world)
 
 nani_add_headers(

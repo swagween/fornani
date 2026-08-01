@@ -1,0 +1,32 @@
+{
+  "nighthawk": {
+    "dimensions": [200, 144],
+    "order": 0,
+    "driver_socket": [64, 44],
+    "parts": [
+      { "tag": "nighthawk_front", "order": 1 },
+      {
+        "tag": "nighthawk_propeller",
+        "order": 1,
+        "animations": [
+          {
+            "label": "off",
+            "parameters": [6, 1, 32, -1, false]
+          },
+          {
+            "label": "slow",
+            "parameters": [6, 3, 32, -1, false]
+          },
+          {
+            "label": "fast",
+            "parameters": [0, 3, 8, -1, false]
+          },
+          {
+            "label": "medium",
+            "parameters": [3, 3, 18, -1, false]
+          }
+        ]
+      }
+    ]
+  }
+}

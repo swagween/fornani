@@ -7,6 +7,7 @@
 #include <fornani/entities/animation/StateMachine.hpp>
 #include <fornani/entities/npc/Vendor.hpp>
 #include <fornani/entities/packages/MobileProp.hpp>
+#include <fornani/entities/vehicle/Vehicle.hpp>
 #include <fornani/entity/Entity.hpp>
 #include <fornani/events/Subscription.hpp>
 #include <fornani/story/Quest.hpp>
@@ -21,7 +22,7 @@
 
 namespace fornani {
 
-enum class NPCFlags { has_turn_animation, face_player, background, no_animation, random_walk, cutscene, piggyback, busy, airborne, custom_camera };
+enum class NPCFlags { has_turn_animation, face_player, background, no_animation, random_walk, cutscene, piggyback, busy, airborne, custom_camera, in_vehicle };
 enum class NPCState { engaged, force_interact, introduced, talking, cutscene, piggybacking, hidden, distant_interact, just_engaged, random_walk, invisible, interacting };
 enum class NPCAnimationState { idle, turn, walk, inspect, fall, land, busy, stagger, respond, special_1, special_2, special_3 };
 
@@ -56,12 +57,15 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	void give_prop(automa::ServiceProvider& svc, world::Map& map, std::string_view label, sf::Vector2i dimensions);
 	void set_prop_socket(sf::Vector2f to) { m_prop_socket = to; }
 	void drop_prop();
+	void pick_up_prop();
+	void give_vehicle(automa::ServiceProvider& svc, world::Map& map, std::string_view label);
 
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;
 	void expose() override;
 	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size = 1.f) override;
+	void render_props(sf::RenderWindow& win, sf::Vector2f cam, DrawOrder order);
 
 	/* conversation */
 	void start_conversation(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console);
@@ -114,6 +118,8 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	[[nodiscard]] auto get_vendor() const -> std::optional<npc::Vendor*> { return vendor; }
 	[[nodiscard]] auto has_prop() const -> bool { return m_mobile_prop.has_value(); }
 	[[nodiscard]] auto get_prop() -> MobileProp& { return m_mobile_prop.value(); }
+	[[nodiscard]] auto has_vehicle() const -> bool { return m_vehicle.has_value(); }
+	[[nodiscard]] auto get_vehicle() -> Vehicle& { return m_vehicle.value(); }
 
   protected:
 	void set_force_interact(bool to) { to ? m_state.set(NPCState::force_interact) : m_state.reset(NPCState::force_interact); }
@@ -128,6 +134,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 
 	std::optional<MobileProp> m_mobile_prop;
 	sf::Vector2f m_prop_socket{};
+	std::optional<Vehicle> m_vehicle;
 
 	/* gameplay members */
 	util::BitFlags<NPCState> m_state{};

@@ -11,7 +11,7 @@
 
 namespace fornani {
 
-enum class RetrieveLynxFlags { pre_intro, intro_done, hang, main_scene };
+enum class RetrieveLynxFlags { pre_intro, intro_done, hang, main_scene, gus_landed, arrived, holding_lynx };
 
 class RetrieveLynx final : public Cutscene {
   public:

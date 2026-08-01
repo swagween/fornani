@@ -93,6 +93,13 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 #if !defined(FORNANI_PRODUCTION)
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Space) { m_screencap_timer.start(); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::G && key_pressed->control) { services.toggle_greyblock_mode(); }
+				if (key_pressed->control) {
+					if (key_pressed->scancode == sf::Keyboard::Scancode::Left) {
+						debug::mode = cycle_presentation_mode(debug::mode, -1);
+					} else if (key_pressed->scancode == sf::Keyboard::Scancode::Right) {
+						debug::mode = cycle_presentation_mode(debug::mode, 1);
+					}
+				}
 				if (key_pressed->scancode == sf::Keyboard::Scancode::P && key_pressed->control) {
 
 					services.toggle_debug();

@@ -242,7 +242,7 @@ void Player::update(world::Map& map) {
 		}
 	}
 
-	m_ear.seek(get_camera_focus_point(), 0.006f);
+	has_flag_set(PlayerFlags::cutscene) ? m_ear.seek(get_camera_focus_point(), 0.006f) : m_ear.seek(m_services->camera_controller.get_position(), 0.006f);
 
 	if (get_collider().has_flag_set(shape::ColliderFlags::submerged)) {
 		if (m_services->ticker.every_x_ticks(32)) { m_air_supply.inflict(1.f); }

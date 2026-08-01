@@ -19,6 +19,7 @@ class MobileProp final : public Mobile, public Flaggable<MobilePropFlags> {
 	void push_and_set_animation(std::string_view tag, anim::Parameters params) { p_animatable.push_and_set_animation(tag, params); }
 	void push_animation(std::string_view tag, anim::Parameters params) { p_animatable.push_animation(tag, params); }
 	void set_animation(std::string_view to) { p_animatable.set_animation(to); }
+	[[nodiscard]] auto get_animation() -> anim::Animation& { return p_animatable.animation; }
 	void drop() { set_flag(MobilePropFlags::dropped); };
 
 	void debug();

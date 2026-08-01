@@ -102,7 +102,73 @@
     "suite": [
       [
         {
+          "codes": [[5, 2]],
           "message": "Lynx, you poor thing..."
+        }
+      ]
+    ]
+  },
+  "63": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[5, 1]],
+          "message": "Take her to the lab at once."
+        },
+        {
+          "codes": [[5, 2]],
+          "message": "We have no time to waste."
+        }
+      ]
+    ]
+  },
+  "64": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[5, 2]],
+          "message": "You know what we have to do, Gus..."
+        }
+      ]
+    ]
+  },
+  "65": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[5, 1]],
+          "message": "At once, I said!"
+        },
+        {
+          "message": "And when the deed is done, meet me at the bridge. Together you and I will devise a plan to end Nani once and for all."
+        }
+      ]
+    ]
+  },
+  "66": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[5, 3]],
+          "message": "It seems I am yet again forced to do everything myself."
+        }
+      ]
+    ]
+  },
+  "67": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [
+            [5, 1],
+            [23, 30]
+          ],
+          "message": "Prepare me a nighthawk before nightfall. I'm going to be leaving the mother ship for a while..."
         }
       ]
     ]
