@@ -53,6 +53,7 @@ void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	} else {
 		svc.input_system.cancel_mouse();
 	}
+
 	GameState::tick_update(svc, engine);
 }
 
@@ -73,7 +74,7 @@ void GameplayState::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	}
 	if (p_inventory_window && p_gui_shader) { p_inventory_window.value()->render(svc, win, *player, *p_gui_shader); }
 
-	p_context.transition.render(win);
+	p_context.transition.render(win, get_context().get_black(svc));
 
 	if (p_reward_sequence) { p_reward_sequence.value()->render(win); }
 

@@ -24,6 +24,7 @@ class AbilityRewardSequence : public IRewardSequence, public Flaggable<AbilityRe
 	std::optional<std::unique_ptr<vfx::Emitter>> m_emitter{};
 
 	util::Cooldown m_cinematic;
+	util::Cooldown m_flash;
 
 	vfx::Sparkler m_sparkler;
 };

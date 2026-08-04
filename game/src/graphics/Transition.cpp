@@ -1,7 +1,6 @@
 
 #include "fornani/graphics/Transition.hpp"
 #include "fornani/entities/player/Player.hpp"
-#include "fornani/service/ServiceProvider.hpp"
 
 namespace fornani::graphics {
 
@@ -27,8 +26,9 @@ void Transition::update(player::Player& player) {
 	m_cooldown.update();
 }
 
-void Transition::render(sf::RenderWindow& win) {
+void Transition::render(sf::RenderWindow& win, sf::Color color) {
 	if (is(TransitionState::inactive)) { return; }
+	m_color = color;
 	m_color.a = m_alpha;
 	m_box.setFillColor(m_color);
 	win.draw(m_box);

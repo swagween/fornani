@@ -256,7 +256,9 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		m_cursor.set_position(services.input_system.get_mouse_position());
 		if (services.input_system.is_mouse_active()) { services.window->get().draw(m_cursor); }
 
+#if !defined(FORNANI_PRODUCTION)
 		ImGui::SFML::Render(services.window->get());
+#endif
 		auto t2 = std::chrono::steady_clock::now();
 		services.window->get().display();
 		auto t3 = std::chrono::steady_clock::now();
@@ -281,9 +283,7 @@ void Game::shutdown() { ImGui::SFML::Shutdown(); }
 
 void Game::draw_wallpaper() {
 	auto entire_window = sf::View(sf::FloatRect{{}, sf::Vector2f{sf::VideoMode::getDesktopMode().size}});
-	auto black = colors::ui_black;
-	if (auto& themed_black = game_state.get_current_state().get_context().biome) { black = Color{services.data.biomes["properties"][*themed_black]["black"]}; }
-	m_wallpaper.setFillColor(black);
+	m_wallpaper.setFillColor(game_state.get_current_state().get_context().get_black(services));
 	m_wallpaper.setSize(sf::Vector2f{services.window->get().getSize()});
 	services.window->get().clear();
 	if (services.window->is_fullscreen()) { services.window->get().setView(entire_window); }

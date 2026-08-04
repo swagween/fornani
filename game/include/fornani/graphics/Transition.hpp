@@ -20,7 +20,7 @@ class Transition {
   public:
 	Transition(sf::Vector2f screen_dim, int duration, sf::Color color = colors::ui_black);
 	void update(player::Player& player);
-	void render(sf::RenderWindow& win);
+	void render(sf::RenderWindow& win, sf::Color color);
 	void start();
 	void end();
 	void hang();

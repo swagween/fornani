@@ -129,7 +129,10 @@ void DataManager::load_data() {
 				map_layers.back().push_back(std::make_unique<world::Layer>(ctr, partition, dimensions, in_tile["layers"][ctr], constants::f_cell_size, ho, hro, parallax, ignore_lighting, animated));
 				++ctr;
 			}
-			m_loader->add([&] { load_map_data(map_jsons.back().metadata); });
+			if (room_data["meta"]["minimap"].as_bool()) {
+				auto const index = map_jsons.size() - 1;
+				m_loader->add([this, index] { minimap.bake(*m_services, map_jsons[index].metadata); });
+			}
 
 			// write to map table
 			auto entry = dj::Json{};

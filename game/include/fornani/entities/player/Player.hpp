@@ -26,6 +26,7 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Antenna.hpp>
 #include <fornani/physics/RegisteredCollider.hpp>
+#include <fornani/shader/FlatShader.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Flaggable.hpp>
 #include <fornani/utils/QuestCode.hpp>
@@ -129,7 +130,8 @@ enum class PlayerFlags {
 	no_turn,
 	encumbered,
 	knocked_over,
-	heavy
+	heavy,
+	flat_shaded
 };
 enum class Triggers { hurt };
 
@@ -194,6 +196,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void set_knocked_over();
 	void set_sleeping(bool on_floor = false);
 	void stall_idle_timer();
+	void flat_shade(sf::Color color);
 	void set_hurt();
 	void set_direction(Direction to);
 	void piggyback(int id);
@@ -262,6 +265,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void freeze_position();
 	void shake_sprite();
 	void update_direction();
+	void update_camera();
 	void update_weapon(world::Map& map);
 	void update_weapon_simple();
 	void walk();
@@ -425,6 +429,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	util::Cooldown m_sprite_shake;
 	util::Cooldown m_hurt_cooldown;
 	util::Cooldown m_death_cooldown;
+
+	FlatShader m_flat_shader;
 
 	std::vector<sf::Vector2f> accumulated_momentum{};
 

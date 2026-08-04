@@ -18,7 +18,8 @@ constexpr auto max_damage_v = 1024.f;
 
 Player::Player(automa::ServiceProvider& svc)
 	: Mobile(svc, "nani", {26, 26}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb},
-	  m_sprite_shake{200}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{10.f, -3.f}, m_sprite_overlay{svc, "nani", {26, 26}} {
+	  m_sprite_shake{200}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{10.f, -3.f}, m_sprite_overlay{svc, "nani", {26, 26}},
+	  m_flat_shader{svc.finder} {
 
 	p_animatable.center();
 	m_sprite_overlay.center();
@@ -285,18 +286,7 @@ void Player::update(world::Map& map) {
 	if (m_animation_machine.is_state(AnimState::turn_slide) && (p_animatable.animation.get_frame_count() > 2 && p_animatable.animation.get_frame_count() < 6)) { m_services->soundboard.repeat_sound("nani_turn_slide"); }
 
 	// camera stuff
-	auto skew = 120.f;
-	auto camx = directions.input.as_float() * 32.f + skew * m_services->input_system.analog(input::AnalogAction::pan).x;
-	auto vert = m_services->input_system.is_gamepad() ? m_services->input_system.analog(input::AnalogAction::pan).y : controller.vertical_movement();
-	m_camera.target_point = sf::Vector2f{camx, skew * vert};
-	auto force_multiplier = 1.f;
-	if (controller.is_dashing() || controller.sprint_held()) {
-		force_multiplier = 1.f;
-		m_camera.target_point = sf::Vector2f{camx, 0.f};
-	}
-	if (m_services->camera_controller.is_owned_by(graphics::CameraOwner::player)) { m_camera.camera.center(get_camera_focus_point(), force_multiplier); }
-	if (m_services->camera_controller.is_owned_by(graphics::CameraOwner::system)) { m_camera.camera.center(m_services->camera_controller.get_position()); }
-	m_camera.camera.update(*m_services);
+	update_camera();
 
 	invincible() ? get_collider().draw_hurtbox.setFillColor(colors::red) : get_collider().draw_hurtbox.setFillColor(colors::blue);
 	if (has_death_type(PlayerDeathType::crushed)) { get_collider().physics.gravity = 0.f; }
@@ -451,7 +441,8 @@ void Player::simple_update() {
 		if (m_headgear) { m_headgear.reset(); }
 	}
 	if (m_headgear) { m_headgear->update(p_animatable.get_frame()); }
-	m_camera.camera.update(*m_services);
+	update_camera();
+	if (!health.invincible()) { set_flag(PlayerFlags::intangible, false); }
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -530,7 +521,12 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		}
 	} else {
 		if (antennae.size() > 1) { antennae[1]->render(svc, win, cam, 1); }
-		has_flag_set(PlayerFlags::special_render) ? win.draw(m_sprite_overlay) : win.draw(p_animatable);
+		auto& drawable = has_flag_set(PlayerFlags::special_render) ? m_sprite_overlay : p_animatable;
+		if (has_flag_set(PlayerFlags::flat_shaded)) {
+			m_flat_shader.submit(win, drawable.get_sprite());
+		} else {
+			win.draw(drawable);
+		}
 		++debug::draw_calls;
 		if (antennae.size() > 1) { antennae[0]->render(svc, win, cam, 1); }
 	}
@@ -565,7 +561,13 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f forced_position) {
 	p_animatable.set_position(forced_position - cam);
-	win.draw(p_animatable);
+	auto& drawable = has_flag_set(PlayerFlags::special_render) ? m_sprite_overlay : p_animatable;
+	if (has_flag_set(PlayerFlags::flat_shaded)) {
+		m_flat_shader.submit(win, drawable.get_sprite());
+	} else {
+		win.draw(drawable);
+	}
+	// set_flag(PlayerFlags::flat_shaded, false);
 }
 
 void Player::render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -751,6 +753,11 @@ void Player::set_sleeping(bool on_floor) {
 
 void Player::stall_idle_timer() { m_animation_machine.idle_timer.start(); }
 
+void Player::flat_shade(sf::Color color) {
+	set_flag(PlayerFlags::flat_shaded);
+	m_flat_shader.finalize(color);
+}
+
 void Player::set_hurt() {
 	m_animation_machine.force(AnimState::hurt, "hurt");
 	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_hurt, &m_animation_machine);
@@ -828,6 +835,22 @@ void Player::update_direction() {
 	} else {
 		anchor_point = {get_collider().physics.position.x + get_collider().bounding_box.get_dimensions().x / 2, get_collider().physics.position.y + get_collider().bounding_box.get_dimensions().y / 2};
 	}
+}
+
+void Player::update_camera() {
+	auto skew = 120.f;
+	auto camx = directions.input.as_float() * 32.f + skew * m_services->input_system.analog(input::AnalogAction::pan).x;
+	auto vert = m_services->input_system.is_gamepad() ? m_services->input_system.analog(input::AnalogAction::pan).y : controller.vertical_movement();
+	m_camera.target_point = sf::Vector2f{camx, skew * vert};
+	auto force_multiplier = 1.f;
+	if (controller.is_dashing() || controller.sprint_held()) {
+		force_multiplier = 1.f;
+		m_camera.target_point = sf::Vector2f{camx, 0.f};
+	}
+	auto focus = has_collider() ? get_camera_focus_point() : m_services->camera_controller.get_position();
+	if (m_services->camera_controller.is_owned_by(graphics::CameraOwner::player)) { m_camera.camera.center(focus, force_multiplier); }
+	if (m_services->camera_controller.is_owned_by(graphics::CameraOwner::system)) { m_camera.camera.center(m_services->camera_controller.get_position()); }
+	m_camera.camera.update(*m_services);
 }
 
 void Player::update_weapon(world::Map& map) {
