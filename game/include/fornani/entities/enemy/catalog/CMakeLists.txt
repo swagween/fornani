@@ -12,6 +12,7 @@ nani_add_headers(
         Frdog.hpp
         Golem.hpp
         Grappler.hpp
+        Grunt.hpp
         Hellion.hpp
         Hurtle.hpp
         Imp.hpp

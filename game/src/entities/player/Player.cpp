@@ -27,8 +27,8 @@ Player::Player(automa::ServiceProvider& svc)
 	health.set_invincibility(default_invincibility_time_v);
 	hurtbox.set_dimensions(sf::Vector2f{12.f, 26.f});
 
-	texture_updater.load_base_texture(svc.assets.get_texture_modifiable("nani"));
 	texture_updater.load_pixel_map(svc.assets.get_texture_modifiable("nani_palette_default"));
+	texture_updater.load_base_texture(svc.assets.get_texture_modifiable("nani"));
 	catalog.wardrobe.set_palette(svc.assets.get_texture_modifiable("nani_palette_default"));
 
 	distant_vicinity.set_dimensions({256.f, 256.f});
@@ -109,6 +109,7 @@ void Player::unserialize(dj::Json const& in) {
 		if (item["revealed"].as_bool()) { catalog.inventory.reveal_item(m_services->data.item_id_from_label(item["label"].as_string())); }
 	}
 
+	auto start = std::chrono::steady_clock::now();
 	// wardrobe
 	auto& wardrobe = catalog.wardrobe;
 	auto hairstyle = in["wardrobe"]["hairstyle"].as<int>();
@@ -117,6 +118,7 @@ void Player::unserialize(dj::Json const& in) {
 	auto pants = in["wardrobe"]["pants"].as<int>();
 	set_outfit({hairstyle, headgear, shirt, pants});
 	update_wardrobe();
+	NANI_LOG_INFO(m_logger, "Player::unserialize took {} μs", std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start).count());
 
 	// equipped items
 	for (auto const& item : in["equipped_items"].as_array()) { equip_item(item.as<int>()); }
@@ -242,7 +244,7 @@ void Player::update(world::Map& map) {
 		}
 	}
 
-	has_flag_set(PlayerFlags::cutscene) ? m_ear.seek(get_camera_focus_point(), 0.006f) : m_ear.seek(m_services->camera_controller.get_position(), 0.006f);
+	has_flag_set(PlayerFlags::cutscene) ? m_ear.seek(m_services->camera_controller.get_position(), 0.006f) : m_ear.seek(get_camera_focus_point(), 0.006f);
 
 	if (get_collider().has_flag_set(shape::ColliderFlags::submerged)) {
 		if (m_services->ticker.every_x_ticks(32)) { m_air_supply.inflict(1.f); }
@@ -449,6 +451,7 @@ void Player::simple_update() {
 		if (m_headgear) { m_headgear.reset(); }
 	}
 	if (m_headgear) { m_headgear->update(p_animatable.get_frame()); }
+	m_camera.camera.update(*m_services);
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -1019,7 +1022,7 @@ bool Player::grounded() const { return get_collider().flags.external_state.test(
 bool Player::fire_weapon() {
 	if (!arsenal || !hotbar) { return false; }
 	if (controller.shot() && equipped_weapon().can_shoot()) {
-		m_services->soundboard.flags.weapon.set(static_cast<audio::Weapon>(equipped_weapon().get_sound_id()));
+		// m_services->soundboard.flags.weapon.set(static_cast<audio::Weapon>(equipped_weapon().get_sound_id()));
 		if (!equipped_weapon().is_chargeable()) { set_flag(PlayerFlags::impart_recoil); }
 		return true;
 	}
@@ -1045,6 +1048,7 @@ void Player::start_over() {
 	m_air_supply.refill();
 	health.reset();
 	controller.unrestrict();
+	m_services->camera_controller.constrain();
 	m_services->camera_controller.set_owner(graphics::CameraOwner::player);
 	set_invincible();
 	hurt_cooldown.cancel();

@@ -4,6 +4,7 @@
 #include <fornani/graphics/MenuTheme.hpp>
 #include <fornani/io/Codec.hpp>
 #include <fornani/io/FileSerializer.hpp>
+#include <fornani/io/Loader.hpp>
 #include <fstream>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -11,7 +12,7 @@
 
 namespace fornani::data {
 
-DataManager::DataManager(automa::ServiceProvider& svc) : m_services(&svc), minimap{svc} {
+DataManager::DataManager(automa::ServiceProvider& svc, io::Loader& loader) : m_services(&svc), minimap{svc}, m_loader{&loader} {
 	load_data();
 	// load themes
 	auto themes_result = dj::Json::from_file((svc.finder.resource_path() + "/data/gui/menu_themes.json").c_str());
@@ -109,18 +110,17 @@ void DataManager::load_data() {
 			if (is_duplicate_room(this_id)) { continue; }
 			auto room_str = this_room.path().filename().string();
 			room_str = room_str.substr(0, room_str.find('.'));
-			map_jsons.push_back(MapData{this_id, room_data, this_region.path().filename().string(), this_biome, room_str});
 
-			// cache map layers
+			map_jsons.push_back(MapData{this_id, room_data, this_region.path().filename().string(), this_biome, room_str});
+			map_layers.push_back(std::vector<std::unique_ptr<world::Layer>>{});
 			sf::Vector2<std::uint32_t> dimensions{};
 			dimensions.x = map_jsons.back().metadata["meta"]["dimensions"][0].as<int>();
 			dimensions.y = map_jsons.back().metadata["meta"]["dimensions"][1].as<int>();
-			map_layers.push_back(std::vector<std::unique_ptr<world::Layer>>{});
 			auto& in_tile = map_jsons.back().metadata["tile"];
 			auto ho = static_cast<bool>(in_tile["flags"]["obscuring"].as_bool());
 			auto hro = static_cast<bool>(in_tile["flags"]["reverse_obscuring"].as_bool());
 			std::uint8_t ctr{0u};
-			for (auto& layer : in_tile["layers"].as_array()) {
+			for (auto const& layer : in_tile["layers"].as_array()) {
 				auto parallax = in_tile["parallax"][ctr].as<float>();
 				auto ignore_lighting = in_tile["ignore_lighting"][ctr].as_bool();
 				auto animated = in_tile["animated"][ctr].as_bool();
@@ -129,7 +129,7 @@ void DataManager::load_data() {
 				map_layers.back().push_back(std::make_unique<world::Layer>(ctr, partition, dimensions, in_tile["layers"][ctr], constants::f_cell_size, ho, hro, parallax, ignore_lighting, animated));
 				++ctr;
 			}
-			if (room_data["meta"]["minimap"].as_bool()) { minimap.bake(*m_services, room_data); }
+			m_loader->add([&] { load_map_data(map_jsons.back().metadata); });
 
 			// write to map table
 			auto entry = dj::Json{};
@@ -152,8 +152,14 @@ void DataManager::load_data() {
 		rooms.push_back(room["room_id"].as<int>());
 	}
 
-	for (auto& id : discovered_rooms) {}
+	load_game_data(m_services->finder);
+}
 
+void DataManager::load_map_data(dj::Json const& room_data) {
+	if (room_data["meta"]["minimap"].as_bool()) { minimap.bake(*m_services, room_data); }
+}
+
+void DataManager::load_game_data(ResourceFinder& finder) {
 	weapon = *dj::Json::from_file((finder.resource_path() + "/data/weapon/weapon_data.json").c_str());
 	assert(!weapon.is_null());
 	enemy_weapon = *dj::Json::from_file((finder.resource_path() + "/data/weapon/enemy_weapons.json").c_str());
@@ -218,10 +224,6 @@ void DataManager::load_data() {
 		for (auto& item : entry.second["vendor"]["guaranteed_finite_items"].as_array()) { vendor.guaranteed_finite_items.push_back(item.as_string().data()); }
 		NANI_LOG_INFO(m_logger, "Created Vendor in marketplace with ID {}", entry.second["id"].as<int>());
 	}
-
-	m_services->stopwatch.stop();
-	// m_services->stopwatch.print_time("data loaded");
-	m_services->stopwatch.start();
 }
 
 void DataManager::save_quests() {
@@ -371,6 +373,10 @@ int DataManager::load_progress(player::Player& player, int const file, bool stat
 	} else if (fs::exists(json_path)) {
 		NANI_LOG_INFO(m_logger, "Loading save from json: {}", json_path.string());
 		if (!load_save_json(json_path, player)) { return 0; }
+	}
+	if (current_save < 0 || current_save >= files.size()) {
+		NANI_LOG_ERROR(m_logger, "Current_save was out of range! Aborting...");
+		return 0;
 	}
 	return files.at(current_save).save_data["save_point_id"].as<int>();
 }
@@ -715,9 +721,11 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	auto blank_result = dj::Json::from_file(blank_template.string());
 	if (!blank_result) { NANI_LOG_ERROR(m_logger, "Failed to clear out save data!"); }
 	auto& save = files.at(current_save).save_data;
-	// if (reload) { save = std::move(*blank_result); }
 
 	assert(!save.is_null());
+
+	auto const& map_data = save["map_data"];
+	auto const& player_data = save["player_data"];
 
 	// marketplace
 	for (auto& vendor : marketplace) {}
@@ -738,19 +746,36 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	m_services->quest_table.unserialize(save);
 	active_quest = save["active_quest"].as<int>();
 
-	m_services->world_clock.unserialize(save["map_data"]["world_time"]);
+	m_services->world_clock.unserialize(map_data["world_time"]);
 
-	for (auto& room : save["discovered_rooms"].as_array()) { discovered_rooms.add(room.as<int>()); }
-	for (auto& enemy : save["bestiary"].as_array()) { m_bestiary.add(EnemyRecord{enemy["tag"].as_string(), enemy["fallen"].as<int>()}); }
-	for (auto& door : save["unlocked_doors"].as_array()) { unlocked_doors.add(door.as_string()); }
-	for (auto& chest : save["opened_chests"].as_array()) { opened_chests.add(chest.as<std::uint64_t>()); }
-	for (auto& s : save["activated_switches"].as_array()) { activated_switches.add(s.as<int>()); }
-	for (auto& block : save["destroyed_blocks"].as_array()) { destructible_states.add({block[0].as<int>(), block[1].as<int>()}); }
-	for (auto& inspectable : save["destroyed_inspectables"].as_array()) { destroyed_inspectables.add(inspectable.as<StableID::underlying_type>()); }
+	auto const& discovered_rooms_data = save["discovered_rooms"].as_array();
+	for (auto const& room : discovered_rooms_data) { discovered_rooms.add(room.as<int>()); }
 
-	for (auto& enemy : save["map_data"]["fallen_enemies"].as_array()) {
-		fallen_enemies.push_back({std::make_pair(enemy[0].as<int>(), StableID{enemy[1].as<StableID::underlying_type>()}), enemy[2].as<int>(), static_cast<bool>(enemy[3].as<int>()), static_cast<bool>(enemy[4].as<int>())});
+	auto const& bestiary_data = save["bestiary"].as_array();
+	for (auto const& enemy : bestiary_data) { m_bestiary.add(EnemyRecord{enemy["tag"].as_string(), enemy["fallen"].as<int>()}); }
+
+	auto const& unlocked_doors_data = save["unlocked_doors"].as_array();
+	for (auto const& door : unlocked_doors_data) { unlocked_doors.add(door.as_string()); }
+
+	auto const& opened_chests_data = save["opened_chests"].as_array();
+	for (auto const& chest : opened_chests_data) { opened_chests.add(chest.as<std::uint64_t>()); }
+
+	auto const& activated_switches_data = save["activated_switches"].as_array();
+	for (auto const& s : activated_switches_data) { activated_switches.add(s.as<int>()); }
+
+	auto const& destroyed_blocks_data = save["destroyed_blocks"].as_array();
+	for (auto const& block : destroyed_blocks_data) { destructible_states.add({block[0].as<int>(), block[1].as<int>()}); }
+
+	auto const& destroyed_inspectables_data = save["destroyed_inspectables"].as_array();
+	for (auto const& inspectable : destroyed_inspectables_data) { destroyed_inspectables.add(inspectable.as<StableID::underlying_type>()); }
+
+	auto const& fallen_enemies_data = map_data["fallen_enemies"].as_array();
+	fallen_enemies.reserve(fallen_enemies_data.size());
+
+	for (auto const& enemy : fallen_enemies_data) {
+		fallen_enemies.emplace_back(std::make_pair(enemy[0].as<int>(), StableID{enemy[1].as<StableID::underlying_type>()}), enemy[2].as<int>(), static_cast<bool>(enemy[3].as<int>()), static_cast<bool>(enemy[4].as<int>()));
 	}
+
 	player.piggybacker = {};
 	if (save["piggybacker"].as<int>() != 0) { player.piggyback(save["piggybacker"].as<int>()); }
 
@@ -760,13 +785,13 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 
 	// set player data based on save file
 	// in the future, all player data will be unserialized from this function
-	player.unserialize(save["player_data"]);
+	player.unserialize(player_data);
 
 	// stat tracker
 	auto& s = m_services->stats;
 	auto deaths = s.player.death_count.get_count();
 	s = {};
-	auto const& in_stat = save["player_data"]["stats"];
+	auto const& in_stat = player_data["stats"];
 	s.player.death_count.set(in_stat["death_count"].as<int>());
 	s.player.bullets_fired.set(in_stat["bullets_fired"].as<int>());
 	s.player.guns_collected.set(in_stat["guns_collected"].as<int>());

@@ -412,7 +412,6 @@
     ]
   },
   "canopy": {
-    "origin": [0, 1],
     "dimensions": [960, 896],
     "layers": [
       {

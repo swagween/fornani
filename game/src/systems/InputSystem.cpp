@@ -2,6 +2,7 @@
 #include <imgui.h>
 #include <djson/json.hpp>
 #include <fornani/gui/ActionControlIconQuery.hpp>
+#include <fornani/io/Loader.hpp>
 #include <fornani/systems/InputSystem.hpp>
 
 namespace fornani::input {
@@ -55,23 +56,25 @@ static auto get_action_set_from_action(DigitalAction action) -> ActionSet {
 	return ActionSet::Platformer; // This will never be hit
 }
 
-InputSystem::InputSystem(ResourceFinder& finder) : m_stick_sensitivity{default_joystick_sensitivity_v}, m_mouse_active{1200} {
-	NANI_LOG_INFO(m_logger, "Initializing Steam Input");
-	if (!SteamInput()->Init(true)) {
-		NANI_LOG_WARN(m_logger, "Could not initialize Steam Input!");
-	} else {
-		NANI_LOG_INFO(m_logger, "Steam Input initialized");
-	}
+InputSystem::InputSystem(ResourceFinder& finder, io::Loader& loader) : m_stick_sensitivity{default_joystick_sensitivity_v}, m_mouse_active{1200} {
+	loader.add([&] {
+		NANI_LOG_INFO(m_logger, "Initializing Steam Input");
+		if (!SteamInput()->Init(true)) {
+			NANI_LOG_WARN(m_logger, "Could not initialize Steam Input!");
+		} else {
+			NANI_LOG_INFO(m_logger, "Steam Input initialized");
+		}
+	});
 	std::string input_action_manifest_path = finder.resource_path() + "/text/input/steam_input_manifest.vdf";
 	if (!std::filesystem::exists(input_action_manifest_path)) { NANI_LOG_ERROR(m_logger, "Manifest file does not exist on disk!"); }
 	if (!SteamInput()->SetInputActionManifestFilePath(input_action_manifest_path.c_str())) {
 		NANI_LOG_ERROR(m_logger, "Could not set Action Manifest file path!");
 		NANI_LOG_ERROR(m_logger, "Path: {}", input_action_manifest_path);
 	}
-	SteamInput()->EnableDeviceCallbacks();
-	init_steam_action_sets();
-	setup_action_handles();
-	load_keyboard_controls(finder);
+	loader.add([&] { SteamInput()->EnableDeviceCallbacks(); });
+	loader.add([&] { init_steam_action_sets(); });
+	loader.add([&] { setup_action_handles(); });
+	loader.add([&] { load_keyboard_controls(finder); });
 	InputHandle_t handles[STEAM_INPUT_MAX_COUNT];
 	int count = SteamInput()->GetConnectedControllers(handles);
 	NANI_LOG_INFO(m_logger, "Available Steam Input Controllers: {}", count);
@@ -191,6 +194,10 @@ void InputSystem::update() {
 }
 
 void InputSystem::flush_inputs() {
+	NANI_LOG_INFO(m_logger, "Flushing Inputs...");
+
+	flush_mouse_input();
+	keys_pressed.clear();
 
 	for (auto& state : m_resolved_digital) {
 		state.held = false;
@@ -202,6 +209,7 @@ void InputSystem::flush_inputs() {
 	for (auto& state : m_resolved_analog) {
 		state.x = 0.f;
 		state.y = 0.f;
+		state.active = false;
 	}
 	for (auto& raw : m_raw_digital) {
 		raw.held = false;

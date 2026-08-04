@@ -1,430 +1,438 @@
 [
-	{
-		"title": "Free Bit",
-		"tag": "free_bit",
-		"target": 1,
-		"objectives": [
-			{
-				"index": 0,
-				"readout": "Find the key to Bit's cell and free him."
-			}
-		],
-		"displayed": true
-	},
+  {
+    "title": "Free Bit",
+    "tag": "free_bit",
+    "target": 1,
+    "objectives": [
+      {
+        "index": 0,
+        "readout": "Find the key to Bit's cell and free him."
+      }
+    ],
+    "displayed": true
+  },
 
-	{
-		"title": "Discover the mystery of the Firstwind Laboratory terminal",
-		"tag": "firstwind_mystery",
-		"target": 5,
-		"objectives": [ "Enter the username.", "Enter the authorization key.", "Open the chest.", "Find the Boiler Room.", "Open the chest." ],
-		"displayed": false
-	},
+  {
+    "title": "Discover the mystery of the Firstwind Laboratory terminal",
+    "tag": "firstwind_mystery",
+    "target": 5,
+    "objectives": ["Enter the username.", "Enter the authorization key.", "Open the chest.", "Find the Boiler Room.", "Open the chest."],
+    "displayed": false
+  },
 
-	{
-		"title": "NPC Dialogue",
-		"tag": "npc_dialogue",
-		"displayed": false,
-		"subquests": [
-			{
-				"tag": "mirin",
-				"id": 114
-			},
-			{
-				"tag": "dr_go",
-				"id": 113
-			},
-			{
-				"tag": "bryn",
-				"id": 420
-			},
-			{
-				"tag": "bandit",
-				"id": 1310
-			},
-			{
-				"tag": "bit",
-				"id": 102
-			},
-			{
-				"tag": "bit",
-				"id": 101
-			},
-			{
-				"tag": "bit",
-				"id": 1310
-			},
-			{
-				"tag": "carl",
-				"id": 104
-			},
-			{
-				"tag": "bryn",
-				"id": 509
-			},
-			{
-				"tag": "bryn",
-				"id": 300
-			},
-			{
-				"tag": "aviator_bryn",
-				"id": 903
-			},
-			{
-				"tag": "dr_willett",
-				"id": 300
-			},
-			{
-				"tag": "doug",
-				"id": 1300
-			},
-			{
-				"tag": "krub",
-				"id": 406
-			},
-			{
-				"tag": "gobe",
-				"id": 212
-			},
-			{
-				"tag": "justin",
-				"id": 247
-			},
-			{
-				"tag": "jimmy",
-				"id": 407
-			},
-			{
-				"tag": "spencer",
-				"id": 1311
-			},
-			{
-				"tag": "gobe",
-				"id": 230
-			}
-		]
-	},
+  {
+    "title": "NPC Dialogue",
+    "tag": "npc_dialogue",
+    "displayed": false,
+    "subquests": [
+      {
+        "tag": "mirin",
+        "id": 114
+      },
+      {
+        "tag": "dr_go",
+        "id": 113
+      },
+      {
+        "tag": "bryn",
+        "id": 420
+      },
+      {
+        "tag": "bandit",
+        "id": 1310
+      },
+      {
+        "tag": "bit",
+        "id": 102
+      },
+      {
+        "tag": "bit",
+        "id": 101
+      },
+      {
+        "tag": "bit",
+        "id": 1310
+      },
+      {
+        "tag": "carl",
+        "id": 104
+      },
+      {
+        "tag": "bryn",
+        "id": 509
+      },
+      {
+        "tag": "bryn",
+        "id": 300
+      },
+      {
+        "tag": "aviator_bryn",
+        "id": 903
+      },
+      {
+        "tag": "dr_willett",
+        "id": 300
+      },
+      {
+        "tag": "doug",
+        "id": 1300
+      },
+      {
+        "tag": "krub",
+        "id": 406
+      },
+      {
+        "tag": "gobe",
+        "id": 212
+      },
+      {
+        "tag": "justin",
+        "id": 247
+      },
+      {
+        "tag": "jimmy",
+        "id": 407
+      },
+      {
+        "tag": "spencer",
+        "id": 1311
+      },
+      {
+        "tag": "gobe",
+        "id": 230
+      }
+    ]
+  },
 
-	{
-		"title": "Collect vermite shards",
-		"tag": "collect_vermite",
-		"target": 24,
-		"objectives": [ "Collect all the vermite shards." ],
-		"displayed": true
-	},
+  {
+    "title": "Collect vermite shards",
+    "tag": "collect_vermite",
+    "target": 24,
+    "objectives": ["Collect all the vermite shards."],
+    "displayed": true
+  },
 
-	{
-		"title": "Defeat Miaag",
-		"tag": "defeat_miaag",
-		"target": 1,
-		"objectives": [ "Defeat the corrupted King Miaag and escape the Kariba Ruins." ],
-		"displayed": false
-	},
+  {
+    "title": "Defeat Miaag",
+    "tag": "defeat_miaag",
+    "target": 1,
+    "objectives": ["Defeat the corrupted King Miaag and escape the Kariba Ruins."],
+    "displayed": false
+  },
 
-	{
-		"title": "Rescue Justin",
-		"tag": "rescue_justin",
-		"target": 2,
-		"objectives": [
-			{
-				"index": 0,
-				"readout": "Find Gobe's dog. He is somewhere near Old Mimic's Farm."
-			},
-			{
-				"index": 1,
-				"readout": "Return Justin to Gobe at Old Mimic's Farm."
-			}
-		],
-		"displayed": true
-	},
-	{
-		"title": "Lynx Dialogue",
-		"tag": "lynx_dialogue",
-		"target": 1,
-		"objectives": [],
-		"displayed": false,
-		"dialogue": true
-	},
-	{
-		"title": "Minigus Dialogue",
-		"tag": "minigus_dialogue",
-		"target": 1,
-		"objectives": [],
-		"displayed": false,
-		"dialogue": true
-	},
-	{
-		"title": "Defeat Skycorps",
-		"tag": "defeat_skycorps",
-		"target": 8,
-		"objectives": [ 
-			{
-				"index": 1,
-				"readout": "Take the Nightside train to Ashtown and await further instruction from Doc and Bryn."
-			},
-			{
-				"index": 2,
-				"readout": "Take Pioneer Trail to Ashtown and await further instruction from Doc and Bryn."
-			},
-			{
-				"index": 3,
-				"readout": "Find someone named Spencer in Ashtown."
-			},
-			{
-				"index": 8,
-				"readout": "Infiltrate the Greatwing and take down Skycorps before they awaken the Mother Worm."
-			} ],
-		"displayed": true
-	},
-	{
-		"title": "Obtain Wasp",
-		"tag": "obtain_wasp",
-		"target": 1,
-		"objectives": [ "Obtain Wasp" ],
-		"displayed": false
-	},
-	{
-		"title": "Map Markers",
-		"tag": "map_markers",
-		"displayed": false,
-		"subquests": [
-			{
-				"tag": "main",
-				"id": 810
-			},
-			{
-				"tag": "woodshine",
-				"id": 400
-			},
-			{
-				"tag": "nightside_station",
-				"id": 901
-			},
-			{
-				"tag": "pioneer_trail",
-				"id": 227
-			},
-			{
-				"tag": "hoarders_cave",
-				"id": 1410
-			},
-			{
-				"tag": "junkyards",
-				"id": 700
-			}
-		]
-	},
-	{
-		"title": "Main",
-		"tag": "main",
-		"target": 1,
-		"displayed": false,
-		"id": 11
-	},
-	{
-		"title": "Pioneer Trail",
-		"tag": "pioneer_trail",
-		"target": 1,
-		"displayed": false
-	},
-	{
-		"title": "Grand Mastiff Mystery",
-		"tag": "grand_mastiff_mystery",
-		"target": 1,
-		"displayed": false
-	},
-	{
-		"title": "Carl Soda",
-		"tag": "carl_soda",
-		"target": 2,
-		"displayed": false
-	},
-	{
-		"title": "Nightside Wall",
-		"tag": "nightside_wall",
-		"target": 2,
-		"displayed": false
-	},
-	{
-		"title": "Open Nightside Station",
-		"tag": "open_nightside_station",
-		"target": 2,
-		"displayed": false
-	},
-	{
-		"title": "Open Pioneer Station",
-		"tag": "open_pioneer_station",
-		"target": 1,
-		"displayed": false
-	},
-	{
-		"title": "The Lost Artifact",
-		"tag": "lost_artifact",
-		"target": 4,
-		"objectives": [
-			{
-				"index": 1,
-				"readout": "Meet Loth at the Pixiote Temple."
-			},
-			{
-				"index": 2,
-				"readout": ""
-			}
-		],
-		"displayed": true
-	},
-	{
-		"title": "Haunch Dialogue",
-		"tag": "haunch_dialogue",
-		"target": 1,
-		"objectives": [],
-		"displayed": false,
-		"dialogue": true
-	},
-	{
-		"tag": "bonus_health",
-		"target": 1,
-		"objectives": [],
-		"displayed": false
-	},
-	{
-		"tag": "defeat_haunch",
-		"target": 1,
-		"objectives": [],
-		"displayed": false
-	},
-	{
-		"tag": "pioneer_tech",
-		"title": "Pioneer Tech",
-		"target": 3,
-		"objectives": [
-			{
-				"index": 1,
-				"readout": "Find a screwdriver and bring it to Dr. Willett."
-			},
-			{
-				"index": 2,
-				"readout": "Bring a screwdriver to Dr. Willett."
-			}],
-		"displayed": true
-	},
-	{
-		"tag": "ashtown_bandit",
-		"target": 11,
-		"objectives": [],
-		"displayed": true
-	},
-	{
-		"tag": "find_spencer",
-		"target": 11,
-		"objectives": [],
-		"displayed": true
-	},
-	{
-		"tag": "cajole_doug",
-		"target": 2,
-		"objectives": [],
-		"displayed": true
-	},
-	{
-		"tag": "nighttime",
-		"target": 2,
-		"objectives": [],
-		"displayed": false
-	},
-	{
-		"tag": "the_hoarder",
-		"target": 11,
-		"objectives": [],
-		"displayed": true
-	},
-	{
-		"tag": "build_scorpion",
-		"target": 2,
-		"objectives": [],
-		"displayed": false
-	},
-	{
-		"tag": "defeat_minigus",
-		"target": 2,
-		"objectives": [],
-		"displayed": false
-	},
-	{
-		"tag": "defeat_lynx",
-		"target": 2,
-		"objectives": [],
-		"displayed": false
-	},
-	{
-		"tag": "cure_minigus",
-		"title": "Cure Minigus",
-		"target": 2,
-		"objectives": [
-			{
-				"index": 1,
-				"readout": "Find the pixiote potion."
-			},
-			{
-				"index": 3,
-				"readout": "Bring the potion to Gus."
-			}
-		],
-		"displayed": true
-	},
-	{
-		"tag": "flee_firstwind",
-		"title": "Flee Firstwind",
-		"target": 2,
-		"objectives": [
-			{
-				"index": 1,
-				"readout": "Find a way out of the Firstwind Airship."
-			}
-		],
-		"displayed": true
-	},
-	{
-		"tag": "rescue_bryn",
-		"title": "Rescue Bryn",
-		"target": 4,
-		"objectives": [
-			{
-				"index": 1,
-				"readout": "Bryn is stuck in a ruin. I promised Dr. Willett I'd find her."
-			},
-			{
-				"index": 2,
-				"readout": "Find a way out of the Kariba Ruins."
-			},
-			{
-				"index": 3,
-				"readout": "Meet Bryn at Pioneer Base."
-			}
-		],
-		"displayed": true
-	},
-	{
-		"tag": "find_ruan",
-		"title": "Find Ruan",
-		"target": 2,
-		"objectives": [
-			{
-				"index": 1,
-				"readout": "Find Gaia's husband, Ruan."
-			}
-		],
-		"displayed": true
-	},
-	{
-		"tag": "find_gas_mask",
-		"title": "Find a Gas Mask",
-		"target": 2,
-		"objectives": [
-			{
-				"index": 1,
-				"readout": "I need to find a Gas Mask so I can take the long road to Ashtown."
-			}
-		],
-		"displayed": true
-	}
+  {
+    "title": "Rescue Justin",
+    "tag": "rescue_justin",
+    "target": 2,
+    "objectives": [
+      {
+        "index": 0,
+        "readout": "Find Gobe's dog. He is somewhere near Old Mimic's Farm."
+      },
+      {
+        "index": 1,
+        "readout": "Return Justin to Gobe at Old Mimic's Farm."
+      }
+    ],
+    "displayed": true
+  },
+  {
+    "title": "Lynx Dialogue",
+    "tag": "lynx_dialogue",
+    "target": 1,
+    "objectives": [],
+    "displayed": false,
+    "dialogue": true
+  },
+  {
+    "title": "Minigus Dialogue",
+    "tag": "minigus_dialogue",
+    "target": 1,
+    "objectives": [],
+    "displayed": false,
+    "dialogue": true
+  },
+  {
+    "title": "Defeat Skycorps",
+    "tag": "defeat_skycorps",
+    "target": 8,
+    "objectives": [
+      {
+        "index": 1,
+        "readout": "Take the Nightside train to Ashtown and await further instruction from Doc and Bryn."
+      },
+      {
+        "index": 2,
+        "readout": "Take Pioneer Trail to Ashtown and await further instruction from Doc and Bryn."
+      },
+      {
+        "index": 3,
+        "readout": "Find someone named Spencer in Ashtown."
+      },
+      {
+        "index": 8,
+        "readout": "Infiltrate the Greatwing and take down Skycorps before they awaken the Mother Worm."
+      }
+    ],
+    "displayed": true
+  },
+  {
+    "title": "Obtain Wasp",
+    "tag": "obtain_wasp",
+    "target": 1,
+    "objectives": ["Obtain Wasp"],
+    "displayed": false
+  },
+  {
+    "title": "Map Markers",
+    "tag": "map_markers",
+    "displayed": false,
+    "subquests": [
+      {
+        "tag": "main",
+        "id": 810
+      },
+      {
+        "tag": "woodshine",
+        "id": 400
+      },
+      {
+        "tag": "nightside_station",
+        "id": 901
+      },
+      {
+        "tag": "pioneer_trail",
+        "id": 227
+      },
+      {
+        "tag": "hoarders_cave",
+        "id": 1410
+      },
+      {
+        "tag": "junkyards",
+        "id": 700
+      }
+    ]
+  },
+  {
+    "title": "Main",
+    "tag": "main",
+    "target": 1,
+    "displayed": false,
+    "id": 11
+  },
+  {
+    "title": "Pioneer Trail",
+    "tag": "pioneer_trail",
+    "target": 4,
+    "displayed": false
+  },
+  {
+    "title": "Grand Mastiff Mystery",
+    "tag": "grand_mastiff_mystery",
+    "target": 1,
+    "displayed": false
+  },
+  {
+    "title": "Carl Soda",
+    "tag": "carl_soda",
+    "target": 2,
+    "displayed": false
+  },
+  {
+    "title": "Nightside Wall",
+    "tag": "nightside_wall",
+    "target": 2,
+    "displayed": false
+  },
+  {
+    "title": "Open Nightside Station",
+    "tag": "open_nightside_station",
+    "target": 2,
+    "displayed": false
+  },
+  {
+    "title": "Open Pioneer Station",
+    "tag": "open_pioneer_station",
+    "target": 1,
+    "displayed": false
+  },
+  {
+    "title": "The Lost Artifact",
+    "tag": "lost_artifact",
+    "target": 4,
+    "objectives": [
+      {
+        "index": 1,
+        "readout": "Meet Loth at the Pixiote Temple."
+      },
+      {
+        "index": 2,
+        "readout": ""
+      }
+    ],
+    "displayed": true
+  },
+  {
+    "title": "Haunch Dialogue",
+    "tag": "haunch_dialogue",
+    "target": 1,
+    "objectives": [],
+    "displayed": false,
+    "dialogue": true
+  },
+  {
+    "tag": "bonus_health",
+    "target": 1,
+    "objectives": [],
+    "displayed": false
+  },
+  {
+    "tag": "defeat_haunch",
+    "target": 1,
+    "objectives": [],
+    "displayed": false
+  },
+  {
+    "tag": "pioneer_tech",
+    "title": "Pioneer Tech",
+    "target": 3,
+    "objectives": [
+      {
+        "index": 1,
+        "readout": "Find a screwdriver and bring it to Dr. Willett."
+      },
+      {
+        "index": 2,
+        "readout": "Bring a screwdriver to Dr. Willett."
+      }
+    ],
+    "displayed": true
+  },
+  {
+    "tag": "ashtown_bandit",
+    "target": 11,
+    "objectives": [],
+    "displayed": true
+  },
+  {
+    "tag": "find_spencer",
+    "target": 11,
+    "objectives": [],
+    "displayed": true
+  },
+  {
+    "tag": "cajole_doug",
+    "target": 10,
+    "objectives": [],
+    "displayed": true
+  },
+  {
+    "tag": "nighttime",
+    "target": 2,
+    "objectives": [],
+    "displayed": false
+  },
+  {
+    "tag": "the_hoarder",
+    "target": 11,
+    "objectives": [],
+    "displayed": true
+  },
+  {
+    "tag": "build_scorpion",
+    "target": 2,
+    "objectives": [],
+    "displayed": false
+  },
+  {
+    "tag": "defeat_minigus",
+    "target": 2,
+    "objectives": [],
+    "displayed": false
+  },
+  {
+    "tag": "defeat_lynx",
+    "target": 2,
+    "objectives": [],
+    "displayed": false
+  },
+  {
+    "tag": "cure_minigus",
+    "title": "Cure Minigus",
+    "target": 2,
+    "objectives": [
+      {
+        "index": 1,
+        "readout": "Find the pixiote potion."
+      },
+      {
+        "index": 3,
+        "readout": "Bring the potion to Gus."
+      }
+    ],
+    "displayed": true
+  },
+  {
+    "tag": "flee_firstwind",
+    "title": "Flee Firstwind",
+    "target": 2,
+    "objectives": [
+      {
+        "index": 1,
+        "readout": "Find a way out of the Firstwind Airship."
+      }
+    ],
+    "displayed": true
+  },
+  {
+    "tag": "rescue_bryn",
+    "title": "Rescue Bryn",
+    "target": 4,
+    "objectives": [
+      {
+        "index": 1,
+        "readout": "Bryn is stuck in a ruin. I promised Dr. Willett I'd find her."
+      },
+      {
+        "index": 2,
+        "readout": "Find a way out of the Kariba Ruins."
+      },
+      {
+        "index": 3,
+        "readout": "Meet Bryn at Pioneer Base."
+      }
+    ],
+    "displayed": true
+  },
+  {
+    "tag": "find_ruan",
+    "title": "Find Ruan",
+    "target": 2,
+    "objectives": [
+      {
+        "index": 1,
+        "readout": "Find Gaia's husband, Ruan."
+      }
+    ],
+    "displayed": true
+  },
+  {
+    "tag": "find_gas_mask",
+    "title": "Find a Gas Mask",
+    "target": 2,
+    "objectives": [
+      {
+        "index": 1,
+        "readout": "I need to find a Gas Mask so I can take the long road to Ashtown."
+      }
+    ],
+    "displayed": true
+  },
+  {
+    "tag": "reunite_with_dad",
+    "target": 2,
+    "objectives": [],
+    "displayed": false
+  }
 ]

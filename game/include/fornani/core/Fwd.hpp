@@ -27,6 +27,10 @@ namespace input {
 class InputSystem;
 }
 
+namespace io {
+class Loader;
+}
+
 struct SceneContext;
 
 class SpriteBatch;

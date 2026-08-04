@@ -1106,16 +1106,6 @@
     "unique": true
   },
   {
-    "tag": "diver_boots",
-    "category": 1,
-    "lookup": [5, 1],
-    "origin": [9, 3],
-    "actual_title": "Diver Boots",
-    "naive_description": "When equipped, these boots will cause you to sink in water.",
-    "unique": true,
-    "equippable": true
-  },
-  {
     "tag": "golden_tiara",
     "category": 5,
     "lookup": [1, 10],
@@ -1149,5 +1139,15 @@
     "naive_description": "A dark red rose. This would make an excellent gift for a lonely guy.",
     "unique": true,
     "value": 180
+  },
+  {
+    "tag": "diver_boots",
+    "category": 1,
+    "lookup": [5, 1],
+    "origin": [9, 3],
+    "actual_title": "Diver Boots",
+    "naive_description": "When equipped, these boots will cause you to sink in water.",
+    "unique": true,
+    "equippable": true
   }
 ]

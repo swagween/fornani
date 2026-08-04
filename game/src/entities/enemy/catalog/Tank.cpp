@@ -426,7 +426,9 @@ fsm::StateFunction Tank::update_drink() {
 	p_animatable.animation.label = "drink";
 	p_state.actual = TankState::drink;
 	if (change_state(TankState::squish, get_params("squish"))) { return TANK_BIND(update_squish); }
-	if (p_animatable.animation.just_started()) { m_services->soundboard.play_sound("tank_sip", get_collider().get_center()); }
+	if (p_animatable.animation.just_started()) {
+		if (!m_services->state_flags.test(automa::StateFlags::cutscene)) { m_services->soundboard.play_sound("tank_sip", get_collider().get_center()); }
+	}
 	if (change_state(TankState::alert, get_params("alert"))) { return TANK_BIND(update_alert); }
 	if (p_animatable.animation.complete()) {
 		request(TankState::type);

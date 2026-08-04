@@ -83,6 +83,7 @@ class Editor final : public EditorState {
 	std::unique_ptr<Tool> current_tool;
 	std::unique_ptr<Tool> secondary_tool;
 	util::BitFlags<GlobalFlags> flags{};
+	sf::RectangleShape m_overlay{};
 	BrushMode m_mode{};
 	Console console{};
 	struct {
@@ -102,7 +103,7 @@ class Editor final : public EditorState {
 	} m_options{};
 	struct {
 		bool fullscreen{};
-		bool trigger_demo{};
+		fornani::util::Cooldown trigger{8};
 		bool custom_position{};
 	} m_demo{};
 	int m_middleground{};

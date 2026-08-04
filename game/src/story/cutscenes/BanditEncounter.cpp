@@ -15,14 +15,9 @@ BanditEncounter::BanditEncounter(automa::ServiceProvider& svc) : Cutscene(svc, 1
 
 void BanditEncounter::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 	if (complete()) {
-		player.controller.unrestrict();
-		svc.state_flags.reset(automa::StateFlags::hide_hud);
-		svc.state_flags.reset(automa::StateFlags::no_menu);
-		svc.state_flags.reset(automa::StateFlags::cutscene);
-		svc.camera_controller.set_owner(graphics::CameraOwner::player);
 		svc.quest_table.progress_quest("ashtown_bandit", 1, 1002);
 		svc.music_player.resume();
-		flags.set(CutsceneFlags::delete_me);
+		Cutscene::end(svc, player);
 		return;
 	}
 

@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Constants.hpp>
 #include <fornani/utils/Math.hpp>
@@ -12,6 +13,7 @@
 namespace fornani::util {
 
 constexpr static auto default_slowdown_rate_v = 1.f;
+constexpr static auto max_integrations_v = 4;
 
 using Clk = std::chrono::steady_clock;
 using Sec = std::chrono::duration<float>;
@@ -55,9 +57,8 @@ class Ticker {
 			accumulator = Sec::zero();
 			return;
 		}
-
 		integrations = 0;
-		while (accumulator >= ft) {
+		while (accumulator >= ft && integrations < max_integrations_v) {
 			second_ticker.tick(ft) ? periods.set(Period::second) : periods.reset(Period::second);
 			twenty_minute_ticker.tick(ft) ? periods.set(Period::twenty_minutes) : periods.reset(Period::twenty_minutes);
 			fn();
@@ -66,11 +67,13 @@ class Ticker {
 			++total_integrations;
 			++ticks;
 		}
+		if (integrations == max_integrations_v) { residue = Sec::zero(); }
 
 		residue = accumulator;
 		accumulator = Sec::zero();
 		++calls_per_frame;
 	};
+	void reset();
 
 	void start_frame();
 	void end_frame();
@@ -136,6 +139,8 @@ class Ticker {
 	float slowdown_rate{};
 	Timer slowdown{};
 	Timer freezeframe{};
+
+	io::Logger m_logger{"Ticker"};
 };
 
 } // namespace fornani::util

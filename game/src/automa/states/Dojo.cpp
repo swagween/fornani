@@ -329,11 +329,10 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 
 	hud.reset_position(); // reset hud position to corner
 	svc.soundboard.turn_on();
-	player->set_camera_bounds(m_map->real_dimensions);
-	player->force_camera_center();
 
 	// TODO: refactor player initialization
 	player->get_collider().physics.zero();
+	player->set_camera_bounds(m_map->real_dimensions);
 
 	bool found_one{};
 	// only search for door entry if room was not loaded from main menu and player didn't die
@@ -348,6 +347,9 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 		player->set_position(svc.state_controller.player_position);
 		svc.state_controller.actions.reset(automa::Actions::custom_player_position);
 	}
+	svc.camera_controller.constrain();
+	player->force_camera_center();
+	svc.camera_controller.set_position(player->get_camera_focus_point());
 
 	// save was loaded from a json, or player died, so we successfully skipped door searchm_map->loa
 	svc.state_controller.actions.reset(Actions::save_loaded);

@@ -27,6 +27,9 @@ class SettingsMenu;
 namespace fornani::data {
 class DataManager;
 }
+namespace fornani::io {
+class Loader;
+}
 
 namespace fornani::input {
 
@@ -106,7 +109,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	friend class data::DataManager;
 	friend class fornani::UserSettings;
 
-	InputSystem(ResourceFinder& finder);
+	InputSystem(ResourceFinder& finder, io::Loader& loader);
 	void handle_event(std::optional<sf::Event> const event);
 	void sync_mouse(sf::RenderWindow& window);
 	void update(); // calls gather + resolve

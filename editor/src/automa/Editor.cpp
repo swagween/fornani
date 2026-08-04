@@ -27,6 +27,7 @@ Editor::Editor(fornani::automa::ServiceProvider& svc, EditorContext& ctx)
 	p_target_state = EditorStateType::editor;
 
 	svc.window->get().requestFocus();
+	svc.window->get().setVisible(true);
 
 	svc.events.new_file_event.attach_to(p_slot, &Editor::new_file, this);
 	svc.events.load_file_event.attach_to(p_slot, &Editor::load_file, this);
@@ -59,11 +60,14 @@ Editor::Editor(fornani::automa::ServiceProvider& svc, EditorContext& ctx)
 
 	p_wallpaper.setSize(p_services->window->f_screen_dimensions());
 	p_colors.backdrop = sf::Color{40, 60, 80};
+
+	m_overlay.setSize(svc.window->get_f_display_dimensions());
+	m_overlay.setFillColor({60, 60, 60, 160});
 }
 
 EditorStateType Editor::run(char** argv) {
 
-	if (m_demo.trigger_demo) {
+	if (m_demo.trigger.is_almost_complete()) {
 		p_alt.reset();
 		p_control.reset();
 		p_shift.reset();
@@ -71,6 +75,7 @@ EditorStateType Editor::run(char** argv) {
 		launch_demo(argv, map.room_id, p_services->finder.paths.room_name, ppos);
 		if (!ImGui::SFML::Init(p_services->window->get())) { console.add_log("ImGui::SFML::Init() failed!\n"); };
 	}
+	m_demo.trigger.update();
 
 	logic();
 
@@ -138,7 +143,7 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 				}
 				if (key_pressed->scancode == sf::Keyboard::Scancode::L) {
 					save();
-					m_demo.trigger_demo = true;
+					m_demo.trigger.start();
 					if (key_pressed->alt) { m_demo.fullscreen = true; }
 				}
 				if (key_pressed->scancode == sf::Keyboard::Scancode::S) { save() ? console.add_log("File saved successfully.") : console.add_log("Encountered an error saving file!"); }
@@ -146,7 +151,7 @@ void Editor::handle_events(std::optional<sf::Event> const event, sf::RenderWindo
 					if (key_pressed->scancode == sf::Keyboard::Scancode::L) {
 						map.entities.variables.player_hot_start = current_tool->scaled_position();
 						save();
-						m_demo.trigger_demo = true;
+						m_demo.trigger.start();
 						m_demo.custom_position = true;
 						if (key_pressed->alt) { m_demo.fullscreen = true; }
 					}
@@ -397,6 +402,8 @@ void Editor::render(sf::RenderWindow& win) {
 
 	// ImGui stuff
 	gui_render(win);
+
+	if (m_demo.trigger.running()) { win.draw(m_overlay); }
 }
 
 void Editor::gui_render(sf::RenderWindow& win) {
@@ -659,9 +666,9 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Demo fullscreen", "", &m_demo.fullscreen)) {}
 			if (ImGui::MenuItem("Save and Launch Demo", "Ctrl+L")) {
 				save();
-				m_demo.trigger_demo = true;
+				m_demo.trigger.start();
 			}
-			if (ImGui::MenuItem("Launch Demo without Saving")) { m_demo.trigger_demo = true; }
+			if (ImGui::MenuItem("Launch Demo without Saving")) { m_demo.trigger.start(); }
 			ImGui::EndMenu();
 		}
 
@@ -1211,7 +1218,6 @@ void Editor::center_map() {
 }
 
 void Editor::launch_demo(char** argv, int room_id, std::filesystem::path path, sf::Vector2f player_position) {
-	m_demo.trigger_demo = false;
 	m_demo.custom_position = false;
 	current_tool->current_entity = {};
 	ImGui::SFML::Shutdown();

@@ -58,11 +58,11 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 		if (m_hitbox.overlaps(i->get_bounding_box())) { i->hit(); }
 	}
 	for (auto& e : map.enemy_catalog.enemies) {
-		if (m_hitbox.overlaps(e->get_collider().bounding_box) && e->get_team() != m_team) { e->hurt(svc, m_damage); }
+		if (m_hitbox.overlaps(e->get_collider().bounding_box) && e->get_team() != m_team && !e->is_invincible()) { e->hurt(svc, m_damage); }
 	}
 
 	if (!m_attributes.test(LaserAttributes::no_collision)) {
-		if (!player.is_intangible() && m_team != arms::Team::nani) { player.get_collider().handle_collider_collision(m_hitbox, true, {}, 0.1f); }
+		if (!player.is_intangible() && m_team != arms::Team::nani && is_active()) { player.get_collider().handle_collider_collision(m_hitbox, true, {}, 0.1f); }
 	}
 
 	// calculate laser end and spawn an effect there

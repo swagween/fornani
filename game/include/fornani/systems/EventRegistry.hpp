@@ -47,6 +47,7 @@ struct EventRegistry {
 	NewFileEvent new_file_event{};
 	ReloadSaveEvent reload_save_event{};
 	ReturnToMainMenuEvent return_to_main_menu_event{};
+	PauseEvent pause_event{};
 };
 
 } // namespace fornani

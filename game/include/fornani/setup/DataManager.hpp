@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
+#include <fornani/core/Fwd.hpp>
 #include <fornani/entities/npc/Vendor.hpp>
 #include <fornani/gui/MiniMap.hpp>
 #include <fornani/io/File.hpp>
@@ -15,18 +16,6 @@
 #include <fornani/world/Layer.hpp>
 #include <array>
 #include <string>
-
-namespace fornani::automa {
-struct ServiceProvider;
-}
-
-namespace fornani::config {
-class InputSystem;
-}
-
-namespace fornani::player {
-class Player;
-}
 
 namespace fornani {
 struct AppContext;
@@ -57,9 +46,11 @@ class DataManager final {
 
   public:
 	friend class fornani::Game;
-	explicit DataManager(automa::ServiceProvider& svc);
+	explicit DataManager(automa::ServiceProvider& svc, io::Loader& loader);
 	// game save
 	void load_data();
+	void load_map_data(dj::Json const& room_data);
+	void load_game_data(ResourceFinder& finder);
 	void save_progress(player::Player& player, int save_point_id);
 	void save_quests();
 	void save_dialogue_quests();
@@ -211,6 +202,8 @@ class DataManager final {
 	std::vector<util::QuestKey> quest_progressions{};
 	std::vector<std::string> m_biomes{};
 	std::unordered_map<int, std::string> m_map_labels{};
+
+	io::Loader* m_loader;
 
 	io::Logger m_logger{"data"};
 };

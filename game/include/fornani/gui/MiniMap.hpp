@@ -7,6 +7,7 @@
 #include <fornani/graphics/MapTexture.hpp>
 #include <fornani/gui/DottedLine.hpp>
 #include <fornani/io/Logger.hpp>
+#include <fornani/shader/FlatShader.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani::player {
@@ -64,6 +65,7 @@ class MiniMap final : public Flaggable<MiniMapFlags> {
 	[[nodiscard]] auto get_currently_hovered_room() const -> int { return m_currently_hovered_room; }
 
   private:
+	FlatShader m_flat_shader;
 	bool m_zoom_limit{};
 	bool m_pan_limit_x{};
 	bool m_pan_limit_y{};
@@ -72,6 +74,16 @@ class MiniMap final : public Flaggable<MiniMapFlags> {
 	float m_scale;
 	float m_speed;
 	float m_texture_scale{};
+
+	struct {
+		sf::Color tile{};
+		sf::Color border{};
+		sf::Color hovered_center{};
+		sf::Color hovered_border{};
+		sf::Color undiscovered_center{};
+		sf::Color undiscovered_border{};
+	} m_colors{};
+
 	Resolution m_resolution{};
 	sf::FloatRect m_extent{};
 	sf::Vector2f m_port_position{};

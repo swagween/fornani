@@ -18,18 +18,11 @@ LothAtWorm::LothAtWorm(automa::ServiceProvider& svc) : Cutscene(svc, 268, "loth_
 
 void LothAtWorm::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 	if (complete()) {
-		player.controller.unrestrict();
-		svc.state_flags.reset(automa::StateFlags::hide_hud);
-		svc.state_flags.reset(automa::StateFlags::no_menu);
-		svc.state_flags.reset(automa::StateFlags::cutscene);
-		svc.camera_controller.set_owner(graphics::CameraOwner::player);
 		svc.music_player.stop();
 		svc.music_player.load(svc.finder, "none");
 		svc.quest_table.progress_quest("mystery_of_pixiote", 1, 26801);
 		svc.music_player.play_looped();
-		flags.set(CutsceneFlags::delete_me);
-		player.set_flag(player::PlayerFlags::cutscene, false);
-		svc.camera_controller.constrain();
+		Cutscene::end(svc, player);
 		return;
 	}
 

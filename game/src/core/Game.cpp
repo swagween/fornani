@@ -19,6 +19,10 @@ static double average_frame_time{};
 
 Game::Game(char** argv, WindowManager& window, AppContext& context, capo::IEngine& audio_engine)
 	: m_context{&context}, services(argv, context, window, audio_engine), player(services), game_state(services, player, context, automa::MenuType::main), m_cursor{services, "mouse_cursor", {8, 8}}, m_screencap_timer{8} {
+	m_loading_screen.emplace(services);
+}
+
+void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2f player_position) {
 
 	/* Set up ImGui Context */
 	auto imgui_context = ImGui::CreateContext();
@@ -33,19 +37,18 @@ Game::Game(char** argv, WindowManager& window, AppContext& context, capo::IEngin
 	}
 
 	m_background = std::make_unique<graphics::Background>(services, "black");
-	m_wallpaper.setSize(window.f_screen_dimensions());
-}
+	m_wallpaper.setSize(services.window->f_screen_dimensions());
 
-void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2f player_position) {
-
-	services.data.load_localized_data(*m_context);
+	m_context->loader.add([&] { services.data.load_localized_data(*m_context); });
+	/*for (auto [i, save] : std::views::enumerate(services.data.files)) {
+		m_context->loader.add([&] { services.data.load_progress(player, static_cast<int>(i)); });
+	}*/
 
 	if (services.window->is_fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
 	services.set_editor(false);
 
 	measurements.win_size.x = services.window->get().getSize().x;
 	measurements.win_size.y = services.window->get().getSize().y;
-	auto entire_window = sf::View(sf::FloatRect{{}, sf::Vector2f{sf::VideoMode::getDesktopMode().size}});
 
 	if (demo) {
 		services.debug_flags.set(automa::DebugFlags::demo_mode);
@@ -67,9 +70,8 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 	services.stopwatch.stop();
 	services.stopwatch.print_time("game started");
 
+	services.window->get().setVisible(true);
 	while (services.window->get().isOpen()) {
-
-		static bool zooming{};
 
 		auto smp = random::percent_chance(10) ? 1 : 0;
 		rng_test.sample += smp;
@@ -80,13 +82,64 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			break;
 		}
 
-		services.ticker.start_frame();
+		// load assets
+		if (!m_context->loader.finished()) { NANI_LOG_INFO(m_logger, "Entered loading loop"); }
 
-		while (std::optional const event = services.window->get().pollEvent()) {
+		while (!m_context->loader.finished()) {
+			while (std::optional const event = services.window->get().pollEvent()) {
+				if (event->is<sf::Event::Closed>()) {
+					shutdown();
+					return;
+				}
+			}
+			m_context->loader.update();
+			services.window->get().clear(colors::ui_black);
+
+			draw_wallpaper();
+
+			if (m_loading_screen) { m_loading_screen->render(services.window->get(), m_context->loader.progress()); }
+
+			services.window->get().display();
+		}
+
+		if (m_loading_screen) {
+			m_loading_screen.reset();
+			services.ticker.reset();
+		}
+
+		auto& window = services.window->get();
+		services.ticker.start_frame();
+		auto t0 = std::chrono::steady_clock::now();
+		while (true) {
+			auto start = std::chrono::steady_clock::now();
+			auto event = window.pollEvent();
+			auto us = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start).count();
+
+			if (us > 10000) { NANI_LOG_WARN(m_logger, "pollEvent blocked for {} us (has event = {})", us, event.has_value()); }
+
+			if (!event) { break; }
+
+			// Log the event type here on the hitch frame if needed.
+			if (us > 10000) {
+				auto e = event->is<sf::Event::FocusLost>();
+				auto f = event->is<sf::Event::FocusGained>();
+				auto jc = event->is<sf::Event::JoystickConnected>();
+				auto jd = event->is<sf::Event::JoystickDisconnected>();
+				auto r = event->is<sf::Event::Resized>();
+				auto sc = event->is<sf::Event::SensorChanged>();
+				NANI_LOG_WARN(m_logger, "Event at hitch was FocusLost: {}", e);
+				NANI_LOG_WARN(m_logger, "Event at hitch was FocusGained: {}", f);
+				NANI_LOG_WARN(m_logger, "Event at hitch was JoystickConnected: {}", jc);
+				NANI_LOG_WARN(m_logger, "Event at hitch was JoystickDisconnected: {}", jd);
+				NANI_LOG_WARN(m_logger, "Event at hitch was Resized: {}", r);
+				NANI_LOG_WARN(m_logger, "Event at hitch was SensorChanged: {}", sc);
+			}
+
 			if (event->is<sf::Event::Closed>()) {
 				shutdown();
 				return;
 			}
+			if (event->is<sf::Event::FocusLost>()) { services.input_system.flush_inputs(); }
 
 			if (auto const* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
 				if (key_pressed->scancode == sf::Keyboard::Scancode::F12) { continue; }
@@ -116,7 +169,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 					auto view = services.window->get_view();
 					view.zoom(0.5f);
 					services.window->get().setView(view);
-					zooming = !zooming;
+					m_zooming = !m_zooming;
 				}
 #endif
 
@@ -128,16 +181,18 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 				auto jy = sf::Joystick::getAxisPosition(joystick_moved->joystickId, sf::Joystick::Axis::Y);
 				services.input_system.set_joystick_throttle(sf::Vector2f{jx, jy});
 			}
-			services.input_system.handle_event(*event);
+			if (window.hasFocus()) { services.input_system.handle_event(*event); }
 			ImGui::SFML::ProcessEvent(services.window->get(), *event);
 		}
 
 		SteamAPI_RunCallbacks();
 
+		auto t1 = std::chrono::steady_clock::now();
 		bool has_focus = services.window->get().hasFocus();
+		if (!has_focus) {}
 		services.ticker.tick([this, has_focus, &ctx_bar = ctx_bar, &services = services, &audio_engine = audio_engine] {
 			services.input_system.sync_mouse(services.window->get());
-			services.input_system.update();
+			if (has_focus) { services.input_system.update(); }
 			services.music_player.update();
 			if (services.input_system.digital(input::DigitalAction::menu_back).triggered && m_game_menu) {
 				if (m_game_menu.value()->get_current_state().is_ready()) {
@@ -164,6 +219,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			if (game_state.get_current_state().get_type() == automa::StateType::menu) { m_background->update(services); }
 			services.input_system.flush_mouse_input();
 		});
+
 		if (m_game_menu) {
 			m_game_menu.value()->get_current_state().frame_update(services);
 			m_game_menu.value()->get_current_state().clear_back_button();
@@ -188,14 +244,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		flags.test(GameFlags::playtest) || demo ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
 
 		// rendering
-		auto black = colors::black;
-		if (auto& themed_black = game_state.get_current_state().get_context().biome) { black = Color{services.data.biomes["properties"][*themed_black]["black"]}; }
-		m_wallpaper.setFillColor(black);
-		services.window->get().clear();
-		services.window->get().draw(m_wallpaper);
-		if (services.window->is_fullscreen()) { services.window->get().setView(entire_window); }
-		if (game_state.get_current_state().get_type() == automa::StateType::menu) { m_background->render(services, services.window->get(), {}); }
-		if (!zooming) { services.window->restore_view(); }
+		draw_wallpaper();
 
 		if (m_game_menu) {
 			m_game_menu.value()->get_current_state().render(services, services.window->get());
@@ -208,7 +257,9 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		if (services.input_system.is_mouse_active()) { services.window->get().draw(m_cursor); }
 
 		ImGui::SFML::Render(services.window->get());
+		auto t2 = std::chrono::steady_clock::now();
 		services.window->get().display();
+		auto t3 = std::chrono::steady_clock::now();
 
 		services.ticker.end_frame();
 
@@ -216,11 +267,30 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 
 		m_screencap_timer.update();
 		if (m_screencap_timer.is_almost_complete()) { take_screenshot(services.window->screencap, false); }
+
+		auto tpoll = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
+		auto ttick = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
+		auto trender = std::chrono::duration_cast<std::chrono::microseconds>(t3 - t2).count();
+		auto threshold = 20000;
+		if (tpoll > threshold || ttick > threshold || trender > threshold) { NANI_LOG_INFO(m_logger, "poll={}us tick={}us render={}us", tpoll, ttick, trender); }
 	}
 	shutdown();
 }
 
 void Game::shutdown() { ImGui::SFML::Shutdown(); }
+
+void Game::draw_wallpaper() {
+	auto entire_window = sf::View(sf::FloatRect{{}, sf::Vector2f{sf::VideoMode::getDesktopMode().size}});
+	auto black = colors::ui_black;
+	if (auto& themed_black = game_state.get_current_state().get_context().biome) { black = Color{services.data.biomes["properties"][*themed_black]["black"]}; }
+	m_wallpaper.setFillColor(black);
+	m_wallpaper.setSize(sf::Vector2f{services.window->get().getSize()});
+	services.window->get().clear();
+	if (services.window->is_fullscreen()) { services.window->get().setView(entire_window); }
+	services.window->get().draw(m_wallpaper);
+	if (game_state.get_current_state().get_type() == automa::StateType::menu) { m_background->render(services, services.window->get(), {}); }
+	if (!m_zooming) { services.window->restore_view(); }
+}
 
 void Game::playtester_portal(sf::RenderWindow& window) {
 	if (!flags.test(GameFlags::playtest)) { return; }

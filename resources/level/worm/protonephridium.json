@@ -38,10 +38,10 @@
           1,
           1
         ],
-        "id": 36,
+        "id": 29,
         "position": [
-          17,
-          6
+          6,
+          14
         ],
         "start_direction": [
           0,
@@ -54,10 +54,10 @@
           1,
           1
         ],
-        "id": 29,
+        "id": 36,
         "position": [
-          6,
-          14
+          11,
+          21
         ],
         "start_direction": [
           0,
@@ -174,6 +174,7 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": true,
+      "sky_limit": 0,
       "timer": false,
       "toxic": true
     },

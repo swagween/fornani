@@ -4,7 +4,32 @@
     "suite": [
       [
         {
-          "message": "Your father is right to be worried about you. Yours is too reckless a spirit!"
+          "messages": [
+            "Your father is right to be worried about you. Yours is too reckless a spirit!",
+            "Had I the jurisdiction to say so, I'd keep you in this village until the war against Skycorps comes to an end.",
+            "Do be careful out there, girl. These forests, while sacred, are perilous!"
+          ]
+        }
+      ]
+    ]
+  },
+  "2": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[4, 1]],
+          "message": "Blessed indeed!"
+        },
+        {
+          "message": "But this girl has wrought far too much headache for this tribe, Chief."
+        },
+        {
+          "codes": [[4, 0]],
+          "message": "Ever since she was a child and began spelunking wantonly in the sacred burial grounds of our tribe, she has been of great concern to me."
+        },
+        {
+          "message": "She ought not leave this village again!"
         }
       ]
     ]

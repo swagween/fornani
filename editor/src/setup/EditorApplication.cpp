@@ -10,7 +10,7 @@
 
 namespace pi {
 
-EditorApplication::EditorApplication(char** argv) : m_finder{argv}, m_services(argv, context, window, *m_engine), context{.settings{m_finder}, .localization{m_finder}, .version{game_info, m_finder}} {
+EditorApplication::EditorApplication(char** argv) : m_finder{argv}, m_services(argv, context, window, *m_engine), context{.settings{m_finder}, .localization{m_finder}, .version{game_info, m_finder}}, window{{1920, 1080}} {
 
 	// load app resources
 	game_info = *dj::Json::from_file((m_services.finder.paths.editor / "data/config/version.json").string().c_str());

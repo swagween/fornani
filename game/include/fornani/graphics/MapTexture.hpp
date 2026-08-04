@@ -23,12 +23,7 @@ enum class MapTextureFlags { current };
 enum class Resolution { high, medium, low };
 
 struct MapTextureLayer {
-	sf::RenderTexture center_texture{};
-	sf::RenderTexture border_texture{};
-	sf::RenderTexture hovered_center_texture{};
-	sf::RenderTexture hovered_border_texture{};
-	sf::RenderTexture undiscovered_center_texture{};
-	sf::RenderTexture undiscovered_border_texture{};
+	sf::RenderTexture texture{};
 };
 
 class MapTexture {
@@ -47,7 +42,7 @@ class MapTexture {
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return get_position() + get_dimensions() * 0.5f; }
 	[[nodiscard]] auto contains(sf::Vector2f point) const -> bool;
 
-	sf::RenderTexture& get(bool border = false, bool hovered = false, bool undiscovered = false);
+	sf::RenderTexture& get();
 	sf::Vector2f get_position() const;
 	sf::Vector2f get_dimensions() const;
 

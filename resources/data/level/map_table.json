@@ -704,6 +704,12 @@
     },
     {
       "folder": "overturned",
+      "label": "landing_point.json",
+      "region": "overturned",
+      "room_id": 270
+    },
+    {
+      "folder": "overturned",
       "label": "lower_glades.json",
       "region": "overturned",
       "room_id": 217
@@ -1073,6 +1079,12 @@
       "label": "test_area.json",
       "region": "toxic",
       "room_id": 900
+    },
+    {
+      "folder": "toxic",
+      "label": "workaround.json",
+      "region": "toxic",
+      "room_id": 467
     },
     {
       "folder": "trials",

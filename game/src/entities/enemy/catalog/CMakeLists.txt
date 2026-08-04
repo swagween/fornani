@@ -12,6 +12,7 @@ nani_add_sources(
         Frdog.cpp
         Golem.cpp
         Grappler.cpp
+        Grunt.cpp
         Hellion.cpp
         Hurtle.cpp
         Imp.cpp

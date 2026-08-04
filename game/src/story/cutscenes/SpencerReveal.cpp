@@ -18,12 +18,6 @@ SpencerReveal::SpencerReveal(automa::ServiceProvider& svc) : Cutscene(svc, 1310,
 
 void SpencerReveal::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 	if (complete()) {
-		player.controller.unrestrict();
-		svc.state_flags.reset(automa::StateFlags::hide_hud);
-		svc.state_flags.reset(automa::StateFlags::no_menu);
-		svc.state_flags.reset(automa::StateFlags::cutscene);
-		svc.camera_controller.set_owner(graphics::CameraOwner::player);
-		svc.camera_controller.constrain();
 		if (progress > 40) {
 			svc.quest_table.set_quest_progression("find_spencer", 11);
 			svc.quest_table.set_quest_progression("the_hoarder", 1);
@@ -32,8 +26,7 @@ void SpencerReveal::update(automa::ServiceProvider& svc, SceneContext& context, 
 			svc.quest_table.progress_quest("find_spencer", 1, 1310);
 		}
 		svc.music_player.resume();
-		player.set_flag(player::PlayerFlags::cutscene, false);
-		flags.set(CutsceneFlags::delete_me);
+		Cutscene::end(svc, player);
 		return;
 	}
 

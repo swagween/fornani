@@ -10,6 +10,7 @@ namespace fornani {
 
 class WindowManager {
   public:
+	WindowManager(sf::Vector2i const dimensions) : m_screen_dimensions{dimensions} {};
 	sf::RenderWindow& get() { return *m_window.get(); }
 	sf::View get_view() const { return game_view; }
 	sf::FloatRect get_viewport() const { return game_port; }

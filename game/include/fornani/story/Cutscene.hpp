@@ -18,7 +18,7 @@ class Console;
 
 namespace fornani {
 
-enum class CutsceneFlags { complete, started, delete_me };
+enum class CutsceneFlags { complete, started, delete_me, initialized };
 
 class Cutscene : public UniquePolymorphic {
   public:
@@ -42,6 +42,8 @@ class Cutscene : public UniquePolymorphic {
 	int id{};
 	struct {
 		bool no_player{};
+		bool stall_idle{};
+		bool hide_weapon{};
 		int target_state_on_end{};
 	} metadata{};
 	struct {

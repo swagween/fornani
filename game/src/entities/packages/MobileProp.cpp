@@ -21,7 +21,7 @@ void MobileProp::update(world::Map& map) {
 		get_collider().set_attribute(shape::ColliderAttributes::no_collision, false);
 		get_collider().set_attribute(shape::ColliderAttributes::no_map_collision, false);
 		get_collider().set_flag(shape::ColliderFlags::gravity, true);
-		get_collider().physics.gravity = 2.f;
+		get_collider().physics.gravity = 1.f;
 	} else {
 		get_collider().physics.set_friction_componentwise({0.8f, 0.8f});
 		get_collider().set_flag(shape::ColliderFlags::simple);

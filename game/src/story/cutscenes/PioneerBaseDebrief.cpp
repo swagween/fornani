@@ -25,17 +25,11 @@ void PioneerBaseDebrief::update(automa::ServiceProvider& svc, SceneContext& cont
 	if (m_flags.consume(PioneerBaseDebriefFlags::start)) { context.transition.start(); }
 
 	if (complete()) {
-		player.controller.unrestrict();
-		svc.state_flags.reset(automa::StateFlags::hide_hud);
-		svc.state_flags.reset(automa::StateFlags::no_menu);
-		svc.state_flags.reset(automa::StateFlags::cutscene);
-		svc.camera_controller.set_owner(graphics::CameraOwner::player);
 		context.transition.end();
-		flags.set(CutsceneFlags::delete_me);
 		svc.quest_table.set_quest_progression("defeat_skycorps", 1);
 		svc.music_player.load(svc.finder, "bryns_turn");
-		player.set_flag(player::PlayerFlags::cutscene, false);
 		svc.music_player.play_looped();
+		Cutscene::end(svc, player);
 		return;
 	}
 

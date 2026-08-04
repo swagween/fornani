@@ -56,17 +56,13 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 		svc.state_controller.switch_rooms(1111, metadata.target_state_on_end, context.transition);
 		svc.state_controller.player_position = sf::Vector2f{3.f, 8.f} * constants::f_cell_size;
 		svc.state_controller.actions.set(automa::Actions::custom_player_position);
-		svc.state_flags.reset(automa::StateFlags::no_menu);
-		svc.state_flags.reset(automa::StateFlags::cutscene);
 		player.set_sleeping(true);
 		player.set_sleep_timer(512);
 		svc.app_flags.set(automa::AppFlags::custom_map_start);
 		svc.world_clock.set_time(17, 30);
 		svc.events.transition_event.dispatch();
-		flags.set(CutsceneFlags::delete_me);
 		svc.quest_table.set_quest_progression("retrieve_lynx", 1);
-		svc.camera_controller.constrain();
-		svc.camera_controller.set_owner(graphics::CameraOwner::player);
+		Cutscene::end(svc, player);
 		return;
 	}
 
@@ -85,6 +81,7 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 	svc.state_flags.set(automa::StateFlags::hide_hud);
 	svc.state_flags.set(automa::StateFlags::no_menu);
 	svc.state_flags.set(automa::StateFlags::cutscene);
+	player.set_flag(player::PlayerFlags::cutscene);
 	auto npcs = map.get_entities<NPC>();
 	auto nit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 22; });
 	auto mit = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 7; });
@@ -102,6 +99,7 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 	if (context.console.has_value()) { gus->disengage(); }
 	auto camera_focus = (nimbus->get_collider().get_center() + gus->get_collider().get_center()) * 0.5f + sf::Vector2f{0.f, 49.f};
 	if (progress >= 17) { camera_focus = nimbus->get_collider().get_center() + sf::Vector2f{0.f, 49.f}; }
+	if (progress > 20) { camera_focus = nimbus->get_collider().get_center() + sf::Vector2f{200.f, 60.f}; }
 	svc.camera_controller.set_owner(graphics::CameraOwner::system);
 	svc.camera_controller.set_position(camera_focus);
 

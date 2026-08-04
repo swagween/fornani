@@ -25,7 +25,7 @@ class EditorApplication {
 	EditorContext editor_context{};
 	dj::Json app_settings{};
 	dj::Json user_data{};
-	fornani::WindowManager window{};
+	fornani::WindowManager window;
 	std::unique_ptr<capo::IEngine> m_engine{capo::create_engine()};
 
 	fornani::automa::ServiceProvider m_services;

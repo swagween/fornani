@@ -8,6 +8,7 @@ nani_add_sources(
         Drawable.cpp
         HelpText.cpp
         Indicator.cpp
+        LoadingScreen.cpp
         MapTexture.cpp
         MenuTheme.cpp
         Weather.cpp

@@ -14,6 +14,26 @@
         ]
       }
     ],
+    "cutscene_triggers": [
+      {
+        "contingencies": [
+          {
+            "requirement": 0,
+            "strict": true,
+            "tag": "reunite_with_dad"
+          }
+        ],
+        "dimensions": [
+          2,
+          11
+        ],
+        "id": 407,
+        "position": [
+          17,
+          14
+        ]
+      }
+    ],
     "npcs": [
       {
         "background": false,
@@ -54,10 +74,6 @@
         ],
         "start_busy": false,
         "suites": [
-          [
-            1,
-            2
-          ],
           [
             2
           ]

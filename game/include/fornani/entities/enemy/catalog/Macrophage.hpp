@@ -8,7 +8,7 @@
 
 namespace fornani::enemy {
 
-enum class MacrophageVariant { monocyte, epithelioid };
+enum class MacrophageVariant { monocyte, epithelioid, lamina };
 enum class MacrophageState { idle };
 enum class MacrophageFlags { caught_player, swallowed_player, released_player, broken };
 
@@ -21,6 +21,9 @@ class Macrophage final : public Enemy, public StateMachine<MacrophageState> {
 
 	fsm::StateFunction state_function = std::bind(&Macrophage::update_idle, this);
 	fsm::StateFunction update_idle();
+
+  private:
+	void debug();
 
   private:
 	automa::ServiceProvider* m_services;

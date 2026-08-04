@@ -9,10 +9,11 @@ namespace fornani::vfx {
 
 constexpr auto y_dampen_v = 0.3f;
 
-Chain::Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2f position, int num_links, bool reversed, float spacing, bool linked) : m_root(position), m_external_dampen{0.07f} {
+Chain::Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2f position, int num_links, bool reversed, float spacing, bool linked)
+	: m_root(position), parameters{.resistance{0.85f}, .tensile_strength{0.3f}, .rigidity{0.7f}, .external_dampen{0.07f}, .gravity{1.f}} {
 	if (!linked) {
 		for (int i{0}; i < num_links; ++i) { links.push_back(Spring({params})); }
-		m_grav = params.grav;
+		parameters.gravity = params.grav;
 		int ctr{};
 		auto sign = reversed ? -1.f : 1.f;
 		for (auto& link : links) {
@@ -29,7 +30,7 @@ Chain::Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2f
 	} else {
 		flags.set(ChainFlags::linked);
 		for (int i{0}; i < num_links; ++i) { links.push_back(Spring({params})); }
-		m_grav = params.grav;
+		parameters.gravity = params.grav;
 		auto sign = reversed ? -1.f : 1.f;
 		if (links.empty()) { return; }
 		float angleStep = 2.f * std::numbers::pi / num_links;
@@ -72,11 +73,11 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 			}
 			if (link.sensor.within_bounds(player.get_collider().bounding_box)) {
 				link.sensor.activate();
-				external_force = {player.get_collider().physics.velocity.x * m_external_dampen * dampen, player.get_collider().physics.velocity.y * m_external_dampen * y_dampen_v * dampen};
+				external_force = {player.get_collider().physics.velocity.x * parameters.external_dampen * dampen, player.get_collider().physics.velocity.y * parameters.external_dampen * y_dampen_v * dampen};
 			} else {
 				link.sensor.deactivate();
 			}
-			link.update(svc, m_grav, external_force, !link.is_locked(), m_free ? true : ctr == links.size() - 1);
+			link.update(svc, parameters.gravity, external_force, !link.is_locked(), m_free ? true : ctr == links.size() - 1);
 			++ctr;
 		}
 
@@ -108,12 +109,11 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 
 	// integrate particles
-	for (std::size_t i = 0; i < links.size(); ++i) { links[i].update_constrained(svc, m_grav, external_forces[i]); }
+	for (std::size_t i = 0; i < links.size(); ++i) { links[i].update_constrained(svc, parameters.gravity, external_forces[i]); }
 
 	if (!flags.test(ChainFlags::no_collision)) {
 		// collision
 		m_avg_velocity = {};
-		m_resistance = 0.85f;
 		m_num_collisions = 0;
 		for (auto& link : links) {
 			sf::Vector2f p = link.get_bob();
@@ -173,7 +173,7 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 				float strength = error * 0.005f;
 
 				// boost correction when too close to center
-				if (t < 0.7f) {
+				if (t < parameters.rigidity) {
 					float boost = (1.f - t) * (1.f - t);
 					strength *= (1.f + boost * 10.0f);
 				}
@@ -190,7 +190,7 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		for (auto& link : links) { center += link.get_bob(); }
 		center /= static_cast<float>(links.size());
 		sf::Vector2f offset = *m_centroid - center;
-		for (auto& link : links) { link.set_bob(link.get_bob() + offset * 0.3f); }
+		for (auto& link : links) { link.set_bob(link.get_bob() + offset * parameters.tensile_strength); }
 	}
 }
 
@@ -260,7 +260,7 @@ void Chain::simulate(automa::ServiceProvider& svc, int amount) {
 			if (!link.is_locked()) {
 				if (link.cousin) { link.set_anchor(link.cousin.value()->get_bob()); }
 			}
-			link.simulate(m_grav, !link.is_locked(), i == links.size() - 1);
+			link.simulate(parameters.gravity, !link.is_locked(), i == links.size() - 1);
 		}
 	}
 }

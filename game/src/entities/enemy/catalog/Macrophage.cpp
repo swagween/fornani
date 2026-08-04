@@ -8,8 +8,12 @@
 namespace fornani::enemy {
 
 Macrophage::Macrophage(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, map, "macrophage"), m_services(&svc), m_map(&map), m_body{std::make_unique<vfx::Chain>(svc, variant == 0 ? "macrophage_wall" : "epithelioid_wall", sf::Vector2i{14, 14}, vfx::SpringParameters{0.999f, 0.08f, 16.5f, 4.f},
-																										get_collider().get_center(), variant == 0 ? 32 : 20, false, 16.5f, true)},
+	: Enemy(svc, map, "macrophage"), m_services(&svc), m_map(&map),
+	  m_body{std::make_unique<vfx::Chain>(svc, variant == 0 ? "macrophage_wall" : "epithelioid_wall", sf::Vector2i{14, 14}, vfx::SpringParameters{0.999f, 0.08f, 16.5f, 4.f}, get_collider().get_center(),
+										  variant == 0	 ? 32
+										  : variant == 1 ? 20
+														 : 26,
+										  false, 16.5f, true)},
 	  m_variant{static_cast<MacrophageVariant>(variant)} {
 	NANI_LOG_DEBUG(m_logger, "Size: {}", m_body->links.size());
 	p_animatable.set_animations({{"idle", {0, 4, 40, -1}}});
@@ -27,6 +31,15 @@ Macrophage::Macrophage(automa::ServiceProvider& svc, world::Map& map, int varian
 		m_body->set_num_angles(4);
 		flags.general.set(GeneralFlags::gravity);
 		flags.general.set(GeneralFlags::hurt_on_contact);
+	}
+	if (m_variant == MacrophageVariant::lamina) {
+		get_collider().physics.set_friction_componentwise({0.99f, 0.99f});
+		m_body->parameters = vfx::ChainParameters{10.f, 1.1f, 10.f, 1.f, 4.f};
+		m_grab.set_constant_radius(68.f);
+		m_body->set_num_angles(4);
+		flags.general.set(GeneralFlags::gravity);
+		flags.general.set(GeneralFlags::hurt_on_contact);
+		get_collider().physics.gravity = 10.f;
 	}
 }
 
@@ -95,11 +108,26 @@ void Macrophage::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 	Enemy::render(svc, win, cam);
 	if (died()) { return; }
 	if (svc.greyblock_mode() && m_grab.sensor.active()) { m_grab.render(win, cam); }
+	debug();
 }
 
 fsm::StateFunction Macrophage::update_idle() {
 	p_state.actual = MacrophageState::idle;
 	return MACROPHAGE_BIND(update_idle);
+}
+
+void Macrophage::debug() {
+	static auto sz = ImVec2{180.f, 250.f};
+	ImGui::SetNextWindowSize(sz);
+	if (ImGui::Begin("Macrophage Debug")) {
+		ImGui::SeparatorText("Controls");
+		ImGui::SliderFloat("Resistance", &m_body->parameters.resistance, 0.0f, 10.f, "%.3f");
+		ImGui::SliderFloat("Tensile", &m_body->parameters.tensile_strength, 0.0f, 10.f, "%.3f");
+		ImGui::SliderFloat("Rigidity", &m_body->parameters.rigidity, 0.0f, 10.f, "%.3f");
+		ImGui::SliderFloat("Dampen", &m_body->parameters.external_dampen, 0.0f, 1.f, "%.3f");
+		ImGui::SliderFloat("Gravity", &m_body->parameters.gravity, 0.0f, 10.f, "%.3f");
+		ImGui::End();
+	}
 }
 
 bool Macrophage::change_state(MacrophageState next, anim::Parameters params) {

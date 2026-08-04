@@ -13,15 +13,27 @@ Cutscene::Cutscene(automa::ServiceProvider& svc, int id, std::string_view label)
 	auto& in_data = svc.data.cutscene[label];
 	metadata.no_player = static_cast<bool>(in_data["no_player"].as_bool());
 	metadata.target_state_on_end = in_data["target_state_on_end"].as<int>();
+	metadata.stall_idle = in_data["stall_idle"].as<bool>();
+	metadata.hide_weapon = in_data["hide_weapon"].as<bool>();
 	svc.events.set_cutscene_progression_event.attach_to(p_slot, &Cutscene::set_progress, this);
 }
 
 void Cutscene::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
+
+	if (!flags.test(CutsceneFlags::initialized)) {
+		player.set_idle();
+		flags.set(CutsceneFlags::initialized);
+	}
+
 	svc.state_flags.set(automa::StateFlags::hide_hud);
 	svc.state_flags.set(automa::StateFlags::no_menu);
 	svc.state_flags.set(automa::StateFlags::cutscene);
+
+	if (metadata.stall_idle) { player.stall_idle_timer(); }
+	if (metadata.hide_weapon) { player.set_flag(player::PlayerFlags::show_weapon, false); }
+	player.set_flag(player::PlayerFlags::cutscene);
+
 	svc.camera_controller.free();
-	player.stall_idle_timer();
 	cooldowns.beginning.update();
 	cooldowns.pause.update();
 	cooldowns.long_pause.update();
@@ -39,6 +51,7 @@ void Cutscene::end(automa::ServiceProvider& svc, player::Player& player) {
 	svc.camera_controller.constrain();
 	svc.camera_controller.set_owner(graphics::CameraOwner::player);
 	flags.set(CutsceneFlags::delete_me);
+	player.set_flag(player::PlayerFlags::cutscene, false);
 }
 
 void Cutscene::set_progress(int const to) {

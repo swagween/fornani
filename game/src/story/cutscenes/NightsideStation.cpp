@@ -16,16 +16,11 @@ NightsideStation::NightsideStation(automa::ServiceProvider& svc) : Cutscene(svc,
 
 void NightsideStation::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 	if (complete()) {
-		player.controller.unrestrict();
-		svc.state_flags.reset(automa::StateFlags::hide_hud);
-		svc.state_flags.reset(automa::StateFlags::no_menu);
-		svc.state_flags.reset(automa::StateFlags::cutscene);
-		svc.camera_controller.set_owner(graphics::CameraOwner::player);
 		svc.music_player.stop();
 		svc.music_player.load(svc.finder, "wind");
 		svc.music_player.play_looped();
 		svc.quest_table.progress_quest("open_nightside_station", 1, 901);
-		flags.set(CutsceneFlags::delete_me);
+		Cutscene::end(svc, player);
 		return;
 	}
 

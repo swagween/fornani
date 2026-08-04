@@ -44,7 +44,7 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	case 101: cutscenes.push_back(std::make_unique<BitCell>(svc)); break;
 	case 117: cutscenes.push_back(std::make_unique<EncounterMinigus>(svc)); break;
 	case 227: cutscenes.push_back(std::make_unique<EncounterLynx>(svc)); break;
-	case 6001: cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc)); break;
+	case 601: cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc)); break;
 	case 509: cutscenes.push_back(std::make_unique<BrynPostMiaag>(svc)); break;
 	case 300: cutscenes.push_back(std::make_unique<PioneerBaseDebrief>(svc, map, player)); break;
 	case 901: cutscenes.push_back(std::make_unique<NightsideStation>(svc)); break;

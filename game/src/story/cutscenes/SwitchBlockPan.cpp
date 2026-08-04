@@ -15,12 +15,7 @@ fornani::SwitchBlockPan::SwitchBlockPan(automa::ServiceProvider& svc, int block_
 void SwitchBlockPan::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 
 	if (cooldowns.end.is_almost_complete()) {
-		player.controller.unrestrict();
-		svc.state_flags.reset(automa::StateFlags::no_menu);
-		svc.state_flags.reset(automa::StateFlags::cutscene);
-		svc.camera_controller.set_owner(graphics::CameraOwner::player);
-		svc.camera_controller.constrain();
-		flags.set(CutsceneFlags::delete_me);
+		Cutscene::end(svc, player);
 		return;
 	}
 

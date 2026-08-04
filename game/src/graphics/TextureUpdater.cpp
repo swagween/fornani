@@ -4,112 +4,109 @@
 namespace fornani::graphics {
 
 void TextureUpdater::load_pixel_map(sf::Texture& map_texture) {
-	map.clear();
-	map_colors.clear();
-	auto map_data = map_texture.copyToImage();
-	auto map_image_data = map_data.getPixelsPtr();
-	int width = map_data.getSize().x;
-	int height = map_data.getSize().y;
-	int total_array_size = width * height * 4;
-	for (int i = 0; i < total_array_size; ++i) {
-		sf::Color current_pixel{};
-		if (i % 4 == 0) {
-			std::uint8_t r = map_image_data[i];
-			std::uint8_t g = map_image_data[i + 1];
-			std::uint8_t b = map_image_data[i + 2];
-			std::uint8_t a = map_image_data[i + 3];
-			current_pixel = sf::Color{r, g, b, a};
-			map_colors.push_back(current_pixel);
-		}
-		map.push_back(i);
+	auto const image = map_texture.copyToImage();
+	auto const* pixels = image.getPixelsPtr();
+
+	auto const size = image.getSize();
+	auto const pixel_count = static_cast<std::size_t>(size.x) * size.y;
+
+	m_color_to_index.clear();
+	m_color_to_index.reserve(pixel_count);
+
+	for (std::size_t pixel{}; pixel < pixel_count; ++pixel) {
+		auto const i = pixel * 4;
+		auto const key = (static_cast<std::uint32_t>(pixels[i + 0]) << 24) | (static_cast<std::uint32_t>(pixels[i + 1]) << 16) | (static_cast<std::uint32_t>(pixels[i + 2]) << 8) | static_cast<std::uint32_t>(pixels[i + 3]);
+		m_color_to_index.emplace(key, pixel);
 	}
 }
 
 void TextureUpdater::switch_to_palette(sf::Texture& palette_texture) {
-	dynamic_texture = base_texture;
 	load_palette(palette_texture);
-	update_texture(dynamic_texture);
+
+	update_texture();
+
+	m_dynamic_texture.update(m_dynamic_pixels.data());
 }
+
 void TextureUpdater::load_base_texture(sf::Texture& base) {
-	base_texture = base;
-	dynamic_texture = base;
+
+	auto image = base.copyToImage();
+	m_size = image.getSize();
+	auto const pixel_count = static_cast<std::size_t>(m_size.x) * m_size.y;
+	auto const* pixels = image.getPixelsPtr();
+	m_palette_indices.resize(pixel_count);
+
+	for (std::size_t pixel{}; pixel < pixel_count; ++pixel) {
+		auto const i = pixel * 4;
+		if (pixels[i + 3] == 0) {
+			m_palette_indices[pixel] = 0xFF;
+			continue;
+		}
+
+		auto const key = (static_cast<std::uint32_t>(pixels[i + 0]) << 24) | (static_cast<std::uint32_t>(pixels[i + 1]) << 16) | (static_cast<std::uint32_t>(pixels[i + 2]) << 8) | static_cast<std::uint32_t>(pixels[i + 3]);
+		auto const it = m_color_to_index.find(key);
+		if (it == m_color_to_index.end()) {
+			// NANI_LOG_ERROR(m_logger, "Unknown palette color in base texture: ({}, {}, {}, {})", pixels[i + 0], pixels[i + 1], pixels[i + 2], pixels[i + 3]);
+			continue;
+		}
+
+		m_palette_indices[pixel] = static_cast<std::uint8_t>(it->second);
+	}
+
+	auto const count = m_size.x * m_size.y * 4;
+	m_dynamic_pixels.resize(count);
+	if (!m_dynamic_texture.loadFromImage(image)) { NANI_LOG_ERROR(m_logger, "Failed to load image in load_base_texture!"); }
 }
 
 void TextureUpdater::load_palette(sf::Texture& palette_texture) {
-	palette.clear();
-	palette_colors.clear();
-	auto palette_data = palette_texture.copyToImage();
-	auto palette_image_data = palette_data.getPixelsPtr();
-	int width = palette_data.getSize().x;
-	int height = palette_data.getSize().y;
-	int total_array_size = width * height * 4;
-	for (int i = 0; i < total_array_size; ++i) {
-		sf::Color current_pixel{};
-		if (i % 4 == 0) {
-			std::uint8_t r = palette_image_data[i];
-			std::uint8_t g = palette_image_data[i + 1];
-			std::uint8_t b = palette_image_data[i + 2];
-			std::uint8_t a = palette_image_data[i + 3];
-			current_pixel = sf::Color{r, g, b, a};
-			palette_colors.push_back(current_pixel);
-		}
-		palette.push_back(i);
+	auto const image = palette_texture.copyToImage();
+	auto const* pixels = image.getPixelsPtr();
+
+	auto const pixel_count = static_cast<std::size_t>(image.getSize().x) * image.getSize().y;
+
+	m_palette_colors.resize(pixel_count);
+
+	for (std::size_t pixel{}; pixel < pixel_count; ++pixel) {
+
+		auto const i = pixel * 4;
+
+		m_palette_colors[pixel] = sf::Color{pixels[i + 0], pixels[i + 1], pixels[i + 2], pixels[i + 3]};
 	}
 }
-void TextureUpdater::update_texture(sf::Texture& texture) {
 
-	// set image data with current texture
-	auto texture_data = texture.copyToImage();
-	auto image_data = texture_data.getPixelsPtr();
-	int width = texture_data.getSize().x;
-	int height = texture_data.getSize().y;
-	int total_array_size = width * height * 4;
+void TextureUpdater::update_texture() {
+	for (std::size_t pixel{}; pixel < m_palette_indices.size(); ++pixel) {
+		auto const index = m_palette_indices[pixel];
+		auto const i = pixel * 4;
 
-	// iterate over passed texture
-	for (int i = 0; i < total_array_size; ++i) {
-
-		// fill image
-		std::uint8_t index = i;
-
-		sf::Color current_pixel{};
-		int to_index{};
-
-		// next pixel
-		if (i % 4 == 0) {
-			current_pixel = {static_cast<std::uint8_t>(image_data[i]), static_cast<std::uint8_t>(image_data[i + 1]), static_cast<std::uint8_t>(image_data[i + 2]), static_cast<std::uint8_t>(image_data[i + 3])};
-
-			// find this pixels home index
-			for (int j = 0; j < map_colors.size(); ++j) {
-				// found base pixel to map, i is where we need to check in the new palette
-				sf::Color map_check = map_colors.at(j);
-				if (map_check == current_pixel) { to_index = j; }
-			}
-			// found, it's to_index
-			// get the color at to_index from our new palette
-			sf::Color to_color = palette_colors.at(to_index);
-			image.push_back(to_color.r);
-			image.push_back(to_color.g);
-			image.push_back(to_color.b);
-			image.push_back(to_color.a);
+		if (index == 0xFF) {
+			m_dynamic_pixels[i + 0] = 0;
+			m_dynamic_pixels[i + 1] = 0;
+			m_dynamic_pixels[i + 2] = 0;
+			m_dynamic_pixels[i + 3] = 0;
+			continue;
 		}
-	}
 
-	// overwrite the texture
-	texture.update(image.data());
-	image.clear();
+		auto const& color = m_palette_colors[index];
+
+		m_dynamic_pixels[i + 0] = color.r;
+		m_dynamic_pixels[i + 1] = color.g;
+		m_dynamic_pixels[i + 2] = color.b;
+		m_dynamic_pixels[i + 3] = color.a;
+	}
 }
 
 void graphics::TextureUpdater::debug_render(sf::RenderWindow& win, sf::Vector2f& campos) {
 	debug.setSize({8.f, 8.f});
 	int i{};
-	for (auto& color : map_colors) {
+	for (auto& color : m_map_colors) {
 		debug.setFillColor(color);
 		debug.setPosition({i * 8.f, 0.f});
 		win.draw(debug);
 		++i;
 	}
 	i = 0;
-	for (auto& color : palette_colors) {
+	for (auto& color : m_palette_colors) {
 		debug.setFillColor(color);
 		debug.setPosition({i * 8.f, 10.f});
 		win.draw(debug);
@@ -117,6 +114,6 @@ void graphics::TextureUpdater::debug_render(sf::RenderWindow& win, sf::Vector2f&
 	}
 }
 
-sf::Texture& TextureUpdater::get_dynamic_texture() { return dynamic_texture; }
+sf::Texture& TextureUpdater::get_dynamic_texture() { return m_dynamic_texture; }
 
-} // namespace graphics
+} // namespace fornani::graphics

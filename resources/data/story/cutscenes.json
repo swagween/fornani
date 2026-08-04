@@ -9,5 +9,9 @@
   "retrieve_lynx": {
     "no_player": true,
     "target_state_on_end": 1001
+  },
+  "family_reunion": {
+    "stall_idle": true,
+    "hide_weapon": true
   }
 }

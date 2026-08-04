@@ -3,6 +3,17 @@
 
 namespace fornani::util {
 
+void Ticker::reset() {
+	current_time = Clk::now();
+
+	dt = Sec::zero();
+	accumulator = Sec::zero();
+	residue = Sec::zero();
+
+	integrations = 0;
+	calls_per_frame = 0;
+}
+
 void Ticker::start_frame() {
 	++num_frames;
 	total_seconds_passed += dt;

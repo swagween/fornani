@@ -215,8 +215,12 @@ void Collider::detect_map_collision(world::Map& map) {
 	flags.state.reset(State::tickwise_ramp_collision);
 
 	auto& grid = map.get_middleground()->grid;
-	auto top = map.get_index_at_position(p_vicinity.vertices.at(0));
-	auto bottom = map.get_index_at_position(p_vicinity.vertices.at(3));
+	auto tt = p_vicinity.vertices.at(0);
+	tt.y = std::clamp(tt.y, constants::small_value, tt.y);
+	auto top = map.get_index_at_position(tt);
+	auto bt = p_vicinity.vertices.at(3);
+	bt.y = std::clamp(bt.y, constants::small_value, bt.y);
+	auto bottom = map.get_index_at_position(bt);
 	auto right = map.get_index_at_position(p_vicinity.vertices.at(1)) - top;
 	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(map.dimensions.x)) {
 		auto left{0};

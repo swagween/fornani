@@ -18,6 +18,7 @@
 #include <fornani/entities/enemy/catalog/Eyebot.hpp>
 #include <fornani/entities/enemy/catalog/Frdog.hpp>
 #include <fornani/entities/enemy/catalog/Grappler.hpp>
+#include <fornani/entities/enemy/catalog/Grunt.hpp>
 #include <fornani/entities/enemy/catalog/Hellion.hpp>
 #include <fornani/entities/enemy/catalog/Hulmet.hpp>
 #include <fornani/entities/enemy/catalog/Hurtle.hpp>
@@ -78,6 +79,7 @@ EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
 	EnemyRegistry::register_factory(35, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Nimbus>(svc, map); });
 	EnemyRegistry::register_factory(36, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Macrophage>(svc, map, p.variant); });
 	EnemyRegistry::register_factory(37, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Antibody>(svc, map, p.variant); });
+	EnemyRegistry::register_factory(38, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Grunt>(svc, map, p.variant); });
 }
 
 void EnemyCatalog::update() {

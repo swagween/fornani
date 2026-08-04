@@ -33,20 +33,14 @@ void MapTexture::bake(dj::Json const& in) {
 		auto const med_resolution_scale = 2;
 
 		auto u_dimensions = sf::Vector2u{map_dim};
-		if (!layer.center_texture.resize(u_dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
-		layer.center_texture.clear(sf::Color::Transparent);
-		if (!layer.border_texture.resize(u_dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
-		layer.border_texture.clear(sf::Color::Transparent);
-		if (!layer.hovered_center_texture.resize(u_dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
-		layer.hovered_center_texture.clear(sf::Color::Transparent);
-		if (!layer.hovered_border_texture.resize(u_dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
-		layer.hovered_border_texture.clear(sf::Color::Transparent);
-		if (!layer.undiscovered_center_texture.resize(u_dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
-		layer.undiscovered_center_texture.clear(sf::Color::Transparent);
-		if (!layer.undiscovered_border_texture.resize(u_dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
-		layer.undiscovered_border_texture.clear(sf::Color::Transparent);
+		if (!layer.texture.resize(u_dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
+		layer.texture.clear(sf::Color::Transparent);
 
-		for (auto [j, tile] : std::views::enumerate(in["tile"]["layers"][in["tile"]["middleground"].as<int>()].as_array())) {
+		auto const& layers = in_tile["layers"];
+		auto const middleground = in_tile["middleground"].as<int>();
+		auto const& tiles = layers[middleground].as_array();
+
+		for (auto [j, tile] : std::views::enumerate(tiles)) {
 			if (lores) {
 				if (j % low_resolution_scale == 0 || j % (u_dimensions.x * low_resolution_scale) > u_dimensions.x) { continue; }
 			}
@@ -66,30 +60,11 @@ void MapTexture::bake(dj::Json const& in) {
 				draw_plat ? m_tile_box.setScale({res_scale, res_scale * 0.75f}) : m_tile_box.setScale({res_scale, res_scale});
 				draw_plat ? m_tile_box.setOrigin({0.0f, -0.25f * res_scale * m_scale}) : m_tile_box.setOrigin({});
 
-				layer.center_texture.draw(m_tile_box);
-
-				m_tile_box.setFillColor(m_hovered_center_color);
-				layer.hovered_center_texture.draw(m_tile_box);
-
-				m_tile_box.setFillColor(m_undiscovered_center_color);
-				layer.undiscovered_center_texture.draw(m_tile_box);
-
-				m_tile_box.setFillColor(m_border_color);
-				layer.border_texture.draw(m_tile_box);
-
-				m_tile_box.setFillColor(m_hovered_border_color);
-				layer.hovered_border_texture.draw(m_tile_box);
-
-				m_tile_box.setFillColor(m_undiscovered_border_color);
-				layer.undiscovered_border_texture.draw(m_tile_box);
+				layer.texture.draw(m_tile_box);
 			}
 		}
-		layer.border_texture.display();
-		layer.center_texture.display();
-		layer.hovered_border_texture.display();
-		layer.hovered_center_texture.display();
-		layer.undiscovered_border_texture.display();
-		layer.undiscovered_center_texture.display();
+
+		layer.texture.display();
 	}
 }
 
@@ -107,10 +82,8 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 	auto const& middleground = map.get_middleground();
 	auto const& obscuring = map.get_obscuring_layer();
 	for (auto [i, layer] : std::views::enumerate(m_layers)) {
-		if (!layer.center_texture.resize(map.dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
-		layer.center_texture.clear(sf::Color::Transparent);
-		if (!layer.border_texture.resize(map.dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
-		layer.border_texture.clear(sf::Color::Transparent);
+		if (!layer.texture.resize(map.dimensions * u_scale)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
+		layer.texture.clear(sf::Color::Transparent);
 
 		for (auto& cell : middleground->grid.cells) {
 			auto obscured = obscuring->grid.cells.at(cell.one_d_index).is_occupied() && map.has_obscuring_layer(); // not sure if i want to use this yet
@@ -121,13 +94,13 @@ void MapTexture::bake(automa::ServiceProvider& svc, world::Map& map, int room, f
 				draw_plat ? m_tile_box.setFillColor(colors::pioneer_dark_red) : m_tile_box.setFillColor(colors::pioneer_dark_red);
 				draw_plat ? m_tile_box.setScale({1.f, 0.75f}) : m_tile_box.setScale({1.f, 1.f});
 				draw_plat ? m_tile_box.setOrigin({0.0f, -0.25f * m_scale}) : m_tile_box.setOrigin({});
-				layer.center_texture.draw(m_tile_box);
+				layer.texture.draw(m_tile_box);
 				m_tile_box.setFillColor(m_border_color);
-				layer.border_texture.draw(m_tile_box);
+				layer.texture.draw(m_tile_box);
 			}
 		}
-		layer.border_texture.display();
-		layer.center_texture.display();
+		layer.texture.display();
+		layer.texture.display();
 	}
 }
 
@@ -138,10 +111,7 @@ auto MapTexture::contains(sf::Vector2f point) const -> bool {
 	return true;
 }
 
-sf::RenderTexture& MapTexture::get(bool border, bool hovered, bool undiscovered) {
-	if (undiscovered) { return border ? current_layer().undiscovered_border_texture : current_layer().undiscovered_center_texture; }
-	return border ? (hovered ? current_layer().hovered_border_texture : current_layer().border_texture) : (hovered ? current_layer().hovered_center_texture : current_layer().center_texture);
-}
+sf::RenderTexture& MapTexture::get() { return current_layer().texture; }
 
 sf::Vector2f MapTexture::get_position() const { return sf::Vector2f(static_cast<float>(m_global_offset.x), static_cast<float>(m_global_offset.y)); }
 

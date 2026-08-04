@@ -7,6 +7,8 @@
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/Background.hpp>
+#include <fornani/graphics/LoadingScreen.hpp>
+#include <fornani/io/Loader.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/setup/AppContext.hpp>
 #include <fornani/utils/BitFlags.hpp>
@@ -17,7 +19,7 @@
 namespace fornani {
 
 class WindowManager;
-enum class GameFlags { playtest, in_game, draw_cursor };
+enum class GameFlags { playtest, in_game, draw_cursor, waited };
 
 class Game final {
   public:
@@ -25,6 +27,7 @@ class Game final {
 	void run(capo::IEngine& audio_engine, bool demo = false, int room_id = 100, std::filesystem::path levelpath = std::filesystem::path{}, sf::Vector2f player_position = {});
 	void set_file(int to) { services.editor_settings.save_file = to; }
 	void shutdown();
+	void draw_wallpaper();
 
 	util::BitFlags<GameFlags> flags{};
 
@@ -37,6 +40,7 @@ class Game final {
 	void restart_trial(std::filesystem::path const& levelpath);
 
   private:
+	std::optional<LoadingScreen> m_loading_screen{};
 	AppContext* m_context;
 
 	automa::ServiceProvider services;
@@ -63,6 +67,8 @@ class Game final {
 	sf::RectangleShape m_wallpaper{};
 
 	io::Logger m_logger{"core"};
+
+	bool m_zooming{};
 };
 
 } // namespace fornani

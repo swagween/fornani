@@ -53,13 +53,8 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, SceneContext& context
 
 	// always has to be called
 	svc.camera_controller.constrain();
-	if (m_intro.just_started()) {
-		svc.music_player.stop();
-		svc.music_player.load(svc.finder, "wind");
-		svc.music_player.play_looped();
-	}
 	if (metadata.no_player) {
-		player.set_position({3200.f, -64.f});
+		player.set_position({0.f, -64.f});
 		player.controller.restrict_movement();
 		player.get_collider().physics.zero_y();
 	}
@@ -72,6 +67,11 @@ void LadyNimbusIntro::update(automa::ServiceProvider& svc, SceneContext& context
 	if (m_pre_intro.running()) {
 		context.transition.hang();
 		return;
+	}
+	if (m_intro.just_started()) {
+		svc.music_player.stop();
+		svc.music_player.load(svc.finder, "wind");
+		svc.music_player.play_looped();
 	}
 	if (m_flags.test(LadyNimbusIntroFlags::intro_done)) { m_intro.update(); }
 	if (context.console && m_flags.test(LadyNimbusIntroFlags::pre_intro)) {

@@ -664,6 +664,7 @@ fsm::StateFunction Lynx::update_stagger() {
 
 fsm::StateFunction Lynx::update_fall_over() {
 	m_state.actual = LynxState::fall_over;
+	if (p_animatable.animation.just_started()) { m_services->soundboard.play_sound("basic_land"); }
 	return LYNX_BIND(update_fall_over);
 }
 

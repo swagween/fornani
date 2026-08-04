@@ -991,8 +991,10 @@ void Map::refresh_collider_chunks(Register<int> const& old_chunks, Register<int>
 bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
 	auto& grid = foreground ? get_obscuring_layer()->grid : get_middleground()->grid;
 	auto& layers = m_services->data.get_layers(room_id);
-	auto top = get_index_at_position(collider.get_vicinity_rect().position);
-	auto bottom = get_index_at_position(collider.get_vicinity_rect().position + collider.get_vicinity_rect().size);
+	auto top = get_index_at_position({collider.get_vicinity_rect().position.x, std::clamp(collider.get_vicinity_rect().position.y, constants::small_value, collider.get_vicinity_rect().position.y)});
+	auto bt = collider.get_vicinity_rect().position + collider.get_vicinity_rect().size;
+	bt.y = std::clamp(bt.y, constants::small_value, bt.y);
+	auto bottom = get_index_at_position(bt);
 	auto right = static_cast<std::size_t>(collider.get_vicinity_rect().size.x / constants::f_cell_size);
 	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};
@@ -1052,8 +1054,10 @@ sf::Vector2i Map::get_circle_collision_result(shape::CircleCollider& collider, b
 
 void Map::handle_cell_collision(shape::CircleCollider& collider) {
 	auto& grid = get_middleground()->grid;
-	auto top = get_index_at_position(collider.get_vicinity_rect().position);
-	auto bottom = get_index_at_position(collider.get_vicinity_rect().position + collider.get_vicinity_rect().size);
+	auto top = get_index_at_position({collider.get_vicinity_rect().position.x, std::clamp(collider.get_vicinity_rect().position.y, constants::small_value, collider.get_vicinity_rect().position.y)});
+	auto bt = collider.get_vicinity_rect().position + collider.get_vicinity_rect().size;
+	bt.y = std::clamp(bt.y, constants::small_value, bt.y);
+	auto bottom = get_index_at_position(bt);
 	auto right = static_cast<std::size_t>(collider.get_vicinity_rect().size.x / constants::f_cell_size);
 	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
 		auto left{0};

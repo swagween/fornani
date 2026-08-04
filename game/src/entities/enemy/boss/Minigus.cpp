@@ -198,6 +198,7 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 
 	if (flags.state.test(StateFlags::hurt)) {
 		cooldowns.hurt.start();
+		if (!hurt_effect.running()) { hurt_effect.start(128); }
 		if (!cooldowns.hurt_sound.running()) {
 			if (random::percent_chance(40)) {
 				m_services->soundboard.play_sound("minigus_hurt_1", Enemy::get_collider().get_center());

@@ -15,15 +15,9 @@ BitCell::BitCell(automa::ServiceProvider& svc) : Cutscene(svc, 101, "bit_cell") 
 
 void BitCell::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 	if (complete()) {
-		player.controller.unrestrict();
-		svc.state_flags.reset(automa::StateFlags::hide_hud);
-		svc.state_flags.reset(automa::StateFlags::no_menu);
-		svc.state_flags.reset(automa::StateFlags::cutscene);
-		svc.camera_controller.constrain();
-		svc.camera_controller.set_owner(graphics::CameraOwner::player);
 		svc.quest_table.progress_quest("free_bit", 1, 101);
 		svc.music_player.resume();
-		flags.set(CutsceneFlags::delete_me);
+		Cutscene::end(svc, player);
 		return;
 	}
 

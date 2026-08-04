@@ -1,58 +1,21 @@
 {
   "1": {
     "output": 2,
-    "responses": [
-      [
-        {
-          "codes": [[1, 1]],
-          "message": "I was held hostage my Skycorps."
-        }
-      ],
-      [
-        {
-          "codes": [[1, 2]],
-          "message": "None at all..."
-        }
-      ]
-    ],
+    "responses": [],
     "suite": [
       [
         {
           "message": "Nani!"
         },
         {
+          "codes": [[27, 36, 1]],
           "message": "Could it be...?"
         },
         {
-          "message": "Oh, how I feared I would never see you again..."
+          "message": "Oh, my child, how I feared I would never see you again..."
         },
         {
-          "codes": [[1, 0]],
-          "message": "Where have you been all this time?"
-        }
-      ],
-      [
-        {
-          "message": "And here I was hoping you'd get caught up in less mischief than your brother..."
-        },
-        {
-          "message": "If only your mother could have lived to help me raise you two."
-        },
-        {
-          "codes": [[13, 8, 407]],
-          "message": "Anyway, it is good to have you home again, despite the circumstances."
-        },
-        {
-          "codes": [[1, 1]],
-          "message": "Have you any word of Loth or his whereabouts?"
-        }
-      ],
-      [
-        {
-          "message": "Alas, then, it is as I feared."
-        },
-        {
-          "message": "Please, do what you can to bring him home, will you?"
+          "message": "This is a blessed day, is it not, Wames?"
         }
       ]
     ]
@@ -165,6 +128,61 @@
         {
           "codes": [[1, 0]],
           "message": "That ought to convince Ward to open the gates for you."
+        }
+      ]
+    ]
+  },
+  "3": {
+    "output": 2,
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "I was held hostage my Skycorps."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "None at all..."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "message": "Oh, nonsense!"
+        },
+        {
+          "message": "Don't listen to him, my child. We are only thankful that you're home safe and sound."
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "Where have you been all this time?"
+        }
+      ],
+      [
+        {
+          "message": "And here I was hoping you'd get caught up in less mischief than your brother..."
+        },
+        {
+          "message": "If only your mother could have lived to help me raise you two."
+        },
+        {
+          "message": "Anyway, it is good to have you home again, despite the circumstances."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "Have you any word of Loth or his whereabouts?"
+        }
+      ],
+      [
+        {
+          "message": "Alas, then, it is as I feared."
+        },
+        {
+          "codes": [[23, 10]],
+          "message": "Please, do what you can to bring him home, will you?"
         }
       ]
     ]

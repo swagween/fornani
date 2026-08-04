@@ -7,7 +7,9 @@
 
 namespace fornani::gui {
 
-MiniMap::MiniMap(automa::ServiceProvider& svc) : m_texture(svc), m_speed{64.f}, m_scale{32.f} {
+MiniMap::MiniMap(automa::ServiceProvider& svc)
+	: m_texture(svc), m_speed{64.f}, m_scale{32.f}, m_flat_shader{svc.finder},
+	  m_colors{.tile{colors::pioneer_dark_red}, .border{201, 9, 42}, .hovered_center{136, 19, 43}, .hovered_border{colors::pioneer_red}, .undiscovered_center{colors::pioneer_black}, .undiscovered_border{colors::navy_blue}} {
 	m_border.setOutlineColor(colors::pioneer_dark_red);
 	m_border.setOutlineThickness(-4.f);
 	m_border.setFillColor(sf::Color::Transparent);
@@ -95,7 +97,10 @@ void MiniMap::bake(automa::ServiceProvider& svc, dj::Json const& in) {
 			}
 		}
 	}
-	for (auto const& save : in["entities"]["save_point"].as_array()) { m_markers.push_back({MapIconFlags::save, sf::Vector2f{save["position"][0].as<float>(), save["position"][1].as<float>()} * m_texture_scale + room_pos, room_id}); }
+	for (auto const& save : in["entities"]["save_point"].as_array()) {
+		m_markers.push_back({MapIconFlags::save, sf::Vector2f{save["position"][0].as<float>(), save["position"][1].as<float>()} * m_texture_scale + room_pos, room_id});
+		if (save["id"].as<int>() != room_id) { NANI_LOG_ERROR(m_logger, "Found corrupted save point in room {}!", room_id); }
+	}
 }
 
 void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int room, bool current, bool undiscovered) {
@@ -158,16 +163,23 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 	}
 
 	for (auto& room : m_atlas) {
+
 		auto is_discovered = svc.data.is_room_discovered(room->get_id());
+		auto color = m_colors.tile;
+
 		// check if the undiscovered room is adjacent to a discovered one
 		auto undiscovered_adjacent = false;
+		auto hovered = room->get_id() == get_currently_hovered_room();
 		if (!is_discovered) { undiscovered_adjacent = svc.data.is_room_adjacent_to_discovered(room->get_id()); }
 		if (!is_discovered && !undiscovered_adjacent) { continue; }
+		if (undiscovered_adjacent) { color = m_colors.undiscovered_center; }
+
 		room->set_resolution(m_resolution);
-		m_map_sprite = sf::Sprite{room->get(false, room->get_id() == get_currently_hovered_room(), undiscovered_adjacent).getTexture()};
+		m_map_sprite = sf::Sprite{room->get().getTexture()};
+		auto outline{sf::Sprite{room->get().getTexture()}};
+
 		m_map_sprite->setScale(get_ratio_vec2().componentWiseDiv(scaled_port.size));
 		m_map_sprite->setPosition((room->get_position() * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size));
-		auto outline{sf::Sprite{room->get(true, room->get_id() == get_currently_hovered_room(), undiscovered_adjacent).getTexture()}};
 		outline.setScale(get_ratio_vec2().componentWiseDiv(scaled_port.size));
 		for (auto i{-1}; i < 2; ++i) {
 			for (auto j{-1}; j < 2; ++j) {
@@ -176,7 +188,10 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 				auto skew_factor = m_resolution == Resolution::high ? 2.f : m_resolution == Resolution::medium ? 2.f : 2.f;
 				auto adjustment = (skew * skew_factor).componentWiseDiv(scaled_port.size);
 				outline.setPosition((room->get_position() * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size) + adjustment);
-				win.draw(outline);
+				color = undiscovered_adjacent ? m_colors.undiscovered_border : hovered ? m_colors.hovered_border : m_colors.border;
+				m_flat_shader.finalize(color);
+				m_flat_shader.submit(win, outline);
+				// .draw(outline);
 			}
 		}
 		if (m_map_sprite->getGlobalBounds().contains(svc.window->f_center_screen())) {
@@ -184,7 +199,11 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 			if (m_currently_hovered_room != m_previously_hovered_room && has_flag_set(MiniMapFlags::open)) { svc.soundboard.play_sound("pioneer_pap"); }
 			m_previously_hovered_room = m_currently_hovered_room;
 		}
-		if (m_map_sprite) { win.draw(*m_map_sprite); }
+		if (m_map_sprite) {
+			color = undiscovered_adjacent ? m_colors.undiscovered_center : hovered ? m_colors.hovered_center : m_colors.tile;
+			m_flat_shader.finalize(color);
+			m_flat_shader.submit(win, *m_map_sprite);
+		}
 	}
 	icon_sprite.setScale(constants::f_scale_vec.componentWiseDiv(port.size));
 	auto icon_dim{8};
@@ -195,7 +214,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 		if (element.type == MapIconFlags::nani) { icon_sprite.setScale(icon_sprite.getScale().componentWiseMul(player.get_facing_scale())); }
 		win.draw(icon_sprite);
 	}
-	if (m_cursor) {
+	if (m_cursor && has_flag_set(MiniMapFlags::open)) {
 		m_cursor->setScale(constants::f_scale_vec.componentWiseDiv(scaled_port.size));
 		m_cursor->setPosition(svc.window->f_center_screen());
 		win.draw(*m_cursor);
