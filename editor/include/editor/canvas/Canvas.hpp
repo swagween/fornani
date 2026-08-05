@@ -33,8 +33,8 @@ enum class CanvasProperties { editable };
 enum class CanvasState { hovered, available };
 
 constexpr inline int chunk_size_v{16};
-constexpr inline int default_num_layers_v{8};
-constexpr inline int default_middleground_v{4};
+constexpr inline int default_num_layers_v{3};
+constexpr inline int default_middleground_v{1};
 constexpr inline std::size_t max_undo_states_v{64};
 
 class Tool;

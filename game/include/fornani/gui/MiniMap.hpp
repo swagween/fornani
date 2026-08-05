@@ -44,7 +44,6 @@ class MiniMap final : public Flaggable<MiniMapFlags> {
 	void set_markers(world::Map& map, player::Player& player);
 	void add_quest_marker(QuestMarkerType type, int room_id);
 	void bake(automa::ServiceProvider& svc, dj::Json const& in);
-	void bake(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int room, bool current = false, bool undiscovered = false);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, sf::Sprite& icon_sprite);
 	void update();
 	void clear_atlas();

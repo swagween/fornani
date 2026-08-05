@@ -2,14 +2,16 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <fornani/io/Loader.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
+#include <filesystem>
 
 namespace fornani::core {
 
 class AssetManager {
   public:
-	explicit AssetManager(ResourceFinder const& finder);
+	explicit AssetManager(ResourceFinder const& finder, io::Loader& loader);
 
 	sf::Texture const& get_texture(std::string const& label);
 	sf::Texture& get_texture_modifiable(std::string const& label);
@@ -20,6 +22,9 @@ class AssetManager {
 	sf::Texture m_null_texture{};
 	std::unordered_map<std::string, sf::Texture> m_textures{};
 	fornani::io::Logger m_logger{"Core"};
+	std::filesystem::path m_image_dir{};
+	std::filesystem::path m_palette_dir{};
+	std::vector<std::filesystem::path> m_paths{};
 };
 
 } // namespace fornani::core

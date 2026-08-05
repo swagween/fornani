@@ -103,34 +103,6 @@ void MiniMap::bake(automa::ServiceProvider& svc, dj::Json const& in) {
 	}
 }
 
-void MiniMap::bake(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int room, bool current, bool undiscovered) {
-	m_atlas.push_back(std::make_unique<MapTexture>(svc));
-	auto& current_map{m_atlas.back()};
-	m_texture_scale = current_map->get_scale();
-	if (current) { current_map->set_current(); }
-	current_map->bake(svc, map, room, 1.f, current, undiscovered);
-	m_extent.position.x = std::min(current_map->get_position().x, m_extent.position.x);
-	m_extent.size.x = std::max(current_map->get_position().x + current_map->get_dimensions().x, m_extent.size.x);
-	m_extent.position.y = std::min(current_map->get_position().y, m_extent.position.y);
-	m_extent.size.y = std::max(current_map->get_position().y + current_map->get_dimensions().y, m_extent.size.y);
-
-	// populate entity data for icons
-	if (!map.is_minimap()) { return; } // don't care about test maps
-	auto room_pos{current_map->get_position()};
-	for (auto& bed : map.beds) { m_markers.push_back({MapIconFlags::bed, bed.bounding_box.get_position() * m_texture_scale / constants::f_cell_size + room_pos, room}); }
-	if (map.has_entities()) {
-		for (auto const& portal : map.get_entities<Portal>()) {
-			if (!portal->is_activate_on_contact()) { m_markers.push_back({MapIconFlags::door, portal->get_world_position() * m_texture_scale / constants::f_cell_size + room_pos, room}); }
-		}
-
-		for (auto const& save : map.get_entities<SavePoint>()) { m_markers.push_back({MapIconFlags::save, save->get_world_position() * m_texture_scale / constants::f_cell_size + room_pos, room}); }
-	}
-	if (current) {
-		m_player_position = player.get_collider().get_center() * m_texture_scale / constants::f_cell_size + room_pos;
-		m_markers.push_back({MapIconFlags::nani, m_player_position, room});
-	}
-}
-
 void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, sf::Sprite& icon_sprite) {
 	static auto flash_frame{util::Circuit{4}};
 	if (svc.ticker.every_x_frames(10)) { flash_frame.modulate(1); }
@@ -175,12 +147,17 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 		if (undiscovered_adjacent) { color = m_colors.undiscovered_center; }
 
 		room->set_resolution(m_resolution);
-		m_map_sprite = sf::Sprite{room->get().getTexture()};
-		auto outline{sf::Sprite{room->get().getTexture()}};
+		m_map_sprite.emplace(room->get());
+		m_map_sprite->setTexture(room->get(), true);
+		auto outline{sf::Sprite{room->get()}};
 
-		m_map_sprite->setScale(get_ratio_vec2().componentWiseDiv(scaled_port.size));
+		auto const lores = m_resolution == Resolution::low;
+		auto const medres = m_resolution == Resolution::medium;
+		auto const lod_divisor = lores ? 4.f : medres ? 2.f : 1.f;
+
+		m_map_sprite->setScale((get_ratio_vec2()).componentWiseDiv(scaled_port.size) * lod_divisor);
 		m_map_sprite->setPosition((room->get_position() * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size));
-		outline.setScale(get_ratio_vec2().componentWiseDiv(scaled_port.size));
+		outline.setScale((get_ratio_vec2()).componentWiseDiv(scaled_port.size) * lod_divisor);
 		for (auto i{-1}; i < 2; ++i) {
 			for (auto j{-1}; j < 2; ++j) {
 				if ((std::abs(i) % 2 == 0 && std::abs(j) % 2 == 0) || (std::abs(i) % 2 == 1 && std::abs(j) % 2 == 1)) { continue; }
@@ -191,7 +168,6 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 				color = undiscovered_adjacent ? m_colors.undiscovered_border : hovered ? m_colors.hovered_border : m_colors.border;
 				m_flat_shader.finalize(color);
 				m_flat_shader.submit(win, outline);
-				// .draw(outline);
 			}
 		}
 		if (m_map_sprite->getGlobalBounds().contains(svc.window->f_center_screen())) {

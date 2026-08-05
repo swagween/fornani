@@ -17,12 +17,11 @@ namespace fornani {
 
 static double average_frame_time{};
 
-Game::Game(char** argv, WindowManager& window, AppContext& context, capo::IEngine& audio_engine)
-	: m_context{&context}, services(argv, context, window, audio_engine), player(services), game_state(services, player, context, automa::MenuType::main), m_cursor{services, "mouse_cursor", {8, 8}}, m_screencap_timer{8} {
-	m_loading_screen.emplace(services);
-}
+Game::Game(char** argv, WindowManager& window, AppContext& context, capo::IEngine& audio_engine) : m_context{&context}, services(argv, context, window, audio_engine), m_screencap_timer{8} { m_loading_screen.emplace(services); }
 
 void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2f player_position) {
+
+	services.stopwatch.start();
 
 	/* Set up ImGui Context */
 	auto imgui_context = ImGui::CreateContext();
@@ -49,20 +48,6 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 
 	measurements.win_size.x = services.window->get().getSize().x;
 	measurements.win_size.y = services.window->get().getSize().y;
-
-	if (demo) {
-		services.debug_flags.set(automa::DebugFlags::demo_mode);
-		flags.set(GameFlags::in_game);
-		// services.music_player.turn_off();
-		services.data.load_progress(player, services.editor_settings.save_file);
-		game_state.set_current_state(std::make_unique<automa::Dojo>(services, player, room_id));
-		services.state_controller.demo_level = room_id;
-		NANI_LOG_INFO(m_logger, "Launching demo in room {} from folder {} ", room_id, levelpath.filename().string());
-		services.state_controller.player_position = player_position;
-		player.set_demo_position(player_position);
-		player.place_at_demo_position();
-		player.set_direction(Direction{LR::left});
-	}
 
 	gui::ActionContextBar ctx_bar(services);
 
@@ -93,19 +78,35 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 				}
 			}
 			m_context->loader.update();
+
 			services.window->get().clear(colors::ui_black);
-
-			draw_wallpaper();
-
 			if (m_loading_screen) { m_loading_screen->render(services.window->get(), m_context->loader.progress()); }
-
 			services.window->get().display();
 		}
 
 		if (m_loading_screen) {
+			services.stopwatch.benchmark("Loader finished.");
 			m_loading_screen.reset();
 			services.ticker.reset();
+			player.emplace(services);
+			game_state.emplace(services, *player, *m_context, automa::MenuType::main);
+			m_cursor.emplace(services, "mouse_cursor", sf::Vector2i{8, 8});
+			if (demo) {
+				services.debug_flags.set(automa::DebugFlags::demo_mode);
+				flags.set(GameFlags::in_game);
+				services.data.load_progress(*player, services.editor_settings.save_file);
+				game_state->set_current_state(std::make_unique<automa::Dojo>(services, *player, room_id));
+				services.state_controller.demo_level = room_id;
+				NANI_LOG_INFO(m_logger, "Launching demo in room {} from folder {} ", room_id, levelpath.filename().string());
+				services.state_controller.player_position = player_position;
+				player->set_demo_position(player_position);
+				player->place_at_demo_position();
+				player->set_direction(Direction{LR::left});
+			}
 		}
+
+		if (!player) { continue; }
+		if (!game_state) { continue; }
 
 		auto& window = services.window->get();
 		services.ticker.start_frame();
@@ -204,19 +205,19 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			if (m_game_menu) {
 				m_game_menu.value()->get_current_state().tick_update(services, audio_engine);
 			} else {
-				game_state.get_current_state().tick_update(services, audio_engine);
+				game_state->get_current_state().tick_update(services, audio_engine);
 			}
 			services.soundboard.play_sounds(audio_engine, services);
 			if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.update(services); }
-			if (game_state.get_current_state().flags.test(automa::GameStateFlags::settings_request)) {
-				m_game_menu = std::make_unique<automa::StateManager>(services, player, *m_context, automa::MenuType::settings);
-				game_state.get_current_state().flags.reset(automa::GameStateFlags::settings_request);
+			if (game_state->get_current_state().flags.test(automa::GameStateFlags::settings_request)) {
+				m_game_menu = std::make_unique<automa::StateManager>(services, *player, *m_context, automa::MenuType::settings);
+				game_state->get_current_state().flags.reset(automa::GameStateFlags::settings_request);
 			}
-			if (game_state.get_current_state().flags.test(automa::GameStateFlags::controls_request)) {
-				m_game_menu = std::make_unique<automa::StateManager>(services, player, *m_context, automa::MenuType::controls);
-				game_state.get_current_state().flags.reset(automa::GameStateFlags::controls_request);
+			if (game_state->get_current_state().flags.test(automa::GameStateFlags::controls_request)) {
+				m_game_menu = std::make_unique<automa::StateManager>(services, *player, *m_context, automa::MenuType::controls);
+				game_state->get_current_state().flags.reset(automa::GameStateFlags::controls_request);
 			}
-			if (game_state.get_current_state().get_type() == automa::StateType::menu) { m_background->update(services); }
+			if (game_state->get_current_state().get_type() == automa::StateType::menu) { m_background->update(services); }
 			services.input_system.flush_mouse_input();
 		});
 
@@ -224,7 +225,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			m_game_menu.value()->get_current_state().frame_update(services);
 			m_game_menu.value()->get_current_state().clear_back_button();
 		} else {
-			game_state.get_current_state().frame_update(services);
+			game_state->get_current_state().frame_update(services);
 		}
 
 		if (services.state_controller.actions.consume(automa::Actions::screenshot)) { take_screenshot(services.window->screencap); }
@@ -249,12 +250,14 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		if (m_game_menu) {
 			m_game_menu.value()->get_current_state().render(services, services.window->get());
 		} else {
-			game_state.get_current_state().render(services, services.window->get());
+			game_state->get_current_state().render(services, services.window->get());
 		}
 
 		if (services.a11y.is_action_ctx_bar_enabled()) { ctx_bar.render(services.window->get()); }
-		m_cursor.set_position(services.input_system.get_mouse_position());
-		if (services.input_system.is_mouse_active()) { services.window->get().draw(m_cursor); }
+		if (m_cursor) {
+			m_cursor->set_position(services.input_system.get_mouse_position());
+			if (services.input_system.is_mouse_active()) { services.window->get().draw(*m_cursor); }
+		}
 
 #if !defined(FORNANI_PRODUCTION)
 		ImGui::SFML::Render(services.window->get());
@@ -265,7 +268,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 
 		services.ticker.end_frame();
 
-		if (!m_game_menu) { game_state.process_state(services, player, *this); }
+		if (!m_game_menu) { game_state->process_state(services, *player, *this); }
 
 		m_screencap_timer.update();
 		if (m_screencap_timer.is_almost_complete()) { take_screenshot(services.window->screencap, false); }
@@ -283,19 +286,21 @@ void Game::shutdown() { ImGui::SFML::Shutdown(); }
 
 void Game::draw_wallpaper() {
 	auto entire_window = sf::View(sf::FloatRect{{}, sf::Vector2f{sf::VideoMode::getDesktopMode().size}});
-	m_wallpaper.setFillColor(game_state.get_current_state().get_context().get_black(services));
+	m_wallpaper.setFillColor(game_state->get_current_state().get_context().get_black(services));
 	m_wallpaper.setSize(sf::Vector2f{services.window->get().getSize()});
 	services.window->get().clear();
 	if (services.window->is_fullscreen()) { services.window->get().setView(entire_window); }
 	services.window->get().draw(m_wallpaper);
-	if (game_state.get_current_state().get_type() == automa::StateType::menu) { m_background->render(services, services.window->get(), {}); }
+	if (game_state->get_current_state().get_type() == automa::StateType::menu) { m_background->render(services, services.window->get(), {}); }
 	if (!m_zooming) { services.window->restore_view(); }
 }
 
 void Game::playtester_portal(sf::RenderWindow& window) {
 	if (!flags.test(GameFlags::playtest)) { return; }
+	if (!player) { return; }
+	if (!game_state) { return; }
 
-	auto const& map = game_state.get_current_state().get_map();
+	auto const& map = game_state->get_current_state().get_map();
 
 	bool* b_debug{};
 	static bool limit_framerate{true};
@@ -327,7 +332,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Checkbox("Limit Framerate", &limit_framerate);
 					ImGui::InputInt("Frame Limit", &frame_limit);
 					limit_framerate ? services.window->get().setFramerateLimit(frame_limit) : services.window->get().setFramerateLimit(0);
-					if (ImGui::Button("Exit to Main Menu")) { game_state.set_current_state(std::make_unique<automa::MainMenu>(services, player, *m_context)); }
+					if (ImGui::Button("Exit to Main Menu")) { game_state->set_current_state(std::make_unique<automa::MainMenu>(services, *player, *m_context)); }
 					ImGui::Text("In Game? %s", services.in_game() ? "Yes" : "No");
 					ImGui::Text("debug mode: %s", services.debug_mode() ? "Enabled" : "Disabled");
 					ImGui::Text("demo mode: %s", services.demo_mode() ? "Enabled" : "Disabled");
@@ -345,7 +350,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Separator();
 					ImGui::Text("Camera");
 					ImGui::Text("Target Position: (%.2f, %.2f)", services.camera_controller.get_position().x, services.camera_controller.get_position().y);
-					ImGui::Text("Actual Position: (%.2f, %.2f)", player.get_actual_camera_position().x, player.get_actual_camera_position().y);
+					ImGui::Text("Actual Position: (%.2f, %.2f)", player->get_actual_camera_position().x, player->get_actual_camera_position().y);
 					ImGui::Text("Camera state: %s", services.camera_controller.is_free() ? "free" : "constrained");
 					if (ImGui::Button("Toggle Freedom")) { services.camera_controller.is_free() ? services.camera_controller.constrain() : services.camera_controller.free(); }
 					ImGui::Separator();
@@ -415,8 +420,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 
 						ImGui::Separator();
 						ImGui::Text("Calculated chunks for player:");
-						if (player.has_collider()) {
-							for (auto const& chunk : player.get_collider().print_chunks()) {
+						if (player->has_collider()) {
+							for (auto const& chunk : player->get_collider().print_chunks()) {
 								ImGui::SameLine();
 								ImGui::Text("[%s]", chunk);
 							}
@@ -472,7 +477,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Up..............: %s", services.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::up) ? "held" : "");
 					ImGui::Text("Down............: %s", services.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::down) ? "held" : "");
 					ImGui::Text("Left Triggered..: %i", left_triggered.get());
-					ImGui::Text("Movement cooldown.....: %i", player.controller.get_movement_cooldown());
+					ImGui::Text("Movement cooldown.....: %i", player->controller.get_movement_cooldown());
 					ImGui::SeparatorText("Gamepad and Joystick");
 					ImGui::Text("Move Input: %.3f", services.input_system.analog(input::AnalogAction::move).x);
 					ImGui::Text("Pan Input: %.3f", services.input_system.analog(input::AnalogAction::pan).y);
@@ -497,10 +502,10 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 				if (ImGui::BeginTabItem("RNG")) {
 					ImGui::Text("Vendor Seed: %u", random::get_vendor_seed());
 					ImGui::Separator();
-					ImGui::Text("Distance Traveled: %i", player.visit_history.distance_traveled());
+					ImGui::Text("Distance Traveled: %i", player->visit_history.distance_traveled());
 					ImGui::Separator();
 					ImGui::Text("Room Deque: ");
-					for (auto& room : player.visit_history.room_deque) {
+					for (auto& room : player->visit_history.room_deque) {
 						ImGui::Text("%i, ", room);
 						ImGui::SameLine();
 					}
@@ -536,12 +541,12 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						}
 					}
 					ImGui::Separator();
-					ImGui::Text("Distance Traveled: %i", player.visit_history.distance_traveled());
-					ImGui::Text("Distance Traveled from 223: %i", player.visit_history.distance_traveled_from(223));
+					ImGui::Text("Distance Traveled: %i", player->visit_history.distance_traveled());
+					ImGui::Text("Distance Traveled from 223: %i", player->visit_history.distance_traveled_from(223));
 					ImGui::Text("Visit History: ");
 					ImGui::Separator();
 					ImGui::Text("Room Deque: ");
-					for (auto& room : player.visit_history.room_deque) {
+					for (auto& room : player->visit_history.room_deque) {
 						ImGui::Text("%i, ", room);
 						ImGui::SameLine();
 					}
@@ -605,10 +610,10 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 				if (ImGui::BeginTabItem("Story")) {
 					ImGui::SeparatorText("Cutscenes");
 					ImGui::Text("Cutscene Active (svc)? %s", services.state_flags.test(automa::StateFlags::cutscene) ? "Yes" : "No");
-					ImGui::Text("Cutscene Active (plr)? %s", player.has_flag_set(player::PlayerFlags::cutscene) ? "Yes" : "No");
-					ImGui::Text("Number of active cutscenes: %i", game_state.get_current_state().get_context().cutscene_catalog.cutscenes.size());
-					if (game_state.get_current_state().get_context().cutscene_catalog.cutscenes.size() > 0) {
-						ImGui::Text("Current cutscene progress: %i", game_state.get_current_state().get_context().cutscene_catalog.cutscenes.at(0)->get_progress());
+					ImGui::Text("Cutscene Active (plr)? %s", player->has_flag_set(player::PlayerFlags::cutscene) ? "Yes" : "No");
+					ImGui::Text("Number of active cutscenes: %i", game_state->get_current_state().get_context().cutscene_catalog.cutscenes.size());
+					if (game_state->get_current_state().get_context().cutscene_catalog.cutscenes.size() > 0) {
+						ImGui::Text("Current cutscene progress: %i", game_state->get_current_state().get_context().cutscene_catalog.cutscenes.at(0)->get_progress());
 					}
 					ImGui::SeparatorText("Quest Info");
 					for (auto i = 0; i < services.quest_registry.get_size(); ++i) {
@@ -619,7 +624,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						ImGui::Text(services.quest_table.print_progressions(tag).c_str());
 					}
 					ImGui::Separator();
-					ImGui::Text("Piggybacking? %s", static_cast<bool>(player.piggybacker) ? "Yes" : "No");
+					ImGui::Text("Piggybacking? %s", static_cast<bool>(player->piggybacker) ? "Yes" : "No");
 					ImGui::Separator();
 					ImGui::Text("Quest Progress:");
 					ImGui::Separator();
@@ -638,48 +643,48 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 				if (services.in_game()) {
 					static float player_hp{};
 					if (ImGui::BeginTabItem("Player")) {
-						player.health.debug();
+						player->health.debug();
 						if (ImGui::BeginTabBar("PlayerTabBar", tab_bar_flags)) {
 							if (ImGui::BeginTabItem("General")) {
 								ImGui::Text("Player");
 								ImGui::Separator();
-								ImGui::Text("Distant Vicinity: %i", player.distant_vicinity.vertices.size());
-								ImGui::Text("Last Requested Direction: %s", player.controller.last_requested_direction().print().c_str());
-								ImGui::Text("Desired Direction: %s", player.get_desired_direction().print().c_str());
-								ImGui::Text("Actual Direction: %s", player.get_actual_direction().print().c_str());
-								ImGui::Text("Movement Direction: %s", player.directions.movement.print().c_str());
-								ImGui::Text("Input Direction: %s", player.directions.input.print().c_str());
-								ImGui::Text("Collider Direction: %s", player.get_collider().get_direction().print().c_str());
-								ImGui::Text("Ability Direction: %s", player.controller.get_ability_direction().print().c_str());
+								ImGui::Text("Distant Vicinity: %i", player->distant_vicinity.vertices.size());
+								ImGui::Text("Last Requested Direction: %s", player->controller.last_requested_direction().print().c_str());
+								ImGui::Text("Desired Direction: %s", player->get_desired_direction().print().c_str());
+								ImGui::Text("Actual Direction: %s", player->get_actual_direction().print().c_str());
+								ImGui::Text("Movement Direction: %s", player->directions.movement.print().c_str());
+								ImGui::Text("Input Direction: %s", player->directions.input.print().c_str());
+								ImGui::Text("Collider Direction: %s", player->get_collider().get_direction().print().c_str());
+								ImGui::Text("Ability Direction: %s", player->controller.get_ability_direction().print().c_str());
 								ImGui::Separator();
-								ImGui::Text("Grounded? %s", player.grounded() ? "Yes" : "No");
-								ImGui::Text("World Grounded? %s", player.get_collider().perma_grounded() ? "Yes" : "No");
-								ImGui::Text("On Water Surface? %s", player.on_water_surface() ? "Yes" : "No");
-								ImGui::Text("Horizontal Movement: %f", player.controller.horizontal_movement());
-								ImGui::Text("Push Time: %i", player.cooldowns.push.get());
-								ImGui::Text("Acceleration Multiplier: %f", player.get_collider().acceleration_multiplier);
+								ImGui::Text("Grounded? %s", player->grounded() ? "Yes" : "No");
+								ImGui::Text("World Grounded? %s", player->get_collider().perma_grounded() ? "Yes" : "No");
+								ImGui::Text("On Water Surface? %s", player->on_water_surface() ? "Yes" : "No");
+								ImGui::Text("Horizontal Movement: %f", player->controller.horizontal_movement());
+								ImGui::Text("Push Time: %i", player->cooldowns.push.get());
+								ImGui::Text("Acceleration Multiplier: %f", player->get_collider().acceleration_multiplier);
 								ImGui::SeparatorText("Player Momentum");
 								static sf::Vector2f force{};
 								ImGui::SliderFloat("X", &force.x, -10.f, 10.f, "%.3f");
 								ImGui::SliderFloat("y", &force.y, -10.f, 10.f, "%.3f");
-								if (ImGui::Button("Apply Momentum")) { player.apply_impulse(force); }
-								ImGui::Text("Has Momentum? %s", player.get_collider().has_flag_set(shape::ColliderFlags::momentum) ? "Yes" : "No");
+								if (ImGui::Button("Apply Momentum")) { player->apply_impulse(force); }
+								ImGui::Text("Has Momentum? %s", player->get_collider().has_flag_set(shape::ColliderFlags::momentum) ? "Yes" : "No");
 								auto total = sf::Vector2f{};
-								for (auto v : player.accumulated_momentum) { total += v; }
+								for (auto v : player->accumulated_momentum) { total += v; }
 								ImGui::Text("Accumumalted Momentum: (%.1f, %.1f)", total.x, total.y);
-								ImGui::Text("Accumumalted Momentum Count: %i", player.accumulated_momentum.size());
+								ImGui::Text("Accumumalted Momentum Count: %i", player->accumulated_momentum.size());
 								ImGui::Separator();
-								ImGui::SliderFloat("Antenna Force", &player.physics_stats.antenna_force, 0.1f, 3.f);
-								ImGui::SliderFloat("Antenna Friction", &player.physics_stats.antenna_friction, 0.8f, 1.f);
+								ImGui::SliderFloat("Antenna Force", &player->physics_stats.antenna_force, 0.1f, 3.f);
+								ImGui::SliderFloat("Antenna Friction", &player->physics_stats.antenna_friction, 0.8f, 1.f);
 								ImGui::Separator();
-								ImGui::Text("Stunned? %s", player.is_stunned() ? "Yes" : "No");
-								if (ImGui::Button("Stun")) { player.stun(); }
-								if (ImGui::Button("Hurt and Stun")) { player.hurt_and_stun(); }
-								if (ImGui::Button("Knock Over")) { player.knock_over(); }
+								ImGui::Text("Stunned? %s", player->is_stunned() ? "Yes" : "No");
+								if (ImGui::Button("Stun")) { player->stun(); }
+								if (ImGui::Button("Hurt and Stun")) { player->hurt_and_stun(); }
+								if (ImGui::Button("Knock Over")) { player->knock_over(); }
 								ImGui::Separator();
 								ImGui::Text("Ability");
 								ImGui::Text("Current: ");
-								auto ability_type = player.controller.get_ability_type();
+								auto ability_type = player->controller.get_ability_type();
 								if (ability_type) {
 									ImGui::SameLine();
 									switch (ability_type.value()) {
@@ -694,60 +699,60 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 									}
 								}
 								ImGui::Separator();
-								ImGui::Text("Trial Mode? %s", player.has_flag_set(player::PlayerFlags::trial) ? "Yes" : "No");
-								ImGui::Text("Cutscene? %s", player.has_flag_set(player::PlayerFlags::cutscene) ? "Yes" : "No");
-								ImGui::Text("Can Move? %s", player.controller.can_move() ? "Yes" : "No");
-								ImGui::Text("Walking Autonomously? %s", player.controller.walking_autonomously() ? "Yes" : "No");
+								ImGui::Text("Trial Mode? %s", player->has_flag_set(player::PlayerFlags::trial) ? "Yes" : "No");
+								ImGui::Text("Cutscene? %s", player->has_flag_set(player::PlayerFlags::cutscene) ? "Yes" : "No");
+								ImGui::Text("Can Move? %s", player->controller.can_move() ? "Yes" : "No");
+								ImGui::Text("Walking Autonomously? %s", player->controller.walking_autonomously() ? "Yes" : "No");
 								ImGui::Separator();
-								ImGui::Text("Sliding? %s", player.controller.is_sliding() ? "Yes" : "No");
-								ImGui::Text("Can Slide? %s", player.can_slide() ? "Yes" : "No");
+								ImGui::Text("Sliding? %s", player->controller.is_sliding() ? "Yes" : "No");
+								ImGui::Text("Can Slide? %s", player->can_slide() ? "Yes" : "No");
 								ImGui::Text("Post-Slide Cooldown");
-								ImGui::ProgressBar(player.controller.post_slide.get_normalized(), {300.f, 4.f}, "");
+								ImGui::ProgressBar(player->controller.post_slide.get_normalized(), {300.f, 4.f}, "");
 								ImGui::Separator();
-								ImGui::Text("No Turn? %s", player.has_flag_set(player::PlayerFlags::no_turn) ? "Yes" : "No");
+								ImGui::Text("No Turn? %s", player->has_flag_set(player::PlayerFlags::no_turn) ? "Yes" : "No");
 								ImGui::Text("Push Cooldown");
-								ImGui::ProgressBar(player.cooldowns.push.get_normalized(), {300.f, 4.f}, "");
+								ImGui::ProgressBar(player->cooldowns.push.get_normalized(), {300.f, 4.f}, "");
 								ImGui::Text("Post-Push Cooldown");
-								ImGui::ProgressBar(player.cooldowns.post_push.get_normalized(), {300.f, 4.f}, "");
+								ImGui::ProgressBar(player->cooldowns.post_push.get_normalized(), {300.f, 4.f}, "");
 								ImGui::Separator();
-								ImGui::Text("Crouching? %s", player.controller.is_crouching() ? "Yes" : "No");
-								ImGui::Text("Inspecting? %s", player.controller.inspecting() ? "Yes" : "No");
-								ImGui::Text("In Front of Door? %s", player.has_flag_set(player::PlayerFlags::in_front_of_door) ? "Yes" : "No");
+								ImGui::Text("Crouching? %s", player->controller.is_crouching() ? "Yes" : "No");
+								ImGui::Text("Inspecting? %s", player->controller.inspecting() ? "Yes" : "No");
+								ImGui::Text("In Front of Door? %s", player->has_flag_set(player::PlayerFlags::in_front_of_door) ? "Yes" : "No");
 								ImGui::Separator();
-								ImGui::Text("Jumping? %s", player.get_collider().jumping() ? "Yes" : "No");
-								ImGui::Text("Can Jump? %s", player.can_jump() ? "Yes" : "No");
-								ImGui::Text("Downhill? %s", player.get_collider().downhill() ? "Yes" : "No");
-								ImGui::Text("Wallsliding? %s", player.controller.is_wallsliding() ? "Yes" : "No");
-								ImGui::Text("Walljumping? %s", player.controller.is_walljumping() ? "Yes" : "No");
-								ImGui::Text("On Ramp? %s", player.get_collider().on_ramp() ? "Yes" : "No");
+								ImGui::Text("Jumping? %s", player->get_collider().jumping() ? "Yes" : "No");
+								ImGui::Text("Can Jump? %s", player->can_jump() ? "Yes" : "No");
+								ImGui::Text("Downhill? %s", player->get_collider().downhill() ? "Yes" : "No");
+								ImGui::Text("Wallsliding? %s", player->controller.is_wallsliding() ? "Yes" : "No");
+								ImGui::Text("Walljumping? %s", player->controller.is_walljumping() ? "Yes" : "No");
+								ImGui::Text("On Ramp? %s", player->get_collider().on_ramp() ? "Yes" : "No");
 								ImGui::Separator();
 								ImGui::Text("Water Exit Cooldown");
-								ImGui::ProgressBar(player.cooldowns.water_exit.get_normalized(), {300.f, 4.f}, "");
-								ImGui::Text("Submerged? %s", player.get_collider().has_flag_set(shape::ColliderFlags::submerged) ? "Yes" : "No");
-								ImGui::Text("In Water? %s", player.get_collider().has_flag_set(shape::ColliderFlags::in_water) ? "Yes" : "No");
+								ImGui::ProgressBar(player->cooldowns.water_exit.get_normalized(), {300.f, 4.f}, "");
+								ImGui::Text("Submerged? %s", player->get_collider().has_flag_set(shape::ColliderFlags::submerged) ? "Yes" : "No");
+								ImGui::Text("In Water? %s", player->get_collider().has_flag_set(shape::ColliderFlags::in_water) ? "Yes" : "No");
 								ImGui::Separator();
-								ImGui::Text("X Position: %.2f", player.get_collider().physics.position.x / constants::f_cell_size);
-								ImGui::Text("Y Position: %.2f", player.get_collider().physics.position.y / constants::f_cell_size);
-								ImGui::Text("X Velocity: %.2f", player.get_collider().physics.velocity.x);
-								ImGui::Text("Y Velocity: %.2f", player.get_collider().physics.velocity.y);
-								ImGui::Text("Apparent X Velocity: %.2f", player.get_collider().physics.apparent_velocity().x);
-								ImGui::Text("Apparent Y Velocity: %.2f", player.get_collider().physics.apparent_velocity().y);
-								ImGui::Text("Actual X Velocity: %.2f", player.get_collider().physics.actual_velocity().x);
-								ImGui::Text("Actual Y Velocity: %.2f", player.get_collider().physics.actual_velocity().y);
-								ImGui::Text("Actual Speed: %.2f", player.get_collider().physics.actual_speed());
+								ImGui::Text("X Position: %.2f", player->get_collider().physics.position.x / constants::f_cell_size);
+								ImGui::Text("Y Position: %.2f", player->get_collider().physics.position.y / constants::f_cell_size);
+								ImGui::Text("X Velocity: %.2f", player->get_collider().physics.velocity.x);
+								ImGui::Text("Y Velocity: %.2f", player->get_collider().physics.velocity.y);
+								ImGui::Text("Apparent X Velocity: %.2f", player->get_collider().physics.apparent_velocity().x);
+								ImGui::Text("Apparent Y Velocity: %.2f", player->get_collider().physics.apparent_velocity().y);
+								ImGui::Text("Actual X Velocity: %.2f", player->get_collider().physics.actual_velocity().x);
+								ImGui::Text("Actual Y Velocity: %.2f", player->get_collider().physics.actual_velocity().y);
+								ImGui::Text("Actual Speed: %.2f", player->get_collider().physics.actual_speed());
 								ImGui::Separator();
-								ImGui::Text("Inventory Size: %i", static_cast<int>(player.catalog.inventory.items_view().size()));
+								ImGui::Text("Inventory Size: %i", static_cast<int>(player->catalog.inventory.items_view().size()));
 								ImGui::EndTabItem();
 							}
 							if (ImGui::BeginTabItem("Death")) {
-								ImGui::Text("Is player dead? %s", player.is_dead() ? "Yes" : "No");
-								ImGui::Text("Death type: %i", player.get_i_death_type());
+								ImGui::Text("Is player dead? %s", player->is_dead() ? "Yes" : "No");
+								ImGui::Text("Death type: %i", player->get_i_death_type());
 								ImGui::EndTabItem();
 							}
 
 							if (ImGui::BeginTabItem("Inventory")) {
 								ImGui::Text("Equipped Items:");
-								for (auto const& ei : player.catalog.inventory.equipped_items_view()) {
+								for (auto const& ei : player->catalog.inventory.equipped_items_view()) {
 									ImGui::Text("[%i]", ei);
 									ImGui::SameLine();
 								}
@@ -761,63 +766,63 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								if (ImGui::Button("Give Pulsar")) { services.events.acquire_weapon_event.dispatch(services, "pulsar"); }
 								ImGui::Text("Current Weapon:");
 								ImGui::Separator();
-								if (player.hotbar) {
-									auto& gun = player.equipped_weapon();
+								if (player->hotbar) {
+									auto& gun = player->equipped_weapon();
 									ImGui::Text("%s", gun.get_label().data());
 									ImGui::Text("Ammo Capacity: %i", gun.ammo.get_capacity());
 									ImGui::Text("Ammo Count: %i", gun.ammo.get_count());
 								}
 								ImGui::Separator();
 								ImGui::Text("Loadout:");
-								if (player.arsenal) {
-									for (auto& gun : player.arsenal.value().get_loadout()) { ImGui::Text("%s", gun.get()->get_label().data()); }
+								if (player->arsenal) {
+									for (auto& gun : player->arsenal.value().get_loadout()) { ImGui::Text("%s", gun.get()->get_label().data()); }
 								}
 								ImGui::Text("Hotbar:");
-								if (player.hotbar) {
-									for (auto& gun : player.hotbar.value().get_tags()) { ImGui::Text("%s", gun.c_str()); }
+								if (player->hotbar) {
+									for (auto& gun : player->hotbar.value().get_tags()) { ImGui::Text("%s", gun.c_str()); }
 								}
-								ImGui::Text("Player has arsenal? %s", player.arsenal ? "Yes" : "No");
-								ImGui::Text("Loadout Size: %zu", player.arsenal ? player.arsenal.value().size() : 0);
+								ImGui::Text("Player has arsenal? %s", player->arsenal ? "Yes" : "No");
+								ImGui::Text("Loadout Size: %zu", player->arsenal ? player->arsenal.value().size() : 0);
 
 								if (ImGui::Button("Clear Loadout")) {
-									if (player.arsenal) { player.arsenal = {}; }
+									if (player->arsenal) { player->arsenal = {}; }
 								}
 								ImGui::EndTabItem();
 							}
 							if (ImGui::BeginTabItem("Catalog")) {
 								ImGui::Separator();
 								ImGui::SeparatorText("Inventory");
-								for (auto& item : player.catalog.inventory.items_view()) { ImGui::Text("%s", item.item->get_label().data()); }
+								for (auto& item : player->catalog.inventory.items_view()) { ImGui::Text("%s", item.item->get_label().data()); }
 								ImGui::SeparatorText("Item Log");
-								for (auto& item : player.catalog.inventory.item_log_view()) { ImGui::Text("%s", item.c_str()); }
+								for (auto& item : player->catalog.inventory.item_log_view()) { ImGui::Text("%s", item.c_str()); }
 
 								ImGui::EndTabItem();
 							}
 							if (ImGui::BeginTabItem("Parameters")) {
 								ImGui::Text("Vertical Movement");
-								ImGui::SliderFloat("GRAVITY", &player.physics_stats.grav, -2.0f, 2.8f, "%.5f");
-								ImGui::SliderFloat("JUMP VELOCITY", &player.physics_stats.jump_velocity, 0.5f, 18.0f, "%.5f");
-								ImGui::SliderFloat("JUMP RELEASE MULTIPLIER", &player.physics_stats.jump_release_multiplier, 0.005f, 1.f, "%.5f");
-								ImGui::SliderFloat("MAX Y VELOCITY", &player.physics_stats.maximum_velocity.y, 1.0f, 60.0f);
+								ImGui::SliderFloat("GRAVITY", &player->physics_stats.grav, -2.0f, 2.8f, "%.5f");
+								ImGui::SliderFloat("JUMP VELOCITY", &player->physics_stats.jump_velocity, 0.5f, 18.0f, "%.5f");
+								ImGui::SliderFloat("JUMP RELEASE MULTIPLIER", &player->physics_stats.jump_release_multiplier, 0.005f, 1.f, "%.5f");
+								ImGui::SliderFloat("MAX Y VELOCITY", &player->physics_stats.maximum_velocity.y, 1.0f, 60.0f);
 
 								ImGui::Separator();
 								ImGui::Text("Horizontal Movement");
-								ImGui::SliderFloat("AIR MULTIPLIER", &player.physics_stats.air_multiplier, 0.0f, 5.0f);
-								ImGui::SliderFloat("GROUND FRICTION", &player.physics_stats.ground_fric, 0.800f, 1.000f);
-								ImGui::SliderFloat("AIR FRICTION", &player.physics_stats.air_fric, 0.800f, 1.000f);
-								ImGui::SliderFloat("GROUND SPEED", &player.physics_stats.x_acc, 0.0f, 3.f);
-								ImGui::SliderFloat("SPRINT MULTIPLIER", &player.physics_stats.sprint_multiplier, 1.0f, 4.0f);
-								ImGui::SliderFloat("MAX X VELOCITY", &player.physics_stats.maximum_velocity.x, 1.0f, 10.0f);
+								ImGui::SliderFloat("AIR MULTIPLIER", &player->physics_stats.air_multiplier, 0.0f, 5.0f);
+								ImGui::SliderFloat("GROUND FRICTION", &player->physics_stats.ground_fric, 0.800f, 1.000f);
+								ImGui::SliderFloat("AIR FRICTION", &player->physics_stats.air_fric, 0.800f, 1.000f);
+								ImGui::SliderFloat("GROUND SPEED", &player->physics_stats.x_acc, 0.0f, 3.f);
+								ImGui::SliderFloat("SPRINT MULTIPLIER", &player->physics_stats.sprint_multiplier, 1.0f, 4.0f);
+								ImGui::SliderFloat("MAX X VELOCITY", &player->physics_stats.maximum_velocity.x, 1.0f, 10.0f);
 
 								ImGui::Separator();
 								ImGui::Text("Abilities");
-								ImGui::SliderFloat("Dash Speed", &player.physics_stats.dash_speed, 1.0f, 30.0f);
-								ImGui::SliderFloat("Vertical Dash Multiplier", &player.physics_stats.vertical_dash_multiplier, 0.0f, 10.0f);
-								ImGui::SliderFloat("Dash Dampen", &player.physics_stats.dash_dampen, 0.7f, 2.0f);
-								ImGui::SliderFloat("Wallslide Speed", &player.physics_stats.wallslide_speed, 0.2f, 3.0f);
+								ImGui::SliderFloat("Dash Speed", &player->physics_stats.dash_speed, 1.0f, 30.0f);
+								ImGui::SliderFloat("Vertical Dash Multiplier", &player->physics_stats.vertical_dash_multiplier, 0.0f, 10.0f);
+								ImGui::SliderFloat("Dash Dampen", &player->physics_stats.dash_dampen, 0.7f, 2.0f);
+								ImGui::SliderFloat("Wallslide Speed", &player->physics_stats.wallslide_speed, 0.2f, 3.0f);
 
 								ImGui::Separator();
-								if (ImGui::Button("Save Parameters")) { services.data.save_player_params(player); }
+								if (ImGui::Button("Save Parameters")) { services.data.save_player_params(*player); }
 								ImGui::EndTabItem();
 							}
 							ImGui::EndTabBar();
@@ -863,6 +868,8 @@ void Game::take_screenshot(sf::Texture& screencap, bool pixel_perfect) {
 	}
 }
 
-void Game::restart_trial(std::filesystem::path const& levelpath) { game_state.set_current_state(std::make_unique<automa::Trial>(services, player, services.state_controller.next_state)); }
+void Game::restart_trial(std::filesystem::path const& levelpath) {
+	if (player) { game_state->set_current_state(std::make_unique<automa::Trial>(services, *player, services.state_controller.next_state)); }
+}
 
 } // namespace fornani

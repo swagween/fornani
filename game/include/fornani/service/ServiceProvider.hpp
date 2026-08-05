@@ -39,8 +39,8 @@ struct EditorSettings {
 
 struct ServiceProvider {
 	ServiceProvider(char** argv, AppContext& context, WindowManager& window, capo::IEngine& audio_engine)
-		: finder(argv), input_system{finder, context.loader}, text{finder, context.localization}, data(*this, context.loader), version(&context.version), window(&window), assets{finder}, sounds{finder}, music_player{audio_engine},
-		  ambience_player{audio_engine}, quest_registry{finder}, quest_table{quest_registry}, soundboard{*this, audio_engine} {};
+		: finder(argv), input_system{finder, context.loader}, text{finder, context.localization}, data(*this, context.loader), version(&context.version), window(&window), assets{finder, context.loader}, sounds{finder},
+		  music_player{audio_engine}, ambience_player{audio_engine}, quest_registry{finder}, quest_table{quest_registry}, soundboard{*this, audio_engine} {};
 
 	util::Stopwatch stopwatch{};
 	ResourceFinder finder;

@@ -56,11 +56,11 @@ class Game final {
 		int total{};
 	} rng_test{};
 
-	player::Player player;
-	automa::StateManager game_state;
-	std::optional<std::unique_ptr<automa::StateManager>> m_game_menu;
+	std::optional<player::Player> player{};
+	std::optional<automa::StateManager> game_state{};
+	std::optional<std::unique_ptr<automa::StateManager>> m_game_menu{};
 	std::unique_ptr<graphics::Background> m_background{};
-	Animatable m_cursor;
+	std::optional<Animatable> m_cursor{};
 	util::Cooldown m_screencap_timer;
 
 	FrameTracker m_frame_tracker{};

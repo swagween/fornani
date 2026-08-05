@@ -23,7 +23,7 @@ enum class MapTextureFlags { current };
 enum class Resolution { high, medium, low };
 
 struct MapTextureLayer {
-	sf::RenderTexture texture{};
+	sf::Texture texture{};
 };
 
 class MapTexture {
@@ -31,18 +31,17 @@ class MapTexture {
 	MapTexture() = default;
 	explicit MapTexture(automa::ServiceProvider& svc);
 	void bake(dj::Json const& in);
-	void bake(automa::ServiceProvider& svc, world::Map& map, int room, float scale, bool current = false, bool undiscovered = false);
 	void set_current() { m_flags.set(MapTextureFlags::current); }
 	void set_resolution(Resolution to) { m_current_resolution = to; }
 
 	[[nodiscard]] auto is_current() const -> bool { return m_flags.test(MapTextureFlags::current); }
 	[[nodiscard]] auto to_ignore() const -> bool { return m_ignore; }
-	[[nodiscard]] auto get_id() const -> int { return m_data.id; }
+	[[nodiscard]] auto get_id() const -> int { return m_id; }
 	[[nodiscard]] auto get_scale() const -> float { return m_scale; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return get_position() + get_dimensions() * 0.5f; }
 	[[nodiscard]] auto contains(sf::Vector2f point) const -> bool;
 
-	sf::RenderTexture& get();
+	sf::Texture& get();
 	sf::Vector2f get_position() const;
 	sf::Vector2f get_dimensions() const;
 
@@ -51,18 +50,13 @@ class MapTexture {
 
   private:
 	std::array<MapTextureLayer, num_resolution_levels_v> m_layers{};
-	sf::RectangleShape m_tile_box{};
-	sf::Color m_tile_color{};
-	sf::Color m_border_color{};
-	sf::Color m_hovered_center_color{};
-	sf::Color m_hovered_border_color{};
-	sf::Color m_undiscovered_center_color{};
-	sf::Color m_undiscovered_border_color{};
+	std::vector<std::uint8_t> m_pixels;
 	sf::Vector2<int> m_global_offset{};
 	sf::Vector2f m_map_dimensions{};
 	util::BitFlags<MapTextureFlags> m_flags{};
 	bool m_ignore{};
-	data::MapData m_data{};
+	int m_id{};
+	std::string m_biome{};
 	float m_scale{};
 	Resolution m_current_resolution{};
 

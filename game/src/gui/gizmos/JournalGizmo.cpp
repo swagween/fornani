@@ -160,8 +160,10 @@ void JournalGizmo::on_close(automa::ServiceProvider& svc, player::Player& player
 	Gizmo::on_close(svc, player, map);
 	m_path.set_section("close");
 	m_text.objective.reset();
-	m_section = JournalSection::quest;
-	switch_sections(svc);
+	if (m_section == JournalSection::bestiary) {
+		m_section = JournalSection::quest;
+		switch_sections(svc);
+	}
 }
 
 void JournalGizmo::refresh() {
