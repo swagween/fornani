@@ -10,7 +10,7 @@ namespace fornani {
 class LoadingScreen {
   public:
 	LoadingScreen(automa::ServiceProvider& svc);
-	void render(sf::RenderWindow& win, float progress);
+	void render(sf::RenderWindow& win, float progress, bool bg = true);
 	void stall(sf::RenderWindow& win);
 
   private:

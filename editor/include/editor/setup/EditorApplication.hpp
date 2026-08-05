@@ -3,6 +3,7 @@
 #include <capo/engine.hpp>
 #include <editor/automa/EditorContext.hpp>
 #include <editor/automa/EditorState.hpp>
+#include <fornani/graphics/LoadingScreen.hpp>
 #include "fornani/io/Logger.hpp"
 #include "fornani/setup/AppContext.hpp"
 #include "fornani/setup/ResourceFinder.hpp"
@@ -19,6 +20,7 @@ class EditorApplication {
 	void shutdown();
 
   private:
+	std::optional<fornani::LoadingScreen> m_loading_screen{};
 	fornani::ResourceFinder m_finder;
 	dj::Json game_info{};
 	fornani::AppContext context;

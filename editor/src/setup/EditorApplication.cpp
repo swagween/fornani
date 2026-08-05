@@ -10,7 +10,8 @@
 
 namespace pi {
 
-EditorApplication::EditorApplication(char** argv) : m_finder{argv}, m_services(argv, context, window, *m_engine), context{.settings{m_finder}, .localization{m_finder}, .version{game_info, m_finder}}, window{{1920, 1080}} {
+EditorApplication::EditorApplication(char** argv) : m_finder{argv}, m_services(argv, context, window, *m_engine), context{.settings{m_finder}, .localization{m_finder}, .version{game_info, m_finder}, .loader{}}, window{{1920, 1080}} {
+	m_loading_screen.emplace(m_services);
 
 	// load app resources
 	game_info = *dj::Json::from_file((m_services.finder.paths.editor / "data/config/version.json").string().c_str());
@@ -22,7 +23,7 @@ EditorApplication::EditorApplication(char** argv) : m_finder{argv}, m_services(a
 	assert(!app_settings.is_null());
 
 	// create window
-	window.create(context.version.long_title(), app_settings["fullscreen"].as_bool(), {1920, 1080});
+	window.create("Pioneer", app_settings["fullscreen"].as_bool(), {1920, 1080});
 	window.set();
 
 	// set app icon
@@ -31,14 +32,30 @@ EditorApplication::EditorApplication(char** argv) : m_finder{argv}, m_services(a
 	window.get().setIcon({32, 32}, icon.getPixelsPtr());
 
 	if (!ImGui::SFML::Init(window.get())) { NANI_LOG_ERROR(m_logger, "Failed to init SFML window."); };
-	window.get().clear();
-	window.get().display();
 
 	user_data = *dj::Json::from_file((m_services.finder.paths.editor / "data" / "config" / "user.json").string().c_str());
 	assert(!user_data.is_null());
 	m_services.finder.paths.region = user_data["region"] ? user_data["region"].as_string() : "config";
 	m_services.finder.paths.room_name = user_data["room"] ? user_data["room"].as_string() : "new_file.json";
 	m_services.editor_settings.save_file = user_data["file"].as<int>();
+
+	m_services.window->get().setVisible(true);
+	while (!context.loader.finished()) {
+		while (std::optional const event = m_services.window->get().pollEvent()) {
+			if (event->is<sf::Event::Closed>()) {
+				shutdown();
+				return;
+			}
+		}
+		context.loader.update();
+
+		m_services.window->get().clear(sf::Color{40, 60, 80});
+		if (m_loading_screen) { m_loading_screen->render(m_services.window->get(), context.loader.progress(), false); }
+		m_services.window->get().display();
+	}
+
+	m_loading_screen.reset();
+
 	m_state = std::make_unique<Editor>(m_services, editor_context);
 	m_current_state = EditorStateType::editor;
 }

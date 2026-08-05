@@ -10,13 +10,13 @@ LoadingScreen::LoadingScreen(automa::ServiceProvider& svc) : m_bar{svc, {300.f, 
 	m_readout.setCharacterSize(16);
 }
 
-void LoadingScreen::render(sf::RenderWindow& win, float progress) {
-	auto bg = sf::RectangleShape{};
-	bg.setSize(sf::Vector2f{win.getSize()});
-	bg.setFillColor(colors::ui_black);
-	win.draw(bg);
-
-	if (progress > 0.99f) { return; }
+void LoadingScreen::render(sf::RenderWindow& win, float progress, bool bg) {
+	if (bg) {
+		auto background = sf::RectangleShape{};
+		background.setSize(sf::Vector2f{win.getSize()});
+		background.setFillColor(colors::ui_black);
+		win.draw(background);
+	}
 
 	auto buffer = 20.f;
 	m_bar.render(win);
@@ -30,7 +30,7 @@ void LoadingScreen::render(sf::RenderWindow& win, float progress) {
 	win.draw(box);
 	m_bar.update(*m_services, box.getGlobalBounds().getCenter(), progress);
 
-	m_readout.setString(std::to_string(static_cast<int>(progress * 100.f) + 1) + "%");
+	m_readout.setString(std::to_string(static_cast<int>(progress * 100.f)) + "%");
 	m_readout.setOrigin(m_readout.getLocalBounds().getCenter() + sf::Vector2f{0.f, buffer});
 	win.draw(m_readout);
 }
