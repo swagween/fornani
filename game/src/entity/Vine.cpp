@@ -138,24 +138,26 @@ void Vine::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
 	Entity::render(win, cam, size);
 	if (m_editor) { return; }
-	if (m_services->greyblock_mode()) { m_chain.render(*m_services, win, cam); }
+	if (debug::is_debug()) { m_chain.render(*m_services, win, cam); }
 	if (m_treasure_balls) {
 		for (auto const& ball : m_treasure_balls.value()) { ball->render(*m_services, win, cam); }
 	}
 	int ctr{0};
 	auto current = 0.f;
 	auto total = static_cast<float>(m_chain.links.size());
-	for (auto& link : m_chain.links) {
-		p_animatable.set_texture_rect(sf::IntRect({static_cast<int>((current / static_cast<float>(m_length)) * 3.f) * segment_size_v.x, encodings.at(ctr).at(0) * segment_size_v.y}, segment_size_v));
-		p_animatable.set_scale(sf::Vector2f{static_cast<float>(encodings.at(ctr).at(1)), 1.f} * constants::f_scale_factor);
-		p_animatable.set_position(util::round_to_even(link.get_bob()) - cam);
-		win.draw(p_animatable);
-		++debug::draw_calls;
-		++ctr;
-		++current;
+	if (debug::is_production()) {
+		for (auto& link : m_chain.links) {
+			p_animatable.set_texture_rect(sf::IntRect({static_cast<int>((current / static_cast<float>(m_length)) * 3.f) * segment_size_v.x, encodings.at(ctr).at(0) * segment_size_v.y}, segment_size_v));
+			p_animatable.set_scale(sf::Vector2f{static_cast<float>(encodings.at(ctr).at(1)), 1.f} * constants::f_scale_factor);
+			p_animatable.set_position(util::round_to_even(link.get_bob()) - cam);
+			win.draw(p_animatable);
+			++debug::draw_calls;
+			++ctr;
+			++current;
+		}
 	}
 	if (m_spawnable_platforms) {
-		for (auto const& plat : m_spawnable_platforms.value()) { plat->render(*m_services, win, cam); }
+		for (auto const& plat : m_spawnable_platforms.value()) { plat->render(win, cam); }
 	}
 }
 

@@ -68,6 +68,7 @@
         "series": [
           {
             "hide_portrait": true,
+            "output": 1,
             "suite": [
               [
                 {
@@ -221,6 +222,7 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

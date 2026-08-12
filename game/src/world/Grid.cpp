@@ -285,7 +285,7 @@ void Grid::destroy_cell(sf::Vector2<int> pos) {
 }
 
 void Grid::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	for (auto& cell : cells) { cell.render(win, m_drawbox, cam); }
+	for (auto& cell : cells) { cell.render(win, cam); }
 }
 
 void Grid::draw(sf::RenderTexture& tex) {

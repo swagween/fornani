@@ -122,7 +122,7 @@ void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		set_channel(cooldowns.shoot_effect.is_complete() ? 0 : cooldowns.shoot_effect.halfway() ? 2 : 1);
 	}
 	win.draw(*this);
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		sf::RectangleShape box{};
 		box.setSize({2.f, 2.f});
 		box.setOrigin({1.f, 1.f});

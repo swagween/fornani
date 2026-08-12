@@ -34,7 +34,7 @@ void Indicator::update(automa::ServiceProvider& svc, sf::Vector2f pos) {
 }
 
 void Indicator::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		return;
 	} else if (!addition_limit.is_complete()) {
 		m_label.setPosition(position + shadow - cam);

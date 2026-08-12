@@ -82,7 +82,6 @@ void Archer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	if (died()) { return; }
 	Enemy::render(svc, win, cam);
 	parts.bow.render(svc, win, cam);
-	if (svc.greyblock_mode()) {}
 }
 
 fsm::StateFunction Archer::update_idle() {

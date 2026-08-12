@@ -61,7 +61,7 @@ struct Tile {
 	Tile(sf::Vector2<std::uint32_t> i, sf::Vector2f p, std::uint32_t val, std::uint32_t odi, float spacing, std::uint8_t chunk_id, sf::Vector2<std::uint32_t> dim);
 
 	void on_hit(automa::ServiceProvider& svc, player::Player& player, world::Map& map, arms::Projectile& proj);
-	void render(sf::RenderWindow& win, sf::RectangleShape& draw, sf::Vector2f cam);
+	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void draw(sf::RenderTexture& tex);
 	void set_type();
 

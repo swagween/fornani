@@ -25,7 +25,7 @@ void Sparkler::update(automa::ServiceProvider& svc) {
 }
 
 void Sparkler::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	if (m_services->greyblock_mode()) {
+	if (!debug::is_production()) {
 		drawbox.setPosition(position - cam);
 		drawbox.setSize(dimensions);
 		win.draw(drawbox);

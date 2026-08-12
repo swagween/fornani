@@ -71,15 +71,20 @@ void HazardMap::update(player::Player& player, world::Map& map, graphics::Transi
 }
 
 void HazardMap::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	auto sprite = sf::Sprite(m_texture.getTexture());
-	sprite.setPosition(-cam);
-	win.draw(sprite);
+	if (debug::is_production()) {
+		auto sprite = sf::Sprite(m_texture.getTexture());
+		sprite.setPosition(-cam);
+		win.draw(sprite);
+	}
 
 	// for debug
-	// for (auto& hazard : m_tiles) { hazard.render(win, cam); }
+	if (!debug::is_production()) {
+		for (auto& hazard : m_tiles) { hazard.render(win, cam); }
+	}
 }
 
 void HazardMap::render(sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f scale, sf::Vector2f origin) {
+	if (!debug::is_production()) { return; }
 	auto sprite = sf::Sprite(m_texture.getTexture());
 	sprite.setOrigin(origin);
 	sprite.setScale(scale);

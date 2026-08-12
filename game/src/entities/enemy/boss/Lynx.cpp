@@ -8,7 +8,6 @@
 
 namespace fornani::enemy {
 
-constexpr auto b_lynx_debug{false};
 constexpr auto lynx_framerate = 7;
 constexpr auto run_threshold_v = 0.002f;
 
@@ -236,7 +235,7 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 
 void Lynx::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Enemy::render(svc, win, cam);
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		for (auto& slash : m_attacks.slash) {
 			if (slash.hit.active()) { slash.render(win, cam); }
 		}
@@ -250,7 +249,7 @@ void Lynx::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 
 void Lynx::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Boss::gui_render(svc, win, cam);
-	if (b_lynx_debug) { debug(); }
+	if (debug::is_debug()) { debug(); }
 }
 
 fsm::StateFunction Lynx::update_sit() {

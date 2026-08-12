@@ -25,7 +25,6 @@ void Layer::generate_textures(sf::Texture const& tex, bool day_night_shift) {
 
 			auto& texture = is_day ? m_texture.day : (is_twilight ? m_texture.twilight : m_texture.night);
 			sf::Vector2u size = grid.dimensions * constants::ui_cell_resolution;
-			NANI_LOG_DEBUG(m_logger, "Grid size: ({}, {})", grid.dimensions.x, grid.dimensions.y);
 			if (!texture.resize(size)) { NANI_LOG_ERROR(m_logger, "Layer texture not created."); }
 			texture.clear(sf::Color::Transparent);
 
@@ -77,6 +76,7 @@ void Layer::generate_textures(sf::Texture const& tex, bool day_night_shift) {
 }
 
 void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg, bool day_night_shift) const {
+	if (!debug::is_production()) { return; }
 	if (background() != is_bg) { return; }
 	if (m_barrier) {
 		auto spr = sf::Sprite{m_barrier->getTexture()};
@@ -127,6 +127,7 @@ void Layer::update(automa::ServiceProvider& svc) {
 }
 
 void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, LightShader& shader, Palette& palette, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg, bool day_night_shift) const {
+	if (!debug::is_production()) { return; }
 	if (background() != is_bg) { return; }
 	if (m_barrier) {
 		auto spr = sf::Sprite{m_barrier->getTexture()};

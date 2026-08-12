@@ -153,16 +153,19 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	}
 }
 
-void Drop::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+void Drop::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	if (m_start_delay) { return; }
-	auto offset = sf::Vector2f{0.f, get_collider().get_radius() - Animatable::get_f_dimensions().y};
-	Animatable::set_position(get_collider().get_global_center() + offset - cam);
-	if (!is_inactive() && !is_completely_gone() && (lifespan.get() > 500 || (lifespan.get() / 20) % 2 == 0)) {
-		win.draw(*this);
-		++debug::draw_calls;
+	if (!debug::is_production()) {
+		if (!is_inactive() && !is_completely_gone()) { get_collider().render(win, cam); }
+	} else {
+		auto offset = sf::Vector2f{0.f, get_collider().get_radius() - Animatable::get_f_dimensions().y};
+		Animatable::set_position(get_collider().get_global_center() + offset - cam);
+		if (!is_inactive() && !is_completely_gone() && (lifespan.get() > 500 || (lifespan.get() / 20) % 2 == 0)) {
+			win.draw(*this);
+			++debug::draw_calls;
+		}
+		sparkler.render(win, cam);
 	}
-	sparkler.render(win, cam);
-	if (svc.greyblock_mode()) { get_collider().render(win, cam); }
 }
 
 void Drop::set_position(sf::Vector2f pos) {

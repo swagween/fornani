@@ -348,20 +348,21 @@ void NPC::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 				auto indicator_offset = sf::Vector2f{0.f, -constants::f_cell_size};
 				m_indicator.set_position(get_collider().get_top() + indicator_offset - cam);
 			}
-			if (m_services->greyblock_mode()) {
-				if (collider.has_value()) { get_collider().render(win, cam); }
-			} else {
-				if (m_vehicle && has_flag_set(NPCFlags::background)) {
-					m_vehicle->render(win, cam, DrawOrder::back);
-					if (!has_flag_set(NPCFlags::in_vehicle)) { m_vehicle->render(win, cam, DrawOrder::front); }
-				}
-				if (!has_flag_set(NPCFlags::no_animation)) { win.draw(Mobile::p_animatable); }
+			if (m_vehicle && has_flag_set(NPCFlags::background)) {
+				m_vehicle->render(win, cam, DrawOrder::back);
+				if (!has_flag_set(NPCFlags::in_vehicle)) { m_vehicle->render(win, cam, DrawOrder::front); }
 			}
+			if (!has_flag_set(NPCFlags::no_animation)) { win.draw(Mobile::p_animatable); }
+
 			if (!has_flag_set(NPCFlags::no_animation) && !has_flag_set(NPCFlags::cutscene)) { win.draw(m_indicator); }
 		}
 		break;
-	case debug::PresentationMode::debug: get_collider().render(win, cam); break;
-	case debug::PresentationMode::greyblock: break;
+	case debug::PresentationMode::debug:
+		if (collider.has_value()) { get_collider().render(win, cam); }
+		break;
+	case debug::PresentationMode::greyblock:
+		if (collider.has_value()) { get_collider().render(win, cam); }
+		break;
 	}
 	if (m_vehicle && has_flag_set(NPCFlags::in_vehicle) && has_flag_set(NPCFlags::background)) { m_vehicle->render(win, cam, DrawOrder::front); }
 	if (m_mobile_prop) { m_mobile_prop->render(win, cam); }

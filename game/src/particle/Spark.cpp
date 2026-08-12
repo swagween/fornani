@@ -1,10 +1,10 @@
 
-#include <cmath>
 #include <fornani/core/Debug.hpp>
 #include <fornani/graphics/Renderer.hpp>
 #include <fornani/particle/Spark.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Random.hpp>
+#include <cmath>
 #include <numbers>
 
 namespace fornani::vfx {
@@ -49,6 +49,7 @@ void Spark::update(automa::ServiceProvider& svc) {
 }
 
 void Spark::render(sf::RenderWindow& win, sf::Vector2f cam) {
+	if (debug::is_production()) { return; }
 	box.setPosition(position - cam);
 	if (fader) {
 		fader.value().get_sprite().setPosition(position - cam);

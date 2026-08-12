@@ -116,7 +116,7 @@ void Imp::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector
 	if (died() || state == ImpState::dormant) { return; }
 	parts.weapon.render(svc, win, cam);
 	parts.hand.render(svc, win, cam);
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		if (state == ImpState::attack) { attacks.stab.render(win, cam); }
 	}
 }

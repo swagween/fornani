@@ -1,5 +1,6 @@
 
 #include <fornani/automa/GameplayState.hpp>
+#include <fornani/core/Debug.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 
 namespace fornani::automa {
@@ -65,7 +66,7 @@ void GameplayState::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	p_context.console || svc.state_flags.test(automa::StateFlags::cutscene) ? svc.state_flags.set(automa::StateFlags::hide_hud) : svc.state_flags.reset(automa::StateFlags::hide_hud);
 
-	if (!svc.greyblock_mode() && !svc.hide_hud()) { hud.render(svc, *player, win); }
+	if (!svc.hide_hud()) { hud.render(svc, *player, win); }
 
 	if (p_dialog && p_gui_shader) {
 		p_renderer.begin(win, {});

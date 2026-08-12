@@ -1,5 +1,6 @@
 
 #include "fornani/physics/Collider.hpp"
+#include <fornani/core/Debug.hpp>
 #include <cmath>
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
@@ -217,10 +218,10 @@ void Collider::detect_map_collision(world::Map& map) {
 	auto& grid = map.get_middleground()->grid;
 	auto tt = p_vicinity.vertices.at(0);
 	tt.y = std::clamp(tt.y, constants::small_value, tt.y);
-	auto top = map.get_index_at_position(tt);
+	auto top = map.get_index_at_position(p_vicinity.vertices.at(0));
 	auto bt = p_vicinity.vertices.at(3);
 	bt.y = std::clamp(bt.y, constants::small_value, bt.y);
-	auto bottom = map.get_index_at_position(bt);
+	auto bottom = map.get_index_at_position(p_vicinity.vertices.at(3));
 	auto right = map.get_index_at_position(p_vicinity.vertices.at(1)) - top;
 	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(map.dimensions.x)) {
 		auto left{0};
@@ -418,30 +419,32 @@ void Collider::update(automa::ServiceProvider& svc) {
 }
 
 void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	ICollider::render(win, cam);
-	// draw predictive vertical
-	box.setSize(predictive_vertical.get_dimensions());
-	box.setPosition(predictive_vertical.get_position() - cam);
-	box.setOutlineColor(sf::Color{255, 0, 0, 220});
-	box.setOutlineThickness(-1);
-	box.setFillColor(sf::Color::Transparent);
-	// win.draw(box);
+	if (debug::is_debug()) {
+		ICollider::render(win, cam);
+		// draw predictive vertical
+		box.setSize(predictive_vertical.get_dimensions());
+		box.setPosition(predictive_vertical.get_position() - cam);
+		box.setOutlineColor(sf::Color{255, 0, 0, 220});
+		box.setOutlineThickness(-1);
+		box.setFillColor(sf::Color::Transparent);
+		// win.draw(box);
 
-	// draw predictive horizontal
-	box.setSize(predictive_horizontal.get_dimensions());
-	box.setPosition(predictive_horizontal.get_position() - cam);
-	box.setOutlineColor(sf::Color{80, 0, 255, 220});
-	box.setOutlineThickness(-1);
-	box.setFillColor(sf::Color::Transparent);
-	// win.draw(box);
+		// draw predictive horizontal
+		box.setSize(predictive_horizontal.get_dimensions());
+		box.setPosition(predictive_horizontal.get_position() - cam);
+		box.setOutlineColor(sf::Color{80, 0, 255, 220});
+		box.setOutlineThickness(-1);
+		box.setFillColor(sf::Color::Transparent);
+		// win.draw(box);
 
-	// draw predictive combined
-	box.setSize(predictive_combined.get_dimensions());
-	box.setPosition(predictive_combined.get_position() - cam);
-	box.setOutlineColor(sf::Color{255, 255, 80, 180});
-	box.setOutlineThickness(-1);
-	box.setFillColor(sf::Color::Transparent);
-	// win.draw(box);
+		// draw predictive combined
+		box.setSize(predictive_combined.get_dimensions());
+		box.setPosition(predictive_combined.get_position() - cam);
+		box.setOutlineColor(sf::Color{255, 255, 80, 180});
+		box.setOutlineThickness(-1);
+		box.setFillColor(sf::Color::Transparent);
+		// win.draw(box);
+	}
 
 	// draw bounding box
 	box.setSize(dimensions);
@@ -460,36 +463,39 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	box.setOutlineThickness(-2);
 	win.draw(box);
 
-	// draw jump box
-	box.setSize(jumpbox.get_dimensions());
-	box.setPosition(jumpbox.get_position() - cam);
-	box.setFillColor(sf::Color::Blue);
-	box.setOutlineColor(sf::Color::Transparent);
-	flags.external_state.test(ExternalState::grounded) ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Yellow);
-	// win.draw(box);
+	if (debug::is_debug()) {
+		// draw jump box
+		box.setSize(jumpbox.get_dimensions());
+		box.setPosition(jumpbox.get_position() - cam);
+		box.setFillColor(sf::Color::Blue);
+		box.setOutlineColor(sf::Color::Transparent);
+		flags.external_state.test(ExternalState::grounded) ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Yellow);
+		// win.draw(box);
 
-	// draw hurtbox
-	draw_hurtbox.setSize(sf::Vector2f{hurtbox.get_dimensions()});
-	draw_hurtbox.setPosition(hurtbox.get_position() - cam);
-	draw_hurtbox.setOutlineColor(colors::ui_white);
-	draw_hurtbox.setOutlineThickness(-1.f);
-	// win.draw(draw_hurtbox);
+		// draw hurtbox
+		draw_hurtbox.setSize(sf::Vector2f{hurtbox.get_dimensions()});
+		draw_hurtbox.setPosition(hurtbox.get_position() - cam);
+		draw_hurtbox.setOutlineColor(colors::ui_white);
+		draw_hurtbox.setOutlineThickness(-1.f);
+		// win.draw(draw_hurtbox);
 
-	// draw vicinity
-	box.setSize(sf::Vector2f{p_vicinity.get_dimensions()});
-	box.setPosition(p_vicinity.get_position() - cam);
-	box.setFillColor(sf::Color::Transparent);
-	box.setOutlineColor(sf::Color{120, 60, 80, 180});
-	box.setOutlineThickness(-1);
-	// win.draw(box);
+		// draw vicinity
+		box.setSize(sf::Vector2f{p_vicinity.get_dimensions()});
+		box.setPosition(p_vicinity.get_position() - cam);
+		box.setFillColor(sf::Color::Transparent);
+		box.setOutlineColor(sf::Color{120, 60, 80, 180});
+		box.setOutlineThickness(-1);
+		// win.draw(box);
 
-	// draw wallslider
-	box.setSize(sf::Vector2f{wallslider.get_dimensions()});
-	box.setPosition(wallslider.get_position() - cam);
-	has_left_wallslide_collision() || has_right_wallslide_collision() ? box.setFillColor(sf::Color{255, 255, 0, 50}) : box.setFillColor(sf::Color::Transparent);
-	box.setOutlineColor(sf::Color{60, 60, 180, 100});
-	box.setOutlineThickness(-1.f);
-	win.draw(box);
+		// draw wallslider
+
+		box.setSize(sf::Vector2f{wallslider.get_dimensions()});
+		box.setPosition(wallslider.get_position() - cam);
+		has_left_wallslide_collision() || has_right_wallslide_collision() ? box.setFillColor(sf::Color{255, 255, 0, 50}) : box.setFillColor(sf::Color::Transparent);
+		box.setOutlineColor(sf::Color{60, 60, 180, 100});
+		box.setOutlineThickness(-1.f);
+		win.draw(box);
+	}
 
 	// draw physics position
 	if (collision_depths) {
@@ -504,6 +510,8 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 		box.setOutlineThickness(0);
 		// win.draw(box);
 	}
+
+	if (debug::is_greyblock()) { return; }
 
 	if (collision_depths) { collision_depths.value().render(bounding_box, win, cam); }
 }

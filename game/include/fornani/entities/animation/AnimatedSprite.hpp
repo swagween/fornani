@@ -35,8 +35,8 @@ class AnimatedSprite {
 	void random_start();
 	void handle_rotation(sf::Vector2f direction, int num_angles, bool radial = true);
 	void end();
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool debug = false);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, LightShader& shader, Palette& palette);
+	void render(sf::RenderWindow& win, sf::Vector2f cam, bool debug = false);
+	void render(sf::RenderWindow& win, sf::Vector2f cam, LightShader& shader, Palette& palette);
 	[[nodiscard]] auto get_frame() const -> int { return animation.get_frame(); }
 	[[nodiscard]] auto just_started() const -> bool { return animation.just_started(); }
 	[[nodiscard]] auto keyframe_started() const -> bool { return animation.keyframe_started(); }

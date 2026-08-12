@@ -57,7 +57,7 @@ void Emitter::update(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Emitter::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		drawbox.setPosition(position - cam - drawbox.getLocalBounds().size * 0.5f);
 		win.draw(drawbox);
 	}

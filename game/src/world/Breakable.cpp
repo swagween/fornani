@@ -42,7 +42,7 @@ void Breakable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 	if (is_destroyed()) { return; }
 	auto render_position = util::round_to(get_collider().physics.position, constants::f_cell_size);
 	Animatable::set_position(render_position - cam + random_offset);
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		get_collider().render(win, cam);
 	} else {
 		win.draw(*this);

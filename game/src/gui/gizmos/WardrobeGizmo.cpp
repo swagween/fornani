@@ -103,11 +103,11 @@ void WardrobeGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, 
 	// win.draw(m_scanline);
 
 	// main piece
-	m_core.render(svc, win, cam, shader, palette);
+	m_core.render(win, cam, shader, palette);
 
 	// small add-ons
 	player.render(svc, win, cam, get_placement() + m_path.get_position() + m_pawn_offset);
-	m_light.render(svc, win, cam);
+	m_light.render(win, cam);
 
 	// health display
 	auto offset{sf::Vector2f{10.f, 4.f}};

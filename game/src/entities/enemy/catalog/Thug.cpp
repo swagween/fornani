@@ -97,11 +97,9 @@ void Thug::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 }
 
 void Thug::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (!svc.greyblock_mode()) {
-	} else {
-		if (state == ThugState::punch) { attacks.punch.render(win, cam); }
-		if (caution.danger()) { attacks.rush.render(win, cam); }
-	}
+	if (debug::is_production()) { return; }
+	if (state == ThugState::punch) { attacks.punch.render(win, cam); }
+	if (caution.danger()) { attacks.rush.render(win, cam); }
 }
 
 fsm::StateFunction Thug::update_idle() {

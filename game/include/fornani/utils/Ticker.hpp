@@ -13,7 +13,7 @@
 namespace fornani::util {
 
 constexpr static auto default_slowdown_rate_v = 1.f;
-constexpr static auto max_integrations_v = 4;
+constexpr static auto max_integrations_v = 8;
 
 using Clk = std::chrono::steady_clock;
 using Sec = std::chrono::duration<float>;

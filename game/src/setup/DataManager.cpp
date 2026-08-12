@@ -131,7 +131,7 @@ void DataManager::load_data() {
 			}
 			if (room_data["meta"]["minimap"].as_bool()) {
 				auto const index = map_jsons.size() - 1;
-				m_loader->add([this, index] { minimap.bake(*m_services, map_jsons[index].metadata); });
+				m_loader->add([this, index] { minimap.bake(*m_services, map_jsons[index].metadata); }, "bake minimap for " + map_jsons[index].room_label);
 			}
 
 			// write to map table

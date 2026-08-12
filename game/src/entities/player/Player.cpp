@@ -292,9 +292,9 @@ void Player::update(world::Map& map) {
 	if (has_death_type(PlayerDeathType::crushed)) { get_collider().physics.gravity = 0.f; }
 
 	// hurtbox and walljumpbox
-	is_in_animation(AnimState::crawl) || is_in_animation(AnimState::crouch) ? hurtbox.set_dimensions(sf::Vector2f{12.f, 12.f}) : hurtbox.set_dimensions(sf::Vector2f{12.f, 26.f});
-	is_in_animation(AnimState::crawl) || is_in_animation(AnimState::crouch) ? hurtbox.set_position(get_collider().hurtbox.get_position() + sf::Vector2f{0.f, 4.f})
-																			: hurtbox.set_position(get_collider().hurtbox.get_position() - sf::Vector2f{0.f, 10.f});
+	auto low_profile = is_in_animation(AnimState::crawl) || is_in_animation(AnimState::crouch) || is_in_animation(AnimState::roll) || is_in_animation(AnimState::slide) || is_in_animation(AnimState::turn_slide);
+	low_profile ? hurtbox.set_dimensions(sf::Vector2f{12.f, 12.f}) : hurtbox.set_dimensions(sf::Vector2f{12.f, 26.f});
+	low_profile ? hurtbox.set_position(get_collider().hurtbox.get_position() + sf::Vector2f{0.f, 4.f}) : hurtbox.set_position(get_collider().hurtbox.get_position() - sf::Vector2f{0.f, 10.f});
 
 	get_collider().set_flag(shape::ColliderFlags::sinking, has_death_type(PlayerDeathType::drowned));
 
@@ -474,7 +474,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 
 	if (arsenal && hotbar && collider.has_value()) { get_collider().flags.general.set(shape::General::complex); }
 
-	if (svc.greyblock_mode()) {
+	if (debug::is_debug()) {
 		win.draw(p_animatable);
 		sf::RectangleShape box{};
 		box.setFillColor(sf::Color::Transparent);
@@ -519,7 +519,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 			win.draw(camera_target);
 			get_collider().render(win, cam);
 		}
-	} else {
+	} else if (debug::is_production()) {
 		if (antennae.size() > 1) { antennae[1]->render(svc, win, cam, 1); }
 		auto& drawable = has_flag_set(PlayerFlags::special_render) ? m_sprite_overlay : p_animatable;
 		if (has_flag_set(PlayerFlags::flat_shaded)) {
@@ -529,6 +529,15 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		}
 		++debug::draw_calls;
 		if (antennae.size() > 1) { antennae[0]->render(svc, win, cam, 1); }
+	} else if (debug::is_greyblock()) {
+		sf::RectangleShape box{};
+		box.setFillColor(colors::pioneer_mid_red);
+		box.setOutlineColor(colors::red);
+		box.setOutlineThickness(-2.f);
+		box.setPosition(hurtbox.get_position() - cam);
+		box.setSize(hurtbox.get_dimensions());
+		win.draw(box);
+		get_collider().render(win, cam);
 	}
 
 	if (arsenal && hotbar) {

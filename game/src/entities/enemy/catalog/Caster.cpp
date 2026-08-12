@@ -105,7 +105,6 @@ void Caster::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	Enemy::render(svc, win, cam);
 	if (died() || is_state(CasterState::dormant) || flags.state.test(StateFlags::invisible)) { return; }
 	m_variant == CasterVariant::apprentice ? parts.scepter.render(svc, win, cam) : parts.wand.render(svc, win, cam);
-	if (svc.greyblock_mode()) {}
 }
 
 void Caster::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {

@@ -56,8 +56,8 @@ void AnimatedSprite::handle_rotation(sf::Vector2f direction, int num_angles, boo
 
 void AnimatedSprite::end() { animation.end(); }
 
-void AnimatedSprite::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool debug) {
-	if (!svc.greyblock_mode()) {
+void AnimatedSprite::render(sf::RenderWindow& win, sf::Vector2f cam, bool debug) {
+	if (debug::is_production()) {
 		sprite.setPosition(position - cam);
 		win.draw(sprite);
 	} else {
@@ -69,8 +69,8 @@ void AnimatedSprite::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 	++debug::draw_calls;
 }
 
-void AnimatedSprite::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, LightShader& shader, Palette& palette) {
-	if (!svc.greyblock_mode()) {
+void AnimatedSprite::render(sf::RenderWindow& win, sf::Vector2f cam, LightShader& shader, Palette& palette) {
+	if (debug::is_production()) {
 		sprite.setPosition(position - cam);
 		shader.submit(win, palette, sprite);
 	} else {

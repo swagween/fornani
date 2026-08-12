@@ -61,7 +61,7 @@ void Hurtle::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 void Hurtle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Enemy::render(svc, win, cam);
 	if (died()) { return; }
-	if (svc.greyblock_mode()) { m_caution.debug_render(win, cam); }
+	if (!debug::is_production()) { m_caution.debug_render(win, cam); }
 }
 
 fsm::StateFunction Hurtle::update_run() {

@@ -40,7 +40,7 @@ class Drop : public Animatable {
 	void seed(float probability);
 	void set_value();
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2f pos);
 	void apply_force(sf::Vector2f force, bool delayed = false);
 	void set_delay(int time);

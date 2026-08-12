@@ -151,7 +151,7 @@ void Tank::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vecto
 	if (died()) { return; }
 	if (p_state.actual != TankState::shoot_vertical) { m_gun.sprite->setRotation(sf::degrees(0)); }
 	if (has_flag_set(TankFlags::show_weapon)) { m_gun.render(svc, win, cam); }
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		m_vertical_range.render(win, cam);
 		m_caution.debug_render(win, cam);
 		m_shoulders.render(win, cam, sf::Color{230, 0, 20, 80});

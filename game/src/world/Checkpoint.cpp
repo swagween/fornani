@@ -17,7 +17,7 @@ void Checkpoint::update(automa::ServiceProvider& svc, Map& map, player::Player& 
 }
 
 void Checkpoint::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (svc.greyblock_mode()) {
+	if (debug::is_debug()) {
 		bounds.render(win, cam);
 		if (reached()) {
 			sf::RectangleShape tag{};

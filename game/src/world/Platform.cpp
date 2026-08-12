@@ -209,7 +209,7 @@ void Platform::render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::
 	auto const v = animation.get_frame() * 112;
 	auto lookup = sf::Vector2<int>{u, v} + offset;
 	set_texture_rect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(get_collider().dimensions) / 2));
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 	} else {
 		tex.draw(*this);
 		++debug::draw_calls;
@@ -223,7 +223,7 @@ void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 	auto const v = animation.get_frame() * 112;
 	auto lookup = sf::Vector2<int>{u, v} + offset;
 	set_texture_rect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(get_collider().dimensions) / 2));
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		win.draw(track_shape);
 		get_collider().render(win, cam);
 	} else {
@@ -235,7 +235,7 @@ void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, LightShader& shader, Palette& palette, sf::Vector2f cam) {
 	track_shape.setPosition(-cam);
 	Animatable::set_position(get_collider().physics.position - cam);
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		win.draw(track_shape);
 		get_collider().render(win, cam);
 	} else {

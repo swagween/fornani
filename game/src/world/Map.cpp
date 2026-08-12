@@ -8,6 +8,7 @@
 #include <fornani/audio/Balance.hpp>
 #include <fornani/automa/SceneContext.hpp>
 #include <fornani/core/Common.hpp>
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/atmosphere/Atmosphere.hpp>
 #include <fornani/entities/enemy/Enemy.hpp>
 #include <fornani/entities/enemy/EnemyRegistry.hpp>
@@ -572,11 +573,11 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		for (auto s : get_entities<SavePoint>()) { s->submit(renderer); }
 		renderer.flush();
 
-		if (svc.greyblock_mode()) {
+		if (debug::is_debug()) {
 			for (auto c : get_entities<CutsceneTrigger>()) { c->render(win, cam, c->get_f_grid_dimensions().x); }
 		}
 		for (auto v : get_entities<Vine>()) {
-			if (!v->is_foreground()) { svc.greyblock_mode() ? v->render(win, cam, 1.f) : v->submit(renderer); }
+			if (!v->is_foreground()) { !debug::is_production() ? v->render(win, cam, 1.f) : v->submit(renderer); }
 		}
 		renderer.flush();
 
@@ -584,7 +585,9 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		// for (auto n : get_entities<NPC>()) { n->render(win, cam, 1.0); }
 	}
 
-	// for (auto& portal : portals) { portal.render(svc, win, cam); }
+	if (!debug::is_production()) {
+		for (auto portal : get_entities<Portal>()) { portal->render(win, cam, 1.f); }
+	}
 	for (auto& f : fire) { f.submit(renderer); }
 	renderer.flush();
 	for (auto& bed : beds) { bed.render(svc, win, cam); }
@@ -604,8 +607,8 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		if (!enemy->is_foreground() && !enemy->is_background()) { enemy->render(svc, win, cam); }
 	}
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
-	for (auto& loot : active_loot) { loot.render(svc, win, cam); }
-	for (auto& emitter : active_emitters) { svc.greyblock_mode() ? emitter->render(svc, win, cam) : emitter->submit(renderer); }
+	for (auto& loot : active_loot) { loot.render(win, cam); }
+	for (auto& emitter : active_emitters) { debug::is_greyblock() ? emitter->render(svc, win, cam) : emitter->submit(renderer); }
 	renderer.flush();
 	for (auto& plat : platforms) { has_property(MapProperties::lighting) ? plat->render(svc, m_entity_texture, cam) : plat->render(svc, win, cam); }
 	for (auto& breakable : breakables) { breakable->render(svc, win, cam); }
@@ -616,12 +619,12 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
 	for (auto& atm : atmosphere) { atm.render(renderer); }
 	renderer.flush();
-	for (auto& exp : m_explosions) { exp.render(svc, win, cam); }
+	for (auto& exp : m_explosions) { exp.render(win, cam); }
 	if (!has_property(MapProperties::lighting)) {
 		for (auto& spike : spikes) { spike.render(svc, win, shader, m_palette, cam); }
 	}
 
-	if (svc.greyblock_mode()) {
+	if (debug::is_debug()) {
 		sf::CircleShape c{4.f};
 		c.setFillColor(colors::orange);
 		for (auto& point : m_surface_points) {
@@ -634,19 +637,17 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		for (auto w : get_entities<Water>()) { w->render(win, cam, 1.0); }
 	}
 
-	if (!svc.greyblock_mode()) {
-		for (auto [i, layer] : std::views::enumerate(get_layers())) {
-			if (use_shader && !layer->ignore_lighting()) {
-				shader->set_texture_size(real_dimensions / constants::f_scale_factor);
-				shader->finalize(svc.data.biomes["properties"][get_biome_string()]["max_light"].as<float>());
-				layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
-			} else {
-				layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
-			}
-			if (i == m_middleground) {
-				for (auto n : get_entities<AmbientProp>()) {
-					if (n->is_foreground()) { n->render(win, cam, 1.f); }
-				}
+	for (auto [i, layer] : std::views::enumerate(get_layers())) {
+		if (use_shader && !layer->ignore_lighting()) {
+			shader->set_texture_size(real_dimensions / constants::f_scale_factor);
+			shader->finalize(svc.data.biomes["properties"][get_biome_string()]["max_light"].as<float>());
+			layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
+		} else {
+			layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
+		}
+		if (i == m_middleground) {
+			for (auto n : get_entities<AmbientProp>()) {
+				if (n->is_foreground()) { n->render(win, cam, 1.f); }
 			}
 		}
 	}
@@ -672,8 +673,10 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 	}
 
 	for (auto& laser : lasers) { laser.render(svc, win, cam); }
-	if (!svc.greyblock_mode()) {
+	if (debug::is_production()) {
 		for (auto& effect : effects) { effect.submit(renderer); }
+	} else {
+		for (auto& effect : effects) { effect.render(win, cam); }
 	}
 	renderer.flush();
 
@@ -693,7 +696,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 
 	if (m_attributes.properties.test(MapProperties::timer)) { svc.world_timer.render(win, sf::Vector2f{32.f, 32.f}); }
 
-	if (svc.greyblock_mode()) {
+	if (debug::is_debug()) {
 		center_box.setPosition({});
 		center_box.setFillColor(sf::Color(80, 80, 80, 60));
 		win.draw(center_box);
@@ -704,43 +707,43 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		win.draw(center_box);
 		center_box.setPosition({0.f, svc.window->f_screen_dimensions().y * 0.5f});
 		win.draw(center_box);
-		get_middleground()->grid.render(win, cam);
 	}
+
+	if (debug::is_greyblock()) { get_middleground()->grid.render(win, cam); }
 
 	m_entity_texture.display();
 }
 
 void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam) {
 
-	if (!svc.greyblock_mode()) {
+	if (debug::is_production()) {
 		background->render(svc, win, cam);
 		if (m_weather) { m_weather.value()->render(svc, win, cam, 2); }
 		for (auto& layer : scenery_layers) {
 			for (auto& piece : layer) { piece->render(svc, win, cam); }
 		}
-		if (!svc.greyblock_mode()) {
-			for (auto [i, layer] : std::views::enumerate(get_layers())) {
-				if (i == 1) {
-					if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather.value()->render(svc, win, cam, 1); }
-					if (m_entities) {
-						for (auto n : get_entities<AmbientProp>()) {
-							if (!n->is_foreground()) { n->render(win, cam, 1.f); }
-						}
-						for (auto n : get_entities<NPC>()) {
-							n->render_props(win, cam, DrawOrder::back);
-							if (n->is_background()) { n->render(win, cam); }
-						}
-						for (auto t : get_entities<Train>()) { t->render(win, cam, 1.f); }
+		for (auto [i, layer] : std::views::enumerate(get_layers())) {
+			if (i == 1) {
+				if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather.value()->render(svc, win, cam, 1); }
+				if (m_entities) {
+					for (auto n : get_entities<AmbientProp>()) {
+						if (!n->is_foreground()) { n->render(win, cam, 1.f); }
 					}
-				}
-				if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
-					shader->finalize(svc.data.biomes["properties"][get_biome_string()]["max_light"].as<float>());
-					layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true);
-				} else {
-					layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true, m_attributes.properties.test(MapProperties::day_night_shift));
+					for (auto n : get_entities<NPC>()) {
+						n->render_props(win, cam, DrawOrder::back);
+						if (n->is_background()) { n->render(win, cam); }
+					}
+					for (auto t : get_entities<Train>()) { t->render(win, cam, 1.f); }
 				}
 			}
+			if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
+				shader->finalize(svc.data.biomes["properties"][get_biome_string()]["max_light"].as<float>());
+				layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true);
+			} else {
+				layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true, m_attributes.properties.test(MapProperties::day_night_shift));
+			}
 		}
+
 		for (auto& switch_block : switch_blocks) { switch_block->render(svc, win, cam, true); }
 	} else {
 		sf::RectangleShape box{};

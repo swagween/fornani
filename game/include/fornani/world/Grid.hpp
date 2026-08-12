@@ -29,7 +29,6 @@ class Grid {
 
   private:
 	float m_spacing{};
-	sf::RectangleShape m_drawbox{};
 };
 
 } // namespace fornani::world

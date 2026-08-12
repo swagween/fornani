@@ -35,6 +35,7 @@ void Renderer::end() { flush(); }
 void Renderer::submit(sf::FloatRect dest, sf::IntRect uv, float scale, sf::Color color, RenderLayer layer) { submit(m_white_texture, dest, uv, scale, color, {}, layer); }
 
 void Renderer::flush() {
+	if (!debug::is_production()) { return; }
 	if (!m_current_texture) { return; }
 	if (m_batch.is_empty()) { return; }
 	m_target->draw(m_batch);

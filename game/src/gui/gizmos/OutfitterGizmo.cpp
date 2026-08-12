@@ -112,7 +112,7 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		m_selector.render(win, m_sprite, cam, selection_origin, shader, palette);
 		for (auto& slider : m_sliders) { slider.body.constituent.render(win, m_sprite, cam, {}, shader, palette); }
 	}
-	m_wires.render(svc, win, cam);
+	m_wires.render(win, cam);
 	if (m_description) { m_description->render(svc, win, player, shader, palette, cam); }
 
 	// debug();

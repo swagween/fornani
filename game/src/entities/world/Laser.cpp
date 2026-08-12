@@ -85,7 +85,7 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 void Laser::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (!is_active() && m_cooldown.is_complete()) { return; }
 	m_drawbox.setPosition(m_hitbox.get_position() - cam);
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		m_hitbox.render(win, cam, colors::bright_purple);
 	} else {
 		win.draw(m_drawbox);

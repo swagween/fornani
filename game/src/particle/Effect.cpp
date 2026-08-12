@@ -30,9 +30,19 @@ void Effect::update() {
 }
 
 void Effect::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	set_position(physics.position - cam);
-	win.draw(*this);
-	++debug::draw_calls;
+	if (debug::is_production()) {
+		set_position(physics.position - cam);
+		win.draw(*this);
+		++debug::draw_calls;
+	} else {
+		sf::RectangleShape box{};
+		box.setPosition(physics.position - get_f_dimensions() - cam);
+		box.setSize(get_f_dimensions() * constants::f_scale_factor);
+		box.setOutlineThickness(-2.f);
+		box.setOutlineColor(sf::Color{20, 120, 120, 40});
+		box.setFillColor(colors::transparent);
+		win.draw(box);
+	}
 }
 
 void Effect::submit(Renderer& renderer) {

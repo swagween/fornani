@@ -1,6 +1,7 @@
 
 #include "fornani/entities/enemy/boss/Minigus.hpp"
 #include <fornani/automa/SceneContext.hpp>
+#include <fornani/core/Debug.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
@@ -288,7 +289,7 @@ void Minigus::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	m_minigun.render(cam);
 	sparkler.render(win, cam);
 
-	if (!svc.greyblock_mode()) {
+	if (debug::is_production()) {
 		win.draw(m_minigun);
 		sprite_history.drag(win, cam);
 	} else {

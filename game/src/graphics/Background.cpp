@@ -1,5 +1,6 @@
 
 #include <imgui.h>
+#include <fornani/core/Debug.hpp>
 #include <fornani/graphics/Background.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Math.hpp>
@@ -44,6 +45,7 @@ void Background::update(automa::ServiceProvider& svc) {
 }
 
 void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	if (!debug::is_production()) { return; }
 	if (m_attributes.test(BackgroundAttributes::no_draw)) { return; }
 	auto epsilon = 0.9999f;
 	for (auto [i, layer] : std::views::enumerate(layers)) {

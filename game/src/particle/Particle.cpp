@@ -104,13 +104,13 @@ void Particle::update(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Particle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (svc.greyblock_mode()) {
-		if (m_collider) { m_collider->get_circle()->render(win, cam); }
-		render(win, cam);
-	}
+	if (debug::is_production()) { return; }
+	if (m_collider) { m_collider->get_circle()->render(win, cam); }
+	render(win, cam);
 }
 
 void Particle::render(sf::RenderWindow& win, sf::Vector2f cam) {
+	if (debug::is_production()) { return; }
 	auto render_position = m_collider ? m_collider->get_circle()->physics.position - cam : m_physics ? m_physics->position - cam : sf::Vector2f{};
 	if (m_animatable) {
 		m_animatable->set_position(render_position);

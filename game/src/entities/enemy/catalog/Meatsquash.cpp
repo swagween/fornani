@@ -63,7 +63,7 @@ void Meatsquash::update(automa::ServiceProvider& svc, world::Map& map, player::P
 void Meatsquash::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (died()) { return; }
 	Enemy::render(svc, win, cam);
-	if (svc.greyblock_mode()) { attacks.bite.render(win, cam); }
+	if (!debug::is_production()) { attacks.bite.render(win, cam); }
 }
 
 fsm::StateFunction Meatsquash::update_idle() {

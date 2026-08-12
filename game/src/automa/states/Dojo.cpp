@@ -1,5 +1,6 @@
 
 #include <fornani/automa/states/Dojo.hpp>
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/events/GameplayEvent.hpp>
 #include <fornani/events/InventoryEvent.hpp>
@@ -242,18 +243,20 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (p_world_shader) {
 		m_map->render_background(p_renderer, svc, win, p_world_shader, cam);
 		for (auto& cutscene : p_context.cutscene_catalog.cutscenes) { cutscene->render(win, cam); }
-		p_entity_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
-		p_entity_shader->finalize(svc.data.biomes["properties"][m_map->get_biome_string()]["max_light"].as<float>());
-		auto ent_sprite = sf::Sprite{m_map->m_entity_texture.getTexture()};
-		ent_sprite.setPosition(-cam);
-		if (m_palette) {
-			p_entity_shader->submit(win, *m_palette, ent_sprite);
-		} else {
-			win.draw(ent_sprite);
+		if (debug::is_production()) {
+			p_entity_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
+			p_entity_shader->finalize(svc.data.biomes["properties"][m_map->get_biome_string()]["max_light"].as<float>());
+			auto ent_sprite = sf::Sprite{m_map->m_entity_texture.getTexture()};
+			ent_sprite.setPosition(-cam);
+			if (m_palette) {
+				p_entity_shader->submit(win, *m_palette, ent_sprite);
+			} else {
+				win.draw(ent_sprite);
+			}
+			auto sent_sprite = sf::Sprite{m_map->m_static_entity_texture.getTexture()};
+			sent_sprite.setPosition(-cam);
+			if (m_palette) { p_entity_shader->submit(win, *m_palette, sent_sprite); }
 		}
-		auto sent_sprite = sf::Sprite{m_map->m_static_entity_texture.getTexture()};
-		sent_sprite.setPosition(-cam);
-		if (m_palette) { p_entity_shader->submit(win, *m_palette, sent_sprite); }
 
 		m_map->render(p_renderer, svc, win, p_world_shader, cam);
 
@@ -280,7 +283,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 		// m_shader->debug();
 	}
-	if (p_haze_shader) {
+	if (p_haze_shader && debug::is_production()) {
 		auto blanket = sf::RectangleShape{svc.window->f_screen_dimensions()};
 		auto highlight = Color{svc.data.biomes["properties"][m_map->get_biome_string()]["haze_highlight"]};
 		auto shadow = Color{svc.data.biomes["properties"][m_map->get_biome_string()]["haze_shadow"]};

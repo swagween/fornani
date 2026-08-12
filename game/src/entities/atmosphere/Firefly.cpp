@@ -1,5 +1,6 @@
 
 #include "fornani/entities/atmosphere/Firefly.hpp"
+#include <fornani/core/Debug.hpp>
 #include <fornani/graphics/Renderer.hpp>
 #include <numbers>
 #include "fornani/service/ServiceProvider.hpp"
@@ -50,18 +51,18 @@ void Firefly::update(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Firefly::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (svc.greyblock_mode()) { return; }
-	++svc.out_value;
-	if (trail) { trail->drag(win, cam); }
-	if (glowing) { sprite.render(svc, win, cam); }
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		sf::RectangleShape drawbox{};
 		drawbox.setSize({2.f, 2.f});
 		drawbox.setFillColor(colors::ui_white);
 		drawbox.setPosition(physics.position - cam);
 		win.draw(drawbox);
 		steering.render(svc, win, cam);
+		return;
 	}
+	++svc.out_value;
+	if (trail) { trail->drag(win, cam); }
+	if (glowing) { sprite.render(win, cam); }
 }
 
 void Firefly::submit(Renderer& renderer) {

@@ -1,4 +1,5 @@
 
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/enemy/catalog/Mastiff.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -53,7 +54,7 @@ void Mastiff::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 
 void Mastiff::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Enemy::render(svc, win, cam);
-	if (svc.greyblock_mode()) { m_bite.render(win, cam); }
+	if (!debug::is_production()) { m_bite.render(win, cam); }
 }
 
 fsm::StateFunction Mastiff::update_idle() {

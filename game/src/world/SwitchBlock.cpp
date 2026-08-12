@@ -40,7 +40,7 @@ void SwitchBlock::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf
 	auto render_position = util::round_to(get_collider().physics.position, constants::f_cell_size);
 	set_position(render_position - cam);
 
-	svc.greyblock_mode() ? get_collider().render(win, cam) : win.draw(*this);
+	!debug::is_production() ? get_collider().render(win, cam) : win.draw(*this);
 }
 
 void SwitchBlock::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) const {

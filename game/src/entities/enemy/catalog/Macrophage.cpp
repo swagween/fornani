@@ -107,8 +107,8 @@ void Macrophage::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 	m_body->render(svc, win, cam);
 	Enemy::render(svc, win, cam);
 	if (died()) { return; }
-	if (svc.greyblock_mode() && m_grab.sensor.active()) { m_grab.render(win, cam); }
-	// debug();
+	if (!debug::is_production() && m_grab.sensor.active()) { m_grab.render(win, cam); }
+	if (debug::is_debug()) { debug(); }
 }
 
 fsm::StateFunction Macrophage::update_idle() {

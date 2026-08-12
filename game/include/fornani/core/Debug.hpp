@@ -18,4 +18,8 @@ inline PresentationMode mode{};
 
 inline int draw_calls{};
 
+inline bool is_production() { return mode == PresentationMode::production; }
+inline bool is_debug() { return mode == PresentationMode::debug; }
+inline bool is_greyblock() { return mode == PresentationMode::greyblock; }
+
 } // namespace fornani::debug

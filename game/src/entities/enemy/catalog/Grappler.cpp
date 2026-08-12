@@ -53,7 +53,7 @@ void Grappler::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 void Grappler::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Enemy::render(svc, win, cam);
 	if (died()) { return; }
-	if (svc.greyblock_mode() && m_grab.sensor.active()) { m_grab.render(win, cam); }
+	if (!debug::is_production() && m_grab.sensor.active()) { m_grab.render(win, cam); }
 }
 
 fsm::StateFunction Grappler::update_idle() {

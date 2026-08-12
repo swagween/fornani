@@ -100,13 +100,13 @@ void GrandMastiff::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& wi
 		m_bite_effect->set_position(m_bite.hit.bounds.getPosition() - cam);
 		win.draw(*m_bite_effect);
 	}
-	// debug();
+	if (debug::is_debug()) { debug(); }
 }
 
 void GrandMastiff::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (!has_flag_set(BossFlags::battle_mode)) { return; }
 	Enemy::render(svc, win, cam);
-	if (svc.greyblock_mode()) { m_bite.render(win, cam); }
+	if (!debug::is_production()) { m_bite.render(win, cam); }
 }
 
 fsm::StateFunction GrandMastiff::update_idle() {

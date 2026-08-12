@@ -29,7 +29,7 @@
 #include <fornani/utils/WorldTimer.hpp>
 
 namespace fornani::automa {
-enum class DebugFlags { imgui_overlay, greyblock_mode, greyblock_trigger, demo_mode, debug_mode };
+enum class DebugFlags { imgui_overlay, demo_mode, debug_mode };
 enum class AppFlags { fullscreen, tutorial, in_game, editor, custom_map_start };
 enum class StateFlags { hide_hud, no_menu, cutscene };
 
@@ -80,7 +80,6 @@ struct ServiceProvider {
 	void toggle_fullscreen() { fullscreen() ? app_flags.reset(AppFlags::fullscreen) : app_flags.set(AppFlags::fullscreen); }
 	void toggle_tutorial() { tutorial() ? app_flags.reset(AppFlags::tutorial) : app_flags.set(AppFlags::tutorial); }
 	void toggle_debug() { debug_mode() ? debug_flags.reset(DebugFlags::debug_mode) : debug_flags.set(DebugFlags::debug_mode); }
-	void toggle_greyblock_mode() { greyblock_mode() ? debug_flags.reset(automa::DebugFlags::greyblock_mode) : debug_flags.set(automa::DebugFlags::greyblock_mode); }
 	void set_fullscreen(bool flag) { flag ? app_flags.set(AppFlags::fullscreen) : app_flags.reset(AppFlags::fullscreen); }
 	void set_editor(bool flag) { flag ? app_flags.set(AppFlags::editor) : app_flags.reset(AppFlags::editor); }
 	void set_tutorial(bool flag) { flag ? app_flags.set(AppFlags::tutorial) : app_flags.reset(AppFlags::tutorial); }
@@ -92,7 +91,6 @@ struct ServiceProvider {
 	[[nodiscard]] auto hide_hud() const -> bool { return state_flags.test(StateFlags::hide_hud); }
 	[[nodiscard]] auto no_menu() const -> bool { return state_flags.test(StateFlags::no_menu); }
 	[[nodiscard]] auto demo_mode() const -> bool { return debug_flags.test(DebugFlags::demo_mode); }
-	[[nodiscard]] auto greyblock_mode() const -> bool { return debug_flags.test(DebugFlags::greyblock_mode); }
 	[[nodiscard]] auto debug_mode() const -> bool { return debug_flags.test(DebugFlags::debug_mode); }
 	[[nodiscard]] auto in_window(sf::Vector2f point, sf::Vector2f dimensions) const -> bool { return window->in_window(point, dimensions); }
 };

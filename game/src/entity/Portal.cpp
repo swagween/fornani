@@ -1,5 +1,6 @@
 
 #include <fornani/automa/SceneContext.hpp>
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entity/Portal.hpp>
 #include <fornani/events/SystemEvent.hpp>
@@ -196,6 +197,15 @@ void Portal::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
 	Entity::render(win, cam, size);
 	p_animatable.set_scale(constants::f_scale_vec);
+	if (!debug::is_production() && !m_editor) {
+		is_activate_on_contact() ? drawbox.setOutlineColor(sf::Color{60, 255, 220, 80}) : drawbox.setOutlineColor(sf::Color{60, 255, 220, 20});
+		drawbox.setFillColor(colors::transparent);
+		drawbox.setOutlineThickness(-2.f);
+		drawbox.setSize(get_f_grid_dimensions() * size * constants::f_cell_size);
+		drawbox.setPosition(get_world_position() - cam);
+		win.draw(drawbox);
+		return;
+	}
 	if (m_custom_animation) {
 		if (m_editor) {
 			m_custom_animation->animatable.set_scale(constants::f_scale_vec * size / constants::f_cell_size);

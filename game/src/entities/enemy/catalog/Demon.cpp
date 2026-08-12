@@ -151,7 +151,7 @@ void Demon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	} else {
 		if (!is_state(DemonState::stab) && !is_state(DemonState::uppercut)) { parts.sword.render(svc, win, cam); }
 	}
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		if (attacks.stab.hit.active()) { attacks.stab.render(win, cam); }
 	}
 }

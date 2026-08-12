@@ -1,4 +1,5 @@
 
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/packages/FloatingPart.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -85,15 +86,16 @@ void FloatingPart::update(automa::ServiceProvider& svc, world::Map& map, player:
 }
 
 void FloatingPart::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (sprite) { sprite->setPosition(m_steering.physics.position - cam); }
-	if (sprite) { win.draw(*sprite); }
-	if (animated_sprite) {
-		animated_sprite->set_position(m_steering.physics.position - cam);
-		win.draw(*animated_sprite);
-	}
-	if (drawbox) { drawbox->setPosition(m_steering.physics.position - cam); }
-	if (drawbox) { win.draw(*drawbox); }
-	if (svc.greyblock_mode()) {
+	if ((debug::is_production())) {
+		if (sprite) { sprite->setPosition(m_steering.physics.position - cam); }
+		if (sprite) { win.draw(*sprite); }
+		if (animated_sprite) {
+			animated_sprite->set_position(m_steering.physics.position - cam);
+			win.draw(*animated_sprite);
+		}
+		if (drawbox) { drawbox->setPosition(m_steering.physics.position - cam); }
+		if (drawbox) { win.draw(*drawbox); }
+	} else {
 		if (hitbox) {
 			debugbox.setSize(hitbox.value().get_dimensions());
 			debugbox.setPosition(hitbox.value().get_position() - cam);

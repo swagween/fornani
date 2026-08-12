@@ -1,4 +1,5 @@
 
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entities/world/Explosion.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -32,8 +33,8 @@ void Explosion::update(automa::ServiceProvider& svc, player::Player& player, Map
 	if (exhausted) { set_flag(ExplosionFlags::exhausted); }
 }
 
-void Explosion::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (svc.greyblock_mode()) { m_sensor.render(win, cam); }
+void Explosion::render(sf::RenderWindow& win, sf::Vector2f cam) {
+	if (!debug::is_production()) { m_sensor.render(win, cam); }
 }
 
 } // namespace fornani::world

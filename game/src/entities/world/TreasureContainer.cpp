@@ -1,4 +1,5 @@
 
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/world/TreasureContainer.hpp>
 #include <fornani/graphics/Renderer.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -52,7 +53,7 @@ void TreasureContainer::on_hit(automa::ServiceProvider& svc, world::Map& map, ar
 
 void TreasureContainer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (m_health.is_dead()) { return; }
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		sensor.render(win, cam);
 	} else {
 		Animatable::set_position(m_steering.physics.position - cam);

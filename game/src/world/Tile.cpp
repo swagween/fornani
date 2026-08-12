@@ -38,16 +38,41 @@ void Tile::on_hit(automa::ServiceProvider& svc, player::Player& player, world::M
 	}
 }
 
-void Tile::render(sf::RenderWindow& win, sf::RectangleShape& draw, sf::Vector2f cam) {
-	draw.setSize({32.f, 32.f});
-	draw.setFillColor(sf::Color::Transparent);
-	draw.setOutlineThickness(-2.f);
-	one_d_index % 2 == 0 ? draw.setOutlineColor(sf::Color{17, 230, 187, 45}) : draw.setOutlineColor(sf::Color{38, 230, 220, 45});
-	if (collision_check) { draw.setOutlineColor(sf::Color{190, 255, 7, 180}); }
-	if (covered()) { draw.setOutlineColor(sf::Color{0, 155, 130, 180}); }
-	if (ramp_adjacent()) { draw.setOutlineColor(sf::Color{240, 10, 7, 180}); }
-	draw.setPosition(bounding_box.get_position() - cam);
-	if (is_occupied()) { win.draw(draw); }
+void Tile::render(sf::RenderWindow& win, sf::Vector2f cam) {
+	auto const size = bounding_box.get_dimensions();
+
+	auto is_in = win.getViewport(win.getView()).contains(sf::Vector2i{bounding_box.get_position() - cam}) || win.getViewport(win.getView()).contains(sf::Vector2i{bounding_box.get_position() + bounding_box.get_dimensions() - cam});
+	// if (!is_in) { return; }
+
+	auto even = (one_d_index % 2 == 0 && index.y % 2 == 0) || (one_d_index % 2 == 1 && index.y % 2 == 1);
+	auto const outline_color = even ? sf::Color{17, 230, 167, 180} : sf::Color{78, 230, 250, 180};
+
+	auto color = outline_color;
+
+	if (ramp_adjacent()) { color = sf::Color{240, 10, 7, 180}; }
+	if (collision_check) { color = sf::Color{190, 215, 60, 180}; }
+
+	sf::VertexArray draw{sf::PrimitiveType::TriangleFan, bounding_box.vertices.size() + 1};
+
+	if (bounding_box.vertices.size() == 4) {
+		auto tweak = sf::Vector2f{};
+		if (is_platform()) { tweak.y = -24.f; }
+		draw[0].position = bounding_box.vertices[0] - cam;
+		draw[1].position = bounding_box.vertices[1] - cam;
+		draw[2].position = bounding_box.vertices[2] - cam + tweak;
+		draw[3].position = bounding_box.vertices[3] - cam + tweak;
+		draw[4].position = bounding_box.vertices[0] - cam;
+	} else if (bounding_box.vertices.size() == 3) {
+		draw[0].position = bounding_box.vertices[0] - cam;
+		draw[1].position = bounding_box.vertices[1] - cam;
+		draw[2].position = bounding_box.vertices[2] - cam;
+		draw[3].position = bounding_box.vertices[0] - cam;
+	}
+
+	for (auto& vertex : draw) { vertex.color = color; }
+
+	if (is_collidable()) { win.draw(draw); }
+
 	collision_check = false;
 }
 

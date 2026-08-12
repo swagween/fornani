@@ -197,8 +197,9 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 void Chain::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool average) {
 	for (auto [i, link] : std::views::enumerate(links)) {
 		if (flags.test(ChainFlags::broken) && link.get_fade().is_complete()) { continue; }
-		if (svc.greyblock_mode()) { link.render(win, cam); }
-		if (sprite) {
+		if (!debug::is_production()) {
+			link.render(win, cam);
+		} else if (sprite) {
 			if (m_num_angles > 0) { m_rotator.handle_rotation(*sprite, get_tangent(i), AnimatableAxis::frame, m_num_angles); }
 			if (link.get_channel() > 0) { sprite->set_channel(link.get_channel()); }
 			auto pos = average ? link.get_average_bob_position() : link.get_bob();

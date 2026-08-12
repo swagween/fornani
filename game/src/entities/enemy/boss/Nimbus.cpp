@@ -1,5 +1,6 @@
 
 #include <fornani/automa/SceneContext.hpp>
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/enemy/boss/Nimbus.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -102,7 +103,7 @@ void Nimbus::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 
 void Nimbus::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Boss::render(svc, win, cam);
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		for (auto& slash : m_attacks.slash) {
 			if (slash.hit.active()) { slash.render(win, cam); }
 		}

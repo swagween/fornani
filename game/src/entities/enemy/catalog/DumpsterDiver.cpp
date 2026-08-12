@@ -104,7 +104,7 @@ void DumpsterDiver::update(automa::ServiceProvider& svc, world::Map& map, player
 void DumpsterDiver::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (m_wait_time.running()) { return; }
 	Enemy::render(svc, win, cam);
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		m_attack.render(win, cam);
 		for (auto const& pt : m_surface_tiles) {
 			sf::CircleShape test{};

@@ -51,12 +51,8 @@ void Antenna::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	box.setFillColor(prev_color);
 	box.setPosition(get_collider().get_global_center() - campos);
 
-	if (svc.debug_flags.test(automa::DebugFlags::greyblock_mode)) {
-		win.draw(box);
-	} else {
-		win.draw(box);
-		++debug::draw_calls;
-	}
+	win.draw(box);
+	++debug::draw_calls;
 }
 
 } // namespace fornani::vfx

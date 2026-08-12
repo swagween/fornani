@@ -36,7 +36,7 @@ class Loot {
 	Loot(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f pos, LootProperties properties);
 
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos);
+	void render(sf::RenderWindow& win, sf::Vector2f campos);
 	void set_position(sf::Vector2f pos);
 
 	[[nodiscard]] auto get_size() const -> std::size_t { return drops.size(); }

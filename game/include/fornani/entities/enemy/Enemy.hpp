@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/audio/Soundboard.hpp>
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/Entity.hpp>
 #include <fornani/entities/Mobile.hpp>
 #include <fornani/entities/animation/StateMachine.hpp>

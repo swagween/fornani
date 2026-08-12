@@ -39,8 +39,8 @@ void Loot::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	for (auto& drop : drops) { drop->update(svc, map, player); }
 }
 
-void Loot::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f campos) {
-	for (auto& drop : drops) { drop->render(svc, win, campos); }
+void Loot::render(sf::RenderWindow& win, sf::Vector2f campos) {
+	for (auto& drop : drops) { drop->render(win, campos); }
 }
 
 void Loot::set_position(sf::Vector2f pos) { position = pos; }

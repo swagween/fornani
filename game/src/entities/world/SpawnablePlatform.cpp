@@ -53,14 +53,14 @@ void SpawnablePlatform::on_hit(automa::ServiceProvider& svc, world::Map& map, ar
 	}
 }
 
-void SpawnablePlatform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (svc.greyblock_mode()) {
+void SpawnablePlatform::render(sf::RenderWindow& win, sf::Vector2f cam) {
+	if (!debug::is_production()) {
 		collider.render(win, cam);
 		sensor.render(win, cam);
 	} else {
-		sprite.render(svc, win, cam);
+		sprite.render(win, cam);
+		++debug::draw_calls;
 	}
-	++debug::draw_calls;
 }
 
 void SpawnablePlatform::submit(Renderer& renderer) {

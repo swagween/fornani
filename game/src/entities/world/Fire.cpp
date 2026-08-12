@@ -27,9 +27,9 @@ void Fire::update(automa::ServiceProvider& svc, player::Player& player, Map& map
 }
 
 void Fire::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	if (!debug::is_production()) { return; }
 	set_position(bounding_box.get_position() + sprite_offset - cam);
 	win.draw(*this);
-	if (svc.greyblock_mode()) {}
 }
 
 void Fire::submit(Renderer& renderer) {

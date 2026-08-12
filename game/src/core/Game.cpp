@@ -38,7 +38,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 	m_background = std::make_unique<graphics::Background>(services, "black");
 	m_wallpaper.setSize(services.window->f_screen_dimensions());
 
-	m_context->loader.add([&] { services.data.load_localized_data(*m_context); });
+	m_context->loader.add([&] { services.data.load_localized_data(*m_context); }, "load localized data");
 	/*for (auto [i, save] : std::views::enumerate(services.data.files)) {
 		m_context->loader.add([&] { services.data.load_progress(player, static_cast<int>(i)); });
 	}*/
@@ -119,23 +119,6 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 			if (us > 10000) { NANI_LOG_WARN(m_logger, "pollEvent blocked for {} us (has event = {})", us, event.has_value()); }
 
 			if (!event) { break; }
-
-			// Log the event type here on the hitch frame if needed.
-			if (us > 10000) {
-				auto e = event->is<sf::Event::FocusLost>();
-				auto f = event->is<sf::Event::FocusGained>();
-				auto jc = event->is<sf::Event::JoystickConnected>();
-				auto jd = event->is<sf::Event::JoystickDisconnected>();
-				auto r = event->is<sf::Event::Resized>();
-				auto sc = event->is<sf::Event::SensorChanged>();
-				NANI_LOG_WARN(m_logger, "Event at hitch was FocusLost: {}", e);
-				NANI_LOG_WARN(m_logger, "Event at hitch was FocusGained: {}", f);
-				NANI_LOG_WARN(m_logger, "Event at hitch was JoystickConnected: {}", jc);
-				NANI_LOG_WARN(m_logger, "Event at hitch was JoystickDisconnected: {}", jd);
-				NANI_LOG_WARN(m_logger, "Event at hitch was Resized: {}", r);
-				NANI_LOG_WARN(m_logger, "Event at hitch was SensorChanged: {}", sc);
-			}
-
 			if (event->is<sf::Event::Closed>()) {
 				shutdown();
 				return;
@@ -146,7 +129,6 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 				if (key_pressed->scancode == sf::Keyboard::Scancode::F12) { continue; }
 #if !defined(FORNANI_PRODUCTION)
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Space) { m_screencap_timer.start(); }
-				if (key_pressed->scancode == sf::Keyboard::Scancode::G && key_pressed->control) { services.toggle_greyblock_mode(); }
 				if (key_pressed->control) {
 					if (key_pressed->scancode == sf::Keyboard::Scancode::Left) {
 						debug::mode = cycle_presentation_mode(debug::mode, -1);
@@ -272,12 +254,6 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 
 		m_screencap_timer.update();
 		if (m_screencap_timer.is_almost_complete()) { take_screenshot(services.window->screencap, false); }
-
-		auto tpoll = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
-		auto ttick = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
-		auto trender = std::chrono::duration_cast<std::chrono::microseconds>(t3 - t2).count();
-		auto threshold = 20000;
-		if (tpoll > threshold || ttick > threshold || trender > threshold) { NANI_LOG_INFO(m_logger, "poll={}us tick={}us render={}us", tpoll, ttick, trender); }
 	}
 	shutdown();
 }
@@ -338,10 +314,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("demo mode: %s", services.demo_mode() ? "Enabled" : "Disabled");
 					if (ImGui::Button("Toggle Debug Mode")) { services.toggle_debug(); }
 					if (ImGui::Button("Toggle Demo Mode")) { services.debug_flags.test(automa::DebugFlags::demo_mode) ? services.debug_flags.reset(automa::DebugFlags::demo_mode) : services.debug_flags.set(automa::DebugFlags::demo_mode); }
-					if (ImGui::Button("Toggle Greyblock Mode")) {
-						services.debug_flags.set(automa::DebugFlags::greyblock_trigger);
-						services.debug_flags.test(automa::DebugFlags::greyblock_mode) ? services.debug_flags.reset(automa::DebugFlags::greyblock_mode) : services.debug_flags.set(automa::DebugFlags::greyblock_mode);
-					}
 					ImGui::Separator();
 					ImGui::Text("Rendering");
 					ImGui::Text("Draw Calls: %i", debug::draw_calls);

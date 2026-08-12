@@ -35,6 +35,7 @@ void Weather::update(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Weather::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, std::size_t layer) {
+	if (!debug::is_production()) { return; }
 	auto& this_layer = m_layers[layer];
 	auto& frame = this_layer.textures[this_layer.loop.get()];
 	for (auto i = 0; i < m_parameters.density; ++i) {

@@ -179,7 +179,7 @@ void Pushable::handle_collision(shape::Collider& other) const { other.handle_col
 
 void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Drawable::set_position(collision_box.get_position() - cam + random_offset);
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		get_collider().render(win, cam);
 		sf::RectangleShape box{};
 		box.setSize(start_box.get_dimensions());

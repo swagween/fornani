@@ -53,7 +53,7 @@ void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::opt
 	} else {
 		win.draw(*this);
 	}
-	if (svc.greyblock_mode()) {
+	if (debug::is_debug()) {
 		collider.render(win, cam);
 		drawbox.setPosition(hitbox.get_position() - cam);
 		drawbox.setSize(hitbox.get_dimensions());
@@ -61,6 +61,19 @@ void Spike::render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::opt
 		drawbox.setOutlineThickness(-1.f);
 		drawbox.setFillColor(sf::Color{249, 12, 48, 64});
 		win.draw(drawbox);
+	}
+	if (debug::is_greyblock()) {
+		sf::VertexArray draw{sf::PrimitiveType::LineStrip, 6};
+		auto tweak = sf::Vector2f{};
+		for (auto [i, v] : std::views::enumerate(draw)) {
+			tweak.x = 8.f * i;
+			tweak.y = 32.f * static_cast<float>((i + 1) % 2);
+			draw[i].position = hitbox.get_position() + tweak - cam;
+			draw[i].color = sf::Color{249, 12, 48, 184};
+		}
+		draw[5] = draw[0];
+
+		win.draw(draw);
 	}
 }
 

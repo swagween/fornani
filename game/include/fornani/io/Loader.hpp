@@ -3,13 +3,19 @@
 
 #include <fornani/io/Logger.hpp>
 #include <functional>
+#include <string>
 #include <vector>
 
 namespace fornani::io {
 
+struct Task {
+	std::function<void()> func{};
+	std::string label{};
+};
+
 class Loader {
   public:
-	void add(std::function<void()> task);
+	void add(std::function<void()> task, std::string label);
 
 	bool finished() const { return m_index == m_tasks.size(); }
 
@@ -18,7 +24,7 @@ class Loader {
 	void update();
 
   private:
-	std::vector<std::function<void()>> m_tasks;
+	std::vector<Task> m_tasks;
 	std::size_t m_index{};
 
 	io::Logger m_logger{"Loader"};

@@ -229,7 +229,7 @@ void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf
 	}
 
 	// proj bounding box for debug
-	if (svc.greyblock_mode()) {
+	if (debug::is_greyblock()) {
 		if (physical.sensor) { physical.sensor.value().render(win, cam); }
 		physical.collider.render(win, cam);
 		sf::RectangleShape box{{2.f, 2.f}};

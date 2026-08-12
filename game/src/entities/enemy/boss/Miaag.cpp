@@ -1,4 +1,5 @@
 
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/enemy/boss/Miaag.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -170,7 +171,7 @@ void Miaag::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 		}
 	}
 	Enemy::render(svc, win, cam);
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		m_spine->render(svc, win, cam);
 		m_bite.render(win, cam);
 	}

@@ -36,7 +36,7 @@ class Explosion : public Flaggable<ExplosionFlags> {
   public:
 	Explosion(automa::ServiceProvider& svc, arms::Team team, sf::Vector2f position, float radius, bool stun = false);
 	void update(automa::ServiceProvider& svc, player::Player& player, Map& map);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void render(sf::RenderWindow& win, sf::Vector2f cam);
 
 	[[nodiscard]] auto is_done() const -> bool { return m_lifetime.is_almost_complete(); }
 

@@ -47,7 +47,7 @@ void Incinerite::handle_collision(shape::Collider& other) const {
 void Incinerite::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (is_destroyed()) { return; }
 	set_position(m_collider.get()->physics.position - cam + random_offset);
-	if (svc.greyblock_mode()) {
+	if (!debug::is_production()) {
 		m_collider.get()->render(win, cam);
 	} else {
 		win.draw(*this);

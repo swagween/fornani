@@ -1,4 +1,5 @@
 
+#include <fornani/core/Debug.hpp>
 #include <fornani/entities/enemy/boss/Haunch.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -187,7 +188,6 @@ void Haunch::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	Enemy::render(svc, win, cam);
 	m_laser_gun.set_position(m_gun_steering.physics.position - cam);
 	if (m_flags.test(HaunchFlags::show_gun)) { win.draw(m_laser_gun); }
-	if (svc.greyblock_mode()) {}
 	if (m_dynamite_stick) {
 		m_dynamite_stick->set_position(get_collider().get_center() - cam);
 		win.draw(*m_dynamite_stick);

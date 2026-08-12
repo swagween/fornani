@@ -1,6 +1,7 @@
 
 #include "fornani/entities/enemy/Enemy.hpp"
 #include <imgui.h>
+#include <fornani/core/Debug.hpp>
 #include <fornani/world/Map.hpp>
 #include <algorithm>
 #include <numbers>
@@ -288,16 +289,19 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	auto horizontal_offset = sf::Vector2f{directions.actual.as_float(), 1.f};
 	auto sprite_position = get_collider().get_center() - cam + m_random_offset + m_native_offset.componentWiseMul(horizontal_offset);
 	p_animatable.set_position(sprite_position);
-	// debug();
 
-	p_animatable.draw(win);
+	if (debug::is_debug()) { debug(); }
 
-	if (svc.greyblock_mode()) {
+	if (debug::is_production()) { p_animatable.draw(win); }
+
+	if (!debug::is_production()) {
 		get_collider().render(win, cam);
 		if (secondary_collider) { get_secondary_collider().render(win, cam); }
-		physical.alert_range.render(win, cam);
-		physical.hostile_range.render(win, cam);
-		physical.home_detector.render(win, cam, colors::blue);
+		if (debug::is_debug()) {
+			physical.alert_range.render(win, cam);
+			physical.hostile_range.render(win, cam);
+			physical.home_detector.render(win, cam, colors::blue);
+		}
 	}
 }
 

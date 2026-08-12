@@ -74,8 +74,6 @@ void Hulmet::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 			m_parts.gun.render(svc, win, cam);
 		}
 	}
-
-	if (svc.greyblock_mode()) {}
 }
 
 fsm::StateFunction Hulmet::update_idle() {
